@@ -106,7 +106,7 @@ bool ShouldSplitCardNameAndLastFourDigits() {
 // secondary text in the corresponding suggestion bubble. `field_types` the
 // types of the fields that will be filled by the suggestion
 std::vector<std::u16string> GetProfileSuggestionLabels(
-    const std::vector<AutofillProfile*>& profiles,
+    const std::vector<const AutofillProfile*>& profiles,
     const ServerFieldTypeSet& field_types,
     ServerFieldType trigger_field_type,
     const std::string& app_locale) {
@@ -221,7 +221,7 @@ std::vector<Suggestion> AutofillSuggestionGenerator::GetSuggestionsForProfiles(
     AutofillType triggering_field_type,
     absl::optional<ServerFieldTypeSet> last_targeted_fields,
     AutofillSuggestionTriggerSource trigger_source) {
-  // If the user manually triggerged suggestions from the context menu, all
+  // If the user manually triggered suggestions from the context menu, all
   // available profiles should be shown. Selecting a suggestion overwrites the
   // triggering field's value.
   const std::u16string field_value_for_filtering =
@@ -229,7 +229,8 @@ std::vector<Suggestion> AutofillSuggestionGenerator::GetSuggestionsForProfiles(
                             kManualFallbackForAutocompleteUnrecognized
           ? triggering_field.value
           : u"";
-  std::vector<AutofillProfile*> profiles_to_suggest =
+
+  std::vector<const AutofillProfile*> profiles_to_suggest =
       GetProfilesToSuggest(triggering_field_type, field_value_for_filtering,
                            triggering_field.is_autofilled, field_types);
 
@@ -238,7 +239,8 @@ std::vector<Suggestion> AutofillSuggestionGenerator::GetSuggestionsForProfiles(
       triggering_field_type, triggering_field.max_length);
 }
 
-std::vector<AutofillProfile*> AutofillSuggestionGenerator::GetProfilesToSuggest(
+std::vector<const AutofillProfile*>
+AutofillSuggestionGenerator::GetProfilesToSuggest(
     const AutofillType& type,
     const std::u16string& field_contents,
     bool field_is_autofilled,
@@ -260,7 +262,7 @@ std::vector<AutofillProfile*> AutofillSuggestionGenerator::GetProfilesToSuggest(
                                                               sorted_profiles);
   }
 
-  std::vector<AutofillProfile*> matched_profiles =
+  std::vector<const AutofillProfile*> matched_profiles =
       suggestion_selection::GetPrefixMatchedProfiles(
           type, field_contents, field_contents_canon,
           personal_data_->app_locale(), field_is_autofilled, sorted_profiles);
@@ -268,7 +270,7 @@ std::vector<AutofillProfile*> AutofillSuggestionGenerator::GetProfilesToSuggest(
   const AutofillProfileComparator comparator(personal_data_->app_locale());
   // Don't show two suggestions if one is a subset of the other.
   // Duplicates across sources are resolved in favour of `kAccount` profiles.
-  std::vector<AutofillProfile*> unique_matched_profiles =
+  std::vector<const AutofillProfile*> unique_matched_profiles =
       suggestion_selection::DeduplicatedProfilesForSuggestions(
           type, field_types, comparator, matched_profiles);
 
@@ -277,7 +279,7 @@ std::vector<AutofillProfile*> AutofillSuggestionGenerator::GetProfilesToSuggest(
 
 std::vector<Suggestion>
 AutofillSuggestionGenerator::CreateSuggestionsFromProfiles(
-    const std::vector<AutofillProfile*>& profiles,
+    const std::vector<const AutofillProfile*>& profiles,
     const ServerFieldTypeSet& field_types,
     absl::optional<ServerFieldTypeSet> last_targeted_fields,
     const AutofillType& trigger_field_type,
@@ -489,7 +491,7 @@ bool AutofillSuggestionGenerator::WasProfileSuggestionPreviouslyHidden(
   // way if the profile represented by `backend_id` is not included we can
   // conclude that it was hidden previously and is only showing now because
   // Autofill is considering address field types.
-  std::vector<AutofillProfile*> profiles_to_suggest =
+  std::vector<const AutofillProfile*> profiles_to_suggest =
       GetProfilesToSuggest(field.Type(), field.value, field.is_autofilled,
                            suggestion_field_types_without_address_types);
 

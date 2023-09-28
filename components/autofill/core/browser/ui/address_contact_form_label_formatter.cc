@@ -10,7 +10,7 @@
 namespace autofill {
 
 AddressContactFormLabelFormatter::AddressContactFormLabelFormatter(
-    const std::vector<AutofillProfile*>& profiles,
+    const std::vector<const AutofillProfile*>& profiles,
     const std::string& app_locale,
     ServerFieldType focused_field_type,
     uint32_t groups,
@@ -24,7 +24,7 @@ AddressContactFormLabelFormatter::AddressContactFormLabelFormatter(
       email_disambiguates_(!HaveSameEmailAddresses(profiles, app_locale)),
       phone_disambiguates_(!HaveSamePhoneNumbers(profiles, app_locale)) {}
 
-AddressContactFormLabelFormatter::~AddressContactFormLabelFormatter() {}
+AddressContactFormLabelFormatter::~AddressContactFormLabelFormatter() = default;
 
 // Note that the order in which parts of the label are added--name, street
 // address, phone, and email--ensures that the label is formatted correctly for

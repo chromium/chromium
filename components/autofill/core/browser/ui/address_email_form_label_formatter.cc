@@ -10,7 +10,7 @@
 namespace autofill {
 
 AddressEmailFormLabelFormatter::AddressEmailFormLabelFormatter(
-    const std::vector<AutofillProfile*>& profiles,
+    const std::vector<const AutofillProfile*>& profiles,
     const std::string& app_locale,
     ServerFieldType focused_field_type,
     uint32_t groups,
@@ -22,7 +22,7 @@ AddressEmailFormLabelFormatter::AddressEmailFormLabelFormatter(
                      field_types),
       form_has_street_address_(HasStreetAddress(field_types_for_labels())) {}
 
-AddressEmailFormLabelFormatter::~AddressEmailFormLabelFormatter() {}
+AddressEmailFormLabelFormatter::~AddressEmailFormLabelFormatter() = default;
 
 std::u16string AddressEmailFormLabelFormatter::GetLabelForProfile(
     const AutofillProfile& profile,

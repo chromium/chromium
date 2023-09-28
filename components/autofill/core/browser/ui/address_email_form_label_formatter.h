@@ -18,11 +18,12 @@ namespace autofill {
 // with name, address, and email fields and without phone fields.
 class AddressEmailFormLabelFormatter : public LabelFormatter {
  public:
-  AddressEmailFormLabelFormatter(const std::vector<AutofillProfile*>& profiles,
-                                 const std::string& app_locale,
-                                 ServerFieldType focused_field_type,
-                                 uint32_t groups,
-                                 const ServerFieldTypeSet& field_types);
+  AddressEmailFormLabelFormatter(
+      const std::vector<const AutofillProfile*>& profiles,
+      const std::string& app_locale,
+      ServerFieldType focused_field_type,
+      uint32_t groups,
+      const ServerFieldTypeSet& field_types);
 
   ~AddressEmailFormLabelFormatter() override;
 

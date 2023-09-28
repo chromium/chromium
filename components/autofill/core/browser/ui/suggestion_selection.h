@@ -64,7 +64,7 @@ std::u16string NormalizeForComparisonForType(const std::u16string& text,
 // Matches based on prefix search, and limits number of profiles.
 // Returns the top matching profiles based on prefix search. At most
 // `kMaxSuggestedProfilesCount` are returned.
-std::vector<AutofillProfile*> GetPrefixMatchedProfiles(
+std::vector<const AutofillProfile*> GetPrefixMatchedProfiles(
     const AutofillType& type,
     const std::u16string& raw_field_contents,
     const std::u16string& field_contents_canon,
@@ -77,11 +77,11 @@ std::vector<AutofillProfile*> GetPrefixMatchedProfiles(
 // `kMaxUniqueSuggestedProfilesCount` profiles. `field_types` stores all of the
 // ServerFieldTypes relevant for the current suggestions, including that of the
 // field on which the user is currently focused.
-std::vector<AutofillProfile*> DeduplicatedProfilesForSuggestions(
+std::vector<const AutofillProfile*> DeduplicatedProfilesForSuggestions(
     const AutofillType& type,
     const ServerFieldTypeSet& field_types,
     const AutofillProfileComparator& comparator,
-    const std::vector<AutofillProfile*> matched_profiles);
+    const std::vector<const AutofillProfile*> matched_profiles);
 
 // Returns whether the |suggestion_canon| is valid considering the
 // |field_contents_canon|, the |type|, |is_masked_server_card|, and

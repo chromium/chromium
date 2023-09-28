@@ -11,7 +11,7 @@
 namespace autofill {
 
 AddressPhoneFormLabelFormatter::AddressPhoneFormLabelFormatter(
-    const std::vector<AutofillProfile*>& profiles,
+    const std::vector<const AutofillProfile*>& profiles,
     const std::string& app_locale,
     ServerFieldType focused_field_type,
     uint32_t groups,
@@ -23,7 +23,7 @@ AddressPhoneFormLabelFormatter::AddressPhoneFormLabelFormatter(
                      field_types),
       form_has_street_address_(HasStreetAddress(field_types_for_labels())) {}
 
-AddressPhoneFormLabelFormatter::~AddressPhoneFormLabelFormatter() {}
+AddressPhoneFormLabelFormatter::~AddressPhoneFormLabelFormatter() = default;
 
 std::u16string AddressPhoneFormLabelFormatter::GetLabelForProfile(
     const AutofillProfile& profile,

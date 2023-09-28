@@ -276,8 +276,12 @@ AddressEntryList GenerateAddressList(
   const std::vector<autofill::AutofillProfile*>& profiles =
       personal_data.GetProfilesForSettings();
   std::vector<std::u16string> labels;
+  // TODO(crbug.com/1487119): Replace by `profiles` when
+  // `GetProfilesForSettings` starts returning a list of const AutofillProfile*.
   autofill::AutofillProfile::CreateDifferentiatingLabels(
-      profiles, g_browser_process->GetApplicationLocale(), &labels);
+      std::vector<const autofill::AutofillProfile*>(profiles.begin(),
+                                                    profiles.end()),
+      g_browser_process->GetApplicationLocale(), &labels);
   DCHECK_EQ(labels.size(), profiles.size());
 
   AddressEntryList list;

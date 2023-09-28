@@ -27,7 +27,7 @@ ServerFieldTypeSet GetNamePhoneAndEmailFieldTypes() {
 }
 
 TEST(ContactFormLabelFormatterTest, GetLabelsWithMissingProfiles) {
-  const std::vector<AutofillProfile*> profiles{};
+  const std::vector<const AutofillProfile*> profiles{};
   const std::unique_ptr<LabelFormatter> formatter = LabelFormatter::Create(
       profiles, "en-US", NAME_FIRST, GetNamePhoneAndEmailFieldTypes());
   EXPECT_TRUE(formatter->GetLabels().empty());
@@ -53,8 +53,8 @@ TEST(ContactFormLabelFormatterTest, GetLabelsForUSProfilesAndFocusedName) {
                        "141 Franklin St.", "", "Quincy", "MA", "02169", "US",
                        "");
 
-  const std::vector<AutofillProfile*> profiles{&profile1, &profile2, &profile3,
-                                               &profile4};
+  const std::vector<const AutofillProfile*> profiles{&profile1, &profile2,
+                                                     &profile3, &profile4};
   const std::unique_ptr<LabelFormatter> formatter = LabelFormatter::Create(
       profiles, "en-US", NAME_LAST, GetNamePhoneAndEmailFieldTypes());
 
@@ -83,8 +83,8 @@ TEST(ContactFormLabelFormatterTest, GetLabelsForUSProfilesAndFocusedEmail) {
   test::SetProfileInfo(&profile4, "", "", "", "", "", "141 Franklin St.", "",
                        "Quincy", "MA", "02169", "US", "");
 
-  const std::vector<AutofillProfile*> profiles{&profile1, &profile2, &profile3,
-                                               &profile4};
+  const std::vector<const AutofillProfile*> profiles{&profile1, &profile2,
+                                                     &profile3, &profile4};
   const std::unique_ptr<LabelFormatter> formatter = LabelFormatter::Create(
       profiles, "en-US", EMAIL_ADDRESS, GetNamePhoneAndEmailFieldTypes());
 
@@ -115,8 +115,8 @@ TEST(ContactFormLabelFormatterTest, GetLabelsForUSProfilesAndFocusedPhone) {
   test::SetProfileInfo(&profile4, "", "", "", "", "", "141 Franklin St.", "",
                        "Quincy", "MA", "02169", "US", "");
 
-  const std::vector<AutofillProfile*> profiles{&profile1, &profile2, &profile3,
-                                               &profile4};
+  const std::vector<const AutofillProfile*> profiles{&profile1, &profile2,
+                                                     &profile3, &profile4};
   const std::unique_ptr<LabelFormatter> formatter =
       LabelFormatter::Create(profiles, "en-US", PHONE_HOME_WHOLE_NUMBER,
                              GetNamePhoneAndEmailFieldTypes());
@@ -142,7 +142,7 @@ TEST(ContactFormLabelFormatterTest, GetLabelsForBRProfilesAndFocusedName) {
                        "Rio de Janeiro", "RJ", "22460-320", "BR",
                        "21987650000");
 
-  const std::vector<AutofillProfile*> profiles{&profile1, &profile2};
+  const std::vector<const AutofillProfile*> profiles{&profile1, &profile2};
   const std::unique_ptr<LabelFormatter> formatter = LabelFormatter::Create(
       profiles, "pt-BR", NAME_LAST, GetNamePhoneAndEmailFieldTypes());
 
@@ -166,7 +166,7 @@ TEST(ContactFormLabelFormatterTest, GetLabelsForBRProfilesAndFocusedEmail) {
                        "Rio de Janeiro", "RJ", "22460-320", "BR",
                        "21987650000");
 
-  const std::vector<AutofillProfile*> profiles{&profile1, &profile2};
+  const std::vector<const AutofillProfile*> profiles{&profile1, &profile2};
   const std::unique_ptr<LabelFormatter> formatter = LabelFormatter::Create(
       profiles, "pt-BR", EMAIL_ADDRESS, GetNamePhoneAndEmailFieldTypes());
 
@@ -189,7 +189,7 @@ TEST(ContactFormLabelFormatterTest, GetLabelsForBRProfilesAndFocusedPhone) {
                        "Rio de Janeiro", "RJ", "22460-320", "BR",
                        "21987650000");
 
-  const std::vector<AutofillProfile*> profiles{&profile1, &profile2};
+  const std::vector<const AutofillProfile*> profiles{&profile1, &profile2};
   const std::unique_ptr<LabelFormatter> formatter =
       LabelFormatter::Create(profiles, "pt-BR", PHONE_HOME_WHOLE_NUMBER,
                              GetNamePhoneAndEmailFieldTypes());
@@ -206,7 +206,7 @@ TEST(ContactFormLabelFormatterTest, GetLabelsForNameAndPhoneWithFocusedName) {
                        "333 Washington St", "", "Brookline", "MA", "02445",
                        "US", "16177302000");
 
-  const std::vector<AutofillProfile*> profiles{&profile};
+  const std::vector<const AutofillProfile*> profiles{&profile};
   const std::unique_ptr<LabelFormatter> formatter =
       LabelFormatter::Create(profiles, "en-US", NAME_LAST,
                              {NAME_FIRST, NAME_LAST, PHONE_HOME_WHOLE_NUMBER});
@@ -222,7 +222,7 @@ TEST(ContactFormLabelFormatterTest, GetLabelsForNameAndPhoneWithFocusedPhone) {
                        "333 Washington St", "", "Brookline", "MA", "02445",
                        "US", "16177302000");
 
-  const std::vector<AutofillProfile*> profiles{&profile};
+  const std::vector<const AutofillProfile*> profiles{&profile};
   const std::unique_ptr<LabelFormatter> formatter =
       LabelFormatter::Create(profiles, "en-US", PHONE_HOME_WHOLE_NUMBER,
                              {NAME_FIRST, NAME_LAST, PHONE_HOME_WHOLE_NUMBER});
@@ -238,7 +238,7 @@ TEST(ContactFormLabelFormatterTest, GetLabelsForNameAndEmailWithFocusedName) {
                        "333 Washington St", "", "Brookline", "MA", "02445",
                        "US", "16177302000");
 
-  const std::vector<AutofillProfile*> profiles{&profile};
+  const std::vector<const AutofillProfile*> profiles{&profile};
   const std::unique_ptr<LabelFormatter> formatter = LabelFormatter::Create(
       profiles, "en-US", NAME_LAST, {NAME_FIRST, NAME_LAST, EMAIL_ADDRESS});
 
@@ -253,7 +253,7 @@ TEST(ContactFormLabelFormatterTest, GetLabelsForNameAndEmailWithFocusedEmail) {
                        "333 Washington St", "", "Brookline", "MA", "02445",
                        "US", "16177302000");
 
-  const std::vector<AutofillProfile*> profiles{&profile};
+  const std::vector<const AutofillProfile*> profiles{&profile};
   const std::unique_ptr<LabelFormatter> formatter = LabelFormatter::Create(
       profiles, "en-US", EMAIL_ADDRESS, {NAME_FIRST, NAME_LAST, EMAIL_ADDRESS});
 
@@ -268,7 +268,7 @@ TEST(ContactFormLabelFormatterTest, GetLabelsForFormWithoutName) {
                        "", "19 North Sq", "", "Boston", "MA", "02113", "US",
                        "16175232338");
 
-  const std::vector<AutofillProfile*> profiles{&profile};
+  const std::vector<const AutofillProfile*> profiles{&profile};
   const std::unique_ptr<LabelFormatter> formatter = LabelFormatter::Create(
       profiles, "en-US", PHONE_HOME_COUNTRY_CODE,
       {EMAIL_ADDRESS, PHONE_HOME_COUNTRY_CODE, PHONE_HOME_CITY_AND_NUMBER});

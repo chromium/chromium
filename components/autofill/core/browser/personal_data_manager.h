@@ -221,6 +221,7 @@ class PersonalDataManager : public KeyedService,
 
   // Returns the profile with the specified |guid|, or nullptr if there is no
   // profile with the specified |guid|.
+  // TODO(crbug.com/1487119): Change return type to const AutofillProfile*
   virtual AutofillProfile* GetProfileByGUID(const std::string& guid) const;
 
   // Determines whether the logged in user (if any) is eligible to store
@@ -355,8 +356,12 @@ class PersonalDataManager : public KeyedService,
   // using `GetProfilesFromSource()`, profiles from a single source are be
   // retrieved.
   // The profiles are returned in the specified `order`.
+  // TODO(crbug.com/1487119): Change return type to
+  // std::vector<const AutofillProfile*>
   virtual std::vector<AutofillProfile*> GetProfiles(
       ProfileOrder order = ProfileOrder::kNone) const;
+  // TODO(crbug.com/1487119): Change return type to
+  // std::vector<const AutofillProfile*>
   virtual std::vector<AutofillProfile*> GetProfilesFromSource(
       AutofillProfile::Source profile_source,
       ProfileOrder order = ProfileOrder::kNone) const;
@@ -408,10 +413,14 @@ class PersonalDataManager : public KeyedService,
 
   // Returns the profiles to suggest to the user for filling, ordered by
   // frecency.
+  // TODO(crbug.com/1487119): Change return type to
+  // std::vector<const AutofillProfile*>
   std::vector<AutofillProfile*> GetProfilesToSuggest() const;
 
   // Returns all `GetProfiles()` in the order that the should be shown in the
   // settings.
+  // TODO(crbug.com/1487119): Change return type to
+  // std::vector<const AutofillProfile*>
   std::vector<AutofillProfile*> GetProfilesForSettings() const;
 
   // Returns the credit cards to suggest to the user. Those have been deduped

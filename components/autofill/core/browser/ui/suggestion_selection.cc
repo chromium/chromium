@@ -391,16 +391,16 @@ std::u16string NormalizeForComparisonForType(const std::u16string& text,
   return AutofillProfileComparator::NormalizeForComparison(text);
 }
 
-std::vector<AutofillProfile*> GetPrefixMatchedProfiles(
+std::vector<const AutofillProfile*> GetPrefixMatchedProfiles(
     const AutofillType& type,
     const std::u16string& raw_field_contents,
     const std::u16string& field_contents_canon,
     const std::string& app_locale,
     bool field_is_autofilled,
     const std::vector<AutofillProfile*>& profiles) {
-  std::vector<AutofillProfile*> matched_profiles;
+  std::vector<const AutofillProfile*> matched_profiles;
 
-  for (AutofillProfile* profile : profiles) {
+  for (const AutofillProfile* profile : profiles) {
     if (matched_profiles.size() == kMaxSuggestedProfilesCount) {
       break;
     }
@@ -432,12 +432,12 @@ std::vector<AutofillProfile*> GetPrefixMatchedProfiles(
   return matched_profiles;
 }
 
-std::vector<AutofillProfile*> DeduplicatedProfilesForSuggestions(
+std::vector<const AutofillProfile*> DeduplicatedProfilesForSuggestions(
     const AutofillType& type,
     const ServerFieldTypeSet& field_types,
     const AutofillProfileComparator& comparator,
-    const std::vector<AutofillProfile*> matched_profiles) {
-  std::vector<AutofillProfile*> unique_matched_profiles;
+    const std::vector<const AutofillProfile*> matched_profiles) {
+  std::vector<const AutofillProfile*> unique_matched_profiles;
   std::vector<std::u16string> suggestion_main_text;
   for (const AutofillProfile* profile : matched_profiles) {
     suggestion_main_text.push_back(
@@ -452,9 +452,9 @@ std::vector<AutofillProfile*> DeduplicatedProfilesForSuggestions(
        unique_matched_profiles.size() < kMaxUniqueSuggestedProfilesCount;
        ++i) {
     bool include = true;
-    AutofillProfile* profile_a = matched_profiles[i];
+    const AutofillProfile* profile_a = matched_profiles[i];
     for (size_t j = 0; j < matched_profiles.size(); ++j) {
-      AutofillProfile* profile_b = matched_profiles[j];
+      const AutofillProfile* profile_b = matched_profiles[j];
       // Check if profile A is a subset of profile B. If not, continue.
       if (i == j ||
           !comparator.Compare(suggestion_main_text[i],

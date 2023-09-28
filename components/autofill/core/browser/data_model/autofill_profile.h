@@ -213,7 +213,7 @@ class AutofillProfile : public AutofillDataModel {
   // 4. Phone.
   // 5. Company name.
   static void CreateDifferentiatingLabels(
-      const std::vector<AutofillProfile*>& profiles,
+      const std::vector<const AutofillProfile*>& profiles,
       const std::string& app_locale,
       std::vector<std::u16string>* labels);
 
@@ -225,7 +225,7 @@ class AutofillProfile : public AutofillDataModel {
   // |UNKNOWN_TYPE| when |suggested_fields| is NULL. Each label includes at
   // least |minimal_fields_shown| fields, if possible.
   static void CreateInferredLabels(
-      const std::vector<AutofillProfile*>& profiles,
+      const std::vector<const AutofillProfile*>& profiles,
       const absl::optional<ServerFieldTypeSet>& suggested_fields,
       ServerFieldType excluded_field,
       size_t minimal_fields_shown,
@@ -344,7 +344,7 @@ class AutofillProfile : public AutofillDataModel {
   // profiles, if possible; and also at least |num_fields_to_include| fields, if
   // possible. The label fields are drawn from |fields|.
   static void CreateInferredLabelsHelper(
-      const std::vector<AutofillProfile*>& profiles,
+      const std::vector<const AutofillProfile*>& profiles,
       const std::list<size_t>& indices,
       const std::vector<ServerFieldType>& fields,
       size_t num_fields_to_include,
@@ -366,7 +366,7 @@ class AutofillProfile : public AutofillDataModel {
 
   // Merging two AutofillProfiles is done by merging their `FormGroups()`. While
   // doing so, the `token_quality_` needs to be merged too. This function is
-  // responsible for carring over or resetting the token quality of all
+  // responsible for carrying over or resetting the token quality of all
   // supported types of the `merged_group`.
   // `merged_group` represents the merged form group of `*this` with the same
   // form group of `other_profile`.

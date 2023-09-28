@@ -60,7 +60,7 @@ class SuggestionSelectionTest : public testing::Test {
   }
 
   std::vector<Suggestion> CreateSuggestions(
-      const std::vector<AutofillProfile*>& profiles,
+      const std::vector<const AutofillProfile*>& profiles,
       const ServerFieldType& field_type) {
     return base::test::ToVector(
         profiles, [field_type](const AutofillProfile* profile) {
@@ -78,9 +78,10 @@ TEST_F(SuggestionSelectionTest, GetPrefixMatchedProfiles_GetMatchingProfile) {
   const std::unique_ptr<AutofillProfile> profile2 =
       CreateProfileUniquePtr("Bob");
 
-  std::vector<AutofillProfile*> matched_profiles = GetPrefixMatchedProfiles(
-      AutofillType(NAME_FIRST), u"Mar", GetCanonicalUtf16Content("Mar"),
-      comparator_.app_locale(), false, {profile1.get(), profile2.get()});
+  std::vector<const AutofillProfile*> matched_profiles =
+      GetPrefixMatchedProfiles(
+          AutofillType(NAME_FIRST), u"Mar", GetCanonicalUtf16Content("Mar"),
+          comparator_.app_locale(), false, {profile1.get(), profile2.get()});
 
   ASSERT_EQ(1U, matched_profiles.size());
   EXPECT_EQ(profile1.get(), matched_profiles[0]);
@@ -90,17 +91,19 @@ TEST_F(SuggestionSelectionTest, GetPrefixMatchedProfiles_NoMatchingProfile) {
   const std::unique_ptr<AutofillProfile> profile1 =
       CreateProfileUniquePtr("Bob");
 
-  std::vector<AutofillProfile*> matched_profiles = GetPrefixMatchedProfiles(
-      AutofillType(NAME_FIRST), u"Mar", GetCanonicalUtf16Content("Mar"),
-      comparator_.app_locale(), false, {profile1.get()});
+  std::vector<const AutofillProfile*> matched_profiles =
+      GetPrefixMatchedProfiles(
+          AutofillType(NAME_FIRST), u"Mar", GetCanonicalUtf16Content("Mar"),
+          comparator_.app_locale(), false, {profile1.get()});
 
   ASSERT_TRUE(matched_profiles.empty());
 }
 
 TEST_F(SuggestionSelectionTest, GetPrefixMatchedProfiles_EmptyProfilesInput) {
-  std::vector<AutofillProfile*> matched_profiles = GetPrefixMatchedProfiles(
-      AutofillType(NAME_FIRST), u"Mar", GetCanonicalUtf16Content("Mar"),
-      comparator_.app_locale(), false, {});
+  std::vector<const AutofillProfile*> matched_profiles =
+      GetPrefixMatchedProfiles(AutofillType(NAME_FIRST), u"Mar",
+                               GetCanonicalUtf16Content("Mar"),
+                               comparator_.app_locale(), false, {});
 
   ASSERT_TRUE(matched_profiles.empty());
 }
@@ -118,9 +121,10 @@ TEST_F(SuggestionSelectionTest, GetPrefixMatchedProfiles_LimitProfiles) {
   std::vector<AutofillProfile*> profiles_pointers = base::test::ToVector(
       profiles_data, &std::unique_ptr<AutofillProfile>::get);
 
-  std::vector<AutofillProfile*> matched_profiles = GetPrefixMatchedProfiles(
-      AutofillType(NAME_FIRST), u"Mar", GetCanonicalUtf16Content("Mar"),
-      comparator_.app_locale(), false, profiles_pointers);
+  std::vector<const AutofillProfile*> matched_profiles =
+      GetPrefixMatchedProfiles(
+          AutofillType(NAME_FIRST), u"Mar", GetCanonicalUtf16Content("Mar"),
+          comparator_.app_locale(), false, profiles_pointers);
 
   // Marie should not be found.
   ASSERT_EQ(kMaxSuggestedProfilesCount, matched_profiles.size());
@@ -141,9 +145,10 @@ TEST_F(SuggestionSelectionTest, GetUniqueSuggestions_SingleDedupe) {
   const std::unique_ptr<AutofillProfile> profile2 =
       CreateProfileUniquePtr("Bob");
 
-  auto profile_pointers = {profile1.get(), profile2.get()};
+  std::vector<const AutofillProfile*> profile_pointers = {profile1.get(),
+                                                          profile2.get()};
 
-  std::vector<AutofillProfile*> unique_matched_profiles =
+  std::vector<const AutofillProfile*> unique_matched_profiles =
       DeduplicatedProfilesForSuggestions(AutofillType(NAME_FIRST), {},
                                          comparator_, profile_pointers);
 
@@ -162,9 +167,10 @@ TEST_F(SuggestionSelectionTest, GetUniqueSuggestions_MultipleDedupe) {
   const std::unique_ptr<AutofillProfile> profile3 =
       CreateProfileUniquePtr("Mary", "Parker");
 
-  auto profile_pointers = {profile1.get(), profile2.get(), profile3.get()};
+  std::vector<const AutofillProfile*> profile_pointers = {
+      profile1.get(), profile2.get(), profile3.get()};
 
-  std::vector<AutofillProfile*> unique_matched_profiles =
+  std::vector<const AutofillProfile*> unique_matched_profiles =
       DeduplicatedProfilesForSuggestions(AutofillType(NAME_FIRST), {NAME_LAST},
                                          comparator_, profile_pointers);
 
@@ -183,11 +189,11 @@ TEST_F(SuggestionSelectionTest, GetUniqueSuggestions_DedupeLimit) {
   }
 
   // Map all the pointers into an array that has the right type.
-  std::vector<AutofillProfile*> profiles_pointers;
+  std::vector<const AutofillProfile*> profiles_pointers;
   base::ranges::transform(profiles_data, std::back_inserter(profiles_pointers),
                           &std::unique_ptr<AutofillProfile>::get);
 
-  std::vector<AutofillProfile*> unique_matched_profiles =
+  std::vector<const AutofillProfile*> unique_matched_profiles =
       DeduplicatedProfilesForSuggestions(AutofillType(NAME_FIRST), {NAME_LAST},
                                          comparator_, profiles_pointers);
 
@@ -215,10 +221,10 @@ TEST_F(SuggestionSelectionTest, GetUniqueSuggestions_kAccount) {
   local_profile->set_source_for_testing(
       AutofillProfile::Source::kLocalOrSyncable);
   // Place `account_profile` behind `local_profile`.
-  std::vector<AutofillProfile*> profiles = {local_profile.get(),
-                                            account_profile.get()};
+  std::vector<const AutofillProfile*> profiles = {local_profile.get(),
+                                                  account_profile.get()};
 
-  std::vector<AutofillProfile*> unique_matched_profiles =
+  std::vector<const AutofillProfile*> unique_matched_profiles =
       DeduplicatedProfilesForSuggestions(AutofillType(NAME_FIRST), {},
                                          comparator_, profiles);
   // Usually, duplicates are resolved in favour of the earlier profile. Expect

@@ -41,7 +41,7 @@ constexpr VerificationStatus kObserved = VerificationStatus::kObserved;
 namespace {
 
 std::u16string GetSuggestionLabel(AutofillProfile* profile) {
-  std::vector<AutofillProfile*> profiles;
+  std::vector<const AutofillProfile*> profiles;
   profiles.push_back(profile);
   std::vector<std::u16string> labels;
   AutofillProfile::CreateDifferentiatingLabels(profiles, "en-US", &labels);
@@ -55,9 +55,9 @@ void SetupTestProfile(AutofillProfile& profile) {
                        "Hollywood", "CA", "91601", "US", "12345678910");
 }
 
-std::vector<AutofillProfile*> ToRawPointerVector(
+std::vector<const AutofillProfile*> ToRawPointerVector(
     const std::vector<std::unique_ptr<AutofillProfile>>& list) {
-  std::vector<AutofillProfile*> result;
+  std::vector<const AutofillProfile*> result;
   for (const auto& item : list)
     result.push_back(item.get());
   return result;
@@ -153,7 +153,7 @@ TEST(AutofillProfileTest, PreviewSummaryString) {
   test::SetProfileInfo(&profile7a, "Marion", "Mitchell", "Morrison",
                        "marion@me.xyz", "Fox", "123 Zoo St.", "unit 5",
                        "Hollywood", "CA", "91601", "US", "16505678910");
-  std::vector<AutofillProfile*> profiles;
+  std::vector<const AutofillProfile*> profiles;
   profiles.push_back(&profile7);
   profiles.push_back(&profile7a);
   std::vector<std::u16string> labels;
@@ -1304,7 +1304,7 @@ TEST(AutofillProfileTest, Compare_StructuredTypes) {
                  << AutofillType(type).ToString());
 
     SCOPED_TRACE(testing::Message()
-                 << "Verify the corrext result for identical values");
+                 << "Verify the correct result for identical values");
     profile1.SetRawInfoWithVerificationStatus(type, value1, status1);
     profile2.SetRawInfoWithVerificationStatus(type, value1, status1);
     EXPECT_EQ(profile1.Compare(profile2), 0);

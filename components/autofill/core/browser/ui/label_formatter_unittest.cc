@@ -14,12 +14,12 @@ namespace autofill {
 namespace {
 
 TEST(LabelFormatterTest, CreateWithMissingFieldTypes) {
-  const std::vector<AutofillProfile*> profiles{};
+  const std::vector<const AutofillProfile*> profiles{};
   EXPECT_EQ(LabelFormatter::Create(profiles, "en-US", NAME_FIRST, {}), nullptr);
 }
 
 TEST(LabelFormatterTest, CreateWithUnsupportedFieldTypes) {
-  const std::vector<AutofillProfile*> profiles{};
+  const std::vector<const AutofillProfile*> profiles{};
   EXPECT_EQ(
       LabelFormatter::Create(profiles, "en-US", USERNAME, {USERNAME, PASSWORD}),
       nullptr);

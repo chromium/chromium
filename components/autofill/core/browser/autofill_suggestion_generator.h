@@ -67,7 +67,7 @@ class AutofillSuggestionGenerator {
   // user. This involved many steps from fetching the profiles to matching with
   // `field_contents`, and deduplicating based on `field_types`, which are the
   // relevant types for the current suggestion.
-  std::vector<AutofillProfile*> GetProfilesToSuggest(
+  std::vector<const AutofillProfile*> GetProfilesToSuggest(
       const AutofillType& type,
       const std::u16string& field_contents,
       bool field_is_autofilled,
@@ -79,7 +79,7 @@ class AutofillSuggestionGenerator {
   // The profiles passed to this function should already have been matched on
   // `trigger_field_contents_canon` and deduplicated.
   std::vector<Suggestion> CreateSuggestionsFromProfiles(
-      const std::vector<AutofillProfile*>& profiles,
+      const std::vector<const AutofillProfile*>& profiles,
       const ServerFieldTypeSet& field_types,
       absl::optional<ServerFieldTypeSet> last_targeted_fields,
       const AutofillType& trigger_field_type,

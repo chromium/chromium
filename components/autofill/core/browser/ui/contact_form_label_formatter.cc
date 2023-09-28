@@ -10,7 +10,7 @@
 namespace autofill {
 
 ContactFormLabelFormatter::ContactFormLabelFormatter(
-    const std::vector<AutofillProfile*>& profiles,
+    const std::vector<const AutofillProfile*>& profiles,
     const std::string& app_locale,
     ServerFieldType focused_field_type,
     uint32_t groups,
@@ -21,7 +21,7 @@ ContactFormLabelFormatter::ContactFormLabelFormatter(
                      groups,
                      field_types) {}
 
-ContactFormLabelFormatter::~ContactFormLabelFormatter() {}
+ContactFormLabelFormatter::~ContactFormLabelFormatter() = default;
 
 // Note that the order--name, phone, and email--in which parts of the label
 // are possibly added ensures that the label is formatted correctly for

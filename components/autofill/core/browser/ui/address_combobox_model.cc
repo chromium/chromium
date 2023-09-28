@@ -34,7 +34,7 @@ AddressComboboxModel::AddressComboboxModel(
   UpdateAddresses();
 }
 
-AddressComboboxModel::~AddressComboboxModel() {}
+AddressComboboxModel::~AddressComboboxModel() = default;
 
 size_t AddressComboboxModel::GetItemCount() const {
   // When there are not addresses, a special entry is shown to prompt the user
@@ -110,7 +110,7 @@ void AddressComboboxModel::UpdateAddresses() {
   std::vector<std::u16string> labels;
   // CreateDifferentiatingLabels is expecting a pointer vector and we keep
   // profiles as unique_ptr.
-  std::vector<AutofillProfile*> profiles;
+  std::vector<const AutofillProfile*> profiles;
   for (const auto& profile : profiles_cache_) {
     profiles.push_back(profile.get());
   }
