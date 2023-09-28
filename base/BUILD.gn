@@ -3192,6 +3192,7 @@ test("base_unittests") {
     "memory/platform_shared_memory_region_unittest.cc",
     "memory/ptr_util_unittest.cc",
     "memory/raw_ptr_asan_unittest.cc",
+    "memory/raw_ptr_chromium_unittest.cc",
     "memory/ref_counted_memory_unittest.cc",
     "memory/ref_counted_unittest.cc",
     "memory/safe_ref_unittest.cc",

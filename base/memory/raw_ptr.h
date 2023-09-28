@@ -10,8 +10,4 @@
 // facade header for ease of typing.
 #include "base/allocator/partition_allocator/pointers/raw_ptr.h"  // IWYU pragma: export
 
-// Chromium expects these to be always enabled.
-static_assert(raw_ptr<int>::kZeroOnConstruct);
-static_assert(raw_ptr<int>::kZeroOnMove);
-
 #endif  // BASE_MEMORY_RAW_PTR_H_
