@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_menu_model.h"
@@ -30,6 +31,7 @@
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/power_bookmarks/core/power_bookmark_features.h"
 #include "components/prefs/pref_service.h"
+#include "components/saved_tab_groups/saved_tab_group_model.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "content/public/test/browser_test.h"
@@ -225,6 +227,107 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupInteractiveTest,
       SelectMenuItem(SavedTabGroupButton::kDeleteGroupMenuItem),
       // Ensure the button is no longer present.
       FinishTabstripAnimations(), WaitForHide(kSavedTabGroupButtonElementId));
+}
+
+// TODO(crbug.com/1487362): Deflake this test before enabling
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_MoveGroupToNewWindowFromButtonMenu \
+  DISABLED_MoveGroupToNewWindowFromButtonMenu
+#else
+#define MAYBE_MoveGroupToNewWindowFromButtonMenu \
+  MoveGroupToNewWindowFromButtonMenu
+#endif  // BUILDFLAG(IS_MAC)
+IN_PROC_BROWSER_TEST_F(SavedTabGroupInteractiveTest,
+                       MAYBE_MoveGroupToNewWindowFromButtonMenu) {
+  // Add 1 tab into the browser. And verify there are 2 tabs (The tab when you
+  // open the browser and the added one).
+  ASSERT_TRUE(
+      AddTabAtIndex(0, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
+  ASSERT_EQ(2, browser()->tab_strip_model()->count());
+
+  const tab_groups::TabGroupId group_id =
+      browser()->tab_strip_model()->AddToNewGroup({0});
+
+  RunTestSequence(
+      // Show the bookmarks bar where the buttons will be displayed.
+      FinishTabstripAnimations(), ShowBookmarksBar(),
+      // Ensure no tab groups save buttons in the bookmarks bar are present.
+      EnsureNotPresent(kSavedTabGroupButtonElementId),
+      SaveGroupLeaveEditorBubbleOpen(group_id),
+      WaitForShow(kSavedTabGroupButtonElementId, true),
+      // Click the tab group header to close the menu.
+      FlushEvents(), HoverTabGroupHeader(group_id),
+      ClickMouse(ui_controls::LEFT), FinishTabstripAnimations(),
+      // Press the enter/return key on the button to open the context menu.
+      WithElement(kSavedTabGroupButtonElementId,
+                  [](ui::TrackedElement* el) {
+                    const ui::KeyEvent event(
+                        ui::ET_KEY_PRESSED, ui::KeyboardCode::VKEY_RETURN,
+                        ui::DomCode::ENTER, ui::EF_NONE, ui::DomKey::ENTER,
+                        base::TimeTicks(), /*is_char=*/false);
+
+                    AsView<SavedTabGroupButton>(el)->OnKeyPressed(event);
+                  }),
+      // Flush events and select the move group to new window menu item.
+      EnsurePresent(SavedTabGroupButton::kMoveGroupToNewWindowMenuItem),
+      FlushEvents(),
+      SelectMenuItem(SavedTabGroupButton::kMoveGroupToNewWindowMenuItem),
+      // Ensure the button is no longer present.
+      FinishTabstripAnimations(),
+      // Expect the original browser has 1 less tab.
+      CheckResult([&]() { return browser()->tab_strip_model()->count(); }, 1),
+      // Expect the browser with the tab group is not the original browser.
+      CheckResult(
+          [&]() {
+            return browser() ==
+                   SavedTabGroupUtils::GetBrowserWithTabGroupId(group_id);
+          },
+          false));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SavedTabGroupInteractiveTest,
+    MoveGroupToNewWindowFromButtonMenuDoesNothingIfOnlyGroupInWindow) {
+  ASSERT_EQ(1, browser()->tab_strip_model()->count());
+
+  const tab_groups::TabGroupId group_id =
+      browser()->tab_strip_model()->AddToNewGroup({0});
+
+  RunTestSequence(
+      // Show the bookmarks bar where the buttons will be displayed.
+      FinishTabstripAnimations(), ShowBookmarksBar(),
+      // Ensure no tab groups save buttons in the bookmarks bar are present.
+      EnsureNotPresent(kSavedTabGroupButtonElementId),
+      SaveGroupLeaveEditorBubbleOpen(group_id),
+      WaitForShow(kSavedTabGroupButtonElementId, true),
+      // Click the tab group header to close the menu.
+      FlushEvents(), HoverTabGroupHeader(group_id),
+      ClickMouse(ui_controls::LEFT), FinishTabstripAnimations(),
+      // Press the enter/return key on the button to open the context menu.
+      WithElement(kSavedTabGroupButtonElementId,
+                  [](ui::TrackedElement* el) {
+                    const ui::KeyEvent event(
+                        ui::ET_KEY_PRESSED, ui::KeyboardCode::VKEY_RETURN,
+                        ui::DomCode::ENTER, ui::EF_NONE, ui::DomKey::ENTER,
+                        base::TimeTicks(), /*is_char=*/false);
+
+                    AsView<SavedTabGroupButton>(el)->OnKeyPressed(event);
+                  }),
+      // Flush events and select the move group to new window menu item.
+      EnsurePresent(SavedTabGroupButton::kMoveGroupToNewWindowMenuItem),
+      FlushEvents(),
+      SelectMenuItem(SavedTabGroupButton::kMoveGroupToNewWindowMenuItem),
+      // Ensure the button is no longer present.
+      FinishTabstripAnimations(),
+      // Expect the original browser has 1 less tab.
+      CheckResult([&]() { return browser()->tab_strip_model()->count(); }, 1),
+      // Expect the browser with the tab group is the original browser.
+      CheckResult(
+          [&]() {
+            return browser() ==
+                   SavedTabGroupUtils::GetBrowserWithTabGroupId(group_id);
+          },
+          true));
 }
 
 IN_PROC_BROWSER_TEST_F(SavedTabGroupInteractiveTest,
