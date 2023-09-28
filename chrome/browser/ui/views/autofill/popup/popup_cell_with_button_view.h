@@ -2,8 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_AUTOFILL_POPUP_POPUP_AUTOCOMPLETE_CELL_VIEW_H_
-#define CHROME_BROWSER_UI_VIEWS_AUTOFILL_POPUP_POPUP_AUTOCOMPLETE_CELL_VIEW_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_AUTOFILL_POPUP_POPUP_CELL_WITH_BUTTON_VIEW_H_
+#define CHROME_BROWSER_UI_VIEWS_AUTOFILL_POPUP_POPUP_CELL_WITH_BUTTON_VIEW_H_
+
+#include <memory>
+#include <string>
 
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_cell_view.h"
@@ -16,10 +19,6 @@ struct NativeWebKeyboardEvent;
 namespace views {
 class ImageButton;
 }  // namespace views
-
-namespace autofill {
-class AutofillPopupController;
-}
 
 namespace gfx {
 class canvas;
@@ -61,33 +60,37 @@ class ButtonPlaceholder : public views::View, public views::ViewObserver {
 
 }  // namespace
 
-// `PopupAutocompleteCellView` represents a single, selectable cell. However, It
-// contains the autocomplete value AND a button to delete the entry.
-class PopupAutocompleteCellView : public autofill::PopupCellView,
-                                  public CellButtonDelegate {
+// A class for a single selectable popup cell that also has a button.
+class PopupCellWithButtonView : public PopupCellView,
+                                public CellButtonDelegate {
  public:
-  PopupAutocompleteCellView(base::WeakPtr<AutofillPopupController> controller,
-                            int line_number);
-  PopupAutocompleteCellView(const PopupAutocompleteCellView&) = delete;
-  PopupAutocompleteCellView& operator=(const PopupAutocompleteCellView&) =
-      delete;
-  ~PopupAutocompleteCellView() override;
+  explicit PopupCellWithButtonView(
+      bool should_ignore_mouse_observed_outside_item_bounds_check = false);
+  PopupCellWithButtonView(const PopupCellWithButtonView&) = delete;
+  PopupCellWithButtonView& operator=(const PopupCellWithButtonView&) = delete;
+  ~PopupCellWithButtonView() override;
 
-  // autofill::PopupCellView;
+  // Removes the current button (if there is any) and adds `cell_button` to the
+  // view. Note that `cell_button` is appended to the current children of `this`
+  // and its controller is overwritten.
+  void SetCellButton(std::unique_ptr<views::ImageButton> cell_button);
+  views::ImageButton* GetCellButtonForTest() { return button_; }
+
+  // Returns the view that contains the button or `nullptr` if no button is set.
+  views::View* GetButtonContainer() { return button_placeholder_; }
+
+  // PopupCellView:
   void SetSelected(bool selected) override;
   // Handles key press events coming from the parent class. Returns false if
   // the parent should handle it.
   bool HandleKeyPressEvent(
       const content::NativeWebKeyboardEvent& event) override;
 
-  views::ImageButton* GetCellButtonForTest() { return button_; }
-
  private:
   // CellButtonDelegate:
   void OnMouseEnteredCellButton() override;
   void OnMouseExitedCellButton() override;
 
-  void CreateDeleteButton();
   void UpdateSelectedAndRunCallback(bool selected);
   void HandleKeyPressEventFocusOnButton();
   void HandleKeyPressEventFocusOnContent();
@@ -95,15 +98,13 @@ class PopupAutocompleteCellView : public autofill::PopupCellView,
   raw_ptr<views::ImageButton> button_ = nullptr;
   raw_ptr<ButtonPlaceholder> button_placeholder_ = nullptr;
 
-  // The controller for the parent view.
-  const base::WeakPtr<AutofillPopupController> controller_;
-  // The line number in the popup.
-  const int line_number_;
   // Whether the button has been focused. Used for accessibility and arrow
   // navigation purposes.
   bool button_focused_ = false;
+  // TODO(crbug.com/1417187): Remove once the work-around is fixed.
+  std::u16string button_accessible_name_;
 };
 
 }  // namespace autofill
 
-#endif  // CHROME_BROWSER_UI_VIEWS_AUTOFILL_POPUP_POPUP_AUTOCOMPLETE_CELL_VIEW_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_AUTOFILL_POPUP_POPUP_CELL_WITH_BUTTON_VIEW_H_
