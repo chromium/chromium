@@ -600,11 +600,7 @@ if (is_win) {
     outputs = []
 
     foreach(locale, platform_pak_locales) {
-      if (is_chrome_branded) {
-        _strings_file = "google_chrome_strings"
-      } else {
-        _strings_file = "chromium_strings"
-      }
+      _strings_file = "${branding_path_product}_strings"
 
       inputs += [ "$root_gen_dir/chrome/${_strings_file}_${locale}.pak" ]
     }

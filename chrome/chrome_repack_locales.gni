@@ -99,17 +99,10 @@ template("chrome_repack_locales") {
       deps += [ "//extensions/strings" ]
     }
 
-    if (is_chrome_branded) {
-      source_patterns += [
-        "${root_gen_dir}/chrome/google_chrome_strings_",
-        "${root_gen_dir}/components/strings/components_google_chrome_strings_",
-      ]
-    } else {
-      source_patterns += [
-        "${root_gen_dir}/chrome/chromium_strings_",
-        "${root_gen_dir}/components/strings/components_chromium_strings_",
-      ]
-    }
+    source_patterns += [
+      "${root_gen_dir}/chrome/${branding_path_product}_strings_",
+      "${root_gen_dir}/components/strings/components_${branding_path_product}_strings_",
+    ]
 
     if (defined(invoker.additional_source_patterns)) {
       source_patterns += invoker.additional_source_patterns

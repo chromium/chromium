@@ -834,11 +834,7 @@ repack("components_tests_pak") {
     "//components/strings",
   ]
 
-  if (is_chrome_branded) {
-    sources += [ "${root_gen_dir}/components/strings/components_google_chrome_strings_en-US.pak" ]
-  } else {
-    sources += [ "${root_gen_dir}/components/strings/components_chromium_strings_en-US.pak" ]
-  }
+  sources += [ "${root_gen_dir}/components/strings/components_${branding_path_product}_strings_en-US.pak" ]
 }
 
 if (is_android) {
