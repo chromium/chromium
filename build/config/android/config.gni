@@ -286,8 +286,12 @@ if (is_android || is_chromeos) {
     enable_startup_profiles = false
 
     # The target to use as the system WebView implementation.
-    if (android_64bit_target_cpu && skip_secondary_abi_for_cq) {
-      system_webview_apk_target = "//android_webview:system_webview_64_apk"
+    if (android_64bit_target_cpu) {
+      if (skip_secondary_abi_for_cq) {
+        system_webview_apk_target = "//android_webview:system_webview_64_apk"
+      } else {
+        system_webview_apk_target = "//android_webview:system_webview_32_64_apk"
+      }
     } else {
       system_webview_apk_target = "//android_webview:system_webview_apk"
     }

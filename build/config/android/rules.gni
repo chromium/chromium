@@ -3123,6 +3123,7 @@ if (enable_java_templates && is_android) {
         forward_variables_from(invoker,
                                [
                                  "lint_baseline_file",
+                                 "lint_gen_dir",
                                  "lint_suppressions_file",
                                  "min_sdk_version",
                                ])
@@ -3142,6 +3143,7 @@ if (enable_java_templates && is_android) {
       not_needed(invoker,
                  [
                    "lint_baseline_file",
+                   "lint_gen_dir",
                    "lint_jar_path",
                    "lint_min_sdk_version",
                    "lint_suppressions_dep",
@@ -3260,6 +3262,7 @@ if (enable_java_templates && is_android) {
             "keystore_password",
             "keystore_path",
             "lint_baseline_file",
+            "lint_gen_dir",
             "lint_min_sdk_version",
             "lint_suppressions_dep",
             "lint_suppressions_file",
@@ -5141,6 +5144,7 @@ if (enable_java_templates && is_android) {
         forward_variables_from(invoker,
                                [
                                  "lint_baseline_file",
+                                 "lint_gen_dir",
                                  "lint_jar_path",
                                  "lint_suppressions_file",
                                ])
@@ -5160,6 +5164,7 @@ if (enable_java_templates && is_android) {
       not_needed(invoker,
                  [
                    "lint_baseline_file",
+                   "lint_gen_dir",
                    "lint_jar_path",
                    "lint_min_sdk_version",
                    "lint_suppressions_dep",
