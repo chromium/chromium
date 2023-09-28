@@ -17,7 +17,7 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/containers/cxx20_erase.h"
+#include "base/containers/cxx20_erase_vector.h"
 #include "base/dcheck_is_on.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/notreached.h"
