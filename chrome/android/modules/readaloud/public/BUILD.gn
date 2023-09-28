@@ -10,10 +10,12 @@ android_library("java") {
     "java/src/org/chromium/chrome/modules/readaloud/Playback.java",
     "java/src/org/chromium/chrome/modules/readaloud/PlaybackArgs.java",
     "java/src/org/chromium/chrome/modules/readaloud/PlaybackListener.java",
+    "java/src/org/chromium/chrome/modules/readaloud/Player.java",
     "java/src/org/chromium/chrome/modules/readaloud/ReadAloudPlaybackHooks.java",
     "java/src/org/chromium/chrome/modules/readaloud/ReadAloudPlaybackHooksProvider.java",
   ]
   deps = [
+    "//base:base_java",
     "//chrome/browser/android/httpclient/public:java",
     "//chrome/browser/readaloud/android:player_state_java",
     "//components/browser_ui/bottomsheet/android:java",

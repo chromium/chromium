@@ -11,6 +11,9 @@ import org.chromium.base.ObserverList;
 import org.chromium.chrome.browser.readaloud.player.mini.MiniPlayerCoordinator;
 import org.chromium.chrome.modules.readaloud.Playback;
 import org.chromium.chrome.modules.readaloud.PlaybackListener;
+import org.chromium.chrome.modules.readaloud.Player;
+import org.chromium.chrome.modules.readaloud.Player.Delegate;
+import org.chromium.chrome.modules.readaloud.Player.Observer;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /**
@@ -25,9 +28,8 @@ import org.chromium.ui.modelutil.PropertyModel;
  * A. no players shown
  * B. mini player visible
  * C. expanded player open and mini player visible (behind expanded player)
- *
  */
-public class PlayerCoordinator {
+public class PlayerCoordinator implements Player {
     private static final String TAG = "ReadAloudPlayer";
 
     private final ObserverList<Observer> mObserverList;
@@ -35,15 +37,12 @@ public class PlayerCoordinator {
     private final PlayerMediator mMediator;
     private final MiniPlayerCoordinator mMiniPlayer;
 
-    public interface Observer {
-        /*
-         * Called when the user dismisses the player. The observer is responsible for
-         * then calling dismissPlayers().
-         */
-        void onRequestClosePlayers();
+    // TODO(b/302567541): remove this constructor when Delegate is available.
+    public PlayerCoordinator(Context context, ViewStub miniPlayerStub) {
+        this(context, miniPlayerStub, null);
     }
 
-    public PlayerCoordinator(Context context, ViewStub miniPlayerStub) {
+    public PlayerCoordinator(Context context, ViewStub miniPlayerStub, Delegate delegate) {
         mObserverList = new ObserverList<Observer>();
         mModel = new PropertyModel.Builder(PlayerProperties.ALL_KEYS)
                          .with(PlayerProperties.MINI_PLAYER_VISIBILITY, VisibilityState.GONE)
@@ -53,49 +52,35 @@ public class PlayerCoordinator {
         mMediator = new PlayerMediator(/*coordinator=*/this, mModel);
     }
 
-    /**
-     * Add an observer to receive event updates.
-     *
-     * @param observer Observer to add.
-     */
+    @Override
     public void addObserver(Observer observer) {
         mObserverList.addObserver(observer);
     }
 
-    /**
-     * Remove an observer that was previously added. No effect if the observer was
-     * never added.
-     */
+    @Override
     public void removeObserver(Observer observer) {
         mObserverList.removeObserver(observer);
     }
 
-    /** Stop playback and stop tracking players. */
+    @Override
     public void destroy() {
         dismissPlayers();
         mMediator.destroy();
     }
 
-    /**
-     * Show the mini player, called when playback is requested.
-     */
+    @Override
     public void playTabRequested() {
         mMediator.setPlaybackState(PlaybackListener.State.BUFFERING);
         mMiniPlayer.show(shouldAnimateMiniPlayer());
     }
 
-    /**
-     * Update players when playback is ready.
-     *
-     * @param playback             New Playback object.
-     * @param currentPlaybackState Playback state.
-     */
+    @Override
     public void playbackReady(Playback playback, @PlaybackListener.State int currentPlaybackState) {
         // TODO bind playback
         mMediator.setPlaybackState(currentPlaybackState);
     }
 
-    /** Update players when playback fails. */
+    @Override
     public void playbackFailed() {
         // TODO unbind playback
         mMediator.setPlaybackState(PlaybackListener.State.ERROR);
@@ -106,7 +91,7 @@ public class PlayerCoordinator {
         // TODO implement
     }
 
-    /** Hide players. */
+    @Override
     public void dismissPlayers() {
         // Resetting the state. We can do it unconditionally because this UI is only
         // dismissed when stopping the playback.

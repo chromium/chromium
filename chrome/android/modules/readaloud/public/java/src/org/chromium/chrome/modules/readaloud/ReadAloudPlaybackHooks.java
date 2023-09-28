@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.modules.readaloud;
 
+import android.view.ViewStub;
+
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 
 /** Interface for creating ReadAloud playback. */
@@ -45,5 +47,15 @@ public interface ReadAloudPlaybackHooks {
      */
     default ExpandedPlayer createExpandedPlayer(BottomSheetController bottomSheetController) {
         return new ExpandedPlayer() {};
+    }
+
+    /**
+     * Create the player UI.
+     * @param miniPlayerViewStub View stub that can create the mini player UI.
+     * @param delegate Delegate providing the UI with outside dependencies.
+     * @return a Player.
+     */
+    default Player createPlayer(ViewStub miniPlayerViewStub, Player.Delegate delegate) {
+        return new Player() {};
     }
 }
