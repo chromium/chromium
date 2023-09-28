@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_filter.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_filter_test_utils.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
+#include "third_party/blink/renderer/platform/graphics/memory_managed_paint_recorder.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -82,36 +83,28 @@ class RecordedOpsView {
 // just gives a definition to all pure virtual method, making it instantiable.
 class TestRenderingContext2D final
     : public GarbageCollected<TestRenderingContext2D>,
-      public BaseRenderingContext2D {
+      public BaseRenderingContext2D,
+      public MemoryManagedPaintRecorder::Client {
  public:
   explicit TestRenderingContext2D(V8TestingScope& scope)
       : BaseRenderingContext2D(
             scheduler::GetSingleThreadTaskRunnerForTesting()),
-        execution_context_(scope.GetExecutionContext()) {
-    recorder_.beginRecording(gfx::Size(1, 1));
-
-    // Production code (see `CanvasResourceHost::InitializeForRecording()`)
-    // initializes the matrix stack by calling `RestoreMatrixClipStack`. .
-    RestoreMatrixClipStack(GetPaintCanvas());
+        execution_context_(scope.GetExecutionContext()),
+        recorder_(this) {
+    recorder_.beginRecording(gfx::Size(Width(), Height()));
   }
   ~TestRenderingContext2D() override = default;
 
   // Returns the content of the paint recorder, leaving it empty.
   cc::PaintRecord FlushRecorder() {
-    cc::PaintRecord record = recorder_.finishRecordingAsPicture();
-    recorder_.beginRecording(gfx::Size(1, 1));
-    return record;
+    return recorder_.finishRecordingAsPicture();
   }
 
   // Get the PaintOps recorded by the context and re-initialize it to be ready
   // to capture more ops. The top-level `SaveOp` and `RestoreOp` are not
   // included in the result since these are implementation details not relevant
   // to unit tests validating specific canvas APIs.
-  RecordedOpsView GetRecordedOps() {
-    cc::PaintRecord record = FlushRecorder();
-    RestoreMatrixClipStack(GetPaintCanvas());
-    return RecordedOpsView(std::move(record));
-  }
+  RecordedOpsView GetRecordedOps() { return RecordedOpsView(FlushRecorder()); }
 
   int StateStackDepth() {
     // Subtract the extra save that gets added when the context is initialized.
@@ -161,6 +154,10 @@ class TestRenderingContext2D final
     BaseRenderingContext2D::Trace(visitor);
   }
 
+  void SetRestoreMatrixEnabled(bool enabled) {
+    restore_matrix_enabled_ = enabled;
+  }
+
  protected:
   PredefinedColorSpace GetDefaultImageDataColorSpace() const override {
     return PredefinedColorSpace::kSRGB;
@@ -169,11 +166,19 @@ class TestRenderingContext2D final
   void WillOverwriteCanvas() override {}
 
  private:
+  void DidPinImage(size_t bytes) override {}
+  void InitializeForRecording(cc::PaintCanvas* canvas) const override {
+    if (restore_matrix_enabled_) {
+      RestoreMatrixClipStack(canvas);
+    }
+  }
+
   void FlushCanvas(FlushReason) override {}
 
   Member<ExecutionContext> execution_context_;
-  cc::InspectablePaintRecorder recorder_;
+  MemoryManagedPaintRecorder recorder_;
   bool context_lost_ = false;
+  bool restore_matrix_enabled_ = true;
 };
 
 V8UnionCanvasFilterOrString* MakeBlurCanvasFilter(float std_deviation) {
@@ -921,6 +926,9 @@ TEST(BaseRenderingContextRestoreStackTests, RestoresSaves) {
   context->save();
   context->save();
 
+  // Disable automatic matrix restore so this test could manually invoke it.
+  context->SetRestoreMatrixEnabled(false);
+
   EXPECT_THAT(RecordedOpsView(context->FlushRecorder()),
               ElementsAre(PaintOpEq<SaveOp>(), PaintOpEq<SaveOp>(),
                           PaintOpEq<SaveOp>(), PaintOpEq<RestoreOp>(),
@@ -950,6 +958,9 @@ TEST(BaseRenderingContextRestoreStackTests, RestoresTransforms) {
   context->save();  // No transforms to restore on that level.
   context->save();
   context->translate(15.0, 15.0);
+
+  // Disable automatic matrix restore so this test could manually invoke it.
+  context->SetRestoreMatrixEnabled(false);
 
   EXPECT_THAT(
       RecordedOpsView(context->FlushRecorder()),
@@ -1012,6 +1023,9 @@ TEST(BaseRenderingContextRestoreStackTests, RestoresClip) {
   context->translate(0.0, 3.0);
   context->lineTo(100, 200);
   context->clip();
+
+  // Disable automatic matrix restore so this test could manually invoke it.
+  context->SetRestoreMatrixEnabled(false);
 
   EXPECT_THAT(
       RecordedOpsView(context->FlushRecorder()),
@@ -1098,6 +1112,9 @@ TEST(BaseRenderingContextRestoreStackTests, RestoresLayers) {
   filter_flags.setAlphaf(0.4f);
   filter_flags.setImageFilter(
       sk_make_sp<BlurPaintFilter>(20.0f, 20.0f, SkTileMode::kDecal, nullptr));
+
+  // Disable automatic matrix restore so this test could manually invoke it.
+  context->SetRestoreMatrixEnabled(false);
 
   EXPECT_THAT(RecordedOpsView(context->FlushRecorder()),
               ElementsAre(PaintOpEq<SaveLayerOp>(shadow_flags),

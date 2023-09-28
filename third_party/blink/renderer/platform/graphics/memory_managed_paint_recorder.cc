@@ -27,10 +27,9 @@
 
 namespace blink {
 
-MemoryManagedPaintRecorder::MemoryManagedPaintRecorder(
-    MemoryManagedPaintCanvas::Client* client)
+MemoryManagedPaintRecorder::MemoryManagedPaintRecorder(Client* client)
     : client_(client) {
-  DCHECK(client);
+  CHECK(client);
 }
 
 MemoryManagedPaintRecorder::~MemoryManagedPaintRecorder() = default;
@@ -44,14 +43,16 @@ cc::PaintCanvas* MemoryManagedPaintRecorder::beginRecording(
     canvas_ = std::make_unique<MemoryManagedPaintCanvas>(size, client_);
   }
   size_ = size;
+  client_->InitializeForRecording(canvas_.get());
   return canvas_.get();
 }
 
 cc::PaintRecord MemoryManagedPaintRecorder::finishRecordingAsPicture() {
   DCHECK(canvas_);
   DCHECK(is_recording_);
-  is_recording_ = false;
-  return canvas_->ReleaseAsRecord();
+  cc::PaintRecord record = canvas_->ReleaseAsRecord();
+  client_->InitializeForRecording(canvas_.get());
+  return record;
 }
 
 }  // namespace blink

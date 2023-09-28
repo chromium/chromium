@@ -37,7 +37,7 @@ class PLATFORM_EXPORT CanvasResourceHost : public cc::TextureLayerClient {
 
   virtual void NotifyGpuContextLost() = 0;
   virtual void SetNeedsCompositingUpdate() = 0;
-  virtual void RestoreCanvasMatrixClipStack(cc::PaintCanvas*) const = 0;
+  virtual void InitializeForRecording(cc::PaintCanvas* canvas) const = 0;
   virtual void UpdateMemoryUsage() = 0;
   virtual size_t GetMemoryUsage() const = 0;
   virtual void PageVisibilityChanged() {}
@@ -109,8 +109,6 @@ class PLATFORM_EXPORT CanvasResourceHost : public cc::TextureLayerClient {
   void set_context_lost(bool value) { context_lost_ = value; }
 
  private:
-  void InitializeForRecording(cc::PaintCanvas* canvas);
-
   bool is_displayed_ = false;
   bool context_lost_ = false;
   unsigned frames_since_last_commit_ = 0;

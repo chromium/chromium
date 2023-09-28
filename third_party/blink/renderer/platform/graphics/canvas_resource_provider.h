@@ -70,7 +70,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
     : public WebGraphicsContext3DProviderWrapper::DestructionObserver,
       public base::CheckedObserver,
       public CanvasMemoryDumpClient,
-      public MemoryManagedPaintCanvas::Client,
+      public MemoryManagedPaintRecorder::Client,
       public ScopedRasterTimer::Host {
  public:
   // These values are persisted to logs. Entries should not be renumbered and
@@ -92,9 +92,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
   };
 #pragma GCC diagnostic pop
 
-  using RestoreMatrixClipStackCb =
-      base::RepeatingCallback<void(cc::PaintCanvas*)>;
-
   // Used to determine if the provider is going to be initialized or not,
   // ignored by PassThrough
   enum class ShouldInitialize { kNo, kCallClear };
@@ -102,13 +99,15 @@ class PLATFORM_EXPORT CanvasResourceProvider
   static std::unique_ptr<CanvasResourceProvider> CreateBitmapProvider(
       const SkImageInfo& info,
       cc::PaintFlags::FilterQuality filter_quality,
-      ShouldInitialize initialize_provider);
+      ShouldInitialize initialize_provider,
+      CanvasResourceHost* resource_host = nullptr);
 
   static std::unique_ptr<CanvasResourceProvider> CreateSharedBitmapProvider(
       const SkImageInfo& info,
       cc::PaintFlags::FilterQuality filter_quality,
       ShouldInitialize initialize_provider,
-      base::WeakPtr<CanvasResourceDispatcher>);
+      base::WeakPtr<CanvasResourceDispatcher> resource_dispatcher,
+      CanvasResourceHost* resource_host = nullptr);
 
   static std::unique_ptr<CanvasResourceProvider> CreateSharedImageProvider(
       const SkImageInfo& info,
@@ -116,25 +115,29 @@ class PLATFORM_EXPORT CanvasResourceProvider
       ShouldInitialize initialize_provider,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
       RasterMode raster_mode,
-      uint32_t shared_image_usage_flags);
+      uint32_t shared_image_usage_flags,
+      CanvasResourceHost* resource_host = nullptr);
 
   static std::unique_ptr<CanvasResourceProvider> CreateWebGPUImageProvider(
       const SkImageInfo& info,
-      uint32_t shared_image_usage_flags = 0);
+      uint32_t shared_image_usage_flags = 0,
+      CanvasResourceHost* resource_host = nullptr);
 
   static std::unique_ptr<CanvasResourceProvider> CreatePassThroughProvider(
       const SkImageInfo& info,
       cc::PaintFlags::FilterQuality filter_quality,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
       base::WeakPtr<CanvasResourceDispatcher>,
-      bool is_origin_top_left);
+      bool is_origin_top_left,
+      CanvasResourceHost* resource_host = nullptr);
 
   static std::unique_ptr<CanvasResourceProvider> CreateSwapChainProvider(
       const SkImageInfo& info,
       cc::PaintFlags::FilterQuality filter_quality,
       ShouldInitialize initialize_provider,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
-      base::WeakPtr<CanvasResourceDispatcher>);
+      base::WeakPtr<CanvasResourceDispatcher>,
+      CanvasResourceHost* resource_host = nullptr);
 
   // Use Snapshot() for capturing a frame that is intended to be displayed via
   // the compositor. Cases that are destined to be transferred via a
@@ -240,7 +243,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
   FlushReason printing_fallback_reason() { return printing_fallback_reason_; }
 
   void SkipQueuedDrawCommands();
-  void SetRestoreClipStackCallback(RestoreMatrixClipStackCb);
   void RestoreBackBuffer(const cc::PaintImage&);
 
   ResourceProviderType GetType() const { return type_; }
@@ -259,6 +261,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
   size_t TotalPinnedImageBytes() const { return total_pinned_image_bytes_; }
 
   void DidPinImage(size_t bytes) override;
+  void InitializeForRecording(cc::PaintCanvas* canvas) const override;
 
   bool IsPrinting() { return resource_host_ && resource_host_->IsPrinting(); }
 
@@ -290,12 +293,15 @@ class PLATFORM_EXPORT CanvasResourceProvider
                                                     FlushReason);
   scoped_refptr<CanvasResource> GetImportedResource() const;
 
-  CanvasResourceProvider(const ResourceProviderType&,
-                         const SkImageInfo&,
-                         cc::PaintFlags::FilterQuality,
-                         bool is_origin_top_left,
-                         base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
-                         base::WeakPtr<CanvasResourceDispatcher>);
+  CanvasResourceProvider(
+      const ResourceProviderType&,
+      const SkImageInfo&,
+      cc::PaintFlags::FilterQuality,
+      bool is_origin_top_left,
+      base::WeakPtr<WebGraphicsContext3DProviderWrapper>
+          context_provider_wrapper,
+      base::WeakPtr<CanvasResourceDispatcher> resource_dispatcher,
+      CanvasResourceHost* resource_host);
 
   // Its important to use this method for generating PaintImage wrapped canvas
   // snapshots to get a cache hit from cc's ImageDecodeCache. This method
@@ -384,8 +390,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
   // Parameters for the auto-flushing heuristic.
   size_t max_recorded_op_bytes_;
   size_t max_pinned_image_bytes_;
-
-  RestoreMatrixClipStackCb restore_clip_stack_callback_;
 
   CanvasResourceHost* resource_host_ = nullptr;
 

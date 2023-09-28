@@ -134,13 +134,15 @@ class CanvasResourceProviderBitmap : public CanvasResourceProvider {
   CanvasResourceProviderBitmap(
       const SkImageInfo& info,
       cc::PaintFlags::FilterQuality filter_quality,
-      base::WeakPtr<CanvasResourceDispatcher> resource_dispatcher)
+      base::WeakPtr<CanvasResourceDispatcher> resource_dispatcher,
+      CanvasResourceHost* resource_host)
       : CanvasResourceProvider(kBitmap,
                                info,
                                filter_quality,
-                               true /*is_origin_top_left*/,
-                               nullptr /*context_provider_wrapper*/,
-                               std::move(resource_dispatcher)) {}
+                               /*is_origin_top_left=*/true,
+                               /*context_provider_wrapper=*/nullptr,
+                               std::move(resource_dispatcher),
+                               resource_host) {}
 
   ~CanvasResourceProviderBitmap() override = default;
 
@@ -176,10 +178,12 @@ class CanvasResourceProviderSharedBitmap : public CanvasResourceProviderBitmap {
   CanvasResourceProviderSharedBitmap(
       const SkImageInfo& info,
       cc::PaintFlags::FilterQuality filter_quality,
-      base::WeakPtr<CanvasResourceDispatcher> resource_dispatcher)
+      base::WeakPtr<CanvasResourceDispatcher> resource_dispatcher,
+      CanvasResourceHost* resource_host)
       : CanvasResourceProviderBitmap(info,
                                      filter_quality,
-                                     std::move(resource_dispatcher)) {
+                                     std::move(resource_dispatcher),
+                                     resource_host) {
     DCHECK(ResourceDispatcher());
     type_ = kSharedBitmap;
   }
@@ -229,13 +233,15 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
           context_provider_wrapper,
       bool is_origin_top_left,
       bool is_accelerated,
-      uint32_t shared_image_usage_flags)
+      uint32_t shared_image_usage_flags,
+      CanvasResourceHost* resource_host)
       : CanvasResourceProvider(kSharedImage,
                                info,
                                filter_quality,
                                is_origin_top_left,
                                std::move(context_provider_wrapper),
-                               nullptr /* resource_dispatcher */),
+                               /*resource_dispatcher=*/nullptr,
+                               resource_host),
         is_accelerated_(is_accelerated),
         shared_image_usage_flags_(shared_image_usage_flags),
         use_oop_rasterization_(is_accelerated && ContextProviderWrapper()
@@ -709,13 +715,15 @@ class CanvasResourceProviderPassThrough final : public CanvasResourceProvider {
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>
           context_provider_wrapper,
       base::WeakPtr<CanvasResourceDispatcher> resource_dispatcher,
-      bool is_origin_top_left)
+      bool is_origin_top_left,
+      CanvasResourceHost* resource_host)
       : CanvasResourceProvider(kPassThrough,
                                info,
                                filter_quality,
                                is_origin_top_left,
                                std::move(context_provider_wrapper),
-                               std::move(resource_dispatcher)) {}
+                               std::move(resource_dispatcher),
+                               resource_host) {}
 
   ~CanvasResourceProviderPassThrough() override = default;
   bool IsValid() const final { return true; }
@@ -760,13 +768,15 @@ class CanvasResourceProviderSwapChain final : public CanvasResourceProvider {
       cc::PaintFlags::FilterQuality filter_quality,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>
           context_provider_wrapper,
-      base::WeakPtr<CanvasResourceDispatcher> resource_dispatcher)
+      base::WeakPtr<CanvasResourceDispatcher> resource_dispatcher,
+      CanvasResourceHost* resource_host)
       : CanvasResourceProvider(kSwapChain,
                                info,
                                filter_quality,
-                               true /*is_origin_top_left*/,
+                               /*is_origin_top_left=*/true,
                                std::move(context_provider_wrapper),
-                               std::move(resource_dispatcher)),
+                               std::move(resource_dispatcher),
+                               resource_host),
         use_oop_rasterization_(ContextProviderWrapper()
                                    ->ContextProvider()
                                    ->GetCapabilities()
@@ -916,9 +926,10 @@ std::unique_ptr<CanvasResourceProvider>
 CanvasResourceProvider::CreateBitmapProvider(
     const SkImageInfo& info,
     cc::PaintFlags::FilterQuality filter_quality,
-    ShouldInitialize should_initialize) {
+    ShouldInitialize should_initialize,
+    CanvasResourceHost* resource_host) {
   auto provider = std::make_unique<CanvasResourceProviderBitmap>(
-      info, filter_quality, nullptr /*resource_dispatcher*/);
+      info, filter_quality, /*resource_dispatcher=*/nullptr, resource_host);
   if (provider->IsValid()) {
     if (should_initialize ==
         CanvasResourceProvider::ShouldInitialize::kCallClear)
@@ -933,14 +944,15 @@ CanvasResourceProvider::CreateSharedBitmapProvider(
     const SkImageInfo& info,
     cc::PaintFlags::FilterQuality filter_quality,
     ShouldInitialize should_initialize,
-    base::WeakPtr<CanvasResourceDispatcher> resource_dispatcher) {
+    base::WeakPtr<CanvasResourceDispatcher> resource_dispatcher,
+    CanvasResourceHost* resource_host) {
   // SharedBitmapProvider has to have a valid resource_dispatecher to be able to
   // be created.
   if (!resource_dispatcher)
     return nullptr;
 
   auto provider = std::make_unique<CanvasResourceProviderSharedBitmap>(
-      info, filter_quality, std::move(resource_dispatcher));
+      info, filter_quality, std::move(resource_dispatcher), resource_host);
   if (provider->IsValid()) {
     if (should_initialize ==
         CanvasResourceProvider::ShouldInitialize::kCallClear)
@@ -958,7 +970,8 @@ CanvasResourceProvider::CreateSharedImageProvider(
     ShouldInitialize should_initialize,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     RasterMode raster_mode,
-    uint32_t shared_image_usage_flags) {
+    uint32_t shared_image_usage_flags,
+    CanvasResourceHost* resource_host) {
   // IsGpuCompositingEnabled can re-create the context if it has been lost, do
   // this up front so that we can fail early and not expose ourselves to
   // use after free bugs (crbug.com/1126424)
@@ -1026,7 +1039,7 @@ CanvasResourceProvider::CreateSharedImageProvider(
   constexpr bool kIsOriginTopLeft = true;
   auto provider = std::make_unique<CanvasResourceProviderSharedImage>(
       adjusted_info, filter_quality, context_provider_wrapper, kIsOriginTopLeft,
-      is_accelerated, shared_image_usage_flags);
+      is_accelerated, shared_image_usage_flags, resource_host);
   if (provider->IsValid()) {
     if (should_initialize ==
         CanvasResourceProvider::ShouldInitialize::kCallClear)
@@ -1040,13 +1053,14 @@ CanvasResourceProvider::CreateSharedImageProvider(
 std::unique_ptr<CanvasResourceProvider>
 CanvasResourceProvider::CreateWebGPUImageProvider(
     const SkImageInfo& info,
-    uint32_t shared_image_usage_flags) {
+    uint32_t shared_image_usage_flags,
+    CanvasResourceHost* resource_host) {
   auto context_provider_wrapper = SharedGpuContext::ContextProviderWrapper();
   return CreateSharedImageProvider(
       info, cc::PaintFlags::FilterQuality::kLow,
       CanvasResourceProvider::ShouldInitialize::kNo,
       std::move(context_provider_wrapper), RasterMode::kGPU,
-      shared_image_usage_flags | gpu::SHARED_IMAGE_USAGE_WEBGPU);
+      shared_image_usage_flags | gpu::SHARED_IMAGE_USAGE_WEBGPU, resource_host);
 }
 
 std::unique_ptr<CanvasResourceProvider>
@@ -1055,7 +1069,8 @@ CanvasResourceProvider::CreatePassThroughProvider(
     cc::PaintFlags::FilterQuality filter_quality,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     base::WeakPtr<CanvasResourceDispatcher> resource_dispatcher,
-    bool is_origin_top_left) {
+    bool is_origin_top_left,
+    CanvasResourceHost* resource_host) {
   // SharedGpuContext::IsGpuCompositingEnabled can potentially replace the
   // context_provider_wrapper, so it's important to call that first as it can
   // invalidate the weak pointer.
@@ -1077,7 +1092,7 @@ CanvasResourceProvider::CreatePassThroughProvider(
 
   auto provider = std::make_unique<CanvasResourceProviderPassThrough>(
       info, filter_quality, context_provider_wrapper, resource_dispatcher,
-      is_origin_top_left);
+      is_origin_top_left, resource_host);
   if (provider->IsValid()) {
     // All the other type of resources are doing a clear here. As a
     // CanvasResourceProvider of type PassThrough is used to delegate the
@@ -1095,7 +1110,8 @@ CanvasResourceProvider::CreateSwapChainProvider(
     cc::PaintFlags::FilterQuality filter_quality,
     ShouldInitialize should_initialize,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
-    base::WeakPtr<CanvasResourceDispatcher> resource_dispatcher) {
+    base::WeakPtr<CanvasResourceDispatcher> resource_dispatcher,
+    CanvasResourceHost* resource_host) {
   // SharedGpuContext::IsGpuCompositingEnabled can potentially replace the
   // context_provider_wrapper, so it's important to call that first as it can
   // invalidate the weak pointer.
@@ -1111,7 +1127,8 @@ CanvasResourceProvider::CreateSwapChainProvider(
   }
 
   auto provider = std::make_unique<CanvasResourceProviderSwapChain>(
-      info, filter_quality, context_provider_wrapper, resource_dispatcher);
+      info, filter_quality, context_provider_wrapper, resource_dispatcher,
+      resource_host);
   if (provider->IsValid()) {
     if (should_initialize ==
         CanvasResourceProvider::ShouldInitialize::kCallClear)
@@ -1255,13 +1272,15 @@ CanvasResourceProvider::CanvasResourceProvider(
     cc::PaintFlags::FilterQuality filter_quality,
     bool is_origin_top_left,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
-    base::WeakPtr<CanvasResourceDispatcher> resource_dispatcher)
+    base::WeakPtr<CanvasResourceDispatcher> resource_dispatcher,
+    CanvasResourceHost* resource_host)
     : type_(type),
       context_provider_wrapper_(std::move(context_provider_wrapper)),
       resource_dispatcher_(resource_dispatcher),
       filter_quality_(filter_quality),
       is_origin_top_left_(is_origin_top_left),
-      snapshot_paint_image_id_(cc::PaintImage::GetNextId()) {
+      snapshot_paint_image_id_(cc::PaintImage::GetNextId()),
+      resource_host_(resource_host) {
   info_ = info;
   max_recorded_op_bytes_ = static_cast<size_t>(kMaxRecordedOpKB.Get()) * 1024;
   max_pinned_image_bytes_ = static_cast<size_t>(kMaxPinnedImageKB.Get()) * 1024;
@@ -1359,6 +1378,13 @@ CanvasResourceProvider::GetOrCreateCanvasImageProvider() {
 
 void CanvasResourceProvider::DidPinImage(size_t bytes) {
   total_pinned_image_bytes_ += bytes;
+}
+
+void CanvasResourceProvider::InitializeForRecording(
+    cc::PaintCanvas* canvas) const {
+  if (resource_host_) {
+    resource_host_->InitializeForRecording(canvas);
+  }
 }
 
 cc::PaintCanvas* CanvasResourceProvider::Canvas(bool needs_will_draw) {
@@ -1490,9 +1516,6 @@ absl::optional<cc::PaintRecord> CanvasResourceProvider::FlushCanvas(
   cc::PaintRecord last_recording = recorder_.finishRecordingAsPicture();
   RasterRecord(preserve_recording ? last_recording : std::move(last_recording));
   total_pinned_image_bytes_ = 0;
-  cc::PaintCanvas* canvas = recorder_.beginRecording(Size());
-  if (restore_clip_stack_callback_)
-    restore_clip_stack_callback_.Run(canvas);
   if (!preserve_recording) {
     return absl::nullopt;
   }
@@ -1693,16 +1716,7 @@ void CanvasResourceProvider::SkipQueuedDrawCommands() {
   if (!HasRecordedDrawOps())
     return;
   recorder_.finishRecordingAsPicture();
-  cc::PaintCanvas* canvas = recorder_.beginRecording(Size());
   total_pinned_image_bytes_ = 0;
-  if (restore_clip_stack_callback_)
-    restore_clip_stack_callback_.Run(canvas);
-}
-
-void CanvasResourceProvider::SetRestoreClipStackCallback(
-    RestoreMatrixClipStackCb callback) {
-  DCHECK(restore_clip_stack_callback_.is_null() || callback.is_null());
-  restore_clip_stack_callback_ = std::move(callback);
 }
 
 void CanvasResourceProvider::RestoreBackBuffer(const cc::PaintImage& image) {

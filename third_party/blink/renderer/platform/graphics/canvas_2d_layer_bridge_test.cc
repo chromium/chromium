@@ -1032,7 +1032,7 @@ class CustomFakeCanvasResourceHost : public FakeCanvasResourceHost {
  public:
   explicit CustomFakeCanvasResourceHost(const gfx::Size& size)
       : FakeCanvasResourceHost(size) {}
-  void RestoreCanvasMatrixClipStack(cc::PaintCanvas* canvas) const override {
+  void InitializeForRecording(cc::PaintCanvas* canvas) const override {
     // Restore the canvas stack to hold a simple matrix transform.
     canvas->save();
     canvas->translate(5, 0);

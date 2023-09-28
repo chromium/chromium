@@ -81,7 +81,7 @@ bool CanvasRenderingContextHost::PrintedInCurrentTask() const {
   return RenderingContext() && RenderingContext()->did_print_in_current_task();
 }
 
-void CanvasRenderingContextHost::RestoreCanvasMatrixClipStack(
+void CanvasRenderingContextHost::InitializeForRecording(
     cc::PaintCanvas* canvas) const {
   if (RenderingContext())
     RenderingContext()->RestoreCanvasMatrixClipStack(canvas);
@@ -135,7 +135,8 @@ void CanvasRenderingContextHost::CreateCanvasResourceProviderWebGPU() {
                         GetRenderingContextSkColorInfo());
   std::unique_ptr<CanvasResourceProvider> provider;
   if (SharedGpuContext::IsGpuCompositingEnabled()) {
-    provider = CanvasResourceProvider::CreateWebGPUImageProvider(resource_info);
+    provider = CanvasResourceProvider::CreateWebGPUImageProvider(
+        resource_info, /*shared_image_usage_flags=*/0, this);
   }
   ReplaceResourceProvider(std::move(provider));
   if (ResourceProvider() && ResourceProvider()->IsValid()) {
@@ -176,7 +177,7 @@ void CanvasRenderingContextHost::CreateCanvasResourceProviderWebGL() {
       provider = CanvasResourceProvider::CreatePassThroughProvider(
           resource_info, FilterQuality(),
           SharedGpuContext::ContextProviderWrapper(), dispatcher,
-          RenderingContext()->IsOriginTopLeft());
+          RenderingContext()->IsOriginTopLeft(), this);
     }
     if (!provider) {
       // If PassThrough failed, try a SharedImage with usage display enabled,
@@ -191,7 +192,7 @@ void CanvasRenderingContextHost::CreateCanvasResourceProviderWebGL() {
       provider = CanvasResourceProvider::CreateSharedImageProvider(
           resource_info, FilterQuality(), kShouldInitialize,
           SharedGpuContext::ContextProviderWrapper(), RasterMode::kGPU,
-          shared_image_usage_flags);
+          shared_image_usage_flags, this);
     }
   } else if (SharedGpuContext::IsGpuCompositingEnabled()) {
     // If there is no LawLatency mode, and GPU is enabled, will try a GPU
@@ -204,7 +205,7 @@ void CanvasRenderingContextHost::CreateCanvasResourceProviderWebGL() {
     provider = CanvasResourceProvider::CreateSharedImageProvider(
         resource_info, FilterQuality(), kShouldInitialize,
         SharedGpuContext::ContextProviderWrapper(), RasterMode::kGPU,
-        shared_image_usage_flags);
+        shared_image_usage_flags, this);
   }
 
   // If either of the other modes failed and / or it was not possible to do, we
@@ -212,11 +213,11 @@ void CanvasRenderingContextHost::CreateCanvasResourceProviderWebGL() {
   // provider.
   if (!provider) {
     provider = CanvasResourceProvider::CreateSharedBitmapProvider(
-        resource_info, FilterQuality(), kShouldInitialize, dispatcher);
+        resource_info, FilterQuality(), kShouldInitialize, dispatcher, this);
   }
   if (!provider) {
     provider = CanvasResourceProvider::CreateBitmapProvider(
-        resource_info, FilterQuality(), kShouldInitialize);
+        resource_info, FilterQuality(), kShouldInitialize, this);
   }
 
   ReplaceResourceProvider(std::move(provider));
@@ -249,7 +250,7 @@ void CanvasRenderingContextHost::CreateCanvasResourceProvider2D(
     // SwapChain if possible.
     provider = CanvasResourceProvider::CreateSwapChainProvider(
         resource_info, FilterQuality(), kShouldInitialize,
-        SharedGpuContext::ContextProviderWrapper(), dispatcher);
+        SharedGpuContext::ContextProviderWrapper(), dispatcher, this);
     // If SwapChain failed or it was not possible, we will try a SharedImage
     // with a set of flags trying to add Usage Display and Usage Scanout and
     // Concurrent Read and Write if possible.
@@ -265,7 +266,7 @@ void CanvasRenderingContextHost::CreateCanvasResourceProvider2D(
       provider = CanvasResourceProvider::CreateSharedImageProvider(
           resource_info, FilterQuality(), kShouldInitialize,
           SharedGpuContext::ContextProviderWrapper(), RasterMode::kGPU,
-          shared_image_usage_flags);
+          shared_image_usage_flags, this);
     }
   } else if (use_gpu) {
     // First try to be optimized for displaying on screen. In the case we are
@@ -278,14 +279,14 @@ void CanvasRenderingContextHost::CreateCanvasResourceProvider2D(
     provider = CanvasResourceProvider::CreateSharedImageProvider(
         resource_info, FilterQuality(), kShouldInitialize,
         SharedGpuContext::ContextProviderWrapper(), RasterMode::kGPU,
-        shared_image_usage_flags);
+        shared_image_usage_flags, this);
   } else if (RuntimeEnabledFeatures::Canvas2dImageChromiumEnabled()) {
     const uint32_t shared_image_usage_flags =
         gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT;
     provider = CanvasResourceProvider::CreateSharedImageProvider(
         resource_info, FilterQuality(), kShouldInitialize,
         SharedGpuContext::ContextProviderWrapper(), RasterMode::kCPU,
-        shared_image_usage_flags);
+        shared_image_usage_flags, this);
   }
 
   // If either of the other modes failed and / or it was not possible to do, we
@@ -293,11 +294,11 @@ void CanvasRenderingContextHost::CreateCanvasResourceProvider2D(
   // provider.
   if (!provider) {
     provider = CanvasResourceProvider::CreateSharedBitmapProvider(
-        resource_info, FilterQuality(), kShouldInitialize, dispatcher);
+        resource_info, FilterQuality(), kShouldInitialize, dispatcher, this);
   }
   if (!provider) {
     provider = CanvasResourceProvider::CreateBitmapProvider(
-        resource_info, FilterQuality(), kShouldInitialize);
+        resource_info, FilterQuality(), kShouldInitialize, this);
   }
 
   ReplaceResourceProvider(std::move(provider));

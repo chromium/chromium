@@ -33,7 +33,13 @@ namespace blink {
 
 class PLATFORM_EXPORT MemoryManagedPaintRecorder {
  public:
-  explicit MemoryManagedPaintRecorder(MemoryManagedPaintCanvas::Client* client);
+  class Client : public MemoryManagedPaintCanvas::Client {
+   public:
+    virtual void InitializeForRecording(cc::PaintCanvas* canvas) const = 0;
+  };
+
+  // `client` can't be nullptr and must outlive this object.
+  explicit MemoryManagedPaintRecorder(Client* client);
   ~MemoryManagedPaintRecorder();
 
   cc::PaintCanvas* beginRecording(const gfx::Size& size);
@@ -59,7 +65,8 @@ class PLATFORM_EXPORT MemoryManagedPaintRecorder {
   }
 
  private:
-  MemoryManagedPaintCanvas::Client* client_;
+  // Unowned, must not be nullptr.
+  Client* client_;
   bool is_recording_ = false;
   gfx::Size size_;
   std::unique_ptr<MemoryManagedPaintCanvas> canvas_;

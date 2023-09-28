@@ -97,7 +97,7 @@ class CORE_EXPORT CanvasRenderingContextHost : public CanvasResourceHost,
   int height() const { return Size().height(); }
 
   // Partial CanvasResourceHost implementation
-  void RestoreCanvasMatrixClipStack(cc::PaintCanvas*) const final;
+  void InitializeForRecording(cc::PaintCanvas*) const final;
   CanvasResourceProvider* GetOrCreateCanvasResourceProviderImpl(
       RasterModeHint hint) final;
   CanvasResourceProvider* GetOrCreateCanvasResourceProvider(

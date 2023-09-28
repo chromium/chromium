@@ -459,7 +459,7 @@ CanvasResourceProvider* OffscreenCanvas::GetOrCreateResourceProvider() {
         CanvasResourceProvider::ShouldInitialize::kCallClear,
         SharedGpuContext::ContextProviderWrapper(),
         can_use_gpu ? RasterMode::kGPU : RasterMode::kCPU,
-        shared_image_usage_flags);
+        shared_image_usage_flags, this);
   } else if (HasPlaceholderCanvas()) {
     // using the software compositor
     base::WeakPtr<CanvasResourceDispatcher> dispatcher_weakptr =
@@ -467,7 +467,7 @@ CanvasResourceProvider* OffscreenCanvas::GetOrCreateResourceProvider() {
     provider = CanvasResourceProvider::CreateSharedBitmapProvider(
         resource_info, filter_quality,
         CanvasResourceProvider::ShouldInitialize::kCallClear,
-        std::move(dispatcher_weakptr));
+        std::move(dispatcher_weakptr), this);
   }
 
   if (!provider) {
@@ -479,7 +479,7 @@ CanvasResourceProvider* OffscreenCanvas::GetOrCreateResourceProvider() {
     // pipeline is in a bad state (e.g. gpu process crashed, out of memory)
     provider = CanvasResourceProvider::CreateBitmapProvider(
         resource_info, filter_quality,
-        CanvasResourceProvider::ShouldInitialize::kCallClear);
+        CanvasResourceProvider::ShouldInitialize::kCallClear, this);
   }
 
   ReplaceResourceProvider(std::move(provider));

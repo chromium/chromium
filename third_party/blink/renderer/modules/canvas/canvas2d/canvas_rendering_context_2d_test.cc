@@ -342,13 +342,16 @@ class FakeCanvas2DLayerBridge : public Canvas2DLayerBridge {
 
 class FakeCanvasResourceProvider : public CanvasResourceProvider {
  public:
-  FakeCanvasResourceProvider(const SkImageInfo& info, RasterModeHint hint)
+  FakeCanvasResourceProvider(const SkImageInfo& info,
+                             RasterModeHint hint,
+                             CanvasResourceHost* resource_host)
       : CanvasResourceProvider(CanvasResourceProvider::kBitmap,
                                info,
                                cc::PaintFlags::FilterQuality::kLow,
                                /*is_origin_top_left=*/false,
-                               nullptr,
-                               nullptr),
+                               /*context_provider_wrapper=*/nullptr,
+                               /*resource_dispatcher=*/nullptr,
+                               resource_host),
         is_accelerated_(hint != RasterModeHint::kPreferCPU) {}
   ~FakeCanvasResourceProvider() override = default;
   bool IsAccelerated() const override { return is_accelerated_; }
@@ -796,7 +799,7 @@ TEST_P(CanvasRenderingContext2DTest, GPUMemoryUpdateForAcceleratedCanvas) {
   std::unique_ptr<FakeCanvasResourceProvider> fake_resource_provider =
       std::make_unique<FakeCanvasResourceProvider>(
           SkImageInfo::MakeN32Premul(size.width(), size.height()),
-          RasterModeHint::kPreferGPU);
+          RasterModeHint::kPreferGPU, &CanvasElement());
   std::unique_ptr<FakeCanvas2DLayerBridge> fake_2d_layer_bridge =
       std::make_unique<FakeCanvas2DLayerBridge>();
   FakeCanvas2DLayerBridge* fake_2d_layer_bridge_ptr =
@@ -827,7 +830,7 @@ TEST_P(CanvasRenderingContext2DTest, GPUMemoryUpdateForAcceleratedCanvas) {
   std::unique_ptr<FakeCanvasResourceProvider> fake_resource_provider2 =
       std::make_unique<FakeCanvasResourceProvider>(
           SkImageInfo::MakeN32Premul(size2.width(), size2.height()),
-          RasterModeHint::kPreferGPU);
+          RasterModeHint::kPreferGPU, &CanvasElement());
   anotherCanvas->SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
   anotherCanvas->SetResourceProviderForTesting(
       std::move(fake_resource_provider2), std::move(fake_2d_layer_bridge2),
