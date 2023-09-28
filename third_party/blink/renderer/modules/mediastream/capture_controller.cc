@@ -29,6 +29,19 @@ bool IsTabOrWindowCapture(const MediaStreamTrack* track) {
               media::mojom::DisplayCaptureSurfaceType::WINDOW);
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+bool ShouldFocusCapturedSurface(V8CaptureStartFocusBehavior focus_behavior) {
+  switch (focus_behavior.AsEnum()) {
+    case V8CaptureStartFocusBehavior::Enum::kFocusCapturedSurface:
+      return true;
+    case V8CaptureStartFocusBehavior::Enum::kFocusCapturingApplication:
+    case V8CaptureStartFocusBehavior::Enum::kNoFocusChange:
+      return false;
+  }
+  NOTREACHED_NORETURN();
+}
+#endif
+
 }  // namespace
 
 CaptureController* CaptureController::Create(ExecutionContext* context) {
@@ -119,9 +132,9 @@ void CaptureController::FinalizeFocusDecision() {
   }
 
 #if !BUILDFLAG(IS_ANDROID)
-  const bool focus = focus_behavior_->AsEnum() ==
-                     V8CaptureStartFocusBehavior::Enum::kFocusCapturedSurface;
-  client->FocusCapturedSurface(String(descriptor_id_), focus);
+  client->FocusCapturedSurface(
+      String(descriptor_id_),
+      ShouldFocusCapturedSurface(focus_behavior_.value()));
 #endif
 }
 
