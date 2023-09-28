@@ -97,6 +97,9 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   // Tab Group Dialog colors.
   mixer[kColorTabGroupDialogIconEnabled] = {ui::kColorSysOnSurfaceSubtle};
 
+  // Cast Dialog colors.
+  mixer[kColorCastDialogHelpIcon] = {ui::kColorSysPrimary};
+
   if (!ShouldApplyChromeMaterialOverrides(key)) {
     return;
   }

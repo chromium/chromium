@@ -59,6 +59,8 @@
   E_CPONLY(kColorCaptionButtonBackground) \
   /* Captured tab colors. */ \
   E_CPONLY(kColorCapturedTabContentsBorder) \
+  /* Cast dialog colors. */ \
+  E_CPONLY(kColorCastDialogHelpIcon) \
   /* Desktop media tab list colors. */ \
   E_CPONLY(kColorDesktopMediaTabListBorder) \
   E_CPONLY(kColorDesktopMediaTabListPreviewBackground) \

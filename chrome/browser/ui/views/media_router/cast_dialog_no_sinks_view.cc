@@ -15,6 +15,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
 #include "chrome/browser/ui/views/media_router/cast_dialog_helper.h"
@@ -26,6 +27,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/page_transition_types.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/animation/ink_drop.h"
@@ -96,12 +98,13 @@ void CastDialogNoSinksView::SetHelpIconView() {
                           ui::PAGE_TRANSITION_LINK);
     Navigate(&params);
   };
-  auto* icon = AddChildViewAt(
-      std::make_unique<HoverButtonHandCursor>(
-          base::BindRepeating(navigate, profile_),
-          ui::ImageModel::FromVectorIcon(vector_icons::kHelpOutlineIcon,
-                                         ui::kColorAccent, kPrimaryIconSize)),
-      0);
+  auto* icon =
+      AddChildViewAt(std::make_unique<HoverButtonHandCursor>(
+                         base::BindRepeating(navigate, profile_),
+                         ui::ImageModel::FromVectorIcon(
+                             vector_icons::kHelpOutlineIcon,
+                             kColorCastDialogHelpIcon, kPrimaryIconSize)),
+                     0);
   icon->SetInstallFocusRingOnFocus(true);
   icon->SetBorder(views::CreateEmptyBorder(media_router::kPrimaryIconBorder));
   icon->SetAccessibleName(
