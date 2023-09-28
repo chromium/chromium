@@ -5,12 +5,14 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_INTERFACE_IN_PROCESS_H_
 #define GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_INTERFACE_IN_PROCESS_H_
 
+#include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/command_buffer_id.h"
 #include "gpu/gpu_gles2_export.h"
+#include "gpu/ipc/common/gpu_memory_buffer_handle_info.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 
 namespace base {
@@ -164,12 +166,13 @@ class GPU_GLES2_EXPORT SharedImageInterfaceInProcess
   // The "OnGpuThread" version of the methods accept a std::string for
   // debug_label so it can be safely passed (copied) between threads without
   // UAF.
-  void MapSharedImageOnGpuThread(const Mailbox& mailbox,
-                                 gfx::GpuMemoryBufferHandle* handle,
-                                 viz::SharedImageFormat* format,
-                                 gfx::Size* size,
-                                 gfx::BufferUsage* buffer_usage,
-                                 base::WaitableEvent* completion);
+  void GetGpuMemoryBufferHandleInfoOnGpuThread(
+      const Mailbox& mailbox,
+      gfx::GpuMemoryBufferHandle* handle,
+      viz::SharedImageFormat* format,
+      gfx::Size* size,
+      gfx::BufferUsage* buffer_usage,
+      base::WaitableEvent* completion);
 
   void CreateSharedImageOnGpuThread(const Mailbox& mailbox,
                                     viz::SharedImageFormat format,
@@ -233,6 +236,9 @@ class GPU_GLES2_EXPORT SharedImageInterfaceInProcess
   void GetCapabilitiesOnGpu(base::WaitableEvent* completion,
                             SharedImageCapabilities* out_capabilities);
 
+  GpuMemoryBufferHandleInfo GetGpuMemoryBufferHandleInfo(
+      const Mailbox& mailbox);
+
   // Used to schedule work on the gpu thread. This is a raw pointer for now
   // since the ownership of SingleTaskSequence would be the same as the
   // SharedImageInterfaceInProcess.
@@ -247,6 +253,8 @@ class GPU_GLES2_EXPORT SharedImageInterfaceInProcess
   // Accessed on any thread.
   base::Lock lock_;
   uint64_t next_fence_sync_release_ GUARDED_BY(lock_) = 1;
+  base::flat_map<Mailbox, GpuMemoryBufferHandleInfo> gmb_handle_infos_
+      GUARDED_BY(lock_);
 
   // Accessed on compositor thread.
   // This is used to get NativePixmap, and is only used when SharedImageManager
