@@ -1184,13 +1184,8 @@ void AutofillAgent::DidReceiveLeftMouseDownOrGestureTapInNode(
     const WebNode& node) {
   DCHECK(!node.IsNull());
   focused_node_was_last_clicked_ = node.Focused();
-
-#if defined(ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   HandleFocusChangeComplete();
-#else
-  if (!focus_requires_scroll_) {
-    HandleFocusChangeComplete();
-  }
 #endif
 }
 
