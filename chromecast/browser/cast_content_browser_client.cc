@@ -113,7 +113,6 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
 #include "chromecast/media/audio/cast_audio_manager_android.h"  // nogncheck
-#include "components/cdm/browser/cdm_message_filter_android.h"
 #include "components/crash/core/app/crashpad.h"
 #include "media/audio/android/audio_manager_android.h"
 #include "media/audio/audio_features.h"
@@ -364,21 +363,6 @@ CastContentBrowserClient::CreateBrowserMainParts(
   CastBrowserProcess::GetInstance()->SetCastContentBrowserClient(this);
 
   return main_parts;
-}
-
-void CastContentBrowserClient::RenderProcessWillLaunch(
-    content::RenderProcessHost* host) {
-#if BUILDFLAG(IS_ANDROID)
-  // Cast on Android always allows persisting data.
-  //
-  // Cast on Android build always uses kForceVideoOverlays command line switch
-  // such that secure codecs can always be rendered.
-  //
-  // TODO(yucliu): On Clank, secure codecs support is tied to AndroidOverlay.
-  // Remove kForceVideoOverlays and switch to the Clank model for secure codecs
-  // support.
-  host->AddFilter(new cdm::CdmMessageFilterAndroid(true, true));
-#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 bool CastContentBrowserClient::IsHandledURL(const GURL& url) {

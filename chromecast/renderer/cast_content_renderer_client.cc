@@ -32,6 +32,7 @@
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
 #include "media/base/audio_parameters.h"
+#include "media/base/key_system_info.h"
 #include "media/base/media.h"
 #include "media/remoting/receiver_controller.h"
 #include "media/remoting/remoting_constants.h"
@@ -50,6 +51,7 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/bundle_utils.h"
 #include "chromecast/media/audio/cast_audio_device_factory.h"
+#include "components/cdm/renderer/key_system_support_update.h"
 #include "media/base/android/media_codec_util.h"
 #else
 #include "chromecast/renderer/memory_pressure_observer_impl.h"
@@ -170,11 +172,16 @@ void CastContentRendererClient::RunScriptsAtDocumentEnd(
 
 void CastContentRendererClient::GetSupportedKeySystems(
     ::media::GetSupportedKeySystemsCB cb) {
+#if BUILDFLAG(IS_ANDROID)
+  cdm::GetSupportedKeySystemsUpdates(
+      /*can_persist_data=*/true, std::move(cb));
+#else
   ::media::KeySystemInfos key_systems;
   media::AddChromecastKeySystems(&key_systems,
                                  false /* enable_persistent_license_support */,
                                  false /* enable_playready */);
   std::move(cb).Run(std::move(key_systems));
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 bool CastContentRendererClient::IsSupportedAudioType(

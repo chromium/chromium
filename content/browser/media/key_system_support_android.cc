@@ -20,6 +20,7 @@
 #include "media/base/media_switches.h"
 #include "media/base/media_util.h"
 #include "media/base/video_codecs.h"
+#include "media/media_buildflags.h"
 
 using media::MediaCodecUtil;
 using media::MediaDrmBridge;
@@ -83,10 +84,9 @@ void GetAndroidCdmCapability(const std::string& key_system,
     return;
   }
 
+  // Rendering of hardware secure codecs is only supported when AndroidOverlay
+  // is enabled.
   if (is_secure) {
-    // Rendering of hardware secure codecs is only supported when
-    // AndroidOverlay is enabled.
-    // TODO(crbug.com/853336): Allow Cast override.
     bool are_overlay_supported =
         content::AndroidOverlayProvider::GetInstance()->AreOverlaysSupported();
     bool overlay_fullscreen_video =
