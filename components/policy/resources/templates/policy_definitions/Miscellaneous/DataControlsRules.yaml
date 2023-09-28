@@ -1,4 +1,4 @@
-caption: Sets a list Data Controls rules.
+caption: Sets a list of Data Controls rules.
 desc: |-
   Configures a list of Data Control rules to prevent data leaks. Data leaks can happen by copying and pasting data, attaching files to web pages, printing, downloading, ...etc.
 
