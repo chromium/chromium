@@ -128,7 +128,8 @@ viz::TransferableResource UiResourceManager::PrepareResourceForExport(
           to_be_exported_resource->sync_token,
           to_be_exported_resource->resource_size,
           to_be_exported_resource->format,
-          to_be_exported_resource->is_overlay_candidate);
+          to_be_exported_resource->is_overlay_candidate,
+          viz::TransferableResource::ResourceSource::kUI);
 
   transferable_resource.id = resource_id;
   exported_resources_pool_[resource_id] = std::move(to_be_exported_resource);

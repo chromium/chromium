@@ -490,7 +490,8 @@ int32_t PPB_Graphics3D_Impl::DoSwapBuffers(const gpu::SyncToken& sync_token,
     auto mailbox = current_color_buffer_->Export();
     viz::TransferableResource resource = viz::TransferableResource::MakeGpu(
         mailbox, target, sync_token, current_color_buffer_->size(),
-        viz::SinglePlaneFormat::kRGBA_8888, is_overlay_candidate);
+        viz::SinglePlaneFormat::kRGBA_8888, is_overlay_candidate,
+        viz::TransferableResource::ResourceSource::kPPBGraphics3D);
     HostGlobals::Get()
         ->GetInstance(pp_instance())
         ->CommitTransferableResource(resource);

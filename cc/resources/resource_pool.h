@@ -27,6 +27,7 @@
 #include "components/viz/common/resources/resource_sizes.h"
 #include "components/viz/common/resources/shared_bitmap.h"
 #include "components/viz/common/resources/shared_image_format.h"
+#include "components/viz/common/resources/transferable_resource.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "third_party/khronos/GLES2/gl2.h"
 #include "ui/gfx/color_space.h"
@@ -236,7 +237,9 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
   // Returns false if the backing does not contain valid data, in particular
   // a zero mailbox for GpuBacking, in which case the resource is not exported,
   // and true otherwise.
-  bool PrepareForExport(const InUsePoolResource& resource);
+  bool PrepareForExport(
+      const InUsePoolResource& resource,
+      viz::TransferableResource::ResourceSource resource_source);
 
   // Marks any resources in the pool as invalid, preventing their reuse. Call if
   // previous resources were allocated in one way, but future resources should

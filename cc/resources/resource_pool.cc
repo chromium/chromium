@@ -306,7 +306,9 @@ void ResourcePool::OnResourceReleased(size_t unique_id,
   busy_resources_.erase(busy_it);
 }
 
-bool ResourcePool::PrepareForExport(const InUsePoolResource& in_use_resource) {
+bool ResourcePool::PrepareForExport(
+    const InUsePoolResource& in_use_resource,
+    viz::TransferableResource::ResourceSource resource_source) {
   PoolResource* resource = in_use_resource.resource_;
   // Exactly one of gpu or software backing should exist.
   DCHECK(resource->gpu_backing() || resource->software_backing());
@@ -325,14 +327,14 @@ bool ResourcePool::PrepareForExport(const InUsePoolResource& in_use_resource) {
     transferable = viz::TransferableResource::MakeGpu(
         gpu_backing->mailbox, gpu_backing->texture_target,
         gpu_backing->mailbox_sync_token, resource->size(), resource->format(),
-        gpu_backing->overlay_candidate);
+        gpu_backing->overlay_candidate, resource_source);
     if (gpu_backing->wait_on_fence_required)
       transferable.synchronization_type =
           viz::TransferableResource::SynchronizationType::kGpuCommandsCompleted;
   } else {
     transferable = viz::TransferableResource::MakeSoftware(
         resource->software_backing()->shared_bitmap_id, resource->size(),
-        resource->format());
+        resource->format(), resource_source);
   }
   transferable.color_space = resource->color_space();
   resource->set_resource_id(resource_provider_->ImportResource(

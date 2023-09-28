@@ -2317,7 +2317,8 @@ void RunPartialRasterCheck(std::unique_ptr<LayerTreeHostImpl> host_impl,
           gfx::ColorSpace::CreateSRGB());
 
   resource.set_software_backing(std::make_unique<TestSoftwareBacking>());
-  host_impl->resource_pool()->PrepareForExport(resource);
+  host_impl->resource_pool()->PrepareForExport(
+      resource, viz::TransferableResource::ResourceSource::kTest);
 
   host_impl->resource_pool()->OnContentReplaced(resource, kInvalidatedId);
   host_impl->resource_pool()->ReleaseResource(std::move(resource));

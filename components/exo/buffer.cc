@@ -553,6 +553,8 @@ bool Buffer::ProduceTransferableResource(
   resource->id = resource_manager->AllocateResourceId();
   resource->format = viz::SinglePlaneFormat::kRGBA_8888;
   resource->size = gpu_memory_buffer_->GetSize();
+  resource->resource_source =
+      viz::TransferableResource::ResourceSource::kExoBuffer;
 
   // Create a new image texture for |gpu_memory_buffer_| with |texture_target_|
   // if one doesn't already exist. The contents of this buffer are copied to

@@ -468,7 +468,8 @@ void DelegatedFrameHost::DidCopyStaleContent(
   auto transfer_resource = viz::TransferableResource::MakeGpu(
       result->GetTextureResult()->mailbox_holders[0].mailbox, GL_TEXTURE_2D,
       result->GetTextureResult()->mailbox_holders[0].sync_token, result->size(),
-      viz::SinglePlaneFormat::kRGBA_8888, false /* is_overlay_candidate */);
+      viz::SinglePlaneFormat::kRGBA_8888, false /* is_overlay_candidate */,
+      viz::TransferableResource::ResourceSource::kStaleContent);
   viz::CopyOutputResult::ReleaseCallbacks release_callbacks =
       result->TakeTextureOwnership();
   DCHECK_EQ(1u, release_callbacks.size());

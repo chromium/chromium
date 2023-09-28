@@ -441,7 +441,8 @@ viz::CompositorFrame ArCompositorFrameSink::CreateFrame(WebXrFrame* xr_frame,
         renderer_buffer->mailbox_holder.texture_target,
         renderer_buffer->mailbox_holder.sync_token, renderer_buffer->size,
         viz::SinglePlaneFormat::kRGBA_8888,
-        /*is_overlay_candidate=*/false);
+        /*is_overlay_candidate=*/false,
+        viz::TransferableResource::ResourceSource::kAR);
 
     renderer_resource.id = renderer_buffer->id;
     id_to_frame_map_[renderer_buffer->id] = xr_frame;
@@ -484,7 +485,8 @@ viz::CompositorFrame ArCompositorFrameSink::CreateFrame(WebXrFrame* xr_frame,
       camera_buffer->mailbox_holder.texture_target,
       camera_buffer->mailbox_holder.sync_token, camera_buffer->size,
       viz::SinglePlaneFormat::kRGBA_8888,
-      /*is_overlay_candidate=*/false);
+      /*is_overlay_candidate=*/false,
+      viz::TransferableResource::ResourceSource::kAR);
 
   camera_resource.id = camera_buffer->id;
   id_to_frame_map_[camera_buffer->id] = xr_frame;

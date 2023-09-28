@@ -174,7 +174,8 @@ void FrameSinkImpl::UploadUIResource(cc::UIResourceId resource_id,
   uploaded_resource.viz_resource_id = resource_provider_.ImportResource(
       viz::TransferableResource::MakeGpu(
           uploaded_resource.mailbox, texture_target, sync_token,
-          resource_bitmap.GetSize(), format, /*is_overlay_candidate=*/false),
+          resource_bitmap.GetSize(), format, /*is_overlay_candidate=*/false,
+          viz::TransferableResource::ResourceSource::kUI),
       base::BindOnce(&FrameSinkImpl::UIResourceReleased, base::Unretained(this),
                      resource_id));
   uploaded_resource.size = resource_bitmap.GetSize();

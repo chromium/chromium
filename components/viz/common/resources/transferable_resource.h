@@ -43,15 +43,44 @@ struct VIZ_COMMON_EXPORT TransferableResource {
     kReleaseFence,
   };
 
-  static TransferableResource MakeSoftware(const SharedBitmapId& id,
-                                           const gfx::Size& size,
-                                           SharedImageFormat format);
-  static TransferableResource MakeGpu(const gpu::Mailbox& mailbox,
-                                      uint32_t texture_target,
-                                      const gpu::SyncToken& sync_token,
-                                      const gfx::Size& size,
-                                      SharedImageFormat format,
-                                      bool is_overlay_candidate);
+  // Differentiates between the various sources that create a resource. They
+  // have different lifetime expectations, and we want to be able to determine
+  // which remain after we Evict a Surface.
+  //
+  // These values are persistent to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class ResourceSource : uint8_t {
+    kUnknown = 0,
+    kAR = 1,
+    kCanvas = 2,
+    kDrawingBuffer = 3,
+    kExoBuffer = 4,
+    kHeadsUpDisplay = 5,
+    kImageLayerBridge = 6,
+    kPPBGraphics3D = 7,
+    kPepperGraphics2D = 8,
+    kSharedElementTransition = 9,
+    kStaleContent = 10,
+    kTest = 11,
+    kTileRasterTask = 12,
+    kUI = 13,
+    kVideo = 14,
+    kWebGPUSwapBuffer = 15,
+  };
+
+  static TransferableResource MakeSoftware(
+      const SharedBitmapId& id,
+      const gfx::Size& size,
+      SharedImageFormat format,
+      ResourceSource source = ResourceSource::kUnknown);
+  static TransferableResource MakeGpu(
+      const gpu::Mailbox& mailbox,
+      uint32_t texture_target,
+      const gpu::SyncToken& sync_token,
+      const gfx::Size& size,
+      SharedImageFormat format,
+      bool is_overlay_candidate,
+      ResourceSource source = ResourceSource::kUnknown);
 
   TransferableResource();
   ~TransferableResource();
@@ -147,6 +176,10 @@ struct VIZ_COMMON_EXPORT TransferableResource {
   bool wants_promotion_hint = false;
 #endif
 
+  // The source that originally allocated this resource. For determining which
+  // sources are maintaining lifetime after surface eviction.
+  ResourceSource resource_source = ResourceSource::kUnknown;
+
   bool operator==(const TransferableResource& o) const {
     return id == o.id && is_software == o.is_software && size == o.size &&
            format == o.format &&
@@ -161,7 +194,8 @@ struct VIZ_COMMON_EXPORT TransferableResource {
 #elif BUILDFLAG(IS_WIN)
            wants_promotion_hint == o.wants_promotion_hint &&
 #endif
-           synchronization_type == o.synchronization_type;
+           synchronization_type == o.synchronization_type &&
+           resource_source == o.resource_source;
   }
   bool operator!=(const TransferableResource& o) const { return !(*this == o); }
 };

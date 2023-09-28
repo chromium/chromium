@@ -196,7 +196,8 @@ bool ImageLayerBridge::PrepareTransferableResource(
         mailbox_holder.mailbox, mailbox_holder.texture_target,
         mailbox_holder.sync_token, size,
         viz::SkColorTypeToSinglePlaneSharedImageFormat(color_type),
-        is_overlay_candidate);
+        is_overlay_candidate,
+        viz::TransferableResource::ResourceSource::kImageLayerBridge);
 
     auto func = WTF::BindOnce(&ImageLayerBridge::ResourceReleasedGpu,
                               WrapWeakPersistent(this),
@@ -234,7 +235,8 @@ bool ImageLayerBridge::PrepareTransferableResource(
       return false;
 
     *out_resource = viz::TransferableResource::MakeSoftware(
-        registered.bitmap->id(), size, format);
+        registered.bitmap->id(), size, format,
+        viz::TransferableResource::ResourceSource::kImageLayerBridge);
     out_resource->color_space = sk_image->colorSpace()
                                     ? gfx::ColorSpace(*sk_image->colorSpace())
                                     : gfx::ColorSpace::CreateSRGB();

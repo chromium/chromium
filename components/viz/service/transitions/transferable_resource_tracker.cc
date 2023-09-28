@@ -80,7 +80,8 @@ TransferableResourceTracker::ImportResource(
     shared_bitmap_manager_->LocalAllocatedSharedBitmap(
         std::move(output_copy.bitmap), id);
     resource = TransferableResource::MakeSoftware(
-        id, output_copy.draw_data.size, SinglePlaneFormat::kRGBA_8888);
+        id, output_copy.draw_data.size, SinglePlaneFormat::kRGBA_8888,
+        TransferableResource::ResourceSource::kSharedElementTransition);
 
     // Remove the bitmap from shared bitmap manager when no longer in use.
     release_callback = base::BindOnce(
@@ -95,7 +96,8 @@ TransferableResourceTracker::ImportResource(
     resource = TransferableResource::MakeGpu(
         output_copy.mailbox, GL_TEXTURE_2D, output_copy.sync_token,
         output_copy.draw_data.size, SinglePlaneFormat::kRGBA_8888,
-        /*is_overlay_candidate=*/false);
+        /*is_overlay_candidate=*/false,
+        TransferableResource::ResourceSource::kSharedElementTransition);
     resource.color_space = output_copy.color_space;
 
     // Run the SingleReleaseCallback when no longer in use.

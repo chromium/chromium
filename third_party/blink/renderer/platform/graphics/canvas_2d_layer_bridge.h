@@ -157,7 +157,6 @@ class PLATFORM_EXPORT Canvas2DLayerBridge {
   mutable SnapshotState snapshot_state_;
 
   CanvasResourceHost* resource_host_;
-  viz::TransferableResource previous_frame_resource_;
 
   absl::optional<cc::PaintRecord> last_recording_;
 

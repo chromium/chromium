@@ -228,7 +228,7 @@ bool CanvasResource::PrepareAcceleratedTransferableResource(
 
   *out_resource = viz::TransferableResource::MakeGpu(
       mailbox, TextureTarget(), GetSyncToken(), Size(), GetSharedImageFormat(),
-      IsOverlayCandidate());
+      IsOverlayCandidate(), viz::TransferableResource::ResourceSource::kCanvas);
 
   out_resource->color_space = GetColorSpace();
   if (NeedsReadLockFences()) {
@@ -252,7 +252,8 @@ bool CanvasResource::PrepareUnacceleratedTransferableResource(
   // TransferableResource. Clients are expected to render in N32 format but use
   // RGBA as the tagged format on resources.
   *out_resource = viz::TransferableResource::MakeSoftware(
-      mailbox, Size(), viz::SinglePlaneFormat::kRGBA_8888);
+      mailbox, Size(), viz::SinglePlaneFormat::kRGBA_8888,
+      viz::TransferableResource::ResourceSource::kCanvas);
 
   out_resource->color_space = GetColorSpace();
 

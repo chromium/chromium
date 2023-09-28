@@ -4711,12 +4711,13 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
 
     transferable = viz::TransferableResource::MakeGpu(
         mailbox, texture_target, sync_token, upload_size, format,
-        overlay_candidate);
+        overlay_candidate, viz::TransferableResource::ResourceSource::kUI);
   } else {
     layer_tree_frame_sink_->DidAllocateSharedBitmap(std::move(shm.region),
                                                     shared_bitmap_id);
-    transferable = viz::TransferableResource::MakeSoftware(shared_bitmap_id,
-                                                           upload_size, format);
+    transferable = viz::TransferableResource::MakeSoftware(
+        shared_bitmap_id, upload_size, format,
+        viz::TransferableResource::ResourceSource::kUI);
   }
   transferable.color_space = color_space;
   id = resource_provider_.ImportResource(

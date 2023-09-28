@@ -241,7 +241,8 @@ class CC_EXPORT TileManager : CheckerImageTrackerClient,
         resource.gpu_backing()->mailbox_sync_token.Set(
             gpu::GPU_IO, gpu::CommandBufferId::FromUnsafeValue(1), 1);
       }
-      bool exported = resource_pool_->PrepareForExport(resource);
+      bool exported = resource_pool_->PrepareForExport(
+          resource, viz::TransferableResource::ResourceSource::kTest);
       DCHECK(exported);
       draw_info.SetResource(std::move(resource), false, false);
       draw_info.set_resource_ready_for_draw();

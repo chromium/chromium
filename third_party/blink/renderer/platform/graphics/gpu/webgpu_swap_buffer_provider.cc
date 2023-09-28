@@ -291,7 +291,8 @@ bool WebGPUSwapBufferProvider::PrepareTransferableResource(
   *out_resource = viz::TransferableResource::MakeGpu(
       current_swap_buffer_->mailbox, GetTextureTarget(),
       current_swap_buffer_->access_finished_token, current_swap_buffer_->size,
-      Format(), IsOverlayCandidate());
+      Format(), IsOverlayCandidate(),
+      viz::TransferableResource::ResourceSource::kWebGPUSwapBuffer);
   out_resource->color_space = PredefinedColorSpaceToGfxColorSpace(color_space_);
 
   // This holds a ref on the SwapBuffers that will keep it alive until the

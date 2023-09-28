@@ -11,12 +11,14 @@ namespace viz {
 TransferableResource TransferableResource::MakeSoftware(
     const SharedBitmapId& id,
     const gfx::Size& size,
-    SharedImageFormat format) {
+    SharedImageFormat format,
+    ResourceSource source) {
   TransferableResource r;
   r.is_software = true;
   r.mailbox_holder.mailbox = id;
   r.size = size;
   r.format = format;
+  r.resource_source = source;
   return r;
 }
 
@@ -27,7 +29,8 @@ TransferableResource TransferableResource::MakeGpu(
     const gpu::SyncToken& sync_token,
     const gfx::Size& size,
     SharedImageFormat format,
-    bool is_overlay_candidate) {
+    bool is_overlay_candidate,
+    ResourceSource source) {
   TransferableResource r;
   r.is_software = false;
   r.mailbox_holder.mailbox = mailbox;
@@ -36,6 +39,7 @@ TransferableResource TransferableResource::MakeGpu(
   r.size = size;
   r.format = format;
   r.is_overlay_candidate = is_overlay_candidate;
+  r.resource_source = source;
   return r;
 }
 

@@ -1561,7 +1561,8 @@ void TileManager::OnRasterTaskCompleted(
 
   // Once raster is done, allow the resource to be exported to the display
   // compositor, by giving it a ResourceId.
-  bool exported = resource_pool_->PrepareForExport(resource);
+  bool exported = resource_pool_->PrepareForExport(
+      resource, viz::TransferableResource::ResourceSource::kTileRasterTask);
 
   // In SMOOTHNESS_TAKES_PRIORITY mode, we wait for GPU work to complete for a
   // tile before setting it as ready to draw.
