@@ -11,16 +11,13 @@
 #include <string>
 #include <vector>
 
-#include "base/containers/enum_set.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/function_ref.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "components/attribution_reporting/aggregatable_values.h"
-#include "components/attribution_reporting/aggregation_keys.h"
-#include "components/attribution_reporting/destination_set.h"
-#include "components/attribution_reporting/event_report_windows.h"
 #include "components/attribution_reporting/filters.h"
+#include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/source_registration_time_config.mojom.h"
 #include "components/attribution_reporting/source_type.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
@@ -41,6 +38,12 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace attribution_reporting {
+class AggregationKeys;
+class DestinationSet;
+class EventReportWindows;
+}  // namespace attribution_reporting
+
 namespace net {
 class SchemefulSite;
 }  // namespace net
@@ -54,11 +57,6 @@ namespace content {
 class AttributionManager;
 
 enum class RateLimitResult : int;
-
-constexpr auto kSourceTypes =
-    base::EnumSet<attribution_reporting::mojom::SourceType,
-                  attribution_reporting::mojom::SourceType::kMinValue,
-                  attribution_reporting::mojom::SourceType::kMaxValue>::All();
 
 base::Uuid DefaultExternalReportID();
 
@@ -148,34 +146,23 @@ class SourceBuilder {
   CommonSourceInfo BuildCommonInfo() const;
 
  private:
-  uint64_t source_event_id_ = 123;
   base::Time source_time_;
-  base::TimeDelta expiry_;
-  absl::optional<base::TimeDelta> aggregatable_report_window_;
   attribution_reporting::SuitableOrigin source_origin_;
-  attribution_reporting::DestinationSet destination_sites_;
+  attribution_reporting::SourceRegistration registration_;
   attribution_reporting::SuitableOrigin reporting_origin_;
   attribution_reporting::mojom::SourceType source_type_ =
       attribution_reporting::mojom::SourceType::kNavigation;
-  int64_t priority_ = 0;
   StoredSource::AttributionLogic attribution_logic_ =
       StoredSource::AttributionLogic::kTruthfully;
-  attribution_reporting::FilterData filter_data_;
   StoredSource::ActiveState active_state_ = StoredSource::ActiveState::kActive;
-  absl::optional<uint64_t> debug_key_;
   // `base::StrongAlias` does not automatically initialize the value here.
   // Ensure that we don't use uninitialized memory.
   StoredSource::Id source_id_{0};
   std::vector<uint64_t> dedup_keys_;
-  attribution_reporting::AggregationKeys aggregation_keys_;
   int64_t aggregatable_budget_consumed_ = 0;
   double randomized_response_rate_ = 0;
   std::vector<uint64_t> aggregatable_dedup_keys_;
-  absl::optional<attribution_reporting::EventReportWindows>
-      event_report_windows_ = absl::nullopt;
-  int max_event_level_reports_;
   bool is_within_fenced_frame_ = false;
-  bool debug_reporting_ = false;
 };
 
 // Returns a AttributionTrigger with default data which matches the default

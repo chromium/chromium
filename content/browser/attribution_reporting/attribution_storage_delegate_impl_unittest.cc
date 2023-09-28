@@ -224,7 +224,7 @@ TEST(AttributionStorageDelegateImplTest, NewReportID_IsValidGUID) {
 
 TEST(AttributionStorageDelegateImplTest,
      RandomizedResponse_NoNoiseModeReturnsRealRateAndNullResponse) {
-  for (auto source_type : kSourceTypes) {
+  for (auto source_type : {SourceType::kNavigation, SourceType::kEvent}) {
     const auto source =
         SourceBuilder()
             .SetSourceType(source_type)
