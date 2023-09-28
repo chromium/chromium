@@ -11,6 +11,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/uuid.h"
+#include "build/build_config.h"
+#include "chrome/browser/sync/test/integration/encryption_helper.h"
 #include "chrome/browser/sync/test/integration/fake_server_match_status_checker.h"
 #include "chrome/browser/sync/test/integration/passwords_helper.h"
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
@@ -18,6 +20,7 @@
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_manager_features_util.h"
 #include "components/sync/base/features.h"
 #include "components/sync/engine/cycle/entity_change_metric_recording.h"
 #include "components/sync/engine/nigori/cross_user_sharing_public_key.h"
@@ -32,6 +35,7 @@
 
 using password_manager::PasswordForm;
 using password_manager::PasswordStoreInterface;
+using passwords_helper::GetAccountPasswordStoreInterface;
 using passwords_helper::GetAllLogins;
 using passwords_helper::GetProfilePasswordStoreInterface;
 using sync_pb::EntitySpecifics;
@@ -368,5 +372,43 @@ IN_PROC_BROWSER_TEST_F(
       "PasswordManager.MergeSyncData.UpdateLoginSyncError",
       /*expected_count=*/0);
 }
+
+// The unconsented primary account isn't supported on ChromeOS.
+// TODO(crbug.com/1348950): enable on Android once transport mode for Passwords
+// is supported.
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_F(SingleClientIncomingPasswordSharingInvitationTest,
+                       ShouldStoreIncomingPasswordIntoAccountDB) {
+  // First, setup sync (in transport mode) to initialize Nigori node with a
+  // public key to be able to inject invitations.
+  ASSERT_TRUE(SetupClients());
+  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+  ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
+  ASSERT_TRUE(CrossUserSharingKeysChecker().Wait());
+
+  // Let the user opt in to the account-scoped password storage, and wait for it
+  // to become active.
+  password_manager::features_util::OptInToAccountStorage(
+      GetProfile(0)->GetPrefs(), GetSyncService(0));
+  PasswordSyncActiveChecker(GetSyncService(0)).Wait();
+  ASSERT_THAT(GetAllLogins(GetAccountPasswordStoreInterface(0)), IsEmpty());
+
+  InjectInvitationToServer();
+  EXPECT_TRUE(PasswordStoredChecker(GetSyncService(0),
+                                    GetAccountPasswordStoreInterface(0),
+                                    /*expected_count=*/1)
+                  .Wait());
+  EXPECT_TRUE(ServerPasswordInvitationChecker(/*expected_count=*/0).Wait());
+
+  EXPECT_THAT(GetAllLogins(GetProfilePasswordStoreInterface(0)), IsEmpty());
+  EXPECT_THAT(GetAllLogins(GetAccountPasswordStoreInterface(0)),
+              Contains(Pointee(
+                  AllOf(Field(&PasswordForm::password_value,
+                              base::UTF8ToUTF16(std::string(kPasswordValue))),
+                        Field(&PasswordForm::type,
+                              PasswordForm::Type::kReceivedViaSharing)))));
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
 
 }  // namespace
