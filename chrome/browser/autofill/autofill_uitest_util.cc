@@ -78,19 +78,6 @@ void AddTestProfile(Profile* base_profile, const AutofillProfile& profile) {
   observer.Wait();
 }
 
-void SetTestProfile(Profile* base_profile, const AutofillProfile& profile) {
-  std::vector<AutofillProfile> profiles;
-  profiles.push_back(profile);
-  SetTestProfiles(base_profile, &profiles);
-}
-
-void SetTestProfiles(Profile* base_profile,
-                     std::vector<AutofillProfile>* profiles) {
-  PdmChangeWaiter observer(base_profile);
-  GetPersonalDataManager(base_profile)->SetProfilesForAllSources(profiles);
-  observer.Wait();
-}
-
 void AddTestCreditCard(Profile* base_profile, const CreditCard& card) {
   PdmChangeWaiter observer(base_profile);
   GetPersonalDataManager(base_profile)->AddCreditCard(card);

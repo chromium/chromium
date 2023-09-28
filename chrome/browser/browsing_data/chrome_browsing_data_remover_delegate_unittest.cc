@@ -975,7 +975,6 @@ class RemoveAutofillTester {
   // Add one profile and two credit cards to the database. One credit card has a
   // web origin and the other has a Chrome origin.
   void AddProfilesAndCards() {
-    std::vector<autofill::AutofillProfile> profiles;
     autofill::AutofillProfile profile;
     profile.set_guid(base::Uuid::GenerateRandomV4().AsLowercaseString());
     profile.SetRawInfo(autofill::NAME_FIRST, u"Bob");
@@ -983,10 +982,7 @@ class RemoveAutofillTester {
     profile.SetRawInfo(autofill::ADDRESS_HOME_ZIP, u"94043");
     profile.SetRawInfo(autofill::EMAIL_ADDRESS, u"sue@example.com");
     profile.SetRawInfo(autofill::COMPANY_NAME, u"Company X");
-    profiles.push_back(profile);
-
-    personal_data_manager_->SetProfilesForAllSources(&profiles);
-
+    personal_data_manager_->AddProfile(profile);
     WaitForOnPersonalDataFinishedProfileTasks();
 
     std::vector<autofill::CreditCard> cards;

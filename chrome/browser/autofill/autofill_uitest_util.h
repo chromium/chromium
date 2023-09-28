@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_AUTOFILL_AUTOFILL_UITEST_UTIL_H_
 #define CHROME_BROWSER_AUTOFILL_AUTOFILL_UITEST_UTIL_H_
 
-#include <vector>
-
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "ui/gfx/geometry/rect_f.h"
 
@@ -18,9 +16,6 @@ class AutofillProfile;
 class CreditCard;
 
 void AddTestProfile(Profile* base_profile, const AutofillProfile& profile);
-void SetTestProfile(Profile* base_profile, const AutofillProfile& profile);
-void SetTestProfiles(Profile* base_profile,
-                     std::vector<AutofillProfile>* profiles);
 void AddTestCreditCard(Profile* base_profile, const CreditCard& card);
 void AddTestServerCreditCard(Profile* base_profile, const CreditCard& card);
 void AddTestAutofillData(Profile* base_profile,
