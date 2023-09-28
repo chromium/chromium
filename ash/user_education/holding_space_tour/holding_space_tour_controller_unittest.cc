@@ -237,11 +237,18 @@ class DraggableView : public views::View {
 // Base class for tests of the `HoldingSpaceTourController`.
 class HoldingSpaceTourControllerTest : public UserEducationAshTestBase {
  public:
-  HoldingSpaceTourControllerTest() {
+  explicit HoldingSpaceTourControllerTest(
+      absl::optional<bool> drop_to_pin_enabled) {
     // NOTE: The `HoldingSpaceTourController` exists only when the Holding Space
     // Tour feature is enabled. Controller existence is verified in test
     // coverage for the controller's owner.
-    scoped_feature_list_.InitAndEnableFeature(features::kHoldingSpaceTour);
+    if (drop_to_pin_enabled.has_value()) {
+      scoped_feature_list_.InitAndEnableFeatureWithParameters(
+          features::kHoldingSpaceTour,
+          {{"drop-to-pin", drop_to_pin_enabled.value() ? "true" : "false"}});
+    } else {
+      scoped_feature_list_.InitAndEnableFeature(features::kHoldingSpaceTour);
+    }
   }
 
  private:
@@ -251,19 +258,30 @@ class HoldingSpaceTourControllerTest : public UserEducationAshTestBase {
 // HoldingSpaceTourControllerDragAndDropTest -----------------------------------
 
 // Base class for drag-and-drop tests of the `HoldingSpaceTourController`,
-// parameterized by (a) whether to drag Files app data and (b) whether to
-// complete the drop (as opposed to cancelling it).
+// parameterized by (a) whether the drop-to-pin param is available and enabled,
+// (b) whether to drag Files app data, and (c) whether to complete the drop (as
+// opposed to cancelling it).
 class HoldingSpaceTourControllerDragAndDropTest
     : public HoldingSpaceTourControllerTest,
       public testing::WithParamInterface<
-          std::tuple</*drag_files_app_data=*/bool, /*complete_drop=*/bool>> {
+          std::tuple</*drop_to_pin_enabled=*/absl::optional<bool>,
+                     /*drag_files_app_data=*/bool,
+                     /*complete_drop=*/bool>> {
  public:
+  HoldingSpaceTourControllerDragAndDropTest()
+      : HoldingSpaceTourControllerTest(drop_to_pin_enabled()) {}
+
+  // Whether the drop-to-pin feature param is enabled.
+  absl::optional<bool> drop_to_pin_enabled() const {
+    return std::get<0>(GetParam());
+  }
+
   // Whether to drag Files app data given test parameterization.
-  bool drag_files_app_data() const { return std::get<0>(GetParam()); }
+  bool drag_files_app_data() const { return std::get<1>(GetParam()); }
 
   // Whether to complete the drop (as opposed to cancelling it) given test
   // parameterization.
-  bool complete_drop() const { return std::get<1>(GetParam()); }
+  bool complete_drop() const { return std::get<2>(GetParam()); }
 
   // Moves the mouse to the center of the specified `widget`.
   void MoveMouseTo(views::Widget* widget) {
@@ -373,8 +391,10 @@ class HoldingSpaceTourControllerDragAndDropTest
 INSTANTIATE_TEST_SUITE_P(
     All,
     HoldingSpaceTourControllerDragAndDropTest,
-    testing::Combine(/*drag_files_app_data=*/testing::Bool(),
-                     /*complete_drop=*/testing::Bool()));
+    testing::Combine(
+        /*drop_to_pin_enabled=*/testing::Values(absl::nullopt, false, true),
+        /*drag_files_app_data=*/testing::Bool(),
+        /*complete_drop=*/testing::Bool()));
 
 // Tests -----------------------------------------------------------------------
 
@@ -477,10 +497,13 @@ TEST_P(HoldingSpaceTourControllerDragAndDropTest, DragAndDrop) {
   EXPECT_EQ(secondary_tray->GetVisible(), drag_files_app_data());
   EXPECT_FALSE(secondary_shelf->IsVisible());
 
+  const bool data_is_droppable =
+      drag_files_app_data() && drop_to_pin_enabled().value_or(false);
+
   // Expect the wallpaper on the primary display to be highlighted if and only
-  // if Files app data was dragged. The wallpaper on the secondary display
-  // should not be highlighted.
-  EXPECT_EQ(HasWallpaperHighlight(primary_display_id), drag_files_app_data());
+  // if Files app data was dragged and the drop-to-pin behavior is enabled. The
+  // wallpaper on the secondary display should not be highlighted.
+  EXPECT_EQ(HasWallpaperHighlight(primary_display_id), data_is_droppable);
   EXPECT_FALSE(HasWallpaperHighlight(secondary_display_id));
 
   // Drag the data to a position just outside the `secondary_widget` so that the
@@ -506,9 +529,9 @@ TEST_P(HoldingSpaceTourControllerDragAndDropTest, DragAndDrop) {
   EXPECT_EQ(primary_shelf->IsVisible(), HasHelpBubble(primary_tray));
 
   // Expect the wallpaper on the secondary display to be highlighted if and only
-  // if Files app data was dragged. The wallpaper on the primary display should
-  // not be highlighted.
-  EXPECT_EQ(HasWallpaperHighlight(secondary_display_id), drag_files_app_data());
+  // if Files app data was dragged and drop-to-pin is enabled. The wallpaper on
+  // the primary display should not be highlighted.
+  EXPECT_EQ(HasWallpaperHighlight(secondary_display_id), data_is_droppable);
   EXPECT_FALSE(HasWallpaperHighlight(primary_display_id));
 
   // Conditionally cancel the drop depending on test parameterization.
@@ -517,7 +540,8 @@ TEST_P(HoldingSpaceTourControllerDragAndDropTest, DragAndDrop) {
   }
 
   const bool complete_drop_of_files_app_data =
-      drag_files_app_data() && complete_drop();
+      drag_files_app_data() && drop_to_pin_enabled().value_or(false) &&
+      complete_drop();
 
   // If test parameterization dictates that Files app data will be dropped,
   // expect the holding space client to be instructed to pin files to the
