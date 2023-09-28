@@ -77,7 +77,7 @@ BASE_FEATURE(kUseAlternativePortForGloballyReachableCheck,
 
 BASE_FEATURE(kSHA1ServerSignature,
              "SHA1ServerSignature",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnableTLS13EarlyData,
              "EnableTLS13EarlyData",

@@ -662,7 +662,7 @@ TEST_F(SSLConnectJobTest, LegacyCryptoFallbackHistograms) {
       socket_factory_.AddSocketDataProvider(&data2);
       socket_factory_.AddSSLSocketDataProvider(&ssl2);
       ssl2.ssl_info = ssl_info;
-      ssl2.expected_disable_sha1_server_signatures = false;
+      ssl2.expected_disable_sha1_server_signatures = true;
     } else {
       ssl.ssl_info = ssl_info;
     }
@@ -1618,7 +1618,7 @@ TEST_F(SSLConnectJobTest, ECHRecoveryThenLegacyCrypto) {
   // connection enables legacy crypto and succeeds.
   SSLSocketDataProvider ssl4(ASYNC, OK);
   ssl4.expected_ech_config_list = ech_config_list3;
-  ssl4.expected_disable_sha1_server_signatures = false;
+  ssl4.expected_disable_sha1_server_signatures = true;
   socket_factory_.AddSSLSocketDataProvider(&ssl4);
 
   // The connection should ultimately succeed.
@@ -1686,7 +1686,7 @@ TEST_F(SSLConnectJobTest, LegacyCryptoThenECHRecovery) {
   // The handshake enables legacy crypto. Now ECH fails with retry configs.
   SSLSocketDataProvider ssl4(ASYNC, ERR_ECH_NOT_NEGOTIATED);
   ssl4.expected_ech_config_list = ech_config_list2;
-  ssl4.expected_disable_sha1_server_signatures = false;
+  ssl4.expected_disable_sha1_server_signatures = true;
   ssl4.ech_retry_configs = ech_config_list3;
   socket_factory_.AddSSLSocketDataProvider(&ssl4);
   // The fourth connection attempt should still skip `endpoint1` and retry with
@@ -1699,7 +1699,7 @@ TEST_F(SSLConnectJobTest, LegacyCryptoThenECHRecovery) {
   // cryptography.
   SSLSocketDataProvider ssl5(ASYNC, OK);
   ssl5.expected_ech_config_list = ech_config_list3;
-  ssl5.expected_disable_sha1_server_signatures = false;
+  ssl5.expected_disable_sha1_server_signatures = true;
   socket_factory_.AddSSLSocketDataProvider(&ssl5);
 
   // The connection should ultimately succeed.
