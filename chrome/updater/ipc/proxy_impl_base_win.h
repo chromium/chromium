@@ -16,6 +16,7 @@
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
+#include "base/strings/string_util.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
@@ -48,7 +49,8 @@ class ProxyImplBase {
   }
 
  protected:
-  explicit ProxyImplBase(UpdaterScope scope) : scope_(scope) {
+  explicit ProxyImplBase(UpdaterScope scope, const std::vector<IID>& iids = {})
+      : scope_(scope), iids_(iids) {
     DETACH_FROM_SEQUENCE(sequence_checker_);
     VLOG(3) << __func__ << ": Interface: " << typeid(Interface).name()
             << ": iid_user: " << base::win::WStringFromGUID(iid_user)
@@ -110,50 +112,35 @@ class ProxyImplBase {
         if (dumped_once) {
           return;
         }
+        dumped_once = true;
 
         base::ThreadPool::PostTask(
             FROM_HERE, {base::MayBlock(), base::WithBaseSyncPrimitives()},
             base::BindOnce(
-                [](std::wstring hkey_root, std::wstring interface_iid) {
-                  std::wstring log_string;
-                  for (const auto& reg_key : {
-                           base::StrCat({hkey_root,
-                                         L"\\SOFTWARE\\Classes\\Interface\\",
-                                         interface_iid}),
-                           base::StrCat({hkey_root,
-                                         L"\\SOFTWARE\\Classes\\TypeLib\\",
-                                         interface_iid}),
-                           base::StrCat({hkey_root,
-                                         L"\\SOFTWARE\\WOW6432Node\\Classes"
-                                         L"\\Interface\\",
-                                         interface_iid}),
-                           base::StrCat({hkey_root,
-                                         L"\\SOFTWARE\\WOW6432Node\\Classes"
-                                         L"\\TypeLib\\",
-                                         interface_iid}),
-                           base::StrCat({L"HKCR\\Interface\\", interface_iid}),
-                           base::StrCat({L"HKCR\\TypeLib\\", interface_iid}),
-                           base::StrCat({L"HKCR\\WOW6432Node\\Interface\\",
-                                         interface_iid}),
-                           base::StrCat({L"HKCR\\WOW6432Node\\TypeLib\\",
-                                         interface_iid}),
-                       }) {
+                [](const std::wstring& hkey_root,
+                   const std::vector<IID>& interface_iids) {
+                  for (const auto& iid : interface_iids) {
+                    const std::wstring interface_iid =
+                        base::win::WStringFromGUID(iid);
+                    const auto reg_key =
+                        base::StrCat({hkey_root,
+                                      L"\\SOFTWARE\\WOW6432Node\\Classes"
+                                      L"\\Interface\\",
+                                      interface_iid});
                     absl::optional<std::wstring> contents =
                         GetRegKeyContents(reg_key);
-                    log_string +=
-                        base::StrCat({L"Contents of *", reg_key, L"* = ",
-                                      contents ? *contents : L"", L"\n"});
+                    LOG(ERROR)
+                        << reg_key << ": "
+                        << (contents && !base::ContainsOnlyChars(
+                                            *contents, base::kWhitespaceWide)
+                                ? *contents
+                                : L"*Missing*");
                   }
-                  LOG(ERROR) << "log_string: " << log_string;
-                  DEBUG_ALIAS_FOR_WCHARCSTR(local_log_string,
-                                            log_string.c_str(), 1024 * 4);
                   DUMP_WILL_BE_CHECK(false);
                 },
-                IsSystemInstall(scope_) ? L"HKLM" : L"HKCU",
-                base::win::WStringFromGUID(iid)));
+                IsSystemInstall(scope_) ? L"HKLM" : L"HKCU", iids_));
 
-        base::PlatformThread::Sleep(base::Seconds(5));
-        dumped_once = true;
+        base::PlatformThread::Sleep(base::Seconds(10));
       }();
       return base::unexpected(hr);
     }
@@ -194,6 +181,7 @@ class ProxyImplBase {
            base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
 
   const UpdaterScope scope_;
+  const std::vector<IID> iids_;
 
   HResultOr<Microsoft::WRL::ComPtr<Interface>> interface_ =
       base::unexpected(S_OK);

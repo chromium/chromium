@@ -22,6 +22,7 @@
 #include "chrome/updater/ipc/update_service_internal_proxy.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/win_util.h"
+#include "chrome/updater/win/setup/setup_util.h"
 #include "chrome/updater/win/win_constants.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -77,7 +78,9 @@ class UpdateServiceInternalProxyImplImpl
                            __uuidof(IUpdaterInternalSystem)> {
  public:
   explicit UpdateServiceInternalProxyImplImpl(UpdaterScope scope)
-      : ProxyImplBase(scope) {}
+      : ProxyImplBase(scope,
+                      JoinVectors(GetSideBySideInterfaces(scope),
+                                  GetActiveInterfaces(scope))) {}
 
   static auto GetClassGuid(UpdaterScope scope) {
     return IsSystemInstall(scope) ? __uuidof(UpdaterInternalSystemClass)
