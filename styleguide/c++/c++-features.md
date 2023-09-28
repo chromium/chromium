@@ -30,16 +30,19 @@ The current status of existing standards and Abseil features is:
 
 *   **C++11:** _Default allowed; see banned features below_
 *   **C++14:** _Default allowed_
-*   **C++17:** Initially supported December 23, 2021; see allowed/banned/TBD
-    features below
+*   **C++17:** _Initially supported December 23, 2021; see allowed/banned/TBD
+    features below_
 *   **C++20:** _Not yet supported in Chromium_, with the exception of
     [designated initializers](https://google.github.io/styleguide/cppguide.html#Designated_initializers)
 *   **C++23:** _Not yet standardized_
-*   **Abseil:** _Default allowed; see banned/TBD features below_
-      * absl::AnyInvocable: Initially supported June 20, 2022
-      * Log library: Initially supported Aug 31, 2022
-      * CRC32C library: Initially supported Dec 5, 2022
-      * Nullability annotation: Initially supported Jun 21, 2023
+*   **Abseil:** _Default allowed; see banned/TBD features below. The following
+    dates represent the start of the two-year TBD periods for certain parts of
+    Abseil:_
+      * absl::AnyInvocable: Initially added to third_party June 20, 2022
+      * Log library: Initially added to third_party Aug 31, 2022
+      * CRC32C library: Initially added to third_party Dec 5, 2022
+      * Nullability annotation: Initially added to third_party Jun 21, 2023
+      * Overload: Initially added to third_party Sep 27, 2023
 
 [TOC]
 
@@ -1912,4 +1915,27 @@ void PaySalary(absl::NotNull<Employee *> employee) {
 These nullability annotations are primarily a human readable signal about the
 intended contract of the pointer. They are not *types* and do not currently
 provide any correctness guarantees.
+***
+
+### Overload <sup>[tbd]</sup>
+
+```c++
+std::variant<int, std::string, double> v(int{1});
+assert(std::visit(absl::Overload(
+                       [](int) -> absl::string_view { return "int"; },
+                       [](const std::string&) -> absl::string_view {
+                         return "string";
+                       },
+                       [](double) -> absl::string_view { return "double"; }),
+                    v) == "int");
+```
+
+**Description:** Returns a functor that provides overloads based on the functors passed to it
+
+**Documentation:**
+[nullability.h](https://source.chromium.org/chromium/chromium/src/+/main:third_party/abseil-cpp/absl/functional/overload.h)
+
+**Notes:**
+*** promo
+Overlaps with `base::Overloaded` from `base/functional/overloaded.h`.
 ***
