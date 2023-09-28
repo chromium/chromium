@@ -66,9 +66,6 @@ const char kDefaultSourceOrigin[] = "https://impression.test/";
 const char kDefaultDestinationOrigin[] = "https://sub.conversion.test/";
 const char kDefaultReportOrigin[] = "https://report.test/";
 
-// Default expiry time for impressions for testing.
-const int64_t kExpiryTime = 30;
-
 }  // namespace
 
 base::Uuid DefaultExternalReportID() {
@@ -121,7 +118,6 @@ SourceBuilder::SourceBuilder(base::Time time)
           {net::SchemefulSite::Deserialize(kDefaultDestinationOrigin)})),
       reporting_origin_(*SuitableOrigin::Deserialize(kDefaultReportOrigin)) {
   registration_.source_event_id = 123;
-  registration_.expiry = base::Milliseconds(kExpiryTime);
   registration_.max_event_level_reports =
       attribution_reporting::kMaxSettableEventLevelAttributions;
 }

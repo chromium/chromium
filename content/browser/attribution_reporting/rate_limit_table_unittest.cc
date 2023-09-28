@@ -959,6 +959,7 @@ TEST_F(RateLimitTableTest, AddRateLimitSource_DeletesExpiredRows) {
       &db_,
       SourceBuilder()
           .SetSourceOrigin(*SuitableOrigin::Deserialize("https://s1.test"))
+          .SetExpiry(base::Milliseconds(30))
           .BuildStored()));
 
   ASSERT_TRUE(table_.AddRateLimitForSource(
@@ -974,6 +975,7 @@ TEST_F(RateLimitTableTest, AddRateLimitSource_DeletesExpiredRows) {
       &db_,
       SourceBuilder()
           .SetSourceOrigin(*SuitableOrigin::Deserialize("https://s3.test"))
+          .SetExpiry(base::Milliseconds(30))
           .BuildStored()));
 
   // No row has expired at this point.
