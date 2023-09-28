@@ -478,10 +478,13 @@ export class StatsRatesCalculator {
               'fecBytesReceived', 'timestamp',
               CalculatorModifier.kBytesToBits),
           packetsReceived: new RateCalculator('packetsReceived', 'timestamp'),
+          packetsDiscarded: new RateCalculator('packetsDiscarded', 'timestamp'),
           retransmittedPacketsReceived:
             new RateCalculator('retransmittedPacketsReceived', 'timestamp'),
           fecPacketsReceived:
             new RateCalculator('fecPacketsReceived', 'timestamp'),
+          fecPacketsDiscarded:
+            new RateCalculator('fecPacketsDiscarded', 'timestamp'),
           framesReceived: [
             new RateCalculator('framesReceived', 'timestamp'),
             new DifferenceCalculator('framesReceived',
