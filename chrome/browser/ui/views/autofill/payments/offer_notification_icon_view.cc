@@ -77,6 +77,7 @@ void OfferNotificationIconView::MaybeShowPageActionLabel() {
     return;
   }
   should_extend_label_shown_duration_ = true;
+  SetPaintLabelOverSolidBackground(true);
   AnimateIn(IDS_DISCOUNT_ICON_EXPANDED_TEXT);
   controller->OnIconExpanded();
   SetAccessibilityProperties(
