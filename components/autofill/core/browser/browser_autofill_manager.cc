@@ -258,40 +258,41 @@ FillDataType GetEventTypeFromSingleFieldSuggestionPopupItemId(
       return FillDataType::kSingleFieldFormFillerPromoCode;
     case PopupItemId::kIbanEntry:
       return FillDataType::kSingleFieldFormFillerIban;
-    case PopupItemId::kInsecureContextPaymentDisabledMessage:
-    case PopupItemId::kPasswordEntry:
-    case PopupItemId::kSeparator:
-    case PopupItemId::kClearForm:
-    case PopupItemId::kAutofillOptions:
-    case PopupItemId::kDatalistEntry:
-    case PopupItemId::kScanCreditCard:
-    case PopupItemId::kTitle:
-    case PopupItemId::kUsernameEntry:
-    case PopupItemId::kAllSavedPasswordsEntry:
-    case PopupItemId::kGeneratePasswordEntry:
-    case PopupItemId::kShowAccountCards:
-    case PopupItemId::kPasswordAccountStorageOptIn:
-    case PopupItemId::kPasswordAccountStorageOptInAndGenerate:
     case PopupItemId::kAccountStoragePasswordEntry:
     case PopupItemId::kAccountStorageUsernameEntry:
-    case PopupItemId::kPasswordAccountStorageReSignin:
-    case PopupItemId::kPasswordAccountStorageEmpty:
-    case PopupItemId::kMixedFormMessage:
-    case PopupItemId::kVirtualCreditCardEntry:
-    case PopupItemId::kWebauthnCredential:
-    case PopupItemId::kSeePromoCodeDetails:
-    case PopupItemId::kWebauthnSignInWithAnotherDevice:
     case PopupItemId::kAddressEntry:
+    case PopupItemId::kAllSavedPasswordsEntry:
+    case PopupItemId::kAutofillOptions:
+    case PopupItemId::kClearForm:
+    case PopupItemId::kCompose:
+    case PopupItemId::kCreateNewPlusAddress:
     case PopupItemId::kCreditCardEntry:
-    case PopupItemId::kEditAddressProfile:
+    case PopupItemId::kDatalistEntry:
     case PopupItemId::kDeleteAddressProfile:
+    case PopupItemId::kEditAddressProfile:
+    case PopupItemId::kFieldByFieldFilling:
+    case PopupItemId::kFillEverythingFromAddressProfile:
+    case PopupItemId::kFillExistingPlusAddress:
     case PopupItemId::kFillFullAddress:
     case PopupItemId::kFillFullName:
-    case PopupItemId::kFillEverythingFromAddressProfile:
-    case PopupItemId::kFieldByFieldFilling:
-    case PopupItemId::kFillExistingPlusAddress:
-    case PopupItemId::kCreateNewPlusAddress:
     case PopupItemId::kFillFullPhoneNumber:
+    case PopupItemId::kGeneratePasswordEntry:
+    case PopupItemId::kInsecureContextPaymentDisabledMessage:
+    case PopupItemId::kMixedFormMessage:
+    case PopupItemId::kPasswordAccountStorageEmpty:
+    case PopupItemId::kPasswordAccountStorageOptIn:
+    case PopupItemId::kPasswordAccountStorageOptInAndGenerate:
+    case PopupItemId::kPasswordAccountStorageReSignin:
+    case PopupItemId::kPasswordEntry:
+    case PopupItemId::kScanCreditCard:
+    case PopupItemId::kSeePromoCodeDetails:
+    case PopupItemId::kSeparator:
+    case PopupItemId::kShowAccountCards:
+    case PopupItemId::kTitle:
+    case PopupItemId::kUsernameEntry:
+    case PopupItemId::kVirtualCreditCardEntry:
+    case PopupItemId::kWebauthnCredential:
+    case PopupItemId::kWebauthnSignInWithAnotherDevice:
       NOTREACHED();
   }
   NOTREACHED();

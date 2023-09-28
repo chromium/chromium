@@ -457,6 +457,8 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
                          GetWeakPtr()));
       break;
     }
+    case PopupItemId::kCompose:
+      break;
     default:
       if (suggestion.popup_item_id == PopupItemId::kAddressEntry ||
           suggestion.popup_item_id == PopupItemId::kCreditCardEntry ||
