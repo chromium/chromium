@@ -434,4 +434,6 @@ Refer to README.md for content description and update process.
  <item id="get_all_plus_addresses" added_in_milestone="119" content_hash_code="057af967" os_list="linux,windows,android,chromeos" file_path="components/plus_addresses/plus_address_client.cc" />
  <item id="report_check_membership" added_in_milestone="119" content_hash_code="07849280" os_list="chromeos" file_path="chromeos/ash/components/report/device_metrics/use_case/use_case.cc" />
  <item id="report_check_in" added_in_milestone="119" content_hash_code="02080b2e" os_list="chromeos" file_path="chromeos/ash/components/report/device_metrics/use_case/use_case.cc" />
+ <item id="plus_address_reservation" added_in_milestone="119" content_hash_code="02835001" os_list="linux,windows,android,chromeos" file_path="components/plus_addresses/plus_address_client.cc" />
+ <item id="plus_address_confirmation" added_in_milestone="119" content_hash_code="04783158" os_list="linux,windows,android,chromeos" file_path="components/plus_addresses/plus_address_client.cc" />
 </annotations>

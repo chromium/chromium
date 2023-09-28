@@ -49,15 +49,23 @@ class PlusAddressClientRequests : public ::testing::Test {
         }));
 
     features_.InitAndEnableFeatureWithParameters(
-        kFeature, {{kEnterprisePlusAddressServerUrl.name, server_base_url}});
+        kFeature, {{kEnterprisePlusAddressServerUrl.name, server_base_url},
+                   {kEnterprisePlusAddressOAuthScope.name, test_scope}});
   }
 
  protected:
   // Not used directly, but required for `IdentityTestEnvironment` to work.
   base::test::TaskEnvironment task_environment;
   std::string server_base_url = "https://enterprise.foo/";
+  std::string test_scope = "scope";
+
   std::string fullProfileEndpoint =
       base::StrCat({server_base_url, kServerPlusProfileEndpoint});
+  std::string fullReserveEndpoint =
+      base::StrCat({server_base_url, kServerReservePlusAddressEndpoint});
+  std::string fullConfirmEndpoint =
+      base::StrCat({server_base_url, kServerCreatePlusAddressEndpoint});
+
   std::string token = "myToken";
   signin::AccessTokenInfo eternal_token_info =
       signin::AccessTokenInfo(token, base::Time::Max(), "");
@@ -102,6 +110,43 @@ TEST_F(PlusAddressClientRequests, CreatePlusAddressV1_IssuesCorrectRequest) {
   std::string* facet_entry = body->GetDict().FindString("facet");
   ASSERT_NE(facet_entry, nullptr);
   EXPECT_EQ(*facet_entry, site);
+}
+
+TEST_F(PlusAddressClientRequests,
+       CreatePlusAddressV1_EnqueuedUntilOAuthTokenFetched) {
+  identity_test_env.MakePrimaryAccountAvailable("foo@plus.plus",
+                                                signin::ConsentLevel::kSignin);
+  PlusAddressClient client(identity_manager, scoped_shared_url_loader_factory);
+  std::string site = "https://foobar.com";
+  base::MockOnceCallback<void(const std::string&)> callback;
+  // Make a request when the PlusAddressClient has an expired OAuth token.
+  EXPECT_CALL(callback, Run).Times(0);
+  client.CreatePlusAddress(site, callback.Get());
+
+  // Verify that CreatePlusAddress hasn't already sent the network request.
+  ASSERT_EQ(test_url_loader_factory.NumPending(), 0);
+
+  // CreatePlusAddress will  run `callback` after an OAuth token is retrieved.
+  EXPECT_CALL(callback, Run).Times(1);
+  identity_test_env
+      .WaitForAccessTokenRequestIfNecessaryAndRespondWithTokenForScopes(
+          "token", base::Time::Max(), "id", {test_scope});
+
+  // Unblock the pending request.
+  ASSERT_EQ(test_url_loader_factory.NumPending(), 1);
+  test_url_loader_factory.SimulateResponseForPendingRequest(fullProfileEndpoint,
+                                                            R"(
+    {
+      "plusProfile": {
+          "unwanted": 123,
+          "facet": "youtube.com",
+          "plusEmail" : {
+            "plusAddress": "plusone@plus.plus"
+          }
+        },
+      "unwanted": "abc"
+    }
+    )");
 }
 
 // For tests that cover successful but unexpected server responses, see the
@@ -192,6 +237,229 @@ TEST_F(PlusAddressClientRequests,
 }
 
 // Ensures the request sent by Chrome matches what we intended.
+TEST_F(PlusAddressClientRequests, ReservePlusAddress_IssuesCorrectRequest) {
+  PlusAddressClient client(identity_manager, scoped_shared_url_loader_factory);
+  std::string site = "https://foobar.com";
+  client.SetAccessTokenInfoForTesting(eternal_token_info);
+  client.ReservePlusAddress(site, base::DoNothing());
+
+  // Validate that the V1 Create request uses the right url and requests method.
+  EXPECT_EQ(last_request.url, fullReserveEndpoint);
+  EXPECT_EQ(last_request.method, net::HttpRequestHeaders::kPutMethod);
+  // Validate the Authorization header includes "myToken".
+  std::string authorization_value;
+  last_request.headers.GetHeader("Authorization", &authorization_value);
+  EXPECT_EQ(authorization_value, "Bearer " + token);
+
+  // Validate the request payload.
+  ASSERT_NE(last_request.request_body, nullptr);
+  ASSERT_EQ(last_request.request_body->elements()->size(), 1u);
+  absl::optional<base::Value> body =
+      base::JSONReader::Read(last_request.request_body->elements()
+                                 ->at(0)
+                                 .As<network::DataElementBytes>()
+                                 .AsStringPiece());
+  ASSERT_TRUE(body.has_value() && body->is_dict());
+  std::string* facet_entry = body->GetDict().FindString("facet");
+  ASSERT_NE(facet_entry, nullptr);
+  EXPECT_EQ(*facet_entry, site);
+}
+
+TEST_F(PlusAddressClientRequests,
+       ReservePlusAddress_EnqueuedUntilOAuthTokenFetched) {
+  identity_test_env.MakePrimaryAccountAvailable("foo@plus.plus",
+                                                signin::ConsentLevel::kSignin);
+  PlusAddressClient client(identity_manager, scoped_shared_url_loader_factory);
+  std::string site = "https://foobar.com";
+  base::MockOnceCallback<void(const std::string&)> callback;
+  // Make a request when the PlusAddressClient has an expired OAuth token.
+  EXPECT_CALL(callback, Run).Times(0);
+  client.ReservePlusAddress(site, callback.Get());
+
+  // Verify that ReservePlusAddress hasn't already sent the network request.
+  ASSERT_EQ(test_url_loader_factory.NumPending(), 0);
+
+  // ReservePlusAddress will  run `callback` after an OAuth token is retrieved.
+  EXPECT_CALL(callback, Run).Times(1);
+  identity_test_env
+      .WaitForAccessTokenRequestIfNecessaryAndRespondWithTokenForScopes(
+          "token", base::Time::Max(), "id", {test_scope});
+
+  // Unblock the pending request.
+  ASSERT_EQ(test_url_loader_factory.NumPending(), 1);
+  test_url_loader_factory.SimulateResponseForPendingRequest(fullReserveEndpoint,
+                                                            R"(
+    {
+      "plusProfile": {
+          "unwanted": 123,
+          "facet": "youtube.com",
+          "plusEmail" : {
+            "plusAddress": "plusone@plus.plus"
+          }
+        },
+      "unwanted": "abc"
+    }
+    )");
+}
+
+// For tests that cover successful but unexpected server responses, see the
+// PlusAddressParsing.FromV1Create tests.
+TEST_F(PlusAddressClientRequests, ReservePlusAddress_RunsCallbackOnSuccess) {
+  PlusAddressClient client(identity_manager, scoped_shared_url_loader_factory);
+  client.SetAccessTokenInfoForTesting(eternal_token_info);
+  std::string site = "https://foobar.com";
+
+  base::MockOnceCallback<void(const std::string&)> on_response_parsed;
+  // Initiate a request...
+  client.ReservePlusAddress(site, on_response_parsed.Get());
+  // Fulfill the request and the callback should be run
+  EXPECT_CALL(on_response_parsed, Run("plusone@plus.plus")).Times(1);
+  test_url_loader_factory.SimulateResponseForPendingRequest(fullReserveEndpoint,
+                                                            R"(
+    {
+      "plusProfile": {
+          "unwanted": 123,
+          "facet": "youtube.com",
+          "plusEmail" : {
+            "plusAddress": "plusone@plus.plus"
+          }
+        },
+      "unwanted": "abc"
+    }
+    )");
+}
+
+TEST_F(PlusAddressClientRequests,
+       ReservePlusAddress_FailedRequestDoesntRunCallback) {
+  PlusAddressClient client(identity_manager, scoped_shared_url_loader_factory);
+  client.SetAccessTokenInfoForTesting(eternal_token_info);
+  std::string site = "https://foobar.com";
+
+  base::MockOnceCallback<void(const std::string&)> on_response_parsed;
+  // Initiate a request...
+  client.ReservePlusAddress(site, on_response_parsed.Get());
+
+  // The request fails and the callback is never run
+  EXPECT_CALL(on_response_parsed, Run).Times(0);
+  EXPECT_TRUE(test_url_loader_factory.SimulateResponseForPendingRequest(
+      GURL(fullReserveEndpoint),
+      network::URLLoaderCompletionStatus(net::HTTP_NOT_FOUND),
+      network::CreateURLResponseHead(net::HTTP_NOT_FOUND), ""));
+}
+
+// Ensures the request sent by Chrome matches what we intended.
+TEST_F(PlusAddressClientRequests, ConfirmPlusAddress_IssuesCorrectRequest) {
+  PlusAddressClient client(identity_manager, scoped_shared_url_loader_factory);
+  std::string site = "https://foobar.com";
+  std::string plus_address = "plus@plus.plus";
+  client.SetAccessTokenInfoForTesting(eternal_token_info);
+  client.ConfirmPlusAddress(site, plus_address, base::DoNothing());
+
+  // Validate that the V1 Create request uses the right url and requests method.
+  EXPECT_EQ(last_request.url, fullConfirmEndpoint);
+  EXPECT_EQ(last_request.method, net::HttpRequestHeaders::kPutMethod);
+  // Validate the Authorization header includes "myToken".
+  std::string authorization_value;
+  last_request.headers.GetHeader("Authorization", &authorization_value);
+  EXPECT_EQ(authorization_value, "Bearer " + token);
+
+  // Validate the request payload.
+  ASSERT_NE(last_request.request_body, nullptr);
+  ASSERT_EQ(last_request.request_body->elements()->size(), 1u);
+  absl::optional<base::Value> body =
+      base::JSONReader::Read(last_request.request_body->elements()
+                                 ->at(0)
+                                 .As<network::DataElementBytes>()
+                                 .AsStringPiece());
+  ASSERT_TRUE(body.has_value() && body->is_dict());
+  std::string* facet_entry = body->GetDict().FindString("facet");
+  ASSERT_NE(facet_entry, nullptr);
+  EXPECT_EQ(*facet_entry, site);
+}
+
+TEST_F(PlusAddressClientRequests,
+       ConfirmPlusAddress_EnqueuedUntilOAuthTokenFetched) {
+  identity_test_env.MakePrimaryAccountAvailable("foo@plus.plus",
+                                                signin::ConsentLevel::kSignin);
+  PlusAddressClient client(identity_manager, scoped_shared_url_loader_factory);
+  std::string site = "https://foobar.com";
+  base::MockOnceCallback<void(const std::string&)> callback;
+  // Make a request when the PlusAddressClient has an expired OAuth token.
+  EXPECT_CALL(callback, Run).Times(0);
+  client.ConfirmPlusAddress(site, "plus+plus@plus.plus", callback.Get());
+
+  // Verify that ConfirmPlusAddress hasn't already sent the network request.
+  ASSERT_EQ(test_url_loader_factory.NumPending(), 0);
+
+  // ConfirmPlusAddress will run `callback` after an OAuth token is retrieved.
+  EXPECT_CALL(callback, Run).Times(1);
+  identity_test_env
+      .WaitForAccessTokenRequestIfNecessaryAndRespondWithTokenForScopes(
+          "token", base::Time::Max(), "id", {test_scope});
+
+  // Unblock the pending request.
+  ASSERT_EQ(test_url_loader_factory.NumPending(), 1);
+  test_url_loader_factory.SimulateResponseForPendingRequest(fullConfirmEndpoint,
+                                                            R"(
+    {
+      "plusProfile": {
+          "unwanted": 123,
+          "facet": "youtube.com",
+          "plusEmail" : {
+            "plusAddress": "plusone@plus.plus"
+          }
+        },
+      "unwanted": "abc"
+    }
+    )");
+}
+
+TEST_F(PlusAddressClientRequests, ConfirmPlusAddress_RunsCallbackOnSuccess) {
+  PlusAddressClient client(identity_manager, scoped_shared_url_loader_factory);
+  client.SetAccessTokenInfoForTesting(eternal_token_info);
+  std::string site = "https://foobar.com";
+  std::string plus_address = "plus@plus.plus";
+
+  base::MockOnceCallback<void(const std::string&)> on_response_parsed;
+  // Initiate a request...
+  client.ConfirmPlusAddress(site, plus_address, on_response_parsed.Get());
+  // Fulfill the request and the callback should be run
+  EXPECT_CALL(on_response_parsed, Run(plus_address)).Times(1);
+  test_url_loader_factory.SimulateResponseForPendingRequest(fullConfirmEndpoint,
+                                                            R"(
+    {
+      "plusProfile": {
+          "unwanted": 123,
+          "facet": "youtube.com",
+          "plusEmail" : {
+            "plusAddress": "plus@plus.plus"
+          }
+        },
+      "unwanted": "abc"
+    }
+    )");
+}
+
+TEST_F(PlusAddressClientRequests,
+       ConfirmPlusAddress_FailedRequestDoesntRunCallback) {
+  PlusAddressClient client(identity_manager, scoped_shared_url_loader_factory);
+  client.SetAccessTokenInfoForTesting(eternal_token_info);
+  std::string site = "https://foobar.com";
+  std::string plus_address = "plus@plus.plus";
+
+  base::MockOnceCallback<void(const std::string&)> on_response_parsed;
+  // Initiate a request...
+  client.ConfirmPlusAddress(site, plus_address, on_response_parsed.Get());
+
+  // The request fails and the callback is never run
+  EXPECT_CALL(on_response_parsed, Run).Times(0);
+  EXPECT_TRUE(test_url_loader_factory.SimulateResponseForPendingRequest(
+      GURL(fullConfirmEndpoint),
+      network::URLLoaderCompletionStatus(net::HTTP_NOT_FOUND),
+      network::CreateURLResponseHead(net::HTTP_NOT_FOUND), ""));
+}
+
+// Ensures the request sent by Chrome matches what we intended.
 TEST_F(PlusAddressClientRequests, GetAllPlusAddressesV1_IssuesCorrectRequest) {
   PlusAddressClient client(identity_manager, scoped_shared_url_loader_factory);
   client.SetAccessTokenInfoForTesting(eternal_token_info);
@@ -204,6 +472,43 @@ TEST_F(PlusAddressClientRequests, GetAllPlusAddressesV1_IssuesCorrectRequest) {
   std::string authorization_value;
   last_request.headers.GetHeader("Authorization", &authorization_value);
   EXPECT_EQ(authorization_value, "Bearer " + token);
+}
+
+TEST_F(PlusAddressClientRequests,
+       GetAllPlusAddresses_EnqueuedUntilOAuthTokenFetched) {
+  identity_test_env.MakePrimaryAccountAvailable("foo@plus.plus",
+                                                signin::ConsentLevel::kSignin);
+  PlusAddressClient client(identity_manager, scoped_shared_url_loader_factory);
+  base::MockOnceCallback<void(const PlusAddressMap&)> callback;
+  // Make a request when the PlusAddressClient has an expired OAuth token.
+  EXPECT_CALL(callback, Run).Times(0);
+  client.GetAllPlusAddresses(callback.Get());
+
+  // Verify that GetAllPlusAddresses hasn't already sent the network request.
+  ASSERT_EQ(test_url_loader_factory.NumPending(), 0);
+
+  // GetAllPlusAddresses will run `callback`  after an OAuth token is retrieved.
+  EXPECT_CALL(callback, Run).Times(1);
+  identity_test_env
+      .WaitForAccessTokenRequestIfNecessaryAndRespondWithTokenForScopes(
+          "token", base::Time::Max(), "id", {test_scope});
+
+  // Unblock the pending request.
+  ASSERT_EQ(test_url_loader_factory.NumPending(), 1);
+  test_url_loader_factory.SimulateResponseForPendingRequest(fullProfileEndpoint,
+                                                            R"(
+    {
+      "plusProfiles": [
+          {
+            "unwanted": 123,
+            "facet": "youtube.com",
+            "plusEmail" : {
+              "plusAddress": "plusone@plus.plus"
+            }
+          }
+        ]
+    }
+    )");
 }
 
 // For tests that cover successful but unexpected server responses, see the

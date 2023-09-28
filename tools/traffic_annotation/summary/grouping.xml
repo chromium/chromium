@@ -291,8 +291,6 @@ after discussions on the right group.
       <annotation id="iwa_update_discovery_web_bundle"/>
       <annotation id="almanac_launcher_app"/>
       <annotation id="ip_protection_service_get_proxy_config"/>
-      <annotation id="plus_address_creation"/>
-      <annotation id="get_all_plus_addresses"/>
     </sender>
   </group>
   <group name="Admin Features" hidden="true">
@@ -572,6 +570,14 @@ after discussions on the right group.
     </sender>
     <sender name="Whats New">
       <annotation id="whats_new_handler"/>
+    </sender>
+  </group>
+  <group name="PlusAddresses" hidden="true">
+    <sender name="PlusAddresses">
+      <annotation id="plus_address_creation"/>
+      <annotation id="get_all_plus_addresses"/>
+      <annotation id="plus_address_reservation"/>
+      <annotation id="plus_address_confirmation"/>
     </sender>
   </group>
 </groups>

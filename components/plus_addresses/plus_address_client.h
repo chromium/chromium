@@ -38,6 +38,8 @@ namespace plus_addresses {
 
 // This endpoint is used for most plus-address operations.
 constexpr char kServerPlusProfileEndpoint[] = "v1/profiles";
+constexpr char kServerReservePlusAddressEndpoint[] = "v1/profiles/reserve";
+constexpr char kServerCreatePlusAddressEndpoint[] = "v1/profiles/create";
 
 // A move-only class for communicating with a remote plus-address server.
 class PlusAddressClient {
@@ -52,11 +54,30 @@ class PlusAddressClient {
   // Initiates a request to get a plus address for use on `site` and only
   // runs `callback` with a plus address if the request to the server
   // completes successfully and returns the expected response.
+  //
+  // TODO (crbug.com/1467623): Should callback be run if the request fails?
   void CreatePlusAddress(const std::string& site, PlusAddressCallback callback);
 
+  // Initiates a request to get a plus address for use on `site` and only
+  // runs `callback` with a plus address if the request to the server
+  // completes successfully and returns the expected response.
+  //
+  // TODO (crbug.com/1467623): Should callback be run if the request fails?
+  void ReservePlusAddress(const std::string& site,
+                          PlusAddressCallback callback);
+
+  // Initiates a request to confirm `plus_address` for use on `site` and only
+  // runs `callback` with the plus address if the request to the server
+  // completes successfully and returns the expected response.
+  //
+  // TODO (crbug.com/1467623): Should callback be run if the request fails?
+  void ConfirmPlusAddress(const std::string& site,
+                          const std::string& plus_address,
+                          PlusAddressCallback callback);
+
   // Initiates a request to get all plus addresses from the remote enterprise-
-  // specified server, running callback with them only if the request completes
-  // successfully and returns the expected response.
+  // specified server and only runs callback with them if the request to
+  // the server completes successfully and returns the expected response.
   void GetAllPlusAddresses(PlusAddressMapCallback callback);
 
   // Initiates a request for a new OAuth token. If the request succeeds, this
@@ -72,9 +93,12 @@ class PlusAddressClient {
  private:
   using UrlLoaderList = std::list<std::unique_ptr<network::SimpleURLLoader>>;
 
-  void OnCreatePlusAddressComplete(UrlLoaderList::iterator it,
-                                   PlusAddressCallback callback,
-                                   std::unique_ptr<std::string> response);
+  // This is shared by the Create, Reserve, and ConfirmPlusAddress methods since
+  // they all use `loaders_for_creation_` and have the same return type.
+  void OnCreateOrReservePlusAddressComplete(
+      UrlLoaderList::iterator it,
+      PlusAddressCallback callback,
+      std::unique_ptr<std::string> response);
   void OnGetAllPlusAddressesComplete(PlusAddressMapCallback callback,
                                      std::unique_ptr<std::string> response);
   // Initiates a network request for an OAuth token, and may only be
