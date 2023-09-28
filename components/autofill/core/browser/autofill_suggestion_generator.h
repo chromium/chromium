@@ -51,8 +51,7 @@ class AutofillSuggestionGenerator {
       delete;
 
   // Generates suggestions for all available profiles based on the `form` and
-  // the value of `field` of type `field_type`. `app_locale` is the locale used
-  // by the application.
+  // the value of `field` of type `field_type`.
   // `last_targeted_fields` is used to know which fields were targeted on a
   // prior form interaction. In the context of granular filling, this could lead
   // the user to be in one of the available filling granularities, field by
@@ -63,10 +62,9 @@ class AutofillSuggestionGenerator {
   std::vector<Suggestion> GetSuggestionsForProfiles(
       const FormStructure& form,
       const FormFieldData& field,
-      absl::optional<ServerFieldTypeSet> last_targeted_fields,
       AutofillType field_type,
-      base::span<FieldFillingSkipReason> skip_statuses,
-      const std::string& app_locale);
+      absl::optional<ServerFieldTypeSet> last_targeted_fields,
+      base::span<FieldFillingSkipReason> skip_statuses);
 
   // Returns a list of profiles that will be displayed as suggestions to the
   // user. This involved many steps from fetching the profiles to matching with
@@ -91,16 +89,14 @@ class AutofillSuggestionGenerator {
       uint64_t trigger_field_max_length);
 
   // Generates suggestions for all available credit cards based on the `type`
-  // and the value of `field`. `app_locale` is the locale used by the
-  // application. `should_display_gpay_logo` will be set to true if there are no
-  // credit card suggestions, or all suggestions come from Payments server.
-  // `with_offer` is set to true if ANY card has card-linked offers.
+  // and the value of `field`. `should_display_gpay_logo` will be set to true if
+  // there are no credit card suggestions, or all suggestions come from Payments
+  // server. `with_offer` is set to true if ANY card has card-linked offers.
   // `metadata_logging_context` contains card metadata related information used
   // for metrics logging.
   std::vector<Suggestion> GetSuggestionsForCreditCards(
       const FormFieldData& field,
       const AutofillType& type,
-      const std::string& app_locale,
       bool& should_display_gpay_logo,
       bool& with_offer,
       autofill_metrics::CardMetadataLoggingContext& metadata_logging_context);
@@ -176,7 +172,6 @@ class AutofillSuggestionGenerator {
   Suggestion CreateCreditCardSuggestion(const CreditCard& credit_card,
                                         const AutofillType& type,
                                         bool virtual_card_option,
-                                        const std::string& app_locale,
                                         bool card_linked_offer_available) const;
 
  private:
@@ -189,15 +184,13 @@ class AutofillSuggestionGenerator {
   // of the first line of the suggestion should be truncated.
   std::pair<Suggestion::Text, Suggestion::Text>
   GetSuggestionMainTextAndMinorTextForCard(const CreditCard& credit_card,
-                                           const AutofillType& type,
-                                           const std::string& app_locale) const;
+                                           const AutofillType& type) const;
 
   // Return the labels to be shown in the suggestion. Note this does not account
   // for virtual cards or card-linked offers.
   std::vector<Suggestion::Text> GetSuggestionLabelsForCard(
       const CreditCard& credit_card,
-      const AutofillType& type,
-      const std::string& app_locale) const;
+      const AutofillType& type) const;
 
   // Adjust the content of |suggestion| if it is a virtual card suggestion.
   void AdjustVirtualCardSuggestionContent(Suggestion& suggestion,

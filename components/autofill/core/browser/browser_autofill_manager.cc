@@ -2863,8 +2863,8 @@ std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
                 form_structure.field_count(),
                 FieldFillingSkipReason::kNotSkipped);
   return suggestion_generator_->GetSuggestionsForProfiles(
-      form_structure, field, last_address_fields_to_fill_for_section,
-      autofill_field.Type(), skip_statuses, app_locale_);
+      form_structure, field, autofill_field.Type(),
+      last_address_fields_to_fill_for_section, skip_statuses);
 }
 
 std::vector<Suggestion> BrowserAutofillManager::GetCreditCardSuggestions(
@@ -2892,8 +2892,7 @@ std::vector<Suggestion> BrowserAutofillManager::GetCreditCardSuggestions(
       }
     } else {
       suggestions = suggestion_generator_->GetSuggestionsForCreditCards(
-          field, type, app_locale_, should_display_gpay_logo, with_offer,
-          context);
+          field, type, should_display_gpay_logo, with_offer, context);
     }
   }
 

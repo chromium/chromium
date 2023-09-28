@@ -94,8 +94,7 @@ class TestAutofillSuggestionGenerator : public AutofillSuggestionGenerator {
       bool virtual_card_option,
       bool card_linked_offer_available) const {
     return AutofillSuggestionGenerator::CreateCreditCardSuggestion(
-        credit_card, type, virtual_card_option, /*app_locale=*/"",
-        card_linked_offer_available);
+        credit_card, type, virtual_card_option, card_linked_offer_available);
   }
 };
 
@@ -1546,8 +1545,7 @@ TEST_F(AutofillSuggestionGeneratorTest,
   autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
   auto suggestions = suggestion_generator()->GetSuggestionsForCreditCards(
       FormFieldData(), AutofillType(CREDIT_CARD_NUMBER),
-      /*app_locale=*/"en", should_display_gpay_logo, with_offer,
-      metadata_logging_context);
+      should_display_gpay_logo, with_offer, metadata_logging_context);
 
   EXPECT_TRUE(with_offer);
   ASSERT_EQ(suggestions.size(), 3U);
@@ -1602,8 +1600,7 @@ TEST_F(AutofillSuggestionGeneratorTest, ShouldDisplayGpayLogo) {
     autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
     auto suggestions = suggestion_generator()->GetSuggestionsForCreditCards(
         FormFieldData(), AutofillType(CREDIT_CARD_NUMBER),
-        /*app_locale=*/"en", should_display_gpay_logo, with_offer,
-        metadata_logging_context);
+        should_display_gpay_logo, with_offer, metadata_logging_context);
 
     EXPECT_EQ(suggestions.size(), 2U);
     EXPECT_TRUE(should_display_gpay_logo);
@@ -1628,8 +1625,7 @@ TEST_F(AutofillSuggestionGeneratorTest, ShouldDisplayGpayLogo) {
     autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
     auto suggestions = suggestion_generator()->GetSuggestionsForCreditCards(
         FormFieldData(), AutofillType(CREDIT_CARD_NUMBER),
-        /*app_locale=*/"en", should_display_gpay_logo, with_offer,
-        metadata_logging_context);
+        should_display_gpay_logo, with_offer, metadata_logging_context);
 
     EXPECT_EQ(suggestions.size(), 2U);
     EXPECT_FALSE(should_display_gpay_logo);
@@ -1656,8 +1652,7 @@ TEST_F(AutofillSuggestionGeneratorTest, ShouldDisplayGpayLogo) {
     autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
     auto suggestions = suggestion_generator()->GetSuggestionsForCreditCards(
         FormFieldData(), AutofillType(CREDIT_CARD_NUMBER),
-        /*app_locale=*/"en", should_display_gpay_logo, with_offer,
-        metadata_logging_context);
+        should_display_gpay_logo, with_offer, metadata_logging_context);
 
     EXPECT_EQ(suggestions.size(), 1U);
     EXPECT_TRUE(should_display_gpay_logo);
@@ -1672,8 +1667,7 @@ TEST_F(AutofillSuggestionGeneratorTest, ShouldDisplayGpayLogo) {
     autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
     auto suggestions = suggestion_generator()->GetSuggestionsForCreditCards(
         FormFieldData(), AutofillType(CREDIT_CARD_NUMBER),
-        /*app_locale=*/"en", should_display_gpay_logo, with_offer,
-        metadata_logging_context);
+        should_display_gpay_logo, with_offer, metadata_logging_context);
 
     EXPECT_TRUE(suggestions.empty());
     EXPECT_TRUE(should_display_gpay_logo);
@@ -2213,8 +2207,7 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
   const std::vector<Suggestion> suggestions =
       suggestion_generator()->GetSuggestionsForCreditCards(
           FormFieldData(), AutofillType(CREDIT_CARD_VERIFICATION_CODE),
-          /*app_locale=*/"en", should_display_gpay_logo, with_offer,
-          metadata_logging_context);
+          should_display_gpay_logo, with_offer, metadata_logging_context);
 
   // Both local card and server card suggestion should be shown when CVC field
   // is focused.
@@ -2239,8 +2232,7 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
   const std::vector<Suggestion> suggestions =
       suggestion_generator()->GetSuggestionsForCreditCards(
           FormFieldData(), AutofillType(CREDIT_CARD_VERIFICATION_CODE),
-          /*app_locale=*/"en", should_display_gpay_logo, with_offer,
-          metadata_logging_context);
+          should_display_gpay_logo, with_offer, metadata_logging_context);
 
   // Only 1 suggestion should be shown when CVC field is focused.
   ASSERT_EQ(suggestions.size(), 1U);
@@ -2264,8 +2256,7 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
   const std::vector<Suggestion> suggestions =
       suggestion_generator()->GetSuggestionsForCreditCards(
           FormFieldData(), AutofillType(CREDIT_CARD_VERIFICATION_CODE),
-          /*app_locale=*/"en", should_display_gpay_logo, with_offer,
-          metadata_logging_context);
+          should_display_gpay_logo, with_offer, metadata_logging_context);
 
   // Both FPAN and VCN suggestion should be shown when CVC field is focused.
   ASSERT_EQ(suggestions.size(), 2U);
@@ -2293,8 +2284,7 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
   const std::vector<Suggestion> suggestions =
       suggestion_generator()->GetSuggestionsForCreditCards(
           FormFieldData(), AutofillType(CREDIT_CARD_VERIFICATION_CODE),
-          /*app_locale=*/"en", should_display_gpay_logo, with_offer,
-          metadata_logging_context);
+          should_display_gpay_logo, with_offer, metadata_logging_context);
 
   // Both FPAN and VCN suggestion should be shown when CVC field is focused.
   ASSERT_EQ(suggestions.size(), 2U);
@@ -2510,8 +2500,7 @@ TEST_P(AutofillSuggestionGeneratorTestForMetadata,
     autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
     suggestion_generator()->GetSuggestionsForCreditCards(
         FormFieldData(), AutofillType(CREDIT_CARD_NUMBER),
-        /*app_locale=*/"en", should_display_gpay_logo, with_offer,
-        metadata_logging_context);
+        should_display_gpay_logo, with_offer, metadata_logging_context);
 
     EXPECT_FALSE(metadata_logging_context.card_metadata_available);
     EXPECT_FALSE(metadata_logging_context.card_product_description_shown);
@@ -2541,8 +2530,7 @@ TEST_P(AutofillSuggestionGeneratorTestForMetadata,
     autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
     suggestion_generator()->GetSuggestionsForCreditCards(
         FormFieldData(), AutofillType(CREDIT_CARD_NUMBER),
-        /*app_locale=*/"en", should_display_gpay_logo, with_offer,
-        metadata_logging_context);
+        should_display_gpay_logo, with_offer, metadata_logging_context);
 
     EXPECT_TRUE(metadata_logging_context.card_metadata_available);
     EXPECT_EQ(metadata_logging_context.card_product_description_shown,

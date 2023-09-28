@@ -222,10 +222,9 @@ AutofillSuggestionGenerator::~AutofillSuggestionGenerator() = default;
 std::vector<Suggestion> AutofillSuggestionGenerator::GetSuggestionsForProfiles(
     const FormStructure& form,
     const FormFieldData& field,
-    absl::optional<ServerFieldTypeSet> last_targeted_fields,
     AutofillType field_type,
-    base::span<FieldFillingSkipReason> skip_statuses,
-    const std::string& app_locale) {
+    absl::optional<ServerFieldTypeSet> last_targeted_fields,
+    base::span<FieldFillingSkipReason> skip_statuses) {
   ServerFieldTypeSet field_types;
   CHECK_EQ(skip_statuses.size(), form.field_count());
   for (size_t i = 0; i < form.field_count(); ++i) {
@@ -365,12 +364,12 @@ std::vector<Suggestion>
 AutofillSuggestionGenerator::GetSuggestionsForCreditCards(
     const FormFieldData& field,
     const AutofillType& type,
-    const std::string& app_locale,
     bool& should_display_gpay_logo,
     bool& with_offer,
     autofill_metrics::CardMetadataLoggingContext& metadata_logging_context) {
   DCHECK(type.group() == FieldTypeGroup::kCreditCard);
   std::vector<Suggestion> suggestions;
+  const std::string& app_locale = personal_data_->app_locale();
 
   std::map<std::string, AutofillOfferData*> card_linked_offers_map =
       GetCardLinkedOffers(autofill_client_);
@@ -411,15 +410,13 @@ AutofillSuggestionGenerator::GetSuggestionsForCreditCards(
       bool card_linked_offer_available =
           base::Contains(card_linked_offers_map, credit_card.guid());
       if (ShouldShowVirtualCardOption(&credit_card)) {
-        suggestions.push_back(
-            CreateCreditCardSuggestion(credit_card, type,
-                                       /*virtual_card_option=*/true, app_locale,
-                                       card_linked_offer_available));
+        suggestions.push_back(CreateCreditCardSuggestion(
+            credit_card, type,
+            /*virtual_card_option=*/true, card_linked_offer_available));
       }
-      suggestions.push_back(
-          CreateCreditCardSuggestion(credit_card, type,
-                                     /*virtual_card_option=*/false, app_locale,
-                                     card_linked_offer_available));
+      suggestions.push_back(CreateCreditCardSuggestion(
+          credit_card, type,
+          /*virtual_card_option=*/false, card_linked_offer_available));
     }
   }
 
@@ -717,7 +714,6 @@ Suggestion AutofillSuggestionGenerator::CreateCreditCardSuggestion(
     const CreditCard& credit_card,
     const AutofillType& type,
     bool virtual_card_option,
-    const std::string& app_locale,
     bool card_linked_offer_available) const {
   DCHECK(type.group() == FieldTypeGroup::kCreditCard);
 
@@ -732,11 +728,11 @@ Suggestion AutofillSuggestionGenerator::CreateCreditCardSuggestion(
 #endif  // BUILDFLAG(IS_ANDROID)
 
   auto [main_text, minor_text] =
-      GetSuggestionMainTextAndMinorTextForCard(credit_card, type, app_locale);
+      GetSuggestionMainTextAndMinorTextForCard(credit_card, type);
   suggestion.main_text = std::move(main_text);
   suggestion.minor_text = std::move(minor_text);
   if (std::vector<Suggestion::Text> card_labels =
-          GetSuggestionLabelsForCard(credit_card, type, app_locale);
+          GetSuggestionLabelsForCard(credit_card, type);
       !card_labels.empty()) {
     suggestion.labels.push_back(std::move(card_labels));
   }
@@ -775,8 +771,7 @@ Suggestion AutofillSuggestionGenerator::CreateCreditCardSuggestion(
 std::pair<Suggestion::Text, Suggestion::Text>
 AutofillSuggestionGenerator::GetSuggestionMainTextAndMinorTextForCard(
     const CreditCard& credit_card,
-    const AutofillType& type,
-    const std::string& app_locale) const {
+    const AutofillType& type) const {
   std::u16string main_text;
   std::u16string minor_text;
   if (type.GetStorableType() == CREDIT_CARD_NUMBER) {
@@ -794,7 +789,7 @@ AutofillSuggestionGenerator::GetSuggestionMainTextAndMinorTextForCard(
     main_text =
         l10n_util::GetStringUTF16(IDS_AUTOFILL_CVC_SUGGESTION_MAIN_TEXT);
   } else {
-    main_text = credit_card.GetInfo(type, app_locale);
+    main_text = credit_card.GetInfo(type, personal_data_->app_locale());
   }
 
   return {Suggestion::Text(main_text, Suggestion::Text::IsPrimary(true),
@@ -808,9 +803,9 @@ AutofillSuggestionGenerator::GetSuggestionMainTextAndMinorTextForCard(
 std::vector<Suggestion::Text>
 AutofillSuggestionGenerator::GetSuggestionLabelsForCard(
     const CreditCard& credit_card,
-    const AutofillType& type,
-    const std::string& app_locale) const {
+    const AutofillType& type) const {
   DCHECK(type.group() == FieldTypeGroup::kCreditCard);
+  const std::string& app_locale = personal_data_->app_locale();
 
   // If the focused field is a card number field.
   if (type.GetStorableType() == CREDIT_CARD_NUMBER) {
