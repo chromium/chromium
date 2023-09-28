@@ -169,7 +169,15 @@ void ArcWmMetrics::OnWindowPropertyChanged(aura::Window* window,
 
   // We do not measure the case that window state is maximized on the app is
   // launched.
-  if (new_window_show_state == old_window_show_state ||
+  if (new_window_show_state == old_window_show_state) {
+    return;
+  }
+
+  // When an ARC window is launched, the window show state will be changed from
+  // `SHOW_STATE_DEFAULT` to the target window state. We do not measure this
+  // case.
+  if (static_cast<ash::AppType>(window->GetProperty(aura::client::kAppType)) ==
+          ash::AppType::ARC_APP &&
       old_window_show_state == ui::WindowShowState::SHOW_STATE_DEFAULT) {
     return;
   }
