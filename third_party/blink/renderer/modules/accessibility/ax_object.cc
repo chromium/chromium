@@ -4166,8 +4166,11 @@ bool AXObject::IsKeyboardFocusable() const {
     // frame owner elements have SupportsFocus() == false.
     return false;
   }
-  // content-visibility:hidden or content-visibility: auto nodes should not be
-  // keyboard focusable.
+  // content-visibility:hidden or content-visibility: auto nodes (when locked)
+  // cannot be marked as keyboard focusable, because then we'll need to do a
+  // style/layout update within the locked subtree to get scroller information.
+  // For all practical purposes, it's unlikely to matter if display-locked
+  // content is marked non-focusable, so let's just avoid the lifecycle update.
   if (DisplayLockUtilities::IsDisplayLockedPreventingPaint(element)) {
     return false;
   }
