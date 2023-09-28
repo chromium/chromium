@@ -9,8 +9,10 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_service.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
 #include "chrome/browser/signin/reauth_result.h"
@@ -20,6 +22,7 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/browser/ui/search_engine_choice/search_engine_choice_tab_helper.h"
 #include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -289,7 +292,8 @@ SigninViewControllerDelegateViews::SigninViewControllerDelegateViews(
     Browser* browser,
     ui::ModalType dialog_modal_type,
     bool wait_for_size,
-    bool should_show_close_button)
+    bool should_show_close_button,
+    bool delete_profile_on_cancel)
     : content_view_(content_view.get()),
       web_contents_(content_view->GetWebContents()),
       browser_(browser),
@@ -321,6 +325,17 @@ SigninViewControllerDelegateViews::SigninViewControllerDelegateViews(
   animated_view->AddChildView(std::move(content_view));
 
   SetButtons(ui::DIALOG_BUTTON_NONE);
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS_LACROS)
+  // On the local profile creation dialog, cancelling the dialog (for instance
+  // through the VKEY_ESCAPE accelerator) should delete the profile.
+  if (delete_profile_on_cancel) {
+    SetCancelCallback(base::BindOnce(
+        &SigninViewControllerDelegateViews::DeleteProfileOnCancel,
+        base::Unretained(this)));
+  }
+#endif
 
   web_contents_->SetDelegate(this);
 
@@ -401,6 +416,27 @@ void SigninViewControllerDelegateViews::DisplayModal() {
   content_view_->RequestFocus();
 }
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS_LACROS)
+void SigninViewControllerDelegateViews::DeleteProfileOnCancel() {
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(browser_->profile()->GetPath());
+  DCHECK(entry);
+  DCHECK(entry->IsEphemeral());
+  // Open the profile picker in the profile creation step again.
+  ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
+      ProfilePicker::EntryPoint::kOpenNewWindowAfterProfileDeletion));
+  // Since the profile is ephemeral, closing all browser windows triggers the
+  // deletion.
+  BrowserList::CloseAllBrowsersWithProfile(browser_->profile(),
+                                           BrowserList::CloseCallback(),
+                                           BrowserList::CloseCallback(),
+                                           /*skip_beforeunload=*/true);
+}
+#endif
+
 BEGIN_METADATA(SigninViewControllerDelegateViews, views::DialogDelegateView)
 END_METADATA
 
@@ -449,7 +485,7 @@ SigninViewControllerDelegate::CreateProfileCustomizationDelegate(
   return new SigninViewControllerDelegateViews(
       SigninViewControllerDelegateViews::CreateProfileCustomizationWebView(
           browser, is_local_profile_creation, show_profile_switch_iph),
-      browser, ui::MODAL_TYPE_WINDOW, false, false);
+      browser, ui::MODAL_TYPE_WINDOW, false, false, is_local_profile_creation);
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
