@@ -22,7 +22,7 @@ public class PageInfoAdPersonalizationController extends PageInfoPreferenceSubpa
 
     private final PageInfoMainController mMainController;
     private final PageInfoRowView mRowView;
-    private PageInfoAdPersonalizationPreference mSubPage;
+    private PageInfoAdPersonalizationSettings mSubPage;
 
     private boolean mHasJoinedUserToInterestGroup;
     private List<String> mTopics;
@@ -68,9 +68,9 @@ public class PageInfoAdPersonalizationController extends PageInfoPreferenceSubpa
     @Override
     public View createViewForSubpage(ViewGroup parent) {
         assert mSubPage == null;
-        mSubPage = new PageInfoAdPersonalizationPreference();
-        PageInfoAdPersonalizationPreference.Params params =
-                new PageInfoAdPersonalizationPreference.Params();
+        mSubPage = new PageInfoAdPersonalizationSettings();
+        PageInfoAdPersonalizationSettings.Params params =
+                new PageInfoAdPersonalizationSettings.Params();
         params.hasJoinedUserToInterestGroup = mHasJoinedUserToInterestGroup;
         params.topicInfo = mTopics;
         params.onManageInterestsButtonClicked = () -> {

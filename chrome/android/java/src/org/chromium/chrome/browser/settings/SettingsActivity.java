@@ -87,7 +87,7 @@ import org.chromium.components.browser_ui.settings.FragmentSettingsLauncher;
 import org.chromium.components.browser_ui.settings.PaddedDividerItemDecoration;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
-import org.chromium.components.browser_ui.site_settings.SiteSettingsPreferenceFragment;
+import org.chromium.components.browser_ui.site_settings.BaseSiteSettingsFragment;
 import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.browser_ui.widget.displaystyle.ViewResizer;
@@ -318,9 +318,9 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
 
         Fragment fragment = getMainFragment();
 
-        if (fragment instanceof SiteSettingsPreferenceFragment) {
+        if (fragment instanceof BaseSiteSettingsFragment) {
             ChromeSiteSettingsDelegate delegate =
-                    (ChromeSiteSettingsDelegate) (((SiteSettingsPreferenceFragment) fragment)
+                    (ChromeSiteSettingsDelegate) (((BaseSiteSettingsFragment) fragment)
                                                           .getSiteSettingsDelegate());
             delegate.setSnackbarManager(mSnackbarManager);
         }
@@ -486,8 +486,8 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
             ((MainSettings) fragment)
                     .setModalDialogManagerSupplier(getModalDialogManagerSupplier());
         }
-        if (fragment instanceof SiteSettingsPreferenceFragment) {
-            ((SiteSettingsPreferenceFragment) fragment)
+        if (fragment instanceof BaseSiteSettingsFragment) {
+            ((BaseSiteSettingsFragment) fragment)
                     .setSiteSettingsDelegate(new ChromeSiteSettingsDelegate(this, mProfile));
         }
         if (fragment instanceof SafetyCheckSettingsFragment) {

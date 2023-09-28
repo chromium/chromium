@@ -104,7 +104,7 @@ import java.util.Set;
  * is launched to allow the user to see or modify the settings for that particular website.
  */
 @UsedByReflection("site_settings_preferences.xml")
-public class SingleCategorySettings extends SiteSettingsPreferenceFragment
+public class SingleCategorySettings extends BaseSiteSettingsFragment
         implements OnPreferenceChangeListener, OnPreferenceClickListener, SiteAddedCallback,
                    OnPreferenceTreeClickListener, FragmentSettingsLauncher,
                    OnCookiesDetailsRequested,

@@ -34,7 +34,7 @@ import java.util.Locale;
  * granted access to it by the user.
  */
 public class ChosenObjectSettings
-        extends SiteSettingsPreferenceFragment implements CustomDividerFragment {
+        extends BaseSiteSettingsFragment implements CustomDividerFragment {
     public static final String EXTRA_OBJECT_INFOS = "org.chromium.chrome.preferences.object_infos";
     public static final String EXTRA_SITES = "org.chromium.chrome.preferences.site_set";
     public static final String EXTRA_CATEGORY =

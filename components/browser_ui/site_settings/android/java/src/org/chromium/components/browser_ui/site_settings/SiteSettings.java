@@ -24,7 +24,7 @@ import org.chromium.content_public.browser.BrowserContextHandle;
  * permissions that have been granted to websites, as well as enable or disable permissions
  * browser-wide.
  */
-public class SiteSettings extends SiteSettingsPreferenceFragment
+public class SiteSettings extends BaseSiteSettingsFragment
         implements Preference.OnPreferenceClickListener, CustomDividerFragment {
     // The keys for each category shown on the Site Settings page
     // are defined in the SiteSettingsCategory.

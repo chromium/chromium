@@ -48,7 +48,7 @@ import java.util.Map;
 /**
  * Shows the permissions and other settings for a particular website.
  */
-public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
+public class SingleWebsiteSettings extends BaseSiteSettingsFragment
         implements Preference.OnPreferenceChangeListener, Preference.OnPreferenceClickListener,
                    CustomDividerFragment {
     /**

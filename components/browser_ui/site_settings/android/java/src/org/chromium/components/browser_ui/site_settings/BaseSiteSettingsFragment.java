@@ -9,7 +9,7 @@ import androidx.preference.PreferenceFragmentCompat;
 /**
  * Preference fragment for showing the Site Settings UI.
  */
-public abstract class SiteSettingsPreferenceFragment extends PreferenceFragmentCompat {
+public abstract class BaseSiteSettingsFragment extends PreferenceFragmentCompat {
     private SiteSettingsDelegate mSiteSettingsDelegate;
 
     /**

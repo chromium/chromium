@@ -25,7 +25,7 @@ import org.chromium.components.browsing_data.DeleteBrowsingDataAction;
 /**
  * Shows the permissions and other settings for a group of websites.
  */
-public class GroupedWebsitesSettings extends SiteSettingsPreferenceFragment
+public class GroupedWebsitesSettings extends BaseSiteSettingsFragment
         implements Preference.OnPreferenceClickListener, CustomDividerFragment {
     public static final String EXTRA_GROUP = "org.chromium.chrome.preferences.site_group";
 

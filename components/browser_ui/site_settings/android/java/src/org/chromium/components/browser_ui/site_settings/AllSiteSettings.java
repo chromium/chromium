@@ -61,7 +61,7 @@ import java.util.Set;
  * is launched to allow the user to see or modify the settings for that particular website.
  */
 @UsedByReflection("all_site_preferences.xml")
-public class AllSiteSettings extends SiteSettingsPreferenceFragment
+public class AllSiteSettings extends BaseSiteSettingsFragment
         implements PreferenceManager.OnPreferenceTreeClickListener, View.OnClickListener,
                    CustomDividerFragment {
     // The key to use to pass which category this preference should display,
