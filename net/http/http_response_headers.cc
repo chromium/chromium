@@ -12,7 +12,6 @@
 #include <algorithm>
 #include <limits>
 #include <memory>
-#include <unordered_map>
 #include <utility>
 
 #include "base/format_macros.h"
@@ -133,6 +132,61 @@ void CheckDoesNotHaveEmbeddedNulls(base::StringPiece str) {
   CHECK(!HasEmbeddedNulls(str));
 }
 
+void RemoveLeadingSpaces(base::StringPiece* s) {
+  s->remove_prefix(std::min(s->find_first_not_of(' '), s->size()));
+}
+
+// Parses `status` for response code and status text. Returns the response code,
+// and appends the response code and trimmed status text preceded by a space to
+// `append_to`. For example, given the input " 404 Not found " would return 404
+// and append " 404 Not found" to `append_to`. The odd calling convention is
+// necessary to avoid extra copies in the implementation of
+// HttpResponseHeaders::ParseStatusLine().
+int ParseStatus(base::StringPiece status, std::string& append_to) {
+  // Skip whitespace. Tabs are not skipped, for backwards compatibility.
+  RemoveLeadingSpaces(&status);
+
+  const char* first_non_digit =
+      std::find_if(status.begin(), status.end(),
+                   [](char c) { return !base::IsAsciiDigit(c); });
+
+  if (first_non_digit == status.begin()) {
+    DVLOG(1) << "missing response status number; assuming 200";
+    append_to.append(" 200");
+    return net::HTTP_OK;
+  }
+
+  append_to.push_back(' ');
+  append_to.append(status.begin(), first_non_digit);
+  int response_code = -1;
+  // For backwards compatibility, overlarge response codes are permitted.
+  // base::StringToInt will clamp the value to INT_MAX.
+  base::StringToInt(base::MakeStringPiece(status.begin(), first_non_digit),
+                    &response_code);
+  CHECK_GE(response_code, 0);
+
+  status.remove_prefix(first_non_digit - status.begin());
+
+  // Skip whitespace. Tabs are not skipped, as before.
+  RemoveLeadingSpaces(&status);
+
+  // Trim trailing whitespace. Tabs are not trimmed.
+  const size_t last_non_space_pos = status.find_last_not_of(' ');
+  if (last_non_space_pos != base::StringPiece::npos) {
+    status.remove_suffix(status.size() - last_non_space_pos - 1);
+  }
+
+  if (status.empty()) {
+    return response_code;
+  }
+
+  CheckDoesNotHaveEmbeddedNulls(status);
+
+  append_to.push_back(' ');
+  append_to.append(status);
+  return response_code;
+}
+
 }  // namespace
 
 const char HttpResponseHeaders::kContentRange[] = "Content-Range";
@@ -158,6 +212,20 @@ struct HttpResponseHeaders::ParsedHeader {
 };
 
 //-----------------------------------------------------------------------------
+
+HttpResponseHeaders::Builder::Builder(HttpVersion version,
+                                      base::StringPiece status)
+    : version_(version), status_(status) {
+  DCHECK(version == HttpVersion(1, 0) || version == HttpVersion(1, 1) ||
+         version == HttpVersion(2, 0));
+}
+
+HttpResponseHeaders::Builder::~Builder() = default;
+
+scoped_refptr<HttpResponseHeaders> HttpResponseHeaders::Builder::Build() {
+  return base::MakeRefCounted<HttpResponseHeaders>(BuilderPassKey(), version_,
+                                                   status_, headers_);
+}
 
 HttpResponseHeaders::HttpResponseHeaders(const std::string& raw_input)
     : response_code_(-1) {
@@ -187,6 +255,93 @@ HttpResponseHeaders::HttpResponseHeaders(base::PickleIterator* iter)
   std::string raw_input;
   if (iter->ReadString(&raw_input))
     Parse(raw_input);
+}
+
+HttpResponseHeaders::HttpResponseHeaders(
+    BuilderPassKey,
+    HttpVersion version,
+    base::StringPiece status,
+    base::span<const std::pair<base::StringPiece, base::StringPiece>> headers)
+    : http_version_(version) {
+  // This must match the behaviour of Parse(). We don't use Parse() because
+  // avoiding the overhead of parsing is the point of this constructor.
+
+  std::string formatted_status;
+  formatted_status.reserve(status.size() + 1);  // ParseStatus() may add a space
+  response_code_ = ParseStatus(status, formatted_status);
+
+  // First calculate how big the output will be so that we can allocate the
+  // right amount of memory.
+  size_t expected_size = 8;  // "HTTP/x.x"
+  expected_size += formatted_status.size();
+  expected_size += 1;  // "\0"
+  size_t expected_parsed_size = 0;
+
+  // Track which headers (by index) have a comma in the value. Since bools are
+  // only 1 byte, we can afford to put 100 of them on the stack and avoid
+  // allocating more memory 99.9% of the time.
+  absl::InlinedVector<bool, 100> header_contains_comma;
+  for (const auto& [key, value] : headers) {
+    expected_size += key.size();
+    expected_size += 1;  // ":"
+    expected_size += value.size();
+    expected_size += 1;  // "\0"
+    // It's okay if we over-estimate the size of `parsed_`, so treat all ','
+    // characters as if they might split the value to avoid parsing the value
+    // carefully here.
+    const size_t comma_count = base::ranges::count(value, ',') + 1;
+    expected_parsed_size += comma_count;
+    header_contains_comma.push_back(comma_count);
+  }
+  expected_size += 1;  // "\0"
+  raw_headers_.reserve(expected_size);
+  parsed_.reserve(expected_parsed_size);
+
+  // Now fill in the output.
+  const uint16_t major = version.major_value();
+  const uint16_t minor = version.minor_value();
+  CHECK_LE(major, 9);
+  CHECK_LE(minor, 9);
+  raw_headers_.append("HTTP/");
+  raw_headers_.push_back('0' + major);
+  raw_headers_.push_back('.');
+  raw_headers_.push_back('0' + minor);
+  raw_headers_.append(formatted_status);
+  raw_headers_.push_back('\0');
+  // It is vital that `raw_headers_` iterators are not invalidated after this
+  // point.
+  const char* const data_at_start = raw_headers_.data();
+  size_t index = 0;
+  for (const auto& [key, value] : headers) {
+    CheckDoesNotHaveEmbeddedNulls(key);
+    CheckDoesNotHaveEmbeddedNulls(value);
+    // Because std::string iterators are random-access, end() has to point to
+    // the position where the next character will be appended.
+    const auto name_begin = raw_headers_.cend();
+    raw_headers_.append(key);
+    const auto name_end = raw_headers_.cend();
+    raw_headers_.push_back(':');
+    auto values_begin = raw_headers_.cend();
+    raw_headers_.append(value);
+    auto values_end = raw_headers_.cend();
+    raw_headers_.push_back('\0');
+    // The HTTP/2 standard disallows header values starting or ending with
+    // whitespace (RFC 9113 8.2.1). Hopefully the same is also true of HTTP/3.
+    // TODO(https://crbug.com/1485670): Validate that our implementations
+    // actually enforce this constraint and change this TrimLWS() to a DCHECK.
+    HttpUtil::TrimLWS(&values_begin, &values_end);
+    AddHeader(name_begin, name_end, values_begin, values_end,
+              header_contains_comma[index] ? ContainsCommas::kYes
+                                           : ContainsCommas::kNo);
+    ++index;
+  }
+  raw_headers_.push_back('\0');
+  CHECK_EQ(expected_size, raw_headers_.size());
+  CHECK_EQ(data_at_start, raw_headers_.data());
+  DCHECK_LE(parsed_.size(), expected_parsed_size);
+
+  DCHECK_EQ('\0', raw_headers_[raw_headers_.size() - 2]);
+  DCHECK_EQ('\0', raw_headers_[raw_headers_.size() - 1]);
 }
 
 scoped_refptr<HttpResponseHeaders> HttpResponseHeaders::TryToCreate(
@@ -496,7 +651,7 @@ void HttpResponseHeaders::Parse(const std::string& raw_input) {
                                     std::string(1, '\0'));
   while (headers.GetNext()) {
     AddHeader(headers.name_begin(), headers.name_end(), headers.values_begin(),
-              headers.values_end());
+              headers.values_end(), ContainsCommas::kMaybe);
   }
 
   DCHECK_EQ('\0', raw_headers_[raw_headers_.size() - 2]);
@@ -708,37 +863,8 @@ void HttpResponseHeaders::ParseStatusLine(
     return;
   }
 
-  // Skip whitespace.
-  while (p < line_end && *p == ' ')
-    ++p;
-
-  std::string::const_iterator code = p;
-  while (p < line_end && base::IsAsciiDigit(*p))
-    ++p;
-
-  if (p == code) {
-    DVLOG(1) << "missing response status number; assuming 200";
-    raw_headers_.append(" 200");
-    response_code_ = net::HTTP_OK;
-    return;
-  }
-  raw_headers_.push_back(' ');
-  raw_headers_.append(code, p);
-  base::StringToInt(base::MakeStringPiece(code, p), &response_code_);
-
-  // Skip whitespace.
-  while (p < line_end && *p == ' ')
-    ++p;
-
-  // Trim trailing whitespace.
-  while (line_end > p && line_end[-1] == ' ')
-    --line_end;
-
-  if (p == line_end)
-    return;
-
-  raw_headers_.push_back(' ');
-  raw_headers_.append(p, line_end);
+  response_code_ =
+      ParseStatus(base::MakeStringPiece(p + 1, line_end), raw_headers_);
 }
 
 size_t HttpResponseHeaders::FindHeader(size_t from,
@@ -803,11 +929,13 @@ bool HttpResponseHeaders::GetCacheControlDirective(
 void HttpResponseHeaders::AddHeader(std::string::const_iterator name_begin,
                                     std::string::const_iterator name_end,
                                     std::string::const_iterator values_begin,
-                                    std::string::const_iterator values_end) {
+                                    std::string::const_iterator values_end,
+                                    ContainsCommas contains_commas) {
   // If the header can be coalesced, then we should split it up.
   if (values_begin == values_end ||
       HttpUtil::IsNonCoalescingHeader(
-          base::MakeStringPiece(name_begin, name_end))) {
+          base::MakeStringPiece(name_begin, name_end)) ||
+      contains_commas == ContainsCommas::kNo) {
     AddToParsed(name_begin, name_end, values_begin, values_end);
   } else {
     HttpUtil::ValuesIterator it(values_begin, values_end, ',',
@@ -815,7 +943,7 @@ void HttpResponseHeaders::AddHeader(std::string::const_iterator name_begin,
     while (it.GetNext()) {
       AddToParsed(name_begin, name_end, it.value_begin(), it.value_end());
       // clobber these so that subsequent values are treated as continuations
-      name_begin = name_end = raw_headers_.end();
+      name_begin = name_end = values_end;
     }
   }
 }
@@ -1402,6 +1530,30 @@ void HttpResponseHeaders::WriteIntoTrace(perfetto::TracedValue context) const {
   perfetto::TracedDictionary dict = std::move(context).WriteDictionary();
   dict.Add("response_code", response_code_);
   dict.Add("headers", parsed_);
+}
+
+bool HttpResponseHeaders::StrictlyEquals(
+    const HttpResponseHeaders& other) const {
+  if (http_version_ != other.http_version_ ||
+      response_code_ != other.response_code_ ||
+      raw_headers_ != other.raw_headers_ ||
+      parsed_.size() != other.parsed_.size()) {
+    return false;
+  }
+
+  auto offsets_match = [&](std::string::const_iterator this_offset,
+                           std::string::const_iterator other_offset) {
+    return this_offset - raw_headers_.begin() ==
+           other_offset - other.raw_headers_.begin();
+  };
+  return std::mismatch(parsed_.begin(), parsed_.end(), other.parsed_.begin(),
+                       [&](const ParsedHeader& lhs, const ParsedHeader& rhs) {
+                         return offsets_match(lhs.name_begin, rhs.name_begin) &&
+                                offsets_match(lhs.name_end, rhs.name_end) &&
+                                offsets_match(lhs.value_begin,
+                                              rhs.value_begin) &&
+                                offsets_match(lhs.value_end, rhs.value_end);
+                       }) == std::make_pair(parsed_.end(), other.parsed_.end());
 }
 
 }  // namespace net

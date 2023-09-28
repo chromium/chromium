@@ -3285,6 +3285,7 @@ if (!is_ios) {
       "disk_cache/disk_cache_perftest.cc",
       "extras/sqlite/sqlite_persistent_cookie_store_perftest.cc",
       "socket/udp_socket_perftest.cc",
+      "spdy/spdy_http_utils_perftest.cc",
       "url_request/url_request_quic_perftest.cc",
     ]
 
@@ -3299,6 +3300,7 @@ if (!is_ios) {
       "//base/test:test_support_perf",
       "//testing/gtest",
       "//testing/perf",
+      "//third_party/google_benchmark:google_benchmark",
       "//url",
     ]
     data_deps = [
@@ -3744,6 +3746,17 @@ fuzzer_test("net_crl_set_fuzzer") {
     "//net",
   ]
   seed_corpus = "data/fuzzer_data/net_crl_set_fuzzer/"
+}
+
+fuzzer_test("net_spdy_headers_to_http_response_headers_fuzzer") {
+  sources = [ "spdy/spdy_headers_to_http_response_headers_fuzzer.cc" ]
+  deps = [
+    ":net_fuzzer_test_support",
+    "//base",
+    "//net",
+  ]
+  dict = "data/fuzzer_dictionaries/net_http_stream_parser_fuzzer.dict"
+  libfuzzer_options = [ "max_len = 512" ]
 }
 
 fuzzer_test("net_unescape_url_component_fuzzer") {

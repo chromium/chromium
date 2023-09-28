@@ -456,4 +456,12 @@ BASE_FEATURE(kPriorityHeader,
              "PriorityHeader",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSpdyHeadersToHttpResponseUseBuilder,
+             "SpdyHeadersToHttpResponseUseBuilder",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kSpdyHeadersToHttpResponseVerifyCorrectness,
+             "SpdyHeadersToHttpResponseVerifyCorrectness",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace net::features
