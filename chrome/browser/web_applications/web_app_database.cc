@@ -19,6 +19,7 @@
 #include "base/pickle.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
+#include "chrome/browser/web_applications/generated_icon_fix_util.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_version.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
@@ -898,6 +899,11 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
         syncer::TimeToProtoTime(web_app.latest_install_time()));
   }
 
+  if (web_app.generated_icon_fix().has_value()) {
+    *local_data->mutable_generated_icon_fix() =
+        web_app.generated_icon_fix().value();
+  }
+
   return local_data;
 }
 
@@ -1657,6 +1663,11 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
   } else if (local_data.has_first_install_time()) {
     web_app->SetLatestInstallTime(
         syncer::ProtoTimeToTime(local_data.first_install_time()));
+  }
+
+  if (local_data.has_generated_icon_fix() &&
+      IsGeneratedIconFixValid(local_data.generated_icon_fix())) {
+    web_app->SetGeneratedIconFix(local_data.generated_icon_fix());
   }
 
   return web_app;

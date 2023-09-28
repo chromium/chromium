@@ -13,9 +13,11 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
+#include "chrome/browser/web_applications/proto/web_app.pb.h"
 #include "chrome/browser/web_applications/scope_extension_info.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
@@ -395,6 +397,10 @@ struct WebAppInstallInfo {
 
   // Used to specify the version of an Isolated Web App that is being installed.
   base::Version isolated_web_app_version;
+
+  // Bookkeeping details about attempts to fix broken icons from sync installed
+  // web apps.
+  absl::optional<GeneratedIconFix> generated_icon_fix;
 
  private:
   // Used this method in Clone() method. Use Clone() to deep copy explicitly.

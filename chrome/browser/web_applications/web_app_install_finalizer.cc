@@ -261,6 +261,10 @@ void WebAppInstallFinalizer::OnOriginAssociationValidated(
   web_app->SetIsFromSyncAndPendingInstallation(false);
   web_app->SetLatestInstallSource(options.install_surface);
 
+  if (!web_app->generated_icon_fix().has_value()) {
+    web_app->SetGeneratedIconFix(web_app_info.generated_icon_fix);
+  }
+
   WriteExternalConfigMapInfo(
       *web_app, options.source, web_app_info.is_placeholder,
       web_app_info.install_url, web_app_info.additional_policy_ids);

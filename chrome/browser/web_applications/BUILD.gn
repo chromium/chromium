@@ -69,6 +69,8 @@ source_set("web_applications") {
     "file_utils_wrapper.h",
     "generated_icon_fix_manager.cc",
     "generated_icon_fix_manager.h",
+    "generated_icon_fix_util.cc",
+    "generated_icon_fix_util.h",
     "install_bounce_metric.cc",
     "install_bounce_metric.h",
     "isolated_web_apps/error/uma_logging.cc",

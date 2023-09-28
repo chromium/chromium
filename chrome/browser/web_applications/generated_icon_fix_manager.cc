@@ -18,8 +18,6 @@ namespace web_app {
 
 namespace {
 
-constexpr base::TimeDelta kFixWindowDuration = base::Days(7);
-
 bool IsEnabled() {
   return base::FeatureList::IsEnabled(
       features::kWebAppSyncGeneratedIconBackgroundFix);

@@ -19,6 +19,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom-forward.h"
+#include "chrome/browser/web_applications/proto/web_app.pb.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
 #include "chrome/browser/web_applications/scope_extension_info.h"
 #include "chrome/browser/web_applications/web_app_chromeos_data.h"
@@ -415,6 +416,8 @@ class WebApp {
 
   const base::Time& latest_install_time() const { return latest_install_time_; }
 
+  const absl::optional<GeneratedIconFix>& generated_icon_fix() const;
+
   // A Web App can be installed from multiple sources simultaneously. Installs
   // add a source to the app. Uninstalls remove a source from the app.
   void AddSource(WebAppManagement::Type source);
@@ -537,6 +540,8 @@ class WebApp {
 
   void SetLatestInstallTime(const base::Time& latest_install_time);
 
+  void SetGeneratedIconFix(absl::optional<GeneratedIconFix> generated_icon_fix);
+
   // For logging and debug purposes.
   bool operator==(const WebApp&) const;
   bool operator!=(const WebApp&) const;
@@ -651,6 +656,8 @@ class WebApp {
 
   base::Time latest_install_time_;
 
+  absl::optional<GeneratedIconFix> generated_icon_fix_;
+
   // New fields must be added to:
   //  - |operator==|
   //  - AsDebugValue()
@@ -664,7 +671,7 @@ class WebApp {
   //  - GetManifestDataChanges() inside manifest_update_utils.h
   //  - SetWebAppManifestFields()
   // If the field relates to the app icons, add revert logic for it in:
-  // - ManifestUpdateCheckCommand::RevertAppIconChanges()
+  // - ManifestUpdateCheckCommand::RevertIdentityChangesIfNeeded()
 };
 
 // For logging and debug purposes.

@@ -31,6 +31,8 @@ enum class GeneratedIconFixScheduleDecision {
 
 class GeneratedIconFixManager {
  public:
+  static constexpr base::TimeDelta kFixWindowDuration = base::Days(7);
+
   GeneratedIconFixManager();
   ~GeneratedIconFixManager();
 
