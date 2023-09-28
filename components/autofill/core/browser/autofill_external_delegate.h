@@ -32,7 +32,7 @@ class AutofillDriver;
 class BrowserAutofillManager;
 class CreditCard;
 
-// TODO(csharp): A lot of the logic in this class is copied from autofillagent.
+// TODO(csharp): A lot of the logic in this class is copied from AutofillAgent.
 // Once Autofill is moved out of WebKit this class should be the only home for
 // this logic. See http://crbug.com/51644
 
@@ -98,14 +98,17 @@ class AutofillExternalDelegate : public AutofillPopupDelegate,
       AutofillSuggestionTriggerSource trigger_source,
       bool is_all_server_suggestions = false);
 
-  // Returns the last targeted server field types to be filled. This is used
-  // by group filling to keep users in the same granularity level by filtering
-  // out fields that do not match the last targeted fields group granularity.
-  // For example, if users choose to fill every address field, we will store
-  // these fields so that in a next iteration, when the user clicks, say a name
-  // field only fields that are of group name are filled, therefore staying at a
-  // group filling level.
-  absl::optional<ServerFieldTypeSet> GetLastServerFieldTypesToFillForSection(
+  // Returns the last targeted field types to be filled. This does not
+  // equate to the field types that were actually filed, but only to those
+  // that were targeted. If a field type is not present on the form that
+  // triggered the suggestions, it cannot possibly be filled.
+  // This is used by group filling to keep users in the same granularity level
+  // by filtering out fields that do not match the last targeted fields group
+  // granularity. For example, if users choose to fill every address field, we
+  // will store these fields so that in a next iteration, when the user clicks,
+  // say a name field only fields that are of group name are filled, therefore
+  // staying at a group filling level.
+  absl::optional<ServerFieldTypeSet> GetLastFieldTypesToFillForSection(
       const Section& section) const;
 
   // Returns true if there is a screen reader installed on the machine.
@@ -155,6 +158,11 @@ class AutofillExternalDelegate : public AutofillPopupDelegate,
   // Called when a credit card is scanned using device camera.
   void OnCreditCardScanned(const AutofillTriggerSource trigger_source,
                            const CreditCard& card);
+
+  // Returns the last Autofill triggering field. Derived from the `form` and
+  // `field` parameters of `OnQuery(). Returns nullptr if called before
+  // `OnQuery()` or if the `form` becomes outdated, see crbug.com/1117028.
+  AutofillField* GetQueriedAutofillField() const;
 
   // Fills the form field with the given plus address.
   // Called when a plus address is created.

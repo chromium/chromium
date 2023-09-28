@@ -2837,7 +2837,7 @@ std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
   address_form_event_logger_->OnDidPollSuggestions(field,
                                                    signin_state_for_metrics_);
   absl::optional<ServerFieldTypeSet> last_address_fields_to_fill_for_section =
-      external_delegate_->GetLastServerFieldTypesToFillForSection(
+      external_delegate_->GetLastFieldTypesToFillForSection(
           autofill_field.section);
   // Getting the filling-relevant fields so that suggestions are based only on
   // those fields. Function BrowserAutofillManager::GetFieldFillingSkipReasons

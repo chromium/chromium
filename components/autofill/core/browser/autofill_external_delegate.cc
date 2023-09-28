@@ -137,6 +137,10 @@ void AutofillExternalDelegate::OnQuery(const FormData& form,
       manager_->ShouldShowCardsFromAccountOption(query_form_, query_field_);
 }
 
+AutofillField* AutofillExternalDelegate::GetQueriedAutofillField() const {
+  return manager_->GetAutofillField(query_form_, query_field_);
+}
+
 void AutofillExternalDelegate::OnSuggestionsReturned(
     FieldGlobalId field_id,
     const std::vector<Suggestion>& input_suggestions,
@@ -199,7 +203,7 @@ void AutofillExternalDelegate::OnSuggestionsReturned(
 }
 
 absl::optional<ServerFieldTypeSet>
-AutofillExternalDelegate::GetLastServerFieldTypesToFillForSection(
+AutofillExternalDelegate::GetLastFieldTypesToFillForSection(
     const Section& section) const {
   if (auto it =
           last_field_types_to_fill_for_address_form_section_.find(section);
@@ -366,8 +370,15 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
           query_field_.global_id(), suggestion.main_text.value);
       break;
     case PopupItemId::kFieldByFieldFilling:
-      manager_->driver().RendererShouldFillFieldWithValue(
-          query_field_.global_id(), suggestion.main_text.value);
+      if (AutofillField* autofill_trigger_field = GetQueriedAutofillField()) {
+        // We target only the triggering field type in the
+        // PopupItemId::kFieldByFieldFilling case.
+        last_field_types_to_fill_for_address_form_section_
+            [autofill_trigger_field->section] = {
+                autofill_trigger_field->Type().GetStorableType()};
+        manager_->driver().RendererShouldFillFieldWithValue(
+            query_field_.global_id(), suggestion.main_text.value);
+      }
       break;
     case PopupItemId::kIbanEntry:
       // User selected an IBAN suggestion, and we should fill the unmasked IBAN
@@ -614,6 +625,25 @@ void AutofillExternalDelegate::FillAutofillFormData(
   // If the selected element is a warning we don't want to do anything.
   if (IsAutofillWarningEntry(popup_item_id)) {
     return;
+  }
+
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillGranularFillingAvailable)) {
+    // Only address suggestions store the last field types to
+    // fill. This is because this is the only use case where filling
+    // granularies need to be persisted.
+    static constexpr auto kAutofillAddressSuggestions =
+        base::MakeFixedFlatSet<PopupItemId>(
+            {PopupItemId::kAddressEntry, PopupItemId::kFillFullAddress,
+             PopupItemId::kFillFullPhoneNumber, PopupItemId::kFillFullName,
+             PopupItemId::kFillEverythingFromAddressProfile});
+    AutofillField* autofill_trigger_field = GetQueriedAutofillField();
+    if (autofill_trigger_field &&
+        kAutofillAddressSuggestions.contains(popup_item_id) && !is_preview) {
+      last_field_types_to_fill_for_address_form_section_[autofill_trigger_field
+                                                             ->section] =
+          trigger_details.field_types_to_fill;
+    }
   }
 
   mojom::AutofillActionPersistence action_persistence =

@@ -104,6 +104,7 @@ FormData GetFormData(const FormDescription& d) {
     ff.host_frame = dd.host_frame.value_or(f.host_frame);
     ff.unique_renderer_id =
         dd.unique_renderer_id.value_or(MakeFieldRendererId());
+    ff.host_form_id = f.unique_renderer_id;
     ff.is_focusable = dd.is_focusable;
     ff.is_visible = dd.is_visible;
     if (!dd.autocomplete_attribute.empty()) {
