@@ -10,6 +10,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/android/tab_android_user_data.h"
 #include "chrome/browser/profiles/profile.h"
 
@@ -102,7 +103,7 @@ class PersistedTabDataAndroid
   struct DeferredRequest {
     DeferredRequest();
     ~DeferredRequest();
-    raw_ptr<TabAndroid> tab_android;
+    base::WeakPtr<TabAndroid> tab_android;
     raw_ptr<const void> user_data_key;
     SupplierCallback supplier_callback;
     FromCallback from_callback;

@@ -177,6 +177,7 @@ class TabAndroid : public base::SupportsUserData {
   // tabs exist (such as on FRE), which should never happen. If it is called
   // then, a nullptr will be returned and must be handled accordingly.
   std::unique_ptr<WebContentsStateByteBuffer> GetWebContentsByteBuffer();
+  base::WeakPtr<TabAndroid> GetWeakPtr();
 
  private:
   JavaObjectWeakGlobalRef weak_java_tab_;
@@ -196,6 +197,7 @@ class TabAndroid : public base::SupportsUserData {
   base::ObserverList<Observer> observers_;
 
   const base::WeakPtr<Profile> profile_;
+  base::WeakPtrFactory<TabAndroid> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_ANDROID_TAB_ANDROID_H_
