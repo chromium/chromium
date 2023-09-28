@@ -77,7 +77,7 @@ class AudioSourceFetcherImpl
   void OnProcessingStateChanged(const std::string& message) override;
 
   // The output callback for ConvertingAudioFifo.
-  void OnAudioFinishedConvert(media::AudioBus* output_bus);
+  void OnAudioFinishedConvert(const media::AudioBus* output_bus);
 
   void set_audio_capturer_source_for_tests(
       media::AudioCapturerSource* audio_capturer_source_for_tests) {
@@ -98,6 +98,8 @@ class AudioSourceFetcherImpl
   void SendAudioEndToSpeechRecognitionService();
 
   media::AudioCapturerSource* GetAudioCapturerSource();
+
+  void DrainConverterOutput();
 
   // Sends audio to the speech recognition recognizer.
   SendAudioToSpeechRecognitionServiceCallback send_audio_callback_;

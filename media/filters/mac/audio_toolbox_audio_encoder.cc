@@ -166,10 +166,7 @@ void AudioToolboxAudioEncoder::Initialize(const Options& options,
 
   // `fifo_` will rebuffer frames to have kAacFramesPerBuffer, and remix to the
   // right number of channels if needed. `fifo_` should not resample any data.
-  fifo_ = std::make_unique<ConvertingAudioFifo>(
-      fifo_params, fifo_params,
-      base::BindRepeating(&AudioToolboxAudioEncoder::DoEncode,
-                          base::Unretained(this)));
+  fifo_ = std::make_unique<ConvertingAudioFifo>(fifo_params, fifo_params);
 
   timestamp_helper_ = std::make_unique<AudioTimestampHelper>(sample_rate_);
   output_cb_ = output_cb;
@@ -194,6 +191,7 @@ void AudioToolboxAudioEncoder::Encode(std::unique_ptr<AudioBus> input_bus,
 
   // This might synchronously call DoEncode().
   fifo_->Push(std::move(input_bus));
+  DrainFifoOutput();
 
   if (current_done_cb_) {
     // If |current_donc_cb_| is null, DoEncode() has already reported an error.
@@ -220,6 +218,7 @@ void AudioToolboxAudioEncoder::Flush(EncoderStatusCB flush_cb) {
 
   // Feed remaining data to the encoder. This might call DoEncode().
   fifo_->Flush();
+  DrainFifoOutput();
 
   // Send an EOS to the encoder.
   DoEncode(nullptr);
@@ -309,7 +308,14 @@ bool AudioToolboxAudioEncoder::CreateEncoder(
   return true;
 }
 
-void AudioToolboxAudioEncoder::DoEncode(AudioBus* input_bus) {
+void AudioToolboxAudioEncoder::DrainFifoOutput() {
+  while (fifo_->HasOutput()) {
+    DoEncode(fifo_->PeekOutput());
+    fifo_->PopOutput();
+  }
+}
+
+void AudioToolboxAudioEncoder::DoEncode(const AudioBus* input_bus) {
   bool is_flushing = !input_bus;
 
   InputData input_data;

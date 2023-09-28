@@ -113,10 +113,7 @@ void AudioSourceFetcherImpl::Start(
     // Bind to current loop to ensure the `ConvertingAudioFifo::OutputCallback`
     // and `ConvertingAudioFifo::Push` to be called on same thread.
     converter_ = std::make_unique<media::ConvertingAudioFifo>(
-        audio_parameters_, server_based_recognition_params_.value(),
-        /*output_callback=*/
-        base::BindRepeating(&AudioSourceFetcherImpl::OnAudioFinishedConvert,
-                            weak_factory_.GetWeakPtr()));
+        audio_parameters_, server_based_recognition_params_.value());
     resample_callback_ = base::BindPostTaskToCurrentDefault(
         base::BindRepeating(&AudioSourceFetcherImpl::SendAudioToResample,
                             weak_factory_.GetWeakPtr()));
@@ -144,6 +141,13 @@ void AudioSourceFetcherImpl::Start(
 #endif
 }
 
+void AudioSourceFetcherImpl::DrainConverterOutput() {
+  while (converter_->HasOutput()) {
+    OnAudioFinishedConvert(converter_->PeekOutput());
+    converter_->PopOutput();
+  }
+}
+
 void AudioSourceFetcherImpl::Stop() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -155,6 +159,7 @@ void AudioSourceFetcherImpl::Stop() {
   if (converter_) {
     // If converter is not null, flush remaining frames.
     converter_->Flush();
+    DrainConverterOutput();
     converter_.reset();
   }
   send_audio_callback_.Reset();
@@ -205,6 +210,7 @@ void AudioSourceFetcherImpl::SendAudioToResample(
     std::unique_ptr<media::AudioBus> audio_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   converter_->Push(std::move(audio_data));
+  DrainConverterOutput();
 }
 
 media::AudioCapturerSource* AudioSourceFetcherImpl::GetAudioCapturerSource() {
@@ -243,7 +249,7 @@ void AudioSourceFetcherImpl::OnProcessingStateChanged(
 }
 
 void AudioSourceFetcherImpl::OnAudioFinishedConvert(
-    media::AudioBus* output_bus) {
+    const media::AudioBus* output_bus) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(output_bus && send_audio_callback_);
   send_audio_callback_.Run(ConvertToAudioDataS16(

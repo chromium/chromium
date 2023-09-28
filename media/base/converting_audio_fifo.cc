@@ -4,7 +4,11 @@
 
 #include "media/base/converting_audio_fifo.h"
 
+#include <memory>
+
+#include "base/metrics/histogram_functions.h"
 #include "media/base/audio_bus.h"
+#include "media/base/audio_bus_pool.h"
 #include "media/base/audio_converter.h"
 #include "media/base/channel_mixer.h"
 
@@ -12,10 +16,8 @@ namespace media {
 
 ConvertingAudioFifo::ConvertingAudioFifo(
     const AudioParameters& input_params,
-    const AudioParameters& converted_params,
-    ConvertingAudioFifo::OuputCallback output_callback)
-    : output_callback_(std::move(output_callback)),
-      input_params_(input_params),
+    const AudioParameters& converted_params)
+    : input_params_(input_params),
       converted_params_(converted_params),
       converter_(std::make_unique<AudioConverter>(input_params,
                                                   converted_params,
@@ -25,13 +27,23 @@ ConvertingAudioFifo::ConvertingAudioFifo(
   min_input_frames_needed_ = converter_->GetMaxInputFramesRequested(
       converted_params_.frames_per_buffer());
 
-  converted_audio_bus_ = AudioBus::Create(
-      converted_params_.channels(), converted_params_.frames_per_buffer());
+  // A single buffer can be enough for many encodes.
+  constexpr int kPreallocated = 1;
+
+  // Save at most half second's worth of data.
+  // This should be 24kB per channel for a 48kHz stream
+  const int kMaxSize = std::ceil(converted_params_.sample_rate() * 0.5 /
+                                 converted_params_.frames_per_buffer());
+  output_pool_ = std::make_unique<AudioBusPoolImpl>(converted_params_,
+                                                    kPreallocated, kMaxSize);
 }
 
 ConvertingAudioFifo::~ConvertingAudioFifo() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   converter_->RemoveInput(this);
+  base::UmaHistogramCounts100(
+      "Media.Audio.ConvertingAudioFifo.MaxOutputQueueSize",
+      max_output_queue_size_);
 }
 
 void ConvertingAudioFifo::Push(std::unique_ptr<AudioBus> input_bus) {
@@ -42,8 +54,9 @@ void ConvertingAudioFifo::Push(std::unique_ptr<AudioBus> input_bus) {
   inputs_.emplace_back(EnsureExpectedChannelCount(std::move(input_bus)));
 
   // Immediately convert frames if we have enough.
-  while (total_frames_ >= min_input_frames_needed_)
+  while (total_frames_ >= min_input_frames_needed_) {
     Convert();
+  }
 }
 
 void ConvertingAudioFifo::Convert() {
@@ -53,8 +66,13 @@ void ConvertingAudioFifo::Convert() {
       << "total_frames_=" << total_frames_
       << ",min_input_frames_needed_=" << min_input_frames_needed_
       << ",is_flushing_=" << is_flushing_;
-  converter_->Convert(converted_audio_bus_.get());
-  output_callback_.Run(converted_audio_bus_.get());
+
+  auto output_dest = output_pool_->GetAudioBus();
+  converter_->Convert(output_dest.get());
+  pending_outputs_.push_back(std::move(output_dest));
+
+  max_output_queue_size_ =
+      std::max(max_output_queue_size_, pending_outputs_.size());
 }
 
 void ConvertingAudioFifo::Flush() {
@@ -62,8 +80,9 @@ void ConvertingAudioFifo::Flush() {
   is_flushing_ = true;
 
   // Convert all remaining frames.
-  while (total_frames_)
+  while (total_frames_) {
     Convert();
+  }
 
   converter_->Reset();
   converter_->PrimeWithSilence();
@@ -147,6 +166,24 @@ std::unique_ptr<AudioBus> ConvertingAudioFifo::EnsureExpectedChannelCount(
   mixer_->Transform(audio_bus.get(), mixed_bus.get());
 
   return mixed_bus;
+}
+
+bool ConvertingAudioFifo::HasOutput() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return !pending_outputs_.empty();
+}
+
+const AudioBus* ConvertingAudioFifo::PeekOutput() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(HasOutput());
+  return pending_outputs_.front().get();
+}
+
+void ConvertingAudioFifo::PopOutput() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(HasOutput());
+  output_pool_->InsertAudioBus(std::move(pending_outputs_.front()));
+  pending_outputs_.pop_front();
 }
 
 }  // namespace media

@@ -4,15 +4,8 @@
 
 #include "media/base/converting_audio_fifo.h"
 
-#include <stdint.h>
 #include <memory>
 
-#include "base/logging.h"
-
-#include "base/functional/callback_helpers.h"
-#include "base/location.h"
-#include "base/test/bind.h"
-#include "base/time/time.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_parameters.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -57,16 +50,25 @@ class ConvertingAudioFifoTest
                            output_sample_rate(), output_frames());
   }
 
-  void CreateFifo(AudioParameters output_params) {
+  void CreateFifo(const AudioParameters& output_params) {
     DCHECK(!fifo_);
-    fifo_ = std::make_unique<ConvertingAudioFifo>(
-        kDefaultParams, output_params, VerifyOutputCallback(output_params));
+    fifo_ =
+        std::make_unique<ConvertingAudioFifo>(kDefaultParams, output_params);
+    output_params_ = output_params;
   }
 
   void PushFrames(int frames, int channels = kDefaultChannels) {
     DCHECK(frames);
     DCHECK(channels);
     fifo_->Push(AudioBus::Create(channels, frames));
+  }
+
+  void PushFramesWithValue(AudioParameters params, float value) {
+    auto audio_bus = AudioBus::Create(params);
+    float* channel = audio_bus->channel(0);
+    for (int i = 0; i < audio_bus->frames(); ++i) {
+      channel[i] = value;
+    }
   }
 
   int min_number_input_frames_needed() {
@@ -80,6 +82,16 @@ class ConvertingAudioFifoTest
     return fifo_.get();
   }
 
+  void DrainAndVerifyOutputs() {
+    while (fifo_->HasOutput()) {
+      ++number_outputs_;
+      auto* output = fifo_->PeekOutput();
+      EXPECT_EQ(output->frames(), output_params_.frames_per_buffer());
+      EXPECT_EQ(output->channels(), output_params_.channels());
+      fifo_->PopOutput();
+    }
+  }
+
   int number_outputs() { return number_outputs_; }
 
  private:
@@ -87,15 +99,7 @@ class ConvertingAudioFifoTest
   int output_sample_rate() { return std::get<1>(GetParam()); }
   int output_frames() { return std::get<2>(GetParam()); }
 
-  ConvertingAudioFifo::OuputCallback VerifyOutputCallback(
-      AudioParameters expected_params) {
-    return base::BindLambdaForTesting(
-        [this, expected_params](AudioBus* audio_bus) {
-          EXPECT_EQ(audio_bus->frames(), expected_params.frames_per_buffer());
-          EXPECT_EQ(audio_bus->channels(), expected_params.channels());
-          ++number_outputs_;
-        });
-  }
+  AudioParameters output_params_;
 
   int number_outputs_ = 0;
   std::unique_ptr<ConvertingAudioFifo> fifo_;
@@ -105,7 +109,7 @@ class ConvertingAudioFifoTest
 TEST_F(ConvertingAudioFifoTest, Construct) {
   CreateFifo(kDefaultParams);
   EXPECT_EQ(0, current_frames_in_fifo());
-  EXPECT_EQ(0, number_outputs());
+  EXPECT_FALSE(fifo()->HasOutput());
 }
 
 // Verify that flushing an empty FIFO is a noop.
@@ -114,7 +118,7 @@ TEST_F(ConvertingAudioFifoTest, EmptyFlush) {
 
   fifo()->Flush();
   EXPECT_EQ(0, current_frames_in_fifo());
-  EXPECT_EQ(0, number_outputs());
+  EXPECT_FALSE(fifo()->HasOutput());
 }
 
 // Verify that the fifo can be flushed .
@@ -123,10 +127,11 @@ TEST_F(ConvertingAudioFifoTest, PushFlush) {
 
   // Push a single frame so the flush won't be a no-op.
   PushFrames(1);
-  EXPECT_EQ(0, number_outputs());
+  EXPECT_FALSE(fifo()->HasOutput());
   EXPECT_EQ(1, current_frames_in_fifo());
 
   fifo()->Flush();
+  DrainAndVerifyOutputs();
   EXPECT_EQ(1, number_outputs());
   EXPECT_EQ(0, current_frames_in_fifo());
 }
@@ -137,12 +142,15 @@ TEST_F(ConvertingAudioFifoTest, PushFlushFlush) {
 
   // Push a single frame so the flush won't be a no-op.
   PushFrames(1);
+  DrainAndVerifyOutputs();
   EXPECT_EQ(0, number_outputs());
 
   fifo()->Flush();
+  DrainAndVerifyOutputs();
   EXPECT_EQ(1, number_outputs());
 
   fifo()->Flush();
+  DrainAndVerifyOutputs();
   EXPECT_EQ(1, number_outputs());
 }
 
@@ -152,13 +160,16 @@ TEST_P(ConvertingAudioFifoTest, PushFlushTwice) {
 
   // Push a single frame so the flush won't be a no-op.
   PushFrames(1);
+  DrainAndVerifyOutputs();
   EXPECT_EQ(0, number_outputs());
 
   fifo()->Flush();
+  DrainAndVerifyOutputs();
   EXPECT_EQ(1, number_outputs());
 
   PushFrames(1);
   fifo()->Flush();
+  DrainAndVerifyOutputs();
   EXPECT_EQ(2, number_outputs());
 }
 
@@ -177,12 +188,14 @@ TEST_P(ConvertingAudioFifoTest, Push_NotEnoughFrames) {
          min_number_input_frames_needed()) {
     PushFrames(frames_to_push);
     total_frames_pushed += frames_to_push;
+    DrainAndVerifyOutputs();
     EXPECT_EQ(0, number_outputs());
     EXPECT_EQ(current_frames_in_fifo(), total_frames_pushed);
   }
 
   // One more push should be enough for a conversion.
   PushFrames(frames_to_push);
+  DrainAndVerifyOutputs();
   EXPECT_EQ(1, number_outputs());
 
   EXPECT_LT(current_frames_in_fifo(), min_number_input_frames_needed());
@@ -197,6 +210,7 @@ TEST_P(ConvertingAudioFifoTest, Push_EnoughFrames) {
 
   // Push enough frames to trigger an single output.
   PushFrames(min_number_input_frames_needed());
+  DrainAndVerifyOutputs();
   EXPECT_EQ(1, number_outputs());
 }
 
@@ -206,10 +220,64 @@ TEST_P(ConvertingAudioFifoTest, Push_MoreThanEnoughFrames) {
 
   // Push enough frames to trigger multiple outputs.
   PushFrames(min_number_input_frames_needed() * 5);
+  DrainAndVerifyOutputs();
   EXPECT_GE(number_outputs(), 5);
 
   // There should not be enough frames leftover to create a new output.
   EXPECT_LT(current_frames_in_fifo(), min_number_input_frames_needed());
+}
+
+// Verify we can partially drain the fifo before pushing more data.
+TEST_P(ConvertingAudioFifoTest, Push_MoreThanEnoughFrames_PartialDrain) {
+  CreateFifo(TestOutputParams());
+
+  // Push enough frames to trigger multiple outputs.
+  PushFrames(min_number_input_frames_needed() * 3);
+  EXPECT_TRUE(fifo()->HasOutput());
+
+  // Partially drain the fifo.
+  fifo()->PopOutput();
+  fifo()->PopOutput();
+
+  EXPECT_TRUE(fifo()->HasOutput());
+
+  // Push more frames.
+  PushFrames(min_number_input_frames_needed() * 3);
+
+  // Partially drain the fifo.
+  fifo()->PopOutput();
+  fifo()->PopOutput();
+  EXPECT_TRUE(fifo()->HasOutput());
+
+  // For good measure, flush any remaining output.
+  fifo()->Flush();
+
+  DrainAndVerifyOutputs();
+
+  EXPECT_FALSE(fifo()->HasOutput());
+}
+
+// Verify that the FIFO returns outputs in FIFO order.
+TEST_F(ConvertingAudioFifoTest, Push_MoreThanEnoughFrames_IsFifoOrder) {
+  // Do not perform any conversion, as to preserve the values pushed in.
+  CreateFifo(kDefaultParams);
+
+  // Push data with increasing values.
+  PushFramesWithValue(kDefaultParams, 0.0);
+  PushFramesWithValue(kDefaultParams, 0.25);
+  PushFramesWithValue(kDefaultParams, 0.5);
+  PushFramesWithValue(kDefaultParams, 0.75);
+
+  float last_value = -1.0;
+
+  // Drain the FIFO, making sure output values are increasing.
+  while (fifo()->HasOutput()) {
+    // Get the first value of the output.
+    auto* output = fifo()->PeekOutput();
+    float current_value = output->channel(0)[0];
+    EXPECT_GT(current_value, last_value);
+    last_value = current_value;
+  }
 }
 
 // Verify that the fifo can handle variable numbers of input frames.
@@ -220,10 +288,12 @@ TEST_P(ConvertingAudioFifoTest, Push_VaryingFrames) {
   constexpr int kFrameVariations[] = {-3, 13, -10, 18};
 
   // Push a varying amount of frames into |fifo_|.
-  for (const int& variation : kFrameVariations)
+  for (const int& variation : kFrameVariations) {
     PushFrames(base_frame_count + variation);
+  }
 
   // We should still get one output.
+  DrainAndVerifyOutputs();
   EXPECT_EQ(1, number_outputs());
 }
 
@@ -236,11 +306,13 @@ TEST_P(ConvertingAudioFifoTest, Push_VaryingChannels) {
   const int kChannelCountSequence[] = {1, 2, 3, 1, 2, 2, 1, 3, 2, 1};
 
   // Push frames with variable channels into |fifo_|.
-  for (const int& channels : kChannelCountSequence)
+  for (const int& channels : kChannelCountSequence) {
     PushFrames(kDefaultFrames, channels);
+  }
 
   // Flush to make sure we consume the frames.
   fifo()->Flush();
+  DrainAndVerifyOutputs();
   EXPECT_GT(number_outputs(), 1);
 }
 
