@@ -72,8 +72,14 @@ BASE_FEATURE(kTangibleSync,
 
 );
 
+// Enables the search engine choice feature for existing users.
 BASE_FEATURE(kSearchEngineChoice,
              "SearchEngineChoice",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables the search engine choice feature in the FRE.
+BASE_FEATURE(kSearchEngineChoiceFre,
+             "SearchEngineChoiceFre",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kUnoDesktop, "UnoDesktop", base::FEATURE_DISABLED_BY_DEFAULT);

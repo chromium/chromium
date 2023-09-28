@@ -57,6 +57,8 @@ BASE_DECLARE_FEATURE(kTangibleSync);
 
 BASE_DECLARE_FEATURE(kSearchEngineChoice);
 
+BASE_DECLARE_FEATURE(kSearchEngineChoiceFre);
+
 // Used to experiment and validate the UNO model on Desktop. Not meant to be
 // launched to stable for the moment, while it's still in a prototype state.
 BASE_DECLARE_FEATURE(kUnoDesktop);
