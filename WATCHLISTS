@@ -710,6 +710,7 @@
                   '|manta'\
                   '|optimization_guide'\
                   '|optimization_hints'\
+                  '|services/on_device_model'\
                   '|third_party/eigen3'\
                   '|third_party/farmhash'\
                   '|third_party/fft2d'\
