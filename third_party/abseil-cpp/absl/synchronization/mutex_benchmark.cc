@@ -34,6 +34,34 @@ void BM_Mutex(benchmark::State& state) {
 }
 BENCHMARK(BM_Mutex)->UseRealTime()->Threads(1)->ThreadPerCpu();
 
+void BM_ReaderLock(benchmark::State& state) {
+  static absl::Mutex* mu = new absl::Mutex;
+  for (auto _ : state) {
+    absl::ReaderMutexLock lock(mu);
+  }
+}
+BENCHMARK(BM_ReaderLock)->UseRealTime()->Threads(1)->ThreadPerCpu();
+
+void BM_TryLock(benchmark::State& state) {
+  absl::Mutex mu;
+  for (auto _ : state) {
+    if (mu.TryLock()) {
+      mu.Unlock();
+    }
+  }
+}
+BENCHMARK(BM_TryLock);
+
+void BM_ReaderTryLock(benchmark::State& state) {
+  static absl::Mutex* mu = new absl::Mutex;
+  for (auto _ : state) {
+    if (mu->ReaderTryLock()) {
+      mu->ReaderUnlock();
+    }
+  }
+}
+BENCHMARK(BM_ReaderTryLock)->UseRealTime()->Threads(1)->ThreadPerCpu();
+
 static void DelayNs(int64_t ns, int* data) {
   int64_t end = absl::base_internal::CycleClock::Now() +
                 ns * absl::base_internal::CycleClock::Frequency() / 1e9;

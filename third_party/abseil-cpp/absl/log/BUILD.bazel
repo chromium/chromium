@@ -550,7 +550,6 @@ cc_test(
         "//absl/base:strerror",
         "//absl/flags:program_name",
         "//absl/log/internal:test_helpers",
-        "//absl/status",
         "//absl/strings",
         "//absl/strings:str_format",
         "@com_google_googletest//:gtest_main",

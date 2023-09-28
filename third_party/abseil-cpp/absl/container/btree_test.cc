@@ -76,16 +76,6 @@ void CheckPairEquals(const std::pair<T, U> &x, const std::pair<V, W> &y) {
   CheckPairEquals(x.first, y.first);
   CheckPairEquals(x.second, y.second);
 }
-
-bool IsAssertEnabled() {
-  // Use an assert with side-effects to figure out if they are actually enabled.
-  bool assert_enabled = false;
-  assert([&]() {  // NOLINT
-    assert_enabled = true;
-    return true;
-  }());
-  return assert_enabled;
-}
 }  // namespace
 
 // The base class for a sorted associative container checker. TreeType is the
@@ -667,96 +657,6 @@ void BtreeMultiTest() {
   DoTest("identical: ", &container, identical_values);
 }
 
-// TODO(ezb): get rid of BtreeAllocatorTest and replace with test cases using
-// specific propagating allocs (e.g. CopyAssignPropagatingCountingAlloc) and
-// also a test for MinimumAlignmentAlloc. Motivation is better test coverage and
-// faster compilation time.
-template <typename T>
-void BtreeAllocatorTest() {
-  using value_type = typename T::value_type;
-
-  int64_t bytes1 = 0, bytes2 = 0;
-  PropagatingCountingAlloc<T> allocator1(&bytes1);
-  PropagatingCountingAlloc<T> allocator2(&bytes2);
-  Generator<value_type> generator(1000);
-
-  // Test that we allocate properly aligned memory. If we don't, then Layout
-  // will assert fail.
-  auto unused1 = allocator1.allocate(1);
-  auto unused2 = allocator2.allocate(1);
-
-  // Test copy assignment
-  {
-    T b1(typename T::key_compare(), allocator1);
-    T b2(typename T::key_compare(), allocator2);
-
-    int64_t original_bytes1 = bytes1;
-    b1.insert(generator(0));
-    EXPECT_GT(bytes1, original_bytes1);
-
-    // This should propagate the allocator.
-    b1 = b2;
-    EXPECT_EQ(b1.size(), 0);
-    EXPECT_EQ(b2.size(), 0);
-    EXPECT_EQ(bytes1, original_bytes1);
-
-    for (int i = 1; i < 1000; i++) {
-      b1.insert(generator(i));
-    }
-
-    // We should have allocated out of allocator2.
-    EXPECT_GT(bytes2, bytes1);
-  }
-
-  // Test move assignment
-  {
-    T b1(typename T::key_compare(), allocator1);
-    T b2(typename T::key_compare(), allocator2);
-
-    int64_t original_bytes1 = bytes1;
-    b1.insert(generator(0));
-    EXPECT_GT(bytes1, original_bytes1);
-
-    // This should propagate the allocator.
-    b1 = std::move(b2);
-    EXPECT_EQ(b1.size(), 0);
-    EXPECT_EQ(bytes1, original_bytes1);
-
-    for (int i = 1; i < 1000; i++) {
-      b1.insert(generator(i));
-    }
-
-    // We should have allocated out of allocator2.
-    EXPECT_GT(bytes2, bytes1);
-  }
-
-  // Test swap
-  {
-    T b1(typename T::key_compare(), allocator1);
-    T b2(typename T::key_compare(), allocator2);
-
-    int64_t original_bytes1 = bytes1;
-    b1.insert(generator(0));
-    EXPECT_GT(bytes1, original_bytes1);
-
-    // This should swap the allocators.
-    swap(b1, b2);
-    EXPECT_EQ(b1.size(), 0);
-    EXPECT_EQ(b2.size(), 1);
-    EXPECT_GT(bytes1, original_bytes1);
-
-    for (int i = 1; i < 1000; i++) {
-      b1.insert(generator(i));
-    }
-
-    // We should have allocated out of allocator2.
-    EXPECT_GT(bytes2, bytes1);
-  }
-
-  allocator1.deallocate(unused1, 1);
-  allocator2.deallocate(unused2, 1);
-}
-
 template <typename T>
 void BtreeMapTest() {
   using value_type = typename T::value_type;
@@ -796,10 +696,7 @@ void SetTest() {
       sizeof(absl::btree_set<K>),
       2 * sizeof(void *) + sizeof(typename absl::btree_set<K>::size_type));
   using BtreeSet = absl::btree_set<K>;
-  using CountingBtreeSet =
-      absl::btree_set<K, std::less<K>, PropagatingCountingAlloc<K>>;
   BtreeTest<BtreeSet, std::set<K>>();
-  BtreeAllocatorTest<CountingBtreeSet>();
 }
 
 template <typename K, int N = 256>
@@ -808,24 +705,16 @@ void MapTest() {
       sizeof(absl::btree_map<K, K>),
       2 * sizeof(void *) + sizeof(typename absl::btree_map<K, K>::size_type));
   using BtreeMap = absl::btree_map<K, K>;
-  using CountingBtreeMap =
-      absl::btree_map<K, K, std::less<K>,
-                      PropagatingCountingAlloc<std::pair<const K, K>>>;
   BtreeTest<BtreeMap, std::map<K, K>>();
-  BtreeAllocatorTest<CountingBtreeMap>();
   BtreeMapTest<BtreeMap>();
 }
 
 TEST(Btree, set_int32) { SetTest<int32_t>(); }
-TEST(Btree, set_int64) { SetTest<int64_t>(); }
 TEST(Btree, set_string) { SetTest<std::string>(); }
 TEST(Btree, set_cord) { SetTest<absl::Cord>(); }
-TEST(Btree, set_pair) { SetTest<std::pair<int, int>>(); }
 TEST(Btree, map_int32) { MapTest<int32_t>(); }
-TEST(Btree, map_int64) { MapTest<int64_t>(); }
 TEST(Btree, map_string) { MapTest<std::string>(); }
 TEST(Btree, map_cord) { MapTest<absl::Cord>(); }
-TEST(Btree, map_pair) { MapTest<std::pair<int, int>>(); }
 
 template <typename K, int N = 256>
 void MultiSetTest() {
@@ -833,10 +722,7 @@ void MultiSetTest() {
       sizeof(absl::btree_multiset<K>),
       2 * sizeof(void *) + sizeof(typename absl::btree_multiset<K>::size_type));
   using BtreeMSet = absl::btree_multiset<K>;
-  using CountingBtreeMSet =
-      absl::btree_multiset<K, std::less<K>, PropagatingCountingAlloc<K>>;
   BtreeMultiTest<BtreeMSet, std::multiset<K>>();
-  BtreeAllocatorTest<CountingBtreeMSet>();
 }
 
 template <typename K, int N = 256>
@@ -845,24 +731,16 @@ void MultiMapTest() {
             2 * sizeof(void *) +
                 sizeof(typename absl::btree_multimap<K, K>::size_type));
   using BtreeMMap = absl::btree_multimap<K, K>;
-  using CountingBtreeMMap =
-      absl::btree_multimap<K, K, std::less<K>,
-                           PropagatingCountingAlloc<std::pair<const K, K>>>;
   BtreeMultiTest<BtreeMMap, std::multimap<K, K>>();
   BtreeMultiMapTest<BtreeMMap>();
-  BtreeAllocatorTest<CountingBtreeMMap>();
 }
 
 TEST(Btree, multiset_int32) { MultiSetTest<int32_t>(); }
-TEST(Btree, multiset_int64) { MultiSetTest<int64_t>(); }
 TEST(Btree, multiset_string) { MultiSetTest<std::string>(); }
 TEST(Btree, multiset_cord) { MultiSetTest<absl::Cord>(); }
-TEST(Btree, multiset_pair) { MultiSetTest<std::pair<int, int>>(); }
 TEST(Btree, multimap_int32) { MultiMapTest<int32_t>(); }
-TEST(Btree, multimap_int64) { MultiMapTest<int64_t>(); }
 TEST(Btree, multimap_string) { MultiMapTest<std::string>(); }
 TEST(Btree, multimap_cord) { MultiMapTest<absl::Cord>(); }
-TEST(Btree, multimap_pair) { MultiMapTest<std::pair<int, int>>(); }
 
 struct CompareIntToString {
   bool operator()(const std::string &a, const std::string &b) const {
@@ -2511,50 +2389,23 @@ TEST(Btree, TryEmplaceWithHintAndMultipleValueArgsWorks) {
   EXPECT_EQ(std::string(10, 'a'), m[1]);
 }
 
-TEST(Btree, MoveAssignmentAllocatorPropagation) {
-  InstanceTracker tracker;
+template <typename Alloc>
+using BtreeSetAlloc = absl::btree_set<int, std::less<int>, Alloc>;
 
-  int64_t bytes1 = 0, bytes2 = 0;
-  MoveAssignPropagatingCountingAlloc<MovableOnlyInstance> allocator1(&bytes1);
-  MoveAssignPropagatingCountingAlloc<MovableOnlyInstance> allocator2(&bytes2);
-  std::less<MovableOnlyInstance> cmp;
+TEST(Btree, AllocatorPropagation) {
+  TestAllocPropagation<BtreeSetAlloc>();
+}
 
-  // Test propagating allocator_type.
-  {
-    absl::btree_set<MovableOnlyInstance, std::less<MovableOnlyInstance>,
-                    MoveAssignPropagatingCountingAlloc<MovableOnlyInstance>>
-        set1(cmp, allocator1), set2(cmp, allocator2);
+TEST(Btree, MinimumAlignmentAllocator) {
+  absl::btree_set<int8_t, std::less<int8_t>, MinimumAlignmentAlloc<int8_t>> set;
 
-    for (int i = 0; i < 100; ++i) set1.insert(MovableOnlyInstance(i));
+  // Do some basic operations. Test that everything is fine when allocator uses
+  // minimal alignment.
+  for (int8_t i = 0; i < 100; ++i) set.insert(i);
+  set.erase(set.find(50), set.end());
+  for (int8_t i = 51; i < 101; ++i) set.insert(i);
 
-    tracker.ResetCopiesMovesSwaps();
-    set2 = std::move(set1);
-    EXPECT_EQ(tracker.moves(), 0);
-  }
-  // Test non-propagating allocator_type with equal allocators.
-  {
-    absl::btree_set<MovableOnlyInstance, std::less<MovableOnlyInstance>,
-                    CountingAllocator<MovableOnlyInstance>>
-        set1(cmp, allocator1), set2(cmp, allocator1);
-
-    for (int i = 0; i < 100; ++i) set1.insert(MovableOnlyInstance(i));
-
-    tracker.ResetCopiesMovesSwaps();
-    set2 = std::move(set1);
-    EXPECT_EQ(tracker.moves(), 0);
-  }
-  // Test non-propagating allocator_type with different allocators.
-  {
-    absl::btree_set<MovableOnlyInstance, std::less<MovableOnlyInstance>,
-                    CountingAllocator<MovableOnlyInstance>>
-        set1(cmp, allocator1), set2(cmp, allocator2);
-
-    for (int i = 0; i < 100; ++i) set1.insert(MovableOnlyInstance(i));
-
-    tracker.ResetCopiesMovesSwaps();
-    set2 = std::move(set1);
-    EXPECT_GE(tracker.moves(), 100);
-  }
+  EXPECT_EQ(set.size(), 100);
 }
 
 TEST(Btree, EmptyTree) {

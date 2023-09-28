@@ -137,6 +137,7 @@ set(ABSL_INTERNAL_DLL_FILES
   "functional/function_ref.h"
   "functional/internal/any_invocable.h"
   "functional/internal/function_ref.h"
+  "functional/overload.h"
   "hash/hash.h"
   "hash/internal/city.h"
   "hash/internal/city.cc"

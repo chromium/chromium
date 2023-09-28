@@ -70,6 +70,7 @@ cc_test(
         ":status",
         "//absl/strings",
         "//absl/strings:cord",
+        "//absl/strings:str_format",
         "@com_google_googletest//:gtest_main",
     ],
 )

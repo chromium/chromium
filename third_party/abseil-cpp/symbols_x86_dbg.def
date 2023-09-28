@@ -2962,6 +2962,7 @@ EXPORTS
     ?ReadSeedMaterialFromOSEntropy@random_internal@absl@@YA_NV?$Span@I@2@@Z
     ?ReaderLock@Mutex@absl@@QAEXXZ
     ?ReaderTryLock@Mutex@absl@@QAE_NXZ
+    ?ReaderTryLockSlow@Mutex@absl@@AAE_NXZ
     ?ReaderUnlock@Mutex@absl@@QAEXXZ
     ?Rebuild@CordRepBtree@cord_internal@absl@@CAXPAPAV123@PAV123@_N@Z
     ?Rebuild@CordRepBtree@cord_internal@absl@@SAPAV123@PAV123@@Z
@@ -3266,6 +3267,7 @@ EXPORTS
     ?TryLock@Mutex@absl@@QAE_NXZ
     ?TryLockImpl@SpinLock@base_internal@absl@@AAE_NXZ
     ?TryLockInternal@SpinLock@base_internal@absl@@AAEIII@Z
+    ?TryLockSlow@Mutex@absl@@AAE_NXZ
     ?TryNewCRC32AcceleratedX86ARMCombined@crc_internal@absl@@YAPAVCRCImpl@12@XZ
     ?TryRemove@Mutex@absl@@AAEXPAUPerThreadSynch@base_internal@2@@Z
     ?UTC@Impl@time_zone@cctz@time_internal@absl@@SA?AV2345@XZ

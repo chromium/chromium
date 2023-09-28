@@ -33,7 +33,7 @@
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 // Log messages at this severity or above are sent to stderr in *addition* to
-// logfiles.  Defaults to `ERROR`.  See log_severity.h for numeric values of
+// `LogSink`s.  Defaults to `ERROR`.  See log_severity.h for numeric values of
 // severity levels.
 ABSL_DECLARE_FLAG(int, stderrthreshold);
 

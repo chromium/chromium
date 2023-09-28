@@ -636,6 +636,9 @@ CRCImpl* TryNewCRC32AcceleratedX86ARMCombined() {
     case CpuType::kArmNeoverseN1:
       return new CRC32AcceleratedX86ARMCombinedMultipleStreams<
           1, 1, CutoffStrategy::Unroll64CRC>();
+    case CpuType::kAmpereSiryn:
+      return new CRC32AcceleratedX86ARMCombinedMultipleStreams<
+          3, 2, CutoffStrategy::Fold3>();
 #if defined(__aarch64__)
     default:
       // Not all ARM processors support the needed instructions, so check here

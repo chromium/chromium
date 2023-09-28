@@ -41,6 +41,7 @@ absl_test("status_test") {
     ":status",
     "//third_party/abseil-cpp/absl/strings",
     "//third_party/abseil-cpp/absl/strings:cord",
+    "//third_party/abseil-cpp/absl/strings:str_format",
   ]
 }
 

@@ -157,6 +157,9 @@ size_t GetEstimatedUsage(const CordRep* rep) {
   // Consume the top level CRC node if present.
   if (repref.rep->tag == CRC) {
     raw_usage.Add(sizeof(CordRepCrc), repref);
+    if (repref.rep->crc()->child == nullptr) {
+      return static_cast<size_t>(raw_usage.total);
+    }
     repref = repref.Child(repref.rep->crc()->child);
   }
 

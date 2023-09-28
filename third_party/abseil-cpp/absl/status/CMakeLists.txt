@@ -56,6 +56,7 @@ absl_cc_test(
     ${ABSL_TEST_COPTS}
   DEPS
     absl::status
+    absl::str_format
     absl::strings
     GTest::gmock_main
 )

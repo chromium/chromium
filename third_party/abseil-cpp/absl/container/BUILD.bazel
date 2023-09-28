@@ -142,10 +142,13 @@ cc_library(
     name = "test_allocator",
     testonly = 1,
     hdrs = ["internal/test_allocator.h"],
-    copts = ABSL_DEFAULT_COPTS,
+    copts = ABSL_TEST_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
     visibility = ["//visibility:private"],
-    deps = ["//absl/base:config"],
+    deps = [
+        "//absl/base:config",
+        "@com_google_googletest//:gtest",
+    ],
 )
 
 cc_test(

@@ -1200,13 +1200,17 @@ inline void AssertIsFull(const ctrl_t* ctrl, GenerationType generation,
                          const GenerationType* generation_ptr,
                          const char* operation) {
   if (!SwisstableDebugEnabled()) return;
-  if (ctrl == nullptr) {
-    ABSL_INTERNAL_LOG(FATAL,
-                      std::string(operation) + " called on end() iterator.");
+  // `SwisstableDebugEnabled()` is also true for release builds with hardening
+  // enabled. To minimize their impact in those builds:
+  // - use `ABSL_PREDICT_FALSE()` to provide a compiler hint for code layout
+  // - use `ABSL_RAW_LOG()` with a format string to reduce code size and improve
+  //   the chances that the hot paths will be inlined.
+  if (ABSL_PREDICT_FALSE(ctrl == nullptr)) {
+    ABSL_RAW_LOG(FATAL, "%s called on end() iterator.", operation);
   }
-  if (ctrl == EmptyGroup()) {
-    ABSL_INTERNAL_LOG(FATAL, std::string(operation) +
-                                 " called on default-constructed iterator.");
+  if (ABSL_PREDICT_FALSE(ctrl == EmptyGroup())) {
+    ABSL_RAW_LOG(FATAL, "%s called on default-constructed iterator.",
+                 operation);
   }
   if (SwisstableGenerationsEnabled()) {
     if (generation != *generation_ptr) {
@@ -1222,13 +1226,13 @@ inline void AssertIsFull(const ctrl_t* ctrl, GenerationType generation,
               " called on invalid iterator. The element was likely erased.");
     }
   } else {
-    if (!IsFull(*ctrl)) {
-      ABSL_INTERNAL_LOG(
+    if (ABSL_PREDICT_FALSE(!IsFull(*ctrl))) {
+      ABSL_RAW_LOG(
           FATAL,
-          std::string(operation) +
-              " called on invalid iterator. The element might have been erased "
-              "or the table might have rehashed. Consider running with "
-              "--config=asan to diagnose rehashing issues.");
+          "%s called on invalid iterator. The element might have been erased "
+          "or the table might have rehashed. Consider running with "
+          "--config=asan to diagnose rehashing issues.",
+          operation);
     }
   }
 }
@@ -1287,10 +1291,15 @@ inline void AssertSameContainer(const ctrl_t* ctrl_a, const ctrl_t* ctrl_b,
                                 const GenerationType* generation_ptr_a,
                                 const GenerationType* generation_ptr_b) {
   if (!SwisstableDebugEnabled()) return;
+  // `SwisstableDebugEnabled()` is also true for release builds with hardening
+  // enabled. To minimize their impact in those builds:
+  // - use `ABSL_PREDICT_FALSE()` to provide a compiler hint for code layout
+  // - use `ABSL_RAW_LOG()` with a format string to reduce code size and improve
+  //   the chances that the hot paths will be inlined.
   const bool a_is_default = ctrl_a == EmptyGroup();
   const bool b_is_default = ctrl_b == EmptyGroup();
-  if (a_is_default != b_is_default) {
-    ABSL_INTERNAL_LOG(
+  if (ABSL_PREDICT_FALSE(a_is_default != b_is_default)) {
+    ABSL_RAW_LOG(
         FATAL,
         "Invalid iterator comparison. Comparing default-constructed iterator "
         "with non-default-constructed iterator.");

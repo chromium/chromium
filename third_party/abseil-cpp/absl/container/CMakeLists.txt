@@ -211,6 +211,7 @@ absl_cc_library(
     ${ABSL_DEFAULT_COPTS}
   DEPS
     absl::config
+    GTest::gmock
 )
 
 absl_cc_test(

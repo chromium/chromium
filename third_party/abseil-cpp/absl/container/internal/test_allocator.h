@@ -15,11 +15,13 @@
 #ifndef ABSL_CONTAINER_INTERNAL_TEST_ALLOCATOR_H_
 #define ABSL_CONTAINER_INTERNAL_TEST_ALLOCATOR_H_
 
+#include <cassert>
 #include <cstddef>
 #include <cstdint>
 #include <memory>
 #include <type_traits>
 
+#include "gtest/gtest.h"
 #include "absl/base/config.h"
 
 namespace absl {
@@ -171,25 +173,6 @@ struct SwapPropagatingCountingAlloc : public CountingAllocator<T> {
   };
 };
 
-template <typename T>
-struct PropagatingCountingAlloc : public CountingAllocator<T> {
-  using propagate_on_container_copy_assignment = std::true_type;
-  using propagate_on_container_move_assignment = std::true_type;
-  using propagate_on_container_swap = std::true_type;
-
-  using Base = CountingAllocator<T>;
-  using Base::Base;
-
-  template <typename U>
-  explicit PropagatingCountingAlloc(const PropagatingCountingAlloc<U> &other)
-      : Base(other.bytes_used_, other.instance_count_) {}
-
-  template <typename U>
-  struct rebind {
-    using other = PropagatingCountingAlloc<U>;
-  };
-};
-
 // Tries to allocate memory at the minimum alignment even when the default
 // allocator uses a higher alignment.
 template <typename T>
@@ -217,6 +200,185 @@ struct MinimumAlignmentAlloc : std::allocator<T> {
     std::allocator<T>::deallocate(reinterpret_cast<T*>(cptr), n + 1);
   }
 };
+
+inline bool IsAssertEnabled() {
+  // Use an assert with side-effects to figure out if they are actually enabled.
+  bool assert_enabled = false;
+  assert([&]() {  // NOLINT
+    assert_enabled = true;
+    return true;
+  }());
+  return assert_enabled;
+}
+
+template <template <class Alloc> class Container>
+void TestCopyAssignAllocPropagation() {
+  int64_t bytes1 = 0, instances1 = 0, bytes2 = 0, instances2 = 0;
+  CopyAssignPropagatingCountingAlloc<int> allocator1(&bytes1, &instances1);
+  CopyAssignPropagatingCountingAlloc<int> allocator2(&bytes2, &instances2);
+
+  // Test propagating allocator_type.
+  {
+    Container<CopyAssignPropagatingCountingAlloc<int>> c1(allocator1);
+    Container<CopyAssignPropagatingCountingAlloc<int>> c2(allocator2);
+
+    for (int i = 0; i < 100; ++i) c1.insert(i);
+
+    EXPECT_NE(c2.get_allocator(), allocator1);
+    EXPECT_EQ(instances1, 100);
+    EXPECT_EQ(instances2, 0);
+
+    c2 = c1;
+
+    EXPECT_EQ(c2.get_allocator(), allocator1);
+    EXPECT_EQ(instances1, 200);
+    EXPECT_EQ(instances2, 0);
+  }
+  // Test non-propagating allocator_type with different allocators.
+  {
+    Container<CountingAllocator<int>> c1(allocator1), c2(allocator2);
+
+    for (int i = 0; i < 100; ++i) c1.insert(i);
+
+    EXPECT_EQ(c2.get_allocator(), allocator2);
+    EXPECT_EQ(instances1, 100);
+    EXPECT_EQ(instances2, 0);
+
+    c2 = c1;
+
+    EXPECT_EQ(c2.get_allocator(), allocator2);
+    EXPECT_EQ(instances1, 100);
+    EXPECT_EQ(instances2, 100);
+  }
+  EXPECT_EQ(bytes1, 0);
+  EXPECT_EQ(instances1, 0);
+  EXPECT_EQ(bytes2, 0);
+  EXPECT_EQ(instances2, 0);
+}
+
+template <template <class Alloc> class Container>
+void TestMoveAssignAllocPropagation() {
+  int64_t bytes1 = 0, instances1 = 0, bytes2 = 0, instances2 = 0;
+  MoveAssignPropagatingCountingAlloc<int> allocator1(&bytes1, &instances1);
+  MoveAssignPropagatingCountingAlloc<int> allocator2(&bytes2, &instances2);
+
+  // Test propagating allocator_type.
+  {
+    Container<MoveAssignPropagatingCountingAlloc<int>> c1(allocator1);
+    Container<MoveAssignPropagatingCountingAlloc<int>> c2(allocator2);
+
+    for (int i = 0; i < 100; ++i) c1.insert(i);
+
+    EXPECT_NE(c2.get_allocator(), allocator1);
+    EXPECT_EQ(instances1, 100);
+    EXPECT_EQ(instances2, 0);
+
+    c2 = std::move(c1);
+
+    EXPECT_EQ(c2.get_allocator(), allocator1);
+    EXPECT_EQ(instances1, 100);
+    EXPECT_EQ(instances2, 0);
+  }
+  // Test non-propagating allocator_type with equal allocators.
+  {
+    Container<CountingAllocator<int>> c1(allocator1), c2(allocator1);
+
+    for (int i = 0; i < 100; ++i) c1.insert(i);
+
+    EXPECT_EQ(c2.get_allocator(), allocator1);
+    EXPECT_EQ(instances1, 100);
+    EXPECT_EQ(instances2, 0);
+
+    c2 = std::move(c1);
+
+    EXPECT_EQ(c2.get_allocator(), allocator1);
+    EXPECT_EQ(instances1, 100);
+    EXPECT_EQ(instances2, 0);
+  }
+  // Test non-propagating allocator_type with different allocators.
+  {
+    Container<CountingAllocator<int>> c1(allocator1), c2(allocator2);
+
+    for (int i = 0; i < 100; ++i) c1.insert(i);
+
+    EXPECT_NE(c2.get_allocator(), allocator1);
+    EXPECT_EQ(instances1, 100);
+    EXPECT_EQ(instances2, 0);
+
+    c2 = std::move(c1);
+
+    EXPECT_EQ(c2.get_allocator(), allocator2);
+    EXPECT_LE(instances1, 100);  // The values in c1 may or may not have been
+                                 // destroyed at this point.
+    EXPECT_EQ(instances2, 100);
+  }
+  EXPECT_EQ(bytes1, 0);
+  EXPECT_EQ(instances1, 0);
+  EXPECT_EQ(bytes2, 0);
+  EXPECT_EQ(instances2, 0);
+}
+
+template <template <class Alloc> class Container>
+void TestSwapAllocPropagation() {
+  int64_t bytes1 = 0, instances1 = 0, bytes2 = 0, instances2 = 0;
+  SwapPropagatingCountingAlloc<int> allocator1(&bytes1, &instances1);
+  SwapPropagatingCountingAlloc<int> allocator2(&bytes2, &instances2);
+
+  // Test propagating allocator_type.
+  {
+    Container<SwapPropagatingCountingAlloc<int>> c1(allocator1), c2(allocator2);
+
+    for (int i = 0; i < 100; ++i) c1.insert(i);
+
+    EXPECT_NE(c2.get_allocator(), allocator1);
+    EXPECT_EQ(instances1, 100);
+    EXPECT_EQ(instances2, 0);
+
+    c2.swap(c1);
+
+    EXPECT_EQ(c2.get_allocator(), allocator1);
+    EXPECT_EQ(instances1, 100);
+    EXPECT_EQ(instances2, 0);
+  }
+  // Test non-propagating allocator_type with equal allocators.
+  {
+    Container<CountingAllocator<int>> c1(allocator1), c2(allocator1);
+
+    for (int i = 0; i < 100; ++i) c1.insert(i);
+
+    EXPECT_EQ(c2.get_allocator(), allocator1);
+    EXPECT_EQ(instances1, 100);
+    EXPECT_EQ(instances2, 0);
+
+    c2.swap(c1);
+
+    EXPECT_EQ(c2.get_allocator(), allocator1);
+    EXPECT_EQ(instances1, 100);
+    EXPECT_EQ(instances2, 0);
+  }
+  // Test non-propagating allocator_type with different allocators.
+  {
+    Container<CountingAllocator<int>> c1(allocator1), c2(allocator2);
+
+    for (int i = 0; i < 100; ++i) c1.insert(i);
+
+    EXPECT_NE(c1.get_allocator(), c2.get_allocator());
+    if (IsAssertEnabled()) {
+      EXPECT_DEATH(c2.swap(c1), "");
+    }
+  }
+  EXPECT_EQ(bytes1, 0);
+  EXPECT_EQ(instances1, 0);
+  EXPECT_EQ(bytes2, 0);
+  EXPECT_EQ(instances2, 0);
+}
+
+template <template <class Alloc> class Container>
+void TestAllocPropagation() {
+  TestCopyAssignAllocPropagation<Container>();
+  TestMoveAssignAllocPropagation<Container>();
+  TestSwapAllocPropagation<Container>();
+}
 
 }  // namespace container_internal
 ABSL_NAMESPACE_END

@@ -225,8 +225,8 @@ inline void V128_Store(V128* dst, V128 data) {
 
 // Using inline assembly as clang does not generate the pmull2 instruction and
 // performance drops by 15-20%.
-// TODO(b/193678732): Investigate why the compiler decides not to generate
-// such instructions and why it becomes so much worse.
+// TODO(b/193678732): Investigate why there is a slight performance hit when
+// using intrinsics instead of inline assembly.
 inline V128 V128_PMulHi(const V128 l, const V128 r) {
   uint64x2_t res;
   __asm__ __volatile__("pmull2 %0.1q, %1.2d, %2.2d \n\t"
@@ -235,10 +235,14 @@ inline V128 V128_PMulHi(const V128 l, const V128 r) {
   return res;
 }
 
+// TODO(b/193678732): Investigate why the compiler decides to move the constant
+// loop multiplicands from GPR to Neon registers every loop iteration.
 inline V128 V128_PMulLow(const V128 l, const V128 r) {
-  return reinterpret_cast<V128>(vmull_p64(
-      reinterpret_cast<poly64_t>(vget_low_p64(vreinterpretq_p64_u64(l))),
-      reinterpret_cast<poly64_t>(vget_low_p64(vreinterpretq_p64_u64(r)))));
+  uint64x2_t res;
+  __asm__ __volatile__("pmull %0.1q, %1.1d, %2.1d \n\t"
+                       : "=w"(res)
+                       : "w"(l), "w"(r));
+  return res;
 }
 
 inline V128 V128_PMul01(const V128 l, const V128 r) {

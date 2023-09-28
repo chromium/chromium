@@ -62,3 +62,22 @@ absl_test("function_ref_test") {
     "//third_party/abseil-cpp/absl/memory",
   ]
 }
+
+absl_source_set("overload") {
+  public = [ "overload.h" ]
+  deps = [
+    "//third_party/abseil-cpp/absl/base:config",
+    "//third_party/abseil-cpp/absl/meta:type_traits",
+  ]
+}
+
+absl_test("overload_test") {
+  sources = [ "overload_test.cc" ]
+  deps = [
+    ":overload",
+    "//third_party/abseil-cpp/absl/base:config",
+    "//third_party/abseil-cpp/absl/strings",
+    "//third_party/abseil-cpp/absl/strings:string_view",
+    "//third_party/abseil-cpp/absl/types:variant",
+  ]
+}

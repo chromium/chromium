@@ -61,15 +61,18 @@ absl_source_set("inlined_vector") {
 absl_source_set("test_allocator") {
   testonly = true
   public = [ "internal/test_allocator.h" ]
-  deps = [ "//third_party/abseil-cpp/absl/base:config" ]
+  deps = [
+    "//third_party/abseil-cpp/absl/base:config",
+    "//third_party/googletest:gtest",
+  ]
   visibility = [ ":*" ]
 }
 
 absl_test("inlined_vector_test") {
   sources = [ "inlined_vector_test.cc" ]
   deps = [
-    ":test_allocator",
     ":inlined_vector",
+    ":test_allocator",
     ":test_instance_tracker",
     "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/base:core_headers",

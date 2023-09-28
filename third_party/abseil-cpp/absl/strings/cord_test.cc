@@ -3240,6 +3240,12 @@ TEST_P(CordTest, ChecksummedEmptyCord) {
   EXPECT_EQ(absl::HashOf(c3), absl::HashOf(absl::string_view()));
 }
 
+TEST(CrcCordTest, ChecksummedEmptyCordEstimateMemoryUsage) {
+  absl::Cord cord;
+  cord.SetExpectedChecksum(0);
+  EXPECT_NE(cord.EstimatedMemoryUsage(), 0);
+}
+
 #if defined(GTEST_HAS_DEATH_TEST) && defined(ABSL_INTERNAL_CORD_HAVE_SANITIZER)
 
 // Returns an expected poison / uninitialized death message expression.

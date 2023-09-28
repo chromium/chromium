@@ -1020,7 +1020,6 @@ absl_cc_test(
     absl::log
     absl::log_internal_test_helpers
     absl::log_severity
-    absl::status
     absl::strerror
     absl::strings
     absl::str_format

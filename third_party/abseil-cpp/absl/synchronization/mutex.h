@@ -521,6 +521,10 @@ class ABSL_LOCKABLE Mutex {
                 int flags) ABSL_ATTRIBUTE_COLD;
   // slow path release
   void UnlockSlow(SynchWaitParams* waitp) ABSL_ATTRIBUTE_COLD;
+  // TryLock slow path.
+  bool TryLockSlow();
+  // ReaderTryLock slow path.
+  bool ReaderTryLockSlow();
   // Common code between Await() and AwaitWithTimeout/Deadline()
   bool AwaitCommon(const Condition& cond,
                    synchronization_internal::KernelTimeout t);

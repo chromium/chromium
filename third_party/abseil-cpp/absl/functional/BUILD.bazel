@@ -113,6 +113,32 @@ cc_test(
     ],
 )
 
+cc_library(
+    name = "overload",
+    hdrs = ["overload.h"],
+    copts = ABSL_DEFAULT_COPTS,
+    linkopts = ABSL_DEFAULT_LINKOPTS,
+    deps = [
+        "//absl/base:config",
+        "//absl/meta:type_traits",
+    ],
+)
+
+cc_test(
+    name = "overload_test",
+    size = "small",
+    srcs = ["overload_test.cc"],
+    copts = ABSL_TEST_COPTS,
+    deps = [
+        ":overload",
+        "//absl/base:config",
+        "//absl/strings",
+        "//absl/strings:string_view",
+        "//absl/types:variant",
+        "@com_google_googletest//:gtest_main",
+    ],
+)
+
 cc_test(
     name = "function_type_benchmark",
     srcs = [
