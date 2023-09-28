@@ -1239,7 +1239,6 @@
       'fuchsia-fyi-x64-dbg': 'debug_bot_fuchsia_reclient',
       'fuchsia-fyi-x64-dbg-persistent-emulator': 'debug_bot_fuchsia_reclient',
       'fuchsia-x64-cast-receiver-rel': 'release_trybot_fuchsia_cast_receiver_reclient',
-      'fuchsia-x64-cast-receiver-siso-rel': 'release_trybot_fuchsia_cast_receiver_reclient',
       'fuchsia-x64-chrome-rel': 'release_trybot_fuchsia_chrome_reclient',
       'fuchsia-x64-rel': 'release_trybot_fuchsia_reclient',
       'fuchsia-x64-workstation': 'release_trybot_fuchsia_chrome',

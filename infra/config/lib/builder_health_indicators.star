@@ -624,8 +624,6 @@ _exempted_from_contact_builders = {
         "fuchsia-x64-accessibility-rel",
         "fuchsia-x64-cast-receiver-rel",
         "fuchsia-x64-cast-receiver-rel-compilator",
-        "fuchsia-x64-cast-receiver-siso-rel",
-        "fuchsia-x64-cast-receiver-siso-rel-compilator",
         "fuchsia-x64-rel",
         "gpu-fyi-cq-android-arm64",
         "gpu-fyi-try-android-m-nexus-5x-64",

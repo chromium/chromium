@@ -628,9 +628,6 @@ as required builders.
   * [`//tools/clang/scripts/update.py`](https://cs.chromium.org/search?q=+file:tools/clang/scripts/update.py)
   * [`//ui/gl/features.gni`](https://cs.chromium.org/search?q=+file:ui/gl/features.gni)
 
-* [fuchsia-x64-cast-receiver-siso-rel](https://ci.chromium.org/p/chromium/builders/try/fuchsia-x64-cast-receiver-siso-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""fuchsia-x64-cast-receiver-siso-rel""))
-  * Experiment percentage: 20.0
-
 * [ios-simulator-siso](https://ci.chromium.org/p/chromium/builders/try/ios-simulator-siso) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""ios-simulator-siso""))
   * Experiment percentage: 10.0
 

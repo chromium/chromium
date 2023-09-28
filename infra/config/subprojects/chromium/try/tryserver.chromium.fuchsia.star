@@ -170,37 +170,6 @@ try_.compilator_builder(
     siso_enabled = True,
 )
 
-try_.orchestrator_builder(
-    name = "fuchsia-x64-cast-receiver-siso-rel",
-    description_html = """\
-This builder shadows fuchsia-x64-cast-receiver-rel builder to compare between Siso builds and Ninja builds.<br/>
-This builder should be removed after migrating fuchsia-x64-cast-receiver-rel from Ninja to Siso. b/277863839
-""",
-    mirrors = builder_config.copy_from("try/fuchsia-x64-cast-receiver-rel"),
-    try_settings = builder_config.try_settings(
-        is_compile_only = True,
-    ),
-    compilator = "fuchsia-x64-cast-receiver-siso-rel-compilator",
-    coverage_test_types = ["unit", "overall"],
-    experiments = {
-        "enable_weetbix_queries": 100,
-        "weetbix.retry_weak_exonerations": 100,
-        "weetbix.enable_weetbix_exonerations": 100,
-    },
-    main_list_view = "try",
-    tryjob = try_.job(
-        experiment_percentage = 20,
-    ),
-    use_clang_coverage = True,
-)
-
-try_.compilator_builder(
-    name = "fuchsia-x64-cast-receiver-siso-rel-compilator",
-    ssd = True,
-    main_list_view = "try",
-    siso_enabled = True,
-)
-
 try_.builder(
     name = "fuchsia-x64-rel",
     branch_selector = branches.selector.FUCHSIA_BRANCHES,
