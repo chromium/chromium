@@ -12,7 +12,7 @@
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
 
-// Similar to a scoped_refptr for GObject types.
+// Similar to a std::shared_ptr for GObject types.
 template <typename T>
 class ScopedGObject {
  public:
@@ -28,32 +28,24 @@ class ScopedGObject {
     other.obj_ = nullptr;
   }
 
-  ~ScopedGObject() { Reset(); }
+  ~ScopedGObject() { Unref(); }
 
   ScopedGObject<T>& operator=(const ScopedGObject<T>& other) {
-    Reset();
+    Unref();
     obj_ = other.obj_;
     Ref();
     return *this;
   }
 
   ScopedGObject<T>& operator=(ScopedGObject<T>&& other) {
-    Reset();
+    Unref();
     obj_ = other.obj_;
     other.obj_ = nullptr;
     return *this;
   }
 
-  void Reset() {
-    if (obj_) {
-      g_object_unref(obj_.ExtractAsDangling());
-    }
-  }
-
   T* get() { return obj_; }
 
-  // Deliberately implicit to allow easier interaction with C APIs.
-  // NOLINTNEXTLINE(google-explicit-constructor)
   operator T*() { return obj_; }
 
  private:
@@ -66,15 +58,22 @@ class ScopedGObject {
 
   void RefSink() {
     // Remove the floating reference from |obj_| if it has one.
-    if (obj_ && g_object_is_floating(obj_)) {
+    if (obj_ && g_object_is_floating(obj_))
       g_object_ref_sink(obj_);
-    }
   }
 
   void Ref() {
     if (obj_) {
       DCHECK(!g_object_is_floating(obj_));
       g_object_ref(obj_);
+    }
+  }
+
+  // This function is necessary so that gtk can overload it in
+  // the case of T = GtkStyleContext.
+  void Unref() {
+    if (obj_) {
+      g_object_unref(obj_.ExtractAsDangling());
     }
   }
 

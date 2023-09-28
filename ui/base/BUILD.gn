@@ -594,8 +594,6 @@ component("base") {
       "glib/glib_integers.h",
       "glib/glib_signal.h",
       "glib/scoped_gobject.h",
-      "glib/scoped_gsignal.cc",
-      "glib/scoped_gsignal.h",
     ]
   }
 
@@ -1300,10 +1298,6 @@ test("ui_base_unittests") {
   # If the platform supports wayland, run wayland library unittests, too.
   if (is_chromeos_ash || ozone_platform_wayland) {
     deps += [ "//ui/base/wayland:unittests" ]
-  }
-
-  if (use_glib) {
-    sources += [ "glib/scoped_gsignal_unittest.cc" ]
   }
 }
 
