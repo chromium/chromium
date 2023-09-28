@@ -57,6 +57,8 @@ _IGNORE_WARNINGS = (
     r'OnBackAnimationCallback',
     # We enforce that this class is removed via -checkdiscard.
     r'FastServiceLoader\.class:.*Could not inline ServiceLoader\.load',
+    # We are following up in b/290389974
+    r'AppSearchDocumentClassMap\.class:.*Could not inline ServiceLoader\.load',
 )
 
 _BLOCKLISTED_EXPECTATION_PATHS = [
