@@ -41,7 +41,7 @@ def __parse_rewrapper_cmdline(ctx, cmd):
     return cmd.args[wrapped_command_pos:], cfg_file, True
 
 # TODO(b/278225415): change gn so this wrapper (and by extension this handler) becomes unnecessary.
-def __rewrite_clang_code_coverage_wrapper(ctx, cmd):
+def __parse_clang_code_coverage_wrapper_cmdline(ctx, cmd):
     # Example command:
     #   python3
     #     ../../build/toolchain/clang_code_coverage_wrapper.py
@@ -78,22 +78,18 @@ def __rewrite_clang_code_coverage_wrapper(ctx, cmd):
         fail("couldn't find rewrapper cfg file in %s" % str(cmd.args))
     coverage_wrapper_command = cmd.args[:rewrapper_pos] + cmd.args[wrapped_command_pos:]
     clang_command = clang_code_coverage_wrapper.run(ctx, list(coverage_wrapper_command))
-
-    ctx.actions.fix(
-        args = clang_command,
-        reproxy_config = json.encode(rewrapper_cfg.parse(ctx, cfg_file)),
-    )
+    return clang_command, cfg_file
 
 def __rewrite_rewrapper(ctx, cmd):
     # If clang-coverage, needs different handling.
     if len(cmd.args) > 2 and "clang_code_coverage_wrapper.py" in cmd.args[1]:
-        __rewrite_clang_code_coverage_wrapper(ctx, cmd)
-        return
-
-    # Below is handling for generic rewrapper.
-    args, cfg_file, wrapped = __parse_rewrapper_cmdline(ctx, cmd)
-    if not wrapped:
-        return
+        args, cfg_file = __parse_clang_code_coverage_wrapper_cmdline(ctx, cmd)
+    else:
+        # handling for generic rewrapper.
+        args, cfg_file, wrapped = __parse_rewrapper_cmdline(ctx, cmd)
+        if not wrapped:
+            print("command doesn't have rewrapper. %s" % str(cmd.args))
+            return
     if not cfg_file:
         fail("couldn't find rewrapper cfg file in %s" % str(cmd.args))
     ctx.actions.fix(
@@ -102,9 +98,14 @@ def __rewrite_rewrapper(ctx, cmd):
     )
 
 def __strip_rewrapper(ctx, cmd):
-    args, _, wrapped = __parse_rewrapper_cmdline(ctx, cmd)
-    if not wrapped:
-        return
+    # If clang-coverage, needs different handling.
+    if len(cmd.args) > 2 and "clang_code_coverage_wrapper.py" in cmd.args[1]:
+        args, _ = __parse_clang_code_coverage_wrapper_cmdline(ctx, cmd)
+    else:
+        args, _, wrapped = __parse_rewrapper_cmdline(ctx, cmd)
+        if not wrapped:
+            print("command doesn't have rewrapper. %s" % str(cmd.args))
+            return
     ctx.actions.fix(args = args)
 
 def __rewrite_action_remote_py(ctx, cmd):

@@ -50,6 +50,7 @@ def __disable_remote_b289968566(ctx, step_config):
             "./obj/chrome/test/browser_tests/device_local_account_browsertest.o",
             "./obj/chrome/test/browser_tests/file_manager_browsertest_base.o",
             "./obj/chrome/test/browser_tests/remote_apps_manager_browsertest.o",
+            "./obj/chrome/test/unit_tests/chrome_browsing_data_remover_delegate_unittest.o",
             "./obj/fuchsia_web/runners/cast_runner_integration_tests__exec/cast_runner_integration_test.o",
             "./obj/fuchsia_web/webengine/web_engine_core/frame_impl.o",
         ],
