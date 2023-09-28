@@ -20,8 +20,6 @@ namespace chromeos::editor_menu {
 
 namespace {
 
-using ::testing::SizeIs;
-
 class MockEditorMenuViewDelegate : public EditorMenuViewDelegate {
  public:
   MockEditorMenuViewDelegate() = default;
@@ -40,30 +38,21 @@ class MockEditorMenuViewDelegate : public EditorMenuViewDelegate {
   void OnEditorMenuVisibilityChanged(bool visible) override {}
 };
 
-std::u16string_view GetChipLabel(const views::View* chip) {
-  CHECK(views::IsViewClass<EditorMenuChipView>(chip));
-  return views::AsViewClass<EditorMenuChipView>(chip)->GetText();
-}
-
 using EditorMenuViewTest = views::ViewsTestBase;
 
 TEST_F(EditorMenuViewTest, CreatesChips) {
   MockEditorMenuViewDelegate delegate;
   const PresetTextQueries queries = {
-      PresetTextQuery("ID1", u"Shorten", PresetQueryCategory::kShorten),
-      PresetTextQuery("ID2", u"Elaborate", PresetQueryCategory::kElaborate)};
+      PresetTextQuery("Query ID 1", u"Label 1", PresetQueryCategory::kUnknown),
+      PresetTextQuery("Query ID 2", u"Label 2", PresetQueryCategory::kUnknown)};
 
   EditorMenuView editor_menu_view =
-      EditorMenuView(queries, gfx::Rect(200, 300, 400, 200), &delegate);
+      EditorMenuView(queries, gfx::Rect(200, 300, 80, 200), &delegate);
 
-  // Chips should be in a single row.
-  const auto* chips_container = editor_menu_view.chips_container_for_testing();
-  ASSERT_THAT(chips_container->children(), SizeIs(1));
-  const auto* chip_row = chips_container->children()[0];
-  ASSERT_THAT(chip_row->children(), SizeIs(queries.size()));
-  // Chips should have correct text labels.
-  EXPECT_EQ(GetChipLabel(chip_row->children()[0]), queries[0].name);
-  EXPECT_EQ(GetChipLabel(chip_row->children()[1]), queries[1].name);
+  const auto& editor_menu_chips = editor_menu_view.chips_for_testing();
+  ASSERT_THAT(editor_menu_chips, testing::SizeIs(queries.size()));
+  EXPECT_EQ(editor_menu_chips[0]->GetText(), queries[0].name);
+  EXPECT_EQ(editor_menu_chips[1]->GetText(), queries[1].name);
 }
 
 }  // namespace

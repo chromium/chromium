@@ -19,11 +19,11 @@
 namespace views {
 class ImageButton;
 class FlexLayoutView;
-class View;
 }  // namespace views
 
 namespace chromeos::editor_menu {
 
+class EditorMenuChipView;
 class EditorMenuTextfieldView;
 class EditorMenuViewDelegate;
 class PreTargetHandler;
@@ -60,8 +60,8 @@ class EditorMenuView : public views::View, public views::WidgetObserver {
 
   void UpdateBounds(const gfx::Rect& anchor_view_bounds);
 
-  const views::View* chips_container_for_testing() const {
-    return chips_container_;
+  const std::vector<raw_ptr<EditorMenuChipView>>& chips_for_testing() const {
+    return chips_;
   }
 
  private:
@@ -69,10 +69,6 @@ class EditorMenuView : public views::View, public views::WidgetObserver {
   void AddTitleContainer();
   void AddChipsContainer(const PresetTextQueries& preset_text_queries);
   void AddTextfield();
-
-  void UpdateChipsContainer(int editor_menu_width);
-
-  views::View* AddChipsRow();
 
   void OnSettingsButtonPressed();
   void OnChipButtonPressed(const std::string& text_query_id);
@@ -90,6 +86,7 @@ class EditorMenuView : public views::View, public views::WidgetObserver {
 
   // Containing chips.
   raw_ptr<views::FlexLayoutView> chips_container_ = nullptr;
+  std::vector<raw_ptr<EditorMenuChipView>> chips_;
 
   raw_ptr<EditorMenuTextfieldView> textfield_ = nullptr;
 
