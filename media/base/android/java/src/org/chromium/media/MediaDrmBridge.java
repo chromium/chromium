@@ -1469,15 +1469,24 @@ public class MediaDrmBridge {
                 final List<MediaDrm.KeyStatus> keyInformation, final boolean hasNewUsableKey) {
             final SessionId sessionId = getSessionIdByDrmId(drmSessionId);
 
-            assert sessionId != null;
-            assert mSessionManager.get(sessionId) != null;
-
-            final boolean isKeyRelease =
-                    mSessionManager.get(sessionId).keyType() == MediaDrm.KEY_TYPE_RELEASE;
-
             deferEventHandleIfNeeded(sessionId, new Runnable() {
                 @Override
                 public void run() {
+                    if (sessionId == null) {
+                        Log.w(TAG, "KeyStatusChange: Unknown session %s",
+                                SessionId.toHexString(drmSessionId));
+                        return;
+                    }
+
+                    SessionInfo sessionInfo = mSessionManager.get(sessionId);
+                    if (sessionInfo == null) {
+                        Log.w(TAG, "KeyStatusChange: No info for session %s",
+                                sessionId.toHexString());
+                        return;
+                    }
+
+                    boolean isKeyRelease = sessionInfo.keyType() == MediaDrm.KEY_TYPE_RELEASE;
+
                     Log.d(TAG,
                             "KeysStatusChange: " + sessionId.toHexString() + ", "
                                     + hasNewUsableKey);
@@ -1494,11 +1503,15 @@ public class MediaDrmBridge {
                 MediaDrm md, byte[] drmSessionId, final long expirationTime) {
             final SessionId sessionId = getSessionIdByDrmId(drmSessionId);
 
-            assert sessionId != null;
-
             deferEventHandleIfNeeded(sessionId, new Runnable() {
                 @Override
                 public void run() {
+                    if (sessionId == null) {
+                        Log.w(TAG, "ExpirationUpdate: Unknown session %s",
+                                SessionId.toHexString(drmSessionId));
+                        return;
+                    }
+
                     Log.d(TAG,
                             "ExpirationUpdate: " + sessionId.toHexString() + ", " + expirationTime);
                     onSessionExpirationUpdate(sessionId, expirationTime);
