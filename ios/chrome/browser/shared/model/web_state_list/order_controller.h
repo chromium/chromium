@@ -58,7 +58,7 @@ class OrderController {
   // will be removed from the WebStateList).
   // Logic diagram: crbug.com/1395319
   int DetermineNewActiveIndex(int active_index,
-                              RemovingIndexes removing_indexes) const;
+                              const RemovingIndexes& removing_indexes) const;
 
  private:
   raw_ref<const OrderControllerSource> source_;

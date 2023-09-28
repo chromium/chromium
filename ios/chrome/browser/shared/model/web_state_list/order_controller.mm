@@ -162,7 +162,7 @@ int OrderController::DetermineInsertionIndex(InsertionParams params) const {
 
 int OrderController::DetermineNewActiveIndex(
     int active_index,
-    RemovingIndexes removing_indexes) const {
+    const RemovingIndexes& removing_indexes) const {
   // If there is no active element, then there will be no new active element
   // after closing the element.
   if (active_index == WebStateList::kInvalidIndex) {

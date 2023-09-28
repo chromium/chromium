@@ -42,6 +42,7 @@ source_set("restoration_agent") {
   deps = [
     ":restoration_observer",
     ":serialisation",
+    ":session_constants",
     ":session_service",
     "//base",
     "//components/favicon/ios",
