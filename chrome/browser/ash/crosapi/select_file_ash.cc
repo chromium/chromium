@@ -109,7 +109,9 @@ class SelectFileDialogHolder : public ui::SelectFileDialog::Listener {
 
   SelectFileDialogHolder(const SelectFileDialogHolder&) = delete;
   SelectFileDialogHolder& operator=(const SelectFileDialogHolder&) = delete;
-  ~SelectFileDialogHolder() override = default;
+  ~SelectFileDialogHolder() override {
+    select_file_dialog_->ListenerDestroyed();
+  }
 
  private:
   // ui::SelectFileDialog::Listener:

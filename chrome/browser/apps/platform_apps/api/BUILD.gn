@@ -64,6 +64,7 @@ source_set("api") {
     "//components/storage_monitor",
     "//components/web_modal",
     "//extensions/browser",
+    "//ui/shell_dialogs",
   ]
 
   if (is_chromeos) {

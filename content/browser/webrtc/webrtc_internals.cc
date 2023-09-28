@@ -149,6 +149,10 @@ WebRTCInternals::~WebRTCInternals() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(g_webrtc_internals);
   g_webrtc_internals = nullptr;
+
+  if (select_file_dialog_) {
+    select_file_dialog_->ListenerDestroyed();
+  }
 }
 
 WebRTCInternals* WebRTCInternals::CreateSingletonInstance() {

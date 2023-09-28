@@ -218,14 +218,12 @@ SavePackageFilePicker::SavePackageFilePicker(
   if (g_should_prompt_for_filename) {
     select_file_dialog_ = ui::SelectFileDialog::Create(
         this, std::make_unique<ChromeSelectFilePolicy>(web_contents));
-    if (select_file_dialog_) {
-      select_file_dialog_->SelectFile(
-          ui::SelectFileDialog::SELECT_SAVEAS_FILE, std::u16string(),
-          suggested_path_copy, &file_type_info, file_type_index,
-          default_extension_copy,
-          platform_util::GetTopLevel(web_contents->GetNativeView()), nullptr);
-      return;
-    }
+    select_file_dialog_->SelectFile(
+        ui::SelectFileDialog::SELECT_SAVEAS_FILE, std::u16string(),
+        suggested_path_copy, &file_type_info, file_type_index,
+        default_extension_copy,
+        platform_util::GetTopLevel(web_contents->GetNativeView()), nullptr);
+    return;
   }
 
   // If |g_should_prompt_for_filename| is unset or |select_file_dialog_| could
@@ -234,7 +232,11 @@ SavePackageFilePicker::SavePackageFilePicker(
   FileSelected(suggested_path_copy, file_type_index, nullptr);
 }
 
-SavePackageFilePicker::~SavePackageFilePicker() = default;
+SavePackageFilePicker::~SavePackageFilePicker() {
+  if (select_file_dialog_) {
+    select_file_dialog_->ListenerDestroyed();
+  }
+}
 
 void SavePackageFilePicker::SetShouldPromptUser(bool should_prompt) {
   g_should_prompt_for_filename = should_prompt;
@@ -252,9 +254,10 @@ void SavePackageFilePicker::FileSelected(const base::FilePath& path,
   if (can_save_as_complete_) {
     DCHECK_LT(index, static_cast<int>(save_types_.size()));
     save_type = save_types_[index];
-    if (select_file_dialog_.get() &&
-        select_file_dialog_->HasMultipleFileTypeChoices())
+    if (select_file_dialog_ &&
+        select_file_dialog_->HasMultipleFileTypeChoices()) {
       download_prefs_->SetSaveFileType(save_type);
+    }
   } else {
     // Use "HTML Only" type as a dummy.
     save_type = content::SAVE_PAGE_TYPE_AS_ONLY_HTML;

@@ -67,7 +67,11 @@ EntryPicker::EntryPicker(EntryPickerClient* client,
                                   nullptr);
 }
 
-EntryPicker::~EntryPicker() {}
+EntryPicker::~EntryPicker() {
+  if (select_file_dialog_) {
+    select_file_dialog_->ListenerDestroyed();
+  }
+}
 
 void EntryPicker::FileSelected(const base::FilePath& path,
                                int index,

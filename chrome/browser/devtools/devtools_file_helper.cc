@@ -73,6 +73,7 @@ class SelectFileDialog : public ui::SelectFileDialog::Listener {
                    WebContents* web_contents,
                    ui::SelectFileDialog::Type type,
                    const base::FilePath& default_path) {
+    // `dialog` is self-deleting.
     auto* dialog = new SelectFileDialog();
     dialog->ShowDialog(std::move(selected_callback),
                        std::move(canceled_callback), web_contents, type,
@@ -94,14 +95,15 @@ class SelectFileDialog : public ui::SelectFileDialog::Listener {
   }
 
   void FileSelectionCanceled(void* params) override {
-    if (!canceled_callback_.is_null())
+    if (canceled_callback_) {
       std::move(canceled_callback_).Run();
+    }
     delete this;
   }
 
  private:
   SelectFileDialog() = default;
-  ~SelectFileDialog() override = default;
+  ~SelectFileDialog() override { select_file_dialog_->ListenerDestroyed(); }
 
   void ShowDialog(SelectedCallback selected_callback,
                   CanceledCallback canceled_callback,
