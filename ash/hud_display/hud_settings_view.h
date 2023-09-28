@@ -12,6 +12,7 @@
 #include "ash/hud_display/hud_constants.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "ui/events/event_observer.h"
 #include "ui/views/view.h"
 
 namespace ui {
@@ -33,7 +34,9 @@ namespace {
 class HUDActionButton;
 }
 
-class HUDSettingsView : public AshTracingManager::Observer, public views::View {
+class HUDSettingsView : public AshTracingManager::Observer,
+                        public views::View,
+                        public ui::EventObserver {
  public:
   METADATA_HEADER(HUDSettingsView);
 
@@ -52,10 +55,19 @@ class HUDSettingsView : public AshTracingManager::Observer, public views::View {
   // Creates Ui Dev Tools.
   void OnEnableUiDevToolsButtonPressed(const ui::Event& event);
 
+  // Show or hide cursor position.
+  void OnEnableCursorPositionDisplayButtonPressed(const ui::Event& event);
+
   // Starts tracing.
   void OnEnableTracingButtonPressed(const ui::Event& event);
 
   ASH_EXPORT void ToggleTracingForTesting();
+
+  // views::View:
+  void OnEvent(ui::Event* event) override;
+
+  // ui::EventObserver:
+  void OnEvent(const ui::Event& event) override;
 
  private:
   // Starts/Stops tracing.
@@ -72,6 +84,14 @@ class HUDSettingsView : public AshTracingManager::Observer, public views::View {
   // Container for "Create Ui Dev Tools" button or "DevTools running" label.
   raw_ptr<views::LabelButton, ExperimentalAsh> ui_dev_tools_control_button_ =
       nullptr;
+
+  // Conrainer for "Show cursor position: button or "Cursor Position: " label.
+  raw_ptr<views::LabelButton, ExperimentalAsh> cursor_position_display_button_ =
+      nullptr;
+
+  // Switches whether `cursor_position_display_button_` is showing cursor
+  // position or not.
+  bool showing_cursor_position_ = false;
 
   raw_ptr<HUDActionButton, ExperimentalAsh> tracing_control_button_ = nullptr;
   raw_ptr<views::Label, ExperimentalAsh> tracing_status_message_ = nullptr;
