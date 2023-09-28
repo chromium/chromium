@@ -38,17 +38,6 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-namespace features {
-
-// Enable dumping when the a NavigationRequest with evicted RFH for BFCache
-// restore is moved to the FrameTreeNode.
-// This is a feature for debugging and should only be enabled on non-stable
-// channel.
-BASE_DECLARE_FEATURE(
-    kDumpWhenFrameTreeNodeTakesNavigationRequestWithEvictedBFCacheRFH);
-
-}  // namespace features
-
 namespace content {
 
 class NavigationRequest;
