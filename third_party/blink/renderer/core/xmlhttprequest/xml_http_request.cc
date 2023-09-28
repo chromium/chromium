@@ -1763,7 +1763,15 @@ void XMLHttpRequest::DidFinishLoadingInternal() {
   }
 
   if (decoder_) {
-    response_text_.Append(decoder_->Flush());
+    if (!response_text_overflow_) {
+      auto text = decoder_->Flush();
+      if (response_text_.DoesAppendCauseOverflow(text.length())) {
+        response_text_overflow_ = true;
+        response_text_.Clear();
+      } else {
+        response_text_.Append(text);
+      }
+    }
     ReportMemoryUsageToV8();
   }
 
@@ -1943,8 +1951,15 @@ void XMLHttpRequest::DidReceiveData(const char* data, unsigned len) {
     if (!decoder_)
       decoder_ = CreateDecoder();
 
-    response_text_.Append(decoder_->Decode(data, len));
-    ReportMemoryUsageToV8();
+    if (!response_text_overflow_) {
+      if (response_text_.DoesAppendCauseOverflow(len)) {
+        response_text_overflow_ = true;
+        response_text_.Clear();
+      } else {
+        response_text_.Append(decoder_->Decode(data, len));
+      }
+      ReportMemoryUsageToV8();
+    }
   } else if (response_type_code_ == kResponseTypeArrayBuffer ||
              response_type_code_ == kResponseTypeBlob) {
     // Buffer binary data.

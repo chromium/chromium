@@ -227,6 +227,18 @@ void StringBuilder::CreateBuffer16(unsigned added_size) {
   string_ = String();
 }
 
+bool StringBuilder::DoesAppendCauseOverflow(unsigned length) const {
+  unsigned new_length = length_ + length;
+  if (new_length < Capacity()) {
+    return false;
+  }
+  // Expanding the underlying vector usually doubles its capacity.
+  if (is_8bit_) {
+    return buffer8_.capacity() * 2 >= buffer8_.MaxCapacity();
+  }
+  return buffer16_.capacity() * 2 >= buffer16_.MaxCapacity();
+}
+
 void StringBuilder::Append(const UChar* characters, unsigned length) {
   if (!length)
     return;

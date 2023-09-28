@@ -47,6 +47,8 @@ class WTF_EXPORT StringBuilder {
   StringBuilder& operator=(const StringBuilder&) = delete;
   ~StringBuilder() { ClearBuffer(); }
 
+  bool DoesAppendCauseOverflow(unsigned length) const;
+
   void Append(const UChar*, unsigned length);
   void Append(const LChar*, unsigned length);
 
