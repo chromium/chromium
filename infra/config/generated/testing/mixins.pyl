@@ -574,6 +574,22 @@
       },
     },
   },
+  'linux-jammy-7': {
+    'swarming': {
+      'dimensions': {
+        'os': 'Ubuntu-22.04',
+        'python': '3.8',
+      },
+    },
+  },
+  'linux-jammy-8': {
+    'swarming': {
+      'dimensions': {
+        'os': 'Ubuntu-22.04',
+        'cipd_platform': 'linux-amd64',
+      },
+    },
+  },
   'linux-jammy-or-bionic': {
     'swarming': {
       'dimensions': {

@@ -5201,7 +5201,7 @@
     'machines': {
       'Linux ASan LSan Tests (1)': {
         'mixins': [
-          'linux-jammy',
+          'linux-jammy-8',
         ],
         'test_suites': {
           'gtest_tests': 'chromium_linux_and_gl_gtests',
@@ -5257,7 +5257,7 @@
       },
       'Linux TSan Tests': {
         'mixins': [
-          'linux-jammy',
+          'linux-jammy-7',
         ],
         'test_suites': {
           'gtest_tests': 'chromium_linux_and_gl_and_vulkan_gtests',

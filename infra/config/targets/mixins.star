@@ -724,6 +724,24 @@ targets.mixin(
         },
     ),
 )
+targets.mixin(
+    name = "linux-jammy-7",
+    swarming = targets.swarming(
+        dimensions = {
+            "os": "Ubuntu-22.04",
+            "python": "3.8",
+        },
+    ),
+)
+targets.mixin(
+    name = "linux-jammy-8",
+    swarming = targets.swarming(
+        dimensions = {
+            "os": "Ubuntu-22.04",
+            "cipd_platform": "linux-amd64",
+        },
+    ),
+)
 
 targets.mixin(
     name = "linux-jammy-or-bionic",
