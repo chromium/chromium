@@ -276,8 +276,10 @@ void GLContext::BackpressureFenceWait(uint64_t fence_id) {
 
   // Waiting on |fence_id| has implicitly waited on all previous fences, so
   // remove them.
-  while (backpressure_fences_.begin()->first < fence_id)
+  while (!backpressure_fences_.empty() &&
+         backpressure_fences_.begin()->first < fence_id) {
     backpressure_fences_.erase(backpressure_fences_.begin());
+  }
 }
 
 bool GLContext::HasBackpressureFences() const {
