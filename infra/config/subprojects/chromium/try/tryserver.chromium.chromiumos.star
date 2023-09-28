@@ -247,6 +247,7 @@ try_.compilator_builder(
     branch_selector = branches.selector.CROS_LTS_BRANCHES,
     cores = 32,
     main_list_view = "try",
+    siso_enabled = True,
 )
 
 try_.orchestrator_builder(
