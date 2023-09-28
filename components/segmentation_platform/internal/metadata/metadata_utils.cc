@@ -513,15 +513,31 @@ std::vector<proto::UMAFeature> GetAllUmaFeatures(
     const proto::SegmentationModelMetadata& model_metadata,
     bool include_outputs) {
   std::vector<proto::UMAFeature> features;
+  VisitAllUmaFeatures(model_metadata, include_outputs,
+                      base::BindRepeating(
+                          [](std::vector<proto::UMAFeature>* features,
+                             const proto::UMAFeature& feature) {
+                            features->push_back(feature);
+                          },
+                          base::Unretained(&features)));
+  return features;
+}
+
+using VisitUmaFeature =
+    base::RepeatingCallback<void(const proto::UMAFeature& feature)>;
+void VisitAllUmaFeatures(const proto::SegmentationModelMetadata& model_metadata,
+                         bool include_outputs,
+                         VisitUmaFeature visit) {
+  std::vector<proto::UMAFeature> features;
   for (int i = 0; i < model_metadata.features_size(); ++i) {
-    features.push_back(model_metadata.features(i));
+    visit.Run(model_metadata.features(i));
   }
 
   // Add training/inference inputs.
   for (int i = 0; i < model_metadata.input_features_size(); ++i) {
     auto feature = model_metadata.input_features(i);
     if (feature.has_uma_feature())
-      features.push_back(feature.uma_feature());
+      visit.Run(feature.uma_feature());
   }
 
   // Add training/inference outputs.
@@ -529,7 +545,7 @@ std::vector<proto::UMAFeature> GetAllUmaFeatures(
     for (const auto& output : model_metadata.training_outputs().outputs()) {
       DCHECK(output.has_uma_output()) << "Currently only support UMA output.";
       if (output.has_uma_output())
-        features.push_back(output.uma_output().uma_feature());
+        visit.Run(output.uma_output().uma_feature());
     }
   }
 
@@ -541,12 +557,10 @@ std::vector<proto::UMAFeature> GetAllUmaFeatures(
       const auto& trigger = training_config.observation_trigger(i);
       if (trigger.has_uma_trigger() &&
           trigger.uma_trigger().has_uma_feature()) {
-        features.push_back(trigger.uma_trigger().uma_feature());
+        visit.Run(trigger.uma_trigger().uma_feature());
       }
     }
   }
-
-  return features;
 }
 
 proto::PredictionResult CreatePredictionResult(

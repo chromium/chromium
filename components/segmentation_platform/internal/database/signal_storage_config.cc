@@ -7,6 +7,7 @@
 #include "base/containers/contains.h"
 #include "base/functional/callback_helpers.h"
 #include "components/segmentation_platform/internal/metadata/metadata_utils.h"
+#include "components/segmentation_platform/public/proto/model_metadata.pb.h"
 
 namespace segmentation_platform {
 namespace {
@@ -77,6 +78,20 @@ proto::SignalStorageConfig* SignalStorageConfig::FindSignal(
   return nullptr;
 }
 
+void SignalStorageConfig::UpdateConfigForUMASignal(
+    int signal_storage_length,
+    bool* is_dirty,
+    const proto::UMAFeature& feature) {
+  if (metadata_utils::ValidateMetadataUmaFeature(feature) !=
+      metadata_utils::ValidationResult::kValidationSuccess) {
+    return;
+  }
+  if (UpdateConfigForSignal(signal_storage_length, feature.name_hash(), 0,
+                            feature.type())) {
+    *is_dirty = true;
+  }
+}
+
 bool SignalStorageConfig::UpdateConfigForSignal(int signal_storage_length,
                                                 uint64_t signal_hash,
                                                 uint64_t event_hash,
@@ -133,24 +148,36 @@ bool SignalStorageConfig::MeetsSignalCollectionRequirement(
 
   // Loop through all the signals specified in the model, and check if they have
   // been collected long enough.
-  auto features =
-      metadata_utils::GetAllUmaFeatures(model_metadata, include_outputs);
-  for (auto const& feature : features) {
-    // Skip the signals that has bucket_count set to 0. These ones are only for
-    // collection purposes and hence don't get used in model evaluation.
-    if (feature.bucket_count() == 0)
-      continue;
+  bool meets_requirement = true;
+  auto feature_visit = base::BindRepeating(
+      [](SignalStorageConfig* config,
+         base::TimeDelta min_signal_collection_length, bool* meets_requirement,
+         const proto::UMAFeature& feature) {
+        // Skip the signals that has bucket_count set to 0. These ones are
+        // only for collection purposes and hence don't get used in model
+        // evaluation.
+        if (feature.bucket_count() == 0) {
+          return;
+        }
 
-    if (metadata_utils::ValidateMetadataUmaFeature(feature) !=
-        metadata_utils::ValidationResult::kValidationSuccess) {
-      continue;
-    }
+        if (metadata_utils::ValidateMetadataUmaFeature(feature) !=
+            metadata_utils::ValidationResult::kValidationSuccess) {
+          return;
+        }
 
-    if (!MeetsSignalCollectionRequirementForSignal(min_signal_collection_length,
-                                                   feature.name_hash(), 0,
-                                                   feature.type())) {
-      return false;
-    };
+        if (!config->MeetsSignalCollectionRequirementForSignal(
+                min_signal_collection_length, feature.name_hash(), 0,
+                feature.type())) {
+          *meets_requirement = false;
+          return;
+        };
+      },
+      base::Unretained(this), min_signal_collection_length,
+      base::Unretained(&meets_requirement));
+  metadata_utils::VisitAllUmaFeatures(model_metadata, include_outputs,
+                                      std::move(feature_visit));
+  if (!meets_requirement) {
+    return false;
   }
 
   // Loop through sql features.
@@ -188,18 +215,11 @@ void SignalStorageConfig::OnSignalCollectionStarted(
 
   // Run through the model and calculate for each signal.
   bool is_dirty = false;
-  auto features = metadata_utils::GetAllUmaFeatures(model_metadata,
-                                                    /*include_outputs=*/true);
-  for (auto const& feature : features) {
-    if (metadata_utils::ValidateMetadataUmaFeature(feature) !=
-        metadata_utils::ValidationResult::kValidationSuccess) {
-      continue;
-    }
-    if (UpdateConfigForSignal(signal_storage_length, feature.name_hash(), 0,
-                              feature.type())) {
-      is_dirty = true;
-    }
-  }
+  metadata_utils::VisitAllUmaFeatures(
+      model_metadata, /*include_outputs=*/true,
+      base::BindRepeating(&SignalStorageConfig::UpdateConfigForUMASignal,
+                          base::Unretained(this), signal_storage_length,
+                          base::Unretained(&is_dirty)));
 
   // Add signals for sql features.
   for (auto const& feature : model_metadata.input_features()) {

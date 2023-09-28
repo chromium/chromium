@@ -44,6 +44,7 @@ using testing::SetArgReferee;
 namespace segmentation_platform {
 namespace {
 
+const int64_t kOldModelVersion = 100;
 const int64_t kModelVersion = 123;
 
 constexpr SegmentId kSearchUserSegmentId =
@@ -154,7 +155,7 @@ TEST_F(ModelManagerTest, OnSegmentationModelUpdatedInvalidMetadata) {
   // Verify that the ModelManager never invokes its
   // SegmentInfoDatabase, nor invokes the callback.
   EXPECT_CALL(*mock_segment_database_ptr, GetSegmentInfo(_, _, _)).Times(0);
-  EXPECT_CALL(callback, Run(_)).Times(0);
+  EXPECT_CALL(callback, Run(_, _)).Times(0);
   model_provider_data_.model_providers_callbacks[segment_id].Run(
       segment_id, metadata, kModelVersion);
 }
@@ -169,7 +170,8 @@ TEST_F(ModelManagerTest, OnSegmentationModelUpdatedNoOldMetadata) {
   proto::SegmentationModelMetadata metadata;
   metadata.set_bucket_duration(42u);
   metadata.set_time_unit(proto::TimeUnit::DAY);
-  EXPECT_CALL(callback, Run(_)).WillOnce(SaveArg<0>(&segment_info));
+  EXPECT_CALL(callback, Run(_, absl::optional<int64_t>()))
+      .WillOnce(SaveArg<0>(&segment_info));
   model_provider_data_.model_providers_callbacks[segment_id].Run(
       segment_id, metadata, kModelVersion);
 
@@ -209,6 +211,8 @@ TEST_F(ModelManagerTest,
   segment_database_->AddUserActionFeature(segment_id, "hello", 2, 2,
                                           proto::Aggregation::BUCKETED_COUNT);
   segment_database_->AddPredictionResult(segment_id, 2, clock_.Now());
+  segment_database_->FindOrCreateSegment(segment_id)
+      ->set_model_version(kOldModelVersion);
 
   base::MockCallback<SegmentInfoDatabase::SegmentInfoCallback> db_callback_1;
   absl::optional<proto::SegmentInfo> segment_info_from_db_1;
@@ -259,7 +263,8 @@ TEST_F(ModelManagerTest,
 
   // Invoke the callback and store the resulting invocation of the outer
   // callback for verification.
-  EXPECT_CALL(callback, Run(_)).WillOnce(SaveArg<0>(&segment_info));
+  EXPECT_CALL(callback, Run(_, absl::optional<int64_t>(kOldModelVersion)))
+      .WillOnce(SaveArg<0>(&segment_info));
   model_provider_data_.model_providers_callbacks[segment_id].Run(
       segment_id, metadata, kModelVersion);
 
@@ -310,7 +315,8 @@ TEST_F(ModelManagerTest, DatabaseUpdateForDeletedServerModel) {
   base::MockCallback<ModelManager::SegmentationModelUpdatedCallback>
       model_updated_callback;
   proto::SegmentInfo updated_segment_info;
-  EXPECT_CALL(model_updated_callback, Run(_))
+  EXPECT_CALL(model_updated_callback,
+              Run(_, absl::optional<int64_t>(kOldModelVersion)))
       .WillOnce(SaveArg<0>(&updated_segment_info));
 
   // Fill in old data for a server model in the SegmentInfo database.
@@ -322,13 +328,16 @@ TEST_F(ModelManagerTest, DatabaseUpdateForDeletedServerModel) {
       proto::ModelSource::SERVER_MODEL_SOURCE);
   segment_database_->AddPredictionResult(
       segment_id, 2, clock_.Now(), proto::ModelSource::SERVER_MODEL_SOURCE);
+  segment_database_->FindOrCreateSegment(segment_id)
+      ->set_model_version(kOldModelVersion);
 
   CreateModelManager({segment_id}, model_updated_callback.Get());
 
   // If the server stops serving a model then we'll receive a callback with null
   // metadata.
   model_provider_data_.model_providers_callbacks[segment_id].Run(
-      segment_id, /* metadata = */ absl::nullopt, /* model_version = */ 0);
+      segment_id, /* metadata = */ absl::nullopt,
+      /* model_version = */ kModelVersion);
 
   base::MockCallback<SegmentInfoDatabase::SegmentInfoCallback> db_callback;
   absl::optional<proto::SegmentInfo> segment_info_from_db;

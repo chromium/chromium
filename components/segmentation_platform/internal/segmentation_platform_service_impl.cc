@@ -260,7 +260,8 @@ void SegmentationPlatformServiceImpl::OnDatabaseInitialized(bool success) {
 }
 
 void SegmentationPlatformServiceImpl::OnSegmentationModelUpdated(
-    proto::SegmentInfo segment_info) {
+    proto::SegmentInfo segment_info,
+    absl::optional<int64_t> old_model_version) {
   CHECK(IsPlatformInitialized());
   if (!segment_info.has_model_metadata()) {
     signal_handler_.OnSignalListUpdated();
@@ -271,7 +272,13 @@ void SegmentationPlatformServiceImpl::OnSegmentationModelUpdated(
   DCHECK(metadata_utils::ValidateSegmentInfoMetadataAndFeatures(segment_info) ==
          metadata_utils::ValidationResult::kValidationSuccess);
 
-  signal_handler_.OnSignalListUpdated();
+  // This method is called when model is available for execution at startup. The
+  // segment info would not have changed for most cases.
+  const bool version_updated =
+      !old_model_version || *old_model_version != segment_info.model_version();
+  if (version_updated) {
+    signal_handler_.OnSignalListUpdated();
+  }
 
   if (!metadata_utils::SegmentUsesLegacyOutput(segment_info.segment_id())) {
     result_refresh_manager_->OnModelUpdated(&segment_info, &execution_service_);

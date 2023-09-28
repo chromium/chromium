@@ -134,9 +134,17 @@ float ConvertToDiscreteScore(const std::string& mapping_key,
 std::string SegmetationModelMetadataToString(
     const proto::SegmentationModelMetadata& model_metadata);
 
-// Helper method to get all UMAFeatures from a segmentation model's metadata.
+// Helper method to visit all UMAFeatures from a segmentation model's metadata.
 // When |include_outputs| is true, the UMA features for training outputs will be
 // included. Otherwise only input UMA features are included.
+using VisitUmaFeature =
+    base::RepeatingCallback<void(const proto::UMAFeature& feature)>;
+void VisitAllUmaFeatures(const proto::SegmentationModelMetadata& model_metadata,
+                         bool include_outputs,
+                         VisitUmaFeature visit);
+
+// Same as VisitAllUmaFeatures(), but copies the features and returns a vector.
+// Prefer VisitAllUmaFeatures() unless copies are required.
 std::vector<proto::UMAFeature> GetAllUmaFeatures(
     const proto::SegmentationModelMetadata& model_metadata,
     bool include_outputs);

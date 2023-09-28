@@ -10,7 +10,6 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_map.h"
-#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -132,7 +131,8 @@ class SegmentationPlatformServiceImpl : public SegmentationPlatformService {
   void OnDatabaseInitialized(bool success);
 
   // Must only be invoked with a valid SegmentInfo.
-  void OnSegmentationModelUpdated(proto::SegmentInfo segment_info);
+  void OnSegmentationModelUpdated(proto::SegmentInfo segment_info,
+                                  absl::optional<int64_t> old_model_version);
 
   // Callback sent to child classes to notify when model results need to be
   // refreshed. For example, when history is cleared.

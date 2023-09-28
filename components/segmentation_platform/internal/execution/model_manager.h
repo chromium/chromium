@@ -6,7 +6,9 @@
 #define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_EXECUTION_MODEL_MANAGER_H_
 
 #include "base/functional/callback_forward.h"
+#include "components/segmentation_platform/public/proto/model_metadata.pb.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace segmentation_platform {
 namespace proto {
@@ -28,7 +30,8 @@ class ModelManager {
   // Invoked whenever there are changes to the state of a segmentation model.
   // Will not be invoked unless the proto::SegmentInfo is valid.
   using SegmentationModelUpdatedCallback =
-      base::RepeatingCallback<void(proto::SegmentInfo)>;
+      base::RepeatingCallback<void(proto::SegmentInfo,
+                                   /*old_version*/ absl::optional<int64_t>)>;
 
   virtual void Initialize() = 0;
 

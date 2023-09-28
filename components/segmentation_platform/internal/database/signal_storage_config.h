@@ -88,6 +88,10 @@ class SignalStorageConfig {
                                          uint64_t event_hash,
                                          proto::SignalType signal_type);
 
+  void UpdateConfigForUMASignal(int signal_storage_length,
+                                bool* is_dirty,
+                                const proto::UMAFeature& feature);
+
   bool UpdateConfigForSignal(int signal_storage_length,
                              uint64_t signal_hash,
                              uint64_t event_hash,
