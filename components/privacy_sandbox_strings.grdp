@@ -2208,4 +2208,19 @@
   <message name="IDS_TRACKING_PROTECTION_ALLOWED_GROUP_TITLE" desc="" translateable="false" formatter_data="android_java">
     Sites allowed to use third-party cookies - <ph name="NUM_WEBSITES">%1$s<ex>3</ex></ph>
   </message>
+  <message name="IDS_TRACKING_PROTECTION_NEVER_EXPIRES_LABEL" desc="" translateable="false" formatter_data="android_java">
+    Does not expire
+  </message>
+  <message name="IDS_TRACKING_PROTECTION_EXPIRES_TODAY_LABEL" desc="" translateable="false" formatter_data="android_java">
+    Expires today
+  </message>
+  <message name="IDS_TRACKING_PROTECTION_EXPIRES_LABEL" desc="" translateable="false" formatter_data="android_java">
+    {COUNT, plural,
+      =1 {Expires tomorrow}
+      other {Expires in # days}
+    }
+  </message>
+  <message name="IDS_TRACKING_PROTECTION_DELETE_SITE_LABEL" desc="" translateable="false" formatter_data="android_java">
+    Delete site
+  </message>
 </grit-part>

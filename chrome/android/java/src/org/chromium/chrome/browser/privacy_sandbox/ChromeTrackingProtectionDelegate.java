@@ -4,8 +4,12 @@
 
 package org.chromium.chrome.browser.privacy_sandbox;
 
+import android.content.Context;
+
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.site_settings.ChromeSiteSettingsDelegate;
+import org.chromium.components.browser_ui.site_settings.SiteSettingsDelegate;
 import org.chromium.components.privacy_sandbox.TrackingProtectionDelegate;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.BrowserContextHandle;
@@ -40,5 +44,10 @@ public class ChromeTrackingProtectionDelegate implements TrackingProtectionDeleg
     @Override
     public BrowserContextHandle getBrowserContext() {
         return mProfile;
+    }
+
+    @Override
+    public SiteSettingsDelegate getSiteSettingsDelegate(Context context) {
+        return new ChromeSiteSettingsDelegate(context, mProfile);
     }
 }

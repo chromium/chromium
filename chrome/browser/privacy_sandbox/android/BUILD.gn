@@ -14,7 +14,6 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/privacy_sandbox/AdMeasurementFragment.java",
     "java/src/org/chromium/chrome/browser/privacy_sandbox/AdPersonalizationFragment.java",
     "java/src/org/chromium/chrome/browser/privacy_sandbox/AdPersonalizationRemovedFragment.java",
-    "java/src/org/chromium/chrome/browser/privacy_sandbox/ChromeTrackingProtectionDelegate.java",
     "java/src/org/chromium/chrome/browser/privacy_sandbox/FledgePreference.java",
     "java/src/org/chromium/chrome/browser/privacy_sandbox/LearnMoreFragment.java",
     "java/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxBottomSheetNotice.java",

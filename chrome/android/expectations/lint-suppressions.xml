@@ -43,6 +43,7 @@ https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md
     <ignore regexp="chrome/android/features/tab_ui/java_strings_grd"/>
     <ignore regexp="chrome/browser/ui/android/strings/ui_strings_grd"/>
     <ignore regexp="components/browser_ui/strings/android/browser_ui_strings_grd"/>
+    <ignore regexp="components/strings/components_strings_grd"/>
   </issue>
   <issue id="InsecureBaseConfiguration">
     <!-- See https://crbug.com/827265 and comment in the file for context. -->

@@ -8,8 +8,8 @@ import android.os.Bundle;
 
 import androidx.preference.PreferenceFragmentCompat;
 
-import org.chromium.components.browser_ui.settings.ChromeImageViewPreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
+import org.chromium.components.browser_ui.settings.CustomDividerFragment;
 import org.chromium.components.browser_ui.settings.ExpandablePreferenceGroup;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
@@ -21,7 +21,8 @@ import java.util.Collection;
 import java.util.List;
 
 /** Fragment to manage settings for tracking protection. */
-public class TrackingProtectionSettings extends PreferenceFragmentCompat {
+public class TrackingProtectionSettings
+        extends PreferenceFragmentCompat implements CustomDividerFragment {
     // Must match keys in tracking_protection_preferences.xml.
     private static final String PREF_BLOCK_ALL_TOGGLE = "block_all_3pcd_toggle";
     private static final String PREF_DNT_TOGGLE = "dnt_toggle";
@@ -60,6 +61,12 @@ public class TrackingProtectionSettings extends PreferenceFragmentCompat {
         getBlockingExceptions();
     }
 
+    @Override
+    public boolean hasDivider() {
+        // Remove dividers between preferences.
+        return false;
+    }
+
     public void setTrackingProtectionDelegate(TrackingProtectionDelegate delegate) {
         mDelegate = delegate;
     }
@@ -72,16 +79,16 @@ public class TrackingProtectionSettings extends PreferenceFragmentCompat {
     }
 
     private void onExceptionsFetched(Collection<Website> sites) {
-        List<ChromeImageViewPreference> websites = new ArrayList<>();
+        List<WebsiteExceptionRowPreference> websites = new ArrayList<>();
         for (Website site : sites) {
-            ChromeImageViewPreference preference = new ChromeImageViewPreference(getContext());
-            preference.setTitle(site.getTitle());
+            WebsiteExceptionRowPreference preference =
+                    new WebsiteExceptionRowPreference(getContext(), site, mDelegate);
             websites.add(preference);
         }
 
         ExpandablePreferenceGroup allowedGroup =
                 getPreferenceScreen().findPreference(ALLOWED_GROUP);
-        for (ChromeImageViewPreference website : websites) {
+        for (WebsiteExceptionRowPreference website : websites) {
             allowedGroup.addPreference(website);
             mAllowedSiteCount++;
         }
