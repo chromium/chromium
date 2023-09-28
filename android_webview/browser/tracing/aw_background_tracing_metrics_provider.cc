@@ -27,7 +27,7 @@ AwBackgroundTracingMetricsProvider::~AwBackgroundTracingMetricsProvider() =
     default;
 
 void AwBackgroundTracingMetricsProvider::DoInit() {
-  android_webview::MaybeSetupWebViewOnlyTracing();
+  android_webview::MaybeSetupWebViewOnlyTracingFromFieldTrial();
 
   metrics::MetricsService* metrics =
       android_webview::AwMetricsServiceClient::GetInstance()

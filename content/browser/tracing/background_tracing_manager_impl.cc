@@ -442,12 +442,15 @@ bool BackgroundTracingManagerImpl::InitializeScenarios(
     return false;
   }
 
-  requires_anonymized_data_ = (data_filtering == ANONYMIZE_DATA);
+  requires_anonymized_data_ = (data_filtering != NO_DATA_FILTERING);
+  bool enable_package_name_filter =
+      (data_filtering == ANONYMIZE_DATA_AND_FILTER_PACKAGE_NAME);
   InitializeTraceReportDatabase();
 
   for (const auto& scenario_config : config.scenarios()) {
-    auto scenario = TracingScenario::Create(scenario_config,
-                                            requires_anonymized_data_, this);
+    auto scenario =
+        TracingScenario::Create(scenario_config, requires_anonymized_data_,
+                                enable_package_name_filter, this);
     if (!scenario) {
       return false;
     }
@@ -500,8 +503,12 @@ bool BackgroundTracingManagerImpl::SetActiveScenario(
     upload_limit_network_kb_ = *config_impl->upload_limit_network_kb();
   }
 
-  requires_anonymized_data_ = (data_filtering == ANONYMIZE_DATA);
+  requires_anonymized_data_ = (data_filtering != NO_DATA_FILTERING);
   config_impl->set_requires_anonymized_data(requires_anonymized_data_);
+
+  bool enable_package_name_filter =
+      (data_filtering == ANONYMIZE_DATA_AND_FILTER_PACKAGE_NAME);
+  config_impl->SetPackageNameFilteringEnabled(enable_package_name_filter);
 
   // TODO(oysteine): Retry when time_until_allowed has elapsed.
   if (delegate_ &&

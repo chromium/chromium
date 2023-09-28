@@ -64,6 +64,7 @@ class CONTENT_EXPORT TracingScenario {
   static std::unique_ptr<TracingScenario> Create(
       const perfetto::protos::gen::ScenarioConfig& config,
       bool requires_anonymized_data,
+      bool enable_package_name_filter,
       Delegate* scenario_delegate);
 
   virtual ~TracingScenario();
@@ -105,7 +106,8 @@ class CONTENT_EXPORT TracingScenario {
       std::unique_ptr<perfetto::TracingSession, TracingSessionDeleter>;
   class TraceReader;
 
-  bool Initialize(bool requires_anonymized_data);
+  bool Initialize(bool requires_anonymized_data,
+                  bool enable_package_name_filter);
 
   void SetupTracingSession();
   void OnTracingError(perfetto::TracingError error);

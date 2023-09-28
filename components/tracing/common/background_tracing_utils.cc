@@ -8,13 +8,16 @@
 #include <string>
 #include <utility>
 
+#include "base/base64.h"
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -24,7 +27,12 @@
 
 namespace tracing {
 
+BASE_FEATURE(kFieldTracing, "FieldTracing", base::FEATURE_DISABLED_BY_DEFAULT);
+
 namespace {
+
+const base::FeatureParam<std::string> kFieldTracingConfig{&kFieldTracing,
+                                                          "config", ""};
 
 bool BlockingWriteTraceToFile(const base::FilePath& output_file,
                               std::string file_contents) {
@@ -132,6 +140,11 @@ bool SetupBackgroundTracingFromProtoConfigFile(
 bool SetupBackgroundTracingFromCommandLine() {
   auto* command_line = base::CommandLine::ForCurrentProcess();
 
+  if (tracing::HasBackgroundTracingOutputFile() &&
+      !tracing::SetBackgroundTracingOutputFile()) {
+    return false;
+  }
+
   switch (GetBackgroundTracingSetupMode()) {
     case BackgroundTracingSetupMode::kDisabledInvalidCommandLine:
       return false;
@@ -201,6 +214,22 @@ BackgroundTracingSetupMode GetBackgroundTracingSetupMode() {
     return BackgroundTracingSetupMode::kFromProtoConfigFile;
   }
   return BackgroundTracingSetupMode::kFromJsonConfigFile;
+}
+
+absl::optional<perfetto::protos::gen::ChromeFieldTracingConfig>
+GetFieldTracingConfig() {
+  if (!base::FeatureList::IsEnabled(kFieldTracing)) {
+    return absl::nullopt;
+  }
+  std::string serialized_config;
+  if (!base::Base64Decode(kFieldTracingConfig.Get(), &serialized_config)) {
+    return absl::nullopt;
+  }
+  perfetto::protos::gen::ChromeFieldTracingConfig config;
+  if (config.ParseFromString(serialized_config)) {
+    return config;
+  }
+  return absl::nullopt;
 }
 
 }  // namespace tracing

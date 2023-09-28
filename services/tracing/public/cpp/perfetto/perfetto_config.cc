@@ -393,6 +393,7 @@ perfetto::TraceConfig COMPONENT_EXPORT(TRACING_CPP)
 bool AdaptPerfettoConfigForChrome(
     perfetto::TraceConfig* perfetto_config,
     bool privacy_filtering_enabled,
+    bool enable_package_name_filter,
     perfetto::protos::gen::ChromeConfig::ClientPriority client_priority) {
   if (perfetto_config->buffers_size() < 1) {
     auto* buffer_config = perfetto_config->add_buffers();
@@ -404,6 +405,7 @@ bool AdaptPerfettoConfigForChrome(
   if (!chrome_config) {
     return false;
   }
+  chrome_config->SetEventPackageNameFilterEnabled(enable_package_name_filter);
   std::string chrome_config_string = chrome_config->ToString();
 
   AdaptBuiltinDataSourcesConfig(perfetto_config->mutable_builtin_data_sources(),

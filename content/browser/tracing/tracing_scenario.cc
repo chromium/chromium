@@ -45,10 +45,12 @@ using Metrics = BackgroundTracingManagerImpl::Metrics;
 std::unique_ptr<TracingScenario> TracingScenario::Create(
     const perfetto::protos::gen::ScenarioConfig& config,
     bool requires_anonymized_data,
+    bool enable_package_name_filter,
     Delegate* scenario_delegate) {
   auto scenario =
       base::WrapUnique(new TracingScenario(config, scenario_delegate));
-  if (!scenario->Initialize(requires_anonymized_data)) {
+  if (!scenario->Initialize(requires_anonymized_data,
+                            enable_package_name_filter)) {
     return nullptr;
   }
   return scenario;
@@ -77,9 +79,10 @@ TracingScenario::TracingScenario(
 
 TracingScenario::~TracingScenario() = default;
 
-bool TracingScenario::Initialize(bool requires_anonymized_data) {
+bool TracingScenario::Initialize(bool requires_anonymized_data,
+                                 bool enable_package_name_filter) {
   return tracing::AdaptPerfettoConfigForChrome(
-      &trace_config_, requires_anonymized_data,
+      &trace_config_, requires_anonymized_data, enable_package_name_filter,
       perfetto::protos::gen::ChromeConfig::BACKGROUND);
 }
 

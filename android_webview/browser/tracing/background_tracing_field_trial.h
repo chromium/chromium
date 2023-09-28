@@ -14,7 +14,7 @@ namespace android_webview {
 // of this method call, any calls to MaybeSetupWebViewOnlyTracing() in
 // the same browser process will do nothing. Returns true if background
 // tracing is successfully initialized, false otherwise.
-bool MaybeSetupSystemTracing();
+bool MaybeSetupSystemTracingFromFieldTrial();
 
 // Sets up app-only background tracing if configured. Requires the metrics
 // service to be enabled.
@@ -23,7 +23,7 @@ bool MaybeSetupSystemTracing();
 // result of this method call, any calls to MaybeSetupSystemTracing() in
 // the same browser process will do nothing. Returns true if background
 // tracing is successfully initialized, false otherwise.
-bool MaybeSetupWebViewOnlyTracing();
+bool MaybeSetupWebViewOnlyTracingFromFieldTrial();
 
 }  // namespace android_webview
 

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/tracing/background_tracing_field_trial.h"
 
+#include "base/base64.h"
 #include "base/files/file_util.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
@@ -87,7 +88,7 @@ std::string GetFieldTracingConfigFromText(const std::string& proto_text) {
 
 }  // namespace
 
-TEST_F(BackgroundTracingTest, SetupBackgroundTracingFieldTrial) {
+TEST_F(BackgroundTracingTest, MaybeSetupBackgroundTracingFromFieldTrial) {
   const std::string kTrialName = "BackgroundTracing";
   const std::string kExperimentName = "SlowStart";
   base::AssociateFieldTrialParams(kTrialName, kExperimentName,
@@ -100,9 +101,29 @@ TEST_F(BackgroundTracingTest, SetupBackgroundTracingFieldTrial) {
 
   ASSERT_EQ(tracing::GetBackgroundTracingSetupMode(),
             BackgroundTracingSetupMode::kFromFieldTrial);
-  EXPECT_TRUE(tracing::SetupBackgroundTracingFieldTrial());
+  EXPECT_FALSE(tracing::MaybeSetupSystemTracingFromFieldTrial());
+  EXPECT_TRUE(tracing::MaybeSetupBackgroundTracingFromFieldTrial());
   EXPECT_TRUE(
       content::BackgroundTracingManager::GetInstance().HasActiveScenario());
+}
+
+TEST_F(BackgroundTracingTest, MaybeSetupFieldTracingFromFieldTrial) {
+  std::string serialized_config =
+      GetFieldTracingConfigFromText(kValidProtoTracingConfig);
+  std::string encoded_config;
+  base::Base64Encode(serialized_config, &encoded_config);
+  base::test::ScopedFeatureList scoped_list;
+  scoped_list.InitAndEnableFeatureWithParameters(tracing::kFieldTracing,
+                                                 {{"config", encoded_config}});
+
+  TestingProfileManager testing_profile_manager(
+      TestingBrowserProcess::GetGlobal());
+  ASSERT_TRUE(testing_profile_manager.SetUp());
+
+  ASSERT_EQ(tracing::GetBackgroundTracingSetupMode(),
+            BackgroundTracingSetupMode::kFromFieldTrial);
+  EXPECT_FALSE(tracing::MaybeSetupSystemTracingFromFieldTrial());
+  EXPECT_TRUE(tracing::MaybeSetupBackgroundTracingFromFieldTrial());
 }
 
 TEST_F(BackgroundTracingTest, SetupBackgroundTracingFromProtoConfigFile) {
@@ -125,7 +146,9 @@ TEST_F(BackgroundTracingTest, SetupBackgroundTracingFromProtoConfigFile) {
 
   ASSERT_EQ(tracing::GetBackgroundTracingSetupMode(),
             BackgroundTracingSetupMode::kFromProtoConfigFile);
-  EXPECT_TRUE(tracing::SetupBackgroundTracingFieldTrial());
+  EXPECT_FALSE(tracing::MaybeSetupSystemTracingFromFieldTrial());
+  EXPECT_FALSE(tracing::MaybeSetupBackgroundTracingFromFieldTrial());
+  EXPECT_TRUE(tracing::SetupBackgroundTracingFromCommandLine());
 }
 
 TEST_F(BackgroundTracingTest, SetupBackgroundTracingFromJsonConfigFile) {
@@ -148,8 +171,8 @@ TEST_F(BackgroundTracingTest, SetupBackgroundTracingFromJsonConfigFile) {
 
   ASSERT_EQ(tracing::GetBackgroundTracingSetupMode(),
             BackgroundTracingSetupMode::kFromJsonConfigFile);
-  EXPECT_TRUE(tracing::SetupBackgroundTracingFieldTrial());
-  EXPECT_TRUE(
+  EXPECT_FALSE(tracing::MaybeSetupBackgroundTracingFromFieldTrial());
+  EXPECT_FALSE(
       content::BackgroundTracingManager::GetInstance().HasActiveScenario());
 }
 
@@ -179,7 +202,7 @@ TEST_F(BackgroundTracingTest, SetupBackgroundTracingFieldTrialOutputFile) {
   ASSERT_TRUE(tracing::HasBackgroundTracingOutputFile());
   ASSERT_EQ(tracing::GetBackgroundTracingSetupMode(),
             BackgroundTracingSetupMode::kFromFieldTrial);
-  EXPECT_TRUE(tracing::SetupBackgroundTracingFieldTrial());
+  EXPECT_TRUE(tracing::MaybeSetupBackgroundTracingFromFieldTrial());
 
   EXPECT_TRUE(
       content::BackgroundTracingManager::GetInstance().HasActiveScenario());

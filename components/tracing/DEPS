@@ -3,6 +3,7 @@ include_rules = [
   "+components/metrics",
   "+components/prefs",
   "+third_party/metrics_proto",
+  "+third_party/perfetto/protos",
   "+content/public/browser/background_tracing_manager.h",
   "+content/public/browser/background_tracing_config.h",
   "+content/public/browser/browser_thread.h",

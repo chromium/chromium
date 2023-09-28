@@ -118,7 +118,7 @@ TEST_F(BackgroundTracingTest, ReactiveConfigSystemSetup) {
   EXPECT_FALSE(
       content::BackgroundTracingManager::GetInstance().HasActiveScenario());
 
-  EXPECT_FALSE(android_webview::MaybeSetupSystemTracing());
+  EXPECT_FALSE(android_webview::MaybeSetupSystemTracingFromFieldTrial());
 
   // Config (reactive) and method call (system) mismatch, nothing should be set
   // up.
@@ -134,7 +134,7 @@ TEST_F(BackgroundTracingTest, ReactiveConfigWebViewOnlySetup) {
   EXPECT_FALSE(
       content::BackgroundTracingManager::GetInstance().HasActiveScenario());
 
-  EXPECT_TRUE(android_webview::MaybeSetupWebViewOnlyTracing());
+  EXPECT_TRUE(android_webview::MaybeSetupWebViewOnlyTracingFromFieldTrial());
 
   // Config (reactive) and method call (webview-only) match.
   EXPECT_TRUE(
@@ -149,7 +149,7 @@ TEST_F(BackgroundTracingTest, PreemptiveConfigSystemSetup) {
   EXPECT_FALSE(
       content::BackgroundTracingManager::GetInstance().HasActiveScenario());
 
-  EXPECT_FALSE(android_webview::MaybeSetupSystemTracing());
+  EXPECT_FALSE(android_webview::MaybeSetupSystemTracingFromFieldTrial());
 
   // Config (preemptive) and method call (system) mismatch, nothing should be
   // set up.
@@ -173,5 +173,6 @@ TEST_F(BackgroundTracingTest, SetupBackgroundTracingFromProtoConfigFile) {
 
   ASSERT_EQ(tracing::GetBackgroundTracingSetupMode(),
             tracing::BackgroundTracingSetupMode::kFromProtoConfigFile);
-  EXPECT_TRUE(android_webview::MaybeSetupWebViewOnlyTracing());
+  EXPECT_FALSE(android_webview::MaybeSetupSystemTracingFromFieldTrial());
+  EXPECT_FALSE(android_webview::MaybeSetupWebViewOnlyTracingFromFieldTrial());
 }

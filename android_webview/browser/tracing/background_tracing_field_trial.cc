@@ -11,63 +11,72 @@
 #include "content/public/browser/background_tracing_manager.h"
 #include "services/tracing/public/cpp/tracing_features.h"
 
+namespace android_webview {
+
 namespace {
 
-using tracing::BackgroundTracingSetupMode;
+using content::BackgroundTracingConfig;
+using content::BackgroundTracingManager;
 
 const char kBackgroundTracingFieldTrial[] = "BackgroundWebviewTracing";
 
-bool SetupBackgroundTracingFieldTrial(int allowed_modes) {
-  content::BackgroundTracingManager::DataFiltering data_filtering =
-      content::BackgroundTracingManager::ANONYMIZE_DATA;
+}  // namespace
+
+bool MaybeSetupSystemTracingFromFieldTrial() {
+  if (tracing::GetBackgroundTracingSetupMode() !=
+      tracing::BackgroundTracingSetupMode::kFromFieldTrial) {
+    return false;
+  }
+
+  auto& manager = BackgroundTracingManager::GetInstance();
+  std::unique_ptr<BackgroundTracingConfig> config =
+      manager.GetBackgroundTracingConfig(kBackgroundTracingFieldTrial);
+  if (!config || config->tracing_mode() != BackgroundTracingConfig::SYSTEM) {
+    return false;
+  }
+
+  BackgroundTracingManager::DataFiltering data_filtering =
+      BackgroundTracingManager::ANONYMIZE_DATA;
   if (tracing::HasBackgroundTracingOutputFile()) {
-    data_filtering = content::BackgroundTracingManager::NO_DATA_FILTERING;
+    data_filtering = BackgroundTracingManager::NO_DATA_FILTERING;
     if (!tracing::SetBackgroundTracingOutputFile()) {
       return false;
     }
   }
 
-  auto tracing_mode = tracing::GetBackgroundTracingSetupMode();
-  if (tracing_mode == BackgroundTracingSetupMode::kDisabledInvalidCommandLine) {
+  return manager.SetActiveScenario(std::move(config), data_filtering);
+}
+
+bool MaybeSetupWebViewOnlyTracingFromFieldTrial() {
+  if (tracing::GetBackgroundTracingSetupMode() !=
+      tracing::BackgroundTracingSetupMode::kFromFieldTrial) {
     return false;
-  } else if (tracing_mode != BackgroundTracingSetupMode::kFromFieldTrial) {
-    return tracing::SetupBackgroundTracingFromCommandLine();
   }
-
-  auto& manager = content::BackgroundTracingManager::GetInstance();
-  std::unique_ptr<content::BackgroundTracingConfig> config =
-      manager.GetBackgroundTracingConfig(kBackgroundTracingFieldTrial);
-
-  if (!config)
-    return false;
-
-  if ((config->tracing_mode() & allowed_modes) == 0)
-    return false;
 
   // WebView-only tracing session has additional filtering of event names that
   // include package names as a privacy requirement (see
   // go/public-webview-trace-collection).
-  config->SetPackageNameFilteringEnabled(
-      config->tracing_mode() != content::BackgroundTracingConfig::SYSTEM);
-  return manager.SetActiveScenario(std::move(config), data_filtering);
-}
+  BackgroundTracingManager::DataFiltering data_filtering =
+      BackgroundTracingManager::ANONYMIZE_DATA_AND_FILTER_PACKAGE_NAME;
+  if (tracing::HasBackgroundTracingOutputFile()) {
+    data_filtering = BackgroundTracingManager::NO_DATA_FILTERING;
+    if (!tracing::SetBackgroundTracingOutputFile()) {
+      return false;
+    }
+  }
 
-}  // namespace
-
-namespace android_webview {
-
-bool MaybeSetupSystemTracing() {
-  if (!tracing::ShouldSetupSystemTracing())
+  auto& manager = BackgroundTracingManager::GetInstance();
+  auto field_tracing_config = tracing::GetFieldTracingConfig();
+  if (field_tracing_config) {
+    return manager.InitializeScenarios(std::move(*field_tracing_config),
+                                       data_filtering);
+  }
+  std::unique_ptr<BackgroundTracingConfig> config =
+      manager.GetBackgroundTracingConfig(kBackgroundTracingFieldTrial);
+  if (config && config->tracing_mode() == BackgroundTracingConfig::SYSTEM) {
     return false;
-
-  return SetupBackgroundTracingFieldTrial(
-      content::BackgroundTracingConfig::SYSTEM);
-}
-
-bool MaybeSetupWebViewOnlyTracing() {
-  return SetupBackgroundTracingFieldTrial(
-      content::BackgroundTracingConfig::PREEMPTIVE |
-      content::BackgroundTracingConfig::REACTIVE);
+  }
+  return manager.SetActiveScenario(std::move(config), data_filtering);
 }
 
 }  // namespace android_webview

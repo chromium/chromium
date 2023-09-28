@@ -86,6 +86,7 @@ class BackgroundTracingManager {
   enum DataFiltering {
     NO_DATA_FILTERING,
     ANONYMIZE_DATA,
+    ANONYMIZE_DATA_AND_FILTER_PACKAGE_NAME,
   };
 
   // Set the triggering rules for when to start recording.

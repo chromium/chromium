@@ -10,6 +10,7 @@
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/tracing/background_tracing_field_trial.h"
 #include "chrome/common/channel_info.h"
 #include "components/metrics/field_trials_provider.h"
 #include "components/metrics/metrics_log.h"
@@ -36,7 +37,7 @@ ChromeBackgroundTracingMetricsProvider::
     ~ChromeBackgroundTracingMetricsProvider() = default;
 
 void ChromeBackgroundTracingMetricsProvider::DoInit() {
-  // TODO(ssid): SetupBackgroundTracingFieldTrial() should be called here.
+  MaybeSetupBackgroundTracingFromFieldTrial();
 
 #if BUILDFLAG(IS_WIN)
   // AV metrics provider is initialized asynchronously. It might not be
