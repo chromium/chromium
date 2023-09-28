@@ -86,6 +86,12 @@ const CGFloat kActivityIndicatorDimensionIPhone = 56;
         self.tableView.editing ? [self createEditModeCancelButton]
                                : self.backButtonItem;
   }
+
+  // The following two lines cause the table view to refresh the cell heights
+  // with animation without reloading the cells. This is needed for
+  // cells that can be significantly taller in edit mode.
+  [self.tableView beginUpdates];
+  [self.tableView endUpdates];
 }
 
 - (void)updatedToolbarForEditState {

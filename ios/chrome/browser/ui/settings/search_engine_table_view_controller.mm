@@ -100,7 +100,6 @@ const char kUmaSelectDefaultSearchEngine[] =
     _prefService = browserState->GetPrefs();
     [self setTitle:l10n_util::GetNSString(IDS_IOS_SEARCH_ENGINE_SETTING_TITLE)];
     self.shouldDisableDoneButtonOnEdit = YES;
-    [self updateUIForEditState];
   }
   return self;
 }
@@ -179,7 +178,10 @@ const char kUmaSelectDefaultSearchEngine[] =
   self.tableView.separatorInset =
       UIEdgeInsetsMake(0, kTableViewSeparatorLeadingInset, 0, 0);
 
+  [self updateUIForEditState];
   [self loadModel];
+  // The toolbar edit button's state depends on the `loadModel`.
+  [self updatedToolbarForEditState];
 }
 
 - (void)viewWillAppear:(BOOL)animated {

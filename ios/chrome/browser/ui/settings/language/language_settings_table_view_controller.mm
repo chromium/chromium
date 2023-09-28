@@ -188,12 +188,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (void)updateUIForEditState {
   [super updateUIForEditState];
 
-  // The following two lines cause the table view to refresh the cell heights
-  // with animation without reloading the cells. This is needed for language
-  // cells that can be significantly taller in edit mode.
-  [self.tableView beginUpdates];
-  [self.tableView endUpdates];
-
   [self setAddLanguageItemEnabled:!self.isEditing];
   if (_translateSwitchItem) {
     [self setTranslateSwitchItemEnabled:!self.isEditing];
