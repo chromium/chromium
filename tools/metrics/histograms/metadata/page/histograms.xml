@@ -1915,7 +1915,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PageLoad.Experimental.PageVisitType" enum="PageVisitType"
+<histogram name="PageLoad.Experimental.PageVisitType2" enum="PageVisitType"
     expires_after="2024-02-25">
   <owner>toyoshim@chromium.org</owner>
   <owner>chrome-prerendering@google.com</owner>
@@ -1973,8 +1973,12 @@ chromium-metrics-reviews@google.com.
     <variant name=".AllVisit"
         summary="all page visits, recorded in PreviewPageLoadMetricsObserver"/>
     <variant name=".HistoryVisit" summary="history page visits"/>
-    <variant name=".IndependentVisit" summary="independent page visits"/>
-    <variant name=".OriginVisit" summary="origin page visits"/>
+    <variant name=".IndependentLinkVisit"
+        summary="independent page visits in a new tab"/>
+    <variant name=".IndependentUIVisit"
+        summary="independent page visits from UI"/>
+    <variant name=".OriginLinkVisit" summary="origin page visits in a new tab"/>
+    <variant name=".OriginUIVisit" summary="origin page visits from UI"/>
     <variant name=".PassingVisit" summary="passing page visits"/>
     <variant name=".TerminalVisit" summary="terminal page visits"/>
   </token>

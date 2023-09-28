@@ -22,12 +22,16 @@ class PreviewPageLoadMetricsObserver
   // As we don't identify client redirect cases, kPassingVisit may be
   // overestimated a little.
   enum class PageVisitType {
-    kIndependentVisit = 0,
-    kOriginVisit = 1,
+    kObsoleteIndependentVisit = 0,
+    kObsoleteOriginVisit = 1,
     kPassingVisit = 2,
     kTerminalVisit = 3,
     kHistoryVisit = 4,
-    kMaxValue = kHistoryVisit,
+    kIndependentLinkVisit = 5,
+    kIndependentUIVisit = 6,
+    kOriginLinkVisit = 7,
+    kOriginUIVisit = 8,
+    kMaxValue = kOriginUIVisit,
   };
 
   PreviewPageLoadMetricsObserver() = default;
@@ -57,9 +61,11 @@ class PreviewPageLoadMetricsObserver
  private:
   PageVisitType RecordPageVisitType();
   void RecordMetrics();
+  void CheckPageTransitionType(content::NavigationHandle* navigation_handle);
 
   bool currently_in_foreground_ = false;
   bool is_history_navigation_ = false;
+  bool is_first_navigation_ = false;
   base::TimeTicks last_time_shown_;
   base::TimeDelta total_foreground_duration_;
 };

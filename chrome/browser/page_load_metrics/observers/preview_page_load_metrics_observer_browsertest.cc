@@ -86,10 +86,10 @@ IN_PROC_BROWSER_TEST_F(PreviewPageLoadMetricsObserverBrowserTest,
   NavigateAway();
 
   histogram_tester().ExpectUniqueSample(
-      "PageLoad.Experimental.PageVisitType",
-      PreviewPageLoadMetricsObserver::PageVisitType::kIndependentVisit, 1);
+      "PageLoad.Experimental.PageVisitType2",
+      PreviewPageLoadMetricsObserver::PageVisitType::kIndependentUIVisit, 1);
   histogram_tester().ExpectTotalCount(
-      "PageLoad.Experimental.TotalForegroundDuration.IndependentVisit", 1);
+      "PageLoad.Experimental.TotalForegroundDuration.IndependentUIVisit", 1);
   histogram_tester().ExpectTotalCount(
       "PageLoad.Experimental.TotalForegroundDuration.AllVisit", 1);
 }
@@ -104,16 +104,16 @@ IN_PROC_BROWSER_TEST_F(PreviewPageLoadMetricsObserverBrowserTest,
   NavigateToOriginPathFromRenderer("/title2.html");
 
   histogram_tester().ExpectBucketCount(
-      "PageLoad.Experimental.PageVisitType",
-      PreviewPageLoadMetricsObserver::PageVisitType::kOriginVisit, 1);
+      "PageLoad.Experimental.PageVisitType2",
+      PreviewPageLoadMetricsObserver::PageVisitType::kOriginUIVisit, 1);
   histogram_tester().ExpectTotalCount(
-      "PageLoad.Experimental.TotalForegroundDuration.OriginVisit", 1);
+      "PageLoad.Experimental.TotalForegroundDuration.OriginUIVisit", 1);
   histogram_tester().ExpectTotalCount(
       "PageLoad.Experimental.TotalForegroundDuration.AllVisit", 1);
 
   NavigateToOriginPathFromRenderer("/title3.html");
   histogram_tester().ExpectBucketCount(
-      "PageLoad.Experimental.PageVisitType",
+      "PageLoad.Experimental.PageVisitType2",
       PreviewPageLoadMetricsObserver::PageVisitType::kPassingVisit, 1);
   histogram_tester().ExpectTotalCount(
       "PageLoad.Experimental.TotalForegroundDuration.PassingVisit", 1);
@@ -122,7 +122,7 @@ IN_PROC_BROWSER_TEST_F(PreviewPageLoadMetricsObserverBrowserTest,
 
   NavigateAway();
   histogram_tester().ExpectBucketCount(
-      "PageLoad.Experimental.PageVisitType",
+      "PageLoad.Experimental.PageVisitType2",
       PreviewPageLoadMetricsObserver::PageVisitType::kTerminalVisit, 1);
   histogram_tester().ExpectTotalCount(
       "PageLoad.Experimental.TotalForegroundDuration.TerminalVisit", 1);
@@ -140,10 +140,10 @@ IN_PROC_BROWSER_TEST_F(PreviewPageLoadMetricsObserverBrowserTest,
   NavigateToOriginPathFromRenderer("/title2.html");
 
   histogram_tester().ExpectBucketCount(
-      "PageLoad.Experimental.PageVisitType",
-      PreviewPageLoadMetricsObserver::PageVisitType::kOriginVisit, 1);
+      "PageLoad.Experimental.PageVisitType2",
+      PreviewPageLoadMetricsObserver::PageVisitType::kOriginUIVisit, 1);
   histogram_tester().ExpectTotalCount(
-      "PageLoad.Experimental.TotalForegroundDuration.OriginVisit", 1);
+      "PageLoad.Experimental.TotalForegroundDuration.OriginUIVisit", 1);
   histogram_tester().ExpectTotalCount(
       "PageLoad.Experimental.TotalForegroundDuration.AllVisit", 1);
 
@@ -152,7 +152,7 @@ IN_PROC_BROWSER_TEST_F(PreviewPageLoadMetricsObserverBrowserTest,
   NavigateBack();
 
   histogram_tester().ExpectBucketCount(
-      "PageLoad.Experimental.PageVisitType",
+      "PageLoad.Experimental.PageVisitType2",
       PreviewPageLoadMetricsObserver::PageVisitType::kTerminalVisit, 1);
   histogram_tester().ExpectTotalCount(
       "PageLoad.Experimental.TotalForegroundDuration.TerminalVisit", 1);
@@ -163,7 +163,7 @@ IN_PROC_BROWSER_TEST_F(PreviewPageLoadMetricsObserverBrowserTest,
   NavigateToOriginPathFromRenderer("/title3.html");
 
   histogram_tester().ExpectBucketCount(
-      "PageLoad.Experimental.PageVisitType",
+      "PageLoad.Experimental.PageVisitType2",
       PreviewPageLoadMetricsObserver::PageVisitType::kHistoryVisit, 1);
   histogram_tester().ExpectTotalCount(
       "PageLoad.Experimental.TotalForegroundDuration.HistoryVisit", 1);
@@ -174,7 +174,7 @@ IN_PROC_BROWSER_TEST_F(PreviewPageLoadMetricsObserverBrowserTest,
   NavigateAway();
 
   histogram_tester().ExpectBucketCount(
-      "PageLoad.Experimental.PageVisitType",
+      "PageLoad.Experimental.PageVisitType2",
       PreviewPageLoadMetricsObserver::PageVisitType::kTerminalVisit, 2);
   histogram_tester().ExpectTotalCount(
       "PageLoad.Experimental.TotalForegroundDuration.TerminalVisit", 2);
@@ -194,10 +194,10 @@ IN_PROC_BROWSER_TEST_F(PreviewPageLoadMetricsObserverBrowserTest,
   NavigateToOriginPathFromRenderer("/title2.html");
 
   histogram_tester().ExpectBucketCount(
-      "PageLoad.Experimental.PageVisitType",
-      PreviewPageLoadMetricsObserver::PageVisitType::kOriginVisit, 1);
+      "PageLoad.Experimental.PageVisitType2",
+      PreviewPageLoadMetricsObserver::PageVisitType::kOriginUIVisit, 1);
   histogram_tester().ExpectTotalCount(
-      "PageLoad.Experimental.TotalForegroundDuration.OriginVisit", 1);
+      "PageLoad.Experimental.TotalForegroundDuration.OriginUIVisit", 1);
   histogram_tester().ExpectTotalCount(
       "PageLoad.Experimental.TotalForegroundDuration.AllVisit", 1);
 
@@ -205,7 +205,7 @@ IN_PROC_BROWSER_TEST_F(PreviewPageLoadMetricsObserverBrowserTest,
   // title1.html is restored from BFCache, and doesn't create a new observer.
   NavigateBack();
   histogram_tester().ExpectBucketCount(
-      "PageLoad.Experimental.PageVisitType",
+      "PageLoad.Experimental.PageVisitType2",
       PreviewPageLoadMetricsObserver::PageVisitType::kTerminalVisit, 1);
   histogram_tester().ExpectTotalCount(
       "PageLoad.Experimental.TotalForegroundDuration.TerminalVisit", 1);
@@ -222,7 +222,7 @@ IN_PROC_BROWSER_TEST_F(PreviewPageLoadMetricsObserverBrowserTest,
   // No new metrics are recorded because of the BFCache restoration.
   NavigateAway();
   histogram_tester().ExpectBucketCount(
-      "PageLoad.Experimental.PageVisitType",
+      "PageLoad.Experimental.PageVisitType2",
       PreviewPageLoadMetricsObserver::PageVisitType::kTerminalVisit, 2);
   histogram_tester().ExpectTotalCount(
       "PageLoad.Experimental.TotalForegroundDuration.TerminalVisit", 2);

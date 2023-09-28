@@ -82343,10 +82343,10 @@ Called by update_net_trust_anchors.py.-->
 <enum name="PageVisitType">
   <int value="0"
       label="Independent Visit; the page is opened from UI or in new tab, and
-             not followed by any link navigation."/>
+             not followed by any link navigation. (obsolete)"/>
   <int value="1"
       label="Origin Visit; the page is opened from UI or in new tab, and
-             followed by a link navigation."/>
+             followed by a link navigation. (obsolete)"/>
   <int value="2"
       label="PassingVisit; the page is visited and followed by link
              navigations."/>
@@ -82355,6 +82355,18 @@ Called by update_net_trust_anchors.py.-->
              followed by any link navigation."/>
   <int value="4"
       label="HistoryVisit; the page is visited by a history navigation."/>
+  <int value="5"
+      label="Independent Link Visit; the page is opened in a new tab, and not
+             followed by any link navigation."/>
+  <int value="6"
+      label="Independent UI Visit; the page is opened from UI, and not
+             followed by any link navigation."/>
+  <int value="7"
+      label="Origin Link Visit; the page is opened in a new tab, and followed
+             by a link navigation."/>
+  <int value="8"
+      label="Origin UI Visit; the page is opened from UI, and followed by a
+             link navigation."/>
 </enum>
 
 <enum name="PageWhitelistingInitiatorCheck">

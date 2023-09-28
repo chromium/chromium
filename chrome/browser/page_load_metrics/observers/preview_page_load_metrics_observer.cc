@@ -18,8 +18,7 @@ PreviewPageLoadMetricsObserver::OnStart(
     last_time_shown_ = navigation_handle->NavigationStart();
   }
   currently_in_foreground_ = started_in_foreground;
-  is_history_navigation_ =
-      navigation_handle->GetPageTransition() & ui::PAGE_TRANSITION_FORWARD_BACK;
+  CheckPageTransitionType(navigation_handle);
   return CONTINUE_OBSERVING;
 }
 
@@ -35,8 +34,7 @@ page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 PreviewPageLoadMetricsObserver::OnPrerenderStart(
     content::NavigationHandle* navigation_handle,
     const GURL& currently_committed_url) {
-  is_history_navigation_ =
-      navigation_handle->GetPageTransition() & ui::PAGE_TRANSITION_FORWARD_BACK;
+  CheckPageTransitionType(navigation_handle);
   return CONTINUE_OBSERVING;
 }
 
@@ -78,13 +76,22 @@ PreviewPageLoadMetricsObserver::RecordPageVisitType() {
   if (is_history_navigation_) {
     type = PageVisitType::kHistoryVisit;
   } else if (delegate.IsOriginVisit()) {
-    type = delegate.IsTerminalVisit() ? PageVisitType::kIndependentVisit
-                                      : PageVisitType::kOriginVisit;
+    if (is_first_navigation_) {
+      // PageTransition::PAGE_TRANSITION_FIRST is set only for the first
+      // navigation that is not triggered by any UI. So, this means the visit
+      // is made via the open-in-new-tab feature.
+      // PageTransition::PAGE_TRANSITION_LINK would not be set for the case.
+      type = delegate.IsTerminalVisit() ? PageVisitType::kIndependentLinkVisit
+                                        : PageVisitType::kOriginLinkVisit;
+    } else {
+      type = delegate.IsTerminalVisit() ? PageVisitType::kIndependentUIVisit
+                                        : PageVisitType::kOriginUIVisit;
+    }
   } else {
     type = delegate.IsTerminalVisit() ? PageVisitType::kTerminalVisit
                                       : PageVisitType::kPassingVisit;
   }
-  base::UmaHistogramEnumeration("PageLoad.Experimental.PageVisitType", type);
+  base::UmaHistogramEnumeration("PageLoad.Experimental.PageVisitType2", type);
   return type;
 }
 
@@ -97,16 +104,9 @@ void PreviewPageLoadMetricsObserver::RecordMetrics() {
       "PageLoad.Experimental.TotalForegroundDuration.AllVisit",
       total_foreground_duration_);
   switch (page_visit_type) {
-    case PageVisitType::kIndependentVisit:
-      PAGE_LOAD_LONG_HISTOGRAM(
-          "PageLoad.Experimental.TotalForegroundDuration.IndependentVisit",
-          total_foreground_duration_);
-      break;
-    case PageVisitType::kOriginVisit:
-      PAGE_LOAD_LONG_HISTOGRAM(
-          "PageLoad.Experimental.TotalForegroundDuration.OriginVisit",
-          total_foreground_duration_);
-      break;
+    case PageVisitType::kObsoleteIndependentVisit:
+    case PageVisitType::kObsoleteOriginVisit:
+      NOTREACHED_NORETURN();
     case PageVisitType::kPassingVisit:
       PAGE_LOAD_LONG_HISTOGRAM(
           "PageLoad.Experimental.TotalForegroundDuration.PassingVisit",
@@ -122,5 +122,35 @@ void PreviewPageLoadMetricsObserver::RecordMetrics() {
           "PageLoad.Experimental.TotalForegroundDuration.HistoryVisit",
           total_foreground_duration_);
       break;
+    case PageVisitType::kIndependentLinkVisit:
+      PAGE_LOAD_LONG_HISTOGRAM(
+          "PageLoad.Experimental.TotalForegroundDuration.IndependentLinkVisit",
+          total_foreground_duration_);
+      break;
+    case PageVisitType::kIndependentUIVisit:
+      PAGE_LOAD_LONG_HISTOGRAM(
+          "PageLoad.Experimental.TotalForegroundDuration.IndependentUIVisit",
+          total_foreground_duration_);
+      break;
+    case PageVisitType::kOriginLinkVisit:
+      PAGE_LOAD_LONG_HISTOGRAM(
+          "PageLoad.Experimental.TotalForegroundDuration.OriginLinkVisit",
+          total_foreground_duration_);
+      break;
+    case PageVisitType::kOriginUIVisit:
+      PAGE_LOAD_LONG_HISTOGRAM(
+          "PageLoad.Experimental.TotalForegroundDuration.OriginUIVisit",
+          total_foreground_duration_);
+      break;
+  }
+}
+
+void PreviewPageLoadMetricsObserver::CheckPageTransitionType(
+    content::NavigationHandle* navigation_handle) {
+  is_history_navigation_ =
+      navigation_handle->GetPageTransition() & ui::PAGE_TRANSITION_FORWARD_BACK;
+  if (ui::PageTransitionCoreTypeIs(navigation_handle->GetPageTransition(),
+                                   ui::PAGE_TRANSITION_FIRST)) {
+    is_first_navigation_ = true;
   }
 }
