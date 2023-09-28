@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/page_load_metrics/observers/third_party_metrics_observer.h"
+#include "components/page_load_metrics/browser/observers/third_party_metrics_observer.h"
 
 #include "base/memory/ptr_util.h"
-#include "chrome/browser/page_load_metrics/observers/page_load_metrics_observer_test_harness.h"
+#include "components/page_load_metrics/browser/observers/page_load_metrics_observer_content_test_harness.h"
 #include "components/page_load_metrics/browser/page_load_tracker.h"
 #include "components/page_load_metrics/common/page_load_metrics.mojom.h"
 #include "components/page_load_metrics/common/test/page_load_metrics_test_util.h"
@@ -26,7 +26,7 @@ using content::RenderFrameHost;
 using content::RenderFrameHostTester;
 
 class ThirdPartyMetricsObserverTestBase
-    : public page_load_metrics::PageLoadMetricsObserverTestHarness {
+    : public page_load_metrics::PageLoadMetricsObserverContentTestHarness {
  public:
   ThirdPartyMetricsObserverTestBase(const ThirdPartyMetricsObserverTestBase&) =
       delete;
@@ -55,8 +55,9 @@ class ThirdPartyMetricsObserverTestBase
   }
 
   RenderFrameHost* AppendChildFrame(content::RenderFrameHost* parent) {
-    if (WithFencedFrames())
+    if (WithFencedFrames()) {
       return content::RenderFrameHostTester::For(parent)->AppendFencedFrame();
+    }
     return content::RenderFrameHostTester::For(parent)->AppendChild("iframe");
   }
 

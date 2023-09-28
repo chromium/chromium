@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/page_load_metrics/observers/third_party_metrics_observer.h"
+#include "components/page_load_metrics/browser/observers/third_party_metrics_observer.h"
 
 #include "base/containers/enum_set.h"
 #include "base/metrics/histogram_macros.h"
@@ -213,8 +213,9 @@ void ThirdPartyMetricsObserver::OnStorageAccessed(
 
 void ThirdPartyMetricsObserver::OnDidFinishSubFrameNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->HasCommitted())
+  if (!navigation_handle->HasCommitted()) {
     return;
+  }
 
   // A RenderFrameHost is navigating. Since this is a new navigation we want to
   // capture its paint timing. Remove the RFH from the list of recorded frames.
@@ -330,8 +331,9 @@ ThirdPartyMetricsObserver::GetThirdPartyInfo(const GURL& url,
   // return false, and function execution will continue because it is considered
   // 3rd party. Since |first_party_url| is actually the |site_for_cookies|, this
   // will happen e.g. for a 3rd party iframe on document.cookie access.
-  if (!url.is_valid() || IsSameSite(url, first_party_url))
+  if (!url.is_valid() || IsSameSite(url, first_party_url)) {
     return nullptr;
+  }
 
   std::string registrable_domain =
       net::registry_controlled_domains::GetDomainAndRegistry(
@@ -379,8 +381,9 @@ void ThirdPartyMetricsObserver::OnCookieOrStorageAccess(
   bool is_third_party = false;
   auto* third_party_info =
       GetThirdPartyInfo(url, first_party_url, is_third_party);
-  if (!is_third_party)
+  if (!is_third_party) {
     return;
+  }
   if (third_party_info != nullptr) {
     third_party_info->access_types[static_cast<size_t>(access_type)] = true;
   }
@@ -391,15 +394,17 @@ void ThirdPartyMetricsObserver::OnCookieOrStorageAccess(
 
 void ThirdPartyMetricsObserver::RecordMetrics(
     const page_load_metrics::mojom::PageLoadTiming& main_frame_timing) {
-  if (!should_record_metrics_)
+  if (!should_record_metrics_) {
     return;
+  }
 
   int cookie_origin_reads = 0;
 
   for (auto it : all_third_party_info_) {
     const ThirdPartyInfo& tpi = it.second;
-    if (tpi.access_types[static_cast<size_t>(AccessType::kCookieRead)])
+    if (tpi.access_types[static_cast<size_t>(AccessType::kCookieRead)]) {
       ++cookie_origin_reads;
+    }
   }
 
   UMA_HISTOGRAM_COUNTS_1000("PageLoad.Clients.ThirdParty.Origins.CookieRead2",
