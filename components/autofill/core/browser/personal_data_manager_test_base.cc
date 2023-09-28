@@ -4,7 +4,6 @@
 
 #include "components/autofill/core/browser/personal_data_manager_test_base.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/test/gmock_callback_support.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/common/autofill_clock.h"
@@ -17,22 +16,6 @@ const char kPrimaryAccountEmail[] = "syncuser@example.com";
 const char kSyncTransportAccountEmail[] = "transport@example.com";
 
 }  // anonymous namespace
-
-PersonalDataLoadedObserverMock::PersonalDataLoadedObserverMock() = default;
-PersonalDataLoadedObserverMock::~PersonalDataLoadedObserverMock() = default;
-
-PersonalDataProfileTaskWaiter::PersonalDataProfileTaskWaiter(
-    PersonalDataManager& pdm) {
-  scoped_observation_.Observe(&pdm);
-  ON_CALL(mock_observer_, OnPersonalDataFinishedProfileTasks())
-      .WillByDefault(base::test::RunClosure(run_loop_.QuitClosure()));
-}
-
-PersonalDataProfileTaskWaiter::~PersonalDataProfileTaskWaiter() = default;
-
-void PersonalDataProfileTaskWaiter::Wait() && {
-  run_loop_.Run();
-}
 
 PersonalDataManagerTestBase::PersonalDataManagerTestBase() = default;
 
