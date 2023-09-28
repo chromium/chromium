@@ -135,6 +135,12 @@ SettingValue GetMacOSFirewall() {
   // status of the firewall (System Preferences> Security & Privacy> Firewall).
   // Reading globalstate from com.apple.alf is the closest way to get such an
   // API in Chrome without delegating to potentially unstable commands.
+  // Values of "globalstate":
+  //   0 = de-activated
+  //   1 = on for specific services
+  //   2 = on for essential services
+  // You can get 2 by, e.g., enabling the "Block all incoming connections"
+  // firewall functionality.
 
   Boolean key_exists_with_valid_format = false;
   CFIndex globalstate = CFPreferencesGetAppIntegerValue(
@@ -148,6 +154,7 @@ SettingValue GetMacOSFirewall() {
     case 0:
       return SettingValue::DISABLED;
     case 1:
+    case 2:
       return SettingValue::ENABLED;
     default:
       return SettingValue::UNKNOWN;
