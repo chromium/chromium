@@ -14,12 +14,11 @@
 // dependency on chrome.exe which is required by this test, and it's undesired
 // to make notification_helper_unittests.exe have data dependency on chrome.exe.
 
-#include <wrl/client.h>
-
 #include <memory>
 #include <string>
 
 #include <NotificationActivationCallback.h>
+#include <wrl/client.h>
 
 #include "base/base_paths.h"
 #include "base/containers/flat_map.h"
@@ -30,7 +29,6 @@
 #include "base/process/kill.h"
 #include "base/process/process.h"
 #include "base/process/process_iterator.h"
-#include "base/test/test_reg_util_win.h"
 #include "base/test/test_timeouts.h"
 #include "base/win/scoped_com_initializer.h"
 #include "build/build_config.h"
@@ -198,9 +196,7 @@ class NotificationHelperLaunchesChrome : public testing::Test {
       const NotificationHelperLaunchesChrome&) = delete;
 
  protected:
-  NotificationHelperLaunchesChrome() : root_(HKEY_CURRENT_USER) {
-    registry_override_.OverrideRegistry(root_);
-  }
+  NotificationHelperLaunchesChrome() : root_(HKEY_CURRENT_USER) {}
 
   ~NotificationHelperLaunchesChrome() override = default;
 
@@ -246,10 +242,6 @@ class NotificationHelperLaunchesChrome : public testing::Test {
 
   // Predefined handle to the registry.
   const HKEY root_;
-
-  // This is used to ensure that any registry changes by this test don't affect
-  // the registry on the machine running the test, and are cleaned up.
-  registry_util::RegistryOverrideManager registry_override_;
 
   // A list of work items on the registry.
   std::unique_ptr<WorkItemList> work_item_list_;

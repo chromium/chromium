@@ -26,10 +26,6 @@
 #include "chromeos/dbus/u2f/u2f_client.h"  // nogncheck
 #endif
 
-#if BUILDFLAG(IS_WIN)
-#include "base/test/test_reg_util_win.h"
-#endif  // BUILDFLAG(IS_WIN)
-
 namespace {
 
 const char kTouchEventFeatureDetectionEnabledHistogramName[] =
@@ -76,9 +72,6 @@ class ChromeBrowserMainExtraPartsMetricsTest : public testing::Test {
     // which would ordinarily have been set up by browser DBus initialization.
     chromeos::U2FClient::InitializeFake();
 #endif
-#if BUILDFLAG(IS_WIN)
-    registry_override_.OverrideRegistry(HKEY_CURRENT_USER);
-#endif  // BUILDFLAG(IS_WIN)
   }
 
   void TearDown() override {
@@ -93,12 +86,6 @@ class ChromeBrowserMainExtraPartsMetricsTest : public testing::Test {
 #endif
 
  private:
-#if BUILDFLAG(IS_WIN)
-  // This is used to ensure that any registry changes by this test don't affect
-  // the registry on the machine running the test, and are cleaned up.
-  registry_util::RegistryOverrideManager registry_override_;
-#endif  // BUILDFLAG(IS_WIN)
-
   // Provides a message loop and allows the use of the task scheduler
   content::BrowserTaskEnvironment task_environment_;
 
