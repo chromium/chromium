@@ -233,6 +233,7 @@ STATIC_ASSERT_ENUM(NSDragOperationMove, ui::DragDropTypes::DRAG_MOVE);
 }
 
 - (void)startDragWithDropData:(const DropData&)dropData
+                 sourceOrigin:(const url::Origin&)sourceOrigin
             dragOperationMask:(NSDragOperation)operationMask
                         image:(NSImage*)image
                        offset:(NSPoint)offset
@@ -253,6 +254,7 @@ STATIC_ASSERT_ENUM(NSDragOperationMove, ui::DragDropTypes::DRAG_MOVE);
 
   _dragSource = [[WebDragSource alloc] initWithHost:_host
                                            dropData:dropData
+                                       sourceOrigin:sourceOrigin
                                        isPrivileged:isPrivileged];
   NSDraggingItem* draggingItem =
       [[NSDraggingItem alloc] initWithPasteboardWriter:_dragSource];

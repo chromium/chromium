@@ -85,15 +85,33 @@ std::unique_ptr<OSExchangeDataProvider> XOSExchangeDataProvider::Clone() const {
   return std::move(ret);
 }
 
-void XOSExchangeDataProvider::MarkOriginatedFromRenderer() {
-  format_map_.Insert(
-      x11::GetAtom(kRendererTaint),
-      scoped_refptr<base::RefCountedMemory>(
-          base::MakeRefCounted<base::RefCountedString>(std::string())));
+void XOSExchangeDataProvider::MarkRendererTaintedFromOrigin(
+    const url::Origin& origin) {
+  format_map_.Insert(x11::GetAtom(kRendererTaint),
+                     base::MakeRefCounted<base::RefCountedString>(
+                         origin.opaque() ? std::string() : origin.Serialize()));
 }
 
-bool XOSExchangeDataProvider::DidOriginateFromRenderer() const {
+bool XOSExchangeDataProvider::IsRendererTainted() const {
   return format_map_.find(x11::GetAtom(kRendererTaint)) != format_map_.end();
+}
+
+absl::optional<url::Origin> XOSExchangeDataProvider::GetRendererTaintedOrigin()
+    const {
+  auto it = format_map_.find(x11::GetAtom(kRendererTaint));
+
+  if (it == format_map_.end()) {
+    return absl::nullopt;
+  }
+
+  ui::SelectionData data(it->first, it->second);
+  std::string data_as_string;
+  data.AssignTo(&data_as_string);
+  if (data_as_string.empty()) {
+    return url::Origin();
+  }
+
+  return url::Origin::Create(GURL(data_as_string));
 }
 
 void XOSExchangeDataProvider::MarkAsFromPrivileged() {

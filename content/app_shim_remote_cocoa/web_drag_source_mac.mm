@@ -33,6 +33,7 @@
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/clipboard/custom_data_helper.h"
 #include "ui/base/cocoa/cocoa_base_utils.h"
+#include "url/origin.h"
 #include "url/url_constants.h"
 
 @implementation WebDragSource {
@@ -43,6 +44,9 @@
 
   // The drop data.
   content::DropData _dropData;
+
+  // The source origin the drop data came from.
+  url::Origin _sourceOrigin;
 
   // Whether to mark the drag as having come from a privileged WebContents.
   BOOL _privileged;
@@ -60,10 +64,12 @@
 
 - (instancetype)initWithHost:(remote_cocoa::mojom::WebContentsNSViewHost*)host
                     dropData:(const content::DropData&)dropData
+                sourceOrigin:(const url::Origin&)sourceOrigin
                 isPrivileged:(BOOL)privileged {
   if ((self = [super init])) {
     _host = host;
     _dropData = dropData;
+    _sourceOrigin = sourceOrigin;
     _privileged = privileged;
   }
 
@@ -295,9 +301,15 @@
     return [NSData dataWithBytes:pickle.data() length:pickle.size()];
   }
 
+  // Source origin of the drop data.
+  if ([type isEqualToString:ui::kUTTypeChromiumRendererInitiatedDrag]) {
+    return _sourceOrigin.opaque()
+               ? [NSString string]
+               : base::SysUTF8ToNSString(_sourceOrigin.Serialize());
+  }
+
   // Flavors used to tag.
   if ([type isEqualToString:ui::kUTTypeChromiumInitiatedDrag] ||
-      [type isEqualToString:ui::kUTTypeChromiumRendererInitiatedDrag] ||
       [type isEqualToString:ui::kUTTypeChromiumPrivilegedInitiatedDrag]) {
     // The type _was_ promised and someone decided to call the bluff.
     return [NSData data];

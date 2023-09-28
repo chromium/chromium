@@ -8818,8 +8818,9 @@ void RenderFrameHostImpl::StartDragging(
     const gfx::Rect& drag_obj_rect_in_dip,
     blink::mojom::DragEventSourceInfoPtr event_info) {
   GetRenderWidgetHost()->StartDragging(
-      std::move(drag_data), drag_operations_mask, unsafe_bitmap,
-      cursor_offset_in_dip, drag_obj_rect_in_dip, std::move(event_info));
+      std::move(drag_data), GetLastCommittedOrigin(), drag_operations_mask,
+      unsafe_bitmap, cursor_offset_in_dip, drag_obj_rect_in_dip,
+      std::move(event_info));
 }
 
 void RenderFrameHostImpl::CreateNewPopupWidget(

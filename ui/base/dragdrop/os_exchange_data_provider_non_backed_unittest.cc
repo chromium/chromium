@@ -45,9 +45,7 @@ TEST(OSExchangeDataProviderNonBackedTest, CloneTest) {
   original.SetFileContents(base::FilePath(kFileContentsFileName),
                            std::string(kFileContents));
   original.SetHtml(kHtml, GURL(kBaseUrl));
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-  original.MarkOriginatedFromRenderer();
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+  original.MarkRendererTaintedFromOrigin(url::Origin());
   GURL url("www.example.com");
   original.SetSource(std::make_unique<DataTransferEndpoint>(url));
 
@@ -82,9 +80,7 @@ TEST(OSExchangeDataProviderNonBackedTest, CloneTest) {
   EXPECT_EQ(kHtml, copy_html);
   EXPECT_EQ(GURL(kBaseUrl), copy_base_url);
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-  EXPECT_TRUE(copy->DidOriginateFromRenderer());
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+  EXPECT_TRUE(copy->IsRendererTainted());
 
   DataTransferEndpoint* data_endpoint = copy->GetSource();
   EXPECT_TRUE(data_endpoint);

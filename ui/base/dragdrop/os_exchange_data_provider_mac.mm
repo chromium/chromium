@@ -135,14 +135,33 @@ OSExchangeDataProviderMac::CreateProviderWrappingPasteboard(
   return std::make_unique<WrappingProvider>(pasteboard);
 }
 
-void OSExchangeDataProviderMac::MarkOriginatedFromRenderer() {
-  [GetPasteboard() setData:[NSData data]
-                   forType:kUTTypeChromiumRendererInitiatedDrag];
+void OSExchangeDataProviderMac::MarkRendererTaintedFromOrigin(
+    const url::Origin& origin) {
+  NSString* string = origin.opaque()
+                         ? [NSString string]
+                         : base::SysUTF8ToNSString(origin.Serialize());
+  [GetPasteboard() setString:string
+                     forType:kUTTypeChromiumRendererInitiatedDrag];
 }
 
-bool OSExchangeDataProviderMac::DidOriginateFromRenderer() const {
+bool OSExchangeDataProviderMac::IsRendererTainted() const {
   return [GetPasteboard().types
       containsObject:kUTTypeChromiumRendererInitiatedDrag];
+}
+
+absl::optional<url::Origin>
+OSExchangeDataProviderMac::GetRendererTaintedOrigin() const {
+  NSString* item =
+      [GetPasteboard() stringForType:kUTTypeChromiumRendererInitiatedDrag];
+  if (!item) {
+    return absl::nullopt;
+  }
+
+  if (0 == [item length]) {
+    return url::Origin();
+  }
+
+  return url::Origin::Create(GURL(base::SysNSStringToUTF8(item)));
 }
 
 void OSExchangeDataProviderMac::MarkAsFromPrivileged() {

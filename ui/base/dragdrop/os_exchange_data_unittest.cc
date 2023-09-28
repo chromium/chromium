@@ -237,4 +237,53 @@ TEST_F(OSExchangeDataTest, TestHTML) {
 }
 #endif
 
+TEST_F(OSExchangeDataTest, NotRendererTainted) {
+  const OSExchangeData copy([&] {
+    OSExchangeData data;
+    return data.provider().Clone();
+  }());
+
+  EXPECT_FALSE(copy.IsRendererTainted());
+  EXPECT_EQ(absl::nullopt, copy.GetRendererTaintedOrigin());
+}
+
+TEST_F(OSExchangeDataTest, RendererTaintedOpaqueOrigin) {
+  const url::Origin tuple_origin =
+      url::Origin::Create(GURL("https://www.google.com/"));
+  const url::Origin opaque_origin = tuple_origin.DeriveNewOpaqueOrigin();
+  ASSERT_TRUE(opaque_origin.opaque());
+
+  const OSExchangeData copy([&] {
+    OSExchangeData data;
+    data.MarkRendererTaintedFromOrigin(opaque_origin);
+    return data.provider().Clone();
+  }());
+
+  EXPECT_TRUE(copy.IsRendererTainted());
+  absl::optional<url::Origin> origin = copy.GetRendererTaintedOrigin();
+  EXPECT_TRUE(origin.has_value());
+  EXPECT_TRUE(origin->opaque());
+  // Currently, the actual value of an opaque origin is not actually serialized
+  // into OSExchangeData, so expect a random opaque origin to be read out.
+  EXPECT_NE(opaque_origin, origin);
+  // And there should be no precursor tuple.
+  EXPECT_FALSE(origin->GetTupleOrPrecursorTupleIfOpaque().IsValid());
+}
+
+TEST_F(OSExchangeDataTest, RendererTaintedTupleOrigin) {
+  const url::Origin tuple_origin =
+      url::Origin::Create(GURL("https://www.google.com/"));
+
+  const OSExchangeData copy([&] {
+    OSExchangeData data;
+    data.MarkRendererTaintedFromOrigin(tuple_origin);
+    return data.provider().Clone();
+  }());
+
+  EXPECT_TRUE(copy.IsRendererTainted());
+  absl::optional<url::Origin> origin = copy.GetRendererTaintedOrigin();
+  EXPECT_TRUE(origin.has_value());
+  EXPECT_EQ(tuple_origin, origin);
+}
+
 }  // namespace ui

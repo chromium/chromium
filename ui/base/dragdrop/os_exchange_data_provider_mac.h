@@ -37,8 +37,9 @@ class COMPONENT_EXPORT(UI_BASE) OSExchangeDataProviderMac
   CreateProviderWrappingPasteboard(NSPasteboard* pasteboard);
 
   // Overridden from OSExchangeDataProvider:
-  void MarkOriginatedFromRenderer() override;
-  bool DidOriginateFromRenderer() const override;
+  void MarkRendererTaintedFromOrigin(const url::Origin& origin) override;
+  bool IsRendererTainted() const override;
+  absl::optional<url::Origin> GetRendererTaintedOrigin() const override;
   void MarkAsFromPrivileged() override;
   bool IsFromPrivileged() const override;
   void SetString(const std::u16string& data) override;

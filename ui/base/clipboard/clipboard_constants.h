@@ -91,7 +91,15 @@ COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES)
 extern NSString* const kUTTypeChromiumPrivilegedInitiatedDrag;
 
 // Data type placed on dragging pasteboards when the drag is initiated from a
-// renderer. There is never any data associated with this type.
+// renderer. If the initiator has a tuple origin (e.g. https://example.com),
+// the data is a string representation (i.e. the result of calling
+// `url::Origin::Serialize()`). Otherwise, the initiator has an opaque origin
+// and the data is the empty string.
+//
+// This format is intentionally chosen for safer backwards compatibility with
+// previous versions of Chrome, which always set an empty string for the data.
+// When newer versions of Chrome attempt to interpret this data as an origin,
+// they will safely treat it as a unique opaque origin.
 COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES)
 extern NSString* const kUTTypeChromiumRendererInitiatedDrag;
 

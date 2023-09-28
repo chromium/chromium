@@ -34,6 +34,7 @@
 #include "ui/display/display_switches.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/geometry/rect.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "ui/base/dragdrop/os_exchange_data_provider_win.h"
@@ -387,7 +388,7 @@ TEST_F(WebContentsViewAuraTest, MAYBE_DragDropFilesOriginateFromRenderer) {
   // Simulate the drag originating in the renderer process, in which case
   // any file data should be filtered out (anchor drag scenario) except in
   // CHROMEOS_ASH.
-  data->MarkOriginatedFromRenderer();
+  data->MarkRendererTaintedFromOrigin(url::Origin());
 
   ui::DropTargetEvent event(*data.get(), kClientPt, kScreenPt,
                             ui::DragDropTypes::DRAG_COPY);
@@ -407,7 +408,6 @@ TEST_F(WebContentsViewAuraTest, MAYBE_DragDropFilesOriginateFromRenderer) {
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // CHROMEOS_ASH always returns false for DidOriginateFromRenderer().
   ASSERT_FALSE(view->current_drag_data_->filenames.empty());
 #else
   ASSERT_TRUE(view->current_drag_data_->filenames.empty());
@@ -440,7 +440,8 @@ TEST_F(WebContentsViewAuraTest, MAYBE_DragDropFilesOriginateFromRenderer) {
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // CHROMEOS_ASH always returns false for DidOriginateFromRenderer().
+  // CHROMEOS_ASH never filters out files from a drop, even if the drag
+  // originated from a renderer, because otherwise, it breaks the Files app.
   ASSERT_FALSE(drop_complete_data_->drop_data.filenames.empty());
 #else
   ASSERT_TRUE(drop_complete_data_->drop_data.filenames.empty());
@@ -483,7 +484,7 @@ TEST_F(WebContentsViewAuraTest, MAYBE_DragDropImageFromRenderer) {
   data->SetFileContents(filename, file_contents);
   data->SetURL(url, url_title);
   data->SetHtml(html, GURL());
-  data->MarkOriginatedFromRenderer();
+  data->MarkRendererTaintedFromOrigin(url::Origin());
 
   ui::DropTargetEvent event(*data.get(), kClientPt, kScreenPt,
                             ui::DragDropTypes::DRAG_COPY);
@@ -642,7 +643,7 @@ TEST_F(WebContentsViewAuraTest, DragDropVirtualFilesOriginateFromRenderer) {
 
   // Simulate the drag originating in the renderer process, in which case
   // any file data should be filtered out (anchor drag scenario).
-  data->MarkOriginatedFromRenderer();
+  data->MarkRendererTaintedFromOrigin(url::Origin());
 
   ui::DropTargetEvent event(*data.get(), kClientPt, kScreenPt,
                             ui::DragDropTypes::DRAG_COPY);
@@ -682,7 +683,7 @@ TEST_F(WebContentsViewAuraTest, DragDropVirtualFilesOriginateFromRenderer) {
 TEST_F(WebContentsViewAuraTest, DragDropUrlData) {
   WebContentsViewAura* view = GetView();
   auto data = std::make_unique<ui::OSExchangeData>();
-  data->MarkOriginatedFromRenderer();
+  data->MarkRendererTaintedFromOrigin(url::Origin());
 
   const std::string url_spec = "https://www.wikipedia.org/";
   const GURL url(url_spec);
@@ -761,7 +762,8 @@ TEST_F(WebContentsViewAuraTest, StartDragging) {
 
   DropData drop_data;
   drop_data.text.emplace(u"Hello World!");
-  view->StartDragging(drop_data, blink::DragOperationsMask::kDragOperationNone,
+  view->StartDragging(drop_data, url::Origin(),
+                      blink::DragOperationsMask::kDragOperationNone,
                       gfx::ImageSkia(), gfx::Vector2d(), gfx::Rect(),
                       blink::mojom::DragEventSourceInfo(),
                       RenderWidgetHostImpl::From(rvh()->GetWidget()));
@@ -832,7 +834,8 @@ TEST_F(WebContentsViewAuraTest, StartDragFromPrivilegedWebContents) {
   view->drag_in_progress_ = true;
 
   DropData drop_data;
-  view->StartDragging(drop_data, blink::DragOperationsMask::kDragOperationNone,
+  view->StartDragging(drop_data, url::Origin(),
+                      blink::DragOperationsMask::kDragOperationNone,
                       gfx::ImageSkia(), gfx::Vector2d(), gfx::Rect(),
                       blink::mojom::DragEventSourceInfo(),
                       RenderWidgetHostImpl::From(rvh()->GetWidget()));

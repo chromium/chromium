@@ -39,6 +39,10 @@ class DropTargetEvent;
 class TouchSelectionController;
 }
 
+namespace url {
+class Origin;
+}
+
 namespace content {
 class GestureNavSimple;
 class RenderWidgetHostImpl;
@@ -211,6 +215,7 @@ class CONTENT_EXPORT WebContentsViewAura
   void ShowContextMenu(RenderFrameHost& render_frame_host,
                        const ContextMenuParams& params) override;
   void StartDragging(const DropData& drop_data,
+                     const url::Origin& source_origin,
                      blink::DragOperationsMask operations,
                      const gfx::ImageSkia& image,
                      const gfx::Vector2d& cursor_offset,

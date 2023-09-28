@@ -156,6 +156,7 @@ void WebContentsViewMac::UpdateWindowControlsOverlay(
 
 void WebContentsViewMac::StartDragging(
     const DropData& drop_data,
+    const url::Origin& source_origin,
     DragOperationsMask allowed_operations,
     const gfx::ImageSkia& image,
     const gfx::Vector2d& cursor_offset,
@@ -183,11 +184,11 @@ void WebContentsViewMac::StartDragging(
   // TODO(crbug.com/1302094): The param `drag_obj_rect` is unused.
 
   if (remote_ns_view_) {
-    remote_ns_view_->StartDrag(drop_data, mask, image, cursor_offset,
-                               is_privileged);
+    remote_ns_view_->StartDrag(drop_data, source_origin, mask, image,
+                               cursor_offset, is_privileged);
   } else {
-    in_process_ns_view_bridge_->StartDrag(drop_data, mask, image, cursor_offset,
-                                          is_privileged);
+    in_process_ns_view_bridge_->StartDrag(drop_data, source_origin, mask, image,
+                                          cursor_offset, is_privileged);
   }
 }
 

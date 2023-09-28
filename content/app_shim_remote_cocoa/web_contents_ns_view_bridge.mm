@@ -98,6 +98,7 @@ void WebContentsNSViewBridge::TakeFocus(bool reverse) {
 }
 
 void WebContentsNSViewBridge::StartDrag(const content::DropData& drop_data,
+                                        const url::Origin& source_origin,
                                         uint32_t operation_mask,
                                         const gfx::ImageSkia& image,
                                         const gfx::Vector2d& image_offset,
@@ -105,6 +106,7 @@ void WebContentsNSViewBridge::StartDrag(const content::DropData& drop_data,
   NSPoint offset = NSPointFromCGPoint(
       gfx::PointAtOffsetFromOrigin(image_offset).ToCGPoint());
   [ns_view_ startDragWithDropData:drop_data
+                     sourceOrigin:source_origin
                 dragOperationMask:operation_mask
                             image:gfx::NSImageFromImageSkia(image)
                            offset:offset

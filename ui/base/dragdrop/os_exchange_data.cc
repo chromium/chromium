@@ -13,7 +13,7 @@
 #include "ui/base/clipboard/clipboard_format_type.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/dragdrop/os_exchange_data_provider_factory.h"
-#include "url/gurl.h"
+#include "url/origin.h"
 
 namespace ui {
 
@@ -27,12 +27,16 @@ OSExchangeData::OSExchangeData(std::unique_ptr<OSExchangeDataProvider> provider)
 OSExchangeData::~OSExchangeData() {
 }
 
-void OSExchangeData::MarkOriginatedFromRenderer() {
-  provider_->MarkOriginatedFromRenderer();
+void OSExchangeData::MarkRendererTaintedFromOrigin(const url::Origin& origin) {
+  provider_->MarkRendererTaintedFromOrigin(origin);
 }
 
-bool OSExchangeData::DidOriginateFromRenderer() const {
-  return provider_->DidOriginateFromRenderer();
+bool OSExchangeData::IsRendererTainted() const {
+  return provider_->IsRendererTainted();
+}
+
+absl::optional<url::Origin> OSExchangeData::GetRendererTaintedOrigin() const {
+  return provider_->GetRendererTaintedOrigin();
 }
 
 void OSExchangeData::MarkAsFromPrivileged() {

@@ -11,7 +11,6 @@
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/strings/utf_string_conversions.h"
-#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "net/base/filename_util.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
@@ -33,20 +32,23 @@ std::unique_ptr<OSExchangeDataProvider> OSExchangeDataProviderNonBacked::Clone()
   return clone;
 }
 
-void OSExchangeDataProviderNonBacked::MarkOriginatedFromRenderer() {
-  // TODO(dcheng): Currently unneeded because ChromeOS Aura correctly separates
-  // URL and filename metadata, and does not implement the DownloadURL protocol.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-  originated_from_renderer_ = true;
-#endif
+void OSExchangeDataProviderNonBacked::MarkRendererTaintedFromOrigin(
+    const url::Origin& origin) {
+  tainted_by_renderer_origin_ = origin;
 }
 
-bool OSExchangeDataProviderNonBacked::DidOriginateFromRenderer() const {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  return false;
-#else
-  return originated_from_renderer_;
-#endif
+bool OSExchangeDataProviderNonBacked::IsRendererTainted() const {
+  return tainted_by_renderer_origin_.has_value();
+}
+
+absl::optional<url::Origin>
+OSExchangeDataProviderNonBacked::GetRendererTaintedOrigin() const {
+  // Platform-specific implementations of OSExchangeDataProvider do not
+  // roundtrip opaque origins, so match that behavior here.
+  if (tainted_by_renderer_origin_ && tainted_by_renderer_origin_->opaque()) {
+    return url::Origin();
+  }
+  return tainted_by_renderer_origin_;
 }
 
 void OSExchangeDataProviderNonBacked::MarkAsFromPrivileged() {
@@ -280,10 +282,8 @@ void OSExchangeDataProviderNonBacked::CopyData(
   provider->source_ =
       source_ ? std::make_unique<DataTransferEndpoint>(*source_.get())
               : nullptr;
+  provider->tainted_by_renderer_origin_ = tainted_by_renderer_origin_;
   provider->is_from_privileged_ = is_from_privileged_;
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-  provider->originated_from_renderer_ = originated_from_renderer_;
-#endif
 }
 
 }  // namespace ui

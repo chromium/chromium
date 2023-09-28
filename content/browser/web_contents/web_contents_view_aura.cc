@@ -252,9 +252,10 @@ const ui::ClipboardFormatType& GetFileSystemFileFormatType() {
 
 // Utility to fill a ui::OSExchangeDataProvider object from DropData.
 void PrepareDragData(const DropData& drop_data,
+                     const url::Origin source_origin,
                      ui::OSExchangeDataProvider* provider,
                      WebContentsImpl* web_contents) {
-  provider->MarkOriginatedFromRenderer();
+  provider->MarkRendererTaintedFromOrigin(source_origin);
 #if BUILDFLAG(IS_WIN)
   // Put download before file contents to prefer the download of a image over
   // its thumbnail link.
@@ -698,7 +699,15 @@ void WebContentsViewAura::SetDelegateForTesting(
 void WebContentsViewAura::PrepareDropData(
     DropData* drop_data,
     const ui::OSExchangeData& data) const {
-  drop_data->did_originate_from_renderer = data.DidOriginateFromRenderer();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // TODO(b/256022714): Using `IsRendererTainted()` breaks the Files app. Always
+  // setting this to false is currently believed to be safe-ish because ChromeOS
+  // separates URL and filename metadata and does not implement the DownloadURL
+  // protocol.
+  drop_data->did_originate_from_renderer = false;
+#else
+  drop_data->did_originate_from_renderer = data.IsRendererTainted();
+#endif
   drop_data->is_from_privileged = data.IsFromPrivileged();
 
   std::u16string plain_text;
@@ -1147,6 +1156,7 @@ void WebContentsViewAura::ShowContextMenu(RenderFrameHost& render_frame_host,
 
 void WebContentsViewAura::StartDragging(
     const DropData& drop_data,
+    const url::Origin& source_origin,
     blink::DragOperationsMask operations,
     const gfx::ImageSkia& image,
     const gfx::Vector2d& cursor_offset,
@@ -1180,7 +1190,7 @@ void WebContentsViewAura::StartDragging(
     selection_controller->HideAndDisallowShowingAutomatically();
   std::unique_ptr<ui::OSExchangeDataProvider> provider =
       ui::OSExchangeDataProviderFactory::CreateProvider();
-  PrepareDragData(drop_data, provider.get(), web_contents_);
+  PrepareDragData(drop_data, source_origin, provider.get(), web_contents_);
 
   auto data = std::make_unique<ui::OSExchangeData>(std::move(provider));
   data->SetSource(

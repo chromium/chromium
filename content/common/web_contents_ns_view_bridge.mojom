@@ -8,6 +8,7 @@ import "content/public/common/drop_data.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/image/mojom/image.mojom";
+import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 
 // Interface through which a WebContentsViewMac communicates with its NSView in
@@ -42,6 +43,7 @@ interface WebContentsNSView {
   // to whether the WebContents initiating the drag is being used to implement
   // a UI surface. See `WebContentsDelegate::IsPrivileged()` for more context.
   StartDrag(content.mojom.DropData drop_data,
+            url.mojom.Origin source_origin,
             uint32 operation_mask,
             gfx.mojom.ImageSkia? image,
             gfx.mojom.Vector2d image_offset,

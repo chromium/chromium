@@ -10,13 +10,14 @@
 
 #include "base/component_export.h"
 #include "base/pickle.h"
-#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/clipboard/file_info.h"
 #include "ui/base/dragdrop/os_exchange_data_provider.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace base {
 class FilePath;
@@ -41,8 +42,9 @@ class COMPONENT_EXPORT(UI_BASE) OSExchangeDataProviderNonBacked
 
   // Overridden from OSExchangeDataProvider:
   std::unique_ptr<OSExchangeDataProvider> Clone() const override;
-  void MarkOriginatedFromRenderer() override;
-  bool DidOriginateFromRenderer() const override;
+  void MarkRendererTaintedFromOrigin(const url::Origin& origin) override;
+  bool IsRendererTainted() const override;
+  absl::optional<url::Origin> GetRendererTaintedOrigin() const override;
   void MarkAsFromPrivileged() override;
   bool IsFromPrivileged() const override;
   void SetString(const std::u16string& data) override;
@@ -125,10 +127,8 @@ class COMPONENT_EXPORT(UI_BASE) OSExchangeDataProviderNonBacked
   std::u16string html_;
   GURL base_url_;
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
   // For marking data originating from the renderer.
-  bool originated_from_renderer_ = false;
-#endif
+  absl::optional<url::Origin> tainted_by_renderer_origin_;
 
   // For marking data originating by privileged WebContents.
   bool is_from_privileged_ = false;

@@ -16,12 +16,17 @@
 #include "base/component_export.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/dragdrop/os_exchange_data_provider.h"
 
 class GURL;
 
 namespace base {
 class Pickle;
+}
+
+namespace url {
+class Origin;
 }
 
 namespace ui {
@@ -75,11 +80,14 @@ class COMPONENT_EXPORT(UI_BASE) OSExchangeData {
   const OSExchangeDataProvider& provider() const { return *provider_; }
   OSExchangeDataProvider& provider() { return *provider_; }
 
-  // Marks drag data as tainted if it originates from the renderer. This is used
-  // to avoid granting privileges to a renderer when dragging in tainted data,
-  // since it could allow potential escalation of privileges.
-  void MarkOriginatedFromRenderer();
-  bool DidOriginateFromRenderer() const;
+  // Marks drag data as tainted by the renderer, with `origin` as the source of
+  // the data. This is used to:
+  // - avoid granting privileges to a renderer when dragging in tainted data,
+  //   since it could allow potential escalation of privileges.
+  // - track the origin where the drag data came from.
+  void MarkRendererTaintedFromOrigin(const url::Origin& origin);
+  bool IsRendererTainted() const;
+  absl::optional<url::Origin> GetRendererTaintedOrigin() const;
 
   // Marks drag data as from privileged WebContents. This is used to
   // make sure non-privileged WebContents will not accept drop data from

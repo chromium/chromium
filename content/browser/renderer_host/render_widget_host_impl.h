@@ -909,6 +909,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
                                   bool animate);
 
   void StartDragging(blink::mojom::DragDataPtr drag_data,
+                     const url::Origin& source_origin,
                      blink::DragOperationsMask drag_operations_mask,
                      const SkBitmap& unsafe_bitmap,
                      const gfx::Vector2d& cursor_offset_in_dip,

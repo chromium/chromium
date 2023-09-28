@@ -30,6 +30,7 @@
 #include "base/win/shlwapi.h"
 #include "net/base/filename_util.h"
 #include "skia/ext/skia_utils_win.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
 #include "ui/base/clipboard/clipboard_util_win.h"
@@ -43,6 +44,7 @@
 #include "ui/gfx/skbitmap_operations.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace ui {
 
@@ -295,14 +297,30 @@ std::unique_ptr<OSExchangeDataProvider> OSExchangeDataProviderWin::Clone()
   return std::make_unique<OSExchangeDataProviderWin>(data_object());
 }
 
-void OSExchangeDataProviderWin::MarkOriginatedFromRenderer() {
-  STGMEDIUM storage = CreateStorageForString(std::string());
+void OSExchangeDataProviderWin::MarkRendererTaintedFromOrigin(
+    const url::Origin& origin) {
+  STGMEDIUM storage = CreateStorageForString(
+      origin.opaque() ? std::string() : origin.Serialize());
   data_->contents_.push_back(DataObjectImpl::StoredDataInfo::TakeStorageMedium(
       GetRendererTaintFormatType().ToFormatEtc(), storage));
 }
 
-bool OSExchangeDataProviderWin::DidOriginateFromRenderer() const {
+bool OSExchangeDataProviderWin::IsRendererTainted() const {
   return HasCustomFormat(GetRendererTaintFormatType());
+}
+
+absl::optional<url::Origin>
+OSExchangeDataProviderWin::GetRendererTaintedOrigin() const {
+  STGMEDIUM medium;
+  FORMATETC format_etc = GetRendererTaintFormatType().ToFormatEtc();
+  if (FAILED(source_object_->GetData(&format_etc, &medium))) {
+    return absl::nullopt;
+  }
+  base::win::ScopedHGlobal<char*> data(medium.hGlobal);
+  if (data.Size() == 0) {
+    return url::Origin();
+  }
+  return url::Origin::Create(GURL(base::StringPiece(data.get(), data.Size())));
 }
 
 void OSExchangeDataProviderWin::MarkAsFromPrivileged() {

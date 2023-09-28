@@ -70,6 +70,7 @@
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace chrome {
 namespace {
@@ -345,10 +346,12 @@ class DragStartWaiter : public aura::client::DragDropClient {
   // WaitUntilDragStart can take a long time to return (it returns only after
   // the OS decides that the drag-and-drop has ended).
   //
-  // Before returning populates |text|, |html| and other parameters with data
-  // that would have been passed to the OS).  If the caller is not interested in
-  // this data, then the corresponding argument can be null.
-  void WaitUntilDragStart(std::string* text,
+  // Before returning populates `source_origin`, `text`, `html` and other
+  // parameters with data that would have been passed to the OS). If the caller
+  // is not interested in this data, then the corresponding argument can be
+  // null.
+  void WaitUntilDragStart(absl::optional<url::Origin>* source_origin,
+                          std::string* text,
                           std::string* html,
                           int* operation,
                           gfx::Point* location_inside_web_contents) {
@@ -357,6 +360,9 @@ class DragStartWaiter : public aura::client::DragDropClient {
     // message_loop_runner_->Quit is only called from StartDragAndDrop.
     DCHECK(drag_started_);
 
+    if (source_origin) {
+      *source_origin = source_origin_;
+    }
     if (text)
       *text = text_;
     if (html)
@@ -387,6 +393,7 @@ class DragStartWaiter : public aura::client::DragDropClient {
       drag_started_ = true;
       message_loop_runner_->Quit();
 
+      source_origin_ = data->GetRendererTaintedOrigin();
       std::u16string text;
       if (data->GetString(&text))
         text_ = base::UTF16ToUTF8(text);
@@ -448,6 +455,7 @@ class DragStartWaiter : public aura::client::DragDropClient {
 
   // Data captured during the first intercepted StartDragAndDrop call.
   bool drag_started_;
+  absl::optional<url::Origin> source_origin_;
   std::string text_;
   std::string html_;
   int operation_;
@@ -1264,12 +1272,16 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, MAYBE_DragStartInFrame) {
 
   // Verify data being passed to the OS.
   {
+    absl::optional<url::Origin> source_origin;
     std::string text;
     std::string html;
     int operation = 0;
     gfx::Point location_inside_web_contents;
-    drag_start_waiter.WaitUntilDragStart(&text, &html, &operation,
+    drag_start_waiter.WaitUntilDragStart(&source_origin, &text, &html,
+                                         &operation,
                                          &location_inside_web_contents);
+    ASSERT_TRUE(source_origin.has_value());
+    EXPECT_EQ(embedded_test_server()->GetOrigin(frame_site), source_origin);
     EXPECT_EQ(embedded_test_server()->GetURL(frame_site,
                                              "/drag_and_drop/cors-allowed.jpg"),
               text);
@@ -1402,7 +1414,8 @@ void DragAndDropBrowserTest::DragImageBetweenFrames_Start(
   // The next step of the test (DragImageBetweenFrames_Step2) runs inside the
   // nested drag-and-drop message loop - the call below won't return until the
   // drag-and-drop has already ended.
-  drag_start_waiter.WaitUntilDragStart(nullptr, nullptr, nullptr, nullptr);
+  drag_start_waiter.WaitUntilDragStart(nullptr, nullptr, nullptr, nullptr,
+                                       nullptr);
 
   DragImageBetweenFrames_Step3(&state);
 }
@@ -1634,7 +1647,8 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest,
   // The next step of the test (DragImageFromDisappearingFrame_Step2) runs
   // inside the nested drag-and-drop message loop - the call below won't return
   // until the drag-and-drop has already ended.
-  drag_start_waiter.WaitUntilDragStart(nullptr, nullptr, nullptr, nullptr);
+  drag_start_waiter.WaitUntilDragStart(nullptr, nullptr, nullptr, nullptr,
+                                       nullptr);
 
   DragImageFromDisappearingFrame_Step3(&state);
 }
@@ -1748,7 +1762,8 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, MAYBE_CrossSiteDrag) {
   // The next step of the test (CrossSiteDrag_Step2) runs inside the
   // nested drag-and-drop message loop - the call below won't return until the
   // drag-and-drop has already ended.
-  drag_start_waiter.WaitUntilDragStart(nullptr, nullptr, nullptr, nullptr);
+  drag_start_waiter.WaitUntilDragStart(nullptr, nullptr, nullptr, nullptr,
+                                       nullptr);
 
   CrossSiteDrag_Step3(&state);
 }
@@ -1886,7 +1901,8 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, MAYBE_CrossTabDrag) {
   // The next step of the test (CrossTabDrag_Step2) runs inside the
   // nested drag-and-drop message loop - the call below won't return until the
   // drag-and-drop has already ended.
-  drag_start_waiter.WaitUntilDragStart(nullptr, nullptr, nullptr, nullptr);
+  drag_start_waiter.WaitUntilDragStart(nullptr, nullptr, nullptr, nullptr,
+                                       nullptr);
 
   CrossTabDrag_Step3(&state);
 }

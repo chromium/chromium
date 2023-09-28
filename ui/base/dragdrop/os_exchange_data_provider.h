@@ -13,11 +13,13 @@
 
 #include "base/component_export.h"
 #include "base/files/file_path.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
 #include "ui/base/clipboard/file_info.h"
 #include "ui/base/dragdrop/download_file_info.h"
 #include "ui/base/dragdrop/download_file_interface.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/functional/callback_forward.h"
@@ -48,8 +50,9 @@ class COMPONENT_EXPORT(UI_BASE_DATA_EXCHANGE) OSExchangeDataProvider {
 
   virtual std::unique_ptr<OSExchangeDataProvider> Clone() const = 0;
 
-  virtual void MarkOriginatedFromRenderer() = 0;
-  virtual bool DidOriginateFromRenderer() const = 0;
+  virtual void MarkRendererTaintedFromOrigin(const url::Origin& origin) = 0;
+  virtual bool IsRendererTainted() const = 0;
+  virtual absl::optional<url::Origin> GetRendererTaintedOrigin() const = 0;
 
   virtual void MarkAsFromPrivileged() = 0;
   virtual bool IsFromPrivileged() const = 0;
