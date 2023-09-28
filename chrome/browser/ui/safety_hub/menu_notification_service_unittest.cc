@@ -27,7 +27,7 @@ class SafetyHubMenuNotificationServiceTest
     hcsm_ = base::MakeRefCounted<HostContentSettingsMap>(&prefs_, false, true,
                                                          false, false);
     unused_site_permissions_service_ =
-        std::make_unique<UnusedSitePermissionsService>(hcsm_.get());
+        std::make_unique<UnusedSitePermissionsService>(hcsm_.get(), &prefs_);
     menu_notification_service_ =
         std::make_unique<SafetyHubMenuNotificationService>(
             unused_site_permissions_service_.get());

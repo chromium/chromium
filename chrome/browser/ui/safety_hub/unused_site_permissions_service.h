@@ -28,6 +28,9 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
+class PrefChangeRegistrar;
+class PrefService;
+
 constexpr char kUnusedSitePermissionsResultKey[] = "permissions";
 constexpr char kUnusedSitePermissionsResultPermissionTypesKey[] =
     "permissionTypes";
@@ -141,7 +144,8 @@ class UnusedSitePermissionsService : public SafetyHubService,
     WEB_CONTENTS_USER_DATA_KEY_DECL();
   };
 
-  explicit UnusedSitePermissionsService(HostContentSettingsMap* hcsm);
+  explicit UnusedSitePermissionsService(HostContentSettingsMap* hcsm,
+                                        PrefService* prefs);
 
   UnusedSitePermissionsService(const UnusedSitePermissionsService&) = delete;
   UnusedSitePermissionsService& operator=(const UnusedSitePermissionsService&) =
@@ -187,6 +191,9 @@ class UnusedSitePermissionsService : public SafetyHubService,
 
   // Returns the list of all permissions that have been revoked.
   std::unique_ptr<Result> GetRevokedPermissions();
+
+  // Stops or restarts permissions autorevocation upon the pref change.
+  void OnPermissionsAutorevocationControlChanged();
 
   // Does most of the heavy lifting of the update process: for each permission,
   // it determines whether it should be considered as recently unused (i.e. one
@@ -251,16 +258,20 @@ class UnusedSitePermissionsService : public SafetyHubService,
   std::unique_ptr<Result> UpdateOnUIThread(
       std::unique_ptr<Result> result) override;
 
+  // Returns if the permissions auto-revocation is enabled for unused sites.
+  bool IsAutoRevocationEnabled();
+
   // Set of permissions that haven't been used for at least a week.
   UnusedPermissionMap recently_unused_permissions_;
-  // Repeating timer that updates the recently_unused_permissions_ map.
-  base::RepeatingTimer update_timer_;
 
   const scoped_refptr<HostContentSettingsMap> hcsm_;
 
   // Observer to watch for content settings changed.
   base::ScopedObservation<HostContentSettingsMap, content_settings::Observer>
       content_settings_observation_{this};
+
+  // Observes user profile prefs.
+  std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
 
   raw_ptr<base::Clock> clock_;
 

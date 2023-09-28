@@ -23,6 +23,7 @@
 #include "base/values.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_service.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_test_util.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -33,22 +34,34 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/permissions/constants.h"
+#include "components/permissions/pref_names.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 class UnusedSitePermissionsServiceTest
     : public ChromeRenderViewHostTestHarness {
  public:
+  UnusedSitePermissionsServiceTest() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {content_settings::features::kSafetyCheckUnusedSitePermissions,
+         features::kSafetyHub},
+        /*disabled_features=*/{});
+  }
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
     base::Time time;
     ASSERT_TRUE(base::Time::FromString("2022-09-07 13:00", &time));
     clock_.SetNow(time);
     HostContentSettingsMap::RegisterProfilePrefs(prefs_.registry());
+    permissions::RegisterProfilePrefs(prefs_.registry());
+    prefs_.SetBoolean(
+        permissions::prefs::kUnusedSitePermissionsRevocationEnabled, true);
     hcsm_ = base::MakeRefCounted<HostContentSettingsMap>(&prefs_, false, true,
                                                          false, false);
     hcsm_->SetClockForTesting(&clock_);
-    service_ = std::make_unique<UnusedSitePermissionsService>(hcsm_.get());
+    service_ =
+        std::make_unique<UnusedSitePermissionsService>(hcsm_.get(), &prefs_);
     service_->SetClockForTesting(&clock_);
     callback_count_ = 0;
   }
@@ -62,11 +75,18 @@ class UnusedSitePermissionsServiceTest
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
+  void ResetService() {
+    service_ =
+        std::make_unique<UnusedSitePermissionsService>(hcsm_.get(), &prefs_);
+  }
+
   base::SimpleTestClock* clock() { return &clock_; }
 
   UnusedSitePermissionsService* service() { return service_.get(); }
 
   HostContentSettingsMap* hcsm() { return hcsm_.get(); }
+
+  sync_preferences::TestingPrefServiceSyncable* prefs() { return &prefs_; }
 
   uint8_t callback_count() { return callback_count_; }
 
@@ -107,6 +127,7 @@ class UnusedSitePermissionsServiceTest
   scoped_refptr<HostContentSettingsMap> hcsm_;
   base::SimpleTestClock clock_;
   uint8_t callback_count_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(UnusedSitePermissionsServiceTest, UnusedSitePermissionsServiceTest) {
@@ -658,7 +679,8 @@ TEST_F(UnusedSitePermissionsServiceTest, InitializeLatestResult) {
 
   // When we start up a new service instance, the latest result (i.e. the list
   // of revoked permissions) should be immediately available.
-  auto new_service = std::make_unique<UnusedSitePermissionsService>(hcsm());
+  auto new_service =
+      std::make_unique<UnusedSitePermissionsService>(hcsm(), prefs());
   absl::optional<std::unique_ptr<SafetyHubService::Result>> opt_result =
       new_service->GetCachedResult();
   EXPECT_TRUE(opt_result.has_value());
@@ -770,4 +792,101 @@ TEST_F(UnusedSitePermissionsServiceTest, ResultWarrantsNewMenuNotification) {
   // origin1 and origin2 in both new and old -> no notification
   old_result->AddRevokedPermission(origin2, permission_types, expiration);
   EXPECT_FALSE(new_result->WarrantsNewMenuNotification(*old_result.get()));
+}
+
+TEST_F(UnusedSitePermissionsServiceTest, AutoRevocationSetting) {
+  base::test::ScopedFeatureList scoped_feature;
+  scoped_feature.InitWithFeatureStates(
+      {{content_settings::features::kSafetyCheckUnusedSitePermissions, false}});
+
+  // When auto-revocation is on, the timer is started by
+  // StartRepeatedUpdates() on start-up.
+  ResetService();
+  EXPECT_TRUE(service()->IsTimerRunningForTesting());
+
+  // Disable auto-revocation by setting kUnusedSitePermissionsRevocationEnabled
+  // pref to false. This should stop the repeated timer.
+  prefs()->SetBoolean(
+      permissions::prefs::kUnusedSitePermissionsRevocationEnabled, false);
+  EXPECT_FALSE(service()->IsTimerRunningForTesting());
+
+  // Reset the service so auto-revocation is off on the service creation. The
+  // repeated timer is not started on service creation in this case.
+  ResetService();
+  EXPECT_FALSE(service()->IsTimerRunningForTesting());
+
+  // Enable auto-revocation by setting kUnusedSitePermissionsRevocationEnabled
+  // pref to true. This should restart the repeated timer.
+  prefs()->SetBoolean(
+      permissions::prefs::kUnusedSitePermissionsRevocationEnabled, true);
+  EXPECT_TRUE(service()->IsTimerRunningForTesting());
+}
+
+class UnusedSitePermissionsServiceSafetyHubDisabledTest
+    : public ChromeRenderViewHostTestHarness {
+ public:
+  UnusedSitePermissionsServiceSafetyHubDisabledTest() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/
+        {features::kSafetyHub});
+  }
+  void SetUp() override {
+    ChromeRenderViewHostTestHarness::SetUp();
+    HostContentSettingsMap::RegisterProfilePrefs(prefs_.registry());
+    permissions::RegisterProfilePrefs(prefs_.registry());
+    hcsm_ = base::MakeRefCounted<HostContentSettingsMap>(&prefs_, false, true,
+                                                         false, false);
+    service_ =
+        std::make_unique<UnusedSitePermissionsService>(hcsm_.get(), &prefs_);
+    callback_count_ = 0;
+  }
+
+  void TearDown() override {
+    service_->Shutdown();
+    hcsm_->ShutdownOnUIThread();
+    base::RunLoop().RunUntilIdle();
+    ChromeRenderViewHostTestHarness::TearDown();
+  }
+
+  void ResetService() {
+    service_ =
+        std::make_unique<UnusedSitePermissionsService>(hcsm_.get(), &prefs_);
+  }
+
+  UnusedSitePermissionsService* service() { return service_.get(); }
+
+  sync_preferences::TestingPrefServiceSyncable* prefs() { return &prefs_; }
+
+  uint8_t callback_count() { return callback_count_; }
+
+ private:
+  sync_preferences::TestingPrefServiceSyncable prefs_;
+  std::unique_ptr<UnusedSitePermissionsService> service_;
+  scoped_refptr<HostContentSettingsMap> hcsm_;
+  uint8_t callback_count_;
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(UnusedSitePermissionsServiceSafetyHubDisabledTest,
+       UnusedSitePermissionsRevocationEnabled) {
+  base::test::ScopedFeatureList scoped_feature;
+  scoped_feature.InitWithFeatureStates(
+      {{content_settings::features::kSafetyCheckUnusedSitePermissions, true}});
+  // If Safety Hub is disabled but kSafetyCheckUnusedSitePermissions is on,
+  // auto-revocation still happens (i.e. the timer is started on start-up).
+  ResetService();
+  EXPECT_TRUE(service()->IsTimerRunningForTesting());
+}
+
+TEST_F(UnusedSitePermissionsServiceSafetyHubDisabledTest,
+       UnusedSitePermissionsRevocationDisabled) {
+  base::test::ScopedFeatureList scoped_feature;
+  scoped_feature.InitWithFeatureStates(
+      {{content_settings::features::kSafetyCheckUnusedSitePermissions, false}});
+
+  // If both kSafetyHub and kSafetyCheckUnusedSitePermissions are disabled, then
+  // no auto-revocation should happen (i.e. no repeated timers should start).
+  ResetService();
+  EXPECT_FALSE(service()->IsTimerRunningForTesting());
 }

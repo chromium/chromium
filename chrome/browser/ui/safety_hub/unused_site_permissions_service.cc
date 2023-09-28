@@ -24,6 +24,7 @@
 #include "base/values.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_service.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/content_settings/core/browser/content_settings_info.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
@@ -36,6 +37,9 @@
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/permissions/constants.h"
+#include "components/permissions/pref_names.h"
+#include "components/prefs/pref_change_registrar.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
@@ -251,12 +255,31 @@ void UnusedSitePermissionsService::TabHelper::PrimaryPageChanged(
 WEB_CONTENTS_USER_DATA_KEY_IMPL(UnusedSitePermissionsService::TabHelper);
 
 UnusedSitePermissionsService::UnusedSitePermissionsService(
-    HostContentSettingsMap* hcsm)
+    HostContentSettingsMap* hcsm,
+    PrefService* prefs)
     : hcsm_(hcsm), clock_(base::DefaultClock::GetInstance()) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   content_settings_observation_.Observe(hcsm);
-  StartRepeatedUpdates();
+
+  DCHECK(prefs);
+  if (base::FeatureList::IsEnabled(features::kSafetyHub)) {
+    pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
+    pref_change_registrar_->Init(prefs);
+
+    pref_change_registrar_->Add(
+        permissions::prefs::kUnusedSitePermissionsRevocationEnabled,
+        base::BindRepeating(&UnusedSitePermissionsService::
+                                OnPermissionsAutorevocationControlChanged,
+                            base::Unretained(this)));
+  }
+
   InitializeLatestResult();
+
+  if (!IsAutoRevocationEnabled()) {
+    return;
+  }
+
+  StartRepeatedUpdates();
 }
 
 UnusedSitePermissionsService::~UnusedSitePermissionsService() = default;
@@ -292,7 +315,6 @@ void UnusedSitePermissionsService::OnContentSettingChanged(
 }
 
 void UnusedSitePermissionsService::Shutdown() {
-  update_timer_.Stop();
   content_settings_observation_.Reset();
 }
 
@@ -506,8 +528,7 @@ UnusedSitePermissionsService::GetRevokedPermissions() {
 }
 
 void UnusedSitePermissionsService::RevokeUnusedPermissions() {
-  if (!base::FeatureList::IsEnabled(
-          content_settings::features::kSafetyCheckUnusedSitePermissions)) {
+  if (!IsAutoRevocationEnabled()) {
     return;
   }
 
@@ -638,6 +659,14 @@ void UnusedSitePermissionsService::StorePermissionInRevokedPermissionSetting(
       constraint.has_value() ? constraint.value() : default_constraint);
 }
 
+void UnusedSitePermissionsService::OnPermissionsAutorevocationControlChanged() {
+  if (IsAutoRevocationEnabled()) {
+    StartRepeatedUpdates();
+  } else {
+    StopTimer();
+  }
+}
+
 std::vector<UnusedSitePermissionsService::ContentSettingEntry>
 UnusedSitePermissionsService::GetTrackedUnusedPermissionsForTesting() {
   std::vector<ContentSettingEntry> result;
@@ -661,4 +690,15 @@ std::unique_ptr<SafetyHubService::Result>
 UnusedSitePermissionsService::GetResultFromDictValue(
     const base::Value::Dict& dict) {
   return std::make_unique<UnusedSitePermissionsResult>(dict);
+}
+
+bool UnusedSitePermissionsService::IsAutoRevocationEnabled() {
+  // If kSafetyHub is disabled, then the auto-revocation directly depends on
+  // kSafetyCheckUnusedSitePermissions.
+  if (!base::FeatureList::IsEnabled(features::kSafetyHub)) {
+    return base::FeatureList::IsEnabled(
+        content_settings::features::kSafetyCheckUnusedSitePermissions);
+  }
+  return pref_change_registrar_->prefs()->GetBoolean(
+      permissions::prefs::kUnusedSitePermissionsRevocationEnabled);
 }
