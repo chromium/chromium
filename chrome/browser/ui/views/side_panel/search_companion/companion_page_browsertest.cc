@@ -1699,6 +1699,8 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
   // The viewport dimension params should be set to a value
   EXPECT_TRUE(GetLastViewportHeightParam() > 0);
   EXPECT_TRUE(GetLastViewportWidthParam() > 0);
+  histogram_tester_->ExpectBucketCount(
+      "Search.Lens.ViewportDimensionsSent.Success", true, 1);
   histogram_tester_->ExpectBucketCount("Companion.SidePanel.ShowUiSuccess",
                                        true, 1);
 }

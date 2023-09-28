@@ -5,6 +5,7 @@
 #include "components/lens/lens_url_utils.h"
 
 #include "base/strings/string_number_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "components/lens/lens_entrypoints.h"
 #include "components/lens/lens_rendering_environment.h"
@@ -30,10 +31,30 @@ TEST(LensUrlUtilsTest, NonSidePanelRequestHasNoSidePanelSizeParams) {
 
 TEST(LensUrlUtilsTest,
      AppendOrReplaceViewportSizeForRequestSetsSidePanelSizeParams) {
+  base::HistogramTester histogram_tester;
   GURL original_url = GURL("https://lens.google.com/");
   GURL url = lens::AppendOrReplaceViewportSizeForRequest(original_url,
                                                          gfx::Size(10, 10));
   EXPECT_THAT(url.query(), MatchesRegex("vpw=10&vph=10"));
+  histogram_tester.ExpectBucketCount(
+      "Search.Lens.ViewportDimensionsSent.Success", true, 1);
+}
+
+TEST(LensUrlUtilsTest,
+     AppendOrReplaceViewportSizeForRequestOnlySetsNonZeroSizes) {
+  base::HistogramTester histogram_tester;
+  GURL original_url = GURL("https://lens.google.com/");
+  GURL url_with_height = lens::AppendOrReplaceViewportSizeForRequest(
+      original_url, gfx::Size(0, 10));
+  EXPECT_THAT(url_with_height.query(), MatchesRegex("vph=10"));
+  GURL url_with_width = lens::AppendOrReplaceViewportSizeForRequest(
+      original_url, gfx::Size(10, 0));
+  EXPECT_THAT(url_with_width.query(), MatchesRegex("vpw=10"));
+  GURL url_with_neither = lens::AppendOrReplaceViewportSizeForRequest(
+      original_url, gfx::Size(0, 0));
+  EXPECT_THAT(url_with_neither.query(), MatchesRegex(""));
+  histogram_tester.ExpectBucketCount(
+      "Search.Lens.ViewportDimensionsSent.Success", false, 3);
 }
 
 TEST(LensUrlUtilsTest, GetRegionSearchNewTabQueryParameterTest) {
