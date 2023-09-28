@@ -450,12 +450,8 @@ TEST_F(BrowserActionFactoryTest, SaveImageInGooglePhotosAction) {
                                            scenario:kTestMenuScenario];
 
 #if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
-  UIImage* expectedImage = CustomSymbolWithConfiguration(
-      kGooglePhotosSymbol,
-      [UIImageSymbolConfiguration
-          configurationWithPointSize:kSymbolActionPointSize
-                              weight:UIImageSymbolWeightThin
-                               scale:UIImageSymbolScaleMedium]);
+  UIImage* expectedImage =
+      CustomSymbolWithPointSize(kGooglePhotosSymbol, kSymbolActionPointSize);
 #else
   UIImage* expectedImage = DefaultSymbolWithPointSize(kSaveImageActionSymbol,
                                                       kSymbolActionPointSize);

@@ -281,12 +281,8 @@
                                                 webState:webState];
 
 #if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
-  UIImage* image = CustomSymbolWithConfiguration(
-      kGooglePhotosSymbol,
-      [UIImageSymbolConfiguration
-          configurationWithPointSize:kSymbolActionPointSize
-                              weight:UIImageSymbolWeightThin
-                               scale:UIImageSymbolScaleMedium]);
+  UIImage* image =
+      CustomSymbolWithPointSize(kGooglePhotosSymbol, kSymbolActionPointSize);
 #else
   UIImage* image = DefaultSymbolWithPointSize(kSaveImageActionSymbol,
                                               kSymbolActionPointSize);
