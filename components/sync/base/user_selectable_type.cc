@@ -69,13 +69,10 @@ UserSelectableTypeInfo GetUserSelectableTypeInfo(UserSelectableType type) {
               {AUTOFILL, AUTOFILL_PROFILE, CONTACT_INFO}};
     case UserSelectableType::kThemes:
       return {kThemesTypeName, THEMES, {THEMES}};
-    case UserSelectableType::kHistory: {
-      // TODO(crbug.com/1365291): Remove TYPED_URLS from here once it's no
-      // longer a registered type.
+    case UserSelectableType::kHistory:
       return {kHistoryTypeName,
               HISTORY,
-              {HISTORY, HISTORY_DELETE_DIRECTIVES, TYPED_URLS, USER_EVENTS}};
-    }
+              {HISTORY, HISTORY_DELETE_DIRECTIVES, USER_EVENTS}};
     case UserSelectableType::kExtensions:
       return {
           kExtensionsTypeName, EXTENSIONS, {EXTENSIONS, EXTENSION_SETTINGS}};
