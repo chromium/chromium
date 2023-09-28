@@ -98,6 +98,21 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
+  if ([self isRunningTest:@selector(testPageWithUnsafeIframe)] ||
+      [self isRunningTest:@selector(testPageWithUnsafeIframeInIncognito)] ||
+      [self isRunningTest:@selector
+            (testBackForwardNavigationWithIframeWarning)] ||
+      [self isRunningTest:@selector(testProceedingPastIframeWarning)]) {
+    config.features_disabled.push_back(
+        safe_browsing::kSafeBrowsingSkipSubresources);
+  } else if ([self isRunningTest:@selector
+                   (testPageWithUnsafeIframeSkipSubresources)] ||
+             [self isRunningTest:@selector
+                   (testPageWithUnsafeIframeInIncognitoSkipSubresources)]) {
+    config.features_enabled.push_back(
+        safe_browsing::kSafeBrowsingSkipSubresources);
+  }
+
   // Use commandline args to insert fake unsafe URLs into the Safe Browsing
   // database.
   config.additional_args.push_back(std::string("--mark_as_phishing=") +
@@ -668,6 +683,20 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
                                                     IDS_MALWARE_V3_HEADING)];
 }
 
+// Tests that a page with an unsafe ifame is not blocked when subframe checks
+// are disabled.
+- (void)testPageWithUnsafeIframeSkipSubresources {
+  [ChromeEarlGrey loadURL:_safeURL2];
+  [ChromeEarlGrey waitForWebStateContainingText:_safeContent2];
+  [ChromeEarlGrey loadURL:_safeURL1];
+  [ChromeEarlGrey waitForWebStateContainingText:_safeContent1];
+
+  // Load a page that has an iframe with malware, and verify that a warning is
+  // not shown.
+  [ChromeEarlGrey loadURL:_iframeWithMalwareURL];
+  [ChromeEarlGrey waitForWebStateFrameContainingText:_malwareContent];
+}
+
 // Tests that a page with an unsafe ifame is blocked, back history is preserved,
 // and forward navigation to the warning works as expected, in incognito mode.
 - (void)testPageWithUnsafeIframeInIncognito {
@@ -698,6 +727,21 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
       performAction:grey_tap()];
   [ChromeEarlGrey waitForWebStateContainingText:l10n_util::GetStringUTF8(
                                                     IDS_MALWARE_V3_HEADING)];
+}
+
+// Tests that a page with an unsafe ifame is not blocked when subframe checks
+// are disabled, in incognito mode.
+- (void)testPageWithUnsafeIframeInIncognitoSkipSubresources {
+  [ChromeEarlGrey openNewIncognitoTab];
+  [ChromeEarlGrey loadURL:_safeURL2];
+  [ChromeEarlGrey waitForWebStateContainingText:_safeContent2];
+  [ChromeEarlGrey loadURL:_safeURL1];
+  [ChromeEarlGrey waitForWebStateContainingText:_safeContent1];
+
+  // Load a page that has an iframe with malware, and verify that a warning is
+  // not shown.
+  [ChromeEarlGrey loadURL:_iframeWithMalwareURL];
+  [ChromeEarlGrey waitForWebStateFrameContainingText:_malwareContent];
 }
 
 // Tests performing a back navigation to a warning page for an unsafe iframe,
