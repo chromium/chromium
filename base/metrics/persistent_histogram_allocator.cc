@@ -457,34 +457,6 @@ void PersistentHistogramAllocator::MergeHistogramDeltaToStatisticsRecorder(
     return;
   }
 
-  // TODO(crbug/1432981): Remove this. Used to investigate unexpected failures.
-  HistogramType type = existing->GetHistogramType();
-  if ((type == HistogramType::HISTOGRAM ||
-       type == HistogramType::LINEAR_HISTOGRAM ||
-       type == HistogramType::BOOLEAN_HISTOGRAM ||
-       type == HistogramType::CUSTOM_HISTOGRAM) &&
-      histogram->GetHistogramType() == type) {
-    const BucketRanges* existing_buckets =
-        static_cast<Histogram*>(existing)->bucket_ranges();
-    const BucketRanges* histogram_buckets =
-        static_cast<Histogram*>(histogram)->bucket_ranges();
-    DCHECK(existing_buckets->HasValidChecksum() &&
-           histogram_buckets->HasValidChecksum());
-
-    // If the buckets do not match, then the call to AddSamples() below should
-    // trigger a NOTREACHED(). This may be indicative that a child process is
-    // emitting a histogram with different parameters than the browser
-    // process, for example.
-    if (!existing_buckets->Equals(histogram_buckets)) {
-#if !BUILDFLAG(IS_NACL)
-      SCOPED_CRASH_KEY_STRING256("PersistentHistogramAllocator", "histogram",
-                                 existing->histogram_name());
-#endif  // !BUILDFLAG(IS_NACL)
-      existing->AddSamples(*histogram->SnapshotDelta());
-      return;
-    }
-  }
-
   // Merge the delta from the passed object to the one in the SR.
   existing->AddSamples(*histogram->SnapshotDelta());
 }
@@ -674,8 +646,50 @@ PersistentHistogramAllocator::GetOrCreateStatisticsRecorderHistogram(
 
   HistogramBase* existing =
       StatisticsRecorder::FindHistogram(histogram->histogram_name());
-  if (existing)
+  if (existing) {
+#if !BUILDFLAG(IS_NACL)
+    // If the passed |histogram| does not match the one registered with the
+    // global StatisticsRecorder (e.g. not same type of histogram, or they
+    // specify different buckets), then unexpected things may happen further
+    // down the line. This may be indicative that a child process is emitting a
+    // histogram with different parameters than the browser process, for
+    // example.
+    // TODO(crbug/1432981): Remove this. Used to investigate failures when
+    // merging histograms from an allocator to the global StatisticsRecorder.
+    bool histograms_match = true;
+    HistogramType existing_type = existing->GetHistogramType();
+    if (histogram->GetHistogramType() != existing_type) {
+      // Different histogram types.
+      histograms_match = false;
+    } else if (existing_type == HistogramType::HISTOGRAM ||
+               existing_type == HistogramType::LINEAR_HISTOGRAM ||
+               existing_type == HistogramType::BOOLEAN_HISTOGRAM ||
+               existing_type == HistogramType::CUSTOM_HISTOGRAM) {
+      // Only numeric histograms make use of BucketRanges.
+      const BucketRanges* existing_buckets =
+          static_cast<const Histogram*>(existing)->bucket_ranges();
+      const BucketRanges* histogram_buckets =
+          static_cast<const Histogram*>(histogram)->bucket_ranges();
+      // DCHECK because HasValidChecksum() recomputes the checksum which can be
+      // expensive to do in a loop.
+      DCHECK(existing_buckets->HasValidChecksum() &&
+             histogram_buckets->HasValidChecksum());
+
+      if (existing_buckets->checksum() != histogram_buckets->checksum()) {
+        // Different buckets.
+        histograms_match = false;
+      }
+    }
+
+    if (!histograms_match) {
+      SCOPED_CRASH_KEY_STRING256("PersistentHistogramAllocator", "histogram",
+                                 existing->histogram_name());
+      NOTREACHED();
+    }
+#endif  // !BUILDFLAG(IS_NACL)
+
     return existing;
+  }
 
   // Adding the passed histogram to the SR would cause a problem if the
   // allocator that holds it eventually goes away. Instead, create a new
