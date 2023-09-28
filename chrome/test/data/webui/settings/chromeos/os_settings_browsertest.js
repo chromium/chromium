@@ -874,7 +874,7 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
  [
    'OsPrivacyPagePrivacyHubSubpage',
    'os_privacy_page/privacy_hub_subpage_test.js',
-   {enabled: ['ash::features::kCrosPrivacyHub']},
+   {enabled: ['ash::features::kCrosPrivacyHubV0']},
  ],
  [
    'OsPrivacyPageSmartPrivacySubpage',
