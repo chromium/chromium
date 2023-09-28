@@ -4,3 +4,4 @@ japhet@chromium.org
 
 per-file *_type_converter*.*=set noparent
 per-file *_type_converter*.*=file://ipc/SECURITY_OWNERS
+per-file *_monitor.*=file://third_party/blink/renderer/core/timing/OWNERS
