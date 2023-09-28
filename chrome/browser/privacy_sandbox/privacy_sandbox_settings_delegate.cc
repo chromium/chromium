@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
@@ -177,6 +178,18 @@ bool PrivacySandboxSettingsDelegate::
     return true;
   }
 
+  TpcdExperimentEligibility eligibility =
+      GetCookieDeprecationExperimentCurrentEligibility();
+  base::UmaHistogramEnumeration(
+      "PrivacySandbox.CookieDeprecationFacilitatedTesting.ProfileEligibility",
+      eligibility);
+
+  return eligibility == TpcdExperimentEligibility::kEligible;
+}
+
+PrivacySandboxSettingsDelegate::TpcdExperimentEligibility
+PrivacySandboxSettingsDelegate::
+    GetCookieDeprecationExperimentCurrentEligibility() const {
   // Whether third-party cookies are blocked.
   scoped_refptr<content_settings::CookieSettings> cookie_settings =
       CookieSettingsFactory::GetForProfile(profile_);
@@ -184,7 +197,7 @@ bool PrivacySandboxSettingsDelegate::
   if (cookie_settings->ShouldBlockThirdPartyCookies() ||
       cookie_settings->GetDefaultCookieSetting() ==
           ContentSetting::CONTENT_SETTING_BLOCK) {
-    return false;
+    return TpcdExperimentEligibility::k3pCookiesBlocked;
   }
 
   // Whether the privacy sandbox Ads APIs notice has been seen.
@@ -197,12 +210,12 @@ bool PrivacySandboxSettingsDelegate::
   const bool eaa_notice_acknowledged = profile_->GetPrefs()->GetBoolean(
       prefs::kPrivacySandboxM1EEANoticeAcknowledged);
   if (!row_notice_acknowledged && !eaa_notice_acknowledged) {
-    return false;
+    return TpcdExperimentEligibility::kHasNotSeenNotice;
   }
 
   // Whether it's a dasher account.
   if (IsSubjectToEnterprisePolicies()) {
-    return false;
+    return TpcdExperimentEligibility::kEnterpriseUser;
   }
 
   // TODO(linnan): Consider moving the following client-level filtering to
@@ -213,17 +226,17 @@ bool PrivacySandboxSettingsDelegate::
       g_browser_process->local_state()->GetInt64(metrics::prefs::kInstallDate));
   if (install_date.is_null() ||
       base::Time::Now() - install_date < base::Days(30)) {
-    return false;
+    return TpcdExperimentEligibility::kNewUser;
   }
 
 // Whether PWA or TWA has been installed on Android.
 #if BUILDFLAG(IS_ANDROID)
   if (!webapp_registry_->GetOriginsWithInstalledApp().empty()) {
-    return false;
+    return TpcdExperimentEligibility::kPwaOrTwaInstalled;
   }
 #endif
 
-  return true;
+  return TpcdExperimentEligibility::kEligible;
 }
 
 bool PrivacySandboxSettingsDelegate::IsSubjectToEnterprisePolicies() const {

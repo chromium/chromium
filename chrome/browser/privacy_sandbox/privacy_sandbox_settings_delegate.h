@@ -40,6 +40,21 @@ class PrivacySandboxSettingsDelegate
 #endif
 
  private:
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class TpcdExperimentEligibility {
+    kEligible = 0,
+    k3pCookiesBlocked = 1,
+    kHasNotSeenNotice = 2,
+    kNewUser = 3,
+    kEnterpriseUser = 4,
+    kPwaOrTwaInstalled = 5,  // Android only
+    kMaxValue = kPwaOrTwaInstalled,
+  };
+
+  TpcdExperimentEligibility GetCookieDeprecationExperimentCurrentEligibility()
+      const;
+
   bool PrivacySandboxRestrictedNoticeRequired() const;
   bool IsSubjectToEnterprisePolicies() const;
   raw_ptr<Profile> profile_;

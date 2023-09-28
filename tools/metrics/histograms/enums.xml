@@ -20184,6 +20184,15 @@ Called by update_net_error_codes.py.-->
   </int>
 </enum>
 
+<enum name="CookieDeprecationFacilitatedTestingProfileEligibility">
+  <int value="0" label="Eligible"/>
+  <int value="1" label="Ineligible: 3P Cookies blocked"/>
+  <int value="2" label="Ineligible: Has not seen Ads API GA notice"/>
+  <int value="3" label="Ineligible: New user"/>
+  <int value="4" label="Ineligible: Enterprise user"/>
+  <int value="5" label="Ineligible: PWA or TWA installed on Android"/>
+</enum>
+
 <enum name="CookieEffectiveSameSite">
   <int value="0" label="No restriction"/>
   <int value="1" label="Lax mode"/>
