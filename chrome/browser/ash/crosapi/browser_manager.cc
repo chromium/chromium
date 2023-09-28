@@ -1088,7 +1088,7 @@ void BrowserManager::StartWithLogFile(bool launching_at_login_screen,
   // Otherwise, if we're pre-launching at login screen, this will be
   // done later, once the user logs in and the session is started.
   if (!launching_at_login_screen) {
-    RecordDataVerForPrimaryUser();
+    WaitForProfileAddedAndThen(base::BindOnce(&RecordDataVerForPrimaryUser));
   }
 
   std::string chrome_path = lacros_path_.MaybeAsASCII();
@@ -1706,28 +1706,23 @@ void BrowserManager::ResumeLaunch() {
 
   LOG(WARNING) << "Resuming lacros-chrome launch";
 
-  // Execute actions that we couldn't run when pre-launching at login screen,
-  // because they required the user to be logged in.
-  PrepareLacrosPolicies();
-  RecordLacrosLaunchMode();
-  crosapi::lacros_startup_state::SetLacrosStartupState(is_lacros_enabled);
-  RecordDataVerForPrimaryUser();
-
   // Once Lacros starts and BrowserService is connected,
   // the following action will be executed.
   pending_actions_.Push(BrowserAction::GetActionForSessionStart());
 
   WaitForDeviceOwnerFetchedAndThen(
-      base::BindOnce(&BrowserManager::WaitForProfileAddedBeforeResuming,
-                     weak_factory_.GetWeakPtr()),
+      base::BindOnce(
+          &BrowserManager::WaitForProfileAddedAndThen,
+          weak_factory_.GetWeakPtr(),
+          base::BindOnce(&BrowserManager::ResumeLaunchAfterProfileAdded,
+                         weak_factory_.GetWeakPtr())),
       /*launching_at_login_screen=*/false);
 }
 
-void BrowserManager::WaitForProfileAddedBeforeResuming() {
+void BrowserManager::WaitForProfileAddedAndThen(base::OnceClosure cb) {
+  DCHECK(!primary_profile_creation_waiter_);
   primary_profile_creation_waiter_ = PrimaryProfileCreationWaiter::WaitOrRun(
-      g_browser_process->profile_manager(),
-      base::BindOnce(&BrowserManager::WritePostLoginData,
-                     weak_factory_.GetWeakPtr()));
+      g_browser_process->profile_manager(), std::move(cb));
 }
 
 void BrowserManager::WaitForDeviceOwnerFetchedAndThen(
@@ -1747,8 +1742,13 @@ void BrowserManager::OnLaunchParamsFetched(bool launching_at_login_screen,
       launching_at_login_screen);
 }
 
-void BrowserManager::WritePostLoginData() {
-  primary_profile_creation_waiter_.reset();
+void BrowserManager::ResumeLaunchAfterProfileAdded() {
+  // Execute actions that we couldn't run when pre-launching at login screen,
+  // because they required the user to be logged in.
+  PrepareLacrosPolicies();
+  RecordLacrosLaunchMode();
+  crosapi::lacros_startup_state::SetLacrosStartupState(true);
+  RecordDataVerForPrimaryUser();
 
   lacros_resume_time_ = base::TimeTicks::Now();
   // Write post-login parameters into the anonymous pipe.
