@@ -207,7 +207,7 @@ void PrimaryAccountManager::Initialize(PrefService* local_state) {
   CoreAccountInfo account_info =
       account_tracker_service_->GetAccountInfo(account_id);
   if (consented) {
-    DCHECK(!account_info.account_id.empty());
+    DUMP_WILL_BE_CHECK(!account_info.account_id.empty());
     // First reset the state, because SetSyncPrimaryAccountInternal() can
     // only be called if there is no primary account.
     SetPrimaryAccountInternal(CoreAccountInfo(), /*consented_to_sync=*/false,
@@ -281,7 +281,7 @@ void PrimaryAccountManager::SetPrimaryAccountInfo(
 
 void PrimaryAccountManager::SetSyncPrimaryAccountInternal(
     const CoreAccountInfo& account_info) {
-  DCHECK(!account_info.account_id.empty());
+  DUMP_WILL_BE_CHECK(!account_info.account_id.empty());
   DCHECK(!HasPrimaryAccount(signin::ConsentLevel::kSync));
 
 #if DCHECK_IS_ON()
