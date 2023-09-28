@@ -184,10 +184,11 @@ struct ComplexMessage : public Channel::Message {
 
 #if BUILDFLAG(IS_WIN)
   // On Windows, handles are serialised into the extra header section.
-  raw_ptr<HandleEntry> handles_ = nullptr;
+  raw_ptr<HandleEntry, AllowPtrArithmetic> handles_ = nullptr;
 #elif BUILDFLAG(MOJO_USE_APPLE_CHANNEL)
   // On OSX, handles are serialised into the extra header section.
-  raw_ptr<MachPortsExtraHeader> mach_ports_header_ = nullptr;
+  raw_ptr<MachPortsExtraHeader, AllowPtrArithmetic> mach_ports_header_ =
+      nullptr;
 #endif
 };
 

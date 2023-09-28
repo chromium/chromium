@@ -47,9 +47,9 @@ std::pair<uint8_t*, size_t> GetSampleBufferBaseAddressAndSize(
 struct I420Planes {
   size_t width;
   size_t height;
-  raw_ptr<uint8_t> y_plane_data;
-  raw_ptr<uint8_t> u_plane_data;
-  raw_ptr<uint8_t> v_plane_data;
+  raw_ptr<uint8_t, AllowPtrArithmetic> y_plane_data;
+  raw_ptr<uint8_t, AllowPtrArithmetic> u_plane_data;
+  raw_ptr<uint8_t, AllowPtrArithmetic> v_plane_data;
   size_t y_plane_stride;
   size_t u_plane_stride;
   size_t v_plane_stride;
@@ -123,8 +123,8 @@ I420Planes GetI420PlanesFromPixelBuffer(CVPixelBufferRef pixel_buffer) {
 struct NV12Planes {
   size_t width;
   size_t height;
-  raw_ptr<uint8_t> y_plane_data;
-  raw_ptr<uint8_t> uv_plane_data;
+  raw_ptr<uint8_t, AllowPtrArithmetic> y_plane_data;
+  raw_ptr<uint8_t, AllowPtrArithmetic> uv_plane_data;
   size_t y_plane_stride;
   size_t uv_plane_stride;
 };

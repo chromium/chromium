@@ -164,7 +164,7 @@ class COMPONENT_EXPORT(UI_DATA_PACK) DataPackWithResourceSharing
   // exists in ash resources .pak.
   // Lacros resource id registered in `mapping_table_` as a key should not be
   // included in fallback_data_pack_.
-  raw_ptr<const Mapping> mapping_table_;
+  raw_ptr<const Mapping, AllowPtrArithmetic> mapping_table_;
   size_t mapping_count_ = 0;
 
   // Stores DataPacks of fallback resources and ash resources for each.
