@@ -141,10 +141,17 @@ void PrefetchURLLoaderInterceptor::OnGetPrefetchComplete(
     return;
   }
 
+  auto request_handler = reader.CreateRequestHandler();
+  if (!request_handler) {
+    redirect_reader_ = PrefetchContainer::Reader();
+    std::move(loader_callback_).Run({});
+    return;
+  }
+
   scoped_refptr<network::SingleRequestURLLoaderFactory>
       single_request_url_loader_factory =
           base::MakeRefCounted<network::SingleRequestURLLoaderFactory>(
-              reader.CreateRequestHandler());
+              std::move(request_handler));
 
   // If |prefetch_container| is done serving the prefetch, clear out
   // |redirect_reader_|, but otherwise cache it in |redirect_reader_|.

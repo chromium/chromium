@@ -258,10 +258,6 @@ class CONTENT_EXPORT PrefetchContainer {
       std::unique_ptr<base::OneShotTimer> block_until_head_timer);
   void ResetBlockUntilHeadTimer();
 
-  // Note: `GetServableState()` does NOT cover all servable condition checks.
-  // `HasPrefetchBeenConsideredToServe()` and
-  // `Reader::HaveDefaultContextCookiesChanged()` also should be checked.
-  // TODO(crbug.com/1449360): Make this requirement more explicit/checked.
   enum class ServableState {
     // Not servable nor should block until head received.
     kNotServable,
@@ -273,6 +269,10 @@ class CONTENT_EXPORT PrefetchContainer {
     // received on a navigation to a matching URL.
     kShouldBlockUntilHeadReceived,
   };
+
+  // Note: Even if this returns `kServable`, `CreateRequestHandler()` can still
+  // fail (returning null handler) due to final checks. See also the comment for
+  // `PrefetchResponseReader::CreateRequestHandler()`.
   ServableState GetServableState(base::TimeDelta cacheable_duration) const;
 
   // Called once it is determined whether or not the prefetch is servable, i.e.
@@ -424,8 +424,7 @@ class CONTENT_EXPORT PrefetchContainer {
     // Returns the `SinglePrefetch` to be served next.
     const SinglePrefetch& GetCurrentSinglePrefetchToServe() const;
 
-    // Set up a PrefetchRequestHandler from the Reader. After this point, the
-    // PrefetchResponseReader starts keeping alive itself.
+    // See the comment for `PrefetchResponseReader::CreateRequestHandler()`.
     PrefetchRequestHandler CreateRequestHandler();
 
    private:

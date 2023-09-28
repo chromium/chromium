@@ -67,6 +67,21 @@ class CONTENT_EXPORT PrefetchResponseReader final
   void OnComplete(network::URLLoaderCompletionStatus completion_status);
 
   // Creates a request handler to serve the response of the prefetch.
+  //
+  // `CreateRequestHandler()` is responsible for the final check for servability
+  // and can return a null PrefetchRequestHandler if the final check fails (even
+  // if `GetServableState()` previously returned `kServable`).
+  //
+  // The caller is responsible for:
+  // - Cookie-related checks and processing.
+  //   For example, checking `HaveDefaultContextCookiesChanged()` is false and
+  //   copying isolated cookies if needed.
+  //   `PrefetchResponseReader::CreateRequestHandler()`,
+  //   `PrefetchResponseReader::Servable()` nor
+  //   `PrefetchContainer::GetServableState()` don't perform cookie-related
+  //   checks.
+  // - Checking `Servable()`/`GetServableState()`.
+  //   `cacheable_duration` is checked only there.
   PrefetchRequestHandler CreateRequestHandler();
 
   bool Servable(base::TimeDelta cacheable_duration) const;
