@@ -19,7 +19,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
-// Handles communication between the browser and chrome://traces.
+// Handles communication between the browser and chrome://traces-internals.
 class CONTENT_EXPORT TraceReportHandler
     : public trace_report::mojom::PageHandler {
  public:

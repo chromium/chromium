@@ -1,0 +1,36 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ui/webui/resources/tools/build_webui.gni")
+
+build_webui("build") {
+  grd_prefix = "traces_internals"
+
+  static_files = [
+    "trace_report_internals.html",
+    "trace_report_internals.css",
+  ]
+
+  web_component_files = [
+    "trace_report_list.ts",
+    "trace_report.ts",
+  ]
+
+  non_web_component_files = [ "trace_report_browser_proxy.ts" ]
+
+  ts_deps = [
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources/cr_elements:build_ts",
+    "//ui/webui/resources/js:build_ts",
+    "//ui/webui/resources/mojo:build_ts",
+  ]
+
+  ts_composite = true
+
+  mojo_files_deps =
+      [ "//content/browser/tracing/trace_report:mojo_bindings_ts__generator" ]
+  mojo_files = [ "$root_gen_dir/content/browser/tracing/trace_report/trace_report.mojom-webui.ts" ]
+
+  grit_output_dir = "$root_gen_dir/content"
+}

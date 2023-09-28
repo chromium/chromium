@@ -2219,6 +2219,8 @@ source_set("browser") {
     "tracing/trace_report/trace_report_database.h",
     "tracing/trace_report/trace_report_handler.cc",
     "tracing/trace_report/trace_report_handler.h",
+    "tracing/trace_report/trace_report_internals_ui.cc",
+    "tracing/trace_report/trace_report_internals_ui.h",
     "tracing/trace_report/trace_upload_list.h",
     "tracing/tracing_controller_impl.cc",
     "tracing/tracing_controller_impl.h",

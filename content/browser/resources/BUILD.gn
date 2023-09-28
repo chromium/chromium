@@ -15,6 +15,7 @@ group("resources") {
     "process:resources",
     "quota:resources",
     "service_worker:resources",
+    "traces_internals:resources",
   ]
 
   if (enable_vr) {

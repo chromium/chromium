@@ -41,6 +41,7 @@ const char kChromeUIProcessInternalsHost[] = "process-internals";
 const char kChromeUIQuotaInternalsHost[] = "quota-internals";
 const char kChromeUIResourcesHost[] = "resources";
 const char kChromeUIServiceWorkerInternalsHost[] = "serviceworker-internals";
+const char kChromeUITracesInternalsHost[] = "traces-internals";
 const char kChromeUITracingHost[] = "tracing";
 const char kChromeUIUkmHost[] = "ukm";
 const char kChromeUIUntrustedResourcesURL[] = "chrome-untrusted://resources/";
