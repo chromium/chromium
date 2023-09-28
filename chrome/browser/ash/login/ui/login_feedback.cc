@@ -4,7 +4,10 @@
 
 #include "chrome/browser/ash/login/ui/login_feedback.h"
 
+#include <utility>
+
 #include "ash/constants/ash_features.h"
+#include "base/functional/callback_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/os_feedback_dialog.h"
 #include "chrome/browser/ui/webui/feedback/feedback_dialog.h"
@@ -21,6 +24,11 @@ LoginFeedback::LoginFeedback(Profile* signin_profile)
 LoginFeedback::~LoginFeedback() {}
 
 void LoginFeedback::Request(const std::string& description) {
+  Request(description, base::NullCallback());
+}
+
+void LoginFeedback::Request(const std::string& description,
+                            base::OnceClosure callback) {
   description_ = description;
 
   extensions::FeedbackPrivateAPI* api =
@@ -37,7 +45,7 @@ void LoginFeedback::Request(const std::string& description) {
       /*autofill_metadata=*/base::Value::Dict());
 
   if (ash::features::IsOsFeedbackDialogEnabled()) {
-    OsFeedbackDialog::ShowDialog(profile_, *info);
+    OsFeedbackDialog::ShowDialogAsync(profile_, *info, std::move(callback));
   } else {
     FeedbackDialog::CreateOrShow(profile_, *info);
   }

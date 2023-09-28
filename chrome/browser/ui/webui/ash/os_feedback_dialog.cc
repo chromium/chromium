@@ -4,8 +4,13 @@
 
 #include "chrome/browser/ui/webui/ash/os_feedback_dialog.h"
 
+#include <memory>
+#include <utility>
+
 #include "ash/webui/os_feedback_ui/url_constants.h"
+#include "base/functional/callback.h"
 #include "base/json/json_writer.h"
+#include "chrome/browser/ash/os_feedback/os_feedback_screenshot_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
 
@@ -24,28 +29,44 @@ GURL GetUrl() {
 
 namespace ash {
 
-void OsFeedbackDialog::ShowDialog(
+void OsFeedbackDialog::ShowDialogAsync(
     content::BrowserContext* context,
     const extensions::api::feedback_private::FeedbackInfo& info,
+    base::OnceClosure callback,
     gfx::NativeWindow parent) {
   // If a dialog is opened, focus on it.
   auto* existing_instance =
       SystemWebDialogDelegate::FindInstance(GetUrl().spec());
   if (existing_instance) {
     existing_instance->Focus();
+    if (callback) {
+      std::move(callback).Run();
+    }
     return;
   }
 
-  auto* dialog = new OsFeedbackDialog(info);
-  dialog->ShowSystemDialogForBrowserContext(context, parent);
+  // Take a screenshot and open the app afterward, regardless of screenshot
+  // taking status. Screenshot is optional data.
+  ash::OsFeedbackScreenshotManager::GetInstance()->TakeScreenshot(
+      base::BindOnce(
+          [](content::BrowserContext* context, base::Value::Dict feedback_info,
+             base::OnceClosure callback, gfx::NativeWindow parent,
+             bool /*taken_ok*/) {
+            // The dialog will be self-destroyed when it is closed.
+            auto* dialog = new OsFeedbackDialog(std::move(feedback_info));
+            dialog->ShowSystemDialogForBrowserContext(context, parent);
+            if (callback) {
+              std::move(callback).Run();
+            }
+          },
+          context, info.ToValue(), std::move(callback), parent));
 }
 
 // Protected.
-OsFeedbackDialog::OsFeedbackDialog(
-    const extensions::api::feedback_private::FeedbackInfo& info)
+OsFeedbackDialog::OsFeedbackDialog(base::Value::Dict feedback_info)
     : SystemWebDialogDelegate(GetUrl(),
                               /* title=*/std::u16string()),
-      feedback_info_(info.ToValue()) {}
+      feedback_info_(std::move(feedback_info)) {}
 
 OsFeedbackDialog::~OsFeedbackDialog() = default;
 

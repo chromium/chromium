@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_OS_FEEDBACK_DIALOG_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_OS_FEEDBACK_DIALOG_H_
 
+#include "base/functional/callback_forward.h"
+#include "base/values.h"
 #include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
 #include "extensions/common/api/feedback_private.h"
 
@@ -16,14 +18,16 @@ class OsFeedbackDialog : public SystemWebDialogDelegate {
   // If |parent| is not null, the dialog will be parented to |parent|.
   // Otherwise it will be attached to either the AlwaysOnTop container or the
   // LockSystemModal container, depending on the session state at creation.
-  static void ShowDialog(
+  // The `callback` will be invoked after a new dialog or an existing one has
+  // been shown.
+  static void ShowDialogAsync(
       content::BrowserContext* context,
       const extensions::api::feedback_private::FeedbackInfo& info,
+      base::OnceClosure callback,
       gfx::NativeWindow parent = nullptr);
 
  protected:
-  explicit OsFeedbackDialog(
-      const extensions::api::feedback_private::FeedbackInfo& info);
+  explicit OsFeedbackDialog(base::Value::Dict feedback_info);
   OsFeedbackDialog(const OsFeedbackDialog&) = delete;
   OsFeedbackDialog& operator=(const OsFeedbackDialog&) = delete;
   ~OsFeedbackDialog() override;

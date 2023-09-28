@@ -4,11 +4,14 @@
 
 #include "chrome/browser/ash/login/ui/login_feedback.h"
 
+#include <memory>
+
 #include "ash/constants/ash_features.h"
 #include "ash/webui/os_feedback_ui/url_constants.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
@@ -23,19 +26,25 @@ namespace ash {
 
 namespace {
 
+GURL GetFeedbackURL() {
+  return GURL(kChromeUIOSFeedbackUrl);
+}
+
 bool HasInstanceOfOsFeedbackDialog() {
-  return ash::SystemWebDialogDelegate::HasInstance(
-      GURL(ash::kChromeUIOSFeedbackUrl));
+  return SystemWebDialogDelegate::HasInstance(GetFeedbackURL());
 }
 
 void TestOpenOsFeedbackDialog() {
   Profile* const profile = ash::ProfileHelper::GetSigninProfile();
-  std::unique_ptr<ash::LoginFeedback> login_feedback(
-      new ash::LoginFeedback(profile));
+  auto login_feedback = std::make_unique<ash::LoginFeedback>(profile);
   // There should be none instance.
   EXPECT_FALSE(HasInstanceOfOsFeedbackDialog());
+
+  base::test::TestFuture<void> test_future;
   // Open the feedback dialog.
-  login_feedback->Request("Test feedback");
+  login_feedback->Request("Test feedback", test_future.GetCallback());
+  EXPECT_TRUE(test_future.Wait());
+
   // Verify an instance exists now.
   EXPECT_TRUE(HasInstanceOfOsFeedbackDialog());
 }
@@ -92,7 +101,7 @@ void EnsureFeedbackAppUIShown(FeedbackDialog* feedback_dialog,
 
 void TestFeedback() {
   Profile* const profile = ProfileHelper::GetSigninProfile();
-  std::unique_ptr<LoginFeedback> login_feedback(new LoginFeedback(profile));
+  auto login_feedback = std::make_unique<ash::LoginFeedback>(profile);
 
   base::RunLoop run_loop;
   // Test that none feedback dialog exists.
