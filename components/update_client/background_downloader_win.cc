@@ -5,6 +5,8 @@
 #include "components/update_client/background_downloader_win.h"
 
 #include <objbase.h>
+#include <shlobj_core.h>
+#include <windows.h>
 #include <winerror.h>
 
 #include <stddef.h>
@@ -14,14 +16,19 @@
 #include <utility>
 #include <vector>
 
+#include "background_downloader_win.h"
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/files/file_enumerator.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/functional/function_ref.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -136,6 +143,12 @@ const int kPurgeStaleJobsIntervalBetweenChecksDays = 1;
 
 // Number of maximum BITS jobs this downloader can create and queue up.
 const int kMaxQueuedJobs = 10;
+
+// Prefix used for naming the temporary directories for downloads.
+static constexpr base::FilePath::CharType kDownloadDirectoryPrefix[] =
+    FILE_PATH_LITERAL("chrome_BITS_");
+static constexpr base::FilePath::CharType kDownloadDirectoryPrefixMatcher[] =
+    FILE_PATH_LITERAL("chrome_BITS_*");
 
 // Retrieves the singleton instance of GIT for this process.
 HRESULT GetGit(ComPtr<IGlobalInterfaceTable>* git) {
@@ -709,11 +722,11 @@ HRESULT BackgroundDownloader::QueueBitsJob(const GURL& url,
                                            ComPtr<IBackgroundCopyJob>* job) {
   CHECK(com_task_runner_->RunsTasksInCurrentSequence());
 
-  size_t num_jobs = std::numeric_limits<size_t>::max();
-  HRESULT hr = GetBackgroundDownloaderJobCount(&num_jobs);
-
   // Remove some old jobs from the BITS queue before creating new jobs.
   CleanupStaleJobs();
+
+  size_t num_jobs = std::numeric_limits<size_t>::max();
+  HRESULT hr = GetBackgroundDownloaderJobCount(&num_jobs);
 
   if (FAILED(hr) || num_jobs >= kMaxQueuedJobs) {
     return MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF,
@@ -774,8 +787,7 @@ HRESULT BackgroundDownloader::InitializeNewJob(
     const ComPtr<IBackgroundCopyJob>& job,
     const GURL& url) {
   base::FilePath tempdir;
-  if (!base::CreateNewTempDirectory(FILE_PATH_LITERAL("chrome_BITS_"),
-                                    &tempdir)) {
+  if (!base::CreateNewTempDirectory(kDownloadDirectoryPrefix, &tempdir)) {
     return E_FAIL;
   }
 
@@ -942,6 +954,39 @@ void BackgroundDownloader::CleanupStaleJobs() {
   for (const auto& job : jobs) {
     CleanupJob(job);
   }
+
+  CleanupStaleDownloads();
+}
+
+void BackgroundDownloader::CleanupStaleDownloads() {
+  EnumerateDownloadDirs(
+      kDownloadDirectoryPrefixMatcher, [](const base::FilePath& dir) {
+        base::File::Info info;
+        if (base::GetFileInfo(dir, &info) &&
+            info.creation_time + base::Days(kPurgeStaleJobsAfterDays) <
+                base::Time::Now()) {
+          base::DeletePathRecursively(dir);
+        }
+      });
+}
+
+void BackgroundDownloader::EnumerateDownloadDirs(
+    const base::FilePath::StringType& matcher,
+    base::FunctionRef<void(const base::FilePath& dir)> callback) {
+  base::FilePath dir;
+  std::vector<base::FilePath> dirs;
+  if (base::GetSecureSystemTemp(&dir)) {
+    dirs.push_back(dir);
+  }
+  if (base::GetTempDir(&dir)) {
+    dirs.push_back(dir);
+  }
+  base::ranges::for_each(dirs, [&](const base::FilePath& parent_dir) {
+    base::FileEnumerator(parent_dir,
+                         /*recursive=*/false, base::FileEnumerator::DIRECTORIES,
+                         matcher)
+        .ForEach(callback);
+  });
 }
 
 }  // namespace update_client

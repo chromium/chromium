@@ -12,7 +12,9 @@
 #include <memory>
 
 #include "base/functional/callback_forward.h"
-#include "base/memory/ref_counted.h"
+#include "base/functional/function_ref.h"
+#include "base/gtest_prod_util.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -21,7 +23,7 @@
 namespace base {
 class FilePath;
 class SequencedTaskRunner;
-}
+}  // namespace base
 
 namespace update_client {
 
@@ -40,6 +42,10 @@ class BackgroundDownloader : public CrxDownloader {
   explicit BackgroundDownloader(scoped_refptr<CrxDownloader> successor);
 
  private:
+  friend class BackgroundDownloaderWinTest;
+  FRIEND_TEST_ALL_PREFIXES(BackgroundDownloaderWinTest, CleansStaleDownloads);
+  FRIEND_TEST_ALL_PREFIXES(BackgroundDownloaderWinTest, RetainsRecentDownloads);
+
   // Overrides for CrxDownloader.
   ~BackgroundDownloader() override;
   base::OnceClosure DoStartDownload(const GURL& url) override;
@@ -115,6 +121,14 @@ class BackgroundDownloader : public CrxDownloader {
 
   // Cleans up incompleted jobs that are too old.
   void CleanupStaleJobs();
+
+  // Perform a best-effort cleanup up downloads that are too old.
+  void CleanupStaleDownloads();
+
+  // Enumerate the writable temporary directories matching |matcher|.
+  void EnumerateDownloadDirs(
+      const base::FilePath::StringType& matcher,
+      base::FunctionRef<void(const base::FilePath& dir)> callback);
 
   // This sequence checker is bound to the main sequence.
   SEQUENCE_CHECKER(sequence_checker_);
