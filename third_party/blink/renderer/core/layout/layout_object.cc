@@ -3276,6 +3276,7 @@ void LayoutObject::CheckCounterChanges(const ComputedStyle* old_style,
     StyleContainmentScope* scope =
         tree.FindOrCreateEnclosingScopeForElement(To<Element>(*GetNode()));
     const AtomicString list_item("list-item");
+    ListItemOrdinal* ordinal = ListItemOrdinal::Get(*GetNode());
     if (old_style) {
       // Remove old counters that got changed or removed.
       if (old_style->GetCounterDirectives()) {
@@ -3294,6 +3295,9 @@ void LayoutObject::CheckCounterChanges(const ComputedStyle* old_style,
           new_style->GetCounterDirectives(list_item).IsDefined() &&
           ElementGeneratesListItemCounter(GetNode())) {
         tree.RemoveListItemCounterForLayoutObject(*this);
+        if (ordinal) {
+          ListItemOrdinal::ItemCounterStyleUpdated(*this);
+        }
       }
       // Add new counters that got changed or added.
       if (new_style->GetCounterDirectives()) {
@@ -3312,6 +3316,9 @@ void LayoutObject::CheckCounterChanges(const ComputedStyle* old_style,
           !new_style->GetCounterDirectives(list_item).IsDefined() &&
           ElementGeneratesListItemCounter(GetNode())) {
         scope->CreateListItemCounterNodeForLayoutObject(*this);
+        if (ordinal) {
+          ListItemOrdinal::ItemCounterStyleUpdated(*this);
+        }
       }
     } else {
       if (ElementGeneratesListItemCounter(GetNode())) {
@@ -3319,6 +3326,9 @@ void LayoutObject::CheckCounterChanges(const ComputedStyle* old_style,
           tree.RemoveListItemCounterForLayoutObject(*this);
         } else {
           scope->CreateListItemCounterNodeForLayoutObject(*this);
+        }
+        if (ordinal) {
+          ListItemOrdinal::ItemCounterStyleUpdated(*this);
         }
       }
       scope->CreateCounterNodesForLayoutObject(*this);

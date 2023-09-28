@@ -206,11 +206,10 @@ void StyleContainmentScopeTree::RemoveCounterForLayoutObject(
   if (counter) {
     StyleContainmentScope* scope = counter->Scope()->StyleScope();
     CountersScopeTree* tree = scope->GetCountersScopeTree();
-    Element& root_element = counter->Scope()->RootElement();
     tree->RemoveCounterFromScope(*counter, *counter->Scope(), identifier);
     if (identifier == list_item_) {
-      if (auto* o_list_element = DynamicTo<HTMLOListElement>(root_element)) {
-        ListItemOrdinal::InvalidateAllItemsForOrderedList(o_list_element);
+      if (ListItemOrdinal::Get(*object.GetNode())) {
+        ListItemOrdinal::ItemInsertedOrRemoved(&object);
       }
     }
     UpdateOutermostCountersDirtyScope(scope->Parent() ? scope->Parent()
@@ -226,10 +225,9 @@ void StyleContainmentScopeTree::RemoveListItemCounterForLayoutObject(
     StyleContainmentScope* scope = counter->Scope()->StyleScope();
     CountersScopeTree* tree =
         counter->Scope()->StyleScope()->GetCountersScopeTree();
-    Element& root_element = counter->Scope()->RootElement();
     tree->RemoveCounterFromScope(*counter, *counter->Scope(), list_item_);
-    if (auto* o_list_element = DynamicTo<HTMLOListElement>(root_element)) {
-      ListItemOrdinal::InvalidateAllItemsForOrderedList(o_list_element);
+    if (ListItemOrdinal::Get(*object.GetNode())) {
+      ListItemOrdinal::ItemInsertedOrRemoved(&object);
     }
     UpdateOutermostCountersDirtyScope(scope->Parent() ? scope->Parent()
                                                       : scope);
