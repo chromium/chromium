@@ -4650,6 +4650,64 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   }
 }
 
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       JoinInterestGroupInvalidAggregationCoordinatorOrigin) {
+  const char kScriptTemplate[] = R"(
+(async function() {
+  try {
+    await navigator.joinAdInterestGroup(
+        {
+          name: 'cars',
+          owner: $1,
+          aggregationCoordinatorOrigin: 'https://invalid^&',
+        },
+        /*joinDurationSec=*/1);
+  } catch (e) {
+    return e.toString();
+  }
+  return 'done';
+})())";
+
+  GURL url = https_server_->GetURL("a.test", "/echo");
+  std::string origin_string = url::Origin::Create(url).Serialize();
+  ASSERT_TRUE(NavigateToURL(shell(), url));
+
+  EXPECT_EQ(
+      "TypeError: Failed to execute 'joinAdInterestGroup' on 'Navigator': "
+      "aggregationCoordinatorOrigin 'https://invalid^&' for "
+      "AuctionAdInterestGroup with name 'cars' must be a valid https origin.",
+      EvalJs(shell(), JsReplace(kScriptTemplate, origin_string.c_str())));
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       JoinInterestGroupNonHTTPSAggregationCoordinatorOrigin) {
+  const char kScriptTemplate[] = R"(
+(async function() {
+  try {
+    await navigator.joinAdInterestGroup(
+        {
+          name: 'cars',
+          owner: $1,
+          aggregationCoordinatorOrigin: 'http://coordinator.test/',
+        },
+        /*joinDurationSec=*/1);
+  } catch (e) {
+    return e.toString();
+  }
+  return 'done';
+})())";
+
+  GURL url = https_server_->GetURL("a.test", "/echo");
+  std::string origin_string = url::Origin::Create(url).Serialize();
+  ASSERT_TRUE(NavigateToURL(shell(), url));
+
+  EXPECT_EQ(
+      "TypeError: Failed to execute 'joinAdInterestGroup' on 'Navigator': "
+      "aggregationCoordinatorOrigin 'http://coordinator.test/' for "
+      "AuctionAdInterestGroup with name 'cars' must be a valid https origin.",
+      EvalJs(shell(), JsReplace(kScriptTemplate, origin_string.c_str())));
+}
+
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionInvalidSeller) {
   ASSERT_TRUE(NavigateToURL(shell(), https_server_->GetURL("a.test", "/echo")));
   AttachInterestGroupObserver();

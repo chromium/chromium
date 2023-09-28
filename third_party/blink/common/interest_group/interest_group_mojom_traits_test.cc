@@ -423,4 +423,12 @@ TEST(InterestGroupMojomTraitsTest, SerializeAndDeserializeAdditionalBidKey) {
   SerializeAndDeserializeAndCompare(interest_group);
 }
 
+TEST(InterestGroupMojomTraitsTest,
+     SerializeAndDeserializeAggregationCoordinatorOrigin) {
+  InterestGroup interest_group = CreateInterestGroup();
+  interest_group.aggregation_coordinator_origin =
+      url::Origin::Create(GURL("https://example.com"));
+  SerializeAndDeserializeAndCompare(interest_group);
+}
+
 }  // namespace blink

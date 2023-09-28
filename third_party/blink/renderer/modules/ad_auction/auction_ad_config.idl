@@ -70,6 +70,8 @@ dictionary AuctionAdConfig {
   [RuntimeEnabled=FledgeNegativeTargeting]
   USVString auctionNonce;
 
+  USVString aggregationCoordinatorOrigin;
+
   sequence<AuctionAdConfig> componentAuctions;
   AbortSignal? signal;
 

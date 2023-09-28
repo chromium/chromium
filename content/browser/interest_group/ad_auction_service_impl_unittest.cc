@@ -1311,7 +1311,8 @@ TEST_F(AdAuctionServiceImplTest, UpdateAllUpdatableFields) {
                  }],
 "adSizes": {"size_new": {"width": "300px", "height": "150px"}},
 "sizeGroups": {"group_new": ["size_new"]},
-"auctionServerRequestFlags": ["omit-ads", "include-full-ads"]
+"auctionServerRequestFlags": ["omit-ads", "include-full-ads"],
+"aggregationCoordinatorOrigin": "https://aggregation.coordinator.test/"
 })",
                          kOriginStringA, kOriginStringA, kOriginStringA,
                          kOriginStringA, kOriginStringA, kOriginStringA));

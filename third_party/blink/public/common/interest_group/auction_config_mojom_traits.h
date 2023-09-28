@@ -405,6 +405,11 @@ struct BLINK_COMMON_EXPORT
     return config.expects_additional_bids;
   }
 
+  static absl::optional<url::Origin> aggregation_coordinator_origin(
+      const blink::AuctionConfig& config) {
+    return config.aggregation_coordinator_origin;
+  }
+
   static bool Read(blink::mojom::AuctionAdConfigDataView data,
                    blink::AuctionConfig* out);
 };

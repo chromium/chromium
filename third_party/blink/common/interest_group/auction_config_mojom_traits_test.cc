@@ -227,6 +227,9 @@ AuctionConfig CreateFullConfig() {
 
   auction_config.expects_additional_bids = true;
 
+  auction_config.aggregation_coordinator_origin =
+      url::Origin::Create(GURL("https://example.com"));
+
   return auction_config;
 }
 

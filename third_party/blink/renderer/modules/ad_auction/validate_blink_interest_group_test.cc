@@ -29,6 +29,7 @@ namespace {
 
 constexpr char kOriginString[] = "https://origin.test/";
 constexpr char kNameString[] = "name";
+constexpr char kAggregationCoordinatorOriginString[] = "https://example.com/";
 
 mojom::blink::InterestGroupAdPtr MakeAdWithUrl(const KURL& url) {
   return mojom::blink::InterestGroupAd::New(
@@ -166,6 +167,9 @@ class ValidateBlinkInterestGroupTest : public testing::Test {
         mojom::blink::AuctionServerRequestFlags::New();
     blink_interest_group->auction_server_request_flags->omit_ads = true;
 
+    blink_interest_group->aggregation_coordinator_origin =
+        kAggregationCoordinatorOrigin;
+
     return blink_interest_group;
   }
 
@@ -175,6 +179,9 @@ class ValidateBlinkInterestGroupTest : public testing::Test {
       SecurityOrigin::CreateFromString(String::FromUTF8(kOriginString));
 
   const String kName = String::FromUTF8(kNameString);
+  const scoped_refptr<const SecurityOrigin> kAggregationCoordinatorOrigin =
+      SecurityOrigin::CreateFromString(
+          String::FromUTF8(kAggregationCoordinatorOriginString));
 };
 
 // Test behavior with an InterestGroup with as few fields populated as allowed.
@@ -1178,6 +1185,45 @@ TEST_F(ValidateBlinkInterestGroupTest,
       /*expected_error=*/
       "Interest groups that provide a value of additionalBidKey for negative "
       "targeting must not provide a value for ads.");
+}
+
+TEST_F(ValidateBlinkInterestGroupTest, AggregationCoordinatorNotHTTPS) {
+  mojom::blink::InterestGroupPtr blink_interest_group =
+      CreateMinimalInterestGroup();
+  blink_interest_group->aggregation_coordinator_origin =
+      SecurityOrigin::CreateFromString("http://coordinator.test");
+
+  // We specifically don't check deserialization because that would cause a
+  // LOG(FATAL), because the fixed-size additional_bid_key array would not be
+  // of the expected size.
+  ExpectInterestGroupIsNotValid(
+      blink_interest_group,
+      /*expected_error_field_name=*/
+      String::FromUTF8("aggregationCoordinatorOrigin"),
+      /*expected_error_field_value=*/
+      String::FromUTF8("http://coordinator.test"),
+      /*expected_error=*/
+      String::FromUTF8("aggregationCoordinatorOrigin origin must be HTTPS."),
+      /*check_deserialization=*/false);
+}
+
+TEST_F(ValidateBlinkInterestGroupTest, AggregationCoordinatorInvalid) {
+  mojom::blink::InterestGroupPtr blink_interest_group =
+      CreateMinimalInterestGroup();
+  blink_interest_group->aggregation_coordinator_origin =
+      SecurityOrigin::CreateFromString("http://invalid^&");
+
+  // We specifically don't check deserialization because that would cause a
+  // LOG(FATAL), because the fixed-size additional_bid_key array would not be
+  // of the expected size.
+  ExpectInterestGroupIsNotValid(
+      blink_interest_group,
+      /*expected_error_field_name=*/
+      String::FromUTF8("aggregationCoordinatorOrigin"),
+      /*expected_error_field_value=*/String::FromUTF8("null"),
+      /*expected_error=*/
+      String::FromUTF8("aggregationCoordinatorOrigin origin must be HTTPS."),
+      /*check_deserialization=*/false);
 }
 
 }  // namespace blink

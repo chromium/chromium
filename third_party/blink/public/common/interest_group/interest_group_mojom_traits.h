@@ -209,6 +209,11 @@ struct BLINK_COMMON_EXPORT
     return interest_group.additional_bid_key;
   }
 
+  static const absl::optional<url::Origin>& aggregation_coordinator_origin(
+      const blink::InterestGroup& interest_group) {
+    return interest_group.aggregation_coordinator_origin;
+  }
+
   static bool Read(blink::mojom::InterestGroupDataView data,
                    blink::InterestGroup* out);
 };

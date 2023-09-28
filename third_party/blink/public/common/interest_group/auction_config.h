@@ -358,6 +358,9 @@ struct BLINK_COMMON_EXPORT AuctionConfig {
   // itself will be stored separately since we don't want to be copying it all
   // over the place. Once received, this will be switched to false.
   bool expects_additional_bids = false;
+
+  // Origin for the Coordinator to be used for Private Aggregation.
+  absl::optional<url::Origin> aggregation_coordinator_origin;
 };
 
 }  // namespace blink

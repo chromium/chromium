@@ -921,6 +921,31 @@ bool CopyAdditionalBidKeyFromIdlToMojo(
   return true;
 }
 
+bool CopyAggregationCoordinatorOriginFromIdlToMojo(
+    const ExecutionContext& execution_context,
+    ExceptionState& exception_state,
+    const AuctionAdInterestGroup& input,
+    mojom::blink::InterestGroup& output) {
+  if (!input.hasAggregationCoordinatorOrigin()) {
+    return true;
+  }
+
+  scoped_refptr<const SecurityOrigin> aggregation_coordinator_origin =
+      ParseOrigin(input.aggregationCoordinatorOrigin());
+  if (!aggregation_coordinator_origin) {
+    exception_state.ThrowTypeError(String::Format(
+        "aggregationCoordinatorOrigin '%s' for AuctionAdInterestGroup with "
+        "name '%s' must be a valid https origin.",
+        input.aggregationCoordinatorOrigin().Utf8().c_str(),
+        input.name().Utf8().c_str()));
+    return false;
+  }
+
+  output.aggregation_coordinator_origin =
+      std::move(aggregation_coordinator_origin);
+  return true;
+}
+
 // createAdRequest copy functions.
 bool CopyAdRequestUrlFromIdlToMojo(const ExecutionContext& context,
                                    ExceptionState& exception_state,
@@ -1508,6 +1533,28 @@ bool CopyAdditionalBidsFromIdlToMojo(
   return true;
 }
 
+bool CopyAggregationCoordinatorOriginFromIdlToMojo(
+    ExceptionState& exception_state,
+    const AuctionAdConfig& input,
+    mojom::blink::AuctionAdConfig& output) {
+  if (!input.hasAggregationCoordinatorOrigin()) {
+    return true;
+  }
+
+  scoped_refptr<const SecurityOrigin> aggregation_coordinator_origin =
+      ParseOrigin(input.aggregationCoordinatorOrigin());
+  if (!aggregation_coordinator_origin) {
+    exception_state.ThrowTypeError(String::Format(
+        "aggregationCoordinatorOrigin '%s' must be a valid https origin.",
+        input.aggregationCoordinatorOrigin().Utf8().c_str()));
+    return false;
+  }
+
+  output.aggregation_coordinator_origin =
+      std::move(aggregation_coordinator_origin);
+  return true;
+}
+
 // Returns nullopt + sets exception on failure, or returns a concrete value.
 absl::optional<HashMap<scoped_refptr<const SecurityOrigin>, String>>
 ConvertNonPromisePerBuyerSignalsFromV8ToMojo(const ScriptState& script_state,
@@ -2064,7 +2111,9 @@ mojom::blink::AuctionAdConfigPtr IdlAuctionConfigToMojo(
                                      *mojo_config) ||
       !CopyAdditionalBidsFromIdlToMojo(auction_handle, auction_id.get(),
                                        script_state, exception_state, config,
-                                       *mojo_config)) {
+                                       *mojo_config) ||
+      !CopyAggregationCoordinatorOriginFromIdlToMojo(exception_state, config,
+                                                     *mojo_config)) {
     return mojom::blink::AuctionAdConfigPtr();
   }
 
@@ -2907,6 +2956,10 @@ ScriptPromise NavigatorAuction::joinAdInterestGroup(
   }
   if (!CopyAdditionalBidKeyFromIdlToMojo(*context, exception_state, *group,
                                          *mojo_group)) {
+    return ScriptPromise();
+  }
+  if (!CopyAggregationCoordinatorOriginFromIdlToMojo(*context, exception_state,
+                                                     *group, *mojo_group)) {
     return ScriptPromise();
   }
 

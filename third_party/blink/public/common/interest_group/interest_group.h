@@ -129,8 +129,9 @@ struct BLINK_COMMON_EXPORT InterestGroup {
   AuctionServerRequestFlags auction_server_request_flags;
 
   absl::optional<AdditionalBidKey> additional_bid_key;
+  absl::optional<url::Origin> aggregation_coordinator_origin;
 
-  static_assert(__LINE__ == 133, R"(
+  static_assert(__LINE__ == 134, R"(
 If modifying InterestGroup fields, make sure to also modify:
 
 * IsValid(), EstimateSize(), and IsEqualForTesting() in this class

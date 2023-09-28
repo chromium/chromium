@@ -238,7 +238,9 @@ bool StructTraits<blink::mojom::AuctionAdConfigDataView, blink::AuctionConfig>::
       !data.ReadAuctionAdConfigNonSharedParams(&out->non_shared_params) ||
       !data.ReadDirectFromSellerSignals(&out->direct_from_seller_signals) ||
       !data.ReadPerBuyerExperimentGroupIds(
-          &out->per_buyer_experiment_group_ids)) {
+          &out->per_buyer_experiment_group_ids) ||
+      !data.ReadAggregationCoordinatorOrigin(
+          &out->aggregation_coordinator_origin)) {
     return false;
   }
 

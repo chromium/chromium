@@ -143,6 +143,9 @@ struct InterestGroup {
   // this InterestGroup, if used by an additional bid for a negative targeting,
   // can only be used by its owner.
   array<uint8, 32>? additional_bid_key;
+
+  // Origin for the Coordinator to be used for Private Aggregation.
+  url.mojom.Origin? aggregation_coordinator_origin;
 };
 
 // Packages the details necessary for the browser process to retrieve a
@@ -497,4 +500,7 @@ struct AuctionAdConfig {
   // Optionally specifies that some bids will be provided as signed exchanges,
   // via `AbortableAdAuction.ResolvedAdditionalBids()`.
   bool expects_additional_bids = false;
+
+  // Origin for the Coordinator to be used for Private Aggregation.
+  url.mojom.Origin? aggregation_coordinator_origin;
 };
