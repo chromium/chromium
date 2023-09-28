@@ -147,6 +147,14 @@ void AddNativeUiColorMixer(ColorProvider* provider,
 
 void AddNativePostprocessingMixer(ColorProvider* provider,
                                   const ColorProviderKey& key) {
+  // Ensure the system tint is applied by default for pre-refresh browsers. For
+  // post-refresh only apply the tint if running old design system themes or the
+  // color source is explicitly configured for grayscale.
+  if (features::IsChromeRefresh2023() && !key.custom_theme &&
+      key.user_color_source != ColorProviderKey::UserColorSource::kGrayscale) {
+    return;
+  }
+
   ColorMixer& mixer = provider->AddPostprocessingMixer();
 
   for (ColorId id = kUiColorsStart; id < kUiColorsEnd; ++id) {
