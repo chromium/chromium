@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/containers/cxx20_erase.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/root_window_controller.h"
 #include "ash/scoped_animation_disabler.h"
@@ -549,12 +550,10 @@ TabletModeWindowManager::GetCarryOverWindowsInSplitView(
   // IsCarryOverCandidateForSplitView() to be carried over to splitscreen.
   MruWindowTracker::WindowList mru_windows =
       Shell::Get()->mru_window_tracker()->BuildWindowForCycleList(kActiveDesk);
-  mru_windows.erase(std::remove_if(mru_windows.begin(), mru_windows.end(),
-                                   [](aura::Window* window) {
-                                     return window->GetProperty(
-                                         chromeos::kIsShowingInOverviewKey);
-                                   }),
-                    mru_windows.end());
+  base::EraseIf(mru_windows, [](aura::Window* window) {
+        return window->GetProperty(
+                chromeos::kIsShowingInOverviewKey);
+    });
   aura::Window* root_window = Shell::GetPrimaryRootWindow();
   if (IsCarryOverCandidateForSplitView(mru_windows, 0u, root_window)) {
     if (GetWindowStateType(mru_windows[0], clamshell_to_tablet) ==

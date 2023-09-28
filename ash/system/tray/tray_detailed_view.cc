@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/containers/cxx20_erase.h"
 #include "ash/constants/ash_features.h"
 #include "ash/controls/rounded_scroll_bar.h"
 #include "ash/public/cpp/ash_view_ids.h"
@@ -249,11 +250,9 @@ class ScrollContentsView : public views::View {
     }
 
     if (!details.is_add && details.parent == this) {
-      headers_.erase(std::remove_if(headers_.begin(), headers_.end(),
-                                    [details](const Header& header) {
-                                      return header.view.get() == details.child;
-                                    }),
-                     headers_.end());
+      base::EraseIf(headers_, [details](const Header& header) {
+          return header.view.get() == details.child;
+      });
     } else if (details.is_add && details.parent == this &&
                details.child == children().front()) {
       // We always want padding on the bottom of the scroll contents.
