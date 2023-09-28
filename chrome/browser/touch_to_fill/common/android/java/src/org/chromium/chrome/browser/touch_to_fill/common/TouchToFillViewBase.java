@@ -26,6 +26,9 @@ import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.ViewUtils;
+
+import java.util.Set;
+
 /**
  * This is a base class for the Touch to Fill View classes.
  */
@@ -87,9 +90,9 @@ public abstract class TouchToFillViewBase implements BottomSheetContent {
 
     /**
      * Used as a helper for the suggestion list height calculation.
-     * @return the item type of the suggestions in the list on the {@link BottomSheet}.
+     * @return the item types of the suggestions in the list on the {@link BottomSheet}.
      */
-    protected abstract int listedItemType();
+    protected abstract Set<Integer> listedItemTypes();
 
     /**
      * Used as a helper for the suggestion list height calculation.
@@ -278,7 +281,8 @@ public abstract class TouchToFillViewBase implements BottomSheetContent {
 
     private boolean isListedItem(View childInSheetView) {
         int posInAdapter = mSheetItemListView.getChildAdapterPosition(childInSheetView);
-        return mSheetItemListView.getAdapter().getItemViewType(posInAdapter) == listedItemType();
+        return listedItemTypes().contains(
+                mSheetItemListView.getAdapter().getItemViewType(posInAdapter));
     }
 
     private boolean isFooterItem(View childInSheetView) {

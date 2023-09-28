@@ -17,6 +17,8 @@ import org.chromium.chrome.browser.touch_to_fill.common.TouchToFillViewBase;
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.ItemType;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 
+import java.util.Set;
+
 /**
  * This class is responsible for rendering the bottom sheet which displays the
  * TouchToFillCreditCard. It is a View in this Model-View-Controller component and doesn't inherit
@@ -113,8 +115,8 @@ class TouchToFillCreditCardView extends TouchToFillViewBase {
     }
 
     @Override
-    protected int listedItemType() {
-        return TouchToFillCreditCardProperties.ItemType.CREDIT_CARD;
+    protected Set<Integer> listedItemTypes() {
+        return Set.of(TouchToFillCreditCardProperties.ItemType.CREDIT_CARD);
     }
 
     @Override

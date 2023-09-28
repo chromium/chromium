@@ -17,6 +17,8 @@ import org.chromium.chrome.browser.touch_to_fill.common.ItemDividerBase;
 import org.chromium.chrome.browser.touch_to_fill.common.TouchToFillViewBase;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 
+import java.util.Set;
+
 /**
  * This class is responsible for rendering the bottom sheet which displays the touch to fill
  * credentials. It is a View in this Model-View-Controller component and doesn't inherit but holds
@@ -117,8 +119,10 @@ class TouchToFillView extends TouchToFillViewBase {
     }
 
     @Override
-    protected int listedItemType() {
-        return TouchToFillProperties.ItemType.CREDENTIAL;
+    protected Set<Integer> listedItemTypes() {
+        return Set.of(TouchToFillProperties.ItemType.CREDENTIAL,
+                TouchToFillProperties.ItemType.WEBAUTHN_CREDENTIAL,
+                TouchToFillProperties.ItemType.MORE_PASSKEYS);
     }
 
     @Override
