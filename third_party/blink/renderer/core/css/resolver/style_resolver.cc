@@ -1907,8 +1907,10 @@ void StyleResolver::CollectPseudoRulesForElement(
     PseudoId pseudo_id,
     const AtomicString& view_transition_name,
     unsigned rules_to_include) {
-  collector.SetPseudoElementStyleRequest(
-      StyleRequest(pseudo_id, nullptr, view_transition_name));
+  collector.SetPseudoElementStyleRequest(StyleRequest(
+      pseudo_id,
+      /* parent_style */ nullptr,
+      /* originating_element_style */ nullptr, view_transition_name));
 
   if (rules_to_include & kUACSSRules) {
     MatchUARules(element, collector);

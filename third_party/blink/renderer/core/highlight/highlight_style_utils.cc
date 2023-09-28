@@ -244,8 +244,11 @@ const ComputedStyle* HighlightPseudoStyleWithOriginatingInheritance(
     // ::selection and ::selection:window-inactive styles may be different. Only
     // cache the styles for ::selection if there are no :window-inactive
     // selector, or if the page is active.
+    // With Originating Inheritance the originating element is also the parent
+    // element.
     return element->UncachedStyleForPseudoElement(
-        StyleRequest(pseudo, element->GetComputedStyle(), pseudo_argument));
+        StyleRequest(pseudo, element->GetComputedStyle(),
+                     element->GetComputedStyle(), pseudo_argument));
   }
 
   return element->CachedStyleForPseudoElement(pseudo, pseudo_argument);

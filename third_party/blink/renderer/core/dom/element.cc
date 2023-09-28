@@ -6964,9 +6964,10 @@ const ComputedStyle* Element::CachedStyleForPseudoElement(
     return cached;
   }
 
-  StyleRequest style_request{pseudo_id, style, pseudo_argument};
-  style_request.originating_element_style = style;
-  const ComputedStyle* result = UncachedStyleForPseudoElement(style_request);
+  // When not using Highlight Pseudo Inheritance, as asserted above, the
+  // originating element style is the same as the parent style.
+  const ComputedStyle* result = UncachedStyleForPseudoElement(
+      StyleRequest(pseudo_id, style, style, pseudo_argument));
   if (result) {
     return style->AddCachedPseudoElementStyle(result, pseudo_id,
                                               pseudo_argument);
@@ -7056,8 +7057,8 @@ const ComputedStyle* Element::StyleForHighlightPseudoElement(
     const ComputedStyle& originating_style,
     const PseudoId pseudo_id,
     const AtomicString& pseudo_argument) {
-  StyleRequest style_request{pseudo_id, highlight_parent, pseudo_argument};
-  style_request.originating_element_style = &originating_style;
+  StyleRequest style_request{pseudo_id, highlight_parent, &originating_style,
+                             pseudo_argument};
   return StyleForPseudoElement(style_recalc_context, style_request);
 }
 

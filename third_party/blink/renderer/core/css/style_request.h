@@ -70,9 +70,11 @@ class StyleRequest {
 
   StyleRequest(PseudoId pseudo_id,
                const ComputedStyle* parent_override,
+               const ComputedStyle* originating_element_style = nullptr,
                const AtomicString& pseudo_argument = g_null_atom)
       : parent_override(parent_override),
         layout_parent_override(parent_override),
+        originating_element_style(originating_element_style),
         pseudo_id(pseudo_id),
         pseudo_argument(pseudo_argument) {
     DCHECK(!IsTransitionPseudoElement(pseudo_id) ||

@@ -198,10 +198,15 @@ PseudoElement::PseudoElement(Element* parent,
 
 const ComputedStyle* PseudoElement::CustomStyleForLayoutObject(
     const StyleRecalcContext& style_recalc_context) {
+  // This method is not used for highlight pseudos that require an
+  // originating element.
+  DCHECK(!IsHighlightPseudoElement(pseudo_id_));
   Element* parent = ParentOrShadowHostElement();
   return parent->StyleForPseudoElement(
-      style_recalc_context, StyleRequest(pseudo_id_, parent->GetComputedStyle(),
-                                         view_transition_name_));
+      style_recalc_context,
+      StyleRequest(pseudo_id_, parent->GetComputedStyle(),
+                   /* originating_element_style */ nullptr,
+                   view_transition_name_));
 }
 
 const ComputedStyle* PseudoElement::LayoutStyleForDisplayContents(
