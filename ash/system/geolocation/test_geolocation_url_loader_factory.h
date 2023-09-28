@@ -39,6 +39,10 @@ class TestGeolocationUrlLoaderFactory : public network::SharedURLLoaderFactory {
   void set_position(Geoposition position) { position_ = position; }
   const Geoposition& position() const { return position_; }
 
+  void SetValidPosition(double latitude,
+                        double longitude,
+                        base::Time timestamp);
+
   // Clears all added responses in `test_url_loader_factory_`.
   void ClearResponses();
 

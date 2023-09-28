@@ -63,6 +63,18 @@ TestGeolocationUrlLoaderFactory::Clone() {
   return nullptr;
 }
 
+void TestGeolocationUrlLoaderFactory::SetValidPosition(double latitude,
+                                                       double longitude,
+                                                       base::Time timestamp) {
+  position_ = Geoposition();
+  position_.latitude = latitude;
+  position_.longitude = longitude;
+  position_.status = Geoposition::STATUS_OK;
+  position_.accuracy = 10;
+  position_.timestamp = timestamp;
+  CHECK(position_.Valid());
+}
+
 void TestGeolocationUrlLoaderFactory::ClearResponses() {
   test_url_loader_factory_.ClearResponses();
 }
