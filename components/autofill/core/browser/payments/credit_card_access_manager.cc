@@ -1145,8 +1145,8 @@ void CreditCardAccessManager::FetchLocalOrFullServerCard() {
     // until the re-authentication flow is complete.
     StartDeviceAuthenticationForFilling(accessor_, card_.get(), /*cvc=*/u"");
   } else {
-    // Fill immediately if local card, and we do not need to authenticate
-    // the user.
+    // Fill immediately if local card or full server card, as we do not need to
+    // authenticate the user.
     accessor_->OnCreditCardFetched(CreditCardFetchResult::kSuccess,
                                    card_.get());
 
