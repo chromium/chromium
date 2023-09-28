@@ -8,6 +8,7 @@
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/omnibox/browser/actions/omnibox_action.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_popup_selection.h"
@@ -161,6 +162,12 @@ std::u16string GetAccessibilityBaseLabel(const AutocompleteMatch& match,
     std::u16string doc_string =
         match.contents + u", " + match.description + u", " + match_text;
     return doc_string;
+  }
+
+  // Standalone action suggestions must use the associated accessibility hint.
+  if (match.type == AutocompleteMatchType::PEDAL) {
+    DCHECK(match.takeover_action);
+    return match.takeover_action->GetLabelStrings().accessibility_hint;
   }
 
   int message = message_ids[match.type];
