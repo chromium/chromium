@@ -20,7 +20,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.bookmarks.BookmarkFolderSelectActivity;
@@ -115,12 +114,13 @@ class BookmarkManagerMediator
     }
 
     private final BookmarkModelObserver mBookmarkModelObserver = new BookmarkModelObserver() {
-        private boolean mPendingRefresh;
+        private final PendingRunnable mPendingRefresh =
+                new PendingRunnable(TaskTraits.UI_DEFAULT, BookmarkManagerMediator.this::refresh);
 
         @Override
         public void bookmarkNodeChildrenReordered(BookmarkItem node) {
             if (!mIsBookmarkModelReorderingInProgress) {
-                postPendingRefresh();
+                mPendingRefresh.post();
             }
             mIsBookmarkModelReorderingInProgress = false;
         }
@@ -148,7 +148,7 @@ class BookmarkManagerMediator
                     // If the position couldn't be found, then do a full refresh. Otherwise be
                     // smart and remove only the index of the removed bookmark.
                     if (position == -1) {
-                        postPendingRefresh();
+                        mPendingRefresh.post();
                     } else {
                         mModelList.removeAt(position);
                         // If the deleted node was selection, unselect it.
@@ -161,7 +161,7 @@ class BookmarkManagerMediator
                 // We cannot rely on removing the specific list item that corresponds to the
                 // removed node because the node might be a parent with children also shown
                 // in the list.
-                postPendingRefresh();
+                mPendingRefresh.post();
             }
         }
 
@@ -176,7 +176,7 @@ class BookmarkManagerMediator
 
             if (getCurrentUiMode() == BookmarkUiMode.FOLDER
                     && Objects.equals(id, getCurrentFolderId())) {
-                postPendingRefresh();
+                mPendingRefresh.post();
             } else {
                 super.bookmarkNodeChanged(item);
             }
@@ -190,20 +190,8 @@ class BookmarkManagerMediator
                     && TextUtils.isEmpty(getCurrentSearchText())) {
                 onEndSearch();
             } else {
-                postPendingRefresh();
+                mPendingRefresh.post();
             }
-        }
-
-        private void postPendingRefresh() {
-            if (!mPendingRefresh) {
-                mPendingRefresh = true;
-                PostTask.postTask(TaskTraits.UI_DEFAULT, this::runPendingRefresh);
-            }
-        }
-
-        private void runPendingRefresh() {
-            mPendingRefresh = false;
-            refresh();
         }
     };
 
