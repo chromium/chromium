@@ -152,6 +152,18 @@ absl::optional<CreditCard> MakeCard(const base::Value::Dict& dict) {
   return card;
 }
 
+// Removes all AutofillProfiles from the `pdm`. Since `PDM::RemoveByGUID()`
+// invalidates the pointers returned by `PDM::GetProfiles()`, this is done by
+// collecting all GUIDs to remove first.
+void RemoveAllExistingProfiles(PersonalDataManager& pdm) {
+  std::vector<std::string> existing_guids;
+  base::ranges::transform(pdm.GetProfiles(), std::back_inserter(existing_guids),
+                          &AutofillProfile::guid);
+  for (const std::string& guid : existing_guids) {
+    pdm.RemoveByGUID(guid);
+  }
+}
+
 // Sets all of the `pdm`'s profiles or credit cards to `profiles` or
 // `credit_cards`, if the `pdm` still exists.
 void SetData(
@@ -169,7 +181,10 @@ void SetData(
   // If a list in `profiles_or_credit_cards` is empty, do not trigger the PDM
   // because this will clear all corresponding existing data.
   if (!profiles_or_credit_cards->profiles->empty()) {
-    pdm->SetProfilesForAllSources(&*profiles_or_credit_cards->profiles);
+    RemoveAllExistingProfiles(*pdm);
+    for (const AutofillProfile& profile : *profiles_or_credit_cards->profiles) {
+      pdm->AddProfile(profile);
+    }
   }
   if (!profiles_or_credit_cards->credit_cards->empty()) {
     pdm->SetCreditCards(&*profiles_or_credit_cards->credit_cards);
