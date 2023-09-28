@@ -805,59 +805,33 @@ bool CertVerifyProc::HasTooLongValidity(const X509Certificate& cert) {
     return true;
   }
 
-  // These dates are derived from the transitions noted in Section 1.2.2
-  // (Relevant Dates) of the Baseline Requirements.
-  const base::Time time_2012_07_01 =
-      base::Time::UnixEpoch() + base::Seconds(1341100800);
-  const base::Time time_2015_04_01 =
-      base::Time::UnixEpoch() + base::Seconds(1427846400);
-  const base::Time time_2018_03_01 =
-      base::Time::UnixEpoch() + base::Seconds(1519862400);
-  const base::Time time_2019_07_01 =
-      base::Time::UnixEpoch() + base::Seconds(1561939200);
-  // From Chrome Root Certificate Policy
-  const base::Time time_2020_09_01 =
-      base::Time::UnixEpoch() + base::Seconds(1598918400);
-
-  // Compute the maximally permissive interpretations, accounting for leap
-  // years.
-  // 10 years - two possible leap years.
-  constexpr base::TimeDelta kTenYears = base::Days((365 * 8) + (366 * 2));
-  // 5 years - two possible leap years (year 0/year 4 or year 1/year 5).
-  constexpr base::TimeDelta kSixtyMonths = base::Days((365 * 3) + (366 * 2));
-  // 39 months - one possible leap year, two at 365 days, and the longest
-  // monthly sequence of 31/31/30 days (June/July/August).
-  constexpr base::TimeDelta kThirtyNineMonths =
-      base::Days(366 + 365 + 365 + 31 + 31 + 30);
+  // The maximum lifetime of publicly trusted certificates has reduced
+  // gradually over time. These dates are derived from the transitions noted in
+  // Section 1.2.2 (Relevant Dates) of the Baseline Requirements.
+  //
+  // * Certificates issued before BRs took effect, Chrome limited to max of ten
+  // years validity and a max notAfter date of 2019-07-01.
+  //   * Last possible expiry: 2019-07-01.
+  //
+  // * Cerificates issued on-or-after the BR effective date of 1 July 2012: 60
+  // months.
+  //   * Last possible expiry: 1 April 2015 + 60 months = 2020-04-01
+  //
+  // * Certificates issued on-or-after 1 April 2015: 39 months.
+  //   * Last possible expiry: 1 March 2018 + 39 months = 2021-06-01
+  //
+  // * Certificates issued on-or-after 1 March 2018: 825 days.
+  //   * Last possible expiry: 1 September 2020 + 825 days = 2022-12-05
+  //
+  // The current limit, from Chrome Root Certificate Policy:
+  // * Certificates issued on-or-after 1 September 2020: 398 days.
 
   base::TimeDelta validity_duration = cert.valid_expiry() - cert.valid_start();
 
-  // For certificates issued before the BRs took effect.
-  if (start < time_2012_07_01 &&
-      (validity_duration > kTenYears || expiry > time_2019_07_01)) {
-    return true;
-  }
-
-  // For certificates issued on-or-after the BR effective date of 1 July 2012:
-  // 60 months.
-  if (start >= time_2012_07_01 && validity_duration > kSixtyMonths)
-    return true;
-
-  // For certificates issued on-or-after 1 April 2015: 39 months.
-  if (start >= time_2015_04_01 && validity_duration > kThirtyNineMonths)
-    return true;
-
-  // For certificates issued on-or-after 1 March 2018: 825 days.
-  if (start >= time_2018_03_01 && validity_duration > base::Days(825)) {
-    return true;
-  }
-
-  // For certificates issued on-or-after 1 September 2020: 398 days.
-  if (start >= time_2020_09_01 && validity_duration > base::Days(398)) {
-    return true;
-  }
-
-  return false;
+  // No certificates issued before the latest lifetime requirement was enacted
+  // could possibly still be accepted, so we don't need to check the older
+  // limits explicitly.
+  return validity_duration > base::Days(398);
 }
 
 CertVerifyProcFactory::ImplParams::ImplParams() {
