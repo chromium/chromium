@@ -174,18 +174,9 @@ enum ModelType {
 
 using ModelTypeSet =
     base::EnumSet<ModelType, FIRST_REAL_MODEL_TYPE, LAST_REAL_MODEL_TYPE>;
-using FullModelTypeSet =
-    base::EnumSet<ModelType, UNSPECIFIED, LAST_REAL_MODEL_TYPE>;
-using ModelTypeNameMap = std::map<ModelType, const char*>;
 
 constexpr int GetNumModelTypes() {
   return static_cast<int>(ModelType::LAST_ENTRY) + 1;
-}
-
-inline ModelType ModelTypeFromInt(int i) {
-  DCHECK_GE(i, 0);
-  DCHECK_LT(i, GetNumModelTypes());
-  return static_cast<ModelType>(i);
 }
 
 // A version of the ModelType enum for use in histograms. ModelType does not
@@ -453,8 +444,6 @@ ModelTypeSet GetModelTypeSetFromSpecificsFieldNumberList(
 // a model type.
 int GetSpecificsFieldNumberFromModelType(ModelType model_type);
 
-// TODO(sync): The functions below badly need some cleanup.
-
 // Returns a string with application lifetime that represents the name of
 // |model_type|.
 const char* ModelTypeToDebugString(ModelType model_type);
@@ -473,17 +462,11 @@ ModelTypeForHistograms ModelTypeHistogramValue(ModelType model_type);
 // time and thus can be used when persisting data.
 int ModelTypeToStableIdentifier(ModelType model_type);
 
-// Handles all model types, and not just real ones.
-base::Value ModelTypeToValue(ModelType model_type);
-
 // Returns the comma-separated string representation of |model_types|.
 std::string ModelTypeSetToDebugString(ModelTypeSet model_types);
 
 // Necessary for compatibility with EXPECT_EQ and the like.
 std::ostream& operator<<(std::ostream& out, ModelTypeSet model_type_set);
-
-// Generates a base::Value::List from |model_types|.
-base::Value::List ModelTypeSetToValue(ModelTypeSet model_types);
 
 // Returns a string corresponding to the root tag as exposed in the sync
 // protocol as the root entity's ID, which makes the root entity trivially
@@ -504,16 +487,7 @@ bool IsRealDataType(ModelType model_type);
 // Returns true if |model_type| is an act-once type. Act once types drop
 // entities after applying them. Drops are deletes that are not synced to other
 // clients.
-// TODO(haitaol): Make entries of act-once data types immutable.
 bool IsActOnceDataType(ModelType model_type);
-
-// Returns true if |model_type| requires its root folder to be explicitly
-// created on the server during initial sync.
-bool IsTypeWithServerGeneratedRoot(ModelType model_type);
-
-// Returns true if root folder for |model_type| is created on the client when
-// that type is initially synced.
-bool IsTypeWithClientGeneratedRoot(ModelType model_type);
 
 }  // namespace syncer
 

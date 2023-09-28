@@ -4,14 +4,11 @@
 
 #include "components/sync/base/model_type.h"
 
-#include <stddef.h>
-
 #include <ostream>
 
 #include "base/containers/fixed_flat_map.h"
 #include "base/logging.h"
 #include "base/notreached.h"
-#include "base/values.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 
 namespace syncer {
@@ -634,10 +631,6 @@ int ModelTypeToStableIdentifier(ModelType model_type) {
   return static_cast<int>(ModelTypeHistogramValue(model_type)) + 1;
 }
 
-base::Value ModelTypeToValue(ModelType model_type) {
-  return base::Value(ModelTypeToDebugString(model_type));
-}
-
 std::string ModelTypeSetToDebugString(ModelTypeSet model_types) {
   std::string result;
   for (ModelType type : model_types) {
@@ -651,14 +644,6 @@ std::string ModelTypeSetToDebugString(ModelTypeSet model_types) {
 
 std::ostream& operator<<(std::ostream& out, ModelTypeSet model_type_set) {
   return out << ModelTypeSetToDebugString(model_type_set);
-}
-
-base::Value::List ModelTypeSetToValue(ModelTypeSet model_types) {
-  base::Value::List value;
-  for (ModelType type : model_types) {
-    value.Append(ModelTypeToDebugString(type));
-  }
-  return value;
 }
 
 std::string ModelTypeToProtocolRootTag(ModelType model_type) {
@@ -681,15 +666,6 @@ bool IsRealDataType(ModelType model_type) {
 
 bool IsActOnceDataType(ModelType model_type) {
   return model_type == HISTORY_DELETE_DIRECTIVES;
-}
-
-bool IsTypeWithServerGeneratedRoot(ModelType model_type) {
-  return model_type == BOOKMARKS || model_type == NIGORI;
-}
-
-bool IsTypeWithClientGeneratedRoot(ModelType model_type) {
-  return IsRealDataType(model_type) &&
-         !IsTypeWithServerGeneratedRoot(model_type);
 }
 
 }  // namespace syncer
