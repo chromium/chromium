@@ -7,6 +7,7 @@
  */
 import {AbstractRole, ChromeVoxRole, CustomRole} from '../../common/role_type.js';
 
+import {OutputRoleInfo} from './output_role_info.js';
 import {OutputCustomEvent, OutputEventType, OutputFormatType, OutputNavigationType} from './output_types.js';
 
 const EventType = chrome.automation.EventType;
@@ -63,16 +64,17 @@ export class OutputRule {
 
   /**
    * @param {ChromeVoxRole|undefined} role
-   * @param {ChromeVoxRole|undefined} parentRole
    * @param {!OutputFormatType|!OutputNavigationType|undefined} formatName
    * @return {boolean} true if the role was set, false otherwise.
    */
-  populateRole(role, parentRole, formatName) {
+  populateRole(role, formatName) {
     if (this.hasRule_(role, formatName) && role) {
       this.role_ = role;
       return true;
-    } else if (this.hasRule_(parentRole, formatName) && parentRole) {
-      this.role_ = parentRole;
+    } else if (
+        this.hasRule_(parent(role), formatName) &&
+        parent(role) !== CustomRole.NO_ROLE) {
+      this.role_ = parent(role);
       return true;
     }
     return false;
@@ -126,14 +128,14 @@ export class OutputRule {
 export class AncestryOutputRule extends OutputRule {
   /**
    * @param {!OutputEventType} eventType
-   * @param {ChromeVoxRole|undefined} nodeRole
-   * @param {ChromeVoxRole|undefined} parentRole
+   * @param {ChromeVoxRole|undefined} role
    * @param {!OutputNavigationType|undefined} navigationType
    * @param {boolean} tryBraille
    */
-  constructor(eventType, nodeRole, parentRole, navigationType, tryBraille) {
+  constructor(eventType, role, navigationType, tryBraille) {
     super(eventType);
-    this.populateRole(nodeRole, parentRole, navigationType);
+
+    this.populateRole(role, navigationType);
     this.populateNavigation(navigationType);
     this.populateOutput(tryBraille);
   }
@@ -170,6 +172,14 @@ export class AncestryOutputRule extends OutputRule {
     }
     return rule || '';
   }
+}
+
+/**
+ * @param {ChromeVoxRole|undefined} role
+ * @return {!ChromeVoxRole}
+ */
+function parent(role) {
+  return OutputRoleInfo[role]?.inherits ?? CustomRole.NO_ROLE;
 }
 
 /**
