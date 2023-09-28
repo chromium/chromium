@@ -226,17 +226,6 @@ void WillInitiatePrerender(FrameTree& frame_tree);
 void DidActivatePrerender(const NavigationRequest& nav_request,
                           const absl::optional<base::UnguessableToken>&
                               initiator_devtools_navigation_token);
-// This function reports cancellation status to DevTools with the
-// `disallowed_api_method`, which is used to give users more information about
-// the cancellation details if the prerendering uses disallowed API method, and
-// disallowed_api_method will be formatted for display in the DevTools. See the
-// DevTools implementation for the format.
-void DidCancelPrerender(
-    FrameTreeNode* ftn,
-    const GURL& prerendering_url,
-    const base::UnguessableToken& initiator_devtools_navigation_token,
-    PrerenderFinalStatus status,
-    const std::string& disallowed_api_method);
 
 void DidUpdatePrefetchStatus(
     FrameTreeNode* ftn,

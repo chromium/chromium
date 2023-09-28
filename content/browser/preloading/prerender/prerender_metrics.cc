@@ -264,24 +264,6 @@ void RecordFailedPrerenderFinalStatus(
         .SetFinalStatus(static_cast<int>(cancellation_reason.final_status()))
         .Record(ukm::UkmRecorder::Get());
   }
-
-  // Browser initiated prerendering doesn't report cancellation reasons to the
-  // DevTools as it doesn't have the initiator frame associated with DevTools
-  // agents.
-  if (!attributes.IsBrowserInitiated()) {
-    auto* ftn = FrameTreeNode::GloballyFindByID(
-        attributes.initiator_frame_tree_node_id);
-    CHECK(ftn);
-    // TODO(https://crbug.com/1332377): Discuss with devtools to finalize the
-    // message protocol.
-    if (attributes.initiator_devtools_navigation_token.has_value()) {
-      devtools_instrumentation::DidCancelPrerender(
-          ftn, attributes.prerendering_url,
-          attributes.initiator_devtools_navigation_token.value(),
-          cancellation_reason.final_status(),
-          cancellation_reason.ToDevtoolReasonString());
-    }
-  }
 }
 
 void ReportSuccessActivation(const PrerenderAttributes& attributes,

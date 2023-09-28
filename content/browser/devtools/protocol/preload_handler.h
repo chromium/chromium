@@ -19,7 +19,6 @@
 namespace content {
 
 class DevToolsAgentHostImpl;
-class NavigationRequest;
 class RenderFrameHostImpl;
 
 namespace protocol {
@@ -33,16 +32,6 @@ class PreloadHandler : public DevToolsDomainHandler, public Preload::Backend {
   ~PreloadHandler() override;
 
   static std::vector<PreloadHandler*> ForAgentHost(DevToolsAgentHostImpl* host);
-
-  void DidActivatePrerender(
-      const base::UnguessableToken& initiator_devtools_navigation_token,
-      const NavigationRequest& nav_request);
-  void DidCancelPrerender(
-      const GURL& prerendering_url,
-      const base::UnguessableToken& initiator_devtools_navigation_token,
-      const std::string& initiating_frame_id,
-      PrerenderFinalStatus status,
-      const std::string& disallowed_api_method);
 
   void DidUpdatePrefetchStatus(
       const base::UnguessableToken& initiator_devtools_navigation_token,

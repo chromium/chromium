@@ -328,54 +328,6 @@ std::vector<PreloadHandler*> PreloadHandler::ForAgentHost(
   return host->HandlersByName<PreloadHandler>(Preload::Metainfo::domainName);
 }
 
-void PreloadHandler::DidActivatePrerender(
-    const base::UnguessableToken& initiator_devtools_navigation_token,
-    const NavigationRequest& nav_request) {
-  if (!enabled_) {
-    return;
-  }
-  FrameTreeNode* ftn = nav_request.frame_tree_node();
-  std::string initiating_frame_id =
-      ftn->current_frame_host()->devtools_frame_token().ToString();
-  const GURL& prerendering_url = nav_request.common_params().url;
-  // TODO(crbug/1384419): Handle target_hint.
-  auto preloading_attempt_key =
-      protocol::Preload::PreloadingAttemptKey::Create()
-          .SetLoaderId(initiator_devtools_navigation_token.ToString())
-          .SetAction(Preload::SpeculationActionEnum::Prerender)
-          .SetUrl(prerendering_url.spec())
-          .Build();
-  frontend_->PrerenderAttemptCompleted(
-      std::move(preloading_attempt_key), initiating_frame_id,
-      prerendering_url.spec(), Preload::PrerenderFinalStatusEnum::Activated);
-}
-
-void PreloadHandler::DidCancelPrerender(
-    const GURL& prerendering_url,
-    const base::UnguessableToken& initiator_devtools_navigation_token,
-    const std::string& initiating_frame_id,
-    PrerenderFinalStatus status,
-    const std::string& disallowed_api_method) {
-  if (!enabled_) {
-    return;
-  }
-  DCHECK_NE(status, PrerenderFinalStatus::kActivated);
-  Maybe<std::string> opt_disallowed_api_method =
-      disallowed_api_method.empty() ? Maybe<std::string>()
-                                    : Maybe<std::string>(disallowed_api_method);
-  // TODO(crbug/1384419): Handle target_hint.
-  auto preloading_attempt_key =
-      protocol::Preload::PreloadingAttemptKey::Create()
-          .SetLoaderId(initiator_devtools_navigation_token.ToString())
-          .SetAction(Preload::SpeculationActionEnum::Prerender)
-          .SetUrl(prerendering_url.spec())
-          .Build();
-  frontend_->PrerenderAttemptCompleted(
-      std::move(preloading_attempt_key), initiating_frame_id,
-      prerendering_url.spec(), PrerenderFinalStatusToProtocol(status),
-      std::move(opt_disallowed_api_method));
-}
-
 void PreloadHandler::DidUpdatePrefetchStatus(
     const base::UnguessableToken& initiator_devtools_navigation_token,
     const std::string& initiating_frame_id,

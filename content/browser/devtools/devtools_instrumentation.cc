@@ -615,28 +615,7 @@ void DidActivatePrerender(const NavigationRequest& nav_request,
                           const absl::optional<base::UnguessableToken>&
                               initiator_devtools_navigation_token) {
   FrameTreeNode* ftn = nav_request.frame_tree_node();
-  if (initiator_devtools_navigation_token.has_value()) {
-    DispatchToAgents(ftn, &protocol::PreloadHandler::DidActivatePrerender,
-                     initiator_devtools_navigation_token.value(), nav_request);
-  }
   UpdateChildFrameTrees(ftn, /* update_target_info= */ true);
-}
-
-void DidCancelPrerender(
-    FrameTreeNode* ftn,
-    const GURL& prerendering_url,
-    const base::UnguessableToken& initiator_devtools_navigation_token,
-    PrerenderFinalStatus status,
-    const std::string& disallowed_api_method) {
-  if (!ftn) {
-    return;
-  }
-
-  std::string initiating_frame_id =
-      ftn->current_frame_host()->devtools_frame_token().ToString();
-  DispatchToAgents(ftn, &protocol::PreloadHandler::DidCancelPrerender,
-                   prerendering_url, initiator_devtools_navigation_token,
-                   initiating_frame_id, status, disallowed_api_method);
 }
 
 void DidUpdatePrefetchStatus(

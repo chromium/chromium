@@ -11385,18 +11385,6 @@ experimental domain Preload
       RedirectedPrerenderingUrlHasEffectiveUrl
       ActivationUrlHasEffectiveUrl
 
-  # Fired when a prerender attempt is completed.
-  event prerenderAttemptCompleted
-    parameters
-      PreloadingAttemptKey key
-      # The frame id of the frame initiating prerendering.
-      Page.FrameId initiatingFrameId
-      string prerenderingUrl
-      PrerenderFinalStatus finalStatus
-      # This is used to give users more information about the name of the API call
-      # that is incompatible with prerender and has caused the cancellation of the attempt
-      optional string disallowedApiMethod
-
   # Fired when a preload enabled state is updated.
   event preloadEnabledStateUpdated
     parameters
