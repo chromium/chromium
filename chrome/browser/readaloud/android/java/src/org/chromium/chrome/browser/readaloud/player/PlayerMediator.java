@@ -28,9 +28,12 @@ class PlayerMediator implements InteractionHandler {
         // TODO implement
     }
 
-    void setPlayback(
-            @Nullable Playback playback, @PlaybackListener.State int currentPlaybackState) {
+    void setPlayback(@Nullable Playback playback) {
         // TODO implement
+    }
+
+    void setPlaybackState(@PlaybackListener.State int currentPlaybackState) {
+        mModel.set(PlayerProperties.PLAYBACK_STATE, currentPlaybackState);
     }
 
     void updateTitleAndPublisher(String title, String publisher) {

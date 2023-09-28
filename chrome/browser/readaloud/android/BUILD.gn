@@ -169,7 +169,10 @@ android_library("player_java") {
     "java/src/org/chromium/chrome/browser/readaloud/player/PlayerMediator.java",
     "java/src/org/chromium/chrome/browser/readaloud/player/PlayerProperties.java",
     "java/src/org/chromium/chrome/browser/readaloud/player/VisibilityState.java",
+    "java/src/org/chromium/chrome/browser/readaloud/player/mini/MiniPlayerCoordinator.java",
     "java/src/org/chromium/chrome/browser/readaloud/player/mini/MiniPlayerLayout.java",
+    "java/src/org/chromium/chrome/browser/readaloud/player/mini/MiniPlayerMediator.java",
+    "java/src/org/chromium/chrome/browser/readaloud/player/mini/MiniPlayerViewBinder.java",
   ]
   deps = [
     ":java_resources",
@@ -191,7 +194,9 @@ robolectric_library("player_junit_java") {
   testonly = true
   sources = [
     "java/src/org/chromium/chrome/browser/readaloud/player/PlayerCoordinatorUnitTest.java",
+    "java/src/org/chromium/chrome/browser/readaloud/player/mini/MiniPlayerCoordinatorUnitTest.java",
     "java/src/org/chromium/chrome/browser/readaloud/player/mini/MiniPlayerLayoutUnitTest.java",
+    "java/src/org/chromium/chrome/browser/readaloud/player/mini/MiniPlayerMediatorUnitTest.java",
   ]
   deps = [
     ":player_java",

@@ -119,7 +119,7 @@ public class ReadAloudController {
         mExpandedPlayer = new ExpandedPlayerCoordinator(context, bottomSheetController);
         mPlayerCoordinator = sPlayerCoordinatorForTesting != null
                 ? sPlayerCoordinatorForTesting
-                : new PlayerCoordinator(context);
+                : new PlayerCoordinator(context, miniPlayerStub);
 
         if (mReadabilityHooks.isEnabled()) {
             mTabObserver = new TabModelTabObserver(mTabModel) {

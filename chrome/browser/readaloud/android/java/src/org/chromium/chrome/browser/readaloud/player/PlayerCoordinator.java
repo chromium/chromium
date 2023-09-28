@@ -5,8 +5,10 @@
 package org.chromium.chrome.browser.readaloud.player;
 
 import android.content.Context;
+import android.view.ViewStub;
 
 import org.chromium.base.ObserverList;
+import org.chromium.chrome.browser.readaloud.player.mini.MiniPlayerCoordinator;
 import org.chromium.chrome.modules.readaloud.Playback;
 import org.chromium.chrome.modules.readaloud.PlaybackListener;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -31,6 +33,7 @@ public class PlayerCoordinator {
     private final ObserverList<Observer> mObserverList;
     private final PropertyModel mModel;
     private final PlayerMediator mMediator;
+    private final MiniPlayerCoordinator mMiniPlayer;
 
     public interface Observer {
         /*
@@ -40,9 +43,13 @@ public class PlayerCoordinator {
         void onRequestClosePlayers();
     }
 
-    public PlayerCoordinator(Context context) {
+    public PlayerCoordinator(Context context, ViewStub miniPlayerStub) {
         mObserverList = new ObserverList<Observer>();
-        mModel = new PropertyModel.Builder(PlayerProperties.ALL_KEYS).build();
+        mModel = new PropertyModel.Builder(PlayerProperties.ALL_KEYS)
+                         .with(PlayerProperties.MINI_PLAYER_VISIBILITY, VisibilityState.GONE)
+                         .with(PlayerProperties.PLAYBACK_STATE, PlaybackListener.State.BUFFERING)
+                         .build();
+        mMiniPlayer = new MiniPlayerCoordinator(miniPlayerStub, mModel);
         mMediator = new PlayerMediator(/*coordinator=*/this, mModel);
     }
 
@@ -73,7 +80,8 @@ public class PlayerCoordinator {
      * Show the mini player, called when playback is requested.
      */
     public void playTabRequested() {
-        // TODO implement
+        mMediator.setPlaybackState(PlaybackListener.State.BUFFERING);
+        mMiniPlayer.show(shouldAnimateMiniPlayer());
     }
 
     /**
@@ -83,12 +91,14 @@ public class PlayerCoordinator {
      * @param currentPlaybackState Playback state.
      */
     public void playbackReady(Playback playback, @PlaybackListener.State int currentPlaybackState) {
-        // TODO implement
+        // TODO bind playback
+        mMediator.setPlaybackState(currentPlaybackState);
     }
 
     /** Update players when playback fails. */
     public void playbackFailed() {
-        // TODO implement
+        // TODO unbind playback
+        mMediator.setPlaybackState(PlaybackListener.State.ERROR);
     }
 
     /** Show expanded player. */
@@ -98,7 +108,11 @@ public class PlayerCoordinator {
 
     /** Hide players. */
     public void dismissPlayers() {
-        // TODO implement
+        // Resetting the state. We can do it unconditionally because this UI is only
+        // dismissed when stopping the playback.
+        mMediator.setPlaybackState(PlaybackListener.State.STOPPED);
+        mMiniPlayer.dismiss(shouldAnimateMiniPlayer());
+        // TODO dismiss expanded player
     }
 
     /** To be called when the close button is clicked. */
@@ -110,5 +124,12 @@ public class PlayerCoordinator {
 
     PropertyModel getModelForTesting() {
         return mModel;
+    }
+
+    private boolean shouldAnimateMiniPlayer() {
+        // If the expanded player is definitely covering the mini player, we can skip
+        // animating the mini player show and hide.
+        // TODO return !mExpandedPlayer.isVisible();
+        return true;
     }
 }
