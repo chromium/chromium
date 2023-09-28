@@ -804,8 +804,9 @@ scoped_refptr<StaticBitmapImage> WebGLRenderingContextBase::GetImage(
 
   if (!CopyRenderingResultsFromDrawingBuffer(resource_provider.get(),
                                              kBackBuffer)) {
-    // CopyRenderingResultsFromDrawingBuffer will handle both CPU and GPU cases.
-    NOTREACHED();
+    // CopyRenderingResultsFromDrawingBuffer handles both the
+    // hardware-accelerated and software cases, so there is no
+    // possible additional fallback for failures seen at this point.
     return nullptr;
   }
   return resource_provider->Snapshot(reason);
