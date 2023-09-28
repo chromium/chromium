@@ -3380,7 +3380,7 @@ class AppSessionRestoreTest : public SessionRestoreTest {
     SessionServiceFactory::GetForProfileForSessionRestore(profile);
   }
 
-  web_app::AppId InstallPWA(Profile* profile, const GURL& start_url) {
+  webapps::AppId InstallPWA(Profile* profile, const GURL& start_url) {
     auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
     web_app_info->start_url = start_url;
     web_app_info->scope = start_url.GetWithoutFilename();
@@ -3390,7 +3390,7 @@ class AppSessionRestoreTest : public SessionRestoreTest {
     return web_app::test::InstallWebApp(profile, std::move(web_app_info));
   }
 
-  web_app::AppId InstallTabbedPWA(Profile* profile, const GURL& start_url) {
+  webapps::AppId InstallTabbedPWA(Profile* profile, const GURL& start_url) {
     blink::Manifest::TabStrip tab_strip;
     tab_strip.home_tab = blink::Manifest::HomeTabParams();
 
@@ -3425,7 +3425,7 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest, MAYBE_BasicAppSessionRestore) {
       browser(), example_url2, WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
-  web_app::AppId app_id = InstallPWA(profile, example_url);
+  webapps::AppId app_id = InstallPWA(profile, example_url);
   Browser* app_browser = web_app::LaunchWebAppBrowserAndWait(profile, app_id);
 
   EXPECT_TRUE(app_browser->is_type_app());
@@ -3508,7 +3508,7 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   // Open a PWA.
-  web_app::AppId app_id = InstallPWA(profile, example_url);
+  webapps::AppId app_id = InstallPWA(profile, example_url);
   // App #1
   web_app::LaunchWebAppBrowserAndWait(profile, app_id);
 
@@ -3581,7 +3581,7 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest, MAYBE_RestoreAppMinimized) {
       profile, ProfileKeepAliveOrigin::kBrowserWindow);
 
   // Open a PWA.
-  web_app::AppId app_id = InstallPWA(profile, example_url);
+  webapps::AppId app_id = InstallPWA(profile, example_url);
   Browser* app_browser = web_app::LaunchWebAppBrowserAndWait(profile, app_id);
 
   app_browser->window()->Minimize();
@@ -3646,7 +3646,7 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest, MAYBE_RestoreMaximizedApp) {
   auto example_url = GURL("http://www.example.com");
 
   // Open a PWA.
-  web_app::AppId app_id = InstallPWA(profile, example_url);
+  webapps::AppId app_id = InstallPWA(profile, example_url);
   Browser* app_browser = web_app::LaunchWebAppBrowserAndWait(profile, app_id);
 
   // Maximize.
@@ -3744,7 +3744,7 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest,
   ASSERT_EQ(0u, BrowserList::GetInstance()->size());
 
   // Open a PWA.
-  web_app::AppId app_id = InstallPWA(profile, example_url);
+  webapps::AppId app_id = InstallPWA(profile, example_url);
   Browser* app_browser = web_app::LaunchWebAppBrowserAndWait(profile, app_id);
 
   CloseBrowserSynchronously(app_browser);
@@ -3793,7 +3793,7 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest,
   Profile* profile = browser()->profile();
 
   // Open a PWA.
-  web_app::AppId app_id = InstallPWA(profile, app_url);
+  webapps::AppId app_id = InstallPWA(profile, app_url);
   Browser* app_browser = web_app::LaunchWebAppBrowserAndWait(profile, app_id);
 
   // App and 3 tab browser.
@@ -3851,9 +3851,9 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest,
   auto example_url3 = GURL("http://www.example3.com");
 
   // Install 3 PWAs.
-  web_app::AppId app_id = InstallPWA(profile, example_url);
-  web_app::AppId app_id2 = InstallPWA(profile, example_url2);
-  web_app::AppId app_id3 = InstallPWA(profile, example_url3);
+  webapps::AppId app_id = InstallPWA(profile, example_url);
+  webapps::AppId app_id2 = InstallPWA(profile, example_url2);
+  webapps::AppId app_id3 = InstallPWA(profile, example_url3);
 
   // Open all 3, browser 2 is app_popup.
   Browser* app_browser = web_app::LaunchWebAppBrowserAndWait(profile, app_id);
@@ -3913,7 +3913,7 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest, NoAppRestore) {
       browser(), example_url2, WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
-  web_app::AppId app_id = InstallPWA(profile, app_url);
+  webapps::AppId app_id = InstallPWA(profile, app_url);
   Browser* app_browser = web_app::LaunchWebAppBrowserAndWait(profile, app_id);
 
   ASSERT_EQ(2u, BrowserList::GetInstance()->size());
@@ -3972,8 +3972,8 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest, InvokeTwoAppsThenRestore) {
   auto profile_keep_alive = std::make_unique<ScopedProfileKeepAlive>(
       profile, ProfileKeepAliveOrigin::kBrowserWindow);
 
-  web_app::AppId app_id = InstallPWA(profile, app_url);
-  web_app::AppId app_id2 = InstallPWA(profile, app_url2);
+  webapps::AppId app_id = InstallPWA(profile, app_url);
+  webapps::AppId app_id2 = InstallPWA(profile, app_url2);
 
   CloseBrowserSynchronously(browser());
 
@@ -4081,7 +4081,7 @@ class TabbedAppSessionRestoreTest : public AppSessionRestoreTest {
 IN_PROC_BROWSER_TEST_F(TabbedAppSessionRestoreTest, RestorePinnedAppTab) {
   Profile* profile = browser()->profile();
   GURL app_url = GURL("http://www.example.com");
-  web_app::AppId app_id = InstallTabbedPWA(profile, app_url);
+  webapps::AppId app_id = InstallTabbedPWA(profile, app_url);
   Browser* app_browser = web_app::LaunchWebAppBrowserAndWait(profile, app_id);
   TabStripModel* tab_strip = app_browser->tab_strip_model();
 
