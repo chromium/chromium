@@ -175,11 +175,8 @@ ChromeRequireCTDelegate::IsCTRequiredForHost(
     const std::string& hostname,
     const net::X509Certificate* chain,
     const net::HashValueVector& spki_hashes) {
-  bool ct_required = false;
-  if (MatchHostname(hostname, &ct_required) ||
-      MatchSPKI(chain, spki_hashes, &ct_required)) {
-    return ct_required ? CTRequirementLevel::REQUIRED
-                       : CTRequirementLevel::NOT_REQUIRED;
+  if (MatchHostname(hostname) || MatchSPKI(chain, spki_hashes)) {
+    return CTRequirementLevel::NOT_REQUIRED;
   }
 
   // Compute >= 2018-05-01, rather than deal with possible fractional
@@ -193,7 +190,6 @@ ChromeRequireCTDelegate::IsCTRequiredForHost(
 }
 
 void ChromeRequireCTDelegate::UpdateCTPolicies(
-    const std::vector<std::string>& required_hosts,
     const std::vector<std::string>& excluded_hosts,
     const std::vector<std::string>& excluded_spkis,
     const std::vector<std::string>& excluded_legacy_spkis) {
@@ -202,8 +198,7 @@ void ChromeRequireCTDelegate::UpdateCTPolicies(
   next_id_ = 0;
 
   url_matcher::URLMatcherConditionSet::Vector all_conditions;
-  AddFilters(true, required_hosts, &all_conditions);
-  AddFilters(false, excluded_hosts, &all_conditions);
+  AddFilters(excluded_hosts, &all_conditions);
 
   url_matcher_->AddConditionSets(all_conditions);
 
@@ -220,8 +215,7 @@ void ChromeRequireCTDelegate::UpdateCTPolicies(
   });
 }
 
-bool ChromeRequireCTDelegate::MatchHostname(const std::string& hostname,
-                                            bool* ct_required) const {
+bool ChromeRequireCTDelegate::MatchHostname(const std::string& hostname) const {
   if (url_matcher_->IsEmpty())
     return false;
 
@@ -234,38 +228,18 @@ bool ChromeRequireCTDelegate::MatchHostname(const std::string& hostname,
   if (matching_ids.empty())
     return false;
 
-  // Determine the overall policy by determining the most specific policy.
-  auto it = filters_.begin();
-  const Filter* active_filter = nullptr;
-  for (const auto& match : matching_ids) {
-    // Because both |filters_| and |matching_ids| are sorted on the ID,
-    // treat both as forward-only iterators.
-    while (it != filters_.end() && it->first < match)
-      ++it;
-    if (it == filters_.end()) {
-      NOTREACHED();
-      break;
-    }
-
-    if (!active_filter || FilterTakesPrecedence(it->second, *active_filter))
-      active_filter = &it->second;
-  }
-  CHECK(active_filter);
-
-  *ct_required = active_filter->ct_required;
   return true;
 }
 
-bool ChromeRequireCTDelegate::MatchSPKI(const net::X509Certificate* chain,
-                                        const net::HashValueVector& hashes,
-                                        bool* ct_required) const {
+bool ChromeRequireCTDelegate::MatchSPKI(
+    const net::X509Certificate* chain,
+    const net::HashValueVector& hashes) const {
   // Try to scan legacy SPKIs first, if any, since they will only require
   // comparing hash values.
   if (!legacy_spkis_.empty()) {
     for (const auto& hash : hashes) {
       if (std::binary_search(legacy_spkis_.begin(), legacy_spkis_.end(),
                              hash)) {
-        *ct_required = false;
         return true;
       }
     }
@@ -295,7 +269,6 @@ bool ChromeRequireCTDelegate::MatchSPKI(const net::X509Certificate* chain,
   net::HashValue hash;
   if (net::x509_util::CalculateSha256SpkiHash(leaf_cert, &hash) &&
       base::Contains(matches, hash)) {
-    *ct_required = false;
     return true;
   }
 
@@ -326,7 +299,6 @@ bool ChromeRequireCTDelegate::MatchSPKI(const net::X509Certificate* chain,
 
   for (auto* cert : candidates) {
     if (AreCertsSameOrganization(leaf_rdn_sequence, cert)) {
-      *ct_required = false;
       return true;
     }
   }
@@ -335,12 +307,10 @@ bool ChromeRequireCTDelegate::MatchSPKI(const net::X509Certificate* chain,
 }
 
 void ChromeRequireCTDelegate::AddFilters(
-    bool ct_required,
     const std::vector<std::string>& hosts,
     url_matcher::URLMatcherConditionSet::Vector* conditions) {
   for (const auto& pattern : hosts) {
     Filter filter;
-    filter.ct_required = ct_required;
 
     // Parse the pattern just to the hostname, ignoring all other portions of
     // the URL.
@@ -407,20 +377,6 @@ void ChromeRequireCTDelegate::ParseSpkiHashes(
     hashes->push_back(std::move(hash));
   }
   std::sort(hashes->begin(), hashes->end());
-}
-
-bool ChromeRequireCTDelegate::FilterTakesPrecedence(const Filter& lhs,
-                                                    const Filter& rhs) const {
-  if (lhs.match_subdomains != rhs.match_subdomains)
-    return !lhs.match_subdomains;  // Prefer the more explicit policy.
-
-  if (lhs.host_length != rhs.host_length)
-    return lhs.host_length > rhs.host_length;  // Prefer the longer host match.
-
-  if (lhs.ct_required != rhs.ct_required)
-    return lhs.ct_required;  // Prefer the policy that requires CT.
-
-  return false;
 }
 
 }  // namespace certificate_transparency

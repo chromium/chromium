@@ -48,51 +48,38 @@ class COMPONENT_EXPORT(CERTIFICATE_TRANSPARENCY) ChromeRequireCTDelegate
       const net::X509Certificate* chain,
       const net::HashValueVector& spki_hashes) override;
 
-  // Updates the CTDelegate to require CT for |required_hosts|, and exclude
-  // |excluded_hosts| from CT policies.  In addtion, this method updates
-  // |excluded_spkis| and |excluded_legacy_spkis| intended for use within an
-  // Enterprise (see https://crbug.com/824184).
-  void UpdateCTPolicies(const std::vector<std::string>& required_hosts,
-                        const std::vector<std::string>& excluded_hosts,
+  // Updates the CTDelegate to exclude |excluded_hosts| from CT policies.  In
+  // addition, this method updates |excluded_spkis| and |excluded_legacy_spkis|
+  // intended for use within an Enterprise (see https://crbug.com/824184).
+  void UpdateCTPolicies(const std::vector<std::string>& excluded_hosts,
                         const std::vector<std::string>& excluded_spkis,
                         const std::vector<std::string>& excluded_legacy_spkis);
 
  private:
   struct Filter {
-    bool ct_required = false;
     bool match_subdomains = false;
     size_t host_length = 0;
   };
 
-  // Returns true if a policy for |hostname| is found, setting
-  // |*ct_required| to indicate whether or not Certificate Transparency is
-  // required for the host.
-  bool MatchHostname(const std::string& hostname, bool* ct_required) const;
+  // Returns true if a policy to disable Certificate Transparency for |hostname|
+  // is found.
+  bool MatchHostname(const std::string& hostname) const;
 
-  // Returns true if a policy for |chain|, which contains the SPKI hashes
-  // |hashes|, is found, setting |*ct_required| to indicate whether or not
-  // Certificate Transparency is required for the certificate.
+  // Returns true if a policy to disable Certificate Transparency for |chain|,
+  // which contains the SPKI hashes |hashes|, is found.
   bool MatchSPKI(const net::X509Certificate* chain,
-                 const net::HashValueVector& hashes,
-                 bool* ct_required) const;
+                 const net::HashValueVector& hashes) const;
 
   // Parses the filters from |host_patterns|, adding them as filters to
-  // |filters_| (with |ct_required| indicating whether or not CT is required
-  // for that host), and updating |*conditions| with the corresponding
+  // |filters_|, and updating |*conditions| with the corresponding
   // URLMatcher::Conditions to match the host.
-  void AddFilters(bool ct_required,
-                  const std::vector<std::string>& host_patterns,
+  void AddFilters(const std::vector<std::string>& host_patterns,
                   url_matcher::URLMatcherConditionSet::Vector* conditions);
 
   // Parses the SPKIs from |spki_list|, setting |*hashes| to the sorted set of
   // all valid SPKIs.
   void ParseSpkiHashes(const std::vector<std::string> spki_list,
                        net::HashValueVector* hashes) const;
-
-  // Returns true if |lhs| has greater precedence than |rhs|. Filters of
-  // higher precedence are consulted first when determining if a given filter
-  // matches.
-  bool FilterTakesPrecedence(const Filter& lhs, const Filter& rhs) const;
 
   std::unique_ptr<url_matcher::URLMatcher> url_matcher_;
   base::MatcherStringPattern::ID next_id_;

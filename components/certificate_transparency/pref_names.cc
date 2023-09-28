@@ -10,13 +10,10 @@ namespace certificate_transparency {
 namespace prefs {
 
 void RegisterPrefs(PrefRegistrySimple* registry) {
-  registry->RegisterListPref(prefs::kCTRequiredHosts);
   registry->RegisterListPref(prefs::kCTExcludedHosts);
   registry->RegisterListPref(prefs::kCTExcludedSPKIs);
   registry->RegisterListPref(prefs::kCTExcludedLegacySPKIs);
 }
-
-const char kCTRequiredHosts[] = "certificate_transparency.required_hosts";
 
 const char kCTExcludedHosts[] = "certificate_transparency.excluded_hosts";
 

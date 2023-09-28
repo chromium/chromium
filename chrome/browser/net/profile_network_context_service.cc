@@ -333,10 +333,6 @@ ProfileNetworkContextService::ProfileNetworkContextService(Profile* profile)
   // When any of the following CT preferences change, we schedule an update
   // to aggregate the actual update using a |ct_policy_update_timer_|.
   pref_change_registrar_.Add(
-      certificate_transparency::prefs::kCTRequiredHosts,
-      base::BindRepeating(&ProfileNetworkContextService::ScheduleUpdateCTPolicy,
-                          base::Unretained(this)));
-  pref_change_registrar_.Add(
       certificate_transparency::prefs::kCTExcludedHosts,
       base::BindRepeating(&ProfileNetworkContextService::ScheduleUpdateCTPolicy,
                           base::Unretained(this)));
@@ -516,8 +512,6 @@ void ProfileNetworkContextService::UpdateReferrersEnabled() {
 
 network::mojom::CTPolicyPtr ProfileNetworkContextService::GetCTPolicy() {
   auto* prefs = profile_->GetPrefs();
-  const base::Value::List& ct_required =
-      prefs->GetList(certificate_transparency::prefs::kCTRequiredHosts);
   const base::Value::List& ct_excluded =
       prefs->GetList(certificate_transparency::prefs::kCTExcludedHosts);
   const base::Value::List& ct_excluded_spkis =
@@ -525,14 +519,13 @@ network::mojom::CTPolicyPtr ProfileNetworkContextService::GetCTPolicy() {
   const base::Value::List& ct_excluded_legacy_spkis =
       prefs->GetList(certificate_transparency::prefs::kCTExcludedLegacySPKIs);
 
-  std::vector<std::string> required(TranslateStringArray(ct_required));
   std::vector<std::string> excluded(TranslateStringArray(ct_excluded));
   std::vector<std::string> excluded_spkis(
       TranslateStringArray(ct_excluded_spkis));
   std::vector<std::string> excluded_legacy_spkis(
       TranslateStringArray(ct_excluded_legacy_spkis));
 
-  return network::mojom::CTPolicy::New(std::move(required), std::move(excluded),
+  return network::mojom::CTPolicy::New(std::move(excluded),
                                        std::move(excluded_spkis),
                                        std::move(excluded_legacy_spkis));
 }

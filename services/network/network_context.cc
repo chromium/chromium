@@ -1491,9 +1491,9 @@ void NetworkContext::SetCTPolicy(mojom::CTPolicyPtr ct_policy) {
   if (!require_ct_delegate_)
     return;
 
-  require_ct_delegate_->UpdateCTPolicies(
-      ct_policy->required_hosts, ct_policy->excluded_hosts,
-      ct_policy->excluded_spkis, ct_policy->excluded_legacy_spkis);
+  require_ct_delegate_->UpdateCTPolicies(ct_policy->excluded_hosts,
+                                         ct_policy->excluded_spkis,
+                                         ct_policy->excluded_legacy_spkis);
 }
 
 int NetworkContext::CheckCTComplianceForSignedExchange(

@@ -58,23 +58,6 @@ TEST_F(ChromeRequireCTDelegateTest, RegistersPrefs) {
   EXPECT_NE(registered_prefs, newly_registered_prefs);
 }
 
-TEST_F(ChromeRequireCTDelegateTest, DelegateChecksRequired) {
-  using CTRequirementLevel =
-      net::TransportSecurityState::RequireCTDelegate::CTRequirementLevel;
-  ChromeRequireCTDelegate delegate;
-
-  // No required host set yet.
-  EXPECT_EQ(CTRequirementLevel::DEFAULT,
-            delegate.IsCTRequiredForHost("google.com", cert_.get(), hashes_));
-
-  // Add a required host
-  delegate.UpdateCTPolicies({"google.com"}, {}, {}, {});
-
-  // The new setting should take effect.
-  EXPECT_EQ(CTRequirementLevel::REQUIRED,
-            delegate.IsCTRequiredForHost("google.com", cert_.get(), hashes_));
-}
-
 TEST_F(ChromeRequireCTDelegateTest, DelegateChecksExcluded) {
   using CTRequirementLevel =
       net::TransportSecurityState::RequireCTDelegate::CTRequirementLevel;
@@ -85,7 +68,7 @@ TEST_F(ChromeRequireCTDelegateTest, DelegateChecksExcluded) {
             delegate.IsCTRequiredForHost("google.com", cert_.get(), hashes_));
 
   // Add a excluded host
-  delegate.UpdateCTPolicies({}, {"google.com"}, {}, {});
+  delegate.UpdateCTPolicies({"google.com"}, {}, {});
 
   // The new setting should take effect.
   EXPECT_EQ(CTRequirementLevel::NOT_REQUIRED,
@@ -106,7 +89,7 @@ TEST_F(ChromeRequireCTDelegateTest, IgnoresInvalidEntries) {
   delegate.UpdateCTPolicies(
       {"file:///etc/fstab", "file://withahost/etc/fstab", "file:///c|/Windows",
        "*", "https://*", "example.com", "https://example.test:invalid_port"},
-      {}, {}, {});
+      {}, {});
 
   // Wildcards are ignored (both * and https://*).
   EXPECT_EQ(CTRequirementLevel::DEFAULT,
@@ -118,77 +101,10 @@ TEST_F(ChromeRequireCTDelegateTest, IgnoresInvalidEntries) {
   //          delegate.IsCTRequiredForHost("withahost", cert_.get(), hashes_));
 
   // While the partially parsed hosts should take effect.
-  EXPECT_EQ(CTRequirementLevel::REQUIRED,
+  EXPECT_EQ(CTRequirementLevel::NOT_REQUIRED,
             delegate.IsCTRequiredForHost("example.test", cert_.get(), hashes_));
-  EXPECT_EQ(CTRequirementLevel::REQUIRED,
-            delegate.IsCTRequiredForHost("example.com", cert_.get(), hashes_));
-}
-
-// Make sure the various 'undocumented' priorities apply:
-//   - non-wildcards beat wildcards
-//   - more specific hosts beat less specific hosts
-//   - requiring beats excluding
-TEST_F(ChromeRequireCTDelegateTest, AppliesPriority) {
-  using CTRequirementLevel =
-      net::TransportSecurityState::RequireCTDelegate::CTRequirementLevel;
-  ChromeRequireCTDelegate delegate;
-
-  // No setting should yield the default results.
-  EXPECT_EQ(CTRequirementLevel::DEFAULT,
-            delegate.IsCTRequiredForHost("example.com", cert_.get(), hashes_));
-  EXPECT_EQ(
-      CTRequirementLevel::DEFAULT,
-      delegate.IsCTRequiredForHost("sub.example.com", cert_.get(), hashes_));
-  EXPECT_EQ(CTRequirementLevel::DEFAULT,
-            delegate.IsCTRequiredForHost("accounts.example.com", cert_.get(),
-                                         hashes_));
-  EXPECT_EQ(CTRequirementLevel::DEFAULT,
-            delegate.IsCTRequiredForHost("login.accounts.example.com",
-                                         cert_.get(), hashes_));
-  EXPECT_EQ(CTRequirementLevel::DEFAULT,
-            delegate.IsCTRequiredForHost("sub.accounts.example.com",
-                                         cert_.get(), hashes_));
-  EXPECT_EQ(CTRequirementLevel::DEFAULT,
-            delegate.IsCTRequiredForHost("login.sub.accounts.example.com",
-                                         cert_.get(), hashes_));
-  EXPECT_EQ(
-      CTRequirementLevel::DEFAULT,
-      delegate.IsCTRequiredForHost("test.example.com", cert_.get(), hashes_));
-
-  // Set up policies that exclude it for a domain and all of its subdomains,
-  // but then require it for a specific host.
-  delegate.UpdateCTPolicies(
-      {"sub.example.com", "accounts.example.com", "test.example.com"},
-      {"example.com", ".sub.example.com", ".sub.accounts.example.com",
-       "test.example.com"},
-      {}, {});
-
   EXPECT_EQ(CTRequirementLevel::NOT_REQUIRED,
             delegate.IsCTRequiredForHost("example.com", cert_.get(), hashes_));
-  // Non-wildcarding (.sub.example.com) beats wildcarding (sub.example.com).
-  EXPECT_EQ(
-      CTRequirementLevel::NOT_REQUIRED,
-      delegate.IsCTRequiredForHost("sub.example.com", cert_.get(), hashes_));
-  // More specific hosts (accounts.example.com) beat less specific hosts
-  // (example.com + wildcard).
-  EXPECT_EQ(CTRequirementLevel::REQUIRED,
-            delegate.IsCTRequiredForHost("accounts.example.com", cert_.get(),
-                                         hashes_));
-  // More specific hosts (accounts.example.com) beat less specific hosts
-  // (example.com).
-  EXPECT_EQ(CTRequirementLevel::REQUIRED,
-            delegate.IsCTRequiredForHost("login.accounts.example.com",
-                                         cert_.get(), hashes_));
-  EXPECT_EQ(CTRequirementLevel::NOT_REQUIRED,
-            delegate.IsCTRequiredForHost("sub.accounts.example.com",
-                                         cert_.get(), hashes_));
-  EXPECT_EQ(CTRequirementLevel::REQUIRED,
-            delegate.IsCTRequiredForHost("login.sub.accounts.example.com",
-                                         cert_.get(), hashes_));
-  // Requiring beats excluding.
-  EXPECT_EQ(
-      CTRequirementLevel::REQUIRED,
-      delegate.IsCTRequiredForHost("test.example.com", cert_.get(), hashes_));
 }
 
 TEST_F(ChromeRequireCTDelegateTest, SupportsOrgRestrictions) {
@@ -310,13 +226,13 @@ TEST_F(ChromeRequireCTDelegateTest, SupportsOrgRestrictions) {
       leaf = net::X509Certificate::CreateFromBuffer(
           bssl::UpRef(leaf->cert_buffer()), std::move(intermediates));
     }
-    delegate.UpdateCTPolicies({}, {}, {}, {});
+    delegate.UpdateCTPolicies({}, {}, {});
 
     // The default setting should require CT.
     EXPECT_EQ(CTRequirementLevel::REQUIRED,
               delegate.IsCTRequiredForHost("google.com", leaf.get(), hashes));
 
-    delegate.UpdateCTPolicies({}, {}, {test.spki.ToString()}, {});
+    delegate.UpdateCTPolicies({}, {test.spki.ToString()}, {});
 
     // The new setting should take effect.
     EXPECT_EQ(test.expected,
@@ -344,7 +260,7 @@ TEST_F(ChromeRequireCTDelegateTest, SupportsLegacyCaRestrictions) {
 
   // Setting to a non-legacy CA should not work.
   std::string leaf_hash_string = hashes_.front().ToString();
-  delegate.UpdateCTPolicies({}, {}, {}, {leaf_hash_string});
+  delegate.UpdateCTPolicies({}, {}, {leaf_hash_string});
 
   // This setting should have no effect, because the hash for |cert_|
   // is not a legacy CA hash.
@@ -353,7 +269,7 @@ TEST_F(ChromeRequireCTDelegateTest, SupportsLegacyCaRestrictions) {
 
   // Now set to a truly legacy CA, and create a chain that
   // contains that legacy CA hash.
-  delegate.UpdateCTPolicies({}, {}, {}, {hashes_.back().ToString()});
+  delegate.UpdateCTPolicies({}, {}, {hashes_.back().ToString()});
   EXPECT_EQ(CTRequirementLevel::NOT_REQUIRED,
             delegate.IsCTRequiredForHost("google.com", cert_.get(), hashes_));
 }
@@ -404,13 +320,13 @@ TEST_F(ChromeRequireCTDelegateTest,
       delegate.IsCTRequiredForHost("example.com", may_2018.get(), new_hashes));
 
   // Check excluding by hostname.
-  delegate.UpdateCTPolicies({}, {"example.com"}, {}, {});
+  delegate.UpdateCTPolicies({"example.com"}, {}, {});
   EXPECT_EQ(
       CTRequirementLevel::NOT_REQUIRED,
       delegate.IsCTRequiredForHost("example.com", may_2018.get(), new_hashes));
 
   // Check excluding by leaf hash.
-  delegate.UpdateCTPolicies({}, {}, {new_hashes.front().ToString()}, {});
+  delegate.UpdateCTPolicies({}, {new_hashes.front().ToString()}, {});
   EXPECT_EQ(
       CTRequirementLevel::NOT_REQUIRED,
       delegate.IsCTRequiredForHost("example.com", may_2018.get(), new_hashes));
@@ -425,7 +341,7 @@ TEST_F(ChromeRequireCTDelegateTest,
       0x81, 0x0A, 0x8D, 0x6E, 0x50, 0x90, 0x5D, 0x20, 0xD6, 0x61,
   }};
   new_hashes.push_back(net::HashValue(legacy_spki));
-  delegate.UpdateCTPolicies({}, {}, {}, {new_hashes.back().ToString()});
+  delegate.UpdateCTPolicies({}, {}, {new_hashes.back().ToString()});
   EXPECT_EQ(
       CTRequirementLevel::NOT_REQUIRED,
       delegate.IsCTRequiredForHost("example.com", may_2018.get(), new_hashes));

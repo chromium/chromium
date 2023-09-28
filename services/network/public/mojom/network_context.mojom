@@ -213,7 +213,6 @@ struct HttpAuthStaticNetworkContextParams {
 
 [EnableIf=is_ct_supported]
 struct CTPolicy {
-  array<string> required_hosts;
   array<string> excluded_hosts;
   array<string> excluded_spkis;
   array<string> excluded_legacy_spkis;
