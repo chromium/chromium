@@ -16,6 +16,8 @@ class WebAppProvider;
 webapps::WebappUninstallSource ConvertUninstallSourceToWebAppUninstallSource(
     apps::UninstallSource uninstall_source);
 
+// Whether a web app is considered as an shortcut in App Service sense.
+// Returns false if the web app cannot found in the web app registrar.
 bool IsAppServiceShortcut(const webapps::AppId& web_app_id,
                           const WebAppProvider& provider);
 

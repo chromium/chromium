@@ -17,6 +17,7 @@
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/services/app_service/public/cpp/types_util.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -80,6 +81,8 @@ TEST_F(WebAppsTest, ShortcutNotPublishedAsWebApp) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
       features::kCrosWebAppShortcutUiUpdate);
+  apps::AppServiceTest app_service_test;
+  app_service_test.SetUp(profile());
   auto app_id = CreateWebApp(GURL("https://example.com/"), "App");
   auto shortcut_id =
       CreateShortcut(GURL("https://example-shortcut.com/"), "Shortcut");
@@ -138,4 +141,44 @@ TEST_F(WebAppsTest, ShortcutPublishedAsWebApp) {
   EXPECT_EQ(cache.GetAppType(new_shortcut_id), apps::AppType::kWeb);
   EXPECT_EQ(cache.GetAppType(new_app_id), apps::AppType::kWeb);
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+TEST_F(WebAppsTest, UninstallWebApp_AppServiceShortcutEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kCrosWebAppShortcutUiUpdate);
+
+  apps::AppServiceTest app_service_test;
+  app_service_test.SetUp(profile());
+
+  // Verify that web app can be installed and uninstalled as normal.
+  auto web_app_id = CreateWebApp(GURL("https://example.com/"), "App");
+  apps::AppRegistryCache& cache =
+      apps::AppServiceProxyFactory::GetForProfile(profile())
+          ->AppRegistryCache();
+  bool found = cache.ForOneApp(web_app_id, [](const apps::AppUpdate& update) {
+    EXPECT_TRUE(apps_util::IsInstalled(update.Readiness()));
+  });
+  ASSERT_TRUE(found);
+
+  web_app::test::UninstallWebApp(profile(), web_app_id);
+  cache.ForOneApp(web_app_id, [](const apps::AppUpdate& update) {
+    EXPECT_FALSE(apps_util::IsInstalled(update.Readiness()));
+  });
+
+  // Verify that shortcuts are not published to app registry cache on
+  // installation and uninstallation.
+  auto web_shortcut_id =
+      CreateShortcut(GURL("https://shortcut_example.com/"), "App");
+
+  found =
+      cache.ForOneApp(web_shortcut_id, [](const apps::AppUpdate& update) {});
+  ASSERT_FALSE(found);
+
+  web_app::test::UninstallWebApp(profile(), web_shortcut_id);
+  found =
+      cache.ForOneApp(web_shortcut_id, [](const apps::AppUpdate& update) {});
+  ASSERT_FALSE(found);
+}
+#endif
 }  // namespace web_app

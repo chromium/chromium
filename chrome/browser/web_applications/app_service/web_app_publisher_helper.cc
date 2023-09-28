@@ -129,6 +129,7 @@
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/full_restore_save_handler.h"
 #include "components/app_restore/full_restore_utils.h"
+#include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/sessions/core/session_id.h"
 #include "extensions/browser/api/file_handlers/mime_util.h"  // nogncheck
 #endif
@@ -1417,9 +1418,17 @@ void WebAppPublisherHelper::OnWebAppManifestUpdated(
 void WebAppPublisherHelper::OnWebAppUninstalled(
     const webapps::AppId& app_id,
     webapps::WebappUninstallSource uninstall_source) {
-  if (IsAppServiceShortcut(app_id, *provider_)) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // If a web app has been uninstalled, we do not know if it is a shortcut from
+  // web app registrar. Here we check if we have got an app registered in
+  // AppRegistryCache to be uninstalled. If not, we do not publish the update.
+  bool found = apps::AppServiceProxyFactory::GetForProfile(profile_)
+                   ->AppRegistryCache()
+                   .ForOneApp(app_id, [](const apps::AppUpdate& update) {});
+  if (!found) {
     return;
   }
+#endif
 #if BUILDFLAG(IS_CHROMEOS)
   paused_apps_.MaybeRemoveApp(app_id);
 
