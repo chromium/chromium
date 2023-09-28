@@ -179,9 +179,11 @@ const gpu::GPUInfo GetGPUInfo() {
 // This function converts the major and minor versions to the proto accepted
 // value. For example, if the version is 3.2, the return value is 0x00030002.
 unsigned GetGLVersionInfo(const gpu::GPUInfo& gpu_info) {
-  gfx::ExtensionSet extensionSet(gfx::MakeExtensionSet(gpu_info.gl_extensions));
-  gl::GLVersionInfo glVersionInfo(gpu_info.gl_version.c_str(),
-                                  gpu_info.gl_renderer.c_str(), extensionSet);
+  gfx::ExtensionSet extensionSet(
+      gfx::MakeExtensionSet(gpu_info.active_gpu().gl_extensions));
+  gl::GLVersionInfo glVersionInfo(gpu_info.active_gpu().gl_version.c_str(),
+                                  gpu_info.active_gpu().gl_renderer.c_str(),
+                                  extensionSet);
 
   unsigned major_version = glVersionInfo.major_version;
   unsigned minor_version = glVersionInfo.minor_version;
@@ -193,7 +195,8 @@ unsigned GetGLVersionInfo(const gpu::GPUInfo& gpu_info) {
 }
 
 gfx::ExtensionSet GetGLExtensions(const gpu::GPUInfo& gpu_info) {
-  gfx::ExtensionSet extensionSet(gfx::MakeExtensionSet(gpu_info.gl_extensions));
+  gfx::ExtensionSet extensionSet(
+      gfx::MakeExtensionSet(gpu_info.active_gpu().gl_extensions));
 
   return extensionSet;
 }

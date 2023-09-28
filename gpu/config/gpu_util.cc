@@ -38,7 +38,6 @@
 #include "gpu/config/gpu_driver_bug_workaround_type.h"
 #include "gpu/config/gpu_feature_type.h"
 #include "gpu/config/gpu_finch_features.h"
-#include "gpu/config/gpu_info.h"
 #include "gpu/config/gpu_info_collector.h"
 #include "gpu/config/gpu_preferences.h"
 #include "gpu/config/gpu_switches.h"
@@ -695,7 +694,7 @@ GpuFeatureInfo ComputeGpuFeatureInfo(const GPUInfo& gpu_info,
 }
 
 void SetKeysForCrashLogging(const GPUInfo& gpu_info) {
-  const GPUInfo::GPUDevice& active_gpu = gpu_info.active_gpu();
+  const GPUDevice& active_gpu = gpu_info.active_gpu();
 #if !BUILDFLAG(IS_ANDROID)
   crash_keys::gpu_vendor_id.Set(
       base::StringPrintf("0x%04x", active_gpu.vendor_id));
@@ -709,15 +708,15 @@ void SetKeysForCrashLogging(const GPUInfo& gpu_info) {
   crash_keys::gpu_revision.Set(base::StringPrintf("%u", active_gpu.revision));
 #endif  // BUILDFLAG(IS_WIN)
   crash_keys::gpu_driver_version.Set(active_gpu.driver_version);
-  crash_keys::gpu_pixel_shader_version.Set(gpu_info.pixel_shader_version);
-  crash_keys::gpu_vertex_shader_version.Set(gpu_info.vertex_shader_version);
+  crash_keys::gpu_pixel_shader_version.Set(active_gpu.pixel_shader_version);
+  crash_keys::gpu_vertex_shader_version.Set(active_gpu.vertex_shader_version);
   crash_keys::gpu_generation_intel.Set(base::StringPrintf(
       "%d", static_cast<int>(GetIntelGpuGeneration(gpu_info))));
 #if BUILDFLAG(IS_MAC)
-  crash_keys::gpu_gl_version.Set(gpu_info.gl_version);
+  crash_keys::gpu_gl_version.Set(active_gpu.gl_version);
 #elif BUILDFLAG(IS_POSIX)
-  crash_keys::gpu_vendor.Set(gpu_info.gl_vendor);
-  crash_keys::gpu_renderer.Set(gpu_info.gl_renderer);
+  crash_keys::gpu_vendor.Set(active_gpu.gl_vendor);
+  crash_keys::gpu_renderer.Set(active_gpu.gl_renderer);
 #endif
 }
 
@@ -782,7 +781,7 @@ gl::GLDisplay* InitializeGLThreadSafe(base::CommandLine* command_line,
   } else {
     gl_display = gl::GetDefaultDisplayEGL();
   }
-  CollectContextGraphicsInfo(out_gpu_info);
+  CollectContextGraphicsInfo(out_gpu_info, gl_display);
   *out_gpu_feature_info = ComputeGpuFeatureInfo(*out_gpu_info, gpu_preferences,
                                                 command_line, nullptr);
   if (!out_gpu_feature_info->disabled_extensions.empty()) {
@@ -1074,4 +1073,12 @@ std::string VulkanVersionToString(uint32_t vulkan_version) {
   }
 }
 #endif  // BUILDFLAG(IS_WIN)
+
+GPUDevice* GetGPUDeviceFromGLDisplay(GPUInfo* gpu_info,
+                                     gl::GLDisplay* display) {
+  DCHECK(gpu_info);
+  DCHECK(display);
+  return gpu_info->FindGpu(display->system_device_id());
+}
+
 }  // namespace gpu

@@ -57,13 +57,13 @@ class GpuControlListTest : public testing::Test,
     gpu_info_.machine_model_name = "MacBookPro";
     gpu_info_.machine_model_version = "7.1";
     if (is_angle()) {
-      gpu_info_.gl_vendor = "Google Inc. (NVIDIA Corporation)";
-      gpu_info_.gl_renderer =
+      gpu_info_.gpu.gl_vendor = "Google Inc. (NVIDIA Corporation)";
+      gpu_info_.gpu.gl_renderer =
           "ANGLE (NVIDIA Corporation, NVIDIA GeForce GT 120 OpenGL Engine,)";
-      gpu_info_.gl_renderer = "";
+      gpu_info_.gpu.gl_renderer = "";
     } else {
-      gpu_info_.gl_vendor = "NVIDIA Corporation";
-      gpu_info_.gl_renderer = "NVIDIA GeForce GT 120 OpenGL Engine";
+      gpu_info_.gpu.gl_vendor = "NVIDIA Corporation";
+      gpu_info_.gpu.gl_renderer = "NVIDIA GeForce GT 120 OpenGL Engine";
     }
   }
 
@@ -132,14 +132,15 @@ TEST_P(GpuControlListTest, NeedsMoreInfoForExceptions) {
 
   // The case we have full info, and the exception applies (so the entry
   // does not apply).
-  gpu_info.gl_renderer = is_angle() ? "ANGLE (vendor, mesa, version)" : "mesa";
+  gpu_info.gpu.gl_renderer =
+      is_angle() ? "ANGLE (vendor, mesa, version)" : "mesa";
   features = control_list->MakeDecision(
       GpuControlList::kOsLinux, kOsVersion, gpu_info);
   EXPECT_EMPTY_SET(features);
   EXPECT_FALSE(control_list->needs_more_info());
 
   // The case we have full info, and this entry applies.
-  gpu_info.gl_renderer =
+  gpu_info.gpu.gl_renderer =
       is_angle() ? "ANGLE (vendor, my renderer, version)" : "my renderer";
   features = control_list->MakeDecision(GpuControlList::kOsLinux, kOsVersion,
       gpu_info);

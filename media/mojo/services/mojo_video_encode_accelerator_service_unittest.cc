@@ -42,7 +42,7 @@ std::unique_ptr<VideoEncodeAccelerator> CreateAndInitializeFakeVEA(
     VideoEncodeAccelerator::Client* client,
     const gpu::GpuPreferences& gpu_preferences,
     const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
-    const gpu::GPUInfo::GPUDevice& gpu_device,
+    const gpu::GPUDevice& gpu_device,
     std::unique_ptr<MediaLog> media_log) {
   // Use FakeVEA as scoped_ptr to guarantee proper destruction via Destroy().
   auto vea = std::make_unique<FakeVideoEncodeAccelerator>(
@@ -104,7 +104,7 @@ class MojoVideoEncodeAcceleratorServiceTest : public ::testing::Test {
         base::BindRepeating(&CreateAndInitializeFakeVEA,
                             will_fake_vea_initialization_succeed),
         gpu::GpuPreferences(), gpu::GpuDriverBugWorkarounds(),
-        gpu::GPUInfo::GPUDevice());
+        gpu::GPUDevice());
   }
 
   void BindAndInitialize() {

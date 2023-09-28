@@ -15,9 +15,9 @@
 namespace mojo {
 
 // static
-bool StructTraits<gpu::mojom::GpuDeviceDataView, gpu::GPUInfo::GPUDevice>::Read(
+bool StructTraits<gpu::mojom::GpuDeviceDataView, gpu::GPUDevice>::Read(
     gpu::mojom::GpuDeviceDataView data,
-    gpu::GPUInfo::GPUDevice* out) {
+    gpu::GPUDevice* out) {
   out->vendor_id = data.vendor_id();
   out->device_id = data.device_id();
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
@@ -28,6 +28,9 @@ bool StructTraits<gpu::mojom::GpuDeviceDataView, gpu::GPUInfo::GPUDevice>::Read(
 #endif  // BUILDFLAG(IS_WIN)
   out->active = data.active();
   out->cuda_compute_capability_major = data.cuda_compute_capability_major();
+  out->gl_reset_notification_strategy = data.gl_reset_notification_strategy();
+  out->can_support_threaded_texture_mailbox =
+      data.can_support_threaded_texture_mailbox();
   return data.ReadVendorString(&out->vendor_string) &&
          data.ReadDeviceString(&out->device_string) &&
 #if BUILDFLAG(IS_WIN)
@@ -35,7 +38,19 @@ bool StructTraits<gpu::mojom::GpuDeviceDataView, gpu::GPUInfo::GPUDevice>::Read(
 #endif  // BUILDFLAG(IS_WIN)
          data.ReadDriverVendor(&out->driver_vendor) &&
          data.ReadDriverVersion(&out->driver_version) &&
-         data.ReadGpuPreference(&out->gpu_preference);
+         data.ReadGpuPreference(&out->gpu_preference) &&
+         data.ReadPixelShaderVersion(&out->pixel_shader_version) &&
+         data.ReadVertexShaderVersion(&out->vertex_shader_version) &&
+         data.ReadMaxMsaaSamples(&out->max_msaa_samples) &&
+         data.ReadDisplayType(&out->display_type) &&
+         data.ReadGlVersion(&out->gl_version) &&
+         data.ReadGlVendor(&out->gl_vendor) &&
+         data.ReadGlRenderer(&out->gl_renderer) &&
+         data.ReadGlExtensions(&out->gl_extensions) &&
+         data.ReadGlWsVendor(&out->gl_ws_vendor) &&
+         data.ReadGlWsVersion(&out->gl_ws_version) &&
+         data.ReadGlWsExtensions(&out->gl_ws_extensions) &&
+         data.ReadDirectRenderingVersion(&out->direct_rendering_version);
 }
 
 // static
@@ -496,12 +511,9 @@ bool StructTraits<gpu::mojom::GpuInfoDataView, gpu::GPUInfo>::Read(
     gpu::GPUInfo* out) {
   out->optimus = data.optimus();
   out->amd_switchable = data.amd_switchable();
-  out->gl_reset_notification_strategy = data.gl_reset_notification_strategy();
   out->sandboxed = data.sandboxed();
   out->in_process_gpu = data.in_process_gpu();
   out->passthrough_cmd_decoder = data.passthrough_cmd_decoder();
-  out->can_support_threaded_texture_mailbox =
-      data.can_support_threaded_texture_mailbox();
 #if BUILDFLAG(IS_MAC)
   if (!gpu::ValidateMacOSSpecificTextureTarget(
           data.macos_specific_texture_target())) {
@@ -524,21 +536,9 @@ bool StructTraits<gpu::mojom::GpuInfoDataView, gpu::GPUInfo>::Read(
   return data.ReadInitializationTime(&out->initialization_time) &&
          data.ReadGpu(&out->gpu) &&
          data.ReadSecondaryGpus(&out->secondary_gpus) &&
-         data.ReadPixelShaderVersion(&out->pixel_shader_version) &&
-         data.ReadVertexShaderVersion(&out->vertex_shader_version) &&
-         data.ReadMaxMsaaSamples(&out->max_msaa_samples) &&
          data.ReadMachineModelName(&out->machine_model_name) &&
          data.ReadMachineModelVersion(&out->machine_model_version) &&
-         data.ReadDisplayType(&out->display_type) &&
-         data.ReadGlVersion(&out->gl_version) &&
-         data.ReadGlVendor(&out->gl_vendor) &&
-         data.ReadGlRenderer(&out->gl_renderer) &&
-         data.ReadGlExtensions(&out->gl_extensions) &&
-         data.ReadGlWsVendor(&out->gl_ws_vendor) &&
-         data.ReadGlWsVersion(&out->gl_ws_version) &&
-         data.ReadGlWsExtensions(&out->gl_ws_extensions) &&
          data.ReadGlImplementationParts(&out->gl_implementation_parts) &&
-         data.ReadDirectRenderingVersion(&out->direct_rendering_version) &&
 #if BUILDFLAG(IS_WIN)
          data.ReadOverlayInfo(&out->overlay_info) &&
          data.ReadDxDiagnostics(&out->dx_diagnostics) &&

@@ -25,7 +25,8 @@ constexpr uint32_t kVendorImagination = 0x1010;
 constexpr uint32_t kVendorGoogle = 0x1AE0;
 constexpr uint32_t kDeviceSwiftShader = 0xC0DE;
 
-struct GPUInfo;
+struct GPUDevice;
+
 class VulkanInfo;
 
 // Submits semaphores to be signaled to the vulkan queue. Semaphores are
@@ -109,7 +110,7 @@ VulkanQueuePresentKHRHook(VkQueue queue, const VkPresentInfoKHR* pPresentInfo);
 
 COMPONENT_EXPORT(VULKAN)
 bool CheckVulkanCompabilities(const VulkanInfo& vulkan_info,
-                              const GPUInfo& gpu_info,
+                              const GPUDevice* gpu_device,
                               std::string enable_by_device_name);
 
 COMPONENT_EXPORT(VULKAN)

@@ -198,13 +198,20 @@ bool CollectDriverInfoD3D(GPUInfo* gpu_info) {
     DXGI_ADAPTER_DESC desc;
     CHECK_EQ(S_OK, dxgi_adapter->GetDesc(&desc));
 
-    GPUInfo::GPUDevice device;
+    GPUDevice device;
     device.vendor_id = desc.VendorId;
     device.device_id = desc.DeviceId;
     device.sub_sys_id = desc.SubSysId;
     device.revision = desc.Revision;
     device.luid =
         CHROME_LUID{desc.AdapterLuid.LowPart, desc.AdapterLuid.HighPart};
+    // TODO(crbug.com/1418417): ANGLE's SystemInfo collection uses the
+    // concatenated luid to build the system_device_id on Windows. This should
+    // be used instead of luid in Chrome. For now, add both IDs to GPUInfo, so
+    // both paths work.
+    device.system_device_id = static_cast<uint64_t>(
+        (static_cast<uint64_t>(desc.AdapterLuid.HighPart) << 32) |
+        (static_cast<uint32_t>(desc.AdapterLuid.LowPart)));
 
     LARGE_INTEGER umd_version;
     hr = dxgi_adapter->CheckInterfaceSupport(__uuidof(IDXGIDevice),
@@ -232,8 +239,8 @@ bool CollectDriverInfoD3D(GPUInfo* gpu_info) {
             IID_PPV_ARGS(&dxgi_adapter)))) {
       DXGI_ADAPTER_DESC desc;
       CHECK_EQ(S_OK, dxgi_adapter->GetDesc(&desc));
-      GPUInfo::GPUDevice* device = gpu_info->FindGpuByLuid(
-          desc.AdapterLuid.LowPart, desc.AdapterLuid.HighPart);
+      GPUDevice* device = gpu_info->FindGpuByLuid(desc.AdapterLuid.LowPart,
+                                                  desc.AdapterLuid.HighPart);
       DCHECK(device);
       device->gpu_preference = gl::GpuPreference::kHighPerformance;
     }
@@ -242,8 +249,8 @@ bool CollectDriverInfoD3D(GPUInfo* gpu_info) {
             IID_PPV_ARGS(&dxgi_adapter)))) {
       DXGI_ADAPTER_DESC desc;
       CHECK_EQ(S_OK, dxgi_adapter->GetDesc(&desc));
-      GPUInfo::GPUDevice* device = gpu_info->FindGpuByLuid(
-          desc.AdapterLuid.LowPart, desc.AdapterLuid.HighPart);
+      GPUDevice* device = gpu_info->FindGpuByLuid(desc.AdapterLuid.LowPart,
+                                                  desc.AdapterLuid.HighPart);
       DCHECK(device);
       device->gpu_preference = gl::GpuPreference::kLowPower;
     }
@@ -402,7 +409,7 @@ bool BadAMDVulkanDriverVersion() {
 // Vulkan 1.1 was released by the Khronos Group on March 7, 2018.
 // Blocklist all driver versions without Vulkan 1.1 support and those that cause
 // lots of crashes.
-bool BadGraphicsDriverVersions(const gpu::GPUInfo::GPUDevice& gpu_device) {
+bool BadGraphicsDriverVersions(const gpu::GPUDevice& gpu_device) {
   // GPU Device info is not available in gpu_integration_test.info-collection
   // with --no-delay-for-dx12-vulkan-info-collection.
   if (gpu_device.driver_version.empty())
@@ -503,8 +510,7 @@ bool InitVulkanInstanceProc(
   return false;
 }
 
-uint32_t GetGpuSupportedVulkanVersion(
-    const gpu::GPUInfo::GPUDevice& gpu_device) {
+uint32_t GetGpuSupportedVulkanVersion(const gpu::GPUDevice& gpu_device) {
   TRACE_EVENT0("gpu", "GetGpuSupportedVulkanVersion");
 
   base::NativeLibrary vulkan_library;
@@ -663,14 +669,16 @@ bool CollectD3D11FeatureInfo(D3D_FEATURE_LEVEL* d3d11_feature_level,
   return false;
 }
 
-bool CollectContextGraphicsInfo(GPUInfo* gpu_info) {
+bool CollectContextGraphicsInfo(GPUInfo* gpu_info, gl::GLDisplay* display) {
   TRACE_EVENT0("gpu", "CollectGraphicsInfo");
 
   DCHECK(gpu_info);
 
-  if (!CollectGraphicsInfoGL(gpu_info, gl::GetDefaultDisplayEGL()))
+  if (!CollectGraphicsInfoGL(gpu_info, display)) {
     return false;
+  }
 
+  GPUDevice* gpu_device = GetGPUDeviceFromGLDisplay(gpu_info, display);
   // ANGLE's renderer strings are of the form:
   // ANGLE (<adapter_identifier> Direct3D<version> vs_x_x ps_x_x)
   std::string direct3d_version;
@@ -678,29 +686,21 @@ bool CollectContextGraphicsInfo(GPUInfo* gpu_info) {
   int vertex_shader_minor_version = 0;
   int pixel_shader_major_version = 0;
   int pixel_shader_minor_version = 0;
-  if (RE2::FullMatch(gpu_info->gl_renderer,
-                     "ANGLE \\(.*\\)") &&
-      RE2::PartialMatch(gpu_info->gl_renderer,
-                        " Direct3D(\\w+)",
+  if (RE2::FullMatch(gpu_device->gl_renderer, "ANGLE \\(.*\\)") &&
+      RE2::PartialMatch(gpu_device->gl_renderer, " Direct3D(\\w+)",
                         &direct3d_version) &&
-      RE2::PartialMatch(gpu_info->gl_renderer,
-                        " vs_(\\d+)_(\\d+)",
+      RE2::PartialMatch(gpu_device->gl_renderer, " vs_(\\d+)_(\\d+)",
                         &vertex_shader_major_version,
                         &vertex_shader_minor_version) &&
-      RE2::PartialMatch(gpu_info->gl_renderer,
-                        " ps_(\\d+)_(\\d+)",
+      RE2::PartialMatch(gpu_device->gl_renderer, " ps_(\\d+)_(\\d+)",
                         &pixel_shader_major_version,
                         &pixel_shader_minor_version)) {
-    gpu_info->vertex_shader_version =
-        base::StringPrintf("%d.%d",
-                           vertex_shader_major_version,
-                           vertex_shader_minor_version);
-    gpu_info->pixel_shader_version =
-        base::StringPrintf("%d.%d",
-                           pixel_shader_major_version,
-                           pixel_shader_minor_version);
+    gpu_device->vertex_shader_version = base::StringPrintf(
+        "%d.%d", vertex_shader_major_version, vertex_shader_minor_version);
+    gpu_device->pixel_shader_version = base::StringPrintf(
+        "%d.%d", pixel_shader_major_version, pixel_shader_minor_version);
 
-    DCHECK(!gpu_info->vertex_shader_version.empty());
+    DCHECK(!gpu_device->vertex_shader_version.empty());
     // Note: do not reorder, used by UMA_HISTOGRAM below
     enum ShaderModel {
       SHADER_MODEL_UNKNOWN,
@@ -712,15 +712,15 @@ bool CollectContextGraphicsInfo(GPUInfo* gpu_info) {
       NUM_SHADER_MODELS
     };
     ShaderModel shader_model = SHADER_MODEL_UNKNOWN;
-    if (gpu_info->vertex_shader_version == "5.0") {
+    if (gpu_device->vertex_shader_version == "5.0") {
       shader_model = SHADER_MODEL_5_0;
-    } else if (gpu_info->vertex_shader_version == "4.1") {
+    } else if (gpu_device->vertex_shader_version == "4.1") {
       shader_model = SHADER_MODEL_4_1;
-    } else if (gpu_info->vertex_shader_version == "4.0") {
+    } else if (gpu_device->vertex_shader_version == "4.0") {
       shader_model = SHADER_MODEL_4_0;
-    } else if (gpu_info->vertex_shader_version == "3.0") {
+    } else if (gpu_device->vertex_shader_version == "3.0") {
       shader_model = SHADER_MODEL_3_0;
-    } else if (gpu_info->vertex_shader_version == "2.0") {
+    } else if (gpu_device->vertex_shader_version == "2.0") {
       shader_model = SHADER_MODEL_2_0;
     }
     UMA_HISTOGRAM_ENUMERATION("GPU.D3DShaderModel", shader_model,

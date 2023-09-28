@@ -36,10 +36,6 @@ class GLDisplayManager {
   // Otherwise kDefault GPU will be mapped to 0 instead of a valid
   // system_device_id.
   void SetGpuPreference(GpuPreference preference, uint64_t system_device_id) {
-#if DCHECK_IS_ON()
-    auto iter = gpu_preference_map_.find(preference);
-    DCHECK(gpu_preference_map_.end() == iter);
-#endif
     gpu_preference_map_[preference] = system_device_id;
   }
 

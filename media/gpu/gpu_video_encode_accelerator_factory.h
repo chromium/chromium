@@ -34,14 +34,14 @@ class MEDIA_GPU_EXPORT GpuVideoEncodeAcceleratorFactory {
       VideoEncodeAccelerator::Client* client,
       const gpu::GpuPreferences& gpu_perferences,
       const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
-      const gpu::GPUInfo::GPUDevice& gpu_device,
+      const gpu::GPUDevice& gpu_device,
       std::unique_ptr<MediaLog> media_log = nullptr);
 
   // Gets the supported codec profiles for video encoding on the platform.
   static VideoEncodeAccelerator::SupportedProfiles GetSupportedProfiles(
       const gpu::GpuPreferences& gpu_preferences,
       const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
-      const gpu::GPUInfo::GPUDevice& gpu_device);
+      const gpu::GPUDevice& gpu_device);
 };
 
 }  // namespace media

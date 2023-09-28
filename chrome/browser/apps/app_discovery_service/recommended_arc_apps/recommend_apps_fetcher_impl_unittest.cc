@@ -1037,9 +1037,9 @@ TEST_F(RecommendAppsFetcherImplTest, GpuInfo) {
   ASSERT_TRUE(recommend_apps_fetcher_);
 
   gpu::GPUInfo gpu_info;
-  gpu_info.gl_version = "OpenGL ES 3.2 Mesa 21.2.3";
-  gpu_info.gl_renderer = "Mesa DRI";
-  gpu_info.gl_extensions =
+  gpu_info.gpu.gl_version = "OpenGL ES 3.2 Mesa 21.2.3";
+  gpu_info.gpu.gl_renderer = "Mesa DRI";
+  gpu_info.gpu.gl_extensions =
       "GL_EXT_texture_format_BGRA8888 GL_EXT_read_format_bgra";
 
   RecommendAppsFetcherImpl::ScopedGpuInfoForTest scoped(&gpu_info);

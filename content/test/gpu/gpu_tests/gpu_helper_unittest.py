@@ -189,30 +189,23 @@ class TagHelpersUnittest(unittest.TestCase):
         # No aux attributes.
         TagHelperTestCase('angle-disabled'),
         # Non-ANGLE renderer.
-        TagHelperTestCase('angle-disabled',
-                          aux_attributes={'gl_renderer': 'renderer'}),
+        TagHelperTestCase('angle-disabled', {'device_string': 'renderer'}),
         # D3D11.
-        TagHelperTestCase('angle-d3d11',
-                          aux_attributes={'gl_renderer': 'ANGLE Direct3D11'}),
+        TagHelperTestCase('angle-d3d11', {'device_string': 'ANGLE Direct3D11'}),
         # D3D9.
-        TagHelperTestCase('angle-d3d9',
-                          aux_attributes={'gl_renderer': 'ANGLE Direct3D9'}),
+        TagHelperTestCase('angle-d3d9', {'device_string': 'ANGLE Direct3D9'}),
         # OpenGL ES.
         TagHelperTestCase('angle-opengles',
-                          aux_attributes={'gl_renderer': 'ANGLE OpenGL ES'}),
+                          {'device_string': 'ANGLE OpenGL ES'}),
         # OpenGL.
-        TagHelperTestCase('angle-opengl',
-                          aux_attributes={'gl_renderer': 'ANGLE OpenGL'}),
+        TagHelperTestCase('angle-opengl', {'device_string': 'ANGLE OpenGL'}),
         # Metal.
-        TagHelperTestCase('angle-metal',
-                          aux_attributes={'gl_renderer': 'ANGLE Metal'}),
+        TagHelperTestCase('angle-metal', {'device_string': 'ANGLE Metal'}),
         # SwiftShader, explicitly test that it's chosen over Vulkan.
-        TagHelperTestCase(
-            'angle-swiftshader',
-            aux_attributes={'gl_renderer': 'ANGLE Vulkan SwiftShader'}),
+        TagHelperTestCase('angle-swiftshader',
+                          {'device_string': 'ANGLE Vulkan SwiftShader'}),
         # Vulkan.
-        TagHelperTestCase('angle-vulkan',
-                          aux_attributes={'gl_renderer': 'ANGLE Vulkan'}),
+        TagHelperTestCase('angle-vulkan', {'device_string': 'ANGLE Vulkan'}),
     ]
 
     for tc in cases:

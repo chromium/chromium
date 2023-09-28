@@ -134,8 +134,7 @@ class AuxGPUInfoEnumerator : public gpu::GPUInfo::Enumerator {
   bool in_aux_attributes_ = false;
 };
 
-std::unique_ptr<GPUDevice> GPUDeviceToProtocol(
-    const gpu::GPUInfo::GPUDevice& device) {
+std::unique_ptr<GPUDevice> GPUDeviceToProtocol(const gpu::GPUDevice& device) {
   return GPUDevice::Create()
       .SetVendorId(device.vendor_id)
       .SetDeviceId(device.device_id)

@@ -26,7 +26,7 @@ void BindVEAProvider(
         CreateAndInitializeVideoEncodeAcceleratorCallback create_vea_callback,
     gpu::GpuPreferences gpu_preferences,
     gpu::GpuDriverBugWorkarounds gpu_workarounds,
-    const gpu::GPUInfo::GPUDevice& gpu_device) {
+    const gpu::GPUDevice& gpu_device) {
   auto vea_provider =
       std::make_unique<media::MojoVideoEncodeAcceleratorProvider>(
           std::move(create_vea_callback), gpu_preferences, gpu_workarounds,
@@ -43,7 +43,7 @@ void MojoVideoEncodeAcceleratorProvider::Create(
     CreateAndInitializeVideoEncodeAcceleratorCallback create_vea_callback,
     const gpu::GpuPreferences& gpu_preferences,
     const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
-    const gpu::GPUInfo::GPUDevice& gpu_device,
+    const gpu::GPUDevice& gpu_device,
     scoped_refptr<base::SequencedTaskRunner> runner) {
   DCHECK(runner);
   runner->PostTask(
@@ -56,7 +56,7 @@ MojoVideoEncodeAcceleratorProvider::MojoVideoEncodeAcceleratorProvider(
     CreateAndInitializeVideoEncodeAcceleratorCallback create_vea_callback,
     const gpu::GpuPreferences& gpu_preferences,
     const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
-    const gpu::GPUInfo::GPUDevice& gpu_device)
+    const gpu::GPUDevice& gpu_device)
     : create_vea_callback_(std::move(create_vea_callback)),
       gpu_preferences_(gpu_preferences),
       gpu_workarounds_(gpu_workarounds),

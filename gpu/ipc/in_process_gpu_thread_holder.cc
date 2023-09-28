@@ -28,7 +28,7 @@ InProcessGpuThreadHolder::InProcessGpuThreadHolder()
   gpu_preferences_ = gles2::ParseGpuPreferences(command_line);
 
   gpu::GPUInfo gpu_info;
-  gpu::CollectGraphicsInfoForTesting(&gpu_info);
+  gpu::CollectGraphicsInfoForTesting(&gpu_info, gl::GetDefaultDisplayEGL());
   gpu_feature_info_ = gpu::ComputeGpuFeatureInfo(gpu_info, gpu_preferences_,
                                                  command_line, nullptr);
 

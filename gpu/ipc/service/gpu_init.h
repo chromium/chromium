@@ -88,7 +88,7 @@ class GPU_IPC_SERVICE_EXPORT GpuInit {
 #endif
 
  private:
-  bool InitializeVulkan();
+  bool InitializeVulkan(uint64_t system_device_id);
 
   raw_ptr<GpuSandboxHelper> sandbox_helper_ = nullptr;
   bool gl_use_swiftshader_ = false;

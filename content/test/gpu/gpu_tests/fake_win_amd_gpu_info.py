@@ -102,10 +102,11 @@ FAKE_GPU_INFO = {
     'devices':
         [
             {
-                'device_string': '',
+                'device_string':
+                    'ANGLE (AMD Radeon HD 6450 Direct3D11 vs_5_0 ps_5_0)',
                 'vendor_id': 4098.0,
                 'device_id': 26489.0,
-                'vendor_string': ''
+                'vendor_string': 'Google Inc.'
             },
             {
                 'device_string': '',

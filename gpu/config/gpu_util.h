@@ -7,6 +7,7 @@
 
 #include "build/build_config.h"
 #include "gpu/config/gpu_feature_info.h"
+#include "gpu/config/gpu_info.h"
 #include "gpu/gpu_export.h"
 #include "ui/gl/gl_display.h"
 
@@ -17,7 +18,6 @@ class CommandLine;
 namespace gpu {
 
 struct DevicePerfInfo;
-struct GPUInfo;
 struct GpuPreferences;
 enum class IntelGpuSeriesType;
 enum class IntelGpuGeneration;
@@ -102,6 +102,9 @@ GPU_EXPORT void RecordDiscreteGpuHistograms(const GPUInfo& gpu_info);
 GPU_EXPORT std::string D3DFeatureLevelToString(uint32_t d3d_feature_level);
 GPU_EXPORT std::string VulkanVersionToString(uint32_t vulkan_version);
 #endif  // BUILDFLAG(IS_WIN)
+
+GPU_EXPORT GPUDevice* GetGPUDeviceFromGLDisplay(GPUInfo* gpu_info,
+                                                gl::GLDisplay* display);
 
 }  // namespace gpu
 

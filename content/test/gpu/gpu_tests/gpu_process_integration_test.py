@@ -270,10 +270,8 @@ class GpuProcessIntegrationTest(gpu_integration_test.GpuIntegrationTest):
       self.fail('Target machine must have a GPU')
     if not system_info.gpu.aux_attributes:
       self.fail('Browser must support GPU aux attributes')
-    if not 'gl_renderer' in system_info.gpu.aux_attributes:
-      self.fail('Browser must have gl_renderer in aux attribs')
     if (sys.platform != 'darwin'
-        and len(system_info.gpu.aux_attributes['gl_renderer']) <= 0):
+        and len(system_info.gpu.devices[0].device_string) <= 0):
       # On MacOSX we don't create a context to collect GL strings.1
       self.fail('Must have a non-empty gl_renderer string')
 
@@ -492,9 +490,9 @@ class GpuProcessIntegrationTest(gpu_integration_test.GpuIntegrationTest):
         self.fail('Target machine must have a GPU')
       if not gpu.aux_attributes:
         self.fail('Browser must support GPU aux attributes')
-      if 'SwiftShader' not in gpu.aux_attributes['gl_renderer']:
+      if 'SwiftShader' not in gpu.devices[0].device_string:
         self.fail('Expected "SwiftShader" in GPU info GL renderer string')
-      if 'Google' not in gpu.aux_attributes['gl_vendor']:
+      if 'Google' not in gpu.devices[0].vendor_string:
         self.fail('Expected "Google" in GPU info GL vendor string')
       device = gpu.devices[0]
       if not device:

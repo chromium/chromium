@@ -59,6 +59,10 @@ unsigned int GLContextStub::CheckStickyGraphicsResetStatusImpl() {
   return graphics_reset_status_;
 }
 
+GLDisplayEGL* GLContextStub::GetGLDisplayEGL() {
+  return gl_display_;
+}
+
 void GLContextStub::SetUseStubApi(bool stub_api) {
   use_stub_api_ = stub_api;
 }
@@ -74,6 +78,10 @@ void GLContextStub::SetGLVersionString(const char* version_str) {
 bool GLContextStub::HasRobustness() {
   return HasExtension("GL_ARB_robustness") ||
          HasExtension("GL_KHR_robustness") || HasExtension("GL_EXT_robustness");
+}
+
+void GLContextStub::SetGLDisplayEGL(GLDisplayEGL* display) {
+  gl_display_ = display;
 }
 
 #if BUILDFLAG(IS_MAC)

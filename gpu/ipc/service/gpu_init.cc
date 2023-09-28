@@ -82,10 +82,10 @@
 namespace gpu {
 
 namespace {
-bool CollectGraphicsInfo(GPUInfo* gpu_info) {
+bool CollectGraphicsInfo(GPUInfo* gpu_info, gl::GLDisplay* display) {
   DCHECK(gpu_info);
   TRACE_EVENT0("gpu,startup", "Collect Graphics Info");
-  bool success = CollectContextGraphicsInfo(gpu_info);
+  bool success = CollectContextGraphicsInfo(gpu_info, display);
   if (!success)
     LOG(ERROR) << "CollectGraphicsInfo failed.";
   return success;
@@ -209,41 +209,31 @@ bool MatchGLInfo(const std::string& field, const std::string& patterns) {
 }
 #endif  // BUILDFLAG(ENABLE_VULKAN)
 
-#if BUILDFLAG(IS_WIN)
-uint64_t CHROME_LUID_to_uint64_t(const CHROME_LUID& luid) {
-  uint64_t id64 = static_cast<uint32_t>(luid.HighPart);
-  return (id64 << 32) | (luid.LowPart & 0xFFFFFFFF);
-}
-#endif  // BUILDFLAG(IS_WIN)
-
-#if defined(USE_EGL) && (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC))
-// GPU picking is only effective with ANGLE/Metal backend on Mac and
-// on Windows with EGL.
-// Returns the default GPU's system_device_id.
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CASTOS)
 void SetupGLDisplayManagerEGL(const GPUInfo& gpu_info,
                               const GpuFeatureInfo& gpu_feature_info) {
-  const GPUInfo::GPUDevice* gpu_high_perf =
+  // Start by setting the first GPU as the default.
+  gl::SetGpuPreferenceEGL(gl::GpuPreference::kDefault,
+                          gpu_info.gpu.system_device_id);
+
+#if (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC))
+  const GPUDevice* gpu_high_perf =
       gpu_info.GetGpuByPreference(gl::GpuPreference::kHighPerformance);
-  const GPUInfo::GPUDevice* gpu_low_power =
+  const GPUDevice* gpu_low_power =
       gpu_info.GetGpuByPreference(gl::GpuPreference::kLowPower);
 #if BUILDFLAG(IS_WIN)
   // On Windows the default GPU may not be the low power GPU.
-  const GPUInfo::GPUDevice* gpu_default = &(gpu_info.gpu);
-  uint64_t system_device_id_high_perf =
-      gpu_high_perf ? CHROME_LUID_to_uint64_t(gpu_high_perf->luid) : 0;
-  uint64_t system_device_id_low_power =
-      gpu_low_power ? CHROME_LUID_to_uint64_t(gpu_low_power->luid) : 0;
-  uint64_t system_device_id_default =
-      CHROME_LUID_to_uint64_t(gpu_default->luid);
+  const GPUDevice* gpu_default = &(gpu_info.gpu);
 #else  // IS_MAC
-  const GPUInfo::GPUDevice* gpu_default =
+  const GPUDevice* gpu_default =
       gpu_low_power ? gpu_low_power : &(gpu_info.gpu);
+#endif
+
   uint64_t system_device_id_high_perf =
       gpu_high_perf ? gpu_high_perf->system_device_id : 0;
   uint64_t system_device_id_low_power =
       gpu_low_power ? gpu_low_power->system_device_id : 0;
   uint64_t system_device_id_default = gpu_default->system_device_id;
-#endif
   DCHECK(gpu_default);
 
   if (gpu_info.GpuCount() <= 1) {
@@ -281,9 +271,11 @@ void SetupGLDisplayManagerEGL(const GPUInfo& gpu_info,
     gl::SetGpuPreferenceEGL(gl::GpuPreference::kHighPerformance,
                             system_device_id_high_perf);
   }
+
+#endif  // (IS_WIN || IS_MAC)
   return;
 }
-#endif  // USE_EGL && (IS_WIN || IS_MAC)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CASTOS)
 
 }  // namespace
 
@@ -332,9 +324,7 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
   gpu_feature_info_ = ComputeGpuFeatureInfo(gpu_info_, gpu_preferences_,
                                             command_line, &needs_more_info);
 
-#if defined(USE_EGL) && (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC))
   SetupGLDisplayManagerEGL(gpu_info_, gpu_feature_info_);
-#endif  // USE_EGL && (IS_WIN || IS_MAC)
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CASTOS)
 
   gpu_info_.in_process_gpu = false;
@@ -521,7 +511,7 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
   // We need to collect GL strings (VENDOR, RENDERER) for blocklisting purposes.
   if (!gl_disabled) {
     if (!gl_use_swiftshader_) {
-      if (!CollectGraphicsInfo(&gpu_info_)) {
+      if (!CollectGraphicsInfo(&gpu_info_, gl_display)) {
         VLOG(1) << "gpu::CollectGraphicsInfo failed";
         return false;
       }
@@ -565,7 +555,7 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
           // Collect GPU info, so we can use blocklist to disable vulkan if it
           // is needed.
           GPUInfo gpu_info;
-          if (!CollectGraphicsInfo(&gpu_info)) {
+          if (!CollectGraphicsInfo(&gpu_info, gl_display)) {
             VLOG(1) << "gpu::CollectGraphicsInfo failed";
             return false;
           }
@@ -630,7 +620,7 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
 
   if (gpu_feature_info_.status_values[GPU_FEATURE_TYPE_VULKAN] !=
           kGpuFeatureStatusEnabled ||
-      !InitializeVulkan()) {
+      !InitializeVulkan(gl_display->system_device_id())) {
     gpu_preferences_.use_vulkan = VulkanImplementationName::kNone;
     gpu_feature_info_.status_values[GPU_FEATURE_TYPE_VULKAN] =
         kGpuFeatureStatusDisabled;
@@ -691,8 +681,9 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
   // information on Linux platform. Try to collect graphics information
   // based on core profile context after disabling platform extensions.
   if (!gl_disabled && !gl_use_swiftshader_) {
-    if (!CollectGraphicsInfo(&gpu_info_))
+    if (!CollectGraphicsInfo(&gpu_info_, gl_display)) {
       return false;
+    }
     SetKeysForCrashLogging(gpu_info_);
     gpu_feature_info_ = ComputeGpuFeatureInfo(gpu_info_, gpu_preferences_,
                                               command_line, nullptr);
@@ -829,7 +820,7 @@ void GpuInit::InitializeInProcess(base::CommandLine* command_line,
 
   if (command_line->HasSwitch(switches::kWebViewDrawFunctorUsesVulkan) &&
       base::FeatureList::IsEnabled(features::kWebViewVulkan)) {
-    bool result = InitializeVulkan();
+    bool result = InitializeVulkan(gl_display->system_device_id());
     // There is no fallback for webview.
     CHECK(result);
   } else {
@@ -906,7 +897,7 @@ void GpuInit::InitializeInProcess(base::CommandLine* command_line,
 #endif
 
   if (!gl_disabled && !gl_use_swiftshader_) {
-    CollectContextGraphicsInfo(&gpu_info_);
+    CollectContextGraphicsInfo(&gpu_info_, gl_display);
     gpu_feature_info_ = ComputeGpuFeatureInfo(gpu_info_, gpu_preferences_,
                                               command_line, nullptr);
     gl_use_swiftshader_ = EnableSwiftShaderIfNeeded(
@@ -969,7 +960,7 @@ void GpuInit::InitializeInProcess(base::CommandLine* command_line,
   // information on Linux platform. Try to collect graphics information
   // based on core profile context after disabling platform extensions.
   if (!gl_disabled && !gl_use_swiftshader_) {
-    CollectContextGraphicsInfo(&gpu_info_);
+    CollectContextGraphicsInfo(&gpu_info_, gl_display);
     gpu_feature_info_ = ComputeGpuFeatureInfo(gpu_info_, gpu_preferences_,
                                               command_line, nullptr);
     gl_use_swiftshader_ = EnableSwiftShaderIfNeeded(
@@ -1017,7 +1008,7 @@ void GpuInit::SaveHardwareGpuInfoAndGpuFeatureInfo() {
 void GpuInit::AdjustInfoToSwiftShader() {
   gpu_info_.passthrough_cmd_decoder = false;
   gpu_feature_info_ = ComputeGpuFeatureInfoForSwiftShader();
-  CollectContextGraphicsInfo(&gpu_info_);
+  CollectContextGraphicsInfo(&gpu_info_, gl::GetDefaultDisplayEGL());
 
   DCHECK_EQ(gpu_info_.passthrough_cmd_decoder, false);
 }
@@ -1026,7 +1017,7 @@ scoped_refptr<gl::GLSurface> GpuInit::TakeDefaultOffscreenSurface() {
   return std::move(default_offscreen_surface_);
 }
 
-bool GpuInit::InitializeVulkan() {
+bool GpuInit::InitializeVulkan(uint64_t system_device_id) {
 #if BUILDFLAG(ENABLE_VULKAN)
   DCHECK_EQ(gpu_feature_info_.status_values[GPU_FEATURE_TYPE_VULKAN],
             kGpuFeatureStatusEnabled);
@@ -1057,15 +1048,15 @@ bool GpuInit::InitializeVulkan() {
 
   const base::FeatureParam<std::string> force_enable_patterns(
       &features::kVulkan, "force_enable_by_gl_renderer", "");
-  forced_native |=
-      MatchGLInfo(gpu_info_.gl_renderer, force_enable_patterns.Get());
+  forced_native |= MatchGLInfo(gpu_info_.active_gpu().gl_renderer,
+                               force_enable_patterns.Get());
 
   const base::FeatureParam<std::string> enable_by_device_name(
       &features::kVulkan, "enable_by_device_name", "");
   if (!use_swiftshader && !forced_native &&
       !CheckVulkanCompabilities(
-          vulkan_implementation_->GetVulkanInstance()->vulkan_info(), gpu_info_,
-          enable_by_device_name.Get())) {
+          vulkan_implementation_->GetVulkanInstance()->vulkan_info(),
+          gpu_info_.FindGpu(system_device_id), enable_by_device_name.Get())) {
     vulkan_implementation_.reset();
     return false;
   }

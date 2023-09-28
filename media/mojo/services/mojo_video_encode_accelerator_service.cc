@@ -27,7 +27,7 @@ void MojoVideoEncodeAcceleratorService::Create(
     CreateAndInitializeVideoEncodeAcceleratorCallback create_vea_callback,
     const gpu::GpuPreferences& gpu_preferences,
     const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
-    const gpu::GPUInfo::GPUDevice& gpu_device) {
+    const gpu::GPUDevice& gpu_device) {
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<MojoVideoEncodeAcceleratorService>(
           std::move(create_vea_callback), gpu_preferences, gpu_workarounds,
@@ -39,7 +39,7 @@ MojoVideoEncodeAcceleratorService::MojoVideoEncodeAcceleratorService(
     CreateAndInitializeVideoEncodeAcceleratorCallback create_vea_callback,
     const gpu::GpuPreferences& gpu_preferences,
     const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
-    const gpu::GPUInfo::GPUDevice& gpu_device)
+    const gpu::GPUDevice& gpu_device)
     : create_vea_callback_(std::move(create_vea_callback)),
       gpu_preferences_(gpu_preferences),
       gpu_workarounds_(gpu_workarounds),

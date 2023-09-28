@@ -443,7 +443,7 @@ mojom("interfaces") {
         },
         {
           mojom = "gpu.mojom.GpuDevice"
-          cpp = "::gpu::GPUInfo::GPUDevice"
+          cpp = "::gpu::GPUDevice"
         },
         {
           mojom = "gpu.mojom.GpuInfo"

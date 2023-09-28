@@ -5,6 +5,7 @@
 #ifndef UI_GL_GL_CONTEXT_STUB_H_
 #define UI_GL_GL_CONTEXT_STUB_H_
 
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_export.h"
@@ -32,11 +33,13 @@ class GL_EXPORT GLContextStub : public GLContextReal {
   std::string GetGLVersion() override;
   std::string GetGLRenderer() override;
   unsigned int CheckStickyGraphicsResetStatusImpl() override;
+  GLDisplayEGL* GetGLDisplayEGL() override;
 
   void SetUseStubApi(bool stub_api);
   void SetExtensionsString(const char* extensions);
   void SetGLVersionString(const char* version_str);
   bool HasRobustness();
+  void SetGLDisplayEGL(GLDisplayEGL* display);
 
 #if BUILDFLAG(IS_MAC)
   void FlushForDriverCrashWorkaround() override;
@@ -51,6 +54,7 @@ class GL_EXPORT GLContextStub : public GLContextReal {
   bool use_stub_api_;
   std::string version_str_;
   unsigned int graphics_reset_status_ = 0;  // GL_NO_ERROR
+  raw_ptr<GLDisplayEGL> gl_display_ = nullptr;
 };
 
 }  // namespace gl

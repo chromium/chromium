@@ -166,7 +166,7 @@ void AddGpuInfoToFingerprint(Fingerprint::MachineCharacteristics* machine,
     return;
 
   const gpu::GPUInfo gpu_info = gpu_data_manager.GetGPUInfo();
-  const gpu::GPUInfo::GPUDevice& active_gpu = gpu_info.active_gpu();
+  const gpu::GPUDevice& active_gpu = gpu_info.active_gpu();
 
   Fingerprint::MachineCharacteristics::Graphics* graphics =
       machine->mutable_graphics_card();

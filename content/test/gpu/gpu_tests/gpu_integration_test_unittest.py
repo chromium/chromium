@@ -47,7 +47,7 @@ VENDOR_AMD = 0x1002
 VENDOR_INTEL = 0x8086
 
 VENDOR_STRING_IMAGINATION = 'Imagination Technologies'
-DEVICE_STRING_SGX = 'PowerVR SGX 554'
+DEVICE_STRING_SGX = 'ANGLE (Imagination, PowerVR SGX 554, OpenGL ES 1.0)'
 
 GpuTestClassType = Type[gpu_integration_test.GpuIntegrationTest]
 
@@ -58,7 +58,6 @@ def _GetSystemInfo(  # pylint: disable=too-many-arguments
     vendor_string: str = '',
     device_string: str = '',
     passthrough: bool = False,
-    gl_renderer: str = '',
     is_asan: bool = False,
     is_clang_coverage: bool = False,
     target_cpu_bits: int = 64) -> system_info.SystemInfo:
@@ -85,8 +84,6 @@ def _GetSystemInfo(  # pylint: disable=too-many-arguments
           }
       }
   }
-  if gl_renderer:
-    sys_info['gpu']['aux_attributes']['gl_renderer'] = gl_renderer
   return system_info.SystemInfo.FromDict(sys_info)
 
 
@@ -117,7 +114,7 @@ def _GenerateNvidiaExampleTagsForTestClassAndArgs(
     browser._returned_system_info = _GetSystemInfo(
         gpu=VENDOR_NVIDIA,
         device=0x1cb3,
-        gl_renderer='ANGLE Direct3D9',
+        device_string='ANGLE Direct3D9',
         is_asan=is_asan,
         is_clang_coverage=is_clang_coverage,
         target_cpu_bits=target_cpu_bits)
@@ -300,7 +297,7 @@ class GpuIntegrationTestUnittest(unittest.TestCase):
     platform = fakes.FakePlatform('win', 'win10')
     browser = fakes.FakeBrowser(platform, 'release')
     browser._returned_system_info = _GetSystemInfo(
-        gpu=VENDOR_NVIDIA, device=0x1cb3, gl_renderer='ANGLE Direct3D9')
+        gpu=VENDOR_NVIDIA, device=0x1cb3, device_string='ANGLE Direct3D9')
     self.assertEqual(
         _GetTagsToTest(browser),
         set([
@@ -326,8 +323,7 @@ class GpuIntegrationTestUnittest(unittest.TestCase):
     browser._returned_system_info = _GetSystemInfo(
         vendor_string=VENDOR_STRING_IMAGINATION,
         device_string=DEVICE_STRING_SGX,
-        passthrough=True,
-        gl_renderer='ANGLE OpenGL ES')
+        passthrough=True)
     self.assertEqual(
         _GetTagsToTest(browser),
         set([

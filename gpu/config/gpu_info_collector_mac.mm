@@ -46,7 +46,7 @@ void RecordReadWriteMetalTexturesSupportedHistogram() {
       static_cast<MetalReadWriteTextureSupportTier>(best_tier));
 }
 
-bool IsLowPowerGpu(const GPUInfo::GPUDevice& gpu) {
+bool IsLowPowerGpu(const GPUDevice& gpu) {
   // Apple GPUs are considered low power. This may not be the case in the
   // future.
   switch (gpu.vendor_id) {
@@ -58,12 +58,12 @@ bool IsLowPowerGpu(const GPUInfo::GPUDevice& gpu) {
   }
 }
 
-bool IsHighPerformanceGpu(const GPUInfo::GPUDevice& gpu) {
+bool IsHighPerformanceGpu(const GPUDevice& gpu) {
   return !gpu.IsSoftwareRenderer() && !IsLowPowerGpu(gpu);
 }
 }  // namespace
 
-bool CollectContextGraphicsInfo(GPUInfo* gpu_info) {
+bool CollectContextGraphicsInfo(GPUInfo* gpu_info, gl::GLDisplay* display) {
   DCHECK(gpu_info);
 
   TRACE_EVENT0("gpu", "gpu_info_collector::CollectGraphicsInfo");
@@ -73,7 +73,7 @@ bool CollectContextGraphicsInfo(GPUInfo* gpu_info) {
 
   RecordReadWriteMetalTexturesSupportedHistogram();
 
-  return CollectGraphicsInfoGL(gpu_info, gl::GetDefaultDisplayEGL());
+  return CollectGraphicsInfoGL(gpu_info, display);
 }
 
 bool CollectBasicGraphicsInfo(GPUInfo* gpu_info) {

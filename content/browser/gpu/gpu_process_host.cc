@@ -1234,7 +1234,7 @@ bool GpuProcessHost::LaunchGpuProcess() {
 
     // Pass the current device info to the info-collection GPU process for
     // crash key logging.
-    const gpu::GPUInfo::GPUDevice device_info = GetGPUInfo().active_gpu();
+    const gpu::GPUDevice device_info = GetGPUInfo().active_gpu();
     cmd_line->AppendSwitchASCII(
         switches::kGpuVendorId,
         base::StringPrintf("%u", device_info.vendor_id));

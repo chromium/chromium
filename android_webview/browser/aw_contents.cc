@@ -437,6 +437,7 @@ static jboolean JNI_AwContents_HasRequiredHardwareExtensions(JNIEnv* env) {
   // already done.
   return GpuServiceWebView::GetInstance()
       ->gpu_info()
+      .active_gpu()
       .can_support_threaded_texture_mailbox;
 }
 

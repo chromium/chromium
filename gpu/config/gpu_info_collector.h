@@ -43,7 +43,8 @@ GPU_EXPORT bool CollectBasicGraphicsInfo(const base::CommandLine* command_line,
 
 // Create a GL/DirectX context and collect related info.
 // This is called at GPU process startup time.
-GPU_EXPORT bool CollectContextGraphicsInfo(GPUInfo* gpu_info);
+GPU_EXPORT bool CollectContextGraphicsInfo(GPUInfo* gpu_info,
+                                           gl::GLDisplay* display);
 
 #if BUILDFLAG(IS_WIN)
 // Collect the DirectX Disagnostics information about the attached displays.
@@ -55,7 +56,7 @@ GPU_EXPORT void RecordGpuSupportedDx12VersionHistograms(
     uint32_t d3d12_feature_level,
     uint32_t highest_shader_model_version);
 GPU_EXPORT uint32_t
-GetGpuSupportedVulkanVersion(const gpu::GPUInfo::GPUDevice& gpu_device);
+GetGpuSupportedVulkanVersion(const gpu::GPUDevice& gpu_device);
 
 // Iterate through all adapters and create a hardware D3D11 device on each
 // adapter. If succeeded, query the highest feature level it supports and
@@ -88,7 +89,8 @@ void FillGPUInfoFromSystemInfo(GPUInfo* gpu_info,
 
 // On Android, this calls CollectContextGraphicsInfo().
 // On other platforms, this calls CollectBasicGraphicsInfo().
-GPU_EXPORT void CollectGraphicsInfoForTesting(GPUInfo* gpu_info);
+GPU_EXPORT void CollectGraphicsInfoForTesting(GPUInfo* gpu_info,
+                                              gl::GLDisplay* display);
 
 // Collect Graphics info related to the current process
 GPU_EXPORT bool CollectGpuExtraInfo(gfx::GpuExtraInfo* gpu_extra_info,

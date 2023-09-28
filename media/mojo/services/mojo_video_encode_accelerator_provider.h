@@ -32,7 +32,7 @@ class MEDIA_MOJO_EXPORT MojoVideoEncodeAcceleratorProvider
           VideoEncodeAccelerator::Client* client,
           const gpu::GpuPreferences& gpu_preferences,
           const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
-          const gpu::GPUInfo::GPUDevice& gpu_device,
+          const gpu::GPUDevice& gpu_device,
           std::unique_ptr<MediaLog> media_log)>;
 
   static void Create(
@@ -40,14 +40,14 @@ class MEDIA_MOJO_EXPORT MojoVideoEncodeAcceleratorProvider
       CreateAndInitializeVideoEncodeAcceleratorCallback create_vea_callback,
       const gpu::GpuPreferences& gpu_preferences,
       const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
-      const gpu::GPUInfo::GPUDevice& gpu_device,
+      const gpu::GPUDevice& gpu_device,
       scoped_refptr<base::SequencedTaskRunner> runner);
 
   MojoVideoEncodeAcceleratorProvider(
       CreateAndInitializeVideoEncodeAcceleratorCallback create_vea_callback,
       const gpu::GpuPreferences& gpu_preferences,
       const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
-      const gpu::GPUInfo::GPUDevice& gpu_device);
+      const gpu::GPUDevice& gpu_device);
 
   MojoVideoEncodeAcceleratorProvider(
       const MojoVideoEncodeAcceleratorProvider&) = delete;
@@ -66,7 +66,7 @@ class MEDIA_MOJO_EXPORT MojoVideoEncodeAcceleratorProvider
   const CreateAndInitializeVideoEncodeAcceleratorCallback create_vea_callback_;
   const gpu::GpuPreferences gpu_preferences_;
   const gpu::GpuDriverBugWorkarounds gpu_workarounds_;
-  const gpu::GPUInfo::GPUDevice gpu_device_;
+  const gpu::GPUDevice gpu_device_;
 };
 
 }  // namespace media

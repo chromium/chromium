@@ -298,7 +298,7 @@ void GpuControlList::Entry::LogControlListMatch(
 }
 
 bool GpuControlList::DriverInfo::Contains(
-    const std::vector<GPUInfo::GPUDevice>& gpus) const {
+    const std::vector<GPUDevice>& gpus) const {
   for (auto& gpu : gpus) {
     if (StringMismatch(gpu.driver_vendor, driver_vendor))
       continue;
@@ -313,22 +313,25 @@ bool GpuControlList::DriverInfo::Contains(
 }
 
 bool GpuControlList::GLStrings::Contains(const GPUInfo& gpu_info) const {
-  if (StringMismatch(gpu_info.gl_extensions, gl_extensions))
+  const GPUDevice& active_gpu = gpu_info.active_gpu();
+  if (StringMismatch(active_gpu.gl_extensions, gl_extensions)) {
     return false;
+  }
 
   std::string vendor;
   std::string renderer;
   std::string version;
-  bool is_angle_gl = ProcessANGLEGLRenderer(gpu_info.gl_renderer, &vendor,
+  bool is_angle_gl = ProcessANGLEGLRenderer(active_gpu.gl_renderer, &vendor,
                                             &renderer, &version);
-  if (StringMismatch(is_angle_gl ? vendor : gpu_info.gl_vendor, gl_vendor)) {
+  if (StringMismatch(is_angle_gl ? vendor : active_gpu.gl_vendor, gl_vendor)) {
     return false;
   }
-  if (StringMismatch(is_angle_gl ? renderer : gpu_info.gl_renderer,
+  if (StringMismatch(is_angle_gl ? renderer : active_gpu.gl_renderer,
                      gl_renderer)) {
     return false;
   }
-  if (StringMismatch(is_angle_gl ? version : gpu_info.gl_version, gl_version)) {
+  if (StringMismatch(is_angle_gl ? version : active_gpu.gl_version,
+                     gl_version)) {
     return false;
   }
   return true;
@@ -358,16 +361,17 @@ bool GpuControlList::MachineModelInfo::Contains(const GPUInfo& gpu_info) const {
 }
 
 bool GpuControlList::More::Contains(const GPUInfo& gpu_info) const {
+  const GPUDevice& active_gpu = gpu_info.active_gpu();
   std::string vendor, renderer, version;
-  bool is_angle_gl = ProcessANGLEGLRenderer(gpu_info.gl_renderer, &vendor,
+  bool is_angle_gl = ProcessANGLEGLRenderer(active_gpu.gl_renderer, &vendor,
                                             &renderer, &version);
-  if (GLVersionInfoMismatch(is_angle_gl ? version : gpu_info.gl_version)) {
+  if (GLVersionInfoMismatch(is_angle_gl ? version : active_gpu.gl_version)) {
     return false;
   }
 
   if (gl_reset_notification_strategy != 0 &&
       gl_reset_notification_strategy !=
-          gpu_info.gl_reset_notification_strategy) {
+          active_gpu.gl_reset_notification_strategy) {
     return false;
   }
   if (gpu_count.IsSpecified()) {
@@ -377,14 +381,14 @@ bool GpuControlList::More::Contains(const GPUInfo& gpu_info) const {
     }
   }
   if (direct_rendering_version.IsSpecified() &&
-      !direct_rendering_version.Contains(gpu_info.direct_rendering_version)) {
+      !direct_rendering_version.Contains(active_gpu.direct_rendering_version)) {
     return false;
   }
   if (in_process_gpu && !gpu_info.in_process_gpu) {
     return false;
   }
   if (pixel_shader_version.IsSpecified() &&
-      !pixel_shader_version.Contains(gpu_info.pixel_shader_version)) {
+      !pixel_shader_version.Contains(active_gpu.pixel_shader_version)) {
     return false;
   }
   switch (hardware_overlay) {
@@ -423,7 +427,7 @@ bool GpuControlList::Conditions::Contains(OsType target_os_type,
       return false;
   }
 
-  std::vector<GPUInfo::GPUDevice> candidates;
+  std::vector<GPUDevice> candidates;
   switch (multi_gpu_category) {
     case kMultiGpuCategoryPrimary:
       candidates.push_back(gpu_info.gpu);
@@ -541,11 +545,10 @@ bool GpuControlList::Conditions::Contains(OsType target_os_type,
     DCHECK(vendor_id != 0 || candidates.size() < 2);
 
     // Remove candidate GPUs made by different vendors.
-    auto behind_last =
-        std::remove_if(candidates.begin(), candidates.end(),
-                       [vid = vendor_id](const GPUInfo::GPUDevice& gpu) {
-                         return (vid && vid != gpu.vendor_id);
-                       });
+    auto behind_last = std::remove_if(candidates.begin(), candidates.end(),
+                                      [vid = vendor_id](const GPUDevice& gpu) {
+                                        return (vid && vid != gpu.vendor_id);
+                                      });
     candidates.erase(behind_last, candidates.end());
 
     if (!driver_info->Contains(candidates))
@@ -596,7 +599,7 @@ bool GpuControlList::Conditions::NeedsMoreInfo(const GPUInfo& gpu_info) const {
   // If certain info is missing due to some error, say, we fail to collect
   // vendor_id/device_id, then even if we launch GPU process and create a gl
   // context, we won't gather such missing info, so we still return false.
-  const GPUInfo::GPUDevice& active_gpu = gpu_info.active_gpu();
+  const GPUDevice& active_gpu = gpu_info.active_gpu();
   if (driver_info) {
     if (driver_info->driver_vendor && active_gpu.driver_vendor.empty()) {
       return true;
@@ -608,15 +611,17 @@ bool GpuControlList::Conditions::NeedsMoreInfo(const GPUInfo& gpu_info) const {
   }
   if (((more && more->gl_version.IsSpecified()) ||
        (gl_strings && gl_strings->gl_version)) &&
-      gpu_info.gl_version.empty()) {
+      active_gpu.gl_version.empty()) {
     return true;
   }
-  if (gl_strings && gl_strings->gl_vendor && gpu_info.gl_vendor.empty())
+  if (gl_strings && gl_strings->gl_vendor && active_gpu.gl_vendor.empty()) {
     return true;
-  if (gl_strings && gl_strings->gl_renderer && gpu_info.gl_renderer.empty())
+  }
+  if (gl_strings && gl_strings->gl_renderer && active_gpu.gl_renderer.empty()) {
     return true;
+  }
   if (more && more->pixel_shader_version.IsSpecified() &&
-      gpu_info.pixel_shader_version.empty()) {
+      active_gpu.pixel_shader_version.empty()) {
     return true;
   }
   return false;
