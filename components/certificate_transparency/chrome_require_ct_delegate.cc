@@ -179,14 +179,9 @@ ChromeRequireCTDelegate::IsCTRequiredForHost(
     return CTRequirementLevel::NOT_REQUIRED;
   }
 
-  // Compute >= 2018-05-01, rather than deal with possible fractional
-  // seconds.
-  const base::Time kMay_1_2018 =
-      base::Time::UnixEpoch() + base::Seconds(1525132800);
-  if (chain->valid_start() >= kMay_1_2018)
-    return CTRequirementLevel::REQUIRED;
-
-  return CTRequirementLevel::DEFAULT;
+  // CT is required since 2018-05-01, and no certificate issued before that
+  // date could be valid anymore, so CT is unconditionally required.
+  return CTRequirementLevel::REQUIRED;
 }
 
 void ChromeRequireCTDelegate::UpdateCTPolicies(
