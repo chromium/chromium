@@ -225,6 +225,13 @@ void RecordKeyboardNumberOfKeysRemapped(const mojom::Keyboard& keyboard) {
   base::UmaHistogramCounts100(keyboard_metrics, num_keys_remapped);
 }
 
+bool ShouldRecordFkeyMetrics(const mojom::Keyboard& keyboard) {
+  return ::features::AreF11AndF12ShortcutsEnabled() &&
+         Shell::Get()->keyboard_capability()->IsChromeOSKeyboard(keyboard.id) &&
+         (keyboard.settings->f11.has_value() &&
+          keyboard.settings->f12.has_value());
+}
+
 }  // namespace
 
 InputDeviceSettingsMetricsManager::InputDeviceSettingsMetricsManager() =
@@ -280,6 +287,13 @@ void InputDeviceSettingsMetricsManager::RecordKeyboardInitialMetrics(
     RecordSixPackKeyInfo(keyboard, ui::VKEY_END, /*is_initial_value=*/true);
     RecordSixPackKeyInfo(keyboard, ui::VKEY_PRIOR, /*is_initial_value=*/true);
     RecordSixPackKeyInfo(keyboard, ui::VKEY_NEXT, /*is_initial_value=*/true);
+  }
+
+  if (ShouldRecordFkeyMetrics(keyboard)) {
+    base::UmaHistogramEnumeration(keyboard_metrics_prefix + "F11.Initial",
+                                  keyboard.settings->f11.value());
+    base::UmaHistogramEnumeration(keyboard_metrics_prefix + "F12.Initial",
+                                  keyboard.settings->f12.value());
   }
 }
 
@@ -348,6 +362,17 @@ void InputDeviceSettingsMetricsManager::RecordKeyboardChangedMetrics(
     if (keyboard.settings->six_pack_key_remappings->page_down !=
         old_settings.six_pack_key_remappings->page_down) {
       RecordSixPackKeyInfo(keyboard, ui::VKEY_NEXT, /*is_initial_value=*/false);
+    }
+  }
+
+  if (ShouldRecordFkeyMetrics(keyboard)) {
+    if (keyboard.settings->f11 != old_settings.f11) {
+      base::UmaHistogramEnumeration(keyboard_metrics_prefix + "F11.Changed",
+                                    keyboard.settings->f11.value());
+    }
+    if (keyboard.settings->f12 != old_settings.f12) {
+      base::UmaHistogramEnumeration(keyboard_metrics_prefix + "F12.Changed",
+                                    keyboard.settings->f12.value());
     }
   }
 }

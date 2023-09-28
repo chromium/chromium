@@ -35050,6 +35050,13 @@ Called by update_document_policy_enum.py.-->
   <int value="3" label="No app could consume the exported data"/>
 </enum>
 
+<enum name="ExtendedFkeysModifier">
+  <int value="0" label="Disabled"/>
+  <int value="1" label="Alt"/>
+  <int value="3" label="Shift"/>
+  <int value="4" label="CtrlShift"/>
+</enum>
+
 <enum name="ExtensionActionInvocationSource">
   <int value="0" label="Keyboard Shortcut"/>
   <int value="1" label="Toolbar Button"/>

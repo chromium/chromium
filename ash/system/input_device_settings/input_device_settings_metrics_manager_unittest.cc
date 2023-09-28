@@ -10,15 +10,21 @@
 #include "ash/test/ash_test_base.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "device/udev_linux/fake_udev_loader.h"
+#include "ui/base/ui_base_features.h"
+#include "ui/events/ash/mojom/extended_fkeys_modifier.mojom-shared.h"
 #include "ui/events/ash/mojom/simulate_right_click_modifier.mojom-shared.h"
 #include "ui/events/ash/mojom/six_pack_shortcut_modifier.mojom-shared.h"
+#include "ui/events/devices/device_data_manager_test_api.h"
+#include "ui/events/devices/input_device.h"
+#include "ui/events/devices/keyboard_device.h"
 
 namespace ash {
 
 namespace {
 constexpr char kExternalKeyboardId[] = "test:external";
 constexpr char kExternalChromeOSKeyboardId[] = "test:chromeos";
-constexpr char kInternalKeyboardId[] = "test:internal";
+constexpr char kInternalKeyboardDeviceKey[] = "test:internal";
 constexpr char kExternalMouseId[] = "test:mouse";
 constexpr char kPointingStickId[] = "test:pointingstick";
 constexpr char kExternalTouchpadId[] = "test:touchpad-external";
@@ -28,6 +34,11 @@ constexpr int kSampleMaxSensitivity = 5;
 
 constexpr char kUser1[] = "user1@gmail.com";
 constexpr char kUser2[] = "user2@gmail.com";
+
+constexpr char kKbdTopRowPropertyName[] = "CROS_KEYBOARD_TOP_ROW_LAYOUT";
+constexpr char kKbdTopRowLayout1Tag[] = "1";
+constexpr int kKeyboardInternalId = 1;
+
 }  // namespace
 
 class InputDeviceSettingsMetricsManagerTest : public AshTestBase {
@@ -50,15 +61,41 @@ class InputDeviceSettingsMetricsManagerTest : public AshTestBase {
     AshTestBase::TearDown();
   }
 
+  // Add a fake keyboard to DeviceDataManagerTestApi and provide layout info to
+  // fake udev.
+  void AddFakeKeyboard(const ui::KeyboardDevice& fake_keyboard) {
+    fake_keyboard_devices_.push_back(fake_keyboard);
+
+    ui::DeviceDataManagerTestApi().SetKeyboardDevices({});
+    ui::DeviceDataManagerTestApi().SetKeyboardDevices(fake_keyboard_devices_);
+    ui::DeviceDataManagerTestApi().OnDeviceListsComplete();
+
+    std::map<std::string, std::string> sysfs_properties;
+    std::map<std::string, std::string> sysfs_attributes;
+    sysfs_properties[kKbdTopRowPropertyName] = kKbdTopRowLayout1Tag;
+    fake_udev_.AddFakeDevice(fake_keyboard.name, fake_keyboard.sys_path.value(),
+                             /*subsystem=*/"input", /*devnode=*/absl::nullopt,
+                             /*devtype=*/absl::nullopt,
+                             std::move(sysfs_attributes),
+                             std::move(sysfs_properties));
+
+    ui::DeviceDataManagerTestApi().SetKeyboardDevices({fake_keyboard});
+  }
+
  protected:
+  testing::FakeUdevLoader fake_udev_;
+  std::vector<ui::KeyboardDevice> fake_keyboard_devices_;
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<InputDeviceSettingsMetricsManager> manager_;
 };
 
 TEST_F(InputDeviceSettingsMetricsManagerTest, RecordsKeyboardSettings) {
   scoped_feature_list_.InitWithFeatures(
-      {features::kInputDeviceSettingsSplit,
-       features::kAltClickAndSixPackCustomization},
+      {
+          features::kInputDeviceSettingsSplit,
+          features::kAltClickAndSixPackCustomization,
+          ::features::kSupportF11AndF12KeyShortcuts,
+      },
       /*disabled_features=*/{});
   mojom::Keyboard keyboard_external;
   keyboard_external.device_key = kExternalKeyboardId;
@@ -82,12 +119,21 @@ TEST_F(InputDeviceSettingsMetricsManagerTest, RecordsKeyboardSettings) {
       mojom::SixPackKeyInfo::New();
 
   mojom::Keyboard keyboard_internal;
-  keyboard_internal.device_key = kInternalKeyboardId;
+  const auto kb = ui::KeyboardDevice(
+      1, ui::InputDeviceType::INPUT_DEVICE_INTERNAL, "fake_kb");
+
+  keyboard_internal.device_key = kInternalKeyboardDeviceKey;
   keyboard_internal.is_external = false;
+  keyboard_internal.id = kKeyboardInternalId;
+  AddFakeKeyboard(ui::KeyboardDevice(kKeyboardInternalId,
+                                     ui::InputDeviceType::INPUT_DEVICE_INTERNAL,
+                                     "keyboard_internal"));
   keyboard_internal.settings = mojom::KeyboardSettings::New();
   auto& settings_internal = *keyboard_internal.settings;
   settings_internal.top_row_are_fkeys = true;
   settings_internal.six_pack_key_remappings = mojom::SixPackKeyInfo::New();
+  settings_internal.f11 = ui::mojom::ExtendedFkeysModifier::kAlt;
+  settings_internal.f12 = ui::mojom::ExtendedFkeysModifier::kShift;
 
   // Initially expect no user preferences recorded.
   base::HistogramTester histogram_tester;
@@ -136,6 +182,12 @@ TEST_F(InputDeviceSettingsMetricsManagerTest, RecordsKeyboardSettings) {
   histogram_tester.ExpectTotalCount(
       "ChromeOS.Settings.Device.Keyboard.Internal.TopRowAreFKeys.Initial",
       /*expected_count=*/1u);
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.Keyboard.Internal.F11.Initial",
+      /*expected_count=*/1u);
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.Keyboard.Internal.F12.Initial",
+      /*expected_count=*/1u);
 
   // Call RecordKeyboardChangedMetrics with the same settings, metrics will
   // not be recoreded.
@@ -153,6 +205,9 @@ TEST_F(InputDeviceSettingsMetricsManagerTest, RecordsKeyboardSettings) {
       !keyboard_internal.settings->top_row_are_fkeys;
   keyboard_internal.settings->six_pack_key_remappings->del =
       ui::mojom::SixPackShortcutModifier::kAlt;
+  keyboard_internal.id = kKeyboardInternalId;
+  keyboard_internal.settings->f11 = ui::mojom::ExtendedFkeysModifier::kDisabled;
+  keyboard_internal.settings->f12 = ui::mojom::ExtendedFkeysModifier::kDisabled;
   manager_.get()->RecordKeyboardChangedMetrics(keyboard_internal,
                                                *old_settings);
   histogram_tester.ExpectTotalCount(
@@ -160,6 +215,12 @@ TEST_F(InputDeviceSettingsMetricsManagerTest, RecordsKeyboardSettings) {
       /*expected_count=*/1u);
   histogram_tester.ExpectTotalCount(
       "ChromeOS.Settings.Device.Keyboard.Internal.SixPackKeys.Delete.Changed",
+      /*expected_count=*/1u);
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.Keyboard.Internal.F11.Changed",
+      /*expected_count=*/1u);
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.Keyboard.Internal.F12.Changed",
       /*expected_count=*/1u);
 }
 
@@ -173,7 +234,7 @@ TEST_F(InputDeviceSettingsMetricsManagerTest, RecordMetricOncePerKeyboard) {
   settings_external.top_row_are_fkeys = true;
 
   mojom::Keyboard keyboard_internal;
-  keyboard_internal.device_key = kInternalKeyboardId;
+  keyboard_internal.device_key = kInternalKeyboardDeviceKey;
   keyboard_internal.is_external = false;
   keyboard_internal.settings = mojom::KeyboardSettings::New();
   auto& settings_internal = *keyboard_internal.settings;
