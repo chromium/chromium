@@ -214,6 +214,7 @@ class MediaSessionControllerTest : public RenderViewHostImplTestHarness {
   }
 
   void TearDown() override {
+    audio_focus_delegate_ = nullptr;
     // Destruct the controller prior to any other teardown to avoid out of order
     // destruction relative to the MediaSession instance.
     controller_.reset();
@@ -307,8 +308,7 @@ class MediaSessionControllerTest : public RenderViewHostImplTestHarness {
   MediaPlayerId id_ = MediaPlayerId::CreateMediaPlayerIdForTests();
   std::unique_ptr<MediaSessionController> controller_;
   std::unique_ptr<TestMediaPlayer> media_player_;
-  raw_ptr<FakeAudioFocusDelegate, DanglingUntriaged> audio_focus_delegate_ =
-      nullptr;
+  raw_ptr<FakeAudioFocusDelegate> audio_focus_delegate_ = nullptr;
 };
 
 TEST_F(MediaSessionControllerTest, NoAudioNoSession) {
