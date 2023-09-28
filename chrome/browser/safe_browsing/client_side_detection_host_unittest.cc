@@ -336,6 +336,8 @@ class ClientSideDetectionHostTestBase : public ChromeRenderViewHostTestHarness {
   }
 
   void TearDown() override {
+    raw_token_fetcher_ = nullptr;
+
     // Delete the host object on the UI thread and release the
     // SafeBrowsingService.
     content::GetUIThreadTaskRunner({})->DeleteSoon(FROM_HERE,
@@ -424,8 +426,8 @@ class ClientSideDetectionHostTestBase : public ChromeRenderViewHostTestHarness {
   scoped_refptr<StrictMock<MockSafeBrowsingUIManager> > ui_manager_;
   scoped_refptr<StrictMock<MockSafeBrowsingDatabaseManager>> database_manager_;
   FakePhishingDetector fake_phishing_detector_;
-  raw_ptr<StrictMock<MockSafeBrowsingTokenFetcher>, DanglingUntriaged>
-      raw_token_fetcher_ = nullptr;
+  raw_ptr<StrictMock<MockSafeBrowsingTokenFetcher>> raw_token_fetcher_ =
+      nullptr;
   base::SimpleTestTickClock clock_;
   const bool is_incognito_;
   signin::IdentityTestEnvironment identity_test_env_;
