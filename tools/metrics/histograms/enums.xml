@@ -25534,6 +25534,14 @@ metrics consent we also won't be able to send UMA metrics. -->
              EXTRA_ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_POSITION"/>
 </enum>
 
+<enum name="CustomTabsMinimizedFeatureAvailability">
+  <int value="0" label="Available"/>
+  <int value="1" label="Unavailable: API level is too low"/>
+  <int value="2" label="Unavailable: Low-end device"/>
+  <int value="3" label="Unavailable: System doesn't have PiP feature"/>
+  <int value="4" label="Unavailable: PiP permission isn't granted"/>
+</enum>
+
 <enum name="CustomTabsParallelRequestStatusOnStart">
   <int value="0" label="No Parallel Request was requested"/>
   <int value="1" label="Parallel request successfully started"/>

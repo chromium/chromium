@@ -316,6 +316,8 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
     private boolean mIsDestroyed;
     private static boolean sSkipRecreateForTesting;
 
+    private final boolean mIsCustomTab;
+
     private static class TabObscuringCallback implements Callback<Boolean> {
         private final TabObscuringHandler mTabObscuringHandler;
         /** A token held while the toolbar/omnibox is obscuring all visible tabs. */
@@ -627,9 +629,9 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         ThemeColorProvider overviewModeThemeColorProvider = mAppThemeColorProvider;
 
         Runnable requestFocusRunnable = compositorViewHolder::requestFocus;
-        boolean isCustomTab = toolbarLayout instanceof CustomTabToolbar;
+        mIsCustomTab = toolbarLayout instanceof CustomTabToolbar;
         ThemeColorProvider menuButtonThemeColorProvider =
-                isCustomTab ? mCustomTabThemeColorProvider : browsingModeThemeColorProvider;
+                mIsCustomTab ? mCustomTabThemeColorProvider : browsingModeThemeColorProvider;
 
         Supplier<MenuButtonState> menuButtonStateSupplier =
                 () -> UpdateMenuItemHelper.getInstance().getUiState().buttonState;
@@ -678,7 +680,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
 
         tabObscuringHandler.addObserver(this);
 
-        if (isCustomTab) {
+        if (mIsCustomTab) {
             CustomTabToolbar customTabToolbar = ((CustomTabToolbar) toolbarLayout);
             mLocationBar = customTabToolbar.createLocationBar(mLocationBarModel,
                     mActionModeController.getActionModeCallback(), modalDialogManagerSupplier,
@@ -1732,7 +1734,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
     @Override
     public void onAccessibilityModeChanged(boolean enabled) {
         if (mIsStartSurfaceEnabled != ReturnToChromeUtil.isStartSurfaceEnabled(mActivity)
-                && !sSkipRecreateForTesting) {
+                && !sSkipRecreateForTesting && !mIsCustomTab) {
             // If Start surface is disabled or re-enabled due to the accessibility change, restarts
             // the activity to create the correct Toolbar from scratch.
             recreateActivityWithTabReparenting();
