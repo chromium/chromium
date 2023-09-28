@@ -163,37 +163,6 @@ bool ShouldDisplayCredentialAsMuted(
   _syncService = syncService;
   _delegate = delegate;
 
-  // TODO(crbug.com/1400692): Improve saved passwords logic when helper is
-  // available in SavedPasswordsPresenter.
-  _usernamesWithSameDomainDict = [[NSMutableDictionary alloc] init];
-  NSMutableSet<NSString*>* signonRealms = [[NSMutableSet alloc] init];
-  auto savedCredentials =
-      manager->GetSavedPasswordsPresenter()->GetSavedCredentials();
-
-  // Store all usernames by domain.
-  for (const auto& credential : self.credentials) {
-    [signonRealms
-        addObject:[NSString
-                      stringWithCString:credential.GetFirstSignonRealm().c_str()
-                               encoding:[NSString defaultCStringEncoding]]];
-  }
-  for (const auto& cred : savedCredentials) {
-    NSString* signonRealm =
-        [NSString stringWithCString:cred.GetFirstSignonRealm().c_str()
-                           encoding:[NSString defaultCStringEncoding]];
-    if ([signonRealms containsObject:signonRealm]) {
-      NSMutableSet* set =
-          [_usernamesWithSameDomainDict objectForKey:signonRealm];
-      if (!set) {
-        set = [[NSMutableSet alloc] init];
-        [set addObject:base::SysUTF16ToNSString(cred.username)];
-        [_usernamesWithSameDomainDict setObject:set forKey:signonRealm];
-
-      } else {
-        [set addObject:base::SysUTF16ToNSString(cred.username)];
-      }
-    }
-  }
   return self;
 }
 
@@ -243,7 +212,7 @@ bool ShouldDisplayCredentialAsMuted(
   }
 
   // Use the iterator before base::Erase() makes it invalid.
-  _manager->GetSavedPasswordsPresenter()->RemoveCredential(*it);
+  self.savedPasswordsPresenter->RemoveCredential(*it);
   // TODO(crbug.com/1359392). Once kPasswordsGrouping launches, the mediator
   // should update the passwords model and receive the updates via
   // SavedPasswordsPresenterObserver, instead of replicating the updates to its
@@ -271,7 +240,7 @@ bool ShouldDisplayCredentialAsMuted(
   }
 
   it->stored_in = {password_manager::PasswordForm::Store::kAccountStore};
-  _manager->GetSavedPasswordsPresenter()->MoveCredentialsToAccount(
+  self.savedPasswordsPresenter->MoveCredentialsToAccount(
       {*it}, password_manager::metrics_util::MoveToAccountStoreTrigger::
                  kExplicitlyTriggeredInSettings);
   [self providePasswordsToConsumer];
@@ -354,7 +323,7 @@ bool ShouldDisplayCredentialAsMuted(
     updated_credential.username = SysNSStringToUTF16(password.username);
     updated_credential.password = SysNSStringToUTF16(password.password);
     updated_credential.note = SysNSStringToUTF16(password.note);
-    if (_manager->GetSavedPasswordsPresenter()->EditSavedCredentials(
+    if (self.savedPasswordsPresenter->EditSavedCredentials(
             original_credential, updated_credential) ==
         password_manager::SavedPasswordsPresenter::EditResult::kSuccess) {
       // Update the usernames by domain dictionary.
@@ -414,7 +383,7 @@ bool ShouldDisplayCredentialAsMuted(
 - (BOOL)isUsernameReused:(NSString*)newUsername forDomain:(NSString*)domain {
   // It is more efficient to check set of the usernames for the same origin
   // instead of delegating this to the `_manager`.
-  return [[_usernamesWithSameDomainDict objectForKey:domain]
+  return [[self.usernamesWithSameDomainDict objectForKey:domain]
       containsObject:newUsername];
 }
 
@@ -446,6 +415,44 @@ bool ShouldDisplayCredentialAsMuted(
 }
 
 #pragma mark - Private
+
+- (NSMutableDictionary<NSString*, NSMutableSet<NSString*>*>*)
+    usernamesWithSameDomainDict {
+  if (!_usernamesWithSameDomainDict) {
+    // TODO(crbug.com/1400692): Improve saved passwords logic when helper is
+    // available in SavedPasswordsPresenter.
+    _usernamesWithSameDomainDict = [[NSMutableDictionary alloc] init];
+    NSMutableSet<NSString*>* signonRealms = [[NSMutableSet alloc] init];
+    auto savedCredentials = self.savedPasswordsPresenter->GetSavedCredentials();
+
+    // Store all usernames by domain.
+    for (const auto& credential : self.credentials) {
+      [signonRealms
+          addObject:[NSString
+                        stringWithCString:credential.GetFirstSignonRealm()
+                                              .c_str()
+                                 encoding:[NSString defaultCStringEncoding]]];
+    }
+    for (const auto& cred : savedCredentials) {
+      NSString* signonRealm =
+          [NSString stringWithCString:cred.GetFirstSignonRealm().c_str()
+                             encoding:[NSString defaultCStringEncoding]];
+      if ([signonRealms containsObject:signonRealm]) {
+        NSMutableSet* set =
+            [_usernamesWithSameDomainDict objectForKey:signonRealm];
+        if (!set) {
+          set = [[NSMutableSet alloc] init];
+          [set addObject:base::SysUTF16ToNSString(cred.username)];
+          [_usernamesWithSameDomainDict setObject:set forKey:signonRealm];
+
+        } else {
+          [set addObject:base::SysUTF16ToNSString(cred.username)];
+        }
+      }
+    }
+  }
+  return _usernamesWithSameDomainDict;
+}
 
 // Pushes password details to the consumer.
 - (void)providePasswordsToConsumer {
@@ -491,7 +498,8 @@ bool ShouldDisplayCredentialAsMuted(
     return;
   }
 
-  NSMutableSet* set = [_usernamesWithSameDomainDict objectForKey:signonRealm];
+  NSMutableSet* set =
+      [self.usernamesWithSameDomainDict objectForKey:signonRealm];
   if (set) {
     [set removeObject:oldUsername];
     [set addObject:newUsername];
