@@ -58,6 +58,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/vector2d.h"
@@ -1153,6 +1154,68 @@ TEST_F(SnapGroupEntryPointArm1Test, DragAndDropBasic) {
     // dragging.
     EXPECT_EQ(overview_item->target_bounds(), target_bounds_before_dragging);
   }
+}
+
+// Tests the stacking order of the overview group item should be above other
+// overview items while being dragged.
+TEST_F(SnapGroupEntryPointArm1Test, StackingOrderWhileDraggingInOverview) {
+  auto* desk_controller = DesksController::Get();
+  desk_controller->NewDesk(DesksCreationRemovalSource::kButton);
+  ASSERT_EQ(2u, desk_controller->desks().size());
+
+  std::unique_ptr<aura::Window> w0 = CreateAppWindow();
+  std::unique_ptr<aura::Window> w1 = CreateAppWindow();
+  std::unique_ptr<aura::Window> w2 = CreateAppWindow(gfx::Rect(100, 100));
+  SnapTwoTestWindowsInArm1(w0.get(), w1.get());
+
+  OverviewController* overview_controller = Shell::Get()->overview_controller();
+  overview_controller->StartOverview(OverviewStartAction::kTests,
+                                     OverviewEnterExitType::kImmediateEnter);
+  ASSERT_TRUE(overview_controller->InOverviewSession());
+
+  const auto* overview_grid =
+      GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
+  ASSERT_TRUE(overview_grid);
+  const auto& window_list = overview_grid->window_list();
+  ASSERT_EQ(window_list.size(), 2u);
+
+  OverviewSession* overview_session = overview_controller->overview_session();
+  auto* group_item = overview_session->GetOverviewItemForWindow(w0.get());
+  auto* group_item_widget = group_item->item_widget();
+  auto* w2_item_pre_drag = GetOverviewItemForWindow(w2.get());
+  EXPECT_TRUE(window_util::IsStackedBelow(
+      w2_item_pre_drag->item_widget()->GetNativeWindow(),
+      group_item_widget->GetNativeWindow()));
+
+  // Initiate the first drag.
+  auto* event_generator = GetEventGenerator();
+  DragItemToPoint(
+      group_item,
+      Shell::GetPrimaryRootWindow()->GetBoundsInScreen().CenterPoint(),
+      event_generator, /*by_touch_gestures=*/false, /*drop=*/false);
+  EXPECT_TRUE(overview_controller->InOverviewSession());
+
+  auto* w2_item_during_drag = GetOverviewItemForWindow(w2.get());
+  auto* w2_item_window_during_drag =
+      w2_item_during_drag->item_widget()->GetNativeWindow();
+
+  // Verify that the two windows together with the group item widget will be
+  // stacked above the other overview item.
+  EXPECT_TRUE(window_util::IsStackedBelow(
+      w2_item_window_during_drag, group_item_widget->GetNativeWindow()));
+  EXPECT_TRUE(
+      window_util::IsStackedBelow(w2_item_window_during_drag, w0.get()));
+  EXPECT_TRUE(
+      window_util::IsStackedBelow(w2_item_window_during_drag, w1.get()));
+  event_generator->ReleaseLeftButton();
+
+  // Verify that the group item can be dragged again after completing the first
+  // drag.
+  DragItemToPoint(
+      group_item,
+      Shell::GetPrimaryRootWindow()->GetBoundsInScreen().CenterPoint(),
+      event_generator, /*by_touch_gestures=*/false, /*drop=*/true);
+  EXPECT_TRUE(overview_controller->InOverviewSession());
 }
 
 // Tests that the hit area of the split view divider can be outside of its

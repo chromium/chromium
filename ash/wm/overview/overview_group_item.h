@@ -65,6 +65,7 @@ class OverviewGroupItem : public OverviewItemBase,
   void RevertHideForSavedDeskLibrary(bool animate) override;
   void CloseWindow() override;
   void Restack() override;
+  void StartDrag() override;
   void OnOverviewItemDragStarted(OverviewItemBase* item) override;
   void OnOverviewItemDragEnded(bool snap) override;
   void OnOverviewItemContinuousScroll(const gfx::Transform& target_transform,
@@ -91,7 +92,6 @@ class OverviewGroupItem : public OverviewItemBase,
  protected:
   // OverviewItemBase:
   void CreateItemWidget() override;
-  void StartDrag() override;
 
  private:
   // A list of `OverviewItem`s hosted and owned by `this`.

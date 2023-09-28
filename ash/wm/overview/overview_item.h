@@ -103,6 +103,7 @@ class ASH_EXPORT OverviewItem : public OverviewItemBase,
   void RevertHideForSavedDeskLibrary(bool animate) override;
   void Restack() override;
   void CloseWindow() override;
+  void StartDrag() override;
   void OnOverviewItemDragStarted(OverviewItemBase* item) override;
   void OnOverviewItemDragEnded(bool snap) override;
   void OnOverviewItemContinuousScroll(const gfx::Transform& target_transform,
@@ -141,7 +142,6 @@ class ASH_EXPORT OverviewItem : public OverviewItemBase,
  protected:
   // OverviewItemBase:
   void CreateItemWidget() override;
-  void StartDrag() override;
 
  private:
   friend class OverviewTestBase;

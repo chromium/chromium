@@ -800,6 +800,19 @@ void OverviewItem::CloseWindow() {
   transform_window_.Close();
 }
 
+void OverviewItem::StartDrag() {
+  // Stack the window and the widget window at the top. This is to ensure that
+  // they appear above other app windows, as well as above the desks bar. Note
+  // that the stacking operations are done in this order to make sure that the
+  // window appears above the widget window.
+  if (aura::Window* widget_window = item_widget_->GetNativeWindow()) {
+    widget_window->parent()->StackChildAtTop(widget_window);
+  }
+
+  aura::Window* window = GetWindow();
+  window->parent()->StackChildAtTop(window);
+}
+
 void OverviewItem::OnOverviewItemDragStarted(OverviewItemBase* item) {
   is_being_dragged_ = (item == this);
 
@@ -1206,19 +1219,6 @@ void OverviewItem::CreateItemWidget() {
           ? 1.f
           : 0.f);
   item_widget_->GetLayer()->SetMasksToBounds(/*masks_to_bounds=*/false);
-}
-
-void OverviewItem::StartDrag() {
-  // Stack the window and the widget window at the top. This is to ensure that
-  // they appear above other app windows, as well as above the desks bar. Note
-  // that the stacking operations are done in this order to make sure that the
-  // window appears above the widget window.
-  if (aura::Window* widget_window = item_widget_->GetNativeWindow()) {
-    widget_window->parent()->StackChildAtTop(widget_window);
-  }
-
-  aura::Window* window = GetWindow();
-  window->parent()->StackChildAtTop(window);
 }
 
 void OverviewItem::OnWindowCloseAnimationCompleted() {

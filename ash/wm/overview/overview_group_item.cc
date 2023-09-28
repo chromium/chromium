@@ -208,9 +208,25 @@ void OverviewGroupItem::CloseWindow() {}
 
 void OverviewGroupItem::Restack() {}
 
+void OverviewGroupItem::StartDrag() {
+  DCHECK(item_widget_);
+  aura::Window* widget_window = item_widget_->GetNativeWindow();
+  widget_window->parent()->StackChildAtTop(widget_window);
+
+  for (const auto& item : overview_items_) {
+    item->StartDrag();
+  }
+}
+
 void OverviewGroupItem::OnOverviewItemDragStarted(OverviewItemBase* item) {}
 
-void OverviewGroupItem::OnOverviewItemDragEnded(bool snap) {}
+void OverviewGroupItem::OnOverviewItemDragEnded(bool snap) {
+  // TODO(michelefan): Figure out why we need to explicitly stack the
+  // `item_widget_` on top by looking into the `Restack()`.
+  DCHECK(item_widget_);
+  aura::Window* widget_window = item_widget_->GetNativeWindow();
+  widget_window->parent()->StackChildAtTop(widget_window);
+}
 
 void OverviewGroupItem::OnOverviewItemContinuousScroll(
     const gfx::Transform& target_transform,
@@ -307,7 +323,5 @@ void OverviewGroupItem::CreateItemWidget() {
   item_widget_->Show();
   item_widget_->GetLayer()->SetMasksToBounds(/*masks_to_bounds=*/false);
 }
-
-void OverviewGroupItem::StartDrag() {}
 
 }  // namespace ash

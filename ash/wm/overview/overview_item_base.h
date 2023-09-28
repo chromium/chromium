@@ -236,6 +236,11 @@ class ASH_EXPORT OverviewItemBase {
   // overview items is the same as when entering overview.
   virtual void Restack() = 0;
 
+  // Called before dragging. Scales up the windows(s) hosted by `this` a little
+  // bit to indicate its selection and stacks the window(s) at the top of the Z
+  // order in order to keep them visible while being dragged around.
+  virtual void StartDrag() = 0;
+
   virtual void OnOverviewItemDragStarted(OverviewItemBase* item) = 0;
   virtual void OnOverviewItemDragEnded(bool snap) = 0;
 
@@ -302,11 +307,6 @@ class ASH_EXPORT OverviewItemBase {
   // Creates `item_widget_` with `OverviewItemView` or
   // `OverviewGroupContainerView` as its contents view.
   virtual void CreateItemWidget() = 0;
-
-  // Called before dragging. Scales up the windows(s) hosted by `this` a little
-  // bit to indicate its selection and stacks the window(s) at the top of the Z
-  // order in order to keep them visible while being dragged around.
-  virtual void StartDrag() = 0;
 
   // Returns the widget init params needed to create the `item_widget_`.
   views::Widget::InitParams CreateOverviewItemWidgetParams(
