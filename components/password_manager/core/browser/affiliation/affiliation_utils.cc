@@ -11,6 +11,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_piece.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "components/url_formatter/elide_url.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
@@ -340,6 +341,14 @@ std::string FacetURI::android_package_name() const {
   if (!IsValidAndroidFacetURI())
     return "";
   return std::string(ComponentString(canonical_spec_, parsed_.host));
+}
+
+std::string FacetURI::GetAndroidPackageDisplayName() const {
+  CHECK(IsValidAndroidFacetURI());
+  std::vector<std::string> parts = base::SplitString(
+      android_package_name(), ".", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+  std::reverse(parts.begin(), parts.end());
+  return base::JoinString(parts, ".");
 }
 
 FacetURI::FacetURI(const std::string& canonical_spec, bool is_valid)

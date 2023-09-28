@@ -246,8 +246,7 @@ CredentialUIEntry::GetAffiliatedDomains() const {
             facet.signon_realm);
     if (facet_uri.IsValidAndroidFacetURI()) {
       domain.name = facet.display_name.empty()
-                        ? password_manager::SplitByDotAndReverse(
-                              facet_uri.android_package_name())
+                        ? facet_uri.GetAndroidPackageDisplayName()
                         : facet.display_name;
       domain.url =
           facet.affiliated_web_realm.empty()

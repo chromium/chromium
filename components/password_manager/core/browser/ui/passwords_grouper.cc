@@ -73,7 +73,7 @@ FacetBrandingInfo CreateBrandingInfoFromFacetURI(
   FacetURI facet_uri =
       FacetURI::FromPotentiallyInvalidSpec(credential.GetFirstSignonRealm());
   if (facet_uri.IsValidAndroidFacetURI()) {
-    branding_info.name = SplitByDotAndReverse(facet_uri.android_package_name());
+    branding_info.name = facet_uri.GetAndroidPackageDisplayName();
     branding_info.icon_url = GURL(kDefaultAndroidIcon);
     return branding_info;
   }

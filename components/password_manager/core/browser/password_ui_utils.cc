@@ -11,7 +11,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
-#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
@@ -38,9 +37,8 @@ std::string GetShownOrigin(const FacetURI& facet_uri,
                            const std::string& app_display_name,
                            const GURL& url) {
   if (facet_uri.IsValidAndroidFacetURI()) {
-    return app_display_name.empty()
-               ? SplitByDotAndReverse(facet_uri.android_package_name())
-               : app_display_name;
+    return app_display_name.empty() ? facet_uri.GetAndroidPackageDisplayName()
+                                    : app_display_name;
   } else {
     return password_manager::GetShownOrigin(url::Origin::Create(url));
   }
@@ -55,13 +53,6 @@ GURL GetShownURL(const FacetURI& facet_uri, const GURL& url) {
 }
 
 }  // namespace
-
-std::string SplitByDotAndReverse(base::StringPiece host) {
-  std::vector<base::StringPiece> parts = base::SplitStringPiece(
-      host, ".", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-  std::reverse(parts.begin(), parts.end());
-  return base::JoinString(parts, ".");
-}
 
 std::pair<std::string, GURL> GetShownOriginAndLinkUrl(
     const PasswordForm& password_form) {

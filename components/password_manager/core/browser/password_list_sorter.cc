@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -29,6 +30,14 @@ constexpr char kSortKeyNoFederationSymbol = '-';
 // Symbols to differentiate between passwords and passkeys.
 constexpr char kSortKeyPasswordSymbol = 'w';
 
+// TODO(crbug.com/1479425): Remove this method. 
+std::string SplitByDotAndReverse(base::StringPiece host) {
+  std::vector<base::StringPiece> parts = base::SplitStringPiece(
+      host, ".", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+  std::reverse(parts.begin(), parts.end());
+  return base::JoinString(parts, ".");
+}
+
 }  // namespace
 
 std::string CreateSortKey(const CredentialUIEntry& credential) {
@@ -44,7 +53,7 @@ std::string CreateSortKey(const CredentialUIEntry& credential) {
     // This might or might not correspond to the eTLD+1, which is why
     // |shown_origin| is set to the reversed android package name in this case,
     // e.g. com.example.android => android.example.com.
-    shown_origin = SplitByDotAndReverse(facet_uri.android_package_name());
+    shown_origin = facet_uri.GetAndroidPackageDisplayName();
   }
 
   std::string site_name =

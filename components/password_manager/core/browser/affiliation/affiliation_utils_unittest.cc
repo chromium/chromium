@@ -241,6 +241,21 @@ TEST_F(AffiliationUtilsTest, NotEqualEquivalenceClasses) {
   EXPECT_FALSE(AreEquivalenceClassesEqual(c, b));
 }
 
+TEST_F(AffiliationUtilsTest, GetAndroidPackageDisplayName) {
+  const struct {
+    const char* input;
+    const char* output;
+  } kTestCases[] = {
+      {"android://hash@com.example.android", "android.example.com"},
+      {"android://hash@com.example.mobile", "mobile.example.com"},
+      {"android://hash@net.example.subdomain", "subdomain.example.net"}};
+  for (const auto& test_case : kTestCases) {
+    EXPECT_EQ(test_case.output,
+              FacetURI::FromPotentiallyInvalidSpec(test_case.input)
+                  .GetAndroidPackageDisplayName());
+  }
+}
+
 struct MainDomainTestCase {
   std::string url;
   std::string expected_result;

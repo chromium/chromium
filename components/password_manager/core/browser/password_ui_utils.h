@@ -21,9 +21,6 @@ struct PasswordForm;
 struct CredentialUIEntry;
 struct CredentialFacet;
 
-// Reverses order of labels in hostname.
-std::string SplitByDotAndReverse(base::StringPiece host);
-
 // Returns a human readable origin and a link URL for the provided
 // |password_form|.
 //

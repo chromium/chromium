@@ -42,7 +42,7 @@ UiCredential::UiCredential(const PasswordForm& form,
   if (facet_uri.IsValidAndroidFacetURI()) {
     origin_ = affiliated_origin;
     display_name_ = form.app_display_name.empty()
-                        ? SplitByDotAndReverse(facet_uri.android_package_name())
+                        ? facet_uri.GetAndroidPackageDisplayName()
                         : form.app_display_name;
   } else {
     origin_ = url::Origin::Create(form.url);

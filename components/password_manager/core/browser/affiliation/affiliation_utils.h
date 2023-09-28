@@ -104,6 +104,9 @@ class FacetURI {
   // referring to an Android application.
   bool IsValidAndroidFacetURI() const;
 
+  // Returns android_package_name() which can be displayed in the UI.
+  std::string GetAndroidPackageDisplayName() const;
+
   // Returns whether or not this instance represents a valid facet identifier
   // referring to either a Web or an Android application. The empty identfier is
   // not considered valid.

@@ -76,18 +76,6 @@ TEST(GetShownOriginAndLinkUrlTest, OriginFromNonAndroidForm) {
   EXPECT_EQ(GURL("https://example.com/login?ref=1"), link_url);
 }
 
-TEST(SplitByDotAndReverseTest, ReversedHostname) {
-  const struct {
-    const char* input;
-    const char* output;
-  } kTestCases[] = {{"com.example.android", "android.example.com"},
-                    {"com.example.mobile", "mobile.example.com"},
-                    {"net.example.subdomain", "subdomain.example.net"}};
-  for (const auto& test_case : kTestCases) {
-    EXPECT_EQ(test_case.output, SplitByDotAndReverse(test_case.input));
-  }
-}
-
 TEST(ToUsernameString, NonEmptyUsername) {
   EXPECT_EQ(ToUsernameString("nadeshiko"), u"nadeshiko");
 }
