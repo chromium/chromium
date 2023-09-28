@@ -487,7 +487,7 @@ void DisplayOverlayController::SetDisplayMode(DisplayMode mode) {
       } else {
         AddInputMappingWidget();
         if (touch_injector_->input_mapping_visible()) {
-          input_mapping_widget_->Show();
+          input_mapping_widget_->ShowInactive();
         }
 
         auto* input_mapping_view = static_cast<InputMappingView*>(
@@ -511,7 +511,7 @@ void DisplayOverlayController::SetDisplayMode(DisplayMode mode) {
 
       // No matter if the mapping hint is hidden, `input_mapping_widget_` needs
       // to show up in `kEdit` mode.
-      input_mapping_widget_->Show();
+      input_mapping_widget_->ShowInactive();
 
       auto* input_mapping_view = static_cast<InputMappingView*>(
           input_mapping_widget_->GetContentsView());
@@ -696,7 +696,7 @@ void DisplayOverlayController::AddButtonOptionsMenuWidget(Action* action) {
       std::make_unique<ButtonOptionsMenu>(this, action));
   UpdateButtonOptionsMenuWidgetBounds(action);
 
-  button_options_widget_->Show();
+  button_options_widget_->ShowInactive();
 }
 
 void DisplayOverlayController::RemoveButtonOptionsMenuWidget() {
@@ -734,7 +734,7 @@ void DisplayOverlayController::SetButtonOptionsMenuWidgetVisibility(
         static_cast<ButtonOptionsMenu*>(
             button_options_widget_->GetContentsView())
             ->action());
-    button_options_widget_->Show();
+    button_options_widget_->ShowInactive();
   } else {
     button_options_widget_->Hide();
   }
@@ -759,7 +759,7 @@ void DisplayOverlayController::AddButtonLabelListWidget(Action* action) {
                         touch_injector_->window()->GetRootWindow()),
                     touch_injector_->content_bounds().origin(), view),
                 view->GetPreferredSize()));
-  button_label_list_widget_->Show();
+  button_label_list_widget_->ShowInactive();
 }
 
 void DisplayOverlayController::RemoveButtonLabelListWidget() {
@@ -772,7 +772,7 @@ void DisplayOverlayController::RemoveButtonLabelListWidget() {
 
 void DisplayOverlayController::OnButtonLabelListBackButtonPressed() {
   RemoveButtonLabelListWidget();
-  button_options_widget_->Show();
+  button_options_widget_->ShowInactive();
 }
 
 void DisplayOverlayController::AddNudgeWidget(views::View* anchor_view,
@@ -796,7 +796,7 @@ void DisplayOverlayController::AddNudgeWidget(views::View* anchor_view,
       std::make_unique<Nudge>(this, anchor_view, text));
   auto* window = nudge_widget_ptr->GetNativeWindow();
   window->parent()->StackChildAtTop(window);
-  nudge_widget_ptr->Show();
+  nudge_widget_ptr->ShowInactive();
 }
 
 void DisplayOverlayController::RemoveNudgeWidget(views::Widget* widget) {
@@ -951,7 +951,7 @@ void DisplayOverlayController::SetInputMappingVisible(bool visible) {
       return;
     }
     if (visible) {
-      input_mapping_widget_->Show();
+      input_mapping_widget_->ShowInactive();
     } else {
       input_mapping_widget_->Hide();
     }
@@ -1148,7 +1148,7 @@ void DisplayOverlayController::AddEditingListWidget() {
   auto* window = editing_list_widget_->GetNativeWindow();
   window->parent()->StackChildAtTop(window);
 
-  editing_list_widget_->Show();
+  editing_list_widget_->ShowInactive();
   UpdateEditingListWidgetBounds();
 }
 
