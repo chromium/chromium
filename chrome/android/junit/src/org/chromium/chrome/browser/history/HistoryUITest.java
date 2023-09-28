@@ -785,6 +785,8 @@ public class HistoryUITest {
         TabLayout.Tab journeysTab = toggle.getTabAt(1);
         Assert.assertEquals(mActivity.getString(R.string.history_clusters_by_group_tab_label),
                 journeysTab.getText());
+        Assert.assertNull(
+                mHistoryManager.getToolbarForTests().getMenu().findItem(R.id.optout_menu_id));
     }
 
     @Test

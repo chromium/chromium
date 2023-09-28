@@ -333,9 +333,10 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
                     .setTitle(historyClustersVisible
                                     ? R.string.history_clusters_disable_menu_item_label
                                     : R.string.history_clusters_enable_menu_item_label);
-            // In the unlikely event history clusters is force enabled by policy, remove the menu
-            // option to turn it off.
-            if (historyClustersPrefIsManaged) {
+            // If the rename is enabled or in the unlikely event history clusters is force enabled
+            // by policy, remove the menu option to turn it off.
+            if (ChromeFeatureList.isEnabled(ChromeFeatureList.RENAME_JOURNEYS)
+                    || historyClustersPrefIsManaged) {
                 mToolbar.getMenu().removeItem(R.id.optout_menu_id);
             }
         } else {
