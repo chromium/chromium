@@ -2363,13 +2363,16 @@
     ],
 
     'chromeos_brya_include_unwind_tables_official_dchecks_skylab_reclient': [
-    'chromeos_device_reclient', 'brya', 'include_unwind_tables', 'official', 'dcheck_always_on', 'is_skylab', 'ozone_headless',
+      'chromeos_device_reclient', 'brya', 'include_unwind_tables', 'official', 'dcheck_always_on', 'is_skylab', 'ozone_headless',
+      'also_build_lacros_chrome_for_architecture_amd64',
     ],
     'chromeos_brya_include_unwind_tables_official_skylab': [
       'chromeos_device', 'brya', 'include_unwind_tables', 'official', 'is_skylab', 'ozone_headless',
+      'also_build_lacros_chrome_for_architecture_amd64',
     ],
     'chromeos_brya_include_unwind_tables_official_skylab_reclient': [
       'chromeos_device_reclient', 'brya', 'include_unwind_tables', 'official', 'is_skylab', 'ozone_headless',
+      'also_build_lacros_chrome_for_architecture_amd64',
     ],
 
     'chromeos_eve-arc-r_include_unwind_tables_official': [
@@ -2438,10 +2441,12 @@
     ],
     'chromeos_octopus_include_unwind_tables_official_skylab': [
       'chromeos_device', 'octopus', 'include_unwind_tables', 'official', 'is_skylab',
+      'also_build_lacros_chrome_for_architecture_amd64',
     ],
 
     'chromeos_octopus_include_unwind_tables_official_skylab_reclient': [
       'chromeos_device_reclient', 'octopus', 'include_unwind_tables', 'official', 'is_skylab',
+      'also_build_lacros_chrome_for_architecture_amd64',
     ],
 
     'chromeos_reven_include_unwind_tables_official_dchecks': [
@@ -2462,9 +2467,11 @@
 
     'chromeos_volteer_include_unwind_tables_official_skylab': [
       'chromeos_device', 'volteer', 'include_unwind_tables', 'official', 'is_skylab',
+      'also_build_lacros_chrome_for_architecture_amd64',
     ],
     'chromeos_volteer_include_unwind_tables_official_skylab_reclient': [
-      'chromeos_device_reclient', 'volteer', 'include_unwind_tables', 'official', 'is_skylab', 'ozone_headless'
+      'chromeos_device_reclient', 'volteer', 'include_unwind_tables', 'official', 'is_skylab', 'ozone_headless',
+      'also_build_lacros_chrome_for_architecture_amd64',
     ],
 
     'chromeos_with_codecs_debug_bot_reclient': [
