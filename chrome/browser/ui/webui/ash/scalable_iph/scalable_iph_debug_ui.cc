@@ -10,6 +10,7 @@
 #include "base/containers/fixed_flat_set.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/strcat.h"
 #include "chrome/browser/scalable_iph/scalable_iph_factory.h"
 #include "chromeos/ash/components/scalable_iph/logger.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph.h"
@@ -24,8 +25,16 @@ constexpr char kLoggingPath[] = "log.txt";
 constexpr char kRecordFiveMinTickEventPath[] = "record-five-min-tick-event";
 constexpr char kRecordedFiveMinTickEvent[] = "Recorded ScalableIphFiveMinTick.";
 
+constexpr char kPreTagBegin[] = "<pre>";
+constexpr char kPreTagEnd[] = "</pre>";
+constexpr char kNewline[] = "\n";
+
 constexpr auto kSupportedPaths = base::MakeFixedFlatSet<base::StringPiece>(
     {kLoggingPath, kRecordFiveMinTickEventPath});
+
+std::string WrapWithPreTags(const std::string& content) {
+  return base::StrCat({kPreTagBegin, kNewline, content, kNewline, kPreTagEnd});
+}
 
 bool ShouldHandleRequest(const std::string& path) {
   return kSupportedPaths.contains(path);
@@ -93,18 +102,18 @@ void ScalableIphDebugUI::HandleRequest(
     // pre-conditions don't get satisfied, querying a service before its
     // initialization, etc.
     std::move(callback).Run(base::MakeRefCounted<base::RefCountedString>(
-        CollectServiceStartUpDebugLog(browser_context)));
+        WrapWithPreTags(CollectServiceStartUpDebugLog(browser_context))));
     return;
   }
 
   if (path == kRecordFiveMinTickEventPath) {
     scalable_iph->RecordEvent(scalable_iph::ScalableIph::Event::kFiveMinTick);
     std::move(callback).Run(base::MakeRefCounted<base::RefCountedString>(
-        kRecordedFiveMinTickEvent));
+        WrapWithPreTags(kRecordedFiveMinTickEvent)));
     return;
   } else if (path == kLoggingPath) {
     std::move(callback).Run(base::MakeRefCounted<base::RefCountedString>(
-        scalable_iph->GetLogger()->GenerateLog()));
+        WrapWithPreTags(scalable_iph->GetLogger()->GenerateLog())));
     return;
   }
 }
