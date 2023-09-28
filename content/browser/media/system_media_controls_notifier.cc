@@ -255,16 +255,20 @@ void SystemMediaControlsNotifier::UpdateMetadata() {
     // If we need to hide the playing media's metadata we replace it with
     // placeholder metadata.
     if (session_info_ptr_ && session_info_ptr_->hide_metadata) {
-      CHECK(MediaSessionClient::Get());
+      MediaSessionClient* media_session_client = MediaSessionClient::Get();
+      CHECK(media_session_client);
 
       system_media_controls_->SetTitle(
-          MediaSessionClient::Get()->GetTitlePlaceholder());
-
+          media_session_client->GetTitlePlaceholder());
       system_media_controls_->SetArtist(
-          MediaSessionClient::Get()->GetArtistPlaceholder());
-
+          media_session_client->GetArtistPlaceholder());
       system_media_controls_->SetAlbum(
-          MediaSessionClient::Get()->GetAlbumPlaceholder());
+          media_session_client->GetAlbumPlaceholder());
+
+      // Always make sure the metadata replacement is accompanied by the
+      // thumbnail replacement.
+      system_media_controls_->SetThumbnail(
+          media_session_client->GetThumbnailPlaceholder());
     } else {
       // If no title was provided, the title of the tab will be in the title
       // property.
@@ -294,10 +298,11 @@ void SystemMediaControlsNotifier::UpdateIcon() {
   // If we need to hide the media metadata we replace the playing media's image
   // with a placeholder.
   if (session_info_ptr_ && session_info_ptr_->hide_metadata) {
-    CHECK(MediaSessionClient::Get());
+    MediaSessionClient* media_session_client = MediaSessionClient::Get();
+    CHECK(media_session_client);
 
     system_media_controls_->SetThumbnail(
-        MediaSessionClient::Get()->GetThumbnailPlaceholder());
+        media_session_client->GetThumbnailPlaceholder());
   } else if (!delayed_icon_update_->empty()) {
     // 5.3.4.4.3 If the image format is supported, use the image as the
     // artwork for display in the platform UI. Otherwise the fetch image

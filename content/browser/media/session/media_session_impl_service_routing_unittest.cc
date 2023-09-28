@@ -764,10 +764,8 @@ TEST_F(MediaSessionImplServiceRoutingTest,
   }
 }
 
-// We hide the media metadata from CrOS' media controls by replacing the
-// metadata in the MediaSessionImpl with some placeholder metadata. These
-// changes are gated to only affect ChromeOS, hence why the testing for this is
-// also ChromeOS only.
+// We hide the media metadata only from CrOS' media controls by replacing the
+// metadata in the MediaSessionImpl with some placeholder metadata.
 #if BUILDFLAG(IS_CHROMEOS)
 TEST_F(MediaSessionImplServiceRoutingTest, HideMediaMetadataInCrOS) {
   client_.SetShouldHideMetadata(true);
@@ -990,6 +988,7 @@ TEST_F(MediaSessionImplServiceRoutingTest,
 
 TEST_F(MediaSessionImplServiceRoutingTest,
        NotifyObserverWithEmptyImagesWhenServiceNotPresent) {
+  client_.SetShouldHideMetadata(false);
   StartPlayerForFrame(main_frame_);
   EXPECT_EQ(nullptr, ComputeServiceForRouting());
 
@@ -1005,6 +1004,7 @@ TEST_F(MediaSessionImplServiceRoutingTest,
 
 TEST_F(MediaSessionImplServiceRoutingTest,
        NotifyObserverWithImagesWhenServicePresent) {
+  client_.SetShouldHideMetadata(false);
   CreateServiceForFrame(main_frame_);
   StartPlayerForFrame(main_frame_);
 
@@ -1062,6 +1062,7 @@ TEST_F(MediaSessionImplServiceRoutingTest,
 
 TEST_F(MediaSessionImplServiceRoutingTest,
        NotifyObserverWithImagesWhenMultipleServicesPresent) {
+  client_.SetShouldHideMetadata(false);
   CreateServiceForFrame(sub_frame_);
   StartPlayerForFrame(sub_frame_);
 
@@ -1095,6 +1096,43 @@ TEST_F(MediaSessionImplServiceRoutingTest,
   std::vector<media_session::MediaImage> empty_images;
   observer.WaitForExpectedImagesOfType(MediaSessionImageType::kArtwork,
                                        empty_images);
+}
+
+TEST_F(MediaSessionImplServiceRoutingTest,
+       NotifyObserverWithImages_HideMetadata) {
+  client_.SetShouldHideMetadata(true);
+
+  CreateServiceForFrame(main_frame_);
+  StartPlayerForFrame(main_frame_);
+
+  EXPECT_EQ(services_[main_frame_].get(), ComputeServiceForRouting());
+
+  std::vector<media_session::MediaImage> expected_images;
+
+  media_session::MediaImage test_image;
+  test_image.src = GURL("https://www.google.com");
+  expected_images.push_back(test_image);
+
+  media_session::test::MockMediaSessionMojoObserver observer(
+      *GetMediaSession());
+
+  blink::mojom::SpecMediaMetadataPtr spec_metadata(
+      blink::mojom::SpecMediaMetadata::New());
+  spec_metadata->artwork.push_back(test_image);
+
+  services_[main_frame_]->SetMetadata(std::move(spec_metadata));
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // We hide the image only from CrOS' media controls by replacing the it with a
+  // default image in the MediaSessionImpl.
+  std::vector<media_session::MediaImage> images_with_default;
+  images_with_default.push_back(media_session::MediaImage());
+  observer.WaitForExpectedImagesOfType(MediaSessionImageType::kArtwork,
+                                       images_with_default);
+#else  // !BUILDFLAG(IS_CHROMEOS)
+  observer.WaitForExpectedImagesOfType(MediaSessionImageType::kArtwork,
+                                       expected_images);
+#endif
 }
 
 TEST_F(MediaSessionImplServiceRoutingTest, StopBehaviourDefault) {

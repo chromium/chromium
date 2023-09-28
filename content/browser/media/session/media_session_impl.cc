@@ -1278,8 +1278,9 @@ void MediaSessionImpl::GetMediaImageBitmap(
 // We want to hide the media image from ChromeOS' media controls.
 #if BUILDFLAG(IS_CHROMEOS)
   if (session_info_ && session_info_->hide_metadata) {
-    std::move(callback).Run(
-        MediaSessionClient::Get()->GetThumbnailPlaceholder());
+    MediaSessionClient* media_session_client = MediaSessionClient::Get();
+    CHECK(media_session_client);
+    std::move(callback).Run(media_session_client->GetThumbnailPlaceholder());
     return;
   }
 #endif
@@ -1381,6 +1382,15 @@ void MediaSessionImpl::RebuildAndNotifyMediaSessionInfoChanged() {
   delegate_->MediaSessionInfoChanged(current_info);
 
   session_info_ = std::move(current_info);
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // If we need to hide the metadata, then we need to notify the metadata
+  // observers with the hidden metadata. They might have received the metadata
+  // before the info has been updated.
+  if (session_info_->hide_metadata) {
+    RebuildAndNotifyMetadataChanged();
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 bool MediaSessionImpl::AddPepperPlayer(MediaSessionPlayerObserver* observer,
@@ -1735,16 +1745,21 @@ void MediaSessionImpl::RebuildAndNotifyMetadataChanged() {
 void MediaSessionImpl::BuildPlaceholderMetadata(
     media_session::MediaMetadata& metadata,
     std::vector<media_session::MediaImage>& artwork) {
-  if (routed_service_ && routed_service_->metadata()) {
+  if ((routed_service_ && routed_service_->metadata()) ||
+      !metadata_.IsEmpty()) {
     MediaSessionClient* media_session_client = MediaSessionClient::Get();
+    CHECK(media_session_client);
+
     metadata.title = media_session_client->GetTitlePlaceholder();
     metadata.artist = media_session_client->GetArtistPlaceholder();
     metadata.album = media_session_client->GetAlbumPlaceholder();
     metadata.source_title = media_session_client->GetSourceTitlePlaceholder();
 
-    // The artwork is replaced in `GetMediaImageBitmap` with the placeholder
-    // `Bitmap`.
-    artwork = routed_service_->metadata()->artwork;
+    // Always make sure the metadata replacement is accompanied by the thumbnail
+    // replacement.
+    // An empty `MediaImage` so `GetMediaImageBitmap` is eventually triggered.
+    // That is where we replace the artwork with the placeholder `Bitmap`.
+    artwork.push_back(media_session::MediaImage());
   }
 }
 #endif
