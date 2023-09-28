@@ -370,6 +370,11 @@ id<GREYMatcher> MoveAddressBarToBottomContextMenuButton() {
 
 @implementation AdaptiveToolbarTestCase
 
+- (void)setUp {
+  [super setUp];
+  [ChromeEarlGrey setBoolValue:NO forUserPref:prefs::kBottomOmnibox];
+}
+
 // Tests that tapping a button cancels the focus on the omnibox.
 - (void)testCancelOmniboxEdit {
   if ([ChromeEarlGrey isCompactWidth]) {
