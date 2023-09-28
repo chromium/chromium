@@ -24,7 +24,6 @@
 #include "ui/display/manager/util/display_manager_test_util.h"
 #include "ui/display/manager/util/display_manager_util.h"
 #include "ui/display/types/display_constants.h"
-#include "ui/display/types/display_types_util.h"
 #include "ui/display/util/display_util.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/display_color_spaces.h"
@@ -84,6 +83,11 @@ struct ManagedDisplayModeSorter {
     return (size_a_dip.GetArea() < size_b_dip.GetArea());
   }
 };
+
+bool IsWithinEpsilon(float a, float b) {
+  constexpr float kEpsilon = 0.0001f;
+  return std::abs(a - b) < kEpsilon;
+}
 
 std::string PanelOrientationToString(PanelOrientation orientation) {
   switch (orientation) {

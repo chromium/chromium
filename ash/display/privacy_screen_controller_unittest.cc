@@ -123,18 +123,6 @@ class PrivacyScreenControllerTest : public NoSessionAshTestBase {
                                     : display::kNotSupported)
               .Build());
       outputs.push_back(owned_snapshots_.back().get());
-      // Register mode info for external display so that it could be found for
-      // matched mode called via |DisplayManager::GetMatchingModeForDisplayId|.
-      if (!param.is_internal_display) {
-        display_manager()->RegisterDisplayProperty(
-            param.id, /*rotation=*/display::Display::ROTATE_0,
-            /*overscan_insets=*/nullptr, /*resolution_in_pixels=*/kDisplaySize,
-            /*device_scale_factor=*/1.0f,
-            /*display_zoom_factor=*/1.0f, /*refresh_rate=*/60.0f,
-            /*is_interlaced=*/false,
-            /*variable_refresh_rate_state=*/display::kVrrNotCapable,
-            /*vsync_rate_min=*/absl::nullopt);
-      }
     }
 
     native_display_delegate_->set_outputs(outputs);

@@ -47,7 +47,6 @@
 #include "ui/display/tablet_state.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/display/types/display_snapshot.h"
-#include "ui/display/types/display_types_util.h"
 #include "ui/display/types/native_display_delegate.h"
 #include "ui/display/util/display_util.h"
 #include "ui/events/devices/touchscreen_device.h"
@@ -733,24 +732,6 @@ void DisplayManager::SetSelectedModeForDisplayId(
   }
 
   display_modes_[display_id] = *iter;
-}
-
-bool DisplayManager::GetMatchingModeForDisplayId(int64_t display_id,
-                                                 const DisplayMode* mode_info,
-                                                 ManagedDisplayMode* mode) {
-  const ManagedDisplayInfo& info = GetDisplayInfo(display_id);
-  const ManagedDisplayInfo::ManagedDisplayModeList& display_modes =
-      info.display_modes();
-  for (const auto& display_mode : display_modes) {
-    if (display_mode.size() == mode_info->size() &&
-        display_mode.is_interlaced() == mode_info->is_interlaced() &&
-        IsWithinEpsilon(display_mode.refresh_rate(),
-                        mode_info->refresh_rate())) {
-      *mode = display_mode;
-      return true;
-    }
-  }
-  return false;
 }
 
 gfx::Insets DisplayManager::GetOverscanInsets(int64_t display_id) const {

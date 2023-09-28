@@ -6,7 +6,6 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/strings/stringprintf.h"
-#include "ui/display/types/display_types_util.h"
 
 namespace display {
 

@@ -62,20 +62,6 @@ std::unique_ptr<DisplayMode> MakeDisplayMode(int width,
                                      refresh_rate);
 }
 
-constexpr int64_t kDisplayId = 123;
-constexpr display::Display::Rotation kRotation = display::Display::ROTATE_0;
-constexpr gfx::Insets* kInsetsToSet = nullptr;
-constexpr int kWidth = 1920;
-constexpr int kHeight = 1080;
-constexpr gfx::Size kResolutionInPixels(kWidth, kHeight);
-constexpr float kDeviceScaleFactor = 1.0f;
-constexpr float kDisplayZoom = 1.0f;
-constexpr float kRefreshRate = 60.0f;
-constexpr bool kIsInterlaced = true;
-constexpr display::VariableRefreshRateState kVariableRefreshRateState =
-    display::kVrrNotCapable;
-constexpr absl::optional<uint16_t> kVsyncRateMin = absl::nullopt;
-
 }  // namespace
 
 class DisplayChangeObserverTestBase : public testing::Test {
@@ -148,10 +134,6 @@ class DisplayChangeObserverPanelRadiiTest
   void InitializeDisplayChangeObserver() {
     display_change_observer_ =
         std::make_unique<DisplayChangeObserver>(display_manager_.get());
-    display_manager_->RegisterDisplayProperty(
-        kDisplayId, kRotation, kInsetsToSet, kResolutionInPixels,
-        kDeviceScaleFactor, kDisplayZoom, kRefreshRate, kIsInterlaced,
-        kVariableRefreshRateState, kVsyncRateMin);
   }
 
  protected:
@@ -172,9 +154,8 @@ TEST_F(DisplayChangeObserverPanelRadiiTest, RadiiSpecifiedForInternalDisplay) {
   // Radii specified for the connection protocol.
   std::unique_ptr<DisplaySnapshot> display_snapshot =
       FakeDisplaySnapshot::Builder()
-          .SetId(kDisplayId)
-          .SetNativeMode(
-              MakeDisplayMode(kWidth, kHeight, kIsInterlaced, kRefreshRate))
+          .SetId(123)
+          .SetNativeMode(MakeDisplayMode(1920, 1080, true, 60))
           .SetType(
               display::DisplayConnectionType::DISPLAY_CONNECTION_TYPE_INTERNAL)
           .Build();
@@ -198,9 +179,8 @@ TEST_F(DisplayChangeObserverPanelRadiiTest, IgnoreRadiiIfNotInternalDisplay) {
   // The snapshot is of a display that is not a internal display.
   std::unique_ptr<DisplaySnapshot> display_snapshot =
       FakeDisplaySnapshot::Builder()
-          .SetId(kDisplayId)
-          .SetNativeMode(
-              MakeDisplayMode(kWidth, kHeight, kIsInterlaced, kRefreshRate))
+          .SetId(123)
+          .SetNativeMode(MakeDisplayMode(1920, 1080, true, 60))
           .SetType(display::DisplayConnectionType::DISPLAY_CONNECTION_TYPE_HDMI)
           .Build();
 
@@ -465,21 +445,15 @@ TEST_P(DisplayChangeObserverTest,
 TEST_P(DisplayChangeObserverTest, InvalidDisplayColorSpaces) {
   const std::unique_ptr<DisplaySnapshot> display_snapshot =
       FakeDisplaySnapshot::Builder()
-          .SetId(kDisplayId)
+          .SetId(123)
           .SetName("AmazingFakeDisplay")
-          .SetNativeMode(
-              MakeDisplayMode(kWidth, kHeight, kIsInterlaced, kRefreshRate))
+          .SetNativeMode(MakeDisplayMode(1920, 1080, true, 60))
           .SetColorSpace(gfx::ColorSpace())
           .Build();
 
   ui::DeviceDataManager::CreateInstance();
   DisplayManager manager(nullptr);
-  manager.RegisterDisplayProperty(kDisplayId, kRotation, kInsetsToSet,
-                                  kResolutionInPixels, kDeviceScaleFactor,
-                                  kDisplayZoom, kRefreshRate, kIsInterlaced,
-                                  kVariableRefreshRateState, kVsyncRateMin);
-  const auto display_mode =
-      MakeDisplayMode(kWidth, kHeight, kIsInterlaced, kRefreshRate);
+  const auto display_mode = MakeDisplayMode(1920, 1080, true, 60);
   DisplayChangeObserver observer(&manager);
   const ManagedDisplayInfo display_info = CreateManagedDisplayInfo(
       &observer, display_snapshot.get(), display_mode.get());
@@ -502,21 +476,15 @@ TEST_P(DisplayChangeObserverTest, InvalidDisplayColorSpaces) {
 TEST_P(DisplayChangeObserverTest, SDRDisplayColorSpaces) {
   const std::unique_ptr<DisplaySnapshot> display_snapshot =
       FakeDisplaySnapshot::Builder()
-          .SetId(kDisplayId)
+          .SetId(123)
           .SetName("AmazingFakeDisplay")
-          .SetNativeMode(
-              MakeDisplayMode(kWidth, kHeight, kIsInterlaced, kRefreshRate))
+          .SetNativeMode(MakeDisplayMode(1920, 1080, true, 60))
           .SetColorSpace(gfx::ColorSpace::CreateSRGB())
           .Build();
 
   ui::DeviceDataManager::CreateInstance();
   DisplayManager manager(nullptr);
-  manager.RegisterDisplayProperty(kDisplayId, kRotation, kInsetsToSet,
-                                  kResolutionInPixels, kDeviceScaleFactor,
-                                  kDisplayZoom, kRefreshRate, kIsInterlaced,
-                                  kVariableRefreshRateState, kVsyncRateMin);
-  const auto display_mode =
-      MakeDisplayMode(kWidth, kHeight, kIsInterlaced, kRefreshRate);
+  const auto display_mode = MakeDisplayMode(1920, 1080, true, 60);
   DisplayChangeObserver observer(&manager);
   const ManagedDisplayInfo display_info = CreateManagedDisplayInfo(
       &observer, display_snapshot.get(), display_mode.get());
@@ -540,21 +508,15 @@ TEST_P(DisplayChangeObserverTest, SDRDisplayColorSpaces) {
 TEST_P(DisplayChangeObserverTest, WCGDisplayColorSpaces) {
   const std::unique_ptr<DisplaySnapshot> display_snapshot =
       FakeDisplaySnapshot::Builder()
-          .SetId(kDisplayId)
+          .SetId(123)
           .SetName("AmazingFakeDisplay")
-          .SetNativeMode(
-              MakeDisplayMode(kWidth, kHeight, kIsInterlaced, kRefreshRate))
+          .SetNativeMode(MakeDisplayMode(1920, 1080, true, 60))
           .SetColorSpace(gfx::ColorSpace::CreateDisplayP3D65())
           .Build();
 
   ui::DeviceDataManager::CreateInstance();
   DisplayManager manager(nullptr);
-  manager.RegisterDisplayProperty(kDisplayId, kRotation, kInsetsToSet,
-                                  kResolutionInPixels, kDeviceScaleFactor,
-                                  kDisplayZoom, kRefreshRate, kIsInterlaced,
-                                  kVariableRefreshRateState, kVsyncRateMin);
-  const auto display_mode =
-      MakeDisplayMode(kWidth, kHeight, kIsInterlaced, kRefreshRate);
+  const auto display_mode = MakeDisplayMode(1920, 1080, true, 60);
   DisplayChangeObserver observer(&manager);
   const ManagedDisplayInfo display_info = CreateManagedDisplayInfo(
       &observer, display_snapshot.get(), display_mode.get());
@@ -585,10 +547,9 @@ TEST_P(DisplayChangeObserverTest, HDRDisplayColorSpaces) {
   const auto display_color_space = gfx::ColorSpace::CreateHDR10();
   const std::unique_ptr<DisplaySnapshot> display_snapshot =
       FakeDisplaySnapshot::Builder()
-          .SetId(kDisplayId)
+          .SetId(123)
           .SetName("AmazingFakeDisplay")
-          .SetNativeMode(
-              MakeDisplayMode(kWidth, kHeight, kIsInterlaced, kRefreshRate))
+          .SetNativeMode(MakeDisplayMode(1920, 1080, true, 60))
           .SetColorSpace(display_color_space)
           .SetBitsPerChannel(10u)
           .SetHDRStaticMetadata(
@@ -601,12 +562,7 @@ TEST_P(DisplayChangeObserverTest, HDRDisplayColorSpaces) {
 
   ui::DeviceDataManager::CreateInstance();
   DisplayManager manager(nullptr);
-  manager.RegisterDisplayProperty(kDisplayId, kRotation, kInsetsToSet,
-                                  kResolutionInPixels, kDeviceScaleFactor,
-                                  kDisplayZoom, kRefreshRate, kIsInterlaced,
-                                  kVariableRefreshRateState, kVsyncRateMin);
-  const auto display_mode =
-      MakeDisplayMode(kWidth, kHeight, kIsInterlaced, kRefreshRate);
+  const auto display_mode = MakeDisplayMode(1920, 1080, true, 60);
   DisplayChangeObserver observer(&manager);
   const ManagedDisplayInfo display_info = CreateManagedDisplayInfo(
       &observer, display_snapshot.get(), display_mode.get());
@@ -647,10 +603,6 @@ TEST_P(DisplayChangeObserverTest, HDRDisplayColorSpaces) {
 TEST_P(DisplayChangeObserverTest, VSyncRateMin) {
   ui::DeviceDataManager::CreateInstance();
   DisplayManager manager(nullptr);
-  manager.RegisterDisplayProperty(kDisplayId, kRotation, kInsetsToSet,
-                                  kResolutionInPixels, kDeviceScaleFactor,
-                                  kDisplayZoom, kRefreshRate, kIsInterlaced,
-                                  kVariableRefreshRateState, kVsyncRateMin);
   DisplayChangeObserver observer(&manager);
 
   // Verify that vsync_rate_min is absent from DisplayInfo when it is not
@@ -658,7 +610,7 @@ TEST_P(DisplayChangeObserverTest, VSyncRateMin) {
   {
     const std::unique_ptr<DisplaySnapshot> display_snapshot =
         FakeDisplaySnapshot::Builder()
-            .SetId(kDisplayId)
+            .SetId(123)
             .SetName("AmazingFakeDisplay")
             .SetNativeMode(MakeDisplayMode(1920, 1080, true, 60))
             .Build();
@@ -675,10 +627,9 @@ TEST_P(DisplayChangeObserverTest, VSyncRateMin) {
   {
     const std::unique_ptr<DisplaySnapshot> display_snapshot =
         FakeDisplaySnapshot::Builder()
-            .SetId(kDisplayId)
+            .SetId(123)
             .SetName("AmazingFakeDisplay")
-            .SetNativeMode(
-                MakeDisplayMode(kWidth, kHeight, kIsInterlaced, kRefreshRate))
+            .SetNativeMode(MakeDisplayMode(1920, 1080, true, 60))
             .SetVsyncRateMin(48)
             .Build();
     const auto display_mode =
@@ -693,10 +644,9 @@ TEST_P(DisplayChangeObserverTest, VSyncRateMin) {
   {
     const std::unique_ptr<DisplaySnapshot> display_snapshot =
         FakeDisplaySnapshot::Builder()
-            .SetId(kDisplayId)
+            .SetId(123)
             .SetName("AmazingFakeDisplay")
-            .SetNativeMode(
-                MakeDisplayMode(kWidth, kHeight, kIsInterlaced, kRefreshRate))
+            .SetNativeMode(MakeDisplayMode(1920, 1080, true, 60))
             .SetVsyncRateMin(48)
             .Build();
     const auto display_mode = std::make_unique<DisplayMode>(

@@ -420,8 +420,8 @@ ManagedDisplayInfo DisplayChangeObserver::CreateManagedDisplayInfoInternal(
     device_scale_factor = FindDeviceScaleFactor(dpi, mode_info->size());
   } else {
     ManagedDisplayMode mode;
-    if (display_manager_->GetMatchingModeForDisplayId(snapshot->display_id(),
-                                                      mode_info, &mode)) {
+    if (display_manager_->GetSelectedModeForDisplayId(snapshot->display_id(),
+                                                      &mode)) {
       device_scale_factor = mode.device_scale_factor();
       native = mode.native();
     }

@@ -49,16 +49,6 @@ namespace {
 constexpr char kUser1Email[] = "user1@nightlight";
 constexpr char kUser2Email[] = "user2@nightlight";
 
-constexpr display::Display::Rotation kRotation = display::Display::ROTATE_0;
-constexpr gfx::Insets* kInsetsToSet = nullptr;
-constexpr float kDeviceScaleFactor = 1.0f;
-constexpr float kDisplayZoom = 1.0f;
-constexpr float kRefreshRate = 60.0f;
-constexpr bool kIsInterlaced = false;
-constexpr display::VariableRefreshRateState kVariableRefreshRateState =
-    display::kVrrNotCapable;
-constexpr absl::optional<uint16_t> kVsyncRateMin = absl::nullopt;
-
 enum AmPm { kAM, kPM };
 
 // Convenience function for constructing a TimeOfDay object for exact hours
@@ -1284,13 +1274,6 @@ class NightLightCrtcTest : public NightLightTest {
                 snapshot_params[1].correction_in_linear_space)
             .Build());
     owned_snapshots_.back()->set_origin({1030, 0});
-    // Register mode info for external display so that it could be found for
-    // matched mode called via |DisplayManager::GetMatchingModeForDisplayId|.
-    // Same as below.
-    display_manager()->RegisterDisplayProperty(
-        kId2, kRotation, kInsetsToSet, kDisplaySize, kDeviceScaleFactor,
-        kDisplayZoom, kRefreshRate, kIsInterlaced, kVariableRefreshRateState,
-        kVsyncRateMin);
     std::vector<display::DisplaySnapshot*> outputs = {
         owned_snapshots_[0].get(), owned_snapshots_[1].get()};
     return outputs;
@@ -1829,10 +1812,6 @@ class AmbientEQTest : public NightLightTest {
                                       .SetCurrentMode(kDisplaySize)
                                       .SetOrigin({1030, 0})
                                       .Build());
-    display_manager()->RegisterDisplayProperty(
-        kExternalDisplayId, kRotation, kInsetsToSet, kDisplaySize,
-        kDeviceScaleFactor, kDisplayZoom, kRefreshRate, kIsInterlaced,
-        kVariableRefreshRateState, kVsyncRateMin);
 
     std::vector<display::DisplaySnapshot*> outputs = {
         owned_snapshots_[0].get(), owned_snapshots_[1].get()};

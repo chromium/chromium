@@ -3718,20 +3718,8 @@ TEST_F(DisplayManagerTest, AccelerometerSupport) {
 
 namespace {
 
-constexpr display::Display::Rotation kRotation = display::Display::ROTATE_0;
-constexpr gfx::Insets* kInsetsToSet = nullptr;
-constexpr gfx::Size kResolutionInPixels(1366, 768);
-constexpr float kDeviceScaleFactor = 1.0f;
-constexpr float kDisplayZoom = 1.0f;
-constexpr float kRefreshRate = 60.0f;
-constexpr bool kIsInterlaced = false;
-constexpr display::VariableRefreshRateState kVariableRefreshRateState =
-    display::kVrrNotCapable;
-constexpr absl::optional<uint16_t> kVsyncRateMin = absl::nullopt;
-
 std::unique_ptr<display::DisplayMode> MakeDisplayMode() {
-  return display::CreateDisplayModePtrForTest(kResolutionInPixels,
-                                              kIsInterlaced, kRefreshRate);
+  return display::CreateDisplayModePtrForTest(gfx::Size(1366, 768), false, 60);
 }
 
 }  // namespace
@@ -3763,13 +3751,6 @@ TEST_F(DisplayManagerTest, DisconnectedInternalDisplayShouldUpdateDisplayInfo) {
           .AddMode(MakeDisplayMode())
           .SetOrigin({0, 1000})
           .Build();
-  // Register mode info for external display so that it could be found for
-  // matched mode called via |DisplayManager::GetMatchingModeForDisplayId|.
-  // Same as below.
-  display_manager()->RegisterDisplayProperty(
-      external_id, kRotation, kInsetsToSet, kResolutionInPixels,
-      kDeviceScaleFactor, kDisplayZoom, kRefreshRate, kIsInterlaced,
-      kVariableRefreshRateState, kVsyncRateMin);
   // "Connected display" has the current mode.
   external_snapshot->set_current_mode(external_snapshot->native_mode());
 
@@ -3821,10 +3802,6 @@ TEST_F(DisplayManagerTest, UpdateInternalDisplayNativeBounds) {
           .SetNativeMode(MakeDisplayMode())
           .AddMode(MakeDisplayMode())
           .Build();
-  display_manager()->RegisterDisplayProperty(
-      external_id, kRotation, kInsetsToSet, kResolutionInPixels,
-      kDeviceScaleFactor, kDisplayZoom, kRefreshRate, kIsInterlaced,
-      kVariableRefreshRateState, kVsyncRateMin);
   // "Connected display" has the current mode.
   external_snapshot->set_current_mode(external_snapshot->native_mode());
   outputs.push_back(external_snapshot.get());
@@ -3892,15 +3869,6 @@ TEST_F(DisplayManagerTest, ForcedMirrorMode) {
 
   outputs.push_back(snapshot1.get());
   outputs.push_back(snapshot2.get());
-
-  display_manager()->RegisterDisplayProperty(
-      id1, kRotation, kInsetsToSet, kResolutionInPixels, kDeviceScaleFactor,
-      kDisplayZoom, kRefreshRate, kIsInterlaced, kVariableRefreshRateState,
-      kVsyncRateMin);
-  display_manager()->RegisterDisplayProperty(
-      id2, kRotation, kInsetsToSet, kResolutionInPixels, kDeviceScaleFactor,
-      kDisplayZoom, kRefreshRate, kIsInterlaced, kVariableRefreshRateState,
-      kVsyncRateMin);
 
   EXPECT_EQ(display::MULTIPLE_DISPLAY_STATE_MULTI_EXTENDED,
             observer.GetStateForDisplayIds(outputs));

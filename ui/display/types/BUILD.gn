@@ -13,8 +13,6 @@ component("types") {
     "display_snapshot.cc",
     "display_snapshot.h",
     "display_types_export.h",
-    "display_types_util.cc",
-    "display_types_util.h",
     "fake_display_controller.h",
     "gamma_ramp_rgb_entry.h",
     "native_display_delegate.cc",
