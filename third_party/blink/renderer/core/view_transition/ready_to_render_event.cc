@@ -12,7 +12,7 @@ namespace blink {
 
 ReadyToRenderEvent::ReadyToRenderEvent()
     : Event(event_type_names::kReadytorender, Bubbles::kNo, Cancelable::kNo) {
-  CHECK(RuntimeEnabledFeatures::ViewTransitionOnNavigationEnabled());
+  CHECK(RuntimeEnabledFeatures::ReadyToRenderEventEnabled());
 }
 
 ReadyToRenderEvent::~ReadyToRenderEvent() = default;

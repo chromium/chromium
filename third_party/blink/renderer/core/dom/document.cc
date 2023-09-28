@@ -9249,7 +9249,7 @@ bool Document::SupportsLegacyDOMMutations() {
 }
 
 void Document::EnqueueReadyToRenderEvent() {
-  CHECK(RuntimeEnabledFeatures::ViewTransitionOnNavigationEnabled());
+  CHECK(RuntimeEnabledFeatures::ReadyToRenderEventEnabled());
   CHECK(dom_window_);
 
   auto* ready_to_render_event = MakeGarbageCollected<ReadyToRenderEvent>();

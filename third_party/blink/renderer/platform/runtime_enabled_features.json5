@@ -3059,6 +3059,11 @@
       name: "ReadableStreamTeeCloneForBranch2",
       status: "stable",
     },
+    {
+      name: "ReadyToRenderEvent",
+      status: "experimental",
+      implied_by: ["ViewTransitionOnNavigation"],
+    },
     // If enabled, the Accept-Language header will be reduced.
     {
       name: "ReduceAcceptLanguage",

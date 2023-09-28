@@ -144,12 +144,15 @@ void PageAnimator::ServiceScriptedAnimations(
   // https://html.spec.whatwg.org/multipage/webappapis.html#event-loop-processing-model
 
   // TODO(bokan): Requires an update to "update the rendering" steps in HTML.
-  if (RuntimeEnabledFeatures::ViewTransitionOnNavigationEnabled()) {
-    run_for_all_active_controllers_with_timing([&](wtf_size_t i) {
+  run_for_all_active_controllers_with_timing([&](wtf_size_t i) {
+    if (RuntimeEnabledFeatures::ReadyToRenderEventEnabled()) {
       active_controllers[i]->DispatchEvents([](const Event* event) {
         return event->type() == event_type_names::kReadytorender;
       });
+    }
 
+    if (RuntimeEnabledFeatures::ViewTransitionOnNavigationEnabled()) {
+      CHECK(RuntimeEnabledFeatures::ReadyToRenderEventEnabled());
       if (const LocalDOMWindow* window = active_controllers[i]->GetWindow()) {
         CHECK(window->document());
         if (ViewTransition* transition =
@@ -157,8 +160,8 @@ void PageAnimator::ServiceScriptedAnimations(
           transition->ActivateFromSnapshot();
         }
       }
-    });
-  }
+    }
+  });
 
   // 6. For each fully active Document in docs, flush autofocus
   // candidates for that Document if its browsing context is a top-level
