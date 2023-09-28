@@ -1,0 +1,45 @@
+<!doctype html>
+<meta charset=utf-8>
+<meta name=timeout content=long>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/attribution-reporting/resources/helpers.js"></script>
+<body>
+<script>
+attribution_reporting_promise_test(async t => {
+  const source = {
+      source_event_id: generateSourceEventId(),
+      debug_reporting: true,
+      destination: 'https://{{host}}',
+      max_event_level_reports: 0,
+    };
+  await registerAttributionSrc({
+    cookie: attributionDebugCookie,
+    source,
+    method: 'a',
+  });
+  await waitForSourceToBeRegistered(source.source_event_id);
+
+  registerAttributionSrcByImg(createRedirectChain([
+    {
+      trigger: {
+        event_trigger_data: [{
+          trigger_data: '3'
+        }],
+        debug_reporting: true,
+      },
+      cookie: attributionDebugCookie,
+    }
+  ]));
+
+  const payload = await pollVerboseDebugReports();
+  assert_equals(payload.reports.length, 1);
+  const debugReport = JSON.parse(payload.reports[0].body);
+  assert_equals(debugReport.length, 1);
+  assert_equals(debugReport[0].type, 'trigger-event-excessive-reports');
+  assert_own_property(debugReport[0], 'body');
+  assert_equals(debugReport[0].body.trigger_data, '3');
+}, 'Source with max event level reports set to 0 produces no reports');
+</script>

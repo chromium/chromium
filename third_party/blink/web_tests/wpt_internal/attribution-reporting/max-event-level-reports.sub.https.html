@@ -1,0 +1,68 @@
+<!doctype html>
+<meta charset=utf-8>
+<meta name=timeout content=long>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/attribution-reporting/resources/helpers.js"></script>
+<body>
+<script>
+attribution_reporting_promise_test(async t => {
+  const source = {
+      source_event_id: generateSourceEventId(),
+      debug_reporting: true,
+      destination: 'https://{{host}}',
+      max_event_level_reports: 2,
+    };
+  await registerAttributionSrc({
+    cookie: attributionDebugCookie,
+    source,
+    method: 'a',
+  });
+  await waitForSourceToBeRegistered(source.source_event_id);
+
+  registerAttributionSrcByImg(createRedirectChain([
+    {trigger: {event_trigger_data: [{trigger_data: '3'}]}},
+    {trigger: {event_trigger_data: [{trigger_data: '4'}]}},
+  ]));
+
+  const reports = [];
+
+  while (reports.length < 2) {
+    const payload = await pollEventLevelReports();
+    payload.reports.forEach(report => {
+      reports.push(JSON.parse(report.body));
+    });
+  }
+
+  assert_equals(reports.length, 2);
+
+  reports.sort((a, b) => {
+    if (a.trigger_data < b.trigger_data) return -1;
+    if (a.trigger_data > b.trigger_data) return 1;
+    return 0;
+  });
+
+  assert_equals(reports[0].trigger_data, '3');
+  assert_equals(reports[1].trigger_data, '4');
+
+  await registerAttributionSrc({
+    trigger: {
+      event_trigger_data: [{
+        trigger_data: '5'
+      }],
+      debug_reporting: true,
+    },
+    cookie: attributionDebugCookie,
+  });
+
+  const payload = await pollVerboseDebugReports();
+  assert_equals(payload.reports.length, 1);
+  const debugReport = JSON.parse(payload.reports[0].body);
+  assert_equals(debugReport.length, 1);
+  assert_equals(debugReport[0].type, 'trigger-event-excessive-reports');
+  assert_own_property(debugReport[0], 'body');
+  assert_equals(debugReport[0].body.trigger_data, '5');
+}, 'Sources abide by max event level reports');
+</script>
