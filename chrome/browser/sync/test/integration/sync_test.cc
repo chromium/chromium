@@ -62,9 +62,11 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/os_crypt/sync/os_crypt_mocker.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/sync/base/command_line_switches.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/engine/sync_scheduler_impl.h"
 #include "components/sync/invalidations/sync_invalidations_service_impl.h"
@@ -1114,4 +1116,62 @@ void SyncTest::CheckForDataTypeFailures(size_t client_index) const {
 void SyncTest::ExcludeDataTypesFromCheckForDataTypeFailures(
     syncer::ModelTypeSet types) {
   excluded_types_from_check_for_data_type_failures_ = types;
+}
+
+syncer::ModelTypeSet AllowedTypesInStandaloneTransportMode() {
+  static_assert(49 == syncer::GetNumModelTypes(),
+                "Add new types below if they can run in transport mode");
+  // Only some types will run by default in transport mode (i.e. without their
+  // own separate opt-in).
+  syncer::ModelTypeSet allowed_types = {syncer::AUTOFILL_WALLET_CREDENTIAL,
+                                        syncer::AUTOFILL_WALLET_DATA,
+                                        syncer::AUTOFILL_WALLET_USAGE,
+                                        syncer::CONTACT_INFO,
+                                        syncer::DEVICE_INFO,
+                                        syncer::SECURITY_EVENTS,
+                                        syncer::SEND_TAB_TO_SELF,
+                                        syncer::SHARING_MESSAGE,
+                                        syncer::USER_CONSENTS};
+  allowed_types.PutAll(syncer::ControlTypes());
+
+  if (base::FeatureList::IsEnabled(
+          syncer::kSyncEnableWalletMetadataInTransportMode)) {
+    allowed_types.Put(syncer::AUTOFILL_WALLET_METADATA);
+  }
+  if (base::FeatureList::IsEnabled(
+          syncer::kSyncEnableWalletOfferInTransportMode)) {
+    allowed_types.Put(syncer::AUTOFILL_WALLET_OFFER);
+  }
+  if (base::FeatureList::IsEnabled(syncer::kEnableBookmarksAccountStorage)) {
+    allowed_types.Put(syncer::BOOKMARKS);
+  }
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kEnablePasswordsAccountStorage)) {
+    allowed_types.Put(syncer::PASSWORDS);
+  }
+  if (base::FeatureList::IsEnabled(syncer::kEnablePreferencesAccountStorage) &&
+      base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos)) {
+    allowed_types.Put(syncer::PREFERENCES);
+    allowed_types.Put(syncer::PRIORITY_PREFERENCES);
+  }
+  if (base::FeatureList::IsEnabled(
+          syncer::kReadingListEnableDualReadingListModel) &&
+      base::FeatureList::IsEnabled(
+          syncer::kReadingListEnableSyncTransportModeUponSignIn)) {
+    allowed_types.Put(syncer::READING_LIST);
+  }
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // On Lacros, Apps-related types may run in transport mode.
+  allowed_types.PutAll({syncer::APPS, syncer::APP_SETTINGS, syncer::WEB_APPS});
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // OS sync types run in transport mode.
+  allowed_types.PutAll({syncer::APP_LIST, syncer::ARC_PACKAGE,
+                        syncer::OS_PREFERENCES, syncer::OS_PRIORITY_PREFERENCES,
+                        syncer::PRINTERS,
+                        syncer::PRINTERS_AUTHORIZATION_SERVERS,
+                        syncer::WIFI_CONFIGURATIONS, syncer::WORKSPACE_DESK});
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  return allowed_types;
 }

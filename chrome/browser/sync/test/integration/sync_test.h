@@ -460,4 +460,6 @@ class SyncTest : public PlatformBrowserTest, public ProfileObserver {
       fake_server_sync_invalidation_sender_;
 };
 
+syncer::ModelTypeSet AllowedTypesInStandaloneTransportMode();
+
 #endif  // CHROME_BROWSER_SYNC_TEST_INTEGRATION_SYNC_TEST_H_
