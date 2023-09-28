@@ -10512,9 +10512,9 @@ Called by update_autofill_enums.py.-->
   <int value="2" label="(02) AR_DELEGATE"/>
   <int value="3" label="(03) SCENE_OVERLAY"/>
   <int value="4" label="(05) START_SURFACE (with tab switcher if enabled)"/>
-  <int value="5" label="(07) SELECTION_POPUP"/>
-  <int value="6" label="(08) MANUAL_FILLING"/>
-  <int value="7" label="(09) FULLSCREEN"/>
+  <int value="5" label="(08) SELECTION_POPUP"/>
+  <int value="6" label="(09) MANUAL_FILLING"/>
+  <int value="7" label="(07) FULLSCREEN"/>
   <int value="8" label="(04) BOTTOM_SHEET"/>
   <int value="9" label="(11) TAB_MODAL_HANDLER"/>
   <int value="10" label="(06) TAB_SWITCHER (if Start surface is disabled)"/>
