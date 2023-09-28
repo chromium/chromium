@@ -5,11 +5,13 @@
 #include "gpu/ipc/service/built_in_shader_cache_loader.h"
 
 #include "base/apple/foundation_util.h"
+#include "base/command_line.h"
 #include "base/files/file.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "gpu/config/gpu_switches.h"
 #include "gpu/ipc/service/built_in_shader_cache_writer.h"
 
 namespace gpu {
@@ -126,10 +128,12 @@ void BuiltInShaderCacheLoader::StartLoading() {
   CHECK(!g_loader);
   // Destroyed when finished loading.
   g_loader = new BuiltInShaderCacheLoader;
+  auto path = base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
+      switches::kShaderCachePath);
   base::ThreadPool::PostTask(
       FROM_HERE, {base::TaskPriority::USER_BLOCKING, base::MayBlock()},
       base::BindOnce(&BuiltInShaderCacheLoader::Load,
-                     base::Unretained(g_loader), base::FilePath()));
+                     base::Unretained(g_loader), path));
 }
 
 // static

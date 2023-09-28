@@ -144,4 +144,6 @@ const char kSkiaGraphiteBackendDawnSwiftshader[] = "dawn-swiftshader";
 const char kSkiaGraphiteBackendDawnVulkan[] = "dawn-vulkan";
 const char kSkiaGraphiteBackendMetal[] = "metal";
 
+const char kShaderCachePath[] = "shader-cache-path";
+
 }  // namespace switches
