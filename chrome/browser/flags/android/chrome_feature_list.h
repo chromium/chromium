@@ -139,7 +139,6 @@ BASE_DECLARE_FEATURE(kPageAnnotationsService);
 BASE_DECLARE_FEATURE(kPreconnectOnTabCreation);
 BASE_DECLARE_FEATURE(kBookmarksImprovedSaveFlow);
 BASE_DECLARE_FEATURE(kBookmarksRefresh);
-BASE_DECLARE_FEATURE(kOpaqueOriginForIncomingIntents);
 BASE_DECLARE_FEATURE(kPartnerCustomizationsUma);
 BASE_DECLARE_FEATURE(kProbabilisticCryptidRenderer);
 BASE_DECLARE_FEATURE(kQuickDeleteForAndroid);

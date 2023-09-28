@@ -1425,13 +1425,8 @@ public class IntentHandler {
                 loadUrlParams.setNavigationUIDataSupplier(navData::createUnownedNativeCopy);
             }
         } else {
-            if (ChromeFeatureList.isEnabled(ChromeFeatureList.OPAQUE_ORIGIN_FOR_INCOMING_INTENTS)
-                    || metadata != null && metadata.isRendererInitiated()) {
-                // Intent is not coming from Chrome, the sender can't be trusted.
-                // Even if the feature isn't enabled we still need to apply an opaque Origin to
-                // intents coming from the renderer. https://crbug.com/1368230
-                loadUrlParams.setInitiatorOrigin(Origin.createOpaqueOrigin());
-            }
+            // Intent is not coming from Chrome, the sender can't be trusted.
+            loadUrlParams.setInitiatorOrigin(Origin.createOpaqueOrigin());
         }
         loadUrlParams.setVerbatimHeaders(headers);
         loadUrlParams.setIsRendererInitiated(

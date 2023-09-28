@@ -276,7 +276,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kOmniboxCacheSuggestionResources,
     &kOmniboxNoopEditUrlSuggestionClicks,
     &kOmniboxWarmRecycledViewPool,
-    &kOpaqueOriginForIncomingIntents,
     &kPartnerCustomizationsUma,
     &kProbabilisticCryptidRenderer,
     &kQuickDeleteForAndroid,
@@ -889,10 +888,6 @@ BASE_FEATURE(kOmniboxNoopEditUrlSuggestionClicks,
 
 BASE_FEATURE(kOmniboxWarmRecycledViewPool,
              "OmniboxWarmRecycledViewPool",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kOpaqueOriginForIncomingIntents,
-             "OpaqueOriginForIncomingIntents",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPartnerCustomizationsUma,

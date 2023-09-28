@@ -2049,7 +2049,7 @@ public class CustomTabActivityTest {
         assertTrue(isTranslucent);
     }
 
-    private void doOpaqueOriginTest(boolean enabled, boolean prefetch) throws Exception {
+    private void doOpaqueOriginTest(boolean prefetch) throws Exception {
         TestWebServer webServer = TestWebServer.start();
         String url = webServer.setResponse("/ok.html", "<html>ok</html>", null);
         CustomTabsConnection connection = CustomTabsTestUtils.warmUpAndWait();
@@ -2071,36 +2071,20 @@ public class CustomTabActivityTest {
             mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
         }
         String actualHeader = webServer.getLastRequest("/ok.html").headerValue("Sec-Fetch-Site");
-        assertEquals(enabled ? "cross-site" : "none", actualHeader);
+        assertEquals("cross-site", actualHeader);
         webServer.shutdown();
     }
 
     @Test
     @LargeTest
-    @EnableFeatures(ChromeFeatureList.OPAQUE_ORIGIN_FOR_INCOMING_INTENTS)
     public void testOpaqueOriginFromPrefetch_Enabled() throws Exception {
-        doOpaqueOriginTest(true, true);
+        doOpaqueOriginTest(true);
     }
 
     @Test
     @LargeTest
-    @DisableFeatures(ChromeFeatureList.OPAQUE_ORIGIN_FOR_INCOMING_INTENTS)
-    public void testOpaqueOriginFromPrefetch_Disabled() throws Exception {
-        doOpaqueOriginTest(false, true);
-    }
-
-    @Test
-    @LargeTest
-    @EnableFeatures(ChromeFeatureList.OPAQUE_ORIGIN_FOR_INCOMING_INTENTS)
     public void testOpaqueOriginFromIntent_Enabled() throws Exception {
-        doOpaqueOriginTest(true, false);
-    }
-
-    @Test
-    @LargeTest
-    @DisableFeatures(ChromeFeatureList.OPAQUE_ORIGIN_FOR_INCOMING_INTENTS)
-    public void testOpaqueOriginFromIntent_Disabled() throws Exception {
-        doOpaqueOriginTest(false, false);
+        doOpaqueOriginTest(false);
     }
 
     /** Asserts that the Overlay Panel is set to allow or not allow ever hiding the Toolbar. */
