@@ -321,8 +321,10 @@
     }
 
     html.simon-enabled {
-      /* TODO(b/289375621): Move to variables when jelly enabled by default. */
-      --oobe-welcome-header-font-size: 52px;
-      --oobe-welcome-header-font-weight: 400; /* regular */
-      --oobe-welcome-header-line-height: 60px;
+      --oobe-welcome-header-font-size:
+          var(--cros-display-0_regular-font-size);
+      --oobe-welcome-header-font-weight:
+          var(--cros-display-0_regular-font-weight);
+      --oobe-welcome-header-line-height:
+          var(--cros-display-0_regular-line-height);
     }
