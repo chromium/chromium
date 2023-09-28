@@ -315,7 +315,9 @@ IN_PROC_BROWSER_TEST_F(NavigationEntryRemoverTest, RecentTabDeletion) {
   ExpectDeleteLastSessionCalled(2);
 }
 
-IN_PROC_BROWSER_TEST_F(NavigationEntryRemoverTest, RecentTabWindowDeletion) {
+// TODO(crbug.com/1487680): flaky.
+IN_PROC_BROWSER_TEST_F(NavigationEntryRemoverTest,
+                       DISABLED_RecentTabWindowDeletion) {
   // Create a new browser with three tabs and close it.
   AddBrowser(browser(), {url_a_});
   Browser* new_browser = BrowserList::GetInstance()->GetLastActive();
