@@ -121,6 +121,13 @@ class LiveCaptionSpeechRecognitionHost
   // The number of characters sent to the translation service.
   int characters_translated_ = 0;
 
+  // The number of characters omitted from the translation by the text
+  // stabilization policy. Used by metrics only.
+  int translation_characters_erased_ = 0;
+
+  // The number of requests to the translation service. Used by metrics only.
+  int partial_result_count_ = 0;
+
   std::unique_ptr<captions::GreedyTextStabilizer> greedy_text_stabilizer_;
 
   base::WeakPtrFactory<LiveCaptionSpeechRecognitionHost> weak_factory_{this};

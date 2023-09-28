@@ -194,6 +194,17 @@ LiveCaptionSpeechRecognitionHost::~LiveCaptionSpeechRecognitionHost() {
     base::UmaHistogramCounts10M(
         "Accessibility.LiveTranslate.CharactersTranslated",
         characters_translated_);
+
+    if (base::FeatureList::IsEnabled(media::kLiveCaptionLogFlickerRate)) {
+      // Log the average number of characters omitted from the translation by
+      // the text stabilization policy per partial recognition result.
+      double lag_rate =
+          (partial_result_count_ > 0)
+              ? translation_characters_erased_ / partial_result_count_
+              : 0;
+      LOG(WARNING) << "Live caption average lag rate:" << lag_rate
+                   << ". (not a warning)";
+    }
   }
 }
 
@@ -400,6 +411,9 @@ std::string LiveCaptionSpeechRecognitionHost::GetTextForDispatch(
           media::kLiveCaptionUseGreedyTextStabilizer)) {
     text = greedy_text_stabilizer_->UpdateText(text, is_final);
   }
+
+  translation_characters_erased_ += input_text.length() - text.length();
+  partial_result_count_++;
 
   return text;
 }
