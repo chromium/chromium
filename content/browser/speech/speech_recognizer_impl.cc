@@ -578,10 +578,13 @@ SpeechRecognizerImpl::StartRecording(const FSMEventArgs&) {
   int chunk_duration_ms = recognition_engine_->GetDesiredAudioChunkDurationMs();
 
   if (!device_params_.IsValid()) {
-    DLOG(ERROR) << "Audio input device not found";
-    return Abort(blink::mojom::SpeechRecognitionError(
-        blink::mojom::SpeechRecognitionErrorCode::kAudioCapture,
-        blink::mojom::SpeechAudioErrorDetails::kNoMic));
+    DLOG(WARNING) << "Audio input device not found, but one should exist -- "
+                     "using fake audio input parameters.";
+
+    // It's okay to try with fake parameters since we've already been given
+    // permission from SpeechRecognitionManagerImpl. If no device exists, this
+    // will just result in an OnCaptureError().
+    device_params_ = media::AudioParameters::UnavailableDeviceParams();
   }
 
   // Audio converter shall provide audio based on these parameters as output.
