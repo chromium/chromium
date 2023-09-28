@@ -4,15 +4,12 @@
 
 package org.chromium.chrome.browser.metrics;
 
-import android.content.Context;
 import android.content.Intent;
 
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.LargeTest;
-import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,7 +33,6 @@ import org.chromium.chrome.test.util.ChromeApplicationTestUtils;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.net.test.EmbeddedTestServer;
 
 /**
  * Tests for startup timing histograms.
@@ -79,27 +75,19 @@ public class StartupLoadingMetricsTest {
     @Rule
     public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    private String mTestPage;
-    private String mTestPage2;
-    private String mErrorPage;
-    private String mSlowPage;
-    private EmbeddedTestServer mTestServer;
-
-    @Before
-    public void setUp() {
-        Context appContext = InstrumentationRegistry.getInstrumentation()
-                                     .getTargetContext()
-                                     .getApplicationContext();
-        mTestServer = EmbeddedTestServer.createAndStartServer(appContext);
-        mTestPage = mTestServer.getURL(TEST_PAGE);
-        mTestPage2 = mTestServer.getURL(TEST_PAGE_2);
-        mErrorPage = mTestServer.getURL(ERROR_PAGE);
-        mSlowPage = mTestServer.getURL(SLOW_PAGE);
+    private String getServerURL(String url) {
+        return mTabbedActivityTestRule.getTestServer().getURL(url);
     }
 
-    private interface CheckedRunnable { void run() throws Exception; }
+    private String getTestPage() {
+        return getServerURL(TEST_PAGE);
+    }
 
-    private void runAndWaitForPageLoadMetricsRecorded(CheckedRunnable runnable) throws Exception {
+    private String getTestPage2() {
+        return getServerURL(TEST_PAGE_2);
+    }
+
+    private void runAndWaitForPageLoadMetricsRecorded(Runnable runnable) throws Exception {
         PageLoadMetricsTest.PageLoadMetricsTestObserver testObserver =
                 new PageLoadMetricsTest.PageLoadMetricsTestObserver();
         TestThreadUtils.runOnUiThreadBlockingNoException(
@@ -194,9 +182,9 @@ public class StartupLoadingMetricsTest {
     @LargeTest
     public void testWebApkStartRecorded() throws Exception {
         runAndWaitForPageLoadMetricsRecorded(
-                () -> mWebApkActivityTestRule.startWebApkActivity(mTestPage));
+                () -> mWebApkActivityTestRule.startWebApkActivity(getTestPage()));
         assertHistogramsRecordedAsExpected(1, WEB_APK_SUFFIX);
-        loadUrlAndWaitForPageLoadMetricsRecorded(mWebApkActivityTestRule, mTestPage2);
+        loadUrlAndWaitForPageLoadMetricsRecorded(mWebApkActivityTestRule, getTestPage2());
         assertHistogramsRecordedAsExpected(1, WEB_APK_SUFFIX);
     }
 
@@ -208,11 +196,13 @@ public class StartupLoadingMetricsTest {
     @LargeTest
     public void testFromExternalAppRecorded() throws Exception {
         runAndWaitForPageLoadMetricsRecorded(
-                () -> mTabbedActivityTestRule.startMainActivityFromExternalApp(mTestPage, null));
+                ()
+                        -> mTabbedActivityTestRule.startMainActivityFromExternalApp(
+                                getTestPage(), null));
         assertHistogramsRecordedAsExpected(1, TABBED_SUFFIX);
 
         // Check that no new histograms were recorded on the second navigation.
-        loadUrlAndWaitForPageLoadMetricsRecorded(mTabbedActivityTestRule, mTestPage2);
+        loadUrlAndWaitForPageLoadMetricsRecorded(mTabbedActivityTestRule, getTestPage2());
         assertHistogramsRecordedAsExpected(1, TABBED_SUFFIX);
     }
 
@@ -225,7 +215,7 @@ public class StartupLoadingMetricsTest {
         runAndWaitForPageLoadMetricsRecorded(
                 () -> mTabbedActivityTestRule.startMainActivityWithURL(UrlConstants.NTP_URL));
         assertHistogramsRecordedAsExpected(0, TABBED_SUFFIX);
-        loadUrlAndWaitForPageLoadMetricsRecorded(mTabbedActivityTestRule, mTestPage2);
+        loadUrlAndWaitForPageLoadMetricsRecorded(mTabbedActivityTestRule, getTestPage2());
         assertHistogramsRecordedAsExpected(0, TABBED_SUFFIX);
     }
 
@@ -239,7 +229,7 @@ public class StartupLoadingMetricsTest {
         runAndWaitForPageLoadMetricsRecorded(
                 () -> mTabbedActivityTestRule.startMainActivityOnBlankPage());
         assertHistogramsRecordedAsExpected(0, TABBED_SUFFIX);
-        loadUrlAndWaitForPageLoadMetricsRecorded(mTabbedActivityTestRule, mTestPage2);
+        loadUrlAndWaitForPageLoadMetricsRecorded(mTabbedActivityTestRule, getTestPage2());
         assertHistogramsRecordedAsExpected(0, TABBED_SUFFIX);
     }
 
@@ -251,9 +241,9 @@ public class StartupLoadingMetricsTest {
     @LargeTest
     public void testErrorPageNotRecorded() throws Exception {
         runAndWaitForPageLoadMetricsRecorded(
-                () -> mTabbedActivityTestRule.startMainActivityWithURL(mErrorPage));
+                () -> mTabbedActivityTestRule.startMainActivityWithURL(getServerURL(ERROR_PAGE)));
         assertHistogramsRecordedAsExpected(0, TABBED_SUFFIX);
-        loadUrlAndWaitForPageLoadMetricsRecorded(mTabbedActivityTestRule, mTestPage2);
+        loadUrlAndWaitForPageLoadMetricsRecorded(mTabbedActivityTestRule, getTestPage2());
         assertHistogramsRecordedAsExpected(0, TABBED_SUFFIX);
     }
 
@@ -265,9 +255,9 @@ public class StartupLoadingMetricsTest {
     @LargeTest
     public void testWebApkErrorPageNotRecorded() throws Exception {
         runAndWaitForPageLoadMetricsRecorded(
-                () -> mWebApkActivityTestRule.startWebApkActivity(mErrorPage));
+                () -> mWebApkActivityTestRule.startWebApkActivity(getServerURL(ERROR_PAGE)));
         assertHistogramsRecordedAsExpected(0, WEB_APK_SUFFIX);
-        loadUrlAndWaitForPageLoadMetricsRecorded(mWebApkActivityTestRule, mTestPage2);
+        loadUrlAndWaitForPageLoadMetricsRecorded(mWebApkActivityTestRule, getTestPage2());
         assertHistogramsRecordedAsExpected(0, WEB_APK_SUFFIX);
     }
 
@@ -282,9 +272,9 @@ public class StartupLoadingMetricsTest {
             Intent intent = new Intent(Intent.ACTION_VIEW);
             intent.addCategory(Intent.CATEGORY_LAUNCHER);
 
-            // mSlowPage will hang for 2 seconds before sending a response. It should be enough to
-            // put Chrome in background before the page is committed.
-            mTabbedActivityTestRule.prepareUrlIntent(intent, mSlowPage);
+            // The SLOW_PAGE will hang for 2 seconds before sending a response. It should be enough
+            // to put Chrome in background before the page is committed.
+            mTabbedActivityTestRule.prepareUrlIntent(intent, getServerURL(SLOW_PAGE));
             mTabbedActivityTestRule.launchActivity(intent);
 
             // Put Chrome in background before the page is committed.
@@ -305,7 +295,7 @@ public class StartupLoadingMetricsTest {
         runAndWaitForPageLoadMetricsRecorded(() -> {
             // Put Chrome in foreground before loading a new page.
             ChromeApplicationTestUtils.launchChrome(ApplicationProvider.getApplicationContext());
-            mTabbedActivityTestRule.loadUrl(mTestPage);
+            mTabbedActivityTestRule.loadUrl(getTestPage());
         });
         assertHistogramsRecordedAsExpected(0, TABBED_SUFFIX);
     }
@@ -320,7 +310,7 @@ public class StartupLoadingMetricsTest {
             intent.addCategory(Intent.CATEGORY_LAUNCHER);
             // Waits for the native initialization to finish. As part of it skips the foreground
             // start as requested above.
-            mTabbedActivityTestRule.startMainActivityFromIntent(intent, mTestPage);
+            mTabbedActivityTestRule.startMainActivityFromIntent(intent, getTestPage());
         });
 
         // Startup metrics should not have been recorded since the browser does not know it is in
