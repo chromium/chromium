@@ -1778,8 +1778,9 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
                         extension_id, "/simple_test_page.html"}));
 }
 
+// Flaky on several platforms: https://crbug.com/1487065
 IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
-                       CantInspectFileUrlWithoutFileAccess) {
+                       DISABLED_CantInspectFileUrlWithoutFileAccess) {
   LoadExtension("can_inspect_url");
   std::string file_url =
       net::FilePathToFileURL(
