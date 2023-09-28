@@ -19,6 +19,8 @@ source_set("platform_apps") {
     "media_galleries_permission_data.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     "//chrome/common:resources_grit",
     "//chrome/common/apps/platform_apps/api",

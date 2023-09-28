@@ -19,6 +19,8 @@ source_set("mac_notifications") {
     "unnotification_metrics.mm",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     "//base",
     "//chrome/app:generated_resources",

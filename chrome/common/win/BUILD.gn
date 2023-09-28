@@ -29,6 +29,8 @@ shared_library("eventlog_provider") {
     "eventlog_provider.cc",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   if (!is_asan && !use_clang_profiling) {
     no_default_deps = true
     ldflags = [ "/NOENTRY" ]
@@ -45,6 +47,7 @@ shared_library("eventlog_provider") {
 # link time.
 source_set("delay_load_failure_hook") {
   sources = [ "delay_load_failure_hook.cc" ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
   deps = [
     ":delay_load_failure_support",
     "//base",
@@ -56,5 +59,6 @@ source_set("delay_load_failure_support") {
     "delay_load_failure_support.cc",
     "delay_load_failure_support.h",
   ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
   deps = [ "//base" ]
 }

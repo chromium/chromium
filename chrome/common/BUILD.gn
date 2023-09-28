@@ -67,6 +67,7 @@ source_set("channel_info") {
     "channel_info.cc",
     "channel_info.h",
   ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
   deps = [
     "//build:branding_buildflags",
     "//build:chromeos_buildflags",
@@ -104,6 +105,7 @@ source_set("ini_parser") {
     "ini_parser.cc",
     "ini_parser.h",
   ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
   deps = [ "//base" ]
 }
 
@@ -522,9 +524,7 @@ static_library("non_code_constants") {
     "env_vars.cc",
     "env_vars.h",
   ]
-  if (is_win) {
-    sources += [ "chrome_icon_resources_win.h" ]
-  }
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   deps = [
     ":buildflags",
@@ -539,6 +539,10 @@ static_library("non_code_constants") {
     "//printing/buildflags",
     "//ui/base:buildflags",
   ]
+
+  if (is_win) {
+    sources += [ "chrome_icon_resources_win.h" ]
+  }
 }
 
 component("chrome_features") {
@@ -548,6 +552,7 @@ component("chrome_features") {
     "chrome_features.cc",
     "chrome_features.h",
   ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   deps = [
     ":buildflags",
@@ -575,6 +580,7 @@ static_library("url_constants") {
     "webui_url_constants.cc",
     "webui_url_constants.h",
   ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   public_deps = [
     ":buildflags",
@@ -609,6 +615,7 @@ static_library("constants") {
     "pref_font_webkit_names.h",
     "pref_names.h",
   ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   public_deps = [
     ":buildflags",

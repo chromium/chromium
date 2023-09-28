@@ -18,12 +18,7 @@ source_set("lib") {
     "speech_recognition_service_impl.h",
   ]
 
-  if (is_chromeos_ash) {
-    sources += [
-      "cros_speech_recognition_recognizer_impl.cc",
-      "cros_speech_recognition_recognizer_impl.h",
-    ]
-  }
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   public_deps = [
     "//media/mojo/mojom",
@@ -45,6 +40,13 @@ source_set("lib") {
     "//net",
     "//services/audio/public/cpp",
   ]
+
+  if (is_chromeos_ash) {
+    sources += [
+      "cros_speech_recognition_recognizer_impl.cc",
+      "cros_speech_recognition_recognizer_impl.h",
+    ]
+  }
 }
 
 if (is_chromeos_ash) {

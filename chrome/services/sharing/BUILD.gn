@@ -10,6 +10,8 @@ source_set("sharing") {
     "sharing_impl.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     "nearby",
     "webrtc",

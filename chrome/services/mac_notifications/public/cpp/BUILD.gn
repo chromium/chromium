@@ -9,6 +9,7 @@ source_set("cpp") {
     "notification_style.h",
     "notification_style.mm",
   ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
   deps = [ "//base" ]
   frameworks = [ "Foundation.framework" ]
 }

@@ -12,6 +12,8 @@ if (use_cups) {
       "ipp_parser_launcher.h",
     ]
 
+    configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
     deps = [
       "//base",
       "//chrome:strings",

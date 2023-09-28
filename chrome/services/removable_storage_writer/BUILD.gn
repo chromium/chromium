@@ -8,6 +8,8 @@ source_set("lib") {
     "removable_storage_writer.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   public_deps = [
     "//base",
     "//chrome/services/removable_storage_writer/public/mojom",

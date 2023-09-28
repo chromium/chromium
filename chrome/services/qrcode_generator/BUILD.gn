@@ -10,6 +10,8 @@ source_set("qrcode_generator") {
     "qrcode_generator_service_impl.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     "//base",
     "//chrome:strings",

@@ -11,6 +11,8 @@ enable_service = use_cups && is_chromeos_ash
 source_set("ipp_parser") {
   sources = [ "ipp_parser.h" ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     "//base",
     "//net",

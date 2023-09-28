@@ -16,6 +16,8 @@ source_set("lib") {
     "util_win_impl.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     "//base",
     "//chrome/browser/win/conflicts:module_info",

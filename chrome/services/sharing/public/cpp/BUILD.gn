@@ -16,6 +16,8 @@ source_set("cpp") {
     "sharing_webrtc_metrics.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   public_deps = [
     "//base",
     "//chrome/services/sharing/public/proto",

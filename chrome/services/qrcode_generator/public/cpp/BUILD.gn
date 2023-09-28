@@ -8,6 +8,8 @@ source_set("cpp") {
     "qrcode_generator_service.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     "//base",
     "//chrome:strings",

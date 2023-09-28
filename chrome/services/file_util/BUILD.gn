@@ -14,6 +14,8 @@ source_set("file_util") {
     "file_util_service.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     ":buildflags",
     "//base",

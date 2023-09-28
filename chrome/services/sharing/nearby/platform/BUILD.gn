@@ -68,6 +68,8 @@ source_set("platform") {
     "wifi_lan_socket.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   public_deps = [
     "//third_party/nearby:connections_local_credential_proto",
     "//third_party/nearby:platform_api_platform",

@@ -9,6 +9,8 @@ import("//testing/test.gni")
 source_set("lib") {
   sources = []
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = []
 
   public_deps = []

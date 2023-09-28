@@ -16,6 +16,8 @@ source_set("cpp") {
     "safe_media_metadata_parser.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     "//base",
     "//chrome/app:generated_resources",

@@ -8,6 +8,7 @@ import("//components/safe_browsing/buildflags.gni")
 import("//printing/buildflags/buildflags.gni")
 
 source_set("cpp") {
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
   deps = [ "//chrome/common/safe_browsing:archive_analyzer_results" ]
   public_deps = [ "//chrome/services/file_util/public/mojom" ]
 

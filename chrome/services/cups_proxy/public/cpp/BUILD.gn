@@ -18,6 +18,8 @@ source_set("cpp") {
     "type_conversions.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     "//base",
     "//chromeos/printing",

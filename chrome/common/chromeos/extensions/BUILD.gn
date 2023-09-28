@@ -26,6 +26,8 @@ static_library("extensions") {
     "chromeos_system_extensions_manifest_handler.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   public_deps = [ "//components/web_package" ]
 
   deps = [

@@ -14,6 +14,8 @@ source_set("quick_start_decoder") {
     "quick_start_decoder.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     "//base",
     "//chromeos/ash/components/quick_start",
