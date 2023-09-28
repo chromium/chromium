@@ -4166,6 +4166,11 @@ bool AXObject::IsKeyboardFocusable() const {
     // frame owner elements have SupportsFocus() == false.
     return false;
   }
+  // content-visibility:hidden or content-visibility: auto nodes should not be
+  // keyboard focusable.
+  if (DisplayLockUtilities::IsDisplayLockedPreventingPaint(element)) {
+    return false;
+  }
   return element->IsKeyboardFocusable();
 }
 
