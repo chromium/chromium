@@ -199,6 +199,19 @@
                   '|chrome/browser/ui/ash/assistant/'\
                   '|chrome/browser/ui/webui/settings/ash/ambient_mode_handler'\
     },
+    'attribution_reporting': {
+      'filepath': 'components/attribution_reporting/'\
+                  '|content/browser/attribution_reporting/'\
+                  '|content/browser/resources/attribution_reporting/'\
+                  '|content/public/android/java/src/org/chromium/content/browser/AttributionOsLevelManager.java'\
+                  '|content/test/data/attribution_reporting/'\
+                  '|services/network/attribution/'\
+                  '|third_party/blink/public/mojom/conversions/'\
+                  '|third_party/blink/renderer/core/frame/attribution_src_loader'\
+                  '|third_party/blink/web_tests/external/wpt/attribution-reporting/'\
+                  '|third_party/blink/web_tests/wpt_internal/attribution-reporting/'\
+                  '|third_party/blink/web_tests/http/tests/inspector-protocol/attribution-reporting/'
+    },
     'audio_service': {
       'filepath': 'services/audio/'
     },
@@ -2390,6 +2403,7 @@
     'ash_wm_desks': ['dandersson@chromium.org',
                      'bicioglu@google.com'],
     'assistive': ['croissant-eng+reviews@chromium.org'],
+    'attribution_reporting': ['apaseltiner+watch@chromium.org'],
     'audio_service': ['marinaciocea+watch@chromium.org',
                       'olka+watch@chromium.org'],
     'audio_settings': ['gordonseto+audio-settings-watch@google.com',
