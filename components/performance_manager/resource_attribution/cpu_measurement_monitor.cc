@@ -103,14 +103,7 @@ void ValidateCPUTimeResult(const CPUTimeResult& result) {
       result.metadata.measurement_time - result.start_time;
   CHECK(interval.is_positive());
 
-  // Cumulative CPU must not be more than was actually available. Over very
-  // short intervals (on the order of 0.01 ms) rounding up after dividing CPU
-  // between frames can lead to `cumulative_cpu` being more than `interval`, so
-  // allow 0.1 ms of slack.
-  static constexpr base::TimeDelta kEpsilon = base::Milliseconds(0.1);
-  static const int kNumProcessors = base::SysInfo::NumberOfProcessors();
   CHECK(!result.cumulative_cpu.is_negative());
-  CHECK_LE(result.cumulative_cpu, interval * kNumProcessors + kEpsilon);
 }
 
 // Adds the measurement in `delta` to `result`. The start time of `delta` must
@@ -657,6 +650,12 @@ void CPUMeasurementMonitor::CPUMeasurement::MeasureAndDistributeCPUUsage(
     // negative.
     return;
   }
+  // When measured in quick succession, GetCumulativeCPUUsage() can go
+  // backwards.
+  if (current_cpu_usage < most_recent_measurement_) {
+    current_cpu_usage = most_recent_measurement_;
+  }
+
   const base::TimeDelta cumulative_cpu_delta =
       current_cpu_usage - most_recent_measurement_;
   most_recent_measurement_ = current_cpu_usage;
@@ -672,6 +671,7 @@ void CPUMeasurementMonitor::CPUMeasurement::MeasureAndDistributeCPUUsage(
     // FrameNode or WorkerNode's containing process is measured when the node is
     // added, so `start_time` will be correctly set to the first time the node
     // is measured.
+    CHECK(!cpu_delta.is_negative());
     const auto [_, inserted] = measurement_deltas.emplace(
         context, CPUTimeResult{
                      .metadata = {.measurement_time = measurement_interval_end},

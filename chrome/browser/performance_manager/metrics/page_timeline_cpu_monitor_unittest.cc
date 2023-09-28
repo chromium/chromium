@@ -19,6 +19,7 @@
 #include "base/process/process_handle.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "base/test/test_waitable_event.h"
@@ -29,9 +30,10 @@
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
 #include "components/performance_manager/graph/worker_node_impl.h"
-#include "components/performance_manager/public/execution_context/execution_context.h"
+#include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/graph/process_node.h"
 #include "components/performance_manager/public/performance_manager.h"
+#include "components/performance_manager/public/resource_attribution/resource_contexts.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
 #include "components/performance_manager/test_support/mock_graphs.h"
 #include "components/performance_manager/test_support/test_harness_helper.h"
@@ -49,12 +51,13 @@ namespace performance_manager::metrics {
 namespace {
 
 using ::testing::_;
+using ::testing::AnyOf;
 using ::testing::DoubleEq;
 using ::testing::Eq;
 using ::testing::IsEmpty;
 using ::testing::Optional;
 
-using execution_context::ExecutionContext;
+using resource_attribution::ResourceContext;
 
 constexpr base::TimeDelta kTimeBetweenMeasurements = base::Minutes(5);
 
@@ -64,6 +67,10 @@ struct SinglePageRendererNodes {
   TestNodeWrapper<ProcessNodeImpl> process_node;
   TestNodeWrapper<PageNodeImpl> page_node;
   TestNodeWrapper<FrameNodeImpl> frame_node;
+
+  // The resource context of `frame_node`, or `page_node` if the
+  // kUseResourceAttributionCPUMonitor feature param is enabled.
+  ResourceContext resource_context;
 };
 
 // State of a simulated process for CPU measurements.
@@ -121,8 +128,8 @@ base::TimeDelta SimulatedCPUMeasurementDelegate::GetCumulativeCPUUsage() {
 
 absl::optional<double> GetMeasurementResult(
     const PageTimelineCPUMonitor::CPUUsageMap& cpu_usage_map,
-    const ExecutionContext* ec) {
-  const auto it = cpu_usage_map.find(ec);
+    const ResourceContext& context) {
+  const auto it = cpu_usage_map.find(context);
   if (it == cpu_usage_map.end()) {
     return absl::nullopt;
   }
@@ -132,15 +139,14 @@ absl::optional<double> GetMeasurementResult(
 absl::optional<double> GetMeasurementResult(
     const PageTimelineCPUMonitor::CPUUsageMap& cpu_usage_map,
     const TestNodeWrapper<FrameNodeImpl>& frame_wrapper) {
-  return GetMeasurementResult(cpu_usage_map,
-                              ExecutionContext::From(frame_wrapper.get()));
+  return GetMeasurementResult(cpu_usage_map, frame_wrapper->resource_context());
 }
 
 absl::optional<double> GetMeasurementResult(
     const PageTimelineCPUMonitor::CPUUsageMap& cpu_usage_map,
     const TestNodeWrapper<WorkerNodeImpl>& worker_wrapper) {
   return GetMeasurementResult(cpu_usage_map,
-                              ExecutionContext::From(worker_wrapper.get()));
+                              worker_wrapper->resource_context());
 }
 
 void RunOnPMSequence(base::OnceClosure closure) {
@@ -164,15 +170,39 @@ void RunOnPMSequence(base::OnceCallback<void(Graph*)> callback) {
   run_loop.Run();
 }
 
+// A GMock matcher that will match 0.0 if the kUseResourceAttributionCPUMonitor
+// feature param is enabled, or absl::nullopt if not.
+//
+// On error conditions, UpdateCPUMeasurements() will not include an entry for
+// any frame or worker in the process with the error, so GetMeasurementResult()
+// will return nullopt. But with kUseResourceAttributionCPUMonitor,
+// UpdateCPUMeasurements() returns estimates for PageNodes, which will be 0%
+// since each page still exists but the affected frames and workers don't
+// contribute any CPU. So GetMeasurementResult() returns optional<double>(0.0).
+auto ExpectedErrorResult() {
+  return ::testing::Conditional(
+      features::kUseResourceAttributionCPUMonitor.Get(),
+      Optional(DoubleEq(0.0)), Eq(absl::nullopt));
+}
+
 }  // namespace
 
-class PageTimelineCPUMonitorTest : public GraphTestHarness {
+class PageTimelineCPUMonitorTest : public GraphTestHarness,
+                                   public ::testing::WithParamInterface<bool> {
  protected:
   using Super = GraphTestHarness;
 
-  void SetUp() override {
-    GetGraphFeatures().EnableExecutionContextRegistry();
+  PageTimelineCPUMonitorTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kPageTimelineMonitor,
+        {{"use_resource_attribution_cpu_monitor",
+          GetParam() ? "true" : "false"}});
+  }
 
+  void SetUp() override {
+    if (features::kUseResourceAttributionCPUMonitor.Get()) {
+      GetGraphFeatures().EnableResourceAttributionRegistries();
+    }
     Super::SetUp();
 
     mock_graph_ =
@@ -197,6 +227,12 @@ class PageTimelineCPUMonitorTest : public GraphTestHarness {
     auto frame_node =
         CreateFrameNodeAutoId(process_node.get(), page_node.get());
 
+    // Resource Attribution stores page estimates directly in CPUUsageMap.
+    auto resource_context =
+        features::kUseResourceAttributionCPUMonitor.Get()
+            ? ResourceContext(page_node->resource_context())
+            : ResourceContext(frame_node->resource_context());
+
     // By default simulate 100% CPU usage in the renderer. To override this call
     // SetProcessCPUUsage again before advancing the clock.
     SetProcessCPUUsage(process_node.get(), 1.0);
@@ -205,6 +241,7 @@ class PageTimelineCPUMonitorTest : public GraphTestHarness {
         .process_node = std::move(process_node),
         .page_node = std::move(page_node),
         .frame_node = std::move(frame_node),
+        .resource_context = std::move(resource_context),
     };
   }
 
@@ -274,6 +311,8 @@ class PageTimelineCPUMonitorTest : public GraphTestHarness {
     return *delegate_ptr;
   }
 
+  base::test::ScopedFeatureList scoped_feature_list_;
+
   PageTimelineCPUMonitor cpu_monitor_;
 
   TestNodeWrapper<ProcessNodeImpl> mock_utility_process_;
@@ -292,7 +331,9 @@ class PageTimelineCPUMonitorTest : public GraphTestHarness {
       mock_graph_;
 };
 
-TEST_F(PageTimelineCPUMonitorTest, CPUMeasurement) {
+INSTANTIATE_TEST_SUITE_P(All, PageTimelineCPUMonitorTest, ::testing::Bool());
+
+TEST_P(PageTimelineCPUMonitorTest, CPUMeasurement) {
   // Create several renderer processes to measure. Put one page and one frame in
   // each renderer, so CPU measurements for the renderer are all assigned to
   // that frame for easy validation.
@@ -338,22 +379,22 @@ TEST_F(PageTimelineCPUMonitorTest, CPUMeasurement) {
   // after its pid became available.
   // `renderer3` only existed for the last half.
   // `renderer4` existed for the measurement but no time passed so it had 0% CPU
-  // usage.
+  // usage. (As an optimization the monitor may not include it in the results.)
   // `renderer5` is not measured yet.
   {
     auto measurements = cpu_monitor_.UpdateCPUMeasurements();
-    EXPECT_THAT(
-        GetMeasurementResult(measurements, early_exit_renderer.frame_node),
-        Eq(absl::nullopt));
-    EXPECT_THAT(GetMeasurementResult(measurements, renderer1.frame_node),
+    EXPECT_THAT(GetMeasurementResult(measurements,
+                                     early_exit_renderer.resource_context),
+                Eq(absl::nullopt));
+    EXPECT_THAT(GetMeasurementResult(measurements, renderer1.resource_context),
                 Optional(DoubleEq(1.0)));
-    EXPECT_THAT(GetMeasurementResult(measurements, renderer2.frame_node),
+    EXPECT_THAT(GetMeasurementResult(measurements, renderer2.resource_context),
                 Optional(DoubleEq(0.5)));
-    EXPECT_THAT(GetMeasurementResult(measurements, renderer3.frame_node),
+    EXPECT_THAT(GetMeasurementResult(measurements, renderer3.resource_context),
                 Optional(DoubleEq(0.5)));
-    EXPECT_THAT(GetMeasurementResult(measurements, renderer4.frame_node),
-                Optional(DoubleEq(0.0)));
-    EXPECT_THAT(GetMeasurementResult(measurements, renderer5.frame_node),
+    EXPECT_THAT(GetMeasurementResult(measurements, renderer4.resource_context),
+                AnyOf(Optional(DoubleEq(0.0)), Eq(absl::nullopt)));
+    EXPECT_THAT(GetMeasurementResult(measurements, renderer5.resource_context),
                 Eq(absl::nullopt));
   }
 
@@ -365,15 +406,15 @@ TEST_F(PageTimelineCPUMonitorTest, CPUMeasurement) {
   // All nodes existed for entire measurement interval.
   {
     auto measurements = cpu_monitor_.UpdateCPUMeasurements();
-    EXPECT_THAT(GetMeasurementResult(measurements, renderer1.frame_node),
+    EXPECT_THAT(GetMeasurementResult(measurements, renderer1.resource_context),
                 Optional(DoubleEq(1.0)));
-    EXPECT_THAT(GetMeasurementResult(measurements, renderer2.frame_node),
+    EXPECT_THAT(GetMeasurementResult(measurements, renderer2.resource_context),
                 Optional(DoubleEq(1.0)));
-    EXPECT_THAT(GetMeasurementResult(measurements, renderer3.frame_node),
+    EXPECT_THAT(GetMeasurementResult(measurements, renderer3.resource_context),
                 Optional(DoubleEq(1.0)));
-    EXPECT_THAT(GetMeasurementResult(measurements, renderer4.frame_node),
+    EXPECT_THAT(GetMeasurementResult(measurements, renderer4.resource_context),
                 Optional(DoubleEq(1.0)));
-    EXPECT_THAT(GetMeasurementResult(measurements, renderer5.frame_node),
+    EXPECT_THAT(GetMeasurementResult(measurements, renderer5.resource_context),
                 Optional(DoubleEq(1.0)));
   }
 
@@ -398,15 +439,15 @@ TEST_F(PageTimelineCPUMonitorTest, CPUMeasurement) {
 
   {
     auto measurements = cpu_monitor_.UpdateCPUMeasurements();
-    EXPECT_THAT(GetMeasurementResult(measurements, renderer1.frame_node),
+    EXPECT_THAT(GetMeasurementResult(measurements, renderer1.resource_context),
                 Optional(DoubleEq(0.5)));
-    EXPECT_THAT(GetMeasurementResult(measurements, renderer2.frame_node),
+    EXPECT_THAT(GetMeasurementResult(measurements, renderer2.resource_context),
                 Optional(DoubleEq(0.75)));
-    EXPECT_THAT(GetMeasurementResult(measurements, renderer3.frame_node),
+    EXPECT_THAT(GetMeasurementResult(measurements, renderer3.resource_context),
                 Optional(DoubleEq(0.25)));
-    EXPECT_THAT(GetMeasurementResult(measurements, renderer4.frame_node),
+    EXPECT_THAT(GetMeasurementResult(measurements, renderer4.resource_context),
                 Optional(DoubleEq(1.0)));
-    EXPECT_THAT(GetMeasurementResult(measurements, renderer5.frame_node),
+    EXPECT_THAT(GetMeasurementResult(measurements, renderer5.resource_context),
                 Optional(DoubleEq(1.0)));
   }
 
@@ -427,16 +468,16 @@ TEST_F(PageTimelineCPUMonitorTest, CPUMeasurement) {
     // that the renderers that have exited return their CPU usage for the time
     // they were alive and 0% for the rest of the measurement interval.
     auto measurements = cpu_monitor_.UpdateCPUMeasurements();
-    EXPECT_THAT(GetMeasurementResult(measurements, renderer1.frame_node),
-                Eq(absl::nullopt));
-    EXPECT_THAT(GetMeasurementResult(measurements, renderer2.frame_node),
-                Eq(absl::nullopt));
-    EXPECT_THAT(GetMeasurementResult(measurements, renderer3.frame_node),
+    EXPECT_THAT(GetMeasurementResult(measurements, renderer1.resource_context),
+                ExpectedErrorResult());
+    EXPECT_THAT(GetMeasurementResult(measurements, renderer2.resource_context),
+                ExpectedErrorResult());
+    EXPECT_THAT(GetMeasurementResult(measurements, renderer3.resource_context),
                 Optional(DoubleEq(0.0)));
-    EXPECT_THAT(GetMeasurementResult(measurements, renderer4.frame_node),
+    EXPECT_THAT(GetMeasurementResult(measurements, renderer4.resource_context),
                 Optional(DoubleEq(0.0)));
-    EXPECT_THAT(GetMeasurementResult(measurements, renderer5.frame_node),
-                Eq(absl::nullopt));
+    EXPECT_THAT(GetMeasurementResult(measurements, renderer5.resource_context),
+                ExpectedErrorResult());
   }
 
   // `renderer3` exits just before the StopMonitoring call and `renderer4`
@@ -446,7 +487,7 @@ TEST_F(PageTimelineCPUMonitorTest, CPUMeasurement) {
   SetProcessExited(renderer4.process_node.get());
 }
 
-TEST_F(PageTimelineCPUMonitorTest, CPUDistribution) {
+TEST_P(PageTimelineCPUMonitorTest, CPUDistribution) {
   // Track CPU usage of the mock utility process to make sure that measuring it
   // doesn't crash. Currently only measurements of renderer processes are
   // stored anywhere, so there are no other expectations to verify.
@@ -463,6 +504,13 @@ TEST_F(PageTimelineCPUMonitorTest, CPUDistribution) {
     EXPECT_THAT(measurements, IsEmpty());
   }
 
+  // If the kUseResourceAttributionCPUMonitor feature param is enabled,
+  // UpdateCPUMeasurements() only returns page estimates, so the frame and
+  // worker breakdowns can't be tested. The underlying CPUMeasurementMonitor
+  // unit tests validates the frame and worker breakdowns in more detail, and
+  // this test validates that the overall page estimates match the expected
+  // percentage.
+
   task_env().FastForwardBy(kTimeBetweenMeasurements);
 
   {
@@ -472,16 +520,18 @@ TEST_F(PageTimelineCPUMonitorTest, CPUDistribution) {
     // and `worker`. `other_process` splits its 50% CPU usage evenly between
     // `child_frame` and `other_worker`. See the chart in
     // MockMultiplePagesAndWorkersWithMultipleProcessesGraph.
-    EXPECT_THAT(GetMeasurementResult(measurements, mock_graph_->frame),
-                Optional(DoubleEq(0.2)));
-    EXPECT_THAT(GetMeasurementResult(measurements, mock_graph_->other_frame),
-                Optional(DoubleEq(0.2)));
-    EXPECT_THAT(GetMeasurementResult(measurements, mock_graph_->worker),
-                Optional(DoubleEq(0.2)));
-    EXPECT_THAT(GetMeasurementResult(measurements, mock_graph_->child_frame),
-                Optional(DoubleEq(0.25)));
-    EXPECT_THAT(GetMeasurementResult(measurements, mock_graph_->other_worker),
-                Optional(DoubleEq(0.25)));
+    if (!features::kUseResourceAttributionCPUMonitor.Get()) {
+      EXPECT_THAT(GetMeasurementResult(measurements, mock_graph_->frame),
+                  Optional(DoubleEq(0.2)));
+      EXPECT_THAT(GetMeasurementResult(measurements, mock_graph_->other_frame),
+                  Optional(DoubleEq(0.2)));
+      EXPECT_THAT(GetMeasurementResult(measurements, mock_graph_->worker),
+                  Optional(DoubleEq(0.2)));
+      EXPECT_THAT(GetMeasurementResult(measurements, mock_graph_->child_frame),
+                  Optional(DoubleEq(0.25)));
+      EXPECT_THAT(GetMeasurementResult(measurements, mock_graph_->other_worker),
+                  Optional(DoubleEq(0.25)));
+    }
 
     // `page` gets its CPU usage from the sum of `frame` and `worker`.
     // `other_page` gets the sum of `other_frame`, `child_frame` and
@@ -507,16 +557,18 @@ TEST_F(PageTimelineCPUMonitorTest, CPUDistribution) {
     // `process` splits its 30% CPU usage evenly between `frame`, `other_frame`
     // and `worker`. `other_process` splits its 80% CPU usage evenly between
     // `child_frame` and `other_worker`.
-    EXPECT_THAT(GetMeasurementResult(measurements, mock_graph_->frame),
-                Optional(DoubleEq(0.1)));
-    EXPECT_THAT(GetMeasurementResult(measurements, mock_graph_->other_frame),
-                Optional(DoubleEq(0.1)));
-    EXPECT_THAT(GetMeasurementResult(measurements, mock_graph_->worker),
-                Optional(DoubleEq(0.1)));
-    EXPECT_THAT(GetMeasurementResult(measurements, mock_graph_->child_frame),
-                Optional(DoubleEq(0.4)));
-    EXPECT_THAT(GetMeasurementResult(measurements, mock_graph_->other_worker),
-                Optional(DoubleEq(0.4)));
+    if (!features::kUseResourceAttributionCPUMonitor.Get()) {
+      EXPECT_THAT(GetMeasurementResult(measurements, mock_graph_->frame),
+                  Optional(DoubleEq(0.1)));
+      EXPECT_THAT(GetMeasurementResult(measurements, mock_graph_->other_frame),
+                  Optional(DoubleEq(0.1)));
+      EXPECT_THAT(GetMeasurementResult(measurements, mock_graph_->worker),
+                  Optional(DoubleEq(0.1)));
+      EXPECT_THAT(GetMeasurementResult(measurements, mock_graph_->child_frame),
+                  Optional(DoubleEq(0.4)));
+      EXPECT_THAT(GetMeasurementResult(measurements, mock_graph_->other_worker),
+                  Optional(DoubleEq(0.4)));
+    }
 
     // `page` gets its CPU usage from the sum of `frame` and `worker`.
     // `other_page` gets the sum of `other_frame`, `child_frame` and
@@ -541,16 +593,18 @@ TEST_F(PageTimelineCPUMonitorTest, CPUDistribution) {
     // `process` splits its 30% CPU usage evenly between `frame`, `other_frame`
     // and `worker`. `other_process` splits its 0% CPU usage evenly between
     // `child_frame` and `other_worker`.
-    EXPECT_THAT(GetMeasurementResult(measurements, mock_graph_->frame),
-                Optional(DoubleEq(0.1)));
-    EXPECT_THAT(GetMeasurementResult(measurements, mock_graph_->other_frame),
-                Optional(DoubleEq(0.1)));
-    EXPECT_THAT(GetMeasurementResult(measurements, mock_graph_->worker),
-                Optional(DoubleEq(0.1)));
-    EXPECT_THAT(GetMeasurementResult(measurements, mock_graph_->child_frame),
-                Optional(DoubleEq(0.0)));
-    EXPECT_THAT(GetMeasurementResult(measurements, mock_graph_->other_worker),
-                Optional(DoubleEq(0.0)));
+    if (!features::kUseResourceAttributionCPUMonitor.Get()) {
+      EXPECT_THAT(GetMeasurementResult(measurements, mock_graph_->frame),
+                  Optional(DoubleEq(0.1)));
+      EXPECT_THAT(GetMeasurementResult(measurements, mock_graph_->other_frame),
+                  Optional(DoubleEq(0.1)));
+      EXPECT_THAT(GetMeasurementResult(measurements, mock_graph_->worker),
+                  Optional(DoubleEq(0.1)));
+      EXPECT_THAT(GetMeasurementResult(measurements, mock_graph_->child_frame),
+                  Optional(DoubleEq(0.0)));
+      EXPECT_THAT(GetMeasurementResult(measurements, mock_graph_->other_worker),
+                  Optional(DoubleEq(0.0)));
+    }
 
     // `page` gets its CPU usage from the sum of `frame` and `worker`.
     // `other_page` gets the sum of `other_frame`, `child_frame` and
@@ -566,7 +620,7 @@ TEST_F(PageTimelineCPUMonitorTest, CPUDistribution) {
   cpu_monitor_.StopMonitoring(graph());
 }
 
-TEST_F(PageTimelineCPUMonitorTest, CPUMeasurementError) {
+TEST_P(PageTimelineCPUMonitorTest, CPUMeasurementError) {
   const SinglePageRendererNodes renderer1 = CreateSimpleCPUTrackingRenderer();
   SetProcessId(renderer1.process_node.get());
   const SinglePageRendererNodes renderer2 = CreateSimpleCPUTrackingRenderer();
@@ -580,11 +634,11 @@ TEST_F(PageTimelineCPUMonitorTest, CPUMeasurementError) {
 
   {
     auto measurements = cpu_monitor_.UpdateCPUMeasurements();
-    EXPECT_THAT(GetMeasurementResult(measurements, renderer1.frame_node),
+    EXPECT_THAT(GetMeasurementResult(measurements, renderer1.resource_context),
                 Optional(DoubleEq(1.0)));
-    EXPECT_THAT(GetMeasurementResult(measurements, renderer2.frame_node),
+    EXPECT_THAT(GetMeasurementResult(measurements, renderer2.resource_context),
                 Optional(DoubleEq(1.0)));
-    EXPECT_THAT(GetMeasurementResult(measurements, renderer3.frame_node),
+    EXPECT_THAT(GetMeasurementResult(measurements, renderer3.resource_context),
                 Optional(DoubleEq(1.0)));
   }
 
@@ -601,11 +655,11 @@ TEST_F(PageTimelineCPUMonitorTest, CPUMeasurementError) {
 
   {
     auto measurements = cpu_monitor_.UpdateCPUMeasurements();
-    EXPECT_THAT(GetMeasurementResult(measurements, renderer1.frame_node),
-                Eq(absl::nullopt));
-    EXPECT_THAT(GetMeasurementResult(measurements, renderer2.frame_node),
-                Eq(absl::nullopt));
-    EXPECT_THAT(GetMeasurementResult(measurements, renderer3.frame_node),
+    EXPECT_THAT(GetMeasurementResult(measurements, renderer1.resource_context),
+                ExpectedErrorResult());
+    EXPECT_THAT(GetMeasurementResult(measurements, renderer2.resource_context),
+                ExpectedErrorResult());
+    EXPECT_THAT(GetMeasurementResult(measurements, renderer3.resource_context),
                 Optional(DoubleEq(0.5)));
   }
 
@@ -613,13 +667,23 @@ TEST_F(PageTimelineCPUMonitorTest, CPUMeasurementError) {
 }
 
 class PageTimelineCPUMonitorTimingTest
-    : public ChromeRenderViewHostTestHarness {
+    : public ChromeRenderViewHostTestHarness,
+      public ::testing::WithParamInterface<bool> {
  protected:
   using Super = ChromeRenderViewHostTestHarness;
 
+  PageTimelineCPUMonitorTimingTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kPageTimelineMonitor,
+        {{"use_resource_attribution_cpu_monitor",
+          GetParam() ? "true" : "false"}});
+  }
+
   void SetUp() override {
     Super::SetUp();
-    pm_helper_.GetGraphFeatures().EnableExecutionContextRegistry();
+    if (features::kUseResourceAttributionCPUMonitor.Get()) {
+      pm_helper_.GetGraphFeatures().EnableResourceAttributionRegistries();
+    }
     pm_helper_.SetUp();
     RunOnPMSequence(base::BindLambdaForTesting([&](Graph* graph) {
       cpu_monitor_ = std::make_unique<PageTimelineCPUMonitor>();
@@ -641,11 +705,16 @@ class PageTimelineCPUMonitorTimingTest
     base::TestWaitableEvent().TimedWait(TestTimeouts::tiny_timeout());
   }
 
+  base::test::ScopedFeatureList scoped_feature_list_;
   PerformanceManagerTestHarnessHelper pm_helper_;
   std::unique_ptr<PageTimelineCPUMonitor> cpu_monitor_;
 };
 
-TEST_F(PageTimelineCPUMonitorTimingTest, ProcessLifetime) {
+INSTANTIATE_TEST_SUITE_P(All,
+                         PageTimelineCPUMonitorTimingTest,
+                         ::testing::Bool());
+
+TEST_P(PageTimelineCPUMonitorTimingTest, ProcessLifetime) {
   SetContents(CreateTestWebContents());
   content::NavigationSimulator::NavigateAndCommitFromBrowser(
       web_contents(), GURL("https://www.example.com/"));
@@ -654,6 +723,19 @@ TEST_F(PageTimelineCPUMonitorTimingTest, ProcessLifetime) {
       PerformanceManager::GetFrameNodeForRenderFrameHost(main_rfh());
   base::WeakPtr<ProcessNode> process_node =
       PerformanceManager::GetProcessNodeForRenderProcessHost(process());
+
+  auto get_measurement_result = [this](base::WeakPtr<FrameNode> frame_node) {
+    CHECK(frame_node);
+    if (features::kUseResourceAttributionCPUMonitor.Get()) {
+      // Resource Attribution stores page estimates directly in CPUUsageMap.
+      CHECK(frame_node->GetPageNode());
+      return GetMeasurementResult(
+          cpu_monitor_->UpdateCPUMeasurements(),
+          frame_node->GetPageNode()->GetResourceContext());
+    }
+    return GetMeasurementResult(cpu_monitor_->UpdateCPUMeasurements(),
+                                frame_node->GetResourceContext());
+  };
 
   // Since process() returns a MockRenderProcessHost, ProcessNode is created
   // but has no pid. (Equivalent to the time between OnProcessNodeAdded and
@@ -664,10 +746,7 @@ TEST_F(PageTimelineCPUMonitorTimingTest, ProcessLifetime) {
     EXPECT_EQ(process_node->GetProcessId(), base::kNullProcessId);
 
     // Process can't be measured yet.
-    ASSERT_TRUE(frame_node);
-    EXPECT_THAT(GetMeasurementResult(cpu_monitor_->UpdateCPUMeasurements(),
-                                     ExecutionContext::From(frame_node.get())),
-                Eq(absl::nullopt));
+    EXPECT_THAT(get_measurement_result(frame_node), Eq(absl::nullopt));
   }));
 
   // Assign a real process to the ProcessNode. (Will call
@@ -681,9 +760,7 @@ TEST_F(PageTimelineCPUMonitorTimingTest, ProcessLifetime) {
 
     // Process can be measured now.
     ASSERT_TRUE(frame_node);
-    EXPECT_THAT(GetMeasurementResult(cpu_monitor_->UpdateCPUMeasurements(),
-                                     ExecutionContext::From(frame_node.get())),
-                Optional(_));
+    EXPECT_THAT(get_measurement_result(frame_node), Optional(_));
   }));
 
   // Simulate that the process died.
@@ -700,9 +777,7 @@ TEST_F(PageTimelineCPUMonitorTimingTest, ProcessLifetime) {
     // doesn't crash.
     const auto measurements = cpu_monitor_->UpdateCPUMeasurements();
     if (frame_node) {
-      EXPECT_THAT(GetMeasurementResult(
-                      measurements, ExecutionContext::From(frame_node.get())),
-                  Eq(absl::nullopt));
+      EXPECT_THAT(get_measurement_result(frame_node), Eq(absl::nullopt));
     }
   }));
 }

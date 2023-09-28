@@ -8,19 +8,17 @@
 #include <map>
 #include <memory>
 
-#include "base/functional/callback_forward.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "components/performance_manager/public/graph/process_node.h"
+#include "components/performance_manager/public/resource_attribution/cpu_measurement_monitor.h"
+#include "components/performance_manager/public/resource_attribution/query_results.h"
+#include "components/performance_manager/public/resource_attribution/resource_contexts.h"
 
 namespace performance_manager {
 
 class Graph;
 class PageNode;
-
-namespace execution_context {
-class ExecutionContext;
-}
 
 namespace metrics {
 
@@ -32,26 +30,21 @@ class PageTimelineCPUMonitor : public ProcessNode::ObserverDefaultImpl {
   // CPUMeasurementDelegate object will be created for each ProcessNode to be
   // measured. Can be overridden for testing by passing a factory callback to
   // SetCPUMeasurementDelegateFactoryForTesting().
-  class CPUMeasurementDelegate {
-   public:
-    using FactoryCallback =
-        base::RepeatingCallback<std::unique_ptr<CPUMeasurementDelegate>(
-            const ProcessNode*)>;
-
-    CPUMeasurementDelegate() = default;
-    virtual ~CPUMeasurementDelegate() = default;
-
-    // Requests CPU usage for the process. This is [[nodiscard]] to match the
-    // semantics of ProcessMetrics::GetCumulativeCPUUsage().
-    [[nodiscard]] virtual base::TimeDelta GetCumulativeCPUUsage() = 0;
-  };
+  using CPUMeasurementDelegate =
+      resource_attribution::CPUMeasurementMonitor::CPUMeasurementDelegate;
 
   // A map from FrameNode's or WorkerNode's to the estimated CPU usage of each.
   // The estimate is a fraction in the range 0% to 100% *
   // SysInfo::NumberOfProcessors(), the same as the return value of
   // ProcessMetrics::GetPlatformIndependentCPUUsage().
-  using CPUUsageMap =
-      std::map<const execution_context::ExecutionContext*, double>;
+  //
+  // If the kUseResourceAttributionCPUMonitor feature parameter is enabled, the
+  // map is keyed by PageNode instead since `cpu_measurement_monitor_` returns
+  // page estimates. In production the FrameNode and WorkerNode values are only
+  // ever used as inputs to EstimatePageCPUUsage() to get page estimates, so
+  // it's more efficient to only store the final page estimates when they're
+  // available.
+  using CPUUsageMap = std::map<resource_attribution::ResourceContext, double>;
 
   PageTimelineCPUMonitor();
   ~PageTimelineCPUMonitor() override;
@@ -72,11 +65,13 @@ class PageTimelineCPUMonitor : public ProcessNode::ObserverDefaultImpl {
 
   // Updates the CPU measurements for each ProcessNode being tracked and returns
   // the estimated CPU usage of each frame and worker in those processes since
-  // the last time UpdateCPUMeasurements() was called.
+  // the last time UpdateCPUMeasurements() was called .
   CPUUsageMap UpdateCPUMeasurements();
 
   // Helper to estimate the CPU usage of a PageNode given the estimates for all
-  // frames and workers.
+  // frames and workers. If the kUseResourceAttributionCPUMonitor feature
+  // parameter is enabled, this simply looks up `page_node` in `cpu_usage_map`
+  // which already includes page estimates.
   static double EstimatePageCPUUsage(const PageNode* page_node,
                                      const CPUUsageMap& cpu_usage_map);
 
@@ -126,6 +121,12 @@ class PageTimelineCPUMonitor : public ProcessNode::ObserverDefaultImpl {
   // `cpu_measurement_map_`.
   void MonitorCPUUsage(const ProcessNode* process_node);
 
+  // Uses `cpu_measurement_monitor_` to update CPU measurements. Called from
+  // UpdateCPUMeasurements() if the kUseResourceAttributionCPUMonitor feature
+  // parameter is enabled.
+  CPUUsageMap UpdateResourceAttributionCPUMeasurements(
+      base::TimeDelta measurement_interval);
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   // Map of process nodes to ProcessMetrics used to measure CPU usage.
@@ -140,6 +141,19 @@ class PageTimelineCPUMonitor : public ProcessNode::ObserverDefaultImpl {
   // each ProcessNode being measured.
   CPUMeasurementDelegate::FactoryCallback cpu_measurement_delegate_factory_
       GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // If the kUseResourceAttributionCPUMonitor feature parameter is enabled,
+  // PageTimelineCPUMonitor will get CPU measurements from this, otherwise it
+  // will perform its own measurements.
+  resource_attribution::CPUMeasurementMonitor cpu_measurement_monitor_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // If the kUseResourceAttributionCPUMonitor feature parameter is enabled, this
+  // will cache the measurements of each page when UpdateCPUMeasurements is
+  // called. Otherwise it's unused.
+  std::map<resource_attribution::ResourceContext,
+           resource_attribution::CPUTimeResult>
+      cached_cpu_measurements_ GUARDED_BY_CONTEXT(sequence_checker_);
 };
 
 }  // namespace metrics

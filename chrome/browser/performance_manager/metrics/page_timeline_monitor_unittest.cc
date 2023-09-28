@@ -6,10 +6,12 @@
 
 #include <map>
 #include <memory>
+#include <utility>
 
 #include "base/containers/fixed_flat_map.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -17,6 +19,7 @@
 #include "components/performance_manager/embedder/graph_features.h"
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
 #include "components/performance_manager/public/decorators/tab_page_decorator.h"
+#include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/mojom/lifecycle.mojom-shared.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
@@ -70,8 +73,6 @@ class PageTimelineMonitorUnitTest : public GraphTestHarness {
       delete;
 
   void SetUp() override {
-    GetGraphFeatures().EnableExecutionContextRegistry();
-
     GraphTestHarness::SetUp();
 
     graph()->PassToGraph(
@@ -135,6 +136,41 @@ void PageTimelineMonitorUnitTest::TestBackgroundStates(
   }
   ResetUkmRecorder();
 }
+
+// A test that runs with various values of the kUseResourceAttributionCPUMonitor
+// feature flag.
+class PageTimelineMonitorWithFeatureTest
+    : public PageTimelineMonitorUnitTest,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  PageTimelineMonitorWithFeatureTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kPageTimelineMonitor,
+        {{"use_resource_attribution_cpu_monitor",
+          GetParam() ? "true" : "false"}});
+  }
+
+  void SetUp() override {
+    if (features::kUseResourceAttributionCPUMonitor.Get()) {
+      GetGraphFeatures().EnableResourceAttributionRegistries();
+    }
+    PageTimelineMonitorUnitTest::SetUp();
+  }
+
+  void TearDown() override {
+    // Destroy `monitor_` before `scoped_feature_list_` so that the feature flag
+    // doesn't change during its destructor.
+    graph()->TakeFromGraph(monitor_.ExtractAsDangling());
+    PageTimelineMonitorUnitTest::TearDown();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         PageTimelineMonitorWithFeatureTest,
+                         ::testing::Bool());
 
 TEST_F(PageTimelineMonitorUnitTest, TestPageTimeline) {
   MockSinglePageInSingleProcessGraph mock_graph(graph());
@@ -535,7 +571,7 @@ TEST_F(PageTimelineMonitorUnitTest, TestUpdatePageNodeBeforeTypeChange) {
   TriggerCollectSlice();
 }
 
-TEST_F(PageTimelineMonitorUnitTest, TestResourceUsage) {
+TEST_P(PageTimelineMonitorWithFeatureTest, TestResourceUsage) {
   MockMultiplePagesWithMultipleProcessesGraph mock_graph(graph());
   const ukm::SourceId mock_source_id = ukm::AssignNewSourceId();
   mock_graph.page->SetType(performance_manager::PageType::kTab);

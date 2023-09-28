@@ -16,7 +16,7 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "components/performance_manager/public/execution_context/execution_context.h"
+#include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/graph_operations.h"
@@ -24,6 +24,8 @@
 #include "components/performance_manager/public/graph/process_node.h"
 #include "components/performance_manager/public/graph/worker_node.h"
 #include "components/performance_manager/public/resource_attribution/attribution_helpers.h"
+#include "components/performance_manager/public/resource_attribution/query_results.h"
+#include "components/performance_manager/public/resource_attribution/resource_contexts.h"
 #include "content/public/browser/browser_child_process_host.h"
 #include "content/public/common/process_type.h"
 
@@ -31,7 +33,8 @@ namespace performance_manager::metrics {
 
 namespace {
 
-using execution_context::ExecutionContext;
+using resource_attribution::PageContext;
+using resource_attribution::ResourceContext;
 
 class CPUMeasurementDelegateImpl final
     : public PageTimelineCPUMonitor::CPUMeasurementDelegate {
@@ -81,6 +84,12 @@ PageTimelineCPUMonitor::~PageTimelineCPUMonitor() = default;
 void PageTimelineCPUMonitor::SetCPUMeasurementDelegateFactoryForTesting(
     CPUMeasurementDelegate::FactoryCallback factory) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (features::kUseResourceAttributionCPUMonitor.Get()) {
+    cpu_measurement_monitor_
+        .SetCPUMeasurementDelegateFactoryForTesting(  // IN_TEST
+            std::move(factory));
+    return;
+  }
   // Ensure that all CPU measurements use the same delegate.
   CHECK(cpu_measurement_map_.empty());
   if (factory.is_null()) {
@@ -93,13 +102,20 @@ void PageTimelineCPUMonitor::SetCPUMeasurementDelegateFactoryForTesting(
 
 void PageTimelineCPUMonitor::StartMonitoring(Graph* graph) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  graph->AddProcessNodeObserver(this);
 
   CHECK(last_measurement_time_.is_null());
   last_measurement_time_ = base::TimeTicks::Now();
 
-  // Start monitoring CPU usage for all existing processes. Can't read their CPU
-  // usage until they have a pid assigned.
+  if (features::kUseResourceAttributionCPUMonitor.Get()) {
+    CHECK(cached_cpu_measurements_.empty());
+    cpu_measurement_monitor_.StartMonitoring(graph);
+    return;
+  }
+
+  graph->AddProcessNodeObserver(this);
+
+  // Start monitoring CPU usage for all existing processes. Can't read their
+  // CPU usage until they have a pid assigned.
   for (const ProcessNode* process_node : graph->GetAllProcessNodes()) {
     if (process_node->GetProcessType() == content::PROCESS_TYPE_RENDERER &&
         process_node->GetProcessId() != base::kNullProcessId) {
@@ -110,10 +126,16 @@ void PageTimelineCPUMonitor::StartMonitoring(Graph* graph) {
 
 void PageTimelineCPUMonitor::StopMonitoring(Graph* graph) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  cpu_measurement_map_.clear();
   CHECK(!last_measurement_time_.is_null());
   last_measurement_time_ = base::TimeTicks();
-  graph->RemoveProcessNodeObserver(this);
+
+  if (features::kUseResourceAttributionCPUMonitor.Get()) {
+    cpu_measurement_monitor_.StopMonitoring();
+    cached_cpu_measurements_.clear();
+  } else {
+    cpu_measurement_map_.clear();
+    graph->RemoveProcessNodeObserver(this);
+  }
 }
 
 PageTimelineCPUMonitor::CPUUsageMap
@@ -124,9 +146,14 @@ PageTimelineCPUMonitor::UpdateCPUMeasurements() {
   CHECK(!last_measurement_time_.is_null());
   CPUUsageMap cpu_usage_map;
   const base::TimeTicks now = base::TimeTicks::Now();
-  for (auto& [process_node, cpu_measurement] : cpu_measurement_map_) {
-    cpu_measurement.MeasureAndDistributeCPUUsage(
-        process_node, last_measurement_time_, now, cpu_usage_map);
+  if (features::kUseResourceAttributionCPUMonitor.Get()) {
+    cpu_usage_map =
+        UpdateResourceAttributionCPUMeasurements(now - last_measurement_time_);
+  } else {
+    for (auto& [process_node, cpu_measurement] : cpu_measurement_map_) {
+      cpu_measurement.MeasureAndDistributeCPUUsage(
+          process_node, last_measurement_time_, now, cpu_usage_map);
+    }
   }
   last_measurement_time_ = now;
   return cpu_usage_map;
@@ -136,10 +163,16 @@ PageTimelineCPUMonitor::UpdateCPUMeasurements() {
 double PageTimelineCPUMonitor::EstimatePageCPUUsage(
     const PageNode* page_node,
     const CPUUsageMap& cpu_usage_map) {
+  if (features::kUseResourceAttributionCPUMonitor.Get()) {
+    // Page estimates are stored directly in `cpu_usage_map`.
+    const auto it = cpu_usage_map.find(page_node->GetResourceContext());
+    return it == cpu_usage_map.end() ? 0.0 : it->second;
+  }
+
   double page_cpu_usage = 0.0;
   auto accumulate_cpu_usage = [&page_cpu_usage,
-                               &cpu_usage_map](const ExecutionContext* ec) {
-    const auto it = cpu_usage_map.find(ec);
+                               &cpu_usage_map](const ResourceContext& context) {
+    const auto it = cpu_usage_map.find(context);
     // A context might be missing from the map if there was an error measuring
     // the CPU usage of its process.
     if (it != cpu_usage_map.end()) {
@@ -148,11 +181,11 @@ double PageTimelineCPUMonitor::EstimatePageCPUUsage(
   };
   GraphOperations::VisitFrameTreePreOrder(page_node, [&accumulate_cpu_usage](
                                                          const FrameNode* f) {
-    accumulate_cpu_usage(ExecutionContext::From(f));
+    accumulate_cpu_usage(f->GetResourceContext());
     // TODO(crbug.com/1410503): Handle non-dedicated workers, which could appear
     // as children of multiple frames.
     f->VisitChildDedicatedWorkers([&accumulate_cpu_usage](const WorkerNode* w) {
-      accumulate_cpu_usage(ExecutionContext::From(w));
+      accumulate_cpu_usage(w->GetResourceContext());
       return true;
     });
     return true;
@@ -163,6 +196,7 @@ double PageTimelineCPUMonitor::EstimatePageCPUUsage(
 void PageTimelineCPUMonitor::OnProcessLifetimeChange(
     const ProcessNode* process_node) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(!features::kUseResourceAttributionCPUMonitor.Get());
   if (last_measurement_time_.is_null()) {
     // Not monitoring CPU usage yet.
     CHECK(cpu_measurement_map_.empty());
@@ -188,17 +222,120 @@ void PageTimelineCPUMonitor::OnProcessLifetimeChange(
 void PageTimelineCPUMonitor::OnBeforeProcessNodeRemoved(
     const ProcessNode* process_node) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(!features::kUseResourceAttributionCPUMonitor.Get());
   cpu_measurement_map_.erase(process_node);
 }
 
 void PageTimelineCPUMonitor::MonitorCPUUsage(const ProcessNode* process_node) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(!features::kUseResourceAttributionCPUMonitor.Get());
   // Only measure renderers.
   CHECK_EQ(process_node->GetProcessType(), content::PROCESS_TYPE_RENDERER);
   const auto& [it, was_inserted] = cpu_measurement_map_.emplace(
       process_node,
       CPUMeasurement(cpu_measurement_delegate_factory_.Run(process_node)));
   CHECK(was_inserted);
+}
+
+PageTimelineCPUMonitor::CPUUsageMap
+PageTimelineCPUMonitor::UpdateResourceAttributionCPUMeasurements(
+    base::TimeDelta measurement_interval) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(features::kUseResourceAttributionCPUMonitor.Get());
+  if (measurement_interval.is_zero()) {
+    // No time passed to measure.
+    return CPUUsageMap();
+  }
+  CHECK(measurement_interval.is_positive());
+
+  // Swap a new measurement into `cached_cpu_measurements_`, storing the
+  // previous contents in `previous_measurements`.
+  std::map<ResourceContext, resource_attribution::CPUTimeResult>
+      previous_measurements =
+          std::exchange(cached_cpu_measurements_,
+                        cpu_measurement_monitor_.UpdateAndGetCPUMeasurements());
+
+  CPUUsageMap cpu_usage_map;
+  for (const auto& [context, result] : cached_cpu_measurements_) {
+    if (!resource_attribution::ContextIs<PageContext>(context)) {
+      continue;
+    }
+
+    // Let time A be the last time UpdateCPUMeasurements() was called (with the
+    // results saved in `previous_measurements`), or the time when
+    // StartMonitoring() was called if this is the first one
+    // (`previous_measurements` will be empty).
+    //
+    // Let time B be current time. (`measurement_interval` is A..B.)
+    //
+    // There are 4 cases:
+    //
+    // 1. The context was created at time C, between A and B. (It will not be
+    // found in `previous_measurements`).
+    //
+    // This snapshot should include 0% CPU for time A..C, and the measured % of
+    // CPU for time C..B.
+    //
+    // A    C         B
+    // |----+---------|
+    // | 0% |   X%    |
+    //
+    // CPU(C..B) is `result.cumulative_cpu`.
+    // `result.start_time` is C.
+    // `result.metadata.measurement_time` is B.
+    //
+    // 2. The context existed for the entire duration A..B.
+    //
+    // This snapshot should include the measured % of CPU for the whole time
+    // A..B.
+    //
+    // A              B
+    // |--------------|
+    // |      X%      |
+    //
+    // CPU(A..B) is `result.cumulative_cpu -
+    // previous_measurements[context].cumulative_cpu`.
+    // `result.start_time` <= A.
+    // `result.metadata.measurement_time` is B.
+    //
+    // 3. Context created before time A, exited at time D, between A and B.
+    //
+    // The snapshot should include the measured % of CPU for time A..D, and 0%
+    // CPU for time D..B.
+    //
+    // A         D    B
+    // |---------+----|
+    // |    X%   | 0% |
+    //
+    // CPU(A..D) is `result.cumulative_cpu -
+    // previous_measurements[context].cumulative_cpu`.
+    // `result.start_time` <= A.
+    // `result.metadata.measurement_time` is D.
+    //
+    // 4. Context created at time C and exited at time D, both between A and B.
+    // (context is not found in `previous_measurements`.
+    // `result.cumulative_cpu` ends at time D, which is
+    // `result.metadata.measurement_time`.)
+    //
+    // The snapshot should include the measured % of CPU for time C..D, and 0%
+    // CPU for the rest.
+    //
+    // A    C    D    B
+    // |----+----+----|
+    // | 0% | X% | 0% |
+    //
+    // CPU(C..D) is `result.cumulative_cpu`.
+    // `result.start_time` is C.
+    // `result.metadata.measurement_time` is D.
+    base::TimeDelta current_cpu = result.cumulative_cpu;
+    const auto it = previous_measurements.find(context);
+    if (it != previous_measurements.end()) {
+      current_cpu -= it->second.cumulative_cpu;
+    }
+    CHECK(!current_cpu.is_negative());
+    cpu_usage_map.emplace(context, current_cpu / measurement_interval);
+  }
+  return cpu_usage_map;
 }
 
 PageTimelineCPUMonitor::CPUMeasurement::CPUMeasurement(
@@ -351,10 +488,10 @@ void PageTimelineCPUMonitor::CPUMeasurement::MeasureAndDistributeCPUUsage(
   resource_attribution::SplitResourceAmongFramesAndWorkers(
       current_cpu_proportion, process_node,
       [&cpu_usage_map](const FrameNode* f, double cpu) {
-        cpu_usage_map.emplace(ExecutionContext::From(f), cpu);
+        cpu_usage_map.emplace(f->GetResourceContext(), cpu);
       },
       [&cpu_usage_map](const WorkerNode* w, double cpu) {
-        cpu_usage_map.emplace(ExecutionContext::From(w), cpu);
+        cpu_usage_map.emplace(w->GetResourceContext(), cpu);
       });
 }
 
