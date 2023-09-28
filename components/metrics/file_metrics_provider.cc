@@ -546,6 +546,12 @@ FileMetricsProvider::AccessResult FileMetricsProvider::CheckAndMapMetricSource(
   // Create an allocator for the mapped file. Ownership passes to the allocator.
   source->allocator = std::make_unique<base::PersistentHistogramAllocator>(
       std::move(memory_allocator));
+  // Pass a custom RangesManager so that we do not register the BucketRanges
+  // with the global StatisticsRecorder when creating histogram objects using
+  // the allocator's underlying data. Otherwise, it could add unnecessary
+  // contention, and possibly a low amount of extra memory that will never be
+  // released.
+  source->allocator->SetRangesManager(new base::RangesManager());
 
   // Check that an "independent" file has the necessary information present.
   if (source->association == ASSOCIATE_INTERNAL_PROFILE &&
@@ -696,10 +702,6 @@ bool FileMetricsProvider::ProvideIndependentMetricsOnTaskRunner(
 
   if (PersistentSystemProfile::GetSystemProfile(
           *source->allocator->memory_allocator(), system_profile_proto)) {
-    // Pass a custom RangesManager so that we do not register the BucketRanges
-    // with the global statistics recorder. Otherwise, it could add unnecessary
-    // contention, and a low amount of extra memory that will never be released.
-    source->allocator->SetRangesManager(new base::RangesManager());
     system_profile_proto->mutable_stability()->set_from_previous_run(true);
     RecordHistogramSnapshotsFromSource(
         snapshot_manager, source,
