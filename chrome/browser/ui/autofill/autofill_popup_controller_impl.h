@@ -106,8 +106,6 @@ class AutofillPopupControllerImpl
   // view is destroyed.
   void PinView();
 
-  void KeepPopupOpenForTesting() { keep_popup_open_for_testing_ = true; }
-
   // Hides the popup and destroys the controller. This also invalidates
   // `delegate_`.
   void Hide(PopupHidingReason reason) override;
@@ -129,13 +127,22 @@ class AutofillPopupControllerImpl
       AutoselectFirstSuggestion autoselect_first_suggestion) override;
   void HideSubPopup() override;
 
+  // PictureInPictureWindowManager::Observer
+  void OnEnterPictureInPicture() override;
+
+  void KeepPopupOpenForTesting() { keep_popup_open_for_testing_ = true; }
+
   // Disables show thresholds. See the documentation of the member for details.
   void DisableThresholdForTesting(bool disable_threshold) {
     disable_threshold_for_testing_ = disable_threshold;
   }
 
-  // PictureInPictureWindowManager::Observer
-  void OnEnterPictureInPicture() override;
+  void SetViewForTesting(base::WeakPtr<AutofillPopupView> view) {
+    view_ = std::move(view);
+    time_view_shown_ = base::TimeTicks::Now();
+  }
+
+  int GetLineCountForTesting() const { return GetLineCount(); }
 
  protected:
   FRIEND_TEST_ALL_PREFIXES(AutofillPopupControllerUnitTest,
@@ -266,10 +273,6 @@ class AutofillPopupControllerImpl
 
   // Returns `true` if this popup has no parent, and `false` for sub-popups.
   bool IsRootPopup() const;
-
-  friend class AutofillPopupControllerUnitTest;
-  friend class AutofillPopupControllerAccessibilityUnitTest;
-  void SetViewForTesting(base::WeakPtr<AutofillPopupView> view);
 
   PopupControllerCommon controller_common_;
   AutofillPopupViewPtr view_;

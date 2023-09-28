@@ -210,12 +210,12 @@ class TestAutofillPopupController : public AutofillPopupControllerImpl {
 
 }  // namespace
 
-class AutofillPopupControllerUnitTest : public ChromeRenderViewHostTestHarness {
+class AutofillPopupControllerImplTest : public ChromeRenderViewHostTestHarness {
  public:
-  AutofillPopupControllerUnitTest()
+  AutofillPopupControllerImplTest()
       : ChromeRenderViewHostTestHarness(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
-  ~AutofillPopupControllerUnitTest() override = default;
+  ~AutofillPopupControllerImplTest() override = default;
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
@@ -354,7 +354,7 @@ class AutofillPopupControllerUnitTest : public ChromeRenderViewHostTestHarness {
   base::WeakPtr<AutofillPopupControllerImpl> autofill_popup_controller_;
 };
 
-TEST_F(AutofillPopupControllerUnitTest, RemoveSuggestion) {
+TEST_F(AutofillPopupControllerImplTest, RemoveSuggestion) {
   ShowSuggestions({PopupItemId::kAddressEntry, PopupItemId::kAddressEntry,
                    PopupItemId::kAutofillOptions});
 
@@ -375,7 +375,7 @@ TEST_F(AutofillPopupControllerUnitTest, RemoveSuggestion) {
   EXPECT_TRUE(popup_controller().RemoveSuggestion(0));
 }
 
-TEST_F(AutofillPopupControllerUnitTest,
+TEST_F(AutofillPopupControllerImplTest,
        RemoveAutocompleteSuggestion_AnnounceText) {
   base::HistogramTester histogram_tester;
   ShowSuggestions({Suggestion(u"main text", PopupItemId::kAutocompleteEntry)});
@@ -386,7 +386,7 @@ TEST_F(AutofillPopupControllerUnitTest,
   EXPECT_TRUE(popup_controller().RemoveSuggestion(0));
 }
 
-TEST_F(AutofillPopupControllerUnitTest,
+TEST_F(AutofillPopupControllerImplTest,
        RemoveAutocompleteSuggestion_IgnoresClickOutsideCheck) {
   ShowSuggestions(
       {PopupItemId::kAutocompleteEntry, PopupItemId::kAutocompleteEntry});
@@ -406,7 +406,7 @@ TEST_F(AutofillPopupControllerUnitTest,
       popup_controller().ShouldIgnoreMouseObservedOutsideItemBoundsCheck());
 }
 
-TEST_F(AutofillPopupControllerUnitTest,
+TEST_F(AutofillPopupControllerImplTest,
        ManualFallBackTriggerSource_IgnoresClickOutsideCheck) {
   ShowSuggestions({PopupItemId::kAddressEntry},
                   AutofillSuggestionTriggerSource::
@@ -421,7 +421,7 @@ TEST_F(AutofillPopupControllerUnitTest,
       popup_controller().ShouldIgnoreMouseObservedOutsideItemBoundsCheck());
 }
 
-TEST_F(AutofillPopupControllerUnitTest, UpdateDataListValues) {
+TEST_F(AutofillPopupControllerImplTest, UpdateDataListValues) {
   ShowSuggestions({PopupItemId::kAddressEntry});
 
   // Add one data list entry.
@@ -492,7 +492,7 @@ TEST_F(AutofillPopupControllerUnitTest, UpdateDataListValues) {
             popup_controller().GetSuggestionAt(0).popup_item_id);
 }
 
-TEST_F(AutofillPopupControllerUnitTest, PopupsWithOnlyDataLists) {
+TEST_F(AutofillPopupControllerImplTest, PopupsWithOnlyDataLists) {
   // Create the popup with a single datalist element.
   ShowSuggestions({PopupItemId::kDatalistEntry});
 
@@ -520,7 +520,7 @@ TEST_F(AutofillPopupControllerUnitTest, PopupsWithOnlyDataLists) {
   popup_controller().UpdateDataListValues(data_list_values, data_list_values);
 }
 
-TEST_F(AutofillPopupControllerUnitTest, GetOrCreateAndroid) {
+TEST_F(AutofillPopupControllerImplTest, GetOrCreateAndroid) {
   NiceMock<MockAutofillExternalDelegate> delegate(&autofill_manager());
 
   WeakPtr<AutofillPopupControllerImpl> controller =
@@ -575,7 +575,7 @@ TEST_F(AutofillPopupControllerUnitTest, GetOrCreateAndroid) {
   delete test_controller;
 }
 
-TEST_F(AutofillPopupControllerUnitTest, ProperlyResetController) {
+TEST_F(AutofillPopupControllerImplTest, ProperlyResetController) {
   ShowSuggestions(
       {PopupItemId::kAutocompleteEntry, PopupItemId::kAutocompleteEntry});
 
@@ -584,10 +584,10 @@ TEST_F(AutofillPopupControllerUnitTest, ProperlyResetController) {
       AutofillPopupControllerImpl::GetOrCreate(
           popup_controller().GetWeakPtr(), delegate()->GetWeakPtrForTest(),
           nullptr, nullptr, gfx::RectF(), base::i18n::UNKNOWN_DIRECTION);
-  EXPECT_EQ(0, controller->GetLineCount());
+  EXPECT_EQ(0, controller->GetLineCountForTesting());
 }
 
-TEST_F(AutofillPopupControllerUnitTest, HidingClearsPreview) {
+TEST_F(AutofillPopupControllerImplTest, HidingClearsPreview) {
   // Create a new controller, because hiding destroys it and we can't destroy it
   // twice.
   StrictMock<MockAutofillExternalDelegate> delegate(&autofill_manager());
@@ -601,7 +601,7 @@ TEST_F(AutofillPopupControllerUnitTest, HidingClearsPreview) {
   test_controller->DoHide();
 }
 
-TEST_F(AutofillPopupControllerUnitTest, DontHideWhenWaitingForData) {
+TEST_F(AutofillPopupControllerImplTest, DontHideWhenWaitingForData) {
   EXPECT_CALL(*autofill_popup_view(), Hide).Times(0);
   popup_controller().PinView();
 
@@ -614,7 +614,7 @@ TEST_F(AutofillPopupControllerUnitTest, DontHideWhenWaitingForData) {
   Mock::VerifyAndClearExpectations(autofill_popup_view());
 }
 
-TEST_F(AutofillPopupControllerUnitTest, ShouldReportHidingPopupReason) {
+TEST_F(AutofillPopupControllerImplTest, ShouldReportHidingPopupReason) {
   // Create a new controller, because hiding destroys it and we can't destroy it
   // twice (since we already hide it in the destructor).
   NiceMock<MockAutofillExternalDelegate> delegate(&autofill_manager());
@@ -633,7 +633,7 @@ TEST_F(AutofillPopupControllerUnitTest, ShouldReportHidingPopupReason) {
 
 // This is a regression test for crbug.com/521133 to ensure that we don't crash
 // when suggestions updates race with user selections.
-TEST_F(AutofillPopupControllerUnitTest, SelectInvalidSuggestion) {
+TEST_F(AutofillPopupControllerImplTest, SelectInvalidSuggestion) {
   ShowSuggestions({PopupItemId::kAddressEntry});
 
   EXPECT_CALL(*delegate(), DidAcceptSuggestion).Times(0);
@@ -643,7 +643,7 @@ TEST_F(AutofillPopupControllerUnitTest, SelectInvalidSuggestion) {
       /*index=*/1, base::TimeTicks::Now());  // Out of bounds!
 }
 
-TEST_F(AutofillPopupControllerUnitTest, AcceptSuggestionRespectsTimeout) {
+TEST_F(AutofillPopupControllerImplTest, AcceptSuggestionRespectsTimeout) {
   base::HistogramTester histogram_tester;
   ShowSuggestions({PopupItemId::kAddressEntry});
 
@@ -661,7 +661,7 @@ TEST_F(AutofillPopupControllerUnitTest, AcceptSuggestionRespectsTimeout) {
       "Autofill.Popup.AcceptanceDelayThresholdNotMet", 2);
 }
 
-TEST_F(AutofillPopupControllerUnitTest,
+TEST_F(AutofillPopupControllerImplTest,
        AcceptSuggestionTimeoutIsUpdatedOnPopupMove) {
   base::HistogramTester histogram_tester;
   ShowSuggestions({PopupItemId::kAddressEntry});
@@ -695,7 +695,7 @@ TEST_F(AutofillPopupControllerUnitTest,
 // Tests that when a picture-in-picture window is initialized, there is a call
 // to the popup view to check if the autofill popup bounds overlap with the
 // picture-in-picture window.
-TEST_F(AutofillPopupControllerUnitTest,
+TEST_F(AutofillPopupControllerImplTest,
        CheckBoundsOverlapWithPictureInPicture) {
   EXPECT_CALL(*autofill_popup_view(), OverlapsWithPictureInPictureWindow)
       .Times(1);
@@ -705,7 +705,7 @@ TEST_F(AutofillPopupControllerUnitTest,
 }
 
 #if BUILDFLAG(IS_ANDROID)
-TEST_F(AutofillPopupControllerUnitTest,
+TEST_F(AutofillPopupControllerImplTest,
        AcceptPwdSuggestionInvokesWarningAndroid) {
   base::test::ScopedFeatureList scoped_feature_list(
       password_manager::features::
@@ -722,7 +722,7 @@ TEST_F(AutofillPopupControllerUnitTest,
       0, base::TimeTicks::Now() + base::Milliseconds(500));
 }
 
-TEST_F(AutofillPopupControllerUnitTest,
+TEST_F(AutofillPopupControllerImplTest,
        AcceptUsernameSuggestionInvokesWarningAndroid) {
   base::test::ScopedFeatureList scoped_feature_list(
       password_manager::features::
@@ -736,7 +736,7 @@ TEST_F(AutofillPopupControllerUnitTest,
       0, base::TimeTicks::Now() + base::Milliseconds(500));
 }
 
-TEST_F(AutofillPopupControllerUnitTest,
+TEST_F(AutofillPopupControllerImplTest,
        AcceptPwdSuggestionNoWarningIfDisabledAndroid) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(
@@ -751,7 +751,7 @@ TEST_F(AutofillPopupControllerUnitTest,
       0, base::TimeTicks::Now() + base::Milliseconds(500));
 }
 
-TEST_F(AutofillPopupControllerUnitTest, AcceptAddressNoPwdWarningAndroid) {
+TEST_F(AutofillPopupControllerImplTest, AcceptAddressNoPwdWarningAndroid) {
   base::test::ScopedFeatureList scoped_feature_list(
       password_manager::features::
           kUnifiedPasswordManagerLocalPasswordsMigrationWarning);
@@ -766,14 +766,14 @@ TEST_F(AutofillPopupControllerUnitTest, AcceptAddressNoPwdWarningAndroid) {
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
-TEST_F(AutofillPopupControllerUnitTest, SubPopupIsCreatedWithViewFromParent) {
+TEST_F(AutofillPopupControllerImplTest, SubPopupIsCreatedWithViewFromParent) {
   base::WeakPtr<AutofillPopupController> sub_controller =
       popup_controller().OpenSubPopup({0, 0, 10, 10}, {},
                                       AutoselectFirstSuggestion(false));
   EXPECT_TRUE(sub_controller);
 }
 
-TEST_F(AutofillPopupControllerUnitTest,
+TEST_F(AutofillPopupControllerImplTest,
        DelegateMethodsAreCalledOnlyByRootPopup) {
   EXPECT_CALL(*external_delegate_, OnPopupShown()).Times(0);
   base::WeakPtr<AutofillPopupController> sub_controller =
@@ -787,7 +787,7 @@ TEST_F(AutofillPopupControllerUnitTest,
   popup_controller().Hide(PopupHidingReason::kUserAborted);
 }
 
-TEST_F(AutofillPopupControllerUnitTest, EventsAreDelegatedToChildrenAndView) {
+TEST_F(AutofillPopupControllerImplTest, EventsAreDelegatedToChildrenAndView) {
   EXPECT_CALL(*external_delegate_, OnPopupShown()).Times(0);
   base::WeakPtr<AutofillPopupController> sub_controller =
       popup_controller().OpenSubPopup({0, 0, 10, 10}, {},
@@ -856,21 +856,21 @@ class MockAxPlatformNode : public ui::AXPlatformNodeBase {
   MOCK_METHOD(ui::AXPlatformNodeDelegate*, GetDelegate, (), (const override));
 };
 
-class AutofillPopupControllerAccessibilityUnitTest
-    : public AutofillPopupControllerUnitTest {
+class AutofillPopupControllerImplTestAccessibility
+    : public AutofillPopupControllerImplTest {
  public:
   static constexpr int kAxUniqueId = 123;
 
-  AutofillPopupControllerAccessibilityUnitTest()
+  AutofillPopupControllerImplTestAccessibility()
       : accessibility_mode_override_(ui::AXMode::kScreenReader) {}
-  AutofillPopupControllerAccessibilityUnitTest(
-      AutofillPopupControllerAccessibilityUnitTest&) = delete;
-  AutofillPopupControllerAccessibilityUnitTest& operator=(
-      AutofillPopupControllerAccessibilityUnitTest&) = delete;
-  ~AutofillPopupControllerAccessibilityUnitTest() override = default;
+  AutofillPopupControllerImplTestAccessibility(
+      AutofillPopupControllerImplTestAccessibility&) = delete;
+  AutofillPopupControllerImplTestAccessibility& operator=(
+      AutofillPopupControllerImplTestAccessibility&) = delete;
+  ~AutofillPopupControllerImplTestAccessibility() override = default;
 
   void SetUp() override {
-    AutofillPopupControllerUnitTest::SetUp();
+    AutofillPopupControllerImplTest::SetUp();
 
     ON_CALL(*autofill_driver(), GetAxTreeId())
         .WillByDefault(Return(test_tree_id_));
@@ -889,7 +889,7 @@ class AutofillPopupControllerAccessibilityUnitTest
     // `kScreenReader` causes mocked functions to get called  with
     // `mock_ax_platform_node_delegate` after it has been destroyed.
     accessibility_mode_override_.ResetMode();
-    AutofillPopupControllerUnitTest::TearDown();
+    AutofillPopupControllerImplTest::TearDown();
   }
 
  protected:
@@ -900,7 +900,7 @@ class AutofillPopupControllerAccessibilityUnitTest
 };
 
 // Test for successfully firing controls changed event for popup show/hide.
-TEST_F(AutofillPopupControllerAccessibilityUnitTest,
+TEST_F(AutofillPopupControllerImplTestAccessibility,
        FireControlsChangedEventDuringShowAndHide) {
   ShowSuggestions({PopupItemId::kAddressEntry});
   // Manually fire the event for popup show since setting the test view results
@@ -915,7 +915,7 @@ TEST_F(AutofillPopupControllerAccessibilityUnitTest,
 // Test for attempting to fire controls changed event when ax tree manager
 // fails to retrieve the ax platform node associated with the popup.
 // No event is fired and global active popup ax unique id is not set.
-TEST_F(AutofillPopupControllerAccessibilityUnitTest,
+TEST_F(AutofillPopupControllerImplTestAccessibility,
        FireControlsChangedEventNoAxPlatformNode) {
   EXPECT_CALL(mock_ax_platform_node_delegate_, GetFromTreeIDAndNodeID)
       .WillOnce(Return(nullptr));
@@ -930,7 +930,7 @@ TEST_F(AutofillPopupControllerAccessibilityUnitTest,
 // Test for attempting to fire controls changed event when failing to retrieve
 // the autofill popup's ax unique id. No event is fired and the global active
 // popup ax unique id is not set.
-TEST_F(AutofillPopupControllerAccessibilityUnitTest,
+TEST_F(AutofillPopupControllerImplTestAccessibility,
        FireControlsChangedEventNoPopupAxUniqueId) {
   EXPECT_CALL(*autofill_popup_view_, GetAxUniqueId)
       .WillOnce(testing::Return(absl::nullopt));

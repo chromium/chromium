@@ -680,12 +680,6 @@ AutofillPopupControllerImpl::CreateSubPopupView(
   return sub_view.value_or(nullptr);
 }
 
-void AutofillPopupControllerImpl::SetViewForTesting(
-    base::WeakPtr<AutofillPopupView> view) {
-  view_ = std::move(view);
-  time_view_shown_ = base::TimeTicks::Now();
-}
-
 void AutofillPopupControllerImpl::FireControlsChangedEvent(bool is_show) {
   if (!accessibility_state_utils::IsScreenReaderEnabled())
     return;
