@@ -9417,21 +9417,6 @@
             ]
         }
     ],
-    "LanguagePacksHandwriting": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "HandwritingLegacyRecognition"
-                    ]
-                }
-            ]
-        }
-    ],
     "LauncherGameSearchStudy": [
         {
             "platforms": [
