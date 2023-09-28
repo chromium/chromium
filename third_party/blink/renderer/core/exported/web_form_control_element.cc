@@ -64,28 +64,94 @@ WebString WebFormControlElement::FormControlName() const {
   return ConstUnwrap<HTMLFormControlElement>()->GetName();
 }
 
-WebString WebFormControlElement::FormControlType() const {
-  return ConstUnwrap<HTMLFormControlElement>()->type();
+WebFormControlElement::Type WebFormControlElement::FormControlType() const {
+  const HTMLFormControlElement* form_control =
+      ConstUnwrap<HTMLFormControlElement>();
+  const WTF::AtomicString& type = form_control->type();
+  if (IsA<HTMLButtonElement>(form_control)) {
+    if (type == "button") {
+      return Type::kButtonButton;
+    } else if (type == "submit") {
+      return Type::kButtonSubmit;
+    } else if (type == "reset") {
+      return Type::kButtonReset;
+    } else if (type == "selectlist") {
+      return Type::kButtonSelectList;
+    }
+  } else if (IsA<HTMLFieldSetElement>(form_control)) {
+    CHECK_EQ(type, "fieldset");
+    return Type::kFieldset;
+  } else if (IsA<HTMLInputElement>(form_control)) {
+    if (type == input_type_names::kButton) {
+      return Type::kInputButton;
+    } else if (type == input_type_names::kCheckbox) {
+      return Type::kInputCheckbox;
+    } else if (type == input_type_names::kColor) {
+      return Type::kInputColor;
+    } else if (type == input_type_names::kDate) {
+      return Type::kInputDate;
+    } else if (type == input_type_names::kDatetimeLocal) {
+      return Type::kInputDatetimeLocal;
+    } else if (type == input_type_names::kEmail) {
+      return Type::kInputEmail;
+    } else if (type == input_type_names::kFile) {
+      return Type::kInputFile;
+    } else if (type == input_type_names::kHidden) {
+      return Type::kInputHidden;
+    } else if (type == input_type_names::kImage) {
+      return Type::kInputImage;
+    } else if (type == input_type_names::kMonth) {
+      return Type::kInputMonth;
+    } else if (type == input_type_names::kNumber) {
+      return Type::kInputNumber;
+    } else if (type == input_type_names::kPassword) {
+      return Type::kInputPassword;
+    } else if (type == input_type_names::kRadio) {
+      return Type::kInputRadio;
+    } else if (type == input_type_names::kRange) {
+      return Type::kInputRange;
+    } else if (type == input_type_names::kReset) {
+      return Type::kInputReset;
+    } else if (type == input_type_names::kSearch) {
+      return Type::kInputSearch;
+    } else if (type == input_type_names::kSubmit) {
+      return Type::kInputSubmit;
+    } else if (type == input_type_names::kTel) {
+      return Type::kInputTelephone;
+    } else if (type == input_type_names::kText) {
+      return Type::kInputText;
+    } else if (type == input_type_names::kTime) {
+      return Type::kInputTime;
+    } else if (type == input_type_names::kUrl) {
+      return Type::kInputUrl;
+    } else if (type == input_type_names::kWeek) {
+      return Type::kInputWeek;
+    }
+  } else if (IsA<HTMLOutputElement>(form_control)) {
+    CHECK_EQ(type, "output");
+    return Type::kOutput;
+  } else if (IsA<HTMLSelectElement>(form_control)) {
+    if (type == "select-one") {
+      return Type::kSelectOne;
+    } else if (type == "select-multiple") {
+      return Type::kSelectMultiple;
+    }
+  } else if (IsA<HTMLSelectListElement>(form_control)) {
+    return Type::kSelectList;
+  } else if (IsA<HTMLTextAreaElement>(form_control)) {
+    return Type::kTextArea;
+  }
+  NOTREACHED_NORETURN();
 }
 
-WebString WebFormControlElement::FormControlTypeForAutofill() const {
+WebFormControlElement::Type WebFormControlElement::FormControlTypeForAutofill()
+    const {
   if (auto* input = ::blink::DynamicTo<HTMLInputElement>(*private_)) {
-    if (input->IsTextField() && input->HasBeenPasswordField())
-      return input_type_names::kPassword;
+    if (input->IsTextField() && input->HasBeenPasswordField()) {
+      return Type::kInputPassword;
+    }
   }
-
-  auto* form_control = ConstUnwrap<HTMLFormControlElement>();
-  const AtomicString& type = form_control->type();
-  if (form_control->HasTagName(html_names::kButtonTag) &&
-      type == "selectlist") {
-    CHECK(RuntimeEnabledFeatures::HTMLSelectListElementEnabled());
-    // <selectlist>'s type() will return "selectlist". In order to prevent
-    // autofill from thinking that <button type=selectlist> is actually a
-    // <selectlist>, let's just say that <button type=selectlist> is just a
-    // "button".
-    return "button";
-  }
-  return type;
+  return FormControlType();
 }
 
 WebAutofillState WebFormControlElement::GetAutofillState() const {

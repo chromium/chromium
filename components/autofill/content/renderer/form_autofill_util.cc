@@ -86,6 +86,7 @@ using blink::mojom::GenericIssueErrorType;
 // https://chromium-review.googlesource.com/c/chromium/src/+/4543002.
 namespace autofill::form_util {
 
+using Type = WebFormControlElement::Type;
 using ::autofill::mojom::ButtonTitleType;
 
 struct ShadowFieldData {
@@ -151,7 +152,6 @@ constexpr base::StringPiece kFont = "font";
 constexpr base::StringPiece kFor = "for";
 constexpr base::StringPiece kForm = "form";
 constexpr base::StringPiece kFormControlSelector = "input, select, textarea";
-constexpr base::StringPiece kHidden = "hidden";
 constexpr base::StringPiece kId = "id";
 constexpr base::StringPiece kIframe = "iframe";
 constexpr base::StringPiece kImage = "img";
@@ -913,10 +913,11 @@ ButtonTitleList InferButtonTitlesForForm(const WebFormElement& web_form) {
        item = input_elements.NextItem()) {
     DCHECK(item.IsFormControlElement());
     WebFormControlElement control_element = item.To<WebFormControlElement>();
+    Type type = control_element.FormControlTypeForAutofill();
     bool is_submit_type =
-        control_element.FormControlTypeForAutofill() == GetWebString<kSubmit>();
+        type == Type::kInputSubmit || type == Type::kButtonSubmit;
     bool is_button_type =
-        control_element.FormControlTypeForAutofill() == GetWebString<kButton>();
+        type == Type::kInputButton || type == Type::kButtonButton;
     if (!is_submit_type && !is_button_type) {
       continue;
     }
@@ -1306,8 +1307,7 @@ void MatchLabelsAndFields(
       }
     } else if (control.IsFormControlElement()) {
       WebFormControlElement form_control = control.To<WebFormControlElement>();
-      if (form_control.FormControlTypeForAutofill() ==
-          GetWebString<kHidden>()) {
+      if (form_control.FormControlTypeForAutofill() == Type::kInputHidden) {
         continue;
       }
       // Typical case: look up |field_data| in |field_set|.
@@ -1878,7 +1878,8 @@ GURL GetDocumentUrlWithoutAuth(const WebDocument& document) {
 }
 
 bool IsMonthInput(const WebInputElement& element) {
-  return !element.IsNull() && element.FormControlTypeForAutofill() == "month";
+  return !element.IsNull() &&
+         element.FormControlTypeForAutofill() == Type::kInputMonth;
 }
 
 // All text fields, including password fields, should be extracted.
@@ -1892,17 +1893,17 @@ bool IsSelectOrSelectListElement(const WebFormControlElement& element) {
 
 bool IsSelectElement(const WebFormControlElement& element) {
   return !element.IsNull() &&
-         element.FormControlTypeForAutofill() == "select-one";
+         element.FormControlTypeForAutofill() == Type::kSelectOne;
 }
 
 bool IsSelectListElement(const WebFormControlElement& element) {
   return !element.IsNull() &&
-         element.FormControlTypeForAutofill() == "selectlist";
+         element.FormControlTypeForAutofill() == Type::kSelectList;
 }
 
 bool IsTextAreaElement(const WebFormControlElement& element) {
   return !element.IsNull() &&
-         element.FormControlTypeForAutofill() == "textarea";
+         element.FormControlTypeForAutofill() == Type::kTextArea;
 }
 
 bool IsTextAreaElementOrTextInput(const WebFormControlElement& element) {
@@ -1931,6 +1932,41 @@ bool IsAutofillableElement(const WebFormControlElement& element) {
          IsSelectElement(element) || IsTextAreaElement(element) ||
          (IsSelectListElement(element) &&
           base::FeatureList::IsEnabled(features::kAutofillEnableSelectList));
+}
+
+std::string_view FormControlTypeToString(Type type) {
+  switch (type) {
+    case Type::kInputCheckbox:
+      return "checkbox";
+    case Type::kInputEmail:
+      return "email";
+    case Type::kInputMonth:
+      return "month";
+    case Type::kInputNumber:
+      return "number";
+    case Type::kInputPassword:
+      return "password";
+    case Type::kInputRadio:
+      return "radio";
+    case Type::kInputSearch:
+      return "search";
+    case Type::kInputTelephone:
+      return "tel";
+    case Type::kInputText:
+      return "text";
+    case Type::kInputUrl:
+      return "url";
+    case Type::kSelectOne:
+      return "select-one";
+    case Type::kSelectMultiple:
+      return "select-multiple";
+    case Type::kSelectList:
+      return "selectlist";
+    case Type::kTextArea:
+      return "textarea";
+    default:
+      NOTREACHED_NORETURN();
+  }
 }
 
 bool IsWebauthnTaggedElement(const WebFormControlElement& element) {
@@ -2039,7 +2075,8 @@ void WebFormControlElementToFormField(
   field->unique_renderer_id = renderer_id;
   field->host_form_id = GetFormRendererId(form_element);
   field->form_control_ax_id = element.GetAxId();
-  field->form_control_type = element.FormControlTypeForAutofill().Utf8();
+  field->form_control_type =
+      FormControlTypeToString(element.FormControlTypeForAutofill());
   field->max_length =
       IsTextInput(input_element) ? input_element.MaxLength() : 0;
   field->autocomplete_attribute = GetAutocompleteAttribute(element);

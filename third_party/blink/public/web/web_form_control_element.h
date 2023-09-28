@@ -58,11 +58,43 @@ class BLINK_EXPORT WebFormControlElement : public WebElement {
   bool IsEnabled() const;
   bool IsReadOnly() const;
   WebString FormControlName() const;
-  WebString FormControlType() const;
 
-  // Same as FormControlType() but returns the type "password" for text fields
-  // that have been a password in the past.
-  WebString FormControlTypeForAutofill() const;
+  enum class Type {
+    kButtonButton,
+    kButtonSubmit,
+    kButtonReset,
+    kButtonSelectList,
+    kFieldset,
+    kInputButton,
+    kInputCheckbox,
+    kInputColor,
+    kInputDate,
+    kInputDatetimeLocal,
+    kInputEmail,
+    kInputFile,
+    kInputHidden,
+    kInputImage,
+    kInputMonth,
+    kInputNumber,
+    kInputPassword,
+    kInputRadio,
+    kInputRange,
+    kInputReset,
+    kInputSearch,
+    kInputSubmit,
+    kInputTelephone,
+    kInputText,
+    kInputTime,
+    kInputUrl,
+    kInputWeek,
+    kOutput,
+    kSelectOne,
+    kSelectMultiple,
+    kSelectList,
+    kTextArea,
+  };
+  Type FormControlType() const;
+  Type FormControlTypeForAutofill() const;
 
   enum WebAutofillState GetAutofillState() const;
   bool IsAutofilled() const;

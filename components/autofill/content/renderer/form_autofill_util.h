@@ -21,6 +21,7 @@
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/web_autofill_state.h"
 #include "third_party/blink/public/web/web_element_collection.h"
+#include "third_party/blink/public/web/web_form_control_element.h"
 #include "ui/gfx/geometry/rect_f.h"
 
 class GURL;
@@ -179,6 +180,10 @@ bool IsAutofillableInputElement(const blink::WebInputElement& element);
 // Returns true if |element| is one of the element types that can be autofilled.
 // {Text, Radiobutton, Checkbox, Select, TextArea}.
 bool IsAutofillableElement(const blink::WebFormControlElement& element);
+
+// TODO(crbug.com/1482526): Move to //components/autofill/core/common.
+std::string_view FormControlTypeToString(
+    blink::WebFormControlElement::Type type);
 
 // Returns true iff `element` has a "webauthn" autocomplete attribute.
 bool IsWebauthnTaggedElement(const blink::WebFormControlElement& element);

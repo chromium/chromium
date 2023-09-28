@@ -307,7 +307,8 @@ void AnnotateFieldsWithSignatures(
   for (blink::WebFormControlElement& control_element : fields) {
     FieldSignature field_signature = CalculateFieldSignatureByNameAndType(
         control_element.NameForAutofill().Utf16(),
-        control_element.FormControlTypeForAutofill().Utf8());
+        form_util::FormControlTypeToString(
+            control_element.FormControlTypeForAutofill()));
     SetAttributeAsync(control_element, kDebugAttributeForFieldSignature,
                       base::NumberToString(field_signature.value()));
     SetAttributeAsync(control_element, kDebugAttributeForFormSignature,
@@ -326,10 +327,9 @@ void AnnotateFieldsWithSignatures(
 // Instead, we can iterate through the fields of the forms and the unowned
 // fields, both of which are cached in the Document.
 bool HasPasswordField(const WebLocalFrame& frame) {
-  static base::NoDestructor<WebString> kPassword("password");
-
   auto ContainsPasswordField = [&](const auto& fields) {
-    return base::Contains(fields, *kPassword,
+    return base::Contains(fields,
+                          blink::WebFormControlElement::Type::kInputPassword,
                           &WebFormControlElement::FormControlTypeForAutofill);
   };
 
@@ -2211,7 +2211,8 @@ bool PasswordAutofillAgent::CanShowPopupWithoutPasswords(
 bool PasswordAutofillAgent::IsPasswordFieldFilledByUser(
     const WebFormControlElement& element) const {
   FieldRendererId element_id = form_util::GetFieldRendererId(element);
-  return element.FormControlTypeForAutofill() == "password" &&
+  return element.FormControlTypeForAutofill() ==
+             blink::WebFormControlElement::Type::kInputPassword &&
          (field_data_manager_->DidUserType(element_id) ||
           field_data_manager_->WasAutofilledOnUserTrigger(element_id));
 }

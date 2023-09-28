@@ -56,6 +56,7 @@ using blink::WebLocalFrame;
 using blink::WebSelectElement;
 using blink::WebString;
 using blink::WebVector;
+using Type = WebFormControlElement::Type;
 
 namespace autofill::form_util {
 
@@ -490,12 +491,12 @@ class FormAutofillTest : public ChromeRenderViewTest {
     WebString value;
     WebFormControlElement element = GetFormControlElementById(
         WebString::FromASCII(field_case.id_attribute));
-    if ((element.FormControlType() == "select-one") ||
-        (element.FormControlType() == "textarea")) {
+    if ((element.FormControlType() == Type::kSelectOne) ||
+        (element.FormControlType() == Type::kTextArea)) {
       value = get_value_function(element);
     } else {
-      ASSERT_TRUE(element.FormControlType() == "text" ||
-                  element.FormControlType() == "month");
+      ASSERT_TRUE(element.FormControlType() == Type::kInputText ||
+                  element.FormControlType() == Type::kInputMonth);
       value = get_value_function(element);
     }
 
@@ -2314,21 +2315,25 @@ class FormAutofillTest : public ChromeRenderViewTest {
   }
 
   static WebString GetValueWrapper(WebFormControlElement element) {
-    if (element.FormControlType() == "textarea")
+    if (element.FormControlType() == Type::kTextArea) {
       return element.To<WebFormControlElement>().Value();
+    }
 
-    if (element.FormControlType() == "select-one")
+    if (element.FormControlType() == Type::kSelectOne) {
       return element.To<WebSelectElement>().Value();
+    }
 
     return element.To<WebInputElement>().Value();
   }
 
   static WebString GetSuggestedValueWrapper(WebFormControlElement element) {
-    if (element.FormControlType() == "textarea")
+    if (element.FormControlType() == Type::kTextArea) {
       return element.To<WebFormControlElement>().SuggestedValue();
+    }
 
-    if (element.FormControlType() == "select-one")
+    if (element.FormControlType() == Type::kSelectOne) {
       return element.To<WebSelectElement>().SuggestedValue();
+    }
 
     return element.To<WebInputElement>().SuggestedValue();
   }

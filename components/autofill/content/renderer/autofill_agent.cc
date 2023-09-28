@@ -259,8 +259,8 @@ FocusedFieldType AutofillAgent::FocusStateNotifier::GetFieldType(
     return FocusedFieldType::kUnfillableElement;
   }
 
-  if (WebString type = input_element.FormControlType();
-      !type.IsNull() && type.Utf8() == "search") {
+  if (input_element.FormControlTypeForAutofill() ==
+      WebFormControlElement::Type::kInputSearch) {
     return FocusedFieldType::kFillableSearchField;
   }
   if (input_element.IsPasswordFieldForAutofill()) {
