@@ -68,12 +68,14 @@ class AdTaggingClusterTelemetry(perf_benchmark.PerfBenchmark):
     uma_histograms = [
         'PageLoad.Clients.Ads.AllPages.NonAdNetworkBytes',
         'PageLoad.Clients.Ads.AllPages.PercentNetworkBytesAds',
-        'PageLoad.Clients.Ads.Cpu.AdFrames.Aggregate.TotalUsage',
-        'PageLoad.Clients.Ads.Cpu.FullPage.TotalUsage',
+        'PageLoad.Clients.Ads.Bytes.AdFrames.Aggregate.Total2',
+        'PageLoad.Clients.Ads.Cpu.AdFrames.Aggregate.TotalUsage2',
+        'PageLoad.Clients.Ads.Cpu.FullPage.TotalUsage2',
         'PageLoad.Clients.Ads.FrameCounts.AdFrames.Total',
         'PageLoad.Clients.Ads.Resources.Bytes.Ads2',
         'PageLoad.Cpu.TotalUsage',
         'PageLoad.PaintTiming.NavigationToFirstContentfulPaint',
+        'SubresourceFilter.PageLoad.NumSubresourceLoads.MatchedRules',
     ]
     uma_histograms.extend(self.additional_histograms)
     for histogram in uma_histograms:
