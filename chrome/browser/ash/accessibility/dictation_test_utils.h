@@ -114,6 +114,7 @@ class DictationTestUtils {
   // Set up helper methods.
   void SetUpPumpkinDir();
   void SetUpTestSupport();
+  void WaitForDictationJSReady();
   void WaitForPumpkinTaggerReady();
   void WaitForFocusHandler();
 

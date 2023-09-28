@@ -30,6 +30,8 @@ export class AccessibilityCommon {
     this.autoclickLoadCallbackForTest_ = null;
     /** @private {?function()} */
     this.magnifierLoadCallbackForTest_ = null;
+    /** @private {?function()} */
+    this.dictationLoadCallbackForTest_ = null;
 
     this.init_();
   }
@@ -160,6 +162,10 @@ export class AccessibilityCommon {
   onDictationUpdated_(details) {
     if (details.value && !this.dictation_) {
       this.dictation_ = new Dictation();
+      if (this.dictationLoadCallbackForTest_) {
+        this.dictationLoadCallbackForTest_();
+        this.dictationLoadCallbackForTest_ = null;
+      }
     } else if (!details.value && this.dictation_) {
       this.dictation_.onDictationDisabled();
       this.dictation_ = null;
@@ -180,6 +186,13 @@ export class AccessibilityCommon {
       }
       // Autoclick already loaded.
       this.autoclick_.setOnLoadDesktopCallbackForTest(callback);
+    } else if (feature === 'dictation') {
+      if (!this.dictation_) {
+        this.dictationLoadCallbackForTest_ = callback;
+        return;
+      }
+      // Dictation already loaded.
+      callback();
     } else if (feature === 'magnifier') {
       if (!this.magnifier_) {
         this.magnifierLoadCallbackForTest_ = callback;
