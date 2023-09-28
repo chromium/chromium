@@ -85,6 +85,10 @@ void Increment(int* value) {
   (*value)++;
 }
 
+void IncrementWithRef(int& value) {
+  value++;
+}
+
 TEST(CallbackHelpersTest, ScopedClosureRunnerHasClosure) {
   base::ScopedClosureRunner runner1;
   EXPECT_FALSE(runner1);
@@ -295,6 +299,19 @@ TEST(CallbackHelpersTest, IgnoreArgs_EmptyCallback) {
   base::OnceCallback<void(int)> once_int_cb =
       base::IgnoreArgs<int>(base::OnceClosure());
   EXPECT_FALSE(once_int_cb);
+}
+
+TEST(CallbackHelpersTest, ForwardRepeatingCallbacks) {
+  int count = 0;
+  auto tie_cb =
+      base::ForwardRepeatingCallbacks({base::BindRepeating(&IncrementWithRef),
+                                       base::BindRepeating(&IncrementWithRef)});
+
+  tie_cb.Run(count);
+  EXPECT_EQ(count, 2);
+
+  tie_cb.Run(count);
+  EXPECT_EQ(count, 4);
 }
 
 }  // namespace

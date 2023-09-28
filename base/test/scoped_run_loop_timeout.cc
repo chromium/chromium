@@ -19,6 +19,9 @@ namespace {
 
 bool g_add_gtest_failure_on_timeout = false;
 
+std::unique_ptr<ScopedRunLoopTimeout::TimeoutCallback>
+    g_handle_timeout_for_testing = nullptr;
+
 std::string TimeoutMessage(const RepeatingCallback<std::string()>& get_log,
                            const Location& timeout_enabled_from_here) {
   std::string message = "RunLoop::Run() timed out. Timeout set at ";
@@ -82,11 +85,32 @@ ScopedRunLoopTimeout::ScopedRunLoopTimeout(
       timeout.has_value() ? timeout.value() : nested_timeout_->timeout;
   CHECK_GT(run_timeout_.timeout, TimeDelta());
 
-  run_timeout_.on_timeout = BindRepeating(
-      g_add_gtest_failure_on_timeout ? &TimeoutCallbackWithGtestFailure
-                                     : &StandardTimeoutCallback,
-      timeout_enabled_from_here, std::move(on_timeout_log));
+  run_timeout_.on_timeout =
+      BindRepeating(GetTimeoutCallback(), timeout_enabled_from_here,
+                    std::move(on_timeout_log));
+
   RunLoop::SetTimeoutForCurrentThread(&run_timeout_);
+}
+
+ScopedRunLoopTimeout::TimeoutCallback
+ScopedRunLoopTimeout::GetTimeoutCallback() {
+  // In case both g_handle_timeout_for_testing and
+  // g_add_gtest_failure_on_timeout are set, we chain the callbacks so that they
+  // both get called eventually. This avoids confusion on what exactly is
+  // happening, especially for tests that are not controlling the call to
+  // `SetAddGTestFailureOnTimeout` directly.
+  if (g_handle_timeout_for_testing) {
+    if (g_add_gtest_failure_on_timeout) {
+      return ForwardRepeatingCallbacks(
+          {BindRepeating(&TimeoutCallbackWithGtestFailure),
+           *g_handle_timeout_for_testing});
+    }
+    return *g_handle_timeout_for_testing;
+  } else if (g_add_gtest_failure_on_timeout) {
+    return BindRepeating(&TimeoutCallbackWithGtestFailure);
+  } else {
+    return BindRepeating(&StandardTimeoutCallback);
+  }
 }
 
 // static
@@ -103,6 +127,12 @@ void ScopedRunLoopTimeout::SetAddGTestFailureOnTimeout() {
 const RunLoop::RunLoopTimeout*
 ScopedRunLoopTimeout::GetTimeoutForCurrentThread() {
   return RunLoop::GetTimeoutForCurrentThread();
+}
+
+// static
+void ScopedRunLoopTimeout::SetTimeoutCallbackForTesting(
+    std::unique_ptr<ScopedRunLoopTimeout::TimeoutCallback> cb) {
+  g_handle_timeout_for_testing = std::move(cb);
 }
 
 ScopedDisableRunLoopTimeout::ScopedDisableRunLoopTimeout()

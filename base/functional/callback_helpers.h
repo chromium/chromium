@@ -96,7 +96,32 @@ class OnceCallbackHolder final {
   const bool ignore_extra_runs_;
 };
 
+template <typename... Args>
+void ForwardRepeatingCallbacksImpl(
+    std::vector<RepeatingCallback<void(Args...)>> cbs,
+    Args... args) {
+  for (auto& cb : cbs) {
+    if (cb) {
+      cb.Run(std::forward<Args>(args)...);
+    }
+  }
+}
+
 }  // namespace internal
+
+// Wraps the given RepeatingCallbacks and return one RepeatingCallbacks with an
+// identical signature. On invocation of this callback, all the given
+// RepeatingCallbacks will be called with the same arguments. Unbound arguments
+// must be copyable.
+template <typename... Args>
+RepeatingCallback<void(Args...)> ForwardRepeatingCallbacks(
+    std::initializer_list<RepeatingCallback<void(Args...)>>&& cbs) {
+  std::vector<RepeatingCallback<void(Args...)>> v(
+      std::forward<std::initializer_list<RepeatingCallback<void(Args...)>>>(
+          cbs));
+  return BindRepeating(&internal::ForwardRepeatingCallbacksImpl<Args...>,
+                       std::move(v));
+}
 
 // Wraps the given OnceCallback and returns two OnceCallbacks with an identical
 // signature. On first invokation of either returned callbacks, the original

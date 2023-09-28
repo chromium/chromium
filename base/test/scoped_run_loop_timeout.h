@@ -60,6 +60,19 @@ FORWARD_DECLARE_TEST(TaskEnvironmentTest, SetsDefaultRunTimeout);
 
 class ScopedRunLoopTimeout {
  public:
+  // This callback is the one called upon run loop timeouts.
+  // RunLoop inner mechanism will call this callback after having quit the run
+  // loop. Implementer might chose to log locations, crash the process, dump a
+  // stack trace, depending on the desired behaviour for run loop timeouts.
+  // Invoking `on_timeout_log` might return a personalized timeouts message
+  // string. This callback was sent at ScopedRunLoopTimeout creation. Invoking
+  // this callback is not mandatory, as it depends on the desired behaviour of
+  // this function.
+  using TimeoutCallback = base::RepeatingCallback<void(
+      const Location& timeout_enabled_from_here,
+      RepeatingCallback<std::string()> on_timeout_log,
+      const Location& run_from_here)>;
+
   ScopedRunLoopTimeout(const Location& timeout_enabled_from_here,
                        TimeDelta timeout);
   ~ScopedRunLoopTimeout();
@@ -77,7 +90,23 @@ class ScopedRunLoopTimeout {
   // Returns true if there is a Run() timeout configured on the current thread.
   static bool ExistsForCurrentThread();
 
+  // Important note:
+  // The two following static methods will alter the behaviour on run loop
+  // timeouts. If both methods are being called (whatever the ordering), the
+  // behaviour will be chained, which means that both callbacks will be invoked.
+  // If the custom callback handling is reset (`SetTimeoutCallbackForTesting`
+  // called with `nullptr`), then we reset the behaviour to its previous state,
+  // which is, if `SetAddGTestFailureOnTimeout`, it will invoke GTest timeout
+  // handling. Otherwise, it will invoke the default function.
+
+  // Add GTest timeout handler.
   static void SetAddGTestFailureOnTimeout();
+
+  // Add provided callback as timeout handler.
+  static void SetTimeoutCallbackForTesting(std::unique_ptr<TimeoutCallback> cb);
+
+ private:
+  TimeoutCallback GetTimeoutCallback();
 
  protected:
   FRIEND_TEST_ALL_PREFIXES(ScopedRunLoopRunTimeoutTest, TimesOut);

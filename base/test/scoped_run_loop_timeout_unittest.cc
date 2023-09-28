@@ -168,4 +168,28 @@ TEST(ScopedRunLoopTimeoutTest, OnTimeoutLogWithNestedTimeouts) {
                           GetExpectedTimeoutMessage(location, kErrorMessage));
 }
 
+TEST(ScopedRunLoopTimeoutTest, OverwriteTimeoutCallbackForTesting) {
+  TaskEnvironment task_environment;
+  RunLoop run_loop;
+
+  bool custom_handler_called = false;
+  ScopedRunLoopTimeout::TimeoutCallback cb = DoNothing();
+  ScopedRunLoopTimeout::SetTimeoutCallbackForTesting(
+      std::make_unique<ScopedRunLoopTimeout::TimeoutCallback>(
+          std::move(cb).Then(BindLambdaForTesting(
+              [&custom_handler_called]() { custom_handler_called = true; }))));
+  static constexpr auto kArbitraryTimeout = Milliseconds(1);
+  const auto location = FROM_HERE;
+  ScopedRunLoopTimeout run_timeout(
+      location, kArbitraryTimeout,
+      BindRepeating([]() -> std::string { return kErrorMessage; }));
+
+  // EXPECT_NONFATAL_FAILURE() can only reference globals and statics.
+  static RunLoop& static_loop = run_loop;
+  EXPECT_NONFATAL_FAILURE(static_loop.Run(),
+                          GetExpectedTimeoutMessage(location, kErrorMessage));
+
+  EXPECT_TRUE(custom_handler_called);
+}
+
 }  // namespace base::test
