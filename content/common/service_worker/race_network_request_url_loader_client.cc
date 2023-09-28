@@ -81,8 +81,8 @@ ServiceWorkerRaceNetworkRequestURLLoaderClient::
 ServiceWorkerRaceNetworkRequestURLLoaderClient::
     ~ServiceWorkerRaceNetworkRequestURLLoaderClient() {
   TRACE_EVENT_WITH_FLOW0("ServiceWorker",
-                         "ServiceWorkerRaceNetworkRequestURLLoaderClient::~"
-                         "ServiceWorkerRaceNetworkRequestURLLoaderClient",
+                         "ServiceWorkerRaceNetworkRequestURLLoaderClient::"
+                         "~ServiceWorkerRaceNetworkRequestURLLoaderClient",
                          TRACE_ID_LOCAL(this), TRACE_EVENT_FLAG_FLOW_IN);
 }
 
@@ -446,12 +446,8 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::ReadAndWrite(
   void* write_buffer_for_fetch_handler = nullptr;
 
   // Begin the write process for the response of the race network request.
-  result = data_pipe_for_race_network_request_.producer->BeginWriteData(
-      &write_buffer, &data_pipe_for_race_network_request_.num_write_bytes,
-      MOJO_WRITE_DATA_FLAG_NONE);
-  base::UmaHistogramEnumeration(
-      base::StrCat({histogram_prefix, ".WriteForRaceNetworkRequset"}),
-      ConvertMojoResultForUMA(result));
+  result = BeginWriteData(data_pipe_for_race_network_request_, &write_buffer,
+                          histogram_prefix);
   switch (result) {
     case MOJO_RESULT_OK:
       // Perhaps writable size may be smaller than the readable size. Choose the
@@ -478,25 +474,15 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::ReadAndWrite(
   // consuming only for the race network request.
   if (!data_pipe_for_fetch_handler_.watcher.IsWatching()) {
     // Copy data and complete read/write process.
-    memcpy(write_buffer, buffer, num_bytes_to_consume);
-    result = data_pipe_for_race_network_request_.producer->EndWriteData(
-        num_bytes_to_consume);
-    CHECK_EQ(result, MOJO_RESULT_OK);
-    result = body_->EndReadData(num_bytes_to_consume);
-    CHECK_EQ(result, MOJO_RESULT_OK);
-    // Once data is written to the data pipe, start the commit process.
-    MaybeCommitResponse();
-    body_consumer_watcher_.ArmOrNotify();
+    CompleteWriteData(data_pipe_for_race_network_request_, write_buffer, buffer,
+                      num_bytes_to_consume);
+    CompleteReadData(num_bytes_to_consume);
     return;
   }
 
   // Begin the write process for the response of the fetch handler.
-  result = data_pipe_for_fetch_handler_.producer->BeginWriteData(
-      &write_buffer_for_fetch_handler,
-      &data_pipe_for_fetch_handler_.num_write_bytes, MOJO_WRITE_DATA_FLAG_NONE);
-  base::UmaHistogramEnumeration(
-      base::StrCat({histogram_prefix, ".WriteForFetchHandler"}),
-      ConvertMojoResultForUMA(result));
+  result = BeginWriteData(data_pipe_for_fetch_handler_,
+                          &write_buffer_for_fetch_handler, histogram_prefix);
   switch (result) {
     case MOJO_RESULT_OK:
       // Perhaps writable size may be smaller than the readable size. Choose
@@ -522,18 +508,43 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::ReadAndWrite(
       return;
   }
 
-  // Copy data and complete read/write process.
-  memcpy(write_buffer, buffer, num_bytes_to_consume);
-  result = data_pipe_for_race_network_request_.producer->EndWriteData(
-      num_bytes_to_consume);
-  CHECK_EQ(result, MOJO_RESULT_OK);
-  memcpy(write_buffer_for_fetch_handler, buffer, num_bytes_to_consume);
-  result =
-      data_pipe_for_fetch_handler_.producer->EndWriteData(num_bytes_to_consume);
-  CHECK_EQ(result, MOJO_RESULT_OK);
-  result = body_->EndReadData(num_bytes_to_consume);
-  CHECK_EQ(result, MOJO_RESULT_OK);
+  // Copy data and call EndWriteData.
+  CompleteWriteData(data_pipe_for_race_network_request_, write_buffer, buffer,
+                    num_bytes_to_consume);
+  CompleteWriteData(data_pipe_for_fetch_handler_,
+                    write_buffer_for_fetch_handler, buffer,
+                    num_bytes_to_consume);
+  CompleteReadData(num_bytes_to_consume);
+}
 
+MojoResult ServiceWorkerRaceNetworkRequestURLLoaderClient::BeginWriteData(
+    DataPipeInfo& data_pipe_info,
+    void** buffer,
+    const std::string& histogram_prefix) {
+  MojoResult result = data_pipe_info.producer->BeginWriteData(
+      buffer, &data_pipe_info.num_write_bytes, MOJO_WRITE_DATA_FLAG_NONE);
+  base::UmaHistogramEnumeration(
+      base::StrCat({histogram_prefix, ".WriteForRaceNetworkRequset"}),
+      ConvertMojoResultForUMA(result));
+
+  return result;
+}
+
+void ServiceWorkerRaceNetworkRequestURLLoaderClient::CompleteWriteData(
+    DataPipeInfo& data_pipe_info,
+    void* write_buffer,
+    const void* read_buffer,
+    uint32_t num_bytes_to_consume) {
+  memcpy(write_buffer, read_buffer, num_bytes_to_consume);
+  MojoResult result =
+      data_pipe_info.producer->EndWriteData(num_bytes_to_consume);
+  CHECK_EQ(result, MOJO_RESULT_OK);
+}
+
+void ServiceWorkerRaceNetworkRequestURLLoaderClient::CompleteReadData(
+    uint32_t num_bytes_to_consume) {
+  MojoResult result = body_->EndReadData(num_bytes_to_consume);
+  CHECK_EQ(result, MOJO_RESULT_OK);
   // Once data is written to the data pipe, start the commit process.
   MaybeCommitResponse();
   body_consumer_watcher_.ArmOrNotify();

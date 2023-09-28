@@ -193,6 +193,14 @@ class CONTENT_EXPORT ServiceWorkerRaceNetworkRequestURLLoaderClient
   // the fetch handler
   void ReadAndWrite(MojoResult);
   void WatchDataUpdate();
+  MojoResult BeginWriteData(DataPipeInfo& data_pipe_info,
+                            void** buffer,
+                            const std::string& histogram_prefix);
+  void CompleteWriteData(DataPipeInfo& data_pipe_info,
+                         void* write_buffer,
+                         const void* read_buffer,
+                         uint32_t num_bytes_to_consume);
+  void CompleteReadData(uint32_t num_bytes_to_consume);
 
   void Abort();
 
