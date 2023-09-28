@@ -45,8 +45,6 @@ class ASH_EXPORT AshMessagePopupCollection
     : public display::DisplayObserver,
       public message_center::MessagePopupCollection,
       public message_center::MessageView::Observer,
-      public ShelfObserver,
-      public TabletModeObserver,
       public views::WidgetObserver {
  public:
   // The name that will set for the message popup widget in
@@ -87,10 +85,6 @@ class ASH_EXPORT AshMessagePopupCollection
       const message_center::Notification& notification) override;
   void ClosePopupItem(const PopupItem& item) override;
 
-  // TabletModeObserver:
-  void OnTabletModeStarted() override;
-  void OnTabletModeEnded() override;
-
   // Returns true if `widget` is a popup widget belongs to this popup
   // collection.
   bool IsWidgetAPopupNotification(views::Widget* widget);
@@ -106,8 +100,11 @@ class ASH_EXPORT AshMessagePopupCollection
   friend class TrayEventFilterTest;
 
   // Handles the collision of popup notifications with corner anchored shelf pod
-  // bubbles, sliders and the extended hotseat by updating the popup baseline.
-  class NotifierCollisionHandler : public SystemTrayObserver {
+  // bubbles, sliders, shelf, and the extended hotseat by updating the popup
+  // baseline.
+  class NotifierCollisionHandler : public ShelfObserver,
+                                   public SystemTrayObserver,
+                                   public TabletModeObserver {
    public:
     NotifierCollisionHandler(AshMessagePopupCollection* popup_collection);
 
@@ -148,6 +145,17 @@ class ASH_EXPORT AshMessagePopupCollection
     // every time a baseline offset is applied.
     void RecordBaselineShiftedUp(int popup_count);
 
+    // TabletModeObserver:
+    void OnTabletModeStarted() override;
+    void OnTabletModeEnded() override;
+
+    // ShelfObserver:
+    void OnBackgroundTypeChanged(ShelfBackgroundType background_type,
+                                 AnimationChangeType change_type) override;
+    void OnShelfWorkAreaInsetsChanged() override;
+    void OnHotseatStateChanged(HotseatState old_state,
+                               HotseatState new_state) override;
+
     raw_ptr<AshMessagePopupCollection> const popup_collection_;
   };
 
@@ -165,13 +173,6 @@ class ASH_EXPORT AshMessagePopupCollection
 
   // Computes the new work area.
   void UpdateWorkArea();
-
-  // ShelfObserver:
-  void OnBackgroundTypeChanged(ShelfBackgroundType background_type,
-                               AnimationChangeType change_type) override;
-  void OnShelfWorkAreaInsetsChanged() override;
-  void OnHotseatStateChanged(HotseatState old_state,
-                             HotseatState new_state) override;
 
   // display::DisplayObserver:
   void OnDisplayMetricsChanged(const display::Display& display,
