@@ -31,10 +31,15 @@ component("carrier_lock") {
 
   sources = [
     "common.h",
+    "fake_fcm_topic_subscriber.cc",
+    "fake_fcm_topic_subscriber.h",
     "fake_provisioning_config_fetcher.cc",
     "fake_provisioning_config_fetcher.h",
     "fake_psm_claim_verifier.cc",
     "fake_psm_claim_verifier.h",
+    "fcm_topic_subscriber.h",
+    "fcm_topic_subscriber_impl.cc",
+    "fcm_topic_subscriber_impl.h",
     "provisioning_config_fetcher.h",
     "provisioning_config_fetcher_impl.cc",
     "provisioning_config_fetcher_impl.h",
@@ -48,6 +53,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "fcm_topic_subscriber_unittest.cc",
     "provisioning_config_fetcher_unittest.cc",
     "psm_claim_verifier_unittest.cc",
     "psm_claim_verifier_unittest.h",
@@ -61,6 +67,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/network",
     "//chromeos/ash/components/network:test_support",
     "//chromeos/ash/services/network_config/public/cpp:test_support",
+    "//components/gcm_driver/instance_id:test_support",
     "//components/prefs:test_support",
     "//testing/gmock",
     "//testing/gtest",
