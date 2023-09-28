@@ -1258,8 +1258,8 @@ void AmbientController::MaybeStartScreenSaver() {
   // Add observer for assistant interaction model
   AssistantInteractionController::Get()->GetModel()->AddObserver(this);
 
-  session_metrics_recorder_ =
-      std::make_unique<AmbientSessionMetricsRecorder>(GetCurrentUiSettings());
+  session_metrics_recorder_ = std::make_unique<AmbientSessionMetricsRecorder>(
+      ambient_ui_launcher_->CreateMetricsDelegate(GetCurrentUiSettings()));
 
   SetUpPreTargetHandler();
 

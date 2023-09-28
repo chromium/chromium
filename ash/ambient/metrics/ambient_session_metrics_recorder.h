@@ -5,6 +5,8 @@
 #ifndef ASH_AMBIENT_METRICS_AMBIENT_SESSION_METRICS_RECORDER_H_
 #define ASH_AMBIENT_METRICS_AMBIENT_SESSION_METRICS_RECORDER_H_
 
+#include <memory>
+
 #include "ash/ambient/ambient_ui_settings.h"
 #include "ash/ash_export.h"
 #include "base/time/time.h"
@@ -26,7 +28,29 @@ namespace ash {
 // Metrics recorded apply to all `AmbientUiSettings`.
 class ASH_EXPORT AmbientSessionMetricsRecorder {
  public:
-  explicit AmbientSessionMetricsRecorder(AmbientUiSettings ui_settings);
+  // `AmbientSessionMetricsRecorder` dictates when to record a metric and what
+  // value to record, whereas the `Delegate` does the actual recording.
+  class Delegate {
+   public:
+    virtual ~Delegate() = default;
+
+    // Session has started.
+    virtual void RecordActivation() {}
+    // Session has finished initialization and will start rendering if
+    // successful.
+    virtual void RecordInitStatus(bool success) {}
+    // Amount of time initialization took.
+    virtual void RecordStartupTime(base::TimeDelta startup_time) {}
+    // Total duration of the session (initialization + rendering) before it
+    // was closed.
+    virtual void RecordEngagementTime(base::TimeDelta engagement_time) {}
+    // Total number of screens that were rendering the UI during this session.
+    // Note this may be 0 if the session never started rendering (initialization
+    // was pending or failed when the session closed).
+    virtual void RecordScreenCount(int num_screens) {}
+  };
+
+  explicit AmbientSessionMetricsRecorder(std::unique_ptr<Delegate> delegate);
   AmbientSessionMetricsRecorder(const AmbientSessionMetricsRecorder&) = delete;
   AmbientSessionMetricsRecorder& operator=(
       const AmbientSessionMetricsRecorder&) = delete;
@@ -41,9 +65,7 @@ class ASH_EXPORT AmbientSessionMetricsRecorder {
   void RegisterScreen();
 
  private:
-  void RecordInitStatus(bool init_status);
-
-  const AmbientUiSettings ui_settings_;
+  const std::unique_ptr<Delegate> delegate_;
   const base::TimeTicks session_start_time_;
   int num_registered_screens_ = 0;
   absl::optional<bool> session_init_status_;

@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "ash/ambient/ambient_ui_settings.h"
+#include "ash/ambient/metrics/ambient_consumer_session_metrics_delegate.h"
 #include "ash/constants/ambient_video.h"
 #include "ash/public/cpp/ambient/ambient_ui_model.h"
 #include "ash/shell.h"
@@ -47,6 +48,10 @@ class AmbientSessionMetricsRecorderTest
   std::string GetMetricNameForTheme(base::StringPiece prefix) {
     return base::StrCat({prefix, GetParam().ToString()});
   }
+
+  std::unique_ptr<AmbientSessionMetricsRecorder::Delegate> CreateDelegate() {
+    return std::make_unique<AmbientConsumerSessionMetricsDelegate>(GetParam());
+  }
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -66,7 +71,7 @@ TEST_P(AmbientSessionMetricsRecorderTest, MetricsEngagementTime) {
   base::HistogramTester histogram_tester;
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
   {
-    AmbientSessionMetricsRecorder recorder(GetParam());
+    AmbientSessionMetricsRecorder recorder(CreateDelegate());
     recorder.SetInitStatus(true);
     recorder.RegisterScreen();
     task_environment()->FastForwardBy(kExpectedEngagementTime);
@@ -82,7 +87,7 @@ TEST_P(AmbientSessionMetricsRecorderTest, MetricsEngagementTime) {
   // Now do the same sequence in tablet mode.
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
   {
-    AmbientSessionMetricsRecorder recorder(GetParam());
+    AmbientSessionMetricsRecorder recorder(CreateDelegate());
     recorder.SetInitStatus(true);
     recorder.RegisterScreen();
     task_environment()->FastForwardBy(kExpectedEngagementTime);
@@ -99,7 +104,7 @@ TEST_P(AmbientSessionMetricsRecorderTest, MetricsStartupTime) {
   constexpr base::TimeDelta kExpectedStartupTime = base::Seconds(5);
 
   base::HistogramTester histogram_tester;
-  AmbientSessionMetricsRecorder recorder(GetParam());
+  AmbientSessionMetricsRecorder recorder(CreateDelegate());
   task_environment()->FastForwardBy(kExpectedStartupTime);
   recorder.SetInitStatus(true);
   recorder.RegisterScreen();
@@ -116,7 +121,7 @@ TEST_P(AmbientSessionMetricsRecorderTest, MetricsStartupTimeFailedToStart) {
   constexpr base::TimeDelta kFailedStartupTime = base::Minutes(1);
   base::HistogramTester histogram_tester;
   {
-    AmbientSessionMetricsRecorder recorder(GetParam());
+    AmbientSessionMetricsRecorder recorder(CreateDelegate());
     task_environment()->FastForwardBy(kFailedStartupTime);
   }
   histogram_tester.ExpectUniqueTimeSample(
@@ -129,7 +134,7 @@ TEST_P(AmbientSessionMetricsRecorderTest, MetricsStartupTimeFailedToStart) {
 
 TEST_P(AmbientSessionMetricsRecorderTest, InitStatusSuccess) {
   base::HistogramTester histogram_tester;
-  AmbientSessionMetricsRecorder recorder(GetParam());
+  AmbientSessionMetricsRecorder recorder(CreateDelegate());
   recorder.SetInitStatus(true);
   recorder.RegisterScreen();
   recorder.RegisterScreen();
@@ -140,7 +145,7 @@ TEST_P(AmbientSessionMetricsRecorderTest, InitStatusSuccess) {
 
 TEST_P(AmbientSessionMetricsRecorderTest, InitStatusFailed) {
   base::HistogramTester histogram_tester;
-  AmbientSessionMetricsRecorder recorder(GetParam());
+  AmbientSessionMetricsRecorder recorder(CreateDelegate());
   recorder.SetInitStatus(false);
   histogram_tester.ExpectUniqueSample(
       base::StrCat({"Ash.AmbientMode.Init.", GetParam().ToString()}),
@@ -150,7 +155,7 @@ TEST_P(AmbientSessionMetricsRecorderTest, InitStatusFailed) {
 TEST_P(AmbientSessionMetricsRecorderTest, RecordsScreenCount) {
   base::HistogramTester histogram_tester;
   {
-    AmbientSessionMetricsRecorder recorder(GetParam());
+    AmbientSessionMetricsRecorder recorder(CreateDelegate());
     recorder.SetInitStatus(true);
     recorder.RegisterScreen();
   }
@@ -158,7 +163,7 @@ TEST_P(AmbientSessionMetricsRecorderTest, RecordsScreenCount) {
       GetMetricNameForTheme("Ash.AmbientMode.ScreenCount."), /*sample=*/1,
       /*expected_bucket_count=*/1);
   {
-    AmbientSessionMetricsRecorder recorder(GetParam());
+    AmbientSessionMetricsRecorder recorder(CreateDelegate());
     recorder.SetInitStatus(true);
     recorder.RegisterScreen();
     recorder.RegisterScreen();

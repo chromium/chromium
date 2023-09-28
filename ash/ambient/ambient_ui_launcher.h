@@ -8,11 +8,14 @@
 #include <memory>
 
 #include "ash/ambient/ambient_photo_controller.h"
+#include "ash/ambient/metrics/ambient_session_metrics_recorder.h"
 #include "ash/ambient/model/ambient_backend_model.h"
 #include "base/functional/callback_forward.h"
 #include "ui/views/view.h"
 
 namespace ash {
+
+class AmbientUiSettings;
 
 // AmbientUiLauncher is used to start ambient UIs. Every implementation of
 // this abstract class is tied a particular UI (slideshow, animation etc) but it
@@ -65,6 +68,13 @@ class AmbientUiLauncher {
   bool IsReady();
 
   void SetObserver(Observer* observer);
+
+  // Always returns a non-null value. Defaults to
+  // `AmbientConsumerSessionMetricsDelegate`, but UI launchers that want to
+  // customize the standard set of metrics that recorded for all ambient UIs
+  // may override with their own implementation here.
+  virtual std::unique_ptr<AmbientSessionMetricsRecorder::Delegate>
+  CreateMetricsDelegate(AmbientUiSettings current_ui_settings);
 
  protected:
   // Sets the ready state and notifies the observer whenvever the reader state

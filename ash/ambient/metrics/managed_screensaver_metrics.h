@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "ash/ambient/metrics/ambient_session_metrics_recorder.h"
 #include "ash/ash_export.h"
 #include "base/strings/string_piece.h"
 #include "base/timer/elapsed_timer.h"
@@ -34,28 +35,18 @@ ASH_EXPORT void RecordManagedScreensaverImageCount(int image_count);
 ASH_EXPORT void RecordManagedScreensaverImageDownloadResult(
     ScreensaverImageDownloadResult result);
 
-class ManagedScreensaverMetricsRecorder {
+class ManagedScreensaverMetricsDelegate
+    : public AmbientSessionMetricsRecorder::Delegate {
  public:
-  ManagedScreensaverMetricsRecorder();
-  ~ManagedScreensaverMetricsRecorder();
-  ManagedScreensaverMetricsRecorder(const ManagedScreensaverMetricsRecorder&) =
+  ManagedScreensaverMetricsDelegate();
+  ~ManagedScreensaverMetricsDelegate() override;
+  ManagedScreensaverMetricsDelegate(const ManagedScreensaverMetricsDelegate&) =
       delete;
-  ManagedScreensaverMetricsRecorder& operator=(
-      const ManagedScreensaverMetricsRecorder&) = delete;
+  ManagedScreensaverMetricsDelegate& operator=(
+      const ManagedScreensaverMetricsDelegate&) = delete;
 
-  // Starts the session elapsed timer. This is used to keep track of the start
-  // of a session.
-  void RecordSessionStart();
-
-  // Records the amount of time it takes for the managed screensaver to start.
-  void RecordSessionStartupTime();
-
-  // Records the engagement time UMA.
-  void RecordSessionEnd();
-
- private:
-  // Timer use to keep track of ambient mode managed screensaver sessions.
-  std::unique_ptr<base::ElapsedTimer> session_elapsed_timer_;
+  void RecordStartupTime(base::TimeDelta startup_time) override;
+  void RecordEngagementTime(base::TimeDelta engagement_time) override;
 };
 
 }  // namespace ash

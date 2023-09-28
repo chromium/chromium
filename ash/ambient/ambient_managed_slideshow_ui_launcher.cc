@@ -44,7 +44,6 @@ AmbientManagedSlideshowUiLauncher::~AmbientManagedSlideshowUiLauncher() =
 void AmbientManagedSlideshowUiLauncher::OnImagesReady() {
   CHECK(initialization_callback_);
   std::move(initialization_callback_).Run(/*success=*/true);
-  metrics_recorder_.RecordSessionStartupTime();
 }
 
 void AmbientManagedSlideshowUiLauncher::OnErrorStateChanged() {
@@ -57,7 +56,6 @@ void AmbientManagedSlideshowUiLauncher::OnLockStateChanged(bool locked) {
 
 void AmbientManagedSlideshowUiLauncher::Initialize(
     InitializationCallback on_done) {
-  metrics_recorder_.RecordSessionStart();
   initialization_callback_ = std::move(on_done);
   // TODO(b/281056480): Remove this line and add the login screen visible method
   // to session observer. This is required because if we compute the ready state
@@ -84,7 +82,6 @@ std::unique_ptr<views::View> AmbientManagedSlideshowUiLauncher::CreateView() {
 
 void AmbientManagedSlideshowUiLauncher::Finalize() {
   photo_controller_.StopScreenUpdate();
-  metrics_recorder_.RecordSessionEnd();
 }
 
 AmbientBackendModel*
@@ -104,6 +101,11 @@ bool AmbientManagedSlideshowUiLauncher::IsActive() {
 bool AmbientManagedSlideshowUiLauncher::ComputeReadyState() {
   return LockScreen::HasInstance() &&
          !photo_controller_.HasScreenUpdateErrors();
+}
+
+std::unique_ptr<AmbientSessionMetricsRecorder::Delegate>
+AmbientManagedSlideshowUiLauncher::CreateMetricsDelegate(AmbientUiSettings) {
+  return std::make_unique<ManagedScreensaverMetricsDelegate>();
 }
 
 }  // namespace ash
