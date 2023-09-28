@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_TABS_TAB_SEARCH_CONTAINER_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_observer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/animation/animation.h"
@@ -64,6 +65,9 @@ class TabSearchContainer : public views::View,
 
   // Animation controlling expansion and collapse of tab_organization_button_.
   gfx::SlideAnimation expansion_animation_{this};
+
+  // Timer for hiding tab_organization_button_ after show.
+  base::OneShotTimer hide_tab_organization_timer_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_SEARCH_CONTAINER_H_

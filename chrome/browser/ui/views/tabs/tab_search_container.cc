@@ -82,6 +82,10 @@ TabSearchContainer::~TabSearchContainer() {
 
 void TabSearchContainer::ShowTabOrganization() {
   expansion_animation_.Show();
+
+  const base::TimeDelta delta = base::Seconds(16);
+  hide_tab_organization_timer_.Start(FROM_HERE, delta, this,
+                                     &TabSearchContainer::HideTabOrganization);
 }
 
 void TabSearchContainer::HideTabOrganization() {
