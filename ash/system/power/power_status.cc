@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <cmath>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/power_utils.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -292,7 +293,12 @@ PowerStatus::BatteryImageInfo PowerStatus::GenerateBatteryImageInfo(
 }
 
 void PowerStatus::CalculateBatteryImageInfo(BatteryImageInfo* info) const {
-  info->alert_if_low = !IsLinePowerConnected();
+  // We only alert if we are on battery, and battery saver mode is disabled.
+  if (features::IsBatterySaverAvailable()) {
+    info->alert_if_low = !IsLinePowerConnected() && !IsBatterySaverActive();
+  } else {
+    info->alert_if_low = !IsLinePowerConnected();
+  }
 
   if (!IsUsbChargerConnected() && !IsBatteryPresent()) {
     info->icon_badge = &kUnifiedMenuBatteryXIcon;
