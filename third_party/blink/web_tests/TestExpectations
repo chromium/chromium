@@ -2690,6 +2690,7 @@ crbug.com/1484043 [ Mac ] virtual/fetch-later/external/wpt/fetch/fetch-later/sen
 crbug.com/1484043 [ Win ] virtual/fetch-later/external/wpt/fetch/fetch-later/send-on-deactivate.tentative.https.window.html [ Pass Timeout ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 [ Win10.20h2 ] virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/hit-test-unrelated-element.html [ Failure ]
 crbug.com/626703 [ Mac13 ] virtual/threaded-prefer-compositing/external/wpt/scroll-animations/css/view-timeline-range-animation.html [ Timeout ]
 crbug.com/626703 [ Mac13 ] virtual/threaded/external/wpt/scroll-animations/css/view-timeline-range-animation.html [ Timeout ]
 crbug.com/626703 [ Win10.20h2 ] virtual/threaded/external/wpt/css/css-backgrounds/background-attachment-margin-root-001.html [ Failure ]

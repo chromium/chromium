@@ -140066,6 +140066,151 @@
         }
        ]
       ],
+      "custom-highlight-font-metrics-001.html": [
+       "755409c6b18d1585e3ba10896c3e7ee5537a05ea",
+       [
+        null,
+        [
+         [
+          "/css/css-highlight-api/painting/custom-highlight-font-metrics-001-ref.html",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             80
+            ],
+            [
+             0,
+             4
+            ]
+           ]
+          ]
+         ]
+        }
+       ]
+      ],
+      "custom-highlight-font-metrics-002.html": [
+       "48ca92feef0f8bcbaa45371afee9365cbf6ccef7",
+       [
+        null,
+        [
+         [
+          "/css/css-highlight-api/painting/custom-highlight-font-metrics-002-ref.html",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             120
+            ],
+            [
+             0,
+             8
+            ]
+           ]
+          ]
+         ]
+        }
+       ]
+      ],
+      "custom-highlight-font-metrics-003.html": [
+       "d1035ed130e1f008716a64fbb9686bb8e4ba203c",
+       [
+        null,
+        [
+         [
+          "/css/css-highlight-api/painting/custom-highlight-font-metrics-003-ref.html",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             120
+            ],
+            [
+             0,
+             8
+            ]
+           ]
+          ]
+         ]
+        }
+       ]
+      ],
+      "custom-highlight-font-metrics-004.html": [
+       "fec70e97d312f4c27f58b8229de95357c9925358",
+       [
+        null,
+        [
+         [
+          "/css/css-highlight-api/painting/custom-highlight-font-metrics-003-ref.html",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             120
+            ],
+            [
+             0,
+             8
+            ]
+           ]
+          ]
+         ]
+        }
+       ]
+      ],
+      "custom-highlight-font-metrics-005.html": [
+       "5b2eb657730cec1e9873209536d94eebcaf11a63",
+       [
+        null,
+        [
+         [
+          "/css/css-highlight-api/painting/custom-highlight-font-metrics-005-ref.html",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             80
+            ],
+            [
+             0,
+             10
+            ]
+           ]
+          ]
+         ]
+        }
+       ]
+      ],
       "custom-highlight-painting-001.html": [
        "82b61ec6de07c4d45796785f3e7b559e64a6deab",
        [
@@ -282497,11 +282642,11 @@
   "support": {
    ".cache": {
     "gitignore2.json": [
-     "de19673c860537963c098323ceaa91b9e2b91c41",
+     "fe01c16490129754e334303f859b0656b6122291",
      []
     ],
     "mtime.json": [
-     "66435170ba9ce0e3cec41decc7c9d9799e400aec",
+     "17ee4d54fddcf8bc2fe96c41713519c7793faef8",
      []
     ]
    },
@@ -299242,7 +299387,7 @@
       []
      ],
      "background-attachment-fixed-inside-transform-1.html.ini": [
-      "187f9d3d92b3fa15026817909d21c30b6a0a36fc",
+      "d1fc6da788a3ac069a97f226a1f04f0816b523f3",
       []
      ],
      "background-attachment-local": {
@@ -299352,7 +299497,7 @@
       []
      ],
      "background-attachment-margin-root-001.html.ini": [
-      "982ae43ab4c938cf16bdf7ea4a2ae436935a2076",
+      "7fd3edda6dc129f81c46d7cd23c87ccd038be0ef",
       []
      ],
      "background-attachment-margin-root-002-ref.html": [
@@ -304470,11 +304615,11 @@
       []
      ],
      "contain-style-counters-004.html.ini": [
-      "45b55cd58d83651d171cd1c49bb69dd32a574718",
+      "183f5d66b8595e076e43d7643add81fb8d5d76cd",
       []
      ],
      "contain-style-counters-005.html.ini": [
-      "e905f517cd2911f4fcae4386345c76613f3254b0",
+      "a01e74fd32224995d2f298bebda1e03482adf987",
       []
      ],
      "contain-style-counters-ref.html": [
@@ -318815,7 +318960,7 @@
        []
       ],
       "grid-area-valid.html.ini": [
-       "cc9c0c0eac28fe3254457a15457aafae9daee0d7",
+       "f1059aba97f9696c25b1ef1476c710561c6d0579",
        []
       ],
       "grid-column-shortest-serialization-expected.txt": [
@@ -318823,7 +318968,7 @@
        []
       ],
       "grid-column-shortest-serialization.html.ini": [
-       "cb51c24b7d1f5bfa3a374674d85f40c5ec078530",
+       "bb8f8ba5ac5ee5fafd96ea577533a6b20898509e",
        []
       ],
       "grid-columns-rows-get-set-multiple-expected.txt": [
@@ -318839,7 +318984,7 @@
        []
       ],
       "grid-row-shortest-serialization.html.ini": [
-       "46ef32782ea30c10d87e7ebb43188649f1242d01",
+       "25e0ca22ed9785c2764114debb850f2bcee1479c",
        []
       ]
      },
@@ -319264,6 +319409,26 @@
       ],
       "css-target-text-decoration-001-ref.html": [
        "5e9ef64579800a922d225ab9ca458555fe067dcc",
+       []
+      ],
+      "custom-highlight-font-metrics-001-ref.html": [
+       "76b7317caabe5bedf10a98bef5cade11a4f6458e",
+       []
+      ],
+      "custom-highlight-font-metrics-002-ref.html": [
+       "13b38d8bbf8accc4d9934738118b551157b1dde9",
+       []
+      ],
+      "custom-highlight-font-metrics-003-ref.html": [
+       "c1a04b0803a080d41645d3439c4260b0459e499c",
+       []
+      ],
+      "custom-highlight-font-metrics-004-ref.html": [
+       "c1a04b0803a080d41645d3439c4260b0459e499c",
+       []
+      ],
+      "custom-highlight-font-metrics-005-ref.html": [
+       "bbfc952116f2f2c86009d8ce6d301d635d71f6e8",
        []
       ],
       "custom-highlight-painting-001-ref.html": [
@@ -333787,7 +333952,7 @@
        []
       ],
       "text-spacing-trim-computed.html.ini": [
-       "e06ec14e35994124dec44e2000ac8f2d7d25aa01",
+       "31e61fc0cff848695a3e0b5f80c7cf0572c71846",
        []
       ],
       "text-spacing-trim-valid-expected.txt": [
@@ -333795,7 +333960,7 @@
        []
       ],
       "text-spacing-trim-valid.html.ini": [
-       "c820c56f8a1bdd67bef1ebb16c21f1d930e00bd3",
+       "6c363573efb7a8cc7f3119de46aaa39585d8d245",
        []
       ],
       "text-transform-computed-expected.txt": [
@@ -334811,7 +334976,7 @@
        []
       ],
       "text-spacing-trim-001.html.ini": [
-       "6fe48418ede7438b955dac9b93cf66c1385f8b0e",
+       "856b7b4d466251037c5ee6858fd52b44acc9801f",
        []
       ],
       "text-spacing-trim-colon-001-ref.html": [
@@ -334819,7 +334984,7 @@
        []
       ],
       "text-spacing-trim-colon-001.html.ini": [
-       "dbd352c0f08d2e2919bcaedef66efb3fc62ad143",
+       "a0b3fd2b586542f8f6932f1e234cab627abbad3c",
        []
       ],
       "text-spacing-trim-combinations-001-expected.txt": [
@@ -334835,7 +335000,7 @@
        []
       ],
       "text-spacing-trim-dot-001.html.ini": [
-       "087e3b7951eea11e36ce7737a175fc378336bc2f",
+       "e809663d601ca57387c76d3950d8f9f5b1556aa1",
        []
       ]
      },
@@ -343621,6 +343786,10 @@
       "23fa74dd5e665f4b63322b13f24caf9be691c15b",
       []
      ],
+     "css-tags-shared-element.html.ini": [
+      "805bc2ddcc04075bc689ba1020a2f7ebafea47e8",
+      []
+     ],
      "dialog-in-rtl-iframe-ref.html": [
       "44ed0947abcc467ad02c374238849f96c7df8ae0",
       []
@@ -343743,6 +343912,10 @@
      ],
      "japanese-tag-ref.html": [
       "8c57dba6588244daa4d3ff8d5daa8a1204563df1",
+      []
+     ],
+     "japanese-tag.html.ini": [
+      "3b69bcfda3112bf1d2efb234badfb124cabb150b",
       []
      ],
      "massive-element-below-and-on-top-of-viewport-partially-onscreen-new.html.ini": [
@@ -353234,7 +353407,7 @@
       []
      ],
      "insertparagraph-in-non-splittable-element-expected.txt": [
-      "dec3f4e7ad997c7b8769ad80e61898bd78b3c48f",
+      "97250e4115f0937543cd883015052007a42b0984",
       []
      ],
      "insertparagraph-in-non-splittable-element.html.ini": [
@@ -359994,7 +360167,7 @@
       []
      ],
      "fenced-frame.tentative.https.window.js.ini": [
-      "ccd1c6dc4c5fa5d7e7e69b842bd3c964be702b40",
+      "94417df72e4cff24212b84ed9378b243d869dfb7",
       []
      ],
      "fetch.tentative.https.window.js.ini": [
@@ -360192,7 +360365,7 @@
       []
      ],
      "shared-worker-blob-fetch.tentative.https.window.js.ini": [
-      "c63674bf03e0bc18dc4b09d0bf741ec5a702fa55",
+      "ab9f5bfa9c0790a87918f5035283a5c615a57302",
       []
      ],
      "shared-worker-blob-fetch.tentative.window-expected.txt": [
@@ -415723,7 +415896,7 @@
      []
     ],
     "sendorder.https.any.js.ini": [
-     "3c5f861bc82e77402bab397f4feca11d6019524a",
+     "0c2284b4b563dcd314846052134464a534829ca9",
      []
     ],
     "sendorder.https.any.serviceworker-expected.txt": [
@@ -470770,6 +470943,13 @@
        {}
       ]
      ],
+     "highlight-pseudo-from-font-computed.html": [
+      "7c436d95d126e0b063e064255db8c5167e13dbef",
+      [
+       null,
+       {}
+      ]
+     ],
      "highlight-pseudo-parsing.html": [
       "c6d999efdf74d6998fe36f6d365d2c33577dabf5",
       [
@@ -475001,7 +475181,7 @@
       ]
      ],
      "highlight-cascade-009.html": [
-      "884a0958db0833c0db5d615213b235d0ad13b0e8",
+      "8d275f37dd1a3c58b8ddb313e5bd0fbd17e18759",
       [
        null,
        {}
@@ -500380,7 +500560,7 @@
       ]
      ],
      "insertparagraph-in-non-splittable-element.html": [
-      "21aa495bd675a5b579fa3205db4409eb4adfb8df",
+      "c77862fecb297e86cbe3605057646cc1238fa1d7",
       [
        null,
        {
@@ -581973,7 +582153,7 @@
        ]
       ],
       "popover-light-dismiss.html": [
-       "4c31bed1635f68774f4368e834b3793d3f857495",
+       "4a57276bce3cbb1c6bcb287d268af38e4ee19752",
        [
         null,
         {
