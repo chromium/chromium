@@ -45,7 +45,7 @@ source_set("unit_tests") {
 
 if (is_android) {
   java_cpp_enum("translate_infobar_event_enum") {
-    sources = [ "translate_constants.h" ]
+    sources = [ "translate_metrics.h" ]
   }
 
   android_library("translate_infobar_event_enum_java") {

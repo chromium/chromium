@@ -19,8 +19,4 @@ typedef NS_OPTIONS(NSUInteger, UserAction) {
   UserActionExpandMenu = 1 << 5,
 };
 
-// UMA histogram names.
-// Note: These string constants are repeated in TranslateCompactInfoBar.java.
-extern const char kEventHistogram[];
-
 #endif  // IOS_CHROME_BROWSER_TRANSLATE_TRANSLATE_CONSTANTS_H_

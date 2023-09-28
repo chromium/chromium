@@ -69,6 +69,13 @@ class MetricsRecorder {
     EXPECT_EQ(count, GetTotalCount());
   }
 
+  void CheckCount(HistogramBase::Sample value, int expected) {
+    if (!samples_) {
+      Snapshot();
+    }
+    EXPECT_EQ(expected, GetCountWithoutSnapshot(value));
+  }
+
   void CheckValueInLogs(double value) {
     Snapshot();
     ASSERT_TRUE(samples_.get());
@@ -82,11 +89,6 @@ class MetricsRecorder {
         return;
     }
     EXPECT_FALSE(true);
-  }
-
-  HistogramBase::Count GetCount(HistogramBase::Sample value) {
-    Snapshot();
-    return GetCountWithoutSnapshot(value);
   }
 
  private:
@@ -172,6 +174,25 @@ TEST(TranslateMetricsTest, ReportTranslatedLanguageDetectionContentLength) {
   ReportTranslatedLanguageDetectionContentLength(12345);
   recorder.CheckValueInLogs(12345);
   recorder.CheckTotalCount(1);
+}
+
+TEST(TranslateMetricsTest, ReportCompactInfobarEvent) {
+  MetricsRecorder recorder(metrics_internal::kTranslateCompactInfobarEvent);
+  recorder.CheckTotalCount(0);
+  ReportCompactInfobarEvent(InfobarEvent::INFOBAR_IMPRESSION);
+  ReportCompactInfobarEvent(InfobarEvent::INFOBAR_IMPRESSION);
+  ReportCompactInfobarEvent(InfobarEvent::INFOBAR_IMPRESSION);
+  ReportCompactInfobarEvent(InfobarEvent::INFOBAR_REVERT);
+  ReportCompactInfobarEvent(InfobarEvent::INFOBAR_REVERT);
+  ReportCompactInfobarEvent(
+      InfobarEvent::INFOBAR_SNACKBAR_AUTO_ALWAYS_IMPRESSION);
+
+  recorder.CheckTotalCount(6);
+  recorder.CheckCount(static_cast<int>(InfobarEvent::INFOBAR_IMPRESSION), 3);
+  recorder.CheckCount(static_cast<int>(InfobarEvent::INFOBAR_REVERT), 2);
+  recorder.CheckCount(
+      static_cast<int>(InfobarEvent::INFOBAR_SNACKBAR_AUTO_ALWAYS_IMPRESSION),
+      1);
 }
 
 }  // namespace

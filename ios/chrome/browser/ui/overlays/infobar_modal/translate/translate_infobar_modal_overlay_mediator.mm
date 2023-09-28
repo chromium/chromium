@@ -10,13 +10,12 @@
 #import "components/metrics/metrics_log.h"
 #import "components/translate/core/browser/translate_infobar_delegate.h"
 #import "components/translate/core/browser/translate_step.h"
-#import "components/translate/core/common/translate_constants.h"
+#import "components/translate/core/common/translate_metrics.h"
 #import "components/translate/core/common/translate_util.h"
 #import "ios/chrome/browser/infobars/overlays/infobar_overlay_util.h"
 #import "ios/chrome/browser/overlays/public/default/default_infobar_overlay_request_config.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
-#import "ios/chrome/browser/translate/translate_constants.h"
 #import "ios/chrome/browser/translate/translate_infobar_metrics_recorder.h"
 #import "ios/chrome/browser/ui/overlays/overlay_request_mediator+subclassing.h"
 
@@ -143,7 +142,7 @@ const int kInvalidLanguageIndex = -1;
 #pragma mark - InfobarTranslateModalDelegate
 
 - (void)showSourceLanguage {
-  [self recordInfobarEvent:translate::InfobarEvent::INFOBAR_REVERT];
+  translate::ReportCompactInfobarEvent(translate::InfobarEvent::INFOBAR_REVERT);
 
   InfoBarIOS* infobar = GetOverlayRequestInfobar(self.request);
   self.translateDelegate->RevertWithoutClosingInfobar();
@@ -156,8 +155,8 @@ const int kInvalidLanguageIndex = -1;
 
 - (void)translateWithNewLanguages {
   [self updateLanguagesIfNecessary];
-  [self
-      recordInfobarEvent:translate::InfobarEvent::INFOBAR_TARGET_TAB_TRANSLATE];
+  translate::ReportCompactInfobarEvent(
+      translate::InfobarEvent::INFOBAR_TARGET_TAB_TRANSLATE);
 
   [self startTranslation];
 
@@ -165,7 +164,8 @@ const int kInvalidLanguageIndex = -1;
 }
 
 - (void)showChangeSourceLanguageOptions {
-  [self recordInfobarEvent:translate::InfobarEvent::INFOBAR_PAGE_NOT_IN];
+  translate::ReportCompactInfobarEvent(
+      translate::InfobarEvent::INFOBAR_PAGE_NOT_IN);
   [TranslateInfobarMetricsRecorder
       recordModalEvent:MobileMessagesTranslateModalEvent::ChangeSourceLanguage];
 
@@ -173,7 +173,8 @@ const int kInvalidLanguageIndex = -1;
 }
 
 - (void)showChangeTargetLanguageOptions {
-  [self recordInfobarEvent:translate::InfobarEvent::INFOBAR_MORE_LANGUAGES];
+  translate::ReportCompactInfobarEvent(
+      translate::InfobarEvent::INFOBAR_MORE_LANGUAGES);
   [TranslateInfobarMetricsRecorder
       recordModalEvent:MobileMessagesTranslateModalEvent::ChangeTargetLanguage];
 
@@ -181,7 +182,8 @@ const int kInvalidLanguageIndex = -1;
 }
 
 - (void)alwaysTranslateSourceLanguage {
-  [self recordInfobarEvent:translate::InfobarEvent::INFOBAR_ALWAYS_TRANSLATE];
+  translate::ReportCompactInfobarEvent(
+      translate::InfobarEvent::INFOBAR_ALWAYS_TRANSLATE);
   [TranslateInfobarMetricsRecorder
       recordModalEvent:MobileMessagesTranslateModalEvent::
                            TappedAlwaysTranslate];
@@ -200,8 +202,8 @@ const int kInvalidLanguageIndex = -1;
 
 - (void)undoAlwaysTranslateSourceLanguage {
   DCHECK(self.translateDelegate->IsTranslatableLanguageByPrefs());
-  [self recordInfobarEvent:translate::InfobarEvent::
-                               INFOBAR_ALWAYS_TRANSLATE_UNDO];
+  translate::ReportCompactInfobarEvent(
+      translate::InfobarEvent::INFOBAR_ALWAYS_TRANSLATE_UNDO);
   [self toggleAlwaysTranslate];
 
   [self dismissOverlay];
@@ -209,7 +211,8 @@ const int kInvalidLanguageIndex = -1;
 
 - (void)neverTranslateSourceLanguage {
   DCHECK(self.translateDelegate->IsTranslatableLanguageByPrefs());
-  [self recordInfobarEvent:translate::InfobarEvent::INFOBAR_NEVER_TRANSLATE];
+  translate::ReportCompactInfobarEvent(
+      translate::InfobarEvent::INFOBAR_NEVER_TRANSLATE);
   [TranslateInfobarMetricsRecorder
       recordModalEvent:MobileMessagesTranslateModalEvent::
                            TappedNeverForSourceLanguage];
@@ -227,8 +230,8 @@ const int kInvalidLanguageIndex = -1;
 
 - (void)neverTranslateSite {
   DCHECK(!self.translateDelegate->IsSiteOnNeverPromptList());
-  [self
-      recordInfobarEvent:translate::InfobarEvent::INFOBAR_NEVER_TRANSLATE_SITE];
+  translate::ReportCompactInfobarEvent(
+      translate::InfobarEvent::INFOBAR_NEVER_TRANSLATE_SITE);
   [TranslateInfobarMetricsRecorder
       recordModalEvent:MobileMessagesTranslateModalEvent::
                            TappedNeverForThisSite];
@@ -375,11 +378,6 @@ const int kInvalidLanguageIndex = -1;
   }
 
   return items;
-}
-
-// Records a histogram for `event`.
-- (void)recordInfobarEvent:(translate::InfobarEvent)event {
-  UMA_HISTOGRAM_ENUMERATION(kEventHistogram, event);
 }
 
 // Records a histogram of `histogram` for `langCode`. This is used to log the

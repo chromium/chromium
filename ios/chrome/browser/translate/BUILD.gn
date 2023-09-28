@@ -5,7 +5,6 @@
 source_set("public") {
   sources = [
     "translate_constants.h",
-    "translate_constants.mm",
     "translate_infobar_metrics_recorder.h",
     "translate_infobar_metrics_recorder.mm",
   ]
