@@ -1077,11 +1077,7 @@ if (enable_java_templates) {
       _cache_dir = "$root_build_dir/android_lint_cache"
 
       # Save generated xml files in a consistent location for debugging.
-      if (defined(invoker.lint_gen_dir)) {
-        _lint_gen_dir = invoker.lint_gen_dir
-      } else {
-        _lint_gen_dir = "$target_gen_dir/$target_name"
-      }
+      _lint_gen_dir = "$target_gen_dir/$target_name"
       _backported_methods = "//third_party/r8/backported_methods.txt"
 
       script = "//build/android/gyp/lint.py"
