@@ -1198,6 +1198,15 @@ void ServiceWorkerVersion::InitializeGlobalScope() {
 
   is_endpoint_ready_ = true;
   associated_registry_ = std::make_unique<blink::AssociatedInterfaceRegistry>();
+
+  // If we have allocated the process we can tell the client to register
+  // services.
+  if (embedded_worker()->process_id() != ChildProcessHost::kInvalidUniqueID) {
+    GetContentClient()
+        ->browser()
+        ->RegisterAssociatedInterfaceBindersForServiceWorker(
+            GetInfo(), *associated_registry_);
+  }
 }
 
 bool ServiceWorkerVersion::IsControlleeProcessID(int process_id) const {
@@ -1381,6 +1390,10 @@ void ServiceWorkerVersion::OnScriptLoaded() {
 }
 
 void ServiceWorkerVersion::OnProcessAllocated() {
+  // If we have not initialized the global scope yet, return early.
+  if (!is_endpoint_ready_) {
+    return;
+  }
   GetContentClient()
       ->browser()
       ->RegisterAssociatedInterfaceBindersForServiceWorker(
