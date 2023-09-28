@@ -29,8 +29,13 @@ typedef xmlMutex *xmlMutexPtr;
 typedef struct _xmlRMutex xmlRMutex;
 typedef xmlRMutex *xmlRMutexPtr;
 
-XMLPUBFUN int xmlCheckThreadLocalStorage(void);
-
+#ifdef __cplusplus
+}
+#endif
+#include <libxml/globals.h>
+#ifdef __cplusplus
+extern "C" {
+#endif
 XMLPUBFUN xmlMutexPtr
 			xmlNewMutex	(void);
 XMLPUBFUN void
@@ -68,10 +73,13 @@ XMLPUBFUN int
 XML_DEPRECATED
 XMLPUBFUN void
 			xmlCleanupThreads(void);
+XML_DEPRECATED
+XMLPUBFUN xmlGlobalStatePtr
+			xmlGetGlobalState(void);
 
 /** DOC_DISABLE */
 #if defined(LIBXML_THREAD_ENABLED) && defined(_WIN32) && \
-    defined(LIBXML_STATIC_FOR_DLL)
+    !defined(HAVE_COMPILER_TLS) && defined(LIBXML_STATIC_FOR_DLL)
 int
 xmlDllMain(void *hinstDLL, unsigned long fdwReason,
            void *lpvReserved);

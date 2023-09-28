@@ -16,6 +16,7 @@
 
 #include <libxml/xmlmemory.h>
 #include <libxml/uri.h>
+#include <libxml/globals.h>
 #include <libxml/xmlerror.h>
 
 #include "private/error.h"

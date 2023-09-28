@@ -28,7 +28,7 @@
 extern "C" {
 #endif
 
-#if defined(LIBXML_XPTR_LOCS_ENABLED)
+#ifdef LIBXML_XPTR_LOCS_ENABLED
 /*
  * A Location Set
  */
@@ -105,7 +105,7 @@ XML_DEPRECATED
 XMLPUBFUN void
 		    xmlXPtrLocationSetRemove	(xmlLocationSetPtr cur,
 						 int val);
-#endif /* defined(LIBXML_XPTR_LOCS_ENABLED) */
+#endif /* LIBXML_XPTR_LOCS_ENABLED */
 
 /*
  * Functions.
@@ -117,8 +117,7 @@ XMLPUBFUN xmlXPathContextPtr
 XMLPUBFUN xmlXPathObjectPtr
 		    xmlXPtrEval			(const xmlChar *str,
 						 xmlXPathContextPtr ctx);
-
-#if defined(LIBXML_XPTR_LOCS_ENABLED)
+#ifdef LIBXML_XPTR_LOCS_ENABLED
 XML_DEPRECATED
 XMLPUBFUN void
 		    xmlXPtrRangeToFunction	(xmlXPathParserContextPtr ctxt,
@@ -129,7 +128,7 @@ XMLPUBFUN xmlNodePtr
 XML_DEPRECATED
 XMLPUBFUN void
 		    xmlXPtrEvalRangePredicate	(xmlXPathParserContextPtr ctxt);
-#endif /* defined(LIBXML_XPTR_LOCS_ENABLED) */
+#endif /* LIBXML_XPTR_LOCS_ENABLED */
 #ifdef __cplusplus
 }
 #endif

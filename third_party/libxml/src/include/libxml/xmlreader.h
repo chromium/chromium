@@ -10,16 +10,13 @@
 #ifndef __XML_XMLREADER_H__
 #define __XML_XMLREADER_H__
 
+#include <libxml/xmlversion.h>
 #include <libxml/tree.h>
 #include <libxml/xmlIO.h>
-#include <libxml/xmlerror.h>
-#include <libxml/xmlversion.h>
 #ifdef LIBXML_SCHEMAS_ENABLED
 #include <libxml/relaxng.h>
 #include <libxml/xmlschemas.h>
 #endif
-/* for compatibility */
-#include <libxml/parser.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -124,8 +121,6 @@ XMLPUBFUN int
             xmlTextReaderSetup(xmlTextReaderPtr reader,
                    xmlParserInputBufferPtr input, const char *URL,
                    const char *encoding, int options);
-XMLPUBFUN void xmlTextReaderSetMaxAmplification(xmlTextReaderPtr reader,
-                                                unsigned maxAmpl);
 
 /*
  * Iterators

@@ -66,11 +66,11 @@ TEST_F(XmlParserTest, ParseBadXml) {
     const char* input;
     const char* expected_error;
   } test_cases[] = {
-      {"", "Document is empty"},
-      {"  ", "Start tag expected"},
-      {"Awesome possum", "Start tag expected"},
-      {R"( ["json", "or", "xml?"] )", "Start tag expected"},
-      {"<unbalanced>", "Premature end of data in tag"},
+      {"", "Extra content at the end of the document"},
+      {"  ", "Extra content at the end of the document"},
+      {"Awesome possum", "Document is empty"},
+      {R"( ["json", "or", "xml?"] )", "Document is empty"},
+      {"<unbalanced>", "Extra content at the end of the document"},
       {"<hello>bad tag</goodbye>",
        "Opening and ending tag mismatch: hello line 1 and goodbye"},
   };

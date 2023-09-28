@@ -1,4 +1,3 @@
-#include <stdlib.h>
 #include <string.h>
 #include <libxml/parser.h>
 #include <libxml/dict.h>
@@ -23,9 +22,9 @@ static const char *seeds2[] = {
    NULL
 };
 
-#define NB_STRINGS_MAX 100000
-#define NB_STRINGS_NS  10000
-#define NB_STRINGS_PREFIX (NB_STRINGS_NS / 20)
+#define NB_STRINGS_MAX 10000
+#define NB_STRINGS_NS 1000
+#define NB_STRINGS_PREFIX 50
 #define NB_STRINGS_MIN 10
 
 static xmlChar **strings1;

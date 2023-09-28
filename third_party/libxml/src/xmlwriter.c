@@ -16,7 +16,6 @@
 #include <libxml/parser.h>
 #include <libxml/uri.h>
 #include <libxml/HTMLtree.h>
-#include <libxml/SAX2.h>
 
 #ifdef LIBXML_WRITER_ENABLED
 

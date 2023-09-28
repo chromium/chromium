@@ -20,16 +20,11 @@
 #include "libxml.h"
 
 #include <limits.h>
-#include <string.h>
+#include <stdlib.h>
 #include <time.h>
 
 #include "private/dict.h"
 #include "private/threads.h"
-
-#include <libxml/parser.h>
-#include <libxml/dict.h>
-#include <libxml/xmlmemory.h>
-#include <libxml/xmlerror.h>
 
 /*
  * Following http://www.ocert.org/advisories/ocert-2011-003.html
@@ -46,13 +41,28 @@
 #define DICT_RANDOMIZATION
 #endif
 
+#include <string.h>
+#ifdef HAVE_STDINT_H
+#include <stdint.h>
+#else
+#ifdef HAVE_INTTYPES_H
+#include <inttypes.h>
+#elif defined(_WIN32)
+typedef unsigned __int32 uint32_t;
+#endif
+#endif
+#include <libxml/tree.h>
+#include <libxml/dict.h>
+#include <libxml/xmlmemory.h>
+#include <libxml/xmlerror.h>
+#include <libxml/globals.h>
+
 /* #define DEBUG_GROW */
 /* #define DICT_DEBUG_PATTERNS */
 
-#define MAX_HASH_LEN 16
-#define MAX_FILL 2
-#define GROWTH_FACTOR 4
+#define MAX_HASH_LEN 3
 #define MIN_DICT_SIZE 128
+#define MAX_DICT_HASH 100000000
 #define WITH_BIG_KEY
 
 #ifdef WITH_BIG_KEY
@@ -85,7 +95,7 @@ struct _xmlDictEntry {
     const xmlChar *name;
     unsigned int len;
     int valid;
-    unsigned okey;
+    unsigned long okey;
 };
 
 typedef struct _xmlDictStrings xmlDictStrings;
@@ -111,7 +121,7 @@ struct _xmlDict {
 
     struct _xmlDict *subdict;
     /* used for randomization */
-    unsigned seed;
+    int seed;
     /* used to impose a limit on size */
     size_t limit;
 };
@@ -122,14 +132,13 @@ struct _xmlDict {
  */
 static xmlMutex xmlDictMutex;
 
+#ifdef DICT_RANDOMIZATION
+#ifdef HAVE_RAND_R
 /*
  * Internal data for random function, protected by xmlDictMutex
  */
-static unsigned globalRngState[2];
-
-#ifdef XML_THREAD_LOCAL
-XML_THREAD_LOCAL static int localRngInitialized = 0;
-XML_THREAD_LOCAL static unsigned localRngState[2];
+static unsigned int rand_seed = 0;
+#endif
 #endif
 
 /**
@@ -137,74 +146,45 @@ XML_THREAD_LOCAL static unsigned localRngState[2];
  *
  * DEPRECATED: Alias for xmlInitParser.
  */
-int
-xmlInitializeDict(void) {
+int xmlInitializeDict(void) {
     xmlInitParser();
     return(0);
 }
 
 /**
- * xmlInitializeDict:
+ * __xmlInitializeDict:
  *
- * Initialize mutex and global PRNG seed.
+ * This function is not public
+ * Do the dictionary mutex initialization.
  */
-#ifdef __clang__
-ATTRIBUTE_NO_SANITIZE("unsigned-integer-overflow")
-ATTRIBUTE_NO_SANITIZE("unsigned-shift-base")
-#endif
-void
-xmlInitDictInternal(void) {
-    int var;
-
+int __xmlInitializeDict(void) {
     xmlInitMutex(&xmlDictMutex);
 
-    /* TODO: Get seed values from system PRNG */
-
-    globalRngState[0] = (unsigned) time(NULL) ^
-                        HASH_ROL((unsigned) (size_t) &xmlInitializeDict, 8);
-    globalRngState[1] = HASH_ROL((unsigned) (size_t) &xmlDictMutex, 16) ^
-                        HASH_ROL((unsigned) (size_t) &var, 24);
-}
-
-#ifdef __clang__
-ATTRIBUTE_NO_SANITIZE("unsigned-integer-overflow")
-ATTRIBUTE_NO_SANITIZE("unsigned-shift-base")
-#endif
-static unsigned
-xoroshiro64ss(unsigned *s) {
-    unsigned s0 = s[0];
-    unsigned s1 = s[1];
-    unsigned result = HASH_ROL(s0 * 0x9E3779BB, 5) * 5;
-
-    s1 ^= s0;
-    s[0] = HASH_ROL(s0, 26) ^ s1 ^ (s1 << 9);
-    s[1] = HASH_ROL(s1, 13);
-
-    return(result & 0xFFFFFFFF);
-}
-
-unsigned
-xmlRandom(void) {
-#ifdef XML_THREAD_LOCAL
-    if (!localRngInitialized) {
-        xmlMutexLock(&xmlDictMutex);
-        localRngState[0] = xoroshiro64ss(globalRngState);
-        localRngState[1] = xoroshiro64ss(globalRngState);
-        localRngInitialized = 1;
-        xmlMutexUnlock(&xmlDictMutex);
-    }
-
-    return(xoroshiro64ss(localRngState));
+#ifdef DICT_RANDOMIZATION
+#ifdef HAVE_RAND_R
+    rand_seed = time(NULL);
+    rand_r(& rand_seed);
 #else
-    unsigned ret;
+    srand(time(NULL));
+#endif
+#endif
+    return(1);
+}
+
+#ifdef DICT_RANDOMIZATION
+int __xmlRandom(void) {
+    int ret;
 
     xmlMutexLock(&xmlDictMutex);
-    ret = xoroshiro64ss(globalRngState);
-    xmlMutexUnlock(&xmlDictMutex);
-
-    return(ret);
+#ifdef HAVE_RAND_R
+    ret = rand_r(& rand_seed);
+#else
+    ret = rand();
 #endif
+    xmlMutexUnlock(&xmlDictMutex);
+    return(ret);
 }
+#endif
 
 /**
  * xmlDictCleanup:
@@ -367,28 +347,34 @@ found_pool:
  *
  * Calculate a hash key using a good hash function that works well for
  * larger hash table sizes.
+ *
+ * Hash function by "One-at-a-Time Hash" see
+ * http://burtleburtle.net/bob/hash/doobs.html
  */
 
 #ifdef __clang__
 ATTRIBUTE_NO_SANITIZE("unsigned-integer-overflow")
 ATTRIBUTE_NO_SANITIZE("unsigned-shift-base")
 #endif
-static unsigned
-xmlDictComputeBigKey(const xmlChar* data, int namelen, unsigned seed) {
-    unsigned h1, h2;
+static uint32_t
+xmlDictComputeBigKey(const xmlChar* data, int namelen, int seed) {
+    uint32_t hash;
     int i;
 
     if (namelen <= 0 || data == NULL) return(0);
 
-    HASH_INIT(h1, h2, seed);
+    hash = seed;
 
-    for (i = 0; i < namelen; i++) {
-        HASH_UPDATE(h1, h2, data[i]);
+    for (i = 0;i < namelen; i++) {
+        hash += data[i];
+	hash += (hash << 10);
+	hash ^= (hash >> 6);
     }
+    hash += (hash << 3);
+    hash ^= (hash >> 11);
+    hash += (hash << 15);
 
-    HASH_FINISH(h1, h2);
-
-    return h2;
+    return hash;
 }
 
 /*
@@ -406,27 +392,34 @@ xmlDictComputeBigKey(const xmlChar* data, int namelen, unsigned seed) {
 ATTRIBUTE_NO_SANITIZE("unsigned-integer-overflow")
 ATTRIBUTE_NO_SANITIZE("unsigned-shift-base")
 #endif
-static unsigned
+static unsigned long
 xmlDictComputeBigQKey(const xmlChar *prefix, int plen,
-                      const xmlChar *name, int len, unsigned seed)
+                      const xmlChar *name, int len, int seed)
 {
-    unsigned h1, h2;
+    uint32_t hash;
     int i;
 
-    HASH_INIT(h1, h2, seed);
+    hash = seed;
 
-    for (i = 0; i < plen; i++) {
-        HASH_UPDATE(h1, h2, prefix[i]);
+    for (i = 0;i < plen; i++) {
+        hash += prefix[i];
+	hash += (hash << 10);
+	hash ^= (hash >> 6);
     }
-    HASH_UPDATE(h1, h2, ':');
+    hash += ':';
+    hash += (hash << 10);
+    hash ^= (hash >> 6);
 
-    for (i = 0; i < len; i++) {
-        HASH_UPDATE(h1, h2, name[i]);
+    for (i = 0;i < len; i++) {
+        hash += name[i];
+	hash += (hash << 10);
+	hash ^= (hash >> 6);
     }
+    hash += (hash << 3);
+    hash ^= (hash >> 11);
+    hash += (hash << 15);
 
-    HASH_FINISH(h1, h2);
-
-    return h2;
+    return hash;
 }
 #endif /* WITH_BIG_KEY */
 
@@ -436,13 +429,9 @@ xmlDictComputeBigQKey(const xmlChar *prefix, int plen,
  * Calculate a hash key using a fast hash function that works well
  * for low hash table fill.
  */
-#ifdef __clang__
-ATTRIBUTE_NO_SANITIZE("unsigned-integer-overflow")
-ATTRIBUTE_NO_SANITIZE("unsigned-shift-base")
-#endif
-static unsigned
-xmlDictComputeFastKey(const xmlChar *name, int namelen, unsigned seed) {
-    unsigned value = seed;
+static unsigned long
+xmlDictComputeFastKey(const xmlChar *name, int namelen, int seed) {
+    unsigned long value = seed;
 
     if ((name == NULL) || (namelen <= 0))
         return(value);
@@ -484,15 +473,11 @@ xmlDictComputeFastKey(const xmlChar *name, int namelen, unsigned seed) {
  *
  * Neither of the two strings must be NULL.
  */
-#ifdef __clang__
-ATTRIBUTE_NO_SANITIZE("unsigned-integer-overflow")
-ATTRIBUTE_NO_SANITIZE("unsigned-shift-base")
-#endif
-static unsigned
+static unsigned long
 xmlDictComputeFastQKey(const xmlChar *prefix, int plen,
-                       const xmlChar *name, int len, unsigned seed)
+                       const xmlChar *name, int len, int seed)
 {
-    unsigned value = seed;
+    unsigned long value = seed;
 
     if (plen == 0)
 	value += 30 * ':';
@@ -592,7 +577,7 @@ xmlDictCreate(void) {
         if (dict->dict) {
 	    memset(dict->dict, 0, MIN_DICT_SIZE * sizeof(xmlDictEntry));
 #ifdef DICT_RANDOMIZATION
-            dict->seed = xmlRandom();
+            dict->seed = __xmlRandom();
 #else
             dict->seed = 0;
 #endif
@@ -657,26 +642,28 @@ xmlDictReference(xmlDictPtr dict) {
  */
 static int
 xmlDictGrow(xmlDictPtr dict, size_t size) {
-    unsigned key, okey;
+    unsigned long key, okey;
     size_t oldsize, i;
     xmlDictEntryPtr iter, next;
     struct _xmlDictEntry *olddict;
 #ifdef DEBUG_GROW
-    unsigned nbElem = 0;
+    unsigned long nbElem = 0;
 #endif
     int ret = 0;
     int keep_keys = 1;
 
     if (dict == NULL)
 	return(-1);
-    oldsize = dict->size;
-    if (size <= oldsize)
-	return(0);
+    if (size < 8)
+        return(-1);
+    if (size > MAX_DICT_HASH)
+	return(-1);
 
 #ifdef DICT_DEBUG_PATTERNS
     fprintf(stderr, "*");
 #endif
 
+    oldsize = dict->size;
     olddict = dict->dict;
     if (olddict == NULL)
         return(-1);
@@ -849,11 +836,11 @@ xmlDictFree(xmlDictPtr dict) {
  */
 const xmlChar *
 xmlDictLookup(xmlDictPtr dict, const xmlChar *name, int len) {
-    unsigned key, okey, nbi = 0;
+    unsigned long key, okey, nbi = 0;
     xmlDictEntryPtr entry;
     xmlDictEntryPtr insert;
     const xmlChar *ret;
-    size_t l;
+    unsigned int l;
 
     if ((dict == NULL) || (name == NULL))
 	return(NULL);
@@ -902,7 +889,7 @@ xmlDictLookup(xmlDictPtr dict, const xmlChar *name, int len) {
     }
 
     if (dict->subdict) {
-        unsigned skey;
+        unsigned long skey;
 
         /* we cannot always reuse the same okey for the subdict */
         if (((dict->size == MIN_DICT_SIZE) &&
@@ -967,12 +954,9 @@ xmlDictLookup(xmlDictPtr dict, const xmlChar *name, int len) {
 
     dict->nbElems++;
 
-    if ((dict->nbElems > dict->size / MAX_FILL) ||
-        (nbi > MAX_HASH_LEN)) {
-        int newSize = dict->size > INT_MAX / GROWTH_FACTOR ?
-                      INT_MAX :
-                      GROWTH_FACTOR * dict->size;
-	if (xmlDictGrow(dict, newSize) != 0)
+    if ((nbi > MAX_HASH_LEN) &&
+        (dict->size <= ((MAX_DICT_HASH / 2) / MAX_HASH_LEN))) {
+	if (xmlDictGrow(dict, MAX_HASH_LEN * 2 * dict->size) != 0)
 	    return(NULL);
     }
     /* Note that entry may have been freed at this point by xmlDictGrow */
@@ -992,9 +976,9 @@ xmlDictLookup(xmlDictPtr dict, const xmlChar *name, int len) {
  */
 const xmlChar *
 xmlDictExists(xmlDictPtr dict, const xmlChar *name, int len) {
-    unsigned key, okey;
+    unsigned long key, okey;
     xmlDictEntryPtr insert;
-    size_t l;
+    unsigned int l;
 
     if ((dict == NULL) || (name == NULL))
 	return(NULL);
@@ -1041,7 +1025,7 @@ xmlDictExists(xmlDictPtr dict, const xmlChar *name, int len) {
     }
 
     if (dict->subdict) {
-        unsigned skey;
+        unsigned long skey;
 
         /* we cannot always reuse the same okey for the subdict */
         if (((dict->size == MIN_DICT_SIZE) &&
@@ -1098,11 +1082,11 @@ xmlDictExists(xmlDictPtr dict, const xmlChar *name, int len) {
  */
 const xmlChar *
 xmlDictQLookup(xmlDictPtr dict, const xmlChar *prefix, const xmlChar *name) {
-    unsigned okey, key, nbi = 0;
+    unsigned long okey, key, nbi = 0;
     xmlDictEntryPtr entry;
     xmlDictEntryPtr insert;
     const xmlChar *ret;
-    size_t len, plen, l;
+    unsigned int len, plen, l;
 
     if ((dict == NULL) || (name == NULL))
 	return(NULL);
@@ -1111,8 +1095,6 @@ xmlDictQLookup(xmlDictPtr dict, const xmlChar *prefix, const xmlChar *name) {
 
     l = len = strlen((const char *) name);
     plen = strlen((const char *) prefix);
-    if ((len > INT_MAX / 2) || (plen > INT_MAX / 2))
-        return(NULL);
     len += 1 + plen;
 
     /*
@@ -1136,7 +1118,7 @@ xmlDictQLookup(xmlDictPtr dict, const xmlChar *prefix, const xmlChar *name) {
     }
 
     if (dict->subdict) {
-        unsigned skey;
+        unsigned long skey;
 
         /* we cannot always reuse the same okey for the subdict */
         if (((dict->size == MIN_DICT_SIZE) &&
@@ -1185,14 +1167,9 @@ xmlDictQLookup(xmlDictPtr dict, const xmlChar *prefix, const xmlChar *name) {
 
     dict->nbElems++;
 
-    if ((dict->nbElems > dict->size / MAX_FILL) ||
-        (nbi > MAX_HASH_LEN)) {
-        int newSize = dict->size > INT_MAX / GROWTH_FACTOR ?
-                      INT_MAX :
-                      GROWTH_FACTOR * dict->size;
-	if (xmlDictGrow(dict, newSize) != 0)
-	    return(NULL);
-    }
+    if ((nbi > MAX_HASH_LEN) &&
+        (dict->size <= ((MAX_DICT_HASH / 2) / MAX_HASH_LEN)))
+	xmlDictGrow(dict, MAX_HASH_LEN * 2 * dict->size);
     /* Note that entry may have been freed at this point by xmlDictGrow */
 
     return(ret);
