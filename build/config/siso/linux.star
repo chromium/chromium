@@ -42,6 +42,7 @@ def __disable_remote_b289968566(ctx, step_config):
             "./android_clang_arm/obj/third_party/distributed_point_functions/distributed_point_functions/evaluate_prg_hwy.o",
             "./obj/chrome/browser/ash/ash/autotest_private_api.o",
             "./obj/chrome/browser/ash/ash/chrome_browser_main_parts_ash.o",
+            "./obj/chrome/browser/ash/system_web_apps/browser_tests/system_web_app_manager_browsertest.o",
             "./obj/chrome/browser/browser/browser_prefs.o",
             "./obj/chrome/browser/browser/chrome_browser_interface_binders.o",
             "./obj/chrome/browser/ui/ash/holding_space/browser_tests/holding_space_ui_browsertest.o",

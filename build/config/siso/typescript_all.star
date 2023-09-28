@@ -9,6 +9,9 @@ __input_deps = {
     "tools/typescript/definitions/settings_private.d.ts": [
         "tools/typescript/definitions/chrome_event.d.ts",
     ],
+    "tools/typescript/definitions/tabs.d.ts": [
+        "tools/typescript/definitions/chrome_event.d.ts",
+    ],
     "./gen/chrome/browser/resources/inline_login/preprocessed/inline_login_app.ts": [
         "chrome/browser/resources/chromeos/arc_account_picker/arc_account_picker_app.d.ts",
         "chrome/browser/resources/chromeos/arc_account_picker/arc_util.d.ts",
@@ -16,9 +19,21 @@ __input_deps = {
         "chrome/browser/resources/gaia_auth_host/saml_password_attributes.d.ts",
     ],
     "third_party/polymer/v3_0/components-chromium/polymer/polymer.d.ts": [
+        "third_party/polymer/v3_0/components-chromium/iron-dropdown/iron-dropdown.d.ts",
+        "third_party/polymer/v3_0/components-chromium/iron-overlay-behavior/iron-overlay-behavior.d.ts",
+        "third_party/polymer/v3_0/components-chromium/iron-overlay-behavior/iron-scroll-manager.d.ts",
+        "third_party/polymer/v3_0/components-chromium/neon-animation/neon-animatable-behavior.d.ts",
+        "third_party/polymer/v3_0/components-chromium/neon-animation/neon-animation-runner-behavior.d.ts",
+        "third_party/polymer/v3_0/components-chromium/paper-behaviors/paper-ripple-behavior.d.ts",
         "third_party/polymer/v3_0/components-chromium/polymer/lib/utils/hide-template-controls.d.ts",
         "third_party/polymer/v3_0/components-chromium/polymer/lib/utils/scope-subtree.d.ts",
-        "third_party/polymer/v3_0/components-chromium/paper-behaviors/paper-ripple-behavior.d.ts",
+    ],
+    "./gen/chrome/test/data/webui/inline_login/preprocessed/arc_account_picker_page_test.ts": [
+        "chrome/browser/resources/chromeos/arc_account_picker/arc_account_picker_browser_proxy.d.ts",
+        "chrome/test/data/webui/chromeos/arc_account_picker/test_util.d.ts",
+    ],
+    "third_party/material_web_components/tsconfig_base.json": [
+        "third_party/material_web_components/components-chromium/node_modules:node_modules",
     ],
 }
 
@@ -27,6 +42,10 @@ __filegroups = {
     "third_party/node/node_modules:node_modules": {
         "type": "glob",
         "includes": ["*.js", "*.cjs", "*.mjs", "*.json", "*.js.flow", "*.ts", "rollup", "terser", "tsc"],
+    },
+    "third_party/material_web_components/components-chromium/node_modules:node_modules": {
+        "type": "glob",
+        "includes": ["*.js", "*.json", "*.ts"],
     },
 }
 
@@ -64,9 +83,8 @@ def _ts_library(ctx, cmd):
     out_dir = path.rel(gen_dir, out_dir)
     gen_dir = ctx.fs.canonpath(gen_dir)
     tsconfig = {}
-    if not tsconfig_base:
-        tsconfig_base = path.rel(gen_dir, "tools/typescript/tsconfig_base.json")
-    tsconfig["extends"] = tsconfig_base
+    if tsconfig_base:
+        tsconfig["extends"] = tsconfig_base
     tsconfig["files"] = [path.join(root_dir, f) for f in in_files]
     tsconfig["files"].extend(definitions)
     tsconfig["references"] = [{"path": dep} for dep in deps]
@@ -102,6 +120,7 @@ def _ts_definitions(ctx, cmd):
     tsconfig_path = path.join(gen_dir, "tsconfig.definitions.json")
     ctx.actions.write(tsconfig_path, bytes(json.encode(tsconfig)))
     deps = tsc.scandeps(ctx, tsconfig_path, tsconfig)
+    print("_ts_definitions: tsconfig=%s, deps=%s" % (tsconfig, deps))
     ctx.actions.fix(inputs = cmd.inputs + deps)
 
 typescript_all = module(
