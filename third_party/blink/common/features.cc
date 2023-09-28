@@ -1442,13 +1442,18 @@ const base::FeatureParam<bool> kProcessHtmlDataImmediatelyMainFrame{
 const base::FeatureParam<bool> kProcessHtmlDataImmediatelySubsequentChunks{
     &kProcessHtmlDataImmediately, "rest", false};
 
-BASE_FEATURE(kProduceCompileHints,
-             "ProduceCompileHints",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kProduceCompileHints2,
+             "ProduceCompileHints2",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 const base::FeatureParam<int> kProduceCompileHintsOnIdleDelayParam{
-    &kProduceCompileHints, "delay-in-ms", 10000};
+    &kProduceCompileHints2, "delay-in-ms", 10000};
 const base::FeatureParam<double> kProduceCompileHintsNoiseLevel{
-    &kProduceCompileHints, "noise probability", 0.5};
+    &kProduceCompileHints2, "noise probability", 0.5};
+const base::FeatureParam<double> kProduceCompileHintsDataProductionLevel{
+    &kProduceCompileHints2, "data production probability", 0.005};
+BASE_FEATURE(kForceProduceCompileHints,
+             "ForceProduceCompileHints",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kConsumeCompileHints,
              "ConsumeCompileHints",

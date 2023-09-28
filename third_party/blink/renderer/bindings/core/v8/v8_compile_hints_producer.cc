@@ -29,12 +29,33 @@ std::atomic<bool>
 V8CrowdsourcedCompileHintsProducer::V8CrowdsourcedCompileHintsProducer(
     Page* page)
     : page_(page) {
+  static bool compile_hints_forced =
+      base::FeatureList::IsEnabled(features::kForceProduceCompileHints);
+  if (compile_hints_forced) {
+    state_ = State::kCollectingData;
+    return;
+  }
+
+  // Data collection is only enabled on Windows. TODO(chromium:1406506): enable
+  // on more platforms.
+#if BUILDFLAG(IS_WIN)
   // Call FeatureList::IsEnabled only once.
   static bool compile_hints_enabled =
-      base::FeatureList::IsEnabled(features::kProduceCompileHints);
+      base::FeatureList::IsEnabled(features::kProduceCompileHints2);
   if (!compile_hints_enabled) {
-    state_ = State::kFinishedOrDisabled;
+    return;
   }
+
+  // Decide whether we collect the data based on client-side randomization.
+  // This is further subject to UKM restrictions: whether the user has enabled
+  // the data collection + downsampling. See crbug.com/1483975 .
+  static double data_production_level =
+      features::kProduceCompileHintsDataProductionLevel.Get();
+  if (base::RandDouble() > data_production_level) {
+    return;
+  }
+  state_ = State::kCollectingData;
+#endif
 }
 
 void V8CrowdsourcedCompileHintsProducer::RecordScript(

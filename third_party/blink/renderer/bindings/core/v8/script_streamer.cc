@@ -760,7 +760,7 @@ bool ResourceScriptStreamer::TryStartStreamingTask() {
   v8_compile_hints::V8CrowdsourcedCompileHintsConsumer* compile_hints_consumer =
       script_resource_->GetV8CrowdsourcedCompileHintsConsumer();
   if (compile_hints_producer && compile_hints_producer->MightGenerateData()) {
-    DCHECK(base::FeatureList::IsEnabled(features::kProduceCompileHints));
+    DCHECK(base::FeatureList::IsEnabled(features::kProduceCompileHints2));
     compile_options = v8::ScriptCompiler::kProduceCompileHints;
   } else if (compile_hints_consumer && compile_hints_consumer->HasData()) {
     // This doesn't need to be gated behind a runtime flag, because there won't

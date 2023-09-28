@@ -75,7 +75,7 @@ class V8CrowdsourcedCompileHintsProducer
     // enough data).
     kFinishedOrDisabled
   };
-  State state_ = State::kCollectingData;
+  State state_ = State::kFinishedOrDisabled;
 
   // Limit the data collection to happen only once per process (because the data
   // is so large). Not the same as the kDataGenerationFinished state, since we

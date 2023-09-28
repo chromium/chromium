@@ -148,7 +148,7 @@ V8CodeCache::GetCompileOptions(mojom::blink::V8CacheOptions cache_options,
   auto no_code_cache_compile_options = v8::ScriptCompiler::kNoCompileOptions;
 
   if (might_generate_compile_hints && url.ProtocolIsInHTTPFamily()) {
-    DCHECK(base::FeatureList::IsEnabled(features::kProduceCompileHints));
+    DCHECK(base::FeatureList::IsEnabled(features::kProduceCompileHints2));
 
     // If we end up compiling the script without forced eager compilation, we'll
     // also produce compile hints. This is orthogonal to producing the code

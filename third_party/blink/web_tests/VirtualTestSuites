@@ -2365,7 +2365,7 @@
       "external/wpt/loading",
       "external/wpt/html/semantics/scripting-1"
     ],
-    "args": ["--enable-features=ProduceCompileHints",
+    "args": ["--enable-features=ForceProduceCompileHints",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "never"
   },

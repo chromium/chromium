@@ -854,11 +854,18 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
 BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
     kProcessHtmlDataImmediatelySubsequentChunks;
 
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kProduceCompileHints);
+// Data producer side for the V8 Crowdsourced Compile hints feature.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kProduceCompileHints2);
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kProduceCompileHintsOnIdleDelayParam;
 BLINK_COMMON_EXPORT extern const base::FeatureParam<double>
     kProduceCompileHintsNoiseLevel;
+// The proportion of the clients producing data.
+BLINK_COMMON_EXPORT extern const base::FeatureParam<double>
+    kProduceCompileHintsDataProductionLevel;
+// For forcing producing compile hints independent of the platform and
+// kProduceCompileHintsDataProductionLevel.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kForceProduceCompileHints);
 
 // Load V8_COMPILE_HINTS optimization data from OptimizationGuide and
 // transmit it to V8. See `ProduceCompileHints` for the data producer side of
