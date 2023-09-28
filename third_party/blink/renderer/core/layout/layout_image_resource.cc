@@ -165,8 +165,10 @@ double LayoutImageResource::DevicePixelRatio() const {
 }
 
 void LayoutImageResource::UseBrokenImage() {
-  SetImageResource(
-      ImageResourceContent::CreateLoaded(BrokenImage(DevicePixelRatio())));
+  auto* broken_image =
+      ImageResourceContent::CreateLoaded(BrokenImage(DevicePixelRatio()));
+  broken_image->SetIsBroken();
+  SetImageResource(broken_image);
 }
 
 scoped_refptr<Image> LayoutImageResource::GetImage(

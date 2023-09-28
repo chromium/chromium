@@ -304,6 +304,13 @@ bool ImagePaintTimingDetector::RecordImage(
   if (image_border.IsEmpty())
     return false;
 
+  if (RuntimeEnabledFeatures::
+          ExcludeBrokenImageIconFromBeingLcpEligibleEnabled()) {
+    if (media_timing.IsBroken()) {
+      return false;
+    }
+  }
+
   MediaRecordId record_id(&object, &media_timing);
   MediaRecordIdHash record_id_hash = record_id.GetHash();
 

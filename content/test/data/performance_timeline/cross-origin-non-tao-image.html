@@ -5,19 +5,20 @@
 
 <body>
   <script>
-    const getLCPStartTime = async () => {
+    const getStartTime = async (type) => {
       return await new Promise(resolve => {
         new PerformanceObserver((entryList, observer) => {
-          resolve(entryList.getEntries()[0].startTime);
+          if (type == 'paint') {
+            resolve(entryList.getEntriesByName('first-contentful-paint')[0].startTime);
+          } else {
+            resolve(entryList.getEntries()[0].startTime);
+          }
           observer.disconnect();
-        }).observe({ type: 'largest-contentful-paint', buffered: true });
+        }).observe({ type: type, buffered: true });
       });
     }
 
-    const getFCPStartTime = () => {
-      return performance.getEntriesByName('first-contentful-paint')[0].startTime;
-    }
   </script>
 
-  <img src='http://b.com/images/blue.png' id='image_id' />
+  <img src='/cross-site/b.com/single_face.jpg' id='image_id' />
 </body>

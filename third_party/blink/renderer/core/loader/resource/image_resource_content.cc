@@ -705,6 +705,14 @@ AtomicString ImageResourceContent::MediaType() const {
   return AtomicString(image_->FilenameExtension());
 }
 
+void ImageResourceContent::SetIsBroken() {
+  is_broken_ = true;
+}
+
+bool ImageResourceContent::IsBroken() const {
+  return is_broken_;
+}
+
 base::TimeTicks ImageResourceContent::DiscoveryTime() const {
   return discovery_time_;
 }

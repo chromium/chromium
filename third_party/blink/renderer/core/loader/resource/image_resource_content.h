@@ -120,6 +120,8 @@ class CORE_EXPORT ImageResourceContent final
   bool IsLoading() const;
   bool ErrorOccurred() const;
   bool LoadFailedOrCanceled() const;
+  void SetIsBroken();
+  bool IsBroken() const override;
   bool IsAnimatedImage() const override;
   bool IsPaintedFirstFrame() const override;
   bool TimingAllowPassed() const override;
@@ -294,6 +296,8 @@ class CORE_EXPORT ImageResourceContent final
   bool has_device_pixel_ratio_header_value_;
 
   scoped_refptr<blink::Image> image_;
+
+  bool is_broken_;
 
   base::TimeTicks discovery_time_;
 

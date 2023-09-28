@@ -1138,3 +1138,25 @@ IN_PROC_BROWSER_TEST_F(MetricIntegrationTest,
   ExpectUKMPageLoadMetricNonExistenceWithExpectedPageLoadMetricsNum(
       2ul, PageLoad::kPaintTiming_LargestContentfulPaintImageLoadEndName);
 }
+
+IN_PROC_BROWSER_TEST_F(MetricIntegrationTest,
+                       LCPBreakdownTimings_NoLcpForBrokenImage) {
+  Start();
+
+  auto waiter = std::make_unique<page_load_metrics::PageLoadMetricsTestWaiter>(
+      web_contents());
+  waiter->AddPageExpectation(page_load_metrics::PageLoadMetricsTestWaiter::
+                                 TimingField::kFirstContentfulPaint);
+  Load("/lcp_broken_image_icon.html");
+
+  waiter->Wait();
+
+  // Expect no LCP entry is emitted to performance timeline.
+  EXPECT_EQ(EvalJs(web_contents()->GetPrimaryMainFrame(), "GetLCP();"), 0);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+
+  // No LCP is recorded.
+  ExpectUKMPageLoadMetricNonExistence(
+      PageLoad::kPaintTiming_NavigationToLargestContentfulPaint2Name);
+}
