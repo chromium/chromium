@@ -759,6 +759,7 @@ template("single_apple_toolchain") {
             "-depfile {{target_out_dir}}/{{module_name}}.d " +
             "-bridge-header {{bridge_header}} $_extra_flags " +
             "{{swiftflags}} {{include_dirs}} {{module_dirs}} {{inputs}}"
+        description = "SWIFT {{output}}"
       }
     }
 
