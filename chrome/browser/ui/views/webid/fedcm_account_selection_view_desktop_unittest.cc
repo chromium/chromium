@@ -647,7 +647,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
       "Blink.FedCm.IdpSigninStatus.MismatchDialogResult", 0);
 
   // Emulate user clicking on "Continue" button in the mismatch dialog.
-  observer->OnSigninToIdP();
+  observer->OnSigninToIdP(CreateMouseEvent());
   CreateAndShowPopupWindow(*controller);
 
   histogram_tester_.ExpectUniqueSample(
@@ -671,7 +671,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
         "Blink.FedCm.IdpSigninStatus.MismatchDialogResult", 0);
 
     // Emulate user clicking on "Continue" button in the mismatch dialog.
-    observer->OnSigninToIdP();
+    observer->OnSigninToIdP(CreateMouseEvent());
     CreateAndShowPopupWindow(*controller);
   }
 
@@ -696,7 +696,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
         static_cast<AccountSelectionBubbleView::Observer*>(controller.get());
 
     // Emulate user clicking on "Continue" button in the mismatch dialog.
-    observer->OnSigninToIdP();
+    observer->OnSigninToIdP(CreateMouseEvent());
     CreateAndShowPopupWindow(*controller);
 
     // When pop-up window is shown, mismatch dialog should be hidden.
@@ -753,7 +753,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
         static_cast<AccountSelectionBubbleView::Observer*>(controller.get());
 
     // Emulate user clicking on "Continue" button in the mismatch dialog.
-    observer->OnSigninToIdP();
+    observer->OnSigninToIdP(CreateMouseEvent());
     CreateAndShowPopupWindow(*controller);
 
     // When pop-up window is shown, mismatch dialog should be hidden.
@@ -809,7 +809,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
         static_cast<AccountSelectionBubbleView::Observer*>(controller.get());
 
     // Emulate user clicking on "Continue" button in the mismatch dialog.
-    observer->OnSigninToIdP();
+    observer->OnSigninToIdP(CreateMouseEvent());
     CreateAndShowPopupWindow(*controller);
 
     // Emulate IdP sending the IdP sign-in status header which updates the
@@ -844,7 +844,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
         static_cast<AccountSelectionBubbleView::Observer*>(controller.get());
 
     // Emulate user clicking on "Continue" button in the mismatch dialog.
-    observer->OnSigninToIdP();
+    observer->OnSigninToIdP(CreateMouseEvent());
     CreateAndShowPopupWindow(*controller);
 
     // Emulate IdentityProvider.close() being called in the pop-up window.
@@ -874,7 +874,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
         static_cast<AccountSelectionBubbleView::Observer*>(controller.get());
 
     // Emulate user clicking on "Continue" button in the mismatch dialog.
-    observer->OnSigninToIdP();
+    observer->OnSigninToIdP(CreateMouseEvent());
     CreateAndShowPopupWindow(*controller);
 
     histogram_tester_.ExpectTotalCount(
@@ -993,7 +993,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   // Emulate user clicking on "Continue" button in the mismatch dialog.
   AccountSelectionBubbleView::Observer* observer =
       static_cast<AccountSelectionBubbleView::Observer*>(controller.get());
-  observer->OnSigninToIdP();
+  observer->OnSigninToIdP(CreateMouseEvent());
   CreateAndShowPopupWindow(*controller);
 
   // Emulate IdP closing the pop-up window.
@@ -1031,7 +1031,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   // Emulate user clicking on "Continue" button in the mismatch dialog.
   AccountSelectionBubbleView::Observer* observer =
       static_cast<AccountSelectionBubbleView::Observer*>(controller.get());
-  observer->OnSigninToIdP();
+  observer->OnSigninToIdP(CreateMouseEvent());
   CreateAndShowPopupWindow(*controller);
 
   // Emulate IdP closing the pop-up window.
@@ -1100,7 +1100,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, ErrorDialogGotItClicked) {
   // Emulate user clicking on "got it" button in the error dialog.
   AccountSelectionBubbleView::Observer* observer =
       static_cast<AccountSelectionBubbleView::Observer*>(controller.get());
-  observer->OnGotIt();
+  observer->OnGotIt(CreateMouseEvent());
 
   // Widget should be dismissed.
   StubAccountSelectionViewDelegate* delegate =
@@ -1119,7 +1119,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, ErrorDialogMoreDetailsClicked) {
   // Emulate user clicking on "more details" button in the error dialog.
   AccountSelectionBubbleView::Observer* observer =
       static_cast<AccountSelectionBubbleView::Observer*>(controller.get());
-  observer->OnMoreDetails();
+  observer->OnMoreDetails(CreateMouseEvent());
   CreateAndShowPopupWindow(*controller);
 
   // Widget should be dismissed.

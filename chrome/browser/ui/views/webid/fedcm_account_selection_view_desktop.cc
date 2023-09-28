@@ -457,7 +457,11 @@ void FedCmAccountSelectionView::OnCloseButtonClicked(const ui::Event& event) {
       views::Widget::ClosedReason::kCloseButtonClicked);
 }
 
-void FedCmAccountSelectionView::OnSigninToIdP() {
+void FedCmAccountSelectionView::OnSigninToIdP(const ui::Event& event) {
+  if (input_protector_->IsPossiblyUnintendedInteraction(event)) {
+    return;
+  }
+
   delegate_->OnSigninToIdP();
   is_mismatch_continue_clicked_ = true;
   popup_window_state_ =
@@ -466,11 +470,19 @@ void FedCmAccountSelectionView::OnSigninToIdP() {
                             MismatchDialogResult::kContinued);
 }
 
-void FedCmAccountSelectionView::OnGotIt() {
+void FedCmAccountSelectionView::OnGotIt(const ui::Event& event) {
+  if (input_protector_->IsPossiblyUnintendedInteraction(event)) {
+    return;
+  }
+
   delegate_->OnDismiss(DismissReason::kGotItButton);
 }
 
-void FedCmAccountSelectionView::OnMoreDetails() {
+void FedCmAccountSelectionView::OnMoreDetails(const ui::Event& event) {
+  if (input_protector_->IsPossiblyUnintendedInteraction(event)) {
+    return;
+  }
+
   delegate_->OnMoreDetails();
   delegate_->OnDismiss(DismissReason::kMoreDetailsButton);
 }
