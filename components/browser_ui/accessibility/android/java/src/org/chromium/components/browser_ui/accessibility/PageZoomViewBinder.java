@@ -5,6 +5,7 @@
 package org.chromium.components.browser_ui.accessibility;
 
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -44,20 +45,28 @@ class PageZoomViewBinder {
                 model.get(PageZoomProperties.USER_INTERACTION_CALLBACK).onResult(null);
             });
         } else if (PageZoomProperties.RESET_ZOOM_VISIBLE == propertyKey) {
-            int visibility =
-                    model.get(PageZoomProperties.RESET_ZOOM_VISIBLE) ? View.VISIBLE : View.GONE;
-            view.findViewById(R.id.page_zoom_reset_zoom_button).setVisibility(visibility);
-            view.findViewById(R.id.page_zoom_reset_divider).setVisibility(visibility);
+            // Early return if the 'Reset' button is not visible.
+            if (!model.get(PageZoomProperties.RESET_ZOOM_VISIBLE)) return;
 
-            // Edit the size of the text box to match that of the reset button
-            // TODO(crbug.com/1459631): when matching the reset button in the first half of the
-            // ternary, use getMeasuredWidth() and getMeasureHeight() instead of getLayoutParams()
-            // to prevent wrap_content issues
-            LayoutParams params = model.get(PageZoomProperties.RESET_ZOOM_VISIBLE)
-                    ? new LayoutParams(
-                            view.findViewById(R.id.page_zoom_reset_zoom_button).getLayoutParams())
-                    : new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-            view.findViewById(R.id.page_zoom_current_zoom_level).setLayoutParams(params);
+            // There is no way to change visibility mid-session, so 'Reset' button must be visible.
+            view.findViewById(R.id.page_zoom_reset_zoom_button).setVisibility(View.VISIBLE);
+            view.findViewById(R.id.page_zoom_reset_divider).setVisibility(View.VISIBLE);
+
+            // Both the 'Reset' button and current zoom value text have wrap_content LayoutParams,
+            // and we want to set them each to the max of the two to maintain symmetry.
+            LayoutParams text_params =
+                    (LinearLayout.LayoutParams) view.findViewById(R.id.page_zoom_current_zoom_level)
+                            .getLayoutParams();
+            LayoutParams reset_params =
+                    (LinearLayout.LayoutParams) view.findViewById(R.id.page_zoom_reset_zoom_button)
+                            .getLayoutParams();
+
+            LayoutParams bounding_params =
+                    new LayoutParams(Math.max(text_params.width, reset_params.width),
+                            Math.max(text_params.height, reset_params.height));
+
+            view.findViewById(R.id.page_zoom_current_zoom_level).setLayoutParams(bounding_params);
+            view.findViewById(R.id.page_zoom_reset_zoom_button).setLayoutParams(bounding_params);
         } else if (PageZoomProperties.RESET_ZOOM_CALLBACK == propertyKey) {
             view.findViewById(R.id.page_zoom_reset_zoom_button).setOnClickListener(v -> {
                 model.get(PageZoomProperties.RESET_ZOOM_CALLBACK).onResult(null);
