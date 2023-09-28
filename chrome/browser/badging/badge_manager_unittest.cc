@@ -84,9 +84,18 @@ class BadgeManagerUnittest : public ::testing::Test {
     badge_manager().SetDelegate(std::move(owned_delegate));
   }
 
-  void TearDown() override { profile_.reset(); }
+  void TearDown() override {
+    // Set `provider_` to nullptr before `profile_` is reset to avoid a dangling
+    // pointer.
+    provider_ = nullptr;
+    profile_.reset();
+  }
 
   TestBadgeManagerDelegate* delegate() { return delegate_; }
+
+  void set_delegate(TestBadgeManagerDelegate* delegate) {
+    delegate_ = delegate;
+  }
 
   BadgeManager& badge_manager() const { return *badge_manager_; }
 
@@ -95,12 +104,14 @@ class BadgeManagerUnittest : public ::testing::Test {
   web_app::WebAppProvider& provider() { return *provider_; }
 
  private:
-  raw_ptr<TestBadgeManagerDelegate, DanglingUntriaged> delegate_;
-  raw_ptr<web_app::FakeWebAppProvider, DanglingUntriaged> provider_;
+  raw_ptr<web_app::FakeWebAppProvider> provider_;
 
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<BadgeManager> badge_manager_;
+
+  // Must be declared after `badge_manager_` to avoid a dangling pointer.
+  raw_ptr<TestBadgeManagerDelegate> delegate_;
 };
 
 TEST_F(BadgeManagerUnittest, SetFlagBadgeForApp) {
@@ -258,6 +269,8 @@ TEST_F(BadgeManagerUnittest, BadgingMultipleProfiles) {
 // Tests methods which call into the badge manager delegate do not crash when
 // the delegate is unset.
 TEST_F(BadgeManagerUnittest, BadgingWithNoDelegateDoesNotCrash) {
+  // Set the delegate to nullptr to avoid a dangling pointer.
+  set_delegate(nullptr);
   badge_manager().SetDelegate(nullptr);
 
   badge_manager().SetBadgeForTesting(kAppId, absl::nullopt,
