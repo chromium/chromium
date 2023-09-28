@@ -53,7 +53,13 @@ BASE_FEATURE(kStartCastSessionWithoutTerminating,
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kFallbackToAudioTabMirroring,
              "FallbackToAudioTabMirroring",
+// TODO(crbug.com/1486680): Enable this once stopping mirroring routes in the
+// global media controls is implemented on Chrome OS.
+#if BUILDFLAG(IS_CHROMEOS)
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#else
              base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 BASE_FEATURE(kCastDialogStopButton,
              "CastDialogStopButton",
              base::FEATURE_ENABLED_BY_DEFAULT);
