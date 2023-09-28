@@ -98,8 +98,6 @@ static_library("browser") {
     "old_google_credentials_cleaner.h",
     "origin_credential_store.cc",
     "origin_credential_store.h",
-    "passkey_credential.cc",
-    "passkey_credential.h",
     "password_access_authenticator.cc",
     "password_access_authenticator.h",
     "password_account_storage_settings_watcher.cc",
@@ -214,8 +212,6 @@ static_library("browser") {
     "ui/bulk_leak_check_service_adapter.cc",
     "ui/bulk_leak_check_service_adapter.h",
     "ui/credential_provider_interface.h",
-    "ui/credential_ui_entry.cc",
-    "ui/credential_ui_entry.h",
     "ui/credential_utils.h",
     "ui/insecure_credentials_manager.cc",
     "ui/insecure_credentials_manager.h",
@@ -237,6 +233,8 @@ static_library("browser") {
   all_dependent_configs = [ ":password_reuse_detection_config" ]
 
   public_deps = [
+    ":credential_ui_entry",
+    ":passkey_credential",
     ":password_form",
     ":sql_builder",
     "//base",
@@ -391,6 +389,40 @@ source_set("password_form") {
     "//components/autofill/core/common/mojom:mojo_types_shared",
     "//components/signin/public/base",
     "//url",
+  ]
+}
+
+source_set("passkey_credential") {
+  sources = [
+    "passkey_credential.cc",
+    "passkey_credential.h",
+  ]
+  deps = [
+    "//base",
+    "//components/strings:components_strings",
+    "//components/sync/protocol",
+    "//third_party/abseil-cpp:absl",
+    "//ui/base",
+  ]
+  if (!is_ios) {
+    deps += [ "//components/webauthn/core/browser" ]
+  }
+}
+
+source_set("credential_ui_entry") {
+  sources = [
+    "ui/credential_ui_entry.cc",
+    "ui/credential_ui_entry.h",
+  ]
+  deps = [
+    ":passkey_credential",
+    ":password_form",
+    "//components/password_manager/core/browser/affiliation",
+    "//components/password_manager/core/browser/form_parsing",
+    "//components/password_manager/core/browser/import:csv",
+    "//components/password_manager/core/browser/well_known_change_password",
+    "//components/url_formatter",
+    "//third_party/abseil-cpp:absl",
   ]
 }
 
