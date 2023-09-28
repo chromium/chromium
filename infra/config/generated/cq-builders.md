@@ -595,7 +595,7 @@ as required builders.
   * Experiment percentage: 3.0
 
 * [android-arm64-siso-rel](https://ci.chromium.org/p/chromium/builders/try/android-arm64-siso-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-arm64-siso-rel""))
-  * Experiment percentage: 20.0
+  * Experiment percentage: 10.0
 
 * [android-nougat-x86-dual-coverage-exp-rel](https://ci.chromium.org/p/chromium/builders/try/android-nougat-x86-dual-coverage-exp-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-nougat-x86-dual-coverage-exp-rel""))
   * Experiment percentage: 3.0
@@ -635,22 +635,22 @@ as required builders.
   * Experiment percentage: 10.0
 
 * [linux-chromeos-siso-rel](https://ci.chromium.org/p/chromium/builders/try/linux-chromeos-siso-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-chromeos-siso-rel""))
-  * Experiment percentage: 20.0
+  * Experiment percentage: 10.0
 
 * [linux-lacros-siso-rel](https://ci.chromium.org/p/chromium/builders/try/linux-lacros-siso-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-lacros-siso-rel""))
-  * Experiment percentage: 20.0
+  * Experiment percentage: 10.0
 
 * [linux-siso-rel](https://ci.chromium.org/p/chromium/builders/try/linux-siso-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-siso-rel""))
-  * Experiment percentage: 20.0
+  * Experiment percentage: 10.0
 
 * [linux-wayland-siso-rel](https://ci.chromium.org/p/chromium/builders/try/linux-wayland-siso-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-wayland-siso-rel""))
-  * Experiment percentage: 20.0
+  * Experiment percentage: 10.0
 
 * [linux_chromium_asan_siso_rel_ng](https://ci.chromium.org/p/chromium/builders/try/linux_chromium_asan_siso_rel_ng) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux_chromium_asan_siso_rel_ng""))
-  * Experiment percentage: 20.0
+  * Experiment percentage: 10.0
 
 * [linux_chromium_tsan_siso_rel_ng](https://ci.chromium.org/p/chromium/builders/try/linux_chromium_tsan_siso_rel_ng) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux_chromium_tsan_siso_rel_ng""))
-  * Experiment percentage: 20.0
+  * Experiment percentage: 10.0
 
 * [mac-siso-rel](https://ci.chromium.org/p/chromium/builders/try/mac-siso-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""mac-siso-rel""))
   * Experiment percentage: 10.0

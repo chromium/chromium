@@ -291,7 +291,7 @@ This builder should be removed after migrating linux-rel from Ninja to Siso. b/2
     },
     main_list_view = "try",
     tryjob = try_.job(
-        experiment_percentage = 20,
+        experiment_percentage = 10,
     ),
     use_clang_coverage = True,
 )
@@ -347,7 +347,7 @@ This builder should be removed after migrating linux-wayland-rel from Ninja to S
     coverage_test_types = ["unit", "overall"],
     main_list_view = "try",
     tryjob = try_.job(
-        experiment_percentage = 20,
+        experiment_percentage = 10,
     ),
     use_clang_coverage = True,
 )
@@ -503,7 +503,7 @@ This builder should be removed after migrating linux_chromium_asan_rel_ng from N
     },
     main_list_view = "try",
     tryjob = try_.job(
-        experiment_percentage = 20,
+        experiment_percentage = 10,
     ),
 )
 
@@ -684,7 +684,7 @@ This builder should be removed after migrating linux_chromium_tsan_rel_ng from N
     },
     main_list_view = "try",
     tryjob = try_.job(
-        experiment_percentage = 20,
+        experiment_percentage = 10,
     ),
 )
 
