@@ -1168,7 +1168,9 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     DlpEntrepriseConnectors, /* dlp_enterprise_connectors.js */
     DlpAndEnterpriseConnectorsFilesAppBrowserTest,
-    ::testing::Values(FILE_TRANSFER_TEST_CASE_NEW_UX("twoWarningsProceeded")));
+    ::testing::Values(
+        FILE_TRANSFER_TEST_CASE_NEW_UX("twoWarningsProceeded"),
+        FILE_TRANSFER_TEST_CASE_NEW_UX("differentBlockPolicies")));
 
 #undef FILE_TRANSFER_TEST_CASE
 #undef FILE_TRANSFER_TEST_CASE_NEW_UX

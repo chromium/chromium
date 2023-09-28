@@ -30,9 +30,33 @@ const warnedFileEntry = new TestEntryInfo({
   typeText: 'JPEG image',
 });
 
+const blockedFileEntry1 = new TestEntryInfo({
+  type: EntryType.FILE,
+  targetPath: 'b_blocked.jpg',
+  sourceFileName: 'small.jpg',
+  mimeType: 'image/jpeg',
+  lastModifiedTime: 'Jan 18, 2038, 1:02 AM',
+  nameText: 'b_blocked.jpg',
+  sizeText: '886 bytes',
+  typeText: 'JPEG image',
+});
+
+const blockedFileEntry2 = new TestEntryInfo({
+  type: EntryType.FILE,
+  targetPath: 'd_blocked.jpg',
+  sourceFileName: 'small.jpg',
+  mimeType: 'image/jpeg',
+  lastModifiedTime: 'Jan 18, 2038, 1:02 AM',
+  nameText: 'd_blocked.jpg',
+  sizeText: '886 bytes',
+  typeText: 'JPEG image',
+});
+
+// Tests that proceeding two warnings, the first is triggered by DLP and the
+// second is triggered by Enterprise Connectors, will move all the copied files.
 testcase.twoWarningsProceeded = async () => {
   // Add entry to Downloads.
-  await addEntries(['local'], [warnedFileEntry]);
+  await addEntries(['local'], [allowedFileEntry, warnedFileEntry]);
 
   // Open Files app.
   const appId = await setupAndWaitUntilReady(
@@ -49,7 +73,7 @@ testcase.twoWarningsProceeded = async () => {
   await sendTestMessage({
     name: 'setCheckFilesTransferMockToPause',
     taskId: 1,
-    fileNames: [warnedFileEntry.nameText],
+    fileNames: [warnedFileEntry.targetPath],
     action: 'copy',
   });
 
@@ -95,11 +119,9 @@ testcase.twoWarningsProceeded = async () => {
   await remoteCall.callRemoteTestUtil('execCommand', appId, ['paste']);
 
   // DLP warning.
-  const dlpWarningPanel = await remoteCall.waitForElement(
-      appId, ['#progress-panel', 'xf-panel-item']);
-  chrome.test.assertEq(
-      'Review is required before copying',
-      dlpWarningPanel.attributes['primary-text']);
+  await remoteCall.waitForFeedbackPanelItem(
+      appId, new RegExp('Review is required before copying'),
+      new RegExp(`^${warnedFileEntry.targetPath}.*$`));
   // Proceed DLP warning.
   await remoteCall.waitAndClickElement(appId, [
     '#progress-panel',
@@ -124,11 +146,9 @@ testcase.twoWarningsProceeded = async () => {
   });
 
   // Enterprise Connectors warning.
-  const ecWarningPanel = await remoteCall.waitForElement(
-      appId, ['#progress-panel', 'xf-panel-item']);
-  chrome.test.assertEq(
-      'Review is required before copying',
-      ecWarningPanel.attributes['primary-text']);
+  await remoteCall.waitForFeedbackPanelItem(
+      appId, new RegExp('Review is required before copying'),
+      new RegExp(`^${warnedFileEntry.targetPath}.*$`));
 
   // Proceed Enterprise Connectors warning.
   await remoteCall.waitAndClickElement(appId, [
@@ -142,4 +162,87 @@ testcase.twoWarningsProceeded = async () => {
   await remoteCall.waitForFiles(
       appId,
       [allowedFileEntry.getExpectedRow(), warnedFileEntry.getExpectedRow()]);
+};
+
+// Tests that blocking different files by DLP and Enterprise Connectors will
+// copy all the file except the blocked ones. A block panel will be shown in the
+// end  with the blocked files count.
+testcase.differentBlockPolicies = async () => {
+  // Add entry to Downloads.
+  await addEntries(
+      ['local'], [allowedFileEntry, blockedFileEntry1, blockedFileEntry2]);
+
+  // Open Files app.
+  const appId = await setupAndWaitUntilReady(
+      RootPath.DOWNLOADS,
+      [allowedFileEntry, blockedFileEntry1, blockedFileEntry2], []);
+
+  // Mount a USB volume.
+  await sendTestMessage({name: 'mountFakeUsbEmpty'});
+
+  // Wait for the USB volume to mount.
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.waitForItemByType('removable');
+
+  // Set the mock to block one file.
+  await sendTestMessage({
+    name: 'setBlockedFilesTransfer',
+    fileNames: [blockedFileEntry1.targetPath],
+  });
+
+  // Setup policy.
+  await sendTestMessage({
+    name: 'setupFileTransferPolicy',
+    source: 'MY_FILES',
+    destination: 'REMOVABLE',
+  });
+
+  // Setup the scanning closure to be able to wait for the scanning to be
+  // complete.
+  await sendTestMessage({
+    name: 'setupScanningRunLoop',
+    number_of_expected_delegates: 3,
+  });
+
+  // Copy and paste all the files to USB.
+  await directoryTree.navigateToPath('/My files/Downloads');
+  await remoteCall.waitForFiles(appId, [
+    allowedFileEntry.getExpectedRow(),
+    blockedFileEntry1.getExpectedRow(),
+    blockedFileEntry2.getExpectedRow(),
+  ]);
+
+  // Focus the file list.
+  await remoteCall.focus(appId, ['#file-list:not([hidden])']);
+
+  // Select all files.
+  const ctrlA = ['#file-list', 'a', true, false, false];
+  await remoteCall.fakeKeyDown(appId, ...ctrlA);
+  // Check: the file-list should be selected.
+  await remoteCall.waitForElement(appId, '#file-list li[selected]');
+
+  await remoteCall.callRemoteTestUtil('execCommand', appId, ['copy']);
+  await directoryTree.navigateToPath('/fake-usb');
+  await remoteCall.callRemoteTestUtil('execCommand', appId, ['paste']);
+
+  // Scanning Label.
+  await remoteCall.waitForFeedbackPanelItem(
+      appId, new RegExp('^Copying.*$'), new RegExp('^Scanning$'));
+
+  // Issue the responses, s.t., the transfer can continue.
+  await sendTestMessage({name: 'issueFileTransferResponses'});
+
+  await remoteCall.waitForFeedbackPanelItem(
+      appId, new RegExp('^Copying 3 items.*$'), new RegExp('$'));
+
+  // Verify that the two files were blocked.
+  await remoteCall.waitForFeedbackPanelItem(
+      appId, new RegExp('2 files blocked from copying'),
+      new RegExp('^Review.*$'));
+  await directoryTree.navigateToPath('/fake-usb');
+  // blockedFileEntry1 is expected since the DLP daemon actual blocking with
+  // Fanotify isn't mocked.
+  await remoteCall.waitForFiles(
+      appId,
+      [allowedFileEntry.getExpectedRow(), blockedFileEntry1.getExpectedRow()]);
 };

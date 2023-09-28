@@ -657,6 +657,11 @@ bool FilesPolicyNotificationManager::FileTaskInfo::HasWarningInfo() const {
 void FilesPolicyNotificationManager::FileTaskInfo::AddBlockedFile(
     DlpConfidentialFile file,
     FilesPolicyDialog::BlockReason reason) {
+  // If a file is already added as blocked, don't re-add it so we keep the first
+  // blocking reason.
+  if (base::Contains(blocked_files_, file)) {
+    return;
+  }
   blocked_files_.emplace(file, reason);
 }
 

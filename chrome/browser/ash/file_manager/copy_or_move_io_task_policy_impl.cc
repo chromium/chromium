@@ -218,20 +218,29 @@ void CopyOrMoveIOTaskPolicyImpl::MaybeSendConnectorsBlockedFilesNotification() {
 }
 
 void CopyOrMoveIOTaskPolicyImpl::Complete(State state) {
-  if (blocked_files_ > 0 &&
+  bool has_dlp_errors = !dlp_blocked_files_.empty();
+  bool has_connector_errors = !connectors_blocked_files_.empty();
+  if ((has_dlp_errors || has_connector_errors) &&
       base::FeatureList::IsEnabled(features::kNewFilesPolicyUX)) {
-    bool has_dlp_errors = GetConnectorsBlockedFilesNum() < blocked_files_;
-    bool has_connector_errors = !connectors_blocked_files_.empty();
-
-    CHECK(has_dlp_errors || has_connector_errors);
     // TODO(b/293425493): Support combined error type (if both dlp and connector
     // errors exist).
     PolicyErrorType error_type = has_dlp_errors
                                      ? PolicyErrorType::kDlp
                                      : PolicyErrorType::kEnterpriseConnectors;
+    // Used for notifications.
+    base::FilePath blocked_file_path =
+        has_dlp_errors ? (*dlp_blocked_files_.begin())
+                       : connectors_blocked_files_.begin()->second[0];
+    std::string blocked_file_name =
+        util::GetDisplayablePath(profile_, blocked_file_path)
+            .value_or(base::FilePath())
+            .BaseName()
+            .value();
 
-    progress_->policy_error.emplace(error_type, blocked_files_,
-                                    blocked_file_name_);
+    progress_->policy_error.emplace(
+        error_type,
+        (dlp_blocked_files_.size() + GetConnectorsBlockedFilesNum()),
+        blocked_file_name);
     state = State::kError;
 
     MaybeSendConnectorsBlockedFilesNotification();
@@ -271,7 +280,7 @@ CopyOrMoveIOTaskPolicyImpl::GetErrorBehavior() {
   // This function is called when the transfer starts and DLP restrictions are
   // applied before the transfer. If there's any file blocked by DLP, the error
   // behavior should be skip instead of abort.
-  if (report_only_scans_ && !blocked_files_) {
+  if (report_only_scans_ && dlp_blocked_files_.empty()) {
     return storage::FileSystemOperation::ERROR_BEHAVIOR_ABORT;
   }
   // For the enterprise connectors, we want files to be copied/moved if they are
@@ -456,7 +465,11 @@ void CopyOrMoveIOTaskPolicyImpl::IsTransferAllowed(
   auto result =
       file_transfer_analysis_delegates_[idx]->GetAnalysisResultAfterScan(
           source_url);
-  if (result.IsAllowed()) {
+  // If a file is blocked by DLP, skip Enterprise Connectors scanning for it
+  // since Enterprise Connectors won't be able to scan it anyway. The file be
+  // blocked by the DLP daemon later.
+  if (result.IsAllowed() ||
+      base::Contains(dlp_blocked_files_, source_url.path())) {
     std::move(callback).Run(base::File::FILE_OK);
     return;
   }
@@ -464,17 +477,10 @@ void CopyOrMoveIOTaskPolicyImpl::IsTransferAllowed(
 
   if (base::FeatureList::IsEnabled(
           features::kFileTransferEnterpriseConnectorUI)) {
-    blocked_files_++;
     auto& paths =
         connectors_blocked_files_[policy::GetEnterpriseConnectorsBlockReason(
             result)];
     paths.push_back(source_url.path());
-    if (blocked_file_name_.empty()) {
-      blocked_file_name_ = util::GetDisplayablePath(profile_, source_url.path())
-                               .value_or(base::FilePath())
-                               .BaseName()
-                               .value();
-    }
   }
 
   std::move(callback).Run(base::File::FILE_ERROR_SECURITY);
@@ -484,16 +490,9 @@ void CopyOrMoveIOTaskPolicyImpl::OnCheckIfTransferAllowed(
     std::vector<storage::FileSystemURL> blocked_entries) {
   // This function won't be reached if the user cancelled the DLP warning or the
   // DLP warning timed out.
-  // TODO(b/279029167): If there's any file blocked by DLP, skip Enterprise
-  // Connectors scanning for them.
 
-  if (!blocked_entries.empty()) {
-    blocked_files_ = blocked_entries.size();
-    blocked_file_name_ =
-        util::GetDisplayablePath(profile_, *blocked_entries.begin())
-            .value_or(base::FilePath())
-            .BaseName()
-            .value();
+  for (const auto& entry : blocked_entries) {
+    dlp_blocked_files_.insert(entry.path());
   }
 
   if (settings_.empty() || report_only_scans_) {

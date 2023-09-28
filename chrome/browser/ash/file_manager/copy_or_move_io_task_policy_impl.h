@@ -146,16 +146,13 @@ class CopyOrMoveIOTaskPolicyImpl : public CopyOrMoveIOTaskImpl {
   // This is set to true if `block_until_verdict` is 0.
   bool report_only_scans_ = false;
 
-  // The number of files blocked by policies.
-  size_t blocked_files_ = 0;
+  // The list of files blocked by Data Leak Prevention policy.
+  std::set<base::FilePath> dlp_blocked_files_;
 
   // Maps block reasons to their associated enterprise connector blocked file
   // paths.
   std::map<policy::FilesPolicyDialog::BlockReason, std::vector<base::FilePath>>
       connectors_blocked_files_;
-
-  // The name of the first blocked file, if any. Used for notifications.
-  std::string blocked_file_name_;
 
   base::WeakPtrFactory<CopyOrMoveIOTaskPolicyImpl> weak_ptr_factory_{this};
 };
