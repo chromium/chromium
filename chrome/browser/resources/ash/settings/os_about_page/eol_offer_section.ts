@@ -37,7 +37,7 @@ class EolOfferSection extends PolymerElement {
 
   shouldShowOfferText: boolean;
 
-  private onIncentiveButtonClick_() {
+  private onIncentiveButtonClick_(): void {
     AboutPageBrowserProxyImpl.getInstance().endOfLifeIncentiveButtonClicked();
   }
 

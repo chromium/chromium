@@ -291,7 +291,7 @@ class OsAboutPageElement extends OsAboutPageBase {
     this.aboutBrowserProxy_ = AboutPageBrowserProxyImpl.getInstance();
   }
 
-  override connectedCallback() {
+  override connectedCallback(): void {
     super.connectedCallback();
 
     this.aboutBrowserProxy_.pageReady();
@@ -333,7 +333,7 @@ class OsAboutPageElement extends OsAboutPageBase {
     }
   }
 
-  override ready() {
+  override ready(): void {
     super.ready();
 
     this.addFocusConfig(
@@ -358,7 +358,7 @@ class OsAboutPageElement extends OsAboutPageBase {
     });
   }
 
-  private startListening_() {
+  private startListening_(): void {
     this.addWebUiListener(
         'update-status-changed', this.onUpdateStatusChanged_.bind(this));
     this.aboutBrowserProxy_.refreshUpdateStatus();
@@ -368,7 +368,7 @@ class OsAboutPageElement extends OsAboutPageBase {
     this.aboutBrowserProxy_.refreshTpmFirmwareUpdateStatus();
   }
 
-  private onUpdateStatusChanged_(event: UpdateStatusChangedEvent) {
+  private onUpdateStatusChanged_(event: UpdateStatusChangedEvent): void {
     if (event.status === UpdateStatus.CHECKING) {
       this.hasCheckedForUpdates_ = true;
     } else if (event.status === UpdateStatus.NEED_PERMISSION_TO_UPDATE) {
@@ -379,13 +379,14 @@ class OsAboutPageElement extends OsAboutPageBase {
     this.currentUpdateStatusEvent_ = event;
   }
 
-  private onLearnMoreClick_(event: Event) {
+  private onLearnMoreClick_(event: Event): void {
     // Stop the propagation of events, so that clicking on links inside
     // actionable items won't trigger action.
     event.stopPropagation();
   }
 
-  private onProductLicenseOtherClicked_(event: CustomEvent<{event: Event}>) {
+  private onProductLicenseOtherClicked_(event: CustomEvent<{event: Event}>):
+      void {
     // Prevent the default link click behavior
     event.detail.event.preventDefault();
 
@@ -393,30 +394,30 @@ class OsAboutPageElement extends OsAboutPageBase {
     this.aboutBrowserProxy_.openProductLicenseOther();
   }
 
-  private onReleaseNotesClick_() {
+  private onReleaseNotesClick_(): void {
     this.aboutBrowserProxy_.launchReleaseNotes();
   }
 
-  private onHelpClick_() {
+  private onHelpClick_(): void {
     this.aboutBrowserProxy_.openOsHelpPage();
   }
 
-  private onDiagnosticsClick_() {
+  private onDiagnosticsClick_(): void {
     this.aboutBrowserProxy_.openDiagnostics();
     recordSettingChange(Setting.kDiagnostics);
   }
 
-  private onFirmwareUpdatesClick_() {
+  private onFirmwareUpdatesClick_(): void {
     this.aboutBrowserProxy_.openFirmwareUpdatesPage();
     recordSettingChange(Setting.kFirmwareUpdates);
   }
 
-  private onRelaunchClick_() {
+  private onRelaunchClick_(): void {
     recordSettingChange();
     LifetimeBrowserProxyImpl.getInstance().relaunch();
   }
 
-  private updateShowUpdateStatus_() {
+  private updateShowUpdateStatus_(): void {
     // Do not show the "updated" status or error states from a previous update
     // attempt if we haven't checked yet or the update warning dialog is shown
     // to user.
@@ -445,7 +446,7 @@ class OsAboutPageElement extends OsAboutPageBase {
    * Hide the button container if all buttons are hidden, otherwise the
    * container displays an unwanted border (see separator class).
    */
-  private updateShowButtonContainer_() {
+  private updateShowButtonContainer_(): void {
     this.showButtonContainer_ = this.showRelaunch_ || this.showCheckUpdates_;
 
     // Check if we have yet to focus the check for update button.
@@ -460,7 +461,7 @@ class OsAboutPageElement extends OsAboutPageBase {
     });
   }
 
-  private computeShowRelaunch_() {
+  private computeShowRelaunch_(): boolean {
     return this.checkStatus_(UpdateStatus.NEARLY_UPDATED);
   }
 
@@ -601,7 +602,7 @@ class OsAboutPageElement extends OsAboutPageBase {
     return this.currentUpdateStatusEvent_.status === status;
   }
 
-  private onManagementPageClick_() {
+  private onManagementPageClick_(): void {
     window.open('chrome://management');
   }
 
@@ -609,7 +610,7 @@ class OsAboutPageElement extends OsAboutPageBase {
     return !!this.currentUpdateStatusEvent_.powerwash;
   }
 
-  private onDetailedBuildInfoClick_() {
+  private onDetailedBuildInfoClick_(): void {
     Router.getInstance().navigateTo(routes.ABOUT_DETAILED_BUILD_INFO);
   }
 
@@ -621,18 +622,18 @@ class OsAboutPageElement extends OsAboutPageBase {
     return '';
   }
 
-  private onCheckUpdatesClick_() {
+  private onCheckUpdatesClick_(): void {
     this.onUpdateStatusChanged_({status: UpdateStatus.CHECKING});
     this.aboutBrowserProxy_.requestUpdate();
     this.$.updateStatusMessageInner.focus();
   }
 
-  private onApplyDeferredUpdateClick_() {
+  private onApplyDeferredUpdateClick_(): void {
     this.aboutBrowserProxy_.applyDeferredUpdate();
     this.$.updateStatusMessageInner.focus();
   }
 
-  private onApplyAndSetAutoUpdateClick_() {
+  private onApplyAndSetAutoUpdateClick_(): void {
     this.aboutBrowserProxy_.setConsumerAutoUpdate(true);
     this.onApplyDeferredUpdateClick_();
   }
@@ -667,7 +668,7 @@ class OsAboutPageElement extends OsAboutPageBase {
   /**
    * @param enabled True if Crostini is enabled.
    */
-  private handleCrostiniEnabledChanged_(enabled: boolean) {
+  private handleCrostiniEnabledChanged_(enabled: boolean): void {
     this.showCrostiniLicense_ = enabled && isCrostiniSupported();
   }
 
@@ -683,7 +684,7 @@ class OsAboutPageElement extends OsAboutPageBase {
     return this.shouldShowSafetyInfo_() || this.shouldShowRegulatoryInfo_();
   }
 
-  private onUpdateWarningDialogClose_() {
+  private onUpdateWarningDialogClose_(): void {
     this.showUpdateWarningDialog_ = false;
     // Shows 'check for updates' button in case that the user cancels the
     // dialog and then intends to check for update again.
@@ -691,19 +692,19 @@ class OsAboutPageElement extends OsAboutPageBase {
   }
 
   private onTpmFirmwareUpdateStatusChanged_(
-      event: TpmFirmwareUpdateStatusChangedEvent) {
+      event: TpmFirmwareUpdateStatusChangedEvent): void {
     this.showTPMFirmwareUpdateLineItem_ = event.updateAvailable;
   }
 
-  private onTpmFirmwareUpdateClick_() {
+  private onTpmFirmwareUpdateClick_(): void {
     this.showTPMFirmwareUpdateDialog_ = true;
   }
 
-  private onPowerwashDialogClose_() {
+  private onPowerwashDialogClose_(): void {
     this.showTPMFirmwareUpdateDialog_ = false;
   }
 
-  private onProductLogoClick_() {
+  private onProductLogoClick_(): void {
     this.$['product-logo'].animate(
         {
           transform: ['none', 'rotate(-10turn)'],
@@ -715,7 +716,7 @@ class OsAboutPageElement extends OsAboutPageBase {
   }
 
   // <if expr="_google_chrome">
-  private onReportIssueClick_() {
+  private onReportIssueClick_(): void {
     this.aboutBrowserProxy_.openFeedbackDialog();
   }
 

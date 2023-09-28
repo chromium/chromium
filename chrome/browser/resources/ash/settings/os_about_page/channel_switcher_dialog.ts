@@ -88,7 +88,7 @@ class SettingsChannelSwitcherDialogElement extends PolymerElement {
     this.browserProxy_ = AboutPageBrowserProxyImpl.getInstance();
   }
 
-  override ready() {
+  override ready(): void {
     super.ready();
 
     this.browserProxy_.getChannelInfo().then(info => {
@@ -101,7 +101,7 @@ class SettingsChannelSwitcherDialogElement extends PolymerElement {
     });
   }
 
-  override connectedCallback() {
+  override connectedCallback(): void {
     super.connectedCallback();
 
     this.$.dialog.showModal();
@@ -111,25 +111,25 @@ class SettingsChannelSwitcherDialogElement extends PolymerElement {
     return castExists(this.shadowRoot!.querySelector('cr-radio-group'));
   }
 
-  private onCancelClick_() {
+  private onCancelClick_(): void {
     this.$.dialog.close();
   }
 
-  private onChangeChannelClick_() {
+  private onChangeChannelClick_(): void {
     const selectedChannel = this.getRadioGroup_().selected as BrowserChannel;
     this.browserProxy_.setChannel(selectedChannel, false);
     this.$.dialog.close();
     this.fireTargetChannelChangedEvent_(selectedChannel);
   }
 
-  private onChangeChannelAndPowerwashClick_() {
+  private onChangeChannelAndPowerwashClick_(): void {
     const selectedChannel = this.getRadioGroup_().selected as BrowserChannel;
     this.browserProxy_.setChannel(selectedChannel, true);
     this.$.dialog.close();
     this.fireTargetChannelChangedEvent_(selectedChannel);
   }
 
-  private fireTargetChannelChangedEvent_(detail = {}) {
+  private fireTargetChannelChangedEvent_(detail = {}): void {
     const event = new CustomEvent(
         'target-channel-changed', {bubbles: true, composed: true, detail});
     this.dispatchEvent(event);
@@ -141,7 +141,7 @@ class SettingsChannelSwitcherDialogElement extends PolymerElement {
    *    button should be visible.
    */
   private updateButtons_(
-      changeChannel: boolean, changeChannelAndPowerwash: boolean) {
+      changeChannel: boolean, changeChannelAndPowerwash: boolean): void {
     if (changeChannel || changeChannelAndPowerwash) {
       // Ensure that at most one button is visible at any given time.
       assert(changeChannel !== changeChannelAndPowerwash);
@@ -153,7 +153,7 @@ class SettingsChannelSwitcherDialogElement extends PolymerElement {
     };
   }
 
-  private onChannelSelectionChanged_() {
+  private onChannelSelectionChanged_(): void {
     const selectedChannel = this.getRadioGroup_().selected as BrowserChannel;
 
     // Selected channel is the same as the target channel so only show 'cancel'.

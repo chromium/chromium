@@ -57,17 +57,17 @@ class SettingsUpdateWarningDialogElement extends
     this.browserProxy_ = AboutPageBrowserProxyImpl.getInstance();
   }
 
-  override connectedCallback() {
+  override connectedCallback(): void {
     super.connectedCallback();
 
     this.$.dialog.showModal();
   }
 
-  private onCancelClick_() {
+  private onCancelClick_(): void {
     this.$.dialog.close();
   }
 
-  private onContinueClick_() {
+  private onContinueClick_(): void {
     if (!this.updateInfo || !this.updateInfo.version || !this.updateInfo.size) {
       console.warn('ERROR: requestUpdateOverCellular arguments are undefined');
       return;
@@ -77,7 +77,7 @@ class SettingsUpdateWarningDialogElement extends
     this.$.dialog.close();
   }
 
-  private updateInfoChanged_() {
+  private updateInfoChanged_(): void {
     if (!this.updateInfo || this.updateInfo.size === undefined) {
       console.warn('ERROR: Update size is undefined');
       return;

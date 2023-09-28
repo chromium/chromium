@@ -36,13 +36,13 @@ export class PageDisplayerElement extends PolymerElement {
   active: boolean;
   section: Section;
 
-  override ready() {
+  override ready(): void {
     super.ready();
 
     assert(this.section in Section, `Invalid section: ${this.section}.`);
   }
 
-  override focus() {
+  override focus(): void {
     this.shadowRoot!.getElementById('focusHost')!.focus();
   }
 }

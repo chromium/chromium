@@ -217,14 +217,14 @@ export class MainPageContainerElement extends MainPageContainerElementBase {
     this.advancedTogglingInProgress_ = false;
   }
 
-  override ready() {
+  override ready(): void {
     super.ready();
 
     this.setAttribute('role', 'main');
     this.addEventListener('showing-subpage', this.onShowingSubpage);
   }
 
-  override connectedCallback() {
+  override connectedCallback(): void {
     super.connectedCallback();
 
     this.currentRoute_ = Router.getInstance().currentRoute;
@@ -240,7 +240,7 @@ export class MainPageContainerElement extends MainPageContainerElementBase {
     });
   }
 
-  override currentRouteChanged(newRoute: Route, oldRoute?: Route) {
+  override currentRouteChanged(newRoute: Route, oldRoute?: Route): void {
     this.currentRoute_ = newRoute;
 
     if (isAdvancedRoute(newRoute)) {
@@ -261,7 +261,7 @@ export class MainPageContainerElement extends MainPageContainerElementBase {
     super.currentRouteChanged(newRoute, oldRoute);
   }
 
-  override containsRoute(_route: Route|undefined) {
+  override containsRoute(_route: Route|undefined): boolean {
     // All routes are contained under this element.
     return true;
   }
@@ -286,7 +286,7 @@ export class MainPageContainerElement extends MainPageContainerElementBase {
     return !this.isShowingSubpage_ && this.showEolIncentive_;
   }
 
-  private androidAppsInfoUpdate_(info: AndroidAppsInfo) {
+  private androidAppsInfoUpdate_(info: AndroidAppsInfo): void {
     this.androidAppsInfo = info;
   }
 
@@ -294,7 +294,7 @@ export class MainPageContainerElement extends MainPageContainerElementBase {
    * Hides the update required EOL banner. It is shown again when Settings is
    * re-opened.
    */
-  private onCloseEolBannerClicked_() {
+  private onCloseEolBannerClicked_(): void {
     this.showUpdateRequiredEolBanner_ = false;
   }
 
@@ -305,7 +305,7 @@ export class MainPageContainerElement extends MainPageContainerElementBase {
   /**
    * Render the advanced page now (don't wait for idle).
    */
-  private advancedToggleExpandedChanged_() {
+  private advancedToggleExpandedChanged_(): void {
     if (!this.advancedToggleExpanded) {
       return;
     }
@@ -317,7 +317,7 @@ export class MainPageContainerElement extends MainPageContainerElementBase {
     });
   }
 
-  private advancedToggleClicked_() {
+  private advancedToggleClicked_(): void {
     if (this.advancedTogglingInProgress_) {
       return;
     }

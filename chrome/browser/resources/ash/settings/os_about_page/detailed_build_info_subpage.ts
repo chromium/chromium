@@ -182,7 +182,7 @@ class SettingsDetailedBuildInfoSubpageElement extends
     this.deviceNameBrowserProxy_ = DeviceNameBrowserProxyImpl.getInstance();
   }
 
-  override ready() {
+  override ready(): void {
     super.ready();
     this.aboutPageBrowserProxy_.pageReady();
 
@@ -215,7 +215,7 @@ class SettingsDetailedBuildInfoSubpageElement extends
     }
   }
 
-  override currentRouteChanged(route: Route, _oldRoute?: Route) {
+  override currentRouteChanged(route: Route, _oldRoute?: Route): void {
     // Does not apply to this page.
     if (route !== routes.ABOUT_DETAILED_BUILD_INFO) {
       return;
@@ -228,7 +228,7 @@ class SettingsDetailedBuildInfoSubpageElement extends
     return this.isManaged_ || !this.eolMessageWithMonthAndYear;
   }
 
-  private updateChannelInfo_() {
+  private updateChannelInfo_(): void {
     // canChangeChannel() call is expected to be low-latency, so fetch this
     // value by itself to ensure UI consistency (see https://crbug.com/848750).
     this.aboutPageBrowserProxy_.canChangeChannel().then(canChangeChannel => {
@@ -246,20 +246,20 @@ class SettingsDetailedBuildInfoSubpageElement extends
     });
   }
 
-  private syncManagedAutoUpdateToggle_() {
+  private syncManagedAutoUpdateToggle_(): void {
     this.aboutPageBrowserProxy_.isManagedAutoUpdateEnabled().then(
         isManagedAutoUpdateEnabled => {
           this.isManagedAutoUpdateEnabled_ = isManagedAutoUpdateEnabled;
         });
   }
 
-  private syncConsumerAutoUpdateToggle_() {
+  private syncConsumerAutoUpdateToggle_(): void {
     this.aboutPageBrowserProxy_.isConsumerAutoUpdateEnabled().then(enabled => {
       this.aboutPageBrowserProxy_.setConsumerAutoUpdate(enabled);
     });
   }
 
-  private updateDeviceNameMetadata_(data: DeviceNameMetadata) {
+  private updateDeviceNameMetadata_(data: DeviceNameMetadata): void {
     this.deviceNameMetadata_ = data;
   }
 
@@ -337,12 +337,12 @@ class SettingsDetailedBuildInfoSubpageElement extends
         CrPolicyIndicatorType.OWNER;
   }
 
-  private onChangeChannelClick_(e: Event) {
+  private onChangeChannelClick_(e: Event): void {
     e.preventDefault();
     this.showChannelSwitcherDialog_ = true;
   }
 
-  private onEditHostnameClick_(e: Event) {
+  private onEditHostnameClick_(e: Event): void {
     e.preventDefault();
     this.showEditHostnameDialog_ = true;
   }
@@ -351,7 +351,7 @@ class SettingsDetailedBuildInfoSubpageElement extends
     return !!this.versionInfo_ && !!this.channelInfo_;
   }
 
-  private onCopyBuildDetailsToClipBoardClick_() {
+  private onCopyBuildDetailsToClipBoardClick_(): void {
     const buildInfo: {[key: string]: string|boolean} = {
       'application_label': loadTimeData.getString('aboutBrowserVersion'),
       'platform': this.versionInfo_.osVersion,
@@ -373,14 +373,14 @@ class SettingsDetailedBuildInfoSubpageElement extends
     navigator.clipboard.writeText(entries.join('\n'));
   }
 
-  private onConsumerAutoUpdateToggled_(_event: Event) {
+  private onConsumerAutoUpdateToggled_(_event: Event): void {
     if (!this.isConsumerAutoUpdateTogglingAllowed_) {
       return;
     }
     this.showDialogOrFlushConsumerAutoUpdateToggle();
   }
 
-  private onConsumerAutoUpdateToggledSettingsBox_() {
+  private onConsumerAutoUpdateToggledSettingsBox_(): void {
     if (!this.isConsumerAutoUpdateTogglingAllowed_) {
       return;
     }
@@ -391,7 +391,7 @@ class SettingsDetailedBuildInfoSubpageElement extends
     this.showDialogOrFlushConsumerAutoUpdateToggle();
   }
 
-  private showDialogOrFlushConsumerAutoUpdateToggle() {
+  private showDialogOrFlushConsumerAutoUpdateToggle(): void {
     if (!this.getPref('settings.consumer_auto_update_toggle').value) {
       // Only show dialog when turning the toggle off.
       this.showConsumerAutoUpdateToggleDialog_ = true;
@@ -401,23 +401,23 @@ class SettingsDetailedBuildInfoSubpageElement extends
     this.aboutPageBrowserProxy_.setConsumerAutoUpdate(true);
   }
 
-  private onConsumerAutoUpdateToggleDialogClosed_() {
+  private onConsumerAutoUpdateToggleDialogClosed_(): void {
     this.showConsumerAutoUpdateToggleDialog_ = false;
   }
 
-  private onVisitBuildDetailsPageClick_(e: Event) {
+  private onVisitBuildDetailsPageClick_(e: Event): void {
     e.preventDefault();
     window.open('chrome://version');
   }
 
-  private onChannelSwitcherDialogClosed_() {
+  private onChannelSwitcherDialogClosed_(): void {
     this.showChannelSwitcherDialog_ = false;
     const button = castExists(this.shadowRoot!.querySelector('cr-button'));
     focusWithoutInk(button);
     this.updateChannelInfo_();
   }
 
-  private onEditHostnameDialogClosed_() {
+  private onEditHostnameDialogClosed_(): void {
     this.showEditHostnameDialog_ = false;
     const button = castExists(this.shadowRoot!.querySelector('cr-button'));
     focusWithoutInk(button);

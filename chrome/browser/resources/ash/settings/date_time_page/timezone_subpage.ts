@@ -92,7 +92,7 @@ export class TimezoneSubpageElement extends TimezoneSubpageElementBase {
    * 'access-code-validation-complete' event is triggered which invokes
    * enableTimeZoneSetting_.
    */
-  override currentRouteChanged(newRoute: Route, _oldRoute?: Route) {
+  override currentRouteChanged(newRoute: Route, _oldRoute?: Route): void {
     if (newRoute !== routes.DATETIME_TIMEZONE_SUBPAGE) {
       return;
     }
@@ -112,7 +112,8 @@ export class TimezoneSubpageElement extends TimezoneSubpageElementBase {
   /**
    * Returns value list for timeZoneResolveMethodDropdown menu.
    */
-  private getTimeZoneResolveMethodsList_() {
+  private getTimeZoneResolveMethodsList_():
+      Array<{name: string, value: number}> {
     const result: Array<{name: string, value: number}> = [];
     const pref =
         this.getPref('generated.resolve_timezone_by_geolocation_method_short');
@@ -150,7 +151,7 @@ export class TimezoneSubpageElement extends TimezoneSubpageElementBase {
   /**
    * Enables all dropdowns and radio buttons.
    */
-  private enableTimeZoneSetting_() {
+  private enableTimeZoneSetting_(): void {
     const radios = this.shadowRoot!.querySelectorAll('controlled-radio-button');
     for (const radio of radios) {
       radio.disabled = false;
@@ -166,7 +167,7 @@ export class TimezoneSubpageElement extends TimezoneSubpageElementBase {
   /**
    * Disables all dropdowns and radio buttons.
    */
-  private disableTimeZoneSetting_() {
+  private disableTimeZoneSetting_(): void {
     this.$.timeZoneResolveMethodDropdown.disabled = true;
     this.$.timezoneSelector.shouldDisableTimeZoneGeoSelector = true;
     const radios = this.shadowRoot!.querySelectorAll('controlled-radio-button');

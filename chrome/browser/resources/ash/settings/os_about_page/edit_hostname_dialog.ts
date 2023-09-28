@@ -92,7 +92,7 @@ class EditHostnameDialogElement extends EditHostnameDialogElementBase {
         MAX_INPUT_LENGTH.toLocaleString());
   }
 
-  private onCancelClick_() {
+  private onCancelClick_(): void {
     this.$.dialog.close();
   }
 
@@ -101,7 +101,7 @@ class EditHostnameDialogElement extends EditHostnameDialogElementBase {
    * Emojis and truncating it to MAX_INPUT_LENGTH. This method will be
    * recursively called until deviceName_ is fully sanitized.
    */
-  private onDeviceNameChanged_(_newValue: string, oldValue: string) {
+  private onDeviceNameChanged_(_newValue: string, oldValue: string): void {
     if (oldValue) {
       const sanitizedOldValue = oldValue.replace(EMOJI_REGEX_EXP, '');
       // If sanitizedOldValue.length > MAX_INPUT_LENGTH, the user attempted to
@@ -124,7 +124,7 @@ class EditHostnameDialogElement extends EditHostnameDialogElementBase {
     }
   }
 
-  private onDoneClick_() {
+  private onDoneClick_(): void {
     this.deviceNameBrowserProxy_.attemptSetDeviceName(this.deviceName_)
         .then(result => {
           this.handleSetDeviceNameResponse_(result);
@@ -132,7 +132,7 @@ class EditHostnameDialogElement extends EditHostnameDialogElementBase {
     this.$.dialog.close();
   }
 
-  private handleSetDeviceNameResponse_(result: SetDeviceNameResult) {
+  private handleSetDeviceNameResponse_(result: SetDeviceNameResult): void {
     if (result !== SetDeviceNameResult.UPDATE_SUCCESSFUL) {
       console.error('ERROR IN UPDATE', result);
     }
