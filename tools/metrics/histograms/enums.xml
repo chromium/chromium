@@ -53436,7 +53436,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
     An on-disk backing store was opened but leveldb failed to read the schema
     version.
   </int>
-  <int value="8" label="OpenFailedUnknownErr"/>
+  <int value="8" label="OpenFailedUnknownErr (Deprecated)"/>
   <int value="9" label="OpenMemoryFailed (Deprecated)">
     An in-memory backing store failed to open.
   </int>
