@@ -702,7 +702,7 @@ $L$end:
 $L$epilogue:
 	mov	rdi,QWORD[8+rsp]	;WIN64 epilogue
 	mov	rsi,QWORD[16+rsp]
-	DB	0F3h,0C3h		;repret
+	ret
 
 $L$SEH_end_md5_block_asm_data_order:
 EXTERN	__imp_RtlVirtualUnwind
@@ -783,7 +783,7 @@ $L$in_prologue:
 	pop	rbx
 	pop	rdi
 	pop	rsi
-	DB	0F3h,0C3h		;repret
+	ret
 
 
 section	.pdata rdata align=4

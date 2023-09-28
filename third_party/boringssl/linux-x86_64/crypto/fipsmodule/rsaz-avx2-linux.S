@@ -658,7 +658,7 @@ _CET_ENDBR
 	leaq	(%rax),%rsp
 .cfi_def_cfa_register	%rsp
 .Lsqr_1024_epilogue:
-	.byte	0xf3,0xc3
+	ret
 .cfi_endproc	
 .size	rsaz_1024_sqr_avx2,.-rsaz_1024_sqr_avx2
 .globl	rsaz_1024_mul_avx2
@@ -1215,7 +1215,7 @@ _CET_ENDBR
 	leaq	(%rax),%rsp
 .cfi_def_cfa_register	%rsp
 .Lmul_1024_epilogue:
-	.byte	0xf3,0xc3
+	ret
 .cfi_endproc	
 .size	rsaz_1024_mul_avx2,.-rsaz_1024_mul_avx2
 .globl	rsaz_1024_red2norm_avx2
@@ -1415,7 +1415,7 @@ _CET_ENDBR
 	adcq	$0,%r11
 	movq	%rax,120(%rdi)
 	movq	%r11,%rax
-	.byte	0xf3,0xc3
+	ret
 .cfi_endproc	
 .size	rsaz_1024_red2norm_avx2,.-rsaz_1024_red2norm_avx2
 
@@ -1577,7 +1577,7 @@ _CET_ENDBR
 	movq	%r8,168(%rdi)
 	movq	%r8,176(%rdi)
 	movq	%r8,184(%rdi)
-	.byte	0xf3,0xc3
+	ret
 .cfi_endproc	
 .size	rsaz_1024_norm2red_avx2,.-rsaz_1024_norm2red_avx2
 .globl	rsaz_1024_scatter5_avx2
@@ -1605,7 +1605,7 @@ _CET_ENDBR
 	jnz	.Loop_scatter_1024
 
 	vzeroupper
-	.byte	0xf3,0xc3
+	ret
 .cfi_endproc	
 .size	rsaz_1024_scatter5_avx2,.-rsaz_1024_scatter5_avx2
 
@@ -1728,7 +1728,7 @@ _CET_ENDBR
 	vzeroupper
 	leaq	(%r11),%rsp
 .cfi_def_cfa_register	%rsp
-	.byte	0xf3,0xc3
+	ret
 .cfi_endproc	
 .LSEH_end_rsaz_1024_gather5:
 .size	rsaz_1024_gather5_avx2,.-rsaz_1024_gather5_avx2

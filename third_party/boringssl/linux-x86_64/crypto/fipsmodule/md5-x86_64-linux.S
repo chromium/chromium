@@ -689,7 +689,7 @@ _CET_ENDBR
 	addq	$40,%rsp
 .cfi_adjust_cfa_offset	-40
 .Lepilogue:
-	.byte	0xf3,0xc3
+	ret
 .cfi_endproc	
 .size	md5_block_asm_data_order,.-md5_block_asm_data_order
 #endif

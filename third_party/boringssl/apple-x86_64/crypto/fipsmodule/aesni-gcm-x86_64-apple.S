@@ -336,7 +336,7 @@ L$6x_done:
 	vpxor	16+8(%rsp),%xmm8,%xmm8
 	vpxor	%xmm4,%xmm8,%xmm8
 
-	.byte	0xf3,0xc3
+	ret
 
 
 .globl	_aesni_gcm_decrypt
@@ -459,7 +459,7 @@ L$dec_no_key_aliasing:
 	popq	%rbp
 
 L$gcm_dec_abort:
-	.byte	0xf3,0xc3
+	ret
 
 
 
@@ -530,7 +530,7 @@ L$oop_ctr32:
 	vmovups	%xmm14,80(%rsi)
 	leaq	96(%rsi),%rsi
 
-	.byte	0xf3,0xc3
+	ret
 .p2align	5
 L$handle_ctr32_2:
 	vpshufb	%xmm0,%xmm1,%xmm6
@@ -846,7 +846,7 @@ L$enc_no_key_aliasing:
 	popq	%rbp
 
 L$gcm_enc_abort:
-	.byte	0xf3,0xc3
+	ret
 
 
 

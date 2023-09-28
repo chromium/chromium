@@ -21,7 +21,7 @@ _CET_ENDBR
 
 	adcq	%rax,%rax
 	movq	%rdx,0(%rdi)
-	.byte	0xf3,0xc3
+	ret
 
 
 
@@ -48,10 +48,10 @@ L$loop:
 	jnz	L$loop
 L$out:
 	movq	$1,%rax
-	.byte	0xf3,0xc3
+	ret
 L$err:
 	xorq	%rax,%rax
-	.byte	0xf3,0xc3
+	ret
 
 
 #endif

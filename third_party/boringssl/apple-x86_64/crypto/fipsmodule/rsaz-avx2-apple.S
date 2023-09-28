@@ -658,7 +658,7 @@ L$OOP_REDUCE_1024:
 	leaq	(%rax),%rsp
 
 L$sqr_1024_epilogue:
-	.byte	0xf3,0xc3
+	ret
 
 
 .globl	_rsaz_1024_mul_avx2
@@ -1215,7 +1215,7 @@ L$oop_mul_1024:
 	leaq	(%rax),%rsp
 
 L$mul_1024_epilogue:
-	.byte	0xf3,0xc3
+	ret
 
 
 .globl	_rsaz_1024_red2norm_avx2
@@ -1415,7 +1415,7 @@ _CET_ENDBR
 	adcq	$0,%r11
 	movq	%rax,120(%rdi)
 	movq	%r11,%rax
-	.byte	0xf3,0xc3
+	ret
 
 
 
@@ -1577,7 +1577,7 @@ _CET_ENDBR
 	movq	%r8,168(%rdi)
 	movq	%r8,176(%rdi)
 	movq	%r8,184(%rdi)
-	.byte	0xf3,0xc3
+	ret
 
 
 .globl	_rsaz_1024_scatter5_avx2
@@ -1605,7 +1605,7 @@ L$oop_scatter_1024:
 	jnz	L$oop_scatter_1024
 
 	vzeroupper
-	.byte	0xf3,0xc3
+	ret
 
 
 
@@ -1728,7 +1728,7 @@ L$oop_gather_1024:
 	vzeroupper
 	leaq	(%r11),%rsp
 
-	.byte	0xf3,0xc3
+	ret
 
 L$SEH_end_rsaz_1024_gather5:
 

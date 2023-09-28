@@ -112,7 +112,7 @@ DB	102,15,56,0,195
 	movdqa	xmm1,XMMWORD[64+r10*1+r11]
 	pxor	xmm0,xmm4
 DB	102,15,56,0,193
-	DB	0F3h,0C3h		;repret
+	ret
 
 
 
@@ -287,7 +287,7 @@ DB	102,65,15,56,0,243
 	pxor	xmm6,xmm12
 DB	102,15,56,0,193
 DB	102,15,56,0,241
-	DB	0F3h,0C3h		;repret
+	ret
 
 
 
@@ -395,7 +395,7 @@ DB	102,15,56,0,226
 DB	102,15,56,0,195
 	pxor	xmm0,xmm4
 DB	102,15,56,0,194
-	DB	0F3h,0C3h		;repret
+	ret
 
 
 
@@ -573,7 +573,7 @@ $L$schedule_mangle_last_dec:
 	pxor	xmm5,xmm5
 	pxor	xmm6,xmm6
 	pxor	xmm7,xmm7
-	DB	0F3h,0C3h		;repret
+	ret
 
 
 
@@ -602,7 +602,7 @@ _vpaes_schedule_192_smear:
 	pxor	xmm6,xmm0
 	movdqa	xmm0,xmm6
 	movhlps	xmm6,xmm1
-	DB	0F3h,0C3h		;repret
+	ret
 
 
 
@@ -680,7 +680,7 @@ DB	102,15,56,0,195
 
 	pxor	xmm0,xmm7
 	movdqa	xmm7,xmm0
-	DB	0F3h,0C3h		;repret
+	ret
 
 
 
@@ -706,7 +706,7 @@ DB	102,15,56,0,208
 	movdqa	xmm0,XMMWORD[16+r11]
 DB	102,15,56,0,193
 	pxor	xmm0,xmm2
-	DB	0F3h,0C3h		;repret
+	ret
 
 
 
@@ -800,7 +800,7 @@ DB	102,15,56,0,217
 	add	r8,-16
 	and	r8,0x30
 	movdqu	XMMWORD[rdx],xmm3
-	DB	0F3h,0C3h		;repret
+	ret
 
 
 
@@ -862,7 +862,7 @@ $L$enc_key_epilogue:
 	xor	eax,eax
 	mov	rdi,QWORD[8+rsp]	;WIN64 epilogue
 	mov	rsi,QWORD[16+rsp]
-	DB	0F3h,0C3h		;repret
+	ret
 
 $L$SEH_end_vpaes_set_encrypt_key:
 
@@ -921,7 +921,7 @@ $L$dec_key_epilogue:
 	xor	eax,eax
 	mov	rdi,QWORD[8+rsp]	;WIN64 epilogue
 	mov	rsi,QWORD[16+rsp]
-	DB	0F3h,0C3h		;repret
+	ret
 
 $L$SEH_end_vpaes_set_decrypt_key:
 
@@ -974,7 +974,7 @@ $L$enc_body:
 $L$enc_epilogue:
 	mov	rdi,QWORD[8+rsp]	;WIN64 epilogue
 	mov	rsi,QWORD[16+rsp]
-	DB	0F3h,0C3h		;repret
+	ret
 
 $L$SEH_end_vpaes_encrypt:
 
@@ -1023,7 +1023,7 @@ $L$dec_body:
 $L$dec_epilogue:
 	mov	rdi,QWORD[8+rsp]	;WIN64 epilogue
 	mov	rsi,QWORD[16+rsp]
-	DB	0F3h,0C3h		;repret
+	ret
 
 $L$SEH_end_vpaes_decrypt:
 global	vpaes_cbc_encrypt
@@ -1104,7 +1104,7 @@ $L$cbc_epilogue:
 $L$cbc_abort:
 	mov	rdi,QWORD[8+rsp]	;WIN64 epilogue
 	mov	rsi,QWORD[16+rsp]
-	DB	0F3h,0C3h		;repret
+	ret
 
 $L$SEH_end_vpaes_cbc_encrypt:
 global	vpaes_ctr32_encrypt_blocks
@@ -1204,7 +1204,7 @@ $L$ctr32_epilogue:
 $L$ctr32_abort:
 	mov	rdi,QWORD[8+rsp]	;WIN64 epilogue
 	mov	rsi,QWORD[16+rsp]
-	DB	0F3h,0C3h		;repret
+	ret
 
 $L$SEH_end_vpaes_ctr32_encrypt_blocks:
 
@@ -1225,7 +1225,7 @@ _vpaes_preheat:
 	movdqa	xmm12,XMMWORD[64+r10]
 	movdqa	xmm15,XMMWORD[80+r10]
 	movdqa	xmm14,XMMWORD[96+r10]
-	DB	0F3h,0C3h		;repret
+	ret
 
 
 
@@ -1426,7 +1426,7 @@ $L$in_prologue:
 	pop	rbx
 	pop	rdi
 	pop	rsi
-	DB	0F3h,0C3h		;repret
+	ret
 
 
 section	.pdata rdata align=4

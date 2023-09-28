@@ -70,7 +70,7 @@ GFMUL:
 	vpxor	xmm2,xmm3,xmm4
 
 	vpxor	xmm0,xmm2,xmm5
-	DB	0F3h,0C3h		;repret
+	ret
 
 
 global	aesgcmsiv_htable_init
@@ -106,7 +106,7 @@ _CET_ENDBR
 	vmovdqa	XMMWORD[112+rdi],xmm0
 	mov	rdi,QWORD[8+rsp]	;WIN64 epilogue
 	mov	rsi,QWORD[16+rsp]
-	DB	0F3h,0C3h		;repret
+	ret
 
 $L$SEH_end_aesgcmsiv_htable_init:
 global	aesgcmsiv_htable6_init
@@ -138,7 +138,7 @@ _CET_ENDBR
 	vmovdqa	XMMWORD[80+rdi],xmm0
 	mov	rdi,QWORD[8+rsp]	;WIN64 epilogue
 	mov	rsi,QWORD[16+rsp]
-	DB	0F3h,0C3h		;repret
+	ret
 
 $L$SEH_end_aesgcmsiv_htable6_init:
 global	aesgcmsiv_htable_polyval
@@ -161,7 +161,7 @@ _CET_ENDBR
 	jnz	NEAR $L$htable_polyval_start
 	mov	rdi,QWORD[8+rsp]	;WIN64 epilogue
 	mov	rsi,QWORD[16+rsp]
-	DB	0F3h,0C3h		;repret
+	ret
 
 $L$htable_polyval_start:
 	vzeroall
@@ -369,7 +369,7 @@ $L$htable_polyval_out:
 	vzeroupper
 	mov	rdi,QWORD[8+rsp]	;WIN64 epilogue
 	mov	rsi,QWORD[16+rsp]
-	DB	0F3h,0C3h		;repret
+	ret
 
 $L$SEH_end_aesgcmsiv_htable_polyval:
 global	aesgcmsiv_polyval_horner
@@ -392,7 +392,7 @@ _CET_ENDBR
 	jnz	NEAR $L$polyval_horner_start
 	mov	rdi,QWORD[8+rsp]	;WIN64 epilogue
 	mov	rsi,QWORD[16+rsp]
-	DB	0F3h,0C3h		;repret
+	ret
 
 $L$polyval_horner_start:
 
@@ -416,7 +416,7 @@ $L$polyval_horner_loop:
 	vmovdqa	XMMWORD[rdi],xmm0
 	mov	rdi,QWORD[8+rsp]	;WIN64 epilogue
 	mov	rsi,QWORD[16+rsp]
-	DB	0F3h,0C3h		;repret
+	ret
 
 $L$SEH_end_aesgcmsiv_polyval_horner:
 global	aes128gcmsiv_aes_ks
@@ -482,7 +482,7 @@ $L$ks128_loop:
 	vmovdqa	XMMWORD[32+rsi],xmm1
 	mov	rdi,QWORD[8+rsp]	;WIN64 epilogue
 	mov	rsi,QWORD[16+rsp]
-	DB	0F3h,0C3h		;repret
+	ret
 
 $L$SEH_end_aes128gcmsiv_aes_ks:
 global	aes256gcmsiv_aes_ks
@@ -540,7 +540,7 @@ $L$ks256_loop:
 	vmovdqa	XMMWORD[32+rsi],xmm1
 	mov	rdi,QWORD[8+rsp]	;WIN64 epilogue
 	mov	rsi,QWORD[16+rsp]
-	DB	0F3h,0C3h		;repret
+	ret
 
 global	aes128gcmsiv_aes_ks_enc_x1
 
@@ -693,7 +693,7 @@ _CET_ENDBR
 	vmovdqa	XMMWORD[rsi],xmm4
 	mov	rdi,QWORD[8+rsp]	;WIN64 epilogue
 	mov	rsi,QWORD[16+rsp]
-	DB	0F3h,0C3h		;repret
+	ret
 
 $L$SEH_end_aes128gcmsiv_aes_ks_enc_x1:
 global	aes128gcmsiv_kdf
@@ -797,7 +797,7 @@ _CET_ENDBR
 	vmovdqa	XMMWORD[48+rsi],xmm12
 	mov	rdi,QWORD[8+rsp]	;WIN64 epilogue
 	mov	rsi,QWORD[16+rsp]
-	DB	0F3h,0C3h		;repret
+	ret
 
 $L$SEH_end_aes128gcmsiv_kdf:
 global	aes128gcmsiv_enc_msg_x4
@@ -821,7 +821,7 @@ _CET_ENDBR
 	jnz	NEAR $L$128_enc_msg_x4_start
 	mov	rdi,QWORD[8+rsp]	;WIN64 epilogue
 	mov	rsi,QWORD[16+rsp]
-	DB	0F3h,0C3h		;repret
+	ret
 
 $L$128_enc_msg_x4_start:
 	push	r12
@@ -987,7 +987,7 @@ $L$128_enc_msg_x4_out:
 
 	mov	rdi,QWORD[8+rsp]	;WIN64 epilogue
 	mov	rsi,QWORD[16+rsp]
-	DB	0F3h,0C3h		;repret
+	ret
 
 $L$SEH_end_aes128gcmsiv_enc_msg_x4:
 global	aes128gcmsiv_enc_msg_x8
@@ -1011,7 +1011,7 @@ _CET_ENDBR
 	jnz	NEAR $L$128_enc_msg_x8_start
 	mov	rdi,QWORD[8+rsp]	;WIN64 epilogue
 	mov	rsi,QWORD[16+rsp]
-	DB	0F3h,0C3h		;repret
+	ret
 
 $L$128_enc_msg_x8_start:
 	push	r12
@@ -1257,7 +1257,7 @@ $L$128_enc_msg_x8_out:
 
 	mov	rdi,QWORD[8+rsp]	;WIN64 epilogue
 	mov	rsi,QWORD[16+rsp]
-	DB	0F3h,0C3h		;repret
+	ret
 
 $L$SEH_end_aes128gcmsiv_enc_msg_x8:
 global	aes128gcmsiv_dec
@@ -1282,7 +1282,7 @@ _CET_ENDBR
 	jnz	NEAR $L$128_dec_start
 	mov	rdi,QWORD[8+rsp]	;WIN64 epilogue
 	mov	rsi,QWORD[16+rsp]
-	DB	0F3h,0C3h		;repret
+	ret
 
 $L$128_dec_start:
 	vzeroupper
@@ -1765,7 +1765,7 @@ $L$128_dec_out:
 	vmovdqu	XMMWORD[rdx],xmm0
 	mov	rdi,QWORD[8+rsp]	;WIN64 epilogue
 	mov	rsi,QWORD[16+rsp]
-	DB	0F3h,0C3h		;repret
+	ret
 
 $L$SEH_end_aes128gcmsiv_dec:
 global	aes128gcmsiv_ecb_enc_block
@@ -1801,7 +1801,7 @@ _CET_ENDBR
 
 	mov	rdi,QWORD[8+rsp]	;WIN64 epilogue
 	mov	rsi,QWORD[16+rsp]
-	DB	0F3h,0C3h		;repret
+	ret
 
 $L$SEH_end_aes128gcmsiv_ecb_enc_block:
 global	aes256gcmsiv_aes_ks_enc_x1
@@ -1996,7 +1996,7 @@ _CET_ENDBR
 	vmovdqa	XMMWORD[rsi],xmm8
 	mov	rdi,QWORD[8+rsp]	;WIN64 epilogue
 	mov	rsi,QWORD[16+rsp]
-	DB	0F3h,0C3h		;repret
+	ret
 
 $L$SEH_end_aes256gcmsiv_aes_ks_enc_x1:
 global	aes256gcmsiv_ecb_enc_block
@@ -2033,7 +2033,7 @@ _CET_ENDBR
 	vmovdqa	XMMWORD[rsi],xmm1
 	mov	rdi,QWORD[8+rsp]	;WIN64 epilogue
 	mov	rsi,QWORD[16+rsp]
-	DB	0F3h,0C3h		;repret
+	ret
 
 $L$SEH_end_aes256gcmsiv_ecb_enc_block:
 global	aes256gcmsiv_enc_msg_x4
@@ -2057,7 +2057,7 @@ _CET_ENDBR
 	jnz	NEAR $L$256_enc_msg_x4_start
 	mov	rdi,QWORD[8+rsp]	;WIN64 epilogue
 	mov	rsi,QWORD[16+rsp]
-	DB	0F3h,0C3h		;repret
+	ret
 
 $L$256_enc_msg_x4_start:
 	mov	r10,r8
@@ -2249,7 +2249,7 @@ $L$256_enc_msg_x4_loop2:
 $L$256_enc_msg_x4_out:
 	mov	rdi,QWORD[8+rsp]	;WIN64 epilogue
 	mov	rsi,QWORD[16+rsp]
-	DB	0F3h,0C3h		;repret
+	ret
 
 $L$SEH_end_aes256gcmsiv_enc_msg_x4:
 global	aes256gcmsiv_enc_msg_x8
@@ -2273,7 +2273,7 @@ _CET_ENDBR
 	jnz	NEAR $L$256_enc_msg_x8_start
 	mov	rdi,QWORD[8+rsp]	;WIN64 epilogue
 	mov	rsi,QWORD[16+rsp]
-	DB	0F3h,0C3h		;repret
+	ret
 
 $L$256_enc_msg_x8_start:
 
@@ -2552,7 +2552,7 @@ $L$256_enc_msg_x8_loop2:
 $L$256_enc_msg_x8_out:
 	mov	rdi,QWORD[8+rsp]	;WIN64 epilogue
 	mov	rsi,QWORD[16+rsp]
-	DB	0F3h,0C3h		;repret
+	ret
 
 
 $L$SEH_end_aes256gcmsiv_enc_msg_x8:
@@ -2578,7 +2578,7 @@ _CET_ENDBR
 	jnz	NEAR $L$256_dec_start
 	mov	rdi,QWORD[8+rsp]	;WIN64 epilogue
 	mov	rsi,QWORD[16+rsp]
-	DB	0F3h,0C3h		;repret
+	ret
 
 $L$256_dec_start:
 	vzeroupper
@@ -3129,7 +3129,7 @@ $L$256_dec_out:
 	vmovdqu	XMMWORD[rdx],xmm0
 	mov	rdi,QWORD[8+rsp]	;WIN64 epilogue
 	mov	rsi,QWORD[16+rsp]
-	DB	0F3h,0C3h		;repret
+	ret
 
 $L$SEH_end_aes256gcmsiv_dec:
 global	aes256gcmsiv_kdf
@@ -3291,7 +3291,7 @@ _CET_ENDBR
 	vmovdqa	XMMWORD[80+rsi],xmm13
 	mov	rdi,QWORD[8+rsp]	;WIN64 epilogue
 	mov	rsi,QWORD[16+rsp]
-	DB	0F3h,0C3h		;repret
+	ret
 
 $L$SEH_end_aes256gcmsiv_kdf:
 %else

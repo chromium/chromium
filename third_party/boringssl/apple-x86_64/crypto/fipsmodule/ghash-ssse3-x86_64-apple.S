@@ -192,7 +192,7 @@ L$oop_row_3:
 	pxor	%xmm4,%xmm4
 	pxor	%xmm5,%xmm5
 	pxor	%xmm6,%xmm6
-	.byte	0xf3,0xc3
+	ret
 
 
 
@@ -405,7 +405,7 @@ L$oop_row_6:
 	pxor	%xmm4,%xmm4
 	pxor	%xmm5,%xmm5
 	pxor	%xmm6,%xmm6
-	.byte	0xf3,0xc3
+	ret
 
 
 

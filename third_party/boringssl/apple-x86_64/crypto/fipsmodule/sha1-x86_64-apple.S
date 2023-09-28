@@ -1261,7 +1261,7 @@ L$loop:
 	leaq	(%rsi),%rsp
 
 L$epilogue:
-	.byte	0xf3,0xc3
+	ret
 
 
 
@@ -1431,7 +1431,7 @@ L$oop_shaext:
 	pshufd	$27,%xmm1,%xmm1
 	movdqu	%xmm0,(%rdi)
 	movd	%xmm1,16(%rdi)
-	.byte	0xf3,0xc3
+	ret
 
 
 
@@ -2619,7 +2619,7 @@ L$done_ssse3:
 	leaq	(%r11),%rsp
 
 L$epilogue_ssse3:
-	.byte	0xf3,0xc3
+	ret
 
 
 
@@ -3747,7 +3747,7 @@ L$done_avx:
 	leaq	(%r11),%rsp
 
 L$epilogue_avx:
-	.byte	0xf3,0xc3
+	ret
 
 
 
@@ -5440,7 +5440,7 @@ L$done_avx2:
 	leaq	(%r11),%rsp
 
 L$epilogue_avx2:
-	.byte	0xf3,0xc3
+	ret
 
 
 .section	__DATA,__const

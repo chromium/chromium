@@ -103,7 +103,7 @@ L$poly_fast_tls_ad:
 	adcq	%r9,%r11
 	adcq	$0,%r12
 
-	.byte	0xf3,0xc3
+	ret
 L$hash_ad_loop:
 
 	cmpq	$16,%r8
@@ -212,7 +212,7 @@ L$hash_ad_tail_loop:
 
 
 L$hash_ad_done:
-	.byte	0xf3,0xc3
+	ret
 
 
 
@@ -1847,7 +1847,7 @@ L$open_sse_finalize:
 
 	popq	%rbp
 
-	.byte	0xf3,0xc3
+	ret
 
 L$open_sse_128:
 
@@ -3899,7 +3899,7 @@ L$do_length_block:
 
 	popq	%rbp
 
-	.byte	0xf3,0xc3
+	ret
 
 L$seal_sse_128:
 

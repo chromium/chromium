@@ -1748,7 +1748,7 @@ $L$rounds_16_xx:
 $L$epilogue:
 	mov	rdi,QWORD[8+rsp]	;WIN64 epilogue
 	mov	rsi,QWORD[16+rsp]
-	DB	0F3h,0C3h		;repret
+	ret
 
 $L$SEH_end_sha256_block_data_order:
 section	.rdata rdata align=8
@@ -2032,7 +2032,7 @@ DB	102,15,58,15,215,8
 $L$epilogue_shaext:
 	mov	rdi,QWORD[8+rsp]	;WIN64 epilogue
 	mov	rsi,QWORD[16+rsp]
-	DB	0F3h,0C3h		;repret
+	ret
 
 $L$SEH_end_sha256_block_data_order_shaext:
 
@@ -3164,7 +3164,7 @@ DB	102,15,58,15,249,4
 $L$epilogue_ssse3:
 	mov	rdi,QWORD[8+rsp]	;WIN64 epilogue
 	mov	rsi,QWORD[16+rsp]
-	DB	0F3h,0C3h		;repret
+	ret
 
 $L$SEH_end_sha256_block_data_order_ssse3:
 
@@ -4258,7 +4258,7 @@ $L$avx_00_47:
 $L$epilogue_avx:
 	mov	rdi,QWORD[8+rsp]	;WIN64 epilogue
 	mov	rsi,QWORD[16+rsp]
-	DB	0F3h,0C3h		;repret
+	ret
 
 $L$SEH_end_sha256_block_data_order_avx:
 EXTERN	__imp_RtlVirtualUnwind
@@ -4355,7 +4355,7 @@ $L$in_prologue:
 	pop	rbx
 	pop	rdi
 	pop	rsi
-	DB	0F3h,0C3h		;repret
+	ret
 
 
 ALIGN	16

@@ -28,7 +28,7 @@ DB	73,15,199,240
 
 	adc	rax,rax
 	mov	QWORD[rcx],r8
-	DB	0F3h,0C3h		;repret
+	ret
 
 
 
@@ -54,10 +54,10 @@ DB	73,15,199,241
 	jnz	NEAR $L$loop
 $L$out:
 	mov	rax,1
-	DB	0F3h,0C3h		;repret
+	ret
 $L$err:
 	xor	rax,rax
-	DB	0F3h,0C3h		;repret
+	ret
 
 
 %else

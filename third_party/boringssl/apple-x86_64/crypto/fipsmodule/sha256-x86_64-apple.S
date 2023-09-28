@@ -1730,7 +1730,7 @@ L$rounds_16_xx:
 	leaq	(%rsi),%rsp
 
 L$epilogue:
-	.byte	0xf3,0xc3
+	ret
 
 
 .section	__DATA,__const
@@ -1984,7 +1984,7 @@ L$oop_shaext:
 
 	movdqu	%xmm1,(%rdi)
 	movdqu	%xmm2,16(%rdi)
-	.byte	0xf3,0xc3
+	ret
 
 
 
@@ -3097,7 +3097,7 @@ L$ssse3_00_47:
 	leaq	(%rsi),%rsp
 
 L$epilogue_ssse3:
-	.byte	0xf3,0xc3
+	ret
 
 
 
@@ -4172,7 +4172,7 @@ L$avx_00_47:
 	leaq	(%rsi),%rsp
 
 L$epilogue_avx:
-	.byte	0xf3,0xc3
+	ret
 
 
 #endif

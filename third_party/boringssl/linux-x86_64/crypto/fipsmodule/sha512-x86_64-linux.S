@@ -1727,7 +1727,7 @@ _CET_ENDBR
 	leaq	(%rsi),%rsp
 .cfi_def_cfa_register	%rsp
 .Lepilogue:
-	.byte	0xf3,0xc3
+	ret
 .cfi_endproc	
 .size	sha512_block_data_order,.-sha512_block_data_order
 .section	.rodata
@@ -2981,7 +2981,7 @@ sha512_block_data_order_avx:
 	leaq	(%rsi),%rsp
 .cfi_def_cfa_register	%rsp
 .Lepilogue_avx:
-	.byte	0xf3,0xc3
+	ret
 .cfi_endproc	
 .size	sha512_block_data_order_avx,.-sha512_block_data_order_avx
 #endif

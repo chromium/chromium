@@ -104,7 +104,7 @@ poly_hash_ad_internal:
 	adcq	%r9,%r11
 	adcq	$0,%r12
 
-	.byte	0xf3,0xc3
+	ret
 .Lhash_ad_loop:
 
 	cmpq	$16,%r8
@@ -213,7 +213,7 @@ poly_hash_ad_internal:
 
 
 .Lhash_ad_done:
-	.byte	0xf3,0xc3
+	ret
 .cfi_endproc	
 .size	poly_hash_ad_internal, .-poly_hash_ad_internal
 
@@ -1862,7 +1862,7 @@ _CET_ENDBR
 	popq	%rbp
 .cfi_adjust_cfa_offset	-8
 .cfi_restore	%rbp
-	.byte	0xf3,0xc3
+	ret
 
 .Lopen_sse_128:
 .cfi_restore_state	
@@ -3928,7 +3928,7 @@ process_extra_in_trailer:
 	popq	%rbp
 .cfi_adjust_cfa_offset	-8
 .cfi_restore	%rbp
-	.byte	0xf3,0xc3
+	ret
 
 .Lseal_sse_128:
 .cfi_restore_state	

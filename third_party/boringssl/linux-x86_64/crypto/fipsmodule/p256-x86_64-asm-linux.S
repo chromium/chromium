@@ -86,7 +86,7 @@ _CET_ENDBR
 	leaq	16(%rsp),%rsp
 .cfi_adjust_cfa_offset	-16
 .Lneg_epilogue:
-	.byte	0xf3,0xc3
+	ret
 .cfi_endproc	
 .size	ecp_nistz256_neg,.-ecp_nistz256_neg
 
@@ -420,7 +420,7 @@ _CET_ENDBR
 	leaq	48(%rsp),%rsp
 .cfi_adjust_cfa_offset	-48
 .Lord_mul_epilogue:
-	.byte	0xf3,0xc3
+	ret
 .cfi_endproc	
 .size	ecp_nistz256_ord_mul_mont,.-ecp_nistz256_ord_mul_mont
 
@@ -725,7 +725,7 @@ _CET_ENDBR
 	leaq	48(%rsp),%rsp
 .cfi_adjust_cfa_offset	-48
 .Lord_sqr_epilogue:
-	.byte	0xf3,0xc3
+	ret
 .cfi_endproc	
 .size	ecp_nistz256_ord_sqr_mont,.-ecp_nistz256_ord_sqr_mont
 
@@ -967,7 +967,7 @@ ecp_nistz256_ord_mul_montx:
 	leaq	48(%rsp),%rsp
 .cfi_adjust_cfa_offset	-48
 .Lord_mulx_epilogue:
-	.byte	0xf3,0xc3
+	ret
 .cfi_endproc	
 .size	ecp_nistz256_ord_mul_montx,.-ecp_nistz256_ord_mul_montx
 
@@ -1181,7 +1181,7 @@ ecp_nistz256_ord_sqr_montx:
 	leaq	48(%rsp),%rsp
 .cfi_adjust_cfa_offset	-48
 .Lord_sqrx_epilogue:
-	.byte	0xf3,0xc3
+	ret
 .cfi_endproc	
 .size	ecp_nistz256_ord_sqr_montx,.-ecp_nistz256_ord_sqr_montx
 
@@ -1259,7 +1259,7 @@ _CET_ENDBR
 	leaq	48(%rsp),%rsp
 .cfi_adjust_cfa_offset	-48
 .Lmul_epilogue:
-	.byte	0xf3,0xc3
+	ret
 .cfi_endproc	
 .size	ecp_nistz256_mul_mont,.-ecp_nistz256_mul_mont
 
@@ -1477,7 +1477,7 @@ __ecp_nistz256_mul_montq:
 	movq	%r8,16(%rdi)
 	movq	%r9,24(%rdi)
 
-	.byte	0xf3,0xc3
+	ret
 .cfi_endproc	
 .size	__ecp_nistz256_mul_montq,.-__ecp_nistz256_mul_montq
 
@@ -1552,7 +1552,7 @@ _CET_ENDBR
 	leaq	48(%rsp),%rsp
 .cfi_adjust_cfa_offset	-48
 .Lsqr_epilogue:
-	.byte	0xf3,0xc3
+	ret
 .cfi_endproc	
 .size	ecp_nistz256_sqr_mont,.-ecp_nistz256_sqr_mont
 
@@ -1716,7 +1716,7 @@ __ecp_nistz256_sqr_montq:
 	movq	%r14,16(%rdi)
 	movq	%r15,24(%rdi)
 
-	.byte	0xf3,0xc3
+	ret
 .cfi_endproc	
 .size	__ecp_nistz256_sqr_montq,.-__ecp_nistz256_sqr_montq
 .type	__ecp_nistz256_mul_montx,@function
@@ -1884,7 +1884,7 @@ __ecp_nistz256_mul_montx:
 	movq	%r8,16(%rdi)
 	movq	%r9,24(%rdi)
 
-	.byte	0xf3,0xc3
+	ret
 .cfi_endproc	
 .size	__ecp_nistz256_mul_montx,.-__ecp_nistz256_mul_montx
 
@@ -2014,7 +2014,7 @@ __ecp_nistz256_sqr_montx:
 	movq	%r14,16(%rdi)
 	movq	%r15,24(%rdi)
 
-	.byte	0xf3,0xc3
+	ret
 .cfi_endproc	
 .size	__ecp_nistz256_sqr_montx,.-__ecp_nistz256_sqr_montx
 
@@ -2080,7 +2080,7 @@ _CET_ENDBR
 	movdqu	%xmm5,48(%rdi)
 	movdqu	%xmm6,64(%rdi)
 	movdqu	%xmm7,80(%rdi)
-	.byte	0xf3,0xc3
+	ret
 .cfi_endproc	
 .LSEH_end_ecp_nistz256_select_w5:
 .size	ecp_nistz256_select_w5,.-ecp_nistz256_select_w5
@@ -2137,7 +2137,7 @@ _CET_ENDBR
 	movdqu	%xmm3,16(%rdi)
 	movdqu	%xmm4,32(%rdi)
 	movdqu	%xmm5,48(%rdi)
-	.byte	0xf3,0xc3
+	ret
 .cfi_endproc	
 .LSEH_end_ecp_nistz256_select_w7:
 .size	ecp_nistz256_select_w7,.-ecp_nistz256_select_w7
@@ -2200,7 +2200,7 @@ ecp_nistz256_avx2_select_w5:
 	vmovdqu	%ymm3,32(%rdi)
 	vmovdqu	%ymm4,64(%rdi)
 	vzeroupper
-	.byte	0xf3,0xc3
+	ret
 .cfi_endproc	
 .LSEH_end_ecp_nistz256_avx2_select_w5:
 .size	ecp_nistz256_avx2_select_w5,.-ecp_nistz256_avx2_select_w5
@@ -2282,7 +2282,7 @@ _CET_ENDBR
 	vmovdqu	%ymm2,0(%rdi)
 	vmovdqu	%ymm3,32(%rdi)
 	vzeroupper
-	.byte	0xf3,0xc3
+	ret
 .cfi_endproc	
 .LSEH_end_ecp_nistz256_avx2_select_w7:
 .size	ecp_nistz256_avx2_select_w7,.-ecp_nistz256_avx2_select_w7
@@ -2316,7 +2316,7 @@ __ecp_nistz256_add_toq:
 	movq	%r8,16(%rdi)
 	movq	%r9,24(%rdi)
 
-	.byte	0xf3,0xc3
+	ret
 .cfi_endproc	
 .size	__ecp_nistz256_add_toq,.-__ecp_nistz256_add_toq
 
@@ -2349,7 +2349,7 @@ __ecp_nistz256_sub_fromq:
 	movq	%r8,16(%rdi)
 	movq	%r9,24(%rdi)
 
-	.byte	0xf3,0xc3
+	ret
 .cfi_endproc	
 .size	__ecp_nistz256_sub_fromq,.-__ecp_nistz256_sub_fromq
 
@@ -2378,7 +2378,7 @@ __ecp_nistz256_subq:
 	cmovnzq	%rcx,%r8
 	cmovnzq	%r10,%r9
 
-	.byte	0xf3,0xc3
+	ret
 .cfi_endproc	
 .size	__ecp_nistz256_subq,.-__ecp_nistz256_subq
 
@@ -2412,7 +2412,7 @@ __ecp_nistz256_mul_by_2q:
 	movq	%r8,16(%rdi)
 	movq	%r9,24(%rdi)
 
-	.byte	0xf3,0xc3
+	ret
 .cfi_endproc	
 .size	__ecp_nistz256_mul_by_2q,.-__ecp_nistz256_mul_by_2q
 .globl	ecp_nistz256_point_double
@@ -2647,7 +2647,7 @@ _CET_ENDBR
 	leaq	(%rsi),%rsp
 .cfi_def_cfa_register	%rsp
 .Lpoint_doubleq_epilogue:
-	.byte	0xf3,0xc3
+	ret
 .cfi_endproc	
 .size	ecp_nistz256_point_double,.-ecp_nistz256_point_double
 .globl	ecp_nistz256_point_add
@@ -3085,7 +3085,7 @@ _CET_ENDBR
 	leaq	(%rsi),%rsp
 .cfi_def_cfa_register	%rsp
 .Lpoint_addq_epilogue:
-	.byte	0xf3,0xc3
+	ret
 .cfi_endproc	
 .size	ecp_nistz256_point_add,.-ecp_nistz256_point_add
 .globl	ecp_nistz256_point_add_affine
@@ -3420,7 +3420,7 @@ _CET_ENDBR
 	leaq	(%rsi),%rsp
 .cfi_def_cfa_register	%rsp
 .Ladd_affineq_epilogue:
-	.byte	0xf3,0xc3
+	ret
 .cfi_endproc	
 .size	ecp_nistz256_point_add_affine,.-ecp_nistz256_point_add_affine
 .type	__ecp_nistz256_add_tox,@function
@@ -3454,7 +3454,7 @@ __ecp_nistz256_add_tox:
 	movq	%r8,16(%rdi)
 	movq	%r9,24(%rdi)
 
-	.byte	0xf3,0xc3
+	ret
 .cfi_endproc	
 .size	__ecp_nistz256_add_tox,.-__ecp_nistz256_add_tox
 
@@ -3489,7 +3489,7 @@ __ecp_nistz256_sub_fromx:
 	movq	%r8,16(%rdi)
 	movq	%r9,24(%rdi)
 
-	.byte	0xf3,0xc3
+	ret
 .cfi_endproc	
 .size	__ecp_nistz256_sub_fromx,.-__ecp_nistz256_sub_fromx
 
@@ -3520,7 +3520,7 @@ __ecp_nistz256_subx:
 	cmovcq	%rcx,%r8
 	cmovcq	%r10,%r9
 
-	.byte	0xf3,0xc3
+	ret
 .cfi_endproc	
 .size	__ecp_nistz256_subx,.-__ecp_nistz256_subx
 
@@ -3555,7 +3555,7 @@ __ecp_nistz256_mul_by_2x:
 	movq	%r8,16(%rdi)
 	movq	%r9,24(%rdi)
 
-	.byte	0xf3,0xc3
+	ret
 .cfi_endproc	
 .size	__ecp_nistz256_mul_by_2x,.-__ecp_nistz256_mul_by_2x
 .type	ecp_nistz256_point_doublex,@function
@@ -3783,7 +3783,7 @@ ecp_nistz256_point_doublex:
 	leaq	(%rsi),%rsp
 .cfi_def_cfa_register	%rsp
 .Lpoint_doublex_epilogue:
-	.byte	0xf3,0xc3
+	ret
 .cfi_endproc	
 .size	ecp_nistz256_point_doublex,.-ecp_nistz256_point_doublex
 .type	ecp_nistz256_point_addx,@function
@@ -4214,7 +4214,7 @@ ecp_nistz256_point_addx:
 	leaq	(%rsi),%rsp
 .cfi_def_cfa_register	%rsp
 .Lpoint_addx_epilogue:
-	.byte	0xf3,0xc3
+	ret
 .cfi_endproc	
 .size	ecp_nistz256_point_addx,.-ecp_nistz256_point_addx
 .type	ecp_nistz256_point_add_affinex,@function
@@ -4542,7 +4542,7 @@ ecp_nistz256_point_add_affinex:
 	leaq	(%rsi),%rsp
 .cfi_def_cfa_register	%rsp
 .Ladd_affinex_epilogue:
-	.byte	0xf3,0xc3
+	ret
 .cfi_endproc	
 .size	ecp_nistz256_point_add_affinex,.-ecp_nistz256_point_add_affinex
 #endif

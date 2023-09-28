@@ -164,7 +164,7 @@ L$_init_clmul:
 	movdqu	%xmm0,64(%rdi)
 .byte	102,15,58,15,227,8
 	movdqu	%xmm4,80(%rdi)
-	.byte	0xf3,0xc3
+	ret
 
 
 
@@ -220,7 +220,7 @@ L$_gmult_clmul:
 	pxor	%xmm1,%xmm0
 .byte	102,15,56,0,197
 	movdqu	%xmm0,(%rdi)
-	.byte	0xf3,0xc3
+	ret
 
 
 .globl	_gcm_ghash_clmul
@@ -609,7 +609,7 @@ L$odd_tail:
 L$done:
 .byte	102,65,15,56,0,194
 	movdqu	%xmm0,(%rdi)
-	.byte	0xf3,0xc3
+	ret
 
 
 
@@ -721,7 +721,7 @@ L$init_start_avx:
 	vmovdqu	%xmm5,-16(%rdi)
 
 	vzeroupper
-	.byte	0xf3,0xc3
+	ret
 
 
 
@@ -1112,7 +1112,7 @@ L$tail_no_xor_avx:
 	vpshufb	%xmm13,%xmm10,%xmm10
 	vmovdqu	%xmm10,(%rdi)
 	vzeroupper
-	.byte	0xf3,0xc3
+	ret
 
 
 

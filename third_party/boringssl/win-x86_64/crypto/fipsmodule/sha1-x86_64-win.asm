@@ -1279,7 +1279,7 @@ $L$loop:
 $L$epilogue:
 	mov	rdi,QWORD[8+rsp]	;WIN64 epilogue
 	mov	rsi,QWORD[16+rsp]
-	DB	0F3h,0C3h		;repret
+	ret
 
 $L$SEH_end_sha1_block_data_order:
 
@@ -1472,7 +1472,7 @@ DB	102,15,56,0,251
 $L$epilogue_shaext:
 	mov	rdi,QWORD[8+rsp]	;WIN64 epilogue
 	mov	rsi,QWORD[16+rsp]
-	DB	0F3h,0C3h		;repret
+	ret
 
 $L$SEH_end_sha1_block_data_order_shaext:
 
@@ -2684,7 +2684,7 @@ $L$done_ssse3:
 $L$epilogue_ssse3:
 	mov	rdi,QWORD[8+rsp]	;WIN64 epilogue
 	mov	rsi,QWORD[16+rsp]
-	DB	0F3h,0C3h		;repret
+	ret
 
 $L$SEH_end_sha1_block_data_order_ssse3:
 
@@ -3836,7 +3836,7 @@ $L$done_avx:
 $L$epilogue_avx:
 	mov	rdi,QWORD[8+rsp]	;WIN64 epilogue
 	mov	rsi,QWORD[16+rsp]
-	DB	0F3h,0C3h		;repret
+	ret
 
 $L$SEH_end_sha1_block_data_order_avx:
 
@@ -5554,7 +5554,7 @@ $L$done_avx2:
 $L$epilogue_avx2:
 	mov	rdi,QWORD[8+rsp]	;WIN64 epilogue
 	mov	rsi,QWORD[16+rsp]
-	DB	0F3h,0C3h		;repret
+	ret
 
 $L$SEH_end_sha1_block_data_order_avx2:
 section	.rdata rdata align=8
@@ -5739,7 +5739,7 @@ $L$common_seh_tail:
 	pop	rbx
 	pop	rdi
 	pop	rsi
-	DB	0F3h,0C3h		;repret
+	ret
 
 
 section	.pdata rdata align=4

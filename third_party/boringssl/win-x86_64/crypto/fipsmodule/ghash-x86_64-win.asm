@@ -177,7 +177,7 @@ DB	102,15,58,15,227,8
 	movdqu	XMMWORD[80+rcx],xmm4
 	movaps	xmm6,XMMWORD[rsp]
 	lea	rsp,[24+rsp]
-	DB	0F3h,0C3h		;repret
+	ret
 
 $L$SEH_end_gcm_init_clmul_4:
 
@@ -232,7 +232,7 @@ DB	102,15,58,68,220,0
 	pxor	xmm0,xmm1
 DB	102,15,56,0,197
 	movdqu	XMMWORD[rcx],xmm0
-	DB	0F3h,0C3h		;repret
+	ret
 
 
 global	gcm_ghash_clmul
@@ -654,7 +654,7 @@ DB	102,65,15,56,0,194
 	movaps	xmm14,XMMWORD[128+rsp]
 	movaps	xmm15,XMMWORD[144+rsp]
 	lea	rsp,[168+rsp]
-	DB	0F3h,0C3h		;repret
+	ret
 
 $L$SEH_end_gcm_ghash_clmul_13:
 
@@ -772,7 +772,7 @@ $L$init_start_avx:
 	vzeroupper
 	movaps	xmm6,XMMWORD[rsp]
 	lea	rsp,[24+rsp]
-	DB	0F3h,0C3h		;repret
+	ret
 $L$SEH_end_gcm_init_avx_4:
 
 
@@ -1196,7 +1196,7 @@ $L$tail_no_xor_avx:
 	movaps	xmm14,XMMWORD[128+rsp]
 	movaps	xmm15,XMMWORD[144+rsp]
 	lea	rsp,[168+rsp]
-	DB	0F3h,0C3h		;repret
+	ret
 
 $L$SEH_end_gcm_ghash_avx_13:
 

@@ -327,7 +327,7 @@ _CET_ENDBR
 	leaq	(%rsi),%rsp
 .cfi_adjust_cfa_offset	-136
 .Lno_data:
-	.byte	0xf3,0xc3
+	ret
 .cfi_endproc	
 .size	ChaCha20_ctr32,.-ChaCha20_ctr32
 .type	ChaCha20_ssse3,@function
@@ -464,7 +464,7 @@ ChaCha20_ssse3:
 	leaq	(%r9),%rsp
 .cfi_def_cfa_register	rsp
 .Lssse3_epilogue:
-	.byte	0xf3,0xc3
+	ret
 .cfi_endproc	
 .size	ChaCha20_ssse3,.-ChaCha20_ssse3
 .type	ChaCha20_4x,@function
@@ -1016,7 +1016,7 @@ ChaCha20_4x:
 	leaq	(%r9),%rsp
 .cfi_def_cfa_register	rsp
 .L4x_epilogue:
-	.byte	0xf3,0xc3
+	ret
 .cfi_endproc	
 .size	ChaCha20_4x,.-ChaCha20_4x
 .type	ChaCha20_8x,@function
@@ -1622,7 +1622,7 @@ ChaCha20_8x:
 	leaq	(%r9),%rsp
 .cfi_def_cfa_register	rsp
 .L8x_epilogue:
-	.byte	0xf3,0xc3
+	ret
 .cfi_endproc	
 .size	ChaCha20_8x,.-ChaCha20_8x
 #endif

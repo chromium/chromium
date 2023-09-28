@@ -336,7 +336,7 @@ _aesni_ctr32_ghash_6x:
 	vpxor	16+8(%rsp),%xmm8,%xmm8
 	vpxor	%xmm4,%xmm8,%xmm8
 
-	.byte	0xf3,0xc3
+	ret
 .cfi_endproc	
 .size	_aesni_ctr32_ghash_6x,.-_aesni_ctr32_ghash_6x
 .globl	aesni_gcm_decrypt
@@ -466,7 +466,7 @@ _CET_ENDBR
 .cfi_adjust_cfa_offset	-8
 .cfi_restore	%rbp
 .Lgcm_dec_abort:
-	.byte	0xf3,0xc3
+	ret
 
 .cfi_endproc	
 .size	aesni_gcm_decrypt,.-aesni_gcm_decrypt
@@ -537,7 +537,7 @@ _aesni_ctr32_6x:
 	vmovups	%xmm14,80(%rsi)
 	leaq	96(%rsi),%rsi
 
-	.byte	0xf3,0xc3
+	ret
 .align	32
 .Lhandle_ctr32_2:
 	vpshufb	%xmm0,%xmm1,%xmm6
@@ -861,7 +861,7 @@ _CET_ENDBR
 .cfi_adjust_cfa_offset	-8
 .cfi_restore	%rbp
 .Lgcm_enc_abort:
-	.byte	0xf3,0xc3
+	ret
 
 .cfi_endproc	
 .size	aesni_gcm_encrypt,.-aesni_gcm_encrypt
