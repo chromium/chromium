@@ -882,7 +882,7 @@ public class PageInfoViewTest {
                 mTestServerRule.getServer().getURLWithHostName("www.example.com", "/"));
 
         final CallbackHelper onDidStartNavigationHelper = new CallbackHelper();
-        final WebContentsObserver observer = TestThreadUtils.runOnUiThreadBlocking(() -> {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
             return new WebContentsObserver(sActivityTestRule.getWebContents()) {
                 @Override
                 public void didStartNavigationInPrimaryMainFrame(
@@ -920,22 +920,6 @@ public class PageInfoViewTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4)
-    public void testShowAdPersonalizationInfoSubPage() throws IOException {
-        loadUrlAndOpenPageInfo(
-                mTestServerRule.getServer().getURLWithHostName("example.com", sSimpleHtml));
-        onView(withId(PageInfoAdPersonalizationController.ROW_ID)).perform(click());
-        onViewWaiting(allOf(withText(R.string.page_info_ad_manage_interests), isDisplayed()));
-        mRenderTestRule.render(getPageInfoView(), "PageInfo_AdPersonalizationSubPage");
-    }
-
-    /**
-     * Tests ad personalization subpage.
-     */
-    @Test
-    @MediumTest
-    @Feature({"RenderTest"})
-    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4)
     public void testShowAdPersonalizationInfoSubPageV4() throws IOException {
         loadUrlAndOpenPageInfo(
                 mTestServerRule.getServer().getURLWithHostName("example.com", sSimpleHtml));
@@ -950,27 +934,6 @@ public class PageInfoViewTest {
      */
     @Test
     @MediumTest
-    @DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4)
-    public void testOpenAdPersonalizationSettings() throws IOException {
-        loadUrlAndOpenPageInfo(
-                mTestServerRule.getServer().getURLWithHostName("example.com", sSimpleHtml));
-        onView(withId(PageInfoAdPersonalizationController.ROW_ID)).perform(click());
-        onViewWaiting(allOf(withText(R.string.page_info_ad_manage_interests), isDisplayed()))
-                .perform(click());
-        // Check that settings are displayed.
-        onView(withText(R.string.privacy_sandbox_topic_interests_subtitle))
-                .check(matches(isDisplayed()));
-        // Leave settings view.
-        onView(withContentDescription("Navigate up")).perform(click());
-        onView(withText(R.string.privacy_sandbox_topic_interests_subtitle)).check(doesNotExist());
-    }
-
-    /**
-     * Tests opening ad personalization settings.
-     */
-    @Test
-    @MediumTest
-    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4)
     public void testOpenAdPersonalizationSettingsV4() throws IOException {
         loadUrlAndOpenPageInfo(
                 mTestServerRule.getServer().getURLWithHostName("example.com", sSimpleHtml));

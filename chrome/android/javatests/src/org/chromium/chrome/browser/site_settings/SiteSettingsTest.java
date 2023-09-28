@@ -675,7 +675,6 @@ public class SiteSettingsTest {
     @Test
     @SmallTest
     @Feature({"Preferences"})
-    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4)
     @DisabledTest(message = "https://crbug.com/1395173")
     public void testSiteExceptionSiteDataBlocked() throws Exception {
         setGlobalToggleForCategory(SiteSettingsCategory.Type.SITE_DATA, true);
@@ -1113,20 +1112,6 @@ public class SiteSettingsTest {
         settingsActivity.finish();
     }
 
-    /** Test that showing the Site Settings menu contains only the "Cookies" row. */
-    @Test
-    @SmallTest
-    @Feature({"Preferences"})
-    @DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4)
-    public void testSiteSettingsMenuWithPSS4Disabled() {
-        final SettingsActivity settingsActivity = SiteSettingsTestUtils.startSiteSettingsMenu("");
-        SiteSettings websitePreferences = (SiteSettings) settingsActivity.getMainFragment();
-        assertNotNull(websitePreferences.findPreference("cookies"));
-        assertNull(websitePreferences.findPreference("third_party_cookies"));
-        assertNull(websitePreferences.findPreference("site_data"));
-        settingsActivity.finish();
-    }
-
     /**
      * Test that showing the Site Settings menu contains the "Third-party cookies" and "Site data"
      * rows.
@@ -1134,7 +1119,6 @@ public class SiteSettingsTest {
     @Test
     @SmallTest
     @Feature({"Preferences"})
-    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4)
     public void testSiteSettingsMenuWithPSS4Enabled() {
         final SettingsActivity settingsActivity = SiteSettingsTestUtils.startSiteSettingsMenu("");
         SiteSettings websitePreferences = (SiteSettings) settingsActivity.getMainFragment();
@@ -1304,7 +1288,6 @@ public class SiteSettingsTest {
     @Test
     @SmallTest
     @Feature({"Preferences"})
-    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4)
     public void testOnlyExpectedPreferencesThirdPartyCookies() {
         testExpectedPreferences(SiteSettingsCategory.Type.THIRD_PARTY_COOKIES,
                 new String[] {"info_text", "tri_state_cookie_toggle", "add_exception"},
@@ -1314,7 +1297,6 @@ public class SiteSettingsTest {
     @Test
     @SmallTest
     @Feature({"Preferences"})
-    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4)
     public void testOnlyExpectedPreferencesSiteData() {
         testExpectedPreferences(SiteSettingsCategory.Type.SITE_DATA,
                 BINARY_TOGGLE_WITH_EXCEPTION_AND_INFO_TEXT,
@@ -1324,7 +1306,6 @@ public class SiteSettingsTest {
     @Test
     @SmallTest
     @Feature({"Preferences"})
-    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4)
     public void testOnlyExpectedExceptionsSiteData() {
         createCookieExceptions();
         SiteSettingsTestUtils.startSiteSettingsCategory(SiteSettingsCategory.Type.SITE_DATA);
@@ -1336,7 +1317,6 @@ public class SiteSettingsTest {
     @Test
     @SmallTest
     @Feature({"Preferences"})
-    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4)
     public void testOnlyExpectedExceptionsThirdPartyCookies() {
         createCookieExceptions();
         SiteSettingsTestUtils.startSiteSettingsCategory(
@@ -1381,10 +1361,8 @@ public class SiteSettingsTest {
     @Test
     @SmallTest
     @Feature({"Preferences"})
-    @EnableFeatures({ChromeFeatureList.PRIVACY_SANDBOX_FPS_UI,
-            ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4})
-    public void
-    testExpectedCookieButtonsCheckedWhenFPSUiAndPSS4Enabled() {
+    @EnableFeatures({ChromeFeatureList.PRIVACY_SANDBOX_FPS_UI})
+    public void testExpectedCookieButtonsCheckedWhenFPSUiAndPSS4Enabled() {
         SettingsActivity settingsActivity = SiteSettingsTestUtils.startSiteSettingsCategory(
                 SiteSettingsCategory.Type.THIRD_PARTY_COOKIES);
 
@@ -2297,7 +2275,6 @@ public class SiteSettingsTest {
     @Test
     @SmallTest
     @Feature({"RenderTest"})
-    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4)
     public void testRenderSiteDataPage() throws Exception {
         renderCategoryPage(SiteSettingsCategory.Type.SITE_DATA, "site_settings_site_data_page");
     }
@@ -2305,7 +2282,6 @@ public class SiteSettingsTest {
     @Test
     @SmallTest
     @Feature({"RenderTest"})
-    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4)
     @DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_FPS_UI)
     public void testRenderThirdPartyCookiesPage() throws Exception {
         renderCategoryPage(SiteSettingsCategory.Type.THIRD_PARTY_COOKIES,
@@ -2315,10 +2291,8 @@ public class SiteSettingsTest {
     @Test
     @SmallTest
     @Feature({"RenderTest"})
-    @EnableFeatures({ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4,
-            ChromeFeatureList.PRIVACY_SANDBOX_FPS_UI})
-    public void
-    testRenderThirdPartyCookiesPageWithFPS() throws Exception {
+    @EnableFeatures({ChromeFeatureList.PRIVACY_SANDBOX_FPS_UI})
+    public void testRenderThirdPartyCookiesPageWithFPS() throws Exception {
         renderCategoryPage(SiteSettingsCategory.Type.THIRD_PARTY_COOKIES,
                 "site_settings_third_party_cookies_page_fps");
     }
@@ -2326,18 +2300,16 @@ public class SiteSettingsTest {
     @Test
     @SmallTest
     @Feature({"RenderTest"})
-    @DisableFeatures({ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4,
-            ChromeFeatureList.PRIVACY_SANDBOX_FPS_UI})
-    public void
-    testRenderCookiesPage() throws Exception {
-        renderCategoryPage(SiteSettingsCategory.Type.COOKIES, "site_settings_cookies_page");
+    @DisableFeatures({ChromeFeatureList.PRIVACY_SANDBOX_FPS_UI})
+    public void testRenderCookiesPageThirdPartyCookiesPageWithoutFPS() throws Exception {
+        renderCategoryPage(SiteSettingsCategory.Type.THIRD_PARTY_COOKIES,
+                "site_settings_third_party_cookies_page_without_fps");
     }
 
     @Test
     @SmallTest
     @Feature({"RenderTest"})
     @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_FPS_UI)
-    @DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4)
     public void testRenderCookiesPageWithFPS() throws Exception {
         renderCategoryPage(SiteSettingsCategory.Type.COOKIES, "site_settings_cookies_page_fps");
     }
@@ -2417,8 +2389,6 @@ public class SiteSettingsTest {
     public void testCookiesSettingsManagedForURL(String setting) throws Exception {
         final SettingsActivity settingsActivity =
                 SiteSettingsTestUtils.startSiteSettingsCategory(SiteSettingsCategory.Type.COOKIES);
-        String managedText = ApplicationProvider.getApplicationContext().getString(
-                R.string.managed_by_your_organization);
 
         SingleCategorySettings websitePreferences =
                 (SingleCategorySettings) settingsActivity.getMainFragment();
