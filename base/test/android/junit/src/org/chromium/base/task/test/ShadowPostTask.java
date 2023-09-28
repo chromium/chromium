@@ -4,10 +4,11 @@
 
 package org.chromium.base.task.test;
 
-import org.robolectric.Robolectric;
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
 import org.robolectric.annotation.Resetter;
+import org.robolectric.shadow.api.Shadow;
+import org.robolectric.util.ReflectionHelpers.ClassParameter;
 
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -37,7 +38,10 @@ public class ShadowPostTask {
     /** Default implementation for tests. Override methods or add new ones as necessary. */
     public static class TestImpl {
         public void postDelayedTask(@TaskTraits int taskTraits, Runnable task, long delay) {
-            Robolectric.getForegroundThreadScheduler().postDelayed(task, delay);
+            Shadow.directlyOn(PostTask.class, "postDelayedTask",
+                    ClassParameter.from(int.class, taskTraits),
+                    ClassParameter.from(Runnable.class, task),
+                    ClassParameter.from(long.class, delay));
         }
     }
 }

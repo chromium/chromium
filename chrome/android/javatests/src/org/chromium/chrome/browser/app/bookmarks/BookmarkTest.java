@@ -10,6 +10,8 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
@@ -293,7 +295,7 @@ public class BookmarkTest {
             Tab activityTab = activity.getActivityTab();
             Criteria.checkThat(activityTab, Matchers.notNullValue());
             Criteria.checkThat(activityTab.getUrl(), Matchers.notNullValue());
-            Criteria.checkThat(activityTab.getUrl(), Matchers.is(mTestPage));
+            Criteria.checkThat(activityTab.getUrl(), is(mTestPage));
         });
     }
 
@@ -370,7 +372,8 @@ public class BookmarkTest {
                 () -> mBookmarkModel.setBookmarkTitle(testFolder, TEST_FOLDER_TITLE2));
 
         // Check that the test folder reflects name changes.
-        assertEquals(TEST_FOLDER_TITLE2, mToolbar.getTitle());
+        CriteriaHelper.pollUiThread(
+                () -> Criteria.checkThat(mToolbar.getTitle(), equalTo(TEST_FOLDER_TITLE2)));
 
         // Call BookmarkToolbar#onClick() to activate the navigation button.
         runOnUiThreadBlocking(() -> mToolbar.onClick(mToolbar));
@@ -418,12 +421,16 @@ public class BookmarkTest {
         assertEquals("Wrong number of items after searching.", 1, mAdapter.getItemCount());
 
         BookmarkId newBookmark = addBookmark(TEST_PAGE_TITLE_GOOGLE2, mTestPage);
-        assertEquals("Wrong number of items after bookmark added while searching.", 2,
-                mAdapter.getItemCount());
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat("Wrong number of items after bookmark added while searching.",
+                    mAdapter.getItemCount(), is(2));
+        });
 
         removeBookmark(newBookmark);
-        assertEquals("Wrong number of items after bookmark removed while searching.", 1,
-                mAdapter.getItemCount());
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat("Wrong number of items after bookmark removed while searching.",
+                    mAdapter.getItemCount(), is(1));
+        });
 
         searchBookmarks("Non-existent page");
         assertEquals("Wrong number of items after searching for non-existent item.", 0,
@@ -538,8 +545,10 @@ public class BookmarkTest {
 
         // Should now be kicked back into an empty search string query, not the initial query. This
         // is why 3 items should now be visible, the two folders and the other url bookmark.
-        assertEquals(search_view.getVisibility(), View.VISIBLE);
-        assertEquals(3, mAdapter.getItemCount());
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(search_view.getVisibility(), is(View.VISIBLE));
+            Criteria.checkThat(mAdapter.getItemCount(), is(3));
+        });
     }
 
     @Test
@@ -583,9 +592,7 @@ public class BookmarkTest {
 
         // The user should still be searching, and the bookmark should be gone. We're refreshing
         // the search query again here, but in this case it's now "Google".
-        assertEquals("Wrong state, should be searching", BookmarkUiMode.SEARCHING,
-                mDelegate.getCurrentUiMode());
-        assertEquals("Wrong number of items after searching.", 0, mAdapter.getItemCount());
+        pollForModeAndCount(BookmarkUiMode.SEARCHING, 0);
 
         // Undo the deletion.
         runOnUiThreadBlocking(
@@ -593,9 +600,7 @@ public class BookmarkTest {
 
         // The user should still be searching, and the bookmark should reappear. Refreshing the
         // search yet again, now with the "Google" search matching returning 1 result.
-        assertEquals("Wrong state, should be searching", BookmarkUiMode.SEARCHING,
-                mDelegate.getCurrentUiMode());
-        assertEquals("Wrong number of items after searching.", 1, mAdapter.getItemCount());
+        pollForModeAndCount(BookmarkUiMode.SEARCHING, 1);
     }
 
     @Test
@@ -618,18 +623,14 @@ public class BookmarkTest {
         removeBookmark(testFolder);
 
         // The user should still be searching, and the bookmark should be gone.
-        assertEquals("Wrong state, should be searching", BookmarkUiMode.SEARCHING,
-                mDelegate.getCurrentUiMode());
-        assertEquals("Wrong number of items after searching.", 0, mAdapter.getItemCount());
+        pollForModeAndCount(BookmarkUiMode.SEARCHING, 0);
 
         // Undo the deletion.
         runOnUiThreadBlocking(
                 () -> mBookmarkManagerCoordinator.getUndoControllerForTesting().onAction(null));
 
         // The user should still be searching, and the bookmark should reappear.
-        assertEquals("Wrong state, should be searching", BookmarkUiMode.SEARCHING,
-                mDelegate.getCurrentUiMode());
-        assertEquals("Wrong number of items after searching.", 2, mAdapter.getItemCount());
+        pollForModeAndCount(BookmarkUiMode.SEARCHING, 2);
     }
 
     @Test
@@ -710,7 +711,7 @@ public class BookmarkTest {
         View loadingView = parent.findViewById(R.id.loading_view);
 
         CriteriaHelper.pollUiThread(
-                () -> Criteria.checkThat(loadingView.getVisibility(), Matchers.is(View.VISIBLE)));
+                () -> Criteria.checkThat(loadingView.getVisibility(), is(View.VISIBLE)));
 
         // The idea is that the manager should now be able to figure out what rows it can populate.
         // However if there are no rows created, because we have an empty folder, no events
@@ -720,7 +721,7 @@ public class BookmarkTest {
         runOnUiThreadBlocking(mBookmarkManagerCoordinator::finishLoadingForTesting);
 
         CriteriaHelper.pollUiThread(
-                () -> { Criteria.checkThat(loadingView.getVisibility(), Matchers.is(View.GONE)); });
+                () -> { Criteria.checkThat(loadingView.getVisibility(), is(View.GONE)); });
     }
 
     @Test
@@ -2010,8 +2011,14 @@ public class BookmarkTest {
 
     private void loadBookmarkModel() {
         runOnUiThreadBlocking(() -> { mBookmarkModel.finishLoadingBookmarkModel(() -> {}); });
+        CriteriaHelper.pollUiThread(
+                () -> { Criteria.checkThat(mBookmarkModel.isBookmarkModelLoaded(), is(true)); });
+    }
+
+    private void pollForModeAndCount(@BookmarkUiMode int uiMode, int itemCount) {
         CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(mBookmarkModel.isBookmarkModelLoaded(), Matchers.is(true));
+            Criteria.checkThat(mDelegate.getCurrentUiMode(), is(uiMode));
+            Criteria.checkThat(mAdapter.getItemCount(), is(itemCount));
         });
     }
 }

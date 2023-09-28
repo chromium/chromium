@@ -44,6 +44,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -55,9 +56,12 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.task.TaskTraits;
+import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.JniMocker;
@@ -130,7 +134,7 @@ import java.util.function.Consumer;
 /** Unit tests for {@link BookmarkManagerMediator}. */
 @Batch(Batch.UNIT_TESTS)
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
+@Config(manifest = Config.NONE, shadows = {ShadowPostTask.class})
 @EnableFeatures({ChromeFeatureList.BOOKMARKS_REFRESH, ChromeFeatureList.SHOPPING_LIST,
         ChromeFeatureList.EMPTY_STATES})
 public class BookmarkManagerMediatorTest {
@@ -260,6 +264,17 @@ public class BookmarkManagerMediatorTest {
 
     @Before
     public void setUp() {
+        // The mediator will respond to model changes by posting a task to update for performance.
+        // This just runs all of those posts synchronously to simplify test code.
+        ShadowPostTask.setTestImpl(new ShadowPostTask.TestImpl() {
+            @Override
+            public void postDelayedTask(@TaskTraits int taskTraits, Runnable task, long delay) {
+                assert delay == 0;
+                assert taskTraits >= TaskTraits.UI_TRAITS_START;
+                task.run();
+            }
+        });
+
         mActivityScenarioRule.getScenario().onActivity((activity) -> {
             mActivity = spy(activity);
 
@@ -411,6 +426,11 @@ public class BookmarkManagerMediatorTest {
                     mOnScrollListenerConsumer);
             mMediator.addUiObserver(mBookmarkUiObserver);
         });
+    }
+
+    @After
+    public void tearDown() {
+        ShadowPostTask.reset();
     }
 
     private void finishLoading() {
@@ -1140,6 +1160,7 @@ public class BookmarkManagerMediatorTest {
         verify(mBookmarkModel).addObserver(mBookmarkModelObserverArgumentCaptor.capture());
         mBookmarkModelObserverArgumentCaptor.getValue().bookmarkNodeRemoved(
                 mFolderItem2, 0, mBookmarkItem21, false);
+
         coordinatorModel = mModelList.get(1)
                                    .model.get(ImprovedBookmarkRowProperties.FOLDER_COORDINATOR)
                                    .getModelForTesting();
@@ -1179,6 +1200,7 @@ public class BookmarkManagerMediatorTest {
         verify(mBookmarkModel).addObserver(mBookmarkModelObserverArgumentCaptor.capture());
         mBookmarkModelObserverArgumentCaptor.getValue().bookmarkNodeRemoved(
                 mFolderItem2, 0, mBookmarkItem21, false);
+
         assertEquals(3, mModelList.size());
         verify(mBookmarkUiObserver, times(1)).onUiModeChanged(BookmarkUiMode.FOLDER);
     }
@@ -1737,5 +1759,34 @@ public class BookmarkManagerMediatorTest {
         // Should still be in search mode, and should have refreshed and picked up new results.
         assertEquals(BookmarkUiMode.SEARCHING, mMediator.getCurrentUiMode());
         assertEquals(1, mModelList.size());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS)
+    public void testModelChangesDeduped() {
+        // Remove test impl from setUp, to resume paused behavior.
+        ShadowPostTask.reset();
+
+        finishLoading();
+        mMediator.openFolder(mFolderId1);
+        verify(mBookmarkModel, times(1)).getChildIds(mFolderId1);
+        verifyCurrentBookmarkIds(null, mFolderId2, mFolderId3);
+
+        verify(mBookmarkModel).addObserver(mBookmarkModelObserverArgumentCaptor.capture());
+        BookmarkModelObserver observer = mBookmarkModelObserverArgumentCaptor.getValue();
+        doReturn(Arrays.asList(mFolderId2)).when(mBookmarkModel).getChildIds(mFolderId1);
+
+        // All of the event spam should result in a single async #setBookmarks, and no more.
+        for (int i = 0; i < 3; i++) {
+            observer.bookmarkModelChanged();
+            observer.bookmarkNodeChildrenReordered(mFolderItem1);
+            observer.bookmarkNodeChanged(mFolderItem1);
+            observer.bookmarkNodeRemoved(mFolderItem1, 1, mFolderItem3, false);
+        }
+        ShadowLooper.idleMainLooper();
+
+        // Measure number of #setBookmarks by counting #getChildIds.
+        verify(mBookmarkModel, times(2)).getChildIds(mFolderId1);
+        verifyCurrentBookmarkIds(null, mFolderId2);
     }
 }
