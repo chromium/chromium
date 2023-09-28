@@ -125,6 +125,9 @@ class BASE_EXPORT SampleVector : public SampleVectorBase {
   SampleVector& operator=(const SampleVector&) = delete;
   ~SampleVector() override;
 
+  // HistogramSamples:
+  bool IsDefinitelyEmpty() const override;
+
  private:
   FRIEND_TEST_ALL_PREFIXES(SampleVectorTest, GetPeakBucketSize);
 
@@ -164,6 +167,9 @@ class BASE_EXPORT PersistentSampleVector : public SampleVectorBase {
   PersistentSampleVector(const PersistentSampleVector&) = delete;
   PersistentSampleVector& operator=(const PersistentSampleVector&) = delete;
   ~PersistentSampleVector() override;
+
+  // HistogramSamples:
+  bool IsDefinitelyEmpty() const override;
 
  private:
   // SampleVectorBase:

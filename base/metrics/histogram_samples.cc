@@ -293,6 +293,10 @@ void HistogramSamples::Extract(HistogramSamples& other) {
   DCHECK(success);
 }
 
+bool HistogramSamples::IsDefinitelyEmpty() const {
+  return sum() == 0 && redundant_count() == 0;
+}
+
 void HistogramSamples::Serialize(Pickle* pickle) const {
   pickle->WriteInt64(sum());
   pickle->WriteInt(redundant_count());

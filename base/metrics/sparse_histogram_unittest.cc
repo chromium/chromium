@@ -195,6 +195,26 @@ TEST_P(SparseHistogramTest, UnloggedSamplesTest) {
   EXPECT_EQ(10, samples->sum());
 }
 
+// Check that IsDefinitelyEmpty() works with the results of SnapshotDelta().
+TEST_P(SparseHistogramTest, IsDefinitelyEmpty_SnapshotDelta) {
+  std::unique_ptr<SparseHistogram> histogram(NewSparseHistogram("Sparse"));
+
+  // No samples initially.
+  EXPECT_TRUE(histogram->SnapshotDelta()->IsDefinitelyEmpty());
+
+  histogram->Add(1);
+  EXPECT_FALSE(histogram->SnapshotDelta()->IsDefinitelyEmpty());
+  EXPECT_TRUE(histogram->SnapshotDelta()->IsDefinitelyEmpty());
+  histogram->Add(10);
+  histogram->Add(10);
+  EXPECT_FALSE(histogram->SnapshotDelta()->IsDefinitelyEmpty());
+  EXPECT_TRUE(histogram->SnapshotDelta()->IsDefinitelyEmpty());
+  histogram->Add(1);
+  histogram->Add(50);
+  EXPECT_FALSE(histogram->SnapshotDelta()->IsDefinitelyEmpty());
+  EXPECT_TRUE(histogram->SnapshotDelta()->IsDefinitelyEmpty());
+}
+
 TEST_P(SparseHistogramTest, AddCount_LargeValuesDontOverflow) {
   std::unique_ptr<SparseHistogram> histogram(NewSparseHistogram("Sparse"));
   std::unique_ptr<HistogramSamples> snapshot(histogram->SnapshotSamples());

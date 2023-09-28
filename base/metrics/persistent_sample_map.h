@@ -49,6 +49,7 @@ class BASE_EXPORT PersistentSampleMap : public HistogramSamples {
   HistogramBase::Count TotalCount() const override;
   std::unique_ptr<SampleCountIterator> Iterator() const override;
   std::unique_ptr<SampleCountIterator> ExtractingIterator() override;
+  bool IsDefinitelyEmpty() const override;
 
   // Uses a persistent-memory |iterator| to locate and return information about
   // the next record holding information for a PersistentSampleMap (in

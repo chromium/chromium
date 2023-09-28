@@ -447,23 +447,13 @@ void PersistentHistogramAllocator::MergeHistogramDeltaToStatisticsRecorder(
     HistogramBase* histogram) {
   DCHECK(histogram);
 
-  HistogramBase* existing = GetOrCreateStatisticsRecorderHistogram(histogram);
-  if (!existing) {
-    // The above should never fail but if it does, no real harm is done.
-    // The data won't be merged but it also won't be recorded as merged
-    // so a future try, if successful, will get what was missed. If it
-    // continues to fail, some metric data will be lost but that is better
-    // than crashing.
+  // Return immediately if the histogram has no samples since the last delta
+  // snapshot. This is to prevent looking up or registering the histogram with
+  // the StatisticsRecorder, which requires acquiring a lock.
+  std::unique_ptr<HistogramSamples> samples = histogram->SnapshotDelta();
+  if (samples->IsDefinitelyEmpty()) {
     return;
   }
-
-  // Merge the delta from the passed object to the one in the SR.
-  existing->AddSamples(*histogram->SnapshotDelta());
-}
-
-void PersistentHistogramAllocator::MergeHistogramFinalDeltaToStatisticsRecorder(
-    const HistogramBase* histogram) {
-  DCHECK(histogram);
 
   HistogramBase* existing = GetOrCreateStatisticsRecorderHistogram(histogram);
   if (!existing) {
@@ -473,7 +463,30 @@ void PersistentHistogramAllocator::MergeHistogramFinalDeltaToStatisticsRecorder(
   }
 
   // Merge the delta from the passed object to the one in the SR.
-  existing->AddSamples(*histogram->SnapshotFinalDelta());
+  existing->AddSamples(*samples);
+}
+
+void PersistentHistogramAllocator::MergeHistogramFinalDeltaToStatisticsRecorder(
+    const HistogramBase* histogram) {
+  DCHECK(histogram);
+
+  // Return immediately if the histogram has no samples. This is to prevent
+  // looking up or registering the histogram with the StatisticsRecorder, which
+  // requires acquiring a lock.
+  std::unique_ptr<HistogramSamples> samples = histogram->SnapshotFinalDelta();
+  if (samples->IsDefinitelyEmpty()) {
+    return;
+  }
+
+  HistogramBase* existing = GetOrCreateStatisticsRecorderHistogram(histogram);
+  if (!existing) {
+    // The above should never fail but if it does, no real harm is done.
+    // Some metric data will be lost but that is better than crashing.
+    return;
+  }
+
+  // Merge the delta from the passed object to the one in the SR.
+  existing->AddSamples(*samples);
 }
 
 std::unique_ptr<PersistentSampleMapRecords>

@@ -172,6 +172,15 @@ std::unique_ptr<SampleCountIterator> PersistentSampleMap::ExtractingIterator() {
       sample_counts_);
 }
 
+bool PersistentSampleMap::IsDefinitelyEmpty() const {
+  // Not implemented.
+  NOTREACHED();
+
+  // Always return false. If we are wrong, this will just make the caller
+  // perform some extra work thinking that |this| is non-empty.
+  return false;
+}
+
 // static
 PersistentMemoryAllocator::Reference
 PersistentSampleMap::GetNextPersistentRecord(

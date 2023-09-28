@@ -138,14 +138,27 @@ std::unique_ptr<SampleCountIterator> SampleMap::ExtractingIterator() {
   return std::make_unique<ExtractingSampleMapIterator>(sample_counts_);
 }
 
+bool SampleMap::IsDefinitelyEmpty() const {
+  // If |sample_counts_| is empty (no entry was ever inserted), then return
+  // true. If it does contain some entries, then it may or may not have samples
+  // (e.g. it's possible all entries have a bucket count of 0). Just return
+  // false in this case. If we are wrong, this will just make the caller perform
+  // some extra work thinking that |this| is non-empty.
+  return HistogramSamples::IsDefinitelyEmpty() && sample_counts_.empty();
+}
+
 bool SampleMap::AddSubtractImpl(SampleCountIterator* iter, Operator op) {
   Sample min;
   int64_t max;
   Count count;
   for (; !iter->Done(); iter->Next()) {
     iter->Get(&min, &max, &count);
-    if (strict_cast<int64_t>(min) + 1 != max)
+    if (strict_cast<int64_t>(min) + 1 != max) {
       return false;  // SparseHistogram only supports bucket with size 1.
+    }
+
+    // Note that we do not need to check that count != 0, since Next() above
+    // will skip empty buckets.
 
     // We do not have to do the following atomically -- if the caller needs
     // thread safety, they should use a lock. And since this is in local memory,

@@ -358,6 +358,113 @@ TEST_F(PersistentHistogramAllocatorTest, StatisticsRecorderMerge) {
   EXPECT_EQ(1, snapshot->GetCount(7));
 }
 
+// Verify that when merging histograms from an allocator with the global
+// StatisticsRecorder, if the histogram has no samples to be merged, then it
+// is skipped (no lookup/registration of the histogram with the SR).
+TEST_F(PersistentHistogramAllocatorTest,
+       StatisticsRecorderMerge_IsDefinitelyEmpty) {
+  const size_t global_sr_initial_histogram_count =
+      StatisticsRecorder::GetHistogramCount();
+  const size_t global_sr_initial_bucket_ranges_count =
+      StatisticsRecorder::GetBucketRanges().size();
+
+  // Create a local StatisticsRecorder in which the newly created histogram
+  // will be recorded. The global allocator must be replaced after because the
+  // act of releasing will cause the active SR to forget about all histograms
+  // in the released memory.
+  std::unique_ptr<StatisticsRecorder> local_sr =
+      StatisticsRecorder::CreateTemporaryForTesting();
+  EXPECT_EQ(0U, StatisticsRecorder::GetHistogramCount());
+  std::unique_ptr<GlobalHistogramAllocator> old_allocator =
+      GlobalHistogramAllocator::ReleaseForTesting();
+  GlobalHistogramAllocator::CreateWithLocalMemory(kAllocatorMemorySize, 0, "");
+  ASSERT_TRUE(GlobalHistogramAllocator::Get());
+
+  // Create a bunch of histograms, and call SnapshotDelta() on all of them so
+  // that their next SnapshotDelta() calls return an empty HistogramSamples.
+  LinearHistogram::FactoryGet("SRTLinearHistogram1", 1, 10, 10, 0);
+  HistogramBase* histogram2 =
+      LinearHistogram::FactoryGet("SRTLinearHistogram2", 1, 10, 10, 0);
+  histogram2->Add(3);
+  histogram2->SnapshotDelta();
+  HistogramBase* histogram3 =
+      LinearHistogram::FactoryGet("SRTLinearHistogram3", 1, 10, 10, 0);
+  histogram3->Add(1);
+  histogram3->Add(10);
+  histogram3->SnapshotDelta();
+  SparseHistogram::FactoryGet("SRTSparseHistogram1", 0);
+  HistogramBase* sparse_histogram2 =
+      SparseHistogram::FactoryGet("SRTSparseHistogram2", 0);
+  sparse_histogram2->Add(3);
+  sparse_histogram2->SnapshotDelta();
+  HistogramBase* sparse_histogram3 =
+      SparseHistogram::FactoryGet("SRTSparseHistogram3", 0);
+  sparse_histogram3->Add(1);
+  sparse_histogram3->Add(10);
+  sparse_histogram3->SnapshotDelta();
+
+  EXPECT_EQ(6U, StatisticsRecorder::GetHistogramCount());
+
+  // Destroy the local SR and ensure that we're back to the initial state and
+  // restore the global allocator. Histograms created in the local SR will
+  // become unmanaged.
+  std::unique_ptr<GlobalHistogramAllocator> new_allocator =
+      GlobalHistogramAllocator::ReleaseForTesting();
+  local_sr.reset();
+  EXPECT_EQ(global_sr_initial_histogram_count,
+            StatisticsRecorder::GetHistogramCount());
+  EXPECT_EQ(global_sr_initial_bucket_ranges_count,
+            StatisticsRecorder::GetBucketRanges().size());
+  GlobalHistogramAllocator::Set(std::move(old_allocator));
+
+  // Create a "recovery" allocator using the same memory as the local one.
+  PersistentHistogramAllocator recovery1(
+      std::make_unique<PersistentMemoryAllocator>(
+          const_cast<void*>(new_allocator->memory_allocator()->data()),
+          new_allocator->memory_allocator()->size(), 0, 0, "",
+          PersistentMemoryAllocator::kReadWrite));
+  PersistentHistogramAllocator::Iterator histogram_iter1(&recovery1);
+
+  // Get the histograms that were created locally (and forgotten) and attempt
+  // to merge them into the global SR. Since their delta are all empty, nothing
+  // should end up being registered with the SR.
+  while (true) {
+    std::unique_ptr<HistogramBase> recovered = histogram_iter1.GetNext();
+    if (!recovered) {
+      break;
+    }
+
+    recovery1.MergeHistogramDeltaToStatisticsRecorder(recovered.get());
+    HistogramBase* found =
+        StatisticsRecorder::FindHistogram(recovered->histogram_name());
+    EXPECT_FALSE(found);
+  }
+  EXPECT_EQ(global_sr_initial_histogram_count,
+            StatisticsRecorder::GetHistogramCount());
+
+  // Same as above, but with MergeHistogramFinalDeltaToStatisticsRecorder()
+  // instead of MergeHistogramDeltaToStatisticsRecorder().
+  PersistentHistogramAllocator recovery2(
+      std::make_unique<PersistentMemoryAllocator>(
+          const_cast<void*>(new_allocator->memory_allocator()->data()),
+          new_allocator->memory_allocator()->size(), 0, 0, "",
+          PersistentMemoryAllocator::kReadWrite));
+  PersistentHistogramAllocator::Iterator histogram_iter2(&recovery2);
+  while (true) {
+    std::unique_ptr<HistogramBase> recovered = histogram_iter2.GetNext();
+    if (!recovered) {
+      break;
+    }
+
+    recovery2.MergeHistogramFinalDeltaToStatisticsRecorder(recovered.get());
+    HistogramBase* found =
+        StatisticsRecorder::FindHistogram(recovered->histogram_name());
+    EXPECT_FALSE(found);
+  }
+  EXPECT_EQ(global_sr_initial_histogram_count,
+            StatisticsRecorder::GetHistogramCount());
+}
+
 TEST_F(PersistentHistogramAllocatorTest, MultipleSameSparseHistograms) {
   const std::string kSparseHistogramName = "SRTSparseHistogram";
 

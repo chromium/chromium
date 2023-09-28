@@ -307,6 +307,29 @@ TEST_P(HistogramTest, FinalDeltaTest) {
   EXPECT_EQ(samples->TotalCount(), samples->redundant_count());
 }
 
+// Check that IsDefinitelyEmpty() works with the results of SnapshotDelta().
+TEST_P(HistogramTest, IsDefinitelyEmpty_SnapshotDelta) {
+  HistogramBase* histogram = Histogram::FactoryGet("DeltaHistogram", 1, 64, 8,
+                                                   HistogramBase::kNoFlags);
+  // No samples initially.
+  EXPECT_TRUE(histogram->SnapshotDelta()->IsDefinitelyEmpty());
+
+  // Verify when |histogram| is using SingleSample.
+  histogram->Add(1);
+  EXPECT_FALSE(histogram->SnapshotDelta()->IsDefinitelyEmpty());
+  EXPECT_TRUE(histogram->SnapshotDelta()->IsDefinitelyEmpty());
+  histogram->Add(10);
+  histogram->Add(10);
+  EXPECT_FALSE(histogram->SnapshotDelta()->IsDefinitelyEmpty());
+  EXPECT_TRUE(histogram->SnapshotDelta()->IsDefinitelyEmpty());
+
+  // Verify when |histogram| uses a counts array instead of SingleSample.
+  histogram->Add(1);
+  histogram->Add(50);
+  EXPECT_FALSE(histogram->SnapshotDelta()->IsDefinitelyEmpty());
+  EXPECT_TRUE(histogram->SnapshotDelta()->IsDefinitelyEmpty());
+}
+
 TEST_P(HistogramTest, ExponentialRangesTest) {
   // Check that we got a nice exponential when there was enough room.
   BucketRanges ranges(9);

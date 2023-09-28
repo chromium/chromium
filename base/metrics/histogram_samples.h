@@ -165,6 +165,22 @@ class BASE_EXPORT HistogramSamples {
   // enforced by a DCHECK in the destructor).
   virtual std::unique_ptr<SampleCountIterator> ExtractingIterator() = 0;
 
+  // Returns true if |this| is empty (has no samples, has a |sum| of zero, and
+  // has a |redundant_count| of zero), which is indicative that the caller does
+  // not need to process |this|.
+  // - Note 1: This should only be called when |this| is only manipulated on one
+  // thread at a time (e.g., the underlying data does not change on another
+  // thread). If this is not the case, then the returned value cannot be trusted
+  // at all.
+  // - Note 2: For performance reasons, this is not guaranteed to return the
+  // correct value. If false is returned, |this| may or may not be empty.
+  // However, if true is returned, then |this| is guaranteed to be empty (no
+  // false positives). Of course, this assumes that "Note 1" is respected.
+  //  - Note 3: The base implementation of this method checks for |sum| and
+  // |redundant_count|, but the child implementations should also check for
+  // samples.
+  virtual bool IsDefinitelyEmpty() const;
+
   void Serialize(Pickle* pickle) const;
 
   // Returns ASCII representation of histograms data for histogram samples.

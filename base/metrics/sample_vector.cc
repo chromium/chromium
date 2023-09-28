@@ -462,6 +462,18 @@ SampleVector::SampleVector(uint64_t id, const BucketRanges* bucket_ranges)
 
 SampleVector::~SampleVector() = default;
 
+bool SampleVector::IsDefinitelyEmpty() const {
+  // If we are still using SingleSample, and it has a count of 0, then |this|
+  // has no samples. If we are not using SingleSample, always return false, even
+  // though it is possible that |this| has no samples (e.g. we are using a
+  // counts array and all the bucket counts are 0). If we are wrong, this will
+  // just make the caller perform some extra work thinking that |this| is
+  // non-empty.
+  AtomicSingleSample sample = single_sample();
+  return HistogramSamples::IsDefinitelyEmpty() && !sample.IsDisabled() &&
+         sample.Load().count == 0;
+}
+
 bool SampleVector::MountExistingCountsStorage() const {
   // There is never any existing storage other than what is already in use.
   return counts() != nullptr;
@@ -591,6 +603,15 @@ PersistentSampleVector::PersistentSampleVector(
 }
 
 PersistentSampleVector::~PersistentSampleVector() = default;
+
+bool PersistentSampleVector::IsDefinitelyEmpty() const {
+  // Not implemented.
+  NOTREACHED();
+
+  // Always return false. If we are wrong, this will just make the caller
+  // perform some extra work thinking that |this| is non-empty.
+  return false;
+}
 
 bool PersistentSampleVector::MountExistingCountsStorage() const {
   // There is no early exit if counts is not yet mounted because, given that
