@@ -188,7 +188,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 @property(nonatomic, strong) TableViewURLDragDropHandler* dragDropHandler;
 @end
 
-@implementation RecentTabsTableViewController : ChromeTableViewController
+@implementation RecentTabsTableViewController
 
 #pragma mark - Public Interface
 
