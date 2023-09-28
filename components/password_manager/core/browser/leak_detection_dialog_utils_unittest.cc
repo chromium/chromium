@@ -7,10 +7,8 @@
 #include "base/i18n/message_formatter.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/elide_url.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -135,13 +133,6 @@ struct BulkCheckParams {
 class CredentialLeakDialogUtilsTest
     : public testing::TestWithParam<LeakTypeParams> {
  public:
-  CredentialLeakDialogUtilsTest() {
-#if BUILDFLAG(IS_ANDROID)
-    feature_list_.InitAndEnableFeature(
-        features::kUnifiedPasswordManagerAndroid);
-#endif
-  }
-
   static std::vector<LeakTypeParams> GetTestCases() {
     std::vector<LeakTypeParams> test_cases;
     base::ranges::copy(kLeakTypesTestCases, std::back_inserter(test_cases));
@@ -156,9 +147,6 @@ class CredentialLeakDialogUtilsTest
                        std::back_inserter(test_cases));
     return test_cases;
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_P(CredentialLeakDialogUtilsTest, GetAcceptButtonLabel) {
@@ -241,13 +229,6 @@ INSTANTIATE_TEST_SUITE_P(
 class BulkCheckCredentialLeakDialogUtilsTest
     : public testing::TestWithParam<BulkCheckParams> {
  public:
-  BulkCheckCredentialLeakDialogUtilsTest() {
-#if BUILDFLAG(IS_ANDROID)
-    feature_list_.InitAndEnableFeature(
-        features::kUnifiedPasswordManagerAndroid);
-#endif
-  }
-
   static std::vector<BulkCheckParams> GetTestCases() {
     std::vector<BulkCheckParams> test_cases;
     base::ranges::copy(kBulkCheckTestCases, std::back_inserter(test_cases));
@@ -262,9 +243,6 @@ class BulkCheckCredentialLeakDialogUtilsTest
                        std::back_inserter(test_cases));
     return test_cases;
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_P(BulkCheckCredentialLeakDialogUtilsTest, ShouldCheckPasswords) {

@@ -137,21 +137,19 @@ void PasswordReuseManagerImpl::Init(PrefService* prefs,
   account_store_ = account_store;
   profile_store_ = profile_store;
 #if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kUnifiedPasswordManagerAndroid)) {
-    // With UPM enabled, calls to the password store will result in a call to
-    // Google Play Services which can be resource-intesive. In order not to slow
-    // down other startup operations requesting logins is delayed by
-    // `kPasswordStoreCallDelaySeconds`.
-    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&PasswordReuseManagerImpl::RequestLoginsFromStores,
-                       weak_ptr_factory_.GetWeakPtr()),
-        kPasswordStoreCallDelaySeconds);
-    return;
-  }
-#endif
+  // Calls to the password store result in a call to Google Play Services which
+  // can be resource-intesive. In order not to slow down other startup
+  // operations, requesting logins is delayed by
+  // `kPasswordStoreCallDelaySeconds`.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&PasswordReuseManagerImpl::RequestLoginsFromStores,
+                     weak_ptr_factory_.GetWeakPtr()),
+      kPasswordStoreCallDelaySeconds);
+  return;
+#else
   RequestLoginsFromStores();
+#endif
 }
 
 void PasswordReuseManagerImpl::ReportMetrics(
