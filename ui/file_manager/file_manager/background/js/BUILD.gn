@@ -43,7 +43,6 @@ js_type_check("closure_compile_jsmodules") {
     ":progress_center",
     ":runtime_loaded_test_util",
     ":test_util_base",
-    ":volume_info_list_impl",
     ":volume_manager_factory",
     ":volume_manager_impl",
     ":volume_manager_util",
@@ -177,7 +176,6 @@ js_library("file_operation_util") {
 js_library("mock_volume_manager") {
   visibility += related_apps
   deps = [
-    ":volume_info_list_impl",
     ":volume_manager_factory",
     ":volume_manager_impl",
     "//ash/webui/common/resources:assert",
@@ -244,17 +242,8 @@ js_library("test_util") {
   ]
 }
 
-js_library("volume_info_list_impl") {
-  deps = [
-    "//ui/file_manager/file_manager/common/js:array_data_model",
-    "//ui/file_manager/file_manager/externs:volume_info",
-    "//ui/file_manager/file_manager/externs:volume_info_list",
-  ]
-}
-
 js_library("volume_manager_impl") {
   deps = [
-    ":volume_info_list_impl",
     ":volume_manager_util",
     "//ash/webui/common/resources:assert",
     "//ash/webui/common/resources:cr_deprecated",
