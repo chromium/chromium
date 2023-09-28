@@ -400,11 +400,6 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosService {
   // Similar to GetInterfaceVersion(), but taking UUID
   int GetInterfaceVersionImpl(base::Token interface_uuid) const;
 
-  // BrowserService implementation injected by chrome/. Must only be used on the
-  // affine sequence.
-  // TODO(hidehiko): Remove this.
-  std::unique_ptr<crosapi::mojom::BrowserService> browser_service_;
-
   // Receiver and cache of system idle info updates.
   std::unique_ptr<SystemIdleCache> system_idle_cache_;
 
