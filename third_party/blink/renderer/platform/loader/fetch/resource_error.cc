@@ -318,9 +318,6 @@ String DescriptionForBlockedByClientOrResponse(
     case ResourceRequestBlockedReason::kConversionRequest:
       detail = "ConversionRequest";
       break;
-    case ResourceRequestBlockedReason::kSupervisedUserUrlBlocked:
-      detail = "SupervisedUserUrlBlocked";
-      break;
   }
   return WebString::FromASCII(net::ErrorToString(error) + "." + detail);
 }

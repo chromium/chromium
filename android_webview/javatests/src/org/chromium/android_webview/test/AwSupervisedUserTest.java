@@ -50,7 +50,7 @@ public class AwSupervisedUserTest {
     private static final String MATURE_SITE_PATH = "/mature.html";
     private static final String MATURE_SITE_IFRAME_TITLE = "IFrame mature site";
     private static final String MATURE_SITE_IFRAME_PATH = "/mature-inner.html";
-    private static final String BLOCKED_SITE_TITLE = "This website is blocked by your parent.";
+    private static final String BLOCKED_SITE_TITLE = "Webpage not available";
 
     private static String makeTestPage(String title, @Nullable String iFrameUrl) {
         return "<html>"

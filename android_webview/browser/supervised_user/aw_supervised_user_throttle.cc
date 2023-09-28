@@ -6,7 +6,6 @@
 
 #include "base/check_op.h"
 #include "services/network/public/cpp/resource_request.h"
-#include "third_party/blink/public/platform/resource_request_blocked_reason.h"
 
 namespace {
 
@@ -108,12 +107,7 @@ void AwSupervisedUserThrottle::OnShouldBlockUrlResult(bool shouldBlockUrl) {
     pending_checks_ = 0;
 
     DCHECK(delegate_);
-    delegate_->CancelWithExtendedError(
-        net::ERR_ACCESS_DENIED,
-        static_cast<int>(
-            blink::ResourceRequestBlockedReason::kSupervisedUserUrlBlocked),
-        kCancelReason);
-
+    delegate_->CancelWithError(net::ERR_ACCESS_DENIED, kCancelReason);
   } else {
     if (pending_checks_ == 0 && deferred_) {
       deferred_ = false;
