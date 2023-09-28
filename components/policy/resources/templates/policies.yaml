@@ -1163,6 +1163,7 @@ policies:
   1162: DeviceEphemeralNetworkPoliciesEnabled
   1163: PPAPISharedImagesForVideoDecoderAllowed
   1164: ProfileReauthPrompt
+  1165: RelatedWebsiteSetsEnabled
 atomic_groups:
   1: Homepage
   2: RemoteAccess

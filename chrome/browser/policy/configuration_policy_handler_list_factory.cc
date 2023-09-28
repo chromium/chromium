@@ -1923,9 +1923,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     ash::prefs::kLoginScreenWebUILazyLoading,
     base::Value::Type::BOOLEAN },
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  { key::kFirstPartySetsEnabled,
-      prefs::kPrivacySandboxRelatedWebsiteSetsEnabled,
-    base::Value::Type::BOOLEAN},
   { key::kWebSQLAccess,
     storage::kWebSQLAccess,
     base::Value::Type::BOOLEAN },
@@ -2040,8 +2037,9 @@ void GetExtensionAllowedTypesMap(
 // Future policies are not supported on Stable and Beta by default.
 bool AreFuturePoliciesEnabledByDefault() {
   // Enable future policies for branded browser tests.
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kTestType))
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kTestType)) {
     return true;
+  }
   version_info::Channel channel = chrome::GetChannel();
   return channel != version_info::Channel::STABLE &&
          channel != version_info::Channel::BETA;
@@ -2054,8 +2052,9 @@ void PopulatePolicyHandlerParameters(PolicyHandlerParameters* parameters) {
   if (user_manager::UserManager::IsInitialized()) {
     const user_manager::User* user =
         user_manager::UserManager::Get()->GetActiveUser();
-    if (user)
+    if (user) {
       parameters->user_id_hash = user->username_hash();
+    }
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
@@ -2824,6 +2823,16 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
           key::kDataControlsRules, data_controls::kDataControlsRulesPref,
           chrome_schema));
 #endif  // BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
+
+  handlers->AddHandler(std::make_unique<SimpleDeprecatingPolicyHandler>(
+      std::make_unique<SimplePolicyHandler>(
+          key::kFirstPartySetsEnabled,  // Legacy Policy
+          prefs::kPrivacySandboxRelatedWebsiteSetsEnabled,
+          base::Value::Type::BOOLEAN),
+      std::make_unique<SimplePolicyHandler>(
+          key::kRelatedWebsiteSetsEnabled,  // New Policy
+          prefs::kPrivacySandboxRelatedWebsiteSetsEnabled,
+          base::Value::Type::BOOLEAN)));
 
   return handlers;
 }
