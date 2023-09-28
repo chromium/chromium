@@ -971,10 +971,19 @@ void Dispatcher::RegisterNativeHandlers(
   module_system->RegisterNativeHandler(
       "runtime",
       std::unique_ptr<NativeHandler>(new RuntimeCustomBindings(context)));
+
+  scoped_refptr<base::SingleThreadTaskRunner> io_task_runner = nullptr;
+  // RenderThread::Get() returns nullptr from some tests.
+  if (context->IsForServiceWorker() && RenderThread::Get()) {
+    io_task_runner = RenderThread::Get()->GetIOTaskRunner();
+  } else if (context->web_frame()) {
+    io_task_runner =
+        context->web_frame()->GetTaskRunner(blink::TaskType::kInternalDefault);
+  }
   module_system->RegisterNativeHandler(
-      "automationInternal",
-      std::make_unique<AutomationInternalCustomBindings>(
-          context, bindings_system, content::WorkerThread::GetCurrentId()));
+      "automationInternal", std::make_unique<AutomationInternalCustomBindings>(
+                                context, bindings_system, io_task_runner,
+                                content::WorkerThread::GetCurrentId()));
 }
 
 bool Dispatcher::OnControlMessageReceived(const IPC::Message& message) {

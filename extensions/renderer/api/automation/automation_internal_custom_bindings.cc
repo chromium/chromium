@@ -48,12 +48,14 @@ namespace extensions {
 AutomationInternalCustomBindings::AutomationInternalCustomBindings(
     ScriptContext* context,
     NativeExtensionBindingsSystem* bindings_system,
+    scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
     int worker_thread_id)
     : ObjectBackedNativeHandler(context),
       bindings_system_(bindings_system),
       should_ignore_context_(false),
       automation_v8_bindings_(
           std::make_unique<ui::AutomationV8Bindings>(this, this)),
+      io_task_runner_(io_task_runner),
       worker_thread_id_(worker_thread_id) {
   // We will ignore this instance if the extension has a background page and
   // this context is not that background page. In all other cases, we will have
@@ -241,9 +243,7 @@ std::string AutomationInternalCustomBindings::GetEventTypeString(
 }
 
 void AutomationInternalCustomBindings::NotifyTreeEventListenersChanged() {
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner =
-      context()->web_frame()->GetTaskRunner(blink::TaskType::kInternalDefault);
-  task_runner->PostTask(
+  io_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&AutomationInternalCustomBindings::
                          MaybeSendOnAllAutomationEventListenersRemoved,
