@@ -323,3 +323,21 @@ declare_args() {
 }
 assert(!enable_pkeys || (is_linux && target_cpu == "x64"),
        "Pkeys are only supported on x64 linux")
+
+# Some implementations of raw_ptr<>, like BackupRefPtr, require zeroing when
+# constructing, destructing or moving out of a pointer. Some don't, like
+# NoOpImpl. Setting these to true, triggers zeroing even for implementations
+# that don't require it. This is the recommended setting.
+# Caveat: _zero_on_move and _on_destruct will prevent the type from being
+# trivially copyable, _zero_on_construct and _on_destruct will prevent the
+# type from being trivially default constructible.
+#
+# Setting to false will make raw_ptr<> behave more like raw C++ pointer `T*`,
+# making NoOpImpl act like an actual no-op, so use it if you're worried about
+# performance of your project. Use at your own risk, as it's unsupported and
+# untested within Chromium.
+declare_args() {
+  raw_ptr_zero_on_construct = raw_ptr_zero_on_construct_default
+  raw_ptr_zero_on_move = raw_ptr_zero_on_move_default
+  raw_ptr_zero_on_destruct = raw_ptr_zero_on_destruct_default
+}

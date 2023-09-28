@@ -50,7 +50,7 @@ PA_COMPONENT_EXPORT(RAW_PTR) void ResetRawPtrHooks();
 template <bool EnableHooks>
 struct RawPtrHookableImpl {
   // Since this Impl is used for BRP-ASan, match BRP as closely as possible.
-  static constexpr bool kMustZeroOnInit = true;
+  static constexpr bool kMustZeroOnConstruct = true;
   static constexpr bool kMustZeroOnMove = true;
   static constexpr bool kMustZeroOnDestruct = true;
 

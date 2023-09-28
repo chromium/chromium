@@ -71,7 +71,7 @@ struct RawPtrBackupRefImpl {
   // the first two, kMustZeroOnDestruct wouldn't be needed if raw_ptr was used
   // correctly, but we already caught cases where a value is written after
   // destruction.
-  static constexpr bool kMustZeroOnInit = true;
+  static constexpr bool kMustZeroOnConstruct = true;
   static constexpr bool kMustZeroOnMove = true;
   static constexpr bool kMustZeroOnDestruct = true;
 

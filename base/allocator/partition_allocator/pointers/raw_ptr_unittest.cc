@@ -62,8 +62,9 @@ static_assert(sizeof(raw_ptr<int>) == sizeof(int*),
 static_assert(sizeof(raw_ptr<std::string>) == sizeof(std::string*),
               "raw_ptr shouldn't add memory overhead");
 
-#if !BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) && \
-    !BUILDFLAG(USE_ASAN_UNOWNED_PTR) && !BUILDFLAG(USE_HOOKABLE_RAW_PTR)
+#if !BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) &&                            \
+    !BUILDFLAG(USE_ASAN_UNOWNED_PTR) && !BUILDFLAG(USE_HOOKABLE_RAW_PTR) && \
+    !BUILDFLAG(RAW_PTR_ZERO_ON_MOVE) && !BUILDFLAG(RAW_PTR_ZERO_ON_DESTRUCT)
 // |is_trivially_copyable| assertion means that arrays/vectors of raw_ptr can
 // be copied by memcpy.
 static_assert(std::is_trivially_copyable<raw_ptr<void>>::value,
@@ -72,7 +73,16 @@ static_assert(std::is_trivially_copyable<raw_ptr<int>>::value,
               "raw_ptr should be trivially copyable");
 static_assert(std::is_trivially_copyable<raw_ptr<std::string>>::value,
               "raw_ptr should be trivially copyable");
+#endif  // !BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) &&
+        // !BUILDFLAG(USE_ASAN_UNOWNED_PTR) &&
+        // !BUILDFLAG(USE_HOOKABLE_RAW_PTR) &&
+        // !BUILDFLAG(RAW_PTR_ZERO_ON_MOVE) &&
+        // !BUILDFLAG(RAW_PTR_ZERO_ON_DESTRUCT)
 
+#if !BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) &&                            \
+    !BUILDFLAG(USE_ASAN_UNOWNED_PTR) && !BUILDFLAG(USE_HOOKABLE_RAW_PTR) && \
+    !BUILDFLAG(RAW_PTR_ZERO_ON_CONSTRUCT) &&                                \
+    !BUILDFLAG(RAW_PTR_ZERO_ON_DESTRUCT)
 // |is_trivially_default_constructible| assertion helps retain implicit default
 // constructors when raw_ptr is used as a union field.  Example of an error
 // if this assertion didn't hold:
@@ -93,7 +103,10 @@ static_assert(
     std::is_trivially_default_constructible<raw_ptr<std::string>>::value,
     "raw_ptr should be trivially default constructible");
 #endif  // !BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) &&
-        // !BUILDFLAG(USE_ASAN_UNOWNED_PTR) && !BUILDFLAG(USE_HOOKABLE_RAW_PTR)
+        // !BUILDFLAG(USE_ASAN_UNOWNED_PTR) &&
+        // !BUILDFLAG(USE_HOOKABLE_RAW_PTR) &&
+        // !BUILDFLAG(RAW_PTR_ZERO_ON_CONSTRUCT) &&
+        // !BUILDFLAG(RAW_PTR_ZERO_ON_DESTRUCT)
 
 // Verify that raw_ptr is a literal type, and its entire interface is constexpr.
 //
@@ -1318,8 +1331,9 @@ TEST_F(RawPtrTest, TrivialRelocability) {
     }
     number_of_capacity_changes++;
   } while (number_of_capacity_changes < 10);
-#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) || \
-    BUILDFLAG(USE_ASAN_UNOWNED_PTR) || BUILDFLAG(USE_HOOKABLE_RAW_PTR)
+#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) ||                           \
+    BUILDFLAG(USE_ASAN_UNOWNED_PTR) || BUILDFLAG(USE_HOOKABLE_RAW_PTR) || \
+    BUILDFLAG(RAW_PTR_ZERO_ON_DESTRUCT)
   // TODO(lukasza): In the future (once C++ language and std library
   // support custom trivially relocatable objects) this #if branch can
   // be removed (keeping only the right long-term expectation from the
@@ -1328,15 +1342,16 @@ TEST_F(RawPtrTest, TrivialRelocability) {
 #else
   // This is the right long-term expectation.
   //
-  // (This EXPECT_EQ assertion is slightly misleading in
-  // !USE_BACKUP_REF_PTR mode, because RawPtrNoOpImpl has a default
-  // destructor that doesn't go through
-  // RawPtrCountingImpl::ReleaseWrappedPtr.  Nevertheless, the spirit of
-  // the EXPECT_EQ is correct + the assertion should be true in the
+  // (This EXPECT_EQ assertion is slightly misleading when NoOpImpl is used,
+  // because, unless zeroing is requested, it forces raw_ptr<> to use a default
+  // destructor that doesn't go through RawPtrCountingImpl::ReleaseWrappedPtr,
+  // so we can't really depend on `g_release_wrapped_ptr_cnt`. Nevertheless, the
+  // spirit of the EXPECT_EQ is correct + the assertion should be true in the
   // long-term.)
   EXPECT_EQ(0, RawPtrCountingImpl::release_wrapped_ptr_cnt);
 #endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) ||
-        // BUILDFLAG(USE_ASAN_UNOWNED_PTR)
+        // BUILDFLAG(USE_ASAN_UNOWNED_PTR) ||
+        // BUILDFLAG(RAW_PTR_ZERO_ON_DESTRUCT)
 
   // Basic smoke test that raw_ptr elements in a vector work okay.
   for (const auto& elem : vector) {
@@ -1349,22 +1364,22 @@ TEST_F(RawPtrTest, TrivialRelocability) {
   RawPtrCountingImpl::ClearCounters();
   size_t number_of_cleared_elements = vector.size();
   vector.clear();
-#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) || \
-    BUILDFLAG(USE_ASAN_UNOWNED_PTR) || BUILDFLAG(USE_HOOKABLE_RAW_PTR)
-
+#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) ||                           \
+    BUILDFLAG(USE_ASAN_UNOWNED_PTR) || BUILDFLAG(USE_HOOKABLE_RAW_PTR) || \
+    BUILDFLAG(RAW_PTR_ZERO_ON_DESTRUCT)
   EXPECT_EQ((int)number_of_cleared_elements,
             RawPtrCountingImpl::release_wrapped_ptr_cnt);
 #else
-  // TODO(lukasza): !USE_BACKUP_REF_PTR / RawPtrNoOpImpl has a default
-  // destructor that doesn't go through
-  // RawPtrCountingImpl::ReleaseWrappedPtr.  So we can't really depend
-  // on `g_release_wrapped_ptr_cnt`.  This #else branch should be
-  // deleted once USE_BACKUP_REF_PTR is removed (e.g. once BackupRefPtr
-  // ships to the Stable channel).
+  // TODO(lukasza): NoOpImpl has a default destructor that, unless zeroing is
+  // requested, doesn't go through RawPtrCountingImpl::ReleaseWrappedPtr.  So we
+  // can't really depend on `g_release_wrapped_ptr_cnt`.  This #else branch
+  // should be deleted once USE_BACKUP_REF_PTR is removed (e.g. once
+  // BackupRefPtr ships to the Stable channel).
   EXPECT_EQ(0, RawPtrCountingImpl::release_wrapped_ptr_cnt);
   std::ignore = number_of_cleared_elements;
 #endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) ||
-        // BUILDFLAG(USE_ASAN_UNOWNED_PTR)
+        // BUILDFLAG(USE_ASAN_UNOWNED_PTR) ||
+        // BUILDFLAG(RAW_PTR_ZERO_ON_DESTRUCT)
 }
 
 struct BaseStruct {

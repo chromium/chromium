@@ -83,3 +83,7 @@ enable_backup_ref_ptr_slow_checks_default = false
 enable_dangling_raw_ptr_checks_default =
     enable_backup_ref_ptr_support_default && is_linux && !is_official_build &&
     (is_debug || dcheck_always_on)
+
+raw_ptr_zero_on_construct_default = true
+raw_ptr_zero_on_move_default = true
+raw_ptr_zero_on_destruct_default = false

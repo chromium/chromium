@@ -26,7 +26,7 @@ struct RawPtrCountingImplWrapperForTest
 
   using SuperImpl = typename raw_ptr_traits::ImplForTraits<Traits>;
 
-  static constexpr bool kMustZeroOnInit = SuperImpl::kMustZeroOnInit;
+  static constexpr bool kMustZeroOnConstruct = SuperImpl::kMustZeroOnConstruct;
   static constexpr bool kMustZeroOnMove = SuperImpl::kMustZeroOnMove;
   static constexpr bool kMustZeroOnDestruct = SuperImpl::kMustZeroOnDestruct;
 

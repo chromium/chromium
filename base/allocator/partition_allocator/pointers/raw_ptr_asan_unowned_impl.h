@@ -27,7 +27,7 @@ template <bool IsAdjustablePtr, bool MayDangle>
 struct RawPtrAsanUnownedImpl {
   // The first two are needed for correctness. The last one isn't technically a
   // must, but better to set it.
-  static constexpr bool kMustZeroOnInit = true;
+  static constexpr bool kMustZeroOnConstruct = true;
   static constexpr bool kMustZeroOnMove = true;
   static constexpr bool kMustZeroOnDestruct = true;
 

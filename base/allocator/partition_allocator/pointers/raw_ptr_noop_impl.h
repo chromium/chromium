@@ -13,7 +13,7 @@
 namespace base::internal {
 
 struct RawPtrNoOpImpl {
-  static constexpr bool kMustZeroOnInit = false;
+  static constexpr bool kMustZeroOnConstruct = false;
   static constexpr bool kMustZeroOnMove = false;
   static constexpr bool kMustZeroOnDestruct = false;
 

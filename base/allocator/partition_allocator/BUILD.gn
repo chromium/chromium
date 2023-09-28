@@ -732,6 +732,16 @@ buildflag_header("partition_alloc_buildflags") {
   ]
 }
 
+buildflag_header("raw_ptr_buildflags") {
+  header = "raw_ptr_buildflags.h"
+
+  flags = [
+    "RAW_PTR_ZERO_ON_CONSTRUCT=$raw_ptr_zero_on_construct",
+    "RAW_PTR_ZERO_ON_MOVE=$raw_ptr_zero_on_move",
+    "RAW_PTR_ZERO_ON_DESTRUCT=$raw_ptr_zero_on_destruct",
+  ]
+}
+
 buildflag_header("chromecast_buildflags") {
   header = "chromecast_buildflags.h"
 
@@ -769,6 +779,7 @@ group("buildflags") {
     ":chromeos_buildflags",
     ":debugging_buildflags",
     ":partition_alloc_buildflags",
+    ":raw_ptr_buildflags",
   ]
 }
 # TODO(crbug.com/1151236): After making partition_alloc a standalone library,

@@ -21,6 +21,7 @@
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_forward.h"
 #include "base/allocator/partition_allocator/pointers/raw_ptr_exclusion.h"
+#include "base/allocator/partition_allocator/raw_ptr_buildflags.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 
@@ -309,39 +310,40 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
   static_assert(raw_ptr_traits::IsSupportedType<T>::value,
                 "raw_ptr<T> doesn't work with this kind of pointee type T");
 
-  // TODO(bartekn): Turn on zeroing as much as possible, to reduce
-  // pointer-related UBs. In the current implementation we do it only when the
-  // underlying implementation needs it for correctness, for performance
-  // reasons. There are two scenarios where it's important:
-  // 1. When rewriting renderer, we don't want extra overhead to get in the way
-  //    of our perf evaluation.
-  // 2. The same applies to rewriting 3rd party libraries, but also we want
-  //    RawPtrNoOpImpl to be a true no-op, in case the library is linked with
-  //    a product other than Chromium (this can be mitigated using
-  //    `build_with_chromium` GN variable).
-  static constexpr bool kZeroOnInit = Impl::kMustZeroOnInit;
-  static constexpr bool kZeroOnMove = Impl::kMustZeroOnMove;
-  static constexpr bool kZeroOnDestruct = Impl::kMustZeroOnDestruct;
+  static constexpr bool kZeroOnConstruct =
+      Impl::kMustZeroOnConstruct || BUILDFLAG(RAW_PTR_ZERO_ON_CONSTRUCT);
+  static constexpr bool kZeroOnMove =
+      Impl::kMustZeroOnMove || BUILDFLAG(RAW_PTR_ZERO_ON_MOVE);
+  static constexpr bool kZeroOnDestruct =
+      Impl::kMustZeroOnDestruct || BUILDFLAG(RAW_PTR_ZERO_ON_DESTRUCT);
 
-#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) || \
-    BUILDFLAG(USE_ASAN_UNOWNED_PTR) || BUILDFLAG(USE_HOOKABLE_RAW_PTR)
-  // BackupRefPtr requires a non-trivial default constructor, destructor, etc.
+// A non-trivial default ctor is required for complex implementations (e.g.
+// BackupRefPtr), or even for NoOpImpl when zeroing is requested.
+#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) ||                           \
+    BUILDFLAG(USE_ASAN_UNOWNED_PTR) || BUILDFLAG(USE_HOOKABLE_RAW_PTR) || \
+    BUILDFLAG(RAW_PTR_ZERO_ON_CONSTRUCT)
   PA_ALWAYS_INLINE constexpr raw_ptr() noexcept {
-    if constexpr (kZeroOnInit) {
+    if constexpr (kZeroOnConstruct) {
       wrapped_ptr_ = nullptr;
     }
   }
+#else
+  // raw_ptr can be trivially default constructed (leaving |wrapped_ptr_|
+  // uninitialized).
+  PA_ALWAYS_INLINE constexpr raw_ptr() noexcept = default;
+  static_assert(!kZeroOnConstruct);
+#endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) ||
+        // BUILDFLAG(USE_ASAN_UNOWNED_PTR) || BUILDFLAG(USE_HOOKABLE_RAW_PTR) ||
+        // BUILDFLAG(RAW_PTR_ZERO_ON_CONSTRUCT)
 
+// A non-trivial copy ctor and assignment operator are required for complex
+// implementations (e.g. BackupRefPtr). Unlike the blocks around, we don't need
+// these for NoOpImpl even when zeroing is requested; better to keep them
+// trivial.
+#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) || \
+    BUILDFLAG(USE_ASAN_UNOWNED_PTR) || BUILDFLAG(USE_HOOKABLE_RAW_PTR)
   PA_ALWAYS_INLINE constexpr raw_ptr(const raw_ptr& p) noexcept
       : wrapped_ptr_(Impl::Duplicate(p.wrapped_ptr_)) {}
-
-  PA_ALWAYS_INLINE constexpr raw_ptr(raw_ptr&& p) noexcept {
-    wrapped_ptr_ = p.wrapped_ptr_;
-    if constexpr (kZeroOnMove) {
-      p.wrapped_ptr_ = nullptr;
-    }
-  }
-
   PA_ALWAYS_INLINE constexpr raw_ptr& operator=(const raw_ptr& p) noexcept {
     // Duplicate before releasing, in case the pointer is assigned to itself.
     //
@@ -355,7 +357,24 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
     wrapped_ptr_ = new_ptr;
     return *this;
   }
+#else
+  PA_ALWAYS_INLINE raw_ptr(const raw_ptr&) noexcept = default;
+  PA_ALWAYS_INLINE raw_ptr& operator=(const raw_ptr&) noexcept = default;
+#endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) ||
+        // BUILDFLAG(USE_ASAN_UNOWNED_PTR) || BUILDFLAG(USE_HOOKABLE_RAW_PTR)
 
+// A non-trivial move ctor and assignment operator are required for complex
+// implementations (e.g. BackupRefPtr), or even for NoOpImpl when zeroing is
+// requested.
+#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) ||                           \
+    BUILDFLAG(USE_ASAN_UNOWNED_PTR) || BUILDFLAG(USE_HOOKABLE_RAW_PTR) || \
+    BUILDFLAG(RAW_PTR_ZERO_ON_MOVE)
+  PA_ALWAYS_INLINE constexpr raw_ptr(raw_ptr&& p) noexcept {
+    wrapped_ptr_ = p.wrapped_ptr_;
+    if constexpr (kZeroOnMove) {
+      p.wrapped_ptr_ = nullptr;
+    }
+  }
   PA_ALWAYS_INLINE constexpr raw_ptr& operator=(raw_ptr&& p) noexcept {
     // Unlike the the copy version of this operator, this branch is necessary
     // for correctness.
@@ -368,7 +387,19 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
     }
     return *this;
   }
+#else
+  PA_ALWAYS_INLINE raw_ptr(raw_ptr&&) noexcept = default;
+  PA_ALWAYS_INLINE raw_ptr& operator=(raw_ptr&&) noexcept = default;
+  static_assert(!kZeroOnMove);
+#endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) ||
+        // BUILDFLAG(USE_ASAN_UNOWNED_PTR) || BUILDFLAG(USE_HOOKABLE_RAW_PTR) ||
+        // BUILDFLAG(RAW_PTR_ZERO_ON_MOVE)
 
+// A non-trivial default dtor is required for complex implementations (e.g.
+// BackupRefPtr), or even for NoOpImpl when zeroing is requested.
+#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) ||                           \
+    BUILDFLAG(USE_ASAN_UNOWNED_PTR) || BUILDFLAG(USE_HOOKABLE_RAW_PTR) || \
+    BUILDFLAG(RAW_PTR_ZERO_ON_DESTRUCT)
   PA_ALWAYS_INLINE PA_CONSTEXPR_DTOR ~raw_ptr() noexcept {
     Impl::ReleaseWrappedPtr(wrapped_ptr_);
     // Work around external issues where raw_ptr is used after destruction.
@@ -376,33 +407,12 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
       wrapped_ptr_ = nullptr;
     }
   }
-
-#else   // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) ||
-        // BUILDFLAG(USE_ASAN_UNOWNED_PTR) || BUILDFLAG(USE_HOOKABLE_RAW_PTR)
-
-  // raw_ptr can be trivially default constructed (leaving |wrapped_ptr_|
-  // uninitialized).
-  PA_ALWAYS_INLINE constexpr raw_ptr() noexcept = default;
-
-  // In addition to nullptr_t ctor above, raw_ptr needs to have these
-  // as |=default| or |constexpr| to avoid hitting -Wglobal-constructors in
-  // cases like this:
-  //     struct SomeStruct { int int_field; raw_ptr<int> ptr_field; };
-  //     SomeStruct g_global_var = { 123, nullptr };
-  PA_ALWAYS_INLINE raw_ptr(const raw_ptr&) noexcept = default;
-  PA_ALWAYS_INLINE raw_ptr(raw_ptr&&) noexcept = default;
-  PA_ALWAYS_INLINE raw_ptr& operator=(const raw_ptr&) noexcept = default;
-  PA_ALWAYS_INLINE raw_ptr& operator=(raw_ptr&&) noexcept = default;
-
+#else
   PA_ALWAYS_INLINE ~raw_ptr() noexcept = default;
-
-  // With default constructor, destructor and move operations, we don't have an
-  // opportunity to zero the underlying pointer, so ensure this isn't expected.
-  static_assert(!kZeroOnInit);
-  static_assert(!kZeroOnMove);
   static_assert(!kZeroOnDestruct);
 #endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) ||
-        // BUILDFLAG(USE_ASAN_UNOWNED_PTR) || BUILDFLAG(USE_HOOKABLE_RAW_PTR)
+        // BUILDFLAG(USE_ASAN_UNOWNED_PTR) || BUILDFLAG(USE_HOOKABLE_RAW_PTR) ||
+        // BUILDFLAG(RAW_PTR_ZERO_ON_DESTRUCT)
 
   // Cross-kind copy constructor.
   // Move is not supported as different traits may use different ref-counts, so
@@ -444,8 +454,9 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
   }
 
   // Deliberately implicit, because raw_ptr is supposed to resemble raw ptr.
-  // Ignore kZeroOnInit, because here the caller explicitly wishes to initialize
-  // with nullptr. NOLINTNEXTLINE(google-explicit-constructor)
+  // Ignore kZeroOnConstruct, because here the caller explicitly wishes to
+  // initialize with nullptr.
+  // NOLINTNEXTLINE(google-explicit-constructor)
   PA_ALWAYS_INLINE constexpr raw_ptr(std::nullptr_t) noexcept
       : wrapped_ptr_(nullptr) {}
 
