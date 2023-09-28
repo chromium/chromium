@@ -132,7 +132,8 @@ void DeviceTrustTestEnvironmentWin::ClearExistingKey() {
 
 std::vector<uint8_t> DeviceTrustTestEnvironmentWin::GetWrappedKey() {
   std::vector<uint8_t> wrapped_key;
-  auto loaded_key_pair = key_persistence_delegate_->LoadKeyPair();
+  auto loaded_key_pair = key_persistence_delegate_->LoadKeyPair(
+      KeyStorageType::kPermanent, nullptr);
   if (loaded_key_pair) {
     auto* key_pointer = loaded_key_pair->key();
     if (key_pointer) {

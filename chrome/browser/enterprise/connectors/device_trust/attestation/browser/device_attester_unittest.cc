@@ -39,7 +39,7 @@ class DeviceAttesterTest : public testing::Test {
     fake_dm_token_storage_.SetClientId(kFakeDeviceId);
     test_key_pair_ =
         persistence_delegate_factory_.CreateKeyPersistenceDelegate()
-            ->LoadKeyPair();
+            ->LoadKeyPair(KeyStorageType::kPermanent, nullptr);
     levels_.insert(DTCPolicyLevel::kBrowser);
   }
 

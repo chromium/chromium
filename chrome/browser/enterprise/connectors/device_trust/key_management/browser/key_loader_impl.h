@@ -13,6 +13,7 @@
 #include "base/sequence_checker.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/key_loader.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/signing_key_pair.h"
+#include "chrome/browser/enterprise/connectors/device_trust/key_management/core/signing_key_util.h"
 
 namespace policy {
 class BrowserDMTokenStorage;
@@ -34,9 +35,8 @@ class KeyLoaderImpl : public KeyLoader {
   void LoadKey(LoadKeyCallback callback) override;
 
  private:
-  // Performs the key synchronization on the `key_pair`.
-  void SynchronizePublicKey(LoadKeyCallback callback,
-                            scoped_refptr<SigningKeyPair> key_pair);
+  // Performs the key synchronization on the `persisted_key`.
+  void SynchronizePublicKey(LoadKeyCallback callback, LoadedKey persisted_key);
 
   // Uses the `upload_request` to upload the `key_pair` to the DM Server.
   void OnKeyUploadRequestCreated(

@@ -63,12 +63,15 @@ ScopedKeyPersistenceDelegateFactory::
 
   auto mocked_delegate = std::make_unique<MockKeyPersistenceDelegate>();
   ON_CALL(*mocked_delegate.get(), LoadKeyPair)
-      .WillByDefault(testing::DoAll(
-          testing::Invoke([&side_effect]() { side_effect.Run(); }),
-          testing::Invoke([]() {
+      .WillByDefault(testing::Invoke(
+          [&side_effect](KeyStorageType type, LoadPersistedKeyResult* result) {
+            side_effect.Run();
+            if (result) {
+              *result = LoadPersistedKeyResult::kSuccess;
+            }
             return base::MakeRefCounted<SigningKeyPair>(
                 GenerateHardwareSigningKey(), BPKUR::CHROME_BROWSER_HW_KEY);
-          })));
+          }));
   ON_CALL(*mocked_delegate.get(), CreateKeyPair)
       .WillByDefault(testing::Invoke([]() {
         return base::MakeRefCounted<SigningKeyPair>(
@@ -85,7 +88,11 @@ ScopedKeyPersistenceDelegateFactory::CreateMockedECDelegate() {
 
   auto mocked_delegate = std::make_unique<MockKeyPersistenceDelegate>();
   ON_CALL(*mocked_delegate.get(), LoadKeyPair)
-      .WillByDefault(testing::Invoke([]() {
+      .WillByDefault(testing::Invoke([](KeyStorageType type,
+                                        LoadPersistedKeyResult* result) {
+        if (result) {
+          *result = LoadPersistedKeyResult::kSuccess;
+        }
         return base::MakeRefCounted<SigningKeyPair>(
             GenerateECSigningKey(), BPKUR::CHROME_BROWSER_OS_KEY);
       }));
@@ -143,10 +150,12 @@ bool ScopedInMemoryKeyPersistenceDelegateFactory::StoreKeyPair(
 }
 
 scoped_refptr<SigningKeyPair>
-ScopedInMemoryKeyPersistenceDelegateFactory::LoadKeyPair(KeyStorageType type) {
+ScopedInMemoryKeyPersistenceDelegateFactory::LoadKeyPair(
+    KeyStorageType type,
+    LoadPersistedKeyResult* result) {
   auto it = key_map_.find(type);
   if (it == key_map_.end()) {
-    return nullptr;
+    return ReturnLoadKeyError(LoadPersistedKeyResult::kNotFound, result);
   }
 
   const std::vector<uint8_t>& wrapped_key = it->second.second;
@@ -154,9 +163,12 @@ ScopedInMemoryKeyPersistenceDelegateFactory::LoadKeyPair(KeyStorageType type) {
   auto signing_key = provider->FromWrappedSigningKeySlowly(wrapped_key);
 
   if (!signing_key) {
-    return nullptr;
+    return ReturnLoadKeyError(LoadPersistedKeyResult::kMalformedKey, result);
   }
 
+  if (result) {
+    *result = LoadPersistedKeyResult::kSuccess;
+  }
   KeyTrustLevel trust_level = it->second.first;
   return base::MakeRefCounted<SigningKeyPair>(std::move(signing_key),
                                               trust_level);
@@ -197,8 +209,9 @@ bool KeyPersistenceDelegateStub::StoreKeyPair(KeyTrustLevel trust_level,
 }
 
 scoped_refptr<SigningKeyPair> KeyPersistenceDelegateStub::LoadKeyPair(
-    KeyStorageType type) {
-  return delegate_->LoadKeyPair(type);
+    KeyStorageType type,
+    LoadPersistedKeyResult* result) {
+  return delegate_->LoadKeyPair(type, result);
 }
 
 scoped_refptr<SigningKeyPair> KeyPersistenceDelegateStub::CreateKeyPair() {

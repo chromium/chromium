@@ -21,10 +21,8 @@ DeviceTrustTestEnvironment::DeviceTrustTestEnvironment(
 DeviceTrustTestEnvironment::~DeviceTrustTestEnvironment() = default;
 
 bool DeviceTrustTestEnvironment::KeyExists() {
-  if (key_persistence_delegate_->LoadKeyPair()) {
-    return true;
-  }
-  return false;
+  return (bool)key_persistence_delegate_->LoadKeyPair(
+      KeyStorageType::kPermanent, nullptr);
 }
 
 void DeviceTrustTestEnvironment::SetUploadResult(

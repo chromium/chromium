@@ -97,8 +97,17 @@ class KeyLoaderTest : public testing::Test {
   void SetPersistedKey(bool has_key = true) {
     auto mock_persistence_delegate =
         std::make_unique<StrictMock<MockKeyPersistenceDelegate>>();
-    EXPECT_CALL(*mock_persistence_delegate, LoadKeyPair(_))
-        .WillOnce(Return(has_key ? test_key_pair_ : nullptr));
+    EXPECT_CALL(*mock_persistence_delegate,
+                LoadKeyPair(KeyStorageType::kPermanent, _))
+        .WillOnce(Invoke([this, has_key](KeyStorageType key_type,
+                                         LoadPersistedKeyResult* result) {
+          if (has_key) {
+            *result = LoadPersistedKeyResult::kSuccess;
+            return test_key_pair_;
+          }
+          *result = LoadPersistedKeyResult::kNotFound;
+          return scoped_refptr<SigningKeyPair>(nullptr);
+        }));
     persistence_delegate_factory_.set_next_instance(
         std::move(mock_persistence_delegate));
   }
@@ -115,12 +124,14 @@ class KeyLoaderTest : public testing::Test {
             }));
   }
 
-  void RunAndValidateLoadKey(DTCLoadKeyResult result) {
+  void RunAndValidateLoadKey(DTCLoadKeyResult expected_result) {
     base::test::TestFuture<DTCLoadKeyResult> future;
     loader_->LoadKey(future.GetCallback());
 
-    EXPECT_EQ(future.Get().key_pair, result.key_pair);
-    EXPECT_EQ(future.Get().status_code, result.status_code);
+    const auto& loaded_key_result = future.Get();
+    EXPECT_EQ(loaded_key_result.key_pair, expected_result.key_pair);
+    EXPECT_EQ(loaded_key_result.status_code, expected_result.status_code);
+    EXPECT_EQ(loaded_key_result.result, expected_result.result);
   }
 
   base::test::TaskEnvironment task_environment_;
@@ -128,8 +139,6 @@ class KeyLoaderTest : public testing::Test {
   StrictMock<policy::MockJobCreationHandler> job_creation_handler_;
   policy::FakeDeviceManagementService fake_device_management_service_{
       &job_creation_handler_};
-  raw_ptr<StrictMock<MockKeyNetworkDelegate>, DanglingUntriaged>
-      mock_network_delegate_;
   test::ScopedKeyPersistenceDelegateFactory persistence_delegate_factory_;
   scoped_refptr<SigningKeyPair> test_key_pair_;
   network::TestURLLoaderFactory test_url_loader_factory_;
@@ -137,6 +146,7 @@ class KeyLoaderTest : public testing::Test {
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
           &test_url_loader_factory_);
   std::unique_ptr<KeyLoader> loader_;
+  raw_ptr<StrictMock<MockKeyNetworkDelegate>> mock_network_delegate_;
   base::HistogramTester histogram_tester_;
 };
 
@@ -149,11 +159,7 @@ TEST_F(KeyLoaderTest, CreateKeyLoader_Success) {
 TEST_F(KeyLoaderTest, CreateKeyLoader_InvalidURLLoaderFactory) {
   auto loader = KeyLoader::Create(&fake_dm_token_storage_,
                                   &fake_device_management_service_, nullptr);
-#if BUILDFLAG(IS_WIN)
-  EXPECT_TRUE(loader);
-#else
   EXPECT_FALSE(loader);
-#endif  // BUILDFLAG(IS_WIN)
 }
 
 TEST_F(KeyLoaderTest, LoadKey_Success) {
@@ -172,7 +178,7 @@ TEST_F(KeyLoaderTest, LoadKey_InvalidDMToken) {
   fake_dm_token_storage_.SetDMToken("");
   SetPersistedKey();
 
-  RunAndValidateLoadKey(DTCLoadKeyResult());
+  RunAndValidateLoadKey(DTCLoadKeyResult(test_key_pair_));
 
   histogram_tester_.ExpectUniqueSample(kSynchronizationErrorHistogram,
                                        DTSynchronizationError::kInvalidDmToken,
@@ -184,7 +190,7 @@ TEST_F(KeyLoaderTest, LoadKey_MissingKeyPair) {
   SetDMToken();
   SetPersistedKey(/*has_key=*/false);
 
-  RunAndValidateLoadKey(DTCLoadKeyResult());
+  RunAndValidateLoadKey(DTCLoadKeyResult(LoadPersistedKeyResult::kNotFound));
 
   histogram_tester_.ExpectUniqueSample(kSynchronizationErrorHistogram,
                                        DTSynchronizationError::kMissingKeyPair,

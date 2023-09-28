@@ -134,12 +134,12 @@ class KeyRotationManagerTest : public testing::Test {
       old_key_pair_ = base::MakeRefCounted<SigningKeyPair>(
           CreateHardwareKey(), BPKUR::CHROME_BROWSER_HW_KEY);
       EXPECT_CALL(*mock_persistence_delegate_,
-                  LoadKeyPair(KeyStorageType::kPermanent))
+                  LoadKeyPair(KeyStorageType::kPermanent, _))
           .WillOnce(Return(old_key_pair_));
     } else {
       old_key_pair_.reset();
       EXPECT_CALL(*mock_persistence_delegate_,
-                  LoadKeyPair(KeyStorageType::kPermanent))
+                  LoadKeyPair(KeyStorageType::kPermanent, _))
           .WillOnce(Invoke([]() { return nullptr; }));
     }
   }

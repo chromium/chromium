@@ -95,7 +95,9 @@ class ScopedInMemoryKeyPersistenceDelegateFactory
   bool CheckRotationPermissions() override;
   bool StoreKeyPair(KeyTrustLevel trust_level,
                     std::vector<uint8_t> wrapped) override;
-  scoped_refptr<SigningKeyPair> LoadKeyPair(KeyStorageType type) override;
+  scoped_refptr<SigningKeyPair> LoadKeyPair(
+      KeyStorageType type,
+      LoadPersistedKeyResult* result) override;
   scoped_refptr<SigningKeyPair> CreateKeyPair() override;
   bool PromoteTemporaryKeyPair() override;
   bool DeleteKeyPair(KeyStorageType type) override;
@@ -116,7 +118,9 @@ class KeyPersistenceDelegateStub : public KeyPersistenceDelegate {
   bool CheckRotationPermissions() override;
   bool StoreKeyPair(KeyTrustLevel trust_level,
                     std::vector<uint8_t> wrapped) override;
-  scoped_refptr<SigningKeyPair> LoadKeyPair(KeyStorageType type) override;
+  scoped_refptr<SigningKeyPair> LoadKeyPair(
+      KeyStorageType type,
+      LoadPersistedKeyResult* result) override;
   scoped_refptr<SigningKeyPair> CreateKeyPair() override;
   bool PromoteTemporaryKeyPair() override;
   bool DeleteKeyPair(KeyStorageType type) override;

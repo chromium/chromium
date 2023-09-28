@@ -59,15 +59,22 @@ bool MacKeyPersistenceDelegate::StoreKeyPair(KeyTrustLevel trust_level,
 }
 
 scoped_refptr<SigningKeyPair> MacKeyPersistenceDelegate::LoadKeyPair(
-    KeyStorageType type) {
+    KeyStorageType type,
+    LoadPersistedKeyResult* result) {
   SecureEnclaveSigningKeyProvider provider;
   OSStatus error;
   auto signing_key = provider.LoadStoredSigningKeySlowly(
       SecureEnclaveClient::KeyType::kPermanent, &error);
   if (!signing_key) {
-    return nullptr;
+    LoadPersistedKeyResult error_result =
+        error == errSecItemNotFound ? LoadPersistedKeyResult::kNotFound
+                                    : LoadPersistedKeyResult::kUnknown;
+    return ReturnLoadKeyError(error_result, result);
   }
 
+  if (result) {
+    *result = LoadPersistedKeyResult::kSuccess;
+  }
   return base::MakeRefCounted<SigningKeyPair>(std::move(signing_key),
                                               BPKUR::CHROME_BROWSER_HW_KEY);
 }

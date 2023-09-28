@@ -167,16 +167,20 @@ bool LinuxKeyPersistenceDelegate::StoreKeyPair(
 }
 
 scoped_refptr<SigningKeyPair> LinuxKeyPersistenceDelegate::LoadKeyPair(
-    KeyStorageType type) {
+    KeyStorageType type,
+    LoadPersistedKeyResult* result) {
+  // TODO(b/301644429): Verify if the errors should be finer grained for "not
+  // found" versus other error types.
   std::string file_content;
   if (!base::ReadFileToStringWithMaxSize(GetSigningKeyFilePath(), &file_content,
-                                         kMaxBufferSize)) {
+                                         kMaxBufferSize) ||
+      file_content.empty()) {
     RecordFailure(
         KeyPersistenceOperation::kLoadKeyPair,
         KeyPersistenceError::kReadPersistenceStorageFailed,
         "Device trust key rotation failed. Failed to read from the signing key "
         "storage.");
-    return nullptr;
+    return ReturnLoadKeyError(LoadPersistedKeyResult::kNotFound, result);
   }
 
   // Get dictionary key info.
@@ -187,7 +191,7 @@ scoped_refptr<SigningKeyPair> LinuxKeyPersistenceDelegate::LoadKeyPair(
         KeyPersistenceError::kInvalidSigningKeyPairFormat,
         "Device trust key rotation failed. Invalid signing key format found in "
         "signing key storage.");
-    return nullptr;
+    return ReturnLoadKeyError(LoadPersistedKeyResult::kMalformedKey, result);
   }
 
   // Get the trust level.
@@ -197,7 +201,7 @@ scoped_refptr<SigningKeyPair> LinuxKeyPersistenceDelegate::LoadKeyPair(
                   KeyPersistenceError::kKeyPairMissingTrustLevel,
                   "Device trust key rotation failed. Signing key pair missing "
                   "trust level details.");
-    return nullptr;
+    return ReturnLoadKeyError(LoadPersistedKeyResult::kMalformedKey, result);
   }
 
   if (stored_trust_level != BPKUR::CHROME_BROWSER_OS_KEY) {
@@ -205,7 +209,7 @@ scoped_refptr<SigningKeyPair> LinuxKeyPersistenceDelegate::LoadKeyPair(
                   KeyPersistenceError::kInvalidTrustLevel,
                   "Device trust key rotation failed. Invalid trust level for "
                   "the signing key.");
-    return nullptr;
+    return ReturnLoadKeyError(LoadPersistedKeyResult::kMalformedKey, result);
   }
 
   // Get the key.
@@ -217,7 +221,7 @@ scoped_refptr<SigningKeyPair> LinuxKeyPersistenceDelegate::LoadKeyPair(
         KeyPersistenceError::kKeyPairMissingSigningKey,
         "Device trust key rotation failed. Signing key pair missing signing "
         "key details.");
-    return nullptr;
+    return ReturnLoadKeyError(LoadPersistedKeyResult::kMalformedKey, result);
   }
 
   if (!base::Base64Decode(*encoded_key, &decoded_key)) {
@@ -225,7 +229,7 @@ scoped_refptr<SigningKeyPair> LinuxKeyPersistenceDelegate::LoadKeyPair(
         KeyPersistenceOperation::kLoadKeyPair,
         KeyPersistenceError::kFailureDecodingSigningKey,
         "Device trust key rotation failed. Failure decoding the signing key.");
-    return nullptr;
+    return ReturnLoadKeyError(LoadPersistedKeyResult::kMalformedKey, result);
   }
   std::vector<uint8_t> wrapped =
       std::vector<uint8_t>(decoded_key.begin(), decoded_key.end());
@@ -238,9 +242,12 @@ scoped_refptr<SigningKeyPair> LinuxKeyPersistenceDelegate::LoadKeyPair(
         KeyPersistenceError::kCreateSigningKeyFromWrappedFailed,
         "Device trust key rotation failed. Failure creating a signing key "
         "object from the signing key details.");
-    return nullptr;
+    return ReturnLoadKeyError(LoadPersistedKeyResult::kMalformedKey, result);
   }
 
+  if (result) {
+    *result = LoadPersistedKeyResult::kSuccess;
+  }
   return base::MakeRefCounted<SigningKeyPair>(std::move(signing_key),
                                               BPKUR::CHROME_BROWSER_OS_KEY);
 }

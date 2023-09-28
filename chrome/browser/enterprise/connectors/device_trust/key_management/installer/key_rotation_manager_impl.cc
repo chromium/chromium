@@ -54,7 +54,8 @@ void KeyRotationManagerImpl::Rotate(
   // If an old key exists, then the `nonce` becomes a required parameter as
   // we're effectively going through a key rotation flow instead of key
   // creation.
-  auto old_key_pair = persistence_delegate_->LoadKeyPair();
+  auto old_key_pair =
+      persistence_delegate_->LoadKeyPair(KeyStorageType::kPermanent, nullptr);
   const bool is_rotation = IsValidKey(old_key_pair.get());
   if (is_rotation && nonce.empty()) {
     RecordRotationStatus(/*is_rotation=*/true,

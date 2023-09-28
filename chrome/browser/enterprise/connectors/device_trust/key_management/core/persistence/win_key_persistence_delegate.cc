@@ -98,7 +98,8 @@ bool WinKeyPersistenceDelegate::StoreKeyPair(
 }
 
 scoped_refptr<SigningKeyPair> WinKeyPersistenceDelegate::LoadKeyPair(
-    KeyStorageType type) {
+    KeyStorageType type,
+    LoadPersistedKeyResult* result) {
   base::win::RegKey key;
   std::wstring signingkey_name;
   std::wstring trustlevel_name;
@@ -110,7 +111,9 @@ scoped_refptr<SigningKeyPair> WinKeyPersistenceDelegate::LoadKeyPair(
                   KeyPersistenceError::kOpenPersistenceStorageFailed,
                   "Device trust key rotation failed. Failed to open the "
                   "signing key storage for reading.");
-    return nullptr;
+    // TODO(b/301587025): Pipe error returned from opening the registry key for
+    // better logging.
+    return ReturnLoadKeyError(LoadPersistedKeyResult::kNotFound, result);
   }
 
   DWORD trust_level_dw;
@@ -120,7 +123,7 @@ scoped_refptr<SigningKeyPair> WinKeyPersistenceDelegate::LoadKeyPair(
                   KeyPersistenceError::kKeyPairMissingTrustLevel,
                   "Device trust key rotation failed. Failed to get the trust "
                   "level details from the signing key storage.");
-    return nullptr;
+    return ReturnLoadKeyError(LoadPersistedKeyResult::kNotFound, result);
   }
 
   std::unique_ptr<crypto::UnexportableKeyProvider> provider;
@@ -136,8 +139,7 @@ scoped_refptr<SigningKeyPair> WinKeyPersistenceDelegate::LoadKeyPair(
                   KeyPersistenceError::kInvalidTrustLevel,
                   "Device trust key rotation failed. Invalid trust level for "
                   "the signing key.");
-
-    return nullptr;
+    return ReturnLoadKeyError(LoadPersistedKeyResult::kMalformedKey, result);
   }
 
   std::vector<uint8_t> wrapped;
@@ -155,14 +157,15 @@ scoped_refptr<SigningKeyPair> WinKeyPersistenceDelegate::LoadKeyPair(
         KeyPersistenceError::kKeyPairMissingSigningKey,
         "Device trust key rotation failed. Failed to get the signing key "
         "details from the signing key storage.");
-    return nullptr;
+    return ReturnLoadKeyError(LoadPersistedKeyResult::kNotFound, result);
+  }
 
-  } else if (reg_type != REG_BINARY) {
+  if (reg_type != REG_BINARY) {
     RecordFailure(
         KeyPersistenceOperation::kLoadKeyPair,
         KeyPersistenceError::kInvalidSigningKey,
         "Device trust key rotation failed. The signing key type is incorrect.");
-    return nullptr;
+    return ReturnLoadKeyError(LoadPersistedKeyResult::kMalformedKey, result);
   }
 
   auto signing_key = provider->FromWrappedSigningKeySlowly(wrapped);
@@ -172,9 +175,12 @@ scoped_refptr<SigningKeyPair> WinKeyPersistenceDelegate::LoadKeyPair(
         KeyPersistenceError::kCreateSigningKeyFromWrappedFailed,
         "Device trust key rotation failed. Failure creating a signing key "
         "object from the signing key details.");
-    return nullptr;
+    return ReturnLoadKeyError(LoadPersistedKeyResult::kMalformedKey, result);
   }
 
+  if (result) {
+    *result = LoadPersistedKeyResult::kSuccess;
+  }
   return base::MakeRefCounted<SigningKeyPair>(std::move(signing_key),
                                               trust_level);
 }

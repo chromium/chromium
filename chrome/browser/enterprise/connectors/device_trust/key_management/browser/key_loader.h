@@ -10,6 +10,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/common/key_types.h"
+#include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/key_persistence_delegate.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/signing_key_pair.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -27,15 +28,33 @@ namespace enterprise_connectors {
 class KeyLoader {
  public:
   struct DTCLoadKeyResult {
-    DTCLoadKeyResult();
+    // When a key was not loaded properly, `result` represents the loading
+    // error.
+    explicit DTCLoadKeyResult(LoadPersistedKeyResult result);
+
+    // When a key was loaded properly, `key_pair` is the loaded key.
+    explicit DTCLoadKeyResult(scoped_refptr<SigningKeyPair> key_pair);
+
+    // When a key was loaded properly and a sync attempt was made, `key_pair` is
+    // the loaded key and `status_code` is the HTTP result.
     DTCLoadKeyResult(int status_code, scoped_refptr<SigningKeyPair> key_pair);
+
+    ~DTCLoadKeyResult();
+
+    DTCLoadKeyResult& operator=(const DTCLoadKeyResult& other) = delete;
+    DTCLoadKeyResult(const DTCLoadKeyResult& other) = delete;
+
     DTCLoadKeyResult(DTCLoadKeyResult&&);
     DTCLoadKeyResult& operator=(DTCLoadKeyResult&&);
-    ~DTCLoadKeyResult();
+
     // HTTP response code from the key upload request.
-    absl::optional<int> status_code;
-    // Permanent signing key.
-    scoped_refptr<SigningKeyPair> key_pair;
+    absl::optional<int> status_code = absl::nullopt;
+
+    // Loaded signing key pair.
+    scoped_refptr<SigningKeyPair> key_pair = nullptr;
+
+    // Result of the local key loading operation.
+    LoadPersistedKeyResult result = LoadPersistedKeyResult::kUnknown;
   };
 
   using LoadKeyCallback = base::OnceCallback<void(DTCLoadKeyResult)>;
