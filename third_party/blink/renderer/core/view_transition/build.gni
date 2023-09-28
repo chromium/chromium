@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 
 blink_core_sources_view_transition = [
+  "dom_view_transition.cc",
+  "dom_view_transition.h",
   "ready_to_render_event.cc",
   "ready_to_render_event.h",
   "view_transition.cc",

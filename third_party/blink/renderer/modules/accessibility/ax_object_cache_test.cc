@@ -13,8 +13,10 @@
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/testing/mock_function_scope.h"
+#include "third_party/blink/renderer/core/view_transition/dom_view_transition.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_supplement.h"
+#include "third_party/blink/renderer/core/view_transition/view_transition_utils.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
 #include "third_party/blink/renderer/modules/accessibility/testing/accessibility_test.h"
@@ -170,8 +172,8 @@ class AXViewTransitionTest : public testing::Test,
 
   using State = ViewTransition::State;
 
-  State GetState(ViewTransition* transition) const {
-    return transition->state_;
+  State GetState(DOMViewTransition* transition) const {
+    return transition->GetViewTransitionForTest()->state_;
   }
 
  protected:

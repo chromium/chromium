@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/core/testing/mock_function_scope.h"
 #include "third_party/blink/renderer/core/timing/layout_shift.h"
+#include "third_party/blink/renderer/core/view_transition/dom_view_transition.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_supplement.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_utils.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -120,14 +121,14 @@ class ViewTransitionTest : public testing::Test,
 
   using State = ViewTransition::State;
 
-  State GetState(ViewTransition* transition) const {
-    return transition->state_;
+  State GetState(DOMViewTransition* transition) const {
+    return transition->GetViewTransitionForTest()->state_;
   }
 
   void FinishTransition() {
     auto* transition = ViewTransitionUtils::GetTransition(GetDocument());
     if (transition)
-      transition->skipTransition();
+      transition->SkipTransition();
   }
 
   bool ShouldCompositeForViewTransition(Element* e) {
@@ -846,7 +847,7 @@ TEST_P(ViewTransitionTest, VirtualKeyboardDoesntAffectSnapshotSize) {
       v8::Function::New(v8_scope.GetContext(), start_setup_lambda, {})
           .ToLocalChecked();
 
-  ViewTransition* transition = ViewTransitionSupplement::startViewTransition(
+  auto* transition = ViewTransitionSupplement::startViewTransition(
       script_state, GetDocument(),
       V8ViewTransitionCallback::Create(start_setup_callback), exception_state);
 
@@ -855,7 +856,8 @@ TEST_P(ViewTransitionTest, VirtualKeyboardDoesntAffectSnapshotSize) {
 
   // The snapshot rect should not have been shrunk by the virtual keyboard, even
   // though it shrinks the WebView.
-  EXPECT_EQ(transition->GetSnapshotRootSize(), original_size);
+  EXPECT_EQ(transition->GetViewTransitionForTest()->GetSnapshotRootSize(),
+            original_size);
 
   // The height of the ::view-transition should come from the snapshot root
   // rect.
@@ -881,7 +883,8 @@ TEST_P(ViewTransitionTest, VirtualKeyboardDoesntAffectSnapshotSize) {
       ->SetVirtualKeyboardResizeHeightForTesting(0);
 
   // The snapshot rect should remain the same size.
-  EXPECT_EQ(transition->GetSnapshotRootSize(), original_size);
+  EXPECT_EQ(transition->GetViewTransitionForTest()->GetSnapshotRootSize(),
+            original_size);
 
   // The start phase should generate pseudo elements for rendering new live
   // content.
@@ -910,7 +913,7 @@ TEST_P(ViewTransitionTest, DocumentWithNoDocumentElementHasNullTransition) {
       v8::Function::New(v8_scope.GetContext(), start_setup_lambda, {})
           .ToLocalChecked();
 
-  ViewTransition* transition = ViewTransitionSupplement::startViewTransition(
+  DOMViewTransition* transition = ViewTransitionSupplement::startViewTransition(
       script_state, *document,
       V8ViewTransitionCallback::Create(start_setup_callback), exception_state);
   ASSERT_FALSE(transition);
@@ -944,8 +947,9 @@ TEST_P(ViewTransitionTest, RootEffectLifetime) {
   ASSERT_FALSE(exception_state.HadException());
 
   EXPECT_TRUE(GetDocument().GetLayoutView()->NeedsPaintPropertyUpdate());
-  EXPECT_TRUE(transition->NeedsViewTransitionEffectNode(
-      *GetDocument().GetLayoutView()));
+  EXPECT_TRUE(
+      transition->GetViewTransitionForTest()->NeedsViewTransitionEffectNode(
+          *GetDocument().GetLayoutView()));
 }
 
 }  // namespace blink

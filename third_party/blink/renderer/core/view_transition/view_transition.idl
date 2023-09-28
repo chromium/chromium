@@ -7,6 +7,7 @@
 [
     ActiveScriptWrappable,
     Exposed=Window,
+    ImplementedAs=DOMViewTransition,
     RuntimeEnabled=ViewTransition
 ] interface ViewTransition {
   // Skips the transition. This will cause the UpdateDOMCallback to run if it

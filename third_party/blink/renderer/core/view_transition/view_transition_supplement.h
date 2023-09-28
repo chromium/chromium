@@ -14,7 +14,7 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
-class ViewTransition;
+class DOMViewTransition;
 class V8ViewTransitionCallback;
 
 class CORE_EXPORT ViewTransitionSupplement
@@ -30,10 +30,11 @@ class CORE_EXPORT ViewTransitionSupplement
 
   // Creates and starts a same-document ViewTransition initiated using the
   // script API.
-  static ViewTransition* startViewTransition(ScriptState*,
-                                             Document&,
-                                             V8ViewTransitionCallback* callback,
-                                             ExceptionState&);
+  static DOMViewTransition* startViewTransition(
+      ScriptState*,
+      Document&,
+      V8ViewTransitionCallback* callback,
+      ExceptionState&);
 
   // Creates a ViewTransition to cache the state of a Document before a
   // navigation. The cached state is provided to the caller using the
@@ -78,10 +79,10 @@ class CORE_EXPORT ViewTransitionSupplement
   void WillInsertBody();
 
  private:
-  ViewTransition* StartTransition(ScriptState* script_state,
-                                  Document& document,
-                                  V8ViewTransitionCallback* callback,
-                                  ExceptionState& exception_state);
+  DOMViewTransition* StartTransition(ScriptState* script_state,
+                                     Document& document,
+                                     V8ViewTransitionCallback* callback,
+                                     ExceptionState& exception_state);
   void StartTransition(Document& document,
                        ViewTransition::ViewTransitionStateCallback callback);
   void StartTransition(Document& document,

@@ -35,6 +35,7 @@ class ActiveScriptWrappableCreationKey final {
   friend class DedicatedWorker;
   friend class DocumentTransition;
   friend class DOMFileSystem;
+  friend class DOMViewTransition;
   friend class DOMWebSocket;
   friend class EditContext;
   template <typename Traits>
@@ -107,7 +108,6 @@ class ActiveScriptWrappableCreationKey final {
   friend class SVGImageElement;
   friend class TCPSocket;
   friend class UDPSocket;
-  friend class ViewTransition;
   friend class WakeLockSentinel;
   friend class WebSocketStream;
   friend class WebTransport;
