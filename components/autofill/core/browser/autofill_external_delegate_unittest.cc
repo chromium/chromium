@@ -37,6 +37,7 @@
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/password_form_fill_data.h"
+#include "components/plus_addresses/plus_address_metrics.h"
 #include "components/plus_addresses/plus_address_service.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "components/strings/grit/components_strings.h"
@@ -67,6 +68,9 @@ Matcher<const AutofillTriggerDetails&> EqualsAutofilltriggerDetails(
 
 constexpr auto kDefaultTriggerSource =
     AutofillSuggestionTriggerSource::kFormControlElementClicked;
+
+const std::string_view kPlusAddressSuggestionMetric =
+    "Autofill.PlusAddresses.Suggestion.Events";
 
 class MockPersonalDataManager : public TestPersonalDataManager {
  public:
@@ -1054,6 +1058,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
        ExternalDelegateFillsExistingPlusAddress) {
   IssueOnQuery();
 
+  base::HistogramTester histogram_tester;
   AutofillClient::PopupOpenArgs open_args;
   EXPECT_CALL(autofill_client_, ShowAutofillPopup)
       .WillOnce(testing::SaveArg<0>(&open_args));
@@ -1083,6 +1088,12 @@ TEST_F(AutofillExternalDelegateUnitTest,
               RendererShouldFillFieldWithValue(field_id_, plus_address));
   external_delegate_->DidAcceptSuggestion(suggestions[0], /*position=*/0,
                                           kDefaultTriggerSource);
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(kPlusAddressSuggestionMetric),
+      BucketsAre(base::Bucket(
+          plus_addresses::PlusAddressMetrics::
+              PlusAddressAutofillSuggestionEvent::kExistingPlusAddressChosen,
+          1)));
 }
 
 // Mock out the new plus address creation flow, and ensure that its completion
@@ -1093,6 +1104,8 @@ TEST_F(AutofillExternalDelegateUnitTest,
       u"test+1234@test.example";
 
   IssueOnQuery();
+
+  base::HistogramTester histogram_tester;
   AutofillClient::PopupOpenArgs open_args;
   EXPECT_CALL(autofill_client_, ShowAutofillPopup)
       .WillOnce(testing::SaveArg<0>(&open_args));
@@ -1128,6 +1141,12 @@ TEST_F(AutofillExternalDelegateUnitTest,
                   field_id_, kMockPlusAddressForCreationCallback));
   external_delegate_->DidAcceptSuggestion(suggestions[0], /*position=*/0,
                                           kDefaultTriggerSource);
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(kPlusAddressSuggestionMetric),
+      BucketsAre(base::Bucket(
+          plus_addresses::PlusAddressMetrics::
+              PlusAddressAutofillSuggestionEvent::kCreateNewPlusAddressChosen,
+          1)));
 }
 
 class AutofillExternalDelegateUnitTest_UndoAutofill

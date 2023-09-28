@@ -3586,6 +3586,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Autofill.PlusAddresses.Suggestion.Events"
+    enum="PlusAddressSuggestionEvent" expires_after="2024-09-24">
+  <owner>mreichhoff@chromium.org</owner>
+  <owner>kaklilu@chromium.org</owner>
+  <summary>
+    Records user interactions with the experimental plus addresses feature in
+    autofill. Includes suggestions and clicks of both new plus address creation
+    suggestions and existing plus address filling suggestions. Recorded when the
+    suggestions are shown, and when they are chosen.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.Popup.AcceptanceDelayThresholdNotMet" units="ms"
     expires_after="2024-04-01">
   <owner>jkeitel@google.com</owner>

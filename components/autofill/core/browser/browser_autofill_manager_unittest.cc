@@ -80,6 +80,7 @@
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/plus_addresses/plus_address_metrics.h"
 #include "components/plus_addresses/plus_address_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/security_interstitials/core/pref_names.h"
@@ -135,6 +136,9 @@ namespace {
 const std::string kArbitraryNickname = "Grocery Card";
 const std::u16string kArbitraryNickname16 = u"Grocery Card";
 const std::string kAddressEntryIcon = "accountIcon";
+
+const std::string_view kPlusAddressSuggestionMetric =
+    "Autofill.PlusAddresses.Suggestion.Events";
 
 struct TestAddressFillData {
   TestAddressFillData(const char* first,
@@ -10493,6 +10497,7 @@ class BrowserAutofillManagerPlusAddressTest
         .WillByDefault(Return(mock_plus_address_service_.get()));
   }
   std::unique_ptr<NiceMock<MockPlusAddressService>> mock_plus_address_service_;
+  base::HistogramTester histogram_tester_;
 };
 
 // Ensure that plus address options aren't shown unexpectedly.
@@ -10521,6 +10526,7 @@ TEST_F(BrowserAutofillManagerPlusAddressTest, NoPlusAddressesWithNameFields) {
   // address options.
   GetAutofillSuggestions(form, form.fields[1]);
   EXPECT_FALSE(external_delegate()->on_suggestions_returned_seen());
+  histogram_tester_.ExpectTotalCount(kPlusAddressSuggestionMetric, 0);
 }
 
 // Ensure that existing plus addresses are offered.
@@ -10547,6 +10553,12 @@ TEST_F(BrowserAutofillManagerPlusAddressTest, PlusAddressSuggestionShown) {
       Suggestion("theking@gmail.com", "", "", PopupItemId::kAddressEntry),
       Suggestion("plus+plus@plus.plus", "", "",
                  PopupItemId::kFillExistingPlusAddress));
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(kPlusAddressSuggestionMetric),
+      BucketsAre(base::Bucket(
+          plus_addresses::PlusAddressMetrics::
+              PlusAddressAutofillSuggestionEvent::kExistingPlusAddressSuggested,
+          1)));
 }
 
 // Ensure that email fields without existing plus addresses for the domain, but
@@ -10574,6 +10586,12 @@ TEST_F(BrowserAutofillManagerPlusAddressTest,
       Suggestion(
           base::UTF16ToUTF8(plus_address_service->GetCreateSuggestionLabel()),
           "", "", PopupItemId::kCreateNewPlusAddress));
+
+  EXPECT_THAT(histogram_tester_.GetAllSamples(kPlusAddressSuggestionMetric),
+              BucketsAre(base::Bucket(plus_addresses::PlusAddressMetrics::
+                                          PlusAddressAutofillSuggestionEvent::
+                                              kCreateNewPlusAddressSuggested,
+                                      1)));
 }
 
 // Test that plus address inputs are forced to !should_autocomplete

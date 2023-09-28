@@ -86307,6 +86307,13 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="2" label="Modal confirmed"/>
 </enum>
 
+<enum name="PlusAddressSuggestionEvent">
+  <int value="0" label="Existing plus address suggested"/>
+  <int value="1" label="Create new plus address suggested"/>
+  <int value="2" label="Existing plus address suggestion chosen"/>
+  <int value="3" label="Create new plus address suggestion chosen"/>
+</enum>
+
 <enum name="PNaClOptionsOptLevelEnum">
   <int value="0" label="0"/>
   <int value="1" label="1"/>

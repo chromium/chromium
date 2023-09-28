@@ -17,6 +17,14 @@ class PlusAddressMetrics {
     kMaxValue = kModalConfirmed,
   };
 
+  enum class PlusAddressAutofillSuggestionEvent {
+    kExistingPlusAddressSuggested = 0,
+    kCreateNewPlusAddressSuggested = 1,
+    kExistingPlusAddressChosen = 2,
+    kCreateNewPlusAddressChosen = 3,
+    kMaxValue = kCreateNewPlusAddressChosen,
+  };
+
   // As of now, the class is intended to be stateless and static; do not allow
   // construction.
   PlusAddressMetrics() = delete;
@@ -25,6 +33,11 @@ class PlusAddressMetrics {
 
   // Log plus address creation modal events.
   static void RecordModalEvent(PlusAddressModalEvent plus_address_modal_event);
+
+  // Log plus address autofill suggestion events.
+  static void RecordAutofillSuggestionEvent(
+      PlusAddressAutofillSuggestionEvent
+          plus_address_autofill_suggestion_event);
 };
 }  // namespace plus_addresses
 

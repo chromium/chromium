@@ -109,6 +109,7 @@
 #include "components/autofill/core/common/password_form_fill_data.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "components/plus_addresses/plus_address_metrics.h"
 #include "components/plus_addresses/plus_address_service.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
@@ -3821,12 +3822,18 @@ BrowserAutofillManager::MaybeGetPlusAddressSuggestion() {
         plus_address_service->GetCreateSuggestionLabel());
     create_plus_address_suggestion.popup_item_id =
         PopupItemId::kCreateNewPlusAddress;
+    plus_addresses::PlusAddressMetrics::RecordAutofillSuggestionEvent(
+        plus_addresses::PlusAddressMetrics::PlusAddressAutofillSuggestionEvent::
+            kCreateNewPlusAddressSuggested);
     return create_plus_address_suggestion;
   }
   Suggestion existing_plus_address_suggestion(
       base::UTF8ToUTF16(maybe_address.value()));
   existing_plus_address_suggestion.popup_item_id =
       PopupItemId::kFillExistingPlusAddress;
+  plus_addresses::PlusAddressMetrics::RecordAutofillSuggestionEvent(
+      plus_addresses::PlusAddressMetrics::PlusAddressAutofillSuggestionEvent::
+          kExistingPlusAddressSuggested);
   return existing_plus_address_suggestion;
 }
 

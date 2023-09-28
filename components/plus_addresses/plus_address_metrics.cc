@@ -13,4 +13,10 @@ void PlusAddressMetrics::RecordModalEvent(
   base::UmaHistogramEnumeration("Autofill.PlusAddresses.Modal.Events",
                                 plus_address_modal_event);
 }
+
+void PlusAddressMetrics::RecordAutofillSuggestionEvent(
+    PlusAddressAutofillSuggestionEvent plus_address_autofill_suggestion_event) {
+  base::UmaHistogramEnumeration("Autofill.PlusAddresses.Suggestion.Events",
+                                plus_address_autofill_suggestion_event);
+}
 }  // namespace plus_addresses

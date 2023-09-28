@@ -35,6 +35,7 @@
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
+#include "components/plus_addresses/plus_address_metrics.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/strings/grit/components_strings.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -440,10 +441,16 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
           suggestion.popup_item_id, query_form_, query_field_);
       break;
     case PopupItemId::kFillExistingPlusAddress:
+      plus_addresses::PlusAddressMetrics::RecordAutofillSuggestionEvent(
+          plus_addresses::PlusAddressMetrics::
+              PlusAddressAutofillSuggestionEvent::kExistingPlusAddressChosen);
       manager_->driver().RendererShouldFillFieldWithValue(
           query_field_.global_id(), suggestion.main_text.value);
       break;
     case PopupItemId::kCreateNewPlusAddress: {
+      plus_addresses::PlusAddressMetrics::RecordAutofillSuggestionEvent(
+          plus_addresses::PlusAddressMetrics::
+              PlusAddressAutofillSuggestionEvent::kCreateNewPlusAddressChosen);
       manager_->client().OfferPlusAddressCreation(
           manager_->client().GetLastCommittedPrimaryMainFrameOrigin(),
           base::BindOnce(&AutofillExternalDelegate::OnPlusAddressCreated,
