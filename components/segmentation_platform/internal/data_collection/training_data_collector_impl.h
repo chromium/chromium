@@ -96,7 +96,7 @@ class TrainingDataCollectorImpl : public TrainingDataCollector,
 
   void OnUmaUpdatedReportForSegmentInfo(
       const absl::optional<ImmediateCollectionParam>& param,
-      absl::optional<proto::SegmentInfo> segment);
+      const proto::SegmentInfo* segment);
 
   void OnGetSegmentInfoAtDecisionTime(
       proto::SegmentId segment_id,
