@@ -21,16 +21,25 @@ about wayland basics. The short summary is that:
 The wayland protocol is used to communicate between ash-chrome
 (exo/wayland-server) and wayland clients. The lacros-chrome client is version
 skewed from ash-chrome. As such, the protocol itself must be a stable API
-surface. This has one main implication:
+surface. This has two main implications:
 
-* It is not safe to remove any methods. This includes reverts of CLs that add
+1. It is not safe to remove any methods. This includes reverts of CLs that add
   methods.
+2. The version update must be atomic. No two (or more) CLs should update the
+  protocol file to the same version.
 
-This implication means we need to minimize risk of needing to revert CLs that
-add methods. We thus add the following guidance:
+This implication means we need to minimize risk of a) needing to revert CLs that
+add methods, b) Geritt auto-resolving conflict of two independent CLs that
+update to the same version, and land them.  We thus add the following guidance:
 
 * When adding a new interface method, create the exo (server) implementation
   and update its version in its own CL and merge that first.
+* The code should use _SINCE_VERSION macro to specify the version you updated
+  to, e.g.:
+
+        constexpr int kAuraShellVersion = ZAURA_SHELL_WINDOW_CORNERS_RADII_SINCE_VERSION;
+
+  This will prevent Geritt from automacially resolving the conflict.
 * Then, in a separate CL, add a stub (empty) implementation on the client
   (ozone-wayland) side without updating the version. This is to avoid a problem
   when yet another protocol update is added on the client side while your are
