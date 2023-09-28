@@ -1205,6 +1205,15 @@ void AVIFImageDecoder::ColorCorrectImage(int from_row,
   }
 }
 
+static inline float FractionToFloat(uint32_t numerator, uint32_t denominator) {
+  // First cast to double and not float because uint32_t->float conversion can
+  // cause precision loss.
+  // E.g. if numerator=UINT32_MAX and denominator=UINT32_MAX/3, casting the
+  // numerator to float would cause precision loss even though the result of the
+  // division (3) can be represented exactly.
+  return static_cast<double>(numerator) / denominator;
+}
+
 bool AVIFImageDecoder::GetGainmapInfoAndData(
     SkGainmapInfo& out_gainmap_info,
     scoped_refptr<SegmentReader>& out_gainmap_data) const {
@@ -1230,41 +1239,38 @@ bool AVIFImageDecoder::GetGainmapInfoAndData(
   // If libavif detected a gain map, it already parsed the metadata from the
   // 'tmap' box.
   if (decoder_->gainMapPresent) {
-    const avifGainMapMetadata& m = decoder_->image->gainMap.metadata;
+    const avifGainMapMetadata& metadata = decoder_->image->gainMap.metadata;
     for (int i = 0; i < 3; ++i) {
-      if (m.gainMapMinD[i] == 0 || m.gainMapMaxD[i] == 0 ||
-          m.gainMapGammaD[i] == 0 || m.offsetSdrD[i] == 0 ||
-          m.offsetHdrD[i] == 0) {
+      if (metadata.gainMapMinD[i] == 0 || metadata.gainMapMaxD[i] == 0 ||
+          metadata.gainMapGammaD[i] == 0 || metadata.offsetSdrD[i] == 0 ||
+          metadata.offsetHdrD[i] == 0) {
         DVLOG(1) << "Invalid gainmap metadata: a denominator value is zero";
         return false;
       }
       // Using double and not float because uint32_t->float conversion can cause
       // precision loss.
       out_gainmap_info.fGainmapRatioMin[i] =
-          static_cast<double>(m.gainMapMinN[i]) / m.gainMapMinD[i];
+          FractionToFloat(metadata.gainMapMinN[i], metadata.gainMapMinD[i]);
       out_gainmap_info.fGainmapRatioMax[i] =
-          static_cast<double>(m.gainMapMaxN[i]) / m.gainMapMaxD[i];
+          FractionToFloat(metadata.gainMapMaxN[i], metadata.gainMapMaxD[i]);
       out_gainmap_info.fGainmapGamma[i] =
-          static_cast<double>(m.gainMapGammaN[i]) / m.gainMapGammaD[i];
+          FractionToFloat(metadata.gainMapGammaN[i], metadata.gainMapGammaD[i]);
       out_gainmap_info.fEpsilonSdr[i] =
-          static_cast<double>(m.offsetSdrN[i]) / m.offsetSdrD[i];
+          FractionToFloat(metadata.offsetSdrN[i], metadata.offsetSdrD[i]);
       out_gainmap_info.fEpsilonHdr[i] =
-          static_cast<double>(m.offsetHdrN[i]) / m.offsetHdrD[i];
+          FractionToFloat(metadata.offsetHdrN[i], metadata.offsetHdrD[i]);
     }
-    out_gainmap_info.fBaseImageType = m.baseRenditionIsHDR
-                                          ? SkGainmapInfo::BaseImageType::kHDR
-                                          : SkGainmapInfo::BaseImageType::kSDR;
-
-    if (m.hdrCapacityMinD == 0 || m.hdrCapacityMaxD == 0) {
+    if (metadata.hdrCapacityMinD == 0 || metadata.hdrCapacityMaxD == 0) {
       DVLOG(1) << "Invalid gainmap metadata: a denominator value is zero";
       return false;
     }
-    // Using double and not float because uint32_t->float conversion can cause
-    // precision loss.
     out_gainmap_info.fDisplayRatioSdr =
-        static_cast<double>(m.hdrCapacityMinN) / m.hdrCapacityMinD;
+        FractionToFloat(metadata.hdrCapacityMinN, metadata.hdrCapacityMinD);
     out_gainmap_info.fDisplayRatioHdr =
-        static_cast<double>(m.hdrCapacityMaxN) / m.hdrCapacityMaxD;
+        FractionToFloat(metadata.hdrCapacityMaxN, metadata.hdrCapacityMaxD);
+    out_gainmap_info.fBaseImageType = metadata.baseRenditionIsHDR
+                                          ? SkGainmapInfo::BaseImageType::kHDR
+                                          : SkGainmapInfo::BaseImageType::kSDR;
     return true;
   }
   // Otherwise, the metadata should be in the gain map image's XMP.
