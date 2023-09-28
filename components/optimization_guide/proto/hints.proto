@@ -46,7 +46,7 @@ message HashedHostInfos {
 // Request to return a set of hints that guide what optimizations to perform
 // on those hosts.
 message GetHintsRequest {
-  reserved 6;
+  reserved 6, 10;
 
   // Information about the set of hosts to retrieve hints for.
   repeated HostInfo hosts = 1;
@@ -83,9 +83,6 @@ message GetHintsRequest {
 
   // Information about the request origin.
   optional OriginInfo origin_info = 9;
-
-  // The theme associated with this request.
-  optional ThemeKey theme_key = 10;
 }
 
 // Response to the GetHints request.
