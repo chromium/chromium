@@ -1978,7 +1978,6 @@ interface Element : Node
     method setAttributeNS
     method setAttributeNode
     method setAttributeNodeNS
-    method setHTML
     method setPointerCapture
     method toggleAttribute
     method webkitMatchesSelector
@@ -8039,11 +8038,6 @@ interface SVGViewElement : SVGElement
     getter zoomAndPan
     method constructor
     setter zoomAndPan
-interface Sanitizer
-    static method getDefaultConfiguration
-    attribute @@toStringTag
-    method constructor
-    method getConfiguration
 interface Scheduler
     attribute @@toStringTag
     method constructor

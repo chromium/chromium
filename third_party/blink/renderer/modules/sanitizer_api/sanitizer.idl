@@ -8,13 +8,14 @@ typedef (DocumentFragment or Document) SanitizerInput;
 
 [
   Exposed=Window,
-  SecureContext
+  SecureContext,
+  RuntimeEnabled=SanitizerAPI
 ] interface Sanitizer {
   [MeasureAs=SanitizerAPICreated, CallWith=ExecutionContext, RaisesException] constructor(optional SanitizerConfig config = {});
 
-  [MeasureAs=SanitizerAPIToFragment, RuntimeEnabled=SanitizerAPI,
+  [MeasureAs=SanitizerAPIToFragment,
 CallWith=ScriptState, RaisesException] DocumentFragment sanitize(SanitizerInput input);
-  [MeasureAs=SanitizerAPISanitizeFor, RuntimeEnabled=SanitizerAPI, CallWith=ScriptState, RaisesException] Element? sanitizeFor(DOMString element, DOMString markup);
+  [MeasureAs=SanitizerAPISanitizeFor, CallWith=ScriptState, RaisesException] Element? sanitizeFor(DOMString element, DOMString markup);
 
   [MeasureAs=SanitizerAPIGetConfig] SanitizerConfig getConfiguration();
   [MeasureAs=SanitizerAPIGetDefaultConfig] static SanitizerConfig getDefaultConfiguration();
