@@ -9790,6 +9790,24 @@
             ]
         }
     ],
+    "MediaHardwareSecureDecryptionFallbackPerSite": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "per_site": "true"
+                    },
+                    "enable_features": [
+                        "HardwareSecureDecryptionFallback"
+                    ]
+                }
+            ]
+        }
+    ],
     "MeetDevicesMojoServices": [
         {
             "platforms": [
