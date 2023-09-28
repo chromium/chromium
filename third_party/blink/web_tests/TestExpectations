@@ -3511,11 +3511,13 @@ crbug.com/1463890 virtual/css-text-autospace/external/wpt/css/css-text/text-auto
 crbug.com/1463891 external/wpt/css/css-text/text-spacing-trim/text-spacing-trim-001.html?class=halt,htb [ Failure ]
 crbug.com/1463891 external/wpt/css/css-text/text-spacing-trim/text-spacing-trim-001.html?class=halt,vrl [ Failure ]
 crbug.com/1463891 external/wpt/css/css-text/text-spacing-trim/text-spacing-trim-colon-001.html?class=halt,htb [ Failure ]
+crbug.com/1463891 external/wpt/css/css-text/text-spacing-trim/text-spacing-trim-colon-001.html?class=halt,vrl [ Failure ]
 crbug.com/1463891 external/wpt/css/css-text/text-spacing-trim/text-spacing-trim-dot-001.html?class=halt,htb [ Failure ]
 crbug.com/1463891 external/wpt/css/css-text/text-spacing-trim/text-spacing-trim-dot-001.html?class=halt,vrl [ Failure ]
 crbug.com/1463891 virtual/css-text-spacing-trim/external/wpt/css/css-text/text-spacing-trim/text-spacing-trim-001.html?class=halt,htb [ Pass ]
 crbug.com/1463891 virtual/css-text-spacing-trim/external/wpt/css/css-text/text-spacing-trim/text-spacing-trim-001.html?class=halt,vrl [ Pass ]
 crbug.com/1463891 virtual/css-text-spacing-trim/external/wpt/css/css-text/text-spacing-trim/text-spacing-trim-colon-001.html?class=halt,htb [ Pass ]
+crbug.com/1463891 virtual/css-text-spacing-trim/external/wpt/css/css-text/text-spacing-trim/text-spacing-trim-colon-001.html?class=halt,vrl [ Pass ]
 crbug.com/1463891 virtual/css-text-spacing-trim/external/wpt/css/css-text/text-spacing-trim/text-spacing-trim-dot-001.html?class=halt,htb [ Pass ]
 crbug.com/1463891 virtual/css-text-spacing-trim/external/wpt/css/css-text/text-spacing-trim/text-spacing-trim-dot-001.html?class=halt,vrl [ Pass ]
 

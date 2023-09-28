@@ -47,8 +47,11 @@ TEST_F(HanKerningTest, FontDataHorizontal) {
   EXPECT_EQ(zht_data.type_for_dot, HanKerning::CharType::kMiddle);
 
   EXPECT_EQ(ja_data.type_for_colon, HanKerning::CharType::kMiddle);
+  EXPECT_EQ(ja_data.type_for_semicolon, HanKerning::CharType::kMiddle);
   EXPECT_EQ(zhs_data.type_for_colon, HanKerning::CharType::kClose);
+  EXPECT_EQ(zhs_data.type_for_semicolon, HanKerning::CharType::kClose);
   EXPECT_EQ(zht_data.type_for_colon, HanKerning::CharType::kMiddle);
+  EXPECT_EQ(zht_data.type_for_semicolon, HanKerning::CharType::kMiddle);
 }
 
 TEST_F(HanKerningTest, FontDataVertical) {
@@ -71,9 +74,12 @@ TEST_F(HanKerningTest, FontDataVertical) {
 
   // In the Adobe's common convention, only colon in Japanese rotates, and all
   // other cases are upright.
-  EXPECT_EQ(ja_data.type_for_colon, HanKerning::CharType::kOther);
+  EXPECT_EQ(ja_data.type_for_colon, HanKerning::CharType::kMiddle);
+  EXPECT_EQ(ja_data.type_for_semicolon, HanKerning::CharType::kOther);
   EXPECT_EQ(zhs_data.type_for_colon, HanKerning::CharType::kOther);
+  EXPECT_EQ(zhs_data.type_for_semicolon, HanKerning::CharType::kOther);
   EXPECT_EQ(zht_data.type_for_colon, HanKerning::CharType::kOther);
+  EXPECT_EQ(zht_data.type_for_semicolon, HanKerning::CharType::kOther);
 }
 
 }  // namespace

@@ -80,7 +80,11 @@ class PLATFORM_EXPORT HanKerning {
     // https://drafts.csswg.org/css-text-4/#text-spacing-classes
     CharType type_for_dot = CharType::kOther;
     // `CharType` for "fullwidth colon punctuation."
+    // Type for colon and semicolon are separated, to support the Adobe's
+    // convention for vertical flow, which rotates Japanese colon, but doesn't
+    // rotate semicolon.
     CharType type_for_colon = CharType::kOther;
+    CharType type_for_semicolon = CharType::kOther;
   };
 
  private:

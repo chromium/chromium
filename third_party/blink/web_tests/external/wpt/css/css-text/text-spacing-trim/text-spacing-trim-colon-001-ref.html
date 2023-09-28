@@ -36,26 +36,21 @@ halt {
 novhal halt {
   font-feature-settings: 'halt' 1;
 }
-:root.halt novhal-if-halt halt {
-  font-feature-settings: 'halt' 1;
-}
 </style>
 <div id="container">
   <div lang="ja">
     <!-- In Adobe's convention, colon rotates, while semicolon is upright. -->
     <!-- In this case, colon can be either middle or other. -->
-    <novhal-if-halt>
-      <!-- Colon + Open/Close/Middle -->
-      <div>国：<halt>（</halt>国</div>
-      <div>国：）国</div>
-      <div>国：・国</div>
-      <div>国：　国</div>
-      <!-- Open/Close/Middle + Colon -->
-      <div>国（：国</div>
-      <div>国<halt>）</halt>：国</div>
-      <div>国・：国</div>
-      <div>国　：国</div>
-    </novhal-if-halt>
+    <!-- Colon + Open/Close/Middle -->
+    <div>国：<halt>（</halt>国</div>
+    <div>国：）国</div>
+    <div>国：・国</div>
+    <div>国：　国</div>
+    <!-- Open/Close/Middle + Colon -->
+    <div>国（：国</div>
+    <div>国<halt>）</halt>：国</div>
+    <div>国・：国</div>
+    <div>国　：国</div>
     <novhal>
       <!-- Semicolon + Open/Close/Middle -->
       <div>国；<halt>（</halt>国</div>

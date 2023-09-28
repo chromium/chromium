@@ -74,8 +74,9 @@ HanKerning::CharType HanKerning::GetCharType(UChar ch,
     case kFullwidthFullStop:             // U+FF0E
       return font_data.type_for_dot;
     case kFullwidthColon:      // U+FF1A
-    case kFullwidthSemicolon:  // U+FF1B
       return font_data.type_for_colon;
+    case kFullwidthSemicolon:  // U+FF1B
+      return font_data.type_for_semicolon;
     case kLeftSingleQuotationMarkCharacter:  // U+2018
     case kLeftDoubleQuotationMarkCharacter:  // U+201C
       return CharType::kOpen;
@@ -219,9 +220,13 @@ HanKerning::FontData::FontData(const SimpleFontData& font,
       // Colon characters.
       // https://drafts.csswg.org/css-text-4/#fullwidth-colon-punctuation
       kFullwidthColon, kFullwidthSemicolon};
-  constexpr unsigned kNumDotCharacters = 4;
-  constexpr unsigned kNumColonCharacters = 2;
-  static_assert(kNumDotCharacters + kNumColonCharacters == std::size(kChars));
+  constexpr unsigned kDotStartIndex = 0;
+  constexpr unsigned kDotSize = 4;
+  constexpr unsigned kColonIndex = 4;
+  constexpr unsigned kSemicolonIndex = 5;
+  static_assert(kDotStartIndex + kDotSize <= std::size(kChars));
+  static_assert(kColonIndex < std::size(kChars));
+  static_assert(kSemicolonIndex < std::size(kChars));
 
   // Use `HarfBuzzShaper` to find the correct glyph ID.
   //
@@ -271,11 +276,11 @@ HanKerning::FontData::FontData(const SimpleFontData& font,
 
   // Compute types from glyph bounds.
   DCHECK_EQ(bounds.size(), std::size(kChars));
-  type_for_dot = GetType(base::make_span(bounds.begin(), kNumDotCharacters), em,
-                         is_horizontal);
-  type_for_colon = GetType(
-      base::make_span(bounds.begin() + kNumDotCharacters, kNumColonCharacters),
-      em, is_horizontal);
+  type_for_dot = GetType(base::make_span(bounds.begin() + kDotStartIndex,
+                                         kDotStartIndex + kDotSize),
+                         em, is_horizontal);
+  type_for_colon = GetType(bounds[kColonIndex], em, is_horizontal);
+  type_for_semicolon = GetType(bounds[kSemicolonIndex], em, is_horizontal);
 }
 
 }  // namespace blink
