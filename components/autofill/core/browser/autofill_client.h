@@ -334,31 +334,30 @@ class AutofillClient : public RiskDataLoader {
   // Callback to run after local credit card save or local CVC save is offered.
   // Sends whether the prompt was accepted, declined, or ignored in
   // |user_decision|.
-  typedef base::OnceCallback<void(SaveCardOfferUserDecision user_decision)>
-      LocalSaveCardPromptCallback;
+  using LocalSaveCardPromptCallback =
+      base::OnceCallback<void(SaveCardOfferUserDecision user_decision)>;
 
   // Callback to run after upload credit card save is offered. Sends whether the
   // prompt was accepted, declined, or ignored in |user_decision|, and
   // additional |user_provided_card_details| if applicable.
-  typedef base::OnceCallback<void(
+  using UploadSaveCardPromptCallback = base::OnceCallback<void(
       SaveCardOfferUserDecision user_decision,
-      const UserProvidedCardDetails& user_provided_card_details)>
-      UploadSaveCardPromptCallback;
+      const UserProvidedCardDetails& user_provided_card_details)>;
 
-  typedef base::OnceCallback<void(const CreditCard&)> CreditCardScanCallback;
+  using CreditCardScanCallback = base::OnceCallback<void(const CreditCard&)>;
 
   // Callback to run if user presses the Save button in the migration dialog.
   // Will pass a vector of GUIDs of cards that the user selected to upload to
   // LocalCardMigrationManager.
-  typedef base::OnceCallback<void(const std::vector<std::string>&)>
-      LocalCardMigrationCallback;
+  using LocalCardMigrationCallback =
+      base::OnceCallback<void(const std::vector<std::string>&)>;
 
   // Callback to run if the user presses the trash can button in the
   // action-required dialog. Will pass to LocalCardMigrationManager a
   // string of GUID of the card that the user selected to delete from local
   // storage.
-  typedef base::RepeatingCallback<void(const std::string&)>
-      MigrationDeleteCardCallback;
+  using MigrationDeleteCardCallback =
+      base::RepeatingCallback<void(const std::string&)>;
 
   // Callback to run after local IBAN save is offered. The callback runs with
   // `user_decision` indicating whether the prompt was accepted, declined,
@@ -370,8 +369,8 @@ class AutofillClient : public RiskDataLoader {
 
   // Callback to run if the OK button or the cancel button in a
   // Webauthn dialog is clicked.
-  typedef base::RepeatingCallback<void(WebauthnDialogCallbackType)>
-      WebauthnDialogCallback;
+  using WebauthnDialogCallback =
+      base::RepeatingCallback<void(WebauthnDialogCallbackType)>;
 
   // TODO(crbug.com/1486412): investigate if AutofillProfile should be passed
   // by const reference.
