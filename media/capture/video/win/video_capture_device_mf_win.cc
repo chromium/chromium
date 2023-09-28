@@ -2262,7 +2262,7 @@ HRESULT VideoCaptureDeviceMFWin::DeliverExternalBufferToClient(
               selected_video_capability_->supported_format.frame_rate,
               pixel_format),
           gfx::ColorSpace());
-  client_->OnIncomingCapturedExternalBuffer(std::move(external_buffer), {},
+  client_->OnIncomingCapturedExternalBuffer(std::move(external_buffer),
                                             reference_time, timestamp,
                                             gfx::Rect(texture_size));
   return hr;

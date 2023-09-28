@@ -484,7 +484,6 @@ void VideoCaptureDeviceClient::OnIncomingCapturedGfxBuffer(
 
 void VideoCaptureDeviceClient::OnIncomingCapturedExternalBuffer(
     CapturedExternalVideoBuffer buffer,
-    std::vector<CapturedExternalVideoBuffer> scaled_buffers,
     base::TimeTicks reference_time,
     base::TimeDelta timestamp,
     const gfx::Rect& visible_rect) {
@@ -497,28 +496,7 @@ void VideoCaptureDeviceClient::OnIncomingCapturedExternalBuffer(
                 "trakcer failed.";
     return;
   }
-  std::vector<ReadyFrameInBuffer> scaled_ready_frames;
-  scaled_ready_frames.reserve(scaled_buffers.size());
-  for (auto& scaled_buffer : scaled_buffers) {
-    // TODO(https://crbug.com/1191986): |visible_rect| is not set correctly for
-    // |scaled_buffers|, but scaled buffers is deprecated and not used. It will
-    // be removed in another CL.
-    gfx::Rect scaled_buffer_visible_rect =
-        gfx::Rect{scaled_buffer.format.frame_size};
-    ReadyFrameInBuffer scaled_ready_frame;
-    if (CreateReadyFrameFromExternalBuffer(
-            std::move(scaled_buffer), reference_time, timestamp,
-            scaled_buffer_visible_rect,
-            &scaled_ready_frame) != ReserveResult::kSucceeded) {
-      DVLOG(2) << __func__
-               << " CreateReadyFrameFromExternalBuffer failed: scaled frame "
-                  "reservation trakcer failed.";
-      return;
-    }
-    scaled_ready_frames.push_back(std::move(scaled_ready_frame));
-  }
-  receiver_->OnFrameReadyInBuffer(std::move(ready_frame),
-                                  std::move(scaled_ready_frames));
+  receiver_->OnFrameReadyInBuffer(std::move(ready_frame), {});
 }
 
 VideoCaptureDevice::Client::ReserveResult

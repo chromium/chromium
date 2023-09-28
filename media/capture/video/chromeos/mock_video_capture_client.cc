@@ -69,7 +69,6 @@ void MockVideoCaptureClient::OnIncomingCapturedGfxBuffer(
 
 void MockVideoCaptureClient::OnIncomingCapturedExternalBuffer(
     CapturedExternalVideoBuffer buffer,
-    std::vector<CapturedExternalVideoBuffer> scaled_buffers,
     base::TimeTicks reference_time,
     base::TimeDelta timestamp,
     const gfx::Rect& visible_rect) {

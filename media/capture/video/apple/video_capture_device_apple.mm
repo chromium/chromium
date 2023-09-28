@@ -276,11 +276,9 @@ void VideoCaptureDeviceApple::ReceiveExternalGpuMemoryBufferFrame(
                      ", and expected " + capture_format_.frame_size.ToString());
     return;
   }
-  // TODO(https://crbug.com/1440075): Remove the `scaled_buffers` argument
-  // because the vector is always empty and no consumers are interested in them.
   client_->OnIncomingCapturedExternalBuffer(
-      std::move(frame), std::vector<CapturedExternalVideoBuffer>(),
-      base::TimeTicks::Now(), timestamp, gfx::Rect(capture_format_.frame_size));
+      std::move(frame), base::TimeTicks::Now(), timestamp,
+      gfx::Rect(capture_format_.frame_size));
 }
 
 void VideoCaptureDeviceApple::OnPhotoTaken(const uint8_t* image_data,

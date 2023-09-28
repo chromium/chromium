@@ -84,7 +84,6 @@ class CAPTURE_EXPORT VideoCaptureDeviceClient
                                    int frame_feedback_id) override;
   void OnIncomingCapturedExternalBuffer(
       CapturedExternalVideoBuffer buffer,
-      std::vector<CapturedExternalVideoBuffer> scaled_buffers,
       base::TimeTicks reference_time,
       base::TimeDelta timestamp,
       const gfx::Rect& visible_rect) override;
