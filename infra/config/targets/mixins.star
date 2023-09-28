@@ -683,7 +683,8 @@ targets.mixin(
     name = "linux-jammy-2",
     swarming = targets.swarming(
         dimensions = {
-            "os": "Ubuntu-22.04.1",
+            "os": "Ubuntu-22.04",
+            "zone": "us",
         },
     ),
 )

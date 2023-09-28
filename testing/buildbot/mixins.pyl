@@ -537,7 +537,8 @@
   'linux-jammy-2': {
     'swarming': {
       'dimensions': {
-        'os': 'Ubuntu-22.04.1',
+        'os': 'Ubuntu-22.04',
+        'zone': 'us',
       },
     },
   },
