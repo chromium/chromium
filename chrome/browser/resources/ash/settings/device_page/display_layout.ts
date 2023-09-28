@@ -122,7 +122,7 @@ class DisplayLayoutElement extends DisplayLayoutElementBase {
     this.mirroringDestinationIds_ = [];
   }
 
-  override disconnectedCallback() {
+  override disconnectedCallback(): void {
     super.disconnectedCallback();
 
     this.initializeDrag(false);
@@ -134,7 +134,7 @@ class DisplayLayoutElement extends DisplayLayoutElementBase {
    */
   updateDisplays(
       displays: DisplayUnitInfo[], layouts: DisplayLayout[],
-      mirroringDestinationIds: string[]) {
+      mirroringDestinationIds: string[]): void {
     this.displays = displays;
     this.layouts = layouts;
     this.mirroringDestinationIds_ = mirroringDestinationIds;
@@ -143,7 +143,7 @@ class DisplayLayoutElement extends DisplayLayoutElementBase {
 
     const self = this;
     const retry = 100;  // ms
-    function tryCalcVisualScale() {
+    function tryCalcVisualScale(): void {
       if (!self.calculateVisualScale_()) {
         setTimeout(tryCalcVisualScale, retry);
       }
@@ -259,24 +259,24 @@ class DisplayLayoutElement extends DisplayLayoutElementBase {
     return display.id === selectedDisplay.id;
   }
 
-  private dispatchSelectDisplayEvent_(displayId: DisplayUnitInfo['id']) {
+  private dispatchSelectDisplayEvent_(displayId: DisplayUnitInfo['id']): void {
     const selectDisplayEvent =
         new CustomEvent('select-display', {composed: true, detail: displayId});
     this.dispatchEvent(selectDisplayEvent);
   }
 
-  private onSelectDisplayClick_(e: DisplaySelectEvent) {
+  private onSelectDisplayClick_(e: DisplaySelectEvent): void {
     this.dispatchSelectDisplayEvent_(e.model.item.id);
     // Keep focused display in-sync with clicked display
     e.target.focus();
   }
 
-  private onFocus_(e: DisplaySelectEvent) {
+  private onFocus_(e: DisplaySelectEvent): void {
     this.dispatchSelectDisplayEvent_(e.model.item.id);
     e.target.focus();
   }
 
-  private onDrag_(id: string, amount: Position|null) {
+  private onDrag_(id: string, amount: Position|null): void {
     id = id.substr(1);  // Skip prefix
 
     let newBounds: Bounds;

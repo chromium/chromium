@@ -131,7 +131,7 @@ class SettingsStorageElement extends SettingsStorageElementBase {
     this.browserProxy_ = DevicePageBrowserProxyImpl.getInstance();
   }
 
-  override connectedCallback() {
+  override connectedCallback(): void {
     super.connectedCallback();
 
     this.addWebUiListener(
@@ -163,7 +163,7 @@ class SettingsStorageElement extends SettingsStorageElementBase {
     }
   }
 
-  override ready() {
+  override ready(): void {
     super.ready();
 
     const r = routes;
@@ -174,7 +174,7 @@ class SettingsStorageElement extends SettingsStorageElementBase {
     this.addFocusConfig(r.APP_MANAGEMENT, '#appsSize');
   }
 
-  override currentRouteChanged(newRoute: Route, oldRoute?: Route) {
+  override currentRouteChanged(newRoute: Route, oldRoute?: Route): void {
     super.currentRouteChanged(newRoute, oldRoute);
 
     if (newRoute !== this.route) {

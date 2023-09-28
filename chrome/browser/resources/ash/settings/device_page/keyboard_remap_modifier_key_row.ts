@@ -36,7 +36,7 @@ const KeyboardRemapModifierKeyRowElementBase = I18nMixin(PolymerElement);
 
 export class KeyboardRemapModifierKeyRowElement extends
     KeyboardRemapModifierKeyRowElementBase {
-  static get is(): string {
+  static get is() {
     return 'keyboard-remap-modifier-key-row';
   }
 
@@ -104,7 +104,7 @@ export class KeyboardRemapModifierKeyRowElement extends
   key: ModifierKey;
   defaultRemappings: {[key: number]: ModifierKey};
 
-  override ready() {
+  override ready(): void {
     super.ready();
 
     this.setUpKeyMapTargets();

@@ -40,7 +40,7 @@ const SettingsPerDeviceTouchpadSubsectionElementBase =
     DeepLinkingMixin(RouteObserverMixin(I18nMixin(PolymerElement)));
 export class SettingsPerDeviceTouchpadSubsectionElement extends
     SettingsPerDeviceTouchpadSubsectionElementBase {
-  static get is(): string {
+  static get is() {
     return 'settings-per-device-touchpad-subsection';
   }
 

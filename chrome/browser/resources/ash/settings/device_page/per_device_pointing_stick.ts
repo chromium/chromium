@@ -35,7 +35,7 @@ const SettingsPerDevicePointingStickElementBase =
 
 export class SettingsPerDevicePointingStickElement extends
     SettingsPerDevicePointingStickElementBase {
-  static get is(): string {
+  static get is() {
     return 'settings-per-device-pointing-stick';
   }
 
@@ -63,7 +63,7 @@ export class SettingsPerDevicePointingStickElement extends
 
   private onPointingStickListUpdated(
       newPointingStickList: PointingStick[],
-      oldPointingStickList: PointingStick[]|undefined) {
+      oldPointingStickList: PointingStick[]|undefined): void {
     if (!oldPointingStickList) {
       return;
     }
@@ -74,7 +74,7 @@ export class SettingsPerDevicePointingStickElement extends
     }
   }
 
-  private computeIsLastDevice(index: number) {
+  private computeIsLastDevice(index: number): boolean {
     return index === this.pointingSticks.length - 1;
   }
 }

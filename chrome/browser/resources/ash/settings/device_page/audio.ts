@@ -153,7 +153,7 @@ export class SettingsAudioElement extends SettingsAudioElementBase {
         AudioAndCaptionsPageBrowserProxyImpl.getInstance();
   }
 
-  override ready() {
+  override ready(): void {
     super.ready();
 
     this.observeAudioSystemProperties_();
@@ -292,7 +292,7 @@ export class SettingsAudioElement extends SettingsAudioElementBase {
     this.crosAudioConfig_.setOutputMuted(!this.isOutputMuted_);
   }
 
-  override currentRouteChanged(route: Route) {
+  override currentRouteChanged(route: Route): void {
     // Does not apply to this page.
     // TODO(crbug.com/1092970): Add DeepLinkingMixin and attempt deep link.
     if (route !== routes.AUDIO) {

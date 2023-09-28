@@ -263,7 +263,7 @@ export class SettingsDevicePageElement extends SettingsDevicePageElementBase {
 
   }
 
-  override connectedCallback() {
+  override connectedCallback(): void {
     super.connectedCallback();
 
     if (!this.isDeviceSettingsSplitEnabled_) {
@@ -290,7 +290,7 @@ export class SettingsDevicePageElement extends SettingsDevicePageElementBase {
     this.browserProxy_.updateAndroidEnabled();
   }
 
-  override ready() {
+  override ready(): void {
     super.ready();
 
     this.addFocusConfig(routes.POINTERS, '#pointersRow');
@@ -439,98 +439,98 @@ export class SettingsDevicePageElement extends SettingsDevicePageElementBase {
   /**
    * Handler for tapping the mouse and touchpad settings menu item.
    */
-  private onPointersClick_() {
+  private onPointersClick_(): void {
     Router.getInstance().navigateTo(routes.POINTERS);
   }
 
   /**
    * Handler for tapping the mouse and touchpad settings menu item.
    */
-  private onPerDeviceKeyboardClick_() {
+  private onPerDeviceKeyboardClick_(): void {
     Router.getInstance().navigateTo(routes.PER_DEVICE_KEYBOARD);
   }
 
   /**
    * Handler for tapping the Mouse settings menu item.
    */
-  private onPerDeviceMouseClick_() {
+  private onPerDeviceMouseClick_(): void {
     Router.getInstance().navigateTo(routes.PER_DEVICE_MOUSE);
   }
 
   /**
    * Handler for tapping the Touchpad settings menu item.
    */
-  private onPerDeviceTouchpadClick_() {
+  private onPerDeviceTouchpadClick_(): void {
     Router.getInstance().navigateTo(routes.PER_DEVICE_TOUCHPAD);
   }
 
   /**
    * Handler for tapping the Pointing stick settings menu item.
    */
-  private onPerDevicePointingStickClick_() {
+  private onPerDevicePointingStickClick_(): void {
     Router.getInstance().navigateTo(routes.PER_DEVICE_POINTING_STICK);
   }
 
   /**
    * Handler for tapping the Keyboard settings menu item.
    */
-  private onKeyboardClick_() {
+  private onKeyboardClick_(): void {
     Router.getInstance().navigateTo(routes.KEYBOARD);
   }
 
   /**
    * Handler for tapping the Stylus settings menu item.
    */
-  private onStylusClick_() {
+  private onStylusClick_(): void {
     Router.getInstance().navigateTo(routes.STYLUS);
   }
 
   /**
    * Handler for tapping the Graphics tablet settings menu item.
    */
-  private onGraphicsTabletClick() {
+  private onGraphicsTabletClick(): void {
     Router.getInstance().navigateTo(routes.GRAPHICS_TABLET);
   }
 
   /**
    * Handler for tapping the Display settings menu item.
    */
-  private onDisplayClick_() {
+  private onDisplayClick_(): void {
     Router.getInstance().navigateTo(routes.DISPLAY);
   }
 
   /**
    * Handler for tapping the Audio settings menu item.
    */
-  private onAudioClick_() {
+  private onAudioClick_(): void {
     Router.getInstance().navigateTo(routes.AUDIO);
   }
 
   /**
    * Handler for tapping the Storage settings menu item.
    */
-  private onStorageClick_() {
+  private onStorageClick_(): void {
     Router.getInstance().navigateTo(routes.STORAGE);
   }
 
   /**
    * Handler for tapping the Power settings menu item.
    */
-  private onPowerClick_() {
+  private onPowerClick_(): void {
     Router.getInstance().navigateTo(routes.POWER);
   }
 
-  override currentRouteChanged(newRoute: Route, oldRoute?: Route) {
+  override currentRouteChanged(newRoute: Route, oldRoute?: Route): void {
     super.currentRouteChanged(newRoute, oldRoute);
 
     this.checkPointerSubpage_();
   }
 
-  private pointersChanged_() {
+  private pointersChanged_(): void {
     this.checkPointerSubpage_();
   }
 
-  private mouseChanged_() {
+  private mouseChanged_(): void {
     if ((!this.mice || this.mice.length === 0) &&
         Router.getInstance().currentRoute === routes.PER_DEVICE_MOUSE) {
       getAnnouncerInstance().announce(
@@ -539,7 +539,7 @@ export class SettingsDevicePageElement extends SettingsDevicePageElementBase {
     }
   }
 
-  private touchpadChanged_() {
+  private touchpadChanged_(): void {
     if ((!this.touchpads || this.touchpads.length === 0) &&
         Router.getInstance().currentRoute === routes.PER_DEVICE_TOUCHPAD) {
       getAnnouncerInstance().announce(
@@ -549,7 +549,7 @@ export class SettingsDevicePageElement extends SettingsDevicePageElementBase {
     }
   }
 
-  private pointingStickChanged_() {
+  private pointingStickChanged_(): void {
     if ((!this.pointingSticks || this.pointingSticks.length === 0) &&
         Router.getInstance().currentRoute ===
             routes.PER_DEVICE_POINTING_STICK) {
@@ -587,7 +587,7 @@ export class SettingsDevicePageElement extends SettingsDevicePageElementBase {
   /**
    * Leaves the pointer subpage if all pointing devices are detached.
    */
-  private checkPointerSubpage_() {
+  private checkPointerSubpage_(): void {
     // Check that the properties have explicitly been set to false.
     if (this.hasMouse_ === false && this.hasPointingStick_ === false &&
         this.hasTouchpad_ === false &&

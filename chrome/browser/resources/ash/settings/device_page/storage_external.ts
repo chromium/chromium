@@ -61,7 +61,7 @@ class SettingsStorageExternalElement extends
     this.browserProxy_ = DevicePageBrowserProxyImpl.getInstance();
   }
 
-  override connectedCallback() {
+  override connectedCallback(): void {
     super.connectedCallback();
 
     this.browserProxy_.setExternalStoragesUpdatedCallback(

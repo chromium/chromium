@@ -41,7 +41,7 @@ const SettingsPerDeviceKeyboardElementBase =
 
 export class SettingsPerDeviceKeyboardElement extends
     SettingsPerDeviceKeyboardElementBase {
-  static get is(): string {
+  static get is() {
     return 'settings-per-device-keyboard';
   }
 
@@ -128,7 +128,7 @@ export class SettingsPerDeviceKeyboardElement extends
   private browserProxy: DevicePageBrowserProxy =
       DevicePageBrowserProxyImpl.getInstance();
 
-  override connectedCallback() {
+  override connectedCallback(): void {
     super.connectedCallback();
 
     this.browserProxy.initializeKeyboard();
@@ -144,7 +144,8 @@ export class SettingsPerDeviceKeyboardElement extends
   }
 
   private onKeyboardListUpdated(
-      newKeyboardList: Keyboard[], oldKeyboardList: Keyboard[]|undefined) {
+      newKeyboardList: Keyboard[],
+      oldKeyboardList: Keyboard[]|undefined): void {
     if (!oldKeyboardList) {
       return;
     }
@@ -169,7 +170,7 @@ export class SettingsPerDeviceKeyboardElement extends
     return this.keyboards.length > 0;
   }
 
-  private computeIsLastDevice(index: number) {
+  private computeIsLastDevice(index: number): boolean {
     return index === this.keyboards.length - 1;
   }
 

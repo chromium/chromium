@@ -35,7 +35,7 @@ const SettingsPerDeviceMouseElementBase =
 
 export class SettingsPerDeviceMouseElement extends
     SettingsPerDeviceMouseElementBase {
-  static get is(): string {
+  static get is() {
     return 'settings-per-device-mouse';
   }
 
@@ -67,7 +67,7 @@ export class SettingsPerDeviceMouseElement extends
   }
 
   private onMouseListUpdated(
-      newMouseList: Mouse[], oldMouseList: Mouse[]|undefined) {
+      newMouseList: Mouse[], oldMouseList: Mouse[]|undefined): void {
     if (!oldMouseList) {
       return;
     }
@@ -78,7 +78,7 @@ export class SettingsPerDeviceMouseElement extends
     }
   }
 
-  private computeIsLastDevice(index: number) {
+  private computeIsLastDevice(index: number): boolean {
     return index === this.mice.length - 1;
   }
 }

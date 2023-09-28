@@ -39,7 +39,7 @@ const SettingsPerDeviceMouseSubsectionElementBase =
     DeepLinkingMixin(RouteObserverMixin(I18nMixin(PolymerElement)));
 export class SettingsPerDeviceMouseSubsectionElement extends
     SettingsPerDeviceMouseSubsectionElementBase {
-  static get is(): string {
+  static get is() {
     return 'settings-per-device-mouse-subsection';
   }
 
@@ -247,7 +247,7 @@ export class SettingsPerDeviceMouseSubsectionElement extends
     this.isInitialized = true;
   }
 
-  private onPoliciesChanged() {
+  private onPoliciesChanged(): void {
     this.primaryRightPref = {
       ...this.primaryRightPref,
       ...getPrefPolicyFields(this.mousePolicies.swapRightPolicy),

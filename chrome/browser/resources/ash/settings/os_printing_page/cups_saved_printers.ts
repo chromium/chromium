@@ -75,7 +75,7 @@ const SettingsCupsSavedPrintersElementBase =
 
 export class SettingsCupsSavedPrintersElement extends
     SettingsCupsSavedPrintersElementBase {
-  static get is(): string {
+  static get is() {
     return 'settings-cups-saved-printers';
   }
 

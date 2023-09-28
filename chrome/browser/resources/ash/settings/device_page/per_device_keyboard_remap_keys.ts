@@ -37,7 +37,7 @@ const SettingsPerDeviceKeyboardRemapKeysElementBase =
 
 export class SettingsPerDeviceKeyboardRemapKeysElement extends
     SettingsPerDeviceKeyboardRemapKeysElementBase {
-  static get is(): string {
+  static get is() {
     return 'settings-per-device-keyboard-remap-keys';
   }
 

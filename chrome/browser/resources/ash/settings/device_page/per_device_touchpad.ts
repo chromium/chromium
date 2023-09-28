@@ -35,7 +35,7 @@ const SettingsPerDeviceTouchpadElementBase =
 
 export class SettingsPerDeviceTouchpadElement extends
     SettingsPerDeviceTouchpadElementBase {
-  static get is(): string {
+  static get is() {
     return 'settings-per-device-touchpad';
   }
 
@@ -62,7 +62,8 @@ export class SettingsPerDeviceTouchpadElement extends
   }
 
   private onTouchpadListUpdated(
-      newTouchpadList: Touchpad[], oldTouchpadList: Touchpad[]|undefined) {
+      newTouchpadList: Touchpad[],
+      oldTouchpadList: Touchpad[]|undefined): void {
     if (!oldTouchpadList) {
       return;
     }
@@ -73,7 +74,7 @@ export class SettingsPerDeviceTouchpadElement extends
     }
   }
 
-  private computeIsLastDevice(index: number) {
+  private computeIsLastDevice(index: number): boolean {
     return index === this.touchpads.length - 1;
   }
 }

@@ -38,7 +38,7 @@ const SettingsPerDevicePointingStickSubsectionElementBase =
     DeepLinkingMixin(RouteObserverMixin(I18nMixin(PolymerElement)));
 export class SettingsPerDevicePointingStickSubsectionElement extends
     SettingsPerDevicePointingStickSubsectionElementBase {
-  static get is(): string {
+  static get is() {
     return 'settings-per-device-pointing-stick-subsection';
   }
 

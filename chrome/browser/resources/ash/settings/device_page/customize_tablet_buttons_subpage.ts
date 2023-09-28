@@ -62,13 +62,13 @@ export class SettingsCustomizeTabletButtonsSubpageElement extends
       getInputDeviceSettingsProvider();
   private previousRoute_: Route|null = null;
 
-  override connectedCallback() {
+  override connectedCallback(): void {
     super.connectedCallback();
 
     this.addEventListener('button-remapping-changed', this.onSettingsChanged);
   }
 
-  override disconnectedCallback() {
+  override disconnectedCallback(): void {
     super.disconnectedCallback();
 
     this.removeEventListener(

@@ -78,7 +78,7 @@ export class SettingsDisplayOverscanDialogElement extends PolymerElement {
     this.keyHandler_ = this.handleKeyEvent_.bind(this);
   }
 
-  open() {
+  open(): void {
     // We need to attach the event listener to |window|, not |this| so that
     // changing focus does not prevent key events from occurring.
     window.addEventListener('keydown', this.keyHandler_);
@@ -88,7 +88,7 @@ export class SettingsDisplayOverscanDialogElement extends PolymerElement {
     this.shadowRoot!.getElementById('reset')!.blur();
   }
 
-  close() {
+  close(): void {
     window.removeEventListener('keydown', this.keyHandler_);
 
     this.displayId = '';  // Will trigger displayIdChanged_.
@@ -98,7 +98,7 @@ export class SettingsDisplayOverscanDialogElement extends PolymerElement {
     }
   }
 
-  private displayIdChanged_(newValue: string, oldValue: string) {
+  private displayIdChanged_(newValue: string, oldValue: string): void {
     if (oldValue && !this.committed_) {
       getDisplayApi().overscanCalibrationReset(oldValue);
       getDisplayApi().overscanCalibrationComplete(oldValue);
@@ -110,17 +110,17 @@ export class SettingsDisplayOverscanDialogElement extends PolymerElement {
     getDisplayApi().overscanCalibrationStart(newValue);
   }
 
-  private onResetClick_() {
+  private onResetClick_(): void {
     getDisplayApi().overscanCalibrationReset(this.displayId);
   }
 
-  private onSaveClick_() {
+  private onSaveClick_(): void {
     getDisplayApi().overscanCalibrationComplete(this.displayId);
     this.committed_ = true;
     this.close();
   }
 
-  private handleKeyEvent_(event: KeyboardEvent) {
+  private handleKeyEvent_(event: KeyboardEvent): void {
     if (event.altKey || event.ctrlKey || event.metaKey) {
       return;
     }
@@ -160,7 +160,7 @@ export class SettingsDisplayOverscanDialogElement extends PolymerElement {
     event.preventDefault();
   }
 
-  private move_(x: number, y: number) {
+  private move_(x: number, y: number): void {
     const delta: Insets = {
       left: x,
       top: y,
@@ -170,7 +170,7 @@ export class SettingsDisplayOverscanDialogElement extends PolymerElement {
     getDisplayApi().overscanCalibrationAdjust(this.displayId, delta);
   }
 
-  private resize_(x: number, y: number) {
+  private resize_(x: number, y: number): void {
     const delta: Insets = {
       left: x,
       top: y,

@@ -182,7 +182,7 @@ class SettingsPointersElement extends SettingsPointersElementBase {
             'mouseAccelerationLabel');
   }
 
-  override currentRouteChanged(route: Route) {
+  override currentRouteChanged(route: Route): void {
     // Does not apply to this page.
     if (route !== routes.POINTERS) {
       return;
@@ -200,7 +200,7 @@ class SettingsPointersElement extends SettingsPointersElementBase {
     this.attemptDeepLink();
   }
 
-  private onLearnMoreLinkClicked_(event: Event) {
+  private onLearnMoreLinkClicked_(event: Event): void {
     const path = event.composedPath();
     if (!Array.isArray(path) || !path.length) {
       return;
@@ -212,19 +212,19 @@ class SettingsPointersElement extends SettingsPointersElementBase {
     }
   }
 
-  private onMouseReverseScrollRowClicked_() {
+  private onMouseReverseScrollRowClicked_(): void {
     this.setPrefValue(
         'settings.mouse.reverse_scroll',
         !this.getPref('settings.mouse.reverse_scroll').value);
   }
 
-  private onTouchpadReverseScrollRowClicked_() {
+  private onTouchpadReverseScrollRowClicked_(): void {
     this.setPrefValue(
         'settings.touchpad.natural_scroll',
         !this.getPref('settings.touchpad.natural_scroll').value);
   }
 
-  private onTouchpadHapticFeedbackRowClicked_() {
+  private onTouchpadHapticFeedbackRowClicked_(): void {
     this.setPrefValue(
         'settings.touchpad.haptic_feedback',
         !this.getPref('settings.touchpad.haptic_feedback').value);

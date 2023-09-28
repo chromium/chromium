@@ -230,7 +230,7 @@ export class SettingsPowerElement extends SettingsPowerElementBase {
     this.browserProxy_ = DevicePageBrowserProxyImpl.getInstance();
   }
 
-  override connectedCallback() {
+  override connectedCallback(): void {
     super.connectedCallback();
 
     this.addWebUiListener(
@@ -259,7 +259,7 @@ export class SettingsPowerElement extends SettingsPowerElementBase {
     return true;
   }
 
-  override currentRouteChanged(route: Route) {
+  override currentRouteChanged(route: Route): void {
     // Does not apply to this page.
     if (route !== routes.POWER) {
       return;
@@ -410,8 +410,7 @@ export class SettingsPowerElement extends SettingsPowerElementBase {
    * @return Idle option object that maps to idleBehavior.
    */
   private getIdleOption_(
-      idleBehavior: IdleBehavior, currIdleBehavior: IdleBehavior):
-      {value: IdleBehavior, name: string, selected: boolean} {
+      idleBehavior: IdleBehavior, currIdleBehavior: IdleBehavior): IdleOption {
     const selected = idleBehavior === currIdleBehavior;
     switch (idleBehavior) {
       case IdleBehavior.DISPLAY_OFF_SLEEP:
@@ -451,7 +450,8 @@ export class SettingsPowerElement extends SettingsPowerElementBase {
 
   private updateIdleOptions_(
       acIdleBehaviors: IdleBehavior[], batteryIdleBehaviors: IdleBehavior[],
-      currAcIdleBehavior: IdleBehavior, currBatteryIdleBehavior: IdleBehavior) {
+      currAcIdleBehavior: IdleBehavior,
+      currBatteryIdleBehavior: IdleBehavior): void {
     this.acIdleOptions_ = acIdleBehaviors.map((idleBehavior) => {
       return this.getIdleOption_(idleBehavior, currAcIdleBehavior);
     });
@@ -465,7 +465,7 @@ export class SettingsPowerElement extends SettingsPowerElementBase {
    * @param powerManagementSettings Current power management settings.
    */
   private powerManagementSettingsChanged_(powerManagementSettings:
-                                              PowerManagementSettings) {
+                                              PowerManagementSettings): void {
     this.updateIdleOptions_(
         powerManagementSettings.possibleAcIdleBehaviors || [],
         powerManagementSettings.possibleBatteryIdleBehaviors || [],

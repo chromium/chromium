@@ -62,7 +62,7 @@ function getEmptyPrinter(): CupsPrinterInfo {
 }
 
 export class SettingsCupsAddPrinterDialogElement extends PolymerElement {
-  static get is(): string {
+  static get is() {
     return 'settings-cups-add-printer-dialog';
   }
 

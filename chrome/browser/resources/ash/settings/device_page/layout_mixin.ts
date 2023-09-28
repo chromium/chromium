@@ -703,7 +703,7 @@ export const LayoutMixin = dedupingMixin(
          * |layoutPosition| is undefined, removes all highlights.
          */
         private highlightEdge_(
-            id: string, layoutPosition: LayoutPosition|undefined) {
+            id: string, layoutPosition: LayoutPosition|undefined): void {
           for (let i = 0; i < this.layouts.length; ++i) {
             const layout = this.layouts[i];
             const highlight = (layout.id === id || layout.parentId === id) ?

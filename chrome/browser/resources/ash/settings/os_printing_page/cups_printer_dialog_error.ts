@@ -13,7 +13,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {getTemplate} from './cups_printer_dialog_error.html.js';
 
 export class PrinterDialogErrorElement extends PolymerElement {
-  static get is(): string {
+  static get is() {
     return 'printer-dialog-error';
   }
 

@@ -37,7 +37,7 @@ class FakeMethodState {
     return this.result;
   }
 
-  setResult(result: any) {
+  setResult(result: any): void {
     this.result = result;
   }
 }
@@ -358,7 +358,7 @@ export class FakeInputDeviceSettingsProvider implements
     return this.observedIds;
   }
 
-  sendButtonPress(button: Button) {
+  sendButtonPress(button: Button): void {
     for (const observer of this.buttonPressObservers) {
       observer.onButtonPressed(button);
     }

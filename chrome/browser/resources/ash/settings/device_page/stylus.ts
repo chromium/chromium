@@ -132,7 +132,7 @@ class SettingsStylusElement extends SettingsStylusElementBase {
     this.browserProxy_ = DevicePageBrowserProxyImpl.getInstance();
   }
 
-  override ready() {
+  override ready(): void {
     super.ready();
 
     this.browserProxy_.setNoteTakingAppsUpdatedCallback(
@@ -140,7 +140,7 @@ class SettingsStylusElement extends SettingsStylusElementBase {
     this.browserProxy_.requestNoteTakingApps();
   }
 
-  override currentRouteChanged(route: Route) {
+  override currentRouteChanged(route: Route): void {
     // Does not apply to this page.
     if (route !== routes.STYLUS) {
       return;
@@ -190,7 +190,7 @@ class SettingsStylusElement extends SettingsStylusElementBase {
    * Toggles whether the selected app is enabled as a note action handler on
    * the lock screen.
    */
-  private toggleLockScreenSupport_() {
+  private toggleLockScreenSupport_(): void {
     assertExists(this.selectedApp_);
     if (this.selectedApp_.lockScreenSupport !==
             NoteAppLockScreenSupport.ENABLED &&
@@ -205,7 +205,7 @@ class SettingsStylusElement extends SettingsStylusElementBase {
     recordSettingChange();
   }
 
-  private onSelectedAppChanged_() {
+  private onSelectedAppChanged_(): void {
     const app = this.findApp_(this.$.selectApp.value);
     this.selectedApp_ = app;
 
@@ -215,7 +215,8 @@ class SettingsStylusElement extends SettingsStylusElementBase {
     }
   }
 
-  private onNoteAppsUpdated_(apps: NoteAppInfo[], waitingForAndroid: boolean) {
+  private onNoteAppsUpdated_(apps: NoteAppInfo[], waitingForAndroid: boolean):
+      void {
     this.waitingForAndroid_ = waitingForAndroid;
     this.appChoices_ = apps;
 
@@ -232,7 +233,7 @@ class SettingsStylusElement extends SettingsStylusElementBase {
     return apps.length > 0 && !waitingForAndroid;
   }
 
-  private onFindAppsClick_() {
+  private onFindAppsClick_(): void {
     this.browserProxy_.showPlayStore(FIND_MORE_APPS_URL);
   }
 }

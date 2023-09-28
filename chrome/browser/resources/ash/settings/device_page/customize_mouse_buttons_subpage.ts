@@ -87,13 +87,13 @@ export class SettingsCustomizeMouseButtonsSubpageElement extends
   private primaryRightPref_: chrome.settingsPrivate.PrefObject;
   private isInitialized_: boolean = false;
 
-  override connectedCallback() {
+  override connectedCallback(): void {
     super.connectedCallback();
 
     this.addEventListener('button-remapping-changed', this.onSettingsChanged);
   }
 
-  override disconnectedCallback() {
+  override disconnectedCallback(): void {
     super.disconnectedCallback();
 
     this.removeEventListener(
@@ -135,7 +135,7 @@ export class SettingsCustomizeMouseButtonsSubpageElement extends
     this.isInitialized_ = true;
   }
 
-  private onPoliciesChanged() {
+  private onPoliciesChanged(): void {
     this.primaryRightPref_ = {
       ...this.primaryRightPref_,
       ...getPrefPolicyFields(this.mousePolicies.swapRightPolicy),

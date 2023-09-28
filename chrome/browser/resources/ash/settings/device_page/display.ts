@@ -312,7 +312,7 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
     this.modeToParentModeMap_ = new Map();
   }
 
-  override connectedCallback() {
+  override connectedCallback(): void {
     super.connectedCallback();
 
     this.displayChangedListener_ =
@@ -323,7 +323,7 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
     this.$.displaySizeSlider.updateValueInstantly = false;
   }
 
-  override disconnectedCallback() {
+  override disconnectedCallback(): void {
     super.disconnectedCallback();
 
     getDisplayApi().onDisplayChanged.removeListener(
@@ -345,7 +345,7 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
     return true;
   }
 
-  override currentRouteChanged(newRoute: Route, oldRoute?: Route) {
+  override currentRouteChanged(newRoute: Route, oldRoute?: Route): void {
     this.currentRoute_ = newRoute;
 
     // When navigating away from the page, deselect any selected display.
@@ -372,7 +372,7 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
   /**
    * Shows or hides the overscan dialog.
    */
-  private showOverscanDialog_(showOverscan: boolean) {
+  private showOverscanDialog_(showOverscan: boolean): void {
     if (showOverscan) {
       this.$.displayOverscan.open();
       this.$.displayOverscan.focus();
@@ -381,13 +381,13 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
     }
   }
 
-  private onDisplayIdsChanged_() {
+  private onDisplayIdsChanged_(): void {
     // Close any overscan dialog (which will cancel any overscan operation)
     // if displayIds changes.
     this.showOverscanDialog_(false);
   }
 
-  private getDisplayInfo_() {
+  private getDisplayInfo_(): void {
     const flags: GetInfoFlags = {
       singleUnified: true,
     };
@@ -395,7 +395,7 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
         (displays: DisplayUnitInfo[]) => this.displayInfoFetched_(displays));
   }
 
-  private displayInfoFetched_(displays: DisplayUnitInfo[]) {
+  private displayInfoFetched_(displays: DisplayUnitInfo[]): void {
     if (!displays.length) {
       return;
     }
@@ -410,7 +410,7 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
   }
 
   private displayLayoutFetched_(
-      displays: DisplayUnitInfo[], layouts: DisplayLayout[]) {
+      displays: DisplayUnitInfo[], layouts: DisplayLayout[]): void {
     this.layouts = layouts;
     this.displays = displays;
     this.displayTabNames_ = displays.map(({name}) => name);
@@ -487,7 +487,7 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
    * Only one parse*DisplayModes_ method must be called, depending on the
    * state of |listAllDisplayModes_|.
    */
-  private parseCompoundDisplayModes_(selectedDisplay: DisplayUnitInfo) {
+  private parseCompoundDisplayModes_(selectedDisplay: DisplayUnitInfo): void {
     assert(!this.listAllDisplayModes_);
     const optionList: DropdownMenuOptionList = [];
     for (let i = 0; i < selectedDisplay.modes.length; ++i) {
@@ -550,7 +550,7 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
    * in a dropdown. Only one parse*DisplayModes_ method must be called,
    * depending on the state of |listAllDisplayModes_|.
    */
-  private parseSplitDisplayModes_(selectedDisplay: DisplayUnitInfo) {
+  private parseSplitDisplayModes_(selectedDisplay: DisplayUnitInfo): void {
     assert(this.listAllDisplayModes_);
     // Clear the mappings before recalculating.
     this.modeToParentModeMap_ = new Map();
@@ -609,7 +609,7 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
    * @param refreshRates each possible refresh rate
    *   mapped to the corresponding mode index.
    */
-  private getParentModeIndex_(refreshRates: Map<number, number>) {
+  private getParentModeIndex_(refreshRates: Map<number, number>): number {
     const maxRefreshRate = Math.max(...refreshRates.keys());
     // maxRefreshRate always exists as a key
     return refreshRates.get(maxRefreshRate)!;
@@ -620,7 +620,7 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
    * |width| and |height| and possible |refreshRates|.
    */
   private addResolution_(
-      parentModeIndex: number, width: number, height: number) {
+      parentModeIndex: number, width: number, height: number): void {
     assert(this.listAllDisplayModes_);
 
     // Add an entry in the outer map for |parentModeIndex|. The inner
@@ -645,7 +645,7 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
    */
   private addRefreshRate_(
       parentModeIndex: number, modeIndex: number, rate: number,
-      isInterlaced?: boolean) {
+      isInterlaced?: boolean): void {
     assert(this.listAllDisplayModes_);
 
     // Truncate at two decimal places for display. If the refresh rate
@@ -670,8 +670,8 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
    * Sorts |displayModeList_| in descending order. First order sort is width,
    * second order sort is height.
    */
-  private sortResolutionList_() {
-    const getWidthFromResolutionString = function(str: string) {
+  private sortResolutionList_(): void {
+    const getWidthFromResolutionString = (str: string): number => {
       return Number(str.substr(0, str.indexOf(' ')));
     };
 
@@ -690,7 +690,7 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
    * refresh rate are parsed into separate dropdowns and
    * |parentModeToRefreshRateMap_| + |modeToParentModeMap_| are populated.
    */
-  private updateDisplayModeStructures_(selectedDisplay: DisplayUnitInfo) {
+  private updateDisplayModeStructures_(selectedDisplay: DisplayUnitInfo): void {
     if (this.listAllDisplayModes_) {
       this.parseSplitDisplayModes_(selectedDisplay);
     } else {
@@ -737,7 +737,7 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
    * We need to call this explicitly rather than relying on change events
    * so that we can control the update order.
    */
-  private setSelectedDisplay_(selectedDisplay: DisplayUnitInfo) {
+  private setSelectedDisplay_(selectedDisplay: DisplayUnitInfo): void {
     // |modeValues_| controls the resolution slider's tick values. Changing it
     // might trigger a change in the |selectedModePref_.value| if the number
     // of modes differs and the current mode index is out of range of the new
@@ -958,7 +958,7 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
    * section
    * @param zoomFactor Current zoom factor applied on the selected display.
    */
-  private updateLogicalResolutionText_(zoomFactor: number) {
+  private updateLogicalResolutionText_(zoomFactor: number): void {
     assertExists(this.selectedDisplay);
     if (!this.selectedDisplay.isInternal) {
       this.logicalResolutionText_ = '';
@@ -994,7 +994,7 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
    * display's native pixels is different than the longer edge of the
    * display's current bounds.
    */
-  private shouldSwapLogicalResolutionText_() {
+  private shouldSwapLogicalResolutionText_(): boolean {
     assertExists(this.selectedDisplay);
     const mode = this.selectedDisplay.modes[this.currentSelectedModeIndex_];
     const bounds = this.selectedDisplay.bounds;
@@ -1007,7 +1007,7 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
    * Handles the event where the display size slider is being dragged, i.e.
    * the mouse or tap has not been released.
    */
-  private onDisplaySizeSliderDrag_() {
+  private onDisplaySizeSliderDrag_(): void {
     if (!this.selectedDisplay) {
       return;
     }
@@ -1023,7 +1023,7 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
   /**
    * @param e |e.detail| is the id of the selected display.
    */
-  private onSelectDisplay_(e: CustomEvent<string>) {
+  private onSelectDisplay_(e: CustomEvent<string>): void {
     const id = e.detail;
     for (let i = 0; i < this.displays.length; ++i) {
       const display = this.displays[i];
@@ -1036,7 +1036,7 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
     }
   }
 
-  private onSelectDisplayTab_() {
+  private onSelectDisplayTab_(): void {
     const {selected} = castExists(this.shadowRoot!.querySelector('cr-tabs'));
     if (this.selectedTab_ !== selected) {
       this.setSelectedDisplay_(this.displays[selected]);
@@ -1046,14 +1046,14 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
   /**
    * Handles event when a touch calibration option is selected.
    */
-  private onTouchCalibrationClick_() {
+  private onTouchCalibrationClick_(): void {
     getDisplayApi().showNativeTouchCalibration(this.selectedDisplay!.id);
   }
 
   /**
    * Handles the event when an option from display select menu is selected.
    */
-  private updatePrimaryDisplay_(e: Event) {
+  private updatePrimaryDisplay_(e: Event): void {
     if (!this.selectedDisplay) {
       return;
     }
@@ -1076,7 +1076,7 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
    * Handles a change in the |selectedParentModePref| value triggered via the
    * observer.
    */
-  private onSelectedParentModeChange_(newModeIndex: number) {
+  private onSelectedParentModeChange_(newModeIndex: number): void {
     if (this.currentSelectedParentModeIndex_ === newModeIndex) {
       return;
     }
@@ -1124,7 +1124,7 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
   /**
    * Handles a change in |selectedModePref| triggered via the observer.
    */
-  private onSelectedModeChange_(newModeIndex: number) {
+  private onSelectedModeChange_(newModeIndex: number): void {
     // We want to ignore all value changes to the pref due to the slider being
     // dragged. See http://crbug/845712 for more info.
     if (this.currentSelectedModeIndex_ === newModeIndex) {
@@ -1154,7 +1154,7 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
    * occurs when the value is committed (i.e. not while the slider is being
    * dragged).
    */
-  private onSelectedZoomChange_() {
+  private onSelectedZoomChange_(): void {
     if (this.currentSelectedModeIndex_ === -1 || !this.selectedDisplay) {
       return;
     }
@@ -1177,7 +1177,7 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
     return selectedDisplay.isAutoRotationAllowed;
   }
 
-  private onOrientationChange_(event: Event) {
+  private onOrientationChange_(event: Event): void {
     const select = cast(event.target, HTMLSelectElement);
     const value = parseInt(select.value, 10);
 
@@ -1192,7 +1192,7 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
         .then(() => this.setPropertiesCallback_());
   }
 
-  private onMirroredClick_(event: Event) {
+  private onMirroredClick_(event: Event): void {
     // Blur the control so that when the transition animation completes and
     // the UI is focused, the control does not receive focus. crbug.com/785070
     (event.currentTarget as CrCheckboxElement).blur();
@@ -1209,7 +1209,7 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
     });
   }
 
-  private onUnifiedDesktopClick_() {
+  private onUnifiedDesktopClick_(): void {
     const properties: DisplayProperties = {
       isUnified: !this.unifiedDesktopMode_,
     };
@@ -1218,17 +1218,17 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
         .then(() => this.setPropertiesCallback_());
   }
 
-  private onOverscanClick_(e: Event) {
+  private onOverscanClick_(e: Event): void {
     e.preventDefault();
     this.overscanDisplayId = this.selectedDisplay!.id;
     this.showOverscanDialog_(true);
   }
 
-  private onCloseOverscanDialog_() {
+  private onCloseOverscanDialog_(): void {
     focusWithoutInk(castExists(this.shadowRoot!.getElementById('overscan')));
   }
 
-  private updateDisplayInfo_() {
+  private updateDisplayInfo_(): void {
     let displayIds = '';
     let primaryDisplay: DisplayUnitInfo|undefined = undefined;
     let selectedDisplay: DisplayUnitInfo|undefined = undefined;
@@ -1265,7 +1265,7 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
     });
   }
 
-  private setPropertiesCallback_() {
+  private setPropertiesCallback_(): void {
     if (chrome.runtime.lastError) {
       console.error(
           'setDisplayProperties Error: ' + chrome.runtime.lastError.message);
@@ -1279,7 +1279,7 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
     return this.hasMultipleDisplays_() || this.isMirrored_(this.displays);
   }
 
-  private onDisplaysChanged_() {
+  private onDisplaysChanged_(): void {
     flush();
     const displayLayout = this.shadowRoot!.querySelector('display-layout');
     if (displayLayout) {
