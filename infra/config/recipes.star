@@ -169,6 +169,10 @@ build_recipe(
 )
 
 build_recipe(
+    name = "recipe:chromium_licenses/scan",
+)
+
+build_recipe(
     name = "recipe:chromium_polymorphic/launcher",
 )
 
