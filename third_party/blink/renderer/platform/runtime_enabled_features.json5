@@ -1992,7 +1992,7 @@
     },
     {
       name: "HighlightInheritance",
-      status: "test",
+      status: "experimental",
       base_feature: "none",
     },
     {
