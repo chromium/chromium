@@ -148,10 +148,9 @@ enum GetSelectedFileInfoLocalPathOption {
   NEED_LOCAL_PATH_FOR_SAVING,
 };
 
-// Gets the information for |file_urls|.
-void GetSelectedFileInfo(content::RenderFrameHost* render_frame_host,
-                         Profile* profile,
-                         const std::vector<GURL>& file_urls,
+// Gets the information for |local_paths|.
+void GetSelectedFileInfo(Profile* profile,
+                         std::vector<base::FilePath> local_paths,
                          GetSelectedFileInfoLocalPathOption local_path_option,
                          GetSelectedFileInfoCallback callback);
 
