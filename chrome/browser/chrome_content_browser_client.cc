@@ -3553,7 +3553,9 @@ bool ChromeContentBrowserClient::IsCookieDeprecationLabelAllowed(
 
   auto* privacy_sandbox_settings =
       PrivacySandboxSettingsFactory::GetForProfile(profile);
-  DCHECK(privacy_sandbox_settings);
+  if (!privacy_sandbox_settings) {
+    return false;
+  }
   return privacy_sandbox_settings->IsCookieDeprecationLabelAllowed();
 }
 
