@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/animation/animation_delegate.h"
 #include "ui/gfx/animation/linear_animation.h"
 #include "ui/views/metadata/view_factory.h"
@@ -20,7 +21,7 @@ namespace views {
 class Label;
 class TabbedPaneTab;
 class TabbedPaneListener;
-class TabStrip;
+class TabbedPaneTabStrip;
 
 namespace test {
 class TabbedPaneAccessibilityMacTest;
@@ -107,7 +108,7 @@ class VIEWS_EXPORT TabbedPane : public View {
  private:
   friend class FocusTraversalTest;
   friend class TabbedPaneTab;
-  friend class TabStrip;
+  friend class TabbedPaneTabStrip;
   friend class test::TabbedPaneWithWidgetTest;
   friend class test::TabbedPaneAccessibilityMacTest;
 
@@ -140,7 +141,7 @@ class VIEWS_EXPORT TabbedPane : public View {
 
   // The tab strip and contents container. The child indices of these members
   // correspond to match each TabbedPaneTab with its respective content View.
-  raw_ptr<TabStrip> tab_strip_ = nullptr;
+  raw_ptr<TabbedPaneTabStrip> tab_strip_ = nullptr;
   raw_ptr<View> contents_ = nullptr;
 
   // The scroll view containing the tab strip, if |scrollable| is specified on
@@ -210,28 +211,27 @@ class VIEWS_EXPORT TabbedPaneTab : public View {
 };
 
 // The tab strip shown above/left of the tab contents.
-class TabStrip : public View, public gfx::AnimationDelegate {
+class TabbedPaneTabStrip : public View, public gfx::AnimationDelegate {
  public:
-  METADATA_HEADER(TabStrip);
-
+  METADATA_HEADER(TabbedPaneTabStrip);
   // The return value of GetSelectedTabIndex() when no tab is selected.
   static constexpr size_t kNoSelectedTab = static_cast<size_t>(-1);
 
-  TabStrip(TabbedPane::Orientation orientation,
-           TabbedPane::TabStripStyle style);
+  TabbedPaneTabStrip(TabbedPane::Orientation orientation,
+                     TabbedPane::TabStripStyle style);
 
-  TabStrip(const TabStrip&) = delete;
-  TabStrip& operator=(const TabStrip&) = delete;
+  TabbedPaneTabStrip(const TabbedPaneTabStrip&) = delete;
+  TabbedPaneTabStrip& operator=(const TabbedPaneTabStrip&) = delete;
 
-  ~TabStrip() override;
+  ~TabbedPaneTabStrip() override;
 
   // AnimationDelegate:
   void AnimationProgressed(const gfx::Animation* animation) override;
   void AnimationEnded(const gfx::Animation* animation) override;
 
-  // Called by TabStrip when the selected tab changes. This function is only
-  // called if |from_tab| is not null, i.e., there was a previously selected
-  // tab.
+  // Called by TabbedPaneTabStrip when the selected tab changes. This function
+  // is only called if |from_tab| is not null, i.e., there was a previously
+  // selected tab.
   void OnSelectedTabChanged(TabbedPaneTab* from_tab,
                             TabbedPaneTab* to_tab,
                             bool animate = true);

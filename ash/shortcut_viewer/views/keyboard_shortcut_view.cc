@@ -292,8 +292,9 @@ bool KeyboardShortcutView::AcceleratorPressed(
 
 void KeyboardShortcutView::Layout() {
   gfx::Rect content_bounds(GetContentsBounds());
-  if (content_bounds.IsEmpty())
+  if (content_bounds.IsEmpty()) {
     return;
+  }
 
   constexpr int kSearchBoxTopPadding = 8;
   constexpr int kSearchBoxBottomPadding = 16;
@@ -334,8 +335,9 @@ void KeyboardShortcutView::OnPaint(gfx::Canvas* canvas) {
     return;
   }
 
-  if (!needs_init_all_categories_)
+  if (!needs_init_all_categories_) {
     return;
+  }
 
   needs_init_all_categories_ = false;
   // Cannot post a task right after initializing the first category, it will
@@ -367,8 +369,9 @@ void KeyboardShortcutView::QueryChanged(const std::u16string& query) {
 
   debounce_timer_.Stop();
   // If search box is empty, do not show |search_results_container_|.
-  if (query_empty)
+  if (query_empty) {
     return;
+  }
 
   // TODO(wutao): This timeout value is chosen based on subjective search
   // latency tests on Minnie. Objective method or UMA is desired.
@@ -411,8 +414,9 @@ void KeyboardShortcutView::InitViews() {
   // clear the cache.
   KeyboardShortcutItemView::ClearKeycodeToString16Cache();
   for (const auto& item : GetKeyboardShortcutItemList()) {
-    if (ShouldExcludeItem(item))
+    if (ShouldExcludeItem(item)) {
       continue;
+    }
 
     for (auto category : item.categories) {
       shortcut_views_.push_back(
@@ -445,8 +449,9 @@ void KeyboardShortcutView::InitCategoriesTabbedPane(
   active_tab_index_ = categories_tabbed_pane_->GetSelectedTabIndex();
   // If the tab count is 0, GetSelectedTabIndex() will return kNoSelectedTab,
   // which we do not want to cache.
-  if (active_tab_index_ == views::TabStrip::kNoSelectedTab)
+  if (active_tab_index_ == views::TabbedPaneTabStrip::kNoSelectedTab) {
     active_tab_index_ = 0;
+  }
 
   ash::ShortcutCategory current_category = ash::ShortcutCategory::kUnknown;
   KeyboardShortcutItemListView* item_list_view = nullptr;
@@ -493,8 +498,9 @@ void KeyboardShortcutView::InitCategoriesTabbedPane(
     // If |initial_category| has a value, we only initialize the pane with the
     // KeyboardShortcutItemView in the specific category in |initial_category|.
     // Otherwise, we will initialize all the panes.
-    if (initial_category.value_or(category) != category)
+    if (initial_category.value_or(category) != category) {
       continue;
+    }
 
     // Add the item to the category contents container.
     if (!item_list_view->children().empty())
