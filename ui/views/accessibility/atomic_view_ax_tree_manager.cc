@@ -102,4 +102,8 @@ ui::AXNode* AtomicViewAXTreeManager::GetParentNodeFromParentTree() const {
   return nullptr;
 }
 
+void AtomicViewAXTreeManager::ClearComputedRootData() {
+  return ax_tree_->root()->ClearComputedNodeData();
+}
+
 }  // namespace views

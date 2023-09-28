@@ -44,6 +44,8 @@ class VIEWS_EXPORT AtomicViewAXTreeManager : public ui::AXPlatformTreeManager {
   ui::AXNode* GetRoot() const override;
   ui::AXNode* GetParentNodeFromParentTree() const override;
 
+  void ClearComputedRootData();
+
  private:
   explicit AtomicViewAXTreeManager(ViewAXPlatformNodeDelegate* delegate,
                                    ui::AXNodeData node_data);
