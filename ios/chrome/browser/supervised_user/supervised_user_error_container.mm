@@ -131,13 +131,15 @@ void SupervisedUserErrorContainer::URLFilterCheckCallback(
   CHECK(blocking_tab_helper);
   security_interstitials::IOSSecurityInterstitialPage* blocking_page =
       blocking_tab_helper->GetCurrentBlockingPage();
-  if (blocking_page and
+
+  // Early exit if the blocking page is not a supervised user interstitial.
+  if (blocking_page &&
       blocking_page->GetInterstitialType() != kSupervisedUserInterstitialType) {
     return;
   }
 
   bool is_showing_supervised_user_interstitial_for_url = false;
-  bool reload_main_frame = true;
+  bool is_main_frame = true;
 
   if (blocking_page) {
     // If a blocking_page exists here, then it has the right type.
@@ -145,9 +147,9 @@ void SupervisedUserErrorContainer::URLFilterCheckCallback(
         static_cast<SupervisedUserInterstitialBlockingPage*>(blocking_page);
     is_showing_supervised_user_interstitial_for_url =
         supervised_user_blocking_page->interstitial().url() == url;
-    reload_main_frame = supervised_user_blocking_page->interstitial()
-                            .web_content_handler()
-                            ->IsMainFrame();
+    is_main_frame = supervised_user_blocking_page->interstitial()
+                        .web_content_handler()
+                        ->IsMainFrame();
   }
 
   bool should_show_interstitial =
@@ -156,8 +158,9 @@ void SupervisedUserErrorContainer::URLFilterCheckCallback(
 
   if (is_showing_supervised_user_interstitial_for_url !=
       should_show_interstitial) {
-    // TODO (b/279766168): Implement interstitial refresh for sub frame.
-    if (reload_main_frame) {
+    // The present interstitial framework on iOS supports main frames only.
+    // It it is not possible to obtain or refresh a subframe interstitial.
+    if (is_main_frame && web_state_->IsRealized()) {
       web_state_->GetNavigationManager()->Reload(web::ReloadType::NORMAL,
                                                  /*check_for_repost=*/true);
     }
