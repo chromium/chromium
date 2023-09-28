@@ -7,27 +7,18 @@
 #include <utility>
 
 #include "base/containers/contains.h"
-#include "base/files/file_path.h"
 #include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
-#include "build/buildflag.h"
-#include "build/chromeos_buildflags.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/privacy_sandbox/tracking_protection_onboarding_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/tpcd/experiment/eligibility_service.h"
 #include "chrome/browser/tpcd/experiment/eligibility_service_factory.h"
 #include "chrome/browser/tpcd/experiment/tpcd_experiment_features.h"
-#include "chrome/browser/tpcd/experiment/tpcd_pref_names.h"
-#include "chrome/browser/tpcd/experiment/tpcd_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "components/privacy_sandbox/privacy_sandbox_test_util.h"
 #include "components/privacy_sandbox/tracking_protection_onboarding.h"
@@ -46,6 +37,8 @@ namespace tpcd::experiment {
 
 // The param indicates whether the user is in in a cohort with 3PCD enabled.
 // (True indicates that third-party cookies are blocked.)
+// These tests are running with "force_eligible" enabled to be deterministic
+// and avoid being flaky.
 class EligibilityServiceBrowserTest : public InProcessBrowserTest,
                                       public testing::WithParamInterface<bool> {
  public:
@@ -53,6 +46,7 @@ class EligibilityServiceBrowserTest : public InProcessBrowserTest,
     feature_list_.InitAndEnableFeatureWithParameters(
         features::kCookieDeprecationFacilitatedTesting,
         {{"label", "label_test"},
+         {"force_eligible", "true"},
          {"disable_3p_cookies", GetDisable3PCookies()}});
   }
 
@@ -67,32 +61,25 @@ class EligibilityServiceBrowserTest : public InProcessBrowserTest,
  protected:
   std::string GetDisable3PCookies() { return GetParam() ? "true" : "false"; }
 
-  Profile* GenerateNewProfile() {
-    ProfileManager* profile_manager = g_browser_process->profile_manager();
-    base::FilePath current_profile_path = browser()->profile()->GetPath();
-
-    // Create an additional profile.
-    base::FilePath new_path =
-        profile_manager->GenerateNextProfileDirectoryPath();
-
-    return &profiles::testing::CreateProfileSync(profile_manager, new_path);
-  }
-
-  void AddImageToDocument(Browser* browser, const GURL& src_url) {
+  void AddImageToDocument(const GURL& src_url) {
     ASSERT_EQ(true,
-              EvalJs(GetActiveWebContents(browser),
+              EvalJs(GetActiveWebContents(),
                      base::StrCat({"((() => { const img = "
                                    "document.createElement('img'); img.src = '",
                                    src_url.spec(), "'; return true; })())"})));
   }
 
-  void FlushNetworkInterface(Profile* profile) {
-    profile->GetDefaultStoragePartition()->FlushNetworkInterfaceForTesting();
+  void FlushNetworkInterface() {
+    browser()
+        ->profile()
+        ->GetDefaultStoragePartition()
+        ->FlushNetworkInterfaceForTesting();
   }
 
-  void FireOnClientEligibilityChanged(Profile* profile, bool is_eligible) {
+  void FireOnClientEligibilityChanged(bool is_eligible) {
     auto* eligibility_service =
-        tpcd::experiment::EligibilityServiceFactory::GetForProfile(profile);
+        tpcd::experiment::EligibilityServiceFactory::GetForProfile(
+            browser()->profile());
     eligibility_service->OnClientEligibilityChanged(is_eligible);
   }
 
@@ -100,16 +87,13 @@ class EligibilityServiceBrowserTest : public InProcessBrowserTest,
       net::test_server::EmbeddedTestServer::TYPE_HTTPS};
 
  private:
-  content::WebContents* GetActiveWebContents(Browser* browser) {
-    return browser->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* GetActiveWebContents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
   }
 
   base::test::ScopedFeatureList feature_list_;
 };
 
-// This test creates a new profile to avoid being flaky, CrOS multi-profiles
-// implementation is too different for this test.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_P(EligibilityServiceBrowserTest,
                        EligibilityChanged_NetworkContextUpdated) {
   auto response_b_a =
@@ -123,16 +107,8 @@ IN_PROC_BROWSER_TEST_P(EligibilityServiceBrowserTest,
           &https_server_, "/b_c");
   ASSERT_TRUE(https_server_.Start());
 
-  // Sets up local state pref and creates a new profile to avoid flaky tests.
-  g_browser_process->local_state()->SetInteger(
-      prefs::kTPCDExperimentClientState,
-      static_cast<int>(utils::ExperimentState::kIneligible));
-
-  Profile* profile = GenerateNewProfile();
-  Browser* current_browser = CreateBrowser(profile);
-
   auto* privacy_sandbox_settings =
-      PrivacySandboxSettingsFactory::GetForProfile(profile);
+      PrivacySandboxSettingsFactory::GetForProfile(browser()->profile());
   auto privacy_sandbox_delegate = std::make_unique<
       privacy_sandbox_test_util::MockPrivacySandboxSettingsDelegate>();
   EXPECT_CALL(*privacy_sandbox_delegate, IsCookieDeprecationExperimentEligible)
@@ -146,15 +122,15 @@ IN_PROC_BROWSER_TEST_P(EligibilityServiceBrowserTest,
 
   ASSERT_FALSE(privacy_sandbox_settings->IsCookieDeprecationLabelAllowed());
 
-  FireOnClientEligibilityChanged(profile, /*is_eligible=*/false);
+  FireOnClientEligibilityChanged(/*is_eligible=*/false);
 
   // Ensures the cookie deprecation label is updated in the network context.
-  FlushNetworkInterface(profile);
+  FlushNetworkInterface();
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      current_browser, https_server_.GetURL("a.test", "/title1.html")));
+      browser(), https_server_.GetURL("a.test", "/title1.html")));
 
-  AddImageToDocument(current_browser, https_server_.GetURL("b.test", "/b_a"));
+  AddImageToDocument(https_server_.GetURL("b.test", "/b_a"));
 
   // [b.test/a] - Non opted-in request should not receive a label header.
   response_b_a->WaitForRequest();
@@ -181,12 +157,12 @@ IN_PROC_BROWSER_TEST_P(EligibilityServiceBrowserTest,
 
   ASSERT_TRUE(privacy_sandbox_settings->IsCookieDeprecationLabelAllowed());
 
-  FireOnClientEligibilityChanged(profile, /*is_eligible=*/true);
+  FireOnClientEligibilityChanged(/*is_eligible=*/true);
 
   // Ensures the cookie deprecation label is updated in the network context.
-  FlushNetworkInterface(profile);
+  FlushNetworkInterface();
 
-  AddImageToDocument(current_browser, https_server_.GetURL("b.test", "/b_c"));
+  AddImageToDocument(https_server_.GetURL("b.test", "/b_c"));
 
   // [b.test/c] - Opted-in request should receive a label header if allowed.
   response_b_c->WaitForRequest();
@@ -194,32 +170,36 @@ IN_PROC_BROWSER_TEST_P(EligibilityServiceBrowserTest,
                              "Sec-Cookie-Deprecation"));
   EXPECT_EQ(response_b_c->http_request()->headers.at("Sec-Cookie-Deprecation"),
             "label_test");
-
-  g_browser_process->local_state()->ClearPref(
-      prefs::kTPCDExperimentClientState);
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 IN_PROC_BROWSER_TEST_P(EligibilityServiceBrowserTest,
                        EligibilityChanged_OnboardingServiceNotified) {
   privacy_sandbox::TrackingProtectionOnboarding* onboarding_service =
       TrackingProtectionOnboardingFactory::GetForProfile(browser()->profile());
 
-  FireOnClientEligibilityChanged(browser()->profile(), /*is_eligible=*/true);
+  const bool disable_3p_cookies = GetParam();
 
-  // Onboarding should be marked eligible for the cohort where 3PCD is enabled,
-  // but not when 3PCD is disabled.
   EXPECT_EQ(onboarding_service->GetOnboardingStatus(),
-            GetParam() ? privacy_sandbox::TrackingProtectionOnboarding::
-                             OnboardingStatus::kEligible
-                       : privacy_sandbox::TrackingProtectionOnboarding::
-                             OnboardingStatus::kIneligible);
+            disable_3p_cookies ? privacy_sandbox::TrackingProtectionOnboarding::
+                                     OnboardingStatus::kEligible
+                               : privacy_sandbox::TrackingProtectionOnboarding::
+                                     OnboardingStatus::kIneligible);
 
-  FireOnClientEligibilityChanged(browser()->profile(), /*is_eligible=*/false);
+  FireOnClientEligibilityChanged(/*is_eligible=*/false);
 
   EXPECT_EQ(onboarding_service->GetOnboardingStatus(),
             privacy_sandbox::TrackingProtectionOnboarding::OnboardingStatus::
                 kIneligible);
+
+  FireOnClientEligibilityChanged(/*is_eligible=*/true);
+
+  // Onboarding should be marked eligible for the cohort where 3PCD is enabled,
+  // but not when 3PCD is disabled.
+  EXPECT_EQ(onboarding_service->GetOnboardingStatus(),
+            disable_3p_cookies ? privacy_sandbox::TrackingProtectionOnboarding::
+                                     OnboardingStatus::kEligible
+                               : privacy_sandbox::TrackingProtectionOnboarding::
+                                     OnboardingStatus::kIneligible);
 }
 
 INSTANTIATE_TEST_SUITE_P(All, EligibilityServiceBrowserTest, testing::Bool());
