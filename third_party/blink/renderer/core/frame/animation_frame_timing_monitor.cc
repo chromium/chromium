@@ -10,6 +10,7 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/mojom/script/script_type.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/js_based_event_listener.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/core_probe_sink.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -22,6 +23,7 @@
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
+#include "v8-microtask-queue.h"
 
 namespace blink {
 
@@ -365,7 +367,9 @@ void AnimationFrameTimingMonitor::Trace(Visitor* visitor) const {
 ScriptTimingInfo* AnimationFrameTimingMonitor::MaybeAddScript(
     ExecutionContext* context,
     base::TimeTicks end_time) {
-  DCHECK(pending_script_info_);
+  if (!pending_script_info_) {
+    return nullptr;
+  }
 
   if ((end_time - pending_script_info_->start_time) < kLongScriptDuration) {
     pending_script_info_ = absl::nullopt;
@@ -423,6 +427,26 @@ ScriptTimingInfo* AnimationFrameTimingMonitor::DidExecuteScript(
     return nullptr;
   }
 
+  v8::MicrotaskQueue* microtask_queue = ToMicrotaskQueue(context);
+  CHECK(microtask_queue);
+  if (microtask_queue->IsRunningMicrotasks() ||
+      microtask_queue->GetMicrotasksScopeDepth()) {
+    CHECK(context->GetAgent());
+    CHECK(context->GetAgent()->event_loop());
+    CHECK(pending_script_info_);
+
+    context->GetAgent()->event_loop()->EnqueueEndOfMicrotaskCheckpointTask(
+        WTF::BindOnce(
+            [](WeakPersistent<AnimationFrameTimingMonitor> self,
+               WeakPersistent<ExecutionContext> context) {
+              if (self && context) {
+                self->MaybeAddScript(context, base::TimeTicks::Now());
+              }
+            },
+            WrapWeakPersistent(this), WrapWeakPersistent(context)));
+    return nullptr;
+  }
+
   return MaybeAddScript(context, probe.CaptureEndTime());
 }
 
@@ -434,10 +458,7 @@ void AnimationFrameTimingMonitor::OnMicrotasksCompleted(
     return;
   }
 
-  if (pending_script_info_->type == ScriptTimingInfo::Type::kPromiseResolve ||
-      pending_script_info_->type == ScriptTimingInfo::Type::kPromiseReject) {
-    MaybeAddScript(context, base::TimeTicks::Now());
-  }
+  MaybeAddScript(context, base::TimeTicks::Now());
 }
 
 void AnimationFrameTimingMonitor::WillHandlePromise(
@@ -511,11 +532,9 @@ void AnimationFrameTimingMonitor::Did(
     return;
   }
 
-  if (ScriptTimingInfo* script_timing_info = DidExecuteScript(probe_data)) {
-    script_timing_info->SetSourceLocation(
-        ScriptTimingInfo::ScriptSourceLocation{
-            .url = probe_data.script->SourceUrl()});
-  }
+  pending_script_info_->source_location = {.url =
+                                               probe_data.script->SourceUrl()};
+  DidExecuteScript(probe_data);
 }
 void AnimationFrameTimingMonitor::WillRunJavaScriptDialog() {
   javascript_dialog_start_ = base::TimeTicks::Now();
@@ -683,12 +702,11 @@ void AnimationFrameTimingMonitor::Did(const probe::InvokeCallback& probe_data) {
     return;
   }
 
-  ScriptTimingInfo* info = DidExecuteScript(probe_data);
-  if (!info) {
-    return;
+  if (pending_script_info_) {
+    pending_script_info_->property_like_name = probe_data.name;
   }
 
-  info->SetPropertyLikeName(AtomicString(probe_data.name));
+  DidExecuteScript(probe_data);
 }
 
 void AnimationFrameTimingMonitor::Will(
