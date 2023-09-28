@@ -16583,26 +16583,6 @@
             ]
         }
     ],
-    "ThirdPartyStoragePartitioning": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "ThirdPartyStoragePartitioning",
-                    "enable_features": [
-                        "ThirdPartyStoragePartitioning"
-                    ]
-                }
-            ]
-        }
-    ],
     "ThreadCacheMinCachedMemoryForPurging": [
         {
             "platforms": [
