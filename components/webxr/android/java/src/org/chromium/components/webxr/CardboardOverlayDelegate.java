@@ -156,4 +156,11 @@ public class CardboardOverlayDelegate
     public int getDesiredOrientation() {
         return Configuration.ORIENTATION_LANDSCAPE;
     }
+
+    @Override
+    public boolean useDisplaySizes() {
+        // When in VR, it is expected to occupy only the safe area taking into account the notch
+        // of the device.
+        return false;
+    }
 }

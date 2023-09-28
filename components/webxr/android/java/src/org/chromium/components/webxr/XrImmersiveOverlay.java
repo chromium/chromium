@@ -85,6 +85,12 @@ public class XrImmersiveOverlay
          * Configuration.ORIENTATION_UNDEFINED
          */
         int getDesiredOrientation();
+
+        /**
+         * Returns whether the size of the rendering surface should be the size of the entire
+         * display or should have the size of cutout areas into account.
+         */
+        boolean useDisplaySizes();
     }
 
     private static final String TAG = "XrImmersiveOverlay";
@@ -478,19 +484,26 @@ public class XrImmersiveOverlay
         // after the session starts, but the session doesn't start until we report the drawing
         // surface being ready (including a configured size), so we use the reported size of the
         // display assuming that's what the fullscreen mode will use.
-        int screenWidth =
-                !swapScreenDimensions ? display.getDisplayWidth() : display.getDisplayHeight();
-        int screenHeight =
-                !swapScreenDimensions ? display.getDisplayHeight() : display.getDisplayWidth();
+        if (mOverlayDelegate.useDisplaySizes()) {
+            int screenWidth = display.getDisplayWidth();
+            int screenHeight = display.getDisplayHeight();
 
-        if (width < screenWidth || height < screenHeight) {
-            if (DEBUG_LOGS) {
-                Log.i(TAG,
-                        "surfaceChanged adjusting size from " + width + "x" + height + " to "
-                                + screenWidth + "x" + screenHeight);
+            if (width < screenWidth || height < screenHeight) {
+                if (DEBUG_LOGS) {
+                    Log.i(TAG,
+                            "surfaceChanged adjusting size from " + width + "x" + height + " to"
+                                    + screenWidth + "x" + screenHeight);
+                }
+                width = screenWidth;
+                height = screenHeight;
             }
-            width = screenWidth;
-            height = screenHeight;
+        }
+
+        if (swapScreenDimensions) {
+            // Swap width and height.
+            int auxWidth = width;
+            width = height;
+            height = auxWidth;
         }
 
         int rotation = display.getRotation();

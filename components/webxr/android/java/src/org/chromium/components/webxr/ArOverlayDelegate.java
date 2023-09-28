@@ -109,4 +109,10 @@ public class ArOverlayDelegate implements XrImmersiveOverlay.Delegate {
     public int getDesiredOrientation() {
         return Configuration.ORIENTATION_UNDEFINED;
     }
+
+    @Override
+    public boolean useDisplaySizes() {
+        // When in AR, it is expected to occupy the entire screen even if there is a notch.
+        return true;
+    }
 }
