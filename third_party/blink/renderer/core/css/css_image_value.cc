@@ -64,8 +64,6 @@ FetchParameters CSSImageValue::PrepareFetch(
     CrossOriginAttributeValue cross_origin) const {
   KURL request_url;
 
-  base::TimeTicks discovery_time = base::TimeTicks::Now();
-
   if (potentially_dangling_markup_) {
     // The PotentiallyDanglingMarkup() flag is lost when storing the absolute
     // url as a string from which the KURL is constructed here. The url passed
@@ -117,8 +115,6 @@ FetchParameters CSSImageValue::PrepareFetch(
   if (origin_clean_ != OriginClean::kTrue) {
     params.SetFromOriginDirtyStyleSheet(true);
   }
-
-  params.SetDiscoveryTime(discovery_time);
 
   return params;
 }

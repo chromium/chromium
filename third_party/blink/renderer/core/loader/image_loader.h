@@ -166,7 +166,6 @@ class CORE_EXPORT ImageLoader : public GarbageCollected<ImageLoader>,
   // force_blocking ensures that the image will block the load event.
   void DoUpdateFromElement(scoped_refptr<const DOMWrapperWorld> world,
                            UpdateFromElementBehavior,
-                           base::TimeTicks discovery_time,
                            UpdateType = UpdateType::kAsync,
                            bool force_blocking = false);
 
@@ -190,8 +189,7 @@ class CORE_EXPORT ImageLoader : public GarbageCollected<ImageLoader>,
   void ClearFailedLoadURL();
   void DispatchErrorEvent();
   void CrossSiteOrCSPViolationOccurred(AtomicString);
-  void EnqueueImageLoadingMicroTask(UpdateFromElementBehavior update_behavior,
-                                    base::TimeTicks discovery_time);
+  void EnqueueImageLoadingMicroTask(UpdateFromElementBehavior update_behavior);
 
   KURL ImageSourceToKURL(AtomicString) const;
 

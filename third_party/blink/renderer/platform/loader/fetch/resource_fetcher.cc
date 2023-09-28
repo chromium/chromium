@@ -850,6 +850,19 @@ void ResourceFetcher::DidLoadResourceFromMemoryCache(
     info->response_end = now;
     info->render_blocking_status =
         render_blocking_behavior == RenderBlockingBehavior::kBlocking;
+
+    // Create a ResourceLoadTiming object and store LCP breakdown timings for
+    // images.
+    if (resource->GetType() == ResourceType::kImage) {
+      // The resource_load_timing may be null in tests.
+      if (ResourceLoadTiming* resource_load_timing =
+              resource->GetResponse().GetResourceLoadTiming()) {
+        resource_load_timing->SetDiscoveryTime(info->start_time);
+        resource_load_timing->SetSendStart(info->start_time);
+        resource_load_timing->SetResponseEnd(info->start_time);
+      }
+    }
+
     scheduled_resource_timing_reports_.push_back(ScheduledResourceTimingInfo{
         std::move(info), resource->Options().initiator_info.name});
     if (!resource_timing_report_timer_.IsActive())
@@ -2822,6 +2835,16 @@ void ResourceFetcher::PopulateAndAddResourceTimingInfo(
   info->render_blocking_status = pending_info.render_blocking_behavior ==
                                  RenderBlockingBehavior::kBlocking;
   info->response_end = response_end;
+  // Store LCP breakdown timings for images.
+  if (resource->GetType() == ResourceType::kImage) {
+    // The resource_load_timing may be null in tests.
+    if (ResourceLoadTiming* resource_load_timing =
+            resource->GetResponse().GetResourceLoadTiming()) {
+      resource_load_timing->SetDiscoveryTime(info->start_time);
+      resource_load_timing->SetResponseEnd(response_end);
+    }
+  }
+
   Context().AddResourceTiming(std::move(info), initiator_type);
 }
 

@@ -207,12 +207,6 @@ class PLATFORM_EXPORT FetchParameters {
     render_blocking_behavior_ = render_blocking_behavior;
   }
 
-  void SetDiscoveryTime(base::TimeTicks discovery_time) {
-    discovery_time_ = discovery_time;
-  }
-
-  base::TimeTicks DiscoveryTime() { return discovery_time_; }
-
   void SetIsPotentiallyLCPElement(bool flag) {
     is_potentially_lcp_element_ = flag;
   }
@@ -253,7 +247,6 @@ class PLATFORM_EXPORT FetchParameters {
   bool is_from_origin_dirty_style_sheet_ = false;
   RenderBlockingBehavior render_blocking_behavior_ =
       RenderBlockingBehavior::kUnset;
-  base::TimeTicks discovery_time_;
   bool is_potentially_lcp_element_ = false;
   bool is_potentially_lcp_influencer_ = false;
 

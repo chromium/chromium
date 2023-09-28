@@ -62,6 +62,8 @@ class PLATFORM_EXPORT ResourceLoadTiming
   void SetSslEnd(base::TimeTicks);
   void SetPushStart(base::TimeTicks);
   void SetPushEnd(base::TimeTicks);
+  void SetDiscoveryTime(base::TimeTicks);
+  void SetResponseEnd(base::TimeTicks);
 
   base::TimeTicks DomainLookupStart() const { return domain_lookup_start_; }
   base::TimeTicks RequestTime() const { return request_time_; }
@@ -90,6 +92,8 @@ class PLATFORM_EXPORT ResourceLoadTiming
   base::TimeTicks SslEnd() const { return ssl_end_; }
   base::TimeTicks PushStart() const { return push_start_; }
   base::TimeTicks PushEnd() const { return push_end_; }
+  base::TimeTicks DiscoveryTime() const { return discovery_time_; }
+  base::TimeTicks ResponseEnd() const { return response_end_; }
 
   double CalculateMillisecondDelta(base::TimeTicks) const;
 
@@ -128,6 +132,8 @@ class PLATFORM_EXPORT ResourceLoadTiming
   base::TimeTicks ssl_end_;
   base::TimeTicks push_start_;
   base::TimeTicks push_end_;
+  base::TimeTicks discovery_time_;
+  base::TimeTicks response_end_;
 };
 
 }  // namespace blink

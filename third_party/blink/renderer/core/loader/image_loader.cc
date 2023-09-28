@@ -121,12 +121,8 @@ bool CanReuseFromListOfAvailableImages(
 
 class ImageLoader::Task {
  public:
-  Task(ImageLoader* loader,
-       UpdateFromElementBehavior update_behavior,
-       base::TimeTicks discovery_time)
-      : loader_(loader),
-        update_behavior_(update_behavior),
-        discovery_time_(discovery_time) {
+  Task(ImageLoader* loader, UpdateFromElementBehavior update_behavior)
+      : loader_(loader), update_behavior_(update_behavior) {
     ExecutionContext* context = loader_->GetElement()->GetExecutionContext();
     async_task_context_.Schedule(context, "Image");
     world_ = context->GetCurrentWorld();
@@ -137,7 +133,7 @@ class ImageLoader::Task {
       return;
     ExecutionContext* context = loader_->GetElement()->GetExecutionContext();
     probe::AsyncTask async_task(context, &async_task_context_);
-    loader_->DoUpdateFromElement(world_, update_behavior_, discovery_time_);
+    loader_->DoUpdateFromElement(world_, update_behavior_);
   }
 
   void ClearLoader() {
@@ -153,7 +149,6 @@ class ImageLoader::Task {
   scoped_refptr<const DOMWrapperWorld> world_;
 
   probe::AsyncTaskContext async_task_context_;
-  base::TimeTicks discovery_time_;
   base::WeakPtrFactory<Task> weak_factory_{this};
 };
 
@@ -411,9 +406,8 @@ inline void ImageLoader::ClearFailedLoadURL() {
 }
 
 inline void ImageLoader::EnqueueImageLoadingMicroTask(
-    UpdateFromElementBehavior update_behavior,
-    base::TimeTicks discovery_time) {
-  auto task = std::make_unique<Task>(this, update_behavior, discovery_time);
+    UpdateFromElementBehavior update_behavior) {
+  auto task = std::make_unique<Task>(this, update_behavior);
   pending_task_ = task->GetWeakPtr();
   element_->GetDocument().GetAgent().event_loop()->EnqueueMicrotask(
       WTF::BindOnce(&Task::Run, std::move(task)));
@@ -441,7 +435,6 @@ void ImageLoader::UpdateImageState(ImageResourceContent* new_image_content) {
 void ImageLoader::DoUpdateFromElement(
     scoped_refptr<const DOMWrapperWorld> world,
     UpdateFromElementBehavior update_behavior,
-    base::TimeTicks discovery_time,
     UpdateType update_type,
     bool force_blocking) {
   // FIXME: According to
@@ -555,8 +548,6 @@ void ImageLoader::DoUpdateFromElement(
     FetchParameters params(std::move(resource_request),
                            resource_loader_options);
 
-    params.SetDiscoveryTime(discovery_time);
-
     ConfigureRequest(params, *element_, frame->GetClientHintsPreferences());
 
     if (update_behavior != kUpdateForcedReload &&
@@ -648,8 +639,6 @@ void ImageLoader::UpdateFromElement(UpdateFromElementBehavior update_behavior,
     return;
   }
 
-  base::TimeTicks discovery_time = base::TimeTicks::Now();
-
   AtomicString image_source_url = element_->ImageSourceURL();
   suppress_error_events_ = (update_behavior == kUpdateSizeChanged);
 
@@ -685,8 +674,7 @@ void ImageLoader::UpdateFromElement(UpdateFromElementBehavior update_behavior,
   if (ShouldLoadImmediately(ImageSourceToKURL(image_source_url)) &&
       update_behavior != kUpdateFromMicrotask) {
     DoUpdateFromElement(element_->GetExecutionContext()->GetCurrentWorld(),
-                        update_behavior, discovery_time, UpdateType::kSync,
-                        force_blocking);
+                        update_behavior, UpdateType::kSync, force_blocking);
     return;
   }
   // Allow the idiom "img.src=''; img.src='.." to clear down the image before an
@@ -712,7 +700,7 @@ void ImageLoader::UpdateFromElement(UpdateFromElementBehavior update_behavior,
   // context. We don't want to slow down the raw HTML parsing case by loading
   // images we don't intend to display.
   if (element_->GetDocument().IsActive())
-    EnqueueImageLoadingMicroTask(update_behavior, discovery_time);
+    EnqueueImageLoadingMicroTask(update_behavior);
 }
 
 KURL ImageLoader::ImageSourceToKURL(AtomicString image_source_url) const {

@@ -46,3 +46,41 @@ async function waitForNumLayoutShiftEntries(num) {
     hadRecentInput: entry.hadRecentInput,
   }));
 }
+
+const getLcp = async (resource) => {
+  return await new Promise(resolve => {
+    const observer = new PerformanceObserver((list) => {
+      const entries = list.getEntries().filter(e => e.url.includes(resource));
+      if (entries.length > 0) {
+        resolve(entries[entries.length - 1].startTime)
+      }
+    });
+    observer.observe({ type: "largest-contentful-paint", buffered: true });
+  })
+}
+
+const getRequestStart = async (name) => {
+  let resource_timings =
+    performance.getEntriesByType('resource').filter(e => e.name.includes(name));
+  return resource_timings[0].requestStart;
+}
+
+const getResponseEnd = async (name) => {
+  let resource_timings =
+    performance.getEntriesByType('resource').filter(e => e.name.includes(name));
+  return resource_timings[0].responseEnd;
+}
+const getStartTime = async (name) => {
+  let resource_timings =
+    performance.getEntriesByType('resource').filter(e => e.name.includes(name));
+  return resource_timings[0].startTime;
+}
+
+const addImageWithUrl = async (url) => {
+  await new Promise(resolve => {
+    const img = document.createElement('img');
+    img.addEventListener('load', resolve);
+    img.src = url;
+    document.body.appendChild(img);
+  });
+}

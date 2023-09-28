@@ -51,6 +51,8 @@ class NullImageResourceInfo final
   const KURL& Url() const override { return url_; }
   base::TimeTicks LoadResponseEnd() const override { return base::TimeTicks(); }
   base::TimeTicks LoadStart() const override { return base::TimeTicks(); }
+  base::TimeTicks LoadEnd() const override { return base::TimeTicks(); }
+  base::TimeTicks DiscoveryTime() const override { return base::TimeTicks(); }
   const ResourceResponse& GetResponse() const override { return response_; }
   bool IsCacheValidator() const override { return false; }
   bool IsAccessAllowed(
@@ -714,11 +716,7 @@ bool ImageResourceContent::IsBroken() const {
 }
 
 base::TimeTicks ImageResourceContent::DiscoveryTime() const {
-  return discovery_time_;
-}
-
-void ImageResourceContent::SetDiscoveryTime(base::TimeTicks discovery_time) {
-  discovery_time_ = discovery_time;
+  return info_->DiscoveryTime();
 }
 
 base::TimeTicks ImageResourceContent::LoadStart() const {
@@ -726,6 +724,10 @@ base::TimeTicks ImageResourceContent::LoadStart() const {
 }
 
 base::TimeTicks ImageResourceContent::LoadEnd() const {
+  return info_->LoadEnd();
+}
+
+base::TimeTicks ImageResourceContent::LoadResponseEnd() const {
   return info_->LoadResponseEnd();
 }
 

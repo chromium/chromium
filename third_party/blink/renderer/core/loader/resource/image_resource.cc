@@ -84,9 +84,18 @@ class ImageResource::ImageResourceInfoImpl final
 
  private:
   const KURL& Url() const override { return resource_->Url(); }
+  base::TimeTicks LoadEnd() const override {
+    if (ResourceLoadTiming* load_timing =
+            resource_->GetResponse().GetResourceLoadTiming()) {
+      return load_timing->ResponseEnd();
+    }
+    return base::TimeTicks();
+  }
+
   base::TimeTicks LoadResponseEnd() const override {
     return resource_->LoadResponseEnd();
   }
+
   base::TimeTicks LoadStart() const override {
     if (ResourceLoadTiming* load_timing =
             resource_->GetResponse().GetResourceLoadTiming()) {
@@ -94,6 +103,15 @@ class ImageResource::ImageResourceInfoImpl final
     }
     return base::TimeTicks();
   }
+
+  base::TimeTicks DiscoveryTime() const override {
+    if (ResourceLoadTiming* load_timing =
+            resource_->GetResponse().GetResourceLoadTiming()) {
+      return load_timing->DiscoveryTime();
+    }
+    return base::TimeTicks();
+  }
+
   const ResourceResponse& GetResponse() const override {
     return resource_->GetResponse();
   }
@@ -196,8 +214,6 @@ ImageResource* ImageResource::Fetch(FetchParameters& params,
 
   auto* resource = To<ImageResource>(
       fetcher->RequestResource(params, ImageResourceFactory(), nullptr));
-
-  resource->GetContent()->SetDiscoveryTime(params.DiscoveryTime());
 
   // If the fetch originated from user agent CSS we should mark it as a user
   // agent resource.

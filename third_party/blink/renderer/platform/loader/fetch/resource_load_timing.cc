@@ -117,6 +117,14 @@ void ResourceLoadTiming::SetPushEnd(base::TimeTicks push_end) {
   push_end_ = push_end;
 }
 
+void ResourceLoadTiming::SetDiscoveryTime(base::TimeTicks discovery_time) {
+  discovery_time_ = discovery_time;
+}
+
+void ResourceLoadTiming::SetResponseEnd(base::TimeTicks response_end) {
+  response_end_ = response_end;
+}
+
 double ResourceLoadTiming::CalculateMillisecondDelta(
     base::TimeTicks time) const {
   return time.is_null() ? -1 : (time - request_time_).InMillisecondsF();

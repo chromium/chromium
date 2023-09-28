@@ -90,9 +90,8 @@ std::unique_ptr<PreloadRequest> PreloadRequest::CreateIfNeeded(
 
 Resource* PreloadRequest::Start(Document* document) {
   DCHECK(document->domWindow());
-  base::TimeTicks discovery_timestamp = base::TimeTicks::Now();
   base::UmaHistogramTimes("Blink.PreloadRequestWaitTime",
-                          discovery_timestamp - creation_time_);
+                          base::TimeTicks::Now() - creation_time_);
 
   FetchInitiatorInfo initiator_info;
   initiator_info.name = AtomicString(initiator_name_);
@@ -136,10 +135,6 @@ Resource* PreloadRequest::Start(Document* document) {
   ResourceLoaderOptions options(document->domWindow()->GetCurrentWorld());
   options.initiator_info = initiator_info;
   FetchParameters params(std::move(resource_request), options);
-
-  if (resource_type_ == ResourceType::kImage) {
-    params.SetDiscoveryTime(discovery_timestamp);
-  }
 
   auto* origin = document->domWindow()->GetSecurityOrigin();
   if (script_type_ == mojom::blink::ScriptType::kModule) {
