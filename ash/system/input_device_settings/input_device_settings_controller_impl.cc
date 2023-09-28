@@ -233,7 +233,8 @@ void AddButtonToButtonRemappingList(
 // Modifier remappings must only contain valid modifiers within the
 // modifier_keys array. Settings are invalid if top_row_are_fkeys_policy exists
 // and policy status is kManaged and the top_row_are_fkeys_policy's value is
-// different from the settings top_row_are_fkeys value.
+// different from the settings top_row_are_fkeys value. F11/F12 settings
+// should only be included for ChromeOS keyboards.
 bool KeyboardSettingsAreValid(
     const mojom::Keyboard& keyboard,
     const mojom::KeyboardSettings& settings,
@@ -255,6 +256,11 @@ bool KeyboardSettingsAreValid(
   const bool is_non_chromeos_keyboard =
       (keyboard.meta_key != mojom::MetaKey::kLauncher &&
        keyboard.meta_key != mojom::MetaKey::kSearch);
+  if (is_non_chromeos_keyboard && ::features::AreF11AndF12ShortcutsEnabled() &&
+      (settings.f11.has_value() || settings.f12.has_value())) {
+    return false;
+  }
+
   const bool is_meta_suppressed_setting_default =
       settings.suppress_meta_fkey_rewrites == kDefaultSuppressMetaFKeyRewrites;
 

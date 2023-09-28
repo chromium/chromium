@@ -43,6 +43,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/ash/keyboard_capability.h"
+#include "ui/events/ash/mojom/extended_fkeys_modifier.mojom-shared.h"
 #include "ui/events/ash/mojom/simulate_right_click_modifier.mojom-shared.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/device_data_manager_test_api.h"
@@ -712,6 +713,25 @@ TEST_F(InputDeviceSettingsControllerTest, KeyboardSettingsAreValid) {
   controller_->SetKeyboardSettings((DeviceId)kSampleKeyboardInternal.id,
                                    settings.Clone());
 
+  EXPECT_EQ(observer_->num_keyboards_settings_updated(), 0u);
+  EXPECT_EQ(keyboard_pref_handler_->num_keyboard_settings_updated(), 0u);
+}
+
+TEST_F(InputDeviceSettingsControllerTest, FkeySettingsAreValid) {
+  ui::KeyboardCapability::KeyboardInfo keyboard_info;
+  keyboard_info.device_type =
+      ui::KeyboardCapability::DeviceType::kDeviceExternalGenericKeyboard;
+  Shell::Get()->keyboard_capability()->SetKeyboardInfoForTesting(
+      kSampleKeyboardUsb, std::move(keyboard_info));
+  fake_keyboard_manager_->AddFakeKeyboard(kSampleKeyboardUsb,
+                                          kKbdTopRowLayout1Tag);
+
+  const mojom::KeyboardSettingsPtr usb_kb_settings =
+      mojom::KeyboardSettings::New();
+  usb_kb_settings->f11 = ui::mojom::ExtendedFkeysModifier::kAlt;
+  usb_kb_settings->f12 = ui::mojom::ExtendedFkeysModifier::kAlt;
+  controller_->SetKeyboardSettings((DeviceId)kSampleKeyboardUsb.id,
+                                   usb_kb_settings.Clone());
   EXPECT_EQ(observer_->num_keyboards_settings_updated(), 0u);
   EXPECT_EQ(keyboard_pref_handler_->num_keyboard_settings_updated(), 0u);
 }
