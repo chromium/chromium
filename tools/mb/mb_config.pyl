@@ -638,11 +638,6 @@
       'Cast Linux ARM64': 'cast_arm64_release_bot_reclient',
       'Cast Linux Debug': 'cast_debug_bot_reclient',
       'Deterministic Linux': 'release_bot_minimal_symbols_reclient',
-      'Deterministic Linux (dbg)': {
-        'local': 'debug_bot_local_build',
-        'goma': 'debug_bot',
-        'reclient': 'debug_bot_reclient',
-      },
       'Leak Detection Linux': 'release_bot_reclient',
       'Linux Builder': 'gpu_tests_release_bot_do_typecheck_reclient',
       'Linux Builder (Wayland)': 'gpu_tests_wayland_release_bot_reclient',
@@ -2701,10 +2696,6 @@
       'debug_bot_reclient', 'fuchsia',
     ],
 
-    'debug_bot_local_build': [
-      'debug_bot_local_build',
-    ],
-
     'debug_bot_no_com_init_hooks_with_codecs_reclient': [
       'debug_bot_reclient', 'no_com_init_hooks', 'chrome_with_codecs'
     ],
@@ -4254,10 +4245,6 @@
 
     'debug_bot_blink': {
       'mixins': ['debug', 'shared', 'reclient', 'minimal_symbols', 'chrome_with_codecs'],
-    },
-
-    'debug_bot_local_build': {
-      'mixins': ['debug', 'shared', 'minimal_symbols'],
     },
 
     'debug_bot_reclient': {

@@ -53,31 +53,6 @@
       "use_remoteexec": true
     }
   },
-  "Deterministic Linux (dbg)": {
-    "goma": {
-      "gn_args": {
-        "is_component_build": true,
-        "is_debug": true,
-        "symbol_level": 1,
-        "use_goma": true
-      }
-    },
-    "local": {
-      "gn_args": {
-        "is_component_build": true,
-        "is_debug": true,
-        "symbol_level": 1
-      }
-    },
-    "reclient": {
-      "gn_args": {
-        "is_component_build": true,
-        "is_debug": true,
-        "symbol_level": 1,
-        "use_remoteexec": true
-      }
-    }
-  },
   "Leak Detection Linux": {
     "gn_args": {
       "dcheck_always_on": false,

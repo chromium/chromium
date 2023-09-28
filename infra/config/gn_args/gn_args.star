@@ -35,9 +35,39 @@ gn_args.config(
 )
 
 gn_args.config(
+    "debug",
+    args = {
+        "is_debug": True,
+    },
+)
+
+gn_args.config(
+    "shared",
+    args = {
+        "is_component_build": True,
+    },
+)
+
+gn_args.config(
+    "goma",
+    args = {
+        "use_goma": True,
+    },
+)
+
+gn_args.config(
     "try_builder",
     configs = [
         "minimal_symbols",
         "dcheck_always_on",
+    ],
+)
+
+gn_args.config(
+    "debug_build",
+    configs = [
+        "debug",
+        "shared",
+        "minimal_symbols",
     ],
 )

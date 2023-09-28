@@ -9,6 +9,7 @@ load("//lib/builders.star", "builders", "os", "reclient", "sheriff_rotations")
 load("//lib/branches.star", "branches")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
+load("//lib/gn_args.star", "gn_args")
 
 ci.defaults.set(
     executable = ci.DEFAULT_EXECUTABLE,
@@ -173,6 +174,15 @@ ci.builder(
     ),
     contact_team_email = "chrome-build-team@google.com",
     execution_timeout = 7 * time.hour,
+    gn_args = {
+        "local": "debug_build",
+        "goma": gn_args.config(
+            configs = ["debug_build", "goma"],
+        ),
+        "reclient": gn_args.config(
+            configs = ["debug_build", "reclient"],
+        ),
+    },
     reclient_jobs = reclient.jobs.DEFAULT,
 )
 
