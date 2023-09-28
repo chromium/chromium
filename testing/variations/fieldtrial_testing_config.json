@@ -18209,7 +18209,6 @@
                         "CameraEffectsSupportedByHardware",
                         "CrOSLateBootAudioAPNoiseCancellation",
                         "CrOSLateBootAudioFlexibleLoopback",
-                        "CrosPrivacyHubV2",
                         "FeatureManagementVideoConference",
                         "SpeakOnMuteEnabled",
                         "SystemLiveCaption",
