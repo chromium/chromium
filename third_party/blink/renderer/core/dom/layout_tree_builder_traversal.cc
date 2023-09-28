@@ -26,7 +26,6 @@
 
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
 
-#include "base/notreached.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
@@ -375,62 +374,40 @@ LayoutObject* LayoutTreeBuilderTraversal::NextInTopLayer(
 
 int LayoutTreeBuilderTraversal::ComparePreorderTreePosition(const Node& node1,
                                                             const Node& node2) {
-  if (&node1 == &node2) {
+  if (node1 == node2) {
     return 0;
   }
-  if (NextSibling(node1) == node2) {
-    return -1;
-  }
-  if (NextSibling(node2) == node1) {
-    return 1;
-  }
-  int depth1 = 0;
+  HeapVector<const Node*> ancestors1;
+  HeapVector<const Node*> ancestors2;
   for (const Node* anc1 = &node1; anc1; anc1 = Parent(*anc1)) {
-    if (anc1 == &node2) {
-      return 1;
-    }
-    ++depth1;
+    ancestors1.emplace_back(anc1);
   }
-  int depth2 = 0;
   for (const Node* anc2 = &node2; anc2; anc2 = Parent(*anc2)) {
-    if (anc2 == &node1) {
-      return -1;
-    }
-    ++depth2;
+    ancestors2.emplace_back(anc2);
   }
-  const Node* anc1 = &node1;
-  const Node* anc2 = &node2;
-  if (depth1 > depth2) {
-    for (int i = depth1; i > depth2; --i) {
-      anc1 = Parent(*anc1);
-    }
-  } else if (depth2 > depth1) {
-    for (int i = depth2; i > depth1; --i) {
-      anc2 = Parent(*anc2);
-    }
+  int anc1 = ancestors1.size() - 1;
+  int anc2 = ancestors2.size() - 1;
+  // First let's eliminate the ancestors until we find the first that are
+  // inequal, meaning that we need to perform a linear search in that subtree.
+  while (anc1 >= 0 && anc2 >= 0 && ancestors1[anc1] == ancestors2[anc2]) {
+    --anc1;
+    --anc2;
   }
-  CHECK(anc1 && anc2);
-  while (Parent(*anc1) != Parent(*anc2)) {
-    anc1 = Parent(*anc1);
-    anc2 = Parent(*anc2);
-    CHECK(anc1 && anc2);
+  if (anc1 < 0) {
+    return anc2 < 0 ? 0 : -1;
+  }
+  if (anc2 < 0) {
+    return 1;
   }
   // Compare the children of the first common ancestor and the current top-most
   // ancestors of the nodes.
-  const Node* parent = Parent(*anc1);
-  const Node* last_child = LastChild(*parent);
-  if (last_child == anc1) {
-    return 1;
-  }
-  if (last_child == anc2) {
-    return -1;
-  }
+  const Node* parent = Parent(*ancestors1[anc1]);
   for (const Node* child = FirstChild(*parent); child;
        child = NextSibling(*child)) {
-    if (child == anc1) {
+    if (child == ancestors1[anc1]) {
       return -1;
     }
-    if (child == anc2) {
+    if (child == ancestors2[anc2]) {
       return 1;
     }
   }

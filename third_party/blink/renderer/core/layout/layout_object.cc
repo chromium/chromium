@@ -63,8 +63,6 @@
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/html_html_element.h"
-#include "third_party/blink/renderer/core/html/html_li_element.h"
-#include "third_party/blink/renderer/core/html/html_olist_element.h"
 #include "third_party/blink/renderer/core/html/html_summary_element.h"
 #include "third_party/blink/renderer/core/html/html_table_cell_element.h"
 #include "third_party/blink/renderer/core/html/html_table_element.h"
@@ -265,11 +263,6 @@ StyleDifference AdjustForCompositableAnimationPaint(
     diff.SetNeedsNormalPaintInvalidation();
 
   return diff;
-}
-
-bool ElementGeneratesListItemCounter(const Node* node) {
-  return IsA<HTMLOListElement>(node) || IsA<HTMLUListElement>(node) ||
-         IsA<HTMLLIElement>(node);
 }
 
 }  // namespace
@@ -3266,85 +3259,17 @@ void LayoutObject::CheckCounterChanges(const ComputedStyle* old_style,
                                        const ComputedStyle* new_style) {
   NOT_DESTROYED();
   DCHECK(new_style);
-  if (!IsA<Element>(GetNode())) {
-    return;
-  }
-  if ((!old_style && new_style->GetCounterDirectives()) ||
-      (old_style && !new_style->CounterDirectivesEqual(*old_style))) {
-    StyleContainmentScopeTree& tree =
-        GetDocument().GetStyleEngine().EnsureStyleContainmentScopeTree();
-    StyleContainmentScope* scope =
-        tree.FindOrCreateEnclosingScopeForElement(To<Element>(*GetNode()));
-    const AtomicString list_item("list-item");
-    ListItemOrdinal* ordinal = ListItemOrdinal::Get(*GetNode());
-    if (old_style) {
-      // Remove old counters that got changed or removed.
-      if (old_style->GetCounterDirectives()) {
-        for (const auto& [identifier, directives] :
-             *old_style->GetCounterDirectives()) {
-          CounterDirectives new_style_directives =
-              new_style->GetCounterDirectives(identifier);
-          if (!new_style_directives.IsDefined() ||
-              new_style_directives != directives) {
-            tree.RemoveCounterForLayoutObject(*this, identifier);
-          }
-        }
-      }
-      // When <li> -> <li style="counter-increment: list-item 3">
-      if (!old_style->GetCounterDirectives(list_item).IsDefined() &&
-          new_style->GetCounterDirectives(list_item).IsDefined() &&
-          ElementGeneratesListItemCounter(GetNode())) {
-        tree.RemoveListItemCounterForLayoutObject(*this);
-        if (ordinal) {
-          ListItemOrdinal::ItemCounterStyleUpdated(*this);
-        }
-      }
-      // Add new counters that got changed or added.
-      if (new_style->GetCounterDirectives()) {
-        for (const auto& [identifier, directives] :
-             *new_style->GetCounterDirectives()) {
-          CounterDirectives old_style_directives =
-              old_style->GetCounterDirectives(identifier);
-          if (!old_style_directives.IsDefined() ||
-              old_style_directives != directives) {
-            scope->CreateCounterNodeForLayoutObject(*this, identifier);
-          }
-        }
-      }
-      // When <li style="counter-increment: list-item 3"> -> <li>
-      if (old_style->GetCounterDirectives(list_item).IsDefined() &&
-          !new_style->GetCounterDirectives(list_item).IsDefined() &&
-          ElementGeneratesListItemCounter(GetNode())) {
-        scope->CreateListItemCounterNodeForLayoutObject(*this);
-        if (ordinal) {
-          ListItemOrdinal::ItemCounterStyleUpdated(*this);
-        }
-      }
-    } else {
-      if (ElementGeneratesListItemCounter(GetNode())) {
-        if (new_style->GetCounterDirectives(list_item).IsDefined()) {
-          tree.RemoveListItemCounterForLayoutObject(*this);
-        } else {
-          scope->CreateListItemCounterNodeForLayoutObject(*this);
-        }
-        if (ordinal) {
-          ListItemOrdinal::ItemCounterStyleUpdated(*this);
-        }
-      }
-      scope->CreateCounterNodesForLayoutObject(*this);
+  if (old_style) {
+    if (old_style->CounterDirectivesEqual(*new_style)) {
+      return;
     }
-    tree.UpdateOutermostCountersDirtyScope(scope);
-  } else if (!bitfields_.HasCounterNodeMap() &&
-             ElementGeneratesListItemCounter(GetNode())) {
-    StyleContainmentScopeTree& tree =
-        GetDocument().GetStyleEngine().EnsureStyleContainmentScopeTree();
-    StyleContainmentScope* scope =
-        tree.FindOrCreateEnclosingScopeForElement(To<Element>(*GetNode()));
-    scope->CreateListItemCounterNodeForLayoutObject(*this);
-    bitfields_.SetHasCounterNodeMap(true);
-    tree.UpdateOutermostCountersDirtyScope(scope->Parent() ? scope->Parent()
-                                                           : scope);
+  } else {
+    if (!new_style->GetCounterDirectives()) {
+      return;
+    }
   }
+  LayoutCounter::LayoutObjectStyleChanged(*this, old_style, *new_style);
+  View()->SetNeedsMarkerOrCounterUpdate();
 }
 
 PhysicalRect LayoutObject::ViewRect() const {
@@ -3755,31 +3680,19 @@ void LayoutObject::WillBeDestroyed() {
       frame->GetPage()->GetAutoscrollController().StopAutoscrollIfNeeded(this);
   }
 
-  // The counters a created only for element with counter directives.
-  // LayoutCounters delete their counters in its own WillBeDestroyed.
-  if (auto* element = DynamicTo<Element>(GetNode());
-      element && !IsCounter() && Style() && StyleRef().GetCounterDirectives()) {
-    StyleContainmentScopeTree& tree =
-        GetDocument().GetStyleEngine().EnsureStyleContainmentScopeTree();
-    tree.RemoveCountersForLayoutObject(*this, StyleRef());
-    if (!StyleRef()
-             .GetCounterDirectives(AtomicString("list-item"))
-             .IsDefined() &&
-        ElementGeneratesListItemCounter(GetNode())) {
-      tree.RemoveListItemCounterForLayoutObject(*this);
-    }
-  } else if (bitfields_.HasCounterNodeMap() &&
-             ElementGeneratesListItemCounter(GetNode())) {
-    StyleContainmentScopeTree& tree =
-        GetDocument().GetStyleEngine().EnsureStyleContainmentScopeTree();
-    tree.RemoveListItemCounterForLayoutObject(*this);
-    bitfields_.SetHasCounterNodeMap(false);
-  }
-
   Remove();
 
   if (AXObjectCache* cache = GetDocument().ExistingAXObjectCache())
     cache->Remove(this);
+
+  // If this layoutObject had a parent, remove should have destroyed any
+  // counters attached to this layoutObject and marked the affected other
+  // counters for reevaluation. This apparently redundant check is here for the
+  // case when this layoutObject had no parent at the time remove() was called.
+
+  if (HasCounterNodeMap()) {
+    LayoutCounter::DestroyCounterNodes(*this);
+  }
 
   // Remove the handler if node had touch-action set. Handlers are not added
   // for text nodes so don't try removing for one too. Need to check if

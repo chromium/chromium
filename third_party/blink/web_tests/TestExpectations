@@ -1264,11 +1264,10 @@ crbug.com/591099 fast/writing-mode/percentage-height-orthogonal-writing-modes.ht
 crbug.com/835484 paint/invalidation/outline/inline-focus.html [ Failure ]
 crbug.com/591099 paint/invalidation/scroll/fixed-under-composited-fixed-scrolled.html [ Failure ]
 
-# CSS Style Containment Counters to be fixed upon spec resolution https://github.com/w3c/csswg-drafts/issues/9212
-crbug.com/990657 external/wpt/css/css-contain/contain-style-counters-004.html [ Failure ]
-crbug.com/990657 external/wpt/css/css-contain/contain-style-counters-005.html [ Failure ]
-crbug.com/990657 fast/css/containment/style-contain-dialogue-element.html [ Failure ]
-crbug.com/990657 fast/css/containment/style-containment-with-counter-nodes.html [ Failure ]
+# CSS counters failures to be fixed with the new implementation
+crbug.com/990657 fast/css/counters/adding-nodes.html [ Failure ]
+crbug.com/990657 fast/css/counters/counter-reset-000.html [ Failure ]
+crbug.com/990657 fast/css/counters/nesting.html [ Failure ]
 
 # CSS Text failures
 crbug.com/750990 external/wpt/css/css-text/text-transform/text-transform-upperlower-105.html [ Failure ]
@@ -1295,6 +1294,22 @@ crbug.com/1219041 external/wpt/css/css-text/white-space/text-space-trim-trim-inn
 # LayoutNG ref-tests that need to be updated (cannot be rebaselined).
 crbug.com/591099 [ Win ] virtual/text-antialias/ellipsis-with-self-painting-layer.html [ Failure ]
 crbug.com/1098801 virtual/text-antialias/whitespace/whitespace-in-pre.html [ Failure ]
+
+# CSS counters tests to be fixed with new implementation.
+crbug.com/990657 external/wpt/css/css-lists/counter-001.html [ Failure ]
+crbug.com/990657 external/wpt/css/css-lists/counter-002.html [ Failure ]
+crbug.com/990657 external/wpt/css/css-lists/counter-003.html [ Failure ]
+crbug.com/990657 external/wpt/css/css-lists/counter-004.html [ Failure ]
+crbug.com/990657 external/wpt/css/css-lists/counters-001.html [ Failure ]
+crbug.com/990657 external/wpt/css/css-lists/counters-002.html [ Failure ]
+crbug.com/990657 external/wpt/css/css-lists/counters-003.html [ Failure ]
+crbug.com/990657 external/wpt/css/css-lists/counters-004.html [ Failure ]
+
+# CSS counters scope tests to be fixed with new implementation.
+crbug.com/990657 external/wpt/css/css-lists/counters-scope-001.html [ Failure ]
+crbug.com/990657 external/wpt/css/css-lists/counters-scope-002.html [ Failure ]
+crbug.com/990657 external/wpt/css/css-lists/counters-scope-003.html [ Failure ]
+crbug.com/990657 external/wpt/css/css-lists/counters-scope-004.html [ Failure ]
 
 # LayoutNG failures that needs to be triaged
 crbug.com/591099 virtual/text-antialias/selection/selection-rect-line-height-too-small.html [ Failure ]
@@ -2905,6 +2920,7 @@ crbug.com/626703 virtual/threaded-preload-scanner/external/wpt/html/semantics/sc
 crbug.com/626703 virtual/threaded-preload-scanner/external/wpt/html/semantics/scripting-1/the-script-element/json-module/load-error-events.html [ Timeout ]
 crbug.com/626703 virtual/threaded-preload-scanner/external/wpt/html/semantics/scripting-1/the-script-element/json-module/module.html [ Timeout ]
 crbug.com/626703 virtual/threaded-preload-scanner/external/wpt/html/semantics/scripting-1/the-script-element/json-module/valid-content-type.html [ Timeout ]
+crbug.com/626703 external/wpt/css/css-contain/counter-scoping-004.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-masking/clip-path/clip-path-rect-003.html [ Failure ]
 crbug.com/626703 external/wpt/css/motion/animation/offset-path-interpolation-006.html [ Crash ]
 crbug.com/626703 [ Win10.20h2 ] external/wpt/web-locks/bfcache/sharedworker-multiple.tentative.https.html [ Skip Timeout ]

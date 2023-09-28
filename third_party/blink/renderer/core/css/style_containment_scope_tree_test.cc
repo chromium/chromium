@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/css/style_containment_scope_tree.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/core/css/counters_scope_tree.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/layout/counter_node.h"
@@ -16,6 +17,37 @@ namespace blink {
 
 class StyleContainmentScopeTreeTest : public RenderingTest {
  public:
+  void CreateCounterNodeForLayoutObject(const char* id) {
+    StyleContainmentScopeTree& tree =
+        GetDocument().GetStyleEngine().EnsureStyleContainmentScopeTree();
+    LayoutObject* object = GetLayoutObjectByElementId(id);
+    Element* element = To<Element>(object->GetNode());
+    if (AtomicString(id).Contains("use")) {
+      object = object->SlowFirstChild()->SlowFirstChild();
+      element = To<Element>(object->Parent()->GetNode());
+    }
+    StyleContainmentScope* scope =
+        tree.FindOrCreateEnclosingScopeForElement(*element);
+    scope->CreateCounterNodesForLayoutObject(*object);
+    tree.UpdateOutermostCountersDirtyScope(scope);
+  }
+
+  void AttachLayoutCounter(const char* id) {
+    StyleContainmentScopeTree& tree =
+        GetDocument().GetStyleEngine().EnsureStyleContainmentScopeTree();
+    LayoutObject* object = GetLayoutObjectByElementId(id);
+    LayoutObject* it = object->NextInPreOrder();
+    for (; it && !it->IsCounter(); it = it->NextInPreOrder(object)) {
+    }
+    LayoutCounter* layout_counter = DynamicTo<LayoutCounter>(it);
+    Element& element = To<Element>(*layout_counter->Parent()->GetNode());
+    ASSERT_TRUE(layout_counter);
+    StyleContainmentScope* scope =
+        tree.FindOrCreateEnclosingScopeForElement(element);
+    scope->CreateCounterNodeForLayoutCounter(*layout_counter);
+    tree.UpdateOutermostCountersDirtyScope(scope);
+  }
+
   CountersScope* GetCountersScopeById(const char* id, const char* identifier) {
     StyleContainmentScopeTree& tree =
         GetDocument().GetStyleEngine().EnsureStyleContainmentScopeTree();
@@ -47,6 +79,15 @@ TEST_F(StyleContainmentScopeTreeTest, ManualInsertion) {
     )HTML");
   GetDocument().UpdateStyleAndLayoutTree();
 
+  CreateCounterNodeForLayoutObject("counter-set");
+  CreateCounterNodeForLayoutObject("counter-increment-1");
+  CreateCounterNodeForLayoutObject("counter-increment-2");
+  AttachLayoutCounter("counter-use");
+
+  StyleContainmentScopeTree& tree =
+      GetDocument().GetStyleEngine().EnsureStyleContainmentScopeTree();
+  tree.UpdateCounters();
+
   CountersScope* scope = GetCountersScopeById("counter-use", "counter");
 
   EXPECT_EQ(scope->Counters().size(), 4u);
@@ -68,6 +109,16 @@ TEST_F(StyleContainmentScopeTreeTest, ManualInsertionStyleContainment) {
     <div id="counter-use-2" class="counter-use"></div>
     )HTML");
   GetDocument().UpdateStyleAndLayoutTree();
+
+  CreateCounterNodeForLayoutObject("counter-increment-1");
+  CreateCounterNodeForLayoutObject("counter-increment-2");
+  AttachLayoutCounter("counter-use-1");
+  AttachLayoutCounter("counter-use-2");
+  CreateCounterNodeForLayoutObject("counter-set");
+
+  StyleContainmentScopeTree& tree =
+      GetDocument().GetStyleEngine().EnsureStyleContainmentScopeTree();
+  tree.UpdateCounters();
 
   CountersScope* scope = GetCountersScopeById("counter-use-2", "counter");
   EXPECT_EQ(scope->Counters().size(), 2u);
@@ -102,6 +153,19 @@ TEST_F(StyleContainmentScopeTreeTest, ManualInsertionStyleContainmentComplex) {
     <div id="counter-use-2" class="counter-use"></div>
     )HTML");
   GetDocument().UpdateStyleAndLayoutTree();
+
+  // Add counters in wrong order to see that the result scope tree is invariant
+  // to order in which the elements are added.
+  AttachLayoutCounter("counter-use-2");
+  AttachLayoutCounter("counter-use-1");
+  CreateCounterNodeForLayoutObject("counter-increment-2");
+  CreateCounterNodeForLayoutObject("counter-increment-1");
+  CreateCounterNodeForLayoutObject("counter-reset");
+  CreateCounterNodeForLayoutObject("counter-set");
+
+  StyleContainmentScopeTree& tree =
+      GetDocument().GetStyleEngine().EnsureStyleContainmentScopeTree();
+  tree.UpdateCounters();
 
   CountersScope* scope = GetCountersScopeById("counter-use-2", "counter");
   EXPECT_EQ(scope->Counters().size(), 2u);
@@ -144,6 +208,24 @@ TEST_F(StyleContainmentScopeTreeTest,
     <div id="counter-use-5" class="counter-use"></div>
     )HTML");
   GetDocument().UpdateStyleAndLayoutTree();
+
+  AttachLayoutCounter("counter-use-1");
+  AttachLayoutCounter("counter-use-2");
+  CreateCounterNodeForLayoutObject("counter-increment-1");
+  CreateCounterNodeForLayoutObject("counter-increment-2");
+  CreateCounterNodeForLayoutObject("counter-increment-3");
+  AttachLayoutCounter("counter-use-3");
+  AttachLayoutCounter("counter-use-4");
+  CreateCounterNodeForLayoutObject("counter-increment-4");
+  CreateCounterNodeForLayoutObject("counter-increment-5");
+  CreateCounterNodeForLayoutObject("counter-increment-6");
+  AttachLayoutCounter("counter-use-5");
+  CreateCounterNodeForLayoutObject("counter-reset-1");
+  CreateCounterNodeForLayoutObject("counter-reset-2");
+
+  StyleContainmentScopeTree& tree =
+      GetDocument().GetStyleEngine().EnsureStyleContainmentScopeTree();
+  tree.UpdateCounters();
 
   CountersScope* scope = GetCountersScopeById("counter-use-2", "counter");
   EXPECT_EQ(scope->Counters().size(), 2u);
@@ -203,6 +285,26 @@ TEST_F(StyleContainmentScopeTreeTest,
     )HTML");
   GetDocument().UpdateStyleAndLayoutTree();
 
+  // Add counters in wrong order to see that the result scope tree is invariant
+  // to order in which the elements are added.
+  AttachLayoutCounter("counter-use-5");
+  CreateCounterNodeForLayoutObject("counter-increment-4");
+  CreateCounterNodeForLayoutObject("counter-increment-5");
+  AttachLayoutCounter("counter-use-2");
+  CreateCounterNodeForLayoutObject("counter-increment-6");
+  CreateCounterNodeForLayoutObject("counter-increment-1");
+  CreateCounterNodeForLayoutObject("counter-increment-2");
+  AttachLayoutCounter("counter-use-4");
+  CreateCounterNodeForLayoutObject("counter-increment-3");
+  CreateCounterNodeForLayoutObject("counter-reset-1");
+  AttachLayoutCounter("counter-use-3");
+  CreateCounterNodeForLayoutObject("counter-reset-2");
+  AttachLayoutCounter("counter-use-1");
+
+  StyleContainmentScopeTree& tree =
+      GetDocument().GetStyleEngine().EnsureStyleContainmentScopeTree();
+  tree.UpdateCounters();
+
   CountersScope* scope = GetCountersScopeById("counter-use-5", "counter");
   EXPECT_EQ(scope->Counters().size(), 1u);
   EXPECT_EQ(scope->Counters().back()->ValueAfter(), 1);
@@ -247,6 +349,18 @@ TEST_F(StyleContainmentScopeTreeTest, ManualInsertionSelfStyleContainment) {
   for (const AtomicString& letter : {AtomicString("A"), AtomicString("B")}) {
     for (int i = 1; i <= 3; ++i) {
       AtomicString id = letter + char(i + '0');
+      CreateCounterNodeForLayoutObject(id.Ascii().c_str());
+      AttachLayoutCounter(id.Ascii().c_str());
+    }
+  }
+
+  StyleContainmentScopeTree& tree =
+      GetDocument().GetStyleEngine().EnsureStyleContainmentScopeTree();
+  tree.UpdateCounters();
+
+  for (const AtomicString& letter : {AtomicString("A"), AtomicString("B")}) {
+    for (int i = 1; i <= 3; ++i) {
+      AtomicString id = letter + char(i + '0');
       CountersScope* scope =
           GetCountersScopeById(id.Ascii().c_str(), "counter");
 
@@ -284,6 +398,17 @@ TEST_F(StyleContainmentScopeTreeTest, ManualInsertionSanityCheck) {
     )HTML");
   GetDocument().UpdateStyleAndLayoutTree();
 
+  AttachLayoutCounter("counter-use-1");
+  AttachLayoutCounter("counter-use-2");
+  AttachLayoutCounter("counter-use-3");
+  AttachLayoutCounter("counter-use-4");
+  CreateCounterNodeForLayoutObject("counter-reset-1");
+  CreateCounterNodeForLayoutObject("counter-reset-2");
+
+  StyleContainmentScopeTree& tree =
+      GetDocument().GetStyleEngine().EnsureStyleContainmentScopeTree();
+  tree.UpdateCounters();
+
   CountersScope* scope = GetCountersScopeById("counter-use-1", "counter");
   EXPECT_EQ(scope->Counters().size(), 3u);
   EXPECT_EQ(scope->Counters().back()->ValueBefore(), 5);
@@ -312,6 +437,16 @@ TEST_F(StyleContainmentScopeTreeTest,
     </div>
     )HTML");
   GetDocument().UpdateStyleAndLayoutTree();
+
+  AttachLayoutCounter("counter-use-1");
+  AttachLayoutCounter("counter-use-2");
+  AttachLayoutCounter("counter-use-3");
+  AttachLayoutCounter("counter-use-4");
+  CreateCounterNodeForLayoutObject("counter-reset-1");
+
+  StyleContainmentScopeTree& tree =
+      GetDocument().GetStyleEngine().EnsureStyleContainmentScopeTree();
+  tree.UpdateCounters();
 
   CountersScope* scope = GetCountersScopeById("counter-use-1", "counter");
   EXPECT_EQ(scope->Counters().size(), 3u);

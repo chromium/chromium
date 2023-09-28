@@ -103,6 +103,7 @@ class HitTestLatencyRecorder {
 LayoutView::LayoutView(ContainerNode* document)
     : LayoutNGBlockFlow(document),
       frame_view_(To<Document>(document)->View()),
+      layout_counter_count_(0),
       hit_test_count_(0),
       hit_test_cache_hits_(0),
       hit_test_cache_(MakeGarbageCollected<HitTestCache>()),
@@ -903,7 +904,7 @@ void LayoutView::UpdateMarkersAndCountersAfterStyleChange(
          "container query style recalcs";
 
   needs_marker_counter_update_ = false;
-  if (!HasLayoutListItems()) {
+  if (!HasLayoutCounters() && !HasLayoutListItems()) {
     return;
   }
 
@@ -925,6 +926,8 @@ void LayoutView::UpdateMarkersAndCountersAfterStyleChange(
     } else if (auto* inline_list_item =
                    DynamicTo<LayoutNGInlineListItem>(layout_object)) {
       inline_list_item->UpdateCounterStyle();
+    } else if (auto* counter = DynamicTo<LayoutCounter>(layout_object)) {
+      counter->UpdateCounter();
     }
   }
 }

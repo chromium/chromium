@@ -159,34 +159,33 @@ void StyleContainmentScopeTree::AddCounterToObjectMap(
     LayoutObject& object,
     const AtomicString& identifier,
     CounterNode& counter) {
-  auto identifier_map = object_counters_map_.find(identifier);
-  if (identifier_map != object_counters_map_.end()) {
-    DCHECK(identifier_map->value->find(&object) ==
-           identifier_map->value->end());
-    identifier_map->value->insert(&object, &counter);
+  auto it = object_counters_map_.find(&object);
+  if (it != object_counters_map_.end()) {
+    DCHECK(it->value->find(identifier) == it->value->end());
+    it->value->insert(identifier, &counter);
   } else {
-    auto* object_map = MakeGarbageCollected<
-        HeapHashMap<Member<LayoutObject>, Member<CounterNode>>>();
-    object_map->insert(&object, &counter);
-    object_counters_map_.insert(identifier, object_map);
+    auto* object_map =
+        MakeGarbageCollected<HeapHashMap<AtomicString, Member<CounterNode>>>();
+    object_map->insert(identifier, &counter);
+    object_counters_map_.insert(&object, object_map);
   }
 }
 
 CounterNode* StyleContainmentScopeTree::PopCounterFromObjectMap(
     LayoutObject& object,
     const AtomicString& identifier) {
-  auto identifier_map = object_counters_map_.find(identifier);
-  if (identifier_map == object_counters_map_.end()) {
+  auto it = object_counters_map_.find(&object);
+  if (it == object_counters_map_.end()) {
     return nullptr;
   }
-  auto object_map = identifier_map->value->find(&object);
-  if (object_map == identifier_map->value->end()) {
+  auto map_it = it->value->find(identifier);
+  if (map_it == it->value->end()) {
     return nullptr;
   }
-  CounterNode* counter = object_map->value;
-  identifier_map->value->erase(object_map);
-  if (!identifier_map->value->size()) {
-    object_counters_map_.erase(identifier_map);
+  CounterNode* counter = map_it->value;
+  it->value->erase(map_it);
+  if (!it->value->size()) {
+    object_counters_map_.erase(it);
   }
   return counter;
 }
@@ -206,10 +205,11 @@ void StyleContainmentScopeTree::RemoveCounterForLayoutObject(
   if (counter) {
     StyleContainmentScope* scope = counter->Scope()->StyleScope();
     CountersScopeTree* tree = scope->GetCountersScopeTree();
-    tree->RemoveCounterFromScope(*counter, *counter->Scope(), identifier);
-    if (identifier == list_item_) {
-      if (ListItemOrdinal::Get(*object.GetNode())) {
-        ListItemOrdinal::ItemInsertedOrRemoved(&object);
+    Element& root_element = counter->Scope()->RootElement();
+    tree->RemoveCounterFromScope(*counter, *counter->Scope());
+    if (identifier == "list-item") {
+      if (auto* o_list_element = DynamicTo<HTMLOListElement>(root_element)) {
+        ListItemOrdinal::InvalidateAllItemsForOrderedList(o_list_element);
       }
     }
     UpdateOutermostCountersDirtyScope(scope->Parent() ? scope->Parent()
@@ -219,15 +219,16 @@ void StyleContainmentScopeTree::RemoveCounterForLayoutObject(
 
 void StyleContainmentScopeTree::RemoveListItemCounterForLayoutObject(
     LayoutObject& object) {
-  // Remove the counter from the counters cache.
-  CounterNode* counter = PopCounterFromObjectMap(object, list_item_);
+  CounterNode* counter =
+      PopCounterFromObjectMap(object, AtomicString("list-item"));
   if (counter) {
     StyleContainmentScope* scope = counter->Scope()->StyleScope();
     CountersScopeTree* tree =
         counter->Scope()->StyleScope()->GetCountersScopeTree();
-    tree->RemoveCounterFromScope(*counter, *counter->Scope(), list_item_);
-    if (ListItemOrdinal::Get(*object.GetNode())) {
-      ListItemOrdinal::ItemInsertedOrRemoved(&object);
+    Element& root_element = counter->Scope()->RootElement();
+    tree->RemoveCounterFromScope(*counter, *counter->Scope());
+    if (auto* o_list_element = DynamicTo<HTMLOListElement>(root_element)) {
+      ListItemOrdinal::InvalidateAllItemsForOrderedList(o_list_element);
     }
     UpdateOutermostCountersDirtyScope(scope->Parent() ? scope->Parent()
                                                       : scope);
