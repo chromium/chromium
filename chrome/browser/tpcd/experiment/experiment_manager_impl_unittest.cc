@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/tpcd/experiment/experiment_manager.h"
+#include "chrome/browser/tpcd/experiment/experiment_manager_impl.h"
 
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
@@ -22,7 +22,7 @@
 namespace tpcd::experiment {
 namespace {
 
-class TestingExperimentManager : public ExperimentManager {};
+class TestingExperimentManagerImpl : public ExperimentManagerImpl {};
 
 using ::testing::InSequence;
 using ::testing::Optional;
@@ -31,9 +31,9 @@ using Checkpoint = ::testing::MockFunction<void(int step)>;
 
 }  // namespace
 
-class ExperimentManagerTestBase : public testing::Test {
+class ExperimentManagerImplTestBase : public testing::Test {
  public:
-  ExperimentManagerTestBase()
+  ExperimentManagerImplTestBase()
       : local_state_(TestingBrowserProcess::GetGlobal()) {}
 
   PrefService& prefs() { return *local_state_.Get(); }
@@ -54,7 +54,7 @@ class ExperimentManagerTestBase : public testing::Test {
   base::TimeDelta delay_time_;
 };
 
-TEST_F(ExperimentManagerTestBase, Version) {
+TEST_F(ExperimentManagerImplTestBase, Version) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       features::kCookieDeprecationFacilitatedTesting, {{"version", "2"}});
@@ -110,7 +110,7 @@ TEST_F(ExperimentManagerTestBase, Version) {
       prefs().ClearPref(prefs::kTPCDExperimentClientState);
     }
 
-    TestingExperimentManager experiment_manager;
+    TestingExperimentManagerImpl experiment_manager;
 
     EXPECT_EQ(prefs().GetInteger(prefs::kTPCDExperimentClientStateVersion),
               test_case.expected_version);
@@ -119,9 +119,9 @@ TEST_F(ExperimentManagerTestBase, Version) {
   }
 }
 
-class ExperimentManagerTest : public ExperimentManagerTestBase {
+class ExperimentManagerImplTest : public ExperimentManagerImplTestBase {
  public:
-  ExperimentManagerTest() {
+  ExperimentManagerImplTest() {
     feature_list_.InitAndEnableFeature(
         features::kCookieDeprecationFacilitatedTesting);
   }
@@ -130,9 +130,9 @@ class ExperimentManagerTest : public ExperimentManagerTestBase {
   base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_F(ExperimentManagerTest,
+TEST_F(ExperimentManagerImplTest,
        ExperimentManager_OneEligibleProfileCallSetsPrefEligible) {
-  TestingExperimentManager test_manager;
+  TestingExperimentManagerImpl test_manager;
   test_manager.SetClientEligibility(/*is_eligible=*/true, mock_callback_.Get());
   EXPECT_CALL(mock_callback_, Run(true)).Times(1);
   task_environment_.FastForwardBy(delay_time_);
@@ -142,9 +142,9 @@ TEST_F(ExperimentManagerTest,
 }
 
 TEST_F(
-    ExperimentManagerTest,
+    ExperimentManagerImplTest,
     ExperimentManager_OneIneligibleProfileCallSetsPrefIneligibleAndReturnsEarly) {
-  TestingExperimentManager test_manager;
+  TestingExperimentManagerImpl test_manager;
   test_manager.SetClientEligibility(/*is_eligible=*/false,
                                     mock_callback_.Get());
   EXPECT_CALL(mock_callback_, Run(false)).Times(1);
@@ -155,9 +155,9 @@ TEST_F(
 }
 
 TEST_F(
-    ExperimentManagerTest,
+    ExperimentManagerImplTest,
     ExperimentManager_OneEligibleOneIneligibleProfileCallSetsPrefIneligible) {
-  TestingExperimentManager test_manager;
+  TestingExperimentManagerImpl test_manager;
   test_manager.SetClientEligibility(/*is_eligible=*/true, mock_callback_.Get());
   test_manager.SetClientEligibility(/*is_eligible=*/false,
                                     mock_callback_.Get());
@@ -169,9 +169,9 @@ TEST_F(
 }
 
 TEST_F(
-    ExperimentManagerTest,
+    ExperimentManagerImplTest,
     ExperimentManager_OneIneligibleOneEligibleProfileCallSetsPrefIneligible) {
-  TestingExperimentManager test_manager;
+  TestingExperimentManagerImpl test_manager;
   test_manager.SetClientEligibility(/*is_eligible=*/false,
                                     mock_callback_.Get());
   test_manager.SetClientEligibility(/*is_eligible=*/true, mock_callback_.Get());
@@ -182,7 +182,7 @@ TEST_F(
             static_cast<int>(utils::ExperimentState::kIneligible));
 }
 
-TEST_F(ExperimentManagerTest,
+TEST_F(ExperimentManagerImplTest,
        ExperimentManager_SetIneligibleAfterDecisionCallDoesNothing) {
   Checkpoint checkpoint;
   {
@@ -194,7 +194,7 @@ TEST_F(ExperimentManagerTest,
     EXPECT_CALL(mock_callback_, Run(true)).Times(1);
   }
 
-  TestingExperimentManager test_manager;
+  TestingExperimentManagerImpl test_manager;
   test_manager.SetClientEligibility(/*is_eligible=*/true, mock_callback_.Get());
 
   checkpoint.Call(1);
@@ -210,7 +210,7 @@ TEST_F(ExperimentManagerTest,
             static_cast<int>(utils::ExperimentState::kEligible));
 }
 
-TEST_F(ExperimentManagerTest,
+TEST_F(ExperimentManagerImplTest,
        ExperimentManager_SetEligibleAfterDecisionCallDoesNothing) {
   Checkpoint checkpoint;
   {
@@ -222,7 +222,7 @@ TEST_F(ExperimentManagerTest,
     EXPECT_CALL(mock_callback_, Run(false)).Times(1);
   }
 
-  TestingExperimentManager test_manager;
+  TestingExperimentManagerImpl test_manager;
   test_manager.SetClientEligibility(/*is_eligible=*/false,
                                     mock_callback_.Get());
 
@@ -238,9 +238,9 @@ TEST_F(ExperimentManagerTest,
             static_cast<int>(utils::ExperimentState::kIneligible));
 }
 
-TEST_F(ExperimentManagerTest,
+TEST_F(ExperimentManagerImplTest,
        ExperimentManager_PrefUnsetBeforeFinalDecisionIsMade) {
-  TestingExperimentManager test_manager;
+  TestingExperimentManagerImpl test_manager;
   test_manager.SetClientEligibility(/*is_eligible=*/false,
                                     mock_callback_.Get());
   // No callbacks run before the delay_time_ time completes.
@@ -254,37 +254,40 @@ TEST_F(ExperimentManagerTest,
             static_cast<int>(utils::ExperimentState::kUnknownEligibility));
 }
 
-TEST_F(ExperimentManagerTest, PrefIneligibleReturnsEarly) {
+TEST_F(ExperimentManagerImplTest, PrefIneligibleReturnsEarly) {
   prefs().SetInteger(prefs::kTPCDExperimentClientState,
                      static_cast<int>(utils::ExperimentState::kIneligible));
   EXPECT_CALL(mock_callback_, Run(false)).Times(1);
-  TestingExperimentManager().SetClientEligibility(/*is_eligible=*/true,
-                                                  mock_callback_.Get());
+  TestingExperimentManagerImpl().SetClientEligibility(/*is_eligible=*/true,
+                                                      mock_callback_.Get());
 
   EXPECT_EQ(prefs().GetInteger(prefs::kTPCDExperimentClientState),
             static_cast<int>(utils::ExperimentState::kIneligible));
 }
 
-TEST_F(ExperimentManagerTest, IsClientEligible_PrefIsEligibleReturnsTrue) {
+TEST_F(ExperimentManagerImplTest, IsClientEligible_PrefIsEligibleReturnsTrue) {
   prefs().SetInteger(prefs::kTPCDExperimentClientState,
                      static_cast<int>(utils::ExperimentState::kEligible));
 
-  EXPECT_THAT(TestingExperimentManager().IsClientEligible(), Optional(true));
+  EXPECT_THAT(TestingExperimentManagerImpl().IsClientEligible(),
+              Optional(true));
 }
 
-TEST_F(ExperimentManagerTest, IsClientEligible_PrefIsIneligibleReturnsFalse) {
+TEST_F(ExperimentManagerImplTest,
+       IsClientEligible_PrefIsIneligibleReturnsFalse) {
   prefs().SetInteger(prefs::kTPCDExperimentClientState,
                      static_cast<int>(utils::ExperimentState::kIneligible));
 
-  EXPECT_THAT(TestingExperimentManager().IsClientEligible(), Optional(false));
+  EXPECT_THAT(TestingExperimentManagerImpl().IsClientEligible(),
+              Optional(false));
 }
 
-TEST_F(ExperimentManagerTest, IsClientEligible_PrefIsUnknownReturnsEmpty) {
+TEST_F(ExperimentManagerImplTest, IsClientEligible_PrefIsUnknownReturnsEmpty) {
   prefs().SetInteger(
       prefs::kTPCDExperimentClientState,
       static_cast<int>(utils::ExperimentState::kUnknownEligibility));
 
-  EXPECT_EQ(TestingExperimentManager().IsClientEligible(), absl::nullopt);
+  EXPECT_EQ(TestingExperimentManagerImpl().IsClientEligible(), absl::nullopt);
 }
 
 }  // namespace tpcd::experiment

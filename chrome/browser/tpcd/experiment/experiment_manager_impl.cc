@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <utility>
+#include "chrome/browser/tpcd/experiment/experiment_manager_impl.h"
 
-#include "chrome/browser/tpcd/experiment/experiment_manager.h"
+#include <utility>
 
 #include "base/check.h"
 #include "base/feature_list.h"
@@ -27,17 +27,17 @@
 namespace tpcd::experiment {
 
 // static
-ExperimentManager* ExperimentManager::GetInstance() {
+ExperimentManagerImpl* ExperimentManagerImpl::GetInstance() {
   if (!base::FeatureList::IsEnabled(
           features::kCookieDeprecationFacilitatedTesting)) {
     return nullptr;
   }
 
-  static base::NoDestructor<ExperimentManager> instance;
+  static base::NoDestructor<ExperimentManagerImpl> instance;
   return instance.get();
 }
 
-ExperimentManager::ExperimentManager() {
+ExperimentManagerImpl::ExperimentManagerImpl() {
   CHECK(base::FeatureList::IsEnabled(
       features::kCookieDeprecationFacilitatedTesting));
 
@@ -62,22 +62,21 @@ ExperimentManager::ExperimentManager() {
   // to use `base::Unretained()`.
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
-      base::BindOnce(&ExperimentManager::CaptureEligibilityInLocalStatePref,
+      base::BindOnce(&ExperimentManagerImpl::CaptureEligibilityInLocalStatePref,
                      base::Unretained(this)),
       kDecisionDelayTime.Get());
 }
 
-ExperimentManager::~ExperimentManager() {
+ExperimentManagerImpl::~ExperimentManagerImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void ExperimentManager::SetClientEligibility(
+void ExperimentManagerImpl::SetClientEligibility(
     bool is_eligible,
     EligibilityDecisionCallback on_eligibility_decision_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (absl::optional<bool> client_is_eligible = IsClientEligible();
-      client_is_eligible.has_value()) {
+  if (absl::optional<bool> client_is_eligible = IsClientEligible()) {
     // If client eligibility is already known, just run callback.
     client_is_eligible_ = *client_is_eligible;
     std::move(on_eligibility_decision_callback).Run(client_is_eligible_);
@@ -90,7 +89,7 @@ void ExperimentManager::SetClientEligibility(
   callbacks_.push_back(std::move(on_eligibility_decision_callback));
 }
 
-void ExperimentManager::CaptureEligibilityInLocalStatePref() {
+void ExperimentManagerImpl::CaptureEligibilityInLocalStatePref() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   g_browser_process->local_state()->SetInteger(
       prefs::kTPCDExperimentClientState,
@@ -103,7 +102,7 @@ void ExperimentManager::CaptureEligibilityInLocalStatePref() {
   callbacks_.clear();
 }
 
-absl::optional<bool> ExperimentManager::IsClientEligible() const {
+absl::optional<bool> ExperimentManagerImpl::IsClientEligible() const {
   switch (g_browser_process->local_state()->GetInteger(
       prefs::kTPCDExperimentClientState)) {
     case static_cast<int>(utils::ExperimentState::kEligible):
