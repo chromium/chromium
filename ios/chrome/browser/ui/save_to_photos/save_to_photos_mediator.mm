@@ -259,16 +259,6 @@ void StartMediatorHelper(__weak SaveToPhotosMediator* mediator,
   _photosService->UploadImage(_imageName, _imageData, _identity,
                               base::DoNothing(),
                               std::move(uploadCompletionCallback));
-  [self showSnackbarWithUploadingMessageAndCancelButton];
-}
-
-// Cancels the ongoing upload and exit hide Save to Photos.
-- (void)cancelUpload {
-  _photosService->CancelUpload();
-  base::UmaHistogramEnumeration(
-      kSaveToPhotosActionsHistogram,
-      SaveToPhotosActions::kFailureUserCancelledWithSnackbar);
-  [self.delegate hideSaveToPhotos];
 }
 
 // Called when the Photos service reports upload completion.
@@ -311,22 +301,6 @@ void StartMediatorHelper(__weak SaveToPhotosMediator* mediator,
                                       kFailureUserCancelledWithAlert);
                               [weakDelegate hideSaveToPhotos];
                             }];
-}
-
-// Shows a snackbar to let the user know the Photos service started to upload
-// the image with a button to cancel the upload.
-- (void)showSnackbarWithUploadingMessageAndCancelButton {
-  NSString* message = l10n_util::GetNSStringF(
-      IDS_IOS_SAVE_TO_PHOTOS_SNACKBAR_SAVING_IMAGE_MESSAGE,
-      base::SysNSStringToUTF16(_identity.userEmail));
-  NSString* buttonText = l10n_util::GetNSString(IDS_CANCEL);
-  __weak __typeof(self) weakSelf = self;
-  [self.delegate showSnackbarWithMessage:message
-                              buttonText:buttonText
-                           messageAction:^{
-                             [weakSelf cancelUpload];
-                           }
-                        completionAction:nil];
 }
 
 // Shows a snackbar to let the user know the Photos service is done uploading

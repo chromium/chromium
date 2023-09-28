@@ -353,17 +353,8 @@ TEST_F(SaveToPhotosMediatorTest,
       SaveToPhotosAccountPickerActions::kSelectedIdentity, 1);
   EXPECT_OCMOCK_VERIFY(mock_save_to_photos_mediator_delegate);
 
-  // Expect the the mediator will start uploading and show a snackbar when the
-  // account picker has been hidden.
-  NSString* expected_message = l10n_util::GetNSStringF(
-      IDS_IOS_SAVE_TO_PHOTOS_SNACKBAR_SAVING_IMAGE_MESSAGE,
-      base::SysNSStringToUTF16(fake_identity_.userEmail));
-  NSString* expected_button_text = l10n_util::GetNSString(IDS_CANCEL);
-  OCMExpect([mock_save_to_photos_mediator_delegate
-      showSnackbarWithMessage:expected_message
-                   buttonText:expected_button_text
-                messageAction:[OCMArg isNotNil]
-             completionAction:[OCMArg isNil]]);
+  // Notify the mediator that the account picker was hidden and run until it
+  // calls the Photos service.
   SetUpPhotosServiceQuitClosure();
   [mediator accountPickerWasHidden];
 
@@ -378,12 +369,12 @@ TEST_F(SaveToPhotosMediatorTest,
   EXPECT_NSEQ(GetTestPhotosService()->GetImageData(), GetFakeImageData());
   EXPECT_EQ(GetTestPhotosService()->GetIdentity(), fake_identity_);
 
-  // Expect that the second snackbar is shown once the PhotosService is done
+  // Expect that the success snackbar is shown once the PhotosService is done
   // uploading.
-  expected_message = l10n_util::GetNSStringF(
+  NSString* expected_message = l10n_util::GetNSStringF(
       IDS_IOS_SAVE_TO_PHOTOS_SNACKBAR_IMAGE_SAVED_MESSAGE,
       base::SysNSStringToUTF16(fake_identity_.userEmail));
-  expected_button_text = l10n_util::GetNSString(
+  NSString* expected_button_text = l10n_util::GetNSString(
       IDS_IOS_SAVE_TO_PHOTOS_SNACKBAR_IMAGE_SAVED_OPEN_BUTTON);
   OCMExpect([mock_save_to_photos_mediator_delegate
       showSnackbarWithMessage:expected_message
@@ -394,12 +385,13 @@ TEST_F(SaveToPhotosMediatorTest,
   // Run until the PhotosService finishes to upload the image.
   task_environment_.RunUntilQuit();
 
-  // Verify that the second snackbar has been shown.
+  // Verify that the success snackbar has been shown.
   EXPECT_OCMOCK_VERIFY(mock_save_to_photos_mediator_delegate);
 }
 
 // Tests that the SaveToPhotosMediator tries to open the Google Photos app if it
-// detects that it is installed and the user taps "Open" in the second snackbar.
+// detects that it is installed and the user taps "Open" in the success
+// snackbar.
 TEST_F(SaveToPhotosMediatorTest, SnackbarOpenButtonOpensPhotosAppIfInstalled) {
   // The feature requires the user being signed-in.
   SignIn();
@@ -419,7 +411,7 @@ TEST_F(SaveToPhotosMediatorTest, SnackbarOpenButtonOpensPhotosAppIfInstalled) {
                      webState:web_state_.get()];
   task_environment_.RunUntilQuit();
 
-  // Expect the second snackbar (with a non-nil completion) is shown and save
+  // Expect the success snackbar (with a non-nil completion) is shown and save
   // the message and completion actions to later simulate the snackbar being
   // dismissed by the user tapping the "Open" button.
   __block ProceduralBlock savedMessageAction = nil;
@@ -438,14 +430,14 @@ TEST_F(SaveToPhotosMediatorTest, SnackbarOpenButtonOpensPhotosAppIfInstalled) {
                return completionAction != nil;
              }]]);
 
-  // Run until the PhotosService is done uploading, at which point the second
+  // Run until the PhotosService is done uploading, at which point the success
   // snackbar is presented to the user.
   SetUpPhotosServiceQuitClosure();
   [mediator accountPickerDidSelectIdentity:fake_identity_ askEveryTime:YES];
   [mediator accountPickerWasHidden];
   task_environment_.RunUntilQuit();
 
-  // Verify that the second snackbar was shown.
+  // Verify that the success snackbar was shown.
   EXPECT_OCMOCK_VERIFY(mock_save_to_photos_mediator_delegate);
   ASSERT_TRUE(savedMessageAction);
   ASSERT_TRUE(savedCompletionAction);
@@ -489,7 +481,7 @@ TEST_F(SaveToPhotosMediatorTest, SnackbarOpenButtonOpensPhotosAppIfInstalled) {
 
 // Tests that the SaveToPhotosMediator tries to show the StoreKit if it detects
 // that the Google Photos app is not installed and the user taps "Open" in the
-// second snackbar.
+// success snackbar.
 TEST_F(SaveToPhotosMediatorTest,
        SnackbarOpenButtonOpensStoreKitIfAppNotInstalled) {
   // The feature requires the user being signed-in.
@@ -510,7 +502,7 @@ TEST_F(SaveToPhotosMediatorTest,
                      webState:web_state_.get()];
   task_environment_.RunUntilQuit();
 
-  // Expect the second snackbar (with a non-nil completion) is shown and save
+  // Expect the success snackbar (with a non-nil completion) is shown and save
   // the message and completion actions to later simulate the snackbar being
   // dismissed by the user tapping the "Open" button.
   __block ProceduralBlock savedMessageAction = nil;
@@ -529,14 +521,14 @@ TEST_F(SaveToPhotosMediatorTest,
                return completionAction != nil;
              }]]);
 
-  // Run until the PhotosService is done uploading, at which point the second
+  // Run until the PhotosService is done uploading, at which point the success
   // snackbar is presented to the user.
   SetUpPhotosServiceQuitClosure();
   [mediator accountPickerDidSelectIdentity:fake_identity_ askEveryTime:YES];
   [mediator accountPickerWasHidden];
   task_environment_.RunUntilQuit();
 
-  // Verify that the second snackbar was shown.
+  // Verify that the success snackbar was shown.
   EXPECT_OCMOCK_VERIFY(mock_save_to_photos_mediator_delegate);
   ASSERT_TRUE(savedMessageAction);
   ASSERT_TRUE(savedCompletionAction);
