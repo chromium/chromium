@@ -1139,12 +1139,6 @@ const ComputedStyle* StyleResolver::ResolveStyle(
   return state.TakeStyle();
 }
 
-static bool AllowsInheritance(const StyleRequest& style_request,
-                              const ComputedStyle* parent_style) {
-  // The spec disallows inheritance for ::backdrop.
-  return parent_style && style_request.pseudo_id != kPseudoIdBackdrop;
-}
-
 void StyleResolver::InitStyle(Element& element,
                               const StyleRequest& style_request,
                               const ComputedStyle& source_for_noninherited,
@@ -1444,12 +1438,13 @@ void StyleResolver::ApplyBaseStyleNoCache(
         style_request.pseudo_id);
   }
 
-  if (!AllowsInheritance(style_request, state.ParentStyle())) {
-    // We either have no parent, or we are ::backdrop (which does not
-    // allow inheriting from its parent), so use the initial style
-    // as the parent. Note that we need to do this before MPC lookup,
-    // so that the parent comparison (to determine if we have a hit
-    // on inherited properties) is correctly determined.
+  if (!state.ParentStyle() ||
+      (style_request.pseudo_id == kPseudoIdBackdrop &&
+       !RuntimeEnabledFeatures::BackdropInheritOriginatingEnabled())) {
+    // We have no parent so use the initial style as the parent. Note that we
+    // need to do this before MPC lookup, so that the parent comparison (to
+    // determine if we have a hit on inherited properties) is correctly
+    // determined.
     state.SetParentStyle(InitialStyleForElement());
     state.SetLayoutParentStyle(state.ParentStyle());
 

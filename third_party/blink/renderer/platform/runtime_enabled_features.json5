@@ -390,6 +390,10 @@
       public: true,
       settable_from_internals: true,
     },
+    {
+      name: "BackdropInheritOriginating",
+      status: "experimental",
+    },
     // When enabled, enforces new interoperable semantics for 3D transforms.
     // See crbug.com/1008483.
     {

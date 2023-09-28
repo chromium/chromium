@@ -2233,6 +2233,8 @@ TEST_F(StyleResolverTest, IsInertWithFrameAndFullscreen) {
 }
 
 TEST_F(StyleResolverTest, IsInertWithBackdrop) {
+  ScopedBackdropInheritOriginatingForTest backdrop_inherit(true);
+
   Document& document = GetDocument();
   NonThrowableExceptionState exception_state;
 
@@ -2262,7 +2264,7 @@ TEST_F(StyleResolverTest, IsInertWithBackdrop) {
   UpdateAllLifecyclePhasesForTest();
 
   EXPECT_EQ(html->GetPseudoElement(kPseudoIdBackdrop), nullptr);
-  EXPECT_FALSE(IsBackdropInert(body));
+  EXPECT_TRUE(IsBackdropInert(body));
   EXPECT_FALSE(IsBackdropInert(dialog));
 
   dialog->close();
@@ -2282,8 +2284,8 @@ TEST_F(StyleResolverTest, IsInertWithBackdrop) {
   dialog->showModal(exception_state);
   UpdateAllLifecyclePhasesForTest();
 
-  EXPECT_FALSE(IsBackdropInert(html));
-  EXPECT_FALSE(IsBackdropInert(body));
+  EXPECT_TRUE(IsBackdropInert(html));
+  EXPECT_TRUE(IsBackdropInert(body));
   EXPECT_FALSE(IsBackdropInert(dialog));
   ExitFullscreen(document);
 }
