@@ -1113,7 +1113,7 @@ base::Value::List ManagementUIHandler::GetApplicationsInfo(
 
   auto& registrar = provider->registrar_unsafe();
 
-  for (const web_app::AppId& app_id : registrar.GetAppIds()) {
+  for (const webapps::AppId& app_id : registrar.GetAppIds()) {
     base::Value::List permission_messages;
     // Display RunOnOsLogin if it is set to autostart by admin policy.
     web_app::ValueWithPolicy<web_app::RunOnOsLoginMode> policy =

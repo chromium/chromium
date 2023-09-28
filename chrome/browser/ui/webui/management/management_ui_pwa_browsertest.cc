@@ -54,7 +54,7 @@ IN_PROC_BROWSER_TEST_F(ManagementUIPWATest, RunOnOsLoginApplicationsReported) {
               .Set(web_app::kManifestId, kTestApp)
               .Set(web_app::kRunOnOsLogin, web_app::kRunWindowed)));
 
-  const web_app::AppId& app_id = InstallPWA(GURL(kTestApp));
+  const webapps::AppId& app_id = InstallPWA(GURL(kTestApp));
 
   // Check that applications contains given app
   ASSERT_TRUE(
