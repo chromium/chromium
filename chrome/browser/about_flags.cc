@@ -3894,6 +3894,18 @@ const FeatureEntry::FeatureVariation
          std::size(kEnableBoundSessionCredentialsWithDice), nullptr}};
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
+#if BUILDFLAG(IS_ANDROID)
+const FeatureEntry::FeatureParam kWebAuthnAndroidCredManGpmInCredManParam = {
+    device::kWebAuthnAndroidGpmInCredMan.name, "true"};
+const FeatureEntry::FeatureParam kWebAuthnAndroidCredManGpmNotInCredManParam = {
+    device::kWebAuthnAndroidGpmInCredMan.name, "false"};
+const FeatureEntry::FeatureVariation kWebAuthnAndroidCredManVariations[] = {
+    {"for Google Password Manager and 3rd party passkeys",
+     &kWebAuthnAndroidCredManGpmInCredManParam, 1, nullptr},
+    {"for 3rd party passkeys", &kWebAuthnAndroidCredManGpmNotInCredManParam, 1,
+     nullptr}};
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // RECORDING USER METRICS FOR FLAGS:
 // -----------------------------------------------------------------------------
 // The first line of the entry is the internal name.
@@ -10657,17 +10669,14 @@ const FeatureEntry kFeatureEntries[] = {
     {"web-authentication-android-credential-management",
      flag_descriptions::kWebAuthnAndroidCredManName,
      flag_descriptions::kWebAuthnAndroidCredManDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(device::kWebAuthnAndroidCredMan)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(device::kWebAuthnAndroidCredMan,
+                                    kWebAuthnAndroidCredManVariations,
+                                    "WebAuthenticationAndroidCredMan")},
 
     {"passwords-in-android-credential-management",
      flag_descriptions::kPasswordsInCredManName,
      flag_descriptions::kPasswordsInCredManDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(password_manager::features::kPasswordsInCredMan)},
-
-    {"web-authentication-android-credential-management-and-gmscore",
-     flag_descriptions::kWebAuthnAndroidCredManAndGmsCoreName,
-     flag_descriptions::kWebAuthnAndroidCredManAndGmsCoreDescription,
-     kOsAndroid, FEATURE_VALUE_TYPE(device::kWebAuthnAndroidCredManAndGmsCore)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
     {"permission-storage-access-api",

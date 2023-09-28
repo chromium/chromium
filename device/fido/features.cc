@@ -68,11 +68,6 @@ BASE_FEATURE(kWebAuthnAndroidCredMan,
 BASE_FEATURE(kWebAuthnAndroidCredManForHybrid,
              "WebAuthenticationAndroidCredManForHybrid",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Added in M118, Not yet enabled by default.
-BASE_FEATURE(kWebAuthnAndroidCredManAndGmsCore,
-             "WebAuthenticationAndroidCredManAndGmsCore",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Added in M115. Remove in or after M118.

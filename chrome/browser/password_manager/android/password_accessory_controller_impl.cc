@@ -461,7 +461,8 @@ void PasswordAccessoryControllerImpl::OnGenerationRequested(
 
 void PasswordAccessoryControllerImpl::UpdateCredManReentryUi(
     FocusedFieldType focused_field_type) {
-  if (!webauthn::WebAuthnCredManDelegate::IsCredManEnabled()) {
+  if (webauthn::WebAuthnCredManDelegate::CredManMode() ==
+      webauthn::WebAuthnCredManDelegate::kNotEnabled) {
     return;  // No updates required.
   }
   if (password_manager::PasswordManagerDriver* driver =

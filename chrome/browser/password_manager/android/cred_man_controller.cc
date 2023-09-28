@@ -34,7 +34,8 @@ bool CredManController::Show(
     bool is_webauthn_form) {
   // webauthn forms without passkeys should show TouchToFill bottom sheet.
   if (!cred_man_delegate || !is_webauthn_form ||
-      !webauthn::WebAuthnCredManDelegate::IsCredManEnabled() ||
+      webauthn::WebAuthnCredManDelegate::CredManMode() ==
+          webauthn::WebAuthnCredManDelegate::kNotEnabled ||
       cred_man_delegate->HasPasskeys() !=
           webauthn::WebAuthnCredManDelegate::kHasPasskeys) {
     filler->Dismiss(ToShowVirtualKeyboard(false));

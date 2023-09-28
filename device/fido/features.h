@@ -7,6 +7,7 @@
 
 #include "base/component_export.h"
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 
@@ -45,13 +46,14 @@ BASE_DECLARE_FEATURE(kWebAuthnGoogleCorpRemoteDesktopClientPrivilege);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnAndroidCredMan);
 
+// Use the Android 14 Credential Manager API for credentials stored in Gmscore.
+COMPONENT_EXPORT(DEVICE_FIDO)
+inline constexpr base::FeatureParam<bool> kWebAuthnAndroidGpmInCredMan{
+    &kWebAuthnAndroidCredMan, "gpm_in_cred_man", false};
+
 // Use the Android 14 Credential Manager API for hybrid requests.
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnAndroidCredManForHybrid);
-
-// Use the Android 14 Credential Manager API alongside GMSCore.
-COMPONENT_EXPORT(DEVICE_FIDO)
-BASE_DECLARE_FEATURE(kWebAuthnAndroidCredManAndGmsCore);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Count kCtap2ErrPinRequired as meaning not recognised.

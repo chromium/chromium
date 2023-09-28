@@ -23,6 +23,12 @@ class WebAuthnCredManDelegate {
     kHasPasskeys,
   };
 
+  enum CredManEnabledMode {
+    kNotEnabled,
+    kAllCredMan,
+    kNonGpmPasskeys,
+  };
+
   explicit WebAuthnCredManDelegate(content::WebContents* web_contents);
 
   WebAuthnCredManDelegate(const WebAuthnCredManDelegate&) = delete;
@@ -68,7 +74,7 @@ class WebAuthnCredManDelegate {
   void FillUsernameAndPassword(const std::u16string& username,
                                const std::u16string& password);
 
-  static bool IsCredManEnabled();
+  static CredManEnabledMode CredManMode();
 
 #if defined(UNIT_TEST)
   static void override_android_version_for_testing(bool should_override) {

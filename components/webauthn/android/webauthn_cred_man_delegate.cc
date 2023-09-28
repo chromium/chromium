@@ -73,10 +73,17 @@ void WebAuthnCredManDelegate::FillUsernameAndPassword(
 }
 
 // static
-bool WebAuthnCredManDelegate::IsCredManEnabled() {
-  return (override_android_version_for_testing_ ||
-          base::android::BuildInfo::GetInstance()->is_at_least_u()) &&
-         base::FeatureList::IsEnabled(device::kWebAuthnAndroidCredMan);
+WebAuthnCredManDelegate::CredManEnabledMode
+WebAuthnCredManDelegate::CredManMode() {
+  if (!override_android_version_for_testing_ &&
+      !base::android::BuildInfo::GetInstance()->is_at_least_u()) {
+    return kNotEnabled;
+  }
+  if (base::FeatureList::IsEnabled(device::kWebAuthnAndroidCredMan)) {
+    return device::kWebAuthnAndroidGpmInCredMan.Get() ? kAllCredMan
+                                                      : kNonGpmPasskeys;
+  }
+  return kNotEnabled;
 }
 
 }  // namespace webauthn

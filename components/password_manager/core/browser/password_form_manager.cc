@@ -756,7 +756,8 @@ void PasswordFormManager::OnTimeout() {
 
 bool PasswordFormManager::WebAuthnCredentialsAvailable() const {
 #if BUILDFLAG(IS_ANDROID)
-  if (webauthn::WebAuthnCredManDelegate::IsCredManEnabled()) {
+  if (webauthn::WebAuthnCredManDelegate::CredManMode() !=
+      webauthn::WebAuthnCredManDelegate::kNotEnabled) {
     webauthn::WebAuthnCredManDelegate* delegate =
         client_->GetWebAuthnCredManDelegateForDriver(driver_.get());
     return delegate ? delegate->HasPasskeys() ==
