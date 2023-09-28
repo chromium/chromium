@@ -204,12 +204,19 @@ mojom::TouchpadSettingsPtr RetrieveTouchpadSettings(
   settings->scroll_acceleration =
       settings_dict.FindBool(prefs::kTouchpadSettingScrollAcceleration)
           .value_or(kDefaultScrollAcceleration);
-  settings->haptic_sensitivity =
-      settings_dict.FindInt(prefs::kTouchpadSettingHapticSensitivity)
-          .value_or(kDefaultSensitivity);
-  settings->haptic_enabled =
-      settings_dict.FindBool(prefs::kTouchpadSettingHapticEnabled)
-          .value_or(kDefaultHapticFeedbackEnabled);
+
+  if (touchpad.is_haptic) {
+    settings->haptic_sensitivity =
+        settings_dict.FindInt(prefs::kTouchpadSettingHapticSensitivity)
+            .value_or(kDefaultSensitivity);
+    settings->haptic_enabled =
+        settings_dict.FindBool(prefs::kTouchpadSettingHapticEnabled)
+            .value_or(kDefaultHapticFeedbackEnabled);
+  } else {
+    settings->haptic_sensitivity = kDefaultSensitivity;
+    settings->haptic_enabled = kDefaultHapticFeedbackEnabled;
+  }
+
   return settings;
 }
 
@@ -286,7 +293,8 @@ base::Value::Dict ConvertSettingsToDict(
                       touchpad.settings->tap_dragging_enabled);
   }
 
-  if (ShouldPersistSetting(
+  if (touchpad.is_haptic &&
+      ShouldPersistSetting(
           prefs::kTouchpadSettingHapticSensitivity,
           static_cast<int>(touchpad.settings->haptic_sensitivity),
           kDefaultSensitivity, force_persistence.haptic_sensitivity,
@@ -295,7 +303,8 @@ base::Value::Dict ConvertSettingsToDict(
                       touchpad.settings->haptic_sensitivity);
   }
 
-  if (ShouldPersistSetting(
+  if (touchpad.is_haptic &&
+      ShouldPersistSetting(
           prefs::kTouchpadSettingHapticEnabled,
           touchpad.settings->haptic_enabled, kDefaultHapticFeedbackEnabled,
           force_persistence.haptic_enabled, existing_settings_dict)) {
@@ -311,11 +320,38 @@ base::Value::Dict ConvertSettingsToDict(
   return settings_dict;
 }
 
+void UpdateInternalTouchpadSettingsImpl(
+    PrefService* pref_service,
+    const mojom::Touchpad& touchpad,
+    const ForceTouchpadSettingPersistence& force_persistence) {
+  CHECK(touchpad.settings);
+  CHECK(!touchpad.is_external);
+
+  base::Value::Dict existing_settings_dict =
+      pref_service->GetDict(prefs::kTouchpadInternalSettings).Clone();
+  base::Value::Dict settings_dict = ConvertSettingsToDict(
+      touchpad, force_persistence, &existing_settings_dict);
+
+  // Merge the new settings into the old settings so that all settings are
+  // transferred over (including ones that might not work on the current
+  // touchpad such as haptic settings)
+  existing_settings_dict.Merge(std::move(settings_dict));
+  pref_service->SetDict(prefs::kTouchpadInternalSettings,
+                        std::move(existing_settings_dict));
+}
+
 void UpdateTouchpadSettingsImpl(
     PrefService* pref_service,
     const mojom::Touchpad& touchpad,
     const ForceTouchpadSettingPersistence& force_persistence) {
-  DCHECK(touchpad.settings);
+  CHECK(touchpad.settings);
+
+  if (!touchpad.is_external) {
+    UpdateInternalTouchpadSettingsImpl(pref_service, touchpad,
+                                       force_persistence);
+    return;
+  }
+
   base::Value::Dict devices_dict =
       pref_service->GetDict(prefs::kTouchpadDeviceSettingsDictPref).Clone();
   base::Value::Dict* existing_settings_dict =
@@ -349,6 +385,7 @@ mojom::TouchpadSettingsPtr GetTouchpadSettingsFromOldLocalStatePrefs(
 
   return settings;
 }
+
 }  // namespace
 
 TouchpadPrefHandlerImpl::TouchpadPrefHandlerImpl() = default;
@@ -362,9 +399,18 @@ void TouchpadPrefHandlerImpl::InitializeTouchpadSettings(
     return;
   }
 
-  const auto& devices_dict =
-      pref_service->GetDict(prefs::kTouchpadDeviceSettingsDictPref);
-  const auto* settings_dict = devices_dict.FindDict(touchpad->device_key);
+  const base::Value::Dict* settings_dict = nullptr;
+  if (!touchpad->is_external) {
+    settings_dict = &pref_service->GetDict(prefs::kTouchpadInternalSettings);
+    if (settings_dict->empty()) {
+      settings_dict = nullptr;
+    }
+  } else {
+    const auto& devices_dict =
+        pref_service->GetDict(prefs::kTouchpadDeviceSettingsDictPref);
+    settings_dict = devices_dict.FindDict(touchpad->device_key);
+  }
+
   ForceTouchpadSettingPersistence force_persistence;
   if (settings_dict) {
     touchpad->settings = RetrieveTouchpadSettings(*touchpad, *settings_dict);
@@ -382,6 +428,11 @@ void TouchpadPrefHandlerImpl::InitializeTouchpadSettings(
         GetTouchpadSettingsFromPrefs(pref_service, force_persistence);
   } else {
     touchpad->settings = GetDefaultTouchpadSettings();
+    // Override simulate right click default value.
+    if (features::IsAltClickAndSixPackCustomizationEnabled()) {
+      touchpad->settings->simulate_right_click =
+          GetSimulateRightClickModifierFromPrefs(pref_service);
+    }
   }
   DCHECK(touchpad->settings);
 

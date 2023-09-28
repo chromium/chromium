@@ -1850,6 +1850,11 @@ inline constexpr char kDemoModeStoreId[] = "demo_mode.store_id";
 // A string pref holding the value of the default locale for demo sessions.
 inline constexpr char kDemoModeDefaultLocale[] = "demo_mode.default_locale";
 
+// A dictionary pref containing the set of touchpad settings for the user. This
+// is synced for all user devices.
+inline constexpr char kTouchpadInternalSettings[] =
+    "ash.settings.touchpad.internal";
+
 // NOTE: New prefs should start with the "ash." prefix. Existing prefs moved
 // into this file should not be renamed, since they may be synced.
 

@@ -38,6 +38,7 @@
 #include "base/strings/to_string.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/account_id/account_id.h"
+#include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/known_user.h"
@@ -555,6 +556,9 @@ void InputDeviceSettingsControllerImpl::RegisterProfilePrefs(
   pref_registry->RegisterDictionaryPref(
       prefs::kPointingStickDeviceSettingsDictPref);
   pref_registry->RegisterDictionaryPref(prefs::kTouchpadDeviceSettingsDictPref);
+  pref_registry->RegisterDictionaryPref(
+      prefs::kTouchpadInternalSettings,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
   pref_registry->RegisterListPref(prefs::kKeyboardDeviceImpostersListPref);
   pref_registry->RegisterDictionaryPref(prefs::kMouseButtonRemappingsDictPref);
   pref_registry->RegisterDictionaryPref(

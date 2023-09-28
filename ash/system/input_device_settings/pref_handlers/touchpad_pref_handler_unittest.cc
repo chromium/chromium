@@ -126,6 +126,8 @@ class TouchpadPrefHandlerTest : public AshTestBase {
 
     pref_service_->registry()->RegisterDictionaryPref(
         prefs::kTouchpadDeviceSettingsDictPref);
+    pref_service_->registry()->RegisterDictionaryPref(
+        prefs::kTouchpadInternalSettings);
     // We are using these test constants as a a way to differentiate values
     // retrieved from prefs or default touchpad settings.
     pref_service_->registry()->RegisterIntegerPref(prefs::kTouchpadSensitivity,
@@ -290,10 +292,13 @@ class TouchpadPrefHandlerTest : public AshTestBase {
   }
 
   void CallUpdateTouchpadSettings(const std::string& device_key,
-                                  const mojom::TouchpadSettings& settings) {
+                                  const mojom::TouchpadSettings& settings,
+                                  bool is_external = true) {
     mojom::TouchpadPtr touchpad = mojom::Touchpad::New();
     touchpad->settings = settings.Clone();
     touchpad->device_key = device_key;
+    touchpad->is_external = is_external;
+    touchpad->is_haptic = true;
 
     pref_handler_->UpdateTouchpadSettings(pref_service_.get(), *touchpad);
   }
@@ -309,9 +314,12 @@ class TouchpadPrefHandlerTest : public AshTestBase {
   }
 
   mojom::TouchpadSettingsPtr CallInitializeTouchpadSettings(
-      const std::string& device_key) {
+      const std::string& device_key,
+      bool is_external = true) {
     mojom::TouchpadPtr touchpad = mojom::Touchpad::New();
     touchpad->device_key = device_key;
+    touchpad->is_external = is_external;
+    touchpad->is_haptic = true;
 
     pref_handler_->InitializeTouchpadSettings(pref_service_.get(),
                                               touchpad.get());
@@ -328,7 +336,12 @@ class TouchpadPrefHandlerTest : public AshTestBase {
     return std::move(touchpad_ptr->settings);
   }
 
-  const base::Value::Dict* GetSettingsDict(const std::string& device_key) {
+  const base::Value::Dict* GetSettingsDict(const std::string& device_key,
+                                           bool is_external = true) {
+    if (!is_external) {
+      return &pref_service_->GetDict(prefs::kTouchpadInternalSettings);
+    }
+
     const auto& devices_dict =
         pref_service_->GetDict(prefs::kTouchpadDeviceSettingsDictPref);
     EXPECT_EQ(1u, devices_dict.size());
@@ -498,6 +511,26 @@ TEST_F(TouchpadPrefHandlerTest, UpdateSettings) {
                                        *unchanged_settings_dict);
 }
 
+TEST_F(TouchpadPrefHandlerTest, UpdateSettingsInternal) {
+  CallUpdateTouchpadSettings(kTouchpadKey1, kTouchpadSettings1,
+                             /*is_external=*/false);
+
+  const auto& settings_dict =
+      pref_service_->GetDict(prefs::kTouchpadInternalSettings);
+  CheckTouchpadSettingsAndDictAreEqual(kTouchpadSettings1, settings_dict);
+
+  mojom::TouchpadSettings updated_settings = kTouchpadSettings1;
+  updated_settings.reverse_scrolling = !updated_settings.reverse_scrolling;
+
+  // Update the settings again and verify the settings are updated in place.
+  CallUpdateTouchpadSettings(kTouchpadKey1, updated_settings,
+                             /*is_external=*/false);
+
+  const auto& updated_settings_dict =
+      pref_service_->GetDict(prefs::kTouchpadInternalSettings);
+  CheckTouchpadSettingsAndDictAreEqual(updated_settings, updated_settings_dict);
+}
+
 TEST_F(TouchpadPrefHandlerTest, NewSettingAddedRoundTrip) {
   mojom::TouchpadSettings test_settings = kTouchpadSettings1;
   test_settings.reverse_scrolling = !kDefaultReverseScrolling;
@@ -516,6 +549,32 @@ TEST_F(TouchpadPrefHandlerTest, NewSettingAddedRoundTrip) {
   // "new settings" match their default values.
   mojom::TouchpadSettingsPtr settings =
       CallInitializeTouchpadSettings(kTouchpadKey1);
+  EXPECT_EQ(kDefaultReverseScrolling, settings->reverse_scrolling);
+
+  // Reset "new settings" to the values that match `test_settings` and check
+  // that the rest of the fields are equal.
+  settings->reverse_scrolling = !kDefaultReverseScrolling;
+  EXPECT_EQ(test_settings, *settings);
+}
+
+TEST_F(TouchpadPrefHandlerTest, NewSettingAddedRoundTripInternal) {
+  mojom::TouchpadSettings test_settings = kTouchpadSettings1;
+  test_settings.reverse_scrolling = !kDefaultReverseScrolling;
+
+  CallUpdateTouchpadSettings(kTouchpadKey1, test_settings,
+                             /*is_external=*/false);
+  auto settings_dict =
+      pref_service_->GetDict(prefs::kTouchpadInternalSettings).Clone();
+
+  // Remove key from the dict to mock adding a new setting in the future.
+  settings_dict.Remove(prefs::kTouchpadSettingReverseScrolling);
+  pref_service_->SetDict(prefs::kTouchpadInternalSettings,
+                         std::move(settings_dict));
+
+  // Initialize touchpad settings for the device and check that
+  // "new settings" match their default values.
+  mojom::TouchpadSettingsPtr settings =
+      CallInitializeTouchpadSettings(kTouchpadKey1, /*is_external=*/false);
   EXPECT_EQ(kDefaultReverseScrolling, settings->reverse_scrolling);
 
   // Reset "new settings" to the values that match `test_settings` and check
@@ -550,6 +609,16 @@ TEST_F(TouchpadPrefHandlerTest, NewTouchpadDefaultSettings) {
   ASSERT_NE(nullptr, settings_dict);
   CheckTouchpadSettingsAndDictAreEqual(kTouchpadSettingsDefault,
                                        *settings_dict);
+}
+
+TEST_F(TouchpadPrefHandlerTest, NewTouchpadDefaultSettingsInternal) {
+  mojom::TouchpadSettingsPtr settings =
+      CallInitializeTouchpadSettings(kTouchpadKey1, /*is_external=*/false);
+  EXPECT_EQ(*settings, kTouchpadSettingsDefault);
+
+  auto& settings_dict =
+      pref_service_->GetDict(prefs::kTouchpadInternalSettings);
+  CheckTouchpadSettingsAndDictAreEqual(kTouchpadSettingsDefault, settings_dict);
 }
 
 TEST_F(TouchpadPrefHandlerTest,
@@ -735,6 +804,14 @@ TEST_P(TouchpadSettingsPrefConversionTest, CheckConversion) {
   CheckTouchpadSettingsAndDictAreEqual(settings_, *settings_dict);
 }
 
+TEST_P(TouchpadSettingsPrefConversionTest, CheckConversionInternal) {
+  CallUpdateTouchpadSettings(device_key_, settings_, /*is_external=*/false);
+
+  const auto* settings_dict =
+      GetSettingsDict(device_key_, /*is_external=*/false);
+  CheckTouchpadSettingsAndDictAreEqual(settings_, *settings_dict);
+}
+
 class TouchpadSettingsSimulateRightClickTest
     : public TouchpadPrefHandlerTest,
       public testing::WithParamInterface<
@@ -775,6 +852,17 @@ TEST_P(TouchpadSettingsSimulateRightClickTest, SimulateRightClickSetting) {
   feature_list.InitAndEnableFeature(features::kAltClickAndSixPackCustomization);
   SetSimulateRightClickPrefs(alt_count, search_count);
   const auto settings = CallInitializeTouchpadSettings(kTouchpadKey1);
+  EXPECT_EQ(expected, settings->simulate_right_click);
+}
+
+TEST_P(TouchpadSettingsSimulateRightClickTest,
+       SimulateRightClickSettingInternal) {
+  CallInitializeTouchpadSettings(kTouchpadKey1, /*is_external=*/false);
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kAltClickAndSixPackCustomization);
+  SetSimulateRightClickPrefs(alt_count, search_count);
+  const auto settings =
+      CallInitializeTouchpadSettings(kTouchpadKey1, /*is_external=*/false);
   EXPECT_EQ(expected, settings->simulate_right_click);
 }
 

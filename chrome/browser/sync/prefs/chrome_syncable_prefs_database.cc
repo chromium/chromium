@@ -287,6 +287,7 @@ enum {
   kAccessibilityReadAnythingHighlightColor = 100231,
   kPinnedActions = 100232,
   kPinnedSearchCompanionMigrationComplete = 100233,
+  kTouchpadInternalSettings = 100234,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -749,6 +750,9 @@ const auto& SyncablePreferences() {
          {syncable_prefs_ids::kTouchpadHapticFeedback,
           syncer::OS_PRIORITY_PREFERENCES, false,
           sync_preferences::MergeBehavior::kNone}},
+        {ash::prefs::kTouchpadInternalSettings,
+         {syncable_prefs_ids::kTouchpadInternalSettings, syncer::OS_PREFERENCES,
+          false, sync_preferences::MergeBehavior::kNone}},
         {ash::prefs::kTouchpadScrollAcceleration,
          {syncable_prefs_ids::kTouchpadScrollAcceleration,
           syncer::OS_PRIORITY_PREFERENCES, false,
