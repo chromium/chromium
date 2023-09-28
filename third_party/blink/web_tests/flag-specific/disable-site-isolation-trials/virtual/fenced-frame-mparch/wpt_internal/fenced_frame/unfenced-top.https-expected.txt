@@ -1,0 +1,12 @@
+This is a testharness.js-based test.
+FAIL _unfencedTop opaque-ads non-refresh success case promise_test: Unhandled rejection with value: object "SecurityError: An attempt was made to break through the security policy of the user agent."
+PASS _unfencedTop opaque-ads refresh success case
+PASS _unfencedTop opaque-ads nested iframe success case
+PASS _unfencedTop :javascript URL failure
+PASS _unfencedTop :blob URL failure
+PASS _unfencedTop fragment navigation
+PASS _unfencedTop outside a fenced frame
+PASS _unfencedTop in default fenced frame
+PASS _unfencedTop in opaque-ads -> default fenced frame
+Harness: the test ran to completion.
+
