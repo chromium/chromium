@@ -190,11 +190,6 @@ class CONTENT_EXPORT AttributionStorageDelegate {
       int max_event_level_reports,
       base::Time source_time) const = 0;
 
-  virtual base::Time GetExpiryTime(
-      absl::optional<base::TimeDelta> declared_expiry,
-      base::Time source_time,
-      attribution_reporting::mojom::SourceType) = 0;
-
   virtual absl::optional<base::Time> GetReportWindowTime(
       absl::optional<base::TimeDelta> declared_window,
       base::Time source_time) = 0;

@@ -19,7 +19,6 @@
 #include "base/types/expected.h"
 #include "components/attribution_reporting/event_report_windows.h"
 #include "content/browser/attribution_reporting/attribution_config.h"
-#include "content/browser/attribution_reporting/attribution_constants.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_storage_delegate.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
@@ -147,15 +146,6 @@ ConfigurableStorageDelegate::GetRandomizedResponse(
   }
   return RandomizedResponseData(randomized_response_rate_,
                                 randomized_response_);
-}
-
-base::Time ConfigurableStorageDelegate::GetExpiryTime(
-    absl::optional<base::TimeDelta> declared_expiry,
-    base::Time source_time,
-    attribution_reporting::mojom::SourceType) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return GetExpiryTimeForTesting(
-      declared_expiry.value_or(kDefaultAttributionSourceExpiry), source_time);
 }
 
 absl::optional<base::Time> ConfigurableStorageDelegate::GetReportWindowTime(

@@ -168,7 +168,7 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
     return source.source_event_id;
   }
 
-  static absl::optional<base::TimeDelta> expiry(
+  static base::TimeDelta expiry(
       const attribution_reporting::SourceRegistration& source) {
     return source.expiry;
   }

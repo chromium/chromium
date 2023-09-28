@@ -72,7 +72,7 @@ TEST(SourceRegistrationTest, Parse) {
           ValueIs(AllOf(
               Field(&SourceRegistration::source_event_id, 0),
               Field(&SourceRegistration::destination_set, destination),
-              Field(&SourceRegistration::expiry, absl::nullopt),
+              Field(&SourceRegistration::expiry, base::Days(30)),
               Field(&SourceRegistration::event_report_windows, absl::nullopt),
               Field(&SourceRegistration::aggregatable_report_window,
                     absl::nullopt),
@@ -147,6 +147,34 @@ TEST(SourceRegistrationTest, Parse) {
           "expiry_negative_int",
           R"json({"expiry":-172801,"destination":"https://d.example"})json",
           ErrorIs(SourceRegistrationError::kExpiryValueInvalid),
+      },
+      {
+          "expiry_clamped_min",
+          R"json({"expiry":86399,"destination":"https://d.example"})json",
+          ValueIs(Field(&SourceRegistration::expiry, base::Days(1))),
+      },
+      {
+          "expiry_clamped_max",
+          R"json({"expiry":2592001,"destination":"https://d.example"})json",
+          ValueIs(Field(&SourceRegistration::expiry, base::Days(30))),
+      },
+      {
+          "expiry_not_rounded_to_whole_day",
+          R"json({"expiry":86401,"destination":"https://d.example"})json",
+          ValueIs(Field(&SourceRegistration::expiry, base::Seconds(86401))),
+          SourceType::kNavigation,
+      },
+      {
+          "expiry_rounded_to_whole_day_down",
+          R"json({"expiry":86401,"destination":"https://d.example"})json",
+          ValueIs(Field(&SourceRegistration::expiry, base::Days(1))),
+          SourceType::kEvent,
+      },
+      {
+          "expiry_rounded_to_whole_day_up",
+          R"json({"expiry":172799,"destination":"https://d.example"})json",
+          ValueIs(Field(&SourceRegistration::expiry, base::Days(2))),
+          SourceType::kEvent,
       },
       {
           "event_report_window_valid",
@@ -330,6 +358,7 @@ TEST(SourceRegistrationTest, ToJson) {
           R"json({
             "debug_reporting": false,
             "destination":"https://d.example",
+            "expiry": 2592000,
             "max_event_level_reports": 0,
             "priority": "0",
             "source_event_id": "0"
@@ -380,11 +409,19 @@ TEST(SourceRegistrationTest, IsValid) {
   EXPECT_TRUE(SourceRegistration(destination).IsValid());
 
   EXPECT_FALSE(SourceRegistrationWith(destination, [](SourceRegistration& r) {
-                 r.expiry = base::Microseconds(-1);
+                 r.expiry = base::Days(1) - base::Microseconds(1);
+               }).IsValid());
+
+  EXPECT_FALSE(SourceRegistrationWith(destination, [](SourceRegistration& r) {
+                 r.expiry = base::Days(30) + base::Microseconds(1);
                }).IsValid());
 
   EXPECT_TRUE(SourceRegistrationWith(destination, [](SourceRegistration& r) {
-                r.expiry = base::Microseconds(0);
+                r.expiry = base::Days(1);
+              }).IsValid());
+
+  EXPECT_TRUE(SourceRegistrationWith(destination, [](SourceRegistration& r) {
+                r.expiry = base::Days(30);
               }).IsValid());
 
   EXPECT_FALSE(SourceRegistrationWith(destination, [](SourceRegistration& r) {
@@ -410,6 +447,20 @@ TEST(SourceRegistrationTest, IsValid) {
   EXPECT_TRUE(SourceRegistrationWith(destination, [](SourceRegistration& r) {
                 r.max_event_level_reports = 20;
               }).IsValid());
+}
+
+TEST(SourceRegistrationTest, IsValidForSourceType) {
+  const DestinationSet destination = *DestinationSet::Create(
+      {net::SchemefulSite::Deserialize("https://d.example")});
+
+  SourceRegistration reg(destination);
+
+  EXPECT_TRUE(reg.IsValidForSourceType(SourceType::kNavigation));
+  EXPECT_TRUE(reg.IsValidForSourceType(SourceType::kEvent));
+
+  reg.expiry -= base::Microseconds(1);
+  EXPECT_TRUE(reg.IsValidForSourceType(SourceType::kNavigation));
+  EXPECT_FALSE(reg.IsValidForSourceType(SourceType::kEvent));
 }
 
 }  // namespace

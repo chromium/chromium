@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <string>
 #include <utility>
 
@@ -68,6 +69,15 @@ int DefaultMaxEventLevelReports(SourceType source_type) {
   }
 }
 
+base::TimeDelta AdjustExpiry(base::TimeDelta expiry, SourceType source_type) {
+  switch (source_type) {
+    case SourceType::kNavigation:
+      return expiry;
+    case SourceType::kEvent:
+      return expiry.RoundToMultiple(base::Days(1));
+  }
+}
+
 }  // namespace
 
 void RecordSourceRegistrationError(mojom::SourceRegistrationError error) {
@@ -127,6 +137,11 @@ SourceRegistration::Parse(base::Value::Dict registration,
     ASSIGN_OR_RETURN(result.expiry,
                      ParseLegacyDuration(
                          *value, SourceRegistrationError::kExpiryValueInvalid));
+
+    result.expiry =
+        std::clamp(result.expiry, kMinSourceExpiry, kMaxSourceExpiry);
+
+    result.expiry = AdjustExpiry(result.expiry, source_type);
   }
 
   if (const base::Value* value = registration.Find(kAggregatableReportWindow)) {
@@ -149,6 +164,7 @@ SourceRegistration::Parse(base::Value::Dict registration,
   result.debug_reporting = ParseDebugReporting(registration);
 
   CHECK(result.IsValid());
+  CHECK(result.IsValidForSourceType(source_type));
   return result;
 }
 
@@ -210,7 +226,7 @@ base::Value::Dict SourceRegistration::ToJson() const {
 }
 
 bool SourceRegistration::IsValid() const {
-  if (expiry.has_value() && expiry->is_negative()) {
+  if (expiry < kMinSourceExpiry || expiry > kMaxSourceExpiry) {
     return false;
   }
 
@@ -224,6 +240,10 @@ bool SourceRegistration::IsValid() const {
   }
 
   return true;
+}
+
+bool SourceRegistration::IsValidForSourceType(SourceType source_type) const {
+  return expiry == AdjustExpiry(expiry, source_type);
 }
 
 }  // namespace attribution_reporting

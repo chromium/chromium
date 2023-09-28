@@ -155,12 +155,13 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest, SourceRegistered) {
   data_host->WaitForSourceData(/*num_source_data=*/1);
   const auto& source_data = data_host->source_data();
 
+  // TODO: These checks are redundant with a variety of unit and/or WPT tests.
   EXPECT_EQ(source_data.size(), 1u);
   EXPECT_EQ(source_data.front().source_event_id, 5UL);
   EXPECT_THAT(source_data.front().destination_set.destinations(),
               ElementsAre(net::SchemefulSite::Deserialize("https://d.test")));
   EXPECT_EQ(source_data.front().priority, 0);
-  EXPECT_EQ(source_data.front().expiry, absl::nullopt);
+  EXPECT_EQ(source_data.front().expiry, base::Days(30));
   EXPECT_FALSE(source_data.front().debug_key);
   EXPECT_THAT(source_data.front().filter_data.filter_values(), IsEmpty());
   EXPECT_THAT(source_data.front().aggregation_keys.keys(), IsEmpty());
@@ -204,12 +205,13 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
     // data host isn't disconnected promptly.
     disconnect_loop.Run();
 
+    // TODO: These checks are redundant with a variety of unit and/or WPT tests.
     EXPECT_EQ(source_data.size(), 1u);
     EXPECT_EQ(source_data.front().source_event_id, 5UL);
     EXPECT_THAT(source_data.front().destination_set.destinations(),
                 ElementsAre(net::SchemefulSite::Deserialize("https://d.test")));
     EXPECT_EQ(source_data.front().priority, 0);
-    EXPECT_EQ(source_data.front().expiry, absl::nullopt);
+    EXPECT_EQ(source_data.front().expiry, base::Days(30));
     EXPECT_FALSE(source_data.front().debug_key);
     EXPECT_THAT(source_data.front().filter_data.filter_values(), IsEmpty());
     EXPECT_THAT(source_data.front().aggregation_keys.keys(), IsEmpty());

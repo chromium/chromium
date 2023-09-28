@@ -842,8 +842,7 @@ StoreSourceResult AttributionStorageSql::StoreSource(
 
   const attribution_reporting::SourceRegistration& reg = source.registration();
 
-  const base::Time expiry_time = delegate_->GetExpiryTime(
-      reg.expiry, source_time, common_info.source_type());
+  const base::Time expiry_time = source_time + reg.expiry;
 
   EventReportWindows event_report_windows;
   if (!reg.event_report_windows.has_value()) {

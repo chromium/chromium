@@ -32,6 +32,7 @@
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "components/aggregation_service/features.h"
+#include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/destination_set.h"
 #include "components/attribution_reporting/event_report_windows.h"
 #include "components/attribution_reporting/filters.h"
@@ -40,7 +41,6 @@
 #include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/test_utils.h"
 #include "content/browser/attribution_reporting/aggregatable_histogram_contribution.h"
-#include "content/browser/attribution_reporting/attribution_constants.h"
 #include "content/browser/attribution_reporting/attribution_features.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_reporting.pb.h"
@@ -1624,11 +1624,11 @@ TEST_P(AttributionStorageSqlTest,
           true,
       },
       {
-          kDefaultAttributionSourceExpiry,
+          attribution_reporting::kMaxSourceExpiry,
           true,
       },
       {
-          kDefaultAttributionSourceExpiry + base::Milliseconds(1),
+          attribution_reporting::kMaxSourceExpiry + base::Milliseconds(1),
           false,
       },
   };

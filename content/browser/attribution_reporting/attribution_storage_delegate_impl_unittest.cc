@@ -523,33 +523,11 @@ TEST(AttributionStorageDelegateImplTest, SanitizeTriggerData) {
   }
 }
 
-TEST(AttributionStorageDelegateImplTest, NoExpiryForImpression_DefaultUsed) {
-  const base::Time source_time = base::Time::Now();
-
-  for (auto source_type : kSourceTypes) {
-    EXPECT_EQ(source_time + base::Days(30),
-              AttributionStorageDelegateImpl().GetExpiryTime(
-                  /*declared_expiry=*/absl::nullopt, source_time, source_type));
-  }
-}
-
 TEST(AttributionStorageDelegateImplTest,
      NoReportWindowForImpression_NullOptReturned) {
   EXPECT_EQ(absl::nullopt, AttributionStorageDelegateImpl().GetReportWindowTime(
                                /*declared_window=*/absl::nullopt,
                                /*source_time=*/base::Time::Now()));
-}
-
-TEST(AttributionStorageDelegateImplTest,
-     LargeImpressionExpirySpecified_ClampedTo30Days) {
-  constexpr base::TimeDelta declared_expiry = base::Days(60);
-  const base::Time source_time = base::Time::Now();
-
-  for (auto source_type : kSourceTypes) {
-    EXPECT_EQ(source_time + base::Days(30),
-              AttributionStorageDelegateImpl().GetExpiryTime(
-                  declared_expiry, source_time, source_type));
-  }
 }
 
 TEST(AttributionStorageDelegateImplTest,
@@ -560,28 +538,6 @@ TEST(AttributionStorageDelegateImplTest,
   EXPECT_EQ(source_time + base::Days(30),
             AttributionStorageDelegateImpl().GetReportWindowTime(
                 declared_report_window, source_time));
-}
-
-TEST(AttributionStorageDelegateImplTest,
-     SmallImpressionExpirySpecified_ClampedTo1Day) {
-  const struct {
-    base::TimeDelta declared_expiry;
-    base::TimeDelta want_expiry;
-  } kTestCases[] = {
-      {base::Days(-1), base::Days(1)},
-      {base::Days(0), base::Days(1)},
-      {base::Days(1) - base::Milliseconds(1), base::Days(1)},
-  };
-
-  const base::Time source_time = base::Time::Now();
-
-  for (auto source_type : kSourceTypes) {
-    for (const auto& test_case : kTestCases) {
-      EXPECT_EQ(source_time + test_case.want_expiry,
-                AttributionStorageDelegateImpl().GetExpiryTime(
-                    test_case.declared_expiry, source_time, source_type));
-    }
-  }
 }
 
 TEST(AttributionStorageDelegateImplTest,
@@ -601,44 +557,6 @@ TEST(AttributionStorageDelegateImplTest,
     EXPECT_EQ(source_time + test_case.want_report_window,
               AttributionStorageDelegateImpl().GetReportWindowTime(
                   test_case.declared_report_window, source_time));
-  }
-}
-
-TEST(AttributionStorageDelegateImplTest,
-     NonWholeDayImpressionExpirySpecified_Rounded) {
-  const struct {
-    SourceType source_type;
-    base::TimeDelta declared_expiry;
-    base::TimeDelta want_expiry;
-  } kTestCases[] = {
-      {SourceType::kNavigation, base::Hours(36), base::Hours(36)},
-      {SourceType::kEvent, base::Hours(36), kDefaultFirstWindow},
-
-      {SourceType::kNavigation, base::Days(1) + base::Milliseconds(1),
-       base::Days(1) + base::Milliseconds(1)},
-      {SourceType::kEvent, base::Days(1) + base::Milliseconds(1),
-       base::Days(1)},
-  };
-
-  const base::Time source_time = base::Time::Now();
-
-  for (const auto& test_case : kTestCases) {
-    EXPECT_EQ(
-        source_time + test_case.want_expiry,
-        AttributionStorageDelegateImpl().GetExpiryTime(
-            test_case.declared_expiry, source_time, test_case.source_type));
-  }
-}
-
-TEST(AttributionStorageDelegateImplTest,
-     ImpressionExpirySpecified_ExpiryOverrideDefault) {
-  constexpr base::TimeDelta declared_expiry = base::Days(10);
-  const base::Time source_time = base::Time::Now();
-
-  for (auto source_type : kSourceTypes) {
-    EXPECT_EQ(source_time + base::Days(10),
-              AttributionStorageDelegateImpl().GetExpiryTime(
-                  declared_expiry, source_time, source_type));
   }
 }
 

@@ -98,9 +98,6 @@ class CONTENT_EXPORT AttributionStorageDelegateImpl
       const attribution_reporting::EventReportWindows&,
       int max_event_level_reports,
       base::Time source_time) const override;
-  base::Time GetExpiryTime(absl::optional<base::TimeDelta> declared_expiry,
-                           base::Time source_time,
-                           attribution_reporting::mojom::SourceType) override;
   absl::optional<base::Time> GetReportWindowTime(
       absl::optional<base::TimeDelta> declared_window,
       base::Time source_time) override;

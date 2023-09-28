@@ -17,6 +17,7 @@ Test that the Storage.attributionReportingSourceRegistered event is fired.
             ]
             start : 0
         }
+        expiry : 2592000
         filterData : [
             [0] : {
                 key : a

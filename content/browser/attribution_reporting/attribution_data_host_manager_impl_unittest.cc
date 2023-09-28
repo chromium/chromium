@@ -465,6 +465,39 @@ TEST_F(AttributionDataHostManagerImplTest,
 }
 
 TEST_F(AttributionDataHostManagerImplTest,
+       SourceDataHost_InvalidForSourceType) {
+  EXPECT_CALL(mock_manager_, HandleSource).Times(0);
+
+  auto page_origin = *SuitableOrigin::Deserialize("https://page.example");
+  auto destination_site =
+      net::SchemefulSite::Deserialize("https://trigger.example");
+  auto reporting_origin =
+      *SuitableOrigin::Deserialize("https://reporter.example");
+
+  mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
+  data_host_manager_.RegisterDataHost(
+      data_host_remote.BindNewPipeAndPassReceiver(), page_origin,
+      /*is_within_fenced_frame=*/false, RegistrationEligibility::kSource,
+      kFrameId,
+      /*last_navigation_id=*/kNavigationId);
+
+  SourceRegistration source_data(*DestinationSet::Create({destination_site}));
+  // Non-whole-day expiry is invalid for `SourceType::kEvent`.
+  source_data.expiry = base::Days(1) + base::Microseconds(1);
+
+  {
+    mojo::test::BadMessageObserver bad_message_observer;
+
+    data_host_remote->SourceDataAvailable(reporting_origin,
+                                          std::move(source_data));
+    data_host_remote.FlushForTesting();
+
+    EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
+              "AttributionDataHost: Source invalid for source type.");
+  }
+}
+
+TEST_F(AttributionDataHostManagerImplTest,
        SourceDataHost_NavigationSourceRegistered) {
   base::HistogramTester histograms;
 

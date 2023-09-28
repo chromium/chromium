@@ -19,6 +19,7 @@
 #include "base/rand_util.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
+#include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/event_report_windows.h"
 #include "components/attribution_reporting/features.h"
 #include "components/attribution_reporting/source_registration_time_config.mojom.h"
@@ -26,7 +27,6 @@
 #include "components/attribution_reporting/trigger_registration.h"
 #include "content/browser/attribution_reporting/aggregatable_attribution_utils.h"
 #include "content/browser/attribution_reporting/attribution_config.h"
-#include "content/browser/attribution_reporting/attribution_constants.h"
 #include "content/browser/attribution_reporting/attribution_features.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
@@ -340,21 +340,6 @@ AttributionStorageDelegateImpl::GetFakeReportsForSequenceIndex(
   return fake_reports;
 }
 
-base::Time AttributionStorageDelegateImpl::GetExpiryTime(
-    absl::optional<base::TimeDelta> declared_expiry,
-    base::Time source_time,
-    SourceType source_type) {
-  base::TimeDelta expiry =
-      declared_expiry.value_or(kDefaultAttributionSourceExpiry);
-
-  if (source_type == SourceType::kEvent) {
-    expiry = expiry.RoundToMultiple(base::Days(1));
-  }
-
-  return source_time +
-         std::clamp(expiry, base::Days(1), kDefaultAttributionSourceExpiry);
-}
-
 absl::optional<base::Time> AttributionStorageDelegateImpl::GetReportWindowTime(
     absl::optional<base::TimeDelta> declared_window,
     base::Time source_time) {
@@ -363,7 +348,7 @@ absl::optional<base::Time> AttributionStorageDelegateImpl::GetReportWindowTime(
   }
 
   return source_time + std::clamp(*declared_window, base::Hours(1),
-                                  kDefaultAttributionSourceExpiry);
+                                  attribution_reporting::kMaxSourceExpiry);
 }
 
 std::vector<AttributionStorageDelegate::NullAggregatableReport>
@@ -406,14 +391,13 @@ AttributionStorageDelegateImpl::GetNullAggregatableReportsImpl(
             RoundDownToWholeDaySinceUnixEpoch(*attributed_source_time);
       }
 
-      static_assert(kDefaultAttributionSourceExpiry == base::Days(30),
+      static_assert(attribution_reporting::kMaxSourceExpiry == base::Days(30),
                     "update null reports rate");
 
       return GetNullAggregatableReportsForLookback(
           trigger, trigger_time, rounded_attributed_source_time,
           /*days_lookback=*/
-          kDefaultAttributionSourceExpiry.RoundToMultiple(base::Days(1))
-              .InDays(),
+          attribution_reporting::kMaxSourceExpiry.InDays(),
           config_.aggregate_limit
               .null_reports_rate_include_source_registration_time);
     }

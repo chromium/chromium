@@ -13,6 +13,7 @@
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "components/attribution_reporting/aggregation_keys.h"
+#include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/destination_set.h"
 #include "components/attribution_reporting/event_report_windows.h"
 #include "components/attribution_reporting/filters.h"
@@ -52,12 +53,13 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) SourceRegistration {
   base::Value::Dict ToJson() const;
 
   bool IsValid() const;
+  bool IsValidForSourceType(mojom::SourceType) const;
 
   uint64_t source_event_id = 0;
   DestinationSet destination_set;
   // These `base::TimeDelta`s must be non-negative if set. This is verified by
   // the `Parse()` and `IsValid()` methods.
-  absl::optional<base::TimeDelta> expiry;
+  base::TimeDelta expiry = kMaxSourceExpiry;
   absl::optional<EventReportWindows> event_report_windows;
   absl::optional<base::TimeDelta> aggregatable_report_window;
   // Must be non-negative and <= `kMaxSettableEventLevelAttributions`.

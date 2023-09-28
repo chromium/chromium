@@ -62,9 +62,6 @@ constexpr auto kSourceTypes =
 
 base::Uuid DefaultExternalReportID();
 
-base::Time GetExpiryTimeForTesting(base::TimeDelta declared_expiry,
-                                   base::Time source_time);
-
 absl::optional<base::Time> GetReportWindowTimeForTesting(
     absl::optional<base::TimeDelta> declared_window,
     base::Time source_time);

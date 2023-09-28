@@ -85,7 +85,7 @@ struct SourceRegistration {
   uint64 source_event_id = 0;
 
   // Specifies how long this source is eligible for attribution.
-  mojo_base.mojom.TimeDelta? expiry;
+  mojo_base.mojom.TimeDelta expiry;
 
   // Optionally specifies a custom set of report windows determining the time
   // bounds of a report being generated with this source.

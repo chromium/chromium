@@ -727,7 +727,7 @@ TEST_F(AttributionStorageTest, ReportTimes) {
     reg.expiry = test_case.expiry.value_or(base::Days(30));
     reg.event_report_windows =
         attribution_reporting::EventReportWindows::CreateSingularWindow(
-            test_case.event_report_window.value_or(*reg.expiry));
+            test_case.event_report_window.value_or(reg.expiry));
     reg.aggregatable_report_window = test_case.aggregatable_report_window;
 
     storage()->StoreSource(

@@ -721,6 +721,12 @@ void AttributionDataHostManagerImpl::SourceDataAvailable(
     source_type = SourceType::kNavigation;
   }
 
+  if (!data.IsValidForSourceType(source_type)) {
+    mojo::ReportBadMessage(
+        "AttributionDataHost: Source invalid for source type.");
+    return;
+  }
+
   attribution_manager_->HandleSource(
       StorableSource(std::move(reporting_origin), std::move(data),
                      /*source_origin=*/context->context_origin(), source_type,

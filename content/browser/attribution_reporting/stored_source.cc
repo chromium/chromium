@@ -12,10 +12,10 @@
 #include "base/check_op.h"
 #include "base/time/time.h"
 #include "components/attribution_reporting/aggregation_keys.h"
+#include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/destination_set.h"
 #include "components/attribution_reporting/event_report_windows.h"
 #include "components/attribution_reporting/filters.h"
-#include "content/browser/attribution_reporting/attribution_constants.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -28,7 +28,7 @@ bool StoredSource::IsExpiryOrReportWindowTimeValid(
   // The source must expire strictly after it occurred.
   return expiry_or_report_window_time > source_time &&
          expiry_or_report_window_time - source_time <=
-             kDefaultAttributionSourceExpiry;
+             attribution_reporting::kMaxSourceExpiry;
 }
 
 StoredSource::StoredSource(

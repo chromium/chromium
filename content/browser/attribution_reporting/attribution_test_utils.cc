@@ -75,11 +75,6 @@ base::Uuid DefaultExternalReportID() {
   return base::Uuid::ParseLowercase("21abd97f-73e8-4b88-9389-a9fee6abda5e");
 }
 
-base::Time GetExpiryTimeForTesting(base::TimeDelta declared_expiry,
-                                   base::Time source_time) {
-  return source_time + declared_expiry;
-}
-
 absl::optional<base::Time> GetReportWindowTimeForTesting(
     absl::optional<base::TimeDelta> declared_window,
     base::Time source_time) {
@@ -283,7 +278,7 @@ StorableSource SourceBuilder::Build() const {
 }
 
 StoredSource SourceBuilder::BuildStored() const {
-  base::Time expiry_time = GetExpiryTimeForTesting(expiry_, source_time_);
+  base::Time expiry_time = source_time_ + expiry_;
   StoredSource source(
       BuildCommonInfo(), source_event_id_, destination_sites_, source_time_,
       expiry_time,
