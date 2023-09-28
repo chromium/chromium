@@ -36,10 +36,19 @@ class EnclaveHttpClient;
 class COMPONENT_EXPORT(DEVICE_FIDO) EnclaveAuthenticator
     : public FidoAuthenticator {
  public:
+  // The first argument is the handshake_hash, the second is the data that will
+  // be signed.
+  using RequestSigningCallback =
+      base::RepeatingCallback<std::vector<uint8_t>(base::span<const uint8_t>,
+                                                   base::span<const uint8_t>)>;
+
   EnclaveAuthenticator(
       const GURL& service_url,
       base::span<const uint8_t, device::kP256X962Length> peer_identity,
-      std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys);
+      std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys,
+      std::vector<uint8_t> device_id,
+      const std::string& username,
+      RequestSigningCallback request_signing_callback);
   ~EnclaveAuthenticator() override;
 
   EnclaveAuthenticator(const EnclaveAuthenticator&) = delete;
@@ -58,6 +67,20 @@ class COMPONENT_EXPORT(DEVICE_FIDO) EnclaveAuthenticator
     kError,
   };
 
+  struct PendingGetAssertionRequest {
+    PendingGetAssertionRequest(const CtapGetAssertionRequest&,
+                               const CtapGetAssertionOptions&,
+                               GetAssertionCallback);
+    ~PendingGetAssertionRequest();
+    PendingGetAssertionRequest(const PendingGetAssertionRequest&) = delete;
+    PendingGetAssertionRequest& operator=(const PendingGetAssertionRequest&) =
+        delete;
+
+    CtapGetAssertionRequest request;
+    CtapGetAssertionOptions options;
+    GetAssertionCallback callback;
+  };
+
   // FidoAuthenticator:
   void InitializeAuthenticator(base::OnceClosure callback) override;
   void MakeCredential(CtapMakeCredentialRequest request,
@@ -73,6 +96,9 @@ class COMPONENT_EXPORT(DEVICE_FIDO) EnclaveAuthenticator
   void OnResponseReceived(int status,
                           absl::optional<std::vector<uint8_t>> data);
   void SendCommand();
+  void CompleteGetAssertionRequest(
+      CtapDeviceResponseCode status,
+      std::vector<AuthenticatorGetAssertionResponse> responses);
 
   State state_ = State::kInitialized;
 
@@ -81,15 +107,23 @@ class COMPONENT_EXPORT(DEVICE_FIDO) EnclaveAuthenticator
   // The peer's public key.
   const std::array<uint8_t, device::kP256X962Length> peer_identity_;
 
+  // Synced passkeys available for this account. Calls to |GetAssertion| must
+  // identify one from this list in the request's allowCredentials.
+  std::vector<sync_pb::WebauthnCredentialSpecifics> available_passkeys_;
+
+  // Identifier for this device, previously registered to the enclave.
+  std::vector<uint8_t> device_id_;
+
+  // Callback for signing requests with the device-bound key.
+  RequestSigningCallback request_signing_callback_;
+
+  // Fields for establishing and using the encrypted channel.
   std::unique_ptr<cablev2::HandshakeInitiator> handshake_;
   absl::optional<std::array<uint8_t, 32>> handshake_hash_;
   std::unique_ptr<cablev2::Crypter> crypter_;
 
-  // GetAssertion arguments while waiting for the connection to be established.
-  std::string pending_request_body_;
-  GetAssertionCallback pending_get_assertion_callback_;
-
-  std::vector<sync_pb::WebauthnCredentialSpecifics> available_passkeys_;
+  // Caches the request while waiting for the connection to be established.
+  std::unique_ptr<PendingGetAssertionRequest> pending_get_assertion_request_;
 
   base::WeakPtrFactory<EnclaveAuthenticator> weak_factory_{this};
 };

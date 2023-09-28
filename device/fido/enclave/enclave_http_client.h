@@ -32,7 +32,9 @@ class EnclaveHttpClient : public net::URLRequest::Delegate {
     kCommand,
   };
 
-  EnclaveHttpClient(const GURL& service_url, RequestCallback on_request_done);
+  EnclaveHttpClient(const GURL& service_url,
+                    const std::string& username,
+                    RequestCallback on_request_done);
   ~EnclaveHttpClient() override;
 
   EnclaveHttpClient(const EnclaveHttpClient&) = delete;
@@ -67,6 +69,7 @@ class EnclaveHttpClient : public net::URLRequest::Delegate {
   RequestType request_in_progress_ = RequestType::kNone;
 
   GURL service_url_;
+  std::string username_;
   RequestCallback on_request_done_;
 
   // url_request_ has to be before url_request_context_ for destruction

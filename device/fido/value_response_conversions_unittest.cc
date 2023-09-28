@@ -65,7 +65,7 @@ TEST(ValueResponseConversionTest,
   constexpr char kJson[] = R"({
       "authenticatorData": "EZQijaj9ve79JhvXtllc_XClDXDGQHvPAT3pbU77F94BAAAAAA",
       "signature": "dGVzdCBzaWduYXR1cmU",
-      "user_handle": "dXNlcmlkMQ"
+      "userHandle": "dXNlcmlkMQ"
       })";
 
   JSONStringValueDeserializer deserializer(kJson);

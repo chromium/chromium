@@ -7,8 +7,11 @@
 
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/component_export.h"
+#include "base/containers/span.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/values.h"
 #include "device/fido/authenticator_get_assertion_response.h"
@@ -31,24 +34,47 @@ const char kCommandPath[] = "v1/cmd";
 // Keys for the RPC param names to the HTTP front end:
 const char kInitSessionRequestData[] = "request";
 const char kInitSessionResponseData[] = "response";
-const char kSessionId[] = "session_id";
-const char kSendCommandRequestData[] = "command";
+const char kSessionId[] = "session_name";
+const char kSendCommandRequestData[] = "request";
 const char kSendCommandResponseData[] = "response";
 
-// For testing only.
+// Parses a decrypted command response from the enclave.
+std::pair<absl::optional<AuthenticatorGetAssertionResponse>, std::string>
+ParseGetAssertionResponse(const std::vector<uint8_t>& response_cbor);
+
+// Returns a CBOR value with the provided GetAssertion request and associated
+// passkey. The return value can be serialized into a Command request according
+// to the enclave protocol.
+cbor::Value BuildGetAssertionCommand(
+    const sync_pb::WebauthnCredentialSpecifics& passkey,
+    scoped_refptr<JSONRequest> request,
+    std::string client_data_hash,
+    std::string rp_id);
+
+// Returns a CBOR serialization of the command to be sent to the enclave
+// service which can then be encrypted and sent over HTTPS.
+// |command_callback| is used to generate the encoded MakeCredential or
+//     GetAssertion command.
+// |signing_callback| is used to generate the signature over the encoded
+//     command using the protected private key.
+// |device_id| is the unique identifier for this device which the server uses
+//     to look up the previously-registered public key.
+std::vector<uint8_t> BuildCommandRequestBody(
+    base::OnceCallback<cbor::Value()> command_callback,
+    base::RepeatingCallback<std::vector<uint8_t>(base::span<const uint8_t>,
+                                                 base::span<const uint8_t>)>
+        signing_callback,
+    base::span<uint8_t> handshake_hash_,
+    const std::vector<uint8_t>& device_id);
+
+// For testing only. (Also this is obsolete, the test service code needs to
+// be updated).
 std::string COMPONENT_EXPORT(DEVICE_FIDO)
     AuthenticatorGetAssertionResponseToJson(
         const AuthenticatorGetAssertionResponse& response);
 
-std::pair<absl::optional<AuthenticatorGetAssertionResponse>, std::string>
-AuthenticatorGetAssertionResponseFromJson(const std::string& json);
-
-void BuildGetAssertionRequestBody(
-    const sync_pb::WebauthnCredentialSpecifics& passkey,
-    scoped_refptr<JSONRequest> request,
-    std::string* out_request_body);
-
-// For testing only.
+// For testing only. (Also this is obsolete, the test service code needs to
+// be updated).
 bool COMPONENT_EXPORT(DEVICE_FIDO) ParseGetAssertionRequestBody(
     const std::string& request_body,
     sync_pb::WebauthnCredentialSpecifics* out_passkey,

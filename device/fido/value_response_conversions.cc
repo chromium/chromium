@@ -34,6 +34,7 @@ absl::optional<std::string> Base64UrlDecodeStringKey(
   if (!base::Base64UrlDecode(*b64url_data,
                              base::Base64UrlDecodePolicy::DISALLOW_PADDING,
                              &decoded)) {
+    FIDO_LOG(ERROR) << "Failed to decode key " << key;
     return absl::nullopt;
   }
   return decoded;
@@ -114,7 +115,7 @@ AuthenticatorGetAssertionResponseFromValue(const base::Value& value) {
   std::vector<uint8_t> signature = ToByteVector(*signature_opt);
 
   auto [success, user_handle_opt] =
-      Base64UrlDecodeOptionalStringKey(response_dict, "user_handle");
+      Base64UrlDecodeOptionalStringKey(response_dict, "userHandle");
   if (!success) {
     FIDO_LOG(ERROR) << "Assertion response contained invalid user handle.";
     return absl::nullopt;

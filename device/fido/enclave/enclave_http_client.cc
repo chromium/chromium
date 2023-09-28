@@ -82,8 +82,11 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 }  // namespace
 
 EnclaveHttpClient::EnclaveHttpClient(const GURL& service_url,
+                                     const std::string& username,
                                      RequestCallback on_request_done)
-    : service_url_(service_url), on_request_done_(std::move(on_request_done)) {
+    : service_url_(service_url),
+      username_(username),
+      on_request_done_(std::move(on_request_done)) {
   net::URLRequestContextBuilder builder;
   builder.DisableHttpCache();
   builder.set_proxy_config_service(
@@ -110,16 +113,20 @@ void EnclaveHttpClient::SendHttpRequest(RequestType type,
   GURL::Replacements replacement;
 
   switch (type) {
-    case RequestType::kInit:
-      replacement.SetPathStr(kInitPath);
+    case RequestType::kInit: {
+      std::string path = base::StrCat({username_, "/", kInitPath});
+      replacement.SetPathStr(path);
       request_url = service_url_.ReplaceComponents(replacement);
       BuildInitBody(data);
       break;
-    case RequestType::kCommand:
-      replacement.SetPathStr(kCommandPath);
+    }
+    case RequestType::kCommand: {
+      std::string path = base::StrCat({username_, "/", kCommandPath});
+      replacement.SetPathStr(path);
       request_url = service_url_.ReplaceComponents(replacement);
       BuildCommandBody(data);
       break;
+    }
     case RequestType::kNone:
       NOTREACHED();
   }

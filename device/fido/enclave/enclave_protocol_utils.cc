@@ -7,6 +7,7 @@
 #include <array>
 
 #include "base/base64url.h"
+#include "base/functional/callback.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/numerics/safe_conversions.h"
@@ -22,23 +23,40 @@
 #include "device/fido/fido_transport_protocol.h"
 #include "device/fido/json_request.h"
 #include "device/fido/public_key_credential_user_entity.h"
+#include "device/fido/value_response_conversions.h"
 
 namespace device::enclave {
 
 namespace {
 
 // JSON keys for front-end service HTTP request bodies.
-const char kCommandRequestCommandTag[] = "command";
+const char kCommandRequestCommandKey[] = "command";
 
-// JSON keys for command.
-const char kCommandEncodedRequestsTag[] = "encoded_requests";
+// JSON keys for command issuance.
+const char kCommandEncodedRequestsKey[] = "encoded_requests";
+const char kCommandDeviceIdKey[] = "device_id";
+const char kCommandSigKey[] = "sig";
+const char kCommandAuthLevelKey[] = "auth_level";
 
 // JSON keys for GetAssertion request fields.
-const char kGetAssertionRequestCommandTag[] = "cmd";
-const char kGetAssertionRequestDataTag[] = "data";
-const char kGetAssertionRequestEntityTag[] = "entity";
+const char kGetAssertionRequestCommandKey[] = "cmd";
+const char kGetAssertionRequestDataKey[] = "request";
+const char kGetAssertionRequestProtobufKey[] = "protobuf";
+const char kGetAssertionRequestClientDataJSONKey[] = "client_data_json";
+const char kGetAssertionRequestUvKey[] = "uv";
 
-// JSON value keys
+// JSON keys for GetAssertion response fields.
+const char kGetAssertionResponseKey[] = "response";
+
+// JSON keys for successful responses and error codes.
+const char kCommandResponseElementSuccessKey[] = "ok";
+const char kCommandResponseElementErrorKey[] = "err";
+
+// Specific command names recognizable by the enclave processor.
+const char kGetAssertionCommandName[] = "passkeys/assert";
+
+// JSON value keys (obsolete, but still referenced by the out-of-date service
+// implementation).
 const char kUserDisplayNameKey[] = "user-display-name";
 const char kUserEntityKey[] = "user-entity";
 const char kUserIdKey[] = "user-id";
@@ -119,25 +137,6 @@ base::Value toJson(const cbor::Value& cbor_value) {
   }
 }
 
-cbor::Value BuildCommandListEntry(
-    const sync_pb::WebauthnCredentialSpecifics& passkey,
-    scoped_refptr<JSONRequest> request) {
-  cbor::Value::MapValue entry_map;
-
-  entry_map.emplace(cbor::Value(kGetAssertionRequestCommandTag),
-                    cbor::Value("navigator.credentials.get"));
-  entry_map.emplace(cbor::Value(kGetAssertionRequestDataTag),
-                    toCbor(*request->value));
-
-  int passkey_byte_size = passkey.ByteSize();
-  std::vector<uint8_t> serialized_passkey;
-  serialized_passkey.resize(passkey_byte_size);
-  CHECK(passkey.SerializeToArray(serialized_passkey.data(), passkey_byte_size));
-  entry_map.emplace(cbor::Value(kGetAssertionRequestEntityTag),
-                    cbor::Value(serialized_passkey));
-  return cbor::Value(entry_map);
-}
-
 bool ParseCommandListEntry(const cbor::Value& entry,
                            sync_pb::WebauthnCredentialSpecifics* out_passkey,
                            base::Value* out_request) {
@@ -147,10 +146,10 @@ bool ParseCommandListEntry(const cbor::Value& entry,
   }
 
   const auto& tag_it =
-      entry.GetMap().find(cbor::Value(kGetAssertionRequestCommandTag));
+      entry.GetMap().find(cbor::Value(kGetAssertionRequestCommandKey));
   if (tag_it == entry.GetMap().end() || !tag_it->second.is_string()) {
     FIDO_LOG(ERROR) << base::StrCat(
-        {"Invalid command list entry field: ", kGetAssertionRequestCommandTag});
+        {"Invalid command list entry field: ", kGetAssertionRequestCommandKey});
     return false;
   }
   if (tag_it->second.GetString() != std::string("navigator.credentials.get")) {
@@ -159,19 +158,19 @@ bool ParseCommandListEntry(const cbor::Value& entry,
   }
 
   const auto& data_it =
-      entry.GetMap().find(cbor::Value(kGetAssertionRequestDataTag));
+      entry.GetMap().find(cbor::Value(kGetAssertionRequestDataKey));
   if (data_it == entry.GetMap().end()) {
     FIDO_LOG(ERROR) << base::StrCat(
-        {"Invalid command list entry field: ", kGetAssertionRequestDataTag});
+        {"Invalid command list entry field: ", kGetAssertionRequestDataKey});
     return false;
   }
   *out_request = toJson(data_it->second);
 
   const auto& entity_it =
-      entry.GetMap().find(cbor::Value(kGetAssertionRequestEntityTag));
+      entry.GetMap().find(cbor::Value(kGetAssertionRequestProtobufKey));
   if (entity_it == entry.GetMap().end() || !entity_it->second.is_bytestring()) {
-    FIDO_LOG(ERROR) << base::StrCat(
-        {"Invalid command list entry field: ", kGetAssertionRequestEntityTag});
+    FIDO_LOG(ERROR) << base::StrCat({"Invalid command list entry field: ",
+                                     kGetAssertionRequestProtobufKey});
     return false;
   }
   if (!out_passkey->ParseFromArray(entity_it->second.GetBytestring().data(),
@@ -212,76 +211,109 @@ std::string AuthenticatorGetAssertionResponseToJson(
 }
 
 std::pair<absl::optional<AuthenticatorGetAssertionResponse>, std::string>
-AuthenticatorGetAssertionResponseFromJson(const std::string& json) {
-  absl::optional<base::Value> parsed_json = base::JSONReader::Read(json);
-  if (!parsed_json || !parsed_json->is_dict()) {
-    return {absl::nullopt, "Invalid JSON in response."};
+ParseGetAssertionResponse(const std::vector<uint8_t>& response_cbor) {
+  absl::optional<cbor::Value> response_value =
+      cbor::Reader::Read(response_cbor);
+  if (!response_value || !response_value->is_array() ||
+      response_value->GetArray().empty()) {
+    return {absl::nullopt, "Command response was not a valid CBOR array."};
   }
 
-  // TODO(kenrb): Pull authenticator data from the response JSON and decode it,
-  // once the server can provide it. This is an empty stand-in for now.
-  AuthenticatorData authenticator_data(
-      std::array<const uint8_t, kRpIdHashLength>{},
-      static_cast<uint8_t>(AuthenticatorData::Flag::kTestOfUserVerification),
-      std::array<const uint8_t, kSignCounterLength>{}, absl::nullopt);
+  base::Value response_element = toJson(response_value->GetArray()[0]);
 
-  AuthenticatorGetAssertionResponse response(std::move(authenticator_data), {},
-                                             FidoTransportProtocol::kInternal);
-
-  const base::Value::Dict* user_entity =
-      parsed_json->GetDict().FindDict(kUserEntityKey);
-  if (user_entity) {
-    PublicKeyCredentialUserEntity user;
-    const std::string* id_string = user_entity->FindString(kUserIdKey);
-    if (!id_string) {
-      return {absl::nullopt, "User entity missing ID."};
-    }
-    absl::optional<std::vector<uint8_t>> decoded_id = base::Base64UrlDecode(
-        *id_string, base::Base64UrlDecodePolicy::DISALLOW_PADDING);
-    if (!decoded_id) {
-      return {absl::nullopt, "User ID failed to decode."};
-    }
-    user.id = std::move(*decoded_id);
-    const std::string* user_name = user_entity->FindString(kUserNameKey);
-    if (user_name) {
-      user.name = std::move(*user_name);
-    }
-    const std::string* display_name =
-        user_entity->FindString(kUserDisplayNameKey);
-    if (display_name) {
-      user.display_name = std::move(*display_name);
-    }
-    response.user_entity = std::move(user);
+  if (!response_element.is_dict()) {
+    return {absl::nullopt, "Command response element is not a map."};
   }
+
+  if (const std::string* error = response_element.GetDict().FindString(
+          kCommandResponseElementErrorKey)) {
+    return {absl::nullopt,
+            base::StrCat({"Error received from enclave: ", *error})};
+  }
+
+  base::Value::Dict* success_response =
+      response_element.GetDict().FindDict(kCommandResponseElementSuccessKey);
+  if (!success_response) {
+    return {
+        absl::nullopt,
+        "Command response did not contain a successful response or an error."};
+  }
+
+  base::Value* assertion_response =
+      success_response->Find(kGetAssertionResponseKey);
+  if (!assertion_response) {
+    return {absl::nullopt,
+            "Command response did not contain a response field."};
+  }
+
+  absl::optional<AuthenticatorGetAssertionResponse> response =
+      AuthenticatorGetAssertionResponseFromValue(*assertion_response);
+  if (!response) {
+    return {absl::nullopt, "Assertion response failed to parse."};
+  }
+
   return {std::move(response), std::string()};
 }
 
-void BuildGetAssertionRequestBody(
+cbor::Value BuildGetAssertionCommand(
     const sync_pb::WebauthnCredentialSpecifics& passkey,
     scoped_refptr<JSONRequest> request,
-    std::string* out_request_body) {
-  base::Value::Dict request_json;
+    std::string client_data_json,
+    std::string rp_id) {
+  cbor::Value::MapValue entry_map;
+
+  entry_map.emplace(cbor::Value(kGetAssertionRequestCommandKey),
+                    cbor::Value(kGetAssertionCommandName));
+  entry_map.emplace(cbor::Value(kGetAssertionRequestDataKey),
+                    toCbor(*request->value));
+
+  int passkey_byte_size = passkey.ByteSize();
+  std::vector<uint8_t> serialized_passkey;
+  serialized_passkey.resize(passkey_byte_size);
+  CHECK(passkey.SerializeToArray(serialized_passkey.data(), passkey_byte_size));
+  entry_map.emplace(cbor::Value(kGetAssertionRequestProtobufKey),
+                    cbor::Value(serialized_passkey));
+
+  entry_map.emplace(cbor::Value(kGetAssertionRequestClientDataJSONKey),
+                    cbor::Value(client_data_json));
+
+  entry_map.emplace(cbor::Value(kGetAssertionRequestUvKey), cbor::Value(true));
+
+  return cbor::Value(entry_map);
+}
+
+std::vector<uint8_t> BuildCommandRequestBody(
+    base::OnceCallback<cbor::Value()> command_callback,
+    base::RepeatingCallback<std::vector<uint8_t>(base::span<const uint8_t>,
+                                                 base::span<const uint8_t>)>
+        signing_callback,
+    base::span<uint8_t> handshake_hash_,
+    const std::vector<uint8_t>& device_id) {
   cbor::Value::MapValue request_body_map;
 
+  request_body_map.emplace(cbor::Value(kCommandDeviceIdKey),
+                           cbor::Value(device_id));
+
   cbor::Value::ArrayValue command_list;
-  command_list.emplace_back(BuildCommandListEntry(passkey, request));
+  command_list.emplace_back(std::move(command_callback).Run());
   absl::optional<std::vector<uint8_t>> serialized_command_list =
       cbor::Writer::Write(cbor::Value(command_list));
 
-  // TODO(kenrb): This needs public key hash and signature when those are
-  // plumbed. The signature is over |serialized_command_list|.
-  request_body_map.emplace(cbor::Value(kCommandEncodedRequestsTag),
+  // TODO(kenrb): The |signing_callback| invocation probably needs to be
+  // asynchronous, which would require a small refactor here.
+  request_body_map.emplace(cbor::Value(kCommandSigKey),
+                           cbor::Value(signing_callback.Run(
+                               handshake_hash_, *serialized_command_list)));
+
+  request_body_map.emplace(cbor::Value(kCommandAuthLevelKey),
+                           cbor::Value("hw"));
+
+  request_body_map.emplace(cbor::Value(kCommandEncodedRequestsKey),
                            cbor::Value(*serialized_command_list));
 
   absl::optional<std::vector<uint8_t>> serialized_request =
       cbor::Writer::Write(cbor::Value(request_body_map));
-  std::string encoded_request_command;
-  base::Base64UrlEncode(*serialized_request,
-                        base::Base64UrlEncodePolicy::OMIT_PADDING,
-                        &encoded_request_command);
-  request_json.Set(kCommandRequestCommandTag, encoded_request_command);
-
-  base::JSONWriter::Write(request_json, out_request_body);
+  return std::move(*serialized_request);
 }
 
 bool ParseGetAssertionRequestBody(
@@ -296,7 +328,7 @@ bool ParseGetAssertionRequestBody(
   }
 
   std::string* encoded_request_command =
-      request_json->GetDict().FindString(kCommandRequestCommandTag);
+      request_json->GetDict().FindString(kCommandRequestCommandKey);
   if (!encoded_request_command) {
     FIDO_LOG(ERROR) << "Command not found in request JSON.";
     return false;
@@ -318,7 +350,7 @@ bool ParseGetAssertionRequestBody(
   }
 
   const auto& it =
-      request_cbor->GetMap().find(cbor::Value(kCommandEncodedRequestsTag));
+      request_cbor->GetMap().find(cbor::Value(kCommandEncodedRequestsKey));
   if (it == request_cbor->GetMap().end() || !it->second.is_bytestring()) {
     FIDO_LOG(ERROR) << "Invalid command array found in the decoded CBOR.";
     return false;
