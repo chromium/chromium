@@ -46,6 +46,7 @@ class NativeWebContentsModalDialogManagerViews
   void Close() override;
   void Focus() override;
   void Pulse() override;
+  bool IsActive() const override;
 
   // web_modal::ModalDialogHostObserver:
   void OnPositionRequiresUpdate() override;

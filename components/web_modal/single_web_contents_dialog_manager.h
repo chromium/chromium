@@ -75,6 +75,10 @@ class SingleWebContentsDialogManager {
   // Return the dialog under management by this object.
   virtual gfx::NativeWindow dialog() = 0;
 
+  // Returns true if the web contents modal dialog is the currently active
+  // window, otherwise false.
+  virtual bool IsActive() const = 0;
+
  protected:
   SingleWebContentsDialogManager() {}
 };

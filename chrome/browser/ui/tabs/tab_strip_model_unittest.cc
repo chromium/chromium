@@ -3130,6 +3130,7 @@ class DummySingleWebContentsDialogManager
   void Pulse() override {}
   void HostChanged(web_modal::WebContentsModalDialogHost* new_host) override {}
   gfx::NativeWindow dialog() override { return dialog_; }
+  bool IsActive() const override { return true; }
 
  private:
   raw_ptr<web_modal::SingleWebContentsDialogManagerDelegate> delegate_;

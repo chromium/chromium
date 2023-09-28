@@ -79,6 +79,10 @@ void NativeWebContentsModalDialogManagerViews::ManageDialog() {
 
 // SingleWebContentsDialogManager:
 
+bool NativeWebContentsModalDialogManagerViews::IsActive() const {
+  return GetWidget(dialog_)->IsActive();
+}
+
 void NativeWebContentsModalDialogManagerViews::Show() {
   // The host destroying means the dialogs will be destroyed in short order.
   // Avoid showing dialogs at this point as the necessary native window

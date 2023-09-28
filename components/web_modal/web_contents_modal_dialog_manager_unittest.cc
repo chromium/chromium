@@ -78,13 +78,16 @@ class TestNativeWebContentsModalDialogManager
   void Pulse() override {}
   void HostChanged(WebContentsModalDialogHost* new_host) override {}
   gfx::NativeWindow dialog() override { return dialog_; }
+  bool IsActive() const override { return is_active_; }
 
   void StopTracking() { tracker_ = nullptr; }
+  void SetIsActive(bool is_active) { is_active_ = is_active; }
 
  private:
   raw_ptr<SingleWebContentsDialogManagerDelegate> delegate_;
   gfx::NativeWindow dialog_;
   raw_ptr<NativeManagerTracker> tracker_;
+  bool is_active_;
 };
 
 class WebContentsModalDialogManagerTest
@@ -218,6 +221,33 @@ TEST_F(WebContentsModalDialogManagerTest, VisibilityObservation) {
   EXPECT_TRUE(manager->IsDialogActive());
   EXPECT_TRUE(delegate->web_contents_blocked());
   EXPECT_EQ(NativeManagerTracker::HIDDEN, tracker.state_);
+
+  test_api->WebContentsVisibilityChanged(content::Visibility::VISIBLE);
+
+  EXPECT_TRUE(manager->IsDialogActive());
+  EXPECT_TRUE(delegate->web_contents_blocked());
+  EXPECT_EQ(NativeManagerTracker::SHOWN, tracker.state_);
+
+  native_manager->StopTracking();
+}
+
+// Tests that the dialog shows when switching from occluded to visible.
+TEST_F(WebContentsModalDialogManagerTest, OccludedToVisible) {
+  const gfx::NativeWindow dialog = MakeFakeDialog();
+
+  delegate->set_web_contents_visible(false);
+  test_api->WebContentsVisibilityChanged(content::Visibility::OCCLUDED);
+
+  NativeManagerTracker tracker;
+  TestNativeWebContentsModalDialogManager* native_manager =
+      new TestNativeWebContentsModalDialogManager(dialog, manager, &tracker);
+  native_manager->SetIsActive(false);
+
+  manager->ShowDialogWithManager(dialog, base::WrapUnique(native_manager));
+
+  EXPECT_TRUE(manager->IsDialogActive());
+  EXPECT_TRUE(delegate->web_contents_blocked());
+  EXPECT_EQ(NativeManagerTracker::NOT_SHOWN, tracker.state_);
 
   test_api->WebContentsVisibilityChanged(content::Visibility::VISIBLE);
 
