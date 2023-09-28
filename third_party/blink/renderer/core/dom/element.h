@@ -1272,10 +1272,10 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // element supports focus if, e.g. it has a tabindex attribute, or it is
   // editable, or other conditions. Note that the element might *support* focus
   // while not *being focusable*, for example if the element is disconnected
-  // from the document. This method can be called when layout is not clean, and
-  // it will *not* update layout itself.
-  // This method should stay protected - it is only for use by the Element
-  // class hierarchy. Outside callers should use `IsFocusable()` and/or
+  // from the document. This method can be called when layout is not clean,
+  // but in some cases it might run a style/layout lifecycle update on the
+  // document. This method should stay protected - it is only for use by the
+  // Element class hierarchy. Outside callers should use `IsFocusable()` and/or
   // `IsKeyboardFocusable()`.
   virtual bool SupportsFocus() const;
 

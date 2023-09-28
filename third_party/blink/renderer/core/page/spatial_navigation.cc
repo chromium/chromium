@@ -336,6 +336,9 @@ bool IsScrollableNode(const Node* node) {
     return true;
 
   if (auto* box = DynamicTo<LayoutBox>(node->GetLayoutObject())) {
+    if (box->NeedsLayout()) {
+      node->GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kFocus);
+    }
     return box->IsUserScrollable();
   }
   return false;

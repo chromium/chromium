@@ -5593,13 +5593,9 @@ bool Element::IsFocusable() const {
 }
 
 bool Element::SupportsFocus() const {
-  // FIXME: supportsFocus() can be called when layout is not up to date.
-  // Logic that deals with the layoutObject should be moved to
-  // layoutObjectIsFocusable().
-  // But supportsFocus must return true when the element is editable, or else
+  // SupportsFocus must return true when the element is editable, or else
   // it won't be focusable. Furthermore, supportsFocus cannot just return true
   // always or else tabIndex() will change for all HTML elements.
-  DocumentLifecycle::DisallowTransitionScope scope(GetDocument().Lifecycle());
   if (DelegatesFocus()) {
     return false;
   }
