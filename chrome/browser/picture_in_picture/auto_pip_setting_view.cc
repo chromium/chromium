@@ -3,7 +3,11 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/picture_in_picture/auto_pip_setting_view.h"
+#include "chrome/grit/generated_resources.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/url_formatter.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/text_elider.h"
 #include "ui/views/layout/flex_layout_view.h"
 
 // Represents the bubble top border offset, with respect to the
@@ -45,13 +49,9 @@ constexpr gfx::Insets kBubbleMargins = gfx::Insets::TLBR(0, 20, 15, 20);
 // Bubble title margins.
 constexpr gfx::Insets kBubbleTitleMargins = gfx::Insets::TLBR(15, 15, 10, 15);
 
-// Bubble title, without origin.
-// TODO(crbug.com/1465529): Localize this.
-constexpr char16_t kBubbleTitleSuffix[] = u" wants to";
-
-// Maximum width for the origin label, for cases where the origin needs to be
+// Maximum origin text width, for cases where the origin needs to be
 // elided.
-constexpr int kBubbleOriginLabelMaximumWidth = 230;
+constexpr int kBubbleOriginTextMaximumWidth = 230;
 
 AutoPipSettingView::AutoPipSettingView(
     ResultCb result_cb,
@@ -89,7 +89,6 @@ AutoPipSettingView::AutoPipSettingView(
 
 AutoPipSettingView::~AutoPipSettingView() {
   autopip_description_ = nullptr;
-  origin_label_ = nullptr;
   allow_once_button_ = allow_on_every_visit_button_ = block_button_ = nullptr;
   anchor_view_observer_.reset();
   dialog_title_view_.reset();
@@ -129,13 +128,15 @@ void AutoPipSettingView::InitBubble() {
           .SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kStart)
           .Build());
 
-  // TODO(crbug.com/1465529): Localize button text labels.
   allow_once_button_ = InitControlViewButton(
-      controls_view, UiResult::kAllowOnce, u"Allow this time");
+      controls_view, UiResult::kAllowOnce,
+      l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW_THIS_TIME));
   allow_on_every_visit_button_ = InitControlViewButton(
-      controls_view, UiResult::kAllowOnEveryVisit, u"Allow on every visit");
-  block_button_ =
-      InitControlViewButton(controls_view, UiResult::kBlock, u"Don't allow");
+      controls_view, UiResult::kAllowOnEveryVisit,
+      l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW_EVERY_VISIT));
+  block_button_ = InitControlViewButton(
+      controls_view, UiResult::kBlock,
+      l10n_util::GetStringUTF16(IDS_PERMISSION_DONT_ALLOW));
 
   SetContentsView(std::move(primary_view));
 }
@@ -148,7 +149,6 @@ raw_ptr<views::MdTextButton> AutoPipSettingView::InitControlViewButton(
       controls_view->AddChildView(std::make_unique<views::MdTextButton>(
           base::BindRepeating(&AutoPipSettingView::OnButtonPressed,
                               base::Unretained(this), ui_result),
-          // TODO(crbug.com/1465529): Localize this.
           label_text));
   button->SetStyle(ui::ButtonStyle::kTonal);
   button->SetCornerRadius(kControlViewButtonCornerRadius);
@@ -187,22 +187,17 @@ void AutoPipSettingView::InitBubbleTitleView(const GURL& origin) {
   const std::u16string host = (origin.SchemeIsFile() && !origin.has_host())
                                   ? u"localhost"
                                   : url_formatter::IDNToUnicode(origin.host());
+  origin_text_ = gfx::ElideText(host, gfx::FontList(),
+                                kBubbleOriginTextMaximumWidth, elide_behavior);
 
-  dialog_title_view_->AddChildView(views::Builder<views::Label>()
-                                       .CopyAddressTo(&origin_label_)
-                                       .SetHorizontalAlignment(gfx::ALIGN_LEFT)
-                                       .SetElideBehavior(elide_behavior)
-                                       .SetMultiLine(false)
-                                       .SetText(host)
-                                       .Build());
-  origin_label_->SetMaximumWidthSingleLine(kBubbleOriginLabelMaximumWidth);
-
-  dialog_title_view_->AddChildView(views::Builder<views::Label>()
-                                       .SetHorizontalAlignment(gfx::ALIGN_LEFT)
-                                       .SetElideBehavior(gfx::NO_ELIDE)
-                                       .SetMultiLine(false)
-                                       .SetText(kBubbleTitleSuffix)
-                                       .Build());
+  dialog_title_view_->AddChildView(
+      views::Builder<views::Label>()
+          .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+          .SetElideBehavior(gfx::NO_ELIDE)
+          .SetMultiLine(false)
+          .SetText(l10n_util::GetStringFUTF16(IDS_PERMISSIONS_BUBBLE_PROMPT,
+                                              origin_text_))
+          .Build());
 }
 
 void AutoPipSettingView::OnButtonPressed(UiResult result) {

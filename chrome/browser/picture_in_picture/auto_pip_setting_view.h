@@ -67,8 +67,8 @@ class AutoPipSettingView : public views::BubbleDialogDelegate {
       views::Widget* widget) override;
   void OnWidgetInitialized() override;
 
-  const views::Label* get_origin_label_for_testing() const {
-    return origin_label_;
+  const std::u16string& get_origin_text_for_testing() const {
+    return origin_text_;
   }
 
  private:
@@ -102,12 +102,12 @@ class AutoPipSettingView : public views::BubbleDialogDelegate {
 
   ResultCb result_cb_;
   raw_ptr<views::Label> autopip_description_ = nullptr;
-  raw_ptr<views::Label> origin_label_ = nullptr;
   raw_ptr<views::MdTextButton> allow_once_button_ = nullptr;
   raw_ptr<views::MdTextButton> allow_on_every_visit_button_ = nullptr;
   raw_ptr<views::MdTextButton> block_button_ = nullptr;
   std::unique_ptr<views::View> dialog_title_view_;
   std::unique_ptr<AutoPipSettingView::AnchorViewObserver> anchor_view_observer_;
+  std::u16string origin_text_;
 
   // Initialize bubble with all it's child views. Called at construction time.
   void InitBubble();

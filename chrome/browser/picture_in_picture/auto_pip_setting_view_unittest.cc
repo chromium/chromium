@@ -12,6 +12,7 @@
 #include "components/url_formatter/url_formatter.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/gfx/text_elider.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_utils.h"
@@ -129,26 +130,50 @@ TEST_F(AutoPipSettingViewTest, TestViewConstructor) {
   EXPECT_TRUE(setting_view()->use_custom_frame());
 }
 
-TEST_F(AutoPipSettingViewTest, TestBubbleTitleElideBehaviorForNonFileURL) {
-  // Get the origin label for testing.
-  const auto* origin_label = setting_view()->get_origin_label_for_testing();
+TEST_F(AutoPipSettingViewTest, TestBubbleTitleNoElide) {
+  // Get the origin text for testing.
+  const auto origin_text = setting_view()->get_origin_text_for_testing();
 
   // Create and show bubble.
   views::Widget* widget =
       views::BubbleDialogDelegate::CreateBubble(std::move(setting_view()));
   widget->Show();
 
-  // Ensure that the origin label has the expected elide behavior.
-  EXPECT_EQ(gfx::ELIDE_HEAD, origin_label->GetElideBehavior());
-
   // Verify that the bubble title contains the origin.
-  EXPECT_THAT(base::UTF16ToUTF8(origin_label->GetText()),
-              HasSubstr(origin().host()));
+  EXPECT_EQ(base::UTF16ToUTF8(origin_text), origin().host());
+}
+
+TEST_F(AutoPipSettingViewTest, TestBubbleTitleElideBehaviorForNonFileURL) {
+  // Set up the setting view.
+  const GURL origin{
+      "https://example_very_long_url_for_testing_that_should_be_elided.com"};
+
+  auto anchor_view_widget = CreateTestWidget();
+  anchor_view_widget->Show();
+  auto* anchor_view =
+      anchor_view_widget->SetContentsView(std::make_unique<views::View>());
+
+  auto setting_view = std::make_unique<AutoPipSettingView>(
+      result_cb().Get(), hide_view_cb().Get(), origin, gfx::Rect(), anchor_view,
+      views::BubbleBorder::TOP_CENTER);
+
+  // Get the origin text for testing.
+  const auto origin_text = setting_view->get_origin_text_for_testing();
+
+  // Create and show bubble.
+  views::Widget* widget =
+      views::BubbleDialogDelegate::CreateBubble(std::move(setting_view));
+  widget->Show();
+
+  // Ensure that the origin text has been elided at head.
+  EXPECT_TRUE(
+      base::StartsWith(origin_text, std::u16string(gfx::kEllipsisUTF16)));
 }
 
 TEST_F(AutoPipSettingViewTest, TestBubbleTitleElideBehaviorForFileURL) {
   // Set up the setting view.
-  const GURL origin{"file://example"};
+  const GURL origin{
+      "file://example_very_long_file_url_for_testing_that_should_be_elided"};
 
   auto anchor_view_widget = CreateTestWidget();
   anchor_view_widget->Show();
@@ -159,25 +184,22 @@ TEST_F(AutoPipSettingViewTest, TestBubbleTitleElideBehaviorForFileURL) {
       result_cb().Get(), hide_view_cb().Get(), origin, gfx::Rect(), anchor_view,
       views::BubbleBorder::TOP_CENTER);
 
-  // Get the origin label for testing.
-  const auto* origin_label = setting_view->get_origin_label_for_testing();
+  // Get the origin text for testing.
+  const auto origin_text = setting_view->get_origin_text_for_testing();
 
   // Create and show bubble.
   views::Widget* widget =
       views::BubbleDialogDelegate::CreateBubble(std::move(setting_view));
   widget->Show();
 
-  // Ensure that the origin label has the expected elide behavior.
-  EXPECT_EQ(gfx::ELIDE_TAIL, origin_label->GetElideBehavior());
-
-  // Verify that the bubble title contains the origin.
-  EXPECT_THAT(base::UTF16ToUTF8(origin_label->GetText()),
-              HasSubstr(origin.host()));
+  // Ensure that the origin text has been elided at tail.
+  EXPECT_TRUE(base::EndsWith(origin_text, std::u16string(gfx::kEllipsisUTF16)));
 }
 
 TEST_F(AutoPipSettingViewTest, TestOriginLabelForGURLWithLocalHost) {
   // Set up the setting view.
-  const GURL origin{"file:///example"};
+  const GURL origin{
+      "file:///example_very_long_file_url_for_testing_that_should_be_elided"};
 
   auto anchor_view_widget = CreateTestWidget();
   anchor_view_widget->Show();
@@ -188,8 +210,8 @@ TEST_F(AutoPipSettingViewTest, TestOriginLabelForGURLWithLocalHost) {
       result_cb().Get(), hide_view_cb().Get(), origin, gfx::Rect(), anchor_view,
       views::BubbleBorder::TOP_CENTER);
 
-  // Get the origin label for testing.
-  const auto* origin_label = setting_view->get_origin_label_for_testing();
+  // Get the origin text for testing.
+  const auto origin_text = setting_view->get_origin_text_for_testing();
 
   // Create and show bubble.
   views::Widget* widget =
@@ -197,7 +219,7 @@ TEST_F(AutoPipSettingViewTest, TestOriginLabelForGURLWithLocalHost) {
   widget->Show();
 
   // Verify that the bubble title contains the origin.
-  EXPECT_EQ(origin_label->GetText(), u"localhost");
+  EXPECT_EQ(origin_text, u"localhost");
 }
 
 const struct TestParams kTestParams[] = {{UiResult::kAllowOnce},
