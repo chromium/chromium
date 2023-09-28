@@ -810,14 +810,9 @@ void PaintArtifactCompositor::Update(
     scoped_refptr<const PaintArtifact> artifact,
     const ViewportProperties& viewport_properties,
     const Vector<const TransformPaintPropertyNode*>& scroll_translation_nodes,
-    const Vector<const TransformPaintPropertyNode*>& anchor_position_scrollers,
     Vector<std::unique_ptr<cc::ViewTransitionRequest>> transition_requests) {
-  const bool unification_enabled =
-      base::FeatureList::IsEnabled(features::kScrollUnification);
   // See: |UpdateRepaintedLayers| for repaint updates.
   DCHECK(needs_update_);
-  DCHECK(scroll_translation_nodes.empty() || unification_enabled);
-  DCHECK(anchor_position_scrollers.empty() || !unification_enabled);
   DCHECK(root_layer_);
 
   TRACE_EVENT0("blink", "PaintArtifactCompositor::Update");
@@ -914,27 +909,18 @@ void PaintArtifactCompositor::Update(
     }
   }
 
-  if (unification_enabled) {
-    // We want to create a cc::TransformNode only if the scroller is painted.
-    // This avoids violating an assumption in CompositorAnimations that an
-    // element has property nodes for either all or none of its animating
-    // properties (see crbug.com/1385575).
-    // However, we want to create a cc::ScrollNode regardless of whether the
-    // scroller is painted. This ensures that scroll offset animations aren't
-    // affected by becoming unpainted.
-    for (auto* node : scroll_translation_nodes) {
-      property_tree_manager.EnsureCompositorScrollNode(*node);
-    }
-    for (auto* node : painted_scroll_translations_.Keys()) {
-      property_tree_manager.EnsureCompositorScrollAndTransformNode(*node);
-    }
-  } else {
-    // Anchor positioning requires all relevant scroll containers to have their
-    // cc::TransformNode and cc::ScrollNode, so that compositor can update the
-    // translation correctly.
-    for (auto* node : anchor_position_scrollers) {
-      property_tree_manager.EnsureCompositorScrollAndTransformNode(*node);
-    }
+  // We want to create a cc::TransformNode only if the scroller is painted.
+  // This avoids violating an assumption in CompositorAnimations that an
+  // element has property nodes for either all or none of its animating
+  // properties (see crbug.com/1385575).
+  // However, we want to create a cc::ScrollNode regardless of whether the
+  // scroller is painted. This ensures that scroll offset animations aren't
+  // affected by becoming unpainted.
+  for (auto* node : scroll_translation_nodes) {
+    property_tree_manager.EnsureCompositorScrollNode(*node);
+  }
+  for (auto* node : painted_scroll_translations_.Keys()) {
+    property_tree_manager.EnsureCompositorScrollAndTransformNode(*node);
   }
 
   root_layer_->layer_tree_host()->RegisterSelection(layer_selection);

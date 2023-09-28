@@ -153,7 +153,7 @@ class PaintArtifactCompositorTest : public testing::Test,
           scroll_translation_nodes = {}) {
     paint_artifact_compositor_->SetNeedsUpdate();
     paint_artifact_compositor_->Update(artifact, viewport_properties,
-                                       scroll_translation_nodes, {}, {});
+                                       scroll_translation_nodes, {});
     layer_tree_->layer_tree_host()->LayoutAndUpdateLayers();
   }
 

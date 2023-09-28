@@ -3619,35 +3619,30 @@ void WebFrameWidgetImpl::InjectGestureScrollEvent(
     ui::ScrollGranularity granularity,
     cc::ElementId scrollable_area_element_id,
     blink::WebInputEvent::Type injected_type) {
-  if (base::FeatureList::IsEnabled(::features::kScrollUnification)) {
-    // create a GestureScroll Event and post it to the compositor thread
-    // TODO(crbug.com/1126098) use original input event's timestamp.
-    // TODO(crbug.com/1082590) ensure continuity in scroll metrics collection
-    base::TimeTicks now = base::TimeTicks::Now();
-    std::unique_ptr<WebGestureEvent> gesture_event =
-        WebGestureEvent::GenerateInjectedScrollGesture(
-            injected_type, now, device, gfx::PointF(0, 0), delta, granularity);
-    if (injected_type == WebInputEvent::Type::kGestureScrollBegin) {
-      gesture_event->data.scroll_begin.scrollable_area_element_id =
-          scrollable_area_element_id.GetInternalValue();
-      gesture_event->data.scroll_begin.main_thread_hit_tested_reasons =
-          device == WebGestureDevice::kScrollbar
-              ? cc::MainThreadScrollingReason::kScrollbarScrolling
-              : cc::MainThreadScrollingReason::kFailedHitTest;
-    }
-
-    // Notifies TestWebFrameWidget of the injected event. Does nothing outside
-    // of unit tests. This would happen in WidgetBase::QueueSyntheticEvent if
-    // scroll unification were not enabled.
-    WillQueueSyntheticEvent(
-        WebCoalescedInputEvent(*gesture_event, ui::LatencyInfo()));
-
-    widget_base_->widget_input_handler_manager()
-        ->DispatchScrollGestureToCompositor(std::move(gesture_event));
-  } else {
-    widget_base_->input_handler().InjectGestureScrollEvent(
-        device, delta, granularity, scrollable_area_element_id, injected_type);
+  // create a GestureScroll Event and post it to the compositor thread
+  // TODO(crbug.com/1126098) use original input event's timestamp.
+  // TODO(crbug.com/1082590) ensure continuity in scroll metrics collection
+  base::TimeTicks now = base::TimeTicks::Now();
+  std::unique_ptr<WebGestureEvent> gesture_event =
+      WebGestureEvent::GenerateInjectedScrollGesture(
+          injected_type, now, device, gfx::PointF(0, 0), delta, granularity);
+  if (injected_type == WebInputEvent::Type::kGestureScrollBegin) {
+    gesture_event->data.scroll_begin.scrollable_area_element_id =
+        scrollable_area_element_id.GetInternalValue();
+    gesture_event->data.scroll_begin.main_thread_hit_tested_reasons =
+        device == WebGestureDevice::kScrollbar
+            ? cc::MainThreadScrollingReason::kScrollbarScrolling
+            : cc::MainThreadScrollingReason::kFailedHitTest;
   }
+
+  // Notifies TestWebFrameWidget of the injected event. Does nothing outside
+  // of unit tests. This would happen in WidgetBase::QueueSyntheticEvent if
+  // scroll unification were not enabled.
+  WillQueueSyntheticEvent(
+      WebCoalescedInputEvent(*gesture_event, ui::LatencyInfo()));
+
+  widget_base_->widget_input_handler_manager()
+      ->DispatchScrollGestureToCompositor(std::move(gesture_event));
 }
 
 void WebFrameWidgetImpl::DidChangeCursor(const ui::Cursor& cursor) {

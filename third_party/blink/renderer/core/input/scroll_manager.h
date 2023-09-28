@@ -40,9 +40,13 @@ class WebGestureEvent;
 // direction. Used in CanPropagate.
 enum class ScrollPropagationDirection { kHorizontal, kVertical, kBoth, kNone };
 
-// This class takes care of scrolling and resizing and the related states. The
-// user action that causes scrolling or resizing is determined in other *Manager
-// classes and they call into this class for doing the work.
+// This class assists certain main-thread scroll operations such as keyboard
+// scrolls and middle-click autoscroll, as well as resizer-control interactions.
+// User scrolls from pointer devices (wheel/touch) are handled on the compositor
+// (cc::InputHandler). For Javascript scrolls, see ProgrammaticScrollAnimator
+// and the ScrollableArea APIs.
+// TODO(crbug.com/1369739): Now that scroll unification has launched, much of
+// this class can be deleted.
 class CORE_EXPORT ScrollManager : public GarbageCollected<ScrollManager>,
                                   public cc::SnapFlingClient {
  public:

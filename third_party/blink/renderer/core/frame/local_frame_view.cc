@@ -3046,28 +3046,17 @@ void LocalFrameView::PushPaintArtifactToCompositor(bool repainted) {
   }
 
   Vector<const TransformPaintPropertyNode*> scroll_translation_nodes;
-  if (base::FeatureList::IsEnabled(::features::kScrollUnification)) {
-    ForAllNonThrottledLocalFrameViews(
-        [&scroll_translation_nodes](LocalFrameView& frame_view) {
-          frame_view.GetUserScrollTranslationNodes(scroll_translation_nodes);
-        });
-  }
-
-  Vector<const TransformPaintPropertyNode*> anchor_position_scrollers;
-  if (!base::FeatureList::IsEnabled(::features::kScrollUnification)) {
-    ForAllNonThrottledLocalFrameViews(
-        [&anchor_position_scrollers](LocalFrameView& frame_view) {
-          frame_view.GetAnchorPositionScrollerIds(anchor_position_scrollers);
-        });
-  }
+  ForAllNonThrottledLocalFrameViews(
+      [&scroll_translation_nodes](LocalFrameView& frame_view) {
+        frame_view.GetUserScrollTranslationNodes(scroll_translation_nodes);
+      });
 
   WTF::Vector<std::unique_ptr<ViewTransitionRequest>> view_transition_requests;
   AppendViewTransitionRequests(view_transition_requests);
 
   paint_artifact_compositor_->Update(
       paint_controller_->GetPaintArtifactShared(), viewport_properties,
-      scroll_translation_nodes, anchor_position_scrollers,
-      std::move(view_transition_requests));
+      scroll_translation_nodes, std::move(view_transition_requests));
 
   CreatePaintTimelineEvents();
 }
@@ -4899,46 +4888,6 @@ void LocalFrameView::GetUserScrollTranslationNodes(
         area->GetLayoutBox()->FirstFragment().PaintProperties();
     if (paint_properties && paint_properties->Scroll()) {
       scroll_translation_nodes.push_back(paint_properties->ScrollTranslation());
-    }
-  }
-}
-
-void LocalFrameView::GetAnchorPositionScrollerIds(
-    Vector<const TransformPaintPropertyNode*>& anchor_position_scrollers) {
-  const auto* scrollable_areas = UserScrollableAreas();
-  if (!scrollable_areas) {
-    return;
-  }
-
-  // Ideally, we should collect the ids into a hash set, but defining a
-  // WTF::HashSet<cc::ElementId> requires introducing a magic deleted value to
-  // cc::ElementId. To prevent complicating the class for just one client in
-  // Blink that will soon be removed (when ScrollUnification is fully enabled,
-  // see crbug.com/1378021) and is not performance-sensitive, we choose to just
-  // use vector and binary search.
-  Vector<cc::ElementId> scroll_container_ids;
-  GetFrame().CollectAnchorPositionScrollerIds(&scroll_container_ids);
-  std::sort(scroll_container_ids.begin(), scroll_container_ids.end());
-  scroll_container_ids.erase(
-      std::unique(scroll_container_ids.begin(), scroll_container_ids.end()),
-      scroll_container_ids.end());
-
-  if (scroll_container_ids.empty()) {
-    return;
-  }
-
-  for (const auto& area : *scrollable_areas) {
-    const auto* paint_properties =
-        area->GetLayoutBox()->FirstFragment().PaintProperties();
-    if (paint_properties && paint_properties->Scroll()) {
-      cc::ElementId element_id = area->GetScrollElementId();
-      if (cc::ElementId* iter =
-              std::lower_bound(scroll_container_ids.begin(),
-                               scroll_container_ids.end(), element_id);
-          iter != scroll_container_ids.end() && *iter == element_id) {
-        anchor_position_scrollers.push_back(
-            paint_properties->ScrollTranslation());
-      }
     }
   }
 }

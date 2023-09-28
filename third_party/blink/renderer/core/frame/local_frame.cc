@@ -3624,17 +3624,6 @@ void LocalFrame::ScheduleNextServiceForScrollSnapshotClients() {
   }
 }
 
-void LocalFrame::CollectAnchorPositionScrollerIds(
-    Vector<cc::ElementId>* ids) const {
-  for (const auto& client : scroll_snapshot_clients_) {
-    if (const AnchorPositionScrollData* data =
-            DynamicTo<AnchorPositionScrollData>(client.Get());
-        data && data->IsActive()) {
-      ids->AppendVector(data->ScrollContainerIds());
-    }
-  }
-}
-
 void LocalFrame::BindResourceCache(
     mojo::PendingReceiver<mojom::blink::ResourceCache> receiver) {
   if (resource_cache_) {

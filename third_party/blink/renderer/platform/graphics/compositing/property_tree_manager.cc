@@ -239,11 +239,7 @@ uint32_t PropertyTreeManager::GetMainThreadScrollingReasons(
   const auto* property_trees = host.property_trees();
   const auto* cc_scroll = property_trees->scroll_tree().Node(
       scroll.CcNodeId(property_trees->sequence_number()));
-  if (!cc_scroll) {
-    DCHECK(!base::FeatureList::IsEnabled(features::kScrollUnification));
-    return scroll.GetMainThreadScrollingReasons() |
-           NonCompositedMainThreadScrollingReasons(scroll);
-  }
+  DCHECK(cc_scroll);
   return cc_scroll->main_thread_scrolling_reasons;
 }
 
@@ -254,10 +250,7 @@ bool PropertyTreeManager::UsesCompositedScrolling(
   const auto* property_trees = host.property_trees();
   const auto* cc_scroll = property_trees->scroll_tree().Node(
       scroll.CcNodeId(property_trees->sequence_number()));
-  if (!cc_scroll) {
-    DCHECK(!base::FeatureList::IsEnabled(features::kScrollUnification));
-    return false;
-  }
+  DCHECK(cc_scroll);
   return cc_scroll->is_composited;
 }
 

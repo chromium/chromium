@@ -741,35 +741,35 @@ WebInputEventResult WebPagePopupImpl::HandleGestureEvent(
         event.PositionInScreen(),
         WebFeature::kPopupGestureTapExceedsOwnerWindowBounds);
   }
-  if (base::FeatureList::IsEnabled(::features::kScrollUnification)) {
-    if (event.GetType() == WebInputEvent::Type::kGestureScrollBegin) {
-      HitTestLocation locationScroll(event.PositionInWidget());
-      HitTestResult resultScroll =
-          MainFrame().GetEventHandler().HitTestResultAtLocation(locationScroll);
-      scrollable_node_ = FindFirstScroller(resultScroll.InnerNode());
-      RecordScrollReasonsMetric(
-          event.SourceDevice(),
-          cc::MainThreadScrollingReason::kPopupNoThreadedInput);
-      return WebInputEventResult::kHandledSystem;
+  if (event.GetType() == WebInputEvent::Type::kGestureScrollBegin) {
+    HitTestLocation locationScroll(event.PositionInWidget());
+    HitTestResult resultScroll =
+        MainFrame().GetEventHandler().HitTestResultAtLocation(locationScroll);
+    scrollable_node_ = FindFirstScroller(resultScroll.InnerNode());
+    RecordScrollReasonsMetric(
+        event.SourceDevice(),
+        cc::MainThreadScrollingReason::kPopupNoThreadedInput);
+    return WebInputEventResult::kHandledSystem;
+  }
+  if (event.GetType() == WebInputEvent::Type::kGestureScrollUpdate) {
+    if (!scrollable_node_) {
+      return WebInputEventResult::kNotHandled;
     }
-    if (event.GetType() == WebInputEvent::Type::kGestureScrollUpdate) {
-      if (!scrollable_node_)
-        return WebInputEventResult::kNotHandled;
 
-      ScrollableArea* scrollable = ToScrollableArea(scrollable_node_);
+    ScrollableArea* scrollable = ToScrollableArea(scrollable_node_);
 
-      if (!scrollable)
-        return WebInputEventResult::kNotHandled;
-      ScrollOffset scroll_offset(-event.data.scroll_update.delta_x,
-                                 -event.data.scroll_update.delta_y);
-      scrollable->UserScroll(event.data.scroll_update.delta_units,
-                             scroll_offset, ScrollableArea::ScrollCallback());
-      return WebInputEventResult::kHandledSystem;
+    if (!scrollable) {
+      return WebInputEventResult::kNotHandled;
     }
-    if (event.GetType() == WebInputEvent::Type::kGestureScrollEnd) {
-      scrollable_node_ = nullptr;
-      return WebInputEventResult::kHandledSystem;
-    }
+    ScrollOffset scroll_offset(-event.data.scroll_update.delta_x,
+                               -event.data.scroll_update.delta_y);
+    scrollable->UserScroll(event.data.scroll_update.delta_units, scroll_offset,
+                           ScrollableArea::ScrollCallback());
+    return WebInputEventResult::kHandledSystem;
+  }
+  if (event.GetType() == WebInputEvent::Type::kGestureScrollEnd) {
+    scrollable_node_ = nullptr;
+    return WebInputEventResult::kHandledSystem;
   }
   WebGestureEvent scaled_event =
       TransformWebGestureEvent(MainFrame().View(), event);

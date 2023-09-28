@@ -134,17 +134,10 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
   // noncomposited nodes, and is used for Scroll Unification to generate scroll
   // nodes for noncomposited scrollers to complete the compositor's scroll
   // property tree.
-  //
-  // |anchor_position_scrollers| is the set of scroll nodes whose scroll
-  // offset contributes to any anchor position scroll translation (namely, whose
-  // id is snapshotted in an AnchorPositionScrollData). This is needed only when
-  // ScrollUnification is disabled.
   void Update(
       scoped_refptr<const PaintArtifact> artifact,
       const ViewportProperties& viewport_properties,
       const Vector<const TransformPaintPropertyNode*>& scroll_translation_nodes,
-      const Vector<const TransformPaintPropertyNode*>&
-          anchor_position_scrollers,
       Vector<std::unique_ptr<cc::ViewTransitionRequest>> requests);
 
   // Fast-path update where the painting of existing composited layers changed,
