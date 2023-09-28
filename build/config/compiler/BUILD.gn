@@ -2228,6 +2228,11 @@ if (is_win) {
     common_optimize_on_ldflags += [ "/OPT:REF" ]  # Remove unreferenced data.
     # TODO(thakis): Add LTO/PGO clang flags eventually, https://crbug.com/598772
   }
+
+  if (is_clang) {
+    # See below.
+    common_optimize_on_cflags += [ "/clang:-fno-math-errno" ]
+  }
 } else {
   common_optimize_on_cflags = []
   common_optimize_on_ldflags = []
@@ -2276,6 +2281,14 @@ if (is_win) {
       "-Wl,--gc-sections",
     ]
   }
+
+  # We cannot rely on errno being set after math functions,
+  # especially since glibc does not set it. Thus, use -fno-math-errno
+  # so that the compiler knows it can inline math functions.
+  # Note that this is different from -ffast-math (even though -ffast-math
+  # implies -fno-math-errno), which also allows a number of unsafe
+  # optimizations.
+  common_optimize_on_cflags += [ "-fno-math-errno" ]
 }
 
 config("default_stack_frames") {
