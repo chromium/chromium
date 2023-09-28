@@ -48,4 +48,11 @@ public class NavigationHistory {
         return mCurrentEntryIndex;
     }
 
+    @Override
+    public String toString() {
+        return "NavigationHistory{" +
+                "mEntries=" + mEntries +
+                ", mCurrentEntryIndex=" + mCurrentEntryIndex +
+                '}';
+    }
 }

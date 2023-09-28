@@ -66,10 +66,18 @@ JNI_NavigationControllerImpl_CreateJavaNavigationEntry(
   }
   jlong j_timestamp = entry->GetTimestamp().ToJavaTime();
 
-  return content::Java_NavigationControllerImpl_createNavigationEntry(
+  ScopedJavaLocalRef<jobject> j_entry = content::Java_NavigationControllerImpl_createNavigationEntry(
       env, index, j_url, j_virtual_url, j_original_url, j_referrer_url, j_title,
       j_bitmap, entry->GetTransitionType(), j_timestamp,
       entry->IsInitialEntry());
+
+  const std::vector<GURL>& redirect_chain = entry->GetRedirectChain();
+  for (std::vector<GURL>::const_iterator iter = redirect_chain.begin();
+        iter != redirect_chain.end(); ++iter) {
+    ScopedJavaLocalRef<jobject> url(url::GURLAndroid::FromNativeGURL(env, *iter));
+      content::Java_NavigationControllerImpl_addRedirectUrlToEntry(env, j_entry, url);
+  }
+  return j_entry;
 }
 
 static void JNI_NavigationControllerImpl_AddNavigationEntryToHistory(

@@ -8,7 +8,11 @@ import android.graphics.Bitmap;
 
 import androidx.annotation.NonNull;
 
+import org.chromium.base.Log;
 import org.chromium.url.GURL;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Represents one entry in the navigation history of a page.
@@ -25,6 +29,7 @@ public class NavigationEntry {
     private int mTransition;
     private long mTimestamp;
     private final boolean mIsInitialEntry;
+    private List<GURL> mRedirectChain;
 
     /**
      * Default constructor.
@@ -129,5 +134,34 @@ public class NavigationEntry {
      */
     public boolean isInitialEntry() {
         return mIsInitialEntry;
+    }
+
+    public void addRedirectUrl(GURL url) {
+        Log.e(getClass().getSimpleName(), "addRedirectUrl url=" + url);
+        if (mRedirectChain == null) {
+            mRedirectChain = new ArrayList<>();
+        }
+        mRedirectChain.add(url);
+    }
+
+    public List<GURL> getRedirectChain() {
+        return mRedirectChain;
+    }
+
+    @Override
+    public String toString() {
+        return "NavigationEntry{" +
+                "mIndex=" + mIndex +
+                ", mUrl=" + mUrl +
+                ", mOriginalUrl=" + mOriginalUrl +
+                ", mVirtualUrl=" + mVirtualUrl +
+                ", mReferrerUrl=" + mReferrerUrl +
+                ", mTitle='" + mTitle + '\'' +
+                ", mFavicon=" + mFavicon +
+                ", mTransition=" + mTransition +
+                ", mTimestamp=" + mTimestamp +
+                ", mIsInitialEntry=" + mIsInitialEntry +
+                ", mRedirectChain=" + mRedirectChain +
+                '}';
     }
 }

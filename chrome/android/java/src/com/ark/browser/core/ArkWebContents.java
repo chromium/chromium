@@ -41,6 +41,7 @@ import org.chromium.content_public.browser.GlobalRenderFrameHostId;
 import org.chromium.content_public.browser.JavaScriptCallback;
 import org.chromium.content_public.browser.LoadCommittedDetails;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsAccessibility;
@@ -57,7 +58,9 @@ public class ArkWebContents {
 
     private final PageInfo mPageInfo;
 
-    /** {@link WebContents} showing the current page, or {@code null} if the tab is frozen. */
+    /**
+     * {@link WebContents} showing the current page, or {@code null} if the tab is frozen.
+     */
     @NonNull
     private final WebContents mWebContents;
 
@@ -179,6 +182,9 @@ public class ArkWebContents {
                             ArkLogger.e(this, "didFinishNavigation navigation=" + navigation);
                             super.didFinishNavigation(navigation);
                             updateThemeColor();
+                            NavigationController controller = ArkWebContents.this.mWebContents.getNavigationController();
+                            ArkLogger.e(this, "didFinishNavigation navigationHistory="
+                                    + controller.getNavigationHistory());
                         }
 
                         @Override
@@ -583,6 +589,10 @@ public class ArkWebContents {
         return mWebContents.getViewAndroidDelegate();
     }
 
+    public NavigationController getNavigationController() {
+        return mWebContents.getNavigationController();
+    }
+
     public void reset() {
         mWebContents.clearJavaWebContentsObservers();
         mWebContents.initialize(VersionInfo.getProductVersion(),
@@ -619,6 +629,7 @@ public class ArkWebContents {
 
         /**
          * Sets a flag indicating how this tab is launched (from a link, external app, etc).
+         *
          * @param type Launch type.
          * @return {@link Builder} creating the Tab.
          */
@@ -630,6 +641,7 @@ public class ArkWebContents {
         /**
          * Sets a flag indicating whether the Tab should start as hidden. Only used if
          * {@code webContents} is {@code null}.
+         *
          * @param initiallyHidden {@code true} if the newly created {@link WebContents} will be hidden.
          * @return {@link Builder} creating the Tab.
          */
@@ -640,6 +652,7 @@ public class ArkWebContents {
 
         /**
          * Sets a {@link TabState} object containing information about this Tab, if it was persisted.
+         *
          * @param tabState State object.
          * @return {@link Builder} creating the Tab.
          */
@@ -740,6 +753,7 @@ public class ArkWebContents {
         /**
          * Creates a TabBuilder for a fresh tab. initialize() needs to be called afterwards to
          * complete the second level initialization.
+         *
          * @param initiallyHidden true iff the tab being created is initially in background
          */
         public static Builder createLiveTab(PageInfo pageInfo, boolean initiallyHidden) {

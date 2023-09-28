@@ -315,6 +315,11 @@ import org.chromium.url.Origin;
     }
 
     @CalledByNative
+    private static void addRedirectUrlToEntry(Object entry, Object url) {
+        ((NavigationEntry) entry).addRedirectUrl((GURL) url);
+    }
+
+    @CalledByNative
     private static NavigationEntry createNavigationEntry(int index, GURL url, GURL virtualUrl,
             GURL originalUrl, GURL referrerUrl, String title, Bitmap favicon, int transition,
             long timestamp, boolean isInitialEntry) {
