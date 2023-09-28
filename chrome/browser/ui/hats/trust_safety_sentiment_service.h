@@ -18,8 +18,14 @@
 #include "components/download/public/common/download_danger_type.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
+#include "components/safe_browsing/core/browser/password_protection/metrics_util.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
+
+using PasswordProtectionUIType = safe_browsing::WarningUIType;
+using PasswordProtectionUIAction = safe_browsing::WarningAction;
+
+const base::TimeDelta kPasswordChangeInactivity = base::Minutes(30);
 
 // Service which receives events from Trust & Safety features and determines
 // whether or not to launch a HaTS survey on the NTP for the user.
@@ -125,7 +131,8 @@ class TrustSafetySentimentService
     kPrivacySandbox4NoticeSettings = 18,
     kSafeBrowsingInterstitial = 19,
     kDownloadWarningUI = 20,
-    kMaxValue = kDownloadWarningUI,
+    kPasswordProtectionUI = 21,
+    kMaxValue = kPasswordProtectionUI,
   };
 
   // Called when the user interacts with Privacy Sandbox 3, |feature_area|
@@ -144,6 +151,22 @@ class TrustSafetySentimentService
   virtual void InteractedWithDownloadWarningUI(
       DownloadItemWarningData::WarningSurface surface,
       DownloadItemWarningData::WarningAction action);
+
+  // Called when user clicks to protect/reset/check their password on a password
+  // protection UI. This triggers a survey if the user has not finished changing
+  // their password after a certain period of time.
+  virtual void ProtectResetOrCheckPasswordClicked(
+      PasswordProtectionUIType ui_type);
+
+  // Called when a user sees a password protection warning and decides to ignore
+  // the warning, close the warning, or mark the warning as legitimate.
+  virtual void PhishedPasswordUpdateNotClicked(
+      PasswordProtectionUIType ui_type,
+      PasswordProtectionUIAction action);
+
+  // Called when a user finishes updating their phished password after seeing a
+  // warning.
+  virtual void PhishedPasswordUpdateFinished();
 
   // Checks that this feature area is valid for the current version.
   static bool VersionCheck(FeatureArea feature_area);
@@ -231,6 +254,16 @@ class TrustSafetySentimentService
     bool interacted = false;
   };
 
+  // Struct which represents the PhishedPasswordChange state. When a user clicks
+  // to change their password, we want to wait to trigger a survey until after
+  // they change their password or the user has been inactive for some time.
+  struct PhishedPasswordChangeState {
+    PhishedPasswordChangeState();
+    base::Time password_change_click_ts_;
+    PasswordProtectionUIType ui_type_;
+    bool finished_action = false;
+  };
+
   void SettingsWatcherComplete();
 
   // Record that a trigger occurred, placing it in the set of pending triggers.
@@ -248,10 +281,17 @@ class TrustSafetySentimentService
 
   static bool ShouldBlockSurvey(const PendingTrigger& trigger);
 
+  // Called by |ProtectResetOrCheckPasswordClicked| and
+  // |PhishedPasswordUpdateNotClicked|. Triggers a survey if one has not already
+  // been triggered for the user journey.
+  void MaybeTriggerPasswordProtectionSurvey(PasswordProtectionUIType ui_type,
+                                            PasswordProtectionUIAction action);
+
   const raw_ptr<Profile> profile_;
   std::map<FeatureArea, PendingTrigger> pending_triggers_;
   std::unique_ptr<SettingsWatcher> settings_watcher_;
   std::unique_ptr<PageInfoState> page_info_state_;
+  std::unique_ptr<PhishedPasswordChangeState> phished_password_change_state_;
   base::ScopedMultiSourceObservation<Profile, ProfileObserver>
       observed_profiles_{this};
   bool performed_control_group_dice_roll_;

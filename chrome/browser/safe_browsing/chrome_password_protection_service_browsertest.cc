@@ -16,6 +16,9 @@
 #include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/hats/mock_trust_safety_sentiment_service.h"
+#include "chrome/browser/ui/hats/trust_safety_sentiment_service.h"
+#include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
@@ -1388,5 +1391,91 @@ IN_PROC_BROWSER_TEST_F(
   prerender_manager.WaitForNavigationFinished();
   ASSERT_TRUE(prerender_manager.was_activated());
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+class ChromePasswordProtectionServiceTrustSafetySentimentServiceBrowserTest
+    : public ChromePasswordProtectionServiceBrowserTest {
+ public:
+  void SetUpMockServiceExpectations() {
+    mock_sentiment_service_ = static_cast<MockTrustSafetySentimentService*>(
+        TrustSafetySentimentServiceFactory::GetInstance()
+            ->SetTestingFactoryAndUse(
+                browser()->profile(),
+                base::BindRepeating(&BuildMockTrustSafetySentimentService)));
+  }
+
+  void ExpectPhishedPasswordUpdateNotClickedCall(
+      PasswordProtectionUIType ui_type,
+      PasswordProtectionUIAction action) {
+    EXPECT_CALL(*mock_sentiment_service_,
+                PhishedPasswordUpdateNotClicked(ui_type, action));
+  }
+
+  void ExpectProtectResetOrCheckPasswordClickedCall(
+      PasswordProtectionUIType ui_type) {
+    EXPECT_CALL(*mock_sentiment_service_,
+                ProtectResetOrCheckPasswordClicked(ui_type));
+  }
+
+ private:
+  raw_ptr<MockTrustSafetySentimentService, DanglingUntriaged>
+      mock_sentiment_service_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    ChromePasswordProtectionServiceTrustSafetySentimentServiceBrowserTest,
+    NonPasswordChangeTrigger) {
+  browser()->profile()->GetPrefs()->SetBoolean(
+      prefs::kSafeBrowsingSurveysEnabled, true);
+  // Expect Trust and Safety Sentiment Service to call
+  // PhishedPasswordUpdateNotClicked.
+  SetUpMockServiceExpectations();
+  ExpectPhishedPasswordUpdateNotClickedCall(
+      PasswordProtectionUIType::MODAL_DIALOG,
+      PasswordProtectionUIAction::CLOSE);
+
+  ChromePasswordProtectionService* service = GetService(/*is_incognito=*/false);
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL(kLoginPageUrl)));
+
+  ReusedPasswordAccountType account_type;
+  account_type.set_account_type(ReusedPasswordAccountType::GSUITE);
+  account_type.set_is_account_syncing(true);
+  service->OnUserAction(web_contents, account_type, RequestOutcome::UNKNOWN,
+                        LoginReputationClientResponse::VERDICT_TYPE_UNSPECIFIED,
+                        "unused_token", WarningUIType::MODAL_DIALOG,
+                        WarningAction::CLOSE);
+  base::RunLoop().RunUntilIdle();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ChromePasswordProtectionServiceTrustSafetySentimentServiceBrowserTest,
+    PasswordChangeTrigger) {
+  browser()->profile()->GetPrefs()->SetBoolean(
+      prefs::kSafeBrowsingSurveysEnabled, true);
+  // Expect Trust and Safety Sentiment Service to call
+  // ProtectResetOrCheckPasswordClicked.
+  SetUpMockServiceExpectations();
+  ExpectProtectResetOrCheckPasswordClickedCall(
+      PasswordProtectionUIType::MODAL_DIALOG);
+
+  ChromePasswordProtectionService* service = GetService(/*is_incognito=*/false);
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL(kLoginPageUrl)));
+
+  ReusedPasswordAccountType account_type;
+  account_type.set_account_type(ReusedPasswordAccountType::GSUITE);
+  account_type.set_is_account_syncing(true);
+  service->OnUserAction(web_contents, account_type, RequestOutcome::UNKNOWN,
+                        LoginReputationClientResponse::VERDICT_TYPE_UNSPECIFIED,
+                        "unused_token", WarningUIType::MODAL_DIALOG,
+                        WarningAction::CHANGE_PASSWORD);
+  base::RunLoop().RunUntilIdle();
+}
+#endif
 
 }  // namespace safe_browsing

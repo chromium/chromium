@@ -53,6 +53,7 @@ extern const char kHatsSurveyTriggerTrustSafetyV2BrowsingData[];
 extern const char kHatsSurveyTriggerTrustSafetyV2ControlGroup[];
 extern const char kHatsSurveyTriggerTrustSafetyV2DownloadWarningUI[];
 extern const char kHatsSurveyTriggerTrustSafetyV2PasswordCheck[];
+extern const char kHatsSurveyTriggerTrustSafetyV2PasswordProtectionUI[];
 extern const char kHatsSurveyTriggerTrustSafetyV2SafetyCheck[];
 extern const char kHatsSurveyTriggerTrustSafetyV2TrustedSurface[];
 extern const char kHatsSurveyTriggerTrustSafetyV2PrivacyGuide[];

@@ -60,6 +60,15 @@ class MockTrustSafetySentimentService : public TrustSafetySentimentService {
               (DownloadItemWarningData::WarningSurface,
                DownloadItemWarningData::WarningAction),
               (override));
+  MOCK_METHOD(void,
+              ProtectResetOrCheckPasswordClicked,
+              (PasswordProtectionUIType),
+              (override));
+  MOCK_METHOD(void,
+              PhishedPasswordUpdateNotClicked,
+              (PasswordProtectionUIType, PasswordProtectionUIAction),
+              (override));
+  MOCK_METHOD(void, PhishedPasswordUpdateFinished, (), (override));
 };
 
 std::unique_ptr<KeyedService> BuildMockTrustSafetySentimentService(
