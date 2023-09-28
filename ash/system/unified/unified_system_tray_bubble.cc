@@ -440,9 +440,18 @@ void UnifiedSystemTrayBubble::UpdateBubbleBounds() {
         std::min(max_height, std::max(qs_current_height, kDetailedViewHeight));
   }
   if (is_qs_revamp_enabled_) {
+    // Setting the max height can result in the popup baseline being updated,
+    // closing this bubble.
     quick_settings_view_->SetMaxHeight(max_height);
   } else {
     unified_view_->SetMaxHeight(max_height);
+  }
+  if (!bubble_view_) {
+    // Updating the maximum height can result in popup baseline changing. If
+    // there is not enough room for popups, the bubble will be closed, and this
+    // `bubble_view_` will not exist. This is a corner case, and we should
+    // probably not close the bubble in this case.  See https://b/302172146.
+    return;
   }
   bubble_view_->SetMaxHeight(max_height);
   bubble_view_->ChangeAnchorAlignment(
