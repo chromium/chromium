@@ -1051,6 +1051,9 @@ void PermissionRequestManager::FinalizeCurrentRequests(
               ShouldCurrentRequestUseQuietUI())) {
         embargo_status = PermissionEmbargoStatus::REPEATED_IGNORES;
       }
+    } else if (permission_action == PermissionAction::GRANTED_ONCE) {
+      autoblocker->RemoveEmbargoAndResetCounts(
+          request->requesting_origin(), request->GetContentSettingsType());
     }
     PermissionUmaUtil::RecordEmbargoStatus(embargo_status);
   }
