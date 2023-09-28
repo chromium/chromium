@@ -44,7 +44,7 @@ MultiWordExperimentGroup GetExperimentGroup(const std::string& finch_trial) {
     return MultiWordExperimentGroup::kGboardE;
   if (finch_trial == "gboard_f")
     return MultiWordExperimentGroup::kGboardF;
-  return MultiWordExperimentGroup::kDefault;
+  return MultiWordExperimentGroup::kGboardE;
 }
 
 chromeos::machine_learning::mojom::TextSuggestionMode ToTextSuggestionModeMojom(
