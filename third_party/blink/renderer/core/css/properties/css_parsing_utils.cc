@@ -960,9 +960,6 @@ class MathFunctionParser {
               is_percentage_allowed, allowed_anchor_queries),
           value_range);
     }
-    if (calc_value_ && calc_value_->HasComparisons()) {
-      context.Count(WebFeature::kCSSComparisonFunctions);
-    }
   }
 
   const CSSMathFunctionValue* Value() const { return calc_value_; }

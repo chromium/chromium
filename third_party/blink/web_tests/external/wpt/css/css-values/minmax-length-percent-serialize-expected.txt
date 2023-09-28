@@ -1,9 +1,9 @@
 This is a testharness.js-based test.
-Found 54 tests; 31 PASS, 23 FAIL, 0 TIMEOUT, 0 NOTRUN.
-FAIL 'min(1px)' as a specified value should serialize as 'calc(1px)'. assert_equals: 'min(1px)' and 'calc(1px)' should serialize the same in specified values. expected "calc(1px)" but got "min(1px)"
+Found 54 tests; 34 PASS, 20 FAIL, 0 TIMEOUT, 0 NOTRUN.
+PASS 'min(1px)' as a specified value should serialize as 'calc(1px)'.
 PASS 'min(1px)' as a computed value should serialize as '1px'.
 PASS 'min(1px)' as a used value should serialize as '1px'.
-FAIL 'max(1px)' as a specified value should serialize as 'calc(1px)'. assert_equals: 'max(1px)' and 'calc(1px)' should serialize the same in specified values. expected "calc(1px)" but got "max(1px)"
+PASS 'max(1px)' as a specified value should serialize as 'calc(1px)'.
 PASS 'max(1px)' as a computed value should serialize as '1px'.
 PASS 'max(1px)' as a used value should serialize as '1px'.
 FAIL 'min(1% + 1px)' as a specified value should serialize as 'calc(1% + 1px)'. assert_equals: 'min(1% + 1px)' and 'calc(1% + 1px)' should serialize the same in specified values. expected "calc(1% + 1px)" but got "min(1% + 1px)"
@@ -15,7 +15,7 @@ PASS 'min(1px + 1%)' as a used value should serialize as '2px'.
 FAIL 'max(1px + 1%)' as a specified value should serialize as 'calc(1% + 1px)'. assert_equals: 'max(1px + 1%)' and 'calc(1% + 1px)' should serialize the same in specified values. expected "calc(1% + 1px)" but got "max(1px + 1%)"
 FAIL 'max(1px + 1%)' as a computed value should serialize as 'calc(1% + 1px)'. assert_equals: 'max(1px + 1%)' and 'calc(1% + 1px)' should serialize the same in computed values. expected "calc(1% + 1px)" but got "max(1% + 1px)"
 PASS 'max(1px + 1%)' as a used value should serialize as '2px'.
-FAIL 'min(1px, 2px)' as a specified value should serialize as 'calc(1px)'. assert_equals: 'min(1px, 2px)' and 'calc(1px)' should serialize the same in specified values. expected "calc(1px)" but got "min(1px, 2px)"
+PASS 'min(1px, 2px)' as a specified value should serialize as 'calc(1px)'.
 PASS 'min(1px, 2px)' as a computed value should serialize as '1px'.
 PASS 'min(1px, 2px)' as a used value should serialize as '1px'.
 PASS 'min(20px, 10%)' as a specified value should serialize as 'min(20px, 10%)'.

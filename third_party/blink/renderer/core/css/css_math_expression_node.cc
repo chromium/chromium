@@ -249,6 +249,14 @@ bool CanEagerlySimplify(const CSSMathExpressionNode* operand) {
     case CalculationResultCategory::kCalcFrequency:
     case CalculationResultCategory::kCalcResolution:
       return true;
+    case CalculationResultCategory::kCalcLength: {
+      switch (operand->ResolvedUnitType()) {
+        case CSSPrimitiveValue::UnitType::kPixels:
+          return true;
+        default:
+          return false;
+      }
+    }
     default:
       return false;
   }
@@ -2086,14 +2094,23 @@ class CSSMathExpressionNodeParser {
       case CSSValueID::kWebkitCalc:
         return const_cast<CSSMathExpressionNode*>(nodes.front().Get());
       case CSSValueID::kMin:
-        return CSSMathExpressionOperation::CreateComparisonFunctionSimplified(
-            std::move(nodes), CSSMathOperator::kMin);
       case CSSValueID::kMax:
-        return CSSMathExpressionOperation::CreateComparisonFunctionSimplified(
-            std::move(nodes), CSSMathOperator::kMax);
-      case CSSValueID::kClamp:
-        return CSSMathExpressionOperation::CreateComparisonFunctionSimplified(
-            std::move(nodes), CSSMathOperator::kClamp);
+      case CSSValueID::kClamp: {
+        CSSMathOperator op = CSSMathOperator::kMin;
+        if (function_id == CSSValueID::kMax) {
+          op = CSSMathOperator::kMax;
+        }
+        if (function_id == CSSValueID::kClamp) {
+          op = CSSMathOperator::kClamp;
+        }
+        CSSMathExpressionNode* node =
+            CSSMathExpressionOperation::CreateComparisonFunctionSimplified(
+                std::move(nodes), op);
+        if (node) {
+          context_.Count(WebFeature::kCSSComparisonFunctions);
+        }
+        return node;
+      }
       case CSSValueID::kSin:
       case CSSValueID::kCos:
       case CSSValueID::kTan:
