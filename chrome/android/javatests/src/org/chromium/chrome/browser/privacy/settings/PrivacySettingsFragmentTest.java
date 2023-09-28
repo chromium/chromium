@@ -242,14 +242,33 @@ public class PrivacySettingsFragmentTest {
     @Test
     @LargeTest
     @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4)
-    public void testPrivacySandboxV4ViewRestrictedNoticeEnabled() throws IOException {
+    public void testPrivacySandboxV4RestrictedWithRestrictedNoticeEnabled() throws IOException {
         mFakePrivacySandboxBridge.setRestrictedNoticeEnabled(true);
+        mFakePrivacySandboxBridge.setPrivacySandboxRestricted(true);
+
         mSettingsActivityTestRule.startSettingsActivity();
         // Scroll down and open Privacy Sandbox page.
         scrollToSetting(withText(R.string.ad_privacy_link_row_label));
         // Verify that the right subtitle is shown.
         onView(withText(R.string.settings_ad_privacy_restricted_link_row_sub_label))
                 .check(matches(isDisplayed()));
+        onView(withText(R.string.ad_privacy_link_row_label)).perform(click());
+        // Verify that the right view is shown depending on feature state.
+        onView(withText(R.string.settings_ad_measurement_page_title)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @LargeTest
+    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4)
+    public void testPrivacySandboxV4NotRestrictedWithRestrictedNoticeEnabled() throws IOException {
+        mFakePrivacySandboxBridge.setRestrictedNoticeEnabled(true);
+        mFakePrivacySandboxBridge.setPrivacySandboxRestricted(false);
+
+        mSettingsActivityTestRule.startSettingsActivity();
+        // Scroll down and open Privacy Sandbox page.
+        scrollToSetting(withText(R.string.ad_privacy_link_row_label));
+        // Verify that the right subtitle is shown.
+        onView(withText(R.string.ad_privacy_link_row_sub_label)).check(matches(isDisplayed()));
         onView(withText(R.string.ad_privacy_link_row_label)).perform(click());
         // Verify that the right view is shown depending on feature state.
         onView(withText(R.string.settings_ad_measurement_page_title)).check(matches(isDisplayed()));

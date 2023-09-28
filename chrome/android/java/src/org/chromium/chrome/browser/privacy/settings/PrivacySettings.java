@@ -91,24 +91,24 @@ public class PrivacySettings extends PreferenceFragmentCompat
         }
 
         Preference sandboxPreference = findPreference(PREF_PRIVACY_SANDBOX);
-        if (PrivacySandboxBridge.isPrivacySandboxRestricted()
-                && !PrivacySandboxBridge.isRestrictedNoticeEnabled()) {
-            // Hide the Privacy Sandbox if it is restricted and ad-measurement is not
-            // available to restricted users.
-            getPreferenceScreen().removePreference(sandboxPreference);
-        } else {
+        // Overwrite the click listener to pass a correct referrer to the fragment.
+        sandboxPreference.setOnPreferenceClickListener(preference -> {
+            PrivacySandboxSettingsBaseFragment.launchPrivacySandboxSettings(getContext(),
+                    new SettingsLauncherImpl(), PrivacySandboxReferrer.PRIVACY_SETTINGS);
+            return true;
+        });
+
+        if (PrivacySandboxBridge.isPrivacySandboxRestricted()) {
             if (PrivacySandboxBridge.isRestrictedNoticeEnabled()) {
                 // Update the summary to one that describes only ad measurement if ad-measurement
                 // is available to restricted users.
                 sandboxPreference.setSummary(getContext().getString(
                         R.string.settings_ad_privacy_restricted_link_row_sub_label));
+            } else {
+                // Hide the Privacy Sandbox if it is restricted and ad-measurement is not
+                // available to restricted users.
+                getPreferenceScreen().removePreference(sandboxPreference);
             }
-            // Overwrite the click listener to pass a correct referrer to the fragment.
-            sandboxPreference.setOnPreferenceClickListener(preference -> {
-                PrivacySandboxSettingsBaseFragment.launchPrivacySandboxSettings(getContext(),
-                        new SettingsLauncherImpl(), PrivacySandboxReferrer.PRIVACY_SETTINGS);
-                return true;
-            });
         }
 
         Preference privacyGuidePreference = findPreference(PREF_PRIVACY_GUIDE);
