@@ -196,8 +196,7 @@ void EducationalView::Init(const gfx::Size& parent_size) {
             l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_RELEASE_ALPHA),
             /*view_defining_max_width=*/nullptr,
             /*enabled_color_type=*/
-            is_dark ? cros_tokens::kColorSelection
-                    : cros_tokens::kColorSelectionLight,
+            cros_tokens::kCrosSysPrimary,
             /*font_list=*/
             gfx::FontList({ash::login_views_utils::kGoogleSansFont},
                           gfx::Font::FontStyle::NORMAL, kAlphaFontSize,
@@ -207,7 +206,7 @@ void EducationalView::Init(const gfx::Size& parent_size) {
         alpha_label->GetPreferredSize().width() + 2 * kAlphaSidePadding,
         kAlphaHeight));
     alpha_label->SetBackground(views::CreateThemedRoundedRectBackground(
-        cros_tokens::kHighlightColor, kAlphaCornerRadius));
+        cros_tokens::kCrosSysHighlightShape, kAlphaCornerRadius));
     alpha_label->SetProperty(views::kMarginsKey,
                              gfx::Insets::TLBR(0, kAlphaLeftMargin, 0, 0));
     container_view->SetProperty(
