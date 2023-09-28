@@ -6748,10 +6748,6 @@ external/wpt/html/browsers/browsing-the-web/navigating-across-documents/initial-
 # Gardener 2023-09-25
 crbug.com/1486580 virtual/view-transition/external/wpt/css/css-view-transitions/snapshot-containing-block-absolute.html [ Failure Pass ]
 
-# Gardener 2023-09-26
-crbug.com/1486861 [ Mac10.15 ] external/wpt/css/css-cascade/all-prop-revert-layer.html [ Failure Pass ]
-crbug.com/1486861 [ Mac10.15 ] external/wpt/css/css-masking/parsing/clip-path-valid.html [ Failure Pass ]
-
 # Gardener 2023-09-27
 crbug.com/1486720 [ Mac ] virtual/view-transition/inspector-protocol/css/css-get-keyframes-for-view-transitions.js [ Failure Pass ]
 crbug.com/1486720 [ Mac ] virtual/view-transition-mpa-serialization/inspector-protocol/css/css-get-keyframes-for-view-transitions.js [ Failure Pass ]
