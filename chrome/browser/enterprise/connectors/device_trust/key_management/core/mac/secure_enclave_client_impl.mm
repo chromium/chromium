@@ -64,8 +64,9 @@ base::apple::ScopedCFTypeRef<CFMutableDictionaryRef> CreateAttributesForKey() {
   base::apple::ScopedCFTypeRef<SecAccessControlRef> access_control(
       SecAccessControlCreateWithFlags(
           kCFAllocatorDefault,
-          // Private key can only be used when the device is unlocked.
-          kSecAttrAccessibleWhenUnlockedThisDeviceOnly,
+          // Private key can only be used if the device was unlocked at least
+          // once.
+          kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly,
           // Private key is available for signing.
           kSecAccessControlPrivateKeyUsage, /*error=*/nullptr));
   CFDictionarySetValue(private_key_params, kSecAttrAccessControl,
