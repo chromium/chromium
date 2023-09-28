@@ -67,7 +67,7 @@ struct AutofillFieldUtilCase {
 
 // An <input> with a label placed on top of it (usually used as a placeholder
 // replacement).
-const char* kPoorMansPlaceholder = R"(
+const char* kPoorMansPlaceholderFullOverlap = R"(
   <style>
     .fixed_position_and_size {
       position: fixed;
@@ -77,8 +77,97 @@ const char* kPoorMansPlaceholder = R"(
       height: 20px;
     }
   </style>
-  <input id='target' class=fixed_position_and_size>
+  <input id=target class=fixed_position_and_size>
   <span class=fixed_position_and_size>label</span>
+)";
+
+// The <input> element partially overlaps the label (placeholder) but the label
+// is not fully contained in the <input> element. This is a common case for
+// placeholders that moph into a minified version when the user focuses an
+// <input> element.
+const char* kPoorMansPlaceholderPartialOverlap = R"(
+  <style>
+    .fixed_position_and_size {
+      position: fixed;
+      top: 30px;
+      left: 0;
+      width: 100px;
+      height: 20px;
+    }
+    .overlapping_position_and_size {
+      position: fixed;
+      top: 25px;
+      left: 0;
+      width: 100px;
+      height: 20px;
+    }
+  </style>
+  <input id=target class=fixed_position_and_size>
+  <span class=overlapping_position_and_size>label</span>
+)";
+
+// The <input> element touches the next element vertically but does not overlap.
+// The label should not be considered a placeholder.
+const char* kPoorMansPlaceholderNoOverlap = R"(
+  <input id='target'>
+  <div>not a label</div>
+)";
+
+// The <input> element touches the next element horizontally but does not
+// overlap. The label should not be considered a placeholder.
+const char* kPoorMansPlaceholderNoOverlap2 = R"(
+  <input id=target>
+  <span>not a label</span>
+)";
+
+// The span exceeds the vertical limits of the input element, which is a
+// pattern often observed in error messages. Therefore we don't consider the
+// span a label.
+const char* kPoorMansPlaceholderPossiblyErrorMessage = R"(
+  <style>
+    .fixed_position_and_size {
+      position: fixed;
+      top: 0px;
+      left: 0;
+      width: 100px;
+      height: 20px;
+    }
+    .label_position_and_size {
+      position: fixed;
+      top: 15px;
+      left: 0;
+      width: 100px;
+      height: 25px;
+    }
+  </style>
+  <input id=target class=fixed_position_and_size>
+  <span class=overlapping_position_and_size>not a label</span>
+)";
+
+// The span is not horizontally contained in the input element. We don't
+// consider this a label because have seen several cases where the actual
+// label was on the left of the input field in a <table> structure and the
+// text on the right, which just touched the element contained non-label
+// data (e.g. instructions like "don't enter symbols").
+const char* kPoorMansPlaceholderNoHorizontalContainment = R"(
+  <style>
+    .fixed_position_and_size {
+      position: fixed;
+      top: 0px;
+      left: 0;
+      width: 100px;
+      height: 20px;
+    }
+    .label_position_and_size {
+      position: fixed;
+      top: 15px;
+      left: 90px;
+      width: 100px;
+      height: 20px;
+    }
+  </style>
+  <input id=target class=fixed_position_and_size>
+  <span class=overlapping_position_and_size>not a label</span>
 )";
 
 void VerifyButtonTitleCache(const WebFormElement& form_target,
@@ -268,7 +357,16 @@ TEST_F(FormAutofillUtilsTest, InferLabelForElementTest) {
        u""},
       {"Infer from next sibling",
        "<input id='target' type='checkbox'>hello <b>world</b>", u"hello world"},
-      {"Poor man's placeholder", kPoorMansPlaceholder, u"label"},
+      {"Poor man's placeholder", kPoorMansPlaceholderFullOverlap, u"label"},
+      {"Poor man's placeholder partial overlap",
+       kPoorMansPlaceholderPartialOverlap, u"label"},
+      {"Poor man's placeholder no overlap", kPoorMansPlaceholderNoOverlap, u""},
+      {"Poor man's placeholder no overlap 2", kPoorMansPlaceholderNoOverlap2,
+       u""},
+      {"Poor man's placeholder: possibly an error message",
+       kPoorMansPlaceholderPossiblyErrorMessage, u""},
+      {"Poor man's placeholder: no horizontal containment",
+       kPoorMansPlaceholderNoHorizontalContainment, u""},
   };
   for (auto test_case : test_cases) {
     SCOPED_TRACE(test_case.description);
@@ -317,7 +415,8 @@ TEST_F(FormAutofillUtilsTest, InferLabelSourceTest) {
        FormFieldData::LabelSource::kTdTag},
       {"<dl><dt>label</dt><dd><input id='target'></dd></dl>",
        FormFieldData::LabelSource::kDdTag},
-      {kPoorMansPlaceholder, FormFieldData::LabelSource::kOverlayingLabel}};
+      {kPoorMansPlaceholderFullOverlap,
+       FormFieldData::LabelSource::kOverlayingLabel}};
 
   for (auto test_case : test_cases) {
     SCOPED_TRACE(testing::Message() << test_case.label_source);
