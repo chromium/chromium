@@ -494,16 +494,20 @@ installer::InstallStatus RepeatDeleteOldVersions(
       return installer::SETUP_SINGLETON_RELEASED;
     }
 
-    // Note that Windows 11 22H2 has a bug whereby process priorities are not
-    // altered by PROCESS_MODE_BACKGROUND_BEGIN, but I/O and memory priorities
-    // still are. See https://crbug.com/1396155 for details.
+    // SetPriorityClass with PROCESS_MODE_BACKGROUND_BEGIN will cap the process
+    // working set to 32 MiB. This was experimentally determined after being
+    // reported in https://crbug.com/1475179. This can lead to extreme
+    // inefficiency as most CPU time is spent faulting in pages and then
+    // immediately trimming the working set. In one trace 99% of CPU time was
+    // spent handling page faults, so avoid SetPriorityClass with
+    // PROCESS_MODE_BACKGROUND_BEGIN.
     base::ScopedClosureRunner restore_priority;
-    if (::SetPriorityClass(::GetCurrentProcess(),
-                           PROCESS_MODE_BACKGROUND_BEGIN) != 0) {
-      // Be aware that a process restoring itself to normal priority from
+    if (::SetThreadPriority(::GetCurrentThread(),
+                            THREAD_MODE_BACKGROUND_BEGIN) != 0) {
+      // Be aware that a thread restoring itself to normal priority from
       // background priority is inherently somewhat of a priority inversion.
       restore_priority.ReplaceClosure(base::BindOnce([]() {
-        ::SetPriorityClass(::GetCurrentProcess(), PROCESS_MODE_BACKGROUND_END);
+        ::SetThreadPriority(::GetCurrentThread(), THREAD_MODE_BACKGROUND_END);
       }));
     }
     const bool delete_old_versions_success =
@@ -795,7 +799,7 @@ installer::InstallStatus InstallProducts(InstallationState& original_state,
   // normal process priority class. This is done here because InstallProducts-
   // Helper has read-only access to the state and because the action also
   // affects everything else that runs below.
-  const bool entered_background_mode = installer::AdjustProcessPriority();
+  const bool entered_background_mode = installer::AdjustThreadPriority();
   VLOG_IF(1, entered_background_mode) << "Entered background processing mode.";
 
   if (CheckPreInstallConditions(original_state, *installer_state,

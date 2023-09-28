@@ -13,10 +13,12 @@
 int main(int argc, char** argv) {
   base::TestSuite test_suite(argc, argv);
 
-  // Handle the --adjust-process-priority switch, which is used to test the
-  // installer::AdjustProcessPriority() function in a subprocess.
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(kAdjustProcessPriority))
-    return DoProcessPriorityAdjustment();
+  // Handle the --adjust-thread-priority switch, which is used to test the
+  // installer::AdjustThreadPriority() function in a subprocess.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          kAdjustThreadPriority)) {
+    return DoThreadPriorityAdjustment();
+  }
 
   // Register Chrome Path provider so that we can get test data dir.
   chrome::RegisterPathProvider();
