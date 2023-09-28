@@ -63,6 +63,7 @@
 #include "third_party/blink/renderer/core/html/html_dialog_element.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/html/html_frame_element_base.h"
+#include "third_party/blink/renderer/core/html/html_permission_element.h"
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
@@ -1841,6 +1842,11 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       DCHECK(RuntimeEnabledFeatures::CSSPseudoPlayingPausedEnabled());
       auto* media_element = DynamicTo<HTMLMediaElement>(element);
       return media_element && media_element->paused();
+    }
+    case CSSSelector::kPseudoPermissionGranted: {
+      DCHECK(RuntimeEnabledFeatures::PermissionElementEnabled());
+      auto* permission_element = DynamicTo<HTMLPermissionElement>(element);
+      return permission_element && permission_element->granted();
     }
     case CSSSelector::kPseudoPictureInPicture:
       return PictureInPictureController::IsElementInPictureInPicture(&element);

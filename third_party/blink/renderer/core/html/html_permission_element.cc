@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "third_party/blink/public/common/input/web_pointer_properties.h"
+#include "third_party/blink/renderer/core/css/css_selector.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
@@ -191,7 +192,11 @@ void HTMLPermissionElement::OnEmbededPermissionsDecided(
       DispatchEvent(*Event::Create(event_type_names::kDismissed));
       return;
     case EmbeddedPermissionControlResult::kGranted:
-      // TODO(crbug.com/1462930): update granted style and layout
+      // TODO(crbug.com/1462930): Register and read permission statuses when
+      // <permission> is attached to DOM and subscribe permission statuses
+      // change.
+      permissions_granted_ = true;
+      PseudoStateChanged(CSSSelector::kPseudoPermissionGranted);
       DispatchEvent(*Event::Create(event_type_names::kResolved));
       return;
     case EmbeddedPermissionControlResult::kDenied:

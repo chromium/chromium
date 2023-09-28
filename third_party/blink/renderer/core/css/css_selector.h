@@ -270,6 +270,7 @@ class CORE_EXPORT CSSSelector {
     kPseudoOptional,
     kPseudoParent,  // Written as & (in nested rules).
     kPseudoPart,
+    kPseudoPermissionGranted,
     kPseudoPlaceholder,
     kPseudoPlaceholderShown,
     kPseudoReadOnly,

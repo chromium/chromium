@@ -377,6 +377,7 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
     case kPseudoPart:
     case kPseudoPastCue:
     case kPseudoPaused:
+    case kPseudoPermissionGranted:
     case kPseudoPictureInPicture:
     case kPseudoPlaceholder:
     case kPseudoPlaceholderShown:
@@ -508,6 +509,7 @@ const static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
     {"fullscreen", CSSSelector::kPseudoFullscreen},
     {"future", CSSSelector::kPseudoFutureCue},
     {"grammar-error", CSSSelector::kPseudoGrammarError},
+    {"granted", CSSSelector::kPseudoPermissionGranted},
     {"horizontal", CSSSelector::kPseudoHorizontal},
     {"host", CSSSelector::kPseudoHost},
     {"hover", CSSSelector::kPseudoHover},
@@ -659,6 +661,11 @@ CSSSelector::PseudoType CSSSelector::NameToPseudoType(
   if ((match->type == CSSSelector::kPseudoDetailsContent ||
        match->type == CSSSelector::kPseudoDetailsSummary) &&
       !RuntimeEnabledFeatures::DetailsStylingEnabled()) {
+    return CSSSelector::kPseudoUnknown;
+  }
+
+  if (match->type == CSSSelector::kPseudoPermissionGranted &&
+      !RuntimeEnabledFeatures::PermissionElementEnabled()) {
     return CSSSelector::kPseudoUnknown;
   }
 
@@ -858,6 +865,7 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
     case kPseudoParent:
     case kPseudoPastCue:
     case kPseudoPaused:
+    case kPseudoPermissionGranted:
     case kPseudoPictureInPicture:
     case kPseudoPlaceholderShown:
     case kPseudoPlaying:

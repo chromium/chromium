@@ -35,6 +35,8 @@ class CORE_EXPORT HTMLPermissionElement final : public HTMLElement {
 
   void AttachLayoutTree(AttachContext& context) override;
 
+  bool granted() const { return permissions_granted_; }
+
   // Given an input type, return permissions list. This method is for testing
   // only.
   static Vector<mojom::blink::PermissionDescriptorPtr>
@@ -101,6 +103,10 @@ class CORE_EXPORT HTMLPermissionElement final : public HTMLElement {
 
   Member<HTMLDivElement> inner_element_;
   Member<HTMLSpanElement> permission_text_;
+
+  // Set to true only if all the corresponding permissions (from `type`
+  // attribute) are granted.
+  bool permissions_granted_ = false;
 };
 
 }  // namespace blink

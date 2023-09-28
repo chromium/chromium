@@ -365,6 +365,7 @@ const char* PseudoTypeToString(CSSSelector::PseudoType pseudo_type) {
     DEFINE_STRING_MAPPING(PseudoFullScreenAncestor)
     DEFINE_STRING_MAPPING(PseudoFullscreen)
     DEFINE_STRING_MAPPING(PseudoPaused)
+    DEFINE_STRING_MAPPING(PseudoPermissionGranted)
     DEFINE_STRING_MAPPING(PseudoPictureInPicture)
     DEFINE_STRING_MAPPING(PseudoPlaying)
     DEFINE_STRING_MAPPING(PseudoInRange)

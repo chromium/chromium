@@ -25,6 +25,10 @@ permission::-internal-permission-element-inner {
   height: 100%;
 }
 
+permission:granted {
+  background-color: white;
+}
+
 permission::-internal-permission-text {
   font-family: monospace;
   font-size: inherit;
