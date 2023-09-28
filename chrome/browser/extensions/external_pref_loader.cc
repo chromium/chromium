@@ -146,8 +146,7 @@ class ExternalPrefLoader::PrioritySyncReadyWaiter
  private:
   void MaybeObserveSyncStart() {
     syncer::SyncService* service = SyncServiceFactory::GetForProfile(profile_);
-    DCHECK(service);
-    if (!service->CanSyncFeatureStart()) {
+    if (!service || !service->CanSyncFeatureStart()) {
       Finish();
       // Note: |this| is deleted.
       return;
