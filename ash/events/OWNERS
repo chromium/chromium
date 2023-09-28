@@ -1,4 +1,4 @@
 per-file accessibility_event_rewriter*=file://ash/accessibility/OWNERS
 per-file select_to_speak_event_handler*=file://ash/accessibility/OWNERS
 per-file keyboard_capability*=zentaro@chromium.org,dpad@google.com
-per-file peripheral_customization*=zentaro@chromium.org
+per-file peripheral_customization*=zentaro@chromium.org,dpad@google.com
