@@ -14,7 +14,8 @@ items:
 - caption: Disable sending username and filename to native printers
   value: false
 owners:
-- srad@google.com
+- ust@google.com
+- chromeos-commercial-printing@google.com
 - pawliczek@chromium.org
 schema:
   type: boolean

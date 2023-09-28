@@ -17,7 +17,6 @@ supported_on:
 - chrome_os:110-
 owners:
 - chromeos-commercial-networking@google.com
-- srad@google.com
 - pmarko@chromium.org
 schema:
   type: string

@@ -21,7 +21,8 @@ features:
   per_profile: false
 max_size: 5242880
 owners:
-- srad@google.com
+- ust@google.com
+- chromeos-commercial-printing@google.com
 - pawliczek@chromium.org
 schema:
   properties:

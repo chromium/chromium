@@ -12,7 +12,8 @@ example_value:
 features:
   dynamic_refresh: true
 owners:
-- srad@google.com
+- ust@google.com
+- chromeos-commercial-printing@google.com
 - pawliczek@chromium.org
 schema:
   items:
