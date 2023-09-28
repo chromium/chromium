@@ -4,6 +4,7 @@
 
 #include "chrome/browser/cart/cart_service.h"
 
+#include "base/containers/contains.h"
 #include "base/json/json_reader.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/no_destructor.h"
@@ -1110,8 +1111,7 @@ void CartService::OnAddCart(const GURL& navigation_url,
   if (!has_product_image && cached_image_url.has_value()) {
     std::string url_string = cached_image_url.value().spec();
     auto existing_images = existing_proto.product_image_urls();
-    if (std::find(existing_images.begin(), existing_images.end(), url_string) ==
-        existing_images.end()) {
+    if (!base::Contains(existing_images, url_string)) {
       existing_proto.add_product_image_urls(url_string);
     }
   }

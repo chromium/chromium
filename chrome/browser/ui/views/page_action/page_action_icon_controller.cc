@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
 
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/immediate_crash.h"
@@ -371,9 +372,7 @@ void PageActionIconController::OnPageActionIconViewShown(
   }
   std::vector<PageActionIconView*> excluded_actions_on_page =
       page_actions_excluded_from_logging_[url];
-  if (!view->ephemeral() || std::find(excluded_actions_on_page.begin(),
-                                      excluded_actions_on_page.end(),
-                                      view) != excluded_actions_on_page.end()) {
+  if (!view->ephemeral() || base::Contains(excluded_actions_on_page, view)) {
     return;
   }
   RecordOverallMetrics();
@@ -445,9 +444,7 @@ void PageActionIconController::RecordMetricsOnURLChange(GURL url) {
   RecordOverallMetrics();
   for (auto icon_item : page_action_icon_views_) {
     if (!icon_item.second->ephemeral() || !icon_item.second->GetVisible() ||
-        std::find(excluded_actions_on_page.begin(),
-                  excluded_actions_on_page.end(),
-                  icon_item.second) != excluded_actions_on_page.end()) {
+        base::Contains(excluded_actions_on_page, icon_item.second)) {
       continue;
     }
     RecordIndividualMetrics(icon_item.first, icon_item.second);
