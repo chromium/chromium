@@ -155,6 +155,14 @@ public class VariationsSeedLoader {
         return true;
     }
 
+    public static void maybeRecordSeedFileTime(long seedFileTime) {
+        if (seedFileTime != 0) {
+            long freshnessMinutes =
+                    TimeUnit.MILLISECONDS.toMinutes(new Date().getTime() - seedFileTime);
+            recordAppSeedFreshness(freshnessMinutes);
+        }
+    }
+
     // Loads our local copy of the seed, if any, and then renames our local copy and/or requests a
     // new seed, if necessary.
     private class SeedLoadAndUpdateRunnable implements Runnable {
@@ -233,11 +241,7 @@ public class VariationsSeedLoader {
         public boolean get(long timeout, TimeUnit unit)
                 throws InterruptedException, ExecutionException, TimeoutException {
             boolean success = mLoadTask.get(timeout, unit);
-            if (mSeedFileTime != 0) {
-                long freshnessMinutes =
-                        TimeUnit.MILLISECONDS.toMinutes(getCurrentTimeMillis() - mSeedFileTime);
-                recordAppSeedFreshness(freshnessMinutes);
-            }
+            maybeRecordSeedFileTime(mSeedFileTime);
             return success;
         }
 

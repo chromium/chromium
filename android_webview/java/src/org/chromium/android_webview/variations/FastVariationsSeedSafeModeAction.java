@@ -186,6 +186,7 @@ public class FastVariationsSeedSafeModeAction implements SafeModeAction {
             if (success) {
                 Log.i(TAG, "Successfully parsed and loaded new seed!");
                 recordLoadSeedResult(LoadSeedResult.SUCCESS);
+                VariationsSeedLoader.maybeRecordSeedFileTime(sSeedFile.lastModified());
             } else {
                 Log.i(TAG, "Failure parsing and loading seed!");
                 recordLoadSeedResult(LoadSeedResult.LOAD_OTHER_FAILURE);
@@ -198,6 +199,7 @@ public class FastVariationsSeedSafeModeAction implements SafeModeAction {
             if (success) {
                 Log.i(TAG, "Successfully parsed and loaded new seed!");
                 recordLoadSeedResult(LoadSeedResult.SUCCESS);
+                VariationsSeedLoader.maybeRecordSeedFileTime(sSeedFile.lastModified());
             } else {
                 Log.i(TAG, "Seed fetch not successful.");
                 recordLoadSeedResult(LoadSeedResult.LOAD_OTHER_FAILURE);
