@@ -256,6 +256,7 @@ class ResourcePrefetchPredictor : public history::HistoryServiceObserver {
   FRIEND_TEST_ALL_PREFIXES(ResourcePrefetchPredictorTest,
                            TestRecordFirstContentfulPaint);
   FRIEND_TEST_ALL_PREFIXES(ResourcePrefetchPredictorTest, LearnLcpp);
+  FRIEND_TEST_ALL_PREFIXES(ResourcePrefetchPredictorTest, LearnFontUrls);
   FRIEND_TEST_ALL_PREFIXES(ResourcePrefetchPredictorTest,
                            WhenLcppDataIsCorrupted_ResetData);
 

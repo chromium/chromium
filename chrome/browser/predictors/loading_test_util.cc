@@ -110,6 +110,17 @@ void InitializeLcpInfluencerScriptUrlsBucket(LcppData& lcpp_data,
   }
 }
 
+void InitializeFontUrlsBucket(LcppData& lcpp_data,
+                              const std::vector<GURL>& urls,
+                              double frequency) {
+  for (const auto& url : urls) {
+    lcpp_data.mutable_lcpp_stat()
+        ->mutable_fetched_font_url_stat()
+        ->mutable_main_buckets()
+        ->insert({url.spec(), frequency});
+  }
+}
+
 void InitializeLcpElementLocatorOtherBucket(LcppData& lcpp_data,
                                             double frequency) {
   lcpp_data.mutable_lcpp_stat()
@@ -121,6 +132,12 @@ void InitializeLcpInfluencerScriptUrlsOtherBucket(LcppData& lcpp_data,
                                                   double frequency) {
   lcpp_data.mutable_lcpp_stat()
       ->mutable_lcp_script_url_stat()
+      ->set_other_bucket_frequency(frequency);
+}
+
+void InitializeFontUrlsOtherBucket(LcppData& lcpp_data, double frequency) {
+  lcpp_data.mutable_lcpp_stat()
+      ->mutable_fetched_font_url_stat()
       ->set_other_bucket_frequency(frequency);
 }
 
@@ -404,7 +421,8 @@ bool operator==(const LcppStringFrequencyStatData& lhs,
 
 bool operator==(const LcppStat& lhs, const LcppStat& rhs) {
   return lhs.lcp_element_locator_stat() == rhs.lcp_element_locator_stat() &&
-         lhs.lcp_script_url_stat() == rhs.lcp_script_url_stat();
+         lhs.lcp_script_url_stat() == rhs.lcp_script_url_stat() &&
+         lhs.fetched_font_url_stat() == rhs.fetched_font_url_stat();
 }
 
 bool operator==(const LcppData& lhs, const LcppData& rhs) {

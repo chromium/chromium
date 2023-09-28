@@ -145,12 +145,28 @@ class ResourcePrefetchPredictorTest : public testing::Test {
 
   void InitializeSampleData();
 
+  double SumOfLcppStringFrequencyStatData(
+      const LcppStringFrequencyStatData& data) {
+    double sum = data.other_bucket_frequency();
+    for (const auto& [url, frequency] : data.main_buckets()) {
+      sum += frequency;
+    }
+    return sum;
+  }
+
   void LearnLcpp(const std::string& host,
                  const std::string& lcp_element_locator,
                  const std::vector<GURL>& lcp_influencer_scripts) {
     predictors::LcppDataInputs inputs;
     inputs.lcp_element_locator = lcp_element_locator;
     inputs.lcp_influencer_scripts = lcp_influencer_scripts;
+    predictor_->LearnLcpp(host, inputs);
+  }
+
+  void LearnFontUrls(const std::string& host,
+                     const std::vector<GURL>& font_urls) {
+    LcppDataInputs inputs;
+    inputs.font_urls = font_urls;
     predictor_->LearnLcpp(host, inputs);
   }
 
@@ -1195,6 +1211,49 @@ TEST_F(ResourcePrefetchPredictorTest, LearnLcpp) {
     InitializeLcpInfluencerScriptUrlsOtherBucket(data, 3.2);
     EXPECT_EQ(data, mock_tables_->lcpp_table_.data_["a.com"]);
     EXPECT_DOUBLE_EQ(5, SumOfInfluencerUrlFrequency(data));
+  }
+}
+
+TEST_F(ResourcePrefetchPredictorTest, LearnFontUrls) {
+  ResetPredictor();
+  InitializePredictor();
+  EXPECT_EQ(5U, predictor_->config_.lcpp_histogram_sliding_window_size);
+  EXPECT_EQ(2U, predictor_->config_.max_lcpp_histogram_buckets);
+  EXPECT_TRUE(mock_tables_->lcpp_table_.data_.empty());
+
+  auto SumOfFontUrlFrequency = [this](const LcppData& data) {
+    return SumOfLcppStringFrequencyStatData(
+        data.lcpp_stat().fetched_font_url_stat());
+  };
+  for (int i = 0; i < 2; ++i) {
+    LearnFontUrls("example.com", {
+                                     GURL("https://example.com/test.woff"),
+                                     GURL("https://example.com/test.ttf"),
+                                 });
+  }
+  {
+    LcppData data = CreateLcppData("example.com", 10);
+    InitializeFontUrlsBucket(data,
+                             {GURL("https://example.com/test.woff"),
+                              GURL("https://example.com/test.ttf")},
+                             2);
+    InitializeFontUrlsOtherBucket(data, 0);
+    EXPECT_EQ(data, mock_tables_->lcpp_table_.data_["example.com"]);
+    EXPECT_DOUBLE_EQ(4, SumOfFontUrlFrequency(data));
+  }
+  for (int i = 0; i < 3; ++i) {
+    LearnFontUrls("example.com", {
+                                     GURL("https://example.org/test.otf"),
+                                     GURL("https://example.net/test.svg"),
+                                 });
+  }
+  {
+    LcppData data = CreateLcppData("example.com", 10);
+    InitializeFontUrlsBucket(data, {GURL("https://example.org/test.otf")}, 0.8);
+    InitializeFontUrlsBucket(data, {GURL("https://example.net/test.svg")}, 1);
+    InitializeFontUrlsOtherBucket(data, 3.2);
+    EXPECT_EQ(data, mock_tables_->lcpp_table_.data_["example.com"]);
+    EXPECT_DOUBLE_EQ(5, SumOfFontUrlFrequency(data));
   }
 }
 

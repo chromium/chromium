@@ -68,10 +68,14 @@ void InitializeLcpElementLocatorBucket(LcppData& lcpp_data,
 void InitializeLcpInfluencerScriptUrlsBucket(LcppData& lcpp_data,
                                              const std::vector<GURL>& urls,
                                              double frequency);
+void InitializeFontUrlsBucket(LcppData& lcpp_data,
+                              const std::vector<GURL>& urls,
+                              double frequency);
 void InitializeLcpElementLocatorOtherBucket(LcppData& lcpp_data,
                                             double frequency);
 void InitializeLcpInfluencerScriptUrlsOtherBucket(LcppData& lcpp_data,
                                                   double frequency);
+void InitializeFontUrlsOtherBucket(LcppData& lcpp_data, double frequency);
 
 PageRequestSummary CreatePageRequestSummary(
     const std::string& main_frame_url,

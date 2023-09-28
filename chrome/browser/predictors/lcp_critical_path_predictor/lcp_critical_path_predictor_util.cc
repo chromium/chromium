@@ -371,6 +371,28 @@ bool RecordLcpInfluencerScriptUrlsHistogram(
   return updater->has_updated();
 }
 
+bool RecordFetchedFontUrlsHistogram(const LoadingPredictorConfig& config,
+                                    const std::vector<GURL>& fetched_font_urls,
+                                    LcppData& data) {
+  // Due to LCPP data structure, histogram is saved per origin.
+  // Therefore, it sounds better to have this as a histogram instead of
+  // a static data.
+  std::unique_ptr<LcppFrequencyStatDataUpdater> updater =
+      LcppFrequencyStatDataUpdater::FromLcppStringFrequencyStatData(
+          config, data.mutable_lcpp_stat()->fetched_font_url_stat());
+  for (const auto& url : fetched_font_urls) {
+    const std::string& font_spec = url.spec();
+    if (font_spec.empty() ||
+        font_spec.size() > ResourcePrefetchPredictorTables::kMaxStringLength) {
+      continue;
+    }
+    updater->Update(font_spec);
+  }
+  *data.mutable_lcpp_stat()->mutable_fetched_font_url_stat() =
+      updater->ToLcppStringFrequencyStatData();
+  return updater->has_updated();
+}
+
 }  // namespace
 
 absl::optional<blink::mojom::LCPCriticalPathPredictorNavigationTimeHint>
@@ -399,6 +421,8 @@ bool UpdateLcppDataWithLcppDataInputs(const LoadingPredictorConfig& config,
       config, inputs.lcp_element_locator, data);
   data_updated |= RecordLcpInfluencerScriptUrlsHistogram(
       config, inputs.lcp_influencer_scripts, data);
+  data_updated |=
+      RecordFetchedFontUrlsHistogram(config, inputs.font_urls, data);
   return data_updated;
 }
 
