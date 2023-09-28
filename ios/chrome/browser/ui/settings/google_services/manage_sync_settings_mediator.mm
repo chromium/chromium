@@ -827,6 +827,12 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
   TableViewModel* model = self.consumer.tableViewModel;
   DCHECK(![model hasSectionForSectionIdentifier:SyncErrorsSectionIdentifier]);
 
+  // During some signout flows, it can happen that the Account section doesn't
+  // exist at this point. In that case, there's nothing to update here.
+  if (![model hasSectionForSectionIdentifier:AccountSectionIdentifier]) {
+    return;
+  }
+
   NSInteger previousSection =
       [model sectionForSectionIdentifier:AccountSectionIdentifier];
   DCHECK_NE(NSNotFound, previousSection);
