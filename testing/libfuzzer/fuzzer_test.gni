@@ -265,6 +265,7 @@ template("fuzzer_test") {
                                "check_includes",
                                "defines",
                                "include_dirs",
+                               "output_name",
                                "sources",
                                "libs",
                                "frameworks",
