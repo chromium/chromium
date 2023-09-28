@@ -173,7 +173,11 @@ public class AwSupervisedUserTest {
 
     @Test
     @SmallTest
-    public void testDisallowedSiteIsLoadedFeatureOff() throws Throwable {
+    @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add("disable-features=" + AwFeatures.WEBVIEW_SUPERVISED_USER_SITE_BLOCK + ","
+            + AwFeatures.WEBVIEW_SUPERVISED_USER_SITE_DETECTION)
+    public void
+    testDisallowedSiteIsLoadedFeatureOff() throws Throwable {
         String embeddedUrl = setUpWebPage(MATURE_SITE_IFRAME_PATH, MATURE_SITE_IFRAME_TITLE, null);
         String requestUrl = setUpWebPage(MATURE_SITE_PATH, MATURE_SITE_TITLE, embeddedUrl);
 
@@ -203,7 +207,7 @@ public class AwSupervisedUserTest {
     }
 
     private static class OnProgressChangedClient extends TestAwContentsClient {
-        private final List<Integer> mProgresses = new ArrayList<Integer>();
+        private final List<Integer> mProgresses = new ArrayList<>();
         private final CallbackHelper mCallbackHelper = new CallbackHelper();
 
         @Override
