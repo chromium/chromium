@@ -63,7 +63,7 @@ class OverviewGroupItem : public OverviewItemBase,
   void OnStartingAnimationComplete() override;
   void HideForSavedDeskLibrary(bool animate) override;
   void RevertHideForSavedDeskLibrary(bool animate) override;
-  void CloseWindow() override;
+  void CloseWindows() override;
   void Restack() override;
   void StartDrag() override;
   void OnOverviewItemDragStarted(OverviewItemBase* item) override;

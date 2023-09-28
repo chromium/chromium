@@ -227,10 +227,8 @@ class ASH_EXPORT OverviewItemBase {
   // them immediately.
   virtual void RevertHideForSavedDeskLibrary(bool animate) = 0;
 
-  // Closes `transform_window_`.
-  // TODO(michelefan): This is temporarily added to reduce the scope of the
-  // task, which will be replaced by `CloseWindows()` in a follow-up cl.
-  virtual void CloseWindow() = 0;
+  // Closes window(s) hosted by `this`.
+  virtual void CloseWindows() = 0;
 
   // Inserts the item back to its original stacking order so that the order of
   // overview items is the same as when entering overview.

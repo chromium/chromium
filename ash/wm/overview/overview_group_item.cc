@@ -204,7 +204,11 @@ void OverviewGroupItem::HideForSavedDeskLibrary(bool animate) {}
 
 void OverviewGroupItem::RevertHideForSavedDeskLibrary(bool animate) {}
 
-void OverviewGroupItem::CloseWindow() {}
+void OverviewGroupItem::CloseWindows() {
+  for (const auto& overview_item : overview_items_) {
+    overview_item->CloseWindows();
+  }
+}
 
 void OverviewGroupItem::Restack() {}
 

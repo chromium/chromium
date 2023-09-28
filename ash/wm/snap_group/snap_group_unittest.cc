@@ -18,6 +18,7 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/overview/overview_focus_cycler.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_item.h"
 #include "ash/wm/overview/overview_item_view.h"
@@ -26,6 +27,7 @@
 #include "ash/wm/overview/overview_test_util.h"
 #include "ash/wm/overview/overview_utils.h"
 #include "ash/wm/overview/overview_window_drag_controller.h"
+#include "ash/wm/overview/scoped_overview_transform_window.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/snap_group/snap_group_expanded_menu_view.h"
 #include "ash/wm/splitview/split_view_constants.h"
@@ -57,6 +59,7 @@
 #include "ui/base/hit_test.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
+#include "ui/events/event_constants.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/rect.h"
@@ -916,6 +919,38 @@ TEST_F(SnapGroupEntryPointArm1Test, OverviewItemTest) {
 
   EXPECT_EQ(overview_session->GetOverviewItemForWindow(w1.get()),
             overview_session->GetOverviewItemForWindow(w2.get()));
+}
+
+// Tests that the overview group item will be closed when focused in overview
+// with `Ctrl + W`.
+TEST_F(SnapGroupEntryPointArm1Test, CtrlPlusWToCloseFocusedGroupInOverview) {
+  // Explicitly enable immediate close so that we can directly close the
+  // window(s) without waiting the delayed task to be completed in
+  // `ScopedOverviewTransformWindow::Close()`.
+  ScopedOverviewTransformWindow::SetImmediateCloseForTests(/*immediate=*/true);
+  std::unique_ptr<aura::Window> w0(CreateAppWindow());
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  SnapTwoTestWindowsInArm1(w0.get(), w1.get());
+
+  OverviewController* overview_controller = Shell::Get()->overview_controller();
+  overview_controller->StartOverview(OverviewStartAction::kTests,
+                                     OverviewEnterExitType::kImmediateEnter);
+  ASSERT_TRUE(overview_controller->InOverviewSession());
+  OverviewSession* overview_session = overview_controller->overview_session();
+  ASSERT_TRUE(GetOverviewItemForWindow(w0.get()));
+
+  SendKeyUntilOverviewItemIsFocused(ui::VKEY_TAB);
+  EXPECT_TRUE(overview_session->focus_cycler()->GetFocusedItem());
+
+  // Since the window will be deleted in overview, release the ownership to
+  // avoid double deletion.
+  w0.release();
+  w1.release();
+  SendKey(ui::VKEY_W, ui::EF_CONTROL_DOWN);
+
+  // Verify that both windows in the snap group will be deleted.
+  EXPECT_FALSE(w0.get());
+  EXPECT_FALSE(w1.get());
 }
 
 // Tests that the minimized windows in a snap group will be shown as a single

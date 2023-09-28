@@ -2003,9 +2003,9 @@ TEST_P(OverviewSessionTest, ExitOverviewWhenAllGridsEmpty) {
   auto* item2 = GetOverviewItemForWindow(window2);
   ASSERT_TRUE(item1 && item2);
 
-  // Close |item2|. Verify that we are still in overview mode because |window1|
+  // Close `item2`. Verify that we are still in overview mode because `window1`
   // is still open. All the grids should not have a no windows widget.
-  item2->CloseWindow();
+  item2->CloseWindows();
   base::RunLoop().RunUntilIdle();
   ASSERT_TRUE(GetOverviewSession());
   ASSERT_EQ(3u, grids.size());
@@ -2015,9 +2015,9 @@ TEST_P(OverviewSessionTest, ExitOverviewWhenAllGridsEmpty) {
   for (auto& grid : grids)
     EXPECT_FALSE(grid->no_windows_widget());
 
-  // Close |item1|. Verify that since no windows are open, we exit overview
+  // Close `item1`. Verify that since no windows are open, we exit overview
   // mode.
-  item1->CloseWindow();
+  item1->CloseWindows();
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(GetOverviewSession());
 }
@@ -3365,7 +3365,7 @@ TEST_P(OverviewSessionTest, ClosingTransientTree) {
 
   auto* item = GetOverviewItemForWindow(window);
   ASSERT_TRUE(item);
-  item->CloseWindow();
+  item->CloseWindows();
 
   // `NativeWidgetAura::Close()` fires a post task.
   base::RunLoop().RunUntilIdle();

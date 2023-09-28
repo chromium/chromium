@@ -101,8 +101,8 @@ class ASH_EXPORT OverviewItem : public OverviewItemBase,
   void OnStartingAnimationComplete() override;
   void HideForSavedDeskLibrary(bool animate) override;
   void RevertHideForSavedDeskLibrary(bool animate) override;
+  void CloseWindows() override;
   void Restack() override;
-  void CloseWindow() override;
   void StartDrag() override;
   void OnOverviewItemDragStarted(OverviewItemBase* item) override;
   void OnOverviewItemDragEnded(bool snap) override;

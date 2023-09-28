@@ -735,6 +735,27 @@ void OverviewItem::RevertHideForSavedDeskLibrary(bool animate) {
   UpdateCannotSnapWarningVisibility(animate);
 }
 
+void OverviewItem::CloseWindows() {
+  SetShadowBounds(/*bounds_in_screen=*/absl::nullopt);
+
+  gfx::RectF inset_bounds(target_bounds_);
+  inset_bounds.Inset(gfx::InsetsF::VH(target_bounds_.height() * kPreCloseScale,
+                                      target_bounds_.width() * kPreCloseScale));
+  // Scale down both the window and label.
+  SetBounds(inset_bounds, OVERVIEW_ANIMATION_CLOSING_OVERVIEW_ITEM);
+
+  // First animate opacity to an intermediate value concurrently with the
+  // scaling animation.
+  AnimateOpacity(kClosingItemOpacity, OVERVIEW_ANIMATION_CLOSING_OVERVIEW_ITEM);
+
+  // Fade out the window and the label, effectively hiding them.
+  AnimateOpacity(/*opacity=*/0.0, OVERVIEW_ANIMATION_CLOSE_OVERVIEW_ITEM);
+
+  // `transform_window_` will delete `this` by deleting the widget associated
+  // with `this`.
+  transform_window_.Close();
+}
+
 void OverviewItem::Restack() {
   aura::Window* window = GetWindow();
   aura::Window* parent_window = window->parent();
@@ -778,26 +799,6 @@ void OverviewItem::Restack() {
     parent_window->StackChildAbove(cannot_snap_widget_->GetNativeWindow(),
                                    window);
   }
-}
-
-void OverviewItem::CloseWindow() {
-  SetShadowBounds(absl::nullopt);
-
-  gfx::RectF inset_bounds(target_bounds_);
-  inset_bounds.Inset(gfx::InsetsF::VH(target_bounds_.height() * kPreCloseScale,
-                                      target_bounds_.width() * kPreCloseScale));
-  // Scale down both the window and label.
-  SetBounds(inset_bounds, OVERVIEW_ANIMATION_CLOSING_OVERVIEW_ITEM);
-  // First animate opacity to an intermediate value concurrently with the
-  // scaling animation.
-  AnimateOpacity(kClosingItemOpacity, OVERVIEW_ANIMATION_CLOSING_OVERVIEW_ITEM);
-
-  // Fade out the window and the label, effectively hiding them.
-  AnimateOpacity(0.0, OVERVIEW_ANIMATION_CLOSE_OVERVIEW_ITEM);
-
-  // `transform_window_` will delete `this` by deleting the widget associated
-  // with `this`.
-  transform_window_.Close();
 }
 
 void OverviewItem::StartDrag() {
@@ -1496,7 +1497,7 @@ void OverviewItem::CloseButtonPressed() {
     base::RecordAction(
         base::UserMetricsAction("Tablet_WindowCloseFromOverviewButton"));
   }
-  CloseWindow();
+  CloseWindows();
 }
 
 aura::Window::Windows OverviewItem::GetWindowsForHomeGesture() {

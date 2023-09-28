@@ -1038,7 +1038,7 @@ void OverviewSession::OnFocusedItemActivated(OverviewItemBase* item) {
 void OverviewSession::OnFocusedItemClosed(OverviewItemBase* item) {
   base::RecordAction(
       base::UserMetricsAction("WindowSelector_OverviewCloseKey"));
-  item->CloseWindow();
+  item->CloseWindows();
 }
 
 void OverviewSession::OnRootWindowClosing(aura::Window* root) {
