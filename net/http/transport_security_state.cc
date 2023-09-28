@@ -36,7 +36,6 @@
 #include "net/base/hash_value.h"
 #include "net/base/host_port_pair.h"
 #include "net/cert/ct_policy_status.h"
-#include "net/cert/symantec_certs.h"
 #include "net/cert/x509_certificate.h"
 #include "net/dns/dns_names_util.h"
 #include "net/extras/preload_data/decoder.h"
@@ -48,8 +47,6 @@
 namespace net {
 
 namespace {
-
-#include "net/http/transport_security_state_ct_policies.inc"
 
 #if BUILDFLAG(INCLUDE_TRANSPORT_SECURITY_STATE_PRELOAD_LIST)
 #include "net/http/transport_security_state_static.h"  // nogncheck
@@ -518,46 +515,9 @@ TransportSecurityState::CheckCTRequirements(
       break;
   }
 
-  const base::Time epoch = base::Time::UnixEpoch();
-  const CTRequiredPolicies& ct_required_policies = GetCTRequiredPolicies();
-
-  bool found = false;
-  for (const auto& restricted_ca : ct_required_policies) {
-    if (!restricted_ca.effective_date.is_zero() &&
-        (epoch + restricted_ca.effective_date >
-         validated_certificate_chain->valid_start())) {
-      // The candidate cert is not subject to the CT policy, because it
-      // was issued before the effective CT date.
-      continue;
-    }
-
-    if (!IsAnySHA256HashInSortedArray(
-            public_key_hashes,
-            base::make_span(restricted_ca.roots, restricted_ca.roots_length))) {
-      // No match for this set of restricted roots.
-      continue;
-    }
-
-    // Found a match, indicating this certificate is potentially
-    // restricted. Determine if any of the hashes are on the exclusion
-    // list as exempt from the CT requirement.
-    if (restricted_ca.exceptions &&
-        IsAnySHA256HashInSortedArray(
-            public_key_hashes,
-            base::make_span(restricted_ca.exceptions,
-                            restricted_ca.exceptions_length))) {
-      // Found an excluded sub-CA; CT is not required.
-      continue;
-    }
-
-    // No exception found. This certificate must conform to the CT policy. The
-    // compliance state is treated as additive - it must comply with all
-    // stated policies.
-    found = true;
-  }
-  if (found || g_ct_required_for_testing)
+  if (g_ct_required_for_testing) {
     return complies ? CT_REQUIREMENTS_MET : CT_REQUIREMENTS_NOT_MET;
-
+  }
   return CT_NOT_REQUIRED;
 }
 

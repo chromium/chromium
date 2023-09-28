@@ -68,13 +68,10 @@ source_set("transport_security_state_generated_files") {
 
   sources = [
     "transport_security_state.cc",
-
     # transport_security_state.h is intentionally specified in net/BUILD.gn
     # rather than in this source_set. See this review comment thread for
     # details:
     # https://chromium-review.googlesource.com/c/chromium/src/+/1460639/comment/b781034b_5794ab47/
-
-    "transport_security_state_ct_policies.inc",
   ]
 
   deps = [

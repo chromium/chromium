@@ -166,14 +166,6 @@ unit tests.
     Certs to test that the maximum validity durations set by the CA/Browser
     Forum Baseline Requirements are enforced.
 
-- pre_june_2016.pem
-- post_june_2016.pem
-- dec_2017.pem
-   Certs to test that policies related to enforcing CT on Symantec are
-   properly gated on the issuance date. See
-   https://g.co/chrome/symantecpkicerts. (Note, however, that the leaf and
-   root do not actually form a chain.)
-
 - may_2018.pem
    An 825-day certificate issued on May 1, 2018, the official start of
    enforcement requiring Certificate Transparency for new certificates. This

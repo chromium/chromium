@@ -80,7 +80,6 @@ data/ssl/certificates/ct-test-embedded-with-intermediate-chain.pem
 data/ssl/certificates/ct-test-embedded-with-intermediate-preca-chain.pem
 data/ssl/certificates/ct-test-embedded-with-preca-chain.pem
 data/ssl/certificates/ct-test-embedded-with-uids.pem
-data/ssl/certificates/dec_2017.pem
 data/ssl/certificates/diginotar_cyber_ca.pem
 data/ssl/certificates/diginotar_pkioverheid.pem
 data/ssl/certificates/diginotar_pkioverheid_g2.pem
@@ -149,11 +148,9 @@ data/ssl/certificates/non-crit-codeSigning-chain.pem
 data/ssl/certificates/ok_cert.pem
 data/ssl/certificates/ok_cert_by_intermediate.pem
 data/ssl/certificates/policies_sanity_check.pem
-data/ssl/certificates/post_june_2016.pem
 data/ssl/certificates/pre_br_validity_bad_121.pem
 data/ssl/certificates/pre_br_validity_bad_2020.pem
 data/ssl/certificates/pre_br_validity_ok.pem
-data/ssl/certificates/pre_june_2016.pem
 data/ssl/certificates/punycodetest.pem
 data/ssl/certificates/quic-chain.pem
 data/ssl/certificates/quic-ecdsa-leaf.key
