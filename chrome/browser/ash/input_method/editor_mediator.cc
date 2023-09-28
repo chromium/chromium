@@ -106,7 +106,8 @@ void EditorMediator::BindEditorPanelManager(
 }
 
 void EditorMediator::OnFocus(int context_id) {
-  if (mako_bubble_coordinator_.IsShowingUI()) {
+  if (mako_bubble_coordinator_.IsShowingUI() ||
+      panel_manager_.IsEditorMenuVisible()) {
     return;
   }
 
@@ -123,7 +124,8 @@ void EditorMediator::OnFocus(int context_id) {
 }
 
 void EditorMediator::OnBlur() {
-  if (mako_bubble_coordinator_.IsShowingUI()) {
+  if (mako_bubble_coordinator_.IsShowingUI() ||
+      panel_manager_.IsEditorMenuVisible()) {
     return;
   }
 
@@ -150,7 +152,8 @@ void EditorMediator::OnTabletControllerDestroyed() {
 
 void EditorMediator::OnSurroundingTextChanged(const std::u16string& text,
                                               gfx::Range selection_range) {
-  if (mako_bubble_coordinator_.IsShowingUI()) {
+  if (mako_bubble_coordinator_.IsShowingUI() ||
+      panel_manager_.IsEditorMenuVisible()) {
     return;
   }
 

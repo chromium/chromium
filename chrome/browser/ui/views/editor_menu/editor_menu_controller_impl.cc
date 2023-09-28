@@ -133,6 +133,10 @@ void EditorMenuControllerImpl::OnPromoCardWidgetClosed(
   }
 }
 
+void EditorMenuControllerImpl::OnEditorMenuVisibilityChanged(bool visible) {
+  GetEditorPanelManager().OnEditorMenuVisibilityChanged(visible);
+}
+
 void EditorMenuControllerImpl::OnGetEditorPanelContextResultForTesting(
     const gfx::Rect& anchor_bounds,
     crosapi::mojom::EditorPanelContextPtr context) {

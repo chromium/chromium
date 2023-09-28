@@ -201,6 +201,12 @@ void EditorMenuView::OnWidgetActivationChanged(views::Widget* widget,
   GetWidget()->Close();
 }
 
+void EditorMenuView::OnWidgetVisibilityChanged(views::Widget* widget,
+                                               bool visible) {
+  CHECK(delegate_);
+  delegate_->OnEditorMenuVisibilityChanged(visible);
+}
+
 void EditorMenuView::UpdateBounds(const gfx::Rect& anchor_view_bounds) {
   int height = GetHeightForWidth(anchor_view_bounds.width());
   int y = anchor_view_bounds.y() - kMarginDip - height;

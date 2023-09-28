@@ -47,6 +47,7 @@ struct EditorPanelContext {
 
 // EditorPanelManager is an interface to allow lacros to handle requests between
 // the context menu editor panel and the backend of the editor feature
+// Next MinVersion: 2
 [Stable, Uuid="a5d776e7-98e6-489c-9b15-57f00000c847"]
 interface EditorPanelManager {
   // Gets the context required to determine what should be shown on the editor
@@ -69,4 +70,7 @@ interface EditorPanelManager {
 
   // Starts the write/rewrite flow with a freeform query.
   StartEditingFlowWithFreeform@5(string text);
+
+  // Should be called when the editor menu is shown or hidden.
+  [MinVersion=1] OnEditorMenuVisibilityChanged@6(bool visible);
 };

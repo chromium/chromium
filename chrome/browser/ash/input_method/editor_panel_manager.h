@@ -45,31 +45,21 @@ class EditorPanelManager : public crosapi::mojom::EditorPanelManager {
   EditorPanelManager& operator=(const EditorPanelManager&) = delete;
   ~EditorPanelManager() override;
 
-  // Gets the context required to determine what should be shown on the editor
-  // panel.
+  // crosapi::mojom::EditorPanelManager:
   void GetEditorPanelContext(GetEditorPanelContextCallback callback) override;
-
-  // Should be called when a promo card is implicitly dismissed (e.g. the
-  // user clicked out the promo card).
   void OnPromoCardDismissed() override;
-
-  // Should be called when the promo card is explicitly dismissed via clicking
-  // the button.
   void OnPromoCardDeclined() override;
-
-  // Starts the editing flow, showing the consent form if needed.
   void StartEditingFlow() override;
-
-  // Starts the rewrite flow with a preset text query.
   void StartEditingFlowWithPreset(const std::string& text_query_id) override;
-
-  // Starts the write/rewrite flow with a freeform query.
   void StartEditingFlowWithFreeform(const std::string& text) override;
+  void OnEditorMenuVisibilityChanged(bool visible) override;
 
   void BindReceiver(mojo::PendingReceiver<crosapi::mojom::EditorPanelManager>
                         pending_receiver);
 
   void BindEditorClient();
+
+  bool IsEditorMenuVisible() const;
 
  private:
   void OnGetPresetTextQueriesResult(
@@ -79,6 +69,8 @@ class EditorPanelManager : public crosapi::mojom::EditorPanelManager {
   raw_ptr<Delegate> delegate_;
   mojo::ReceiverSet<crosapi::mojom::EditorPanelManager> receivers_;
   mojo::Remote<orca::mojom::EditorClient> editor_client_remote_;
+
+  bool is_editor_menu_visible_ = false;
 
   base::WeakPtrFactory<EditorPanelManager> weak_ptr_factory_{this};
 };

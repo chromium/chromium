@@ -23,6 +23,8 @@ class EditorMenuViewDelegate {
 
   virtual void OnPromoCardWidgetClosed(
       views::Widget::ClosedReason closed_reason) = 0;
+
+  virtual void OnEditorMenuVisibilityChanged(bool visible) = 0;
 };
 
 }  // namespace chromeos::editor_menu

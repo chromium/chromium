@@ -34,6 +34,8 @@ class MockEditorMenuViewDelegate : public EditorMenuViewDelegate {
 
   void OnPromoCardWidgetClosed(
       views::Widget::ClosedReason closed_reason) override {}
+
+  void OnEditorMenuVisibilityChanged(bool visible) override {}
 };
 
 using EditorMenuViewTest = views::ViewsTestBase;

@@ -42,6 +42,7 @@ class EditorMenuControllerImpl : public chromeos::ReadWriteCardController,
   void OnTextfieldArrowButtonPressed(std::u16string_view text) override;
   void OnPromoCardWidgetClosed(
       views::Widget::ClosedReason closed_reason) override;
+  void OnEditorMenuVisibilityChanged(bool visible) override;
 
   views::Widget* editor_menu_widget_for_testing() {
     return editor_menu_widget_.get();

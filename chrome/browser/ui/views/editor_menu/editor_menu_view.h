@@ -56,6 +56,7 @@ class EditorMenuView : public views::View, public views::WidgetObserver {
   void OnWidgetDestroying(views::Widget* widget) override;
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
+  void OnWidgetVisibilityChanged(views::Widget* widget, bool visible) override;
 
   void UpdateBounds(const gfx::Rect& anchor_view_bounds);
 
