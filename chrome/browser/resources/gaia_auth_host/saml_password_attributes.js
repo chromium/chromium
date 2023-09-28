@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {SafeXMLUtils} from './safe_xml_utils.js';
 import {decodeTimestamp} from './saml_timestamps.js';
 
 /**
@@ -76,16 +77,14 @@ import {decodeTimestamp} from './saml_timestamps.js';
         return PasswordAttributes.EMPTY;
       }
 
-      const xmlDom = new DOMParser().parseFromString(xmlStr, 'text/xml');
-      if (!xmlDom) {
-        return PasswordAttributes.EMPTY;
-      }
+      const xmlUtils = new SafeXMLUtils(xmlStr);
 
       return new PasswordAttributes(
-          extractTimestampFromXml(xmlDom, PASSWORD_MODIFIED_TIMESTAMP_SELECTOR),
-          extractTimestampFromXml(
-              xmlDom, PASSWORD_EXPIRATION_TIMESTAMP_SELECTOR),
-          extractStringFromXml(xmlDom, PASSWORD_CHANGE_URL_SELECTOR));
+          extractTimestampFromString(xmlUtils.extractStringFromXml(
+              PASSWORD_MODIFIED_TIMESTAMP_SELECTOR)),
+          extractTimestampFromString(xmlUtils.extractStringFromXml(
+              PASSWORD_EXPIRATION_TIMESTAMP_SELECTOR)),
+          xmlUtils.extractStringFromXml(PASSWORD_CHANGE_URL_SELECTOR));
 
     } catch (error) {
       console.error('Error reading password attributes: ' + error);
@@ -94,31 +93,17 @@ import {decodeTimestamp} from './saml_timestamps.js';
   }
 
   /**
-   * Extracts a string from the given XML DOM, using the given query selector.
-   * @param {!Object} xmlDom The XML DOM.
-   * @param {string} querySelectorStr The query selector to find the string.
-   * @return {string} The extracted string (empty if failed to extract).
-   */
-  function extractStringFromXml(xmlDom, querySelectorStr) {
-    const element = xmlDom.querySelector(querySelectorStr);
-    return (element && element.textContent) ? element.textContent : '';
-  }
-
-  /**
-   * Extracts a timestamp from the given XML DOM, using the given query selector
-   * to find it and using {@code decodeTimestamp} to decode it.
-   * @param {!Object} xmlDom The XML DOM.
-   * @param {string} querySelectorStr The query selector to find the timestamp.
+   * Decode a timestamp string using {@code decodeTimestamp}.
+   * @param {string} timeStampStr Timestamp string to decode.
    * @return {string} The timestamp as number of ms since 1970, formatted as a
    * string (or an empty string if the timestamp could not be extracted).
    */
-  function extractTimestampFromXml(xmlDom, querySelectorStr) {
-    const valueText = extractStringFromXml(xmlDom, querySelectorStr);
-    if (!valueText) {
+  function extractTimestampFromString(timeStampStr) {
+    if (!timeStampStr) {
       return '';
     }
 
-    const timestamp = decodeTimestamp(valueText);
+    const timestamp = decodeTimestamp(timeStampStr);
     return timestamp ? String(timestamp.valueOf()) : '';
   }
 

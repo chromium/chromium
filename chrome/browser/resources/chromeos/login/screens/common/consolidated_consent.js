@@ -24,6 +24,7 @@ import '../../components/dialogs/oobe_modal_dialog.js';
 
 import {loadTimeData} from '//resources/ash/common/load_time_data.m.js';
 import {dom, html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
 import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.js';
@@ -449,7 +450,8 @@ class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
     const privacyPolicyLink = subtitle.querySelector('#privacyPolicyLink');
     privacyPolicyLink.setAttribute('is', 'action-link');
     privacyPolicyLink.classList.add('oobe-local-link');
-    return subtitle.innerHTML;
+    return sanitizeInnerHtml(
+        subtitle.innerHTML, {tags: ['a'], attrs: ['id', 'is', 'class']});
   }
 
   getTermsDescriptionArcEnabled_(locale) {
@@ -469,7 +471,8 @@ class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
     arcTosLink.setAttribute('is', 'action-link');
     arcTosLink.classList.add('oobe-local-link');
 
-    return description.innerHTML;
+    return sanitizeInnerHtml(
+        description.innerHTML, {tags: ['a'], attrs: ['id', 'is', 'class']});
   }
 
   getTermsDescriptionArcDisabled_(locale) {
@@ -486,7 +489,8 @@ class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
     crosEulaLink.setAttribute('is', 'action-link');
     crosEulaLink.classList.add('oobe-local-link');
 
-    return description.innerHTML;
+    return sanitizeInnerHtml(
+        description.innerHTML, {tags: ['a'], attrs: ['id', 'is', 'class']});
   }
 
   getTitle_(locale, isTosHidden, isChildAccount) {

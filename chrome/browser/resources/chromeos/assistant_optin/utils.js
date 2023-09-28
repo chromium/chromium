@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
+
 /* Script used to strip anchor links from webview */
 export const webviewStripLinksContentScript = {
   name: 'stripLinks',
@@ -34,8 +36,9 @@ export class HtmlSanitizer {
   sanitizeHtml(content) {
     const doc = document.implementation.createHTMLDocument();
     const div = doc.createElement('div');
-    div.innerHTML = content;
-    return this.sanitizeNode_(doc, div).innerHTML;
+    div.innerHTML = sanitizeInnerHtml(content, {tags: ['i', 'ul', 'li']});
+    return sanitizeInnerHtml(
+        this.sanitizeNode_(doc, div).innerHTML, {tags: ['i', 'ul', 'li']});
   }
 
   /**

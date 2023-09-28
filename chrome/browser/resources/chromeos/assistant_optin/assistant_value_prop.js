@@ -417,8 +417,7 @@ class AssistantValueProp extends AssistantValuePropBase {
 
         const description = document.createElement('div');
         description.innerHTML =
-            this.sanitizer_.sanitizeHtml(data['description']);
-        description.innerHTML += '&ensp;';
+            this.sanitizer_.sanitizeHtml(data['description'] + '&ensp;');
 
         const learnMoreLink = document.createElement('a');
         learnMoreLink.textContent = data['popupLink'];

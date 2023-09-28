@@ -31,7 +31,7 @@ export let SelectListType;
  * updated!
  */
 export function setupSelect(select, list, callback) {
-  select.innerHTML = '';
+  select.innerHTML = window.trustedTypes.emptyHTML;
   let optgroup = select;
   for (let i = 0; i < list.length; ++i) {
     const item = list[i];

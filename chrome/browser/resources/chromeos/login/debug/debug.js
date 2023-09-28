@@ -8,6 +8,7 @@
 
 import {MessageType, ProblemType} from '//resources/ash/common/quick_unlock/setup_pin_keyboard.js';
 import {$} from '//resources/ash/common/util.js';
+import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 
 import {AssistantNativeIconType} from '../../assistant_optin/utils.js';
 import {Oobe} from '../cr_ui.js';
@@ -2315,7 +2316,7 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
     createCssStyle(name, styleSpec) {
       var style = document.createElement('style');
       style.type = 'text/css';
-      style.innerHTML = '.' + name + ' {' + styleSpec + '}';
+      style.innerHTML = sanitizeInnerHtml('.' + name + ' {' + styleSpec + '}');
       document.getElementsByTagName('head')[0].appendChild(style);
     }
 

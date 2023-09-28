@@ -17,6 +17,7 @@
 #include "ash/public/cpp/network_config_service.h"
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
 #include "ash/shell.h"
+#include "ash/webui/common/trusted_types_util.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
@@ -288,6 +289,7 @@ void CreateAndAddOobeUIDataSource(Profile* profile,
 
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile, chrome::kChromeUIOobeHost);
+  ash::EnableTrustedTypesCSP(source);
   source->AddLocalizedStrings(localized_strings);
   source->UseStringsJs();
 
@@ -360,7 +362,6 @@ void CreateAndAddOobeUIDataSource(Profile* profile,
 
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ObjectSrc, "object-src chrome:;");
-  source->DisableTrustedTypesCSP();
 
   // Only add a filter when runing as test.
   const bool is_running_test = command_line->HasSwitch(::switches::kTestName) ||

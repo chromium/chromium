@@ -18,6 +18,7 @@ import '../../components/dialogs/oobe_loading_dialog.js';
 import '../../components/dialogs/oobe_modal_dialog.js';
 
 import {html, mixinBehaviors, Polymer, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
 import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.js';
@@ -150,7 +151,8 @@ class GuestTos extends GuestTosScreenElementBase {
     crosEulaLink.setAttribute('is', 'action-link');
     crosEulaLink.classList.add('oobe-local-link');
 
-    return terms.innerHTML;
+    return sanitizeInnerHtml(
+        terms.innerHTML, {tags: ['a'], attrs: ['id', 'is', 'class']});
   }
 
   getUsageLearnMoreText_(locale) {
