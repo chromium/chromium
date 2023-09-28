@@ -116,13 +116,13 @@
       </message>
     </else>
   </if>
-  <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_LOCAL" desc="Title text for the Autofill save card prompt to save a card locally. It is shown when a new card is used during checkout, and Chrome sync is not enabled. This prompt title is shown on both the Desktop bubble and the Android infobar.">
+  <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_LOCAL" desc="Title text for the Autofill save card prompt to save a card locally. It is shown when a new card is used during checkout, and sync is not enabled. This prompt title is shown on both the Desktop bubble and the Android infobar.">
     Save card?
   </message>
-  <message name="IDS_AUTOFILL_SAVE_CARD_ONLY_PROMPT_EXPLANATION_LOCAL" desc="Explanation text for the Autofill save card prompt to save a card locally. It is shown when a new card is used during checkout, and Chrome sync is not enabled. This prompt description is shown on both the Desktop bubble and the Android infobar.">
+  <message name="IDS_AUTOFILL_SAVE_CARD_ONLY_PROMPT_EXPLANATION_LOCAL" desc="Explanation text for the Autofill save card prompt to save a card locally. It is shown when a new card is used during checkout, and sync is not enabled. This prompt description is shown on both the Desktop bubble and the Android infobar.">
     To pay faster next time, save your card to your device
   </message>
-  <message name="IDS_AUTOFILL_SAVE_CARD_WITH_CVC_PROMPT_EXPLANATION_LOCAL" desc="Explanation text for the Autofill save card prompt to save a card with CVC locally. It is shown when a new card is used during checkout, and Chrome sync is not enabled. This prompt description is shown on both the Desktop bubble and the Android infobar.">
+  <message name="IDS_AUTOFILL_SAVE_CARD_WITH_CVC_PROMPT_EXPLANATION_LOCAL" desc="Explanation text for the Autofill save card prompt to save a card with CVC locally. It is shown when a new card is used during checkout, and sync is not enabled. This prompt description is shown on both the Desktop bubble and the Android infobar.">
     To pay faster next time, save your card, and security code to your device
   </message>
   <message name="IDS_AUTOFILL_SAVE_CVC_PROMPT_TITLE_LOCAL" desc="Title text for the Autofill save CVC prompt that offers to save CVC for existing local cards. This prompt is shown if a CVC is detected for an existing local card on form submission.">
@@ -160,6 +160,9 @@
   </message>
   <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_V5" desc="Title text for the Autofill save card prompt when the card is to be saved by uploading it to Google Payments, based on the results for the Save Card UI experiment. The prompt can be either a bubble or an infobar.">
     Save card?
+  </message>
+  <message name="IDS_AUTOFILL_SAVE_CVC_PROMPT_TITLE_TO_CLOUD" desc="Title text for the Autofill CVC upload prompt that offers to upload CVC to the Sync server for existing server cards. This prompt is shown if a CVC is detected for an existing server card on form submission.">
+    Save security code?
   </message>
   <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_CARD_DESCRIPTION" desc="Accessibility description for the credit card chip containing the network icon and card labels on the Autofill save card prompt when the card is to be saved (either locally or by uploading it to Google Payments).">
     <ph name="CARD_NETWORK_NAME">$1<ex>Visa</ex></ph>, <ph name="CARD_LAST_FOUR_DIGITS">$2<ex>4444</ex></ph>, expires <ph name="CARD_EXPIRATION">$3<ex>01/2025</ex></ph>
@@ -210,6 +213,9 @@
   </message>
   <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_V4" desc="Explanation of the effect of the Autofill save card prompt when the card is to be saved by uploading it to Google Payments, based on the results for the Save Card UI experiment. The prompt will be shown in a bubble below the omnibox.">
     Pay faster next time and protect your card with Google’s industry-leading security.
+  </message>
+  <message name="IDS_AUTOFILL_SAVE_CVC_PROMPT_EXPLANATION_UPLOAD" desc="Explanation text for the Autofill save CVC prompt that offers to upload CVC to the Sync server for existing server cards. This prompt is shown if a CVC is detected for an existing server card on form submission.">
+    For faster checkout, save the CVC for this card in your Google Account
   </message>
 
   <if expr="is_android">

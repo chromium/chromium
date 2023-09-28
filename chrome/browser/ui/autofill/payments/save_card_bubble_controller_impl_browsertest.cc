@@ -66,7 +66,7 @@ class SaveCardBubbleControllerImplTest : public DialogBrowserTest {
     // invoke via ChromeAutofillClient.
     SaveCardBubbleControllerImpl::CreateForWebContents(web_contents);
     controller_ = SaveCardBubbleControllerImpl::FromWebContents(web_contents);
-    DCHECK(controller_);
+    CHECK(controller_);
 
     AutofillClient::SaveCreditCardOptions options =
         AutofillClient::SaveCreditCardOptions()
@@ -75,6 +75,10 @@ class SaveCardBubbleControllerImplTest : public DialogBrowserTest {
             .with_should_request_expiration_date_from_user(
                 name.find("WithCardExpirationDateDropDownBox") !=
                 std::string::npos)
+            .with_card_save_type(
+                name.find("CvcSave") != std::string::npos
+                    ? AutofillClient::CardSaveType::kCvcSaveOnly
+                    : AutofillClient::CardSaveType::kCardSaveOnly)
             .with_show_prompt(true);
 
     BubbleType bubble_type = BubbleType::INACTIVE;
@@ -87,6 +91,9 @@ class SaveCardBubbleControllerImplTest : public DialogBrowserTest {
     if (name.find("ServerSave") != std::string::npos) {
       bubble_type = BubbleType::UPLOAD_SAVE;
     }
+    if (name.find("ServerCvcSave") != std::string::npos) {
+      bubble_type = BubbleType::UPLOAD_CVC_SAVE;
+    }
     if (name.find("Manage") != std::string::npos) {
       bubble_type = BubbleType::MANAGE_CARDS;
     }
@@ -96,20 +103,19 @@ class SaveCardBubbleControllerImplTest : public DialogBrowserTest {
 
     switch (bubble_type) {
       case BubbleType::LOCAL_SAVE:
-        controller_->OfferLocalSave(
-            test::GetCreditCard(),
-            AutofillClient::SaveCreditCardOptions().with_show_prompt(true),
-            base::DoNothing());
+        controller_->OfferLocalSave(test::GetCreditCard(), options,
+                                    base::DoNothing());
         break;
       case BubbleType::LOCAL_CVC_SAVE:
-        controller_->OfferLocalSave(
-            test::GetCreditCard(),
-            AutofillClient::SaveCreditCardOptions()
-                .with_card_save_type(AutofillClient::CardSaveType::kCvcSaveOnly)
-                .with_show_prompt(true),
-            base::DoNothing());
+        controller_->OfferLocalSave(test::GetCreditCard(), options,
+                                    base::DoNothing());
         break;
       case BubbleType::UPLOAD_SAVE:
+        controller_->OfferUploadSave(test::GetMaskedServerCard(),
+                                     GetTestLegalMessage(), options,
+                                     base::DoNothing());
+        break;
+      case BubbleType::UPLOAD_CVC_SAVE:
         controller_->OfferUploadSave(test::GetMaskedServerCard(),
                                      GetTestLegalMessage(), options,
                                      base::DoNothing());
@@ -152,6 +158,13 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleControllerImplTest,
 // Invokes a bubble asking the user if they want to save a credit card to the
 // server.
 IN_PROC_BROWSER_TEST_F(SaveCardBubbleControllerImplTest, InvokeUi_ServerSave) {
+  ShowAndVerifyUi();
+}
+
+// Invokes a bubble asking the user if they want to save the CVC for a credit
+// card to Google Payments.
+IN_PROC_BROWSER_TEST_F(SaveCardBubbleControllerImplTest,
+                       InvokeUi_ServerCvcSave) {
   ShowAndVerifyUi();
 }
 

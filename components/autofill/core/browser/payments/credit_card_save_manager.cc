@@ -278,8 +278,9 @@ void CreditCardSaveManager::AttemptToOfferCardUploadSave(
   }
 
   // All required data is available, start the upload process.
-  if (observer_for_testing_)
+  if (observer_for_testing_) {
     observer_for_testing_->OnDecideToRequestUploadSave();
+  }
 
   // Query the Autofill StrikeDatabase on if we should pop up the
   // offer-to-save prompt for this card.
@@ -349,8 +350,9 @@ bool CreditCardSaveManager::IsCreditCardUploadEnabled() {
   // If observer_for_testing_ is set, assume we are in a browsertest and
   // credit card upload should be enabled by default.
   // TODO(crbug.com/859761): Remove dependency from iOS tests on this behavior.
-  if (observer_for_testing_)
+  if (observer_for_testing_) {
     return true;
+  }
 #endif  // BUILDFLAG(IS_IOS)
   return ::autofill::IsCreditCardUploadEnabled(
       client_->GetSyncService(),
@@ -364,8 +366,9 @@ void CreditCardSaveManager::OnDidUploadCard(
     AutofillClient::PaymentsRpcResult result,
     const payments::PaymentsClient::UploadCardResponseDetails&
         upload_card_response_details) {
-  if (observer_for_testing_)
+  if (observer_for_testing_) {
     observer_for_testing_->OnReceivedUploadCardResponse();
+  }
 
   if (result == AutofillClient::PaymentsRpcResult::kSuccess) {
     // Log how many strikes the card had when it was saved.
@@ -431,8 +434,9 @@ void CreditCardSaveManager::OnDidUploadCard(
   client_->CreditCardUploadCompleted(
       result == AutofillClient::PaymentsRpcResult::kSuccess);
 
-  if (observer_for_testing_)
+  if (observer_for_testing_) {
     observer_for_testing_->OnShowCardSavedFeedback();
+  }
 }
 
 CreditCardSaveStrikeDatabase*
@@ -473,8 +477,9 @@ void CreditCardSaveManager::OnDidGetUploadDetails(
     const std::u16string& context_token,
     std::unique_ptr<base::Value::Dict> legal_message,
     std::vector<std::pair<int, int>> supported_card_bin_ranges) {
-  if (observer_for_testing_)
+  if (observer_for_testing_) {
     observer_for_testing_->OnReceivedGetUploadDetailsResponse();
+  }
   if (result == AutofillClient::PaymentsRpcResult::kSuccess) {
     LegalMessageLine::Parse(*legal_message, &legal_message_lines_,
                             /*escape_apostrophes=*/true);
@@ -555,8 +560,9 @@ void CreditCardSaveManager::OfferCardLocalSave() {
   // save in the omnibox without popping-up the bubble. Mobile builds, however,
   // should not display the offer-to-save infobar at all.
   if (!is_mobile_build || show_save_prompt_.value_or(true)) {
-    if (observer_for_testing_)
+    if (observer_for_testing_) {
       observer_for_testing_->OnOfferLocalSave();
+    }
     client_->ConfirmSaveCreditCardLocally(
         card_save_candidate_,
         AutofillClient::SaveCreditCardOptions()
@@ -600,8 +606,9 @@ void CreditCardSaveManager::OfferCardUploadSave() {
   // should not display the offer-to-save infobar at all.
   if (!is_mobile_build || show_save_prompt_.value_or(true)) {
     user_did_accept_upload_prompt_ = false;
-    if (observer_for_testing_)
+    if (observer_for_testing_) {
       observer_for_testing_->OnOfferUploadSave();
+    }
     auto server_cards = personal_data_manager_->GetServerCreditCards();
     // At this point of the flow, we know there are no maksed server cards with
     // the same last four digits and expiration date as the card we are
@@ -1078,8 +1085,9 @@ void CreditCardSaveManager::OnDidGetUploadRiskData(
 }
 
 void CreditCardSaveManager::SendUploadCardRequest() {
-  if (observer_for_testing_)
+  if (observer_for_testing_) {
     observer_for_testing_->OnSentUploadCardRequest();
+  }
   upload_request_.app_locale = app_locale_;
   upload_request_.billing_customer_number =
       payments::GetBillingCustomerId(personal_data_manager_);
@@ -1106,8 +1114,9 @@ void CreditCardSaveManager::OnUserDidIgnoreOrDeclineSave(
 }
 
 void CreditCardSaveManager::OnStrikeChangeComplete(const int num_strikes) {
-  if (observer_for_testing_)
+  if (observer_for_testing_) {
     observer_for_testing_->OnStrikeChangeComplete();
+  }
 }
 
 autofill_metrics::CardUploadDecision

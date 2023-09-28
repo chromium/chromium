@@ -15,8 +15,12 @@ enum class BubbleType {
   // Save prompt for saving CVC locally to an existing local card.
   LOCAL_CVC_SAVE,
 
-  // Save prompt when uploading a card to Google payments.
+  // Save prompt when uploading a card to Google Payments.
   UPLOAD_SAVE,
+
+  // Save prompt for uploading CVC to the Sync server for an existing server
+  // card.
+  UPLOAD_CVC_SAVE,
 
   // Credit card upload is in progress. No bubble visible but show the credit
   // card icon with the loading indicator animation.

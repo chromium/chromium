@@ -137,6 +137,10 @@ class SaveCardBubbleControllerImplTest : public BrowserWithTestWindowTest {
   void ShowUploadBubble(
       AutofillClient::SaveCreditCardOptions options =
           AutofillClient::SaveCreditCardOptions().with_show_prompt()) {
+    if (options.card_save_type == AutofillClient::CardSaveType::kCvcSaveOnly) {
+      SetLegalMessage("{}", options);
+      return;
+    }
     SetLegalMessage(
         "{"
         "  \"line\" : [ {"
@@ -693,6 +697,22 @@ TEST_F(SaveCardBubbleControllerImplTest, UploadCardSaveDialogContent) {
   EXPECT_EQ(controller()->GetExplanatoryMessage(),
             u"Pay faster next time and protect your card with Google’s "
             u"industry-leading security.");
+}
+
+TEST_F(SaveCardBubbleControllerImplTest, UploadCvcOnlySaveDialogContent) {
+  // Show the server card save bubble.
+  ShowUploadBubble(
+      /*options=*/AutofillClient::SaveCreditCardOptions()
+          .with_card_save_type(AutofillClient::CardSaveType::kCvcSaveOnly)
+          .with_show_prompt(true));
+
+  ASSERT_EQ(BubbleType::UPLOAD_CVC_SAVE, controller()->GetBubbleType());
+  ASSERT_NE(nullptr, controller()->GetPaymentBubbleView());
+  EXPECT_EQ(controller()->GetWindowTitle(), u"Save security code?");
+  EXPECT_EQ(controller()->GetExplanatoryMessage(),
+            u"For faster checkout, save the CVC for this card in your "
+            u"Google Account");
+  EXPECT_TRUE(controller()->GetLegalMessageLines().empty());
 }
 
 TEST_F(SaveCardBubbleControllerImplTest,
