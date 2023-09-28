@@ -12,6 +12,8 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/layer_animator.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/widget/widget.h"
@@ -41,6 +43,10 @@ class AutoPipSettingOverlayViewTest : public views::ViewsTestBase {
     // Define the browser view overridden bounds.
     const gfx::Rect browser_view_overridden_bounds(0, 0, 500, 500);
 
+    animation_duration_ =
+        std::make_unique<ui::ScopedAnimationDurationScaleMode>(
+            ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
     setting_overlay_ =
         widget_->SetContentsView(std::make_unique<AutoPipSettingOverlayView>(
             cb().Get(), origin_, browser_view_overridden_bounds, anchor_view,
@@ -48,6 +54,7 @@ class AutoPipSettingOverlayViewTest : public views::ViewsTestBase {
   }
 
   void TearDown() override {
+    animation_duration_.reset();
     anchor_view_widget_.reset();
     parent_widget_.reset();
     setting_overlay_ = nullptr;
@@ -59,7 +66,7 @@ class AutoPipSettingOverlayViewTest : public views::ViewsTestBase {
     return setting_overlay_;
   }
 
-  const views::View* background() const {
+  views::View* background() const {
     return setting_overlay_->get_background_for_testing();
   }
 
@@ -77,6 +84,9 @@ class AutoPipSettingOverlayViewTest : public views::ViewsTestBase {
   raw_ptr<AutoPipSettingOverlayView> setting_overlay_ = nullptr;
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
   const GURL origin_{"https://example.com"};
+
+  // Used to force a non-zero animation duration.
+  std::unique_ptr<ui::ScopedAnimationDurationScaleMode> animation_duration_;
 };
 
 TEST_F(AutoPipSettingOverlayViewTest, TestViewInitialization) {
@@ -84,4 +94,15 @@ TEST_F(AutoPipSettingOverlayViewTest, TestViewInitialization) {
   EXPECT_EQ(
       background()->GetColorProvider()->GetColor(kColorPipWindowBackground),
       background()->GetBackground()->get_color());
+}
+
+TEST_F(AutoPipSettingOverlayViewTest, TestBackgroundLayerAnimation) {
+  // Background layer opacity should start at 0.0f and end at 0.70f.
+  EXPECT_EQ(0.0f, background()->layer()->opacity());
+  EXPECT_EQ(0.70f, background()->layer()->GetTargetOpacity());
+
+  // Progress animation to its end position. Background layer should fade in to
+  // a 0.70f opacity.
+  background()->layer()->GetAnimator()->StopAnimating();
+  EXPECT_EQ(0.70f, background()->layer()->GetTargetOpacity());
 }
