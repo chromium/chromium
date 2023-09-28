@@ -51,6 +51,24 @@ base::TimeDelta GetDisconnectedKeepAliveURLLoaderTimeout() {
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 //
+// Must remain in sync with FetchKeepAliveBrowserMetricType in
+// tools/metrics/histograms/enums.xml.
+enum class FetchKeepAliveBrowserMetricType {
+  kLoadingSuceeded = 0,
+  kLoadingFailed = 1,
+  kForwardingCompleted = 2,
+  kCancelledAfterTimeLimit = 3,
+  kAbortedByInitiator = 4,
+  kMaxValue = kAbortedByInitiator,
+};
+
+void LogFetchKeepAliveMetric(const FetchKeepAliveBrowserMetricType& type) {
+  base::UmaHistogramEnumeration("FetchKeepAlive.Browser.Metrics", type);
+}
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
 // Must remain in sync with FetchLaterBrowserMetricType in
 // tools/metrics/histograms/enums.xml.
 enum class FetchLaterBrowserMetricType {
@@ -339,7 +357,10 @@ KeepAliveURLLoader::KeepAliveURLLoader(
               request_id_, "url", last_url_);
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("loading", "KeepAliveURLLoader",
                                     request_id_, "url", last_url_);
-  base::UmaHistogramBoolean("FetchLater.Browser.Total", true);
+  if (IsFetchLater()) {
+    base::UmaHistogramBoolean("FetchLater.Browser.Total", true);
+  }
+  base::UmaHistogramBoolean("FetchKeepAlive.Browser.Total", true);
 
   // TODO(crbug.com/1356128): Replace custom throttle logic here with blink's.
   for (auto& content_throttle : throttles) {
@@ -357,6 +378,7 @@ void KeepAliveURLLoader::Start() {
   if (IsFetchLater()) {
     base::UmaHistogramBoolean("FetchLater.Browser.Total.Started", true);
   }
+  base::UmaHistogramBoolean("FetchKeepAlive.Browser.Total.Started", true);
 
   // Asks the network service to create a URL loader with passed in params.
   network_loader_factory_->CreateLoaderAndStart(
@@ -524,6 +546,7 @@ void KeepAliveURLLoader::OnReceiveRedirect(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   TRACE_EVENT("loading", "KeepAliveURLLoader::OnReceiveRedirect", "request_id",
               request_id_);
+  base::UmaHistogramBoolean("FetchKeepAlive.Browser.Total.Redirected", true);
 
   // Stores the redirect data for later use by renderer.
   stored_url_load_->redirects.emplace(
@@ -606,6 +629,8 @@ void KeepAliveURLLoader::OnReceiveResponse(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   TRACE_EVENT("loading", "KeepAliveURLLoader::OnReceiveResponse", "request_id",
               request_id_, "url", last_url_);
+  base::UmaHistogramBoolean("FetchKeepAlive.Browser.Total.ReceivedResponse",
+                            true);
 
   if (observer_for_testing_) {
     CHECK_IS_TEST();
@@ -684,6 +709,11 @@ void KeepAliveURLLoader::OnComplete(
     CHECK_IS_TEST();
     observer_for_testing_->OnComplete(this, completion_status);
   }
+
+  LogFetchKeepAliveMetric(
+      completion_status.error_code == net::OK
+          ? FetchKeepAliveBrowserMetricType::kLoadingSuceeded
+          : FetchKeepAliveBrowserMetricType::kLoadingFailed);
 
   // In case the renderer is alive, the stored status will be forwarded
   // at the end of `ForwardURLLoad()`.
@@ -777,6 +807,8 @@ void KeepAliveURLLoader::ForwardURLLoad() {
           this, *(stored_url_load_->completion_status));
     }
     stored_url_load_ = nullptr;
+    LogFetchKeepAliveMetric(
+        FetchKeepAliveBrowserMetricType::kForwardingCompleted);
 
     DeleteSelf();
     // DO NOT touch any members after this line. `this` is already deleted.
@@ -897,7 +929,11 @@ void KeepAliveURLLoader::OnURLLoaderDisconnected() {
 }
 
 void KeepAliveURLLoader::OnDisconnectedLoaderTimerFired() {
-  LogFetchLaterMetric(FetchLaterBrowserMetricType::kCancelledAfterTimeLimit);
+  if (IsFetchLater()) {
+    LogFetchLaterMetric(FetchLaterBrowserMetricType::kCancelledAfterTimeLimit);
+  }
+  LogFetchKeepAliveMetric(
+      FetchKeepAliveBrowserMetricType::kCancelledAfterTimeLimit);
   DeleteSelf();
 }
 
@@ -908,6 +944,7 @@ bool KeepAliveURLLoader::IsFetchLater() const {
 
 void KeepAliveURLLoader::DeleteSelf() {
   CHECK(on_delete_callback_);
+  base::UmaHistogramBoolean("FetchKeepAlive.Browser.Total.Finished", true);
   std::move(on_delete_callback_).Run();
 }
 

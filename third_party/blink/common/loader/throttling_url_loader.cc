@@ -600,6 +600,9 @@ void ThrottlingURLLoader::StartNow() {
     return;
   }
 
+  if (start_info_->url_request.keepalive) {
+    base::UmaHistogramBoolean("FetchKeepAlive.Renderer.Total.Started", true);
+  }
   DCHECK(start_info_->url_loader_factory);
   start_info_->url_loader_factory->CreateLoaderAndStart(
       url_loader_.BindNewPipeAndPassReceiver(start_info_->task_runner),
@@ -698,6 +701,10 @@ void ThrottlingURLLoader::OnReceiveResponse(
   DCHECK(deferring_throttles_.empty());
   TRACE_EVENT1("loading", "ThrottlingURLLoader::OnReceiveResponse", "url",
                response_url_.possibly_invalid_spec());
+  if (start_info_ && start_info_->url_request.keepalive) {
+    base::UmaHistogramBoolean("FetchKeepAlive.Renderer.Total.ReceivedResponse",
+                              true);
+  }
   did_receive_response_ = true;
   body_ = std::move(body);
   cached_metadata_ = std::move(cached_metadata);
@@ -764,6 +771,9 @@ void ThrottlingURLLoader::OnReceiveRedirect(
   DCHECK_EQ(DEFERRED_NONE, deferred_stage_);
   DCHECK(!loader_completed_);
   DCHECK(deferring_throttles_.empty());
+  if (start_info_ && start_info_->url_request.keepalive) {
+    base::UmaHistogramBoolean("FetchKeepAlive.Renderer.Total.Redirected", true);
+  }
 
   if (!throttles_.empty()) {
     bool deferred = false;
