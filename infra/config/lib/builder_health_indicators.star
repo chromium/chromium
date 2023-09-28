@@ -550,8 +550,6 @@ _exempted_from_contact_builders = {
         "android-nougat-x86-dual-coverage-exp-rel",
         "android-nougat-x86-rel",
         "android-nougat-x86-rel-compilator",
-        "android-nougat-x86-siso-rel",
-        "android-nougat-x86-siso-rel-compilator",
         "android-official",
         "android-oreo-arm64-dbg",
         "android-oreo-x86-rel",

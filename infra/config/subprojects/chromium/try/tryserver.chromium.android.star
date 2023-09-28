@@ -465,35 +465,6 @@ This builder shadows android-nougat-x86-rel builder to experiment both jacoco an
 )
 
 try_.orchestrator_builder(
-    name = "android-nougat-x86-siso-rel",
-    description_html = """\
-This builder shadows android-nougat-x86-rel builder to compare between Siso builds and Ninja builds.<br/>
-This builder should be removed after migrating android-nougat-x86-rel from Ninja to Siso. b/277863839
-""",
-    mirrors = builder_config.copy_from("try/android-nougat-x86-rel"),
-    try_settings = builder_config.try_settings(
-        is_compile_only = True,
-    ),
-    compilator = "android-nougat-x86-siso-rel-compilator",
-    coverage_test_types = ["unit", "overall"],
-    experiments = {
-        "chromium.add_one_test_shard": 10,
-    },
-    main_list_view = "try",
-    tryjob = try_.job(
-        experiment_percentage = 20,
-    ),
-    use_java_coverage = True,
-)
-
-try_.compilator_builder(
-    name = "android-nougat-x86-siso-rel-compilator",
-    cores = 64,
-    main_list_view = "try",
-    siso_enabled = True,
-)
-
-try_.orchestrator_builder(
     name = "android-nougat-x86-rel",
     branch_selector = branches.selector.ANDROID_BRANCHES,
     mirrors = [
