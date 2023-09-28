@@ -43,6 +43,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.content.browser.HostZoomMapImpl;
 import org.chromium.content.browser.HostZoomMapImplJni;
@@ -84,6 +85,8 @@ public class PageZoomViewTest {
     @Mock
     private HostZoomMapImpl.Natives mHostZoomMapJniMock;
     @Mock
+    private PageZoomMetrics.Natives mPageZoomMetricsJniMock;
+    @Mock
     private BrowserContextHandle mBrowserContextHandle;
     @Mock
     private WebContents mWebContents;
@@ -112,6 +115,7 @@ public class PageZoomViewTest {
         MockitoAnnotations.initMocks(this);
 
         mJniMocker.mock(HostZoomMapImplJni.TEST_HOOKS, mHostZoomMapJniMock);
+        mJniMocker.mock(PageZoomMetricsJni.TEST_HOOKS, mPageZoomMetricsJniMock);
         when(mHostZoomMapJniMock.getDefaultZoomLevel(any())).thenReturn(0.0);
         when(mHostZoomMapJniMock.getDesktopSiteZoomScale(any())).thenReturn(1.0);
         when(mHostZoomMapJniMock.getZoomLevel(any())).thenReturn(0.0);
@@ -186,10 +190,24 @@ public class PageZoomViewTest {
                 50, ((SeekBar) mPageZoomView.findViewById(R.id.page_zoom_slider)).getProgress());
         assertViewState("100", true, true);
 
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecord(
+                                PageZoomUma.PAGE_ZOOM_APP_MENU_SLIDER_ZOOM_LEVEL_CHANGED_HISTOGRAM,
+                                true)
+                        .expectIntRecord(
+                                PageZoomUma.PAGE_ZOOM_APP_MENU_SLIDER_ZOOM_LEVEL_VALUE_HISTOGRAM,
+                                90)
+                        .build();
+
         onView(withId(R.id.page_zoom_decrease_zoom_button)).perform(click());
         assertEquals(
                 40, ((SeekBar) mPageZoomView.findViewById(R.id.page_zoom_slider)).getProgress());
         assertViewState("90", true, true);
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> { mCoordinator.hide(); });
+
+        histogramWatcher.assertExpected();
     }
 
     @Test
@@ -199,10 +217,24 @@ public class PageZoomViewTest {
                 50, ((SeekBar) mPageZoomView.findViewById(R.id.page_zoom_slider)).getProgress());
         assertViewState("100", true, true);
 
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecord(
+                                PageZoomUma.PAGE_ZOOM_APP_MENU_SLIDER_ZOOM_LEVEL_CHANGED_HISTOGRAM,
+                                true)
+                        .expectIntRecord(
+                                PageZoomUma.PAGE_ZOOM_APP_MENU_SLIDER_ZOOM_LEVEL_VALUE_HISTOGRAM,
+                                110)
+                        .build();
+
         onView(withId(R.id.page_zoom_increase_zoom_button)).perform(click());
         assertEquals(
                 60, ((SeekBar) mPageZoomView.findViewById(R.id.page_zoom_slider)).getProgress());
         assertViewState("110", true, true);
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> { mCoordinator.hide(); });
+
+        histogramWatcher.assertExpected();
     }
 
     @Test
