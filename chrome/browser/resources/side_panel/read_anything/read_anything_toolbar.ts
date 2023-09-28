@@ -420,7 +420,7 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
             ...(voiceListForLang).map(speechSynthesisVoice => ({
                                         title: speechSynthesisVoice.name,
                                         icon: '',
-                                        data: '',
+                                        data: speechSynthesisVoice,
                                         callback: () => {},
                                       })),
           ]),
@@ -498,6 +498,14 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
     this.onTextStyleClick_(
         event, ReadAnythingSettingsChange.THEME_CHANGE, this.$.colorMenu,
         ReadAnythingElement.prototype.updateThemeFromWebUi);
+  }
+
+  private onVoiceSelectClick_(event: DomRepeatEvent<MenuStateItem>) {
+    // TODO(crbug.com/1474951): Save voice to prefs.
+    if (this.contentPage) {
+      this.contentPage.setSpeechSynthesisVoice(
+          event.model.item.data as SpeechSynthesisVoice);
+    }
   }
 
   private onTextStyleClick_(

@@ -181,6 +181,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   // State for speech synthesis needs to be tracked separately because there
   // are bugs with window.speechSynthesis.paused and
   // window.speechSynthesis.speaking on some platforms.
+  private voice: SpeechSynthesisVoice|undefined;
   paused = true;
   speechStarted = false;
   maxSpeechLength = 175;
@@ -407,14 +408,35 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     this.rate = rate;
   }
 
+  getSpeechSynthesisVoice(): SpeechSynthesisVoice|undefined {
+    if (!this.voice) {
+      this.voice = this.defaultVoice();
+    }
+    return this.voice;
+  }
+
+  defaultVoice(): SpeechSynthesisVoice|undefined {
+    // TODO(crbug.com/1474951): Additional logic to find defaualt voice if there
+    // isn't a voice marked as default
+    return this.synth.getVoices().find(
+        ({localService, default: isDefaultVoice}) =>
+            localService && isDefaultVoice);
+  }
+
   getVoices(): VoicesByLanguage {
-    return this.synth.getVoices().reduce(
-        (voicesByLang: VoicesByLanguage, voice: SpeechSynthesisVoice) => {
-          (voicesByLang[voice.lang] = voicesByLang[voice.lang] || [])
-              .push(voice);
-          return voicesByLang;
-        },
-        {});
+    return this.synth.getVoices()
+        .filter(({localService}) => localService)
+        .reduce(
+            (voicesByLang: VoicesByLanguage, voice: SpeechSynthesisVoice) => {
+              (voicesByLang[voice.lang] = voicesByLang[voice.lang] || [])
+                  .push(voice);
+              return voicesByLang;
+            },
+            {});
+  }
+
+  setSpeechSynthesisVoice(voice: SpeechSynthesisVoice) {
+    this.voice = voice;
   }
 
   stopSpeech() {
@@ -577,13 +599,13 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     // TODO(crbug.com/1474951): Use correct locale when speaking.
     const languageCode = chrome.readingMode.speechSynthesisLanguageCode;
     message.lang = languageCode;
+    const voice = this.getSpeechSynthesisVoice();
+    if (!voice) {
+      // TODO(crbug.com/1474951): Handle when no voices are available.
+      return;
+    }
 
-    // TODO(crbug.com/1474951): Allow voice selection.
-    // This just selects the default voice of the brower's language. If no
-    // voice is available, nothing happens.
-    const voices =
-        this.synth.getVoices().filter(voice => voice.lang === languageCode);
-    message.voice = voices[0];
+    message.voice = voice;
 
     // TODO(crbug.com/1474951): Ensure the correct default values are used.
     message.volume = 1;

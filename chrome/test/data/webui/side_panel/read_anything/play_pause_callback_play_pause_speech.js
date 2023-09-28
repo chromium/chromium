@@ -65,14 +65,15 @@
   assertEquals(
       playPauseButton.getAttribute('iron-icon'), 'read-anything-20:pause');
   assertEquals(readAnythingApp.paused, false);
-  assertEquals(readAnythingApp.speechStarted, true);
+  // TODO(crbug.com/1474951): Since this test browser doesn't have any voices,
+  // speechStarted doesn't get set to true. Find a way to add a mock voice to
+  // this browser, and test that readAnythingApp.speechStarted is true.
 
   // Now pause again by clicking pause
   playPauseButton.click();
   assertEquals(
       playPauseButton.getAttribute('iron-icon'), 'read-anything-20:play');
   assertEquals(readAnythingApp.paused, true);
-  assertEquals(readAnythingApp.speechStarted, true);
 
   return result;
 })();
