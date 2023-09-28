@@ -31,8 +31,13 @@ class DefaultDelegateImpl : public ArcIdleManager::Delegate {
   ~DefaultDelegateImpl() override = default;
 
   // ArcIdleManager::Delegate:
-  void SetInteractiveMode(ArcBridgeService* bridge, bool enable) override {
-    ArcPowerBridge::NotifyAndroidInteractiveState(bridge, enable);
+  void SetInteractiveMode(ArcPowerBridge* arc_power_bridge,
+                          ArcBridgeService* bridge,
+                          bool enable) override {
+    if (!arc_power_bridge) {
+      return;
+    }
+    arc_power_bridge->NotifyAndroidInteractiveState(bridge, enable);
   }
 };
 
@@ -84,12 +89,12 @@ ArcIdleManager::ArcIdleManager(content::BrowserContext* context,
   }
   AddObserver(std::make_unique<ArcDisplayPowerObserver>());
 
-  auto* const power_bridge = ArcPowerBridge::GetForBrowserContext(context);
+  arc_power_bridge_ = ArcPowerBridge::GetForBrowserContext(context);
 
   // This maybe null in unit tests.
-  if (power_bridge) {
-    power_bridge->DisableAndroidIdleControl();
-    powerbridge_observation_.Observe(power_bridge);
+  if (arc_power_bridge_) {
+    arc_power_bridge_->DisableAndroidIdleControl();
+    powerbridge_observation_.Observe(arc_power_bridge_);
   }
 
   DCHECK(bridge_);
@@ -122,7 +127,7 @@ void ArcIdleManager::OnConnectionReady() {
   if (is_connected_)
     return;
   StartObservers();
-  delegate_->SetInteractiveMode(bridge_, !should_throttle());
+  delegate_->SetInteractiveMode(arc_power_bridge_, bridge_, !should_throttle());
   is_connected_ = true;
 
   // Always reset the timer on connect.
@@ -155,7 +160,7 @@ void ArcIdleManager::ThrottleInstance(bool should_throttle) {
   }
   first_idle_happened_ = true;
   LogScreenOffTimer(/*toggle_timer*/ should_throttle);
-  delegate_->SetInteractiveMode(bridge_, !should_throttle);
+  delegate_->SetInteractiveMode(arc_power_bridge_, bridge_, !should_throttle);
 }
 
 void ArcIdleManager::OnVmResumed() {
@@ -164,13 +169,16 @@ void ArcIdleManager::OnVmResumed() {
     // That earlier suspend counts as first-idle.
     first_idle_happened_ = true;
 
-    ThrottleInstance(false);
+    // Just sync up Android state with internal state.
+    // No need for logging metrics, not a state change.
+    delegate_->SetInteractiveMode(arc_power_bridge_, bridge_, true);
   }
 }
 
 void ArcIdleManager::OnWillDestroyArcPowerBridge() {
   // No more notifications about VM resumed.
   powerbridge_observation_.Reset();
+  arc_power_bridge_ = nullptr;
 }
 
 void ArcIdleManager::LogScreenOffTimer(bool toggle_timer) {
