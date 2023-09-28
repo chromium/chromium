@@ -31,7 +31,7 @@ namespace {
 // Use to evaluate if the hack is still needed. See https://crbug.com/517681.
 BASE_FEATURE(kSkipConditionVariableWakeupHack,
              "SkipConditionVariableWakeupHack",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 std::atomic_bool g_skip_wakeup_hack = false;
 #endif
 }  // namespace
