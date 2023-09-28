@@ -54,6 +54,7 @@ class CORE_EXPORT LayoutFlowThread : public LayoutBlockFlow {
   ~LayoutFlowThread() override = default;
   void Trace(Visitor*) const override;
 
+  bool IsLayoutNGObject() const final;
   bool IsLayoutFlowThread() const final {
     NOT_DESTROYED();
     return true;

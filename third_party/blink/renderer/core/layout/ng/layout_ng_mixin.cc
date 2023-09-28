@@ -37,12 +37,6 @@ LayoutNGMixin<Base>::LayoutNGMixin(ContainerNode* node) : Base(node) {
 template <typename Base>
 LayoutNGMixin<Base>::~LayoutNGMixin() = default;
 
-template <typename Base>
-bool LayoutNGMixin<Base>::IsLayoutNGObject() const {
-  Base::CheckIsNotDestroyed();
-  return true;
-}
-
 template class CORE_TEMPLATE_EXPORT LayoutNGMixin<LayoutBlock>;
 template class CORE_TEMPLATE_EXPORT LayoutNGMixin<LayoutBlockFlow>;
 

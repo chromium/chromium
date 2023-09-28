@@ -71,6 +71,8 @@ class CORE_EXPORT LayoutMultiColumnSet final : public LayoutBlockFlow {
 
   void Trace(Visitor*) const override;
 
+  bool IsLayoutNGObject() const final;
+
   const MultiColumnFragmentainerGroup& FirstFragmentainerGroup() const {
     NOT_DESTROYED();
     UpdateGeometryIfNeeded();

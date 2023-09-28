@@ -43,6 +43,11 @@ void LayoutFlowThread::Trace(Visitor* visitor) const {
   LayoutBlockFlow::Trace(visitor);
 }
 
+bool LayoutFlowThread::IsLayoutNGObject() const {
+  NOT_DESTROYED();
+  return false;
+}
+
 LayoutFlowThread* LayoutFlowThread::LocateFlowThreadContainingBlockOf(
     const LayoutObject& descendant,
     AncestorSearchConstraint constraint) {

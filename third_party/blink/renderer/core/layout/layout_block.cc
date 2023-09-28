@@ -93,6 +93,11 @@ void LayoutBlock::Trace(Visitor* visitor) const {
   LayoutBox::Trace(visitor);
 }
 
+bool LayoutBlock::IsLayoutNGObject() const {
+  NOT_DESTROYED();
+  return true;
+}
+
 void LayoutBlock::RemoveFromGlobalMaps() {
   NOT_DESTROYED();
   if (has_svg_text_descendants_) {

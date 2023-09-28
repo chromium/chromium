@@ -169,6 +169,11 @@ void LayoutMultiColumnSet::Trace(Visitor* visitor) const {
   LayoutBlockFlow::Trace(visitor);
 }
 
+bool LayoutMultiColumnSet::IsLayoutNGObject() const {
+  NOT_DESTROYED();
+  return false;
+}
+
 unsigned LayoutMultiColumnSet::FragmentainerGroupIndexAtFlowThreadOffset(
     LayoutUnit flow_thread_offset,
     PageBoundaryRule rule) const {

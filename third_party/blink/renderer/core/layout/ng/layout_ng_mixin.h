@@ -29,8 +29,6 @@ class LayoutNGMixin : public Base {
  public:
   explicit LayoutNGMixin(ContainerNode*);
   ~LayoutNGMixin() override;
-
-  bool IsLayoutNGObject() const final;
 };
 
 }  // namespace blink
