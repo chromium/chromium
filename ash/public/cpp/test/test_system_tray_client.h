@@ -58,6 +58,7 @@ class ASH_PUBLIC_EXPORT TestSystemTrayClient : public SystemTrayClient {
   void ShowNetworkCreate(const std::string& type) override;
   void ShowSettingsCellularSetup(bool show_psim_flow) override;
   void ShowSettingsSimUnlock() override;
+  void ShowApnSubpage(const std::string& network_id) override;
   void ShowThirdPartyVpnCreate(const std::string& extension_id) override;
   void ShowArcVpnCreate(const std::string& app_id) override;
   void ShowNetworkSettings(const std::string& network_id) override;
@@ -129,6 +130,12 @@ class ASH_PUBLIC_EXPORT TestSystemTrayClient : public SystemTrayClient {
 
   int show_sim_unlock_settings_count() const {
     return show_sim_unlock_settings_count_;
+  }
+
+  int show_apn_subpage_count() const { return show_apn_subpage_count_; }
+
+  const std::string& last_apn_subpage_network_id() const {
+    return last_apn_subpage_network_id_;
   }
 
   int show_third_party_vpn_create_count() const {
@@ -211,6 +218,7 @@ class ASH_PUBLIC_EXPORT TestSystemTrayClient : public SystemTrayClient {
   int show_os_smart_privacy_settings_count_ = 0;
   int show_wifi_sync_settings_count_ = 0;
   int show_sim_unlock_settings_count_ = 0;
+  int show_apn_subpage_count_ = 0;
   int show_third_party_vpn_create_count_ = 0;
   std::string last_third_party_vpn_extension_id_;
   int show_arc_vpn_create_count_ = 0;
@@ -221,6 +229,7 @@ class ASH_PUBLIC_EXPORT TestSystemTrayClient : public SystemTrayClient {
   int show_calendar_event_count_ = 0;
   int show_video_conference_count_ = 0;
   std::string last_bluetooth_settings_device_id_;
+  std::string last_apn_subpage_network_id_;
   std::string last_network_settings_network_id_;
   std::string last_network_type_;
   int show_channel_info_additional_details_count_ = 0;

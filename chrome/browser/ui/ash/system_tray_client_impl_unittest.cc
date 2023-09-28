@@ -91,4 +91,15 @@ TEST_F(SystemTrayClientImplTest, ShowRemapKeysSettings) {
             user_action_tester.GetActionCount(kShowRemapKeysSettingsSubpage));
 }
 
+TEST_F(SystemTrayClientImplTest, ShowApnSubpage) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(ash::features::kApnRevamp);
+  client_impl_->ShowApnSubpage(/*network_id=*/"guid");
+  EXPECT_EQ(settings_window_manager_->last_url(),
+            base::StrCat({chrome::GetOSSettingsUrl(
+                              chromeos::settings::mojom::kApnSubpagePath)
+                              .spec(),
+                          "?guid=guid"}));
+}
+
 }  // namespace

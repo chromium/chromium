@@ -106,6 +106,11 @@ void TestSystemTrayClient::ShowSettingsSimUnlock() {
   ++show_sim_unlock_settings_count_;
 }
 
+void TestSystemTrayClient::ShowApnSubpage(const std::string& network_id) {
+  ++show_apn_subpage_count_;
+  last_apn_subpage_network_id_ = network_id;
+}
+
 void TestSystemTrayClient::ShowThirdPartyVpnCreate(
     const std::string& extension_id) {
   ++show_third_party_vpn_create_count_;

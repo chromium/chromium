@@ -648,6 +648,14 @@ void SystemTrayClientImpl::ShowSettingsSimUnlock() {
   ShowSettingsSubPageForActiveUser(page);
 }
 
+void SystemTrayClientImpl::ShowApnSubpage(const std::string& network_id) {
+  CHECK(ash::features::IsApnRevampEnabled());
+  std::string page = chromeos::settings::mojom::kApnSubpagePath +
+                     std::string("?guid=") +
+                     base::EscapeUrlEncodedData(network_id, /*use_plus=*/true);
+  ShowSettingsSubPageForActiveUser(page);
+}
+
 void SystemTrayClientImpl::ShowNetworkSettings(const std::string& network_id) {
   ShowNetworkSettingsHelper(network_id, false /* show_configure */);
 }

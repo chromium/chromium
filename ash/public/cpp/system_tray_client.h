@@ -129,6 +129,9 @@ class ASH_PUBLIC_EXPORT SystemTrayClient {
   // Opens SIM unlock dialog in OS Settings.
   virtual void ShowSettingsSimUnlock() = 0;
 
+  // Opens the APN subpage for network with guid |network_id|.
+  virtual void ShowApnSubpage(const std::string& network_id) = 0;
+
   // Shows the "add network" UI to create a third-party extension-backed VPN
   // connection (e.g. Cisco AnyConnect).
   virtual void ShowThirdPartyVpnCreate(const std::string& extension_id) = 0;

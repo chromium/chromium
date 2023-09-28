@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/public/cpp/system_tray_client.h"
@@ -575,6 +576,10 @@ void NetworkStateNotifier::ShowConnectErrorNotification(
   if (IsSimLockConnectionFailure(error_name, network)) {
     on_click = base::BindRepeating(&NetworkStateNotifier::ShowSimUnlockSettings,
                                    weak_ptr_factory_.GetWeakPtr());
+  } else if (features::IsApnRevampEnabled() && network &&
+             network->GetError() == shill::kErrorInvalidAPN) {
+    on_click = base::BindRepeating(&NetworkStateNotifier::ShowApnSettings,
+                                   weak_ptr_factory_.GetWeakPtr(), guid);
   } else {
     on_click = base::BindRepeating(&NetworkStateNotifier::ShowNetworkSettings,
                                    weak_ptr_factory_.GetWeakPtr(), guid);
@@ -627,6 +632,16 @@ void NetworkStateNotifier::ShowSimUnlockSettings() {
 
   NET_LOG(USER) << "Opening SIM unlock settings";
   system_tray_client_->ShowSettingsSimUnlock();
+}
+
+void NetworkStateNotifier::ShowApnSettings(const std::string& network_id) {
+  CHECK(features::IsApnRevampEnabled());
+  if (!system_tray_client_) {
+    return;
+  }
+
+  NET_LOG(USER) << "Opening APN subpage for network: " << network_id;
+  system_tray_client_->ShowApnSubpage(network_id);
 }
 
 void NetworkStateNotifier::ShowCarrierAccountDetail(
