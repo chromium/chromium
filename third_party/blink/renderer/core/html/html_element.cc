@@ -2490,17 +2490,55 @@ template <typename Traversal>
 absl::optional<TextDirection> HTMLElement::ResolveAutoDirectionality(
     bool& is_deferred,
     Node* stay_within) const {
+  // TODO(https://crbug.com/576815): Once the CSSPseudoDir flag is
+  // removed, we can remove the stay_within argument.
+  CHECK(!RuntimeEnabledFeatures::CSSPseudoDirEnabled() || this == stay_within);
+
   is_deferred = false;
   if (const TextControlElement* text_element =
           ElementIfAutoDirShouldUseValueOrNull(this)) {
     return BidiParagraph::BaseDirectionForStringOrLtr(text_element->Value());
   }
 
-  // For <textarea>, the heuristic is applied on a per-paragraph level, and
-  // we should traverse the flat tree.
-  Node* node = (IsA<HTMLTextAreaElement>(*this) || IsA<HTMLSlotElement>(*this))
-                   ? FlatTreeTraversal::FirstChild(*this)
-                   : Traversal::FirstChild(*this);
+  if (RuntimeEnabledFeatures::CSSPseudoDirEnabled()) {
+    if (const HTMLSlotElement* slot_this =
+            ToHTMLSlotElementIfSupportsAssignmentOrNull(this)) {
+      auto& assigned_nodes = slot_this->AssignedNodes();
+      // Use the assigned nodes if there are any.  Otherwise, the <slot>
+      // represents its content and we should fall back to the regular codepath.
+      if (!assigned_nodes.empty()) {
+        for (Node* slotted_node : assigned_nodes) {
+          if (slotted_node->IsTextNode()) {
+            if (const absl::optional<TextDirection> text_direction =
+                    BidiParagraph::BaseDirectionForString(
+                        slotted_node->textContent(true))) {
+              return *text_direction;
+            }
+          } else if (HTMLElement* slotted_element =
+                         DynamicTo<HTMLElement>(slotted_node)) {
+            // TODO(https://crbug.com/576815): This should work for
+            // non-HTML elements too.
+            absl::optional<TextDirection> slotted_child_result =
+                slotted_element->ResolveAutoDirectionality<NodeTraversal>(
+                    is_deferred, slotted_element);
+            if (slotted_child_result) {
+              return slotted_child_result;
+            }
+          }
+        }
+        return absl::nullopt;
+      }
+    }
+  }
+
+  Node* node;
+  if (RuntimeEnabledFeatures::CSSPseudoDirEnabled()) {
+    node = Traversal::FirstChild(*this);
+  } else {
+    node = (IsA<HTMLTextAreaElement>(*this) || IsA<HTMLSlotElement>(*this))
+               ? FlatTreeTraversal::FirstChild(*this)
+               : Traversal::FirstChild(*this);
+  }
   while (node) {
     // Skip bdi, script, style and text form controls.
     auto* element = DynamicTo<Element>(node);
