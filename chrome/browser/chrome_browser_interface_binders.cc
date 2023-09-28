@@ -330,6 +330,8 @@
 #include "chrome/browser/ui/webui/ash/office_fallback/office_fallback_ui.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_ui.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_ui.mojom.h"
+#include "chrome/browser/ui/webui/ash/sensor_info/sensor.mojom.h"
+#include "chrome/browser/ui/webui/ash/sensor_info/sensor_info_ui.h"
 #include "chrome/browser/ui/webui/ash/set_time_ui.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/apps/mojom/app_notification_handler.mojom.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/files/mojom/google_drive_handler.mojom.h"
@@ -1491,6 +1493,8 @@ void PopulateChromeWebUIFrameBinders(
   RegisterWebUIControllerInterfaceBinder<
       emoji_picker::mojom::PageHandlerFactory, ash::EmojiUI>(map);
 
+  RegisterWebUIControllerInterfaceBinder<sensor::mojom::PageHandlerFactory,
+                                         ash::SensorInfoUI>(map);
   RegisterWebUIControllerInterfaceBinder<
       enterprise_reporting::mojom::PageHandlerFactory,
       ash::reporting::EnterpriseReportingUI>(map);

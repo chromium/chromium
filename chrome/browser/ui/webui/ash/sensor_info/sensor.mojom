@@ -1,0 +1,52 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module sensor.mojom;
+
+// SensorType represents type of the sensor where this update is from.
+enum SensorType {
+  kLidAngle = 0,
+  kAccelerometerBase = 1,
+  kAccelerometerLid = 2,
+  kGyroscopeBase = 3,
+  kGyroscopeLid = 4,
+  kSensorTypeCount = 5,
+};
+
+// A single non lid_angle sensor's update.
+// 'x','y','z' are sensor's value from x, y, z axis.
+struct NonLidAngleUpdateInfo {
+  SensorType sensor_type;
+  float x;
+  float y;
+  float z;
+};
+
+// A single lid_angle sensor's update.
+// 'x' is the angle between the lid and the base.
+struct LidAngleUpdateInfo {
+  SensorType sensor_type;
+  float x;
+};
+
+// Lid_angle sensor only has a single value so we use a union to describe
+// SensorUpdateInfo.
+union SensorUpdateInfo{
+  LidAngleUpdateInfo lid_angle_update_info;
+  NonLidAngleUpdateInfo update_info;
+};
+
+// PageHandlerFactory managing PageHandler.
+interface PageHandlerFactory {
+  // Creates PageHandler in C++ side. establish connection to TS side.
+  CreatePageHandler(pending_receiver<PageHandler> handler);
+};
+
+// Called from TS side of chrome://sensor-info (Renderer -> Browser)
+interface PageHandler {
+  // Starts writing SensorUpdates to file.
+  StartRecordingUpdate();
+  // Stops writing SensorUpdates to file.
+  StopRecordingUpdate();
+};

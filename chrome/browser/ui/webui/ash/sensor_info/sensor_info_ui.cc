@@ -3,6 +3,11 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/webui/ash/sensor_info/sensor_info_ui.h"
+
+#include <memory>
+#include <utility>
+
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/sensor_info_resources.h"
@@ -14,12 +19,14 @@
 
 namespace ash {
 SensorInfoUI::SensorInfoUI(content::WebUI* web_ui)
-    : content::WebUIController(web_ui) {
-  // Set up the chrome://sensor-info source.
+    : MojoWebUIController(web_ui),
+      profile_(Profile::FromWebUI(web_ui)),
+      provider_(ash::SensorProvider()) {
+  // Sets up the chrome://sensor-info source.
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       web_ui->GetWebContents()->GetBrowserContext(),
       chrome::kChromeUISensorInfoHost);
-  // Add required resources.
+  // Adds required resources.
   webui::SetupWebUIDataSource(
       source, base::make_span(kSensorInfoResources, kSensorInfoResourcesSize),
       IDR_SENSOR_INFO_SENSOR_INFO_HTML);
@@ -27,4 +34,17 @@ SensorInfoUI::SensorInfoUI(content::WebUI* web_ui)
 
 SensorInfoUI::~SensorInfoUI() = default;
 
+void SensorInfoUI::BindInterface(
+    mojo::PendingReceiver<sensor::mojom::PageHandlerFactory> receiver) {
+  page_factory_receiver_.reset();
+  page_factory_receiver_.Bind(std::move(receiver));
+}
+
+void SensorInfoUI::CreatePageHandler(
+    mojo::PendingReceiver<sensor::mojom::PageHandler> receiver) {
+  page_handler_ = std::make_unique<SensorPageHandler>(profile_, &provider_,
+                                                      std::move(receiver));
+}
+
+WEB_UI_CONTROLLER_TYPE_IMPL(SensorInfoUI)
 }  // namespace ash

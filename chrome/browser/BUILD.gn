@@ -5291,6 +5291,7 @@ static_library("browser") {
       "//chrome/browser/ui/webui/ash/manage_mirrorsync:mojo_bindings",
       "//chrome/browser/ui/webui/ash/office_fallback:mojo_bindings",
       "//chrome/browser/ui/webui/ash/parent_access:mojo_bindings",
+      "//chrome/browser/ui/webui/ash/sensor_info:mojo_bindings",
       "//chrome/browser/ui/webui/ash/settings/pages/apps/mojom",
       "//chrome/browser/ui/webui/ash/settings/pages/files/mojom",
       "//chrome/browser/ui/webui/ash/settings/search/mojom",
