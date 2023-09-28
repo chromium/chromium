@@ -1989,6 +1989,19 @@ StyleRule* CSSParserImpl::ConsumeStyleRule(
     observer_->StartRuleHeader(StyleRule::kStyle, stream.LookAheadOffset());
   }
 
+  // Style rules that look like custom property declarations
+  // are not allowed by css-syntax.
+  //
+  // https://drafts.csswg.org/css-syntax/#consume-qualified-rule
+  bool custom_property_ambiguity = false;
+  if (RuntimeEnabledFeatures::CSSNestingIdentEnabled() &&
+      CSSVariableParser::IsValidVariableName(stream.Peek())) {
+    CSSParserTokenStream::State state = stream.Save();
+    stream.ConsumeIncludingWhitespace();  // <ident>
+    custom_property_ambiguity = stream.Peek().GetType() == kColonToken;
+    stream.Restore(state);
+  }
+
   // Parse the prelude of the style rule
   base::span<CSSSelector> selector_vector = CSSSelectorParser::ConsumeSelector(
       stream, context_, nesting_type, parent_rule_for_nesting,
@@ -2025,6 +2038,9 @@ StyleRule* CSSParserImpl::ConsumeStyleRule(
 
   if (selector_vector.empty()) {
     // Parse error, invalid selector list.
+    return nullptr;
+  }
+  if (custom_property_ambiguity) {
     return nullptr;
   }
 
