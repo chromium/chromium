@@ -2587,6 +2587,9 @@ class SoftNavigationBrowserTest : public PageLoadMetricsBrowserTest {
     content::WaitForHitTestData(web_contents->GetPrimaryMainFrame());
 
     waiter->AddPageExpectation(TimingField::kSoftNavigationCountUpdated);
+    if (wait_for_second_lcp) {
+      waiter->AddPageExpectation(TimingField::kLargestContentfulPaint);
+    }
 
     const std::string wait_for_lcp = R"(
       (async () => {
@@ -2689,6 +2692,7 @@ class SoftNavigationBrowserTest : public PageLoadMetricsBrowserTest {
     EXPECT_EQ(expected_event_number, num_events);
 
     std::string previous_frame;
+    std::string navigation_id;
     double soft_navigation_timestamp = 0.0;
     for (auto* event : events) {
       EXPECT_TRUE(event->HasStringArg("frame"));
@@ -2699,8 +2703,15 @@ class SoftNavigationBrowserTest : public PageLoadMetricsBrowserTest {
       previous_frame = frame;
       if (event->name == "SoftNavigationHeuristics_SoftNavigationDetected") {
         soft_navigation_timestamp = event->timestamp;
+        EXPECT_TRUE(event->HasStringArg("navigationId"));
+        navigation_id = event->GetKnownArgAsString("navigationId");
       } else if (soft_navigation_timestamp > 0.0) {
         EXPECT_LE(soft_navigation_timestamp, event->timestamp);
+        EXPECT_EQ(event->name, "largestContentfulPaint::Candidate");
+        base::Value::Dict data = event->GetKnownArgAsDict("data");
+        if (!navigation_id.empty()) {
+          EXPECT_EQ(navigation_id, *data.FindString("navigationId"));
+        }
       }
     }
     // If we have more than one event, one of them needs to be a soft

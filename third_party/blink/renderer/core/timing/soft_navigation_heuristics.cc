@@ -38,7 +38,8 @@ void LogAndTraceDetectedSoftNavigation(LocalFrame* frame,
   TRACE_EVENT_INSTANT("scheduler,devtools.timeline,loading",
                       "SoftNavigationHeuristics_SoftNavigationDetected",
                       user_click_timestamp, "frame",
-                      GetFrameIdForTracing(frame), "url", url);
+                      GetFrameIdForTracing(frame), "url", url, "navigationId",
+                      window->GetNavigationId());
 }
 
 }  // namespace

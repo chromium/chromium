@@ -124,8 +124,8 @@ void LargestContentfulPaintCalculator::UpdateWebExposedLargestContentfulImage(
 
     TRACE_EVENT_MARK_WITH_TIMESTAMP2(
         kTraceCategories, kLCPCandidate, largest_image->paint_time, "data",
-        ImageCandidateTraceData(largest_image), "frame",
-        GetFrameIdForTracing(window->GetFrame()));
+        ImageCandidateTraceData(largest_image, is_triggered_by_soft_navigation),
+        "frame", GetFrameIdForTracing(window->GetFrame()));
   }
 }
 
@@ -158,8 +158,8 @@ void LargestContentfulPaintCalculator::UpdateWebExposedLargestContentfulText(
   if (LocalDOMWindow* window = window_performance_->DomWindow()) {
     TRACE_EVENT_MARK_WITH_TIMESTAMP2(
         kTraceCategories, kLCPCandidate, largest_text.paint_time, "data",
-        TextCandidateTraceData(largest_text), "frame",
-        GetFrameIdForTracing(window->GetFrame()));
+        TextCandidateTraceData(largest_text, is_triggered_by_soft_navigation),
+        "frame", GetFrameIdForTracing(window->GetFrame()));
   }
 }
 
@@ -169,7 +169,8 @@ void LargestContentfulPaintCalculator::Trace(Visitor* visitor) const {
 
 std::unique_ptr<TracedValue>
 LargestContentfulPaintCalculator::TextCandidateTraceData(
-    const TextRecord& largest_text) {
+    const TextRecord& largest_text,
+    bool is_triggered_by_soft_navigation) {
   auto value = std::make_unique<TracedValue>();
   value->SetString("type", "text");
   value->SetInteger("nodeId",
@@ -180,14 +181,17 @@ LargestContentfulPaintCalculator::TextCandidateTraceData(
   value->SetBoolean("isOutermostMainFrame",
                     window->GetFrame()->IsOutermostMainFrame());
   value->SetBoolean("isMainFrame", window->GetFrame()->IsMainFrame());
-  value->SetString("navigationId",
-                   IdentifiersFactory::LoaderId(window->document()->Loader()));
+  value->SetString("navigationId", is_triggered_by_soft_navigation
+                                       ? window->GetNavigationId()
+                                       : IdentifiersFactory::LoaderId(
+                                             window->document()->Loader()));
   return value;
 }
 
 std::unique_ptr<TracedValue>
 LargestContentfulPaintCalculator::ImageCandidateTraceData(
-    const ImageRecord* largest_image) {
+    const ImageRecord* largest_image,
+    bool is_triggered_by_soft_navigation) {
   auto value = std::make_unique<TracedValue>();
   value->SetString("type", "image");
   value->SetInteger("nodeId", static_cast<int>(largest_image->node_id));
@@ -197,8 +201,10 @@ LargestContentfulPaintCalculator::ImageCandidateTraceData(
   value->SetBoolean("isOutermostMainFrame",
                     window->GetFrame()->IsOutermostMainFrame());
   value->SetBoolean("isMainFrame", window->GetFrame()->IsMainFrame());
-  value->SetString("navigationId",
-                   IdentifiersFactory::LoaderId(window->document()->Loader()));
+  value->SetString("navigationId", is_triggered_by_soft_navigation
+                                       ? window->GetNavigationId()
+                                       : IdentifiersFactory::LoaderId(
+                                             window->document()->Loader()));
 
   value->SetDouble("imageDiscoveryTime",
                    window_performance_->MonotonicTimeToDOMHighResTimeStamp(
