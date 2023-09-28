@@ -12,7 +12,6 @@ import * as ProfilerModule from 'devtools/panels/profiler/profiler.js';
   TestRunner.addResult(
       `Tests Overview pane calculation in FlameChart for different width = 2^n with n in range 4 - 0.
       Also tests loading of a legacy nodes format, where nodes were represented as a tree.\n`);
-  await TestRunner.loadLegacyModule('profiler');
 
   var profileAndExpectations = {
     profile: {

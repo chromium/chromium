@@ -11,7 +11,6 @@ import * as ProfilerModule from 'devtools/panels/profiler/profiler.js';
 
 (async function() {
   TestRunner.addResult(`Tests that search works for large bottom-up view of CPU profile.\n`);
-  await TestRunner.loadLegacyModule('profiler');
 
   var nodesCount = 200;
   function buildTree(startId, count) {

@@ -10,7 +10,6 @@ import * as ProfilerModule from 'devtools/panels/profiler/profiler.js';
 
 (async function() {
   TestRunner.addResult(`Tests bottom-up view self and total time calculation in CPU profiler.\n`);
-  await TestRunner.loadLegacyModule('profiler');
 
   var profileAndExpectations = {
     'title': 'profile1',

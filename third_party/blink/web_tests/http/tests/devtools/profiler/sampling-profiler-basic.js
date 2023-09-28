@@ -8,7 +8,6 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
 
 (async function() {
   TestRunner.addResult(`Tests that the sampling heap profiler works and supports nesting.\n`);
-  await TestRunner.loadLegacyModule('profiler');
 
   const profiler = SDK.TargetManager.TargetManager.instance().primaryPageTarget().model(SDK.HeapProfilerModel.HeapProfilerModel);
   await profiler.startSampling();
