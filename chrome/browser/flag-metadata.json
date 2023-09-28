@@ -3165,7 +3165,14 @@
     "owners": [
       "wicarr@microsoft.com"
     ],
-    "expiry_milestone": 120
+    "expiry_milestone": 130
+  },
+  {
+    "name": "enable-media-foundation-clear-rendering-strategy",
+    "owners": [
+      "wicarr@microsoft.com"
+    ],
+    "expiry_milestone": 130
   },
   {
     "name": "enable-media-foundation-video-capture",

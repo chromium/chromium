@@ -5091,10 +5091,26 @@ const char kHardwareSecureDecryptionFallbackDescription[] =
     "secure CDMs. If this feature is disabled, the fallback will never happen "
     "and users could be stuck with playback failures.";
 
-const char kMediaFoundationClearName[] = "MediaFoundation for Clear";
+const char kMediaFoundationClearName[] = "Media Foundation for Clear";
 const char kMediaFoundationClearDescription[] =
     "Enable/Disable the use of MediaFoundation for non-protected content "
     "playback on supported systems.";
+
+const char kMediaFoundationClearStrategyName[] =
+    "Media Foundation for Clear Rendering Strategy";
+const char kMediaFoundationClearStrategyDescription[] =
+    "Sets the rendering strategy to be used when Media Foundation for Clear is "
+    "in use. The "
+    "Direct Composition rendering strategy enforces presentation to a Direct "
+    "Composition surface "
+    "from the Media Foundation Media Engine. The Frame Server rendering "
+    "strategy produces video "
+    "frames from the Media Foundation Media Engine which are fed through "
+    "Chromium's frame painting "
+    "pipeline. The Dynamic rendering strategy allows changing between the two "
+    "modes based on the "
+    "current operating conditions. Other options will result in a default "
+    "rendering strategy.";
 
 const char kRawAudioCaptureName[] = "Raw audio capture";
 const char kRawAudioCaptureDescription[] =

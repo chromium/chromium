@@ -2959,6 +2959,9 @@ extern const char kHardwareSecureDecryptionFallbackDescription[];
 extern const char kMediaFoundationClearName[];
 extern const char kMediaFoundationClearDescription[];
 
+extern const char kMediaFoundationClearStrategyName[];
+extern const char kMediaFoundationClearStrategyDescription[];
+
 extern const char kRawAudioCaptureName[];
 extern const char kRawAudioCaptureDescription[];
 
