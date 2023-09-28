@@ -356,60 +356,24 @@ class PersonalDataManagerMockTest : public PersonalDataManagerTestBase,
   void SetUp() override {
     SetUpTest();
     ResetPersonalDataManager();
-    personal_data_->pref_service_->SetInteger(
-        prefs::kAutofillLastVersionDeduped, 0);
   }
 
   void TearDown() override {
-    if (personal_data_)
+    if (personal_data_) {
       personal_data_->Shutdown();
+    }
     personal_data_.reset();
     TearDownTest();
   }
 
   void ResetPersonalDataManager() {
-    if (personal_data_)
+    if (personal_data_) {
       personal_data_->Shutdown();
+    }
     personal_data_ =
         std::make_unique<PersonalDataManagerMock>("en", std::string());
     PersonalDataManagerTestBase::ResetPersonalDataManager(
         /*use_sync_transport_mode=*/true, personal_data_.get());
-  }
-
-  bool TurnOnSyncFeature() {
-    return PersonalDataManagerTestBase::TurnOnSyncFeature(personal_data_.get());
-  }
-
-  void StopTheDedupeProcess() {
-    personal_data_->pref_service_->SetInteger(
-        prefs::kAutofillLastVersionDeduped,
-        version_info::GetMajorVersionNumberAsInt());
-  }
-
-  void AddProfileToPersonalDataManager(const AutofillProfile& profile) {
-    PersonalDataProfileTaskWaiter waiter(*personal_data_);
-    EXPECT_CALL(waiter.mock_observer(), OnPersonalDataChanged());
-    personal_data_->AddProfile(profile);
-    std::move(waiter).Wait();
-  }
-
-  void UpdateProfileOnPersonalDataManager(const AutofillProfile& profile) {
-    PersonalDataProfileTaskWaiter waiter(*personal_data_);
-    EXPECT_CALL(waiter.mock_observer(), OnPersonalDataChanged());
-    personal_data_->UpdateProfile(profile);
-    std::move(waiter).Wait();
-  }
-
-  void RemoveByGUIDFromPersonalDataManager(const std::string& guid) {
-    PersonalDataProfileTaskWaiter waiter(*personal_data_);
-    EXPECT_CALL(waiter.mock_observer(), OnPersonalDataChanged());
-    personal_data_->RemoveByGUID(guid);
-    std::move(waiter).Wait();
-  }
-
-  void AddOfferDataForTest(AutofillOfferData offer_data) {
-    personal_data_->AddOfferDataForTest(
-        std::make_unique<AutofillOfferData>(offer_data));
   }
 
   // Verifies the credit card art image fetching should begin.
@@ -1944,7 +1908,7 @@ TEST_F(PersonalDataManagerTest, GetAutofillOffers) {
 
 // Tests that GetAutofillOffers does not return any offers if
 // |IsAutofillWalletImportEnabled()| returns |false|.
-TEST_F(PersonalDataManagerMockTest, GetAutofillOffers_WalletImportDisabled) {
+TEST_F(PersonalDataManagerTest, GetAutofillOffers_WalletImportDisabled) {
   syncer::TestSyncService sync_service;
   personal_data_->SetSyncServiceForTest(&sync_service);
 
@@ -1966,8 +1930,7 @@ TEST_F(PersonalDataManagerMockTest, GetAutofillOffers_WalletImportDisabled) {
 
 // Tests that GetAutofillOffers does not return any offers if
 // |IsAutofillCreditCardEnabled()| returns |false|.
-TEST_F(PersonalDataManagerMockTest,
-       GetAutofillOffers_AutofillCreditCardDisabled) {
+TEST_F(PersonalDataManagerTest, GetAutofillOffers_AutofillCreditCardDisabled) {
   // Add a card-linked offer and a promo code offer.
   AddOfferDataForTest(test::GetCardLinkedOfferData1());
   AddOfferDataForTest(test::GetPromoCodeOfferData());
@@ -2004,7 +1967,7 @@ TEST_F(PersonalDataManagerTest, GetActiveAutofillPromoCodeOffersForOrigin) {
 
 // Tests that GetActiveAutofillPromoCodeOffersForOrigin does not return any
 // promo code offers if |IsAutofillWalletImportEnabled()| returns |false|.
-TEST_F(PersonalDataManagerMockTest,
+TEST_F(PersonalDataManagerTest,
        GetActiveAutofillPromoCodeOffersForOrigin_WalletImportDisabled) {
   syncer::TestSyncService sync_service;
   personal_data_->SetSyncServiceForTest(&sync_service);
@@ -2033,7 +1996,7 @@ TEST_F(PersonalDataManagerMockTest,
 
 // Tests that GetActiveAutofillPromoCodeOffersForOrigin does not return any
 // promo code offers if |IsAutofillCreditCardEnabled()| returns |false|.
-TEST_F(PersonalDataManagerMockTest,
+TEST_F(PersonalDataManagerTest,
        GetActiveAutofillPromoCodeOffersForOrigin_AutofillCreditCardDisabled) {
   // Add an active promo code offer.
   AddOfferDataForTest(test::GetPromoCodeOfferData(
