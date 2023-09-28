@@ -14,6 +14,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/types/expected.h"
 #include "chrome/browser/printing/print_job.h"
 #include "chrome/common/extensions/api/printing.h"
 #include "chromeos/crosapi/mojom/local_printer.mojom-forward.h"
@@ -37,6 +38,7 @@ class MetafileSkia;
 class PdfBlobDataFlattener;
 class PrintedDocument;
 class PrintSettings;
+struct PrintJobCreatedInfo;
 }  // namespace printing
 
 namespace extensions {
@@ -48,14 +50,13 @@ class PrintJobController;
 // arguments, sending errors and submitting print job to the printer.
 class PrintJobSubmitter : public printing::PrintJob::Observer {
  public:
-  // At most one of `job_id` and `error` are set.
-  // Either `job_id`, `print_job`, and `document` are all set or none of them
-  // are set.
-  using SubmitJobCallback =
-      base::OnceCallback<void(absl::optional<int> job_id,
-                              printing::PrintJob* print_job,
-                              printing::PrintedDocument* document,
-                              absl::optional<std::string> error)>;
+  // The error field in `PrintJobCreationResult` is absl::nullopt when a print
+  // job is rejected by the user. In all other possible failure cases the error
+  // is well-formed.
+  using PrintJobCreationResult = base::expected<printing::PrintJobCreatedInfo,
+                                                absl::optional<std::string>>;
+
+  using SubmitJobCallback = base::OnceCallback<void(PrintJobCreationResult)>;
 
   PrintJobSubmitter(gfx::NativeWindow native_window,
                     content::BrowserContext* browser_context,

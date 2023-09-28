@@ -45,17 +45,17 @@ crosapi::mojom::PrintJobPtr PrintJobToMojom(int job_id,
 
 }  // namespace
 
-void NotifyAshJobCreated(const PrintJob& job,
-                         int job_id,
+void NotifyAshJobCreated(int job_id,
                          const PrintedDocument& document,
+                         const crosapi::mojom::PrintJob::Source& source,
+                         const std::string& source_id,
                          crosapi::mojom::LocalPrinter* local_printer) {
   if (!local_printer) {
     LOG(ERROR) << "Could not report print job queued";
     return;
   }
   local_printer->CreatePrintJob(
-      PrintJobToMojom(job_id, document, job.source(), job.source_id()),
-      base::DoNothing());
+      PrintJobToMojom(job_id, document, source, source_id), base::DoNothing());
 }
 
 void NotifyAshJobCreated(const PrintJob& job,
@@ -65,7 +65,8 @@ void NotifyAshJobCreated(const PrintJob& job,
   chromeos::LacrosService* service = chromeos::LacrosService::Get();
   if (service->IsAvailable<crosapi::mojom::LocalPrinter>())
     local_printer = service->GetRemote<crosapi::mojom::LocalPrinter>().get();
-  NotifyAshJobCreated(job, job_id, document, local_printer);
+  NotifyAshJobCreated(job_id, document, job.source(), job.source_id(),
+                      local_printer);
 }
 
 }  // namespace printing

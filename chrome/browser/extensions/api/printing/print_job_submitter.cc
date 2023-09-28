@@ -14,6 +14,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/types/expected.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/api/printing/print_job_controller.h"
 #include "chrome/browser/extensions/api/printing/printing_api_utils.h"
@@ -219,8 +220,8 @@ void PrintJobSubmitter::OnPrintJobConfirmationDialogClosed(bool accepted) {
                         ->enabled_extensions()
                         .Contains(extension_->id())) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback_), absl::nullopt, nullptr,
-                                  nullptr, absl::nullopt));
+        FROM_HERE,
+        base::BindOnce(std::move(callback_), base::unexpected(absl::nullopt)));
     return;
   }
   StartPrintJob();
@@ -240,7 +241,9 @@ void PrintJobSubmitter::OnDocDone(int job_id,
                                   printing::PrintedDocument* document) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(callback_);
-  std::move(callback_).Run(job_id, print_job_.get(), document, absl::nullopt);
+
+  auto document_ref = raw_ref<printing::PrintedDocument>::from_ptr(document);
+  std::move(callback_).Run(printing::PrintJobCreatedInfo{job_id, document_ref});
 }
 
 void PrintJobSubmitter::OnFailed() {
@@ -251,8 +254,7 @@ void PrintJobSubmitter::FireErrorCallback(const std::string& error) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(callback_);
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback_), absl::nullopt, nullptr,
-                                nullptr, error));
+      FROM_HERE, base::BindOnce(std::move(callback_), base::unexpected(error)));
 }
 
 // static

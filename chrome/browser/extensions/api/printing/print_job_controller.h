@@ -8,12 +8,20 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 
 namespace printing {
 class MetafileSkia;
+class PrintedDocument;
 class PrintJob;
 class PrintSettings;
+
+struct PrintJobCreatedInfo {
+  const int32_t job_id;
+  const raw_ref<PrintedDocument> document;
+};
+
 }  // namespace printing
 
 namespace extensions {

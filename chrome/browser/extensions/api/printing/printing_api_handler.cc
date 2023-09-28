@@ -162,24 +162,25 @@ void PrintingAPIHandler::SubmitJob(
   // PrintingAPIHandler must outlive PrintJobSubmitter. Even if the WeakPtr
   // expires, PrintJobSubmitter will continue to access PrintingAPIHandler
   // member variables.
+
+  std::string extension_id = extension->id();
   PrintJobSubmitter::Run(std::make_unique<PrintJobSubmitter>(
       native_window, browser_context_, print_job_controller_.get(),
       pdf_blob_data_flattener_.get(), std::move(extension),
       std::move(params->request), local_printer_,
       base::BindOnce(&PrintingAPIHandler::OnPrintJobSubmitted,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback))));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     std::move(extension_id))));
 }
 
 void PrintingAPIHandler::OnPrintJobSubmitted(
     SubmitJobCallback callback,
-    absl::optional<int> job_id,
-    printing::PrintJob* print_job,
-    printing::PrintedDocument* document,
-    absl::optional<std::string> error) {
+    const std::string& extension_id,
+    PrintJobSubmitter::PrintJobCreationResult result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(!(job_id && error));
 
-  if (!job_id) {
+  if (!result.has_value()) {
+    absl::optional<std::string> error = std::move(result).error();
     absl::optional<api::printing::SubmitJobStatus> status;
     if (!error)
       status = api::printing::SUBMIT_JOB_STATUS_USER_REJECTED;
@@ -189,13 +190,12 @@ void PrintingAPIHandler::OnPrintJobSubmitted(
     return;
   }
 
-  DCHECK_EQ(print_job->source(), crosapi::mojom::PrintJob::Source::kExtension);
-
+  printing::PrintJobCreatedInfo info = std::move(result).value();
   std::string printer_id =
-      base::UTF16ToUTF8(document->settings().device_name());
+      base::UTF16ToUTF8(info.document->settings().device_name());
   DCHECK(!printer_id.empty());
 
-  std::string cups_id = CreateUniqueId(printer_id, *job_id);
+  std::string cups_id = CreateUniqueId(printer_id, info.job_id);
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
@@ -203,15 +203,15 @@ void PrintingAPIHandler::OnPrintJobSubmitted(
                      cups_id, absl::nullopt));
 
   DCHECK(!base::Contains(print_jobs_, cups_id));
-  print_jobs_[cups_id] =
-      PrintJobInfo{printer_id, *job_id, print_job->source_id()};
+  print_jobs_[cups_id] = PrintJobInfo{printer_id, info.job_id, extension_id};
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  NotifyAshJobCreated(*print_job, *job_id, *document, local_printer_);
+  NotifyAshJobCreated(info.job_id, *info.document,
+                      crosapi::mojom::PrintJob::Source::kExtension,
+                      extension_id, local_printer_);
 #endif
 
-  if (!extension_registry_->enabled_extensions().Contains(
-          print_job->source_id())) {
+  if (!extension_registry_->enabled_extensions().Contains(extension_id)) {
     return;
   }
 
@@ -220,8 +220,7 @@ void PrintingAPIHandler::OnPrintJobSubmitted(
                               api::printing::OnJobStatusChanged::kEventName,
                               api::printing::OnJobStatusChanged::Create(
                                   cups_id, api::printing::JOB_STATUS_PENDING));
-  event_router_->DispatchEventToExtension(print_job->source_id(),
-                                          std::move(event));
+  event_router_->DispatchEventToExtension(extension_id, std::move(event));
 }
 
 absl::optional<std::string> PrintingAPIHandler::CancelJob(

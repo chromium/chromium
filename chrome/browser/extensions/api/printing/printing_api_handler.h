@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/extensions/api/printing/print_job_submitter.h"
 #include "chrome/common/extensions/api/printing.h"
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
@@ -37,10 +38,9 @@ class BrowserContext;
 }  // namespace content
 
 namespace printing {
-struct PrinterStatus;
 class PdfBlobDataFlattener;
-class PrintJob;
-class PrintedDocument;
+struct PrinterStatus;
+struct PrintJobCreatedInfo;
 }  // namespace printing
 
 namespace extensions {
@@ -135,10 +135,8 @@ class PrintingAPIHandler : public BrowserContextKeyedAPI,
   };
 
   void OnPrintJobSubmitted(SubmitJobCallback callback,
-                           absl::optional<int> job_id,
-                           printing::PrintJob* print_job,
-                           printing::PrintedDocument* document,
-                           absl::optional<std::string> error);
+                           const std::string& extension_id,
+                           PrintJobSubmitter::PrintJobCreationResult result);
 
   void OnPrintersRetrieved(
       GetPrintersCallback callback,
