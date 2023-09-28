@@ -19,7 +19,6 @@
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/base/net_errors.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "services/network/public/cpp/http_raw_request_response_info.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "url/gurl.h"
 

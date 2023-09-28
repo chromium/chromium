@@ -388,8 +388,6 @@ component("cpp_base") {
     "cross_origin_opener_policy_mojom_traits.h",
     "data_element.cc",
     "data_element.h",
-    "http_raw_request_response_info.cc",
-    "http_raw_request_response_info.h",
     "http_request_headers_mojom_traits.cc",
     "http_request_headers_mojom_traits.h",
     "isolation_info_mojom_traits.cc",
