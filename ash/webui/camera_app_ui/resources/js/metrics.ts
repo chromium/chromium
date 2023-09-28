@@ -27,6 +27,7 @@ import {
   GaBaseEvent,
   GaMetricDimension,
   getGaHelper,
+  MemoryUsageEventDimension,
 } from './untrusted_scripts.js';
 import {WaitableEvent} from './waitable_event.js';
 
@@ -194,7 +195,10 @@ export async function initMetrics(): Promise<void> {
   // don't have time to read the value from `checkCanSendMetrics()`. Currently,
   // we check the consent option on register instead of send.
   if (await checkCanSendMetrics()) {
-    await gaHelper.registerGa4EndSessionEvent();
+    await Promise.all([
+      gaHelper.registerGa4EndSessionEvent(),
+      gaHelper.registerGa4MemoryUsageEvent(),
+    ]);
   }
   ready.signal();
 }
@@ -679,4 +683,18 @@ export function sendOpenCameraEvent(moduleId: string|null): void {
       new Map([
         [GaMetricDimension.CAMERA_MODULE_ID, newModuleId],
       ]));
+}
+
+/**
+ * Updates the memory usage and session behavior value to untrusted_ga_helpers.
+ *
+ * @param updatedValue Updated memory usage dimensions value to be updated.
+ */
+export function updateMemoryUsageEventDimensions(
+    updatedValue: MemoryUsageEventDimension): void {
+  // No caller uses the returned promise.
+  void (async () => {
+    const gaHelper = await getGaHelper();
+    await gaHelper.updateMemoryUsageEventDimensions(updatedValue);
+  })();
 }

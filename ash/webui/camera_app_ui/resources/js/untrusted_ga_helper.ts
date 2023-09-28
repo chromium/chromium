@@ -118,6 +118,7 @@ export enum Ga4MetricDimension {
   LAUNCH_TYPE = 'launch_type',
   LINE_NO = 'line_no',
   MAXIMIZED = 'maximized',
+  MEMORY_USAGE = 'memory_usage',
   MICROPHONE = 'microphone',
   MIRROR = 'mirror',
   OS_VERSION = 'os_version',
@@ -126,6 +127,7 @@ export enum Ga4MetricDimension {
   RESOLUTION_LEVEL = 'resolution_level',
   SCHEMA_VERSION = 'schema_version',
   SCREEN_RESOLUTION = 'screen_resolution',
+  SESSION_BEHAVIOR = 'session_behavior',
   SESSION_LENGTH = 'session_length',
   SHOULD_DOWN_SCALE = 'should_down_scale',
   SHOULD_HANDLE_RESULT = 'should_handle_result',
@@ -294,6 +296,42 @@ function registerGa4EndSessionEvent(): void {
   });
 }
 
+export interface MemoryUsageEventDimension {
+  memoryUsage: number;
+  sessionBehavior: number;
+}
+let memoryEventDimensions: MemoryUsageEventDimension|null = null;
+
+/**
+ * Sends a "memory_usage" event when CCA is closed or refreshed.
+ */
+function registerGa4MemoryUsageEvent(): void {
+  window.addEventListener('unload', () => {
+    if (memoryEventDimensions !== null) {
+      const {memoryUsage, sessionBehavior} = memoryEventDimensions;
+      sendGa4Event({
+        name: 'memory_usage',
+        eventParams: {
+          [Ga4MetricDimension.MEMORY_USAGE]: String(memoryUsage),
+          [Ga4MetricDimension.SESSION_BEHAVIOR]: String(sessionBehavior),
+        },
+        beacon: true,
+      });
+    }
+  });
+}
+
+/**
+ * Updates the memory usage and session behavior value which will be sent at the
+ * end of the session.
+ *
+ * @param updatedValue New updated dimensions value to be set.
+ */
+function updateMemoryUsageEventDimensions(
+    updatedValue: MemoryUsageEventDimension): void {
+  memoryEventDimensions = updatedValue;
+}
+
 interface SendGaEventParams {
   baseEvent: GaBaseEvent;
   dimensions: Map<GaMetricDimension, string>;
@@ -425,19 +463,23 @@ export interface GaHelper {
   initGa: typeof initGa;
   initGa4: typeof initGa4;
   registerGa4EndSessionEvent: typeof registerGa4EndSessionEvent;
+  registerGa4MemoryUsageEvent: typeof registerGa4MemoryUsageEvent;
   sendGaEvent: typeof sendGaEvent;
   sendGa4Event: typeof sendGa4Event;
   setGaEnabled: typeof setGaEnabled;
   setGa4Enabled: typeof setGa4Enabled;
   setMeasurementProtocolUrl: typeof setMeasurementProtocolUrl;
+  updateMemoryUsageEventDimensions: typeof updateMemoryUsageEventDimensions;
 }
 export {
   initGa,
   initGa4,
   registerGa4EndSessionEvent,
+  registerGa4MemoryUsageEvent,
   sendGaEvent,
   sendGa4Event,
   setGaEnabled,
   setGa4Enabled,
   setMeasurementProtocolUrl,
+  updateMemoryUsageEventDimensions,
 };

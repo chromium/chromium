@@ -4,6 +4,7 @@
 
 import {assert} from './assert.js';
 import {AsyncJobQueue} from './async_job_queue.js';
+import {updateMemoryUsageEventDimensions} from './metrics.js';
 import * as state from './state.js';
 import {Mode} from './type.js';
 import {measureUntrustedScriptsMemory} from './untrusted_scripts.js';
@@ -55,9 +56,6 @@ class MemoryMeasurementHelper {
    * A number represented boolean bit flags for each |SessionBehavior|. The
    * value is updated in |measureWithSessionBehavior|.
    */
-  // TODO(b/291854531): Remove the exceptions once the metric is sent.
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
   private sessionBehavior = 0;
 
   constructor() {
@@ -107,8 +105,10 @@ class MemoryMeasurementHelper {
     const totalUsage = usage.main.bytes + usage.untrusted.bytes;
     if (this.maxUsage === null || totalUsage > this.maxUsage) {
       this.maxUsage = totalUsage;
-      // TODO(b/291854531): Send the max usage to untrusted_ga_helpers, to let
-      // it send at the end of the session.
+      updateMemoryUsageEventDimensions({
+        memoryUsage: this.maxUsage,
+        sessionBehavior: this.sessionBehavior,
+      });
     }
   }
 

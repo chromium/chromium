@@ -11,6 +11,7 @@ import {
   GaBaseEvent,
   GaHelper,
   GaMetricDimension,
+  MemoryUsageEventDimension,
 } from './untrusted_ga_helper.js';
 import {VideoProcessorHelper} from './untrusted_video_processor_helper.js';
 import {expandPath} from './util.js';
@@ -115,7 +116,7 @@ export function setGaHelper(newGaHelper: Promise<Comlink.Remote<GaHelper>>):
  * Types of event parameters and dimensions for GA and GA4.
  */
 export {Ga4MetricDimension, GaMetricDimension};
-export type{Ga4EventParams, GaBaseEvent};
+export type {Ga4EventParams, GaBaseEvent, MemoryUsageEventDimension};
 
 /**
  * Gets the singleton VideoProcessorHelper instance that is located in an
