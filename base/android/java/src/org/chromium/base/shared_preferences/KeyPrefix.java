@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.preferences;
+package org.chromium.base.shared_preferences;
 
 /**
  * A prefix for a range of SharedPreferences keys generated dynamically.
  *
- * Instances should be declared as keys in {@link ChromePreferenceKeys}.
+ * Instances should be declared as keys in the PreferenceKeys registry.
  */
 public class KeyPrefix {
     private final String mPrefix;
 
-    KeyPrefix(String pattern) {
+    public KeyPrefix(String pattern) {
         // More thorough checking is performed in ChromePreferenceKeysTest.
         assert pattern.endsWith("*");
         mPrefix = pattern.substring(0, pattern.length() - 1);
@@ -33,11 +33,11 @@ public class KeyPrefix {
         return mPrefix + index;
     }
 
-    String pattern() {
+    public String pattern() {
         return mPrefix + "*";
     }
 
-    boolean hasGenerated(String key) {
+    public boolean hasGenerated(String key) {
         return key.startsWith(mPrefix);
     }
 }

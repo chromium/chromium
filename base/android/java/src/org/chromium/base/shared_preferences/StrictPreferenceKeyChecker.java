@@ -1,19 +1,14 @@
-// Copyright 2019 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.preferences;
+package org.chromium.base.shared_preferences;
 
 import android.text.TextUtils;
-
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.build.annotations.CheckDiscard;
 
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 import java.util.regex.Pattern;
 
 /**
@@ -32,27 +27,10 @@ class StrictPreferenceKeyChecker implements PreferenceKeyChecker {
     // stars.
     private static final Pattern DYNAMIC_PART_PATTERN = Pattern.compile("[^\\*]+");
 
-    private final Set<String> mKeysInUse;
-    private final Set<String> mLegacyFormatKeys;
-    private final List<KeyPrefix> mLegacyPrefixes;
+    private final PreferenceKeyRegistry mRegistry;
 
-    /**
-     * Constructor that pulls the lists of keys from {@link ChromePreferenceKeys}.
-     */
-    StrictPreferenceKeyChecker() {
-        this(ChromePreferenceKeys.getKeysInUse(), LegacyChromePreferenceKeys.getKeysInUse(),
-                LegacyChromePreferenceKeys.getPrefixesInUse());
-    }
-
-    /**
-     * Generic constructor, dependencies are passed in.
-     */
-    @VisibleForTesting
-    StrictPreferenceKeyChecker(
-            List<String> keysInUse, List<String> legacyKeys, List<KeyPrefix> legacyPrefixes) {
-        mKeysInUse = new HashSet<>(keysInUse);
-        mLegacyFormatKeys = new HashSet<>(legacyKeys);
-        mLegacyPrefixes = legacyPrefixes;
+    StrictPreferenceKeyChecker(PreferenceKeyRegistry registry) {
+        mRegistry = registry;
     }
 
     /**
@@ -63,8 +41,9 @@ class StrictPreferenceKeyChecker implements PreferenceKeyChecker {
     public void checkIsKeyInUse(String key) {
         if (!isKeyInUse(key)) {
             throw new RuntimeException("SharedPreferences key \"" + key
-                    + "\" is not registered in ChromePreferenceKeys.createKeysInUse()");
+                    + "\" is not registered in PreferenceKeyRegistry.mKeysInUse");
         }
+        KnownPreferenceKeyRegistries.onRegistryUsed(mRegistry);
     }
 
     /**
@@ -72,12 +51,12 @@ class StrictPreferenceKeyChecker implements PreferenceKeyChecker {
      */
     private boolean isKeyInUse(String key) {
         // For non-dynamic legacy keys, a simple map check is enough.
-        if (mLegacyFormatKeys.contains(key)) {
+        if (mRegistry.mLegacyFormatKeys.contains(key)) {
             return true;
         }
 
         // For dynamic legacy keys, each legacy prefix has to be checked.
-        for (KeyPrefix prefix : mLegacyPrefixes) {
+        for (KeyPrefix prefix : mRegistry.mLegacyPrefixes) {
             if (prefix.hasGenerated(key)) {
                 return true;
             }
@@ -95,7 +74,7 @@ class StrictPreferenceKeyChecker implements PreferenceKeyChecker {
             // Check if its prefix is registered in |mKeysInUse|.
             String prefixFormat =
                     TextUtils.join(".", Arrays.asList(parts[0], parts[1], parts[2], "*"));
-            if (!mKeysInUse.contains(prefixFormat)) return false;
+            if (!mRegistry.mKeysInUse.contains(prefixFormat)) return false;
 
             // Check if the dynamic part is correctly formed.
             String dynamicPart = parts[3];
@@ -103,21 +82,21 @@ class StrictPreferenceKeyChecker implements PreferenceKeyChecker {
         } else {
             // Regular key in format "Chrome.[Feature].[Key]" which was not present in |mKeysInUse|.
             // Just check if it is in [keys in use].
-            return mKeysInUse.contains(key);
+            return mRegistry.mKeysInUse.contains(key);
         }
     }
 
     @Override
     public void checkIsPrefixInUse(KeyPrefix prefix) {
-        if (mLegacyPrefixes.contains(prefix)) {
+        if (mRegistry.mLegacyPrefixes.contains(prefix)) {
             return;
         }
 
-        if (mKeysInUse.contains(prefix.pattern())) {
+        if (mRegistry.mKeysInUse.contains(prefix.pattern())) {
             return;
         }
 
         throw new RuntimeException("SharedPreferences KeyPrefix \"" + prefix.pattern()
-                + "\" is not registered in ChromePreferenceKeys.createKeysInUse()");
+                + "\" is not registered in PreferenceKeyRegistry.mKeysInUse()");
     }
 }

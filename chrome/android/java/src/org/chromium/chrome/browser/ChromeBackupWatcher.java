@@ -34,6 +34,9 @@ public class ChromeBackupWatcher {
         return new ChromeBackupWatcher();
     }
 
+    // Suppress to observe SharedPreferences, which is discouraged; use another messaging channel
+    // instead.
+    @SuppressWarnings("UseSharedPreferencesManagerFromChromeCheck")
     private ChromeBackupWatcher() {
         Context context = ContextUtils.getApplicationContext();
         if (context == null) return;
@@ -48,15 +51,16 @@ public class ChromeBackupWatcher {
             }
             sharedPrefs.writeBoolean(ChromePreferenceKeys.BACKUP_FIRST_BACKUP_DONE, true);
         }
-        sharedPrefs.addObserver((key) -> {
-            // Update the backup if any of the backed up Android preferences change.
-            for (String pref : ChromeBackupAgentImpl.BACKUP_ANDROID_BOOL_PREFS) {
-                if (key.equals(pref)) {
-                    onBackupPrefsChanged();
-                    return;
-                }
-            }
-        });
+        ContextUtils.getAppSharedPreferences().registerOnSharedPreferenceChangeListener(
+                (prefs, key) -> {
+                    // Update the backup if any of the backed up Android preferences change.
+                    for (String pref : ChromeBackupAgentImpl.BACKUP_ANDROID_BOOL_PREFS) {
+                        if (key.equals(pref)) {
+                            onBackupPrefsChanged();
+                            return;
+                        }
+                    }
+                });
         // Update the backup if the sign-in status changes.
         IdentityManager identityManager = IdentityServicesProvider.get().getIdentityManager(
                 Profile.getLastUsedRegularProfile());

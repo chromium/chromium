@@ -1196,6 +1196,8 @@ component("base") {
       "android/scoped_hardware_buffer_fence_sync.h",
       "android/scoped_hardware_buffer_handle.cc",
       "android/scoped_hardware_buffer_handle.h",
+      "android/shared_preferences/shared_preferences_manager.cc",
+      "android/shared_preferences/shared_preferences_manager.h",
       "android/statistics_recorder_android.cc",
       "android/sys_utils.cc",
       "android/sys_utils.h",
@@ -1242,6 +1244,7 @@ component("base") {
     ]
 
     deps += [
+      ":base_shared_preferences_jni",
       "//third_party/ashmem",
       "//third_party/cpu_features:ndk_compat",
     ]
@@ -4226,6 +4229,10 @@ if (is_android || is_robolectric) {
   generate_jni("process_launcher_jni") {
     sources = [ "android/java/src/org/chromium/base/process_launcher/ChildProcessService.java" ]
   }
+
+  generate_jni("base_shared_preferences_jni") {
+    sources = [ "android/java/src/org/chromium/base/shared_preferences/SharedPreferencesManager.java" ]
+  }
 }  # is_android || is_robolectric
 
 if (is_android) {
@@ -4312,6 +4319,7 @@ if (is_android) {
       "//build/android:build_java",
       "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
       "//third_party/android_deps:com_google_errorprone_error_prone_annotations_java",
+      "//third_party/android_deps:guava_android_java",
       "//third_party/androidx:androidx_annotation_annotation_experimental_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/androidx:androidx_collection_collection_java",
@@ -4470,6 +4478,25 @@ if (is_android) {
       "android/proguard/chromium_apk.flags",
       "android/proguard/chromium_code.flags",
       "android/proguard/remove_logging.flags",
+    ]
+  }
+
+  android_library("base_shared_preferences_java") {
+    deps = [
+      ":base_java",
+      ":jni_java",
+      "//third_party/android_deps:guava_android_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+    ]
+
+    sources = [
+      "android/java/src/org/chromium/base/shared_preferences/KeyPrefix.java",
+      "android/java/src/org/chromium/base/shared_preferences/KnownPreferenceKeyRegistries.java",
+      "android/java/src/org/chromium/base/shared_preferences/NoOpPreferenceKeyChecker.java",
+      "android/java/src/org/chromium/base/shared_preferences/PreferenceKeyChecker.java",
+      "android/java/src/org/chromium/base/shared_preferences/PreferenceKeyRegistry.java",
+      "android/java/src/org/chromium/base/shared_preferences/SharedPreferencesManager.java",
+      "android/java/src/org/chromium/base/shared_preferences/StrictPreferenceKeyChecker.java",
     ]
   }
 
@@ -4771,6 +4798,10 @@ if (is_android) {
       "android/junit/src/org/chromium/base/metrics/CachingUmaRecorderTest.java",
       "android/junit/src/org/chromium/base/process_launcher/ChildConnectionAllocatorTest.java",
       "android/junit/src/org/chromium/base/process_launcher/ChildProcessConnectionTest.java",
+      "android/junit/src/org/chromium/base/shared_preferences/KeyPrefixTest.java",
+      "android/junit/src/org/chromium/base/shared_preferences/KnownPreferenceKeyRegistriesTest.java",
+      "android/junit/src/org/chromium/base/shared_preferences/SharedPreferencesManagerTest.java",
+      "android/junit/src/org/chromium/base/shared_preferences/StrictPreferenceKeyCheckerTest.java",
       "android/junit/src/org/chromium/base/supplier/ObservableSupplierImplTest.java",
       "android/junit/src/org/chromium/base/supplier/OneShotCallbackTest.java",
       "android/junit/src/org/chromium/base/supplier/OneshotSupplierImplTest.java",
@@ -4801,6 +4832,7 @@ if (is_android) {
       ":base_java_test_support",
       ":base_java_test_support_uncommon",
       ":base_junit_test_support",
+      ":base_shared_preferences_java",
       "//base:jni_java",
       "//base/test:test_support_java",
       "//third_party/android_deps:guava_android_java",

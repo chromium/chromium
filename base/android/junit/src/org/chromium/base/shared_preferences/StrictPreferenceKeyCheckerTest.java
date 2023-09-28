@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.preferences;
+package org.chromium.base.shared_preferences;
 
 import androidx.test.filters.SmallTest;
 
@@ -40,7 +40,9 @@ public class StrictPreferenceKeyCheckerTest {
                 KEY_PREFIX1_IN_USE.pattern(), KEY_PREFIX2_IN_USE.pattern());
         List<String> legacyKeys = Arrays.asList(LEGACY_KEY_IN_USE);
         List<KeyPrefix> legacyPrefixes = Arrays.asList(new KeyPrefix(LEGACY_PREFIX_IN_USE + "*"));
-        mSubject = new StrictPreferenceKeyChecker(keysInUse, legacyKeys, legacyPrefixes);
+        PreferenceKeyRegistry registry =
+                new PreferenceKeyRegistry("testModule", keysInUse, legacyKeys, legacyPrefixes);
+        mSubject = new StrictPreferenceKeyChecker(registry);
     }
 
     @Test

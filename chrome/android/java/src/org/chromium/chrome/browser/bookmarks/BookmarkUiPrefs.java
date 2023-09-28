@@ -4,8 +4,11 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
+import android.content.SharedPreferences;
+
 import androidx.annotation.IntDef;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
@@ -61,10 +64,10 @@ public class BookmarkUiPrefs {
         default void onBookmarkRowSortOrderChanged(@BookmarkRowSortOrder int sortOrder) {}
     }
 
-    private SharedPreferencesManager.Observer mPrefsObserver =
-            new SharedPreferencesManager.Observer() {
+    private SharedPreferences.OnSharedPreferenceChangeListener mPrefsListener =
+            new SharedPreferences.OnSharedPreferenceChangeListener() {
                 @Override
-                public void onPreferenceChanged(String key) {
+                public void onSharedPreferenceChanged(SharedPreferences sharedPrefs, String key) {
                     if (key.equals(ChromePreferenceKeys.BOOKMARKS_VISUALS_PREF)) {
                         notifyObserversForDisplayPrefChange(
                                 mPrefsManager.readInt(ChromePreferenceKeys.BOOKMARKS_VISUALS_PREF));
@@ -81,9 +84,13 @@ public class BookmarkUiPrefs {
     /**
      * @param prefsManager Instance of {@link SharedPreferencesManager} to read/write from prefs.
      */
+    // Suppress to observe SharedPreferences, which is discouraged; use another messaging channel
+    // instead.
+    @SuppressWarnings("UseSharedPreferencesManagerFromChromeCheck")
     public BookmarkUiPrefs(SharedPreferencesManager prefsManager) {
         mPrefsManager = prefsManager;
-        mPrefsManager.addObserver(mPrefsObserver);
+        ContextUtils.getAppSharedPreferences().registerOnSharedPreferenceChangeListener(
+                mPrefsListener);
     }
 
     /** Add the given observer to the list. */

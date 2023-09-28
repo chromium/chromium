@@ -6,8 +6,11 @@
 
 #include <string>
 
-#include "chrome/browser/preferences/android/shared_preferences_manager.h"
+#include "base/android/shared_preferences/shared_preferences_manager.h"
+#include "chrome/browser/preferences/android/chrome_shared_preferences.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+using base::android::SharedPreferencesManager;
 
 namespace android::shared_preferences {
 

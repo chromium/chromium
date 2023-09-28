@@ -2,27 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/preferences/android/shared_preferences_manager.h"
+#include "base/android/shared_preferences/shared_preferences_manager.h"
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
+#include "base/base_shared_preferences_jni/SharedPreferencesManager_jni.h"
 #include "base/check.h"
-#include "chrome/browser/preferences/jni_headers/SharedPreferencesManager_jni.h"
 
-using base::android::AttachCurrentThread;
-using base::android::ConvertJavaStringToUTF8;
-using base::android::ConvertUTF8ToJavaString;
-using base::android::JavaRef;
-using base::android::ScopedJavaLocalRef;
-
-namespace android::shared_preferences {
-
-const SharedPreferencesManager GetChromeSharedPreferences() {
-  JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> jshared_prefs_manager =
-      Java_SharedPreferencesManager_getInstance(env);
-  return SharedPreferencesManager(jshared_prefs_manager, env);
-}
+namespace base::android {
 
 SharedPreferencesManager::SharedPreferencesManager(const JavaRef<jobject>& jobj,
                                                    JNIEnv* env)
@@ -87,4 +74,4 @@ void SharedPreferencesManager::WriteString(
   Java_SharedPreferencesManager_writeString(env_, java_obj_, jkey, jvalue);
 }
 
-}  // namespace android::shared_preferences
+}  // namespace base::android

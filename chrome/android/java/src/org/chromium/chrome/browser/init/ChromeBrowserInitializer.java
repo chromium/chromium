@@ -27,6 +27,7 @@ import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.ChainedTasks;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.ChromeStrictMode;
 import org.chromium.chrome.browser.FileProviderHelper;
@@ -36,6 +37,7 @@ import org.chromium.chrome.browser.download.DownloadManagerService;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.language.GlobalAppLocaleController;
 import org.chromium.chrome.browser.metrics.UmaUtils;
+import org.chromium.chrome.browser.preferences.AllPreferenceKeyRegistries;
 import org.chromium.chrome.browser.signin.SigninCheckerProvider;
 import org.chromium.chrome.browser.webapps.ChromeWebApkHost;
 import org.chromium.components.background_task_scheduler.BackgroundTaskSchedulerFactory;
@@ -209,6 +211,10 @@ public class ChromeBrowserInitializer {
         ChromeStrictMode.configureStrictMode();
         ChromeWebApkHost.init();
 
+        // In ENABLE_ASSERTS builds, initialize SharedPreferences key registry checking.
+        if (BuildConfig.ENABLE_ASSERTS) {
+            AllPreferenceKeyRegistries.initializeKnownRegistries();
+        }
         // Time this call takes in background from test devices:
         // - Pixel 2: ~10 ms
         // - Nokia 1 (Android Go): 20-200 ms

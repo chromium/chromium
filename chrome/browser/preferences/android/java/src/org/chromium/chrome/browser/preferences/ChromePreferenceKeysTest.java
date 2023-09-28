@@ -11,13 +11,18 @@ import static org.junit.Assert.fail;
 
 import androidx.test.filters.SmallTest;
 
+import com.google.common.collect.Sets;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.shared_preferences.KeyPrefix;
+import org.chromium.base.shared_preferences.PreferenceKeyRegistry;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -32,7 +37,8 @@ import java.util.regex.Pattern;
 @RunWith(BaseRobolectricTestRunner.class)
 public class ChromePreferenceKeysTest {
     /**
-     * The important test: verify that keys in {@link ChromePreferenceKeys} are not reused.
+     * The important test: verify that keys in {@link ChromePreferenceKeys} are not reused, both
+     * between registries and across time (checking the deprecated key list).
      *
      * If a key was used in the past but is not used anymore, it should be in [deprecated keys].
      * Adding the same key to [keys in use] will break this test to warn the developer.
@@ -40,16 +46,50 @@ public class ChromePreferenceKeysTest {
     @Test
     @SmallTest
     public void testKeysAreNotReused() {
-        doTestKeysAreNotReused(ChromePreferenceKeys.getKeysInUse(),
-                LegacyChromePreferenceKeys.getKeysInUse(),
-                DeprecatedChromePreferenceKeys.getKeysForTesting(),
-                LegacyChromePreferenceKeys.getPrefixesInUse(),
+        // Build sets of all keys combined between registries and check for any intersections
+        // between registries.
+        Set<String> allKeysInUse = new HashSet<>();
+        Set<String> allLegacyFormatKeys = new HashSet<>();
+        Set<KeyPrefix> allLegacyFormatPrefixesInUse = new HashSet<>();
+        Set<String> allLegacyFormatPrefixesPatternsInUse = new HashSet<>();
+        for (PreferenceKeyRegistry registry : AllPreferenceKeyRegistries.KNOWN_REGISTRIES) {
+            failIfAnyCommonElements(allKeysInUse, registry.mKeysInUse,
+                    "Shared preference keys present in multiple registries");
+            failIfAnyCommonElements(allLegacyFormatKeys, registry.mLegacyFormatKeys,
+                    "Legacy-format shared preference key present in multiple registries");
+
+            Set<String> newLegacyFormatPrefixesPatterns = new HashSet<>();
+            for (KeyPrefix legacyPrefix : registry.mLegacyPrefixes) {
+                newLegacyFormatPrefixesPatterns.add(legacyPrefix.pattern());
+            }
+            failIfAnyCommonElements(allLegacyFormatPrefixesPatternsInUse,
+                    newLegacyFormatPrefixesPatterns,
+                    "Legacy-format shared preference KeyPrefix present in multiple registries");
+
+            allKeysInUse.addAll(registry.mKeysInUse);
+            allLegacyFormatKeys.addAll(registry.mLegacyFormatKeys);
+            allLegacyFormatPrefixesInUse.addAll(registry.mLegacyPrefixes);
+            allLegacyFormatPrefixesPatternsInUse.addAll(newLegacyFormatPrefixesPatterns);
+        }
+
+        doTestKeysAreNotReused(allKeysInUse, allLegacyFormatKeys,
+                DeprecatedChromePreferenceKeys.getKeysForTesting(), allLegacyFormatPrefixesInUse,
                 DeprecatedChromePreferenceKeys.getPrefixesForTesting());
     }
 
-    private void doTestKeysAreNotReused(List<String> usedList, List<String> legacyUsedList,
-            List<String> deprecatedList, List<KeyPrefix> usedLegacyPrefixList,
-            List<KeyPrefix> deprecatedLegacyPrefixList) {
+    private static void failIfAnyCommonElements(
+            Set<String> s1, Set<String> s2, String failureMessage) {
+        Set<String> intersection = Sets.intersection(s1, s2);
+        if (!intersection.isEmpty()) {
+            String keyStrings = String.join(",", intersection);
+            fail(failureMessage + ": " + keyStrings);
+        }
+    }
+
+    private void doTestKeysAreNotReused(Collection<String> usedList,
+            Collection<String> legacyUsedList, Collection<String> deprecatedList,
+            Collection<KeyPrefix> usedLegacyPrefixList,
+            Collection<KeyPrefix> deprecatedLegacyPrefixList) {
         // Check for duplicate keys in [keys in use].
         Set<String> usedSet = new HashSet<>(usedList);
         assertEquals(usedList.size(), usedSet.size());

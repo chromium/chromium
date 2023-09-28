@@ -8,12 +8,14 @@ import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.ADAPT
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.view.View;
 
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.FeatureList;
 import org.chromium.base.ObserverList;
 import org.chromium.base.metrics.RecordHistogram;
@@ -45,7 +47,8 @@ import java.util.Objects;
 /** Meta {@link ButtonDataProvider} which chooses the optional button variant that will be shown. */
 public class AdaptiveToolbarButtonController
         implements ButtonDataProvider, ButtonDataObserver, NativeInitObserver,
-                   SharedPreferencesManager.Observer, ConfigurationChangedObserver {
+                   SharedPreferences.OnSharedPreferenceChangeListener,
+                   ConfigurationChangedObserver {
     private ObserverList<ButtonDataObserver> mObservers = new ObserverList<>();
     @Nullable
     private ButtonDataProvider mSingleProvider;
@@ -87,6 +90,9 @@ public class AdaptiveToolbarButtonController
      * @param settingsLauncher opens adaptive button settings
      * @param lifecycleDispatcher notifies about native initialization
      */
+    // Suppress to observe SharedPreferences, which is discouraged; use another messaging channel
+    // instead.
+    @SuppressWarnings("UseSharedPreferencesManagerFromChromeCheck")
     public AdaptiveToolbarButtonController(Context context, SettingsLauncher settingsLauncher,
             ActivityLifecycleDispatcher lifecycleDispatcher,
             AdaptiveButtonActionMenuCoordinator menuCoordinator,
@@ -107,7 +113,7 @@ public class AdaptiveToolbarButtonController
                 new AdaptiveToolbarStatePredictor(androidPermissionDelegate);
         mMenuCoordinator = menuCoordinator;
         mSharedPreferencesManager = sharedPreferencesManager;
-        mSharedPreferencesManager.addObserver(this);
+        ContextUtils.getAppSharedPreferences().registerOnSharedPreferenceChangeListener(this);
         mScreenWidthDp = context.getResources().getConfiguration().screenWidthDp;
     }
 
@@ -136,10 +142,13 @@ public class AdaptiveToolbarButtonController
     }
 
     @Override
+    // Suppress to observe SharedPreferences, which is discouraged; use another messaging channel
+    // instead.
+    @SuppressWarnings("UseSharedPreferencesManagerFromChromeCheck")
     public void destroy() {
         setSingleProvider(AdaptiveToolbarButtonVariant.UNKNOWN);
         mObservers.clear();
-        mSharedPreferencesManager.removeObserver(this);
+        ContextUtils.getAppSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
         mLifecycleDispatcher.unregister(this);
 
         Iterator<Map.Entry<Integer, ButtonDataProvider>> it =
@@ -279,7 +288,7 @@ public class AdaptiveToolbarButtonController
     }
 
     @Override
-    public void onPreferenceChanged(String key) {
+    public void onSharedPreferenceChanged(SharedPreferences sharedPrefs, @Nullable String key) {
         if (ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS.equals(key)
                 || ADAPTIVE_TOOLBAR_CUSTOMIZATION_ENABLED.equals(key)) {
             assert AdaptiveToolbarFeatures.isCustomizationEnabled();

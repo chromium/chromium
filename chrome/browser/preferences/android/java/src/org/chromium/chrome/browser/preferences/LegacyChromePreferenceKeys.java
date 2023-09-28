@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.preferences;
 
+import org.chromium.base.shared_preferences.KeyPrefix;
 import org.chromium.build.annotations.CheckDiscard;
 
 import java.util.Arrays;

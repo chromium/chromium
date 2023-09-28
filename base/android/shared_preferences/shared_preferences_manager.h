@@ -2,19 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PREFERENCES_ANDROID_SHARED_PREFERENCES_MANAGER_H_
-#define CHROME_BROWSER_PREFERENCES_ANDROID_SHARED_PREFERENCES_MANAGER_H_
+#ifndef BASE_ANDROID_SHARED_PREFERENCES_SHARED_PREFERENCES_MANAGER_H_
+#define BASE_ANDROID_SHARED_PREFERENCES_SHARED_PREFERENCES_MANAGER_H_
+
+#include "base/base_export.h"
 
 #include "base/android/jni_android.h"
 
-namespace android::shared_preferences {
+namespace base::android {
 
 // A SharedPreferencesManager that provides access to Android SharedPreferences
 // with uniqueness key checking.
-class SharedPreferencesManager {
+class BASE_EXPORT SharedPreferencesManager {
  public:
-  explicit SharedPreferencesManager(const base::android::JavaRef<jobject>& jobj,
-                                    JNIEnv* env);
+  explicit SharedPreferencesManager(const JavaRef<jobject>& jobj, JNIEnv* env);
   SharedPreferencesManager(const SharedPreferencesManager&);
   SharedPreferencesManager& operator=(const SharedPreferencesManager&) = delete;
   ~SharedPreferencesManager();
@@ -30,14 +31,10 @@ class SharedPreferencesManager {
                    const std::string& value);
 
  private:
-  base::android::ScopedJavaLocalRef<jobject> java_obj_;
+  ScopedJavaLocalRef<jobject> java_obj_;
   raw_ptr<JNIEnv> env_;
 };
 
-// Get a SharedPreferencesManager to access SharedPreferences registered in
-// ChromePreferenceKeys.java.
-const SharedPreferencesManager GetChromeSharedPreferences();
+}  // namespace base::android
 
-}  // namespace android::shared_preferences
-
-#endif  // CHROME_BROWSER_PREFERENCES_ANDROID_SHARED_PREFERENCES_MANAGER_H_
+#endif  // BASE_ANDROID_SHARED_PREFERENCES_SHARED_PREFERENCES_MANAGER_H_
