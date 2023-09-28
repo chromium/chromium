@@ -1692,11 +1692,14 @@ EXPORT_TEMPLATE void* PartitionRoot::Alloc<AllocFlags::kNone>(size_t,
 EXPORT_TEMPLATE void* PartitionRoot::Alloc<AllocFlags::kReturnNull>(
     size_t,
     const char*);
-EXPORT_TEMPLATE void* PartitionRoot::Realloc<AllocFlags::kNone>(void*,
-                                                                size_t,
-                                                                const char*);
 EXPORT_TEMPLATE void*
-PartitionRoot::Realloc<AllocFlags::kReturnNull>(void*, size_t, const char*);
+PartitionRoot::Realloc<AllocFlags::kNone, FreeFlags::kNone>(void*,
+                                                            size_t,
+                                                            const char*);
+EXPORT_TEMPLATE void*
+PartitionRoot::Realloc<AllocFlags::kReturnNull, FreeFlags::kNone>(void*,
+                                                                  size_t,
+                                                                  const char*);
 EXPORT_TEMPLATE void* PartitionRoot::AlignedAlloc<AllocFlags::kNone>(size_t,
                                                                      size_t);
 #undef EXPORT_TEMPLATE

@@ -477,13 +477,15 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
     return AllocInternal<flags>(requested_size, slot_span_alignment, type_name);
   }
 
-  template <AllocFlags flags = AllocFlags::kNone>
+  template <AllocFlags alloc_flags = AllocFlags::kNone,
+            FreeFlags free_flags = FreeFlags::kNone>
   PA_NOINLINE PA_MALLOC_ALIGNED void* Realloc(void* ptr,
                                               size_t new_size,
                                               const char* type_name) {
-    return ReallocInline<flags>(ptr, new_size, type_name);
+    return ReallocInline<alloc_flags, free_flags>(ptr, new_size, type_name);
   }
-  template <AllocFlags flags = AllocFlags::kNone>
+  template <AllocFlags alloc_flags = AllocFlags::kNone,
+            FreeFlags free_flags = FreeFlags::kNone>
   PA_ALWAYS_INLINE PA_MALLOC_ALIGNED void* ReallocInline(void* ptr,
                                                          size_t new_size,
                                                          const char* type_name);
@@ -2256,39 +2258,39 @@ PA_ALWAYS_INLINE void* PartitionRoot::AlignedAllocInline(
   return object;
 }
 
-template <AllocFlags flags>
+template <AllocFlags alloc_flags, FreeFlags free_flags>
 void* PartitionRoot::ReallocInline(void* ptr,
                                    size_t new_size,
                                    const char* type_name) {
 #if defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
-  if (!PartitionRoot::AllocWithMemoryToolProlog<flags>(new_size)) {
+  if (!PartitionRoot::AllocWithMemoryToolProlog<alloc_flags>(new_size)) {
     // Early return if AllocWithMemoryToolProlog returns false
     return nullptr;
   }
   void* result = realloc(ptr, new_size);
-  if constexpr (!ContainsFlags(flags, AllocFlags::kReturnNull)) {
+  if constexpr (!ContainsFlags(alloc_flags, AllocFlags::kReturnNull)) {
     PA_CHECK(result);
   }
   return result;
 #else
   if (PA_UNLIKELY(!ptr)) {
-    return AllocInternal<flags>(new_size, internal::PartitionPageSize(),
-                                type_name);
+    return AllocInternal<alloc_flags>(new_size, internal::PartitionPageSize(),
+                                      type_name);
   }
 
   if (PA_UNLIKELY(!new_size)) {
-    FreeInUnknownRoot(ptr);
+    FreeInUnknownRoot<free_flags>(ptr);
     return nullptr;
   }
 
   if (new_size > internal::MaxDirectMapped()) {
-    if constexpr (ContainsFlags(flags, AllocFlags::kReturnNull)) {
+    if constexpr (ContainsFlags(alloc_flags, AllocFlags::kReturnNull)) {
       return nullptr;
     }
     internal::PartitionExcessiveAllocationSize(new_size);
   }
 
-  constexpr bool no_hooks = ContainsFlags(flags, AllocFlags::kNoHooks);
+  constexpr bool no_hooks = ContainsFlags(alloc_flags, AllocFlags::kNoHooks);
   const bool hooks_enabled = PartitionAllocHooks::AreHooksEnabled();
   bool overridden = false;
   size_t old_usable_size;
@@ -2335,17 +2337,18 @@ void* PartitionRoot::ReallocInline(void* ptr,
   }
 
   // This realloc cannot be resized in-place. Sadness.
-  void* ret =
-      AllocInternal<flags>(new_size, internal::PartitionPageSize(), type_name);
+  void* ret = AllocInternal<alloc_flags>(
+      new_size, internal::PartitionPageSize(), type_name);
   if (!ret) {
-    if constexpr (ContainsFlags(flags, AllocFlags::kReturnNull)) {
+    if constexpr (ContainsFlags(alloc_flags, AllocFlags::kReturnNull)) {
       return nullptr;
     }
     internal::PartitionExcessiveAllocationSize(new_size);
   }
 
   memcpy(ret, ptr, std::min(old_usable_size, new_size));
-  FreeInUnknownRoot(ptr);  // Implicitly protects the old ptr on MTE systems.
+  FreeInUnknownRoot<free_flags>(
+      ptr);  // Implicitly protects the old ptr on MTE systems.
   return ret;
 #endif
 }
@@ -2402,11 +2405,14 @@ EXPORT_TEMPLATE void* PartitionRoot::Alloc<AllocFlags::kNone>(size_t,
 EXPORT_TEMPLATE void* PartitionRoot::Alloc<AllocFlags::kReturnNull>(
     size_t,
     const char*);
-EXPORT_TEMPLATE void* PartitionRoot::Realloc<AllocFlags::kNone>(void*,
-                                                                size_t,
-                                                                const char*);
 EXPORT_TEMPLATE void*
-PartitionRoot::Realloc<AllocFlags::kReturnNull>(void*, size_t, const char*);
+PartitionRoot::Realloc<AllocFlags::kNone, FreeFlags::kNone>(void*,
+                                                            size_t,
+                                                            const char*);
+EXPORT_TEMPLATE void*
+PartitionRoot::Realloc<AllocFlags::kReturnNull, FreeFlags::kNone>(void*,
+                                                                  size_t,
+                                                                  const char*);
 EXPORT_TEMPLATE void* PartitionRoot::AlignedAlloc<AllocFlags::kNone>(size_t,
                                                                      size_t);
 #undef EXPORT_TEMPLATE
