@@ -278,6 +278,8 @@ void PageInfoCookiesContentView::SetThirdPartyCookiesInfo(
     description = l10n_util::GetStringUTF16(
         will_create_permanent_exception
             ? IDS_PAGE_INFO_COOKIES_SITE_NOT_WORKING_DESCRIPTION_PERMANENT
+        : presenter_->IsTrackingProtection3pcdEnabled()
+            ? IDS_PAGE_INFO_TRACKING_PROTECTION_SITE_NOT_WORKING_DESCRIPTION_TEMPORARY
             : IDS_PAGE_INFO_COOKIES_SITE_NOT_WORKING_DESCRIPTION_TEMPORARY);
   } else {
     title = is_permanent_exception
