@@ -167,8 +167,7 @@ public class TabPersistentStoreIntegrationTest {
     private void doTestOpenAndCloseTabCreatesAndDeletesFile() {
         // Setup the test: Create a tab
         TabModel tabModel = mTabModelSelector.getModel(false);
-        MockTab tab =
-                (MockTab) MockTab.createAndInitialize(TAB_ID, false, TabLaunchType.FROM_CHROME_UI);
+        MockTab tab = MockTab.createAndInitialize(TAB_ID, false, TabLaunchType.FROM_CHROME_UI);
         // Ordinarily, TabState comes from native, so setup a stub in TabStateExtractor.
         TabState tabState = new TabState();
         tabState.contentsState = WEB_CONTENTS_STATE;

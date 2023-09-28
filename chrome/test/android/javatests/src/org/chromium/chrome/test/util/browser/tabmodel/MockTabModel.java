@@ -33,7 +33,7 @@ public class MockTabModel extends EmptyTabModel implements IncognitoTabModel {
          * @param incognito Whether the Tab is incognito.
          * @return Tab that is created.
          */
-        public Tab createTab(int id, boolean incognito);
+        public MockTab createTab(int id, boolean incognito);
     }
 
     private int mIndex = TabModel.INVALID_TAB_INDEX;
@@ -49,9 +49,9 @@ public class MockTabModel extends EmptyTabModel implements IncognitoTabModel {
         mDelegate = delegate;
     }
 
-    public Tab addTab(int id) {
-        Tab tab = mDelegate == null ? new MockTab(id, isIncognito())
-                                    : mDelegate.createTab(id, isIncognito());
+    public MockTab addTab(int id) {
+        MockTab tab = mDelegate == null ? new MockTab(id, isIncognito())
+                                        : mDelegate.createTab(id, isIncognito());
 
         addTab(tab, TabModel.INVALID_TAB_INDEX, TabLaunchType.FROM_CHROME_UI,
                 TabCreationState.LIVE_IN_FOREGROUND);

@@ -96,7 +96,7 @@ public class TabSelectionEditorShareActionUnitTest {
                 mContext, ShowMode.MENU_ONLY, ButtonType.TEXT, IconPosition.START);
         mTabModel = spy(new MockTabModel(false, new MockTabModel.MockTabModelDelegate() {
             @Override
-            public Tab createTab(int id, boolean incognito) {
+            public MockTab createTab(int id, boolean incognito) {
                 MockTab tab = new MockTab(id, incognito);
                 tab.setGurlOverrideForTesting(mIdUrlMap.get(id));
                 return tab;

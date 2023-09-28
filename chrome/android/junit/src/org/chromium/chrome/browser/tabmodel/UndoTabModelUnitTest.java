@@ -189,7 +189,7 @@ public class UndoTabModelUnitTest {
 
     private void createTab(final TabModel model, boolean isIncognito) {
         final int launchType = TabLaunchType.FROM_CHROME_UI;
-        MockTab tab = (MockTab) MockTab.createAndInitialize(mNextTabId++, isIncognito, launchType);
+        MockTab tab = MockTab.createAndInitialize(mNextTabId++, isIncognito, launchType);
         tab.setIsInitialized(true);
         model.addTab(tab, -1, launchType, TabCreationState.LIVE_IN_FOREGROUND);
     }

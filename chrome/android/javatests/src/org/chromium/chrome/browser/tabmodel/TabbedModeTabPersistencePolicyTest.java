@@ -98,7 +98,7 @@ public class TabbedModeTabPersistencePolicyTest {
         MockTabModel.MockTabModelDelegate tabModelDelegate =
                 new MockTabModel.MockTabModelDelegate() {
                     @Override
-                    public Tab createTab(int id, boolean incognito) {
+                    public MockTab createTab(int id, boolean incognito) {
                         MockTab tab = new MockTab(id, incognito) {
                             @Override
                             public GURL getUrl() {

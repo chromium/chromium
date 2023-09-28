@@ -41,7 +41,6 @@ import org.chromium.chrome.browser.app.tabmodel.ChromeTabModelFilterFactory;
 import org.chromium.chrome.browser.app.tabmodel.CustomTabsTabModelOrchestrator;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.tab.MockTab;
-import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorImpl;
 import org.chromium.chrome.browser.tabmodel.TabPersistencePolicy;
@@ -444,7 +443,7 @@ public class CustomTabTabPersistencePolicyTest {
         MockTabModel.MockTabModelDelegate tabModelDelegate =
                 new MockTabModel.MockTabModelDelegate() {
                     @Override
-                    public Tab createTab(int id, boolean incognito) {
+                    public MockTab createTab(int id, boolean incognito) {
                         return new MockTab(id, incognito) {
                             @Override
                             public GURL getUrl() {

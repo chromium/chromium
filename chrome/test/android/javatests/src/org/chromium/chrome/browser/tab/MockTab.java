@@ -28,8 +28,8 @@ public class MockTab extends TabImpl {
     /**
      * Create a new Tab for testing and initializes Tab UserData objects.
      */
-    public static Tab createAndInitialize(int id, boolean incognito) {
-        TabImpl tab = new MockTab(id, incognito);
+    public static MockTab createAndInitialize(int id, boolean incognito) {
+        MockTab tab = new MockTab(id, incognito);
         tab.initialize(null, null, null, null, null, false, null, false);
         return tab;
     }
@@ -37,9 +37,9 @@ public class MockTab extends TabImpl {
     /**
      * Create a new Tab for testing and initializes Tab UserData objects.
      */
-    public static Tab createAndInitialize(
+    public static MockTab createAndInitialize(
             int id, boolean incognito, @TabLaunchType int tabLaunchType) {
-        TabImpl tab = new MockTab(id, incognito, tabLaunchType);
+        MockTab tab = new MockTab(id, incognito, tabLaunchType);
         tab.initialize(null, null, null, null, null, false, null, false);
         return tab;
     }

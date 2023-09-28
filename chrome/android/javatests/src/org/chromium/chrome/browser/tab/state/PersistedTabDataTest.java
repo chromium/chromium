@@ -146,7 +146,7 @@ public class PersistedTabDataTest {
     @UiThreadTest
     @Test
     public void testOnTabClose() throws TimeoutException {
-        TabImpl tab = (TabImpl) MockTab.createAndInitialize(1, false);
+        TabImpl tab = MockTab.createAndInitialize(1, false);
         tab.getUserDataHost().setUserData(
                 ShoppingPersistedTabData.class, mShoppingPersistedTabDataMock);
         PersistedTabData.onTabClose(tab);

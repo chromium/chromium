@@ -113,7 +113,7 @@ public class HistoricalTabSaverImplUnitTest {
         WebContentsState tempState = new WebContentsState(buf);
         tempState.setVersion(1);
 
-        MockTab tab = (MockTab) MockTab.createAndInitialize(0, false);
+        MockTab tab = MockTab.createAndInitialize(0, false);
         tab.setWebContentsState(tempState);
 
         HistoricalEntry group = new HistoricalEntry(0, "Foo", Arrays.asList(new Tab[] {tab}));
@@ -148,7 +148,7 @@ public class HistoricalTabSaverImplUnitTest {
         WebContentsState tempState = new WebContentsState(buf);
         tempState.setVersion(1);
 
-        MockTab tab = (MockTab) MockTab.createAndInitialize(0, false);
+        MockTab tab = MockTab.createAndInitialize(0, false);
         tab.setWebContentsState(tempState);
 
         mHistoricalTabSaver.createHistoricalBulkClosure(

@@ -86,7 +86,7 @@ public class AuxiliarySearchProviderTest {
     public void testGetTabsSearchableDataProto() throws InterruptedException {
         MockTabModel mockTabModel = new MockTabModel(false, null);
         for (int i = 0; i < 200; i++) {
-            MockTab tab = (MockTab) mockTabModel.addTab(i);
+            MockTab tab = mockTabModel.addTab(i);
             tab.setGurlOverrideForTesting(new GURL(TAB_URL + Integer.toString(i)));
             tab.setTitle(TAB_TITLE + Integer.toString(i));
             tab.setTimestampMillis(i);
@@ -157,13 +157,13 @@ public class AuxiliarySearchProviderTest {
         MockTabModel mockTabModel = new MockTabModel(false, null);
 
         // Add a normal tab
-        MockTab tab = (MockTab) mockTabModel.addTab(0);
+        MockTab tab = mockTabModel.addTab(0);
         tab.setGurlOverrideForTesting(new GURL(TAB_URL + "0"));
         tab.setTitle(TAB_TITLE + "0");
         tab.setTimestampMillis(0);
 
         // Add a null title tab
-        tab = (MockTab) mockTabModel.addTab(1);
+        tab = mockTabModel.addTab(1);
         tab.setGurlOverrideForTesting(new GURL(TAB_URL + Integer.toString(1)));
         tab.setTimestampMillis(1);
         tab.setTitle(null);
@@ -184,13 +184,13 @@ public class AuxiliarySearchProviderTest {
         MockTabModel mockTabModel = new MockTabModel(false, null);
 
         // Add a normal tab
-        MockTab tab = (MockTab) mockTabModel.addTab(0);
+        MockTab tab = mockTabModel.addTab(0);
         tab.setGurlOverrideForTesting(new GURL(TAB_URL + "0"));
         tab.setTitle(TAB_TITLE + "0");
         tab.setTimestampMillis(0);
 
         // Add an empty title tab
-        tab = (MockTab) mockTabModel.addTab(1);
+        tab = mockTabModel.addTab(1);
         tab.setGurlOverrideForTesting(new GURL(TAB_URL + "1"));
         tab.setTimestampMillis(1);
         tab.setTitle("");
@@ -211,13 +211,13 @@ public class AuxiliarySearchProviderTest {
         MockTabModel mockTabModel = new MockTabModel(false, null);
 
         // Add a normal tab
-        MockTab tab = (MockTab) mockTabModel.addTab(0);
+        MockTab tab = mockTabModel.addTab(0);
         tab.setGurlOverrideForTesting(new GURL(TAB_URL + "0"));
         tab.setTitle(TAB_TITLE + "0");
         tab.setTimestampMillis(0);
 
         // Add a null url tab
-        tab = (MockTab) mockTabModel.addTab(1);
+        tab = mockTabModel.addTab(1);
         tab.setGurlOverrideForTesting(null);
         tab.setTimestampMillis(1);
         tab.setTitle(TAB_TITLE + "0");
@@ -238,13 +238,13 @@ public class AuxiliarySearchProviderTest {
         MockTabModel mockTabModel = new MockTabModel(false, null);
 
         // Add a normal tab
-        MockTab tab = (MockTab) mockTabModel.addTab(0);
+        MockTab tab = mockTabModel.addTab(0);
         tab.setGurlOverrideForTesting(new GURL(TAB_URL + "0"));
         tab.setTitle(TAB_TITLE + "0");
         tab.setTimestampMillis(0);
 
         // Add an invalid url tab
-        tab = (MockTab) mockTabModel.addTab(1);
+        tab = mockTabModel.addTab(1);
         tab.setGurlOverrideForTesting(new GURL("invalid"));
         tab.setTimestampMillis(1);
         tab.setTitle(TAB_TITLE + "0");
@@ -267,7 +267,7 @@ public class AuxiliarySearchProviderTest {
         // Create 200 tabs with different timestamps(from 0 to 199), and only the newest 100 tabs
         // should be returned from 'getTabsSearchableDataProtoAsync'.
         for (int i = 0; i < 200; i++) {
-            MockTab tab = (MockTab) mockTabModel.addTab(i);
+            MockTab tab = mockTabModel.addTab(i);
             tab.setGurlOverrideForTesting(new GURL(TAB_URL + Integer.toString(i)));
             tab.setTitle(TAB_TITLE + Integer.toString(i));
             tab.setTimestampMillis(i);

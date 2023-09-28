@@ -111,7 +111,7 @@ public class TabModelImplUnitTest {
 
     private Tab createTab(final TabModel model, long activeTimestampMillis, int parentId) {
         final int launchType = TabLaunchType.FROM_CHROME_UI;
-        MockTab tab = (MockTab) MockTab.createAndInitialize(mNextTabId++, model.isIncognito());
+        MockTab tab = MockTab.createAndInitialize(mNextTabId++, model.isIncognito());
         tab.setTimestampMillis(activeTimestampMillis);
         tab.setParentId(parentId);
         tab.setIsInitialized(true);

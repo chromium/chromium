@@ -837,7 +837,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
     }
 
     @Override
-    public Tab createTab(int id, boolean incognito) {
+    public MockTab createTab(int id, boolean incognito) {
         return MockTab.createAndInitialize(id, incognito);
     }
 }

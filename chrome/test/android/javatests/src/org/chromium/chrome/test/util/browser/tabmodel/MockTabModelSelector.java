@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.test.util.browser.tabmodel;
 
+import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabModel;
@@ -55,7 +56,7 @@ public class MockTabModelSelector extends TabModelSelectorBase {
         return sCurTabOffset++;
     }
 
-    public Tab addMockTab() {
+    public MockTab addMockTab() {
         return ((MockTabModel) getModel(false)).addTab(ID_OFFSET + nextIdOffset());
     }
 
@@ -93,5 +94,10 @@ public class MockTabModelSelector extends TabModelSelectorBase {
     public void selectModel(boolean incognito) {
         super.selectModel(incognito);
         ((MockTabModel) getModel(incognito)).setAsActiveModelForTesting();
+    }
+
+    @Override
+    public MockTab getCurrentTab() {
+        return (MockTab) super.getCurrentTab();
     }
 }

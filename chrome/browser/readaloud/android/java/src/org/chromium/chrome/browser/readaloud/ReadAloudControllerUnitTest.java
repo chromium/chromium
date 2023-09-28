@@ -37,7 +37,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.readaloud.player.PlayerCoordinator;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.chrome.browser.tab.MockTab;
-import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.translate.FakeTranslateBridgeJni;
 import org.chromium.chrome.browser.translate.TranslateBridgeJni;
 import org.chromium.chrome.modules.readaloud.Playback;
@@ -101,7 +100,7 @@ public class ReadAloudControllerUnitTest {
         mJniMocker.mock(TranslateBridgeJni.TEST_HOOKS, mFakeTranslateBridge);
         mTabModelSelector = new MockTabModelSelector(
                 /* tabCount= */ 2, /* incognitoTabCount= */ 1, (id, incognito) -> {
-                    Tab tab = spy(MockTab.createAndInitialize(id, incognito));
+                    MockTab tab = spy(MockTab.createAndInitialize(id, incognito));
                     return tab;
                 });
         when(mHooksImpl.isEnabled()).thenReturn(true);
@@ -111,7 +110,7 @@ public class ReadAloudControllerUnitTest {
         mController = new ReadAloudController(mContext, mMockProfileSupplier,
                 mTabModelSelector.getModel(false), mViewStub, mBottomSheetController);
 
-        mTab = (MockTab) mTabModelSelector.getCurrentTab();
+        mTab = mTabModelSelector.getCurrentTab();
         mTab.setGurlOverrideForTesting(sTestGURL);
     }
 
@@ -249,7 +248,7 @@ public class ReadAloudControllerUnitTest {
         verify(mPlayerCoordinator, times(1)).playbackReady(eq(mPlayback), eq(PlaybackListener.State.PLAYING));
 
         // test that previous playback is released when another playback is called
-        MockTab newTab = (MockTab) mTabModelSelector.addMockTab();
+        MockTab newTab = mTabModelSelector.addMockTab();
         newTab.setGurlOverrideForTesting(new GURL("https://en.wikipedia.org/wiki/Alphabet_Inc."));
         mController.playTab(newTab);
         verify(mPlayback, times(1)).release();

@@ -203,10 +203,10 @@ public abstract class ShoppingPersistedTabDataTestUtils {
         return shoppingPersistedTabData;
     }
 
-    static Tab createTabOnUiThread(int tabId, boolean isIncognito) {
-        AtomicReference<Tab> res = new AtomicReference<>();
+    static MockTab createTabOnUiThread(int tabId, boolean isIncognito) {
+        AtomicReference<MockTab> res = new AtomicReference<>();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            MockTab tab = (MockTab) MockTab.createAndInitialize(tabId, isIncognito);
+            MockTab tab = MockTab.createAndInitialize(tabId, isIncognito);
             tab.setIsInitialized(true);
             tab.setGurlOverrideForTesting(DEFAULT_GURL);
             tab.setTimestampMillis(System.currentTimeMillis());

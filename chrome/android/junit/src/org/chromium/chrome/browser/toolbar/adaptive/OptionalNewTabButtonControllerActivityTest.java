@@ -36,7 +36,6 @@ import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.MockTab;
-import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.ButtonDataProvider;
@@ -111,7 +110,7 @@ public class OptionalNewTabButtonControllerActivityTest {
                 new Pair<>(true, AdaptiveToolbarButtonVariant.NEW_TAB));
         MockTabModelSelector tabModelSelector = new MockTabModelSelector(
                 /*tabCount=*/1, /*incognitoTabCount=*/0, (id, incognito) -> {
-                    Tab tab = spy(MockTab.createAndInitialize(id, incognito));
+                    MockTab tab = spy(MockTab.createAndInitialize(id, incognito));
                     doReturn(Mockito.mock(WebContents.class)).when(tab).getWebContents();
                     return tab;
                 });
@@ -119,7 +118,7 @@ public class OptionalNewTabButtonControllerActivityTest {
         assertNull(ShadowDelegate.sTabCreatorManager);
         ShadowDelegate.sTabModelSelector = tabModelSelector;
         ShadowDelegate.sTabCreatorManager = new MockTabCreatorManager(tabModelSelector);
-        mTab = (MockTab) tabModelSelector.getCurrentTab();
+        mTab = tabModelSelector.getCurrentTab();
         mTab.setGurlOverrideForTesting(JUnitTestGURLs.EXAMPLE_URL);
 
         mActivityScenario = ActivityScenario.launch(ChromeTabbedActivity.class);

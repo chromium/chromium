@@ -918,7 +918,7 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
             mockCurrencyFormatter();
             mockUrlUtilities();
             mockOptimizationGuideResponse(OptimizationGuideDecision.TRUE, ANY_PRICE_TRACKING_DATA);
-            MockTab tab = (MockTab) MockTab.createAndInitialize(1, false);
+            MockTab tab = MockTab.createAndInitialize(1, false);
             tab.setGurlOverrideForTesting(TEST_GURL);
             tab.setIsInitialized(true);
             tab.setTimestampMillis(System.currentTimeMillis());
