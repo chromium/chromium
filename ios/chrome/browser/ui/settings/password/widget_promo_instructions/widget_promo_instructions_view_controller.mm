@@ -47,10 +47,10 @@
                        constant:32],
     [instructionsViewController.view.bottomAnchor
         constraintEqualToAnchor:self.view.bottomAnchor],
-    [instructionsViewController.view.leadingAnchor
-        constraintEqualToAnchor:self.view.leadingAnchor],
-    [instructionsViewController.view.trailingAnchor
-        constraintEqualToAnchor:self.view.trailingAnchor],
+    [instructionsViewController.view.centerXAnchor
+        constraintEqualToAnchor:self.view.centerXAnchor],
+    [instructionsViewController.view.widthAnchor
+        constraintEqualToAnchor:self.view.widthAnchor],
 
   ]];
 
@@ -89,7 +89,7 @@
 
   instructionsViewController.titleString =
       l10n_util::GetNSString(IDS_IOS_WIDGET_PROMO_INSTRUCTIONS_TITLE);
-  instructionsViewController.titleTextStyle = UIFontTextStyleTitle1;
+  instructionsViewController.titleTextStyle = UIFontTextStyleTitle2;
   instructionsViewController.subtitleString =
       l10n_util::GetNSString(IDS_IOS_WIDGET_PROMO_INSTRUCTIONS_SUBTITLE);
   instructionsViewController.subtitleTextStyle = UIFontTextStyleBody;
@@ -102,14 +102,6 @@
 
   InstructionView* instructionView = [self createInstructionView];
   instructionsViewController.underTitleView = instructionView;
-  [NSLayoutConstraint activateConstraints:@[
-    [instructionView.leadingAnchor
-        constraintEqualToAnchor:instructionsViewController.view.leadingAnchor
-                       constant:24],
-    [instructionView.trailingAnchor
-        constraintEqualToAnchor:instructionsViewController.view.trailingAnchor
-                       constant:-24],
-  ]];
 
   instructionsViewController.view.translatesAutoresizingMaskIntoConstraints =
       NO;

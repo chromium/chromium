@@ -11,5 +11,9 @@ imageset("widget_promo_instructions_banner") {
     "widget_promo_instructions_banner.imageset/widget_promo_instructions_banner@3x.png",
     "widget_promo_instructions_banner.imageset/widget_promo_instructions_banner_dark@2x.png",
     "widget_promo_instructions_banner.imageset/widget_promo_instructions_banner_dark@3x.png",
+    "widget_promo_instructions_banner.imageset/widget_promo_instructions_banner_dark_ipad@1x.png",
+    "widget_promo_instructions_banner.imageset/widget_promo_instructions_banner_dark_ipad@2x.png",
+    "widget_promo_instructions_banner.imageset/widget_promo_instructions_banner_ipad@1x.png",
+    "widget_promo_instructions_banner.imageset/widget_promo_instructions_banner_ipad@2x.png",
   ]
 }

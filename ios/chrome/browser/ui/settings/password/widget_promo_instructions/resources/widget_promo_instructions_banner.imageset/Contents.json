@@ -31,6 +31,38 @@
           "value" : "dark"
         }
       ]
+    },
+    {
+      "idiom" : "ipad",
+      "filename" : "widget_promo_instructions_banner_ipad@1x.png",
+      "scale" : "1x"
+    },
+    {
+      "idiom" : "ipad",
+      "filename" : "widget_promo_instructions_banner_ipad@2x.png",
+      "scale" : "2x"
+    },
+    {
+      "idiom" : "ipad",
+      "filename" : "widget_promo_instructions_banner_dark_ipad@1x.png",
+      "scale" : "1x",
+      "appearances" : [
+        {
+          "appearance" : "luminosity",
+          "value" : "dark"
+        }
+      ]
+    },
+    {
+      "idiom" : "ipad",
+      "filename" : "widget_promo_instructions_banner_dark_ipad@2x.png",
+      "scale" : "2x",
+      "appearances" : [
+        {
+          "appearance" : "luminosity",
+          "value" : "dark"
+        }
+      ]
     }
   ],
   "info" : {
