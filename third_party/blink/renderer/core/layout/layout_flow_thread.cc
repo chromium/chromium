@@ -199,6 +199,13 @@ void LayoutFlowThread::AddOutlineRects(
   collector.AddRect(FragmentsBoundingBox(flow_collector.Rect()));
 }
 
+void LayoutFlowThread::Paint(const PaintInfo& paint_info) const {
+  NOT_DESTROYED();
+  // NGBoxFragmentPainter traverses a physical fragment tree, and doesn't call
+  // Paint() for LayoutFlowThread.
+  NOTREACHED_NORETURN();
+}
+
 bool LayoutFlowThread::NodeAtPoint(HitTestResult& result,
                                    const HitTestLocation& hit_test_location,
                                    const PhysicalOffset& accumulated_offset,

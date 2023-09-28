@@ -38,39 +38,6 @@ template <typename Base>
 LayoutNGMixin<Base>::~LayoutNGMixin() = default;
 
 template <typename Base>
-void LayoutNGMixin<Base>::Paint(const PaintInfo& paint_info) const {
-  Base::CheckIsNotDestroyed();
-
-  // When |this| is NG block fragmented, the painter should traverse fragments
-  // instead of |LayoutObject|, because this function cannot handle block
-  // fragmented objects. We can come here only when |this| cannot traverse
-  // fragments, or the parent is legacy.
-  DCHECK(Base::IsMonolithic() || !Base::CanTraversePhysicalFragments() ||
-         !Base::Parent()->CanTraversePhysicalFragments());
-  // We may get here in multiple-fragment cases if the object is repeated
-  // (inside table headers and footers, for instance).
-  DCHECK(Base::PhysicalFragmentCount() <= 1u ||
-         Base::GetPhysicalFragment(0)->BreakToken()->IsRepeated());
-
-  // Avoid painting dirty objects because descendants maybe already destroyed.
-  if (UNLIKELY(Base::NeedsLayout() &&
-               !Base::ChildLayoutBlockedByDisplayLock())) {
-    NOTREACHED();
-    return;
-  }
-
-  if (Base::PhysicalFragmentCount()) {
-    const NGPhysicalBoxFragment* fragment = Base::GetPhysicalFragment(0);
-    DCHECK(fragment);
-    NGBoxFragmentPainter(*fragment).Paint(paint_info);
-    return;
-  }
-
-  NOTREACHED();
-  Base::Paint(paint_info);
-}
-
-template <typename Base>
 bool LayoutNGMixin<Base>::IsLayoutNGObject() const {
   Base::CheckIsNotDestroyed();
   return true;

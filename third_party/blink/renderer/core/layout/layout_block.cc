@@ -358,6 +358,31 @@ void LayoutBlock::AddVisualOverflowFromBlockChildren() {
 
 void LayoutBlock::Paint(const PaintInfo& paint_info) const {
   NOT_DESTROYED();
+
+  // When |this| is NG block fragmented, the painter should traverse fragments
+  // instead of |LayoutObject|, because this function cannot handle block
+  // fragmented objects. We can come here only when |this| cannot traverse
+  // fragments, or the parent is legacy.
+  DCHECK(IsMonolithic() || !CanTraversePhysicalFragments() ||
+         !Parent()->CanTraversePhysicalFragments());
+  // We may get here in multiple-fragment cases if the object is repeated
+  // (inside table headers and footers, for instance).
+  DCHECK(PhysicalFragmentCount() <= 1u ||
+         GetPhysicalFragment(0)->BreakToken()->IsRepeated());
+
+  // Avoid painting dirty objects because descendants maybe already destroyed.
+  if (UNLIKELY(NeedsLayout() && !ChildLayoutBlockedByDisplayLock())) {
+    NOTREACHED();
+    return;
+  }
+
+  if (PhysicalFragmentCount()) {
+    const NGPhysicalBoxFragment* fragment = GetPhysicalFragment(0);
+    DCHECK(fragment);
+    NGBoxFragmentPainter(*fragment).Paint(paint_info);
+    return;
+  }
+
   NOTREACHED_NORETURN();
 }
 

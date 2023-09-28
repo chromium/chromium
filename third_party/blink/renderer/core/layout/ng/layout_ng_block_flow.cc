@@ -92,7 +92,7 @@ bool LayoutNGBlockFlow::NodeAtPoint(HitTestResult& result,
                                     HitTestPhase phase) {
   NOT_DESTROYED();
 
-  // Please see |LayoutNGMixin<Base>::Paint()| for these DCHECKs.
+  // Please see |LayoutBlock::Paint()| for these DCHECKs.
   DCHECK(IsMonolithic() || !CanTraversePhysicalFragments() ||
          !Parent()->CanTraversePhysicalFragments());
   // We may get here in multiple-fragment cases if the object is repeated

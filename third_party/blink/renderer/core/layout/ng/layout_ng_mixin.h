@@ -30,8 +30,6 @@ class LayoutNGMixin : public Base {
   explicit LayoutNGMixin(ContainerNode*);
   ~LayoutNGMixin() override;
 
-  void Paint(const PaintInfo&) const override;
-
   bool IsLayoutNGObject() const final;
 };
 
