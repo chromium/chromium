@@ -10,6 +10,7 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "chrome/browser/manta/manta_status.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/endpoint_fetcher/mock_endpoint_fetcher.h"
@@ -137,7 +138,9 @@ TEST_F(SnapperProviderTest, SimpleRequestPayload) {
   snapper_provider->Call(
       manta::proto::Request(),
       base::BindLambdaForTesting(
-          [&quit_closure](std::unique_ptr<manta::proto::Response> response) {
+          [&quit_closure](std::unique_ptr<manta::proto::Response> response,
+                          MantaStatus manta_status) {
+            ASSERT_EQ(manta_status.status_code, MantaStatusCode::kOk);
             ASSERT_TRUE(response);
             ASSERT_EQ(1, response->output_data_size());
             ASSERT_TRUE(response->output_data(0).has_image());

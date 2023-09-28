@@ -15,20 +15,19 @@
 
 namespace manta {
 
-// Manta service uses this internal callback to return a Response proto parsed
-// from server response, which will be consumed by the provider to extract
-// concerned info and pack as a base::Value::Dict, and a MantaStatus struct that
-// indicates OK status or errors if server does not respond properly.
-using MantaInternalCallback =
+// Manta service uses this callback to return a Response proto parsed
+// from server response, and a MantaStatus struct that indicates OK status or
+// errors if server does not respond properly.
+using MantaProtoResponseCallback =
     base::OnceCallback<void(std::unique_ptr<manta::proto::Response>,
                             MantaStatus)>;
 
-// Manta service uses this callback to return the response / error messages to
-// the caller.
+// Manta service uses this callback to return the parsed result / error messages
+// to the caller.
 using MantaGenericCallback =
     base::OnceCallback<void(base::Value::Dict, MantaStatus)>;
 
-void OnEndpointFetcherComplete(MantaInternalCallback callback,
+void OnEndpointFetcherComplete(MantaProtoResponseCallback callback,
                                std::unique_ptr<EndpointFetcher> fetcher,
                                std::unique_ptr<EndpointResponse> responses);
 

@@ -138,7 +138,7 @@ void OrcaProvider::Call(const std::map<std::string, std::string>& input,
       GURL{kEndpointUrl}, {kOAuthScope}, serialized_request);
 
   EndpointFetcher* const fetcher_ptr = fetcher.get();
-  MantaInternalCallback internal_callback = base::BindOnce(
+  MantaProtoResponseCallback internal_callback = base::BindOnce(
       &OnServerResponseOrErrorReceived, std::move(done_callback));
   fetcher_ptr->Fetch(base::BindOnce(&OnEndpointFetcherComplete,
                                     std::move(internal_callback),

@@ -10,7 +10,7 @@
 
 namespace manta {
 
-void OnEndpointFetcherComplete(MantaInternalCallback callback,
+void OnEndpointFetcherComplete(MantaProtoResponseCallback callback,
                                std::unique_ptr<EndpointFetcher> fetcher,
                                std::unique_ptr<EndpointResponse> responses) {
   // TODO(b/301185733): Log error code to UMA.

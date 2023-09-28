@@ -12,6 +12,7 @@
 #include "base/metrics/user_metrics_action.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/manta/manta_service_factory.h"
+#include "chrome/browser/manta/manta_status.h"
 #include "chrome/browser/manta/proto/manta.pb.h"
 #include "chrome/browser/manta/snapper_provider.h"
 #include "chrome/browser/new_tab_page/modules/new_tab_page_modules.h"
@@ -227,8 +228,10 @@ void CustomizeChromePageHandler::RemoveBackgroundImage() {
 
 void CustomizeChromePageHandler::WallpaperSearchCallback(
     SearchWallpaperCallback callback,
-    std::unique_ptr<manta::proto::Response> response) {
-  if (!response || response->output_data_size() < 1) {
+    std::unique_ptr<manta::proto::Response> response,
+    manta::MantaStatus manta_status) {
+  if (manta_status.status_code != manta::MantaStatusCode::kOk || !response ||
+      response->output_data_size() < 1) {
     std::move(callback).Run(false);
     return;
   }

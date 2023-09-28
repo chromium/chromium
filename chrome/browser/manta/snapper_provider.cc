@@ -10,6 +10,7 @@
 
 #include "base/functional/bind.h"
 #include "base/time/time.h"
+#include "chrome/browser/manta/manta_service_callbacks.h"
 #include "chrome/browser/manta/proto/manta.pb.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
@@ -41,7 +42,7 @@ SnapperProvider::SnapperProvider(
 SnapperProvider::~SnapperProvider() = default;
 
 void SnapperProvider::Call(const manta::proto::Request& request,
-                           SnapperDoneCallback done_callback) {
+                           MantaProtoResponseCallback done_callback) {
   std::string serialized_request;
   request.SerializeToString(&serialized_request);
 
@@ -49,22 +50,9 @@ void SnapperProvider::Call(const manta::proto::Request& request,
       GURL{kEndpointUrl}, {kOAuthScope}, serialized_request);
 
   EndpointFetcher* const fetcher_ptr = fetcher.get();
-  fetcher_ptr->Fetch(base::BindOnce(
-      &SnapperProvider::HandleResponse, weak_ptr_factory_.GetWeakPtr(),
-      std::move(done_callback), std::move(fetcher)));
-}
-
-void SnapperProvider::HandleResponse(
-    SnapperDoneCallback done_callback,
-    std::unique_ptr<EndpointFetcher> /* endpoint_fetcher */,
-    std::unique_ptr<EndpointResponse> response) {
-  if (!response) {
-    std::move(done_callback).Run(nullptr);
-    return;
-  }
-  auto manta_response = std::make_unique<manta::proto::Response>();
-  manta_response->ParseFromString(response->response);
-  std::move(done_callback).Run(std::move(manta_response));
+  fetcher_ptr->Fetch(base::BindOnce(&OnEndpointFetcherComplete,
+                                    std::move(done_callback),
+                                    std::move(fetcher)));
 }
 
 std::unique_ptr<EndpointFetcher> SnapperProvider::CreateEndpointFetcher(
