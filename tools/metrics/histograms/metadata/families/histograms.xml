@@ -287,8 +287,11 @@ chromium-metrics-reviews@google.com.
   <owner>tju@google.com</owner>
   <owner>chrome-kids-eng@google.com</owner>
   <summary>
-    Tracks the latency in calls to Kids Management API::ClassifyURL. Googlers
-    only: See go/chrome-kids-backend-monitoring for backend-related metrics.
+    Tracks the latency in calls to Kids Management API::ClassifyURL. It includes
+    both the actual RPC call and the time spent in requesting access token.
+
+    Googlers only: See go/chrome-kids-backend-monitoring for backend-related
+    metrics.
   </summary>
 </histogram>
 
@@ -317,7 +320,8 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-kids-eng@google.com</owner>
   <summary>
     Latency of the calls in calls to Kids Management API::ClassifyURL that
-    resulted with &quot;{Status}&quot; status.
+    resulted with &quot;{Status}&quot; status. It includes both the actual RPC
+    call and the time spent in requesting access token.
   </summary>
   <token key="Status">
     <variant name="AuthError"/>
@@ -349,8 +353,9 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-kids-eng@google.com</owner>
   <summary>
     Tracks the latency in calls to Kids Management API::CreatePermissionRequest.
-    Googlers only: See go/chrome-kids-backend-monitoring for backend-related
-    metrics.
+    It includes both the actual RPC call and the time spent in requesting access
+    token. Googlers only: See go/chrome-kids-backend-monitoring for
+    backend-related metrics.
   </summary>
 </histogram>
 
@@ -373,6 +378,8 @@ chromium-metrics-reviews@google.com.
   <summary>
     Latency of the calls in calls to Kids Management
     API::CreatePermissionRequest that resulted with &quot;{Status}&quot; status.
+    It includes both the actual RPC call and the time spent in requesting access
+    token.
   </summary>
   <token key="Status">
     <variant name="AuthError"/>
