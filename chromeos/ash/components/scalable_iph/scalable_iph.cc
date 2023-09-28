@@ -304,6 +304,24 @@ std::string ParseActionEventName(const std::string& event_used_param) {
   return name_value[1];
 }
 
+ScalableIphDelegate::NotificationIcon GetNotificationIcon(
+    const std::string& icon) {
+  if (icon == kCustomNotificationIconValueRedeem) {
+    return ScalableIphDelegate::NotificationIcon::kRedeem;
+  }
+
+  return ScalableIphDelegate::NotificationIcon::kDefault;
+}
+
+ScalableIphDelegate::NotificationSummaryText GetNotificationSummaryText(
+    const std::string& summary_text) {
+  if (summary_text == kCustomNotificationSummaryTextValueNone) {
+    return ScalableIphDelegate::NotificationSummaryText::kNone;
+  }
+
+  return ScalableIphDelegate::NotificationSummaryText::kWelcomeTips;
+}
+
 std::unique_ptr<NotificationParams> ParseNotificationParams(
     Logger* logger,
     const base::Feature& feature) {
@@ -368,6 +386,35 @@ std::unique_ptr<NotificationParams> ParseNotificationParams(
   if (image_type == kCustomNotificationImageTypeValueWallpaper) {
     param->image_type = ScalableIphDelegate::NotificationImageType::kWallpaper;
   }
+
+  std::string icon = GetParamValue(feature, kCustomNotificationIconParamName);
+  if (!icon.empty()) {
+    param->icon = GetNotificationIcon(icon);
+  }
+  SCALABLE_IPH_LOG(logger) << kCustomNotificationIconParamName
+                           << " is specified as " << icon << ". " << param->icon
+                           << " is set.";
+
+  std::string summary_text =
+      GetParamValue(feature, kCustomNotificationSummaryTextParamName);
+  if (!summary_text.empty()) {
+    param->summary_text = GetNotificationSummaryText(summary_text);
+  }
+  SCALABLE_IPH_LOG(logger) << kCustomNotificationSummaryTextParamName
+                           << " is specified as " << summary_text << ". "
+                           << param->summary_text << " is set.";
+
+  std::string source =
+      GetParamValue(feature, kCustomNotificationSourceTextParamName);
+  if (!source.empty()) {
+    param->source = source;
+  } else {
+    param->source = kCustomNotificationSourceTextValueDefault;
+  }
+  SCALABLE_IPH_LOG(logger) << kCustomNotificationSourceTextParamName
+                           << " is specified as " << source << ". "
+                           << param->source << " is set.";
+
   return param;
 }
 

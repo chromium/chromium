@@ -59,6 +59,7 @@
 #include "chromeos/ash/grit/ash_resources.h"
 #include "chromeos/crosapi/cpp/gurl_os_handler_utils.h"
 #include "chromeos/dbus/power/power_manager_client.h"
+#include "chromeos/ui/vector_icons/vector_icons.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
@@ -91,7 +92,6 @@ using NotificationImageType =
 using BubbleIcon = ::scalable_iph::ScalableIphDelegate::BubbleIcon;
 using scalable_iph::ActionType;
 
-constexpr char kNotificationSourceName[] = "ChromeOS";
 constexpr char kScalableIphNotificationType[] =
     "scalable_iph_notification_type";
 constexpr char kWallpaperNotificationType[] = "wallpaper_notification_type";
@@ -427,7 +427,7 @@ void ScalableIphDelegateImpl::ShowNotification(
     std::unique_ptr<scalable_iph::IphSession> iph_session) {
   SCALABLE_IPH_LOG(GetLogger()) << "Show notification: " << params;
 
-  std::string notification_source_name = kNotificationSourceName;
+  std::string notification_source_name = params.source;
   std::string notification_title = params.title;
   std::string notification_text = params.text;
 
@@ -447,23 +447,35 @@ void ScalableIphDelegateImpl::ShowNotification(
   }
 #endif  // BUILDFLAG(ENABLE_CROS_SCALABLE_IPH)
 
+  const gfx::VectorIcon* icon = &gfx::kNoneIcon;
+  if (params.icon == ScalableIphDelegate::NotificationIcon::kRedeem) {
+    icon = &chromeos::kRedeemIcon;
+  }
+
+  std::string custom_view_type;
+  if (IsWallpaperNotification(params)) {
+    custom_view_type = kWallpaperNotificationType;
+  } else if (params.summary_text ==
+             ScalableIphDelegate::NotificationSummaryText::kWelcomeTips) {
+    custom_view_type = kScalableIphNotificationType;
+  }
+
   std::unique_ptr<message_center::Notification> notification =
       ash::CreateSystemNotificationPtr(
-          message_center::NOTIFICATION_TYPE_CUSTOM, params.notification_id,
-          base::UTF8ToUTF16(notification_title),
+          custom_view_type.empty() ? message_center::NOTIFICATION_TYPE_SIMPLE
+                                   : message_center::NOTIFICATION_TYPE_CUSTOM,
+          params.notification_id, base::UTF8ToUTF16(notification_title),
           base::UTF8ToUTF16(notification_text),
           base::UTF8ToUTF16(notification_source_name), GURL(), GetNotifierId(),
           rich_notification_data,
           base::MakeRefCounted<ScalableIphNotificationDelegate>(
               std::move(iph_session), params.notification_id,
               params.button.action),
-          gfx::kNoneIcon,
-          message_center::SystemNotificationWarningLevel::NORMAL);
-  if (IsWallpaperNotification(params)) {
-    notification->set_custom_view_type(kWallpaperNotificationType);
-  } else {
-    notification->set_custom_view_type(kScalableIphNotificationType);
+          *icon, message_center::SystemNotificationWarningLevel::NORMAL);
+  if (!custom_view_type.empty()) {
+    notification->set_custom_view_type(custom_view_type);
   }
+
   AddOrReplaceNotification(std::move(notification));
 }
 

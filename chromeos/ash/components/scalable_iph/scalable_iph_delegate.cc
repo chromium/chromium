@@ -77,6 +77,28 @@ std::ostream& operator<<(std::ostream& out,
 
 std::ostream& operator<<(
     std::ostream& out,
+    ScalableIphDelegate::NotificationIcon notification_icon) {
+  switch (notification_icon) {
+    case ScalableIphDelegate::NotificationIcon::kDefault:
+      return out << "Default";
+    case ScalableIphDelegate::NotificationIcon::kRedeem:
+      return out << "Redeem";
+  }
+}
+
+std::ostream& operator<<(
+    std::ostream& out,
+    ScalableIphDelegate::NotificationSummaryText notification_summary_text) {
+  switch (notification_summary_text) {
+    case ScalableIphDelegate::NotificationSummaryText::kNone:
+      return out << "None";
+    case ScalableIphDelegate::NotificationSummaryText::kWelcomeTips:
+      return out << "WelcomeTips";
+  }
+}
+
+std::ostream& operator<<(
+    std::ostream& out,
     ScalableIphDelegate::NotificationImageType notification_image_type) {
   switch (notification_image_type) {
     case ScalableIphDelegate::NotificationImageType::kNoImage:
@@ -89,9 +111,12 @@ std::ostream& operator<<(
 std::ostream& operator<<(std::ostream& out,
                          ScalableIphDelegate::NotificationParams params) {
   return out << "NotificationParams: notification_id: "
-             << params.notification_id << " title: " << params.title
-             << " text: " << params.text << " image_type: " << params.image_type
-             << " button: (" << params.button << ")";
+             << params.notification_id << " icon: " << params.icon
+             << " source: " << params.source
+             << " summary_text: " << params.summary_text
+             << " title: " << params.title << " text: " << params.text
+             << " image_type: " << params.image_type << " button: ("
+             << params.button << ")";
 }
 
 }  // namespace scalable_iph

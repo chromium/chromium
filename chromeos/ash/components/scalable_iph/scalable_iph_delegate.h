@@ -106,6 +106,16 @@ class ScalableIphDelegate {
     kWallpaper,
   };
 
+  enum class NotificationIcon {
+    kDefault,
+    kRedeem,
+  };
+
+  enum class NotificationSummaryText {
+    kNone,
+    kWelcomeTips,
+  };
+
   struct NotificationParams {
     NotificationParams();
     NotificationParams(const NotificationParams&);
@@ -116,6 +126,10 @@ class ScalableIphDelegate {
     std::string notification_id;
     std::string title;
     std::string text;
+    std::string source = kCustomNotificationSourceTextValueDefault;
+    NotificationIcon icon = NotificationIcon::kDefault;
+    NotificationSummaryText summary_text =
+        NotificationSummaryText::kWelcomeTips;
     Button button;
 
     bool operator==(const NotificationParams& params) const = default;
@@ -165,6 +179,12 @@ std::ostream& operator<<(std::ostream& out,
 std::ostream& operator<<(
     std::ostream& out,
     ScalableIphDelegate::NotificationImageType notification_image_type);
+std::ostream& operator<<(
+    std::ostream& out,
+    ScalableIphDelegate::NotificationIcon notification_icon);
+std::ostream& operator<<(
+    std::ostream& out,
+    ScalableIphDelegate::NotificationSummaryText summary_text);
 std::ostream& operator<<(std::ostream& out,
                          ScalableIphDelegate::NotificationParams params);
 

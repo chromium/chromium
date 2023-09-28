@@ -230,6 +230,13 @@ enum class UiType {
 // - Body text: a body text of a notification.
 // - Button text: a text of a button in a notification.
 // - Image type: a type of preview image(s) in a notification.
+// - Icon: an icon of a notification. Default is Chrome icon.
+// - Source text: a source text of a notification. Default is ChromeOS.
+// - Summary text: a summary text of a notification. Default is Welcome Tips.
+//
+// Default value of summary text is set to Welcome Tips as ScalableIph is/was
+// primarily implemented/used for Welcome Tips. We can update this behavior
+// later with a new version number.
 inline constexpr char kCustomNotificationIdParamName[] =
     "x_CustomNotificationId";
 inline constexpr char kCustomNotificationTitleParamName[] =
@@ -242,6 +249,18 @@ inline constexpr char kCustomNotificationImageTypeParamName[] =
     "x_CustomNotificationImageType";
 inline constexpr char kCustomNotificationImageTypeValueWallpaper[] =
     "Wallpaper";
+inline constexpr char kCustomNotificationIconParamName[] =
+    "x_CustomNotificationIcon";
+inline constexpr char kCustomNotificationIconValueDefault[] = "Default";
+inline constexpr char kCustomNotificationIconValueRedeem[] = "Redeem";
+inline constexpr char kCustomNotificationSourceTextParamName[] =
+    "x_CustomNotificationSourceText";
+inline constexpr char kCustomNotificationSourceTextValueDefault[] = "ChromeOS";
+inline constexpr char kCustomNotificationSummaryTextParamName[] =
+    "x_CustomNotificationSummaryText";
+inline constexpr char kCustomNotificationSummaryTextValueWelcomeTips[] =
+    "WelcomeTips";
+inline constexpr char kCustomNotificationSummaryTextValueNone[] = "None";
 
 // Parameters for a bubble UI. All fields are required field.
 // - Bubble ID: the id used to add and remove a bubble.
