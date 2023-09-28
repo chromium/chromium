@@ -219,6 +219,26 @@ TEST_P(GoogleURLLoaderThrottleTest, InterceptBoundSessionCookieExpired) {
       BoundSessionRequestThrottledListener::UnblockAction::kResume);
 }
 
+TEST_P(GoogleURLLoaderThrottleTest,
+       InterceptBoundSessionCookieExpiredCookieDomainWithLeadingDot) {
+  ConfigureBoundSessionThrottlerParams(".google.com", "/",
+                                       base::Time::Now() - base::Minutes(10));
+  CallThrottleAndVerifyDeferExpectation(
+      /*expect_defer=*/true, GURL("https://google.com/"));
+  UnblockRequestAndVerifyCallbackAction(
+      BoundSessionRequestThrottledListener::UnblockAction::kResume);
+}
+
+TEST_P(GoogleURLLoaderThrottleTest,
+       InterceptBoundSessionCookieExpiredCookieDomainWithoutLeadingDot) {
+  ConfigureBoundSessionThrottlerParams("google.com", "/",
+                                       base::Time::Now() - base::Minutes(10));
+  CallThrottleAndVerifyDeferExpectation(
+      /*expect_defer=*/true, GURL("https://google.com/"));
+  UnblockRequestAndVerifyCallbackAction(
+      BoundSessionRequestThrottledListener::UnblockAction::kResume);
+}
+
 TEST_P(GoogleURLLoaderThrottleTest, InterceptBoundSessionCookieExpiresNow) {
   ConfigureBoundSessionThrottlerParams("google.com", "/", base::Time::Now());
 

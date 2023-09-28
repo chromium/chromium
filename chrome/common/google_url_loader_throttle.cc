@@ -225,7 +225,8 @@ bool GoogleURLLoaderThrottle::ShouldDeferRequestForBoundSession(
   // Short lived Cookie expired.
   // Check if the request requires the short lived cookie.
 
-  if (!request_url.DomainIs(bound_session_throttler_params->domain)) {
+  if (!request_url.DomainIs(net::cookie_util::CookieDomainAsHost(
+          bound_session_throttler_params->domain))) {
     return false;
   }
 
