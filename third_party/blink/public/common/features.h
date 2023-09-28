@@ -933,13 +933,12 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
 // than the beginning.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kRunTextInputUpdatePostLifecycle);
 
-// Kill-switch for any calls to the mojo interface RuntimeFeatureStateController
+// Kill-switch for any calls to the mojo interface OriginTrialStateHost
 // in the RuntimeFeatureStateOverrideContext class. If
-// `kRuntimeFeatureStateControllerApplyFeatureDiff` is disabled,
+// `kOriginTrialStateHostApplyFeatureDiff` is disabled,
 // origin/deprecation trial token information is not sent to the browser
 // process.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
-    kRuntimeFeatureStateControllerApplyFeatureDiff);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kOriginTrialStateHostApplyFeatureDiff);
 
 // When enabled, it adds FTP / FTPS / SFTP to the safe list for
 // registerProtocolHandler. This feature is enabled by default and meant to

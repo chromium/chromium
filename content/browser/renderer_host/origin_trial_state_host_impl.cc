@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/renderer_host/runtime_feature_state_controller_impl.h"
+#include "content/browser/renderer_host/origin_trial_state_host_impl.h"
 
 #include "content/browser/bad_message.h"
 #include "content/browser/runtime_feature_state/runtime_feature_state_document_data.h"
@@ -11,33 +11,31 @@
 #include "third_party/blink/public/common/origin_trials/origin_trials.h"
 #include "third_party/blink/public/common/origin_trials/trial_token_result.h"
 #include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
-#include "third_party/blink/public/mojom/runtime_feature_state/runtime_feature_state.mojom.h"
-#include "third_party/blink/public/mojom/runtime_feature_state/runtime_feature_state_controller.mojom.h"
+#include "third_party/blink/public/mojom/origin_trial_state/origin_trial_state_host.mojom.h"
 
 namespace content {
 
-RuntimeFeatureStateControllerImpl::RuntimeFeatureStateControllerImpl(
+OriginTrialStateHostImpl::OriginTrialStateHostImpl(
     RenderFrameHost& host,
-    mojo::PendingReceiver<blink::mojom::RuntimeFeatureStateController> receiver)
+    mojo::PendingReceiver<blink::mojom::OriginTrialStateHost> receiver)
     : DocumentService(host, std::move(receiver)) {}
 
-RuntimeFeatureStateControllerImpl::~RuntimeFeatureStateControllerImpl() =
-    default;
+OriginTrialStateHostImpl::~OriginTrialStateHostImpl() = default;
 
 // static
-void RuntimeFeatureStateControllerImpl::Create(
+void OriginTrialStateHostImpl::Create(
     RenderFrameHost* host,
-    mojo::PendingReceiver<blink::mojom::RuntimeFeatureStateController>
-        receiver) {
+    mojo::PendingReceiver<blink::mojom::OriginTrialStateHost> receiver) {
   CHECK(host);
   // The object is bound to the lifetime of `render_frame_host` and the mojo
   // connection. See DocumentService for details.
-  new RuntimeFeatureStateControllerImpl(*host, std::move(receiver));
+  new OriginTrialStateHostImpl(*host, std::move(receiver));
 }
 
-void RuntimeFeatureStateControllerImpl::ApplyFeatureDiffForOriginTrial(
+void OriginTrialStateHostImpl::ApplyFeatureDiffForOriginTrial(
     base::flat_map<::blink::mojom::RuntimeFeatureState,
-                   ::blink::mojom::FeatureValuePtr> modified_features) {
+                   ::blink::mojom::OriginTrialFeatureStatePtr>
+        origin_trial_features) {
   // TODO(crbug.com/1377000): RuntimeFeatureState does not yet support
   // HTTP header origin trial tokens, which currently cause this function to be
   // called between RenderFrameHostImpl::CommitNavigation() and
@@ -53,7 +51,7 @@ void RuntimeFeatureStateControllerImpl::ApplyFeatureDiffForOriginTrial(
       validated_features{};
   base::flat_map<::blink::mojom::RuntimeFeatureState, std::vector<std::string>>
       possible_third_party_features{};
-  for (const auto& feature_pair : modified_features) {
+  for (const auto& feature_pair : origin_trial_features) {
     // Ensure the tokens we received are valid for this feature and origin.
     std::string feature_name;
     blink::TrialTokenValidator validator;
@@ -109,11 +107,11 @@ void RuntimeFeatureStateControllerImpl::ApplyFeatureDiffForOriginTrial(
   CHECK(document_data);
   document_data
       ->GetMutableRuntimeFeatureStateReadContext(
-          base::PassKey<RuntimeFeatureStateControllerImpl>())
+          base::PassKey<OriginTrialStateHostImpl>())
       .ApplyFeatureChange(validated_features, possible_third_party_features);
 }
 
-void RuntimeFeatureStateControllerImpl::EnablePersistentTrial(
+void OriginTrialStateHostImpl::EnablePersistentTrial(
     const std::string& token,
     const std::vector<url::Origin>& script_origins) {
   OriginTrialsControllerDelegate* delegate =

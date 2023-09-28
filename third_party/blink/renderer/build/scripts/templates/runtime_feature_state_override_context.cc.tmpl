@@ -6,8 +6,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/origin_trials/origin_trial_feature.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
-#include "third_party/blink/public/mojom/runtime_feature_state/runtime_feature_state_controller.mojom-blink.h"
-#include "third_party/blink/public/mojom/runtime_feature_state/runtime_feature_state.mojom.h"
+#include "third_party/blink/public/mojom/origin_trial_state/origin_trial_state_host.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -84,8 +83,7 @@ bool RuntimeFeatureStateOverrideContext::
       [mojom::RuntimeFeatureState::k{{feature.name}}] = true;
     // Add successful overrides to the list of features we sent back
     // to the browser process.
-    mojom::blink::FeatureValuePtr value =
-          mojom::blink::FeatureValue::New(true, tokens);
+    auto value = mojom::blink::OriginTrialFeatureState::New(true, tokens);
     origin_trial_overrides_[
       mojom::RuntimeFeatureState::k{{feature.name}}] =
       std::move(value);
@@ -115,17 +113,18 @@ void RuntimeFeatureStateOverrideContext::ApplyOriginTrialOverride(
     // TODO(https://crbug.com/1377000): make origin_trial_overrides_ a
     // WTF:: type in a follow-up CL.
     WTF::HashMap<mojom::blink::RuntimeFeatureState,
-                     mojom::blink::FeatureValuePtr> blink_overrides;
+                 mojom::blink::OriginTrialFeatureStatePtr>
+        blink_overrides;
     for (auto& o : origin_trial_overrides_){
       blink_overrides.insert(o.first, std::move(o.second));
     }
     // Feature overrides and origin trial information should only be
     // sent to the browser process if the corresponding base::Feature
     // is enabled.
-    if(base::FeatureList::IsEnabled(
-        blink::features::kRuntimeFeatureStateControllerApplyFeatureDiff)){
-      GetOrBindRuntimeFeatureStateController()->ApplyFeatureDiffForOriginTrial(
-      std::move(blink_overrides));
+    if (base::FeatureList::IsEnabled(
+            blink::features::kOriginTrialStateHostApplyFeatureDiff)) {
+      GetOrBindOriginTrialStateHost()->ApplyFeatureDiffForOriginTrial(
+          std::move(blink_overrides));
     }
     // TODO(https://crbug.com/1377000): when we convert to WTF:: types,
     // we use std::move, so we have to do some cleanup.
@@ -137,27 +136,27 @@ void RuntimeFeatureStateOverrideContext::EnablePersistentTrial(
       const WTF::String& raw_token,
       const WTF::Vector<scoped_refptr<const blink::SecurityOrigin>>&
           script_origins) {
-    GetOrBindRuntimeFeatureStateController()->EnablePersistentTrial(
+    GetOrBindOriginTrialStateHost()->EnablePersistentTrial(
         raw_token, script_origins);
   }
 
-mojom::blink::RuntimeFeatureStateController*
-  RuntimeFeatureStateOverrideContext::GetOrBindRuntimeFeatureStateController(){
+mojom::blink::OriginTrialStateHost*
+RuntimeFeatureStateOverrideContext::GetOrBindOriginTrialStateHost(){
   // TODO(https://crbug.com/1410817): add support for workers/non-frames that
   // are enabling origin trials to send their information to the browser too.
-  if (!runtime_feature_state_controller_remote_.is_bound()) {
+  if (!origin_trial_state_host_remote_.is_bound()) {
       CHECK(send_runtime_features_to_browser_);
       binding_context_->GetBrowserInterfaceBroker().GetInterface(
-          runtime_feature_state_controller_remote_.BindNewPipeAndPassReceiver(
+          origin_trial_state_host_remote_.BindNewPipeAndPassReceiver(
               binding_context_->GetTaskRunner(TaskType::kInternalDefault)));
     }
-  return runtime_feature_state_controller_remote_.get();
+  return origin_trial_state_host_remote_.get();
 }
 
 void RuntimeFeatureStateOverrideContext::Trace(Visitor* visitor) const{
   visitor->Trace(binding_context_);
   visitor->Trace(use_counter_);
-  visitor->Trace(runtime_feature_state_controller_remote_);
+  visitor->Trace(origin_trial_state_host_remote_);
 }
 
 }  // namespace blink
