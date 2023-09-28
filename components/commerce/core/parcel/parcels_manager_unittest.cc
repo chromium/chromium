@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/gtest_util.h"
+#include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "components/commerce/core/commerce_types.h"
 #include "components/commerce/core/parcel/parcels_manager.h"
@@ -31,6 +32,16 @@ namespace {
 const std::string kTestTrackingId = "xyz";
 const std::string kSoucePageDomain = "www.foo.com";
 
+base::Time GetTestTime() {
+  base::Time time;
+  EXPECT_TRUE(base::Time::FromString("05/18/20 01:00:00 AM", &time));
+  return time;
+}
+
+base::Time GetTestDeliveryTime() {
+  return GetTestTime() + base::Days(2);
+}
+
 std::unique_ptr<std::vector<commerce::ParcelStatus>> BuildParcelStatus(
     const std::string& tracking_id,
     commerce::ParcelStatus::ParcelState state) {
@@ -40,8 +51,24 @@ std::unique_ptr<std::vector<commerce::ParcelStatus>> BuildParcelStatus(
   commerce::ParcelStatus parcel_status;
   parcel_status.set_parcel_state(state);
   *parcel_status.mutable_parcel_identifier() = identifier;
+  parcel_status.set_estimated_delivery_time_usec(
+      GetTestDeliveryTime().ToDeltaSinceWindowsEpoch().InMicroseconds());
   auto result = std::make_unique<std::vector<commerce::ParcelStatus>>();
   result->emplace_back(parcel_status);
+  return result;
+}
+
+std::unique_ptr<std::vector<parcel_tracking_db::ParcelTrackingContent>>
+BuildParcelTracking(const std::string& tracking_id,
+                    commerce::ParcelStatus::ParcelState state) {
+  parcel_tracking_db::ParcelTrackingContent tracking;
+  tracking.set_last_update_time_usec(
+      GetTestTime().ToDeltaSinceWindowsEpoch().InMicroseconds());
+  auto status = BuildParcelStatus(tracking_id, state);
+  *tracking.mutable_parcel_status() = (*status)[0];
+  auto result = std::make_unique<
+      std::vector<parcel_tracking_db::ParcelTrackingContent>>();
+  result->emplace_back(tracking);
   return result;
 }
 
@@ -127,16 +154,17 @@ class MockServerProxy : public ParcelsServerProxy {
 
 class MockParcelsStorage : public ParcelsStorage {
  public:
-  MockParcelsStorage() : ParcelsStorage(nullptr) {}
+  MockParcelsStorage() : ParcelsStorage(nullptr, nullptr) {}
   MockParcelsStorage(const MockParcelsStorage&) = delete;
   MockParcelsStorage operator=(const MockParcelsStorage&) = delete;
   ~MockParcelsStorage() override = default;
 
   MOCK_METHOD(void, Init, (OnInitializedCallback callback), (override));
-  MOCK_METHOD(std::unique_ptr<std::vector<ParcelStatus>>,
-              GetAllParcelStatus,
-              (),
-              (override));
+  MOCK_METHOD(
+      std::unique_ptr<std::vector<parcel_tracking_db::ParcelTrackingContent>>,
+      GetAllParcelTrackingContents,
+      (),
+      (override));
   MOCK_METHOD(void,
               UpdateParcelStatus,
               (const std::vector<ParcelStatus>& parcel_status,
@@ -159,11 +187,12 @@ class MockParcelsStorage : public ParcelsStorage {
             });
   }
 
-  void MockGetAllParcelStatus(const std::string& tracking_id,
-                              ParcelStatus::ParcelState state) {
-    ON_CALL(*this, GetAllParcelStatus).WillByDefault([tracking_id, state]() {
-      return BuildParcelStatus(tracking_id, state);
-    });
+  void MockGetAllParcelTrackingContents(const std::string& tracking_id,
+                                        ParcelStatus::ParcelState state) {
+    ON_CALL(*this, GetAllParcelTrackingContents)
+        .WillByDefault([tracking_id, state]() {
+          return BuildParcelTracking(tracking_id, state);
+        });
   }
 };
 
@@ -173,13 +202,14 @@ class ParcelsManagerTest : public testing::Test {
   ~ParcelsManagerTest() override = default;
 
   void SetUp() override {
+    clock_.SetNow(GetTestTime());
     auto mock_server_proxy = std::make_unique<MockServerProxy>();
     auto mock_storage = std::make_unique<MockParcelsStorage>();
     mock_server_proxy_ = mock_server_proxy.get();
     mock_storage_ = mock_storage.get();
 
     parcels_manager_ = std::make_unique<ParcelsManager>(
-        std::move(mock_server_proxy), std::move(mock_storage));
+        std::move(mock_server_proxy), std::move(mock_storage), &clock_);
 
     ON_CALL(*mock_storage_, UpdateParcelStatus)
         .WillByDefault([](const std::vector<ParcelStatus>& parcel_status,
@@ -198,6 +228,7 @@ class ParcelsManagerTest : public testing::Test {
   raw_ptr<MockServerProxy> mock_server_proxy_;
   raw_ptr<MockParcelsStorage> mock_storage_;
   std::unique_ptr<ParcelsManager> parcels_manager_;
+  base::SimpleTestClock clock_;
 };
 
 TEST_F(ParcelsManagerTest, TestStartTrackingParcels) {
@@ -247,15 +278,47 @@ TEST_F(ParcelsManagerTest, TestStartTrackingParcels_ServerError) {
   run_loop.Run();
 }
 
-TEST_F(ParcelsManagerTest, TestGetAllParcelStatuses_ServerHasFreshStatus) {
+TEST_F(ParcelsManagerTest,
+       TestGetAllParcelStatuses_LocalStorageHasFreshStatus) {
   EXPECT_CALL(*mock_storage_, Init(_)).Times(1);
-  mock_storage_->MockGetAllParcelStatus(kTestTrackingId, ParcelStatus::NEW);
+  mock_storage_->MockGetAllParcelTrackingContents(kTestTrackingId,
+                                                  ParcelStatus::NEW);
   mock_server_proxy_->MockParcelStatusResponses(true, kTestTrackingId,
                                                 ParcelStatus::PICKED_UP);
   mock_storage_->MockInitCallback(true);
 
+  EXPECT_CALL(*mock_server_proxy_, GetParcelStatus(_, _)).Times(0);
+  EXPECT_CALL(*mock_storage_, GetAllParcelTrackingContents()).Times(1);
+  EXPECT_CALL(*mock_storage_, UpdateParcelStatus(_, _)).Times(0);
+  base::RunLoop run_loop;
+  parcels_manager_->GetAllParcelStatuses(base::BindOnce(
+      [](base::RunLoop* run_loop, bool success,
+         std::unique_ptr<std::vector<ParcelTrackingStatus>> parcel_status) {
+        ASSERT_TRUE(success);
+        ASSERT_EQ(1, static_cast<int>(parcel_status->size()));
+        auto status = (*parcel_status)[0];
+        ASSERT_EQ(kTestTrackingId, status.tracking_id);
+        ASSERT_EQ(commerce::ParcelIdentifier::UPS, status.carrier);
+        ASSERT_EQ(ParcelStatus::NEW, status.state);
+        run_loop->Quit();
+      },
+      &run_loop));
+  run_loop.Run();
+}
+
+TEST_F(ParcelsManagerTest,
+       TestGetAllParcelStatuses_LocalStorageHasStaleStatus) {
+  EXPECT_CALL(*mock_storage_, Init(_)).Times(1);
+  mock_storage_->MockGetAllParcelTrackingContents(kTestTrackingId,
+                                                  ParcelStatus::NEW);
+  mock_server_proxy_->MockParcelStatusResponses(true, kTestTrackingId,
+                                                ParcelStatus::PICKED_UP);
+  mock_storage_->MockInitCallback(true);
+
+  // Advance clock by 1 day.
+  clock_.Advance(base::Days(1));
   EXPECT_CALL(*mock_server_proxy_, GetParcelStatus(_, _)).Times(1);
-  EXPECT_CALL(*mock_storage_, GetAllParcelStatus()).Times(1);
+  EXPECT_CALL(*mock_storage_, GetAllParcelTrackingContents()).Times(1);
   EXPECT_CALL(*mock_storage_, UpdateParcelStatus(_, _)).Times(1);
   base::RunLoop run_loop;
   parcels_manager_->GetAllParcelStatuses(base::BindOnce(
@@ -275,13 +338,15 @@ TEST_F(ParcelsManagerTest, TestGetAllParcelStatuses_ServerHasFreshStatus) {
 
 TEST_F(ParcelsManagerTest, TestGetAllParcelStatuses_ServerError) {
   EXPECT_CALL(*mock_storage_, Init(_)).Times(1);
-  mock_storage_->MockGetAllParcelStatus(kTestTrackingId, ParcelStatus::NEW);
+  mock_storage_->MockGetAllParcelTrackingContents(kTestTrackingId,
+                                                  ParcelStatus::NEW);
   mock_server_proxy_->MockParcelStatusResponses(false, kTestTrackingId,
                                                 ParcelStatus::PICKED_UP);
   mock_storage_->MockInitCallback(true);
 
+  clock_.Advance(base::Days(1));
   EXPECT_CALL(*mock_server_proxy_, GetParcelStatus(_, _)).Times(1);
-  EXPECT_CALL(*mock_storage_, GetAllParcelStatus()).Times(1);
+  EXPECT_CALL(*mock_storage_, GetAllParcelTrackingContents()).Times(1);
   EXPECT_CALL(*mock_storage_, UpdateParcelStatus(_, _)).Times(0);
   base::RunLoop run_loop;
   parcels_manager_->GetAllParcelStatuses(base::BindOnce(
@@ -301,8 +366,10 @@ TEST_F(ParcelsManagerTest, TestGetAllParcelStatuses_ServerError) {
 
 TEST_F(ParcelsManagerTest, TestGetAllParcelStatuses_StorageError) {
   EXPECT_CALL(*mock_storage_, Init(_)).Times(1);
-  EXPECT_CALL(*mock_storage_, GetAllParcelStatus)
-      .WillOnce(Return(ByMove(std::make_unique<std::vector<ParcelStatus>>())));
+  EXPECT_CALL(*mock_storage_, GetAllParcelTrackingContents)
+      .WillOnce(Return(
+          ByMove(std::make_unique<
+                 std::vector<parcel_tracking_db::ParcelTrackingContent>>())));
   mock_storage_->MockInitCallback(false);
 
   base::RunLoop run_loop;

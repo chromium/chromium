@@ -9,6 +9,7 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "components/commerce/core/parcel/parcels_storage.h"
 #include "components/commerce/core/proto/parcel.pb.h"
@@ -183,9 +184,12 @@ class ParcelsStorageTest : public testing::Test {
   ~ParcelsStorageTest() override = default;
 
   void SetUp() override {
+    base::Time fake_now;
+    EXPECT_TRUE(base::Time::FromString("05/18/20 01:00:00 AM", &fake_now));
+    clock_.SetNow(fake_now);
     proto_db_ = std::make_unique<MockProtoStorage>();
     proto_db_->MockLoadAllResponse();
-    storage_ = std::make_unique<ParcelsStorage>(proto_db_.get());
+    storage_ = std::make_unique<ParcelsStorage>(proto_db_.get(), &clock_);
     EXPECT_CALL(*proto_db_, LoadAllEntries(_));
     storage_->Init(base::BindOnce(&DoNothing));
   }
@@ -194,12 +198,13 @@ class ParcelsStorageTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<MockProtoStorage> proto_db_;
   std::unique_ptr<ParcelsStorage> storage_;
+  base::SimpleTestClock clock_;
 };
 
-TEST_F(ParcelsStorageTest, TestGetAllParcelStatus) {
-  auto all_parcels = storage_->GetAllParcelStatus();
+TEST_F(ParcelsStorageTest, TestGetAllParcelTrackingContents) {
+  auto all_parcels = storage_->GetAllParcelTrackingContents();
   ASSERT_EQ(1u, all_parcels->size());
-  auto& parcel_1 = (*all_parcels)[0];
+  auto& parcel_1 = (*all_parcels)[0].parcel_status();
   ASSERT_EQ(kTrackingId1, parcel_1.parcel_identifier().tracking_id());
   ASSERT_EQ(kCarrier1, parcel_1.parcel_identifier().carrier());
   ASSERT_EQ(kDefaultState, parcel_1.parcel_state());
@@ -209,7 +214,7 @@ TEST_F(ParcelsStorageTest, TestDeleteAllParcelStatus) {
   EXPECT_CALL(*proto_db_, DeleteAllContent(_));
   storage_->DeleteAllParcelStatus(base::BindOnce(&DoNothing));
   task_environment_.RunUntilIdle();
-  auto all_parcels = storage_->GetAllParcelStatus();
+  auto all_parcels = storage_->GetAllParcelTrackingContents();
   ASSERT_EQ(0u, all_parcels->size());
 }
 
@@ -220,14 +225,14 @@ TEST_F(ParcelsStorageTest, TestDeleteParcelStatus) {
   storage_->DeleteParcelStatus("xyz", base::BindOnce(&DoNothing));
   task_environment_.RunUntilIdle();
 
-  auto all_parcels = storage_->GetAllParcelStatus();
+  auto all_parcels = storage_->GetAllParcelTrackingContents();
   ASSERT_EQ(1u, all_parcels->size());
 
   // Delete the tracking id in storage.
   storage_->DeleteParcelStatus(kTrackingId1, base::BindOnce(&DoNothing));
   task_environment_.RunUntilIdle();
 
-  all_parcels = storage_->GetAllParcelStatus();
+  all_parcels = storage_->GetAllParcelTrackingContents();
   ASSERT_EQ(0u, all_parcels->size());
 }
 
@@ -246,11 +251,14 @@ TEST_F(ParcelsStorageTest, TestUpdateParcelStatus) {
   storage_->UpdateParcelStatus(status, base::BindOnce(&DoNothing));
   task_environment_.RunUntilIdle();
 
-  auto all_parcels = storage_->GetAllParcelStatus();
+  auto all_parcels = storage_->GetAllParcelTrackingContents();
   ASSERT_EQ(2u, all_parcels->size());
   std::map<std::string, ParcelStatus> status_map;
   for (int i = 0; i < 2; ++i) {
-    auto p = (*all_parcels)[i];
+    ASSERT_EQ(clock_.Now(),
+              base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(
+                  (*all_parcels)[i].last_update_time_usec())));
+    auto p = (*all_parcels)[i].parcel_status();
     status_map.emplace(p.parcel_identifier().tracking_id(), p);
   }
 

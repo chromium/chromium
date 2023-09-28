@@ -24,8 +24,9 @@ std::string GetDbKeyFromParcelStatus(
 }  // namespace
 
 ParcelsStorage::ParcelsStorage(
-    SessionProtoStorage<ParcelTrackingContent>* parcel_tracking_db)
-    : proto_db_(parcel_tracking_db) {}
+    SessionProtoStorage<ParcelTrackingContent>* parcel_tracking_db,
+    base::Clock* clock)
+    : proto_db_(parcel_tracking_db), clock_(clock) {}
 
 ParcelsStorage::~ParcelsStorage() = default;
 
@@ -36,10 +37,10 @@ void ParcelsStorage::Init(OnInitializedCallback callback) {
                                            std::move(callback)));
 }
 
-std::unique_ptr<std::vector<ParcelStatus>>
-ParcelsStorage::GetAllParcelStatus() {
+std::unique_ptr<std::vector<parcel_tracking_db::ParcelTrackingContent>>
+ParcelsStorage::GetAllParcelTrackingContents() {
   DCHECK(is_initialized_);
-  auto result = std::make_unique<std::vector<ParcelStatus>>();
+  auto result = std::make_unique<std::vector<ParcelTrackingContent>>();
   for (auto& kv : parcels_cache_) {
     result->emplace_back(kv.second);
   }
@@ -57,8 +58,10 @@ void ParcelsStorage::UpdateParcelStatus(
     content.set_key(key);
     auto* new_status = content.mutable_parcel_status();
     *new_status = status;
+    content.set_last_update_time_usec(
+        clock_->Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
     content_to_insert.emplace_back(key, content);
-    parcels_cache_[key] = status;
+    parcels_cache_[key] = std::move(content);
   }
   proto_db_->UpdateEntries(std::move(content_to_insert), std::move(callback));
 }
@@ -69,7 +72,7 @@ void ParcelsStorage::DeleteParcelStatus(const std::string& tracking_id,
 
   absl::optional<ParcelIdentifier> parcel_identifier;
   for (auto& kv : parcels_cache_) {
-    auto& identifier = kv.second.parcel_identifier();
+    auto& identifier = kv.second.parcel_status().parcel_identifier();
     if (identifier.tracking_id() == tracking_id) {
       parcel_identifier = identifier;
       break;
@@ -97,8 +100,7 @@ void ParcelsStorage::OnAllParcelsLoaded(OnInitializedCallback callback,
   }
   is_initialized_ = true;
   for (auto& kv : parcel_trackings) {
-    auto& parcel_status = kv.second.parcel_status();
-    parcels_cache_.emplace(std::move(kv.first), std::move(parcel_status));
+    parcels_cache_.emplace(std::move(kv.first), std::move(kv.second));
   }
   std::move(callback).Run(success);
 }

@@ -5,6 +5,8 @@
 #include "components/commerce/core/parcel/parcels_manager.h"
 
 #include "base/functional/bind.h"
+#include "base/time/clock.h"
+#include "base/time/default_clock.h"
 #include "components/commerce/core/parcel/parcels_server_proxy.h"
 #include "components/commerce/core/parcel/parcels_storage.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -12,6 +14,10 @@
 namespace commerce {
 
 namespace {
+
+constexpr base::TimeDelta kAboutToDeliverThreshold = base::Days(1);
+constexpr base::TimeDelta kRefreshIntervalForAboutToDeliver = base::Hours(1);
+constexpr base::TimeDelta kDefaultRefreshInterval = base::Hours(12);
 
 std::vector<ParcelIdentifier> ConvertParcelIdentifier(
     const std::vector<std::pair<ParcelIdentifier::Carrier, std::string>>&
@@ -25,7 +31,41 @@ std::vector<ParcelIdentifier> ConvertParcelIdentifier(
   return result;
 }
 
-void DoNothing(bool success) {}
+bool HasParcelsToRefresh(
+    base::Clock* clock,
+    const std::vector<parcel_tracking_db::ParcelTrackingContent>&
+        parcel_trackings) {
+  base::Time now = clock->Now();
+
+  for (const auto& tracking : parcel_trackings) {
+    base::TimeDelta since_last_update =
+        now - base::Time::FromDeltaSinceWindowsEpoch(
+                  base::Microseconds(tracking.last_update_time_usec()));
+    base::TimeDelta time_to_deliver =
+        now - base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(
+                  tracking.parcel_status().estimated_delivery_time_usec()));
+    if (time_to_deliver < kAboutToDeliverThreshold) {
+      if (since_last_update >= kRefreshIntervalForAboutToDeliver) {
+        return true;
+      }
+    } else if (since_last_update >= kDefaultRefreshInterval) {
+      return true;
+    }
+  }
+  return false;
+}
+
+std::unique_ptr<std::vector<ParcelStatus>>
+ConvertParcelTrackingContentsToParcelStatuses(
+    const std::vector<parcel_tracking_db::ParcelTrackingContent>&
+        parcel_trackings) {
+  auto ret = std::make_unique<std::vector<ParcelStatus>>();
+  for (const auto& tracking : parcel_trackings) {
+    ret->emplace_back(tracking.parcel_status());
+  }
+  return ret;
+}
+
 }  // namespace
 
 ParcelsManager::ParcelsManager(
@@ -34,16 +74,19 @@ ParcelsManager::ParcelsManager(
     SessionProtoStorage<parcel_tracking_db::ParcelTrackingContent>*
         parcel_tracking_proto_db,
     AccountChecker* account_checker)
-    : parcels_server_proxy_(
+    : clock_(base::DefaultClock::GetInstance()),
+      parcels_server_proxy_(
           std::make_unique<ParcelsServerProxy>(identity_manager,
                                                url_loader_factory)),
       parcels_storage_(
-          std::make_unique<ParcelsStorage>(parcel_tracking_proto_db)) {}
+          std::make_unique<ParcelsStorage>(parcel_tracking_proto_db, clock_)) {}
 
 ParcelsManager::ParcelsManager(
     std::unique_ptr<ParcelsServerProxy> parcels_server_proxy,
-    std::unique_ptr<ParcelsStorage> parcels_storage)
-    : parcels_server_proxy_(std::move(parcels_server_proxy)),
+    std::unique_ptr<ParcelsStorage> parcels_storage,
+    base::Clock* clock)
+    : clock_(clock),
+      parcels_server_proxy_(std::move(parcels_server_proxy)),
       parcels_storage_(std::move(parcels_storage)) {}
 
 ParcelsManager::~ParcelsManager() = default;
@@ -126,15 +169,29 @@ void ParcelsManager::StartTrackingParcelsInternal(
 
 void ParcelsManager::GetAllParcelStatusesInternal(
     GetParcelStatusCallback callback) {
-  auto parcel_status = parcels_storage_->GetAllParcelStatus();
-  if (parcel_status->empty()) {
+  auto parcel_trackings = parcels_storage_->GetAllParcelTrackingContents();
+  if (parcel_trackings->empty()) {
     std::move(callback).Run(
         storage_status_ == StorageInitializationStatus::kSuccess,
         std::make_unique<std::vector<ParcelTrackingStatus>>());
     return;
   }
-  // TODO(qinmin): Check whether the data is fresh and we need to call the
-  // server.
+
+  // Refresh all parcel status if one of them needs update.
+  if (!HasParcelsToRefresh(clock_, *parcel_trackings)) {
+    auto tracking_statuses =
+        std::make_unique<std::vector<ParcelTrackingStatus>>();
+    for (const auto& tracking : *parcel_trackings) {
+      tracking_statuses->emplace_back(tracking.parcel_status());
+    }
+    std::move(callback).Run(
+        storage_status_ == StorageInitializationStatus::kSuccess,
+        std::move(tracking_statuses));
+    return;
+  }
+
+  auto parcel_status =
+      ConvertParcelTrackingContentsToParcelStatuses(*parcel_trackings);
   std::vector<ParcelIdentifier> identifiers;
   for (auto& status : *parcel_status) {
     identifiers.emplace_back(status.parcel_identifier());
@@ -189,7 +246,7 @@ void ParcelsManager::OnGetParcelStatusDone(
     auto& status_to_update = *new_parcel_status;
     // TODO(qinmin): Check if we need to handle storage update failure.
     parcels_storage_->UpdateParcelStatus(status_to_update,
-                                         base::BindOnce(&DoNothing));
+                                         base::DoNothingAs<void(bool)>());
   }
 
   // If there are stored status, treat the call as successful.
@@ -206,7 +263,7 @@ void ParcelsManager::OnStopTrackingParcelDone(
   // Update the database if network request succeeds.
   if (success) {
     parcels_storage_->DeleteParcelStatus(tracking_id,
-                                         base::BindOnce(&DoNothing));
+                                         base::DoNothingAs<void(bool)>());
   }
 
   std::move(callback).Run(success);
@@ -220,7 +277,7 @@ void ParcelsManager::OnStopTrackingAllParcelsDone(
 
   // Update the database if network request succeeds.
   if (success) {
-    parcels_storage_->DeleteAllParcelStatus(base::BindOnce(&DoNothing));
+    parcels_storage_->DeleteAllParcelStatus(base::DoNothingAs<void(bool)>());
   }
 
   std::move(callback).Run(success);

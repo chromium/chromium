@@ -17,4 +17,7 @@ message ParcelTrackingContent {
 
   // Most recent status of the parcel.
   commerce.ParcelStatus parcel_status = 2;
+
+  // Last time since windows epoch when the parcel status is updated.
+  int64 last_update_time_usec = 3;
 }

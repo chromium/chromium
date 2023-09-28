@@ -9,12 +9,17 @@
 #include <queue>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/commerce/core/commerce_types.h"
 #include "components/commerce/core/proto/parcel.pb.h"
 #include "components/commerce/core/proto/parcel_tracking_db_content.pb.h"
 #include "components/session_proto_db/session_proto_storage.h"
+
+namespace base {
+class Clock;
+}
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -40,7 +45,8 @@ class ParcelsManager {
       AccountChecker* account_checker);
   // Ctor used for testing purposes.
   ParcelsManager(std::unique_ptr<ParcelsServerProxy> parcels_server_proxy,
-                 std::unique_ptr<ParcelsStorage> parcels_storage);
+                 std::unique_ptr<ParcelsStorage> parcels_storage,
+                 base::Clock* clock);
   ~ParcelsManager();
   ParcelsManager(const ParcelsManager&) = delete;
   ParcelsManager& operator=(const ParcelsManager&) = delete;
@@ -120,6 +126,8 @@ class ParcelsManager {
   bool is_processing_pending_operations_ = false;
 
   std::queue<base::OnceClosure> pending_operations_;
+
+  raw_ptr<base::Clock> clock_;
 
   std::unique_ptr<ParcelsServerProxy> parcels_server_proxy_;
 
