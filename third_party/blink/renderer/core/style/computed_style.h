@@ -3125,6 +3125,7 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
     return LineHeightInternal() ==
            ComputedStyleInitialValues::InitialLineHeight();
   }
+  const Length& LineHeight() const { return LineHeightInternal(); }
 
   // Sizing properties
   const Length& UsedWidth() const {

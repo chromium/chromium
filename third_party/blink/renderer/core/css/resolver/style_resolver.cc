@@ -2103,10 +2103,19 @@ bool StyleResolver::CacheSuccess::InheritedVariablesChanged(
          builder.InheritedVariables();
 }
 
+bool StyleResolver::CacheSuccess::LineHeightChanged(
+    const ComputedStyleBuilder& builder) const {
+  if (!cached_matched_properties) {
+    return false;
+  }
+  return cached_matched_properties->computed_style->LineHeight() !=
+         builder.LineHeight();
+}
+
 bool StyleResolver::CacheSuccess::IsUsableAfterApplyInheritedOnly(
     const ComputedStyleBuilder& builder) const {
   return !EffectiveZoomChanged(builder) && !FontChanged(builder) &&
-         !InheritedVariablesChanged(builder);
+         !InheritedVariablesChanged(builder) && !LineHeightChanged(builder);
 }
 
 StyleResolver::CacheSuccess StyleResolver::ApplyMatchedCache(

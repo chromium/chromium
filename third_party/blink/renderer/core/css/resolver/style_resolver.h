@@ -306,6 +306,7 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
     bool EffectiveZoomChanged(const ComputedStyleBuilder&) const;
     bool FontChanged(const ComputedStyleBuilder&) const;
     bool InheritedVariablesChanged(const ComputedStyleBuilder&) const;
+    bool LineHeightChanged(const ComputedStyleBuilder&) const;
     bool IsUsableAfterApplyInheritedOnly(const ComputedStyleBuilder&) const;
   };
 
