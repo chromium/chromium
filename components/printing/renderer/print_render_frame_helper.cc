@@ -227,14 +227,18 @@ mojom::PrintParamsPtr GetCssPrintParams(blink::WebLocalFrame* frame,
 
 double FitPrintParamsToPage(const mojom::PrintParams& page_params,
                             mojom::PrintParams* params_to_fit) {
-  double content_width =
-      static_cast<double>(params_to_fit->content_size.width());
-  double content_height =
-      static_cast<double>(params_to_fit->content_size.height());
-  int default_page_size_height = page_params.page_size.height();
-  int default_page_size_width = page_params.page_size.width();
-  int css_page_size_height = params_to_fit->page_size.height();
-  int css_page_size_width = params_to_fit->page_size.width();
+  float content_width = params_to_fit->content_size.width();
+  float content_height = params_to_fit->content_size.height();
+  float default_page_size_height = page_params.page_size.height();
+  float default_page_size_width = page_params.page_size.width();
+  float css_page_size_height = params_to_fit->page_size.height();
+  float css_page_size_width = params_to_fit->page_size.width();
+
+  if ((default_page_size_width > default_page_size_height) !=
+      (css_page_size_width > css_page_size_height)) {
+    // Match orientation.
+    std::swap(default_page_size_width, default_page_size_height);
+  }
 
   double scale_factor = 1.0f;
   if (page_params.page_size == params_to_fit->page_size)
@@ -257,7 +261,8 @@ double FitPrintParamsToPage(const mojom::PrintParams& page_params,
       (default_page_size_width - css_page_size_width * scale_factor) / 2 +
       (params_to_fit->margin_left * scale_factor));
   params_to_fit->content_size = gfx::SizeF(content_width, content_height);
-  params_to_fit->page_size = page_params.page_size;
+  params_to_fit->page_size.SetSize(default_page_size_width,
+                                   default_page_size_height);
   return scale_factor;
 }
 

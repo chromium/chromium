@@ -1744,6 +1744,46 @@ TEST_F(PrintRenderFrameHelperPreviewTest, ShrinkToFitPageMatchOrientation) {
   OnClosePrintPreviewDialog();
 }
 
+// Test to verify that print preview workflow scale the html page contents to
+// fit the page size, and that orientation implied by specified CSS page size is
+// honored.
+TEST_F(PrintRenderFrameHelperPreviewTest,
+       ShrinkToFitPageMatchOrientationCssMargins) {
+  LoadHTML(R"HTML(
+      <style>
+        @page {
+          size: 20in 17in;
+          margin: 1in 2in 3in 4in;
+        }
+      </style>
+      :-D
+  )HTML");
+  // The default page size is 8.5 by 11 inches. The @page descriptor wants it in
+  // landscape mode, so 11 by 8.5 inches, then. The content should be scaled to
+  // fit on the page. The requested page size is 20 by 17 inches. Figure out
+  // which axis needs the most scaling. 20/11 < 17/8.5. 17/8.5 is 2. The content
+  // needs to be scaled down by a factor of 2. To retain the aspect ratio of the
+  // paper size, additional horizontal margins will be inserted, so that the
+  // page width before scaling becomes 22in (11*2). The requested page size is
+  // 20in, so add an additional 1in to the left and the right margins. This
+  // means that the result would be the same as if this were in the CSS:
+  //
+  // @page {
+  //   size: 22in 17in;
+  //   margin: 1in 3in 3in 5in;
+  // }
+  //
+  // Then scale everything down by a factor of 2.
+
+  print_settings().Set(kSettingPrinterType,
+                       static_cast<int>(mojom::PrinterType::kLocal));
+  OnPrintPreview();
+
+  EXPECT_EQ(0u, preview_ui()->print_preview_pages_remaining());
+  VerifyDefaultPageLayout(504, 468, 36, 108, 180, 108, true, true);
+  OnClosePrintPreviewDialog();
+}
+
 TEST_F(PrintRenderFrameHelperPreviewTest, MarginsAndInputScaleToPdf1) {
   // The default page size in these tests is US Letter - 8.5 by 11 inches.
   // Setting vertical margins to 0.5in results in a page area of 10 inches.
