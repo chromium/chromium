@@ -206,9 +206,13 @@ void EditorMenuView::OnWidgetVisibilityChanged(views::Widget* widget,
 }
 
 void EditorMenuView::UpdateBounds(const gfx::Rect& anchor_view_bounds) {
+  const int editor_menu_width = GetEditorMenuWidth(anchor_view_bounds.width());
+  // TODO(b/302241013): Adjust chips container layout according to the updated
+  // editor menu width.
+
   GetWidget()->SetBounds(GetEditorMenuBounds(
-      anchor_view_bounds, gfx::Size(kContainerMinWidthDip,
-                                    GetHeightForWidth(kContainerMinWidthDip))));
+      anchor_view_bounds,
+      gfx::Size(editor_menu_width, GetHeightForWidth(editor_menu_width))));
 }
 
 void EditorMenuView::InitLayout(const PresetTextQueries& preset_text_queries) {
@@ -220,8 +224,7 @@ void EditorMenuView::InitLayout(const PresetTextQueries& preset_text_queries) {
       cros_tokens::kCrosSysAppBase, kRadiusDip));
 
   auto* layout = SetLayoutManager(std::make_unique<views::FlexLayout>());
-  layout->SetOrientation(views::LayoutOrientation::kVertical)
-      .SetCrossAxisAlignment(views::LayoutAlignment::kStart);
+  layout->SetOrientation(views::LayoutOrientation::kVertical);
 
   AddTitleContainer();
   AddChipsContainer(preset_text_queries);
@@ -283,11 +286,6 @@ void EditorMenuView::AddTitleContainer() {
   settings_button_->SetHasInkDropActionOnClick(true);
 
   title_container_->SetProperty(views::kMarginsKey, kTitleContainerInsets);
-
-  int width = kContainerMinWidthDip - kTitleContainerInsets.width();
-  int height = std::max(title->GetPreferredSize().height(),
-                        settings_button_->GetPreferredSize().height());
-  title_container_->SetPreferredSize(gfx::Size(width, height));
 }
 
 void EditorMenuView::AddChipsContainer(
@@ -337,10 +335,6 @@ void EditorMenuView::AddTextfield() {
   textfield_ =
       AddChildView(std::make_unique<EditorMenuTextfieldView>(delegate_));
   textfield_->SetProperty(views::kMarginsKey, kTextfieldContainerInsets);
-
-  int width = kContainerMinWidthDip - kTextfieldContainerInsets.width();
-  int height = textfield_->GetHeightForWidth(width);
-  textfield_->SetPreferredSize(gfx::Size(width, height));
 }
 
 void EditorMenuView::OnSettingsButtonPressed() {

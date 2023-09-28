@@ -193,6 +193,40 @@ IN_PROC_BROWSER_TEST_F(EditorMenuBrowserFeatureEnabledTest,
 }
 
 IN_PROC_BROWSER_TEST_F(EditorMenuBrowserFeatureEnabledTest,
+                       MatchesAnchorWidth) {
+  ASSERT_THAT(GetControllerImpl(), Not(IsNull()));
+
+  // Show editor menu.
+  constexpr int kAnchorWidth = 401;
+  GetControllerImpl()->OnGetEditorPanelContextResultForTesting(
+      gfx::Rect(200, 300, kAnchorWidth, 50),
+      CreateTestEditorPanelContext(crosapi::mojom::EditorPanelMode::kRewrite));
+
+  // Editor menu width should match anchor width.
+  EXPECT_EQ(GetEditorMenuView()->GetBoundsInScreen().width(), kAnchorWidth);
+
+  GetEditorMenuView()->GetWidget()->Close();
+}
+
+IN_PROC_BROWSER_TEST_F(EditorMenuBrowserFeatureEnabledTest,
+                       MatchesUpdatedAnchorWidth) {
+  ASSERT_THAT(GetControllerImpl(), Not(IsNull()));
+
+  // Show editor menu.
+  GetControllerImpl()->OnGetEditorPanelContextResultForTesting(
+      gfx::Rect(200, 300, 408, 50),
+      CreateTestEditorPanelContext(crosapi::mojom::EditorPanelMode::kRewrite));
+  constexpr int kNewAnchorWidth = 365;
+  GetControllerImpl()->OnAnchorBoundsChanged(
+      gfx::Rect(200, 300, kNewAnchorWidth, 50));
+
+  // Editor menu width should match the latest anchor width.
+  EXPECT_EQ(GetEditorMenuView()->GetBoundsInScreen().width(), kNewAnchorWidth);
+
+  GetEditorMenuView()->GetWidget()->Close();
+}
+
+IN_PROC_BROWSER_TEST_F(EditorMenuBrowserFeatureEnabledTest,
                        AdjustsPositionWhenAnchorBoundsUpdate) {
   ASSERT_THAT(GetControllerImpl(), Not(IsNull()));
 
