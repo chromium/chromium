@@ -9,4 +9,13 @@ namespace password_manager {
 NSString* const kWidgetPromoInstructionsViewID =
     @"WidgetPromoInstructionsViewID";
 
+NSString* const kWidgetPromoInstructionsImageName =
+    @"widget_promo_instructions_banner";
+
+NSString* const kWidgetPromoInstructionsImageID =
+    @"WidgetPromoInstructionsImageID";
+
+NSString* const kWidgetPromoInstructionsScrollableViewID =
+    @"WidgetPromoInstructionsScrollableViewID";
+
 }  // namespace password_manager

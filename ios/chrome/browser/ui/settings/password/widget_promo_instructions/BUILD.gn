@@ -11,6 +11,8 @@ source_set("widget_promo_instructions") {
     ":widget_promo_instructions_ui",
     "//base",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/ui/settings:settings_root",
+    "//ios/chrome/common/ui/confirmation_alert",
   ]
 }
 
@@ -21,7 +23,14 @@ source_set("widget_promo_instructions_ui") {
   ]
   deps = [
     ":widget_promo_instructions_constants",
+    "resources:widget_promo_instructions_banner",
+    "//components/strings",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/ui/elements",
+    "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/confirmation_alert",
+    "//ui/base",
   ]
 }
 

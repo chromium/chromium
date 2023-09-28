@@ -5,45 +5,48 @@
 #import "ios/chrome/browser/ui/settings/password/widget_promo_instructions/widget_promo_instructions_coordinator.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/notreached.h"
 #import "ios/chrome/browser/ui/settings/password/widget_promo_instructions/widget_promo_instructions_view_controller.h"
+#import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
+#import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 
 @interface WidgetPromoInstructionsCoordinator () <
-    UIAdaptivePresentationControllerDelegate>
+    UIAdaptivePresentationControllerDelegate,
+    ConfirmationAlertActionHandler,
+    SettingsNavigationControllerDelegate>
 
 // Password Manager widget promo instructions view controller.
 @property(nonatomic, strong)
     WidgetPromoInstructionsViewController* viewController;
 
+// The presented SettingsNavigationController containing the `viewController`.
+@property(nonatomic, strong)
+    SettingsNavigationController* settingsNavigationController;
+
 @end
 
 @implementation WidgetPromoInstructionsCoordinator
-
-@synthesize baseNavigationController = _baseNavigationController;
-
-- (instancetype)initWithBaseNavigationController:
-                    (UINavigationController*)navigationController
-                                         browser:(Browser*)browser {
-  self = [super initWithBaseViewController:navigationController
-                                   browser:browser];
-  if (self) {
-    _baseNavigationController = navigationController;
-  }
-  return self;
-}
 
 #pragma mark - ChromeCoordinator
 
 - (void)start {
   self.viewController = [[WidgetPromoInstructionsViewController alloc] init];
-  self.viewController.presentationController.delegate = self;
+  self.viewController.actionHandler = self;
 
-  [self.baseNavigationController presentViewController:self.viewController
-                                              animated:YES
-                                            completion:nil];
+  self.settingsNavigationController = [[SettingsNavigationController alloc]
+      initWithRootViewController:self.viewController
+                         browser:self.browser
+                        delegate:self];
+  self.settingsNavigationController.presentationController.delegate = self;
+
+  [self.baseViewController
+      presentViewController:self.settingsNavigationController
+                   animated:YES
+                 completion:nil];
 }
 
 - (void)stop {
-  [self.viewController.presentingViewController
+  [self.settingsNavigationController.presentingViewController
       dismissViewControllerAnimated:YES
                          completion:nil];
   self.viewController = nil;
@@ -54,7 +57,44 @@
 
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
-  [self.delegate widgetPromoInstructionsCoordinatorDidRemove:self];
+  [self.delegate removeWidgetPromoInstructionsCoordinator:self];
+}
+
+#pragma mark - ConfirmationAlertActionHandler
+
+- (void)confirmationAlertPrimaryAction {
+  // No-op.
+}
+
+- (void)confirmationAlertSecondaryAction {
+  [self.delegate removeWidgetPromoInstructionsCoordinator:self];
+}
+
+#pragma mark - SettingsNavigationControllerDelegate
+
+- (void)closeSettings {
+  auto* __weak weakSelf = self;
+  [weakSelf settingsWasDismissed];
+}
+
+- (void)settingsWasDismissed {
+  [self.delegate removeWidgetPromoInstructionsCoordinator:self];
+}
+
+- (id<ApplicationCommands, BrowserCommands, BrowsingDataCommands>)
+    handlerForSettings {
+  NOTREACHED_NORETURN();
+  return nil;
+}
+
+- (id<ApplicationCommands>)handlerForApplicationCommands {
+  NOTREACHED_NORETURN();
+  return nil;
+}
+
+- (id<SnackbarCommands>)handlerForSnackbarCommands {
+  NOTREACHED_NORETURN();
+  return nil;
 }
 
 @end

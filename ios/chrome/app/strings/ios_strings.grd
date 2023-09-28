@@ -5550,6 +5550,24 @@ Your data was encrypted with your passphrase on <ph name="TIME">$2<ex>Sept 1, 20
       <message name="IDS_IOS_PASSWORD_MANAGER_WIDGET_PROMO_BUTTON_TITLE" desc="Title of the button for the Password Manager widget promo shown in the Password Manager." meaning="Title-cased">
         Show Me How
       </message>
+      <message name="IDS_IOS_WIDGET_PROMO_INSTRUCTIONS_TITLE" desc="Title of the instruction screen for the Password Manager widget's installation.">
+        Get to passwords from the home screen
+      </message>
+      <message name="IDS_IOS_WIDGET_PROMO_INSTRUCTIONS_SUBTITLE" desc="Subtitle of the instruction screen for the Password Manager widget's installation.">
+        Easy and secure access with the Google Password Manager widget.
+      </message>
+      <message name="IDS_IOS_WIDGET_PROMO_INSTRUCTIONS_STEP_1" desc="First step of the instructions for the Password Manager widget's installation.">
+        Touch and hold the home screen
+      </message>
+      <message name="IDS_IOS_WIDGET_PROMO_INSTRUCTIONS_STEP_2" desc="Second step of the instructions for the Password Manager widget's installation.">
+        At the top of the screen, tap +
+      </message>
+      <message name="IDS_IOS_WIDGET_PROMO_INSTRUCTIONS_STEP_3" desc="Third step of the instructions for the Password Manager widget's installation.">
+        In the Search Widgets box, enter Chrome
+      </message>
+      <message name="IDS_IOS_WIDGET_PROMO_INSTRUCTIONS_STEP_4" desc="Fourth step of the instructions for the Password Manager widget's installation.">
+        Select Password Manager, then tap Add Widget
+      </message>
     </messages>
   </release>
 </grit>

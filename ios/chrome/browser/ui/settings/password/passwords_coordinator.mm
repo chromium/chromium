@@ -419,8 +419,8 @@ using password_manager::WarningType;
 
   self.widgetPromoInstructionsCoordinator =
       [[WidgetPromoInstructionsCoordinator alloc]
-          initWithBaseNavigationController:self.baseNavigationController
-                                   browser:self.browser];
+          initWithBaseViewController:self.viewController
+                             browser:self.browser];
   self.widgetPromoInstructionsCoordinator.delegate = self;
   [self.widgetPromoInstructionsCoordinator start];
 }
@@ -526,7 +526,7 @@ using password_manager::WarningType;
 
 #pragma mark - WidgetPromoInstructionsCoordinatorDelegate
 
-- (void)widgetPromoInstructionsCoordinatorDidRemove:
+- (void)removeWidgetPromoInstructionsCoordinator:
     (WidgetPromoInstructionsCoordinator*)coordinator {
   DCHECK_EQ(self.widgetPromoInstructionsCoordinator, coordinator);
   [self.widgetPromoInstructionsCoordinator stop];

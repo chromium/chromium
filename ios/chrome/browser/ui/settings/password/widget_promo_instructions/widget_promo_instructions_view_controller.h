@@ -7,10 +7,15 @@
 
 #import <UIKit/UIKit.h>
 
+@protocol ConfirmationAlertActionHandler;
+
 // Screen that presents the instructions on how to install the Password Manager
 // widget. Presented when the user interacts with the "Show Me How" button of
 // the Password Manager widget promo that's presented in the Password Manager.
 @interface WidgetPromoInstructionsViewController : UIViewController
+
+// The action handler for interactions in this view controller.
+@property(nonatomic, weak) id<ConfirmationAlertActionHandler> actionHandler;
 
 @end
 
