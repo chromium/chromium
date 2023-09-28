@@ -72,7 +72,6 @@
 #import "ios/chrome/browser/ui/settings/settings_root_table_view_controller+toolbar_add.h"
 #import "ios/chrome/browser/ui/settings/settings_root_table_view_controller+toolbar_settings.h"
 #import "ios/chrome/browser/ui/settings/settings_root_table_view_controller.h"
-#import "ios/chrome/browser/ui/settings/utils/settings_utils.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/elements/popover_label_view_controller.h"

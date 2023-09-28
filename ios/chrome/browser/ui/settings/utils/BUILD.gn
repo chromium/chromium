@@ -11,8 +11,6 @@ source_set("utils") {
     "password_auto_fill_status_observer.h",
     "password_utils.h",
     "password_utils.mm",
-    "settings_utils.h",
-    "settings_utils.mm",
   ]
   deps = [
     "//base",

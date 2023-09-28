@@ -41,7 +41,6 @@
 #import "ios/chrome/browser/ui/settings/password/reauthentication/reauthentication_coordinator.h"
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
 #import "ios/chrome/browser/ui/settings/utils/password_utils.h"
-#import "ios/chrome/browser/ui/settings/utils/settings_utils.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -317,15 +316,17 @@ constexpr const char* kBulkMovePasswordsToAccountConfirmationDialogAccepted =
 }
 
 - (void)showOnDeviceEncryptionSetUp {
-  GURL url = google_util::AppendGoogleLocaleParam(
+  GURL URL = google_util::AppendGoogleLocaleParam(
       GURL(kOnDeviceEncryptionOptInURL),
       GetApplicationContext()->GetApplicationLocale());
-  BlockToOpenURL(self.passwordSettingsViewController, self.dispatcher)(url);
+  OpenNewTabCommand* command = [OpenNewTabCommand commandWithURLFromChrome:URL];
+  [self.dispatcher closeSettingsUIAndOpenURL:command];
 }
 
 - (void)showOnDeviceEncryptionHelp {
-  GURL url = GURL(kOnDeviceEncryptionLearnMoreURL);
-  BlockToOpenURL(self.passwordSettingsViewController, self.dispatcher)(url);
+  GURL URL = GURL(kOnDeviceEncryptionLearnMoreURL);
+  OpenNewTabCommand* command = [OpenNewTabCommand commandWithURLFromChrome:URL];
+  [self.dispatcher closeSettingsUIAndOpenURL:command];
 }
 
 #pragma mark - PopoverLabelViewControllerDelegate
@@ -595,6 +596,13 @@ constexpr const char* kBulkMovePasswordsToAccountConfirmationDialogAccepted =
 
 #pragma mark - Private
 
+// Closes the settings and load the passcode help article in a new tab.
+- (void)showPasscodeHelp {
+  GURL URL = GURL(kPasscodeArticleURL);
+  OpenNewTabCommand* command = [OpenNewTabCommand commandWithURLFromChrome:URL];
+  [self.dispatcher closeSettingsUIAndOpenURL:command];
+}
+
 // Helper to show the "set passcode" dialog with customizable content.
 - (void)showSetPasscodeDialogWithContent:(NSString*)content {
   UIAlertController* alertController = [UIAlertController
@@ -603,14 +611,13 @@ constexpr const char* kBulkMovePasswordsToAccountConfirmationDialogAccepted =
                        message:content
                 preferredStyle:UIAlertControllerStyleAlert];
 
-  void (^blockOpenURL)(const GURL&) =
-      BlockToOpenURL(self.passwordSettingsViewController, self.dispatcher);
+  __weak PasswordSettingsCoordinator* weakSelf = self;
   UIAlertAction* learnAction = [UIAlertAction
       actionWithTitle:l10n_util::GetNSString(
                           IDS_IOS_SETTINGS_SET_UP_SCREENLOCK_LEARN_HOW)
                 style:UIAlertActionStyleDefault
               handler:^(UIAlertAction*) {
-                blockOpenURL(GURL(kPasscodeArticleURL));
+                [weakSelf showPasscodeHelp];
               }];
   [alertController addAction:learnAction];
   UIAlertAction* okAction =
