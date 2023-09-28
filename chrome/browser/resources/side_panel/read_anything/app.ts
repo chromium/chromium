@@ -25,6 +25,13 @@ interface LinkColor {
   visited: string;
 }
 
+interface UtteranceSettings {
+  lang: string;
+  volume: number;
+  pitch: number;
+  rate: number;
+}
+
 interface VoicesByLanguage {
   [lang: string]: SpeechSynthesisVoice[];
 }
@@ -416,7 +423,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   }
 
   defaultVoice(): SpeechSynthesisVoice|undefined {
-    // TODO(crbug.com/1474951): Additional logic to find defaualt voice if there
+    // TODO(crbug.com/1474951): Additional logic to find default voice if there
     // isn't a voice marked as default
     return this.synth.getVoices().find(
         ({localService, default: isDefaultVoice}) =>
@@ -437,6 +444,23 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
   setSpeechSynthesisVoice(voice: SpeechSynthesisVoice) {
     this.voice = voice;
+  }
+
+  previewSpeechSynthesisVoice(voice: SpeechSynthesisVoice) {
+    const defaultUtteranceSettings = this.defaultUtteranceSettings();
+
+    // TODO(crbug.com/1474951): Translate the utterance into the language of
+    // the voice being previewed, and remove the hard-coded string.
+    // TODO(crbug.com/1474951): Call this.synth.cancel() to interrupt reading
+    // and reset the play icon.
+    const utterance = new SpeechSynthesisUtterance('Hi. This is a preview');
+    utterance.voice = voice;
+    utterance.lang = defaultUtteranceSettings.lang;
+    utterance.volume = defaultUtteranceSettings.volume;
+    utterance.pitch = defaultUtteranceSettings.pitch;
+    utterance.rate = defaultUtteranceSettings.rate;
+
+    this.synth.speak(utterance);
   }
 
   stopSpeech() {
@@ -596,9 +620,6 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   playCurrentMessage() {
     const message = this.utterancesToSpeak_[this.currentUtteranceIndex_];
 
-    // TODO(crbug.com/1474951): Use correct locale when speaking.
-    const languageCode = chrome.readingMode.speechSynthesisLanguageCode;
-    message.lang = languageCode;
     const voice = this.getSpeechSynthesisVoice();
     if (!voice) {
       // TODO(crbug.com/1474951): Handle when no voices are available.
@@ -607,18 +628,31 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
     message.voice = voice;
 
-    // TODO(crbug.com/1474951): Ensure the correct default values are used.
-    message.volume = 1;
-    message.pitch = 1;
-
-    // TODO(crbug.com/1474951): Ensure rate change happens immediately, rather
-    // than on the next set of text.
-    // TODO(crbug.com/1474951): Ensure the rate is valid for the current speech
-    // engine.
-    message.rate = this.rate;
+    const utteranceSettings = this.defaultUtteranceSettings();
+    message.lang = utteranceSettings.lang;
+    message.volume = utteranceSettings.volume;
+    message.pitch = utteranceSettings.pitch;
+    message.rate = utteranceSettings.rate;
 
     this.speechStarted = true;
     this.synth.speak(message);
+  }
+
+  private defaultUtteranceSettings(): UtteranceSettings {
+    // TODO(crbug.com/1474951): Use correct locale when speaking.
+    const lang = chrome.readingMode.speechSynthesisLanguageCode;
+
+    return {
+      lang,
+      // TODO(crbug.com/1474951): Ensure rate change happens immediately, rather
+      // than on the next set of text.
+      // TODO(crbug.com/1474951): Ensure the rate is valid for the current
+      // speech engine.
+      rate: this.rate,
+      // TODO(crbug.com/1474951): Ensure the correct default values are used.
+      volume: 1,
+      pitch: 1,
+    };
   }
 
   // The following results in

@@ -430,8 +430,6 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
     }
   }
 
-
-
   private onMoreOptionsClick_(event: MouseEvent) {
     this.openMenu_(this.$.moreOptionsMenu, event.target as HTMLElement);
   }
@@ -504,6 +502,18 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
     // TODO(crbug.com/1474951): Save voice to prefs.
     if (this.contentPage) {
       this.contentPage.setSpeechSynthesisVoice(
+          event.model.item.data as SpeechSynthesisVoice);
+    }
+  }
+
+  private onVoicePreviewClick_(event: DomRepeatEvent<MenuStateItem>) {
+    // Because the preview button is layered onto the voice-selection button,
+    // the onVoiceSelectClick_() listener is also subscribed to this event. This
+    // line is to make sure that the voice-selection callback is not triggered.
+    event.stopImmediatePropagation();
+
+    if (this.contentPage) {
+      this.contentPage.previewSpeechSynthesisVoice(
           event.model.item.data as SpeechSynthesisVoice);
     }
   }

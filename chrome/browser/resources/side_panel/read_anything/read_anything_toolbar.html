@@ -30,6 +30,18 @@
   .dropdown-item {
     display: block;
   }
+  .dropdown-voice-selection {
+    display: flex;
+    min-width: 312px;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .dropdown-voice-selection cr-icon-button {
+    margin: 0;
+  }
+  .dropdown-voice-selection p {
+    margin: 8px 0;
+  }
   /* TODO(b/1465029): Investigate why chrome refresh colors don't always
      work on first launch. */
   :host-context([chrome-refresh-2023]) cr-action-menu {
@@ -133,17 +145,20 @@
   </cr-action-menu>
   <cr-action-menu id="voiceSelectionMenu">
     <template is="dom-repeat" items="[[voiceSelectionOptions_]]">
-      <!--  TODO(crbug.com/1474951): add play icon for voice previews -->
       <!--  TODO(crbug.com/1474951): show a header for each locale group before
             listing the languages of the locale -->
       <!--  TODO(crbug.com/1474951): show currently selected language -->
       <!--  TODO(crbug.com/1474951): allow user to change language -->
-      <button class="dropdown-item" on-click="onVoiceSelectClick_">
-        [[item.title]]
+      <button class="dropdown-item dropdown-voice-selection"
+        on-click="onVoiceSelectClick_">
+        <p>[[item.title]]</p>
+        <!-- TODO(crbug.com/1474951): Show pause button when a preview is
+                      playing -->
+        <cr-icon-button on-click="onVoicePreviewClick_" class="button-image"
+          iron-icon="read-anything-20:play-circle"></cr-icon-button>
       </button>
     </template>
   </cr-action-menu>
-
   <cr-action-menu id="fontSizeMenu">
     <cr-icon-button
         class="font-size"
