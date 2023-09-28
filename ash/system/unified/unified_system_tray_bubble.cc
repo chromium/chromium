@@ -351,11 +351,7 @@ void UnifiedSystemTrayBubble::OnWindowActivated(ActivationReason reason,
 
   // Don't close the bubble if a transient child is gaining or losing
   // activation.
-  if (bubble_widget_ == gained_active_widget ||
-      ::wm::HasTransientAncestor(gained_active,
-                                 bubble_widget_->GetNativeWindow()) ||
-      (lost_active && ::wm::HasTransientAncestor(
-                          lost_active, bubble_widget_->GetNativeWindow()))) {
+  if (bubble_widget_ == gained_active_widget) {
     return;
   }
 
