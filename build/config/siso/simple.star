@@ -19,6 +19,7 @@ def __stamp(ctx, cmd):
         # dir and non-exist-in-hashfs file?
         # TODO(b/300385880): fix this workaround.
         return
+
     # don't truncate if file exists.
     out = cmd.outputs[0]
     if ctx.fs.exists(out):
