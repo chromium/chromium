@@ -165,7 +165,7 @@ class PasswordsPrivateDelegateImpl
       const password_manager::PasswordStoreChangeList& changes) override;
 
   // web_app::WebAppInstallManagerObserver implementation.
-  void OnWebAppInstalledWithOsHooks(const web_app::AppId& app_id) override;
+  void OnWebAppInstalledWithOsHooks(const webapps::AppId& app_id) override;
   void OnWebAppInstallManagerDestroyed() override;
 
   // Called after the lists are fetched. Once both lists have been set, the

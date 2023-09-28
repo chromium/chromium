@@ -1049,7 +1049,7 @@ void PasswordsPrivateDelegateImpl::OnSavedPasswordsChanged(
 }
 
 void PasswordsPrivateDelegateImpl::OnWebAppInstalledWithOsHooks(
-    const web_app::AppId& app_id) {
+    const webapps::AppId& app_id) {
   if (app_id != web_app::kPasswordManagerAppId) {
     return;
   }

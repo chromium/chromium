@@ -88,7 +88,7 @@ class FakePromoCard : public PromoCardInterface {
 
 std::unique_ptr<web_app::WebApp> CreateWebApp() {
   GURL url(chrome::kChromeUIPasswordManagerURL);
-  web_app::AppId app_id = web_app::GenerateAppId(/*manifest_id=*/"", url);
+  webapps::AppId app_id = web_app::GenerateAppId(/*manifest_id=*/"", url);
   auto web_app = std::make_unique<web_app::WebApp>(app_id);
   web_app->SetStartUrl(url);
   web_app->SetScope(url.DeprecatedGetOriginAsURL());
