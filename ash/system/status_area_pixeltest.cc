@@ -153,8 +153,9 @@ TEST_P(StatusAreaParameterizedPixelTest, DateTrayTest) {
       date_tray));
 }
 
+// TODO(https://crbug.com/1487311): Disaled due to flakiness.
 TEST_P(StatusAreaParameterizedPixelTest,
-       NotificationTrayCounterWithSingleCount) {
+       DISABLED_NotificationTrayCounterWithSingleCount) {
   GetPrimaryShelf()->SetAlignment(GetShelfAlignment());
   ShellTestApi().SetTabletModeEnabledForTest(IsTabletMode());
   base::i18n::SetRTLForTesting(IsRTL());
@@ -183,7 +184,8 @@ INSTANTIATE_TEST_SUITE_P(All,
                          StatusAreaParamerterizedAlignmentPixelTest,
                          testing::ValuesIn(kShelfAlignments));
 
-TEST_P(StatusAreaParamerterizedAlignmentPixelTest, OverflowTray) {
+// TODO(https://crbug.com/1487336): Disabled due to excessive flakiness.
+TEST_P(StatusAreaParamerterizedAlignmentPixelTest, DISABLED_OverflowTray) {
   UpdateDisplay("500x600");
   GetPrimaryShelf()->SetAlignment(GetShelfAlignment());
   ShellTestApi().SetTabletModeEnabledForTest(true);
