@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.touch_to_fill.no_passkeys;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -12,7 +13,11 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
 import android.content.Context;
+import android.graphics.Typeface;
+import android.text.Spanned;
+import android.text.style.StyleSpan;
 import android.view.View;
+import android.widget.TextView;
 
 import androidx.appcompat.view.ContextThemeWrapper;
 import androidx.test.core.app.ApplicationProvider;
@@ -117,6 +122,24 @@ public class NoPasskeysBottomSheetModuleTest {
         // {@code destroy()} is called when a sheet gets dismissed by action, tabs, or layouting.
         contentCaptor.getValue().destroy();
         verify(mNativeMock).onDismissed(TEST_NATIVE);
+    }
+
+    @Test
+    public void originIsBold() {
+        var contentCaptor = ArgumentCaptor.forClass(NoPasskeysBottomSheetContent.class);
+
+        mBridge.show(TEST_ORIGIN);
+        verify(mBottomSheetController).requestShowContent(contentCaptor.capture(), eq(true));
+
+        TextView view = contentCaptor.getValue().getContentView().findViewById(
+                R.id.no_passkeys_sheet_subtitle);
+        int originStartIndex = view.getText().toString().indexOf(TEST_ORIGIN);
+        Spanned spannedMessage = (Spanned) view.getText();
+        StyleSpan[] spans = spannedMessage.getSpans(
+                originStartIndex, originStartIndex + TEST_ORIGIN.length(), StyleSpan.class);
+
+        assertEquals(spans.length, 1);
+        assertEquals(spans[0].getStyle(), Typeface.BOLD);
     }
 
     private static View findOkButton(NoPasskeysBottomSheetContent content) {
