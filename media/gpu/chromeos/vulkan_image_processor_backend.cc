@@ -860,23 +860,15 @@ VulkanImageProcessorBackend::Create(const PortConfig& input_config,
   std::vector<VkVertexInputBindingDescription> binding_descriptions;
   std::vector<VkVertexInputAttributeDescription> attribute_descriptions;
 
-  std::vector<VkDescriptorSetLayoutBinding> descriptor_bindings(3);
+  std::vector<VkDescriptorSetLayoutBinding> descriptor_bindings(2);
   descriptor_bindings[0].binding = 0;
   descriptor_bindings[0].descriptorCount = 1;
-  descriptor_bindings[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+  descriptor_bindings[0].descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
   descriptor_bindings[0].stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-
   descriptor_bindings[1].binding = 1;
   descriptor_bindings[1].descriptorCount = 1;
-  descriptor_bindings[1].descriptorType =
-      VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+  descriptor_bindings[1].descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
   descriptor_bindings[1].stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-
-  descriptor_bindings[2].binding = 2;
-  descriptor_bindings[2].descriptorCount = 1;
-  descriptor_bindings[2].descriptorType =
-      VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-  descriptor_bindings[2].stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
 
   auto vert_shader =
       VulkanShader::Create(kMM21ShaderVert, sizeof(kMM21ShaderVert),
@@ -900,13 +892,10 @@ VulkanImageProcessorBackend::Create(const PortConfig& input_config,
     return nullptr;
   }
 
-  auto descriptor_pool =
-      VulkanDescriptorPool::Create(1,
-                                   {VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
-                                    VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-                                    VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER},
-                                   pipeline->GetDescriptorSetLayout(),
-                                   vulkan_device_queue->GetVulkanDevice());
+  auto descriptor_pool = VulkanDescriptorPool::Create(
+      1, {VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE},
+      pipeline->GetDescriptorSetLayout(),
+      vulkan_device_queue->GetVulkanDevice());
   if (!descriptor_pool) {
     return nullptr;
   }
