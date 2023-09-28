@@ -8,7 +8,8 @@
 #include <cstdint>
 #include <vector>
 
-#include "base/memory/ref_counted.h"
+#include "base/containers/span.h"
+#include "base/memory/scoped_refptr.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/demuxer_stream.h"
@@ -50,8 +51,7 @@ std::vector<uint8_t> DecoderBufferToByteArray(
 
 // Converts byte array into DecoderBufferSegment.
 scoped_refptr<media::DecoderBuffer> ByteArrayToDecoderBuffer(
-    const uint8_t* data,
-    uint32_t size);
+    base::span<const uint8_t> data);
 
 // Data type conversion between media::AudioDecoderConfig and proto buffer.
 void ConvertAudioDecoderConfigToProto(

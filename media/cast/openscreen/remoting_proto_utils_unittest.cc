@@ -41,7 +41,7 @@ TEST_F(ProtoUtilsTest, PassEOSDecoderBuffer) {
 
   // 3. To DecoderBuffer
   scoped_refptr<media::DecoderBuffer> output_buffer =
-      ByteArrayToDecoderBuffer(data.data(), data.size());
+      ByteArrayToDecoderBuffer(data);
   DCHECK(output_buffer);
 
   ASSERT_TRUE(output_buffer->end_of_stream());
@@ -79,7 +79,7 @@ TEST_F(ProtoUtilsTest, PassValidDecoderBuffer) {
 
   // 3. To DecoderBuffer
   scoped_refptr<media::DecoderBuffer> output_buffer =
-      ByteArrayToDecoderBuffer(data.data(), data.size());
+      ByteArrayToDecoderBuffer(data);
   DCHECK(output_buffer);
 
   ASSERT_FALSE(output_buffer->end_of_stream());

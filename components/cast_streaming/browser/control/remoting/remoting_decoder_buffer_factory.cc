@@ -23,7 +23,7 @@ RemotingDecoderBufferFactory::ToDecoderBuffer(
     FrameContents& frame_contents) {
   auto span = frame_contents.Get();
   scoped_refptr<media::DecoderBuffer> decoder_buffer =
-      media::cast::ByteArrayToDecoderBuffer(span.data(), span.size());
+      media::cast::ByteArrayToDecoderBuffer(span);
   if (!decoder_buffer) {
     DLOG(WARNING) << "Deserialization failed!";
     return nullptr;
