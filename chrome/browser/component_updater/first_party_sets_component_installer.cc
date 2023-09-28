@@ -42,7 +42,7 @@ constexpr uint8_t kFirstPartySetsPublicKeySHA256[32] = {
     0xff, 0x1c, 0x65, 0x66, 0x14, 0xa8, 0x46, 0x37, 0xe6, 0xeb, 0x80,
     0x8b, 0x8f, 0xb0, 0xb6, 0x18, 0xa7, 0xcd, 0x3d, 0xbb, 0xfb};
 
-constexpr char kFirstPartySetsManifestName[] = "First-Party Sets";
+constexpr char kFirstPartySetsManifestName[] = "Related Website Sets";
 
 constexpr base::FilePath::CharType kFirstPartySetsRelativeInstallDir[] =
     FILE_PATH_LITERAL("FirstPartySetsPreloaded");
@@ -155,8 +155,8 @@ void FirstPartySetsComponentInstallerPolicy::ComponentReady(
   if (install_dir.empty() || GetConfigPathInstance().has_value())
     return;
 
-  VLOG(1) << "First-Party Sets Component ready, version " << version.GetString()
-          << " in " << install_dir.value();
+  VLOG(1) << "Related Website Sets Component ready, version "
+          << version.GetString() << " in " << install_dir.value();
 
   GetConfigPathInstance() =
       std::make_pair(GetInstalledPath(install_dir), version);
@@ -200,12 +200,12 @@ void FirstPartySetsComponentInstallerPolicy::ResetForTesting() {
 }
 
 void RegisterFirstPartySetsComponent(ComponentUpdateService* cus) {
-  VLOG(1) << "Registering First-Party Sets component.";
+  VLOG(1) << "Registering Related Website Sets component.";
 
   auto policy = std::make_unique<FirstPartySetsComponentInstallerPolicy>(
       /*on_sets_ready=*/base::BindOnce([](base::Version version,
                                           base::File sets_file) {
-        VLOG(1) << "Received First-Party Sets";
+        VLOG(1) << "Received Related Website Sets";
         content::FirstPartySetsHandler::GetInstance()->SetPublicFirstPartySets(
             version, std::move(sets_file));
       }));
