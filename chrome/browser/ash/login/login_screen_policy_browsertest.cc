@@ -24,14 +24,19 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
+#include "chrome/browser/net/profile_network_context_service.h"
+#include "chrome/browser/net/profile_network_context_service_factory.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
+#include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/test/browser_test.h"
+#include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ime/ash/input_method_manager.h"
@@ -171,9 +176,42 @@ IN_PROC_BROWSER_TEST_F(LoginScreenLocalePolicyTest,
                        LoginLocaleEnforcedByPolicy) {
   // Verifies that the default locale can be overridden with policy.
   EXPECT_EQ("fr", g_browser_process->GetApplicationLocale());
+}
 
-  // TODO(https://crbug.com/1071010) Implement dynamic locale reload on policy
-  // change.
+class LoginScreenLocalePolicyWithVPDTest
+    : public LoginScreenLocalePolicyTestBase {
+ public:
+  LoginScreenLocalePolicyWithVPDTest()
+      : LoginScreenLocalePolicyTestBase("fr-FR") {
+    // Set a different locale in VPD.
+    fake_statistics_provider_.SetMachineStatistic("initial_locale", "en-US");
+  }
+  LoginScreenLocalePolicyWithVPDTest(
+      const LoginScreenLocalePolicyWithVPDTest&) = delete;
+  LoginScreenLocalePolicyWithVPDTest& operator=(
+      const LoginScreenLocalePolicyWithVPDTest&) = delete;
+
+ private:
+  system::ScopedFakeStatisticsProvider fake_statistics_provider_;
+};
+
+// Verifies that for the network service the device policy locale takes
+// preference over the VPD locale.
+IN_PROC_BROWSER_TEST_F(LoginScreenLocalePolicyWithVPDTest,
+                       SigninAcceptLanguage) {
+  auto* profile_network_context =
+      ProfileNetworkContextServiceFactory::GetForContext(
+          ash::BrowserContextHelper::Get()->GetSigninBrowserContext());
+  ASSERT_NE(profile_network_context, nullptr);
+
+  network::mojom::NetworkContextParams network_context_params;
+  cert_verifier::mojom::CertVerifierCreationParams
+      cert_verifier_creation_params;
+  base::FilePath empty_relative_partition_path;
+  profile_network_context->ConfigureNetworkContextParams(
+      /*in_memory=*/true, empty_relative_partition_path,
+      &network_context_params, &cert_verifier_creation_params);
+  ASSERT_EQ(network_context_params.accept_language, "fr-FR,fr;q=0.9");
 }
 
 class LoginScreenButtonsLocalePolicy : public LoginScreenLocalePolicyTestBase {
