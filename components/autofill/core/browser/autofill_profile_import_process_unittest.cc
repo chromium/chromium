@@ -88,9 +88,6 @@ TEST_F(AutofillProfileImportProcessTest, ImportFirstProfile_UserAccepts) {
 
   AutofillProfile observed_profile = test::StandardProfile();
 
-  std::vector<AutofillProfile> existing_profiles = {};
-  personal_data_manager_.SetProfilesForAllSources(&existing_profiles);
-
   // Advance the test clock to make sure that the modification date of the new
   // profile gets updated.
   test_clock.Advance(base::Days(1));
@@ -123,9 +120,6 @@ TEST_F(AutofillProfileImportProcessTest, ImportFirstProfile_UserAccepts) {
 TEST_F(AutofillProfileImportProcessTest, ImportFirstProfile_ImportIsBlocked) {
   AutofillProfile observed_profile = test::StandardProfile();
 
-  std::vector<AutofillProfile> existing_profiles = {};
-  personal_data_manager_.SetProfilesForAllSources(&existing_profiles);
-
   BlockDomainForNewProfiles(url_);
 
   // Create the import process for the scenario that there aren't any other
@@ -151,9 +145,6 @@ TEST_F(AutofillProfileImportProcessTest, ImportFirstProfile_ImportIsBlocked) {
 TEST_F(AutofillProfileImportProcessTest,
        ImportFirstProfile_UserAcceptsWithEdits) {
   AutofillProfile observed_profile = test::StandardProfile();
-
-  std::vector<AutofillProfile> existing_profiles = {};
-  personal_data_manager_.SetProfilesForAllSources(&existing_profiles);
 
   // Create the import process for the scenario that there aren't any other
   // stored profiles yet.
@@ -182,9 +173,6 @@ TEST_F(AutofillProfileImportProcessTest,
 TEST_F(AutofillProfileImportProcessTest, ImportFirstProfile_UserRejects) {
   AutofillProfile observed_profile = test::StandardProfile();
 
-  std::vector<AutofillProfile> existing_profiles = {};
-  personal_data_manager_.SetProfilesForAllSources(&existing_profiles);
-
   // Create the import process for the scenario that there aren't any other
   // stored profiles yet.
   ProfileImportProcess import_data(observed_profile, "en_US", url_,
@@ -208,9 +196,7 @@ TEST_F(AutofillProfileImportProcessTest, ImportFirstProfile_UserRejects) {
 // existing profile.
 TEST_F(AutofillProfileImportProcessTest, ImportDuplicateProfile) {
   AutofillProfile observed_profile = test::StandardProfile();
-
-  std::vector<AutofillProfile> existing_profiles = {observed_profile};
-  personal_data_manager_.SetProfilesForAllSources(&existing_profiles);
+  personal_data_manager_.AddProfile(observed_profile);
 
   // Create the import process for the scenario that the observed profile is an
   // exact copy of an already existing one.
@@ -230,7 +216,7 @@ TEST_F(AutofillProfileImportProcessTest, ImportDuplicateProfile) {
   EXPECT_FALSE(import_data.ProfilesChanged());
 
   EXPECT_THAT(ApplyImportAndGetProfiles(import_data),
-              testing::UnorderedElementsAre(existing_profiles.at(0)));
+              testing::UnorderedElementsAre(observed_profile));
 }
 
 // Tests that an incorrectly complemented country doesn't lead to an almost-
@@ -239,8 +225,7 @@ TEST_F(AutofillProfileImportProcessTest, ImportDuplicateProfile) {
 TEST_F(AutofillProfileImportProcessTest, IncorrectlyComplementedCountry) {
   AutofillProfile profile = test::StandardProfile();
   EXPECT_EQ(u"US", profile.GetRawInfo(ADDRESS_HOME_COUNTRY));
-  std::vector<AutofillProfile> existing_profiles = {profile};
-  personal_data_manager_.SetProfilesForAllSources(&existing_profiles);
+  personal_data_manager_.AddProfile(profile);
 
   // Suppose the country was incorrectly complemented to "DE".
   profile.SetRawInfo(ADDRESS_HOME_COUNTRY, u"DE");
@@ -267,9 +252,8 @@ TEST_F(AutofillProfileImportProcessTest,
   AutofillProfile distinct_existing_profile =
       test::DifferentFromStandardProfile();
 
-  std::vector<AutofillProfile> existing_profiles = {duplicate_existing_profile,
-                                                    distinct_existing_profile};
-  personal_data_manager_.SetProfilesForAllSources(&existing_profiles);
+  personal_data_manager_.AddProfile(duplicate_existing_profile);
+  personal_data_manager_.AddProfile(distinct_existing_profile);
 
   // Create the import process for the two already existing profiles.
   ProfileImportProcess import_data(observed_profile, "en_US", url_,
@@ -297,8 +281,7 @@ TEST_F(AutofillProfileImportProcessTest,
 TEST_F(AutofillProfileImportProcessTest, ImportDuplicateProfile_kAccount) {
   AutofillProfile account_profile = test::StandardProfile();
   account_profile.set_source_for_testing(AutofillProfile::Source::kAccount);
-  std::vector<AutofillProfile> existing_profiles = {account_profile};
-  personal_data_manager_.SetProfilesForAllSources(&existing_profiles);
+  personal_data_manager_.AddProfile(account_profile);
 
   ProfileImportProcess import_data(
       /*observed_profile=*/test::StandardProfile(), "en_US", url_,
@@ -310,7 +293,7 @@ TEST_F(AutofillProfileImportProcessTest, ImportDuplicateProfile_kAccount) {
   import_data.AcceptWithoutPrompt();
   EXPECT_FALSE(import_data.ProfilesChanged());
   EXPECT_THAT(ApplyImportAndGetProfiles(import_data),
-              testing::ElementsAreArray(existing_profiles));
+              testing::UnorderedElementsAre(account_profile));
 }
 
 // Tests that importing a profile that is a subset of a kAccount profile is
@@ -318,8 +301,7 @@ TEST_F(AutofillProfileImportProcessTest, ImportDuplicateProfile_kAccount) {
 TEST_F(AutofillProfileImportProcessTest, ImportSubsetProfile_kAccount) {
   AutofillProfile account_profile = test::StandardProfile();
   account_profile.set_source_for_testing(AutofillProfile::Source::kAccount);
-  std::vector<AutofillProfile> existing_profiles = {account_profile};
-  personal_data_manager_.SetProfilesForAllSources(&existing_profiles);
+  personal_data_manager_.AddProfile(account_profile);
 
   ProfileImportProcess import_data(
       /*observed_profile=*/test::SubsetOfStandardProfile(), "en_US", url_,
@@ -331,7 +313,7 @@ TEST_F(AutofillProfileImportProcessTest, ImportSubsetProfile_kAccount) {
   import_data.AcceptWithoutPrompt();
   EXPECT_FALSE(import_data.ProfilesChanged());
   EXPECT_THAT(ApplyImportAndGetProfiles(import_data),
-              testing::ElementsAreArray(existing_profiles));
+              testing::UnorderedElementsAre(account_profile));
 }
 
 // Tests that importing a profile that is a superset of a kAccount profile is
@@ -343,8 +325,7 @@ TEST_F(AutofillProfileImportProcessTest,
 
   AutofillProfile account_profile = test::SubsetOfStandardProfile();
   account_profile.set_source_for_testing(AutofillProfile::Source::kAccount);
-  std::vector<AutofillProfile> existing_profiles = {account_profile};
-  personal_data_manager_.SetProfilesForAllSources(&existing_profiles);
+  personal_data_manager_.AddProfile(account_profile);
 
   ProfileImportProcess import_data(
       /*observed_profile=*/test::StandardProfile(), "en_US", url_,
@@ -356,7 +337,7 @@ TEST_F(AutofillProfileImportProcessTest,
   import_data.AcceptWithoutPrompt();
   EXPECT_FALSE(import_data.ProfilesChanged());
   EXPECT_THAT(ApplyImportAndGetProfiles(import_data),
-              testing::ElementsAreArray(existing_profiles));
+              testing::UnorderedElementsAre(account_profile));
 }
 
 // Tests that importing a profile that is a superset of a kAccount profile
@@ -369,8 +350,7 @@ TEST_F(AutofillProfileImportProcessTest,
 
   AutofillProfile account_profile = test::SubsetOfStandardProfile();
   account_profile.set_source_for_testing(AutofillProfile::Source::kAccount);
-  std::vector<AutofillProfile> existing_profiles = {account_profile};
-  personal_data_manager_.SetProfilesForAllSources(&existing_profiles);
+  personal_data_manager_.AddProfile(account_profile);
 
   ProfileImportProcess import_data(
       /*observed_profile=*/test::StandardProfile(), "en_US", url_,
@@ -385,15 +365,14 @@ TEST_F(AutofillProfileImportProcessTest,
   expected_profile.set_guid(account_profile.guid());
   expected_profile.set_source_for_testing(AutofillProfile::Source::kAccount);
   EXPECT_THAT(ApplyImportAndGetProfiles(import_data),
-              testing::ElementsAre(expected_profile));
+              testing::UnorderedElementsAre(expected_profile));
 }
 
 // Tests that an import can cause a silent update of a `kAccount` profile.
 TEST_F(AutofillProfileImportProcessTest, ImportSilentUpdate_kAccount) {
   AutofillProfile account_profile = test::UpdateableStandardProfile();
   account_profile.set_source_for_testing(AutofillProfile::Source::kAccount);
-  std::vector<AutofillProfile> existing_profiles = {account_profile};
-  personal_data_manager_.SetProfilesForAllSources(&existing_profiles);
+  personal_data_manager_.AddProfile(account_profile);
 
   // The `observed_profile` is of type `kLocalOrSyncable`. This should not
   // prevent silent-updating a `kAccount` profile.
@@ -412,7 +391,7 @@ TEST_F(AutofillProfileImportProcessTest, ImportSilentUpdate_kAccount) {
   expected_profile.set_source_for_testing(AutofillProfile::Source::kAccount);
   expected_profile.set_guid(account_profile.guid());
   EXPECT_THAT(ApplyImportAndGetProfiles(import_data),
-              testing::ElementsAre(expected_profile));
+              testing::UnorderedElementsAre(expected_profile));
 }
 
 // Tests the accepted import of a profile that is mergeable with an already
@@ -429,8 +408,7 @@ TEST_F(AutofillProfileImportProcessTest, MergeWithExistingProfile_Accepted) {
   test_clock.Advance(base::Days(1));
   base::Time current_time = AutofillClock::Now();
 
-  std::vector<AutofillProfile> existing_profiles = {mergeable_profile};
-  personal_data_manager_.SetProfilesForAllSources(&existing_profiles);
+  personal_data_manager_.AddProfile(mergeable_profile);
 
   // Create the import process for the scenario that a profile that is mergeable
   // with the observed profile already exists.
@@ -481,8 +459,7 @@ TEST_F(AutofillProfileImportProcessTest,
   test_clock.Advance(base::Days(1));
   base::Time current_time = AutofillClock::Now();
 
-  std::vector<AutofillProfile> existing_profiles = {mergeable_profile};
-  personal_data_manager_.SetProfilesForAllSources(&existing_profiles);
+  personal_data_manager_.AddProfile(mergeable_profile);
 
   // Create the import process for the scenario that a profile that is mergeable
   // with the observed profile already exists.
@@ -525,9 +502,8 @@ TEST_F(AutofillProfileImportProcessTest,
   // This is just another completely different profile.
   AutofillProfile distinct_profile = test::DifferentFromStandardProfile();
 
-  std::vector<AutofillProfile> existing_profiles = {mergeable_profile,
-                                                    distinct_profile};
-  personal_data_manager_.SetProfilesForAllSources(&existing_profiles);
+  personal_data_manager_.AddProfile(mergeable_profile);
+  personal_data_manager_.AddProfile(distinct_profile);
 
   // Create an import data instance for the observed profile and determine the
   // import type for the case that there are no already existing profiles.
@@ -573,8 +549,7 @@ TEST_F(AutofillProfileImportProcessTest, MergeWithExistingProfile_Rejected) {
   base::Time earlier_time = AutofillClock::Now();
   test_clock.Advance(base::Days(1));
 
-  std::vector<AutofillProfile> existing_profiles = {mergeable_profile};
-  personal_data_manager_.SetProfilesForAllSources(&existing_profiles);
+  personal_data_manager_.AddProfile(mergeable_profile);
 
   // Create an import data instance for the observed profile and determine the
   // import type for the case that there are no already existing profiles.
@@ -620,8 +595,7 @@ TEST_F(AutofillProfileImportProcessTest, SilentlyUpdateProfile) {
   test_clock.Advance(base::Days(1));
   base::Time current_time = AutofillClock::Now();
 
-  std::vector<AutofillProfile> existing_profiles = {updateable_profile};
-  personal_data_manager_.SetProfilesForAllSources(&existing_profiles);
+  personal_data_manager_.AddProfile(updateable_profile);
 
   // Create the import process for the scenario that there is an existing
   // profile that is updateable with the observed profile.
@@ -665,9 +639,8 @@ TEST_F(AutofillProfileImportProcessTest, BothMergeAndSilentUpdate_Accepted) {
   // This profile should be mergeable with the observed profile.
   AutofillProfile mergeable_profile = test::SubsetOfStandardProfile();
 
-  std::vector<AutofillProfile> existing_profiles = {updateable_profile,
-                                                    mergeable_profile};
-  personal_data_manager_.SetProfilesForAllSources(&existing_profiles);
+  personal_data_manager_.AddProfile(updateable_profile);
+  personal_data_manager_.AddProfile(mergeable_profile);
 
   // Create the import process with a mergeable and a updateable profile..
   ProfileImportProcess import_data(observed_profile, "en_US", url_,
@@ -708,9 +681,8 @@ TEST_F(AutofillProfileImportProcessTest, BothMergeAndSilentUpdate_Rejected) {
   // This profile should be mergeable with the observed profile.
   AutofillProfile mergeable_profile = test::SubsetOfStandardProfile();
 
-  std::vector<AutofillProfile> existing_profiles = {updateable_profile,
-                                                    mergeable_profile};
-  personal_data_manager_.SetProfilesForAllSources(&existing_profiles);
+  personal_data_manager_.AddProfile(updateable_profile);
+  personal_data_manager_.AddProfile(mergeable_profile);
 
   // Create the import process with a mergeable and a updateable profile..
   ProfileImportProcess import_data(observed_profile, "en_US", url_,
@@ -753,9 +725,8 @@ TEST_F(AutofillProfileImportProcessTest, BlockedMergeAndSilentUpdate) {
 
   BlockProfileForUpdates(mergeable_profile);
 
-  std::vector<AutofillProfile> existing_profiles = {updateable_profile,
-                                                    mergeable_profile};
-  personal_data_manager_.SetProfilesForAllSources(&existing_profiles);
+  personal_data_manager_.AddProfile(updateable_profile);
+  personal_data_manager_.AddProfile(mergeable_profile);
 
   // Create the import process with a mergeable and an updateable profile..
   ProfileImportProcess import_data(observed_profile, "en_US", url_,
@@ -794,9 +765,7 @@ TEST_F(AutofillProfileImportProcessTest, BlockedMerge) {
   AutofillProfile mergeable_profile = test::SubsetOfStandardProfile();
 
   BlockProfileForUpdates(mergeable_profile);
-
-  std::vector<AutofillProfile> existing_profiles = {mergeable_profile};
-  personal_data_manager_.SetProfilesForAllSources(&existing_profiles);
+  personal_data_manager_.AddProfile(mergeable_profile);
 
   // Create the import process with a mergeable profile.
   ProfileImportProcess import_data(observed_profile, "en_US", url_,
@@ -837,8 +806,7 @@ TEST_F(AutofillProfileImportProcessTest,
   test_clock.Advance(base::Days(1));
   base::Time current_time = AutofillClock::Now();
 
-  std::vector<AutofillProfile> existing_profiles = {updateable_profile};
-  personal_data_manager_.SetProfilesForAllSources(&existing_profiles);
+  personal_data_manager_.AddProfile(updateable_profile);
 
   // Create the import process for the scenario that there is an existing
   // profile that is updateable with the observed profile.
@@ -879,9 +847,6 @@ TEST_F(AutofillProfileImportProcessTest, SilentlyUpdateProfile_WithNewProfile) {
 
   AutofillProfile observed_profile = test::StandardProfile();
 
-  std::vector<AutofillProfile> existing_profiles = {};
-  personal_data_manager_.SetProfilesForAllSources(&existing_profiles);
-
   // Create the import process for the scenario that there is an existing
   // profile that is updateable with the observed profile.
   ProfileImportProcess import_data(observed_profile, "en_US", url_,
@@ -914,9 +879,8 @@ TEST_F(AutofillProfileImportProcessTest,
   // This profile should be mergeable with the observed profile.
   AutofillProfile mergeable_profile = test::SubsetOfStandardProfile();
 
-  std::vector<AutofillProfile> existing_profiles = {updateable_profile,
-                                                    mergeable_profile};
-  personal_data_manager_.SetProfilesForAllSources(&existing_profiles);
+  personal_data_manager_.AddProfile(updateable_profile);
+  personal_data_manager_.AddProfile(mergeable_profile);
 
   // Create the import process with a mergeable and an updateable profile..
   ProfileImportProcess import_data(observed_profile, "en_US", url_,
@@ -985,9 +949,8 @@ TEST_F(AutofillProfileImportProcessTest, NewProfileSource) {
 TEST_F(AutofillProfileImportProcessTest, MigrateProfileToAccount) {
   const AutofillProfile profile_to_migrate = test::StandardProfile();
   const AutofillProfile other_profile = test::DifferentFromStandardProfile();
-  std::vector<AutofillProfile> existing_profiles = {profile_to_migrate,
-                                                    other_profile};
-  personal_data_manager_.SetProfilesForAllSources(&existing_profiles);
+  personal_data_manager_.AddProfile(profile_to_migrate);
+  personal_data_manager_.AddProfile(other_profile);
   personal_data_manager_.SetIsEligibleForAddressAccountStorage(true);
 
   ProfileImportProcess import_data(
@@ -1013,8 +976,7 @@ TEST_F(AutofillProfileImportProcessTest, MigrateProfileToAccount) {
 TEST_F(AutofillProfileImportProcessTest, MigrateProfileToAccount_SilentUpdate) {
   const AutofillProfile profile_to_migrate = test::UpdateableStandardProfile();
   const AutofillProfile observed_profile = test::StandardProfile();
-  std::vector<AutofillProfile> existing_profiles = {profile_to_migrate};
-  personal_data_manager_.SetProfilesForAllSources(&existing_profiles);
+  personal_data_manager_.AddProfile(profile_to_migrate);
   personal_data_manager_.SetIsEligibleForAddressAccountStorage(true);
 
   ProfileImportProcess import_data(observed_profile, "en_US", url_,
@@ -1042,8 +1004,7 @@ TEST_F(AutofillProfileImportProcessTest,
        MigrateProfileToAccount_SilentUpdate_Decline) {
   const AutofillProfile migration_candidate = test::UpdateableStandardProfile();
   const AutofillProfile observed_profile = test::StandardProfile();
-  std::vector<AutofillProfile> existing_profiles = {migration_candidate};
-  personal_data_manager_.SetProfilesForAllSources(&existing_profiles);
+  personal_data_manager_.AddProfile(migration_candidate);
   personal_data_manager_.SetIsEligibleForAddressAccountStorage(true);
 
   ProfileImportProcess import_data(observed_profile, "en_US", url_,
@@ -1062,8 +1023,7 @@ TEST_F(AutofillProfileImportProcessTest,
 TEST_F(AutofillProfileImportProcessTest,
        MigrateProfileToAccount_IneligibleUser) {
   const AutofillProfile profile = test::StandardProfile();
-  std::vector<AutofillProfile> existing_profiles = {profile};
-  personal_data_manager_.SetProfilesForAllSources(&existing_profiles);
+  personal_data_manager_.AddProfile(profile);
   personal_data_manager_.SetIsEligibleForAddressAccountStorage(false);
 
   ProfileImportProcess import_data(
@@ -1078,8 +1038,7 @@ TEST_F(AutofillProfileImportProcessTest,
        MigrateProfileToAccount_IneligibleProfile) {
   AutofillProfile profile = test::StandardProfile();
   profile.SetRawInfo(ADDRESS_HOME_COUNTRY, u"KP");
-  std::vector<AutofillProfile> existing_profiles = {profile};
-  personal_data_manager_.SetProfilesForAllSources(&existing_profiles);
+  personal_data_manager_.AddProfile(profile);
 
   ProfileImportProcess import_data(
       /*observed_profile=*/profile, "en_US", url_, &personal_data_manager_,

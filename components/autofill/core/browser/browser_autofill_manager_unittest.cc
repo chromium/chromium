@@ -3677,9 +3677,6 @@ TEST_F(BrowserAutofillManagerTest, FillAddressForm_CollectObservations) {
 
   // Submit the form and expect observations for all of the form's types.
   FormSubmitted(filled_form);
-  // `profile` is invalidated by the form submission, since the importing logic
-  // overwrites all profiles of the PDM using `SetProfilesForAllSources()`.
-  profile = personal_data().GetProfileByGUID(kElvisProfileGuid);
   EXPECT_TRUE(base::ranges::none_of(
       *form_structure, [&](const std::unique_ptr<AutofillField>& field) {
         return profile->token_quality()

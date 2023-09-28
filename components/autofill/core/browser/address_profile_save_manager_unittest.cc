@@ -288,9 +288,11 @@ void AddressProfileSaveManagerTest::TestImportScenario(
     EXPECT_CALL(save_manager, OfferSavePrompt).Times(0);
   }
 
-  // Set the existing profiles to the personal data manager.
-  personal_data_manager_.SetProfilesForAllSources(
-      &test_scenario.existing_profiles);
+  // Add the existing profiles to the personal data manager.
+  ASSERT_TRUE(personal_data_manager_.GetProfiles().empty());
+  for (const AutofillProfile& profile : test_scenario.existing_profiles) {
+    personal_data_manager_.AddProfile(profile);
+  }
 
   // Initiate the profile import.
   save_manager.ImportProfileFromForm(

@@ -143,12 +143,6 @@ class PersonalDataManagerHelper : public PersonalDataManagerTestBase {
         use_sync_transport_mode, personal_data_.get());
   }
 
-  void ResetProfiles() {
-    std::vector<AutofillProfile> empty_profiles;
-    personal_data_->SetProfilesForAllSources(&empty_profiles);
-    PersonalDataProfileTaskWaiter(*personal_data_).Wait();
-  }
-
   bool TurnOnSyncFeature() {
     return PersonalDataManagerTestBase::TurnOnSyncFeature(personal_data_.get());
   }
@@ -796,10 +790,9 @@ TEST_F(PersonalDataManagerTest, AddProfile_CrazyCharacters) {
   profile7.FinalizeAfterImport();
   profiles.push_back(profile7);
 
-  personal_data_->SetProfilesForAllSources(&profiles);
-
-  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
-
+  for (const AutofillProfile& profile : profiles) {
+    AddProfileToPersonalDataManager(profile);
+  }
   ASSERT_EQ(profiles.size(), personal_data_->GetProfiles().size());
   for (size_t i = 0; i < profiles.size(); ++i) {
     EXPECT_TRUE(base::Contains(profiles, *personal_data_->GetProfiles()[i]));
@@ -822,10 +815,7 @@ TEST_F(PersonalDataManagerTest, AddProfile_Invalid) {
   AutofillProfile with_invalid = without_invalid;
   with_invalid.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"Invalid_Phone_Number");
 
-  std::vector<AutofillProfile> profiles;
-  profiles.push_back(with_invalid);
-  personal_data_->SetProfilesForAllSources(&profiles);
-  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
+  AddProfileToPersonalDataManager(with_invalid);
   ASSERT_EQ(1u, personal_data_->GetProfiles().size());
   AutofillProfile profile = *personal_data_->GetProfiles()[0];
   ASSERT_NE(without_invalid.GetRawInfo(PHONE_HOME_WHOLE_NUMBER),
