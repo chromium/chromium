@@ -244,6 +244,17 @@ class DefaultNetworkMonitor : public NetworkUiController::NetworkMonitor {
   scoped_refptr<NetworkStateInformer> network_state_informer_;
 };
 
+std::string ToString(app_mode::ForceInstallObserver::Result result) {
+  switch (result) {
+    case app_mode::ForceInstallObserver::Result::kSuccess:
+      return "kSuccess";
+    case app_mode::ForceInstallObserver::Result::kTimeout:
+      return "kTimeout";
+    case app_mode::ForceInstallObserver::Result::kInvalidPolicy:
+      return "kInvalidPolicy";
+  }
+}
+
 }  // namespace
 
 using NetworkUIState = NetworkUiController::NetworkUIState;
@@ -641,6 +652,9 @@ void KioskLaunchController::FinishForcedExtensionsInstall(
     app_mode::ForceInstallObserver::Result result) {
   app_state_ = AppState::kInstalled;
   force_install_observer_.reset();
+
+  SYSLOG(INFO) << "Kiosk finished installing extensions with result: "
+               << ToString(result);
 
   switch (result) {
     case app_mode::ForceInstallObserver::Result::kTimeout:
