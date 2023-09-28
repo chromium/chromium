@@ -96,7 +96,7 @@ public class PermissionInfoTest {
     private void setSettingAndExpectValue(@ContentSettingsType int type, String origin,
             String embedder, @ContentSettingValues int setting, Profile profile,
             @ContentSettingValues int expectedSetting) {
-        PermissionInfo info = new PermissionInfo(type, origin, embedder, /*isEmbargoed=*/false);
+        PermissionInfo info = new PermissionInfo(type, origin, embedder);
 
         TestThreadUtils.runOnUiThreadBlocking(() -> info.setContentSetting(profile, setting));
 

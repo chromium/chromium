@@ -4,17 +4,7 @@
 
 package org.chromium.chrome.browser.site_settings;
 
-import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
-import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.withText;
-
 import static com.google.common.truth.Truth.assertThat;
-
-import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.assertEquals;
 
 import android.os.Build;
 
@@ -36,7 +26,6 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -44,16 +33,15 @@ import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.site_settings.ContentSettingException;
+import org.chromium.components.browser_ui.site_settings.PermissionInfo;
 import org.chromium.components.browser_ui.site_settings.SingleWebsiteSettings;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsUtil;
 import org.chromium.components.browser_ui.site_settings.Website;
 import org.chromium.components.browser_ui.site_settings.WebsiteAddress;
-import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.permissions.PermissionsAndroidFeatureList;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -153,51 +141,19 @@ public class SingleWebsiteSettingsTest {
     @Test
     @SmallTest
     @EnableFeatures(PermissionsAndroidFeatureList.PERMISSION_STORAGE_ACCESS)
-    public void testStorageAccessPermission() {
-        int type = ContentSettingsType.STORAGE_ACCESS;
-        GURL example = new GURL("https://example.com");
-        GURL embedded2 = new GURL("https://embedded2.com");
-
+    public void testStorageAccessePermission() {
         Website website = createWebsiteWithStorageAccessPermission(
-                "https://[*.]embedded.com", "https://[*.]example.com", ContentSettingValues.ALLOW);
-        Website website2 = createWebsiteWithStorageAccessPermission(
-                "https://[*.]embedded2.com", "https://[*.]example.com", ContentSettingValues.BLOCK);
+                "https://[*.]embedded.com", "https://[*.]example.com");
         Website other = createWebsiteWithStorageAccessPermission(
-                "https://[*.]embedded.com", "https://[*.]foo.com", ContentSettingValues.BLOCK);
+                "https://[*.]embedded.com", "https://[*.]foo.com");
         Website merged = SingleWebsiteSettings.mergePermissionAndStorageInfoForTopLevelOrigin(
-                WebsiteAddress.create(EXAMPLE_ADDRESS), List.of(website, website2, other));
+                WebsiteAddress.create(EXAMPLE_ADDRESS), List.of(website, other));
+        assertThat(merged.getEmbeddedPermissionInfos())
+                .isEqualTo(website.getEmbeddedPermissionInfos());
 
-        var exceptions = merged.getEmbeddedPermissions().get(type);
-        assertThat(exceptions.size()).isEqualTo(2);
-        assertThat(exceptions.get(0).getContentSetting()).isEqualTo(ContentSettingValues.ALLOW);
-        assertThat(exceptions.get(1).getContentSetting()).isEqualTo(ContentSettingValues.BLOCK);
-        assertEquals(ContentSettingValues.BLOCK, getStorageAccessSetting(type, embedded2, example));
-
-        // Open site settings.
         SettingsActivity activity = SiteSettingsTestUtils.startSingleWebsitePreferences(merged);
-        onView(withText("embedded.com")).check(matches(isDisplayed()));
-
-        // Toggle the second permission.
-        onView(withText("embedded2.com")).check(matches(isDisplayed())).perform(click());
-        assertEquals(ContentSettingValues.ALLOW, getStorageAccessSetting(type, embedded2, example));
-
-        // Reset permission.
-        onView(withText(containsString("reset permissions"))).perform(click());
-        onView(withText("Delete & reset")).perform(click());
-        onView(withText("Embedded content")).check(doesNotExist());
-        assertEquals(ContentSettingValues.ASK, getStorageAccessSetting(type, embedded2, example));
+        // TODO(crbug.com/1478113): Test UI when it is implemented.
         activity.finish();
-    }
-
-    private static int getStorageAccessSetting(
-            @ContentSettingsType int contentSettingType, GURL primaryUrl, GURL secondaryUrl) {
-        int[] result = {0};
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            result[0] =
-                    WebsitePreferenceBridge.getContentSetting(Profile.getLastUsedRegularProfile(),
-                            contentSettingType, primaryUrl, secondaryUrl);
-        });
-        return result[0];
     }
 
     /**
@@ -249,7 +205,7 @@ public class SingleWebsiteSettingsTest {
             String prefKey = SingleWebsiteSettings.getPreferenceKey(mContentSettingsType);
             ChromeSwitchPreference switchPref = websitePreferences.findPreference(prefKey);
             Assert.assertNotNull("Preference cannot be found on screen.", switchPref);
-            assertEquals("Switch check state is different than test setting.",
+            Assert.assertEquals("Switch check state is different than test setting.",
                     mContentSettingValue == ContentSettingValues.ALLOW, switchPref.isChecked());
         }
     }
@@ -266,16 +222,11 @@ public class SingleWebsiteSettingsTest {
     }
 
     private static Website createWebsiteWithStorageAccessPermission(
-            String origin, String embedder, @ContentSettingValues int setting) {
+            String origin, String embedder) {
         Website website =
                 new Website(WebsiteAddress.create(origin), WebsiteAddress.create(embedder));
-        ContentSettingException info = new ContentSettingException(
-                ContentSettingsType.STORAGE_ACCESS, origin, embedder, ContentSettingValues.ASK,
-                /*source=*/"", /*expiration=*/0, /*isEmbargoed=*/false);
-        // Set setting explicitly to write it to prefs.
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> { info.setContentSetting(Profile.getLastUsedRegularProfile(), setting); });
-        website.addEmbeddedPermission(info);
+        website.addEmbeddedPermissionInfo(new PermissionInfo(
+                ContentSettingsType.STORAGE_ACCESS, origin, embedder, /*isEmbargoed=*/false));
         return website;
     }
 }
