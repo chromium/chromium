@@ -9,6 +9,8 @@
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "components/translate/core/browser/translate_pref_names.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/fullscreen/test/fullscreen_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_app_interface.h"
@@ -101,6 +103,8 @@ void WaitforPDFExtensionView() {
       setBoolValue:NO
        forUserPref:base::SysUTF8ToNSString(
                        translate::prefs::kOfferTranslateEnabled)];
+
+  [ChromeEarlGrey setBoolValue:NO forUserPref:prefs::kBottomOmnibox];
 }
 
 - (void)tearDown {
@@ -425,6 +429,31 @@ void WaitforPDFExtensionView() {
   AppLaunchConfiguration config;
   config.features_enabled.push_back(web::features::kSmoothScrollingDefault);
   return config;
+}
+
+// This is currently needed to prevent this test case from being ignored.
+- (void)testEmpty {
+}
+
+@end
+
+#pragma mark - Bottom omnibox enabled Tests
+
+// Fullscreens tests for Chrome with bottom omnibox enabled by default.
+@interface FullscreenBottomOmniboxTestCase : ZZZFullscreenTestCase
+@end
+
+@implementation FullscreenBottomOmniboxTestCase
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config;
+  config.features_enabled.push_back(kBottomOmniboxSteadyState);
+  return config;
+}
+
+- (void)setUp {
+  [super setUp];
+  [ChromeEarlGrey setBoolValue:YES forUserPref:prefs::kBottomOmnibox];
 }
 
 // This is currently needed to prevent this test case from being ignored.

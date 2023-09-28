@@ -151,6 +151,8 @@ source_set("eg2_tests") {
     "//base",
     "//base/test:test_support",
     "//components/translate/core/browser:translate_pref_names",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/ui/fullscreen/test:eg_test_support+eg2",
     "//ios/chrome/test:eg_test_support+eg2",
