@@ -30,7 +30,8 @@ EligibilityServiceFactory::EligibilityServiceFactory()
     : ProfileKeyedServiceFactory(
           "EligibilityServiceFactory",
           ProfileSelections::Builder()
-              .WithRegular(ProfileSelection::kOriginalOnly)
+              .WithRegular(ProfileSelection::kOwnInstance)
+              .WithGuest(ProfileSelection::kOwnInstance)
               .Build()) {
   DependsOn(TrackingProtectionOnboardingFactory::GetInstance());
 }
@@ -44,6 +45,10 @@ EligibilityServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   if (!base::FeatureList::IsEnabled(
           features::kCookieDeprecationFacilitatedTesting)) {
+    return nullptr;
+  }
+  if (!features::kCookieDeprecationFacilitatedTestingEnableIncognito.Get() &&
+      context->IsOffTheRecord()) {
     return nullptr;
   }
   return std::make_unique<EligibilityService>(

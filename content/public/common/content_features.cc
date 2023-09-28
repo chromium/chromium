@@ -175,6 +175,9 @@ BASE_FEATURE(kCookieDeprecationFacilitatedTesting,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Set whether to enable cookie deprecation API in incognito mode.
+//
+// TODO(linnan): Consider renaming to "enable_otr_profiles" to include
+// guest profiles as well.
 const base::FeatureParam<bool>
     kCookieDeprecationFacilitatedTestingEnableIncognito{
         &kCookieDeprecationFacilitatedTesting, "enable_incognito", false};
