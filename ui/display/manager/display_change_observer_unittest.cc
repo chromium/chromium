@@ -26,6 +26,7 @@
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/manager/managed_display_info.h"
 #include "ui/display/manager/test/fake_display_snapshot.h"
+#include "ui/display/manager/util/display_manager_test_util.h"
 #include "ui/display/manager/util/display_manager_util.h"
 #include "ui/display/screen.h"
 #include "ui/display/types/display_constants.h"
@@ -57,8 +58,8 @@ std::unique_ptr<DisplayMode> MakeDisplayMode(int width,
                                              int height,
                                              bool is_interlaced,
                                              float refresh_rate) {
-  return std::make_unique<DisplayMode>(gfx::Size(width, height), is_interlaced,
-                                       refresh_rate);
+  return CreateDisplayModePtrForTest({width, height}, is_interlaced,
+                                     refresh_rate);
 }
 
 constexpr int64_t kDisplayId = 123;
@@ -642,6 +643,70 @@ TEST_P(DisplayChangeObserverTest, HDRDisplayColorSpaces) {
             gfx::ColorSpace::TransferID::PIECEWISE_HDR);
 }
 #endif
+
+TEST_P(DisplayChangeObserverTest, VSyncRateMin) {
+  ui::DeviceDataManager::CreateInstance();
+  DisplayManager manager(nullptr);
+  manager.RegisterDisplayProperty(kDisplayId, kRotation, kInsetsToSet,
+                                  kResolutionInPixels, kDeviceScaleFactor,
+                                  kDisplayZoom, kRefreshRate, kIsInterlaced,
+                                  kVariableRefreshRateState, kVsyncRateMin);
+  DisplayChangeObserver observer(&manager);
+
+  // Verify that vsync_rate_min is absent from DisplayInfo when it is not
+  // present from the DisplaySnapshot.
+  {
+    const std::unique_ptr<DisplaySnapshot> display_snapshot =
+        FakeDisplaySnapshot::Builder()
+            .SetId(kDisplayId)
+            .SetName("AmazingFakeDisplay")
+            .SetNativeMode(MakeDisplayMode(1920, 1080, true, 60))
+            .Build();
+    const auto display_mode = std::make_unique<DisplayMode>(
+        gfx::Size{1920, 1080}, true, 60, 2720, 1696, 553580);
+    const ManagedDisplayInfo display_info = CreateManagedDisplayInfo(
+        &observer, display_snapshot.get(), display_mode.get());
+
+    EXPECT_EQ(display_info.vsync_rate_min(), absl::nullopt);
+  }
+
+  // Verify that the value of vsync_rate_min falls back to the value from the
+  // EDID when it cannot be calculated from the mode.
+  {
+    const std::unique_ptr<DisplaySnapshot> display_snapshot =
+        FakeDisplaySnapshot::Builder()
+            .SetId(kDisplayId)
+            .SetName("AmazingFakeDisplay")
+            .SetNativeMode(
+                MakeDisplayMode(kWidth, kHeight, kIsInterlaced, kRefreshRate))
+            .SetVsyncRateMin(48)
+            .Build();
+    const auto display_mode =
+        std::make_unique<DisplayMode>(gfx::Size{1920, 1080}, true, 60, 0, 0, 0);
+    const ManagedDisplayInfo display_info = CreateManagedDisplayInfo(
+        &observer, display_snapshot.get(), display_mode.get());
+
+    EXPECT_EQ(display_info.vsync_rate_min(), 48.0f);
+  }
+
+  // Verify that the value of vsync_rate_min is correctly calculated.
+  {
+    const std::unique_ptr<DisplaySnapshot> display_snapshot =
+        FakeDisplaySnapshot::Builder()
+            .SetId(kDisplayId)
+            .SetName("AmazingFakeDisplay")
+            .SetNativeMode(
+                MakeDisplayMode(kWidth, kHeight, kIsInterlaced, kRefreshRate))
+            .SetVsyncRateMin(48)
+            .Build();
+    const auto display_mode = std::make_unique<DisplayMode>(
+        gfx::Size{1920, 1080}, true, 60, 2720, 1696, 553580);
+    const ManagedDisplayInfo display_info = CreateManagedDisplayInfo(
+        &observer, display_snapshot.get(), display_mode.get());
+
+    EXPECT_EQ(display_info.vsync_rate_min(), 48.000488f);
+  }
+}
 
 INSTANTIATE_TEST_SUITE_P(All,
                          DisplayChangeObserverTest,

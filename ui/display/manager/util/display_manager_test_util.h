@@ -6,10 +6,17 @@
 #define UI_DISPLAY_MANAGER_UTIL_DISPLAY_MANAGER_TEST_UTIL_H_
 
 #include <stdint.h>
+#include <memory>
 
 #include "ui/display/manager/display_manager_export.h"
 
+namespace gfx {
+class Size;
+}  // namespace gfx
+
 namespace display {
+
+class DisplayMode;
 
 // Resets the synthesized display id for testing. This
 // is necessary to avoid overflowing the output index.
@@ -31,6 +38,20 @@ DISPLAY_MANAGER_EXPORT int64_t GetNextSynthesizedEdidDisplayConnectorIndex();
 // easy-to-read relationship between |id| and the returned value, so that a
 // reader of test logs can look at the two IDs and recognize they are related.
 DISPLAY_MANAGER_EXPORT int64_t ProduceAlternativeSchemeIdForId(int64_t id);
+
+// Creates and returns a |DisplayMode| with the specified settings and chooses
+// some reasonable mode timing details.
+DISPLAY_MANAGER_EXPORT DisplayMode
+CreateDisplayModeForTest(const gfx::Size& size,
+                         bool interlaced,
+                         float refresh_rate);
+
+// Creates and returns a |DisplayMode| unique pointer with the specified
+// settings and chooses some reasonable mode timing details.
+DISPLAY_MANAGER_EXPORT std::unique_ptr<DisplayMode> CreateDisplayModePtrForTest(
+    const gfx::Size& size,
+    bool interlaced,
+    float refresh_rate);
 
 }  // namespace display
 

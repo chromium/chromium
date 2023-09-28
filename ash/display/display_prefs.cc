@@ -275,8 +275,8 @@ void LoadDisplayProperties(PrefService* local_state) {
       variable_refresh_rate_state =
           static_cast<display::VariableRefreshRateState>(*vrr_state_value);
     }
-    absl::optional<uint16_t> vsync_rate_min =
-        dict_value->FindInt(kVsyncRateMin);
+    absl::optional<float> vsync_rate_min =
+        dict_value->FindDouble(kVsyncRateMin);
 
     GetDisplayManager()->RegisterDisplayProperty(
         id, rotation, insets_to_set, resolution_in_pixels, device_scale_factor,
@@ -573,8 +573,7 @@ void StoreCurrentDisplayProperties(PrefService* pref_service) {
 
     property_value.Set(kVariableRefreshRateState,
                        info.variable_refresh_rate_state());
-    if (const absl::optional<uint16_t>& vsync_rate_min =
-            info.vsync_rate_min()) {
+    if (const absl::optional<float>& vsync_rate_min = info.vsync_rate_min()) {
       property_value.Set(kVsyncRateMin, vsync_rate_min.value());
     }
 

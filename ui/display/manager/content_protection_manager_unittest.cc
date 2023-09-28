@@ -13,13 +13,15 @@
 #include "ui/display/manager/test/fake_display_snapshot.h"
 #include "ui/display/manager/test/test_display_layout_manager.h"
 #include "ui/display/manager/test/test_native_display_delegate.h"
+#include "ui/display/manager/util/display_manager_test_util.h"
 
 namespace display::test {
 
 namespace {
 
 constexpr int64_t kDisplayIds[] = {123, 234, 345, 456};
-const DisplayMode kDisplayMode{gfx::Size(1366, 768), false, 60.0f};
+const DisplayMode kDisplayMode =
+    CreateDisplayModeForTest({1366, 768}, false, 60.0f);
 
 }  // namespace
 

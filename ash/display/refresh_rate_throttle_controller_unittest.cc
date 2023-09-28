@@ -18,6 +18,7 @@
 #include "ui/display/manager/test/action_logger_util.h"
 #include "ui/display/manager/test/fake_display_snapshot.h"
 #include "ui/display/manager/test/test_native_display_delegate.h"
+#include "ui/display/manager/util/display_manager_test_util.h"
 #include "ui/display/types/display_mode.h"
 #include "ui/display/types/display_snapshot.h"
 #include "ui/display/types/native_display_delegate.h"
@@ -44,8 +45,8 @@ std::unique_ptr<DisplayMode> MakeDisplayMode(int width,
                                              int height,
                                              bool is_interlaced,
                                              float refresh_rate) {
-  return std::make_unique<DisplayMode>(gfx::Size(width, height), is_interlaced,
-                                       refresh_rate);
+  return display::CreateDisplayModePtrForTest({width, height}, is_interlaced,
+                                              refresh_rate);
 }
 
 std::unique_ptr<DisplaySnapshot> BuildDualRefreshPanelSnapshot(

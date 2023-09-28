@@ -15,6 +15,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/manager/test/fake_display_snapshot.h"
+#include "ui/display/manager/util/display_manager_test_util.h"
 
 using chromeos::cdm::mojom::OutputProtection;
 using testing::_;
@@ -23,7 +24,8 @@ using testing::ReturnRef;
 
 constexpr uint64_t kFakeClientId = 1;
 constexpr int64_t kDisplayIds[] = {123, 234, 345, 456};
-const display::DisplayMode kDisplayMode{gfx::Size(1366, 768), false, 60.0f};
+const display::DisplayMode kDisplayMode =
+    display::CreateDisplayModeForTest({1366, 768}, false, 60.0f);
 
 namespace chromeos {
 

@@ -8,7 +8,16 @@ import "ui/gfx/geometry/mojom/geometry.mojom";
 
 // Corresponds to display::DisplayMode
 struct DisplayMode {
+  // Display size of the mode.
   gfx.mojom.Size size;
+  // True if the mode is interlaced.
   bool is_interlaced;
+  // Precise refresh rate of the mode in Hz.
   float refresh_rate;
+  // Total horizontal size of the mode.
+  int32 htotal;
+  // Total vertical size of the mode.
+  int32 vtotal;
+  // Pixel clock in kHz.
+  int32 clock;
 };

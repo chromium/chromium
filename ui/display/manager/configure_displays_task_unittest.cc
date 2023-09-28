@@ -13,6 +13,7 @@
 #include "ui/display/manager/test/action_logger_util.h"
 #include "ui/display/manager/test/fake_display_snapshot.h"
 #include "ui/display/manager/test/test_native_display_delegate.h"
+#include "ui/display/manager/util/display_manager_test_util.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/display/types/display_mode.h"
 #include "ui/gfx/geometry/point.h"
@@ -39,12 +40,14 @@ class ConfigureDisplaysTaskTest : public testing::Test {
  public:
   ConfigureDisplaysTaskTest()
       : delegate_(&log_),
-        small_mode_60hz_(gfx::Size(1366, 768), false, 60.0f),
-        small_mode_30hz_(gfx::Size(1366, 768), false, 30.0f),
-        medium_mode_60hz_(gfx::Size(1920, 1080), false, 60.0f),
-        medium_mode_29_98hz_(gfx::Size(1920, 1080), false, 29.98f),
-        big_mode_60hz_(gfx::Size(2560, 1600), false, 60.0f),
-        big_mode_29_97hz_(gfx::Size(2560, 1600), false, 29.97f) {}
+        small_mode_60hz_(CreateDisplayModeForTest({1366, 768}, false, 60.0f)),
+        small_mode_30hz_(CreateDisplayModeForTest({1366, 768}, false, 30.0f)),
+        medium_mode_60hz_(CreateDisplayModeForTest({1920, 1080}, false, 60.0f)),
+        medium_mode_29_98hz_(
+            CreateDisplayModeForTest({1920, 1080}, false, 29.98f)),
+        big_mode_60hz_(CreateDisplayModeForTest({2560, 1600}, false, 60.0f)),
+        big_mode_29_97hz_(
+            CreateDisplayModeForTest({2560, 1600}, false, 29.97f)) {}
 
   ConfigureDisplaysTaskTest(const ConfigureDisplaysTaskTest&) = delete;
   ConfigureDisplaysTaskTest& operator=(const ConfigureDisplaysTaskTest&) =

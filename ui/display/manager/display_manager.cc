@@ -640,7 +640,7 @@ void DisplayManager::RegisterDisplayProperty(
     float refresh_rate,
     bool is_interlaced,
     VariableRefreshRateState variable_refresh_rate_state,
-    const absl::optional<uint16_t>& vsync_rate_min) {
+    const absl::optional<float>& vsync_rate_min) {
   if (display_info_.find(display_id) == display_info_.end())
     display_info_[display_id] =
         ManagedDisplayInfo(display_id, std::string(), false);

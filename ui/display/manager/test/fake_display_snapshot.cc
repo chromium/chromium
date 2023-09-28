@@ -74,8 +74,8 @@ std::unique_ptr<DisplayMode> ParseDisplayMode(const std::string& str) {
     return nullptr;
   }
 
-  return std::make_unique<DisplayMode>(gfx::Size(width, height), false,
-                                       static_cast<float>(refresh_rate));
+  return CreateDisplayModePtrForTest({width, height}, false,
+                                     static_cast<float>(refresh_rate));
 }
 
 // Parses a list of alternate display modes, adding each new display mode to
@@ -359,7 +359,7 @@ const DisplayMode* Builder::AddOrFindDisplayMode(const gfx::Size& size) {
   }
 
   // Not found, insert a mode with the size and return.
-  modes_.push_back(std::make_unique<DisplayMode>(size, false, 60.0f));
+  modes_.push_back(CreateDisplayModePtrForTest(size, false, 60.0f));
   return modes_.back().get();
 }
 

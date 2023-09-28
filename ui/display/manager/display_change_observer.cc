@@ -99,6 +99,14 @@ absl::optional<gfx::RoundedCornersF> ParsePanelRadiiFromCommandLine() {
   return ParseDisplayPanelRadii(&display_switch_value.value());
 }
 
+absl::optional<float> GetVSyncRateMin(const DisplaySnapshot* snapshot,
+                                      const DisplayMode* mode_info) {
+  if (snapshot->vsync_rate_min().has_value()) {
+    return mode_info->GetVSyncRateMin(snapshot->vsync_rate_min().value());
+  }
+  return absl::nullopt;
+}
+
 }  // namespace
 
 // static
@@ -347,6 +355,9 @@ ManagedDisplayInfo DisplayChangeObserver::CreateManagedDisplayInfo(
 
   new_info.set_refresh_rate(mode_info->refresh_rate());
   new_info.set_is_interlaced(mode_info->is_interlaced());
+  new_info.set_vsync_rate_min(GetVSyncRateMin(snapshot, mode_info));
+  new_info.set_variable_refresh_rate_state(
+      snapshot->variable_refresh_rate_state());
 
   ManagedDisplayInfo::ManagedDisplayModeList display_modes =
       (snapshot->type() == DISPLAY_CONNECTION_TYPE_INTERNAL)
@@ -359,10 +370,6 @@ ManagedDisplayInfo DisplayChangeObserver::CreateManagedDisplayInfo(
   new_info.set_panel_corners_radii(panel_radii);
 
   new_info.SetDRMFormatsAndModifiers(snapshot->GetDRMFormatsAndModifiers());
-
-  new_info.set_variable_refresh_rate_state(
-      snapshot->variable_refresh_rate_state());
-  new_info.set_vsync_rate_min(snapshot->vsync_rate_min());
 
   return new_info;
 }

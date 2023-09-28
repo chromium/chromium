@@ -3730,8 +3730,8 @@ constexpr display::VariableRefreshRateState kVariableRefreshRateState =
 constexpr absl::optional<uint16_t> kVsyncRateMin = absl::nullopt;
 
 std::unique_ptr<display::DisplayMode> MakeDisplayMode() {
-  return std::make_unique<display::DisplayMode>(kResolutionInPixels,
-                                                kIsInterlaced, kRefreshRate);
+  return display::CreateDisplayModePtrForTest(kResolutionInPixels,
+                                              kIsInterlaced, kRefreshRate);
 }
 
 }  // namespace

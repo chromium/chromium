@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include "ui/display/display_features.h"
+#include "ui/display/types/display_mode.h"
 #include "ui/display/util/display_util.h"
 
 namespace display {
@@ -75,6 +76,21 @@ int64_t ProduceAlternativeSchemeIdForId(int64_t id) {
 
   const int64_t new_id = id - magnitude;
   return new_id > 0 ? new_id : id + magnitude;
+}
+
+DisplayMode CreateDisplayModeForTest(const gfx::Size& size,
+                                     bool interlaced,
+                                     float refresh_rate) {
+  return DisplayMode(size, interlaced, refresh_rate, size.width(),
+                     size.height(), size.GetArea() * refresh_rate);
+}
+
+std::unique_ptr<DisplayMode> CreateDisplayModePtrForTest(const gfx::Size& size,
+                                                         bool interlaced,
+                                                         float refresh_rate) {
+  return std::make_unique<DisplayMode>(size, interlaced, refresh_rate,
+                                       size.width(), size.height(),
+                                       size.GetArea() * refresh_rate);
 }
 
 }  // namespace display

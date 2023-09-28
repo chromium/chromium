@@ -220,7 +220,7 @@ class DISPLAY_MANAGER_EXPORT DisplayManager
       float refresh_rate,
       bool is_interlaced,
       VariableRefreshRateState variable_refresh_rate_state,
-      const absl::optional<uint16_t>& vsync_rate_min);
+      const absl::optional<float>& vsync_rate_min);
 
   // Register stored rotation properties for the internal display.
   void RegisterDisplayRotationProperties(bool rotation_lock,
