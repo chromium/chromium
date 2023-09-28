@@ -329,4 +329,4 @@ void SearchCompanionSidePanelCoordinator::OnExpsPolicyPrefChanged() {
   companion::UpdateCompanionDefaultPinnedToToolbarState(pref_service_);
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(SearchCompanionSidePanelCoordinator);
+BROWSER_USER_DATA_KEY_IMPL(SearchCompanionSidePanelCoordinator);

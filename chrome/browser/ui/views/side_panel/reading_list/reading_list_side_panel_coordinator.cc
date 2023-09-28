@@ -41,4 +41,4 @@ ReadingListSidePanelCoordinator::CreateReadingListWebView() {
                                                      base::RepeatingClosure());
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(ReadingListSidePanelCoordinator);
+BROWSER_USER_DATA_KEY_IMPL(ReadingListSidePanelCoordinator);

@@ -354,4 +354,4 @@ void ReadAnythingCoordinator::OnBrowserSetLastActive(Browser* browser) {
   }
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(ReadAnythingCoordinator);
+BROWSER_USER_DATA_KEY_IMPL(ReadAnythingCoordinator);

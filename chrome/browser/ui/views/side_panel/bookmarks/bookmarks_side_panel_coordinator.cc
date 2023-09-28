@@ -56,4 +56,4 @@ BookmarksSidePanelCoordinator::CreateBookmarksWebView() {
   return bookmarks_web_view;
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(BookmarksSidePanelCoordinator);
+BROWSER_USER_DATA_KEY_IMPL(BookmarksSidePanelCoordinator);

@@ -50,6 +50,6 @@ std::unique_ptr<views::View> FeedSidePanelCoordinator::CreateFeedWebUIView() {
   return view;
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(FeedSidePanelCoordinator);
+BROWSER_USER_DATA_KEY_IMPL(FeedSidePanelCoordinator);
 
 }  // namespace feed

@@ -64,4 +64,4 @@ PerformanceSidePanelCoordinator::CreatePerformanceWebUIView() {
   return view;
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(PerformanceSidePanelCoordinator);
+BROWSER_USER_DATA_KEY_IMPL(PerformanceSidePanelCoordinator);
