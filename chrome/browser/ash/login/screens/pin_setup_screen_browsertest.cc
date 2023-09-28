@@ -75,19 +75,25 @@ class PinSetupScreenTest : public OobeBaseTest {
     GetScreen()->set_exit_callback_for_testing(base::BindRepeating(
         &PinSetupScreenTest::HandleScreenExit, base::Unretained(this)));
 
+    auto* wizard_context =
+        LoginDisplayHost::default_host()->GetWizardContextForTesting();
+
     // Force the sync screen to be shown so that we don't jump to PIN setup
     // screen (consuming auth session) in unbranded build
-    LoginDisplayHost::default_host()->GetWizardContext()->is_branded_build =
-        true;
+    wizard_context->is_branded_build = true;
 
     login_manager_mixin_.LoginAsNewRegularUser();
 
     // Add an authenticated session to the user context used during OOBE. In
     // production, this is set by earlier screens which are skipped in this
     // test.
-    UserContext* context = LoginDisplayHost::default_host()
-                               ->GetWizardContext()
-                               ->extra_factors_auth_session.get();
+    std::unique_ptr<UserContext> context;
+    if (ash::features::ShouldUseAuthSessionStorage()) {
+      context = ash::AuthSessionStorage::Get()->BorrowForTests(
+          FROM_HERE, wizard_context->extra_factors_token.value());
+    } else {
+      context = std::move(wizard_context->extra_factors_auth_session);
+    }
     // LoginManagerMixin uses StubAuthenticator that fills out authsession.
     // Reset Authsession to correctly interact with FakeUserDataAuthClient.
     context->ResetAuthSessionIds();
@@ -95,6 +101,14 @@ class PinSetupScreenTest : public OobeBaseTest {
     auto session_ids =
         cryptohome_.AddSession(context->GetAccountId(), /*authenticated=*/true);
     context->SetAuthSessionIds(session_ids.first, session_ids.second);
+    if (ash::features::ShouldUseAuthSessionStorage()) {
+      ash::AuthSessionStorage::Get()->Return(
+          wizard_context->extra_factors_token.value(), std::move(context));
+    } else {
+      LoginDisplayHost::default_host()
+          ->GetWizardContext()
+          ->extra_factors_auth_session = std::move(context);
+    }
   }
 
   PinSetupScreen* GetScreen() {
