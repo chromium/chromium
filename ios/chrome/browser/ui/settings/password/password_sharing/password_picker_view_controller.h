@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/ui/settings/password/password_sharing/password_picker_consumer.h"
 
 @protocol PasswordPickerViewControllerPresentationDelegate;
+@protocol TableViewFaviconDataSource;
 
 // Screen that presents a list of password credential groups for passwords that
 // have more than 1 affiliated group.
@@ -18,6 +19,9 @@
 // Delegate for handling dismissal of the view.
 @property(nonatomic, weak) id<PasswordPickerViewControllerPresentationDelegate>
     delegate;
+
+// Data source for favicon images.
+@property(nonatomic, weak) id<TableViewFaviconDataSource> imageDataSource;
 
 @end
 

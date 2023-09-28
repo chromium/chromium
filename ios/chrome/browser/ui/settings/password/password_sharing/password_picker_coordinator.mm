@@ -5,6 +5,8 @@
 #import "ios/chrome/browser/ui/settings/password/password_sharing/password_picker_coordinator.h"
 
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
+#import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/password_picker_coordinator_delegate.h"
@@ -55,8 +57,11 @@
   self.viewController = [[PasswordPickerViewController alloc]
       initWithStyle:ChromeTableViewStyle()];
   self.viewController.delegate = self;
-  self.mediator =
-      [[PasswordPickerMediator alloc] initWithCredentials:_credentials];
+  self.mediator = [[PasswordPickerMediator alloc]
+      initWithCredentials:_credentials
+            faviconLoader:IOSChromeFaviconLoaderFactory::GetForBrowserState(
+                              self.browser->GetBrowserState())];
+  self.viewController.imageDataSource = self.mediator;
   self.mediator.consumer = self.viewController;
   self.navigationController =
       [[TableViewNavigationController alloc] initWithTable:self.viewController];

@@ -354,8 +354,7 @@ void SignInAndEnableSync() {
 
   // Select first row and click "Next".
   [[EarlGrey
-      selectElementWithMatcher:grey_allOf(grey_accessibilityID(
-                                              @"username1, example.com"),
+      selectElementWithMatcher:grey_allOf(grey_accessibilityID(@"username1"),
                                           grey_sufficientlyVisible(), nil)]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
