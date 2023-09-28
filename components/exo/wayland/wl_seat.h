@@ -5,11 +5,11 @@
 #ifndef COMPONENTS_EXO_WAYLAND_WL_SEAT_H_
 #define COMPONENTS_EXO_WAYLAND_WL_SEAT_H_
 
+#include <wayland-server-protocol-core.h>
+
 #include <stdint.h>
 
 #include "base/memory/raw_ptr.h"
-
-struct wl_client;
 
 namespace exo {
 class Seat;
@@ -17,7 +17,7 @@ class Seat;
 namespace wayland {
 class SerialTracker;
 
-constexpr uint32_t kWlSeatVersion = 6;
+constexpr uint32_t kWlSeatVersion = WL_TOUCH_SHAPE_SINCE_VERSION;
 
 struct WaylandSeat {
   WaylandSeat(Seat* seat, SerialTracker* serial_tracker)

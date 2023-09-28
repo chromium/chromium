@@ -3,15 +3,13 @@
 // found in the LICENSE file.
 
 #include <aura-shell-server-protocol.h>
-#include <remote-shell-unstable-v2-server-protocol.h>
 
 #include "ash/wm/desks/desks_util.h"
 #include "components/exo/wayland/server_util.h"
 #include "components/exo/wayland/zcr_remote_shell_impl.h"
 #include "components/exo/wm_helper.h"
 
-namespace exo {
-namespace wayland {
+namespace exo::wayland {
 namespace {
 
 int RemoteSurfaceContainerV2(uint32_t container) {
@@ -309,5 +307,4 @@ void bind_remote_shell_v2(wl_client* client,
           /*use_default_scale_cancellation_default=*/false));
 }
 
-}  // namespace wayland
-}  // namespace exo
+}  // namespace exo::wayland

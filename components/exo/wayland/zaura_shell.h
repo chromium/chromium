@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_EXO_WAYLAND_ZAURA_SHELL_H_
 #define COMPONENTS_EXO_WAYLAND_ZAURA_SHELL_H_
 
+#include <aura-shell-server-protocol.h>
+
 #include <stdint.h>
 
 #include "ash/focus_cycler.h"
@@ -19,9 +21,6 @@
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/wm/public/activation_change_observer.h"
 
-struct wl_client;
-struct wl_resource;
-
 namespace base {
 class TimeDelta;
 }
@@ -34,7 +33,8 @@ class ShellSurfaceBase;
 namespace wayland {
 class SerialTracker;
 
-constexpr uint32_t kZAuraShellVersion = 61;
+constexpr uint32_t kZAuraShellVersion =
+    ZAURA_SHELL_WINDOW_CORNERS_RADII_SINCE_VERSION;
 
 // Adds bindings to the Aura Shell. Normally this implies Ash on ChromeOS
 // builds. On non-ChromeOS builds the protocol provides access to Aura windowing

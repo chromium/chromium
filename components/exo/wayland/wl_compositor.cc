@@ -4,8 +4,6 @@
 
 #include "components/exo/wayland/wl_compositor.h"
 
-#include <wayland-server-protocol-core.h>
-
 #include <memory>
 
 #include "base/functional/bind.h"

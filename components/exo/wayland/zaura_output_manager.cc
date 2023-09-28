@@ -4,7 +4,6 @@
 
 #include "components/exo/wayland/zaura_output_manager.h"
 
-#include <aura-shell-server-protocol.h>
 #include <wayland-server-core.h>
 
 #include <memory>

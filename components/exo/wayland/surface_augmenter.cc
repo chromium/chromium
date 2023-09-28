@@ -4,8 +4,6 @@
 
 #include "components/exo/wayland/surface_augmenter.h"
 
-#include <surface-augmenter-server-protocol.h>
-
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
@@ -20,8 +18,7 @@
 #include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/geometry/size.h"
 
-namespace exo {
-namespace wayland {
+namespace exo::wayland {
 
 namespace {
 
@@ -451,5 +448,4 @@ void bind_surface_augmenter(wl_client* client,
                                  nullptr);
 }
 
-}  // namespace wayland
-}  // namespace exo
+}  // namespace exo::wayland

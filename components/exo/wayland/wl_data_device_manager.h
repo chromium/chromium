@@ -5,11 +5,11 @@
 #ifndef COMPONENTS_EXO_WAYLAND_WL_DATA_DEVICE_MANAGER_H_
 #define COMPONENTS_EXO_WAYLAND_WL_DATA_DEVICE_MANAGER_H_
 
+#include <wayland-server-protocol-core.h>
+
 #include <stdint.h>
 
 #include "base/memory/raw_ptr.h"
-
-struct wl_client;
 
 namespace exo {
 class Display;
@@ -17,7 +17,8 @@ class Display;
 namespace wayland {
 class SerialTracker;
 
-constexpr uint32_t kWlDataDeviceManagerVersion = 3;
+constexpr uint32_t kWlDataDeviceManagerVersion =
+    WL_DATA_OFFER_FINISH_SINCE_VERSION;
 
 struct WaylandDataDeviceManager {
   WaylandDataDeviceManager(Display* display, SerialTracker* serial_tracker)

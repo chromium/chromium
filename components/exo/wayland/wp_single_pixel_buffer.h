@@ -5,13 +5,14 @@
 #ifndef COMPONENTS_EXO_WAYLAND_WP_SINGLE_PIXEL_BUFFER_H_
 #define COMPONENTS_EXO_WAYLAND_WP_SINGLE_PIXEL_BUFFER_H_
 
-#include <stdint.h>
+#include <single-pixel-buffer-v1-server-protocol.h>
 
-struct wl_client;
+#include <stdint.h>
 
 namespace exo::wayland {
 
-constexpr uint32_t kSinglePixelBufferVersion = 1;
+constexpr uint32_t kSinglePixelBufferVersion =
+    WP_SINGLE_PIXEL_BUFFER_MANAGER_V1_DESTROY_SINCE_VERSION;
 
 void bind_single_pixel_buffer(wl_client* client,
                               void* data,

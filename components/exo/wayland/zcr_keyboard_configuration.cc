@@ -4,7 +4,6 @@
 
 #include "components/exo/wayland/zcr_keyboard_configuration.h"
 
-#include <keyboard-configuration-unstable-v1-server-protocol.h>
 #include <linux/input.h>
 #include <wayland-server-core.h>
 #include <wayland-server-protocol-core.h>
@@ -33,8 +32,7 @@
 #include "ui/ozone/public/input_controller.h"
 #include "ui/ozone/public/ozone_platform.h"
 
-namespace exo {
-namespace wayland {
+namespace exo::wayland {
 
 namespace {
 
@@ -315,5 +313,4 @@ void bind_keyboard_configuration(wl_client* client,
       resource, &keyboard_configuration_implementation, data, nullptr);
 }
 
-}  // namespace wayland
-}  // namespace exo
+}  // namespace exo::wayland

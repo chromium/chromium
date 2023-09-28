@@ -9,8 +9,7 @@
 #include "components/exo/wayland/server_util.h"
 #include "components/exo/wayland/zcr_remote_shell_impl.h"
 
-namespace exo {
-namespace wayland {
+namespace exo::wayland {
 namespace {
 
 const struct zcr_remote_surface_v1_interface remote_surface_implementation = {
@@ -367,5 +366,4 @@ gfx::Rect GetStableWorkArea(const display::Display& display) {
   return ash::WorkAreaInsets::ForWindow(root)->ComputeStableWorkArea();
 }
 
-}  // namespace wayland
-}  // namespace exo
+}  // namespace exo::wayland

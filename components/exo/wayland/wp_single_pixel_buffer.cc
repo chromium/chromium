@@ -4,8 +4,6 @@
 
 #include "components/exo/wayland/wp_single_pixel_buffer.h"
 
-#include <single-pixel-buffer-v1-server-protocol.h>
-
 #include <cstdint>
 #include <memory>
 

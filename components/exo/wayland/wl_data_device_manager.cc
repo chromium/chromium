@@ -4,8 +4,6 @@
 
 #include "components/exo/wayland/wl_data_device_manager.h"
 
-#include <wayland-server-protocol-core.h>
-
 #include <algorithm>
 #include <memory>
 #include <string>
@@ -23,8 +21,7 @@
 #include "components/exo/wayland/server_util.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 
-namespace exo {
-namespace wayland {
+namespace exo::wayland {
 namespace {
 
 uint32_t WaylandDataDeviceManagerDndAction(DndAction action) {
@@ -435,5 +432,4 @@ void bind_data_device_manager(wl_client* client,
                                  data, nullptr);
 }
 
-}  // namespace wayland
-}  // namespace exo
+}  // namespace exo::wayland

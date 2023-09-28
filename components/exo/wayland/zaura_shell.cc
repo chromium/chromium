@@ -4,7 +4,6 @@
 
 #include "components/exo/wayland/zaura_shell.h"
 
-#include <aura-shell-server-protocol.h>
 #include <wayland-server-core.h>
 #include <wayland-server-protocol-core.h>
 #include <xdg-shell-server-protocol.h>
@@ -62,8 +61,7 @@
 #include "ui/wm/public/activation_client.h"
 #include "ui/wm/public/tooltip_client.h"
 
-namespace exo {
-namespace wayland {
+namespace exo::wayland {
 
 namespace {
 
@@ -1831,5 +1829,4 @@ void bind_aura_shell(wl_client* client,
                     std::make_unique<WaylandAuraShell>(resource, display));
 }
 
-}  // namespace wayland
-}  // namespace exo
+}  // namespace exo::wayland

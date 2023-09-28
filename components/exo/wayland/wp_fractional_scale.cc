@@ -4,15 +4,12 @@
 
 #include "components/exo/wayland/wp_fractional_scale.h"
 
-#include <fractional-scale-v1-server-protocol.h>
-
 #include "base/memory/raw_ptr.h"
 #include "components/exo/surface.h"
 #include "components/exo/surface_observer.h"
 #include "components/exo/wayland/server_util.h"
 
-namespace exo {
-namespace wayland {
+namespace exo::wayland {
 namespace {
 
 // A property key containing a boolean set to true if a fractional scale object
@@ -129,5 +126,4 @@ void bind_fractional_scale_manager(wl_client* client,
       resource, &fractional_scale_manager_implementation, data, nullptr);
 }
 
-}  // namespace wayland
-}  // namespace exo
+}  // namespace exo::wayland

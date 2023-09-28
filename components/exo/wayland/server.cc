@@ -5,19 +5,17 @@
 #include "components/exo/wayland/server.h"
 
 #include <alpha-compositing-unstable-v1-server-protocol.h>
-#include <aura-shell-server-protocol.h>
 #include <chrome-color-management-server-protocol.h>
 #include <content-type-v1-server-protocol.h>
 #include <cursor-shapes-unstable-v1-server-protocol.h>
 #include <extended-drag-unstable-v1-server-protocol.h>
-#include <fractional-scale-v1-server-protocol.h>
 #include <gaming-input-unstable-v2-server-protocol.h>
 #include <grp.h>
 #include <idle-inhibit-unstable-v1-server-protocol.h>
 #include <input-timestamps-unstable-v1-server-protocol.h>
-#include <keyboard-configuration-unstable-v1-server-protocol.h>
 #include <keyboard-extension-unstable-v1-server-protocol.h>
 #include <keyboard-shortcuts-inhibit-unstable-v1-server-protocol.h>
+#include <linux-dmabuf-unstable-v1-server-protocol.h>
 #include <linux-explicit-synchronization-unstable-v1-server-protocol.h>
 #include <notification-shell-unstable-v1-server-protocol.h>
 #include <overlay-prioritizer-server-protocol.h>
@@ -25,26 +23,18 @@
 #include <pointer-gestures-unstable-v1-server-protocol.h>
 #include <presentation-time-server-protocol.h>
 #include <relative-pointer-unstable-v1-server-protocol.h>
-#include <remote-shell-unstable-v1-server-protocol.h>
-#include <remote-shell-unstable-v2-server-protocol.h>
 #include <secure-output-unstable-v1-server-protocol.h>
-#include <single-pixel-buffer-v1-server-protocol.h>
 #include <stylus-tools-unstable-v1-server-protocol.h>
-#include <stylus-unstable-v2-server-protocol.h>
-#include <surface-augmenter-server-protocol.h>
 #include <sys/socket.h>
 #include <text-input-extension-unstable-v1-server-protocol.h>
 #include <text-input-unstable-v1-server-protocol.h>
 #include <touchpad-haptics-unstable-v1-server-protocol.h>
 #include <viewporter-server-protocol.h>
 #include <vsync-feedback-unstable-v1-server-protocol.h>
-#include <wayland-server-core.h>
-#include <wayland-server-protocol-core.h>
 #include <xdg-decoration-unstable-v1-server-protocol.h>
 #include <xdg-output-unstable-v1-server-protocol.h>
 #include <xdg-shell-server-protocol.h>
 
-#include <linux-dmabuf-unstable-v1-server-protocol.h>
 #include <memory>
 #include <string>
 #include <utility>
@@ -284,7 +274,8 @@ void Server::Initialize() {
   rotation_serial_tracker_ = std::make_unique<SerialTracker>(wl_display_.get());
   wl_global_create(wl_display_.get(), &wl_compositor_interface,
                    kWlCompositorVersion, this, bind_compositor);
-  wl_global_create(wl_display_.get(), &wl_shm_interface, 1, display_, bind_shm);
+  wl_global_create(wl_display_.get(), &wl_shm_interface, /*version=*/1,
+                   display_, bind_shm);
   wayland_feedback_manager_ =
       std::make_unique<WaylandDmabufFeedbackManager>(display_);
   if (wayland_feedback_manager_->GetVersionSupportedByPlatform() > 0) {
@@ -300,13 +291,13 @@ void Server::Initialize() {
   // data in these events might be needed by the client.
   wl_global_create(wl_display_.get(), &zaura_output_manager_interface,
                    kZAuraOutputManagerVersion, this, bind_aura_output_manager);
-  wl_global_create(wl_display_.get(), &wl_subcompositor_interface, 1, display_,
-                   bind_subcompositor);
+  wl_global_create(wl_display_.get(), &wl_subcompositor_interface,
+                   /*version=*/1, display_, bind_subcompositor);
   for (const auto& display : display::Screen::GetScreen()->GetAllDisplays()) {
     OnDisplayAdded(display);
   }
-  wl_global_create(wl_display_.get(), &zcr_vsync_feedback_v1_interface, 1,
-                   display_, bind_vsync_feedback);
+  wl_global_create(wl_display_.get(), &zcr_vsync_feedback_v1_interface,
+                   /*version=*/1, display_, bind_vsync_feedback);
 
   data_device_manager_data_ = std::make_unique<WaylandDataDeviceManager>(
       display_, serial_tracker_.get());
@@ -319,21 +310,21 @@ void Server::Initialize() {
   wl_global_create(
       wl_display_.get(), &wp_single_pixel_buffer_manager_v1_interface,
       kSinglePixelBufferVersion, display_, bind_single_pixel_buffer);
-  wl_global_create(wl_display_.get(), &overlay_prioritizer_interface, 1,
-                   display_, bind_overlay_prioritizer);
+  wl_global_create(wl_display_.get(), &overlay_prioritizer_interface,
+                   /*version=*/1, display_, bind_overlay_prioritizer);
   wl_global_create(wl_display_.get(), &wp_fractional_scale_manager_v1_interface,
                    kFractionalScaleVersion, display_,
                    bind_fractional_scale_manager);
-  wl_global_create(wl_display_.get(), &wp_viewporter_interface, 1, display_,
-                   bind_viewporter);
-  wl_global_create(wl_display_.get(), &wp_presentation_interface, 1, display_,
-                   bind_presentation);
-  wl_global_create(wl_display_.get(), &zcr_secure_output_v1_interface, 1,
-                   display_, bind_secure_output);
-  wl_global_create(wl_display_.get(), &zcr_alpha_compositing_v1_interface, 1,
-                   display_, bind_alpha_compositing);
+  wl_global_create(wl_display_.get(), &wp_viewporter_interface, /*version=*/1,
+                   display_, bind_viewporter);
+  wl_global_create(wl_display_.get(), &wp_presentation_interface, /*version=*/1,
+                   display_, bind_presentation);
+  wl_global_create(wl_display_.get(), &zcr_secure_output_v1_interface,
+                   /*version=*/1, display_, bind_secure_output);
+  wl_global_create(wl_display_.get(), &zcr_alpha_compositing_v1_interface,
+                   /*version=*/1, display_, bind_alpha_compositing);
   wl_global_create(wl_display_.get(), &zcr_stylus_v2_interface,
-                   zcr_stylus_v2_interface.version, display_, bind_stylus_v2);
+                   kZcrStylusVersion, display_, bind_stylus_v2);
 
   seat_data_ =
       std::make_unique<WaylandSeat>(display_->seat(), serial_tracker_.get());
@@ -344,75 +335,77 @@ void Server::Initialize() {
     // The release fence needed by linux-explicit-sync comes from DRM-atomic.
     // If DRM atomic is not supported, linux-explicit-sync interface is
     // disabled.
-    wl_global_create(wl_display_.get(),
-                     &zwp_linux_explicit_synchronization_v1_interface, 2,
-                     display_, bind_linux_explicit_synchronization);
+    wl_global_create(
+        wl_display_.get(), &zwp_linux_explicit_synchronization_v1_interface,
+        /*version=*/2, display_, bind_linux_explicit_synchronization);
   }
   wl_global_create(wl_display_.get(), &zaura_shell_interface,
                    kZAuraShellVersion, display_, bind_aura_shell);
-  wl_global_create(wl_display_.get(), &wl_shell_interface, 1, display_,
-                   bind_shell);
-  wl_global_create(wl_display_.get(), &wp_content_type_manager_v1_interface, 1,
-                   display_, bind_content_type);
-  wl_global_create(wl_display_.get(), &zcr_cursor_shapes_v1_interface, 1,
-                   display_, bind_cursor_shapes);
-  wl_global_create(wl_display_.get(), &zcr_gaming_input_v2_interface, 3,
-                   display_, bind_gaming_input);
+  wl_global_create(wl_display_.get(), &wl_shell_interface, /*version=*/1,
+                   display_, bind_shell);
+  wl_global_create(wl_display_.get(), &wp_content_type_manager_v1_interface,
+                   /*version=*/1, display_, bind_content_type);
+  wl_global_create(wl_display_.get(), &zcr_cursor_shapes_v1_interface,
+                   /*version=*/1, display_, bind_cursor_shapes);
+  wl_global_create(wl_display_.get(), &zcr_gaming_input_v2_interface,
+                   /*version=*/3, display_, bind_gaming_input);
   wl_global_create(wl_display_.get(), &zcr_keyboard_configuration_v1_interface,
-                   zcr_keyboard_configuration_v1_interface.version, display_,
+                   kZcrKeyboardConfigurationVersion, display_,
                    bind_keyboard_configuration);
-  wl_global_create(wl_display_.get(), &zcr_notification_shell_v1_interface, 1,
-                   display_, bind_notification_shell);
+  wl_global_create(wl_display_.get(), &zcr_notification_shell_v1_interface,
+                   /*version=*/1, display_, bind_notification_shell);
 
   remote_shell_data_ = std::make_unique<WaylandRemoteShellData>(
       display_,
       WaylandRemoteShellData::OutputResourceProvider(base::BindRepeating(
           &Server::GetOutputResource, base::Unretained(this))));
   wl_global_create(wl_display_.get(), &zcr_remote_shell_v1_interface,
-                   zcr_remote_shell_v1_interface.version,
-                   remote_shell_data_.get(), bind_remote_shell);
+                   kZcrRemoteShellVersion, remote_shell_data_.get(),
+                   bind_remote_shell);
   wl_global_create(wl_display_.get(), &zcr_remote_shell_v2_interface,
-                   zcr_remote_shell_v2_interface.version,
-                   remote_shell_data_.get(), bind_remote_shell_v2);
+                   kZcrRemoteShellV2Version, remote_shell_data_.get(),
+                   bind_remote_shell_v2);
 
-  wl_global_create(wl_display_.get(), &zcr_stylus_tools_v1_interface, 1,
-                   display_, bind_stylus_tools);
+  wl_global_create(wl_display_.get(), &zcr_stylus_tools_v1_interface,
+                   /*version=*/1, display_, bind_stylus_tools);
   wl_global_create(wl_display_.get(),
-                   &zwp_input_timestamps_manager_v1_interface, 1, display_,
-                   bind_input_timestamps_manager);
-  wl_global_create(wl_display_.get(), &zwp_pointer_gestures_v1_interface, 1,
-                   display_, bind_pointer_gestures);
-  wl_global_create(wl_display_.get(), &zwp_pointer_constraints_v1_interface, 1,
-                   display_, bind_pointer_constraints);
+                   &zwp_input_timestamps_manager_v1_interface, /*version=*/1,
+                   display_, bind_input_timestamps_manager);
+  wl_global_create(wl_display_.get(), &zwp_pointer_gestures_v1_interface,
+                   /*version=*/1, display_, bind_pointer_gestures);
+  wl_global_create(wl_display_.get(), &zwp_pointer_constraints_v1_interface,
+                   /*version=*/1, display_, bind_pointer_constraints);
   wl_global_create(wl_display_.get(),
-                   &zwp_relative_pointer_manager_v1_interface, 1, display_,
-                   bind_relative_pointer_manager);
+                   &zwp_relative_pointer_manager_v1_interface, /*version=*/1,
+                   display_, bind_relative_pointer_manager);
   wl_global_create(wl_display_.get(), &zcr_color_manager_v1_interface,
                    kZcrColorManagerVersion, this, bind_zcr_color_manager);
-  wl_global_create(wl_display_.get(), &zxdg_decoration_manager_v1_interface, 1,
-                   display_, bind_zxdg_decoration_manager);
-  wl_global_create(wl_display_.get(), &zcr_extended_drag_v1_interface, 1,
-                   display_, bind_extended_drag);
-  wl_global_create(wl_display_.get(), &zxdg_output_manager_v1_interface, 3,
-                   display_, bind_zxdg_output_manager);
-  wl_global_create(wl_display_.get(), &zwp_idle_inhibit_manager_v1_interface, 1,
-                   display_, bind_zwp_idle_inhibit_manager);
+  wl_global_create(wl_display_.get(), &zxdg_decoration_manager_v1_interface,
+                   /*version=*/1, display_, bind_zxdg_decoration_manager);
+  wl_global_create(wl_display_.get(), &zcr_extended_drag_v1_interface,
+                   /*version=*/1, display_, bind_extended_drag);
+  wl_global_create(wl_display_.get(), &zxdg_output_manager_v1_interface,
+                   /*version=*/3, display_, bind_zxdg_output_manager);
+  wl_global_create(wl_display_.get(), &zwp_idle_inhibit_manager_v1_interface,
+                   /*version=*/1, display_, bind_zwp_idle_inhibit_manager);
 
   ui_controls_holder_ = std::make_unique<UiControls>(this);
 
   zcr_keyboard_extension_data_ =
       std::make_unique<WaylandKeyboardExtension>(serial_tracker_.get());
-  wl_global_create(wl_display_.get(), &zcr_keyboard_extension_v1_interface, 2,
-                   zcr_keyboard_extension_data_.get(), bind_keyboard_extension);
+  wl_global_create(wl_display_.get(), &zcr_keyboard_extension_v1_interface,
+                   /*version=*/2, zcr_keyboard_extension_data_.get(),
+                   bind_keyboard_extension);
 
-  wl_global_create(wl_display_.get(),
-                   &zwp_keyboard_shortcuts_inhibit_manager_v1_interface, 1,
-                   display_, bind_keyboard_shortcuts_inhibit_manager);
+  wl_global_create(
+      wl_display_.get(), &zwp_keyboard_shortcuts_inhibit_manager_v1_interface,
+      /*version=*/1, display_, bind_keyboard_shortcuts_inhibit_manager);
 
   zwp_text_manager_data_ = std::make_unique<WaylandTextInputManager>(
       display_->seat()->xkb_tracker(), serial_tracker_.get());
-  wl_global_create(wl_display_.get(), &zwp_text_input_manager_v1_interface, 1,
-                   zwp_text_manager_data_.get(), bind_text_input_manager);
+  wl_global_create(wl_display_.get(), &zwp_text_input_manager_v1_interface,
+                   /*version=*/1, zwp_text_manager_data_.get(),
+                   bind_text_input_manager);
 
   zcr_text_input_extension_data_ =
       std::make_unique<WaylandTextInputExtension>();
@@ -423,11 +416,11 @@ void Server::Initialize() {
 
   xdg_shell_data_ = std::make_unique<WaylandXdgShell>(
       display_, serial_tracker_.get(), rotation_serial_tracker_.get());
-  wl_global_create(wl_display_.get(), &xdg_wm_base_interface, 3,
+  wl_global_create(wl_display_.get(), &xdg_wm_base_interface, /*version=*/3,
                    xdg_shell_data_.get(), bind_xdg_shell);
 
-  wl_global_create(wl_display_.get(), &zcr_touchpad_haptics_v1_interface, 1,
-                   display_, bind_touchpad_haptics);
+  wl_global_create(wl_display_.get(), &zcr_touchpad_haptics_v1_interface,
+                   /*version=*/1, display_, bind_touchpad_haptics);
 }
 
 void Server::Finalize(StartCallback callback, bool success) {
