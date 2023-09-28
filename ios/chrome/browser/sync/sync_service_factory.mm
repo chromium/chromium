@@ -14,6 +14,7 @@
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/network_time/network_time_tracker.h"
+#import "components/password_manager/core/browser/sharing/password_receiver_service.h"
 #import "components/prefs/pref_service.h"
 #import "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #import "components/supervised_user/core/common/buildflags.h"
@@ -37,6 +38,8 @@
 #import "ios/chrome/browser/history/history_service_factory.h"
 #import "ios/chrome/browser/metrics/google_groups_updater_service_factory.h"
 #import "ios/chrome/browser/passwords/ios_chrome_account_password_store_factory.h"
+#import "ios/chrome/browser/passwords/ios_chrome_password_receiver_service_factory.h"
+#import "ios/chrome/browser/passwords/ios_chrome_password_sender_service_factory.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
 #import "ios/chrome/browser/reading_list/reading_list_model_factory.h"
 #import "ios/chrome/browser/search_engines/template_url_service_factory.h"
@@ -126,6 +129,13 @@ std::unique_ptr<KeyedService> BuildSyncService(web::BrowserState* context) {
     }
   }
 
+  password_manager::PasswordReceiverService* password_receiver_service =
+      IOSChromePasswordReceiverServiceFactory::GetForBrowserState(
+          browser_state);
+  if (password_receiver_service) {
+    password_receiver_service->OnSyncServiceInitialized(sync_service.get());
+  }
+
   // Allow sync_preferences/ components to use SyncService.
   sync_preferences::PrefServiceSyncable* pref_service =
       browser_state->GetSyncablePrefs();
@@ -204,6 +214,8 @@ SyncServiceFactory::SyncServiceFactory()
   DependsOn(ios::WebDataServiceFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(IOSChromeGCMProfileServiceFactory::GetInstance());
+  DependsOn(IOSChromePasswordReceiverServiceFactory::GetInstance());
+  DependsOn(IOSChromePasswordSenderServiceFactory::GetInstance());
   DependsOn(IOSChromePasswordStoreFactory::GetInstance());
   DependsOn(IOSChromeAccountPasswordStoreFactory::GetInstance());
   DependsOn(IOSTrustedVaultServiceFactory::GetInstance());
