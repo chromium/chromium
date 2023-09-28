@@ -1674,7 +1674,6 @@ source_set("browser") {
     "renderer_host/embedded_frame_sink_impl.h",
     "renderer_host/embedded_frame_sink_provider_impl.cc",
     "renderer_host/embedded_frame_sink_provider_impl.h",
-    "renderer_host/event_with_latency_info.h",
     "renderer_host/file_utilities_host_impl.cc",
     "renderer_host/file_utilities_host_impl.h",
     "renderer_host/frame_navigation_entry.cc",

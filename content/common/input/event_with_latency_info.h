@@ -6,6 +6,7 @@
 #define CONTENT_COMMON_INPUT_EVENT_WITH_LATENCY_INFO_H_
 
 #include "base/check_op.h"
+#include "content/public/common/input/native_web_keyboard_event.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
 #include "third_party/blink/public/common/input/web_mouse_wheel_event.h"
 #include "third_party/blink/public/common/input/web_touch_event.h"
@@ -68,6 +69,9 @@ typedef EventWithLatencyInfo<blink::WebMouseEvent>
     MouseEventWithLatencyInfo;
 typedef EventWithLatencyInfo<blink::WebTouchEvent>
     TouchEventWithLatencyInfo;
+
+typedef EventWithLatencyInfo<NativeWebKeyboardEvent>
+    NativeWebKeyboardEventWithLatencyInfo;
 
 }  // namespace content
 

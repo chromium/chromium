@@ -10,7 +10,6 @@
 
 #include "base/task/sequenced_task_runner.h"
 #include "cc/input/touch_action.h"
-#include "content/browser/renderer_host/event_with_latency_info.h"
 #include "content/common/input/event_with_latency_info.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/input/touch_event.mojom.h"

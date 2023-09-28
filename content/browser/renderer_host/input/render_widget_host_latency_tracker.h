@@ -8,8 +8,8 @@
 #include <stdint.h>
 
 #include "base/memory/raw_ptr.h"
-#include "content/browser/renderer_host/event_with_latency_info.h"
 #include "content/common/content_export.h"
+#include "content/common/input/event_with_latency_info.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
 #include "ui/latency/latency_info.h"
 #include "ui/latency/latency_tracker.h"
