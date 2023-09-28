@@ -9,6 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_cell_utils.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
@@ -215,7 +216,7 @@ bool PopupAutocompleteCellView::HandleKeyPressEvent(
     case ui::VKEY_RETURN:
       CHECK(button_);
       if (button_focused_) {
-        DeleteAutocompleteEntry();
+        DeleteAutocompleteEntrySoon();
         return true;
       }
       break;
@@ -265,7 +266,7 @@ void PopupAutocompleteCellView::CreateDeleteButton() {
   std::unique_ptr<views::ImageButton> button =
       views::CreateVectorImageButtonWithNativeTheme(
           base::BindRepeating(
-              &PopupAutocompleteCellView::DeleteAutocompleteEntry,
+              &PopupAutocompleteCellView::DeleteAutocompleteEntrySoon,
               base::Unretained(this)),
           views::kIcCloseIcon, kCloseIconSize);
 
@@ -304,17 +305,21 @@ void PopupAutocompleteCellView::CreateDeleteButton() {
           button_.get())));
 }
 
-void PopupAutocompleteCellView::DeleteAutocompleteEntry() {
-  if (controller_ && controller_->RemoveSuggestion(line_number_)) {
-    // Do not access any member variable from here on. Remove suggestions
-    // leads to this class being destroyed and it would therefore lead to
-    // a possible UAF. The following metric is ok because it is a static method.
-    // TODO(crbug.com/1417187): Post the remove call as a task to avoid the UAF
-    // risk.
-    AutofillMetrics::OnAutocompleteSuggestionDeleted(
-        AutofillMetrics::AutocompleteSingleEntryRemovalMethod::
-            kDeleteButtonClicked);
-  }
+void PopupAutocompleteCellView::DeleteAutocompleteEntrySoon() {
+  // Post the deletion task to the tasks queue instead of executing it directly
+  // to avoid that callers cause their own deletion.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](base::WeakPtr<AutofillPopupController> controller,
+             int line_number) {
+            if (controller && controller->RemoveSuggestion(line_number)) {
+              AutofillMetrics::OnAutocompleteSuggestionDeleted(
+                  AutofillMetrics::AutocompleteSingleEntryRemovalMethod::
+                      kDeleteButtonClicked);
+            }
+          },
+          controller_, line_number_));
 }
 
 void PopupAutocompleteCellView::OnMouseEnteredCellButton() {

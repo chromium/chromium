@@ -175,6 +175,10 @@ TEST_F(PopupAutocompleteCellViewTest,
   generator().MoveMouseTo(button->GetBoundsInScreen().CenterPoint());
   generator().ClickLeftButton();
 
+  // Deletion does not happen immediately to avoid that an object deletes
+  // itself. This ensures that the deletion task is processed.
+  task_environment()->RunUntilIdle();
+
   histogram_tester.ExpectUniqueSample(
       "Autofill.Autocomplete.SingleEntryRemovalMethod",
       AutofillMetrics::AutocompleteSingleEntryRemovalMethod::
