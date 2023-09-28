@@ -108,7 +108,7 @@ found in the LICENSE file.
 
       <org.chromium.ui.widget.ButtonCompat
           android:id="@+id/autofill_save_card_confirm_button"
-          style="@style/FilledButton"
+          style="@style/FilledButton.Flat"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:textAlignment="center"
