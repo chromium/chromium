@@ -3233,14 +3233,14 @@
   <message name="IDS_SETTINGS_COOKIES_BLOCK_EXCEPTIONS" desc="Title of the list containing site exceptions always blocking them from using cookies">
     Sites that can never use cookies
   </message>
-  <message name="IDS_SETTINGS_TRACKING_PROTECTION_LINK_ROW_LABEL" desc="Label for the 'Tracking protection' page entry point." translateable="false">
-    Tracking protection
+  <message name="IDS_SETTINGS_TRACKING_PROTECTION_LINK_ROW_LABEL" desc="Label for the 'Tracking Protection' page entry point." translateable="false">
+    Tracking Protection
   </message>
-  <message name="IDS_SETTINGS_TRACKING_PROTECTION_LINK_ROW_SUB_LABEL" desc="Sub-label for the 'Tracking protection' page entry point." translateable="false">
-    Manage third-party cookies and other tracking protections
+  <message name="IDS_SETTINGS_TRACKING_PROTECTION_LINK_ROW_SUB_LABEL" desc="Sub-label for the 'Tracking Protection' page entry point." translateable="false">
+    Manage third-party cookies and tracking protections
   </message>
   <message name="IDS_SETTINGS_TRACKING_PROTECTION_PAGE_TITLE" translateable="false" desc="The title of a new settings page that allows users to manage settings related to tracking, for example third-party cookies. This settings page will replace the existing cookie settings page at chrome://settings/cookies.">
-    Tracking protection
+    Tracking Protection
   </message>
   <message name="IDS_SETTINGS_TRACKING_PROTECTION_PAGE_DESCRIPTION" translateable="false" desc="Explanatory text for the tracking protection settings page.">
     Chrome limits the type of information sites can use to track you as you browse. You can change your settings to choose your own level of protection.
@@ -3249,7 +3249,7 @@
     Chrome automatically limits third-party cookies
   </message>
   <message name="IDS_SETTINGS_TRACKING_PROTECTION_BULLET_ONE_DESCRIPTION" translateable="false" desc="Description of the first bullet for tracking protection settings. Explains what limiting third-party cookies means.">
-    Most sites can’t use third-party cookies to track you as you browse and sites can’t use third-party cookies in Incognito mode.
+    Most sites can’t use third-party cookies to track you as you browse, and sites can’t use third-party cookies in Incognito mode.
   </message>
   <message name="IDS_SETTINGS_TRACKING_PROTECTION_BULLET_TWO" translateable="false" desc="The second bullet for tracking protection settings. Informs users that most sites should work as expected.">
     Most sites should work as expected
@@ -3268,9 +3268,6 @@
   </message>
   <message name="IDS_SETTINGS_TRACKING_PROTECTION_ADVANCED_LABEL" translateable="false" desc="Label for an expandable section containing advanced tracking protection options.">
     Advanced
-  </message>
-  <message name="IDS_SETTINGS_TRACKING_PROTECTION_ADVANCED_EXPAND_A11Y_LABEL" translateable="false" desc="This text is read by screenreaders and is associated with a button that shows the user advanced tracking protection options.">
-    See advanced tracking protection options
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_APP_PROTOCOL_HANDLERS" desc="Label for the app protocol handlers (e.g. mailto) in site settings.">
     Apps
