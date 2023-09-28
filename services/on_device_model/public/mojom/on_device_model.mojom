@@ -1,0 +1,43 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module on_device_model.mojom;
+
+import "mojo/public/mojom/base/file_path.mojom";
+import "sandbox/policy/mojom/sandbox.mojom";
+
+// Streams a response from a call to execute a model.
+interface StreamingResponder {
+  // This is called N times each time a new chunk of text is available.
+  OnResponse(string text);
+
+  // This is called once when all text for the query has been returned.
+  // OnResponse() will not be called after OnComplete() has been called.
+  OnComplete();
+};
+
+// A loaded model which can be queried.
+interface OnDeviceModel {
+  // Executes model on the given input. The response will be streamed to
+  // |response|.
+  Execute(string input, pending_remote<StreamingResponder> response);
+};
+
+struct LoadModelParams {
+  // The path to the model on disk.
+  mojo_base.mojom.FilePath path;
+};
+
+union LoadModelResult {
+  pending_remote<OnDeviceModel> model;
+  string error;
+};
+
+// A service which allows loading models which are stored on-device.
+[ServiceSandbox=sandbox.mojom.Sandbox.kNoSandbox]
+interface OnDeviceModelService {
+  // Loads a model and returns the model or an error if the model could not be
+  // loaded.
+  LoadModel(LoadModelParams params) => (LoadModelResult result);
+};

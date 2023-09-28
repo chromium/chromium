@@ -1,0 +1,31 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+component("on_device_model_service") {
+  sources = [
+    "on_device_model.cc",
+    "on_device_model.h",
+    "on_device_model_service.cc",
+    "on_device_model_service.h",
+  ]
+  deps = [
+    "//base",
+    "//mojo/public/cpp/bindings",
+    "//services/on_device_model/public/mojom",
+  ]
+  defines = [ "IS_ON_DEVICE_MODEL_IMPL" ]
+}
+
+source_set("tests") {
+  testonly = true
+
+  sources = [ "on_device_model_service_unittest.cc" ]
+  deps = [
+    ":on_device_model_service",
+    "//base/test:test_support",
+    "//services/on_device_model/public/mojom",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

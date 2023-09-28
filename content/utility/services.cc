@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/lazy_instance.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/branding_buildflags.h"
@@ -29,6 +30,8 @@
 #include "services/audio/service_factory.h"
 #include "services/data_decoder/data_decoder_service.h"
 #include "services/network/network_service.h"
+#include "services/on_device_model/on_device_model_service.h"
+#include "services/on_device_model/public/cpp/features.h"
 #include "services/tracing/public/mojom/tracing_service.mojom.h"
 #include "services/tracing/tracing_service.h"
 #include "services/video_capture/public/mojom/video_capture_service.mojom.h"
@@ -322,6 +325,13 @@ auto RunVideoCapture(
   return service;
 }
 
+auto RunOnDeviceModel(
+    mojo::PendingReceiver<on_device_model::mojom::OnDeviceModelService>
+        receiver) {
+  return std::make_unique<on_device_model::OnDeviceModelService>(
+      std::move(receiver));
+}
+
 #if BUILDFLAG(ENABLE_VR) && !BUILDFLAG(IS_ANDROID)
 auto RunXrDeviceService(
     mojo::PendingReceiver<device::mojom::XRDeviceService> receiver) {
@@ -392,6 +402,11 @@ void RegisterMainThreadServices(mojo::ServiceFactory& services) {
   services.Add(RunStorageService);
   services.Add(RunTracing);
   services.Add(RunVideoCapture);
+
+  if (base::FeatureList::IsEnabled(
+          on_device_model::features::kOnDeviceModelService)) {
+    services.Add(RunOnDeviceModel);
+  }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING) && BUILDFLAG(IS_CHROMEOS)
   services.Add(RunShapeDetectionService);
