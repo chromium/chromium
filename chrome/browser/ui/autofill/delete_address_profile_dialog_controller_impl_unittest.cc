@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/autofill/delete_address_profile_dialog_controller_impl.h"
 
+#include "base/test/mock_callback.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -97,6 +98,7 @@ class DeleteAddressProfileDialogControllerImplTest
               controller()->GetDeleteConfirmationText());
   }
 
+  base::MockOnceCallback<void(bool)> delete_dialog_callback_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_adaptor_;
 };
@@ -104,7 +106,8 @@ class DeleteAddressProfileDialogControllerImplTest
 TEST_F(DeleteAddressProfileDialogControllerImplTest,
        LocalAddressProfile_AssertStrings) {
   ConfigureAddressSync(/*enable_address_sync=*/false);
-  controller()->OfferDelete(/*is_account_address_profile=*/false);
+  controller()->OfferDelete(/*is_account_address_profile=*/false,
+                            /*delete_dialog_callback=*/base::DoNothing());
 
   TestUiStringsHaveExpectedValues(l10n_util::GetStringUTF16(
       IDS_AUTOFILL_DELETE_LOCAL_ADDRESS_SOURCE_NOTICE));
@@ -114,7 +117,8 @@ TEST_F(DeleteAddressProfileDialogControllerImplTest,
        AccountAddressProfile_AssertStrings) {
   ConfigureAddressSync(/*enable_address_sync=*/false);
   SigninUser();
-  controller()->OfferDelete(/*is_account_address_profile=*/true);
+  controller()->OfferDelete(/*is_account_address_profile=*/true,
+                            /*delete_dialog_callback=*/base::DoNothing());
 
   TestUiStringsHaveExpectedValues(l10n_util::GetStringFUTF16(
       IDS_AUTOFILL_DELETE_ACCOUNT_ADDRESS_SOURCE_NOTICE,
@@ -124,10 +128,65 @@ TEST_F(DeleteAddressProfileDialogControllerImplTest,
 TEST_F(DeleteAddressProfileDialogControllerImplTest,
        SyncAddressProfile_AssertStrings) {
   ConfigureAddressSync(/*enable_address_sync=*/true);
-  controller()->OfferDelete(/*is_account_address_profile=*/false);
+  controller()->OfferDelete(/*is_account_address_profile=*/false,
+                            /*delete_dialog_callback=*/base::DoNothing());
 
   TestUiStringsHaveExpectedValues(l10n_util::GetStringUTF16(
       IDS_AUTOFILL_DELETE_SYNC_ADDRESS_SOURCE_NOTICE));
+}
+
+TEST_F(DeleteAddressProfileDialogControllerImplTest, AcceptedDelete) {
+  ConfigureAddressSync(/*enable_address_sync=*/false);
+  controller()->OfferDelete(/*is_account_address_profile=*/false,
+                            delete_dialog_callback_.Get());
+
+  EXPECT_CALL(delete_dialog_callback_, Run(true));
+  controller()->OnAccepted();
+  controller()->OnDialogDestroying();
+}
+
+TEST_F(DeleteAddressProfileDialogControllerImplTest, CanceledDelete) {
+  ConfigureAddressSync(/*enable_address_sync=*/false);
+  controller()->OfferDelete(/*is_account_address_profile=*/false,
+                            delete_dialog_callback_.Get());
+
+  EXPECT_CALL(delete_dialog_callback_, Run(false));
+  controller()->OnCanceled();
+  controller()->OnDialogDestroying();
+}
+
+TEST_F(DeleteAddressProfileDialogControllerImplTest, ClosedDialog) {
+  ConfigureAddressSync(/*enable_address_sync=*/false);
+  controller()->OfferDelete(/*is_account_address_profile=*/false,
+                            delete_dialog_callback_.Get());
+
+  EXPECT_CALL(delete_dialog_callback_, Run(false));
+  controller()->OnClosed();
+  controller()->OnDialogDestroying();
+}
+
+TEST_F(DeleteAddressProfileDialogControllerImplTest, UserDecisionIsReset) {
+  ConfigureAddressSync(/*enable_address_sync=*/false);
+  controller()->OfferDelete(/*is_account_address_profile=*/false,
+                            delete_dialog_callback_.Get());
+
+  EXPECT_CALL(delete_dialog_callback_, Run(false));
+  controller()->OnClosed();
+  controller()->OnDialogDestroying();
+
+  // Show dialog for the second time without providing the user decision.
+  controller()->OfferDelete(/*is_account_address_profile=*/false,
+                            delete_dialog_callback_.Get());
+  controller()->OnDialogDestroying();
+}
+
+TEST_F(DeleteAddressProfileDialogControllerImplTest, TabClosed) {
+  ConfigureAddressSync(/*enable_address_sync=*/false);
+  controller()->OfferDelete(/*is_account_address_profile=*/false,
+                            delete_dialog_callback_.Get());
+
+  EXPECT_CALL(delete_dialog_callback_, Run).Times(0);
+  web_contents()->Close();
 }
 
 }  // namespace autofill

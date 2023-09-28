@@ -13,6 +13,7 @@
 #include "components/autofill/core/browser/autofill_client.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace views {
 class Widget;
@@ -31,7 +32,9 @@ class DeleteAddressProfileDialogControllerImpl
       const DeleteAddressProfileDialogControllerImpl&) = delete;
   ~DeleteAddressProfileDialogControllerImpl() override;
 
-  void OfferDelete(bool is_account_address_profile);
+  void OfferDelete(bool is_account_address_profile,
+                   AutofillClient::AddressProfileDeleteDialogCallback
+                       delete_dialog_callback);
   // DeleteAddressProfileDialogController:
   std::u16string GetTitle() const override;
   std::u16string GetAcceptButtonText() const override;
@@ -54,6 +57,8 @@ class DeleteAddressProfileDialogControllerImpl
   const raw_ptr<content::WebContents> web_contents_;
   raw_ptr<const views::Widget> widget_dialog_ = nullptr;
   bool is_account_address_profile_;
+  AutofillClient::AddressProfileDeleteDialogCallback delete_dialog_callback_;
+  absl::optional<bool> user_accepted_;
 
   base::WeakPtrFactory<DeleteAddressProfileDialogController> weak_ptr_factory_{
       this};

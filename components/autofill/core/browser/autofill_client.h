@@ -378,6 +378,11 @@ class AutofillClient : public RiskDataLoader {
       base::OnceCallback<void(SaveAddressProfileOfferUserDecision,
                               AutofillProfile profile)>;
 
+  // The callback accepts the boolean parameter indicating whether the user has
+  // accepted the delete dialog. The callback is intended to be called only upon
+  // user closing the dialog directly and not when user closes the browser tab.
+  using AddressProfileDeleteDialogCallback = base::OnceCallback<void(bool)>;
+
   ~AutofillClient() override = default;
 
   // Returns the channel for the installation. In branded builds, this will be

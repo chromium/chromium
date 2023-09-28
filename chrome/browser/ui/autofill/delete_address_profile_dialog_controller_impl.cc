@@ -34,8 +34,10 @@ DeleteAddressProfileDialogControllerImpl::
     ~DeleteAddressProfileDialogControllerImpl() = default;
 
 void DeleteAddressProfileDialogControllerImpl::OfferDelete(
-    bool is_account_address_profile) {
+    bool is_account_address_profile,
+    AutofillClient::AddressProfileDeleteDialogCallback delete_dialog_callback) {
   is_account_address_profile_ = is_account_address_profile;
+  delete_dialog_callback_ = std::move(delete_dialog_callback);
   if (!widget_dialog_) {
     // TODO(crbug.com/1459990): Open the delete dialog view.
     widget_dialog_ = nullptr;
@@ -77,13 +79,23 @@ DeleteAddressProfileDialogControllerImpl::GetDeleteConfirmationText() const {
           : IDS_AUTOFILL_DELETE_LOCAL_ADDRESS_SOURCE_NOTICE);
 }
 
-void DeleteAddressProfileDialogControllerImpl::OnAccepted() {}
+void DeleteAddressProfileDialogControllerImpl::OnAccepted() {
+  user_accepted_ = true;
+}
 
-void DeleteAddressProfileDialogControllerImpl::OnCanceled() {}
+void DeleteAddressProfileDialogControllerImpl::OnCanceled() {
+  user_accepted_ = false;
+}
 
-void DeleteAddressProfileDialogControllerImpl::OnClosed() {}
+void DeleteAddressProfileDialogControllerImpl::OnClosed() {
+  user_accepted_ = false;
+}
 
 void DeleteAddressProfileDialogControllerImpl::OnDialogDestroying() {
+  if (user_accepted_) {
+    std::move(delete_dialog_callback_).Run(user_accepted_.value());
+    user_accepted_.reset();
+  }
   widget_dialog_ = nullptr;
 }
 

@@ -38,7 +38,7 @@ views::Widget* ShowDeleteAddressProfileDialogView(
               ui::DialogModelLabel(controller->GetDeleteConfirmationText())
                   .set_is_secondary())
           .SetCloseActionCallback(base::BindOnce(
-              &DeleteAddressProfileDialogController::OnAccepted, controller))
+              &DeleteAddressProfileDialogController::OnClosed, controller))
           .SetDialogDestroyingCallback(base::BindOnce(
               &DeleteAddressProfileDialogController::OnDialogDestroying,
               controller))
