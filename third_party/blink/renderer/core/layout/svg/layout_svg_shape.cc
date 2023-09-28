@@ -206,7 +206,7 @@ gfx::RectF LayoutSVGShape::HitTestStrokeBoundingBox() const {
 
 gfx::RectF LayoutSVGShape::StrokeBoundingBox() const {
   NOT_DESTROYED();
-  if (!StyleRef().HasStroke()) {
+  if (!StyleRef().HasStroke() || IsShapeEmpty()) {
     return fill_bounding_box_;
   }
   // If no Path object has been created for the shape, assume that it is

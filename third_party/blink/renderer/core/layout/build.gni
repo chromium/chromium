@@ -796,6 +796,7 @@ blink_core_tests_layout = [
   "svg/layout_svg_foreign_object_test.cc",
   "svg/layout_svg_inline_test.cc",
   "svg/layout_svg_root_test.cc",
+  "svg/layout_svg_shape_test.cc",
   "svg/layout_svg_text_test.cc",
   "svg/svg_layout_support_test.cc",
   "svg/svg_text_layout_algorithm_test.cc",
