@@ -154,6 +154,7 @@ bool ImeService::IsFeatureEnabled(const char* feature_name) {
       &features::kImeFstDecoderParamsUpdate,
       &features::kAutocorrectByDefault,
       &features::kAutocorrectUseReplaceSurroundingText,
+      &features::kInputMethodKoreanRightAltKeyDownFix,
   };
 
   // Use consistent feature flag names as in CrOS base::Feature::name and always

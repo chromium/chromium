@@ -2891,6 +2891,13 @@ BASE_FEATURE(kInputMethodDeadKeyFixForTerminal,
              "InputMethodDeadKeyFixForTerminal",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables bug fix for right alt keys for Korean input method.
+// When enabled, Right Alt will immediately toggle between Korean and English on
+// key down.
+BASE_FEATURE(kInputMethodKoreanRightAltKeyDownFix,
+             "InputMethodKoreanRightAltKeyDownFix",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables peripheral customization to be split per device.
 BASE_FEATURE(kPeripheralCustomization,
              "PeripheralCustomization",
