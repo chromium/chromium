@@ -1146,6 +1146,11 @@ bool CoopSuppressOpener(const RenderFrameHostImpl* opener) {
   }
 }
 
+void RecordAutomaticBeaconOutcome(const blink::AutomaticBeaconOutcome outcome) {
+  base::UmaHistogramEnumeration(blink::kAutomaticBeaconOutcomeHistogram,
+                                outcome);
+}
+
 }  // namespace
 
 class RenderFrameHostImpl::SubresourceLoaderFactoriesConfig {
@@ -8608,6 +8613,18 @@ void RenderFrameHostImpl::MaybeSendFencedFrameAutomaticReportingBeacon(
     return;
   }
 
+  // Beacons can only be sent from inside a fenced frame/urn iframe tree, where
+  // there is a fenced frame reporter.
+  const absl::optional<FencedFrameProperties>& properties =
+      initiator_rfh->frame_tree_node()->GetFencedFrameProperties();
+  if (properties.has_value()) {
+    base::UmaHistogramEnumeration(blink::kFencedFrameTopNavigationHistogram,
+                                  blink::FencedFrameNavigationState::kCommit);
+  }
+  if (!properties.has_value() || !properties->fenced_frame_reporter_) {
+    return;
+  }
+
   // Automatic beacons can only be sent if the initiating frame had transient
   // user activation when it navigated. For navigations originating from the
   // contextual menu (i.e. "Open Link in X"), or for navigations originating
@@ -8621,14 +8638,8 @@ void RenderFrameHostImpl::MaybeSendFencedFrameAutomaticReportingBeacon(
           blink::mojom::NavigationInitiatorActivationAndAdStatus::
               kDidNotStartWithTransientActivation &&
       !navigation_request.common_params().has_user_gesture) {
-    return;
-  }
-
-  // Beacons can only be sent from inside a fenced frame/urn iframe tree, where
-  // there is a fenced frame reporter.
-  const absl::optional<FencedFrameProperties>& properties =
-      initiator_rfh->frame_tree_node()->GetFencedFrameProperties();
-  if (!properties.has_value() || !properties->fenced_frame_reporter_) {
+    RecordAutomaticBeaconOutcome(
+        blink::AutomaticBeaconOutcome::kNoUserActivation);
     return;
   }
 
@@ -8649,6 +8660,7 @@ void RenderFrameHostImpl::MaybeSendFencedFrameAutomaticReportingBeacon(
       !initiator_rfh->GetLastCommittedOrigin().IsSameOriginWith(
           url::Origin::Create(
               properties->mapped_url_->GetValueIgnoringVisibility()))) {
+    RecordAutomaticBeaconOutcome(blink::AutomaticBeaconOutcome::kNotSameOrigin);
     return;
   }
 
@@ -8659,6 +8671,8 @@ void RenderFrameHostImpl::MaybeSendFencedFrameAutomaticReportingBeacon(
   //             Storage worklet will have a beacon sent to its endpoint.
   if (base::FeatureList::IsEnabled(
           blink::features::kFencedFramesM119Features)) {
+    RecordAutomaticBeaconOutcome(blink::AutomaticBeaconOutcome::kSuccess);
+
     network::AttributionReportingRuntimeFeatures
         attribution_reporting_features =
             info ? info->attribution_reporting_runtime_features
@@ -8682,6 +8696,10 @@ void RenderFrameHostImpl::MaybeSendFencedFrameAutomaticReportingBeacon(
           GetFrameTreeNodeId(), navigation_request.GetNavigationId());
     }
   } else {
+    if (!info->destinations.empty()) {
+      RecordAutomaticBeaconOutcome(blink::AutomaticBeaconOutcome::kSuccess);
+    }
+
     for (blink::FencedFrame::ReportingDestination destination :
          info->destinations) {
       initiator_rfh->SendFencedFrameReportingBeaconInternal(

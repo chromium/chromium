@@ -473,6 +473,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Navigation.AutomaticBeaconOutcome"
+    enum="AutomaticBeaconOutcome" expires_after="2024-10-01">
+  <owner>lbrady@google.com</owner>
+  <owner>shivanisha@chromium.org</owner>
+  <summary>
+    Record if a 'reserved.top_navigation' automatic beacon was sent out, or the
+    reason for not sending the beacon if it was not sent out.
+  </summary>
+</histogram>
+
 <histogram name="Navigation.BackForward.CacheFlags" enum="NavigationCacheEnum"
     expires_after="M85">
   <owner>clamy@chromium.org</owner>
@@ -676,6 +686,20 @@ chromium-metrics-reviews@google.com.
   <summary>
     The percentage of time that HTTPS pages were in the foreground, as compared
     to total foreground time. Recorded whenever user metrics are uploaded.
+  </summary>
+</histogram>
+
+<histogram name="Navigation.FencedFrameTopNavigation"
+    enum="FencedFrameNavigationState" expires_after="2024-10-01">
+  <owner>lbrady@google.com</owner>
+  <owner>shivanisha@chromium.org</owner>
+  <summary>
+    This records top-level navigations that originated from a fenced frame or
+    URN iframe. At navigation start, a 'Begin' is logged. If the navigation
+    commits (i.e. doesn't fail at some point in the navigation process), a
+    'Commit' is logged. To get the percentage of top-level navigations
+    originating from a fenced frame or URN iframe that successfully commit,
+    divide the number of 'Commit' logs by the number of 'Begin' logs.
   </summary>
 </histogram>
 

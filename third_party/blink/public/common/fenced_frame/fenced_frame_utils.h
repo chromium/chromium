@@ -37,6 +37,12 @@ inline constexpr char kFencedFrameMandatoryUnsandboxedFlagsSandboxed[] =
 inline constexpr char kFencedFrameFailedSandboxLoadInTopLevelFrame[] =
     "Blink.FencedFrame.FailedSandboxLoadInTopLevelFrame";
 
+inline constexpr char kFencedFrameTopNavigationHistogram[] =
+    "Navigation.TopNavigationFromFencedFrame";
+
+inline constexpr char kAutomaticBeaconOutcomeHistogram[] =
+    "Navigation.AutomaticBeaconOutcome";
+
 // Corresponds to the "FencedFrameCreationOutcome" histogram enumeration type in
 // tools/metrics/histograms/enums.xml.
 //
@@ -52,6 +58,27 @@ enum class FencedFrameCreationOutcome {
   kResponseHeaderNotOptIn = 7,  // HTTP response header Supports-Loading-Mode
                                 // is not opted-in with 'fenced-frame'
   kMaxValue = kResponseHeaderNotOptIn
+};
+
+// Corresponds to the "AutomaticBeaconOutcome" histogram enumeration type in
+// tools/metrics/histograms/enums.xml.
+//
+// PLEASE DO NOT REORDER, REMOVE, OR CHANGE THE MEANING OF THESE VALUES.
+enum class AutomaticBeaconOutcome {
+  kSuccess = 0,
+  kNoUserActivation,
+  kNotSameOrigin,
+  kMaxValue = kNotSameOrigin,
+};
+
+// Corresponds to the "FencedFrameNavigationState" histogram enumeration type in
+// tools/metrics/histograms/enums.xml.
+//
+// PLEASE DO NOT REORDER, REMOVE, OR CHANGE THE MEANING OF THESE VALUES.
+enum class FencedFrameNavigationState {
+  kBegin = 0,
+  kCommit = 1,
+  kMaxValue = kCommit
 };
 
 // Whether or not a fenced frame is allowed to be navigated to `url`. For now

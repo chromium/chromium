@@ -9857,6 +9857,12 @@ Called by update_autofill_enums.py.-->
   <int value="3" label="[Deprecated] AUTO_LAUNCH_FOREGROUND_USELESS"/>
 </enum>
 
+<enum name="AutomaticBeaconOutcome">
+  <int value="0" label="Success"/>
+  <int value="1" label="No transient user activation"/>
+  <int value="2" label="Initiator frame not same-origin with mapped URL"/>
+</enum>
+
 <enum name="AutomaticLazyFrameLoadReason">
   <int value="0" label="Not eligible"/>
   <int value="1" label="Eligible for LazyEmbeds"/>
@@ -45031,6 +45037,11 @@ Called by update_permissions_policy_enum.py.-->
   <int value="7"
       label="Supports-Loading-Mode response header 'fenced-frame' not
              opted-in"/>
+</enum>
+
+<enum name="FencedFrameNavigationState">
+  <int value="0" label="Begin"/>
+  <int value="1" label="Commit"/>
 </enum>
 
 <enum name="FetchFailedReasonOrResourceRequestBlockedReason">
