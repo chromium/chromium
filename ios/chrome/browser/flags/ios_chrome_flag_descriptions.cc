@@ -513,12 +513,6 @@ const char kEnableWebChannelsDescription[] =
     "Enable folowing content from web and display Following feed on NTP based "
     "on sites that users followed.";
 
-const char kTailoredSecurityIntegrationName[] =
-    "Enable Tailored Security Integration";
-const char kTailoredSecurityIntegrationDescription[] =
-    "Enable integration between account level enhanced safe browsing and "
-    "chrome enhanced safe browsing";
-
 const char kFeedBackgroundRefreshName[] = "Enable feed background refresh";
 const char kFeedBackgroundRefreshDescription[] =
     "Schedules a feed background refresh after some minimum period of time has "

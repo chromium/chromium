@@ -3725,11 +3725,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "enable-tailored-security-integration",
-    "owners": ["joemerramos", "ajuma", "bling-flags@google.com"],
-    "expiry_milestone": 120
-  },
-  {
     "name": "enable-tailored-security-retry-for-sync-users",
     "owners": ["jacastro", "chrome-counter-abuse-alerts@google.com"],
     "expiry_milestone": 120

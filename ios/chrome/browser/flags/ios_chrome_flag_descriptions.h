@@ -357,11 +357,6 @@ extern const char kEnableRedInterstitialFaceliftDescription[];
 extern const char kEditPasswordsInSettingsName[];
 extern const char kEditPasswordsInSettingsDescription[];
 
-// Title and description for the flag to enable kTailoredSecurityIntegration
-// flag on iOS.
-extern const char kTailoredSecurityIntegrationName[];
-extern const char kTailoredSecurityIntegrationDescription[];
-
 // Title and description for the flag to enable address verification support in
 // autofill address save prompts.
 extern const char kEnableAutofillAddressSavePromptAddressVerificationName[];

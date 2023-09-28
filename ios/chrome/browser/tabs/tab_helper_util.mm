@@ -174,12 +174,9 @@ void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
   SafeBrowsingUrlAllowList::CreateForWebState(web_state);
   SafeBrowsingUnsafeResourceContainer::CreateForWebState(web_state);
 
-  if (base::FeatureList::IsEnabled(
-          safe_browsing::kTailoredSecurityIntegration)) {
-    TailoredSecurityTabHelper::CreateForWebState(
-        web_state,
-        TailoredSecurityServiceFactory::GetForBrowserState(browser_state));
-  }
+  TailoredSecurityTabHelper::CreateForWebState(
+      web_state,
+      TailoredSecurityServiceFactory::GetForBrowserState(browser_state));
 
   PolicyUrlBlockingTabHelper::CreateForWebState(web_state);
 

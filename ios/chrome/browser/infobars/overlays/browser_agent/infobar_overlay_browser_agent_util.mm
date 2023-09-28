@@ -16,11 +16,8 @@ void AttachInfobarOverlayBrowserAgent(Browser* browser) {
   InfobarOverlayBrowserAgent* browser_agent =
       InfobarOverlayBrowserAgent::FromBrowser(browser);
 
-  if (base::FeatureList::IsEnabled(
-          safe_browsing::kTailoredSecurityIntegration)) {
-    browser_agent->AddDefaultInfobarInteractionHandlerForInfobarType(
-        InfobarType::kInfobarTypeTailoredSecurityService);
-  }
+  browser_agent->AddDefaultInfobarInteractionHandlerForInfobarType(
+      InfobarType::kInfobarTypeTailoredSecurityService);
 
   browser_agent->AddDefaultInfobarInteractionHandlerForInfobarType(
       InfobarType::kInfobarTypePasswordSave);
