@@ -172,6 +172,56 @@
       'win-angle-chromium-x86-builder': 'gpu_tests_release_bot_dcheck_always_on_x86_reclient',
     },
 
+    # TODO: b/278144885 - Rename build perf builders.
+    'chromium.build': {
+      'android-build-perf-developer': {
+        'builtin': 'android_developer_siso',
+        'reproxy': 'android_developer_reclient',
+      },
+      # Keep in sync with android-arm64-rel
+      'build-perf-android': 'android_release_trybot_arm64_webview_monochrome_expectations_fastbuild_native_coverage_reclient',
+      'build-perf-android-siso': {
+        'builtin': 'android_release_trybot_arm64_webview_monochrome_expectations_fastbuild_native_coverage_siso',
+        'reproxy': 'android_release_trybot_arm64_webview_monochrome_expectations_fastbuild_native_coverage_reclient',
+      },
+      # Keep in sync with linux-rel
+      'build-perf-linux': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_code_coverage_do_typecheck_reclient',
+      'build-perf-linux-siso': {
+        'builtin': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_code_coverage_do_typecheck_siso',
+        'reproxy': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_code_coverage_do_typecheck_reclient',
+      },
+      # Keep in sync with win-rel
+      'build-perf-windows': 'gpu_tests_release_trybot_resource_allowlisting_code_coverage_reclient',
+      'build-perf-windows-siso': {
+        'builtin': 'gpu_tests_release_trybot_resource_allowlisting_code_coverage_siso',
+        'reproxy': 'gpu_tests_release_trybot_resource_allowlisting_code_coverage_reclient',
+      },
+      'linux-build-perf-developer': {
+        'builtin': 'developer_siso',
+        'reproxy': 'developer_reclient',
+      },
+      # Keep in sync with linux-chromeos-rel
+      'linux-chromeos-build-perf': 'chromeos_with_codecs_release_trybot_code_coverage_reclient',
+      'linux-chromeos-build-perf-siso': {
+        'builtin': 'chromeos_with_codecs_release_trybot_code_coverage_siso',
+        'reproxy': 'chromeos_with_codecs_release_trybot_code_coverage_reclient',
+      },
+      # Keep in sync with mac-rel
+      'mac-build-perf': 'gpu_tests_release_trybot_no_symbols_mac_code_coverage_x64_reclient',
+      'mac-build-perf-developer': {
+        'builtin': 'developer_siso',
+        'reproxy': 'developer_reclient',
+      },
+      'mac-build-perf-siso': {
+        'builtin': 'gpu_tests_release_trybot_no_symbols_mac_code_coverage_x64_siso',
+        'reproxy': 'gpu_tests_release_trybot_no_symbols_mac_code_coverage_x64_reclient',
+      },
+      'win-build-perf-developer': {
+        'builtin': 'developer_siso',
+        'reproxy': 'developer_reclient',
+      },
+    },
+
     'chromium.cft': {
       'linux-arm64-rel-cft': 'gpu_tests_release_bot_minimal_symbols_chrome_for_testing_reclient_arm64',
       'linux-rel-cft': 'gpu_tests_release_bot_minimal_symbols_chrome_for_testing_reclient',
@@ -421,30 +471,8 @@
       'Win 10 Fast Ring': 'release_trybot_minimal_symbols_reclient',
       'Win x64 Builder (reclient compare)': 'gpu_tests_release_bot_minimal_symbols_reclient',
       'Win x64 Builder (reclient)': 'gpu_tests_release_bot_minimal_symbols_reclient',
-      'android-build-perf-developer': {
-        'builtin': 'android_developer_siso',
-        'reproxy': 'android_developer_reclient',
-      },
       'android-fieldtrial-rel': 'android_release_bot_minimal_symbols_x64_fastbuild_webview_trichrome_reclient',
       'android-perfetto-rel': 'perfetto_release_bot_reclient_android',
-      # Keep in sync with android-arm64-rel
-      'build-perf-android': 'android_release_trybot_arm64_webview_monochrome_expectations_fastbuild_native_coverage_reclient',
-      'build-perf-android-siso': {
-        'builtin': 'android_release_trybot_arm64_webview_monochrome_expectations_fastbuild_native_coverage_siso',
-        'reproxy': 'android_release_trybot_arm64_webview_monochrome_expectations_fastbuild_native_coverage_reclient',
-      },
-      # Keep in sync with linux-rel
-      'build-perf-linux': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_code_coverage_do_typecheck_reclient',
-      'build-perf-linux-siso': {
-        'builtin': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_code_coverage_do_typecheck_siso',
-        'reproxy': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_code_coverage_do_typecheck_reclient',
-      },
-      # Keep in sync with win-rel
-      'build-perf-windows': 'gpu_tests_release_trybot_resource_allowlisting_code_coverage_reclient',
-      'build-perf-windows-siso': {
-        'builtin': 'gpu_tests_release_trybot_resource_allowlisting_code_coverage_siso',
-        'reproxy': 'gpu_tests_release_trybot_resource_allowlisting_code_coverage_reclient',
-      },
       # TODO(crbug.com/1235218): remove after the migration.
       'chromeos-amd64-generic-rel (reclient compare)': 'chromeos_amd64-generic-vm_use_fake_dbus_clients_reclient',
       'chromeos-amd64-generic-rel (reclient)': 'chromeos_amd64-generic-vm_use_fake_dbus_clients_reclient',
@@ -472,17 +500,7 @@
       'linux-blink-heap-concurrent-marking-tsan-rel': 'release_trybot_minimal_symbols_tsan',
       'linux-blink-heap-verification': 'release_bot_enable_blink_heap_verification_dcheck_always_on_reclient',
       'linux-blink-wpt-reset-rel': 'release_bot_blink_minimal_symbols_reclient',
-      'linux-build-perf-developer': {
-        'builtin': 'developer_siso',
-        'reproxy': 'developer_reclient',
-      },
       'linux-chromeos-annotator-rel': 'chromeos_with_codecs_release_bot_reclient',
-      # Keep in sync with linux-chromeos-rel
-      'linux-chromeos-build-perf': 'chromeos_with_codecs_release_trybot_code_coverage_reclient',
-      'linux-chromeos-build-perf-siso': {
-        'builtin': 'chromeos_with_codecs_release_trybot_code_coverage_siso',
-        'reproxy': 'chromeos_with_codecs_release_trybot_code_coverage_reclient',
-      },
       'linux-cr23-rel': 'release_bot_minimal_symbols_reclient',
       'linux-fieldtrial-rel': 'release_bot_minimal_symbols_reclient',
       'linux-headless-shell-rel': 'headless_shell_release_bot_reclient',
@@ -502,16 +520,6 @@
       'linux-wpt-fyi-rel': 'release_trybot_minimal_symbols_reclient',
       'linux-wpt-identity-fyi-rel': 'release_bot_minimal_symbols_reclient',
       'linux-wpt-input-fyi-rel': 'release_bot_minimal_symbols_reclient',
-      # Keep in sync with mac-rel
-      'mac-build-perf': 'gpu_tests_release_trybot_no_symbols_mac_code_coverage_x64_reclient',
-      'mac-build-perf-developer': {
-        'builtin': 'developer_siso',
-        'reproxy': 'developer_reclient',
-      },
-      'mac-build-perf-siso': {
-        'builtin': 'gpu_tests_release_trybot_no_symbols_mac_code_coverage_x64_siso',
-        'reproxy': 'gpu_tests_release_trybot_no_symbols_mac_code_coverage_x64_reclient',
-      },
       'mac-cr23-rel': 'release_bot_minimal_symbols_reclient',
       'mac-osxbeta-rel': 'gpu_tests_debug_trybot_reclient',
       'mac-perfetto-rel': 'perfetto_release_bot_reclient',
@@ -524,10 +532,6 @@
       'mac13-arm64-wpt-content-shell-fyi-rel': 'mac_arm64_release_bot_reclient',
       'mac13-wpt-content-shell-fyi-rel': 'release_trybot_minimal_symbols_reclient',
       'win-annotator-rel': 'release_bot_reclient',
-      'win-build-perf-developer': {
-        'builtin': 'developer_siso',
-        'reproxy': 'developer_reclient',
-      },
       'win-celab-builder-rel': 'release_bot_minimal_symbols_reclient',
       'win-cr23-rel': 'release_bot_minimal_symbols_reclient',
       'win-fieldtrial-rel': 'release_bot_minimal_symbols_reclient',
