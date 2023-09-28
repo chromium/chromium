@@ -6738,3 +6738,6 @@ crbug.com/1486720 [ Mac ] virtual/view-transition/inspector-protocol/css/css-get
 crbug.com/1486720 [ Mac ] virtual/view-transition-mpa-serialization/inspector-protocol/css/css-get-keyframes-for-view-transitions.js [ Failure Pass ]
 crbug.com/1486720 [ Mac ] virtual/view-transition-wide-gamut/inspector-protocol/css/css-get-keyframes-for-view-transitions.js [ Failure Pass ]
 crbug.com/1486105 animations/responsive/zoom-responsive-transform-animation-003.html [ Failure Pass ]
+
+# Gardener 2023-09-28
+crbug.com/1487363 [ Linux ] inspector-protocol/overlay/overlay-with-emulation-scale.js [ Failure ]
