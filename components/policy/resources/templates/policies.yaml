@@ -1162,6 +1162,7 @@ policies:
   1161: DataControlsRules
   1162: DeviceEphemeralNetworkPoliciesEnabled
   1163: PPAPISharedImagesForVideoDecoderAllowed
+  1164: ProfileReauthPrompt
 atomic_groups:
   1: Homepage
   2: RemoteAccess

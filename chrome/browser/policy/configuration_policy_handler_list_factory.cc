@@ -220,6 +220,7 @@
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #include "chrome/browser/enterprise/idle/action.h"
+#include "chrome/browser/enterprise/signin/enterprise_signin_prefs.h"
 #include "components/device_signals/core/browser/pref_names.h"  // nogncheck due to crbug.com/1125897
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
@@ -2387,6 +2388,11 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
           key::kProfileSeparationDataMigrationSettings,
           prefs::kProfileSeparationDataMigrationSettings,
           base::Value::Type::INTEGER)));
+  handlers->AddHandler(std::make_unique<IntRangePolicyHandler>(
+      key::kProfileReauthPrompt, enterprise_signin::prefs::kProfileReauthPrompt,
+      static_cast<int>(enterprise_signin::ProfileReauthPrompt::kDoNotPrompt),
+      static_cast<int>(enterprise_signin::ProfileReauthPrompt::kPromptInTab),
+      false));
 #elif BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
   handlers->AddHandler(
       std::make_unique<ManagedAccountRestrictionsPolicyHandler>(chrome_schema));
