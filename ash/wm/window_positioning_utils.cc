@@ -210,7 +210,7 @@ chromeos::OrientationType GetSnapDisplayOrientation(
     const display::Display& display) {
   // This function is used by `GetSnappedWindowBounds()` for clamshell mode
   // only. Tablet mode uses a different function
-  // `SplitViewController::GetSnappedWindowBoundsInScreen()`1.
+  // `SplitViewController::GetSnappedWindowBoundsInScreen()`.
   auto* tablet_mode_controller = Shell::Get()->tablet_mode_controller();
   DCHECK(!tablet_mode_controller || !tablet_mode_controller->InTabletMode());
 

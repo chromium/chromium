@@ -67,9 +67,6 @@ void LockLayoutManager::OnWindowRemovedFromLayout(aura::Window* child) {
   keyboard::KeyboardUIController::Get()->UpdateKeyboardConfig(config);
 }
 
-void LockLayoutManager::OnChildWindowVisibilityChanged(aura::Window* child,
-                                                       bool visible) {}
-
 void LockLayoutManager::SetChildBounds(aura::Window* child,
                                        const gfx::Rect& requested_bounds) {
   WindowState* window_state = WindowState::Get(child);
