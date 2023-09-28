@@ -26,8 +26,8 @@ found in the LICENSE file.
             style="@style/CardboardUiButton"
             android:id="@+id/cardboard_ui_back_button"
             android:contentDescription="@string/close"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:src="@drawable/btn_close_white"
             android:layout_gravity="start|top"/>
     </FrameLayout>
@@ -53,8 +53,8 @@ found in the LICENSE file.
                 style="@style/CardboardUiButton"
                 android:id="@+id/cardboard_ui_settings_button"
                 android:contentDescription="@string/vr_menu"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:src="@drawable/ic_more_vert_24dp_on_dark_bg"
                 android:layout_gravity="end|top"/>
         </FrameLayout>
