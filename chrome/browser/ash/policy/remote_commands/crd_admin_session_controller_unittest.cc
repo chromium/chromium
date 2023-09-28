@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/policy/remote_commands/crd_admin_session_controller.h"
 
 #include <string>
+#include <tuple>
 
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
@@ -48,6 +49,7 @@ using remoting::mojom::StartSupportSessionResponse;
 using remoting::mojom::StartSupportSessionResponsePtr;
 using remoting::mojom::SupportHostObserver;
 using remoting::mojom::SupportSessionParamsPtr;
+using remoting::protocol::ErrorCode;
 
 constexpr char kTestUserName[] = "test-username";
 
@@ -287,6 +289,12 @@ class CrdAdminSessionControllerTest : public ash::AshTestBase {
     ASSERT_TRUE(terminate_signal.GetCallback());
   }
 
+  void SimulateLoginScreenIsVisible() {
+    // Notifies the observers that the login screen is visible and ensure the
+    // `RemoteActivityNotificationController::Init()` is called.
+    session_manager().NotifyLoginOrLockScreenVisible();
+  }
+
   const aura::Window& GetLockScreenContainersContainer() {
     return CHECK_DEREF(ash::Shell::Get()->GetPrimaryRootWindow()->GetChildById(
         ash::kShellWindowId_LockScreenContainersContainer));
@@ -309,6 +317,8 @@ class CrdAdminSessionControllerTest : public ash::AshTestBase {
   mojo::PendingReceiver<SupportHostObserver> BindObserver() {
     return observer_.BindNewPipeAndPassReceiver();
   }
+
+  void ResetObserver() { observer_.reset(); }
 
   void DisableFeature(const base::Feature& feature) {
     feature_.Reset();
@@ -549,7 +559,7 @@ TEST_F(CrdAdminSessionControllerTest,
   Response response = WaitForResponse();
   ASSERT_TRUE(response.HasError());
   EXPECT_EQ("host disconnected", response.error_message());
-  EXPECT_EQ(ResultCode::FAILURE_CRD_HOST_ERROR, response.error_code());
+  EXPECT_EQ(ResultCode::HOST_SESSION_DISCONNECTED, response.error_code());
 }
 
 TEST_F(CrdAdminSessionControllerTest,
@@ -561,7 +571,7 @@ TEST_F(CrdAdminSessionControllerTest,
   Response response = WaitForResponse();
   ASSERT_TRUE(response.HasError());
   EXPECT_EQ("policy error", response.error_message());
-  EXPECT_EQ(ResultCode::FAILURE_CRD_HOST_ERROR, response.error_code());
+  EXPECT_EQ(ResultCode::FAILURE_HOST_POLICY_ERROR, response.error_code());
 }
 
 TEST_F(CrdAdminSessionControllerTest,
@@ -573,19 +583,8 @@ TEST_F(CrdAdminSessionControllerTest,
   Response response = WaitForResponse();
   ASSERT_TRUE(response.HasError());
   EXPECT_EQ("invalid domain error", response.error_message());
-  EXPECT_EQ(ResultCode::FAILURE_CRD_HOST_ERROR, response.error_code());
-}
-
-TEST_F(CrdAdminSessionControllerTest,
-       ShouldReportErrorWhenRemotingServiceReportsStateError) {
-  SupportHostObserver& observer = StartCrdHostAndBindObserver();
-
-  observer.OnHostStateError(123);
-
-  Response response = WaitForResponse();
-  ASSERT_TRUE(response.HasError());
-  EXPECT_EQ("host state error", response.error_message());
-  EXPECT_EQ(ResultCode::FAILURE_CRD_HOST_ERROR, response.error_code());
+  EXPECT_EQ(ResultCode::FAILURE_HOST_INVALID_DOMAIN_ERROR,
+            response.error_code());
 }
 
 TEST_F(CrdAdminSessionControllerTest,
@@ -760,9 +759,7 @@ TEST_F(CrdAdminSessionControllerTest,
   SetPref(prefs::kRemoteAdminWasPresent, true);
   InitControllerWithNoReconnectableSession();
 
-  // Notifies the observers that the login screen is visible and ensure the
-  // `RemoteActivityNotificationController::Init()` is called.
-  session_manager().NotifyLoginOrLockScreenVisible();
+  SimulateLoginScreenIsVisible();
 
   EXPECT_TRUE(IsNotificationViewVisible());
 }
@@ -773,9 +770,7 @@ TEST_F(CrdAdminSessionControllerTest,
   SetPref(prefs::kRemoteAdminWasPresent, false);
   InitControllerWithNoReconnectableSession();
 
-  // Notifies the observers that the login screen is visible and ensure the
-  // `RemoteActivityNotificationController::Init()` is called.
-  session_manager().NotifyLoginOrLockScreenVisible();
+  SimulateLoginScreenIsVisible();
 
   EXPECT_FALSE(IsNotificationViewVisible());
 }
@@ -786,9 +781,7 @@ TEST_F(CrdAdminSessionControllerTest,
   SetPref(prefs::kRemoteAdminWasPresent, true);
   InitControllerWithNoReconnectableSession();
 
-  // Notifies the observers that the login screen is visible and ensure the
-  // `RemoteActivityNotificationController::Init()` is called.
-  session_manager().NotifyLoginOrLockScreenVisible();
+  SimulateLoginScreenIsVisible();
 
   EXPECT_TRUE(IsNotificationViewVisible());
 
@@ -811,9 +804,7 @@ TEST_F(CrdAdminSessionControllerTest,
   observer.OnHostStateConnected(kTestUserName);
   FlushForTesting();
 
-  // Notifies the observers that the login screen is visible and ensure the
-  // `RemoteActivityNotificationController::Init()` is called.
-  session_manager().NotifyLoginOrLockScreenVisible();
+  SimulateLoginScreenIsVisible();
 
   EXPECT_TRUE(GetPref(prefs::kRemoteAdminWasPresent));
 
@@ -822,8 +813,9 @@ TEST_F(CrdAdminSessionControllerTest,
   EXPECT_FALSE(GetPref(prefs::kRemoteAdminWasPresent));
 }
 
-TEST_F(CrdAdminSessionControllerTest,
-       ShouldNotResetStatePrefWhenCurrentSessionIsCurtained) {
+TEST_F(
+    CrdAdminSessionControllerTest,
+    ShouldNotResetStatePrefWhenDismissingNotificationWithinACurtainedSession) {
   EnableFeature(kEnableCrdAdminRemoteAccessV2);
   SetPref(prefs::kRemoteAdminWasPresent, true);
   InitControllerWithNoReconnectableSession();
@@ -836,15 +828,62 @@ TEST_F(CrdAdminSessionControllerTest,
   observer.OnHostStateConnected(kTestUserName);
   FlushForTesting();
 
-  // Notifies the observers that the login screen is visible and ensure the
-  // `RemoteActivityNotificationController::Init()` is called.
-  session_manager().NotifyLoginOrLockScreenVisible();
+  SimulateLoginScreenIsVisible();
 
   EXPECT_TRUE(GetPref(prefs::kRemoteAdminWasPresent));
 
   session_controller().ClickNotificationButtonForTesting();
 
   EXPECT_TRUE(GetPref(prefs::kRemoteAdminWasPresent));
+}
+
+TEST_F(CrdAdminSessionControllerTest,
+       ShouldReportErrorWhenRemotingServiceReportsStateError) {
+  const std::tuple<ErrorCode, ResultCode> test_cases[] = {
+      {ErrorCode::OK, ResultCode::SUCCESS},
+      {ErrorCode::PEER_IS_OFFLINE, ResultCode::FAILURE_PEER_IS_OFFLINE},
+      {ErrorCode::SESSION_REJECTED, ResultCode::FAILURE_SESSION_REJECTED},
+      {ErrorCode::INCOMPATIBLE_PROTOCOL,
+       ResultCode::FAILURE_INCOMPATIBLE_PROTOCOL},
+      {ErrorCode::AUTHENTICATION_FAILED,
+       ResultCode::FAILURE_AUTHENTICATION_FAILED},
+      {ErrorCode::INVALID_ACCOUNT, ResultCode::FAILURE_INVALID_ACCOUNT},
+      {ErrorCode::CHANNEL_CONNECTION_ERROR,
+       ResultCode::FAILURE_CHANNEL_CONNECTION_ERROR},
+      {ErrorCode::SIGNALING_ERROR, ResultCode::FAILURE_SIGNALING_ERROR},
+      {ErrorCode::SIGNALING_TIMEOUT, ResultCode::FAILURE_SIGNALING_TIMEOUT},
+      {ErrorCode::HOST_OVERLOAD, ResultCode::FAILURE_HOST_OVERLOAD},
+      {ErrorCode::MAX_SESSION_LENGTH, ResultCode::FAILURE_MAX_SESSION_LENGTH},
+      {ErrorCode::HOST_CONFIGURATION_ERROR,
+       ResultCode::FAILURE_HOST_CONFIGURATION_ERROR},
+      {ErrorCode::UNKNOWN_ERROR, ResultCode::FAILURE_UNKNOWN_ERROR},
+      {ErrorCode::ELEVATION_ERROR, ResultCode::FAILURE_UNKNOWN_ERROR},
+      {ErrorCode::HOST_CERTIFICATE_ERROR,
+       ResultCode::FAILURE_HOST_CERTIFICATE_ERROR},
+      {ErrorCode::HOST_REGISTRATION_ERROR,
+       ResultCode::FAILURE_HOST_REGISTRATION_ERROR},
+      {ErrorCode::EXISTING_ADMIN_SESSION,
+       ResultCode::FAILURE_EXISTING_ADMIN_SESSION},
+      {ErrorCode::AUTHZ_POLICY_CHECK_FAILED,
+       ResultCode::FAILURE_AUTHZ_POLICY_CHECK_FAILED},
+      {ErrorCode::LOCATION_AUTHZ_POLICY_CHECK_FAILED,
+       ResultCode::FAILURE_LOCATION_AUTHZ_POLICY_CHECK_FAILED},
+      {ErrorCode::UNAUTHORIZED_ACCOUNT,
+       ResultCode::FAILURE_UNAUTHORIZED_ACCOUNT}};
+
+  for (auto& [error_code, expected_result_code] : test_cases) {
+    SupportHostObserver& observer = StartCrdHostAndBindObserver();
+
+    observer.OnHostStateError(error_code);
+
+    Response response = WaitForResponse();
+    ASSERT_TRUE(response.HasError());
+    EXPECT_EQ("host state error", response.error_message());
+    EXPECT_EQ(expected_result_code, response.error_code());
+
+    ResetObserver();
+    TerminateActiveSession();
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(CrdAdminSessionControllerTestWithBoolParams,

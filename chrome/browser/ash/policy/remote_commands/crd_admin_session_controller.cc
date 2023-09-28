@@ -45,6 +45,7 @@ using SessionParameters = StartCrdSessionJobDelegate::SessionParameters;
 using CurtainSessionStartedCallback = base::OnceClosure;
 using HostSessionStartedCallback = base::OnceClosure;
 using remoting::features::kEnableCrdAdminRemoteAccessV2;
+using remoting::protocol::ErrorCode;
 
 namespace {
 
@@ -156,7 +157,7 @@ class SupportHostObserver : public remoting::mojom::SupportHostObserver {
       ReportSessionTermination(base::Time::Now() -
                                session_connected_time_.value());
     }
-    ReportError(ResultCode::FAILURE_CRD_HOST_ERROR, "host disconnected");
+    ReportError(ResultCode::HOST_SESSION_DISCONNECTED, "host disconnected");
   }
   void OnNatPolicyChanged(
       remoting::mojom::NatPolicyStatePtr nat_policy_state) override {
@@ -165,23 +166,31 @@ class SupportHostObserver : public remoting::mojom::SupportHostObserver {
   void OnHostStateError(int64_t error_code) override {
     CRD_DVLOG(3) << __FUNCTION__ << " with error code: " << error_code;
 
-    if (error_code == remoting::protocol::ErrorCode::DISALLOWED_BY_POLICY) {
+    if (error_code == ErrorCode::DISALLOWED_BY_POLICY) {
       ReportError(ResultCode::FAILURE_DISABLED_BY_POLICY,
                   "enterprise remote support disabled");
       return;
     }
 
-    ReportError(ResultCode::FAILURE_CRD_HOST_ERROR, "host state error");
+    const ResultCode result_code =
+        ConvertErrorCodeToResultCode(static_cast<ErrorCode>(error_code));
+
+    if (result_code == ResultCode::FAILURE_UNKNOWN_ERROR) {
+      CRD_DVLOG(3) << __FUNCTION__
+                   << " unexpected error code received : " << error_code;
+    }
+    ReportError(result_code, "host state error");
   }
   void OnPolicyError() override {
     CRD_DVLOG(3) << __FUNCTION__;
 
-    ReportError(ResultCode::FAILURE_CRD_HOST_ERROR, "policy error");
+    ReportError(ResultCode::FAILURE_HOST_POLICY_ERROR, "policy error");
   }
   void OnInvalidDomainError() override {
     CRD_DVLOG(3) << __FUNCTION__;
 
-    ReportError(ResultCode::FAILURE_CRD_HOST_ERROR, "invalid domain error");
+    ReportError(ResultCode::FAILURE_HOST_INVALID_DOMAIN_ERROR,
+                "invalid domain error");
   }
 
   void ReportError(ResultCode error_code, const std::string& error_message) {

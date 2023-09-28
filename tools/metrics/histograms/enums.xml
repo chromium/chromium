@@ -32212,6 +32212,27 @@ Called by update_document_policy_enum.py.-->
   <int value="6" label="FAILURE_CRD_HOST_ERROR"/>
   <int value="7" label="FAILURE_UNMANAGED_ENVIRONMENT"/>
   <int value="8" label="FAILURE_DISABLED_BY_POLICY"/>
+  <int value="9" label="FAILURE_PEER_IS_OFFLINE"/>
+  <int value="10" label="FAILURE_SESSION_REJECTED"/>
+  <int value="11" label="FAILURE_INCOMPATIBLE_PROTOCOL"/>
+  <int value="12" label="FAILURE_AUTHENTICATION_FAILED"/>
+  <int value="13" label="FAILURE_INVALID_ACCOUNT"/>
+  <int value="14" label="FAILURE_CHANNEL_CONNECTION_ERROR"/>
+  <int value="15" label="FAILURE_SIGNALING_ERROR"/>
+  <int value="16" label="FAILURE_SIGNALING_TIMEOUT"/>
+  <int value="17" label="FAILURE_HOST_OVERLOAD"/>
+  <int value="18" label="FAILURE_MAX_SESSION_LENGTH"/>
+  <int value="19" label="FAILURE_HOST_CONFIGURATION_ERROR"/>
+  <int value="20" label="FAILURE_HOST_CERTIFICATE_ERROR"/>
+  <int value="21" label="FAILURE_HOST_REGISTRATION_ERROR"/>
+  <int value="22" label="FAILURE_EXISTING_ADMIN_SESSION"/>
+  <int value="23" label="FAILURE_AUTHZ_POLICY_CHECK_FAILED"/>
+  <int value="24" label="FAILURE_LOCATION_AUTHZ_POLICY_CHECK_FAILED"/>
+  <int value="25" label="FAILURE_UNAUTHORIZED_ACCOUNT"/>
+  <int value="26" label="FAILURE_HOST_POLICY_ERROR"/>
+  <int value="27" label="FAILURE_HOST_INVALID_DOMAIN_ERROR"/>
+  <int value="28" label="HOST_SESSION_DISCONNECTED"/>
+  <int value="29" label="FAILURE_UNKNOWN_ERROR"/>
 </enum>
 
 <enum name="EnterpriseCrdUserType">
