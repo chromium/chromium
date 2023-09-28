@@ -4,6 +4,7 @@
 
 #include "content/browser/preloading/prefetch/prefetch_response_reader.h"
 
+#include "base/debug/dump_without_crashing.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "content/browser/preloading/prefetch/prefetch_streaming_url_loader.h"
@@ -93,15 +94,42 @@ void PrefetchResponseReader::OnServingURLLoaderMojoDisconnect() {
 }
 
 PrefetchRequestHandler PrefetchResponseReader::CreateRequestHandler() {
+  if (create_request_handler_called_) {
+    // Monitor cases where CreateRequestHandler() is called multiple times, for
+    // investigation of crbug.com/1483599. Anyway such cases should be handled
+    // (failing gracefully) below, e.g. by checking `body_`.
+    // TODO(crbug.com/1483599): Remove this.
+    base::debug::DumpWithoutCrashing();
+  }
+  create_request_handler_called_ = true;
+
+  // Returns a null handler if some checks fail here.
+  // This is a subset of the checks in `BindAndStart()`, but not identical,
+  // because `load_state_` can be transitioned between the two methods. Still
+  // the CHECKs in `BindAndStart()` should pass even when `load_state_` is
+  // transitioned.
+  switch (load_state_) {
+    case LoadState::kResponseReceived:
+    case LoadState::kCompleted:
+    case LoadState::kFailed:
+      if (!body_) {
+        // This might be because `CreateRequestHandler()` is called for the
+        // second time.
+        return {};
+      }
+      break;
+
+    case LoadState::kRedirectHandled:
+      break;
+
+    case LoadState::kStarted:
+    case LoadState::kFailedResponseReceived:
+      return {};
+  }
+
   if (streaming_url_loader_) {
     streaming_url_loader_->OnStartServing();
   }
-
-  // Currently only one client is allowed.
-  // This CHECK is also for investigation of crbug.com/1483599.
-  // TODO(crbug.com/1449360): Actually support multiple clients.
-  CHECK(!create_request_handler_called_);
-  create_request_handler_called_ = true;
 
   return base::BindOnce(&PrefetchResponseReader::BindAndStart,
                         base::WrapRefCounted(this), std::move(body_));
