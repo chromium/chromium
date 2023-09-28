@@ -9,7 +9,6 @@ import * as Common from 'devtools/core/common/common.js';
 
 (async function() {
   TestRunner.addResult(`Tests that breakpoints are not activated on page reload.Bug 41461\n`);
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.showPanel('sources');
   await TestRunner.evaluateInPagePromise(`
       function testFunction()

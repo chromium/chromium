@@ -9,7 +9,6 @@ import {ConsoleTestRunner} from 'console_test_runner';
 (async function() {
   TestRunner.addResult(
       `Tests resource tree model on iframe addition, compares resource tree against golden. Every line is important.\n`);
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('resources');
   await TestRunner.addStylesheetTag('resources/styles-initial.css');

@@ -11,7 +11,6 @@ import * as Host from 'devtools/core/host/host.js';
 
 (async function() {
   TestRunner.addResult(`Tests file system project.\n`);
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.showPanel('sources');
 
   function fileSystemUISourceCodes() {

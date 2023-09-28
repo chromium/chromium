@@ -9,7 +9,6 @@ import {NetworkTestRunner} from 'network_test_runner';
 
 (async function() {
   TestRunner.addResult(`Tests asynchronous network initiator for image loaded from JS.\n`);
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.loadLegacyModule('console');
   await TestRunner.loadLegacyModule('components');
   await TestRunner.showPanel('sources');

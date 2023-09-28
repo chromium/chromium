@@ -13,7 +13,6 @@ import * as SourcesModule from 'devtools/panels/sources/sources.js';
 
 (async function() {
   TestRunner.addResult(`Tests object revelation in the UI.\n`);
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.loadLegacyModule('resources');
   await TestRunner.showPanel('elements');
   await TestRunner.showPanel('sources');

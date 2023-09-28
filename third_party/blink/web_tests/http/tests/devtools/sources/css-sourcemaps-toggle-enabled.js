@@ -10,7 +10,6 @@ import * as SourcesModule from 'devtools/panels/sources/sources.js';
 
 (async function() {
   TestRunner.addResult(`Verify that CSS sourcemap enabling and disabling adds/removes sourcemap sources.\n`);
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.showPanel('sources');
 
   var sourcesNavigator = new SourcesModule.SourcesNavigator.NetworkNavigatorView();

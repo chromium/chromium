@@ -8,7 +8,6 @@ import {SourcesTestRunner} from 'sources_test_runner';
 
 (async function() {
   TestRunner.addResult(`Verify that sourcemap sources are mapped with non-exact match.\n`);
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.showPanel('sources');
   await TestRunner.addStylesheetTag('./resources/s.css');
 

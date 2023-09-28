@@ -6,8 +6,10 @@ import {TestRunner} from 'test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 
 (async function() {
-  TestRunner.addResult(`Tests fetch() breakpoints.\n`);
-  await TestRunner.loadLegacyModule('sources');
+  // The await is necessary because evaluateInPagePromise can't be the first async call in the test if accurate source
+  // positions are required. evaluateInPagePromise computes line numbers based from `new Error().stack`, expecting the
+  // bottom-most frame to be the evaluateInPagePromise call.
+  await TestRunner.addResult(`Tests fetch() breakpoints.\n`);
   await TestRunner.evaluateInPagePromise(`
       function sendRequest(url)
       {

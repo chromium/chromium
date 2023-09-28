@@ -9,7 +9,6 @@ import {SourcesTestRunner} from 'sources_test_runner';
 import * as SourcesModule from 'devtools/panels/sources/sources.js';
 
 (async function() {
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.showPanel('sources');
   await UI.viewManager.showView('sources.scopeChain');
 

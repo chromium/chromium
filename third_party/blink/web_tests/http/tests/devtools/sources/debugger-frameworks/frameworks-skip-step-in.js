@@ -9,7 +9,6 @@ import * as Common from 'devtools/core/common/common.js';
 
 (async function() {
   TestRunner.addResult(`Tests the skip stack frames feature when stepping.\n`);
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.showPanel('sources');
   await TestRunner.loadHTML(`
       <input type="button" onclick="testFunction()" value="Test">

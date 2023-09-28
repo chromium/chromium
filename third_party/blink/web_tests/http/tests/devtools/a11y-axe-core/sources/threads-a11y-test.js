@@ -9,7 +9,6 @@ import {SourcesTestRunner} from 'sources_test_runner';
 (async function() {
   TestRunner.addResult('Testing accessibility in the threads sidebar pane.');
 
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.showPanel('sources');
   await SourcesTestRunner.startDebuggerTestPromise(/* quiet */ true);
 

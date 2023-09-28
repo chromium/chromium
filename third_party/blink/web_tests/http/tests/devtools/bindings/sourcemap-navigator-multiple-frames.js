@@ -15,7 +15,6 @@ const GC = async () => {
 
 (async function () {
   TestRunner.addResult(`Verify that SourceMap sources are correctly displayed in navigator.\n`);
-  await TestRunner.loadLegacyModule('sources');
 
   var sourcesNavigator = new SourcesModule.SourcesNavigator.NetworkNavigatorView();
   sourcesNavigator.show(UI.inspectorView.element);

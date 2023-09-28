@@ -11,7 +11,6 @@ import * as BindingsModule from 'devtools/models/bindings/bindings.js';
 (async function() {
   TestRunner.addResult(
       `Checks that script evaluated twice with different source and the same sourceURL won't be diverged from VM.\n`);
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.showPanel('sources');
 
   const scriptSource = '239\n//# sourceURL=test.js';

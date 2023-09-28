@@ -9,7 +9,6 @@ import * as SourcesModule from 'devtools/panels/sources/sources.js';
 
 (async function() {
   TestRunner.addResult(`Tests that execution line is revealed and highlighted when debugger is paused.\n`);
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.loadLegacyModule('source_frame');
   await TestRunner.showPanel('sources');
   await TestRunner.evaluateInPagePromise(`

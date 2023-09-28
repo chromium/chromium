@@ -9,7 +9,6 @@ import {ConsoleTestRunner} from 'console_test_runner';
 (async function() {
   TestRunner.addResult(
       `Tests that scripts for dynamically added script elements are shown in sources panel if loaded with inspector open.\n`);
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('sources');
   await TestRunner.evaluateInPagePromise(`

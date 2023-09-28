@@ -9,7 +9,6 @@ import {BindingsTestRunner} from 'bindings_test_runner';
 
 (async function() {
   TestRunner.addResult(`Tests file system project mappings.\n`);
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <style>#inspected {

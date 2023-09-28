@@ -12,7 +12,6 @@ import * as SourcesModule from 'devtools/panels/sources/sources.js';
 (async function() {
   TestRunner.addResult(`Test that link to snippet works.\n`);
 
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('console');
 

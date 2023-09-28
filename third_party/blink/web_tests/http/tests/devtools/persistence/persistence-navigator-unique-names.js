@@ -10,7 +10,6 @@ import * as SourcesModule from 'devtools/panels/sources/sources.js';
 
 (async function() {
   TestRunner.addResult(`Verify that navigator view removes mapped UISourceCodes.\n`);
-  await TestRunner.loadLegacyModule('sources');
 
   var filesNavigator = new SourcesModule.SourcesNavigator.FilesNavigatorView();
   filesNavigator.show(UI.inspectorView.element);

@@ -7,7 +7,6 @@ import {SourcesTestRunner} from 'sources_test_runner';
 
 (async function() {
   TestRunner.addResult(`Verify that network UISourceCode has metadata.\n`);
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.showPanel('sources');
   await TestRunner.addStylesheetTag('resources/style.css');
 

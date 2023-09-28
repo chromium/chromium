@@ -11,7 +11,6 @@ import {SourcesTestRunner} from 'sources_test_runner';
       `Test that command line api does not mask values of scope variables while evaluating on a call frame.\n`);
 
   await TestRunner.loadLegacyModule('console');
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.showPanel('console');
 
   await TestRunner.evaluateInPagePromise(`

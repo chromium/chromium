@@ -11,7 +11,6 @@ import * as UIModule from 'devtools/ui/legacy/legacy.js';
 (async function() {
   TestRunner.addResult(`Tests script snippet model.\n`);
   await TestRunner.loadLegacyModule('console');
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.loadLegacyModule('snippets');
 
   await TestRunner.showPanel('sources');

@@ -10,7 +10,6 @@ import * as BindingsModule from 'devtools/models/bindings/bindings.js';
 
 (async function() {
   TestRunner.addResult(`Tests SourceMap and StyleSheetMapping.\n`);
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.evaluateInPagePromise(`
       function addStyleSheet()
       {

@@ -10,7 +10,7 @@ import * as Common from 'devtools/core/common/common.js';
 (async function() {
   TestRunner.addResult(
       `Tests that framework blackboxing skips instant pauses (e.g. breakpoints on console.assert(), setTimeout(), etc.) if they happen entirely inside the framework.\n`);
-  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadLegacyModule('panels/browser_debugger');
+  await TestRunner.loadLegacyModule('panels/browser_debugger');
   await TestRunner.showPanel('sources');
   await TestRunner.loadHTML(`
       <input type="button" onclick="testFunction()" value="Test">

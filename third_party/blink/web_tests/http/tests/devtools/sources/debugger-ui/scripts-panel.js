@@ -11,7 +11,6 @@ import * as SourcesModule from 'devtools/panels/sources/sources.js';
 
 (async function() {
   TestRunner.addResult(`Tests that scripts panel UI elements work as intended.\n`);
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.showPanel('sources');
 
   function dumpNavigator(sourcesNavigatorView) {

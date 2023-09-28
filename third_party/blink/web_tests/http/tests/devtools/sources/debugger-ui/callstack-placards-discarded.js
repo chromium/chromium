@@ -9,7 +9,6 @@ import * as BindingsModule from 'devtools/models/bindings/bindings.js';
 
 (async function() {
   TestRunner.addResult(`Tests that RawSourceCode listeners count won't grow on each script pause. Bug 70996\n`);
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.showPanel('sources');
   await TestRunner.evaluateInPagePromise(`
       function testFunction()

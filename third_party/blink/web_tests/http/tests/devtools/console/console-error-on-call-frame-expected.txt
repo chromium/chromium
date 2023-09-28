@@ -6,7 +6,7 @@ Script execution resumed.
 console.error(42)
 VM:1 42
 eval @ VM:1
-testFunction @ console-error-on-call-frame.js:19
+testFunction @ console-error-on-call-frame.js:18
 setTimeout (async)
 scheduleTestFunction @ VM:3
 (anonymous) @ VM:1

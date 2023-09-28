@@ -6,6 +6,6 @@ Script source was shown.
 Script execution paused.
 Call stack:
     0) handleClick (add-elements.js:15)
-    1) clickButton (compiler-source-mapping-debug.js:22)
+    1) clickButton (compiler-source-mapping-debug.js:21)
 Script execution resumed.
 

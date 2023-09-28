@@ -10,7 +10,6 @@ import {ConsoleTestRunner} from 'console_test_runner';
 (async function() {
   TestRunner.addResult(
       `Tests that webInspector.inspectedWindow.reload() successfully injects and preprocesses user's code upon reload\n`);
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.loadLegacyModule('console');
   await TestRunner.navigatePromise(TestRunner.url('resources/reload.html'));
 

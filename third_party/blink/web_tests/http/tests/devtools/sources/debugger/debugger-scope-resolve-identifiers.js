@@ -9,7 +9,6 @@ import * as SourceMapScopesModule from 'devtools/models/source_map_scopes/source
 
 (async function() {
   TestRunner.addResult(`Tests resolving variable names via source maps.\n`);
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.showPanel('sources');
   await TestRunner.addScriptTag('resources/resolve-identifiers.js');
 

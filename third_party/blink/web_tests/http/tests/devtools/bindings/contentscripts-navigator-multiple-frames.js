@@ -10,7 +10,6 @@ import * as SourcesModule from 'devtools/panels/sources/sources.js';
 
 (async function () {
   TestRunner.addResult(`Verify that SourceMap bindings are generating UISourceCodes properly.\n`);
-  await TestRunner.loadLegacyModule('sources');
 
   var contentScriptsNavigator = new SourcesModule.SourcesNavigator.ContentScriptsNavigatorView();
   contentScriptsNavigator.show(UI.inspectorView.element);

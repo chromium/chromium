@@ -8,7 +8,6 @@ import {SourcesTestRunner} from 'sources_test_runner';
 (async function() {
   TestRunner.addResult(
       `Tests that valid parsed script notifications are received by front-end.`);
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.showPanel('sources');
   await TestRunner.navigatePromise('resources/debugger-scripts.html');
 

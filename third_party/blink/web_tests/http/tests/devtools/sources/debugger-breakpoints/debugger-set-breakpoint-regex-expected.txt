@@ -11,6 +11,6 @@ Running: testSetByRegex
 Set timer for test function.
 Script execution paused.
 Call stack:
-    0) testFunction (debugger-set-breakpoint-regex.js:15)
+    0) testFunction (debugger-set-breakpoint-regex.js:14)
 Script execution resumed.
 

@@ -8,7 +8,6 @@ import {SourcesTestRunner} from 'sources_test_runner';
 (async function() {
   TestRunner.addResult(
       `Tests that debugger StepOver will step through inlined scripts.\n`);
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.showPanel('sources');
   await TestRunner.navigatePromise(
       'resources/debugger-step-over-inlined-scripts.html');

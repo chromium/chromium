@@ -8,7 +8,6 @@ import {BindingsTestRunner} from 'bindings_test_runner';
 
 (async function() {
   TestRunner.addResult(`Tests that persistence syncs network and filesystem UISourceCodes.\n`);
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.addScriptTag('resources/foo.js');
 
   var testMapping = BindingsTestRunner.initializeTestMapping();

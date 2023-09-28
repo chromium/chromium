@@ -11,7 +11,6 @@ import * as UIModule from 'devtools/ui/legacy/legacy.js';
 
 (async function() {
   TestRunner.addResult(`Tests evaluation in webpack bundled scripts with 'line-by'line' source maps.\n`);
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.showPanel('sources');
 
   // Bundle created using `npx webpack` with 'cheap-module-source-map'.

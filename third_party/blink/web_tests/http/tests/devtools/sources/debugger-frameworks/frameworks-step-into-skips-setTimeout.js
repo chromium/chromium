@@ -10,7 +10,6 @@ import * as Common from 'devtools/core/common/common.js';
 (async function() {
   TestRunner.addResult(
       `Tests that stepping into blackboxed framework will not pause on setTimeout() inside the framework.\n`);
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.showPanel('sources');
   await TestRunner.loadHTML(`
       <input type="button" onclick="testFunction()" value="Test">

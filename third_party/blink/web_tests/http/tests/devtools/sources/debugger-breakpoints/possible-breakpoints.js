@@ -7,7 +7,6 @@ import {SourcesTestRunner} from 'sources_test_runner';
 
 (async function() {
   TestRunner.addResult(`Checks that BreakpointManager.possibleBreakpoints returns correct locations\n`);
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.showPanel('sources');
   await TestRunner.evaluateInPageAnonymously(`
       function foo() {

@@ -11,7 +11,6 @@ import * as SourcesModule from 'devtools/panels/sources/sources.js';
 (async function() {
   TestRunner.addResult(
       `Verify that navigator shows proper UISourceCodes as shadow dom styles and scripts are added and removed.\n`);
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.loadHTML(`
     <template id='template'>
     <style>div {

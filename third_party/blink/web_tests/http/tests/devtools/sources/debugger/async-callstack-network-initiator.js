@@ -8,7 +8,6 @@ import {ConsoleTestRunner} from 'console_test_runner';
 
 (async function() {
   TestRunner.addResult(`Tests asynchronous call stacks printed in console for a Network.Initiator.\n`);
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('sources');
   await TestRunner.evaluateInPagePromise(`

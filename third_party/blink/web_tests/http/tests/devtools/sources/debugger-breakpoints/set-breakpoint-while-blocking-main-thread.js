@@ -12,7 +12,6 @@ import * as Root from 'devtools/core/root/root.js';
   // turn off the new breakpoint pane experiment.
   Root.Runtime.experiments.setEnabled('breakpointView', false);
   TestRunner.addResult(`Tests setting breakpoint when main thread blocks.\n`);
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.showPanel('sources');
   await TestRunner.navigatePromise('resources/blocking-main-thread.html');
 

@@ -12,7 +12,6 @@ import * as UIModule from 'devtools/ui/legacy/legacy.js';
 (async function() {
   TestRunner.addResult(
       `Test that watch expressions expansion state is restored after update.\n`);
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.showPanel('sources');
   await TestRunner.evaluateInPagePromise(`
       var globalObject = {

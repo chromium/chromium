@@ -10,7 +10,6 @@ import * as UIModule from 'devtools/ui/legacy/legacy.js';
 
 (async function() {
   TestRunner.addResult(`Tests separate compilation and run.\n`);
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.showPanel('sources');
 
   function printExceptionDetails(exceptionDetails) {

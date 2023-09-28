@@ -11,7 +11,6 @@ import * as Common from 'devtools/core/common/common.js';
 (async function() {
   TestRunner.addResult(
       `Tests framework black-boxing on DOM, XHR and Event breakpoints.\n`);
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.showPanel('sources');
   await TestRunner.loadHTML(`
       <div id="rootElement"></div>

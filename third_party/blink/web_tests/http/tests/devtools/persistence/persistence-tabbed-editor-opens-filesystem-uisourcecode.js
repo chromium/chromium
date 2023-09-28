@@ -10,7 +10,6 @@ import {BindingsTestRunner} from 'bindings_test_runner';
   'use strict';
   TestRunner.addResult(
       `Verify that for a fileSystem UISourceCode with persistence binding TabbedEditorContainer opens filesystem UISourceCode.\n`);
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.addScriptTag('resources/foo.js');
   await TestRunner.showPanel('sources');
 

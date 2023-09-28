@@ -10,7 +10,6 @@ import * as UIModule from 'devtools/ui/legacy/legacy.js';
 (async function() {
   TestRunner.addResult(
       `Tests that Debugger.getGeneratorObjectDetails command returns correct result.\n`);
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.showPanel('sources');
   await TestRunner.evaluateInPagePromise(`
       function forward(iter, step)

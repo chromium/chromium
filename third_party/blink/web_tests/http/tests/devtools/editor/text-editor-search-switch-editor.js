@@ -8,7 +8,6 @@ import {SourcesTestRunner} from 'sources_test_runner';
 (async function() {
   TestRunner.addResult(
       `Tests that switching editor tabs after searching does not affect editor selection and viewport.\n`);
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.showPanel('sources');
   await TestRunner.addScriptTag('../sources/debugger/resources/edit-me.js');
   await TestRunner.addScriptTag('resources/search-me.js');

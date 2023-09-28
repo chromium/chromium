@@ -8,7 +8,6 @@ import {SourcesTestRunner} from 'sources_test_runner';
 (async function() {
   TestRunner.addResult(
       `Tests that stepping out of an event listener will lead to a pause in the next event listener.\n`);
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.showPanel('sources');
   await TestRunner.loadHTML(`
       <div id="myDiv"></div>

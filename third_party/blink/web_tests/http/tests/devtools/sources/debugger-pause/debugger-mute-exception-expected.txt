@@ -2,10 +2,10 @@ Tests that pause on exception is muted when conditional breakpoint is set to "fa
 Script source was shown.
 Script execution paused.
 Call stack:
-    0) throwAnException (test.js:22)
-    1) handleClick (test.js:32)
+    0) throwAnException (test.js:21)
+    1) handleClick (test.js:31)
     [setTimeout]
-    0)  (debugger-mute-exception.js:49)
+    0)  (debugger-mute-exception.js:48)
 Debugger paused
 Script execution resumed.
 

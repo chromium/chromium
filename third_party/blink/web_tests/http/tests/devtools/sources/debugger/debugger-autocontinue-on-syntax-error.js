@@ -9,7 +9,6 @@ import {ConsoleTestRunner} from 'console_test_runner';
 (async function() {
   TestRunner.addResult(
       `Tests that debugger won't stop on syntax errors even if "pause on uncaught exceptions" is on.\n`);
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('sources');
 

@@ -8,7 +8,6 @@ import {SourcesTestRunner} from 'sources_test_runner';
 (async function() {
   TestRunner.addResult(
       `Tests that debugging a page where Object prototype has a cyclic reference won't crash the browser.Bug 43558\n`);
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.showPanel('sources');
   await TestRunner.evaluateInPagePromise(`
       Object.prototype.cyclicRef = Object.prototype;

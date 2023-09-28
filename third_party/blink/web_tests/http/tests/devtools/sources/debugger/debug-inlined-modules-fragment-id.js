@@ -8,7 +8,6 @@ import {SourcesTestRunner} from 'sources_test_runner';
 (async function() {
   TestRunner.addResult(
       `Tests that all inlined modules from the same document are shown in the same source frame with html script tags. Bug 1338257.\n`);
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.showPanel('sources');
 
   await TestRunner.navigatePromise('resources/inline-modules.html');

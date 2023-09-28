@@ -12,7 +12,6 @@ import * as SourcesModule from 'devtools/panels/sources/sources.js';
 (async function() {
   TestRunner.addResult(
       'Verifies that snippets still map when local overrides is on.\n');
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.showPanel('sources');
 
   await BindingsTestRunner.createOverrideProject('file:///tmp');

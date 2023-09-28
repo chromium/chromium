@@ -8,7 +8,6 @@ import {ConsoleTestRunner} from 'console_test_runner';
 
 (async function() {
   TestRunner.addResult(`Tests that pausing on uncaught exceptions thrown from C++ bindings will not crash.\n`);
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('sources');
   await TestRunner.evaluateInPagePromise(`

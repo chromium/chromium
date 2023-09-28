@@ -11,7 +11,6 @@ import * as SourcesModule from 'devtools/panels/sources/sources.js';
 
 (async function() {
   TestRunner.addResult(`Verify that navigator is rendered properly when targets are suspended and resumed.\n`);
-  await TestRunner.loadLegacyModule('sources');
 
   var sourcesNavigator = new SourcesModule.SourcesNavigator.NetworkNavigatorView();
   sourcesNavigator.show(UI.inspectorView.element);

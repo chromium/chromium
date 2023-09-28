@@ -11,7 +11,6 @@ import * as SourcesModule from 'devtools/panels/sources/sources.js';
 
 (async function() {
   TestRunner.addResult(`Tests scripts panel file selectors.\n`);
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.showPanel('sources');
   await TestRunner.addIframe(
       'resources/post-message-listener.html', {name: 'childframe'});

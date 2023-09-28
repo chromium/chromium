@@ -11,7 +11,6 @@ import * as SourcesModule from 'devtools/panels/sources/sources.js';
 (async function() {
   TestRunner.addResult(`Tests single resource search in inspector page agent.\n`);
   await TestRunner.loadLegacyModule('console');
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.loadLegacyModule('search');
   await TestRunner.showPanel('sources');
   await TestRunner.navigate('resources/sourcemap-page.html');

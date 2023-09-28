@@ -7,7 +7,6 @@ import {SourcesTestRunner} from 'sources_test_runner';
 
 (async function() {
   TestRunner.addResult(`Tests SourceMap and CompilerScriptMapping.\n`);
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.evaluateInPagePromise(`
       function addScript(url)
       {

@@ -10,7 +10,6 @@ import {SourcesTestRunner} from 'sources_test_runner';
   TestRunner.addResult(
       `Tests that DOM Mutation Observers do not attempt to deliver mutation records while the debugger is paused.Bug 105810\n`);
   await TestRunner.loadLegacyModule('console');
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.showPanel('sources');
 
   var setup = 'window.testDiv = document.createElement(\'div\');\n' +

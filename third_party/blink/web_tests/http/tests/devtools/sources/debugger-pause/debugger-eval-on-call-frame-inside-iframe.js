@@ -11,7 +11,6 @@ import * as SourcesModule from 'devtools/panels/sources/sources.js';
 (async function() {
   TestRunner.addResult(`Test that evaluation on call frame works across all inspected windows in the call stack.\n`);
   await TestRunner.loadLegacyModule('console');
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.showPanel('sources');
   await TestRunner.loadHTML(`
       <iframe id="iframe"></iframe>

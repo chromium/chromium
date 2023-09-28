@@ -10,7 +10,6 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
 
 (async function() {
   TestRunner.addResult(`Verify that syncing Node.js contents works fine.\n`);
-  await TestRunner.loadLegacyModule('sources');
 
   var testMapping = BindingsTestRunner.initializeTestMapping();
   // Pretend we are running under V8 front-end.

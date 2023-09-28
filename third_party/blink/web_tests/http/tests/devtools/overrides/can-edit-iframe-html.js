@@ -9,8 +9,6 @@ import * as SourcesModule from 'devtools/panels/sources/sources.js';
 
 (async function() {
   TestRunner.addResult(`Ensures iframes are overridable if overrides are setup.\n`);
-  await TestRunner.loadLegacyModule('sources');
-  await TestRunner.loadLegacyModule('sources');
 
   var {project} = await BindingsTestRunner.createOverrideProject('file:///tmp/');
   BindingsTestRunner.setOverridesEnabled(true);

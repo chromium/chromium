@@ -11,7 +11,6 @@ import * as Common from 'devtools/core/common/common.js';
 (async function() {
   TestRunner.addResult(
       `Verify that sourcemap sources are mapped event when sourcemap compiled url matches with one of the source urls.\n`);
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.showPanel('sources');
   await TestRunner.addScriptTag('resources/sourcemap-name-clash/out.js');
 

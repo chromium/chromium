@@ -6,7 +6,7 @@ Breakpoint added.
 Set timer for test function.
 Script execution paused.
 Call stack:
-    0) simpleTestFunction (debug-console-command.js:17)
+    0) simpleTestFunction (debug-console-command.js:16)
     1)  (:1)
 Breakpoint removed.
 Script execution resumed.
@@ -16,7 +16,7 @@ Breakpoint added.
 Set timer for test function.
 Script execution paused.
 Call stack:
-    0) simpleTestFunction1 (debug-console-command.js:21)
+    0) simpleTestFunction1 (debug-console-command.js:20)
     1)  (:1)
 Breakpoint removed.
 Script execution resumed.
@@ -26,7 +26,7 @@ Breakpoint added.
 Set timer for test function.
 Script execution paused.
 Call stack:
-    0) simpleTestFunction2 (debug-console-command.js:21)
+    0) simpleTestFunction2 (debug-console-command.js:20)
     1)  (:1)
 Breakpoint removed.
 Script execution resumed.

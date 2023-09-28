@@ -9,7 +9,6 @@ import * as Common from 'devtools/core/common/common.js';
 
 (async function() {
   TestRunner.addResult(`Tests stepping into/over/out with framework black-boxing.\n`);
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.showPanel('sources');
   await TestRunner.loadHTML(`
       <input type="button" onclick="testFunction()" value="Test">

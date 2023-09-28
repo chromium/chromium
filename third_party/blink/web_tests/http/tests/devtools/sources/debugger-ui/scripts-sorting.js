@@ -11,7 +11,6 @@ import * as SourcesModule from 'devtools/panels/sources/sources.js';
 (async function() {
   'use strict';
   TestRunner.addResult(`Tests scripts sorting in the scripts panel.\n`);
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.showPanel('sources');
 
   function createNavigatorView(constructor) {

@@ -9,7 +9,6 @@ import * as Common from 'devtools/core/common/common.js';
 
 (async function() {
   TestRunner.addResult(`Tests that blackboxed script will be skipped while stepping on worker.\n`);
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.showPanel('sources');
   await TestRunner.evaluateInPagePromise(`
       function installWorker()

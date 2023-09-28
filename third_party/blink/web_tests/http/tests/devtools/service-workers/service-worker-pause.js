@@ -8,7 +8,6 @@ import {ApplicationTestRunner} from 'application_test_runner';
 
 (async function() {
   TestRunner.addResult(`Tests that we can pause in service worker.\n`);
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.showPanel('sources');
   await TestRunner.loadLegacyModule('console');
     // Note: every test that uses a storage API must manually clean-up state from previous tests.

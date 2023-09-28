@@ -8,7 +8,6 @@ import * as FormatterModule from 'devtools/models/formatter/formatter.js';
 
 (async function() {
   TestRunner.addResult(`The test verifies the CSS outline functionality.\n`);
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
 <style id="styler">

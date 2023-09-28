@@ -10,7 +10,6 @@ import * as UIModule from 'devtools/ui/legacy/legacy.js';
 
 (async function() {
   TestRunner.addResult(`Tests evaluation in minified scripts.\n`);
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.showPanel('sources');
   await TestRunner.addScriptTag('resources/resolve-expressions-compressed.js');
 

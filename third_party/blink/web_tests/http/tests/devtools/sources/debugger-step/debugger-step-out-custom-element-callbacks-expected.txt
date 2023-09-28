@@ -2,7 +2,22 @@ Tests stepping out from custom element callbacks.
 
 Set timer for test function.
 Call stack:
-    0) FooElement (debugger-step-out-custom-element-callbacks.js:26)
+    0) FooElement (debugger-step-out-custom-element-callbacks.js:25)
+    1) testFunction (debugger-step-out-custom-element-callbacks.js:43)
+    [setTimeout]
+    0) scheduleTestFunction <omitted>
+    <... skipped remaining frames ...>
+
+Executing StepOut...
+Call stack:
+    0) testFunction (debugger-step-out-custom-element-callbacks.js:44)
+    [setTimeout]
+    0) scheduleTestFunction <omitted>
+    <... skipped remaining frames ...>
+
+Executing StepInto...
+Call stack:
+    0) attributeChangedCallback (debugger-step-out-custom-element-callbacks.js:38)
     1) testFunction (debugger-step-out-custom-element-callbacks.js:44)
     [setTimeout]
     0) scheduleTestFunction <omitted>
@@ -17,7 +32,7 @@ Call stack:
 
 Executing StepInto...
 Call stack:
-    0) attributeChangedCallback (debugger-step-out-custom-element-callbacks.js:39)
+    0) connectedCallback (debugger-step-out-custom-element-callbacks.js:29)
     1) testFunction (debugger-step-out-custom-element-callbacks.js:45)
     [setTimeout]
     0) scheduleTestFunction <omitted>
@@ -32,7 +47,7 @@ Call stack:
 
 Executing StepInto...
 Call stack:
-    0) connectedCallback (debugger-step-out-custom-element-callbacks.js:30)
+    0) disconnectedCallback (debugger-step-out-custom-element-callbacks.js:32)
     1) testFunction (debugger-step-out-custom-element-callbacks.js:46)
     [setTimeout]
     0) scheduleTestFunction <omitted>
@@ -41,21 +56,6 @@ Call stack:
 Executing StepOut...
 Call stack:
     0) testFunction (debugger-step-out-custom-element-callbacks.js:47)
-    [setTimeout]
-    0) scheduleTestFunction <omitted>
-    <... skipped remaining frames ...>
-
-Executing StepInto...
-Call stack:
-    0) disconnectedCallback (debugger-step-out-custom-element-callbacks.js:33)
-    1) testFunction (debugger-step-out-custom-element-callbacks.js:47)
-    [setTimeout]
-    0) scheduleTestFunction <omitted>
-    <... skipped remaining frames ...>
-
-Executing StepOut...
-Call stack:
-    0) testFunction (debugger-step-out-custom-element-callbacks.js:48)
     [setTimeout]
     0) scheduleTestFunction <omitted>
     <... skipped remaining frames ...>

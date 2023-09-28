@@ -3,17 +3,17 @@ Tests "step in" functionality in debugger.
 Set timer for test function.
 Script execution paused.
 Call stack:
+    0) testFunction (debugger-step-in.js:19)
+Stepping into...
+Script execution resumed.
+Script execution paused.
+Call stack:
     0) testFunction (debugger-step-in.js:20)
 Stepping into...
 Script execution resumed.
 Script execution paused.
 Call stack:
-    0) testFunction (debugger-step-in.js:21)
-Stepping into...
-Script execution resumed.
-Script execution paused.
-Call stack:
-    0) d (debugger-step-in.js:15)
-    1) testFunction (debugger-step-in.js:21)
+    0) d (debugger-step-in.js:14)
+    1) testFunction (debugger-step-in.js:20)
 Script execution resumed.
 

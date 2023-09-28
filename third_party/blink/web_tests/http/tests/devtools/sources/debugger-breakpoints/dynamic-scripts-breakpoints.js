@@ -8,7 +8,6 @@ import {SourcesTestRunner} from 'sources_test_runner';
 (async function() {
   TestRunner.addResult(
       `Tests that there is no exception in front-end on page reload when breakpoint is set in HTML document and some dynamic scripts are loaded before the script with the breakpoint is loaded.`);
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.showPanel('sources');
   await TestRunner.navigatePromise(
       'resources/dynamic-scripts-breakpoints.html');

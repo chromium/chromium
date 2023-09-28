@@ -7,7 +7,6 @@ import {SourcesTestRunner} from 'sources_test_runner';
 
 (async function() {
   TestRunner.addResult(`Tests that scripts list is cleared upon page reload.\n`);
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.showPanel('sources');
 
   TestRunner.evaluateInPage('function foo() {} //# sourceURL=dummyScript.js', step1);

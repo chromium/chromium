@@ -12,7 +12,6 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
 (async function() {
   TestRunner.addResult(`Tests resource-related methods of WebInspector extension API\n`);
   await TestRunner.loadLegacyModule('console');
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.loadLegacyModule('components');
 
   TestRunner.clickOnURL = async function() {

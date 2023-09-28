@@ -10,7 +10,6 @@ import * as SourcesModule from 'devtools/panels/sources/sources.js';
 
 (async function () {
   TestRunner.addResult(`Verify that JavaScript SourceMap handle different sourcemaps with overlapping sources.`);
-  await TestRunner.loadLegacyModule('sources');
 
   var sourcesNavigator = new SourcesModule.SourcesNavigator.NetworkNavigatorView();
   sourcesNavigator.show(UI.inspectorView.element);

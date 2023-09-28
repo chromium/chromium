@@ -3,10 +3,10 @@ Tests that pause on exception works.
 Script source was shown.
 Script execution paused.
 Call stack:
-    0) throwAnException (debugger-pause-on-exception.js:15)
-    1) handleClick (debugger-pause-on-exception.js:20)
+    0) throwAnException (debugger-pause-on-exception.js:14)
+    1) handleClick (debugger-pause-on-exception.js:19)
     [setTimeout]
-    0)  (debugger-pause-on-exception.js:34)
+    0)  (debugger-pause-on-exception.js:33)
 Paused on exceptionReferenceError: unknown_var is not defined
 Script execution resumed.
 

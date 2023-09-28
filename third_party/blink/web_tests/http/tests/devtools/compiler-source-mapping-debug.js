@@ -9,7 +9,6 @@ import {NetworkTestRunner} from 'network_test_runner';
 
 (async function() {
   TestRunner.addResult(`Tests installing compiler source map in scripts panel.\n`);
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('sources');
 

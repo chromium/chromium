@@ -12,7 +12,6 @@ import * as BindingsModule from 'devtools/models/bindings/bindings.js';
   TestRunner.addResult(
       `Tests single resource search in inspector page agent with non existing resource url does not cause a crash.\n`);
   await TestRunner.loadLegacyModule('console');
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.showPanel('sources');
   await TestRunner.addIframe('resources/search.html');
   await TestRunner

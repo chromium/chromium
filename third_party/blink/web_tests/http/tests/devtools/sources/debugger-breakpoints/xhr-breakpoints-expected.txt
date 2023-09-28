@@ -4,7 +4,7 @@ Tests XHR breakpoints.
 Running: testXHRBreakpoint
 Script execution paused.
 Call stack:
-    0) sendRequest (xhr-breakpoints.js:17)
+    0) sendRequest (xhr-breakpoints.js:16)
     1)  (:1)
 Script execution resumed.
 

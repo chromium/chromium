@@ -9,7 +9,6 @@ import {ConsoleTestRunner} from 'console_test_runner';
 (async function() {
   TestRunner.addResult(
       `Tests that SourceMap and X-SourceMap http headers are propagated to scripts in the front-end.\n`);
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('sources');
   await SourcesTestRunner.startDebuggerTestPromise();

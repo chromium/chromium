@@ -9,7 +9,6 @@ import * as SourcesModule from 'devtools/panels/sources/sources.js';
 
 (async function() {
   TestRunner.addResult(`Verifies that SelectUISourceCodeDialog rendering works properly.\n`);
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.evaluateInPagePromise(`    function dummy1() { }
       //# sourceURL=http://test/helloWorld12.js
     `);

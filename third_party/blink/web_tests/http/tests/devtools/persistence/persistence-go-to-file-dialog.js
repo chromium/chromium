@@ -10,7 +10,6 @@ import * as UIModule from 'devtools/ui/legacy/legacy.js';
 
 (async function() {
   TestRunner.addResult(`Verify that GoTo source dialog filters out mapped uiSourceCodes.\n`);
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.loadLegacyModule('quick_open');
   await TestRunner.addScriptTag('resources/foo.js');
 

@@ -12,7 +12,6 @@ import * as BindingsModule from 'devtools/models/bindings/bindings.js';
 (async function() {
   TestRunner.addResult(`Tests static content provider search.\n`);
   await TestRunner.loadLegacyModule('console');
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.showPanel('sources');
 
   await TestRunner.addIframe('resources/search.html');

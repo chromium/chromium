@@ -10,7 +10,6 @@ import {BindingsTestRunner} from 'bindings_test_runner';
   'use strict';
   TestRunner.addResult(
       `Verify that a network file tab gets substituted with filesystem tab when persistence binding comes.\n`);
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.showPanel('sources');
   await TestRunner.addScriptTag('resources/foo.js');
 

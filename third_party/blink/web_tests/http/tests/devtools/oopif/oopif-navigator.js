@@ -9,7 +9,6 @@ import * as SourcesModule from 'devtools/panels/sources/sources.js';
 
 (async function() {
   TestRunner.addResult(`Verify navigator rendering with OOPIFs`);
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.showPanel('sources');
 
   var sourcesNavigatorView = new SourcesModule.SourcesNavigator.NetworkNavigatorView();

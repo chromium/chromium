@@ -11,7 +11,6 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
 
 (async function() {
   TestRunner.addResult(`Verify that front-end is able to set breakpoint for node.js scripts.\n`);
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.showPanel('sources');
 
   SDK.TargetManager.TargetManager.instance().rootTarget().markAsNodeJSForTest();

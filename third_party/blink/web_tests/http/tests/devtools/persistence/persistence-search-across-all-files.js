@@ -11,7 +11,6 @@ import * as SourcesModule from 'devtools/panels/sources/sources.js';
 
 (async function() {
   TestRunner.addResult(`Verify that search across all files omits filesystem uiSourceCodes with binding to network.\n`);
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.loadLegacyModule('search');
   await TestRunner.addScriptTag('resources/foo.js');
 

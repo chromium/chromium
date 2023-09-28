@@ -10,7 +10,6 @@ import {SourcesTestRunner} from 'sources_test_runner';
   TestRunner.addResult(
       `Tests that evaluation in console that throws works fine when script is paused.\n`);
   await TestRunner.loadLegacyModule('console');
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.showPanel('sources');
   await TestRunner.evaluateInPagePromise(`
       var globalObj = {

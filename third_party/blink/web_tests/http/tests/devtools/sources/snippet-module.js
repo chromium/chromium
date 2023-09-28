@@ -13,7 +13,6 @@ import * as SourcesModule from 'devtools/panels/sources/sources.js';
   TestRunner.addResult(
       'Verifies that modules can be loaded via import() in snippets\n');
   await TestRunner.loadLegacyModule('console');
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.showPanel('sources');
 
   const sourceCode = `

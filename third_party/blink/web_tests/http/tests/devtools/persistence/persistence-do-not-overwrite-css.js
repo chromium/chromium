@@ -11,7 +11,6 @@ import * as BindingsModule from 'devtools/models/bindings/bindings.js';
 (async function() {
   TestRunner.addResult(
       `Verify that persistence does not overwrite CSS files when CSS model reports error on getStyleSheetText.\n`);
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.loadHTML(`
       <style>
       body {

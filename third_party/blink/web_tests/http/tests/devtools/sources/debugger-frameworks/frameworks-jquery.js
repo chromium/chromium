@@ -10,7 +10,6 @@ import * as Common from 'devtools/core/common/common.js';
 (async function() {
   TestRunner.addResult(`Tests framework blackboxing feature on jQuery.\n`);
 
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.showPanel('sources');
 
   await TestRunner.loadHTML(`

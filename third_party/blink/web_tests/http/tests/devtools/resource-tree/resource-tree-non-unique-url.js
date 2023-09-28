@@ -9,7 +9,6 @@ import {ApplicationTestRunner} from 'application_test_runner';
 (async function() {
   TestRunner.addResult(
       `Tests resources panel shows several resources with the same url if they were loaded with inspector already opened.\n`);
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('resources');
   TestRunner.addSniffer(Resources.FrameTreeElement.prototype, 'appendResource', onResource, true);

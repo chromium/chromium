@@ -9,7 +9,6 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
 
 (async function() {
   TestRunner.addResult(`Tests that a line-level CPU profile is shown in the text editor.\n`);
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.loadLegacyModule("perf_ui");
   await TestRunner.loadLegacyModule('source_frame');
   await TestRunner.showPanel('timeline');

@@ -12,7 +12,6 @@ import * as UIModule from 'devtools/ui/legacy/legacy.js';
 (async function() {
   TestRunner.addResult(`Tests saving objects to temporary variables.\n`);
   await TestRunner.loadLegacyModule('console');
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.showPanel('sources');
   await TestRunner.showPanel('console');
   await TestRunner.evaluateInPagePromise(`

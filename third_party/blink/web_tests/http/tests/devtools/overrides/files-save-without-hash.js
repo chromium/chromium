@@ -7,7 +7,6 @@ import {BindingsTestRunner} from 'bindings_test_runner';
 
 (async function() {
   TestRunner.addResult(`Ensures iframes are overridable if overrides are setup.\n`);
-  await TestRunner.loadLegacyModule('sources');
 
   var fileSystemPath = 'file:///tmp/';
 

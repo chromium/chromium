@@ -9,7 +9,6 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
 import * as UIModule from 'devtools/ui/legacy/legacy.js';
 
 (async function() {
-  await TestRunner.loadLegacyModule('sources');
   TestRunner.addResult("Test frontend's timeout support.\n");
 
   const executionContext = UIModule.Context.Context.instance().flavor(SDK.RuntimeModel.ExecutionContext);

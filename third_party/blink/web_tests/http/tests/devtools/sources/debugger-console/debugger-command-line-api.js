@@ -12,7 +12,6 @@ import * as Common from 'devtools/core/common/common.js';
 (async function() {
   TestRunner.addResult(`Tests that inspect() command line api works while on breakpoint.\n`);
   await TestRunner.loadLegacyModule('console');
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.showPanel('sources');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`

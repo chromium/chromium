@@ -11,7 +11,6 @@ import * as BindingsModule from 'devtools/models/bindings/bindings.js';
 (async function() {
   TestRunner.addResult(`Tests single resource search in inspector page agent.\n`);
   await TestRunner.loadLegacyModule('console');
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.showPanel('sources');
 
   await TestRunner.addIframe('resources/search.html');
