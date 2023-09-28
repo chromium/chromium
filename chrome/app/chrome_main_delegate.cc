@@ -520,50 +520,42 @@ absl::optional<int> HandlePackExtensionSwitches(
 #if BUILDFLAG(ENABLE_PROCESS_SINGLETON)
 absl::optional<int> AcquireProcessSingleton(
     const base::FilePath& user_data_dir) {
-  // Configure the early process singleton experiment.
-  const base::CommandLine& command_line =
-      *base::CommandLine::ForCurrentProcess();
-  ChromeProcessSingleton::SetupEarlySingletonFeature(command_line);
+  // Take the Chrome process singleton lock. The process can become the
+  // Browser process if it succeed to take the lock. Otherwise, the
+  // command-line is sent to the actual Browser process and the current
+  // process can be exited.
+  ChromeProcessSingleton::CreateInstance(user_data_dir);
 
-  if (ChromeProcessSingleton::IsEarlySingletonFeatureEnabled()) {
-    // Take the Chrome process singleton lock. The process can become the
-    // Browser process if it succeed to take the lock. Otherwise, the
-    // command-line is sent to the actual Browser process and the current
-    // process can be exited.
-    ChromeProcessSingleton::CreateInstance(user_data_dir);
+  ProcessSingleton::NotifyResult notify_result =
+      ChromeProcessSingleton::GetInstance()->NotifyOtherProcessOrCreate();
+  UMA_HISTOGRAM_ENUMERATION("Chrome.ProcessSingleton.NotifyResult",
+                            notify_result, ProcessSingleton::kNumNotifyResults);
 
-    ProcessSingleton::NotifyResult notify_result =
-        ChromeProcessSingleton::GetInstance()->NotifyOtherProcessOrCreate();
-    UMA_HISTOGRAM_ENUMERATION("Chrome.ProcessSingleton.NotifyResult",
-                              notify_result,
-                              ProcessSingleton::kNumNotifyResults);
+  switch (notify_result) {
+    case ProcessSingleton::PROCESS_NONE:
+      break;
 
-    switch (notify_result) {
-      case ProcessSingleton::PROCESS_NONE:
-        break;
-
-      case ProcessSingleton::PROCESS_NOTIFIED: {
-        // Ensure there is an instance of ResourceBundle that is initialized for
-        // localized string resource accesses.
-        ui::ScopedStartupResourceBundle startup_resource_bundle;
-        printf("%s\n", base::SysWideToNativeMB(
-                           base::UTF16ToWide(l10n_util::GetStringUTF16(
-                               IDS_USED_EXISTING_BROWSER)))
-                           .c_str());
-        return chrome::RESULT_CODE_NORMAL_EXIT_PROCESS_NOTIFIED;
-      }
-
-      case ProcessSingleton::PROFILE_IN_USE:
-        return chrome::RESULT_CODE_PROFILE_IN_USE;
-
-      case ProcessSingleton::LOCK_ERROR:
-        LOG(ERROR) << "Failed to create a ProcessSingleton for your profile "
-                      "directory. This means that running multiple instances "
-                      "would start multiple browser processes rather than "
-                      "opening a new window in the existing process. Aborting "
-                      "now to avoid profile corruption.";
-        return chrome::RESULT_CODE_PROFILE_IN_USE;
+    case ProcessSingleton::PROCESS_NOTIFIED: {
+      // Ensure there is an instance of ResourceBundle that is initialized for
+      // localized string resource accesses.
+      ui::ScopedStartupResourceBundle startup_resource_bundle;
+      printf("%s\n", base::SysWideToNativeMB(
+                         base::UTF16ToWide(l10n_util::GetStringUTF16(
+                             IDS_USED_EXISTING_BROWSER)))
+                         .c_str());
+      return chrome::RESULT_CODE_NORMAL_EXIT_PROCESS_NOTIFIED;
     }
+
+    case ProcessSingleton::PROFILE_IN_USE:
+      return chrome::RESULT_CODE_PROFILE_IN_USE;
+
+    case ProcessSingleton::LOCK_ERROR:
+      LOG(ERROR) << "Failed to create a ProcessSingleton for your profile "
+                    "directory. This means that running multiple instances "
+                    "would start multiple browser processes rather than "
+                    "opening a new window in the existing process. Aborting "
+                    "now to avoid profile corruption.";
+      return chrome::RESULT_CODE_PROFILE_IN_USE;
   }
 
   return absl::nullopt;
@@ -760,10 +752,9 @@ absl::optional<int> ChromeMainDelegate::PostEarlyInitialization(
   }
 
 #if BUILDFLAG(ENABLE_PROCESS_SINGLETON)
-  base::FilePath user_data_dir;
-  if (!base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir)) {
-    return chrome::RESULT_CODE_MISSING_DATA;
-  }
+  // The User Data dir is guaranteed to be valid as per InitializeUserDataDir.
+  base::FilePath user_data_dir =
+      base::PathService::CheckedGet(chrome::DIR_USER_DATA);
 
   // On platforms that support the process rendezvous, acquire the process
   // singleton. In case of failure, it means there is already a running browser
@@ -1728,8 +1719,7 @@ void ChromeMainDelegate::ProcessExiting(const std::string& process_type) {
   }
 
 #if BUILDFLAG(ENABLE_PROCESS_SINGLETON)
-  if (ChromeProcessSingleton::IsEarlySingletonFeatureEnabled())
-    ChromeProcessSingleton::DeleteInstance();
+  ChromeProcessSingleton::DeleteInstance();
 #endif  // BUILDFLAG(ENABLE_PROCESS_SINGLETON)
 
   if (SubprocessNeedsResourceBundle(process_type))

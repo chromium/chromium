@@ -15,8 +15,6 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/buildflags.h"
-#include "chrome/browser/chrome_process_singleton.h"
 #include "chrome/browser/metrics/chrome_browser_sampling_trials.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/metrics/chrome_metrics_service_client.h"
@@ -111,9 +109,6 @@ void ChromeBrowserFieldTrials::SetUpClientSideFieldTrials(
 }
 
 void ChromeBrowserFieldTrials::RegisterSyntheticTrials() {
-#if BUILDFLAG(ENABLE_PROCESS_SINGLETON)
-  ChromeProcessSingleton::RegisterEarlySingletonFeature();
-#endif  // BUILDFLAG(ENABLE_PROCESS_SINGLETON)
 #if BUILDFLAG(IS_ANDROID)
   static constexpr char kReachedCodeProfilerTrial[] =
       "ReachedCodeProfilerSynthetic2";
