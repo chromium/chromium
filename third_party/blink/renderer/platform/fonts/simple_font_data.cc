@@ -460,6 +460,26 @@ LayoutUnit SimpleFontData::VerticalPosition(
   return LayoutUnit();
 }
 
+const HanKerning::FontData& SimpleFontData::HanKerningData(
+    const LayoutLocale& locale,
+    bool is_horizontal) const {
+  for (const HanKerningCacheEntry& entry : han_kerning_cache_) {
+    if (entry.locale == &locale && entry.is_horizontal == is_horizontal) {
+      return entry.data;
+    }
+  }
+
+  // The cache didn't hit. Shift the list and create a new entry at `[0]`.
+  for (wtf_size_t i = 1; i < std::size(han_kerning_cache_); ++i) {
+    han_kerning_cache_[i] = std::move(han_kerning_cache_[i - 1]);
+  }
+  HanKerningCacheEntry& new_entry = han_kerning_cache_[0];
+  new_entry = {.locale = &locale,
+               .is_horizontal = is_horizontal,
+               .data = HanKerning::FontData(*this, locale, is_horizontal)};
+  return new_entry.data;
+}
+
 gfx::RectF SimpleFontData::PlatformBoundsForGlyph(Glyph glyph) const {
   if (!platform_data_.size())
     return gfx::RectF();

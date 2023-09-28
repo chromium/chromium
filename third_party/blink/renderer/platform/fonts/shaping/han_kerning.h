@@ -64,22 +64,23 @@ class PLATFORM_EXPORT HanKerning {
 
   // Data retrieved from fonts for `HanKerning`.
   struct PLATFORM_EXPORT FontData {
+    FontData() = default;
     FontData(const SimpleFontData& font,
              const LayoutLocale& locale,
              bool is_horizontal);
 
     // True if this font has `halt` (or `vhal` in vertical.)
     // https://learn.microsoft.com/en-us/typography/opentype/spec/features_fj#tag-halt
-    bool has_alternate_spacing;
+    bool has_alternate_spacing = false;
     // True if this font has `chws` (or `vchw` in vertical.)
     // https://learn.microsoft.com/en-us/typography/opentype/spec/features_ae#tag-chws
-    bool has_contextual_spacing;
+    bool has_contextual_spacing = false;
 
     // `CharType` for "fullwidth dot punctuation."
     // https://drafts.csswg.org/css-text-4/#text-spacing-classes
-    CharType type_for_dot;
+    CharType type_for_dot = CharType::kOther;
     // `CharType` for "fullwidth colon punctuation."
-    CharType type_for_colon;
+    CharType type_for_colon = CharType::kOther;
   };
 
  private:

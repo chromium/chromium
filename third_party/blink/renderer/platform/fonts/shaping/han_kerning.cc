@@ -119,8 +119,7 @@ void HanKerning::Compute(const String& text,
                          const LayoutLocale& locale,
                          bool is_horizontal,
                          FontFeatures& features) {
-  // TODO(crbug.com/1463890): Cache `FontData`.
-  FontData font_data(font, locale, is_horizontal);
+  const FontData& font_data = font.HanKerningData(locale, is_horizontal);
   if (!font_data.has_alternate_spacing) {
     return;
   }
