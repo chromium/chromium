@@ -210,6 +210,13 @@ bool LayoutFlowThread::NodeAtPoint(HitTestResult& result,
                                       accumulated_offset, phase);
 }
 
+RecalcLayoutOverflowResult LayoutFlowThread::RecalcLayoutOverflow() {
+  NOT_DESTROYED();
+  // RecalcLayoutOverflow() traverses a physical fragment tree. So it's not
+  // called for LayoutFlowThread, which has no physical fragments.
+  NOTREACHED_NORETURN();
+}
+
 void LayoutFlowThread::GenerateColumnSetIntervalTree() {
   NOT_DESTROYED();
   // FIXME: Optimize not to clear the interval all the time. This implies

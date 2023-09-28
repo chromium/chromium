@@ -172,6 +172,8 @@ class CORE_EXPORT LayoutFlowThread : public LayoutBlockFlow {
 
   const char* GetName() const override = 0;
 
+  RecalcLayoutOverflowResult RecalcLayoutOverflow() final;
+
  protected:
   void GenerateColumnSetIntervalTree();
 

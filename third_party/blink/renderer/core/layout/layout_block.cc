@@ -56,6 +56,7 @@
 #include "third_party/blink/renderer/core/layout/ng/legacy_layout_tree_walking.h"
 #include "third_party/blink/renderer/core/layout/ng/mathml/layout_ng_mathml_block.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_disable_side_effects_scope.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_length_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_text.h"
@@ -808,6 +809,12 @@ LayoutBlock* LayoutBlock::CreateAnonymousWithParentAndDisplay(
   layout_block->SetDocumentForAnonymous(&parent->GetDocument());
   layout_block->SetStyle(new_style);
   return layout_block;
+}
+
+RecalcLayoutOverflowResult LayoutBlock::RecalcLayoutOverflow() {
+  NOT_DESTROYED();
+  DCHECK(!NGDisableSideEffectsScope::IsDisabled());
+  return RecalcLayoutOverflowNG();
 }
 
 void LayoutBlock::RecalcChildVisualOverflow() {

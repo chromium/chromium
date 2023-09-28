@@ -32,8 +32,6 @@ class LayoutNGMixin : public Base {
 
   void Paint(const PaintInfo&) const override;
 
-  RecalcLayoutOverflowResult RecalcLayoutOverflow() override;
-
   bool IsLayoutNGObject() const final;
 };
 

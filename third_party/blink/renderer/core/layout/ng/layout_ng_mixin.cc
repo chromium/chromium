@@ -14,7 +14,6 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_box_fragment_builder.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space_builder.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_disable_side_effects_scope.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_result.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_length_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_out_of_flow_layout_part.h"
@@ -69,13 +68,6 @@ void LayoutNGMixin<Base>::Paint(const PaintInfo& paint_info) const {
 
   NOTREACHED();
   Base::Paint(paint_info);
-}
-
-template <typename Base>
-RecalcLayoutOverflowResult LayoutNGMixin<Base>::RecalcLayoutOverflow() {
-  Base::CheckIsNotDestroyed();
-  DCHECK(!NGDisableSideEffectsScope::IsDisabled());
-  return Base::RecalcLayoutOverflowNG();
 }
 
 template <typename Base>
