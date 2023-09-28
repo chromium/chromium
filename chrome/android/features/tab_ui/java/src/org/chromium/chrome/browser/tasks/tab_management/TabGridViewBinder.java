@@ -8,29 +8,24 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.Card
 
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
-import android.graphics.Matrix;
 import android.util.Size;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.ImageView.ScaleType;
 import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.view.ViewCompat;
 import androidx.core.widget.ImageViewCompat;
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 
-import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
 import org.chromium.chrome.tab_ui.R;
-import org.chromium.ui.display.DisplayUtil;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.ButtonCompat;
@@ -291,8 +286,7 @@ class TabGridViewBinder {
                     return;
                 }
                 // Adjust bitmap to thumbnail.
-                updateThumbnailMatrix(thumbnail, result, thumbnailSize);
-                thumbnail.setImageBitmap(result);
+                TabUtils.setBitmapAndUpdateImageMatrix(thumbnail, result, thumbnailSize);
             } else if (isMostRecentRequest) {
                 // If the most recent request is a null bitmap ensure a placeholder is visible.
                 thumbnail.setImageDrawable(null);
@@ -303,45 +297,6 @@ class TabGridViewBinder {
         } else {
             fetcher.fetch(callback, thumbnailSize, isSelected);
         }
-    }
-
-    /**
-     * Update @{@link Matrix} of ImageView. Bitmap is scaled to larger of the two dimens, then
-     * top-center aligned.
-     * @param thumbnail Destination image view @{@link TabGridThumbnailView}.
-     * @param source Image bitmap to resize.
-     * @param destinationSize Desired width and height for source.
-     */
-    @VisibleForTesting
-    static void updateThumbnailMatrix(
-            TabGridThumbnailView thumbnail, Bitmap source, Size destinationSize) {
-        if (BuildInfo.getInstance().isAutomotive) {
-            source.setDensity(
-                    (int) (source.getDensity() * DisplayUtil.getUiScalingFactorForAutomotive()));
-        }
-        int newWidth = destinationSize == null ? 0 : destinationSize.getWidth();
-        int newHeight = destinationSize == null ? 0 : destinationSize.getHeight();
-        if (newWidth <= 0 || newHeight <= 0
-                || (newWidth == source.getWidth() && newHeight == source.getHeight())) {
-            thumbnail.setScaleType(ScaleType.FIT_CENTER);
-            return;
-        }
-
-        final Matrix m = new Matrix();
-        final float scale = Math.max(
-                (float) newWidth / source.getWidth(), (float) newHeight / source.getHeight());
-        m.setScale(scale, scale);
-
-        /**
-         * Bitmap is top-left aligned by default. We want to translate the image to be horizontally
-         * center-aligned. |destination width - scaled width| is the width that is out of view
-         * bounds. We need to translate bitmap (to left) by half of this distance.
-         */
-        final int xOffset = (int) ((newWidth - (source.getWidth() * scale)) / 2);
-        m.postTranslate(xOffset, 0);
-
-        thumbnail.setScaleType(ScaleType.MATRIX);
-        thumbnail.setImageMatrix(m);
     }
 
     /**

@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tab;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
@@ -12,6 +14,10 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.graphics.Bitmap;
+import android.util.DisplayMetrics;
+import android.util.Size;
+
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -19,6 +25,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
@@ -29,12 +36,15 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.TabUtils.UseDesktopUserAgentCaller;
+import org.chromium.chrome.browser.tasks.tab_management.TabGridThumbnailView;
+import org.chromium.chrome.test.AutomotiveContextWrapperTestRule;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.display.DisplayUtil;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -68,6 +78,9 @@ public class TabUtilsUnitTest {
 
     @Rule
     public JniMocker mJniMocker = new JniMocker();
+    @Rule
+    public AutomotiveContextWrapperTestRule mAutomotiveContextWrapperTestRule =
+            new AutomotiveContextWrapperTestRule();
 
     @Mock
     WebsitePreferenceBridge.Natives mWebsitePreferenceBridgeJniMock;
@@ -307,5 +320,42 @@ public class TabUtilsUnitTest {
                 TabUtils.isRequestDesktopSiteContentSettingsGlobal(mProfile, null));
         Assert.assertFalse("Content setting is domain setting.",
                 TabUtils.isRequestDesktopSiteContentSettingsGlobal(mProfile, gurl));
+    }
+
+    @Test
+    public void testUpdateThumbnailMatrix_notOnAutomotiveDevice_thumbnailImageHasOriginalDensity() {
+        mAutomotiveContextWrapperTestRule.setIsAutomotive(false);
+        int mockImageSize = 100;
+        int mockTargetSize = 50;
+
+        TabGridThumbnailView thumbnailView = Mockito.mock(TabGridThumbnailView.class);
+        Bitmap bitmap = Bitmap.createBitmap(mockImageSize, mockImageSize, Bitmap.Config.ARGB_8888);
+        bitmap.setDensity(DisplayMetrics.DENSITY_DEFAULT);
+        TabUtils.setBitmapAndUpdateImageMatrix(
+                thumbnailView, bitmap, new Size(mockTargetSize, mockTargetSize));
+
+        assertNotEquals("The bitmap image density should not be zero.", 0, bitmap.getDensity());
+        assertEquals("The bitmap image's density should not be scaled up on non-automotive"
+                        + " devices.",
+                DisplayMetrics.DENSITY_DEFAULT, bitmap.getDensity());
+    }
+
+    @Test
+    public void testUpdateThumbnailMatrix_onAutomotiveDevice_thumbnailImageHasScaledUpDensity() {
+        mAutomotiveContextWrapperTestRule.setIsAutomotive(true);
+        int mockImageSize = 100;
+        int mockTargetSize = 50;
+
+        TabGridThumbnailView thumbnailView = Mockito.mock(TabGridThumbnailView.class);
+        Bitmap bitmap = Bitmap.createBitmap(mockImageSize, mockImageSize, Bitmap.Config.ARGB_8888);
+        bitmap.setDensity(DisplayMetrics.DENSITY_DEFAULT);
+        TabUtils.setBitmapAndUpdateImageMatrix(
+                thumbnailView, bitmap, new Size(mockTargetSize, mockTargetSize));
+
+        assertNotEquals("The bitmap image density should not be zero.", 0, bitmap.getDensity());
+        assertEquals("The bitmap image's density should be scaled up on automotive.",
+                (int) (DisplayMetrics.DENSITY_DEFAULT
+                        * DisplayUtil.getUiScalingFactorForAutomotive()),
+                bitmap.getDensity());
     }
 }

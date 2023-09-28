@@ -8,10 +8,14 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.Matrix;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.util.Size;
 import android.view.Display;
+import android.widget.ImageView;
+import android.widget.ImageView.ScaleType;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
@@ -33,6 +37,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayAndroidManager;
+import org.chromium.ui.display.DisplayUtil;
 import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
@@ -319,6 +324,46 @@ public class TabUtils {
         int thumbnailWidth = gridCardSize.getWidth() - getThumbnailWidthDiff(context);
         int thumbnailHeight = gridCardSize.getHeight() - getThumbnailHeightDiff(context);
         return new Size(thumbnailWidth, thumbnailHeight);
+    }
+
+    /**
+     * Update the {@link Bitmap} and @{@link Matrix} of ImageView. The bitmap is scaled by a
+     * matrix to be scaled to larger of the two dimensions of {@code destinationSize},
+     * then top-center aligned.
+     * @param view The {@link ImageView} to update.
+     * @param bitmap The {@link Bitmap} to set in the view and scale.
+     * @param destinationSize The desired {@link Size} of the bitmap.
+     */
+    public static void setBitmapAndUpdateImageMatrix(
+            ImageView view, Bitmap bitmap, Size destinationSize) {
+        view.setImageBitmap(bitmap);
+        if (BuildInfo.getInstance().isAutomotive) {
+            bitmap.setDensity(
+                    (int) (bitmap.getDensity() * DisplayUtil.getUiScalingFactorForAutomotive()));
+        }
+        int newWidth = destinationSize == null ? 0 : destinationSize.getWidth();
+        int newHeight = destinationSize == null ? 0 : destinationSize.getHeight();
+        if (newWidth <= 0 || newHeight <= 0
+                || (newWidth == bitmap.getWidth() && newHeight == bitmap.getHeight())) {
+            view.setScaleType(ScaleType.FIT_CENTER);
+            return;
+        }
+
+        final Matrix m = new Matrix();
+        final float scale = Math.max(
+                (float) newWidth / bitmap.getWidth(), (float) newHeight / bitmap.getHeight());
+        m.setScale(scale, scale);
+
+        /**
+         * Bitmap is top-left aligned by default. We want to translate the image to be horizontally
+         * center-aligned. |destination width - scaled width| is the width that is out of view
+         * bounds. We need to translate bitmap (to left) by half of this distance.
+         */
+        final int xOffset = (int) ((newWidth - (bitmap.getWidth() * scale)) / 2);
+        m.postTranslate(xOffset, 0);
+
+        view.setScaleType(ScaleType.MATRIX);
+        view.setImageMatrix(m);
     }
 
     private static int getThumbnailHeightDiff(Context context) {
