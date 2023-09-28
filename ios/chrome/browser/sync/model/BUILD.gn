@@ -1,0 +1,20 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("model") {
+  sources = [
+    "sync_service_factory.h",
+    "sync_setup_service.h",
+    "sync_setup_service_factory.h",
+  ]
+  public_deps = [ "//ios/chrome/browser/sync" ]
+}
+
+source_set("test_support") {
+  testonly = true
+  public_deps = [
+    "//ios/chrome/browser/sync",
+    "//ios/chrome/browser/sync:test_support",
+  ]
+}
