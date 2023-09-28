@@ -83,11 +83,14 @@ void OpenDatabaseOnDatabaseTaskRunner(
   } else {
     success = database->OpenDatabase(*database_dir);
   }
+  absl::optional<NewTraceReport> report_to_upload;
+  if (base::FeatureList::IsEnabled(kBackgroundTracingDatabase)) {
+    report_to_upload = database->GetNextReportPendingUpload();
+  }
   GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(on_database_created),
-                     database->GetScenarioCounts(),
-                     database->GetNextReportPendingUpload(), success));
+      FROM_HERE, base::BindOnce(std::move(on_database_created),
+                                database->GetScenarioCounts(),
+                                std::move(report_to_upload), success));
 }
 
 void AddTraceOnDatabaseTaskRunner(
