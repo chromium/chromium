@@ -66,6 +66,8 @@ source_set("utils") {
     "//chromeos/ash/components/report/utils/test_utils.h",
     "//chromeos/ash/components/report/utils/time_utils.cc",
     "//chromeos/ash/components/report/utils/time_utils.h",
+    "//chromeos/ash/components/report/utils/uma_utils.cc",
+    "//chromeos/ash/components/report/utils/uma_utils.h",
   ]
 }
 
@@ -127,6 +129,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/report/utils/psm_utils_unittest.cc",
     "//chromeos/ash/components/report/utils/test_utils_unittest.cc",
     "//chromeos/ash/components/report/utils/time_utils_unittest.cc",
+    "//chromeos/ash/components/report/utils/uma_utils_unittest.cc",
   ]
 
   deps = [
