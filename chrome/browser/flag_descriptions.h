@@ -2640,9 +2640,6 @@ extern const char kTouchDragAndContextMenuDescription[];
 extern const char kTranslateMessageUIName[];
 extern const char kTranslateMessageUIDescription[];
 
-extern const char kTwaPostMessageName[];
-extern const char kTwaPostMessageDescription[];
-
 extern const char kUpdateMenuBadgeName[];
 extern const char kUpdateMenuBadgeDescription[];
 

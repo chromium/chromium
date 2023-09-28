@@ -16,7 +16,6 @@ import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.content_relationship_verification.OriginVerifier;
 import org.chromium.components.content_relationship_verification.OriginVerifier.OriginVerificationListener;
@@ -66,13 +65,11 @@ public class PostMessageHandler implements OriginVerificationListener {
             }
 
             Bundle bundle = null;
-            if (ChromeFeatureList.isEnabled(ChromeFeatureList.TRUSTED_WEB_ACTIVITY_POST_MESSAGE)) {
-                GURL url = mWebContents.getMainFrame().getLastCommittedURL();
-                if (url != null) {
-                    String origin = GURLUtils.getOrigin(url.getSpec());
-                    bundle = new Bundle();
-                    bundle.putString(POST_MESSAGE_ORIGIN, origin);
-                }
+            GURL url = mWebContents.getMainFrame().getLastCommittedURL();
+            if (url != null) {
+                String origin = GURLUtils.getOrigin(url.getSpec());
+                bundle = new Bundle();
+                bundle.putString(POST_MESSAGE_ORIGIN, origin);
             }
             mPostMessageBackend.onPostMessage(messagePayload.getAsString(), bundle);
             RecordHistogram.recordBooleanHistogram("CustomTabs.PostMessage.OnMessage", true);
