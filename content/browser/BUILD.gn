@@ -2585,7 +2585,7 @@ source_set("browser") {
   # on Android at all (see https://crbug.com/1011535), whereas
   # `base::FilePatchWatcher` is not implemented on Fuchsia (see
   # https://crbug.com/851641)
-  if (!is_fuchsia && !is_android) {
+  if (!is_android && !is_ios && !is_fuchsia) {
     sources += [
       "file_system_access/file_system_access_local_path_watcher.cc",
       "file_system_access/file_system_access_local_path_watcher.h",

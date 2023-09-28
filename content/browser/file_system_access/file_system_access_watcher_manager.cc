@@ -27,9 +27,10 @@
 #include "storage/common/file_system/file_system_types.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom-shared.h"
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_FUCHSIA)
 #include "content/browser/file_system_access/file_system_access_local_path_watcher.h"
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) &&
+        // !BUILDFLAG(IS_FUCHSIA)
 
 namespace content {
 
