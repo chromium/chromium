@@ -174,6 +174,8 @@ source_set("chromeos") {
     "reporting/websites/website_events_observer.cc",
     "reporting/websites/website_events_observer.h",
     "reporting/websites/website_metrics_retriever_interface.h",
+    "reporting/websites/website_usage_observer.cc",
+    "reporting/websites/website_usage_observer.h",
     "smart_reader/smart_reader_client_impl.cc",
     "smart_reader/smart_reader_client_impl.h",
     "tablet_mode/chrome_content_browser_client_tablet_mode_part.cc",
@@ -508,6 +510,7 @@ source_set("unit_tests") {
     "reporting/network/network_bandwidth_sampler_unittest.cc",
     "reporting/user_reporting_settings_unittest.cc",
     "reporting/websites/website_events_observer_unittest.cc",
+    "reporting/websites/website_usage_observer_unittest.cc",
     "video_conference/video_conference_ukm_helper_unittest.cc",
 
     # TODO(zturner): Enable this on Windows. See

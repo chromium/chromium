@@ -33,6 +33,13 @@ constexpr char kReportWebsiteTelemetry[] = "reporting.report_website_telemetry";
 constexpr char kReportWebsiteTelemetryCollectionRateMs[] =
     "reporting.report_website_telemetry_collection_rate_ms";
 
+// A dictionary pref that tracks foreground website usage for URLs with the
+// current user profile.
+constexpr char kWebsiteUsage[] = "reporting.website_usage";
+
+// Website telemetry types tracked by the `ReportWebsiteTelemetry` policy.
+constexpr char kWebsiteTelemetryUsageType[] = "usage";
+
 void RegisterProfilePrefs(::user_prefs::PrefRegistrySyncable* registry);
 
 // Retrieves the corresponding website metric reporting policy and returns true
