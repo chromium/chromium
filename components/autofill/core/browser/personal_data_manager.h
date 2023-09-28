@@ -208,7 +208,7 @@ class PersonalDataManager : public KeyedService,
   // The function will sets the GUID of `imported_iban` to the one that matches
   // it in `local_ibans_` so that UpdateIban() will be able to update the
   // specific IBAN.
-  std::string OnAcceptedLocalIbanSave(Iban& imported_iban);
+  std::string OnAcceptedLocalIbanSave(Iban imported_iban);
 
   // Adds |profile| to the web database.
   virtual void AddProfile(const AutofillProfile& profile);
@@ -248,7 +248,7 @@ class PersonalDataManager : public KeyedService,
   // 1) IBAN saving must be enabled.
   // 2) No IBAN exists in `local_ibans_` which has the same guid as`iban`.
   // 3) Local database is available.
-  virtual std::string AddIban(const Iban& iban);
+  virtual std::string AddIban(Iban iban);
 
   // Updates `iban` which already exists in the web database. This can only
   // be used on local ibans. Returns the guid of `iban` if the update is
@@ -887,10 +887,6 @@ class PersonalDataManager : public KeyedService,
   // the new or updated card, or the empty string if no card was saved.
   virtual std::string SaveImportedCreditCard(
       const CreditCard& imported_credit_card);
-
-  // Saves `imported_iban` to the WebDB if it exists. Returns the guid of
-  // the new or updated IBAN, or an empty string if no IBAN was saved.
-  std::string SaveImportedIban(Iban& imported_iban);
 
   // Finds the country code that occurs most frequently among all profiles.
   // Prefers verified profiles over unverified ones.

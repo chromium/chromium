@@ -263,6 +263,8 @@ autofill_private::IbanEntry IbanToIbanEntry(
   iban_entry.metadata.emplace();
   iban_entry.metadata->summary_label =
       base::UTF16ToUTF8(iban.GetIdentifierStringForAutofillDisplay());
+  iban_entry.metadata->is_local =
+      iban.record_type() == autofill::Iban::RecordType::kLocalIban;
 
   return iban_entry;
 }

@@ -2807,9 +2807,14 @@ TEST_P(FormDataImporterTest,
 }
 
 TEST_P(FormDataImporterTest, ExtractFormData_ImportIbanRecordType_LocalIban) {
-  Iban iban(Iban::Guid(base::Uuid::GenerateRandomV4().AsLowercaseString()));
+  Iban iban;
   iban.set_value(base::UTF8ToUTF16(std::string(test::kIbanValue)));
-  personal_data_manager_->AddIban(iban);
+  const std::string guid = personal_data_manager_->AddIban(iban);
+  // Should set identifier and record_type manually here as `iban` has been
+  // passed by value above in `AddIban`, and `AddIban` method sets identifier
+  // and record_type to the given `iban`.
+  iban.set_identifier(Iban::Guid(guid));
+  iban.set_record_type(Iban::kLocalIban);
 
   const std::vector<Iban*>& results = personal_data_manager_->GetLocalIbans();
   ASSERT_EQ(1U, results.size());
@@ -2817,7 +2822,8 @@ TEST_P(FormDataImporterTest, ExtractFormData_ImportIbanRecordType_LocalIban) {
 
   // Simulate a form submission with the same IBAN. The IBAN can be extracted
   // from the form.
-  FormStructure form_structure(CreateTestIbanFormData());
+  FormStructure form_structure(
+      CreateTestIbanFormData(/*value=*/test::kIbanValue));
   form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
                                          nullptr);
   auto extracted_data = ExtractFormDataAndProcessAddressCandidates(
@@ -3682,13 +3688,14 @@ TEST_P(FormDataImporterTest,
 
 TEST_P(FormDataImporterTest,
        ExtractFormData_ProcessIbanImportCandidate_LocalIban) {
-  Iban iban(Iban::Guid(base::Uuid::GenerateRandomV4().AsLowercaseString()));
+  Iban iban;
   iban.set_value(base::UTF8ToUTF16(std::string(test::kIbanValue)));
   personal_data_manager_->AddIban(iban);
 
   // Simulate a form submission with the same IBAN. The IBAN should not be
   // offered to be saved, because it already exists as a local IBAN.
-  FormStructure form_structure(CreateTestIbanFormData());
+  FormStructure form_structure(
+      CreateTestIbanFormData(/*value=*/test::kIbanValue));
   form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
                                          nullptr);
 

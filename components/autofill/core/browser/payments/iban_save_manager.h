@@ -77,7 +77,8 @@ class IbanSaveManager {
       const absl::optional<std::u16string>& nickname = absl::nullopt);
 
   // The IBAN to be saved if local IBAN save is accepted. It will be set if
-  // imported IBAN is not empty.
+  // imported IBAN is not empty. The record type of this IBAN candidate is
+  // initially set to `kUnknown`.
   Iban iban_save_candidate_;
 
   // The associated autofill client. Weak reference.

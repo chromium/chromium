@@ -87,7 +87,7 @@ class IbanManagerTest : public testing::Test {
   }
 
   // Sets up the TestPersonalDataManager with an IBAN.
-  Iban SetUpIban(std::string_view value, std::string_view nickname) {
+  Iban SetUpLocalIban(std::string_view value, std::string_view nickname) {
     Iban iban;
     std::string guid = base::Uuid::GenerateRandomV4().AsLowercaseString();
     iban.set_identifier(Iban::Guid(guid));
@@ -112,9 +112,9 @@ class IbanManagerTest : public testing::Test {
 
   // Sets up the TestPersonalDataManager with an IBAN and corresponding
   // suggestion.
-  Suggestion SetUpIbanAndSuggestion(std::string_view value,
-                                    std::string_view nickname) {
-    Iban iban = SetUpIban(value, nickname);
+  Suggestion SetUpLocalIbanAndSuggestion(std::string_view value,
+                                         std::string_view nickname) {
+    Iban iban = SetUpLocalIban(value, nickname);
     Suggestion iban_suggestion(iban.GetIdentifierStringForAutofillDisplay());
     iban_suggestion.popup_item_id = PopupItemId::kIbanEntry;
     return iban_suggestion;
@@ -152,9 +152,9 @@ MATCHER_P(MatchesTextAndPopupItemId, suggestion, "") {
 
 TEST_F(IbanManagerTest, ShowsIbanSuggestions) {
   Suggestion iban_suggestion_0 =
-      SetUpIbanAndSuggestion(test::kIbanValue, kNickname_0);
+      SetUpLocalIbanAndSuggestion(test::kIbanValue, kNickname_0);
   Suggestion iban_suggestion_1 =
-      SetUpIbanAndSuggestion(test::kIbanValue_1, kNickname_1);
+      SetUpLocalIbanAndSuggestion(test::kIbanValue_1, kNickname_1);
 
   AutofillField test_field;
   SuggestionsContext context = GetIbanFocusedSuggestionsContext(test_field);
@@ -181,8 +181,8 @@ TEST_F(IbanManagerTest, ShowsIbanSuggestions) {
 
 TEST_F(IbanManagerTest, PaymentsAutofillEnabledPrefOff_NoIbanSuggestionsShown) {
   personal_data_manager_.SetAutofillCreditCardEnabled(false);
-  SetUpIbanAndSuggestion(test::kIbanValue, kNickname_0);
-  SetUpIbanAndSuggestion(test::kIbanValue_1, kNickname_1);
+  SetUpLocalIbanAndSuggestion(test::kIbanValue, kNickname_0);
+  SetUpLocalIbanAndSuggestion(test::kIbanValue_1, kNickname_1);
 
   AutofillField test_field;
   SuggestionsContext context = GetIbanFocusedSuggestionsContext(test_field);
@@ -199,7 +199,7 @@ TEST_F(IbanManagerTest, PaymentsAutofillEnabledPrefOff_NoIbanSuggestionsShown) {
 
 TEST_F(IbanManagerTest, IbanSuggestions_SeparatorAndFooter) {
   Suggestion iban_suggestion_0 =
-      SetUpIbanAndSuggestion(test::kIbanValue, kNickname_0);
+      SetUpLocalIbanAndSuggestion(test::kIbanValue, kNickname_0);
   Suggestion iban_suggestion_1 = SetUpSeparator();
   Suggestion iban_suggestion_2 = SetUpFooterManagePaymentMethods();
 
@@ -230,9 +230,9 @@ TEST_F(IbanManagerTest, IbanSuggestions_SeparatorAndFooter) {
 
 TEST_F(IbanManagerTest, ShowsIbanSuggestions_NoSuggestion) {
   Suggestion iban_suggestion_0 =
-      SetUpIbanAndSuggestion(test::kIbanValue, kNickname_0);
+      SetUpLocalIbanAndSuggestion(test::kIbanValue, kNickname_0);
   Suggestion iban_suggestion_1 =
-      SetUpIbanAndSuggestion(test::kIbanValue_1, kNickname_1);
+      SetUpLocalIbanAndSuggestion(test::kIbanValue_1, kNickname_1);
 
   AutofillField test_field;
   test_field.value = base::UTF8ToUTF16(std::string(test::kIbanValue));
@@ -253,9 +253,9 @@ TEST_F(IbanManagerTest, ShowsIbanSuggestions_NoSuggestion) {
 
 TEST_F(IbanManagerTest, ShowsIbanSuggestions_OnlyPrefixMatch) {
   Suggestion iban_suggestion_0 =
-      SetUpIbanAndSuggestion(test::kIbanValue_1, kNickname_0);
+      SetUpLocalIbanAndSuggestion(test::kIbanValue_1, kNickname_0);
   Suggestion iban_suggestion_1 =
-      SetUpIbanAndSuggestion(test::kIbanValue_2, kNickname_1);
+      SetUpLocalIbanAndSuggestion(test::kIbanValue_2, kNickname_1);
   Suggestion iban_suggestion_2 = SetUpSeparator();
   Suggestion iban_suggestion_3 = SetUpFooterManagePaymentMethods();
 
@@ -326,7 +326,7 @@ TEST_F(IbanManagerTest, ShowsIbanSuggestions_OnlyPrefixMatch) {
 }
 
 TEST_F(IbanManagerTest, DoesNotShowIbansForBlockedWebsite) {
-  SetUpIban(test::kIbanValue, kNickname_0);
+  SetUpLocalIban(test::kIbanValue, kNickname_0);
   AutofillField test_field;
   SuggestionsContext context = GetIbanFocusedSuggestionsContext(test_field);
 
@@ -350,7 +350,7 @@ TEST_F(IbanManagerTest, DoesNotShowIbansForBlockedWebsite) {
 // suggestions cannot and will not be blocked.
 TEST_F(IbanManagerTest, ShowsIbanSuggestions_OptimizationGuideNotPresent) {
   Suggestion iban_suggestion_0 =
-      SetUpIbanAndSuggestion(test::kIbanValue, kNickname_0);
+      SetUpLocalIbanAndSuggestion(test::kIbanValue, kNickname_0);
   AutofillField test_field;
   SuggestionsContext context = GetIbanFocusedSuggestionsContext(test_field);
 
@@ -377,7 +377,7 @@ TEST_F(IbanManagerTest, ShowsIbanSuggestions_OptimizationGuideNotPresent) {
 }
 
 TEST_F(IbanManagerTest, NotIbanFieldFocused_NoSuggestionsShown) {
-  SetUpIban(test::kIbanValue, kNickname_0);
+  SetUpLocalIban(test::kIbanValue, kNickname_0);
 
   AutofillField test_field;
   test_field.value = base::UTF8ToUTF16(std::string(test::kIbanValue));
@@ -400,7 +400,7 @@ TEST_F(IbanManagerTest, NotIbanFieldFocused_NoSuggestionsShown) {
 // blocklist, appropriate metrics are logged.
 TEST_F(IbanManagerTest, Metrics_Suggestions_Allowed) {
   base::HistogramTester histogram_tester;
-  SetUpIban(test::kIbanValue, kNickname_0);
+  SetUpLocalIban(test::kIbanValue, kNickname_0);
 
   AutofillField test_field;
   test_field.unique_renderer_id = test::MakeFieldRendererId();
@@ -419,7 +419,7 @@ TEST_F(IbanManagerTest, Metrics_Suggestions_Allowed) {
 // blocklist, appropriate metrics are logged.
 TEST_F(IbanManagerTest, Metrics_Suggestions_Blocked) {
   base::HistogramTester histogram_tester;
-  SetUpIban(test::kIbanValue, kNickname_0);
+  SetUpLocalIban(test::kIbanValue, kNickname_0);
   AutofillField test_field;
   SuggestionsContext context = GetIbanFocusedSuggestionsContext(test_field);
 
@@ -445,7 +445,7 @@ TEST_F(IbanManagerTest, Metrics_Suggestions_Blocked) {
 // not available, appropriate metrics are logged.
 TEST_F(IbanManagerTest, Metrics_Suggestions_BlocklistNotAccessible) {
   base::HistogramTester histogram_tester;
-  SetUpIban(test::kIbanValue, kNickname_0);
+  SetUpLocalIban(test::kIbanValue, kNickname_0);
   AutofillField test_field;
   SuggestionsContext context = GetIbanFocusedSuggestionsContext(test_field);
   // Delete the AutofillOptimizationGuide.
@@ -467,7 +467,7 @@ TEST_F(IbanManagerTest, Metrics_Suggestions_BlocklistNotAccessible) {
 // logged correctly.
 TEST_F(IbanManagerTest, Metrics_SuggestionsShown) {
   base::HistogramTester histogram_tester;
-  SetUpIban(test::kIbanValue, kNickname_0);
+  SetUpLocalIban(test::kIbanValue, kNickname_0);
 
   AutofillField test_field;
   test_field.unique_renderer_id = test::MakeFieldRendererId();
@@ -496,9 +496,9 @@ TEST_F(IbanManagerTest, Metrics_SuggestionsShown) {
 // are logged correctly.
 TEST_F(IbanManagerTest, Metrics_SuggestionSelected) {
   base::HistogramTester histogram_tester;
-  SetUpIban(test::kIbanValue, kNickname_0);
-  SetUpIban(test::kIbanValue_1, kNickname_1);
-  SetUpIban(test::kIbanValue_2, "");
+  SetUpLocalIban(test::kIbanValue, kNickname_0);
+  SetUpLocalIban(test::kIbanValue_1, kNickname_1);
+  SetUpLocalIban(test::kIbanValue_2, "");
 
   AutofillField test_field;
   test_field.unique_renderer_id = test::MakeFieldRendererId();
@@ -532,8 +532,8 @@ TEST_F(IbanManagerTest, Metrics_SuggestionSelected) {
 
 TEST_F(IbanManagerTest, Metrics_NoSuggestionShown) {
   base::HistogramTester histogram_tester;
-  SetUpIban(test::kIbanValue, kNickname_0);
-  SetUpIban(test::kIbanValue_1, kNickname_1);
+  SetUpLocalIban(test::kIbanValue, kNickname_0);
+  SetUpLocalIban(test::kIbanValue_1, kNickname_1);
   AutofillField test_field;
   // Input a prefix that does not have any matching IBAN value so that no IBAN
   // suggestions will be shown.

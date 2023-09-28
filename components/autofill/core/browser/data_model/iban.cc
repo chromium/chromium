@@ -337,6 +337,7 @@ void Iban::set_value(const std::u16string& value) {
   if (!IsValid(value)) {
     return;
   }
+  CHECK_NE(record_type_, Iban::kServerIban);
   // Get rid of all separators in the value before storing.
   value_ = RemoveIbanSeparators(value);
   static_assert(

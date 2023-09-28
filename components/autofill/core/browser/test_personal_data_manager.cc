@@ -95,7 +95,11 @@ void TestPersonalDataManager::AddCreditCard(const CreditCard& credit_card) {
   NotifyPersonalDataObserver();
 }
 
-std::string TestPersonalDataManager::AddIban(const Iban& iban) {
+std::string TestPersonalDataManager::AddIban(Iban iban) {
+  CHECK_EQ(iban.record_type(), Iban::kUnknown);
+  iban.set_record_type(Iban::kLocalIban);
+  iban.set_identifier(
+      Iban::Guid(base::Uuid::GenerateRandomV4().AsLowercaseString()));
   std::unique_ptr<Iban> local_iban = std::make_unique<Iban>(iban);
   local_ibans_.push_back(std::move(local_iban));
   NotifyPersonalDataObserver();

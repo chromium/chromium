@@ -33,9 +33,6 @@ bool IbanSaveManager::AttemptToOfferIbanLocalSave(
     return false;
   }
   iban_save_candidate_ = iban_import_candidate;
-  // Set the guid as this IBAN will be offered to save locally.
-  iban_save_candidate_.set_identifier(
-      Iban::Guid(base::Uuid::GenerateRandomV4().AsLowercaseString()));
   // If the max strikes limit has been reached, do not show the IBAN save
   // prompt.
   bool show_save_prompt =
@@ -101,7 +98,7 @@ void IbanSaveManager::OnUserDidDecideOnLocalSave(
       // the strike count starts over with respect to re-saving it.
       GetIbanSaveStrikeDatabase()->ClearStrikes(partial_iban_hash);
       client_->GetPersonalDataManager()->OnAcceptedLocalIbanSave(
-          iban_save_candidate_);
+          std::move(iban_save_candidate_));
       if (observer_for_testing_) {
         observer_for_testing_->OnAcceptSaveIbanComplete();
       }

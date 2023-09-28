@@ -1014,6 +1014,8 @@ FormDataImporter::ExtractCreditCardFromForm(const FormStructure& form) {
 }
 
 Iban FormDataImporter::ExtractIbanFromForm(const FormStructure& form) {
+  // Creates an IBAN candidate with `kUnknown` record type as it is currently
+  // unknown if this IBAN already exists locally or on the server.
   Iban candidate_iban;
 
   for (const auto& field : form) {
