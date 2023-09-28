@@ -24,6 +24,7 @@
 #include "components/webapps/browser/installable/installable_params.h"
 #include "components/webapps/common/web_page_metadata.mojom.h"
 #include "components/webapps/common/web_page_metadata_agent.mojom.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -88,6 +89,15 @@ void WebAppDataRetriever::GetWebAppInstallInfo(
   DCHECK(!get_web_app_info_callback_);
   get_web_app_info_callback_ = std::move(callback);
 
+  if (ShouldStopRetrieval()) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&WebAppDataRetriever::CallCallbackOnError,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       webapps::InstallableStatusCode::RENDERER_CANCELLED));
+    return;
+  }
+
   content::NavigationEntry* entry =
       web_contents->GetController().GetLastCommittedEntry();
   if (entry->IsInitialEntry()) {
@@ -135,15 +145,19 @@ void WebAppDataRetriever::CheckInstallabilityAndRetrieveManifest(
     CheckInstallabilityCallback callback,
     absl::optional<webapps::InstallableParams> params) {
   DCHECK(!web_contents->IsBeingDestroyed());
-  webapps::InstallableManager* installable_manager =
-      webapps::InstallableManager::FromWebContents(web_contents);
-  DCHECK(installable_manager);
-
   Observe(web_contents);
 
   // Concurrent calls are not allowed.
   DCHECK(!check_installability_callback_);
   check_installability_callback_ = std::move(callback);
+  if (ShouldStopRetrieval()) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&WebAppDataRetriever::CallCallbackOnError,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       webapps::InstallableStatusCode::RENDERER_CANCELLED));
+    return;
+  }
 
   // TODO(crbug.com/829232) Unify with other calls to GetData.
   if (!params.has_value()) {
@@ -157,6 +171,11 @@ void WebAppDataRetriever::CheckInstallabilityAndRetrieveManifest(
     data_params.has_worker = !bypass_service_worker_check;
     params = data_params;
   }
+
+  webapps::InstallableManager* installable_manager =
+      webapps::InstallableManager::FromWebContents(web_contents);
+  DCHECK(installable_manager);
+
   // Do not wait_for_worker. OnDidPerformInstallableCheck is always invoked.
   installable_manager->GetData(
       params.value(),
@@ -175,6 +194,15 @@ void WebAppDataRetriever::GetIcons(content::WebContents* web_contents,
   // Concurrent calls are not allowed.
   CHECK(!get_icons_callback_);
   get_icons_callback_ = std::move(callback);
+
+  if (ShouldStopRetrieval()) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&WebAppDataRetriever::CallCallbackOnError,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       webapps::InstallableStatusCode::RENDERER_CANCELLED));
+    return;
+  }
 
   IconDownloaderOptions options = {
       .skip_page_favicons = skip_page_favicons,
@@ -208,7 +236,11 @@ void WebAppDataRetriever::OnGetWebPageMetadata(
     int last_committed_nav_entry_unique_id,
     webapps::mojom::WebPageMetadataPtr metadata) {
   if (ShouldStopRetrieval()) {
-    CallCallbackOnError(webapps::InstallableStatusCode::RENDERER_CANCELLED);
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&WebAppDataRetriever::CallCallbackOnError,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       webapps::InstallableStatusCode::RENDERER_CANCELLED));
     return;
   }
 
@@ -246,7 +278,11 @@ void WebAppDataRetriever::OnGetWebPageMetadata(
 void WebAppDataRetriever::OnDidPerformInstallableCheck(
     const webapps::InstallableData& data) {
   if (ShouldStopRetrieval()) {
-    CallCallbackOnError(webapps::InstallableStatusCode::RENDERER_CANCELLED);
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&WebAppDataRetriever::CallCallbackOnError,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       webapps::InstallableStatusCode::RENDERER_CANCELLED));
     return;
   }
 
@@ -271,7 +307,11 @@ void WebAppDataRetriever::OnIconsDownloaded(
     IconsMap icons_map,
     DownloadedIconsHttpResults icons_http_results) {
   if (ShouldStopRetrieval()) {
-    CallCallbackOnError(webapps::InstallableStatusCode::RENDERER_CANCELLED);
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&WebAppDataRetriever::CallCallbackOnError,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       webapps::InstallableStatusCode::RENDERER_CANCELLED));
     return;
   }
 
@@ -308,8 +348,11 @@ void WebAppDataRetriever::CallCallbackOnError(
   }
 }
 
+// TODO(b/302531937): Make this a utility that can be used through out the
+// web_applications/ system.
 bool WebAppDataRetriever::ShouldStopRetrieval() const {
-  return !web_contents() || web_contents()->IsBeingDestroyed();
+  return !web_contents() || web_contents()->IsBeingDestroyed() ||
+         web_contents()->GetBrowserContext()->ShutdownStarted();
 }
 
 }  // namespace web_app

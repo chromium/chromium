@@ -15,6 +15,7 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -32,6 +33,14 @@ base::FeatureParam<base::TimeDelta> kTimeoutTime(
     &kIconDownloaderTimeout,
     "timeout_time",
     WebAppIconDownloader::kDefaultSecondsToWaitForIconDownloading);
+
+// TODO(b/302531937): Make this a utility that can be used through out the
+// web_applications/ system.
+bool WebContentsShuttingDown(content::WebContents* web_contents) {
+  return !web_contents || web_contents->IsBeingDestroyed() ||
+         web_contents->GetBrowserContext()->ShutdownStarted();
+}
+
 }  // namespace
 
 WebAppIconDownloader::WebAppIconDownloader() = default;
@@ -48,6 +57,14 @@ void WebAppIconDownloader::Start(content::WebContents* web_contents,
   Observe(web_contents);
   callback_ = std::move(callback);
   options_ = options;
+
+  if (WebContentsShuttingDown(web_contents)) {
+    // Reports http status code for the failure.
+    CancelDownloads(IconsDownloadedResult::kPrimaryPageChanged,
+                    DownloadedIconsHttpResults{},
+                    WebAppIconDownloaderResult::kPrimaryPageChanged);
+    return;
+  }
 
   if (base::FeatureList::IsEnabled(kIconDownloaderTimeout)) {
     timer_.Start(FROM_HERE, kTimeoutTime.Get(),
@@ -88,16 +105,24 @@ bool WebAppIconDownloader::IsRunning() {
 }
 
 int WebAppIconDownloader::DownloadImage(const GURL& url) {
-  // If |is_favicon| is true, the cookies are not sent and not accepted during
-  // download.
-  return web_contents()->DownloadImage(
-      url,
-      true,         // is_favicon
-      gfx::Size(),  // no preferred size
-      0,            // no max size
-      false,        // normal cache policy
-      base::BindOnce(&WebAppIconDownloader::DidDownloadFavicon,
-                     weak_ptr_factory_.GetWeakPtr()));
+  if (web_contents()->GetBrowserContext()->ShutdownStarted()) {
+    // Reports http status code for the failure.
+    CancelDownloads(IconsDownloadedResult::kPrimaryPageChanged,
+                    DownloadedIconsHttpResults{},
+                    WebAppIconDownloaderResult::kPrimaryPageChanged);
+    return 0;
+  } else {
+    // If |is_favicon| is true, the cookies are not sent and not accepted during
+    // download.
+    return web_contents()->DownloadImage(
+        url,
+        true,         // is_favicon
+        gfx::Size(),  // no preferred size
+        0,            // no max size
+        false,        // normal cache policy
+        base::BindOnce(&WebAppIconDownloader::DidDownloadFavicon,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
 const std::vector<blink::mojom::FaviconURLPtr>&
@@ -134,6 +159,14 @@ void WebAppIconDownloader::DidDownloadFavicon(
   if (!IsRunning()) {
     return;
   }
+
+  if (web_contents()->GetBrowserContext()->ShutdownStarted()) {
+    CancelDownloads(IconsDownloadedResult::kPrimaryPageChanged,
+                    DownloadedIconsHttpResults{},
+                    WebAppIconDownloaderResult::kPrimaryPageChanged);
+    return;
+  }
+
   size_t num_deleted = in_progress_requests_.erase(id);
   CHECK_EQ(num_deleted, 1ul);
 
@@ -215,12 +248,22 @@ void WebAppIconDownloader::OnTimeout() {
   if (!IsRunning()) {
     return;
   }
+
+  if (web_contents()->GetBrowserContext()->ShutdownStarted()) {
+    // Reports http status code for the failure.
+    CancelDownloads(IconsDownloadedResult::kPrimaryPageChanged,
+                    DownloadedIconsHttpResults{},
+                    WebAppIconDownloaderResult::kPrimaryPageChanged);
+    return;
+  }
+
   if (options_.fail_all_if_any_fail || icons_map_.empty()) {
     CancelDownloads(IconsDownloadedResult::kAbortedDueToFailure,
                     DownloadedIconsHttpResults(),
                     WebAppIconDownloaderResult::kTimeoutFailure);
     return;
   }
+
   // Populate results for the the hanging requests.
   for (const auto& [_, icon_url] : in_progress_requests_) {
     icons_http_results_[icon_url] = net::HttpStatusCode::HTTP_REQUEST_TIMEOUT;
