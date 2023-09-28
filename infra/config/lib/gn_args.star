@@ -13,6 +13,7 @@ load("./chrome_settings.star", "per_builder_outputs_config")
 load("./nodes.star", "nodes")
 
 _GN_CONFIG = nodes.create_unscoped_node_type("gn_config")
+_PHASED_CONFIG = nodes.create_unscoped_node_type("phased_config")
 
 _GN_ARGS_FILE_NAME = "gn-args.json"
 
@@ -88,7 +89,7 @@ def _get_gn_args_resolver():
             # Memoize.
             resolved_gn_args_by_config_node[n] = gn_args
 
-        return dict(resolved_gn_args_by_config_node[gn_config_node])
+        return {k: v for k, v in resolved_gn_args_by_config_node[gn_config_node].items() if v}
 
     return resolve
 
@@ -164,21 +165,41 @@ def register_gn_args(builder_group, bucket, builder, gn_args):
         builder_group: (string) The builder group name.
         bucket: (string) The bucket name.
         builder: (string) The builder name.
-        gn_args: The string name of a GN config, or the return value of
-            a gn_args.config method call without setting the "name" parameter.
+        gn_args: The string name of a GN config, a dict of phased GN config,
+            or the return value of a gn_args.config method call without setting
+            the "name" parameter.
 
     Returns:
         A list of generated GN args file paths relative to the per-builder
             output root dir if gn_args is set; None otherwise.
     """
-    if gn_args:
-        if type(gn_args) == "string":
-            gn_args = {"configs": [gn_args]}
+
+    # Function for formating GN config for GN config node creation.
+    def format_gn_config(config):
+        if type(config) == "string":
+            return {"configs": [config]}
         else:
-            # If a unnamed config is specified, convert the struct to dict.
-            gn_args = {a: getattr(gn_args, a) for a in dir(gn_args)}
-        gn_args["builder_group"] = builder_group
-        builder_node_key = _create_gn_config_node("{}/{}".format(bucket, builder), **gn_args)
+            return {a: getattr(config, a) for a in dir(config)}
+
+    builder_node_name = "{}/{}".format(bucket, builder)
+    if gn_args:
+        if type(gn_args) == "dict":
+            # Phased GN config.
+            builder_node_key = _PHASED_CONFIG.add(builder_node_name, props = {
+                "builder_group": builder_group,
+            })
+            phase_prefix = "{}/{}".format(bucket, builder)
+            for phase_name, config in gn_args.items():
+                phase_node_name = "{}:{}".format(phase_prefix, phase_name)
+                phase_node_key = _create_gn_config_node(phase_node_name, **format_gn_config(config))
+                graph.add_edge(builder_node_key, phase_node_key)
+
+        else:
+            # Non-phased GN config.
+            config = format_gn_config(gn_args)
+            config["builder_group"] = builder_group
+            builder_node_key = _create_gn_config_node(builder_node_name, **config)
+
         graph.add_edge(keys.project(), builder_node_key)
         return ["{}/{}/{}".format(bucket, builder, _GN_ARGS_FILE_NAME)]
     else:
@@ -192,23 +213,31 @@ def _generate_gn_args(ctx):
     """
     args_gn_locations = {}
     root_out_dir = per_builder_outputs_config().root_dir
-    builder_nodes = graph.children(keys.project(), _GN_CONFIG.kind)
-    if builder_nodes:
-        resolve_gn_args = _get_gn_args_resolver()
-        for node in builder_nodes:
-            gn_args_file_path = "{}/{}/{}".format(root_out_dir, node.key.id, _GN_ARGS_FILE_NAME)
-            gn_args_dict = resolve_gn_args(node)
-            for key in gn_args_dict.keys():
-                if not gn_args_dict[key]:
-                    gn_args_dict.pop(key)
-            ctx.output[gn_args_file_path] = json.indent(json.encode(gn_args_dict), indent = "  ")
+    resolve_gn_args = _get_gn_args_resolver()
 
-            builder_name = node.key.id.rsplit("/", 1)[-1]
-            builder_group = node.props.builder_group
-            args_gn_locations.setdefault(
-                builder_group,
-                {},
-            )[builder_name] = "{}/{}".format(node.key.id, _GN_ARGS_FILE_NAME)
+    # Function for generating args-gn.json files
+    def gen_args_gn_json(gn_args_dict):
+        gn_args_file_path = "{}/{}/{}".format(root_out_dir, node.key.id, _GN_ARGS_FILE_NAME)
+        ctx.output[gn_args_file_path] = json.indent(json.encode(gn_args_dict), indent = "  ")
+
+        builder_name = node.key.id.rsplit("/", 1)[-1]
+        builder_group = node.props.builder_group
+        args_gn_locations.setdefault(
+            builder_group,
+            {},
+        )[builder_name] = "{}/{}".format(node.key.id, _GN_ARGS_FILE_NAME)
+
+    # Builders with non-phased GN configs
+    for node in graph.children(keys.project(), _GN_CONFIG.kind):
+        gn_args_dict = resolve_gn_args(node)
+        gen_args_gn_json(gn_args_dict)
+
+    # Builders with phased GN configs
+    for node in graph.children(keys.project(), _PHASED_CONFIG.kind):
+        phases_dict = {}
+        for phase_node in graph.children(node.key):
+            phases_dict[phase_node.key.id.split(":")[-1]] = resolve_gn_args(phase_node)
+        gen_args_gn_json({"phases": phases_dict})
 
     locations_file_path = "{}/gn_args_locations.json".format(root_out_dir)
     ctx.output[locations_file_path] = json.indent(
