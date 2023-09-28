@@ -26,8 +26,9 @@ class MixedContentSettingsTabHelper
 
   // Enables running active mixed content resources in the associated
   // WebContents/tab. This will stick around as long as the main frame's
-  // RenderFrameHost stays the same. When the RenderFrameHost changes, we're
-  // back to the default (mixed content resources are not allowed to run).
+  // SiteInstance stays the same. When the SiteInstance changes, we're back to
+  // the default (mixed content resources are not allowed to run). See also the
+  // `SiteSettings` class below.
   void AllowRunningOfInsecureContent(
       content::RenderFrameHost& render_frame_host);
 
@@ -43,25 +44,32 @@ class MixedContentSettingsTabHelper
   void RenderFrameCreated(content::RenderFrameHost* render_frame_host) override;
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
 
-  // TODO(crbug.com/1071232): When RenderDocument is implemented, make this a
-  // DocumentUserData.
-  class PageSettings {
+  // The SiteSettings is shared between all RenderFrameHosts that uses the
+  // `render_frame_host`'s SiteInstance, and the SiteSettings will remain in the
+  // `settings_` map as long as it is still used by at least 1 RenderFrame.
+  class SiteSettings {
    public:
-    explicit PageSettings(content::RenderFrameHost* render_frame_host);
-    PageSettings(const PageSettings&) = delete;
-    void operator=(const PageSettings&) = delete;
+    explicit SiteSettings(content::RenderFrameHost* render_frame_host);
+    SiteSettings(const SiteSettings&) = delete;
+    void operator=(const SiteSettings&) = delete;
 
     void AllowRunningOfInsecureContent();
 
-    bool is_running_insecure_content_allowed() {
+    bool is_running_insecure_content_allowed() const {
       return is_running_insecure_content_allowed_;
     }
 
+    void IncrementRenderFrameCount();
+    void DecrementRenderFrameCount();
+    bool render_frame_count() const { return render_frame_count_; }
+
    private:
+    int render_frame_count_ = 0;
     bool is_running_insecure_content_allowed_ = false;
   };
 
-  std::map<content::RenderFrameHost*, std::unique_ptr<PageSettings>> settings_;
+  std::map<raw_ptr<content::SiteInstance>, std::unique_ptr<SiteSettings>>
+      settings_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
