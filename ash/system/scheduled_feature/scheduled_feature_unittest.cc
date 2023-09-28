@@ -1408,8 +1408,10 @@ TEST_P(ScheduledFeatureGeopositionTest, CyclesThroughCheckpoints) {
   }
 
   const size_t num_checkpoints_observed = checkpoint_observer.changes().size();
-  // There are a couple of corner cases where more than 4 checkpoints are
-  // observed in 24 hours. Example:
+  // There are a couple of corner cases where 3 or 5 checkpoints are observed in
+  // 24 hours.
+  //
+  // Example of 5:
   // Now: 5:59 AM
   // Sunrise today: 6:00 AM
   // Sunrise tomorrow: 5:58 AM
@@ -1420,7 +1422,18 @@ TEST_P(ScheduledFeatureGeopositionTest, CyclesThroughCheckpoints) {
   // * Late Afternoon (4 PM)
   // * Sunset (6 PM)
   // * Sunrise 2 (5:58 AM)
-  ASSERT_GE(num_checkpoints_observed, kNumCheckpointsPerDay);
+  //
+  // Example of 3:
+  // Now: 6:01 AM
+  // Sunrise today: 6:00 AM
+  // Sunrise tomorrow: 6:02 AM
+  //
+  // Expected checkpoint changes:
+  // * Morning (10 AM)
+  // * Late Afternoon (4 PM)
+  // * Sunset (6 PM)
+  ASSERT_GE(num_checkpoints_observed, kNumCheckpointsPerDay - 1);
+  ASSERT_LE(num_checkpoints_observed, kNumCheckpointsPerDay + 1);
   for (size_t i = 1; i < num_checkpoints_observed; ++i) {
     EXPECT_EQ(
         checkpoint_observer.changes()[i].second,
