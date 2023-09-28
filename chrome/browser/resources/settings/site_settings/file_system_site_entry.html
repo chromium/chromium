@@ -13,9 +13,11 @@
       [[grantsPerOrigin.origin]]
     </cr-expand-button>
     <div class="separator"></div>
-    <cr-icon-button class="icon-more-vert"
-        title="$i18n{moreActions}" on-click="onOptionsMenuClick_"
-        aria-label="$i18n{moreActions}">
+    <cr-icon-button
+        class="icon-delete-gray"
+        id="removeGrants"
+        on-click="onRemoveGrantsClick_">
+      $i18n{siteSettingsFileSystemSiteListRemoveGrants}
     </cr-icon-button>
   </div>
   <iron-collapse id="collapseChild" expand-icon="cr:arrow-drop-down"

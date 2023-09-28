@@ -52,8 +52,8 @@ export class FileSystemSiteEntryElement extends FileSystemSiteEntryElementBase {
   }
   grantsPerOrigin: OriginFileSystemGrants;
 
-  private onOptionsMenuClick_() {
-    this.fire('options-icon-click', this.grantsPerOrigin);
+  private onRemoveGrantsClick_() {
+    this.fire('revoke-grants', this.grantsPerOrigin);
   }
 }
 declare global {

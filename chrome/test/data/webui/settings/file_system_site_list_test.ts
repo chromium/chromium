@@ -105,35 +105,10 @@ suite('FileSystemSettings_EnablePersistentPermissions', function() {
         assertEquals(directoryFilePath1, filePath);
         assertEquals(1, browserProxy.getCallCount('revokeFileSystemGrant'));
 
-        // Option menu icons populate for all origins with grants.
-        const optionsMenuButtonOrigin1 =
-            fileSystemSiteEntries[0]!.shadowRoot!.querySelector<HTMLElement>(
-                '.icon-more-vert');
-        assertTrue(!!optionsMenuButtonOrigin1);
-
-        const optionsMenuButtonOrigin2 =
-            fileSystemSiteEntries[1]!.shadowRoot!.querySelector<HTMLElement>(
-                '.icon-more-vert');
-        assertTrue(!!optionsMenuButtonOrigin2);
-
-        // Navigate to the site details page for a given origin.
-        optionsMenuButtonOrigin2.click();
-        const menu = testElement.$.menu.get();
-        const viewSiteDetailsButton =
-            menu!.querySelector<HTMLElement>('#viewSiteDetails');
-        assertTrue(!!viewSiteDetailsButton);
-        viewSiteDetailsButton.click();
-        assertEquals(
-            routes.SITE_SETTINGS_SITE_DETAILS.path,
-            Router.getInstance().getCurrentRoute().path);
-        assertEquals(
-            origin2, Router.getInstance().getQueryParameters().get('site'));
-
         // Remove all of an origin's granted permissions.
-        optionsMenuButtonOrigin1.click();
-        const updatedMenu = testElement.$.menu.get();
         const removeGrantsButton =
-            updatedMenu.querySelector<HTMLElement>('#removeGrants');
+            fileSystemSiteEntries[0]!.shadowRoot!.querySelector<HTMLElement>(
+                '#removeGrants');
         assertTrue(!!removeGrantsButton);
         removeGrantsButton.click();
         const testOrigin1 =
