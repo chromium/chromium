@@ -65,11 +65,17 @@ ExclusiveAccessBubbleViews* GetExclusiveAccessBubble(Browser* browser) {
   return browser_view->exclusive_access_bubble();
 }
 
+// Enables tests to use a special windows driver to create virtual displays when
+// this command line switch is enabled.
+// TODO(crbug.com/1034772): Make this switch do more than just logging.
+static constexpr char kSwitchWinVirtualDisplayDriver[] =
+    "win-virtual-display-driver";
+
 // Tests popups with multi-screen features from the Window Management API.
 // Tests are run with and without the requisite Window Management permission.
 // Tests must run in series to manage virtual displays on supported platforms.
 // Use 2+ physical displays to run locally with --gtest_also_run_disabled_tests.
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 #define MAYBE_PopupMultiScreenTest PopupMultiScreenTest
 #else
 #define MAYBE_PopupMultiScreenTest DISABLED_PopupMultiScreenTest
@@ -88,6 +94,14 @@ class MAYBE_PopupMultiScreenTest : public PopupTestBase,
   }
 
   void SetUpOnMainThread() override {
+    auto* cmd_line = base::CommandLine::ForCurrentProcess();
+
+    // Log a message if windows virtual display driver is enabled.
+    // TODO(crbug.com/1034772): Make this switch do more than just logging.
+    if (cmd_line->HasSwitch(kSwitchWinVirtualDisplayDriver)) {
+      LOG(INFO) << kSwitchWinVirtualDisplayDriver << " switch is enabled.";
+    }
+
     if (!SetUpVirtualDisplays()) {
       GTEST_SKIP() << "Virtual displays not supported on this platform.";
     }
