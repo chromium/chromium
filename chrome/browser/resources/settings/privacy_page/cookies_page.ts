@@ -139,11 +139,6 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
         value: () =>
             loadTimeData.getBoolean('is3pcdCookieSettingsRedesignEnabled'),
       },
-
-      advancedExpanded_: {
-        type: Boolean,
-        value: false,
-      },
     };
   }
 
@@ -162,7 +157,6 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
   private isPrivacySandboxSettings4_: boolean;
   private showPreloadingSubpage_: boolean;
   private is3pcdRedesignEnabled_: boolean;
-  private advancedExpanded_: boolean;
 
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();

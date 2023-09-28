@@ -823,36 +823,23 @@ suite('Settings3pcdOptions', function() {
     flush();
   });
 
-  function expandAdvance(): SettingsCollapseRadioButtonElement {
-    return page.shadowRoot!.querySelector('#advanced')!;
-  }
-
-  test('TrackingProtectionPageDescriptionIsShown', function() {
-    assertTrue(isChildVisible(page, '#explanationText'));
-  });
-
-  test('AdvanceLabelIsVisisble', function() {
-    assertTrue(isChildVisible(page, '#labelWrapper'));
-  });
-
   test('CheckVisibility', function() {
+    // Page description
+    assertTrue(isChildVisible(page, '#explanationText'));
+
+    // Advance toggles
+    assertTrue(isChildVisible(page, '#blockThirdPartyToggle'));
+    assertTrue(isChildVisible(page, '#doNotTrack'));
+
     // Site Exception header
     assertFalse(isChildVisible(page, '#exceptionHeader'));
     assertFalse(isChildVisible(page, '#exceptionHeaderSubLabel'));
     assertTrue(isChildVisible(page, '#exceptionHeader3pcd'));
-
-    // Advance toggles
-    assertFalse(isChildVisible(page, '#blockThirdPartyToggle'));
-    assertFalse(isChildVisible(page, '#doNotTrack'));
-    expandAdvance().click();
-    assertTrue(isChildVisible(page, '#blockThirdPartyToggle'));
-    assertTrue(isChildVisible(page, '#doNotTrack'));
   });
 
   test('Toggle3PCDPref', function() {
     page.set(
         'prefs.tracking_protection.block_all_3pc_toggle_enabled.value', false);
-    expandAdvance().click();
     const blockThirdPartyCookiesToggle =
         page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
             '#blockThirdPartyToggle')!;

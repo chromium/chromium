@@ -11,7 +11,7 @@
 
       #exceptionHeader3pcd {
         padding: 0 var(--cr-section-padding);
-        margin-bottom: -40px;
+        margin-bottom: -32px;
       }
 
       #explanationText {
@@ -26,23 +26,9 @@
         padding: var(--cr-section-vertical-padding) var(--cr-section-padding);
       }
 
-      #borderWrapper {
-        align-items: center;
-        display: flex;
-        width: 100%;
-      }
-
-      #labelWrapper {
-        flex: 1;
-      }
-
-      .separator {
-        margin-inline-end: 0;
-      }
-
-      .cr-row {
-        padding: 0;
-        border-top: none;
+      #advancedHeader {
+        padding-top: 24px;
+        padding-bottom: 8px;
       }
 
       .radio-group-sub-heading {
@@ -136,32 +122,19 @@
             </div>
         </div>
       </div>
-      <div id="borderWrapper">
-        <div id="labelWrapper" class="cr-padded-text">
-          $i18n{trackingProtectionAdvancedLabel}
-        </div>
-        <div class="separator"></div>
-        <cr-expand-button id="advanced" class="cr-row"
-            expanded="{{advancedExpanded_}}"
-            aria-label="{{
-              $i18n{trackingProtectionAdvancedExpandA11yLabel}}}"
-            no-hover>
-        </cr-expand-button>
-      </div>
-      <iron-collapse opened="[[advancedExpanded_]]">
-        <settings-toggle-button
-            id="blockThirdPartyToggle"
-            pref="{{prefs.tracking_protection.block_all_3pc_toggle_enabled}}"
-            label="$i18n{trackingProtectionThirdPartyCookiesToggleLabel}"
-            sub-label="
-              $i18n{trackingProtectionThirdPartyCookiesToggleSubLabel}"
-            learn-more-url="
-              $i18n{trackingProtectionThirdPartyCookiesLearnMoreUrl}"
-            icon="settings:visibility-off">
-        </settings-toggle-button>
-        <settings-do-not-track-toggle id="doNotTrack" prefs="{{prefs}}">
-        </settings-do-not-track-toggle>
-      </iron-collapse>
+      <h2 id="advancedHeader">$i18n{trackingProtectionAdvancedLabel}</h2>
+      <settings-toggle-button
+          id="blockThirdPartyToggle"
+          pref="{{prefs.tracking_protection.block_all_3pc_toggle_enabled}}"
+          label="$i18n{trackingProtectionThirdPartyCookiesToggleLabel}"
+          sub-label="
+            $i18n{trackingProtectionThirdPartyCookiesToggleSubLabel}"
+          learn-more-url="
+            $i18n{trackingProtectionThirdPartyCookiesLearnMoreUrl}"
+          icon="settings:visibility-off">
+      </settings-toggle-button>
+      <settings-do-not-track-toggle id="doNotTrack" prefs="{{prefs}}">
+      </settings-do-not-track-toggle>
     </template>
     <template is="dom-if"
       if="[[isPrivacySandboxSettings4CookieSettingsEnabled_(
