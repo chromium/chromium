@@ -10,6 +10,7 @@
 #include "base/observer_list.h"
 #include "build/chromeos_buildflags.h"
 #include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
+#include "components/services/app_service/public/cpp/types_util.h"
 
 namespace apps {
 
@@ -192,6 +193,14 @@ const std::set<AppType>& AppRegistryCache::InitializedAppTypes() const {
 
 bool AppRegistryCache::IsAppTypeInitialized(apps::AppType app_type) const {
   return base::Contains(initialized_app_types_, app_type);
+}
+
+bool AppRegistryCache::IsAppInstalled(const std::string& app_id) const {
+  bool installed = false;
+  ForOneApp(app_id, [&installed](const AppUpdate& update) {
+    installed = apps_util::IsInstalled(update.Readiness());
+  });
+  return installed;
 }
 
 void AppRegistryCache::ReinitializeForTesting() {

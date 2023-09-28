@@ -20,7 +20,6 @@ source_set("app_service") {
     "//components/services/app_service/public/cpp:intents",
     "//components/services/app_service/public/cpp:preferred_apps",
     "//components/services/app_service/public/cpp:protocol_handling",
-    "//components/services/app_service/public/cpp:types",
   ]
 
   if (is_chromeos) {

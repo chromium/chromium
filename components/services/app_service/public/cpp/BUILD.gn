@@ -31,6 +31,8 @@ component("app_types") {
     "preferred_app.h",
     "run_on_os_login_types.cc",
     "run_on_os_login_types.h",
+    "types_util.cc",
+    "types_util.h",
   ]
 
   defines = [ "IS_APP_TYPES_IMPL" ]
@@ -42,6 +44,7 @@ component("app_types") {
 
   deps = [
     ":macros",
+    "//third_party/abseil-cpp:absl",
     "//ui/gfx",
     "//url",
   ]
@@ -279,20 +282,6 @@ source_set("preferred_apps") {
   visibility = [ "//components/services/app_service/*" ]
 }
 
-source_set("types") {
-  sources = [
-    "types_util.cc",
-    "types_util.h",
-  ]
-
-  deps = [
-    ":app_types",
-    "//third_party/abseil-cpp:absl",
-  ]
-
-  visibility = [ "//components/services/app_service/*" ]
-}
-
 source_set("crosapi_utils") {
   sources = [ "crosapi_utils.h" ]
 
@@ -326,7 +315,6 @@ source_set("unit_tests") {
     ":intents",
     ":preferred_apps",
     ":test_support",
-    ":types",
     "//content/test:test_support",
     "//testing/gtest",
   ]

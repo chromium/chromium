@@ -1044,4 +1044,30 @@ TEST_F(AppRegistryCacheTest, OnAppTypeInitializedWithEnableFlagEmptyUpdate) {
   EXPECT_EQ(0, observer2.app_count_at_initialization());
 }
 
+TEST_F(AppRegistryCacheTest, IsAppInstalledForInstalledApp) {
+  AppRegistryCache cache;
+  std::vector<AppPtr> deltas;
+  deltas.push_back(MakeApp("a", "avocado", AppType::kArc, Readiness::kReady));
+  deltas.push_back(
+      MakeApp("b", "banana", AppType::kArc, Readiness::kDisabledByUser));
+  cache.OnApps(std::move(deltas), AppType::kArc,
+               true /* should_notify_initialized */);
+
+  ASSERT_TRUE(cache.IsAppInstalled("a"));
+  ASSERT_TRUE(cache.IsAppInstalled("b"));
+}
+
+TEST_F(AppRegistryCacheTest, IsAppInstalledForUninstalledApp) {
+  AppRegistryCache cache;
+  std::vector<AppPtr> deltas;
+  deltas.push_back(
+      MakeApp("a", "avocado", AppType::kArc, Readiness::kUninstalledByUser));
+  cache.OnApps(std::move(deltas), AppType::kArc,
+               true /* should_notify_initialized */);
+
+  ASSERT_FALSE(cache.IsAppInstalled("a"));
+  // App doesn't exist in the cache.
+  ASSERT_FALSE(cache.IsAppInstalled("b"));
+}
+
 }  // namespace apps
