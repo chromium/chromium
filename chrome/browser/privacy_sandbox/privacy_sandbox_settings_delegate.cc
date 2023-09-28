@@ -17,6 +17,7 @@
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/tpcd/experiment/tpcd_experiment_features.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/metrics/metrics_pref_names.h"
@@ -172,6 +173,10 @@ bool PrivacySandboxSettingsDelegate::IsCookieDeprecationExperimentEligible()
 
 bool PrivacySandboxSettingsDelegate::
     IsCookieDeprecationExperimentCurrentlyEligible() const {
+  if (tpcd::experiment::kForceEligibleForTesting.Get()) {
+    return true;
+  }
+
   // Whether third-party cookies are blocked.
   scoped_refptr<content_settings::CookieSettings> cookie_settings =
       CookieSettingsFactory::GetForProfile(profile_);

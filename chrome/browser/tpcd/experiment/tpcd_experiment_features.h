@@ -14,6 +14,7 @@ extern const base::FeatureParam<int> kVersion;
 extern const base::FeatureParam<bool> kDisable3PCookies;
 extern const base::FeatureParam<bool> kDisableAdsAPIs;
 extern const base::FeatureParam<base::TimeDelta> kDecisionDelayTime;
+extern const base::FeatureParam<bool> kForceEligibleForTesting;
 
 }  // namespace tpcd::experiment
 

@@ -26,6 +26,7 @@
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -271,6 +272,7 @@ class MockWebappRegistry : public WebappRegistry {
 #endif
 
 struct CookieDeprecationExperimentEligibilityTestCase {
+  bool force_eligible = false;
   absl::optional<bool> is_subject_to_enterprise_policies;
   content_settings::CookieControlsMode cookie_controls_mode_pref =
       content_settings::CookieControlsMode::kOff;
@@ -292,6 +294,11 @@ const CookieDeprecationExperimentEligibilityTestCase
         {
             .expected_eligible = false,
             .expected_currently_eligible = false,
+        },
+        {
+            .force_eligible = true,
+            .expected_eligible = true,
+            .expected_currently_eligible = true,
         },
         {
             .privacy_sandbox_eea_notice_acknowledged_pref = true,
@@ -402,6 +409,10 @@ TEST_P(CookieDeprecationExperimentEligibilityTest, IsEligible) {
     EXPECT_EQ(delegate()->IsCookieDeprecationExperimentEligible(),
               *test_case.expected_eligible_before);
   }
+
+  feature_list()->InitAndEnableFeatureWithParameters(
+      features::kCookieDeprecationFacilitatedTesting,
+      {{"force_eligible", test_case.force_eligible ? "true" : "false"}});
 
   if (test_case.is_subject_to_enterprise_policies.has_value()) {
     // Sign the user in.

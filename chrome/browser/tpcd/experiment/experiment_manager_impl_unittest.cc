@@ -119,6 +119,25 @@ TEST_F(ExperimentManagerImplTestBase, Version) {
   }
 }
 
+TEST_F(ExperimentManagerImplTestBase, ForceEligibleForTesting) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kCookieDeprecationFacilitatedTesting,
+      {{"force_eligible", "true"}});
+
+  EXPECT_CALL(mock_callback_, Run(true)).Times(1);
+
+  TestingExperimentManagerImpl test_manager;
+  EXPECT_THAT(test_manager.IsClientEligible(), testing::Optional(true));
+
+  // This should do nothing.
+  test_manager.SetClientEligibility(/*is_eligible=*/false,
+                                    mock_callback_.Get());
+
+  task_environment_.FastForwardBy(delay_time_);
+  EXPECT_THAT(test_manager.IsClientEligible(), testing::Optional(true));
+}
+
 class ExperimentManagerImplTest : public ExperimentManagerImplTestBase {
  public:
   ExperimentManagerImplTest() {

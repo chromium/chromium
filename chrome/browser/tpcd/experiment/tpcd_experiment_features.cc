@@ -35,4 +35,10 @@ extern const base::FeatureParam<base::TimeDelta> kDecisionDelayTime{
     /*name=*/"decision_delay_time",
     /*default_value=*/base::Seconds(1)};
 
+// Set whether to force client being eligible for manual testing.
+const base::FeatureParam<bool> kForceEligibleForTesting{
+    &features::kCookieDeprecationFacilitatedTesting,
+    /*name=*/"force_eligible",
+    /*default_value=*/false};
+
 }  // namespace tpcd::experiment

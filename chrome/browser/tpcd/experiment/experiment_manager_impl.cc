@@ -41,6 +41,11 @@ ExperimentManagerImpl::ExperimentManagerImpl() {
   CHECK(base::FeatureList::IsEnabled(
       features::kCookieDeprecationFacilitatedTesting));
 
+  // If in force eligible mode, there's no work for the manager to do.
+  if (kForceEligibleForTesting.Get()) {
+    return;
+  }
+
   PrefService* local_state = g_browser_process->local_state();
   CHECK(local_state);
 
@@ -103,6 +108,10 @@ void ExperimentManagerImpl::CaptureEligibilityInLocalStatePref() {
 }
 
 absl::optional<bool> ExperimentManagerImpl::IsClientEligible() const {
+  if (kForceEligibleForTesting.Get()) {
+    return true;
+  }
+
   switch (g_browser_process->local_state()->GetInteger(
       prefs::kTPCDExperimentClientState)) {
     case static_cast<int>(utils::ExperimentState::kEligible):
