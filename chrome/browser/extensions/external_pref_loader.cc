@@ -146,7 +146,7 @@ class ExternalPrefLoader::PrioritySyncReadyWaiter
  private:
   void MaybeObserveSyncStart() {
     syncer::SyncService* service = SyncServiceFactory::GetForProfile(profile_);
-    if (!service || !service->CanSyncFeatureStart()) {
+    if (!service || !service->IsSyncFeatureEnabled()) {
       Finish();
       // Note: |this| is deleted.
       return;
@@ -166,8 +166,9 @@ class ExternalPrefLoader::PrioritySyncReadyWaiter
 
   // syncer::SyncServiceObserver
   void OnStateChanged(syncer::SyncService* sync) override {
-    if (!sync->CanSyncFeatureStart())
+    if (!sync->IsSyncFeatureEnabled()) {
       Finish();
+    }
   }
 
   void OnSyncShutdown(syncer::SyncService* sync) override {

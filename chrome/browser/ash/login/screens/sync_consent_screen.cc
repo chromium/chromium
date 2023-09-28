@@ -198,7 +198,7 @@ void SyncConsentScreen::Finish(Result result) {
   base::UmaHistogramEnumeration("OOBE.SyncConsentScreen.Behavior", behavior_);
   // Record the final state of the sync service.
   syncer::SyncService* service = GetSyncService(profile_);
-  bool sync_enabled = service && service->CanSyncFeatureStart() &&
+  bool sync_enabled = service && service->IsSyncFeatureEnabled() &&
                       service->GetUserSettings()->IsSyncEverythingEnabled();
   base::UmaHistogramBoolean("OOBE.SyncConsentScreen.SyncEnabled", sync_enabled);
   if (test_exit_delegate_) {
