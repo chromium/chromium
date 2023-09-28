@@ -404,6 +404,10 @@ void TranslateManager::TranslatePage(const std::string& original_source_lang,
 }
 
 void TranslateManager::RevertTranslation() {
+  // Do nothing if the page is not translated.
+  if (!GetLanguageState()->IsPageTranslated()) {
+    return;
+  }
   // Capture the revert event in the translate metrics
   RecordTranslateEvent(metrics::TranslateEventProto::USER_REVERT);
 

@@ -177,8 +177,7 @@ void TranslateUIDelegate::Translate() {
 }
 
 void TranslateUIDelegate::RevertTranslation() {
-  if (translate_manager_ &&
-      translate_manager_->GetLanguageState()->IsPageTranslated()) {
+  if (translate_manager_) {
     translate_manager_->RevertTranslation();
   }
 }
