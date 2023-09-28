@@ -127,14 +127,6 @@ class XuCameraService : public CfmObserver,
       const content::GlobalRenderFrameHostId& host_id,
       base::OnceCallback<void(const absl::optional<std::string>&)> callback)
       const;
-  void GetCtrlDbus(const std::string& dev_path_or_ip_addr,
-                   const mojom::ControlQueryPtr& query,
-                   const uint8_t& query_request,
-                   GetCtrlCallback callback) const;
-  void SetCtrlDbus(const std::string& dev_path_or_ip_addr,
-                   const mojom::ControlQueryPtr& query,
-                   const std::vector<uint8_t>& data,
-                   SetCtrlCallback callback) const;
   uint8_t CtrlThroughQuery(const base::ScopedFD& file_descriptor,
                            const mojom::ControlQueryPtr& query,
                            std::vector<uint8_t>& data,
