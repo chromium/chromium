@@ -71,10 +71,6 @@ config("pgo_optimization_flags") {
       } else {
         _pgo_target = "android-arm32"
       }
-
-      # Continue to use mac-arm profile while investigating Android results.
-      # TODO(crbug.com/4828524, crbug.com/1308749): Remove the following.
-      _pgo_target = "mac-arm"
     } else if (is_fuchsia) {
       if (target_cpu == "arm64") {
         _pgo_target = "mac-arm"
