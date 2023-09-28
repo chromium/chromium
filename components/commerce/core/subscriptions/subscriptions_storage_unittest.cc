@@ -136,14 +136,16 @@ class MockProtoStorage
                SessionProtoStorage<commerce::CommerceSubscriptionProto>::
                    OperationCallback callback),
               (override));
-  MOCK_METHOD(void,
-              UpdateEntries,
-              ((const std::vector<
-                   std::pair<std::string, commerce::CommerceSubscriptionProto>>&
-                    entries_to_update),
-               SessionProtoStorage<commerce::CommerceSubscriptionProto>::
-                   OperationCallback callback),
-              (override));
+  MOCK_METHOD(
+      void,
+      UpdateEntries,
+      ((std::unique_ptr<std::vector<
+            std::pair<std::string, commerce::CommerceSubscriptionProto>>>
+            entries_to_update),
+       std::unique_ptr<std::vector<std::string>> keys_to_remove,
+       SessionProtoStorage<
+           commerce::CommerceSubscriptionProto>::OperationCallback callback),
+      (override));
   MOCK_METHOD(
       void,
       DeleteAllContent,
@@ -213,6 +215,17 @@ class MockProtoStorage
         .WillByDefault(
             [succeeded](
                 const std::string& key,
+                SessionProtoStorage<commerce::CommerceSubscriptionProto>::
+                    OperationCallback callback) {
+              std::move(callback).Run(succeeded);
+            });
+    ON_CALL(*this, UpdateEntries)
+        .WillByDefault(
+            [succeeded](
+                std::unique_ptr<std::vector<std::pair<
+                    std::string, commerce::CommerceSubscriptionProto>>>
+                    entries_to_update,
+                std::unique_ptr<std::vector<std::string>> keys_to_remove,
                 SessionProtoStorage<commerce::CommerceSubscriptionProto>::
                     OperationCallback callback) {
               std::move(callback).Run(succeeded);
@@ -349,10 +362,7 @@ TEST_F(SubscriptionsStorageTest, TestUpdateStorage) {
   proto_db_->MockOperationResult(true);
 
   EXPECT_CALL(*proto_db_, LoadContentWithPrefix("PRICE_TRACK", _));
-  EXPECT_CALL(*proto_db_, DeleteOneEntry(kKey3, _)).Times(1);
-  EXPECT_CALL(*proto_db_, InsertContent(kKey1, _, _)).Times(1);
-  EXPECT_CALL(*proto_db_, DeleteOneEntry(kKey2, _)).Times(0);
-  EXPECT_CALL(*proto_db_, InsertContent(kKey2, _, _)).Times(0);
+  EXPECT_CALL(*proto_db_, UpdateEntries(_, _, _)).Times(1);
 
   base::RunLoop run_loop;
   storage_->UpdateStorage(
@@ -393,10 +403,7 @@ TEST_F(SubscriptionsStorageTest,
   proto_db_->MockOperationResult(true);
 
   EXPECT_CALL(*proto_db_, LoadContentWithPrefix("PRICE_TRACK", _));
-  EXPECT_CALL(*proto_db_, DeleteOneEntry(kKey3, _)).Times(1);
-  EXPECT_CALL(*proto_db_, InsertContent(kKey1, _, _)).Times(1);
-  EXPECT_CALL(*proto_db_, DeleteOneEntry(kKey2, _)).Times(1);
-  EXPECT_CALL(*proto_db_, InsertContent(kKey2, _, _)).Times(1);
+  EXPECT_CALL(*proto_db_, UpdateEntries(_, _, _)).Times(1);
 
   base::RunLoop run_loop;
   storage_->UpdateStorage(
@@ -426,9 +433,7 @@ TEST_F(SubscriptionsStorageTest, TestUpdateStorage_LoadFailed) {
   {
     InSequence s;
     EXPECT_CALL(*proto_db_, LoadContentWithPrefix("PRICE_TRACK", _));
-    EXPECT_CALL(*proto_db_, DeleteOneEntry).Times(0);
-    EXPECT_CALL(*proto_db_, InsertContent(kKey2, _, _));
-    EXPECT_CALL(*proto_db_, InsertContent(kKey1, _, _));
+    EXPECT_CALL(*proto_db_, UpdateEntries(_, _, _)).Times(1);
   }
 
   base::RunLoop run_loop;
@@ -459,8 +464,7 @@ TEST_F(SubscriptionsStorageTest, TestUpdateStorage_OperationFailed) {
   {
     InSequence s;
     EXPECT_CALL(*proto_db_, LoadContentWithPrefix("PRICE_TRACK", _));
-    EXPECT_CALL(*proto_db_, DeleteOneEntry(kKey3, _));
-    EXPECT_CALL(*proto_db_, InsertContent(kKey1, _, _));
+    EXPECT_CALL(*proto_db_, UpdateEntries(_, _, _));
   }
 
   base::RunLoop run_loop;
@@ -489,10 +493,7 @@ TEST_F(SubscriptionsStorageTest, UpdateStorageAndNotifyModifiedSubscriptions) {
   proto_db_->MockOperationResult(true);
 
   EXPECT_CALL(*proto_db_, LoadContentWithPrefix("PRICE_TRACK", _));
-  EXPECT_CALL(*proto_db_, DeleteOneEntry(kKey3, _)).Times(1);
-  EXPECT_CALL(*proto_db_, InsertContent(kKey1, _, _)).Times(1);
-  EXPECT_CALL(*proto_db_, DeleteOneEntry(kKey2, _)).Times(0);
-  EXPECT_CALL(*proto_db_, InsertContent(kKey2, _, _)).Times(0);
+  EXPECT_CALL(*proto_db_, UpdateEntries(_, _, _)).Times(1);
 
   base::RunLoop run_loop;
   storage_->UpdateStorageAndNotifyModifiedSubscriptions(

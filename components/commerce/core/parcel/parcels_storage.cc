@@ -51,7 +51,8 @@ void ParcelsStorage::UpdateParcelStatus(
     const std::vector<ParcelStatus>& parcel_status,
     StorageUpdateCallback callback) {
   DCHECK(is_initialized_);
-  std::vector<std::pair<std::string, ParcelTrackingContent>> content_to_insert;
+  auto content_to_insert = std::make_unique<
+      std::vector<std::pair<std::string, ParcelTrackingContent>>>();
   for (const auto& status : parcel_status) {
     std::string key = GetDbKeyFromParcelStatus(status.parcel_identifier());
     ParcelTrackingContent content;
@@ -60,10 +61,12 @@ void ParcelsStorage::UpdateParcelStatus(
     *new_status = status;
     content.set_last_update_time_usec(
         clock_->Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
-    content_to_insert.emplace_back(key, content);
+    content_to_insert->emplace_back(key, content);
     parcels_cache_[key] = std::move(content);
   }
-  proto_db_->UpdateEntries(std::move(content_to_insert), std::move(callback));
+  proto_db_->UpdateEntries(std::move(content_to_insert),
+                           std::make_unique<std::vector<std::string>>(),
+                           std::move(callback));
 }
 
 void ParcelsStorage::DeleteParcelStatus(const std::string& tracking_id,

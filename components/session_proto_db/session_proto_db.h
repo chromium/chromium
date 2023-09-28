@@ -98,9 +98,9 @@ class SessionProtoDB : public KeyedService, public SessionProtoStorage<T> {
   void DeleteOneEntry(const std::string& key,
                       OperationCallback callback) override;
 
-  void UpdateEntries(
-      const std::vector<std::pair<std::string, T>>& entries_to_update,
-      OperationCallback callback) override;
+  void UpdateEntries(std::unique_ptr<ContentEntry> entries_to_update,
+                     std::unique_ptr<std::vector<std::string>> keys_to_remove,
+                     OperationCallback callback) override;
 
   void DeleteContentWithPrefix(const std::string& key_prefix,
                                OperationCallback callback) override;
@@ -328,23 +328,20 @@ void SessionProtoDB<T>::DeleteOneEntry(const std::string& key,
 
 template <typename T>
 void SessionProtoDB<T>::UpdateEntries(
-    const std::vector<std::pair<std::string, T>>& entries_to_update,
+    std::unique_ptr<ContentEntry> entries_to_update,
+    std::unique_ptr<std::vector<std::string>> keys_to_remove,
     OperationCallback callback) {
   if (InitStatusUnknown()) {
     deferred_operations_.push_back(base::BindOnce(
         &SessionProtoDB::UpdateEntries, weak_ptr_factory_.GetWeakPtr(),
-        entries_to_update, std::move(callback)));
+        std::move(entries_to_update), std::move(keys_to_remove),
+        std::move(callback)));
   } else if (FailedToInit()) {
     ui_thread_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), false));
   } else {
-    auto contents_to_save = std::make_unique<ContentEntry>();
-    for (auto& entry : entries_to_update) {
-      contents_to_save->emplace_back(entry.first, entry.second);
-    }
     storage_database_->UpdateEntries(
-        std::move(contents_to_save),
-        std::make_unique<std::vector<std::string>>(),
+        std::move(entries_to_update), std::move(keys_to_remove),
         base::BindOnce(&SessionProtoDB::OnOperationCommitted,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }

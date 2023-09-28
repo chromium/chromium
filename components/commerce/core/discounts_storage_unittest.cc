@@ -154,8 +154,10 @@ class MockProtoStorage
   MOCK_METHOD(
       void,
       UpdateEntries,
-      ((const std::vector<std::pair<std::string, commerce::DiscountsContent>>&
+      ((std::unique_ptr<
+           std::vector<std::pair<std::string, commerce::DiscountsContent>>>
             entries_to_update),
+       std::unique_ptr<std::vector<std::string>> keys_to_remove,
        SessionProtoStorage<commerce::DiscountsContent>::OperationCallback
            callback),
       (override));

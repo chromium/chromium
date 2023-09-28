@@ -99,9 +99,10 @@ class MockProtoStorage
   MOCK_METHOD(
       void,
       UpdateEntries,
-      ((const std::vector<
-           std::pair<std::string, parcel_tracking_db::ParcelTrackingContent>>&
+      ((std::unique_ptr<std::vector<
+            std::pair<std::string, parcel_tracking_db::ParcelTrackingContent>>>
             entries_to_update),
+       std::unique_ptr<std::vector<std::string>> keys_to_remove,
        SessionProtoStorage<parcel_tracking_db::ParcelTrackingContent>::
            OperationCallback callback),
       (override));
@@ -237,7 +238,7 @@ TEST_F(ParcelsStorageTest, TestDeleteParcelStatus) {
 }
 
 TEST_F(ParcelsStorageTest, TestUpdateParcelStatus) {
-  EXPECT_CALL(*proto_db_, UpdateEntries(_, _)).Times(1);
+  EXPECT_CALL(*proto_db_, UpdateEntries(_, _, _)).Times(1);
 
   std::vector<ParcelStatus> status;
   ParcelStatus status1 = CreateParcelStatus(kCarrier1, kTrackingId1,
