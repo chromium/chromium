@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 static_library("core") {
@@ -67,4 +68,15 @@ source_set("unit_tests") {
 
 proto_library("proto") {
   sources = [ "safety_tips.proto" ]
+}
+
+fuzzer_test("lookalike_url_util_fuzzer") {
+  sources = [ "lookalike_url_util_fuzzer.cc" ]
+  deps = [
+    ":core",
+    ":proto",
+    "//base:i18n",
+    "//third_party/abseil-cpp:absl",
+    "//third_party/icu",
+  ]
 }
