@@ -79737,6 +79737,8 @@ Called by update_net_trust_anchors.py.-->
   <int value="4" label="Shortcut text prefix"/>
 </enum>
 
+<!-- Not used in current metrics, see OmniboxSearchEngineType instead. -->
+
 <enum name="OmniboxSearchEngine">
   <int value="0" label="Unknown"/>
   <int value="1" label="Google"/>
@@ -79879,6 +79881,18 @@ Called by update_net_trust_anchors.py.-->
   <int value="57" label="OceanHero"/>
   <int value="58" label="PrivacyWall"/>
   <int value="59" label="Ecosia"/>
+  <int value="60" label="Petalsearch"/>
+  <int value="61" label="StarterPackBookmarks"/>
+  <int value="62" label="StarterPackHistory"/>
+  <int value="63" label="StarterPackTabs"/>
+  <int value="64" label="Mojeek"/>
+  <int value="65" label="Panda Search"/>
+  <int value="66" label="Presearch"/>
+  <int value="67" label="Yep"/>
+  <int value="68" label="Nona"/>
+  <int value="69" label="Quendu"/>
+  <int value="70" label="Brave"/>
+  <int value="71" label="Karma"/>
 </enum>
 
 <enum name="OmniboxSuggestionUiType">

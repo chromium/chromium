@@ -9,6 +9,8 @@
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 //
+// This should be kept aligned with OmniboxSearchEngineType in enums.xml.
+//
 // A Java counterpart will be generated for this enum.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.search_engines
 enum SearchEngineType {
