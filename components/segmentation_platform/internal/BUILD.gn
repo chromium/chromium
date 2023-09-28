@@ -283,6 +283,7 @@ source_set("unit_tests") {
     "execution/processing/query_processor.h",
     "execution/processing/sql_feature_processor_unittest.cc",
     "execution/processing/sync_device_info_observer_unittest.cc",
+    "execution/processing/uma_feature_processor_unittest.cc",
     "metadata/metadata_utils_unittest.cc",
     "metrics/field_trial_recorder_unittest.cc",
     "migration/prefs_migrator_unittest.cc",

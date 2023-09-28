@@ -44,20 +44,18 @@ class UmaFeatureProcessor : public QueryProcessor {
 
  private:
   // Function for processing the next UMAFeature type of input for ML model.
-  void ProcessNextUmaFeature();
+  void ProcessOnGotAllSamples(base::Time end_time,
+                              std::vector<SignalDatabase::DbEntry> samples);
+
+  void GetStartAndEndTime(size_t bucket_count,
+                          base::Time& start_time,
+                          base::Time& end_time) const;
 
   // Helper function for parsing a single uma feature.
-  void ProcessSingleUmaFeature(FeatureIndex index,
-                               const proto::UMAFeature& feature);
-
-  // Callback method for when all relevant samples for a particular feature has
-  // been loaded. Processes the samples, and inserts them into the input tensor
-  // that is later given to the ML execution.
-  void OnGetSamplesForUmaFeature(FeatureIndex index,
-                                 const proto::UMAFeature& feature,
-                                 const std::vector<int32_t>& accepted_enum_ids,
-                                 const base::Time end_time,
-                                 std::vector<SignalDatabase::Sample> samples);
+  void ProcessSingleUmaFeature(
+      const std::vector<SignalDatabase::DbEntry>& samples,
+      FeatureIndex index,
+      const proto::UMAFeature& feature);
 
   // List of custom inputs to process into input tensors.
   base::flat_map<FeatureIndex, Data> uma_features_;

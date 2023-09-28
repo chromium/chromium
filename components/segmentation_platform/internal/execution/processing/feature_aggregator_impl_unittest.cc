@@ -8,11 +8,10 @@
 #include <memory>
 #include <vector>
 
-#include "base/notreached.h"
+#include "base/metrics/metrics_hashes.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
 #include "components/segmentation_platform/internal/database/signal_database.h"
-#include "components/segmentation_platform/internal/execution/processing/feature_aggregator.h"
 #include "components/segmentation_platform/public/proto/aggregation.pb.h"
 #include "components/segmentation_platform/public/proto/types.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -30,6 +29,7 @@ constexpr base::TimeDelta kTwoSeconds = base::Seconds(2);
 constexpr base::TimeDelta kThreeSeconds = base::Seconds(3);
 constexpr base::TimeDelta kFourSeconds = base::Seconds(4);
 constexpr uint64_t kDefaultBucketCount = 6;
+
 }  // namespace
 
 class FeatureAggregatorImplTest : public testing::Test {
@@ -100,9 +100,20 @@ class FeatureAggregatorImplTest : public testing::Test {
               base::TimeDelta bucket_duration,
               std::vector<Sample> samples,
               absl::optional<std::vector<float>> expected) {
-    absl::optional<std::vector<float>> res =
-        feature_aggregator_->Process(signal_type, aggregation, bucket_count,
-                                     clock_.Now(), bucket_duration, samples);
+    std::vector<SignalDatabase::DbEntry> entries;
+    base::Time start_time = clock_.Now();
+    for (const auto& sample : samples) {
+      entries.push_back(SignalDatabase::DbEntry{.type = signal_type,
+                                                .name_hash = 123,
+                                                .time = sample.first,
+                                                .value = sample.second});
+      if (start_time > sample.first) {
+        start_time = sample.first;
+      }
+    }
+    absl::optional<std::vector<float>> res = feature_aggregator_->Process(
+        signal_type, 123, aggregation, bucket_count, start_time, clock_.Now(),
+        bucket_duration, {}, entries);
     EXPECT_EQ(expected, res);
   }
 
@@ -317,23 +328,6 @@ TEST_F(FeatureAggregatorImplTest, BucketsOutOfBounds) {
          base::Days(1), samples, absl::optional<std::vector<float>>({1, 1, 1}));
   Verify(SignalType::HISTOGRAM_VALUE, Aggregation::BUCKETED_SUM, 3,
          base::Days(1), samples, absl::optional<std::vector<float>>({2, 3, 4}));
-}
-
-TEST_F(FeatureAggregatorImplTest, FilterEnumSamples) {
-  std::vector<Sample> samples{
-      {clock_.Now(), 1}, {clock_.Now(), 2}, {clock_.Now(), 3},
-      {clock_.Now(), 4}, {clock_.Now(), 5},
-  };
-
-  // Empty accept list should keep all samples.
-  feature_aggregator_->FilterEnumSamples(std::vector<int32_t>(), samples);
-  EXPECT_EQ(5u, samples.size());
-
-  // Only accept 1 and 3 as enum values.
-  feature_aggregator_->FilterEnumSamples(std::vector<int32_t>{2, 4}, samples);
-  EXPECT_EQ(2u, samples.size());
-  EXPECT_EQ(2, samples[0].second);
-  EXPECT_EQ(4, samples[1].second);
 }
 
 }  // namespace segmentation_platform::processing

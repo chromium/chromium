@@ -77,5 +77,6 @@ UkmDatabaseBackendTest.*
 UkmMetricsTableTest.*
 UkmObserverTest.*
 UkmUrlTableTest.*
+UmaFeatureProcessorTest.*
 UrlSignalHandlerTest.*
 UserActionSignalHandlerTest.*
