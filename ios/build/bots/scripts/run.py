@@ -239,6 +239,7 @@ class Runner():
             test_cases=self.args.test_cases,
             test_args=self.test_args,
             env_vars=env_vars,
+            record_video_option=self.args.record_video,
             output_disabled_tests=self.args.output_disabled_tests,
         )
       else:
@@ -617,9 +618,8 @@ class Runner():
         parser.error('--xcode-parallelization also requires '
                      'both -p/--platform and -v/--version')
 
-      if (not args.xcode_parallelization) and args.record_video:
-        parser.error('--record-video is only supported on EG tests '
-                     'running on simulators')
+      if not self.use_xcodebuild_runner(args) and args.record_video:
+        parser.error('--record-video is only supported on EG tests')
 
       # Do not retry when repeat
       if args.repeat and args.repeat > 1:
