@@ -1,5 +1,3 @@
 include_rules = [
   "+third_party/cardboard/src/sdk/include",
-  # TODO(https://crbug.com/1476661): Remove this allowed DEP.
-  "+third_party/cardboard/src_overrides/sdk/jni_utils/android/jni_registration.h"
 ]

@@ -19,3 +19,4 @@ Local Modifications:
 * Created local override for CardboardQrCode_getSavedDeviceParams function in cardboard.cc to prevent undefined behavior.
 * Created local fork of GL ES2 renderer to override GLES2 headers with chromium bindings.
   No other code changes except marked by CARDBOARD_USE_CUSTOM_GL_BINDINGS ifdefs.
+* Created local override for initializeAndroid function in jni_utils.cc to add a call to RegisterNatives function.

@@ -28,6 +28,7 @@
 #include "third_party/cardboard/src/sdk/util/logging.h"
 #ifdef __ANDROID__
 #include "third_party/cardboard/src/sdk/device_params/android/device_params.h"
+#include "third_party/cardboard/src/sdk/jni_utils/android/jni_utils.h"
 #endif
 
 // TODO(b/134142617): Revisit struct/class hierarchy.
@@ -111,6 +112,7 @@ void Cardboard_initializeAndroid(JavaVM* vm, jobject context) {
   vm->GetEnv((void**)&env, JNI_VERSION_1_6);
   jobject global_context = env->NewGlobalRef(context);
 
+  cardboard::jni::initializeAndroid(vm, global_context);
   cardboard::qrcode::initializeAndroid(vm, global_context);
   cardboard::screen_params::initializeAndroid(vm, global_context);
   cardboard::DeviceParams::initializeAndroid(vm, global_context);
