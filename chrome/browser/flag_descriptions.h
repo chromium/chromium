@@ -2179,6 +2179,9 @@ extern const char kUseIDNA2008NonTransitionalDescription[];
 extern const char kEnableVariationsGoogleGroupFilteringName[];
 extern const char kEnableVariationsGoogleGroupFilteringDescription[];
 
+extern const char kEnablePasswordSharingName[];
+extern const char kEnablePasswordSharingDescription[];
+
 // Android --------------------------------------------------------------------
 
 #if BUILDFLAG(IS_ANDROID)

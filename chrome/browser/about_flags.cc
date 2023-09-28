@@ -402,6 +402,18 @@ const FeatureEntry::Choice kTouchTextSelectionStrategyChoices[] = {
      blink::switches::kTouchTextSelectionStrategy,
      blink::switches::kTouchTextSelectionStrategy_Direction}};
 
+#if !BUILDFLAG(IS_ANDROID)
+const FeatureEntry::Choice kEnablePasswordSharingChoices[] = {
+    {"Default", "", ""},
+    {"Bootstraping Only", switches::kEnableFeatures,
+     "SharingOfferKeyPairBootstrap"},
+    {"Enabled", switches::kEnableFeatures,
+     "SharingOfferKeyPairBootstrap,SendPasswords,"
+     "PasswordManagerEnableSenderService,"
+     "PasswordManagerEnableReceiverService,SharedPasswordNotificationUI"},
+};
+#endif
+
 #if BUILDFLAG(IS_WIN)
 const FeatureEntry::FeatureParam kMediaFoundationClearStrategyUseFrameServer[] =
     {{"strategy", "frame-server"}};
@@ -5126,6 +5138,10 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(features::kOsIntegrationSubManagers,
                                     kOsIntegrationSubManagersConfigVariations,
                                     "OsIntegrationSubManagers")},
+
+    {"password-sharing", flag_descriptions::kEnablePasswordSharingName,
+     flag_descriptions::kEnablePasswordSharingDescription, kOsDesktop,
+     MULTI_VALUE_TYPE(kEnablePasswordSharingChoices)},
 
 #endif  // !BUILDFLAG(IS_ANDROID)
 

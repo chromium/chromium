@@ -3746,6 +3746,10 @@ const char kEnableVariationsGoogleGroupFilteringDescription[] =
     "is experimental and is used only for dogfooding, and only for users who "
     "are signed in and have Chrome Sync enabled.";
 
+const char kEnablePasswordSharingName[] = "Enables password sharing";
+const char kEnablePasswordSharingDescription[] =
+    "Enables sharing of password between members of the same family.";
+
 // Android ---------------------------------------------------------------------
 
 #if BUILDFLAG(IS_ANDROID)
