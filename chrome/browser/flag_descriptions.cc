@@ -6515,6 +6515,11 @@ const char kImeTrayHideVoiceButtonName[] =
 const char kImeTrayHideVoiceButtonDescription[] =
     "Hides voice button in IME tray when mic icon is shown in the shelf";
 
+const char kImeKoreanModeSwitchDebugName[] =
+    "Korean input method's mode switch debug";
+const char kImeKoreanModeSwitchDebugDescription[] =
+    "Enables debug info UI for Korean input method's internal-mode switch";
+
 const char kIppFirstSetupForUsbPrintersName[] =
     "Try to setup USB printers with IPP first";
 const char kIppFirstSetupForUsbPrintersDescription[] =

@@ -3755,6 +3755,9 @@ extern const char kImeFstDecoderParamsUpdateDescription[];
 extern const char kImeTrayHideVoiceButtonName[];
 extern const char kImeTrayHideVoiceButtonDescription[];
 
+extern const char kImeKoreanModeSwitchDebugName[];
+extern const char kImeKoreanModeSwitchDebugDescription[];
+
 extern const char kIppFirstSetupForUsbPrintersName[];
 extern const char kIppFirstSetupForUsbPrintersDescription[];
 

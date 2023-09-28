@@ -1533,6 +1533,11 @@ BASE_FEATURE(kImeTrayHideVoiceButton,
              "ImeTrayHideVoiceButton",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables debug info UI for Korean input method's internal-mode switch.
+BASE_FEATURE(kImeKoreanModeSwitchDebug,
+             "ImeKoreanModeSwitchDebug",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether to show new improved UI for cryptohome errors that happened
 // during login. UI contains links to help center and might provide actions
 // that can be taken to resolve the problem.
