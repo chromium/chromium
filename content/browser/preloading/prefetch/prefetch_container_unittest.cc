@@ -1034,7 +1034,32 @@ enum class Event {
   kDestructPrefetchContainer,
 };
 
+std::ostream& operator<<(std::ostream& ostream, Event event) {
+  switch (event) {
+    case Event::kPrefetchOnComplete:
+      return ostream << "kPrefetchOnComplete";
+    case Event::kCreateRequestHandler:
+      return ostream << "kCreateRequestHandler";
+    case Event::kRequestHandler:
+      return ostream << "kRequestHandler";
+    case Event::kDisconnectServingClient:
+      return ostream << "kDisconnectServingClient";
+    case Event::kCompleteBody:
+      return ostream << "kCompleteBody";
+    case Event::kDestructPrefetchContainer:
+      return ostream << "kDestructPrefetchContainer";
+  }
+}
+
 enum class BodySize { kSmall, kLarge };
+std::ostream& operator<<(std::ostream& ostream, BodySize body_size) {
+  switch (body_size) {
+    case BodySize::kSmall:
+      return ostream << "Small";
+    case BodySize::kLarge:
+      return ostream << "Large";
+  }
+}
 
 // To detect corner cases around lifetime and ownership, test all possible
 // permutations of the order of events.

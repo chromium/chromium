@@ -593,6 +593,10 @@ CONTENT_EXPORT std::ostream& operator<<(
     std::ostream& ostream,
     const PrefetchContainer& prefetch_container);
 
+CONTENT_EXPORT std::ostream& operator<<(
+    std::ostream& ostream,
+    PrefetchContainer::ServableState servable_state);
+
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_CONTAINER_H_

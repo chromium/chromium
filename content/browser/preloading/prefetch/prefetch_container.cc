@@ -1176,6 +1176,19 @@ std::ostream& operator<<(std::ostream& ostream,
                  << ", URL=" << prefetch_container.GetURL() << "]";
 }
 
+CONTENT_EXPORT std::ostream& operator<<(
+    std::ostream& ostream,
+    PrefetchContainer::ServableState servable_state) {
+  switch (servable_state) {
+    case PrefetchContainer::ServableState::kNotServable:
+      return ostream << "NotServable";
+    case PrefetchContainer::ServableState::kServable:
+      return ostream << "Servable";
+    case PrefetchContainer::ServableState::kShouldBlockUntilHeadReceived:
+      return ostream << "ShouldBlockUntilHeadReceived";
+  }
+}
+
 PrefetchContainer::SinglePrefetch::SinglePrefetch(
     const GURL& url,
     const net::SchemefulSite& referring_site)
