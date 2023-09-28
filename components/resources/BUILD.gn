@@ -113,6 +113,7 @@ action("about_credits") {
   inputs = [
     "../about_ui/resources/about_credits.tmpl",
     "../about_ui/resources/about_credits_entry.tmpl",
+    "../about_ui/resources/about_credits_reciprocal.tmpl",
   ]
 
   outputs = [ about_credits_file ]

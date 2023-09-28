@@ -37,6 +37,11 @@ body {
 a {
   color: var(--interactive-color);
 }
+.open-sourced {
+  clear: both;
+  padding-top: 10px;
+  font-size: 110%;
+}
 .page-title {
   float: left;
   font-size: 164%;
