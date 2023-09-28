@@ -11,10 +11,12 @@
 
 namespace ash {
 
+namespace {
 void ExecuteScript(content::WebContents* web_contents,
                    const std::string& script) {
   ASSERT_TRUE(content::ExecJs(web_contents, script));
 }
+}  // namespace
 
 gfx::Rect GetControlBoundsInRoot(content::WebContents* web_contents,
                                  const std::string& field_id) {

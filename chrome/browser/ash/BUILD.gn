@@ -4415,6 +4415,8 @@ static_library("test_support") {
     "accessibility/accessibility_test_utils.h",
     "accessibility/autoclick_test_utils.cc",
     "accessibility/autoclick_test_utils.h",
+    "accessibility/automation_test_utils.cc",
+    "accessibility/automation_test_utils.h",
     "accessibility/caret_bounds_changed_waiter.cc",
     "accessibility/caret_bounds_changed_waiter.h",
     "accessibility/dictation_test_utils.cc",
