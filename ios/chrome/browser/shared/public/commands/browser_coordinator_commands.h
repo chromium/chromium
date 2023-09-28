@@ -104,6 +104,9 @@ class GURL;
 // Dismiss the choice screen.
 - (void)dismissChoice;
 
+// Dismiss the payments suggestions.
+- (void)dismissPaymentSuggestions;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_BROWSER_COORDINATOR_COMMANDS_H_
