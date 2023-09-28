@@ -201,8 +201,8 @@ TEST(PasswordListSorterTest, EntriesDifferingByStoreShouldMapToSameKey) {
   PasswordForm profile_form(account_form);
   profile_form.in_store = PasswordForm::Store::kProfileStore;
 
-  EXPECT_EQ(CreateSortKey(account_form, IgnoreStore(true)),
-            CreateSortKey(profile_form, IgnoreStore(true)));
+  EXPECT_EQ(CreateSortKey(CredentialUIEntry(account_form)),
+            CreateSortKey(CredentialUIEntry(profile_form)));
 }
 
 TEST(PasswordListSorterTest, CreateUsernamePasswordSortKey) {
@@ -213,7 +213,8 @@ TEST(PasswordListSorterTest, CreateUsernamePasswordSortKey) {
   form.username_value = u"username00";
   form.password_value = u"password01";
 
-  EXPECT_EQ(CreateUsernamePasswordSortKey(form), "username00 password01 -");
+  EXPECT_EQ(CreateUsernamePasswordSortKey(CredentialUIEntry(form)),
+            "username00 password01 -");
 }
 
 TEST(PasswordListSorterTest,
@@ -225,7 +226,7 @@ TEST(PasswordListSorterTest,
   form.password_value = u"password01";
   form.federation_origin = url::Origin::Create(GURL("https://google.com/"));
 
-  EXPECT_EQ(CreateUsernamePasswordSortKey(form),
+  EXPECT_EQ(CreateUsernamePasswordSortKey(CredentialUIEntry(form)),
             "username00 password01 google.com");
 }
 
@@ -235,7 +236,7 @@ TEST(PasswordListSorterTest, CreateUsernamePasswordSortKeyBlockedByUser) {
   form.url = GURL(form.signon_realm);
   form.blocked_by_user = true;
 
-  EXPECT_EQ(CreateUsernamePasswordSortKey(form), "g.com");
+  EXPECT_EQ(CreateUsernamePasswordSortKey(CredentialUIEntry(form)), "g.com");
 }
 
 TEST(PasswordListSorterTest, PasskeyVsPasswordSortKey) {

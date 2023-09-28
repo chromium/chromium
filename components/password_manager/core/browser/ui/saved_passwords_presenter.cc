@@ -523,7 +523,7 @@ void SavedPasswordsPresenter::AddForms(const std::vector<PasswordForm>& forms,
     // TODO(crbug.com/1359392): Consider replacing |sort_key_to_password_forms_|
     // when grouping is launched.
     sort_key_to_password_forms_.insert(
-        std::make_pair(CreateSortKey(form, IgnoreStore(true)), form));
+        std::make_pair(CreateSortKey(CredentialUIEntry(form)), form));
   }
 
 #if BUILDFLAG(IS_ANDROID)

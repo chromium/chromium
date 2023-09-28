@@ -31,19 +31,6 @@ constexpr char kSortKeyPasswordSymbol = 'w';
 
 }  // namespace
 
-std::string CreateSortKey(const PasswordForm& form, IgnoreStore ignore_store) {
-  std::string key = CreateSortKey(CredentialUIEntry(form));
-
-  if (ignore_store)
-    return key;
-
-  if (form.in_store == PasswordForm::Store::kAccountStore) {
-    return key + kSortKeyPartsSeparator + std::string("account");
-  }
-
-  return key;
-}
-
 std::string CreateSortKey(const CredentialUIEntry& credential) {
   std::string shown_origin = GetShownOrigin(credential);
 
@@ -101,10 +88,6 @@ std::string CreateSortKey(const CredentialUIEntry& credential) {
   return key;
 }
 
-std::string CreateUsernamePasswordSortKey(const PasswordForm& form) {
-  return CreateUsernamePasswordSortKey(CredentialUIEntry(form));
-}
-
 std::string CreateUsernamePasswordSortKey(const CredentialUIEntry& credential) {
   std::string key;
   // The origin isn't taken into account for normal credentials since we want to
@@ -134,7 +117,7 @@ void SortEntriesAndHideDuplicates(
       keys_to_forms;
   keys_to_forms.reserve(list->size());
   for (auto& form : *list) {
-    std::string key = CreateSortKey(*form, IgnoreStore(true));
+    std::string key = CreateSortKey(CredentialUIEntry(*form));
     keys_to_forms.emplace_back(std::move(key), std::move(form));
   }
 

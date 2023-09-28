@@ -320,7 +320,8 @@ void PasswordsGrouper::GroupPasswordsImpl(
     map_signon_realm_to_group_id_[SignonRealm(form.signon_realm)] = group_id;
 
     // Store form for username/password key.
-    UsernamePasswordKey key(CreateUsernamePasswordSortKey(form));
+    UsernamePasswordKey key(
+        CreateUsernamePasswordSortKey(CredentialUIEntry(form)));
     map_group_id_to_credentials_[group_id].forms[key].push_back(
         std::move(form));
   }
