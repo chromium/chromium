@@ -11,13 +11,13 @@
 
 namespace blink {
 
-// static
-wtf_size_t CountersScope::FindCounterIndexPrecedingCounter(
-    const CounterNode& search_counter,
-    const CountersVector& counters) {
-  // comp returns true if the counter goes before the search_counter in preorder
-  // tree traversal. We can have two counters on one element: use and non-use.
-  // We want use counter to be after the non-use one, for this we need to return
+namespace {
+
+wtf_size_t FindCounterIndexPrecedingCounter(const CounterNode& counter,
+                                            const CountersVector& counters) {
+  // comp returns true if the element goes before counter in preorder tree
+  // traversal. As we can have two counters on one element: use and non-use,
+  // we want use counter to be after the non-use one, for this we need to return
   // true for the case, when result is 0 and the counter is non-use,
   // meaning we've hit the same element.
   // With such approach if we insert use counter in scope with non-use counter
@@ -42,66 +42,17 @@ wtf_size_t CountersScope::FindCounterIndexPrecedingCounter(
   // return e1 use in this case, due to the `result == 0` condition. And the
   // return will be kNotFound, meaning we don't have any preceding counter,
   // which is correct. Now, let's say we have both e1 non-use and use inserted,
-  // and the search counter is `e1 use`.
-  // Let's see, how the array will be partitioned with respect to comp:
-  //
-  // Search counter - `e1 use`.
-  // [ e1 non-use, e1 use, e2 non-use, e2 use, ... ].
-  // [ comp: false, true , true      , true ],
-  //
+  // and the search counter is `e1 use`. Let's see, how the array will be
+  // partitioned with respect to comp: [ e1 non-use, e1 use, e2 non-use, e2 use,
+  // ... ]. Search counter - `e1 use`. [ comp: false, true , true      , true ],
   // and the upper_bound will return `e1 use`, and the prev will give us the
-  // index of `e1 non-use`, which is correct.
-  //
-  // Now, let's say we have both e1 non-use and use inserted,
-  // and the search counter is `e1 non-use`. Let's
-  // see, how the array will be partitioned with respect to comp:
-  //
-  // Search counter - `e1 non-use`.
-  // [  e1 non-use, e1 use, e2 non-use, e2 use, ... ].
-  // [ comp: true , true  , true      , true ],
-  // and the upper_bound will return `e1 non-use`,
+  // index of `e1 non-use`, which is correct. Now, let's say we have both e1
+  // non-use and use inserted, and the search counter is `e1 non-use`. Let's
+  // see, how the array will be partitioned with respect to comp: [  e1 non-use,
+  // e1 use, e2 non-use, e2 use, ... ]. Search counter - `e1 non-use`. [ comp:
+  // true , true , true , true ], and the upper_bound will return `e1 non-use`,
   // and the result will be kNotFound, which is correct, as there are no
   // counters preceding `e1 non-use`.
-
-  // If possible, use fast path, where traversal positions are already
-  // available.
-  if (!counters.empty()) {
-    const Element* search_element = &search_counter.OwnerElement();
-    const Element* non_pseudo_search_element =
-        &search_counter.OwnerNonPseudoElement();
-    const Element* back_element = &counters.back()->OwnerElement();
-    if (&search_counter == counters.back()) {
-      return counters.size() > 1 ? counters.size() - 2 : kNotFound;
-    }
-    // The situation when the last existing counter is a pseudo element
-    // of the search_counter's previous sibling.
-    bool element_after_prev_sibling_pseudo =
-        back_element->IsPseudoElement() &&
-        search_element->previousSibling() ==
-            &counters.back()->OwnerNonPseudoElement();
-    // If the last existing counter is our parent.
-    bool pseudo_after_parent = search_element->IsPseudoElement() &&
-                               !search_counter.HasUseType() &&
-                               non_pseudo_search_element == back_element;
-    // If the last existing counter is our previous sibling.
-    bool element_after_prev_sibling =
-        search_element->previousSibling() == back_element;
-    // If any of above is true, we can use the fast path, as we are
-    // sure that we go after the last counter.
-    if (element_after_prev_sibling_pseudo || pseudo_after_parent ||
-        element_after_prev_sibling) {
-      return counters.size() - 1;
-    }
-    const Element* front_element = &counters.front()->OwnerElement();
-    // If the newly added counter is ::before of the first existing counter,
-    // use the fast path.
-    pseudo_after_parent = search_element->IsBeforePseudoElement() &&
-                          !search_counter.HasUseType() &&
-                          non_pseudo_search_element == front_element;
-    if (pseudo_after_parent) {
-      return 0;
-    }
-  }
   auto comp = [](const CounterNode& search_counter,
                  const CounterNode* counter) {
     int result = LayoutTreeBuilderTraversal::ComparePreorderTreePosition(
@@ -110,12 +61,13 @@ wtf_size_t CountersScope::FindCounterIndexPrecedingCounter(
            &search_counter == counter;
   };
   // Find the first counter for which comp will return true.
-  auto* it =
-      std::upper_bound(counters.begin(), counters.end(), search_counter, comp);
+  auto* it = std::upper_bound(counters.begin(), counters.end(), counter, comp);
   // And get the previous counter as it will be the one we are searching for.
   return it == counters.begin() ? kNotFound
                                 : wtf_size_t(std::prev(it) - counters.begin());
 }
+
+}  // namespace
 
 void CountersScope::Trace(Visitor* visitor) const {
   visitor->Trace(parent_);
@@ -147,11 +99,6 @@ void CountersScope::ClearChildren() {
 Element& CountersScope::RootElement() const {
   // The first counter is the root of the scope.
   return FirstCounter().OwnerElement();
-}
-
-Element& CountersScope::RootNonPseudoElement() const {
-  // The first counter is the root of the scope.
-  return FirstCounter().OwnerNonPseudoElement();
 }
 
 CounterNode& CountersScope::FirstCounter() const {
@@ -209,54 +156,47 @@ CounterNode* CountersScope::FindPreviousCounterWithinStyleScope(
 }
 
 CounterNode* CountersScope::FindPreviousCounterInAncestorStyleScopes(
-    CounterNode& counter,
-    const AtomicString& identifier) {
+    CounterNode& counter) {
   for (auto* ancestor = scope_->Parent(); ancestor;
        ancestor = ancestor->Parent()) {
     if (auto* scope_in_ancestor = ancestor->FindCountersScopeForElement(
-            counter.OwnerElement(), identifier)) {
+            counter.OwnerElement(), counter.Identifier())) {
       return scope_in_ancestor->FindPreviousCounterFrom(
           counter,
-          /* search_scope */ SearchScope::SelfAndAncestorSearch, identifier);
+          /* search_scope */ SearchScope::SelfAndAncestorSearch);
     }
   }
   return nullptr;
 }
 
-CounterNode* CountersScope::FindPreviousCounterFrom(
-    CounterNode& counter,
-    SearchScope search_scope,
-    const AtomicString& identifier,
-    bool leave_style_scope) {
+CounterNode* CountersScope::FindPreviousCounterFrom(CounterNode& counter,
+                                                    SearchScope search_scope,
+                                                    bool leave_style_scope) {
   CounterNode* result =
       FindPreviousCounterWithinStyleScope(counter, search_scope);
   if (result || search_scope == SearchScope::SelfSearch || !leave_style_scope) {
     return result;
   }
-  return FindPreviousCounterInAncestorStyleScopes(counter, identifier);
+  return FindPreviousCounterInAncestorStyleScopes(counter);
 }
 
-bool CountersScope::UpdateOwnCounters(bool force_update,
-                                      const AtomicString& identifier) {
+bool CountersScope::UpdateOwnCounters(bool force_update) {
   if (!is_dirty_ && !force_update) {
     return false;
   }
   // If the first counter is of use type, search for the previous in pre-order
   // traversal order in parents' scopes to get the correct value.
   // https://drafts.csswg.org/css-contain/#example-6932a400.
-  // But we set the value before for all the counters anyway,
-  // so it can be easily used for counters() function.
   int value = 0;
   bool need_children_udpate = false;
-  CounterNode* previous_counter = FindPreviousCounterFrom(
+  CounterNode* parent_counter = FindPreviousCounterFrom(
       FirstCounter(), /* search_scope */ SearchScope::AncestorSearch,
-      identifier,
       /* leave_style_scope */ true);
-  if (previous_counter) {
-    value = previous_counter->ValueAfter();
-    if (FirstCounter().PreviousInParent() != previous_counter) {
+  if (parent_counter) {
+    value = parent_counter->ValueAfter();
+    if (FirstCounter().PreviousInParent() != parent_counter) {
       need_children_udpate = true;
-      FirstCounter().SetPreviousInParent(previous_counter);
+      FirstCounter().SetPreviousInParent(parent_counter);
     }
   }
   // The first increment should have the before value 0, if there has not been
@@ -272,9 +212,6 @@ bool CountersScope::UpdateOwnCounters(bool force_update,
     }
     counter->SetValueBefore(value);
     counter->CalculateValueAfter(should_reset_increment, num_counters_in_scope);
-    if (auto* layout_counter = DynamicTo<LayoutCounter>(counter->Owner())) {
-      layout_counter->UpdateCounter();
-    }
     if (!counter->HasUseType()) {
       should_reset_increment = false;
     }
@@ -284,17 +221,15 @@ bool CountersScope::UpdateOwnCounters(bool force_update,
   return need_children_udpate;
 }
 
-void CountersScope::UpdateChildCounters(const AtomicString& identifier,
-                                        bool force_update) {
+void CountersScope::UpdateChildCounters(bool force_update) {
   for (CountersScope* child : children_) {
-    child->UpdateCounters(identifier, force_update);
+    child->UpdateCounters(force_update);
   }
 }
 
-void CountersScope::UpdateCounters(const AtomicString& identifier,
-                                   bool force_update) {
-  bool force_update_children = UpdateOwnCounters(force_update, identifier);
-  UpdateChildCounters(identifier, force_update_children);
+void CountersScope::UpdateCounters(bool force_update) {
+  bool force_update_children = UpdateOwnCounters(force_update);
+  UpdateChildCounters(force_update_children);
 }
 
 }  // namespace blink

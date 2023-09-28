@@ -21,7 +21,7 @@ class CORE_EXPORT CountersScopeTree final
     : public GarbageCollected<CountersScopeTree> {
  public:
   explicit CountersScopeTree(StyleContainmentScope* style_scope)
-      : list_item_("list-item"), style_scope_(style_scope) {}
+      : style_scope_(style_scope) {}
   CountersScopeTree(const CountersScopeTree&) = delete;
   CountersScopeTree& operator=(const CountersScopeTree&) = delete;
 
@@ -29,14 +29,11 @@ class CORE_EXPORT CountersScopeTree final
   CountersScope* FindScopeForElement(const Element&, const AtomicString&);
 
   void CreateCountersForLayoutObject(LayoutObject&);
-  void CreateCounterForLayoutObject(LayoutObject&, const AtomicString&);
   void CreateCounterForLayoutCounter(LayoutCounter&);
   void CreateListItemCounterForLayoutObject(LayoutObject&);
 
   void RemoveCounterForLayoutCounter(LayoutCounter&);
-  void RemoveCounterFromScope(CounterNode&,
-                              CountersScope&,
-                              const AtomicString&);
+  void RemoveCounterFromScope(CounterNode&, CountersScope&);
 
   void UpdateCounters();
   ScopesMap& Scopes() { return scopes_; }
@@ -54,14 +51,11 @@ class CORE_EXPORT CountersScopeTree final
 #endif  // DCHECK_IS_ON()
 
  private:
-  void AttachCounter(CounterNode&, const AtomicString& identifier);
-  void CreateScope(CounterNode&,
-                   CountersScope* parent,
-                   const AtomicString& identifier);
+  void AttachCounter(CounterNode&);
+  void CreateScope(CounterNode&, CountersScope* parent);
   void RemoveEmptyScope(CountersScope&, const AtomicString&);
 
   ScopesMap scopes_;
-  const AtomicString list_item_;
   Member<StyleContainmentScope> style_scope_;
 };
 
