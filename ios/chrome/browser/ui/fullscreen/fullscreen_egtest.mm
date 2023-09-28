@@ -415,6 +415,31 @@ void WaitforPDFExtensionView() {
   [ChromeEarlGreyUI waitForToolbarVisible:YES];
 }
 
+// Tests collapsing of toolbar when a user scroll on a long page and rotate.
+- (void)testCollapseToolbarOnScrollAndRotate {
+  std::map<GURL, std::string> responses;
+  const GURL URL = web::test::HttpServer::MakeUrl("http://tallpage");
+  // A page long enough to ensure that the toolbar goes away on scrolling.
+  responses[URL] =
+      base::StringPrintf("<p style='height:%dem'>a</p><p>b</p>", kPageHeightEM);
+  web::test::SetUpSimpleHttpServer(responses);
+
+  [ChromeEarlGrey loadURL:URL];
+  [ChromeEarlGreyUI waitForToolbarVisible:YES];
+
+  // Scroll and check that toolbar is collapsed.
+  HideToolbarUsingUI();
+  [ChromeEarlGreyUI waitForToolbarVisible:NO];
+
+  // Rotate and check that toolbar is still collapsed.
+  [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationLandscapeLeft
+                                error:nil];
+  [ChromeEarlGreyUI waitForToolbarVisible:NO];
+
+  // Cancel the rotation.
+  [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait error:nil];
+}
+
 @end
 
 #pragma mark - Smooth scrolling enabled Tests
