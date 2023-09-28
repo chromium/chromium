@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_PLUS_ADDRESSES_PLUS_ADDRESS_CLIENT_H_
 #define COMPONENTS_PLUS_ADDRESSES_PLUS_ADDRESS_CLIENT_H_
 
+#include <list>
+
 #include "base/containers/queue.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
@@ -65,10 +67,16 @@ class PlusAddressClient {
     access_token_info_ = info;
   }
   void SetClockForTesting(base::Clock* clock) { clock_ = clock; }
-
   absl::optional<GURL> GetServerUrlForTesting() const { return server_url_; }
 
  private:
+  using UrlLoaderList = std::list<std::unique_ptr<network::SimpleURLLoader>>;
+
+  void OnCreatePlusAddressComplete(UrlLoaderList::iterator it,
+                                   PlusAddressCallback callback,
+                                   std::unique_ptr<std::string> response);
+  void OnGetAllPlusAddressesComplete(PlusAddressMapCallback callback,
+                                     std::unique_ptr<std::string> response);
   // Initiates a network request for an OAuth token, and may only be
   // called by GetAuthToken. This also must be run on the UI thread.
   void RequestAuthToken();
@@ -82,9 +90,13 @@ class PlusAddressClient {
       access_token_fetcher_ GUARDED_BY_CONTEXT(sequence_checker_);
   // Used to make HTTP requests.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-  // Use a separate URLLoader for each request flow.
-  std::unique_ptr<network::SimpleURLLoader> loader_for_creation_;
-  std::unique_ptr<network::SimpleURLLoader> loader_for_retrieval_;
+  // List of loaders used by the creation flow (CreatePlusAddress). We use a
+  // list of loaders instead of a single one to handle several requests made
+  // quickly across different tabs.
+  std::list<std::unique_ptr<network::SimpleURLLoader>> loaders_for_creation_;
+  // A loader used infrequently for calls to GetAllPlusAddresses which keeps
+  // the PlusAddressService synced with the remote server.
+  std::unique_ptr<network::SimpleURLLoader> loader_for_sync_;
 
   absl::optional<GURL> server_url_;
   signin::AccessTokenInfo access_token_info_;

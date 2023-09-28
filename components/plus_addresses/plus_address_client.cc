@@ -29,7 +29,7 @@ namespace {
 const base::TimeDelta kRequestTimeout = base::Seconds(5);
 
 // See docs/network_traffic_annotations.md for reference.
-// TODO(b/277532955): Update the description and trigger fields when possible.
+// TODO(b/295556954): Update the description and trigger fields when possible.
 //                    Also replace the policy_exception when we have a policy.
 const net::NetworkTrafficAnnotationTag kCreatePlusAddressAnnotation =
     net::DefineNetworkTrafficAnnotation("plus_address_creation", R"(
@@ -59,7 +59,7 @@ const net::NetworkTrafficAnnotationTag kCreatePlusAddressAnnotation =
       }
     )");
 
-// TODO(b/277532955): Update the description and trigger fields when possible.
+// TODO(b/295556954): Update the description and trigger fields when possible.
 //                    Also replace the policy_exception when we have a policy.
 const net::NetworkTrafficAnnotationTag kGetAllPlusAddressesAnnotation =
     net::DefineNetworkTrafficAnnotation("get_all_plus_addresses", R"(
@@ -136,38 +136,46 @@ void PlusAddressClient::CreatePlusAddress(const std::string& site,
   bool wrote_payload = base::JSONWriter::Write(payload, &request_body);
   DCHECK(wrote_payload);
 
-  // TODO(b/300443275): Handle potential race to `loader_for_creation_` here.
-  loader_for_creation_ = network::SimpleURLLoader::Create(
-      std::move(resource_request), kCreatePlusAddressAnnotation);
-  loader_for_creation_->AttachStringForUpload(request_body, "application/json");
-  loader_for_creation_->SetTimeoutDuration(kRequestTimeout);
-  // Use max download size for now.
-  // TODO(kaklilu) - Measure average downloadsize and pick a more appropriate
-  // one.
-  loader_for_creation_->DownloadToString(
+  std::unique_ptr<network::SimpleURLLoader> loader =
+      network::SimpleURLLoader::Create(std::move(resource_request),
+                                       kCreatePlusAddressAnnotation);
+  network::SimpleURLLoader* loader_ptr = loader.get();
+  loader_ptr->AttachStringForUpload(request_body, "application/json");
+  loader_ptr->SetTimeoutDuration(kRequestTimeout);
+  // TODO(b/301984623) - Measure average downloadsize and change this.
+  loader_ptr->DownloadToString(
       url_loader_factory_.get(),
-      base::BindOnce(
-          [](PlusAddressCallback callback,
-             std::unique_ptr<std::string> response) {
-            if (!response) {
-              // The request has failed.
-              // TODO: Add metrics here.
-              return;
-            }
-            data_decoder::DataDecoder::ParseJsonIsolated(
-                *response,
-                base::BindOnce(&PlusAddressParser::ParsePlusAddressFromV1Create)
-                    .Then(base::BindOnce(
-                        [](PlusAddressCallback callback,
-                           absl::optional<std::string> result) {
-                          if (result.has_value()) {
-                            std::move(callback).Run(result.value());
-                          }
-                        },
-                        std::move(callback))));
-          },
-          std::move(callback)),
+      base::BindOnce(&PlusAddressClient::OnCreatePlusAddressComplete,
+                     // Safe since this class owns the list of loaders.
+                     base::Unretained(this),
+                     loaders_for_creation_.insert(loaders_for_creation_.begin(),
+                                                  std::move(loader)),
+                     std::move(callback)),
       network::SimpleURLLoader::kMaxBoundedStringDownloadSize);
+}
+
+void PlusAddressClient::OnCreatePlusAddressComplete(
+    UrlLoaderList::iterator it,
+    PlusAddressCallback callback,
+    std::unique_ptr<std::string> response) {
+  // TODO (b/301071850): Add metrics to measure error or healthy request here
+  // with SimpleUrlLoader::NetError().
+  loaders_for_creation_.erase(it);
+  if (!response) {
+    // The request has failed.
+    return;
+  }
+  data_decoder::DataDecoder::ParseJsonIsolated(
+      *response,
+      base::BindOnce(&PlusAddressParser::ParsePlusAddressFromV1Create)
+          .Then(base::BindOnce(
+              [](PlusAddressCallback callback,
+                 absl::optional<std::string> result) {
+                if (result.has_value()) {
+                  std::move(callback).Run(result.value());
+                }
+              },
+              std::move(callback))));
 }
 
 void PlusAddressClient::GetAllPlusAddresses(PlusAddressMapCallback callback) {
@@ -181,6 +189,13 @@ void PlusAddressClient::GetAllPlusAddresses(PlusAddressMapCallback callback) {
     return;
   }
 
+  // Fail early if the URL Loader is already in-use. We never expect this method
+  // to be called in quick succession.
+  if (loader_for_sync_) {
+    DCHECK(false);
+    return;
+  }
+
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->method = net::HttpRequestHeaders::kGetMethod;
   resource_request->url =
@@ -190,39 +205,40 @@ void PlusAddressClient::GetAllPlusAddresses(PlusAddressMapCallback callback) {
       base::StrCat({"Bearer ", access_token_info_.token}));
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
 
-  // TODO(b/300443275): Handle potential race to `loader_for_retrieval_` here.
-  loader_for_retrieval_ = network::SimpleURLLoader::Create(
+  loader_for_sync_ = network::SimpleURLLoader::Create(
       std::move(resource_request), kGetAllPlusAddressesAnnotation);
-  loader_for_retrieval_->SetTimeoutDuration(kRequestTimeout);
-  // Use max download size for now.
-  // TODO(kaklilu) - Measure average downloadsize and pick a more appropriate
-  // one.
-  loader_for_retrieval_->DownloadToString(
+  loader_for_sync_->SetTimeoutDuration(kRequestTimeout);
+  loader_for_sync_->DownloadToString(
       url_loader_factory_.get(),
-      base::BindOnce(
-          [](PlusAddressMapCallback callback,
-             std::unique_ptr<std::string> response) {
-            if (!response) {
-              // The request has failed.
-              // TODO: Add metrics here.
-              return;
-            }
-
-            data_decoder::DataDecoder::ParseJsonIsolated(
-                *response,
-                base::BindOnce(
-                    &PlusAddressParser::ParsePlusAddressMapFromV1List)
-                    .Then(base::BindOnce(
-                        [](PlusAddressMapCallback callback,
-                           absl::optional<PlusAddressMap> result) {
-                          if (result.has_value()) {
-                            std::move(callback).Run(result.value());
-                          }
-                        },
-                        std::move(callback))));
-          },
-          std::move(callback)),
+      base::BindOnce(&PlusAddressClient::OnGetAllPlusAddressesComplete,
+                     // Safe since this class owns the loader_for_sync_.
+                     base::Unretained(this), std::move(callback)),
+      // TODO(b/301984623) - Measure average downloadsize and change this.
       network::SimpleURLLoader::kMaxBoundedStringDownloadSize);
+}
+
+void PlusAddressClient::OnGetAllPlusAddressesComplete(
+    PlusAddressMapCallback callback,
+    std::unique_ptr<std::string> response) {
+  // TODO (b/301071850): Add metrics to measure error or healthy request here
+  // with SimpleUrlLoader::NetError().
+  loader_for_sync_.reset();
+  if (!response) {
+    // The request has failed.
+    return;
+  }
+
+  data_decoder::DataDecoder::ParseJsonIsolated(
+      *response,
+      base::BindOnce(&PlusAddressParser::ParsePlusAddressMapFromV1List)
+          .Then(base::BindOnce(
+              [](PlusAddressMapCallback callback,
+                 absl::optional<PlusAddressMap> result) {
+                if (result.has_value()) {
+                  std::move(callback).Run(result.value());
+                }
+              },
+              std::move(callback))));
 }
 
 // TODO (kaklilu): Handle requests when token is nearing expiration.

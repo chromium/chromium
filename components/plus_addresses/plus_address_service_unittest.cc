@@ -260,8 +260,12 @@ TEST_F(PlusAddressServicePolling, CallsGetAllPlusAddresses) {
   PlusAddressClient client(identity_test_env.identity_manager(),
                            test_shared_loader_factory);
   client.SetAccessTokenInfoForTesting(eternal_access_token_info);
+  // The service starts the timer on construction and issues a request to poll.
   PlusAddressService service(identity_test_env.identity_manager(), prefs(),
                              std::move(client));
+  // Unblock the initial polling request.
+  test_url_loader_factory.SimulateResponseForPendingRequest(
+      plus_profiles_endpoint, MakeListResponse({}));
 
   EXPECT_FALSE(service.IsPlusAddress("plus+foo@plus.plus"));
   EXPECT_FALSE(service.IsPlusAddress("plus+bar@plus.plus"));

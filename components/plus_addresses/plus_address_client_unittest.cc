@@ -8,6 +8,7 @@
 #include "base/json/json_reader.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
+#include "base/test/gtest_util.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
@@ -150,6 +151,46 @@ TEST_F(PlusAddressClientRequests,
       network::CreateURLResponseHead(net::HTTP_NOT_FOUND), ""));
 }
 
+TEST_F(PlusAddressClientRequests,
+       CreatePlusAddressV1_HandlesConcurrentRequests) {
+  PlusAddressClient client(identity_manager, scoped_shared_url_loader_factory);
+  client.SetAccessTokenInfoForTesting(eternal_token_info);
+
+  base::MockOnceCallback<void(const std::string&)> first_request;
+  base::MockOnceCallback<void(const std::string&)> second_request;
+  // Send two requests in quick succession
+  client.CreatePlusAddress("hulu.com", first_request.Get());
+  client.CreatePlusAddress("netflix.com", second_request.Get());
+
+  // The first callback should be run once the server responds to its request.
+  PlusAddressMap expected;
+  EXPECT_CALL(first_request, Run("plusthree@plus.plus")).Times(1);
+  test_url_loader_factory.SimulateResponseForPendingRequest(fullProfileEndpoint,
+                                                            R"(
+      {
+      "plusProfile": {
+          "facet": "hulu.com",
+          "plusEmail" : {
+            "plusAddress": "plusthree@plus.plus"
+          }
+        }
+    }
+    )");
+  // Same for the second callback.
+  EXPECT_CALL(second_request, Run("plusfour@plus.plus")).Times(1);
+  test_url_loader_factory.SimulateResponseForPendingRequest(fullProfileEndpoint,
+                                                            R"(
+      {
+      "plusProfile": {
+          "facet": "netflix.com",
+          "plusEmail" : {
+            "plusAddress": "plusfour@plus.plus"
+          }
+        }
+    }
+    )");
+}
+
 // Ensures the request sent by Chrome matches what we intended.
 TEST_F(PlusAddressClientRequests, GetAllPlusAddressesV1_IssuesCorrectRequest) {
   PlusAddressClient client(identity_manager, scoped_shared_url_loader_factory);
@@ -216,6 +257,27 @@ TEST_F(PlusAddressClientRequests,
       GURL(fullProfileEndpoint),
       network::URLLoaderCompletionStatus(net::HTTP_NOT_FOUND),
       network::CreateURLResponseHead(net::HTTP_NOT_FOUND), ""));
+}
+
+TEST_F(PlusAddressClientRequests,
+       GetAllPlusAddressesV1_WhenLoadingRequest_NewRequestsAreDropped) {
+  PlusAddressClient client(identity_manager, scoped_shared_url_loader_factory);
+  client.SetAccessTokenInfoForTesting(eternal_token_info);
+
+  base::MockOnceCallback<void(const PlusAddressMap&)> first_request;
+  // Send two requests in quick succession
+  client.GetAllPlusAddresses(first_request.Get());
+  EXPECT_DCHECK_DEATH(client.GetAllPlusAddresses(base::DoNothing()));
+
+  // The first callback should be run once the server responds.
+  PlusAddressMap expected;
+  EXPECT_CALL(first_request, Run(expected)).Times(1);
+  test_url_loader_factory.SimulateResponseForPendingRequest(fullProfileEndpoint,
+                                                            R"(
+    {
+      "plusProfiles": []
+    }
+    )");
 }
 
 TEST(PlusAddressClient, ChecksUrlParamIsValidGurl) {
