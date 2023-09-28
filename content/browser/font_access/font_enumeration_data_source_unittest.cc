@@ -9,9 +9,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/font_access/font_enumeration_table.pb.h"
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
 #include "content/browser/font_access/font_enumeration_data_source_mac.h"
-#endif  // BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_APPLE)
 
 namespace content {
 
@@ -48,13 +48,13 @@ TEST_F(FontEnumerationDataSourceTest, GetFonts_DefaultLocale) {
   }
 }
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
 TEST_F(FontEnumerationDataSourceTest, CheckInvalidFontMac) {
   const CTFontDescriptorRef fd = nullptr;
   FontEnumerationDataSourceMac data_src_mac;
   EXPECT_FALSE(data_src_mac.IsValidFontMacForTesting(fd));
 }
-#endif  // BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_APPLE)
 
 }  // namespace
 
