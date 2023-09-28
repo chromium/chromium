@@ -131,6 +131,8 @@ source_set("common") {
     "input/synthetic_smooth_scroll_gesture_params.h",
     "input/synthetic_tap_gesture_params.cc",
     "input/synthetic_tap_gesture_params.h",
+    "input/tap_suppression_controller.cc",
+    "input/tap_suppression_controller.h",
     "input/touch_event_stream_validator.cc",
     "input/touch_event_stream_validator.h",
     "input/web_touch_event_traits.cc",

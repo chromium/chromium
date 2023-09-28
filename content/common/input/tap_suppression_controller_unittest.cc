@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/renderer_host/input/tap_suppression_controller.h"
+#include "content/common/input/tap_suppression_controller.h"
 
 #include <memory>
 
@@ -14,8 +14,8 @@ namespace content {
 class MockTapSuppressionController : public TapSuppressionController {
  public:
   using TapSuppressionController::DISABLED;
-  using TapSuppressionController::NOTHING;
   using TapSuppressionController::LAST_CANCEL_STOPPED_FLING;
+  using TapSuppressionController::NOTHING;
   using TapSuppressionController::SUPPRESSING_TAPS;
 
   enum Action {
@@ -42,18 +42,20 @@ class MockTapSuppressionController : public TapSuppressionController {
 
   void SendTapDown() {
     last_actions_ = NONE;
-    if (ShouldSuppressTapDown())
+    if (ShouldSuppressTapDown()) {
       last_actions_ |= TAP_DOWN_SUPPRESSED;
-    else
+    } else {
       last_actions_ |= TAP_DOWN_FORWARDED;
+    }
   }
 
   void SendTapUp() {
     last_actions_ = NONE;
-    if (ShouldSuppressTapEnd())
+    if (ShouldSuppressTapEnd()) {
       last_actions_ |= TAP_UP_SUPPRESSED;
-    else
+    } else {
       last_actions_ |= TAP_UP_FORWARDED;
+    }
   }
 
   void AdvanceTime(const base::TimeDelta& delta) {
@@ -68,9 +70,7 @@ class MockTapSuppressionController : public TapSuppressionController {
  protected:
   base::TimeTicks Now() override { return time_; }
 
-
  private:
-
   // Hiding some derived public methods
   using TapSuppressionController::GestureFlingCancelStoppedFling;
   using TapSuppressionController::ShouldSuppressTapDown;
@@ -83,8 +83,7 @@ class MockTapSuppressionController : public TapSuppressionController {
 
 class TapSuppressionControllerTest : public testing::Test {
  public:
-  TapSuppressionControllerTest() {
-  }
+  TapSuppressionControllerTest() {}
   ~TapSuppressionControllerTest() override {}
 
  protected:

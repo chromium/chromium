@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_RENDERER_HOST_INPUT_TAP_SUPPRESSION_CONTROLLER_H_
-#define CONTENT_BROWSER_RENDERER_HOST_INPUT_TAP_SUPPRESSION_CONTROLLER_H_
+#ifndef CONTENT_COMMON_INPUT_TAP_SUPPRESSION_CONTROLLER_H_
+#define CONTENT_COMMON_INPUT_TAP_SUPPRESSION_CONTROLLER_H_
 
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -50,6 +50,7 @@ class CONTENT_EXPORT TapSuppressionController {
 
  protected:
   virtual base::TimeTicks Now();
+
  private:
   friend class MockTapSuppressionController;
 
@@ -76,4 +77,4 @@ class CONTENT_EXPORT TapSuppressionController {
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_RENDERER_HOST_INPUT_TAP_SUPPRESSION_CONTROLLER_H_
+#endif  // CONTENT_COMMON_INPUT_TAP_SUPPRESSION_CONTROLLER_H_

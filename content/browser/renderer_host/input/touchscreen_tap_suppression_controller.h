@@ -5,8 +5,8 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_INPUT_TOUCHSCREEN_TAP_SUPPRESSION_CONTROLLER_H_
 #define CONTENT_BROWSER_RENDERER_HOST_INPUT_TOUCHSCREEN_TAP_SUPPRESSION_CONTROLLER_H_
 
-#include "content/browser/renderer_host/input/tap_suppression_controller.h"
 #include "content/common/input/event_with_latency_info.h"
+#include "content/common/input/tap_suppression_controller.h"
 
 namespace content {
 
