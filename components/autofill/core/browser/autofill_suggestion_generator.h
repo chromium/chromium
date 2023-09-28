@@ -60,7 +60,8 @@ class AutofillSuggestionGenerator {
       const ServerFieldTypeSet& field_types,
       const FormFieldData& triggering_field,
       AutofillType triggering_field_type,
-      absl::optional<ServerFieldTypeSet> last_targeted_fields);
+      absl::optional<ServerFieldTypeSet> last_targeted_fields,
+      AutofillSuggestionTriggerSource trigger_source);
 
   // Returns a list of profiles that will be displayed as suggestions to the
   // user. This involved many steps from fetching the profiles to matching with

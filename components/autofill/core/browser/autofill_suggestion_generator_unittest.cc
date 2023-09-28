@@ -8,6 +8,7 @@
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -1312,6 +1313,40 @@ TEST_F(
     return child.popup_item_id ==
            PopupItemId::kFillEverythingFromAddressProfile;
   }));
+}
+
+// Tests that regular suggestions are filtered by the triggering field's value,
+// but manual fallback suggestions are not.
+TEST_F(AutofillSuggestionGeneratorTest, GetSuggestionsForProfiles_Filtering) {
+  AutofillProfile profile1 = test::GetFullProfile();
+  AutofillProfile profile2 = test::GetFullProfile2();
+  personal_data()->AddProfile(profile1);
+  personal_data()->AddProfile(profile2);
+
+  // Create a triggering field those value prefix-matches `profile1`, but not
+  // `profile2`.
+  FormFieldData triggering_field;
+  triggering_field.value = profile1.GetRawInfo(NAME_FIRST);
+  ASSERT_FALSE(base::StartsWith(profile2.GetRawInfo(NAME_FIRST),
+                                profile1.GetRawInfo(NAME_FIRST)));
+
+  // Expect that regular suggestions filter.
+  EXPECT_EQ(suggestion_generator()
+                ->GetSuggestionsForProfiles(
+                    {NAME_FIRST}, triggering_field, AutofillType(NAME_FIRST),
+                    /*last_targeted_fields=*/absl::nullopt,
+                    AutofillSuggestionTriggerSource::kFormControlElementClicked)
+                .size(),
+            1u);
+  // But manual fallback suggestions do not.
+  EXPECT_EQ(suggestion_generator()
+                ->GetSuggestionsForProfiles(
+                    {NAME_FIRST}, triggering_field, AutofillType(NAME_FIRST),
+                    /*last_targeted_fields=*/absl::nullopt,
+                    AutofillSuggestionTriggerSource::
+                        kManualFallbackForAutocompleteUnrecognized)
+                .size(),
+            2u);
 }
 
 TEST_F(AutofillSuggestionGeneratorTest,

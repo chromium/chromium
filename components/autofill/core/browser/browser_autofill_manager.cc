@@ -2870,7 +2870,7 @@ std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
   }
   return suggestion_generator_->GetSuggestionsForProfiles(
       field_types, field, autofill_field.Type(),
-      last_address_fields_to_fill_for_section);
+      last_address_fields_to_fill_for_section, trigger_source);
 }
 
 std::vector<Suggestion> BrowserAutofillManager::GetCreditCardSuggestions(

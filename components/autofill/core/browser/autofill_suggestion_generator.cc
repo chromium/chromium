@@ -219,10 +219,20 @@ std::vector<Suggestion> AutofillSuggestionGenerator::GetSuggestionsForProfiles(
     const ServerFieldTypeSet& field_types,
     const FormFieldData& triggering_field,
     AutofillType triggering_field_type,
-    absl::optional<ServerFieldTypeSet> last_targeted_fields) {
+    absl::optional<ServerFieldTypeSet> last_targeted_fields,
+    AutofillSuggestionTriggerSource trigger_source) {
+  // If the user manually triggerged suggestions from the context menu, all
+  // available profiles should be shown. Selecting a suggestion overwrites the
+  // triggering field's value.
+  const std::u16string field_value_for_filtering =
+      trigger_source != AutofillSuggestionTriggerSource::
+                            kManualFallbackForAutocompleteUnrecognized
+          ? triggering_field.value
+          : u"";
   std::vector<AutofillProfile*> profiles_to_suggest =
-      GetProfilesToSuggest(triggering_field_type, triggering_field.value,
+      GetProfilesToSuggest(triggering_field_type, field_value_for_filtering,
                            triggering_field.is_autofilled, field_types);
+
   return CreateSuggestionsFromProfiles(
       profiles_to_suggest, field_types, last_targeted_fields,
       triggering_field_type, triggering_field.max_length);
