@@ -102,6 +102,59 @@ bool FailedWithProxy(const std::string& mime_type,
   return false;
 }
 
+std::string ResponseCodeToString(int response_code) {
+  switch (response_code) {
+    case DeviceManagementService::kSuccess:
+      return "Success";
+    case DeviceManagementService::kInvalidArgument:
+      return "InvalidArgument";
+    case DeviceManagementService::kInvalidAuthCookieOrDMToken:
+      return "InvalidAuthCookieOrDMToken";
+    case DeviceManagementService::kMissingLicenses:
+      return "MissingLicenses";
+    case DeviceManagementService::kDeviceManagementNotAllowed:
+      return "DeviceManagementNotAllowed";
+    case DeviceManagementService::kInvalidURL:
+      return "InvalidURL";
+    case DeviceManagementService::kInvalidSerialNumber:
+      return "InvalidSerialNumber";
+    case DeviceManagementService::kDomainMismatch:
+      return "DomainMismatch";
+    case DeviceManagementService::kDeviceIdConflict:
+      return "DeviceIdConflict";
+    case DeviceManagementService::kDeviceNotFound:
+      return "DeviceNotFound";
+    case DeviceManagementService::kPendingApproval:
+      return "PendingApproval";
+    case DeviceManagementService::kRequestTooLarge:
+      return "RequestTooLarge";
+    case DeviceManagementService::kConsumerAccountWithPackagedLicense:
+      return "ConsumerAccountWithPackagedLicense";
+    case DeviceManagementService::kTooManyRequests:
+      return "TooManyRequests";
+    case DeviceManagementService::kInternalServerError:
+      return "InternalServerError";
+    case DeviceManagementService::kServiceUnavailable:
+      return "ServiceUnavailable";
+    case DeviceManagementService::kPolicyNotFound:
+      return "PolicyNotFound";
+    case DeviceManagementService::kDeprovisioned:
+      return "Deprovisioned";
+    case DeviceManagementService::kArcDisabled:
+      return "ArcDisabled";
+    case DeviceManagementService::kInvalidDomainlessCustomer:
+      return "InvalidDomainlessCustomer";
+    case DeviceManagementService::kTosHasNotBeenAccepted:
+      return "TosHasNotBeenAccepted";
+    case DeviceManagementService::kIllegalAccountForPackagedEDULicense:
+      return "IllegalAccountForPackagedEDULicense";
+    case DeviceManagementService::kInvalidPackagedDeviceForKiosk:
+      return "InvalidPackagedDeviceForKiosk";
+  }
+
+  return base::NumberToString(response_code);
+}
+
 }  // namespace
 
 // While these are declared as constexpr in the header file, they also need to
@@ -517,7 +570,8 @@ DeviceManagementService::JobImpl::HandleResponseData(
     LOG_POLICY(WARNING, CBCM_ENROLLMENT)
         << "Request of type "
         << JobConfiguration::GetJobTypeAsString(config_->GetType())
-        << " failed (net_error = " << net_error << ").";
+        << " failed (net_error = " << net::ErrorToString(net_error) << " ("
+        << net_error << ")).";
     config_->OnURLLoadComplete(this, net_error, response_code, std::string());
     return RetryMethod::NO_RETRY;
   }
@@ -526,7 +580,8 @@ DeviceManagementService::JobImpl::HandleResponseData(
     LOG_POLICY(WARNING, CBCM_ENROLLMENT)
         << "Request of type "
         << JobConfiguration::GetJobTypeAsString(config_->GetType())
-        << " failed (response_code = " << response_code << ").";
+        << " failed (response_code = " << ResponseCodeToString(response_code)
+        << " (" << response_code << ")).";
     base::UmaHistogramEnumeration(uma_name,
                                   DMServerRequestSuccess::kRequestError);
   } else {
