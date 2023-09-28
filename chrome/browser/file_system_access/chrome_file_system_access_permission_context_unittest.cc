@@ -1201,29 +1201,6 @@ TEST_F(ChromeFileSystemAccessPermissionContextNoPersistenceTest,
   EXPECT_EQ(granted_objects.size(), 1UL);
 }
 
-TEST_F(ChromeFileSystemAccessPermissionContextTest,
-       GetDormantPersistedObjects) {
-  auto grant = permission_context()->GetReadPermissionGrant(
-      kTestOrigin, kTestPath, HandleType::kFile, UserAction::kOpen);
-  auto grant2 = permission_context()->GetWritePermissionGrant(
-      kTestOrigin, kTestPath, HandleType::kDirectory, UserAction::kOpen);
-
-  // TODO(crbug.com/1011533): Update this test to navigate away from the page,
-  // instead of manually resetting the grant.
-  grant.reset();
-
-  // `kTestOrigin` should have a dormant grant object after clearing active
-  // permissions.
-  auto dormant_objects_origin1 =
-      permission_context()->GetDormantPersistedObjectsForTesting(kTestOrigin);
-  EXPECT_EQ(dormant_objects_origin1.size(), 1UL);
-
-  // `kTestOrigin2` does not have any dormant grants.
-  auto dormant_objects_origin2 =
-      permission_context()->GetDormantPersistedObjectsForTesting(kTestOrigin2);
-  EXPECT_TRUE(dormant_objects_origin2.empty());
-}
-
 TEST_F(ChromeFileSystemAccessPermissionContextTest, ShowRestorePrompt) {
   auto grant = permission_context()->GetWritePermissionGrant(
       kTestOrigin, kTestPath, HandleType::kFile, UserAction::kSave);

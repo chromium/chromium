@@ -215,10 +215,6 @@ class ChromeFileSystemAccessPermissionContext
       const url::Origin& origin) {
     return GetExtendedPersistedObjects(origin);
   }
-  std::vector<std::unique_ptr<Object>> GetDormantPersistedObjectsForTesting(
-      const url::Origin& origin) {
-    return GetDormantPersistedObjects(origin);
-  }
 
   // Converts permissions objects into a snapshot of grants categorized by
   // read/write and file/directory types. Currently, used in UI code.
@@ -285,8 +281,8 @@ class ChromeFileSystemAccessPermissionContext
   class PermissionGrantImpl;
 
   // This value should not be stored, and should only be used to check the
-  // state of persisted grants, using the `GetPersistedGrantState()` method.
-  enum class PersistedGrantState {
+  // state of persisted grants, using the `GetPersistedGrantType()` method.
+  enum class PersistedGrantType {
     // Represents a grant that was granted access on previous visit.
     // Extended Permissions is not enabled for the given origin.
     kDormant,
@@ -307,9 +303,8 @@ class ChromeFileSystemAccessPermissionContext
     kUpdatePersistedPermission,
   };
 
-  // Retrieve the persisted grant state for all persisted grants for a given
-  // origin.
-  PersistedGrantState GetPersistedGrantState(const url::Origin& origin) const;
+  // Retrieve the persisted grant type for a given origin.
+  PersistedGrantType GetPersistedGrantType(const url::Origin& origin) const;
 
   void PermissionGrantDestroyed(PermissionGrantImpl* grant);
 
@@ -377,6 +372,16 @@ class ChromeFileSystemAccessPermissionContext
                                    const base::FilePath& path,
                                    GrantType grant_type) const;
 
+  // Given the current state of the origin, returns whether it is eligible to
+  // trigger the restore permission prompt instead of the permission request
+  // prompt. All of the following criteria must meet:
+  // 1) Origin is not embargoed for showing the Restore permission prompt for
+  //    too many times
+  // 2) Origin does not have extended permission yet
+  // 3) Permission request is on a handle retrieved from Indexed DB, or any
+  //    type of request after the permission is auto-revoked due to tabs
+  //    being backgrounded.
+  // 4) A dormant grant matching the requested file path and handle type exists.
   bool IsEligibleToUpgradePermissionRequestToRestorePrompt(
       const url::Origin& origin,
       const base::FilePath& file_path,
@@ -384,10 +389,12 @@ class ChromeFileSystemAccessPermissionContext
       UserAction user_action,
       GrantType grant_type);
 
-  bool HasDormantPermission(const url::Origin& origin,
-                            base::FilePath file_path,
-                            HandleType handle_type,
-                            GrantType grant_type);
+  // Returns whether a matching persisted grant object exists.
+  bool HasPersistedGrantObject(const url::Origin& origin,
+                               const base::FilePath& file_path,
+                               HandleType handle_type,
+                               GrantType grant_type);
+
   // Returns whether the origin has extended permission for a specific file.
   bool HasExtendedPermission(const url::Origin& origin,
                              const base::FilePath& path,
@@ -397,14 +404,8 @@ class ChromeFileSystemAccessPermissionContext
   // opt-in or by having an actively installed PWA.
   bool OriginHasExtendedPermission(const url::Origin& origin) const;
 
-  bool HasGrantedActiveGrant(const url::Origin& origin) const;
-
   // Similar to GetGrantedObjects() but returns only extended grants.
   std::vector<std::unique_ptr<Object>> GetExtendedPersistedObjects(
-      const url::Origin& origin);
-
-  // Similar to GetGrantedObjects() but returns only dormant grants.
-  std::vector<std::unique_ptr<Object>> GetDormantPersistedObjects(
       const url::Origin& origin);
 
   // Revokes the active grants for the given origin, and returns whether any is
