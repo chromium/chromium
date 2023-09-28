@@ -57,6 +57,12 @@ class MockQuickStartDecoder
               (override));
 
   MOCK_METHOD(void,
+              DecodeUserVerificationMethod,
+              (const absl::optional<std::vector<uint8_t>>& data,
+               DecodeUserVerificationMethodCallback callback),
+              (override));
+
+  MOCK_METHOD(void,
               DecodeUserVerificationResult,
               (const absl::optional<std::vector<uint8_t>>& data,
                DecodeUserVerificationResultCallback callback),

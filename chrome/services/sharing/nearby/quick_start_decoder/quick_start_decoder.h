@@ -48,6 +48,10 @@ class QuickStartDecoder : public mojom::QuickStartDecoder {
       const absl::optional<std::vector<uint8_t>>& data,
       DecodeNotifySourceOfUpdateResponseCallback callback) override;
 
+  void DecodeUserVerificationMethod(
+      const absl::optional<std::vector<uint8_t>>& data,
+      DecodeUserVerificationMethodCallback callback) override;
+
   void DecodeUserVerificationResult(
       const absl::optional<std::vector<uint8_t>>& data,
       DecodeUserVerificationResultCallback callback) override;

@@ -71,6 +71,17 @@ constexpr char kIsFirstUserVerificationKey[] = "is_first_user_verification";
 // requested
 constexpr char kAwaitingUserVerificationKey[] = "await_user_verification";
 
+// Key in UserVerificationMethod. Value is an enum indicating which user
+// verification method the source device intends to use. Always expected to be 0
+// = SOURCE_LSKF_VERIFICATION.
+constexpr char kUserVerificationMethodKey[] = "user_verification_method";
+
+// This value indicates that user verification will take place on the source
+// device using a lock screen prompt. This is the only supported method on
+// ChromeOS. Value defined here:
+// http://google3/java/com/google/android/gmscore/integ/client/smartdevice/src/com/google/android/gms/smartdevice/d2d/UserVerificationMethod.java;l=15;rcl=557316806
+constexpr int kUserVerificationMethodSourceLockScreenPrompt = 0;
+
 std::pair<int, absl::optional<cbor::Value>> CborDecodeGetAssertionResponse(
     base::span<const uint8_t> response) {
   cbor::Reader::DecoderError error;
@@ -484,6 +495,42 @@ QuickStartDecoder::DecodeQuickStartPayload(const base::Value::Dict& payload) {
 
   LOG(ERROR) << "Unknown QuickStartPayload";
   return base::unexpected(mojom::QuickStartDecoderError::kUnknownPayload);
+}
+
+void QuickStartDecoder::DecodeUserVerificationMethod(
+    const absl::optional<std::vector<uint8_t>>& data,
+    DecodeUserVerificationMethodCallback callback) {
+  if (!data.has_value()) {
+    LOG(ERROR) << "No response bytes received.";
+    std::move(callback).Run(nullptr,
+                            mojom::QuickStartDecoderError::kEmptyMessage);
+    return;
+  }
+
+  QuickStartMessage::ReadResult read_result = QuickStartMessage::ReadMessage(
+      data.value(), QuickStartMessageType::kQuickStartPayload);
+  if (!read_result.has_value()) {
+    LOG(ERROR) << "Failed to read UserVerificationMethod as QuickStartMessage";
+    std::move(callback).Run(nullptr,
+                            mojom::QuickStartDecoderError::kUnableToReadAsJSON);
+    return;
+  }
+
+  absl::optional<int> user_verification_method =
+      read_result.value()->GetPayload()->FindInt(kUserVerificationMethodKey);
+  if (!user_verification_method.has_value()) {
+    LOG(ERROR) << "UserVerificationMethod message does not include "
+                  "user_verification_method";
+    std::move(callback).Run(
+        nullptr, mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
+    return;
+  }
+
+  std::move(callback).Run(
+      mojom::UserVerificationMethod::New(
+          /*use_source_lock_screen_prompt=*/user_verification_method.value() ==
+          kUserVerificationMethodSourceLockScreenPrompt),
+      absl::nullopt);
 }
 
 base::expected<mojom::QuickStartMessagePtr, mojom::QuickStartDecoderError>

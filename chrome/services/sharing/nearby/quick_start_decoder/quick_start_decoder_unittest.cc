@@ -58,6 +58,9 @@ constexpr char kNotifySourceOfUpdateAckKey[] = "forced_update_acknowledged";
 // Key in UserVerificationResult containing the result
 constexpr char kUserVerificationResultKey[] = "user_verification_result";
 
+// Key in UserVerificationMethod containing the verification method to be used.
+constexpr char kUserVerificationMethodKey[] = "user_verification_method";
+
 // Key in UserVerificationResult indicating if this is the first user
 // verification
 constexpr char kIsFirstUserVerificationKey[] = "is_first_user_verification";
@@ -1055,6 +1058,50 @@ TEST_F(QuickStartDecoderTest,
 
   DoDecodeNotifySourceOfUpdateResponse(&message, future.GetCallback());
   EXPECT_FALSE(future.Get<0>());
+}
+
+TEST_F(QuickStartDecoderTest, DecodeUserVerificationMethodSucceeds) {
+  QuickStartMessage message(QuickStartMessageType::kQuickStartPayload);
+  message.GetPayload()->Set(kUserVerificationMethodKey, 0);
+
+  base::test::TestFuture<
+      ::ash::quick_start::mojom::UserVerificationMethodPtr,
+      absl::optional<::ash::quick_start::mojom::QuickStartDecoderError>>
+      future;
+
+  decoder()->DecodeUserVerificationMethod(ConvertMessageToBytes(&message),
+                                          future.GetCallback());
+
+  ASSERT_FALSE(future.Get<0>().is_null());
+  EXPECT_TRUE(future.Get<0>().get()->use_source_lock_screen_prompt);
+  EXPECT_EQ(future.Get<1>(), absl::nullopt);
+}
+
+TEST_F(QuickStartDecoderTest, DecodeUserVerificationMethod_NullData) {
+  base::test::TestFuture<
+      ::ash::quick_start::mojom::UserVerificationMethodPtr,
+      absl::optional<::ash::quick_start::mojom::QuickStartDecoderError>>
+      future;
+
+  decoder()->DecodeUserVerificationMethod(absl::nullopt, future.GetCallback());
+
+  EXPECT_TRUE(future.Get<0>().is_null());
+  EXPECT_EQ(future.Get<1>(), mojom::QuickStartDecoderError::kEmptyMessage);
+}
+
+TEST_F(QuickStartDecoderTest,
+       DecodeUserVerificationMethodFailsIfMessageIsNotJson) {
+  std::vector<uint8_t> message;
+  base::test::TestFuture<
+      ::ash::quick_start::mojom::UserVerificationMethodPtr,
+      absl::optional<::ash::quick_start::mojom::QuickStartDecoderError>>
+      future;
+
+  decoder()->DecodeUserVerificationMethod(message, future.GetCallback());
+
+  EXPECT_TRUE(future.Get<0>().is_null());
+  EXPECT_EQ(future.Get<1>(),
+            mojom::QuickStartDecoderError::kUnableToReadAsJSON);
 }
 
 TEST_F(QuickStartDecoderTest, DecodeUserVerificationResultSucceeds) {

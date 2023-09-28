@@ -18,6 +18,10 @@ enum WifiSecurityType {
   kSAE = 5,
 };
 
+struct UserVerificationMethod {
+  bool use_source_lock_screen_prompt;
+};
+
 // These values are directly taken from Android, and reported back.
 enum UserVerificationResult {
   kUserVerified = 0,

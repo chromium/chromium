@@ -35,8 +35,8 @@ namespace ash::quick_start {
 
 class QuickStartMessage;
 
-// Represents a connection to the remote source device and is an abstraction of
-// a Nearby Connection.
+// Represents a high-level connection used to exchange Quick Start messages with
+// the remote source device using a NearbyConnection.
 class Connection
     : public TargetDeviceConnectionBroker::AuthenticatedConnection {
  public:
@@ -199,6 +199,18 @@ class Connection
   void DecodeData(DecoderMethod<T> decoder_method,
                   OnDecodingCompleteCallback<T> on_decoding_complete,
                   absl::optional<std::vector<uint8_t>> data);
+
+  template <typename T>
+  using OnDecodingSuccessCallback = base::OnceCallback<void(T)>;
+
+  // Decode data using QuickStartDecoder, allowing a separate callback for
+  // success and failure. Used to decode messages that could be one of several
+  // different types by trying each type in succession.
+  template <typename T>
+  void TryDecodeData(DecoderMethod<T> decoder_method,
+                     OnDecodingSuccessCallback<T> on_decoding_success,
+                     ConnectionResponseCallback on_decoding_failed,
+                     absl::optional<std::vector<uint8_t>> data);
 
   base::OneShotTimer response_timeout_timer_;
   raw_ptr<NearbyConnection, ExperimentalAsh> nearby_connection_;

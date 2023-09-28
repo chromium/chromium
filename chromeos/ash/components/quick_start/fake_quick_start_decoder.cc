@@ -34,6 +34,17 @@ void FakeQuickStartDecoder::DecodeWifiCredentialsResponse(
   std::move(callback).Run(std::move(credentials_), error_);
 }
 
+void FakeQuickStartDecoder::DecodeUserVerificationMethod(
+    const absl::optional<std::vector<uint8_t>>& data,
+    DecodeUserVerificationMethodCallback callback) {
+  if (error_ != absl::nullopt) {
+    std::move(callback).Run(nullptr, error_);
+  } else {
+    std::move(callback).Run(std::move(user_verification_method_),
+                            absl::nullopt);
+  }
+}
+
 void FakeQuickStartDecoder::DecodeUserVerificationRequested(
     const absl::optional<std::vector<uint8_t>>& data,
     DecodeUserVerificationRequestedCallback callback) {

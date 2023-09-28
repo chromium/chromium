@@ -44,6 +44,11 @@ interface QuickStartDecoder {
   DecodeGetAssertionResponse(array<uint8>? data) => (
    FidoAssertionResponse? response, QuickStartDecoderError? error);
 
+  // Decode UserVerificationMethod message indicating whether the user will
+  // be verified by the phone.
+  DecodeUserVerificationMethod(array<uint8>? data) => (
+    UserVerificationMethod? response, QuickStartDecoderError? error);
+
   // Decode UserVerificationRequested message, indicating we are waiting
   // for the user to pass a verification prompt.
   DecodeUserVerificationRequested(array<uint8>? data) => (
