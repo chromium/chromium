@@ -948,7 +948,14 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest,
 
 namespace {
 
-class PlatformAppDevToolsBrowserTest : public PlatformAppBrowserTest {
+// TODO(crbug.com/1487630): flaky on Linux dbg.
+#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
+#define MAYBE_PlatformAppDevToolsBrowserTest \
+  DISABLED_PlatformAppDevToolsBrowserTest
+#else
+#define MAYBE_PlatformAppDevToolsBrowserTest PlatformAppDevToolsBrowserTest
+#endif
+class MAYBE_PlatformAppDevToolsBrowserTest : public PlatformAppBrowserTest {
  protected:
   enum TestFlags {
     RELAUNCH = 0x1,
@@ -958,8 +965,8 @@ class PlatformAppDevToolsBrowserTest : public PlatformAppBrowserTest {
   void RunTestWithDevTools(const char* name, int test_flags);
 };
 
-void PlatformAppDevToolsBrowserTest::RunTestWithDevTools(const char* name,
-                                                         int test_flags) {
+void MAYBE_PlatformAppDevToolsBrowserTest::RunTestWithDevTools(const char* name,
+                                                               int test_flags) {
   using content::DevToolsAgentHost;
   const Extension* extension = LoadAndLaunchPlatformApp(name, "Launched");
   ASSERT_TRUE(extension);
@@ -998,11 +1005,11 @@ void PlatformAppDevToolsBrowserTest::RunTestWithDevTools(const char* name,
 
 }  // namespace
 
-IN_PROC_BROWSER_TEST_F(PlatformAppDevToolsBrowserTest, ReOpenedWithID) {
+IN_PROC_BROWSER_TEST_F(MAYBE_PlatformAppDevToolsBrowserTest, ReOpenedWithID) {
   RunTestWithDevTools("minimal_id", RELAUNCH | HAS_ID);
 }
 
-IN_PROC_BROWSER_TEST_F(PlatformAppDevToolsBrowserTest, ReOpenedWithURL) {
+IN_PROC_BROWSER_TEST_F(MAYBE_PlatformAppDevToolsBrowserTest, ReOpenedWithURL) {
   RunTestWithDevTools("minimal", RELAUNCH);
 }
 
