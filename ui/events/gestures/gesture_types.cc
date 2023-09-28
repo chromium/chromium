@@ -23,6 +23,10 @@ base::WeakPtr<GestureConsumer> GestureConsumer::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
+std::unique_ptr<GestureProviderAura> GestureConsumer::TakeProvider() {
+  return std::move(provider_);
+}
+
 void GestureConsumer::reset_gesture_provider() {
   provider_.reset();
 }

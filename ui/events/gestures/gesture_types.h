@@ -47,9 +47,7 @@ class EVENTS_EXPORT GestureConsumer {
 
   base::WeakPtr<GestureConsumer> GetWeakPtr();
 
-  std::unique_ptr<GestureProviderAura> TakeProvider() {
-    return std::move(provider_);
-  }
+  std::unique_ptr<GestureProviderAura> TakeProvider();
   void reset_gesture_provider();
   void set_gesture_provider(std::unique_ptr<GestureProviderAura> provider);
   GestureProviderAura* provider() const { return provider_.get(); }
