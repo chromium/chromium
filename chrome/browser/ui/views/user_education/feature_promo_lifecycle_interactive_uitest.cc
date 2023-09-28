@@ -17,7 +17,6 @@
 #include "chrome/browser/ui/views/user_education/browser_feature_promo_controller.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/feature_engagement/test/mock_tracker.h"
@@ -29,6 +28,7 @@
 #include "components/user_education/common/feature_promo_storage_service.h"
 #include "components/user_education/views/help_bubble_factory_views.h"
 #include "components/user_education/views/help_bubble_view.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -438,8 +438,8 @@ class FeaturePromoLifecycleAppUiTest : public FeaturePromoLifecycleUiTest {
   }
 
  protected:
-  web_app::AppId app1_id_;
-  web_app::AppId app2_id_;
+  webapps::AppId app1_id_;
+  webapps::AppId app2_id_;
 
  private:
   SpecList CreatePromos() override {

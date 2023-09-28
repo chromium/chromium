@@ -696,7 +696,7 @@ class DetachToBrowserTabDragControllerTest
   raw_ptr<aura::Window, DanglingUntriaged | ExperimentalAsh> root_ = nullptr;
 #endif
   base::test::ScopedFeatureList scoped_feature_list_;
-  absl::optional<web_app::AppId> tabbed_app_id_;
+  absl::optional<webapps::AppId> tabbed_app_id_;
 };
 
 // Creates a browser with four tabs. The first three belong in the same Tab
@@ -2892,7 +2892,7 @@ class DetachToBrowserTabDragControllerTestWithTabbedWebApp
         {blink::features::kDesktopPWAsTabStrip}, {});
   }
 
-  web_app::AppId InstallMockApp(bool add_home_tab) {
+  webapps::AppId InstallMockApp(bool add_home_tab) {
     auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
     web_app_info->start_url = GURL("https://www.example.com");
     web_app_info->title = u"A tabbed web app";
@@ -2923,7 +2923,7 @@ class DetachToBrowserTabDragControllerTestWithTabbedWebApp
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithTabbedWebApp,
                        MAYBE_HomeTabAddedToEveryWindow) {
   // Install tabbed web app.
-  web_app::AppId app_id = InstallMockApp(/*add_home_tab=*/true);
+  webapps::AppId app_id = InstallMockApp(/*add_home_tab=*/true);
   Browser* app_browser =
       web_app::LaunchWebAppBrowser(browser()->profile(), app_id);
   ASSERT_EQ(2u, browser_list->size());
@@ -2981,7 +2981,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithTabbedWebApp,
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithTabbedWebApp,
                        MAYBE_CantDragHomeTab) {
   // Install tabbed web app.
-  web_app::AppId app_id = InstallMockApp(/*add_home_tab=*/true);
+  webapps::AppId app_id = InstallMockApp(/*add_home_tab=*/true);
   Browser* app_browser =
       web_app::LaunchWebAppBrowser(browser()->profile(), app_id);
   ASSERT_EQ(2u, browser_list->size());
@@ -3025,7 +3025,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithTabbedWebApp,
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithTabbedWebApp,
                        MAYBE_NoHomeTab) {
   // Install tabbed web app.
-  web_app::AppId app_id = InstallMockApp(/*add_home_tab=*/false);
+  webapps::AppId app_id = InstallMockApp(/*add_home_tab=*/false);
   Browser* app_browser =
       web_app::LaunchWebAppBrowser(browser()->profile(), app_id);
   ASSERT_EQ(2u, browser_list->size());
@@ -3785,12 +3785,12 @@ class DetachToBrowserTabDragControllerTestWithTabbedSystemApp
       : test_system_web_app_installation_(
             ash::TestSystemWebAppInstallation::SetUpTabbedMultiWindowApp()) {}
 
-  web_app::AppId InstallMockApp() {
+  webapps::AppId InstallMockApp() {
     test_system_web_app_installation_->WaitForAppInstall();
     return test_system_web_app_installation_->GetAppId();
   }
 
-  Browser* LaunchWebAppBrowser(web_app::AppId app_id) {
+  Browser* LaunchWebAppBrowser(webapps::AppId app_id) {
     return web_app::LaunchWebAppBrowser(browser()->profile(), app_id);
   }
 
@@ -3807,7 +3807,7 @@ class DetachToBrowserTabDragControllerTestWithTabbedSystemApp
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithTabbedSystemApp,
                        DragAppToOwnWindow) {
   // Install and get a tabbed system app.
-  web_app::AppId tabbed_app_id = InstallMockApp();
+  webapps::AppId tabbed_app_id = InstallMockApp();
   Browser* app_browser = LaunchWebAppBrowser(tabbed_app_id);
   ASSERT_EQ(2u, browser_list->size());
 
@@ -3836,7 +3836,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithTabbedSystemApp,
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithTabbedSystemApp,
                        DragAppToAppWindow) {
   // Install and get 2 browsers with tabbed system app.
-  web_app::AppId tabbed_app_id = InstallMockApp();
+  webapps::AppId tabbed_app_id = InstallMockApp();
   Browser* app_browser1 = LaunchWebAppBrowser(tabbed_app_id);
   Browser* app_browser2 = LaunchWebAppBrowser(tabbed_app_id);
   ASSERT_EQ(3u, browser_list->size());
