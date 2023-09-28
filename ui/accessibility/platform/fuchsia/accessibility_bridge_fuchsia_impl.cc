@@ -71,10 +71,6 @@ AccessibilityBridgeFuchsiaImpl::~AccessibilityBridgeFuchsiaImpl() {
   DCHECK(registry);
   if (root_window_)
     registry->UnregisterAccessibilityBridge(root_window_);
-
-  for (auto& it : pending_hit_test_completers_) {
-    std::move(it.second).Run(fuchsia_accessibility_semantics::Hit());
-  }
 }
 
 uint32_t AccessibilityBridgeFuchsiaImpl::MaybeToFuchsiaRootID(
