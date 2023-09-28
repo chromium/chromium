@@ -74,7 +74,7 @@ struct PartitionBucket {
   // Note the matching Free() functions are in SlotSpanMetadata.
   PA_NOINLINE PA_COMPONENT_EXPORT(PARTITION_ALLOC) uintptr_t
       SlowPathAlloc(PartitionRoot* root,
-                    unsigned int flags,
+                    AllocFlags flags,
                     size_t raw_size,
                     size_t slot_span_alignment,
                     bool* is_already_zeroed)
@@ -166,7 +166,7 @@ struct PartitionBucket {
   // compilation unit.
   uintptr_t AllocNewSuperPageSpanForGwpAsan(PartitionRoot* root,
                                             size_t super_page_count,
-                                            unsigned int flags)
+                                            AllocFlags flags)
       PA_EXCLUSIVE_LOCKS_REQUIRED(PartitionRootLock(root));
   void InitializeSlotSpanForGwpAsan(SlotSpanMetadata* slot_span);
 
@@ -175,14 +175,14 @@ struct PartitionBucket {
   // super page.
   PA_ALWAYS_INLINE uintptr_t AllocNewSuperPageSpan(PartitionRoot* root,
                                                    size_t super_page_count,
-                                                   unsigned int flags)
+                                                   AllocFlags flags)
       PA_EXCLUSIVE_LOCKS_REQUIRED(PartitionRootLock(root));
   // Allocates a new slot span with size |num_partition_pages| from the
   // current extent. Metadata within this slot span will be initialized.
   // Returns nullptr on error.
   PA_ALWAYS_INLINE SlotSpanMetadata* AllocNewSlotSpan(
       PartitionRoot* root,
-      unsigned int flags,
+      AllocFlags flags,
       size_t slot_span_alignment)
       PA_EXCLUSIVE_LOCKS_REQUIRED(PartitionRootLock(root));
 
@@ -190,7 +190,7 @@ struct PartitionBucket {
   // slot-spans will be in the decommitted state. Returns the address of the
   // super page's payload, or 0 on error.
   PA_ALWAYS_INLINE uintptr_t AllocNewSuperPage(PartitionRoot* root,
-                                               unsigned int flags)
+                                               AllocFlags flags)
       PA_EXCLUSIVE_LOCKS_REQUIRED(PartitionRootLock(root));
 
   // Each bucket allocates a slot span when it runs out of slots.

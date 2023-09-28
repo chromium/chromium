@@ -1687,14 +1687,18 @@ void PartitionRoot::SetSortActiveSlotSpansEnabled(bool new_value) {
 // Explicitly define common template instantiations to reduce compile time.
 #define EXPORT_TEMPLATE \
   template PA_EXPORT_TEMPLATE_DEFINE(PA_COMPONENT_EXPORT(PARTITION_ALLOC))
-EXPORT_TEMPLATE void* PartitionRoot::Alloc<0>(size_t, const char*);
+EXPORT_TEMPLATE void* PartitionRoot::Alloc<AllocFlags::kNone>(size_t,
+                                                              const char*);
 EXPORT_TEMPLATE void* PartitionRoot::Alloc<AllocFlags::kReturnNull>(
     size_t,
     const char*);
-EXPORT_TEMPLATE void* PartitionRoot::Realloc<0>(void*, size_t, const char*);
+EXPORT_TEMPLATE void* PartitionRoot::Realloc<AllocFlags::kNone>(void*,
+                                                                size_t,
+                                                                const char*);
 EXPORT_TEMPLATE void*
 PartitionRoot::Realloc<AllocFlags::kReturnNull>(void*, size_t, const char*);
-EXPORT_TEMPLATE void* PartitionRoot::AlignedAlloc<0>(size_t, size_t);
+EXPORT_TEMPLATE void* PartitionRoot::AlignedAlloc<AllocFlags::kNone>(size_t,
+                                                                     size_t);
 #undef EXPORT_TEMPLATE
 
 static_assert(offsetof(PartitionRoot, sentinel_bucket) ==

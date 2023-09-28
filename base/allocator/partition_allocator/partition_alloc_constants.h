@@ -11,6 +11,7 @@
 #include <limits>
 
 #include "base/allocator/partition_allocator/address_pool_manager_types.h"
+#include "base/allocator/partition_allocator/flags.h"
 #include "base/allocator/partition_allocator/page_allocator_constants.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
@@ -28,39 +29,45 @@
 
 namespace partition_alloc {
 
+namespace internal {
 // Bit flag constants used as `flag` argument of PartitionRoot::Alloc<flags>,
 // AlignedAlloc, etc.
-struct AllocFlags {
-  static constexpr unsigned int kReturnNull = 1 << 0;
-  static constexpr unsigned int kZeroFill = 1 << 1;
+enum class AllocFlags {
+  kNone = 0,
+  kReturnNull = 1 << 0,
+  kZeroFill = 1 << 1,
   // Don't allow allocation override hooks. Override hooks are expected to
   // check for the presence of this flag and return false if it is active.
-  static constexpr unsigned int kNoOverrideHooks = 1 << 2;
+  kNoOverrideHooks = 1 << 2,
   // Never let a memory tool like ASan (if active) perform the allocation.
-  static constexpr unsigned int kNoMemoryToolOverride = 1 << 3;
+  kNoMemoryToolOverride = 1 << 3,
   // Don't allow any hooks (override or observers).
-  static constexpr unsigned int kNoHooks = 1 << 4;  // Internal.
+  kNoHooks = 1 << 4,  // Internal.
   // If the allocation requires a "slow path" (such as allocating/committing a
   // new slot span), return nullptr instead. Note this makes all large
   // allocations return nullptr, such as direct-mapped ones, and even for
   // smaller ones, a nullptr value is common.
-  static constexpr unsigned int kFastPathOrReturnNull = 1 << 5;  // Internal.
+  kFastPathOrReturnNull = 1 << 5,  // Internal.
   // An allocation override hook should tag the allocated memory for MTE.
-  static constexpr unsigned int kMemoryShouldBeTaggedForMte =
-      1 << 6;  // Internal.
-
-  static constexpr unsigned int kLastFlag = kMemoryShouldBeTaggedForMte;
+  kMemoryShouldBeTaggedForMte = 1 << 6,  // Internal.
+  kMaxValue = kMemoryShouldBeTaggedForMte,
 };
+PA_DEFINE_OPERATORS_FOR_FLAGS(AllocFlags);
 
 // Bit flag constants used as `flag` argument of PartitionRoot::Free<flags>.
-struct FreeFlags {
+enum class FreeFlags {
+  kNone = 0,
   // See AllocFlags::kNoMemoryToolOverride.
-  static constexpr unsigned int kNoMemoryToolOverride = 1 << 0;
+  kNoMemoryToolOverride = 1 << 0,
   // Don't allow any hooks (override or observers).
-  static constexpr unsigned int kNoHooks = 1 << 1;  // Internal.
-
-  static constexpr unsigned int kLastFlag = kNoHooks;
+  kNoHooks = 1 << 1,  // Internal.
+  kMaxValue = kNoHooks,
 };
+PA_DEFINE_OPERATORS_FOR_FLAGS(FreeFlags);
+}  // namespace internal
+
+using internal::AllocFlags;
+using internal::FreeFlags;
 
 namespace internal {
 

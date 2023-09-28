@@ -29,7 +29,7 @@ class ArrayBufferAllocator : public v8::ArrayBuffer::Allocator {
  private:
   friend class V8Initializer;
 
-  template <unsigned int flags>
+  template <partition_alloc::AllocFlags flags>
   void* AllocateInternal(size_t length);
 
   // Initialize the PartitionAlloc partition from which instances of this class

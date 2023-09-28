@@ -86,14 +86,14 @@ constexpr bool ShouldUsePartitionAlloc(MemorySafetyCheck checks) {
 }
 
 // Returns |partition_alloc::AllocFlags| corresponding to |checks|.
-constexpr unsigned int GetAllocFlags(MemorySafetyCheck checks) {
+constexpr partition_alloc::AllocFlags GetAllocFlags(MemorySafetyCheck checks) {
   return partition_alloc::AllocFlags::kReturnNull |
          partition_alloc::AllocFlags::kNoHooks;
 }
 
 // Returns |partition_alloc::FreeFlags| corresponding to |checks|.
-constexpr unsigned int GetFreeFlags(MemorySafetyCheck checks) {
-  return 0;
+constexpr partition_alloc::FreeFlags GetFreeFlags(MemorySafetyCheck checks) {
+  return partition_alloc::FreeFlags::kNone;
 }
 
 }  // namespace

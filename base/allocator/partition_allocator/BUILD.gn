@@ -134,6 +134,7 @@ source_set("allocator_core") {
     "compressed_pointer.h",
     "dangling_raw_ptr_checks.cc",
     "dangling_raw_ptr_checks.h",
+    "flags.h",
     "freeslot_bitmap.h",
     "freeslot_bitmap_constants.h",
     "gwp_asan_support.cc",

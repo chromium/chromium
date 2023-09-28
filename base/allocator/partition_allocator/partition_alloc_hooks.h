@@ -10,6 +10,7 @@
 
 #include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
+#include "base/allocator/partition_allocator/partition_alloc_constants.h"
 
 namespace partition_alloc {
 
@@ -28,7 +29,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAllocHooks {
   // If it returns true, the allocation has been overridden with the pointer in
   // *out.
   typedef bool AllocationOverrideHook(void** out,
-                                      unsigned int flags,
+                                      AllocFlags flags,
                                       size_t size,
                                       const char* type_name);
   // If it returns true, then the allocation was overridden and has been freed.
@@ -60,7 +61,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAllocHooks {
   static void AllocationObserverHookIfEnabled(
       const partition_alloc::AllocationNotificationData& notification_data);
   static bool AllocationOverrideHookIfEnabled(void** out,
-                                              unsigned int flags,
+                                              AllocFlags flags,
                                               size_t size,
                                               const char* type_name);
 

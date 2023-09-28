@@ -152,7 +152,7 @@ void ArrayBufferContents::CopyTo(ArrayBufferContents& other) {
   std::memcpy(other.Data(), Data(), DataLength());
 }
 
-template <unsigned int flags>
+template <partition_alloc::AllocFlags flags>
 void* ArrayBufferContents::AllocateMemory(size_t size,
                                           InitializationPolicy policy) {
   // The array buffer contents are sometimes expected to be 16-byte aligned in
