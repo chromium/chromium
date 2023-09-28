@@ -12,11 +12,15 @@ __input_deps = {
     "tools/typescript/definitions/tabs.d.ts": [
         "tools/typescript/definitions/chrome_event.d.ts",
     ],
-    "./gen/chrome/browser/resources/inline_login/preprocessed/inline_login_app.ts": [
+    "chrome/browser/resources/inline_login/inline_login_app.ts": [
         "chrome/browser/resources/chromeos/arc_account_picker/arc_account_picker_app.d.ts",
+        "chrome/browser/resources/chromeos/arc_account_picker/arc_account_picker_browser_proxy.d.ts",
         "chrome/browser/resources/chromeos/arc_account_picker/arc_util.d.ts",
         "chrome/browser/resources/gaia_auth_host/authenticator.d.ts",
         "chrome/browser/resources/gaia_auth_host/saml_password_attributes.d.ts",
+    ],
+    "chrome/test/data/webui/inline_login/arc_account_picker_page_test.ts": [
+        "chrome/test/data/webui/chromeos/arc_account_picker/test_util.d.ts",
     ],
     "third_party/polymer/v3_0/components-chromium/polymer/polymer.d.ts": [
         "third_party/polymer/v3_0/components-chromium/iron-dropdown/iron-dropdown.d.ts",

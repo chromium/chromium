@@ -54,6 +54,10 @@ def __disable_remote_b289968566(ctx, step_config):
             "./obj/chrome/test/unit_tests/chrome_browsing_data_remover_delegate_unittest.o",
             "./obj/fuchsia_web/runners/cast_runner_integration_tests__exec/cast_runner_integration_test.o",
             "./obj/fuchsia_web/webengine/web_engine_core/frame_impl.o",
+            "./ash_clang_x64/obj/chrome/browser/ash/ash/autotest_private_api.o",
+            "./ash_clang_x64/obj/chrome/browser/ash/ash/chrome_browser_main_parts_ash.o",
+            "./ash_clang_x64/obj/chrome/browser/browser/browser_prefs.o",
+            "./ash_clang_x64/obj/chrome/browser/browser/chrome_browser_interface_binders.o",
         ],
         "remote": False,
     }
