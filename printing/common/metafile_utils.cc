@@ -4,21 +4,28 @@
 
 #include "printing/common/metafile_utils.h"
 
+#include "base/check.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "printing/buildflags/buildflags.h"
+#include "third_party/skia/include/codec/SkPngDecoder.h"
 #include "third_party/skia/include/core/SkCanvas.h"
+#include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkPicture.h"
 #include "third_party/skia/include/core/SkPictureRecorder.h"
 #include "third_party/skia/include/core/SkStream.h"
 #include "third_party/skia/include/core/SkString.h"
 #include "third_party/skia/include/core/SkTypeface.h"
 #include "third_party/skia/include/docs/SkPDFDocument.h"
+#include "third_party/skia/include/encode/SkPngEncoder.h"
+#include "third_party/skia/include/private/chromium/SkImageChromium.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/ax_tree.h"
 #include "ui/accessibility/ax_tree_update.h"
+
+#include <variant>
 
 namespace {
 
@@ -315,9 +322,32 @@ sk_sp<SkTypeface> DeserializeOopTypeface(const void* data,
   return typeface;
 }
 
+sk_sp<SkData> SerializeRasterImage(SkImage* img, void*) {
+  if (!img) {
+    return nullptr;
+  }
+  // TODO(crbug.com/1486503)
+  DUMP_WILL_BE_CHECK(!img->isTextureBacked());
+  if (img->isTextureBacked()) {
+    GrDirectContext* ctx = SkImages::GetContext(img);
+    return SkPngEncoder::Encode(ctx, img, SkPngEncoder::Options{});
+  }
+  return SkPngEncoder::Encode(nullptr, img, SkPngEncoder::Options{});
+}
+
+sk_sp<SkImage> DeserializeRasterImage(const void* bytes, size_t length, void*) {
+  auto data = SkData::MakeWithoutCopy(bytes, length);
+  auto codec = SkPngDecoder::Decode(data, nullptr);
+  if (codec) {
+    return std::get<0>(codec->getImage());
+  }
+  return nullptr;
+}
+
 SkSerialProcs SerializationProcs(PictureSerializationContext* picture_ctx,
                                  TypefaceSerializationContext* typeface_ctx) {
   SkSerialProcs procs;
+  procs.fImageProc = SerializeRasterImage;
   procs.fPictureProc = SerializeOopPicture;
   procs.fPictureCtx = picture_ctx;
   procs.fTypefaceProc = SerializeOopTypeface;
@@ -329,6 +359,7 @@ SkDeserialProcs DeserializationProcs(
     PictureDeserializationContext* picture_ctx,
     TypefaceDeserializationContext* typeface_ctx) {
   SkDeserialProcs procs;
+  procs.fImageProc = DeserializeRasterImage;
   procs.fPictureProc = DeserializeOopPicture;
   procs.fPictureCtx = picture_ctx;
   procs.fTypefaceProc = DeserializeOopTypeface;
