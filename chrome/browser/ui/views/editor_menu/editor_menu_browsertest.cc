@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ui/views/editor_menu/editor_menu_controller_impl.h"
 
+#include <string_view>
+
+#include "base/check.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/quick_answers/read_write_cards_manager_impl.h"
@@ -13,16 +16,32 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/crosapi/mojom/editor_panel.mojom.h"
 #include "content/public/test/browser_test.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/screen.h"
 #include "ui/events/event_constants.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
 
 namespace {
 
+using ::testing::ElementsAre;
 using ::testing::IsNull;
 using ::testing::Not;
+using ::testing::Property;
+using ::testing::SizeIs;
+
+crosapi::mojom::EditorPanelPresetTextQueryPtr CreateTestPresetTextQuery(
+    const std::string& text_query_id,
+    const std::string& name,
+    crosapi::mojom::EditorPanelPresetQueryCategory category) {
+  auto query = crosapi::mojom::EditorPanelPresetTextQuery::New();
+  query->text_query_id = text_query_id;
+  query->name = name;
+  query->category = category;
+  return query;
+}
 
 crosapi::mojom::EditorPanelContextPtr CreateTestEditorPanelContext(
     crosapi::mojom::EditorPanelMode editor_panel_mode) {
@@ -32,11 +51,35 @@ crosapi::mojom::EditorPanelContextPtr CreateTestEditorPanelContext(
   return context;
 }
 
+crosapi::mojom::EditorPanelContextPtr
+CreateTestEditorPanelContextWithQueries() {
+  auto context =
+      CreateTestEditorPanelContext(crosapi::mojom::EditorPanelMode::kRewrite);
+  context->preset_text_queries.push_back(CreateTestPresetTextQuery(
+      "ID1", "Rephrase",
+      crosapi::mojom::EditorPanelPresetQueryCategory::kRephrase));
+  context->preset_text_queries.push_back(CreateTestPresetTextQuery(
+      "ID2", "Emojify",
+      crosapi::mojom::EditorPanelPresetQueryCategory::kEmojify));
+  context->preset_text_queries.push_back(CreateTestPresetTextQuery(
+      "ID3", "Shorten",
+      crosapi::mojom::EditorPanelPresetQueryCategory::kShorten));
+  context->preset_text_queries.push_back(CreateTestPresetTextQuery(
+      "ID4", "Elaborate",
+      crosapi::mojom::EditorPanelPresetQueryCategory::kElaborate));
+  context->preset_text_queries.push_back(CreateTestPresetTextQuery(
+      "ID5", "Formalize",
+      crosapi::mojom::EditorPanelPresetQueryCategory::kFormalize));
+  return context;
+}
+
+auto ChildrenSizeIs(int n) {
+  return Property(&views::View::children, SizeIs(n));
+}
+
 constexpr int kMarginDip = 8;
-constexpr gfx::Rect kAnchorBounds =
-    gfx::Rect(gfx::Point(500, 250), gfx::Size(80, 160));
-constexpr gfx::Rect kAnchorBoundsTop =
-    gfx::Rect(gfx::Point(500, 0), gfx::Size(80, 160));
+constexpr gfx::Rect kAnchorBounds(500, 300, 80, 160);
+constexpr gfx::Rect kAnchorBoundsTop(500, 10, 80, 160);
 
 }  // namespace
 
@@ -110,6 +153,38 @@ IN_PROC_BROWSER_TEST_F(EditorMenuBrowserFeatureEnabledTest, CanShowEditorMenu) {
   EXPECT_TRUE(views::IsViewClass<EditorMenuView>(GetEditorMenuView()));
 
   GetEditorMenuView()->GetWidget()->Close();
+}
+
+IN_PROC_BROWSER_TEST_F(EditorMenuBrowserFeatureEnabledTest,
+                       ShowsRewriteUIWithChips) {
+  ASSERT_THAT(GetControllerImpl(), Not(IsNull()));
+
+  GetControllerImpl()->OnGetEditorPanelContextResultForTesting(
+      gfx::Rect(200, 300, 400, 200), CreateTestEditorPanelContextWithQueries());
+
+  // Editor menu should be showing with two rows of chips.
+  ASSERT_TRUE(views::IsViewClass<EditorMenuView>(GetEditorMenuView()));
+  const auto* chips_container =
+      views::AsViewClass<EditorMenuView>(GetEditorMenuView())
+          ->chips_container_for_testing();
+  EXPECT_THAT(chips_container->children(),
+              ElementsAre(ChildrenSizeIs(3), ChildrenSizeIs(2)));
+}
+
+IN_PROC_BROWSER_TEST_F(EditorMenuBrowserFeatureEnabledTest,
+                       ShowsWideRewriteUIWithChips) {
+  ASSERT_THAT(GetControllerImpl(), Not(IsNull()));
+
+  // Show editor menu with a wide anchor.
+  GetControllerImpl()->OnGetEditorPanelContextResultForTesting(
+      gfx::Rect(200, 300, 600, 200), CreateTestEditorPanelContextWithQueries());
+
+  // Editor menu should be wide enough to fit all chips in one row.
+  ASSERT_TRUE(views::IsViewClass<EditorMenuView>(GetEditorMenuView()));
+  const auto* chips_container =
+      views::AsViewClass<EditorMenuView>(GetEditorMenuView())
+          ->chips_container_for_testing();
+  EXPECT_THAT(chips_container->children(), ElementsAre(ChildrenSizeIs(5)));
 }
 
 IN_PROC_BROWSER_TEST_F(EditorMenuBrowserFeatureEnabledTest, CanShowPromoCard) {
