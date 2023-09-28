@@ -19,14 +19,14 @@ var testEvent;
 
 function handleToggleEventFromHTMLAttribute(ev) {
     testEvent = ev;
-    shouldBe("testEvent.__proto__", "Event.prototype");
+    shouldBe("testEvent.__proto__", "ToggleEvent.prototype");
     shouldBeEqualToString("testEvent.type", "toggle");
     ++toggleEventCountFromHTMLAttribute;
 }
 
 function handleToggleEvent(ev) {
     testEvent = ev;
-    shouldBe("testEvent.__proto__", "Event.prototype");
+    shouldBe("testEvent.__proto__", "ToggleEvent.prototype");
     shouldBeEqualToString("testEvent.type", "toggle");
     ++toggleEventCount;
 }

@@ -1302,6 +1302,14 @@
       status: "test",
     },
     {
+      // This flag makes the details element's toggle events use the
+      // ToggleEvent class instead of being a regular Event.
+      // http://crbug.com/1416738
+      // https://github.com/whatwg/html/pull/8893
+      name: "DetailsElementToggleEvent",
+      status: "stable",
+    },
+    {
       name: "DetailsStyling",
       status: "experimental",
     },

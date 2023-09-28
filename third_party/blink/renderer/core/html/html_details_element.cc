@@ -57,9 +57,19 @@ HTMLDetailsElement::~HTMLDetailsElement() = default;
 
 void HTMLDetailsElement::DispatchPendingEvent(
     const AttributeModificationReason reason) {
+  Event* toggle_event = nullptr;
+  if (RuntimeEnabledFeatures::DetailsElementToggleEventEnabled()) {
+    CHECK(pending_toggle_event_);
+    toggle_event = pending_toggle_event_.Get();
+    pending_toggle_event_ = nullptr;
+  } else {
+    CHECK(!pending_toggle_event_);
+    toggle_event = Event::Create(event_type_names::kToggle);
+  }
+
   if (reason == AttributeModificationReason::kByParser)
     GetDocument().SetToggleDuringParsing(true);
-  DispatchEvent(*Event::Create(event_type_names::kToggle));
+  DispatchEvent(*toggle_event);
   if (reason == AttributeModificationReason::kByParser)
     GetDocument().SetToggleDuringParsing(false);
 }
@@ -159,6 +169,7 @@ void HTMLDetailsElement::ManuallyAssignSlots() {
 }
 
 void HTMLDetailsElement::Trace(Visitor* visitor) const {
+  visitor->Trace(pending_toggle_event_);
   visitor->Trace(summary_slot_);
   visitor->Trace(content_slot_);
   HTMLElement::Trace(visitor);
@@ -180,7 +191,17 @@ void HTMLDetailsElement::ParseAttribute(
       return;
 
     // Dispatch toggle event asynchronously.
-    pending_event_ = PostCancellableTask(
+    if (RuntimeEnabledFeatures::DetailsElementToggleEventEnabled()) {
+      String old_state = is_open_ ? "closed" : "open";
+      String new_state = is_open_ ? "open" : "closed";
+      if (pending_toggle_event_) {
+        old_state = pending_toggle_event_->oldState();
+      }
+      pending_toggle_event_ =
+          ToggleEvent::Create(event_type_names::kToggle, Event::Cancelable::kNo,
+                              old_state, new_state);
+    }
+    pending_event_task_ = PostCancellableTask(
         *GetDocument().GetTaskRunner(TaskType::kDOMManipulation), FROM_HERE,
         WTF::BindOnce(&HTMLDetailsElement::DispatchPendingEvent,
                       WrapPersistent(this), params.reason));

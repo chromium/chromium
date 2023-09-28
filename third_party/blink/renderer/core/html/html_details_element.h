@@ -21,6 +21,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_HTML_DETAILS_ELEMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_HTML_DETAILS_ELEMENT_H_
 
+#include "third_party/blink/renderer/core/events/toggle_event.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cancellable_task.h"
 
@@ -68,7 +69,8 @@ class HTMLDetailsElement final : public HTMLElement {
   bool IsInteractiveContent() const override;
 
   bool is_open_ = false;
-  TaskHandle pending_event_;
+  TaskHandle pending_event_task_;
+  Member<ToggleEvent> pending_toggle_event_;
   Member<HTMLSlotElement> summary_slot_;
   Member<HTMLSlotElement> content_slot_;
 };
