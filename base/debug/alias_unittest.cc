@@ -11,13 +11,16 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 TEST(DebugAlias, Test) {
-  const char kTestString[] = "string contents";
+  constexpr char kTestString[] = "string contents";
+  constexpr auto kTestStringLength = std::string_view(kTestString).size();
   std::unique_ptr<std::string> input =
-      std::make_unique<std::string>("string contents");
+      std::make_unique<std::string>(kTestString);
 
-  // Verify the contents get copied + the new local variable has the right type.
-  DEBUG_ALIAS_FOR_CSTR(copy1, input->c_str(), 100 /* > input->size() */);
-  static_assert(std::is_same_v<decltype(copy1), char[100]>);
+  // Verify the contents get copied + the new local variable has the right type
+  // when the array size given is exactly `input->size() + 1`.
+  DEBUG_ALIAS_FOR_CSTR(copy1, input->c_str(),
+                       kTestStringLength + 1 /* == input->size() + 1 */);
+  static_assert(std::is_same_v<decltype(copy1), char[kTestStringLength + 1]>);
   EXPECT_TRUE(
       std::equal(std::begin(kTestString), std::end(kTestString), copy1));
 
@@ -26,16 +29,35 @@ TEST(DebugAlias, Test) {
   DEBUG_ALIAS_FOR_CSTR(copy2, input->c_str(), 3 /* < input->size() */);
   static_assert(std::is_same_v<decltype(copy2), char[3]>);
   EXPECT_TRUE(std::equal(std::begin(copy2), std::end(copy2), "st"));
+
+  // Verify that the copy is properly null-terminated even when it is larger
+  // than the input string.
+  DEBUG_ALIAS_FOR_CSTR(copy3, input->c_str(), 100 /* > input->size() + 1 */);
+  static_assert(std::is_same_v<decltype(copy3), char[100]>);
+  EXPECT_TRUE(
+      std::equal(std::begin(kTestString), std::end(kTestString), copy3));
 }
 
 TEST(DebugAlias, U16String) {
-  const char16_t kTestString[] = u"H͟e͟l͟l͟o͟ ͟w͟o͟r͟l͟d͟!͟";
+  constexpr char16_t kTestString[] = u"H͟e͟l͟l͟o͟ ͟w͟o͟r͟l͟d͟!͟";
+  constexpr auto kTestStringLength = std::u16string_view(kTestString).size();
   std::u16string input = kTestString;
 
-  DEBUG_ALIAS_FOR_U16CSTR(aliased_copy, input.c_str(), 100);
-  static_assert(std::is_same_v<decltype(aliased_copy), char16_t[100]>);
+  // Verify the contents get copied + the new local variable has the right type
+  // when the array size given is exactly `input->size() + 1`.
+  DEBUG_ALIAS_FOR_U16CSTR(aliased_copy, input.c_str(), kTestStringLength + 1);
+  static_assert(
+      std::is_same_v<decltype(aliased_copy), char16_t[kTestStringLength + 1]>);
   EXPECT_TRUE(
       std::equal(std::begin(kTestString), std::end(kTestString), aliased_copy));
+
+  // Verify that the copy is properly null-terminated even when it is larger
+  // than the input string.
+  DEBUG_ALIAS_FOR_U16CSTR(aliased_copy2, input.c_str(), kTestStringLength + 1);
+  static_assert(
+      std::is_same_v<decltype(aliased_copy2), char16_t[kTestStringLength + 1]>);
+  EXPECT_TRUE(std::equal(std::begin(kTestString), std::end(kTestString),
+                         aliased_copy2));
 }
 
 TEST(DebugAlias, U16StringPartialCopy) {

@@ -85,21 +85,21 @@ BASE_EXPORT size_t wcslcpy(wchar_t* dst, const wchar_t* src, size_t dst_size);
 
 }  // namespace base
 
-// Convenience macro that copies the null-terminated string from |c_str| into a
-// stack-allocated char array named |var_name| that holds up to |char_count|
+// Convenience macro that copies the null-terminated string from `c_str` into a
+// stack-allocated char array named `var_name` that holds up to `array_size - 1`
 // characters and should be preserved in memory dumps.
-#define DEBUG_ALIAS_FOR_CSTR(var_name, c_str, char_count) \
-  char var_name[char_count];                              \
-  ::base::strlcpy(var_name, (c_str), sizeof(var_name));   \
+#define DEBUG_ALIAS_FOR_CSTR(var_name, c_str, array_size)  \
+  char var_name[array_size] = {};                          \
+  ::base::strlcpy(var_name, (c_str), std::size(var_name)); \
   ::base::debug::Alias(var_name)
 
-#define DEBUG_ALIAS_FOR_U16CSTR(var_name, c_str, char_count)   \
-  char16_t var_name[char_count];                               \
+#define DEBUG_ALIAS_FOR_U16CSTR(var_name, c_str, array_size)   \
+  char16_t var_name[array_size] = {};                          \
   ::base::u16cstrlcpy(var_name, (c_str), std::size(var_name)); \
   ::base::debug::Alias(var_name)
 
-#define DEBUG_ALIAS_FOR_WCHARCSTR(var_name, c_str, char_count) \
-  wchar_t var_name[char_count];                                \
+#define DEBUG_ALIAS_FOR_WCHARCSTR(var_name, c_str, array_size) \
+  wchar_t var_name[array_size] = {};                           \
   ::base::wcslcpy(var_name, (c_str), std::size(var_name));     \
   ::base::debug::Alias(var_name)
 
