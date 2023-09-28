@@ -265,7 +265,6 @@ class COMPONENT_EXPORT(ACTIONS) ActionManager
   // ActionId if found, otherwise returns kActionsEnd.
   static absl::optional<ActionId> StringToActionId(
       const std::string action_id_string);
-
   static std::vector<absl::optional<std::string>> ActionIdsToStrings(
       std::vector<ActionId> action_ids);
   static std::vector<absl::optional<ActionId>> StringsToActionIds(
@@ -275,6 +274,11 @@ class COMPONENT_EXPORT(ACTIONS) ActionManager
       base::flat_map<ActionId, std::string_view> map);
   static void AddStringToActionIdMappings(
       base::flat_map<std::string_view, ActionId> map);
+
+  // The second element in the pair is set to true if a new ActionId is
+  // created, or false if an ActionId with the given name already exists.
+  static std::pair<ActionId, bool> CreateActionId(
+      const std::string& action_name);
 
   void IndexActions();
   ActionItem* FindAction(std::u16string term, ActionItem* scope = nullptr);

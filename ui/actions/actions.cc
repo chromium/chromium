@@ -5,6 +5,7 @@
 #include "ui/actions/actions.h"
 
 #include <algorithm>
+#include <limits>
 
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
@@ -605,6 +606,23 @@ void ActionManager::AddActionIdToStringMappings(
 void ActionManager::AddStringToActionIdMappings(
     base::flat_map<std::string_view, ActionId> map) {
   MergeMaps(GetStringToActionIdMap(), map);
+}
+
+// static
+std::pair<ActionId, bool> ActionManager::CreateActionId(
+    const std::string& action_name) {
+  static ActionId new_action_id = std::numeric_limits<ActionId>::max();
+
+  auto action_id = StringToActionId(action_name);
+
+  if (action_id.has_value()) {
+    return {action_id.value(), false};
+  }
+
+  GetActionIdToStringMap()[new_action_id] = action_name;
+  GetStringToActionIdMap()[action_name] = new_action_id;
+
+  return {new_action_id--, true};
 }
 
 void ActionManager::IndexActions() {

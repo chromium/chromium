@@ -163,6 +163,26 @@ TEST_F(ActionItemTest, ScopedFindActionTest) {
   EXPECT_FALSE(action_test3);
 }
 
+TEST_F(ActionManagerTest, TestCreateActionId) {
+  const std::string new_action_id_1 = "kNewActionId1";
+  const std::string new_action_id_2 = "kNewActionId2";
+  const std::string existing_action_id = "kActionPaste";
+
+  auto result_1 = ActionManager::CreateActionId(new_action_id_1);
+  EXPECT_TRUE(result_1.second);
+
+  auto result_2 = ActionManager::CreateActionId(new_action_id_2);
+  EXPECT_TRUE(result_2.second);
+  EXPECT_NE(result_1.first, result_2.first);
+
+  auto result_2_dupe = ActionManager::CreateActionId(new_action_id_2);
+  EXPECT_FALSE(result_2_dupe.second);
+  EXPECT_EQ(result_2.first, result_2_dupe.first);
+
+  auto result_existing = ActionManager::CreateActionId(existing_action_id);
+  EXPECT_FALSE(result_existing.second);
+}
+
 TEST_F(ActionManagerTest, MapBetweenEnumAndString) {
   const std::string expected_action_string = "kActionPaste";
   auto actual_action_string = ActionManager::ActionIdToString(kActionPaste);
@@ -209,6 +229,9 @@ TEST_F(ActionManagerTest, MergeMaps) {
   EXPECT_EQ(expected_string, actual_string.value());
 }
 
+#include "ui/actions/action_id_macros.inc"
+#undef MAP_ACTION_IDS_TO_STRINGS
+
 TEST_F(ActionManagerTest, TestEnumNotFound) {
   const std::string unknown_action = "kActionUnknown";
   auto unknown_id = ActionManager::StringToActionId(unknown_action);
@@ -218,9 +241,6 @@ TEST_F(ActionManagerTest, TestEnumNotFound) {
   auto unknown_id_string = ActionManager::ActionIdToString(invalid_action_id);
   EXPECT_FALSE(unknown_id_string.has_value());
 }
-
-#include "ui/actions/action_id_macros.inc"
-#undef MAP_ACTION_IDS_TO_STRINGS
 
 TEST_F(ActionItemTest, ActionBuilderTest) {
   const std::u16string text = u"Test Action";
