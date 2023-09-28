@@ -1055,8 +1055,8 @@ void FederatedAuthRequestImpl::FetchEndpointsForIdps(
     fetch_data_.for_idp_signin = for_idp_signin;
   }
 
-  provider_fetcher_ =
-      std::make_unique<FederatedProviderFetcher>(network_manager_.get());
+  provider_fetcher_ = std::make_unique<FederatedProviderFetcher>(
+      render_frame_host(), network_manager_.get());
   provider_fetcher_->Start(
       fetch_data_.pending_idps, icon_ideal_size, icon_minimum_size,
       base::BindOnce(&FederatedAuthRequestImpl::OnAllConfigAndWellKnownFetched,

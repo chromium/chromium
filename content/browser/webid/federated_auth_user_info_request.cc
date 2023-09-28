@@ -165,8 +165,8 @@ void FederatedAuthUserInfoRequest::SetCallbackAndStart(
   // FederatedProviderFetcher is stored as a member so that
   // FederatedProviderFetcher is destroyed when FederatedAuthRequestImpl is
   // destroyed.
-  provider_fetcher_ =
-      std::make_unique<FederatedProviderFetcher>(network_manager_.get());
+  provider_fetcher_ = std::make_unique<FederatedProviderFetcher>(
+      *render_frame_host_, network_manager_.get());
   provider_fetcher_->Start(
       {idp_config_url_}, /*icon_ideal_size=*/0, /*icon_minimum_size=*/0,
       base::BindOnce(

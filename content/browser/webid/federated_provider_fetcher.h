@@ -19,6 +19,7 @@
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom.h"
 
 namespace content {
+class RenderFrameHost;
 
 // Fetches the config and well-known files for a list of identity providers.
 // Validates returned information and calls callback when done.
@@ -48,7 +49,10 @@ class FederatedProviderFetcher {
 
   using RequesterCallback = base::OnceCallback<void(std::vector<FetchResult>)>;
 
-  explicit FederatedProviderFetcher(IdpNetworkRequestManager* network_manager);
+  // TODO(crbug.com/1487668): Remove |render_frame_host| when the IDP signin
+  // status API is enabled by default.
+  FederatedProviderFetcher(RenderFrameHost& render_frame_host,
+                           IdpNetworkRequestManager* network_manager);
   ~FederatedProviderFetcher();
 
   FederatedProviderFetcher(const FederatedProviderFetcher&) = delete;
@@ -78,6 +82,8 @@ class FederatedProviderFetcher {
                absl::optional<std::string> additional_console_error_message);
 
   void RunCallbackIfDone();
+
+  raw_ref<RenderFrameHost> render_frame_host_;
 
   RequesterCallback callback_;
 

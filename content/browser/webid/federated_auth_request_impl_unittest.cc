@@ -1458,6 +1458,10 @@ TEST_F(FederatedAuthRequestImplTest, AccountEndpointDifferentOriginIdp) {
 // Test that request fails if IDP signin URL is different origin from IDP config
 // URL.
 TEST_F(FederatedAuthRequestImplTest, SigninUrlDifferentOriginIdp) {
+  // We only validate the signin_url if IdpSigninStatus is enabled.
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmIdpSigninStatusEnabled);
+
   MockConfiguration configuration = kConfigurationValid;
   configuration.idp_info[kProviderUrlFull].config.idp_signin_url =
       "https://idp2.example/signin_url";

@@ -39,8 +39,10 @@ FederatedProviderFetcher::FetchResult::FetchResult(const FetchResult&) =
 FederatedProviderFetcher::FetchResult::~FetchResult() = default;
 
 FederatedProviderFetcher::FederatedProviderFetcher(
+    RenderFrameHost& render_frame_host,
     IdpNetworkRequestManager* network_manager)
-    : network_manager_(network_manager) {}
+    : render_frame_host_(render_frame_host),
+      network_manager_(network_manager) {}
 
 FederatedProviderFetcher::~FederatedProviderFetcher() = default;
 
@@ -232,8 +234,12 @@ void FederatedProviderFetcher::OnConfigFetched(
   bool is_accounts_valid =
       webid::IsEndpointSameOrigin(fetch_result.identity_provider_config_url,
                                   fetch_result.endpoints.accounts);
+  url::Origin idp_origin =
+      url::Origin::Create(fetch_result.identity_provider_config_url);
+  // We only need a signin URL if the IDP signin status API is enabled.
   bool is_signin_url_valid =
-      idp_metadata.idp_signin_url.is_empty() ||
+      webid::GetIdpSigninStatusMode(render_frame_host_.get(), idp_origin) !=
+          FedCmIdpSigninStatusMode::ENABLED ||
       webid::IsEndpointSameOrigin(fetch_result.identity_provider_config_url,
                                   idp_metadata.idp_signin_url);
   if (!is_token_valid || !is_accounts_valid || !is_signin_url_valid) {
