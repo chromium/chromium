@@ -7324,6 +7324,10 @@ def generate_install_properties_per_feature(function_name,
             for entry in member.exposure.global_names_and_features:
                 if entry.feature and entry.feature.is_origin_trial:
                     features.append(entry.feature)
+            for feature in (member.exposure.
+                            only_in_coi_contexts_or_runtime_enabled_features):
+                if feature.is_origin_trial:
+                    features.append(feature)
             for feature in features:
                 feature_to_class_likes.setdefault(feature,
                                                   set()).add(class_like)

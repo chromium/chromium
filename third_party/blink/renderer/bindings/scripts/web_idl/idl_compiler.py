@@ -336,6 +336,8 @@ class IdlCompiler(object):
             propagate(('ContextEnabled', 'add_context_enabled_feature'))
             propagate(('CrossOriginIsolated', 'set_only_in_coi_contexts'),
                       default_value=True)
+            propagate(('CrossOriginIsolatedOrRuntimeEnabled',
+                       'add_only_in_coi_contexts_or_runtime_enabled_feature'))
             propagate(('IsolatedContext', 'set_only_in_isolated_contexts'),
                       default_value=True)
             propagate(('SecureContext', 'set_only_in_secure_contexts'),
@@ -745,6 +747,18 @@ class IdlCompiler(object):
                     pass  # Exposed by default.
                 else:
                     group.exposure.set_only_in_coi_contexts(True)
+
+                # [CrossOriginIsolatedOrRuntimeEnabled]
+                features = set()
+                for exposure in exposures:
+                    for feature in (
+                            exposure.
+                            only_in_coi_contexts_or_runtime_enabled_features):
+                        features.add(feature)
+                for feature in sorted(features):
+                    (group.exposure.
+                     add_only_in_coi_contexts_or_runtime_enabled_feature
+                     )(feature)
 
                 # [IsolatedContext]
                 if any(not exposure.only_in_isolated_contexts

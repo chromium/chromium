@@ -65,7 +65,9 @@ class Exposure(object):
             self._context_enabled_features = tuple(
                 other.context_enabled_features)
             self._only_in_coi_contexts = other.only_in_coi_contexts
-            self._only_in_isolated_contexts = (other.only_in_isolated_contexts)
+            self._only_in_coi_contexts_or_runtime_enabled_features = tuple(
+                other.only_in_coi_contexts_or_runtime_enabled_features)
+            self._only_in_isolated_contexts = other.only_in_isolated_contexts
             self._only_in_secure_contexts = other.only_in_secure_contexts
         else:
             self._global_names_and_features = tuple()
@@ -75,6 +77,7 @@ class Exposure(object):
             self._origin_trial_features = tuple()
             self._context_enabled_features = tuple()
             self._only_in_coi_contexts = False
+            self._only_in_coi_contexts_or_runtime_enabled_features = tuple()
             self._only_in_isolated_contexts = False
             self._only_in_secure_contexts = None
 
@@ -129,6 +132,18 @@ class Exposure(object):
         https://webidl.spec.whatwg.org/#CrossOriginIsolated
         """
         return self._only_in_coi_contexts
+
+    @property
+    def only_in_coi_contexts_or_runtime_enabled_features(self):
+        """
+        Returns a list of runtime enabled features that affects cross-origin
+        isolation.
+
+        If the list is not empty, this construct is available only in
+        cross-origin isolated contexts or when any of the specified runtime
+        enabled features (supposed to be origin trials) gets enabled.
+        """
+        return self._only_in_coi_contexts_or_runtime_enabled_features
 
     @property
     def only_in_isolated_contexts(self):
@@ -196,6 +211,7 @@ class ExposureMutable(Exposure):
         self._origin_trial_features = []
         self._context_enabled_features = []
         self._only_in_coi_contexts = False
+        self._only_in_coi_contexts_or_runtime_enabled_features = []
         self._only_in_isolated_contexts = False
         self._only_in_secure_contexts = None
 
@@ -227,6 +243,11 @@ class ExposureMutable(Exposure):
     def set_only_in_coi_contexts(self, value):
         assert isinstance(value, bool)
         self._only_in_coi_contexts = value
+
+    def add_only_in_coi_contexts_or_runtime_enabled_feature(self, name):
+        assert isinstance(name, str)
+        self._only_in_coi_contexts_or_runtime_enabled_features.append(
+            _Feature(name))
 
     def set_only_in_isolated_contexts(self, value):
         assert isinstance(value, bool)
