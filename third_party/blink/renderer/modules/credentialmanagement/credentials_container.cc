@@ -88,6 +88,7 @@ namespace blink {
 namespace {
 
 using mojom::blink::AttestationConveyancePreference;
+using mojom::blink::AuthenticationExtensionsClientOutputsPtr;
 using mojom::blink::AuthenticatorAttachment;
 using mojom::blink::AuthenticatorStatus;
 using mojom::blink::CredentialInfo;
@@ -819,60 +820,63 @@ void OnGetAssertionComplete(
             std::move(credential->info->authenticator_data),
             std::move(credential->signature), credential->user_handle);
 
+    AuthenticationExtensionsClientOutputsPtr& extensions =
+        credential->extensions;
+
     AuthenticationExtensionsClientOutputs* extension_outputs =
         AuthenticationExtensionsClientOutputs::Create();
-    if (credential->echo_appid_extension) {
-      extension_outputs->setAppid(credential->appid_extension);
+    if (extensions->echo_appid_extension) {
+      extension_outputs->setAppid(extensions->appid_extension);
     }
 #if BUILDFLAG(IS_ANDROID)
-    if (credential->echo_user_verification_methods) {
+    if (extensions->echo_user_verification_methods) {
       extension_outputs->setUvm(
-          UvmEntryToArray(std::move(*credential->user_verification_methods)));
+          UvmEntryToArray(std::move(*extensions->user_verification_methods)));
       UseCounter::Count(resolver->GetExecutionContext(),
                         WebFeature::kCredentialManagerGetSuccessWithUVM);
     }
 #endif
-    if (credential->echo_large_blob) {
+    if (extensions->echo_large_blob) {
       DCHECK(
           RuntimeEnabledFeatures::WebAuthenticationLargeBlobExtensionEnabled());
       AuthenticationExtensionsLargeBlobOutputs* large_blob_outputs =
           AuthenticationExtensionsLargeBlobOutputs::Create();
-      if (credential->large_blob) {
+      if (extensions->large_blob) {
         large_blob_outputs->setBlob(
-            VectorToDOMArrayBuffer(std::move(*credential->large_blob)));
+            VectorToDOMArrayBuffer(std::move(*extensions->large_blob)));
       }
-      if (credential->echo_large_blob_written) {
-        large_blob_outputs->setWritten(credential->large_blob_written);
+      if (extensions->echo_large_blob_written) {
+        large_blob_outputs->setWritten(extensions->large_blob_written);
       }
       extension_outputs->setLargeBlob(large_blob_outputs);
     }
-    if (credential->get_cred_blob) {
+    if (extensions->get_cred_blob) {
       extension_outputs->setGetCredBlob(
-          VectorToDOMArrayBuffer(std::move(*credential->get_cred_blob)));
+          VectorToDOMArrayBuffer(std::move(*extensions->get_cred_blob)));
     }
-    if (credential->device_public_key) {
+    if (extensions->device_public_key) {
       AuthenticationExtensionsDevicePublicKeyOutputs*
           device_public_key_outputs =
               AuthenticationExtensionsDevicePublicKeyOutputs::Create();
       device_public_key_outputs->setAuthenticatorOutput(VectorToDOMArrayBuffer(
-          std::move(credential->device_public_key->authenticator_output)));
+          std::move(extensions->device_public_key->authenticator_output)));
       device_public_key_outputs->setSignature(VectorToDOMArrayBuffer(
-          std::move(credential->device_public_key->signature)));
+          std::move(extensions->device_public_key->signature)));
       extension_outputs->setDevicePubKey(device_public_key_outputs);
     }
-    if (credential->echo_prf) {
+    if (extensions->echo_prf) {
       auto* prf_outputs = AuthenticationExtensionsPRFOutputs::Create();
-      if (credential->prf_results) {
+      if (extensions->prf_results) {
         auto* values = AuthenticationExtensionsPRFValues::Create();
         values->setFirst(
             MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferView>(
                 VectorToDOMArrayBuffer(
-                    std::move(credential->prf_results->first))));
-        if (credential->prf_results->second) {
+                    std::move(extensions->prf_results->first))));
+        if (extensions->prf_results->second) {
           values->setSecond(
               MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferView>(
                   VectorToDOMArrayBuffer(
-                      std::move(credential->prf_results->second.value()))));
+                      std::move(extensions->prf_results->second.value()))));
         }
         prf_outputs->setResults(values);
       }

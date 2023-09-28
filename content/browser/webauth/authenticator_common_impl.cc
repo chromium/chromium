@@ -2063,6 +2063,8 @@ AuthenticatorCommonImpl::CreateGetAssertionResponse(
     device::AuthenticatorGetAssertionResponse response_data) {
   auto response = blink::mojom::GetAssertionAuthenticatorResponse::New();
   auto common_info = blink::mojom::CommonCredentialInfo::New();
+  auto response_extensions =
+      blink::mojom::AuthenticationExtensionsClientOutputs::New();
   common_info->client_data_json.assign(req_state_->client_data_json.begin(),
                                        req_state_->client_data_json.end());
   common_info->raw_id = response_data.credential->id;
@@ -2084,14 +2086,14 @@ AuthenticatorCommonImpl::CreateGetAssertionResponse(
     switch (ext) {
       case RequestExtension::kAppID:
         DCHECK(req_state_->app_id);
-        response->echo_appid_extension = true;
+        response_extensions->echo_appid_extension = true;
         if (response_data.authenticator_data.application_parameter() ==
             CreateApplicationParameter(*req_state_->app_id)) {
-          response->appid_extension = true;
+          response_extensions->appid_extension = true;
         }
         break;
       case RequestExtension::kPRF: {
-        response->echo_prf = true;
+        response_extensions->echo_prf = true;
         absl::optional<base::span<const uint8_t>> hmac_secret =
             response_data.hmac_secret;
         if (hmac_secret) {
@@ -2103,20 +2105,22 @@ AuthenticatorCommonImpl::CreateGetAssertionResponse(
             prf_values->second = device::fido_parsing_utils::Materialize(
                 hmac_secret->subspan(32, 32));
           }
-          response->prf_results = std::move(prf_values);
+          response_extensions->prf_results = std::move(prf_values);
         } else {
-          response->prf_not_evaluated = response_data.hmac_secret_not_evaluated;
+          response_extensions->prf_not_evaluated =
+              response_data.hmac_secret_not_evaluated;
         }
         break;
       }
       case RequestExtension::kLargeBlobRead:
-        response->echo_large_blob = true;
-        response->large_blob = response_data.large_blob;
+        response_extensions->echo_large_blob = true;
+        response_extensions->large_blob = response_data.large_blob;
         break;
       case RequestExtension::kLargeBlobWrite:
-        response->echo_large_blob = true;
-        response->echo_large_blob_written = true;
-        response->large_blob_written = response_data.large_blob_written;
+        response_extensions->echo_large_blob = true;
+        response_extensions->echo_large_blob_written = true;
+        response_extensions->large_blob_written =
+            response_data.large_blob_written;
         break;
       case RequestExtension::kGetCredBlob: {
         const absl::optional<cbor::Value>& extensions =
@@ -2125,14 +2129,14 @@ AuthenticatorCommonImpl::CreateGetAssertionResponse(
           const cbor::Value::MapValue& map = extensions->GetMap();
           const auto& it = map.find(cbor::Value(device::kExtensionCredBlob));
           if (it != map.end() && it->second.is_bytestring()) {
-            response->get_cred_blob = it->second.GetBytestring();
+            response_extensions->get_cred_blob = it->second.GetBytestring();
           }
         }
-        if (!response->get_cred_blob.has_value()) {
+        if (!response_extensions->get_cred_blob.has_value()) {
           // The authenticator is supposed to return an empty byte string if it
           // does not have a credBlob for the credential. But in case it
           // doesn't, we return one to the caller anyway.
-          response->get_cred_blob = std::vector<uint8_t>();
+          response_extensions->get_cred_blob = std::vector<uint8_t>();
         }
 
         break;
@@ -2147,11 +2151,11 @@ AuthenticatorCommonImpl::CreateGetAssertionResponse(
           const auto it =
               extensions.find(cbor::Value(device::kExtensionDevicePublicKey));
           if (it != extensions.end() && it->second.is_bytestring()) {
-            response->device_public_key =
+            response_extensions->device_public_key =
                 blink::mojom::DevicePublicKeyResponse::New();
-            response->device_public_key->authenticator_output =
+            response_extensions->device_public_key->authenticator_output =
                 it->second.GetBytestring();
-            response->device_public_key->signature =
+            response_extensions->device_public_key->signature =
                 *response_data.device_public_key_signature;
           }
         }
@@ -2166,6 +2170,7 @@ AuthenticatorCommonImpl::CreateGetAssertionResponse(
         break;
     }
   }
+  response->extensions = std::move(response_extensions);
 
   return response;
 }

@@ -969,7 +969,7 @@ public class Fido2CredentialRequestTest {
         mCallback.blockUntilCalled();
         Assert.assertEquals(mCallback.getStatus(), Integer.valueOf(AuthenticatorStatus.SUCCESS));
         GetAssertionAuthenticatorResponse response = mCallback.getGetAssertionResponse();
-        Assert.assertTrue(response.echoUserVerificationMethods);
+        Assert.assertTrue(response.extensions.echoUserVerificationMethods);
         Fido2ApiTestHelper.validateGetAssertionResponse(response);
         Fido2ApiTestHelper.verifyRespondedBeforeTimeout(mStartTimeMs);
     }
@@ -1105,7 +1105,7 @@ public class Fido2CredentialRequestTest {
         Assert.assertEquals(mCallback.getStatus(), Integer.valueOf(AuthenticatorStatus.SUCCESS));
         GetAssertionAuthenticatorResponse response = mCallback.getGetAssertionResponse();
         Fido2ApiTestHelper.validateGetAssertionResponse(response);
-        Assert.assertEquals(response.echoAppidExtension, true);
+        Assert.assertEquals(response.extensions.echoAppidExtension, true);
         Fido2ApiTestHelper.verifyRespondedBeforeTimeout(mStartTimeMs);
     }
 
@@ -1151,7 +1151,8 @@ public class Fido2CredentialRequestTest {
         mCallback.blockUntilCalled();
 
         Assert.assertEquals(mCallback.getStatus(), Integer.valueOf(AuthenticatorStatus.SUCCESS));
-        Fido2ApiTestHelper.validatePrfResults(mCallback.getGetAssertionResponse().prfResults);
+        Fido2ApiTestHelper.validatePrfResults(
+                mCallback.getGetAssertionResponse().extensions.prfResults);
         Fido2ApiTestHelper.verifyRespondedBeforeTimeout(mStartTimeMs);
     }
 
@@ -1173,7 +1174,7 @@ public class Fido2CredentialRequestTest {
 
         Assert.assertEquals(mCallback.getStatus(), Integer.valueOf(AuthenticatorStatus.SUCCESS));
         Fido2ApiTestHelper.validateDevicePubKey(
-                mCallback.getGetAssertionResponse().devicePublicKey);
+                mCallback.getGetAssertionResponse().extensions.devicePublicKey);
         Fido2ApiTestHelper.verifyRespondedBeforeTimeout(mStartTimeMs);
     }
 

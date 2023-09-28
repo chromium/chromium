@@ -33,6 +33,8 @@ namespace {
 
 using blink::mojom::AuthenticationExtensionsClientInputs;
 using blink::mojom::AuthenticationExtensionsClientInputsPtr;
+using blink::mojom::AuthenticationExtensionsClientOutputs;
+using blink::mojom::AuthenticationExtensionsClientOutputsPtr;
 using blink::mojom::CommonCredentialInfo;
 using blink::mojom::CommonCredentialInfoPtr;
 using blink::mojom::GetAssertionAuthenticatorResponse;
@@ -510,18 +512,20 @@ TEST(WebAuthenticationJSONConversionTest,
       CommonCredentialInfo::New(kIdB64Url, kId, kClientDataJson,
                                 kAuthenticatorData),
       device::AuthenticatorAttachment::kCrossPlatform, kSignature, kUserHandle,
-      /*echo_appid_extension=*/true, /*appid_extension=*/true,
+      AuthenticationExtensionsClientOutputs::New(
+          /*echo_appid_extension=*/true, /*appid_extension=*/true,
 #if BUILDFLAG(IS_ANDROID)
-      /*echo_user_verification_methods=*/false,
-      /*user_verification_methods=*/absl::nullopt,
+          /*echo_user_verification_methods=*/false,
+          /*user_verification_methods=*/absl::nullopt,
 #endif
-      /*echo_prf=*/true, /*prf_results=*/nullptr, /*prf_not_evaluated=*/false,
-      /*echo_large_blob=*/true,
-      /*large_blob=*/kLargeBlob, /*echo_large_blob_written=*/true,
-      /*large_blob_written=*/true,
-      /*get_cred_blob=*/kCredBlob,
-      // TODO: support devicePubKey in JSON when it's stable.
-      /*device_public_key=*/nullptr);
+          /*echo_prf=*/true, /*prf_results=*/nullptr,
+          /*prf_not_evaluated=*/false,
+          /*echo_large_blob=*/true,
+          /*large_blob=*/kLargeBlob, /*echo_large_blob_written=*/true,
+          /*large_blob_written=*/true,
+          /*get_cred_blob=*/kCredBlob,
+          // TODO: support devicePubKey in JSON when it's stable.
+          /*device_public_key=*/nullptr));
   static const uint8_t expected_prf_first[32] = {
       0x99, 0x9d, 0x30, 0x29, 0x7b, 0xc5, 0x03, 0x7b, 0xa5, 0x7b, 0x81,
       0xbc, 0xf8, 0x27, 0xb3, 0x47, 0x1b, 0xe8, 0x3f, 0x80, 0x67, 0xf6,
@@ -538,26 +542,32 @@ TEST(WebAuthenticationJSONConversionTest,
             expected->authenticator_attachment);
   EXPECT_EQ(response->signature, expected->signature);
   EXPECT_EQ(response->user_handle, expected->user_handle);
-  EXPECT_EQ(response->echo_appid_extension, expected->echo_appid_extension);
-  EXPECT_EQ(response->appid_extension, expected->appid_extension);
-  EXPECT_EQ(response->echo_prf, expected->echo_prf);
-  ASSERT_TRUE(response->prf_results);
-  EXPECT_TRUE(
-      base::ranges::equal(response->prf_results->first, expected_prf_first));
-  ASSERT_TRUE(response->prf_results->second);
-  EXPECT_TRUE(
-      base::ranges::equal(*response->prf_results->second, expected_prf_second));
-  EXPECT_EQ(response->prf_not_evaluated, expected->prf_not_evaluated);
-  EXPECT_EQ(response->echo_large_blob, expected->echo_large_blob);
-  EXPECT_EQ(response->large_blob, expected->large_blob);
-  EXPECT_EQ(response->echo_large_blob_written,
-            expected->echo_large_blob_written);
-  EXPECT_EQ(response->large_blob_written, expected->large_blob_written);
-  EXPECT_EQ(response->get_cred_blob, expected->get_cred_blob);
+  EXPECT_EQ(response->extensions->echo_appid_extension,
+            expected->extensions->echo_appid_extension);
+  EXPECT_EQ(response->extensions->appid_extension,
+            expected->extensions->appid_extension);
+  EXPECT_EQ(response->extensions->echo_prf, expected->extensions->echo_prf);
+  ASSERT_TRUE(response->extensions->prf_results);
+  EXPECT_TRUE(base::ranges::equal(response->extensions->prf_results->first,
+                                  expected_prf_first));
+  ASSERT_TRUE(response->extensions->prf_results->second);
+  EXPECT_TRUE(base::ranges::equal(*response->extensions->prf_results->second,
+                                  expected_prf_second));
+  EXPECT_EQ(response->extensions->prf_not_evaluated,
+            expected->extensions->prf_not_evaluated);
+  EXPECT_EQ(response->extensions->echo_large_blob,
+            expected->extensions->echo_large_blob);
+  EXPECT_EQ(response->extensions->large_blob, expected->extensions->large_blob);
+  EXPECT_EQ(response->extensions->echo_large_blob_written,
+            expected->extensions->echo_large_blob_written);
+  EXPECT_EQ(response->extensions->large_blob_written,
+            expected->extensions->large_blob_written);
+  EXPECT_EQ(response->extensions->get_cred_blob,
+            expected->extensions->get_cred_blob);
   // Produce a failure even if the list above is missing any fields. But this
   // will not print any meaningful error. `prf_values` has to be cleared
   // because a pointer comparison will be performed for it.
-  response->prf_results = nullptr;
+  response->extensions->prf_results = nullptr;
   EXPECT_EQ(response, expected);
 }
 

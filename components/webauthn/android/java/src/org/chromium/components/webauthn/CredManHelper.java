@@ -467,7 +467,7 @@ public class CredManHelper {
                     return;
                 }
                 response.info.clientDataJson = mClientDataJson;
-                response.echoAppidExtension = options.extensions.appid != null;
+                response.extensions.echoAppidExtension = options.extensions.appid != null;
                 mConditionalUiState = options.isConditional
                         ? ConditionalUiState.WAITING_FOR_SELECTION
                         : ConditionalUiState.NONE;

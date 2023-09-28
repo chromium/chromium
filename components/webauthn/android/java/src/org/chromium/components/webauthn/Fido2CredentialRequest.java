@@ -817,7 +817,7 @@ public class Fido2CredentialRequest
                         mFrameHost.notifyWebAuthnAssertionRequestSucceeded();
                     }
                 }
-                r.echoAppidExtension = mAppIdExtensionUsed;
+                r.extensions.echoAppidExtension = mAppIdExtensionUsed;
                 mGetAssertionCallback.onSignResponse(AuthenticatorStatus.SUCCESS, r);
                 mGetAssertionCallback = null;
                 return;

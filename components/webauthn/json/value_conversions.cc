@@ -740,6 +740,8 @@ GetAssertionResponseFromValue(const base::Value& value, const JSONUser user) {
 
   auto response = blink::mojom::GetAssertionAuthenticatorResponse::New();
   response->info = blink::mojom::CommonCredentialInfo::New();
+  response->extensions =
+      blink::mojom::AuthenticationExtensionsClientOutputs::New();
 
   const std::string* id = dict.FindString("id");
   if (!id) {
@@ -804,8 +806,8 @@ GetAssertionResponseFromValue(const base::Value& value, const JSONUser user) {
   const absl::optional<bool> app_id =
       client_extension_results->FindBool("appid");
   if (app_id) {
-    response->echo_appid_extension = true;
-    response->appid_extension = *app_id;
+    response->extensions->echo_appid_extension = true;
+    response->extensions->appid_extension = *app_id;
   }
   if (client_extension_results->contains("getCredBlob")) {
     absl::optional<std::string> cred_blob =
@@ -813,24 +815,24 @@ GetAssertionResponseFromValue(const base::Value& value, const JSONUser user) {
     if (!cred_blob) {
       return InvalidGetAssertionField("credBlob");
     }
-    response->get_cred_blob = ToByteVector(*cred_blob);
+    response->extensions->get_cred_blob = ToByteVector(*cred_blob);
   }
   const base::Value::Dict* large_blob =
       client_extension_results->FindDict("largeBlob");
   if (large_blob) {
-    response->echo_large_blob = true;
+    response->extensions->echo_large_blob = true;
     if (large_blob->contains("blob")) {
       absl::optional<std::string> blob =
           Base64UrlDecodeStringKey(*large_blob, "blob");
       if (!blob) {
         return InvalidGetAssertionField("largeBlob");
       }
-      response->large_blob = ToByteVector(*blob);
+      response->extensions->large_blob = ToByteVector(*blob);
     }
     const absl::optional<bool> written = large_blob->FindBool("written");
     if (written) {
-      response->echo_large_blob_written = true;
-      response->large_blob_written = *written;
+      response->extensions->echo_large_blob_written = true;
+      response->extensions->large_blob_written = *written;
     }
   }
   const base::Value::Dict* prf = client_extension_results->FindDict("prf");
@@ -854,8 +856,8 @@ GetAssertionResponseFromValue(const base::Value& value, const JSONUser user) {
         prf_values->second.emplace(second->begin(), second->end());
       }
 
-      response->echo_prf = true;
-      response->prf_results = std::move(prf_values);
+      response->extensions->echo_prf = true;
+      response->extensions->prf_results = std::move(prf_values);
     }
   }
 

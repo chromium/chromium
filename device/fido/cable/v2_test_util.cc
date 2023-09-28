@@ -591,6 +591,8 @@ class TestPlatform : public authenticator::Platform {
 
     auto response = blink::mojom::GetAssertionAuthenticatorResponse::New();
     response->info = blink::mojom::CommonCredentialInfo::New();
+    response->extensions =
+        blink::mojom::AuthenticationExtensionsClientOutputs::New();
 
     absl::optional<cbor::Value> v = cbor::Reader::Read(payload.subspan(1));
     const cbor::Value::MapValue& in_map = v->GetMap();
@@ -617,9 +619,10 @@ class TestPlatform : public authenticator::Platform {
       const auto dpk_it = unsigned_extension_outputs.find(
           cbor::Value(kExtensionDevicePublicKey));
       if (dpk_it != unsigned_extension_outputs.end()) {
-        response->device_public_key =
+        response->extensions->device_public_key =
             blink::mojom::DevicePublicKeyResponse::New();
-        response->device_public_key->signature = dpk_it->second.GetBytestring();
+        response->extensions->device_public_key->signature =
+            dpk_it->second.GetBytestring();
       }
       const auto prf_it =
           unsigned_extension_outputs.find(cbor::Value(kExtensionPRF));
@@ -637,7 +640,7 @@ class TestPlatform : public authenticator::Platform {
         if (second_it != results_from_authenticator.end()) {
           results_for_response->second = second_it->second.GetBytestring();
         }
-        response->prf_results = std::move(results_for_response);
+        response->extensions->prf_results = std::move(results_for_response);
       }
     }
 

@@ -57,6 +57,8 @@ void TestCreditCardFidoAuthenticator::GetAssertion(
     blink::mojom::GetAssertionAuthenticatorResponsePtr response =
         blink::mojom::GetAssertionAuthenticatorResponse::New();
     response->info = blink::mojom::CommonCredentialInfo::New();
+    response->extensions =
+        blink::mojom::AuthenticationExtensionsClientOutputs::New();
     fido_authenticator->OnDidGetAssertion(
         blink::mojom::AuthenticatorStatus::SUCCESS, std::move(response),
         /*dom_exception_details=*/nullptr);

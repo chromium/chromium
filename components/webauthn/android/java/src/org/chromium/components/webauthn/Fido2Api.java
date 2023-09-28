@@ -18,6 +18,7 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.blink.mojom.AttestationConveyancePreference;
+import org.chromium.blink.mojom.AuthenticationExtensionsClientOutputs;
 import org.chromium.blink.mojom.AuthenticatorAttachment;
 import org.chromium.blink.mojom.AuthenticatorTransport;
 import org.chromium.blink.mojom.CommonCredentialInfo;
@@ -893,30 +894,30 @@ public final class Fido2Api {
 
         if (assertionResponse != null) {
             if (extensions != null && extensions.userVerificationMethods != null) {
-                assertionResponse.echoUserVerificationMethods = true;
-                assertionResponse.userVerificationMethods = new UvmEntry[0];
-                assertionResponse.userVerificationMethods =
+                assertionResponse.extensions.echoUserVerificationMethods = true;
+                assertionResponse.extensions.userVerificationMethods = new UvmEntry[0];
+                assertionResponse.extensions.userVerificationMethods =
                         extensions.userVerificationMethods.toArray(
-                                assertionResponse.userVerificationMethods);
+                                assertionResponse.extensions.userVerificationMethods);
             }
             if (extensions != null && extensions.devicePublicKey != null) {
-                assertionResponse.devicePublicKey = extensions.devicePublicKey;
-                assertionResponse.devicePublicKey.authenticatorOutput =
+                assertionResponse.extensions.devicePublicKey = extensions.devicePublicKey;
+                assertionResponse.extensions.devicePublicKey.authenticatorOutput =
                         Fido2ApiJni.get().getDevicePublicKeyFromAuthenticatorData(
                                 assertionResponse.info.authenticatorData);
             }
             if (extensions != null && extensions.prf != null) {
-                assertionResponse.echoPrf = true;
-                assertionResponse.prfResults = new PrfValues();
+                assertionResponse.extensions.echoPrf = true;
+                assertionResponse.extensions.prfResults = new PrfValues();
                 if (extensions.prf.second.length == 32) {
-                    assertionResponse.prfResults.first = extensions.prf.second;
+                    assertionResponse.extensions.prfResults.first = extensions.prf.second;
                 } else {
-                    assertionResponse.prfResults.first = new byte[32];
-                    assertionResponse.prfResults.second = new byte[32];
-                    System.arraycopy(
-                            extensions.prf.second, 0, assertionResponse.prfResults.first, 0, 32);
-                    System.arraycopy(
-                            extensions.prf.second, 32, assertionResponse.prfResults.second, 0, 32);
+                    assertionResponse.extensions.prfResults.first = new byte[32];
+                    assertionResponse.extensions.prfResults.second = new byte[32];
+                    System.arraycopy(extensions.prf.second, 0,
+                            assertionResponse.extensions.prfResults.first, 0, 32);
+                    System.arraycopy(extensions.prf.second, 32,
+                            assertionResponse.extensions.prfResults.second, 0, 32);
                 }
             }
             if (attachment >= AuthenticatorAttachment.MIN_VALUE) {
@@ -1081,6 +1082,7 @@ public final class Fido2Api {
         response.info = info;
         response.signature = signature;
         response.userHandle = userHandle;
+        response.extensions = new AuthenticationExtensionsClientOutputs();
 
         return response;
     }

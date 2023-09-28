@@ -169,6 +169,12 @@ struct GetAssertionAuthenticatorResponse {
   // Maximum 64 bytes.
   array<uint8>? user_handle;
 
+  // Webauthn extension related output responses.
+  AuthenticationExtensionsClientOutputs extensions;
+};
+
+// Webauthn credential assertion extensions response values.
+struct AuthenticationExtensionsClientOutputs {
   // True if getClientExtensionResults() called on the returned
   // PublicKeyCredential instance should contain an `appid` extension output.
   // If so, |appid_extension| contains the actual value.
