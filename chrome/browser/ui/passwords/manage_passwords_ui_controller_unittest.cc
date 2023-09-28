@@ -507,6 +507,26 @@ TEST_F(ManagePasswordsUIControllerTest, PasswordSaved) {
   ExpectIconAndControllerStateIs(password_manager::ui::MANAGE_STATE);
 }
 
+TEST_F(ManagePasswordsUIControllerTest, PhishedPasswordUpdated) {
+  auto* mock_sentiment_service = static_cast<MockTrustSafetySentimentService*>(
+      TrustSafetySentimentServiceFactory::GetInstance()
+          ->SetTestingFactoryAndUse(
+              profile(),
+              base::BindRepeating(&BuildMockTrustSafetySentimentService)));
+
+  submitted_form().password_issues.insert(
+      {InsecureType::kPhished, InsecurityMetadata()});
+  std::vector<const PasswordForm*> best_matches;
+  auto test_form_manager = CreateFormManagerWithBestMatches(&best_matches);
+  EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
+  EXPECT_CALL(*test_form_manager, Save());
+  controller()->OnPasswordSubmitted(std::move(test_form_manager));
+  EXPECT_CALL(*mock_sentiment_service, PhishedPasswordUpdateFinished());
+  controller()->SavePassword(submitted_form().username_value,
+                             submitted_form().password_value);
+  ExpectIconAndControllerStateIs(password_manager::ui::MANAGE_STATE);
+}
+
 TEST_F(ManagePasswordsUIControllerTest, PasswordSavedUKMRecording) {
   using UkmEntry = ukm::builders::PasswordForm;
   const struct {

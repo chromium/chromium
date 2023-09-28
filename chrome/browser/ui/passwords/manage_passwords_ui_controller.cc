@@ -624,6 +624,9 @@ void ManagePasswordsUIController::SavePassword(const std::u16string& username,
               Profile::FromBrowserContext(
                   web_contents()->GetBrowserContext()))) {
     sentiment_service->SavedPassword();
+    if (IsPendingPasswordPhished()) {
+      sentiment_service->PhishedPasswordUpdateFinished();
+    }
   }
 
   if (GetPasswordFormMetricsRecorder() && BubbleIsManualFallbackForSaving()) {
@@ -1080,6 +1083,13 @@ void ManagePasswordsUIController::CancelAnyOngoingBiometricAuth() {
     return;
   biometric_authenticator_->Cancel();
   biometric_authenticator_.reset();
+}
+
+bool ManagePasswordsUIController::IsPendingPasswordPhished() const {
+  const password_manager::PasswordForm& pending_form = GetPendingPassword();
+  return pending_form.password_issues.find(
+             password_manager::InsecureType::kPhished) !=
+         pending_form.password_issues.end();
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(ManagePasswordsUIController);
