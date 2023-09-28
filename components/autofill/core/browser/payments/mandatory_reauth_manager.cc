@@ -26,8 +26,7 @@ void MandatoryReauthManager::Authenticate(
   CHECK(device_authenticator_);
   device_authenticator_->Authenticate(
       base::BindOnce(&MandatoryReauthManager::OnAuthenticationCompleted,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
-      /*use_last_valid_auth=*/true);
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void MandatoryReauthManager::AuthenticateWithMessage(

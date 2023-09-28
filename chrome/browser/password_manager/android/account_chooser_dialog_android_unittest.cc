@@ -153,9 +153,7 @@ TEST_F(AccountChooserDialogAndroidTest, SendsCredentialIfAuthSuccessful) {
 
   ON_CALL(*authenticator, CanAuthenticateWithBiometrics())
       .WillByDefault(Return(true));
-  EXPECT_CALL(*authenticator, Authenticate(_,
-                                           /*use_last_valid_auth=*/true))
-      .WillOnce(RunOnceCallback<0>(true));
+  EXPECT_CALL(*authenticator, Authenticate).WillOnce(RunOnceCallback<0>(true));
   EXPECT_CALL(client_, GetDeviceAuthenticator)
       .WillOnce(Return(testing::ByMove(std::move(authenticator))));
 
@@ -175,9 +173,7 @@ TEST_F(AccountChooserDialogAndroidTest, DoesntSendCredentialIfAuthFailed) {
 
   ON_CALL(*authenticator, CanAuthenticateWithBiometrics())
       .WillByDefault(Return(true));
-  EXPECT_CALL(*authenticator, Authenticate(_,
-                                           /*use_last_valid_auth=*/true))
-      .WillOnce(RunOnceCallback<0>(false));
+  EXPECT_CALL(*authenticator, Authenticate).WillOnce(RunOnceCallback<0>(false));
   EXPECT_CALL(client_, GetDeviceAuthenticator)
       .WillOnce(Return(testing::ByMove(std::move(authenticator))));
 
@@ -198,8 +194,7 @@ TEST_F(AccountChooserDialogAndroidTest, CancelsAuthIfDestroyed) {
 
   ON_CALL(*authenticator_ptr, CanAuthenticateWithBiometrics())
       .WillByDefault(Return(true));
-  EXPECT_CALL(*authenticator_ptr, Authenticate(_,
-                                               /*use_last_valid_auth=*/true));
+  EXPECT_CALL(*authenticator_ptr, Authenticate);
   EXPECT_CALL(client_, GetDeviceAuthenticator)
       .WillOnce(Return(testing::ByMove(std::move(authenticator))));
 

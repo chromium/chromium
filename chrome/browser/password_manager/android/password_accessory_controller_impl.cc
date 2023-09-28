@@ -266,8 +266,7 @@ void PasswordAccessoryControllerImpl::OnFillingTriggered(
   // which resets the callback, so it's safe to use base::Unretained(this) here.
   authenticator_->Authenticate(
       base::BindOnce(&PasswordAccessoryControllerImpl::OnReauthCompleted,
-                     base::Unretained(this), selection),
-      /*use_last_valid_auth=*/true);
+                     base::Unretained(this), selection));
 }
 
 void PasswordAccessoryControllerImpl::OnPasskeySelected(

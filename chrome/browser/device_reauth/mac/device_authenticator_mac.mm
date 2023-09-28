@@ -59,9 +59,7 @@ bool DeviceAuthenticatorMac::CanAuthenticateWithBiometricOrScreenLock() {
   return authenticator_->CheckIfBiometricsOrScreenLockAvailable();
 }
 
-void DeviceAuthenticatorMac::Authenticate(
-    AuthenticateCallback callback,
-    bool use_last_valid_auth) {
+void DeviceAuthenticatorMac::Authenticate(AuthenticateCallback callback) {
   NOTIMPLEMENTED();
 }
 

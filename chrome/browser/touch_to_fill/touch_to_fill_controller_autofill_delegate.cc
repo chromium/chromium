@@ -134,8 +134,7 @@ void TouchToFillControllerAutofillDelegate::OnCredentialSelected(
   // to use base::Unretained.
   authenticator_->Authenticate(
       base::BindOnce(&TouchToFillControllerAutofillDelegate::OnReauthCompleted,
-                     base::Unretained(this), credential),
-      /*use_last_valid_auth=*/true);
+                     base::Unretained(this), credential));
 }
 
 void TouchToFillControllerAutofillDelegate::OnPasskeyCredentialSelected(

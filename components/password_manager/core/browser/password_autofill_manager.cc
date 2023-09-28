@@ -503,12 +503,10 @@ void PasswordAutofillManager::DidAcceptSuggestion(
       } else {
         authenticator_ = std::move(authenticator);
 #if BUILDFLAG(IS_ANDROID)
-        authenticator_->Authenticate(
-            base::BindOnce(&PasswordAutofillManager::OnBiometricReauthCompleted,
-                           weak_ptr_factory_.GetWeakPtr(),
-                           suggestion.main_text.value,
-                           suggestion.popup_item_id),
-            /*use_last_valid_auth=*/true);
+        authenticator_->Authenticate(base::BindOnce(
+            &PasswordAutofillManager::OnBiometricReauthCompleted,
+            weak_ptr_factory_.GetWeakPtr(), suggestion.main_text.value,
+            suggestion.popup_item_id));
 #elif BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
         const std::u16string origin =
             base::UTF8ToUTF16(GetShownOrigin(url::Origin::Create(

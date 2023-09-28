@@ -32,9 +32,7 @@ bool DeviceAuthenticatorChromeOS::CanAuthenticateWithBiometricOrScreenLock() {
   return false;
 }
 
-void DeviceAuthenticatorChromeOS::Authenticate(
-    AuthenticateCallback callback,
-    bool use_last_valid_auth) {
+void DeviceAuthenticatorChromeOS::Authenticate(AuthenticateCallback callback) {
   NOTIMPLEMENTED();
 }
 

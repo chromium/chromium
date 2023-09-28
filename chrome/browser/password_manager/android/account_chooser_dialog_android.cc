@@ -235,8 +235,7 @@ bool AccountChooserDialogAndroid::HandleCredentialChosen(
     authenticator_ = std::move(authenticator);
     authenticator_->Authenticate(
         base::BindOnce(&AccountChooserDialogAndroid::OnReauthCompleted,
-                       base::Unretained(this), index),
-        /*use_last_valid_auth=*/true);
+                       base::Unretained(this), index));
     // The credential handling will only happen after the authentication
     // finishes.
     return false;

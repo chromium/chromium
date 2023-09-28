@@ -99,9 +99,7 @@ bool DeviceAuthenticatorAndroid::CanAuthenticateWithBiometricOrScreenLock() {
   return bridge_->CanAuthenticateWithBiometricOrScreenLock();
 }
 
-void DeviceAuthenticatorAndroid::Authenticate(
-    AuthenticateCallback callback,
-    bool use_last_valid_auth) {
+void DeviceAuthenticatorAndroid::Authenticate(AuthenticateCallback callback) {
   // Previous authentication is not yet completed, so return.
   if (callback_) {
     return;
@@ -111,7 +109,7 @@ void DeviceAuthenticatorAndroid::Authenticate(
 
   LogAuthSource(source_);
 
-  if (use_last_valid_auth && !NeedsToAuthenticate()) {
+  if (!NeedsToAuthenticate()) {
     LogAuthResult(source_, DeviceAuthFinalResult::kAuthStillValid);
     // No code should be run after the callback as the callback could already be
     // destroying "this".

@@ -58,9 +58,7 @@ bool DeviceAuthenticatorWin::CanAuthenticateWithBiometricOrScreenLock() {
          authenticator_->CanAuthenticateWithScreenLock();
 }
 
-void DeviceAuthenticatorWin::Authenticate(
-    AuthenticateCallback callback,
-    bool use_last_valid_auth) {
+void DeviceAuthenticatorWin::Authenticate(AuthenticateCallback callback) {
   NOTIMPLEMENTED();
 }
 

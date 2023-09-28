@@ -370,16 +370,14 @@ class PasswordAutofillManagerTest : public testing::Test {
 #else
     ON_CALL(*authenticator, CanAuthenticateWithBiometrics)
         .WillByDefault(Return(true));
-    EXPECT_CALL(*authenticator, Authenticate(_,
-                                             /*use_last_valid_auth= */ true));
+    EXPECT_CALL(*authenticator, Authenticate);
 #endif
   }
 
 #if BUILDFLAG(IS_ANDROID)
   void ExpectAndSimulateAuthenticationSuccess(
       device_reauth::MockDeviceAuthenticator* authenticator) {
-    EXPECT_CALL(*authenticator, Authenticate(_,
-                                             /*use_last_valid_auth= */ true))
+    EXPECT_CALL(*authenticator, Authenticate)
         .WillOnce(RunOnceCallback<0>(/*auth_succeeded=*/true));
   }
 #endif
@@ -1648,8 +1646,7 @@ TEST_F(PasswordAutofillManagerTest, FillsSuggestionIfAuthSuccessful) {
 #else
     ON_CALL(*authenticator, CanAuthenticateWithBiometrics)
         .WillByDefault(Return(true));
-    EXPECT_CALL(*authenticator, Authenticate(_,
-                                             /*use_last_valid_auth= */ true))
+    EXPECT_CALL(*authenticator, Authenticate)
         .WillOnce(RunOnceCallback<0>(/*auth_succeeded=*/true));
 #endif
 
@@ -1722,8 +1719,7 @@ TEST_F(PasswordAutofillManagerTest, DoesntFillSuggestionIfAuthFailed) {
 #else
     ON_CALL(*authenticator, CanAuthenticateWithBiometrics)
         .WillByDefault(Return(true));
-    EXPECT_CALL(*authenticator, Authenticate(_,
-                                             /*use_last_valid_auth= */ true))
+    EXPECT_CALL(*authenticator, Authenticate)
         .WillOnce(RunOnceCallback<0>(/*auth_succeeded=*/false));
 #endif
 

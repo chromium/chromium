@@ -35,8 +35,7 @@ class FakeChromeDeviceAuthenticatorCommon
   bool CanAuthenticateWithBiometricOrScreenLock() override;
 #endif
 
-  void Authenticate(AuthenticateCallback callback,
-                    bool use_last_valid) override;
+  void Authenticate(AuthenticateCallback callback) override;
 
   void AuthenticateWithMessage(const std::u16string& message,
                                AuthenticateCallback callback) override;
@@ -66,8 +65,7 @@ bool FakeChromeDeviceAuthenticatorCommon::
 #endif
 
 void FakeChromeDeviceAuthenticatorCommon::Authenticate(
-    AuthenticateCallback callback,
-    bool use_last_valid) {
+    AuthenticateCallback callback) {
   NOTIMPLEMENTED();
 }
 
@@ -140,3 +138,5 @@ TEST_F(ChromeDeviceAuthenticatorCommonTest, NeedAuthentication) {
   task_environment().FastForwardBy(kAuthValidityPeriod);
   EXPECT_TRUE(authenticator_pointer()->NeedsToAuthenticate());
 }
+
+// TODO(crbug.com/1476842): Add test for validity period of 0 seconds

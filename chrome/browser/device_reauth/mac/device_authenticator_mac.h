@@ -32,11 +32,7 @@ class DeviceAuthenticatorMac : public ChromeDeviceAuthenticatorCommon {
   // Triggers an authentication flow based on biometrics, with the
   // screen lock as fallback. Note: this only supports one authentication
   // request at a time.
-  // |use_last_valid_auth| if set to false, ignores the grace 60 seconds
-  // period between the last valid authentication and the current
-  // authentication, and re-invokes system authentication.
-  void Authenticate(AuthenticateCallback callback,
-                    bool use_last_valid_auth) override;
+  void Authenticate(AuthenticateCallback callback) override;
 
   // Triggers an OS-level authentication flow.
   // If biometrics are available, it creates touchIdAuthentication object,
