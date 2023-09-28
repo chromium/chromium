@@ -106,6 +106,12 @@ class StatisticsRecorderTest : public testing::TestWithParam<bool> {
       const StatisticsRecorder::SrAutoWriterLock auto_lock(
           StatisticsRecorder::GetLock());
       statistics_recorder_.reset(StatisticsRecorder::top_);
+      if (statistics_recorder_) {
+        // Prevent releasing ranges in test to avoid dangling pointers in
+        // created histogram objects.
+        statistics_recorder_->ranges_manager_
+            .DoNotReleaseRangesOnDestroyForTesting();
+      }
     }
     statistics_recorder_.reset();
     DCHECK(!HasGlobalRecorder());
