@@ -2646,7 +2646,7 @@
     Not allowed to automatically download multiple files
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_AUTO_PICTURE_IN_PICTURE_DESCRIPTION" desc="Description of the auto-picture-in-picture content setting.">
-    Sites use this setting to enter picture-in-picture mode if you switch tabs on certain sites. This lets you continue watching a video, while freeing up your screen for other tasks.
+    Sites use this setting to enter picture-in-picture automatically. This lets you continue watching a video, while freeing up your screen for other tasks.
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_AUTO_PICTURE_IN_PICTURE_ALLOWED" desc="Label for the enabled option of the auto-picture-in-picture content setting.">
     Sites can enter picture-in-picture automatically
