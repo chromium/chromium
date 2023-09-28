@@ -4,7 +4,8 @@
       "cros_board": "brya",
       "cros_chrome_version": "119.0.6024.0",
       "cros_img": "brya-release/R119-15626.0.0",
-      "autotest_name": "tast.chrome-from-gcs"
+      "autotest_name": "tast.chrome-from-gcs",
+      "dut_pool": "chrome"
     },
     "identifier": "BRYA_RELEASE_LKGM"
   },

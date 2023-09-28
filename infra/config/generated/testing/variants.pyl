@@ -434,6 +434,7 @@
       'cros_board': 'brya',
       'cros_img': 'brya-release/R119-15626.0.0',
       'autotest_name': 'tast.chrome-from-gcs',
+      'dut_pool': 'chrome',
     },
   },
   'CROS_BRYA_RELEASE_LKGM': {
