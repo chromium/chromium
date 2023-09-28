@@ -27,6 +27,23 @@
 #include "base/win/windows_version.h"
 #endif
 
+#if BUILDFLAG(IS_MAC)
+#include "base/mac/mac_util.h"
+
+BASE_FEATURE(kUseCGDisplayStreamCreateSonoma,
+             "UseCGDisplayStreamCreateSonoma",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// CGDisplayStreamCreate() is marked as deprecated from macOS 14 (Sonoma), so
+// don't use unless the feature flag is set.
+bool CGDisplayStreamCreateIsAvailable() {
+  if (base::mac::MacOSMajorVersion() >= 14) {
+    return base::FeatureList::IsEnabled(kUseCGDisplayStreamCreateSonoma);
+  }
+  return true;
+}
+#endif  // BUILDFLAG(IS_MAC)
+
 namespace content::desktop_capture {
 
 webrtc::DesktopCaptureOptions CreateDesktopCaptureOptions() {
@@ -46,7 +63,11 @@ webrtc::DesktopCaptureOptions CreateDesktopCaptureOptions() {
       ShouldEnumerateCurrentProcessWindows());
 
 #elif BUILDFLAG(IS_MAC)
-  if (base::FeatureList::IsEnabled(features::kIOSurfaceCapturer)) {
+  // Enabling IO surface capturer means that we will be using the
+  // CGDisplayStreamCreate() API. This is marked as deprecated from macOS 14
+  // (Sonoma), only use it if it's available.
+  if (base::FeatureList::IsEnabled(features::kIOSurfaceCapturer) &&
+      CGDisplayStreamCreateIsAvailable()) {
     options.set_allow_iosurface(true);
   }
 #endif
