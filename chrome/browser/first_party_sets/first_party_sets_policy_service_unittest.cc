@@ -15,6 +15,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
+#include "components/privacy_sandbox/tracking_protection_prefs.h"
 #include "content/public/browser/first_party_sets_handler.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
@@ -38,14 +39,16 @@ using ::testing::Optional;
 using ::testing::Pair;
 
 MATCHER_P(CarryingConfig, config, "") {
-  if (arg.is_null())
+  if (arg.is_null()) {
     return false;
+  }
   return ExplainMatchResult(testing::Eq(config), arg->config, result_listener);
 }
 
 MATCHER_P2(CarryingConfigAndCacheFilter, config, cache_filter, "") {
-  if (arg.is_null())
+  if (arg.is_null()) {
     return false;
+  }
   return arg->config == config && arg->cache_filter == cache_filter;
 }
 
@@ -206,11 +209,6 @@ class FirstPartySetsPolicyServiceTest
     first_party_sets_handler_.SetGlobalSets(std::move(global_sets));
   }
 
-  void SetEnabledPref(bool enabled) {
-    profile()->GetPrefs()->SetBoolean(
-        prefs::kPrivacySandboxRelatedWebsiteSetsEnabled, enabled);
-  }
-
   void SetInvokeCallbacksAsynchronously(bool asynchronous) {
     first_party_sets_handler_.set_invoke_callbacks_asynchronously(asynchronous);
   }
@@ -267,14 +265,38 @@ TEST_F(FirstPartySetsPolicyServiceTest,
   env().RunUntilIdle();
 }
 
-TEST_F(FirstPartySetsPolicyServiceTest,
+// Parameterized test class that controls whether the enabled pref status we are
+// setting is for the existing pref or the 3PCD prefs.
+class FirstPartySetsPolicyServicePrefTest
+    : public FirstPartySetsPolicyServiceTest,
+      public testing::WithParamInterface</*enable_3pcd=*/bool> {
+ public:
+  void SetRwsEnabledViaPref(bool enabled) {
+    bool enable_3pcd = GetParam();
+    if (enable_3pcd) {
+      profile()->GetPrefs()->SetBoolean(prefs::kTrackingProtection3pcdEnabled,
+                                        true);
+      profile()->GetPrefs()->SetBoolean(prefs::kBlockAll3pcToggleEnabled,
+                                        !enabled);
+    } else {
+      profile()->GetPrefs()->SetBoolean(
+          prefs::kPrivacySandboxRelatedWebsiteSetsEnabled, enabled);
+    }
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         FirstPartySetsPolicyServicePrefTest,
+                         testing::Bool());
+
+TEST_P(FirstPartySetsPolicyServicePrefTest,
        IsSiteInManagedSet_SiteInConfig_PrefDisabled) {
   net::SchemefulSite example_site(GURL("https://example.test"));
   SetContextConfig(net::FirstPartySetsContextConfig(
       {{example_site, net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
                           net::SchemefulSite(GURL("https://primary.test")),
                           net::SiteType::kAssociated, absl::nullopt))}}));
-  SetEnabledPref(false);
+  SetRwsEnabledViaPref(false);
   service()->InitForTesting();
   EXPECT_FALSE(service()->IsSiteInManagedSet(example_site));
   env().RunUntilIdle();
@@ -294,7 +316,7 @@ TEST_F(FirstPartySetsPolicyServiceTest,
   env().RunUntilIdle();
 }
 
-TEST_F(FirstPartySetsPolicyServiceTest, FindEntry_FpsDisabledByFeature) {
+TEST_P(FirstPartySetsPolicyServicePrefTest, FindEntry_FpsDisabledByFeature) {
   base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList features;
   net::SchemefulSite primary_site(GURL("https://primary.test"));
@@ -314,7 +336,7 @@ TEST_F(FirstPartySetsPolicyServiceTest, FindEntry_FpsDisabledByFeature) {
 
   // Simulate First-Party Sets disabled by the feature.
   features.InitAndDisableFeature(features::kFirstPartySets);
-  SetEnabledPref(true);
+  SetRwsEnabledViaPref(true);
   // Verify that FindEntry doesn't return associate1's entry when FPS is off.
   EXPECT_FALSE(service()->FindEntry(associate1_site));
   histogram_tester.ExpectUniqueSample(
@@ -322,7 +344,7 @@ TEST_F(FirstPartySetsPolicyServiceTest, FindEntry_FpsDisabledByFeature) {
   env().RunUntilIdle();
 }
 
-TEST_F(FirstPartySetsPolicyServiceTest, FindEntry_FpsDisabledByPref) {
+TEST_P(FirstPartySetsPolicyServicePrefTest, FindEntry_FpsDisabledByPref) {
   base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList features;
   net::SchemefulSite primary_site(GURL("https://primary.test"));
@@ -340,7 +362,7 @@ TEST_F(FirstPartySetsPolicyServiceTest, FindEntry_FpsDisabledByPref) {
 
   // Simulate First-Party Sets disabled by the preference.
   features.InitAndEnableFeature(features::kFirstPartySets);
-  SetEnabledPref(false);
+  SetRwsEnabledViaPref(false);
 
   service()->InitForTesting();
 
@@ -351,7 +373,7 @@ TEST_F(FirstPartySetsPolicyServiceTest, FindEntry_FpsDisabledByPref) {
   env().RunUntilIdle();
 }
 
-TEST_F(FirstPartySetsPolicyServiceTest,
+TEST_P(FirstPartySetsPolicyServicePrefTest,
        FindEntry_FpsEnabled_ReturnsEmptyUntilAllSetsReady) {
   base::test::ScopedFeatureList features;
   net::SchemefulSite primary_site(GURL("https://primary.test"));
@@ -361,7 +383,7 @@ TEST_F(FirstPartySetsPolicyServiceTest,
 
   // Fully enable First-Party Sets.
   features.InitAndEnableFeature(features::kFirstPartySets);
-  SetEnabledPref(true);
+  SetRwsEnabledViaPref(true);
   // Verify that FindEntry returns empty if the global sets and profile sets
   // aren't ready yet.
   EXPECT_FALSE(service()->FindEntry(associate1_site));
@@ -384,7 +406,7 @@ TEST_F(FirstPartySetsPolicyServiceTest,
   env().RunUntilIdle();
 }
 
-TEST_F(FirstPartySetsPolicyServiceTest,
+TEST_P(FirstPartySetsPolicyServicePrefTest,
        FindEntry_NumQueriesRecorded_BeforeConfigReady) {
   base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList features;
@@ -396,7 +418,7 @@ TEST_F(FirstPartySetsPolicyServiceTest,
 
   // Fully enable First-Party Sets.
   features.InitAndEnableFeature(features::kFirstPartySets);
-  SetEnabledPref(true);
+  SetRwsEnabledViaPref(true);
 
   // Simulate 3 FindEntry queries which all should return empty.
   EXPECT_FALSE(service()->FindEntry(associate_site));
@@ -428,7 +450,7 @@ TEST_F(FirstPartySetsPolicyServiceTest,
   env().RunUntilIdle();
 }
 
-TEST_F(FirstPartySetsPolicyServiceTest,
+TEST_P(FirstPartySetsPolicyServicePrefTest,
        FindEntry_NumQueriesRecorded_AfterConfigReady) {
   base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList features;
@@ -440,7 +462,7 @@ TEST_F(FirstPartySetsPolicyServiceTest,
 
   // Fully enable First-Party Sets.
   features.InitAndEnableFeature(features::kFirstPartySets);
-  SetEnabledPref(true);
+  SetRwsEnabledViaPref(true);
 
   // Simulate the global First-Party Sets with the following set:
   // { primary: "https://primary.test",
@@ -645,7 +667,7 @@ TEST_F(FirstPartySetsPolicyServiceTest,
   EXPECT_NE(future.Take(), net::FirstPartySetMetadata());
 }
 
-TEST_F(FirstPartySetsPolicyServiceTest,
+TEST_P(FirstPartySetsPolicyServicePrefTest,
        ComputeFirstPartySetMetadata_PrefDisabled) {
   net::SchemefulSite test_primary(GURL("https://a.test"));
   net::FirstPartySetEntry test_entry(test_primary, net::SiteType::kPrimary,
@@ -655,7 +677,7 @@ TEST_F(FirstPartySetsPolicyServiceTest,
 
   SetContextConfig(test_config.Clone());
   SetInvokeCallbacksAsynchronously(/*asynchronous=*/false);
-  SetEnabledPref(false);
+  SetRwsEnabledViaPref(false);
 
   service()->InitForTesting();
 
