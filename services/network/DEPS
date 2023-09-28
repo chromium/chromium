@@ -3,6 +3,7 @@ include_rules = [
   "+components/content_settings/core/common",
   "+components/cookie_config",
   "+components/domain_reliability",
+  "+components/miracle_parameter",
   "+components/network_session_configurator",
   "+components/os_crypt/sync",
   # Prefs are used to create an independent file with a persisted key:value

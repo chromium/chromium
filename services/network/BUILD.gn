@@ -307,6 +307,7 @@ component("network_service") {
     "//components/content_settings/core/common",
     "//components/cookie_config",
     "//components/domain_reliability",
+    "//components/miracle_parameter/common",
     "//components/network_session_configurator/browser",
     "//components/network_session_configurator/common",
     "//components/os_crypt/sync",

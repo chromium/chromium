@@ -25,6 +25,7 @@
 #include "base/time/tick_clock.h"
 #include "base/trace_event/trace_event.h"
 #include "base/unguessable_token.h"
+#include "components/miracle_parameter/common/public/miracle_parameter.h"
 #include "net/base/isolation_info.h"
 #include "net/base/load_flags.h"
 #include "net/base/request_priority.h"
@@ -106,11 +107,12 @@ BASE_FEATURE(kDelayablePriorityThresholdFeature,
              "DelayablePriorityThresholdFeature",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::FeatureParam<net::RequestPriority>::Option kRequestPriorities[] = {
-    {net::LOWEST, "lowest"},
-    {net::LOW, "low"},
-    {net::MEDIUM, "medium"},
-    {net::HIGHEST, "highest"},
+constexpr base::FeatureParam<net::RequestPriority>::Option
+    kRequestPriorities[] = {
+        {net::LOWEST, "lowest"},
+        {net::LOW, "low"},
+        {net::MEDIUM, "medium"},
+        {net::HIGHEST, "highest"},
 };
 
 }  // namespace
@@ -118,17 +120,18 @@ const base::FeatureParam<net::RequestPriority>::Option kRequestPriorities[] = {
 // The maximum number of requests to allow be in-flight at any point in time per
 // host. This limit does not apply to hosts that support request prioritization
 // when |delay_requests_on_multiplexed_connections| is true.
-constexpr base::FeatureParam<int> kMaxNumDelayableRequestsPerHostPerClient(
-    &kMaxNumDelayableRequestsPerHostPerClientFeature,
-    "MaxNumDelayableRequestsPerHostPerClient",
-    6);
+constexpr miracle_parameter::MiracleParameter<int>
+    kMaxNumDelayableRequestsPerHostPerClient(
+        &kMaxNumDelayableRequestsPerHostPerClientFeature,
+        "MaxNumDelayableRequestsPerHostPerClient",
+        6);
 
 // The priority level below which resources are considered to be delayable.
-constexpr base::FeatureParam<net::RequestPriority> kDelayablePriorityThreshold(
-    &kDelayablePriorityThresholdFeature,
-    "DelayablePriorityThreshold",
-    net::MEDIUM,
-    &kRequestPriorities);
+constexpr miracle_parameter::MiracleParameter<net::RequestPriority>
+    kDelayablePriorityThreshold(&kDelayablePriorityThresholdFeature,
+                                "DelayablePriorityThreshold",
+                                net::MEDIUM,
+                                base::make_span(kRequestPriorities));
 
 // Returns the duration after which the timer to dispatch queued requests should
 // fire.
