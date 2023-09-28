@@ -5,14 +5,11 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_SUGGESTION_GENERATOR_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_SUGGESTION_GENERATOR_H_
 
-#include <map>
 #include <string>
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/types/id_type.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_wallet_usage_data.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -35,7 +32,6 @@ class AutofillOfferData;
 class AutofillType;
 class CreditCard;
 struct FormFieldData;
-class FormStructure;
 class Iban;
 class PersonalDataManager;
 
@@ -50,8 +46,9 @@ class AutofillSuggestionGenerator {
   AutofillSuggestionGenerator& operator=(const AutofillSuggestionGenerator&) =
       delete;
 
-  // Generates suggestions for all available profiles based on the `form` and
-  // the value of `field` of type `field_type`.
+  // Generates suggestions for a form containing the given `field_types`. It
+  // considers all available profiles, deduplicates them based on the types and
+  // returns one suggestion per remaining profile.
   // `last_targeted_fields` is used to know which fields were targeted on a
   // prior form interaction. In the context of granular filling, this could lead
   // the user to be in one of the available filling granularities, field by
@@ -60,11 +57,10 @@ class AutofillSuggestionGenerator {
   // only use fillable fields for suggestion deduplication and label generation.
   // It is assumed that skip_statuses and form_structure have the sane size.
   std::vector<Suggestion> GetSuggestionsForProfiles(
-      const FormStructure& form,
-      const FormFieldData& field,
-      AutofillType field_type,
-      absl::optional<ServerFieldTypeSet> last_targeted_fields,
-      base::span<FieldFillingSkipReason> skip_statuses);
+      const ServerFieldTypeSet& field_types,
+      const FormFieldData& triggering_field,
+      AutofillType triggering_field_type,
+      absl::optional<ServerFieldTypeSet> last_targeted_fields);
 
   // Returns a list of profiles that will be displayed as suggestions to the
   // user. This involved many steps from fetching the profiles to matching with

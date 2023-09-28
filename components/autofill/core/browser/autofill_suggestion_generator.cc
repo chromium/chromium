@@ -12,12 +12,10 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/uuid.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_browser_util.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_experiments.h"
-#include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_optimization_guide.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
@@ -28,12 +26,10 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
-#include "components/autofill/core/browser/metrics/log_event.h"
 #include "components/autofill/core/browser/metrics/payments/card_metadata_metrics.h"
 #include "components/autofill/core/browser/payments/autofill_offer_manager.h"
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
-#include "components/autofill/core/browser/strike_databases/autofill_profile_migration_strike_database.h"
 #include "components/autofill/core/browser/ui/label_formatter.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
@@ -220,25 +216,16 @@ AutofillSuggestionGenerator::AutofillSuggestionGenerator(
 AutofillSuggestionGenerator::~AutofillSuggestionGenerator() = default;
 
 std::vector<Suggestion> AutofillSuggestionGenerator::GetSuggestionsForProfiles(
-    const FormStructure& form,
-    const FormFieldData& field,
-    AutofillType field_type,
-    absl::optional<ServerFieldTypeSet> last_targeted_fields,
-    base::span<FieldFillingSkipReason> skip_statuses) {
-  ServerFieldTypeSet field_types;
-  CHECK_EQ(skip_statuses.size(), form.field_count());
-  for (size_t i = 0; i < form.field_count(); ++i) {
-    if (skip_statuses[i] == FieldFillingSkipReason::kNotSkipped) {
-      field_types.insert(form.field(i)->Type().GetStorableType());
-    }
-  }
-
-  std::vector<AutofillProfile*> profiles_to_suggest = GetProfilesToSuggest(
-      field_type, field.value, field.is_autofilled, field_types);
-
-  return CreateSuggestionsFromProfiles(profiles_to_suggest, field_types,
-                                       last_targeted_fields, field_type,
-                                       field.max_length);
+    const ServerFieldTypeSet& field_types,
+    const FormFieldData& triggering_field,
+    AutofillType triggering_field_type,
+    absl::optional<ServerFieldTypeSet> last_targeted_fields) {
+  std::vector<AutofillProfile*> profiles_to_suggest =
+      GetProfilesToSuggest(triggering_field_type, triggering_field.value,
+                           triggering_field.is_autofilled, field_types);
+  return CreateSuggestionsFromProfiles(
+      profiles_to_suggest, field_types, last_targeted_fields,
+      triggering_field_type, triggering_field.max_length);
 }
 
 std::vector<AutofillProfile*> AutofillSuggestionGenerator::GetProfilesToSuggest(

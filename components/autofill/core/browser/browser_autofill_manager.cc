@@ -2862,9 +2862,15 @@ std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
           : std::vector<FieldFillingSkipReason>(
                 form_structure.field_count(),
                 FieldFillingSkipReason::kNotSkipped);
+  ServerFieldTypeSet field_types;
+  for (size_t i = 0; i < form_structure.field_count(); ++i) {
+    if (skip_statuses[i] == FieldFillingSkipReason::kNotSkipped) {
+      field_types.insert(form_structure.field(i)->Type().GetStorableType());
+    }
+  }
   return suggestion_generator_->GetSuggestionsForProfiles(
-      form_structure, field, autofill_field.Type(),
-      last_address_fields_to_fill_for_section, skip_statuses);
+      field_types, field, autofill_field.Type(),
+      last_address_fields_to_fill_for_section);
 }
 
 std::vector<Suggestion> BrowserAutofillManager::GetCreditCardSuggestions(
