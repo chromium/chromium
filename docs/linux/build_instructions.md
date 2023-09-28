@@ -155,7 +155,7 @@ sorted so that the things that make the biggest difference are first.
 
 #### Use reclient
 
-If you are a Google employee, see
+If you are a Google employee, do not follow the instructions below. See
 [go/chrome-linux-build#using-reclient-for-build](http://go/chrome-linux-build#using-reclient-for-build)
 instead.
 

@@ -21,19 +21,20 @@ assert(!is_win || !use_goma || is_clang,
 
 if (use_goma) {
   if (host_os == "win") {
-    print("WARNING: use_goma=true will be deprecated by EOY 2023. " +
+    print("The gn arg use_goma=true will be deprecated by EOY 2023. " +
           "Please use `use_remoteexec=true` instead. See " +
           "https://chromium.googlesource.com/chromium/src/+/main/docs/" +
-          "windows_build_instructions.md#use-reclient for more info.")
+          "windows_build_instructions.md#use-reclient " +
+          "for setup instructions.")
   } else if (host_os == "mac") {
-    print("WARNING: use_goma=true will be deprecated by EOY 2023. " +
+    print("The gn arg use_goma=true will be deprecated by EOY 2023. " +
           "Please use `use_remoteexec=true` instead. " +
-          "If you are a googler see " +
-          "go/building-chrome-mac#using-reclient-for-build for more info.")
+          "If you are a googler see http://go/building-chrome-mac" +
+          "#using-remote-execution for setup instructions.")
   } else {
-    print("WARNING: use_goma=true will be deprecated by EOY 2023. " +
+    print("The gn arg use_goma=true will be deprecated by EOY 2023. " +
           "Please use `use_remoteexec=true` instead. See " +
           "https://chromium.googlesource.com/chromium/src/+/main/docs/" +
-          "linux/build_instructions.md#use-reclient for more info.")
+          "linux/build_instructions.md#use-reclient for setup instructions.")
   }
 }
