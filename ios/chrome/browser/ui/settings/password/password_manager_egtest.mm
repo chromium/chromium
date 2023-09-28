@@ -742,6 +742,8 @@ void CheckPasswordManagerWidgetPromoInstructionScreenVisible(
             (testDismissPasswordManagerWidgetPromoInstructionsScreen)] ||
       [self isRunningTest:@selector
             (testPasswordManagerWidgetPromoInstructionsDeviceOrientation)]) {
+    config.features_enabled.push_back(
+        password_manager::features::kIOSPasswordAuthOnEntryV2);
     config.additional_args.push_back(
         base::StringPrintf("--enable-features=%s:chosen_feature/"
                            "IPH_iOSPromoPasswordManagerWidget",
