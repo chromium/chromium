@@ -17,7 +17,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/input/input_router_config_helper.h"
-#include "content/browser/renderer_host/input/touchpad_tap_suppression_controller.h"
+#include "content/common/input/touchpad_tap_suppression_controller.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
 #include "third_party/blink/public/common/input/web_input_event.h"

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/renderer_host/input/touchpad_tap_suppression_controller.h"
+#include "content/common/input/touchpad_tap_suppression_controller.h"
 
 namespace content {
 
