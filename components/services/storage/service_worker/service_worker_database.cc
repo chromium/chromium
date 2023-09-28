@@ -683,14 +683,15 @@ absl::optional<blink::ServiceWorkerRouterCondition> ConvertToBlinkCondition(
       ret.running_status = running_status;
       break;
     }
-    case ServiceWorkerRegistrationData::RouterRules::RuleV1::Condition::kOr: {
+    case ServiceWorkerRegistrationData::RouterRules::RuleV1::Condition::
+        kOrCondition: {
       ret.type = blink::ServiceWorkerRouterCondition::Type::kOr;
-      if (!condition.has_or_()) {
+      if (!condition.has_or_condition()) {
         return absl::nullopt;
       }
       blink::ServiceWorkerRouterOrCondition or_condition;
 
-      const auto& pb_conditions = condition.or_().conditions();
+      const auto& pb_conditions = condition.or_condition().conditions();
       or_condition.conditions.reserve(pb_conditions.size());
       for (const auto& pb_c : pb_conditions) {
         absl::optional<blink::ServiceWorkerRouterCondition> c =
@@ -944,7 +945,7 @@ void WriteConditionToProto(
     }
     case blink::ServiceWorkerRouterCondition::Type::kOr: {
       const auto& conditions = condition.or_condition->conditions;
-      auto* pb_conditions = out->mutable_or_()->mutable_conditions();
+      auto* pb_conditions = out->mutable_or_condition()->mutable_conditions();
       pb_conditions->Reserve(conditions.size());
       for (auto&& c : conditions) {
         auto* e_out = pb_conditions->Add();
