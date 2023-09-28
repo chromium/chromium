@@ -16,6 +16,7 @@
 #include "content/public/common/content_features.h"
 #include "mojo/public/c/system/data_pipe.h"
 #include "net/http/http_status_code.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/record_ontransfersizeupdate_utils.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 
@@ -40,12 +41,15 @@ MojoResult CreateDataPipe(mojo::ScopedDataPipeProducerHandle& producer_handle,
 }
 }  // namespace
 
+uint32_t
+    ServiceWorkerRaceNetworkRequestURLLoaderClient::data_pipe_size_for_test_ =
+        0;
+
 ServiceWorkerRaceNetworkRequestURLLoaderClient::
     ServiceWorkerRaceNetworkRequestURLLoaderClient(
         const network::ResourceRequest& request,
         base::WeakPtr<ServiceWorkerResourceLoader> owner,
-        mojo::PendingRemote<network::mojom::URLLoaderClient> forwarding_client,
-        uint32_t data_pipe_capacity_num_bytes)
+        mojo::PendingRemote<network::mojom::URLLoaderClient> forwarding_client)
     : request_(request),
       owner_(std::move(owner)),
       forwarding_client_(std::move(forwarding_client)),
@@ -58,10 +62,9 @@ ServiceWorkerRaceNetworkRequestURLLoaderClient::
                          "ServiceWorkerRaceNetworkRequestURLLoaderClient::"
                          "ServiceWorkerRaceNetworkRequestURLLoaderClient",
                          TRACE_ID_LOCAL(this), TRACE_EVENT_FLAG_FLOW_OUT);
-  // The feature param may override the buffer size.
-  uint32_t data_pipe_size = base::GetFieldTrialParamByFeatureAsInt(
-      features::kServiceWorkerBypassFetchHandler,
-      "data_pipe_capacity_num_bytes", data_pipe_capacity_num_bytes);
+
+  uint32_t data_pipe_size = ServiceWorkerRaceNetworkRequestURLLoaderClient::
+      GetDataPipeCapacityBytes();
   // Create two data pipes. One is for RaceNetworkRequest. The other is for the
   // corresponding request in the fetch handler.
   if (CreateDataPipe(data_pipe_for_race_network_request_.producer,
@@ -753,5 +756,20 @@ ServiceWorkerRaceNetworkRequestURLLoaderClient::NetworkTrafficAnnotationTag() {
       "register a service worker. Using either URLBlocklist or URLAllowlist "
       "policies (or a combination of both) limits the scope of these requests."
 )");
+}
+
+uint32_t
+ServiceWorkerRaceNetworkRequestURLLoaderClient::GetDataPipeCapacityBytes() {
+  return data_pipe_size_for_test_ > 0
+             ? data_pipe_size_for_test_
+             : network::features::GetDataPipeDefaultAllocationSize(
+                   network::features::DataPipeAllocationSize::
+                       kLargerSizeIfPossible);
+}
+
+// static
+void ServiceWorkerRaceNetworkRequestURLLoaderClient::
+    SetDataPipeCapacityBytesForTest(uint32_t size) {
+  data_pipe_size_for_test_ = size;
 }
 }  // namespace content

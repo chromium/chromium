@@ -237,11 +237,9 @@ bool ServiceWorkerSubresourceLoader::StartRaceNetworkRequest() {
       resource_request_.url);
 
   DCHECK(!race_network_request_loader_client_);
-  race_network_request_loader_client_.emplace(
-      resource_request_, weak_factory_.GetWeakPtr(),
-      std::move(forwarding_client),
-      network::features::GetDataPipeDefaultAllocationSize(
-          network::features::DataPipeAllocationSize::kLargerSizeIfPossible));
+  race_network_request_loader_client_.emplace(resource_request_,
+                                              weak_factory_.GetWeakPtr(),
+                                              std::move(forwarding_client));
 
   // If the initial state is not kWaitForBody, that means creating data pipes
   // failed. Do not start RaceNetworkRequest this case.

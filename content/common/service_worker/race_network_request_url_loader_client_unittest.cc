@@ -255,11 +255,12 @@ class ServiceWorkerRaceNetworkRequestURLLoaderClientTest
   }
 
   void SetUpURLLoaderClient(uint32_t data_pipe_capacity_num_bytes) {
+    ServiceWorkerRaceNetworkRequestURLLoaderClient::
+        SetDataPipeCapacityBytesForTest(data_pipe_capacity_num_bytes);
     mojo::PendingRemote<network::mojom::URLLoaderClient> forwarding_client;
     client_for_fetch_handler_->Bind(&forwarding_client);
     client_ = std::make_unique<ServiceWorkerRaceNetworkRequestURLLoaderClient>(
-        *CreateRequest(), owner_->GetWeakPtr(), std::move(forwarding_client),
-        data_pipe_capacity_num_bytes);
+        *CreateRequest(), owner_->GetWeakPtr(), std::move(forwarding_client));
     EXPECT_EQ(
         client_->state(),
         ServiceWorkerRaceNetworkRequestURLLoaderClient::State::kWaitForBody);
