@@ -36,21 +36,18 @@
 #include <memory>
 
 #include "base/memory/scoped_refptr.h"
-#include "base/time/time.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
-#include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
-#include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/loader/keep_alive_handle.mojom-blink.h"
 #include "third_party/blink/public/platform/web_common.h"
-#include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url_request.h"
-#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/renderer/platform/loader/fetch/loader_freeze_mode.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace base {
 class SingleThreadTaskRunner;
+class TimeDelta;
 class WaitableEvent;
 }  // namespace base
 
@@ -61,15 +58,15 @@ struct ResourceRequest;
 
 namespace blink {
 
-class ResourceLoadInfoNotifierWrapper;
 class BackForwardCacheLoaderHelper;
 class BlobDataHandle;
+class ResourceLoadInfoNotifierWrapper;
 class ResourceRequestSender;
-class WebURLRequestExtraData;
 class URLLoaderClient;
-class WebURLResponse;
-struct WebURLError;
 class URLLoaderThrottle;
+struct WebURLError;
+class WebURLRequestExtraData;
+class WebURLResponse;
 
 class BLINK_PLATFORM_EXPORT URLLoader {
  public:
