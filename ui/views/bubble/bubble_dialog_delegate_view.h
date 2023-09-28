@@ -6,6 +6,7 @@
 #define UI_VIEWS_BUBBLE_BUBBLE_DIALOG_DELEGATE_VIEW_H_
 
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/gtest_prod_util.h"
@@ -315,6 +316,35 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
   void SizeToContents();
 
  protected:
+  // A helper class for logging UMA metrics related to bubbles.
+  // The class logs metrics to:
+  // 1. An aggregated histogram for all bubbles.
+  // 2. A histogram specific to a bubble subclass when its name is provided.
+  class BubbleUmaLogger {
+   public:
+    BubbleUmaLogger();
+    ~BubbleUmaLogger();
+
+    void set_bubble_name(std::string bubble_name) {
+      bubble_name_ = bubble_name;
+    }
+
+    base::WeakPtr<BubbleUmaLogger> GetWeakPtr();
+
+    // Logs a metric value to UMA histograms. This method logs to:
+    // - "Bubble.All.{histogram_name}" for the general bubble metric.
+    // - "Bubble.{bubble_name}.{histogram_name}" for a specific bubble
+    //   subclass, if `bubble_name` is set.
+    template <typename Value>
+    void LogMetric(void (*uma_func)(const std::string&, Value),
+                   std::string histogram_name,
+                   Value value) const;
+
+   private:
+    absl::optional<std::string> bubble_name_;
+    base::WeakPtrFactory<BubbleUmaLogger> weak_factory_{this};
+  };
+
   // Override this method if you want to position the bubble regardless of its
   // anchor, while retaining the other anchor view logic.
   virtual gfx::Rect GetBubbleBounds();
@@ -329,6 +359,8 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
   void set_color_internal(SkColor color) { color_ = color; }
 
   bool color_explicitly_set() const { return color_explicitly_set_; }
+
+  BubbleUmaLogger& bubble_uma_logger() { return bubble_uma_logger_; }
 
   // Redeclarations of virtuals that BubbleDialogDelegate used to inherit from
   // WidgetObserver. These should not exist; do not add new overrides of them.
@@ -457,6 +489,9 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
 
   // Used to ensure the button remains anchored while this dialog is open.
   absl::optional<Button::ScopedAnchorHighlight> button_anchor_higlight_;
+
+  // The helper class that logs common bubble metrics.
+  BubbleUmaLogger bubble_uma_logger_;
 
   absl::optional<base::TimeTicks> bubble_created_time_;
 
