@@ -5655,8 +5655,12 @@ Element* AXObject::GetClosestElement() const {
   if (!element) {
     for (AXObject* parent = ParentObject(); parent;
          parent = parent->ParentObject()) {
-      if (parent) {
-        return parent->GetElement();
+      // It's possible to have a parent without a node here if the parent is a
+      // pseudo element descendant. Since we're looking for the nearest element,
+      // keep going up the ancestor chain until we find a parent that has one.
+      element = parent->GetElement();
+      if (element) {
+        return element;
       }
     }
   }
