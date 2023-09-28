@@ -112,6 +112,4 @@ AutofillBubbleBase* TestAutofillBubbleHandler::ShowMandatoryReauthBubble(
   return mandatory_reauth_bubble_view_.get();
 }
 
-void TestAutofillBubbleHandler::OnPasswordSaved() {}
-
 }  // namespace autofill

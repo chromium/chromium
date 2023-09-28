@@ -319,8 +319,6 @@ AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowMandatoryReauthBubble(
   }
 }
 
-void AutofillBubbleHandlerImpl::OnPasswordSaved() {}
-
 void AutofillBubbleHandlerImpl::OnAvatarHighlightAnimationFinished() {
   if (should_show_sign_in_promo_if_applicable_) {
     should_show_sign_in_promo_if_applicable_ = false;

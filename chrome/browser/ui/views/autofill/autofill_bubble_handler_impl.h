@@ -79,8 +79,6 @@ class AutofillBubbleHandlerImpl : public AutofillBubbleHandler,
       bool is_user_gesture,
       MandatoryReauthBubbleType bubble_type) override;
 
-  void OnPasswordSaved() override;
-
   // AvatarToolbarButton::Observer:
   void OnAvatarHighlightAnimationFinished() override;
 
