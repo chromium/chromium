@@ -171,6 +171,15 @@ struct CredentialUIEntry {
   std::vector<DomainInfo> GetAffiliatedDomains() const;
 };
 
+// Creates key for sorting password or password exception entries. The key is
+// eTLD+1 followed by the reversed list of domains (e.g.
+// secure.accounts.example.com => example.com.com.example.accounts.secure) and
+// the scheme. If |form| is not blocklisted, username, password and federation
+// are appended to the key. If not, no further information is added. For Android
+// credentials the canocial spec is included.
+// TODO(vsemeniuk): find a better name for this function.
+std::string CreateSortKey(const CredentialUIEntry& credential);
+
 bool operator==(const CredentialUIEntry& lhs, const CredentialUIEntry& rhs);
 bool operator!=(const CredentialUIEntry& lhs, const CredentialUIEntry& rhs);
 bool operator<(const CredentialUIEntry& lhs, const CredentialUIEntry& rhs);

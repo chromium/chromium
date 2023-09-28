@@ -4,6 +4,7 @@
 
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 
+#include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/form_parsing/form_data_parser.h"
@@ -13,6 +14,7 @@
 #include "components/password_manager/core/browser/password_ui_utils.h"
 #include "components/password_manager/core/browser/well_known_change_password/well_known_change_password_util.h"
 #include "components/url_formatter/elide_url.h"
+#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 
 namespace password_manager {
 
@@ -21,9 +23,26 @@ namespace {
 constexpr char kPlayStoreAppPrefix[] =
     "https://play.google.com/store/apps/details?id=";
 
+constexpr char kSortKeyPartsSeparator = ' ';
+
+// The character that is added to a sort key if there is no federation.
+// Note: to separate the entries w/ federation and the entries w/o federation,
+// this character should be alphabetically smaller than real federations.
+constexpr char kSortKeyNoFederationSymbol = '-';
+
+// Symbols to differentiate between passwords and passkeys.
+constexpr char kSortKeyPasswordSymbol = 'w';
+
 std::string GetOrigin(const url::Origin& origin) {
   return base::UTF16ToUTF8(url_formatter::FormatOriginForSecurityDisplay(
       origin, url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
+}
+
+std::string SplitByDotAndReverse(base::StringPiece host) {
+  std::vector<base::StringPiece> parts = base::SplitStringPiece(
+      host, ".", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+  std::reverse(parts.begin(), parts.end());
+  return base::JoinString(parts, ".");
 }
 
 }  // namespace
@@ -261,6 +280,65 @@ CredentialUIEntry::GetAffiliatedDomains() const {
     }
   }
   return domains;
+}
+
+std::string CreateSortKey(const CredentialUIEntry& credential) {
+  std::string shown_origin = GetShownOrigin(credential);
+
+  const auto facet_uri =
+      FacetURI::FromPotentiallyInvalidSpec(credential.GetFirstSignonRealm());
+  const bool is_android_uri = facet_uri.IsValidAndroidFacetURI();
+
+  if (is_android_uri) {
+    // In case of Android credentials |GetShownOriginAndLinkURl| might return
+    // the app display name, e.g. the Play Store name of the given application.
+    // This might or might not correspond to the eTLD+1, which is why
+    // |shown_origin| is set to the reversed android package name in this case,
+    // e.g. com.example.android => android.example.com.
+    shown_origin = facet_uri.GetAndroidPackageDisplayName();
+  }
+
+  std::string site_name =
+      net::registry_controlled_domains::GetDomainAndRegistry(
+          shown_origin,
+          net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+  if (site_name.empty()) {  // e.g. localhost.
+    site_name = shown_origin;
+  }
+
+  std::string key = site_name + kSortKeyPartsSeparator;
+
+  // Since multiple distinct credentials might have the same site name, more
+  // information is added. For Android credentials this includes the full
+  // canonical spec which is guaranteed to be unique for a given App.
+  key += is_android_uri ? facet_uri.canonical_spec()
+                        : SplitByDotAndReverse(shown_origin);
+
+  if (!credential.blocked_by_user) {
+    key += kSortKeyPartsSeparator + base::UTF16ToUTF8(credential.username) +
+           kSortKeyPartsSeparator + base::UTF16ToUTF8(credential.password);
+
+    key += kSortKeyPartsSeparator;
+    if (!credential.federation_origin.opaque()) {
+      key += credential.federation_origin.host();
+    } else {
+      key += kSortKeyNoFederationSymbol;
+    }
+  }
+
+  // To separate HTTP/HTTPS credentials, add the scheme to the key.
+  key += kSortKeyPartsSeparator + GetShownUrl(credential).scheme();
+
+  // Separate passwords from passkeys.
+  key += kSortKeyPartsSeparator;
+  if (credential.passkey_credential_id.empty()) {
+    key += kSortKeyPasswordSymbol;
+  } else {
+    key += base::UTF16ToUTF8(credential.user_display_name) +
+           kSortKeyPartsSeparator +
+           base::HexEncode(credential.passkey_credential_id);
+  }
+  return key;
 }
 
 bool operator==(const CredentialUIEntry& lhs, const CredentialUIEntry& rhs) {

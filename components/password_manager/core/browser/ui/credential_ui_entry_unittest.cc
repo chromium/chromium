@@ -281,4 +281,51 @@ TEST(CredentialUIEntryTest, TestGetChangeURLWebForm) {
   EXPECT_EQ(entry.GetChangePasswordURL(), GURL(kTestComChangePassword));
 }
 
+TEST(CredentialUIEntryTest, EntriesDifferingByStoreShouldMapToSameKey) {
+  PasswordForm account_form;
+  account_form.signon_realm = "https://g.com/";
+  account_form.url = GURL(account_form.signon_realm);
+  account_form.blocked_by_user = false;
+  account_form.in_store = PasswordForm::Store::kAccountStore;
+
+  PasswordForm profile_form(account_form);
+  profile_form.in_store = PasswordForm::Store::kProfileStore;
+
+  EXPECT_EQ(CreateSortKey(CredentialUIEntry(account_form)),
+            CreateSortKey(CredentialUIEntry(profile_form)));
+}
+
+TEST(CredentialUIEntryTest, PasskeyVsPasswordSortKey) {
+  PasswordForm form;
+  form.signon_realm = "https://test.com/";
+  form.url = GURL(form.signon_realm);
+  form.username_value = u"victor";
+  CredentialUIEntry password(std::move(form));
+
+  PasskeyCredential passkey_credential(
+      PasskeyCredential::Source::kAndroidPhone,
+      PasskeyCredential::RpId("test.com"),
+      PasskeyCredential::CredentialId({1, 2, 3, 4}),
+      PasskeyCredential::UserId(), PasskeyCredential::Username("victor"));
+  CredentialUIEntry passkey(std::move(passkey_credential));
+
+  EXPECT_NE(CreateSortKey(password), CreateSortKey(passkey));
+}
+
+// Tests that two passkeys that are equal in everything but the display name
+// have different sort keys.
+TEST(CredentialUIEntryTest, PasskeyDifferentSortKeyForDifferentDisplayName) {
+  PasskeyCredential passkey_credential(
+      PasskeyCredential::Source::kAndroidPhone,
+      PasskeyCredential::RpId("test.com"),
+      PasskeyCredential::CredentialId({1, 2, 3, 4}),
+      PasskeyCredential::UserId(), PasskeyCredential::Username("victor"),
+      PasskeyCredential::DisplayName("Display Name 1"));
+  CredentialUIEntry passkey1(std::move(passkey_credential));
+  CredentialUIEntry passkey2 = passkey1;
+  passkey2.user_display_name = u"Display Name 2";
+
+  EXPECT_NE(CreateSortKey(passkey1), CreateSortKey(passkey2));
+}
+
 }  // namespace password_manager
