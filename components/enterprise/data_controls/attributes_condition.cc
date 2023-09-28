@@ -4,7 +4,10 @@
 
 #include "components/enterprise/data_controls/attributes_condition.h"
 
+#include <algorithm>
+
 #include "base/containers/contains.h"
+#include "base/memory/ptr_util.h"
 #include "components/url_matcher/url_util.h"
 
 namespace data_controls {
@@ -21,29 +24,14 @@ constexpr char kKeyComponents[] = "components";
 
 }  // namespace
 
-AttributesCondition::AttributesCondition() = default;
 AttributesCondition::~AttributesCondition() = default;
 
-// static
-std::unique_ptr<AttributesCondition> AttributesCondition::Create(
-    const base::Value& value) {
-  if (!value.is_dict()) {
-    return nullptr;
-  }
-
-  return AttributesCondition::Create(value.GetDict());
-}
-
-// static
-std::unique_ptr<AttributesCondition> AttributesCondition::Create(
-    const base::Value::Dict& value) {
-  auto attributes_condition = std::make_unique<AttributesCondition>();
-
+AttributesCondition::AttributesCondition(const base::Value::Dict& value) {
   const base::Value::List* urls_value = value.FindList(kKeyUrls);
   if (urls_value) {
     for (const base::Value& url_pattern : *urls_value) {
       if (!url_pattern.is_string()) {
-        return nullptr;
+        return;
       }
     }
 
@@ -52,7 +40,7 @@ std::unique_ptr<AttributesCondition> AttributesCondition::Create(
     url_matcher::util::AddFilters(url_matcher.get(), true, &id, *urls_value);
 
     if (!url_matcher->IsEmpty()) {
-      attributes_condition->url_matcher_ = std::move(url_matcher);
+      url_matcher_ = std::move(url_matcher);
     }
   }
 
@@ -70,31 +58,12 @@ std::unique_ptr<AttributesCondition> AttributesCondition::Create(
         components.insert(component);
       }
     }
-    attributes_condition->components_ = std::move(components);
+    components_ = std::move(components);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
-
-  if (attributes_condition->IsValid()) {
-    return attributes_condition;
-  }
-
-  return nullptr;
 }
 
-bool AttributesCondition::IsTriggered(
-    const ActionContext& action_context) const {
-#if BUILDFLAG(IS_CHROMEOS)
-  if (!components_.empty() &&
-      !base::Contains(components_, action_context.component)) {
-    return false;
-  }
-#endif
-  if (url_matcher_ && action_context.url.is_valid() &&
-      url_matcher_->MatchURL(action_context.url).empty()) {
-    return false;
-  }
-  return true;
-}
+AttributesCondition::AttributesCondition(AttributesCondition&& other) = default;
 
 bool AttributesCondition::IsValid() const {
 #if BUILDFLAG(IS_CHROMEOS)
@@ -103,5 +72,98 @@ bool AttributesCondition::IsValid() const {
   return url_matcher_ && !url_matcher_->IsEmpty();
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
+
+bool AttributesCondition::URLMatches(GURL url) const {
+  // Without URLs to match, any URL is considered to pass the condition.
+  if (!url_matcher_) {
+    return true;
+  }
+
+  // With URLs to match, an invalid URL is considered as not matching the
+  // condition.
+  if (!url.is_valid()) {
+    return false;
+  }
+
+  return !url_matcher_->MatchURL(url).empty();
+}
+
+#if BUILDFLAG(IS_CHROMEOS)
+bool AttributesCondition::ComponentMatches(Component component) const {
+  // Without components to match, any URL is considered to pass the condition.
+  if (components_.empty()) {
+    return true;
+  }
+
+  // With components to match, `component` needs to be in the set to pass the
+  // condition.
+  return base::Contains(components_, component);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+// static
+std::unique_ptr<Condition> SourceAttributesCondition::Create(
+    const base::Value& value) {
+  if (!value.is_dict()) {
+    return nullptr;
+  }
+
+  return SourceAttributesCondition::Create(value.GetDict());
+}
+
+// static
+std::unique_ptr<Condition> SourceAttributesCondition::Create(
+    const base::Value::Dict& value) {
+  AttributesCondition attributes_condition(value);
+  if (!attributes_condition.IsValid()) {
+    return nullptr;
+  }
+  return base::WrapUnique(
+      new SourceAttributesCondition(std::move(attributes_condition)));
+}
+
+bool SourceAttributesCondition::IsTriggered(
+    const ActionContext& action_context) const {
+  return URLMatches(action_context.source.url);
+}
+
+SourceAttributesCondition::SourceAttributesCondition(
+    AttributesCondition&& attributes_condition)
+    : AttributesCondition(std::move(attributes_condition)) {}
+
+// static
+std::unique_ptr<Condition> DestinationAttributesCondition::Create(
+    const base::Value& value) {
+  if (!value.is_dict()) {
+    return nullptr;
+  }
+
+  return DestinationAttributesCondition::Create(value.GetDict());
+}
+
+// static
+std::unique_ptr<Condition> DestinationAttributesCondition::Create(
+    const base::Value::Dict& value) {
+  AttributesCondition attributes_condition(value);
+  if (!attributes_condition.IsValid()) {
+    return nullptr;
+  }
+  return base::WrapUnique(
+      new DestinationAttributesCondition(std::move(attributes_condition)));
+}
+
+bool DestinationAttributesCondition::IsTriggered(
+    const ActionContext& action_context) const {
+#if BUILDFLAG(IS_CHROMEOS)
+  if (!ComponentMatches(action_context.destination.component)) {
+    return false;
+  }
+#endif
+  return URLMatches(action_context.destination.url);
+}
+
+DestinationAttributesCondition::DestinationAttributesCondition(
+    AttributesCondition&& attributes_condition)
+    : AttributesCondition(std::move(attributes_condition)) {}
 
 }  // namespace data_controls

@@ -6,6 +6,7 @@
 #define COMPONENTS_ENTERPRISE_DATA_CONTROLS_ACTION_CONTEXT_H_
 
 #include "build/chromeos_buildflags.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -14,14 +15,22 @@
 
 namespace data_controls {
 
-// Generic struct that represents metadata about an action involved in Data
-// Controls. It can be used to either represent a source or destination tied
-// to an action.
-struct ActionContext {
+struct ActionSource {
+  GURL url;
+};
+
+struct ActionDestination {
   GURL url;
 #if BUILDFLAG(IS_CHROMEOS)
   Component component = Component::kUnknownComponent;
 #endif  // BUILDFLAG(IS_CHROMEOS)
+};
+
+// Generic struct that represents metadata about an action involved in Data
+// Controls.
+struct ActionContext {
+  ActionSource source;
+  ActionDestination destination;
 };
 
 }  // namespace data_controls

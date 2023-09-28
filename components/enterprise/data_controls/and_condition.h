@@ -17,7 +17,7 @@ namespace data_controls {
 class AndCondition : public Condition {
  public:
   // Returns nullptr if the passed vector is empty.
-  static std::unique_ptr<AndCondition> Create(
+  static std::unique_ptr<Condition> Create(
       std::vector<std::unique_ptr<Condition>> conditions);
 
   ~AndCondition() override;

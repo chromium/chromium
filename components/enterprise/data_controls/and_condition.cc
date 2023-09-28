@@ -11,7 +11,7 @@
 namespace data_controls {
 
 // static
-std::unique_ptr<AndCondition> AndCondition::Create(
+std::unique_ptr<Condition> AndCondition::Create(
     std::vector<std::unique_ptr<Condition>> conditions) {
   if (conditions.empty()) {
     return nullptr;
