@@ -25,7 +25,10 @@ compile_entitlements("entitlements") {
 
 ios_appex_bundle("appex") {
   output_name = "open_extension"
-  deps = [ "//ios/chrome/open_extension:open" ]
+  deps = [
+    "//ios/chrome/open_extension:open",
+    "//ios/chrome/open_extension/resources:extension_icon",
+  ]
 
   bundle_deps_filter = [ "//third_party/icu:icudata" ]
   assert_no_deps = ios_extension_assert_no_deps

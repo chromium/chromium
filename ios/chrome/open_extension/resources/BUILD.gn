@@ -1,0 +1,26 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ios/asset_catalog.gni")
+
+appiconset("extension_icon") {
+  sources = [
+    "ExtensionIcon.appiconset/Contents.json",
+    "ExtensionIcon.appiconset/chrome_logo_1024.png",
+    "ExtensionIcon.appiconset/chrome_logo_114.png",
+    "ExtensionIcon.appiconset/chrome_logo_120.png",
+    "ExtensionIcon.appiconset/chrome_logo_128.png",
+    "ExtensionIcon.appiconset/chrome_logo_136.png",
+    "ExtensionIcon.appiconset/chrome_logo_152.png",
+    "ExtensionIcon.appiconset/chrome_logo_167.png",
+    "ExtensionIcon.appiconset/chrome_logo_180.png",
+    "ExtensionIcon.appiconset/chrome_logo_192.png",
+    "ExtensionIcon.appiconset/chrome_logo_40.png",
+    "ExtensionIcon.appiconset/chrome_logo_58.png",
+    "ExtensionIcon.appiconset/chrome_logo_60.png",
+    "ExtensionIcon.appiconset/chrome_logo_76.png",
+    "ExtensionIcon.appiconset/chrome_logo_80.png",
+    "ExtensionIcon.appiconset/chrome_logo_87.png",
+  ]
+}

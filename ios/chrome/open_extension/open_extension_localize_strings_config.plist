@@ -21,6 +21,15 @@
 				</dict>
 			</array>
 		</dict>
+		<dict>
+			<key>name</key>
+			<string>Localizable.strings</string>
+			<key>strings</key>
+			<array>
+				<string>IDS_IOS_ERROR_MESSAGE_OPEN_IN_EXTENSION</string>
+				<string>IDS_IOS_OK_BUTTON_OPEN_IN_EXTENSION</string>
+			</array>
+		</dict>
 	</array>
 </dict>
 </plist>

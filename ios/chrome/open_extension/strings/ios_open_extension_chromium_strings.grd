@@ -193,6 +193,12 @@ all other OS specific variables will be false.
       <message name="IDS_IOS_OPEN_IN_CHROME_OPEN_EXTENSION" desc="Open extension button to open link in Chromium [Length: 30em]" meaning="Button title [Length: 30em]">
         Open in Chromium
       </message>
+     <message name="IDS_IOS_ERROR_MESSAGE_OPEN_IN_EXTENSION" desc="Open in Chromium extension message to tell the user the URL cannot be processed.">
+        Chromium cannot handle this link.
+      </message>
+      <message name="IDS_IOS_OK_BUTTON_OPEN_IN_EXTENSION" desc="Label for the OK button in the Open in Chromium extension.">
+        OK
+      </message>
     </messages>
   </release>
 </grit>
