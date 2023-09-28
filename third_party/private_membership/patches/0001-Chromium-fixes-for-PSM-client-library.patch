@@ -1,3 +1,290 @@
+diff --git a/third_party/private_membership/src/internal/BUILD b/third_party/private_membership/src/internal/BUILD
+deleted file mode 100644
+index b6e49dade5d6e..0000000000000
+--- a/third_party/private_membership/src/internal/BUILD
++++ /dev/null
+@@ -1,281 +0,0 @@
+-package(default_visibility = ["//:__subpackages__"])
+-
+-cc_library(
+-    name = "aes_ctr_256_with_fixed_iv",
+-    srcs = [
+-        "aes_ctr_256_with_fixed_iv.cc",
+-    ],
+-    hdrs = [
+-        "aes_ctr_256_with_fixed_iv.h",
+-    ],
+-    deps = [
+-        "@boringssl//:ssl",
+-        "@com_github_google_shell//shell_encryption:statusor_fork",
+-        "@com_google_absl//absl/strings",
+-    ],
+-)
+-
+-cc_test(
+-    name = "aes_ctr_256_with_fixed_iv_test",
+-    srcs = [
+-        "aes_ctr_256_with_fixed_iv_test.cc",
+-    ],
+-    deps = [
+-        ":aes_ctr_256_with_fixed_iv",
+-        "@boringssl//:ssl",
+-        "@com_github_google_googletest//:gtest_main",
+-        "@com_github_google_shell//shell_encryption/testing:status_is_fork",
+-        "@com_github_google_shell//shell_encryption/testing:status_testing",
+-        "@com_google_absl//absl/memory",
+-    ],
+-)
+-
+-cc_library(
+-    name = "crypto_utils",
+-    srcs = [
+-        "crypto_utils.cc",
+-    ],
+-    hdrs = [
+-        "crypto_utils.h",
+-    ],
+-    deps = [
+-        ":aes_ctr_256_with_fixed_iv",
+-        ":id_utils",
+-        "//private_membership/rlwe/client/proto:private_membership_cc_proto",
+-        "@com_github_google_private_join_and_compute//private_join_and_compute/crypto:bn_util",
+-        "@com_github_google_private_join_and_compute//private_join_and_compute/crypto:ec_commutative_cipher",
+-        "@com_github_google_shell//shell_encryption:statusor_fork",
+-        "@com_google_absl//absl/strings",
+-    ],
+-)
+-
+-cc_test(
+-    name = "crypto_utils_test",
+-    srcs = ["crypto_utils_test.cc"],
+-    deps = [
+-        ":aes_ctr_256_with_fixed_iv",
+-        ":crypto_utils",
+-        "//private_membership/rlwe/client/proto:private_membership_cc_proto",
+-        "@com_github_google_googletest//:gtest_main",
+-        "@com_github_google_shell//shell_encryption/testing:status_is_fork",
+-        "@com_github_google_shell//shell_encryption/testing:status_testing",
+-    ],
+-)
+-
+-cc_library(
+-    name = "id_utils",
+-    srcs = [
+-        "id_utils.cc",
+-    ],
+-    hdrs = [
+-        "id_utils.h",
+-    ],
+-    deps = [
+-        "@com_google_absl//absl/strings",
+-    ],
+-)
+-
+-cc_test(
+-    name = "id_utils_test",
+-    srcs = [
+-        "id_utils_test.cc",
+-    ],
+-    deps = [
+-        ":id_utils",
+-        "@com_github_google_googletest//:gtest_main",
+-    ],
+-)
+-
+-cc_library(
+-    name = "oprf_utils",
+-    srcs = [
+-        "oprf_utils.cc",
+-    ],
+-    hdrs = [
+-        "oprf_utils.h",
+-    ],
+-    deps = [
+-        "//private_membership/rlwe/client/proto:private_membership_cc_proto",
+-        "@com_github_google_private_join_and_compute//private_join_and_compute/crypto:ec_commutative_cipher",
+-        "@com_github_google_shell//shell_encryption:statusor_fork",
+-    ],
+-)
+-
+-cc_test(
+-    name = "oprf_utils_test",
+-    srcs = [
+-        "oprf_utils_test.cc",
+-    ],
+-    deps = [
+-        ":oprf_utils",
+-        "@com_github_google_googletest//:gtest_main",
+-        "@com_github_google_private_join_and_compute//private_join_and_compute/crypto:ec_commutative_cipher",
+-        "@com_github_google_shell//shell_encryption/testing:status_is_fork",
+-        "@com_github_google_shell//shell_encryption/testing:status_testing",
+-    ],
+-)
+-
+-cc_library(
+-    name = "constants",
+-    hdrs = [
+-        "constants.h",
+-    ],
+-    deps = [
+-        "@boringssl//:ssl",
+-        "@com_github_google_shell//shell_encryption:montgomery",
+-        "@com_github_google_shell//shell_encryption/prng:chacha_prng",
+-        "@com_github_google_shell//shell_encryption/prng:single_thread_chacha_prng",
+-    ],
+-)
+-
+-cc_library(
+-    name = "encrypted_bucket_id",
+-    srcs = [
+-        "encrypted_bucket_id.cc",
+-    ],
+-    hdrs = [
+-        "encrypted_bucket_id.h",
+-    ],
+-    deps = [
+-        ":rlwe_id_utils",
+-        ":utils",
+-        "//private_membership/rlwe/client/cpp/internal:crypto_utils",
+-        "//private_membership/rlwe/client/proto:private_membership_rlwe_cc_proto",
+-        "@com_github_google_private_join_and_compute//private_join_and_compute/crypto:ec_commutative_cipher",
+-        "@com_github_google_shell//shell_encryption:statusor_fork",
+-        "@com_google_absl//absl/hash",
+-        "@com_google_absl//absl/strings",
+-    ],
+-)
+-
+-cc_test(
+-    name = "encrypted_bucket_id_test",
+-    srcs = [
+-        "encrypted_bucket_id_test.cc",
+-    ],
+-    deps = [
+-        ":encrypted_bucket_id",
+-        ":rlwe_id_utils",
+-        "//private_membership/rlwe/client/cpp/internal/testing:constants",
+-        "//private_membership/rlwe/client/proto:private_membership_rlwe_cc_proto",
+-        "@com_github_google_googletest//:gtest_main",
+-        "@com_github_google_shell//shell_encryption/testing:status_is_fork",
+-        "@com_github_google_shell//shell_encryption/testing:status_testing",
+-    ],
+-)
+-
+-cc_library(
+-    name = "hashed_bucket_id",
+-    srcs = [
+-        "hashed_bucket_id.cc",
+-    ],
+-    hdrs = [
+-        "hashed_bucket_id.h",
+-    ],
+-    deps = [
+-        ":rlwe_id_utils",
+-        ":utils",
+-        "//private_membership/rlwe/client/proto:private_membership_cc_proto",
+-        "//private_membership/rlwe/client/proto:private_membership_rlwe_cc_proto",
+-        "@com_github_google_private_join_and_compute//private_join_and_compute/crypto:ec_commutative_cipher",
+-        "@com_github_google_shell//shell_encryption:statusor_fork",
+-        "@com_google_absl//absl/hash",
+-        "@com_google_absl//absl/strings",
+-    ],
+-)
+-
+-cc_test(
+-    name = "hashed_bucket_id_test",
+-    srcs = [
+-        "hashed_bucket_id_test.cc",
+-    ],
+-    deps = [
+-        ":hashed_bucket_id",
+-        "//private_membership/rlwe/client/proto:private_membership_cc_proto",
+-        "//private_membership/rlwe/client/proto:private_membership_rlwe_cc_proto",
+-        "@com_github_google_googletest//:gtest_main",
+-        "@com_github_google_shell//shell_encryption/testing:status_is_fork",
+-        "@com_github_google_shell//shell_encryption/testing:status_testing",
+-    ],
+-)
+-
+-cc_library(
+-    name = "rlwe_id_utils",
+-    srcs = [
+-        "rlwe_id_utils.cc",
+-    ],
+-    hdrs = [
+-        "rlwe_id_utils.h",
+-    ],
+-    deps = [
+-        ":constants",
+-        "//private_membership/rlwe/client/cpp/internal:crypto_utils",
+-        "//private_membership/rlwe/client/proto:private_membership_cc_proto",
+-        "//private_membership/rlwe/client/proto:private_membership_rlwe_cc_proto",
+-        "@com_github_google_private_join_and_compute//private_join_and_compute/crypto:ec_commutative_cipher",
+-        "@com_github_google_shell//shell_encryption:statusor_fork",
+-        "@com_google_absl//absl/status",
+-        "@com_google_absl//absl/strings",
+-    ],
+-)
+-
+-cc_test(
+-    name = "rlwe_id_utils_test",
+-    srcs = ["rlwe_id_utils_test.cc"],
+-    deps = [
+-        ":constants",
+-        ":rlwe_id_utils",
+-        "//private_membership/rlwe/client/cpp/internal/testing:constants",
+-        "//private_membership/rlwe/client/proto:private_membership_cc_proto",
+-        "@com_github_google_googletest//:gtest_main",
+-        "@com_github_google_shell//shell_encryption/testing:status_is_fork",
+-        "@com_github_google_shell//shell_encryption/testing:status_testing",
+-        "@com_google_absl//absl/status",
+-    ],
+-)
+-
+-cc_library(
+-    name = "rlwe_params",
+-    srcs = [
+-        "rlwe_params.cc",
+-    ],
+-    hdrs = [
+-        "rlwe_params.h",
+-    ],
+-    deps = [
+-        ":constants",
+-        "//private_membership/rlwe/client/proto:private_membership_rlwe_cc_proto",
+-        "@com_github_google_shell//shell_encryption:context",
+-        "@com_github_google_shell//shell_encryption:error_params",
+-        "@com_github_google_shell//shell_encryption:montgomery",
+-        "@com_github_google_shell//shell_encryption:ntt_parameters",
+-        "@com_github_google_shell//shell_encryption:statusor_fork",
+-    ],
+-)
+-
+-cc_library(
+-    name = "utils",
+-    srcs = [
+-        "utils.cc",
+-    ],
+-    hdrs = [
+-        "utils.h",
+-    ],
+-    deps = [
+-        "@com_github_google_shell//shell_encryption:statusor_fork",
+-        "@com_google_absl//absl/strings",
+-    ],
+-)
+-
+-cc_test(
+-    name = "utils_test",
+-    srcs = [
+-        "utils_test.cc",
+-    ],
+-    deps = [
+-        ":utils",
+-        "@com_github_google_googletest//:gtest_main",
+-        "@com_github_google_shell//shell_encryption/testing:status_is_fork",
+-        "@com_github_google_shell//shell_encryption/testing:status_testing",
+-    ],
+-)
 diff --git a/third_party/private_membership/src/internal/aes_ctr_256_with_fixed_iv.cc b/third_party/private_membership/src/internal/aes_ctr_256_with_fixed_iv.cc
 index 20ff7fa4c24ea..ebd721107c30f 100644
 --- a/third_party/private_membership/src/internal/aes_ctr_256_with_fixed_iv.cc
@@ -329,6 +616,34 @@ index 75b70f98eac83..db1805c7a0676 100644
  
 -#endif  // PRIVATE_MEMBERSHIP_RLWE_CLIENT_CPP_INTERNAL_HASHED_BUCKET_ID_H_
 +#endif  // THIRD_PARTY_PRIVATE_MEMBERSHIP_SRC_INTERNAL_HASHED_BUCKET_ID_H_
+diff --git a/third_party/private_membership/src/internal/hashed_bucket_id_test.cc b/third_party/private_membership/src/internal/hashed_bucket_id_test.cc
+index 41e36f79d5823..be8c24112db59 100644
+--- a/third_party/private_membership/src/internal/hashed_bucket_id_test.cc
++++ b/third_party/private_membership/src/internal/hashed_bucket_id_test.cc
+@@ -12,17 +12,17 @@
+ // See the License for the specific language governing permissions and
+ // limitations under the License.
+ 
+-#include "private_membership/rlwe/client/cpp/internal/hashed_bucket_id.h"
++#include "third_party/private_membership/src/internal/hashed_bucket_id.h"
+ 
+ #include <string>
+ 
+-#include "private_membership/rlwe/client/proto/private_membership.pb.h"
+-#include "private_membership/rlwe/client/proto/private_membership_rlwe.pb.h"
++#include "third_party/private_membership/src/private_membership.pb.h"
++#include "third_party/private_membership/src/private_membership_rlwe.pb.h"
+ #include <gmock/gmock.h>
+ #include <gtest/gtest.h>
+-#include "shell_encryption/testing/protobuf_matchers.h"
+-#include "shell_encryption/testing/status_matchers.h"
+-#include "shell_encryption/testing/status_testing.h"
++#include "third_party/shell-encryption/src/testing/protobuf_matchers.h"
++#include "third_party/shell-encryption/src/testing/status_matchers.h"
++#include "third_party/shell-encryption/src/testing/status_testing.h"
+ 
+ namespace private_membership {
+ namespace rlwe {
 diff --git a/third_party/private_membership/src/internal/id_utils.cc b/third_party/private_membership/src/internal/id_utils.cc
 index 472e7197fe0fd..a01bf2a98ef98 100644
 --- a/third_party/private_membership/src/internal/id_utils.cc
@@ -453,7 +768,7 @@ index a1c0cd7d6aeb5..695444d8e96d1 100644
  namespace private_membership {
  namespace {
 diff --git a/third_party/private_membership/src/internal/rlwe_id_utils.cc b/third_party/private_membership/src/internal/rlwe_id_utils.cc
-index 78500f85a740d..2c702f2a896f5 100644
+index 2c59cab0f83c6..551e637972dc3 100644
 --- a/third_party/private_membership/src/internal/rlwe_id_utils.cc
 +++ b/third_party/private_membership/src/internal/rlwe_id_utils.cc
 @@ -12,18 +12,18 @@
@@ -604,6 +919,23 @@ index c769b9b5d4ef7..84e4bafbf8b63 100644
  
 -#endif  // PRIVATE_MEMBERSHIP_RLWE_CLIENT_CPP_INTERNAL_RLWE_PARAMS_H_
 +#endif  // THIRD_PARTY_PRIVATE_MEMBERSHIP_SRC_INTERNAL_RLWE_PARAMS_H_
+diff --git a/third_party/private_membership/src/internal/testing/BUILD b/third_party/private_membership/src/internal/testing/BUILD
+deleted file mode 100644
+index 5b1d0ad6689be..0000000000000
+--- a/third_party/private_membership/src/internal/testing/BUILD
++++ /dev/null
+@@ -1,11 +0,0 @@
+-package(default_visibility = ["//:__subpackages__"])
+-
+-cc_library(
+-    name = "constants",
+-    hdrs = [
+-        "constants.h",
+-    ],
+-    deps = [
+-        "@boringssl//:ssl",
+-    ],
+-)
 diff --git a/third_party/private_membership/src/internal/testing/constants.h b/third_party/private_membership/src/internal/testing/constants.h
 index a98cb67d4d011..8e679f36020ce 100644
 --- a/third_party/private_membership/src/internal/testing/constants.h
@@ -622,6 +954,37 @@ index a98cb67d4d011..8e679f36020ce 100644
  
 -#endif  // PRIVATE_MEMBERSHIP_RLWE_CLIENT_CPP_INTERNAL_TESTING_CONSTANTS_H_
 +#endif  // THIRD_PARTY_PRIVATE_MEMBERSHIP_SRC_INTERNAL_TESTING_CONSTANTS_H_
+diff --git a/third_party/private_membership/src/internal/testing/regression_test_data/BUILD b/third_party/private_membership/src/internal/testing/regression_test_data/BUILD
+deleted file mode 100644
+index df3be365735da..0000000000000
+--- a/third_party/private_membership/src/internal/testing/regression_test_data/BUILD
++++ /dev/null
+@@ -1,25 +0,0 @@
+-load("@rules_cc//cc:defs.bzl", "cc_library")
+-load("@rules_proto//proto:defs.bzl", "proto_library")
+-
+-package(default_visibility = ["//:__subpackages__"])
+-
+-proto_library(
+-    name = "regression_test_data_proto",
+-    srcs = ["regression_test_data.proto"],
+-    deps = [
+-        "//private_membership/rlwe/client/proto:private_membership_rlwe_proto",
+-    ],
+-)
+-
+-cc_proto_library(
+-    name = "regression_test_data_cc_proto",
+-    deps = [":regression_test_data_proto"],
+-)
+-
+-filegroup(
+-    name = "regression_test_data",
+-    testonly = 1,
+-    srcs = [
+-        "test_data.binarypb",
+-    ],
+-)
 diff --git a/third_party/private_membership/src/internal/testing/regression_test_data/regression_test_data.proto b/third_party/private_membership/src/internal/testing/regression_test_data/regression_test_data.proto
 index f43c87a91a1f5..023e6e7abde96 100644
 --- a/third_party/private_membership/src/internal/testing/regression_test_data/regression_test_data.proto
@@ -703,7 +1066,7 @@ index 9e7473cf1f623..c4c3812e9c25c 100644
  using ::rlwe::testing::StatusIs;
  using ::testing::HasSubstr;
 diff --git a/third_party/private_membership/src/private_membership_rlwe.proto b/third_party/private_membership/src/private_membership_rlwe.proto
-index 67abc9db7a7ae..2a0befb51b417 100644
+index 165096c32cd82..402dad1b5ba1f 100644
 --- a/third_party/private_membership/src/private_membership_rlwe.proto
 +++ b/third_party/private_membership/src/private_membership_rlwe.proto
 @@ -20,8 +20,8 @@ package private_membership.rlwe;
@@ -718,7 +1081,7 @@ index 67abc9db7a7ae..2a0befb51b417 100644
  // Request and Response protos
  //
 diff --git a/third_party/private_membership/src/private_membership_rlwe_client.cc b/third_party/private_membership/src/private_membership_rlwe_client.cc
-index a0e1d866e778b..b33dde13b9ee3 100644
+index ca04abc7fb070..39bc87ad8d02a 100644
 --- a/third_party/private_membership/src/private_membership_rlwe_client.cc
 +++ b/third_party/private_membership/src/private_membership_rlwe_client.cc
 @@ -12,7 +12,7 @@
@@ -770,10 +1133,10 @@ index a0e1d866e778b..b33dde13b9ee3 100644
  namespace private_membership {
  namespace rlwe {
 diff --git a/third_party/private_membership/src/private_membership_rlwe_client.h b/third_party/private_membership/src/private_membership_rlwe_client.h
-index 78ef22fcb0dca..e64e9733a1e7c 100644
+index a47ae95a4b273..d04b8086911c7 100644
 --- a/third_party/private_membership/src/private_membership_rlwe_client.h
 +++ b/third_party/private_membership/src/private_membership_rlwe_client.h
-@@ -12,23 +12,23 @@
+@@ -12,24 +12,24 @@
  // See the License for the specific language governing permissions and
  // limitations under the License.
  
@@ -799,15 +1162,17 @@ index 78ef22fcb0dca..e64e9733a1e7c 100644
 +#include "third_party/private_membership/src/internal/constants.h"
  #include "absl/container/flat_hash_map.h"
 -#include "shell_encryption/montgomery.h"
+-#include "shell_encryption/prng/prng.h"
 -#include "shell_encryption/statusor.h"
 -#include "shell_encryption/symmetric_encryption.h"
 +#include "third_party/shell-encryption/src/montgomery.h"
++#include "third_party/shell-encryption/src/prng/prng.h"
 +#include "third_party/shell-encryption/src/statusor.h"
 +#include "third_party/shell-encryption/src/symmetric_encryption.h"
  
  namespace private_membership {
  namespace rlwe {
-@@ -258,4 +258,4 @@ class PRIVATE_MEMBERSHIP_EXPORT PrivateMembershipRlweClient {
+@@ -300,4 +300,4 @@ class PRIVATE_MEMBERSHIP_EXPORT PrivateMembershipRlweClient {
  }  // namespace rlwe
  }  // namespace private_membership
  

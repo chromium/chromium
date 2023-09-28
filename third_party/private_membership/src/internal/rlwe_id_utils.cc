@@ -84,7 +84,7 @@ namespace rlwe {
 std::string HashRlwePlaintextId(const RlwePlaintextId& id) {
   // For backward compatibility. We can show that if non_sensitive_id length is
   // 0, it is okay to concatenate without delimiters to make it injective.
-  if (id.non_sensitive_id().length() == 0) {
+  if (id.non_sensitive_id().empty()) {
     return absl::StrCat(0, id.sensitive_id().length(), id.sensitive_id());
   }
   static constexpr char delimiter[] = "/";

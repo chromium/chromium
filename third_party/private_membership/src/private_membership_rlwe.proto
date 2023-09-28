@@ -97,7 +97,7 @@ message RlwePlaintextId {
 
 // Different use cases of the RLWE-based PSM protocol.
 //
-// NEXT ID: 24
+// NEXT ID: 25
 enum RlweUseCase {
   RLWE_USE_CASE_UNDEFINED = 0;
   TEST_USE_CASE = 1;
@@ -117,12 +117,9 @@ enum RlweUseCase {
   // asked to reveal some bits of the hash of non-sensitive identifier.
   CROS_DEVICE_STATE_UNIFIED = 23;
 
-  // The device state of Chrome OS device, used for Forced Re-enrollment.
-  CROS_DEVICE_SECONDARY_STATE = 12;
-
-  // The backup use case for CROS_DEVICE_STATE while transitioning
-  // CROS_DEVICE_STATE to be used for unified enrollment flow.
-  CROS_DEVICE_STATE_BACKUP = 21;
+  // The device state of ChromeOS device.
+  CROS_DEVICE_SECONDARY_STATE = 12 [deprecated = true];
+  CROS_DEVICE_STATE_BACKUP = 21 [deprecated = true];
 
   // Use-cases for ChromeOS Device Active Reporting to Fresnel.
   CROS_FRESNEL_DAILY = 13;
@@ -133,8 +130,9 @@ enum RlweUseCase {
   CROS_FRESNEL_CHURN_MONTHLY_COHORT = 19;
   CROS_FRESNEL_CHURN_MONTHLY_OBSERVATION = 20;
 
-  // SimLock
+  // Use-cases for Cellular Carrier Lock (SimLock).
   CROS_SIM_LOCK = 18;
+  CROS_SIM_LOCK_DEVMODE = 24;
 
   reserved 4, 6, 7, 8, 9, 10, 11;
 }
