@@ -18,6 +18,10 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
+namespace views {
+class AXVirtualView;
+}  // namespace views
+
 namespace ash {
 
 class AppListToastView;
@@ -180,6 +184,10 @@ class ASH_EXPORT AppListSearchView : public views::View,
 
   // Timer used to delay calls to NotifyA11yResultsChanged().
   base::OneShotTimer notify_a11y_results_changed_timer_;
+
+  // The virtual view that announces the guidance to the search notifier. The
+  // ownership belongs to the view accessibility.
+  raw_ptr<views::AXVirtualView> search_notifier_guide_ = nullptr;
 
   // Stores the last time fast search result update animations were used.
   absl::optional<base::TimeTicks> search_result_fast_update_time_;

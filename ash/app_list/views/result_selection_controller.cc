@@ -47,6 +47,11 @@ ResultSelectionController::ResultSelectionController(
 
 ResultSelectionController::~ResultSelectionController() = default;
 
+bool ResultSelectionController::IsSelectedResultAtFirstAvailableLocation() {
+  auto location = GetFirstAvailableResultLocation();
+  return location && (*location == *selected_location_details_);
+}
+
 ResultSelectionController::MoveResult ResultSelectionController::MoveSelection(
     const ui::KeyEvent& event) {
   if (block_selection_changes_)

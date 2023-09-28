@@ -103,6 +103,10 @@ class ASH_EXPORT ResultSelectionController {
     return selected_location_details_.get();
   }
 
+  // Returns whether `selected_result_` locates at the first available location.
+  // Returns false if there is no selected result.
+  bool IsSelectedResultAtFirstAvailableLocation();
+
   // Calls |SetSelection| using the result of |GetNextResultLocation|.
   MoveResult MoveSelection(const ui::KeyEvent& event);
 
