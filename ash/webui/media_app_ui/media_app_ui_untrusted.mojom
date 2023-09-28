@@ -1,0 +1,26 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.media_app_ui.mojom;
+
+// Factory interface to create an untrusted page handler (for the
+// chrome-untrusted:// frame) communicating directly with the browser.
+interface UntrustedPageHandlerFactory {
+  // Create a page handler for the untrusted frame exposing APIs between it and
+  // the browser via |receiver| and |page|.
+  CreateUntrustedPageHandler(pending_receiver<UntrustedPageHandler> receiver,
+                    pending_remote<UntrustedPage> page);
+};
+
+// Interface implemented in the browser process and called by the
+// chrome-untrusted:// Media App page.
+interface UntrustedPageHandler {
+  // TODO(b/301007305): Implement methods for the OCR service.
+};
+
+// Interface implemented in JavaScript by the chrome-untrusted:// page for Media
+// App and called by browser process code.
+interface UntrustedPage {
+  // TODO(b/301007305): Implement methods for the OCR service.
+};

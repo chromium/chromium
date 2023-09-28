@@ -23,6 +23,8 @@ static_library("media_app_ui") {
     "media_app_ui.cc",
     "media_app_ui.h",
     "media_app_ui_delegate.h",
+    "media_app_untrusted_page_handler.cc",
+    "media_app_untrusted_page_handler.h",
     "url_constants.cc",
     "url_constants.h",
   ]
@@ -30,6 +32,7 @@ static_library("media_app_ui") {
   deps = [
     ":mojo_bindings",
     ":mojo_bindings_js",
+    ":mojo_bindings_untrusted",
     "//ash/constants:constants",
     "//ash/webui/media_app_ui:buildflags",
     "//ash/webui/resources:media_app_bundle_resources",
@@ -102,6 +105,10 @@ group("closure_compile") {
 mojom("mojo_bindings") {
   sources = [ "media_app_ui.mojom" ]
   deps = [ "//third_party/blink/public/mojom:mojom_platform" ]
+}
+
+mojom("mojo_bindings_untrusted") {
+  sources = [ "media_app_ui_untrusted.mojom" ]
 }
 
 media_test_lib_closure_flags = system_app_closure_flags_strict + [

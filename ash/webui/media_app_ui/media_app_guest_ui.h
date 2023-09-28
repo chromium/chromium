@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "ash/webui/media_app_ui/media_app_ui_untrusted.mojom.h"
 #include "base/files/file_path.h"
 #include "base/task/sequenced_task_runner.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -21,6 +22,8 @@ class ColorChangeHandler;
 
 namespace ash {
 
+class MediaAppUntrustedPageHandler;
+
 // A delegate used during data source creation to expose some //chrome
 // functionality to the data source
 class MediaAppGuestUIDelegate {
@@ -31,8 +34,10 @@ class MediaAppGuestUIDelegate {
 };
 
 // The webui for chrome-untrusted://media-app.
-class MediaAppGuestUI : public ui::UntrustedWebUIController,
-                        public content::WebContentsObserver {
+class MediaAppGuestUI
+    : public ui::UntrustedWebUIController,
+      public content::WebContentsObserver,
+      public media_app_ui::mojom::UntrustedPageHandlerFactory {
  public:
   MediaAppGuestUI(content::WebUI* web_ui, MediaAppGuestUIDelegate* delegate);
   MediaAppGuestUI(const MediaAppGuestUI&) = delete;
@@ -49,8 +54,19 @@ class MediaAppGuestUI : public ui::UntrustedWebUIController,
       mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
           receiver);
 
+  // Binds an UntrustedPageHandler to the MediaAppGuestUI. This handler is used
+  // for communication between the untrusted MediaApp frame and the browser.
+  void BindInterface(
+      mojo::PendingReceiver<media_app_ui::mojom::UntrustedPageHandlerFactory>
+          factory);
+
  private:
   WEB_UI_CONTROLLER_TYPE_DECL();
+
+  // media_app_ui::mojom::UntrustedPageHandlerFactory:
+  void CreateUntrustedPageHandler(
+      mojo::PendingReceiver<media_app_ui::mojom::UntrustedPageHandler> receiver,
+      mojo::PendingRemote<media_app_ui::mojom::UntrustedPage> page) override;
 
   void StartFontDataRequest(
       const std::string& path,
@@ -67,6 +83,9 @@ class MediaAppGuestUI : public ui::UntrustedWebUIController,
   bool app_navigation_committed_ = false;
 
   std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
+  mojo::Receiver<media_app_ui::mojom::UntrustedPageHandlerFactory>
+      untrusted_page_factory_{this};
+  std::unique_ptr<MediaAppUntrustedPageHandler> untrusted_page_handler_;
 
   base::WeakPtrFactory<MediaAppGuestUI> weak_factory_{this};
 };

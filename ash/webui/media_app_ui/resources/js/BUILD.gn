@@ -24,6 +24,7 @@ copy("stage_static") {
     "launch.js",
     "message_types.js",
     "mojo_api_bootstrap.js",
+    "mojo_api_bootstrap_untrusted.js",
     "piex_module.js",
     "piex_module_loader.js",
     "receiver.js",
@@ -37,12 +38,14 @@ copy("stage_generated") {
     "$root_gen_dir/mojo/public/mojom/base/unguessable_token.mojom-lite.js",
     "$root_gen_dir/third_party/blink/public/mojom/file_system_access/file_system_access_transfer_token.mojom-lite.js",
     "$target_gen_dir/../../media_app_ui.mojom-lite.js",
+    "$target_gen_dir/../../media_app_ui_untrusted.mojom-lite.js",
   ]
 
   outputs = [ stage_folder + "/{{source_file_part}}" ]
 
   deps = [
     "//ash/webui/media_app_ui:mojo_bindings_js",
+    "//ash/webui/media_app_ui:mojo_bindings_untrusted_js",
     "//third_party/blink/public/mojom:mojom_platform_js",
   ]
 }
@@ -62,9 +65,9 @@ optimize_webui("receiver_rollup") {
   js_module_in_files = [ "receiver.js" ]
   input = rebase_path(stage_folder, root_build_dir)
   deps = [
-    "//ui/webui/resources/cr_components/color_change_listener:build_ts",
     ":stage_generated",
     ":stage_static",
+    "//ui/webui/resources/cr_components/color_change_listener:build_ts",
   ]
 }
 
@@ -178,4 +181,14 @@ js_library("mojo_api_bootstrap") {
     "//ash/webui/media_app_ui:mojo_bindings_js",
     "//third_party/blink/public/mojom:mojom_platform_js",
   ]
+}
+
+js_library("mojo_api_bootstrap_untrusted") {
+  sources = [
+    "$target_gen_dir/../../media_app_ui_untrusted.mojom-lite-for-compile.js",
+  ]
+
+  deps = [ "//mojo/public/mojom/base:base_js_library_for_compile" ]
+
+  extra_deps = [ "//ash/webui/media_app_ui:mojo_bindings_untrusted_js" ]
 }

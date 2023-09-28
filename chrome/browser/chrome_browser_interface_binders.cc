@@ -270,6 +270,7 @@
 #include "ash/webui/media_app_ui/media_app_guest_ui.h"
 #include "ash/webui/media_app_ui/media_app_ui.h"
 #include "ash/webui/media_app_ui/media_app_ui.mojom.h"
+#include "ash/webui/media_app_ui/media_app_ui_untrusted.mojom.h"
 #include "ash/webui/multidevice_debug/proximity_auth_ui.h"
 #include "ash/webui/os_feedback_ui/mojom/os_feedback_ui.mojom.h"
 #include "ash/webui/os_feedback_ui/os_feedback_ui.h"
@@ -1702,7 +1703,8 @@ void PopulateChromeWebUIFrameInterfaceBrokers(
       .Add<color_change_listener::mojom::PageHandler>();
 
   registry.ForWebUI<ash::MediaAppGuestUI>()
-      .Add<color_change_listener::mojom::PageHandler>();
+      .Add<color_change_listener::mojom::PageHandler>()
+      .Add<ash::media_app_ui::mojom::UntrustedPageHandlerFactory>();
 
   registry.ForWebUI<ash::HelpAppUntrustedUI>()
       .Add<color_change_listener::mojom::PageHandler>();
