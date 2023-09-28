@@ -185,6 +185,7 @@
 #include "chrome/browser/ui/prefs/prefs_tab_helper.h"
 #include "chrome/browser/ui/safety_hub/password_status_check_service_factory.h"
 #include "chrome/browser/ui/tabs/pinned_tab_service_factory.h"
+#include "chrome/browser/ui/toolbar/pinned_toolbar_actions_model_factory.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model_factory.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/ntp/ntp_resource_cache_factory.h"
@@ -916,6 +917,7 @@ void ChromeBrowserMainExtraPartsProfiles::
 #if !BUILDFLAG(IS_ANDROID)
   PhotosServiceFactory::GetInstance();
   PinnedTabServiceFactory::GetInstance();
+  PinnedToolbarActionsModelFactory::GetInstance();
 #endif
   PlatformNotificationServiceFactory::GetInstance();
 #if BUILDFLAG(ENABLE_PLUGINS)

@@ -2532,6 +2532,7 @@ if (!is_android) {
       "../browser/ui/test/test_infobar.cc",
       "../browser/ui/test/test_infobar.h",
       "../browser/ui/thumbnails/thumbnail_readiness_tracker_browsertest.cc",
+      "../browser/ui/toolbar/pinned_toolbar_actions_model_browsertest.cc",
       "../browser/ui/toolbar/toolbar_actions_model_browsertest.cc",
       "../browser/ui/unload_controller_browsertest.cc",
       "../browser/ui/update_chrome_dialog_browsertest.cc",
@@ -3742,6 +3743,7 @@ if (!is_android) {
         "//extensions/renderer",
         "//google_apis/common:test_support",
         "//google_apis/drive",
+        "//ui/actions:actions_headers",
         "//ui/base/idle:test_support",
         "//ui/views:test_support",
       ]
