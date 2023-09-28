@@ -75,5 +75,9 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   aw_feature_overrides.DisableFeature(
       ::features::kDefaultPassthroughCommandDecoder);
 
+  // Disable Reducing User Agent minor version on WebView.
+  aw_feature_overrides.DisableFeature(
+      blink::features::kReduceUserAgentMinorVersion);
+
   aw_feature_overrides.RegisterOverrides(feature_list);
 }

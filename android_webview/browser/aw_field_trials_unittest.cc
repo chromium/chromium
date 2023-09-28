@@ -107,6 +107,9 @@ TEST_F(AwFieldTrialsTest, OnlyRegisterFeatureOverrides) {
 
   EXPECT_TRUE(
       base::FeatureList::IsEnabled(blink::features::kUserAgentClientHint));
+
+  EXPECT_FALSE(base::FeatureList::IsEnabled(
+      blink::features::kReduceUserAgentMinorVersion));
 }
 
 }  // namespace android_webview

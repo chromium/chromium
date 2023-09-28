@@ -39,6 +39,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Test suite for user-agent client hints.
@@ -57,6 +59,8 @@ public class ClientHintsTest {
             "sec-ch-ua-wow64", "sec-ch-ua-form-factor"};
 
     private static final String ANDROID_WEBVIEW_BRAND_NAME = "Android WebView";
+
+    private static final String CHROME_PRODUCT_PATTERN = "Chrome/(\\d+).(\\d+).(\\d+).(\\d+)";
 
     private static class ClientHintsTestResult {
         public Map<String, String> mHttpHeaderClientHints;
@@ -803,6 +807,33 @@ public class ClientHintsTest {
         Assert.assertEquals("[]", jsClientHints.getString("fullVersionList"));
         Assert.assertEquals("", jsClientHints.getString("uaFullVersion"));
         Assert.assertEquals("", jsClientHints.getString("platformVersion"));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testDefaultUserAgentDefaultReductionOverride() throws Throwable {
+        String defaultUserAgent = getDefaultUserAgent();
+        // Verify user-agent minor version not reduced.
+        Matcher uaMatcher = Pattern.compile(CHROME_PRODUCT_PATTERN).matcher(defaultUserAgent);
+        Assert.assertTrue(uaMatcher.find());
+        Assert.assertNotEquals("0.0.0",
+                String.format(
+                        "%s.%s.%s", uaMatcher.group(2), uaMatcher.group(3), uaMatcher.group(4)));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({"enable-features=ReduceUserAgentMinorVersion"})
+    public void testDefaultUserAgentEnableReductionOverride() throws Throwable {
+        String defaultUserAgent = getDefaultUserAgent();
+        // Verify user-agent minor version is reduced.
+        Matcher uaMatcher = Pattern.compile(CHROME_PRODUCT_PATTERN).matcher(defaultUserAgent);
+        Assert.assertTrue(uaMatcher.find());
+        Assert.assertEquals("0.0.0",
+                String.format(
+                        "%s.%s.%s", uaMatcher.group(2), uaMatcher.group(3), uaMatcher.group(4)));
     }
 
     private void verifyOverrideUaAndOverrideUaMetadata(String overrideUserAgent) throws Throwable {
