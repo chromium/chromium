@@ -6652,6 +6652,10 @@ const char kLockScreenNotificationName[] = "Lock screen notification";
 const char kLockScreenNotificationDescription[] =
     "Enable notifications on the lock screen.";
 
+const char kMediaAppPdfA11yOcrName[] = "Media App PDF A11y via OCR";
+const char kMediaAppPdfA11yOcrDescription[] =
+    "Enable ChromeVox A11y support for PDF content in Gallery app, using OCR.";
+
 const char kMeteredShowToggleName[] = "Show Metered Toggle";
 const char kMeteredShowToggleDescription[] =
     "Shows a Metered toggle in the Network settings UI for WiFI and Cellular. "

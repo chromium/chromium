@@ -61436,6 +61436,7 @@ from previous Chrome versions.
       label="MessagesForAndroidStackingAnimation:disabled"/>
   <int value="-1707624866" label="SmdsSupportEuiccUpload:enabled"/>
   <int value="-1706483123" label="VmStatusPage:enabled"/>
+  <int value="-1704630681" label="MediaAppPdfA11yOcr:enabled"/>
   <int value="-1704472714" label="UseMessagesGoogleComDomain:disabled"/>
   <int value="-1704022650" label="EnableDangerousDownloadDialog:enabled"/>
   <int value="-1703709912" label="enable-new-ntp"/>
@@ -65467,6 +65468,7 @@ from previous Chrome versions.
   <int value="280644887" label="mash"/>
   <int value="280925459" label="LiveCaption:disabled"/>
   <int value="281024089" label="AppServiceExternalProtocol:disabled"/>
+  <int value="281528483" label="MediaAppPdfA11yOcr:disabled"/>
   <int value="282165459" label="ForceMinorVersion100InUserAgent:enabled"/>
   <int value="282456095"
       label="ExperimentalAccessibilityChromeVoxOobeDialogImprovements:enabled"/>

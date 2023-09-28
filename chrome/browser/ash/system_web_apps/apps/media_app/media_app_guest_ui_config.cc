@@ -81,6 +81,8 @@ void ChromeMediaAppGuestUIDelegate::PopulateLoadTimeData(
   source->AddBoolean("jelly", chromeos::features::IsJellyEnabled());
   source->AddBoolean("photosAvailableForImage", photos_integration_supported);
   source->AddBoolean("photosAvailableForVideo", photos_integration_supported);
+  source->AddBoolean("pdfA11yOcr", base::FeatureList::IsEnabled(
+                                       ash::features::kMediaAppPdfA11yOcr));
   source->AddBoolean("flagsMenu", channel != version_info::Channel::BETA &&
                                       channel != version_info::Channel::STABLE);
   source->AddBoolean("isDevChannel", channel == version_info::Channel::DEV);
