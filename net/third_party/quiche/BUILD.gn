@@ -454,6 +454,8 @@ source_set("quiche_tests") {
     "src/quiche/blind_sign_auth/blind_sign_auth_test.cc",
     "src/quiche/blind_sign_auth/cached_blind_sign_auth_test.cc",
     "src/quiche/common/capsule_test.cc",
+    "src/quiche/common/http/http_header_block_test.cc",
+    "src/quiche/common/http/http_header_storage_test.cc",
     "src/quiche/common/platform/api/quiche_file_utils_test.cc",
     "src/quiche/common/platform/api/quiche_hostname_utils_test.cc",
     "src/quiche/common/platform/api/quiche_mem_slice_test.cc",
@@ -470,6 +472,7 @@ source_set("quiche_tests") {
     "src/quiche/common/quiche_linked_hash_map_test.cc",
     "src/quiche/common/quiche_mem_slice_storage_test.cc",
     "src/quiche/common/quiche_random_test.cc",
+    "src/quiche/common/quiche_simple_arena_test.cc",
     "src/quiche/common/quiche_text_utils_test.cc",
     "src/quiche/common/simple_buffer_allocator_test.cc",
     "src/quiche/common/structured_headers_generated_test.cc",
@@ -684,8 +687,6 @@ source_set("quiche_tests") {
     "src/quiche/spdy/core/hpack/hpack_output_stream_test.cc",
     "src/quiche/spdy/core/hpack/hpack_round_trip_test.cc",
     "src/quiche/spdy/core/hpack/hpack_static_table_test.cc",
-    "src/quiche/spdy/core/http2_header_block_test.cc",
-    "src/quiche/spdy/core/http2_header_storage_test.cc",
     "src/quiche/spdy/core/spdy_alt_svc_wire_format_test.cc",
     "src/quiche/spdy/core/spdy_frame_builder_test.cc",
     "src/quiche/spdy/core/spdy_framer_test.cc",
@@ -693,7 +694,6 @@ source_set("quiche_tests") {
     "src/quiche/spdy/core/spdy_pinnable_buffer_piece_test.cc",
     "src/quiche/spdy/core/spdy_prefixed_buffer_reader_test.cc",
     "src/quiche/spdy/core/spdy_protocol_test.cc",
-    "src/quiche/spdy/core/spdy_simple_arena_test.cc",
   ]
 
   data = [
