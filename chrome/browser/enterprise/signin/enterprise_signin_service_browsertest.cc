@@ -15,6 +15,7 @@
 #include "chrome/browser/enterprise/signin/enterprise_signin_service_factory.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -22,6 +23,8 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interaction_test_util_browser.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/test/test_sync_service.h"
 #include "content/public/test/browser_test.h"
@@ -38,6 +41,12 @@ namespace enterprise_signin {
 namespace {
 
 using TransportState = syncer::SyncService::TransportState;
+
+const char kAuthUrl[] =
+    "https://accounts.google.com/"
+    "AddSession?Email=user%40example.com&continue=https%3A%2F%2Fwww.google.com%"
+    "2F";
+const char kExampleUrl[] = "http://example.com/";
 
 // A boolean with a more explicit meaning.
 enum Activation {
@@ -85,6 +94,13 @@ class EnterpriseSigninServiceTest : public InteractiveBrowserTest {
         SyncServiceFactory::GetInstance()->GetForProfile(profile));
     EnterpriseSigninServiceFactory::GetInstance()->GetForBrowserContext(
         profile);
+
+    signin::IdentityManager* identity_manager =
+        IdentityManagerFactory::GetForProfile(browser()->profile());
+    signin::MakePrimaryAccountAvailable(identity_manager, "user@example.com",
+                                        signin::ConsentLevel::kSync);
+    signin::SetRefreshTokenForPrimaryAccount(identity_manager);
+    signin::SetInvalidRefreshTokenForPrimaryAccount(identity_manager);
 
     profile->GetPrefs()->SetInteger(
         prefs::kProfileReauthPrompt,
@@ -134,6 +150,11 @@ class EnterpriseSigninServiceTest : public InteractiveBrowserTest {
     }));
   }
 
+  auto Navigate(Browser* browser, GURL dest) {
+    return Steps(
+        Do([browser, dest]() { ui_test_utils::NavigateToURL(browser, dest); }));
+  }
+
  private:
   void SetTestingFactories(content::BrowserContext* context) {
     SyncServiceFactory::GetInstance()->SetTestingFactory(
@@ -163,20 +184,21 @@ IN_PROC_BROWSER_TEST_F(EnterpriseSigninServiceTest, DoesNothingIfPolicyNotSet) {
 }
 
 IN_PROC_BROWSER_TEST_F(EnterpriseSigninServiceTest, OpensNewTabOnSyncPaused) {
-  GURL about_blank = GURL(url::kAboutBlankURL);
-  GURL reauth_url = GaiaUrls::GetInstance()->reauth_url();
+  GURL example_url(kExampleUrl);
+  GURL auth_url(kAuthUrl);
   RunTestSequence(SetTransportState(TransportState::START_DEFERRED),
-                  CheckTabs(browser(), {{about_blank, ACTIVE}}),
+                  Navigate(browser(), example_url),
+                  CheckTabs(browser(), {{example_url, ACTIVE}}),
                   // Sync becomes paused. This should open a new tab pointing to
                   // accounts.google.com.
                   SetTransportState(TransportState::PAUSED),
-                  CheckTabs(browser(), {{about_blank}, {reauth_url, ACTIVE}}),
+                  CheckTabs(browser(), {{example_url}, {auth_url, ACTIVE}}),
                   // Call OnStateChanged() again, with the same TransportState.
                   // This should do nothing.
                   ActivateTab(browser(), 0),
-                  CheckTabs(browser(), {{about_blank, ACTIVE}, {reauth_url}}),
+                  CheckTabs(browser(), {{example_url, ACTIVE}, {auth_url}}),
                   SetTransportState(TransportState::PAUSED),
-                  CheckTabs(browser(), {{about_blank, ACTIVE}, {reauth_url}}));
+                  CheckTabs(browser(), {{example_url, ACTIVE}, {auth_url}}));
 }
 
 // The build flag OZONE_PLATFORM_WAYLAND is only available on
@@ -193,29 +215,30 @@ IN_PROC_BROWSER_TEST_F(EnterpriseSigninServiceTest, OpensNewTabOnSyncPaused) {
 #if !defined(OZONE_PLATFORM_WAYLAND)
 IN_PROC_BROWSER_TEST_F(EnterpriseSigninServiceTest,
                        CurrentlyActiveTabIsAlreadyLoginPage) {
-  GURL about_blank = GURL(url::kAboutBlankURL);
-  GURL auth_url = GaiaUrls::GetInstance()->gaia_url();
+  GURL example_url(kExampleUrl);
+  GURL auth_url(kAuthUrl);
 
   Browser* browser2 = CreateBrowser(browser()->profile());
 
   RunTestSequence(
       SetTransportState(TransportState::START_DEFERRED),
-      NewTab(browser(), about_blank),
-      CheckTabs(browser(), {{about_blank, ACTIVE}, {about_blank}}),
-      NewTab(browser2, auth_url), ActivateTab(browser2, 1),
-      CheckTabs(browser2, {{about_blank}, {auth_url, ACTIVE}}),
+      Navigate(browser(), example_url), NewTab(browser(), example_url),
+      CheckTabs(browser(), {{example_url, ACTIVE}, {example_url}}),
+      Navigate(browser2, example_url), NewTab(browser2, auth_url),
+      ActivateTab(browser2, 1),
+      CheckTabs(browser2, {{example_url}, {auth_url, ACTIVE}}),
       // Sync becomes paused. The currently active tab already points to
       // accounts.google.com, so do nothing.
       SetTransportState(TransportState::PAUSED),
-      CheckTabs(browser(), {{about_blank, ACTIVE}, {about_blank}}),
-      CheckTabs(browser2, {{about_blank}, {auth_url, ACTIVE}}),
+      CheckTabs(browser(), {{example_url, ACTIVE}, {example_url}}),
+      CheckTabs(browser2, {{example_url}, {auth_url, ACTIVE}}),
       // Call OnStateChanged() again, with the same TransportState. This is not
       // a TransportState change, so it should do nothing.
       ActivateTab(browser2, 0),
-      CheckTabs(browser2, {{about_blank, ACTIVE}, {auth_url}}),
+      CheckTabs(browser2, {{example_url, ACTIVE}, {auth_url}}),
       SetTransportState(TransportState::PAUSED),
-      CheckTabs(browser(), {{about_blank, ACTIVE}, {about_blank}}),
-      CheckTabs(browser2, {{about_blank, ACTIVE}, {auth_url}}));
+      CheckTabs(browser(), {{example_url, ACTIVE}, {example_url}}),
+      CheckTabs(browser2, {{example_url, ACTIVE}, {auth_url}}));
 }
 #endif  // !defined(OZONE_PLATFORM_WAYLAND)
 
