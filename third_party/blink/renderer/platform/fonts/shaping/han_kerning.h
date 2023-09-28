@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_EAST_ASIAN_SPACING_H_
-#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_EAST_ASIAN_SPACING_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_HAN_KERNING_H_
+#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_HAN_KERNING_H_
 
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -19,8 +19,14 @@ class SimpleFontData;
 // This class implements the behavior necessary for the CSS `text-spacing-trim`
 // property[1].
 //
-// The OpenType `chws`[1] feature is designed to implement the CSS property,
-// but this class complements it in that:
+// In short, it's similar to kerning to be applied to Han-derived scripts such
+// as Chinese or Japanese. In OpenType, this behavior is defined as the
+// `chws`[2] feature.
+//
+// It's different from the regular kerning that the kerning pairs and amounts
+// are computable. There are tools to add the features to existing fonts[3][4].
+//
+// This class complements the OpenType feature in that:
 // 1. Handles the desired beahvior at the font boundaries. OpenType features
 //    can't handle kerning at font boundaries by design.
 // 2. Emulates the behavior when the font doesn't have the `chws` feature.
@@ -28,24 +34,25 @@ class SimpleFontData;
 // [1]: https://drafts.csswg.org/css-text-4/#text-spacing-trim-property
 // [2]:
 // https://learn.microsoft.com/en-us/typography/opentype/spec/features_ae#tag-chws
+// [3]: https://github.com/googlefonts/chws_tool
+// [4]: https://github.com/kojiishi/east_asian_spacing
 //
-class PLATFORM_EXPORT EastAsianSpacing {
+class PLATFORM_EXPORT HanKerning {
   STACK_ALLOCATED();
 
  public:
-  EastAsianSpacing(const String& text,
-                   wtf_size_t start,
-                   wtf_size_t end,
-                   const SimpleFontData& font_data,
-                   const LayoutLocale& locale,
-                   bool is_horizontal,
-                   FontFeatures& features) {
+  HanKerning(const String& text,
+             wtf_size_t start,
+             wtf_size_t end,
+             const SimpleFontData& font_data,
+             const LayoutLocale& locale,
+             bool is_horizontal,
+             FontFeatures& features) {
     if (!RuntimeEnabledFeatures::CSSTextSpacingTrimEnabled()) {
       return;
     }
     // TODO(crbug.com/1463890): Add more conditions to fail fast.
-    ComputeKerning(text, start, end, font_data, locale, is_horizontal,
-                   features);
+    Compute(text, start, end, font_data, locale, is_horizontal, features);
   }
 
   enum class CharType : uint8_t {
@@ -55,7 +62,7 @@ class PLATFORM_EXPORT EastAsianSpacing {
     kMiddle,
   };
 
-  // Data retrieved from fonts for `EastAsianSpacing`.
+  // Data retrieved from fonts for `HanKerning`.
   struct PLATFORM_EXPORT FontData {
     FontData(const SimpleFontData& font,
              const LayoutLocale& locale,
@@ -81,15 +88,15 @@ class PLATFORM_EXPORT EastAsianSpacing {
   static bool ShouldKern(CharType type, CharType last_type);
   static bool ShouldKernLast(CharType type, CharType last_type);
 
-  static void ComputeKerning(const String& text,
-                             wtf_size_t start,
-                             wtf_size_t end,
-                             const SimpleFontData& font_data,
-                             const LayoutLocale& locale,
-                             bool is_horizontal,
-                             FontFeatures& features);
+  static void Compute(const String& text,
+                      wtf_size_t start,
+                      wtf_size_t end,
+                      const SimpleFontData& font_data,
+                      const LayoutLocale& locale,
+                      bool is_horizontal,
+                      FontFeatures& features);
 };
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_EAST_ASIAN_SPACING_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_HAN_KERNING_H_

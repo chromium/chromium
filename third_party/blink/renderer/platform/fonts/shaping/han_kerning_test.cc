@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/platform/fonts/shaping/east_asian_spacing.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/han_kerning.h"
 
 #include <testing/gmock/include/gmock/gmock.h>
 #include <testing/gtest/include/gtest/gtest.h>
@@ -23,9 +23,9 @@ Font CreateNotoCjk() {
       16.0);
 }
 
-class EastAsianSpacingTest : public testing::Test {};
+class HanKerningTest : public testing::Test {};
 
-TEST_F(EastAsianSpacingTest, FontDataHorizontal) {
+TEST_F(HanKerningTest, FontDataHorizontal) {
   Font noto_cjk = CreateNotoCjk();
   const SimpleFontData* noto_cjk_data = noto_cjk.PrimaryFont();
   EXPECT_TRUE(noto_cjk_data);
@@ -35,23 +35,23 @@ TEST_F(EastAsianSpacingTest, FontDataHorizontal) {
       LayoutLocale::CreateForTesting(AtomicString("zh-hans"));
   scoped_refptr<LayoutLocale> zht =
       LayoutLocale::CreateForTesting(AtomicString("zh-hant"));
-  EastAsianSpacing::FontData ja_data(*noto_cjk_data, *ja, true);
-  EastAsianSpacing::FontData zhs_data(*noto_cjk_data, *zhs, true);
-  EastAsianSpacing::FontData zht_data(*noto_cjk_data, *zht, true);
+  HanKerning::FontData ja_data(*noto_cjk_data, *ja, true);
+  HanKerning::FontData zhs_data(*noto_cjk_data, *zhs, true);
+  HanKerning::FontData zht_data(*noto_cjk_data, *zht, true);
 
   // In the Adobe's common convention:
   // * Place full stop and comma at center only for Traditional Chinese.
   // * Place colon and semicolon on the left only for Simplified Chinese.
-  EXPECT_EQ(ja_data.type_for_dot, EastAsianSpacing::CharType::kClose);
-  EXPECT_EQ(zhs_data.type_for_dot, EastAsianSpacing::CharType::kClose);
-  EXPECT_EQ(zht_data.type_for_dot, EastAsianSpacing::CharType::kMiddle);
+  EXPECT_EQ(ja_data.type_for_dot, HanKerning::CharType::kClose);
+  EXPECT_EQ(zhs_data.type_for_dot, HanKerning::CharType::kClose);
+  EXPECT_EQ(zht_data.type_for_dot, HanKerning::CharType::kMiddle);
 
-  EXPECT_EQ(ja_data.type_for_colon, EastAsianSpacing::CharType::kMiddle);
-  EXPECT_EQ(zhs_data.type_for_colon, EastAsianSpacing::CharType::kClose);
-  EXPECT_EQ(zht_data.type_for_colon, EastAsianSpacing::CharType::kMiddle);
+  EXPECT_EQ(ja_data.type_for_colon, HanKerning::CharType::kMiddle);
+  EXPECT_EQ(zhs_data.type_for_colon, HanKerning::CharType::kClose);
+  EXPECT_EQ(zht_data.type_for_colon, HanKerning::CharType::kMiddle);
 }
 
-TEST_F(EastAsianSpacingTest, FontDataVertical) {
+TEST_F(HanKerningTest, FontDataVertical) {
   Font noto_cjk = CreateNotoCjk();
   const SimpleFontData* noto_cjk_data = noto_cjk.PrimaryFont();
   EXPECT_TRUE(noto_cjk_data);
@@ -61,19 +61,19 @@ TEST_F(EastAsianSpacingTest, FontDataVertical) {
       LayoutLocale::CreateForTesting(AtomicString("zh-hans"));
   scoped_refptr<LayoutLocale> zht =
       LayoutLocale::CreateForTesting(AtomicString("zh-hant"));
-  EastAsianSpacing::FontData ja_data(*noto_cjk_data, *ja, false);
-  EastAsianSpacing::FontData zhs_data(*noto_cjk_data, *zhs, false);
-  EastAsianSpacing::FontData zht_data(*noto_cjk_data, *zht, false);
+  HanKerning::FontData ja_data(*noto_cjk_data, *ja, false);
+  HanKerning::FontData zhs_data(*noto_cjk_data, *zhs, false);
+  HanKerning::FontData zht_data(*noto_cjk_data, *zht, false);
 
-  EXPECT_EQ(ja_data.type_for_dot, EastAsianSpacing::CharType::kClose);
-  EXPECT_EQ(zhs_data.type_for_dot, EastAsianSpacing::CharType::kClose);
-  EXPECT_EQ(zht_data.type_for_dot, EastAsianSpacing::CharType::kMiddle);
+  EXPECT_EQ(ja_data.type_for_dot, HanKerning::CharType::kClose);
+  EXPECT_EQ(zhs_data.type_for_dot, HanKerning::CharType::kClose);
+  EXPECT_EQ(zht_data.type_for_dot, HanKerning::CharType::kMiddle);
 
   // In the Adobe's common convention, only colon in Japanese rotates, and all
   // other cases are upright.
-  EXPECT_EQ(ja_data.type_for_colon, EastAsianSpacing::CharType::kOther);
-  EXPECT_EQ(zhs_data.type_for_colon, EastAsianSpacing::CharType::kOther);
-  EXPECT_EQ(zht_data.type_for_colon, EastAsianSpacing::CharType::kOther);
+  EXPECT_EQ(ja_data.type_for_colon, HanKerning::CharType::kOther);
+  EXPECT_EQ(zhs_data.type_for_colon, HanKerning::CharType::kOther);
+  EXPECT_EQ(zht_data.type_for_colon, HanKerning::CharType::kOther);
 }
 
 }  // namespace
