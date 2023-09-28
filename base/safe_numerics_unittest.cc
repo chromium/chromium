@@ -1838,7 +1838,9 @@ TEST(SafeNumerics, RoundInt) {
   EXPECT_EQ(-100, ClampRound(-100.1f));
   EXPECT_EQ(-101, ClampRound(-100.5f));
   EXPECT_EQ(-101, ClampRound(-100.9f));
+  EXPECT_EQ(0, ClampRound(std::nextafter(-0.5f, 0.0f)));
   EXPECT_EQ(0, ClampRound(0.0f));
+  EXPECT_EQ(0, ClampRound(std::nextafter(0.5f, 0.0f)));
   EXPECT_EQ(100, ClampRound(100.1f));
   EXPECT_EQ(101, ClampRound(100.5f));
   EXPECT_EQ(101, ClampRound(100.9f));

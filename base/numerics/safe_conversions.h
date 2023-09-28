@@ -357,8 +357,18 @@ using internal::StrictNumeric;
 using SizeT = StrictNumeric<size_t>;
 
 // floating -> integral conversions that saturate and thus can actually return
-// an integral type.  In most cases, these should be preferred over the std::
-// versions.
+// an integral type.
+//
+// Generally, what you want is saturated_cast<Dst>(std::nearbyint(x)), which
+// rounds correctly according to IEEE-754 (round to nearest, ties go to nearest
+// even number; this avoids bias). If your code is performance-critical
+// and you are sure that you will never overflow, you can use std::lrint()
+// or std::llrint(), which return a long or long long directly.
+//
+// Below are convenience functions around similar patterns, except that
+// they round in nonstandard directions and will generally be slower.
+
+// Rounds towards negative infinity (i.e., down).
 template <typename Dst = int,
           typename Src,
           typename = std::enable_if_t<std::is_integral<Dst>::value &&
@@ -366,6 +376,8 @@ template <typename Dst = int,
 Dst ClampFloor(Src value) {
   return saturated_cast<Dst>(std::floor(value));
 }
+
+// Rounds towards positive infinity (i.e., up).
 template <typename Dst = int,
           typename Src,
           typename = std::enable_if_t<std::is_integral<Dst>::value &&
@@ -373,13 +385,22 @@ template <typename Dst = int,
 Dst ClampCeil(Src value) {
   return saturated_cast<Dst>(std::ceil(value));
 }
+
+// Rounds towards nearest integer, with ties away from zero.
+// This means that 0.5 will be rounded to 1 and 1.5 will be rounded to 2.
+// Similarly, -0.5 will be rounded to -1 and -1.5 will be rounded to -2.
+//
+// This is normally not what you want accuracy-wise (it introduces a small bias
+// away from zero), and it is not the fastest option, but it is frequently what
+// existing code expects. Compare with saturated_cast<Dst>(std::nearbyint(x))
+// or std::lrint(x), which would round 0.5 and -0.5 to 0 but 1.5 to 2 and
+// -1.5 to -2.
 template <typename Dst = int,
           typename Src,
           typename = std::enable_if_t<std::is_integral<Dst>::value &&
                                       std::is_floating_point<Src>::value>>
 Dst ClampRound(Src value) {
-  const Src rounded =
-      (value >= 0.0f) ? std::floor(value + 0.5f) : std::ceil(value - 0.5f);
+  const Src rounded = std::round(value);
   return saturated_cast<Dst>(rounded);
 }
 
