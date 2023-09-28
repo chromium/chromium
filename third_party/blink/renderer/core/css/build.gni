@@ -810,6 +810,7 @@ blink_core_tests_css = [
   "parser/css_selector_parser_test.cc",
   "parser/css_supports_parser_test.cc",
   "parser/css_tokenizer_test.cc",
+  "parser/css_variable_parser_test.cc",
   "parser/media_condition_test.cc",
   "parser/sizes_attribute_parser_test.cc",
   "parser/sizes_math_function_parser_test.cc",
