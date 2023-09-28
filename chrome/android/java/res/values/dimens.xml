@@ -237,7 +237,8 @@ found in the LICENSE file.
     <dimen name="improved_bookmark_start_image_size_visual">80dp</dimen>
     <dimen name="improved_bookmark_icon_radius">24dp</dimen>
     <dimen name="add_new_folder_dialog_horizontal_margin">24dp</dimen>
-    <dimen name="bookmark_folder_picker_button_container_height">54dp</dimen>
+    <dimen name="bookmark_folder_picker_button_container_top_padding">10dp</dimen>
+    <dimen name="bookmark_folder_picker_button_container_bottom_padding">16dp</dimen>
     <dimen name="improved_bookmark_row_horizontal_margin">10dp</dimen>
     <dimen name="improved_bookmark_row_horizontal_padding">6dp</dimen>
     <dimen name="improved_bookmark_row_horizontal_negative_margin">-10dp</dimen>
