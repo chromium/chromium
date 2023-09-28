@@ -218,6 +218,12 @@ void AvifInfoSegmentReaderSkip(void* void_stream, size_t num_bytes) {
   stream->num_read_bytes += num_bytes;
 }
 
+inline float FractionToFloat(uint32_t numerator, uint32_t denominator) {
+  // First cast to double and not float because uint32_t->float conversion can
+  // cause precision loss.
+  return static_cast<double>(numerator) / denominator;
+}
+
 }  // namespace
 
 AVIFImageDecoder::AVIFImageDecoder(AlphaOption alpha_option,
@@ -1203,15 +1209,6 @@ void AVIFImageDecoder::ColorCorrectImage(int from_row,
       DCHECK(success);
     }
   }
-}
-
-static inline float FractionToFloat(uint32_t numerator, uint32_t denominator) {
-  // First cast to double and not float because uint32_t->float conversion can
-  // cause precision loss.
-  // E.g. if numerator=UINT32_MAX and denominator=UINT32_MAX/3, casting the
-  // numerator to float would cause precision loss even though the result of the
-  // division (3) can be represented exactly.
-  return static_cast<double>(numerator) / denominator;
 }
 
 bool AVIFImageDecoder::GetGainmapInfoAndData(
