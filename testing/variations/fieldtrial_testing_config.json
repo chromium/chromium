@@ -14983,9 +14983,13 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_SCStream_20230927",
+                    "params": {
+                        "capture_mode": "sc_stream"
+                    },
                     "enable_features": [
-                        "ScreenCaptureKitStreamPickerSonoma"
+                        "ScreenCaptureKitStreamPickerSonoma",
+                        "ThumbnailCapturerMac"
                     ]
                 }
             ]
