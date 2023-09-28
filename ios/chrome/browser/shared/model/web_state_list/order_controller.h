@@ -5,7 +5,9 @@
 #ifndef IOS_CHROME_BROWSER_SHARED_MODEL_WEB_STATE_LIST_ORDER_CONTROLLER_H_
 #define IOS_CHROME_BROWSER_SHARED_MODEL_WEB_STATE_LIST_ORDER_CONTROLLER_H_
 
-class WebStateList;
+#include "base/memory/raw_ref.h"
+
+class OrderControllerSource;
 class RemovingIndexes;
 
 // OrderController abstracts the algorithms used to determine the insertion
@@ -14,25 +16,34 @@ class RemovingIndexes;
 // it on a serialized version.
 class OrderController {
  public:
+  // Enumeration representing the group of the item during insertion.
+  enum class ItemGroup {
+    kRegular,
+    kPinned,
+  };
+
   // Structure used to represent the requirement to determine the insertion
   // index of a new element in the list. The structure must be initialized
   // using one of the public factory methods.
   struct InsertionParams {
     const int desired_index;
     const int opener_index;
-    const bool pinned;
+    const ItemGroup group;
+
+    // Returns whether the item is pinned.
+    bool pinned() const { return group == ItemGroup::kPinned; }
 
     // Factory representing automatic selection of the insertion index.
-    static InsertionParams Automatic(bool pinned);
+    static InsertionParams Automatic(ItemGroup group);
 
     // Factory representing insertion at a specified index.
-    static InsertionParams ForceIndex(int desired_index, bool pinned);
+    static InsertionParams ForceIndex(int desired_index, ItemGroup group);
 
     // Factory representing insertion relative to the opener.
-    static InsertionParams WithOpener(int opener_index, bool pinned);
+    static InsertionParams WithOpener(int opener_index, ItemGroup group);
   };
 
-  explicit OrderController(const WebStateList& web_state_list);
+  explicit OrderController(const OrderControllerSource& source);
   ~OrderController();
 
   // Determines where to place a newly opened WebState according to the
@@ -50,7 +61,7 @@ class OrderController {
                               RemovingIndexes removing_indexes) const;
 
  private:
-  const WebStateList& web_state_list_;
+  raw_ref<const OrderControllerSource> source_;
 };
 
 #endif  // IOS_CHROME_BROWSER_SHARED_MODEL_WEB_STATE_LIST_ORDER_CONTROLLER_H_

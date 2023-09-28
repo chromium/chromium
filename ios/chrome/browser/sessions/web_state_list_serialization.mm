@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/sessions/session_constants.h"
 #import "ios/chrome/browser/sessions/session_window_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/order_controller.h"
+#import "ios/chrome/browser/shared/model/web_state_list/order_controller_source_from_web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/removing_indexes.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
@@ -420,7 +421,8 @@ SessionWindowIOS* SerializeWebStateList(const WebStateList* web_state_list) {
     }
   }
 
-  OrderController order_controller(*web_state_list);
+  OrderControllerSourceFromWebStateList source(*web_state_list);
+  OrderController order_controller(source);
   const int active_index = order_controller.DetermineNewActiveIndex(
       web_state_list->active_index(), std::move(removing_indexes));
 
@@ -477,7 +479,8 @@ void SerializeWebStateList(const WebStateList& web_state_list,
   DCHECK_LE(removed_pinned_tabs_count, pinned_tabs_count);
   storage.set_pinned_item_count(pinned_tabs_count - removed_pinned_tabs_count);
 
-  OrderController order_controller(web_state_list);
+  OrderControllerSourceFromWebStateList source(web_state_list);
+  OrderController order_controller(source);
   const int active_index = order_controller.DetermineNewActiveIndex(
       web_state_list.active_index(), std::move(removing_indexes));
   DCHECK_LT(active_index, web_state_list.count());

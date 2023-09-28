@@ -11,11 +11,11 @@
 #import "base/check_op.h"
 #import "base/containers/adapters.h"
 #import "ios/chrome/browser/shared/model/web_state_list/order_controller.h"
+#import "ios/chrome/browser/shared/model/web_state_list/order_controller_source_from_web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/removing_indexes.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
-#import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
 
 namespace {
@@ -144,13 +144,6 @@ class WebStateList::WebStateWrapper {
   bool ShouldResetOpenerOnActiveWebStateChange() const;
   void SetShouldResetOpenerOnActiveWebStateChange(bool should_reset_opener);
 
-  // Returns whether `opener` spawned the wrapped WebState. If `use_group` is
-  // true, also use the opener navigation index to detect navigation changes
-  // during the same session.
-  bool WasOpenedBy(const web::WebState* opener,
-                   int opener_navigation_index,
-                   bool use_group) const;
-
  private:
   std::unique_ptr<web::WebState> web_state_;
   WebStateOpener opener_;
@@ -186,21 +179,6 @@ void WebStateList::WebStateWrapper::SetOpener(WebStateOpener opener) {
   DCHECK_NE(web_state_.get(), opener.opener);
   should_reset_opener_ = false;
   opener_ = opener;
-}
-
-bool WebStateList::WebStateWrapper::WasOpenedBy(const web::WebState* opener,
-                                                int opener_navigation_index,
-                                                bool use_group) const {
-  DCHECK(opener);
-  if (opener_.opener != opener) {
-    return false;
-  }
-
-  if (!use_group) {
-    return true;
-  }
-
-  return opener_.navigation_index == opener_navigation_index;
 }
 
 bool WebStateList::WebStateWrapper::ShouldResetOpenerOnActiveWebStateChange()
@@ -302,20 +280,6 @@ void WebStateList::SetOpenerOfWebStateAt(int index, WebStateOpener opener) {
   web_state_wrappers_[index]->SetOpener(opener);
 }
 
-int WebStateList::GetIndexOfNextWebStateOpenedBy(const web::WebState* opener,
-                                                 int start_index,
-                                                 bool use_group) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return GetIndexOfNthWebStateOpenedBy(opener, start_index, use_group, 1);
-}
-
-int WebStateList::GetIndexOfLastWebStateOpenedBy(const web::WebState* opener,
-                                                 int start_index,
-                                                 bool use_group) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return GetIndexOfNthWebStateOpenedBy(opener, start_index, use_group, INT_MAX);
-}
-
 int WebStateList::SetWebStatePinnedAt(int index, bool pinned) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(ContainsIndex(index));
@@ -415,17 +379,22 @@ int WebStateList::InsertWebStateImpl(int index,
     opener = WebStateOpener(GetActiveWebState());
   }
 
-  OrderController order_controller(*this);
+  const OrderController::ItemGroup group =
+      pinned ? OrderController::ItemGroup::kPinned
+             : OrderController::ItemGroup::kRegular;
+
+  const OrderControllerSourceFromWebStateList source(*this);
+  const OrderController order_controller(source);
   if (forced && index != WebStateList::kInvalidIndex) {
     index = order_controller.DetermineInsertionIndex(
-        OrderController::InsertionParams::ForceIndex(index, pinned));
+        OrderController::InsertionParams::ForceIndex(index, group));
   } else if (opener.opener) {
     const int opener_index = GetIndexOfWebState(opener.opener);
     index = order_controller.DetermineInsertionIndex(
-        OrderController::InsertionParams::WithOpener(opener_index, pinned));
+        OrderController::InsertionParams::WithOpener(opener_index, group));
   } else {
     index = order_controller.DetermineInsertionIndex(
-        OrderController::InsertionParams::Automatic(pinned));
+        OrderController::InsertionParams::Automatic(group));
   }
 
   DCHECK(ContainsIndex(index) || index == count());
@@ -595,7 +564,8 @@ std::unique_ptr<web::WebState> WebStateList::DetachWebStateAtImpl(
   // Update the active index to prevent observer from seeing an invalid WebState
   // as the active one but only send the WebStateActivatedAt notification after
   // the WebStateListDidChange with kDetach.
-  OrderController order_controller(*this);
+  OrderControllerSourceFromWebStateList source(*this);
+  OrderController order_controller(source);
   active_index_ =
       order_controller.DetermineNewActiveIndex(active_index_, {index});
   if (is_active_web_state_detached) {
@@ -655,7 +625,8 @@ void WebStateList::CloseAllWebStatesAfterIndexImpl(int start_index,
       removing_indexes.push_back(i);
     }
 
-    OrderController order_controller(*this);
+    OrderControllerSourceFromWebStateList source(*this);
+    OrderController order_controller(source);
     new_active_index = order_controller.DetermineNewActiveIndex(
         active_index_, RemovingIndexes(std::move(removing_indexes)));
   }
@@ -748,40 +719,6 @@ void WebStateList::ClearOpenersReferencing(int index) {
       web_state_wrapper->SetOpener(WebStateOpener());
     }
   }
-}
-
-int WebStateList::GetIndexOfNthWebStateOpenedBy(const web::WebState* opener,
-                                                int start_index,
-                                                bool use_group,
-                                                int n) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_GT(n, 0);
-  if (!opener || !ContainsIndex(start_index)) {
-    return kInvalidIndex;
-  }
-
-  const int opener_navigation_index =
-      use_group ? opener->GetNavigationManager()->GetLastCommittedItemIndex()
-                : -1;
-
-  int found_index = kInvalidIndex;
-  const int list_length = count();
-  for (int i = 1; i < list_length; ++i) {
-    const int index = (start_index + i) % list_length;
-    DCHECK_NE(index, start_index);
-
-    const auto& wrapper = web_state_wrappers_[index];
-    if (!wrapper->WasOpenedBy(opener, opener_navigation_index, use_group)) {
-      continue;
-    }
-
-    found_index = index;
-    if (--n == 0) {
-      break;
-    }
-  }
-
-  return found_index;
 }
 
 int WebStateList::SetWebStatePinnedImpl(int index, bool pinned) {

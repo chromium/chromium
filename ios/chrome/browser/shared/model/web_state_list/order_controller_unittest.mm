@@ -4,298 +4,312 @@
 
 #import "ios/chrome/browser/shared/model/web_state_list/order_controller.h"
 
-#import <memory>
-
+#import "base/check_op.h"
+#import "ios/chrome/browser/shared/model/web_state_list/order_controller_source_from_web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/removing_indexes.h"
-#import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
-#import "ios/web/public/test/fakes/fake_navigation_manager.h"
-#import "ios/web/public/test/fakes/fake_web_state.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 
 namespace {
-const char kURL[] = "https://chromium.org/";
 
-// A fake NavigationManager used to test opener-opened relationship in the
-// WebStateList.
-class FakeNavigationManager : public web::FakeNavigationManager {
+struct ItemInfo {
+  int opener_index = -1;
+  int opener_navigation_index = -1;
+  int last_committed_navigation_index = 0;
+};
+
+class FakeOrderControllerSource final : public OrderControllerSource {
  public:
-  FakeNavigationManager() = default;
+  FakeOrderControllerSource(int pinned_items_count, std::vector<ItemInfo> items)
+      : items_(std::move(items)), pinned_items_count_(pinned_items_count) {
+    DCHECK_GE(pinned_items_count_, 0);
+    DCHECK_LE(pinned_items_count_, static_cast<int>(items_.size()));
+  }
 
-  FakeNavigationManager(const FakeNavigationManager&) = delete;
-  FakeNavigationManager& operator=(const FakeNavigationManager&) = delete;
+  // OrderControllerSource implementation.
+  int GetCount() const final { return static_cast<int>(items_.size()); }
 
-  // web::NavigationManager implementation.
-  int GetLastCommittedItemIndex() const override { return 0; }
+  int GetPinnedCount() const final { return pinned_items_count_; }
+
+  int GetOpenerOfItemAt(int index) const final {
+    DCHECK_GE(index, 0);
+    DCHECK_LT(index, static_cast<int>(items_.size()));
+    return items_[index].opener_index;
+  }
+
+  bool IsOpenerOfItemAt(int index,
+                        int opener_index,
+                        bool check_navigation_index) const final {
+    DCHECK_GE(index, 0);
+    DCHECK_LT(index, static_cast<int>(items_.size()));
+    const ItemInfo& item = items_[index];
+    if (opener_index != item.opener_index) {
+      return false;
+    }
+
+    if (!check_navigation_index) {
+      return true;
+    }
+
+    DCHECK_GE(opener_index, 0);
+    DCHECK_LT(opener_index, static_cast<int>(items_.size()));
+    return item.opener_navigation_index ==
+           items_[opener_index].last_committed_navigation_index;
+  }
+
+ private:
+  const std::vector<ItemInfo> items_;
+  const int pinned_items_count_;
 };
 
 }  // namespace
 
-class OrderControllerTest : public PlatformTest {
- public:
-  OrderControllerTest()
-      : web_state_list_(&web_state_list_delegate_),
-        order_controller_(web_state_list_) {}
+using OrderControllerTest = PlatformTest;
 
- protected:
-  FakeWebStateListDelegate web_state_list_delegate_;
-  WebStateList web_state_list_;
-  OrderController order_controller_;
+// Tests that DetermineInsertionIndex respects the pinned/regular group
+// when the insertion policy is "automatic".
+TEST_F(OrderControllerTest, DetermineInsertionIndex_Automatic) {
+  FakeOrderControllerSource source(2, {
+                                          // Pinned items
+                                          ItemInfo{},
+                                          ItemInfo{},
 
-  void InsertNewWebState(int index, WebStateOpener opener) {
-    auto test_web_state = std::make_unique<web::FakeWebState>();
-    test_web_state->SetCurrentURL(GURL(kURL));
-    test_web_state->SetNavigationManager(
-        std::make_unique<FakeNavigationManager>());
-    web_state_list_.InsertWebState(index, std::move(test_web_state),
-                                   WebStateList::INSERT_FORCE_INDEX, opener);
-  }
-};
+                                          // Regular items
+                                          ItemInfo{},
+                                          ItemInfo{},
+                                      });
+  OrderController order_controller(source);
 
-// Tests that DetermineInsertionIndex respects the opener if specified.
-TEST_F(OrderControllerTest, DetermineInsertionIndex) {
-  InsertNewWebState(0, WebStateOpener());
-  InsertNewWebState(1, WebStateOpener());
+  // Verify that inserting an item with "automatic" policy put the item
+  // at the end of the selected group (regular).
+  EXPECT_EQ(4, order_controller.DetermineInsertionIndex(
+                   OrderController::InsertionParams::Automatic(
+                       OrderController::ItemGroup::kRegular)));
 
-  // Verify that first child WebState is inserted its opener if there are
-  // no other children.
-  EXPECT_EQ(1, order_controller_.DetermineInsertionIndex(
-                   OrderController::InsertionParams::WithOpener(0, false)));
-
-  // Verify that  WebState is inserted at the end when using "automatic".
-  EXPECT_EQ(2, order_controller_.DetermineInsertionIndex(
-                   OrderController::InsertionParams::Automatic(false)));
-
-  // Add a child WebState to `opener`, and verify that a second child would be
-  // inserted after the first.
-  InsertNewWebState(2, WebStateOpener(web_state_list_.GetWebStateAt(0)));
-
-  EXPECT_EQ(3, order_controller_.DetermineInsertionIndex(
-                   OrderController::InsertionParams::WithOpener(0, false)));
-
-  // Add a grand-child to `opener`, and verify that adding another child to
-  // `opener` would be inserted before the grand-child.
-  InsertNewWebState(3, WebStateOpener(web_state_list_.GetWebStateAt(1)));
-
-  EXPECT_EQ(3, order_controller_.DetermineInsertionIndex(
-                   OrderController::InsertionParams::WithOpener(0, false)));
+  // Verify that inserting an item with "automatic" policy put the item
+  // at the end of the selected group (pinned).
+  EXPECT_EQ(2, order_controller.DetermineInsertionIndex(
+                   OrderController::InsertionParams::Automatic(
+                       OrderController::ItemGroup::kPinned)));
 }
 
-// Tests determination of insertion index for pinned and non-pinned WebStates
-// when no opener is provided and insertion index is forced (FORCE_INDEX flag is
-// set).
-TEST_F(OrderControllerTest, DetermineInsertionIndex_HasForceIndex) {
-  InsertNewWebState(0, WebStateOpener());
-  InsertNewWebState(1, WebStateOpener());
-  InsertNewWebState(2, WebStateOpener());
-  InsertNewWebState(3, WebStateOpener());
-  InsertNewWebState(4, WebStateOpener());
+// Tests that DetermineInsertionIndex respects the desired index when
+// insertion policy is "forced".
+TEST_F(OrderControllerTest, DetermineInsertionIndex_ForceIndex) {
+  FakeOrderControllerSource source(2, {
+                                          // Pinned items
+                                          ItemInfo{},
+                                          ItemInfo{},
 
-  // Pin first three WebStates.
-  web_state_list_.SetWebStatePinnedAt(0, true);
-  web_state_list_.SetWebStatePinnedAt(1, true);
-  web_state_list_.SetWebStatePinnedAt(2, true);
+                                          // Regular items
+                                          ItemInfo{},
+                                          ItemInfo{},
+                                      });
+  OrderController order_controller(source);
 
-  // Verify that insertion index of pinned WebState, added within pinned
-  // WebStates range equals the forced index.
-  EXPECT_EQ(1, order_controller_.DetermineInsertionIndex(
-                   OrderController::InsertionParams::ForceIndex(1, true)));
+  // Verify that inserting an item with "forced" policy puts the item at
+  // the requested position.
+  EXPECT_EQ(2, order_controller.DetermineInsertionIndex(
+                   OrderController::InsertionParams::ForceIndex(
+                       2, OrderController::ItemGroup::kRegular)));
 
-  // Verify that insertion index of non-pinned WebState, added within non-pinned
-  // WebStates range equals the forced index.
-  EXPECT_EQ(3, order_controller_.DetermineInsertionIndex(
-                   OrderController::InsertionParams::ForceIndex(3, false)));
+  EXPECT_EQ(3, order_controller.DetermineInsertionIndex(
+                   OrderController::InsertionParams::ForceIndex(
+                       3, OrderController::ItemGroup::kRegular)));
 
-  // Verify that insertion index of pinned WebState, added outside of pinned
-  // WebStates range equals the index of first non-pinned WebState (end of
-  // pinned WebStates list).
-  EXPECT_EQ(3, order_controller_.DetermineInsertionIndex(
-                   OrderController::InsertionParams::ForceIndex(4, true)));
+  EXPECT_EQ(4, order_controller.DetermineInsertionIndex(
+                   OrderController::InsertionParams::ForceIndex(
+                       4, OrderController::ItemGroup::kRegular)));
 
-  // Verify that insertion index of non-pinned WebState, added outside of
-  // non-pinned WebStates range equals the count of WebStates (end of non-pinned
-  // WebStates list).
-  EXPECT_EQ(5, order_controller_.DetermineInsertionIndex(
-                   OrderController::InsertionParams::ForceIndex(0, false)));
+  EXPECT_EQ(0, order_controller.DetermineInsertionIndex(
+                   OrderController::InsertionParams::ForceIndex(
+                       0, OrderController::ItemGroup::kPinned)));
+
+  EXPECT_EQ(1, order_controller.DetermineInsertionIndex(
+                   OrderController::InsertionParams::ForceIndex(
+                       1, OrderController::ItemGroup::kPinned)));
+
+  EXPECT_EQ(2, order_controller.DetermineInsertionIndex(
+                   OrderController::InsertionParams::ForceIndex(
+                       2, OrderController::ItemGroup::kPinned)));
+
+  // Verify that inserting an item with "forced" policy puts the item at
+  // the end of the group if the requested position is not in group.
+  EXPECT_EQ(4, order_controller.DetermineInsertionIndex(
+                   OrderController::InsertionParams::ForceIndex(
+                       0, OrderController::ItemGroup::kRegular)));
+
+  EXPECT_EQ(4, order_controller.DetermineInsertionIndex(
+                   OrderController::InsertionParams::ForceIndex(
+                       1, OrderController::ItemGroup::kRegular)));
+
+  EXPECT_EQ(2, order_controller.DetermineInsertionIndex(
+                   OrderController::InsertionParams::ForceIndex(
+                       3, OrderController::ItemGroup::kPinned)));
+
+  EXPECT_EQ(2, order_controller.DetermineInsertionIndex(
+                   OrderController::InsertionParams::ForceIndex(
+                       4, OrderController::ItemGroup::kPinned)));
 }
 
-// Tests determination of insertion index for pinned and non-pinned WebStates
-// when opener is provied and insertion index is not forced (FORCE_INDEX flag
-// is not set).
-TEST_F(OrderControllerTest, DetermineInsertionIndex_HasOpener) {
-  InsertNewWebState(0, WebStateOpener());
-  InsertNewWebState(1, WebStateOpener());
-  InsertNewWebState(2, WebStateOpener());
-  InsertNewWebState(3, WebStateOpener());
-  InsertNewWebState(4, WebStateOpener());
+// Tests that DetermineInsertionIndex correctly position an item with an
+// opener relative to its parent, siblings and the pinned/regular group.
+TEST_F(OrderControllerTest, DetermineInsertionIndex_WithOpener) {
+  FakeOrderControllerSource source(6, {
+                                          // Pinned items
+                                          ItemInfo{},
+                                          ItemInfo{
+                                              .opener_index = 5,
+                                              .opener_navigation_index = 0,
+                                          },
+                                          ItemInfo{
+                                              .opener_index = 1,
+                                              .opener_navigation_index = 0,
+                                          },
+                                          ItemInfo{
+                                              .opener_index = 1,
+                                              .opener_navigation_index = 0,
+                                          },
+                                          ItemInfo{
+                                              .opener_index = 1,
+                                              .opener_navigation_index = 1,
+                                          },
+                                          ItemInfo{},
 
-  // Pin first three WebStates.
-  web_state_list_.SetWebStatePinnedAt(0, true);
-  web_state_list_.SetWebStatePinnedAt(1, true);
-  web_state_list_.SetWebStatePinnedAt(2, true);
+                                          // Regular items
+                                          ItemInfo{},
+                                          ItemInfo{
+                                              .opener_index = 11,
+                                              .opener_navigation_index = 0,
+                                          },
+                                          ItemInfo{
+                                              .opener_index = 7,
+                                              .opener_navigation_index = 0,
+                                          },
+                                          ItemInfo{
+                                              .opener_index = 7,
+                                              .opener_navigation_index = 0,
+                                          },
+                                          ItemInfo{
+                                              .opener_index = 7,
+                                              .opener_navigation_index = 1,
+                                          },
+                                          ItemInfo{},
+                                      });
+  OrderController order_controller(source);
 
-  // Verify that insertion index of pinned WebState, added within pinned
-  // WebStates range equals the opener index + 1.
-  EXPECT_EQ(2, order_controller_.DetermineInsertionIndex(
-                   OrderController::InsertionParams::WithOpener(1, true)));
+  // Verify that inserting an item with an opener will position it after
+  // the last sibling if there is at least one sibling.
+  EXPECT_EQ(10, order_controller.DetermineInsertionIndex(
+                    OrderController::InsertionParams::WithOpener(
+                        7, OrderController::ItemGroup::kRegular)));
 
-  // Verify that insertion index of non-pinned WebState, added within non-pinned
-  // WebStates range equals the opener index + 1.
-  EXPECT_EQ(5, order_controller_.DetermineInsertionIndex(
-                   OrderController::InsertionParams::WithOpener(4, false)));
+  EXPECT_EQ(4, order_controller.DetermineInsertionIndex(
+                   OrderController::InsertionParams::WithOpener(
+                       1, OrderController::ItemGroup::kPinned)));
 
-  // Verify that insertion index of pinned WebState, added outside of pinned
-  // WebStates range equals the index of first non-pinned WebState (end of
-  // pinned WebStates list).
-  EXPECT_EQ(3, order_controller_.DetermineInsertionIndex(
-                   OrderController::InsertionParams::WithOpener(4, true)));
+  // Verify that inserting an item with an opener will position it after
+  // the last sibling if there is at least one sibling, even if the last
+  // sibling is "before" the opener.
+  EXPECT_EQ(8, order_controller.DetermineInsertionIndex(
+                   OrderController::InsertionParams::WithOpener(
+                       11, OrderController::ItemGroup::kRegular)));
 
-  // Verify that insertion index of non-pinned WebState, added outside of
-  // non-pinned WebStates range equals the count of WebStates (end of non-pinned
-  // WebStates list).
-  EXPECT_EQ(5, order_controller_.DetermineInsertionIndex(
-                   OrderController::InsertionParams::WithOpener(1, false)));
+  EXPECT_EQ(2, order_controller.DetermineInsertionIndex(
+                   OrderController::InsertionParams::WithOpener(
+                       5, OrderController::ItemGroup::kPinned)));
+
+  // Verify that inserting an item with an opener will position it after
+  // the parent if there is no sibling.
+  EXPECT_EQ(9, order_controller.DetermineInsertionIndex(
+                   OrderController::InsertionParams::WithOpener(
+                       8, OrderController::ItemGroup::kRegular)));
+
+  EXPECT_EQ(3, order_controller.DetermineInsertionIndex(
+                   OrderController::InsertionParams::WithOpener(
+                       2, OrderController::ItemGroup::kPinned)));
+
+  // Verify that inserting an item with an opener will force the index
+  // in the correct group if the automatically determined position is
+  // outside of the group.
+  EXPECT_EQ(12, order_controller.DetermineInsertionIndex(
+                    OrderController::InsertionParams::WithOpener(
+                        0, OrderController::ItemGroup::kRegular)));
+
+  EXPECT_EQ(6, order_controller.DetermineInsertionIndex(
+                   OrderController::InsertionParams::WithOpener(
+                       6, OrderController::ItemGroup::kPinned)));
 }
 
-// Tests determination of insertion index for pinned and non-pinned WebStates
-// when opener is provied and it has children WebStates.
-TEST_F(OrderControllerTest, DetermineInsertionIndex_HasOpenerChildren) {
-  InsertNewWebState(0, WebStateOpener());
-  InsertNewWebState(1, WebStateOpener(web_state_list_.GetWebStateAt(0)));
-  InsertNewWebState(2, WebStateOpener());
-  InsertNewWebState(3, WebStateOpener(web_state_list_.GetWebStateAt(2)));
-  InsertNewWebState(4, WebStateOpener());
-
-  // Pin first three WebStates.
-  web_state_list_.SetWebStatePinnedAt(0, true);
-  web_state_list_.SetWebStatePinnedAt(1, true);
-  web_state_list_.SetWebStatePinnedAt(2, true);
-
-  // Verify that insertion index of pinned WebState, added within pinned
-  // WebStates range equals the opener last child index + 1.
-  EXPECT_EQ(2, order_controller_.DetermineInsertionIndex(
-                   OrderController::InsertionParams::WithOpener(0, true)));
-
-  // Verify that insertion index of non-pinned WebState, added within non-pinned
-  // WebStates range equals the opener last child index + 1.
-  EXPECT_EQ(4, order_controller_.DetermineInsertionIndex(
-                   OrderController::InsertionParams::WithOpener(2, false)));
-
-  // Verify that insertion index of pinned WebState, added outside of pinned
-  // WebStates range equals the index of first non-pinned WebState (end of
-  // pinned WebStates list).
-  EXPECT_EQ(3, order_controller_.DetermineInsertionIndex(
-                   OrderController::InsertionParams::WithOpener(2, true)));
-
-  // Verify that insertion index of non-pinned WebState, added outside of
-  // non-pinned WebStates range equals the count of WebStates (end of non-pinned
-  // WebStates list).
-  EXPECT_EQ(5, order_controller_.DetermineInsertionIndex(
-                   OrderController::InsertionParams::WithOpener(0, false)));
-}
-
-// Test that the selection of the next tab to show when closing a tab respect
-// the opener-opened relationship (note: the index returned always omit the
-// would be closed WebState, so there is a - 1 offset).
+// Tests that the selection of the next active element when closing tabs
+// respects the opener-opened relationship.
 TEST_F(OrderControllerTest, DetermineNewActiveIndex) {
-  InsertNewWebState(0, WebStateOpener());
+  FakeOrderControllerSource source(0, {
+                                          ItemInfo{},
+                                          ItemInfo{},
+                                          ItemInfo{.opener_index = 7},
+                                          ItemInfo{},
+                                          ItemInfo{.opener_index = 0},
+                                          ItemInfo{.opener_index = 0},
+                                          ItemInfo{.opener_index = 1},
+                                          ItemInfo{},
+                                          ItemInfo{},
+                                      });
+  OrderController order_controller(source);
 
-  // Verify that if closing the last WebState, no WebState is selected.
-  EXPECT_EQ(WebStateList::kInvalidIndex,
-            order_controller_.DetermineNewActiveIndex(0, {0}));
-
-  InsertNewWebState(1, WebStateOpener());
-  InsertNewWebState(2, WebStateOpener());
-  InsertNewWebState(3, WebStateOpener(web_state_list_.GetWebStateAt(0)));
-  InsertNewWebState(4, WebStateOpener(web_state_list_.GetWebStateAt(0)));
-  InsertNewWebState(5, WebStateOpener(web_state_list_.GetWebStateAt(1)));
-  InsertNewWebState(6, WebStateOpener());
-
-  // Verify that if there is no active WebState, no WebState will be activated.
-  EXPECT_EQ(WebStateList::kInvalidIndex,
-            order_controller_.DetermineNewActiveIndex(
-                WebStateList::kInvalidIndex, {0}));
-
-  // Verify that if closing a WebState that is not active, the active item
-  // is not changed, but the index is updated only if active WebState is
-  // after the closed WebState.
-  EXPECT_EQ(3, order_controller_.DetermineNewActiveIndex(3, {4}));
-  EXPECT_EQ(4, order_controller_.DetermineNewActiveIndex(5, {4}));
-
-  // Verify that if closing a WebState with siblings, the next sibling is
-  // selected.
-  EXPECT_EQ(3, order_controller_.DetermineNewActiveIndex(3, {3}));
-
-  // Verify that if closing a WebState with siblings, the next sibling is
-  // selected even if it is before the active WebState.
-  EXPECT_EQ(3, order_controller_.DetermineNewActiveIndex(4, {4}));
-
-  // Verify that if closing a WebState with no sibling, the opener is selected.
-  EXPECT_EQ(1, order_controller_.DetermineNewActiveIndex(5, {5}));
-
-  // Verify that if closing a WebState with children, the first child is
-  // selected.
-  EXPECT_EQ(4, order_controller_.DetermineNewActiveIndex(1, {1}));
-
-  // Verify that if closing a WebState with children, the first child is
-  // selected, even if it is before the active WebState.
-  EXPECT_EQ(4, order_controller_.DetermineNewActiveIndex(1, {1}));
-
-  // Verify that if closing a WebState with no child, the next WebState is
-  // selected, or the previous one if the last WebState was closed.
-  EXPECT_EQ(2, order_controller_.DetermineNewActiveIndex(2, {2}));
-  EXPECT_EQ(5, order_controller_.DetermineNewActiveIndex(6, {6}));
-}
-
-// Test that the selection of the next tab to show when closing multiple
-// tabs respect the opener-opened relationship (note: the index returned
-// always omit the would be closed WebStates).
-TEST_F(OrderControllerTest, DetermineNewActiveIndexClosingMultipleTabs) {
-  InsertNewWebState(0, WebStateOpener());
-
-  // Verify that if closing the last WebState, no WebState is selected.
-  EXPECT_EQ(WebStateList::kInvalidIndex,
-            order_controller_.DetermineNewActiveIndex(0, {0}));
-
-  InsertNewWebState(1, WebStateOpener());
-  InsertNewWebState(2, WebStateOpener());
-  InsertNewWebState(3, WebStateOpener(web_state_list_.GetWebStateAt(0)));
-  InsertNewWebState(4, WebStateOpener(web_state_list_.GetWebStateAt(0)));
-  InsertNewWebState(5, WebStateOpener(web_state_list_.GetWebStateAt(1)));
-  InsertNewWebState(6, WebStateOpener());
-
-  // Verify that if closing all WebStates, no WebState is selected.
+  // Verify that if closing all the items, no item is selected.
   EXPECT_EQ(
       WebStateList::kInvalidIndex,
-      order_controller_.DetermineNewActiveIndex(0, {0, 1, 2, 3, 4, 5, 6}));
+      order_controller.DetermineNewActiveIndex(0, {0, 1, 2, 3, 4, 5, 6, 7, 8}));
 
-  // Verify that if there is no active WebState, no WebState will be activated.
+  // Verify that if there is no active item, no active item will be activated.
   EXPECT_EQ(WebStateList::kInvalidIndex,
-            order_controller_.DetermineNewActiveIndex(
-                WebStateList::kInvalidIndex, {0}));
+            order_controller.DetermineNewActiveIndex(
+                WebStateList::kInvalidIndex, {}));
 
-  // Verify that if closing a WebState that is not active, the active item
-  // is not changed, but the index is updated only if active WebState is
-  // after the closed WebState.
-  EXPECT_EQ(3, order_controller_.DetermineNewActiveIndex(3, {4, 6}));
-  EXPECT_EQ(4, order_controller_.DetermineNewActiveIndex(5, {4, 6}));
-  EXPECT_EQ(4, order_controller_.DetermineNewActiveIndex(6, {4, 5}));
+  // Verify that if closing an item that is not active, the active item is
+  // not changed, but the index is updated if the item is after the closed
+  // one.
+  EXPECT_EQ(4, order_controller.DetermineNewActiveIndex(4, {5}));
+  EXPECT_EQ(5, order_controller.DetermineNewActiveIndex(6, {5}));
+  EXPECT_EQ(4, order_controller.DetermineNewActiveIndex(4, {5, 7}));
+  EXPECT_EQ(5, order_controller.DetermineNewActiveIndex(6, {5, 7}));
+  EXPECT_EQ(5, order_controller.DetermineNewActiveIndex(7, {5, 6}));
 
-  // Verify that if closing a WebState and its siblings, the opener is
+  // Verify that if closing an item with siblings, the next sibling is
+  // selected, even if it is before the active one.
+  EXPECT_EQ(4, order_controller.DetermineNewActiveIndex(4, {4}));
+  EXPECT_EQ(4, order_controller.DetermineNewActiveIndex(5, {5}));
+
+  // Verify that if closing an item with opener but no sibling, then the
+  // opener is selected.
+  EXPECT_EQ(1, order_controller.DetermineNewActiveIndex(6, {6}));
+
+  // Verify that if closing an item with children, the first child is
+  // selected, even if it is before the active item.
+  EXPECT_EQ(5, order_controller.DetermineNewActiveIndex(1, {1}));
+  EXPECT_EQ(2, order_controller.DetermineNewActiveIndex(7, {7}));
+
+  // Verify that if closing an item with no child, the next item is
+  // selected, or the previous one if the last item was closed.
+  EXPECT_EQ(3, order_controller.DetermineNewActiveIndex(3, {3}));
+  EXPECT_EQ(7, order_controller.DetermineNewActiveIndex(8, {8}));
+
+  // Verify that if closing an item and its siblings, the opener is
   // selected.
-  EXPECT_EQ(0, order_controller_.DetermineNewActiveIndex(3, {3, 4}));
+  EXPECT_EQ(0, order_controller.DetermineNewActiveIndex(4, {4, 5}));
 
-  // Verify that if closing a WebState with children, the first non closed
+  // Verify that if closing an item with children, the first non closed
   // child is selected.
-  EXPECT_EQ(2, order_controller_.DetermineNewActiveIndex(0, {0, 3}));
+  EXPECT_EQ(3, order_controller.DetermineNewActiveIndex(0, {0, 4}));
 
-  // Verify that if closing a WebState with children and all its children,
+  // Verify that if closing an item with children and all its children,
   // the tab after it is selected.
-  EXPECT_EQ(0, order_controller_.DetermineNewActiveIndex(0, {0, 3, 4}));
+  EXPECT_EQ(0, order_controller.DetermineNewActiveIndex(0, {0, 4, 5}));
 
-  // Verify that if closing a WebState, all its children and all the tab
+  // Verify that if closing an item, all its children and all the item
   // after it, then the tab before it is selected.
-  EXPECT_EQ(1, order_controller_.DetermineNewActiveIndex(2, {2, 3, 4, 5, 6}));
+  EXPECT_EQ(
+      0, order_controller.DetermineNewActiveIndex(1, {1, 2, 3, 4, 5, 6, 7, 8}));
 }

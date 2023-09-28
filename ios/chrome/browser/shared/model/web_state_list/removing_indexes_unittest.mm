@@ -33,6 +33,10 @@ TEST_F(RemovingIndexesTest, IndexAfterRemovalEmpty) {
   EXPECT_EQ(removing_indexes.IndexAfterRemoval(6), 6);  // no removal before
   EXPECT_EQ(removing_indexes.IndexAfterRemoval(7), 7);  // no removal before
   EXPECT_EQ(removing_indexes.IndexAfterRemoval(8), 8);  // no removal before
+
+  // kInvalidIndex should always be mapped to kInvalidIndex.
+  EXPECT_EQ(removing_indexes.IndexAfterRemoval(WebStateList::kInvalidIndex),
+            WebStateList::kInvalidIndex);
 }
 
 // Tests that RemovingIndexes correctly returns the correct updated value
@@ -48,6 +52,10 @@ TEST_F(RemovingIndexesTest, IndexAfterRemovalOneTab) {
   EXPECT_EQ(removing_indexes.IndexAfterRemoval(6), 5);  // one removals before
   EXPECT_EQ(removing_indexes.IndexAfterRemoval(7), 6);  // one removals before
   EXPECT_EQ(removing_indexes.IndexAfterRemoval(8), 7);  // one removals before
+
+  // kInvalidIndex should always be mapped to kInvalidIndex.
+  EXPECT_EQ(removing_indexes.IndexAfterRemoval(WebStateList::kInvalidIndex),
+            WebStateList::kInvalidIndex);
 }
 
 // Tests that RemovingIndexes correctly returns the correct updated value
@@ -63,6 +71,10 @@ TEST_F(RemovingIndexesTest, IndexAfterRemovalMultipleTabs) {
   EXPECT_EQ(removing_indexes.IndexAfterRemoval(6), 4);  // two removals before
   EXPECT_EQ(removing_indexes.IndexAfterRemoval(7), WebStateList::kInvalidIndex);
   EXPECT_EQ(removing_indexes.IndexAfterRemoval(8), 5);  // three removals before
+
+  // kInvalidIndex should always be mapped to kInvalidIndex.
+  EXPECT_EQ(removing_indexes.IndexAfterRemoval(WebStateList::kInvalidIndex),
+            WebStateList::kInvalidIndex);
 }
 
 // Tests that RemovingIndexes correctly returns whether it contains the
