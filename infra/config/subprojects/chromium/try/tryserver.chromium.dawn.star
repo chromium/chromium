@@ -14,6 +14,7 @@ try_.defaults.set(
     pool = try_.DEFAULT_POOL,
     builderless = False,
     os = os.LINUX_DEFAULT,
+    contact_team_email = "chrome-gpu-infra@google.com",
     execution_timeout = try_.DEFAULT_EXECUTION_TIMEOUT,
     reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
@@ -285,7 +286,6 @@ try_.builder(
     pool = "luci.chromium.gpu.mac.arm64.apple.m1.try",
     builderless = True,
     os = os.MAC_ANY,
-    contact_team_email = "chrome-gpu-infra@google.com",
     test_presentation = resultdb.test_presentation(
         grouping_keys = ["status", "v.test_suite", "v.gpu"],
     ),

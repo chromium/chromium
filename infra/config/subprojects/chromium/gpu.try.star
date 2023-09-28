@@ -13,6 +13,7 @@ try_.defaults.set(
     os = os.LINUX_DEFAULT,
     cpu = cpu.X86_64,
     build_numbers = True,
+    contact_team_email = "chrome-gpu-infra@google.com",
     cq_group = "cq",
     execution_timeout = 6 * time.hour,
     # Max. pending time for builds. CQ considers builds pending >2h as timed
@@ -502,5 +503,4 @@ gpu_win_builder(
         "ci/Win10 x64 Debug (NVIDIA)",
     ],
     pool = "luci.chromium.gpu.win10.nvidia.try",
-    contact_team_email = "chrome-gpu-infra@google.com",
 )
