@@ -1065,7 +1065,7 @@ const ComputedStyle* StyleResolver::ResolveStyle(
 
   // Compute the base style, or reuse an existing cached base style if
   // applicable (ie., only animation has changed). This is the bulk of the
-  // style computation itself, also also where the caching for the base
+  // style computation itself, also where the caching for the base
   // computed style optimization happens.
   ApplyBaseStyle(element, style_recalc_context, style_request, state, cascade);
 

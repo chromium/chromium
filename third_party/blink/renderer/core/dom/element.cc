@@ -4255,8 +4255,58 @@ Element::HighlightRecalc Element::CalculateHighlightRecalc(
   // and our children also need to recalc (see above).
   bool self_non_universal = new_style.HasNonUniversalHighlightPseudoStyles();
 
-  return (parent_non_universal || self_non_universal) ? HighlightRecalc::kFull
-                                                      : HighlightRecalc::kNone;
+  if (parent_non_universal || self_non_universal) {
+    return HighlightRecalc::kFull;
+  }
+
+  // If the parent has any font relative units then we may need
+  // recalc to capture sizes from the originating element. But note that
+  // self will be recalculated regardless if self has its own non-universal
+  // pseudo style.
+  if (parent_style != nullptr &&
+      parent_style->HighlightPseudoElementStylesDependOnFontMetrics()) {
+    return HighlightRecalc::kFontRelative;
+  }
+
+  return HighlightRecalc::kNone;
+}
+
+bool Element::ShouldRecalcHighlightPseudoStyle(
+    HighlightRecalc highlight_recalc,
+    const ComputedStyle* highlight_parent) {
+  if (highlight_recalc == HighlightRecalc::kFull) {
+    return true;
+  }
+  DCHECK(highlight_recalc == HighlightRecalc::kFontRelative);
+  return (highlight_parent && highlight_parent->HasFontRelativeUnits());
+}
+
+void Element::RecalcCustomHighlightPseudoStyle(
+    const StyleRecalcContext& style_recalc_context,
+    HighlightRecalc highlight_recalc,
+    ComputedStyleBuilder& builder,
+    const StyleHighlightData* parent_highlights,
+    const ComputedStyle& originating_style) {
+  const HashSet<AtomicString>* highlight_names =
+      originating_style.CustomHighlightNames();
+  if (!highlight_names) {
+    return;
+  }
+
+  StyleHighlightData& highlights = builder.AccessHighlightData();
+  for (auto highlight_name : *highlight_names) {
+    const ComputedStyle* highlight_parent =
+        parent_highlights ? parent_highlights->CustomHighlight(highlight_name)
+                          : nullptr;
+    if (ShouldRecalcHighlightPseudoStyle(highlight_recalc, highlight_parent)) {
+      const ComputedStyle* highlight_style = StyleForHighlightPseudoElement(
+          style_recalc_context, highlight_parent, originating_style,
+          kPseudoIdHighlight, highlight_name);
+      if (highlight_style) {
+        highlights.SetCustomHighlight(highlight_name, highlight_style);
+      }
+    }
+  }
 }
 
 const ComputedStyle* Element::RecalcHighlightStyles(
@@ -4275,77 +4325,60 @@ const ComputedStyle* Element::RecalcHighlightStyles(
   if (highlight_recalc == HighlightRecalc::kReuse) {
     DCHECK(old_style);
     builder.SetHighlightData(old_style->HighlightData());
-  } else {
-    DCHECK_EQ(highlight_recalc, HighlightRecalc::kFull);
+    return builder.TakeStyle();
+  }
 
-    const StyleHighlightData* parent_highlights =
-        parent_style ? &parent_style->HighlightData() : nullptr;
+  const StyleHighlightData* parent_highlights =
+      parent_style ? &parent_style->HighlightData() : nullptr;
 
-    if (UsesHighlightPseudoInheritance(kPseudoIdSelection) &&
-        new_style.HasPseudoElementStyle(kPseudoIdSelection)) {
-      StyleHighlightData& highlights = builder.AccessHighlightData();
-      const ComputedStyle* highlight_parent =
-          parent_highlights ? parent_highlights->Selection() : nullptr;
-      StyleRequest style_request{kPseudoIdSelection, highlight_parent};
-      style_request.originating_element_style = &new_style;
-      highlights.SetSelection(
-          StyleForPseudoElement(style_recalc_context, style_request));
+  if (UsesHighlightPseudoInheritance(kPseudoIdSelection) &&
+      new_style.HasPseudoElementStyle(kPseudoIdSelection)) {
+    const ComputedStyle* highlight_parent =
+        parent_highlights ? parent_highlights->Selection() : nullptr;
+    if (ShouldRecalcHighlightPseudoStyle(highlight_recalc, highlight_parent)) {
+      builder.AccessHighlightData().SetSelection(
+          StyleForHighlightPseudoElement(style_recalc_context, highlight_parent,
+                                         new_style, kPseudoIdSelection));
     }
+  }
 
-    if (UsesHighlightPseudoInheritance(kPseudoIdTargetText) &&
-        new_style.HasPseudoElementStyle(kPseudoIdTargetText)) {
-      StyleHighlightData& highlights = builder.AccessHighlightData();
-      const ComputedStyle* highlight_parent =
-          parent_highlights ? parent_highlights->TargetText() : nullptr;
-      StyleRequest style_request{kPseudoIdTargetText, highlight_parent};
-      style_request.originating_element_style = &new_style;
-      highlights.SetTargetText(
-          StyleForPseudoElement(style_recalc_context, style_request));
+  if (UsesHighlightPseudoInheritance(kPseudoIdTargetText) &&
+      new_style.HasPseudoElementStyle(kPseudoIdTargetText)) {
+    const ComputedStyle* highlight_parent =
+        parent_highlights ? parent_highlights->TargetText() : nullptr;
+    if (ShouldRecalcHighlightPseudoStyle(highlight_recalc, highlight_parent)) {
+      builder.AccessHighlightData().SetTargetText(
+          StyleForHighlightPseudoElement(style_recalc_context, highlight_parent,
+                                         new_style, kPseudoIdTargetText));
     }
+  }
 
-    if (UsesHighlightPseudoInheritance(kPseudoIdSpellingError) &&
-        new_style.HasPseudoElementStyle(kPseudoIdSpellingError)) {
-      StyleHighlightData& highlights = builder.AccessHighlightData();
-      const ComputedStyle* highlight_parent =
-          parent_highlights ? parent_highlights->SpellingError() : nullptr;
-      StyleRequest style_request{kPseudoIdSpellingError, highlight_parent};
-      style_request.originating_element_style = &new_style;
-      highlights.SetSpellingError(
-          StyleForPseudoElement(style_recalc_context, style_request));
+  if (UsesHighlightPseudoInheritance(kPseudoIdSpellingError) &&
+      new_style.HasPseudoElementStyle(kPseudoIdSpellingError)) {
+    const ComputedStyle* highlight_parent =
+        parent_highlights ? parent_highlights->SpellingError() : nullptr;
+    if (ShouldRecalcHighlightPseudoStyle(highlight_recalc, highlight_parent)) {
+      builder.AccessHighlightData().SetSpellingError(
+          StyleForHighlightPseudoElement(style_recalc_context, highlight_parent,
+                                         new_style, kPseudoIdSpellingError));
     }
+  }
 
-    if (UsesHighlightPseudoInheritance(kPseudoIdGrammarError) &&
-        new_style.HasPseudoElementStyle(kPseudoIdGrammarError)) {
-      StyleHighlightData& highlights = builder.AccessHighlightData();
-      const ComputedStyle* highlight_parent =
-          parent_highlights ? parent_highlights->GrammarError() : nullptr;
-      StyleRequest style_request{kPseudoIdGrammarError, highlight_parent};
-      style_request.originating_element_style = &new_style;
-      highlights.SetGrammarError(
-          StyleForPseudoElement(style_recalc_context, style_request));
+  if (UsesHighlightPseudoInheritance(kPseudoIdGrammarError) &&
+      new_style.HasPseudoElementStyle(kPseudoIdGrammarError)) {
+    const ComputedStyle* highlight_parent =
+        parent_highlights ? parent_highlights->GrammarError() : nullptr;
+    if (ShouldRecalcHighlightPseudoStyle(highlight_recalc, highlight_parent)) {
+      builder.AccessHighlightData().SetGrammarError(
+          StyleForHighlightPseudoElement(style_recalc_context, highlight_parent,
+                                         new_style, kPseudoIdGrammarError));
     }
+  }
 
-    if (UsesHighlightPseudoInheritance(kPseudoIdHighlight) &&
-        new_style.HasPseudoElementStyle(kPseudoIdHighlight)) {
-      const HashSet<AtomicString>* custom_highlight_names =
-          new_style.CustomHighlightNames();
-      if (custom_highlight_names) {
-        for (const AtomicString& custom_highlight_name :
-             *custom_highlight_names) {
-          StyleHighlightData& highlights = builder.AccessHighlightData();
-          const ComputedStyle* highlight_parent =
-              parent_highlights
-                  ? parent_highlights->CustomHighlight(custom_highlight_name)
-                  : nullptr;
-          StyleRequest style_request{kPseudoIdHighlight, highlight_parent,
-                                     custom_highlight_name};
-          style_request.originating_element_style = &new_style;
-          highlights.SetCustomHighlight(
-              custom_highlight_name,
-              StyleForPseudoElement(style_recalc_context, style_request));
-        }
-      }
-    }
+  if (UsesHighlightPseudoInheritance(kPseudoIdHighlight) &&
+      new_style.HasPseudoElementStyle(kPseudoIdHighlight)) {
+    RecalcCustomHighlightPseudoStyle(style_recalc_context, highlight_recalc,
+                                     builder, parent_highlights, new_style);
   }
 
   return builder.TakeStyle();
@@ -6930,8 +6963,9 @@ const ComputedStyle* Element::CachedStyleForPseudoElement(
     return cached;
   }
 
-  const ComputedStyle* result = UncachedStyleForPseudoElement(
-      StyleRequest(pseudo_id, style, pseudo_argument));
+  StyleRequest style_request{pseudo_id, style, pseudo_argument};
+  style_request.originating_element_style = style;
+  const ComputedStyle* result = UncachedStyleForPseudoElement(style_request);
   if (result) {
     return style->AddCachedPseudoElementStyle(result, pseudo_id,
                                               pseudo_argument);
@@ -7013,6 +7047,17 @@ const ComputedStyle* Element::StyleForPseudoElement(
 
   return GetDocument().GetStyleResolver().ResolveStyle(
       this, style_recalc_context, request);
+}
+
+const ComputedStyle* Element::StyleForHighlightPseudoElement(
+    const StyleRecalcContext& style_recalc_context,
+    const ComputedStyle* highlight_parent,
+    const ComputedStyle& originating_style,
+    const PseudoId pseudo_id,
+    const AtomicString& pseudo_argument) {
+  StyleRequest style_request{pseudo_id, highlight_parent, pseudo_argument};
+  style_request.originating_element_style = &originating_style;
+  return StyleForPseudoElement(style_recalc_context, style_request);
 }
 
 bool Element::CanGeneratePseudoElement(PseudoId pseudo_id) const {

@@ -5,6 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_FONT_SIZE_STYLE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_FONT_SIZE_STYLE_H_
 
+#include "third_party/blink/renderer/platform/fonts/font.h"
+#include "third_party/blink/renderer/platform/geometry/length.h"
+
 namespace blink {
 
 // FontSizeStyle contains the subset of ComputedStyle/ComputedStyleBuilder
@@ -20,6 +23,13 @@ class CORE_EXPORT FontSizeStyle {
       : font_(font),
         specified_line_height_(specified_line_height),
         effective_zoom_(effective_zoom) {}
+
+  bool operator==(const FontSizeStyle& o) const {
+    return (font_ == o.font_ &&
+            specified_line_height_ == o.specified_line_height_ &&
+            effective_zoom_ == o.effective_zoom_);
+  }
+  bool operator!=(const FontSizeStyle& o) const { return !(*this == o); }
 
   const Font& GetFont() const { return font_; }
   const Length& SpecifiedLineHeight() const { return specified_line_height_; }

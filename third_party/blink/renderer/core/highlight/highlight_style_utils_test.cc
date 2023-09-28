@@ -33,7 +33,6 @@ class HighlightStyleUtilsTest : public SimTest,
 
 TEST_F(HighlightStyleUtilsTest, SelectedTextInputShadow) {
   // Test that we apply input ::selection style to the value text.
-
   SimRequest main_resource("https://example.com/test.html", "text/html");
 
   LoadURL("https://example.com/test.html");
@@ -153,6 +152,56 @@ TEST_F(HighlightStyleUtilsTest, CustomPropertyInheritanceNoRoot) {
       kPseudoIdSelection);
 
   EXPECT_EQ(Color(0, 128, 0), background_color);
+}
+
+TEST_F(HighlightStyleUtilsTest, FontMetricsFromOriginatingElement) {
+  ScopedHighlightInheritanceForTest highlight_inheritance_enabled(true);
+  SimRequest main_resource("https://example.com/test.html", "text/html");
+
+  LoadURL("https://example.com/test.html");
+
+  main_resource.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>
+      :root {
+        font-size: 16px;
+      }
+      div {
+        font-size: 40px;
+      }
+      ::highlight(highlight1) {
+        text-underline-offset: 0.5em;
+        text-decoration-line: underline;
+        text-decoration-color: green;
+        text-decoration-thickness: 0.25rem;
+      }
+    </style>
+    <div id="h1">Font-dependent lengths</div>
+    <script>
+      let r1 = new Range();
+      r1.setStart(h1, 0);
+      r1.setEnd(h1, 1);
+      CSS.highlights.set("highlight1", new Highlight(r1));
+    </script>
+  )HTML");
+
+  Compositor().BeginFrame();
+
+  auto* div_node =
+      To<HTMLDivElement>(GetDocument().QuerySelector(AtomicString("div")));
+  const ComputedStyle& div_style = div_node->ComputedStyleRef();
+  EXPECT_EQ(div_style.SpecifiedFontSize(), 40);
+
+  const ComputedStyle* pseudo_style = HighlightStyleUtils::HighlightPseudoStyle(
+      div_node, div_style, kPseudoIdHighlight, AtomicString("highlight1"));
+
+  EXPECT_TRUE(pseudo_style->HasAppliedTextDecorations());
+  const AppliedTextDecoration& text_decoration =
+      pseudo_style->AppliedTextDecorations()[0];
+  TextDecorationThickness thickness = text_decoration.Thickness();
+  EXPECT_EQ(FloatValueForLength(thickness.Thickness(), 1), 4);
+  Length offset = text_decoration.UnderlineOffset();
+  EXPECT_EQ(FloatValueForLength(offset, 1), 20);
 }
 
 }  // namespace blink

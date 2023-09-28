@@ -33,9 +33,9 @@
     test(() => void assert_equals(body_selection.getPropertyValue("--background-color"), "green"),
         "body ::selection has the root custom property");
     test(() => void assert_equals(body_selection.getPropertyValue("--decoration-color"), "green"),
-        "body ::selection uses it's own custom property");
+        "body ::selection uses its own custom property");
     test(() => void assert_equals(div_selection.getPropertyValue("--decoration-color"), "green"),
         "div::selection inherits a custom property");
     test(() => void assert_equals(div_selection.getPropertyValue("--background-color"), "blue"),
-        "div::selection uses it's own custom property");
+        "div::selection uses its own custom property");
 </script>
