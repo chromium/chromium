@@ -8,6 +8,7 @@ import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_butto
 import {maybeShowTooltip} from '../common/js/dom_utils.js';
 import {isEntryInsideComputers, isEntryInsideDrive, isEntryInsideMyDrive, isGrandRootEntryInDrives, isMyFilesEntry, isTrashEntry, isVolumeEntry} from '../common/js/entry_utils.js';
 import {EntryList, FakeEntryImpl, VolumeEntry} from '../common/js/files_app_entry_types.js';
+import {vmTypeToIconName} from '../common/js/icon_util.js';
 import {recordEnum, recordUserAction} from '../common/js/metrics.js';
 import {str, strf, util} from '../common/js/util.js';
 import {VolumeManagerCommon} from '../common/js/volume_manager_types.js';
@@ -289,6 +290,9 @@ export class DirectoryTreeContainer {
       return;
     }
     const fileData = newData as FileData;
+    if (window.IN_TEST) {
+      this.addAttributesForTesting_(element, fileData, navigationRoot);
+    }
 
     // TODO(b/228139439): The current menu/command implementation requires a
     // valid `.entry` existed on the tree item. We should remove this `.entry`
@@ -409,6 +413,30 @@ export class DirectoryTreeContainer {
       if (isExternalMedia) {
         element.icon = constants.ICON_TYPES.USB;
       }
+    }
+  }
+
+  /** Add attributes for testing purpose. */
+  private addAttributesForTesting_(
+      element: XfTreeItem, fileData: FileData,
+      navigationRoot?: NavigationRoot) {
+    // Add full-path for all non-root items.
+    if (!navigationRoot) {
+      element.setAttribute('full-path-for-testing', fileData.entry.fullPath);
+    }
+    if (!isVolumeEntry(fileData.entry)) {
+      return;
+    }
+    // Add volume-type for the root volume items.
+    const volumeData = getVolume(this.store_.getState(), fileData);
+    if (!volumeData) {
+      return;
+    }
+    if (volumeData.volumeType == VolumeManagerCommon.VolumeType.GUEST_OS) {
+      element.setAttribute(
+          'volume-type-for-testing', vmTypeToIconName(volumeData.vmType));
+    } else {
+      element.setAttribute('volume-type-for-testing', volumeData.volumeType);
     }
   }
 

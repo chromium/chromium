@@ -226,7 +226,11 @@ function appendChildIfNotExisted(
  */
 export function convertEntryToFileData(entry: Entry|FilesAppEntry): FileData {
   const {volumeManager, metadataModel} = window.fileManager;
-  const volumeInfo = volumeManager.getVolumeInfo(entry);
+  // When this function is triggered when mounting new volumes, volumeInfo is
+  // not available in the VolumeManager yet, we need to get volumeInfo from the
+  // entry itself.
+  const volumeInfo = 'volumeInfo' in entry ? entry.volumeInfo as VolumeInfo :
+                                             volumeManager.getVolumeInfo(entry);
   const locationInfo = volumeManager.getLocationInfo(entry);
   // getEntryLabel() can accept locationInfo=null, but TS doesn't recognize the
   // type definition in closure, hence the ! here.

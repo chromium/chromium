@@ -699,33 +699,33 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     DirectoryTree, /* directory_tree.js */
     FilesAppBrowserTest,
     ::testing::Values(
-        TestCase("directoryTreeActiveDirectory"),
         TestCase("directoryTreeActiveDirectory").FilesExperimental(),
-        TestCase("directoryTreeSelectedDirectory"),
         TestCase("directoryTreeSelectedDirectory").FilesExperimental(),
-        TestCase("directoryTreeHorizontalScroll"),
         TestCase("directoryTreeHorizontalScroll").FilesExperimental(),
-        TestCase("directoryTreeExpandHorizontalScroll"),
         TestCase("directoryTreeExpandHorizontalScroll").FilesExperimental(),
-        TestCase("directoryTreeExpandHorizontalScrollRTL"),
         TestCase("directoryTreeExpandHorizontalScrollRTL").FilesExperimental(),
-        TestCase("directoryTreeVerticalScroll"),
         TestCase("directoryTreeVerticalScroll").FilesExperimental(),
-        TestCase("directoryTreeExpandFolder"),
         TestCase("directoryTreeExpandFolder").FilesExperimental(),
-        TestCase(
-            "directoryTreeExpandFolderWithHiddenFileAndShowHiddenFilesOff"),
         TestCase("directoryTreeExpandFolderWithHiddenFileAndShowHiddenFilesOff")
             .FilesExperimental(),
-        TestCase("directoryTreeExpandFolderWithHiddenFileAndShowHiddenFilesOn"),
         TestCase("directoryTreeExpandFolderWithHiddenFileAndShowHiddenFilesOn")
             .FilesExperimental(),
-        TestCase("directoryTreeExpandFolderOnNonDelayExpansionVolume"),
         TestCase("directoryTreeExpandFolderOnNonDelayExpansionVolume")
             .FilesExperimental(),
-        TestCase("directoryTreeExpandFolderOnDelayExpansionVolume"),
         TestCase("directoryTreeExpandFolderOnDelayExpansionVolume")
-            .FilesExperimental()));
+            .FilesExperimental(),
+        TestCase("directoryTreeActiveDirectory"),
+        TestCase("directoryTreeSelectedDirectory"),
+        TestCase("directoryTreeHorizontalScroll"),
+        TestCase("directoryTreeExpandHorizontalScroll"),
+        TestCase("directoryTreeExpandHorizontalScrollRTL"),
+        TestCase("directoryTreeVerticalScroll"),
+        TestCase("directoryTreeExpandFolder"),
+        TestCase(
+            "directoryTreeExpandFolderWithHiddenFileAndShowHiddenFilesOff"),
+        TestCase("directoryTreeExpandFolderWithHiddenFileAndShowHiddenFilesOn"),
+        TestCase("directoryTreeExpandFolderOnNonDelayExpansionVolume"),
+        TestCase("directoryTreeExpandFolderOnDelayExpansionVolume")));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     DirectoryTreeContextMenu, /* directory_tree_context_menu.js */
@@ -1556,6 +1556,13 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     AndroidPhotos, /* android_photos.js */
     FilesAppBrowserTest,
     ::testing::Values(
+        TestCase("androidPhotosBanner")
+            .EnablePhotosDocumentsProvider()
+            .FilesExperimental(),
+        TestCase("androidPhotosBanner")
+            .EnablePhotosDocumentsProvider()
+            .EnableCrosComponents()
+            .FilesExperimental(),
         TestCase("androidPhotosBanner").EnablePhotosDocumentsProvider(),
         TestCase("androidPhotosBanner")
             .EnablePhotosDocumentsProvider()

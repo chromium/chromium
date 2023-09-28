@@ -1314,10 +1314,11 @@ class DirectoryTreeSelectors_ {
    */
   itemItselfByType(type, isPlaceholder) {
     if (this.useNewTree) {
-      return isPlaceholder ? `${this.item}[data-navigation-key^="${
-                                 FAKE_ENTRY_PATH_PREFIX}"][icon="${type}"]` :
-                             `${this.item}[data-navigation-key^="${
-                                 REAL_ENTRY_PATH_PREFIX}"][icon="${type}"]`;
+      return isPlaceholder ?
+          `${this.item}[data-navigation-key^="${
+              FAKE_ENTRY_PATH_PREFIX}"][icon="${type}"]` :
+          `${this.item}[data-navigation-key^="${
+              REAL_ENTRY_PATH_PREFIX}"][volume-type-for-testing="${type}"]`;
     }
     return isPlaceholder ?
         `${this.item}:has(> .tree-row [root-type-icon="${type}"])` :

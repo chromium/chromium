@@ -68,7 +68,7 @@ testcase.androidPhotosBanner = async () => {
 
   // Banner should disappear when navigating away (child elements are still in
   // DOM).
-  await directoryTree.selectItemByType('downloads');
+  await directoryTree.selectItemByLabel('Downloads');
   await waitForElement(photosBannerHiddenQuery);
   await waitForElement(photosBannerTextQuery);
 
@@ -82,7 +82,7 @@ testcase.androidPhotosBanner = async () => {
   await waitForElement(photosBannerHiddenQuery);
 
   // Navigate away and then back, it should not re-appear.
-  await directoryTree.selectItemByType('downloads');
+  await directoryTree.selectItemByLabel('Downloads');
   await waitForFile('hello.txt');
   await directoryTree.selectItemByType(photosVolumeType);
   await waitForFile('image2.png');
