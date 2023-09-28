@@ -1935,7 +1935,7 @@ deps = {
       'dep_type': 'cipd',
   },
 
-  'src/third_party/vulkan-deps': '{chromium_git}/vulkan-deps@250d0ebaea5e4697576695791abcbadf8638756e',
+  'src/third_party/vulkan-deps': '{chromium_git}/vulkan-deps@7baa5f7cc56a48ea2783c7370413ed8c7f513719',
 
   'src/third_party/vulkan_memory_allocator':
     Var('chromium_git') + '/external/github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator.git' + '@' + 'e87036508bb156f9986ea959323de1869e328f58',
