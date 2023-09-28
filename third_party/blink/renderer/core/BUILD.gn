@@ -1707,6 +1707,17 @@ fuzzer_test("blink_html_tokenizer_fuzzer") {
   ]
 }
 
+# Fuzzer for SVG path string parsing
+fuzzer_test("svg_path_parser_fuzzer") {
+  sources = [ "svg/svg_path_parser_fuzzer.cc" ]
+  deps = [
+    ":core",
+    "../platform:blink_fuzzer_test_support",
+  ]
+  dict = "//third_party/blink/renderer/core/svg/svg_path_parser.dict"
+  seed_corpus = "//third_party/blink/renderer/core/svg/svg_path_parser_corpus"
+}
+
 # Fuzzers for blink::PermissionsPolicy.
 fuzzer_test("feature_policy_fuzzer") {
   sources = [ "permissions_policy/feature_policy_fuzzer.cc" ]
