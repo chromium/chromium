@@ -32,12 +32,7 @@ class LayoutNGMixin : public Base {
 
   void Paint(const PaintInfo&) const override;
 
-  bool NodeAtPoint(HitTestResult&,
-                   const HitTestLocation&,
-                   const PhysicalOffset& accumulated_offset,
-                   HitTestPhase) override;
   RecalcLayoutOverflowResult RecalcLayoutOverflow() override;
-  void RecalcVisualOverflow() override;
 
   bool IsLayoutNGObject() const final;
 };

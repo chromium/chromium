@@ -72,45 +72,10 @@ void LayoutNGMixin<Base>::Paint(const PaintInfo& paint_info) const {
 }
 
 template <typename Base>
-bool LayoutNGMixin<Base>::NodeAtPoint(HitTestResult& result,
-                                      const HitTestLocation& hit_test_location,
-                                      const PhysicalOffset& accumulated_offset,
-                                      HitTestPhase phase) {
-  Base::CheckIsNotDestroyed();
-
-  // See |Paint()|.
-  DCHECK(Base::IsMonolithic() || !Base::CanTraversePhysicalFragments() ||
-         !Base::Parent()->CanTraversePhysicalFragments());
-  // We may get here in multiple-fragment cases if the object is repeated
-  // (inside table headers and footers, for instance).
-  DCHECK(Base::PhysicalFragmentCount() <= 1u ||
-         Base::GetPhysicalFragment(0)->BreakToken()->IsRepeated());
-
-  if (Base::PhysicalFragmentCount()) {
-    const NGPhysicalBoxFragment* fragment = Base::GetPhysicalFragment(0);
-    DCHECK(fragment);
-    return NGBoxFragmentPainter(*fragment).NodeAtPoint(
-        result, hit_test_location, accumulated_offset, phase);
-  }
-
-  return false;
-}
-
-template <typename Base>
 RecalcLayoutOverflowResult LayoutNGMixin<Base>::RecalcLayoutOverflow() {
   Base::CheckIsNotDestroyed();
   DCHECK(!NGDisableSideEffectsScope::IsDisabled());
   return Base::RecalcLayoutOverflowNG();
-}
-
-template <typename Base>
-void LayoutNGMixin<Base>::RecalcVisualOverflow() {
-  Base::CheckIsNotDestroyed();
-  if (Base::CanUseFragmentsForVisualOverflow()) {
-    Base::RecalcFragmentsVisualOverflow();
-    return;
-  }
-  Base::RecalcVisualOverflow();
 }
 
 template <typename Base>

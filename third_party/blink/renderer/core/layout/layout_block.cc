@@ -472,6 +472,30 @@ LayoutUnit LayoutBlock::TextIndentOffset() const {
   return MinimumValueForLength(StyleRef().TextIndent(), cw);
 }
 
+bool LayoutBlock::NodeAtPoint(HitTestResult& result,
+                              const HitTestLocation& hit_test_location,
+                              const PhysicalOffset& accumulated_offset,
+                              HitTestPhase phase) {
+  NOT_DESTROYED();
+
+  // See |Paint()|.
+  DCHECK(IsMonolithic() || !CanTraversePhysicalFragments() ||
+         Parent()->CanTraversePhysicalFragments());
+  // We may get here in multiple-fragment cases if the object is repeated
+  // (inside table headers and footers, for instance).
+  DCHECK(PhysicalFragmentCount() <= 1u ||
+         GetPhysicalFragment(0)->BreakToken()->IsRepeated());
+
+  if (PhysicalFragmentCount()) {
+    const NGPhysicalBoxFragment* fragment = GetPhysicalFragment(0);
+    DCHECK(fragment);
+    return NGBoxFragmentPainter(*fragment).NodeAtPoint(
+        result, hit_test_location, accumulated_offset, phase);
+  }
+
+  return false;
+}
+
 bool LayoutBlock::HitTestChildren(HitTestResult& result,
                                   const HitTestLocation& hit_test_location,
                                   const PhysicalOffset& accumulated_offset,
@@ -807,6 +831,10 @@ void LayoutBlock::RecalcChildVisualOverflow() {
 
 void LayoutBlock::RecalcVisualOverflow() {
   NOT_DESTROYED();
+  if (CanUseFragmentsForVisualOverflow()) {
+    RecalcFragmentsVisualOverflow();
+    return;
+  }
   DCHECK(!CanUseFragmentsForVisualOverflow());
   DCHECK(!IsLayoutMultiColumnSet());
   RecalcChildVisualOverflow();

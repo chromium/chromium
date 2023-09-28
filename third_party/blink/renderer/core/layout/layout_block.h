@@ -210,6 +210,11 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
   // Or returns no value if we can't get font data.
   absl::optional<LayoutUnit> BaselineForEmptyLine() const;
 
+  bool NodeAtPoint(HitTestResult&,
+                   const HitTestLocation&,
+                   const PhysicalOffset& accumulated_offset,
+                   HitTestPhase) override;
+
  protected:
   bool HitTestChildren(HitTestResult&,
                        const HitTestLocation&,
