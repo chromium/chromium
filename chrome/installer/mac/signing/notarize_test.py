@@ -334,3 +334,22 @@ class TestStaple(unittest.TestCase):
                 ['xcrun', 'stapler', 'staple', '--verbose', '/tmp/file.dmg'])
         ])
         self.assertEqual(2, kwargs['sleep'].call_count)
+
+
+class TestRetry(unittest.TestCase):
+
+    def test_retry(self):
+        retry = notarize.Retry('test')
+        self.assertTrue(retry.failed_should_retry())
+        self.assertTrue(retry.keep_going())
+        self.assertTrue(retry.failed_should_retry())
+        self.assertTrue(retry.keep_going())
+        self.assertFalse(retry.failed_should_retry())
+        with self.assertRaises(RuntimeError):
+            retry.keep_going()
+
+    @mock.patch('time.sleep')
+    def test_with_sleep(self, sleep):
+        retry = notarize.Retry('test', sleep_before_retry=True)
+        self.assertTrue(retry.failed_should_retry())
+        self.assertEqual(1, sleep.call_count)
