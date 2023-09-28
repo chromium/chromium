@@ -22,8 +22,8 @@
 # - gcc-aarch64-linux-gnu
 # - g++-aarch64-linux-gnu
 # 32bit build environment for cmake. Including but potentially not limited to:
-# - lib32gcc-12-dev
-# - lib32stdc++-12-dev
+# - lib32gcc-13-dev
+# - lib32stdc++-13-dev
 # Alternatively: treat 32bit builds like Windows and manually tweak aom_config.h
 
 set -eE
