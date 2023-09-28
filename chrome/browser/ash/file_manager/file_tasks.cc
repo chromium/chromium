@@ -51,6 +51,7 @@
 #include "chrome/browser/ash/file_manager/open_with_browser.h"
 #include "chrome/browser/ash/file_manager/uma_enums.gen.h"
 #include "chrome/browser/ash/file_manager/url_util.h"
+#include "chrome/browser/ash/file_manager/virtual_file_tasks.h"
 #include "chrome/browser/ash/file_system_provider/mount_path_util.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_interface.h"
@@ -833,6 +834,21 @@ bool ExecuteFileTask(Profile* profile,
     }
     return true;
   }
+  // TODO(b/284800493): Add a test that VirtualTasks get run.
+  if (IsVirtualTask(task)) {
+    const bool started =
+        ExecuteVirtualTask(profile, task, file_urls, modal_parent);
+    if (done) {
+      if (started) {
+        std::move(done).Run(
+            extensions::api::file_manager_private::TASK_RESULT_OPENED, "");
+      } else {
+        std::move(done).Run(
+            extensions::api::file_manager_private::TASK_RESULT_FAILED, "");
+      }
+    }
+    return true;
+  }
 
   // Some action IDs of the file manager's file browser handlers require the
   // files to be directly opened with the browser. In a multiprofile session
@@ -969,7 +985,14 @@ void FindAllTypesOfTasks(Profile* profile,
           "", GURL(), false, false, false));
     }
     std::move(callback).Run(std::move(resulting_tasks));
-  } else if (!ash::features::ShouldArcFileTasksUseAppService()) {
+    return;
+  }
+
+  // TODO(b/284800493): Add a test that VirtualTasks are found.
+  FindVirtualTasks(profile, entries, file_urls, dlp_source_urls,
+                   &resulting_tasks->tasks);
+
+  if (!ash::features::ShouldArcFileTasksUseAppService()) {
     // 1. Find and append ARC handler tasks if ARC file tasks aren't
     // provided by App Service.
     FindArcTasks(

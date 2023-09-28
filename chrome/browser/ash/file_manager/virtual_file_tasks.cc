@@ -93,4 +93,39 @@ bool IsVirtualTask(const TaskDescriptor& task) {
 VirtualTask::VirtualTask() = default;
 VirtualTask::~VirtualTask() = default;
 
+bool VirtualTask::Matches(
+    const std::vector<extensions::EntryInfo>& entries,
+    const std::vector<GURL>& file_urls,
+    const std::vector<std::string>& dlp_source_urls) const {
+  // Try to match mime types
+  bool mime_types_matched = std::all_of(
+      entries.begin(), entries.end(),
+      [this](const extensions::EntryInfo& entry) {
+        for (const std::string& matched_mime_type : matcher_mime_types_) {
+          if (apps_util::MimeTypeMatched(entry.mime_type, matched_mime_type)) {
+            return true;
+          }
+        }
+        return false;
+      });
+
+  // Try to match extensions
+  bool extensions_matched =
+      std::all_of(file_urls.begin(), file_urls.end(), [this](const GURL& url) {
+        for (const std::string& matched_extension : matcher_file_extensions_) {
+          if (apps_util::ExtensionMatched(url.ExtractFileName(),
+                                          matched_extension)) {
+            return true;
+          }
+        }
+        return false;
+      });
+
+  // TODO(b/284800493): Handle dlp_source_urls.
+
+  // TODO(b/284800493): Should this be able to mix and match mimes and
+  // extensions too?
+  return mime_types_matched || extensions_matched;
+}
+
 }  // namespace file_manager::file_tasks
