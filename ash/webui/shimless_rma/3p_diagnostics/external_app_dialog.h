@@ -73,22 +73,8 @@ class ExternalAppDialog : public ui::WebDialogDelegate,
 
  private:
   // ui::WebDialogDelegate overrides:
-  ui::ModalType GetDialogModalType() const override;
-  std::u16string GetDialogTitle() const override;
-  GURL GetDialogContentURL() const override;
   void GetDialogSize(gfx::Size* size) const override;
-  void GetWebUIMessageHandlers(
-      std::vector<content::WebUIMessageHandler*>* handlers) const override;
-  std::string GetDialogArgs() const override;
   void OnLoadingStateChanged(content::WebContents* source) override;
-  // NOTE: This function deletes this object at the end.
-  void OnDialogClosed(const std::string& json_retval) override;
-  void OnCloseContents(content::WebContents* source,
-                       bool* out_close_dialog) override;
-  bool ShouldCloseDialogOnEscape() const override;
-  bool ShouldShowDialogTitle() const override;
-  bool ShouldCenterDialogTitleText() const override;
-  bool ShouldShowCloseButton() const override;
 
   // content::WebContentsObserver overrides:
   void OnDidAddMessageToConsole(
@@ -99,10 +85,6 @@ class ExternalAppDialog : public ui::WebDialogDelegate,
       const std::u16string& source_id,
       const absl::optional<std::u16string>& untrusted_stack_trace) override;
 
-  // The url of the content.
-  GURL content_url_;
-  // App name.
-  std::string app_name_;
   // views::WebDialogView that owns this delegate.
   raw_ptr<views::WebDialogView> web_dialog_view_;
   // Callback for handling the console log from the app.

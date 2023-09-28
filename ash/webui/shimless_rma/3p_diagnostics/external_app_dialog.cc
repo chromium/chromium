@@ -119,13 +119,17 @@ void ExternalAppDialog::SetMockShowForTesting(
 
 ExternalAppDialog::ExternalAppDialog(const InitParams& params)
     : content::WebContentsObserver(nullptr),
-      content_url_(params.content_url),
-      app_name_(params.app_name),
       on_console_log_(params.on_console_log) {
   CHECK_EQ(g_instance, nullptr);
   g_instance = this;
 
+  set_can_close(true);
   set_can_resize(false);
+  set_center_dialog_title_text(true);
+  set_close_dialog_on_escape(false);
+  set_dialog_content_url(params.content_url);
+  set_dialog_modal_type(ui::MODAL_TYPE_SYSTEM);
+  set_dialog_title(base::UTF8ToUTF16(params.app_name));
 
   views::Widget::InitParams widget_params{};
   widget_params.z_order = ui::ZOrderLevel::kFloatingWindow;
@@ -146,18 +150,6 @@ ExternalAppDialog::~ExternalAppDialog() {
   g_instance = nullptr;
 }
 
-ui::ModalType ExternalAppDialog::GetDialogModalType() const {
-  return ui::MODAL_TYPE_SYSTEM;
-}
-
-std::u16string ExternalAppDialog::GetDialogTitle() const {
-  return base::UTF8ToUTF16(app_name_);
-}
-
-GURL ExternalAppDialog::GetDialogContentURL() const {
-  return content_url_;
-}
-
 void ExternalAppDialog::GetDialogSize(gfx::Size* size) const {
   gfx::Size screen_size =
       display::Screen::GetScreen()->GetPrimaryDisplay().size();
@@ -165,41 +157,8 @@ void ExternalAppDialog::GetDialogSize(gfx::Size* size) const {
                     kRelativeScreenHeight * screen_size.height());
 }
 
-void ExternalAppDialog::GetWebUIMessageHandlers(
-    std::vector<content::WebUIMessageHandler*>* handlers) const {}
-
-std::string ExternalAppDialog::GetDialogArgs() const {
-  return {};
-}
-
 void ExternalAppDialog::OnLoadingStateChanged(content::WebContents* source) {
   content::WebContentsObserver::Observe(source);
-}
-
-// NOTE: This function deletes this object at the end.
-void ExternalAppDialog::OnDialogClosed(const std::string& json_retval) {
-  delete this;
-}
-
-void ExternalAppDialog::OnCloseContents(content::WebContents* source,
-                                        bool* out_close_dialog) {
-  *out_close_dialog = true;
-}
-
-bool ExternalAppDialog::ShouldCloseDialogOnEscape() const {
-  return false;
-}
-
-bool ExternalAppDialog::ShouldShowDialogTitle() const {
-  return true;
-}
-
-bool ExternalAppDialog::ShouldCenterDialogTitleText() const {
-  return true;
-}
-
-bool ExternalAppDialog::ShouldShowCloseButton() const {
-  return true;
 }
 
 void ExternalAppDialog::OnDidAddMessageToConsole(
