@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/autofill/delete_address_profile_dialog_controller.h"
+#include "components/autofill/core/browser/autofill_client.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -30,9 +31,13 @@ class DeleteAddressProfileDialogControllerImpl
       const DeleteAddressProfileDialogControllerImpl&) = delete;
   ~DeleteAddressProfileDialogControllerImpl() override;
 
-  void OfferDelete();
-  // DeleteAddressProfileDialogController
-  std::u16string GetAccount() const override;
+  void OfferDelete(bool is_account_address_profile);
+  // DeleteAddressProfileDialogController:
+  std::u16string GetTitle() const override;
+  std::u16string GetAcceptButtonText() const override;
+  std::u16string GetDeclineButtonText() const override;
+  std::u16string GetDeleteConfirmationText() const override;
+
   void OnAccepted() override;
   void OnCanceled() override;
   void OnClosed() override;
@@ -48,6 +53,7 @@ class DeleteAddressProfileDialogControllerImpl
 
   const raw_ptr<content::WebContents> web_contents_;
   raw_ptr<const views::Widget> widget_dialog_ = nullptr;
+  bool is_account_address_profile_;
 
   base::WeakPtrFactory<DeleteAddressProfileDialogController> weak_ptr_factory_{
       this};

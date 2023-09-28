@@ -16,8 +16,6 @@
 namespace autofill::dialogs {
 
 // static
-// TODO(crbug.com/1459990): Remove hard coded strings and use email address to
-// identify account from where we are deleting the address profile from.
 views::Widget* ShowDeleteAddressProfileDialogView(
     content::WebContents* web_contents,
     base::WeakPtr<DeleteAddressProfileDialogController> controller) {
@@ -25,18 +23,19 @@ views::Widget* ShowDeleteAddressProfileDialogView(
 
   auto dialog_model =
       ui::DialogModel::Builder(std::make_unique<ui::DialogModelDelegate>())
-          .SetTitle(u"Delete address?")
+          .SetTitle(controller->GetTitle())
           .AddOkButton(
               base::BindOnce(&DeleteAddressProfileDialogController::OnAccepted,
                              controller),
-              ui::DialogModelButton::Params().SetLabel(u"Delete"))
+              ui::DialogModelButton::Params().SetLabel(
+                  controller->GetAcceptButtonText()))
           .AddCancelButton(
               base::BindOnce(&DeleteAddressProfileDialogController::OnCanceled,
                              controller),
-              ui::DialogModelButton::Params().SetLabel(u"Cancel"))
+              ui::DialogModelButton::Params().SetLabel(
+                  controller->GetDeclineButtonText()))
           .AddParagraph(
-              ui::DialogModelLabel(
-                  u"This address will be deleted from your Google account")
+              ui::DialogModelLabel(controller->GetDeleteConfirmationText())
                   .set_is_secondary())
           .SetCloseActionCallback(base::BindOnce(
               &DeleteAddressProfileDialogController::OnAccepted, controller))

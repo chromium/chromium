@@ -15,8 +15,11 @@ class DeleteAddressProfileDialogController {
  public:
   virtual ~DeleteAddressProfileDialogController() = default;
 
-  // Returns the account email to delete the profile from.
-  virtual std::u16string GetAccount() const = 0;
+  virtual std::u16string GetTitle() const = 0;
+  virtual std::u16string GetAcceptButtonText() const = 0;
+  virtual std::u16string GetDeclineButtonText() const = 0;
+  virtual std::u16string GetDeleteConfirmationText() const = 0;
+
   virtual void OnAccepted() = 0;
   virtual void OnCanceled() = 0;
   virtual void OnClosed() = 0;
