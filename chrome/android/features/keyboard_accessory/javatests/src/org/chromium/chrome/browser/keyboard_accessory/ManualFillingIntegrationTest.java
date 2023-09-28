@@ -237,7 +237,6 @@ public class ManualFillingIntegrationTest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "https://crbug.com/1466461")
     public void testSelectingNonPasswordInputDismissesAccessory() throws TimeoutException {
         mHelper.loadTestPage(false);
 
