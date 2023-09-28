@@ -25,7 +25,6 @@ class SystemShadow;
 // This view supports different configurations depending on the provided
 // nudge data parameters. It will always have a body text, and may have a
 // leading image view, a title text, and up to two buttons placed on the bottom.
-// If `use_toast_style` is true, the nudge will look like go/toast-style-spec.
 class ASH_EXPORT SystemNudgeView : public views::FlexLayoutView {
  public:
   METADATA_HEADER(SystemNudgeView);
@@ -59,11 +58,6 @@ class ASH_EXPORT SystemNudgeView : public views::FlexLayoutView {
 
   // Sets the maximum width for `title_label_` and `body_label_`.
   void SetLabelsMaxWidth(int max_width);
-
-  // Updates the margins for a toast style nudge, along with the label's max
-  // width and rounded corners value. `with_button` specifies if the nudge has a
-  // button or not, since margins will be different.
-  void UpdateToastStyleMargins(bool with_button);
 };
 
 }  // namespace ash

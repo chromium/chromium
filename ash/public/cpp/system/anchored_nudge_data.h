@@ -100,12 +100,6 @@ struct ASH_PUBLIC_EXPORT AnchoredNudgeData {
   // It will maintain the shelf visible while a nudge is being shown.
   bool anchored_to_shelf = false;
 
-  // If true, the view will be styled to look like go/toast-style-spec. If there
-  // is a button it will be added on the trailing side of the nudge instead of
-  // the bottom when creating the nudge's contents view. Does not support adding
-  // a second button or a leading image.
-  bool use_toast_style = false;
-
   // Nudge action callbacks.
   HoverStateChangeCallback hover_state_change_callback;
   NudgeClickCallback click_callback;

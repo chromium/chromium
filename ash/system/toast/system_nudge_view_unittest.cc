@@ -20,7 +20,6 @@ namespace {
 constexpr int kLabelMaxWidth_TextOnlyNudge = 300;
 constexpr int kLabelMaxWidth_NudgeWithoutLeadingImage = 292;
 constexpr int kLabelMaxWidth_NudgeWithLeadingImage = 276;
-constexpr int kLabelMaxWidth_ToastStyleNudge = 512;
 constexpr int kImageViewSize = 64;
 
 // Creates an `AnchoredNudgeData` object with only the required elements.
@@ -118,31 +117,6 @@ TEST_F(SystemNudgeViewTest, TitleAndLeadingImage) {
 
   // Test that text labels max width is set correctly.
   EXPECT_EQ(kLabelMaxWidth_NudgeWithLeadingImage,
-            system_nudge_view->body_label()->GetMaximumWidth());
-}
-
-TEST_F(SystemNudgeViewTest, ToastStyleNudge) {
-  std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
-  auto* contents_view =
-      widget->SetContentsView(std::make_unique<views::View>());
-
-  // Set up base nudge data, have it use "toast style" and add a button.
-  auto nudge_data = CreateBaseNudgeData(contents_view);
-  nudge_data.first_button_text = u"Button";
-  nudge_data.use_toast_style = true;
-
-  auto* system_nudge_view = contents_view->AddChildView(
-      std::make_unique<SystemNudgeView>(nudge_data));
-
-  // Test that appropriate nudge elements were created.
-  EXPECT_FALSE(system_nudge_view->image_view());
-  EXPECT_FALSE(system_nudge_view->title_label());
-  ASSERT_TRUE(system_nudge_view->body_label());
-  EXPECT_TRUE(system_nudge_view->first_button());
-  EXPECT_FALSE(system_nudge_view->second_button());
-
-  // Test that text labels max width is set correctly.
-  EXPECT_EQ(kLabelMaxWidth_ToastStyleNudge,
             system_nudge_view->body_label()->GetMaximumWidth());
 }
 
