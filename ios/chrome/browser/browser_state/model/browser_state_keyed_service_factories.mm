@@ -19,7 +19,7 @@
 #import "ios/chrome/browser/consent_auditor/model/consent_auditor_factory.h"
 #import "ios/chrome/browser/content_settings/model/cookie_settings_factory.h"
 #import "ios/chrome/browser/crash_report/model/breadcrumbs/breadcrumb_manager_keyed_service_factory.h"
-#import "ios/chrome/browser/credential_provider/credential_provider_buildflags.h"
+#import "ios/chrome/browser/credential_provider/model/credential_provider_buildflags.h"
 #import "ios/chrome/browser/device_sharing/device_sharing_manager_factory.h"
 #import "ios/chrome/browser/discover_feed/discover_feed_service_factory.h"
 #import "ios/chrome/browser/dom_distiller/dom_distiller_service_factory.h"
@@ -94,7 +94,7 @@
 #import "ios/chrome/browser/webdata_services/model/web_data_service_factory.h"
 
 #if BUILDFLAG(IOS_CREDENTIAL_PROVIDER_ENABLED)
-#import "ios/chrome/browser/credential_provider/credential_provider_service_factory.h"
+#import "ios/chrome/browser/credential_provider/model/credential_provider_service_factory.h"
 #endif
 
 #if BUILDFLAG(IOS_SCREEN_TIME_ENABLED)

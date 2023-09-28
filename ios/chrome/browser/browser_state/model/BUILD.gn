@@ -81,7 +81,7 @@ source_set("model") {
     "//ios/chrome/browser/consent_auditor/model",
     "//ios/chrome/browser/content_settings/model",
     "//ios/chrome/browser/crash_report/model/breadcrumbs",
-    "//ios/chrome/browser/credential_provider:buildflags",
+    "//ios/chrome/browser/credential_provider/model:buildflags",
     "//ios/chrome/browser/device_sharing",
     "//ios/chrome/browser/discover_feed:discover_feed_factory",
     "//ios/chrome/browser/dom_distiller",
@@ -158,7 +158,7 @@ source_set("model") {
     ]
   }
   if (ios_enable_credential_provider_extension) {
-    deps += [ "//ios/chrome/browser/credential_provider" ]
+    deps += [ "//ios/chrome/browser/credential_provider/model" ]
   }
   allow_circular_includes_from = [
     "//ios/chrome/browser/browser_state_metrics/model",

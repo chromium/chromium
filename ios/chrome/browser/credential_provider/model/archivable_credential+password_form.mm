@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/credential_provider/archivable_credential+password_form.h"
+#import "ios/chrome/browser/credential_provider/model/archivable_credential+password_form.h"
 
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
@@ -10,15 +10,15 @@
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_manager_util.h"
 #import "components/password_manager/core/browser/password_ui_utils.h"
-#import "ios/chrome/browser/credential_provider/credential_provider_util.h"
+#import "ios/chrome/browser/credential_provider/model/credential_provider_util.h"
 #import "url/gurl.h"
 
 namespace {
 
-using base::SysNSStringToUTF8;
 using base::SysNSStringToUTF16;
-using base::SysUTF8ToNSString;
+using base::SysNSStringToUTF8;
 using base::SysUTF16ToNSString;
+using base::SysUTF8ToNSString;
 
 }  // namespace
 

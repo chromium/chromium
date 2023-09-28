@@ -14,7 +14,7 @@ buildflag_header("buildflags") {
 }
 
 if (ios_enable_credential_provider_extension) {
-  source_set("credential_provider") {
+  source_set("model") {
     sources = [
       "archivable_credential+password_form.h",
       "archivable_credential+password_form.mm",
@@ -70,7 +70,7 @@ if (ios_enable_credential_provider_extension) {
       "credential_provider_util_unittest.mm",
     ]
     deps = [
-      ":credential_provider",
+      ":model",
       "//base/test:test_support",
       "//components/autofill/core/common",
       "//components/favicon/core",

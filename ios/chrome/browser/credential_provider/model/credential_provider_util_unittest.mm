@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/credential_provider/credential_provider_util.h"
+#import "ios/chrome/browser/credential_provider/model/credential_provider_util.h"
 
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"

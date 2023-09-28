@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/credential_provider/credential_provider_util.h"
+#import "ios/chrome/browser/credential_provider/model/credential_provider_util.h"
 
 #import <CommonCrypto/CommonDigest.h>
 
@@ -158,8 +158,9 @@ base::Time GetFaviconsLastSyncDate() {
           objectForKey:kFaviconsLastSyncDatePrefKey]);
   // If no value stored in the NSUserDefaults, consider that the last sync
   // happened forever ago.
-  if (!last_sync_date)
+  if (!last_sync_date) {
     return base::Time();
+  }
   return base::Time::FromNSDate(last_sync_date);
 }
 

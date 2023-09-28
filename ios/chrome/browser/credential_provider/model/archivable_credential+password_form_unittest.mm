@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/credential_provider/archivable_credential+password_form.h"
+#import "ios/chrome/browser/credential_provider/model/archivable_credential+password_form.h"
 
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"

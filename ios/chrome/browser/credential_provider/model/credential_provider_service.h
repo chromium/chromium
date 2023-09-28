@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_CREDENTIAL_PROVIDER_CREDENTIAL_PROVIDER_SERVICE_H_
-#define IOS_CHROME_BROWSER_CREDENTIAL_PROVIDER_CREDENTIAL_PROVIDER_SERVICE_H_
+#ifndef IOS_CHROME_BROWSER_CREDENTIAL_PROVIDER_MODEL_CREDENTIAL_PROVIDER_SERVICE_H_
+#define IOS_CHROME_BROWSER_CREDENTIAL_PROVIDER_MODEL_CREDENTIAL_PROVIDER_SERVICE_H_
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -24,7 +24,7 @@ class FaviconLoader;
 namespace password_manager {
 class AffiliationService;
 class AffiliatedMatchHelper;
-}
+}  // namespace password_manager
 
 namespace syncer {
 class SyncService;
@@ -180,4 +180,4 @@ class CredentialProviderService
   base::WeakPtrFactory<CredentialProviderService> weak_ptr_factory_{this};
 };
 
-#endif  // IOS_CHROME_BROWSER_CREDENTIAL_PROVIDER_CREDENTIAL_PROVIDER_SERVICE_H_
+#endif  // IOS_CHROME_BROWSER_CREDENTIAL_PROVIDER_MODEL_CREDENTIAL_PROVIDER_SERVICE_H_

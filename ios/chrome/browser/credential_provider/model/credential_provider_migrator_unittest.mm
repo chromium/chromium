@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/credential_provider/credential_provider_migrator.h"
+#import "ios/chrome/browser/credential_provider/model/credential_provider_migrator.h"
 
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
@@ -10,7 +10,7 @@
 #import "base/test/task_environment.h"
 #import "components/password_manager/core/browser/mock_password_store_interface.h"
 #import "components/password_manager/core/browser/password_form.h"
-#import "ios/chrome/browser/credential_provider/archivable_credential+password_form.h"
+#import "ios/chrome/browser/credential_provider/model/archivable_credential+password_form.h"
 #import "ios/chrome/common/credential_provider/archivable_credential.h"
 #import "ios/chrome/common/credential_provider/user_defaults_credential_store.h"
 #import "testing/gtest_mac.h"
@@ -43,12 +43,8 @@ ArchivableCredential* TestCredential() {
 
 class CredentialProviderMigratorTest : public PlatformTest {
  protected:
-  void SetUp() override {
-    [user_defaults_ removeObjectForKey:store_key_];
-  }
-  void TearDown() override {
-    [user_defaults_ removeObjectForKey:store_key_];
-  }
+  void SetUp() override { [user_defaults_ removeObjectForKey:store_key_]; }
+  void TearDown() override { [user_defaults_ removeObjectForKey:store_key_]; }
 
   NSUserDefaults* user_defaults_ = [NSUserDefaults standardUserDefaults];
   NSString* store_key_ = @"store_key";

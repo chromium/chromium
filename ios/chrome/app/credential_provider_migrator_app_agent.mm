@@ -8,7 +8,7 @@
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_manager_features_util.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
-#import "ios/chrome/browser/credential_provider/credential_provider_migrator.h"
+#import "ios/chrome/browser/credential_provider/model/credential_provider_migrator.h"
 #import "ios/chrome/browser/passwords/ios_chrome_account_password_store_factory.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"

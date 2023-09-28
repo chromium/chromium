@@ -458,7 +458,7 @@ test("ios_chrome_unittests") {
 
   if (ios_enable_credential_provider_extension) {
     deps += [
-      "//ios/chrome/browser/credential_provider:unit_tests",
+      "//ios/chrome/browser/credential_provider/model:unit_tests",
       "//ios/chrome/credential_provider_extension:unit_tests",
       "//ios/chrome/credential_provider_extension/ui:unit_tests",
     ]

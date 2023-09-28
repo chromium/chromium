@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/credential_provider/credential_provider_service.h"
+#import "ios/chrome/browser/credential_provider/model/credential_provider_service.h"
 
 #import <AuthenticationServices/AuthenticationServices.h>
 
@@ -26,8 +26,8 @@
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_service_utils.h"
 #import "components/sync/service/sync_user_settings.h"
-#import "ios/chrome/browser/credential_provider/archivable_credential+password_form.h"
-#import "ios/chrome/browser/credential_provider/credential_provider_util.h"
+#import "ios/chrome/browser/credential_provider/model/archivable_credential+password_form.h"
+#import "ios/chrome/browser/credential_provider/model/credential_provider_util.h"
 #import "ios/chrome/browser/signin/system_identity.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/common/credential_provider/archivable_credential.h"
@@ -37,12 +37,12 @@
 
 namespace {
 
-using password_manager::PasswordForm;
 using password_manager::AffiliatedMatchHelper;
+using password_manager::AffiliationService;
+using password_manager::PasswordForm;
 using password_manager::PasswordStoreChange;
 using password_manager::PasswordStoreChangeList;
 using password_manager::PasswordStoreInterface;
-using password_manager::AffiliationService;
 
 // ASCredentialIdentityStoreError enum to report UMA metrics. Must be in sync
 // with iOSCredentialIdentityStoreErrorForReporting in
