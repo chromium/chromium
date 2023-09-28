@@ -6744,3 +6744,4 @@ crbug.com/1486105 animations/responsive/zoom-responsive-transform-animation-003.
 
 # Gardener 2023-09-28
 crbug.com/1487363 [ Linux ] inspector-protocol/overlay/overlay-with-emulation-scale.js [ Failure ]
+crbug.com/1486131 [ Linux ] external/wpt/html/browsers/history/the-history-interface/005.html [ Failure Pass ]
