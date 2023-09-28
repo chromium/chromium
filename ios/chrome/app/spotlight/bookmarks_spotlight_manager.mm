@@ -36,9 +36,6 @@ class SpotlightBookmarkModelBridge;
 // Called from the BrowserBookmarkModelBridge from C++ -> ObjC.
 @interface BookmarksSpotlightManager ()
 
-// Set at shutdown. Will not continue indexing when set.
-@property(nonatomic, assign) BOOL isShuttingDown;
-
 // Detaches the `SpotlightBookmarkModelBridge` from the bookmark model. The
 // manager must not be used after calling this method.
 - (void)detachBookmarkModel;
@@ -172,11 +169,10 @@ class SpotlightBookmarkModelBridge : public bookmarks::BookmarkModelObserver {
                bookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
           spotlightInterface:(SpotlightInterface*)spotlightInterface
        searchableItemFactory:(SearchableItemFactory*)searchableItemFactory {
-  self = [super init];
+  self = [super initWithSpotlightInterface:spotlightInterface
+                     searchableItemFactory:searchableItemFactory];
   if (self) {
     _pendingLargeIconTasksCount = 0;
-    _searchableItemFactory = searchableItemFactory;
-    _spotlightInterface = spotlightInterface;
     _bookmarkModelBridge.reset(new SpotlightBookmarkModelBridge(self));
     _bookmarkModel = bookmarkModel;
     bookmarkModel->AddObserver(_bookmarkModelBridge.get());
@@ -351,8 +347,7 @@ class SpotlightBookmarkModelBridge : public bookmarks::BookmarkModelObserver {
 }
 
 - (void)shutdown {
-  self.isShuttingDown = YES;
-  [self.searchableItemFactory cancelItemsGeneration];
+  [super shutdown];
   [self detachBookmarkModel];
 }
 

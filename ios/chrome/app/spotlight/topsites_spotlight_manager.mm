@@ -136,7 +136,8 @@ class SpotlightTopSitesBridge : public history::TopSitesObserver {
                bookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
           spotlightInterface:(SpotlightInterface*)spotlightInterface
        searchableItemFactory:(SearchableItemFactory*)searchableItemFactory {
-  self = [super init];
+  self = [super initWithSpotlightInterface:spotlightInterface
+                     searchableItemFactory:searchableItemFactory];
   if (self) {
     DCHECK(topSites);
     DCHECK(bookmarkModel);
@@ -145,8 +146,6 @@ class SpotlightTopSitesBridge : public history::TopSitesObserver {
     _topSitesCallbackBridge.reset(new SpotlightTopSitesCallbackBridge(self));
     _bookmarkModel = bookmarkModel;
     _isReindexPending = false;
-    _spotlightInterface = spotlightInterface;
-    _searchableItemFactory = searchableItemFactory;
   }
   return self;
 }
@@ -217,6 +216,7 @@ class SpotlightTopSitesBridge : public history::TopSitesObserver {
 }
 
 - (void)shutdown {
+  [super shutdown];
   _topSitesBridge.reset();
   _topSitesCallbackBridge.reset();
 

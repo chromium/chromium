@@ -62,12 +62,11 @@
             readingListModel:(ReadingListModel*)model
           spotlightInterface:(SpotlightInterface*)spotlightInterface
        searchableItemFactory:(SearchableItemFactory*)searchableItemFactory {
-  self = [super init];
+  self = [super initWithSpotlightInterface:spotlightInterface
+                     searchableItemFactory:searchableItemFactory];
 
   if (self) {
     _model = model;
-    _searchableItemFactory = searchableItemFactory;
-    _spotlightInterface = spotlightInterface;
     _modelBridge.reset(new ReadingListModelBridge(self, model));
   }
   return self;
@@ -79,6 +78,7 @@
 }
 
 - (void)shutdown {
+  [super shutdown];
   [self detachModel];
 }
 
@@ -108,6 +108,10 @@
   if (!self.model || !self.model->loaded()) {
     [SpotlightLogger logSpotlightError:[ReadingListSpotlightManager
                                            modelNotReadyOrShutDownError]];
+    return;
+  }
+
+  if (self.isShuttingDown) {
     return;
   }
 

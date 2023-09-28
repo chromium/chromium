@@ -141,11 +141,8 @@ BOOL SetStartupParametersForSpotlightAction(
 - (instancetype)
     initWithSpotlightInterface:(SpotlightInterface*)spotlightInterface
          searchableItemFactory:(SearchableItemFactory*)searchableItemFactory {
-  self = [super init];
-  if (self) {
-    _spotlightInterface = spotlightInterface;
-    _searchableItemFactory = searchableItemFactory;
-  }
+  self = [super initWithSpotlightInterface:spotlightInterface
+                     searchableItemFactory:searchableItemFactory];
   return self;
 }
 
@@ -253,10 +250,6 @@ BOOL SetStartupParametersForSpotlightAction(
   return [self.searchableItemFactory searchableItem:title
                                              itemID:itemID
                                  additionalKeywords:@[]];
-}
-
-- (void)shutdown {
-  [self.searchableItemFactory cancelItemsGeneration];
 }
 
 @end
