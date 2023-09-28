@@ -762,12 +762,6 @@ are declared in tools/grit/grit_rule.gni.
           <message name="IDS_CONTENT_CONTEXT_PDF_OCR_MENU_OPTION" desc="The context-menu item that asks whether to use the PDF OCR service to convert image to text.">
             Extract text from PDF
           </message>
-          <message name="IDS_CONTENT_CONTEXT_PDF_OCR_MENU_OPTION_ALWAYS" desc="The context-menu sub-item that asks whether to use the PDF OCR service to convert image to text always.">
-            Always
-          </message>
-          <message name="IDS_CONTENT_CONTEXT_PDF_OCR_MENU_OPTION_ONCE" desc="The context-menu sub-item that asks whether to use the PDF OCR service to convert image to text, for a single use.">
-            Just once
-          </message>
           <message name="IDS_CONTENT_CONTEXT_RUN_LAYOUT_EXTRACTION" desc="The context-menu item that runs a local machine intelligence model to extract visual layout semantics.">
            Recognize visual layout semantics
           </message>
@@ -1051,12 +1045,6 @@ are declared in tools/grit/grit_rule.gni.
           </message>
           <message name="IDS_CONTENT_CONTEXT_PDF_OCR_MENU_OPTION" desc="The context-menu item that asks whether to use the PDF OCR service to convert image to text.">
             Extract Text From PDF
-          </message>
-          <message name="IDS_CONTENT_CONTEXT_PDF_OCR_MENU_OPTION_ALWAYS" desc="The context-menu sub-item that asks whether to use the PDF OCR service to convert image to text always.">
-            Always
-          </message>
-          <message name="IDS_CONTENT_CONTEXT_PDF_OCR_MENU_OPTION_ONCE" desc="The context-menu sub-item that asks whether to use the PDF OCR service to convert image to text, for a single use.">
-            Just once
           </message>
           <message name="IDS_CONTENT_CONTEXT_RUN_LAYOUT_EXTRACTION" desc="In Title Case: The context-menu item that runs a local machine intelligence model to extract visual layout semantics.">
            Recognize Visual Layout Semantics

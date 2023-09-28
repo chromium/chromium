@@ -79,7 +79,7 @@ class MockRenderViewContextMenu : public ui::SimpleMenuModel::Delegate,
   void RemoveSeparatorBeforeMenuItem(int command_id) override;
   void AddSpellCheckServiceItem(bool is_checked) override;
   void AddAccessibilityLabelsServiceItem(bool is_checked) override;
-  void AddPdfOcrMenuItem(bool is_checked) override;
+  void AddPdfOcrMenuItem() override;
   content::RenderViewHost* GetRenderViewHost() const override;
   content::BrowserContext* GetBrowserContext() const override;
   content::WebContents* GetWebContents() const override;

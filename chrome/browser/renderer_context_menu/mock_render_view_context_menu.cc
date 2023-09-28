@@ -237,27 +237,11 @@ void MockRenderViewContextMenu::AddAccessibilityLabelsServiceItem(
   }
 }
 
-void MockRenderViewContextMenu::AddPdfOcrMenuItem(bool is_checked) {
+void MockRenderViewContextMenu::AddPdfOcrMenuItem() {
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  if (is_checked) {
-    AddCheckItem(
-        IDC_CONTENT_CONTEXT_PDF_OCR,
-        l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_PDF_OCR_MENU_OPTION));
-  } else {
-    ui::SimpleMenuModel pdf_ocr_submenu_model_(this);
-    pdf_ocr_submenu_model_.AddItem(
-        IDC_CONTENT_CONTEXT_PDF_OCR_ALWAYS,
-        l10n_util::GetStringUTF16(
-            IDS_CONTENT_CONTEXT_PDF_OCR_MENU_OPTION_ALWAYS));
-    pdf_ocr_submenu_model_.AddItem(
-        IDC_CONTENT_CONTEXT_PDF_OCR_ONCE,
-        l10n_util::GetStringUTF16(
-            IDS_CONTENT_CONTEXT_PDF_OCR_MENU_OPTION_ONCE));
-    AddSubMenu(
-        IDC_CONTENT_CONTEXT_PDF_OCR,
-        l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_PDF_OCR_MENU_OPTION),
-        &pdf_ocr_submenu_model_);
-  }
+  AddCheckItem(
+      IDC_CONTENT_CONTEXT_PDF_OCR,
+      l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_PDF_OCR_MENU_OPTION));
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 }
 

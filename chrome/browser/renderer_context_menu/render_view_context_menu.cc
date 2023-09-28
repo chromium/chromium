@@ -487,8 +487,8 @@ const std::map<int, int>& GetIdcToUmaMap(UmaEnumIdLookupType type) {
        {IDC_CONTENT_CONTEXT_ADD_A_NOTE, 124},
        {IDC_LIVE_CAPTION, 125},
        {IDC_CONTENT_CONTEXT_PDF_OCR, 126},
-       {IDC_CONTENT_CONTEXT_PDF_OCR_ALWAYS, 127},
-       {IDC_CONTENT_CONTEXT_PDF_OCR_ONCE, 128},
+       // Removed: {IDC_CONTENT_CONTEXT_PDF_OCR_ALWAYS, 127},
+       // Removed: {IDC_CONTENT_CONTEXT_PDF_OCR_ONCE, 128},
        {IDC_CONTENT_CONTEXT_AUTOFILL_FEEDBACK, 129},
        {IDC_CONTENT_CONTEXT_TRANSLATEIMAGEWITHWEB, 130},
        {IDC_CONTENT_CONTEXT_TRANSLATEIMAGEWITHLENS, 131},
@@ -3316,30 +3316,13 @@ void RenderViewContextMenu::AddAccessibilityLabelsServiceItem(bool is_checked) {
   }
 }
 
-void RenderViewContextMenu::AddPdfOcrMenuItem(bool is_always_active) {
+void RenderViewContextMenu::AddPdfOcrMenuItem() {
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  if (is_always_active) {
-    // Only a checked item needs to be added to the context menu when the user
-    // selects "Always" or toggles on PDF OCR to make it always active.
-    menu_model_.AddCheckItem(
-        IDC_CONTENT_CONTEXT_PDF_OCR,
-        l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_PDF_OCR_MENU_OPTION));
-  } else {
-    // Add the submenu when the user doesn't select "Always" nor toggle on the
-    // the PDF OCR.
-    pdf_ocr_submenu_model_->AddItem(
-        IDC_CONTENT_CONTEXT_PDF_OCR_ALWAYS,
-        l10n_util::GetStringUTF16(
-            IDS_CONTENT_CONTEXT_PDF_OCR_MENU_OPTION_ALWAYS));
-    pdf_ocr_submenu_model_->AddItem(
-        IDC_CONTENT_CONTEXT_PDF_OCR_ONCE,
-        l10n_util::GetStringUTF16(
-            IDS_CONTENT_CONTEXT_PDF_OCR_MENU_OPTION_ONCE));
-    menu_model_.AddSubMenu(
-        IDC_CONTENT_CONTEXT_PDF_OCR,
-        l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_PDF_OCR_MENU_OPTION),
-        pdf_ocr_submenu_model_.get());
-  }
+  // Add an item to the context menu. Its check state will be determined by
+  // whether PDF OCR is on. If on, it will be checked; otherwise, unchecked.
+  menu_model_.AddCheckItem(
+      IDC_CONTENT_CONTEXT_PDF_OCR,
+      l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_PDF_OCR_MENU_OPTION));
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 }
 

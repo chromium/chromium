@@ -17,7 +17,7 @@ class RenderViewContextMenuProxy;
 // numeric values should never be reused. Must be kept in sync with
 // PdfOcrUserSelection enum in //tools/metrics/histograms/enums.xml.
 enum class PdfOcrUserSelection {
-  kTurnOnOnceFromContextMenu = 0,
+  kDeprecated_TurnOnOnceFromContextMenu = 0,
   kTurnOnAlwaysFromContextMenu = 1,
   kTurnOffFromContextMenu = 2,
   kTurnOnAlwaysFromMoreActions = 3,

@@ -41,10 +41,6 @@ class PdfOcrController : public KeyedService, ScreenAIInstallState::Observer {
   // service to become ready.
   bool IsEnabled() const;
 
-  // Run PDF OCR only once regardless of the PDF OCR pref value. This function
-  // doesn't update the PDF OCR pref value.
-  void RunPdfOcrOnlyOnce(content::WebContents* web_contents);
-
   // ScreenAIInstallState::Observer:
   void StateChanged(ScreenAIInstallState::State state) override;
 
@@ -63,12 +59,7 @@ class PdfOcrController : public KeyedService, ScreenAIInstallState::Observer {
   //    not done before.
   //  - Asks for a retry on download if a previous download has failed.
   //  - Returns true.
-  //
-  // If `web_contents_for_only_once_request` is empty, a request to always run
-  // PDF OCR will be scheduled. Otherwise only the request for the last
-  // WebContents is scheduled.
-  bool MaybeScheduleRequest(
-      content::WebContents* web_contents_for_only_once_request);
+  bool MaybeScheduleRequest();
 
   // Observes changes in Screen AI component download and readiness state.
   base::ScopedObservation<ScreenAIInstallState, ScreenAIInstallState::Observer>
@@ -83,12 +74,6 @@ class PdfOcrController : public KeyedService, ScreenAIInstallState::Observer {
   // Indicates that user has selected always active and we are waiting for the
   // Screen AI service to be ready to send this bit.
   bool send_always_active_state_when_service_is_ready_{false};
-
-  // Store a weak pointer to `content::WebContents` the user requested last for
-  // the "Just once" option. Having a valid pointer indicates that user has
-  // requested running just once on WebContents, and we are waiting for the
-  // Screen AI service to be ready for the user request.
-  base::WeakPtr<content::WebContents> last_webcontents_requested_for_run_once_;
 
   base::WeakPtrFactory<PdfOcrController> weak_ptr_factory_{this};
 };

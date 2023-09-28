@@ -44,72 +44,49 @@ void PdfOcrMenuObserver::InitMenu(const content::ContextMenuParams& params) {
   Profile* profile = Profile::FromBrowserContext(proxy_->GetBrowserContext());
   DCHECK(profile != nullptr);
   if (ShouldShowPdfOcrMenuItem()) {
-    proxy_->AddPdfOcrMenuItem(profile->GetPrefs()->GetBoolean(
-        prefs::kAccessibilityPdfOcrAlwaysActive));
+    proxy_->AddPdfOcrMenuItem();
   }
 }
 
 bool PdfOcrMenuObserver::IsCommandIdSupported(int command_id) {
-  return command_id == IDC_CONTENT_CONTEXT_PDF_OCR ||
-         command_id == IDC_CONTENT_CONTEXT_PDF_OCR_ALWAYS ||
-         command_id == IDC_CONTENT_CONTEXT_PDF_OCR_ONCE;
+  return command_id == IDC_CONTENT_CONTEXT_PDF_OCR;
 }
 
 bool PdfOcrMenuObserver::IsCommandIdChecked(int command_id) {
   DCHECK(IsCommandIdSupported(command_id));
   Profile* profile = Profile::FromBrowserContext(proxy_->GetBrowserContext());
   DCHECK(profile != nullptr);
-  if (command_id == IDC_CONTENT_CONTEXT_PDF_OCR ||
-      command_id == IDC_CONTENT_CONTEXT_PDF_OCR_ALWAYS ||
-      command_id == IDC_CONTENT_CONTEXT_PDF_OCR_ONCE) {
-    return profile->GetPrefs()->GetBoolean(
-        prefs::kAccessibilityPdfOcrAlwaysActive);
-  }
-  return false;
+  return (command_id == IDC_CONTENT_CONTEXT_PDF_OCR
+              ? profile->GetPrefs()->GetBoolean(
+                    prefs::kAccessibilityPdfOcrAlwaysActive)
+              : false);
 }
 
 bool PdfOcrMenuObserver::IsCommandIdEnabled(int command_id) {
   DCHECK(IsCommandIdSupported(command_id));
-  if (command_id == IDC_CONTENT_CONTEXT_PDF_OCR ||
-      command_id == IDC_CONTENT_CONTEXT_PDF_OCR_ALWAYS ||
-      command_id == IDC_CONTENT_CONTEXT_PDF_OCR_ONCE) {
-    return ShouldShowPdfOcrMenuItem();
-  }
-  return false;
+  return (command_id == IDC_CONTENT_CONTEXT_PDF_OCR ? ShouldShowPdfOcrMenuItem()
+                                                    : false);
 }
 
 void PdfOcrMenuObserver::ExecuteCommand(int command_id) {
   DCHECK(IsCommandIdSupported(command_id));
   Profile* profile = Profile::FromBrowserContext(proxy_->GetBrowserContext());
   DCHECK(profile != nullptr);
-  bool is_always_active =
-      profile->GetPrefs()->GetBoolean(prefs::kAccessibilityPdfOcrAlwaysActive);
   switch (command_id) {
     case IDC_CONTENT_CONTEXT_PDF_OCR:
-      // If the user has selected to make PDF OCR always active, we directly
-      // update the profile and change it to the original menu item when the
-      // user disables this item.
-      DCHECK(is_always_active);
-      VLOG(2) << "Turning off PDF OCR from the context menu";
-      profile->GetPrefs()->SetBoolean(prefs::kAccessibilityPdfOcrAlwaysActive,
-                                      false);
-      RecordUserSelection(PdfOcrUserSelection::kTurnOffFromContextMenu);
-      break;
-    case IDC_CONTENT_CONTEXT_PDF_OCR_ALWAYS:
-      // When a user choose "Always" to run the PDF OCR, we save this
-      // preference and change this item to a check item in the context menu.
-      if (!is_always_active) {
-        VLOG(2) << "Setting PDF OCR to be always active from the context menu";
+      // If PDF OCR is already on, turn off PDF OCR. Otherwise, turn on PDF OCR.
+      if (profile->GetPrefs()->GetBoolean(
+              prefs::kAccessibilityPdfOcrAlwaysActive)) {
+        VLOG(2) << "Turning off PDF OCR from the context menu";
+        profile->GetPrefs()->SetBoolean(prefs::kAccessibilityPdfOcrAlwaysActive,
+                                        false);
+        RecordUserSelection(PdfOcrUserSelection::kTurnOffFromContextMenu);
+      } else {
+        VLOG(2) << "Turning on PDF OCR from the context menu";
         profile->GetPrefs()->SetBoolean(prefs::kAccessibilityPdfOcrAlwaysActive,
                                         true);
         RecordUserSelection(PdfOcrUserSelection::kTurnOnAlwaysFromContextMenu);
       }
-      break;
-    case IDC_CONTENT_CONTEXT_PDF_OCR_ONCE:
-      VLOG(2) << "Running PDF OCR only once from the context menu";
-      screen_ai::PdfOcrControllerFactory::GetForProfile(profile)
-          ->RunPdfOcrOnlyOnce(proxy_->GetWebContents());
-      RecordUserSelection(PdfOcrUserSelection::kTurnOnOnceFromContextMenu);
       break;
     default:
       NOTREACHED();

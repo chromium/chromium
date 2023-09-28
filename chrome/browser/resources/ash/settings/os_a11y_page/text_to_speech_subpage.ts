@@ -36,7 +36,7 @@ import {TextToSpeechSubpageBrowserProxy, TextToSpeechSubpageBrowserProxyImpl} fr
  * and should always reflect it (do not change one without changing the other).
  */
 export enum PdfOcrUserSelection {
-  TURN_ON_ONCE_FROM_CONTEXT_MENU = 0,
+  DEPRECATED_TURN_ON_ONCE_FROM_CONTEXT_MENU = 0,
   TURN_ON_ALWAYS_FROM_CONTEXT_MENU = 1,
   TURN_OFF_FROM_CONTEXT_MENU = 2,
   TURN_ON_ALWAYS_FROM_MORE_ACTIONS = 3,

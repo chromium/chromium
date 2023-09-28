@@ -138,29 +138,6 @@ PdfOcrController::GetAllPdfWebContentsesForTesting(Profile* profile) {
   return GetPdfHtmlWebContentses(profile);
 }
 
-void PdfOcrController::RunPdfOcrOnlyOnce(content::WebContents* web_contents) {
-  if (!web_contents) {
-    CHECK_IS_TEST();
-    return;
-  }
-
-  if (MaybeScheduleRequest(web_contents)) {
-    // The request will be handled when the library is ready or discarded if it
-    // fails to load.
-    return;
-  }
-
-  // `web_contents` should be a PDF Viewer Mimehandler.
-  DCHECK_EQ(web_contents->GetContentsMimeType(), kHtmlMimeType);
-
-  ui::AXMode ax_mode = web_contents->GetAccessibilityMode();
-  ax_mode.set_mode(ui::AXMode::kPDFOcr, true);
-  web_contents->SetAccessibilityMode(ax_mode);
-
-  RecordAcceptLanguages(
-      profile_->GetPrefs()->GetString(language::prefs::kAcceptLanguages));
-}
-
 bool PdfOcrController::IsEnabled() const {
   return profile_->GetPrefs()->GetBoolean(
              prefs::kAccessibilityPdfOcrAlwaysActive) &&
@@ -191,7 +168,7 @@ void PdfOcrController::OnPdfOcrAlwaysActiveChanged() {
   if (is_always_active) {
     RecordAcceptLanguages(
         profile_->GetPrefs()->GetString(language::prefs::kAcceptLanguages));
-    if (MaybeScheduleRequest(/*web_contents_for_only_once_request=*/nullptr)) {
+    if (MaybeScheduleRequest()) {
       // The request will be handled when the library is ready or discarded if
       // it fails to load.
       return;
@@ -220,8 +197,7 @@ void PdfOcrController::SendPdfOcrAlwaysActiveToAll(bool is_always_active) {
   }
 }
 
-bool PdfOcrController::MaybeScheduleRequest(
-    content::WebContents* web_contents_for_only_once_request) {
+bool PdfOcrController::MaybeScheduleRequest() {
   ScreenAIInstallState::State current_install_state =
       ScreenAIInstallState::GetInstance()->get_state();
 
@@ -231,15 +207,7 @@ bool PdfOcrController::MaybeScheduleRequest(
   }
 
   // Keep the request until the library is ready.
-  if (web_contents_for_only_once_request) {
-    // PDF OCR once request. Keep its weak pointer of the web contents
-    // requested for this. We only keep this request for one PDF (the last one).
-    last_webcontents_requested_for_run_once_ =
-        web_contents_for_only_once_request->GetWeakPtr();
-  } else {
-    // PDF OCR always request.
-    send_always_active_state_when_service_is_ready_ = true;
-  }
+  send_always_active_state_when_service_is_ready_ = true;
 
   // TODO(crbug.com/127829): Make sure requesting to repeat a failed download
   // will trigger a new one.
@@ -267,9 +235,6 @@ void PdfOcrController::StateChanged(ScreenAIInstallState::State state) {
 
     case ScreenAIInstallState::State::kFailed:
       AnnounceToScreenReader(IDS_SETTINGS_PDF_OCR_DOWNLOAD_ERROR);
-      if (last_webcontents_requested_for_run_once_) {
-        last_webcontents_requested_for_run_once_.reset();
-      }
       if (send_always_active_state_when_service_is_ready_) {
         // Update the PDF OCR pref to be false to toggle off the button.
         profile_->GetPrefs()->SetBoolean(
@@ -285,10 +250,6 @@ void PdfOcrController::StateChanged(ScreenAIInstallState::State state) {
       break;
 
     case ScreenAIInstallState::State::kReady:
-      if (last_webcontents_requested_for_run_once_) {
-        RunPdfOcrOnlyOnce(last_webcontents_requested_for_run_once_.get());
-        last_webcontents_requested_for_run_once_.reset();
-      }
       if (send_always_active_state_when_service_is_ready_) {
         send_always_active_state_when_service_is_ready_ = false;
         SendPdfOcrAlwaysActiveToAll(true);
