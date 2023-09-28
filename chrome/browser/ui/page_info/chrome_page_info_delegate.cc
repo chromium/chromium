@@ -16,6 +16,7 @@
 #include "chrome/browser/permissions/permission_manager_factory.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
+#include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/chrome_password_protection_service.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
@@ -35,6 +36,7 @@
 #include "components/permissions/object_permission_context_base.h"
 #include "components/permissions/permission_manager.h"
 #include "components/prefs/pref_service.h"
+#include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "components/security_interstitials/content/stateful_ssl_host_state_delegate.h"
 #include "components/subresource_filter/content/browser/subresource_filter_content_settings_manager.h"
 #include "components/subresource_filter/content/browser/subresource_filter_profile_context.h"
@@ -242,8 +244,9 @@ bool ChromePageInfoDelegate::IsIsolatedWebApp() {
 }
 
 void ChromePageInfoDelegate::ShowSiteSettings(const GURL& site_url) {
-  if (web_app::HandleAppManagementLinkClickedInPageInfo(web_contents_))
+  if (web_app::HandleAppManagementLinkClickedInPageInfo(web_contents_)) {
     return;
+  }
 
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents_);
   chrome::ShowSiteSettings(browser, site_url);
@@ -298,16 +301,18 @@ void ChromePageInfoDelegate::OpenContentSettingsExceptions(
 void ChromePageInfoDelegate::OnPageInfoActionOccurred(
     PageInfo::PageInfoAction action) {
   if (sentiment_service_) {
-    if (action == PageInfo::PAGE_INFO_OPENED)
+    if (action == PageInfo::PAGE_INFO_OPENED) {
       sentiment_service_->PageInfoOpened();
-    else
+    } else {
       sentiment_service_->InteractedWithPageInfo();
+    }
   }
 }
 
 void ChromePageInfoDelegate::OnUIClosing() {
-  if (sentiment_service_)
+  if (sentiment_service_) {
     sentiment_service_->PageInfoClosed();
+  }
 }
 #endif
 
@@ -358,8 +363,9 @@ bool ChromePageInfoDelegate::IsContentDisplayedInVrHeadset() {
 }
 
 security_state::SecurityLevel ChromePageInfoDelegate::GetSecurityLevel() {
-  if (security_state_for_tests_set_)
+  if (security_state_for_tests_set_) {
     return security_level_for_tests_;
+  }
 
   // This is a no-op if a SecurityStateTabHelper already exists for
   // |web_contents|.
@@ -372,8 +378,9 @@ security_state::SecurityLevel ChromePageInfoDelegate::GetSecurityLevel() {
 
 security_state::VisibleSecurityState
 ChromePageInfoDelegate::GetVisibleSecurityState() {
-  if (security_state_for_tests_set_)
+  if (security_state_for_tests_set_) {
     return visible_security_state_for_tests_;
+  }
 
   // This is a no-op if a SecurityStateTabHelper already exists for
   // |web_contents|.
@@ -401,6 +408,16 @@ ChromePageInfoDelegate::GetPageSpecificContentSettingsDelegate() {
   auto delegate = std::make_unique<chrome::PageSpecificContentSettingsDelegate>(
       web_contents_);
   return std::move(delegate);
+}
+
+bool ChromePageInfoDelegate::IsTrackingProtection3pcdEnabled() {
+  return TrackingProtectionSettingsFactory::GetForProfile(GetProfile())
+      ->IsTrackingProtection3pcdEnabled();
+}
+
+bool ChromePageInfoDelegate::AreAllThirdPartyCookiesBlocked() {
+  return TrackingProtectionSettingsFactory::GetForProfile(GetProfile())
+      ->AreAllThirdPartyCookiesBlocked();
 }
 
 #if BUILDFLAG(IS_ANDROID)

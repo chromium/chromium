@@ -177,7 +177,7 @@ void PageInfoMainView::EnsureCookieInfo() {
           icon,
           is_3pcd_enabled
               ? l10n_util::GetStringUTF16(
-                    IDS_PAGE_INFO_TRACKING_PROTECTION_HEADER)
+                    IDS_PAGE_INFO_TRACKING_PROTECTION_SITE_INFO_BUTTON_NAME)
               : l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_HEADER),
           std::u16string(), tooltip, std::u16string(),
           PageInfoViewFactory::GetOpenSubpageIcon()));

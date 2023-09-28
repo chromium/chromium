@@ -425,8 +425,9 @@ void PageInfo::UpdateSecurityState() {
 }
 
 void PageInfo::RecordPageInfoAction(PageInfoAction action) {
-  if (action != PAGE_INFO_OPENED)
+  if (action != PAGE_INFO_OPENED) {
     did_perform_action_ = true;
+  }
 
 #if !BUILDFLAG(IS_ANDROID)
   delegate_->OnPageInfoActionOccurred(action);
@@ -442,8 +443,9 @@ void PageInfo::RecordPageInfoAction(PageInfoAction action) {
   }
 
   auto* settings = GetPageSpecificContentSettings();
-  if (!settings)
+  if (!settings) {
     return;
+  }
 
   bool has_topic = settings->HasAccessedTopics();
   bool has_fledge = settings->HasJoinedUserToInterestGroup();
@@ -738,14 +740,16 @@ void PageInfo::OnSiteChosenObjectDeleted(const ChooserUIInfo& ui_info,
 }
 
 void PageInfo::OnUIClosing(bool* reload_prompt) {
-  if (reload_prompt)
+  if (reload_prompt) {
     *reload_prompt = false;
+  }
 #if BUILDFLAG(IS_ANDROID)
   NOTREACHED();
 #else
   if (show_info_bar_ && web_contents_ && !web_contents_->IsBeingDestroyed()) {
-    if (delegate_->CreateInfoBarDelegate() && reload_prompt)
+    if (delegate_->CreateInfoBarDelegate() && reload_prompt) {
       *reload_prompt = true;
+    }
   }
   delegate_->OnUIClosing();
 #endif
@@ -785,10 +789,11 @@ void PageInfo::OpenAllSitesViewFilteredToFps() {
 #else
   auto fps_owner = delegate_->GetFpsOwner(site_url_);
   RecordPageInfoAction(PAGE_INFO_ALL_SITES_WITH_FPS_FILTER_OPENED);
-  if (fps_owner)
+  if (fps_owner) {
     delegate_->ShowAllSitesSettingsFilteredByFpsOwner(*fps_owner);
-  else
+  } else {
     delegate_->ShowAllSitesSettingsFilteredByFpsOwner(std::u16string());
+  }
 
 #endif
 }
@@ -797,8 +802,9 @@ void PageInfo::OpenCookiesDialog() {
 #if BUILDFLAG(IS_ANDROID)
   NOTREACHED();
 #else
-  if (!web_contents_ || web_contents_->IsBeingDestroyed())
+  if (!web_contents_ || web_contents_->IsBeingDestroyed()) {
     return;
+  }
 
   RecordPageInfoAction(PAGE_INFO_COOKIES_DIALOG_OPENED);
   delegate_->OpenCookiesDialog();
@@ -809,8 +815,9 @@ void PageInfo::OpenCertificateDialog(net::X509Certificate* certificate) {
 #if BUILDFLAG(IS_ANDROID)
   NOTREACHED();
 #else
-  if (!web_contents_ || web_contents_->IsBeingDestroyed())
+  if (!web_contents_ || web_contents_->IsBeingDestroyed()) {
     return;
+  }
 
   gfx::NativeWindow top_window = web_contents_->GetTopLevelNativeWindow();
   if (certificate && top_window) {
@@ -1383,8 +1390,9 @@ void PageInfo::PresentSitePermissions() {
   for (const ChooserUIInfo& ui_info : kChooserUIInfo) {
     permissions::ObjectPermissionContextBase* context =
         delegate_->GetChooserContext(ui_info.content_settings_type);
-    if (!context)
+    if (!context) {
       continue;
+    }
     auto chosen_objects = context->GetGrantedObjects(origin);
     for (std::unique_ptr<permissions::ObjectPermissionContextBase::Object>&
              object : chosen_objects) {
@@ -1443,8 +1451,9 @@ std::set<net::SchemefulSite> PageInfo::GetTwoSitePermissionRequesters(
 void PageInfo::PresentSiteDataInternal(base::OnceClosure done) {
   // Since this is called asynchronously, the associated `WebContents` object
   // might no longer be available.
-  if (!web_contents_ || web_contents_->IsBeingDestroyed())
+  if (!web_contents_ || web_contents_->IsBeingDestroyed()) {
     return;
+  }
 
   // Presenting site data is only needed if `PageInfoUI` is available.
   if (!ui_) {
@@ -1535,8 +1544,9 @@ void PageInfo::PresentPageFeatureInfo() {
 void PageInfo::PresentAdPersonalizationData() {
   PageInfoUI::AdPersonalizationInfo info;
   auto* settings = GetPageSpecificContentSettings();
-  if (!settings)
+  if (!settings) {
     return;
+  }
 
   info.has_joined_user_to_interest_group =
       settings->HasJoinedUserToInterestGroup();
@@ -1570,8 +1580,9 @@ HostContentSettingsMap* PageInfo::GetContentSettings() const {
 
 std::vector<ContentSettingsType> PageInfo::GetAllPermissionsForTesting() {
   std::vector<ContentSettingsType> permission_list;
-  for (const ContentSettingsType type : kPermissionType)
+  for (const ContentSettingsType type : kPermissionType) {
     permission_list.push_back(type);
+  }
 
   return permission_list;
 }
@@ -1659,32 +1670,36 @@ PageInfo::GetPageSpecificContentSettings() const {
 bool PageInfo::HasContentSettingChangedViaPageInfo(
     ContentSettingsType type) const {
   auto* settings = GetPageSpecificContentSettings();
-  if (!settings)
+  if (!settings) {
     return false;
+  }
 
   return settings->HasContentSettingChangedViaPageInfo(type);
 }
 
 void PageInfo::ContentSettingChangedViaPageInfo(ContentSettingsType type) {
   auto* settings = GetPageSpecificContentSettings();
-  if (!settings)
+  if (!settings) {
     return;
+  }
 
   return settings->ContentSettingChangedViaPageInfo(type);
 }
 
 int PageInfo::GetFirstPartyAllowedCookiesCount(const GURL& site_url) {
   auto* settings = GetPageSpecificContentSettings();
-  if (!settings)
+  if (!settings) {
     return 0;
+  }
   return settings->allowed_local_shared_objects().GetObjectCountForDomain(
       site_url);
 }
 
 int PageInfo::GetSitesWithAllowedCookiesAccessCount() {
   auto* settings = GetPageSpecificContentSettings();
-  if (!settings)
+  if (!settings) {
     return 0;
+  }
   return browsing_data::GetUniqueHostCount(
       settings->allowed_local_shared_objects(),
       *(settings->allowed_browsing_data_model()));
@@ -1693,17 +1708,27 @@ int PageInfo::GetSitesWithAllowedCookiesAccessCount() {
 int PageInfo::GetThirdPartySitesWithBlockedCookiesAccessCount(
     const GURL& site_url) {
   auto* settings = GetPageSpecificContentSettings();
-  if (!settings)
+  if (!settings) {
     return 0;
+  }
   return browsing_data::GetUniqueThirdPartyCookiesHostCount(
       site_url, settings->blocked_local_shared_objects(),
       *(settings->blocked_browsing_data_model()));
 }
 
+bool PageInfo::IsTrackingProtection3pcdEnabled() const {
+  return delegate_->IsTrackingProtection3pcdEnabled();
+}
+
+bool PageInfo::AreAllThirdPartyCookiesBlocked() const {
+  return delegate_->AreAllThirdPartyCookiesBlocked();
+}
+
 int PageInfo::GetFirstPartyBlockedCookiesCount(const GURL& site_url) {
   auto* settings = GetPageSpecificContentSettings();
-  if (!settings)
+  if (!settings) {
     return 0;
+  }
 
   return settings->blocked_local_shared_objects().GetObjectCountForDomain(
       site_url);

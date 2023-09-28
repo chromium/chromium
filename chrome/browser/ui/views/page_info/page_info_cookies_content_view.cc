@@ -49,10 +49,24 @@ PageInfoCookiesContentView::PageInfoCookiesContentView(PageInfo* presenter)
 
   // Text on cookies description label has an embedded link to cookies settings.
   size_t offset;
-  auto settings_text_for_link =
-      l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_SETTINGS_LINK);
-  auto description_text = l10n_util::GetStringFUTF16(
-      IDS_PAGE_INFO_COOKIES_DESCRIPTION, settings_text_for_link, &offset);
+  std::u16string settings_text_for_link;
+  std::u16string description_text;
+
+  // Override the description if 3pcd enabled.
+  if (presenter_->IsTrackingProtection3pcdEnabled()) {
+    settings_text_for_link = l10n_util::GetStringUTF16(
+        IDS_PAGE_INFO_TRACKING_PROTECTION_SETTINGS_LINK);
+    description_text = l10n_util::GetStringFUTF16(
+        presenter_->AreAllThirdPartyCookiesBlocked()
+            ? IDS_PAGE_INFO_TRACKING_PROTECTION_BLOCKED_COOKIES_DESCRIPTION
+            : IDS_PAGE_INFO_TRACKING_PROTECTION_DESCRIPTION,
+        settings_text_for_link, &offset);
+  } else {
+    settings_text_for_link =
+        l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_SETTINGS_LINK);
+    description_text = l10n_util::GetStringFUTF16(
+        IDS_PAGE_INFO_COOKIES_DESCRIPTION, settings_text_for_link, &offset);
+  }
 
   gfx::Range link_range(offset, offset + settings_text_for_link.length());
   views::StyledLabel::RangeStyleInfo link_style =
@@ -112,8 +126,9 @@ void PageInfoCookiesContentView::SetInitializedCallbackForTesting(
 }
 
 void PageInfoCookiesContentView::InitCookiesDialogButton() {
-  if (cookies_dialog_button_)
+  if (cookies_dialog_button_) {
     return;
+  }
   // Get the icon.
   PageInfo::PermissionInfo info;
   info.type = ContentSettingsType::COOKIES;
@@ -179,8 +194,9 @@ void PageInfoCookiesContentView::SetCookieInfo(
   SetFpsCookiesInfo(cookie_info.fps_info, is_fps_allowed);
 
   PreferredSizeChanged();
-  if (!initialized_callback_.is_null())
+  if (!initialized_callback_.is_null()) {
     std::move(initialized_callback_).Run();
+  }
 }
 
 void PageInfoCookiesContentView::SetBlockingThirdPartyCookiesInfo(
@@ -205,8 +221,9 @@ void PageInfoCookiesContentView::SetBlockingThirdPartyCookiesInfo(
     InitBlockingThirdPartyCookiesRow();
     blocking_third_party_cookies_row_->SetVisible(true);
     InitBlockingThirdPartyCookiesToggleOrIcon(cookie_info.enforcement);
-    if (blocking_third_party_cookies_toggle_)
+    if (blocking_third_party_cookies_toggle_) {
       UpdateBlockingThirdPartyCookiesToggle(are_cookies_blocked);
+    }
 
     if (are_cookies_blocked) {
       // TODO(crbug.com/1349370): Use
@@ -373,14 +390,17 @@ void PageInfoCookiesContentView::InitBlockingThirdPartyCookiesToggleOrIcon(
   }
 
   // Set correct visibility for existing views.
-  if (enforced_icon_)
+  if (enforced_icon_) {
     enforced_icon_->SetVisible(enforced);
-  if (blocking_third_party_cookies_toggle_)
+  }
+  if (blocking_third_party_cookies_toggle_) {
     blocking_third_party_cookies_toggle_->SetVisible(!enforced);
+  }
 
   // If it's not enforced then toggle is for sure not being changed.
-  if (!enforced && blocking_third_party_cookies_toggle_)
+  if (!enforced && blocking_third_party_cookies_toggle_) {
     return;
+  }
 
   // Newly created views are visible by default.
   if (enforced) {
@@ -411,8 +431,9 @@ void PageInfoCookiesContentView::InitBlockingThirdPartyCookiesToggleOrIcon(
 }
 
 void PageInfoCookiesContentView::InitBlockingThirdPartyCookiesRow() {
-  if (blocking_third_party_cookies_row_)
+  if (blocking_third_party_cookies_row_) {
     return;
+  }
 
   const auto title =
       l10n_util::GetStringUTF16(IDS_PAGE_INFO_BLOCK_THIRD_PARTY_COOKIES_TITLE);
@@ -474,8 +495,9 @@ void PageInfoCookiesContentView::SetFpsCookiesInfo(
 }
 
 void PageInfoCookiesContentView::InitFpsButton(bool is_managed) {
-  if (fps_button_)
+  if (fps_button_) {
     return;
+  }
 
   const std::u16string& tooltip =
       l10n_util::GetStringUTF16(IDS_PAGE_INFO_FPS_BUTTON_TOOLTIP);

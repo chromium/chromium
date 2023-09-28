@@ -346,6 +346,10 @@ class PageInfo : private content_settings::CookieControlsObserver,
 
   void PresentSitePermissionsForTesting() { PresentSitePermissions(); }
 
+  bool IsTrackingProtection3pcdEnabled() const;
+
+  bool AreAllThirdPartyCookiesBlocked() const;
+
  private:
   FRIEND_TEST_ALL_PREFIXES(PageInfoTest,
                            ShowInfoBarWhenAllowingThirdPartyCookies);
