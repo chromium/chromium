@@ -2508,6 +2508,36 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.EME.CdmStorageManager.DatabaseOpenError"
+    enum="CdmStorageOpenError" expires_after="2024-08-11">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    This UMA logs overall error rates from opening the CdmStorageDatabase.
+    Recorded on every open.
+  </summary>
+</histogram>
+
+<histogram name="Media.EME.CdmStorageManager.DatabaseOpenError.Incognito"
+    enum="CdmStorageOpenError" expires_after="2024-08-11">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    This UMA logs overall error rates from opening the CdmStorageDatabase.
+    Recorded on every open from an Incognito profile.
+  </summary>
+</histogram>
+
+<histogram name="Media.EME.CdmStorageManager.DatabaseOpenError.NotIncognito"
+    enum="CdmStorageOpenError" expires_after="2024-08-11">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    This UMA logs overall error rates from opening the CdmStorageDatabase.
+    Recorded on every open from a non-Incognito profile.
+  </summary>
+</histogram>
+
 <histogram name="Media.EME.CdmStorageManager.DeleteDatabaseError.Incognito"
     enum="BooleanError" expires_after="2024-08-11">
   <owner>vpasupathy@chromium.org</owner>

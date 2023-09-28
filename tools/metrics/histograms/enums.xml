@@ -14826,6 +14826,14 @@ Called by update_bad_message_reasons.py.-->
   <int value="9" label="SessionAlreadyExists"/>
 </enum>
 
+<enum name="CdmStorageOpenError">
+  <int value="0" label="kInvalidBucket"/>
+  <int value="1" label="kNoFileSpecified"/>
+  <int value="2" label="kDatabaseOpenError"/>
+  <int value="3" label="kDatabaseRazeError"/>
+  <int value="4" label="kSQLExecutionError"/>
+</enum>
+
 <enum name="CdmStorageStatus">
   <int value="0" label="Success"/>
   <int value="1" label="In Use"/>

@@ -26,6 +26,8 @@ const char kDeleteForStorageKeyError[] = "DeleteForStorageKeyError.";
 const char kDeleteFileError[] = "DeleteFileError.";
 const char kWriteFileError[] = "WriteFileError.";
 const char kReadFileError[] = "ReadFileError.";
+const char kDatabaseOpenErrorNoPeriod[] = "DatabaseOpenError";
+const char kDatabaseOpenError[] = "DatabaseOpenError.";
 
 // Creates a task runner suitable for running SQLite database operations.
 scoped_refptr<base::SequencedTaskRunner> CreateDatabaseTaskRunner() {
@@ -236,7 +238,14 @@ void CdmStorageManager::DidDeleteDatabase(bool success) {
   base::UmaHistogramBoolean(GetHistogramName(kDeleteDatabaseError), !success);
 }
 
-void CdmStorageManager::ReportDatabaseOpenError(CdmStorageOpenError error) {}
+void CdmStorageManager::ReportDatabaseOpenError(CdmStorageOpenError error) {
+  // General Errors without distinguishing incognito or not.
+  base::UmaHistogramEnumeration(
+      std::string{kUmaPrefix} + std::string{kDatabaseOpenErrorNoPeriod}, error);
+
+  // Histogram split by incognito and non-incognito.
+  base::UmaHistogramEnumeration(GetHistogramName(kDatabaseOpenError), error);
+}
 
 std::string CdmStorageManager::GetHistogramName(const char operation[]) {
   return std::string{kUmaPrefix} + std::string{operation} +
