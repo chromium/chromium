@@ -80,12 +80,8 @@ cc::ScrollState CreateScrollStateForGesture(const WebGestureEvent& event) {
             event.data.scroll_begin.scrollable_area_element_id);
         scroll_state_data.set_current_native_scrolling_element(target_scroller);
 
-        // If the target scroller comes from a main thread hit test, we're in
-        // scroll unification.
         scroll_state_data.main_thread_hit_tested_reasons =
             event.data.scroll_begin.main_thread_hit_tested_reasons;
-        DCHECK(!event.data.scroll_begin.main_thread_hit_tested_reasons ||
-               base::FeatureList::IsEnabled(::features::kScrollUnification));
       } else {
         // If a main thread hit test didn't yield a target we should have
         // discarded this event before this point.
@@ -386,7 +382,6 @@ void InputHandlerProxy::ContinueScrollBeginAfterMainThreadHitTest(
     std::unique_ptr<cc::EventMetrics> metrics,
     EventDispositionCallback callback,
     cc::ElementId hit_test_result) {
-  DCHECK(base::FeatureList::IsEnabled(::features::kScrollUnification));
   DCHECK_EQ(event->Event().GetType(),
             WebGestureEvent::Type::kGestureScrollBegin);
   DCHECK(scroll_begin_main_thread_hit_test_reasons_);
@@ -535,7 +530,6 @@ bool InputHandlerProxy::HasQueuedEventsReadyForDispatch(bool frame_aligned) {
   // scroll begin hit test outstanding. We'll flush the queue when the hit test
   // responds.
   if (scroll_begin_main_thread_hit_test_reasons_) {
-    DCHECK(base::FeatureList::IsEnabled(::features::kScrollUnification));
     return false;
   }
 
@@ -924,19 +918,6 @@ void InputHandlerProxy::RecordScrollBegin(
   // see new pixels until the next BeginMainFrame. These reasons are passed as
   // main_thread_repaint_reasons instead of reasons_from_scroll_begin.
   reportable_reasons |= main_thread_repaint_reasons;
-
-  if (reportable_reasons &&
-      !base::FeatureList::IsEnabled(::features::kScrollUnification)) {
-    // In pre-ScrollUnification, there may be non-composited scroll nodes that
-    // are ancestors of composited scroll nodes. Don't report non-composited
-    // main-thread scrolling reasons here because ScrollManager will report
-    // them.
-    reportable_reasons &= ~cc::MainThreadScrollingReason::kNonCompositedReasons;
-    if (!reportable_reasons) {
-      reportable_reasons = cc::MainThreadScrollingReason::kNoScrollingLayer;
-    }
-  }
-
   RecordScrollReasonsMetric(device, reportable_reasons);
 }
 
@@ -1029,7 +1010,6 @@ InputHandlerProxy::EventDisposition InputHandlerProxy::HandleGestureScrollBegin(
   // begin event once the hit test is complete so avoid everything below for
   // now, it'll be run on the second iteration.
   if (scroll_status.main_thread_hit_test_reasons) {
-    DCHECK(base::FeatureList::IsEnabled(::features::kScrollUnification));
     scroll_begin_main_thread_hit_test_reasons_ =
         scroll_status.main_thread_hit_test_reasons;
     return REQUIRES_MAIN_THREAD_HIT_TEST;
@@ -1102,9 +1082,7 @@ InputHandlerProxy::HandleGestureScrollUpdate(
   }
 
   if (!handling_gesture_on_impl_thread_ && !gesture_pinch_in_progress_) {
-    return base::FeatureList::IsEnabled(::features::kScrollUnification)
-               ? DROP_EVENT
-               : DID_NOT_HANDLE;
+    return DROP_EVENT;
   }
 
   cc::ScrollState scroll_state = CreateScrollStateForGesture(gesture_event);
@@ -1118,25 +1096,6 @@ InputHandlerProxy::HandleGestureScrollUpdate(
           GetGestureScrollUpdateInfo(gesture_event))) {
     handling_gesture_on_impl_thread_ = false;
     return DROP_EVENT;
-  }
-
-  if (!base::FeatureList::IsEnabled(::features::kScrollUnification) &&
-      input_handler_->ScrollingShouldSwitchtoMainThread()) {
-    TRACE_EVENT_INSTANT0("input", "Move Scroll To Main Thread",
-                         TRACE_EVENT_SCOPE_THREAD);
-    handling_gesture_on_impl_thread_ = false;
-    currently_active_gesture_device_ = absl::nullopt;
-    client_->GenerateScrollBeginAndSendToMainThread(
-        gesture_event, original_attribution, metrics);
-
-    // TODO(bokan): |!gesture_pinch_in_progress_| was put here by
-    // https://crrev.com/2720903005 but it's not clear to me how this is
-    // supposed to work - we already generated and sent a GSB to the main
-    // thread above so it's odd to continue handling on the compositor thread
-    // if a pinch was in progress. It probably makes more sense to bake this
-    // condition into ScrollingShouldSwitchToMainThread().
-    if (!gesture_pinch_in_progress_)
-      return DID_NOT_HANDLE;
   }
 
   base::TimeTicks event_time = gesture_event.TimeStamp();
@@ -1198,9 +1157,7 @@ InputHandlerProxy::EventDisposition InputHandlerProxy::HandleGestureScrollEnd(
 
   if (!handling_gesture_on_impl_thread_) {
     DCHECK(!currently_active_gesture_device_.has_value());
-    return base::FeatureList::IsEnabled(::features::kScrollUnification)
-               ? DROP_EVENT
-               : DID_NOT_HANDLE;
+    return DROP_EVENT;
   }
 
   if (!currently_active_gesture_device_.has_value() ||

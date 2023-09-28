@@ -109,17 +109,8 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
 
   // InputHandlerProxyClient overrides.
   void WillShutdown() override;
-  void DispatchNonBlockingEventToMainThread(
-      std::unique_ptr<WebCoalescedInputEvent> event,
-      const WebInputEventAttribution& attribution,
-      std::unique_ptr<cc::EventMetrics> metrics) override;
-
   void DidAnimateForInput() override;
   void DidStartScrollingViewport() override;
-  void GenerateScrollBeginAndSendToMainThread(
-      const WebGestureEvent& update_event,
-      const WebInputEventAttribution& attribution,
-      const cc::EventMetrics* update_metrics) override;
   void SetAllowedTouchAction(cc::TouchAction touch_action) override;
   bool AllowsScrollResampling() override { return allow_scroll_resampling_; }
 

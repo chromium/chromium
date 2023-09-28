@@ -107,29 +107,6 @@ mojom::blink::InputEventResultState InputEventDispositionToAck(
   }
 }
 
-std::unique_ptr<blink::WebGestureEvent> ScrollBeginFromScrollUpdate(
-    const WebGestureEvent& gesture_update) {
-  DCHECK(gesture_update.GetType() == WebInputEvent::Type::kGestureScrollUpdate);
-
-  auto scroll_begin = std::make_unique<WebGestureEvent>(gesture_update);
-  scroll_begin->SetType(WebInputEvent::Type::kGestureScrollBegin);
-
-  scroll_begin->data.scroll_begin.delta_x_hint =
-      gesture_update.data.scroll_update.delta_x;
-  scroll_begin->data.scroll_begin.delta_y_hint =
-      gesture_update.data.scroll_update.delta_y;
-  scroll_begin->data.scroll_begin.delta_hint_units =
-      gesture_update.data.scroll_update.delta_units;
-  scroll_begin->data.scroll_begin.target_viewport = false;
-  scroll_begin->data.scroll_begin.inertial_phase =
-      gesture_update.data.scroll_update.inertial_phase;
-  scroll_begin->data.scroll_begin.synthetic = false;
-  scroll_begin->data.scroll_begin.pointer_count = 0;
-  scroll_begin->data.scroll_begin.scrollable_area_element_id = 0;
-
-  return scroll_begin;
-}
-
 }  // namespace
 
 #if BUILDFLAG(IS_ANDROID)
@@ -353,17 +330,6 @@ void WidgetInputHandlerManager::WillShutdown() {
   dropped_event_counts_timer_.reset();
 }
 
-void WidgetInputHandlerManager::DispatchNonBlockingEventToMainThread(
-    std::unique_ptr<WebCoalescedInputEvent> event,
-    const WebInputEventAttribution& attribution,
-    std::unique_ptr<cc::EventMetrics> metrics) {
-  DCHECK(input_event_queue_);
-  input_event_queue_->HandleEvent(
-      std::move(event), MainThreadEventQueue::DispatchType::kNonBlocking,
-      mojom::blink::InputEventResultState::kSetNonBlocking, attribution,
-      std::move(metrics), HandledEventCallback());
-}
-
 void WidgetInputHandlerManager::FindScrollTargetOnMainThread(
     const gfx::PointF& point,
     ElementAtPointCallback callback) {
@@ -371,7 +337,6 @@ void WidgetInputHandlerManager::FindScrollTargetOnMainThread(
                "WidgetInputHandlerManager::FindScrollTargetOnMainThread",
                "point.x", point.x(), "point.y", point.y());
   DCHECK(main_thread_task_runner_->BelongsToCurrentThread());
-  DCHECK(base::FeatureList::IsEnabled(::features::kScrollUnification));
 
   cc::ElementId element_id;
   if (widget_) {
@@ -392,38 +357,6 @@ void WidgetInputHandlerManager::DidStartScrollingViewport() {
   if (!host)
     return;
   host->DidStartScrollingViewport();
-}
-
-void WidgetInputHandlerManager::GenerateScrollBeginAndSendToMainThread(
-    const WebGestureEvent& update_event,
-    const WebInputEventAttribution& attribution,
-    const cc::EventMetrics* update_metrics) {
-  DCHECK_EQ(update_event.GetType(), WebInputEvent::Type::kGestureScrollUpdate);
-  auto gesture_event = ScrollBeginFromScrollUpdate(update_event);
-
-  // TODO(crbug.com/1137870): Scroll-begin events should not normally be
-  // inertial. Here, the scroll-begin is created from the first scroll-update
-  // event of a sequence and the first scroll-update should not be inertial,
-  // either. Consider setting `is_inertial` to `false` and adding
-  // DCHECKs here to make sure `gesture_event` is not inertial.
-  const bool is_inertial = gesture_event->InertialPhase() ==
-                           WebGestureEvent::InertialPhaseState::kMomentum;
-  std::unique_ptr<cc::EventMetrics> metrics =
-      cc::ScrollEventMetrics::CreateFromExisting(
-          gesture_event->GetTypeAsUiEventType(),
-          gesture_event->GetScrollInputType(), is_inertial,
-          cc::EventMetrics::DispatchStage::kRendererCompositorStarted,
-          update_metrics);
-  if (metrics) {
-    metrics->SetDispatchStageTimestamp(
-        cc::EventMetrics::DispatchStage::kRendererCompositorFinished);
-  }
-
-  auto event = std::make_unique<WebCoalescedInputEvent>(
-      std::move(gesture_event), ui::LatencyInfo());
-
-  DispatchNonBlockingEventToMainThread(std::move(event), attribution,
-                                       std::move(metrics));
 }
 
 void WidgetInputHandlerManager::SetAllowedTouchAction(
@@ -526,7 +459,6 @@ void WidgetInputHandlerManager::RecordMetricsForDroppedEventsBeforePaint(
 
 void WidgetInputHandlerManager::DispatchScrollGestureToCompositor(
     std::unique_ptr<WebGestureEvent> event) {
-  DCHECK(base::FeatureList::IsEnabled(::features::kScrollUnification));
   std::unique_ptr<WebCoalescedInputEvent> web_scoped_gesture_event =
       std::make_unique<WebCoalescedInputEvent>(std::move(event),
                                                ui::LatencyInfo());
@@ -541,7 +473,6 @@ void WidgetInputHandlerManager::DispatchScrollGestureToCompositor(
 void WidgetInputHandlerManager::
     HandleInputEventWithLatencyOnInputHandlingThread(
         std::unique_ptr<WebCoalescedInputEvent> event) {
-  DCHECK(base::FeatureList::IsEnabled(::features::kScrollUnification));
   DCHECK(input_handler_proxy_);
   input_handler_proxy_->HandleInputEventWithLatencyInfo(
       std::move(event), nullptr, base::DoNothing());
@@ -901,7 +832,6 @@ void WidgetInputHandlerManager::FindScrollTargetReply(
   TRACE_EVENT1("input", "WidgetInputHandlerManager::FindScrollTargetReply",
                "hit_test_result", hit_test_result.ToString());
   DCHECK(InputThreadTaskRunner()->BelongsToCurrentThread());
-  DCHECK(base::FeatureList::IsEnabled(::features::kScrollUnification));
 
   // If the input_handler was destroyed in the mean time just ACK the event as
   // unconsumed to the browser and drop further handling.
@@ -978,7 +908,6 @@ void WidgetInputHandlerManager::DidHandleInputEventSentToCompositor(
   if (event_disposition == InputHandlerProxy::REQUIRES_MAIN_THREAD_HIT_TEST) {
     TRACE_EVENT_INSTANT0("input", "PostingHitTestToMainThread",
                          TRACE_EVENT_SCOPE_THREAD);
-    DCHECK(base::FeatureList::IsEnabled(::features::kScrollUnification));
     DCHECK_EQ(event->Event().GetType(),
               WebInputEvent::Type::kGestureScrollBegin);
     DCHECK(input_handler_proxy_);

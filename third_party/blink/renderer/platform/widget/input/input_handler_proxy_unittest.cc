@@ -166,7 +166,6 @@ class MockInputHandler : public cc::InputHandler {
                void(ui::ScrollInputType type,
                     cc::ScrollBeginThreadState state));
   MOCK_METHOD1(RecordScrollEnd, void(ui::ScrollInputType type));
-  MOCK_METHOD0(ScrollingShouldSwitchtoMainThread, bool());
   MOCK_METHOD1(HitTest,
                cc::PointerResultType(const gfx::PointF& mouse_position));
   MOCK_METHOD2(MouseDown,
@@ -280,11 +279,6 @@ class MockInputHandlerProxyClient : public InputHandlerProxyClient {
                void(const WebGestureEvent& update_event,
                     const WebInputEventAttribution&,
                     const cc::EventMetrics*));
-
-  void DispatchNonBlockingEventToMainThread(
-      std::unique_ptr<WebCoalescedInputEvent> event,
-      const WebInputEventAttribution&,
-      std::unique_ptr<cc::EventMetrics> metrics) override {}
 
   MOCK_METHOD5(DidOverscroll,
                void(const gfx::Vector2dF& accumulated_overscroll,
@@ -435,7 +429,6 @@ class InputHandlerProxyTest : public testing::Test,
 
  protected:
   void GestureScrollStarted();
-  void ScrollHandlingSwitchedToMainThread();
   void GestureScrollIgnored();
   void FlingAndSnap();
 
@@ -1155,65 +1148,6 @@ TEST_P(InputHandlerProxyTest, GesturePinch) {
 
   gesture_.SetType(WebInputEvent::Type::kGesturePinchEnd);
   EXPECT_CALL(mock_input_handler_, PinchGestureEnd(gfx::Point(9, 6)));
-  EXPECT_EQ(expected_disposition_,
-            HandleInputEventAndFlushEventQueue(mock_input_handler_,
-                                               input_handler_.get(), gesture_));
-
-  VERIFY_AND_RESET_MOCKS();
-}
-
-void InputHandlerProxyTest::ScrollHandlingSwitchedToMainThread() {
-  // We shouldn't send any events to the widget for this gesture.
-  expected_disposition_ = InputHandlerProxy::DID_HANDLE;
-  VERIFY_AND_RESET_MOCKS();
-
-  EXPECT_CALL(mock_input_handler_, ScrollBegin(_, _))
-      .WillOnce(testing::Return(kImplThreadScrollState));
-  EXPECT_CALL(
-      mock_input_handler_,
-      RecordScrollBegin(_, cc::ScrollBeginThreadState::kScrollingOnCompositor))
-      .Times(1);
-
-  // HandleGestureScrollBegin will set gesture_scroll_on_impl_thread_.
-  gesture_.SetType(WebInputEvent::Type::kGestureScrollBegin);
-  EXPECT_EQ(expected_disposition_,
-            HandleInputEventAndFlushEventQueue(mock_input_handler_,
-                                               input_handler_.get(), gesture_));
-  EXPECT_TRUE(input_handler_->gesture_scroll_on_impl_thread_for_testing());
-
-  VERIFY_AND_RESET_MOCKS();
-
-  gesture_.SetType(WebInputEvent::Type::kGestureScrollUpdate);
-  gesture_.data.scroll_update.delta_y = -40;
-  EXPECT_CALL(mock_input_handler_, ScrollingShouldSwitchtoMainThread())
-      .WillOnce(testing::Return(false));
-  EXPECT_CALL(
-      mock_input_handler_,
-      ScrollUpdate(testing::Property(&cc::ScrollState::delta_y, testing::Gt(0)),
-                   _))
-      .WillOnce(testing::Return(scroll_result_did_scroll_));
-  EXPECT_EQ(expected_disposition_,
-            HandleInputEventAndFlushEventQueue(mock_input_handler_,
-                                               input_handler_.get(), gesture_));
-  EXPECT_TRUE(input_handler_->gesture_scroll_on_impl_thread_for_testing());
-  VERIFY_AND_RESET_MOCKS();
-
-  // The scroll handling switches to the main thread, a GSB is sent to the main
-  // thread to initiate the hit testing and compute the scroll chain.
-  expected_disposition_ = InputHandlerProxy::DID_NOT_HANDLE;
-  EXPECT_CALL(mock_input_handler_, ScrollUpdate(_, _)).Times(0);
-  EXPECT_CALL(mock_input_handler_, ScrollingShouldSwitchtoMainThread())
-      .WillOnce(testing::Return(true));
-  EXPECT_CALL(mock_client_, GenerateScrollBeginAndSendToMainThread(_, _, _));
-  EXPECT_EQ(expected_disposition_,
-            HandleInputEventAndFlushEventQueue(mock_input_handler_,
-                                               input_handler_.get(), gesture_));
-  EXPECT_FALSE(input_handler_->gesture_scroll_on_impl_thread_for_testing());
-
-  VERIFY_AND_RESET_MOCKS();
-
-  gesture_.SetType(WebInputEvent::Type::kGestureScrollEnd);
-  EXPECT_CALL(mock_input_handler_, RecordScrollEnd(_)).Times(1);
   EXPECT_EQ(expected_disposition_,
             HandleInputEventAndFlushEventQueue(mock_input_handler_,
                                                input_handler_.get(), gesture_));

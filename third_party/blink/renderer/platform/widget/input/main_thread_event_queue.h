@@ -211,7 +211,7 @@ class PLATFORM_EXPORT MainThreadEventQueue
  private:
   // Returns false if we are trying to send a gesture scroll event to the main
   // thread when we shouldn't be.  Used for DCHECK in HandleEvent.
-  bool AllowedForUnification(const WebInputEvent& event, bool force_allow);
+  bool Allowed(const WebInputEvent& event, bool force_allow);
 
   // Tracked here for DCHECK purposes only.  For cursor control we allow gesture
   // scroll events to go to main.  See CursorControlHandler (impl-side filter)

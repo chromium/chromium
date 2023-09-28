@@ -289,13 +289,9 @@ MainThreadEventQueue::MainThreadEventQueue(
 
 MainThreadEventQueue::~MainThreadEventQueue() {}
 
-bool MainThreadEventQueue::AllowedForUnification(const WebInputEvent& event,
-                                                 bool force_allow) {
+bool MainThreadEventQueue::Allowed(const WebInputEvent& event,
+                                   bool force_allow) {
   if (force_allow) {
-    return true;
-  }
-
-  if (!base::FeatureList::IsEnabled(::features::kScrollUnification)) {
     return true;
   }
 
@@ -311,8 +307,8 @@ bool MainThreadEventQueue::AllowedForUnification(const WebInputEvent& event,
     cursor_control_in_progress_ = true;
   }
 
-  // Unification should not send gesture scroll events to the main thread,
-  // except for the Android swipe-to-move-cursor feature.
+  // The Android swipe-to-move-cursor feature still sends gesture scroll events
+  // to the main thread.
   bool allowed = cursor_control_in_progress_;
 
   if (event_type == WebInputEvent::Type::kGestureScrollEnd &&
@@ -341,9 +337,7 @@ void MainThreadEventQueue::HandleEvent(
          ack_result == mojom::blink::InputEventResultState::kNotConsumed ||
          ack_result ==
              mojom::blink::InputEventResultState::kNotConsumedBlocking);
-  if (!AllowedForUnification(event->Event(), allow_main_gesture_scroll)) {
-    DCHECK(!base::FeatureList::IsEnabled(::features::kScrollUnification));
-  }
+  DCHECK(Allowed(event->Event(), allow_main_gesture_scroll));
 
   bool is_blocking =
       original_dispatch_type == DispatchType::kBlocking &&
