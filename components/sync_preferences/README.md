@@ -31,6 +31,7 @@ Making a pref syncable requires a few things:
   * Consider whether your pref is particularly privacy-sensitive, and if so,
     point this out to the reviewer. The most common case of this is when a pref
     records URLs or other history-like data.
+* Add an entry to the `SyncablePref` enum in tools/metrics/histograms/enums.xml.
 
 ### For reviewers
 

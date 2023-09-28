@@ -30,7 +30,7 @@ Prefs are not for:
    `RegisterProfilePrefs()` as appropriate.
 1. If your pref should be synced (only an option for profile prefs), add one of
    the `SYNCABLE_PREF` flags when registering it and add it to the syncable
-   prefs database:
+   prefs database (see components/sync_preferences/README.md for details):
    * iOS-specific syncable prefs should be added to
      ios/chrome/browser/sync/prefs/ios_chrome_syncable_prefs_database.cc.
    * Syncable prefs which are not valid for iOS should be added to
