@@ -315,6 +315,8 @@ void SegmentResultProviderImpl::ExecuteModelAndGetScore(
     return;
   }
 
+  DCHECK_EQ(metadata_utils::ValidationResult::kValidationSuccess,
+            metadata_utils::ValidateMetadata(segment_info->model_metadata()));
   if (!force_refresh_results_ &&
       !signal_storage_config_->MeetsSignalCollectionRequirement(
           segment_info->model_metadata())) {
