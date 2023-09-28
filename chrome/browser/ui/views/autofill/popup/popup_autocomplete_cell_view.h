@@ -27,12 +27,11 @@ class canvas;
 
 namespace autofill {
 
-// To notify `PopupAutocompleteCellView` of mouse cursor entering or leaving the
-// button.
-class DeleteButtonDelegate {
+// Receives notifications of mouse enter/exit events of the cell button.
+class CellButtonDelegate {
  public:
-  virtual void OnMouseEnteredDeleteButton() = 0;
-  virtual void OnMouseExitedDeleteButton() = 0;
+  virtual void OnMouseEnteredCellButton() = 0;
+  virtual void OnMouseExitedCellButton() = 0;
 };
 
 namespace {
@@ -42,7 +41,7 @@ namespace {
 // entry leads to another entry being rendered right under the cursor.
 class ButtonPlaceholder : public views::View, public views::ViewObserver {
  public:
-  explicit ButtonPlaceholder(DeleteButtonDelegate* delete_button_owner);
+  explicit ButtonPlaceholder(CellButtonDelegate* cell_button_delegate);
   ~ButtonPlaceholder() override;
 
   // views::View:
@@ -56,7 +55,7 @@ class ButtonPlaceholder : public views::View, public views::ViewObserver {
   // Scoped observation for OnViewBoundsChanged.
   base::ScopedObservation<views::View, views::ViewObserver>
       view_bounds_changed_observer_{this};
-  const raw_ptr<DeleteButtonDelegate> delete_button_owner_ = nullptr;
+  const raw_ptr<CellButtonDelegate> cell_button_delegate_ = nullptr;
   bool first_paint_happened_ = false;
 };
 
@@ -65,7 +64,7 @@ class ButtonPlaceholder : public views::View, public views::ViewObserver {
 // `PopupAutocompleteCellView` represents a single, selectable cell. However, It
 // contains the autocomplete value AND a button to delete the entry.
 class PopupAutocompleteCellView : public autofill::PopupCellView,
-                                  public DeleteButtonDelegate {
+                                  public CellButtonDelegate {
  public:
   PopupAutocompleteCellView(base::WeakPtr<AutofillPopupController> controller,
                             int line_number);
@@ -81,24 +80,18 @@ class PopupAutocompleteCellView : public autofill::PopupCellView,
   bool HandleKeyPressEvent(
       const content::NativeWebKeyboardEvent& event) override;
 
-  views::ImageButton* GetDeleteButton();
+  views::ImageButton* GetCellButtonForTest() { return button_; }
 
  private:
-  // DeleteButtonDelegate
-  void OnMouseEnteredDeleteButton() override;
-  void OnMouseExitedDeleteButton() override;
+  // CellButtonDelegate:
+  void OnMouseEnteredCellButton() override;
+  void OnMouseExitedCellButton() override;
 
   void CreateDeleteButton();
   void DeleteAutocompleteEntry();
   void UpdateSelectedAndRunCallback(bool selected);
   void HandleKeyPressEventFocusOnButton();
   void HandleKeyPressEventFocusOnContent();
-  // When an entry is deleted the popup is recreated. This can lead to a row
-  // being rendered under the cursor, leading it to be unreactive (not
-  // highlighted/selected) until a mouse movement occurs. In this situation we
-  // have to manually select the content or highlight the button depending on
-  // the cursor position.
-  void HandleEntryWasDeleted();
 
   raw_ptr<views::ImageButton> button_ = nullptr;
   raw_ptr<ButtonPlaceholder> button_placeholder_ = nullptr;

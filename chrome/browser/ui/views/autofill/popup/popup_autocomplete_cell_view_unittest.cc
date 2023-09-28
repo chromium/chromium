@@ -88,7 +88,7 @@ class PopupAutocompleteCellViewTest : public ChromeViewsTestBase {
                                                     /*line_number=*/0);
     cell->SetAccessibilityDelegate(
         std::make_unique<TestAccessibilityDelegate>());
-    views::ImageButton* button = cell->GetDeleteButton();
+    views::ImageButton* button = cell->GetCellButtonForTest();
     ShowView(std::move(cell));
     return button;
   }

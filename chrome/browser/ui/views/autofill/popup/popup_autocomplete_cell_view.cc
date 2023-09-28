@@ -39,31 +39,34 @@ constexpr int kCloseIconSize = 16;
 // `views::ButtonController`. Used by `PopupAutocompleteCellView` to know when
 // the mouse cursor has entered or left the delete button in order to run the
 // selection callbacks.
-class DeleteButtonController : public views::ButtonController {
+class CellButtonController : public views::ButtonController {
  public:
-  DeleteButtonController(
+  CellButtonController(
       views::Button* button,
-      DeleteButtonDelegate* delete_button_owner,
+      CellButtonDelegate* cell_button_delegate,
       std::unique_ptr<views::ButtonControllerDelegate> delegate)
       : views::ButtonController(button, std::move(delegate)),
-        delete_button_owner_(delete_button_owner) {}
+        cell_button_delegate_(cell_button_delegate) {}
+
+  ~CellButtonController() override = default;
 
   void OnMouseEntered(const ui::MouseEvent& event) override {
-    delete_button_owner_->OnMouseEnteredDeleteButton();
+    cell_button_delegate_->OnMouseEnteredCellButton();
     views::ButtonController::OnMouseEntered(event);
   }
 
   void OnMouseExited(const ui::MouseEvent& event) override {
-    delete_button_owner_->OnMouseExitedDeleteButton();
+    cell_button_delegate_->OnMouseExitedCellButton();
     views::ButtonController::OnMouseExited(event);
   }
 
  private:
-  raw_ptr<DeleteButtonDelegate> delete_button_owner_ = nullptr;
+  raw_ptr<CellButtonDelegate> cell_button_delegate_ = nullptr;
 };
 
-ButtonPlaceholder::ButtonPlaceholder(DeleteButtonDelegate* delete_button_owner)
-    : delete_button_owner_(delete_button_owner) {}
+ButtonPlaceholder::ButtonPlaceholder(CellButtonDelegate* cell_button_delegate)
+    : cell_button_delegate_(cell_button_delegate) {}
+
 ButtonPlaceholder::~ButtonPlaceholder() = default;
 
 void ButtonPlaceholder::OnPaint(gfx::Canvas* canvas) {
@@ -100,7 +103,7 @@ void ButtonPlaceholder::OnViewBoundsChanged(View* observed_view) {
   if (observed_view == delete_button && observed_view->GetVisible()) {
     GetWidget()->SynthesizeMouseMoveEvent();
     if (observed_view->IsMouseHovered()) {
-      delete_button_owner_->OnMouseEnteredDeleteButton();
+      cell_button_delegate_->OnMouseEnteredCellButton();
       view_bounds_changed_observer_.Reset();
     }
   }
@@ -258,10 +261,6 @@ void PopupAutocompleteCellView::SetSelected(bool selected) {
   button_focused_ = false;
 }
 
-views::ImageButton* PopupAutocompleteCellView::GetDeleteButton() {
-  return button_;
-}
-
 void PopupAutocompleteCellView::CreateDeleteButton() {
   std::unique_ptr<views::ImageButton> button =
       views::CreateVectorImageButtonWithNativeTheme(
@@ -299,7 +298,7 @@ void PopupAutocompleteCellView::CreateDeleteButton() {
   button_ = button_placeholder_->AddChildView(std::move(button));
   layout->SetFlexForView(button_placeholder_, 0);
 
-  button_->SetButtonController(std::make_unique<DeleteButtonController>(
+  button_->SetButtonController(std::make_unique<CellButtonController>(
       button_, this,
       std::make_unique<views::Button::DefaultButtonControllerDelegate>(
           button_.get())));
@@ -318,11 +317,11 @@ void PopupAutocompleteCellView::DeleteAutocompleteEntry() {
   }
 }
 
-void PopupAutocompleteCellView::OnMouseEnteredDeleteButton() {
+void PopupAutocompleteCellView::OnMouseEnteredCellButton() {
   UpdateSelectedAndRunCallback(/*selected=*/false);
 }
 
-void PopupAutocompleteCellView::OnMouseExitedDeleteButton() {
+void PopupAutocompleteCellView::OnMouseExitedCellButton() {
   // We check for IsMouseHovered() because moving too fast outside the button
   // could place the mouse cursor outside the whole cell.
   UpdateSelectedAndRunCallback(/*selected=*/IsMouseHovered());
