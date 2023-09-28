@@ -2206,7 +2206,10 @@
     Sites use their discretion when responding to this request
   </message>
   <message name="IDS_TRACKING_PROTECTION_ALLOWED_GROUP_TITLE" desc="" translateable="false" formatter_data="android_java">
-    Sites allowed to use third-party cookies - <ph name="NUM_WEBSITES">%1$s<ex>3</ex></ph>
+    Sites allowed to use third-party cookies
+  </message>
+  <message name="IDS_TRACKING_PROTECTION_ALLOWED_GROUP_DESCRIPTION" desc="" translateable="false" formatter_data="android_java">
+    Affects the sites listed here and their subdomains. For example, adding “google.com” means that third-party cookies can also be active for mail.google.com, because it’s part of google.com.
   </message>
   <message name="IDS_TRACKING_PROTECTION_NEVER_EXPIRES_LABEL" desc="" translateable="false" formatter_data="android_java">
     Does not expire
