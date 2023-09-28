@@ -130,8 +130,7 @@ AuthenticatorQRSheetView::AuthenticatorQRSheetView(
 
 AuthenticatorQRSheetView::~AuthenticatorQRSheetView() = default;
 
-std::pair<std::unique_ptr<views::View>,
-          AuthenticatorRequestSheetView::AutoFocus>
+std::unique_ptr<views::View>
 AuthenticatorQRSheetView::BuildStepSpecificContent() {
   auto* sheet_model = static_cast<AuthenticatorQRSheetModel*>(model());
   auto container = std::make_unique<views::BoxLayoutView>();
@@ -168,5 +167,5 @@ AuthenticatorQRSheetView::BuildStepSpecificContent() {
     label->SetAllowCharacterBreak(true);
     label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
   }
-  return std::make_pair(std::move(container), AutoFocus::kYes);
+  return container;
 }

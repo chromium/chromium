@@ -31,8 +31,7 @@ class AuthenticatorClientPinEntrySheetView
   AuthenticatorClientPinEntrySheetModel* pin_entry_sheet_model();
 
   // AuthenticatorRequestSheetView:
-  std::pair<std::unique_ptr<views::View>, AutoFocus> BuildStepSpecificContent()
-      override;
+  std::unique_ptr<views::View> BuildStepSpecificContent() override;
 
   // AuthenticatorClientPinEntryView::Delegate:
   void OnPincodeChanged(std::u16string pincode) override;

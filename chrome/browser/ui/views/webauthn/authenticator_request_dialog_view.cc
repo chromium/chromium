@@ -6,21 +6,16 @@
 
 #include <string>
 
-#include "base/logging.h"
-#include "chrome/browser/ui/views/chrome_layout_provider.h"
-#include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_request_sheet_view.h"
 #include "chrome/browser/ui/views/webauthn/sheet_view_factory.h"
 #include "chrome/browser/ui/webauthn/authenticator_request_sheet_model.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
-#include "components/strings/grit/components_strings.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "components/web_modal/web_contents_modal_dialog_manager_delegate.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/insets.h"
-#include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
@@ -180,33 +175,10 @@ bool AuthenticatorRequestDialogView::IsDialogButtonEnabled(
 }
 
 views::View* AuthenticatorRequestDialogView::GetInitiallyFocusedView() {
-  // Need to provide a custom implementation, as most dialog sheets will not
-  // have a default button which gets initial focus. The focus priority is:
-  //  1. Step-specific content, e.g. transport selection list, if any.
-  //  2. Accept button, if visible and enabled.
-  //  3. Other transport selection button, if visible.
-  //  4. `Cancel` / `Close` button.
-
-  views::View* intially_focused_sheet_control =
-      sheet()->GetInitiallyFocusedView();
-  if (intially_focused_sheet_control) {
-    return intially_focused_sheet_control;
-  }
-
-  if (sheet()->model()->IsAcceptButtonVisible() &&
-      sheet()->model()->IsAcceptButtonEnabled()) {
-    return GetOkButton();
-  }
-
-  if (ShouldOtherMechanismsButtonBeVisible()) {
-    return other_mechanisms_button_;
-  }
-
-  if (sheet()->model()->IsCancelButtonVisible()) {
-    return GetCancelButton();
-  }
-
-  return nullptr;
+  // The authenticator dialog focuses on the title of the sheet instead of the
+  // default control. This vastly improves the experience for screen readers as
+  // the dialog sheet is updated and the new title is read.
+  return sheet()->title_label();
 }
 
 std::u16string AuthenticatorRequestDialogView::GetWindowTitle() const {

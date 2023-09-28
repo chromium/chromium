@@ -22,8 +22,7 @@ class AuthenticatorQRSheetView : public AuthenticatorRequestSheetView {
 
  private:
   // AuthenticatorRequestSheetView:
-  std::pair<std::unique_ptr<views::View>, AutoFocus> BuildStepSpecificContent()
-      override;
+  std::unique_ptr<views::View> BuildStepSpecificContent() override;
 
   const std::string qr_string_;
 };

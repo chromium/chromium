@@ -60,15 +60,12 @@ class AuthenticatorMechanismSelectorSheetView
 
  private:
   // AuthenticatorRequestSheetView:
-  std::pair<std::unique_ptr<views::View>,
-            AuthenticatorRequestSheetView::AutoFocus>
-  BuildStepSpecificContent() override {
+  std::unique_ptr<views::View> BuildStepSpecificContent() override {
     auto* model = static_cast<AuthenticatorMechanismSelectorSheetModel*>(
         AuthenticatorRequestSheetView::model());
-    return std::make_pair(std::make_unique<HoverListView>(
-                              std::make_unique<TransportHoverListModel>(
-                                  model->dialog_model()->mechanisms())),
-                          AutoFocus::kYes);
+    return std::make_unique<HoverListView>(
+        std::make_unique<TransportHoverListModel>(
+            model->dialog_model()->mechanisms()));
   }
 };
 
@@ -86,9 +83,7 @@ class AuthenticatorCreatePasskeySheetView
 
  private:
   // AuthenticatorRequestSheetView:
-  std::pair<std::unique_ptr<views::View>,
-            AuthenticatorRequestSheetView::AutoFocus>
-  BuildStepSpecificContent() override {
+  std::unique_ptr<views::View> BuildStepSpecificContent() override {
     auto container = std::make_unique<views::BoxLayoutView>();
     container->SetOrientation(views::BoxLayout::Orientation::kVertical);
     container->SetCrossAxisAlignment(
@@ -105,7 +100,7 @@ class AuthenticatorCreatePasskeySheetView
     label->SetMultiLine(true);
     label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
 
-    return std::make_pair(std::move(container), AutoFocus::kNo);
+    return container;
   }
 };
 

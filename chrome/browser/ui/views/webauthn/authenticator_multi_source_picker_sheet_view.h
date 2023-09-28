@@ -27,8 +27,7 @@ class AuthenticatorMultiSourcePickerSheetView
 
  private:
   // AuthenticatorRequestSheetView:
-  std::pair<std::unique_ptr<views::View>, AutoFocus> BuildStepSpecificContent()
-      override;
+  std::unique_ptr<views::View> BuildStepSpecificContent() override;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEBAUTHN_AUTHENTICATOR_MULTI_SOURCE_PICKER_SHEET_VIEW_H_

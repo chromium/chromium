@@ -60,8 +60,7 @@ AuthenticatorMultiSourcePickerSheetView::
 AuthenticatorMultiSourcePickerSheetView::
     ~AuthenticatorMultiSourcePickerSheetView() = default;
 
-std::pair<std::unique_ptr<views::View>,
-          AuthenticatorRequestSheetView::AutoFocus>
+std::unique_ptr<views::View>
 AuthenticatorMultiSourcePickerSheetView::BuildStepSpecificContent() {
   constexpr int kPaddingInBetweenPasskeyLists = 20;
   auto* sheet_model =
@@ -85,5 +84,5 @@ AuthenticatorMultiSourcePickerSheetView::BuildStepSpecificContent() {
       secondary_passkeys_label, sheet_model->secondary_passkey_indices(),
       sheet_model->dialog_model()->mechanisms()));
 
-  return std::make_pair(std::move(container), AutoFocus::kYes);
+  return container;
 }

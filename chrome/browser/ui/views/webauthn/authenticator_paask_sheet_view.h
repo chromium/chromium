@@ -23,8 +23,7 @@ class AuthenticatorPaaskSheetView : public AuthenticatorRequestSheetView {
 
  private:
   // AuthenticatorRequestSheetView:
-  std::pair<std::unique_ptr<views::View>, AutoFocus> BuildStepSpecificContent()
-      override;
+  std::unique_ptr<views::View> BuildStepSpecificContent() override;
 
   void OnLinkClicked(const ui::Event&);
 };
