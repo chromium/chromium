@@ -14,7 +14,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.content_public.browser.SelectionPopupController;
-import org.chromium.content_public.browser.WebContents;
 
 /**
  * {@link BackPressHandler} of {@link SelectionPopupController}. This listens to the change of tab
@@ -29,7 +28,6 @@ public class SelectionPopupBackPressHandler
 
     private SelectionPopupController mPopupController;
     private Tab mTab;
-    private WebContents mWebContents;
 
     /**
      * @param tabModelSelector A {@link TabModelSelector} which can provide
@@ -81,16 +79,12 @@ public class SelectionPopupBackPressHandler
             mPopupController = null;
         }
         if (mTab != null) mTab.removeObserver(this);
-        if (tab == null) {
-            mWebContents = null;
-            mTab = null;
-            return;
-        }
-        mWebContents = tab.getWebContents();
-        if (tab.getWebContents() == null) return;
-        tab.addObserver(this);
         mTab = tab;
-        mPopupController = SelectionPopupController.fromWebContents(tab.getWebContents());
+        if (tab == null) return;
+        var webContents = tab.getWebContents();
+        if (webContents == null) return;
+        tab.addObserver(this);
+        mPopupController = SelectionPopupController.fromWebContents(webContents);
         mPopupController.isSelectActionBarShowingSupplier().addObserver(mCallback);
     }
 
