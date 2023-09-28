@@ -241,6 +241,25 @@ TEST_GN_ARGS_JSON = """\
 }
 """
 
+TEST_PHASED_GN_ARGS_JSON = """\
+{
+  "phases": {
+    "phase_1": {
+      "gn_args": {
+        "string_arg": "has double quotes",
+        "bool_arg_lower_case": true
+      }
+    },
+    "phase_2": {
+      "gn_args": {
+        "string_arg": "second phase",
+        "bool_arg_lower_case": false
+      }
+    }
+  }
+}
+"""
+
 TEST_BAD_CONFIG = """\
 {
   'configs': {
@@ -906,7 +925,7 @@ class UnitTest(unittest.TestCase):
                     '""" to _path_/args.gn.\n\n'
                     '/fake_src/buildtools/linux64/gn gen _path_\n'))
 
-  def test_lookup_starlark_generated_gn_args(self):
+  def gen_starlark_gn_args_mbw(self, gn_args_json):
     is_win = sys.platform == 'win32'
     paths = [
         '/fake_src/tools/mb/mb_config.pyl',
@@ -921,15 +940,18 @@ class UnitTest(unittest.TestCase):
         'c:' + paths[1].replace('/', '\\') if is_win else paths[1]:
         TEST_GN_ARGS_LOCATIONS_JSON,
         'c:' + paths[2].replace('/', '\\') if is_win else paths[2]:
-        TEST_GN_ARGS_JSON,
+        gn_args_json,
     }
-    mbw = self.fake_mbw(files=files, win32=is_win)
+    return self.fake_mbw(files=files, win32=is_win)
+
+  def test_lookup_starlark_gn_args(self):
+    mbw = self.gen_starlark_gn_args_mbw(TEST_GN_ARGS_JSON)
     expected_out = ('\n'
                     'Writing """\\\n'
                     'bool_arg_lower_case = true\n'
                     'string_arg = "has double quotes"\n'
                     '""" to _path_/args.gn.\n\n')
-    if is_win:
+    if sys.platform == 'win32':
       expected_out += 'c:\\fake_src\\buildtools\\win\\gn.exe gen _path_\n'
     else:
       expected_out += '/fake_src/buildtools/linux64/gn gen _path_\n'
@@ -937,6 +959,55 @@ class UnitTest(unittest.TestCase):
                mbw=mbw,
                ret=0,
                out=expected_out)
+
+  def test_lookup_starlark_gn_args_specified_phase(self):
+    mbw = self.gen_starlark_gn_args_mbw(TEST_GN_ARGS_JSON)
+    self.check([
+        'lookup', '-m', 'chromium', '-b', 'linux-official', '--phase', 'phase_1'
+    ],
+               mbw=mbw,
+               ret=1)
+    self.assertIn(
+        'MBErr: Must not specify a build --phase '
+        'for linux-official on chromium', mbw.out)
+
+  def test_lookup_starlark_phased_gn_args(self):
+    mbw = self.gen_starlark_gn_args_mbw(TEST_PHASED_GN_ARGS_JSON)
+    expected_out = ('\n'
+                    'Writing """\\\n'
+                    'bool_arg_lower_case = false\n'
+                    'string_arg = "second phase"\n'
+                    '""" to _path_/args.gn.\n\n')
+    if sys.platform == 'win32':
+      expected_out += 'c:\\fake_src\\buildtools\\win\\gn.exe gen _path_\n'
+    else:
+      expected_out += '/fake_src/buildtools/linux64/gn gen _path_\n'
+    self.check([
+        'lookup', '-m', 'chromium', '-b', 'linux-official', '--phase', 'phase_2'
+    ],
+               mbw=mbw,
+               ret=0,
+               out=expected_out)
+
+  def test_lookup_starlark_phased_gn_args_no_phase(self):
+    mbw = self.gen_starlark_gn_args_mbw(TEST_PHASED_GN_ARGS_JSON)
+    self.check(['lookup', '-m', 'chromium', '-b', 'linux-official'],
+               mbw=mbw,
+               ret=1)
+    self.assertIn(
+        'MBErr: Must specify a build --phase for linux-official on chromium',
+        mbw.out)
+
+  def test_lookup_starlark_phased_gn_args_wrong_phase(self):
+    mbw = self.gen_starlark_gn_args_mbw(TEST_PHASED_GN_ARGS_JSON)
+    self.check([
+        'lookup', '-m', 'chromium', '-b', 'linux-official', '--phase', 'phase_3'
+    ],
+               mbw=mbw,
+               ret=1)
+    self.assertIn(
+        'MBErr: Phase phase_3 doesn\'t exist for linux-official on chromium',
+        mbw.out)
 
   def test_quiet_lookup(self):
     self.check(['lookup', '-c', 'debug_goma', '--quiet'], ret=0,
