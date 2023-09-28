@@ -271,6 +271,11 @@ class CONTENT_EXPORT ServiceWorkerContext {
   GetRunningServiceWorkerInfos() = 0;
 
   // Returns true if the ServiceWorkerVersion for `service_worker_version_id` is
+  // live and starting.
+  virtual bool IsLiveStartingServiceWorker(
+      int64_t service_worker_version_id) = 0;
+
+  // Returns true if the ServiceWorkerVersion for `service_worker_version_id` is
   // live and running.
   virtual bool IsLiveRunningServiceWorker(
       int64_t service_worker_version_id) = 0;

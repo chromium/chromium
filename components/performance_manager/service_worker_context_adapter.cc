@@ -206,6 +206,12 @@ void ServiceWorkerContextAdapter::StartWorkerForScope(
   NOTIMPLEMENTED();
 }
 
+bool ServiceWorkerContextAdapter::IsLiveStartingServiceWorker(
+    int64_t service_worker_version_id) {
+  NOTIMPLEMENTED();
+  return false;
+}
+
 bool ServiceWorkerContextAdapter::IsLiveRunningServiceWorker(
     int64_t service_worker_version_id) {
   NOTIMPLEMENTED();

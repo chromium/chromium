@@ -104,6 +104,12 @@ void FakeServiceWorkerContext::StartWorkerForScope(
   NOTREACHED();
 }
 
+bool FakeServiceWorkerContext::IsLiveStartingServiceWorker(
+    int64_t service_worker_version_id) {
+  NOTREACHED();
+  return false;
+}
+
 bool FakeServiceWorkerContext::IsLiveRunningServiceWorker(
     int64_t service_worker_version_id) {
   NOTREACHED();

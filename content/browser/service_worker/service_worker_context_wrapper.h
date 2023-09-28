@@ -221,6 +221,7 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
   void StopAllServiceWorkers(base::OnceClosure callback) override;
   const base::flat_map<int64_t, ServiceWorkerRunningInfo>&
   GetRunningServiceWorkerInfos() override;
+  bool IsLiveStartingServiceWorker(int64_t service_worker_version_id) override;
   bool IsLiveRunningServiceWorker(int64_t service_worker_version_id) override;
   service_manager::InterfaceProvider& GetRemoteInterfaces(
       int64_t service_worker_version_id) override;
@@ -563,6 +564,10 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
 
   // A loader factory used to register a service worker. Used for tests.
   scoped_refptr<network::SharedURLLoaderFactory> loader_factory_for_test_;
+
+ private:
+  // Returns a version if the worker is live, otherwise nullptr.
+  ServiceWorkerVersion* GetLiveServiceWorker(int64_t service_worker_version_id);
 };
 
 }  // namespace content

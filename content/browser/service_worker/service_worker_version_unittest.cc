@@ -260,7 +260,7 @@ TEST_F(ServiceWorkerVersionTest, ConcurrentStartAndStop) {
       ServiceWorkerMetrics::EventType::UNKNOWN,
       ReceiveServiceWorkerStatus(&status1, run_loop_1.QuitClosure()));
   EXPECT_EQ(blink::EmbeddedWorkerStatus::kStarting, version_->running_status());
-  EXPECT_TRUE(helper_->context_wrapper()->IsLiveRunningServiceWorker(
+  EXPECT_TRUE(helper_->context_wrapper()->IsLiveStartingServiceWorker(
       version_->version_id()));
   version_->StartWorker(
       ServiceWorkerMetrics::EventType::UNKNOWN,
@@ -322,7 +322,7 @@ TEST_F(ServiceWorkerVersionTest, ConcurrentStartAndStop) {
       ReceiveServiceWorkerStatus(&status1, run_loop_6.QuitClosure()));
 
   EXPECT_EQ(blink::EmbeddedWorkerStatus::kStarting, version_->running_status());
-  EXPECT_TRUE(helper_->context_wrapper()->IsLiveRunningServiceWorker(
+  EXPECT_TRUE(helper_->context_wrapper()->IsLiveStartingServiceWorker(
       version_->version_id()));
   run_loop_6.Run();
   EXPECT_EQ(blink::EmbeddedWorkerStatus::kRunning, version_->running_status());
@@ -1150,7 +1150,7 @@ TEST_F(ServiceWorkerVersionTest, FailToStart_RendererCrash) {
   // Callback has not completed yet.
   EXPECT_FALSE(status);
   EXPECT_EQ(blink::EmbeddedWorkerStatus::kStarting, version_->running_status());
-  EXPECT_TRUE(helper_->context_wrapper()->IsLiveRunningServiceWorker(
+  EXPECT_TRUE(helper_->context_wrapper()->IsLiveStartingServiceWorker(
       version_->version_id()));
 
   // Simulate renderer crash: break EmbeddedWorkerInstance's Mojo connection to
@@ -1181,7 +1181,7 @@ TEST_F(ServiceWorkerVersionTest, FailToStart_Timeout) {
   // Callback has not completed yet.
   EXPECT_FALSE(status);
   EXPECT_EQ(blink::EmbeddedWorkerStatus::kStarting, version_->running_status());
-  EXPECT_TRUE(helper_->context_wrapper()->IsLiveRunningServiceWorker(
+  EXPECT_TRUE(helper_->context_wrapper()->IsLiveStartingServiceWorker(
       version_->version_id()));
 
   // Simulate timeout.
