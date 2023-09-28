@@ -91465,14 +91465,6 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="7" label="Network error"/>
 </enum>
 
-<enum name="PushUserVisibleStatus">
-  <int value="0" label="Required and shown"/>
-  <int value="1" label="Not required but shown"/>
-  <int value="2" label="Not required and not shown"/>
-  <int value="3" label="Required but not shown - used grace"/>
-  <int value="4" label="Required but not shown - grace exceeded"/>
-</enum>
-
 <enum name="PwaInstallPath">
   <summary>The path taken by the user to reach install point for PWAs.</summary>
   <int value="0" label="Unknown metric (error case)"/>

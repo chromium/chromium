@@ -65,9 +65,6 @@ using content::ServiceWorkerContext;
 using content::WebContents;
 
 namespace {
-void RecordUserVisibleStatus(blink::mojom::PushUserVisibleStatus status) {
-  UMA_HISTOGRAM_ENUMERATION("PushMessaging.UserVisibleStatus", status);
-}
 
 content::StoragePartition* GetStoragePartition(Profile* profile,
                                                const GURL& origin) {
@@ -151,9 +148,6 @@ void PushMessagingNotificationManager::DidCountVisibleNotifications(
   bool notification_shown = notification_count > 0;
   bool notification_needed = true;
 
-  base::UmaHistogramCounts100("PushMessaging.VisibleNotificationCount",
-                              notification_count);
-
   // Sites with a currently visible tab don't need to show notifications.
 #if BUILDFLAG(IS_ANDROID)
   for (const TabModel* model : TabModelList::models()) {
@@ -191,17 +185,6 @@ void PushMessagingNotificationManager::DidCountVisibleNotifications(
                        service_worker_registration_id,
                        std::move(message_handled_callback)));
     return;
-  }
-
-  if (notification_needed && notification_shown) {
-    RecordUserVisibleStatus(
-        blink::mojom::PushUserVisibleStatus::REQUIRED_AND_SHOWN);
-  } else if (!notification_needed && !notification_shown) {
-    RecordUserVisibleStatus(
-        blink::mojom::PushUserVisibleStatus::NOT_REQUIRED_AND_NOT_SHOWN);
-  } else {
-    RecordUserVisibleStatus(
-        blink::mojom::PushUserVisibleStatus::NOT_REQUIRED_BUT_SHOWN);
   }
 
   std::move(message_handled_callback)
@@ -250,15 +233,10 @@ void PushMessagingNotificationManager::ProcessSilentPush(
 
   // If the origin was allowed to issue a silent push, just return.
   if (silent_push_allowed) {
-    RecordUserVisibleStatus(
-        blink::mojom::PushUserVisibleStatus::REQUIRED_BUT_NOT_SHOWN_USED_GRACE);
     std::move(message_handled_callback)
         .Run(/* did_show_generic_notification= */ false);
     return;
   }
-
-  RecordUserVisibleStatus(blink::mojom::PushUserVisibleStatus::
-                              REQUIRED_BUT_NOT_SHOWN_GRACE_EXCEEDED);
 
   // The site failed to show a notification when one was needed, and they don't
   // have enough budget to cover the cost of suppressing, so we will show a

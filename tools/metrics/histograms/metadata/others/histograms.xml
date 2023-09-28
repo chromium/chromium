@@ -10258,27 +10258,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PushMessaging.UserVisibleStatus" enum="PushUserVisibleStatus"
-    expires_after="2022-06-19">
-  <owner>peter@chromium.org</owner>
-  <owner>knollr@chromium.org</owner>
-  <summary>
-    When a Service Worker receives a push message, this records whether it
-    showed user-visible UX (like a notification), or whether we showed a forced
-    notification on its behalf.
-  </summary>
-</histogram>
-
-<histogram name="PushMessaging.VisibleNotificationCount" units="notifications"
-    expires_after="M98">
-  <owner>knollr@chromium.org</owner>
-  <owner>peter@chromium.org</owner>
-  <summary>
-    Records the number of visible notifications for a Service Worker when it
-    receives a push message. Counted and recorded after handling the push event.
-  </summary>
-</histogram>
-
 <histogram name="ReadingList.AddOrReplaceEntry" enum="ReadingListStorageState"
     expires_after="2024-06-15">
   <owner>mastiz@chromium.org</owner>
