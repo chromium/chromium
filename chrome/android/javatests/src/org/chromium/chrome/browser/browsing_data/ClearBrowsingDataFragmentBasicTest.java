@@ -111,7 +111,7 @@ public class ClearBrowsingDataFragmentBasicTest {
 
     private void waitForOptionsMenu() {
         CriteriaHelper.pollUiThread(() -> {
-            return mSettingsActivityTestRule.getActivity().findViewById(R.id.menu_id_general_help)
+            return mSettingsActivityTestRule.getActivity().findViewById(R.id.menu_id_targeted_help)
                     != null;
         });
     }

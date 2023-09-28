@@ -8,6 +8,7 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.matcher.RootMatchers.isDialog;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -65,6 +66,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataFragment.DialogOption;
+import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.notifications.channels.SiteChannelsManager;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -110,6 +112,9 @@ public class ClearBrowsingDataFragmentTest {
 
     @Mock
     private BrowsingDataBridge.Natives mBrowsingDataBridgeMock;
+
+    @Mock
+    private HelpAndFeedbackLauncher mHelpAndFeedbackLauncher;
 
     private final CallbackHelper mCallbackHelper = new CallbackHelper();
 
@@ -178,7 +183,7 @@ public class ClearBrowsingDataFragmentTest {
         mSigninTestRule.addTestAccountThenSigninAndEnableSync();
         mSettingsActivityTestRule.startSettingsActivity();
         CriteriaHelper.pollUiThread(() -> {
-            return mSettingsActivityTestRule.getActivity().findViewById(R.id.menu_id_general_help)
+            return mSettingsActivityTestRule.getActivity().findViewById(R.id.menu_id_targeted_help)
                     != null;
         });
 
@@ -333,6 +338,21 @@ public class ClearBrowsingDataFragmentTest {
             }
         }
         Assert.fail("Failed to find time period " + time);
+    }
+
+    @Test
+    @MediumTest
+    public void testHelpButtonClicked() {
+        SettingsActivity activity = startPreferences();
+        ClearBrowsingDataFragment fragment = mSettingsActivityTestRule.getFragment();
+
+        fragment.setHelpAndFeedbackLauncher(mHelpAndFeedbackLauncher);
+        onView(withId(R.id.menu_id_targeted_help)).perform(click());
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            verify(mHelpAndFeedbackLauncher)
+                    .show(activity, fragment.getString(R.string.help_context_clear_browsing_data),
+                            null);
+        });
     }
 
     /**
