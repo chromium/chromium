@@ -230,9 +230,6 @@ class PLATFORM_EXPORT ResourceRequestHead {
     SetHttpHeaderField(http_names::kAccept, http_accept);
   }
 
-  bool AllowStoredCredentials() const;
-  void SetAllowStoredCredentials(bool allow_credentials);
-
   // The initial priority for the request.
   ResourceLoadPriority InitialPriority() const;
 
@@ -647,7 +644,6 @@ class PLATFORM_EXPORT ResourceRequestHead {
 
   AtomicString http_method_;
   HTTPHeaderMap http_header_fields_;
-  bool allow_stored_credentials_ : 1;
   bool report_upload_progress_ : 1;
   bool has_user_gesture_ : 1;
   bool has_text_fragment_token_ : 1;

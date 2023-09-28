@@ -90,7 +90,6 @@ ResourceRequestHead::ResourceRequestHead(const KURL& url)
     : url_(url),
       timeout_interval_(default_timeout_interval_),
       http_method_(http_names::kGET),
-      allow_stored_credentials_(true),
       report_upload_progress_(false),
       has_user_gesture_(false),
       has_text_fragment_token_(false),
@@ -352,14 +351,6 @@ const scoped_refptr<EncodedFormData>& ResourceRequest::HttpBody() const {
 
 void ResourceRequest::SetHttpBody(scoped_refptr<EncodedFormData> http_body) {
   body_.SetFormBody(std::move(http_body));
-}
-
-bool ResourceRequestHead::AllowStoredCredentials() const {
-  return allow_stored_credentials_;
-}
-
-void ResourceRequestHead::SetAllowStoredCredentials(bool allow_credentials) {
-  allow_stored_credentials_ = allow_credentials;
 }
 
 ResourceLoadPriority ResourceRequestHead::InitialPriority() const {

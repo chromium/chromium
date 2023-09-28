@@ -166,14 +166,6 @@ void WebURLRequest::SetRequestorOrigin(
   resource_request_->SetRequestorOrigin(requestor_origin);
 }
 
-bool WebURLRequest::AllowStoredCredentials() const {
-  return resource_request_->AllowStoredCredentials();
-}
-
-void WebURLRequest::SetAllowStoredCredentials(bool allow_stored_credentials) {
-  resource_request_->SetAllowStoredCredentials(allow_stored_credentials);
-}
-
 mojom::FetchCacheMode WebURLRequest::GetCacheMode() const {
   return resource_request_->GetCacheMode();
 }

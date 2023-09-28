@@ -763,14 +763,14 @@ Resource::MatchStatus Resource::CanReuse(const FetchParameters& params) const {
   // Use GetResourceRequest to get the const resource_request_.
   const ResourceRequestHead& current_request = GetResourceRequest();
 
-  // If credentials were sent with the previous request and won't be with this
-  // one, or vice versa, re-fetch the resource.
+  // If credentials mode is defferent from the the previous request, re-fetch
+  // the resource.
   //
   // This helps with the case where the server sends back
   // "Access-Control-Allow-Origin: *" all the time, but some of the client's
   // requests are made without CORS and some with.
-  if (current_request.AllowStoredCredentials() !=
-      new_request.AllowStoredCredentials()) {
+  if (current_request.GetCredentialsMode() !=
+      new_request.GetCredentialsMode()) {
     return MatchStatus::kRequestCredentialsModeDoesNotMatch;
   }
 

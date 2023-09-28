@@ -1199,12 +1199,6 @@ absl::optional<ResourceRequestBlockedReason> ResourceFetcher::PrepareRequest(
   if (!params.Url().IsValid())
     return ResourceRequestBlockedReason::kOther;
 
-  if (resource_request.GetCredentialsMode() ==
-      network::mojom::CredentialsMode::kOmit) {
-    // See comments at network::ResourceRequest::credentials_mode.
-    resource_request.SetAllowStoredCredentials(false);
-  }
-
   return absl::nullopt;
 }
 

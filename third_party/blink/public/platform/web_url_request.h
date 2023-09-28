@@ -120,11 +120,6 @@ class BLINK_PLATFORM_EXPORT WebURLRequest {
   // an isolated world.
   WebSecurityOrigin IsolatedWorldOrigin() const;
 
-  // Controls whether user name, password, and cookies may be sent with the
-  // request.
-  bool AllowStoredCredentials() const;
-  void SetAllowStoredCredentials(bool);
-
   mojom::FetchCacheMode GetCacheMode() const;
   void SetCacheMode(mojom::FetchCacheMode);
 

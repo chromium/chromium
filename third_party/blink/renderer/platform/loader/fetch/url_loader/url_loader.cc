@@ -271,9 +271,6 @@ void URLLoader::Context::Start(
   url_ = KURL(request->url);
   has_devtools_request_id_ = request->devtools_request_id.has_value();
 
-  // TODO(horo): Check credentials flag is unset when credentials mode is omit.
-  //             Check credentials flag is set when credentials mode is include.
-
   scoped_refptr<WebURLRequestExtraData> empty_url_request_extra_data;
   WebURLRequestExtraData* url_request_extra_data;
   if (passed_url_request_extra_data) {
