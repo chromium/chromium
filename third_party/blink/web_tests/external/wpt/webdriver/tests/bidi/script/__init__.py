@@ -192,6 +192,9 @@ REMOTE_VALUES: list[tuple[str, dict]] = [
     ("(function*() { yield 'a'; })()", {
         "type": "generator",
     }),
+    ("(async function*() { yield await Promise.resolve(1); })()", {
+        "type": "generator",
+    }),
     ("Promise.resolve()", {"type": "promise", },),
     ("new Int32Array()", {"type": "typedarray", },),
     ("new ArrayBuffer()", {"type": "arraybuffer", },),

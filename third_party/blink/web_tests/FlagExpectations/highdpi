@@ -444,6 +444,7 @@ crbug.com/1324618 external/wpt/css/css-images/object-view-box-fit-fill* [ Pass ]
 crbug.com/1339051 fast/forms/suggestion-picker/month-suggestion-picker-appearance-rtl.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 virtual/view-transition/external/wpt/css/css-view-transitions/iframe-transition.sub.html [ Failure ]
 crbug.com/626703 virtual/view-transition/external/wpt/css/css-view-transitions/capture-with-opacity-zero-child.html [ Failure ]
 
 # Re-enable after new baselines are generated
