@@ -16,6 +16,7 @@
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/buffer.h"
 #include "gpu/command_buffer/common/shared_image_capabilities.h"
+#include "gpu/ipc/common/gpu_memory_buffer_handle_info.h"
 
 namespace viz {
 class SharedImageFormat;
@@ -32,40 +33,6 @@ class SharedImageInterfaceProxy {
       int32_t route_id,
       const gpu::SharedImageCapabilities& capabilities);
   ~SharedImageInterfaceProxy();
-
-  struct GpuMemoryBufferHandleInfo {
-    GpuMemoryBufferHandleInfo() = default;
-    GpuMemoryBufferHandleInfo(gfx::GpuMemoryBufferHandle handle,
-                              viz::SharedImageFormat format,
-                              gfx::Size size,
-                              gfx::BufferUsage buffer_usage)
-        : handle(std::move(handle)),
-          format(format),
-          size(size),
-          buffer_usage(buffer_usage) {}
-    ~GpuMemoryBufferHandleInfo() = default;
-
-    GpuMemoryBufferHandleInfo(const GpuMemoryBufferHandleInfo& other) {
-      handle = other.handle.Clone();
-      format = other.format;
-      size = other.size;
-      buffer_usage = other.buffer_usage;
-    }
-
-    GpuMemoryBufferHandleInfo& operator=(
-        const GpuMemoryBufferHandleInfo& other) {
-      handle = other.handle.Clone();
-      format = other.format;
-      size = other.size;
-      buffer_usage = other.buffer_usage;
-      return *this;
-    }
-
-    gfx::GpuMemoryBufferHandle handle;
-    viz::SharedImageFormat format;
-    gfx::Size size;
-    gfx::BufferUsage buffer_usage;
-  };
 
   struct SharedImageInfo {
     SharedImageInfo();

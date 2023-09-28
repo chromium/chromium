@@ -204,9 +204,8 @@ gpu::Mailbox TestSharedImageInterface::CreateSharedImage(
 
   auto gmb_handle = CreateGMBHandle(format, size, buffer_usage);
 
-  mailbox_to_gmb_handle_info_map_[mailbox] =
-      gpu::SharedImageInterfaceProxy::GpuMemoryBufferHandleInfo(
-          std::move(gmb_handle), format, size, buffer_usage);
+  mailbox_to_gmb_handle_info_map_[mailbox] = gpu::GpuMemoryBufferHandleInfo(
+      std::move(gmb_handle), format, size, buffer_usage);
 
   return mailbox;
 }

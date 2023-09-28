@@ -616,7 +616,7 @@ void SharedImageInterfaceProxy::NotifyMailboxAdded(const Mailbox& mailbox,
   AddMailbox(mailbox, usage);
 }
 
-SharedImageInterfaceProxy::GpuMemoryBufferHandleInfo
+GpuMemoryBufferHandleInfo
 SharedImageInterfaceProxy::GetGpuMemoryBufferHandleInfo(
     const Mailbox& mailbox) {
   // Check if the handle info is already present in the map.
