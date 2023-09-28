@@ -33,6 +33,7 @@
 #include "extensions/browser/renderer_startup_helper.h"
 #include "extensions/browser/service_worker_task_queue_factory.h"
 #include "extensions/common/constants.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/manifest_handlers/incognito_info.h"
@@ -376,6 +377,26 @@ void ServiceWorkerTaskQueue::AddPendingTask(
   WorkerState* worker_state = GetWorkerState(context_id);
   DCHECK(worker_state);
   auto& tasks = worker_state->pending_tasks_;
+
+  if (base::FeatureList::IsEnabled(
+          extensions_features::
+              kExtensionsServiceWorkerOptimizedEventDispatch)) {
+    DispatchTaskBasedOnRunningStatus(task, tasks, worker_state, context_id,
+                                     lazy_context_id);
+  } else {
+    DispatchTask(task, tasks, worker_state, context_id);
+  }
+}
+
+void ServiceWorkerTaskQueue::DispatchTask(
+    PendingTask& task,
+    std::vector<PendingTask>& tasks,
+    WorkerState* worker_state,
+    const SequencedContextId& context_id) {
+  // This ensures an assumption that every new task received (after we've
+  // processed previous tasks or this is the first task ever received) might be
+  // for a worker that isn't started. So we should attempt to start the worker
+  // in case that is true.
   bool needs_start_worker = tasks.empty();
   tasks.push_back(std::move(task));
 
@@ -385,10 +406,64 @@ void ServiceWorkerTaskQueue::AddPendingTask(
     return;
   }
 
-  // Start worker if there isn't any request to start worker with |context_id|
-  // is in progress.
+  // Start worker if there aren't any tasks to dispatch to the worker (with
+  // `context_id`) in progress. Otherwise, assume we've started the worker and
+  // our start worker callback will run the pending tasks for us.
   if (needs_start_worker)
     RunTasksAfterStartWorker(context_id);
+}
+
+void ServiceWorkerTaskQueue::DispatchTaskBasedOnRunningStatus(
+    PendingTask& task,
+    std::vector<PendingTask>& tasks,
+    WorkerState* worker_state,
+    const SequencedContextId& context_id,
+    const LazyContextId& lazy_context_id) {
+  bool pending_tasks = !tasks.empty();
+  tasks.push_back(std::move(task));
+
+  bool worker_ready_to_run_tasks = CanWorkerImmediatelyRunTasks(
+      worker_state, GetServiceWorkerContext(lazy_context_id.extension_id()));
+
+  if (worker_state->registration_state_ != RegistrationState::kRegistered ||
+      pending_tasks) {
+    // If the worker hasn't finished registration, wait for it to complete.
+    // DidRegisterServiceWorker will Start worker to run |task| later.
+    // Similarly if `pending_tasks` then assume we've attempted to start the
+    // worker and the start worker callback will run them for us.
+    return;
+  }
+
+  if (!worker_ready_to_run_tasks) {
+    RunTasksAfterStartWorker(context_id);
+  } else {
+    // When the worker is already running then immediately dispatch to avoid us
+    // sending a request to start the worker.
+    worker_state->browser_state_ = BrowserState::kStarted;
+    RunPendingTasksIfWorkerReady(context_id);
+  }
+}
+
+bool ServiceWorkerTaskQueue::CanWorkerImmediatelyRunTasks(
+    const WorkerState* worker_state,
+    content::ServiceWorkerContext* context) {
+  // We can't CHECK() here because sometimes this method is called before a
+  // worker has been started (so `worker_id_` is null).
+  if (!worker_state->worker_id_) {
+    // Assume the worker has not been started (is kRunning). It is likely in
+    // blink::EmbeddedWorkerStatus::(kStarting|kStopped) status.
+    return false;
+    // TODO(crbug.com/1467015): Attempt to optimize
+    // blink::EmbeddedWorkerStatus::kStarting since we shouldn't need to attempt
+    // to start a worker that will start soon anyways.
+  }
+
+  // All other statuses besides kRunning we assume will need a start since we
+  // can't be certain the worker will be ready to receive the event when we
+  // dispatch. Otherwise if the worker is running then it should be able to run
+  // the tasks immediately.
+  return context->IsLiveRunningServiceWorker(
+      worker_state->worker_id_->version_id);
 }
 
 void ServiceWorkerTaskQueue::ActivateExtension(const Extension* extension) {

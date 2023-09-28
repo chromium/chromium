@@ -202,4 +202,11 @@ BASE_FEATURE(kExtensionsZipFileInstalledInProfileDir,
              "ExtensionsZipFileInstalledInProfileDir",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// If enabled, extensions with service workers use an optimized event
+// dispatching flow that does not start the worker for every event. It only
+// starts a worker if it is not already running.
+BASE_FEATURE(kExtensionsServiceWorkerOptimizedEventDispatch,
+             "ExtensionsServiceWorkerOptimizedEventDispatch",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace extensions_features

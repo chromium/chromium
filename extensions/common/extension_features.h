@@ -101,6 +101,8 @@ BASE_DECLARE_FEATURE(kWebviewTagMPArchBehavior);
 
 BASE_DECLARE_FEATURE(kExtensionsZipFileInstalledInProfileDir);
 
+BASE_DECLARE_FEATURE(kExtensionsServiceWorkerOptimizedEventDispatch);
+
 }  // namespace extensions_features
 
 #endif  // EXTENSIONS_COMMON_EXTENSION_FEATURES_H_
