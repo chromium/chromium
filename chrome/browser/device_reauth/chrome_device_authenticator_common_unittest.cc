@@ -102,6 +102,8 @@ class ChromeDeviceAuthenticatorCommonTest : public testing::Test {
             other_proxy_.get(), kAuthValidityPeriod);
   }
 
+  DeviceAuthenticatorProxy* proxy() { return proxy_.get(); }
+
   FakeChromeDeviceAuthenticatorCommon* authenticator_pointer() {
     return authenticator_pointer_.get();
   }
@@ -139,4 +141,14 @@ TEST_F(ChromeDeviceAuthenticatorCommonTest, NeedAuthentication) {
   EXPECT_TRUE(authenticator_pointer()->NeedsToAuthenticate());
 }
 
-// TODO(crbug.com/1476842): Add test for validity period of 0 seconds
+// Checks that user cannot perform an operation without reauthenticating when
+// `kAuthValidityPeriod` is 0.
+TEST_F(ChromeDeviceAuthenticatorCommonTest, NeedAuthenticationImmediately) {
+  auto authenticator_pointer_0_seconds =
+      std::make_unique<FakeChromeDeviceAuthenticatorCommon>(proxy(),
+                                                            base::Seconds(0));
+
+  authenticator_pointer_0_seconds->RecordAuthenticationTimeIfSuccessful(
+      /*success=*/true);
+  EXPECT_TRUE(authenticator_pointer_0_seconds->NeedsToAuthenticate());
+}
