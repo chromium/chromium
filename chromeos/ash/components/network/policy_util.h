@@ -98,6 +98,10 @@ bool IsPolicyMatching(const base::Value::Dict& policy,
 // Returns if the given |onc_config| is Cellular type configuration.
 bool IsCellularPolicy(const base::Value::Dict& onc_config);
 
+// Returns true if `onc_config` has any field that is marked as "Recommended".
+COMPONENT_EXPORT(CHROMEOS_NETWORK)
+bool HasAnyRecommendedField(const base::Value::Dict& onc_config);
+
 // Returns the ICCID value from the given |onc_config|, returns nullptr if it
 // is not a Cellular type ONC or no ICCID field is found.
 const std::string* GetIccidFromONC(const base::Value::Dict& onc_config);

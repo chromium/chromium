@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "components/onc/onc_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -69,6 +70,118 @@ TEST_F(PolicyUtilTest, GetActivationCodesFromONC) {
   EXPECT_TRUE(activation_code.has_value());
   EXPECT_EQ(activation_code->type(), SmdxActivationCode::Type::SMDS);
   EXPECT_EQ(activation_code->value(), kSmdsActivationCode);
+}
+
+TEST_F(PolicyUtilTest, HasAnyRecommendedField_TopLevel) {
+  const char* const top_level_recommended = R"(
+      {
+        "Type": "WiFi",
+        "Recommended": ["Test"]
+      })";
+  EXPECT_TRUE(
+      HasAnyRecommendedField(base::test::ParseJsonDict(top_level_recommended)));
+
+  const char* const top_level_recommended_empty = R"(
+      {
+        "Type": "WiFi",
+        "Recommended": []
+      })";
+  EXPECT_FALSE(HasAnyRecommendedField(
+      base::test::ParseJsonDict(top_level_recommended_empty)));
+
+  const char* const top_level_not_recommended = R"(
+      {
+        "Type": "WiFi",
+      })";
+  EXPECT_FALSE(HasAnyRecommendedField(
+      base::test::ParseJsonDict(top_level_not_recommended)));
+}
+
+TEST_F(PolicyUtilTest, HasAnyRecommendedField_Nested) {
+  const char* const nested_recommended_level1 = R"(
+      {
+        "Subdict": {
+          "Recommended": ["Test"],
+        },
+        "Type": "WiFi",
+        "SomeList": [
+          { },
+        ]
+      })";
+  EXPECT_TRUE(HasAnyRecommendedField(
+      base::test::ParseJsonDict(nested_recommended_level1)));
+
+  const char* const nested_recommended_level2 = R"(
+      {
+        "Type": "WiFi",
+        "SomeList": [
+          { },
+          {
+            "Recommended": ["Test"]
+          }
+        ]
+      })";
+  EXPECT_TRUE(HasAnyRecommendedField(
+      base::test::ParseJsonDict(nested_recommended_level2)));
+
+  const char* const nested_recommended_level3 = R"(
+      {
+        "Type": "WiFi",
+        "SomeList": [
+          { },
+          {
+            "Nested": {
+              "Recommended": ["Test"]
+            }
+          }
+        ]
+      })";
+  EXPECT_TRUE(HasAnyRecommendedField(
+      base::test::ParseJsonDict(nested_recommended_level3)));
+
+  const char* const nested_recommended_empty = R"(
+      {
+        "Type": "WiFi",
+        "SomeList": [
+          { },
+          {
+            "Nested": {
+              "Recommended": []
+            }
+          }
+        ]
+      })";
+  EXPECT_FALSE(HasAnyRecommendedField(
+      base::test::ParseJsonDict(nested_recommended_empty)));
+
+  const char* const nested_recommended_not_a_list = R"(
+      {
+        "Type": "WiFi",
+        "SomeList": [
+          { },
+          {
+            "Nested": {
+              "Recommended": "not_a_list"
+            }
+          }
+        ]
+      })";
+  EXPECT_FALSE(HasAnyRecommendedField(
+      base::test::ParseJsonDict(nested_recommended_not_a_list)));
+
+  const char* const nested_not_recommended = R"(
+      {
+        "Type": "WiFi",
+        "SomeList": [
+          { },
+          {
+            "Nested": {
+            }
+          }
+        ]
+      })";
+  EXPECT_FALSE(HasAnyRecommendedField(
+      base::test::ParseJsonDict(nested_not_recommended)));
 }
 
 }  // namespace ash::policy_util

@@ -156,6 +156,16 @@ void ApplyGlobalAutoconnectPolicy(NetworkProfile::Type profile_type,
                                policy_source);
 }
 
+bool HasAnyRecommendedField(const base::Value::List& onc_list) {
+  for (const auto& entry : onc_list) {
+    if (entry.is_dict() &&
+        ::ash::policy_util::HasAnyRecommendedField(entry.GetDict())) {
+      return true;
+    }
+  }
+  return false;
+}
+
 }  // namespace
 
 SmdxActivationCode::SmdxActivationCode(Type type, std::string value)
@@ -482,6 +492,22 @@ bool IsPolicyMatching(const base::Value::Dict& policy,
 bool IsCellularPolicy(const base::Value::Dict& onc_config) {
   const std::string* type = onc_config.FindString(::onc::network_config::kType);
   return type && *type == ::onc::network_type::kCellular;
+}
+
+bool HasAnyRecommendedField(const base::Value::Dict& onc_config) {
+  for (const auto [field_name, onc_value] : onc_config) {
+    if (field_name == ::onc::kRecommended && onc_value.is_list() &&
+        !onc_value.GetList().empty()) {
+      return true;
+    }
+    if (onc_value.is_dict() && HasAnyRecommendedField(onc_value.GetDict())) {
+      return true;
+    }
+    if (onc_value.is_list() && HasAnyRecommendedField(onc_value.GetList())) {
+      return true;
+    }
+  }
+  return false;
 }
 
 const std::string* GetIccidFromONC(const base::Value::Dict& onc_config) {
