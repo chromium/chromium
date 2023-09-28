@@ -11,7 +11,6 @@
 </if>
 <title>$i18n{title}</title>
 
-<link rel="stylesheet" href="flags.css">
 <if expr="chromeos_lacros or chromeos_ash">
   <link rel="stylesheet" href="chrome://resources/css/os_header.css">
 </if>
@@ -20,112 +19,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1, maximum-scale=1">
   <link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
 </if>
-
+<style>
+  html,
+  body {
+    height: 100%;
+    overflow: hidden;
+    margin: 0;
+  }
+</style>
 </head>
 <body>
-<div id="header">
-  <div class="flex-container">
-    <div class="flex">
-      <div class="search-container">
-        <input type="text" id="search"
-               aria-label="$i18n{search-label}"
-               placeholder="$i18n{search-placeholder}" tabindex="1"
-               autocomplete="off" spellcheck="false">
-        <input type="button" class="clear-search" title="$i18n{clear-search}"
-            tabindex="2">
-      </div>
-    </div>
-    <div class="flex">
-      <button id="experiment-reset-all" type="button" tabindex="3">
-          $i18n{reset}
-      </button>
-    </div>
-  </div>
-  <div class="screen-reader-only" id="screen-reader-status-message" role="status"></div>
-</div>
-<div id="body-container" style="visibility:hidden">
-  <div id="flagsTemplate">
-<if expr="chromeos_lacros or chromeos_ash">
-    <div class="os-link-container" id="os-link-container">
-      <span id="os-flags-link-container" class="os-link-icon"></span>
-      <span aria-hidden="true" id="os-link-desc">$i18n{os-flags-text1}</span>
-      <a href="#" id="os-link-href" tabindex="4" aria-describedby="os-link-desc">
-        $i18n{os-flags-link}
-      </a>
-      <span aria-hidden="true">$i18n{os-flags-text2}</span>
-    </div>
-</if>
-
-    <div class="flex-container">
-      <div class="flex"><h1 class="section-header-title">$i18n{heading}</h1></div>
-      <span id="version" class="flex">$i18n{version}</span>
-    </div>
-    <div class="blurb-container">
-      <span class="blurb-warning">$i18n{page-warning}</span>
-      <span>$i18n{page-warning-explanation}</span>
-<if expr="chromeos_ash">
-      <p id="owner-warning">$i18n{owner-warning}</p>
-</if>
-    </div>
-    <p id="promos" hidden>
-      <!-- Those strings are not localized because they only appear in
-           chrome://flags, which is not localized. -->
-      <span id="channel-promo-beta" hidden>
-        Interested in cool new Chrome features? Try our
-        <a href="https://chrome.com/beta">beta channel</a>.
-      </span>
-      <span id="channel-promo-dev" hidden>
-        Interested in cool new Chrome features? Try our
-        <a href="https://chrome.com/dev">dev channel</a>
-      </span>
-    </p>
-    <div id="tabs" class="tabs" role="tablist">
-      <a href="#tab-content-available" id="tab-available" class="tab selected"
-          role="tab"
-          aria-selected="true"
-          aria-controls="panel1"
-          tabindex="5">$i18n{available}</a>
-<!-- Unsupported experiments are not shown on iOS -->
-<if expr="not is_ios">
-      <a href="#tab-content-unavailable" id="tab-unavailable" class="tab"
-          role="tab"
-          aria-selected="false" aria-controls="panel2"
-          tabindex="-1">$i18n{unavailable}</a>
-</if>
-    </div>
-    <div id="tabpanels">
-      <div id="tab-content-available" class="tab-content selected"
-          role="tabpanel" aria-labelledby="tab-available" aria-hidden="false">
-        <!-- Non default experiments. -->
-        <div id="non-default-experiments"></div>
-        <!-- Experiments with default settings. -->
-        <div id="default-experiments"></div>
-        <div class="no-match hidden" role="alert">$i18n{no-results}</div>
-      </div>
-<if expr="not is_ios">
-      <div id="tab-content-unavailable" class="tab-content"
-          role="tabpanel" aria-labelledby="tab-unavailable" aria-hidden="false">
-        <div id="unavailable-experiments"></div>
-        <div class="no-match hidden" role="alert">
-          $i18n{no-results}
-        </div>
-      </div>
-</if>
-    </div>
-    <div id="needs-restart" jsvalues="class:needsRestart ? 'show' : ''">
-      <div class="flex-container">
-        <div class="flex restart-notice" jstcache="0">$i18n{flagsRestartNotice}</div>
-        <div class="flex">
-<if expr="not is_ios">
-          <button id="experiment-restart-button" class="primary" tabindex="-1">
-            $i18n{relaunch}
-          </button>
-</if>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-<script type="module" src="flags.js"></script>
+  <script src="app.js" type="module"></script>
+  <flags-app></flags-app>
 </body>
 </html>
