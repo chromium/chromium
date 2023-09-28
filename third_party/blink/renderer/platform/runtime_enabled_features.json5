@@ -2065,7 +2065,7 @@
     },
     {
       name: "InertDisplayTransition",
-      status: "experimental",
+      status: "stable",
     },
     {
       // If a painting bug no longer reproduces with this feature enabled, then
