@@ -76,7 +76,7 @@ class RecoveryEligibilityScreenTest : public OobeBaseTest {
 
     std::unique_ptr<UserContext> user_context;
     if (ash::features::ShouldUseAuthSessionStorage()) {
-      user_context = ash::AuthSessionStorage::Get()->Borrow(
+      user_context = ash::AuthSessionStorage::Get()->BorrowForTests(
           FROM_HERE, context->extra_factors_token.value());
       context->extra_factors_token = absl::nullopt;
     } else {

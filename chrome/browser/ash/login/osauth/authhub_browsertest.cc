@@ -99,7 +99,7 @@ IN_PROC_BROWSER_TEST_F(AuthHubTest, LoginScreenWithPasswordOnly) {
   EXPECT_TRUE(auth_token_.has_value());
   EXPECT_TRUE(AuthSessionStorage::Get()->IsValid(*auth_token_));
   std::unique_ptr<UserContext> context =
-      AuthSessionStorage::Get()->Borrow(FROM_HERE, *auth_token_);
+      AuthSessionStorage::Get()->BorrowForTests(FROM_HERE, *auth_token_);
   ASSERT_NE(context.get(), nullptr);
   EXPECT_EQ(context->GetAuthorizedIntents(),
             AuthSessionIntents{AuthSessionIntent::kDecrypt});
@@ -141,7 +141,7 @@ IN_PROC_BROWSER_TEST_F(AuthHubTest, LoginScreenAuthenticateWithPin) {
   EXPECT_TRUE(auth_token_.has_value());
   EXPECT_TRUE(AuthSessionStorage::Get()->IsValid(*auth_token_));
   std::unique_ptr<UserContext> context =
-      AuthSessionStorage::Get()->Borrow(FROM_HERE, *auth_token_);
+      AuthSessionStorage::Get()->BorrowForTests(FROM_HERE, *auth_token_);
   ASSERT_NE(context.get(), nullptr);
   EXPECT_EQ(context->GetAuthorizedIntents(),
             AuthSessionIntents{AuthSessionIntent::kDecrypt});

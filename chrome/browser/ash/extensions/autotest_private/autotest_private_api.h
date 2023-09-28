@@ -38,6 +38,10 @@
 
 class GoogleServiceAuthError;
 
+namespace ash {
+class UserContext;
+}
+
 namespace crostini {
 enum class CrostiniResult;
 }
@@ -372,6 +376,8 @@ class AutotestPrivateGetCryptohomeRecoveryDataFunction
  private:
   ~AutotestPrivateGetCryptohomeRecoveryDataFunction() override;
   ResponseAction Run() override;
+  void RunWithContext(const std::string& auth_token,
+                      std::unique_ptr<ash::UserContext> context);
 };
 
 class AutotestPrivateWaitForSystemWebAppsInstallFunction

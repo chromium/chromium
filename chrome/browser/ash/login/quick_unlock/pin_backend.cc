@@ -212,7 +212,11 @@ void PinBackend::Set(const AccountId& account_id,
         PostResponse(std::move(did_set), false);
         return;
       }
-      user_context = ash::AuthSessionStorage::Get()->Borrow(FROM_HERE, token);
+      ash::AuthSessionStorage::Get()->BorrowAsync(
+          FROM_HERE, token,
+          base::BindOnce(&PinBackend::SetWithContext, base::Unretained(this),
+                         account_id, token, pin, std::move(did_set)));
+      return;
     } else {
       // If `user_context` is null, then the token timed out.
       const UserContext* maybe_context = storage->GetUserContext(token);
@@ -221,20 +225,35 @@ void PinBackend::Set(const AccountId& account_id,
         return;
       }
       user_context = std::make_unique<UserContext>(*maybe_context);
+      SetWithContext(account_id, token, pin, std::move(did_set),
+                     std::make_unique<UserContext>(*maybe_context));
     }
-    // There may be a pref value if resetting PIN and the device now supports
-    // cryptohome-based PIN.
-    storage->pin_storage_prefs()->RemovePin();
-    cryptohome_backend_->SetPin(std::move(user_context), pin, absl::nullopt,
-                                base::BindOnce(&PinBackend::OnAuthOperation,
-                                               token, std::move(did_set)));
-    UpdatePinAutosubmitOnSet(account_id, pin.length());
   } else {
     storage->pin_storage_prefs()->SetPin(pin);
     storage->MarkStrongAuth();
     UpdatePinAutosubmitOnSet(account_id, pin.length());
     PostResponse(std::move(did_set), true);
   }
+}
+
+void PinBackend::SetWithContext(const AccountId& account_id,
+                                const std::string& token,
+                                const std::string& pin,
+                                BoolCallback did_set,
+                                std::unique_ptr<UserContext> user_context) {
+  if (!user_context) {
+    PostResponse(std::move(did_set), false);
+    return;
+  }
+  QuickUnlockStorage* storage = GetPrefsBackend(account_id);
+  CHECK(storage);
+  // There may be a pref value if resetting PIN and the device now supports
+  // cryptohome-based PIN.
+  storage->pin_storage_prefs()->RemovePin();
+  cryptohome_backend_->SetPin(
+      std::move(user_context), pin, absl::nullopt,
+      base::BindOnce(&PinBackend::OnAuthOperation, token, std::move(did_set)));
+  UpdatePinAutosubmitOnSet(account_id, pin.length());
 }
 
 void PinBackend::SetPinAutoSubmitEnabled(const AccountId& account_id,
@@ -306,7 +325,11 @@ void PinBackend::Remove(const AccountId& account_id,
         PostResponse(std::move(did_remove), false);
         return;
       }
-      user_context = ash::AuthSessionStorage::Get()->Borrow(FROM_HERE, token);
+      ash::AuthSessionStorage::Get()->BorrowAsync(
+          FROM_HERE, token,
+          base::BindOnce(&PinBackend::RemoveWithContext, base::Unretained(this),
+                         account_id, token, std::move(did_remove)));
+      return;
     } else {
       // If `user_context` is null, then the token timed out.
       const UserContext* maybe_context = storage->GetUserContext(token);
@@ -314,17 +337,23 @@ void PinBackend::Remove(const AccountId& account_id,
         PostResponse(std::move(did_remove), false);
         return;
       }
-      user_context = std::make_unique<UserContext>(*maybe_context);
+      RemoveWithContext(account_id, token, std::move(did_remove),
+                        std::make_unique<UserContext>(*maybe_context));
     }
-    cryptohome_backend_->RemovePin(
-        std::make_unique<UserContext>(*user_context),
-        base::BindOnce(&PinBackend::OnAuthOperation, token,
-                       std::move(did_remove)));
   } else {
     const bool had_pin = storage->pin_storage_prefs()->IsPinSet();
     storage->pin_storage_prefs()->RemovePin();
     PostResponse(std::move(did_remove), had_pin);
   }
+}
+
+void PinBackend::RemoveWithContext(const AccountId& account_id,
+                                   const std::string& token,
+                                   BoolCallback did_remove,
+                                   std::unique_ptr<UserContext> user_context) {
+  cryptohome_backend_->RemovePin(std::make_unique<UserContext>(*user_context),
+                                 base::BindOnce(&PinBackend::OnAuthOperation,
+                                                token, std::move(did_remove)));
 }
 
 void PinBackend::CanAuthenticate(const AccountId& account_id,

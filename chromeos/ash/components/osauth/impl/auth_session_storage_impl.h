@@ -46,8 +46,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthSessionStorageImpl
   // AuthSessionStorage implementation:
   AuthProofToken Store(std::unique_ptr<UserContext> context) override;
   bool IsValid(const AuthProofToken& token) override;
-  std::unique_ptr<UserContext> Borrow(const base::Location& location,
-                                      const AuthProofToken& token) override;
+  std::unique_ptr<UserContext> BorrowForTests(
+      const base::Location& location,
+      const AuthProofToken& token) override;
   void BorrowAsync(const base::Location& location,
                    const AuthProofToken& token,
                    BorrowCallback callback) override;
@@ -82,6 +83,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthSessionStorageImpl
     std::queue<std::pair<base::Location, BorrowCallback>> borrow_queue;
   };
 
+  std::unique_ptr<UserContext> Borrow(const base::Location& location,
+                                      const AuthProofToken& token);
   void OnSessionInvalidated(const AuthProofToken& token,
                             base::OnceClosure on_invalidated,
                             std::unique_ptr<UserContext> context,

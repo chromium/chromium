@@ -2251,36 +2251,54 @@ AutotestPrivateGetCryptohomeRecoveryDataFunction::Run() {
   if (!context) {
     return RespondNow(Error("WizardContext is not available"));
   }
-  const ash::UserContext* user_context;
   if (ash::features::ShouldUseAuthSessionStorage()) {
     if (!context->extra_factors_token.has_value()) {
       return RespondNow(Error("UserContext is not available"));
     }
     auto* storage = ash::AuthSessionStorage::Get();
     auto& token = context->extra_factors_token.value();
-    if (!storage->IsValid(token)) {
-      return RespondNow(Error("UserContext is not available"));
-    }
-    user_context = storage->Peek(token);
+    storage->BorrowAsync(
+        FROM_HERE, token,
+        base::BindOnce(
+            &AutotestPrivateGetCryptohomeRecoveryDataFunction::RunWithContext,
+            this, token));
+    return RespondLater();
   } else {
-    user_context = context->extra_factors_auth_session.get();
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &AutotestPrivateGetCryptohomeRecoveryDataFunction::RunWithContext,
+            this, std::string(),
+            std::make_unique<ash::UserContext>(
+                *context->extra_factors_auth_session)));
+    return RespondLater();
+  }
+}
+
+void AutotestPrivateGetCryptohomeRecoveryDataFunction::RunWithContext(
+    const std::string& auth_token,
+    std::unique_ptr<ash::UserContext> context) {
+  if (!context) {
+    Respond(Error("UserContext is not available"));
+    return;
   }
 
-  if (!user_context) {
-    return RespondNow(Error("UserContext is not available"));
+  const std::string reauth_proof_token = context->GetReauthProofToken();
+  const std::string refresh_token = context->GetRefreshToken();
+  if (ash::features::ShouldUseAuthSessionStorage()) {
+    ash::AuthSessionStorage::Get()->Return(auth_token, std::move(context));
   }
 
-  std::string reauth_proof_token = user_context->GetReauthProofToken();
-  std::string refresh_token = user_context->GetRefreshToken();
   if (reauth_proof_token.empty() || refresh_token.empty()) {
-    return RespondNow(Error("Tokens are empty"));
+    Respond(Error("Tokens are empty"));
+    return;
   }
 
   api::autotest_private::CryptohomeRecoveryDataDict result;
   result.reauth_proof_token = reauth_proof_token;
   result.refresh_token = refresh_token;
 
-  return RespondNow(WithArguments(result.ToValue()));
+  Respond(WithArguments(result.ToValue()));
 }
 
 ///////////////////////////////////////////////////////////////////////////////

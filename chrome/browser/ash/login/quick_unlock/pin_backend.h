@@ -154,6 +154,16 @@ class PinBackend : public ash::auth::PinBackendDelegate {
   // Simple operations to be performed for PIN auto submit during the common
   // operations in PinBackend - Set, Remove, TryAuthenticate
 
+  void SetWithContext(const AccountId& account_id,
+                      const std::string& auth_token,
+                      const std::string& pin,
+                      BoolCallback did_set,
+                      std::unique_ptr<UserContext> user_context);
+  void RemoveWithContext(const AccountId& account_id,
+                         const std::string& auth_token,
+                         BoolCallback did_remove,
+                         std::unique_ptr<UserContext> user_context);
+
   // When setting/updating a PIN. After every 'Set' operation the
   // exposed length can only be either the true PIN length, or zero.
   void UpdatePinAutosubmitOnSet(const AccountId& account_id, size_t pin_length);

@@ -35,6 +35,12 @@ class RecoveryFactorEditor : public mojom::RecoveryFactorEditor {
                      bool should_enable,
                      base::OnceCallback<void(mojom::ConfigureResult)> callback,
                      bool is_editable);
+  void ConfigureWithContext(
+      const std::string& auth_token,
+      bool should_enable,
+      base::OnceCallback<void(mojom::ConfigureResult)> callback,
+      bool is_editable,
+      std::unique_ptr<UserContext> user_context);
   void OnRecoveryFactorConfigured(
       base::OnceCallback<void(mojom::ConfigureResult)> callback,
       const std::string& auth_token,

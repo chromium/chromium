@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/unguessable_token.h"
 #include "chromeos/ash/components/login/auth/auth_performer.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
@@ -54,6 +55,12 @@ bool AuthSessionStorageImpl::IsValid(const AuthProofToken& token) {
   }
 }
 
+std::unique_ptr<UserContext> AuthSessionStorageImpl::BorrowForTests(
+    const base::Location& borrow_location,
+    const AuthProofToken& token) {
+  return Borrow(borrow_location, token);
+}
+
 std::unique_ptr<UserContext> AuthSessionStorageImpl::Borrow(
     const base::Location& borrow_location,
     const AuthProofToken& token) {
@@ -79,17 +86,20 @@ void AuthSessionStorageImpl::BorrowAsync(const base::Location& location,
   auto data_it = tokens_.find(token);
   if (data_it == std::end(tokens_)) {
     LOG(ERROR) << "Accessing expired token";
-    std::move(callback).Run(nullptr);
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), nullptr));
     return;
   }
   if (data_it->second->state == TokenState::kOwned) {
     auto context = Borrow(location, token);
-    std::move(callback).Run(std::move(context));
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), std::move(context)));
     return;
   }
   if (data_it->second->state == TokenState::kInvalidating ||
       data_it->second->invalidate_on_return) {
-    std::move(callback).Run(nullptr);
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), nullptr));
     return;
   }
   data_it->second->borrow_queue.emplace(location, std::move(callback));

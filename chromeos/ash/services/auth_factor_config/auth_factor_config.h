@@ -79,6 +79,21 @@ class AuthFactorConfig : public mojom::AuthFactorConfig {
                                          base::OnceCallback<void()> callback);
 
  private:
+  void ObtainContext(
+      const std::string& auth_token,
+      base::OnceCallback<void(std::unique_ptr<UserContext>)> callback);
+  void IsSupportedWithContext(const std::string& auth_token,
+                              mojom::AuthFactor factor,
+                              base::OnceCallback<void(bool)> callback,
+                              std::unique_ptr<UserContext> context);
+  void IsConfiguredWithContext(const std::string& auth_token,
+                               mojom::AuthFactor factor,
+                               base::OnceCallback<void(bool)>,
+                               std::unique_ptr<UserContext> context);
+  void IsEditableWithContext(const std::string& auth_token,
+                             mojom::AuthFactor factor,
+                             base::OnceCallback<void(bool)>,
+                             std::unique_ptr<UserContext> context);
   void OnGetAuthFactorsConfiguration(
       AuthFactorSet changed_factors,
       base::OnceCallback<void(mojom::ConfigureResult)> callback,

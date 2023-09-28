@@ -56,14 +56,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthSessionStorage {
   // Checks if given token is valid (exists and has not expired).
   virtual bool IsValid(const AuthProofToken& token) = 0;
 
-  // Borrows UserContext to perform some authenticated operation. Borrowing
-  // a context does not make it invalid.
-  // Borrow is guaranteed to return non-null Context, and it would crash if
-  // context is already borrowed.
-  // TODO (b/271249180): There will be a way to determine if context can
-  // be borrowed.
-  virtual std::unique_ptr<UserContext> Borrow(const base::Location& location,
-                                              const AuthProofToken& token) = 0;
+  virtual std::unique_ptr<UserContext> BorrowForTests(
+      const base::Location& location,
+      const AuthProofToken& token) = 0;
 
   // Borrows UserContext to perform some authenticated operation. Borrowing
   // a context does not make it invalid.
