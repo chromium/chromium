@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_MANAGER_FEATURES_UTIL_H_
-#define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_MANAGER_FEATURES_UTIL_H_
+#ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_FEATURES_PASSWORD_MANAGER_FEATURES_UTIL_H_
+#define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_FEATURES_PASSWORD_MANAGER_FEATURES_UTIL_H_
 
 #include "build/build_config.h"
 #include "components/password_manager/core/browser/password_form.h"
-#include "components/password_manager/core/browser/password_manager_metrics_util.h"
 
 namespace syncer {
 class SyncService;
@@ -16,6 +15,46 @@ class SyncService;
 class PrefService;
 
 namespace password_manager::features_util {
+
+// Represents the state of the user wrt. sign-in and account-scoped storage.
+// Used for metrics. Always keep this enum in sync with the corresponding
+// histogram_suffixes in histograms.xml!
+enum class PasswordAccountStorageUserState {
+  // Signed-out user (and no account storage opt-in exists).
+  kSignedOutUser = 0,
+  // Signed-out user, but an account storage opt-in exists.
+  kSignedOutAccountStoreUser = 1,
+  // Signed-in non-syncing user, not opted in to the account storage (but may
+  // save passwords to the account storage by default).
+  kSignedInUser = 2,
+  // Signed-in non-syncing user, not opted in to the account storage, and has
+  // explicitly chosen to save passwords only on the device.
+  kSignedInUserSavingLocally = 3,
+  // Signed-in non-syncing user, opted in to the account storage, and saving
+  // passwords to the account storage.
+  kSignedInAccountStoreUser = 4,
+  // Signed-in non-syncing user and opted in to the account storage, but has
+  // chosen to save passwords only on the device.
+  kSignedInAccountStoreUserSavingLocally = 5,
+  // Syncing user.
+  kSyncUser = 6,
+};
+
+// The usage level of the account-scoped password storage. This is essentially
+// a less-detailed version of PasswordAccountStorageUserState, for metrics that
+// don't need the fully-detailed breakdown.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class PasswordAccountStorageUsageLevel {
+  // The user is not using the account-scoped password storage. Either they're
+  // not signed in, or they haven't opted in to the account storage.
+  kNotUsingAccountStorage = 0,
+  // The user is signed in (but not syncing) and has opted in to the account
+  // storage.
+  kUsingAccountStorage = 1,
+  // The user has enabled Sync.
+  kSyncing = 2,
+};
 
 // Note on password-account-storage methods on desktop vs mobile:
 // On desktop, there is an explicit per-user opt-in, and various associated
@@ -102,15 +141,14 @@ bool IsDefaultPasswordStoreSet(const PrefService* pref_service,
                                const syncer::SyncService* sync_service);
 
 // See definition of PasswordAccountStorageUserState.
-metrics_util::PasswordAccountStorageUserState
-ComputePasswordAccountStorageUserState(const PrefService* pref_service,
-                                       const syncer::SyncService* sync_service);
+PasswordAccountStorageUserState ComputePasswordAccountStorageUserState(
+    const PrefService* pref_service,
+    const syncer::SyncService* sync_service);
 
 // Returns the "usage level" of the account-scoped password storage. See
 // definition of PasswordAccountStorageUsageLevel.
 // See PasswordFeatureManager::ComputePasswordAccountStorageUsageLevel.
-password_manager::metrics_util::PasswordAccountStorageUsageLevel
-ComputePasswordAccountStorageUsageLevel(
+PasswordAccountStorageUsageLevel ComputePasswordAccountStorageUsageLevel(
     const PrefService* pref_service,
     const syncer::SyncService* sync_service);
 
@@ -179,4 +217,4 @@ int GetMoveOfferedToNonOptedInUserCount(
 
 }  // namespace password_manager::features_util
 
-#endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_MANAGER_FEATURES_UTIL_H_
+#endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_FEATURES_PASSWORD_MANAGER_FEATURES_UTIL_H_

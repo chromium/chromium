@@ -17,10 +17,10 @@
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
+#include "components/password_manager/core/browser/features/password_manager_features_util.h"
 #include "components/password_manager/core/browser/manage_passwords_referrer.h"
 #include "components/password_manager/core/browser/password_feature_manager.h"
 #include "components/password_manager/core/browser/password_form_metrics_recorder.h"
-#include "components/password_manager/core/browser/password_manager_features_util.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/password_manager/core/browser/reauth_purpose.h"
@@ -40,6 +40,7 @@ namespace {
 
 using Store = password_manager::PasswordForm::Store;
 namespace metrics_util = password_manager::metrics_util;
+namespace features_util = password_manager::features_util;
 
 metrics_util::UIDisplayDisposition ComputeDisplayDisposition(
     PasswordBubbleControllerBase::DisplayReason display_reason,
@@ -337,7 +338,7 @@ void SaveUpdateBubbleController::ReportInteractions() {
     metrics_util::LogUpdateUIDismissalReason(
         GetDismissalReason(), GetPendingPassword().submission_event);
   } else if (GetState() == password_manager::ui::PENDING_PASSWORD_STATE) {
-    absl::optional<metrics_util::PasswordAccountStorageUserState> user_state =
+    absl::optional<features_util::PasswordAccountStorageUserState> user_state =
         absl::nullopt;
     Profile* profile = GetProfile();
     if (profile) {

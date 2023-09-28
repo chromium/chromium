@@ -12,7 +12,7 @@
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/sync/test/integration/webauthn_credentials_helper.h"
 #include "chrome/browser/ui/browser.h"
-#include "components/password_manager/core/browser/password_manager_features_util.h"
+#include "components/password_manager/core/browser/features/password_manager_features_util.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"

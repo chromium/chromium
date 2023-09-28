@@ -62,7 +62,7 @@ class PasswordSessionDurationsMetricsRecorder
 
   // The current state of the user. Whenever this changes, duration metrics are
   // recorded.
-  metrics_util::PasswordAccountStorageUserState user_state_;
+  features_util::PasswordAccountStorageUserState user_state_;
 
   // Tracks the elapsed active session time in the current state. The timer is
   // null if there's no active session.

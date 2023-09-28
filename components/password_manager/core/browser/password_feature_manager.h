@@ -77,7 +77,7 @@ class PasswordFeatureManager {
 
   // Returns the "usage level" of the account-scoped password storage. See
   // definition of PasswordAccountStorageUsageLevel.
-  virtual metrics_util::PasswordAccountStorageUsageLevel
+  virtual features_util::PasswordAccountStorageUsageLevel
   ComputePasswordAccountStorageUsageLevel() const = 0;
 
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)

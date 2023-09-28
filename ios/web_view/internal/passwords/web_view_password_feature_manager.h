@@ -39,7 +39,7 @@ class WebViewPasswordFeatureManager
       const override;
   bool IsDefaultPasswordStoreSet() const override;
 
-  password_manager::metrics_util::PasswordAccountStorageUsageLevel
+  password_manager::features_util::PasswordAccountStorageUsageLevel
   ComputePasswordAccountStorageUsageLevel() const override;
 
   bool IsBiometricAuthenticationBeforeFillingEnabled() const override;

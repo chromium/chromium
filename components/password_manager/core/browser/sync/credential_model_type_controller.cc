@@ -11,7 +11,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "components/password_manager/core/browser/features/password_features.h"
-#include "components/password_manager/core/browser/password_manager_features_util.h"
+#include "components/password_manager/core/browser/features/password_manager_features_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/sync/base/features.h"

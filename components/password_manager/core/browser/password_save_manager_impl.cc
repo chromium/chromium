@@ -935,7 +935,7 @@ bool PasswordSaveManagerImpl::ShouldStoreGeneratedPasswordsInAccountStore()
   if (account_store_form_saver_ &&
       client_->GetPasswordFeatureManager()
               ->ComputePasswordAccountStorageUsageLevel() ==
-          metrics_util::PasswordAccountStorageUsageLevel::
+          features_util::PasswordAccountStorageUsageLevel::
               kUsingAccountStorage) {
     return true;
   }

@@ -33,13 +33,13 @@
 #import "components/autofill/ios/form_util/form_activity_params.h"
 #import "components/autofill/ios/form_util/unique_id_data_tab_helper.h"
 #import "components/infobars/core/infobar_manager.h"
+#import "components/password_manager/core/browser/features/password_manager_features_util.h"
 #import "components/password_manager/core/browser/password_bubble_experiment.h"
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_form_manager_for_ui.h"
 #import "components/password_manager/core/browser/password_generation_frame_helper.h"
 #import "components/password_manager/core/browser/password_manager.h"
 #import "components/password_manager/core/browser/password_manager_client.h"
-#import "components/password_manager/core/browser/password_manager_features_util.h"
 #import "components/password_manager/core/browser/password_manager_metrics_util.h"
 #import "components/password_manager/core/browser/password_sync_util.h"
 #import "components/password_manager/core/common/password_manager_features.h"
@@ -450,7 +450,7 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
       SyncServiceFactory::GetForBrowserState(self.browserState);
   const absl::optional<std::string> accountToStorePassword =
       password_manager::sync_util::GetAccountForSaving(prefs, syncService);
-  const password_manager::metrics_util::PasswordAccountStorageUserState
+  const password_manager::features_util::PasswordAccountStorageUserState
       accountStorageUserState = password_manager::features_util::
           ComputePasswordAccountStorageUserState(prefs, syncService);
 

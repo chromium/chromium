@@ -535,7 +535,7 @@ void PasswordFormMetricsRecorder::CalculateFillingAssistanceMetric(
         saved_passwords,
     bool is_blocklisted,
     const std::vector<InteractionsStats>& interactions_stats,
-    metrics_util::PasswordAccountStorageUsageLevel
+    features_util::PasswordAccountStorageUsageLevel
         account_storage_usage_level) {
   CalculateJsOnlyInput(submitted_form);
   if (is_main_frame_secure_ && submitted_form.action.is_valid() &&

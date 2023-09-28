@@ -15,7 +15,7 @@
 #import "base/test/task_environment.h"
 #import "components/autofill/core/common/autofill_prefs.h"
 #import "components/image_fetcher/ios/ios_image_decoder_impl.h"
-#import "components/password_manager/core/browser/password_manager_features_util.h"
+#import "components/password_manager/core/browser/features/password_manager_features_util.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/prefs/pref_registry_simple.h"

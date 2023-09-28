@@ -2,15 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/password_manager/core/browser/password_manager_features_util.h"
+#include "components/password_manager/core/browser/features/password_manager_features_util.h"
 
 #include "build/build_config.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
-
-using password_manager::metrics_util::PasswordAccountStorageUsageLevel;
-using password_manager::metrics_util::PasswordAccountStorageUserState;
 
 namespace password_manager::features_util {
 

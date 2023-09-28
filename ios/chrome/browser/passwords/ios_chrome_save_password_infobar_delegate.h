@@ -31,7 +31,7 @@ class IOSChromeSavePasswordInfoBarDelegate : public ConfirmInfoBarDelegate {
   IOSChromeSavePasswordInfoBarDelegate(
       absl::optional<std::string> account_to_store_password,
       bool password_update,
-      password_manager::metrics_util::PasswordAccountStorageUserState
+      password_manager::features_util::PasswordAccountStorageUserState
           account_storage_user_state,
       std::unique_ptr<password_manager::PasswordFormManagerForUI> form_to_save,
       CommandDispatcher* dispatcher);
@@ -123,7 +123,7 @@ class IOSChromeSavePasswordInfoBarDelegate : public ConfirmInfoBarDelegate {
   const absl::optional<std::string> account_to_store_password_;
 
   // Used to record metrics related to passwords account storage.
-  const password_manager::metrics_util::PasswordAccountStorageUserState
+  const password_manager::features_util::PasswordAccountStorageUserState
       account_storage_user_state_;
 
   // Used to track the results we get from the info bar.

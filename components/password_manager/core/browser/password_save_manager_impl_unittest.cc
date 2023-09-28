@@ -363,11 +363,11 @@ class PasswordSaveManagerImplTestBase : public testing::Test {
         .WillByDefault(Return(is_enabled));
     ON_CALL(*client()->GetPasswordFeatureManager(),
             ComputePasswordAccountStorageUsageLevel)
-        .WillByDefault(
-            Return(is_enabled ? metrics_util::PasswordAccountStorageUsageLevel::
-                                    kUsingAccountStorage
-                              : metrics_util::PasswordAccountStorageUsageLevel::
-                                    kNotUsingAccountStorage));
+        .WillByDefault(Return(
+            is_enabled ? features_util::PasswordAccountStorageUsageLevel::
+                             kUsingAccountStorage
+                       : features_util::PasswordAccountStorageUsageLevel::
+                             kNotUsingAccountStorage));
   }
 
   void SetDefaultPasswordStore(const PasswordForm::Store& store) {
@@ -2175,7 +2175,7 @@ TEST_P(
   ON_CALL(*client()->GetPasswordFeatureManager(),
           ComputePasswordAccountStorageUsageLevel)
       .WillByDefault(
-          Return(metrics_util::PasswordAccountStorageUsageLevel::kSyncing));
+          Return(features_util::PasswordAccountStorageUsageLevel::kSyncing));
 
   EXPECT_CALL(*mock_profile_form_saver(), Save).Times(1);
   EXPECT_CALL(*mock_account_form_saver(), Save).Times(0);

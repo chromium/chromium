@@ -90,7 +90,7 @@ void RecordPresentationMetrics(
 void RecordDismissalMetrics(
     password_manager::PasswordFormManagerForUI* form_to_save,
     password_manager::metrics_util::UIDismissalReason infobar_response,
-    password_manager::metrics_util::PasswordAccountStorageUserState
+    password_manager::features_util::PasswordAccountStorageUserState
         account_storage_user_state,
     bool update_infobar) {
   form_to_save->GetMetricsRecorder()->RecordUIDismissalReason(infobar_response);
@@ -124,7 +124,7 @@ using password_manager::PasswordFormManagerForUI;
 IOSChromeSavePasswordInfoBarDelegate::IOSChromeSavePasswordInfoBarDelegate(
     absl::optional<std::string> account_to_store_password,
     bool password_update,
-    password_manager::metrics_util::PasswordAccountStorageUserState
+    password_manager::features_util::PasswordAccountStorageUserState
         account_storage_user_state,
     std::unique_ptr<PasswordFormManagerForUI> form_to_save,
     CommandDispatcher* dispatcher)

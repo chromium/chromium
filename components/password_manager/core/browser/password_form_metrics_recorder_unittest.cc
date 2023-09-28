@@ -40,7 +40,7 @@ namespace {
 
 constexpr ukm::SourceId kTestSourceId = 0x1234;
 
-using metrics_util::PasswordAccountStorageUsageLevel;
+using features_util::PasswordAccountStorageUsageLevel;
 using UkmEntry = ukm::builders::PasswordForm;
 
 // Create a UkmEntryBuilder with kTestSourceId.

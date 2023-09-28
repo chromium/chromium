@@ -15,6 +15,7 @@
 #include "base/timer/elapsed_timer.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
 #include "components/autofill/core/common/password_generation_util.h"
+#include "components/password_manager/core/browser/features/password_manager_features_util.h"
 #include "components/password_manager/core/common/credential_manager_types.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
@@ -412,30 +413,6 @@ enum class SignInState {
   kSyncing = 2,
 };
 
-// Represents the state of the user wrt. sign-in and account-scoped storage.
-// Used for metrics. Always keep this enum in sync with the corresponding
-// histogram_suffixes in histograms.xml!
-enum class PasswordAccountStorageUserState {
-  // Signed-out user (and no account storage opt-in exists).
-  kSignedOutUser = 0,
-  // Signed-out user, but an account storage opt-in exists.
-  kSignedOutAccountStoreUser = 1,
-  // Signed-in non-syncing user, not opted in to the account storage (but may
-  // save passwords to the account storage by default).
-  kSignedInUser = 2,
-  // Signed-in non-syncing user, not opted in to the account storage, and has
-  // explicitly chosen to save passwords only on the device.
-  kSignedInUserSavingLocally = 3,
-  // Signed-in non-syncing user, opted in to the account storage, and saving
-  // passwords to the account storage.
-  kSignedInAccountStoreUser = 4,
-  // Signed-in non-syncing user and opted in to the account storage, but has
-  // chosen to save passwords only on the device.
-  kSignedInAccountStoreUserSavingLocally = 5,
-  // Syncing user.
-  kSyncUser = 6,
-};
-
 // Represents different user interactions related to password check.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused. Always keep this enum in sync with the
@@ -532,23 +509,8 @@ enum class PasswordNoteAction {
 };
 
 std::string GetPasswordAccountStorageUserStateHistogramSuffix(
-    PasswordAccountStorageUserState user_state);
-
-// The usage level of the account-scoped password storage. This is essentially
-// a less-detailed version of PasswordAccountStorageUserState, for metrics that
-// don't need the fully-detailed breakdown.
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class PasswordAccountStorageUsageLevel {
-  // The user is not using the account-scoped password storage. Either they're
-  // not signed in, or they haven't opted in to the account storage.
-  kNotUsingAccountStorage = 0,
-  // The user is signed in (but not syncing) and has opted in to the account
-  // storage.
-  kUsingAccountStorage = 1,
-  // The user has enabled Sync.
-  kSyncing = 2,
-};
+    password_manager::features_util::PasswordAccountStorageUserState
+        user_state);
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -714,7 +676,8 @@ enum class ProcessIncomingPasswordSharingInvitationResult {
 };
 
 std::string GetPasswordAccountStorageUsageLevelHistogramSuffix(
-    PasswordAccountStorageUsageLevel usage_level);
+    password_manager::features_util::PasswordAccountStorageUsageLevel
+        usage_level);
 
 // Records the `type` of a leak dialog shown to the user and the `reason`
 // why it was dismissed.
@@ -766,7 +729,7 @@ void LogGeneralUIDismissalReason(UIDismissalReason reason);
 void LogSaveUIDismissalReason(
     UIDismissalReason reason,
     autofill::mojom::SubmissionIndicatorEvent submission_event,
-    absl::optional<PasswordAccountStorageUserState> user_state);
+    absl::optional<features_util::PasswordAccountStorageUserState> user_state);
 
 // Log the |reason| a user dismissed the update password bubble. If the
 // submission is detected on a cleared change password form, dismissal reason is
@@ -776,8 +739,9 @@ void LogUpdateUIDismissalReason(
     autofill::mojom::SubmissionIndicatorEvent submission_event);
 
 // Log the |reason| a user dismissed the move password bubble.
-void LogMoveUIDismissalReason(UIDismissalReason reason,
-                              PasswordAccountStorageUserState user_state);
+void LogMoveUIDismissalReason(
+    UIDismissalReason reason,
+    features_util::PasswordAccountStorageUserState user_state);
 
 // Log the appropriate display disposition.
 void LogUIDisplayDisposition(UIDisplayDisposition disposition);
@@ -856,7 +820,8 @@ void LogDeleteUndecryptableLoginsReturnValue(
 void LogNewlySavedPasswordMetrics(
     bool is_generated_password,
     bool is_username_empty,
-    PasswordAccountStorageUsageLevel account_storage_usage_level);
+    password_manager::features_util::PasswordAccountStorageUsageLevel
+        account_storage_usage_level);
 
 // Log whether the generated password was accepted or rejected for generation of
 // |type| (automatic or manual).

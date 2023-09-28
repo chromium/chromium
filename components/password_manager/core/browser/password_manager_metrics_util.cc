@@ -21,22 +21,29 @@ class PasswordManager_LeakWarningDialog;
 namespace password_manager::metrics_util {
 
 std::string GetPasswordAccountStorageUserStateHistogramSuffix(
-    PasswordAccountStorageUserState user_state) {
+    password_manager::features_util::PasswordAccountStorageUserState
+        user_state) {
   switch (user_state) {
-    case PasswordAccountStorageUserState::kSignedOutUser:
+    case password_manager::features_util::PasswordAccountStorageUserState::
+        kSignedOutUser:
       return "SignedOutUser";
-    case PasswordAccountStorageUserState::kSignedOutAccountStoreUser:
+    case password_manager::features_util::PasswordAccountStorageUserState::
+        kSignedOutAccountStoreUser:
       return "SignedOutAccountStoreUser";
-    case PasswordAccountStorageUserState::kSignedInUser:
+    case password_manager::features_util::PasswordAccountStorageUserState::
+        kSignedInUser:
       return "SignedInUser";
-    case PasswordAccountStorageUserState::kSignedInUserSavingLocally:
+    case password_manager::features_util::PasswordAccountStorageUserState::
+        kSignedInUserSavingLocally:
       return "SignedInUserSavingLocally";
-    case PasswordAccountStorageUserState::kSignedInAccountStoreUser:
+    case password_manager::features_util::PasswordAccountStorageUserState::
+        kSignedInAccountStoreUser:
       return "SignedInAccountStoreUser";
-    case PasswordAccountStorageUserState::
+    case password_manager::features_util::PasswordAccountStorageUserState::
         kSignedInAccountStoreUserSavingLocally:
       return "SignedInAccountStoreUserSavingLocally";
-    case PasswordAccountStorageUserState::kSyncUser:
+    case password_manager::features_util::PasswordAccountStorageUserState::
+        kSyncUser:
       return "SyncUser";
   }
   NOTREACHED();
@@ -44,13 +51,17 @@ std::string GetPasswordAccountStorageUserStateHistogramSuffix(
 }
 
 std::string GetPasswordAccountStorageUsageLevelHistogramSuffix(
-    PasswordAccountStorageUsageLevel usage_level) {
+    password_manager::features_util::PasswordAccountStorageUsageLevel
+        usage_level) {
   switch (usage_level) {
-    case PasswordAccountStorageUsageLevel::kNotUsingAccountStorage:
+    case password_manager::features_util::PasswordAccountStorageUsageLevel::
+        kNotUsingAccountStorage:
       return "NotUsingAccountStorage";
-    case PasswordAccountStorageUsageLevel::kUsingAccountStorage:
+    case password_manager::features_util::PasswordAccountStorageUsageLevel::
+        kUsingAccountStorage:
       return "UsingAccountStorage";
-    case PasswordAccountStorageUsageLevel::kSyncing:
+    case password_manager::features_util::PasswordAccountStorageUsageLevel::
+        kSyncing:
       return "Syncing";
   }
   NOTREACHED();
@@ -100,7 +111,9 @@ void LogGeneralUIDismissalReason(UIDismissalReason reason) {
 void LogSaveUIDismissalReason(
     UIDismissalReason reason,
     autofill::mojom::SubmissionIndicatorEvent submission_event,
-    absl::optional<PasswordAccountStorageUserState> user_state) {
+    absl::optional<
+        password_manager::features_util::PasswordAccountStorageUserState>
+        user_state) {
   base::UmaHistogramEnumeration("PasswordManager.SaveUIDismissalReason", reason,
                                 NUM_UI_RESPONSES);
 
@@ -134,8 +147,10 @@ void LogUpdateUIDismissalReason(
   }
 }
 
-void LogMoveUIDismissalReason(UIDismissalReason reason,
-                              PasswordAccountStorageUserState user_state) {
+void LogMoveUIDismissalReason(
+    UIDismissalReason reason,
+    password_manager::features_util::PasswordAccountStorageUserState
+        user_state) {
   base::UmaHistogramEnumeration("PasswordManager.MoveUIDismissalReason", reason,
                                 NUM_UI_RESPONSES);
 
@@ -277,7 +292,8 @@ void LogDeleteUndecryptableLoginsReturnValue(
 void LogNewlySavedPasswordMetrics(
     bool is_generated_password,
     bool is_username_empty,
-    PasswordAccountStorageUsageLevel account_storage_usage_level) {
+    password_manager::features_util::PasswordAccountStorageUsageLevel
+        account_storage_usage_level) {
   base::UmaHistogramBoolean("PasswordManager.NewlySavedPasswordIsGenerated",
                             is_generated_password);
   std::string suffix = GetPasswordAccountStorageUsageLevelHistogramSuffix(

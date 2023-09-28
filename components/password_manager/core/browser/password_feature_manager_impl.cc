@@ -7,7 +7,7 @@
 #include "base/feature_list.h"
 #include "build/build_config.h"
 #include "components/password_manager/core/browser/features/password_features.h"
-#include "components/password_manager/core/browser/password_manager_features_util.h"
+#include "components/password_manager/core/browser/features/password_manager_features_util.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -87,7 +87,7 @@ bool PasswordFeatureManagerImpl::IsDefaultPasswordStoreSet() const {
   return features_util::IsDefaultPasswordStoreSet(pref_service_, sync_service_);
 }
 
-metrics_util::PasswordAccountStorageUsageLevel
+features_util::PasswordAccountStorageUsageLevel
 PasswordFeatureManagerImpl::ComputePasswordAccountStorageUsageLevel() const {
   return features_util::ComputePasswordAccountStorageUsageLevel(pref_service_,
                                                                 sync_service_);

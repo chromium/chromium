@@ -42,7 +42,7 @@ class PasswordFeatureManagerImpl : public PasswordFeatureManager {
   bool ShouldShowAccountStorageBubbleUi() const override;
   PasswordForm::Store GetDefaultPasswordStore() const override;
   bool IsDefaultPasswordStoreSet() const override;
-  metrics_util::PasswordAccountStorageUsageLevel
+  features_util::PasswordAccountStorageUsageLevel
   ComputePasswordAccountStorageUsageLevel() const override;
 
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)

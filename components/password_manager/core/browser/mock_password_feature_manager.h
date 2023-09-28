@@ -30,7 +30,7 @@ class MockPasswordFeatureManager : public PasswordFeatureManager {
               (override, const));
   MOCK_METHOD(bool, IsDefaultPasswordStoreSet, (), (override, const));
 
-  MOCK_METHOD(metrics_util::PasswordAccountStorageUsageLevel,
+  MOCK_METHOD(features_util::PasswordAccountStorageUsageLevel,
               ComputePasswordAccountStorageUsageLevel,
               (),
               (override, const));

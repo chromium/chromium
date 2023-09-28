@@ -83,7 +83,7 @@ TestInfobarPasswordDelegate::TestInfobarPasswordDelegate(
     : IOSChromeSavePasswordInfoBarDelegate(
           "foobar@gmail.com",
           false,
-          password_manager::metrics_util::PasswordAccountStorageUserState::
+          password_manager::features_util::PasswordAccountStorageUserState::
               kSyncUser,
           CreateFormManager(),
           nullptr),

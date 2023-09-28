@@ -53,9 +53,9 @@ MockIOSChromeSavePasswordInfoBarDelegate::
           account_to_store_password,
           /*password_update=*/false,
           account_to_store_password.has_value()
-              ? password_manager::metrics_util::
+              ? password_manager::features_util::
                     PasswordAccountStorageUserState::kSyncUser
-              : password_manager::metrics_util::
+              : password_manager::features_util::
                     PasswordAccountStorageUserState::kSignedOutUser,
           CreateFormManager(form.get(), url.get()),
           [[CommandDispatcher alloc] init]),

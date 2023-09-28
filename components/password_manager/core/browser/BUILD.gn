@@ -141,8 +141,6 @@ static_library("browser") {
     "password_manager_constants.cc",
     "password_manager_constants.h",
     "password_manager_driver.h",
-    "password_manager_features_util.h",
-    "password_manager_features_util_common.cc",
     "password_manager_interface.h",
     "password_manager_metrics_recorder.cc",
     "password_manager_metrics_recorder.h",
@@ -243,6 +241,7 @@ static_library("browser") {
     ":sql_builder",
     "//base",
     "//components/password_manager/core/browser/affiliation",
+    "//components/password_manager/core/browser/features:utils",
     "//components/password_manager/core/browser/well_known_change_password",
     "//components/safe_browsing:buildflags",
     "//components/sync",
@@ -306,13 +305,6 @@ static_library("browser") {
     "//url",
   ]
 
-  if (!is_android && !is_ios) {
-    sources += [ "password_manager_features_util_desktop.cc" ]
-    deps += [ "//components/webauthn/core/browser" ]
-  } else {
-    sources += [ "password_manager_features_util_mobile.cc" ]
-  }
-
   if (is_android) {
     sources += [
       "android_backend_error.cc",
@@ -336,6 +328,10 @@ static_library("browser") {
       ":unified_password_manager_proto",
       "//components/webauthn/android",
     ]
+  }
+
+  if (!is_android && !is_ios) {
+    deps += [ "//components/webauthn/core/browser" ]
   }
 
   if (use_blink) {
@@ -572,7 +568,6 @@ source_set("unit_tests") {
     "password_hash_data_unittest.cc",
     "password_list_sorter_unittest.cc",
     "password_manager_client_helper_unittest.cc",
-    "password_manager_features_util_unittest.cc",
     "password_manager_metrics_recorder_unittest.cc",
     "password_manager_metrics_util_unittest.cc",
     "password_manager_unittest.cc",
@@ -650,6 +645,7 @@ source_set("unit_tests") {
     "//components/password_manager/core/browser:affiliation_proto",
     "//components/password_manager/core/browser/affiliation:test_support",
     "//components/password_manager/core/browser/features:password_features",
+    "//components/password_manager/core/browser/features:utils",
     "//components/password_manager/core/browser/form_parsing:form_parsing",
     "//components/password_manager/core/browser/form_parsing:unit_tests",
     "//components/password_manager/core/browser/form_parsing/fuzzer:unit_tests",

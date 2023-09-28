@@ -7,9 +7,10 @@
 #include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
+#include "components/password_manager/core/browser/features/password_manager_features_util.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_digest.h"
-#include "components/password_manager/core/browser/password_manager_features_util.h"
+#include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/password_manager/core/browser/sharing/incoming_password_sharing_invitation_sync_bridge.h"
 #include "components/password_manager/core/browser/sharing/sharing_invitations.h"
@@ -137,17 +138,17 @@ void PasswordReceiverServiceImpl::ProcessIncomingSharingInvitation(
   // of destruction of sync service after delivering the invitation), the user
   // will be considered signed out (i.e. kNotUsingAccountStorage) and hence the
   // invitation will be ignored.
-  metrics_util::PasswordAccountStorageUsageLevel usage_level =
+  features_util::PasswordAccountStorageUsageLevel usage_level =
       features_util::ComputePasswordAccountStorageUsageLevel(pref_service_,
                                                              sync_service_);
   switch (usage_level) {
-    case metrics_util::PasswordAccountStorageUsageLevel::kSyncing:
+    case features_util::PasswordAccountStorageUsageLevel::kSyncing:
       password_store = profile_password_store_;
       break;
-    case metrics_util::PasswordAccountStorageUsageLevel::kUsingAccountStorage:
+    case features_util::PasswordAccountStorageUsageLevel::kUsingAccountStorage:
       password_store = account_password_store_;
       break;
-    case metrics_util::PasswordAccountStorageUsageLevel::
+    case features_util::PasswordAccountStorageUsageLevel::
         kNotUsingAccountStorage:
       break;
   }

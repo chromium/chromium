@@ -397,7 +397,7 @@ class PasswordFormMetricsRecorder
           saved_passwords,
       bool is_blocklisted,
       const std::vector<InteractionsStats>& interactions_stats,
-      metrics_util::PasswordAccountStorageUsageLevel
+      features_util::PasswordAccountStorageUsageLevel
           account_storage_usage_level);
 
   // Calculates whether all field values in |submitted_form| came from
@@ -505,7 +505,7 @@ class PasswordFormMetricsRecorder
 
   absl::optional<FillingAssistance> filling_assistance_;
   absl::optional<FillingSource> filling_source_;
-  absl::optional<metrics_util::PasswordAccountStorageUsageLevel>
+  absl::optional<features_util::PasswordAccountStorageUsageLevel>
       account_storage_usage_level_;
   absl::optional<metrics_util::SubmittedFormFrame> submitted_form_frame_;
 

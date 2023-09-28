@@ -70,7 +70,7 @@ TEST(PasswordManagerMetricsUtil, LogNewlySavedPasswordMetrics) {
   constexpr bool kIsUsernameEmpty = true;
   LogNewlySavedPasswordMetrics(
       /*is_generated_password=*/true, /*is_username_empty=*/true,
-      PasswordAccountStorageUsageLevel::kNotUsingAccountStorage);
+      features_util::PasswordAccountStorageUsageLevel::kNotUsingAccountStorage);
 
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.NewlySavedPasswordIsGenerated", kIsGeneratedPassword, 1);

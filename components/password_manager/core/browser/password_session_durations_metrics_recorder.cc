@@ -6,13 +6,13 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
-#include "components/password_manager/core/browser/password_manager_features_util.h"
+#include "components/password_manager/core/browser/features/password_manager_features_util.h"
 
 namespace password_manager {
 
 namespace {
 
-void LogStateDuration(metrics_util::PasswordAccountStorageUserState user_state,
+void LogStateDuration(features_util::PasswordAccountStorageUserState user_state,
                       base::TimeDelta session_length) {
   std::string suffix =
       metrics_util::GetPasswordAccountStorageUserStateHistogramSuffix(
@@ -91,7 +91,7 @@ void PasswordSessionDurationsMetricsRecorder::OnStateChanged(
 }
 
 void PasswordSessionDurationsMetricsRecorder::CheckForUserStateChange() {
-  metrics_util::PasswordAccountStorageUserState new_user_state =
+  features_util::PasswordAccountStorageUserState new_user_state =
       features_util::ComputePasswordAccountStorageUserState(pref_service_,
                                                             sync_service_);
   // If the state is unchanged, nothing to do.

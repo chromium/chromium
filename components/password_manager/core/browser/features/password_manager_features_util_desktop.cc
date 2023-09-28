@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/password_manager/core/browser/password_manager_features_util.h"
+#include "components/password_manager/core/browser/features/password_manager_features_util.h"
 
 #include <algorithm>
 
@@ -19,8 +19,6 @@
 #include "components/sync/service/sync_service.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 
-using password_manager::metrics_util::PasswordAccountStorageUsageLevel;
-using password_manager::metrics_util::PasswordAccountStorageUserState;
 using signin::GaiaIdHash;
 
 namespace password_manager::features_util {

@@ -109,7 +109,7 @@
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/open_from_clipboard/clipboard_recent_content.h"
 #include "components/password_manager/core/browser/features/password_features.h"
-#include "components/password_manager/core/browser/password_manager_features_util.h"
+#include "components/password_manager/core/browser/features/password_manager_features_util.h"
 #include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/password_manager/core/browser/smart_bubble_stats_store.h"
 #include "components/payments/content/payment_manifest_web_data_service.h"

@@ -6,8 +6,8 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "components/password_manager/core/browser/features/password_manager_features_util.h"
 #include "components/password_manager/core/browser/password_form.h"
-#include "components/password_manager/core/browser/password_manager_features_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
