@@ -17,12 +17,19 @@
 
     async function main() {
       const has_alpha_string = parsedString.get('has_alpha');
+      const hidden_string = parsedString.get('hidden');
 
       has_alpha = (has_alpha_string != null) ?
         has_alpha_string == 'true' : false;
 
+      hidden = (hidden_string != null) ? hidden_string == 'true' : false;
+
       const gpuCanvas = document.getElementById('canvas_gpu');
-      const [device, swapChain] = await webGpuUtils.init(gpuCanvas, /*has_alpha=*/has_alpha);
+      if (hidden) {
+        gpuCanvas.style.display = 'none';
+      }
+
+      const [device, swapChain] = await webGpuUtils.init(gpuCanvas, has_alpha);
       if (!device || !swapChain) {
         console.error("Failed to initialize WebGPU - skipping test");
         domAutomationController.send("FAILURE");
@@ -71,7 +78,7 @@
   </script>
 </head>
 
-<body onload="main()">
+<body onload="main()" class="nomargin" style="display: inline-flex">
   <video id="video_player" playsinline autoplay muted width="200" height="200" class="nomargin"></video>
   <canvas id="canvas_gpu" width="200" height="200" class="nomargin"></canvas>
 </body>

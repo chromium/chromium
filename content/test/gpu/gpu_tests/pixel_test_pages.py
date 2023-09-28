@@ -533,6 +533,12 @@ class PixelTestPages():
                       matching_algorithm=GENERAL_MP4_ALGO,
                       browser_args=browser_args_canvas_one_copy_capture,
                       other_args=other_args_canvas_one_copy_capture),
+        PixelTestPage('pixel_webgpu_canvas_capture_to_video.html?hidden=true',
+                      base_name + '_WebGPUCanvasOneCopyCapture_Hidden',
+                      test_rect=[0, 0, 200, 200],
+                      matching_algorithm=GENERAL_MP4_ALGO,
+                      browser_args=browser_args_canvas_one_copy_capture,
+                      other_args=other_args_canvas_one_copy_capture),
         # Disabled OneCopyCapture + canvas is opaque
         PixelTestPage(
             'pixel_webgpu_canvas_capture_to_video.html?has_alpha=false',

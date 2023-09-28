@@ -256,19 +256,25 @@ scoped_refptr<WebGPUMailboxTexture> WebGPUSwapBufferProvider::GetNewTexture(
 
 WebGPUSwapBufferProvider::WebGPUMailboxTextureAndSize
 WebGPUSwapBufferProvider::GetLastWebGPUMailboxTextureAndSize() const {
+  // It's possible this is called after the canvas context current texture has
+  // been destroyed, but `current_swap_buffer_` is still available e.g. when the
+  // context is used offscreen only.
+  auto latest_swap_buffer =
+      current_swap_buffer_ ? current_swap_buffer_ : last_swap_buffer_;
   auto context_provider = GetContextProviderWeakPtr();
-  if (!last_swap_buffer_ || !context_provider)
+  if (!latest_swap_buffer || !context_provider) {
     return WebGPUMailboxTextureAndSize(nullptr, gfx::Size());
+  }
 
   WGPUTextureDescriptor desc = {};
   desc.usage = usage_;
 
   return WebGPUMailboxTextureAndSize(
       WebGPUMailboxTexture::FromExistingMailbox(
-          dawn_control_client_, device_, desc, last_swap_buffer_->mailbox,
-          last_swap_buffer_->access_finished_token,
+          dawn_control_client_, device_, desc, latest_swap_buffer->mailbox,
+          latest_swap_buffer->access_finished_token,
           gpu::webgpu::WEBGPU_MAILBOX_NONE),
-      last_swap_buffer_->size);
+      latest_swap_buffer->size);
 }
 
 base::WeakPtr<WebGraphicsContext3DProviderWrapper>
@@ -332,18 +338,18 @@ bool WebGPUSwapBufferProvider::CopyToVideoFrame(
                                     current_swap_buffer_->access_finished_token,
                                     GetTextureTarget());
 
-  auto success = frame_pool->CopyRGBATextureToVideoFrame(
-      Format(), current_swap_buffer_->size,
-      PredefinedColorSpaceToGfxColorSpace(color_space_),
-      kTopLeft_GrSurfaceOrigin, mailbox_holder, dst_color_space,
-      std::move(callback));
-
-  // Subsequent access to this swap buffer (either webgpu or compositor) must
-  // wait for the copy operation to finish.
-  frame_pool_ri->GenUnverifiedSyncTokenCHROMIUM(
-      current_swap_buffer_->access_finished_token.GetData());
-
-  return success;
+  if (frame_pool->CopyRGBATextureToVideoFrame(
+          Format(), current_swap_buffer_->size,
+          PredefinedColorSpaceToGfxColorSpace(color_space_),
+          kTopLeft_GrSurfaceOrigin, mailbox_holder, dst_color_space,
+          std::move(callback))) {
+    // Subsequent access to this swap buffer (either webgpu or compositor) must
+    // wait for the copy operation to finish.
+    frame_pool_ri->GenUnverifiedSyncTokenCHROMIUM(
+        current_swap_buffer_->access_finished_token.GetData());
+    return true;
+  }
+  return false;
 }
 
 void WebGPUSwapBufferProvider::MailboxReleased(
