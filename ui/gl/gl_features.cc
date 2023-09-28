@@ -112,7 +112,7 @@ BASE_FEATURE(kUseBuiltInMetalShaderCache,
 // refresh rate as the vsync interval.
 BASE_FEATURE(kUsePrimaryMonitorVSyncIntervalOnSV3,
              "UsePrimaryMonitorVSyncIntervalOnSV3",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN)
 
 bool UseGpuVsync() {
