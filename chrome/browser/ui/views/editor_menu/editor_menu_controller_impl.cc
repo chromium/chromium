@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/views/editor_menu/utils/preset_text_query.h"
 #include "chromeos/crosapi/mojom/editor_panel.mojom.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -94,9 +95,14 @@ void EditorMenuControllerImpl::OnAnchorBoundsChanged(
     return;
   }
 
-  // Update the bounds of the shown view.
-  // TODO(b/295060733): The main view.
-  // TODO(b/295061567): The consent view.
+  auto* editor_menu_view = editor_menu_widget_->GetContentsView();
+  if (views::IsViewClass<EditorMenuView>(editor_menu_view)) {
+    views::AsViewClass<EditorMenuView>(editor_menu_view)
+        ->UpdateBounds(anchor_bounds);
+  } else if (views::IsViewClass<EditorMenuPromoCardView>(editor_menu_view)) {
+    views::AsViewClass<EditorMenuPromoCardView>(editor_menu_view)
+        ->UpdateBounds(anchor_bounds);
+  }
 }
 
 void EditorMenuControllerImpl::OnDismiss(bool is_other_command_executed) {

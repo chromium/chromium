@@ -26,7 +26,6 @@
 #include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_owner.h"
-#include "ui/display/screen.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
@@ -54,7 +53,9 @@ namespace {
 constexpr char kWidgetName[] = "EditorMenuViewWidget";
 constexpr char16_t kContainerTitle[] = u"Editor Menu";
 
-constexpr int kContainerMinWidthDip = 368;
+// TODO(b/302043981): Dynamically size the editor menu view according to the
+// anchor view bounds, instead of always using this min width.
+constexpr int kContainerMinWidthDip = 320;
 constexpr int kRadiusDip = 4;
 
 constexpr gfx::Insets kTitleContainerInsets = gfx::Insets::TLBR(10, 16, 10, 10);
@@ -77,9 +78,6 @@ constexpr gfx::Insets kChipsContainerInsets = gfx::Insets::TLBR(0, 8, 0, 8);
 
 constexpr gfx::Insets kTextfieldContainerInsets =
     gfx::Insets::TLBR(0, 16, 10, 16);
-
-// Spacing between this view and the anchor view (context menu).
-constexpr int kMarginDip = 8;
 
 // A background that fills the canvas with rounded corners and gradient colors.
 class GradientRoundedRectBackground : public views::Background {
@@ -208,21 +206,9 @@ void EditorMenuView::OnWidgetVisibilityChanged(views::Widget* widget,
 }
 
 void EditorMenuView::UpdateBounds(const gfx::Rect& anchor_view_bounds) {
-  int height = GetHeightForWidth(anchor_view_bounds.width());
-  int y = anchor_view_bounds.y() - kMarginDip - height;
-
-  // The Editor Menu view will be off screen if showing above the anchor.
-  // Show below the anchor instead.
-  if (y < display::Screen::GetScreen()
-              ->GetDisplayMatching(anchor_view_bounds)
-              .work_area()
-              .y()) {
-    y = anchor_view_bounds.bottom() + kMarginDip;
-  }
-
-  gfx::Rect bounds = {{anchor_view_bounds.x(), y},
-                      {kContainerMinWidthDip, height}};
-  GetWidget()->SetBounds(bounds);
+  GetWidget()->SetBounds(GetEditorMenuBounds(
+      anchor_view_bounds, gfx::Size(kContainerMinWidthDip,
+                                    GetHeightForWidth(kContainerMinWidthDip))));
 }
 
 void EditorMenuView::InitLayout(const PresetTextQueries& preset_text_queries) {

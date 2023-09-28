@@ -14,6 +14,7 @@ source_set("utils") {
     "utils/pre_target_handler.h",
     "utils/preset_text_query.cc",
     "utils/preset_text_query.h",
+    "utils/utils.cc",
     "utils/utils.h",
   ]
 
@@ -22,6 +23,7 @@ source_set("utils") {
     "//chrome/browser/ui/views/editor_menu/vector_icons",
     "//components/vector_icons",
     "//ui/aura",
+    "//ui/display",
     "//ui/events",
     "//ui/gfx",
     "//ui/views",

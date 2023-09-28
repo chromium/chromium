@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/quick_answers/read_write_cards_manager_impl.h"
 #include "chrome/browser/ui/views/editor_menu/editor_menu_promo_card_view.h"
+#include "chrome/browser/ui/views/editor_menu/editor_menu_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/crosapi/mojom/editor_panel.mojom.h"
@@ -20,9 +21,13 @@
 
 namespace {
 
-crosapi::mojom::EditorPanelContextPtr CreateTestEditorPanelContext() {
+using ::testing::IsNull;
+using ::testing::Not;
+
+crosapi::mojom::EditorPanelContextPtr CreateTestEditorPanelContext(
+    crosapi::mojom::EditorPanelMode editor_panel_mode) {
   auto context = crosapi::mojom::EditorPanelContext::New();
-  context->editor_panel_mode = crosapi::mojom::EditorPanelMode::kPromoCard;
+  context->editor_panel_mode = editor_panel_mode;
 
   return context;
 }
@@ -43,6 +48,7 @@ class EditorMenuBrowserTest : public InProcessBrowserTest {
  protected:
   using EditorMenuControllerImpl =
       chromeos::editor_menu::EditorMenuControllerImpl;
+  using EditorMenuView = chromeos::editor_menu::EditorMenuView;
   using EditorMenuPromoCardView =
       chromeos::editor_menu::EditorMenuPromoCardView;
 
@@ -94,13 +100,49 @@ IN_PROC_BROWSER_TEST_F(EditorMenuBrowserFeatureEnabledTest,
   EXPECT_NE(nullptr, GetControllerImpl());
 }
 
+IN_PROC_BROWSER_TEST_F(EditorMenuBrowserFeatureEnabledTest, CanShowEditorMenu) {
+  ASSERT_THAT(GetControllerImpl(), Not(IsNull()));
+
+  GetControllerImpl()->OnGetEditorPanelContextResultForTesting(
+      kAnchorBounds,
+      CreateTestEditorPanelContext(crosapi::mojom::EditorPanelMode::kRewrite));
+
+  EXPECT_TRUE(views::IsViewClass<EditorMenuView>(GetEditorMenuView()));
+
+  GetEditorMenuView()->GetWidget()->Close();
+}
+
+IN_PROC_BROWSER_TEST_F(EditorMenuBrowserFeatureEnabledTest, CanShowPromoCard) {
+  ASSERT_THAT(GetControllerImpl(), Not(IsNull()));
+
+  GetControllerImpl()->OnGetEditorPanelContextResultForTesting(
+      kAnchorBounds, CreateTestEditorPanelContext(
+                         crosapi::mojom::EditorPanelMode::kPromoCard));
+
+  EXPECT_TRUE(views::IsViewClass<EditorMenuPromoCardView>(GetEditorMenuView()));
+
+  GetEditorMenuView()->GetWidget()->Close();
+}
+
+IN_PROC_BROWSER_TEST_F(EditorMenuBrowserFeatureEnabledTest,
+                       DoesNotShowWhenBlocked) {
+  ASSERT_THAT(GetControllerImpl(), Not(IsNull()));
+
+  GetControllerImpl()->OnGetEditorPanelContextResultForTesting(
+      kAnchorBounds,
+      CreateTestEditorPanelContext(crosapi::mojom::EditorPanelMode::kBlocked));
+
+  EXPECT_EQ(GetControllerImpl()->editor_menu_widget_for_testing(), nullptr);
+}
+
 IN_PROC_BROWSER_TEST_F(EditorMenuBrowserFeatureEnabledTest,
                        ShowEditorMenuAboveAnchor) {
   EXPECT_TRUE(chromeos::features::IsOrcaEnabled());
   EXPECT_NE(nullptr, GetControllerImpl());
 
   GetControllerImpl()->OnGetEditorPanelContextResultForTesting(
-      kAnchorBounds, CreateTestEditorPanelContext());
+      kAnchorBounds,
+      CreateTestEditorPanelContext(crosapi::mojom::EditorPanelMode::kRewrite));
   const gfx::Rect& bounds = GetEditorMenuView()->GetBoundsInScreen();
 
   // View is vertically left aligned with anchor.
@@ -117,7 +159,8 @@ IN_PROC_BROWSER_TEST_F(EditorMenuBrowserFeatureEnabledTest,
   EXPECT_NE(nullptr, GetControllerImpl());
 
   GetControllerImpl()->OnGetEditorPanelContextResultForTesting(
-      kAnchorBoundsTop, CreateTestEditorPanelContext());
+      kAnchorBoundsTop,
+      CreateTestEditorPanelContext(crosapi::mojom::EditorPanelMode::kRewrite));
 
   const gfx::Rect& bounds = GetEditorMenuView()->GetBoundsInScreen();
 
@@ -139,7 +182,8 @@ IN_PROC_BROWSER_TEST_F(EditorMenuBrowserFeatureEnabledTest,
   const gfx::Rect anchor_bounds = gfx::Rect(screen_right - 80, 250, 70, 160);
 
   GetControllerImpl()->OnGetEditorPanelContextResultForTesting(
-      anchor_bounds, CreateTestEditorPanelContext());
+      anchor_bounds,
+      CreateTestEditorPanelContext(crosapi::mojom::EditorPanelMode::kRewrite));
 
   // Editor menu should be right aligned with anchor.
   EXPECT_EQ(GetEditorMenuView()->GetBoundsInScreen().right(),
@@ -149,13 +193,25 @@ IN_PROC_BROWSER_TEST_F(EditorMenuBrowserFeatureEnabledTest,
 }
 
 IN_PROC_BROWSER_TEST_F(EditorMenuBrowserFeatureEnabledTest,
-                       InitiallyShowsPromoCard) {
-  EXPECT_NE(nullptr, GetControllerImpl());
+                       AdjustsPositionWhenAnchorBoundsUpdate) {
+  ASSERT_THAT(GetControllerImpl(), Not(IsNull()));
 
+  // Show editor menu.
   GetControllerImpl()->OnGetEditorPanelContextResultForTesting(
-      kAnchorBounds, CreateTestEditorPanelContext());
+      kAnchorBounds,
+      CreateTestEditorPanelContext(crosapi::mojom::EditorPanelMode::kRewrite));
+  const gfx::Rect initial_editor_menu_bounds =
+      GetEditorMenuView()->GetBoundsInScreen();
+  // Adjust anchor bounds (this can happen e.g. when the context menu adjusts
+  // its bounds to not overlap with the shelf, or after a context menu item's
+  // icon loads).
+  constexpr gfx::Vector2d kAnchorBoundsUpdate(10, -20);
+  GetControllerImpl()->OnAnchorBoundsChanged(kAnchorBounds +
+                                             kAnchorBoundsUpdate);
 
-  EXPECT_TRUE(views::IsViewClass<EditorMenuPromoCardView>(GetEditorMenuView()));
+  // Editor menu should have been repositioned.
+  EXPECT_EQ(GetEditorMenuView()->GetBoundsInScreen(),
+            initial_editor_menu_bounds + kAnchorBoundsUpdate);
 
   GetEditorMenuView()->GetWidget()->Close();
 }
@@ -165,7 +221,8 @@ IN_PROC_BROWSER_TEST_F(EditorMenuBrowserFeatureEnabledTest,
   ASSERT_NE(GetControllerImpl(), nullptr);
 
   GetControllerImpl()->OnGetEditorPanelContextResultForTesting(
-      kAnchorBounds, CreateTestEditorPanelContext());
+      kAnchorBounds,
+      CreateTestEditorPanelContext(crosapi::mojom::EditorPanelMode::kRewrite));
 
   ASSERT_NE(GetEditorMenuView()->GetWidget(), nullptr);
   GetEditorMenuView()->GetWidget()->GetFocusManager()->ProcessAccelerator(
