@@ -1,11 +1,11 @@
 This is a testharness.js-based test.
 PASS 'min(1px)' as a specified value should serialize as 'calc(1px)'.
 PASS 'min(1px)' as a computed value should serialize as '1px'.
-FAIL 'min(1in)' as a specified value should serialize as 'calc(96px)'. assert_equals: 'min(1in)' and 'calc(96px)' should serialize the same in specified values. expected "calc(96px)" but got "min(1in)"
+FAIL 'min(1in)' as a specified value should serialize as 'calc(96px)'. assert_equals: 'min(1in)' and 'calc(96px)' should serialize the same in specified values. expected "calc(96px)" but got "calc(1in)"
 PASS 'min(1in)' as a computed value should serialize as '96px'.
 PASS 'max(1px)' as a specified value should serialize as 'calc(1px)'.
 PASS 'max(1px)' as a computed value should serialize as '1px'.
-FAIL 'max(1in)' as a specified value should serialize as 'calc(96px)'. assert_equals: 'max(1in)' and 'calc(96px)' should serialize the same in specified values. expected "calc(96px)" but got "max(1in)"
+FAIL 'max(1in)' as a specified value should serialize as 'calc(96px)'. assert_equals: 'max(1in)' and 'calc(96px)' should serialize the same in specified values. expected "calc(96px)" but got "calc(1in)"
 PASS 'max(1in)' as a computed value should serialize as '96px'.
 PASS 'min(1PX)' as a specified value should serialize as 'calc(1px)'.
 PASS 'min(1PX)' as a computed value should serialize as '1px'.

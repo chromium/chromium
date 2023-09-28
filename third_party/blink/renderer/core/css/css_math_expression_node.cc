@@ -639,6 +639,10 @@ CSSMathExpressionOperation::CreateComparisonFunctionSimplified(
         EvaluateOperator(canonical_values, op), canonical_unit);
   }
 
+  if (operands.size() == 1) {
+    return operands.front()->Copy();
+  }
+
   const bool can_be_resolved_with_conversion_data =
       DetermineCanBeSimplifiedWithConversionData(operands);
   return MakeGarbageCollected<CSSMathExpressionOperation>(
