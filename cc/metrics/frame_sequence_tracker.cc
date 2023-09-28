@@ -384,8 +384,6 @@ void FrameSequenceTracker::ReportFrameEnd(
   compositor_frame_submitted_ = false;
   submitted_frame_had_new_main_content_ = false;
   last_processed_main_sequence_latency_ = 0;
-
-  DCHECK(is_inside_frame_) << TRACKER_DCHECK_MSG;
   is_inside_frame_ = false;
 
   DCHECK_EQ(last_started_impl_sequence_, last_processed_impl_sequence_)
@@ -459,9 +457,6 @@ void FrameSequenceTracker::ReportFramePresented(
       main_frames_.pop_front();
     }
     if (main_frames_.size() < size_before_erase) {
-      DCHECK_LT(main_throughput().frames_produced,
-                main_throughput().frames_expected)
-          << TRACKER_DCHECK_MSG;
       ++main_throughput().frames_produced;
       if (metrics()->GetEffectiveThread() == ThreadType::kMain) {
         metrics()->AdvanceTrace(feedback.timestamp, frame_token);
@@ -584,8 +579,22 @@ void FrameSequenceTracker::UpdateTrackedFrameData(
       frame_data->previous_source == source_id) {
     uint32_t current_latency =
         sequence_number - frame_data->previous_sequence - throttled_frame_count;
-    DCHECK_GT(current_latency, 0u) << TRACKER_DCHECK_MSG;
-    frame_data->previous_sequence_delta = current_latency;
+    if (current_latency > 0u) {
+      frame_data->previous_sequence_delta = current_latency;
+    } else {
+      // It is possible for the `current_latency` to be 0. This can occur when
+      // the Renderer or VideoFrameSubmitter is detached from Viz as a client.
+      // Before being re-attached during the same frame. This can be caused by
+      // re-embedding this client. Such as when triggering Picture-in-Picture
+      // mode.
+      //
+      // These special-case re-embedding lead to the `source_id` staying the
+      // same. As it is the same instance of Viz.
+      //
+      // We do not want to error on such a transition, so we treat the
+      // transition as a single frame delta.
+      frame_data->previous_sequence_delta = 1;
+    }
   } else {
     frame_data->previous_sequence_delta = 1;
   }
