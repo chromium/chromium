@@ -1176,6 +1176,7 @@ are not absolutely necessary:
 probably never think about while you are coding. It has always been a
 huge pain.
 * Sync calls may lead to deadlocks.
+* Sync web apis are [strongly discouraged](https://www.w3.org/TR/design-principles/#async-by-default).
 
 ### Mojom changes
 
