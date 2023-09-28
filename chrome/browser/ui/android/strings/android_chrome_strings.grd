@@ -3809,7 +3809,7 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         Find in page
       </message>
       <message name="IDS_MENU_PAGE_INSIGHTS" desc="Menu item showing Page Insights hub. [CHAR_LIMIT=27]">
-        View page insights
+        View Page Insights
       </message>
       <message name="IDS_MENU_FOLLOW" desc="Menu item allowing users to follow the current website. [CHAR_LIMIT=27]">
         Follow
@@ -4522,7 +4522,7 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         Page insights bottom sheet is closed
       </message>
       <message name="IDS_PAGE_INSIGHTS_HUB_TITLE_TEXT" desc="The title of Page Insights Sheet.">
-        Related Insights
+        Page Insights
       </message>
       <message name="IDS_PAGE_INSIGHTS_BACK_BUTTON_DESCRIPTION" desc="The content description of back button in page insights sheet.">
         Page insights back button
