@@ -36,7 +36,7 @@ namespace ash {
 
 namespace {
 
-constexpr int kBluetoothPairingDialogHeight = 409;
+constexpr int kBluetoothPairingDialogHeight = 430;
 
 void AddBluetoothStrings(content::WebUIDataSource* html_source) {
   struct {
