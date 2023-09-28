@@ -32,6 +32,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_sequence.h"
 #include "ui/compositor/layer_animator.h"
@@ -168,12 +169,20 @@ class LoginUserView::UserImage : public NonAccessibleView {
     enterprise_icon_container_->SetLayoutManager(
         std::make_unique<EnterpriseBadgeLayout>(icon_size));
 
+    const bool is_jelly = chromeos::features::IsJellyrollEnabled();
+    ui::ColorId icon_background_color_id =
+        is_jelly ? static_cast<ui::ColorId>(cros_tokens::kCrosSysSecondary)
+                 : kColorAshIconColorSecondaryBackground;
+    ui::ColorId icon_color_id =
+        is_jelly ? static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSecondary)
+                 : kColorAshIconColorSecondary;
+
     views::ImageView* icon_ = enterprise_icon_container_->AddChildView(
         std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-            chromeos::kEnterpriseIcon, kColorAshIconColorSecondary,
+            chromeos::kEnterpriseIcon, icon_color_id,
             icon_size * kIconProportion)));
     icon_->SetBackground(views::CreateThemedRoundedRectBackground(
-        kColorAshIconColorSecondaryBackground, icon_size / 2));
+        icon_background_color_id, icon_size / 2));
   }
 
   UserImage(const UserImage&) = delete;
