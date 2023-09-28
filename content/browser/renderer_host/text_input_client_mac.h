@@ -116,11 +116,6 @@ class CONTENT_EXPORT TextInputClientMac {
   // condition.
   void AfterRequest() UNLOCK_FUNCTION(lock_);
 
-  base::TimeDelta wait_timeout_for_tests() const { return wait_timeout_; }
-  void set_wait_timeout_for_tests(base::TimeDelta wait_timeout) {
-    wait_timeout_ = wait_timeout;
-  }
-
   uint32_t character_index_;
   gfx::Rect first_rect_;
 
@@ -128,9 +123,7 @@ class CONTENT_EXPORT TextInputClientMac {
   base::ConditionVariable condition_;
   // The amount of time that the browser process will wait for a response from
   // the renderer.
-  // TODO(rsesek): Using the histogram data, find the best upper-bound for this
-  // value.
-  base::TimeDelta wait_timeout_ = base::Milliseconds(1500);
+  base::TimeDelta wait_timeout_;
 };
 
 }  // namespace content

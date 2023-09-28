@@ -12,10 +12,12 @@
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
+#include "content/common/features.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_task_environment.h"
@@ -213,17 +215,17 @@ TEST_F(TextInputClientMacTest, GetRectForRange) {
 }
 
 TEST_F(TextInputClientMacTest, TimeoutRectForRange) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(features::kTextInputClient,
+                                                  {{"ipc_timeout", "300ms"}});
+
   base::RunLoop run_loop;
   local_frame()->SetCallback(run_loop.QuitClosure());
-
-  base::TimeDelta old_timeout = service()->wait_timeout_for_tests();
-  service()->set_wait_timeout_for_tests(base::Milliseconds(300));
 
   gfx::Rect rect =
       service()->GetFirstRectForRange(widget(), gfx::Range(NSMakeRange(0, 32)));
   run_loop.Run();
 
-  service()->set_wait_timeout_for_tests(old_timeout);
   EXPECT_EQ(gfx::Rect(), rect);
 }
 

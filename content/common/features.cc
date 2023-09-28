@@ -455,6 +455,14 @@ BASE_FEATURE(kStopVideoCaptureOnScreenLock,
              "StopVideoCaptureOnScreenLock",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_MAC)
+BASE_FEATURE(kTextInputClient,
+             "TextInputClient",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+const base::FeatureParam<base::TimeDelta> kTextInputClientIPCTimeout{
+    &kTextInputClient, "ipc_timeout", base::Milliseconds(1500)};
+#endif
+
 // Enables async touchpad pinch zoom events. We check the ACK of the first
 // synthetic wheel event in a pinch sequence, then send the rest of the
 // synthetic wheel events of the pinch sequence as non-blocking if the first
