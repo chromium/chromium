@@ -109,6 +109,16 @@ void LCPCriticalPathPredictor::OnLargestContentfulPaintUpdated(
   }
 }
 
+void LCPCriticalPathPredictor::OnFontFetched(const KURL& url) {
+  if (!base::FeatureList::IsEnabled(blink::features::kLCPPFontURLPredictor)) {
+    return;
+  }
+  if (!url.ProtocolIsInHTTPFamily()) {
+    return;
+  }
+  GetHost().NotifyFetchedFont(url);
+}
+
 mojom::blink::LCPCriticalPathPredictorHost&
 LCPCriticalPathPredictor::GetHost() {
   if (!host_.is_bound() || !host_.is_connected()) {

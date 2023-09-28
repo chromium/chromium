@@ -16,6 +16,14 @@ interface LCPCriticalPathPredictorHost {
   // `lcp_influencer_scripts` contain the list of script URLs that affected
   // the LCP element.
   SetLcpInfluencerScriptUrls(array<url.mojom.Url> lcp_influencer_scripts);
+
+  // This method is for letting the LCPP know the used web fonts.
+  // `font_url` is a web font's URL, which has started to be fetched.
+  // This method should be called under the following conditions:
+  // - the `kLCPPFontURLPredictor` feature is enabled,
+  // - and the `font_url` scheme is HTTP or HTTPS,
+  // Otherwise, the renderer will be killed.
+  NotifyFetchedFont(url.mojom.Url font_url);
 };
 
 // LCP Critical Path Predictor hints provided at navigation time.

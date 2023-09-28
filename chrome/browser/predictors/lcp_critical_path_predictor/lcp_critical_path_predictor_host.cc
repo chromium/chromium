@@ -58,4 +58,29 @@ void LCPCriticalPathPredictorHost::SetLcpInfluencerScriptUrls(
   }
 }
 
+void LCPCriticalPathPredictorHost::NotifyFetchedFont(const GURL& font_url) {
+  if (!base::FeatureList::IsEnabled(blink::features::kLCPPFontURLPredictor)) {
+    ReportBadMessageAndDeleteThis(
+        "NotifyFetchedFont can be called only if kLCPPFontURLPredictor is "
+        "enabled.");
+    return;
+  }
+  if (!font_url.SchemeIsHTTPOrHTTPS()) {
+    ReportBadMessageAndDeleteThis("url format must be checked in the caller.");
+    return;
+  }
+  auto* page_data =
+      LcpCriticalPathPredictorPageLoadMetricsObserver::PageData::GetForPage(
+          render_frame_host().GetPage());
+  if (!page_data) {
+    return;
+  }
+  auto* plmo = page_data->GetLcpCriticalPathPredictorPageLoadMetricsObserver();
+  if (!plmo) {
+    return;
+  }
+
+  plmo->AppendFetchedFontUrl(font_url);
+}
+
 }  // namespace predictors
