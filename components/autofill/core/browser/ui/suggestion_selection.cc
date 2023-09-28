@@ -7,6 +7,7 @@
 #include <unordered_set>
 #include <vector>
 
+#include "base/containers/cxx20_erase_vector.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -494,8 +495,7 @@ bool IsValidSuggestionForFieldContents(std::u16string suggestion_canon,
                                        bool is_masked_server_card,
                                        bool field_is_autofilled) {
   // Phones should do a substring match because they can be trimmed to remove
-  // the first parts (e.g. country code or prefix). It is still considered a
-  // prefix match in order to put it at the top of the suggestions.
+  // the first parts (e.g. country code or prefix).
   if (type.group() == FieldTypeGroup::kPhone &&
       suggestion_canon.find(field_contents_canon) != std::u16string::npos) {
     return true;
@@ -529,31 +529,20 @@ bool IsValidSuggestionForFieldContents(std::u16string suggestion_canon,
     return false;
   }
 
-  if (base::StartsWith(suggestion_canon, field_contents_canon,
-                       base::CompareCase::SENSITIVE)) {
-    return true;
-  }
-
-  return false;
+  return base::StartsWith(suggestion_canon, field_contents_canon,
+                          base::CompareCase::SENSITIVE);
 }
 
 void RemoveProfilesNotUsedSinceTimestamp(
     base::Time min_last_used,
-    std::vector<AutofillProfile*>* profiles) {
-  const size_t original_size = profiles->size();
-  profiles->erase(
-      std::stable_partition(profiles->begin(), profiles->end(),
-                            [min_last_used](const AutofillDataModel* m) {
-                              return m->use_date() > min_last_used;
-                            }),
-      profiles->end());
-  const size_t num_profiles_suppressed = original_size - profiles->size();
+    std::vector<AutofillProfile*>& profiles) {
+  const size_t original_size = profiles.size();
+  base::EraseIf(profiles, [min_last_used](const AutofillProfile* profile) {
+    return profile->use_date() <= min_last_used;
+  });
+  const size_t num_profiles_suppressed = original_size - profiles.size();
   AutofillMetrics::LogNumberOfAddressesSuppressedForDisuse(
       num_profiles_suppressed);
 }
-
-void PrepareSuggestions(const std::vector<std::u16string>& labels,
-                        std::vector<Suggestion>* suggestions,
-                        const AutofillProfileComparator& comparator) {}
 
 }  // namespace autofill::suggestion_selection

@@ -261,7 +261,7 @@ std::vector<AutofillProfile*> AutofillSuggestionGenerator::GetProfilesToSuggest(
     const base::Time min_last_used =
         AutofillClock::Now() - kDisusedDataModelTimeDelta;
     suggestion_selection::RemoveProfilesNotUsedSinceTimestamp(min_last_used,
-                                                              &sorted_profiles);
+                                                              sorted_profiles);
   }
 
   std::vector<AutofillProfile*> matched_profiles =

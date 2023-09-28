@@ -268,7 +268,7 @@ TEST_F(SuggestionSelectionTest, RemoveProfilesNotUsedSinceTimestamp) {
     // Filter the profiles while capturing histograms.
     base::HistogramTester histogram_tester;
     suggestion_selection::RemoveProfilesNotUsedSinceTimestamp(k175DaysAgo,
-                                                              &profiles);
+                                                              profiles);
 
     // Validate that we get the expected filtered profiles and histograms.
     EXPECT_EQ(expected_profiles, profiles);
@@ -295,7 +295,7 @@ TEST_F(SuggestionSelectionTest, RemoveProfilesNotUsedSinceTimestamp) {
     // Filter the profiles while capturing histograms.
     base::HistogramTester histogram_tester;
     suggestion_selection::RemoveProfilesNotUsedSinceTimestamp(k145DaysAgo,
-                                                              &profiles);
+                                                              profiles);
 
     // Validate that we get the expected filtered profiles and histograms.
     EXPECT_EQ(expected_profiles, profiles);
@@ -322,7 +322,7 @@ TEST_F(SuggestionSelectionTest, RemoveProfilesNotUsedSinceTimestamp) {
     // Filter the profiles while capturing histograms.
     base::HistogramTester histogram_tester;
     suggestion_selection::RemoveProfilesNotUsedSinceTimestamp(
-        k115DaysAgo, &profiles_recently_used);
+        k115DaysAgo, profiles_recently_used);
 
     // Validate that we have the right profiles. Iterate of the shuffled master
     // copy and the filtered copy at the same time making sure that the elements
@@ -357,7 +357,7 @@ TEST_F(SuggestionSelectionTest, RemoveProfilesNotUsedSinceTimestamp) {
     // Filter the profiles while capturing histograms.
     base::HistogramTester histogram_tester;
     suggestion_selection::RemoveProfilesNotUsedSinceTimestamp(
-        kCurrentTime + base::Days(1), &profiles);
+        kCurrentTime + base::Days(1), profiles);
 
     // Validate that we get the expected filtered profiles and histograms.
     EXPECT_TRUE(profiles.empty());
@@ -375,7 +375,7 @@ TEST_F(SuggestionSelectionTest, RemoveProfilesNotUsedSinceTimestamp) {
     base::HistogramTester histogram_tester;
     suggestion_selection::RemoveProfilesNotUsedSinceTimestamp(
         kCurrentTime - base::Days(2 * kNumProfiles * k30Days.InDays()),
-        &profiles);
+        profiles);
 
     // Validate that we get the expected filtered profiles and histograms.
     EXPECT_EQ(all_profile_ptrs, profiles);

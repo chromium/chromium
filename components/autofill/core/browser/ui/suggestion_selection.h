@@ -96,7 +96,7 @@ bool IsValidSuggestionForFieldContents(std::u16string suggestion_canon,
 // |profiles|. The relative ordering of |profiles| is maintained.
 void RemoveProfilesNotUsedSinceTimestamp(
     base::Time min_last_used,
-    std::vector<AutofillProfile*>* profiles);
+    std::vector<AutofillProfile*>& profiles);
 
 }  // namespace suggestion_selection
 }  // namespace autofill
