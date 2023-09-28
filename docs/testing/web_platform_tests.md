@@ -213,13 +213,16 @@ introduce failures as long as test owners did not choose to opt-out the failure
 notification mechanism. This includes new tests that fail in Chromium, as well
 as new failures introduced to an existing test. Test owners are encouraged to
 create an `DIR_METADATA` file in the appropriate `external/wpt/` subdirectory
-that contains at least `monorail.component` fields, which will be used by the
-importer to file the bugs.
+that contains at least the `monorail.component` and `buganizer_public.component_id`
+fields, which the importer will use to file bugs.
 For example, `external/wpt/css/css-grid/DIR_METADATA` looks like:
 
 ```
 monorail {
   component: "Blink>Layout>Grid"
+}
+buganizer_public {
+  component_id: 1415957
 }
 team_email: "layout-dev@chromium.org"
 ```
