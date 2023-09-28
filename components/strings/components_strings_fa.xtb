@@ -1263,7 +1263,6 @@
 <translation id="36224234498066874">پاک کردن داده‌های محصول مرور…</translation>
 <translation id="362276910939193118">نمایش کل سابقه</translation>
 <translation id="3624292976554877583">برچسب (مات)</translation>
-<translation id="3625929652356389713">می‌تواند به‌طور خودکار درخواست کند پنجره‌های «تصویر در تصویر» باز شود</translation>
 <translation id="3628905806504633297">{0,plural, =1{خط‌مشی سرپرست توصیه نمی‌کند این فایل را به <ph name="DESTINATION_NAME" /> منتقل کنید}one{خط‌مشی سرپرست توصیه نمی‌کند این فایل را به <ph name="DESTINATION_NAME" /> منتقل کنید}other{خط‌مشی سرپرست توصیه نمی‌کند این فایل‌ها را به <ph name="DESTINATION_NAME" /> منتقل کنید}}</translation>
 <translation id="3630155396527302611">اگر درحال حاضر به‌عنوان برنامه‌ای برای دسترسی به شبکه در فهرست قرار دارد،
       سعی کنید آن را از فهرست حذف کرده و دوباره به فهرست اضافه کنید.</translation>
@@ -1398,7 +1397,6 @@
 <translation id="388632593194507180">نظارت تشخیص داده شد</translation>
 <translation id="3886948180919384617">پشته‌ساز ۳</translation>
 <translation id="3890664840433101773">افزودن ایمیل</translation>
-<translation id="3893306401511601929">تصویر در تصویر خودکار</translation>
 <translation id="3897092660631435901">منو</translation>
 <translation id="3901925938762663762">کارت منقضی شده است</translation>
 <translation id="390391808978419508">مهلت زمانی کپی کردن تمام شد</translation>
@@ -1867,7 +1865,6 @@
 <translation id="4852429274334674023">سیستم‌عامل</translation>
 <translation id="4854853140771946034">‏ایجاد سریع یادداشت جدید در Google Keep</translation>
 <translation id="485902285759009870">درحال تأیید کد…</translation>
-<translation id="4862630594858951805">مایلید اگر قیمت کاهش پیدا کرد ایمیل دریافت کنید؟</translation>
 <translation id="4864406669374375262">رشته نسخه در بریده‌دان کپی شد</translation>
 <translation id="486459320933704969">ولی یا سرپرست باید بازدید شما از این وب‌سایت را تأیید کند</translation>
 <translation id="4866506163384898554">برای نمایش نشانگر، |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| را فشار دهید</translation>
@@ -2756,7 +2753,6 @@
 <translation id="6710594484020273272">&lt;عبارت جستجو را تایپ کنید&gt;</translation>
 <translation id="671076103358959139">کد ثبت‌نام:</translation>
 <translation id="6711464428925977395">مشکلی در سرور پروکسی وجود دارد یا این آدرس درست نیست.</translation>
-<translation id="6716013836112872184">اگر قیمت در هر سایتی کاهش پیدا کند، ایمیلی به <ph name="EMAIL" /> ارسال می‌شود.</translation>
 <translation id="6716672519412350405"><ph name="URL" /> می‌خواهد نقشه‌ای سه‌بعدی از محیط ایجاد کند و موقعیت دوربین را ردیابی کند</translation>
 <translation id="6718612893943028815">از دوربین استفاده شود؟</translation>
 <translation id="6721164594124191969">برچسب (براق)</translation>
@@ -4035,6 +4031,5 @@
     &lt;li&gt;به شبکه دیگری متصل شوید&lt;/li&gt;
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
-<translation id="995240771322213706">تصویر در تصویر خودکار</translation>
 <translation id="997986563973421916">‏از Google Pay</translation>
 </translationbundle>

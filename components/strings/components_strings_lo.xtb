@@ -1263,7 +1263,6 @@
 <translation id="36224234498066874">ລຶບລ້າງຂໍ້ມູນການທ່ອງເວັບ...</translation>
 <translation id="362276910939193118">ສະ​ແດງ​ປະຫວັດທັງໝົດ</translation>
 <translation id="3624292976554877583">ປ້າຍ (ດ້ານ)</translation>
-<translation id="3625929652356389713">ສາມາດຂໍໃຫ້ເປີດໜ້າຈໍການສະແດງຜົນຊ້ອນກັນໂດຍອັດຕະໂນມັດ</translation>
 <translation id="3628905806504633297">{0,plural, =1{ນະໂຍບາຍຜູ້ເບິ່ງແຍງລະບົບບໍ່ແນະນຳໃຫ້ໂອນຍ້າຍໄຟລ໌ນີ້ໃສ່ໃນ <ph name="DESTINATION_NAME" />}other{ນະໂຍບາຍຜູ້ເບິ່ງແຍງລະບົບບໍ່ແນະນຳໃຫ້ໂອນຍ້າຍໄຟລ໌ເຫຼົ່ານີ້ໃສ່ໃນ <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3630155396527302611">ຖ້າວ່າມັນຢູ່ໃນລາຍການເປັນໂປຣແກຣມທີ່ໄດ້ຮັບອະນຸຍາດໃຫ້ເຂົ້າຫາເຄືອຂ່າຍໄດ້, ໃຫ້ລອງ
       ລຶບມັນອອກໄປຈາກລາຍການ ແລ້ວເພີ່ມມັນໃສ່ຄືນໃໝ່.</translation>
@@ -1398,7 +1397,6 @@
 <translation id="388632593194507180">ກວດພົບການຕິດຕາມເບິ່ງ</translation>
 <translation id="3886948180919384617">ສະແຕັກເກີ້ 3</translation>
 <translation id="3890664840433101773">ເພີ່ມອີເມວ</translation>
-<translation id="3893306401511601929">ການສະແດງຜົນຊ້ອນກັນອັດຕະໂນມັດ</translation>
 <translation id="3897092660631435901">ເມ​ນູ</translation>
 <translation id="3901925938762663762">ບັດ​ຫມົດ​ອາ​ຍຸແລ້ວ</translation>
 <translation id="390391808978419508">ການເປີດໝົດເວລາແລ້ວ</translation>
@@ -1867,7 +1865,6 @@
 <translation id="4852429274334674023">ລະບົບປະຕິບັດການ</translation>
 <translation id="4854853140771946034">ສ້າງບັນທຶກໃໝ່ໃນ Google Keep ໄດ້ຢ່າງງ່າຍດາຍ</translation>
 <translation id="485902285759009870">ກຳລັງຢັ້ງຢືນລະຫັດ...</translation>
-<translation id="4862630594858951805">ຕ້ອງການຮັບອີເມວແຈ້ງເມື່ອລາຄາຫຼຸດລົງບໍ?</translation>
 <translation id="4864406669374375262">ສຳເນົາສະຕຣິງເວີຊັນໄປໃສ່ຄລິບບອດແລ້ວ</translation>
 <translation id="486459320933704969">ພໍ່ແມ່ ຫຼື ຜູ້ປົກຄອງຕ້ອງເວົ້າວ່າທ່ານສາມາດເຂົ້າເບິ່ງເວັບໄຊນີ້ໄດ້</translation>
 <translation id="4866506163384898554">ກົດ |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| ເພື່ອສະແດງເຄີເຊີຂອງທ່ານ</translation>
@@ -2756,7 +2753,6 @@
 <translation id="6710594484020273272">&lt;ພິມຄຳສັບການຄົ້ນຫາ&gt;</translation>
 <translation id="671076103358959139">ໂທເຄັນການລົງທະບຽນ:</translation>
 <translation id="6711464428925977395">ມີບາງຢ່າງຜິດພາດກັບເຊີບເວີພຣັອກຊີ ຫຼື ທີ່ຢູ່ບໍ່ຖືກຕ້ອງ.</translation>
-<translation id="6716013836112872184">ຮັບອີເມວເຊິ່ງຈະສົ່ງໄປຫາ <ph name="EMAIL" /> ເມື່ອລາຄາຫຼຸດລົງໃນເວັບໄຊໃດກໍຕາມ.</translation>
 <translation id="6716672519412350405"><ph name="URL" /> ຕ້ອງການສ້າງແຜນທີ່ 3 ມິຕິຂອງສິ່ງທີ່ຢູ່ອ້ອມຂ້າງຕົວທ່ານ ແລະ ຕິດຕາມຕຳແໜ່ງກ້ອງ</translation>
 <translation id="6718612893943028815">ໃຊ້ກ້ອງຖ່າຍຮູບບໍ?</translation>
 <translation id="6721164594124191969">ປ້າຍ (ມັນວາວ)</translation>
@@ -4036,6 +4032,5 @@
     &lt;li&gt;ລອງເຊື່ອມຕໍ່ກັບເຄືອຂ່າຍອື່ນ&lt;/li&gt;
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
-<translation id="995240771322213706">ການສະແດງຜົນຊ້ອນກັນອັດຕະໂນມັດ</translation>
 <translation id="997986563973421916">ຈາກ Google Pay</translation>
 </translationbundle>

@@ -1263,7 +1263,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="36224234498066874">Sirvimisandmete kustutamine...</translation>
 <translation id="362276910939193118">Näita kogu ajalugu</translation>
 <translation id="3624292976554877583">Etiketid (matt)</translation>
-<translation id="3625929652356389713">Võimaldab paluda automaatselt avada pilt pildis aknad</translation>
 <translation id="3628905806504633297">{0,plural, =1{Administraatori eeskirjad ei soovita seda faili sihtkohta <ph name="DESTINATION_NAME" /> üle kanda}other{Administraatori eeskirjad ei soovita neid faile sihtkohta <ph name="DESTINATION_NAME" /> üle kanda}}</translation>
 <translation id="3630155396527302611">Kui see on juba loendis kui programm, millele on lubatud võrgujuurdepääs, proovige
       see loendist eemaldada ja siis uuesti lisada.</translation>
@@ -1398,7 +1397,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="388632593194507180">Tuvastati jälgimine</translation>
 <translation id="3886948180919384617">Virnastaja 3</translation>
 <translation id="3890664840433101773">E-posti aadressi lisamine</translation>
-<translation id="3893306401511601929">Automaatne pilt pildis</translation>
 <translation id="3897092660631435901">Menüü</translation>
 <translation id="3901925938762663762">Kaart on aegunud</translation>
 <translation id="390391808978419508">Avamine aegus</translation>
@@ -1867,7 +1865,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="4852429274334674023">Operatsioonisüsteemid</translation>
 <translation id="4854853140771946034">Rakenduses Google Keep kiirelt uue märkuse loomine</translation>
 <translation id="485902285759009870">Koodi kinnitamine …</translation>
-<translation id="4862630594858951805">Kas soovite e-kirju, kui hind langeb?</translation>
 <translation id="4864406669374375262">Versiooni string kopeeriti lõikelauale</translation>
 <translation id="486459320933704969">Vanem või eestkostja peab andma sulle loa selle veebisaidi külastamiseks</translation>
 <translation id="4866506163384898554">Vajutage kursori kuvamiseks klahve |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />|</translation>
@@ -2756,7 +2753,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6710594484020273272">&lt;Sisestage otsingutermin&gt;</translation>
 <translation id="671076103358959139">Registreerimismärk:</translation>
 <translation id="6711464428925977395">Puhverserveriga on midagi valesti või aadress on vale.</translation>
-<translation id="6716013836112872184">Kui hind mõnel saidil langeb, saate e-kirjad aadressile <ph name="EMAIL" />.</translation>
 <translation id="6716672519412350405"><ph name="URL" /> soovib luua teid ümbritsevast 3D-kaardi ja jälgida kaamera asendit</translation>
 <translation id="6718612893943028815">Kas kasutada kaamerat?</translation>
 <translation id="6721164594124191969">Etiketid (läikega)</translation>
@@ -4035,6 +4031,5 @@ Lisateave:
     &lt;li&gt;Proovige luua ühendus mõne teise võrguga&lt;/li&gt;
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
-<translation id="995240771322213706">automaatne pilt pildis</translation>
 <translation id="997986563973421916">Teenusest Google Pay</translation>
 </translationbundle>

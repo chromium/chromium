@@ -555,7 +555,6 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="40433179647657191">Buat dan bagikan link langsung ke bagian halaman yang telah Anda tandai.</translation>
 <translation id="4045648459118332842">Dapatkan sandi tersimpan di aplikasi apa pun dengan sekali ketuk</translation>
 <translation id="4049507953662678203">Pastikan Anda memiliki koneksi jaringan dan coba lagi.</translation>
-<translation id="4063300985191096908">Buka Feed</translation>
 <translation id="4066639687323968621">Login dengan Akun Google Anda untuk menyinkronkan bookmark, histori, dan lainnya.</translation>
 <translation id="4092655288299341041">Tampilkan Bantuan</translation>
 <translation id="4105841739161771091">{count,plural, =1{Hapus Alamat}other{Hapus Alamat}}</translation>
@@ -1152,7 +1151,6 @@ Selama dalam mode Samaran, situs tidak dapat menggunakan cookie untuk melihat ak
 <translation id="7302503784943202842">Gunakan Sandi di Semua Perangkat Anda</translation>
 <translation id="730958329302570991">Tambahkan sandi situs dengan mudah ke Pengelola Sandi Google kapan saja.</translation>
 <translation id="7313347584264171202">Tab Samaran Anda akan ditampilkan di sini</translation>
-<translation id="7331371412779932885">Memberikan saran tab berdasarkan aktivitas penjelajahan Anda di perangkat lain menggunakan Akun Google Anda. Perangkat Anda harus login dan disinkronkan menggunakan Akun Google yang sama.</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> persen berhasil didownload</translation>
 <translation id="7340958967809483333">Opsi untuk Discover</translation>
 <translation id="7346909386216857016">Oke, mengerti</translation>
@@ -1348,6 +1346,7 @@ Situs dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berb
 <translation id="8393889347136007944">Tab tidak digunakan selama <ph name="THRESHOLD" /> hari</translation>
 <translation id="8395339334550012808">Anda akan segera melihat konten dari dan tentang <ph name="CHANNEL_NAME" /> di tab Mengikuti.</translation>
 <translation id="8395378633507873708">Kolom URL</translation>
+<translation id="8402673309244746971">Buka feed Mengikuti</translation>
 <translation id="8403629764260204788">Menyembunyikan "Lanjutkan Menjelajah"</translation>
 <translation id="8407669440184693619">Tidak ada sandi yang ditemukan untuk situs ini</translation>
 <translation id="842017693807136194">Login Dengan</translation>

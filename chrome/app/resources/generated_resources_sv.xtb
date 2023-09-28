@@ -17,7 +17,6 @@
 <translation id="1008261151167010035"><ph name="BRAND" /> kommer ihåg hur du loggade in och loggar in dig automatiskt när det är möjligt. När funktionen är inaktiverad måste du bekräfta varje gång.</translation>
 <translation id="1008544602823861396">har blockerats från att använda dina uppgifter på</translation>
 <translation id="1008557486741366299">Inte nu</translation>
-<translation id="1009454959501038262">{NUM_SITES,plural, =1{För att skydda din data har behörigheter tagits bort från en webbplats som du inte har besökt på två månader}other{För att skydda din data har behörigheter tagits bort från webbplatser som du inte har besökt på två månader}}</translation>
 <translation id="1009663062402466586">Nu är spelkontroller tillgängliga</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{sida svarar inte}other{sidor svarar inte}}</translation>
 <translation id="1011003645819296594">Sparade enheter</translation>
@@ -122,7 +121,6 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1084824384139382525">Kopiera länk&amp;adress</translation>
 <translation id="1085064499066015002">Alltid på alla webbplatser</translation>
 <translation id="1085697365578766383">Det gick inte att starta den virtuella maskinen. Försök igen.</translation>
-<translation id="1087965115100412394">Tillåt inte att webbplatser ansluter till MIDI-enheter</translation>
 <translation id="1088659085457112967">Aktivera läsarläge</translation>
 <translation id="1090126737595388931">Inga bakgrundsprogram körs</translation>
 <translation id="1090541560108055381">Kontrollera att samma kod visas på båda enheterna innan du parkopplar</translation>
@@ -3232,7 +3230,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3551320343578183772">Stäng flik</translation>
 <translation id="3552097563855472344"><ph name="NETWORK_NAME" /> – <ph name="SPAN_START" /><ph name="CARRIER_NAME" /><ph name="SPAN_END" /></translation>
 <translation id="3552780134252864554">Rensas vis avslutning</translation>
-<translation id="3553487194781590058">Tillåt inte att webbplatser öppnar bild-i-bild-fönster när du byter till en annan flik</translation>
 <translation id="3554493885489666172">Enheten hanteras av <ph name="PROFILE_NAME" />. Administratörer kan få åtkomst till data i alla profiler på enheten.</translation>
 <translation id="3555812735919707620">Ta bort tillägg</translation>
 <translation id="3557101512409028104">Begränsa vilka webbplatser som är tillgängliga och ange skärmtid med Family Link</translation>
@@ -3791,7 +3788,6 @@ Detta kan omfatta information om installerad programvara, filer, webbläsaren oc
 <translation id="3975201861340929143">Förklaring</translation>
 <translation id="3975565978598857337">Det gick inte att kontakta servern för sfären</translation>
 <translation id="3976108569178263973">Inga skrivare är tillgängliga.</translation>
-<translation id="3976244126942806443">Webbplatser brukar ansluta till MIDI-enheter för att skapa och redigera musik</translation>
 <translation id="397703832102027365">Slutför ...</translation>
 <translation id="3977145907578671392">Vissa webbplatsers funktioner kanske inte fungerar i inkognitoläge</translation>
 <translation id="3977886311744775419">Automatiska uppdateringar laddas inte ned med den här nätverkstypen, men du kan söka efter uppdateringar manuellt.</translation>
@@ -4692,7 +4688,6 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="4730492586225682674">Senaste anteckningen med e-penna på låsskärmen</translation>
 <translation id="4730888769809690665">Aviseringar har tillåtits för <ph name="SITE" /></translation>
 <translation id="4731306954230393087">Tillåts att använda uppgifter som webbplatsen har sparat om dig</translation>
-<translation id="473140019006744096">Det gick inte att slutföra uppdateringen eftersom utrymmet inte räcker till. Frigör <ph name="NECESSARY_SPACE" /> på enheten och försök igen.</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" /> % (vänster)</translation>
 <translation id="4733793249294335256">Plats</translation>
 <translation id="473546211690256853">Detta konto hanteras av <ph name="DOMAIN" /></translation>
@@ -5394,7 +5389,6 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="5327912693242073631">Funktioner som kräver aviseringar slutar fungera</translation>
 <translation id="532943162177641444">Konfigurera den trådlösa surfzonen som den här enheten ska kunna använda genom att trycka på aviseringen på din <ph name="PHONE_NAME" />.</translation>
 <translation id="5329858601952122676">&amp;Ta bort</translation>
-<translation id="5330592967519769658">Tillåts öppna bild-i-bild-fönster när du byter till en annan flik</translation>
 <translation id="5331069282670671859">Du har inga certifikat i den här kategorin</translation>
 <translation id="5331568967879689647">Systemapp i Chrome OS</translation>
 <translation id="5331975486040154427">USB-C-enhet (bakre porten på vänster sida)</translation>
@@ -5572,7 +5566,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="5473099001878321374">Genom att fortsätta godkänner du att enheten kan ladda ned och installera uppdateringar och appar automatiskt från Google, ditt barns operatör och enhetstillverkaren, eventuellt genom att använda mobildata. Det kan hända att några av apparna erbjuder köp i appen.</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{Pinkoden måste innehålla minst ett tecken}other{Pinkoden måste innehålla minst # tecken}}</translation>
 <translation id="5474859849784484111"><ph name="MANAGER" /> kräver att du ansluter till wifi och laddar ned en uppdatering nu. Du kan även ladda ned via en anslutning med datapriser (avgifter kan tillkomma).</translation>
-<translation id="5478520208448702555">Webbplatser kan öppna ett bild-i-bild-fönster när du byter till en annan flik</translation>
 <translation id="5481273127572794904">Får inte ladda ned flera filer automatiskt</translation>
 <translation id="5481941284378890518">Lägg till skrivare i närheten</translation>
 <translation id="5484181871714116891">När detta är aktiverat skapas nycklar i iCloud Keychain och kan användas på alla dina Apple-enheter. När detta är inaktiverat skapas nycklar i Chrome-profilen på den här enheten.</translation>
@@ -5730,7 +5723,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="5600348067066185292">Du kan installera med några enkla steg. Du får en ny chans att bekräfta innan ändringarna görs på datorn.</translation>
 <translation id="5600706100022181951">Nedladdningen av uppdateringen förbrukar <ph name="UPDATE_SIZE_MB" /> MB mobildata. Vill du fortsätta?</translation>
 <translation id="5601503069213153581">Pinkod</translation>
-<translation id="5601823921345337195">Får inte ansluta till MIDI-enheter</translation>
 <translation id="5601833336918638013">Tillåt inte att webbplatser söker efter Bluetooth-enheter</translation>
 <translation id="5602586420788540146">Öppna i en ny flikgrupp</translation>
 <translation id="5605758115928394442">En avisering har skickats till din mobil för att bekräfta att det är du.</translation>
@@ -5852,7 +5844,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="5707185214361380026">Det gick inte att läsa in tillägget från:</translation>
 <translation id="5708171344853220004">Huvudnamn för Microsoft</translation>
 <translation id="5709557627224531708">Ange Chrome som standardwebbläsare</translation>
-<translation id="5710122160114032242">Tillåts inte att öppna ett bild-i-bild-fönster när du byter till en annan flik</translation>
 <translation id="5711010025974903573">Tjänstloggar</translation>
 <translation id="5711983031544731014">Det går inte att låsa upp. Ange ditt lösenord.</translation>
 <translation id="5712153969432126546">Ibland publicerar webbplatser PDF-filer, som dokument, avtal och formulär</translation>
@@ -6614,7 +6605,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="6326175484149238433">Ta bort från Chrome</translation>
 <translation id="6326855256003666642">Antal keepalive</translation>
 <translation id="6327785803543103246">Automatisk identifiering av webbproxy</translation>
-<translation id="6331818708794917058">Webbplatser får begära tillstånd att ansluta till MIDI-enheter</translation>
 <translation id="6333064448949140209">Filen skickas till Google för felsökning</translation>
 <translation id="6333170995003625229">Det gick inte att verifiera e-postadressen eller lösenordet. Testa att logga in igen.</translation>
 <translation id="6334267141726449402">Kopiera och skicka den här länken till användaren för att samla in loggarna.</translation>
@@ -6764,7 +6754,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="6458701200018867744">Uppladdningen misslyckades (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">Använd markering för sökning</translation>
 <translation id="6459799433792303855">Det aktiva fönstret har flyttats till en annan skärm.</translation>
-<translation id="6460566145397380451">Får ansluta till MIDI-enheter</translation>
 <translation id="6460601847208524483">Sök nästa</translation>
 <translation id="6461170143930046705">Söker efter nätverk …</translation>
 <translation id="6463795194797719782">&amp;Redigera</translation>
@@ -7090,7 +7079,6 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="6735304988756581115">Visa cookies och andra webbplatsdata...</translation>
 <translation id="6736243959894955139">Adress</translation>
 <translation id="6737663862851963468">Ta bort Kerberos-biljett</translation>
-<translation id="6737931010859480781">Den här appen är förinstallerad på enheten</translation>
 <translation id="6738180164164974883">Tillåt att cookies från tredje part sparas</translation>
 <translation id="6738430949033571771">Verifierar konto …</translation>
 <translation id="6739923123728562974">Visa skrivbordsgenväg</translation>
@@ -8485,7 +8473,6 @@ Tryck på en brytare eller tangent som redan tilldelats en åtgärd om du vill t
 <translation id="7853747251428735">Fler verk&amp;tyg</translation>
 <translation id="7853999103056713222">Använd ett säkrare lösenord</translation>
 <translation id="7855678561139483478">Flytta fliken till ett nytt fönster</translation>
-<translation id="7855729579456690716">Webbplatser kan öppna ett bild-i-bild-fönster när du byter till en annan flik</translation>
 <translation id="7857004848504343806">Datorn innehåller en säker modul som används för att implementera flera viktiga säkerhetsfunktioner i ChromeOS Flex. Besök hjälpcentret för Chromebook om du vill läsa mer: https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">Textförslag</translation>
 <translation id="7857949311770343000">Var det den här nya fliksidan du väntade dig?</translation>

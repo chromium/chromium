@@ -17,7 +17,6 @@
 <translation id="1008261151167010035">Pakalpojumā <ph name="BRAND" /> tiek saglabāti pierakstīšanās akreditācijas dati un, kad iespējams, jūsu vārdā automātiski veikta pierakstīšanās. Ja šī funkcija ir izslēgta, jums katru reizi tiek prasīts apstiprinājums.</translation>
 <translation id="1008544602823861396">tika liegts izmantot jūsu informāciju vietnē</translation>
 <translation id="1008557486741366299">Vēlāk</translation>
-<translation id="1009454959501038262">{NUM_SITES,plural, =1{Lai aizsargātu jūsu datus, tika atsauktas atļaujas vietnei, kuru neesat apmeklējis divus mēnešus.}zero{Lai aizsargātu jūsu datus, tika atsauktas atļaujas vietnēm, kuras neesat apmeklējis divus mēnešus.}one{Lai aizsargātu jūsu datus, tika atsauktas atļaujas vietnēm, kuras neesat apmeklējis divus mēnešus.}other{Lai aizsargātu jūsu datus, tika atsauktas atļaujas vietnēm, kuras neesat apmeklējis divus mēnešus.}}</translation>
 <translation id="1009663062402466586">Tagad ir pieejamas spēļu vadīklas</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{Nereaģējoša lapa}zero{Nereaģējošas lapas}one{Nereaģējošas lapas}other{Nereaģējošas lapas}}</translation>
 <translation id="1011003645819296594">Saglabātās ierīces</translation>
@@ -122,7 +121,6 @@ Jebkurā laikā varat pārbaudīt paroles pakalpojumā <ph name="GOOGLE_PASSWORD
 <translation id="1084824384139382525">Kopēt saites adresi</translation>
 <translation id="1085064499066015002">Vienmēr visās vietnēs</translation>
 <translation id="1085697365578766383">Startējot virtuālo mašīnu, radās kļūda. Lūdzu, mēģiniet vēlreiz.</translation>
-<translation id="1087965115100412394">Neļaut vietnēm veidot savienojumu ar MIDI ierīcēm</translation>
 <translation id="1088659085457112967">Ieslēgt lasītāja režīmu</translation>
 <translation id="1090126737595388931">Nedarbojas neviena fona lietotne</translation>
 <translation id="1090541560108055381">Pirms izveidojat savienojumu pārī, pārliecinieties, ka šis kods abās ierīcēs ir vienāds.</translation>
@@ -3219,7 +3217,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3551320343578183772">Aizvērt cilni</translation>
 <translation id="3552097563855472344"><ph name="NETWORK_NAME" /> — <ph name="SPAN_START" /><ph name="CARRIER_NAME" /><ph name="SPAN_END" /></translation>
 <translation id="3552780134252864554">Izdzēst aizverot</translation>
-<translation id="3553487194781590058">Neatļaut vietnēm atvērt logu ar attēlu attēlā, kad pārejat uz citu cilni</translation>
 <translation id="3554493885489666172">Jūsu ierīci pārvalda <ph name="PROFILE_NAME" />. Administratori var piekļūt jebkura profila datiem šajā ierīcē.</translation>
 <translation id="3555812735919707620">Noņemt paplašinājumu</translation>
 <translation id="3557101512409028104">Iestatīt vietņu ierobežojumus un izmantošanas ilguma ierobežojumus, izmantojot Family Link</translation>
@@ -3778,7 +3775,6 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="3975201861340929143">Paskaidrojums</translation>
 <translation id="3975565978598857337">Sazināšanās ar serveri nozarojumam neizdevās</translation>
 <translation id="3976108569178263973">Neviens printeris nav pieejams.</translation>
-<translation id="3976244126942806443">Parasti vietnēs veido savienojumu ar MIDI ierīcēm, lai nodrošinātu mūzikas veidošanu un rediģēšanu.</translation>
 <translation id="397703832102027365">Notiek pabeigšana...</translation>
 <translation id="3977145907578671392">Noteiktās vietnēs funkcijas var nedarboties, ja tiek izmantots inkognito režīms.</translation>
 <translation id="3977886311744775419">Kad izveidots savienojums ar šāda veida tīklu, atjauninājumi netiek lejupielādēti automātiski, taču varat manuāli pārbaudīt, vai tie ir pieejami.</translation>
@@ -4678,7 +4674,6 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="4730492586225682674">Skārienekrāna pildspalva: pēdējā piezīme bloķēšanas ekrānā</translation>
 <translation id="4730888769809690665">Vietnei <ph name="SITE" /> ir atļauts rādīt paziņojumus</translation>
 <translation id="4731306954230393087">Atļauts izmantot informāciju, kas attiecīgajā vietnē saglabāta par jums</translation>
-<translation id="473140019006744096">Šajā ierīcē nepietiek vietas, lai pabeigtu atjaunināšanu. Atbrīvojiet nepieciešamo vietu (<ph name="NECESSARY_SPACE" />) savā ierīcē un mēģiniet vēlreiz.</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (kreisā)</translation>
 <translation id="4733793249294335256">Atrašanās vieta</translation>
 <translation id="473546211690256853">Šo kontu pārvalda <ph name="DOMAIN" /></translation>
@@ -5380,7 +5375,6 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="5327912693242073631">Funkcijas, kurām nepieciešami paziņojumi, nedarbosies</translation>
 <translation id="532943162177641444">Lai iestatītu mobilo tīklāju, ko izmantot šajā ierīcē, pieskarieties paziņojumam savā tālrunī <ph name="PHONE_NAME" />.</translation>
 <translation id="5329858601952122676">Dzēst</translation>
-<translation id="5330592967519769658">Atļauts atvērt logu ar attēlu attēlā, kad pārejat uz citu cilni</translation>
 <translation id="5331069282670671859">Jums nav sertifikātu šajā kategorijā</translation>
 <translation id="5331568967879689647">Chrome OS sistēmas lietotne</translation>
 <translation id="5331975486040154427">USB-C ierīce (pieslēgvieta kreisajā pusē aizmugurē)</translation>
@@ -5558,7 +5552,6 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="5473099001878321374">Turpinot jūs piekrītat, ka šajā ierīcē drīkst arī automātiski lejupielādēt un instalēt atjauninājumus un lietotnes no Google, jūsu bērna mobilo sakaru operatora un šīs ierīces ražotāja, iespējams, izmantojot mobilos datus. Dažās lietotnēs var tikt piedāvāti pirkumi.</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{PIN kodā ir jābūt vismaz vienai rakstzīmei.}zero{PIN kodā ir jābūt vismaz # rakstzīmēm.}one{PIN kodā ir jābūt vismaz # rakstzīmei.}other{PIN kodā ir jābūt vismaz # rakstzīmēm.}}</translation>
 <translation id="5474859849784484111"><ph name="MANAGER" /> pieprasa, lai jūs tūlīt izveidotu savienojumu ar Wi-Fi tīklu un lejupielādētu atjauninājumu. Varat arī veikt lejupielādi, izmantojot maksas savienojumu (var tikt piemērota maksa par datu pārraidi).</translation>
-<translation id="5478520208448702555">Vietnes var atvērt logu ar attēlu attēlā, kad pārejat uz citu cilni</translation>
 <translation id="5481273127572794904">Nedrīkst automātiski lejupielādēt vairākus failus</translation>
 <translation id="5481941284378890518">Pievienot tuvumā esošus printerus</translation>
 <translation id="5484181871714116891">Ja šī funkcija ir iespējota, piekļuves atslēgas tiek izveidotas pakalpojumā iCloud Keychain un jūs varat izmantot šīs atslēgas visās savās Apple ierīcēs. Ja šī funkcija nav iespējota, piekļuves atslēgas tiek izveidotas jūsu Chrome profilā šajā ierīcē.</translation>
@@ -5716,7 +5709,6 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="5600348067066185292">Lai instalētu, jāveic dažas vienkāršas darbības. Jums būs vēl viena iespēja apstiprināt izmaiņas, pirms tās tiek lietotas datorā.</translation>
 <translation id="5600706100022181951">Atjauninājuma lejupielādei tiks izmantoti <ph name="UPDATE_SIZE_MB" /> MB mobilo datu. Vai vēlaties turpināt?</translation>
 <translation id="5601503069213153581">PIN</translation>
-<translation id="5601823921345337195">Nedrīkst izveidot savienojumu ar MIDI ierīcēm</translation>
 <translation id="5601833336918638013">Neatļaut vietnēm meklēt Bluetooth ierīces</translation>
 <translation id="5602586420788540146">Atveriet jaunā ciļņu grupā</translation>
 <translation id="5605758115928394442">Uz jūsu tālruni tika nosūtīts paziņojums, lai apstiprinātu, ka tas esat jūs.</translation>
@@ -5836,7 +5828,6 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="5707185214361380026">Neizdevās ielādēt paplašinājumu no:</translation>
 <translation id="5708171344853220004">Microsoft pamatnosaukums</translation>
 <translation id="5709557627224531708">Chrome iestatīšana par noklusējuma pārlūku</translation>
-<translation id="5710122160114032242">Nav atļauts atvērt logu ar attēlu attēlā, kad pārejat uz citu cilni</translation>
 <translation id="5711010025974903573">Pakalpojuma žurnāli</translation>
 <translation id="5711983031544731014">Neizdevās atbloķēt. Ievadiet paroli.</translation>
 <translation id="5712153969432126546">Dažkārt vietnēs tiek publicēti PDF faili, piemēram, dokumenti, līgumi un veidlapas.</translation>
@@ -6597,7 +6588,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="6326175484149238433">Noņemt no pārlūka Chrome</translation>
 <translation id="6326855256003666642">Aktīvo darbību skaits</translation>
 <translation id="6327785803543103246">Tīmekļa starpniekservera automātiskā atklāšana</translation>
-<translation id="6331818708794917058">Atļaut vietnēm pieprasīt atļauju veidot savienojumu ar MIDI ierīcēm</translation>
 <translation id="6333064448949140209">Fails tiks nosūtīts Google serveriem atkļūdošanai</translation>
 <translation id="6333170995003625229">Nevarēja verificēt jūsu e-pasta adresi vai paroli. Mēģiniet pierakstīties vēlreiz.</translation>
 <translation id="6334267141726449402">Kopējiet un nosūtiet šo saiti lietotājam, lai vāktu žurnālus.</translation>
@@ -6747,7 +6737,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="6458701200018867744">Augšupielāde neizdevās (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">Izmantot atlasīto meklēšanai</translation>
 <translation id="6459799433792303855">Aktīvais logs ir pārvietots uz citu attēlojumu.</translation>
-<translation id="6460566145397380451">Drīkst izveidot savienojumu ar MIDI ierīcēm</translation>
 <translation id="6460601847208524483">Atrast nākamo</translation>
 <translation id="6461170143930046705">Notiek tīklu meklēšana…</translation>
 <translation id="6463795194797719782">Rediģēt</translation>
@@ -7077,7 +7066,6 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="6735304988756581115">Rādīt sīkfailus un citus vietņu datus...</translation>
 <translation id="6736243959894955139">Adrese</translation>
 <translation id="6737663862851963468">Kerberos biļetes noņemšana</translation>
-<translation id="6737931010859480781">Šī lietotne ir priekšinstalēta jūsu ierīcē.</translation>
 <translation id="6738180164164974883">Atļaut iestatīt trešo pušu sīkfailus</translation>
 <translation id="6738430949033571771">Notiek konta verifikācija…</translation>
 <translation id="6739923123728562974">Rādīt darbvirsmas saīsni</translation>
@@ -8471,7 +8459,6 @@ Lai noņemtu piešķīrumu, nospiediet piešķirto slēdzi vai taustiņu.</trans
 <translation id="7853747251428735">Vairāk rī&amp;ku</translation>
 <translation id="7853999103056713222">Izmantojiet drošāku paroli</translation>
 <translation id="7855678561139483478">Pārvietojiet cilni uz jaunu logu</translation>
-<translation id="7855729579456690716">Vietnes var atvērt logu ar attēlu attēlā, kad pārejat uz citu cilni</translation>
 <translation id="7857004848504343806">Jūsu datorā ir ietverts drošības modulis, kas tiek izmantots, lai operētājsistēmā Chrome OS Flex ieviestu daudz svarīgu drošības funkciju. Lai uzzinātu vairāk, apmeklējiet Chromebook palīdzības centru: https://support.google.com/chromebook/?p=sm.</translation>
 <translation id="7857093393627376423">Teksta ieteikumi</translation>
 <translation id="7857949311770343000">Vai šī ir jaunas cilnes lapa, ko gaidījāt?</translation>

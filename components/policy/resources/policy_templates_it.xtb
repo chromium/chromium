@@ -1821,8 +1821,6 @@ Nota: l'omissione di un campo implica la corrispondenza di tutti i valori per il
 
       Se il criterio non viene configurato, viene applicato il valore <ph name="PRINTERS_ALLOW_ALL" />.</translation>
 <translation id="2581338546762479588">Consenti il riavvio automatico dopo gli aggiornamenti</translation>
-<translation id="2582855747769273665">Un URL che gli utenti possono visitare per saperne di più. Se lo schema non viene configurato,
-nel programma di installazione non verrà visualizzato alcun URL "Scopri di più".</translation>
 <translation id="2586117300379904732">Consenti wakelock per la gestione dell'alimentazione</translation>
 <translation id="2586231026319371211">L'ora nel formato di tempo reale di 24 ore locale.</translation>
 <translation id="2587719089023392205">Imposta <ph name="PRODUCT_NAME" /> come browser predefinito</translation>

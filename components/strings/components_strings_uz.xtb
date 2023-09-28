@@ -1259,7 +1259,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="36224234498066874">Brauzer tarixini tozalash...</translation>
 <translation id="362276910939193118">To‘liq tarixni ko‘rsatish</translation>
 <translation id="3624292976554877583">Yorliqlar (jilosiz)</translation>
-<translation id="3625929652356389713">Tasvir ustida tasvir oynalarini avtomatik ravishda ochishni soʻrashi mumkin</translation>
 <translation id="3628905806504633297">{0,plural, =1{Administrator bu faylni <ph name="DESTINATION_NAME" />ga uzatishni tavsiya qilmaydi}other{Administrator bu fayllarni <ph name="DESTINATION_NAME" />ga uzatishni tavsiya qilmaydi}}</translation>
 <translation id="3630155396527302611">Agar bu dasturga avvaldan tarmoqqa ulanish uchun ruxsat berilgan bo‘lsa, undan ruxsatni olib tashlab, keyin qaytadan ruxsat bering.</translation>
 <translation id="3630426379756188722">Qurilmamni top tugmasi, Google hisobidagi qurilmani topish xizmatini ochish uchun faollashtiring</translation>
@@ -1393,7 +1392,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="388632593194507180">Kuzatuv aniqlandi</translation>
 <translation id="3886948180919384617">Taxlovchi 3</translation>
 <translation id="3890664840433101773">Email manzilini kiriting</translation>
-<translation id="3893306401511601929">Avtomatik tasvir ustida tasvir</translation>
 <translation id="3897092660631435901">Menyu</translation>
 <translation id="3901925938762663762">Bu kartadan foydalanish muddati tugadi</translation>
 <translation id="390391808978419508">Ochish vaqti tugadi</translation>
@@ -1862,7 +1860,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="4852429274334674023">Operatsion tizimlar</translation>
 <translation id="4854853140771946034">Google Keepda yangi qaydni tez yaratish</translation>
 <translation id="485902285759009870">Kod tasdiqlanmoqda...</translation>
-<translation id="4862630594858951805">Narx tushganda email orqali xabar kelsinmi?</translation>
 <translation id="4864406669374375262">Versiya qatori vaqtinchalik xotiraga nusxalandi</translation>
 <translation id="486459320933704969">Bu saytga kirishingiz uchun ota-onangiz yoki vasiyingiz ruxsat berishi kerak</translation>
 <translation id="4866506163384898554">Kursorni koʻrish uchun |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| tugmalarini bosing</translation>
@@ -2750,7 +2747,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6710594484020273272">&lt;Qidiruv so‘rovini kiriting&gt;</translation>
 <translation id="671076103358959139">Qaydnoma tokeni:</translation>
 <translation id="6711464428925977395">Proksi serverda xatolik mavjud yoki manzil noto‘g‘ri kiritildi.</translation>
-<translation id="6716013836112872184">Har qaysi saytda narx tushganda <ph name="EMAIL" /> manziliga xabar qilinsin.</translation>
 <translation id="6716672519412350405"><ph name="URL" /> sayti atrofingiz 3D xaritasini yaratmoqchi va kamera holatini kuzatmoqchi</translation>
 <translation id="6718612893943028815">Kamera ishlatilsinmi?</translation>
 <translation id="6721164594124191969">Yorliqlar (yaltiroq)</translation>
@@ -4029,6 +4025,5 @@ Batafsil axborot:
     &lt;li&gt;Boshqa Wi-Fi tarmoqqa ulanib ko‘ring&lt;/li&gt;
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
-<translation id="995240771322213706">avtomatik tasvir ustida tasvir</translation>
 <translation id="997986563973421916">Google Pay xizmatidan</translation>
 </translationbundle>

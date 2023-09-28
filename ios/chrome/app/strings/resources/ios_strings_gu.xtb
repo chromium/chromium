@@ -555,7 +555,6 @@
 <translation id="40433179647657191">તમે હાઇલાઇટ કરેલા પેજના ભાગની ડાયરેક્ટ લિંક બનાવો અને શેર કરો.</translation>
 <translation id="4045648459118332842">કોઈપણ ઍપમાં તમારા સાચવેલા પાસવર્ડ માત્ર એક ટૅપમાં મેળવો</translation>
 <translation id="4049507953662678203">તમારી પાસે નેટવર્ક કનેક્શન છે તેની ખાતરી કરો અને ફરીથી પ્રયાસ કરો.</translation>
-<translation id="4063300985191096908">ફીડ પર જાઓ</translation>
 <translation id="4066639687323968621">તમારા બુકમાર્ક, ઇતિહાસ જેવું બીજું ઘણું સિંક કરવા માટે, તમારા Google એકાઉન્ટ વડે સાઇન ઇન કરો.</translation>
 <translation id="4092655288299341041">સહાય બતાવો</translation>
 <translation id="4105841739161771091">{count,plural, =1{સરનામું ડિલીટ કરો}one{સરનામું ડિલીટ કરો}other{સરનામા ડિલીટ કરો}}</translation>
@@ -1152,7 +1151,6 @@
 <translation id="7302503784943202842">તમારા બધા ડિવાઇસ પર પાસવર્ડનો ઉપયોગ કરો</translation>
 <translation id="730958329302570991">Google Password Managerમાં કોઈપણ સમયે સાઇટના પાસવર્ડ સરળતાથી ઉમેરો.</translation>
 <translation id="7313347584264171202">તમને તમારી છૂપી ટૅબ અહીં મળશે</translation>
-<translation id="7331371412779932885">તમારા Google એકાઉન્ટનો ઉપયોગ કરીને, તમારા અન્ય ડિવાઇસ પરની તમારી બ્રાઉઝિંગ પ્રવૃત્તિના આધારે તમને ટૅબ માટેના સૂચનો આપે છે. તમારા ડિવાઇસ એક જ Google એકાઉન્ટનો ઉપયોગ કરીને સાઇન ઇન કરેલા તેમજ સિંક કરેલા હોવા જોઈએ.</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> ટકા ડાઉનલોડ થઈ</translation>
 <translation id="7340958967809483333">Discover માટેના વિકલ્પો</translation>
 <translation id="7346909386216857016">બરાબર, સમજાઇ ગયું</translation>
@@ -1348,6 +1346,7 @@
 <translation id="8393889347136007944"><ph name="THRESHOLD" /> દિવસથી ઉપયોગમાં ન લેવાયેલી ટૅબ</translation>
 <translation id="8395339334550012808">ટૂંક સમયમાં, તમને 'ફૉલો કરી રહ્યાં છો'માં <ph name="CHANNEL_NAME" /> પરથી અને વિશેનું કન્ટેન્ટ જોવા મળશે.</translation>
 <translation id="8395378633507873708">ઍડ્રેસ બાર</translation>
+<translation id="8402673309244746971">અનુસરે છે ફીડ પર જાઓ</translation>
 <translation id="8403629764260204788">"બ્રાઉઝ કરવા આગળ વધો" છુપાવો</translation>
 <translation id="8407669440184693619">આ સાઇટ માટે કોઈ પાસવર્ડ મળ્યાં નથી</translation>
 <translation id="842017693807136194">ની સાથે સાઇન ઇન કરેલ</translation>

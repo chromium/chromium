@@ -1263,7 +1263,6 @@
 <translation id="36224234498066874">Обриши податке прегледања...</translation>
 <translation id="362276910939193118">Прикажи комплетну историју</translation>
 <translation id="3624292976554877583">Налепнице (мат)</translation>
-<translation id="3625929652356389713">Може да тражи да се аутоматски отварају прозори са сликом у слици</translation>
 <translation id="3628905806504633297">{0,plural, =1{Смернице администратора не препоручују пренос овог фајла на <ph name="DESTINATION_NAME" />}one{Смернице администратора не препоручују пренос ових фајлова на <ph name="DESTINATION_NAME" />}few{Смернице администратора не препоручују пренос ових фајлова на <ph name="DESTINATION_NAME" />}other{Смернице администратора не препоручују пренос ових фајлова на <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3630155396527302611">Ако је већ наведен као програм коме је дозвољен приступ мрежи, покушајте да га
       уклоните са листе и да га поново додате.</translation>
@@ -1398,7 +1397,6 @@
 <translation id="388632593194507180">Откривено је праћење</translation>
 <translation id="3886948180919384617">3. преграда за слагање</translation>
 <translation id="3890664840433101773">Додајте имејл</translation>
-<translation id="3893306401511601929">Аутоматска слика у слици</translation>
 <translation id="3897092660631435901">Мени</translation>
 <translation id="3901925938762663762">Картица је истекла</translation>
 <translation id="390391808978419508">Време за отварање је истекло</translation>
@@ -1867,7 +1865,6 @@
 <translation id="4852429274334674023">Оперативни системи</translation>
 <translation id="4854853140771946034">Брзо направите нову белешку у Google Keep-у</translation>
 <translation id="485902285759009870">Кôд се верификује...</translation>
-<translation id="4862630594858951805">Желите имејлове када падне цена?</translation>
 <translation id="4864406669374375262">Стринг верзије је копиран у привремену меморију</translation>
 <translation id="486459320933704969">Родитељ или старатељ мора да каже да је у реду да посетите овај веб-сајт</translation>
 <translation id="4866506163384898554">Притисните |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| да би се показивач приказао</translation>
@@ -2755,7 +2752,6 @@
 <translation id="6710594484020273272">&lt;Унесите термин за претрагу&gt;</translation>
 <translation id="671076103358959139">Токен за регистрацију:</translation>
 <translation id="6711464428925977395">Дошло је до грешке са прокси сервером или је адреса нетачна.</translation>
-<translation id="6716013836112872184">Добијајте имејлове на <ph name="EMAIL" /> када цена падне на било ком сајту.</translation>
 <translation id="6716672519412350405"><ph name="URL" /> жели да прави 3D мапу окружења и да прати положај камере</translation>
 <translation id="6718612893943028815">Дозволићете коришћење камере?</translation>
 <translation id="6721164594124191969">Налепнице (сјајне)</translation>
@@ -4036,6 +4032,5 @@
     &lt;li&gt;Пробајте да се повежете са другом мрежом&lt;/li&gt;
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
-<translation id="995240771322213706">аутоматска слика у слици</translation>
 <translation id="997986563973421916">Са Google Pay-а</translation>
 </translationbundle>

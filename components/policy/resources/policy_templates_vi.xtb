@@ -1837,7 +1837,6 @@ Lưu ý: Việc bạn bỏ qua một trường nghĩa là mọi giá trị đề
 
       Nếu bạn không đặt chính sách này, <ph name="PRINTERS_ALLOW_ALL" /> sẽ được áp dụng.</translation>
 <translation id="2581338546762479588">Cho phép tự động khởi động lại sau khi cập nhật</translation>
-<translation id="2582855747769273665">Đây là URL để người dùng truy cập khi cần tìm hiểu thêm. Nếu bạn không đặt thì trình cài đặt sẽ không có URL "tìm hiểu thêm".</translation>
 <translation id="2586117300379904732">Cho phép khóa chế độ thức để quản lý nguồn điện</translation>
 <translation id="2586231026319371211">Giờ địa phương ở định dạng 24 giờ theo thời gian thực đã qua.</translation>
 <translation id="2587719089023392205">Đặt <ph name="PRODUCT_NAME" /> làm trình duyệt mặc định</translation>

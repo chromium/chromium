@@ -1263,7 +1263,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="36224234498066874">Rensa webbinformation ...</translation>
 <translation id="362276910939193118">Visa fullständig historik</translation>
 <translation id="3624292976554877583">Etiketter (matta)</translation>
-<translation id="3625929652356389713">Får begära tillstånd att öppna bild-i-bild-fönster automatiskt</translation>
 <translation id="3628905806504633297">{0,plural, =1{Enligt administratörspolicyn är det inte rekommenderat att överföra den här filen till <ph name="DESTINATION_NAME" />}other{Enligt administratörspolicyn är det inte rekommenderat att överföra dessa filer till <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3630155396527302611">Om den redan finns med på listan över program som har tillgång till nätverket 
         kan du prova att ta bort den från listan och sedan lägga till den igen.</translation>
@@ -1398,7 +1397,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="388632593194507180">Övervakning har upptäckts</translation>
 <translation id="3886948180919384617">Utmatningsfack 3</translation>
 <translation id="3890664840433101773">Lägg till e-post</translation>
-<translation id="3893306401511601929">Automatisk bild-i-bild</translation>
 <translation id="3897092660631435901">Meny</translation>
 <translation id="3901925938762663762">Kortet gäller inte längre</translation>
 <translation id="390391808978419508">Tidsgränsen för att öppna överskreds</translation>
@@ -1867,7 +1865,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="4852429274334674023">Operativsystem</translation>
 <translation id="4854853140771946034">Skapa en ny anteckning i Google Keep snabbt</translation>
 <translation id="485902285759009870">Koden verifieras …</translation>
-<translation id="4862630594858951805">Vill du få e-postmeddelanden när priset sänks?</translation>
 <translation id="4864406669374375262">Versionssträngen har kopierats till urklipp</translation>
 <translation id="486459320933704969">En förälder eller vårdnadshavare måste godkänna att du besöker webbplatsen</translation>
 <translation id="4866506163384898554">Tryck på |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| om du vill att markören ska visas</translation>
@@ -2756,7 +2753,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="6710594484020273272">&lt;Ange sökterm&gt;</translation>
 <translation id="671076103358959139">Registreringstoken:</translation>
 <translation id="6711464428925977395">Något är fel med proxyservern eller så är adressen felaktig.</translation>
-<translation id="6716013836112872184">Få e-postmeddelanden till <ph name="EMAIL" /> när priset sänks på en webbplats.</translation>
 <translation id="6716672519412350405"><ph name="URL" /> skapa en 3D-karta över dina omgivningar och registrera kamerans position</translation>
 <translation id="6718612893943028815">Vill du använda kameran?</translation>
 <translation id="6721164594124191969">Etiketter (blanka)</translation>
@@ -4036,6 +4032,5 @@ Mer information:
     &lt;li&gt;Testa att ansluta till ett annat nätverk&lt;/li&gt;
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
-<translation id="995240771322213706">automatisk bild-i-bild</translation>
 <translation id="997986563973421916">Från Google Pay</translation>
 </translationbundle>

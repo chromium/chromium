@@ -1262,7 +1262,6 @@
 <translation id="36224234498066874">ล้างข้อมูลการท่องเว็บ</translation>
 <translation id="362276910939193118">แสดงประวัติการเข้าชมทั้งหมด</translation>
 <translation id="3624292976554877583">ป้าย (ด้าน)</translation>
-<translation id="3625929652356389713">สามารถขอเปิดหน้าต่างการแสดงภาพซ้อนภาพโดยอัตโนมัติได้</translation>
 <translation id="3628905806504633297">{0,plural, =1{นโยบายของผู้ดูแลระบบไม่แนะนำให้โอนไฟล์นี้ไปยัง <ph name="DESTINATION_NAME" />}other{นโยบายของผู้ดูแลระบบไม่แนะนำให้โอนไฟล์เหล่านี้ไปยัง <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3630155396527302611">หากโปรแกรมอยู่ในรายการที่ได้รับอนุญาตให้เข้าถึงเครือข่ายอยู่แล้ว
       ลองนำโปรแกรมออกจากรายการและเพิ่มกลับเข้าไปใหม่</translation>
@@ -1397,7 +1396,6 @@
 <translation id="388632593194507180">ตรวจพบการตรวจสอบ</translation>
 <translation id="3886948180919384617">สแต็กเกอร์ 3</translation>
 <translation id="3890664840433101773">เพิ่มอีเมล</translation>
-<translation id="3893306401511601929">การแสดงภาพซ้อนภาพอัตโนมัติ</translation>
 <translation id="3897092660631435901">เมนู</translation>
 <translation id="3901925938762663762">บัตรหมดอายุ</translation>
 <translation id="390391808978419508">การเปิดหมดเวลาแล้ว</translation>
@@ -1866,7 +1864,6 @@
 <translation id="4852429274334674023">ระบบปฏิบัติการ</translation>
 <translation id="4854853140771946034">สร้างโน้ตใหม่ใน Google Keep อย่างรวดเร็ว</translation>
 <translation id="485902285759009870">กำลังยืนยันรหัส...</translation>
-<translation id="4862630594858951805">ต้องการรับอีเมลแจ้งเมื่อราคาต่ำลงไหม</translation>
 <translation id="4864406669374375262">คัดลอกสตริงเวอร์ชันไปยังคลิปบอร์ดแล้ว</translation>
 <translation id="486459320933704969">พ่อแม่หรือผู้ปกครองต้องระบุว่าคุณเข้าชมเว็บไซต์นี้ได้</translation>
 <translation id="4866506163384898554">กด |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| เพื่อแสดงเคอร์เซอร์</translation>
@@ -2755,7 +2752,6 @@
 <translation id="6710594484020273272">&lt;พิมพ์ข้อความค้นหา&gt;</translation>
 <translation id="671076103358959139">โทเค็นการลงทะเบียน:</translation>
 <translation id="6711464428925977395">พร็อกซีเซิร์ฟเวอร์ผิดปกติหรือที่อยู่ไม่ถูกต้อง</translation>
-<translation id="6716013836112872184">รับอีเมลซึ่งจะส่งไปที่ <ph name="EMAIL" /> เมื่อราคาต่ำลงในเว็บไซต์ใดก็ตาม</translation>
 <translation id="6716672519412350405"><ph name="URL" /> ต้องการสร้างแผนที่ 3 มิติของสิ่งที่อยู่รอบตัวคุณและติดตามตำแหน่งของกล้อง</translation>
 <translation id="6718612893943028815">ใช้กล้องถ่ายรูปไหม</translation>
 <translation id="6721164594124191969">ป้าย (เงา)</translation>
@@ -4035,6 +4031,5 @@
     &lt;li&gt;ลองเชื่อมต่อกับเครือข่ายอื่น&lt;/li&gt;
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
-<translation id="995240771322213706">การแสดงภาพซ้อนภาพอัตโนมัติ</translation>
 <translation id="997986563973421916">จาก Google Pay</translation>
 </translationbundle>

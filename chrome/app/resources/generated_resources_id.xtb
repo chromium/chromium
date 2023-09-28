@@ -17,7 +17,6 @@
 <translation id="1008261151167010035"><ph name="BRAND" /> mengingat cara Anda login dan otomatis membuat Anda login jika memungkinkan. Saat nonaktif, Anda akan selalu dimintai konfirmasi.</translation>
 <translation id="1008544602823861396">diblokir agar tidak dapat menggunakan info Anda di</translation>
 <translation id="1008557486741366299">Jangan Sekarang</translation>
-<translation id="1009454959501038262">{NUM_SITES,plural, =1{Untuk melindungi data Anda, izin telah dihapus dari situs yang tidak Anda buka dalam 2 bulan}other{Untuk melindungi data Anda, izin telah dihapus dari situs yang tidak Anda buka dalam 2 bulan}}</translation>
 <translation id="1009663062402466586">Kontrol game kini tersedia</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{Halaman Tidak Merespons}other{Halaman Tidak Merespons}}</translation>
 <translation id="1011003645819296594">Perangkat yang disimpan</translation>
@@ -122,7 +121,6 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="1084824384139382525">Salin ala&amp;mat link</translation>
 <translation id="1085064499066015002">Selalu di semua situs</translation>
 <translation id="1085697365578766383">Error saat memulai mesin virtual. Harap coba lagi.</translation>
-<translation id="1087965115100412394">Jangan izinkan situs terhubung ke perangkat MIDI</translation>
 <translation id="1088659085457112967">Masuk ke Mode Pembaca</translation>
 <translation id="1090126737595388931">Tidak Ada Apl Latar Belakang yang Sedang Berjalan</translation>
 <translation id="1090541560108055381">Sebelum menyambungkan, pastikan kode ini sama di kedua perangkat</translation>
@@ -3232,7 +3230,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3551320343578183772">Tutup Tab</translation>
 <translation id="3552097563855472344"><ph name="NETWORK_NAME" /> - <ph name="SPAN_START" /><ph name="CARRIER_NAME" /><ph name="SPAN_END" /></translation>
 <translation id="3552780134252864554">Dihapus saat Keluar</translation>
-<translation id="3553487194781590058">Jangan izinkan situs membuka jendela picture-in-picture saat Anda beralih ke tab lain</translation>
 <translation id="3554493885489666172">Perangkat Anda dikelola oleh <ph name="PROFILE_NAME" />. Administrator dapat mengakses data di profil mana pun di perangkat ini.</translation>
 <translation id="3555812735919707620">Buang ekstensi</translation>
 <translation id="3557101512409028104">Setel pembatasan situs dan batas waktu pemakaian perangkat dengan Family Link</translation>
@@ -3791,7 +3788,6 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="3975201861340929143">Penjelasan</translation>
 <translation id="3975565978598857337">Menghubungi server untuk area yang gagal</translation>
 <translation id="3976108569178263973">Tidak ada printer yang tersedia.</translation>
-<translation id="3976244126942806443">Situs biasanya terhubung ke perangkat MIDI untuk membuat dan mengedit musik</translation>
 <translation id="397703832102027365">Mengakhiri...</translation>
 <translation id="3977145907578671392">Fitur di beberapa situs mungkin tidak berfungsi dalam mode Samaran</translation>
 <translation id="3977886311744775419">Update otomatis tidak didownload pada jenis jaringan ini, namun Anda dapat memeriksa update secara manual.</translation>
@@ -4692,7 +4688,6 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="4730492586225682674">Catatan terakhir stilus di layar kunci</translation>
 <translation id="4730888769809690665">Notifikasi diizinkan untuk <ph name="SITE" /></translation>
 <translation id="4731306954230393087">Diizinkan untuk menggunakan info tentang Anda yang telah disimpan situs</translation>
-<translation id="473140019006744096">Tidak tersedia cukup ruang di perangkat ini untuk menyelesaikan update ini. Kosongkan <ph name="NECESSARY_SPACE" /> di perangkat, lalu coba lagi.</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (Kiri)</translation>
 <translation id="4733793249294335256">Lokasi</translation>
 <translation id="473546211690256853">Akun ini dikelola oleh <ph name="DOMAIN" /></translation>
@@ -5394,7 +5389,6 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="5327912693242073631">Fitur yang memerlukan notifikasi tidak akan berfungsi</translation>
 <translation id="532943162177641444">Ketuk notifikasi di <ph name="PHONE_NAME" /> Anda untuk menyiapkan hotspot seluler yang dapat digunakan oleh perangkat ini.</translation>
 <translation id="5329858601952122676">&amp;Hapus</translation>
-<translation id="5330592967519769658">Diizinkan membuka jendela picture-in-picture saat Anda beralih ke tab lain</translation>
 <translation id="5331069282670671859">Anda tidak memiliki sertifikat dalam kategori ini</translation>
 <translation id="5331568967879689647">Aplikasi Sistem ChromeOS</translation>
 <translation id="5331975486040154427">Perangkat USB-C (port belakang sebelah kiri)</translation>
@@ -5572,7 +5566,6 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="5473099001878321374">Dengan melanjutkan, Anda setuju bahwa perangkat ini juga dapat otomatis mendownload serta menginstal update dan aplikasi dari Google, operator anak Anda, dan produsen perangkat ini, yang kemungkinan menggunakan data seluler. Beberapa aplikasi ini mungkin menawarkan pembelian dalam aplikasi.</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{PIN harus berisi minimal satu karakter}other{PIN harus berisi minimal # karakter}}</translation>
 <translation id="5474859849784484111"><ph name="MANAGER" /> mengharuskan Anda terhubung ke Wi-Fi sekarang dan mendownload update. Atau, Anda dapat mendownload dengan koneksi berbayar (dapat dikenai biaya).</translation>
-<translation id="5478520208448702555">Situs mungkin membuka jendela picture-in-picture saat Anda beralih ke tab lain</translation>
 <translation id="5481273127572794904">Tidak diizinkan mendownload otomatis beberapa file</translation>
 <translation id="5481941284378890518">Tambahkan Printer di Sekitar</translation>
 <translation id="5484181871714116891">Jika diaktifkan, kunci sandi akan dibuat di Rantai Kunci iCloud dan tersedia di seluruh perangkat Apple Anda. Jika dinonaktifkan, kunci sandi akan dibuat di profil Chrome Anda di perangkat ini.</translation>
@@ -5730,7 +5723,6 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="5600348067066185292">Penginstalan dapat dilakukan dalam beberapa langkah mudah. Anda akan memiliki kesempatan lain untuk mengonfirmasi sebelum perubahan dilakukan pada komputer.</translation>
 <translation id="5600706100022181951">Update akan didownload menggunakan data seluler sebesar <ph name="UPDATE_SIZE_MB" /> MB. Ingin melanjutkan?</translation>
 <translation id="5601503069213153581">PIN</translation>
-<translation id="5601823921345337195">Tidak diizinkan terhubung ke perangkat MIDI</translation>
 <translation id="5601833336918638013">Jangan izinkan situs mencari perangkat Bluetooth</translation>
 <translation id="5602586420788540146">Buka di grup tab baru</translation>
 <translation id="5605758115928394442">Notifikasi telah dikirim ke ponsel Anda untuk mengonfirmasi bahwa ini memang Anda.</translation>
@@ -5852,7 +5844,6 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="5707185214361380026">Gagal memuat ekstensi dari:</translation>
 <translation id="5708171344853220004">Microsoft Principal Name</translation>
 <translation id="5709557627224531708">Setel Chrome sebagai browser default Anda</translation>
-<translation id="5710122160114032242">Tidak diizinkan membuka jendela picture-in-picture saat Anda beralih ke tab lain</translation>
 <translation id="5711010025974903573">Log layanan</translation>
 <translation id="5711983031544731014">Tidak dapat membuka. Masukkan sandi Anda.</translation>
 <translation id="5712153969432126546">Situs terkadang memublikasikan PDF, seperti dokumen, kontrak, dan formulir</translation>
@@ -6614,7 +6605,6 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="6326175484149238433">Hapus dari Chrome</translation>
 <translation id="6326855256003666642">Jumlah aktivitas yang Tetap Aktif</translation>
 <translation id="6327785803543103246">Penemuan otomatis proksi web</translation>
-<translation id="6331818708794917058">Situs dapat meminta untuk terhubung ke perangkat MIDI</translation>
 <translation id="6333064448949140209">File akan dikirim ke Google untuk proses debug</translation>
 <translation id="6333170995003625229">Alamat email atau sandi Anda tidak dapat diverifikasi. Coba login lagi.</translation>
 <translation id="6334267141726449402">Salin dan kirim link ini kepada pengguna untuk mengumpulkan log.</translation>
@@ -6764,7 +6754,6 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="6458701200018867744">Upload gagal (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">Gunakan Pilihan untuk Temukan</translation>
 <translation id="6459799433792303855">Jendela aktif dipindahkan ke layar lain.</translation>
-<translation id="6460566145397380451">Diizinkan terhubung ke perangkat MIDI</translation>
 <translation id="6460601847208524483">Temukan Berikutnya</translation>
 <translation id="6461170143930046705">Mencari jaringan...</translation>
 <translation id="6463795194797719782">&amp;Edit</translation>
@@ -7090,7 +7079,6 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="6735304988756581115">Tampilkan cookie dan data situs lainnya...</translation>
 <translation id="6736243959894955139">Alamat</translation>
 <translation id="6737663862851963468">Hapus tiket Kerberos</translation>
-<translation id="6737931010859480781">Aplikasi ini diprainstal pada perangkat Anda</translation>
 <translation id="6738180164164974883">Izinkan untuk menyetel cookie pihak ketiga</translation>
 <translation id="6738430949033571771">Memverifikasi akun ...</translation>
 <translation id="6739923123728562974">Tampilkan pintasan desktop</translation>
@@ -8484,7 +8472,6 @@ Tekan tombol akses atau tombol keyboard yang telah ditetapkan untuk menghapus pe
 <translation id="7853747251428735">Alat Lain&amp;nya</translation>
 <translation id="7853999103056713222">Gunakan Sandi yang Lebih Aman</translation>
 <translation id="7855678561139483478">Pindahkan tab ke jendela baru</translation>
-<translation id="7855729579456690716">Situs dapat membuka jendela picture-in-picture saat Anda beralih ke tab lain</translation>
 <translation id="7857004848504343806">Komputer Anda berisi modul aman, yang digunakan untuk menerapkan banyak fitur keamanan penting di ChromeOS Flex. Buka Pusat Bantuan Chromebook untuk mempelajari lebih lanjut: https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">Saran teks</translation>
 <translation id="7857949311770343000">Apakah ini halaman tab baru yang Anda harapkan?</translation>

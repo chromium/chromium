@@ -17,7 +17,6 @@
 <translation id="1008261151167010035"><ph name="BRAND" />会记住您的登录方式，并在可能的情况下自动为您登录。关闭此功能后，您每次登录时，系统都会要求您确认。</translation>
 <translation id="1008544602823861396">已被禁止在以下网站上使用您的相关信息：</translation>
 <translation id="1008557486741366299">以后再说</translation>
-<translation id="1009454959501038262">{NUM_SITES,plural, =1{为了保护您的数据，对于这个您在 2 个月内未访问过的网站，系统已将其权限撤消}other{为了保护您的数据，对于这些您在 2 个月内未访问过的网站，系统已将其权限撤消}}</translation>
 <translation id="1009663062402466586">游戏控件现已可供使用</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{1 个页面无响应}other{多个页面无响应}}</translation>
 <translation id="1011003645819296594">已保存的设备</translation>
@@ -122,7 +121,6 @@
 <translation id="1084824384139382525">复制链接地址(&amp;E)</translation>
 <translation id="1085064499066015002">在所有网站上始终允许</translation>
 <translation id="1085697365578766383">启动虚拟机时出错。请重试。</translation>
-<translation id="1087965115100412394">不允许网站连接到 MIDI 设备</translation>
 <translation id="1088659085457112967">进入阅读器模式</translation>
 <translation id="1090126737595388931">没有任何后台应用在运行</translation>
 <translation id="1090541560108055381">配对之前，请确保在这两部设备上显示的配对码相同</translation>
@@ -3203,7 +3201,6 @@
 <translation id="3551320343578183772">关闭标签页</translation>
 <translation id="3552097563855472344"><ph name="NETWORK_NAME" /> - <ph name="SPAN_START" /><ph name="CARRIER_NAME" /><ph name="SPAN_END" /></translation>
 <translation id="3552780134252864554">退出时清除</translation>
-<translation id="3553487194781590058">不允许网站在您切换到另一标签页时打开画中画窗口</translation>
 <translation id="3554493885489666172">您的设备由 <ph name="PROFILE_NAME" /> 管理。管理员可访问此设备上任意个人资料中的数据。</translation>
 <translation id="3555812735919707620">卸载扩展程序</translation>
 <translation id="3557101512409028104">通过 Family Link 设置网站限制和设备使用时间限制</translation>
@@ -3761,7 +3758,6 @@
 <translation id="3975201861340929143">说明</translation>
 <translation id="3975565978598857337">无法连接到指定领域的服务器</translation>
 <translation id="3976108569178263973">没有找到可用的打印机。</translation>
-<translation id="3976244126942806443">网站通常会连接到 MIDI 设备以便创作和编辑音乐</translation>
 <translation id="397703832102027365">正在完成...</translation>
 <translation id="3977145907578671392">在无痕模式下，某些网站上的功能可能会无法正常运作</translation>
 <translation id="3977886311744775419">使用此网络类型时无法下载自动更新，但您可以手动检查是否有更新。</translation>
@@ -4657,7 +4653,6 @@
 <translation id="4730492586225682674">在锁定屏幕上显示触控笔最新记事</translation>
 <translation id="4730888769809690665">允许 <ph name="SITE" /> 传送通知</translation>
 <translation id="4731306954230393087">允许使用其保存的与您相关的信息</translation>
-<translation id="473140019006744096">此设备的空间不足，无法完成更新。请在设备上清理出 <ph name="NECESSARY_SPACE" /> 的空间，然后重试。</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />%（左侧）</translation>
 <translation id="4733793249294335256">位置</translation>
 <translation id="473546211690256853">此账号由 <ph name="DOMAIN" /> 管理</translation>
@@ -5355,7 +5350,6 @@
 <translation id="5327912693242073631">所有需要使用通知的功能都将无法正常运行</translation>
 <translation id="532943162177641444">请点按您的 <ph name="PHONE_NAME" /> 设备上的通知，以设置可供此设备使用的移动热点。</translation>
 <translation id="5329858601952122676">删除(&amp;D)</translation>
-<translation id="5330592967519769658">可以在您切换到另一标签页时打开画中画窗口</translation>
 <translation id="5331069282670671859">您没有此类别的证书</translation>
 <translation id="5331568967879689647">Chrome 操作系统系统应用</translation>
 <translation id="5331975486040154427">USB-C 设备（左侧后端端口）</translation>
@@ -5533,7 +5527,6 @@
 <translation id="5473099001878321374">继续操作即表示您同意：此设备还可自动下载并安装来自 Google、您孩子的运营商和此设备的制造商的更新及应用（期间可能会使用移动数据网络），其中的部分应用可能会提供应用内购商品。</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{PIN 码必须包含至少 1 个字符}other{PIN 码必须包含至少 # 个字符}}</translation>
 <translation id="5474859849784484111"><ph name="MANAGER" /> 要求您立即连接到 Wi-Fi 并下载更新。您也可使用按流量计费的网络连接进行下载（可能需要支付相应费用）。</translation>
-<translation id="5478520208448702555">网站可能会在您切换到另一标签页时打开画中画窗口</translation>
 <translation id="5481273127572794904">不允许自动下载多个文件</translation>
 <translation id="5481941284378890518">添加附近的打印机</translation>
 <translation id="5484181871714116891">当此选项处于开启状态时，通行密钥会在 iCloud 钥匙串中创建，并可在各部 Apple 设备上使用。当此选项处于关闭状态时，通行密钥会在该设备上您的 Chrome 个人资料中创建。</translation>
@@ -5691,7 +5684,6 @@
 <translation id="5600348067066185292">只需执行几个简单的步骤即可完成安装。在更改计算机之前，您还有一次机会进行确认。</translation>
 <translation id="5600706100022181951">下载更新需要使用 <ph name="UPDATE_SIZE_MB" /> MB 的移动数据流量。要继续吗？</translation>
 <translation id="5601503069213153581">PIN</translation>
-<translation id="5601823921345337195">不允许连接到 MIDI 设备</translation>
 <translation id="5601833336918638013">不允许网站寻找蓝牙设备</translation>
 <translation id="5602586420788540146">在新标签页分组中打开</translation>
 <translation id="5605758115928394442">系统向您的手机发送了一条通知，以确认您的身份。</translation>
@@ -5811,7 +5803,6 @@
 <translation id="5707185214361380026">无法加载以下来源的扩展程序：</translation>
 <translation id="5708171344853220004">Microsoft 主体名称</translation>
 <translation id="5709557627224531708">将 Chrome 设为您的默认浏览器</translation>
-<translation id="5710122160114032242">不得在您切换到另一标签页时打开画中画窗口</translation>
 <translation id="5711010025974903573">服务日志</translation>
 <translation id="5711983031544731014">无法解锁，请输入密码。</translation>
 <translation id="5712153969432126546">网站有时会发布 PDF 文件，例如文档、合同和表单</translation>
@@ -6572,7 +6563,6 @@
 <translation id="6326175484149238433">从Chrome中移除</translation>
 <translation id="6326855256003666642">正在使用相应扩展程序的活动数</translation>
 <translation id="6327785803543103246">网络代理自动发现</translation>
-<translation id="6331818708794917058">网站可以请求连接到 MIDI 设备</translation>
 <translation id="6333064448949140209">文件将发送到 Google 进行调试</translation>
 <translation id="6333170995003625229">无法验证您的电子邮件地址或密码。请尝试重新登录。</translation>
 <translation id="6334267141726449402">复制此链接并将其发送给用户以收集日志。</translation>
@@ -6722,7 +6712,6 @@
 <translation id="6458701200018867744">上传失败（<ph name="WEBRTC_LOG_UPLOAD_TIME" />）。</translation>
 <translation id="6459488832681039634">使用所选内容查找</translation>
 <translation id="6459799433792303855">活动窗口已移至另一显示屏。</translation>
-<translation id="6460566145397380451">允许连接到 MIDI 设备</translation>
 <translation id="6460601847208524483">查找下一个</translation>
 <translation id="6461170143930046705">正在搜索网络…</translation>
 <translation id="6463795194797719782">修改(&amp;E)</translation>
@@ -7048,7 +7037,6 @@
 <translation id="6735304988756581115">显示 Cookie 和其他网站数据…</translation>
 <translation id="6736243959894955139">地址</translation>
 <translation id="6737663862851963468">移除 Kerberos 票据</translation>
-<translation id="6737931010859480781">此应用已预安装在您的设备上</translation>
 <translation id="6738180164164974883">允许设置第三方 Cookie</translation>
 <translation id="6738430949033571771">正在验证账号…</translation>
 <translation id="6739923123728562974">显示桌面快捷方式</translation>
@@ -8438,7 +8426,6 @@
 <translation id="7853747251428735">更多工具(&amp;L)</translation>
 <translation id="7853999103056713222">使用更安全的密码</translation>
 <translation id="7855678561139483478">将标签页移至新窗口</translation>
-<translation id="7855729579456690716">网站可以在您切换到另一标签页时打开画中画窗口</translation>
 <translation id="7857004848504343806">您的计算机包含一个安全模块，该模块可用于在 ChromeOS Flex 中实现许多关键的安全功能。如需了解详情，请访问 Chromebook 帮助中心：https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">文字建议</translation>
 <translation id="7857949311770343000">这是您想要的新标签页吗？</translation>

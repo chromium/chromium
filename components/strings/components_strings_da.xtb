@@ -1263,7 +1263,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="36224234498066874">Ryd browserdata...</translation>
 <translation id="362276910939193118">Vis hele historikken</translation>
 <translation id="3624292976554877583">Etiketter (matte)</translation>
-<translation id="3625929652356389713">Kan anmode om automatisk at åbne vinduer med integreret billede</translation>
 <translation id="3628905806504633297">{0,plural, =1{Administratorpolitikken fraråder at overføre denne fil til <ph name="DESTINATION_NAME" />}one{Administratorpolitikken fraråder at overføre denne fil til <ph name="DESTINATION_NAME" />}other{Administratorpolitikken fraråder at overføre disse filer til l <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3630155396527302611">Hvis programmet allerede står på listen over programmer, der har adgang til netværket, kan du prøve
     at fjerne det fra listen og tilføje det igen.</translation>
@@ -1398,7 +1397,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="388632593194507180">Overvågning blev registreret.</translation>
 <translation id="3886948180919384617">Stabler 3</translation>
 <translation id="3890664840433101773">Tilføj mailadresse</translation>
-<translation id="3893306401511601929">Automatisk integreret billede</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3901925938762663762">Kortet er udløbet</translation>
 <translation id="390391808978419508">Åbningen fik timeout</translation>
@@ -1867,7 +1865,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4852429274334674023">Operativsystemer</translation>
 <translation id="4854853140771946034">Opret hurtigt en ny note i Google Keep</translation>
 <translation id="485902285759009870">Verificerer koden...</translation>
-<translation id="4862630594858951805">Vil du have mails, når prisen falder?</translation>
 <translation id="4864406669374375262">Versionsstrengen er blevet kopieret til udklipsholderen</translation>
 <translation id="486459320933704969">En forælder eller værge skal godkende, at du må besøge dette website</translation>
 <translation id="4866506163384898554">Tryk på |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| for at se din markør</translation>
@@ -2756,7 +2753,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6710594484020273272">&lt;Indtast søgeterm&gt;</translation>
 <translation id="671076103358959139">Tilmeldingstoken:</translation>
 <translation id="6711464428925977395">Der er noget galt med proxyserveren, eller adressen er forkert.</translation>
-<translation id="6716013836112872184">Få mails sendt til <ph name="EMAIL" />, når prisen falder på et website.</translation>
 <translation id="6716672519412350405"><ph name="URL" /> vil oprette et 3D-kort over dine omgivelser og registrere kamerapositionen</translation>
 <translation id="6718612893943028815">Vil du bruge kameraet?</translation>
 <translation id="6721164594124191969">Etiketter (blanke)</translation>
@@ -4036,6 +4032,5 @@ Yderligere oplysninger:
     &lt;li&gt;Prøv at oprette forbindelse til et andet netværk&lt;/li&gt;
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
-<translation id="995240771322213706">automatisk integreret billede</translation>
 <translation id="997986563973421916">Fra Google Pay</translation>
 </translationbundle>

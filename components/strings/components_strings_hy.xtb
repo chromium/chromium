@@ -1269,7 +1269,6 @@
 <translation id="36224234498066874">Ջնջել այցելությունների պատմությունը...</translation>
 <translation id="362276910939193118">Ցույց տալ ամբողջ պատմությունը</translation>
 <translation id="3624292976554877583">Պիտակներ (անփայլ)</translation>
-<translation id="3625929652356389713">Կարող է հայցել ավտոմատ «նկար նկարի մեջ» պատուհաններ բացելու թույլտվություն</translation>
 <translation id="3628905806504633297">{0,plural, =1{Ադմինիստրատորը խորհուրդ չի տալիս այս ֆայլը տեղափոխել <ph name="DESTINATION_NAME" />}one{Ադմինիստրատորը խորհուրդ չի տալիս այս ֆայլը տեղափոխել <ph name="DESTINATION_NAME" />}other{Ադմինիստրատորը խորհուրդ չի տալիս այս ֆայլերը տեղափոխել <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3630155396527302611">Եթե այն արդեն նշված է որպես ցանցին կապակցվելու թույլտվություն ունեցող ծրագիր, փորձեք
         հեռացնել այն և նորից ավելացնել:</translation>
@@ -1406,7 +1405,6 @@
 <translation id="388632593194507180">Միացումը վերահսկվում է</translation>
 <translation id="3886948180919384617">Շեղջիչ 3</translation>
 <translation id="3890664840433101773">Ավելացրեք էլ․ հասցե</translation>
-<translation id="3893306401511601929">Ավտոմատ «նկար նկարի մեջ» ռեժիմ</translation>
 <translation id="3897092660631435901">Ընտրացանկ</translation>
 <translation id="3901925938762663762">Քարտի ժամկետը սպառվել է</translation>
 <translation id="390391808978419508">Բացման ժամանակը սպառվել է</translation>
@@ -1875,7 +1873,6 @@
 <translation id="4852429274334674023">Օպերացիոն համակարգեր</translation>
 <translation id="4854853140771946034">Արագ ստեղծել նշում Google Keep-ում</translation>
 <translation id="485902285759009870">Կոդը ստուգվում է…</translation>
-<translation id="4862630594858951805">Ուզո՞ւմ եք նամակով տեղեկացվել, երբ գնիջեցում լինի</translation>
 <translation id="4864406669374375262">Տարբերակի տողը պատճենվեց սեղմատախտակին</translation>
 <translation id="486459320933704969">Ծնողը կամ խնամակալը պետք է թույլատրի ձեզ այցելել այս կայք</translation>
 <translation id="4866506163384898554">Նշորդը ցույց տալու համար սեղմեք |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />|</translation>
@@ -2767,7 +2764,6 @@
 <translation id="6710594484020273272">&lt;Մուտքագրեք որոնման հարցումը&gt;</translation>
 <translation id="671076103358959139">Գրանցման թոքեն՝</translation>
 <translation id="6711464428925977395">Պրոքսի սերվերի հետ ինչ-որ բան այն չէ, կամ հասցեն սխալ է:</translation>
-<translation id="6716013836112872184">Ստացեք նամակներ <ph name="EMAIL" /> հասցեին, երբ որևէ կայքում գնիջեցում լինի։</translation>
 <translation id="6716672519412350405"><ph name="URL" /> կայքն ուզում է ստեղծել ձեր շրջակայքի եռաչափ քարտեզը և հետագծել տեսախցիկի դիրքը</translation>
 <translation id="6718612893943028815">Օգտագործե՞լ տեսախցիկը</translation>
 <translation id="6721164594124191969">Պիտակներ (փայլուն)</translation>
@@ -4046,6 +4042,5 @@
     &lt;li&gt;միացեք այլ ցանցի։&lt;/li&gt;
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
-<translation id="995240771322213706">ավտոմատ «նկար նկարի մեջ» ռեժիմ</translation>
 <translation id="997986563973421916">Google Pay-ից</translation>
 </translationbundle>

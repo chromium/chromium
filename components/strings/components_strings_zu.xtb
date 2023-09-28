@@ -1261,7 +1261,6 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="36224234498066874">Sula idatha yokuphequlula...</translation>
 <translation id="362276910939193118">Bonisa umlando ogcwele</translation>
 <translation id="3624292976554877583">Amalebula (i-Matte)</translation>
-<translation id="3625929652356389713">Cela ukuvula ngokuzenzakalelayo amawindi esithombe-esithombeni</translation>
 <translation id="3628905806504633297">{0,plural, =1{Inqubomgomo yomlawuli ayikukhuthazi ukudlulisela leli fayela ku-<ph name="DESTINATION_NAME" />}one{Inqubomgomo yomlawuli ayikukhuthazi ukudlulisela lawa mafayela ku-<ph name="DESTINATION_NAME" />}other{Inqubomgomo yomlawuli ayikukhuthazi ukudlulisela lawa mafayela ku-<ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3630155396527302611">Uma seluvele lifakwe kuhlu njengohlelo oluvunyelwe ukuze lufinyelele kunethiwekhi, zama ukulisusa kusukela kuhlu uphinde ulingeze futhi.</translation>
 <translation id="3630426379756188722">Inkinobho ethi Thola ifoni yami, yenza kusebenze ukuze uthole idivayisi yakho ku-Google Account</translation>
@@ -1395,7 +1394,6 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="388632593194507180">Ukwengamela kutholiwe</translation>
 <translation id="3886948180919384617">Isitaki esingu-3</translation>
 <translation id="3890664840433101773">Engeza i-imeyili</translation>
-<translation id="3893306401511601929">Isithombe-esithombeni esizenzakalelayo</translation>
 <translation id="3897092660631435901">Imenyu</translation>
 <translation id="3901925938762663762">Ikhadi liphelelwe yisikhathi</translation>
 <translation id="390391808978419508">Ukuvula kuphelelwe yisikhathi</translation>
@@ -1864,7 +1862,6 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="4852429274334674023">Amasistimu okusebenza</translation>
 <translation id="4854853140771946034">Dala inothi elisha ngokushesha ku-Google Keep</translation>
 <translation id="485902285759009870">Iqinisekisa ikhodi...</translation>
-<translation id="4862630594858951805">Ufuna ama-imeyili uma intengo yehla?</translation>
 <translation id="4864406669374375262">Uhlobo lwezinhlamvu ezikopishwe ebhodini lokunamathisela</translation>
 <translation id="486459320933704969">Umzali noma umnakekeli kufanele athi Kulungile ukuthi uvakashele le webhusayithi</translation>
 <translation id="4866506163384898554">Cindezela u-|<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| ukuze ubonise i-cursor yakho</translation>
@@ -2753,7 +2750,6 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="6710594484020273272">&lt;Thayipha itemu lokusesha&gt;</translation>
 <translation id="671076103358959139">Ithokheni yokubhaliswa:</translation>
 <translation id="6711464428925977395">Kukhona okungalungile ngeseva elibamba, noma ikheli alilungile.</translation>
-<translation id="6716013836112872184">Thola ama-imeyili athunyelwe ku-<ph name="EMAIL" /> lapho intengo yehla kunoma iyiphi isayithi.</translation>
 <translation id="6716672519412350405">I-<ph name="URL" /> ifuna ukudala imephu ye-3D yendawo ekuzungezile futhi ilandelele indawo yekhamera</translation>
 <translation id="6718612893943028815">Sebenzisa ikhamera?</translation>
 <translation id="6721164594124191969">Amalebula (i-Glossy)</translation>
@@ -4032,6 +4028,5 @@ Imininingwane engeziwe:
     &lt;li&gt;Zama ukuxhuma kwenye inethiwekhi&lt;/li&gt;
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">I-JIS B1</translation>
-<translation id="995240771322213706">isithombe-esithombeni esizenzakalelayo</translation>
 <translation id="997986563973421916">Kusukela ku-Google Play</translation>
 </translationbundle>

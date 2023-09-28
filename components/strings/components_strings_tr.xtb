@@ -1263,7 +1263,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="36224234498066874">Tarama Verilerini Temizle...</translation>
 <translation id="362276910939193118">Tam Geçmişi Göster</translation>
 <translation id="3624292976554877583">Etiketler (Mat)</translation>
-<translation id="3625929652356389713">Pencere içinde pencerelerin otomatik olarak açılmasını isteyebilir</translation>
 <translation id="3628905806504633297">{0,plural, =1{Yönetici politikası bu dosyayı <ph name="DESTINATION_NAME" /> hedefine aktarmanızı önermiyor}other{Yönetici politikası bu dosyaları <ph name="DESTINATION_NAME" /> hedefine aktarmanızı önermiyor}}</translation>
 <translation id="3630155396527302611">Ağa erişmesine izin verilmiş bir program olarak zaten listeleniyorsa,
     listeden kaldırıp tekrar eklemeyi deneyin.</translation>
@@ -1398,7 +1397,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="388632593194507180">İzleme Tespit Edildi</translation>
 <translation id="3886948180919384617">Yığınlayıcı 3</translation>
 <translation id="3890664840433101773">E-posta adresi ekle</translation>
-<translation id="3893306401511601929">Otomatik pencere içinde pencere</translation>
 <translation id="3897092660631435901">Menü</translation>
 <translation id="3901925938762663762">Kartın kullanım süresi doldu</translation>
 <translation id="390391808978419508">Açma zaman aşımına uğradı</translation>
@@ -1867,7 +1865,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="4852429274334674023">İşletim sistemleri</translation>
 <translation id="4854853140771946034">Google Keep'te hızlıca yeni bir not oluşturun</translation>
 <translation id="485902285759009870">Kod doğrulanıyor...</translation>
-<translation id="4862630594858951805">Fiyat düştüğünde e-posta almak ister misiniz?</translation>
 <translation id="4864406669374375262">Sürüm dizesi, panoya kopyalandı</translation>
 <translation id="486459320933704969">Bir anne veya babanın ya da velinin, bu web sitesini ziyaret etmenizin uygun olduğunu belirtmesi gerekir</translation>
 <translation id="4866506163384898554">İmlecinizi göstermek için |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| tuşlarına basın</translation>
@@ -2756,7 +2753,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6710594484020273272">&lt;Arama terimini yazın&gt;</translation>
 <translation id="671076103358959139">Kayıt Jetonu:</translation>
 <translation id="6711464428925977395">Proxy sunucusunda bir sorun var veya adres yanlış.</translation>
-<translation id="6716013836112872184">Ürünün fiyatı herhangi bir sitede düştüğünde <ph name="EMAIL" /> adresine e-posta alın.</translation>
 <translation id="6716672519412350405"><ph name="URL" />, çevrenizin 3D haritasını oluşturmak ve kamera konumunu takip etmek istiyor</translation>
 <translation id="6718612893943028815">Kamera kullanılsın mı?</translation>
 <translation id="6721164594124191969">Etiketler (Parlak)</translation>
@@ -4036,6 +4032,5 @@ Ek ayrıntılar:
     &lt;li&gt;Başka bir kablosuz ağa bağlanmayı deneyin&lt;/li&gt;
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
-<translation id="995240771322213706">otomatik pencere içinde pencere</translation>
 <translation id="997986563973421916">Google Pay'den</translation>
 </translationbundle>

@@ -17,7 +17,6 @@
 <translation id="1008261151167010035">דרך הכניסה לחשבון נשמרת ב<ph name="BRAND" />, והכניסה מתבצעת באופן אוטומטי מתי שאפשר. כשהאפשרות הזו מושבתת, מוצגת בקשה לאישור בכל פעם.</translation>
 <translation id="1008544602823861396">חסימת השימוש במידע שלך ב-</translation>
 <translation id="1008557486741366299">לא עכשיו</translation>
-<translation id="1009454959501038262">{NUM_SITES,plural, =1{כדי להגן על הנתונים שלך, הוסרו ההרשאות מאתר שלא נכנסת אליו במשך חודשיים}one{כדי להגן על הנתונים שלך, הוסרו הרשאות מאתרים שלא נכנסת אליהם במשך חודשיים}two{כדי להגן על הנתונים שלך, הוסרו הרשאות מאתרים שלא נכנסת אליהם במשך חודשיים}other{כדי להגן על הנתונים שלך, הוסרו הרשאות מאתרים שלא נכנסת אליהם במשך חודשיים}}</translation>
 <translation id="1009663062402466586">פקדי המשחקים זמינים עכשיו</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{הדף אינו מגיב}one{הדפים אינם מגיבים}two{הדפים אינם מגיבים}other{הדפים אינם מגיבים}}</translation>
 <translation id="1011003645819296594">המכשירים השמורים</translation>
@@ -122,7 +121,6 @@
 <translation id="1084824384139382525">העתקת כתו&amp;בת קישור</translation>
 <translation id="1085064499066015002">פועל כל הזמן בכל האתרים</translation>
 <translation id="1085697365578766383">קרתה שגיאה בהפעלת המכונה הווירטואלית. יש לנסות שוב.</translation>
-<translation id="1087965115100412394">‏לא לאפשר לאתרים להתחבר למכשירי MIDI</translation>
 <translation id="1088659085457112967">כניסה למצב קורא</translation>
 <translation id="1090126737595388931">אין יישומים פועלים ברקע</translation>
 <translation id="1090541560108055381">לפני ההתאמה צריך לוודא שמשתמשים באותו קוד בשני המכשירים</translation>
@@ -3232,7 +3230,6 @@
 <translation id="3551320343578183772">סגירת כרטיסייה</translation>
 <translation id="3552097563855472344"><ph name="NETWORK_NAME" /> – <ph name="SPAN_START" /><ph name="CARRIER_NAME" /><ph name="SPAN_END" /></translation>
 <translation id="3552780134252864554">מנוקה בעת היציאה</translation>
-<translation id="3553487194781590058">אין הרשאה לפתוח חלון עם תמונה בתוך תמונה, כשעוברים לכרטיסייה אחרת</translation>
 <translation id="3554493885489666172">המכשיר שלך מנוהל על-ידי <ph name="PROFILE_NAME" />. למנהלי המערכת יש גישה לנתונים של כל פרופיל במכשיר הזה.</translation>
 <translation id="3555812735919707620">הסרת תוסף</translation>
 <translation id="3557101512409028104">‏הגדרה של הגבלות גישה לאתרים וזמן מסך בעזרת Family Link</translation>
@@ -3791,7 +3788,6 @@
 <translation id="3975201861340929143">הסבר</translation>
 <translation id="3975565978598857337">יצירת הקשר עם השרת של התחום נכשלה</translation>
 <translation id="3976108569178263973">אין מדפסות זמינות.</translation>
-<translation id="3976244126942806443">‏בדרך כלל אתרים מתחברים למכשירי MIDI כדי לתמוך ביצירה ובעריכה של מוזיקה</translation>
 <translation id="397703832102027365">בשלבי סיום...</translation>
 <translation id="3977145907578671392">יכול להיות שהתכונות באתרים מסוימים לא יפעלו במצב פרטי</translation>
 <translation id="3977886311744775419">ברשת מסוג זה לא יכולים להתבצע עדכונים אוטומטיים, אבל אפשר לבדוק ידנית אם יש עדכונים.</translation>
@@ -4692,7 +4688,6 @@
 <translation id="4730492586225682674">ההערה האחרונה שנכתבה במסך הנעילה עם סטיילוס</translation>
 <translation id="4730888769809690665">לאתר <ph name="SITE" /> יש הרשאה לשלוח התראות</translation>
 <translation id="4731306954230393087">לאתר יש הרשאה להשתמש במידע עליך שנשמר בו</translation>
-<translation id="473140019006744096">אין מספיק מקום אחסון במכשיר הזה כדי להשלים את העדכון. צריך לפנות <ph name="NECESSARY_SPACE" /> במכשיר ולנסות שוב.</translation>
 <translation id="4733161265940833579">%<ph name="BATTERY_PERCENTAGE" /> (שמאל)</translation>
 <translation id="4733793249294335256">מיקום</translation>
 <translation id="473546211690256853">חשבון זה מנוהל על ידי <ph name="DOMAIN" /></translation>
@@ -5394,7 +5389,6 @@
 <translation id="5327912693242073631">תכונות שצריכות התראות לא יפעלו</translation>
 <translation id="532943162177641444">יש להקיש על ההודעה בטלפון <ph name="PHONE_NAME" /> כדי להגדיר את הנקודה לשיתוף אינטרנט בנייד שבה המכשיר הזה יכול להשתמש.</translation>
 <translation id="5329858601952122676">&amp;מחיקה</translation>
-<translation id="5330592967519769658">הרשאה לפתוח חלון עם תמונה בתוך תמונה במעבר לכרטיסייה אחרת</translation>
 <translation id="5331069282670671859">אין לך אישורים בקטגוריה הזו</translation>
 <translation id="5331568967879689647">‏אפליקציית מערכת של ChromeOS</translation>
 <translation id="5331975486040154427">‏מכשיר עם יציאת USB-C (יציאה שמאלית-אחורית)</translation>
@@ -5572,7 +5566,6 @@
 <translation id="5473099001878321374">‏המשך הפעולה מבטא את הסכמתך לכך שהמכשיר הזה יוכל גם להוריד ולהתקין עדכונים ואפליקציות באופן אוטומטי מ-Google, מהספק של הילד או הילדה שלך ומיצרן המכשיר, גם אם ייעשה לשם כך שימוש בחבילת הגלישה. חלק מהאפליקציות האלו עשויות להציע רכישות מתוך האפליקציה.</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{קוד האימות חייב להיות באורך של תו אחד לפחות}one{קוד האימות חייב להיות באורך של # תווים לפחות}two{קוד האימות חייב להיות באורך של # תווים לפחות}other{קוד האימות חייב להיות באורך של # תווים לפחות}}</translation>
 <translation id="5474859849784484111">‏כדי להיכנס אל <ph name="MANAGER" />, מתחברים עכשיו לרשת Wi-Fi ומורידים עדכון. ניתן גם לבצע את ההורדה דרך חיבור עם חיוב לפי שימוש בנתונים (עשויים לחול חיובים).</translation>
-<translation id="5478520208448702555">כשעוברים לכרטיסייה אחרת, אתרים עשויים לפתוח חלון עם תמונה בתוך תמונה</translation>
 <translation id="5481273127572794904">לא מורשים להוריד מספר קבצים באופן אוטומטי</translation>
 <translation id="5481941284378890518">הוספת מדפסות קרובות</translation>
 <translation id="5484181871714116891">‏כשההגדרה מופעלת, מפתחות הגישה נוצרים ב'צרור המפתחות של iCloud' וזמינים בכל מכשירי Apple. כשההגדרה מושבתת, מפתחות הגישה נוצרים בפרופיל Chrome במכשיר הזה.</translation>
@@ -5730,7 +5723,6 @@
 <translation id="5600348067066185292">ההתקנה מתבצעת בכמה שלבים פשוטים. תהיה לך עוד הזדמנות לאשר לפני שיבוצעו שינויים במחשב שלך.</translation>
 <translation id="5600706100022181951">‏ההורדה של העדכון תנצל MB <ph name="UPDATE_SIZE_MB" /> מחבילת הגלישה. להמשיך?</translation>
 <translation id="5601503069213153581">קוד אימות</translation>
-<translation id="5601823921345337195">‏לא מורשים להתחבר אל מכשירי MIDI</translation>
 <translation id="5601833336918638013">‏לא לאפשר לאתרים לאתר מכשירי Bluetooth</translation>
 <translation id="5602586420788540146">פתיחה בקבוצת כרטיסיות חדשה</translation>
 <translation id="5605758115928394442">הודעה נשלחה לטלפון שלך כדי לאשר את זהותך.</translation>
@@ -5852,7 +5844,6 @@
 <translation id="5707185214361380026">נכשלה טעינת תוסף מ:</translation>
 <translation id="5708171344853220004">‏שם ראשי של Microsoft</translation>
 <translation id="5709557627224531708">‏הגדרת Chrome כדפדפן ברירת המחדל</translation>
-<translation id="5710122160114032242">אין הרשאה לפתוח חלון עם תמונה בתוך תמונה במעבר לכרטיסייה אחרת</translation>
 <translation id="5711010025974903573">יומני שירות</translation>
 <translation id="5711983031544731014">לא ניתן לבטל את הנעילה. יש להזין את הסיסמה שלך.</translation>
 <translation id="5712153969432126546">‏לפעמים אתרים מפרסמים קובצי PDF, כמו מסמכים, חוזים וטפסים</translation>
@@ -6614,7 +6605,6 @@
 <translation id="6326175484149238433">‏הסרה מ-Chrome</translation>
 <translation id="6326855256003666642">‏ספירת Keepalive</translation>
 <translation id="6327785803543103246">‏גילוי אוטומטי של שרת proxy באינטרנט</translation>
-<translation id="6331818708794917058">‏אתרים יכולים לבקש הרשאה להתחבר אל מכשירי MIDI</translation>
 <translation id="6333064448949140209">‏הקובץ יישלח אל Google לניפוי באגים</translation>
 <translation id="6333170995003625229">לא ניתן לאמת את כתובת האימייל או את הסיסמה שלך. יש לנסות להיכנס שוב.</translation>
 <translation id="6334267141726449402">כדי לאסוף את היומנים, צריך להעתיק את הקישור הזה ולשלוח אותו למשתמש.</translation>
@@ -6764,7 +6754,6 @@
 <translation id="6458701200018867744">ההעלאה נכשלה (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">שימוש בבחירה לחיפוש</translation>
 <translation id="6459799433792303855">החלון הפעיל הועבר אל צג אחר.</translation>
-<translation id="6460566145397380451">‏מורשים להתחבר אל מכשירי MIDI</translation>
 <translation id="6460601847208524483">חיפוש של הבא</translation>
 <translation id="6461170143930046705">המכשיר מחפש רשתות...</translation>
 <translation id="6463795194797719782">&amp;עריכה</translation>
@@ -7094,7 +7083,6 @@
 <translation id="6735304988756581115">‏הצגת קובצי Cookie ונתוני אתר אחרים...</translation>
 <translation id="6736243959894955139">כתובת</translation>
 <translation id="6737663862851963468">‏הסרה של כרטיס Kerberos</translation>
-<translation id="6737931010859480781">האפליקציה הזו הותקנה מראש במכשיר</translation>
 <translation id="6738180164164974883">‏אישור להגדיר קובצי cookie של צד שלישי</translation>
 <translation id="6738430949033571771">החשבון בתהליך אימות…</translation>
 <translation id="6739923123728562974">הצגת קיצור דרך בשולחן העבודה</translation>
@@ -8488,7 +8476,6 @@
 <translation id="7853747251428735">&amp;כלים נוספים</translation>
 <translation id="7853999103056713222">אפשר להשתמש בסיסמה בטוחה יותר</translation>
 <translation id="7855678561139483478">העברת כרטיסייה לחלון חדש</translation>
-<translation id="7855729579456690716">כשעוברים לכרטיסייה אחרת, אתרים יכולים לפתוח חלון עם תמונה בתוך תמונה</translation>
 <translation id="7857004848504343806">‏המחשב שלך מכיל מודול אבטחה המשמש ליישום תכונות אבטחה קריטיות רבות ב-ChromeOS Flex. מידע נוסף מפורט במרכז העזרה של Chromebook‏: https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">הצעות לטקסט</translation>
 <translation id="7857949311770343000">האם זהו דף הכרטיסייה החדשה שציפית לראות?</translation>

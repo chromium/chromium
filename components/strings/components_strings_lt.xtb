@@ -1264,7 +1264,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="36224234498066874">Išvalyti naršymo duomenis...</translation>
 <translation id="362276910939193118">Rodyti visą istoriją</translation>
 <translation id="3624292976554877583">Etiketės (matinės)</translation>
-<translation id="3625929652356389713">Gali prašyti automatiškai atidaryti vaizdo vaizde langus</translation>
 <translation id="3628905806504633297">{0,plural, =1{Pagal administratoriaus politikos nuostatas nerekomenduojama perkelti šio failo į „<ph name="DESTINATION_NAME" />“}one{Pagal administratoriaus politikos nuostatas nerekomenduojama perkelti šių failų į „<ph name="DESTINATION_NAME" />“}few{Pagal administratoriaus politikos nuostatas nerekomenduojama perkelti šių failų į „<ph name="DESTINATION_NAME" />“}many{Pagal administratoriaus politikos nuostatas nerekomenduojama perkelti šių failų į „<ph name="DESTINATION_NAME" />“}other{Pagal administratoriaus politikos nuostatas nerekomenduojama perkelti šių failų į „<ph name="DESTINATION_NAME" />“}}</translation>
 <translation id="3630155396527302611">Jei ji nurodyta kaip programa, kuriai leidžiama pasiekti tinklą, pabandykite
       ją pašalinti iš sąrašo ir vėl pridėti.</translation>
@@ -1399,7 +1398,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="388632593194507180">Aptiktas stebėjimas</translation>
 <translation id="3886948180919384617">3 dėtuvė</translation>
 <translation id="3890664840433101773">Pridėti el. pašto adresą</translation>
-<translation id="3893306401511601929">Automatinis vaizdas vaizde</translation>
 <translation id="3897092660631435901">Meniu</translation>
 <translation id="3901925938762663762">Kortelė nebegalioja</translation>
 <translation id="390391808978419508">Baigėsi atidarymo skirtasis laikas</translation>
@@ -1868,7 +1866,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="4852429274334674023">Operacinės sistemos</translation>
 <translation id="4854853140771946034">Greitai sukurkite naują „Google Keep“ užrašą</translation>
 <translation id="485902285759009870">Patvirtinamas kodas...</translation>
-<translation id="4862630594858951805">Norite gauti el. laiškus, kai kaina sumažės?</translation>
 <translation id="4864406669374375262">Versijos eilutė nukopijuota į iškarpinę</translation>
 <translation id="486459320933704969">Vienas iš tėvų ar globėjų turi patvirtinti, kad galite apsilankyti šioje svetainėje</translation>
 <translation id="4866506163384898554">Paspauskite |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />, kad būtų rodomas žymeklis</translation>
@@ -2757,7 +2754,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="6710594484020273272">&lt;Įveskite paieškos terminą&gt;</translation>
 <translation id="671076103358959139">Registracijos prieigos raktas:</translation>
 <translation id="6711464428925977395">Kažkas negerai su tarpiniu serveriu arba adresas netinkamas.</translation>
-<translation id="6716013836112872184">Gaukite el. laiškus adresu <ph name="EMAIL" />, kai kurioje nors svetainėje sumažės kaina.</translation>
 <translation id="6716672519412350405"><ph name="URL" /> nori kurti jūsų aplinkos 3D žemėlapį ir stebėti kameros padėtį</translation>
 <translation id="6718612893943028815">Naudoti fotoaparatą?</translation>
 <translation id="6721164594124191969">Etiketės (blizgios)</translation>
@@ -4037,6 +4033,5 @@ Papildoma išsami informacija:
     &lt;li&gt;Pabandykite prisijungti prie kito tinklo.&lt;/li&gt;
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
-<translation id="995240771322213706">automatinis vaizdas vaizde</translation>
 <translation id="997986563973421916">Iš „Google Pay“</translation>
 </translationbundle>

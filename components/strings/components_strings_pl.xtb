@@ -1263,7 +1263,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="36224234498066874">Wyczyść dane przeglądania...</translation>
 <translation id="362276910939193118">Wyświetl całą historię</translation>
 <translation id="3624292976554877583">Etykiety (matowe)</translation>
-<translation id="3625929652356389713">Może prosić o zgodę na automatyczne otwieranie okien obrazu w obrazie</translation>
 <translation id="3628905806504633297">{0,plural, =1{Zgodnie z zasadą administratora nie zaleca się przenoszenia tego pliku, jeśli miejscem docelowym jest <ph name="DESTINATION_NAME" />}few{Zgodnie z zasadą administratora nie zaleca się przenoszenia tych plików, jeśli miejscem docelowym jest <ph name="DESTINATION_NAME" />}many{Zgodnie z zasadą administratora nie zaleca się przenoszenia tych plików, jeśli miejscem docelowym jest <ph name="DESTINATION_NAME" />}other{Zgodnie z zasadą administratora nie zaleca się przenoszenia tych plików, jeśli miejscem docelowym jest <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3630155396527302611">Jeśli ten program jest już na liście programów mogących korzystać z sieci,
     spróbuj go z niej usunąć i dodać ponownie.</translation>
@@ -1398,7 +1397,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="388632593194507180">Wykryto monitorowanie</translation>
 <translation id="3886948180919384617">Układarka 3</translation>
 <translation id="3890664840433101773">Dodaj adres e-mail</translation>
-<translation id="3893306401511601929">Automatyczny obraz w obrazie</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3901925938762663762">Karta straciła ważność</translation>
 <translation id="390391808978419508">Upłynął limit czasu otwierania</translation>
@@ -1867,7 +1865,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4852429274334674023">Systemy operacyjne</translation>
 <translation id="4854853140771946034">Szybko utwórz nową notatkę w Google Keep</translation>
 <translation id="485902285759009870">Weryfikuję kod...</translation>
-<translation id="4862630594858951805">Czy chcesz otrzymywać e-maile o obniżkach cen?</translation>
 <translation id="4864406669374375262">Ciąg znaków wersji został skopiowany do schowka</translation>
 <translation id="486459320933704969">Twój rodzic lub opiekun musi wyrazić zgodę na odwiedzenie tej witryny</translation>
 <translation id="4866506163384898554">Naciśnij |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />|, aby wyświetlić kursor</translation>
@@ -2756,7 +2753,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6710594484020273272">&lt;Wpisz wyszukiwane słowa&gt;</translation>
 <translation id="671076103358959139">Token rejestracji:</translation>
 <translation id="6711464428925977395">Serwer proxy działa nieprawidłowo albo adres jest błędny.</translation>
-<translation id="6716013836112872184">Otrzymuj e-maile na adres <ph name="EMAIL" />, gdy cena spadnie na dowolnej stronie.</translation>
 <translation id="6716672519412350405"><ph name="URL" /> chce tworzyć mapę 3D Twojego otoczenia i śledzić pozycję kamery</translation>
 <translation id="6718612893943028815">Korzystać z kamery?</translation>
 <translation id="6721164594124191969">Etykiety (błyszczące)</translation>
@@ -4035,6 +4031,5 @@ Dodatkowe informacje:
     &lt;li&gt;Połącz się z inną siecią.&lt;/li&gt;
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
-<translation id="995240771322213706">automatyczny obraz w obrazie</translation>
 <translation id="997986563973421916">Z Google Pay</translation>
 </translationbundle>

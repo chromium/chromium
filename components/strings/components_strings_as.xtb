@@ -1260,7 +1260,6 @@
 <translation id="36224234498066874">ব্ৰাউজিং ডেটা মচক...</translation>
 <translation id="362276910939193118">সম্পূৰ্ণ ইতিহাস দেখুৱাওক</translation>
 <translation id="3624292976554877583">লেবেল (মেট)</translation>
-<translation id="3625929652356389713">স্বয়ংক্ৰিয়ভাৱে picture-in-picture ৱিণ্ড’ খুলিবলৈ বিচাৰিব পাৰে</translation>
 <translation id="3628905806504633297">{0,plural, =1{প্ৰশাসকৰ নীতিয়ে এই ফাইলটো <ph name="DESTINATION_NAME" />লৈ স্থানান্তৰ কৰাটো চুপাৰিছ নকৰে}one{প্ৰশাসকৰ নীতিয়ে এই ফাইলসমূহ <ph name="DESTINATION_NAME" />লৈ স্থানান্তৰ কৰাটো চুপাৰিছ নকৰে}other{প্ৰশাসকৰ নীতিয়ে এই ফাইলসমূহ <ph name="DESTINATION_NAME" />লৈ স্থানান্তৰ কৰাটো চুপাৰিছ নকৰে}}</translation>
 <translation id="3630155396527302611">যদি ইয়াক ইতিমধ্যে এটা নেটৱৰ্কটো এক্সেছ কৰিব পৰা প্ৰ‘গ্ৰেম হিচাপে তালিকাভুক্ত কৰি থোৱা থাকে, তেন্তে
       সেই তালিকাখনৰ পৰা ইয়াক আঁতৰাই পুনৰ যোগ কৰি চাওক</translation>
@@ -1395,7 +1394,6 @@
 <translation id="388632593194507180">নিৰীক্ষণ কৰি থকা বুলি চিনাক্ত কৰা হৈছে</translation>
 <translation id="3886948180919384617">ষ্টেকাৰ ৩</translation>
 <translation id="3890664840433101773">ইমেইল যোগ কৰক</translation>
-<translation id="3893306401511601929">স্বয়ংক্ৰিয় picture-in-picture</translation>
 <translation id="3897092660631435901">মেনু</translation>
 <translation id="3901925938762663762">কার্ডখনৰ ম্যাদ উকলিল</translation>
 <translation id="390391808978419508">খোলাৰ সময় উকলিছে</translation>
@@ -1863,7 +1861,6 @@
 <translation id="4852429274334674023">অপাৰেটিং ছিষ্টেম</translation>
 <translation id="4854853140771946034">Google Keepত ক্ষিপ্ৰভাৱে এটা নতুন টোকা সৃষ্টি কৰক</translation>
 <translation id="485902285759009870">ক’ডটো সত্যাপন কৰি থকা হৈছে...</translation>
-<translation id="4862630594858951805">মূল্য হ্ৰাস হ'লে ইমেইল বিচাৰে নেকি?</translation>
 <translation id="4864406669374375262">সংস্কৰণৰ ষ্ট্ৰিং ক্লিপব’ৰ্ডলৈ প্ৰতিলিপি কৰা হৈছে</translation>
 <translation id="486459320933704969">আ্ৰপুনি এই ৱেবছাইটটো চোৱাত আপত্তি নাই বুলি এগৰাকী অভিভাৱক অথবা প্ৰাপ্তবয়স্ক পৰিয়ালৰ লোকে জনাব লাগিব</translation>
 <translation id="4866506163384898554">আপোনাৰ কাৰ্ছৰটো দেখুৱাবলৈ |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| টিপক</translation>
@@ -2751,7 +2748,6 @@
 <translation id="6710594484020273272">&lt;সন্ধান কৰিবলগীয়া শব্দ টাইপ কৰক&gt;</translation>
 <translation id="671076103358959139">পঞ্জীয়নৰ ট’কেন:</translation>
 <translation id="6711464428925977395">প্ৰ’ক্সি ছার্ভাৰত কিবা আসোঁৱাহ আছে বা ঠিকনাটো শুদ্ধ নহয়।</translation>
-<translation id="6716013836112872184">কোনো ছাইটত মূল্য হ্ৰাস হ'লে <ph name="EMAIL" />লৈ ইমেইল পঠিয়াওক।</translation>
 <translation id="6716672519412350405"><ph name="URL" />এ আপোনাৰ চৌপাশৰ এখন 3D মেপ সৃষ্টি কৰিবলৈ আৰু কেমেৰাৰ স্থান ট্ৰেক কৰিবলৈ বিচাৰিছে</translation>
 <translation id="6718612893943028815">কেমেৰা ব্যৱহাৰ কৰিবনে?</translation>
 <translation id="6721164594124191969">লেবেল (গ্লছযুক্ত)</translation>
@@ -4029,6 +4025,5 @@
     &lt;li&gt;অন্য নেটৱৰ্কত সংযোগ কৰি চাওক&lt;/li&gt;
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
-<translation id="995240771322213706">স্বয়ংক্ৰিয় picture-in-picture</translation>
 <translation id="997986563973421916">Google Payৰ পৰা</translation>
 </translationbundle>

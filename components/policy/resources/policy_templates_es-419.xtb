@@ -1830,8 +1830,6 @@ Nota: Si se omite un campo, todos los valores coincidirán con ese campo en part
 
       Si no estableces la política, se aplicará <ph name="PRINTERS_ALLOW_ALL" />.</translation>
 <translation id="2581338546762479588">Permitir el reinicio automático después de las actualizaciones</translation>
-<translation id="2582855747769273665">Una URL que los usuarios pueden visitar para obtener más información. Si no la estableces, no habrá
-ninguna URL de "más información" en el instalador.</translation>
 <translation id="2586117300379904732">Permite los bloqueos de activación para la administración de energía</translation>
 <translation id="2586231026319371211">Hora local en formato de reloj de pared de 24 horas.</translation>
 <translation id="2587719089023392205">Establecer <ph name="PRODUCT_NAME" /> como navegador predeterminado</translation>

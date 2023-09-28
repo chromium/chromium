@@ -17,7 +17,6 @@
 <translation id="1008261151167010035"><ph name="BRAND" /> memorizza il metodo di accesso e, se possibile, ti consente di accedere automaticamente. Se questa opzione è disattivata, ti verrà chiesta una conferma ogni volta.</translation>
 <translation id="1008544602823861396">non può usare le tue informazioni su</translation>
 <translation id="1008557486741366299">Non adesso</translation>
-<translation id="1009454959501038262">{NUM_SITES,plural, =1{Per proteggere i tuoi dati, sono state rimosse le autorizzazioni da un sito che non hai visitato per 2 mesi}other{Per proteggere i tuoi dati, sono state rimosse le autorizzazioni da siti che non hai visitato per 2 mesi}}</translation>
 <translation id="1009663062402466586">Sono disponibili i controlli per i giochi</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{La pagina non risponde}other{Le pagine non rispondono}}</translation>
 <translation id="1011003645819296594">Dispositivi salvati</translation>
@@ -122,7 +121,6 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1084824384139382525">Copia indi&amp;rizzo link</translation>
 <translation id="1085064499066015002">Sempre su tutti i siti</translation>
 <translation id="1085697365578766383">Errore durante l'avvio della macchina virtuale. Riprova.</translation>
-<translation id="1087965115100412394">Non consentire ai siti di connettersi ai dispositivi MIDI</translation>
 <translation id="1088659085457112967">Avvia modalità Reader</translation>
 <translation id="1090126737595388931">Nessuna applicazione in esecuzione in background</translation>
 <translation id="1090541560108055381">Prima di eseguire l'accoppiamento, assicurati che questo codice sia lo stesso su entrambi i dispositivi</translation>
@@ -3227,7 +3225,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3551320343578183772">Chiudi scheda</translation>
 <translation id="3552097563855472344"><ph name="NETWORK_NAME" /> - <ph name="SPAN_START" /><ph name="CARRIER_NAME" /><ph name="SPAN_END" /></translation>
 <translation id="3552780134252864554">Cancellato all'uscita</translation>
-<translation id="3553487194781590058">Non consentire ai siti di aprire una finestra Picture in picture quando passi a una scheda diversa</translation>
 <translation id="3554493885489666172">Il dispositivo è gestito da <ph name="PROFILE_NAME" />. Gli amministratori possono accedere ai dati in qualsiasi profilo su questo dispositivo.</translation>
 <translation id="3555812735919707620">Rimuovi estensione</translation>
 <translation id="3557101512409028104">Imposta limitazioni relative ai siti web e limiti per il tempo di utilizzo con Family Link</translation>
@@ -3786,7 +3783,6 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="3975201861340929143">Spiegazione</translation>
 <translation id="3975565978598857337">Tentativo di contatto del server per area di autenticazione non riuscito</translation>
 <translation id="3976108569178263973">Non ci sono stampanti disponibili.</translation>
-<translation id="3976244126942806443">In genere, i siti si connettono a dispositivi MIDI per creare e modificare musica</translation>
 <translation id="397703832102027365">Finalizzazione in corso...</translation>
 <translation id="3977145907578671392">Le funzionalità su alcuni siti potrebbero non essere disponibili in incognito</translation>
 <translation id="3977886311744775419">Gli aggiornamenti automatici non vengono scaricati su questo tipo di rete, ma puoi verificare la presenza di aggiornamenti manualmente.</translation>
@@ -4686,7 +4682,6 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="4730492586225682674">Nota più recente scritta con lo stilo nella schermata di blocco</translation>
 <translation id="4730888769809690665">Notifiche consentite per <ph name="SITE" /></translation>
 <translation id="4731306954230393087">Può usare le informazioni su di te che ha salvato</translation>
-<translation id="473140019006744096">Spazio su questo dispositivo insufficiente per completare l'aggiornamento. Libera <ph name="NECESSARY_SPACE" /> sul dispositivo e riprova.</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (sinistro)</translation>
 <translation id="4733793249294335256">Posizione</translation>
 <translation id="473546211690256853">Questo account è gestito da <ph name="DOMAIN" /></translation>
@@ -5388,7 +5383,6 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="5327912693242073631">Le funzionalità che richiedono notifiche non funzioneranno</translation>
 <translation id="532943162177641444">Tocca la notifica sul tuo <ph name="PHONE_NAME" /> per configurare l'hotspot mobile che può essere utilizzato per questo dispositivo.</translation>
 <translation id="5329858601952122676">&amp;Elimina</translation>
-<translation id="5330592967519769658">Siti autorizzati ad aprire una finestra Picture in picture quando passi a una scheda diversa</translation>
 <translation id="5331069282670671859">Nessun certificato presente in questa categoria</translation>
 <translation id="5331568967879689647">App sistema operativo ChromeOS</translation>
 <translation id="5331975486040154427">Dispositivo USB-C (porta posteriore sinistra)</translation>
@@ -5566,7 +5560,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="5473099001878321374">Se prosegui, accetti che il dispositivo possa scaricare e installare automaticamente aggiornamenti e app da Google, dall'operatore di tuo figlio e dal produttore del dispositivo, utilizzando eventualmente la rete dati. Alcune di queste app potrebbero offrire acquisti in-app.</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{Il PIN deve contenere almeno un carattere}other{Il PIN deve contenere almeno # caratteri}}</translation>
 <translation id="5474859849784484111"><ph name="MANAGER" /> richiede l'immediata connessione a una rete Wi-Fi per scaricare un aggiornamento. In alternativa, puoi eseguire il download tramite una connessione a consumo (potrebbero essere applicati costi).</translation>
-<translation id="5478520208448702555">Quando passi a una scheda diversa, i siti potrebbero aprire una finestra Picture in picture</translation>
 <translation id="5481273127572794904">Non possono scaricare automaticamente più file</translation>
 <translation id="5481941284378890518">Aggiungi stampanti nelle vicinanze</translation>
 <translation id="5484181871714116891">Se attivate, le passkey vengono create nel portachiavi iCloud e sono disponibili su tutti i tuoi dispositivi Apple. Se l'opzione è disattivata, le passkey vengono create nel tuo profilo Chrome su questo dispositivo.</translation>
@@ -5724,7 +5717,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="5600348067066185292">L'installazione richiede pochi semplici passaggi. Avrai un'altra possibilità di confermare prima dell'applicazione delle modifiche al computer.</translation>
 <translation id="5600706100022181951">Il download dell'aggiornamento richiederà <ph name="UPDATE_SIZE_MB" /> MB di dati mobili. Vuoi continuare?</translation>
 <translation id="5601503069213153581">PIN</translation>
-<translation id="5601823921345337195">Non possono connettersi ai dispositivi MIDI</translation>
 <translation id="5601833336918638013">Non consentire ai siti di cercare dispositivi Bluetooth</translation>
 <translation id="5602586420788540146">Apri in un nuovo gruppo di schede</translation>
 <translation id="5605758115928394442">È stata inviata una notifica al tuo telefono per verificare la tua identità.</translation>
@@ -5844,7 +5836,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="5707185214361380026">Impossibile caricare l'estensione da:</translation>
 <translation id="5708171344853220004">Nome entità Microsoft</translation>
 <translation id="5709557627224531708">Imposta Chrome come browser predefinito</translation>
-<translation id="5710122160114032242">Siti non autorizzati ad aprire una finestra Picture in picture quando passi a una scheda diversa</translation>
 <translation id="5711010025974903573">Log di servizio</translation>
 <translation id="5711983031544731014">Impossibile sbloccare. Inserisci la password.</translation>
 <translation id="5712153969432126546">A volte i siti pubblicano PDF, come documenti, contratti e moduli</translation>
@@ -6606,7 +6597,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="6326175484149238433">Rimuovi da Chrome</translation>
 <translation id="6326855256003666642">Conteggio attività keep-alive</translation>
 <translation id="6327785803543103246">Rilevamento automatico proxy web</translation>
-<translation id="6331818708794917058">I siti possono chiedere di connettersi ai dispositivi MIDI</translation>
 <translation id="6333064448949140209">Il file sarà inviato a Google per il debug</translation>
 <translation id="6333170995003625229">Impossibile verificare l'indirizzo email o la password. Prova ad accedere nuovamente.</translation>
 <translation id="6334267141726449402">Copia e invia questo link all'utente per raccogliere i log.</translation>
@@ -6756,7 +6746,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="6458701200018867744">Caricamento non riuscito (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">Utilizza selezione per Trova</translation>
 <translation id="6459799433792303855">Finestra attiva spostata in un altro schermo.</translation>
-<translation id="6460566145397380451">Possono connettersi ai dispositivi MIDI</translation>
 <translation id="6460601847208524483">Trova successivo</translation>
 <translation id="6461170143930046705">Ricerca di reti...</translation>
 <translation id="6463795194797719782">&amp;Modifica</translation>
@@ -7083,7 +7072,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6735304988756581115">Mostra cookie e altri dati dei siti...</translation>
 <translation id="6736243959894955139">Indirizzo</translation>
 <translation id="6737663862851963468">Rimuovere richiesta di Kerberos</translation>
-<translation id="6737931010859480781">Questa app è preinstallata sul tuo dispositivo</translation>
 <translation id="6738180164164974883">Consenti l'impostazione di cookie di terze parti</translation>
 <translation id="6738430949033571771">Verifica dell'account in corso…</translation>
 <translation id="6739923123728562974">Mostra collegamento sul desktop</translation>
@@ -8480,7 +8468,6 @@ Premi un sensore o un tasto assegnato per rimuovere l'assegnazione.</translation
 <translation id="7853747251428735">Altri strume&amp;nti</translation>
 <translation id="7853999103056713222">Usa una password più sicura</translation>
 <translation id="7855678561139483478">Sposta scheda in una nuova finestra</translation>
-<translation id="7855729579456690716">I siti possono aprire una finestra Picture in picture quando passi a una scheda diversa</translation>
 <translation id="7857004848504343806">Il computer contiene un modulo di sicurezza che viene utilizzato per implementare in ChromeOS Flex molte funzionalità di sicurezza fondamentali. Per saperne di più, visita il Centro assistenza Chromebook all'indirizzo: https://support.google.com/chromebook/?p=sm.</translation>
 <translation id="7857093393627376423">Suggerimenti testuali</translation>
 <translation id="7857949311770343000">È la pagina Nuova scheda prevista?</translation>

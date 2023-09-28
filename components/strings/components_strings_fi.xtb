@@ -1264,7 +1264,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="36224234498066874">Poista selaustiedot...</translation>
 <translation id="362276910939193118">Näytä koko selaushistoria</translation>
 <translation id="3624292976554877583">Etiketit (matta)</translation>
-<translation id="3625929652356389713">Voi pyytää lupaa avata pikkuruutu-ikkunoita automaattisesti</translation>
 <translation id="3628905806504633297">{0,plural, =1{Järjestelmänvalvojakäytännössä ei suositella tiedoston siirtämistä tänne: <ph name="DESTINATION_NAME" />.}other{Järjestelmänvalvojakäytännössä ei suositella tiedostojen siirtämistä tänne: <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3630155396527302611">Jos sillä on jo verkon käyttöoikeus, kokeile sen poistamista
       sallittujen ohjelmien luettelosta ja lisäämistä sitten uudelleen.</translation>
@@ -1399,7 +1398,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="388632593194507180">Valvonta havaittu</translation>
 <translation id="3886948180919384617">Pinoaja 3</translation>
 <translation id="3890664840433101773">Lisää sähköposti</translation>
-<translation id="3893306401511601929">Automaattinen pikkuruutu</translation>
 <translation id="3897092660631435901">Valikko</translation>
 <translation id="3901925938762663762">Kortti on vanhentunut.</translation>
 <translation id="390391808978419508">Avaaminen aikakatkaistu</translation>
@@ -1868,7 +1866,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="4852429274334674023">Käyttöjärjestelmät</translation>
 <translation id="4854853140771946034">Luo uusi muistiinpano nopeasti Google Keepissa</translation>
 <translation id="485902285759009870">Vahvistetaan koodia…</translation>
-<translation id="4862630594858951805">Haluatko sähköpostia, kun hinta laskee?</translation>
 <translation id="4864406669374375262">Versiomerkkijono kopioitu leikepöydälle</translation>
 <translation id="486459320933704969">Vanhemman tai huoltajan on hyväksyttävä käyntisi tällä sivustolla</translation>
 <translation id="4866506163384898554">Näytä kohdistin painamalla |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />|</translation>
@@ -2757,7 +2754,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="6710594484020273272">&lt;Anna hakukysely&gt;</translation>
 <translation id="671076103358959139">Käyttöönottotunnus:</translation>
 <translation id="6711464428925977395">Välityspalvelimessa on jotain vikaa tai osoite on virheellinen.</translation>
-<translation id="6716013836112872184">Voit saada sähköpostia osoitteeseen <ph name="EMAIL" />, kun hinta laskee jollakin sivustolla.</translation>
 <translation id="6716672519412350405"><ph name="URL" /> pyytää lupaa luoda 3D-kartan ympäristöstäsi ja seurata kameran asentoa</translation>
 <translation id="6718612893943028815">Käytetäänkö kameraa?</translation>
 <translation id="6721164594124191969">Etiketit (kiiltävä)</translation>
@@ -4038,6 +4034,5 @@ Lisätietoja:
     &lt;li&gt;Yritä yhdistää toiseen verkkoon&lt;/li&gt;
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1 (728 mm x 1 030 mm)</translation>
-<translation id="995240771322213706">automaattinen pikkuruutu</translation>
 <translation id="997986563973421916">Google Paysta</translation>
 </translationbundle>

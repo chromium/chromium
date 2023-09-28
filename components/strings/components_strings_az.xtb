@@ -1260,7 +1260,6 @@
 <translation id="36224234498066874">Axtarış Datasını Silin...</translation>
 <translation id="362276910939193118">Tam tarixçəni göstərin</translation>
 <translation id="3624292976554877583">Etiket (mat)</translation>
-<translation id="3625929652356389713">Şəkildə şəkil pəncərələrini avtomatik açmaq istəyə bilər</translation>
 <translation id="3628905806504633297">{0,plural, =1{Administrator siyasəti bu faylı <ph name="DESTINATION_NAME" /> bölməsinə ötürməyi tövsiyə etmir}other{Administrator siyasəti bu faylları <ph name="DESTINATION_NAME" /> bölməsinə ötürməyi tövsiyə etmir}}</translation>
 <translation id="3630155396527302611">Şəbəkəyə girmək icazəsi olan proqram olaraq siyahılanıb, onu siyahıdan silin və yenidən əlavə edin.</translation>
 <translation id="3630426379756188722">"Cihazın tapılması" düyməsi, aktivləşdirərək Google Hesabında cihazın tapılması bölməsinə keçin</translation>
@@ -1394,7 +1393,6 @@
 <translation id="388632593194507180">Nəzarət Aşkarlanıb</translation>
 <translation id="3886948180919384617">Yığıcı 3</translation>
 <translation id="3890664840433101773">E-poçt ünvanı əlavə edin</translation>
-<translation id="3893306401511601929">Avtomatik şəkildə şəkil</translation>
 <translation id="3897092660631435901">Menyu</translation>
 <translation id="3901925938762663762">Kartın vaxtı bitib.</translation>
 <translation id="390391808978419508">Açma vaxtı bitdi</translation>
@@ -1863,7 +1861,6 @@
 <translation id="4852429274334674023">Əməliyyat sistemləri</translation>
 <translation id="4854853140771946034">Google Keep'də cəld yeni qeyd yaradın</translation>
 <translation id="485902285759009870">Kod doğrulanır...</translation>
-<translation id="4862630594858951805">Qiymət düşdükdə e-məktub göndərilsin?</translation>
 <translation id="4864406669374375262">Versiya sətri mübadilə buferinə kopyalandı</translation>
 <translation id="486459320933704969">Valideyn və ya qəyyum bu vebsaytı ziyarət etmənizə icazə verməlidir</translation>
 <translation id="4866506163384898554">Kursoru göstərmək üçün |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| düyməsinə basın</translation>
@@ -2752,7 +2749,6 @@
 <translation id="6710594484020273272">&lt;Axtarış sözünü yazın&gt;</translation>
 <translation id="671076103358959139">Qeydiyyat Açarı:</translation>
 <translation id="6711464428925977395">Proksi serveri ilə bağlı nəsə xəta var və ya ünvan yanlışdır.</translation>
-<translation id="6716013836112872184">Hansısa saytda qiymət düşdükdə <ph name="EMAIL" /> ünvanında e-məktub alın.</translation>
 <translation id="6716672519412350405"><ph name="URL" /> ətrafınızdakı sahələrin 3D xəritəsini yaratmaq və kamera mövqeyini izləmək istəyir</translation>
 <translation id="6718612893943028815">Kameradan istifadə edilsin?</translation>
 <translation id="6721164594124191969">Etiket (parlaq)</translation>
@@ -4032,6 +4028,5 @@
     &lt;li&gt;Başqa şəbəkəyə qoşulun&lt;/li&gt;
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
-<translation id="995240771322213706">avtomatik şəkildə şəkil</translation>
 <translation id="997986563973421916">Google Pay'dən</translation>
 </translationbundle>

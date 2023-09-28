@@ -1265,7 +1265,6 @@
 <translation id="36224234498066874">براؤزنگ ڈیٹا صاف کریں…</translation>
 <translation id="362276910939193118">پوری سرگزشت دکھائیں</translation>
 <translation id="3624292976554877583">لیبلز (مَیٹ)</translation>
-<translation id="3625929652356389713">تصویر میں تصویر والی ونڈوز خودکار طور پر کھولنے کے لیے پوچھ سکتی ہے</translation>
 <translation id="3628905806504633297">{0,plural, =1{منتظم کی پالیسی اس فائل کو <ph name="DESTINATION_NAME" /> میں منتقل کرنے کی تجویز نہیں کرتی ہے}other{منتظم کی پالیسی ان فائلز کو <ph name="DESTINATION_NAME" /> میں منتقل کرنے کی تجویز نہیں کرتی ہے}}</translation>
 <translation id="3630155396527302611">اگر یہ پہلے سے ہی نیٹ ورک تک رسائی کیلئے اجازت یافتہ پروگرام کے بطور مندرج
       ہے تو اسے فہرست سے ہٹانے اور دوبارہ شامل کرنے کی کوشش کریں۔</translation>
@@ -1400,7 +1399,6 @@
 <translation id="388632593194507180">مانیٹر کرنے کا پتہ چلا</translation>
 <translation id="3886948180919384617">اسٹیکر 3</translation>
 <translation id="3890664840433101773">ای میل شامل کریں</translation>
-<translation id="3893306401511601929">خودکار تصویر میں تصویر</translation>
 <translation id="3897092660631435901">مینیو</translation>
 <translation id="3901925938762663762">اس کارڈ کی میعاد ختم ہو گئی ہے</translation>
 <translation id="390391808978419508">کھولنے کا وقت ختم ہو گیا</translation>
@@ -1869,7 +1867,6 @@
 <translation id="4852429274334674023">آپریٹنگ سسٹمز</translation>
 <translation id="4854853140771946034">‏Google Keep میں تیزی سے ایک نیا نوٹ تخلیق کریں</translation>
 <translation id="485902285759009870">کوڈ کی توثیق ہو رہی ہے...</translation>
-<translation id="4862630594858951805">قیمت کم ہونے پر ای میلز چاہتے ہیں؟</translation>
 <translation id="4864406669374375262">ورژن اسٹرنگ کلپ بورڈ پر کاپی ہو گئی</translation>
 <translation id="486459320933704969">یہ سائٹ ملاحظہ کرنے کے لئے آپ کے والد/والدہ یا سرپرست کو کہنا ہوگا کہ یہ آپ کے لئے ٹھیک ہے</translation>
 <translation id="4866506163384898554">اپنا کرسر دکھانے کے لیے |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| دبائیں</translation>
@@ -2759,7 +2756,6 @@
 <translation id="6710594484020273272">&lt;تلاش کی اصطلاح ٹائپ کریں&gt;</translation>
 <translation id="671076103358959139">اندراج کا ٹوکن:</translation>
 <translation id="6711464428925977395">پراکسی سرور میں کچھ غلط ہے یا پتہ درست نہیں ہے۔</translation>
-<translation id="6716013836112872184">کسی بھی سائٹ پر قیمت کم ہونے پر <ph name="EMAIL" /> پر بھیجی گئی ای میلز حاصل کریں۔</translation>
 <translation id="6716672519412350405">‏<ph name="URL" /> آپ کے اطراف کا 3D نقشہ تخلیق اور کیمرے کی پوزیشن ٹریک کرنا چاہتا ہے</translation>
 <translation id="6718612893943028815">کیمرا استعمال کریں؟</translation>
 <translation id="6721164594124191969">لیبلز (گلوسی)</translation>
@@ -4040,6 +4036,5 @@
     &lt;li&gt;کسی اور Wi-Fi نیٹ ورک سے منسلک ہونے کی کوشش کریں&lt;/li&gt;
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
-<translation id="995240771322213706">خودکار تصویر میں تصویر</translation>
 <translation id="997986563973421916">‏منجانب Google Pay</translation>
 </translationbundle>

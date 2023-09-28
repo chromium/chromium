@@ -1262,7 +1262,6 @@
 <translation id="36224234498066874">Серепчиден көрүлгөн нерселерди тазалоо…</translation>
 <translation id="362276910939193118">Толук таржымалды көрсөтүү</translation>
 <translation id="3624292976554877583">Энбелгилер (жылтырабаган кагаз)</translation>
-<translation id="3625929652356389713">Сүрөттөгү сүрөт терезелерин автоматтык түрдө ачууга уруксат сурай алат</translation>
 <translation id="3628905806504633297">{0,plural, =1{Администратордун саясаты бул файлды төмөнкүгө өткөрүүнү сунуштабайт: <ph name="DESTINATION_NAME" />}other{Администратордун саясаты бул файлдарды төмөнкүгө өткөрүүнү сунуштабайт: <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3630155396527302611">Эгер ал тармакка кире алган программа катары мурунтан эле тизмеленген
       болсо, аны тизмеден алып салып, кайра кошуп көрүңүз.</translation>
@@ -1397,7 +1396,6 @@
 <translation id="388632593194507180">Көзөмөлдөө аныкталды</translation>
 <translation id="3886948180919384617">3-төшөгүч</translation>
 <translation id="3890664840433101773">Электрондук почта дарегин кошуу</translation>
-<translation id="3893306401511601929">Автоматтык сүрөттөгү сүрөт</translation>
 <translation id="3897092660631435901">Меню</translation>
 <translation id="3901925938762663762">Картанын мөөнөтү бүткөн</translation>
 <translation id="390391808978419508">Ачуу убакыты аяктады</translation>
@@ -1866,7 +1864,6 @@
 <translation id="4852429274334674023">Операциялык тутумдар</translation>
 <translation id="4854853140771946034">Google Keep'те жаңы эскертмени тез жазуу</translation>
 <translation id="485902285759009870">Код текшерилүүдө…</translation>
-<translation id="4862630594858951805">Баалардын арзандаганы тууралуу электрондук каттарды алгыңыз келеби?</translation>
 <translation id="4864406669374375262">Версиянын сабы алмашуу буферине көчүрүлдү</translation>
 <translation id="486459320933704969">Ата-энең же камкорчуң вебсайтка кирүүңө уруксат бериши керек</translation>
 <translation id="4866506163384898554">Курсорду көрсөтүү үчүн |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| баскычтарын басыңыз</translation>
@@ -2755,7 +2752,6 @@
 <translation id="6710594484020273272">&lt;Изделүүчү сөздү териңиз&gt;</translation>
 <translation id="671076103358959139">Катталуу токени:</translation>
 <translation id="6711464428925977395">Прокси серверден кандайдыр бир ката кетти же дарек туура эмес.</translation>
-<translation id="6716013836112872184">Кандайдыр бир сайтта баасы арзандаганда, <ph name="EMAIL" /> дарегине электрондук каттарды алуу.</translation>
 <translation id="6716672519412350405"><ph name="URL" /> айланаңыздын 3D картасын түзүүгө же камераңыздын абалына көз салууга уруксат сурап жатат</translation>
 <translation id="6718612893943028815">Камера колдонулсунбу?</translation>
 <translation id="6721164594124191969">Энбелгилер (жылтырак)</translation>
@@ -4034,6 +4030,5 @@
     &lt;li&gt;Башка тармакка туташып көрүңүз&lt;/li&gt;
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1 (728mm x 1030mm)</translation>
-<translation id="995240771322213706">автоматтык сүрөттөгү сүрөт</translation>
 <translation id="997986563973421916">Google Pay'ден</translation>
 </translationbundle>

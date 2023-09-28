@@ -1263,7 +1263,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="36224234498066874">Remover dados de navegação...</translation>
 <translation id="362276910939193118">Mostrar histórico completo</translation>
 <translation id="3624292976554877583">Rótulos (foscos)</translation>
-<translation id="3625929652356389713">Pode pedir para abrir automaticamente janelas picture-in-picture</translation>
 <translation id="3628905806504633297">{0,plural, =1{A política do administrador não recomenda transferir o arquivo para este local: <ph name="DESTINATION_NAME" />}one{A política do administrador não recomenda transferir o arquivo para este local: <ph name="DESTINATION_NAME" />}other{A política do administrador não recomenda transferir os arquivos para este local: <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3630155396527302611">Se ele já estiver listado como um programa que tem permissão para acessar a rede, tente
       removê-lo da lista e adicioná-lo novamente.</translation>
@@ -1398,7 +1397,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="388632593194507180">Monitoramento detectado</translation>
 <translation id="3886948180919384617">Empilhador 3</translation>
 <translation id="3890664840433101773">Adicionar e-mail</translation>
-<translation id="3893306401511601929">Picture-in-picture automático</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3901925938762663762">O cartão expirou</translation>
 <translation id="390391808978419508">O tempo de abertura expirou</translation>
@@ -1867,7 +1865,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4852429274334674023">Sistemas operacionais</translation>
 <translation id="4854853140771946034">Criar rapidamente uma nova nota no Google Keep</translation>
 <translation id="485902285759009870">Confirmando código...</translation>
-<translation id="4862630594858951805">Quer receber e-mails quando houver reduções no preço?</translation>
 <translation id="4864406669374375262">String da versão copiada para a área de transferência</translation>
 <translation id="486459320933704969">Um familiar ou responsável precisa autorizar seu acesso a este site</translation>
 <translation id="4866506163384898554">Pressione |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| para mostrar o cursor</translation>
@@ -2756,7 +2753,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6710594484020273272">&lt;Digitar termo de pesquisa&gt;</translation>
 <translation id="671076103358959139">Token de inscrição:</translation>
 <translation id="6711464428925977395">Há algo errado com o servidor proxy, ou o endereço está incorreto.</translation>
-<translation id="6716013836112872184">Receba e-mails no endereço <ph name="EMAIL" /> quando houver uma redução no preço em qualquer site.</translation>
 <translation id="6716672519412350405"><ph name="URL" /> quer criar um mapa 3D do ambiente a sua volta e acompanhar a posição da câmera</translation>
 <translation id="6718612893943028815">Usar a câmera?</translation>
 <translation id="6721164594124191969">Rótulos (brilhantes)</translation>
@@ -4037,6 +4033,5 @@ incomuns e incorretas. Isso pode acontecer quando um invasor está fingindo ser 
     &lt;li&gt;Tente conectar-se a outra rede&lt;/li&gt;
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
-<translation id="995240771322213706">picture-in-picture automático</translation>
 <translation id="997986563973421916">Do Google Pay</translation>
 </translationbundle>

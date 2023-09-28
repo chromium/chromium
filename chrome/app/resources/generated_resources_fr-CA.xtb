@@ -17,7 +17,6 @@
 <translation id="1008261151167010035"><ph name="BRAND" /> se souvient de la façon dont vous vous êtes connecté et vous connecte automatiquement lorsque cela est possible. Lorsqu'il est désactivé, une confirmation vous sera demandée à chaque fois.</translation>
 <translation id="1008544602823861396">n'est pas autorisé à utiliser vos informations sur</translation>
 <translation id="1008557486741366299">Pas maintenant</translation>
-<translation id="1009454959501038262">{NUM_SITES,plural, =1{Afin de protéger vos données, les autorisations ont été retirées pour un site que vous n'avez pas visité depuis deux mois}one{Afin de protéger vos données, les autorisations ont été retirées pour ce site que vous n'avez pas visité depuis deux mois}other{Afin de protéger vos données, les autorisations ont été retirées pour ces sites que vous n'avez pas visités depuis deux mois}}</translation>
 <translation id="1009663062402466586">Commandes de jeu maintenant accessibles</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{La page ne répond pas}one{La page ne répond pas}other{Les pages ne répondent pas}}</translation>
 <translation id="1011003645819296594">Appareils enregistrés</translation>
@@ -122,7 +121,6 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1084824384139382525">Copier l'adr&amp;esse du lien</translation>
 <translation id="1085064499066015002">Toujours sur tous les sites</translation>
 <translation id="1085697365578766383">Erreur lors du démarrage de la machine virtuelle. Veuillez réessayer.</translation>
-<translation id="1087965115100412394">Ne pas autoriser les sites à se connecter à des appareils MIDI</translation>
 <translation id="1088659085457112967">Activer le mode Lecture</translation>
 <translation id="1090126737595388931">Aucune application ne fonctionne en arrière-plan</translation>
 <translation id="1090541560108055381">Avant de procéder à l'association, assurez-vous que ce code est le même sur les deux appareils</translation>
@@ -3212,7 +3210,6 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="3551320343578183772">Fermer l'onglet</translation>
 <translation id="3552097563855472344"><ph name="NETWORK_NAME" /> : <ph name="SPAN_START" /><ph name="CARRIER_NAME" /><ph name="SPAN_END" /></translation>
 <translation id="3552780134252864554">Effacé à la fin de la session</translation>
-<translation id="3553487194781590058">N'autorise pas les sites à ouvrir une fenêtre d'incrustation d'image lorsque vous passez à un autre onglet</translation>
 <translation id="3554493885489666172">Votre appareil est géré par <ph name="PROFILE_NAME" />. Les administrateurs ont accès aux données de tous les profils enregistrés sur cet appareil.</translation>
 <translation id="3555812735919707620">Retirer l'extension</translation>
 <translation id="3557101512409028104">Définissez des restrictions de sites Web et des limites de temps d'utilisation des écrans avec Family Link</translation>
@@ -3771,7 +3768,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3975201861340929143">Explication</translation>
 <translation id="3975565978598857337">Échec de la tentative de contact du serveur associé à ce domaine</translation>
 <translation id="3976108569178263973">Il n'y a aucune imprimante à proximité.</translation>
-<translation id="3976244126942806443">Les sites se connectent généralement à des appareils MIDI pour créer et éditer de la musique</translation>
 <translation id="397703832102027365">Finalisation en cours...</translation>
 <translation id="3977145907578671392">Les fonctionnalités de certains sites peuvent ne pas fonctionner en mode de navigation privée</translation>
 <translation id="3977886311744775419">Les mises à jour automatiques ne seront pas téléchargées sur ce type de réseau, mais vous pouvez vérifier manuellement la présence de mises à jour.</translation>
@@ -4669,7 +4665,6 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="4730492586225682674">Afficher la dernière note prise au stylet sur l'écran de verrouillage</translation>
 <translation id="4730888769809690665">Les notifications sont autorisées pour <ph name="SITE" /></translation>
 <translation id="4731306954230393087">Autorisé à utiliser les renseignements enregistrés à votre sujet</translation>
-<translation id="473140019006744096">Impossible d'effectuer cette mise à jour parce que l'espace de stockage sur cet appareil est insuffisant. Libérez <ph name="NECESSARY_SPACE" /> sur votre appareil et réessayez.</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" /> % (gauche)</translation>
 <translation id="4733793249294335256">Emplacement</translation>
 <translation id="473546211690256853">Ce compte est géré par <ph name="DOMAIN" /></translation>
@@ -5367,7 +5362,6 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5327912693242073631">Les fonctionnalités qui ont besoin des notifications ne fonctionneront pas</translation>
 <translation id="532943162177641444">Touchez la notification sur votre <ph name="PHONE_NAME" /> afin de configurer le point d'accès mobile que cet appareil peut utiliser.</translation>
 <translation id="5329858601952122676">&amp;Supprimer</translation>
-<translation id="5330592967519769658">Autorisé à ouvrir une fenêtre d'incrustation d'image lorsque vous passez à un autre onglet</translation>
 <translation id="5331069282670671859">Vous n'avez aucun certificat dans cette catégorie</translation>
 <translation id="5331568967879689647">Application système de Chrome OS</translation>
 <translation id="5331975486040154427">Appareil USB-C (port arrière-gauche)</translation>
@@ -5545,7 +5539,6 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="5473099001878321374">En continuant, vous acceptez que cet appareil puisse également recevoir et installer automatiquement des mises à jour et des applications de Google, du fournisseur de services de votre enfant, et de son fabricant (et utiliser les données cellulaires, le cas échéant). Certaines de ces applications offrent des achats au moyen de l'application.</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{Le NIP doit comprendre au moins un caractère}one{Le NIP doit comprendre au moins # caractère}other{Le NIP doit comprendre au moins # caractères}}</translation>
 <translation id="5474859849784484111"><ph name="MANAGER" /> exige que vous vous connectiez au Wi-Fi maintenant et que vous téléchargiez une mise à jour. Autrement, téléchargez-la à l'aide d'une connexion mesurée (des frais pourraient s'appliquer).</translation>
-<translation id="5478520208448702555">Les sites peuvent ouvrir une fenêtre d'incrustation d'image lorsque vous passez à un autre onglet</translation>
 <translation id="5481273127572794904">Non autorisés à télécharger automatiquement plusieurs fichiers</translation>
 <translation id="5481941284378890518">Ajouter des imprimantes à proximité</translation>
 <translation id="5484181871714116891">Lorsque cette option est activée, les clés d'accès sont créées dans le trousseau iCloud et sont accessibles sur vos appareils Apple. Lorsqu'elle est désactivée, les clés d'accès sont créées dans votre profil Chrome sur cet appareil.</translation>
@@ -5703,7 +5696,6 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="5600348067066185292">L'installation se fait en quelques étapes simples. Vous pourrez encore confirmer l'opération avant que les modifications soient apportées à votre ordinateur.</translation>
 <translation id="5600706100022181951">La mise à jour sera téléchargée en utilisant <ph name="UPDATE_SIZE_MB" /> Mo de données cellulaires. Voulez-vous continuer?</translation>
 <translation id="5601503069213153581">NIP</translation>
-<translation id="5601823921345337195">Non autorisés à se connecter à des appareils MIDI</translation>
 <translation id="5601833336918638013">Ne pas autoriser les sites à rechercher les appareils Bluetooth</translation>
 <translation id="5602586420788540146">Ouvrir dans un nouveau groupe d'onglets</translation>
 <translation id="5605758115928394442">Nous avons envoyé une notification à votre téléphone pour confirmer votre identité.</translation>
@@ -5825,7 +5817,6 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="5707185214361380026">Échec du chargement de l'extension de :</translation>
 <translation id="5708171344853220004">Nom Microsoft principal</translation>
 <translation id="5709557627224531708">Définir Chrome comme navigateur par défaut</translation>
-<translation id="5710122160114032242">Non autorisé à ouvrir une fenêtre d'incrustation d'image lorsque vous passez à un autre onglet</translation>
 <translation id="5711010025974903573">Journaux de service</translation>
 <translation id="5711983031544731014">Impossible de procéder au déverrouillage. Veuillez entrer votre mot de passe.</translation>
 <translation id="5712153969432126546">Les sites publient parfois des fichiers en format PDF, comme des documents, des contrats et des formulaires</translation>
@@ -6587,7 +6578,6 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="6326175484149238433">Supprimer de Google Chrome</translation>
 <translation id="6326855256003666642">Compte de conservation de connexion active</translation>
 <translation id="6327785803543103246">Découverte automatique de mandataire Web</translation>
-<translation id="6331818708794917058">Les sites peuvent demander à se connecter à des appareils MIDI</translation>
 <translation id="6333064448949140209">Le fichier sera envoyé à Google pour débogage</translation>
 <translation id="6333170995003625229">Impossible de vérifier votre adresse de courriel ni votre mot de passe. Essayez de vous connecter à nouveau.</translation>
 <translation id="6334267141726449402">Copiez ce lien et envoyez-le à l'utilisateur pour collecter les journaux.</translation>
@@ -6737,7 +6727,6 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="6458701200018867744">Échec du téléversement (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">Rechercher la sélection</translation>
 <translation id="6459799433792303855">Fenêtre active déplacée sur un autre écran</translation>
-<translation id="6460566145397380451">Autorisés à se connecter à des appareils MIDI</translation>
 <translation id="6460601847208524483">Rechercher le suivant</translation>
 <translation id="6461170143930046705">Recherche de réseaux en cours…</translation>
 <translation id="6463795194797719782">&amp;Modifier</translation>
@@ -7065,7 +7054,6 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="6735304988756581115">Afficher les témoins et les autres données de sites...</translation>
 <translation id="6736243959894955139">Adresse</translation>
 <translation id="6737663862851963468">Supprimer le ticket Kerberos</translation>
-<translation id="6737931010859480781">Cette application est préinstallée sur votre appareil</translation>
 <translation id="6738180164164974883">Autoriser l'activation de témoins tiers</translation>
 <translation id="6738430949033571771">Vérification du compte en cours…</translation>
 <translation id="6739923123728562974">Afficher le raccourci du bureau</translation>
@@ -8454,7 +8442,6 @@ Appuyez sur un commutateur attribué ou une touche du clavier pour retirer l'att
 <translation id="7853747251428735">Plus d'outils</translation>
 <translation id="7853999103056713222">Utilisez un mot de passe plus sûr</translation>
 <translation id="7855678561139483478">Déplacer l'onglet vers une nouvelle fenêtre</translation>
-<translation id="7855729579456690716">Les sites peuvent ouvrir une fenêtre d'incrustation d'image lorsque vous passez à un autre onglet</translation>
 <translation id="7857004848504343806">Votre ordinateur contient un module de sécurité qui est utilisé pour mettre en œuvre de nombreuses fonctionnalités de sécurité cruciales dans Chrome OS Flex. Visitez le centre d'aide Chromebook pour en savoir plus : https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">Suggestions écrites</translation>
 <translation id="7857949311770343000">Est-ce bien la page Nouvel onglet à laquelle vous vous attendiez?</translation>

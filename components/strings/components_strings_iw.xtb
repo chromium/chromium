@@ -1263,7 +1263,6 @@
 <translation id="36224234498066874">ניקוי נתוני גלישה…</translation>
 <translation id="362276910939193118">כל ההיסטוריה</translation>
 <translation id="3624292976554877583">Labels (Matte)</translation>
-<translation id="3625929652356389713">האתר יכול לבקש הרשאה לפתוח אוטומטית חלונות עם תמונה בתוך תמונה</translation>
 <translation id="3628905806504633297">{0,plural, =1{בהתאם למדיניות האדמין, לא מומלץ להעביר את הקובץ הזה אל <ph name="DESTINATION_NAME" />}one{בהתאם למדיניות האדמין, לא מומלץ להעביר את הקבצים האלה אל <ph name="DESTINATION_NAME" />}two{בהתאם למדיניות האדמין, לא מומלץ להעביר את הקבצים האלה אל <ph name="DESTINATION_NAME" />}other{בהתאם למדיניות האדמין, לא מומלץ להעביר את הקבצים האלה אל <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3630155396527302611">אם היא כבר רשומה כתוכנית המורשית לגשת לרשת, יש לנסות
       להסיר אותה מהרשימה ולהוסיף אותה שוב.</translation>
@@ -1398,7 +1397,6 @@
 <translation id="388632593194507180">זוהה מעקב</translation>
 <translation id="3886948180919384617">מערים 3</translation>
 <translation id="3890664840433101773">הוספת כתובת אימייל</translation>
-<translation id="3893306401511601929">הצגת אוטומטית של תמונה בתוך תמונה</translation>
 <translation id="3897092660631435901">תפריט</translation>
 <translation id="3901925938762663762">תוקף הכרטיס פג</translation>
 <translation id="390391808978419508">פג הזמן הקצוב לפתיחה</translation>
@@ -1871,7 +1869,6 @@ Del</translation>
 <translation id="4852429274334674023">מערכות הפעלה</translation>
 <translation id="4854853140771946034">‏יצירת הערה חדשה ב-Google Keep במהירות</translation>
 <translation id="485902285759009870">הקוד בתהליך אימות…</translation>
-<translation id="4862630594858951805">רוצה לקבל אימיילים על ירידות במחיר?</translation>
 <translation id="4864406669374375262">מחרוזת הגרסה הועתקה ללוח</translation>
 <translation id="486459320933704969">כדי לבקר באתר הזה, עליך לקבל אישור מהורה או מאפוטרופוס</translation>
 <translation id="4866506163384898554">צריך להקיש על |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| כדי להציג את הסמן</translation>
@@ -2761,7 +2758,6 @@ Del</translation>
 <translation id="6710594484020273272">&lt;יש להקליד מונח חיפוש&gt;</translation>
 <translation id="671076103358959139">אסימון הרשמה:</translation>
 <translation id="6711464428925977395">‏משהו אינו תקין בשרת ה-proxy, או שהכתובת שגויה.</translation>
-<translation id="6716013836112872184">יישלחו אימיילים לכתובת <ph name="EMAIL" /> כשתהיה ירידה במחיר באתר כלשהו.</translation>
 <translation id="6716672519412350405">האתר <ph name="URL" /> רוצה ליצור מפה בתלת ממד של הסביבה שלך ולעקוב אחר מיקום המצלמה</translation>
 <translation id="6718612893943028815">להשתמש במצלמה?</translation>
 <translation id="6721164594124191969">Labels (Glossy)</translation>
@@ -4040,6 +4036,5 @@ Del</translation>
     &lt;li&gt;להתחבר לרשת אחרת&lt;/li&gt;
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
-<translation id="995240771322213706">הצגת אוטומטית של תמונה בתוך תמונה</translation>
 <translation id="997986563973421916">‏מ-Google Pay</translation>
 </translationbundle>

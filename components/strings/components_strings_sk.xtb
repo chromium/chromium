@@ -1260,7 +1260,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="36224234498066874">Vymazať dáta prehliadania...</translation>
 <translation id="362276910939193118">Zobraziť celú históriu</translation>
 <translation id="3624292976554877583">Štítky (matné)</translation>
-<translation id="3625929652356389713">Môže žiadať o automatické otváranie okien obrazu v obraze</translation>
 <translation id="3628905806504633297">{0,plural, =1{Pravidlá správcu prenos tohto súboru do úložiska <ph name="DESTINATION_NAME" /> neodporúčajú}few{Pravidlá správcu prenos týchto súborov do úložiska <ph name="DESTINATION_NAME" /> neodporúčajú}many{Administrator policy doesn’t recommend transferring these files to <ph name="DESTINATION_NAME" />}other{Pravidlá správcu prenos týchto súborov do úložiska <ph name="DESTINATION_NAME" /> neodporúčajú}}</translation>
 <translation id="3630155396527302611">Ak je už uvedený ako program s prístupom k sieti, skúste ho odstrániť zo zoznamu a znova ho pridať.</translation>
 <translation id="3630426379756188722">Tlačidlo Nájdi moje zariadenie, ktorého aktivovaním prejdete na vyhľadávanie zariadenia v účte Google</translation>
@@ -1394,7 +1393,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="388632593194507180">Bolo rozpoznané monitorovanie</translation>
 <translation id="3886948180919384617">Odkladač č. 3</translation>
 <translation id="3890664840433101773">Pridanie e-mailu</translation>
-<translation id="3893306401511601929">Automatický obraz v obraze</translation>
 <translation id="3897092660631435901">Ponuka</translation>
 <translation id="3901925938762663762">Platnosť karty vypršala</translation>
 <translation id="390391808978419508">Vypršal čas otvorenia</translation>
@@ -1863,7 +1861,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="4852429274334674023">Operačné systémy</translation>
 <translation id="4854853140771946034">Rýchlo vytvoriť novú poznámku v službe Google Keep</translation>
 <translation id="485902285759009870">Overuje sa kód...</translation>
-<translation id="4862630594858951805">Chcete dostávať správy, keď cena klesne?</translation>
 <translation id="4864406669374375262">Reťazec verzie bol skopírovaný do schránky</translation>
 <translation id="486459320933704969">Rodič alebo zákonný zástupca musí súhlasiť s tým, že môžeš navštíviť tento web</translation>
 <translation id="4866506163384898554">Stlačením klávesov |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| zobrazíte kurzor</translation>
@@ -2751,7 +2748,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="6710594484020273272">&lt;Zadajte hľadaný výraz&gt;</translation>
 <translation id="671076103358959139">Registračný token:</translation>
 <translation id="6711464428925977395">Vyskytol sa problém s proxy serverom alebo je adresa nesprávna.</translation>
-<translation id="6716013836112872184">Dostávajte správy na <ph name="EMAIL" />, keď cena klesne na ľubovoľnom webe.</translation>
 <translation id="6716672519412350405"><ph name="URL" /> chce vytvoriť 3D mapu vášho okolia a sledovať umiestnenie kamier</translation>
 <translation id="6718612893943028815">Chcete použiť fotoaparát?</translation>
 <translation id="6721164594124191969">Štítky (lesklé)</translation>
@@ -4031,6 +4027,5 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
     &lt;li&gt;skúste sa pripojiť k inej sieti Wi-Fi.&lt;/li&gt;
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
-<translation id="995240771322213706">automatický obraz v obraze</translation>
 <translation id="997986563973421916">Zo služby Google Pay</translation>
 </translationbundle>

@@ -555,7 +555,6 @@ Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povij
 <translation id="40433179647657191">Izradite i dijelite izravnu vezu na dio stranice koji ste istaknuli.</translation>
 <translation id="4045648459118332842">Dohvatite svoje spremljene zaporke u bilo kojoj aplikaciju jednim dodirom</translation>
 <translation id="4049507953662678203">Provjerite mrežnu vezu i pokušajte ponovo.</translation>
-<translation id="4063300985191096908">Otvori feed</translation>
 <translation id="4066639687323968621">Prijavite se Google računom da biste sinkronizirali oznake, povijest i ostalo.</translation>
 <translation id="4092655288299341041">Prikaži pomoć</translation>
 <translation id="4105841739161771091">{count,plural, =1{Brisanje adrese}one{Brisanje adresa}few{Brisanje adresa}other{Brisanje adresa}}</translation>
@@ -1152,7 +1151,6 @@ Dok ste u anonimnom načinu, web-lokacije ne mogu upotrebljavati kolačiće za u
 <translation id="7302503784943202842">Upotreba zaporki na svim uređajima</translation>
 <translation id="730958329302570991">Jednostavno dodajte zaporke web-lokacija na Google upravitelj zaporki kad god želite.</translation>
 <translation id="7313347584264171202">Ovdje ćete pronaći svoje anonimne kartice</translation>
-<translation id="7331371412779932885">Pruža vam prijedloge kartica na temelju vaše aktivnosti pregledavanja na drugim uređajima pomoću vašeg Google računa. Uređaji moraju biti prijavljeni i sinkronizirani s pomoću istog Google računa.</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> posto preuzeto</translation>
 <translation id="7340958967809483333">Opcije za Discover</translation>
 <translation id="7346909386216857016">Dobro, shvaćam</translation>
@@ -1348,6 +1346,7 @@ Web-lokacije mogu upotrebljavati kolačiće za uvid u vašu aktivnost pregledava
 <translation id="8393889347136007944">Kartice koje se ne upotrebljavaju <ph name="THRESHOLD" /> dan/dana</translation>
 <translation id="8395339334550012808">Uskoro će se na kartici Praćeno prikazivati sadržaj s kanala <ph name="CHANNEL_NAME" /> i o tom kanalu.</translation>
 <translation id="8395378633507873708">Adresna traka</translation>
+<translation id="8402673309244746971">Otvorite feed Praćeno</translation>
 <translation id="8403629764260204788">Sakrij "Nastavite pregledavati"</translation>
 <translation id="8407669440184693619">Nije pronađena nijedna zaporka za ovu web-lokaciju</translation>
 <translation id="842017693807136194">Prijavljeni ste na uslugu</translation>

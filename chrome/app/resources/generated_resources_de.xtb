@@ -17,7 +17,6 @@
 <translation id="1008261151167010035"><ph name="BRAND" /> merkt sich, wie du dich angemeldet hast, und meldet dich wenn möglich automatisch an. Wenn diese Funktion deaktiviert ist, wirst du jedes Mal um eine Bestätigung gebeten.</translation>
 <translation id="1008544602823861396">wird daran gehindert, deine Informationen zu nutzen auf</translation>
 <translation id="1008557486741366299">Jetzt nicht</translation>
-<translation id="1009454959501038262">{NUM_SITES,plural, =1{Zum Schutz deiner Daten wurden einer Website, die du zwei Monate nicht besucht hast, Berechtigungen entzogen}other{Zum Schutz deiner Daten wurden Websites, die du zwei Monate nicht besucht hast, Berechtigungen entzogen}}</translation>
 <translation id="1009663062402466586">Spielsteuerung jetzt verfügbar</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{Seite reagiert nicht}other{Seiten reagieren nicht}}</translation>
 <translation id="1011003645819296594">Gespeicherte Geräte</translation>
@@ -122,7 +121,6 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1084824384139382525">Adr&amp;esse des Links kopieren</translation>
 <translation id="1085064499066015002">Immer auf allen Websites</translation>
 <translation id="1085697365578766383">Fehler beim Starten der virtuellen Maschine. Bitte versuche es noch einmal.</translation>
-<translation id="1087965115100412394">Websites dürfen keine Verbindung mit MIDI-Geräten herstellen</translation>
 <translation id="1088659085457112967">Lesemodus aktivieren</translation>
 <translation id="1090126737595388931">Es werden keine Apps im Hintergrund ausgeführt.</translation>
 <translation id="1090541560108055381">Prüfe vor dem Koppeln, ob dieser Code auf beiden Geräten übereinstimmt</translation>
@@ -3203,7 +3201,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3551320343578183772">Tab schließen</translation>
 <translation id="3552097563855472344"><ph name="NETWORK_NAME" /> – <ph name="SPAN_START" /><ph name="CARRIER_NAME" /><ph name="SPAN_END" /></translation>
 <translation id="3552780134252864554">Wird beim Beenden gelöscht</translation>
-<translation id="3553487194781590058">Websites dürfen Fenster nicht als Bild im Bild öffnen, wenn zu einem anderen Tab gewechselt wird</translation>
 <translation id="3554493885489666172">Dein Gerät wird von <ph name="PROFILE_NAME" /> verwaltet. Administratoren können auf die Daten in jedem Profil auf diesem Gerät zugreifen.</translation>
 <translation id="3555812735919707620">Erweiterung entfernen</translation>
 <translation id="3557101512409028104">Mit Family Link den Web-Zugriff und die Bildschirmzeit begrenzen</translation>
@@ -3762,7 +3759,6 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="3975201861340929143">Erklärung</translation>
 <translation id="3975565978598857337">Fehler bei Verbindungsaufbau mit Server für diesen Bereich</translation>
 <translation id="3976108569178263973">Es sind keine Drucker verfügbar.</translation>
-<translation id="3976244126942806443">Websites stellen normalerweise zum Komponieren oder Bearbeiten von Musik eine Verbindung mit MIDI-Geräten her</translation>
 <translation id="397703832102027365">Aktualisierung wird abgeschlossen...</translation>
 <translation id="3977145907578671392">Einige Websites funktionieren im Inkognitomodus möglicherweise nicht richtig</translation>
 <translation id="3977886311744775419">Bei diesem Netzwerktyp werden keine automatischen Updates heruntergeladen. Du kannst aber manuell nach Updates suchen.</translation>
@@ -4660,7 +4656,6 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="4730492586225682674">Letzte Notiz mit Eingabestift auf Sperrbildschirm</translation>
 <translation id="4730888769809690665">Benachrichtigungen zugelassen für <ph name="SITE" /></translation>
 <translation id="4731306954230393087">Darf Informationen nutzen, die zu deiner Person gespeichert wurden</translation>
-<translation id="473140019006744096">Auf diesem Gerät ist nicht genügend Platz, um dieses Update durchzuführen. Bereinige <ph name="NECESSARY_SPACE" /> auf dem Gerät und versuch es dann noch einmal.</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" /> % (links)</translation>
 <translation id="4733793249294335256">Ort</translation>
 <translation id="473546211690256853">Dieses Konto wird von <ph name="DOMAIN" /> verwaltet.</translation>
@@ -5358,7 +5353,6 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5327912693242073631">Funktionen, die Benachrichtigungen erfordern, funktionieren dann nicht</translation>
 <translation id="532943162177641444">Tippe auf die Benachrichtigung auf deinem <ph name="PHONE_NAME" />, um einen mobilen Hotspot einzurichten, den dieses Gerät nutzen kann.</translation>
 <translation id="5329858601952122676">&amp;Löschen</translation>
-<translation id="5330592967519769658">Dürfen Fenster als Bild im Bild öffnen, wenn zu einem anderen Tab gewechselt wird</translation>
 <translation id="5331069282670671859">In dieser Kategorie befinden sich keine Zertifikate</translation>
 <translation id="5331568967879689647">Chrome OS-System-App</translation>
 <translation id="5331975486040154427">USB-C-Gerät (Port hinten links)</translation>
@@ -5536,7 +5530,6 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="5473099001878321374">Wenn du fortfährst, stimmst du zu, dass auf diesem Gerät auch automatisch Updates und Apps von Google, vom Mobilfunkanbieter deines Kindes und vom Hersteller dieses Geräts abgerufen und installiert werden dürfen, möglicherweise über eine mobile Datenverbindung. Bei einigen dieser Apps werden eventuell In-App-Käufe angeboten.</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{Die PIN muss aus mindestens 1 Zeichen bestehen}other{Die PIN muss aus mindestens # Zeichen bestehen}}</translation>
 <translation id="5474859849784484111"><ph name="MANAGER" /> erfordert, dass du dein Gerät jetzt mit dem WLAN verbindest und ein Update herunterlädst. Das Update kann auch über eine kostenpflichtige Verbindung heruntergeladen werden (hierfür können zusätzliche Gebühren anfallen).</translation>
-<translation id="5478520208448702555">Websites können Fenster als Bild im Bild öffnen, wenn zu einem anderen Tab gewechselt wird</translation>
 <translation id="5481273127572794904">Dürfen nicht automatisch mehrere Dateien herunterladen</translation>
 <translation id="5481941284378890518">Drucker in der Nähe hinzufügen</translation>
 <translation id="5484181871714116891">Wenn diese Option aktiviert ist, werden Passkeys im iCloud-Schlüsselbund erstellt und sind auf allen deinen Apple-Geräten verfügbar. Wenn sie deaktiviert ist, werden Passkeys in deinem Chrome-Profil auf diesem Gerät erstellt.</translation>
@@ -5694,7 +5687,6 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="5600348067066185292">Die Installation ist einfach und gelingt in wenigen Schritten. Du musst noch einmal alles bestätigen, bevor Änderungen an deinem Computer vorgenommen werden.</translation>
 <translation id="5600706100022181951">Der Download des Updates verbraucht <ph name="UPDATE_SIZE_MB" /> MB an mobilen Daten. Möchtest du fortfahren?</translation>
 <translation id="5601503069213153581">PIN</translation>
-<translation id="5601823921345337195">Dürfen keine Verbindung mit MIDI-Geräten herstellen</translation>
 <translation id="5601833336918638013">Websites dürfen nicht darum bitten, nach Bluetooth-Geräten zu suchen</translation>
 <translation id="5602586420788540146">In neuer Tabgruppe öffnen</translation>
 <translation id="5605758115928394442">An dein Smartphone wurde eine Benachrichtigung gesendet, um deine Identität zu bestätigen.</translation>
@@ -5814,7 +5806,6 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="5707185214361380026">Fehler beim Laden der Erweiterung aus:</translation>
 <translation id="5708171344853220004">Microsoft-Prinzipalname</translation>
 <translation id="5709557627224531708">Chrome als Standardbrowser festlegen</translation>
-<translation id="5710122160114032242">Dürfen Fenster nicht als Bild im Bild öffnen, wenn zu einem anderen Tab gewechselt wird</translation>
 <translation id="5711010025974903573">Dienstprotokolle</translation>
 <translation id="5711983031544731014">Entsperren nicht möglich. Bitte gib dein Passwort ein.</translation>
 <translation id="5712153969432126546">Websites veröffentlichen manchmal PDFs wie Dokumente, Verträge und Formulare</translation>
@@ -6571,7 +6562,6 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="6326175484149238433">Aus Chrome entfernen</translation>
 <translation id="6326855256003666642">Keepalive-Zahl</translation>
 <translation id="6327785803543103246">Web-Proxy Autodiscovery</translation>
-<translation id="6331818708794917058">Websites dürfen nachfragen, wenn sie eine Verbindung mit MIDI-Geräten herstellen möchten</translation>
 <translation id="6333064448949140209">Datei wird zur Fehlerbehebung an Google gesendet</translation>
 <translation id="6333170995003625229">Deine E-Mail-Adresse oder dein Passwort konnte nicht bestätigt werden. Melde dich noch einmal an.</translation>
 <translation id="6334267141726449402">Kopiere diesen Link und sende ihn an den Nutzer, um die Protokolle zu erfassen.</translation>
@@ -6721,7 +6711,6 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="6458701200018867744">Upload fehlgeschlagen (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">Auswahl für Suche übernehmen</translation>
 <translation id="6459799433792303855">Aktives Fenster auf anderen Bildschirm verschoben.</translation>
-<translation id="6460566145397380451">Dürfen eine Verbindung mit MIDI-Geräten herstellen</translation>
 <translation id="6460601847208524483">Weitersuchen (vorwärts)</translation>
 <translation id="6461170143930046705">Netzwerke werden gesucht…</translation>
 <translation id="6463795194797719782">B&amp;earbeiten</translation>
@@ -7047,7 +7036,6 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="6735304988756581115">Cookies und andere Websitedaten anzeigen...</translation>
 <translation id="6736243959894955139">Adresse</translation>
 <translation id="6737663862851963468">Kerberos-Ticket entfernen</translation>
-<translation id="6737931010859480781">Diese App ist auf deinem Gerät vorinstalliert</translation>
 <translation id="6738180164164974883">Drittanbieter-Cookies zulassen</translation>
 <translation id="6738430949033571771">Konto wird überprüft…</translation>
 <translation id="6739923123728562974">Desktopverknüpfung einblenden</translation>
@@ -8437,7 +8425,6 @@ Drücke zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter oder ein
 <translation id="7853747251428735">Weitere Too&amp;ls</translation>
 <translation id="7853999103056713222">Sichereres Passwort verwenden</translation>
 <translation id="7855678561139483478">Tab in ein neues Fenster verschieben</translation>
-<translation id="7855729579456690716">Websites können Fenster als Bild im Bild öffnen, wenn zu einem anderen Tab gewechselt wird</translation>
 <translation id="7857004848504343806">Dein Computer enthält ein Sicherheitsmodul, über das viele wichtige Sicherheitsfunktionen in Chrome OS Flex implementiert werden. Weitere Informationen dazu findest du in der Chromebook-Hilfe unter https://support.google.com/chromebook/?p=sm.</translation>
 <translation id="7857093393627376423">Textvorschläge</translation>
 <translation id="7857949311770343000">Ist das die „Neuer Tab“-Seite, die du erwartet hattest?</translation>

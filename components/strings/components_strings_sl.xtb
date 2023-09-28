@@ -1263,7 +1263,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="36224234498066874">Izbriši podatke brskanja ...</translation>
 <translation id="362276910939193118">Prikaži celotno zgodovino</translation>
 <translation id="3624292976554877583">Labels (Matte)</translation>
-<translation id="3625929652356389713">Lahko zahteva samodejno odpiranje oken v načinu slike v sliki</translation>
 <translation id="3628905806504633297">{0,plural, =1{Pravilnik skrbnika ne priporoča prenosa te datoteke sem: <ph name="DESTINATION_NAME" />.}one{Pravilnik skrbnika ne priporoča prenosa teh datotek sem: <ph name="DESTINATION_NAME" />.}two{Pravilnik skrbnika ne priporoča prenosa teh datotek sem: <ph name="DESTINATION_NAME" />.}few{Pravilnik skrbnika ne priporoča prenosa teh datotek sem: <ph name="DESTINATION_NAME" />.}other{Pravilnik skrbnika ne priporoča prenosa teh datotek sem: <ph name="DESTINATION_NAME" />.}}</translation>
 <translation id="3630155396527302611">Če je že na seznamu programov, ki jim je dovoljen dostop do omrežja, ga poskusite
     odstraniti s seznama in znova dodati.</translation>
@@ -1398,7 +1397,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="388632593194507180">Zaznano je nadzorovanje</translation>
 <translation id="3886948180919384617">Zlagalnik 3</translation>
 <translation id="3890664840433101773">Dodajanje e-poštnega naslova</translation>
-<translation id="3893306401511601929">Samodejni način slike v sliki</translation>
 <translation id="3897092660631435901">Meni</translation>
 <translation id="3901925938762663762">Kartica je potekla</translation>
 <translation id="390391808978419508">Časovna omejitev za odpiranje je potekla</translation>
@@ -1867,7 +1865,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4852429274334674023">Operacijski sistemi</translation>
 <translation id="4854853140771946034">Hitro ustvarjanje novega zapiska v Googlu Keep</translation>
 <translation id="485902285759009870">Preverjanje kode …</translation>
-<translation id="4862630594858951805">Ali želite prejemati e-poštna sporočila, ko se cena zniža?</translation>
 <translation id="4864406669374375262">Niz različice je kopiran v odložišče</translation>
 <translation id="486459320933704969">Starš ali skrbnik mora potrditi, da lahko obiščeš to spletno mesto.</translation>
 <translation id="4866506163384898554">Pritisnite |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| za prikaz kazalca</translation>
@@ -2756,7 +2753,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6710594484020273272">&lt;Vnesite iskalno poizvedbo&gt;</translation>
 <translation id="671076103358959139">Žeton za včlanitev:</translation>
 <translation id="6711464428925977395">Nekaj je narobe s strežnikom proxy ali pa naslov ni pravilen.</translation>
-<translation id="6716013836112872184">Prejmite e-poštna sporočila na naslov <ph name="EMAIL" />, ko se cena zniža na katerem koli spletnem mestu.</translation>
 <translation id="6716672519412350405"><ph name="URL" /> želi ustvariti 3D-zemljevid vaše okolice in spremljati položaj kamere</translation>
 <translation id="6718612893943028815">Želite uporabiti kamero?</translation>
 <translation id="6721164594124191969">Labels (Glossy)</translation>
@@ -4035,6 +4031,5 @@ Dodatne podrobnosti:
     &lt;li&gt;Poskusite se povezati z drugim omrežjem&lt;/li&gt;
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
-<translation id="995240771322213706">samodejni način slike v sliki</translation>
 <translation id="997986563973421916">Iz Googla Pay</translation>
 </translationbundle>

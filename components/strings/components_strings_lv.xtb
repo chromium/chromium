@@ -1263,7 +1263,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="36224234498066874">Dzēst pārlūkošanas datus...</translation>
 <translation id="362276910939193118">Rādīt pilnu vēsturi</translation>
 <translation id="3624292976554877583">Etiķešu papīrs (matēts)</translation>
-<translation id="3625929652356389713">Var tikt pieprasīts, lai automātiski tiktu atvērti logi ar attēlu attēlā</translation>
 <translation id="3628905806504633297">{0,plural, =1{Administratora politika nosaka, ka nav ieteicams pārsūtīt šo failu uz: <ph name="DESTINATION_NAME" />.}zero{Administratora politika nosaka, ka nav ieteicams pārsūtīt šos failus uz: <ph name="DESTINATION_NAME" />.}one{Administratora politika nosaka, ka nav ieteicams pārsūtīt šos failus uz: <ph name="DESTINATION_NAME" />.}other{Administratora politika nosaka, ka nav ieteicams pārsūtīt šos failus uz: <ph name="DESTINATION_NAME" />.}}</translation>
 <translation id="3630155396527302611">Ja tā jau ir norādīta kā programma, kurai ir atļauts piekļūt tīklam, noņemiet to no saraksta un pievienojiet vēlreiz.</translation>
 <translation id="3630426379756188722">Poga “Atrast ierīci”. Aktivizējiet, lai savā Google kontā atvērtu lapu Atrast ierīci.</translation>
@@ -1397,7 +1396,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="388632593194507180">Konstatēta pārraudzība</translation>
 <translation id="3886948180919384617">3. izvades vieta</translation>
 <translation id="3890664840433101773">E-pasta adreses pievienošana</translation>
-<translation id="3893306401511601929">Automātisks attēls attēlā</translation>
 <translation id="3897092660631435901">Izvēlne</translation>
 <translation id="3901925938762663762">Kartes derīguma termiņš ir beidzies.</translation>
 <translation id="390391808978419508">Atvēršanai iestājās noildze</translation>
@@ -1866,7 +1864,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="4852429274334674023">Operētājsistēmas</translation>
 <translation id="4854853140771946034">Ātri izveidot jaunu piezīmi lietotnē Google Keep</translation>
 <translation id="485902285759009870">Notiek koda verificēšana…</translation>
-<translation id="4862630594858951805">Vai vēlaties saņemt e-pasta ziņojumus par cenas kritumu?</translation>
 <translation id="4864406669374375262">Versijas virkne tika kopēta starpliktuvē</translation>
 <translation id="486459320933704969">Kādam no vecākiem vai aizbildnim ir jāapstiprina, ka jūs varat apmeklēt šo vietni.</translation>
 <translation id="4866506163384898554">Nospiediet |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />|, lai parādītu kursoru.</translation>
@@ -2755,7 +2752,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="6710594484020273272">&lt;Ierakstiet meklēšanas vienumu&gt;</translation>
 <translation id="671076103358959139">Reģistrācijas pilnvara:</translation>
 <translation id="6711464428925977395">Starpniekserverī radās kļūda, vai arī adrese nav pareiza.</translation>
-<translation id="6716013836112872184">Varat iestatīt e-pasta ziņojumu nosūtīšanu uz adresi <ph name="EMAIL" />, kad kādā vietnē tiek konstatēts cenas kritums.</translation>
 <translation id="6716672519412350405">Vietne <ph name="URL" /> vēlas izveidot jūsu apkārtnes 3D karti un izsekot kameras pozīciju.</translation>
 <translation id="6718612893943028815">Vai lietot kameru?</translation>
 <translation id="6721164594124191969">Etiķešu papīrs (glancēts)</translation>
@@ -4035,6 +4031,5 @@ Papildu informācija:
     &lt;li&gt;Mēģiniet izveidot savienojumu ar citu tīklu.&lt;/li&gt;
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
-<translation id="995240771322213706">automātisks attēls attēlā</translation>
 <translation id="997986563973421916">No pakalpojuma Google Pay</translation>
 </translationbundle>

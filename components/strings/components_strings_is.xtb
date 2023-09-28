@@ -1263,7 +1263,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="36224234498066874">Hreinsa vafragögn...</translation>
 <translation id="362276910939193118">Sýna feril í heild</translation>
 <translation id="3624292976554877583">Merkimiðar (mattir)</translation>
-<translation id="3625929652356389713">Getur beðið um að opna mynd í mynd-glugga sjálfkrafa</translation>
 <translation id="3628905806504633297">{0,plural, =1{Regla kerfisstjóra mælir ekki með því að flytja skrána í <ph name="DESTINATION_NAME" />}one{Regla kerfisstjóra mælir ekki með því að flytja skrárnar í <ph name="DESTINATION_NAME" />}other{Regla kerfisstjóra mælir ekki með því að flytja skrárnar í <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3630155396527302611">Ef síðan er þegar skráð sem forrit sem hefur aðgang að netinu skaltu prófa
       að taka hana af listanum og bæta henni svo við aftur.</translation>
@@ -1398,7 +1397,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="388632593194507180">Eftirlit greindist</translation>
 <translation id="3886948180919384617">Staflari 3</translation>
 <translation id="3890664840433101773">Bæta við netfangi</translation>
-<translation id="3893306401511601929">Sjálfvirk mynd í mynd</translation>
 <translation id="3897092660631435901">Valmynd</translation>
 <translation id="3901925938762663762">Kortið er útrunnið</translation>
 <translation id="390391808978419508">Opnun rann út á tíma</translation>
@@ -1867,7 +1865,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="4852429274334674023">Stýrikerfi</translation>
 <translation id="4854853140771946034">Búa til nýja glósu í Google Keep á skjótan hátt</translation>
 <translation id="485902285759009870">Staðfestir kóða...</translation>
-<translation id="4862630594858951805">Viltu fá tölvupóst þegar verðið lækkar?</translation>
 <translation id="4864406669374375262">Útgáfustrengur vistaður á klippiborð</translation>
 <translation id="486459320933704969">Foreldri eða forráðamaður verður að samþykkja að þú opnir þetta vefsvæði</translation>
 <translation id="4866506163384898554">Ýttu á |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| til að sýna bendilinn</translation>
@@ -2756,7 +2753,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="6710594484020273272">&lt;Sláðu inn leitarorð&gt;</translation>
 <translation id="671076103358959139">Skráningarlykill:</translation>
 <translation id="6711464428925977395">Eitthvað amar að staðgengilsþjóninum, eða þá að slóðin er röng.</translation>
-<translation id="6716013836112872184">Fáðu sendan tölvupóst á <ph name="EMAIL" /> þegar verðið lækkar á hvaða vefsvæði sem er.</translation>
 <translation id="6716672519412350405"><ph name="URL" /> vill búa til þrívíddarkort af umhverfinu og rekja staðsetningu myndavélarinnar</translation>
 <translation id="6718612893943028815">Nota myndavél?</translation>
 <translation id="6721164594124191969">Merkimiðar (glans)</translation>
@@ -4035,6 +4031,5 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
     &lt;li&gt;Prófaðu að tengjast við annað net&lt;/li&gt;
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
-<translation id="995240771322213706">sjálfvirk mynd í mynd</translation>
 <translation id="997986563973421916">Frá Google Pay</translation>
 </translationbundle>

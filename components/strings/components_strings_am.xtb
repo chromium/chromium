@@ -1262,7 +1262,6 @@
 <translation id="36224234498066874">የአሰሳ ውሂብ አስወግድ…</translation>
 <translation id="362276910939193118">ሙሉ ታሪክ አሳይ</translation>
 <translation id="3624292976554877583">መሰየሚያዎች (ድብዳብ)</translation>
-<translation id="3625929652356389713">በራስ-ሰር የስዕል-ላይ-ስዕል መስኮቶችን ለመክፈት መጠየቅ ይችላል</translation>
 <translation id="3628905806504633297">{0,plural, =1{የአስተዳዳሪ መመሪያ ይህን ፋይል ወደ <ph name="DESTINATION_NAME" /> ማስተላለፍን አይመክርም}one{የአስተዳዳሪ መመሪያ ይህን ፋይል ወደ <ph name="DESTINATION_NAME" /> ማስተላለፍን አይመክርም}other{የአስተዳዳሪ መመሪያ እነዚህን ፋይሎች ወደ <ph name="DESTINATION_NAME" /> ማስተላለፍን አይመክርም}}</translation>
 <translation id="3630155396527302611">አውታረ መረቡ እንዲደርስ የተፈቀደለት መሣሪያ ነው ተብሎ አስቀድሞ ከተዘረዘረ ከዝርዝሩ
         አስወግደው እንደገና ለማከል ይሞክሩ።</translation>
@@ -1397,7 +1396,6 @@
 <translation id="388632593194507180">ክትትል እንዳለ ተደርሶበታል</translation>
 <translation id="3886948180919384617">ቁልል 3</translation>
 <translation id="3890664840433101773">ኢሜይል ያክሉ</translation>
-<translation id="3893306401511601929">ራስ-ሰር ስዕል-ላይ-ስዕል</translation>
 <translation id="3897092660631435901">ምናሌ</translation>
 <translation id="3901925938762663762">ካርዱ አገልግሎት ጊዜው አብቅቷል</translation>
 <translation id="390391808978419508">የእረፍት ጊዜን በመክፈት ላይ</translation>
@@ -1866,7 +1864,6 @@
 <translation id="4852429274334674023">ስርዓተ ክወናዎች</translation>
 <translation id="4854853140771946034">በGoogle Keep ውስጥ አዲስ ማስታወሻ በፍጥነት ፍጠር</translation>
 <translation id="485902285759009870">ኮድ በማረጋገጥ ላይ...</translation>
-<translation id="4862630594858951805">ዋጋው ሲቀንስ ኢሜይሎች እንዲደርሱዎት ይፈልጋሉ?</translation>
 <translation id="4864406669374375262">ወደ ቅንጥብ ሰሌዳ የተቀዳ ስሪት ሕብረቁምፊ</translation>
 <translation id="486459320933704969">ወላጅ ወይም አሳዳጊ ይህን ድር ጣቢያ ቢጎበኙ ምንም ችግር የለውም ማለት አለባቸው</translation>
 <translation id="4866506163384898554">የእርስዎን ጠቋሚ ለማሳየት |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| ይጫኑ</translation>
@@ -2755,7 +2752,6 @@
 <translation id="6710594484020273272">&lt;የፍለጋ ቃል ይተይቡ&gt;</translation>
 <translation id="671076103358959139">የምዝገባ ማስመሰያ፦</translation>
 <translation id="6711464428925977395">በተኪ አገልጋዩ ላይ የሆነ ችግር አለ ወይም አድራሻው ትክክል አይደለም።</translation>
-<translation id="6716013836112872184">በማንኛውም ጣቢያ ላይ ዋጋው ሲቀንስ ኢሜይሎች ወደ <ph name="EMAIL" /> እንዲላኩ ያድርጉ።</translation>
 <translation id="6716672519412350405"><ph name="URL" /> የዙሪያዎ የ3ል ካርታ መፍጠር እና የካሜራ ቦታን መከታተል ይፈልጋል</translation>
 <translation id="6718612893943028815">ካሜራ ይጠቀም?</translation>
 <translation id="6721164594124191969">መሰየሚያዎች (አንጸባራቂ)</translation>
@@ -4035,6 +4031,5 @@
     &lt;li&gt;ከሌላ አውታረ መረብ ጋር ለመገናኘት ይሞክሩ&lt;/li&gt;
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
-<translation id="995240771322213706">ራስ-ሰር ስዕል-ላይ-ስዕል</translation>
 <translation id="997986563973421916">ከGoogle Pay</translation>
 </translationbundle>

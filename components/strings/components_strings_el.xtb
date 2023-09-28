@@ -1263,7 +1263,6 @@
 <translation id="36224234498066874">Διαγραφή δεδομένων περιήγησης…</translation>
 <translation id="362276910939193118">Εμφάνιση πλήρους ιστορικού</translation>
 <translation id="3624292976554877583">Ετικέτες (Ματ)</translation>
-<translation id="3625929652356389713">Μπορεί να ζητήσει το αυτόματο άνοιγμα παραθύρων picture-in-picture</translation>
 <translation id="3628905806504633297">{0,plural, =1{Η πολιτική διαχειριστή δεν συνιστά τη μεταφορά αυτού του αρχείου σε <ph name="DESTINATION_NAME" />.}other{Η πολιτική διαχειριστή δεν συνιστά τη μεταφορά αυτών των αρχείων σε <ph name="DESTINATION_NAME" />.}}</translation>
 <translation id="3630155396527302611">Εάν έχει ήδη καταχωριστεί ως πρόγραμμα στο οποίο επιτρέπεται η πρόσβαση στο δίκτυο, δοκιμάστε
       να το καταργήσετε από τη λίστα και να το προσθέσετε ξανά.</translation>
@@ -1398,7 +1397,6 @@
 <translation id="388632593194507180">Εντοπίστηκε παρακολούθηση</translation>
 <translation id="3886948180919384617">Μονάδα στοίβαξης 3</translation>
 <translation id="3890664840433101773">Προσθήκη διεύθυνσης ηλεκτρονικού ταχυδρομείου</translation>
-<translation id="3893306401511601929">Αυτόματη λειτουργία picture-in-picture</translation>
 <translation id="3897092660631435901">Μενού</translation>
 <translation id="3901925938762663762">Η κάρτα έχει λήξει</translation>
 <translation id="390391808978419508">Έληξε το χρονικό όριο για το άνοιγμα</translation>
@@ -1868,7 +1866,6 @@
 <translation id="4852429274334674023">Λειτουργικά συστήματα</translation>
 <translation id="4854853140771946034">Γρήγορη δημιουργία νέας σημείωσης στο Google Keep</translation>
 <translation id="485902285759009870">Επαλήθευση κωδικού…</translation>
-<translation id="4862630594858951805">Θέλετε να λαμβάνετε μηνύματα ηλεκτρονικού ταχυδρομείου όταν υπάρχει πτώση τιμής;</translation>
 <translation id="4864406669374375262">Η συμβολοσειρά έκδοσης αντιγράφηκε στο πρόχειρο</translation>
 <translation id="486459320933704969">Για να μπορέσεις να επισκεφτείς αυτόν τον ιστότοπο, πρέπει να δώσει την άδεια ένας γονέα ή κηδεμόνας</translation>
 <translation id="4866506163384898554">Πατήστε |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| για να εμφανιστεί ο δείκτης</translation>
@@ -2757,7 +2754,6 @@
 <translation id="6710594484020273272">&lt;Πληκτρολογήστε όρο αναζήτησης&gt;</translation>
 <translation id="671076103358959139">Διακριτικό εγγραφής:</translation>
 <translation id="6711464428925977395">Υπάρχει κάποιο πρόβλημα με το διακομιστή μεσολάβησης ή η διεύθυνση είναι εσφαλμένη.</translation>
-<translation id="6716013836112872184">Λάβετε μηνύματα ηλεκτρονικού ταχυδρομείου στη διεύθυνση <ph name="EMAIL" /> όταν η τιμή πέσει σε οποιονδήποτε ιστότοπο.</translation>
 <translation id="6716672519412350405">Ο ιστότοπος <ph name="URL" /> θέλει να δημιουργήσει τρισδιάστατο χάρτη του περιβάλλοντα χώρου σας και να παρακολουθεί τη θέση της κάμερας.</translation>
 <translation id="6718612893943028815">Χρήση κάμερας;</translation>
 <translation id="6721164594124191969">Ετικέτες (Γυαλιστερές)</translation>
@@ -4037,6 +4033,5 @@
     &lt;li&gt;Δοκιμάστε να συνδεθείτε σε κάποιο άλλο δίκτυο&lt;/li&gt;
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
-<translation id="995240771322213706">αυτόματη λειτουργία picture-in-picture</translation>
 <translation id="997986563973421916">Από το Google Pay</translation>
 </translationbundle>

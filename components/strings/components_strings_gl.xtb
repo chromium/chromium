@@ -1263,7 +1263,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="36224234498066874">Borrar datos de navegación...</translation>
 <translation id="362276910939193118">Mostrar historial completo</translation>
 <translation id="3624292976554877583">Etiquetas (mate)</translation>
-<translation id="3625929652356389713">Pode pedirche permiso para abrir automaticamente ventás en pantalla superposta</translation>
 <translation id="3628905806504633297">{0,plural, =1{A política do administrador non recomenda transferir este ficheiro ao destino: <ph name="DESTINATION_NAME" />}other{A política do administrador non recomenda transferir estes ficheiros ao destino: <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3630155396527302611">Se xa está incluído como programa autorizado para acceder á rede, proba
        a eliminalo da lista e volver engadilo.</translation>
@@ -1398,7 +1397,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="388632593194507180">Detectouse a supervisión</translation>
 <translation id="3886948180919384617">Amontoador 3</translation>
 <translation id="3890664840433101773">Engadir correo electrónico</translation>
-<translation id="3893306401511601929">Pantalla superposta automática</translation>
 <translation id="3897092660631435901">Menú</translation>
 <translation id="3901925938762663762">A tarxeta caducou</translation>
 <translation id="390391808978419508">Esgotouse o tempo de espera para a apertura</translation>
@@ -1867,7 +1865,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4852429274334674023">Sistemas operativos</translation>
 <translation id="4854853140771946034">Crear rapidamente unha nota nova en Google Keep</translation>
 <translation id="485902285759009870">Verificando código…</translation>
-<translation id="4862630594858951805">Queres recibir un correo electrónico cando baixe o prezo?</translation>
 <translation id="4864406669374375262">Copiouse a cadea de versión no portapapeis</translation>
 <translation id="486459320933704969">Para poderes visitar este sitio web, ten que darche permiso o teu pai, nai, titor ou titora</translation>
 <translation id="4866506163384898554">Para que se mostre o cursor, preme |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />|</translation>
@@ -2756,7 +2753,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6710594484020273272">&lt;Escribe un termo de busca&gt;</translation>
 <translation id="671076103358959139">Token de inscrición:</translation>
 <translation id="6711464428925977395">Produciuse un erro co servidor proxy ou o enderezo é incorrecto.</translation>
-<translation id="6716013836112872184">Recibe correos electrónicos en <ph name="EMAIL" /> cando baixe o prezo en calquera sitio.</translation>
 <translation id="6716672519412350405"><ph name="URL" /> quere crear un mapa 3D do que te rodea e facer un seguimento da posición da cámara</translation>
 <translation id="6718612893943028815">Queres usar a cámara?</translation>
 <translation id="6721164594124191969">Etiquetas (brillo)</translation>
@@ -4035,6 +4031,5 @@ Detalles adicionais:
     &lt;li&gt;Proba a conectarte a outra rede&lt;/li&gt;
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
-<translation id="995240771322213706">pantalla superposta automática</translation>
 <translation id="997986563973421916">De Google Pay</translation>
 </translationbundle>

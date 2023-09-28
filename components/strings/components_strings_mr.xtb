@@ -1262,7 +1262,6 @@
 <translation id="36224234498066874">ब्राउझिंग डेटा साफ करा...</translation>
 <translation id="362276910939193118">पूर्ण इतिहास दर्शवा</translation>
 <translation id="3624292976554877583">लेबल (मॅट)</translation>
-<translation id="3625929652356389713">चित्रात-चित्र विंडो आपोआप उघडण्यास सांगू शकते</translation>
 <translation id="3628905806504633297">{0,plural, =1{अ‍ॅडमिनिस्ट्रेटर धोरण ही फाइल <ph name="DESTINATION_NAME" /> वर ट्रान्सफर करण्याची शिफारस करत नाही}other{अ‍ॅडमिनिस्ट्रेटर धोरण या फाइल <ph name="DESTINATION_NAME" /> वर ट्रान्सफर करण्याची शिफारस करत नाही}}</translation>
 <translation id="3630155396527302611">नेटवर्क ॲक्सेस करण्यासाठी परवानगी  दिलेला प्रोग्राम म्हणून तो आधीपासून सूचीबद्ध केला असल्यास
         तो सूचीमधून काढा आणि पुन्हा जोडून पहा.</translation>
@@ -1397,7 +1396,6 @@
 <translation id="388632593194507180">परीक्षण आढळले</translation>
 <translation id="3886948180919384617">स्टॅकर ३</translation>
 <translation id="3890664840433101773">ईमेल जोडा</translation>
-<translation id="3893306401511601929">ऑटो चित्रात-चित्र</translation>
 <translation id="3897092660631435901">मेनू</translation>
 <translation id="3901925938762663762">कार्ड कालबाह्य झाले आहे</translation>
 <translation id="390391808978419508">उघडणे टाइम आउट झाले</translation>
@@ -1866,7 +1864,6 @@
 <translation id="4852429274334674023">ऑपरेटिंग सिस्टीम</translation>
 <translation id="4854853140771946034">Google Keep मध्ये नवीन टीप झटपट तयार करा</translation>
 <translation id="485902285759009870">कोडची पडताळणी करत आहे...</translation>
-<translation id="4862630594858951805">किंमत कमी झाल्यानंतर ईमेल हवा आहे का?</translation>
 <translation id="4864406669374375262">आवृत्तीची स्ट्रिंग क्लिपबोर्डवर कॉपी केली</translation>
 <translation id="486459320933704969">तुम्ही या वेबसाइटला भेट देऊ शकता अशी पालकांनी मंजुरी देणे आवश्यक आहे</translation>
 <translation id="4866506163384898554">तुमचा कर्सर दाखवण्यासाठी |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| प्रेस करा</translation>
@@ -2756,7 +2753,6 @@
 <translation id="6710594484020273272">&lt;शोध संज्ञा एंटर करा&gt;</translation>
 <translation id="671076103358959139">नोंदणी टोकन:</translation>
 <translation id="6711464428925977395">प्रॉक्सी सर्व्हरमध्ये काहीतरी चुकीचे आहे किंवा पत्ता चुकीचा आहे.</translation>
-<translation id="6716013836112872184">कोणत्याही साइटवर किंमत कमी झाल्यानंतर <ph name="EMAIL" /> वर ईमेल मिळवा.</translation>
 <translation id="6716672519412350405"><ph name="URL" /> ला तुमच्या आसपासच्या परिसराचा 3D नकाशा तयार करायचा आणि कॅमेर्‍याचे स्थान ट्रॅक करायचे आहे</translation>
 <translation id="6718612893943028815">कॅमेरा वापरायचा का?</translation>
 <translation id="6721164594124191969">लेबल (ग्लॉसी)</translation>
@@ -4035,6 +4031,5 @@
     &lt;li&gt;दुसर्‍या वाय-फाय नेटवर्कशी कनेक्ट करून पहा&lt;/li&gt;
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
-<translation id="995240771322213706">ऑटो चित्रात-चित्र</translation>
 <translation id="997986563973421916">Google Pay वरून</translation>
 </translationbundle>

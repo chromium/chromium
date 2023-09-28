@@ -17,7 +17,6 @@
 <translation id="1008261151167010035">O <ph name="BRAND" /> lembra como você fez login e conecta sua conta automaticamente sempre que possível. Quando essa opção estiver desativada, será necessário fornecer uma confirmação todas as vezes.</translation>
 <translation id="1008544602823861396">está impedido de usar suas informações em</translation>
 <translation id="1008557486741366299">Não agora</translation>
-<translation id="1009454959501038262">{NUM_SITES,plural, =1{Para proteger seus dados, as permissões de um site que você não acessa há dois meses foram removidas}one{Para proteger seus dados, as permissões de um site que você não acessa há dois meses foram removidas}other{Para proteger seus dados, as permissões de sites que você não acessa há dois meses foram removidas}}</translation>
 <translation id="1009663062402466586">Controles do jogo já disponíveis</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{Página sem resposta}one{Páginas sem resposta}other{Páginas sem resposta}}</translation>
 <translation id="1011003645819296594">Dispositivos salvos</translation>
@@ -122,7 +121,6 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1084824384139382525">Copiar &amp;endereço do link</translation>
 <translation id="1085064499066015002">Sempre em todos os sites</translation>
 <translation id="1085697365578766383">Erro ao iniciar a máquina virtual. Tente novamente.</translation>
-<translation id="1087965115100412394">Não permitir que os sites se conectem a dispositivos MIDI</translation>
 <translation id="1088659085457112967">Entrar no modo leitor</translation>
 <translation id="1090126737595388931">Nenhum aplicativo de fundo sendo executado</translation>
 <translation id="1090541560108055381">Antes de parear, confira se é mostrado o mesmo código nos dois dispositivos</translation>
@@ -3233,7 +3231,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3551320343578183772">Fechar guia</translation>
 <translation id="3552097563855472344"><ph name="NETWORK_NAME" />: <ph name="SPAN_START" /><ph name="CARRIER_NAME" /><ph name="SPAN_END" /></translation>
 <translation id="3552780134252864554">Limpar ao sair</translation>
-<translation id="3553487194781590058">Não permitir que os sites abram uma janela picture-in-picture quando você mudar para outra guia</translation>
 <translation id="3554493885489666172">Seu dispositivo é gerenciado por <ph name="PROFILE_NAME" />. Os administradores podem acessar os dados de qualquer perfil neste dispositivo.</translation>
 <translation id="3555812735919707620">Remover extensão</translation>
 <translation id="3557101512409028104">Defina restrições de sites e limites de tempo de uso com o Family Link</translation>
@@ -3792,7 +3789,6 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="3975201861340929143">Explicação</translation>
 <translation id="3975565978598857337">Falha ao entrar em contato com o servidor desse domínio</translation>
 <translation id="3976108569178263973">Não há impressoras disponíveis.</translation>
-<translation id="3976244126942806443">Os sites geralmente se conectam a dispositivos MIDI para criar e editar músicas</translation>
 <translation id="397703832102027365">Finalizando...</translation>
 <translation id="3977145907578671392">Os recursos de alguns sites podem não funcionar na navegação anônima</translation>
 <translation id="3977886311744775419">Não é possível fazer o download das atualizações automáticas neste tipo de rede, mas você pode verificar as atualizações manualmente.</translation>
@@ -4693,7 +4689,6 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="4730492586225682674">Anotação mais recente da stylus na tela de bloqueio</translation>
 <translation id="4730888769809690665">Notificações permitidas para <ph name="SITE" /></translation>
 <translation id="4731306954230393087">Pode usar as informações salvas sobre você</translation>
-<translation id="473140019006744096">Não há espaço suficiente neste dispositivo para concluir a atualização. Libere <ph name="NECESSARY_SPACE" /> no dispositivo e tente novamente.</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (esquerdo)</translation>
 <translation id="4733793249294335256">Local</translation>
 <translation id="473546211690256853">Esta conta é gerenciada por <ph name="DOMAIN" /></translation>
@@ -5395,7 +5390,6 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="5327912693242073631">Os recursos que precisam das notificações não funcionarão</translation>
 <translation id="532943162177641444">Toque na notificação no <ph name="PHONE_NAME" /> para configurar o ponto de acesso móvel que pode ser usado por este dispositivo.</translation>
 <translation id="5329858601952122676">&amp;Excluir</translation>
-<translation id="5330592967519769658">Com permissão para abrir uma janela picture-in-picture ao mudar para uma guia diferente</translation>
 <translation id="5331069282670671859">Você não tem certificados nesta categoria</translation>
 <translation id="5331568967879689647">App do sistema ChromeOS</translation>
 <translation id="5331975486040154427">Dispositivo USB-C (porta traseira da esquerda)</translation>
@@ -5573,7 +5567,6 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="5473099001878321374">Ao continuar, você concorda que este dispositivo também pode fazer o download e a instalação de atualizações de apps do Google, da operadora da criança e do fabricante do dispositivo automaticamente, possivelmente usando dados da rede celular. Alguns aplicativos podem oferecer compras no app.</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{O PIN precisa ter pelo menos 1 caractere}one{O PIN precisa ter pelo menos # caractere}other{O PIN precisa ter pelo menos # caracteres}}</translation>
 <translation id="5474859849784484111"><ph name="MANAGER" /> precisa que você se conecte ao Wi-Fi para fazer o download de uma atualização. Você também pode fazer o download em uma conexão limitada (sujeito a cobranças).</translation>
-<translation id="5478520208448702555">Os sites podem abrir uma janela picture-in-picture quando você muda para uma guia diferente</translation>
 <translation id="5481273127572794904">Bloquear o download automático de vários arquivos</translation>
 <translation id="5481941284378890518">Adicionar impressoras próximas</translation>
 <translation id="5484181871714116891">Quando ativadas, as chaves de acesso serão criadas com as Chaves do iCloud e ficarão disponíveis nos seus dispositivos Apple. Quando desativadas, as chaves de acesso serão criadas no seu perfil do Chrome nesse dispositivo.</translation>
@@ -5731,7 +5724,6 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="5600348067066185292">Siga algumas etapas simples para fazer a instalação. Você terá outra chance de confirmar suas opções antes que as mudanças sejam concluídas.</translation>
 <translation id="5600706100022181951">O download da atualização será feito com <ph name="UPDATE_SIZE_MB" /> MB de dados móveis. Quer continuar?</translation>
 <translation id="5601503069213153581">PIN</translation>
-<translation id="5601823921345337195">Bloquear a conexão a dispositivos MIDI</translation>
 <translation id="5601833336918638013">Não permitir que os sites procurem dispositivos Bluetooth</translation>
 <translation id="5602586420788540146">Abrir em um novo grupo de guias</translation>
 <translation id="5605758115928394442">Uma notificação foi enviada ao seu smartphone para confirmar sua identidade.</translation>
@@ -5854,7 +5846,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5707185214361380026">Falha ao carregar a extensão a partir de:</translation>
 <translation id="5708171344853220004">Nome principal da Microsoft</translation>
 <translation id="5709557627224531708">Definir o Chrome como seu navegador padrão</translation>
-<translation id="5710122160114032242">Sem permissão para abrir uma janela picture-in-picture ao mudar para uma guia diferente</translation>
 <translation id="5711010025974903573">Registros do serviço</translation>
 <translation id="5711983031544731014">Não foi possível realizar o desbloqueio. Insira sua senha.</translation>
 <translation id="5712153969432126546">Às vezes, os sites podem publicar PDFs, como documentos, contratos, e formulários</translation>
@@ -6616,7 +6607,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6326175484149238433">Remover do Google Chrome</translation>
 <translation id="6326855256003666642">Contagem de manutenção de atividade</translation>
 <translation id="6327785803543103246">Descoberta automática do proxy da Web</translation>
-<translation id="6331818708794917058">Os sites podem pedir para se conectar a dispositivos MIDI</translation>
 <translation id="6333064448949140209">O arquivo será enviado ao Google para depuração</translation>
 <translation id="6333170995003625229">Não foi possível verificar seu endereço de e-mail ou sua senha. Tente fazer login novamente.</translation>
 <translation id="6334267141726449402">Copie e envie esse link ao usuário para coletar os registros.</translation>
@@ -6766,7 +6756,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6458701200018867744">Falha no upload (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">Usar seleção para buscar</translation>
 <translation id="6459799433792303855">A janela ativa foi movida para outra tela.</translation>
-<translation id="6460566145397380451">Permitir a conexão a dispositivos MIDI</translation>
 <translation id="6460601847208524483">Localizar próximo</translation>
 <translation id="6461170143930046705">Procurando redes…</translation>
 <translation id="6463795194797719782">&amp;Editar</translation>
@@ -7094,7 +7083,6 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6735304988756581115">Mostrar cookies e outros dados do site...</translation>
 <translation id="6736243959894955139">Endereço</translation>
 <translation id="6737663862851963468">Remover tíquete do Kerberos</translation>
-<translation id="6737931010859480781">Este app é pré-instalado no seu dispositivo</translation>
 <translation id="6738180164164974883">Permitir a definição de cookies de terceiros</translation>
 <translation id="6738430949033571771">Verificando a conta…</translation>
 <translation id="6739923123728562974">Mostrar atalho na área de trabalho</translation>
@@ -8489,7 +8477,6 @@ Pressione um interruptor ou tecla atribuídos para remover a atribuição.</tran
 <translation id="7853747251428735">Mais &amp;ferramentas</translation>
 <translation id="7853999103056713222">Usar uma senha mais segura</translation>
 <translation id="7855678561139483478">Mover guia para uma nova janela</translation>
-<translation id="7855729579456690716">Os sites podem abrir uma janela picture-in-picture quando você muda para outra guia</translation>
 <translation id="7857004848504343806">Seu computador tem um módulo de segurança, que é usado para implementar vários recursos de proteção importantes no ChromeOS Flex. Visite a Central de Ajuda do Chromebook para saber mais: https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">Sugestões de texto</translation>
 <translation id="7857949311770343000">Esta é a página "Nova guia" que você esperava?</translation>

@@ -555,7 +555,6 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="40433179647657191">Créez et partagez un lien direct vers une partie de la page que vous avez mise en évidence.</translation>
 <translation id="4045648459118332842">Récupérez d'un seul geste vos mots de passe enregistrés dans n'importe quelle appli</translation>
 <translation id="4049507953662678203">Vérifiez si vous disposez bien d'une connexion réseau, puis réessayez.</translation>
-<translation id="4063300985191096908">Accéder au flux</translation>
 <translation id="4066639687323968621">Connectez-vous avec votre compte Google pour synchroniser vos favoris, votre historique et plus encore.</translation>
 <translation id="4092655288299341041">Afficher l'aide</translation>
 <translation id="4105841739161771091">{count,plural, =1{Supprimer l'adresse}one{Supprimer l'adresse}other{Supprimer les adresses}}</translation>
@@ -1153,7 +1152,6 @@ Lorsque vous êtes en navigation privée, ils ne peuvent pas utiliser de cookies
 <translation id="7302503784943202842">Utiliser des mots de passe sur tous vos appareils</translation>
 <translation id="730958329302570991">Ajoutez facilement et à tout moment des mots de passe de site au Gestionnaire de mots de passe de Google.</translation>
 <translation id="7313347584264171202">Les onglets de navigation privée s'afficheront ici</translation>
-<translation id="7331371412779932885">Des suggestions d'onglets vous sont faites en fonction de votre activité de navigation sur vos autres appareils utilisant votre compte Google. Vos appareils doivent être connectés et synchronisés à l'aide du même compte Google.</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> % téléchargés</translation>
 <translation id="7340958967809483333">Options pour Discover</translation>
 <translation id="7346909386216857016">OK</translation>
@@ -1349,6 +1347,7 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="8393889347136007944">Onglets non utilisés pendant <ph name="THRESHOLD" /> jours</translation>
 <translation id="8395339334550012808">Vous verrez bientôt des contenus provenant de <ph name="CHANNEL_NAME" /> ou la concernant dans "Suivis".</translation>
 <translation id="8395378633507873708">Barre d'adresse</translation>
+<translation id="8402673309244746971">Accéder aux sites suivis</translation>
 <translation id="8403629764260204788">Masquer "Poursuivre la navigation"</translation>
 <translation id="8407669440184693619">Aucun mot de passe trouvé pour ce site</translation>
 <translation id="842017693807136194">Connecté avec</translation>

@@ -1828,7 +1828,6 @@ Remarque : Si vous ne renseignez pas un champ, toutes les valeurs seront prises
 
       Si cette règle n'est pas définie, <ph name="PRINTERS_ALLOW_ALL" /> est appliqué.</translation>
 <translation id="2581338546762479588">Autoriser le redémarrage automatique après les mises à jour</translation>
-<translation id="2582855747769273665">URL permettant aux utilisateurs d'en savoir plus. Si cette règle n'est pas configurée, plus aucune URL "En savoir plus" ne figurera dans le programme d'installation.</translation>
 <translation id="2586117300379904732">Autoriser les wakelocks pour la gestion de l'alimentation</translation>
 <translation id="2586231026319371211">Heure au format 24h local.</translation>
 <translation id="2587719089023392205">Définir <ph name="PRODUCT_NAME" /> comme navigateur par défaut</translation>

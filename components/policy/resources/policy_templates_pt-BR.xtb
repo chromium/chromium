@@ -1852,8 +1852,6 @@ Observação: a omissão de um campo significa que todos os valores correspondem
 
       Se a política não for definida, <ph name="PRINTERS_ALLOW_ALL" /> será aplicado.</translation>
 <translation id="2581338546762479588">Permitir a reinicialização automática após atualizações</translation>
-<translation id="2582855747769273665">Um URL que os usuários podem acessar para saber mais. Se essa propriedade não for configurada, não
-haverá um URL do tipo "saiba mais" no instalador.</translation>
 <translation id="2586117300379904732">Permitir wake locks para gerenciamento de energia</translation>
 <translation id="2586231026319371211">Horário interpretado no formato local convencional de 24h.</translation>
 <translation id="2587719089023392205">Definir o <ph name="PRODUCT_NAME" /> como meu navegador padrão</translation>

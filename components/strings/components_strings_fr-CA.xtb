@@ -1259,7 +1259,6 @@
 <translation id="36224234498066874">Effacer données navigation…</translation>
 <translation id="362276910939193118">Afficher l'historique complet</translation>
 <translation id="3624292976554877583">Étiquettes (mat)</translation>
-<translation id="3625929652356389713">Peut demander d'ouvrir automatiquement les fenêtres d'incrustation d'image</translation>
 <translation id="3628905806504633297">{0,plural, =1{La politique de l'administrateur ne recommande pas de transférer ce fichier vers <ph name="DESTINATION_NAME" />}one{La politique de l'administrateur ne recommande pas de transférer ce fichier vers <ph name="DESTINATION_NAME" />}other{La politique de l'administrateur ne recommande pas de transférer ces fichiers vers <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3630155396527302611">Si la page est déjà répertoriée comme étant un programme autorisé à accéder
     au réseau, essayez de la supprimer de la liste, puis de la rajouter.</translation>
@@ -1394,7 +1393,6 @@
 <translation id="388632593194507180">Surveillance détectée</translation>
 <translation id="3886948180919384617">Empileur 3</translation>
 <translation id="3890664840433101773">Ajouter une adresse de courriel</translation>
-<translation id="3893306401511601929">Incrustation d'image automatique</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3901925938762663762">La carte a expiré.</translation>
 <translation id="390391808978419508">L'ouverture a dépassé le délai</translation>
@@ -1862,7 +1860,6 @@
 <translation id="4852429274334674023">Systèmes d'exploitation</translation>
 <translation id="4854853140771946034">Créer rapidement une note dans Google Keep</translation>
 <translation id="485902285759009870">Vérification du code en cours…</translation>
-<translation id="4862630594858951805">Vous souhaitez recevoir des courriels lorsque les prix baissent?</translation>
 <translation id="4864406669374375262">Chaîne de version copiée dans le presse-papiers</translation>
 <translation id="486459320933704969">Un parent ou un tuteur doit indiquer que tu as l'autorisation de consulter ce site Web</translation>
 <translation id="4866506163384898554">Appuyez sur |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| pour afficher votre curseur</translation>
@@ -2750,7 +2747,6 @@
 <translation id="6710594484020273272">&lt;Entrez un terme de recherche&gt;</translation>
 <translation id="671076103358959139">Jeton d'inscription :</translation>
 <translation id="6711464428925977395">Un problème est survenu avec le serveur mandataire, ou l'adresse est incorrecte.</translation>
-<translation id="6716013836112872184">Recevez des courriels à l'adresse <ph name="EMAIL" /> lorsque les prix baissent sur n'importe quel site.</translation>
 <translation id="6716672519412350405"><ph name="URL" /> souhaite créer une carte 3D de votre environnement et faire le suivi de la position de l'appareil photo</translation>
 <translation id="6718612893943028815">Utiliser la caméra?</translation>
 <translation id="6721164594124191969">Étiquettes (brillantes)</translation>
@@ -4027,6 +4023,5 @@ Détails supplémentaires :
     &lt;li&gt;Essayez de vous connecter à un autre réseau&lt;/li&gt;
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
-<translation id="995240771322213706">incrustation d'image automatique</translation>
 <translation id="997986563973421916">De Google Pay</translation>
 </translationbundle>

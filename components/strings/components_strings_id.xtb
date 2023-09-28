@@ -1263,7 +1263,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="36224234498066874">Hapus Data Penjelajahan...</translation>
 <translation id="362276910939193118">Tampilkan Histori Lengkap</translation>
 <translation id="3624292976554877583">Label (Matte)</translation>
-<translation id="3625929652356389713">Dapat meminta untuk membuka jendela picture-in-picture secara otomatis</translation>
 <translation id="3628905806504633297">{0,plural, =1{Kebijakan administrator tidak merekomendasikan untuk mentransfer file ini ke <ph name="DESTINATION_NAME" />}other{Kebijakan administrator tidak merekomendasikan untuk mentransfer file ini ke <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3630155396527302611">Jika sudah tercantum sebagai program yang diizinkan untuk mengakses jaringan,
       coba hapus dari daftar dan tambahkan lagi.</translation>
@@ -1398,7 +1397,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="388632593194507180">Pemantauan Terdeteksi</translation>
 <translation id="3886948180919384617">Tempat kertas 3</translation>
 <translation id="3890664840433101773">Tambahkan email</translation>
-<translation id="3893306401511601929">Picture-in-picture otomatis</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3901925938762663762">Kartu telah habis masa berlakunya</translation>
 <translation id="390391808978419508">Waktu pembukaan habis</translation>
@@ -1867,7 +1865,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="4852429274334674023">Sistem operasi</translation>
 <translation id="4854853140771946034">Buat catatan baru di Google Keep dengan cepat</translation>
 <translation id="485902285759009870">Memverifikasi kode ...</translation>
-<translation id="4862630594858951805">Ingin mendapatkan email jika ada penurunan harga?</translation>
 <translation id="4864406669374375262">String versi disalin ke papan klip</translation>
 <translation id="486459320933704969">Orang tua atau wali harus menyatakan bahwa kamu boleh membuka situs ini</translation>
 <translation id="4866506163384898554">Tekan |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| untuk menampilkan kursor</translation>
@@ -2756,7 +2753,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="6710594484020273272">&lt;Ketik istilah penelusuran&gt;</translation>
 <translation id="671076103358959139">Token Pendaftaran:</translation>
 <translation id="6711464428925977395">Ada yang salah dengan server proxy, atau alamat tidak benar.</translation>
-<translation id="6716013836112872184">Dapatkan email yang dikirim ke <ph name="EMAIL" /> jika ada penurunan harga di situs mana pun.</translation>
 <translation id="6716672519412350405"><ph name="URL" /> ingin membuat peta 3D untuk area di sekeliling Anda dan melacak posisi kamera</translation>
 <translation id="6718612893943028815">Gunakan kamera?</translation>
 <translation id="6721164594124191969">Label (Mengilap)</translation>
@@ -4031,6 +4027,5 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
     &lt;li&gt;Coba hubungkan ke jaringan lain&lt;/li&gt;
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
-<translation id="995240771322213706">picture-in-picture otomatis</translation>
 <translation id="997986563973421916">Dari Google Pay</translation>
 </translationbundle>

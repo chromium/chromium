@@ -17,7 +17,6 @@
 <translation id="1008261151167010035"><ph name="BRAND" /> でログイン方法を記憶し、可能な場合は自動的にログインします。オフにすると、毎回確認を求められます。</translation>
 <translation id="1008544602823861396">では次のサイトであなたの情報を使用できません:</translation>
 <translation id="1008557486741366299">後で</translation>
-<translation id="1009454959501038262">{NUM_SITES,plural, =1{データ保護のため、2 か月間アクセスしていないサイトから権限を削除しました}other{データ保護のため、2 か月間アクセスしていないサイトから権限を削除しました}}</translation>
 <translation id="1009663062402466586">ゲーム操作キーをご利用いただけるようになりました</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{ページが応答しません}other{ページが応答しません}}</translation>
 <translation id="1011003645819296594">保存済みのデバイス</translation>
@@ -122,7 +121,6 @@
 <translation id="1084824384139382525">リンクのアドレスをコピー(&amp;E)</translation>
 <translation id="1085064499066015002">すべてのサイトで常に許可</translation>
 <translation id="1085697365578766383">仮想マシンの起動中にエラーが発生しました。もう一度お試しください。</translation>
-<translation id="1087965115100412394">サイトに MIDI デバイスへの接続を許可しない</translation>
 <translation id="1088659085457112967">リーダーモードを開始</translation>
 <translation id="1090126737595388931">実行中のバックグラウンド アプリはありません</translation>
 <translation id="1090541560108055381">ペア設定を行う前に、両方のデバイスでコードが一致しているか確認してください</translation>
@@ -3211,7 +3209,6 @@
 <translation id="3551320343578183772">タブを閉じる</translation>
 <translation id="3552097563855472344"><ph name="NETWORK_NAME" /> - <ph name="SPAN_START" /><ph name="CARRIER_NAME" /><ph name="SPAN_END" /></translation>
 <translation id="3552780134252864554">終了時に削除</translation>
-<translation id="3553487194781590058">別のタブに変更したときピクチャー イン ピクチャー ウィンドウを開くことをサイトに許可しない</translation>
 <translation id="3554493885489666172">このデバイスは <ph name="PROFILE_NAME" /> によって管理されています。管理者はこのデバイスの任意のプロファイルのデータにアクセスできます。</translation>
 <translation id="3555812735919707620">拡張機能を削除</translation>
 <translation id="3557101512409028104">ファミリー リンクでウェブサイトの制限と利用時間の上限を設定します</translation>
@@ -3769,7 +3766,6 @@
 <translation id="3975201861340929143">説明</translation>
 <translation id="3975565978598857337">レルムのサーバーに接続できませんでした</translation>
 <translation id="3976108569178263973">利用できるプリンタがありません。</translation>
-<translation id="3976244126942806443">多くのサイトは、音楽の制作や編集をするために MIDI デバイスに接続します</translation>
 <translation id="397703832102027365">最終処理中...</translation>
 <translation id="3977145907578671392">シークレット モードでは、一部サイトの機能が使用できなくなる可能性があります</translation>
 <translation id="3977886311744775419">このネットワーク タイプでは自動更新はダウンロードされませんが、手動で更新を確認できます。</translation>
@@ -4668,7 +4664,6 @@
 <translation id="4730492586225682674">ロック画面でタッチペンによる最新メモを表示</translation>
 <translation id="4730888769809690665"><ph name="SITE" /> で通知を許可されています</translation>
 <translation id="4731306954230393087">保存したあなたに関する情報の使用を許可する</translation>
-<translation id="473140019006744096">更新を完了するのに十分な容量がデバイスにありません。デバイスで <ph name="NECESSARY_SPACE" /> の容量を確保してから、もう一度お試しください。</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />%（左）</translation>
 <translation id="4733793249294335256">保存先</translation>
 <translation id="473546211690256853">このアカウントは <ph name="DOMAIN" /> によって管理されています。</translation>
@@ -5369,7 +5364,6 @@
 <translation id="5327912693242073631">通知を必要とする機能は動作しなくなります</translation>
 <translation id="532943162177641444">「<ph name="PHONE_NAME" />」で通知をタップして、このデバイスで使用できるモバイル アクセス ポイントを設定してください。</translation>
 <translation id="5329858601952122676">削除(&amp;D)</translation>
-<translation id="5330592967519769658">別のタブに変更したときにピクチャー イン ピクチャー ウィンドウを開くことが許可されるサイト</translation>
 <translation id="5331069282670671859">このカテゴリの証明書はありません</translation>
 <translation id="5331568967879689647">Chrome OS のシステムアプリ</translation>
 <translation id="5331975486040154427">USB-C デバイス（左奥のポート）</translation>
@@ -5546,7 +5540,6 @@
 <translation id="5473099001878321374">続行すると、Google、お子様がご利用の携帯通信会社、デバイス メーカーからアップデートやアプリをこのデバイスが自動的に（場合によってはモバイルデータ接続を使用して）ダウンロードし、インストールする場合があることに同意したことになります。一部のアプリでは、アプリ内購入をご利用いただけます。</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{PIN は 1 文字以上で入力してください}other{PIN は # 文字以上で入力してください}}</translation>
 <translation id="5474859849784484111"><ph name="MANAGER" /> が、アップデートを今すぐダウンロードするよう求めています。Wi-Fi に接続するか、現在の従量制接続でのダウンロードを許可してください（通信料が発生することがあります）。</translation>
-<translation id="5478520208448702555">別のタブに変更したときにピクチャー イン ピクチャー ウィンドウを開くことをサイトに許可するかどうかを設定します</translation>
 <translation id="5481273127572794904">複数のファイルの自動ダウンロードを許可しないサイト</translation>
 <translation id="5481941284378890518">近くのプリンタを追加</translation>
 <translation id="5484181871714116891">オンにした場合、パスキーが iCloud キーチェーンで作成され、Apple デバイスで使用できるようになります。オフにした場合、パスキーはこのデバイスの Chrome プロフィールで作成されます。</translation>
@@ -5704,7 +5697,6 @@
 <translation id="5600348067066185292">インストールの手順は簡単です。パソコンに変更を加える前に、インストールを確認するメッセージがもう一度表示されます。</translation>
 <translation id="5600706100022181951">アップデートをダウンロードすると、<ph name="UPDATE_SIZE_MB" /> MB のモバイルデータを使用することになります。続行してもよろしいですか？</translation>
 <translation id="5601503069213153581">PIN</translation>
-<translation id="5601823921345337195">MIDI デバイスへの接続を許可しないサイト</translation>
 <translation id="5601833336918638013">サイトが Bluetooth デバイスを検出することを許可しない</translation>
 <translation id="5602586420788540146">新しいタブグループで開く</translation>
 <translation id="5605758115928394442">本人確認の通知をご使用のスマートフォンに送信しました。</translation>
@@ -5826,7 +5818,6 @@
 <translation id="5707185214361380026">次の場所から拡張機能を読み込むことができませんでした:</translation>
 <translation id="5708171344853220004">Microsoft プリンシパル名</translation>
 <translation id="5709557627224531708">Chrome を既定のブラウザに設定する</translation>
-<translation id="5710122160114032242">別のタブに変更したときにピクチャー イン ピクチャー ウィンドウを開くことが許可されないサイト</translation>
 <translation id="5711010025974903573">サービスログ</translation>
 <translation id="5711983031544731014">ロックを解除できません。パスワードを入力してください。</translation>
 <translation id="5712153969432126546">一部のサイトはドキュメント、契約、フォームなどの PDF を一般に提供しています</translation>
@@ -6588,7 +6579,6 @@
 <translation id="6326175484149238433">Chrome から削除</translation>
 <translation id="6326855256003666642">キープアライブ カウント</translation>
 <translation id="6327785803543103246">ウェブプロキシ自動検出</translation>
-<translation id="6331818708794917058">サイトが MIDI デバイスへの接続を要求できるようにする</translation>
 <translation id="6333064448949140209">ファイルはデバッグのため Google に送信されます</translation>
 <translation id="6333170995003625229">メールアドレスまたはパスワードを確認できませんでした。もう一度ログインしてみてください。</translation>
 <translation id="6334267141726449402">このリンクをコピーして、ログを収集するユーザーに送信します。</translation>
@@ -6738,7 +6728,6 @@
 <translation id="6458701200018867744">アップロードできませんでした（<ph name="WEBRTC_LOG_UPLOAD_TIME" />）。</translation>
 <translation id="6459488832681039634">選択部分を検索に使用</translation>
 <translation id="6459799433792303855">アクティブなウィンドウが別のディスプレイに移動しました。</translation>
-<translation id="6460566145397380451">MIDI デバイスへの接続を許可するサイト</translation>
 <translation id="6460601847208524483">次を検索</translation>
 <translation id="6461170143930046705">ネットワークの検索中...</translation>
 <translation id="6463795194797719782">編集(&amp;E)</translation>
@@ -7063,7 +7052,6 @@
 <translation id="6735304988756581115">Cookie と他のサイトのデータを表示...</translation>
 <translation id="6736243959894955139">アドレス</translation>
 <translation id="6737663862851963468">Kerberos チケットの削除</translation>
-<translation id="6737931010859480781">このアプリはデバイスにプリインストールされています</translation>
 <translation id="6738180164164974883">サードパーティ Cookie の設定を許可する</translation>
 <translation id="6738430949033571771">アカウントを確認しています...</translation>
 <translation id="6739923123728562974">デスクトップ ショートカットを表示</translation>
@@ -8455,7 +8443,6 @@
 <translation id="7853747251428735">その他のツール(&amp;L)</translation>
 <translation id="7853999103056713222">より安全なパスワードを使用する</translation>
 <translation id="7855678561139483478">タブを新しいウィンドウに移動</translation>
-<translation id="7855729579456690716">別のタブに変更したときにピクチャー イン ピクチャー ウィンドウを開くことをサイトに許可する</translation>
 <translation id="7857004848504343806">ご使用のパソコンにはセキュア モジュールが組み込まれています。これは ChromeOS Flex の多くの重要なセキュリティ機能を実装するために使用されます。詳しくは Chromebook ヘルプセンター（https://support.google.com/chromebook/?p=sm）をご覧ください。</translation>
 <translation id="7857093393627376423">テキスト候補</translation>
 <translation id="7857949311770343000">この新しいタブ ページでよろしいですか？</translation>

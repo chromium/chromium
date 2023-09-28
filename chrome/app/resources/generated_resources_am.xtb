@@ -17,7 +17,6 @@
 <translation id="1008261151167010035"><ph name="BRAND" /> እንዴት በመለያ እንደገቡ ያስታውሳል እና በሚቻልበት ጊዜ በራስ-ሰር በመለያ ያስገባዎታል። በሚጠፋበት ጊዜ በእያንዳንዱ ጊዜ ማረጋገጫ ይጠየቃሉ።</translation>
 <translation id="1008544602823861396">በሚከተለው ላይ መረጃዎን ከመጠቀም ታግዷል</translation>
 <translation id="1008557486741366299">አሁን አይደለም</translation>
-<translation id="1009454959501038262">{NUM_SITES,plural, =1{ውሂብዎን ለመጠበቅ ፈቃዶች በ2 ወራት ውስጥ ካልጎበኙት ጣቢያ ተወግደዋል}one{ውሂብዎን ለመጠበቅ ፈቃዶች በ2 ወራት ውስጥ ካልጎበኙት ጣቢያ ተወግደዋል}other{ውሂብዎን ለመጠበቅ ፈቃዶች በ2 ወራት ውስጥ ካልጎበኟቸው ጣቢያዎች ተወግደዋል}}</translation>
 <translation id="1009663062402466586">የጨዋታ መቆጣጠሪያዎች አሁን ይገኛሉ</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{ገፅ ምላሽ አይሰጥም}one{ገጾች ምላሽ አይሰጡም}other{ገጾች ምላሽ አይሰጡም}}</translation>
 <translation id="1011003645819296594">የተቀመጡ መሣሪያዎች</translation>
@@ -122,7 +121,6 @@
 <translation id="1084824384139382525">የአገናኝ አድ&amp;ራሻ ቅዳ</translation>
 <translation id="1085064499066015002">ሁሉም ጣቢያዎችን ሁሌም አብራ</translation>
 <translation id="1085697365578766383">ምናባዊ ማሽንን ማስጀመር አልተቻለም። እባክዎ እንደገና ይሞክሩ።</translation>
-<translation id="1087965115100412394">ጣቢያዎች ከ MIDI መሣሪያዎች ጋር እንዲገናኙ አይፍቀዱ</translation>
 <translation id="1088659085457112967">ወደ የአንባቢ ሁነታ ግባ</translation>
 <translation id="1090126737595388931">ምንም የሚያሂዱ የጀርባ መተግበሪያዎች የሉም</translation>
 <translation id="1090541560108055381">ከማጣመርዎ በፊት ይህ ኮድ በሁለቱም መሣሪያዎች ላይ ተመሳሳይ መሆኑን ያረጋግጡ</translation>
@@ -3226,7 +3224,6 @@
 <translation id="3551320343578183772">ትር ዝጋ</translation>
 <translation id="3552097563855472344"><ph name="NETWORK_NAME" /> - <ph name="SPAN_START" /><ph name="CARRIER_NAME" /><ph name="SPAN_END" /></translation>
 <translation id="3552780134252864554">በመውጫ ላይ ጸድቷል</translation>
-<translation id="3553487194781590058">እርስዎ ወደ የተለየ ትር ሲለውጡ ጣቢያዎች የስዕል-ላይ-ስዕል መስኮት እንዲከፍቱ አይፍቀዱ</translation>
 <translation id="3554493885489666172">የእርስዎ መሣሪያ በ<ph name="PROFILE_NAME" /> ነው የሚተዳደረው። አስተዳዳሪዎች በዚህ መሣሪያ ላይ በማንኛውም መገለጫ ውስጥ ያለውን ውሂብ መድረስ ይችላሉ።</translation>
 <translation id="3555812735919707620">ቅጥያ አስወገድ</translation>
 <translation id="3557101512409028104">የድር ጣቢያ ገደቦችን እና የማያ ገፅ ጊዜ ገደቦችን በFamily Link ያቀናብሩ</translation>
@@ -3785,7 +3782,6 @@
 <translation id="3975201861340929143">ገለጻ</translation>
 <translation id="3975565978598857337">ለማከማቸት አገልጋይን ማግኘት አልተሳካም</translation>
 <translation id="3976108569178263973">ምንም የሚገኙ አታሚዎች የሉም።</translation>
-<translation id="3976244126942806443">ጣቢያዎች ሙዚቃ ለመፍጠር እና ለማርትዕ በአብዛኛው ከMIDI መሣሪያዎች ጋር ይገናኛሉ</translation>
 <translation id="397703832102027365">በማጠናቀቅ ላይ...</translation>
 <translation id="3977145907578671392">በአንዳንድ ጣቢያዎች ላይ ያሉ ባህሪያት ማንነትን በማያሳውቅ ውስጥ ላይሰሩ ይችላሉ</translation>
 <translation id="3977886311744775419">ራስሰር ዝማኔዎች በዚህ ዓይነቱ አውታረ መረብ ላይ አይወርድም ሆኖም ግን በእጅ ዝማኔዎችን መፈለግ ይችላሉ።</translation>
@@ -4683,7 +4679,6 @@
 <translation id="4730492586225682674">በማያ ገፅ ቁልፍ ላይ የስታይለስ የቅርብ ጊዜ ማስታወሻ</translation>
 <translation id="4730888769809690665">ማሳወቂያዎች ለ<ph name="SITE" /> ተፈቅደዋል</translation>
 <translation id="4731306954230393087">ስለ እርስዎ ያስቀመጡትን መረጃ እንዲጠቀም ለሚለው ተፈቅዷል</translation>
-<translation id="473140019006744096">ይህን ዝማኔ ለማጠናቀቅ በዚህ መሣሪያ ላይ በቂ ቦታ የለም። በመሣሪያዎ ላይ <ph name="NECESSARY_SPACE" /> ያጽዱ እና እንደገና ይሞክሩ።</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (ግራ)</translation>
 <translation id="4733793249294335256">አካባቢ</translation>
 <translation id="473546211690256853">ይህ መለያ በ<ph name="DOMAIN" /> ነው የሚተዳደረው</translation>
@@ -5385,7 +5380,6 @@
 <translation id="5327912693242073631">ማሳወቂያዎች የሚያስፈልጋቸው ባህሪዎች አይሰሩም</translation>
 <translation id="532943162177641444">ይህ መሣሪያ ሊጠቀሙበት የሚችልበት የተንቀሳቃሽ ስልክ መገናኛ ነጥብ ለማቀናበር በእርስዎ <ph name="PHONE_NAME" /> ላይ ያለውን ማሳወቂያ መታ ያድርጉ።</translation>
 <translation id="5329858601952122676">&amp;ሠርዝ</translation>
-<translation id="5330592967519769658">እርስዎ ወደ የተለየ ትር ሲለውጡ የስዕል-ላይ-ስዕል መስኮት መክፈት ተፈቅዷል</translation>
 <translation id="5331069282670671859">በዚህ ምድብ ውስጥ የዕውቅና ማረጋገጫዎች የሉዎትም</translation>
 <translation id="5331568967879689647">የChromeOS ስርዓት መተግበሪያ</translation>
 <translation id="5331975486040154427">USB-C መሣሪያ (የግራ ጎን ኋላ ወደብ)</translation>
@@ -5563,7 +5557,6 @@
 <translation id="5473099001878321374">በመቀጠልዎ ይህ መሣሪያ እንዲሁም ዝማኔዎችን እና መተግበሪያዎችን ከGoogle፣ ከልጅዎ አገልግሎት አቅራቢ እና ከዚህ መሣሪያ አምራች፣ ምናልባት የተንቀሳቃሽ ውሂብን በመጠቀም፣ በራስ-ሰር ሊያወርድ እና ሊጭን እንደሚችል መስማማትዎን ያረጋግጣሉ። አንዳንድ መተግበሪያዎች የውስጠ-መተግበሪያ ግዢዎችን ሊያቀርቡ ይችላሉ።</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{ፒን ቢያንስ አንድ ቁምፊ መሆን አለበት}one{ፒን ቢያንስ # ቁምፊዎች መሆን አለበት}other{ፒን ቢያንስ # ቁምፊዎች መሆን አለበት}}</translation>
 <translation id="5474859849784484111"><ph name="MANAGER" /> አሁን ከWi-Fi ጋር እንዲገናኙ እና አንድ ዝማኔ እንዲያወርዱ ይፈልግብዎታል። ወይም ደግሞ ከሚለካ ግንኙነት ያውርዱ (ክፍያዎች ሊከፈልባቸው ይችላል)።</translation>
-<translation id="5478520208448702555">እርስዎ ወደ የተለየ ትር ሲለውጡ ጣቢያዎች የስዕል-ላይ-ስዕል መስኮት ሊከፍቱ ይችላሉ</translation>
 <translation id="5481273127572794904">ብዙ ፋይሎችን በራስ-ሰር ለማውረድ አልተፈቀደም</translation>
 <translation id="5481941284378890518">አቅራቢያ ያሉ አታሚዎችን አክል</translation>
 <translation id="5484181871714116891">በሚበራበት ጊዜ የይለፍ ቁልፎች በiCloud Keychain ውስጥ ይፈጠራሉ እና በመላው የApple መሣሪያዎችዎ ላይ ይገኛሉ። በሚጠፋበት ጊዜ የይለፍ ቁልፎች በዚህ መሣሪያ ላይ ባለው የChrome መገለጫዎ ውስጥ ይፈጠራሉ።</translation>
@@ -5721,7 +5714,6 @@
 <translation id="5600348067066185292">ጭነት ጥቂት ቀላል ደረጃዎችን ይወስዳል። በኮምፒተርዎ ላይ ለውጦች ከመደረጋቸው በፊት ለማረጋገጥ ሌላ ዕድል ይኖርዎታል።</translation>
 <translation id="5600706100022181951">ዝማኔው ከሞባይል ውሂብ <ph name="UPDATE_SIZE_MB" /> ሜባ በመጠቀም ይወርዳል። መቀጠል ይፈልጋሉ?</translation>
 <translation id="5601503069213153581">ፒን</translation>
-<translation id="5601823921345337195">ከMIDI መሣሪያዎች ጋር እንዲገናኝ አልተፈቀደም</translation>
 <translation id="5601833336918638013">ጣቢያዎች የብሉቱዝ መሣሪያዎችን እንዲፈልጉ አይፍቀዱ</translation>
 <translation id="5602586420788540146">በአዲስ ትር ቡድን ውስጥ ይክፈቱ</translation>
 <translation id="5605758115928394442">እርስዎ መሆንዎን ለማረጋገጥ አንድ ማሳወቂያ ወደ ስልክዎ ተልኳል።</translation>
@@ -5843,7 +5835,6 @@
 <translation id="5707185214361380026">ቅጥያዎችን ከሚከተለው መጫን አልተቻለም፦</translation>
 <translation id="5708171344853220004">Microsoft Principal Name</translation>
 <translation id="5709557627224531708">Chromeን እንደ ነባሪ አሳሽዎ አድርገው ያቀናብሩት</translation>
-<translation id="5710122160114032242">እርስዎ ወደሌላ ትር ሲለውጡ የስዕል-ላይ-ስዕል መስኮት መክፈት አልተፈቀደም</translation>
 <translation id="5711010025974903573">የአገልግሎት ምዝግብ ማስታወሻዎች</translation>
 <translation id="5711983031544731014">ማስከፈት አልተቻለም። የይለፍ ቃልዎን ያስገቡ።</translation>
 <translation id="5712153969432126546">ጣቢያዎች አንዳንድ ጊዜ እንደ ሰነዶች፣ ውሎች እና ቅጾች ያሉ በPDF ያትማሉ</translation>
@@ -6605,7 +6596,6 @@
 <translation id="6326175484149238433">ከChrome አስወግድ</translation>
 <translation id="6326855256003666642">የKeepalive ብዛት</translation>
 <translation id="6327785803543103246">የድር ተኪ ራስ-ግኝት</translation>
-<translation id="6331818708794917058">ጣቢያዎች ከMIDI መሣሪያዎች ጋር ለመገናኘት መጠየቅ ይችላሉ</translation>
 <translation id="6333064448949140209">ፋይሉ ለመታረም ወደ Google ይላካል</translation>
 <translation id="6333170995003625229">የእርስዎ ኢሜይል አድራሻ ወይም የይለፍ ቃል መረጋገጥ አልቻለም። እንደገና ለመግባት ይሞክሩ።</translation>
 <translation id="6334267141726449402">ምዝግብ ማስታወሻዎቹን ለመሰብሰብ ይህን አገናኝ ይቅዱ እና ለተጠቃሚው ይላኩ።</translation>
@@ -6755,7 +6745,6 @@
 <translation id="6458701200018867744">ዝማኔ አልተሳካም (<ph name="WEBRTC_LOG_UPLOAD_TIME" />)።</translation>
 <translation id="6459488832681039634">ለማግኘት የተመረጡትን ተጠቀም</translation>
 <translation id="6459799433792303855">ንቁ መስኮት ወደ ሌላ ማሳያ ተዛውሯል።</translation>
-<translation id="6460566145397380451">ከMIDI መሣሪያዎች ጋር እንዲገናኝ ተፈቅዷል</translation>
 <translation id="6460601847208524483">ቀጣዩን አግኝ</translation>
 <translation id="6461170143930046705">አውታረ መረብን በመፈለግ ላይ...</translation>
 <translation id="6463795194797719782">&amp;አርትዕ</translation>
@@ -7083,7 +7072,6 @@
 <translation id="6735304988756581115">ኩኪዎችንና የሌላ ጣቢያ ውሂብ አሳይ…</translation>
 <translation id="6736243959894955139">አድራሻ</translation>
 <translation id="6737663862851963468">የKerberos ቲኬትን ያስወግዱ</translation>
-<translation id="6737931010859480781">ይህ መተግበሪያ በእርስዎ መሣሪያ ላይ አስቀድሞ ተጭኗል</translation>
 <translation id="6738180164164974883">የሦስተኛ ወገን ኩኪዎችን ለማቀናበር ፍቀድ</translation>
 <translation id="6738430949033571771">የመለያ ትክክለኛነትን በማረጋገጥ ላይ</translation>
 <translation id="6739923123728562974">የዴስክቶፕ አቋራጭን አሳይ</translation>
@@ -8478,7 +8466,6 @@
 <translation id="7853747251428735">ተጨማሪ መሣሪያዎ&amp;ች</translation>
 <translation id="7853999103056713222">ይበልጥ ደህንነቱ የተጠበቀ የይለፍ ቃል ይጠቀሙ</translation>
 <translation id="7855678561139483478">ትር ወደ አዲስ መስኮት ውሰድ</translation>
-<translation id="7855729579456690716">እርስዎ ወደሌላ ትር ሲለውጡ ጣቢያዎች ስዕል-ላይ-ስዕል መስኮት ሊከፍቱ ይችላሉ</translation>
 <translation id="7857004848504343806">የእርስዎ ኮምፒውተር የደህንነት ሞዱል አለው፣ ይህም በChromeOS Flex ውስጥ ብዙ ወሳኝ የደህንነት ባህሪያትን ለመተግበር ሥራ ላይ ይውላል። የበለጠ ለመረዳት የChromebook እገዛ ማዕከሉን ይጎብኙ፦ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">የጽሑፍ ጥቆማ አስተያየቶች</translation>
 <translation id="7857949311770343000">የጠበቁት የአዲስ ትር ገፅ ይሄ ነው?</translation>

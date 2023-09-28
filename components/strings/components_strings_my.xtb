@@ -1264,7 +1264,6 @@
 <translation id="36224234498066874">ဘရောက်စ်ဒေတာ ရှင်းထုတ်ရန်...</translation>
 <translation id="362276910939193118">မှတ်တမ်း အပြည့် ပြရန်</translation>
 <translation id="3624292976554877583">လေဘယ်လ် (မှိုင်းပျပျ)</translation>
-<translation id="3625929652356389713">နှစ်ခုထပ်၍ကြည့်ခြင်းဝင်းဒိုး အလိုအလျောက်ဖွင့်ရန် တောင်းဆိုနိုင်သည်</translation>
 <translation id="3628905806504633297">{0,plural, =1{<ph name="DESTINATION_NAME" /> သို့ ဤဖိုင် လွှဲပြောင်းခြင်းကို စီမံခန့်ခွဲသူမူဝါဒက အကြံပြုထားခြင်းမရှိပါ}other{<ph name="DESTINATION_NAME" /> သို့ ဤဖိုင်များ လွှဲပြောင်းခြင်းကို စီမံခန့်ခွဲသူမူဝါဒက အကြံပြုထားခြင်းမရှိပါ}}</translation>
 <translation id="3630155396527302611">၎င်းကို ကွန်ရက်အသုံးပြုသည့် ပရိုဂရမ်အဖြစ် စာရင်းထည့်သွင်းပြီးဖြစ်လျှင်၊ စာရင်းမှ ဖယ်ရှားပြီး ထပ်မံထည့်သွင်းကြည့်ပါ။</translation>
 <translation id="3630426379756188722">Google Account ရှိ သင့်စက်ပစ္စည်းရှာခြင်းသို့ သွားရန်အတွက် Find My Device ခလုတ်ကို နှိပ်နိုင်သည်</translation>
@@ -1398,7 +1397,6 @@
 <translation id="388632593194507180">စောင့်ကြည့်နေကြောင်း တွေ့ရှိထားသည်</translation>
 <translation id="3886948180919384617">စီထည့်သည့်ပုံး ၃</translation>
 <translation id="3890664840433101773">အီးမေးလ် ထည့်ပါ</translation>
-<translation id="3893306401511601929">အလိုအလျောက် နှစ်ခုထပ်၍ကြည့်ခြင်း</translation>
 <translation id="3897092660631435901">မီနျူး</translation>
 <translation id="3901925938762663762">ကတ် သက်တမ်းကုန်ဆုံး၏</translation>
 <translation id="390391808978419508">ဖွင့်ကြည့်မှု အချိန်ကုန်သွားသည်</translation>
@@ -1868,7 +1866,6 @@
 <translation id="4852429274334674023">လည်ပတ်သည့်စနစ်များ</translation>
 <translation id="4854853140771946034">Google Keep တွင် မှတ်စုအသစ် အမြန်ပြုလုပ်ရန်</translation>
 <translation id="485902285759009870">ကုဒ်ကို စိစစ်နေသည်...</translation>
-<translation id="4862630594858951805">ဈေးကျချိန်၌ အီးမေးလ်ရယူလိုပါသလား။</translation>
 <translation id="4864406669374375262">ဗားရှင်းအက္ခရာတွဲကို ကလစ်ဘုတ်သို့ ကူးယူပြီးပြီ</translation>
 <translation id="486459320933704969">ဤဝဘ်ဆိုက်သို့ ဝင်ကြည့်ရန် မိဘ (သို့) အုပ်ထိန်းသူက OK ဟု ပြောရန်လိုအပ်သည်</translation>
 <translation id="4866506163384898554">သင်၏ကာဆာကို ပြရန် |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| နှိပ်ပါ</translation>
@@ -2756,7 +2753,6 @@
 <translation id="6710594484020273272">&lt;ရှာဖွေရန် အကြောင်းအရာကို ရိုက်ထည့်ပါ&gt;</translation>
 <translation id="671076103358959139">စာရင်းသွင်းရန် တိုကင်နံပါတ်-</translation>
 <translation id="6711464428925977395">ပရော့စီဆာဗာ တစ်စုံတစ်ခုမှားယွင်းနေပါသည် သို့မဟုတ် လိပ်စာမမှန်ကန်ပါ။</translation>
-<translation id="6716013836112872184">ဝဘ်ဆိုက်များတွင် ဈေးကျသောအခါ <ph name="EMAIL" /> တွင် အီးမေးလ်ရယူနိုင်သည်။</translation>
 <translation id="6716672519412350405"><ph name="URL" /> က သင့်ပတ်ဝန်းကျင်၏ 3D မြေပုံဆွဲခြင်း သို့မဟုတ် ကင်မရာအနေအထား ခြေရာခံခြင်းတို့ ပြုလုပ်လိုသည်</translation>
 <translation id="6718612893943028815">ကင်မရာ အသုံးပြုမလား။</translation>
 <translation id="6721164594124191969">လေဘယ်လ် (တောက်ပြောင်)</translation>
@@ -4038,6 +4034,5 @@
     &lt;li&gt;အခြားကွန်ရက်သို့ ချိတ်ဆက်ကြည့်ပါ&lt;/li&gt;
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
-<translation id="995240771322213706">အလိုအလျောက် နှစ်ခုထပ်၍ကြည့်ခြင်း</translation>
 <translation id="997986563973421916">Google Pay မှ</translation>
 </translationbundle>

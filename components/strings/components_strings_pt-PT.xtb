@@ -1263,7 +1263,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="36224234498066874">Limpar dados de navegação...</translation>
 <translation id="362276910939193118">Mostrar histórico completo</translation>
 <translation id="3624292976554877583">Etiquetas (mate)</translation>
-<translation id="3625929652356389713">Pode pedir para abrir automaticamente janelas de ecrã no ecrã</translation>
 <translation id="3628905806504633297">{0,plural, =1{A política do administrador não recomenda a transferência deste ficheiro para <ph name="DESTINATION_NAME" />}other{A política do administrador não recomenda a transferência destes ficheiros para <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3630155396527302611">Se já estiver indicado na lista como sendo um programa com permissão para aceder à rede, experimente
     removê-lo da lista e adicioná-lo novamente.</translation>
@@ -1398,7 +1397,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="388632593194507180">Monitorização detetada</translation>
 <translation id="3886948180919384617">Empilhador 3</translation>
 <translation id="3890664840433101773">Adicionar email</translation>
-<translation id="3893306401511601929">Ecrã no ecrã automático</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3901925938762663762">O cartão expirou</translation>
 <translation id="390391808978419508">A abertura excedeu o tempo limite</translation>
@@ -1867,7 +1865,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4852429274334674023">Sistemas operativos</translation>
 <translation id="4854853140771946034">Crie rapidamente uma nova nota no Google Keep</translation>
 <translation id="485902285759009870">A validar o código…</translation>
-<translation id="4862630594858951805">Quer receber emails quando o preço descer?</translation>
 <translation id="4864406669374375262">String da versão copiada para a área de transferência</translation>
 <translation id="486459320933704969">O teu adulto responsável ou tutor tem de indicar que podes visitar este Website.</translation>
 <translation id="4866506163384898554">Prima |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| para mostrar o cursor</translation>
@@ -2756,7 +2753,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6710594484020273272">&lt;Introduzir termo de pesquisa&gt;</translation>
 <translation id="671076103358959139">Símbolo de inscrição:</translation>
 <translation id="6711464428925977395">Existe um problema com o servidor proxy ou o endereço está incorreto.</translation>
-<translation id="6716013836112872184">Receba emails em <ph name="EMAIL" /> quando o preço descer em qualquer site.</translation>
 <translation id="6716672519412350405"><ph name="URL" /> quer criar um mapa 3D do ambiente à sua volta e monitorizar a posição da câmara.</translation>
 <translation id="6718612893943028815">Quer utilizar a câmara?</translation>
 <translation id="6721164594124191969">Etiquetas (brilhante)</translation>
@@ -4035,6 +4031,5 @@ Detalhes adicionais:
     &lt;li&gt;Experimente estabelecer ligação a outra rede&lt;/li&gt;
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
-<translation id="995240771322213706">ecrã no ecrã automático</translation>
 <translation id="997986563973421916">Do Google Pay</translation>
 </translationbundle>

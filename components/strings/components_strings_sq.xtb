@@ -1263,7 +1263,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="36224234498066874">Pastro të dhënat e shfletimit...</translation>
 <translation id="362276910939193118">Shfaq historikun e plotë</translation>
 <translation id="3624292976554877583">Etiketa (mat)</translation>
-<translation id="3625929652356389713">Mund të kërkojnë që të hapin automatikisht dritaret në modalitetin "figurë brenda figurës"</translation>
 <translation id="3628905806504633297">{0,plural, =1{Politika e administratorit nuk rekomandon transferimin e këtij skedari te: <ph name="DESTINATION_NAME" />}other{Politika e administratorit nuk rekomandon transferimin e këtyre skedarëve te: <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3630155396527302611">Nëse tashmë është i listuar si program që lejohet të ketë qasje te rrjeti,
       provo që ta heqësh nga lista dhe ta shtosh përsëri.</translation>
@@ -1398,7 +1397,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="388632593194507180">U zbulua monitorim</translation>
 <translation id="3886948180919384617">Stivuesi 3</translation>
 <translation id="3890664840433101773">Shto një email</translation>
-<translation id="3893306401511601929">Modaliteti automatik "figurë brenda figurës"</translation>
 <translation id="3897092660631435901">Menyja</translation>
 <translation id="3901925938762663762">Karta ka skaduar</translation>
 <translation id="390391808978419508">Koha e hapjes skadoi</translation>
@@ -1867,7 +1865,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4852429274334674023">Sistemet operative</translation>
 <translation id="4854853140771946034">Krijo shpejt një shënim të ri në Google Keep</translation>
 <translation id="485902285759009870">Po verifikon kodin...</translation>
-<translation id="4862630594858951805">Dëshiron të marrësh email-e kur të ulet çmimi?</translation>
 <translation id="4864406669374375262">Vargu i versionit u kopjua te kujtesa e fragmenteve</translation>
 <translation id="486459320933704969">Një prind ose kujdestar duhet të pranojë që ta vizitosh këtë uebsajt</translation>
 <translation id="4866506163384898554">Shtyp |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| për të shfaqur kursorin</translation>
@@ -2755,7 +2752,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6710594484020273272">&lt;Shkruaj termin e kërkimit&gt;</translation>
 <translation id="671076103358959139">Tokeni i regjistrimit:</translation>
 <translation id="6711464428925977395">Ka një gabim me serverin përfaqësues ose adresa është e pasaktë.</translation>
-<translation id="6716013836112872184">Merr email-e të dërguara në <ph name="EMAIL" /> kur bie çmimi në një sajt.</translation>
 <translation id="6716672519412350405"><ph name="URL" /> kërkon të krijojë një hartë 3D të ambientit tënd rrethues dhe të gjurmojë pozicionin e kamerës</translation>
 <translation id="6718612893943028815">Të përdoret kamera?</translation>
 <translation id="6721164594124191969">Etiketa (me shkëlqim)</translation>
@@ -4034,6 +4030,5 @@ Detaje shtesë:
     &lt;li&gt;Provo të lidhesh me një rrjet tjetër&lt;/li&gt;
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
-<translation id="995240771322213706">modaliteti automatik "figurë brenda figurës"</translation>
 <translation id="997986563973421916">Nga Google Pay</translation>
 </translationbundle>

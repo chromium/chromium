@@ -17,7 +17,6 @@
 <translation id="1008261151167010035">「<ph name="BRAND" />」會記住您的登入方式，並盡可能自動登入。停用此功能後，系統每次都會詢問您是否要登入。</translation>
 <translation id="1008544602823861396">已被封鎖，無法使用你的資料 (位於</translation>
 <translation id="1008557486741366299">暫時不要</translation>
-<translation id="1009454959501038262">{NUM_SITES,plural, =1{為保護您的資料，系統已移除您在過去 2 個月沒有瀏覽的網站權限}other{為保護您的資料，系統已移除您在過去 2 個月沒有瀏覽的網站權限}}</translation>
 <translation id="1009663062402466586">您現可使用遊戲控制項</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{網頁沒有回應}other{網頁沒有回應}}</translation>
 <translation id="1011003645819296594">已儲存的裝置</translation>
@@ -122,7 +121,6 @@
 <translation id="1084824384139382525">複製連結網址(&amp;E)</translation>
 <translation id="1085064499066015002">一律在所有網站上執行</translation>
 <translation id="1085697365578766383">啟動虛擬機器時發生錯誤，請再試一次。</translation>
-<translation id="1087965115100412394">不允許網站連接 MIDI 裝置</translation>
 <translation id="1088659085457112967">進入閱讀器模式</translation>
 <translation id="1090126737595388931">沒有執行中的背景應用程式</translation>
 <translation id="1090541560108055381">在進行配對前，請先確認兩部裝置所顯示的代碼相同</translation>
@@ -3232,7 +3230,6 @@
 <translation id="3551320343578183772">關閉分頁</translation>
 <translation id="3552097563855472344"><ph name="NETWORK_NAME" /> - <ph name="SPAN_START" /><ph name="CARRIER_NAME" /><ph name="SPAN_END" /></translation>
 <translation id="3552780134252864554">退出時清除</translation>
-<translation id="3553487194781590058">切換至其他分頁時，不允許網站開啟畫中畫視窗</translation>
 <translation id="3554493885489666172">您的裝置由 <ph name="PROFILE_NAME" /> 管理。管理員可以存取此裝置上任何設定檔中的資料。</translation>
 <translation id="3555812735919707620">移除擴充功能</translation>
 <translation id="3557101512409028104">透過 Family Link 設定網站限制和裝置使用時間限制</translation>
@@ -3789,7 +3786,6 @@
 <translation id="3975201861340929143">說明</translation>
 <translation id="3975565978598857337">無法連線至指定的伺服器領域</translation>
 <translation id="3976108569178263973">沒有可用的打印機。</translation>
-<translation id="3976244126942806443">網站通常會連接 MIDI 裝置以創作或編輯音樂</translation>
 <translation id="397703832102027365">即將完成…</translation>
 <translation id="3977145907578671392">部分網站的功能可能無法在無痕模式中正常運作</translation>
 <translation id="3977886311744775419">此網絡類型無法下載自動更新，但您可以手動檢查更新。</translation>
@@ -4688,7 +4684,6 @@
 <translation id="4730492586225682674">在上鎖畫面上顯示最新觸控筆筆記</translation>
 <translation id="4730888769809690665">已允許 <ph name="SITE" /> 傳送通知</translation>
 <translation id="4731306954230393087">已允許使用與你相關的既有資料</translation>
-<translation id="473140019006744096">裝置空間不足，無法完成此更新。請在裝置上騰出 <ph name="NECESSARY_SPACE" /> 的空間，然後再試一次。</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (左邊)</translation>
 <translation id="4733793249294335256">位置</translation>
 <translation id="473546211690256853">這個帳戶是由 <ph name="DOMAIN" /> 負責管理</translation>
@@ -5390,7 +5385,6 @@
 <translation id="5327912693242073631">需要傳送通知的功能將無法運作</translation>
 <translation id="532943162177641444">輕按 <ph name="PHONE_NAME" /> 上的通知，即可設定可供此裝置使用的流動熱點。</translation>
 <translation id="5329858601952122676">刪除(&amp;D)</translation>
-<translation id="5330592967519769658">切換至其他分頁時，允許開啟畫中畫視窗</translation>
 <translation id="5331069282670671859">您沒有此類別的憑證</translation>
 <translation id="5331568967879689647">Chrome OS 系統應用程式</translation>
 <translation id="5331975486040154427">USB-C 裝置 (左側後方連接埠)</translation>
@@ -5568,7 +5562,6 @@
 <translation id="5473099001878321374">如繼續操作，即表示您亦允許此裝置自動下載和安裝來自 Google、您子女的流動網絡供應商和裝置製造商的更新內容和應用程式，當中可能會使用流動數據，部分應用程式可能會提供應用程式內購買。</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{PIN 必須包含至少 1 個字元}other{PIN 必須包含至少 # 個字元}}</translation>
 <translation id="5474859849784484111"><ph name="MANAGER" /> 要求您立即連接 Wi-Fi 並下載更新，或使用按用量收費連線的下載更新 (可能需支付費用)。</translation>
-<translation id="5478520208448702555">切換至其他分頁時，網站可開啟畫中畫視窗</translation>
 <translation id="5481273127572794904">不允許自動下載多個檔案</translation>
 <translation id="5481941284378890518">新增附近的打印機</translation>
 <translation id="5484181871714116891">開啟後，系統會在「iCloud 鑰匙圈」中建立密鑰，方便你在 Apple 裝置上使用。關閉後，系統會在此裝置的 Chrome 設定檔中建立密鑰。</translation>
@@ -5726,7 +5719,6 @@
 <translation id="5600348067066185292">只要簡單幾個步驟即可完成安裝。您亦可於系統變更電腦前，再次進行確認。</translation>
 <translation id="5600706100022181951">下載更新將會使用 <ph name="UPDATE_SIZE_MB" /> MB 流動數據。要繼續嗎？</translation>
 <translation id="5601503069213153581">PIN</translation>
-<translation id="5601823921345337195">不允許連接 MIDI 裝置</translation>
 <translation id="5601833336918638013">不允許網站尋找藍牙裝置</translation>
 <translation id="5602586420788540146">在新分頁中開啟</translation>
 <translation id="5605758115928394442">已將通知傳送至您的手機，以確認您的身分。</translation>
@@ -5846,7 +5838,6 @@
 <translation id="5707185214361380026">無法載入下列來源的擴充功能：</translation>
 <translation id="5708171344853220004">Microsoft 主要名稱</translation>
 <translation id="5709557627224531708">將 Chrome 設為預設瀏覽器</translation>
-<translation id="5710122160114032242">切換至其他分頁時，不允許開啟畫中畫視窗</translation>
 <translation id="5711010025974903573">服務紀錄</translation>
 <translation id="5711983031544731014">無法解鎖，請輸入您的密碼。</translation>
 <translation id="5712153969432126546">網站有時會發佈文件、合約和表格等 PDF</translation>
@@ -6608,7 +6599,6 @@
 <translation id="6326175484149238433">從 Chrome 中移除</translation>
 <translation id="6326855256003666642">Keepalive 數量</translation>
 <translation id="6327785803543103246">Web Proxy Autodiscovery</translation>
-<translation id="6331818708794917058">網站可要求連接 MIDI 裝置</translation>
 <translation id="6333064448949140209">檔案將傳送至 Google 執行偵錯</translation>
 <translation id="6333170995003625229">無法驗證您的電郵地址或密碼，請再試一次。</translation>
 <translation id="6334267141726449402">複製此連結，並傳送給要收集記錄的使用者。</translation>
@@ -6758,7 +6748,6 @@
 <translation id="6458701200018867744">上載失敗 (<ph name="WEBRTC_LOG_UPLOAD_TIME" />)。</translation>
 <translation id="6459488832681039634">使用所選範圍尋找</translation>
 <translation id="6459799433792303855">使用中的視窗已移至其他顯示屏。</translation>
-<translation id="6460566145397380451">已允許連接 MIDI 裝置</translation>
 <translation id="6460601847208524483">尋找下一個項目</translation>
 <translation id="6461170143930046705">正在搜尋網絡...</translation>
 <translation id="6463795194797719782">編輯(&amp;E)</translation>
@@ -7084,7 +7073,6 @@
 <translation id="6735304988756581115">顯示 Cookie 和其他網站數據…</translation>
 <translation id="6736243959894955139">位址</translation>
 <translation id="6737663862851963468">移除 Kerberos 票證</translation>
-<translation id="6737931010859480781">此應用程式已預先安裝在裝置上</translation>
 <translation id="6738180164164974883">允許設定第三方 Cookie</translation>
 <translation id="6738430949033571771">正在驗證帳戶…</translation>
 <translation id="6739923123728562974">顯示桌面捷徑</translation>
@@ -8478,7 +8466,6 @@
 <translation id="7853747251428735">更多工具(&amp;L)</translation>
 <translation id="7853999103056713222">使用更安全的密碼</translation>
 <translation id="7855678561139483478">把分頁移至新視窗</translation>
-<translation id="7855729579456690716">切換至其他分頁時，網站可開啟畫中畫視窗</translation>
 <translation id="7857004848504343806">您的電腦具有安全模組，ChromeOS Flex 需要透過該模組來執行許多重要的安全防護功能。如要瞭解詳情，請瀏覽 Chromebook 說明中心：https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">文字建議</translation>
 <translation id="7857949311770343000">這是您想要的新分頁嗎？</translation>

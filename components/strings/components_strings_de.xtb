@@ -1255,7 +1255,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="36224234498066874">Browserdaten löschen...</translation>
 <translation id="362276910939193118">Gesamtverlauf anzeigen</translation>
 <translation id="3624292976554877583">Etiketten (matt)</translation>
-<translation id="3625929652356389713">Darf nachfragen, ob Fenster automatisch als Bild im Bild geöffnet werden sollen</translation>
 <translation id="3628905806504633297">{0,plural, =1{Gemäß der Administratorrichtlinie wird nicht empfohlen, diese Datei auf „<ph name="DESTINATION_NAME" />“ zu übertragen}other{Gemäß der Administratorrichtlinie wird nicht empfohlen, diese Dateien auf „<ph name="DESTINATION_NAME" />“ zu übertragen}}</translation>
 <translation id="3630155396527302611">Falls das Programm schon in der Liste mit erlaubtem Netzwerkzugriff eingetragen ist, entferne es aus der Liste und füge es noch einmal hinzu.</translation>
 <translation id="3630426379756188722">Schaltfläche „Mein Gerät finden“ – aktivieren, um „Mein Gerät finden“ im Google-Konto zu finden</translation>
@@ -1389,7 +1388,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="388632593194507180">Überwachung erkannt</translation>
 <translation id="3886948180919384617">Stapelfach 3</translation>
 <translation id="3890664840433101773">E-Mail-Adresse hinzufügen</translation>
-<translation id="3893306401511601929">Automatischer Bild-im-Bild-Modus</translation>
 <translation id="3897092660631435901">Menü</translation>
 <translation id="3901925938762663762">Die Karte ist abgelaufen.</translation>
 <translation id="390391808978419508">Zeitüberschreitung beim Öffnen</translation>
@@ -1857,7 +1855,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="4852429274334674023">Betriebssysteme</translation>
 <translation id="4854853140771946034">Schnell eine neue Notiz in Google Notizen erstellen</translation>
 <translation id="485902285759009870">Code wird geprüft...</translation>
-<translation id="4862630594858951805">Du möchtest per E‑Mail benachrichtigt werden, wenn der Preis sinkt?</translation>
 <translation id="4864406669374375262">Versionsstring in Zwischenablage kopiert</translation>
 <translation id="486459320933704969">Ein Elternteil oder Erziehungsberechtigter muss dir erlauben, diese Website zu besuchen</translation>
 <translation id="4866506163384898554">Zum Einblenden des Cursors |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| drücken</translation>
@@ -2742,7 +2739,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6710594484020273272">&lt;Suchbegriff eingeben&gt;</translation>
 <translation id="671076103358959139">Registrierungstoken:</translation>
 <translation id="6711464428925977395">Mit dem Proxyserver ist ein Problem aufgetreten oder die Adresse ist falsch.</translation>
-<translation id="6716013836112872184">Wenn der Preis auf einer Website sinkt, wird eine E‑Mails an <ph name="EMAIL" /> gesendet.</translation>
 <translation id="6716672519412350405"><ph name="URL" /> möchte eine 3D-Karte deiner Umgebung erstellen und die Kameraposition verfolgen</translation>
 <translation id="6718612893943028815">Kamera verwenden?</translation>
 <translation id="6721164594124191969">Etiketten (glänzend)</translation>
@@ -4017,6 +4013,5 @@ Weitere Details:
     &lt;li&gt;Stelle eine Verbindung zu einem anderen Netzwerk her.&lt;/li&gt;
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
-<translation id="995240771322213706">automatischer Bild-im-Bild-Modus</translation>
 <translation id="997986563973421916">Aus Google Pay</translation>
 </translationbundle>

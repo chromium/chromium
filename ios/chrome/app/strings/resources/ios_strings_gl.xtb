@@ -555,7 +555,6 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="40433179647657191">Crea e comparte unha ligazón directa a unha parte dunha páxina que destacases.</translation>
 <translation id="4045648459118332842">Usa en calquera aplicación e cun toque os contrasinais gardados</translation>
 <translation id="4049507953662678203">Asegúrate de ter conexión de rede e téntao de novo.</translation>
-<translation id="4063300985191096908">Ir ao feed</translation>
 <translation id="4066639687323968621">Inicia sesión coa túa Conta de Google para sincronizar os marcadores ou o historial, entre outras opcións.</translation>
 <translation id="4092655288299341041">Mostrar axuda:</translation>
 <translation id="4105841739161771091">{count,plural, =1{Eliminar enderezo}other{Eliminar enderezos}}</translation>
@@ -1152,7 +1151,6 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="7302503784943202842">Usar contrasinais en todos os dispositivos</translation>
 <translation id="730958329302570991">Engade facilmente contrasinais de sitios ao xestor de contrasinais de Google en calquera momento.</translation>
 <translation id="7313347584264171202">Aquí atoparás as túas pestanas do modo de incógnito</translation>
-<translation id="7331371412779932885">Suxíreche pestanas en función da túa actividade de navegación noutros dispositivos coa túa Conta de Google. Debes ter a sesión iniciada coa mesma Conta de Google nos teus dispositivos e deben estar sincronizados.</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> por cento descargado</translation>
 <translation id="7340958967809483333">Opcións de Discover</translation>
 <translation id="7346909386216857016">Entendido</translation>
@@ -1348,6 +1346,7 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="8393889347136007944">Estas pestanas levan sen usarse <ph name="THRESHOLD" /> días</translation>
 <translation id="8395339334550012808">Pronto verás contido da canle <ph name="CHANNEL_NAME" /> e sobre ela en Seguindo.</translation>
 <translation id="8395378633507873708">Barra de enderezos</translation>
+<translation id="8402673309244746971">Ir a Seguindo</translation>
 <translation id="8403629764260204788">Oculta Continuar navegando</translation>
 <translation id="8407669440184693619">Non se atopou ningún contrasinal para este sitio</translation>
 <translation id="842017693807136194">Sesión iniciada con</translation>

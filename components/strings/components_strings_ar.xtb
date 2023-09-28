@@ -1264,7 +1264,6 @@
 <translation id="36224234498066874">محو بيانات التصفّح...</translation>
 <translation id="362276910939193118">عرض السجلّ بكامله</translation>
 <translation id="3624292976554877583">تصنيفات (غير لامعة)</translation>
-<translation id="3625929652356389713">يمكن للموقع الإلكتروني طلب فتح النوافذ على وضع "نافذة ضمن النافذة" تلقائيًا.</translation>
 <translation id="3628905806504633297">{0,plural, =1{لا تنصح سياسة المشرف بنقل هذا الملف إلى <ph name="DESTINATION_NAME" />.}zero{لا تنصح سياسة المشرف بنقل هذه الملفات إلى <ph name="DESTINATION_NAME" />.}two{لا تنصح سياسة المشرف بنقل هذين الملفَّين إلى <ph name="DESTINATION_NAME" />.}few{لا تنصح سياسة المشرف بنقل هذه الملفات إلى <ph name="DESTINATION_NAME" />.}many{لا تنصح سياسة المشرف بنقل هذه الملفات إلى <ph name="DESTINATION_NAME" />.}other{لا تنصح سياسة المشرف بنقل هذه الملفات إلى <ph name="DESTINATION_NAME" />.}}</translation>
 <translation id="3630155396527302611">إذا تم بالفعل إدراج صفحة الويب كبرنامج مسموح له بالدخول إلى الشبكة، فجرّب
         إزالتها من القائمة وإضافتها مرةً أخرى.</translation>
@@ -1400,7 +1399,6 @@
 <translation id="388632593194507180">تم رصد المراقبة</translation>
 <translation id="3886948180919384617">المكدِّس 3</translation>
 <translation id="3890664840433101773">إضافة بريد إلكتروني</translation>
-<translation id="3893306401511601929">أدوات ضبط إعدادات وضع "نافذة ضمن النافذة" تلقائيًا</translation>
 <translation id="3897092660631435901">قائمة</translation>
 <translation id="3901925938762663762">انتهت صلاحية البطاقة</translation>
 <translation id="390391808978419508">انتهت مهلة الفتح</translation>
@@ -1871,7 +1869,6 @@
 <translation id="4852429274334674023">أنظمة تشغيل</translation>
 <translation id="4854853140771946034">‏إنشاء ملاحظة جديدة في Google Keep بسرعة</translation>
 <translation id="485902285759009870">جارٍ التحقّق من الرمز…</translation>
-<translation id="4862630594858951805">هل تريد تلقّي رسائل إلكترونية عند انخفاض السعر؟</translation>
 <translation id="4864406669374375262">تم نسخ سلسلة الإصدار إلى الحافظة.</translation>
 <translation id="486459320933704969">يجب أن يوافق الوصي عليك أو أحد والديَك على طلبك بزيارة هذا الموقع الإلكتروني.</translation>
 <translation id="4866506163384898554">اضغط على |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| لعرض المؤشر.</translation>
@@ -2760,7 +2757,6 @@
 <translation id="6710594484020273272">&lt;إدخال عبارة البحث&gt;</translation>
 <translation id="671076103358959139">الرمز المميّز للتسجيل:</translation>
 <translation id="6711464428925977395">هناك خطأ ما في الخادم الوكيل، أو العنوان غير صحيح.</translation>
-<translation id="6716013836112872184">يمكنك تلقّي رسائل إلكترونية على <ph name="EMAIL" /> عند انخفاض الأسعار على أي موقع إلكتروني.</translation>
 <translation id="6716672519412350405">يريد الموقع الإلكتروني <ph name="URL" /> إنشاء خريطة ثلاثية الأبعاد للبيئة المحيطة بك وتتبُّع موضع الكاميرا.</translation>
 <translation id="6718612893943028815">هل تريد استخدام الكاميرا؟</translation>
 <translation id="6721164594124191969">تصنيفات (لامعة)</translation>
@@ -4042,6 +4038,5 @@
     &lt;li&gt;حاوِل الاتصال بشبكة أخرى&lt;/li&gt;
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
-<translation id="995240771322213706">أدوات ضبط إعدادات وضع "نافذة ضمن النافذة" تلقائيًا</translation>
 <translation id="997986563973421916">‏من Google Pay</translation>
 </translationbundle>

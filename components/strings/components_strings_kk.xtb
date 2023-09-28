@@ -1262,7 +1262,6 @@
 <translation id="36224234498066874">Шолу деректерін өшіру…</translation>
 <translation id="362276910939193118">Тарихты толық көрсету</translation>
 <translation id="3624292976554877583">Белгілер (күңгірт)</translation>
-<translation id="3625929652356389713">"Суреттегі сурет" режимі терезелерін автоматты түрде ашуды сұрай алады</translation>
 <translation id="3628905806504633297">{0,plural, =1{Әкімші саясатына сәйкес бұл файлды <ph name="DESTINATION_NAME" /> қалтасына тасымалдау ұсынылмайды.}other{Әкімші саясатына сәйкес бұл файлдарды <ph name="DESTINATION_NAME" /> қалтасына тасымалдау ұсынылмайды.}}</translation>
 <translation id="3630155396527302611">Ол желіге кіруге рұқсат алған бағдарламалар тізімінде тұрса, оны
       тізімнен өшіріп, қайта қосып көріңіз.</translation>
@@ -1397,7 +1396,6 @@
 <translation id="388632593194507180">Бақыланып жатқаны анықталды</translation>
 <translation id="3886948180919384617">3-жинастырушы</translation>
 <translation id="3890664840433101773">Электрондық пошта мекенжайын енгізу</translation>
-<translation id="3893306401511601929">Автоматты "Суреттегі сурет" режимі</translation>
 <translation id="3897092660631435901">Мәзір</translation>
 <translation id="3901925938762663762">Картаның мерзімі өткен</translation>
 <translation id="390391808978419508">Ашу уақыты өтіп кетті</translation>
@@ -1866,7 +1864,6 @@
 <translation id="4852429274334674023">Операциялық жүйелер</translation>
 <translation id="4854853140771946034">Google Keep-те жылдам жаңа ескертпе жасау</translation>
 <translation id="485902285759009870">Код тексерілуде…</translation>
-<translation id="4862630594858951805">Баға төмендегенде, электрондық хаттарды алғыңыз келе ме?</translation>
 <translation id="4864406669374375262">Нұсқа жолы буферге көшірілді</translation>
 <translation id="486459320933704969">Ата-ана немесе қамқоршы бұл веб-сайтқа кіре алатыныңызды хабарлауы керек.</translation>
 <translation id="4866506163384898554">Курсорды көрсету үшін |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| пернелерін басыңыз.</translation>
@@ -2755,7 +2752,6 @@
 <translation id="6710594484020273272">&lt;Іздеу терминін теру&gt;</translation>
 <translation id="671076103358959139">Тіркеу таңбалауышы:</translation>
 <translation id="6711464428925977395">Прокси серверде бірдеңе дұрыс емес немесе мекенжай қате.</translation>
-<translation id="6716013836112872184">Кез келген сайтта баға төмендегенде, <ph name="EMAIL" /> мекенжайына жіберілген электрондық хаттарды алыңыз.</translation>
 <translation id="6716672519412350405"><ph name="URL" /> айналаңыздың 3D картасын жасағысы және камера орнын бақылағысы келеді.</translation>
 <translation id="6718612893943028815">Камера пайдаланылсын ба?</translation>
 <translation id="6721164594124191969">Белгілер (жылтыр)</translation>
@@ -4034,6 +4030,5 @@
     &lt;li&gt;Басқа желіге қосылып көріңіз&lt;/li&gt;
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
-<translation id="995240771322213706">автоматты "Суреттегі сурет" режимі</translation>
 <translation id="997986563973421916">Google Pay қызметінен алынды</translation>
 </translationbundle>

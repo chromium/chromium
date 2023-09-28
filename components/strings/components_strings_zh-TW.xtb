@@ -1262,7 +1262,6 @@
 <translation id="36224234498066874">清除瀏覽資料...</translation>
 <translation id="362276910939193118">顯示完整記錄</translation>
 <translation id="3624292976554877583">標籤 (霧面)</translation>
-<translation id="3625929652356389713">可以要求自動開啟子母畫面視窗</translation>
 <translation id="3628905806504633297">{0,plural, =1{根據管理員政策，建議你不要將這個檔案轉移到「<ph name="DESTINATION_NAME" />」}other{根據管理員政策，建議你不要將這些檔案轉移到「<ph name="DESTINATION_NAME" />」}}</translation>
 <translation id="3630155396527302611">如果程式已列在允許存取網路的清單中，建議您
       從清單中將其移除，然後再重新加入。</translation>
@@ -1397,7 +1396,6 @@
 <translation id="388632593194507180">偵測到你正遭到監控</translation>
 <translation id="3886948180919384617">堆疊出紙器 3</translation>
 <translation id="3890664840433101773">新增電子郵件地址</translation>
-<translation id="3893306401511601929">自動顯示子母畫面</translation>
 <translation id="3897092660631435901">選單</translation>
 <translation id="3901925938762663762">這張信用卡已過期</translation>
 <translation id="390391808978419508">開啟作業逾時</translation>
@@ -1866,7 +1864,6 @@
 <translation id="4852429274334674023">作業系統</translation>
 <translation id="4854853140771946034">在 Google Keep 中快速建立新記事</translation>
 <translation id="485902285759009870">正在驗證動態密碼...</translation>
-<translation id="4862630594858951805">想在商品降價時收到電子郵件通知嗎？</translation>
 <translation id="4864406669374375262">已將版本字串複製到剪貼簿</translation>
 <translation id="486459320933704969">你必須獲得家長或監護人許可，才能造訪這個網站</translation>
 <translation id="4866506163384898554">按下 |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| 即可顯示游標</translation>
@@ -2755,7 +2752,6 @@
 <translation id="6710594484020273272">&lt;輸入搜尋字詞&gt;</translation>
 <translation id="671076103358959139">註冊憑證：</translation>
 <translation id="6711464428925977395">Proxy 伺服器發生錯誤，或是位址不正確。</translation>
-<translation id="6716013836112872184">商品在任何網站上降價時，系統會傳送電子郵件到 <ph name="EMAIL" />。</translation>
 <translation id="6716672519412350405"><ph name="URL" /> 要求根據你的周遭環境建立 3D 地圖並追蹤攝影機位置</translation>
 <translation id="6718612893943028815">要使用攝影機嗎？</translation>
 <translation id="6721164594124191969">標籤 (光面)</translation>
@@ -4034,6 +4030,5 @@
     &lt;li&gt;嘗試連線至其他網路&lt;/li&gt;
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
-<translation id="995240771322213706">自動顯示子母畫面</translation>
 <translation id="997986563973421916">來自 Google Pay</translation>
 </translationbundle>

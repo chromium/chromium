@@ -1263,7 +1263,6 @@
 <translation id="36224234498066874">Șterge datele de navigare...</translation>
 <translation id="362276910939193118">Afișează întregul istoric</translation>
 <translation id="3624292976554877583">Etichete (mat)</translation>
-<translation id="3625929652356389713">Poate solicita permisiunea de a deschide automat ferestrele picture-in-picture</translation>
 <translation id="3628905806504633297">{0,plural, =1{Politica implementată de administrator nu recomandă să transferi acest fișier către <ph name="DESTINATION_NAME" />}few{Politica implementată de administrator nu recomandă să transferi aceste fișiere către <ph name="DESTINATION_NAME" />}other{Politica implementată de administrator nu recomandă să transferi aceste fișiere către <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3630155396527302611">Dacă este deja inclus ca program căruia i se permite să acceseze rețeaua, încearcă
       să îl elimini din listă și să îl adaugi din nou.</translation>
@@ -1398,7 +1397,6 @@
 <translation id="388632593194507180">S-a detectat monitorizarea</translation>
 <translation id="3886948180919384617">Receptorul de hârtie 3</translation>
 <translation id="3890664840433101773">Adaugă o adresă de e-mail</translation>
-<translation id="3893306401511601929">Picture-in-picture automat</translation>
 <translation id="3897092660631435901">Meniu</translation>
 <translation id="3901925938762663762">Cardul este expirat</translation>
 <translation id="390391808978419508">Deschiderea a expirat</translation>
@@ -1867,7 +1865,6 @@
 <translation id="4852429274334674023">Sisteme de operare</translation>
 <translation id="4854853140771946034">Creează rapid o notă în Google Keep</translation>
 <translation id="485902285759009870">Codul se verifică...</translation>
-<translation id="4862630594858951805">Vrei să primești e-mailuri când scade prețul?</translation>
 <translation id="4864406669374375262">Șirul versiunii s-a copiat în clipboard</translation>
 <translation id="486459320933704969">Părintele sau tutorele trebuie să spună că poți accesa acest site</translation>
 <translation id="4866506163384898554">Apasă pe |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| pentru a afișa cursorul</translation>
@@ -2756,7 +2753,6 @@
 <translation id="6710594484020273272">&lt;Introdu termenul de căutare&gt;</translation>
 <translation id="671076103358959139">Indicativ de înregistrare:</translation>
 <translation id="6711464428925977395">A apărut o problemă la serverul proxy sau adresa nu este corectă.</translation>
-<translation id="6716013836112872184">Primește e-mailuri trimise la <ph name="EMAIL" /> când prețul scade pe orice site.</translation>
 <translation id="6716672519412350405"><ph name="URL" /> dorește să creeze o hartă 3D a lucrurilor din jurul tău și să urmărească poziția camerei video</translation>
 <translation id="6718612893943028815">Folosești camera foto?</translation>
 <translation id="6721164594124191969">Etichete (lucioase)</translation>
@@ -4036,6 +4032,5 @@ Detalii suplimentare:
     &lt;li&gt;încearcă să te conectezi la altă rețea Wi-Fi.&lt;/li&gt;
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
-<translation id="995240771322213706">picture-in-picture automat</translation>
 <translation id="997986563973421916">Din Google Pay</translation>
 </translationbundle>

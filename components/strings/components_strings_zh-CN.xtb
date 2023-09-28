@@ -1256,7 +1256,6 @@
 <translation id="36224234498066874">清除浏览数据...</translation>
 <translation id="362276910939193118">显示全部历史记录</translation>
 <translation id="3624292976554877583">标签（哑光）</translation>
-<translation id="3625929652356389713">可以询问能否自动打开画中画窗口</translation>
 <translation id="3628905806504633297">{0,plural, =1{管理员政策不建议将此文件转移到<ph name="DESTINATION_NAME" />}other{管理员政策不建议将这些文件转移到<ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3630155396527302611">如果它已在可访问网络的程序列表中，请尝试将它从该列表中移除，然后重新添加到其中。</translation>
 <translation id="3630426379756188722">“查找我的设备”按钮，激活它即可访问 Google 账号中的“查找您的设备”页面</translation>
@@ -1390,7 +1389,6 @@
 <translation id="388632593194507180">检测到正被监控</translation>
 <translation id="3886948180919384617">堆叠出纸器 3</translation>
 <translation id="3890664840433101773">添加电子邮件地址</translation>
-<translation id="3893306401511601929">自动画中画</translation>
 <translation id="3897092660631435901">菜单</translation>
 <translation id="3901925938762663762">此信用卡已过期</translation>
 <translation id="390391808978419508">打开超时</translation>
@@ -1858,7 +1856,6 @@
 <translation id="4852429274334674023">操作系统</translation>
 <translation id="4854853140771946034">在 Google Keep 中快速创建新记事</translation>
 <translation id="485902285759009870">正在核对动态密码…</translation>
-<translation id="4862630594858951805">想在降价时收到电子邮件通知？</translation>
 <translation id="4864406669374375262">已将版本字符串复制到剪贴板</translation>
 <translation id="486459320933704969">必须先征得家长或监护人的同意，然后你才能访问此网站</translation>
 <translation id="4866506163384898554">按 |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| 可显示鼠标光标</translation>
@@ -2745,7 +2742,6 @@
 <translation id="6710594484020273272">&lt;输入搜索字词&gt;</translation>
 <translation id="671076103358959139">注册令牌：</translation>
 <translation id="6711464428925977395">代理服务器出现问题，或者地址有误。</translation>
-<translation id="6716013836112872184">当任一网站上的商品降价时，向 <ph name="EMAIL" /> 发送电子邮件通知。</translation>
 <translation id="6716672519412350405"><ph name="URL" /> 想为您的周边环境创建 3D 地图并跟踪摄像头位置</translation>
 <translation id="6718612893943028815">使用摄像头？</translation>
 <translation id="6721164594124191969">标签（平滑）</translation>
@@ -4023,6 +4019,5 @@
     &lt;li&gt;请尝试连接到其他网络&lt;/li&gt;
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
-<translation id="995240771322213706">自动画中画</translation>
 <translation id="997986563973421916">来自 Google Pay</translation>
 </translationbundle>

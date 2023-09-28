@@ -555,7 +555,6 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="40433179647657191">Looge otselink enda lehe esiletõstetud osale ja jagage seda.</translation>
 <translation id="4045648459118332842">Pääsege mis tahes rakenduses oma salvestatud paroolidele juurde vaid ühe puudutusega</translation>
 <translation id="4049507953662678203">Veenduge, et oleksite võrguga ühendatud, ja proovige uuesti.</translation>
-<translation id="4063300985191096908">Ava voog</translation>
 <translation id="4066639687323968621">Järjehoidjate, ajaloo ja muu sisu sünkroonimiseks logige sisse oma Google'i kontoga.</translation>
 <translation id="4092655288299341041">Abi kuvamine</translation>
 <translation id="4105841739161771091">{count,plural, =1{Kustuta aadress}other{Kustuta aadressid}}</translation>
@@ -1152,7 +1151,6 @@ Inkognito režiimis ei saa saidid küpsisefailide abil eri saitidel teie sirvimi
 <translation id="7302503784943202842">Paroolide kasutamine kõigis oma seadmetes</translation>
 <translation id="730958329302570991">Saate saitide paroole igal ajal hõlpsasti Google'i paroolihaldurisse lisada.</translation>
 <translation id="7313347584264171202">Oma inkognito vahelehed leiate siit</translation>
-<translation id="7331371412779932885">Soovitab vahelehti teie muude seadmete sirvimisajaloo alusel, kasutades teie Google’i kontot. Peate olema seadmetes sama Google’i kontoga sisse logitud ja seadmed peavad olema sünkroonitud.</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> protsenti on alla laaditud</translation>
 <translation id="7340958967809483333">Funktsiooni Discover valikud</translation>
 <translation id="7346909386216857016">Selge, sain aru</translation>
@@ -1348,6 +1346,7 @@ Saidid saavad küpsisefailide abil eri saitidel teie sirvimistegevust jälgida, 
 <translation id="8393889347136007944">Vahelehed, mida pole <ph name="THRESHOLD" /> päeva kasutatud</translation>
 <translation id="8395339334550012808">Varsti näete jaotises Jälgitav sisu, mis on kanalilt <ph name="CHANNEL_NAME" /> pärit ja käib selle kohta.</translation>
 <translation id="8395378633507873708">Aadressiriba</translation>
+<translation id="8402673309244746971">Ava voog Jälgitav</translation>
 <translation id="8403629764260204788">Funktsioon „Pidev sirvimine“ peidetakse</translation>
 <translation id="8407669440184693619">Selle saidi jaoks ei leitud paroole</translation>
 <translation id="842017693807136194">Sisse logitud:</translation>

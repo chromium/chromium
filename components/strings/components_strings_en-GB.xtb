@@ -1263,7 +1263,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="36224234498066874">Clear Browsing Data...</translation>
 <translation id="362276910939193118">Show full history</translation>
 <translation id="3624292976554877583">Labels (matte)</translation>
-<translation id="3625929652356389713">Can ask to automatically open picture-in-picture windows</translation>
 <translation id="3628905806504633297">{0,plural, =1{Administrator policy doesn’t recommend transferring this file to <ph name="DESTINATION_NAME" />}other{Administrator policy doesn’t recommend transferring these files to <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3630155396527302611">If it is already listed as a program allowed to access the network, try
       removing it from the list and adding it again.</translation>
@@ -1398,7 +1397,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="388632593194507180">Monitoring detected</translation>
 <translation id="3886948180919384617">Stacker 3</translation>
 <translation id="3890664840433101773">Add email</translation>
-<translation id="3893306401511601929">Auto picture-in-picture</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3901925938762663762">The card is expired</translation>
 <translation id="390391808978419508">Opening timed out</translation>
@@ -1867,7 +1865,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4852429274334674023">Operating systems</translation>
 <translation id="4854853140771946034">Create a new note in Google Keep quickly</translation>
 <translation id="485902285759009870">Verifying code…</translation>
-<translation id="4862630594858951805">Want emails when the price drops?</translation>
 <translation id="4864406669374375262">Copied version string to clipboard</translation>
 <translation id="486459320933704969">A parent or guardian has to say that it's OK for you to visit this website</translation>
 <translation id="4866506163384898554">Press |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| to show your cursor</translation>
@@ -2756,7 +2753,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6710594484020273272">&lt;Type search term&gt;</translation>
 <translation id="671076103358959139">Enrolment Token:</translation>
 <translation id="6711464428925977395">There is something wrong with the proxy server or the address is incorrect.</translation>
-<translation id="6716013836112872184">Get emails sent to <ph name="EMAIL" /> when the price drops on any site.</translation>
 <translation id="6716672519412350405"><ph name="URL" /> wants to create a 3D map of your surroundings and track camera position</translation>
 <translation id="6718612893943028815">Use camera?</translation>
 <translation id="6721164594124191969">Labels (glossy)</translation>
@@ -4035,6 +4031,5 @@ Additional details:
     &lt;li&gt;Try connecting to another network&lt;/li&gt;
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
-<translation id="995240771322213706">auto picture-in-picture</translation>
 <translation id="997986563973421916">From Google Pay</translation>
 </translationbundle>

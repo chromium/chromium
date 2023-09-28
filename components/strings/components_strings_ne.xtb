@@ -1260,7 +1260,6 @@
 <translation id="36224234498066874">ब्राउजिङको डेटा मेटाउनुहोस्...</translation>
 <translation id="362276910939193118">पूर्ण इतिहास देखाउनुहोस्</translation>
 <translation id="3624292976554877583">लेबल (म्याट)</translation>
-<translation id="3625929652356389713">picture-in-picture विन्डो स्वतः खोल्ने अनुमति माग्न सक्छ</translation>
 <translation id="3628905806504633297">{0,plural, =1{एड्मिनले तोकेको नीतिअनुसार यो फाइल <ph name="DESTINATION_NAME" /> मा ट्रान्स्फर गर्न सिफारिस गरिँदैन}other{एड्मिनले तोकेको नीतिअनुसार यी फाइलहरू <ph name="DESTINATION_NAME" /> मा ट्रान्स्फर गर्न सिफारिस गरिँदैन}}</translation>
 <translation id="3630155396527302611">यदि यसलाई नेटवर्कमा पहुँच गर्ने अनुमति भएको प्रोग्रामको रूपमा पहिले नै सूचीबद्ध गरिएको छ भने यसलाई
       सूचीबाट हटाएर फेरि थप्ने प्रयास गर्नुहोस्।</translation>
@@ -1395,7 +1394,6 @@
 <translation id="388632593194507180">निगरानी भइरहेको कुरा पत्ता लाग्यो</translation>
 <translation id="3886948180919384617">स्ट्याकर ३</translation>
 <translation id="3890664840433101773">इमेल थप्नुहोस्</translation>
-<translation id="3893306401511601929">picture-in-picture मोड स्वतः सक्रिय गर्ने लेबल</translation>
 <translation id="3897092660631435901">मेनु</translation>
 <translation id="3901925938762663762">कार्डको म्याद सकिएको छ</translation>
 <translation id="390391808978419508">खोल्ने समय सकिएको छ</translation>
@@ -1865,7 +1863,6 @@
 <translation id="4852429274334674023">अपरेटिङ सिस्टमहरू</translation>
 <translation id="4854853140771946034">Google Keep प्रयोग गरी तुरुन्तै नयाँ टिपोट बनाउनुहोस्</translation>
 <translation id="485902285759009870">कोड पुष्टि गरिँदै छ...</translation>
-<translation id="4862630594858951805">उत्पादनको मूल्य घटेका खण्डमा इमेल प्राप्त गर्न चाहनुहुन्छ?</translation>
 <translation id="4864406669374375262">संस्करणको स्ट्रिङ क्लिपबोर्डमा कपी गरिएको छ</translation>
 <translation id="486459320933704969">तपाईंका आमाबुवा वा अभिभावकले तपाईंलाई यो साइटमा जाने अनुमति दिनु पर्ने हुन्छ</translation>
 <translation id="4866506163384898554">तपाईं कर्सर देखाउन चाहनुहुन्छ भने |<ph name="ACCELERATOR1" />| र |<ph name="ACCELERATOR2" />| की एकै पटक थिच्नुहोस्</translation>
@@ -2754,7 +2751,6 @@
 <translation id="6710594484020273272">&lt;खोज पदलाई टाइप गर्नुहोस्&gt;</translation>
 <translation id="671076103358959139">दर्ता टोकन:</translation>
 <translation id="6711464428925977395">प्रोक्सी सर्भरमा केही त्रुटि वा ठेगाना गलत छ।</translation>
-<translation id="6716013836112872184">कुनै पनि साइटमा उत्पादनको मूल्य घटेका खण्डमा <ph name="EMAIL" /> मा इमेल प्राप्त गर्नुहोस्।</translation>
 <translation id="6716672519412350405"><ph name="URL" /> ले तपाईं वरपरको ठाउँको 3D नक्सा बनाउन र क्यामेराको अवस्था पत्ता लगाउन चाहन्छ</translation>
 <translation id="6718612893943028815">क्यामेरा प्रयोग गर्ने हो?</translation>
 <translation id="6721164594124191969">लेबल (ग्लसी)</translation>
@@ -4034,6 +4030,5 @@
     &lt;li&gt;अर्को नेटवर्कमा जडान गरी हेर्नुहोस्&lt;/li&gt;
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
-<translation id="995240771322213706">picture-in-picture मोड स्वतः सक्रिय गर्ने लेबल</translation>
 <translation id="997986563973421916">Google Pay बाट</translation>
 </translationbundle>

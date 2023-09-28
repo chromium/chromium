@@ -1785,7 +1785,6 @@ Hinweis: Wenn du ein Feld auslässt, gelten alle Werte für dieses Feld als übe
 
       Wenn die Richtlinie nicht konfiguriert ist, wird <ph name="PRINTERS_ALLOW_ALL" /> verwendet.</translation>
 <translation id="2581338546762479588">Automatischen Neustart nach Updates zulassen</translation>
-<translation id="2582855747769273665">Eine URL, über die Nutzer mehr erfahren können. Sofern nicht konfiguriert, gibt es im Installationsprogramm keine URL „Weitere Informationen“.</translation>
 <translation id="2586117300379904732">Wakelocks für die Energieverwaltung zulassen</translation>
 <translation id="2586231026319371211">Die Zeit wird in der jeweiligen Ortszeit im 24-Stunden-Format angegeben.</translation>
 <translation id="2587719089023392205"><ph name="PRODUCT_NAME" /> als Standardbrowser festlegen</translation>

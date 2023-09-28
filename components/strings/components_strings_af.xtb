@@ -1263,7 +1263,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="36224234498066874">Vee blaaierdata uit …</translation>
 <translation id="362276910939193118">Wys hele geskiedenis</translation>
 <translation id="3624292976554877583">Etikette (mat)</translation>
-<translation id="3625929652356389713">Kan vra om prent-in-prent-vensters outomaties oop te maak</translation>
 <translation id="3628905806504633297">{0,plural, =1{Administrateursbeleid beveel aan dat jy nie hierdie lêer na <ph name="DESTINATION_NAME" /> toe oordra nie}other{Administrateursbeleid beveel aan dat jy nie hierdie lêers na <ph name="DESTINATION_NAME" /> toe oordra nie}}</translation>
 <translation id="3630155396527302611">As dit reeds gelys is as 'n program wat by die netwerk mag ingaan, probeer
       om dit van die lys af te verwyder en dit weer by te voeg.</translation>
@@ -1398,7 +1397,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="388632593194507180">Monitering is bespeur</translation>
 <translation id="3886948180919384617">Stapelaar 3</translation>
 <translation id="3890664840433101773">Voeg e-posadres by</translation>
-<translation id="3893306401511601929">Outomatiese prent-in-prent</translation>
 <translation id="3897092660631435901">Kieslys</translation>
 <translation id="3901925938762663762">Die kaart het verval</translation>
 <translation id="390391808978419508">Oopmaak het uitgetel</translation>
@@ -1867,7 +1865,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4852429274334674023">Bedryfstelsels</translation>
 <translation id="4854853140771946034">Skep vinnig 'n nuwe nota in Google Keep</translation>
 <translation id="485902285759009870">Verifieer tans kode …</translation>
-<translation id="4862630594858951805">Wil jy e-posse kry wanneer die prys daal?</translation>
 <translation id="4864406669374375262">Weergawestring na knipbord gekopieer</translation>
 <translation id="486459320933704969">’n Ouer of voog moet sê dat dit aanvaarbaar is vir jou om hierdie webwerf te besoek</translation>
 <translation id="4866506163384898554">Druk |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| om jou skermpyltjie te wys</translation>
@@ -2756,7 +2753,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="6710594484020273272">&lt;Tik soekterm in&gt;</translation>
 <translation id="671076103358959139">Inskrywingtoken:</translation>
 <translation id="6711464428925977395">Daar is iets verkeerd met hierdie instaanbediener of die adres is verkeerd.</translation>
-<translation id="6716013836112872184">Kry e-posse wat na <ph name="EMAIL" /> toe gestuur word wanneer die prys op enige werf daal.</translation>
 <translation id="6716672519412350405"><ph name="URL" /> wil 'n 3D-kaart van jou omgewing skep en kameraposisie naspoor.</translation>
 <translation id="6718612893943028815">Gebruik kamera?</translation>
 <translation id="6721164594124191969">Etikette (glas)</translation>
@@ -4035,6 +4031,5 @@ Bykomende besonderhede:
     &lt;li&gt;Probeer om aan 'n ander netwerk te koppel&lt;/li&gt;
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
-<translation id="995240771322213706">outomatiese prent-in-prent</translation>
 <translation id="997986563973421916">Van Google Pay af</translation>
 </translationbundle>

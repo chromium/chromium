@@ -1261,7 +1261,6 @@
 <translation id="36224234498066874">ब्राउज़िंग डेटा मिटाएं...</translation>
 <translation id="362276910939193118">पूरा इतिहास दिखाएं</translation>
 <translation id="3624292976554877583">लेबल (मैट)</translation>
-<translation id="3625929652356389713">पिक्चर में पिक्चर विंडो को अपने-आप खोलने के लिए कहा जा सकता है</translation>
 <translation id="3628905806504633297">{0,plural, =1{एडमिन नीति, इस फ़ाइल को <ph name="DESTINATION_NAME" /> पर ट्रांसफ़र करने का सुझाव नहीं देती है}one{एडमिन नीति, इस फ़ाइल को <ph name="DESTINATION_NAME" /> पर ट्रांसफ़र करने का सुझाव नहीं देती है}other{एडमिन नीति, इन फ़ाइलों को <ph name="DESTINATION_NAME" /> पर ट्रांसफ़र करने का सुझाव नहीं देती है}}</translation>
 <translation id="3630155396527302611">अगर वह नेटवर्क एक्सेस करने की अनुमति पाए हुए प्रोग्राम के रूप में पहले से ही सूची में शामिल है, तो
       उसे सूची से हटाने और फिर से जोड़ने की कोशिश करें.</translation>
@@ -1396,7 +1395,6 @@
 <translation id="388632593194507180">यह पता चला है कि नज़र रखी जा रही है</translation>
 <translation id="3886948180919384617">स्टैकर 3</translation>
 <translation id="3890664840433101773">ईमेल जोड़ें</translation>
-<translation id="3893306401511601929">पिक्चर में पिक्चर सुविधा को ऑटो मोड में सेट करें</translation>
 <translation id="3897092660631435901">मेन्यू</translation>
 <translation id="3901925938762663762">इस कार्ड की समय सीमा खत्म हो गई है</translation>
 <translation id="390391808978419508">खोलने का समय खत्म हो गया</translation>
@@ -1865,7 +1863,6 @@
 <translation id="4852429274334674023">ऑपरेटिंग सिस्टम</translation>
 <translation id="4854853140771946034">Google Keep में जल्दी से नया नोट बनाएं</translation>
 <translation id="485902285759009870">कोड की पुष्टि की जा रही है...</translation>
-<translation id="4862630594858951805">क्या कीमत में गिरावट होने पर आपको ईमेल से सूचना चाहिए?</translation>
 <translation id="4864406669374375262">वर्शन स्ट्रिंग को क्लिपबोर्ड पर कॉपी किया गया</translation>
 <translation id="486459320933704969">इस वेबसाइट पर जाने के लिए, आपके पास अपने माता-पिता या अभिभावक की अनुमति होनी चाहिए</translation>
 <translation id="4866506163384898554">अपना कर्सर दिखाने के लिए, |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| को दबाएं</translation>
@@ -2754,7 +2751,6 @@
 <translation id="6710594484020273272">&lt;खोज शब्द लिखें&gt;</translation>
 <translation id="671076103358959139">नाम दर्ज करने का टोकन:</translation>
 <translation id="6711464428925977395">प्रॉक्सी सर्वर के साथ कुछ गलत है या पता गलत है.</translation>
-<translation id="6716013836112872184">किसी भी साइट पर, कीमत में गिरावट होने पर <ph name="EMAIL" /> पर ईमेल पाएं.</translation>
 <translation id="6716672519412350405"><ph name="URL" /> आपके आस-पास की जगह का 3D मैप बनाना और कैमरे की स्थिति ट्रैक करना चाहती है</translation>
 <translation id="6718612893943028815">क्या आप कैमरे का इस्तेमाल करना चाहते हैं?</translation>
 <translation id="6721164594124191969">लेबल (ग्लॉसी)</translation>
@@ -4033,6 +4029,5 @@
     &lt;li&gt;किसी दूसरे नेटवर्क से कनेक्ट करके देखें&lt;/li&gt;
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
-<translation id="995240771322213706">पिक्चर में पिक्चर सुविधा को ऑटो मोड में सेट करें</translation>
 <translation id="997986563973421916">Google Pay से</translation>
 </translationbundle>

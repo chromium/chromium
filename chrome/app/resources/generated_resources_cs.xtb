@@ -17,7 +17,6 @@
 <translation id="1008261151167010035"><ph name="BRAND" /> si pamatuje, jak jste se přihlásili, a když je to možné, přihlásí vás automaticky. Když je tato funkce vypnutá, zobrazuje se pokaždé žádost o potvrzení.</translation>
 <translation id="1008544602823861396">má zablokováno používání vašich údajů na</translation>
 <translation id="1008557486741366299">Teď ne</translation>
-<translation id="1009454959501038262">{NUM_SITES,plural, =1{Z důvodu ochrany vašich dat byla odebrána oprávnění webu, který jste dva měsíce nenavštívili}few{Z důvodu ochrany vašich dat byla odebrána oprávnění webům, které jste dva měsíce nenavštívili}many{Z důvodu ochrany vašich dat byla odebrána oprávnění webům, které jste dva měsíce nenavštívili}other{Z důvodu ochrany vašich dat byla odebrána oprávnění webům, které jste dva měsíce nenavštívili}}</translation>
 <translation id="1009663062402466586">K dispozici jsou ovládací prvky hry</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{Stránka nereaguje}few{Stránky nereagují}many{Stránky nereagují}other{Stránky nereagují}}</translation>
 <translation id="1011003645819296594">Uložená zařízení</translation>
@@ -122,7 +121,6 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1084824384139382525">Kopírovat a&amp;dresu odkazu</translation>
 <translation id="1085064499066015002">Vždy na všech webech</translation>
 <translation id="1085697365578766383">Při spouštění virtuálního počítače došlo k chybě. Zkuste to znovu.</translation>
-<translation id="1087965115100412394">Nepovolovat webům připojení k zařízením MIDI</translation>
 <translation id="1088659085457112967">Zapnout režim čtečky</translation>
 <translation id="1090126737595388931">Na pozadí nejsou spuštěny žádné aplikace</translation>
 <translation id="1090541560108055381">Před spárováním se ujistěte, zda se tento kód na obou zařízeních shoduje</translation>
@@ -3219,7 +3217,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3551320343578183772">Zavřít kartu</translation>
 <translation id="3552097563855472344"><ph name="NETWORK_NAME" /> – <ph name="SPAN_START" /><ph name="CARRIER_NAME" /><ph name="SPAN_END" /></translation>
 <translation id="3552780134252864554">Při ukončení se vymaže</translation>
-<translation id="3553487194781590058">Nepovolovat webům otevřít okno obrazu v obraze, když přejdete na jinou kartu</translation>
 <translation id="3554493885489666172">Toto zařízení spravuje organizace <ph name="PROFILE_NAME" />. K datům ve všech profilech v tomto zařízení mají přístup administrátoři.</translation>
 <translation id="3555812735919707620">Odstranit rozšíření</translation>
 <translation id="3557101512409028104">Nastavte pomocí služby Family Link omezení přístupu na webové stránky a limity času stráveného na zařízení</translation>
@@ -3777,7 +3774,6 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="3975201861340929143">Vysvětlení</translation>
 <translation id="3975565978598857337">Kontaktování serveru pro sféru se nezdařilo</translation>
 <translation id="3976108569178263973">Nejsou k dispozici žádné tiskárny.</translation>
-<translation id="3976244126942806443">K zařízením MIDI se weby připojují obvykle za účelem vytváření a úpravy hudby</translation>
 <translation id="397703832102027365">Dokončování...</translation>
 <translation id="3977145907578671392">Některé weby nemusejí v anonymním režimu fungovat správně.</translation>
 <translation id="3977886311744775419">Automatické aktualizace se v tomto typu sítě nestahují, ale můžete aktualizace vyhledat ručně.</translation>
@@ -4677,7 +4673,6 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="4730492586225682674">Poslední poznámka napsaná dotykovým perem na obrazovce uzamčení</translation>
 <translation id="4730888769809690665">Oznámení webu <ph name="SITE" /> jsou povolena</translation>
 <translation id="4731306954230393087">Povoleno používání uložených informací o vás</translation>
-<translation id="473140019006744096">Na tomto zařízení není dostatek místa k dokončení této aktualizace. Uvolněte na zařízení <ph name="NECESSARY_SPACE" /> a zkuste to znovu.</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" /> % (vlevo)</translation>
 <translation id="4733793249294335256">Umístění</translation>
 <translation id="473546211690256853">Tento účet spravuje <ph name="DOMAIN" />.</translation>
@@ -5379,7 +5374,6 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="5327912693242073631">Funkce vyžadující oznámení nebudou k dispozici</translation>
 <translation id="532943162177641444">Klepnutím na oznámení na telefonu nebo tabletu <ph name="PHONE_NAME" /> nastavte mobilní hotspot, který bude moci využít toto zařízení.</translation>
 <translation id="5329858601952122676">&amp;Smazat</translation>
-<translation id="5330592967519769658">Může otevřít okno obrazu v obraze, když přejdete na jinou kartu</translation>
 <translation id="5331069282670671859">Nemáte žádné certifikáty této kategorie</translation>
 <translation id="5331568967879689647">Systémová aplikace ChromeOS</translation>
 <translation id="5331975486040154427">Zařízení USB Type-C (levý zadní port)</translation>
@@ -5557,7 +5551,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="5473099001878321374">Pokračováním vyjadřujete souhlas s tím, že toto zařízení může také automaticky stahovat a instalovat aktualizace a aplikace od společnosti Google, operátora a výrobce zařízení a v případě potřeby k tomu smí používat mobilní datové připojení. Některé z těchto aplikací mohou nabízet nákupy v aplikaci.</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{PIN musí obsahovat nejméně 1 znak}few{PIN musí obsahovat nejméně # znaky}many{PIN musí obsahovat nejméně # znaku}other{PIN musí obsahovat nejméně # znaků}}</translation>
 <translation id="5474859849784484111">Doména <ph name="MANAGER" /> vyžaduje, abyste se připojili k síti Wi-Fi a stáhli aktualizaci. Případně ji můžete stáhnout přes měřené připojení (mohou být účtovány poplatky).</translation>
-<translation id="5478520208448702555">Weby mohou otevřít okno obrazu v obraze, když přejdete na jinou kartu</translation>
 <translation id="5481273127572794904">Zákaz stahovat automaticky několik souborů</translation>
 <translation id="5481941284378890518">Přidat tiskárny v okolí</translation>
 <translation id="5484181871714116891">Když je tato funkce zapnutá, přístupové klíče se vytvářejí v Klíčence na Cloudu a jsou dostupné ve všech vašich zařízeních Apple. Když je tato možnost vypnutá, přístupové klíče se vytvářejí ve vašem profilu Chrome na tomto zařízení.</translation>
@@ -5715,7 +5708,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="5600348067066185292">K instalaci je potřeba jen několik snadných kroků. Než v počítači budou provedeny změny, budete mít ještě možnost je potvrdit.</translation>
 <translation id="5600706100022181951">Ke stažení aktualizace bude použito <ph name="UPDATE_SIZE_MB" /> MB mobilních dat. Chcete pokračovat?</translation>
 <translation id="5601503069213153581">PIN</translation>
-<translation id="5601823921345337195">Zákaz připojovat se k zařízením MIDI</translation>
 <translation id="5601833336918638013">Nepovolovat webům vyhledávat zařízení Bluetooth</translation>
 <translation id="5602586420788540146">Otevřít v nové skupině karet</translation>
 <translation id="5605758115928394442">Odeslali jsme vám na telefon oznámení, abychom si ověřili, zda jste to skutečně vy.</translation>
@@ -5835,7 +5827,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="5707185214361380026">Načtení rozšíření z následujícího umístění se nezdařilo:</translation>
 <translation id="5708171344853220004">Hlavní název Microsoft</translation>
 <translation id="5709557627224531708">Nastavte si Chrome jako výchozí prohlížeč</translation>
-<translation id="5710122160114032242">Nemůže otevřít okno obrazu v obraze, když přejdete na jinou kartu</translation>
 <translation id="5711010025974903573">Protokoly služby</translation>
 <translation id="5711983031544731014">Zařízení nelze odemknout. Zadejte heslo.</translation>
 <translation id="5712153969432126546">Weby někdy publikují soubory PDF, např. dokumenty, smlouvy a formuláře</translation>
@@ -6596,7 +6587,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="6326175484149238433">Odstranit z Chromu</translation>
 <translation id="6326855256003666642">Aktivity zabraňující ukončení</translation>
 <translation id="6327785803543103246">Automatické zjišťování webového proxy serveru</translation>
-<translation id="6331818708794917058">Weby mohou žádat o připojení k zařízením MIDI</translation>
 <translation id="6333064448949140209">Soubor bude odeslán do Googlu k ladění</translation>
 <translation id="6333170995003625229">Vaši e‑mailovou adresu nebo heslo se nepodařilo ověřit. Zkuste se přihlásit znovu.</translation>
 <translation id="6334267141726449402">Zkopírujte tento odkaz a odešlete ho uživateli, aby mohl shromáždit protokoly.</translation>
@@ -6746,7 +6736,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="6458701200018867744">Nahrávání se nezdařilo (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">Pro hledání použít výběr</translation>
 <translation id="6459799433792303855">Aktivní okno bylo přesunuto na jinou obrazovku.</translation>
-<translation id="6460566145397380451">Povolení připojovat se k zařízením MIDI</translation>
 <translation id="6460601847208524483">Najít další</translation>
 <translation id="6461170143930046705">Vyhledávání sítí...</translation>
 <translation id="6463795194797719782">&amp;Upravit</translation>
@@ -7076,7 +7065,6 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="6735304988756581115">Zobrazit soubory cookie a jiná data webů...</translation>
 <translation id="6736243959894955139">Adresa</translation>
 <translation id="6737663862851963468">Odstranit lístek Kerberos</translation>
-<translation id="6737931010859480781">Tato aplikace je v zařízení předinstalovaná</translation>
 <translation id="6738180164164974883">Povolit nastavení souborů cookie třetích stran</translation>
 <translation id="6738430949033571771">Ověřování účtu…</translation>
 <translation id="6739923123728562974">Zobrazit zástupce na ploše</translation>
@@ -8470,7 +8458,6 @@ Pokud přiřazení chcete odstranit, stiskněte přiřazený přepínač nebo kl
 <translation id="7853747251428735">&amp;Další nástroje</translation>
 <translation id="7853999103056713222">Použijte bezpečnější heslo</translation>
 <translation id="7855678561139483478">Přesunout kartu do nového okna</translation>
-<translation id="7855729579456690716">Weby mohou otevřít okno obrazu v obraze, když přejdete na jinou kartu</translation>
 <translation id="7857004848504343806">Ve vašem počítači je bezpečnostní modul, jehož pomocí je do systému ChromeOS Flex implementováno mnoho důležitých bezpečnostních prvků. Další informace najdete v centru nápovědy k Chromebookům: http://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">Textové návrhy</translation>
 <translation id="7857949311770343000">Je toto stránka nové karty, kterou jste očekávali?</translation>

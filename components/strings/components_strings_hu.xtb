@@ -1261,7 +1261,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="36224234498066874">Böngészési adatok törlése…</translation>
 <translation id="362276910939193118">Az összes előzmény</translation>
 <translation id="3624292976554877583">Címkék (matt)</translation>
-<translation id="3625929652356389713">Engedélyt kérhet az ablakok kép a képben módban való automatikus megnyitására</translation>
 <translation id="3628905806504633297">{0,plural, =1{A rendszergazda által beállított házirend nem javasolja ennek a fájlnak az átvitelét a következő helyre: <ph name="DESTINATION_NAME" />}other{A rendszergazda által beállított házirend nem javasolja ezeknek a fájloknak az átvitelét a következő helyre: <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3630155396527302611">Ha már megjelenik a hálózat elérésére engedélyezett programként, próbálkozzon
       az eltávolításával, majd a listára való ismételt felvételével.</translation>
@@ -1396,7 +1395,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="388632593194507180">Figyelés észlelve</translation>
 <translation id="3886948180919384617">3. kötegelő</translation>
 <translation id="3890664840433101773">E-mail-cím hozzáadása</translation>
-<translation id="3893306401511601929">Automatikus kép a képben mód</translation>
 <translation id="3897092660631435901">Menü</translation>
 <translation id="3901925938762663762">A kártya lejárt</translation>
 <translation id="390391808978419508">Időtúllépés történt a megnyitás során</translation>
@@ -1865,7 +1863,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4852429274334674023">Operációs rendszerek</translation>
 <translation id="4854853140771946034">Új jegyzet gyors létrehozása a Google Keep szolgáltatással</translation>
 <translation id="485902285759009870">Kód ellenőrzése…</translation>
-<translation id="4862630594858951805">Szeretne e-mailt kapni, ha csökkennek az árak?</translation>
 <translation id="4864406669374375262">Verzió-karakterlánc vágólapra másolva</translation>
 <translation id="486459320933704969">A szülődnek vagy a gondviselődnek jóvá kell hagynia a webhely felkeresését</translation>
 <translation id="4866506163384898554">A kurzor megjelenítéséhez nyomja le a következő billentyűkombinációt: |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />|</translation>
@@ -2754,7 +2751,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6710594484020273272">&lt;Írja be a keresési kifejezést&gt;</translation>
 <translation id="671076103358959139">Regisztrációs token</translation>
 <translation id="6711464428925977395">Valami gond van a proxyszerverrel, vagy a cím nem megfelelő.</translation>
-<translation id="6716013836112872184">E-mailt küldünk a(z) <ph name="EMAIL" /> e-mail-címre, ha valamelyik webhelyen csökken az ár.</translation>
 <translation id="6716672519412350405">A(z) <ph name="URL" /> 3D-s térképet szeretne készíteni az Ön környezetéről, és követni szeretné a kamera pozícióját</translation>
 <translation id="6718612893943028815">Engedélyezi a kamera használatát?</translation>
 <translation id="6721164594124191969">Címkék (fényes)</translation>
@@ -4035,6 +4031,5 @@ További részletek:
     &lt;li&gt;Próbáljon másik hálózathoz csatlakozni.&lt;/li&gt;
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
-<translation id="995240771322213706">automatikus kép a képben mód</translation>
 <translation id="997986563973421916">A Google Payről</translation>
 </translationbundle>

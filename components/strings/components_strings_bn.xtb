@@ -1264,7 +1264,6 @@
 <translation id="36224234498066874">ব্রাউজ করা ডেটা সাফ করুন...</translation>
 <translation id="362276910939193118">সম্পূর্ণ ইতিহাস দেখুন</translation>
 <translation id="3624292976554877583">লেবেল (ম্যাট)</translation>
-<translation id="3625929652356389713">ছবির-মধ্যে-ছবির উইন্ডো অটোমেটিক খোলার জন্য বলতে পারে</translation>
 <translation id="3628905806504633297">{0,plural, =1{অ্যাডমিনিস্ট্রেটরের নীতি অনুযায়ী <ph name="DESTINATION_NAME" />-এ এই ফাইল ট্রান্সফার করা যাবে না}one{অ্যাডমিনিস্ট্রেটরের নীতি অনুযায়ী <ph name="DESTINATION_NAME" />-এ এই ফাইল ট্রান্সফার করা যাবে না}other{অ্যাডমিনিস্ট্রেটরের নীতি অনুযায়ী <ph name="DESTINATION_NAME" />-এ এই ফাইল ট্রান্সফার করা যাবে না}}</translation>
 <translation id="3630155396527302611">নেটওয়ার্ক অ্যাক্সেস করতে এটি যদি ইতোমধ্যে মঞ্জুরিকৃত প্রোগ্রাম হিসাবে তালিকাতে থাকে, তাহলে
       তালিকাটি থেকে এটি সরানোর চেষ্টা করে আবার যোগ করে দেখুন।</translation>
@@ -1399,7 +1398,6 @@
 <translation id="388632593194507180">মনিটর করা হচ্ছে, সেটি শনাক্ত করা গেছে</translation>
 <translation id="3886948180919384617">স্ট্যাকার ৩</translation>
 <translation id="3890664840433101773">ইমেল আইডি যোগ করুন</translation>
-<translation id="3893306401511601929">অটোমেটিক ছবির-মধ্যে-ছবি</translation>
 <translation id="3897092660631435901">মেনু</translation>
 <translation id="3901925938762663762">কার্ডটির মেয়াদ শেষ হয়েছে</translation>
 <translation id="390391808978419508">খোলার সময় শেষ হয়ে গেছে</translation>
@@ -1868,7 +1866,6 @@
 <translation id="4852429274334674023">অপারেটিং সিস্টেম</translation>
 <translation id="4854853140771946034">Google Keep-এ চটপট নতুন নোট তৈরি করুন</translation>
 <translation id="485902285759009870">কোড যাচাই করা হচ্ছে…</translation>
-<translation id="4862630594858951805">দাম কমলে ইমেল পেতে চান?</translation>
 <translation id="4864406669374375262">ক্লিপবোর্ডে ভার্সন স্ট্রিং কপি করা হয়েছে</translation>
 <translation id="486459320933704969">একজন প্যারেন্ট বা অভিভাবককে বলতে হবে যে এই ওয়েবসাইটটি দেখার জন্য আপনার পক্ষে ঠিক আছে</translation>
 <translation id="4866506163384898554">আপনার কার্সার দেখাতে |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| প্রেস করুন</translation>
@@ -2756,7 +2753,6 @@
 <translation id="6710594484020273272">&lt;সার্চের পদ লিখুন&gt;</translation>
 <translation id="671076103358959139">নথিভুক্ত করার জন্য টোকেন:</translation>
 <translation id="6711464428925977395">প্রক্সী সার্ভারের কোনো সমস্যা হয়েছে, অথবা ঠিকানাটি ভুল।</translation>
-<translation id="6716013836112872184">কোনও সাইটে দাম কমে গেলে <ph name="EMAIL" />-এ ইমেল পান।</translation>
 <translation id="6716672519412350405"><ph name="URL" /> আপনার আশেপাশের এলাকার একটি 3D ম্যাপ তৈরি করতে এবং ক্যামেরার অবস্থান ট্র্যাক করতে চাইছে</translation>
 <translation id="6718612893943028815">ক্যামেরা ব্যবহার করবেন?</translation>
 <translation id="6721164594124191969">লেবেল (গ্লসি)</translation>
@@ -4035,6 +4031,5 @@
     &lt;li&gt;অন্য ওয়াই-ফাই নেটওয়ার্কের সাথে সংযুক্ত করে দেখুন&lt;/li&gt;
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
-<translation id="995240771322213706">অটোমেটিক ছবির-মধ্যে-ছবি</translation>
 <translation id="997986563973421916">Google Pay থেকে</translation>
 </translationbundle>

@@ -1261,7 +1261,6 @@
 <translation id="36224234498066874">ਬ੍ਰਾਊਜ਼ਿੰਗ ਡਾਟਾ ਕਲੀਅਰ ਕਰੋ...</translation>
 <translation id="362276910939193118">ਪੂਰਾ ਇਤਿਹਾਸ ਦਿਖਾਓ</translation>
 <translation id="3624292976554877583">ਲੇਬਲ (ਮੈਟ)</translation>
-<translation id="3625929652356389713">ਤਸਵੀਰ-ਵਿੱਚ-ਤਸਵੀਰ ਵਿੰਡੋਆਂ ਨੂੰ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਖੋਲ੍ਹਣ ਲਈ ਕਿਹਾ ਜਾ ਸਕਦਾ ਹੈ</translation>
 <translation id="3628905806504633297">{0,plural, =1{ਪ੍ਰਸ਼ਾਸਕ ਨੀਤੀ ਇਸ ਫ਼ਾਈਲ ਨੂੰ <ph name="DESTINATION_NAME" /> ਵਿੱਚ ਟ੍ਰਾਂਸਫ਼ਰ ਕਰਨ ਦੀ ਸਿਫ਼ਾਰਸ਼ ਨਹੀਂ ਕਰਦੀ ਹੈ}one{ਪ੍ਰਸ਼ਾਸਕ ਨੀਤੀ ਇਸ ਫ਼ਾਈਲ ਨੂੰ <ph name="DESTINATION_NAME" /> ਵਿੱਚ ਟ੍ਰਾਂਸਫ਼ਰ ਕਰਨ ਦੀ ਸਿਫ਼ਾਰਸ਼ ਨਹੀਂ ਕਰਦੀ ਹੈ}other{ਪ੍ਰਸ਼ਾਸਕ ਨੀਤੀ ਇਨ੍ਹਾਂ ਫ਼ਾਈਲਾਂ ਨੂੰ <ph name="DESTINATION_NAME" /> ਵਿੱਚ ਟ੍ਰਾਂਸਫ਼ਰ ਕਰਨ ਦੀ ਸਿਫ਼ਾਰਸ਼ ਨਹੀਂ ਕਰਦੀ ਹੈ}}</translation>
 <translation id="3630155396527302611">ਜੇਕਰ ਇਸ ਨੂੰ ਪਹਿਲਾਂ ਹੀ ਨੈੱਟਵਰਕ 'ਤੇ ਪਹੁੰਚ ਦੀ ਮਨਜ਼ੂਰੀ ਵਾਲੇ ਇੱਕ ਪ੍ਰੋਗਰਾਮ ਦੇ ਤੌਰ 'ਤੇ ਸੂਚੀਬੱਧ ਕੀਤਾ ਗਿਆ ਹੈ, ਇਸ ਨੂੰ ਸੂਚੀ ਵਿੱਚ ਹਟਾਉਣ ਅਤੇ ਦੁਬਾਰਾ ਸ਼ਾਮਲ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="3630426379756188722">'Find My Device' ਬਟਨ, Google ਖਾਤੇ ਵਿੱਚ 'ਆਪਣਾ ਡੀਵਾਈਸ ਲੱਭੋ' 'ਤੇ ਜਾਣ ਲਈ ਇਸਨੂੰ ਕਿਰਿਆਸ਼ੀਲ ਕਰੋ</translation>
@@ -1395,7 +1394,6 @@
 <translation id="388632593194507180">ਨਿਗਰਾਨੀ ਦਾ ਪਤਾ ਲੱਗਿਆ</translation>
 <translation id="3886948180919384617">ਸਟੈਕਰ 3</translation>
 <translation id="3890664840433101773">ਈਮੇਲ ਸ਼ਾਮਲ ਕਰੋ</translation>
-<translation id="3893306401511601929">ਸਵੈਚਲਿਤ ਤਸਵੀਰ-ਵਿੱਚ-ਤਸਵੀਰ</translation>
 <translation id="3897092660631435901">ਮੀਨੂ</translation>
 <translation id="3901925938762663762">ਕਾਰਡ ਦੀ ਮਿਆਦ ਪੁੱਗ ਗਈ ਹੈ</translation>
 <translation id="390391808978419508">ਖੋਲ੍ਹਣ ਦਾ ਟਾਈਮ-ਆਊਟ ਹੋ ਗਿਆ ਹੈ</translation>
@@ -1864,7 +1862,6 @@
 <translation id="4852429274334674023">ਓਪਰੇਟਿੰਗ ਸਿਸਟਮ</translation>
 <translation id="4854853140771946034">Google Keep ਵਿੱਚ ਤੇਜ਼ੀ ਨਾਲ ਨਵਾਂ ਨੋਟ-ਕਥਨ ਬਣਾਓ</translation>
 <translation id="485902285759009870">ਕੋਡ ਦੀ ਪੁਸ਼ਟੀ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ...</translation>
-<translation id="4862630594858951805">ਕੀਮਤ ਘਟਣ 'ਤੇ ਕੀ ਤੁਸੀਂ ਈਮੇਲਾਂ ਚਾਹੁੰਦੇ ਹੋ?</translation>
 <translation id="4864406669374375262">ਵਰਜਨ ਸਟ੍ਰਿੰਗ ਨੂੰ ਕਲਿੱਪਬੋਰਡ 'ਤੇ ਕਾਪੀ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="486459320933704969">ਮਾਂ-ਪਿਓ ਜਾਂ ਸਰਪ੍ਰਸਤ ਨੂੰ ਇਹ ਕਹਿਣਾ ਹੋਵੇਗਾ ਕਿ ਤੁਸੀਂ ਇਸ ਵੈੱਬਸਾਈਟ 'ਤੇ ਜਾ ਸਕਦੇ ਹੋ</translation>
 <translation id="4866506163384898554">ਆਪਣਾ ਕਰਸਰ ਦਿਖਾਉਣ ਲਈ |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| ਦਬਾਓ</translation>
@@ -2752,7 +2749,6 @@
 <translation id="6710594484020273272">&lt;ਖੋਜ ਸ਼ਬਦ ਟਾਈਪ ਕਰੋ&gt;</translation>
 <translation id="671076103358959139">ਦਰਜਾਬੰਦੀ ਟੋਕਨ:</translation>
 <translation id="6711464428925977395">ਪ੍ਰੌਕਸੀ ਸਰਵਰ ਨਾਲ ਕੋਈ ਸਮੱਸਿਆ ਹੈ ਜਾਂ ਪਤਾ ਗਲਤ ਹੈ।</translation>
-<translation id="6716013836112872184">ਕਿਸੇ ਵੀ ਸਾਈਟ 'ਤੇ ਕੀਮਤ ਘਟਣ 'ਤੇ <ph name="EMAIL" /> 'ਤੇ ਭੇਜੀਆਂ ਗਈਆਂ ਈਮੇਲਾਂ ਪ੍ਰਾਪਤ ਕਰੋ।</translation>
 <translation id="6716672519412350405"><ph name="URL" /> ਤੁਹਾਡੇ ਆਲੇ-ਦੁਆਲੇ ਦਾ 3D ਨਕਸ਼ਾ ਬਣਾਉਣਾ ਅਤੇ ਕੈਮਰਾ ਸਥਿਤੀ ਨੂੰ ਟਰੈਕ ਕਰਨਾ ਚਾਹੁੰਦਾ ਹੈ</translation>
 <translation id="6718612893943028815">ਕੀ ਕੈਮਰਾ ਵਰਤਣਾ ਹੈ?</translation>
 <translation id="6721164594124191969">ਲੇਬਲ (ਗਲੋਸੀ)</translation>
@@ -4031,6 +4027,5 @@
     &lt;li&gt;ਕਿਸੇ ਹੋਰ ਵਾਈ-ਫਾਈ ਨੈੱਟਵਰਕ ਨਾਲ ਕਨੈਕਟ ਕਰਕੇ ਦੇਖੋ&lt;/li&gt;
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
-<translation id="995240771322213706">ਸਵੈਚਲਿਤ ਤਸਵੀਰ-ਵਿੱਚ-ਤਸਵੀਰ</translation>
 <translation id="997986563973421916">Google Pay ਤੋਂ</translation>
 </translationbundle>

@@ -17,7 +17,6 @@
 <translation id="1008261151167010035"><ph name="BRAND" /> husker, hvordan du loggede ind, og logger dig automatisk ind, når det er muligt. Når funktionen er slået fra, bliver du bedt om en bekræftelse hver gang.</translation>
 <translation id="1008544602823861396">er blokeret, så det ikke kan bruge dine oplysninger på</translation>
 <translation id="1008557486741366299">Ikke nu</translation>
-<translation id="1009454959501038262">{NUM_SITES,plural, =1{For at beskytte dine data blev tilladelserne fjernet fra et website, som du ikke har besøgt i 2 måneder}one{For at beskytte dine data blev tilladelserne fjernet fra et website, som du ikke har besøgt i 2 måneder}other{For at beskytte dine data blev tilladelserne fjernet fra websites, som du ikke har besøgt i 2 måneder}}</translation>
 <translation id="1009663062402466586">Spilindstillinger er nu tilgængelige</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{Siden svarer ikke}one{Siderne svarer ikke}other{Siderne svarer ikke}}</translation>
 <translation id="1011003645819296594">Gemte enheder</translation>
@@ -122,7 +121,6 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1084824384139382525">Kopier linkadr&amp;esse</translation>
 <translation id="1085064499066015002">Altid på alle websites</translation>
 <translation id="1085697365578766383">Der opstod en fejl ved opstarten af den virtuelle maskine. Prøv igen.</translation>
-<translation id="1087965115100412394">Tillad ikke, at websites opretter forbindelse til MIDI-enheder</translation>
 <translation id="1088659085457112967">Start Læser-tilstand</translation>
 <translation id="1090126737595388931">Ingen apps kører i baggrunden</translation>
 <translation id="1090541560108055381">Inden du parrer, skal du sørge for, at koden er den samme på begge enheder</translation>
@@ -3233,7 +3231,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3551320343578183772">Luk fanen</translation>
 <translation id="3552097563855472344"><ph name="NETWORK_NAME" /> – <ph name="SPAN_START" /><ph name="CARRIER_NAME" /><ph name="SPAN_END" /></translation>
 <translation id="3552780134252864554">Ryddes ved lukning</translation>
-<translation id="3553487194781590058">Tillad ikke, at websites åbner et vindue med integreret billede, når du skifter til en anden fane</translation>
 <translation id="3554493885489666172">Din enhed administreres af <ph name="PROFILE_NAME" />. Administratorer kan få adgang til dataene på enhver profil på denne enhed.</translation>
 <translation id="3555812735919707620">Fjern udvidelse</translation>
 <translation id="3557101512409028104">Angiv websitebegrænsninger og grænser for skærmtid ved hjælp af Family Link</translation>
@@ -3792,7 +3789,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3975201861340929143">Forklaring</translation>
 <translation id="3975565978598857337">Det var ikke muligt at kontakte serveren for domænet</translation>
 <translation id="3976108569178263973">Der er ingen tilgængelige printere.</translation>
-<translation id="3976244126942806443">Websites opretter normalt forbindelse til MIDI-enheder for at kunne skabe og redigere musik</translation>
 <translation id="397703832102027365">Afslutter...</translation>
 <translation id="3977145907578671392">Funktioner på visse websites fungerer muligvis ikke i inkognito</translation>
 <translation id="3977886311744775419">Automatiske opdateringer downloades ikke på denne netværkstype, men du kan kigge efter opdateringer manuelt.</translation>
@@ -4693,7 +4689,6 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="4730492586225682674">Nyeste note med styluspen på låseskærmen</translation>
 <translation id="4730888769809690665">Notifikationer er tilladt for <ph name="SITE" /></translation>
 <translation id="4731306954230393087">Har tilladelse til at bruge oplysninger, de har gemt om dig</translation>
-<translation id="473140019006744096">Der er ikke nok plads på denne enhed til at fuldføre denne opdatering. Frigør <ph name="NECESSARY_SPACE" /> på din enhed, og prøv igen.</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" /> % (venstre)</translation>
 <translation id="4733793249294335256">Placering</translation>
 <translation id="473546211690256853">Denne konto administreres af <ph name="DOMAIN" /></translation>
@@ -5395,7 +5390,6 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5327912693242073631">Funktioner, der skal bruge notifikationer, fungerer ikke</translation>
 <translation id="532943162177641444">Tryk på notifikationen på din <ph name="PHONE_NAME" /> for at konfigurere det mobilhotspot, der kan anvendes af denne enhed.</translation>
 <translation id="5329858601952122676">&amp;Slet</translation>
-<translation id="5330592967519769658">Har tilladelse til at åbne et vindue med integreret billede, når du skifter til en anden fane</translation>
 <translation id="5331069282670671859">Du har ingen certifikater i denne kategori</translation>
 <translation id="5331568967879689647">ChromeOS-systemapp</translation>
 <translation id="5331975486040154427">USB-C-enhed (porten bagpå i venstre side)</translation>
@@ -5573,7 +5567,6 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="5473099001878321374">Hvis du fortsætter, accepterer du, at denne enhed også kan downloade og installere opdateringer og apps automatisk fra Google, dit barns mobilselskab og producenten af enheden, eventuelt ved hjælp af mobildata. Nogle af disse apps tilbyder muligvis køb i appen.</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{Pinkoden skal være på mindst ét tegn}one{Pinkoden skal være på mindst # tegn}other{Pinkoden skal være på mindst # tegn}}</translation>
 <translation id="5474859849784484111"><ph name="MANAGER" /> kræver, at du opretter forbindelse til Wi-Fi nu og downloader en opdatering. Du kan også downloade via en forbrugsafregnet forbindelse (du opkræves muligvis et gebyr).</translation>
-<translation id="5478520208448702555">Websites kan åbne et vindue med integreret billede, når du skifter til en anden fane</translation>
 <translation id="5481273127572794904">Har ikke tilladelse til at downloade flere filer automatisk</translation>
 <translation id="5481941284378890518">Tilføj printere i nærheden</translation>
 <translation id="5484181871714116891">Når denne indstilling er aktiveret, oprettes der adgangsnøgler i iCloud-nøglering, og nøglerne vil være tilgængelige på dine Apple-enheder. Når denne indstilling er deaktiveret, oprettes der adgangsnøgler på din Chrome-profil på denne enhed.</translation>
@@ -5731,7 +5724,6 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="5600348067066185292">Installationen er nem. Du vil have mulighed for at bekræfte igen, inden der foretages ændringer af din computer.</translation>
 <translation id="5600706100022181951">Opdateringen downloades ved brug af <ph name="UPDATE_SIZE_MB" /> MB mobildata. Vil du fortsætte?</translation>
 <translation id="5601503069213153581">Pinkode</translation>
-<translation id="5601823921345337195">Har ikke tilladelse til at oprette forbindelse til MIDI-enheder</translation>
 <translation id="5601833336918638013">Tillad ikke, at websites søger efter Bluetooth-enheder</translation>
 <translation id="5602586420788540146">Åbn i en ny fanegruppe</translation>
 <translation id="5605758115928394442">Der blev sendt en notifikation til din telefon til bekræftelse af din identitet.</translation>
@@ -5853,7 +5845,6 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="5707185214361380026">Det var ikke muligt at indlæse udvidelsen fra:</translation>
 <translation id="5708171344853220004">Microsoft-hovednavn</translation>
 <translation id="5709557627224531708">Angiv Chrome som din standardbrowser</translation>
-<translation id="5710122160114032242">Har ikke tilladelse til at åbne et vindue med integreret billede, når du skifter til en anden fane</translation>
 <translation id="5711010025974903573">Tjenestelogs</translation>
 <translation id="5711983031544731014">Enheden kan ikke låses op. Angiv din adgangskode.</translation>
 <translation id="5712153969432126546">Websites kan nogle gange udgive PDF-filer som f.eks. dokumenter, kontrakter og formularer</translation>
@@ -6615,7 +6606,6 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="6326175484149238433">Fjern fra Chrome</translation>
 <translation id="6326855256003666642">Optælling af Keepalive</translation>
 <translation id="6327785803543103246">Automatisk registrering af webproxy</translation>
-<translation id="6331818708794917058">Websites kan anmode om tilladelse til at oprette forbindelse til MIDI-enheder</translation>
 <translation id="6333064448949140209">Filen sendes til Google til fejlretning</translation>
 <translation id="6333170995003625229">Din mailadresse eller adgangskode kunne ikke verificeres. Prøv at logge ind igen.</translation>
 <translation id="6334267141726449402">Kopiér og send dette link til brugeren for at indsamle loggerne.</translation>
@@ -6765,7 +6755,6 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="6458701200018867744">Upload mislykkedes (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">Brug valg til Find</translation>
 <translation id="6459799433792303855">Det aktive vindue blev flyttet til en anden skærm.</translation>
-<translation id="6460566145397380451">Har tilladelse til at oprette forbindelse til MIDI-enheder</translation>
 <translation id="6460601847208524483">Find næste</translation>
 <translation id="6461170143930046705">Søger efter netværk...</translation>
 <translation id="6463795194797719782">&amp;Rediger</translation>
@@ -7093,7 +7082,6 @@ Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anb
 <translation id="6735304988756581115">Vis cookies og andre websitedata...</translation>
 <translation id="6736243959894955139">Adresse</translation>
 <translation id="6737663862851963468">Fjern Kerberos-billet</translation>
-<translation id="6737931010859480781">Denne app er forudinstalleret på din enhed</translation>
 <translation id="6738180164164974883">Giv tilladelse til at gemme tredjepartscookies</translation>
 <translation id="6738430949033571771">Verificerer kontoen...</translation>
 <translation id="6739923123728562974">Vis genvej på skrivebordet</translation>
@@ -8487,7 +8475,6 @@ Tryk på en kontakt eller tast, der er tildelt en handling, for at fjerne tildel
 <translation id="7853747251428735">Flere værktø&amp;jer</translation>
 <translation id="7853999103056713222">Brug en mere sikker adgangskode</translation>
 <translation id="7855678561139483478">Flyt fanen til et nyt vindue</translation>
-<translation id="7855729579456690716">Websites kan åbne et vindue med integreret billede, når du skifter til en anden fane</translation>
 <translation id="7857004848504343806">Computeren indeholder et sikkerhedsmodul, som bruges til at implementere mange vigtige sikkerhedsfunktioner i ChromeOS Flex. Du kan få flere oplysninger i Hjælp til Chromebook: https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">Tekstforslag</translation>
 <translation id="7857949311770343000">Er dette den forventede side Ny fane?</translation>

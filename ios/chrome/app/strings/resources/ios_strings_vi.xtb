@@ -555,7 +555,6 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="40433179647657191">Tạo và chia sẻ đường liên kết trực tiếp đến một phần của trang mà bạn đã đánh dấu.</translation>
 <translation id="4045648459118332842">Sử dụng mật khẩu đã lưu trong mọi ứng dụng chỉ bằng một lần nhấn</translation>
 <translation id="4049507953662678203">Hãy đảm bảo rằng bạn có kết nối mạng và thử lại.</translation>
-<translation id="4063300985191096908">Chuyển đến nguồn cấp dữ liệu</translation>
 <translation id="4066639687323968621">Đăng nhập bằng Tài khoản Google để đồng bộ hoá dấu trang, nhật ký hoạt động và nhiều nội dung khác.</translation>
 <translation id="4092655288299341041">Hiện thông tin trợ giúp</translation>
 <translation id="4105841739161771091">{count,plural, =1{Xoá địa chỉ}other{Xoá các địa chỉ}}</translation>
@@ -1152,7 +1151,6 @@ Hãy cố gắng sử dụng một mật khẩu riêng cho mỗi trang web.</tra
 <translation id="7302503784943202842">Sử dụng mật khẩu trên tất cả thiết bị của bạn</translation>
 <translation id="730958329302570991">Dễ dàng thêm mật khẩu trang web vào Trình quản lý mật khẩu của Google bất cứ lúc nào.</translation>
 <translation id="7313347584264171202">Bạn sẽ thấy các thẻ ẩn danh ở đây</translation>
-<translation id="7331371412779932885">Đề xuất thẻ cho bạn dựa theo hoạt động duyệt web trên các thiết bị khác bằng cách sử dụng Tài khoản Google của bạn. Các thiết bị của bạn phải được đăng nhập và đồng bộ hoá bằng cùng một Tài khoản Google.</translation>
 <translation id="7336264872878993241">Đã tải xuống <ph name="PERCENT" /> phần trăm</translation>
 <translation id="7340958967809483333">Các tùy chọn của tính năng Khám phá</translation>
 <translation id="7346909386216857016">Ok</translation>
@@ -1348,6 +1346,7 @@ Các trang web có thể dùng cookie để giám sát hoạt động duyệt we
 <translation id="8393889347136007944">Các thẻ mà bạn đã không sử dụng trong <ph name="THRESHOLD" /> ngày</translation>
 <translation id="8395339334550012808">Sắp tới, bạn sẽ có thể xem thông tin về <ph name="CHANNEL_NAME" /> và nội dung của kênh trong phần Đang theo dõi.</translation>
 <translation id="8395378633507873708">Thanh địa chỉ</translation>
+<translation id="8402673309244746971">Chuyển đến phần Đang theo dõi</translation>
 <translation id="8403629764260204788">Ẩn thẻ "Tiếp tục duyệt web"</translation>
 <translation id="8407669440184693619">Không tìm thấy mật khẩu nào cho trang web này</translation>
 <translation id="842017693807136194">Đăng nhập bằng</translation>

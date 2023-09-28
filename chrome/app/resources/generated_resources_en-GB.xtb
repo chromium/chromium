@@ -17,7 +17,6 @@
 <translation id="1008261151167010035"><ph name="BRAND" /> remembers how you signed in and automatically signs you in when possible. When off, you'll be asked for confirmation every time.</translation>
 <translation id="1008544602823861396">is blocked from using your info on</translation>
 <translation id="1008557486741366299">Not Now</translation>
-<translation id="1009454959501038262">{NUM_SITES,plural, =1{To protect your data, permissions were removed from a site that you haven't visited in two months}other{To protect your data, permissions were removed from sites that you haven't visited in two months}}</translation>
 <translation id="1009663062402466586">Game controls now available</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{Page Unresponsive}other{Pages Unresponsive}}</translation>
 <translation id="1011003645819296594">Saved devices</translation>
@@ -122,7 +121,6 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1084824384139382525">Copy link addr&amp;ess</translation>
 <translation id="1085064499066015002">Always on all sites</translation>
 <translation id="1085697365578766383">Error starting the virtual machine. Please try again.</translation>
-<translation id="1087965115100412394">Don't allow sites to connect to MIDI devices</translation>
 <translation id="1088659085457112967">Enter Reader Mode</translation>
 <translation id="1090126737595388931">No Background Apps Running</translation>
 <translation id="1090541560108055381">Before pairing, make sure that this code is the same on both devices</translation>
@@ -3232,7 +3230,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3551320343578183772">Close Tab</translation>
 <translation id="3552097563855472344"><ph name="NETWORK_NAME" /> – <ph name="SPAN_START" /><ph name="CARRIER_NAME" /><ph name="SPAN_END" /></translation>
 <translation id="3552780134252864554">Cleared on exit</translation>
-<translation id="3553487194781590058">Don't allow sites to open a picture-in-picture window when you change to a different tab</translation>
 <translation id="3554493885489666172">Your device is managed by <ph name="PROFILE_NAME" />. Administrators can access the data in any profile on this device.</translation>
 <translation id="3555812735919707620">Remove extension</translation>
 <translation id="3557101512409028104">Set website restrictions and screen time limits with Family Link</translation>
@@ -3791,7 +3788,6 @@ This can include information about installed software, files, your browser and t
 <translation id="3975201861340929143">Explanation</translation>
 <translation id="3975565978598857337">Contacting server for realm failed</translation>
 <translation id="3976108569178263973">There are no available printers.</translation>
-<translation id="3976244126942806443">Sites usually connect to MIDI devices for creating and editing music</translation>
 <translation id="397703832102027365">Finalising...</translation>
 <translation id="3977145907578671392">Features on some sites may not work in Incognito</translation>
 <translation id="3977886311744775419">Automatic updates don't download on this network type, but you can check for updates manually.</translation>
@@ -4692,7 +4688,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4730492586225682674">Stylus latest note on lock screen</translation>
 <translation id="4730888769809690665">Notifications allowed for <ph name="SITE" /></translation>
 <translation id="4731306954230393087">Allowed to use info they've saved about you</translation>
-<translation id="473140019006744096">There isn't enough space on this device to complete this update. Clear up <ph name="NECESSARY_SPACE" /> on your device and try again.</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (left)</translation>
 <translation id="4733793249294335256">Location</translation>
 <translation id="473546211690256853">This account is managed by <ph name="DOMAIN" /></translation>
@@ -5394,7 +5389,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5327912693242073631">Features that need notifications won't work</translation>
 <translation id="532943162177641444">Tap the notification on your <ph name="PHONE_NAME" /> to set up the mobile hotspot that can be used by this device.</translation>
 <translation id="5329858601952122676">&amp;Delete</translation>
-<translation id="5330592967519769658">Allowed to open a picture-in-picture window when you change to a different tab</translation>
 <translation id="5331069282670671859">You have no certificates in this category</translation>
 <translation id="5331568967879689647">Chrome OS system app</translation>
 <translation id="5331975486040154427">USB-C device (left side back port)</translation>
@@ -5572,7 +5566,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="5473099001878321374">By continuing, you agree that this device may also automatically download and install updates and apps from Google, your child's operator and this device's manufacturer, possibly using mobile data. Some of these apps may offer in-app purchases.</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{PIN must be at least one character}other{PIN must be at least # characters}}</translation>
 <translation id="5474859849784484111"><ph name="MANAGER" /> requires you to connect to Wi-Fi now and download an update. Or, download from a metered connection (charges may apply).</translation>
-<translation id="5478520208448702555">Sites might open a picture-in-picture window when you change to a different tab</translation>
 <translation id="5481273127572794904">Not allowed to automatically download multiple files</translation>
 <translation id="5481941284378890518">Add Nearby Printers</translation>
 <translation id="5484181871714116891">When on, passkeys are created in iCloud Keychain and are available across your Apple devices. When off, passkeys are created in your Chrome profile on this device.</translation>
@@ -5730,7 +5723,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="5600348067066185292">Installation takes a few easy steps. You’ll have another chance to confirm before changes are made to your computer.</translation>
 <translation id="5600706100022181951">Update will be downloaded using <ph name="UPDATE_SIZE_MB" /> MB of mobile data. Would you like to continue?</translation>
 <translation id="5601503069213153581">PIN</translation>
-<translation id="5601823921345337195">Not allowed to connect to MIDI devices</translation>
 <translation id="5601833336918638013">Don't allow sites to look for Bluetooth devices</translation>
 <translation id="5602586420788540146">Open in new tab group</translation>
 <translation id="5605758115928394442">A notification was sent to your phone to confirm that it's you.</translation>
@@ -5852,7 +5844,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="5707185214361380026">Failed to load extension from:</translation>
 <translation id="5708171344853220004">Microsoft Principal Name</translation>
 <translation id="5709557627224531708">Set Chrome as your default browser</translation>
-<translation id="5710122160114032242">Not allowed to open a picture-in-picture window when you change to a different tab</translation>
 <translation id="5711010025974903573">Service logs</translation>
 <translation id="5711983031544731014">Unable to unlock. Enter your password.</translation>
 <translation id="5712153969432126546">Sites sometimes publish PDFs, like documents, contracts and forms</translation>
@@ -6614,7 +6605,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="6326175484149238433">Remove from Chrome</translation>
 <translation id="6326855256003666642">Keepalive Count</translation>
 <translation id="6327785803543103246">Web proxy auto-discovery</translation>
-<translation id="6331818708794917058">Sites can ask to connect to MIDI devices</translation>
 <translation id="6333064448949140209">File will be sent to Google for debugging</translation>
 <translation id="6333170995003625229">Your email address or password couldn't be verified. Try signing in again.</translation>
 <translation id="6334267141726449402">Copy and send this link to the user to collect the logs.</translation>
@@ -6764,7 +6754,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="6458701200018867744">Upload failed (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">Use Selection for Find</translation>
 <translation id="6459799433792303855">Active window moved to another display.</translation>
-<translation id="6460566145397380451">Allowed to connect to MIDI devices</translation>
 <translation id="6460601847208524483">Find Next</translation>
 <translation id="6461170143930046705">Searching for networks...</translation>
 <translation id="6463795194797719782">&amp;Edit</translation>
@@ -7090,7 +7079,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6735304988756581115">Show cookies and other site data...</translation>
 <translation id="6736243959894955139">Address</translation>
 <translation id="6737663862851963468">Remove Kerberos ticket</translation>
-<translation id="6737931010859480781">This app is pre-installed on your device</translation>
 <translation id="6738180164164974883">Allow to set third-party cookies</translation>
 <translation id="6738430949033571771">Verifying account…</translation>
 <translation id="6739923123728562974">Show desktop shortcut</translation>
@@ -8485,7 +8473,6 @@ Press an assigned switch or key to remove assignment.</translation>
 <translation id="7853747251428735">More Too&amp;ls</translation>
 <translation id="7853999103056713222">Use a Safer Password</translation>
 <translation id="7855678561139483478">Move tab to new window</translation>
-<translation id="7855729579456690716">Sites can open a picture-in-picture window when you change to a different tab</translation>
 <translation id="7857004848504343806">Your computer contains a secure module, which is used to implement many critical security features in Chrome OS Flex. Visit the Chromebook Help Centre to learn more: https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">Text suggestions</translation>
 <translation id="7857949311770343000">Is this the new tab page that you were expecting?</translation>

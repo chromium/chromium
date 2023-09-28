@@ -1263,7 +1263,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="36224234498066874">Obriši podatke pregledanja...</translation>
 <translation id="362276910939193118">Prikaži kompletnu istoriju</translation>
 <translation id="3624292976554877583">Nalepnice (mat)</translation>
-<translation id="3625929652356389713">Može da traži da se automatski otvaraju prozori sa slikom u slici</translation>
 <translation id="3628905806504633297">{0,plural, =1{Smernice administratora ne preporučuju prenos ovog fajla na <ph name="DESTINATION_NAME" />}one{Smernice administratora ne preporučuju prenos ovih fajlova na <ph name="DESTINATION_NAME" />}few{Smernice administratora ne preporučuju prenos ovih fajlova na <ph name="DESTINATION_NAME" />}other{Smernice administratora ne preporučuju prenos ovih fajlova na <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3630155396527302611">Ako je već naveden kao program kome je dozvoljen pristup mreži, pokušajte da ga
       uklonite sa liste i da ga ponovo dodate.</translation>
@@ -1398,7 +1397,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="388632593194507180">Otkriveno je praćenje</translation>
 <translation id="3886948180919384617">3. pregrada za slaganje</translation>
 <translation id="3890664840433101773">Dodajte imejl</translation>
-<translation id="3893306401511601929">Automatska slika u slici</translation>
 <translation id="3897092660631435901">Meni</translation>
 <translation id="3901925938762663762">Kartica je istekla</translation>
 <translation id="390391808978419508">Vreme za otvaranje je isteklo</translation>
@@ -1867,7 +1865,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="4852429274334674023">Operativni sistemi</translation>
 <translation id="4854853140771946034">Brzo napravite novu belešku u Google Keep-u</translation>
 <translation id="485902285759009870">Kôd se verifikuje...</translation>
-<translation id="4862630594858951805">Želite imejlove kada padne cena?</translation>
 <translation id="4864406669374375262">String verzije je kopiran u privremenu memoriju</translation>
 <translation id="486459320933704969">Roditelj ili staratelj mora da kaže da je u redu da posetite ovaj veb-sajt</translation>
 <translation id="4866506163384898554">Pritisnite |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| da bi se pokazivač prikazao</translation>
@@ -2755,7 +2752,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="6710594484020273272">&lt;Unesite termin za pretragu&gt;</translation>
 <translation id="671076103358959139">Token za registraciju:</translation>
 <translation id="6711464428925977395">Došlo je do greške sa proksi serverom ili je adresa netačna.</translation>
-<translation id="6716013836112872184">Dobijajte imejlove na <ph name="EMAIL" /> kada cena padne na bilo kom sajtu.</translation>
 <translation id="6716672519412350405"><ph name="URL" /> želi da pravi 3D mapu okruženja i da prati položaj kamere</translation>
 <translation id="6718612893943028815">Dozvolićete korišćenje kamere?</translation>
 <translation id="6721164594124191969">Nalepnice (sjajne)</translation>
@@ -4036,6 +4032,5 @@ Dodatni detalji:
     &lt;li&gt;Probajte da se povežete sa drugom mrežom&lt;/li&gt;
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
-<translation id="995240771322213706">automatska slika u slici</translation>
 <translation id="997986563973421916">Sa Google Pay-a</translation>
 </translationbundle>

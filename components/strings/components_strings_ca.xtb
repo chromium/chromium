@@ -1263,7 +1263,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="36224234498066874">Esborra dades de navegació</translation>
 <translation id="362276910939193118">Mostra l'historial complet</translation>
 <translation id="3624292976554877583">Etiquetes (mats)</translation>
-<translation id="3625929652356389713">Pot demanar permís per obrir automàticament finestres d'imatge sobre imatge</translation>
 <translation id="3628905806504633297">{0,plural, =1{La política de l'administrador no recomana transferir aquest fitxer a <ph name="DESTINATION_NAME" />}other{La política de l'administrador no recomana transferir aquests fitxers a <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3630155396527302611">Si ja està inclòs a la llista de programes autoritzats per accedir a la xarxa, proveu
       de suprimir-lo de la llista i torneu-lo a afegir.</translation>
@@ -1398,7 +1397,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="388632593194507180">S'ha detectat supervisió</translation>
 <translation id="3886948180919384617">Apiladora 3</translation>
 <translation id="3890664840433101773">Afegeix un correu electrònic</translation>
-<translation id="3893306401511601929">Imatge sobre imatge automàtica</translation>
 <translation id="3897092660631435901">Menú</translation>
 <translation id="3901925938762663762">La targeta ha caducat</translation>
 <translation id="390391808978419508">S'ha esgotat el temps d'espera per a l'obertura</translation>
@@ -1867,7 +1865,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4852429274334674023">Sistemes operatius</translation>
 <translation id="4854853140771946034">Crea una nota nova a Google Keep ràpidament</translation>
 <translation id="485902285759009870">S'està verificant el codi...</translation>
-<translation id="4862630594858951805">Vols rebre correus electrònics quan el preu baixi?</translation>
 <translation id="4864406669374375262">S'ha copiat la cadena de versió al porta-retalls</translation>
 <translation id="486459320933704969">El teu pare, mare o tutor ha de dir si pots visitar aquest lloc web</translation>
 <translation id="4866506163384898554">Prem |<ph name="ACCELERATOR1" />|+|<ph name="ACCELERATOR2" />| perquè es mostri el cursor</translation>
@@ -2756,7 +2753,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6710594484020273272">&lt;Escriviu el terme de cerca&gt;</translation>
 <translation id="671076103358959139">Testimoni d'inscripció:</translation>
 <translation id="6711464428925977395">Hi ha hagut algun problema amb el servidor intermediari o l'adreça no és correcta.</translation>
-<translation id="6716013836112872184">Rep correus electrònics a <ph name="EMAIL" /> quan el preu baixi en qualsevol lloc web.</translation>
 <translation id="6716672519412350405"><ph name="URL" /> vol crear un mapa en 3D del teu entorn i fer un seguiment de la posició de la càmera</translation>
 <translation id="6718612893943028815">Vols utilitzar la càmera?</translation>
 <translation id="6721164594124191969">Etiquetes (brillants)</translation>
@@ -4036,6 +4032,5 @@ Detalls addicionals:
     &lt;li&gt;Prova de connectar-te a una altra xarxa&lt;/li&gt;
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
-<translation id="995240771322213706">imatge sobre imatge automàtica</translation>
 <translation id="997986563973421916">De Google Pay</translation>
 </translationbundle>

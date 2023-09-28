@@ -1260,7 +1260,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="36224234498066874">Cancella dati di navigazione...</translation>
 <translation id="362276910939193118">Mostra cronologia completa</translation>
 <translation id="3624292976554877583">Etichette (opache)</translation>
-<translation id="3625929652356389713">Può chiedere l'autorizzazione ad aprire automaticamente finestre Picture in picture</translation>
 <translation id="3628905806504633297">{0,plural, =1{Il criterio dell'amministratore sconsiglia di trasferire questo file su <ph name="DESTINATION_NAME" />}other{Il criterio dell'amministratore sconsiglia di trasferire questi file su <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3630155396527302611">Se è già elencato come programma autorizzato ad accedere alla rete, prova a
       rimuoverlo dall'elenco e ad aggiungerlo di nuovo.</translation>
@@ -1395,7 +1394,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="388632593194507180">Monitoraggio rilevato</translation>
 <translation id="3886948180919384617">Fascicolatore 3</translation>
 <translation id="3890664840433101773">Aggiungi email</translation>
-<translation id="3893306401511601929">Funzionalità Picture in picture automatica</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3901925938762663762">La carta è scaduta</translation>
 <translation id="390391808978419508">Timeout dell'apertura</translation>
@@ -1864,7 +1862,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4852429274334674023">Sistemi operativi</translation>
 <translation id="4854853140771946034">Crea rapidamente una nuova nota in Google Keep</translation>
 <translation id="485902285759009870">Verifica del codice in corso…</translation>
-<translation id="4862630594858951805">Vuoi ricevere email quando il prezzo cala?</translation>
 <translation id="4864406669374375262">Stringa di versione copiata negli appunti</translation>
 <translation id="486459320933704969">Un genitore o tutore deve autorizzarti a visitare questo sito web</translation>
 <translation id="4866506163384898554">Premi |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| per mostrare il cursore</translation>
@@ -2752,7 +2749,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6710594484020273272">&lt;Digita un termine di ricerca&gt;</translation>
 <translation id="671076103358959139">Token di registrazione:</translation>
 <translation id="6711464428925977395">Si è verificato un problema con il server proxy oppure l'indirizzo non è corretto.</translation>
-<translation id="6716013836112872184">Ricevi email all'indirizzo <ph name="EMAIL" /> quando il prezzo cala su qualsiasi sito.</translation>
 <translation id="6716672519412350405"><ph name="URL" /> vorrebbe creare una mappa 3D dell'ambiente circostante e monitorare la posizione della fotocamera</translation>
 <translation id="6718612893943028815">Usare la videocamera?</translation>
 <translation id="6721164594124191969">Etichette (lucide)</translation>
@@ -4033,6 +4029,5 @@ Ulteriori dettagli:
     &lt;li&gt;Prova a collegarti a un'altra rete&lt;/li&gt;
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
-<translation id="995240771322213706">funzionalità Picture in picture automatica</translation>
 <translation id="997986563973421916">Da Google Pay</translation>
 </translationbundle>

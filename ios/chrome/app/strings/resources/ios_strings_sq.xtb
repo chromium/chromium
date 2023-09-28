@@ -555,7 +555,6 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="40433179647657191">Krijo dhe ndaj një lidhje të drejtpërdrejtë për te pjesa e një faqeje që ke theksuar.</translation>
 <translation id="4045648459118332842">Merri fjalëkalimet e tua të ruajtura në çdo aplikacion me një trokitje</translation>
 <translation id="4049507953662678203">Sigurohu që ke një lidhje interneti dhe provo përsëri.</translation>
-<translation id="4063300985191096908">Shko te "Furnizimi"</translation>
 <translation id="4066639687323968621">Identifikohu me "Llogarinë tënde të Google" për të sinkronizuar faqeshënuesit, historikun tënd etj.</translation>
 <translation id="4092655288299341041">Shfaq ndihmën</translation>
 <translation id="4105841739161771091">{count,plural, =1{Fshi adresën}other{Fshi adresat}}</translation>
@@ -1152,7 +1151,6 @@ Në modalitetin "e fshehtë", sajtet nuk mund t'i përdorin kukit për të parë
 <translation id="7302503784943202842">Përdor fjalëkalime në të gjitha pajisjet e tua</translation>
 <translation id="730958329302570991">Shto me lehtësi fjalëkalimet e sajteve te "Menaxheri i fjalëkalimeve i Google" në çdo kohë.</translation>
 <translation id="7313347584264171202">Këtu do të gjesh skedat e tua "të fshehta"</translation>
-<translation id="7331371412779932885">Të jep sugjerime për skedat bazuar në aktivitetin tënd të shfletimit në pajisjet e tjera duke përdorur "Llogarinë tënde të Google". Duhet të jesh i identifikuar në pajisjet e tua me të njëjtën "Llogari të Google" dhe ato duhet të jenë të sinkronizuara duke përdorur të njëjtën llogari.</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> përqind të shkarkuara</translation>
 <translation id="7340958967809483333">Opsionet për "Zbulo"</translation>
 <translation id="7346909386216857016">Në rregull, kuptova</translation>
@@ -1348,6 +1346,7 @@ Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit 
 <translation id="8393889347136007944">Skedat nuk janë përdorur për <ph name="THRESHOLD" /> ditë</translation>
 <translation id="8395339334550012808">Së shpejti, do të shohësh përmbajtje nga dhe rreth <ph name="CHANNEL_NAME" /> te "Ndjekjet".</translation>
 <translation id="8395378633507873708">Shiriti i adresave</translation>
+<translation id="8402673309244746971">Shko te "Po ndjek"</translation>
 <translation id="8403629764260204788">Fshih "Vazhdo shfletimin"</translation>
 <translation id="8407669440184693619">Nuk u gjetën fjalëkalime për këtë sajt</translation>
 <translation id="842017693807136194">Identifikuar me</translation>
