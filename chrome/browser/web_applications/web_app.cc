@@ -747,6 +747,8 @@ void WebApp::SetLatestInstallTime(const base::Time& latest_install_time) {
 
 void WebApp::SetGeneratedIconFix(
     absl::optional<GeneratedIconFix> generated_icon_fix) {
+  CHECK(!generated_icon_fix.has_value() ||
+        generated_icon_fix_util::IsValid(*generated_icon_fix));
   generated_icon_fix_ = generated_icon_fix;
 }
 
@@ -900,7 +902,7 @@ void WebApp::IsolationData::SetPendingUpdateInfo(
 
 const absl::optional<GeneratedIconFix>& WebApp::generated_icon_fix() const {
   CHECK(!generated_icon_fix_.has_value() ||
-        IsGeneratedIconFixValid(generated_icon_fix_.value()));
+        generated_icon_fix_util::IsValid(generated_icon_fix_.value()));
   return generated_icon_fix_;
 }
 
@@ -1197,7 +1199,7 @@ base::Value WebApp::AsDebugValueWithOnlyPlatformAgnosticFields() const {
 
   root.Set("latest_install_time", base::ToString(latest_install_time_));
 
-  root.Set("generated_icon_fix", GeneratedIconFixToDebugValue(
+  root.Set("generated_icon_fix", generated_icon_fix_util::ToDebugValue(
                                      base::OptionalToPtr(generated_icon_fix_)));
 
   return base::Value(std::move(root));

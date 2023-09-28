@@ -31,8 +31,6 @@ enum class GeneratedIconFixScheduleDecision {
 
 class GeneratedIconFixManager {
  public:
-  static constexpr base::TimeDelta kFixWindowDuration = base::Days(7);
-
   GeneratedIconFixManager();
   ~GeneratedIconFixManager();
 
@@ -57,8 +55,6 @@ class GeneratedIconFixManager {
     return fix_completed_callback_for_testing_;
   }
 
-  absl::optional<base::Time>& time_for_testing() { return time_for_testing_; }
-
  private:
   GeneratedIconFixScheduleDecision MaybeScheduleFix(
       WithAppResources& resources,
@@ -78,7 +74,6 @@ class GeneratedIconFixManager {
       maybe_schedule_callback_for_testing_;
   base::OnceCallback<void(const webapps::AppId&, GeneratedIconFixResult)>
       fix_completed_callback_for_testing_;
-  absl::optional<base::Time> time_for_testing_;
 
   base::WeakPtrFactory<GeneratedIconFixManager> weak_ptr_factory_{this};
 };

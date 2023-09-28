@@ -6,7 +6,9 @@
 
 #include "base/feature_list.h"
 #include "base/time/time.h"
+#include "chrome/browser/web_applications/generated_icon_fix_util.h"
 #include "chrome/browser/web_applications/locks/all_apps_lock.h"
+#include "chrome/browser/web_applications/proto/web_app.pb.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
@@ -70,8 +72,9 @@ GeneratedIconFixScheduleDecision GeneratedIconFixManager::MaybeScheduleFix(
     scheduled_fixes_.insert(app_id);
     provider_->command_manager().ScheduleCommand(
         std::make_unique<GeneratedIconFixCommand>(
-            app_id, base::BindOnce(&GeneratedIconFixManager::FixCompleted,
-                                   weak_ptr_factory_.GetWeakPtr(), app_id)));
+            app_id, GeneratedIconFixSource_RETROACTIVE,
+            base::BindOnce(&GeneratedIconFixManager::FixCompleted,
+                           weak_ptr_factory_.GetWeakPtr(), app_id)));
   }
 
   if (maybe_schedule_callback_for_testing_) {
@@ -89,12 +92,7 @@ GeneratedIconFixScheduleDecision GeneratedIconFixManager::MakeScheduleDecision(
     return GeneratedIconFixScheduleDecision::kNoApp;
   }
 
-  base::TimeDelta duration_since_installation =
-      time_for_testing_.value_or(base::Time::Now()) - app->first_install_time();
-  if (duration_since_installation > kFixWindowDuration) {
-    // TODO(crbug.com/1216965): Enable a one off retroactive fix for
-    // pre-existing generated icons from before this fix was added (effectively
-    // reset their time window).
+  if (!generated_icon_fix_util::IsWithinFixTimeWindow(*app)) {
     return GeneratedIconFixScheduleDecision::kTimeWindowExpired;
   }
 

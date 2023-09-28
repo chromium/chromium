@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/web_applications/generated_icon_fix_util.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
@@ -26,10 +27,12 @@ namespace web_app {
 
 GeneratedIconFixCommand::GeneratedIconFixCommand(
     webapps::AppId app_id,
+    GeneratedIconFixSource source,
     base::OnceCallback<void(GeneratedIconFixResult)> callback)
     : WebAppCommandTemplate<SharedWebContentsWithAppLock>(
           "GeneratedIconFixCommand"),
       app_id_(std::move(app_id)),
+      source_(source),
       callback_(std::move(callback)),
       lock_description_({app_id_}) {
   CHECK(base::FeatureList::IsEnabled(
@@ -47,6 +50,14 @@ void GeneratedIconFixCommand::StartWithLock(
     Stop(GeneratedIconFixResult::kAppUninstalled, FROM_HERE);
     return;
   }
+
+  {
+    ScopedRegistryUpdate update = lock_->sync_bridge().BeginUpdate();
+    generated_icon_fix_util::RecordFixAttempt(*lock_, update, app_id_, source_);
+  }
+
+  // Refresh WebApp pointer as the above mutation destroys the previous one.
+  app = lock_->registrar().GetAppById(app_id_);
 
   icon_downloader_ = lock_->web_contents_manager().CreateIconDownloader();
   base::flat_set<GURL> icon_urls;
@@ -73,8 +84,10 @@ const LockDescription& GeneratedIconFixCommand::lock_description() const {
 }
 
 base::Value GeneratedIconFixCommand::ToDebugValue() const {
-  return base::Value(
-      base::Value::Dict().Set("stop_location", stop_location_.ToString()));
+  return base::Value(base::Value::Dict()
+                         .Set("app_id", app_id_)
+                         .Set("source", base::ToString(source_))
+                         .Set("stop_location", stop_location_.ToString()));
 }
 
 void GeneratedIconFixCommand::OnIconsDownloaded(

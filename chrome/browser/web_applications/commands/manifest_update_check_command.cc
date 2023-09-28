@@ -10,11 +10,13 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/web_applications/callback_utils.h"
-#include "chrome/browser/web_applications/generated_icon_fix_manager.h"
+#include "chrome/browser/web_applications/generated_icon_fix_util.h"
 #include "chrome/browser/web_applications/manifest_update_manager.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_registry_update.h"
+#include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/web_contents/web_app_icon_downloader.h"
 #include "chrome/common/chrome_features.h"
@@ -423,8 +425,10 @@ ManifestUpdateCheckCommand::MakeAppIconIdentityUpdateDecision() const {
           features::kWebAppSyncGeneratedIconUpdateFix) &&
       web_app.is_generated_icon() &&
       web_app.latest_install_source() == webapps::WebappInstallSource::SYNC &&
-      check_time_ < (web_app.first_install_time() +
-                     GeneratedIconFixManager::kFixWindowDuration)) {
+      generated_icon_fix_util::IsWithinFixTimeWindow(web_app)) {
+    ScopedRegistryUpdate update = lock_->sync_bridge().BeginUpdate();
+    generated_icon_fix_util::EnsureFixTimeWindowStarted(
+        *lock_, update, app_id_, GeneratedIconFixSource_MANIFEST_UPDATE);
     return IdentityUpdateDecision::kSilentlyAllow;
   }
 

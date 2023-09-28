@@ -11,6 +11,7 @@
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/web_apps_sync_test_base.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
+#include "chrome/browser/web_applications/generated_icon_fix_util.h"
 #include "chrome/browser/web_applications/manifest_update_manager.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
@@ -140,8 +141,8 @@ IN_PROC_BROWSER_TEST_P(SingleClientWebAppsSyncGeneratedIconFixSyncTest,
 
   if (wait_8_days()) {
     // Advance time beyond the fix time window.
-    provider(0).manifest_update_manager().set_time_override_for_testing(
-        base::Time::Now() + base::Days(8));
+    generated_icon_fix_util::SetNowForTesting(base::Time::Now() +
+                                              base::Days(8));
   }
 
   // Trigger manifest update.

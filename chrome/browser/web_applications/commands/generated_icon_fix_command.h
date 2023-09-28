@@ -12,6 +12,7 @@
 #include "base/values.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/locks/shared_web_contents_with_app_lock.h"
+#include "chrome/browser/web_applications/proto/web_app.pb.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -35,6 +36,7 @@ class GeneratedIconFixCommand
  public:
   explicit GeneratedIconFixCommand(
       webapps::AppId app_id,
+      GeneratedIconFixSource source,
       base::OnceCallback<void(GeneratedIconFixResult)> callback);
   ~GeneratedIconFixCommand() override;
 
@@ -53,6 +55,7 @@ class GeneratedIconFixCommand
   void Stop(GeneratedIconFixResult result, base::Location location);
 
   webapps::AppId app_id_;
+  GeneratedIconFixSource source_;
   base::OnceCallback<void(GeneratedIconFixResult)> callback_;
   SharedWebContentsWithAppLockDescription lock_description_;
   std::unique_ptr<SharedWebContentsWithAppLock> lock_;

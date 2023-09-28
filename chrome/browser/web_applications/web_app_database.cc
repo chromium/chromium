@@ -1666,7 +1666,7 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
   }
 
   if (local_data.has_generated_icon_fix() &&
-      IsGeneratedIconFixValid(local_data.generated_icon_fix())) {
+      generated_icon_fix_util::IsValid(local_data.generated_icon_fix())) {
     web_app->SetGeneratedIconFix(local_data.generated_icon_fix());
   }
 

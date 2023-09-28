@@ -14,12 +14,15 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
+#include "chrome/browser/web_applications/generated_icon_fix_util.h"
 #include "chrome/browser/web_applications/install_bounce_metric.h"
 #include "chrome/browser/web_applications/locks/shared_web_contents_with_app_lock.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
+#include "chrome/browser/web_applications/web_app_registry_update.h"
+#include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/web_contents/web_app_url_loader.h"
@@ -273,6 +276,10 @@ void InstallFromSyncCommand::OnIconsRetrievedFinalizeInstall(
   install_error_log_entry_.LogDownloadedIconsErrors(
       *current_info, result, icons_map, icons_http_results);
 
+  current_info->generated_icon_fix =
+      generated_icon_fix_util::CreateInitialTimeWindow(
+          GeneratedIconFixSource_SYNC_INSTALL);
+
   lock_->install_finalizer().FinalizeInstall(
       *current_info, GetFinalizerOptionForSyncInstall(),
       base::BindOnce(&InstallFromSyncCommand::OnInstallFinalized,
@@ -287,6 +294,7 @@ void InstallFromSyncCommand::OnInstallFinalized(FinalizeMode mode,
     InstallFallback(code);
     return;
   }
+
   ReportResultAndDestroy(app_id, code);
 }
 

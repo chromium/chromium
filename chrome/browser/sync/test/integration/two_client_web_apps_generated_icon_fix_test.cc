@@ -6,6 +6,7 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/sync/test/integration/web_apps_sync_test_base.h"
 #include "chrome/browser/web_applications/generated_icon_fix_manager.h"
+#include "chrome/browser/web_applications/generated_icon_fix_util.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/fake_web_contents_manager.h"
@@ -16,6 +17,7 @@
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/chrome_features.h"
+#include "components/sync/base/time.h"
 #include "content/public/test/browser_test.h"
 
 namespace web_app {
@@ -114,6 +116,12 @@ class TwoClientGeneratedIconFixSyncTest : public WebAppsSyncTestBase {
                                            icon_state);
   }
 
+  void SimulateRestart(FakeWebAppProvider& provider) {
+    // It's difficult to set up the callback listener in time for a real restart
+    // so just call Start() directly.
+    provider.generated_icon_fix_manager().Start();
+  }
+
  protected:
   FakeWebAppProviderCreator fake_web_app_provider_creator_{
       base::BindLambdaForTesting(
@@ -150,9 +158,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientGeneratedIconFixSyncTest, Fix) {
   FakeWebAppProvider& provider1 = *fake_providers_[GetProfile(1)];
   GeneratedIconFixFutures futures(provider1);
 
-  // Simulate a restart (it's difficult to set up the callback listener in
-  // time for a real restart).
-  provider1.generated_icon_fix_manager().Start();
+  SimulateRestart(provider1);
 
   EXPECT_EQ(futures.schedule.Get<webapps::AppId>(), app_id);
   EXPECT_EQ(futures.schedule.Get<GeneratedIconFixScheduleDecision>(),
@@ -177,11 +183,9 @@ IN_PROC_BROWSER_TEST_F(TwoClientGeneratedIconFixSyncTest, TimeWindowExpired) {
   GeneratedIconFixFutures futures(provider1);
 
   // Simulate one week passing.
-  provider1.generated_icon_fix_manager().time_for_testing() =
-      base::Time::Now() + base::Days(7);
-  // Simulate a restart (it's difficult to set up the callback listener in
-  // time for a real restart).
-  provider1.generated_icon_fix_manager().Start();
+  generated_icon_fix_util::SetNowForTesting(base::Time::Now() + base::Days(7));
+
+  SimulateRestart(provider1);
 
   EXPECT_EQ(futures.schedule.Get<webapps::AppId>(), app_id);
   EXPECT_EQ(futures.schedule.Get<GeneratedIconFixScheduleDecision>(),
@@ -205,9 +209,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientGeneratedIconFixSyncTest, NotRequired) {
   FakeWebAppProvider& provider1 = *fake_providers_[GetProfile(1)];
   GeneratedIconFixFutures futures(provider1);
 
-  // Simulate a restart (it's difficult to set up the callback listener in
-  // time for a real restart).
-  provider1.generated_icon_fix_manager().Start();
+  SimulateRestart(provider1);
 
   EXPECT_EQ(futures.schedule.Get<webapps::AppId>(), app_id);
   EXPECT_EQ(futures.schedule.Get<GeneratedIconFixScheduleDecision>(),
@@ -226,9 +228,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientGeneratedIconFixSyncTest, AppUninstalled) {
   FakeWebAppProvider& provider1 = *fake_providers_[GetProfile(1)];
   GeneratedIconFixFutures futures(provider1);
 
-  // Simulate a restart (it's difficult to set up the callback listener in time
-  // for a real restart).
-  provider1.generated_icon_fix_manager().Start();
+  SimulateRestart(provider1);
 
   EXPECT_EQ(futures.schedule.Get<webapps::AppId>(), app_id);
   EXPECT_EQ(futures.schedule.Get<GeneratedIconFixScheduleDecision>(),
@@ -242,6 +242,63 @@ IN_PROC_BROWSER_TEST_F(TwoClientGeneratedIconFixSyncTest, AppUninstalled) {
   EXPECT_EQ(futures.fix.Get<webapps::AppId>(), app_id);
   EXPECT_EQ(futures.fix.Get<GeneratedIconFixResult>(),
             GeneratedIconFixResult::kAppUninstalled);
+}
+
+IN_PROC_BROWSER_TEST_F(TwoClientGeneratedIconFixSyncTest,
+                       RetroactiveTimeWindow) {
+  webapps::AppId app_id = SyncBrokenIcon(GetProfile(0), GetProfile(1));
+
+  EXPECT_EQ(CheckIconState(GetProfile(1), app_id),
+            (IconState{.is_generated = true, .is_correct_color = false}));
+
+  FakeWebAppProvider& provider1 = *fake_providers_[GetProfile(1)];
+
+  const absl::optional<GeneratedIconFix> generated_icon_fix =
+      provider1.registrar_unsafe().GetAppById(app_id)->generated_icon_fix();
+  // The fix time window should have started.
+  ASSERT_TRUE(generated_icon_fix.has_value());
+  // Delete the fix time window to simulate a web app install that happened
+  // prior to updating to the GeneratedIconFix code.
+  {
+    provider1.sync_bridge_unsafe()
+        .BeginUpdate()
+        ->UpdateApp(app_id)
+        ->SetGeneratedIconFix(absl::nullopt);
+  }
+
+  // Fast forward time well beyond the fix time window.
+  base::Time now = base::Time::Now() + base::Days(1000);
+  generated_icon_fix_util::SetNowForTesting(now);
+
+  // The time window should start now.
+  {
+    GeneratedIconFixFutures futures(provider1);
+    SimulateRestart(provider1);
+    EXPECT_EQ(futures.schedule.Get<webapps::AppId>(), app_id);
+    EXPECT_EQ(futures.schedule.Get<GeneratedIconFixScheduleDecision>(),
+              GeneratedIconFixScheduleDecision::kSchedule);
+    EXPECT_EQ(futures.fix.Get<webapps::AppId>(), app_id);
+    EXPECT_EQ(futures.fix.Get<GeneratedIconFixResult>(),
+              GeneratedIconFixResult::kStillGenerated);
+  }
+  EXPECT_EQ((provider1.registrar_unsafe()
+                 .GetAppById(app_id)
+                 ->generated_icon_fix()
+                 ->window_start_time()),
+            syncer::TimeToProtoTime(now));
+
+  // Fast forward outside of the new time window.
+  now += base::Days(7);
+  generated_icon_fix_util::SetNowForTesting(now);
+
+  // Check that the time window still expires.
+  {
+    GeneratedIconFixFutures futures(provider1);
+    SimulateRestart(provider1);
+    EXPECT_EQ(futures.schedule.Get<webapps::AppId>(), app_id);
+    EXPECT_EQ(futures.schedule.Get<GeneratedIconFixScheduleDecision>(),
+              GeneratedIconFixScheduleDecision::kTimeWindowExpired);
+  }
 }
 
 }  // namespace web_app

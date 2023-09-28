@@ -5,21 +5,51 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_GENERATED_ICON_FIX_UTIL_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_GENERATED_ICON_FIX_UTIL_H_
 
+#include "base/time/time.h"
+#include "chrome/browser/web_applications/proto/web_app.pb.h"
+#include "chrome/browser/web_applications/web_app.h"
+
 namespace base {
 class Value;
 }
 
 namespace web_app {
 
-class GeneratedIconFix;
+class WithAppResources;
+class ScopedRegistryUpdate;
 
-// Must have all fields present and a known source.
-bool IsGeneratedIconFixValid(const GeneratedIconFix& generated_icon_fix);
+namespace generated_icon_fix_util {
 
-base::Value GeneratedIconFixToDebugValue(
-    const GeneratedIconFix* generated_icon_fix);
+// Must have window start time, attempt count and a known source.
+bool IsValid(const GeneratedIconFix& generated_icon_fix);
+
+base::Value ToDebugValue(const GeneratedIconFix* generated_icon_fix);
+
+void SetNowForTesting(base::Time now);
+
+// Checks if the current time is within the GeneratedIconFix time window for
+// `app`. If retroactive fixes are enabled then the absence of a time window
+// implies it can retroactively start now.
+bool IsWithinFixTimeWindow(const WebApp& app);
+
+void EnsureFixTimeWindowStarted(WithAppResources& resources,
+                                ScopedRegistryUpdate& update,
+                                const webapps::AppId& app_id,
+                                GeneratedIconFixSource source);
+
+GeneratedIconFix CreateInitialTimeWindow(GeneratedIconFixSource source);
+
+void RecordFixAttempt(WithAppResources& resources,
+                      ScopedRegistryUpdate& update,
+                      const webapps::AppId& app_id,
+                      GeneratedIconFixSource source);
+
+}  // namespace generated_icon_fix_util
 
 bool operator==(const GeneratedIconFix& a, const GeneratedIconFix& b);
+
+std::ostream& operator<<(std::ostream& out,
+                         const GeneratedIconFixSource& source);
 
 }  // namespace web_app
 

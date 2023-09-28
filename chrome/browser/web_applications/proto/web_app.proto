@@ -200,6 +200,7 @@ enum GeneratedIconFixSource {
   GeneratedIconFixSource_UNKNOWN = 0;
   GeneratedIconFixSource_SYNC_INSTALL = 1;
   GeneratedIconFixSource_RETROACTIVE = 2;
+  GeneratedIconFixSource_MANIFEST_UPDATE = 3;
 };
 
 // Represents the current state of attempts to fix broken icons from sync
