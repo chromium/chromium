@@ -2942,6 +2942,11 @@ void Element::AttachLayoutTree(AttachContext& context) {
     shadow_root->AttachLayoutTree(children_context);
     Node::AttachLayoutTree(context);
     ClearChildNeedsReattachLayoutTree();
+  } else if (HTMLSlotElement* slot =
+                 ToHTMLSlotElementIfSupportsAssignmentOrNull(this)) {
+    slot->AttachLayoutTreeForSlotChildren(children_context);
+    Node::AttachLayoutTree(context);
+    ClearChildNeedsReattachLayoutTree();
   } else {
     ContainerNode::AttachLayoutTree(children_context);
   }

@@ -79,7 +79,7 @@ class CORE_EXPORT HTMLSlotElement final : public HTMLElement {
       DetachDisplayLockedAssignedNodesLayoutTreeIfNeeded();
   }
 
-  void AttachLayoutTree(AttachContext&) final;
+  void AttachLayoutTreeForSlotChildren(AttachContext&);
   void DetachLayoutTree(bool performing_reattach) final;
   void RebuildDistributedChildrenLayoutTrees(WhitespaceAttacher&);
 
