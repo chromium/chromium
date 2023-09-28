@@ -181,7 +181,13 @@ content::PreloadingFailureReason ToPreloadingFailureReason(
   // non-overlapping range after kPreloadingFailureReasonContentEnd. It is
   // probably a good idea to centralize the allocation of enum ranges whenever a
   // second case emerges.
-  // TODO(sreejakshetty): Assert that the reasons do not overlap.
+  // Ensure that the enums do not overlap.
+  static_assert(static_cast<int>(SearchPrefetchServingReason::kServed) !=
+                    static_cast<int>(content::PreloadingFailureReason::
+                                         kPreloadingFailureReasonContentEnd),
+                "Enum values overlap! Update enum values.");
+
+  // Calculate and return the result.
   return static_cast<content::PreloadingFailureReason>(
       static_cast<int>(reason) +
       static_cast<int>(content::PreloadingFailureReason::
