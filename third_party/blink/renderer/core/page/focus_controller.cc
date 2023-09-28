@@ -816,7 +816,14 @@ Element* FindFocusableElementAcrossFocusScopesBackward(
   while (IsOpenPopoverInvoker(found)) {
     ScopedFocusNavigation inner_scope =
         ScopedFocusNavigation::OwnedByPopoverInvoker(*found, owner_map);
-    found = FindFocusableElementRecursivelyBackward(inner_scope, owner_map);
+    // If no inner element is focusable, then focus should be on the current
+    // found popover invoker.
+    if (Element* inner_found =
+            FindFocusableElementRecursivelyBackward(inner_scope, owner_map)) {
+      found = inner_found;
+    } else {
+      break;
+    }
   }
 
   // If there's no focusable element to advance to, move up the focus scopes
