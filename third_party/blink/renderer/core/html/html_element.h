@@ -159,6 +159,7 @@ class CORE_EXPORT HTMLElement : public Element {
   bool HasDirectionAuto() const;
 
   static bool ElementAffectsDirectionality(const Node* node);
+  static bool ElementInheritsDirectionality(const Node* node);
 
   virtual bool IsHTMLBodyElement() const { return false; }
   // TODO(crbug.com/1123606): Remove this virtual method once the fenced frame

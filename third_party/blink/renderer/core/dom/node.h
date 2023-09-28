@@ -1001,24 +1001,16 @@ class CORE_EXPORT Node : public EventTarget {
     return (node_flags_ & kCachedDirectionalityIsRtl) ? TextDirection::kRtl
                                                       : TextDirection::kLtr;
   }
-  void SetCachedDirectionality(TextDirection direction) {
-    switch (direction) {
-      case TextDirection::kRtl:
-        SetFlag(kCachedDirectionalityIsRtl);
-        break;
-      case TextDirection::kLtr:
-        ClearFlag(kCachedDirectionalityIsRtl);
-        break;
-    }
-    ClearFlag(kNeedsInheritDirectionalityFromParent);
-  }
-  bool NeedsInheritDirectionalityFromParent() const {
-    return GetFlag(kNeedsInheritDirectionalityFromParent);
-  }
+  void SetCachedDirectionality(TextDirection direction);
+
+  bool NeedsInheritDirectionalityFromParent() const;
   void SetNeedsInheritDirectionalityFromParent();
-  void ClearNeedsInheritDirectionalityFromParent() {
-    ClearFlag(kNeedsInheritDirectionalityFromParent);
-  }
+  void ClearNeedsInheritDirectionalityFromParent();
+
+  bool DirAutoInheritsFromParent() const;
+  void SetDirAutoInheritsFromParent();
+  void ClearDirAutoInheritsFromParent();
+
   void Trace(Visitor*) const override;
 
  private:
@@ -1069,9 +1061,16 @@ class CORE_EXPORT Node : public EventTarget {
 
     kSelfOrAncestorHasDirAutoAttribute = 1 << 28,
     kCachedDirectionalityIsRtl = 1 << 29,
-    // TODO(https://crbug.com/576815): Remove this once new dir=auto handling
-    // ships as part of RuntimeEnabledFeatures::CSSPseudoDirEnabled().
+    // TODO(https://crbug.com/576815): Remove this duplication once new
+    // dir=auto handling ships as part of
+    // RuntimeEnabledFeatures::CSSPseudoDirEnabled().
+    //
+    // This has the same value as the next flag; this one is used only when
+    // !RuntimeEnabledFeatures::CSSPseudoDirEnabled():
     kNeedsInheritDirectionalityFromParent = 1u << 30,
+    // This has the same value as the previous flag; this one is used only when
+    // RuntimeEnabledFeatures::CSSPseudoDirEnabled():
+    kDirAutoInheritsFromParent = 1u << 30,
 
     kDefaultNodeFlags = kIsFinishedParsingChildrenFlag,
 

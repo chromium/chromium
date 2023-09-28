@@ -2437,6 +2437,11 @@ bool HTMLElement::ElementAffectsDirectionality(const Node* node) {
          (input_element && input_element->IsTelephone());
 }
 
+bool HTMLElement::ElementInheritsDirectionality(const Node* node) {
+  return !HTMLElement::ElementAffectsDirectionality(node) ||
+         node->DirAutoInheritsFromParent();
+}
+
 void HTMLElement::ChildrenChanged(const ChildrenChange& change) {
   Element::ChildrenChanged(change);
 
@@ -2449,8 +2454,9 @@ void HTMLElement::ChildrenChanged(const ChildrenChange& change) {
         !RuntimeEnabledFeatures::CSSPseudoDirEnabled()) {
       auto* element = DynamicTo<HTMLElement>(change.sibling_changed);
       if (element && !element->NeedsInheritDirectionalityFromParent() &&
-          !ElementAffectsDirectionality(element))
+          ElementInheritsDirectionality(element)) {
         element->UpdateDirectionalityAndDescendant(CachedDirectionality());
+      }
     }
   }
   if (change.IsChildInsertion()) {
@@ -2639,9 +2645,20 @@ void HTMLElement::AdjustDirectionalityIfNeededAfterChildAttributeChanged(
 bool HTMLElement::CalculateAndAdjustAutoDirectionality(Node* stay_within) {
   CHECK(!RuntimeEnabledFeatures::CSSPseudoDirEnabled() || this == stay_within);
   bool is_deferred = false;
-  TextDirection text_direction =
-      ResolveAutoDirectionality<NodeTraversal>(is_deferred, stay_within)
-          .value_or(TextDirection::kLtr);
+  TextDirection text_direction;
+  absl::optional<TextDirection> resolve_result =
+      ResolveAutoDirectionality<NodeTraversal>(is_deferred, stay_within);
+  if (resolve_result) {
+    text_direction = *resolve_result;
+    if (RuntimeEnabledFeatures::CSSPseudoDirEnabled()) {
+      ClearDirAutoInheritsFromParent();
+    }
+  } else {
+    text_direction = ParentDirectionality();
+    if (RuntimeEnabledFeatures::CSSPseudoDirEnabled()) {
+      SetDirAutoInheritsFromParent();
+    }
+  }
   if (CachedDirectionality() != text_direction && !is_deferred) {
     UpdateDirectionalityAndDescendant(text_direction);
 
@@ -2665,12 +2682,12 @@ void HTMLElement::AdjustDirectionalityIfNeededAfterChildrenChanged(
   Node* stay_within = nullptr;
   if (change.type == ChildrenChangeType::kTextChanged) {
     CHECK(change.old_text);
-    TextDirection old_text_direction =
-        BidiParagraph::BaseDirectionForStringOrLtr(*change.old_text);
+    absl::optional<TextDirection> old_text_direction =
+        BidiParagraph::BaseDirectionForString(*change.old_text);
     auto* character_data = DynamicTo<CharacterData>(change.sibling_changed);
     DCHECK(character_data);
-    TextDirection new_text_direction =
-        BidiParagraph::BaseDirectionForStringOrLtr(character_data->data());
+    absl::optional<TextDirection> new_text_direction =
+        BidiParagraph::BaseDirectionForString(character_data->data());
     if (old_text_direction == new_text_direction)
       return;
     stay_within = change.sibling_changed;
@@ -2680,7 +2697,8 @@ void HTMLElement::AdjustDirectionalityIfNeededAfterChildrenChanged(
           BidiParagraph::BaseDirectionForString(
               change.sibling_changed->textContent(true));
       if (!new_text_direction ||
-          *new_text_direction == CachedDirectionality()) {
+          (*new_text_direction == CachedDirectionality() &&
+           !DirAutoInheritsFromParent())) {
         return;
       }
     }
@@ -3358,7 +3376,7 @@ void HTMLElement::UpdateDirectionalityAndDescendant(TextDirection direction) {
     do {
       if (element != this &&
           (ToHTMLSlotElementIfSupportsAssignmentOrNull(element) ||
-           ElementAffectsDirectionality(element) ||
+           !ElementInheritsDirectionality(element) ||
            element->CachedDirectionality() == direction)) {
         element = ElementTraversal::NextSkippingChildren(*element, this);
         continue;
@@ -3372,7 +3390,7 @@ void HTMLElement::UpdateDirectionalityAndDescendant(TextDirection direction) {
           // TODO(https://crbug.com/576815): This should work for
           // non-HTML elements too.
           if (HTMLElement* child_element = DynamicTo<HTMLElement>(child)) {
-            if (!ElementAffectsDirectionality(child_element) &&
+            if (ElementInheritsDirectionality(child_element) &&
                 child_element->CachedDirectionality() != direction) {
               child_element->UpdateDirectionalityAndDescendant(direction);
             }
@@ -3381,7 +3399,7 @@ void HTMLElement::UpdateDirectionalityAndDescendant(TextDirection direction) {
         if (shadow_root->HasSlotAssignment()) {
           for (HTMLSlotElement* slot :
                shadow_root->GetSlotAssignment().Slots()) {
-            if (!ElementAffectsDirectionality(slot) &&
+            if (ElementInheritsDirectionality(slot) &&
                 slot->CachedDirectionality() != direction) {
               slot->UpdateDirectionalityAndDescendant(direction);
             }

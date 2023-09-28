@@ -4017,6 +4017,30 @@ void Element::NotifyIfMatchedDocumentRulesSelectorsChanged(
   }
 }
 
+TextDirection Element::ParentDirectionality() const {
+  if (!RuntimeEnabledFeatures::CSSPseudoDirEnabled()) {
+    // Do what the code that uses this used to do, until the :dir()
+    // pseudo is enabled.
+    return TextDirection::kLtr;
+  }
+
+  if (const HTMLSlotElement* slot =
+          ToHTMLSlotElementIfSupportsAssignmentOrNull(this)) {
+    return ContainingShadowRoot()->host().CachedDirectionality();
+  }
+
+  Node* parent = parentNode();
+  if (Element* parent_element = DynamicTo<Element>(parent)) {
+    return parent_element->CachedDirectionality();
+  }
+
+  if (ShadowRoot* shadow_root = DynamicTo<ShadowRoot>(parent)) {
+    return shadow_root->host().CachedDirectionality();
+  }
+
+  return TextDirection::kLtr;
+}
+
 void Element::RecomputeDirectionFromParent() {
   // This function recomputes the inherited direction if an element inherits
   // direction from a parent or shadow host.
@@ -4026,21 +4050,8 @@ void Element::RecomputeDirectionFromParent() {
   // direction change to the descendants that need updating.
   if (GetDocument().HasDirAttribute() &&
       RuntimeEnabledFeatures::CSSPseudoDirEnabled() &&
-      !HTMLElement::ElementAffectsDirectionality(this)) {
-    if (HTMLSlotElement* slot =
-            ToHTMLSlotElementIfSupportsAssignmentOrNull(this)) {
-      SetCachedDirectionality(
-          ContainingShadowRoot()->host().CachedDirectionality());
-    } else {
-      Node* parent = parentNode();
-      if (Element* parent_element = DynamicTo<Element>(parent)) {
-        SetCachedDirectionality(parent_element->CachedDirectionality());
-      } else if (ShadowRoot* shadow_root = DynamicTo<ShadowRoot>(parent)) {
-        SetCachedDirectionality(shadow_root->host().CachedDirectionality());
-      } else {
-        SetCachedDirectionality(TextDirection::kLtr);
-      }
-    }
+      HTMLElement::ElementInheritsDirectionality(this)) {
+    SetCachedDirectionality(ParentDirectionality());
   }
 }
 

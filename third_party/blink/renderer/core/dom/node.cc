@@ -3451,9 +3451,48 @@ HeapHashSet<Member<TreeScope>> Node::GetAncestorTreeScopes() const {
   return ancestor_tree_scopes;
 }
 
+void Node::SetCachedDirectionality(TextDirection direction) {
+  switch (direction) {
+    case TextDirection::kRtl:
+      SetFlag(kCachedDirectionalityIsRtl);
+      break;
+    case TextDirection::kLtr:
+      ClearFlag(kCachedDirectionalityIsRtl);
+      break;
+  }
+  if (!RuntimeEnabledFeatures::CSSPseudoDirEnabled()) {
+    ClearFlag(kNeedsInheritDirectionalityFromParent);
+  }
+}
+
+bool Node::NeedsInheritDirectionalityFromParent() const {
+  CHECK(!RuntimeEnabledFeatures::CSSPseudoDirEnabled());
+  return GetFlag(kNeedsInheritDirectionalityFromParent);
+}
+
 void Node::SetNeedsInheritDirectionalityFromParent() {
   CHECK(!RuntimeEnabledFeatures::CSSPseudoDirEnabled());
   SetFlag(kNeedsInheritDirectionalityFromParent);
+}
+
+void Node::ClearNeedsInheritDirectionalityFromParent() {
+  CHECK(!RuntimeEnabledFeatures::CSSPseudoDirEnabled());
+  ClearFlag(kNeedsInheritDirectionalityFromParent);
+}
+
+bool Node::DirAutoInheritsFromParent() const {
+  return RuntimeEnabledFeatures::CSSPseudoDirEnabled() &&
+         GetFlag(kDirAutoInheritsFromParent);
+}
+
+void Node::SetDirAutoInheritsFromParent() {
+  CHECK(RuntimeEnabledFeatures::CSSPseudoDirEnabled());
+  return SetFlag(kDirAutoInheritsFromParent);
+}
+
+void Node::ClearDirAutoInheritsFromParent() {
+  CHECK(RuntimeEnabledFeatures::CSSPseudoDirEnabled());
+  return ClearFlag(kDirAutoInheritsFromParent);
 }
 
 void Node::Trace(Visitor* visitor) const {

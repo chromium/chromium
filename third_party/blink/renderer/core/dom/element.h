@@ -1334,6 +1334,8 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // changes.
   void LangAttributeChanged();
 
+  TextDirection ParentDirectionality() const;
+
  private:
   friend class AXObject;
   struct AffectedByPseudoStateChange;
