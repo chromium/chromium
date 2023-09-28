@@ -884,65 +884,6 @@ TEST_P(CanvasRenderingContext2DTest,
   EXPECT_FALSE(CanvasElement().ResourceProvider());
 }
 
-TEST_P(CanvasRenderingContext2DTest,
-       DISABLED_DisableAcceleration_UpdateGPUMemoryUsage) {
-  CreateContext(kNonOpaque);
-
-  gfx::Size size(10, 10);
-  auto fake_accelerate_surface = std::make_unique<FakeCanvas2DLayerBridge>();
-  CanvasElement().SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
-  CanvasElement().SetResourceProviderForTesting(
-      nullptr, std::move(fake_accelerate_surface), size);
-  CanvasRenderingContext2D* context = Context2D();
-
-  // 800 = 10 * 10 * 4 * 2 where 10*10 is canvas size, 4 is num of bytes per
-  // pixel per buffer, and 2 is an estimate of num of gpu buffers required
-
-  context->fillRect(10, 10, 100, 100);
-  EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
-
-  CanvasElement().DisableAcceleration();
-  EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kCPU);
-
-  context->fillRect(10, 10, 100, 100);
-}
-
-TEST_P(CanvasRenderingContext2DTest,
-       DisableAcceleration_RestoreCanvasMatrixClipStack) {
-  // This tests verifies whether the RestoreCanvasMatrixClipStack happens after
-  // PaintCanvas is drawn from old 2d bridge to new 2d bridge.
-  InSequence s;
-
-  CreateContext(kNonOpaque);
-  gfx::Size size(10, 10);
-  auto fake_accelerate_surface = std::make_unique<FakeCanvas2DLayerBridge>();
-  CanvasElement().SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
-  CanvasElement().SetResourceProviderForTesting(
-      nullptr, std::move(fake_accelerate_surface), size);
-
-  FakeCanvasResourceHost host(size);
-  auto fake_deaccelerate_surface = std::make_unique<FakeCanvas2DLayerBridge>();
-  host.SetPreferred2DRasterMode(RasterModeHint::kPreferCPU);
-  fake_deaccelerate_surface->SetCanvasResourceHost(&host);
-
-  FakeCanvas2DLayerBridge* surface_ptr = fake_deaccelerate_surface.get();
-
-  EXPECT_CALL(*fake_deaccelerate_surface, DrawFullImage(_)).Times(1);
-  EXPECT_CALL(*fake_deaccelerate_surface, DidRestoreCanvasMatrixClipStack(_))
-      .Times(1);
-
-  EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
-  EXPECT_TRUE(
-      IsCanvasResourceHostSet(CanvasElement().GetCanvas2DLayerBridge()));
-
-  CanvasElement().DisableAcceleration(std::move(fake_deaccelerate_surface));
-  EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kCPU);
-  EXPECT_TRUE(
-      IsCanvasResourceHostSet(CanvasElement().GetCanvas2DLayerBridge()));
-
-  Mock::VerifyAndClearExpectations(surface_ptr);
-}
-
 static void TestDrawSingleHighBitDepthPNGOnCanvas(
     String filepath,
     CanvasRenderingContext2D* context,
@@ -1607,6 +1548,65 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, DrawImage_Video_Flush) {
   // The drawImage Operation is supposed to trigger a flush, which means that
   // There should not be any Recorded ops at this point.
   EXPECT_FALSE(CanvasElement().ResourceProvider()->HasRecordedDrawOps());
+}
+
+TEST_P(CanvasRenderingContext2DTestAccelerated,
+       DISABLED_DisableAcceleration_UpdateGPUMemoryUsage) {
+  CreateContext(kNonOpaque);
+
+  gfx::Size size(10, 10);
+  auto fake_accelerate_surface = std::make_unique<FakeCanvas2DLayerBridge>();
+  CanvasElement().SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
+  CanvasElement().SetResourceProviderForTesting(
+      nullptr, std::move(fake_accelerate_surface), size);
+  CanvasRenderingContext2D* context = Context2D();
+
+  // 800 = 10 * 10 * 4 * 2 where 10*10 is canvas size, 4 is num of bytes per
+  // pixel per buffer, and 2 is an estimate of num of gpu buffers required
+
+  context->fillRect(10, 10, 100, 100);
+  EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
+
+  CanvasElement().DisableAcceleration();
+  EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kCPU);
+
+  context->fillRect(10, 10, 100, 100);
+}
+
+TEST_P(CanvasRenderingContext2DTestAccelerated,
+       DisableAcceleration_RestoreCanvasMatrixClipStack) {
+  // This tests verifies whether the RestoreCanvasMatrixClipStack happens after
+  // PaintCanvas is drawn from old 2d bridge to new 2d bridge.
+  InSequence s;
+
+  CreateContext(kNonOpaque);
+  gfx::Size size(10, 10);
+  auto fake_accelerate_surface = std::make_unique<FakeCanvas2DLayerBridge>();
+  CanvasElement().SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
+  CanvasElement().SetResourceProviderForTesting(
+      nullptr, std::move(fake_accelerate_surface), size);
+
+  FakeCanvasResourceHost host(size);
+  auto fake_deaccelerate_surface = std::make_unique<FakeCanvas2DLayerBridge>();
+  host.SetPreferred2DRasterMode(RasterModeHint::kPreferCPU);
+  fake_deaccelerate_surface->SetCanvasResourceHost(&host);
+
+  FakeCanvas2DLayerBridge* surface_ptr = fake_deaccelerate_surface.get();
+
+  EXPECT_CALL(*fake_deaccelerate_surface, DrawFullImage(_)).Times(1);
+  EXPECT_CALL(*fake_deaccelerate_surface, DidRestoreCanvasMatrixClipStack(_))
+      .Times(1);
+
+  EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
+  EXPECT_TRUE(
+      IsCanvasResourceHostSet(CanvasElement().GetCanvas2DLayerBridge()));
+
+  CanvasElement().DisableAcceleration(std::move(fake_deaccelerate_surface));
+  EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kCPU);
+  EXPECT_TRUE(
+      IsCanvasResourceHostSet(CanvasElement().GetCanvas2DLayerBridge()));
+
+  Mock::VerifyAndClearExpectations(surface_ptr);
 }
 
 class CanvasRenderingContext2DTestAcceleratedMultipleDisables
