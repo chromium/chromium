@@ -60,8 +60,6 @@ source_set("grid_ui_constants") {
 
 source_set("grid_ui") {
   sources = [
-    "flow_layout.h",
-    "flow_layout.mm",
     "grid_cell.h",
     "grid_cell.mm",
     "grid_commands.h",

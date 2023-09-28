@@ -5,10 +5,18 @@
 #ifndef IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_GRID_GRID_LAYOUT_H_
 #define IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_GRID_GRID_LAYOUT_H_
 
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/flow_layout.h"
+#import <UIKit/UIKit.h>
 
-// A specialization of FlowLayout that displays items in a grid.
-@interface GridLayout : FlowLayout
+// A collection view compositional layout that displays items in a grid.
+//
+// - The number of columns adapts to the available width and whether an
+//     Accessibility Dynamic Type is selected.
+// - Item insertions and deletions are animated by default.
+@interface GridLayout : UICollectionViewFlowLayout
+
+// Whether to animate item insertions and deletions. Defaults to YES.
+@property(nonatomic, assign) BOOL animatesItemUpdates;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_GRID_GRID_LAYOUT_H_

@@ -109,7 +109,7 @@
 #pragma mark - Private
 
 // The collection view header always stretch across the whole collection view
-// width. to work around that, this method adds a padding to the container view
+// width. To work around that, this method adds a padding to the container view
 // based on the current layout and the size classes.
 - (void)updateContentInsets {
   UIEdgeInsets contentInsets;
