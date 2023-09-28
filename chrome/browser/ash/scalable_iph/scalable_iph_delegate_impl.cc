@@ -98,6 +98,7 @@ constexpr char kWallpaperNotificationType[] = "wallpaper_notification_type";
 constexpr char kNotifierId[] = "scalable_iph";
 constexpr char kButtonIndex = 0;
 constexpr gfx::Size kBubbleIconSizeDip = gfx::Size(60, 60);
+constexpr char kHelpAppPerksUrl[] = "chrome://help-app/offers";
 
 const base::flat_map<ActionType, std::string>& GetActionTypeURLs() {
   static const base::NoDestructor<base::flat_map<ActionType, std::string>>
@@ -108,7 +109,13 @@ const base::flat_map<ActionType, std::string>& GetActionTypeURLs() {
            {ActionType::kOpenGoogleDocs,
             "https://docs.google.com/document/?usp=installed_webapp/"},
            {ActionType::kOpenGooglePhotos, "https://photos.google.com/"},
-           {ActionType::kOpenYouTube, "https://www.youtube.com/"}});
+           {ActionType::kOpenYouTube, "https://www.youtube.com/"},
+           {ActionType::kOpenChromebookPerksWeb,
+            "https://www.google.com/chromebook/perks/"},
+           {ActionType::kOpenChromebookPerksGfnPriority2022,
+            "https://www.google.com/chromebook/perks/?id=gfn.priority.2022"},
+           {ActionType::kOpenChromebookPerksMinecraft2023,
+            "https://www.google.com/chromebook/perks/?id=minecraft.2023"}});
   return *action_type_urls;
 }
 
@@ -582,6 +589,39 @@ void ScalableIphDelegateImpl::PerformActionForScalableIph(
           crosapi::browser_util::ClearGotoFilesClicked,
           g_browser_process->local_state(), std::move(user_id_hash)));
       SCALABLE_IPH_LOG(GetLogger()) << "Opening file manager.";
+      break;
+    }
+    case ActionType::kOpenHelpAppPerks: {
+      SCALABLE_IPH_LOG(GetLogger())
+          << "Opening ash::SystemWebAppType::HELP via "
+             "ash::LaunchSystemWebAppAsync for url: "
+          << kHelpAppPerksUrl;
+
+      SystemAppLaunchParams system_app_launch_params;
+      system_app_launch_params.url = GURL(kHelpAppPerksUrl);
+      ash::LaunchSystemWebAppAsync(profile_, ash::SystemWebAppType::HELP,
+                                   system_app_launch_params);
+      break;
+    }
+    case ActionType::kOpenChromebookPerksWeb: {
+      OpenUrlForProfile(
+          profile_,
+          GURL(GetActionTypeURLs().at(ActionType::kOpenChromebookPerksWeb)),
+          GetLogger());
+      break;
+    }
+    case ActionType::kOpenChromebookPerksGfnPriority2022: {
+      OpenUrlForProfile(profile_,
+                        GURL(GetActionTypeURLs().at(
+                            ActionType::kOpenChromebookPerksGfnPriority2022)),
+                        GetLogger());
+      break;
+    }
+    case ActionType::kOpenChromebookPerksMinecraft2023: {
+      OpenUrlForProfile(profile_,
+                        GURL(GetActionTypeURLs().at(
+                            ActionType::kOpenChromebookPerksMinecraft2023)),
+                        GetLogger());
       break;
     }
     case ActionType::kOpenLauncher:

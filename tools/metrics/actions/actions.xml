@@ -39480,6 +39480,8 @@ should be able to be added at any place in this file.
   <suffix name="RequestDesktopSiteOptIn"
       label="For the RequestDesktopSiteOptIn feature."/>
   <suffix name="RestoreTabsOnFRE" label="For the RestoreTabsOnFRE feature."/>
+  <suffix name="ScalableIphGaming"
+      label="For a variant of Scalable Iph feature."/>
   <suffix name="ScalableIphHelpAppBasedEight"
       label="For a variant of Scalable Iph feature."/>
   <suffix name="ScalableIphHelpAppBasedFive"

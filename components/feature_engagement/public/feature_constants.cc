@@ -645,6 +645,9 @@ BASE_FEATURE(kIPHScalableIphHelpAppBasedNineFeature,
 BASE_FEATURE(kIPHScalableIphHelpAppBasedTenFeature,
              "IPH_ScalableIphHelpAppBasedTen",
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHScalableIphGamingFeature,
+             "IPH_ScalableIphGaming",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 #if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)

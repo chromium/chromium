@@ -57,7 +57,11 @@ enum class ActionType {
   kOpenPhoneHub = 8,
   kOpenYouTube = 9,
   kOpenFileManager = 10,
-  kLastAction = kOpenFileManager,
+  kOpenHelpAppPerks = 11,
+  kOpenChromebookPerksWeb = 12,
+  kOpenChromebookPerksGfnPriority2022 = 13,
+  kOpenChromebookPerksMinecraft2023 = 14,
+  kLastAction = kOpenChromebookPerksMinecraft2023,
 };
 
 std::ostream& operator<<(std::ostream& out, ActionType action_type);
@@ -75,6 +79,13 @@ inline constexpr char kActionTypeOpenSettingsPrinter[] = "OpenSettingsPrinter";
 inline constexpr char kActionTypeOpenPhoneHub[] = "OpenPhoneHub";
 inline constexpr char kActionTypeOpenYouTube[] = "OpenYouTube";
 inline constexpr char kActionTypeOpenFileManager[] = "OpenFileManager";
+inline constexpr char kActionTypeOpenHelpAppPerks[] = "OpenHelpAppPerks";
+inline constexpr char kActionTypeOpenChromebookPerksWeb[] =
+    "OpenChromebookPerksWeb";
+inline constexpr char kActionTypeOpenChromebookPerksGfnPriority2022[] =
+    "OpenChromebookPerksGfnPriority2022";
+inline constexpr char kActionTypeOpenChromebookPerksMinecraft2023[] =
+    "OpenChromebookPerksMinecraft2023";
 
 // Constants for events.
 // Naming convention: Camel case starting with a capital letter. Note that

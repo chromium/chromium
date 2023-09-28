@@ -30,6 +30,14 @@ std::ostream& operator<<(std::ostream& out, ActionType action_type) {
       return out << "OpenYouTube";
     case ActionType::kOpenFileManager:
       return out << "OpenFileManager";
+    case ActionType::kOpenHelpAppPerks:
+      return out << "OpenHelpAppPerks";
+    case ActionType::kOpenChromebookPerksWeb:
+      return out << "OpenChromebookPerksWeb";
+    case ActionType::kOpenChromebookPerksGfnPriority2022:
+      return out << "OpenChromebookPerksGfnPriority2022";
+    case ActionType::kOpenChromebookPerksMinecraft2023:
+      return out << "OpenChromebookPerksMinecraft2023";
   }
 }
 

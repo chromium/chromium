@@ -150,6 +150,8 @@ const std::vector<const base::Feature*>& GetFeatureListConstant() {
           &feature_engagement::kIPHScalableIphHelpAppBasedEightFeature,
           &feature_engagement::kIPHScalableIphHelpAppBasedNineFeature,
           &feature_engagement::kIPHScalableIphHelpAppBasedTenFeature,
+          // Gaming.
+          &feature_engagement::kIPHScalableIphGamingFeature,
       });
   return *feature_list;
 }
@@ -169,6 +171,13 @@ const base::flat_map<std::string, ActionType>& GetActionTypesMap() {
           {kActionTypeOpenPhoneHub, ActionType::kOpenPhoneHub},
           {kActionTypeOpenYouTube, ActionType::kOpenYouTube},
           {kActionTypeOpenFileManager, ActionType::kOpenFileManager},
+          {kActionTypeOpenHelpAppPerks, ActionType::kOpenHelpAppPerks},
+          {kActionTypeOpenChromebookPerksWeb,
+           ActionType::kOpenChromebookPerksWeb},
+          {kActionTypeOpenChromebookPerksGfnPriority2022,
+           ActionType::kOpenChromebookPerksGfnPriority2022},
+          {kActionTypeOpenChromebookPerksMinecraft2023,
+           ActionType::kOpenChromebookPerksMinecraft2023},
       });
   return *action_types_map;
 }
