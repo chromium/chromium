@@ -144,6 +144,9 @@ void AutomaticUsbPrinterConfigurer::OnResolvePpdReferenceDone(
   // new printer's configuration is saved to `connected_printers_` only if the
   // setup succeeds.
   chromeos::Printer printer = detected.printer;
+  if (printer.supports_ippusb()) {
+    printer.SetAffectedByIppUsbMigration(true);
+  }
 
   // Experimental path (b/184293121).
   const bool force_ipp =

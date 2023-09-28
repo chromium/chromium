@@ -214,6 +214,15 @@ class COMPONENT_EXPORT(CHROMEOS_PRINTING) Printer {
     printer_status_ = printer_status;
   }
 
+  // Setter and getter for flag marking that the printer is used in the finch
+  // experiment created for b:184293121.
+  bool AffectedByIppUsbMigration() const {
+    return experimental_setup_of_usb_printer_with_ipp_and_ppd_;
+  }
+  void SetAffectedByIppUsbMigration(bool flag) {
+    experimental_setup_of_usb_printer_with_ipp_and_ppd_ = flag;
+  }
+
  private:
   // Globally unique identifier. Empty indicates a new printer.
   std::string id_;
@@ -254,6 +263,10 @@ class COMPONENT_EXPORT(CHROMEOS_PRINTING) Printer {
 
   // The current status of the printer
   chromeos::CupsPrinterStatus printer_status_;
+
+  // This flag is set for printers that take part in the finch experiment
+  // created for b/184293121.
+  bool experimental_setup_of_usb_printer_with_ipp_and_ppd_ = false;
 };
 
 }  // namespace chromeos

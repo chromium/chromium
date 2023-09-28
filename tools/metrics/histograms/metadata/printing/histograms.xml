@@ -190,6 +190,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Printing.CUPS.JobResultForUsbPrintersWithIppAndPpd"
+    enum="PrintJobResult" expires_after="2024-04-01">
+  <owner>pawliczek@chromium.org</owner>
+  <owner>bmgordon@chromium.org</owner>
+  <owner>project-bolton@google.com</owner>
+  <summary>
+    The final status of every print job that was succesfully queued for a USB
+    printer that meets all of the following conditions: 1. The setup procedure
+    of the printer was initiated automatically when the printer was physically
+    connected to the device. 2. There is a matching PPD file that can be used to
+    setup the printer. 3. The printer supports IPP over USB protocol. 4. The
+    printer was setup in the first attempt.
+  </summary>
+</histogram>
+
 <histogram name="Printing.CUPS.NearbyNetworkAutomaticPrintersCount"
     units="printers" expires_after="2024-02-11">
   <owner>bmgordon@chromium.org</owner>
