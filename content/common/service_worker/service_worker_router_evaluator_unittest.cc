@@ -69,7 +69,7 @@ TEST(ServiceWorkerRouterEvaluator, SimpleMatch) {
     }
     {
       blink::ServiceWorkerRouterSource source;
-      source.type = blink::ServiceWorkerRouterSource::SourceType::kNetwork;
+      source.type = blink::ServiceWorkerRouterSource::Type::kNetwork;
       source.network_source.emplace();
       rule.sources.push_back(source);
     }
@@ -106,7 +106,7 @@ TEST(ServiceWorkerRouterEvaluator, SimpleExactMatch) {
     }
     {
       blink::ServiceWorkerRouterSource source;
-      source.type = blink::ServiceWorkerRouterSource::SourceType::kNetwork;
+      source.type = blink::ServiceWorkerRouterSource::Type::kNetwork;
       source.network_source.emplace();
       rule.sources.push_back(source);
     }
@@ -143,7 +143,7 @@ TEST(ServiceWorkerRouterEvaluator, NotMatchingCondition) {
     }
     {
       blink::ServiceWorkerRouterSource source;
-      source.type = blink::ServiceWorkerRouterSource::SourceType::kNetwork;
+      source.type = blink::ServiceWorkerRouterSource::Type::kNetwork;
       source.network_source.emplace();
       rule.sources.push_back(source);
     }
@@ -192,7 +192,7 @@ TEST(ServiceWorkerRouterEvaluator, OneConditionMisMatch) {
     }
     {
       blink::ServiceWorkerRouterSource source;
-      source.type = blink::ServiceWorkerRouterSource::SourceType::kNetwork;
+      source.type = blink::ServiceWorkerRouterSource::Type::kNetwork;
       source.network_source.emplace();
       rule.sources.push_back(source);
     }
@@ -240,7 +240,7 @@ TEST(ServiceWorkerRouterEvaluator, AllConditionMatch) {
     }
     {
       blink::ServiceWorkerRouterSource source;
-      source.type = blink::ServiceWorkerRouterSource::SourceType::kNetwork;
+      source.type = blink::ServiceWorkerRouterSource::Type::kNetwork;
       source.network_source.emplace();
       rule.sources.push_back(source);
     }
@@ -276,7 +276,7 @@ TEST(ServiceWorkerRouterEvaluator, ChooseMatchedRoute) {
     }
     {
       blink::ServiceWorkerRouterSource source;
-      source.type = blink::ServiceWorkerRouterSource::SourceType::kNetwork;
+      source.type = blink::ServiceWorkerRouterSource::Type::kNetwork;
       source.network_source.emplace();
       rule.sources.push_back(source);
     }
@@ -297,7 +297,7 @@ TEST(ServiceWorkerRouterEvaluator, ChooseMatchedRoute) {
     }
     {
       blink::ServiceWorkerRouterSource source;
-      source.type = blink::ServiceWorkerRouterSource::SourceType::kRace;
+      source.type = blink::ServiceWorkerRouterSource::Type::kRace;
       source.race_source.emplace();
       rule.sources.push_back(source);
     }
@@ -315,8 +315,7 @@ TEST(ServiceWorkerRouterEvaluator, ChooseMatchedRoute) {
   const auto sources = evaluator.EvaluateWithoutRunningStatus(request);
   // Four sources rule should match because of *.css URLPattern.
   ASSERT_EQ(1U, sources.size());
-  EXPECT_EQ(blink::ServiceWorkerRouterSource::SourceType::kRace,
-            sources[0].type);
+  EXPECT_EQ(blink::ServiceWorkerRouterSource::Type::kRace, sources[0].type);
 }
 
 TEST(ServiceWorkerRouterEvaluator, SimpleHostnameMatch) {
@@ -337,7 +336,7 @@ TEST(ServiceWorkerRouterEvaluator, SimpleHostnameMatch) {
     }
     {
       blink::ServiceWorkerRouterSource source;
-      source.type = blink::ServiceWorkerRouterSource::SourceType::kNetwork;
+      source.type = blink::ServiceWorkerRouterSource::Type::kNetwork;
       source.network_source.emplace();
       rule.sources.push_back(source);
     }
@@ -374,7 +373,7 @@ TEST(ServiceWorkerRouterEvaluator, SimpleExactHostnameMatch) {
     }
     {
       blink::ServiceWorkerRouterSource source;
-      source.type = blink::ServiceWorkerRouterSource::SourceType::kNetwork;
+      source.type = blink::ServiceWorkerRouterSource::Type::kNetwork;
       source.network_source.emplace();
       rule.sources.push_back(source);
     }
@@ -411,7 +410,7 @@ TEST(ServiceWorkerRouterEvaluator, NotMatchingHostnameCondition) {
     }
     {
       blink::ServiceWorkerRouterSource source;
-      source.type = blink::ServiceWorkerRouterSource::SourceType::kNetwork;
+      source.type = blink::ServiceWorkerRouterSource::Type::kNetwork;
       source.network_source.emplace();
       rule.sources.push_back(source);
     }
@@ -498,7 +497,7 @@ TEST(ServiceWorkerRouterEvaluator, MatchingVariousCondition) {
     }
     {
       blink::ServiceWorkerRouterSource source;
-      source.type = blink::ServiceWorkerRouterSource::SourceType::kNetwork;
+      source.type = blink::ServiceWorkerRouterSource::Type::kNetwork;
       source.network_source.emplace();
       rule.sources.push_back(source);
     }
@@ -531,7 +530,7 @@ TEST(ServiceWorkerRouterEvaluator, MatchingDefaultURLPattern) {
     }
     {
       blink::ServiceWorkerRouterSource source;
-      source.type = blink::ServiceWorkerRouterSource::SourceType::kNetwork;
+      source.type = blink::ServiceWorkerRouterSource::Type::kNetwork;
       source.network_source.emplace();
       rule.sources.push_back(source);
     }
@@ -571,7 +570,7 @@ TEST(ServiceWorkerRouterEvaluator, NotMatchingProtocol) {
     }
     {
       blink::ServiceWorkerRouterSource source;
-      source.type = blink::ServiceWorkerRouterSource::SourceType::kNetwork;
+      source.type = blink::ServiceWorkerRouterSource::Type::kNetwork;
       source.network_source.emplace();
       rule.sources.push_back(source);
     }
@@ -612,7 +611,7 @@ TEST(ServiceWorkerRouterEvaluator, NotMatchingUsername) {
     }
     {
       blink::ServiceWorkerRouterSource source;
-      source.type = blink::ServiceWorkerRouterSource::SourceType::kNetwork;
+      source.type = blink::ServiceWorkerRouterSource::Type::kNetwork;
       source.network_source.emplace();
       rule.sources.push_back(source);
     }
@@ -653,7 +652,7 @@ TEST(ServiceWorkerRouterEvaluator, NotMatchingPassword) {
     }
     {
       blink::ServiceWorkerRouterSource source;
-      source.type = blink::ServiceWorkerRouterSource::SourceType::kNetwork;
+      source.type = blink::ServiceWorkerRouterSource::Type::kNetwork;
       source.network_source.emplace();
       rule.sources.push_back(source);
     }
@@ -693,7 +692,7 @@ TEST(ServiceWorkerRouterEvaluator, NotMatchingPort) {
     }
     {
       blink::ServiceWorkerRouterSource source;
-      source.type = blink::ServiceWorkerRouterSource::SourceType::kNetwork;
+      source.type = blink::ServiceWorkerRouterSource::Type::kNetwork;
       source.network_source.emplace();
       rule.sources.push_back(source);
     }
@@ -734,7 +733,7 @@ TEST(ServiceWorkerRouterEvaluator, NotMatchingSearch) {
     }
     {
       blink::ServiceWorkerRouterSource source;
-      source.type = blink::ServiceWorkerRouterSource::SourceType::kNetwork;
+      source.type = blink::ServiceWorkerRouterSource::Type::kNetwork;
       source.network_source.emplace();
       rule.sources.push_back(source);
     }
@@ -775,7 +774,7 @@ TEST(ServiceWorkerRouterEvaluator, NotMatchingHash) {
     }
     {
       blink::ServiceWorkerRouterSource source;
-      source.type = blink::ServiceWorkerRouterSource::SourceType::kNetwork;
+      source.type = blink::ServiceWorkerRouterSource::Type::kNetwork;
       source.network_source.emplace();
       rule.sources.push_back(source);
     }
@@ -803,7 +802,7 @@ TEST(ServiceWorkerRouterEvaluator, EmptyCondition) {
     // No condition is set.
     {
       blink::ServiceWorkerRouterSource source;
-      source.type = blink::ServiceWorkerRouterSource::SourceType::kNetwork;
+      source.type = blink::ServiceWorkerRouterSource::Type::kNetwork;
       source.network_source.emplace();
       rule.sources.push_back(source);
     }
@@ -860,7 +859,7 @@ TEST(ServiceWorkerRouterEvaluator, InvalidSource) {
     }
     {
       blink::ServiceWorkerRouterSource source;
-      source.type = blink::ServiceWorkerRouterSource::SourceType::kNetwork;
+      source.type = blink::ServiceWorkerRouterSource::Type::kNetwork;
       // source.network_source is not set.
       rule.sources.push_back(source);
     }
@@ -889,8 +888,7 @@ TEST(ServiceWorkerRouterEvaluator, RequestMatch) {
           }
           {
             blink::ServiceWorkerRouterSource source;
-            source.type =
-                blink::ServiceWorkerRouterSource::SourceType::kFetchEvent;
+            source.type = blink::ServiceWorkerRouterSource::Type::kFetchEvent;
             source.fetch_event_source.emplace();
             rule.sources.push_back(source);
           }
@@ -974,7 +972,7 @@ TEST(ServiceWorkerRouterEvaluator, RunningStatusMatch) {
       }
       {
         blink::ServiceWorkerRouterSource source;
-        source.type = blink::ServiceWorkerRouterSource::SourceType::kFetchEvent;
+        source.type = blink::ServiceWorkerRouterSource::Type::kFetchEvent;
         source.fetch_event_source.emplace();
         rule.sources.push_back(source);
       }
@@ -1086,31 +1084,31 @@ TEST(ServiceWorkerRouterEvaluator, ToValueBasicSimpleRule) {
     }
     {
       blink::ServiceWorkerRouterSource source;
-      source.type = blink::ServiceWorkerRouterSource::SourceType::kNetwork;
+      source.type = blink::ServiceWorkerRouterSource::Type::kNetwork;
       source.network_source.emplace();
       rule.sources.push_back(source);
     }
     {
       blink::ServiceWorkerRouterSource source;
-      source.type = blink::ServiceWorkerRouterSource::SourceType::kRace;
+      source.type = blink::ServiceWorkerRouterSource::Type::kRace;
       source.race_source.emplace();
       rule.sources.push_back(source);
     }
     {
       blink::ServiceWorkerRouterSource source;
-      source.type = blink::ServiceWorkerRouterSource::SourceType::kFetchEvent;
+      source.type = blink::ServiceWorkerRouterSource::Type::kFetchEvent;
       source.fetch_event_source.emplace();
       rule.sources.push_back(source);
     }
     {
       blink::ServiceWorkerRouterSource source;
-      source.type = blink::ServiceWorkerRouterSource::SourceType::kCache;
+      source.type = blink::ServiceWorkerRouterSource::Type::kCache;
       source.cache_source.emplace();
       rule.sources.push_back(source);
     }
     {
       blink::ServiceWorkerRouterSource source;
-      source.type = blink::ServiceWorkerRouterSource::SourceType::kCache;
+      source.type = blink::ServiceWorkerRouterSource::Type::kCache;
       blink::ServiceWorkerRouterCacheSource cache_source;
       cache_source.cache_name = "example_cache_name";
       source.cache_source = cache_source;
@@ -1255,7 +1253,7 @@ TEST(ServiceWorkerRouterEvaluator, ToValueUrlPatternWithFields) {
     }
     {
       blink::ServiceWorkerRouterSource source;
-      source.type = blink::ServiceWorkerRouterSource::SourceType::kNetwork;
+      source.type = blink::ServiceWorkerRouterSource::Type::kNetwork;
       source.network_source.emplace();
       rule.sources.push_back(source);
     }
@@ -1311,7 +1309,7 @@ TEST(ServiceWorkerRouterEvaluator, ToValueUrlPatternWithoutFields) {
     }
     {
       blink::ServiceWorkerRouterSource source;
-      source.type = blink::ServiceWorkerRouterSource::SourceType::kNetwork;
+      source.type = blink::ServiceWorkerRouterSource::Type::kNetwork;
       source.network_source.emplace();
       rule.sources.push_back(source);
     }

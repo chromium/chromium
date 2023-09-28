@@ -3621,7 +3621,7 @@ TEST(ServiceWorkerDatabaseTest, RouterRulesStoreRestore) {
     rule.conditions.emplace_back(condition);
 
     blink::ServiceWorkerRouterSource source;
-    source.type = blink::ServiceWorkerRouterSource::SourceType::kNetwork;
+    source.type = blink::ServiceWorkerRouterSource::Type::kNetwork;
     source.network_source = blink::ServiceWorkerRouterNetworkSource{};
     rule.sources.emplace_back(source);
     router_rules.rules.emplace_back(rule);
@@ -3709,7 +3709,7 @@ TEST(ServiceWorkerDatabaseTest, RouterRulesStoreRestore) {
     }
 
     blink::ServiceWorkerRouterSource source;
-    source.type = blink::ServiceWorkerRouterSource::SourceType::kNetwork;
+    source.type = blink::ServiceWorkerRouterSource::Type::kNetwork;
     source.network_source = blink::ServiceWorkerRouterNetworkSource{};
     rule.sources.emplace_back(source);
     router_rules.rules.emplace_back(rule);
@@ -3740,7 +3740,7 @@ TEST(ServiceWorkerDatabaseTest, RouterRulesStoreRestore) {
     rule.conditions.emplace_back(condition);
 
     blink::ServiceWorkerRouterSource source;
-    source.type = blink::ServiceWorkerRouterSource::SourceType::kNetwork;
+    source.type = blink::ServiceWorkerRouterSource::Type::kNetwork;
     source.network_source = blink::ServiceWorkerRouterNetworkSource{};
     rule.sources.emplace_back(source);
     router_rules.rules.emplace_back(rule);
@@ -3771,7 +3771,7 @@ TEST(ServiceWorkerDatabaseTest, RouterRulesStoreRestore) {
     rule.conditions.emplace_back(condition);
 
     blink::ServiceWorkerRouterSource source;
-    source.type = blink::ServiceWorkerRouterSource::SourceType::kNetwork;
+    source.type = blink::ServiceWorkerRouterSource::Type::kNetwork;
     source.network_source = blink::ServiceWorkerRouterNetworkSource{};
     rule.sources.emplace_back(source);
     router_rules.rules.emplace_back(rule);
@@ -3797,31 +3797,31 @@ TEST(ServiceWorkerDatabaseTest, RouterRulesStoreRestore) {
 
     {
       blink::ServiceWorkerRouterSource source;
-      source.type = blink::ServiceWorkerRouterSource::SourceType::kNetwork;
+      source.type = blink::ServiceWorkerRouterSource::Type::kNetwork;
       source.network_source.emplace();
       rule.sources.push_back(source);
     }
     {
       blink::ServiceWorkerRouterSource source;
-      source.type = blink::ServiceWorkerRouterSource::SourceType::kRace;
+      source.type = blink::ServiceWorkerRouterSource::Type::kRace;
       source.race_source.emplace();
       rule.sources.push_back(source);
     }
     {
       blink::ServiceWorkerRouterSource source;
-      source.type = blink::ServiceWorkerRouterSource::SourceType::kFetchEvent;
+      source.type = blink::ServiceWorkerRouterSource::Type::kFetchEvent;
       source.fetch_event_source.emplace();
       rule.sources.push_back(source);
     }
     {  // cache source without cache_name.
       blink::ServiceWorkerRouterSource source;
-      source.type = blink::ServiceWorkerRouterSource::SourceType::kCache;
+      source.type = blink::ServiceWorkerRouterSource::Type::kCache;
       source.cache_source.emplace();
       rule.sources.push_back(source);
     }
     {  // cache source with cache_name.
       blink::ServiceWorkerRouterSource source;
-      source.type = blink::ServiceWorkerRouterSource::SourceType::kCache;
+      source.type = blink::ServiceWorkerRouterSource::Type::kCache;
       blink::ServiceWorkerRouterCacheSource cache_source;
       cache_source.cache_name = "example_cache_name";
       source.cache_source = cache_source;
@@ -3846,7 +3846,7 @@ TEST(ServiceWorkerDatabaseTest, RouterRulesStoreRestore) {
     rule.conditions.emplace_back(condition);
 
     blink::ServiceWorkerRouterSource source;
-    source.type = blink::ServiceWorkerRouterSource::SourceType::kNetwork;
+    source.type = blink::ServiceWorkerRouterSource::Type::kNetwork;
     source.network_source = blink::ServiceWorkerRouterNetworkSource{};
     rule.sources.emplace_back(source);
     router_rules.rules.push_back(rule);

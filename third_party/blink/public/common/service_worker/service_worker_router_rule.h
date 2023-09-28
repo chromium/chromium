@@ -132,7 +132,7 @@ struct BLINK_COMMON_EXPORT ServiceWorkerRouterSource {
   // Type of sources.
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
-  enum class SourceType {
+  enum class Type {
     // Network is used as a source.
     kNetwork = 0,
     // Race network and fetch handler.
@@ -144,7 +144,7 @@ struct BLINK_COMMON_EXPORT ServiceWorkerRouterSource {
 
     kMaxValue = kCache,
   };
-  SourceType type;
+  Type type;
 
   absl::optional<ServiceWorkerRouterNetworkSource> network_source;
   absl::optional<ServiceWorkerRouterRaceSource> race_source;

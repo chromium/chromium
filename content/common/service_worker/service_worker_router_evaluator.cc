@@ -194,28 +194,28 @@ bool IsValidSources(
   // Currently, only network source is supported.
   for (const auto& s : sources) {
     switch (s.type) {
-      case blink::ServiceWorkerRouterSource::SourceType::kNetwork:
+      case blink::ServiceWorkerRouterSource::Type::kNetwork:
         if (!s.network_source) {
           RecordSetupError(
               ServiceWorkerRouterEvaluatorErrorEnums::kInvalidSource);
           return false;
         }
         break;
-      case blink::ServiceWorkerRouterSource::SourceType::kRace:
+      case blink::ServiceWorkerRouterSource::Type::kRace:
         if (!s.race_source) {
           RecordSetupError(
               ServiceWorkerRouterEvaluatorErrorEnums::kInvalidSource);
           return false;
         }
         break;
-      case blink::ServiceWorkerRouterSource::SourceType::kFetchEvent:
+      case blink::ServiceWorkerRouterSource::Type::kFetchEvent:
         if (!s.fetch_event_source) {
           RecordSetupError(
               ServiceWorkerRouterEvaluatorErrorEnums::kInvalidSource);
           return false;
         }
         break;
-      case blink::ServiceWorkerRouterSource::SourceType::kCache:
+      case blink::ServiceWorkerRouterSource::Type::kCache:
         if (!s.cache_source) {
           RecordSetupError(
               ServiceWorkerRouterEvaluatorErrorEnums::kInvalidSource);
@@ -545,17 +545,17 @@ base::Value ServiceWorkerRouterEvaluator::ToValue() const {
     }
     for (const auto& s : r.sources) {
       switch (s.type) {
-        case blink::ServiceWorkerRouterSource::SourceType::kNetwork:
+        case blink::ServiceWorkerRouterSource::Type::kNetwork:
           source.Append("network");
           break;
-        case blink::ServiceWorkerRouterSource::SourceType::kRace:
+        case blink::ServiceWorkerRouterSource::Type::kRace:
           // TODO(crbug.com/1371756): we may need to update the name per target.
           source.Append("race-network-and-fetch-handler");
           break;
-        case blink::ServiceWorkerRouterSource::SourceType::kFetchEvent:
+        case blink::ServiceWorkerRouterSource::Type::kFetchEvent:
           source.Append("fetch-event");
           break;
-        case blink::ServiceWorkerRouterSource::SourceType::kCache:
+        case blink::ServiceWorkerRouterSource::Type::kCache:
           if (s.cache_source->cache_name) {
             base::Value::Dict out_s;
             out_s.Set("cache_name", *s.cache_source->cache_name);

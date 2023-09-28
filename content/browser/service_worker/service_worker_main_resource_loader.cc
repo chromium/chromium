@@ -275,7 +275,7 @@ void ServiceWorkerMainResourceLoader::StartRequest(
       // TODO(crbug.com/1371756): support other sources in the full form.
       // https://github.com/yoshisatoyanagisawa/service-worker-static-routing-api/blob/main/final-form.md
       switch (sources[0].type) {
-        case blink::ServiceWorkerRouterSource::SourceType::kNetwork:
+        case blink::ServiceWorkerRouterSource::Type::kNetwork:
           // Network fallback is requested.
           // URLLoader in |fallback_callback_|, in other words |url_loader_|
           // which is referred in
@@ -310,13 +310,13 @@ void ServiceWorkerMainResourceLoader::StartRequest(
                   },
                   std::move(fallback_callback_), active_worker));
           return;
-        case blink::ServiceWorkerRouterSource::SourceType::kRace:
+        case blink::ServiceWorkerRouterSource::Type::kRace:
           race_network_request_mode = RaceNetworkRequestMode::kForced;
           break;
-        case blink::ServiceWorkerRouterSource::SourceType::kFetchEvent:
+        case blink::ServiceWorkerRouterSource::Type::kFetchEvent:
           race_network_request_mode = RaceNetworkRequestMode::kSkipped;
           break;
-        case blink::ServiceWorkerRouterSource::SourceType::kCache:
+        case blink::ServiceWorkerRouterSource::Type::kCache:
           cache_matcher_ = std::make_unique<ServiceWorkerCacheStorageMatcher>(
               sources[0].cache_source->cache_name,
               blink::mojom::FetchAPIRequest::From(resource_request_),

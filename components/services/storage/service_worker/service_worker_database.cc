@@ -2659,24 +2659,22 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::ParseRegistrationData(
             return Status::kErrorCorrupted;
           case ServiceWorkerRegistrationData::RouterRules::RuleV1::Source::
               kNetworkSource:
-            source.type =
-                blink::ServiceWorkerRouterSource::SourceType::kNetwork;
+            source.type = blink::ServiceWorkerRouterSource::Type::kNetwork;
             source.network_source.emplace();
             break;
           case ServiceWorkerRegistrationData::RouterRules::RuleV1::Source::
               kRaceSource:
-            source.type = blink::ServiceWorkerRouterSource::SourceType::kRace;
+            source.type = blink::ServiceWorkerRouterSource::Type::kRace;
             source.race_source.emplace();
             break;
           case ServiceWorkerRegistrationData::RouterRules::RuleV1::Source::
               kFetchEventSource:
-            source.type =
-                blink::ServiceWorkerRouterSource::SourceType::kFetchEvent;
+            source.type = blink::ServiceWorkerRouterSource::Type::kFetchEvent;
             source.fetch_event_source.emplace();
             break;
           case ServiceWorkerRegistrationData::RouterRules::RuleV1::Source::
               kCacheSource:
-            source.type = blink::ServiceWorkerRouterSource::SourceType::kCache;
+            source.type = blink::ServiceWorkerRouterSource::Type::kCache;
             blink::ServiceWorkerRouterCacheSource cache_source;
             if (s.cache_source().has_cache_name()) {
               cache_source.cache_name = s.cache_source().cache_name();
@@ -2889,16 +2887,16 @@ void ServiceWorkerDatabase::WriteRegistrationDataInBatch(
         ServiceWorkerRegistrationData::RouterRules::RuleV1::Source* source =
             v1->add_source();
         switch (s.type) {
-          case blink::ServiceWorkerRouterSource::SourceType::kNetwork:
+          case blink::ServiceWorkerRouterSource::Type::kNetwork:
             source->mutable_network_source();
             break;
-          case blink::ServiceWorkerRouterSource::SourceType::kRace:
+          case blink::ServiceWorkerRouterSource::Type::kRace:
             source->mutable_race_source();
             break;
-          case blink::ServiceWorkerRouterSource::SourceType::kFetchEvent:
+          case blink::ServiceWorkerRouterSource::Type::kFetchEvent:
             source->mutable_fetch_event_source();
             break;
-          case blink::ServiceWorkerRouterSource::SourceType::kCache:
+          case blink::ServiceWorkerRouterSource::Type::kCache:
             auto* cache_source = source->mutable_cache_source();
             if (s.cache_source->cache_name) {
               cache_source->set_cache_name(*s.cache_source->cache_name);

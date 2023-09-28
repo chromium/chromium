@@ -45,13 +45,13 @@ bool ServiceWorkerRouterSource::operator==(
     return false;
   }
   switch (type) {
-    case SourceType::kNetwork:
+    case Type::kNetwork:
       return network_source == other.network_source;
-    case SourceType::kRace:
+    case Type::kRace:
       return race_source == other.race_source;
-    case SourceType::kFetchEvent:
+    case Type::kFetchEvent:
       return fetch_event_source == other.fetch_event_source;
-    case SourceType::kCache:
+    case Type::kCache:
       return cache_source == other.cache_source;
   }
 }
