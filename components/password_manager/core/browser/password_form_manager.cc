@@ -162,6 +162,16 @@ PossibleUsernameData FindBestPossibleUsernameCandidate(
   return possible_usernames.begin()->second;
 }
 
+void SetUsernameValueFromOutsideOfForm(const std::u16string& value,
+                                       PasswordForm& form) {
+  // Username is found outside of the password form. Clear username field
+  // predictions that is inside the password form to not send incorrect
+  // votes.
+  form.username_value = value;
+  form.username_element_renderer_id = FieldRendererId();
+  form.username_element.clear();
+}
+
 }  // namespace
 
 PasswordFormManager::PasswordFormManager(
@@ -1248,28 +1258,26 @@ void PasswordFormManager::HandleUsernameFirstFlow(
              password_manager::features::
                  kUsernameFirstFlowHonorAutocomplete))) {
       if (!password_form_had_matching_username) {
-        // Username is found outside of the password form. Clear username field
-        // predictions that is inside the password form to not send incorrect
-        // votes.
-        parsed_submitted_form_->username_value = possible_username.value;
-        parsed_submitted_form_->username_element_renderer_id =
-            FieldRendererId();
-        parsed_submitted_form_->username_element.clear();
+        SetUsernameValueFromOutsideOfForm(possible_username.value,
+                                          *parsed_submitted_form_.get());
       }
       metrics_recorder_->set_possible_username_used(true);
       if (possible_username.autocomplete_attribute_has_username) {
-        LogUsingPossibleUsername(client_, /*is_used=*/true,
-                                 "Valid possible username by autocomplete "
-                                 "attribue, populated in prompt");
+        LogUsingPossibleUsername(
+            client_, /*is_used=*/true,
+            "Single username by autocomplete attribute, "
+            "retrieved from PossibleUsernameData, populated in prompt");
       } else {
-        LogUsingPossibleUsername(client_, /*is_used=*/true,
-                                 "Valid possible username by server "
-                                 "prediction, populated in prompt");
+        LogUsingPossibleUsername(
+            client_, /*is_used=*/true,
+            "Single username predicted by the server, "
+            "retrieved from PossibleUsernameData, populated in prompt");
       }
     } else {
-      LogUsingPossibleUsername(client_, /*is_used=*/true,
-                               "Valid possible username by local heuristic, "
-                               "not populated in prompt");
+      LogUsingPossibleUsername(
+          client_, /*is_used=*/true,
+          "Single username by local heuristics, "
+          "retrieved from PossibleUsernameData, not populated in prompt");
     }
     votes_uploader_.set_single_username_vote_data(SingleUsernameVoteData(
         possible_username.renderer_id, possible_username.value,
@@ -1333,6 +1341,15 @@ void PasswordFormManager::HandleForgotPasswordFormData() {
           field.stored_predictions.value_or(FormPredictions()),
           form_fetcher_->GetBestMatches(),
           password_form_had_matching_username));
+
+      if (password_manager_util::IsSingleUsernameType(field.type)) {
+        SetUsernameValueFromOutsideOfForm(field.value,
+                                          *parsed_submitted_form_.get());
+        LogUsingPossibleUsername(client_, /*is_used=*/true,
+                                 "Single username predicted by the server, "
+                                 "retrieved from FieldInfoManager, populated "
+                                 "in prompt");
+      }
     }
   }
 }

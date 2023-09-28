@@ -3522,6 +3522,66 @@ TEST_P(PasswordFormManagerTest, ForgotPasswordFormVotesOnLiklelyOTPField) {
   form_manager_->Save();
 }
 
+// Tests that single username info stored in FieldInfoManager is used to
+// build pending credentials if it is predicted to be a single username field
+// by the server.
+TEST_P(PasswordFormManagerTest, ForgotPasswordFormUsernamePopulatedInPrompt) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kForgotPasswordFormSupport},
+      /*disabled_features=*/{});
+
+  CreateFormManager(observed_form_only_password_fields_);
+  fetcher_->NotifyFetchCompleted();
+
+  // Simulate user input in a single text field in a forgot password form.
+  constexpr char16_t kPossibleUsername[] = u"possible_username";
+  AddFieldInfo(/*driver_id=*/0, kSingleUsernameFieldRendererId,
+               observed_form_only_password_fields_.url, kPossibleUsername,
+               kSingleUsernameFormSignature, kSingleUsernameFieldSignature,
+               /*is_likely_otp=*/false, SINGLE_USERNAME_FORGOT_PASSWORD);
+
+  // Provisionally save the form on password input.
+  FormData submitted_form = observed_form_only_password_fields_;
+  submitted_form.fields[0].value = u"strong_password";
+  ASSERT_TRUE(form_manager_->ProvisionallySave(submitted_form, &driver_,
+                                               /*possible_usernames=*/nullptr));
+
+  // Check that single username is used to build pending credentials.
+  EXPECT_EQ(kPossibleUsername,
+            form_manager_->GetPendingCredentials().username_value);
+}
+
+// Tests that single username info stored in FieldInfoManager is not used to
+// build pending credentials if it is not predicted to be a single username
+// field by the server.
+TEST_P(PasswordFormManagerTest,
+       ForgotPasswordFormUsernameNotPopulatedInPrompt) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kForgotPasswordFormSupport},
+      /*disabled_features=*/{});
+
+  CreateFormManager(observed_form_only_password_fields_);
+  fetcher_->NotifyFetchCompleted();
+
+  // Simulate user input in a single text field in a forgot password form.
+  constexpr char16_t kPossibleUsername[] = u"possible_username";
+  AddFieldInfo(/*driver_id=*/0, kSingleUsernameFieldRendererId,
+               observed_form_only_password_fields_.url, kPossibleUsername,
+               kSingleUsernameFormSignature, kSingleUsernameFieldSignature,
+               /*is_likely_otp=*/false, UNKNOWN_TYPE);
+
+  // Provisionally save the form on password input.
+  FormData submitted_form = observed_form_only_password_fields_;
+  submitted_form.fields[0].value = u"strong_password";
+  ASSERT_TRUE(form_manager_->ProvisionallySave(submitted_form, &driver_,
+                                               /*possible_usernames=*/nullptr));
+
+  // Check that single username is used to build pending credentials.
+  EXPECT_EQ(u"", form_manager_->GetPendingCredentials().username_value);
+}
+
 #if BUILDFLAG(IS_ANDROID)
 TEST_P(PasswordFormManagerTest,
        ClientShouldShowErrorMessageForAuthErrorResolvable) {
