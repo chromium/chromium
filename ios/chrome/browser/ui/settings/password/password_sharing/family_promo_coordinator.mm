@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/family_promo_action_handler.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/family_promo_coordinator_delegate.h"
+#import "ios/chrome/browser/ui/settings/password/password_sharing/family_promo_mediator.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/family_promo_view_controller.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/password_sharing_constants.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
@@ -20,13 +21,23 @@
 // Main view controller for this coordinator.
 @property(nonatomic, strong) FamilyPromoViewController* viewController;
 
+// Main mediator for this coordinator.
+@property(nonatomic, strong) FamilyPromoMediator* mediator;
+
+// Type of the family promo to be displayed.
+@property(nonatomic, assign) FamilyPromoType familyPromoType;
+
 @end
 
 @implementation FamilyPromoCoordinator
 
-- (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                                   browser:(Browser*)browser {
+- (instancetype)initWithFamilyPromoType:(FamilyPromoType)familyPromoType
+                     baseViewController:(UIViewController*)viewController
+                                browser:(Browser*)browser {
   self = [super initWithBaseViewController:viewController browser:browser];
+  if (self) {
+    _familyPromoType = familyPromoType;
+  }
   return self;
 }
 
@@ -35,6 +46,9 @@
 
   self.viewController =
       [[FamilyPromoViewController alloc] initWithActionHandler:self];
+  self.mediator = [[FamilyPromoMediator alloc]
+      initWithFamilyPromoType:self.familyPromoType];
+  self.mediator.consumer = self.viewController;
   [self.baseViewController presentViewController:self.viewController
                                         animated:YES
                                       completion:nil];

@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/ui/settings/password/password_sharing/family_promo_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/password_picker_coordinator.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/password_picker_coordinator_delegate.h"
+#import "ios/chrome/browser/ui/settings/password/password_sharing/password_sharing_constants.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/password_sharing_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/password_sharing_mediator.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/password_sharing_mediator_delegate.h"
@@ -209,16 +210,12 @@ using password_manager::FetchFamilyMembersRequestStatus;
       }
       break;
     case FetchFamilyMembersRequestStatus::kNoFamily:
-      [self.familyPromoCoordinator stop];
-      self.familyPromoCoordinator = [[FamilyPromoCoordinator alloc]
-          initWithBaseViewController:self.viewController
-                             browser:self.browser];
-      self.familyPromoCoordinator.delegate = self;
-      [self.familyPromoCoordinator start];
+      [self startFamilyPromoCoordinatorWithType:FamilyPromoType::
+                                                    kUserNotInFamilyGroup];
       break;
     case FetchFamilyMembersRequestStatus::kNoOtherFamilyMembers:
-      // TODO(crbug.com/1463882): Add handling the case where user is the only
-      // member of the family.
+      [self startFamilyPromoCoordinatorWithType:
+                FamilyPromoType::kUserWithNoOtherFamilyMembers];
       break;
     case FetchFamilyMembersRequestStatus::kUnknown:
     case FetchFamilyMembersRequestStatus::kNetworkError:
@@ -254,6 +251,16 @@ using password_manager::FetchFamilyMembersRequestStatus;
                            credentials:_credentials];
   self.passwordPickerCoordinator.delegate = self;
   [self.passwordPickerCoordinator start];
+}
+
+- (void)startFamilyPromoCoordinatorWithType:(FamilyPromoType)type {
+  [self.familyPromoCoordinator stop];
+  self.familyPromoCoordinator = [[FamilyPromoCoordinator alloc]
+      initWithFamilyPromoType:type
+           baseViewController:self.viewController
+                      browser:self.browser];
+  self.familyPromoCoordinator.delegate = self;
+  [self.familyPromoCoordinator start];
 }
 
 - (void)startAlertCoordinator {

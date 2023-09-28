@@ -24,4 +24,12 @@ extern const char kFamilyGroupSiteURL[];
 // Link for the password sharing HC article.
 extern const char kPasswordSharingLearnMoreURL[];
 
+// Represents possible variants of the family promo view.
+enum class FamilyPromoType {
+  // Promo to create a family group.
+  kUserNotInFamilyGroup,
+  // Promo to invite members to existing family group.
+  kUserWithNoOtherFamilyMembers,
+};
+
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_SHARING_PASSWORD_SHARING_CONSTANTS_H_

@@ -245,6 +245,40 @@ void SignInAndEnableSync() {
       assertWithMatcher:grey_notNil()];
 }
 
+- (void)testTappingGotItInFamilyPromoInviteMembersView {
+  // Override family status with
+  // `FetchFamilyMembersRequestStatus::kNoOtherFamilyMembers`.
+  AppLaunchConfiguration config = [self appConfigurationForTestCase];
+  config.additional_args.push_back(std::string("-") +
+                                   test_switches::kFamilyStatus + "=5");
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+
+  SignInAndEnableSync();
+  [self saveExamplePasswordAndOpenDetails];
+
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonId)]
+      performAction:grey_tap()];
+
+  // Check that the family promo view was displayed.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityLabel(l10n_util::GetNSString(
+              IDS_IOS_PASSWORD_SHARING_FAMILY_PROMO_INVITE_MEMBERS_TITLE))]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Click the "Got It" button.
+  [[EarlGrey selectElementWithMatcher:
+                 ButtonWithAccessibilityLabel(l10n_util::GetNSString(
+                     IDS_IOS_PASSWORD_SHARING_FAMILY_PROMO_BUTTON))]
+      performAction:grey_tap()];
+
+  // Check that the current view is the password details view.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kPasswordDetailsTableViewId)]
+      assertWithMatcher:grey_notNil()];
+}
+
 - (void)testFetchingRecipientsError {
   // Override family status with `FetchFamilyMembersRequestStatus::kUnknown`.
   AppLaunchConfiguration config = [self appConfigurationForTestCase];

@@ -15,6 +15,9 @@
 // The action handler for interactions in this view controller.
 @property(nonatomic, weak) id<FamilyPromoActionHandler> actionHandler;
 
+// Range of the link in the `subtitleString`.
+@property(nonatomic, assign) NSRange subtitleLinkRange;
+
 @end
 
 @implementation FamilyPromoViewController
@@ -55,9 +58,6 @@
   self.showDismissBarButton = NO;
   self.titleTextStyle = UIFontTextStyleTitle2;
   self.topAlignedLayout = YES;
-  self.titleString =
-      l10n_util::GetNSString(IDS_IOS_PASSWORD_SHARING_FAMILY_PROMO_TITLE);
-  self.subtitleString = [self subtitleStringWithTag].string;
   self.primaryActionString =
       l10n_util::GetNSString(IDS_IOS_PASSWORD_SHARING_FAMILY_PROMO_BUTTON);
 
@@ -75,7 +75,7 @@
       initWithAttributedString:subtitle.attributedText];
   [newSubtitle addAttribute:NSLinkAttributeName
                       value:@""
-                      range:[self subtitleStringWithTag].range];
+                      range:self.subtitleLinkRange];
   subtitle.attributedText = newSubtitle;
 }
 
@@ -89,13 +89,14 @@
   return NO;
 }
 
-#pragma mark - Private
+#pragma mark - FamilyPromoConsumer
 
-- (StringWithTag)subtitleStringWithTag {
-  StringWithTags stringWithTags = ParseStringWithLinks(
-      l10n_util::GetNSString(IDS_IOS_PASSWORD_SHARING_FAMILY_PROMO_SUBTITLE));
+- (void)setTitle:(NSString*)title subtitle:(NSString*)subtitle {
+  self.titleString = title;
+  StringWithTags stringWithTags = ParseStringWithLinks(subtitle);
   CHECK_EQ(stringWithTags.ranges.size(), 1u);
-  return {stringWithTags.string, stringWithTags.ranges[0]};
+  self.subtitleString = stringWithTags.string;
+  self.subtitleLinkRange = stringWithTags.ranges[0];
 }
 
 @end
