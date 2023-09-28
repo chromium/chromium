@@ -4232,9 +4232,6 @@ if (is_android) {
   java_library("jni_java") {
     supports_android = true
     sources = [
-      "android/java/src/org/chromium/base/JniException.java",
-      "android/java/src/org/chromium/base/JniStaticTestMocker.java",
-      "android/java/src/org/chromium/base/NativeLibraryLoadedStatus.java",
       "android/java/src/org/chromium/base/annotations/AccessedByNative.java",
       "android/java/src/org/chromium/base/annotations/CalledByNative.java",
       "android/java/src/org/chromium/base/annotations/CalledByNativeForTesting.java",
@@ -4244,8 +4241,12 @@ if (is_android) {
       "android/java/src/org/chromium/base/annotations/NativeMethods.java",
     ]
 
-    # Public because @CheckDiscard is added to generated *Jni.java files.
-    public_deps = [ "//build/android:build_java" ]
+    public_deps = [
+      # Public because @CheckDiscard is added to generated *Jni.java files.
+      "//build/android:build_java",
+      "//third_party/jni_zero:native_library_loaded_status_java",
+      "//third_party/jni_zero:test_mocker_java",
+    ]
   }
 
   java_cpp_features("java_features_srcjar") {

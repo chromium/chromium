@@ -4,9 +4,9 @@
 
 package org.chromium.base.test.util;
 
+import org.jni_zero.JniStaticTestMocker;
 import org.junit.rules.ExternalResource;
 
-import org.chromium.base.JniStaticTestMocker;
 import org.chromium.base.annotations.NativeMethods;
 
 import java.util.ArrayList;

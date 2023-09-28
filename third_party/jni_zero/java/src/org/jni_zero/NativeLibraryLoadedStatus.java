@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.base;
+package org.jni_zero;
 
 import org.chromium.build.BuildConfig;
 
@@ -19,15 +19,18 @@ public class NativeLibraryLoadedStatus {
 
     private static NativeLibraryLoadedStatusProvider sProvider;
 
-    public static void checkLoaded() {
-        // Necessary to make sure all of these calls are stripped in release builds.
-        if (!BuildConfig.ENABLE_ASSERTS) return;
+    public static class NativeNotLoadedException extends RuntimeException {
+        public NativeNotLoadedException(String s) {
+            super(s);
+        }
+    }
 
+    public static void checkLoaded() {
         if (sProvider == null) return;
 
         if (!sProvider.areNativeMethodsReady()) {
-            throw new JniException(
-                    String.format("Native method called before the native library was ready."));
+            throw new NativeNotLoadedException(
+                    "Native method called before the native library was ready.");
         }
     }
 

@@ -53,6 +53,7 @@
 //third_party/icu
 //third_party/ijar
 //third_party/jdk
+//third_party/jni_zero
 //third_party/jsoncpp
 //third_party/kotlin_stdlib
 //third_party/libevent

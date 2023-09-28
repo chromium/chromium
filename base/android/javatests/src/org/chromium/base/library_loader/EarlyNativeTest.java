@@ -6,14 +6,13 @@ package org.chromium.base.library_loader;
 
 import androidx.test.filters.SmallTest;
 
+import org.jni_zero.NativeLibraryLoadedStatus;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.JniException;
-import org.chromium.base.NativeLibraryLoadedStatus;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
@@ -95,7 +94,7 @@ public class EarlyNativeTest {
         try {
             EarlyNativeTestJni.get().isCommandLineInitialized();
             Assert.fail("Using JNI before the library is loaded should throw an exception.");
-        } catch (JniException e) {
+        } catch (NativeLibraryLoadedStatus.NativeNotLoadedException e) {
         }
     }
 }

@@ -31,8 +31,7 @@ public class WebFeedBridge {
 
     // Access to JNI test hooks for other libraries. This can go away once more Feed code is
     // migrated to chrome/browser/feed.
-    public static org.chromium.base.JniStaticTestMocker<WebFeedBridge.Natives>
-    getTestHooksForTesting() {
+    public static org.jni_zero.JniStaticTestMocker<WebFeedBridge.Natives> getTestHooksForTesting() {
         return WebFeedBridgeJni.TEST_HOOKS;
     }
 

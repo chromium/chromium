@@ -47,28 +47,32 @@ template("jni_sources_list") {
 
 template("_invoke_jni_zero") {
   action(target_name) {
-    script = "//third_party/jni_zero/jni_zero.py"
-    inputs = rebase_path([
-                           "../../build/action_helpers.py",
-                           "../../build/android/gyp/util/__init__.py",
-                           "../../build/android/gyp/util/build_utils.py",
-                           "../../build/gn_helpers.py",
-                           "../../build/zip_helpers.py",
-                           "codegen/placeholder_gen_jni_java.py",
-                           "codegen/proxy_impl_java.py",
-                           "common.py",
-                           "java_lang_classes.py",
-                           "java_types.py",
-                           "jni_generator.py",
-                           "jni_registration_generator.py",
-                           "jni_zero.py",
-                           "parse.py",
-                           "proxy.py",
-                         ],
-                         ".",
-                         _jni_zero_dir)
     forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
     forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
+
+    script = "//third_party/jni_zero/jni_zero.py"
+    if (!defined(inputs)) {
+      inputs = []
+    }
+    inputs += rebase_path([
+                            "../../build/action_helpers.py",
+                            "../../build/android/gyp/util/__init__.py",
+                            "../../build/android/gyp/util/build_utils.py",
+                            "../../build/gn_helpers.py",
+                            "../../build/zip_helpers.py",
+                            "codegen/placeholder_gen_jni_java.py",
+                            "codegen/proxy_impl_java.py",
+                            "common.py",
+                            "java_lang_classes.py",
+                            "java_types.py",
+                            "jni_generator.py",
+                            "jni_registration_generator.py",
+                            "jni_zero.py",
+                            "parse.py",
+                            "proxy.py",
+                          ],
+                          ".",
+                          _jni_zero_dir)
   }
 }
 
