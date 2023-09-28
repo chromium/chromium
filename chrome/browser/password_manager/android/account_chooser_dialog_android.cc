@@ -233,9 +233,9 @@ bool AccountChooserDialogAndroid::HandleCredentialChosen(
   if (password_manager_util::CanUseBiometricAuth(authenticator.get(),
                                                  client_)) {
     authenticator_ = std::move(authenticator);
-    authenticator_->Authenticate(
-        base::BindOnce(&AccountChooserDialogAndroid::OnReauthCompleted,
-                       base::Unretained(this), index));
+    authenticator_->AuthenticateWithMessage(
+        u"", base::BindOnce(&AccountChooserDialogAndroid::OnReauthCompleted,
+                            base::Unretained(this), index));
     // The credential handling will only happen after the authentication
     // finishes.
     return false;

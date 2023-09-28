@@ -233,8 +233,8 @@ class TouchToFillControllerAutofillTest
 
   void ExpectAndSimulateAuthenticationSuccess(
       device_reauth::MockDeviceAuthenticator* authenticator_ptr) {
-    EXPECT_CALL(*authenticator_ptr, Authenticate)
-        .WillOnce(RunOnceCallback<0>(true));
+    EXPECT_CALL(*authenticator_ptr, AuthenticateWithMessage)
+        .WillOnce(RunOnceCallback<1>(true));
   }
 
  private:
@@ -539,8 +539,8 @@ TEST_F(TouchToFillControllerAutofillTest,
 
   ON_CALL(*authenticator_ptr, CanAuthenticateWithBiometrics)
       .WillByDefault(Return(true));
-  EXPECT_CALL(*authenticator_ptr, Authenticate)
-      .WillOnce(RunOnceCallback<0>(false));
+  EXPECT_CALL(*authenticator_ptr, AuthenticateWithMessage)
+      .WillOnce(RunOnceCallback<1>(false));
   touch_to_fill_controller().OnCredentialSelected(credentials[0]);
 
   histogram_tester().ExpectUniqueSample(
@@ -761,7 +761,7 @@ TEST_F(TouchToFillControllerAutofillTest, DestroyedWhileAuthRunning) {
 
   ON_CALL(*authenticator_ptr, CanAuthenticateWithBiometrics)
       .WillByDefault(Return(true));
-  EXPECT_CALL(*authenticator_ptr, Authenticate);
+  EXPECT_CALL(*authenticator_ptr, AuthenticateWithMessage);
   touch_to_fill_controller().OnCredentialSelected(credentials[0]);
 
   EXPECT_CALL(*authenticator_ptr, Cancel());

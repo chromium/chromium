@@ -75,9 +75,10 @@ class MandatoryReauthManagerTest : public testing::Test {
 };
 
 // Test that `MandatoryReauthManager::Authenticate()` triggers
-// `DeviceAuthenticator::Authenticate()`.
+// `DeviceAuthenticator::AuthenticateWithMessage()`.
 TEST_F(MandatoryReauthManagerTest, Authenticate) {
-  EXPECT_CALL(*autofill_client_->GetDeviceAuthenticatorPtr(), Authenticate)
+  EXPECT_CALL(*autofill_client_->GetDeviceAuthenticatorPtr(),
+              AuthenticateWithMessage)
       .Times(1);
 
   mandatory_reauth_manager_->Authenticate(
@@ -320,20 +321,9 @@ TEST_F(MandatoryReauthManagerTest, StartOptInFlow) {
 // Test that the MandatoryReauthManager correctly handles the case where the
 // user accepts the re-auth prompt.
 TEST_F(MandatoryReauthManagerTest, OnUserAcceptedOptInPrompt) {
-#if BUILDFLAG(IS_ANDROID)
-  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
-    GTEST_SKIP() << "This test should not run on automotive.";
-  }
-#endif  // BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   ON_CALL(*autofill_client_->GetDeviceAuthenticatorPtr(),
           AuthenticateWithMessage)
       .WillByDefault(testing::WithArg<1>(
-#elif BUILDFLAG(IS_ANDROID)
-  ON_CALL(*autofill_client_->GetDeviceAuthenticatorPtr(), Authenticate)
-      .WillByDefault(testing::WithArg<0>(
-#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
           [](base::OnceCallback<void(bool)> callback) {
             std::move(callback).Run(false);
           }));
@@ -358,14 +348,9 @@ TEST_F(MandatoryReauthManagerTest, OnUserAcceptedOptInPrompt) {
   autofill_client_->SetDeviceAuthenticator(
       std::move(mock_device_authenticator2));
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   ON_CALL(*autofill_client_->GetDeviceAuthenticatorPtr(),
           AuthenticateWithMessage)
       .WillByDefault(testing::WithArg<1>(
-#elif BUILDFLAG(IS_ANDROID)
-  ON_CALL(*autofill_client_->GetDeviceAuthenticatorPtr(), Authenticate)
-      .WillByDefault(testing::WithArg<0>(
-#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
           [](base::OnceCallback<void(bool)> callback) {
             std::move(callback).Run(true);
           }));
@@ -449,13 +434,8 @@ class MandatoryReauthManagerOptInFlowTest
   void SetUpDeviceAuthenticator(
       device_reauth::MockDeviceAuthenticator* device_authenticator_ptr,
       bool success) {
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
     ON_CALL(*device_authenticator_ptr, AuthenticateWithMessage)
         .WillByDefault(testing::WithArg<1>(
-#elif BUILDFLAG(IS_ANDROID)
-    ON_CALL(*device_authenticator_ptr, Authenticate)
-        .WillByDefault(testing::WithArg<0>(
-#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
             [success](base::OnceCallback<void(bool)> callback) {
               std::move(callback).Run(success);
             }));

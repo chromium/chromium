@@ -109,7 +109,7 @@ TEST_F(
 TEST_F(DeviceAuthenticatorAndroidTest, AuthenticateRecordsSource) {
   base::HistogramTester histogram_tester;
 
-  authenticator()->Authenticate(base::DoNothing());
+  authenticator()->AuthenticateWithMessage(u"", base::DoNothing());
 
   histogram_tester.ExpectUniqueSample(
       "Android.DeviceAuthenticator.AuthSource",
@@ -121,13 +121,13 @@ TEST_F(DeviceAuthenticatorAndroidTest, DoesntTriggerAuthIfWithin60Seconds) {
   base::HistogramTester histogram_tester;
   EXPECT_CALL(bridge(), Authenticate)
       .WillOnce(RunOnceCallback<0>(DeviceAuthUIResult::kSuccessWithBiometrics));
-  authenticator()->Authenticate(base::DoNothing());
+  authenticator()->AuthenticateWithMessage(u"", base::DoNothing());
 
   // The next call to `Authenticate()` should not re-trigger an authentication.
   EXPECT_CALL(bridge(), Authenticate(_)).Times(0);
   base::MockCallback<DeviceAuthenticator::AuthenticateCallback> result_callback;
   EXPECT_CALL(result_callback, Run(/*auth_succeeded=*/true));
-  authenticator()->Authenticate(result_callback.Get());
+  authenticator()->AuthenticateWithMessage(u"", result_callback.Get());
   EXPECT_THAT(
       histogram_tester.GetAllSamples(
           "PasswordManager.BiometricAuthPwdFill.AuthResult"),
@@ -143,7 +143,7 @@ TEST_F(DeviceAuthenticatorAndroidTest, TriggersAuthIfMoreThan60Seconds) {
   // Simulate a previous successful authentication
   EXPECT_CALL(bridge(), Authenticate)
       .WillOnce(RunOnceCallback<0>(DeviceAuthUIResult::kSuccessWithBiometrics));
-  authenticator()->Authenticate(base::DoNothing());
+  authenticator()->AuthenticateWithMessage(u"", base::DoNothing());
 
   task_environment().FastForwardBy(base::Seconds(60));
 
@@ -152,7 +152,7 @@ TEST_F(DeviceAuthenticatorAndroidTest, TriggersAuthIfMoreThan60Seconds) {
       .WillOnce(RunOnceCallback<0>(DeviceAuthUIResult::kFailed));
   base::MockCallback<DeviceAuthenticator::AuthenticateCallback> result_callback;
   EXPECT_CALL(result_callback, Run(/*auth_succeeded=*/false));
-  authenticator()->Authenticate(result_callback.Get());
+  authenticator()->AuthenticateWithMessage(u"", result_callback.Get());
 
   EXPECT_THAT(
       histogram_tester.GetAllSamples(
@@ -168,14 +168,14 @@ TEST_F(DeviceAuthenticatorAndroidTest, TriggersAuthIfPreviousFailed) {
   // Simulate a previous failed authentication
   EXPECT_CALL(bridge(), Authenticate)
       .WillOnce(RunOnceCallback<0>(DeviceAuthUIResult::kFailed));
-  authenticator()->Authenticate(base::DoNothing());
+  authenticator()->AuthenticateWithMessage(u"", base::DoNothing());
 
   // The next call to `Authenticate()` should re-trigger an authentication.
   EXPECT_CALL(bridge(), Authenticate(_))
       .WillOnce(RunOnceCallback<0>(DeviceAuthUIResult::kSuccessWithBiometrics));
   base::MockCallback<DeviceAuthenticator::AuthenticateCallback> result_callback;
   EXPECT_CALL(result_callback, Run(/*auth_succeeded=*/true));
-  authenticator()->Authenticate(result_callback.Get());
+  authenticator()->AuthenticateWithMessage(u"", result_callback.Get());
 
   EXPECT_THAT(
       histogram_tester.GetAllSamples(

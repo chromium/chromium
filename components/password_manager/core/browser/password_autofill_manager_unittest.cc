@@ -365,20 +365,16 @@ class PasswordAutofillManagerTest : public testing::Test {
   void ExpectAndAllowAuthentication(
       device_reauth::MockDeviceAuthenticator* authenticator) {
     // Allow authentication.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-    EXPECT_CALL(*authenticator, AuthenticateWithMessage);
-#else
     ON_CALL(*authenticator, CanAuthenticateWithBiometrics)
         .WillByDefault(Return(true));
-    EXPECT_CALL(*authenticator, Authenticate);
-#endif
+    EXPECT_CALL(*authenticator, AuthenticateWithMessage);
   }
 
 #if BUILDFLAG(IS_ANDROID)
   void ExpectAndSimulateAuthenticationSuccess(
       device_reauth::MockDeviceAuthenticator* authenticator) {
-    EXPECT_CALL(*authenticator, Authenticate)
-        .WillOnce(RunOnceCallback<0>(/*auth_succeeded=*/true));
+    EXPECT_CALL(*authenticator, AuthenticateWithMessage)
+        .WillOnce(RunOnceCallback<1>(/*auth_succeeded=*/true));
   }
 #endif
 
@@ -1639,16 +1635,11 @@ TEST_F(PasswordAutofillManagerTest, FillsSuggestionIfAuthSuccessful) {
     auto authenticator =
         std::make_unique<device_reauth::MockDeviceAuthenticator>();
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-    EXPECT_CALL(*authenticator, AuthenticateWithMessage)
-        .WillOnce(RunOnceCallback<1>(/*auth_succeeded=*/true));
     // The authenticator exists and is available.
-#else
     ON_CALL(*authenticator, CanAuthenticateWithBiometrics)
         .WillByDefault(Return(true));
-    EXPECT_CALL(*authenticator, Authenticate)
-        .WillOnce(RunOnceCallback<0>(/*auth_succeeded=*/true));
-#endif
+    EXPECT_CALL(*authenticator, AuthenticateWithMessage)
+        .WillOnce(RunOnceCallback<1>(/*auth_succeeded=*/true));
 
     EXPECT_CALL(client, GetDeviceAuthenticator)
         .WillOnce(Return(testing::ByMove(std::move(authenticator))));
@@ -1713,15 +1704,10 @@ TEST_F(PasswordAutofillManagerTest, DoesntFillSuggestionIfAuthFailed) {
         HideAutofillPopup(autofill::PopupHidingReason::kAcceptSuggestion));
 
     // The authenticator exists and is available.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-    EXPECT_CALL(*authenticator, AuthenticateWithMessage)
-        .WillOnce(RunOnceCallback<1>(/*auth_succeeded=*/false));
-#else
     ON_CALL(*authenticator, CanAuthenticateWithBiometrics)
         .WillByDefault(Return(true));
-    EXPECT_CALL(*authenticator, Authenticate)
-        .WillOnce(RunOnceCallback<0>(/*auth_succeeded=*/false));
-#endif
+    EXPECT_CALL(*authenticator, AuthenticateWithMessage)
+        .WillOnce(RunOnceCallback<1>(/*auth_succeeded=*/false));
 
     EXPECT_CALL(client, GetDeviceAuthenticator)
         .WillOnce(Return(testing::ByMove(std::move(authenticator))));

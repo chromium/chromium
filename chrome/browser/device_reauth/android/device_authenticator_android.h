@@ -58,13 +58,9 @@ class DeviceAuthenticatorAndroid : public ChromeDeviceAuthenticatorCommon {
   bool CanAuthenticateWithBiometricOrScreenLock() override;
 
   // Trigges an authentication flow based on biometrics, with the
-  // screen lock as fallback. Note: this only supports one authentication
-  // request at a time.
-  void Authenticate(AuthenticateCallback callback) override;
-
-  // Trigges an authentication flow based on biometrics, with the
   // screen lock as fallback. Displays `message` in the authentication UI.
   // Note: this only supports one authentication request at a time.
+  // On Android `message` is not relevant, can be empty.
   void AuthenticateWithMessage(const std::u16string& message,
                                AuthenticateCallback callback) override;
 

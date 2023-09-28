@@ -35,8 +35,6 @@ class FakeChromeDeviceAuthenticatorCommon
   bool CanAuthenticateWithBiometricOrScreenLock() override;
 #endif
 
-  void Authenticate(AuthenticateCallback callback) override;
-
   void AuthenticateWithMessage(const std::u16string& message,
                                AuthenticateCallback callback) override;
 
@@ -63,11 +61,6 @@ bool FakeChromeDeviceAuthenticatorCommon::
   return false;
 }
 #endif
-
-void FakeChromeDeviceAuthenticatorCommon::Authenticate(
-    AuthenticateCallback callback) {
-  NOTIMPLEMENTED();
-}
 
 void FakeChromeDeviceAuthenticatorCommon::Cancel() {
   NOTIMPLEMENTED();

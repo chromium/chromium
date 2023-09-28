@@ -19,7 +19,6 @@ class MockDeviceAuthenticator : public DeviceAuthenticator {
 
   MOCK_METHOD(bool, CanAuthenticateWithBiometrics, (), (override));
   MOCK_METHOD(bool, CanAuthenticateWithBiometricOrScreenLock, (), (override));
-  MOCK_METHOD(void, Authenticate, (AuthenticateCallback), (override));
   MOCK_METHOD(void,
               AuthenticateWithMessage,
               (const std::u16string&, AuthenticateCallback),

@@ -99,7 +99,12 @@ bool DeviceAuthenticatorAndroid::CanAuthenticateWithBiometricOrScreenLock() {
   return bridge_->CanAuthenticateWithBiometricOrScreenLock();
 }
 
-void DeviceAuthenticatorAndroid::Authenticate(AuthenticateCallback callback) {
+void DeviceAuthenticatorAndroid::AuthenticateWithMessage(
+    const std::u16string& message,
+    AuthenticateCallback callback) {
+  CHECK(message.empty())
+      << "Android doesn't support messages for authentication dialog";
+
   // Previous authentication is not yet completed, so return.
   if (callback_) {
     return;
@@ -120,12 +125,6 @@ void DeviceAuthenticatorAndroid::Authenticate(AuthenticateCallback callback) {
   bridge_->Authenticate(
       base::BindOnce(&DeviceAuthenticatorAndroid::OnAuthenticationCompleted,
                      base::Unretained(this)));
-}
-
-void DeviceAuthenticatorAndroid::AuthenticateWithMessage(
-    const std::u16string& message,
-    AuthenticateCallback callback) {
-  NOTIMPLEMENTED();
 }
 
 void DeviceAuthenticatorAndroid::Cancel() {

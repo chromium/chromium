@@ -58,9 +58,9 @@ void ReauthenticatorBridge::Reauthenticate(JNIEnv* env) {
   // `this` notifies the authenticator when it is destructed, resulting in
   // the callback being reset by the authenticator. Therefore, it is safe
   // to use base::Unretained.
-  authenticator_->Authenticate(
-      base::BindOnce(&ReauthenticatorBridge::OnReauthenticationCompleted,
-                     base::Unretained(this)));
+  authenticator_->AuthenticateWithMessage(
+      u"", base::BindOnce(&ReauthenticatorBridge::OnReauthenticationCompleted,
+                          base::Unretained(this)));
 }
 
 void ReauthenticatorBridge::OnReauthenticationCompleted(bool auth_succeeded) {

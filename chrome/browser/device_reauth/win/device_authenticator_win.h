@@ -26,10 +26,6 @@ class DeviceAuthenticatorWin : public ChromeDeviceAuthenticatorCommon {
   // Returns true, when biometrics or screen lock is available.
   bool CanAuthenticateWithBiometricOrScreenLock() override;
 
-  // Triggers an authentication flow based on biometrics.
-  // Note: this only supports one authentication request at a time.
-  void Authenticate(AuthenticateCallback callback) override;
-
   // Triggers an authentication flow based on biometrics. Request user to
   // authenticate(a prompt with that information will appear on the screen and
   // the `message` will be displayed there) using their windows hello or if it's

@@ -266,7 +266,8 @@ TEST_F(AllPasswordsBottomSheetControllerTest, FillsPasswordIfAuthSuccessful) {
 
   ON_CALL(*authenticator, CanAuthenticateWithBiometrics)
       .WillByDefault(Return(true));
-  EXPECT_CALL(*authenticator, Authenticate).WillOnce(RunOnceCallback<0>(true));
+  EXPECT_CALL(*authenticator, AuthenticateWithMessage)
+      .WillOnce(RunOnceCallback<1>(true));
   EXPECT_CALL(client(), GetDeviceAuthenticator)
       .WillOnce(Return(testing::ByMove(std::move(authenticator))));
 
@@ -282,7 +283,8 @@ TEST_F(AllPasswordsBottomSheetControllerTest, DoesntFillPasswordIfAuthFailed) {
 
   ON_CALL(*authenticator, CanAuthenticateWithBiometrics)
       .WillByDefault(Return(true));
-  EXPECT_CALL(*authenticator, Authenticate).WillOnce(RunOnceCallback<0>(false));
+  EXPECT_CALL(*authenticator, AuthenticateWithMessage)
+      .WillOnce(RunOnceCallback<1>(false));
   EXPECT_CALL(client(), GetDeviceAuthenticator)
       .WillOnce(Return(testing::ByMove(std::move(authenticator))));
 
@@ -300,7 +302,7 @@ TEST_F(AllPasswordsBottomSheetControllerTest, CancelsAuthIfDestroyed) {
 
   ON_CALL(*authenticator, CanAuthenticateWithBiometrics)
       .WillByDefault(Return(true));
-  EXPECT_CALL(*authenticator_ptr, Authenticate);
+  EXPECT_CALL(*authenticator_ptr, AuthenticateWithMessage);
   EXPECT_CALL(client(), GetDeviceAuthenticator)
       .WillOnce(Return(testing::ByMove(std::move(authenticator))));
 
@@ -322,8 +324,8 @@ TEST_F(AllPasswordsBottomSheetControllerTest,
        OnCredentialSelectedTriggersPhishGuard) {
   if (base::android::BuildInfo::GetInstance()->is_automotive()) {
     auto authenticator = std::make_unique<MockDeviceAuthenticator>();
-    ON_CALL(*authenticator, Authenticate)
-        .WillByDefault(RunOnceCallback<0>(/*auth_succeeded=*/true));
+    ON_CALL(*authenticator, AuthenticateWithMessage)
+        .WillByDefault(RunOnceCallback<1>(/*auth_succeeded=*/true));
     EXPECT_CALL(client(), GetDeviceAuthenticator)
         .WillOnce(Return(testing::ByMove(std::move(authenticator))));
   }

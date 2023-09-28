@@ -24,9 +24,9 @@ void MandatoryReauthManager::Authenticate(
     device_reauth::DeviceAuthenticator::AuthenticateCallback callback) {
   device_authenticator_ = client_->GetDeviceAuthenticator();
   CHECK(device_authenticator_);
-  device_authenticator_->Authenticate(
-      base::BindOnce(&MandatoryReauthManager::OnAuthenticationCompleted,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  device_authenticator_->AuthenticateWithMessage(
+      u"", base::BindOnce(&MandatoryReauthManager::OnAuthenticationCompleted,
+                          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void MandatoryReauthManager::AuthenticateWithMessage(

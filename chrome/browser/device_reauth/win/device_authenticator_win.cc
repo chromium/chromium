@@ -58,10 +58,6 @@ bool DeviceAuthenticatorWin::CanAuthenticateWithBiometricOrScreenLock() {
          authenticator_->CanAuthenticateWithScreenLock();
 }
 
-void DeviceAuthenticatorWin::Authenticate(AuthenticateCallback callback) {
-  NOTIMPLEMENTED();
-}
-
 void DeviceAuthenticatorWin::AuthenticateWithMessage(
     const std::u16string& message,
     AuthenticateCallback callback) {

@@ -32,10 +32,6 @@ bool DeviceAuthenticatorChromeOS::CanAuthenticateWithBiometricOrScreenLock() {
   return false;
 }
 
-void DeviceAuthenticatorChromeOS::Authenticate(AuthenticateCallback callback) {
-  NOTIMPLEMENTED();
-}
-
 void DeviceAuthenticatorChromeOS::AuthenticateWithMessage(
     const std::u16string& message,
     AuthenticateCallback callback) {

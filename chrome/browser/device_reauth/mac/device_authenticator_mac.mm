@@ -59,10 +59,6 @@ bool DeviceAuthenticatorMac::CanAuthenticateWithBiometricOrScreenLock() {
   return authenticator_->CheckIfBiometricsOrScreenLockAvailable();
 }
 
-void DeviceAuthenticatorMac::Authenticate(AuthenticateCallback callback) {
-  NOTIMPLEMENTED();
-}
-
 void DeviceAuthenticatorMac::Cancel() {
   touch_id_auth_context_ = nullptr;
   if (callback_) {

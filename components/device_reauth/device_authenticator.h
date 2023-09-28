@@ -67,13 +67,9 @@ class DeviceAuthenticator {
 
   // Asks the user to authenticate. Invokes |callback| asynchronously when
   // the auth flow returns with the result.
-  // |requester| is the filling surface that is asking for authentication.
-  virtual void Authenticate(AuthenticateCallback callback) = 0;
-
-  // Asks the user to authenticate. Invokes |callback| asynchronously when
-  // the auth flow returns with the result.
   // |message| contains text that will be displayed to the end user on
   // authentication request
+  // On Android |message| is not relevant, can be empty.
   virtual void AuthenticateWithMessage(const std::u16string& message,
                                        AuthenticateCallback callback) = 0;
 

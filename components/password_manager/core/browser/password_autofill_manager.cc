@@ -502,28 +502,24 @@ void PasswordAutofillManager::DidAcceptSuggestion(
         DCHECK(success);
       } else {
         authenticator_ = std::move(authenticator);
-#if BUILDFLAG(IS_ANDROID)
-        authenticator_->Authenticate(base::BindOnce(
-            &PasswordAutofillManager::OnBiometricReauthCompleted,
-            weak_ptr_factory_.GetWeakPtr(), suggestion.main_text.value,
-            suggestion.popup_item_id));
-#elif BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-        const std::u16string origin =
-            base::UTF8ToUTF16(GetShownOrigin(url::Origin::Create(
-                password_manager_driver_->GetLastCommittedURL())));
 
+        std::u16string message;
         auto on_reath_complete = base::BindOnce(
             &PasswordAutofillManager::OnBiometricReauthCompleted,
             weak_ptr_factory_.GetWeakPtr(), suggestion.main_text.value,
             suggestion.popup_item_id);
 
-        authenticator_->AuthenticateWithMessage(
-            l10n_util::GetStringFUTF16(IDS_PASSWORD_MANAGER_FILLING_REAUTH,
-                                       origin),
-            metrics_util::TimeCallback(
-                std::move(on_reath_complete),
-                "PasswordManager.PasswordFilling.AuthenticationTime"));
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+        const std::u16string origin =
+            base::UTF8ToUTF16(GetShownOrigin(url::Origin::Create(
+                password_manager_driver_->GetLastCommittedURL())));
+        message = l10n_util::GetStringFUTF16(
+            IDS_PASSWORD_MANAGER_FILLING_REAUTH, origin);
 #endif
+        authenticator_->AuthenticateWithMessage(
+            message, metrics_util::TimeCallback(
+                         std::move(on_reath_complete),
+                         "PasswordManager.PasswordFilling.AuthenticationTime"));
       }
       break;
   }
