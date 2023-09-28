@@ -44,8 +44,8 @@ allowlist.
     * It will ask you to double check its actions before proceeding.  It will fail if you're not
       a member of `chrome-counter-abuse-core@google.com`, since that's required for access to
       the GCS bucket.
-    * The Component Updater system will notice those files and push them to users within ~6 hours.
-      If not, contact `waffles@.`
+    * The Component Updater system will notice those files and gradually push them to users
+      over a 3 day period. If not, contact the Omaha support team.
 
 ## Procedure for rollback
 While Omaha allows rollback through the release manager, the Chrome client will
