@@ -2378,4 +2378,96 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationNoEthernetWorkaroundTest,
   }
 }
 
+IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationNoEthernetWorkaroundTest,
+                       RetainEthernetIPAddrUnmanagedToManaged) {
+  constexpr char kEthernetGuidUnmanaged[] = "{orig_guid_ethernet_any}";
+  constexpr char kEthernetGuidManaged[] = "{EthernetGuid}";
+  constexpr char kStaticIpAddr[] = "192.168.1.44";
+
+  CrosNetworkConfigGuidsAvailableWaiter available_waiter(
+      cros_network_config_.get(), {kEthernetGuidUnmanaged});
+  shill_service_client_test_->AddService(kServiceEth, kEthernetGuidUnmanaged,
+                                         "ethernet_any", shill::kTypeEthernet,
+                                         shill::kStateOnline, /*visible=*/true);
+  shill_profile_client_test_->AddService(kSharedProfilePath, kServiceEth);
+  available_waiter.Wait();
+
+  // Check that IP address is modifiable and does not come from policy
+  {
+    auto properties =
+        CrosNetworkConfigGetManagedProperties(kEthernetGuidUnmanaged);
+    ASSERT_TRUE(properties);
+    EXPECT_EQ(properties->ip_address_config_type->policy_source,
+              network_mojom::PolicySource::kNone);
+  }
+
+  // Simulate setting an IP address through the UI.
+  {
+    auto properties = network_mojom::ConfigProperties::New();
+    properties->type_config =
+        network_mojom::NetworkTypeConfigProperties::NewEthernet(
+            network_mojom::EthernetConfigProperties::New());
+    properties->ip_address_config_type =
+        ::onc::network_config::kIPConfigTypeStatic;
+    properties->static_ip_config = network_mojom::IPConfigProperties::New();
+    properties->static_ip_config->ip_address = kStaticIpAddr;
+    properties->static_ip_config->gateway = "192.168.1.1";
+    properties->static_ip_config->routing_prefix = 4;
+    ASSERT_NO_FATAL_FAILURE(CrosNetworkConfigSetProperties(
+        kEthernetGuidUnmanaged, std::move(properties)));
+  }
+
+  // Verify that the Static IP config has been applied.
+  {
+    const base::Value::Dict* shill_properties =
+        shill_service_client_test_->GetServiceProperties(kServiceEth);
+    ASSERT_TRUE(shill_properties);
+    EXPECT_EQ(GetStaticIPAddressFromShillProperties(*shill_properties),
+              kStaticIpAddr);
+  }
+
+  // Apply policy: Explicitly recommend both IP address and Nameservers,
+  // allowing the user to modify them.
+  const std::string kDeviceONCEverythingRecommended =
+      base::StringPrintf(R"(
+    {
+      "NetworkConfigurations": [
+        {
+          "GUID": "%s",
+          "Name": "EthernetName",
+          "Type": "Ethernet",
+          "Ethernet": {
+             "Authentication": "None"
+          },
+          "StaticIPConfig": {
+             "Recommended": ["Gateway", "IPAddress", "RoutingPrefix",
+                             "NameServers"]
+          },
+          "Recommended": ["IPAddressConfigType", "NameServersConfigType"]
+        }
+      ]
+    })",
+                         kEthernetGuidManaged);
+  SetDeviceOpenNetworkConfiguration(kDeviceONCEverythingRecommended,
+                                    /*wait_applied=*/true);
+
+  // Verify that the Static IP is still active.
+  {
+    const base::Value::Dict* shill_properties =
+        shill_service_client_test_->GetServiceProperties(kServiceEth);
+    ASSERT_TRUE(shill_properties);
+    EXPECT_EQ(GetStaticIPAddressFromShillProperties(*shill_properties),
+              kStaticIpAddr);
+  }
+
+  // Check that IP address is modifiable and "Recommended" by policy
+  {
+    auto properties =
+        CrosNetworkConfigGetManagedProperties(kEthernetGuidManaged);
+    ASSERT_TRUE(properties);
+    EXPECT_EQ(properties->ip_address_config_type->policy_source,
+              network_mojom::PolicySource::kDevicePolicyRecommended);
+  }
+}
+
 }  // namespace policy

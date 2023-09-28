@@ -105,7 +105,7 @@ class PolicyApplicator {
   // entry and may be empty.
   // |callback| will be called when policy application for |entry_identifier|
   // has finished.
-  void ApplyNewPolicy(const std::string& entry_identifier,
+  void ApplyOncPolicy(const std::string& entry_identifier,
                       const base::Value::Dict& entry_properties,
                       std::unique_ptr<NetworkUIData> ui_data,
                       const std::string& old_guid,

@@ -225,7 +225,7 @@ void PolicyApplicator::GetEntryCallback(const std::string& entry_identifier,
         << "Applying policy " << new_guid << " to previously unmanaged "
         << "configuration.";
 
-    ApplyNewPolicy(entry_identifier, entry_properties, std::move(ui_data),
+    ApplyOncPolicy(entry_identifier, entry_properties, std::move(ui_data),
                    old_guid, new_guid, *new_policy,
                    std::move(profile_entry_finished_callback));
 
@@ -289,7 +289,7 @@ void PolicyApplicator::GetEntryError(const std::string& entry_identifier,
   ProfileEntryFinished(entry_identifier);
 }
 
-void PolicyApplicator::ApplyNewPolicy(const std::string& entry_identifier,
+void PolicyApplicator::ApplyOncPolicy(const std::string& entry_identifier,
                                       const base::Value::Dict& entry_properties,
                                       std::unique_ptr<NetworkUIData> ui_data,
                                       const std::string& old_guid,
@@ -297,14 +297,18 @@ void PolicyApplicator::ApplyNewPolicy(const std::string& entry_identifier,
                                       const base::Value::Dict& new_policy,
                                       base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (old_guid == new_guid &&
-      !base::Contains(remaining_policy_guids_, new_guid)) {
+
+  const bool policy_guid_changed = (old_guid != new_guid);
+  const bool policy_contents_changed =
+      base::Contains(remaining_policy_guids_, new_guid);
+  remaining_policy_guids_.erase(new_guid);
+
+  if (!policy_guid_changed && !policy_contents_changed) {
     VLOG(1) << "Not updating existing managed configuration with guid "
             << new_guid << " because the policy didn't change.";
     std::move(callback).Run();
     return;
   }
-  remaining_policy_guids_.erase(new_guid);
 
   const base::Value::Dict* user_settings =
       ui_data ? ui_data->GetUserSettingsDictionary() : nullptr;
@@ -318,24 +322,28 @@ void PolicyApplicator::ApplyNewPolicy(const std::string& entry_identifier,
   // existing service.
   CopyRequiredCellularProperties(entry_properties, &new_shill_properties);
 
-  // A new policy has to be applied to this profile entry. In order to keep
-  // implicit state of Shill like "connected successfully before", keep the
-  // entry if a policy is reapplied (e.g. after reboot) or is updated.
-  // However, some Shill properties are used to identify the network and
-  // cannot be modified after initial configuration, so we have to delete
+  // In order to keep implicit state of Shill like "connected successfully
+  // before", keep the entry if a policy is reapplied (e.g. after reboot) or is
+  // updated. However, some Shill properties are used to identify the network
+  // and cannot be modified after initial configuration, so we have to delete
   // the profile entry in these cases. Also, keeping Shill's state if the
   // SSID changed might not be a good idea anyways. If the policy GUID
   // changed, or there was no policy before, we delete the entry at first to
   // ensure that no old configuration remains.
-  if (old_guid == new_guid && shill_property_util::DoIdentifyingPropertiesMatch(
-                                  new_shill_properties, entry_properties)) {
+  const bool identifying_properties_match =
+      shill_property_util::DoIdentifyingPropertiesMatch(new_shill_properties,
+                                                        entry_properties);
+  if (!policy_guid_changed && identifying_properties_match) {
     NET_LOG(EVENT) << "Updating previously managed configuration with the "
                    << "updated policy " << new_guid << ".";
     WriteNewShillConfiguration(std::move(new_shill_properties),
                                new_policy.Clone(), std::move(callback));
   } else {
     NET_LOG(EVENT) << "Deleting profile entry before writing new policy "
-                   << new_guid << " because of identifying properties changed.";
+                   << new_guid
+                   << " [policy_guid_changed=" << policy_guid_changed
+                   << ", identifying_propreties_match="
+                   << identifying_properties_match << "]";
     // In general, old entries should at first be deleted before new
     // configurations are written to prevent inconsistencies. Therefore, we
     // delay the writing of the new config here until ~PolicyApplicator.

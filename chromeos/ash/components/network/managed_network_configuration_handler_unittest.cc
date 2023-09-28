@@ -967,6 +967,8 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, SetPolicyUpdateManagedNewGUID) {
   SetUpEntry("policy/shill_managed_wifi1.json", kUser1ProfilePath,
              "old_entry_path");
 
+  // Note that this test case expects that the UIData user settings are copied
+  // to the entry with the new GUID.
   base::Value::Dict expected_shill_properties = test_utils::ReadTestDictionary(
       "policy/shill_policy_on_unmanaged_wifi1.json");
 
