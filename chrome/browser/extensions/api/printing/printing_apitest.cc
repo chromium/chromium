@@ -27,8 +27,17 @@
 #include "extensions/test/test_extension_dir.h"
 #include "printing/backend/print_backend.h"
 #include "printing/backend/test_print_backend.h"
+#include "printing/buildflags/buildflags.h"
 #include "printing/mojom/print.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+#include "base/feature_list.h"
+#include "chrome/browser/printing/print_backend_service_test_impl.h"
+#include "chrome/services/printing/public/mojom/print_backend_service.mojom.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "printing/printing_features.h"
+#endif
 
 namespace extensions {
 
@@ -81,6 +90,18 @@ class PrintingApiTest : public ExtensionApiTest,
   PrintingApiTest& operator=(const PrintingApiTest&) = delete;
 
  protected:
+  void SetUpOnMainThread() override {
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+    if (base::FeatureList::IsEnabled(
+            printing::features::kEnableOopPrintDrivers)) {
+      print_backend_service_ =
+          printing::PrintBackendServiceTestImpl::LaunchForTesting(
+              test_remote_, test_print_backend_.get(), /*sandboxed=*/true);
+    }
+#endif
+    ExtensionApiTest::SetUpOnMainThread();
+  }
+
   void SetUpInProcessBrowserTestFixture() override {
     create_services_subscription_ =
         BrowserContextDependencyManager::GetInstance()
@@ -153,6 +174,11 @@ class PrintingApiTest : public ExtensionApiTest,
     ash::CupsPrintersManagerFactory::GetInstance()->SetTestingFactory(
         context, base::BindRepeating(&BuildFakeCupsPrintersManager));
   }
+
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+  mojo::Remote<printing::mojom::PrintBackendService> test_remote_;
+  std::unique_ptr<printing::PrintBackendServiceTestImpl> print_backend_service_;
+#endif
 
   base::CallbackListSubscription create_services_subscription_;
 
