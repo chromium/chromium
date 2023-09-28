@@ -28,6 +28,7 @@ namespace content {
 class BrowserContext;
 class BrowserURLHandler;
 class RenderProcessHost;
+struct ServiceWorkerVersionBaseInfo;
 class SiteInstance;
 class WebContents;
 }
@@ -80,6 +81,11 @@ class ChromeContentBrowserClientParts {
       service_manager::BinderRegistry* registry,
       blink::AssociatedInterfaceRegistry* associated_registry,
       content::RenderProcessHost* render_process_host) {}
+
+  // Allows to register browser interfaces exposed to a ServiceWorker.
+  virtual void ExposeInterfacesToRendererForServiceWorker(
+      const content::ServiceWorkerVersionBaseInfo& service_worker_version_info,
+      blink::AssociatedInterfaceRegistry& associated_registry) {}
 };
 
 #endif  // CHROME_BROWSER_CHROME_CONTENT_BROWSER_CLIENT_PARTS_H_

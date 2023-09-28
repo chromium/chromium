@@ -445,6 +445,7 @@ static_library("extensions") {
     "chrome_component_extension_resource_manager.h",
     "chrome_content_browser_client_extensions_part.cc",
     "chrome_content_browser_client_extensions_part.h",
+    "chrome_content_browser_client_extensions_part_bindings.cc",
     "chrome_content_verifier_delegate.cc",
     "chrome_content_verifier_delegate.h",
     "chrome_extension_browser_constants.cc",

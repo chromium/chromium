@@ -525,6 +525,9 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       const content::ServiceWorkerVersionBaseInfo& service_worker_version_info,
       mojo::BinderMapWithContext<const content::ServiceWorkerVersionBaseInfo&>*
           map) override;
+  void RegisterAssociatedInterfaceBindersForServiceWorker(
+      const content::ServiceWorkerVersionBaseInfo& service_worker_version_info,
+      blink::AssociatedInterfaceRegistry& associated_registry) override;
   void RegisterAssociatedInterfaceBindersForRenderFrameHost(
       content::RenderFrameHost& render_frame_host,
       blink::AssociatedInterfaceRegistry& associated_registry) override;

@@ -551,7 +551,7 @@ void Dispatcher::WillEvaluateServiceWorkerOnWorkerThread(
     WorkerThreadDispatcher* worker_dispatcher = WorkerThreadDispatcher::Get();
     std::unique_ptr<IPCMessageSender> ipc_sender =
         IPCMessageSender::CreateWorkerThreadIPCMessageSender(
-            worker_dispatcher, service_worker_version_id);
+            worker_dispatcher, context_proxy, service_worker_version_id);
     base::UnguessableToken worker_activation_token =
         *RendererExtensionRegistry::Get()->GetWorkerActivationToken(
             extension->id());

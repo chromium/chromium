@@ -1380,6 +1380,13 @@ void ServiceWorkerVersion::OnScriptLoaded() {
   }
 }
 
+void ServiceWorkerVersion::OnProcessAllocated() {
+  GetContentClient()
+      ->browser()
+      ->RegisterAssociatedInterfaceBindersForServiceWorker(
+          GetInfo(), *associated_registry_);
+}
+
 void ServiceWorkerVersion::OnStarting() {
   for (auto& observer : observers_)
     observer.OnRunningStateChanged(this);

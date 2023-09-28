@@ -19,6 +19,10 @@ namespace base {
 class Uuid;
 }
 
+namespace blink {
+class WebServiceWorkerContextProxy;
+}
+
 namespace extensions {
 
 enum class ChannelType;
@@ -115,6 +119,7 @@ class IPCMessageSender {
   // Creates an IPCMessageSender for use on a worker thread.
   static std::unique_ptr<IPCMessageSender> CreateWorkerThreadIPCMessageSender(
       WorkerThreadDispatcher* dispatcher,
+      blink::WebServiceWorkerContextProxy* context_proxy,
       int64_t service_worker_version_id);
 
  protected:

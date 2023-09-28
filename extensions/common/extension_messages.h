@@ -71,37 +71,6 @@ IPC_ENUM_TRAITS_MAX_VALUE(extensions::SerializationFormat,
 IPC_ENUM_TRAITS_MAX_VALUE(extensions::ChannelType,
                           extensions::ChannelType::kLast)
 
-// Parameters structure for ExtensionHostMsg_AddAPIActionToActivityLog and
-// ExtensionHostMsg_AddEventToActivityLog.
-IPC_STRUCT_BEGIN(ExtensionHostMsg_APIActionOrEvent_Params)
-  // API name.
-  IPC_STRUCT_MEMBER(std::string, api_call)
-
-  // List of arguments.
-  IPC_STRUCT_MEMBER(base::Value::List, arguments)
-
-  // Extra logging information.
-  IPC_STRUCT_MEMBER(std::string, extra)
-IPC_STRUCT_END()
-
-// Parameters structure for ExtensionHostMsg_AddDOMActionToActivityLog.
-IPC_STRUCT_BEGIN(ExtensionHostMsg_DOMAction_Params)
-  // URL of the page.
-  IPC_STRUCT_MEMBER(GURL, url)
-
-  // Title of the page.
-  IPC_STRUCT_MEMBER(std::u16string, url_title)
-
-  // API name.
-  IPC_STRUCT_MEMBER(std::string, api_call)
-
-  // List of arguments.
-  IPC_STRUCT_MEMBER(base::Value::List, arguments)
-
-  // Type of DOM API call.
-  IPC_STRUCT_MEMBER(int, call_type)
-IPC_STRUCT_END()
-
 // Struct containing information about the sender of connect() calls that
 // originate from a tab.
 IPC_STRUCT_BEGIN(ExtensionMsg_TabConnectionInfo)
@@ -359,21 +328,6 @@ IPC_MESSAGE_ROUTED0(ExtensionHostMsg_AppWindowReady)
 // Sent by the renderer when the draggable regions are updated.
 IPC_MESSAGE_ROUTED1(ExtensionHostMsg_UpdateDraggableRegions,
                     std::vector<extensions::DraggableRegion> /* regions */)
-
-// Sent by the renderer to log an API action to the extension activity log.
-IPC_MESSAGE_CONTROL2(ExtensionHostMsg_AddAPIActionToActivityLog,
-                     std::string /* extension_id */,
-                     ExtensionHostMsg_APIActionOrEvent_Params)
-
-// Sent by the renderer to log an event to the extension activity log.
-IPC_MESSAGE_CONTROL2(ExtensionHostMsg_AddEventToActivityLog,
-                     std::string /* extension_id */,
-                     ExtensionHostMsg_APIActionOrEvent_Params)
-
-// Sent by the renderer to log a DOM action to the extension activity log.
-IPC_MESSAGE_CONTROL2(ExtensionHostMsg_AddDOMActionToActivityLog,
-                     std::string /* extension_id */,
-                     ExtensionHostMsg_DOMAction_Params)
 
 // Asks the browser to wake the event page of an extension.
 // The browser will reply with ExtensionHostMsg_WakeEventPageResponse.

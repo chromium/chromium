@@ -1347,6 +1347,14 @@ class CONTENT_EXPORT ContentBrowserClient {
       const ServiceWorkerVersionBaseInfo& service_worker_version_info,
       mojo::BinderMapWithContext<const ServiceWorkerVersionBaseInfo&>* map) {}
 
+  // Allows the embedder to register browser channel-associated interfaces that
+  // are exposed through the ServiceWorker. `service_worker_version_info`
+  // contains the information to uniquely identify the service worker instance.
+  // `associated_registry` contains interfaces provided by the browser.
+  virtual void RegisterAssociatedInterfaceBindersForServiceWorker(
+      const ServiceWorkerVersionBaseInfo& service_worker_version_info,
+      blink::AssociatedInterfaceRegistry& associated_registry) {}
+
   // Allows the embedder to register per-WebUI interface brokers that are used
   // for handling Mojo.bindInterface in WebUI JavaScript.
   //

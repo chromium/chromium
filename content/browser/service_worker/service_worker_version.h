@@ -888,6 +888,7 @@ class CONTENT_EXPORT ServiceWorkerVersion
   // EmbeddedWorkerInstance::Listener overrides:
   void OnScriptEvaluationStart() override;
   void OnScriptLoaded() override;
+  void OnProcessAllocated() override;
   void OnStarting() override;
   void OnStarted(blink::mojom::ServiceWorkerStartStatus status,
                  FetchHandlerType new_fetch_handler_type,

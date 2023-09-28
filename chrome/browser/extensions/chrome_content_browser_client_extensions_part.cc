@@ -49,23 +49,19 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
-#include "extensions/browser/api/automation_internal/automation_event_router.h"
 #include "extensions/browser/api/messaging/messaging_api_message_filter.h"
 #include "extensions/browser/api/web_request/web_request_api.h"
 #include "extensions/browser/api/web_request/web_request_api_helpers.h"
 #include "extensions/browser/bad_message.h"
-#include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_message_filter.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_service_worker_message_filter.h"
 #include "extensions/browser/extension_system.h"
-#include "extensions/browser/guest_view/extensions_guest_view.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "extensions/browser/guest_view/web_view/web_view_renderer_state.h"
 #include "extensions/browser/process_map.h"
 #include "extensions/browser/renderer_startup_helper.h"
-#include "extensions/browser/service_worker/service_worker_host.h"
 #include "extensions/browser/service_worker_task_queue.h"
 #include "extensions/browser/url_loader_factory_manager.h"
 #include "extensions/browser/url_request_util.h"
@@ -75,14 +71,9 @@
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/manifest_handlers/web_accessible_resources_info.h"
-#include "extensions/common/mojom/automation_registry.mojom.h"
-#include "extensions/common/mojom/event_router.mojom.h"
-#include "extensions/common/mojom/guest_view.mojom.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
-#include "extensions/common/mojom/renderer_host.mojom.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/switches.h"
-#include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -881,27 +872,6 @@ void ChromeContentBrowserClientExtensionsPart::
   if (process_map->Contains(process->GetID())) {
     command_line->AppendSwitch(switches::kExtensionProcess);
   }
-}
-
-void ChromeContentBrowserClientExtensionsPart::ExposeInterfacesToRenderer(
-    service_manager::BinderRegistry* registry,
-    blink::AssociatedInterfaceRegistry* associated_registry,
-    content::RenderProcessHost* host) {
-  associated_registry->AddInterface<mojom::EventRouter>(
-      base::BindRepeating(&EventRouter::BindForRenderer, host->GetID()));
-  associated_registry->AddInterface<guest_view::mojom::GuestViewHost>(
-      base::BindRepeating(&ExtensionsGuestView::CreateForComponents,
-                          host->GetID()));
-  associated_registry->AddInterface<mojom::GuestView>(base::BindRepeating(
-      &ExtensionsGuestView::CreateForExtensions, host->GetID()));
-  associated_registry->AddInterface<mojom::RendererHost>(base::BindRepeating(
-      &RendererStartupHelper::BindForRenderer, host->GetID()));
-  associated_registry->AddInterface<mojom::ServiceWorkerHost>(
-      base::BindRepeating(&ServiceWorkerHost::BindReceiver, host->GetID()));
-  associated_registry
-      ->AddInterface<extensions::mojom::RendererAutomationRegistry>(
-          base::BindRepeating(&AutomationEventRouter::BindForRenderer,
-                              host->GetID()));
 }
 
 }  // namespace extensions

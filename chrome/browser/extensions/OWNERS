@@ -8,6 +8,8 @@ per-file extension_gcm_app_handler*=file://chrome/browser/extensions/api/gcm/OWN
 # For security review.
 per-file chrome_extensions_browser_interface_binders.*=set noparent
 per-file chrome_extensions_browser_interface_binders.*=file://ipc/SECURITY_OWNERS
+per-file chrome_content_browser_client_extensions_part_bindings.cc=set noparent
+per-file chrome_content_browser_client_extensions_part_bindings.cc=file://ipc/SECURITY_OWNERS
 
 # For adding/renaming files for Chrome OS apps APIs.
 per-file BUILD.gn=stevenjb@chromium.org

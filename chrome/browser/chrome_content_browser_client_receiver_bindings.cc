@@ -471,6 +471,17 @@ void ChromeContentBrowserClient::
 }
 
 void ChromeContentBrowserClient::
+    RegisterAssociatedInterfaceBindersForServiceWorker(
+        const content::ServiceWorkerVersionBaseInfo&
+            service_worker_version_info,
+        blink::AssociatedInterfaceRegistry& associated_registry) {
+  for (auto& ep : extra_parts_) {
+    ep->ExposeInterfacesToRendererForServiceWorker(service_worker_version_info,
+                                                   associated_registry);
+  }
+}
+
+void ChromeContentBrowserClient::
     RegisterAssociatedInterfaceBindersForRenderFrameHost(
         content::RenderFrameHost& render_frame_host,
         blink::AssociatedInterfaceRegistry& associated_registry) {
