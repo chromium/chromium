@@ -6,9 +6,8 @@
  * daniel@veillard.com
  */
 
-#include "libxml.h"
 #include <stdio.h>
-
+#include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
 
@@ -201,9 +200,6 @@ static xmlXPathContextPtr ctxtXPath;
 
 static void
 initializeLibxml2(void) {
-    xmlGetWarningsDefaultValue = 0;
-    xmlPedanticParserDefault(0);
-
     xmlMemSetup(xmlMemFree, xmlMemMalloc, xmlMemRealloc, xmlMemoryStrdup);
     xmlInitParser();
     xmlSetExternalEntityLoader(testExternalEntityLoader);

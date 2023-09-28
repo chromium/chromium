@@ -6,5 +6,3 @@ CONSOLE ERROR: Opening and ending tag mismatch: html line 5 and xsl:template
 
 CONSOLE ERROR: Opening and ending tag mismatch: template line 4 and stylesheet
 
-CONSOLE ERROR: Premature end of data in tag stylesheet line 2
-

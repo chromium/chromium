@@ -4,6 +4,8 @@
 #include <libxml/xmlerror.h>
 #include <libxml/xmlversion.h>
 
+struct _xmlNode;
+
 XML_HIDDEN void
 __xmlRaiseError(xmlStructuredErrorFunc schannel,
                 xmlGenericErrorFunc channel, void *data, void *ctx,
@@ -12,7 +14,7 @@ __xmlRaiseError(xmlStructuredErrorFunc schannel,
                 const char *str2, const char *str3, int int1, int col,
 	        const char *msg, ...) LIBXML_ATTR_FORMAT(16,17);
 XML_HIDDEN void
-__xmlSimpleError(int domain, int code, xmlNodePtr node,
+__xmlSimpleError(int domain, int code, struct _xmlNode *node,
                  const char *msg, const char *extra) LIBXML_ATTR_FORMAT(4,0);
 XML_HIDDEN void
 xmlGenericErrorDefaultFunc(void *ctx, const char *msg,

@@ -84,9 +84,9 @@ while test $# -gt 0; do
     --libs)
         if [ "$2" = "--dynamic" ]; then
             shift
-            libs="-lxml2"
+            libs="-lxml2 "
         else
-            libs="-lxml2     -licui18n -licuuc -licudata -lm   "
+            libs="-lxml2  -licui18n -licuuc -licudata    -lm   "
         fi
 
         if [ "-L${libdir}" != "-L/usr/lib" -a "-L${libdir}" != "-L/usr/lib64" ]; then

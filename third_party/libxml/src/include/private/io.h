@@ -11,6 +11,9 @@ XML_HIDDEN void
 __xmlLoaderErr(void *ctx, const char *msg,
                const char *filename) LIBXML_ATTR_FORMAT(2,0);
 
+xmlParserInputBufferPtr
+xmlParserInputBufferCreateString(const xmlChar *str);
+
 #ifdef LIBXML_OUTPUT_ENABLED
 XML_HIDDEN xmlOutputBufferPtr
 xmlAllocOutputBufferInternal(xmlCharEncodingHandlerPtr encoder);

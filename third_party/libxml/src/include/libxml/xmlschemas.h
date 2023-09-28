@@ -16,7 +16,9 @@
 
 #ifdef LIBXML_SCHEMAS_ENABLED
 
+#include <libxml/encoding.h>
 #include <libxml/tree.h>
+#include <libxml/xmlerror.h>
 
 #ifdef __cplusplus
 extern "C" {

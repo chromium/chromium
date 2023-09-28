@@ -1,5 +1,38 @@
 NEWS file for libxml2
 
+v2.12.0: not released yet
+
+### Major changes
+
+Starting with this release, it should be enough to add the --with-legacy
+configuration option to provide maximum ABI compatibility. For example,
+if a code module was removed from the default configuration, the option
+will add stubs for the removed symbols.
+
+libxml2 will now store global variables in thread-local storage if supported
+by the compiler. This avoids allocating the data lazily which can result in
+a fatal error condition. A new API function xmlCheckThreadLocalStorage
+was added so the allocation can be checked earlier.
+
+Several cyclic dependencies in public header files were fixed. As a result,
+certain headers won't include other headers as before.
+
+Refactoring of the encoding code has been mostly completed. Calling
+xmlSwitchEncoding from client code is now fully supported, for example to
+override the encoding for the push parser.
+
+When parsing data from memory, libxml2 will now stream data chunk by chunk
+instead of copying the whole buffer (possibly twice with encodings),
+reducing peak memory consumption considerably.
+
+A new API function xmlCtxtSetMaxAmplification was added to allow parsing
+of files that would otherwise trigger the billion laughs protection.
+
+Several bugs in the regex determinism checks were fixed. Invalid XML
+Schemas which previous versions erroneously accepted will now be
+rejected.
+
+
 v2.11.0: Apr 28 2023
 
 ### Major changes

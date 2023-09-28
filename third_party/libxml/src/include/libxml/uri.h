@@ -12,7 +12,7 @@
 #define __XML_URI_H__
 
 #include <libxml/xmlversion.h>
-#include <libxml/tree.h>
+#include <libxml/xmlstring.h>
 
 #ifdef __cplusplus
 extern "C" {

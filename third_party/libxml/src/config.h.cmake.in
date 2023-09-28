@@ -60,9 +60,6 @@
 /* Define if <pthread.h> is there */
 #cmakedefine HAVE_PTHREAD_H 1
 
-/* Define to 1 if you have the `rand_r' function. */
-#cmakedefine HAVE_RAND_R 1
-
 /* Have shl_load based dso */
 #cmakedefine HAVE_SHLLOAD 1
 

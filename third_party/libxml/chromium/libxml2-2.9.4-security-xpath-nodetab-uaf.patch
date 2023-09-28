@@ -12,4 +12,4 @@ and https://bugs.chromium.org/p/chromium/issues/detail?id=705445
 +    ret->boolval = 0;
      ret->user = (void *) val;
      ret->nodesetval = xmlXPathNodeSetCreate(val);
- #ifdef XP_DEBUG_OBJ_USAGE
+     return(ret);

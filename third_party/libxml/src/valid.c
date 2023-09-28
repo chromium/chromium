@@ -21,7 +21,6 @@
 #include <libxml/parserInternals.h>
 #include <libxml/xmlerror.h>
 #include <libxml/list.h>
-#include <libxml/globals.h>
 
 #include "private/error.h"
 #include "private/parser.h"
@@ -29,8 +28,6 @@
 static xmlElementPtr
 xmlGetDtdElementDesc2(xmlValidCtxtPtr ctxt, xmlDtdPtr dtd, const xmlChar *name,
                       int create);
-/* #define DEBUG_VALID_ALGO */
-/* #define DEBUG_REGEXP_ALGO */
 
 #define TODO								\
     xmlGenericError(xmlGenericErrorContext,				\
@@ -465,151 +462,6 @@ nodeVPop(xmlValidCtxtPtr ctxt)
     return (ret);
 }
 
-#ifdef DEBUG_VALID_ALGO
-static void
-xmlValidPrintNode(xmlNodePtr cur) {
-    if (cur == NULL) {
-	xmlGenericError(xmlGenericErrorContext, "null");
-	return;
-    }
-    switch (cur->type) {
-	case XML_ELEMENT_NODE:
-	    xmlGenericError(xmlGenericErrorContext, "%s ", cur->name);
-	    break;
-	case XML_TEXT_NODE:
-	    xmlGenericError(xmlGenericErrorContext, "text ");
-	    break;
-	case XML_CDATA_SECTION_NODE:
-	    xmlGenericError(xmlGenericErrorContext, "cdata ");
-	    break;
-	case XML_ENTITY_REF_NODE:
-	    xmlGenericError(xmlGenericErrorContext, "&%s; ", cur->name);
-	    break;
-	case XML_PI_NODE:
-	    xmlGenericError(xmlGenericErrorContext, "pi(%s) ", cur->name);
-	    break;
-	case XML_COMMENT_NODE:
-	    xmlGenericError(xmlGenericErrorContext, "comment ");
-	    break;
-	case XML_ATTRIBUTE_NODE:
-	    xmlGenericError(xmlGenericErrorContext, "?attr? ");
-	    break;
-	case XML_ENTITY_NODE:
-	    xmlGenericError(xmlGenericErrorContext, "?ent? ");
-	    break;
-	case XML_DOCUMENT_NODE:
-	    xmlGenericError(xmlGenericErrorContext, "?doc? ");
-	    break;
-	case XML_DOCUMENT_TYPE_NODE:
-	    xmlGenericError(xmlGenericErrorContext, "?doctype? ");
-	    break;
-	case XML_DOCUMENT_FRAG_NODE:
-	    xmlGenericError(xmlGenericErrorContext, "?frag? ");
-	    break;
-	case XML_NOTATION_NODE:
-	    xmlGenericError(xmlGenericErrorContext, "?nota? ");
-	    break;
-	case XML_HTML_DOCUMENT_NODE:
-	    xmlGenericError(xmlGenericErrorContext, "?html? ");
-	    break;
-	case XML_DTD_NODE:
-	    xmlGenericError(xmlGenericErrorContext, "?dtd? ");
-	    break;
-	case XML_ELEMENT_DECL:
-	    xmlGenericError(xmlGenericErrorContext, "?edecl? ");
-	    break;
-	case XML_ATTRIBUTE_DECL:
-	    xmlGenericError(xmlGenericErrorContext, "?adecl? ");
-	    break;
-	case XML_ENTITY_DECL:
-	    xmlGenericError(xmlGenericErrorContext, "?entdecl? ");
-	    break;
-	case XML_NAMESPACE_DECL:
-	    xmlGenericError(xmlGenericErrorContext, "?nsdecl? ");
-	    break;
-	case XML_XINCLUDE_START:
-	    xmlGenericError(xmlGenericErrorContext, "incstart ");
-	    break;
-	case XML_XINCLUDE_END:
-	    xmlGenericError(xmlGenericErrorContext, "incend ");
-	    break;
-    }
-}
-
-static void
-xmlValidPrintNodeList(xmlNodePtr cur) {
-    if (cur == NULL)
-	xmlGenericError(xmlGenericErrorContext, "null ");
-    while (cur != NULL) {
-	xmlValidPrintNode(cur);
-	cur = cur->next;
-    }
-}
-
-static void
-xmlValidDebug(xmlNodePtr cur, xmlElementContentPtr cont) {
-    char expr[5000];
-
-    expr[0] = 0;
-    xmlGenericError(xmlGenericErrorContext, "valid: ");
-    xmlValidPrintNodeList(cur);
-    xmlGenericError(xmlGenericErrorContext, "against ");
-    xmlSnprintfElementContent(expr, 5000, cont, 1);
-    xmlGenericError(xmlGenericErrorContext, "%s\n", expr);
-}
-
-static void
-xmlValidDebugState(xmlValidStatePtr state) {
-    xmlGenericError(xmlGenericErrorContext, "(");
-    if (state->cont == NULL)
-	xmlGenericError(xmlGenericErrorContext, "null,");
-    else
-	switch (state->cont->type) {
-            case XML_ELEMENT_CONTENT_PCDATA:
-		xmlGenericError(xmlGenericErrorContext, "pcdata,");
-		break;
-            case XML_ELEMENT_CONTENT_ELEMENT:
-		xmlGenericError(xmlGenericErrorContext, "%s,",
-			        state->cont->name);
-		break;
-            case XML_ELEMENT_CONTENT_SEQ:
-		xmlGenericError(xmlGenericErrorContext, "seq,");
-		break;
-            case XML_ELEMENT_CONTENT_OR:
-		xmlGenericError(xmlGenericErrorContext, "or,");
-		break;
-	}
-    xmlValidPrintNode(state->node);
-    xmlGenericError(xmlGenericErrorContext, ",%d,%X,%d)",
-	    state->depth, state->occurs, state->state);
-}
-
-static void
-xmlValidStateDebug(xmlValidCtxtPtr ctxt) {
-    int i, j;
-
-    xmlGenericError(xmlGenericErrorContext, "state: ");
-    xmlValidDebugState(ctxt->vstate);
-    xmlGenericError(xmlGenericErrorContext, " stack: %d ",
-	    ctxt->vstateNr - 1);
-    for (i = 0, j = ctxt->vstateNr - 1;(i < 3) && (j > 0);i++,j--)
-	xmlValidDebugState(&ctxt->vstateTab[j]);
-    xmlGenericError(xmlGenericErrorContext, "\n");
-}
-
-/*****
-#define DEBUG_VALID_STATE(n,c) xmlValidDebug(n,c);
- *****/
-
-#define DEBUG_VALID_STATE(n,c) xmlValidStateDebug(ctxt);
-#define DEBUG_VALID_MSG(m)					\
-    xmlGenericError(xmlGenericErrorContext, "%s\n", m);
-
-#else
-#define DEBUG_VALID_STATE(n,c)
-#define DEBUG_VALID_MSG(m)
-#endif
-
 /* TODO: use hash table for accesses to elem and attribute definitions */
 
 
@@ -828,9 +680,6 @@ xmlValidBuildContentModel(xmlValidCtxtPtr ctxt, xmlElementPtr elem) {
 	                XML_DTD_CONTENT_NOT_DETERMINIST,
 	       "Content model of %s is not deterministic: %s\n",
 	       elem->name, BAD_CAST expr, NULL);
-#ifdef DEBUG_REGEXP_ALGO
-        xmlRegexpPrint(stderr, elem->contModel);
-#endif
         ctxt->valid = 0;
 	ctxt->state = NULL;
 	xmlFreeAutomata(ctxt->am);
@@ -1052,7 +901,7 @@ xmlCopyDocElementContent(xmlDocPtr doc, xmlElementContentPtr cur) {
 	    if (cur->c1 != NULL)
 	        tmp->c1 = xmlCopyDocElementContent(doc,cur->c1);
 	    if (tmp->c1 != NULL)
-		tmp->c1->parent = ret;
+		tmp->c1->parent = tmp;
 	    prev = tmp;
 	    cur = cur->c2;
 	}
@@ -4892,13 +4741,10 @@ cont:
      * epsilon transition, go directly to the analysis phase
      */
     if (STATE == ROLLBACK_PARENT) {
-	DEBUG_VALID_MSG("restored parent branch");
-	DEBUG_VALID_STATE(NODE, CONT)
 	ret = 1;
 	goto analyze;
     }
 
-    DEBUG_VALID_STATE(NODE, CONT)
     /*
      * we may have to save a backup state here. This is the equivalent
      * of handling epsilon transition in NFAs.
@@ -4910,7 +4756,6 @@ cont:
 	((CONT->ocur == XML_ELEMENT_CONTENT_MULT) ||
 	 (CONT->ocur == XML_ELEMENT_CONTENT_OPT) ||
 	 ((CONT->ocur == XML_ELEMENT_CONTENT_PLUS) && (OCCURRENCE)))) {
-	DEBUG_VALID_MSG("saving parent branch");
 	if (vstateVPush(ctxt, CONT, NODE, DEPTH, OCCURS, ROLLBACK_PARENT) < 0)
 	    return(0);
     }
@@ -4922,12 +4767,10 @@ cont:
     switch (CONT->type) {
 	case XML_ELEMENT_CONTENT_PCDATA:
 	    if (NODE == NULL) {
-		DEBUG_VALID_MSG("pcdata failed no node");
 		ret = 0;
 		break;
 	    }
 	    if (NODE->type == XML_TEXT_NODE) {
-		DEBUG_VALID_MSG("pcdata found, skip to next");
 		/*
 		 * go to next element in the content model
 		 * skipping ignorable elems
@@ -4945,14 +4788,12 @@ cont:
                 ret = 1;
 		break;
 	    } else {
-		DEBUG_VALID_MSG("pcdata failed");
 		ret = 0;
 		break;
 	    }
 	    break;
 	case XML_ELEMENT_CONTENT_ELEMENT:
 	    if (NODE == NULL) {
-		DEBUG_VALID_MSG("element failed no node");
 		ret = 0;
 		break;
 	    }
@@ -4968,7 +4809,6 @@ cont:
 		}
 	    }
 	    if (ret == 1) {
-		DEBUG_VALID_MSG("element found, skip to next");
 		/*
 		 * go to next element in the content model
 		 * skipping ignorable elems
@@ -4984,7 +4824,6 @@ cont:
 			  (NODE->type != XML_TEXT_NODE) &&
 			  (NODE->type != XML_CDATA_SECTION_NODE)));
 	    } else {
-		DEBUG_VALID_MSG("element failed");
 		ret = 0;
 		break;
 	    }
@@ -5017,7 +4856,6 @@ cont:
 	    /*
 	     * save the second branch 'or' branch
 	     */
-	    DEBUG_VALID_MSG("saving 'or' branch");
 	    if (vstateVPush(ctxt, CONT->c2, NODE, DEPTH + 1,
 			    OCCURS, ROLLBACK_OR) < 0)
 		return(-1);
@@ -5059,7 +4897,6 @@ cont:
      * At this point handle going up in the tree
      */
     if (ret == -1) {
-	DEBUG_VALID_MSG("error found returning");
 	return(ret);
     }
 analyze:
@@ -5074,9 +4911,7 @@ analyze:
 
 		case XML_ELEMENT_CONTENT_ONCE:
 		    cur = ctxt->vstate->node;
-		    DEBUG_VALID_MSG("Once branch failed, rollback");
 		    if (vstateVPop(ctxt) < 0 ) {
-			DEBUG_VALID_MSG("exhaustion, failed");
 			return(0);
 		    }
 		    if (cur != ctxt->vstate->node)
@@ -5085,69 +4920,50 @@ analyze:
 		case XML_ELEMENT_CONTENT_PLUS:
 		    if (OCCURRENCE == 0) {
 			cur = ctxt->vstate->node;
-			DEBUG_VALID_MSG("Plus branch failed, rollback");
 			if (vstateVPop(ctxt) < 0 ) {
-			    DEBUG_VALID_MSG("exhaustion, failed");
 			    return(0);
 			}
 			if (cur != ctxt->vstate->node)
 			    determinist = -3;
 			goto cont;
 		    }
-		    DEBUG_VALID_MSG("Plus branch found");
 		    ret = 1;
 		    break;
 		case XML_ELEMENT_CONTENT_MULT:
-#ifdef DEBUG_VALID_ALGO
-		    if (OCCURRENCE == 0) {
-			DEBUG_VALID_MSG("Mult branch failed");
-		    } else {
-			DEBUG_VALID_MSG("Mult branch found");
-		    }
-#endif
 		    ret = 1;
 		    break;
 		case XML_ELEMENT_CONTENT_OPT:
-		    DEBUG_VALID_MSG("Option branch failed");
 		    ret = 1;
 		    break;
 	    }
 	} else {
 	    switch (CONT->ocur) {
 		case XML_ELEMENT_CONTENT_OPT:
-		    DEBUG_VALID_MSG("Option branch succeeded");
 		    ret = 1;
 		    break;
 		case XML_ELEMENT_CONTENT_ONCE:
-		    DEBUG_VALID_MSG("Once branch succeeded");
 		    ret = 1;
 		    break;
 		case XML_ELEMENT_CONTENT_PLUS:
 		    if (STATE == ROLLBACK_PARENT) {
-			DEBUG_VALID_MSG("Plus branch rollback");
 			ret = 1;
 			break;
 		    }
 		    if (NODE == NULL) {
-			DEBUG_VALID_MSG("Plus branch exhausted");
 			ret = 1;
 			break;
 		    }
-		    DEBUG_VALID_MSG("Plus branch succeeded, continuing");
 		    SET_OCCURRENCE;
 		    goto cont;
 		case XML_ELEMENT_CONTENT_MULT:
 		    if (STATE == ROLLBACK_PARENT) {
-			DEBUG_VALID_MSG("Mult branch rollback");
 			ret = 1;
 			break;
 		    }
 		    if (NODE == NULL) {
-			DEBUG_VALID_MSG("Mult branch exhausted");
 			ret = 1;
 			break;
 		    }
-		    DEBUG_VALID_MSG("Mult branch succeeded, continuing");
 		    /* SET_OCCURRENCE; */
 		    goto cont;
 	    }
@@ -5164,33 +4980,26 @@ analyze:
 
 	switch (CONT->parent->type) {
 	    case XML_ELEMENT_CONTENT_PCDATA:
-		DEBUG_VALID_MSG("Error: parent pcdata");
 		return(-1);
 	    case XML_ELEMENT_CONTENT_ELEMENT:
-		DEBUG_VALID_MSG("Error: parent element");
 		return(-1);
 	    case XML_ELEMENT_CONTENT_OR:
 		if (ret == 1) {
-		    DEBUG_VALID_MSG("Or succeeded");
 		    CONT = CONT->parent;
 		    DEPTH--;
 		} else {
-		    DEBUG_VALID_MSG("Or failed");
 		    CONT = CONT->parent;
 		    DEPTH--;
 		}
 		break;
 	    case XML_ELEMENT_CONTENT_SEQ:
 		if (ret == 0) {
-		    DEBUG_VALID_MSG("Sequence failed");
 		    CONT = CONT->parent;
 		    DEPTH--;
 		} else if (CONT == CONT->parent->c1) {
-		    DEBUG_VALID_MSG("Sequence testing 2nd branch");
 		    CONT = CONT->parent->c2;
 		    goto cont;
 		} else {
-		    DEBUG_VALID_MSG("Sequence succeeded");
 		    CONT = CONT->parent;
 		    DEPTH--;
 		}
@@ -5200,9 +5009,7 @@ analyze:
 	xmlNodePtr cur;
 
 	cur = ctxt->vstate->node;
-	DEBUG_VALID_MSG("Failed, remaining input, rollback");
 	if (vstateVPop(ctxt) < 0 ) {
-	    DEBUG_VALID_MSG("exhaustion, failed");
 	    return(0);
 	}
 	if (cur != ctxt->vstate->node)
@@ -5213,9 +5020,7 @@ analyze:
 	xmlNodePtr cur;
 
 	cur = ctxt->vstate->node;
-	DEBUG_VALID_MSG("Failure, rollback");
 	if (vstateVPop(ctxt) < 0 ) {
-	    DEBUG_VALID_MSG("exhaustion, failed");
 	    return(0);
 	}
 	if (cur != ctxt->vstate->node)
@@ -5454,7 +5259,6 @@ fail:
 	 * Build a minimal representation of this node content
 	 * sufficient to run the validation process on it
 	 */
-	DEBUG_VALID_MSG("Found an entity reference, linearizing");
 	cur = child;
 	while (cur != NULL) {
 	    switch (cur->type) {
@@ -6460,7 +6264,7 @@ name_ok:
  * xmlValidateElement:
  * @ctxt:  the validation context
  * @doc:  a document instance
- * @elem:  an element instance
+ * @root:  an element instance
  *
  * Try to validate the subtree under an element
  *

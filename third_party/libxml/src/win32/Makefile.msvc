@@ -48,8 +48,8 @@ CFLAGS = $(CFLAGS) /I$(XML_SRCDIR) /I$(XML_SRCDIR)\include /I$(INCPREFIX)
 !if "$(WITH_THREADS)" != "no"
 CFLAGS = $(CFLAGS) /D "_REENTRANT"
 !endif
-!if "$(WITH_THREADS)" == "yes" || "$(WITH_THREADS)" == "ctls"
-CFLAGS = $(CFLAGS) /D "HAVE_COMPILER_TLS"
+!if "$(WITH_THREADS)" == "ctls"
+CFLAGS = $(CFLAGS) /D "XML_THREAD_LOCAL=__declspec(thread)"
 !else if "$(WITH_THREADS)" == "posix"
 CFLAGS = $(CFLAGS) /D "HAVE_PTHREAD_H"
 !endif

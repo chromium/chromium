@@ -19,10 +19,8 @@
 #include <libxml/HTMLparser.h>
 #include <libxml/HTMLtree.h>
 #include <libxml/entities.h>
-#include <libxml/valid.h>
 #include <libxml/xmlerror.h>
 #include <libxml/parserInternals.h>
-#include <libxml/globals.h>
 #include <libxml/uri.h>
 
 #include "private/buf.h"

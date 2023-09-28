@@ -1847,7 +1847,7 @@ xmlSaveDoc(xmlSaveCtxtPtr ctxt, xmlDocPtr doc)
 /**
  * xmlSaveTree:
  * @ctxt:  a document saving context
- * @node:  the top node of the subtree to save
+ * @cur:  the top node of the subtree to save
  *
  * Save a subtree starting at the node parameter to a saving context
  * TODO: The function is not fully implemented yet as it does not return the
@@ -2166,17 +2166,9 @@ xmlBufNodeDump(xmlBufPtr buf, xmlDocPtr doc, xmlNodePtr cur, int level,
     xmlInitParser();
 
     if (cur == NULL) {
-#ifdef DEBUG_TREE
-        xmlGenericError(xmlGenericErrorContext,
-                        "xmlNodeDump : node == NULL\n");
-#endif
         return (-1);
     }
     if (buf == NULL) {
-#ifdef DEBUG_TREE
-        xmlGenericError(xmlGenericErrorContext,
-                        "xmlNodeDump : buf == NULL\n");
-#endif
         return (-1);
     }
     outbuf = (xmlOutputBufferPtr) xmlMalloc(sizeof(xmlOutputBuffer));
@@ -2218,18 +2210,8 @@ xmlElemDump(FILE * f, xmlDocPtr doc, xmlNodePtr cur)
     xmlInitParser();
 
     if (cur == NULL) {
-#ifdef DEBUG_TREE
-        xmlGenericError(xmlGenericErrorContext,
-                        "xmlElemDump : cur == NULL\n");
-#endif
         return;
     }
-#ifdef DEBUG_TREE
-    if (doc == NULL) {
-        xmlGenericError(xmlGenericErrorContext,
-                        "xmlElemDump : doc == NULL\n");
-    }
-#endif
 
     outbuf = xmlOutputBufferCreateFile(f, NULL);
     if (outbuf == NULL)
@@ -2273,6 +2255,8 @@ xmlNodeDumpOutput(xmlOutputBufferPtr buf, xmlDocPtr doc, xmlNodePtr cur,
     xmlDtdPtr dtd;
     int is_xhtml = 0;
 #endif
+
+    (void) doc;
 
     xmlInitParser();
 
@@ -2467,10 +2451,6 @@ xmlDocFormatDump(FILE *f, xmlDocPtr cur, int format) {
     int ret;
 
     if (cur == NULL) {
-#ifdef DEBUG_TREE
-        xmlGenericError(xmlGenericErrorContext,
-		"xmlDocDump : document == NULL\n");
-#endif
 	return(-1);
     }
     encoding = (const char *) cur->encoding;

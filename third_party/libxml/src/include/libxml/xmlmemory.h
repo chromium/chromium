@@ -15,32 +15,6 @@
 #include <stdio.h>
 #include <libxml/xmlversion.h>
 
-/**
- * DEBUG_MEMORY:
- *
- * DEBUG_MEMORY replaces the allocator with a collect and debug
- * shell to the libc allocator.
- * DEBUG_MEMORY should only be activated when debugging
- * libxml i.e. if libxml has been configured with --with-debug-mem too.
- */
-/* #define DEBUG_MEMORY_FREED */
-/* #define DEBUG_MEMORY_LOCATION */
-
-#ifdef DEBUG
-#ifndef DEBUG_MEMORY
-#define DEBUG_MEMORY
-#endif
-#endif
-
-/**
- * DEBUG_MEMORY_LOCATION:
- *
- * DEBUG_MEMORY_LOCATION should be activated only when debugging
- * libxml i.e. if libxml has been configured with --with-debug-mem too.
- */
-#ifdef DEBUG_MEMORY_LOCATION
-#endif
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -87,13 +61,41 @@ typedef void *(*xmlReallocFunc)(void *mem, size_t size);
 typedef char *(*xmlStrdupFunc)(const char *str);
 
 /*
- * The 4 interfaces used for all memory handling within libxml.
-LIBXML_DLL_IMPORT xmlFreeFunc xmlFree;
-LIBXML_DLL_IMPORT xmlMallocFunc xmlMalloc;
-LIBXML_DLL_IMPORT xmlMallocFunc xmlMallocAtomic;
-LIBXML_DLL_IMPORT xmlReallocFunc xmlRealloc;
-LIBXML_DLL_IMPORT xmlStrdupFunc xmlMemStrdup;
+ * In general the memory allocation entry points are not kept
+ * thread specific but this can be overridden by LIBXML_THREAD_ALLOC_ENABLED
+ *    - xmlMalloc
+ *    - xmlMallocAtomic
+ *    - xmlRealloc
+ *    - xmlMemStrdup
+ *    - xmlFree
  */
+/** DOC_DISABLE */
+#ifdef LIBXML_THREAD_ALLOC_ENABLED
+  #define XML_GLOBALS_ALLOC \
+    XML_OP(xmlMalloc, xmlMallocFunc, XML_EMPTY) \
+    XML_OP(xmlMallocAtomic, xmlMallocFunc, XML_EMPTY) \
+    XML_OP(xmlRealloc, xmlReallocFunc, XML_EMPTY) \
+    XML_OP(xmlFree, xmlFreeFunc, XML_EMPTY) \
+    XML_OP(xmlMemStrdup, xmlStrdupFunc, XML_EMPTY)
+  #define XML_OP XML_DECLARE_GLOBAL
+    XML_GLOBALS_ALLOC
+  #undef XML_OP
+  #ifdef LIBXML_THREAD_ENABLED
+    #define xmlMalloc XML_GLOBAL_MACRO(xmlMalloc)
+    #define xmlMallocAtomic XML_GLOBAL_MACRO(xmlMallocAtomic)
+    #define xmlRealloc XML_GLOBAL_MACRO(xmlRealloc)
+    #define xmlFree XML_GLOBAL_MACRO(xmlFree)
+    #define xmlMemStrdup XML_GLOBAL_MACRO(xmlMemStrdup)
+  #endif
+#else
+  #define XML_GLOBALS_ALLOC
+/** DOC_ENABLE */
+  XMLPUBVAR xmlMallocFunc xmlMalloc;
+  XMLPUBVAR xmlMallocFunc xmlMallocAtomic;
+  XMLPUBVAR xmlReallocFunc xmlRealloc;
+  XMLPUBVAR xmlFreeFunc xmlFree;
+  XMLPUBVAR xmlStrdupFunc xmlMemStrdup;
+#endif
 
 /*
  * The way to overload the existing functions.
@@ -171,6 +173,7 @@ XMLPUBFUN char *
 	xmlMemStrdupLoc	(const char *str, const char *file, int line);
 
 
+/** DOC_DISABLE */
 #ifdef DEBUG_MEMORY_LOCATION
 /**
  * xmlMalloc:
@@ -212,17 +215,11 @@ XMLPUBFUN char *
 #define xmlMemStrdup(str) xmlMemStrdupLoc((str), __FILE__, __LINE__)
 
 #endif /* DEBUG_MEMORY_LOCATION */
+/** DOC_ENABLE */
 
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
-
-#ifndef __XML_GLOBALS_H
-#ifndef __XML_THREADS_H__
-#include <libxml/threads.h>
-#include <libxml/globals.h>
-#endif
-#endif
 
 #endif  /* __DEBUG_MEMORY_ALLOC__ */
 

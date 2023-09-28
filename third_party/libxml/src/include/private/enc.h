@@ -9,9 +9,9 @@ xmlInitEncodingInternal(void);
 
 XML_HIDDEN int
 xmlEncInputChunk(xmlCharEncodingHandler *handler, unsigned char *out,
-                 int *outlen, const unsigned char *in, int *inlen, int flush);
+                 int *outlen, const unsigned char *in, int *inlen);
 XML_HIDDEN int
-xmlCharEncInput(xmlParserInputBufferPtr input, int flush);
+xmlCharEncInput(xmlParserInputBufferPtr input);
 XML_HIDDEN int
 xmlCharEncOutput(xmlOutputBufferPtr output, int init);
 

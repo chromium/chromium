@@ -17,10 +17,22 @@
  */
 #define XML_VCTXT_USE_PCTXT (1u << 1)
 
+#define XML_INPUT_HAS_ENCODING      (1u << 0)
+#define XML_INPUT_AUTO_ENCODING     (7u << 1)
+#define XML_INPUT_AUTO_UTF8         (1u << 1)
+#define XML_INPUT_AUTO_UTF16LE      (2u << 1)
+#define XML_INPUT_AUTO_UTF16BE      (3u << 1)
+#define XML_INPUT_AUTO_OTHER        (4u << 1)
+#define XML_INPUT_USES_ENC_DECL     (1u << 4)
+#define XML_INPUT_8_BIT             (1u << 5)
+
 XML_HIDDEN void
 xmlErrMemory(xmlParserCtxtPtr ctxt, const char *extra);
 XML_HIDDEN void
 xmlFatalErr(xmlParserCtxtPtr ctxt, xmlParserErrors error, const char *info);
+XML_HIDDEN void LIBXML_ATTR_FORMAT(3,0)
+xmlWarningMsg(xmlParserCtxtPtr ctxt, xmlParserErrors error,
+              const char *msg, const xmlChar *str1, const xmlChar *str2);
 XML_HIDDEN void
 __xmlErrEncoding(xmlParserCtxtPtr ctxt, xmlParserErrors xmlerr,
                  const char *msg, const xmlChar *str1,
@@ -31,5 +43,10 @@ XML_HIDDEN int
 xmlParserGrow(xmlParserCtxtPtr ctxt);
 XML_HIDDEN void
 xmlParserShrink(xmlParserCtxtPtr ctxt);
+
+XML_HIDDEN void
+xmlDetectEncoding(xmlParserCtxtPtr ctxt);
+XML_HIDDEN void
+xmlSetDeclaredEncoding(xmlParserCtxtPtr ctxt, xmlChar *encoding);
 
 #endif /* XML_PARSER_H_PRIVATE__ */

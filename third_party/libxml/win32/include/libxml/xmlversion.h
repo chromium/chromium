@@ -466,32 +466,10 @@ XMLPUBFUN void xmlCheckVersion(int version);
   #define XML_POP_WARNINGS
 #endif
 
-/** DOC_ENABLE */
 #else /* ! __GNUC__ */
-/**
- * ATTRIBUTE_UNUSED:
- *
- * Macro used to signal to GCC unused function parameters
- */
 #define ATTRIBUTE_UNUSED
-/**
- * LIBXML_ATTR_ALLOC_SIZE:
- *
- * Macro used to indicate to GCC this is an allocator function
- */
 #define LIBXML_ATTR_ALLOC_SIZE(x)
-/**
- * LIBXML_ATTR_FORMAT:
- *
- * Macro used to indicate to GCC the parameter are printf like
- */
 #define LIBXML_ATTR_FORMAT(fmt,args)
-/**
- * XML_DEPRECATED:
- *
- * Macro used to indicate that a function, variable, type or struct member
- * is deprecated.
- */
 #ifndef XML_DEPRECATED
 #  if defined (IN_LIBXML) || !defined (_MSC_VER)
 #    define XML_DEPRECATED
@@ -500,21 +478,11 @@ XMLPUBFUN void xmlCheckVersion(int version);
 #    define XML_DEPRECATED __declspec(deprecated)
 #  endif
 #endif
-/**
- * LIBXML_IGNORE_FPTR_CAST_WARNINGS:
- *
- * Macro used to ignore pointer cast warnings that can't be worked around.
- */
 #if defined (_MSC_VER) && (_MSC_VER >= 1400)
 #  define XML_IGNORE_FPTR_CAST_WARNINGS __pragma(warning(push))
 #else
 #  define XML_IGNORE_FPTR_CAST_WARNINGS
 #endif
-/**
- * XML_POP_WARNINGS:
- *
- * Macro used to restore warnings state.
- */
 #ifndef XML_POP_WARNINGS
 #  if defined (_MSC_VER) && (_MSC_VER >= 1400)
 #    define XML_POP_WARNINGS __pragma(warning(pop))
@@ -523,6 +491,17 @@ XMLPUBFUN void xmlCheckVersion(int version);
 #  endif
 #endif
 #endif /* __GNUC__ */
+
+#define XML_EMPTY
+
+#ifdef LIBXML_THREAD_ENABLED
+  #define XML_DECLARE_GLOBAL(name, type, attrs) \
+    attrs XMLPUBFUN type *__##name(void);
+  #define XML_GLOBAL_MACRO(name) (*__##name())
+#else
+  #define XML_DECLARE_GLOBAL(name, type, attrs) \
+    attrs XMLPUBVAR type name;
+#endif
 
 #ifdef __cplusplus
 }

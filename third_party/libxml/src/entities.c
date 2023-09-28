@@ -23,7 +23,6 @@
 #include <libxml/parser.h>
 #include <libxml/parserInternals.h>
 #include <libxml/xmlerror.h>
-#include <libxml/globals.h>
 #include <libxml/dict.h>
 
 #include "private/entities.h"
@@ -718,8 +717,6 @@ xmlEncodeEntitiesInternal(xmlDocPtr doc, const xmlChar *input, int attr) {
 		    (((cur[0] & 0xF8) == 0xF8))) {
 		    xmlEntitiesErr(XML_CHECK_NOT_UTF8,
 			    "xmlEncodeEntities: input not UTF-8");
-		    if (doc != NULL)
-			doc->encoding = xmlStrdup(BAD_CAST "ISO-8859-1");
 		    snprintf(buf, sizeof(buf), "&#%d;", *cur);
 		    buf[sizeof(buf) - 1] = 0;
 		    ptr = buf;
@@ -751,8 +748,6 @@ xmlEncodeEntitiesInternal(xmlDocPtr doc, const xmlChar *input, int attr) {
 		if ((l == 1) || (!IS_CHAR(val))) {
 		    xmlEntitiesErr(XML_ERR_INVALID_CHAR,
 			"xmlEncodeEntities: char out of range\n");
-		    if (doc != NULL)
-			doc->encoding = xmlStrdup(BAD_CAST "ISO-8859-1");
 		    snprintf(buf, sizeof(buf), "&#%d;", *cur);
 		    buf[sizeof(buf) - 1] = 0;
 		    ptr = buf;

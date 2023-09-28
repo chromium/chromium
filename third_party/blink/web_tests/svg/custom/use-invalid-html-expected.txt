@@ -1,5 +1,5 @@
 This page contains the following errors:
-error on line 18 at column 9: Extra content at the end of the document
+error on line 19 at column 1: Premature end of data in tag html line 1
 
 Below is a rendering of the page up to the first error.
 This test passes if a malformed html document triggers an error, not crash. 
