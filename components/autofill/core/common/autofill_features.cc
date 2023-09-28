@@ -631,7 +631,6 @@ BASE_FEATURE(kAutofillUseNewSectioningMethod,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls whether to use the newest, parameterized sectioning algorithm.
-// Use together with `kAutofillRefillByFormRendererId`.
 // TODO(crbug.com/1153539): Remove the feature when the experiment is completed.
 BASE_FEATURE(kAutofillUseParameterizedSectioning,
              "AutofillUseParameterizedSectioning",
@@ -643,14 +642,6 @@ const base::FeatureParam<bool> kAutofillSectioningModeCreateGaps{
     &kAutofillUseParameterizedSectioning, "create_gaps", false};
 const base::FeatureParam<bool> kAutofillSectioningModeExpand{
     &kAutofillUseParameterizedSectioning, "expand_assigned_sections", false};
-
-// Controls whether to use form renderer IDs to find the form which contains the
-// field that was last interacted with in
-// `AutofillAgent::TriggerRefillIfNeeded()`.
-// TODO(crbug.com/1360988): Remove the feature when the experiment is completed.
-BASE_FEATURE(kAutofillRefillByFormRendererId,
-             "AutofillRefillByFormRendererId",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls an ablation study in which autofill for addresses and payment data
 // can be suppressed.
