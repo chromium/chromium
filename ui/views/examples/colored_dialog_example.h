@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
 #include "ui/views/examples/example_base.h"
 #include "ui/views/view.h"
@@ -21,6 +22,7 @@ namespace examples {
 class ColoredDialog : public views::DialogDelegateView,
                       public views::TextfieldController {
  public:
+  METADATA_HEADER(ColoredDialog);
   using AcceptCallback = base::OnceCallback<void(std::u16string)>;
 
   explicit ColoredDialog(AcceptCallback accept_callback);
@@ -42,6 +44,7 @@ class ColoredDialog : public views::DialogDelegateView,
 
 class ColoredDialogChooser : public views::View {
  public:
+  METADATA_HEADER(ColoredDialogChooser);
   ColoredDialogChooser();
   ColoredDialogChooser(const ColoredDialogChooser&) = delete;
   ColoredDialogChooser& operator=(const ColoredDialogChooser&) = delete;

@@ -19,6 +19,8 @@
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/simple_combobox_model.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
@@ -45,6 +47,7 @@ namespace {
 
 class VectorIconGallery : public View, public TextfieldController {
  public:
+  METADATA_HEADER(VectorIconGallery);
   VectorIconGallery() {
     size_input_ = AddChildView(std::make_unique<Textfield>());
     color_input_ = AddChildView(std::make_unique<Textfield>());
@@ -288,6 +291,9 @@ class VectorIconGallery : public View, public TextfieldController {
   raw_ptr<Button> file_go_button_;
   std::string contents_;
 };
+
+BEGIN_METADATA(VectorIconGallery, View)
+END_METADATA
 
 }  // namespace
 

@@ -28,6 +28,7 @@
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/dialog_model_menu_model_adapter.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
@@ -328,3 +329,6 @@ SidePanelCoordinator* SidePanelToolbarContainer::GetSidePanelCoordinator() {
   return SidePanelUtil::GetSidePanelCoordinatorForBrowser(
       browser_view_->browser());
 }
+
+BEGIN_METADATA(SidePanelToolbarContainer, ToolbarIconContainerView)
+END_METADATA

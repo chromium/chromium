@@ -10,6 +10,7 @@
 #include "base/containers/adapters.h"
 #include "base/memory/raw_ref.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_types.h"
@@ -28,6 +29,7 @@ namespace views::examples {
 
 class ThemeTrackingCheckbox : public views::Checkbox {
  public:
+  METADATA_HEADER(ThemeTrackingCheckbox);
   explicit ThemeTrackingCheckbox(const std::u16string& label)
       : Checkbox(label,
                  base::BindRepeating(&ThemeTrackingCheckbox::ButtonPressed,
@@ -48,8 +50,12 @@ class ThemeTrackingCheckbox : public views::Checkbox {
   }
 };
 
+BEGIN_METADATA(ThemeTrackingCheckbox, views::Checkbox)
+END_METADATA
+
 class TextVectorImageButton : public views::MdTextButton {
  public:
+  METADATA_HEADER(TextVectorImageButton);
   TextVectorImageButton(PressedCallback callback,
                         const std::u16string& text,
                         const gfx::VectorIcon& icon)
@@ -70,6 +76,9 @@ class TextVectorImageButton : public views::MdTextButton {
  private:
   const raw_ref<const gfx::VectorIcon> icon_;
 };
+
+BEGIN_METADATA(TextVectorImageButton, views::MdTextButton)
+END_METADATA
 
 ColoredDialog::ColoredDialog(AcceptCallback accept_callback) {
   SetAcceptCallback(base::BindOnce(
@@ -108,6 +117,9 @@ void ColoredDialog::ContentsChanged(Textfield* sender,
   SetButtonEnabled(ui::DIALOG_BUTTON_OK, !textfield_->GetText().empty());
   DialogModelChanged();
 }
+
+BEGIN_METADATA(ColoredDialog, views::DialogDelegateView)
+END_METADATA
 
 ColoredDialogChooser::ColoredDialogChooser() {
   views::LayoutProvider* provider = views::LayoutProvider::Get();
@@ -156,6 +168,9 @@ void ColoredDialogChooser::OnFeedbackSubmit(std::u16string text) {
       base::BindOnce([](views::View* view) { view->SetVisible(false); },
                      confirmation_label_));
 }
+
+BEGIN_METADATA(ColoredDialogChooser, views::View)
+END_METADATA
 
 ColoredDialogExample::ColoredDialogExample() : ExampleBase("Colored Dialog") {}
 

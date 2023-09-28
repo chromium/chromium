@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_icon_container_view.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 class BrowserView;
 class SidePanelToolbarButton;
@@ -22,6 +23,7 @@ class SidePanelCoordinator;
 // toolbar.
 class SidePanelToolbarContainer : public ToolbarIconContainerView {
  public:
+  METADATA_HEADER(SidePanelToolbarContainer);
   explicit SidePanelToolbarContainer(BrowserView* browser_view);
   SidePanelToolbarContainer(const SidePanelToolbarContainer&) = delete;
   SidePanelToolbarContainer& operator=(const SidePanelToolbarContainer&) =

@@ -223,6 +223,7 @@ namespace captions {
 #if BUILDFLAG(IS_WIN)
 class MediaFoundationRendererErrorMessageView : public views::StyledLabel {
  public:
+  METADATA_HEADER(MediaFoundationRendererErrorMessageView);
   explicit MediaFoundationRendererErrorMessageView(
       CaptionBubble* caption_bubble)
       : caption_bubble_(caption_bubble) {}
@@ -242,6 +243,10 @@ class MediaFoundationRendererErrorMessageView : public views::StyledLabel {
  private:
   const raw_ptr<CaptionBubble> caption_bubble_;  // Not owned.
 };
+
+BEGIN_METADATA(MediaFoundationRendererErrorMessageView, views::StyledLabel)
+END_METADATA
+
 #endif
 
 // CaptionBubble implementation of BubbleFrameView. This class takes care

@@ -13,6 +13,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "media/base/video_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/image/image_skia_operations.h"
@@ -185,3 +186,6 @@ void ShareThisTabSourceView::OnCaptureHandled(
                      weak_factory_.GetWeakPtr()),
       kUpdatePeriodMs);
 }
+
+BEGIN_METADATA(ShareThisTabSourceView, views::View)
+END_METADATA

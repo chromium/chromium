@@ -200,6 +200,7 @@ class TabstripLikeBackground : public views::Background {
 
 class ToolbarView::ContainerView : public views::View {
  public:
+  METADATA_HEADER(ContainerView);
   // Calling PreferredSizeChanged() will trigger the parent's
   // ChildPreferredSizeChanged.
   // Bubble up calls to ChildPreferredSizeChanged.
@@ -207,6 +208,9 @@ class ToolbarView::ContainerView : public views::View {
     PreferredSizeChanged();
   }
 };
+
+BEGIN_METADATA(ToolbarView, ContainerView, views::View)
+END_METADATA
 
 ////////////////////////////////////////////////////////////////////////////////
 // ToolbarView, public:

@@ -123,6 +123,9 @@ FadingView::FadingView() {
 
 FadingView::~FadingView() = default;
 
+BEGIN_METADATA(FadingView, View)
+END_METADATA
+
 ProposedLayout CenteringLayoutManager::CalculateProposedLayout(
     const SizeBounds& size_bounds) const {
   ProposedLayout layout;

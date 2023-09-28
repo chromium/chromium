@@ -951,3 +951,6 @@ void WebUITabStripContainerView::DeinitializeWebView() {
     tab_strip_ui->Deinitialize();
   }
 }
+
+BEGIN_METADATA(WebUITabStripContainerView, views::AccessiblePaneView)
+END_METADATA

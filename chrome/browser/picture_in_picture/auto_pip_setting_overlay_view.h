@@ -8,6 +8,7 @@
 #include "base/check_is_test.h"
 #include "base/functional/callback.h"
 #include "chrome/browser/picture_in_picture/auto_pip_setting_view.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/view.h"
 #include "ui/views/view_targeter_delegate.h"
 
@@ -16,6 +17,7 @@
 class AutoPipSettingOverlayView : public views::View,
                                   public views::ViewTargeterDelegate {
  public:
+  METADATA_HEADER(AutoPipSettingOverlayView);
   using ResultCb =
       base::OnceCallback<void(AutoPipSettingView::UiResult result)>;
 

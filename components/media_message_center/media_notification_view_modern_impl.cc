@@ -89,6 +89,7 @@ void RecordMetadataHistogram(
 
 class MediaButton : public views::ImageButton {
  public:
+  METADATA_HEADER(MediaButton);
   MediaButton(PressedCallback callback, int icon_size, gfx::Size button_size)
       : ImageButton(callback), icon_size_(icon_size) {
     SetHasInkDropActionOnClick(true);
@@ -132,6 +133,9 @@ class MediaButton : public views::ImageButton {
   SkColor foreground_disabled_color_ = gfx::kPlaceholderColor;
   int icon_size_;
 };
+
+BEGIN_METADATA(MediaButton, views::ImageButton)
+END_METADATA
 
 }  // anonymous namespace
 

@@ -18,6 +18,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/controls/menu/menu_runner.h"
 
 SidePanelWebUIView::SidePanelWebUIView(base::RepeatingClosure on_show_cb,
@@ -80,3 +81,6 @@ bool SidePanelWebUIView::HandleKeyboardEvent(
   return unhandled_keyboard_event_handler_.HandleKeyboardEvent(
       event, GetFocusManager());
 }
+
+BEGIN_METADATA(SidePanelWebUIView, views::WebView)
+END_METADATA

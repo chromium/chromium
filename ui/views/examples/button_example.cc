@@ -9,6 +9,8 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/image/image.h"
@@ -133,6 +135,7 @@ class SolidRoundRectPainterWithShadow : public Painter {
 // by overriding the hover effect to draw a new background with a shadow.
 class FabButton : public views::MdTextButton {
  public:
+  METADATA_HEADER(FabButton);
   using MdTextButton::MdTextButton;
   FabButton(const FabButton&) = delete;
   FabButton& operator=(const FabButton&) = delete;
@@ -165,8 +168,12 @@ class FabButton : public views::MdTextButton {
   bool use_shadow_ = false;
 };
 
+BEGIN_METADATA(FabButton, views::MdTextButton)
+END_METADATA
+
 class IconAndTextButton : public views::MdTextButton {
  public:
+  METADATA_HEADER(IconAndTextButton);
   IconAndTextButton(PressedCallback callback,
                     const std::u16string& text,
                     const gfx::VectorIcon& icon)
@@ -187,6 +194,9 @@ class IconAndTextButton : public views::MdTextButton {
  private:
   const raw_ref<const gfx::VectorIcon> icon_;
 };
+
+BEGIN_METADATA(IconAndTextButton, views::MdTextButton)
+END_METADATA
 
 ButtonExample::ButtonExample() : ExampleBase("Button") {
   ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();

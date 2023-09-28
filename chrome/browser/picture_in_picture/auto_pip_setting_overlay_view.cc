@@ -5,6 +5,7 @@
 #include "chrome/browser/picture_in_picture/auto_pip_setting_overlay_view.h"
 
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/views/animation/animation_builder.h"
@@ -75,3 +76,6 @@ AutoPipSettingOverlayView::~AutoPipSettingOverlayView() {
   background_ = nullptr;
   auto_pip_setting_view_.reset();
 }
+
+BEGIN_METADATA(AutoPipSettingOverlayView, views::View)
+END_METADATA

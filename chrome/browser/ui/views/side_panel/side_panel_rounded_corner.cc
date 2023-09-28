@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/top_container_background.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/canvas.h"
 
@@ -83,3 +84,6 @@ void SidePanelRoundedCorner::OnThemeChanged() {
   SchedulePaint();
   View::OnThemeChanged();
 }
+
+BEGIN_METADATA(SidePanelRoundedCorner, views::View)
+END_METADATA

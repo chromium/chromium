@@ -13,6 +13,8 @@
 
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/events/event.h"
 #include "ui/gfx/range/range.h"
 #include "ui/gfx/render_text.h"
@@ -42,6 +44,7 @@ gfx::Range ClampRange(gfx::Range range, size_t max) {
 // A Label with a clamped preferred width to demonstrate wrapping.
 class PreferredSizeLabel : public Label {
  public:
+  METADATA_HEADER(PreferredSizeLabel);
   PreferredSizeLabel() = default;
 
   PreferredSizeLabel(const PreferredSizeLabel&) = delete;
@@ -55,11 +58,15 @@ class PreferredSizeLabel : public Label {
   }
 };
 
+BEGIN_METADATA(PreferredSizeLabel, Label)
+END_METADATA
+
 }  // namespace
 
 // A simple View that hosts a RenderText object.
 class MultilineExample::RenderTextView : public View {
  public:
+  METADATA_HEADER(RenderTextView);
   RenderTextView() : render_text_(gfx::RenderText::CreateRenderText()) {
     render_text_->SetHorizontalAlignment(gfx::ALIGN_TO_HEAD);
     render_text_->SetMultiline(true);
@@ -149,6 +156,9 @@ class MultilineExample::RenderTextView : public View {
 
   std::unique_ptr<gfx::RenderText> render_text_;
 };
+
+BEGIN_METADATA(MultilineExample, RenderTextView, View)
+END_METADATA
 
 MultilineExample::MultilineExample()
     : ExampleBase(GetStringUTF8(IDS_MULTILINE_SELECT_LABEL).c_str()) {}

@@ -6,6 +6,7 @@
 #define UI_MESSAGE_CENTER_VIEWS_NOTIFICATION_VIEW_H_
 
 #include "base/memory/raw_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/message_center/message_center_export.h"
 #include "ui/message_center/views/notification_view_base.h"
 
@@ -21,6 +22,7 @@ namespace message_center {
 // notification (web, basic, image, and list) except custom notification.
 class MESSAGE_CENTER_EXPORT NotificationView : public NotificationViewBase {
  public:
+  METADATA_HEADER(NotificationView);
   // TODO(crbug/1241983): Add metadata and builder support to this view.
   explicit NotificationView(const message_center::Notification& notification);
   NotificationView(const NotificationView&) = delete;

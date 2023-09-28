@@ -20,6 +20,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/button_controller.h"
@@ -72,3 +73,6 @@ void SidePanelToolbarButton::UpdateToolbarButtonIcon() {
 bool SidePanelToolbarButton::ShouldShowInkdropAfterIphInteraction() {
   return false;
 }
+
+BEGIN_METADATA(SidePanelToolbarButton, ToolbarButton)
+END_METADATA

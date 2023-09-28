@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_media_capture_id.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/throbber.h"
@@ -17,6 +18,7 @@
 // throbber while the dialog is not yet activated.
 class ShareThisTabSourceView : public views::View {
  public:
+  METADATA_HEADER(ShareThisTabSourceView);
   explicit ShareThisTabSourceView(
       base::WeakPtr<content::WebContents> web_contents);
   ShareThisTabSourceView(const ShareThisTabSourceView&) = delete;

@@ -6,6 +6,7 @@
 #define UI_VIEWS_EXAMPLES_LAYOUT_EXAMPLE_BASE_H_
 
 #include "base/memory/raw_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/controls/button/checkbox.h"
@@ -39,6 +40,7 @@ class VIEWS_EXAMPLES_EXPORT LayoutExampleBase : public ExampleBase,
   // interactively set each margin and the "flex" for the given view.
   class ChildPanel : public View, public TextfieldController {
    public:
+    METADATA_HEADER(ChildPanel);
     explicit ChildPanel(LayoutExampleBase* example);
     ChildPanel(const ChildPanel&) = delete;
     ChildPanel& operator=(const ChildPanel&) = delete;

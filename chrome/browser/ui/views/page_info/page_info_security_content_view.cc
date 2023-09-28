@@ -11,6 +11,7 @@
 #include "components/safe_browsing/core/common/features.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/views/layout/box_layout.h"
 
@@ -174,3 +175,6 @@ void PageInfoSecurityContentView::SecurityDetailsClicked(
     presenter_->OpenConnectionHelpCenterPage(event);
   }
 }
+
+BEGIN_METADATA(PageInfoSecurityContentView, views::View)
+END_METADATA

@@ -199,6 +199,7 @@ END_METADATA
 // |PopulateSheetHeaderView|.
 class PaymentHandlerCloseButton : public views::ImageButton {
  public:
+  METADATA_HEADER(PaymentHandlerCloseButton);
   explicit PaymentHandlerCloseButton(
       views::Button::PressedCallback pressed_callback,
       const SkColor enabled_color,
@@ -218,6 +219,9 @@ class PaymentHandlerCloseButton : public views::ImageButton {
                                            enabled_color, disabled_color);
   }
 };
+
+BEGIN_METADATA(PaymentHandlerCloseButton, views::ImageButton)
+END_METADATA
 
 PaymentHandlerWebFlowViewController::PaymentHandlerWebFlowViewController(
     base::WeakPtr<PaymentRequestSpec> spec,

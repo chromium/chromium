@@ -19,6 +19,7 @@
 #include "chrome/common/buildflags.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/events/event_handler.h"
 #include "ui/gfx/animation/animation_delegate.h"
 #include "ui/gfx/animation/slide_animation.h"
@@ -54,6 +55,7 @@ class WebUITabStripContainerView : public TabStripUIEmbedder,
                                    public views::WidgetObserver,
                                    public content::WebContentsObserver {
  public:
+  METADATA_HEADER(WebUITabStripContainerView);
   WebUITabStripContainerView(BrowserView* browser_view,
                              views::View* tab_contents_container,
                              views::View* top_container,

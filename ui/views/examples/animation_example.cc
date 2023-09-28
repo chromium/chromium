@@ -10,6 +10,8 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_element.h"
 #include "ui/compositor/layer_animation_sequence.h"
@@ -45,6 +47,7 @@ AnimationExample::~AnimationExample() = default;
 
 class AnimatingSquare : public View {
  public:
+  METADATA_HEADER(AnimatingSquare);
   explicit AnimatingSquare(size_t index);
   AnimatingSquare(const AnimatingSquare&) = delete;
   AnimatingSquare& operator=(const AnimatingSquare&) = delete;
@@ -61,6 +64,9 @@ class AnimatingSquare : public View {
       TypographyProvider::Get().GetFont(style::CONTEXT_DIALOG_TITLE,
                                         style::STYLE_PRIMARY);
 };
+
+BEGIN_METADATA(AnimatingSquare, View)
+END_METADATA
 
 AnimatingSquare::AnimatingSquare(size_t index) : index_(index) {
   SetPaintToLayer();

@@ -7,6 +7,7 @@
 #include "components/media_message_center/vector_icons/vector_icons.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/background.h"
 #include "ui/views/layout/box_layout.h"
 
@@ -66,3 +67,7 @@ void MediaItemUICastFooterView::StopCasting() {
   stop_casting_button_->SetEnabled(false);
   stop_casting_callback_.Run();
 }
+
+BEGIN_METADATA(MediaItemUICastFooterView,
+               global_media_controls::MediaItemUIFooter)
+END_METADATA

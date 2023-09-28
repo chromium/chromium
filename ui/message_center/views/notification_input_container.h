@@ -6,6 +6,7 @@
 #define UI_MESSAGE_CENTER_VIEWS_NOTIFICATION_INPUT_CONTAINER_H_
 
 #include "base/memory/raw_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/message_center/message_center_export.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
 #include "ui/views/layout/box_layout.h"
@@ -36,6 +37,7 @@ class MESSAGE_CENTER_EXPORT NotificationInputContainer
     : public views::View,
       public views::TextfieldController {
  public:
+  METADATA_HEADER(NotificationInputContainer);
   explicit NotificationInputContainer(
       NotificationInputDelegate* delegate = nullptr);
   NotificationInputContainer(const NotificationInputContainer&) = delete;

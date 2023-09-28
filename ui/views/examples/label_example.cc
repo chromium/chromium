@@ -10,6 +10,8 @@
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/views/background.h"
@@ -38,6 +40,7 @@ const char* kAlignments[] = {"Left", "Center", "Right", "Head"};
 // A Label with a clamped preferred width to demonstrate eliding or wrapping.
 class ExamplePreferredSizeLabel : public Label {
  public:
+  METADATA_HEADER(ExamplePreferredSizeLabel);
   ExamplePreferredSizeLabel() {
     SetBorder(
         CreateThemedSolidBorder(1, ExamplesColorIds::kColorLabelExampleBorder));
@@ -56,6 +59,9 @@ class ExamplePreferredSizeLabel : public Label {
 
   static const char* kElideBehaviors[];
 };
+
+BEGIN_METADATA(ExamplePreferredSizeLabel, Label)
+END_METADATA
 
 // static
 const char* ExamplePreferredSizeLabel::kElideBehaviors[] = {

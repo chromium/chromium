@@ -917,4 +917,7 @@ void NotificationViewBase::InkDropRippleAnimationEnded(
     header_row_->SetSubpixelRenderingEnabled(true);
 }
 
+BEGIN_METADATA(NotificationViewBase, MessageView)
+END_METADATA
+
 }  // namespace message_center

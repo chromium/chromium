@@ -66,6 +66,7 @@ const views::Label::CustomFont kTextFont = {
 
 class MediaButton : public views::ImageButton {
  public:
+  METADATA_HEADER(MediaButton);
   MediaButton(PressedCallback callback,
               int button_id,
               const gfx::VectorIcon& vector_icon,
@@ -116,6 +117,9 @@ class MediaButton : public views::ImageButton {
   const int icon_size_;
   const ui::ColorId foreground_disabled_color_id_;
 };
+
+BEGIN_METADATA(MediaButton, views::ImageButton)
+END_METADATA
 
 // If the image does not fit the square view, scale the image to fill the view
 // even if part of the image is cropped.

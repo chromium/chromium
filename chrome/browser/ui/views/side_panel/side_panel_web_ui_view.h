@@ -10,6 +10,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/bubble/bubble_contents_wrapper.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/controls/webview/webview.h"
 
@@ -27,6 +28,7 @@ class MenuRunner;
 class SidePanelWebUIView : public views::WebView,
                            public BubbleContentsWrapper::Host {
  public:
+  METADATA_HEADER(SidePanelWebUIView);
   SidePanelWebUIView(base::RepeatingClosure on_show_cb,
                      base::RepeatingClosure close_cb,
                      BubbleContentsWrapper* contents_wrapper);

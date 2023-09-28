@@ -7,6 +7,7 @@
 
 #include "components/global_media_controls/public/views/media_item_ui_footer.h"
 #include "components/media_message_center/notification_theme.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/label_button.h"
 
 // A footer view attached to MediaItemUIView containing a stop casting button
@@ -15,6 +16,7 @@
 class MediaItemUICastFooterView
     : public global_media_controls::MediaItemUIFooter {
  public:
+  METADATA_HEADER(MediaItemUICastFooterView);
   explicit MediaItemUICastFooterView(
       base::RepeatingClosure stop_casting_callback,
       media_message_center::MediaColorTheme media_color_theme);
