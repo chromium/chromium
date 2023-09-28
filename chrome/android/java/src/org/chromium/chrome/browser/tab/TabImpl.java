@@ -993,6 +993,7 @@ public class TabImpl implements Tab {
         assert state != null;
         mWebContentsState = state.contentsState;
         setTimestampMillis(state.timestampMillis);
+        setLastNavigationCommittedTimestampMillis(state.lastNavigationCommittedTimestampMillis);
         mUrl = new GURL(state.contentsState.getVirtualUrlFromState());
         setTitle(state.contentsState.getDisplayTitleFromState());
         mTabLaunchTypeAtCreation = state.tabLaunchTypeAtCreation;
