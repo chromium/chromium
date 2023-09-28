@@ -312,6 +312,7 @@ try_.builder(
         "ci/Mac Builder",
         "ci/Mac12 Tests",
     ],
+    os = os.MAC_DEFAULT,
 )
 
 try_.builder(
