@@ -101,8 +101,8 @@ testcase.mountGuestSuccess = async () => {
       appId, `#breadcrumbs[path="My files/${guestName}"]`);
 
   // We should have a volume in the sidebar.
-  const realTreeItem = await directoryTree.waitForItemByLabel(guestName);
-  chrome.test.assertEq('guest_os', directoryTree.getItemIconType(realTreeItem));
+  await directoryTree.waitForItemByLabel(guestName);
+  await directoryTree.waitForItemByType('bruschetta');
 
   // We should no longer have a fake.
   await directoryTree.waitForPlaceholderItemLostByType('bruschetta');
@@ -155,9 +155,8 @@ testcase.mountAndroidVolumeSuccess = async () => {
       appId, `#breadcrumbs[path="My files/${guestName}"]`);
 
   // We should have a volume in the sidebar.
-  const realTreeItem = await directoryTree.waitForItemByLabel(guestName);
-  chrome.test.assertEq(
-      'android_files', directoryTree.getItemIconType(realTreeItem));
+  await directoryTree.waitForItemByLabel(guestName);
+  await directoryTree.waitForItemByType('android_files');
 
   // We should no longer have a fake.
   await directoryTree.waitForPlaceholderItemLostByType('android_files');
