@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
@@ -327,6 +328,17 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandlerImpl
 
   void set_ui_proxy_config_service(
       UIProxyConfigService* ui_proxy_config_service);
+
+  // Returns the device policy GlobalNetworkConfiguration boolean value under
+  // `key` or `absl::nullopt` if such a value doesn't exist or is not of type
+  // BOOLEAN.
+  absl::optional<bool> FindGlobalPolicyBool(std::string_view key) const;
+  // Returns the device policy GlobalNetworkConfiguration List value under
+  // `key` or `nullptr` if such a value doesn't exist or is not of type LIST.
+  const base::Value::List* FindGlobalPolicyList(std::string_view key) const;
+  // Returns the device policy GlobalNetworkConfiguration string value under
+  // `key` or `nullptr` if such a value doesn't exist or is not of type STRING.
+  const std::string* FindGlobalPolicyString(std::string_view key) const;
 
   // If present, the empty string maps to the device policy.
   UserToPoliciesMap policies_by_user_;
