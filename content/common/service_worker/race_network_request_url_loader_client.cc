@@ -54,6 +54,10 @@ ServiceWorkerRaceNetworkRequestURLLoaderClient::
                              base::SequencedTaskRunner::GetCurrentDefault()),
       request_start_(base::TimeTicks::Now()),
       request_start_time_(base::Time::Now()) {
+  TRACE_EVENT_WITH_FLOW0("ServiceWorker",
+                         "ServiceWorkerRaceNetworkRequestURLLoaderClient::"
+                         "ServiceWorkerRaceNetworkRequestURLLoaderClient",
+                         TRACE_ID_LOCAL(this), TRACE_EVENT_FLAG_FLOW_OUT);
   // The feature param may override the buffer size.
   uint32_t data_pipe_size = base::GetFieldTrialParamByFeatureAsInt(
       features::kServiceWorkerBypassFetchHandler,
@@ -75,7 +79,12 @@ ServiceWorkerRaceNetworkRequestURLLoaderClient::
 }
 
 ServiceWorkerRaceNetworkRequestURLLoaderClient::
-    ~ServiceWorkerRaceNetworkRequestURLLoaderClient() = default;
+    ~ServiceWorkerRaceNetworkRequestURLLoaderClient() {
+  TRACE_EVENT_WITH_FLOW0("ServiceWorker",
+                         "ServiceWorkerRaceNetworkRequestURLLoaderClient::~"
+                         "ServiceWorkerRaceNetworkRequestURLLoaderClient",
+                         TRACE_ID_LOCAL(this), TRACE_EVENT_FLAG_FLOW_IN);
+}
 
 void ServiceWorkerRaceNetworkRequestURLLoaderClient::OnUploadProgress(
     int64_t current_position,
@@ -100,13 +109,15 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::OnReceiveResponse(
     network::mojom::URLResponseHeadPtr head,
     mojo::ScopedDataPipeConsumerHandle body,
     absl::optional<mojo_base::BigBuffer> cached_metadata) {
-  TRACE_EVENT0(
-      "ServiceWorker",
-      "ServiceWorkerRaceNetworkRequestURLLoaderClient::OnReceiveResponse");
   if (!owner_) {
     return;
   }
-
+  TRACE_EVENT_WITH_FLOW2(
+      "ServiceWorker",
+      "ServiceWorkerRaceNetworkRequestURLLoaderClient::OnReceiveResponse",
+      TRACE_ID_LOCAL(this),
+      TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "url", request_.url,
+      "state", state_);
   TransitionState(State::kResponseReceived);
 
   // Set the response received time, and record the time delta between the
@@ -139,6 +150,12 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::OnReceiveRedirect(
   if (!owner_) {
     return;
   }
+  TRACE_EVENT_WITH_FLOW2(
+      "ServiceWorker",
+      "ServiceWorkerRaceNetworkRequestURLLoaderClient::OnReceiveRedirect",
+      TRACE_ID_LOCAL(this),
+      TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "url", request_.url,
+      "state", state_);
   TransitionState(State::kRedirect);
   // If redirect happened, we don't have to create another data pipe.
   data_consume_policy_ = DataConsumePolicy::kForwardingOnly;
@@ -190,6 +207,12 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::OnComplete(
   if (!owner_) {
     return;
   }
+  TRACE_EVENT_WITH_FLOW2(
+      "ServiceWorker",
+      "ServiceWorkerRaceNetworkRequestURLLoaderClient::OnComplete",
+      TRACE_ID_LOCAL(this),
+      TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "url", request_.url,
+      "state", state_);
   if (owner_->IsMainResourceLoader()) {
     base::UmaHistogramBoolean(
         "ServiceWorker.FetchEvent.MainResource.RaceNetworkRequest.Redirect",
@@ -299,6 +322,12 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::CompleteResponse() {
   if (!owner_) {
     return;
   }
+  TRACE_EVENT_WITH_FLOW2(
+      "ServiceWorker",
+      "ServiceWorkerRaceNetworkRequestURLLoaderClient::CompleteResponse",
+      TRACE_ID_LOCAL(this),
+      TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "url", request_.url,
+      "state", state_);
   switch (owner_->commit_responsibility()) {
     case FetchResponseFrom::kNoResponseYet:
     case FetchResponseFrom::kSubresourceLoaderIsHandlingRedirect:
@@ -338,10 +367,13 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::
 }
 
 void ServiceWorkerRaceNetworkRequestURLLoaderClient::OnDataTransferComplete() {
-  MaybeCommitResponse();
-  TRACE_EVENT0(
+  TRACE_EVENT_WITH_FLOW2(
       "ServiceWorker",
-      "ServiceWorkerRaceNetworkRequestURLLoaderClient::OnDataTransferComplete");
+      "ServiceWorkerRaceNetworkRequestURLLoaderClient::OnDataTransferComplete",
+      TRACE_ID_LOCAL(this),
+      TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "url", request_.url,
+      "state", state_);
+  MaybeCommitResponse();
   TransitionState(State::kDataTransferFinished);
   MaybeCompleteResponse();
 }
@@ -369,9 +401,6 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::WatchDataUpdate() {
 
 void ServiceWorkerRaceNetworkRequestURLLoaderClient::ReadAndWrite(
     MojoResult aresult) {
-  TRACE_EVENT0("ServiceWorker",
-               "ServiceWorkerRaceNetworkRequestURLLoaderClient::ReadAndWrite");
-
   if (!owner_) {
     return;
   }
@@ -390,6 +419,12 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::ReadAndWrite(
 
   MojoResult result = body_->BeginReadData(&buffer, &num_bytes_to_consume,
                                            MOJO_READ_DATA_FLAG_NONE);
+  TRACE_EVENT_WITH_FLOW2(
+      "ServiceWorker",
+      "ServiceWorkerRaceNetworkRequestURLLoaderClient::ReadAndWrite",
+      TRACE_ID_LOCAL(this),
+      TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "url", request_.url,
+      "read_data_result", result);
   base::UmaHistogramEnumeration(base::StrCat({histogram_prefix, ".Read"}),
                                 ConvertMojoResultForUMA(result));
   switch (result) {
