@@ -8,14 +8,27 @@ import android.os.Bundle;
 
 import androidx.preference.PreferenceFragmentCompat;
 
+import org.chromium.components.browser_ui.settings.ChromeImageViewPreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
+import org.chromium.components.browser_ui.settings.ExpandablePreferenceGroup;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
+import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
+import org.chromium.components.browser_ui.site_settings.Website;
+import org.chromium.components.browser_ui.site_settings.WebsitePermissionsFetcher;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /** Fragment to manage settings for tracking protection. */
 public class TrackingProtectionSettings extends PreferenceFragmentCompat {
     // Must match keys in tracking_protection_preferences.xml.
     private static final String PREF_BLOCK_ALL_TOGGLE = "block_all_3pcd_toggle";
     private static final String PREF_DNT_TOGGLE = "dnt_toggle";
+    private static final String ALLOWED_GROUP = "allowed_group";
+
+    // The number of sites that are on the Allowed list.
+    private int mAllowedSiteCount;
 
     private TrackingProtectionDelegate mDelegate;
 
@@ -42,9 +55,43 @@ public class TrackingProtectionSettings extends PreferenceFragmentCompat {
             mDelegate.setDoNotTrack((boolean) newValue);
             return true;
         });
+
+        mAllowedSiteCount = 0;
+        getBlockingExceptions();
     }
 
     public void setTrackingProtectionDelegate(TrackingProtectionDelegate delegate) {
         mDelegate = delegate;
+    }
+
+    private void getBlockingExceptions() {
+        SiteSettingsCategory cookiesCategory = SiteSettingsCategory.createFromType(
+                mDelegate.getBrowserContext(), SiteSettingsCategory.Type.THIRD_PARTY_COOKIES);
+        new WebsitePermissionsFetcher(mDelegate.getBrowserContext())
+                .fetchPreferencesForCategory(cookiesCategory, this::onExceptionsFetched);
+    }
+
+    private void onExceptionsFetched(Collection<Website> sites) {
+        List<ChromeImageViewPreference> websites = new ArrayList<>();
+        for (Website site : sites) {
+            ChromeImageViewPreference preference = new ChromeImageViewPreference(getContext());
+            preference.setTitle(site.getTitle());
+            websites.add(preference);
+        }
+
+        ExpandablePreferenceGroup allowedGroup =
+                getPreferenceScreen().findPreference(ALLOWED_GROUP);
+        for (ChromeImageViewPreference website : websites) {
+            allowedGroup.addPreference(website);
+            mAllowedSiteCount++;
+        }
+        updateExceptionsHeader();
+    }
+
+    private void updateExceptionsHeader() {
+        ExpandablePreferenceGroup allowedGroup =
+                getPreferenceScreen().findPreference(ALLOWED_GROUP);
+        allowedGroup.setTitle(String.format(
+                getString(R.string.tracking_protection_allowed_group_title), mAllowedSiteCount));
     }
 }

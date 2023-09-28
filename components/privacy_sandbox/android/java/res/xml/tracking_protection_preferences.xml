@@ -42,4 +42,7 @@ found in the LICENSE file.
 
     </PreferenceCategory>
 
+    <org.chromium.components.browser_ui.settings.ExpandablePreferenceGroup
+        android:key="allowed_group" />
+
 </PreferenceScreen>

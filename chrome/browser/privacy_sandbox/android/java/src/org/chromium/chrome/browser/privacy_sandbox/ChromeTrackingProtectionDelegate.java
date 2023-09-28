@@ -8,6 +8,7 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.privacy_sandbox.TrackingProtectionDelegate;
 import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.content_public.browser.BrowserContextHandle;
 
 public class ChromeTrackingProtectionDelegate implements TrackingProtectionDelegate {
     private final Profile mProfile;
@@ -34,5 +35,10 @@ public class ChromeTrackingProtectionDelegate implements TrackingProtectionDeleg
     @Override
     public void setDoNotTrack(boolean enabled) {
         UserPrefs.get(mProfile).setBoolean(Pref.ENABLE_DO_NOT_TRACK, enabled);
+    }
+
+    @Override
+    public BrowserContextHandle getBrowserContext() {
+        return mProfile;
     }
 }

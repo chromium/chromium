@@ -2205,4 +2205,7 @@
   <message name="IDS_TRACKING_PROTECTION_DNT_TOGGLE_SUMMARY" desc="" translateable="false" formatter_data="android_java">
     Sites use their discretion when responding to this request
   </message>
+  <message name="IDS_TRACKING_PROTECTION_ALLOWED_GROUP_TITLE" desc="" translateable="false" formatter_data="android_java">
+    Sites allowed to use third-party cookies - <ph name="NUM_WEBSITES">%1$s<ex>3</ex></ph>
+  </message>
 </grit-part>
