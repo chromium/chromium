@@ -169,8 +169,11 @@ void PermissionContextBase::RequestPermission(
   content::PermissionResult result = GetPermissionStatus(
       rfh, request_data.requesting_origin, request_data.embedding_origin);
 
-  if (result.status == PermissionStatus::GRANTED ||
-      result.status == PermissionStatus::DENIED) {
+  bool status_ignorable = PermissionUtil::CanPermissionRequestIgnoreStatus(
+      request_data, result.source);
+
+  if (!status_ignorable && (result.status == PermissionStatus::GRANTED ||
+                            result.status == PermissionStatus::DENIED)) {
     switch (result.source) {
       case content::PermissionStatusSource::KILL_SWITCH:
         // Block the request and log to the developer console.

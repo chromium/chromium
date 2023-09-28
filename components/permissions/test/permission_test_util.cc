@@ -74,6 +74,14 @@ PermissionManager::PermissionContextMap CreatePermissionContexts(
 #endif
   permission_contexts[ContentSettingsType::WINDOW_MANAGEMENT] =
       std::make_unique<WindowManagementPermissionContext>(browser_context);
+  permission_contexts[ContentSettingsType::MEDIASTREAM_CAMERA] =
+      std::make_unique<FakePermissionContext>(
+          browser_context, ContentSettingsType::MEDIASTREAM_CAMERA,
+          blink::mojom::PermissionsPolicyFeature::kCamera);
+  permission_contexts[ContentSettingsType::MEDIASTREAM_MIC] =
+      std::make_unique<FakePermissionContext>(
+          browser_context, ContentSettingsType::MEDIASTREAM_MIC,
+          blink::mojom::PermissionsPolicyFeature::kMicrophone);
   return permission_contexts;
 }
 

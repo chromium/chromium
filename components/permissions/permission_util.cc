@@ -423,4 +423,30 @@ bool PermissionUtil::HasUserGesture(PermissionPrompt::Delegate* delegate) {
                permissions::PermissionRequestGestureType::GESTURE;
       });
 }
+
+bool PermissionUtil::CanPermissionRequestIgnoreStatus(
+    const PermissionRequestData& request,
+    content::PermissionStatusSource source) {
+  if (!request.embedded_permission_element_initiated) {
+    return false;
+  }
+
+  switch (source) {
+    case content::PermissionStatusSource::KILL_SWITCH:
+    case content::PermissionStatusSource::FEATURE_POLICY:
+    case content::PermissionStatusSource::FENCED_FRAME:
+    case content::PermissionStatusSource::INSECURE_ORIGIN:
+    case content::PermissionStatusSource::VIRTUAL_URL_DIFFERENT_ORIGIN:
+    case content::PermissionStatusSource::PORTAL:
+      return false;
+    case content::PermissionStatusSource::MULTIPLE_DISMISSALS:
+    case content::PermissionStatusSource::MULTIPLE_IGNORES:
+    case content::PermissionStatusSource::RECENT_DISPLAY:
+    case content::PermissionStatusSource::UNSPECIFIED:
+      return true;
+  }
+
+  NOTREACHED();
+}
+
 }  // namespace permissions

@@ -152,7 +152,8 @@ void PermissionServiceImpl::RequestPageEmbeddedPermission(
         PermissionRequestDescription(
             permission_types, /*user_gesture=*/true,
             /*requesting_origin=*/GURL(),
-            /*embedded_permission_element_initiated=*/true),
+            /*embedded_permission_element_initiated=*/true,
+            /*anchor_element_position=*/descriptor->element_position),
         base::BindOnce(&EmbeddedPermissionRequestCallbackWrapper,
                        std::move(callback)));
   }
