@@ -256,7 +256,10 @@ void DragController::PerformDrag(DragData* drag_data, LocalFrame& local_root) {
   if ((drag_destination_action_ & kDragDestinationActionDHTML) &&
       document_is_handling_drag_) {
     bool prevented_default = false;
-    if (local_root.View()) {
+    if (drag_data->ForceDefaultAction()) {
+      // Tell the document that the drag has left the building.
+      DragExited(drag_data, local_root);
+    } else if (local_root.View()) {
       // Sending an event can result in the destruction of the view and part.
       DataTransfer* data_transfer = CreateDraggingDataTransfer(
           DataTransferAccessPolicy::kReadable, drag_data);
@@ -334,8 +337,9 @@ void DragController::MouseMovedIntoDocument(Document* new_document) {
   document_under_mouse_ = new_document;
 }
 
-DragOperation DragController::DragEnteredOrUpdated(DragData* drag_data,
-                                                   LocalFrame& local_root) {
+DragController::Operation DragController::DragEnteredOrUpdated(
+    DragData* drag_data,
+    LocalFrame& local_root) {
   DCHECK(drag_data);
 
   MouseMovedIntoDocument(local_root.DocumentAtPoint(
@@ -348,12 +352,16 @@ DragOperation DragController::DragEnteredOrUpdated(DragData* drag_data,
           : static_cast<DragDestinationAction>(kDragDestinationActionDHTML |
                                                kDragDestinationActionEdit);
 
-  DragOperation drag_operation = DragOperation::kNone;
-  document_is_handling_drag_ = TryDocumentDrag(
-      drag_data, drag_destination_action_, drag_operation, local_root);
+  Operation drag_operation;
+  document_is_handling_drag_ =
+      TryDocumentDrag(drag_data, drag_destination_action_,
+                      drag_operation.operation, local_root);
   if (!document_is_handling_drag_ &&
-      (drag_destination_action_ & kDragDestinationActionLoad))
-    drag_operation = OperationForLoad(drag_data, local_root);
+      (drag_destination_action_ & kDragDestinationActionLoad)) {
+    drag_operation.operation = OperationForLoad(drag_data, local_root);
+  }
+
+  drag_operation.document_is_handling_drag = document_is_handling_drag_;
   return drag_operation;
 }
 

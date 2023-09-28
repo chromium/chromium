@@ -10,6 +10,7 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/common/drop_data.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/gfx/geometry/point_f.h"
 
 namespace content {
@@ -74,7 +75,11 @@ CONTENT_EXPORT
 // Sets the current operation negotiated by the source and destination,
 // which determines whether or not we should allow the drop. Takes effect the
 // next time |-draggingUpdated:| is called.
-- (void)setCurrentOperation:(NSDragOperation)operation;
+//
+// See mojo method FrameWidget::DragTargetDragEnter() for a discussion of
+// |operation| and |documentOperation|.
+- (void)setCurrentOperation:(ui::mojom::DragOperation)operation
+     documentIsHandlingDrag:(bool)documentIsHandlingDrag;
 
 // Messages to send during the tracking of a drag, usually upon receiving
 // calls from the view system. Communicates the drag messages to WebCore.

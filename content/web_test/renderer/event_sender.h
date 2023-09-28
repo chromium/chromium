@@ -196,7 +196,9 @@ class EventSender {
                              float* radius_x,
                              float* radius_y);
 
-  void FinishDragAndDrop(const blink::WebMouseEvent&, ui::mojom::DragOperation);
+  void FinishDragAndDrop(const blink::WebMouseEvent&,
+                         ui::mojom::DragOperation,
+                         bool);
 
   int ModifiersForPointer(int pointer_id);
   void DoDragAfterMouseUp(const blink::WebMouseEvent&);

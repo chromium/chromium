@@ -373,7 +373,7 @@ WebContentsViewAura::DropMetadata::DropMetadata(
   flags = event.flags();
 }
 
-WebContentsViewAura::OnPerformDropContext::OnPerformDropContext(
+WebContentsViewAura::OnPerformingDropContext::OnPerformingDropContext(
     RenderWidgetHostImpl* target_rwh,
     std::unique_ptr<DropData> drop_data,
     DropMetadata drop_metadata,
@@ -389,10 +389,11 @@ WebContentsViewAura::OnPerformDropContext::OnPerformDropContext(
       transformed_pt(std::move(transformed_pt)),
       screen_pt(screen_pt) {}
 
-WebContentsViewAura::OnPerformDropContext::OnPerformDropContext(
-    OnPerformDropContext&&) = default;
+WebContentsViewAura::OnPerformingDropContext::OnPerformingDropContext(
+    OnPerformingDropContext&&) = default;
 
-WebContentsViewAura::OnPerformDropContext::~OnPerformDropContext() = default;
+WebContentsViewAura::OnPerformingDropContext::~OnPerformingDropContext() =
+    default;
 
 #if BUILDFLAG(IS_WIN)
 // A web contents observer that watches for navigations while an async drop
@@ -670,7 +671,6 @@ WebContentsViewAura::WebContentsViewAura(
     std::unique_ptr<WebContentsViewDelegate> delegate)
     : web_contents_(web_contents),
       delegate_(std::move(delegate)),
-      current_drag_op_(DragOperation::kNone),
       drag_dest_delegate_(nullptr),
       current_rvh_for_drag_(ChildProcessHost::kInvalidUniqueID,
                             MSG_ROUTING_NONE),
@@ -1253,8 +1253,14 @@ void WebContentsViewAura::StartDragging(
   }
 }
 
-void WebContentsViewAura::UpdateDragCursor(DragOperation operation) {
-  current_drag_op_ = operation;
+void WebContentsViewAura::UpdateDragOperation(DragOperation operation,
+                                              bool document_is_handling_drag) {
+  // This asynchronous update may arrive after a drop has already been cancelled
+  // or completed, in which case `current_drag_data_` will have been reset.
+  if (current_drag_data_) {
+    current_drag_data_->operation = operation;
+    current_drag_data_->document_is_handling_drag = document_is_handling_drag;
+  }
 }
 
 void WebContentsViewAura::GotFocus(RenderWidgetHostImpl* render_widget_host) {
@@ -1560,7 +1566,9 @@ aura::client::DragUpdateInfo WebContentsViewAura::OnDragUpdated(
                          weak_ptr_factory_.GetWeakPtr(), drop_metadata,
                          std::move(drop_data)));
 
-  drag_info.drag_operation = static_cast<int>(current_drag_op_);
+  drag_info.drag_operation =
+      static_cast<int>(current_drag_data_ ? current_drag_data_->operation
+                                          : ui::mojom::DragOperation::kNone);
   return drag_info;
 }
 
@@ -1599,7 +1607,7 @@ void WebContentsViewAura::CompleteDragExit() {
 // the web contents delegate.  A drop is not considered done by this view until
 // all the asynchronous operations complete.
 //
-// Assuming that a drop is allowed, an instance of OnPerformDropContext is
+// Assuming that a drop is allowed, an instance of OnPerformingDropContext is
 // created to keep track of the drop state during the various async operations.
 // This context is saved in the `drop_context` argument passed around to the
 // various methods. The data being dropped, stored in `current_drag_data_`, is
@@ -1617,16 +1625,17 @@ void WebContentsViewAura::CompleteDragExit() {
 // may filter that data according to specific criteria, and may even block the
 // drop altogether.  For example, some enterprise policies may block
 // sensitive data from being dropped on unsanctioned web pages.  This step is
-// kicked off by calling DelegateOnPerformDrop() and the async response is
+// kicked off by calling MaybeLetDelegateProcessDrop() and the async response is
 // handled by GotModifiedDropDataFromDelegate().  In tests it's possible that
-// no delegate exists, in which case FinishOnPerformDrop() is called directly.
+// no delegate exists, in which case CompleteDrop() is called
+// directly.
 //
 // GotModifiedDropDataFromDelegate() is called only when a delegate exists and
 // processes the result of the delegate's handling of the dropped data.
 // Assuming the delegate allows the drop, the dropped data in `drop_context`
-// is updated and FinishOnPerformDrop() is called.
+// is updated and CompleteDrop() is called.
 //
-// FinishOnPerformDrop() calls CompleteDrop() to send the dropped data to
+// CompleteDrop() calls CompleteDrop() to send the dropped data to
 // the RWH.  At this point the drop is considered completed from this view's
 // point of view.
 //
@@ -1673,7 +1682,7 @@ void WebContentsViewAura::PerformDropCallback(
     return;
   }
 
-  OnPerformDropContext drop_context = OnPerformDropContext(
+  OnPerformingDropContext drop_context(
       target_rwh, std::move(current_drag_data_), drop_metadata, std::move(data),
       std::move(end_drag_runner), transformed_pt, screen_pt);
 
@@ -1696,27 +1705,27 @@ void WebContentsViewAura::PerformDropCallback(
   }
 #endif
 
-  DelegateOnPerformDrop(std::move(drop_context));
+  MaybeLetDelegateProcessDrop(std::move(drop_context));
 }
 
-void WebContentsViewAura::DelegateOnPerformDrop(
-    OnPerformDropContext drop_context) {
+void WebContentsViewAura::MaybeLetDelegateProcessDrop(
+    OnPerformingDropContext drop_context) {
   // |delegate_| may be null in unit tests.
   // TODO(crbug.com/1459352): Tests should use a delegate.
   if (delegate_) {
     auto* drop_data_ptr = drop_context.drop_data.get();
-    delegate_->OnPerformDrop(
+    delegate_->OnPerformingDrop(
         *drop_data_ptr,
         base::BindOnce(&WebContentsViewAura::GotModifiedDropDataFromDelegate,
                        weak_ptr_factory_.GetWeakPtr(),
                        std::move(drop_context)));
   } else {
-    FinishOnPerformDrop(std::move(drop_context));
+    CompleteDrop(std::move(drop_context));
   }
 }
 
 void WebContentsViewAura::GotModifiedDropDataFromDelegate(
-    OnPerformDropContext drop_context,
+    OnPerformingDropContext drop_context,
     absl::optional<DropData> drop_data) {
   // This is possibly an async callback.  Make sure the RWH is still valid.
   if (!drop_context.target_rwh ||
@@ -1742,16 +1751,7 @@ void WebContentsViewAura::GotModifiedDropDataFromDelegate(
   }
 
   *drop_context.drop_data = std::move(drop_data.value());
-  FinishOnPerformDrop(std::move(drop_context));
-}
-
-void WebContentsViewAura::FinishOnPerformDrop(
-    OnPerformDropContext drop_context) {
-  const int key_modifiers =
-      ui::EventFlagsToWebEventModifiers(drop_context.drop_metadata.flags);
-  CompleteDrop(drop_context.target_rwh.get(), *drop_context.drop_data,
-               drop_context.transformed_pt.value(), drop_context.screen_pt,
-               key_modifiers);
+  CompleteDrop(std::move(drop_context));
 }
 
 aura::client::DragDropDelegate::DropCallback
@@ -1766,22 +1766,23 @@ WebContentsViewAura::GetDropCallback(const ui::DropTargetEvent& event) {
                         drop_metadata);
 }
 
-void WebContentsViewAura::CompleteDrop(RenderWidgetHostImpl* target_rwh,
-                                       const DropData& drop_data,
-                                       const gfx::PointF& client_pt,
-                                       const gfx::PointF& screen_pt,
-                                       int key_modifiers) {
+void WebContentsViewAura::CompleteDrop(OnPerformingDropContext drop_context) {
   web_contents_->Focus();
 
-  target_rwh->DragTargetDrop(drop_data, client_pt, screen_pt, key_modifiers,
-                             base::DoNothing());
+  const int key_modifiers =
+      ui::EventFlagsToWebEventModifiers(drop_context.drop_metadata.flags);
+  drop_context.target_rwh.get()->DragTargetDrop(
+      *drop_context.drop_data, drop_context.transformed_pt.value(),
+      drop_context.screen_pt, key_modifiers, base::DoNothing());
   if (drag_dest_delegate_) {
     drag_dest_delegate_->OnDrop();
   }
 
   if (!drop_callback_for_testing_.is_null()) {
     std::move(drop_callback_for_testing_)
-        .Run(target_rwh, drop_data, client_pt, screen_pt, key_modifiers,
+        .Run(drop_context.target_rwh.get(), *drop_context.drop_data,
+             drop_context.transformed_pt.value(), drop_context.screen_pt,
+             key_modifiers,
              /*drop_allowed=*/true);
   }
 }
@@ -1792,6 +1793,12 @@ void WebContentsViewAura::PerformDropOrExitDrag(
     std::unique_ptr<ui::OSExchangeData> data,
     ui::mojom::DragOperation& output_drag_op,
     std::unique_ptr<ui::LayerTreeOwner> drag_image_layer_owner) {
+  // Set output_drag_op before calling on `web_contents_` below because it
+  // is possible for the drop to end and the member `current_drag_data_` to be
+  // reset.
+  output_drag_op = current_drag_data_ ? current_drag_data_->operation
+                                      : ui::mojom::DragOperation::kNone;
+
   web_contents_->GetInputEventRouter()
       ->GetRenderWidgetHostAtPointAsynchronously(
           web_contents_->GetRenderViewHost()->GetWidget()->GetView(),
@@ -1799,7 +1806,6 @@ void WebContentsViewAura::PerformDropOrExitDrag(
           base::BindOnce(&WebContentsViewAura::PerformDropCallback,
                          weak_ptr_factory_.GetWeakPtr(), drop_metadata,
                          std::move(data)));
-  output_drag_op = current_drag_op_;
   exit_drag.ReplaceClosure(base::DoNothing());
 }
 
@@ -1810,7 +1816,7 @@ void WebContentsViewAura::RegisterDropCallbackForTesting(
 
 #if BUILDFLAG(IS_WIN)
 void WebContentsViewAura::OnGotVirtualFilesAsTempFiles(
-    OnPerformDropContext drop_context,
+    OnPerformingDropContext drop_context,
     const std::vector<std::pair<base::FilePath, base::FilePath>>&
         filepaths_and_names) {
   if (!async_drop_navigation_observer_) {
@@ -1865,7 +1871,7 @@ void WebContentsViewAura::OnGotVirtualFilesAsTempFiles(
     }
   }
 
-  DelegateOnPerformDrop(std::move(drop_context));
+  MaybeLetDelegateProcessDrop(std::move(drop_context));
 }
 #endif
 

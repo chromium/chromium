@@ -7,6 +7,7 @@
 data/accept-header-iframe.html
 data/accept-header-iframe.html.mock-http-headers
 data/accept-header.html
+data/accept-drop.html
 data/accessibility/accdescription/description-ignores-slot-expected-blink.txt
 data/accessibility/accdescription/description-ignores-slot.html
 data/accessibility/accname/desc-combobox-focusable-expected-android-external.txt

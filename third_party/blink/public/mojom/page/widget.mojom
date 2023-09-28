@@ -40,22 +40,32 @@ interface FrameWidget {
   // completed processing the event the callback is called with the type of
   // the current drag operation that is active and the browser will update
   // the mouse cursor displayed to the user.
+  //
+  // The callback also receives whether the document is handling the drag in
+  // |document_is_handling_drag|. This can be false for example when the
+  // the renderer may handle the drop directly with some default action or
+  // in editable regions.
   DragTargetDragEnter(DragData drag_data,
                       gfx.mojom.PointF point_in_viewport,
                       gfx.mojom.PointF screen_point,
                       AllowedDragOperations operations_allowed,
                       uint32 key_modifiers)
-      => (ui.mojom.DragOperation operation);
+      => (ui.mojom.DragOperation operation,
+          bool document_is_handling_drag);
 
   // Notifies the Widget of a drag over operation. Once the renderer has
   // completed processing the event the callback is called with the type of
   // the current drag operation that is active and the browser will update
   // the mouse cursor displayed to the user.
+  //
+  // See comment for DragTargetDragEnter() for a discussion of |operation| and
+  // |document_is_handling_drag|.
   DragTargetDragOver(gfx.mojom.PointF point_in_viewport,
                      gfx.mojom.PointF screen_point,
                      AllowedDragOperations operations_allowed,
                      uint32 key_modifiers)
-      => (ui.mojom.DragOperation operation);
+      => (ui.mojom.DragOperation operation,
+          bool document_is_handling_drag);
 
   // Notifies the Widget of a drag leave operation.
   DragTargetDragLeave(gfx.mojom.PointF point_in_viewport,

@@ -283,7 +283,7 @@ class CONTENT_EXPORT RenderWidgetHost {
   virtual void WriteIntoTrace(perfetto::TracedValue context) = 0;
 
   using DragOperationCallback =
-      base::OnceCallback<void(::ui::mojom::DragOperation)>;
+      base::OnceCallback<void(::ui::mojom::DragOperation, bool)>;
   // Drag-and-drop drop target messages that get sent to Blink.
   virtual void DragTargetDragEnter(const DropData& drop_data,
                                    const gfx::PointF& client_pt,

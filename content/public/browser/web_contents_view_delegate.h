@@ -35,9 +35,9 @@ struct DropData;
 // WebContentsView implementation.
 class CONTENT_EXPORT WebContentsViewDelegate {
  public:
-  // Callback used with OnPerformDrop() method that is called once
-  // OnPerformDrop() completes. Returns an updated DropData or nothing if the
-  // drop operation should be aborted.
+  // Callback used with OnPerformingDrop() method that is called once
+  // OnPerformingDrop() completes. Returns an updated DropData or nothing if
+  // the drop operation should be aborted.
   using DropCompletionCallback =
       base::OnceCallback<void(absl::optional<DropData>)>;
 
@@ -97,8 +97,8 @@ class CONTENT_EXPORT WebContentsViewDelegate {
 
   // Performs the actions needed for a drop and then calls the completion
   // callback once done.
-  virtual void OnPerformDrop(const DropData& drop_data,
-                             DropCompletionCallback callback);
+  virtual void OnPerformingDrop(const DropData& drop_data,
+                                DropCompletionCallback callback);
 };
 
 }  // namespace content

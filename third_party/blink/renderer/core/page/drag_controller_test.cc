@@ -148,7 +148,8 @@ TEST_F(DragControllerSimTest, ThrottledDocumentHandled) {
   DragData data(
       object, gfx::PointF(10, 10), gfx::PointF(10, 10),
       static_cast<DragOperationsMask>(kDragOperationCopy | kDragOperationLink |
-                                      kDragOperationMove));
+                                      kDragOperationMove),
+      false);
 
   WebView().GetPage()->GetDragController().DragEnteredOrUpdated(
       &data, *GetDocument().GetFrame());

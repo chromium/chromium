@@ -355,9 +355,9 @@ DropData ProtocolDragDataToDropData(std::unique_ptr<Input::DragData> data) {
     items.push_back(blink::mojom::DragItem::NewString(std::move(mojo_item)));
   }
 
-  blink::mojom::DragDataPtr mojo_data =
-      blink::mojom::DragData::New(std::move(items), absl::nullopt,
-                                  network::mojom::ReferrerPolicy::kDefault);
+  blink::mojom::DragDataPtr mojo_data = blink::mojom::DragData::New(
+      std::move(items), absl::nullopt,
+      /*force_default_action=*/false, network::mojom::ReferrerPolicy::kDefault);
   DropData drop_data = DragDataToDropData(*mojo_data);
 
   protocol::Array<protocol::String> default_value;
@@ -806,7 +806,6 @@ struct InputHandler::DragController::DragState {
   blink::DragOperationsMask mask;
   base::WeakPtr<RenderWidgetHostImpl> host;
   gfx::PointF pos;
-  ui::mojom::DragOperation operation;
   // Acts as a counting semaphore for concurrent updates.
   size_t updating;
   base::OnceClosure updated_callback;
@@ -920,8 +919,8 @@ void InputHandler::DragController::StartDragging(
   }
 
   drag_state_ = std::make_unique<DragState>(
-      DragState{drop_data, drag_operations_mask, nullptr, gfx::PointF(),
-                ui::mojom::DragOperation::kNone, 0, base::DoNothing()});
+      DragState{drop_data, drag_operations_mask, nullptr, gfx::PointF(), 0,
+                base::DoNothing()});
   UpdateDragging(*initial_state_->host,
                  // Note we don't move it here. See
                  // InputHandler::DragController::HandleMouseEvent.
@@ -964,14 +963,16 @@ void InputHandler::DragController::UpdateDragging(
 void InputHandler::DragController::DragUpdated(
     std::unique_ptr<blink::WebMouseEvent> event,
     std::unique_ptr<FailSafe<DispatchMouseEventCallback>> callback,
-    ui::mojom::DragOperation operation) {
+    ui::mojom::DragOperation operation,
+    bool document_is_handling_drag) {
   if (!drag_state_) {
     // Dragging ended, perhaps due to a previous mouse up or a drag
     // cancellation.
     handler_.HandleMouseEvent(std::move(event), callback->release());
     return;
   }
-  drag_state_->operation = operation;
+  drag_state_->data.operation = operation;
+  drag_state_->data.document_is_handling_drag = document_is_handling_drag;
 
   --drag_state_->updating;
   if (callback) {
@@ -1038,7 +1039,7 @@ void InputHandler::DragController::EndDraggingWithRenderWidgetHostAtPoint(
   host->DragTargetDrop(drag_state_->data, point, point, event->GetModifiers(),
                        base::DoNothing());
   host->DragSourceEndedAt(
-      point, point, drag_state_->operation,
+      point, point, drag_state_->data.operation,
       base::BindOnce(&FailSafe<DispatchMouseEventCallback>::sendSuccess,
                      std::move(callback)));
 }
@@ -1408,18 +1409,16 @@ void InputHandler::OnWidgetForDispatchDragEvent(
         *drop_data, point, point, mask, event_modifiers,
         base::BindOnce(
             [](std::unique_ptr<DispatchDragEventCallback> callback,
-               ::ui::mojom::DragOperation operation) {
-              callback->sendSuccess();
-            },
+               ::ui::mojom::DragOperation operation,
+               bool document_is_handling_drag) { callback->sendSuccess(); },
             std::move(callback)));
   } else if (event_type == Input::DispatchDragEvent::TypeEnum::DragOver) {
     widget_host->DragTargetDragOver(
         point, point, mask, event_modifiers,
         base::BindOnce(
             [](std::unique_ptr<DispatchDragEventCallback> callback,
-               ::ui::mojom::DragOperation operation) {
-              callback->sendSuccess();
-            },
+               ::ui::mojom::DragOperation operation,
+               bool document_is_handling_drag) { callback->sendSuccess(); },
             std::move(callback)));
   } else if (event_type == Input::DispatchDragEvent::TypeEnum::Drop) {
     widget_host->DragTargetDragOver(
@@ -1428,11 +1427,14 @@ void InputHandler::OnWidgetForDispatchDragEvent(
             [](std::unique_ptr<DropData> drop_data, int event_modifiers,
                std::unique_ptr<DispatchDragEventCallback> callback,
                base::WeakPtr<RenderWidgetHostViewBase> target,
-               gfx::PointF point, ui::mojom::DragOperation current_op) {
+               gfx::PointF point, ui::mojom::DragOperation current_op,
+               bool document_is_handling_drag) {
               if (!target) {
                 callback->sendFailure(Response::InternalError());
                 return;
               }
+              drop_data->operation = current_op;
+              drop_data->document_is_handling_drag = document_is_handling_drag;
               RenderWidgetHostImpl* widget_host =
                   RenderWidgetHostImpl::From(target->GetRenderWidgetHost());
               widget_host->DragTargetDrop(*drop_data, point, point,

@@ -21,6 +21,7 @@
 #include "services/network/public/mojom/referrer_policy.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/clipboard/file_info.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -86,7 +87,7 @@ struct CONTENT_EXPORT DropData {
 
   // User is dragging a link or image.
   GURL url;
-  std::u16string url_title;  // The title associated with |url|.
+  std::u16string url_title;  // The title associated with `url`.
 
   // User is dragging a link out-of the webview.
   std::u16string download_metadata;
@@ -113,8 +114,8 @@ struct CONTENT_EXPORT DropData {
   absl::optional<std::u16string> text;
 
   // User is dragging text/html into the webview (e.g., out of Firefox).
-  // |html_base_url| is the URL that the html fragment is taken from (used to
-  // resolve relative links).  It's ok for |html_base_url| to be empty.
+  // `html_base_url` is the URL that the html fragment is taken from (used to
+  // resolve relative links). It's ok for `html_base_url` to be empty.
   absl::optional<std::u16string> html;
   GURL html_base_url;
 
@@ -126,6 +127,11 @@ struct CONTENT_EXPORT DropData {
   std::string file_contents_content_disposition;
 
   std::unordered_map<std::u16string, std::u16string> custom_data;
+
+  // The drop operation. See mojo method FrameWidget::DragTargetDragEnter() for
+  // a discussion of `operation` and `document_is_handling_drag`.
+  ui::mojom::DragOperation operation = ui::mojom::DragOperation::kNone;
+  bool document_is_handling_drag = false;
 };
 
 }  // namespace content

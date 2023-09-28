@@ -33,7 +33,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
-#include "ui/base/dragdrop/mojom/drag_drop_types.mojom-blink-forward.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom-blink.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -63,8 +63,23 @@ class CORE_EXPORT DragController final
   DragController(const DragController&) = delete;
   DragController& operator=(const DragController&) = delete;
 
-  ui::mojom::blink::DragOperation DragEnteredOrUpdated(DragData*,
-                                                       LocalFrame& local_root);
+  // Holds the drag operation and whether the document is handling it.  Also see
+  // DragTargetDragEnter() in widget.mojom for further details.
+  struct Operation {
+    // The current drag operation as negotiated by the source and destination.
+    // When not equal to DragOperationNone, the drag data can be dropped onto
+    // the current drop target in this WebView (the drop target can accept the
+    // drop).
+    ui::mojom::blink::DragOperation operation =
+        ui::mojom::blink::DragOperation::kNone;
+
+    // True if the document intends to handle the drag.  This means the drag
+    // controller will pass the data to the document, but the document might
+    // still decide not to handle it by not calling preventDefault().
+    bool document_is_handling_drag = false;
+  };
+
+  Operation DragEnteredOrUpdated(DragData*, LocalFrame& local_root);
   void DragExited(DragData*, LocalFrame& local_root);
   void PerformDrag(DragData*, LocalFrame& local_root);
 

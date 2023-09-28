@@ -237,7 +237,8 @@ class InputHandler : public DevToolsDomainHandler, public Input::Backend {
     void DragUpdated(
         std::unique_ptr<blink::WebMouseEvent> event,
         std::unique_ptr<FailSafe<DispatchMouseEventCallback>> callback,
-        ui::mojom::DragOperation operation);
+        ui::mojom::DragOperation operation,
+        bool document_is_handling_drag);
 
     // Ends the drag with the given event and host.
     //

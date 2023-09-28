@@ -47,8 +47,8 @@ class ChromeWebContentsViewDelegateViews
   void ShowContextMenu(content::RenderFrameHost& render_frame_host,
                        const content::ContextMenuParams& params) override;
   void ExecuteCommandForTesting(int command_id, int event_flags) override;
-  void OnPerformDrop(const content::DropData& drop_data,
-                     DropCompletionCallback callback) override;
+  void OnPerformingDrop(const content::DropData& drop_data,
+                        DropCompletionCallback callback) override;
 
   // Overridden from ContextMenuDelegate.
   std::unique_ptr<RenderViewContextMenuBase> BuildMenu(

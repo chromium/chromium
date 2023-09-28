@@ -303,6 +303,12 @@ WTF::String StructTraits<blink::mojom::DragDataDataView, blink::WebDragData>::
 }
 
 // static
+bool StructTraits<blink::mojom::DragDataDataView, blink::WebDragData>::
+    force_default_action(const blink::WebDragData& drag_data) {
+  return drag_data.ForceDefaultAction();
+}
+
+// static
 network::mojom::ReferrerPolicy StructTraits<
     blink::mojom::DragDataDataView,
     blink::WebDragData>::referrer_policy(const blink::WebDragData& drag_data) {
@@ -323,6 +329,7 @@ bool StructTraits<blink::mojom::DragDataDataView, blink::WebDragData>::Read(
   blink::WebDragData drag_data;
   drag_data.SetItems(std::move(items));
   drag_data.SetFilesystemId(file_system_id);
+  drag_data.SetForceDefaultAction(data.force_default_action());
   drag_data.SetReferrerPolicy(referrer_policy);
   *out = std::move(drag_data);
   return true;

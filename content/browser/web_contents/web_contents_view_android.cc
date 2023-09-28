@@ -407,7 +407,9 @@ void WebContentsViewAndroid::StartDragging(
   }
 }
 
-void WebContentsViewAndroid::UpdateDragCursor(ui::mojom::DragOperation op) {
+void WebContentsViewAndroid::UpdateDragOperation(
+    ui::mojom::DragOperation op,
+    bool document_is_handling_drag) {
   // Intentional no-op because Android does not have cursor.
 }
 

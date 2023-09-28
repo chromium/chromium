@@ -217,6 +217,7 @@ blink::mojom::DragDataPtr DropDataToDragData(
           ? absl::nullopt
           : absl::optional<std::string>(
                 base::UTF16ToUTF8(drop_data.filesystem_id)),
+      /*force_default_action=*/!drop_data.document_is_handling_drag,
       drop_data.referrer_policy);
 }
 
@@ -271,6 +272,7 @@ blink::mojom::DragDataPtr DropMetaDataToDragData(
     }
   }
   return blink::mojom::DragData::New(std::move(items), absl::nullopt,
+                                     /*force_default_action=*/false,
                                      network::mojom::ReferrerPolicy::kDefault);
 }
 

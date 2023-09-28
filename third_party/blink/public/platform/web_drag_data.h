@@ -118,6 +118,12 @@ class BLINK_PLATFORM_EXPORT WebDragData {
     filesystem_id_ = filesystem_id;
   }
 
+  bool ForceDefaultAction() const { return force_default_action_; }
+
+  void SetForceDefaultAction(bool force_default_action) {
+    force_default_action_ = force_default_action;
+  }
+
   network::mojom::ReferrerPolicy ReferrerPolicy() const {
     return referrer_policy_;
   }
@@ -129,6 +135,10 @@ class BLINK_PLATFORM_EXPORT WebDragData {
  private:
   WebVector<Item> item_list_;
   WebString filesystem_id_;
+
+  // If true, the renderer always performs the default action for the drop.
+  // See DragData::force_default_action for complete details.
+  bool force_default_action_ = false;
 
   // Used for items where string_type == "downloadurl". Stores the referrer
   // policy for usage when dragging a link out of the webview results in a

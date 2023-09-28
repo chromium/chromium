@@ -113,7 +113,6 @@
 #include "third_party/blink/renderer/core/loader/interactive_detector.h"
 #include "third_party/blink/renderer/core/page/context_menu_controller.h"
 #include "third_party/blink/renderer/core/page/drag_actions.h"
-#include "third_party/blink/renderer/core/page/drag_controller.h"
 #include "third_party/blink/renderer/core/page/drag_data.h"
 #include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/link_highlight.h"
@@ -500,7 +499,8 @@ void WebFrameWidgetImpl::DragTargetDragEnter(
   DragTargetDragEnterOrOver(point_in_viewport, screen_point, kDragEnter,
                             key_modifiers);
 
-  std::move(callback).Run(drag_operation_);
+  std::move(callback).Run(drag_operation_.operation,
+                          drag_operation_.document_is_handling_drag);
 }
 
 void WebFrameWidgetImpl::DragTargetDragOver(
@@ -514,7 +514,8 @@ void WebFrameWidgetImpl::DragTargetDragOver(
   DragTargetDragEnterOrOver(point_in_viewport, screen_point, kDragOver,
                             key_modifiers);
 
-  std::move(callback).Run(drag_operation_);
+  std::move(callback).Run(drag_operation_.operation,
+                          drag_operation_.document_is_handling_drag);
 }
 
 void WebFrameWidgetImpl::DragTargetDragLeave(
@@ -528,7 +529,8 @@ void WebFrameWidgetImpl::DragTargetDragLeave(
 
   gfx::PointF point_in_root_frame(ViewportToRootFrame(point_in_viewport));
   DragData drag_data(current_drag_data_.Get(), point_in_root_frame,
-                     screen_point, operations_allowed_);
+                     screen_point, operations_allowed_,
+                     /*force_default_action=*/false);
 
   GetPage()->GetDragController().DragExited(&drag_data,
                                             *local_root_->GetFrame());
@@ -560,9 +562,9 @@ void WebFrameWidgetImpl::DragTargetDrop(const WebDragData& web_drag_data,
   // flight, or else delayed by javascript processing in this webview.  If a
   // drop happens before our IPC reply has reached the browser process, then
   // the browser forwards the drop to this webview.  So only allow a drop to
-  // proceed if our webview drag_operation_ state is not DragOperation::kNone.
+  // proceed if our webview drag operation state is not DragOperation::kNone.
 
-  if (drag_operation_ == DragOperation::kNone) {
+  if (drag_operation_.operation == DragOperation::kNone) {
     // IPC RACE CONDITION: do not allow this drop.
     DragTargetDragLeave(point_in_viewport, screen_point);
     return;
@@ -571,7 +573,7 @@ void WebFrameWidgetImpl::DragTargetDrop(const WebDragData& web_drag_data,
   current_drag_data_->SetModifiers(key_modifiers);
   DragData drag_data(current_drag_data_.Get(),
                      ViewportToRootFrame(point_in_viewport), screen_point,
-                     operations_allowed_);
+                     operations_allowed_, web_drag_data.ForceDefaultAction());
   GetPage()->GetDragController().PerformDrag(&drag_data,
                                              *local_root_->GetFrame());
 }
@@ -1235,7 +1237,7 @@ WebInputEventResult WebFrameWidgetImpl::HandleCharEvent(
 }
 
 void WebFrameWidgetImpl::CancelDrag() {
-  drag_operation_ = DragOperation::kNone;
+  drag_operation_ = DragController::Operation();
   current_drag_data_ = nullptr;
 }
 
@@ -1276,16 +1278,17 @@ void WebFrameWidgetImpl::DragTargetDragEnterOrOver(
 
   current_drag_data_->SetModifiers(key_modifiers);
   DragData drag_data(current_drag_data_.Get(), point_in_root_frame,
-                     screen_point, operations_allowed_);
+                     screen_point, operations_allowed_,
+                     /*force_default_action=*/false);
 
   drag_operation_ = GetPage()->GetDragController().DragEnteredOrUpdated(
       &drag_data, *local_root_->GetFrame());
 
   // Mask the drag operation against the drag source's allowed
   // operations.
-  if (!(static_cast<int>(drag_operation_) &
+  if (!(static_cast<int>(drag_operation_.operation) &
         drag_data.DraggingSourceOperationMask())) {
-    drag_operation_ = DragOperation::kNone;
+    drag_operation_ = DragController::Operation();
   }
 }
 

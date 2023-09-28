@@ -76,21 +76,31 @@ class TestWebContentsViewDelegate : public WebContentsViewDelegate {
  public:
   TestWebContentsViewDelegate(bool allow_drop) : allow_drop_(allow_drop) {}
 
-  void OnPerformDrop(const DropData& drop_data,
-                     DropCompletionCallback callback) override {
-    if (allow_drop_)
+  void OnPerformingDrop(const DropData& drop_data,
+                        DropCompletionCallback callback) override {
+    if (allow_drop_) {
       drop_callback_ = base::BindOnce(std::move(callback), drop_data);
-    else
+    } else {
       drop_callback_ = base::BindOnce(std::move(callback), absl::nullopt);
+    }
+
+    renderer_told_to_force_default_action_ =
+        !drop_data.document_is_handling_drag;
   }
 
-  void FinishScan() {
-    if (!drop_callback_.is_null())
+  void FinishOnPerformingDrop() {
+    if (drop_callback_) {
       std::move(drop_callback_).Run();
+    }
+  }
+
+  bool IsRendererToldToForceDefaultAction() {
+    return renderer_told_to_force_default_action_;
   }
 
  private:
   bool allow_drop_;
+  bool renderer_told_to_force_default_action_ = false;
   base::OnceClosure drop_callback_;
 };
 
@@ -130,6 +140,50 @@ class WebContentsViewAuraTest : public ContentBrowserTest {
                            switches::kTouchEventFeatureDetectionEnabled);
   }
 
+  WebContentsImpl* GetWebContentsImpl() {
+    return static_cast<WebContentsImpl*>(shell()->web_contents());
+  }
+
+  WebContentsViewAura* GetWebContentsViewAura() {
+    WebContentsImpl* contents = GetWebContentsImpl();
+    return static_cast<WebContentsViewAura*>(contents->GetView());
+  }
+
+  TestWebContentsViewDelegate* PrepareWebContentsViewForDropTest(
+      bool delegate_allows_drop) {
+    WebContentsViewAura* view = GetWebContentsViewAura();
+
+    drag_dest_delegate_.Reset();
+    view->SetDragDestDelegateForTesting(&drag_dest_delegate_);
+
+    auto delegate = std::make_unique<TestWebContentsViewDelegate>(
+        /*allow_drop=*/delegate_allows_drop);
+    TestWebContentsViewDelegate* delegate_ptr = delegate.get();
+    view->SetDelegateForTesting(std::move(delegate));
+    view->RegisterDropCallbackForTesting(base::BindOnce(
+        &WebContentsViewAuraTest::OnDropComplete, base::Unretained(this)));
+
+    return delegate_ptr;
+  }
+
+  void SimulateDragEnterAndDrop(bool document_is_handling_drag) {
+    WebContentsViewAura* view = GetWebContentsViewAura();
+    std::unique_ptr<ui::OSExchangeData> data =
+        std::make_unique<ui::OSExchangeData>();
+    gfx::PointF point = {10, 10};
+    ui::DropTargetEvent event(*data.get(), point, point,
+                              ui::DragDropTypes::DRAG_COPY);
+    view->OnDragEntered(event);
+    view->UpdateDragOperation(ui::mojom::DragOperation::kCopy,
+                              document_is_handling_drag);
+    EXPECT_TRUE(drag_dest_delegate_.GetDragInitializeCalled());
+    auto drop_cb = view->GetDropCallback(event);
+    ASSERT_TRUE(drop_cb);
+    ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
+    std::move(drop_cb).Run(std::move(data), output_drag_op,
+                           /*drag_image_layer_owner=*/nullptr);
+  }
+
   void OnDropComplete(RenderWidgetHostImpl* target_rwh,
                       const DropData& drop_data,
                       const gfx::PointF& client_pt,
@@ -143,8 +197,7 @@ class WebContentsViewAuraTest : public ContentBrowserTest {
 
   void TestOverscrollNavigation(bool touch_handler) {
     ASSERT_NO_FATAL_FAILURE(StartTestWithPage("/overscroll_navigation.html"));
-    WebContentsImpl* web_contents =
-        static_cast<WebContentsImpl*>(shell()->web_contents());
+    WebContentsImpl* web_contents = GetWebContentsImpl();
     NavigationController& controller = web_contents->GetController();
     RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
 
@@ -214,8 +267,7 @@ class WebContentsViewAuraTest : public ContentBrowserTest {
   }
 
   int GetCurrentIndex() {
-    WebContentsImpl* web_contents =
-        static_cast<WebContentsImpl*>(shell()->web_contents());
+    WebContentsImpl* web_contents = GetWebContentsImpl();
     RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
     return EvalJs(main_frame, "get_current()").ExtractInt();
   }
@@ -258,18 +310,18 @@ class WebContentsViewAuraTest : public ContentBrowserTest {
     }
     void OnDragOver() override {}
     void OnDragEnter() override {}
-    void OnDrop() override { on_drop_called_ = true; }
+    void OnDrop() override { ++on_drop_called_count_; }
     void OnDragLeave() override { on_drag_leave_called_ = true; }
     void OnReceiveDragData(const ui::OSExchangeData& data) override {}
 
     void Reset() { drag_initialize_called_ = false; }
     bool GetDragInitializeCalled() { return drag_initialize_called_; }
-    bool GetOnDropCalled() { return on_drop_called_; }
+    int GetOnDropCalledCount() { return on_drop_called_count_; }
     bool GetOnDragLeaveCalled() { return on_drag_leave_called_; }
 
    private:
     bool drag_initialize_called_ = false;
-    bool on_drop_called_ = false;
+    int on_drop_called_count_ = 0;
     bool on_drag_leave_called_ = false;
   };
 
@@ -360,8 +412,7 @@ class SpuriousMouseMoveEventObserver
 IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest,
                        DISABLED_OverscrollNotInterruptedBySpuriousMouseEvents) {
   ASSERT_NO_FATAL_FAILURE(StartTestWithPage("/overscroll_navigation.html"));
-  WebContentsImpl* web_contents =
-      static_cast<WebContentsImpl*>(shell()->web_contents());
+  WebContentsImpl* web_contents = GetWebContentsImpl();
   NavigationController& controller = web_contents->GetController();
   RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
 
@@ -433,8 +484,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest,
 IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest,
                        MAYBE_QuickOverscrollDirectionChange) {
   ASSERT_NO_FATAL_FAILURE(StartTestWithPage("/overscroll_navigation.html"));
-  WebContentsImpl* web_contents =
-      static_cast<WebContentsImpl*>(shell()->web_contents());
+  WebContentsImpl* web_contents = GetWebContentsImpl();
   RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
 
   // This test triggers a large number of animations. Speed them up to ensure
@@ -525,8 +575,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest,
   std::unique_ptr<aura::Window> window(new aura::Window(nullptr));
   window->Init(ui::LAYER_NOT_DRAWN);
 
-  WebContentsImpl* web_contents =
-      static_cast<WebContentsImpl*>(shell()->web_contents());
+  WebContentsImpl* web_contents = GetWebContentsImpl();
   ASSERT_TRUE(
       content::ExecJs(web_contents->GetPrimaryMainFrame(), "navigate_next()"));
   EXPECT_EQ(1, GetCurrentIndex());
@@ -548,10 +597,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest, DragDropOnOopif) {
       "a.com", "/overlapping_cross_site_iframe.html");
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
-  WebContentsImpl* contents =
-      static_cast<WebContentsImpl*>(shell()->web_contents());
-  WebContentsViewAura* view =
-      static_cast<WebContentsViewAura*>(contents->GetView());
+  WebContentsImpl* contents = GetWebContentsImpl();
+  WebContentsViewAura* view = GetWebContentsViewAura();
 
   view->SetDragDestDelegateForTesting(&drag_dest_delegate_);
 
@@ -623,131 +670,94 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest, DragDropOnOopif) {
   }
 }
 
-IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest, Drop_DeepScanOK) {
+// When the user drops data onto a web page that does not handle drops and the
+// web view delegate allows it, the renderer sees this as a "drop" and not a
+// "drag leave".
+IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest,
+                       Drop_NoDropZone_DelegateAllows) {
   StartTestWithPage("/simple_page.html");
-  WebContentsImpl* contents =
-      static_cast<WebContentsImpl*>(shell()->web_contents());
-  WebContentsViewAura* view =
-      static_cast<WebContentsViewAura*>(contents->GetView());
 
-  drag_dest_delegate_.Reset();
-  view->SetDragDestDelegateForTesting(&drag_dest_delegate_);
-
-  auto delegate =
-      std::make_unique<TestWebContentsViewDelegate>(/*allow_drop*/ true);
-  TestWebContentsViewDelegate* delegate_ptr = delegate.get();
-  view->SetDelegateForTesting(std::move(delegate));
-
-  std::unique_ptr<ui::OSExchangeData> data =
-      std::make_unique<ui::OSExchangeData>();
-  view->RegisterDropCallbackForTesting(base::BindOnce(
-      &WebContentsViewAuraTest::OnDropComplete, base::Unretained(this)));
   base::RunLoop run_loop;
   async_drop_closure_ = run_loop.QuitClosure();
 
-  gfx::PointF point = {10, 10};
-  ui::DropTargetEvent event(*data.get(), point, point,
-                            ui::DragDropTypes::DRAG_COPY);
-  view->OnDragEntered(event);
-  EXPECT_TRUE(drag_dest_delegate_.GetDragInitializeCalled());
-  auto drop_cb = view->GetDropCallback(event);
-  ASSERT_TRUE(drop_cb);
-  ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
-  std::move(drop_cb).Run(std::move(data), output_drag_op,
-                         /*drag_image_layer_owner=*/nullptr);
+  TestWebContentsViewDelegate* delegate =
+      PrepareWebContentsViewForDropTest(/*delegate_allows_drop=*/true);
+  SimulateDragEnterAndDrop(/*document_is_handling_drag=*/false);
+  delegate->FinishOnPerformingDrop();
 
-  // The user should be able to drag other content over Chrome while the scan is
-  // occurring without affecting it.
-  contents->SetIgnoreInputEvents(true);
-
-  // The user can drag something in and then drag it away.
-  auto new_data = std::make_unique<ui::OSExchangeData>();
-  ui::DropTargetEvent new_event(*new_data.get(), point, point,
-                                ui::DragDropTypes::DRAG_COPY);
-  view->OnDragEntered(new_event);
-  view->OnDragExited();
-  EXPECT_FALSE(drag_dest_delegate_.GetOnDragLeaveCalled());
-
-  // The user can drag something in and drop it.
-  view->OnDragEntered(new_event);
-  drop_cb = view->GetDropCallback(new_event);
-  output_drag_op = ui::mojom::DragOperation::kNone;
-  std::move(drop_cb).Run(std::move(new_data), output_drag_op,
-                         /*drag_image_layer_owner=*/nullptr);
-  EXPECT_FALSE(drag_dest_delegate_.GetOnDropCalled());
-
-  delegate_ptr->FinishScan();
   run_loop.Run();
 
-  EXPECT_TRUE(drag_dest_delegate_.GetOnDropCalled());
+  EXPECT_TRUE(delegate->IsRendererToldToForceDefaultAction());
+  EXPECT_EQ(1, drag_dest_delegate_.GetOnDropCalledCount());
   EXPECT_FALSE(drag_dest_delegate_.GetOnDragLeaveCalled());
 }
 
-IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest, Drop_DeepScanBad) {
+// When the user drops data onto a web page that does not handle drops and the
+// web view delegate blocks it, the renderer sees this as a "drag leave" and not
+// a "drop".
+IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest,
+                       Drop_NoDropZone_DelegateBlocks) {
   StartTestWithPage("/simple_page.html");
-  WebContentsImpl* contents =
-      static_cast<WebContentsImpl*>(shell()->web_contents());
-  WebContentsViewAura* view =
-      static_cast<WebContentsViewAura*>(contents->GetView());
 
-  drag_dest_delegate_.Reset();
-  view->SetDragDestDelegateForTesting(&drag_dest_delegate_);
-
-  auto delegate =
-      std::make_unique<TestWebContentsViewDelegate>(/*allow_drop*/ false);
-  TestWebContentsViewDelegate* delegate_ptr = delegate.get();
-  view->SetDelegateForTesting(std::move(delegate));
-
-  std::unique_ptr<ui::OSExchangeData> data =
-      std::make_unique<ui::OSExchangeData>();
-  view->RegisterDropCallbackForTesting(base::BindOnce(
-      &WebContentsViewAuraTest::OnDropComplete, base::Unretained(this)));
   base::RunLoop run_loop;
   async_drop_closure_ = run_loop.QuitClosure();
 
-  gfx::PointF point = {10, 10};
-  ui::DropTargetEvent event(*data.get(), point, point,
-                            ui::DragDropTypes::DRAG_COPY);
-  view->OnDragEntered(event);
-  EXPECT_TRUE(drag_dest_delegate_.GetDragInitializeCalled());
-  auto drop_cb = view->GetDropCallback(event);
-  ASSERT_TRUE(drop_cb);
-  ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
-  std::move(drop_cb).Run(std::move(data), output_drag_op,
-                         /*drag_image_layer_owner=*/nullptr);
+  TestWebContentsViewDelegate* delegate =
+      PrepareWebContentsViewForDropTest(/*delegate_allows_drop=*/false);
+  SimulateDragEnterAndDrop(/*document_is_handling_drag=*/false);
+  delegate->FinishOnPerformingDrop();
 
-  // The user should be able to drag other content over Chrome while the scan is
-  // occurring without affecting it.
-  contents->SetIgnoreInputEvents(true);
-
-  // The user can drag something in and then drag it away.
-  auto new_data = std::make_unique<ui::OSExchangeData>();
-  ui::DropTargetEvent new_event(*new_data.get(), point, point,
-                                ui::DragDropTypes::DRAG_COPY);
-  view->OnDragEntered(new_event);
-  view->OnDragExited();
-  EXPECT_FALSE(drag_dest_delegate_.GetOnDragLeaveCalled());
-
-  // The user can drag something in and drop it.
-  view->OnDragEntered(new_event);
-  drop_cb = view->GetDropCallback(new_event);
-  output_drag_op = ui::mojom::DragOperation::kNone;
-  std::move(drop_cb).Run(std::move(new_data), output_drag_op,
-                         /*drag_image_layer_owner=*/nullptr);
-  EXPECT_FALSE(drag_dest_delegate_.GetOnDropCalled());
-
-  delegate_ptr->FinishScan();
   run_loop.Run();
 
-  EXPECT_FALSE(drag_dest_delegate_.GetOnDropCalled());
+  EXPECT_EQ(0, drag_dest_delegate_.GetOnDropCalledCount());
+  EXPECT_TRUE(drag_dest_delegate_.GetOnDragLeaveCalled());
+}
+
+// When the user drops data onto a web page that handles drops and the web view
+// delegate allows it, the renderer sees this as a "drop" and not a "drag
+// leave".
+IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest, Drop_DropZone_DelegateAllow) {
+  StartTestWithPage("/accept-drop.html");
+
+  base::RunLoop run_loop;
+  async_drop_closure_ = run_loop.QuitClosure();
+
+  TestWebContentsViewDelegate* delegate =
+      PrepareWebContentsViewForDropTest(/*delegate_allows_drop=*/true);
+  SimulateDragEnterAndDrop(/*document_is_handling_drag=*/true);
+  delegate->FinishOnPerformingDrop();
+
+  run_loop.Run();
+
+  EXPECT_FALSE(delegate->IsRendererToldToForceDefaultAction());
+  EXPECT_EQ(1, drag_dest_delegate_.GetOnDropCalledCount());
+  EXPECT_FALSE(drag_dest_delegate_.GetOnDragLeaveCalled());
+}
+
+// When the user drops data onto a web page that handles drops and the web view
+// delegate blocks it, the renderer sees this as a "drag leave" and not a
+// "drop".
+IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest, Drop_DropZone_DelegateBlocks) {
+  StartTestWithPage("/accept-drop.html");
+
+  base::RunLoop run_loop;
+  async_drop_closure_ = run_loop.QuitClosure();
+
+  TestWebContentsViewDelegate* delegate =
+      PrepareWebContentsViewForDropTest(/*delegate_allows_drop=*/false);
+  SimulateDragEnterAndDrop(/*document_is_handling_drag=*/true);
+  delegate->FinishOnPerformingDrop();
+
+  run_loop.Run();
+
+  EXPECT_EQ(0, drag_dest_delegate_.GetOnDropCalledCount());
   EXPECT_TRUE(drag_dest_delegate_.GetOnDragLeaveCalled());
 }
 
 IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest, ContentWindowClose) {
   ASSERT_NO_FATAL_FAILURE(StartTestWithPage("/overscroll_navigation.html"));
 
-  WebContentsImpl* web_contents =
-      static_cast<WebContentsImpl*>(shell()->web_contents());
+  WebContentsImpl* web_contents = GetWebContentsImpl();
   ASSERT_TRUE(
       content::ExecJs(web_contents->GetPrimaryMainFrame(), "navigate_next()"));
   EXPECT_EQ(1, GetCurrentIndex());
@@ -780,8 +790,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest,
                        MAYBE_RepeatedQuickOverscrollGestures) {
   ASSERT_NO_FATAL_FAILURE(StartTestWithPage("/overscroll_navigation.html"));
 
-  WebContentsImpl* web_contents =
-      static_cast<WebContentsImpl*>(shell()->web_contents());
+  WebContentsImpl* web_contents = GetWebContentsImpl();
   NavigationController& controller = web_contents->GetController();
   RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
   ASSERT_TRUE(content::ExecJs(main_frame, "install_touch_handler()"));
@@ -845,10 +854,8 @@ class OverscrollWebContentsDelegate : public WebContentsDelegate {
 IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest, RenderViewHostChanged) {
   ASSERT_NO_FATAL_FAILURE(StartTestWithPage("/overscroll_navigation.html"));
 
-  WebContentsImpl* contents =
-      static_cast<WebContentsImpl*>(shell()->web_contents());
-  WebContentsViewAura* view =
-      static_cast<WebContentsViewAura*>(contents->GetView());
+  WebContentsImpl* contents = GetWebContentsImpl();
+  WebContentsViewAura* view = GetWebContentsViewAura();
   OverscrollWebContentsDelegate delegate;
   contents->SetDelegate(&delegate);
 
@@ -897,8 +904,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest,
                        MAYBE_OverscrollNavigationTouchThrottling) {
   ASSERT_NO_FATAL_FAILURE(StartTestWithPage("/overscroll_navigation.html"));
 
-  WebContentsImpl* web_contents =
-      static_cast<WebContentsImpl*>(shell()->web_contents());
+  WebContentsImpl* web_contents = GetWebContentsImpl();
   aura::Window* content = web_contents->GetContentNativeView();
   gfx::Rect bounds = content->GetBoundsInRootWindow();
   const int dx = 20;
@@ -993,10 +999,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest,
 // Tests that running the drop callback will perform drop.
 IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest, GetDropCallback_Run) {
   StartTestWithPage("/simple_page.html");
-  WebContentsImpl* contents =
-      static_cast<WebContentsImpl*>(shell()->web_contents());
-  WebContentsViewAura* view =
-      static_cast<WebContentsViewAura*>(contents->GetView());
+  WebContentsImpl* contents = GetWebContentsImpl();
+  WebContentsViewAura* view = GetWebContentsViewAura();
 
   view->SetDragDestDelegateForTesting(&drag_dest_delegate_);
 
@@ -1020,7 +1024,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest, GetDropCallback_Run) {
 
   run_loop.Run();
 
-  EXPECT_TRUE(drag_dest_delegate_.GetOnDropCalled());
+  EXPECT_EQ(1, drag_dest_delegate_.GetOnDropCalledCount());
   EXPECT_FALSE(drag_dest_delegate_.GetOnDragLeaveCalled());
   EXPECT_EQ(drop_target_widget_,
             RenderWidgetHostImpl::From(contents->GetPrimaryFrameTree()
@@ -1033,10 +1037,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest, GetDropCallback_Run) {
 // the drag insead.
 IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest, GetDropCallback_Cancelled) {
   StartTestWithPage("/simple_page.html");
-  WebContentsImpl* contents =
-      static_cast<WebContentsImpl*>(shell()->web_contents());
-  WebContentsViewAura* view =
-      static_cast<WebContentsViewAura*>(contents->GetView());
+  WebContentsViewAura* view = GetWebContentsViewAura();
 
   view->SetDragDestDelegateForTesting(&drag_dest_delegate_);
 
@@ -1054,7 +1055,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest, GetDropCallback_Cancelled) {
   ASSERT_TRUE(drop_cb);
   drop_cb.Reset();
 
-  EXPECT_FALSE(drag_dest_delegate_.GetOnDropCalled());
+  EXPECT_EQ(0, drag_dest_delegate_.GetOnDropCalledCount());
   EXPECT_TRUE(drag_dest_delegate_.GetOnDragLeaveCalled());
 }
 

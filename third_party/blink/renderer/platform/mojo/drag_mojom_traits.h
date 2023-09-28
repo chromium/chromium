@@ -120,6 +120,7 @@ struct PLATFORM_EXPORT
   static const blink::WebVector<blink::WebDragData::Item>& items(
       const blink::WebDragData& drag_data);
   static WTF::String file_system_id(const blink::WebDragData& drag_data);
+  static bool force_default_action(const blink::WebDragData& drag_data);
   static network::mojom::ReferrerPolicy referrer_policy(
       const blink::WebDragData& drag_data);
   static bool Read(blink::mojom::DragDataDataView data,

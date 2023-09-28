@@ -51,7 +51,8 @@ class CORE_EXPORT DragData {
   DragData(DataObject*,
            const gfx::PointF& client_position,
            const gfx::PointF& global_position,
-           DragOperationsMask);
+           DragOperationsMask,
+           bool force_default_action);
   const gfx::PointF& ClientPosition() const { return client_position_; }
   const gfx::PointF& GlobalPosition() const { return global_position_; }
   DataObject* PlatformData() const { return platform_drag_data_; }
@@ -70,6 +71,7 @@ class CORE_EXPORT DragData {
   DocumentFragment* AsFragment(LocalFrame*) const;
   bool CanSmartReplace() const;
   bool ContainsFiles() const;
+  bool ForceDefaultAction() const;
   int GetModifiers() const;
 
   String DroppedFileSystemId() const;
@@ -79,6 +81,7 @@ class CORE_EXPORT DragData {
   const gfx::PointF global_position_;
   DataObject* const platform_drag_data_;
   const DragOperationsMask dragging_source_operation_mask_;
+  bool force_default_action_;
 
   bool ContainsHTML() const;
 };

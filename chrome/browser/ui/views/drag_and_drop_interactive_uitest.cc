@@ -1011,6 +1011,12 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, DropTextFromOutside) {
     EXPECT_THAT(dragover_event, expected_dom_event_data.Matches());
   }
 
+  // Allow the dragenter and dragover events to update the current drag
+  // operations on the WebContentsView before proceeding to the drop, since
+  // the latter needs that information to determine whether to force a
+  // default action in the renderer process.
+  base::RunLoop().RunUntilIdle();
+
   // Drop into the right frame.
   {
     DOMDragEventWaiter drop_waiter("drop", GetRightFrame());

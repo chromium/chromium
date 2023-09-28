@@ -1,0 +1,19 @@
+<html>
+<head><title>OK</title></head>
+<body style="margin: 0">
+Drop site.
+</body>
+<script>
+// Make the body element a target for drops.
+document.body.addEventListener('dragover', e => {
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'copy';
+  console.log('dragover');
+});
+document.body.addEventListener('drop', e => {
+  console.log('drop');
+  e.preventDefault();
+});
+
+</script>
+</html>

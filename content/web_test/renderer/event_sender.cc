@@ -1317,7 +1317,8 @@ void EventSender::DoDragDrop(const WebDragData& drag_data,
           current_pointer_state_[kRawMousePointerId].modifiers_,
           current_pointer_state_[kRawMousePointerId].current_buttons_),
       base::BindOnce(
-          [](base::WeakPtr<EventSender> sender, ui::mojom::DragOperation op) {
+          [](base::WeakPtr<EventSender> sender, ui::mojom::DragOperation op,
+             bool document_is_handling_drag) {
             if (sender)
               sender->current_drag_effect_ = op;
           },
@@ -1710,7 +1711,7 @@ void EventSender::KeyEvent(KeyEventType event_type,
           current_pointer_state_[kRawMousePointerId].current_buttons_,
           current_pointer_state_[kRawMousePointerId].last_pos_, click_count_,
           &event);
-      FinishDragAndDrop(event, ui::mojom::DragOperation::kNone);
+      FinishDragAndDrop(event, ui::mojom::DragOperation::kNone, false);
     }
 
     web_frame_widget_->ClearEditCommands();
@@ -2506,7 +2507,7 @@ void EventSender::GestureEvent(WebInputEvent::Type type,
                    current_pointer_state_[kRawMousePointerId].current_buttons_,
                    gfx::PointF(x, y), click_count_, &mouse_event);
 
-    FinishDragAndDrop(mouse_event, ui::mojom::DragOperation::kNone);
+    FinishDragAndDrop(mouse_event, ui::mojom::DragOperation::kNone, false);
   }
   args->Return(result != WebInputEventResult::kNotHandled);
 }
@@ -2665,7 +2666,8 @@ void EventSender::InitPointerProperties(gin::Arguments* args,
 }
 
 void EventSender::FinishDragAndDrop(const WebMouseEvent& event,
-                                    ui::mojom::DragOperation drag_effect) {
+                                    ui::mojom::DragOperation drag_effect,
+                                    bool document_is_handling_drag) {
   // Bail if cancelled.
   if (!current_drag_data_)
     return;
@@ -2713,7 +2715,8 @@ void EventSender::DoDragAfterMouseMove(const WebMouseEvent& event) {
       event.PositionInWidget(), event.PositionInScreen(),
       current_drag_effects_allowed_, event.GetModifiers(),
       base::BindOnce(
-          [](base::WeakPtr<EventSender> sender, ui::mojom::DragOperation op) {
+          [](base::WeakPtr<EventSender> sender, ui::mojom::DragOperation op,
+             bool document_is_handling_drag) {
             if (sender)
               sender->current_drag_effect_ = op;
           },

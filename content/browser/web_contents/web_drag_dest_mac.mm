@@ -109,10 +109,6 @@ void DropCompletionCallback(WebDragDest* drag_dest,
   // Delegate; weak.
   raw_ptr<content::WebDragDestDelegate, DanglingUntriaged> _delegate;
 
-  // Updated asynchronously during a drag to tell us whether or not we should
-  // allow the drop.
-  NSDragOperation _currentOperation;
-
   // Tracks the current RenderWidgetHost we're dragging over.
   base::WeakPtr<content::RenderWidgetHostImpl> _currentRWHForDrag;
 
@@ -164,8 +160,16 @@ void DropCompletionCallback(WebDragDest* drag_dest,
 
 // Call to set whether or not we should allow the drop. Takes effect the
 // next time |-draggingUpdated:| is called.
-- (void)setCurrentOperation:(NSDragOperation)operation {
-  _currentOperation = operation;
+- (void)setCurrentOperation:(ui::mojom::DragOperation)operation
+     documentIsHandlingDrag:(bool)documentIsHandlingDrag {
+  if (_dropDataUnfiltered) {
+    _dropDataUnfiltered->operation = operation;
+    _dropDataUnfiltered->document_is_handling_drag = documentIsHandlingDrag;
+  }
+  if (_dropDataFiltered) {
+    _dropDataFiltered->operation = operation;
+    _dropDataFiltered->document_is_handling_drag = documentIsHandlingDrag;
+  }
 }
 
 // Given a point in window coordinates and a view in that window, return a
@@ -253,8 +257,9 @@ void DropCompletionCallback(WebDragDest* drag_dest,
 
   // We won't know the true operation (whether the drag is allowed) until we
   // hear back from the renderer. For now, be optimistic:
-  _currentOperation = NSDragOperationCopy;
-  return _currentOperation;
+  _dropDataUnfiltered->operation = ui::mojom::DragOperation::kCopy;
+  _dropDataUnfiltered->document_is_handling_drag = true;
+  return static_cast<NSDragOperation>(_dropDataUnfiltered->operation);
 }
 
 - (void)draggingExited {
@@ -336,7 +341,7 @@ void DropCompletionCallback(WebDragDest* drag_dest,
   if (_delegate)
     _delegate->OnDragOver();
 
-  return _currentOperation;
+  return static_cast<NSDragOperation>(_dropDataUnfiltered->operation);
 }
 
 - (BOOL)performDragOperation:(const DraggingInfo*)info
@@ -371,7 +376,7 @@ void DropCompletionCallback(WebDragDest* drag_dest,
                                  /*target_rwh=*/targetRWH->GetWeakPtr());
     // Use a separate variable since `context` is about to move.
     content::DropData drop_data = context.drop_data;
-    webContentsViewDelegate->OnPerformDrop(
+    webContentsViewDelegate->OnPerformingDrop(
         std::move(drop_data),
         base::BindOnce(&DropCompletionCallback, self, std::move(context)));
   } else {

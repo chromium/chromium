@@ -107,10 +107,10 @@ void ChromeWebContentsViewDelegateViews::ExecuteCommandForTesting(
   context_menu_.reset();
 }
 
-void ChromeWebContentsViewDelegateViews::OnPerformDrop(
+void ChromeWebContentsViewDelegateViews::OnPerformingDrop(
     const content::DropData& drop_data,
     DropCompletionCallback callback) {
-  HandleOnPerformDrop(web_contents_, drop_data, std::move(callback));
+  HandleOnPerformingDrop(web_contents_, drop_data, std::move(callback));
 }
 
 std::unique_ptr<content::WebContentsViewDelegate> CreateWebContentsViewDelegate(

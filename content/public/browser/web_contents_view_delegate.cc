@@ -59,8 +59,9 @@ void* WebContentsViewDelegate::GetDelegateForHost(
   return nullptr;
 }
 
-void WebContentsViewDelegate::OnPerformDrop(const DropData& drop_data,
-                                            DropCompletionCallback callback) {
+void WebContentsViewDelegate::OnPerformingDrop(
+    const DropData& drop_data,
+    DropCompletionCallback callback) {
   return std::move(callback).Run(drop_data);
 }
 

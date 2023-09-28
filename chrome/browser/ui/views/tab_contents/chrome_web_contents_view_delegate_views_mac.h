@@ -47,8 +47,8 @@ class ChromeWebContentsViewDelegateViewsMac
   void ResetStoredFocus() override;
   bool Focus() override;
   bool TakeFocus(bool reverse) override;
-  void OnPerformDrop(const content::DropData& drop_data,
-                     DropCompletionCallback callback) override;
+  void OnPerformingDrop(const content::DropData& drop_data,
+                        DropCompletionCallback callback) override;
 
   // ContextMenuDelegate:
   std::unique_ptr<RenderViewContextMenuBase> BuildMenu(

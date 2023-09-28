@@ -102,18 +102,19 @@ class CONTENT_EXPORT WebContentsViewAura
   // A structure used to keep drop context for asynchronously finishing a
   // drop operation.  This is required because some drop event data gets
   // cleared out once PerformDropCallback() returns.
-  struct CONTENT_EXPORT OnPerformDropContext {
-    OnPerformDropContext(RenderWidgetHostImpl* target_rwh,
-                         std::unique_ptr<DropData> drop_data,
-                         DropMetadata drop_metadata,
-                         std::unique_ptr<ui::OSExchangeData> data,
-                         base::ScopedClosureRunner end_drag_runner,
-                         absl::optional<gfx::PointF> transformed_pt,
-                         gfx::PointF screen_pt);
-    OnPerformDropContext(const OnPerformDropContext& other) = delete;
-    OnPerformDropContext(OnPerformDropContext&& other);
-    OnPerformDropContext& operator=(const OnPerformDropContext& other) = delete;
-    ~OnPerformDropContext();
+  struct CONTENT_EXPORT OnPerformingDropContext {
+    OnPerformingDropContext(RenderWidgetHostImpl* target_rwh,
+                            std::unique_ptr<DropData> drop_data,
+                            DropMetadata drop_metadata,
+                            std::unique_ptr<ui::OSExchangeData> data,
+                            base::ScopedClosureRunner end_drag_runner,
+                            absl::optional<gfx::PointF> transformed_pt,
+                            gfx::PointF screen_pt);
+    OnPerformingDropContext(const OnPerformingDropContext& other) = delete;
+    OnPerformingDropContext(OnPerformingDropContext&& other);
+    OnPerformingDropContext& operator=(const OnPerformingDropContext& other) =
+        delete;
+    ~OnPerformingDropContext();
 
     base::WeakPtr<RenderWidgetHostImpl> target_rwh;
     std::unique_ptr<DropData> drop_data;
@@ -136,8 +137,14 @@ class CONTENT_EXPORT WebContentsViewAura
                            DragDropVirtualFilesOriginateFromRenderer);
   FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest, DragDropUrlData);
   FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest, DragDropOnOopif);
-  FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest, Drop_DeepScanOK);
-  FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest, Drop_DeepScanBad);
+  FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest,
+                           Drop_NoDropZone_DelegateAllows);
+  FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest,
+                           Drop_NoDropZone_DelegateBlocks);
+  FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest,
+                           Drop_DropZone_DelegateAllow);
+  FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest,
+                           Drop_DropZone_DelegateBlocks);
   FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest, StartDragging);
   FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest, GetDropCallback_Run);
   FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest, GetDropCallback_Cancelled);
@@ -222,7 +229,8 @@ class CONTENT_EXPORT WebContentsViewAura
                      const gfx::Rect& drag_obj_rect,
                      const blink::mojom::DragEventSourceInfo& event_info,
                      RenderWidgetHostImpl* source_rwh) override;
-  void UpdateDragCursor(ui::mojom::DragOperation operation) override;
+  void UpdateDragOperation(ui::mojom::DragOperation operation,
+                           bool document_is_handling_drag) override;
   void GotFocus(RenderWidgetHostImpl* render_widget_host) override;
   void LostFocus(RenderWidgetHostImpl* render_widget_host) override;
   void TakeFocus(bool reverse) override;
@@ -294,20 +302,15 @@ class CONTENT_EXPORT WebContentsViewAura
   // Completes a drag exit operation by communicating with the renderer process.
   void CompleteDragExit();
 
-  // Called from PerformDropCallback() to finish processing the drop.
+  // Called from MaybeLetDelegateProcessDrop() to finish processing the drop.
   // The override with `drop_data` updates `current_drag_data_` before
   // completing the drop.
-  void FinishOnPerformDrop(OnPerformDropContext drop_context);
-  void GotModifiedDropDataFromDelegate(OnPerformDropContext drop_context,
+  void GotModifiedDropDataFromDelegate(OnPerformingDropContext drop_context,
                                        absl::optional<DropData> drop_data);
 
   // Completes a drop operation by communicating the drop data to the renderer
   // process.
-  void CompleteDrop(RenderWidgetHostImpl* target_rwh,
-                    const DropData& drop_data,
-                    const gfx::PointF& client_pt,
-                    const gfx::PointF& screen_pt,
-                    int key_modifiers);
+  void CompleteDrop(OnPerformingDropContext drop_context);
 
   // Performs drop if it's run. Otherwise, it exits the drag. Returned by
   // GetDropCallback.
@@ -336,7 +339,7 @@ class CONTENT_EXPORT WebContentsViewAura
 #if BUILDFLAG(IS_WIN)
   // Callback for asynchronous retrieval of virtual files.
   void OnGotVirtualFilesAsTempFiles(
-      OnPerformDropContext drop_context,
+      OnPerformingDropContext drop_context,
       const std::vector<std::pair</*temp path*/ base::FilePath,
                                   /*display name*/ base::FilePath>>&
           filepaths_and_names);
@@ -349,9 +352,9 @@ class CONTENT_EXPORT WebContentsViewAura
 #endif
   DropCallbackForTesting drop_callback_for_testing_;
 
-  // Calls the delegate's OnPerformDrop() if a delegate is present, otherwise
-  // finishes performing the drop by calling FinishOnPerformDrop().
-  void DelegateOnPerformDrop(OnPerformDropContext drop_context);
+  // Calls the delegate's OnPerformingDrop() if a delegate is present, otherwise
+  // finishes performing the drop by calling FinishOnPerformingDrop().
+  void MaybeLetDelegateProcessDrop(OnPerformingDropContext drop_context);
 
   // If this callback is initialized it must be run after the drop operation is
   // done to send dragend event in EndDrag function.
@@ -366,7 +369,7 @@ class CONTENT_EXPORT WebContentsViewAura
 
   std::unique_ptr<WebContentsViewDelegate> delegate_;
 
-  ui::mojom::DragOperation current_drag_op_;
+  ui::mojom::DragOperation current_drag_op_ = ui::mojom::DragOperation::kNone;
 
   // This member holds the dropped data from the drag enter phase to the end
   // of the drop.  A drop may end if the user releases the mouse button over

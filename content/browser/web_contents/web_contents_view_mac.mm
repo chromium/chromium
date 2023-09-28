@@ -249,8 +249,10 @@ void WebContentsViewMac::CancelDragDropForPortalActivation() {
   NOTIMPLEMENTED();
 }
 
-void WebContentsViewMac::UpdateDragCursor(ui::mojom::DragOperation operation) {
-  [drag_dest_ setCurrentOperation:static_cast<NSDragOperation>(operation)];
+void WebContentsViewMac::UpdateDragOperation(ui::mojom::DragOperation operation,
+                                             bool document_is_handling_drag) {
+  [drag_dest_ setCurrentOperation:operation
+           documentIsHandlingDrag:document_is_handling_drag];
 }
 
 void WebContentsViewMac::GotFocus(RenderWidgetHostImpl* render_widget_host) {
