@@ -32,8 +32,6 @@ class V8GPUCullMode;
 class V8GPUFrontFace;
 class V8GPUTextureAspect;
 class V8GPUErrorFilter;
-class V8GPUComputePassTimestampLocation;
-class V8GPURenderPassTimestampLocation;
 enum class PredefinedColorSpace;
 
 // Convert WebGPU bitfield values to Dawn enums. These have the same value.
@@ -73,10 +71,6 @@ WGPUCullMode AsDawnEnum(const V8GPUCullMode& webgpu_enum);
 WGPUFrontFace AsDawnEnum(const V8GPUFrontFace& webgpu_enum);
 WGPUTextureAspect AsDawnEnum(const V8GPUTextureAspect& webgpu_enum);
 WGPUErrorFilter AsDawnEnum(const V8GPUErrorFilter& webgpu_enum);
-WGPUComputePassTimestampLocation AsDawnEnum(
-    const V8GPUComputePassTimestampLocation& webgpu_enum);
-WGPURenderPassTimestampLocation AsDawnEnum(
-    const V8GPURenderPassTimestampLocation& webgpu_enum);
 
 // Convert Dawn enums to WebGPU IDL enums.
 const char* FromDawnEnum(WGPUQueryType dawn_enum);

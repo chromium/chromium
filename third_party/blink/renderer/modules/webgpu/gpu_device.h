@@ -64,7 +64,6 @@ class V8GPUErrorFilter;
 enum class GPUSingletonWarning {
   kNonPreferredFormat,
   kDepthKey,
-  kTimestampArray,
   kCount,  // Must be last
 };
 
