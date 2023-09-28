@@ -264,6 +264,9 @@ absl::optional<int> AwMainDelegate::BasicStartupComplete() {
 
     features.DisableIfNotSet(::features::kPeriodicBackgroundSync);
 
+    // Disable Reducing User Agent minor version on WebView.
+    features.DisableIfNotSet(blink::features::kReduceUserAgentMinorVersion);
+
     // Disabled until viz scheduling can be improved.
     features.DisableIfNotSet(::features::kUseSurfaceLayerForVideoDefault);
 
