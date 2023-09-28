@@ -152,11 +152,11 @@ MenuRunnerImplInterface* MenuRunnerImplInterface::Create(
 }
 
 MenuRunnerImplCocoa::MenuRunnerImplCocoa(
-    ui::MenuModel* menu,
+    ui::MenuModel* menu_model,
     base::RepeatingClosure on_menu_closed_callback)
     : on_menu_closed_callback_(std::move(on_menu_closed_callback)) {
   menu_delegate_ = [[MenuControllerCocoaDelegateImpl alloc] init];
-  menu_controller_ = [[MenuControllerCocoa alloc] initWithModel:menu
+  menu_controller_ = [[MenuControllerCocoa alloc] initWithModel:menu_model
                                                        delegate:menu_delegate_
                                          useWithPopUpButtonCell:NO];
 }
@@ -193,6 +193,26 @@ void MenuRunnerImplCocoa::RunMenuAt(
     absl::optional<gfx::RoundedCornersF> corners) {
   DCHECK(!IsRunning());
   DCHECK(parent);
+
+  // If you call this method to present a menu and in your model's
+  // MenuWillShow() method you Cancel the menu, the cancel executes
+  // before the menu appears. If you immediately call RunMenuAt() again,
+  // -popUpContextMenu:withEvent:forView: will hang waiting for a menu
+  // tracking event. This occurs as of macOS 14, and this particular sequence
+  // occurs in the Views unittest "MenuRunnerCocoaTest.ComboboxAnchoring".
+  // Creating a fresh menu controller (with its fresh NSMenu) avoids the
+  // problem, and is the most natural fix for the test (vs. creating a
+  // MenuRunnerImplCocoa::CancelWithoutAnimation method that would be called
+  // in the test but never in production). Rebuilding the controller is
+  // harmless, and even though you would never cancel a menu before it appears
+  // in production code, the rebuild ensures there won't be any weirdness if
+  // the MenuRunner is reused.
+  BOOL useWithPopUpButtonCell = menu_controller_.useWithPopUpButtonCell;
+  menu_controller_ =
+      [[MenuControllerCocoa alloc] initWithModel:[menu_controller_ model]
+                                        delegate:menu_delegate_
+                          useWithPopUpButtonCell:useWithPopUpButtonCell];
+
   closing_event_time_ = base::TimeTicks();
   running_ = true;
   [menu_delegate_ setAnchorRect:bounds];
