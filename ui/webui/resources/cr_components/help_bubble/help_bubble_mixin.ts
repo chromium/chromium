@@ -419,8 +419,8 @@ export const HelpBubbleMixin = dedupingMixin(
             this.helpBubbleHandler_.helpBubbleClosed(
                 nativeId, HelpBubbleClosedReason.kPageChanged);
           }
-          const bounds =
-              isVisible ? this.getElementBounds_(target) : new RectF();
+          const bounds: RectF = isVisible ? this.getElementBounds_(target) :
+                                            {x: 0, y: 0, width: 0, height: 0};
           if (!ctrl || ctrl.updateAnchorVisibility(isVisible, bounds)) {
             this.helpBubbleHandler_.helpBubbleAnchorVisibilityChanged(
                 nativeId, isVisible, bounds);
@@ -447,7 +447,7 @@ export const HelpBubbleMixin = dedupingMixin(
          * Returns bounds of the anchor element
          */
         private getElementBounds_(element: HTMLElement) {
-          const rect = new RectF();
+          const rect: RectF = {x: 0, y: 0, width: 0, height: 0};
           const bounds = element.getBoundingClientRect();
           rect.x = bounds.x;
           rect.y = bounds.y;
@@ -586,7 +586,7 @@ export interface Options {
 }
 
 export function parseOptions(options: Options) {
-  const padding = new InsetsF();
+  const padding: InsetsF = {top: 0, bottom: 0, left: 0, right: 0};
   padding.top = clampPadding(options.anchorPaddingTop);
   padding.left = clampPadding(options.anchorPaddingLeft);
   padding.bottom = clampPadding(options.anchorPaddingBottom);

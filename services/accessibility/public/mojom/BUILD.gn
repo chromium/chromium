@@ -51,7 +51,6 @@ if (supports_os_accessibility_service) {
       "//skia/public/mojom:mojom",
       "//ui/gfx/geometry/mojom",
     ]
-    webui_module_path = "/"
   }
 
   group("os_accessibility_service_js") {

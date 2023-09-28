@@ -73,7 +73,8 @@ export class HelpBubbleController {
   private root_: ShadowRoot;
   private anchor_: HTMLElement|null = null;
   private bubble_: HelpBubbleElement|null = null;
-  private options_: Options = {padding: new InsetsF(), fixed: false};
+  private options_:
+      Options = {padding: {top: 0, bottom: 0, left: 0, right: 0}, fixed: false};
 
   /**
    * Whether a help bubble (webui or external) is being shown for this
@@ -85,7 +86,7 @@ export class HelpBubbleController {
   private isAnchorVisible_: boolean = false;
 
   /** Keep track of last known anchor bounds. */
-  private lastAnchorBounds_: RectF = new RectF();
+  private lastAnchorBounds_: RectF = {x: 0, y: 0, width: 0, height: 0};
 
   /*
    * This flag is used to know whether to send position updates for

@@ -107,7 +107,7 @@ export class HelpBubbleElement extends PolymerElement {
   timeoutMs: number|null = null;
   timeoutTimerId: number|null = null;
   debouncedUpdate: (() => void)|null = null;
-  padding: InsetsF = new InsetsF();
+  padding: InsetsF = {top: 0, bottom: 0, left: 0, right: 0};
   fixed: boolean = false;
 
   /**

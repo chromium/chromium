@@ -45,7 +45,6 @@ mojom("mojom") {
     "//skia/public/mojom",
     "//ui/gfx/geometry/mojom",
   ]
-  webui_module_path = "chrome://resources/mojo/ui/gfx/mojom"
 
   enabled_features = []
   if (ozone_platform_x11) {
