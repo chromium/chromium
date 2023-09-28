@@ -143,7 +143,8 @@ void PreloadingAttemptImpl::SetTriggeringOutcome(
     case PreloadingTriggeringOutcome::kReady:
       CHECK(preloading_type_ == PreloadingType::kPrefetch ||
             preloading_type_ == PreloadingType::kPrerender ||
-            preloading_type_ == PreloadingType::kNoStatePrefetch);
+            preloading_type_ == PreloadingType::kNoStatePrefetch ||
+            preloading_type_ == PreloadingType::kLinkPreview);
       if (!ready_time_) {
         ready_time_ = elapsed_timer_.Elapsed();
       }

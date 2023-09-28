@@ -105,6 +105,9 @@ static constexpr content::PreloadingPredictor kOmniboxTouchDownPredictor(
     111,
     "OmniboxTouchDownPredirector");
 
+// When the Link-Preview loads a page with prerendering infrastractures.
+static constexpr content::PreloadingPredictor kLinkPreview(112, "LinkPreview");
+
 // TODO(crbug.com/1309934): Integrate more Preloading predictors with
 // Preloading logging APIs.
 }  // namespace chrome_preloading_predictor

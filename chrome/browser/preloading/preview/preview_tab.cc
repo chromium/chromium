@@ -6,12 +6,15 @@
 
 #include "base/debug/debugger.h"
 #include "chrome/browser/page_load_metrics/page_load_metrics_initialize.h"
+#include "chrome/browser/preloading/chrome_preloading.h"
 #include "chrome/browser/preloading/prerender/prerender_utils.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "components/zoom/zoom_controller.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/host_zoom_map.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/preloading.h"
+#include "content/public/browser/preloading_data.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "ui/base/page_transition_types.h"
@@ -29,14 +32,27 @@ PreviewTab::PreviewTab(content::WebContents& parent, const GURL& url)
   view_->GetWebContents()->SetDelegate(this);
   AttachTabHelpersForInit();
 
-  // TODO: Need yet another API to trigger prerendering with more navigation
-  // related information, e.g. referrer, etc, to mimic anchor navigation.
+  // The attempt is attached to the parent WebContents that initiates the
+  // Link-Preview.
+  // TODO(b:292184832): Verify if this approach works fine with the LinkPreview
+  // use-cases later. See the review comment at https://crrev.com/c/4886428.
+  auto* preloading_data =
+      content::PreloadingData::GetOrCreateForWebContents(&parent);
+  content::PreloadingAttempt* preloading_attempt =
+      preloading_data->AddPreloadingAttempt(
+          chrome_preloading_predictor::kLinkPreview,
+          content::PreloadingType::kLinkPreview,
+          content::PreloadingData::GetSameURLMatcher(url),
+          parent.GetPrimaryMainFrame()->GetPageUkmSourceId());
+
+  // TODO(b:292184832): Need yet another API to trigger prerendering with more
+  // navigation related information, e.g. referrer, etc, to mimic anchor
+  // navigation.
   prerender_handle_ = view_->GetWebContents()->StartPrerendering(
       url, content::PrerenderTriggerType::kEmbedder,
       prerender_utils::kLinkPreviewMetricsSuffix,
       ui::PageTransitionFromInt(ui::PAGE_TRANSITION_AUTO_TOPLEVEL),
-      content::PreloadingHoldbackStatus::kUnspecified,
-      /*preloading_attempt=*/nullptr);
+      content::PreloadingHoldbackStatus::kUnspecified, preloading_attempt);
 
   InitWindow(parent);
 }
@@ -66,8 +82,8 @@ void PreviewTab::InitWindow(content::WebContents& parent) {
   // TODO(go/launch/4269184): Revisit it later.
 
   views::Widget::InitParams params;
-  params.type =
-      views::Widget::InitParams::TYPE_WINDOW;  // TODO: with own buttons
+  // TODO(b:292184832): Create with own buttons
+  params.type = views::Widget::InitParams::TYPE_WINDOW;
   params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.z_order = ui::ZOrderLevel::kFloatingWindow;
   const gfx::Rect rect = parent.GetContainerBounds();
@@ -75,9 +91,9 @@ void PreviewTab::InitWindow(content::WebContents& parent) {
       gfx::Rect(rect.x() + rect.width() / 2, rect.y() + rect.height() / 2,
                 rect.width() / 2, rect.height() / 2);
   widget_->Init(std::move(params));
+  // TODO(b:292184832): Clarify the ownership.
   widget_->non_client_view()->frame_view()->InsertClientView(
-      new views::ClientView(widget_.get(),
-                            view_.get()));  // TODO: owner?
+      new views::ClientView(widget_.get(), view_.get()));
   widget_->non_client_view()->frame_view()->SetLayoutManager(
       std::make_unique<views::FillLayout>());
 }

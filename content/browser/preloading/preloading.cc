@@ -20,10 +20,10 @@ base::StringPiece PreloadingTypeToString(PreloadingType type) {
       return "Prerender";
     case PreloadingType::kNoStatePrefetch:
       return "NoStatePrefetch";
-    default:
-      NOTREACHED();
-      return "";
+    case PreloadingType::kLinkPreview:
+      return "LinkPreview";
   }
+  NOTREACHED_NORETURN();
 }
 
 PreloadingPredictor GetPredictorForSpeculationRules(
@@ -36,6 +36,7 @@ PreloadingPredictor GetPredictorForSpeculationRules(
     case blink::mojom::SpeculationInjectionWorld::kIsolated:
       return content_preloading_predictor::kSpeculationRulesFromIsolatedWorld;
   }
+  NOTREACHED_NORETURN();
 }
 
 }  // namespace content
