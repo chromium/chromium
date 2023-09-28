@@ -46,7 +46,7 @@
 #import "ios/chrome/browser/browser_state/model/chrome_browser_state_manager_impl.h"
 #import "ios/chrome/browser/browser_state/model/ios_chrome_io_thread.h"
 #import "ios/chrome/browser/component_updater/model/ios_component_updater_configurator.h"
-#import "ios/chrome/browser/crash_report/breadcrumbs/application_breadcrumbs_logger.h"
+#import "ios/chrome/browser/crash_report/model/breadcrumbs/application_breadcrumbs_logger.h"
 #import "ios/chrome/browser/default_browser/utils.h"
 #import "ios/chrome/browser/gcm/ios_chrome_gcm_profile_service_factory.h"
 #import "ios/chrome/browser/history/history_service_factory.h"

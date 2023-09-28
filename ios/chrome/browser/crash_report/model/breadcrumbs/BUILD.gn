@@ -1,0 +1,85 @@
+# Copyright 2019 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ios/build/config.gni")
+
+source_set("breadcrumbs") {
+  deps = [
+    "//base",
+    "//components/breadcrumbs/core",
+    "//components/infobars/core",
+    "//components/keyed_service/ios",
+    "//ios/chrome/browser/infobars",
+    "//ios/chrome/browser/overlays",
+    "//ios/chrome/browser/overlays/public/web_content_area",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/url",
+    "//ios/chrome/browser/shared/model/url:constants",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/net",
+    "//ios/web/public",
+    "//ios/web/public/security",
+  ]
+
+  sources = [
+    "breadcrumb_manager_browser_agent.h",
+    "breadcrumb_manager_browser_agent.mm",
+    "breadcrumb_manager_keyed_service_factory.cc",
+    "breadcrumb_manager_keyed_service_factory.h",
+    "breadcrumb_manager_tab_helper.h",
+    "breadcrumb_manager_tab_helper.mm",
+  ]
+}
+
+source_set("application_breadcrumbs_logger") {
+  sources = [
+    "application_breadcrumbs_logger.h",
+    "application_breadcrumbs_logger.mm",
+  ]
+
+  deps = [
+    ":breadcrumbs",
+    "//base",
+    "//components/breadcrumbs/core",
+    "//ios/chrome/browser/crash_report/model:model_internal",
+    "//ios/chrome/browser/crash_report/model/breadcrumbs",
+    "//ios/chrome/browser/metrics:accessor",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  deps = [
+    ":application_breadcrumbs_logger",
+    ":breadcrumbs",
+    "//base/test:test_support",
+    "//components/breadcrumbs/core",
+    "//ios/chrome/browser/crash_report/model",
+    "//ios/chrome/browser/download",
+    "//ios/chrome/browser/infobars",
+    "//ios/chrome/browser/infobars/test",
+    "//ios/chrome/browser/overlays",
+    "//ios/chrome/browser/overlays/public/web_content_area",
+    "//ios/chrome/browser/overlays/test",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/url:constants",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/model/web_state_list/test:test_support",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/ui/infobars/test",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/security",
+    "//ios/web/public/test",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+
+  sources = [
+    "application_breadcrumbs_logger_unittest.mm",
+    "breadcrumb_manager_browser_agent_unittest.mm",
+    "breadcrumb_manager_tab_helper_unittest.mm",
+  ]
+}

@@ -1,0 +1,140 @@
+# Copyright 2016 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//testing/libfuzzer/fuzzer_test.gni")
+
+source_set("model") {
+  sources = [
+    "crash_helper.h",
+    "crash_helper.mm",
+    "crash_keys_helper.h",
+    "crash_keys_helper.mm",
+    "crash_loop_detection_util.h",
+    "crash_loop_detection_util.mm",
+    "crash_report_multi_parameter.h",
+    "crash_report_multi_parameter.mm",
+    "crash_report_user_application_state.h",
+    "crash_report_user_application_state.mm",
+    "crash_upload_list.cc",
+    "crash_upload_list.h",
+    "features.cc",
+    "features.h",
+    "main_thread_freeze_detector.h",
+    "main_thread_freeze_detector.mm",
+  ]
+
+  deps = [
+    "//base",
+    "//build:branding_buildflags",
+    "//components/breadcrumbs/core",
+    "//components/breadcrumbs/core:status",
+    "//components/crash/core/app",
+    "//components/crash/core/browser",
+    "//components/crash/core/common",
+    "//components/previous_session_info",
+    "//components/upload_list",
+    "//ios/chrome/app:tests_hook",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/paths",
+    "//ios/chrome/common",
+    "//ios/chrome/common/app_group",
+    "//ios/chrome/common/crash_report",
+    "//ios/web",
+    "//third_party/abseil-cpp:absl",
+  ]
+}
+
+source_set("model_internal") {
+  sources = [
+    "crash_report_helper.h",
+    "crash_report_helper.mm",
+    "crash_reporter_url_observer.h",
+    "crash_reporter_url_observer.mm",
+  ]
+  deps = [
+    ":model",
+    "//base",
+    "//components/breadcrumbs/core",
+    "//components/crash/core/common:crash_key",
+    "//components/infobars/core",
+    "//components/previous_session_info",
+    "//components/sessions",
+    "//components/strings",
+    "//components/upload_list",
+    "//ios/chrome/app/theme",
+    "//ios/chrome/browser/infobars",
+    "//ios/chrome/browser/infobars:public",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/paths",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/web",
+    "//net",
+    "//ui/base",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "crash_helper_unittest.mm",
+    "crash_loop_detection_util_unittest.mm",
+    "crash_reporter_breadcrumb_observer_unittest.mm",
+    "crash_reporter_url_observer_unittest.mm",
+    "main_thread_freeze_detector_unittest.mm",
+  ]
+  deps = [
+    ":model",
+    ":model_internal",
+    "//base",
+    "//base/test:test_support",
+    "//components/breadcrumbs/core",
+    "//components/crash/core/common:reporter_running_ios",
+    "//components/previous_session_info",
+    "//ios/chrome/browser/crash_report/model/breadcrumbs",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/web_state_list:web_state_list",
+    "//ios/chrome/browser/shared/model/web_state_list/test:test_support",
+    "//ios/chrome/common/crash_report",
+    "//ios/testing:block_swizzler",
+    "//ios/web/public/test",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/crashpad/crashpad/client:common",
+    "//third_party/ocmock",
+  ]
+}
+
+group("crashpad_fuzzer_tests") {
+  testonly = true
+  deps = [
+    ":crashpad_intermediate_dump_fuzzer",
+    ":crashpad_process_snapshot_intermediate_dump_fuzzer",
+  ]
+}
+
+fuzzer_test("crashpad_intermediate_dump_fuzzer") {
+  additional_configs = [ "//testing/libfuzzer:build_for_ios_clusterfuzz_job" ]
+  sources = [ "crashpad_intermediate_dump_fuzzer.cc" ]
+  deps = [
+    "//base",
+    "//third_party/crashpad/crashpad/util",
+  ]
+}
+
+fuzzer_test("crashpad_process_snapshot_intermediate_dump_fuzzer") {
+  additional_configs = [ "//testing/libfuzzer:build_for_ios_clusterfuzz_job" ]
+  sources = [ "crashpad_process_snapshot_intermediate_dump_fuzzer.cc" ]
+  deps = [
+    "//base",
+    "//third_party/crashpad/crashpad/snapshot",
+  ]
+  seed_corpuses = [ "seed_corpuses" ]
+}

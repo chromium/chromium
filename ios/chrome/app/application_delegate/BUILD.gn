@@ -14,7 +14,7 @@ source_set("application_delegate") {
   deps = [
     "//base",
     "//components/previous_session_info",
-    "//ios/chrome/browser/crash_report",
+    "//ios/chrome/browser/crash_report/model",
   ]
   frameworks = [ "Foundation.framework" ]
 }
@@ -51,7 +51,7 @@ source_set("unit_tests") {
     "//ios/chrome/app:safe_mode_app_state_agent",
     "//ios/chrome/app/spotlight",
     "//ios/chrome/app/startup",
-    "//ios/chrome/browser/crash_report",
+    "//ios/chrome/browser/crash_report/model",
     "//ios/chrome/browser/device_sharing",
     "//ios/chrome/browser/flags:system_flags",
     "//ios/chrome/browser/geolocation",
@@ -131,7 +131,7 @@ source_set("metric_kit_subscriber") {
     "//components/crash/core/common:reporter_running_ios",
     "//components/previous_session_info",
     "//components/version_info",
-    "//ios/chrome/browser/crash_report",
+    "//ios/chrome/browser/crash_report/model",
   ]
 }
 
@@ -198,7 +198,7 @@ source_set("application_delegate_internal") {
     "//ios/chrome/app/startup:ios_enable_sandbox_dump_buildflags",
     "//ios/chrome/app/startup:startup_basic",
     "//ios/chrome/browser/browsing_data/model",
-    "//ios/chrome/browser/crash_report",
+    "//ios/chrome/browser/crash_report/model",
     "//ios/chrome/browser/default_browser:utils",
     "//ios/chrome/browser/device_sharing",
     "//ios/chrome/browser/feature_engagement",

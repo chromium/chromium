@@ -18,7 +18,7 @@
 #import "components/crash/core/common/reporter_running_ios.h"
 #import "components/previous_session_info/previous_session_info.h"
 #import "components/version_info/version_info.h"
-#import "ios/chrome/browser/crash_report/features.h"
+#import "ios/chrome/browser/crash_report/model/features.h"
 
 // The different causes of app exit as reported by MetricKit.
 // This enum is used in UMA. Do not change the order.

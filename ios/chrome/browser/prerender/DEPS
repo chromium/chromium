@@ -1,7 +1,7 @@
 include_rules = [
   "+ios/chrome/browser/net",
   "+ios/chrome/browser/app_launcher/model",
-  "+ios/chrome/browser/crash_report",
+  "+ios/chrome/browser/crash_report/model",
   "+ios/chrome/browser/download",
   "+ios/chrome/browser/history",
   "+ios/chrome/browser/itunes_urls",

@@ -53,7 +53,7 @@ source_set("browser_view") {
     "//ios/chrome/browser/commerce/model/price_notifications",
     "//ios/chrome/browser/commerce/model/push_notification",
     "//ios/chrome/browser/content_settings/model",
-    "//ios/chrome/browser/crash_report",
+    "//ios/chrome/browser/crash_report/model",
     "//ios/chrome/browser/credential_provider_promo:features",
     "//ios/chrome/browser/default_browser:utils",
     "//ios/chrome/browser/download",

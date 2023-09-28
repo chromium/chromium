@@ -15,7 +15,7 @@
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/startup_metric_utils/browser/startup_metric_utils.h"
 #import "ios/chrome/app/tests_hook.h"
-#import "ios/chrome/browser/crash_report/crash_helper.h"
+#import "ios/chrome/browser/crash_report/model/crash_helper.h"
 #import "ios/chrome/browser/first_run/first_run.h"
 #import "ios/chrome/browser/first_run/first_run_metrics.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"

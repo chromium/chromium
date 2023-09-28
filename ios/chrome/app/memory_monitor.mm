@@ -20,7 +20,7 @@
 #import "base/threading/scoped_blocking_call.h"
 #import "base/time/time.h"
 #import "components/previous_session_info/previous_session_info.h"
-#import "ios/chrome/browser/crash_report/crash_keys_helper.h"
+#import "ios/chrome/browser/crash_report/model/crash_keys_helper.h"
 
 namespace {
 

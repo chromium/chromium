@@ -17,9 +17,9 @@
 #import "components/metrics/metrics_service.h"
 #import "components/previous_session_info/previous_session_info.h"
 #import "components/version_info/version_info.h"
-#import "ios/chrome/browser/crash_report/crash_helper.h"
-#import "ios/chrome/browser/crash_report/features.h"
-#import "ios/chrome/browser/crash_report/main_thread_freeze_detector.h"
+#import "ios/chrome/browser/crash_report/model/crash_helper.h"
+#import "ios/chrome/browser/crash_report/model/features.h"
+#import "ios/chrome/browser/crash_report/model/main_thread_freeze_detector.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 
 using previous_session_info_constants::DeviceBatteryState;

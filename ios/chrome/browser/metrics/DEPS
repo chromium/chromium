@@ -5,7 +5,7 @@ include_rules = [
   "+ios/chrome/browser/prerender",
   "+ios/chrome/browser/ntp/features.h",
   "+ios/chrome/browser/variations",
-  "+ios/chrome/browser/crash_report",
+  "+ios/chrome/browser/crash_report/model",
   "+ios/chrome/browser/voice",
   "+ios/chrome/browser/tabs",
   "+ios/chrome/browser/translate",

@@ -11,7 +11,7 @@ source_set("model") {
     "//base",
     "//components/navigation_metrics",
     "//components/profile_metrics",
-    "//ios/chrome/browser/crash_report",
+    "//ios/chrome/browser/crash_report/model",
     "//ios/chrome/browser/sessions:restoration_agent",
     "//ios/chrome/browser/sessions:restoration_observer",
     "//ios/chrome/browser/shared/model/browser",

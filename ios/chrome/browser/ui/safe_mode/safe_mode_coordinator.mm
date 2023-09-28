@@ -7,7 +7,7 @@
 #import <ostream>
 
 #import "base/notreached.h"
-#import "ios/chrome/browser/crash_report/crash_loop_detection_util.h"
+#import "ios/chrome/browser/crash_report/model/crash_loop_detection_util.h"
 #import "ios/chrome/browser/ui/safe_mode/safe_mode_view_controller.h"
 
 namespace {

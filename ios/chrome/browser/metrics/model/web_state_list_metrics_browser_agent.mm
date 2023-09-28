@@ -10,7 +10,7 @@
 #import "base/metrics/user_metrics_action.h"
 #import "components/navigation_metrics/navigation_metrics.h"
 #import "components/profile_metrics/browser_profile_type.h"
-#import "ios/chrome/browser/crash_report/crash_loop_detection_util.h"
+#import "ios/chrome/browser/crash_report/model/crash_loop_detection_util.h"
 #import "ios/chrome/browser/sessions/session_restoration_browser_agent.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
