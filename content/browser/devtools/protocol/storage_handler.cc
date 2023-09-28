@@ -1066,7 +1066,7 @@ void SendGetInterestGroup(
   if (group.ads) {
     for (const auto& ad : *group.ads) {
       auto protocol_ad = protocol::Storage::InterestGroupAd::Create()
-                             .SetRenderUrl(ad.render_url.spec())
+                             .SetRenderURL(ad.render_url.spec())
                              .Build();
       if (ad.metadata) {
         protocol_ad->SetMetadata(*ad.metadata);
@@ -1079,7 +1079,7 @@ void SendGetInterestGroup(
   if (group.ad_components) {
     for (const auto& ad : *group.ad_components) {
       auto protocol_ad = protocol::Storage::InterestGroupAd::Create()
-                             .SetRenderUrl(ad.render_url.spec())
+                             .SetRenderURL(ad.render_url.spec())
                              .Build();
       if (ad.metadata) {
         protocol_ad->SetMetadata(*ad.metadata);
@@ -1098,17 +1098,17 @@ void SendGetInterestGroup(
           .SetAdComponents(std::move(ad_components))
           .Build();
   if (group.bidding_url) {
-    protocol_group->SetBiddingUrl(group.bidding_url->spec());
+    protocol_group->SetBiddingLogicURL(group.bidding_url->spec());
   }
   if (group.bidding_wasm_helper_url) {
-    protocol_group->SetBiddingWasmHelperUrl(
+    protocol_group->SetBiddingWasmHelperURL(
         group.bidding_wasm_helper_url->spec());
   }
   if (group.update_url) {
-    protocol_group->SetUpdateUrl(group.update_url->spec());
+    protocol_group->SetUpdateURL(group.update_url->spec());
   }
   if (group.trusted_bidding_signals_url) {
-    protocol_group->SetTrustedBiddingSignalsUrl(
+    protocol_group->SetTrustedBiddingSignalsURL(
         group.trusted_bidding_signals_url->spec());
   }
   if (group.user_bidding_signals) {

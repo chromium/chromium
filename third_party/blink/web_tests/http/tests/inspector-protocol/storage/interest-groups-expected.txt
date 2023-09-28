@@ -12,10 +12,10 @@ Events logged: 7
     ads : [
         [0] : {
             metadata : {"ad":"metadata","here":[1,2,3]}
-            renderUrl : https://example.com/render0
+            renderURL : https://example.com/render0
         }
     ]
-    biddingUrl : https://a.test:8443/inspector-protocol/resources/fledge_bidding_logic.js.php
+    biddingLogicURL : https://a.test:8443/inspector-protocol/resources/fledge_bidding_logic.js.php
     expirationTime : 0
     joiningOrigin : https://a.test:8443
     name : 0
@@ -34,10 +34,10 @@ Events logged: 7
     ads : [
         [0] : {
             metadata : {"ad":"metadata","here":[1,2,3]}
-            renderUrl : https://example.com/render1
+            renderURL : https://example.com/render1
         }
     ]
-    biddingUrl : https://a.test:8443/inspector-protocol/resources/fledge_bidding_logic.js.php
+    biddingLogicURL : https://a.test:8443/inspector-protocol/resources/fledge_bidding_logic.js.php
     expirationTime : 0
     joiningOrigin : https://a.test:8443
     name : 1
@@ -56,10 +56,10 @@ Events logged: 7
     ads : [
         [0] : {
             metadata : {"ad":"metadata","here":[1,2,3]}
-            renderUrl : https://example.com/render0
+            renderURL : https://example.com/render0
         }
     ]
-    biddingUrl : https://a.test:8443/inspector-protocol/resources/fledge_bidding_logic.js.php
+    biddingLogicURL : https://a.test:8443/inspector-protocol/resources/fledge_bidding_logic.js.php
     expirationTime : 0
     joiningOrigin : https://a.test:8443
     name : 0
@@ -78,10 +78,10 @@ Events logged: 7
     ads : [
         [0] : {
             metadata : {"ad":"metadata","here":[1,2,3]}
-            renderUrl : https://example.com/render1
+            renderURL : https://example.com/render1
         }
     ]
-    biddingUrl : https://a.test:8443/inspector-protocol/resources/fledge_bidding_logic.js.php
+    biddingLogicURL : https://a.test:8443/inspector-protocol/resources/fledge_bidding_logic.js.php
     expirationTime : 0
     joiningOrigin : https://a.test:8443
     name : 1
@@ -100,10 +100,10 @@ Events logged: 7
     ads : [
         [0] : {
             metadata : {"ad":"metadata","here":[1,2,3]}
-            renderUrl : https://example.com/render0
+            renderURL : https://example.com/render0
         }
     ]
-    biddingUrl : https://a.test:8443/inspector-protocol/resources/fledge_bidding_logic.js.php
+    biddingLogicURL : https://a.test:8443/inspector-protocol/resources/fledge_bidding_logic.js.php
     expirationTime : 0
     joiningOrigin : https://a.test:8443
     name : 0
@@ -122,10 +122,10 @@ Events logged: 7
     ads : [
         [0] : {
             metadata : {"ad":"metadata","here":[1,2,3]}
-            renderUrl : https://example.com/render1
+            renderURL : https://example.com/render1
         }
     ]
-    biddingUrl : https://a.test:8443/inspector-protocol/resources/fledge_bidding_logic.js.php
+    biddingLogicURL : https://a.test:8443/inspector-protocol/resources/fledge_bidding_logic.js.php
     expirationTime : 0
     joiningOrigin : https://a.test:8443
     name : 1
@@ -144,10 +144,10 @@ Events logged: 7
     ads : [
         [0] : {
             metadata : {"ad":"metadata","here":[1,2,3]}
-            renderUrl : https://example.com/render1
+            renderURL : https://example.com/render1
         }
     ]
-    biddingUrl : https://a.test:8443/inspector-protocol/resources/fledge_bidding_logic.js.php
+    biddingLogicURL : https://a.test:8443/inspector-protocol/resources/fledge_bidding_logic.js.php
     expirationTime : 0
     joiningOrigin : https://a.test:8443
     name : 1
