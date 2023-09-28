@@ -216,7 +216,7 @@ bool PopupAutocompleteCellView::HandleKeyPressEvent(
     case ui::VKEY_RETURN:
       CHECK(button_);
       if (button_focused_) {
-        DeleteAutocompleteEntrySoon();
+        button_->button_controller()->NotifyClick();
         return true;
       }
       break;
@@ -263,12 +263,30 @@ void PopupAutocompleteCellView::SetSelected(bool selected) {
 }
 
 void PopupAutocompleteCellView::CreateDeleteButton() {
+  // The closure that actually attempts to delete an entry and record metrics
+  // for it.
+  base::RepeatingClosure deletion_action = base::BindRepeating(
+      [](base::WeakPtr<AutofillPopupController> controller, int line_number) {
+        if (controller && controller->RemoveSuggestion(line_number)) {
+          AutofillMetrics::OnAutocompleteSuggestionDeleted(
+              AutofillMetrics::AutocompleteSingleEntryRemovalMethod::
+                  kDeleteButtonClicked);
+        }
+      },
+      controller_, line_number_);
+
+  // The closure that delays makes sure this is called only via direct entry
+  // from the task queue to avoid that the caller suicides.
+  base::RepeatingClosure button_action = base::BindRepeating(
+      [](base::RepeatingClosure delayed_task) {
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE, std::move(delayed_task));
+      },
+      std::move(deletion_action));
+
   std::unique_ptr<views::ImageButton> button =
       views::CreateVectorImageButtonWithNativeTheme(
-          base::BindRepeating(
-              &PopupAutocompleteCellView::DeleteAutocompleteEntrySoon,
-              base::Unretained(this)),
-          views::kIcCloseIcon, kCloseIconSize);
+          std::move(button_action), views::kIcCloseIcon, kCloseIconSize);
 
   CHECK(GetLayoutManager());
   views::BoxLayout* layout = static_cast<views::BoxLayout*>(GetLayoutManager());
@@ -303,23 +321,6 @@ void PopupAutocompleteCellView::CreateDeleteButton() {
       button_, this,
       std::make_unique<views::Button::DefaultButtonControllerDelegate>(
           button_.get())));
-}
-
-void PopupAutocompleteCellView::DeleteAutocompleteEntrySoon() {
-  // Post the deletion task to the tasks queue instead of executing it directly
-  // to avoid that callers cause their own deletion.
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          [](base::WeakPtr<AutofillPopupController> controller,
-             int line_number) {
-            if (controller && controller->RemoveSuggestion(line_number)) {
-              AutofillMetrics::OnAutocompleteSuggestionDeleted(
-                  AutofillMetrics::AutocompleteSingleEntryRemovalMethod::
-                      kDeleteButtonClicked);
-            }
-          },
-          controller_, line_number_));
 }
 
 void PopupAutocompleteCellView::OnMouseEnteredCellButton() {
