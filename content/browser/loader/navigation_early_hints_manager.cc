@@ -395,10 +395,11 @@ void NavigationEarlyHintsManager::HandleEarlyHints(
   // policies such as CSP are inconsistent among the first and following
   // responses. This behavior is specified by the step 19.5 of
   // https://html.spec.whatwg.org/multipage/browsing-the-web.html#create-navigation-params-by-fetching
-  if (was_first_early_hints_received_)
+  if (first_early_hints_receive_time_) {
     return;
+  }
 
-  was_first_early_hints_received_ = true;
+  first_early_hints_receive_time_ = base::TimeTicks::Now();
 
   net::ReferrerPolicy referrer_policy =
       Referrer::ReferrerPolicyForUrlRequest(early_hints->referrer_policy);

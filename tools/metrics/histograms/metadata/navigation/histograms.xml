@@ -584,6 +584,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Navigation.Earlyhints.EarlyHintsToResponseStartTime"
+    units="ms" expires_after="2024-01-28">
+  <owner>bashi@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Time from a navigation request received the first early hints to the
+    response started. Recorded per navigation when both early hints and the
+    final response are received.
+  </summary>
+</histogram>
+
+<histogram name="Navigation.Earlyhints.WillStartRequestToEarlyHintsTime"
+    units="ms" expires_after="2024-01-28">
+  <owner>bashi@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Time from a navigation request will start to the first early hints is
+    received. Recorded per navigation when both early hints and the final
+    response are received.
+  </summary>
+</histogram>
+
 <histogram name="Navigation.EarlyRenderFrameHostSwap.HasCommitted"
     enum="Boolean" expires_after="2024-08-03">
   <owner>alexmos@chromium.org</owner>

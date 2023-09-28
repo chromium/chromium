@@ -117,6 +117,10 @@ class CONTENT_EXPORT NavigationEarlyHintsManager {
   // True when there are at least one inflight preloads.
   bool HasInflightPreloads() const;
 
+  absl::optional<base::TimeTicks> first_early_hints_receive_time() const {
+    return first_early_hints_receive_time_;
+  }
+
   void WaitForPreloadsFinishedForTesting(
       base::OnceCallback<void(PreloadedResources)> callback);
 
@@ -187,7 +191,7 @@ class CONTENT_EXPORT NavigationEarlyHintsManager {
 
   // Set to true when HandleEarlyHints() is called for the first time. Used to
   // ignore following responses.
-  bool was_first_early_hints_received_ = false;
+  absl::optional<base::TimeTicks> first_early_hints_receive_time_;
   // Set to true when preload or preconnect Link headers are received. Used for
   // metrics recording.
   bool was_resource_hints_received_ = false;

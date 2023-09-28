@@ -3979,10 +3979,22 @@ void NavigationRequest::OnResponseStarted(
   response_body_ = std::move(response_body);
   ssl_info_ = response_head_->ssl_info;
   auth_challenge_info_ = response_head_->auth_challenge_info;
+
   // TODO(https://crbug.com/1305896): Store the whole EarlyHints struct instead
   // of duplicating all of its fields.
   was_resource_hints_received_ = early_hints.was_resource_hints_received;
   early_hints_manager_ = std::move(early_hints.manager);
+  if (early_hints_manager_ &&
+      early_hints_manager_->first_early_hints_receive_time()) {
+    base::UmaHistogramTimes(
+        "Navigation.EarlyHints.WillStartRequestToEarlyHintsTime",
+        *early_hints_manager_->first_early_hints_receive_time() -
+            will_start_request_time_);
+    base::UmaHistogramTimes(
+        "Navigation.EarlyHints.EarlyHintsToResponseStartTime",
+        base::TimeTicks::Now() -
+            *early_hints_manager_->first_early_hints_receive_time());
+  }
 
   // A request was made. Record it before we decide to block this response for
   // a reason or another.

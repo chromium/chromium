@@ -11,6 +11,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "components/network_session_configurator/common/network_switches.h"
@@ -411,6 +412,8 @@ class NavigationEarlyHintsTest : public ContentBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(NavigationEarlyHintsTest, Basic) {
+  base::HistogramTester histograms;
+
   ResponseEntry entry = CreatePageEntryWithHintedScript(net::HTTP_OK);
   RegisterResponse(entry);
 
@@ -426,6 +429,11 @@ IN_PROC_BROWSER_TEST_F(NavigationEarlyHintsTest, Basic) {
   ASSERT_FALSE(it->second.was_canceled);
   ASSERT_TRUE(it->second.error_code.has_value());
   EXPECT_EQ(it->second.error_code.value(), net::OK);
+
+  histograms.ExpectTotalCount(
+      "Navigation.EarlyHints.WillStartRequestToEarlyHintsTime", 1);
+  histograms.ExpectTotalCount(
+      "Navigation.EarlyHints.EarlyHintsToResponseStartTime", 1);
 }
 
 IN_PROC_BROWSER_TEST_F(NavigationEarlyHintsTest, CorsAttribute) {
