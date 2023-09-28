@@ -134,9 +134,15 @@ bool ExtensionsRequestAccessButton::IsShowingConfirmationFor(
 std::u16string ExtensionsRequestAccessButton::GetTooltipText(
     const gfx::Point& p) const {
   std::vector<std::u16string> tooltip_parts;
+  content::WebContents* active_contents = GetActiveWebContents();
+
+  // Active contents can be null if the window is closing.
+  if (!active_contents) {
+    return std::u16string();
+  }
   tooltip_parts.push_back(l10n_util::GetStringFUTF16(
       IDS_EXTENSIONS_REQUEST_ACCESS_BUTTON_TOOLTIP_MULTIPLE_EXTENSIONS,
-      GetCurrentHost(GetActiveWebContents())));
+      GetCurrentHost(active_contents)));
   for (const auto& extension_id : extension_ids_) {
     ToolbarActionViewController* action =
         extensions_container_->GetActionForId(extension_id);
