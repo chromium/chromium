@@ -87,6 +87,10 @@
       iron-icon="voice-rate:1"
       on-click="onShowRateMenuClick_">
     </cr-icon-button>
+    <cr-icon-button id="voice-selection" on-click="onVoiceSelectionMenuClick_"
+      class="toolbar-button"
+      iron-icon="read-anything:voice-selection">
+    </cr-icon-button>
     <cr-icon-button
       class="toolbar-button"
       id="highlight"
@@ -127,6 +131,19 @@
       </button>
     </template>
   </cr-action-menu>
+  <cr-action-menu id="voiceSelectionMenu">
+    <template is="dom-repeat" items="[[voiceSelectionOptions_]]">
+      <!--  TODO(crbug.com/1474951): add play icon for voice previews -->
+      <!--  TODO(crbug.com/1474951): show a header for each locale group before
+            listing the languages of the locale -->
+      <!--  TODO(crbug.com/1474951): show currently selected language -->
+      <!--  TODO(crbug.com/1474951): allow user to change language -->
+      <button class="dropdown-item">
+        [[item.title]]
+      </button>
+    </template>
+  </cr-action-menu>
+
   <cr-action-menu id="fontSizeMenu">
     <cr-icon-button
         class="font-size"

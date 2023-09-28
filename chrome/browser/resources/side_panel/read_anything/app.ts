@@ -24,6 +24,11 @@ interface LinkColor {
   default: string;
   visited: string;
 }
+
+interface VoicesByLanguage {
+  [lang: string]: SpeechSynthesisVoice[];
+}
+
 // TODO(crbug.com/1465029): Remove colors defined here once the Views toolbar is
 // removed.
 const style = getComputedStyle(document.body);
@@ -400,6 +405,16 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
   onSpeechRateChange(rate: number) {
     this.rate = rate;
+  }
+
+  getVoices(): VoicesByLanguage {
+    return this.synth.getVoices().reduce(
+        (voicesByLang: VoicesByLanguage, voice: SpeechSynthesisVoice) => {
+          (voicesByLang[voice.lang] = voicesByLang[voice.lang] || [])
+              .push(voice);
+          return voicesByLang;
+        },
+        {});
   }
 
   stopSpeech() {

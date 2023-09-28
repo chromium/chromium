@@ -28,6 +28,7 @@ export interface ReadAnythingToolbar {
     fontMenu: CrActionMenuElement,
     fontSizeMenu: CrActionMenuElement,
     moreOptionsMenu: CrActionMenuElement,
+    voiceSelectionMenu: CrActionMenuElement,
     fontTemplate: DomRepeat,
   };
 }
@@ -229,6 +230,8 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
     },
   ];
 
+  private voiceSelectionOptions_: MenuStateItem[] = [];
+
   private rateOptions_: number[] = [0.5, 0.8, 1, 1.2, 1.5, 2, 3, 4];
 
   private textStyleOptions_: MenuButton[] = [
@@ -406,6 +409,28 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
   private onShowRateMenuClick_(event: MouseEvent) {
     this.openMenu_(this.$.rateMenu, event.target as HTMLElement);
   }
+
+  // TODO(crbug.com/1474951): Add unit tests
+  private onVoiceSelectionMenuClick_(event: MouseEvent) {
+    if (this.contentPage) {
+      const voices = this.contentPage.getVoices();
+      this.voiceSelectionOptions_ = Object.entries(voices).reduce(
+          (aggregateVoiceList: MenuStateItem[], [_, voiceListForLang]) => ([
+            ...aggregateVoiceList,
+            ...(voiceListForLang).map(speechSynthesisVoice => ({
+                                        title: speechSynthesisVoice.name,
+                                        icon: '',
+                                        data: '',
+                                        callback: () => {},
+                                      })),
+          ]),
+          []);
+
+      this.openMenu_(this.$.voiceSelectionMenu, event.target as HTMLElement);
+    }
+  }
+
+
 
   private onMoreOptionsClick_(event: MouseEvent) {
     this.openMenu_(this.$.moreOptionsMenu, event.target as HTMLElement);
