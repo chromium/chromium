@@ -30,6 +30,7 @@ absl::optional<GlobalActionManager>& GetGlobalManager() {
 }  // namespace
 
 namespace actions {
+DEFINE_UI_CLASS_PROPERTY_KEY(bool, kActionItemPinnableKey, false)
 
 ActionList::ActionList(Delegate* delegate) : delegate_(delegate) {}
 

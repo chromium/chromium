@@ -9,6 +9,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/class_property.h"
 
 namespace actions {
 
@@ -401,6 +402,36 @@ TEST_F(ActionItemTest, TestGroupIdExclusion) {
   action_test2->SetChecked(true);
   EXPECT_TRUE(action_test2->GetChecked());
   EXPECT_FALSE(action_test3->GetChecked());
+}
+
+TEST_F(ActionItemTest, TestActionItemPinnableKey) {
+  // clang-format off
+  auto builder = ActionItem::Builder()
+      .SetText(kActionText)
+      .SetActionId(kActionTest1)
+      .SetVisible(true)
+      .SetEnabled(true);
+  // clang-format on
+  auto& manager = ActionManager::GetForTesting();
+  manager.AddAction(std::move(builder).Build());
+  auto* action_test1 = manager.FindAction(kActionTest1);
+  ASSERT_TRUE(action_test1);
+  ASSERT_FALSE(action_test1->GetProperty(kActionItemPinnableKey));
+  action_test1->SetProperty(kActionItemPinnableKey, true);
+  ASSERT_TRUE(action_test1->GetProperty(kActionItemPinnableKey));
+
+  // test using builder
+  builder = ActionItem::Builder()
+                .SetText(kActionText)
+                .SetActionId(kActionTest2)
+                .SetProperty(kActionItemPinnableKey, true)
+                .SetVisible(true)
+                .SetEnabled(true);
+
+  manager.AddAction(std::move(builder).Build());
+  auto* action_test2 = manager.FindAction(kActionTest2);
+  ASSERT_TRUE(action_test2);
+  ASSERT_TRUE(action_test2->GetProperty(kActionItemPinnableKey));
 }
 
 }  // namespace actions

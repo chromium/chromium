@@ -9,6 +9,9 @@
 
 #include "base/notreached.h"
 
+// common class properties.
+DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(COMPONENT_EXPORT(UI_BASE), bool)
+
 namespace ui {
 
 PropertyHandler::PropertyHandler() = default;

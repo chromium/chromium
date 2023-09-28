@@ -17,6 +17,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/actions/action_id.h"
 #include "ui/base/accelerators/accelerator.h"
+#include "ui/base/class_property.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/events/event.h"
@@ -52,7 +53,8 @@ class COMPONENT_EXPORT(ACTIONS) ActionList {
 
 class COMPONENT_EXPORT(ACTIONS) BaseAction
     : public ui::metadata::MetaDataProvider,
-      public ActionList::Delegate {
+      public ActionList::Delegate,
+      public ui::PropertyHandler {
  public:
   METADATA_HEADER_BASE(BaseAction);
   BaseAction();
@@ -123,6 +125,18 @@ class COMPONENT_EXPORT(ACTIONS) ActionItem : public BaseAction {
     template <typename ActionPtr>
     ActionItemBuilder&& CopyAddressTo(ActionPtr* action_address) && {
       return std::move(this->CopyAddressTo(action_address));
+    }
+
+    template <typename T>
+    ActionItemBuilder& SetProperty(const ui::ClassProperty<T>* property,
+                                   ui::metadata::ArgType<T> value) & {
+      action_item_->SetProperty(property, value);
+      return *this;
+    }
+    template <typename T>
+    ActionItemBuilder&& SetProperty(const ui::ClassProperty<T>* property,
+                                    ui::metadata::ArgType<T> value) && {
+      return std::move(this->SetProperty(property, value));
     }
     ActionItemBuilder& SetActionId(absl::optional<ActionId> action_id) &;
     ActionItemBuilder&& SetActionId(absl::optional<ActionId> action_id) &&;
@@ -332,6 +346,9 @@ class COMPONENT_EXPORT(ACTIONS) ActionManager
   static base::flat_map<ActionId, std::string_view>& GetActionIdToStringMap();
   static base::flat_map<std::string_view, ActionId>& GetStringToActionIdMap();
 };
+
+COMPONENT_EXPORT(ACTIONS)
+extern const ui::ClassProperty<bool>* const kActionItemPinnableKey;
 
 }  // namespace actions
 
