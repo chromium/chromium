@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_reader.h"
 
+#include <cstdint>
 #include <memory>
 #include <string>
 #include <vector>
@@ -851,6 +852,81 @@ TEST_F(SignedWebBundleReaderTest, ReadResponseBody) {
   std::string response_body =
       ReadAndFulfillResponseBody(*reader.get(), std::move(response));
   EXPECT_EQ(response_body, kResponseBody);
+}
+
+TEST_F(SignedWebBundleReaderTest, CloseWhileReadingResponseBody) {
+  base::test::TestFuture<base::expected<void, UnusableSwbnFileError>>
+      parse_status_future;
+  auto reader = CreateReaderAndInitialize(parse_status_future.GetCallback());
+
+  parser_factory_->RunIntegrityBlockCallback(integrity_block_->Clone());
+  parser_factory_->RunMetadataCallback(integrity_block_->size,
+                                       metadata_->Clone());
+
+  auto parse_status = parse_status_future.Take();
+  EXPECT_THAT(parse_status, HasValue());
+  EXPECT_EQ(reader->GetState(), SignedWebBundleReader::State::kInitialized);
+
+  network::ResourceRequest resource_request;
+  resource_request.url = kUrl;
+
+  ASSERT_OK_AND_ASSIGN(
+      auto response, ReadAndFulfillResponse(*reader.get(), resource_request,
+                                            metadata_->requests[kUrl]->Clone(),
+                                            response_->Clone()));
+
+  const uint64_t response_body_length = response->payload_length;
+  auto read_response_body_callable =
+      base::BindOnce(&SignedWebBundleReader::ReadResponseBody,
+                     base::Unretained(reader.get()), std::move(response));
+
+  base::test::TestFuture<net::Error> on_response_read_callback;
+  mojo::ScopedDataPipeConsumerHandle response_body_consumer = ReadResponseBody(
+      response_body_length, std::move(read_response_body_callable),
+      on_response_read_callback.GetCallback());
+
+  base::test::TestFuture<void> close_future;
+  reader->Close(close_future.GetCallback());
+
+  EXPECT_EQ(net::OK, on_response_read_callback.Get());
+  std::vector<char> buffer(response_body_length);
+  uint32_t bytes_read = buffer.size();
+  MojoResult read_result = response_body_consumer->ReadData(
+      buffer.data(), &bytes_read, MOJO_READ_DATA_FLAG_NONE);
+  EXPECT_EQ(MOJO_RESULT_OK, read_result);
+  EXPECT_EQ(buffer.size(), bytes_read);
+  EXPECT_EQ(std::string(buffer.data(), bytes_read), kResponseBody);
+
+  close_future.Wait();
+}
+
+TEST_F(SignedWebBundleReaderTest, ResponseBodyEndDoesntFitInUint64) {
+  base::test::TestFuture<base::expected<void, UnusableSwbnFileError>>
+      parse_status_future;
+  auto reader = CreateReaderAndInitialize(parse_status_future.GetCallback());
+  parser_factory_->RunIntegrityBlockCallback(integrity_block_->Clone());
+  parser_factory_->RunMetadataCallback(integrity_block_->size,
+                                       metadata_->Clone());
+  parse_status_future.Wait();
+
+  auto response = web_package::mojom::BundleResponse::New();
+  response->response_code = 200;
+  // End of the response (which is offset + length) should not fit into
+  // unit64_t.
+  response->payload_offset = std::numeric_limits<uint64_t>::max() - 10;
+  response->payload_length = 11;
+  const uint64_t response_body_length = response->payload_length;
+
+  auto read_response_body_callable =
+      base::BindOnce(&SignedWebBundleReader::ReadResponseBody,
+                     base::Unretained(reader.get()), std::move(response));
+
+  base::test::TestFuture<net::Error> on_response_read_callback;
+  mojo::ScopedDataPipeConsumerHandle response_body_consumer = ReadResponseBody(
+      response_body_length, std::move(read_response_body_callable),
+      on_response_read_callback.GetCallback());
+
+  EXPECT_NE(net::OK, on_response_read_callback.Get());
 }
 
 class SignedWebBundleReaderBaseUrlTest

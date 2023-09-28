@@ -19,7 +19,7 @@ class SignedWebBundleReader;
 // Start reading the response body from `read_response_body_callback`. The
 // returned Mojo handle can be used to provide the response contents.
 mojo::ScopedDataPipeConsumerHandle ReadResponseBody(
-    uint32_t response_length,
+    uint64_t response_length,
     base::OnceCallback<void(mojo::ScopedDataPipeProducerHandle producer_handle,
                             base::OnceCallback<void(net::Error net_error)>)>
         read_response_body_callback,
@@ -33,7 +33,7 @@ std::string ReadAndFulfillResponseBody(
 
 // Given a callback that produces a response, read its contents and return it.
 std::string ReadAndFulfillResponseBody(
-    uint32_t response_length,
+    uint64_t response_length,
     base::OnceCallback<void(mojo::ScopedDataPipeProducerHandle producer_handle,
                             base::OnceCallback<void(net::Error net_error)>)>
         read_response_body_callback);

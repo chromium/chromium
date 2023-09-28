@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_reader.h"
 
+#include <cstddef>
 #include <memory>
 #include <string>
 #include <utility>
@@ -28,8 +29,8 @@
 #include "chrome/browser/web_applications/isolated_web_apps/error/unusable_swbn_file_error.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_integrity_block.h"
-#include "components/web_package/web_bundle_file_data_source.h"
 #include "mojo/public/cpp/system/data_pipe_producer.h"
+#include "mojo/public/cpp/system/file_data_source.h"
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -64,6 +65,25 @@ void CloseFile(base::File file, base::OnceClosure close_callback) {
       FROM_HERE, {base::MayBlock()},
       base::BindOnce([](base::File file) { file.Close(); }, std::move(file)),
       std::move(close_callback));
+}
+
+void OpenFileDataSource(
+    base::File file,
+    uint64_t start,
+    uint64_t end,
+    base::OnceCallback<void(
+        std::unique_ptr<mojo::DataPipeProducer::DataSource>)> open_callback) {
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(
+          [](base::File file, uint64_t start, uint64_t end) {
+            auto file_data_source =
+                std::make_unique<mojo::FileDataSource>(std::move(file));
+            file_data_source->SetRange(start, end);
+            return file_data_source;
+          },
+          std::move(file), start, end),
+      std::move(open_callback));
 }
 
 }  // namespace
@@ -193,14 +213,28 @@ std::unique_ptr<SignedWebBundleReader> SignedWebBundleReader::Create(
 }
 
 void SignedWebBundleReader::Close(base::OnceClosure callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK_EQ(state_, State::kInitialized);
   state_ = State::kClosed;
-  connection_->parser_->Close(
-      base::BindOnce(&SignedWebBundleReader::OnParserClosed,
-                     base::Unretained(this), std::move(callback)));
+  CloseFile(
+      std::move(*file_),
+      base::BindOnce(&SignedWebBundleReader::OnFileClosed,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void SignedWebBundleReader::OnParserClosed(base::OnceClosure callback) const {
-  std::move(callback).Run();
+void SignedWebBundleReader::OnFileClosed(base::OnceClosure callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK_EQ(state_, State::kClosed);
+  connection_->parser_->Close(
+      base::BindOnce(&SignedWebBundleReader::OnParserClosed,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void SignedWebBundleReader::OnParserClosed(base::OnceClosure callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK_EQ(state_, State::kClosed);
+  close_callback_ = std::move(callback);
+  ReplyClosedIfNecessary();
 }
 
 void SignedWebBundleReader::StartReading(
@@ -511,23 +545,53 @@ void SignedWebBundleReader::ReadResponseBody(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_EQ(state_, State::kInitialized);
 
+  uint64_t response_start = response->payload_offset;
+  uint64_t response_end;
+  if (!base::CheckAdd(response_start, response->payload_length)
+           .AssignIfValid(&response_end)) {
+    // Response end doesn't fit in uint64_t.
+    OnResponseBodyRead(nullptr, std::move(callback),
+                       MOJO_RESULT_INVALID_ARGUMENT);
+    return;
+  }
+
   auto data_producer =
       std::make_unique<mojo::DataPipeProducer>(std::move(producer_handle));
   mojo::DataPipeProducer* raw_producer = data_producer.get();
-  raw_producer->Write(
-      web_package::WebBundleFileDataSource::CreateDataSource(
-          file_->Duplicate(), response->payload_offset,
-          response->payload_length),
-      base::BindOnce(
-          // `producer` is passed to this callback purely for its lifetime
-          // management so that it is deleted once this callback runs.
-          [](std::unique_ptr<mojo::DataPipeProducer> producer,
-             MojoResult result) -> net::Error {
-            return result == MOJO_RESULT_OK ? net::Error::OK
-                                            : net::Error::ERR_UNEXPECTED;
-          },
-          std::move(data_producer))
-          .Then(std::move(callback)));
+  active_response_body_producers_.insert(std::move(data_producer));
+
+  OpenFileDataSource(
+      file_->Duplicate(), response_start, response_end,
+      base::BindOnce(&SignedWebBundleReader::StartReadingFromDataSource,
+                     this->AsWeakPtr(), raw_producer, std::move(callback)));
+}
+
+void SignedWebBundleReader::StartReadingFromDataSource(
+    mojo::DataPipeProducer* data_pipe_producer,
+    ResponseBodyCallback callback,
+    std::unique_ptr<mojo::DataPipeProducer::DataSource> data_source) {
+  data_pipe_producer->Write(
+      std::move(data_source),
+      base::BindOnce(&SignedWebBundleReader::OnResponseBodyRead,
+                     this->AsWeakPtr(), data_pipe_producer,
+                     std::move(callback)));
+}
+
+void SignedWebBundleReader::OnResponseBodyRead(mojo::DataPipeProducer* producer,
+                                               ResponseBodyCallback callback,
+                                               MojoResult result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  active_response_body_producers_.erase(producer);
+  net::Error net_result =
+      result == MOJO_RESULT_OK ? net::Error::OK : net::Error::ERR_UNEXPECTED;
+  std::move(callback).Run(net_result);
+  ReplyClosedIfNecessary();
+}
+
+void SignedWebBundleReader::ReplyClosedIfNecessary() {
+  if (active_response_body_producers_.empty() && !close_callback_.is_null()) {
+    std::move(close_callback_).Run();
+  }
 }
 
 base::WeakPtr<SignedWebBundleReader> SignedWebBundleReader::AsWeakPtr() {

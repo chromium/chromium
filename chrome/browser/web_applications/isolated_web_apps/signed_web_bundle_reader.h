@@ -9,6 +9,8 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_set.h"
+#include "base/containers/unique_ptr_adapters.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/sequence_checker.h"
@@ -17,6 +19,7 @@
 #include "components/web_package/mojom/web_bundle_parser.mojom-forward.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_signature_verifier.h"
+#include "mojo/public/cpp/system/data_pipe_producer.h"
 #include "net/base/net_errors.h"
 #include "services/data_decoder/public/cpp/safe_web_bundle_parser.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -29,6 +32,10 @@ struct ResourceRequest;
 namespace web_package {
 class SignedWebBundleIntegrityBlock;
 }
+
+namespace mojo {
+class DataPipeProducer;
+}  // namespace mojo
 
 namespace web_app {
 
@@ -316,6 +323,13 @@ class SignedWebBundleReader {
   void OnResponseParsed(ResponseCallback callback,
                         web_package::mojom::BundleResponsePtr response,
                         web_package::mojom::BundleResponseParseErrorPtr error);
+  void StartReadingFromDataSource(
+      mojo::DataPipeProducer* data_pipe_producer,
+      ResponseBodyCallback callback,
+      std::unique_ptr<mojo::DataPipeProducer::DataSource> data_source);
+  void OnResponseBodyRead(mojo::DataPipeProducer* producer,
+                          ResponseBodyCallback callback,
+                          MojoResult result);
 
   // The following method is a callback for reconnection handling if the
   // `SafeWebBundleParser` in the `SignedWebBundleParserConnection`
@@ -324,7 +338,9 @@ class SignedWebBundleReader {
   // the next call to `ReadResponse`.
   void OnReconnect(base::expected<void, std::string> status);
 
-  void OnParserClosed(base::OnceClosure callback) const;
+  void OnParserClosed(base::OnceClosure callback);
+  void OnFileClosed(base::OnceClosure callback);
+  void ReplyClosedIfNecessary();
 
   State state_ = State::kUninitialized;
 
@@ -346,8 +362,12 @@ class SignedWebBundleReader {
 
   base::FilePath web_bundle_path_;
   absl::optional<GURL> base_url_;
-  absl::optional<base::File> file_;
   std::unique_ptr<internal::SafeWebBundleParserConnection> connection_;
+  base::flat_set<std::unique_ptr<mojo::DataPipeProducer>,
+                 base::UniquePtrComparator>
+      active_response_body_producers_;
+  absl::optional<base::File> file_;
+  base::OnceClosure close_callback_;
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<SignedWebBundleReader> weak_ptr_factory_{this};
@@ -420,4 +440,4 @@ class UnsecureSignedWebBundleIdReader : public UnsecureReader {
 
 }  // namespace web_app
 
-#endif  // CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_SIGNED_WEB_BUNDLE_H_
+#endif  // CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_SIGNED_WEB_BUNDLE_READER_H_
