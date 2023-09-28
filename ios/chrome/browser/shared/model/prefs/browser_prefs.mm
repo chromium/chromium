@@ -610,7 +610,7 @@ void MigrateObsoleteLocalStatePrefs(PrefService* prefs) {
         base::apple::ObjCCastStrict<NSDate>([defaults objectForKey:key]);
     if (value) {
       [defaults removeObjectForKey:key];
-      prefs->SetTime(kAppStoreRatingTotalDaysOnChromeKey,
+      prefs->SetTime(kAppStoreRatingLastShownPromoDayKey,
                      base::Time::FromNSDate(value));
     }
   }
