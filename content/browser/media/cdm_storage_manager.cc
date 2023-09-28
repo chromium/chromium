@@ -4,6 +4,7 @@
 
 #include "content/browser/media/cdm_storage_manager.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/task/thread_pool.h"
 #include "base/types/pass_key.h"
@@ -14,6 +15,17 @@
 namespace content {
 
 namespace {
+
+const char kUmaPrefix[] = "Media.EME.CdmStorageManager.";
+
+const char kIncognito[] = "Incognito";
+const char kNonIncognito[] = "NonIncognito";
+
+const char kDeleteDatabaseError[] = "DeleteDatabaseError.";
+const char kDeleteForStorageKeyError[] = "DeleteForStorageKeyError.";
+const char kDeleteFileError[] = "DeleteFileError.";
+const char kWriteFileError[] = "WriteFileError.";
+const char kReadFileError[] = "ReadFileError.";
 
 // Creates a task runner suitable for running SQLite database operations.
 scoped_refptr<base::SequencedTaskRunner> CreateDatabaseTaskRunner() {
@@ -85,7 +97,8 @@ void CdmStorageManager::ReadFile(
 
   db_.AsyncCall(&CdmStorageDatabase::ReadFile)
       .WithArgs(storage_key, cdm_type, file_name)
-      .Then(std::move(callback));
+      .Then(base::BindOnce(&CdmStorageManager::DidReadFile,
+                           weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void CdmStorageManager::WriteFile(const blink::StorageKey& storage_key,
@@ -174,13 +187,22 @@ void CdmStorageManager::DidOpenFile(const blink::StorageKey& storage_key,
   std::move(callback).Run(Status::kSuccess, std::move(cdm_file));
 }
 
-// TODO(crbug.com/1454512) Add UMA to report errors. Investigate if we can
-// propagate the SQL errors. Temporarily used as a callback for all db
-// operations that aren't read, rename and create different methods for each
-// operation later.
+void CdmStorageManager::DidReadFile(
+    base::OnceCallback<void(absl::optional<std::vector<uint8_t>>)> callback,
+    absl::optional<std::vector<uint8_t>> data) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  base::UmaHistogramBoolean(GetHistogramName(kReadFileError),
+                            data == absl::nullopt);
+
+  std::move(callback).Run(data);
+}
+
 void CdmStorageManager::DidWriteFile(base::OnceCallback<void(bool)> callback,
                                      bool success) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  base::UmaHistogramBoolean(GetHistogramName(kWriteFileError), !success);
 
   std::move(callback).Run(success);
 }
@@ -188,6 +210,8 @@ void CdmStorageManager::DidWriteFile(base::OnceCallback<void(bool)> callback,
 void CdmStorageManager::DidDeleteFile(base::OnceCallback<void(bool)> callback,
                                       bool success) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  base::UmaHistogramBoolean(GetHistogramName(kDeleteFileError), !success);
 
   std::move(callback).Run(success);
 }
@@ -197,16 +221,25 @@ void CdmStorageManager::DidDeleteForStorageKey(
     bool success) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  base::UmaHistogramBoolean(GetHistogramName(kDeleteForStorageKeyError),
+                            !success);
+
   std::move(callback).Run(success);
 }
 
-// TODO(crbug.com/1454512) Add UMA to report errors. Investigate if we can
-// propagate the SQL errors. Investigate adding delete functionality to
-// 'MojoCdmHelper::CloseCdmFileIO' to close database on CdmFileIO closure.
+// TODO(crbug.com/1454512) Investigate if we can propagate the SQL errors.
+// Investigate adding delete functionality to 'MojoCdmHelper::CloseCdmFileIO' to
+// close database on CdmFileIO closure.
 void CdmStorageManager::DidDeleteDatabase(bool success) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  base::UmaHistogramBoolean(GetHistogramName(kDeleteDatabaseError), !success);
 }
 
 void CdmStorageManager::ReportDatabaseOpenError(CdmStorageOpenError error) {}
 
+std::string CdmStorageManager::GetHistogramName(const char operation[]) {
+  return std::string{kUmaPrefix} + std::string{operation} +
+         (in_memory() ? std::string{kIncognito} : std::string{kNonIncognito});
+}
 }  // namespace content

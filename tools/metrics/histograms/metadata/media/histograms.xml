@@ -2498,6 +2498,108 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.EME.CdmStorageManager.DeleteDatabaseError.Incognito"
+    enum="BooleanError" expires_after="2024-08-11">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    This UMA logs overall error rates from the DeleteDatabase function. Recorded
+    after every call of DeleteDatabase on Incognito profile.
+  </summary>
+</histogram>
+
+<histogram name="Media.EME.CdmStorageManager.DeleteDatabaseError.NotIncognito"
+    enum="BooleanError" expires_after="2024-08-11">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    This UMA logs overall error rates from the DeleteDatabase function. Recorded
+    after every call of DeleteDatabase on non-Incognito profile.
+  </summary>
+</histogram>
+
+<histogram name="Media.EME.CdmStorageManager.DeleteFileError.Incognito"
+    enum="BooleanError" expires_after="2024-08-11">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    This UMA logs overall error rates from the DeleteFile function. Recorded
+    after every call of DeleteFile on Incognito profile.
+  </summary>
+</histogram>
+
+<histogram name="Media.EME.CdmStorageManager.DeleteFileError.NotIncognito"
+    enum="BooleanError" expires_after="2024-08-11">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    This UMA logs overall error rates from the DeleteFile function. Recorded
+    after every call of DeleteFile on non-Incognito profile.
+  </summary>
+</histogram>
+
+<histogram
+    name="Media.EME.CdmStorageManager.DeleteForStorageKeyError.Incognito"
+    enum="BooleanError" expires_after="2024-08-11">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    This UMA logs overall error rates from the DeleteForStorageKey function.
+    Recorded after every call of DeleteForStorageKey on Incognito profile.
+  </summary>
+</histogram>
+
+<histogram
+    name="Media.EME.CdmStorageManager.DeleteForStorageKeyError.NotIncognito"
+    enum="BooleanError" expires_after="2024-08-11">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    This UMA logs overall error rates from the DeleteForStorageKey function.
+    Recorded after every call of DeleteForStorageKey on non-Incognito profile.
+  </summary>
+</histogram>
+
+<histogram name="Media.EME.CdmStorageManager.ReadFileError.Incognito"
+    enum="BooleanError" expires_after="2024-08-11">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    This UMA logs overall error rates from the ReadFile function. Recorded after
+    every call of ReadFile on Incognito profile.
+  </summary>
+</histogram>
+
+<histogram name="Media.EME.CdmStorageManager.ReadFileError.NotIncognito"
+    enum="BooleanError" expires_after="2024-08-11">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    This UMA logs overall error rates from the ReadFile function. Recorded after
+    every call of ReadFile on non-Incognito profile.
+  </summary>
+</histogram>
+
+<histogram name="Media.EME.CdmStorageManager.WriteFileError.Incognito"
+    enum="BooleanError" expires_after="2024-08-11">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    This UMA logs overall error rates from the WriteFile function. Recorded
+    after every call of WriteFile on Incognito profile.
+  </summary>
+</histogram>
+
+<histogram name="Media.EME.CdmStorageManager.WriteFileError.NotIncognito"
+    enum="BooleanError" expires_after="2024-08-11">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    This UMA logs overall error rates from the WriteFile function. Recorded
+    after every call of WriteFile on non-Incognito profile.
+  </summary>
+</histogram>
+
 <histogram name="Media.EME.CrosCdmType" enum="CrosCdmType"
     expires_after="2024-03-17">
   <owner>jkardatzke@chromium.org</owner>

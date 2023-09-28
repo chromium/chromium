@@ -17,6 +17,7 @@
 #include "media/cdm/cdm_type.h"
 #include "media/mojo/mojom/cdm_storage.mojom.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace content {
@@ -86,6 +87,10 @@ class CONTENT_EXPORT CdmStorageManager : public media::mojom::CdmStorage {
                    OpenCallback callback,
                    CdmStorageOpenError error);
 
+  void DidReadFile(
+      base::OnceCallback<void(absl::optional<std::vector<uint8_t>>)> callback,
+      absl::optional<std::vector<uint8_t>> data);
+
   void DidWriteFile(base::OnceCallback<void(bool)> callback, bool success);
 
   void DidDeleteFile(base::OnceCallback<void(bool)> callback, bool success);
@@ -96,6 +101,8 @@ class CONTENT_EXPORT CdmStorageManager : public media::mojom::CdmStorage {
   void DidDeleteDatabase(bool success);
 
   void ReportDatabaseOpenError(CdmStorageOpenError error);
+
+  std::string GetHistogramName(const char operation[]);
 
   const base::FilePath path_;
 
