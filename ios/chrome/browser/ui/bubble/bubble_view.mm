@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/ui/bubble/bubble_constants.h"
 #import "ios/chrome/browser/ui/bubble/bubble_util.h"
 #import "ios/chrome/common/button_configuration_util.h"
+#import "ios/chrome/common/material_timing.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -294,12 +295,15 @@ UIImageView* BubbleImageViewWithImage(UIImage* image) {
 @property(nonatomic, strong, readonly) UIImageView* imageView;
 // Triangular shape, the backing layer for the arrow.
 @property(nonatomic, weak) CAShapeLayer* arrowLayer;
-@property(nonatomic, assign, readonly) BubbleArrowDirection direction;
 @property(nonatomic, assign, readonly) BubbleAlignment alignment;
 // Constraint for the arrow alignment offset.
 @property(nonatomic, strong) NSLayoutConstraint* arrowAlignmentConstraint;
 // Indicate whether views' constraints need to be added to the bubble.
 @property(nonatomic, assign) BOOL needsAddConstraints;
+// The constraint between the tip of the arrow and the edge of bubble view the
+// arrow is anchored to. Saved for "arrow emerge" animation purpose so the
+// constant can be updated to produce animation.
+@property(nonatomic, assign) NSLayoutConstraint* arrowTipToEdgeConstraint;
 
 // Controls if there is a close button in the view.
 @property(nonatomic, readonly) BOOL showsCloseButton;
@@ -336,7 +340,10 @@ UIImageView* BubbleImageViewWithImage(UIImage* image) {
     // Add arrow view.
     _arrow = BubbleArrowViewWithDirection(direction);
     _arrowLayer = [_arrow.layer.sublayers lastObject];
-    [self addSubview:_arrow];
+    // The animation where the arrow emerges from the bubble requires the arrow
+    // to initially hide behind the bubble; Therefore, the arrow should have a
+    // lower z-index than the background.
+    [self insertSubview:_arrow belowSubview:_background];
     // Add title label if present.
     if (titleString && titleString.length > 0) {
       _titleLabel = BubbleTitleLabelWithText(titleString, textAlignment);
@@ -426,6 +433,26 @@ UIImageView* BubbleImageViewWithImage(UIImage* image) {
                           selector:@selector(closeButtonWasTapped:)]];
   }
   return accessibilityCustomActions;
+}
+
+- (void)setArrowHidden:(BOOL)hidden animated:(BOOL)animated {
+  CHECK(self.arrowTipToEdgeConstraint);
+  __weak BubbleView* weakSelf = self;
+  void (^slideArrow)(void) = ^{
+    weakSelf.arrowTipToEdgeConstraint.constant = hidden ? 0 : kArrowHeight;
+  };
+
+  if (animated) {
+    NSTimeInterval duration = UIView.inheritedAnimationDuration > 0
+                                  ? UIView.inheritedAnimationDuration
+                                  : kMaterialDuration3;
+    [UIView animateWithDuration:duration animations:slideArrow];
+  } else {
+    [UIView performWithoutAnimation:^{
+      slideArrow();
+      [weakSelf layoutIfNeeded];
+    }];
+  }
 }
 
 #pragma mark - Private instance methods
@@ -705,38 +732,61 @@ UIImageView* BubbleImageViewWithImage(UIImage* image) {
 // Return an array of constraints that depend on the bubble's arrow direction.
 - (NSArray<NSLayoutConstraint*>*)arrowDirectionConstraints {
   NSArray<NSLayoutConstraint*>* constraints;
-  CGSize arrowSize = GetArrowSize(self.direction);
   switch (self.direction) {
     case BubbleArrowDirectionUp:
+      if (!self.arrowTipToEdgeConstraint) {
+        self.arrowTipToEdgeConstraint = [self.background.topAnchor
+            constraintEqualToAnchor:self.arrow.topAnchor
+                           constant:kArrowHeight];
+      }
       constraints = @[
-        [self.background.topAnchor constraintEqualToAnchor:self.arrow.topAnchor
-                                                  constant:arrowSize.height],
+        self.arrowTipToEdgeConstraint,
         // Ensure that the top of the arrow is aligned with the top of the
         // bubble view and add a margin above the arrow.
         [self.arrow.topAnchor constraintEqualToAnchor:self.topAnchor
                                              constant:kBubbleVerticalMargin],
         [self.centerXAnchor
             constraintEqualToAnchor:self.background.centerXAnchor],
+        // In case the arrow is hidden, make sure the margin between the
+        // background's bound and the view still leaves room for the arrow to
+        // slide out without shrinking the background size.
+        [self.background.heightAnchor
+            constraintLessThanOrEqualToAnchor:self.heightAnchor
+                                     constant:-kArrowHeight -
+                                              kBubbleVerticalMargin * 2],
       ];
       break;
     case BubbleArrowDirectionDown:
-      constraints = @[
-        [self.arrow.bottomAnchor
+      if (!self.arrowTipToEdgeConstraint) {
+        self.arrowTipToEdgeConstraint = [self.arrow.bottomAnchor
             constraintEqualToAnchor:self.background.bottomAnchor
-                           constant:arrowSize.height],
+                           constant:kArrowHeight];
+      }
+      constraints = @[
+        self.arrowTipToEdgeConstraint,
         // Ensure that the bottom of the arrow is aligned with the bottom of the
         // bubble view and add a margin below the arrow.
         [self.bottomAnchor constraintEqualToAnchor:self.arrow.bottomAnchor
                                           constant:kBubbleVerticalMargin],
         [self.centerXAnchor
             constraintEqualToAnchor:self.background.centerXAnchor],
+        // In case the arrow is hidden, make sure the margin between the
+        // background's bound and the view still leaves room for the arrow to
+        // slide out without shrinking the background size.
+        [self.background.heightAnchor
+            constraintLessThanOrEqualToAnchor:self.heightAnchor
+                                     constant:-kArrowHeight -
+                                              kBubbleVerticalMargin * 2],
       ];
       break;
     case BubbleArrowDirectionLeading:
-      constraints = @[
-        [self.background.leadingAnchor
+      if (!self.arrowTipToEdgeConstraint) {
+        self.arrowTipToEdgeConstraint = [self.background.leadingAnchor
             constraintEqualToAnchor:self.arrow.leadingAnchor
-                           constant:arrowSize.width],
+                           constant:kArrowHeight];
+      }
+      constraints = @[
+        self.arrowTipToEdgeConstraint,
         // Ensure that the leading edge of the arrow is aligned with the bottom
         // of the bubble view and add a margin below the arrow.
         [self.arrow.leadingAnchor
@@ -744,19 +794,36 @@ UIImageView* BubbleImageViewWithImage(UIImage* image) {
                            constant:kBubbleHorizontalMargin],
         [self.centerYAnchor
             constraintEqualToAnchor:self.background.centerYAnchor],
+        // In case the arrow is hidden, make sure the margin between the
+        // background's bound and the view still leaves room for the arrow to
+        // slide out without shrinking the background size.
+        [self.background.widthAnchor
+            constraintLessThanOrEqualToAnchor:self.widthAnchor
+                                     constant:-kArrowHeight -
+                                              kBubbleHorizontalMargin * 2],
       ];
       break;
     case BubbleArrowDirectionTrailing:
-      constraints = @[
-        [self.arrow.trailingAnchor
+      if (!self.arrowTipToEdgeConstraint) {
+        self.arrowTipToEdgeConstraint = [self.arrow.trailingAnchor
             constraintEqualToAnchor:self.background.trailingAnchor
-                           constant:arrowSize.width],
+                           constant:kArrowHeight];
+      }
+      constraints = @[
+        self.arrowTipToEdgeConstraint,
         // Ensure that the trailing edge of the arrow is aligned with the bottom
         // of the bubble view and add a margin below the arrow.
         [self.trailingAnchor constraintEqualToAnchor:self.arrow.trailingAnchor
                                             constant:kBubbleHorizontalMargin],
         [self.centerYAnchor
             constraintEqualToAnchor:self.background.centerYAnchor],
+        // In case the arrow is hidden, make sure the margin between the
+        // background's bound and the view still leaves room for the arrow to
+        // slide out without shrinking the background size.
+        [self.background.widthAnchor
+            constraintLessThanOrEqualToAnchor:self.widthAnchor
+                                     constant:-kArrowHeight -
+                                              kBubbleHorizontalMargin * 2],
       ];
       break;
   }

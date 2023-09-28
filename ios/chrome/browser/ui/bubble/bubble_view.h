@@ -52,6 +52,16 @@ typedef NS_ENUM(NSInteger, BubbleArrowDirection);
 
 - (instancetype)init NS_UNAVAILABLE;
 
+// If `YES`, the arrow hides behind the bubble; otherwise, it is visible and
+// pointing to the anchor point. If `animated`, the arrow will be slid out of /
+// back in the bubble.
+//
+// NOTE: This should only be called when the view is in the view hierarchy.
+- (void)setArrowHidden:(BOOL)hidden animated:(BOOL)animated;
+
+// Read-only property to check arrow direction.
+@property(nonatomic, assign, readonly) BubbleArrowDirection direction;
+
 // Distance between the arrow's centerX and the (leading or trailing) edge of
 // the bubble, depending on the BubbleAlignment. If BubbleAlignment is center,
 // then `alignmentOffset` is ignored. `alignmentOffset` changes the minimum size
