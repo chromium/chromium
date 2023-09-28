@@ -18,6 +18,10 @@ void SensitivityPersistedTabDataAndroid::RegisterPCAService(
     optimization_guide::PageContentAnnotationsService*
         page_content_annotations_service) {
   DCHECK(page_content_annotations_service);
+  if (page_content_annotations_service_ == page_content_annotations_service) {
+    return;
+  }
+
   page_content_annotations_service_ = page_content_annotations_service;
   page_content_annotations_service_->AddObserver(
       optimization_guide::AnnotationType::kContentVisibility, this);
