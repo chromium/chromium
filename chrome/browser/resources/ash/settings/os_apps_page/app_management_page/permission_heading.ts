@@ -7,10 +7,12 @@ import 'chrome://resources/cr_components/localized_link/localized_link.js';
 import {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {getParentApp, getSubAppsOfSelectedApp} from 'chrome://resources/cr_components/app_management/util.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './permission_heading.html.js';
 import {AppManagementStoreMixin} from './store_mixin.js';
+import {openAppDetailPage} from './util.js';
 
 const AppManagementPermissionHeadingElementBase =
     AppManagementStoreMixin(I18nMixin(PolymerElement));
@@ -58,18 +60,27 @@ export class AppManagementPermissionHeadingElement extends
     if (this.hasSubApps_) {
       return this.i18n(
           'appManagementParentAppPermissionExplanation',
-          this.app.title ? this.app.title : '');
+          String(this.app.title));
     }
     return '';
   }
 
-  private getSubAppPermissionExplanationString_(): string {
+  private getSubAppPermissionExplanationString_(): TrustedHTML {
     if (this.parentApp_) {
-      return this.i18n(
+      return this.i18nAdvanced(
           'appManagementSubAppPermissionExplanation',
-          this.parentApp_.title ? this.parentApp_.title : '');
+          {substitutions: [String(this.parentApp_.title)]});
     }
-    return '';
+    assert(window.trustedTypes);
+    return window.trustedTypes.emptyHTML;
+  }
+
+  private onManagePermissionsClicked_(event: CustomEvent<{event: Event}>):
+      void {
+    event.detail.event.preventDefault();
+    if (this.parentApp_) {
+      openAppDetailPage(this.parentApp_.id);
+    }
   }
 }
 
