@@ -713,9 +713,12 @@ void StatusAreaWidget::SetOpenShelfPodBubble(
     // widget.
     DCHECK(open_shelf_pod_bubble->IsAnchoredToStatusArea());
 
-    // There should not be 2 tray bubbles that are open at the same time (with
-    // the exception of message center bubble mentioned above).
-    DCHECK(!open_shelf_pod_bubble_);
+    // There should be only one shelf pod bubble open at a time, so we will
+    // close the current bubble for the new one to come in.
+    if (open_shelf_pod_bubble_) {
+      open_shelf_pod_bubble_->CloseBubbleView();
+      open_shelf_pod_bubble_ = nullptr;
+    }
   }
 
   open_shelf_pod_bubble_ = open_shelf_pod_bubble;

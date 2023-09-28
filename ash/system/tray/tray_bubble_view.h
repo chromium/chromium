@@ -90,7 +90,7 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
 
     // Called when a bubble wants to hide/destroy itself (e.g. last visible
     // child view was closed).
-    virtual void HideBubble(const TrayBubbleView* bubble_view);
+    virtual void HideBubble(const TrayBubbleView* bubble_view) = 0;
 
     // Returns the accelerator action associated with the delegate's bubble
     // view.

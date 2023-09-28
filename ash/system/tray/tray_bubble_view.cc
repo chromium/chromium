@@ -157,13 +157,6 @@ bool TrayBubbleView::Delegate::ShouldEnableExtraKeyboardAccessibility() {
   return false;
 }
 
-void TrayBubbleView::Delegate::HideBubble(const TrayBubbleView* bubble_view) {
-  // All anchored to shelf corner bubble needs to implement `HideBubble()` and
-  // should not use this default function.
-  // TODO(b/297211055): Refactor the class to make this requirement clearer.
-  CHECK(!bubble_view->IsAnchoredToShelfCorner());
-}
-
 base::WeakPtr<TrayBubbleView::Delegate> TrayBubbleView::Delegate::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }

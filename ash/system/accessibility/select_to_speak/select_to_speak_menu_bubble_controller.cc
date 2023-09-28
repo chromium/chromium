@@ -104,6 +104,12 @@ void SelectToSpeakMenuBubbleController::BubbleViewDestroyed() {
   menu_view_ = nullptr;
 }
 
+void SelectToSpeakMenuBubbleController::HideBubble(
+    const TrayBubbleView* bubble_view) {
+  // This function is currently not unused for bubbles of type
+  // `kAccessibilityBubble`, so can leave this empty.
+}
+
 void SelectToSpeakMenuBubbleController::OnWindowActivated(
     ActivationReason reason,
     aura::Window* gained_active,

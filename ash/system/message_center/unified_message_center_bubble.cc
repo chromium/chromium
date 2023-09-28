@@ -257,6 +257,10 @@ bool UnifiedMessageCenterBubble::ShouldEnableExtraKeyboardAccessibility() {
   return Shell::Get()->accessibility_controller()->spoken_feedback().enabled();
 }
 
+void UnifiedMessageCenterBubble::HideBubble(const TrayBubbleView* bubble_view) {
+  tray_->CloseBubble();
+}
+
 void UnifiedMessageCenterBubble::OnViewPreferredSizeChanged(
     views::View* observed_view) {
   UpdatePosition();

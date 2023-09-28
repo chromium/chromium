@@ -40,6 +40,7 @@ class MockTrayBackgroundView : public ash::TrayBackgroundView {
   std::u16string GetAccessibleNameForTray() override { return u""; }
   void HandleLocaleChange() override {}
   void HideBubbleWithView(const TrayBubbleView* bubble_view) override {}
+  void HideBubble(const TrayBubbleView* bubble_view) override {}
   void ClickedOutsideBubble() override {}
   void UpdateTrayItemColor(bool is_active) override {}
 };

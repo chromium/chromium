@@ -41,6 +41,7 @@ class ASH_EXPORT SelectToSpeakTray : public TrayBackgroundView,
   // The SelectToSpeakTray does not have a bubble, so these functions are
   // no-ops.
   void HideBubbleWithView(const TrayBubbleView* bubble_view) override {}
+  void HideBubble(const TrayBubbleView* bubble_view) override {}
   void ClickedOutsideBubble() override {}
   // No need to override since the icon and tray activation state will change
   // and get updated simultaneously in `UpdateUXOnCurrentStatus()`.

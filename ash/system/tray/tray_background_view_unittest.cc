@@ -53,6 +53,12 @@ class TestTrayBackgroundView : public TrayBackgroundView,
       CloseBubble();
   }
 
+  void HideBubble(const TrayBubbleView* bubble_view) override {
+    if (bubble_view == bubble_->GetBubbleView()) {
+      CloseBubble();
+    }
+  }
+
   std::unique_ptr<ui::SimpleMenuModel> CreateContextMenuModel() override {
     return provide_menu_model_ ? std::make_unique<ui::SimpleMenuModel>(this)
                                : nullptr;

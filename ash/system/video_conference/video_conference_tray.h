@@ -135,6 +135,7 @@ class ASH_EXPORT VideoConferenceTray
   std::u16string GetAccessibleNameForTray() override;
   std::u16string GetAccessibleNameForBubble() override;
   void HideBubbleWithView(const TrayBubbleView* bubble_view) override;
+  void HideBubble(const TrayBubbleView* bubble_view) override;
   void ClickedOutsideBubble() override;
   // No need to override since this view doesn't have an active/inactive state.
   void UpdateTrayItemColor(bool is_active) override {}

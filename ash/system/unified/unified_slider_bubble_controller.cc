@@ -148,6 +148,9 @@ void UnifiedSliderBubbleController::OnMouseExitedView() {
   mouse_hovered_ = false;
 }
 
+void UnifiedSliderBubbleController::HideBubble(
+    const TrayBubbleView* bubble_view) {}
+
 void UnifiedSliderBubbleController::DisplayMicrophoneMuteToast() {
   // We will not display the microphone mute toast if no microphone is connected
   // to the device, or if the video conference controls tray is visible.

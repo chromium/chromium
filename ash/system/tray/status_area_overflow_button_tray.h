@@ -48,6 +48,7 @@ class ASH_EXPORT StatusAreaOverflowButtonTray : public TrayBackgroundView {
   std::u16string GetAccessibleNameForTray() override;
   void HandleLocaleChange() override;
   void HideBubbleWithView(const TrayBubbleView* bubble_view) override;
+  void HideBubble(const TrayBubbleView* bubble_view) override;
   void Initialize() override;
   void SetVisiblePreferred(bool visible_preferred) override;
   void UpdateAfterStatusAreaCollapseChange() override;

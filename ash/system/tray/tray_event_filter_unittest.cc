@@ -73,6 +73,12 @@ class TestTrayBackgroundView : public TrayBackgroundView {
     }
   }
 
+  void HideBubble(const TrayBubbleView* bubble_view) override {
+    if (bubble_view == bubble_->GetBubbleView()) {
+      CloseBubble();
+    }
+  }
+
   void ShowBubble() override {
     auto bubble_view = std::make_unique<TrayBubbleView>(
         CreateInitParamsForTrayBubble(/*tray=*/this));

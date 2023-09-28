@@ -159,6 +159,9 @@ void FloatingAccessibilityDetailedController::BubbleViewDestroyed() {
   // Hammer time, |this| is destroyed in the previous call.
 }
 
+void FloatingAccessibilityDetailedController::HideBubble(
+    const TrayBubbleView* bubble_view) {}
+
 void FloatingAccessibilityDetailedController::OnAccessibilityStatusChanged() {
   if (detailed_view_)
     detailed_view_->OnAccessibilityStatusChanged();

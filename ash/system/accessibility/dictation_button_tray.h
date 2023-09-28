@@ -65,6 +65,7 @@ class ASH_EXPORT DictationButtonTray : public TrayBackgroundView,
   void HideBubbleWithView(const TrayBubbleView* bubble_view) override;
   void OnThemeChanged() override;
   void Layout() override;
+  void HideBubble(const TrayBubbleView* bubble_view) override;
 
   // ui::InputMethodObserver:
   void OnFocus() override {}

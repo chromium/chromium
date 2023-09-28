@@ -270,6 +270,10 @@ std::u16string MediaTray::GetAccessibleNameForTray() {
       IDS_ASH_GLOBAL_MEDIA_CONTROLS_BUTTON_TOOLTIP_TEXT);
 }
 
+void MediaTray::HideBubble(const TrayBubbleView* bubble_view) {
+  CloseBubble();
+}
+
 void MediaTray::UpdateAfterLoginStatusChange() {
   UpdateDisplayState();
   PreferredSizeChanged();

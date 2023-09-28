@@ -62,6 +62,12 @@ void FocusModeTray::HideBubbleWithView(const TrayBubbleView* bubble_view) {
   }
 }
 
+void FocusModeTray::HideBubble(const TrayBubbleView* bubble_view) {
+  if (bubble_->bubble_view() == bubble_view) {
+    CloseBubble();
+  }
+}
+
 void FocusModeTray::CloseBubble() {
   if (!bubble_) {
     return;

@@ -134,6 +134,8 @@ void VirtualKeyboardTray::UpdateTrayItemColor(bool is_active) {
                 : cros_tokens::kCrosSysOnSurface));
 }
 
+void VirtualKeyboardTray::HideBubble(const TrayBubbleView* bubble_view) {}
+
 void VirtualKeyboardTray::OnAccessibilityStatusChanged() {
   bool new_enabled =
       Shell::Get()->accessibility_controller()->virtual_keyboard().enabled();

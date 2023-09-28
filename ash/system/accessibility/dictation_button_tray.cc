@@ -173,6 +173,10 @@ void DictationButtonTray::Layout() {
   UpdateProgressIndicatorBounds();
 }
 
+void DictationButtonTray::HideBubble(const TrayBubbleView* bubble_view) {
+  // This class has no bubbles to hide.
+}
+
 void DictationButtonTray::OnCaretBoundsChanged(
     const ui::TextInputClient* client) {
   TextInputChanged(client);

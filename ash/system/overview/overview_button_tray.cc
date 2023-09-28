@@ -166,6 +166,10 @@ void OverviewButtonTray::OnThemeChanged() {
   icon_->SetImage(GetIconImage());
 }
 
+void OverviewButtonTray::HideBubble(const TrayBubbleView* bubble_view) {
+  // This class has no bubbles to hide.
+}
+
 void OverviewButtonTray::OnButtonPressed(const ui::Event& event) {
   DCHECK(event.type() == ui::ET_MOUSE_RELEASED ||
          event.type() == ui::ET_GESTURE_TAP);

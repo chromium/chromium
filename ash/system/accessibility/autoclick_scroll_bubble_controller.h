@@ -45,6 +45,7 @@ class AutoclickScrollBubbleController : public TrayBubbleView::Delegate {
   // TrayBubbleView::Delegate:
   void BubbleViewDestroyed() override;
   std::u16string GetAccessibleNameForBubble() override;
+  void HideBubble(const TrayBubbleView* bubble_view) override;
 
  private:
   friend class AutoclickMenuBubbleControllerTest;

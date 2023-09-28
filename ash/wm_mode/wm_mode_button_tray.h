@@ -40,6 +40,7 @@ class WmModeButtonTray : public TrayBackgroundView, public SessionObserver {
   // No need to override since the icon and activation state of this tray will
   // change and get updated simultaneously in `UpdateButtonVisuals()`.
   void UpdateTrayItemColor(bool is_active) override {}
+  void HideBubble(const TrayBubbleView* bubble_view) override {}
 
   // SessionObserver:
   void OnSessionStateChanged(session_manager::SessionState state) override;

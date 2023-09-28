@@ -323,6 +323,12 @@ void VideoConferenceTray::HideBubbleWithView(
   }
 }
 
+void VideoConferenceTray::HideBubble(const TrayBubbleView* bubble_view) {
+  if (bubble_ && bubble_->bubble_view() == bubble_view) {
+    CloseBubble();
+  }
+}
+
 void VideoConferenceTray::ClickedOutsideBubble() {
   CloseBubble();
 }

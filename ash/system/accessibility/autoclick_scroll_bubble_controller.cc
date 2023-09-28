@@ -282,4 +282,10 @@ std::u16string AutoclickScrollBubbleController::GetAccessibleNameForBubble() {
   return l10n_util::GetStringUTF16(IDS_ASH_AUTOCLICK_SCROLL_BUBBLE);
 }
 
+void AutoclickScrollBubbleController::HideBubble(
+    const TrayBubbleView* bubble_view) {
+  // This function is currently not unused for bubbles of type
+  // `kAccessibilityBubble`, so can leave this empty.
+}
+
 }  // namespace ash

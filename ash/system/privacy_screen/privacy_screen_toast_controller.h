@@ -53,6 +53,7 @@ class ASH_EXPORT PrivacyScreenToastController
   void OnMouseEnteredView() override;
   void OnMouseExitedView() override;
   std::u16string GetAccessibleNameForBubble() override;
+  void HideBubble(const TrayBubbleView* bubble_view) override;
 
   // PrivacyScreenController::Observer:
   void OnPrivacyScreenSettingChanged(bool enabled, bool notify_ui) override;

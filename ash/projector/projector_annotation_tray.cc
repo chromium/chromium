@@ -229,6 +229,10 @@ void ProjectorAnnotationTray::OnThemeChanged() {
   UpdateIcon();
 }
 
+void ProjectorAnnotationTray::HideBubble(const TrayBubbleView* bubble_view) {
+  CloseBubble();
+}
+
 void ProjectorAnnotationTray::OnActiveUserPrefServiceChanged(
     PrefService* pref_service) {
   const uint64_t color =

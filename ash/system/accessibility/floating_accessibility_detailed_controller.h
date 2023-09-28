@@ -53,6 +53,7 @@ class ASH_EXPORT FloatingAccessibilityDetailedController
       views::Button::PressedCallback callback) override;
   // TrayBubbleView::Delegate:
   void BubbleViewDestroyed() override;
+  void HideBubble(const TrayBubbleView* bubble_view) override;
 
   // ::wm::ActivationChangeObserver:
   void OnWindowActivated(ActivationReason reason,

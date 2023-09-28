@@ -64,6 +64,7 @@ class ASH_EXPORT UnifiedSliderBubbleController
   void BubbleViewDestroyed() override;
   void OnMouseEnteredView() override;
   void OnMouseExitedView() override;
+  void HideBubble(const TrayBubbleView* bubble_view) override;
 
   // Displays the microphone mute toast.
   void DisplayMicrophoneMuteToast();

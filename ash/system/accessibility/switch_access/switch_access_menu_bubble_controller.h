@@ -34,6 +34,7 @@ class ASH_EXPORT SwitchAccessMenuBubbleController
 
   // TrayBubbleView::Delegate:
   void BubbleViewDestroyed() override;
+  void HideBubble(const TrayBubbleView* bubble_view) override;
 
  private:
   friend class SwitchAccessBackButtonBubbleControllerTest;

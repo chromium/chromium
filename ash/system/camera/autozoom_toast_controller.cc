@@ -118,6 +118,8 @@ std::u16string AutozoomToastController::GetAccessibleNameForBubble() {
   return toast_view_->GetAccessibleName();
 }
 
+void AutozoomToastController::HideBubble(const TrayBubbleView* bubble_view) {}
+
 void AutozoomToastController::StartAutoCloseTimer() {
   close_timer_.Stop();
 

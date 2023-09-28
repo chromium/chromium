@@ -32,6 +32,7 @@ class FocusModeTray : public TrayBackgroundView,
   std::u16string GetAccessibleNameForTray() override;
   void HandleLocaleChange() override {}
   void HideBubbleWithView(const TrayBubbleView* bubble_view) override;
+  void HideBubble(const TrayBubbleView* bubble_view) override;
   void CloseBubble() override;
   void ShowBubble() override;
   void UpdateTrayItemColor(bool is_active) override;

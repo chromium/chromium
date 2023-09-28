@@ -120,6 +120,8 @@ void LogoutButtonTray::ClickedOutsideBubble() {}
 
 void LogoutButtonTray::HideBubbleWithView(const TrayBubbleView* bubble_view) {}
 
+void LogoutButtonTray::HideBubble(const TrayBubbleView* bubble_view) {}
+
 std::u16string LogoutButtonTray::GetAccessibleNameForTray() {
   return button_->GetText();
 }

@@ -196,6 +196,9 @@ std::u16string FloatingAccessibilityController::GetAccessibleNameForBubble() {
   return l10n_util::GetStringUTF16(IDS_ASH_FLOATING_ACCESSIBILITY_MAIN_MENU);
 }
 
+void FloatingAccessibilityController::HideBubble(
+    const TrayBubbleView* bubble_view) {}
+
 void FloatingAccessibilityController::OnLocaleChanged() {
   // Layout update is needed when language changes between LTR and RTL, if the
   // position is the system default.

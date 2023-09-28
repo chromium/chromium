@@ -130,6 +130,9 @@ void StatusAreaOverflowButtonTray::HandleLocaleChange() {}
 void StatusAreaOverflowButtonTray::HideBubbleWithView(
     const TrayBubbleView* bubble_view) {}
 
+void StatusAreaOverflowButtonTray::HideBubble(
+    const TrayBubbleView* bubble_view) {}
+
 void StatusAreaOverflowButtonTray::Initialize() {
   TrayBackgroundView::Initialize();
   SetVisiblePreferred(false);

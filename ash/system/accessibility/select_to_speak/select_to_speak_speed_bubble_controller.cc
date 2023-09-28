@@ -102,6 +102,9 @@ void SelectToSpeakSpeedBubbleController::BubbleViewDestroyed() {
   bubble_widget_ = nullptr;
 }
 
+void SelectToSpeakSpeedBubbleController::HideBubble(
+    const TrayBubbleView* bubble_view) {}
+
 void SelectToSpeakSpeedBubbleController::OnWindowActivated(
     ActivationReason reason,
     aura::Window* gained_active,
