@@ -33,10 +33,13 @@ struct MEDIA_EXPORT VideoEncoderOutput {
   VideoEncoderOutput(VideoEncoderOutput&&);
   ~VideoEncoderOutput();
 
-  // Feel free take this buffer out and use underlying memory as is without
+  // Feel free take these buffers out and use underlying memory as is without
   // copying.
   std::unique_ptr<uint8_t[]> data;
   size_t size = 0;
+
+  std::unique_ptr<uint8_t[]> alpha_data;
+  size_t alpha_size = 0;
 
   base::TimeDelta timestamp;
   bool key_frame = false;

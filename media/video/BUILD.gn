@@ -16,6 +16,8 @@ source_set("video") {
   ]
 
   sources = [
+    "alpha_video_encoder_wrapper.cc",
+    "alpha_video_encoder_wrapper.h",
     "bit_reader_macros.h",
     "gpu_memory_buffer_video_frame_pool.cc",
     "gpu_memory_buffer_video_frame_pool.h",
@@ -156,6 +158,7 @@ static_library("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "alpha_video_encoder_wrapper_unittest.cc",
     "gpu_memory_buffer_video_frame_pool_unittest.cc",
     "h264_bit_reader_unittest.cc",
     "h264_parser_unittest.cc",
