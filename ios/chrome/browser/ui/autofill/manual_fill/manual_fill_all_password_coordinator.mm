@@ -24,10 +24,13 @@
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_password_mediator.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/password_list_navigator.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/password_view_controller.h"
+#import "ios/chrome/browser/ui/settings/password/password_manager_ui_features.h"
+#import "ios/chrome/browser/ui/settings/password/reauthentication/reauthentication_coordinator.h"
 
 @interface ManualFillAllPasswordCoordinator () <
     ManualFillPasswordMediatorDelegate,
-    PasswordViewControllerDelegate>
+    PasswordViewControllerDelegate,
+    ReauthenticationCoordinatorDelegate>
 
 // Fetches and filters the passwords for the view controller.
 @property(nonatomic, strong) ManualFillPasswordMediator* passwordMediator;
@@ -38,7 +41,15 @@
 
 @end
 
-@implementation ManualFillAllPasswordCoordinator
+@implementation ManualFillAllPasswordCoordinator {
+  // Used for requiring Local Authentication before revealing the password list.
+  // Authentication is also required when the app is backgrounded/foregrounded
+  // with this surface opened.
+  ReauthenticationCoordinator* _reauthCoordinator;
+
+  // Navigation controller presented by this coordinator.
+  TableViewNavigationController* _navigationController;
+}
 
 - (void)start {
   [super start];
@@ -78,19 +89,24 @@
 
   searchController.searchResultsUpdater = self.passwordMediator;
 
-  TableViewNavigationController* navigationController =
-      [[TableViewNavigationController alloc]
-          initWithTable:self.passwordViewController];
-  navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
-  navigationController.modalTransitionStyle =
+  _navigationController = [[TableViewNavigationController alloc]
+      initWithTable:self.passwordViewController];
+  _navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
+  _navigationController.modalTransitionStyle =
       UIModalTransitionStyleCoverVertical;
 
-  [self.baseViewController presentViewController:navigationController
+  [self.baseViewController presentViewController:_navigationController
                                         animated:YES
                                       completion:nil];
+
+  if (password_manager::features::IsAuthOnEntryV2Enabled()) {
+    [self startReauthCoordinator];
+  }
 }
 
 - (void)stop {
+  [self stopReauthCoordinator];
+
   [self.passwordViewController.presentingViewController
       dismissViewControllerAnimated:YES
                          completion:nil];
@@ -132,6 +148,39 @@
   [self.manualFillAllPasswordCoordinatorDelegate
       manualFillAllPasswordCoordinatorWantsToBeDismissed:self];
   [handler openURLInNewTab:command];
+}
+
+#pragma mark - ReauthenticationCoordinatorDelegate
+
+- (void)successfulReauthenticationWithCoordinator:
+    (ReauthenticationCoordinator*)coordinator {
+  // No-op.
+}
+
+- (void)willPushReauthenticationViewController {
+  // No-op.
+}
+
+#pragma mark - Private
+
+// Starts reauthCoordinator and Local Authentication before revealing the
+// password list. Once started reauthCoordinator observes scene state changes
+// and requires authentication when the scene is backgrounded and then
+// foregrounded while the surface is is opened.
+- (void)startReauthCoordinator {
+  _reauthCoordinator = [[ReauthenticationCoordinator alloc]
+      initWithBaseNavigationController:_navigationController
+                               browser:self.browser
+                reauthenticationModule:nil
+                           authOnStart:YES];
+  _reauthCoordinator.delegate = self;
+  [_reauthCoordinator start];
+}
+
+// Stops reauthCoordinator.
+- (void)stopReauthCoordinator {
+  [_reauthCoordinator stop];
+  _reauthCoordinator = nil;
 }
 
 @end
