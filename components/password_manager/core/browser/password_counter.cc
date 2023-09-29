@@ -31,7 +31,7 @@ PasswordCounter::~PasswordCounter() = default;
 
 void PasswordCounter::OnGetPasswordStoreResultsOrErrorFrom(
     PasswordStoreInterface* store,
-    FormsOrError results_or_error) {
+    LoginsResultOrError results_or_error) {
   if (absl::holds_alternative<password_manager::PasswordStoreBackendError>(
           results_or_error)) {
     return;

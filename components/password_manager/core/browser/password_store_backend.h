@@ -10,7 +10,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "components/password_manager/core/browser/password_form_digest.h"
-#include "components/password_manager/core/browser/password_store_backend_error.h"
+#include "components/password_manager/core/browser/password_store_consumer.h"
 #include "components/password_manager/core/browser/password_store_change.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -28,17 +28,9 @@ struct PasswordForm;
 class AffiliatedMatchHelper;
 class SmartBubbleStatsStore;
 
-using LoginsResult = std::vector<std::unique_ptr<PasswordForm>>;
 using LoginsReply = base::OnceCallback<void(LoginsResult)>;
-
-using PasswordChanges = absl::optional<PasswordStoreChangeList>;
-using PasswordChangesOrError =
-    absl::variant<PasswordChanges, PasswordStoreBackendError>;
 using PasswordChangesOrErrorReply =
     base::OnceCallback<void(PasswordChangesOrError)>;
-
-using LoginsResultOrError =
-    absl::variant<LoginsResult, PasswordStoreBackendError>;
 using LoginsOrErrorReply = base::OnceCallback<void(LoginsResultOrError)>;
 
 // The backend is used by the `PasswordStore` to interact with the storage in a

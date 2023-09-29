@@ -10,31 +10,13 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
-#include "base/time/time.h"
-#include "url/gurl.h"
+#include "components/password_manager/core/browser/interactions_stats.h"
 
 namespace sql {
 class Database;
 }
 
 namespace password_manager {
-
-// The statistics containing user interactions with a site.
-struct InteractionsStats {
-  // The domain of the site.
-  GURL origin_domain;
-
-  // The value of the username.
-  std::u16string username_value;
-
-  // Number of times the user dismissed the bubble.
-  int dismissal_count = 0;
-
-  // The date when the row was updated.
-  base::Time update_time;
-};
-
-bool operator==(const InteractionsStats& lhs, const InteractionsStats& rhs);
 
 // Represents the 'stats' table in the Login Database.
 class StatisticsTable {

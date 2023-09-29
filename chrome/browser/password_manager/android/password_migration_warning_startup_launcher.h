@@ -44,7 +44,7 @@ class PasswordMigrationWarningStartupLauncher
   // it.
   void OnGetPasswordStoreResultsOrErrorFrom(
       password_manager::PasswordStoreInterface* store,
-      FormsOrError results_or_error) override;
+      password_manager::LoginsResultOrError results_or_error) override;
 
   // Not implemented. Required override.
   void OnGetPasswordStoreResults(

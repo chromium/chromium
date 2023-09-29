@@ -169,24 +169,15 @@ static_library("browser") {
     "password_store.cc",
     "password_store.h",
     "password_store_backend.h",
-    "password_store_backend_error.cc",
-    "password_store_backend_error.h",
     "password_store_backend_metrics_recorder.cc",
     "password_store_backend_metrics_recorder.h",
     "password_store_built_in_backend.cc",
     "password_store_built_in_backend.h",
-    "password_store_change.cc",
-    "password_store_change.h",
-    "password_store_consumer.cc",
-    "password_store_consumer.h",
     "password_store_factory_util.cc",
     "password_store_factory_util.h",
-    "password_store_interface.h",
     "password_store_signin_notifier.h",
     "password_store_sync.cc",
     "password_store_sync.h",
-    "password_store_util.cc",
-    "password_store_util.h",
     "password_sync_util.cc",
     "password_sync_util.h",
     "password_ui_utils.cc",
@@ -237,6 +228,7 @@ static_library("browser") {
   all_dependent_configs = [ ":password_reuse_detection_config" ]
 
   public_deps = [
+    ":password_store_interface",
     ":password_form",
     ":sql_builder",
     "//base",
@@ -391,6 +383,28 @@ source_set("password_form") {
     "//components/autofill/core/common/mojom:mojo_types_shared",
     "//components/signin/public/base",
     "//url",
+  ]
+}
+
+source_set("password_store_interface") {
+  sources = [
+    "password_store_backend_error.h",
+    "password_store_backend_error.cc",
+    "password_store_interface.h",
+    "password_store_change.cc",
+    "password_store_change.h",
+    "password_store_consumer.cc",
+    "password_store_consumer.h",
+    "interactions_stats.h",
+    "interactions_stats.cc",
+    "password_store_util.h",
+    "password_store_util.cc",
+  ]
+  deps = [
+    ":password_form",
+    "//url",
+    "//base",
+    "//components/keyed_service/core",
   ]
 }
 

@@ -9,6 +9,8 @@
 #include <vector>
 
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_store_backend_error.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace password_manager {
 
@@ -50,7 +52,10 @@ class PasswordStoreChange {
   InsecureCredentialsChanged insecure_credentials_changed_{false};
 };
 
-typedef std::vector<PasswordStoreChange> PasswordStoreChangeList;
+using PasswordStoreChangeList = std::vector<PasswordStoreChange>;
+using PasswordChanges = absl::optional<PasswordStoreChangeList>;
+using PasswordChangesOrError =
+    absl::variant<PasswordChanges, PasswordStoreBackendError>;
 
 // For testing.
 #if defined(UNIT_TEST)

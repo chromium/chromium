@@ -31,7 +31,7 @@ class MockPasswordStoreConsumer : public PasswordStoreConsumer {
 
   MOCK_METHOD(void,
               OnGetPasswordStoreResultsOrErrorFrom,
-              (PasswordStoreInterface*, FormsOrError),
+              (PasswordStoreInterface*, LoginsResultOrError),
               (override));
 
   base::WeakPtr<PasswordStoreConsumer> GetWeakPtr();

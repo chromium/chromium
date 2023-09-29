@@ -13,6 +13,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "components/password_manager/core/browser/form_fetcher.h"
+#include "components/password_manager/core/browser/password_form_digest.h"
 #include "components/password_manager/core/common/credential_manager_types.h"
 #include "url/gurl.h"
 #include "url/origin.h"

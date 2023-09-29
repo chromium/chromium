@@ -40,13 +40,6 @@ std::vector<InteractionsStats> StatementToInteractionsStats(sql::Statement* s) {
 
 }  // namespace
 
-bool operator==(const InteractionsStats& lhs, const InteractionsStats& rhs) {
-  return lhs.origin_domain == rhs.origin_domain &&
-         lhs.username_value == rhs.username_value &&
-         lhs.dismissal_count == rhs.dismissal_count &&
-         lhs.update_time == rhs.update_time;
-}
-
 StatisticsTable::StatisticsTable() = default;
 
 StatisticsTable::~StatisticsTable() = default;

@@ -7,8 +7,8 @@
 
 #include <vector>
 
-#include "components/password_manager/core/browser/password_store_backend.h"
 #include "components/password_manager/core/browser/password_store_change.h"
+#include "components/password_manager/core/browser/password_store_consumer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace password_manager {

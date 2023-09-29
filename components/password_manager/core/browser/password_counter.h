@@ -43,7 +43,7 @@ class PasswordCounter : public PasswordStoreConsumer,
   // PasswordStoreConsumer:
   void OnGetPasswordStoreResultsOrErrorFrom(
       PasswordStoreInterface* store,
-      FormsOrError results_or_error) override;
+      LoginsResultOrError results_or_error) override;
 
   // PasswordStoreInterface::Observer:
   void OnLoginsChanged(PasswordStoreInterface* store,

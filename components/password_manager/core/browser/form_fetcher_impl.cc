@@ -306,7 +306,7 @@ void FormFetcherImpl::OnGetPasswordStoreResultsFrom(
 
 void FormFetcherImpl::OnGetPasswordStoreResultsOrErrorFrom(
     PasswordStoreInterface* store,
-    FormFetcherImpl::FormsOrError results_or_error) {
+    LoginsResultOrError results_or_error) {
   // TODO(https://crbug.com/1365324): Handle errors coming from the account
   // store.
   if (store == client_->GetProfilePasswordStore()) {

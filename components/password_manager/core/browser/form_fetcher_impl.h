@@ -109,7 +109,7 @@ class FormFetcherImpl : public FormFetcher,
   void OnGetSiteStatistics(std::vector<InteractionsStats> stats) override;
   void OnGetPasswordStoreResultsOrErrorFrom(
       PasswordStoreInterface* store,
-      FormsOrError results_or_error) override;
+      LoginsResultOrError results_or_error) override;
 
   // HttpPasswordStoreMigrator::Consumer:
   void ProcessMigratedForms(

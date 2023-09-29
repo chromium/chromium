@@ -309,8 +309,8 @@ class FormFetcherImplTestBase : public testing::Test {
   }
 
   void DeliverPasswordStoreResults(
-      PasswordStoreConsumer::FormsOrError profile_store_results,
-      PasswordStoreConsumer::FormsOrError account_store_results) {
+      LoginsResultOrError profile_store_results,
+      LoginsResultOrError account_store_results) {
     store_consumer()->OnGetPasswordStoreResultsOrErrorFrom(
         profile_mock_store_.get(), std::move(profile_store_results));
     if (account_mock_store_) {

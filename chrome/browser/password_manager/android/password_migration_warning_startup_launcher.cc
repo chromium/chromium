@@ -65,7 +65,7 @@ void PasswordMigrationWarningStartupLauncher::MaybeFetchPasswordsAndShowWarning(
 void PasswordMigrationWarningStartupLauncher::
     OnGetPasswordStoreResultsOrErrorFrom(
         password_manager::PasswordStoreInterface* store,
-        FormsOrError results_or_error) {
+        password_manager::LoginsResultOrError results_or_error) {
   if (absl::holds_alternative<password_manager::PasswordStoreBackendError>(
           results_or_error)) {
     return;
