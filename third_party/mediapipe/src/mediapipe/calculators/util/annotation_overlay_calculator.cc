@@ -37,6 +37,7 @@
 #include "mediapipe/gpu/gl_calculator_helper.h"
 #include "mediapipe/gpu/gl_simple_shaders.h"
 #include "mediapipe/gpu/gpu_buffer.h"
+#include "mediapipe/gpu/gpu_buffer_format.h"
 #include "mediapipe/gpu/shader_util.h"
 #endif  // !MEDIAPIPE_DISABLE_GPU
 
@@ -273,10 +274,9 @@ absl::Status AnnotationOverlayCalculator::Open(CalculatorContext* cc) {
   renderer_ = absl::make_unique<AnnotationRenderer>();
   renderer_->SetFlipTextVertically(options_.flip_text_vertically());
   if (use_gpu_) renderer_->SetScaleFactor(options_.gpu_scale_factor());
-  if (renderer_->GetScaleFactor() < 1.0 && HasImageTag(cc)) {
+  if (renderer_->GetScaleFactor() < 1.0 && HasImageTag(cc))
     ABSL_LOG(WARNING)
         << "Annotation scale factor only supports GPU backed Image.";
-  }
 
   // Set the output header based on the input header (if present).
   const char* tag = HasImageTag(cc) ? kImageTag
@@ -450,7 +450,8 @@ absl::Status AnnotationOverlayCalculator::RenderToGpu(CalculatorContext* cc,
   auto input_texture = gpu_helper_.CreateSourceTexture(input_frame);
 
   auto output_texture = gpu_helper_.CreateDestinationTexture(
-      width_, height_, mediapipe::GpuBufferFormat::kBGRA32);
+      input_texture.width(), input_texture.height(),
+      mediapipe::GpuBufferFormat::kBGRA32);
 
   // Upload render target to GPU.
   {
@@ -479,7 +480,7 @@ absl::Status AnnotationOverlayCalculator::RenderToGpu(CalculatorContext* cc,
   }
 
   // Send out blended image as GPU packet.
-  auto output_frame = output_texture.GetFrame<Type>();
+  auto output_frame = output_texture.template GetFrame<Type>();
   cc->Outputs().Tag(Tag).Add(output_frame.release(), cc->InputTimestamp());
 
   // Cleanup
@@ -539,8 +540,7 @@ absl::Status AnnotationOverlayCalculator::CreateRenderTargetCpu(
 }
 
 absl::Status AnnotationOverlayCalculator::CreateRenderTargetCpuImage(
-    CalculatorContext* cc,
-    std::unique_ptr<cv::Mat>& image_mat,
+    CalculatorContext* cc, std::unique_ptr<cv::Mat>& image_mat,
     ImageFormat::Format* target_format) {
   if (image_frame_available_) {
     const auto& input_frame =

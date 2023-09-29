@@ -294,8 +294,7 @@ absl::Status GlContext::SetCurrentContextBinding(
 #if !MEDIAPIPE_DISABLE_PTHREADS
   EnsureEglThreadRelease();
 #else
-  ABSL_LOG(WARNING) << __func__
-                    << ": make sure this thread releases EGL resources!";
+  ABSL_LOG(WARNING) << __func__ << ": make sure this thread releases EGL resources!";
 #endif
   EGLDisplay display = new_binding.display;
   if (display == EGL_NO_DISPLAY) {

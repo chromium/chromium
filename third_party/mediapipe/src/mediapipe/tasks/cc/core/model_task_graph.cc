@@ -187,8 +187,7 @@ absl::StatusOr<const ModelResources*> ModelTaskGraph::CreateModelResources(
 }
 
 absl::StatusOr<const ModelResources*> ModelTaskGraph::GetOrCreateModelResources(
-    SubgraphContext* sc,
-    std::unique_ptr<proto::ExternalFile> external_file,
+    SubgraphContext* sc, std::unique_ptr<proto::ExternalFile> external_file,
     std::string tag_suffix) {
   auto model_resources_cache_service = sc->Service(kModelResourcesCacheService);
   if (model_resources_cache_service.IsAvailable()) {

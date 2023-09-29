@@ -14,13 +14,13 @@
 
 #import "mediapipe/gpu/MPPMetalHelper.h"
 
-#import "GTMDefines.h"
 #include "absl/log/absl_check.h"
 #include "absl/log/absl_log.h"
 #import "mediapipe/gpu/gpu_buffer.h"
 #import "mediapipe/gpu/gpu_service.h"
 #import "mediapipe/gpu/graph_support.h"
 #import "mediapipe/gpu/metal_shared_resources.h"
+#import "GTMDefines.h"
 
 #include "mediapipe/framework/port/ret_check.h"
 
@@ -85,9 +85,8 @@ class MetalHelperLegacySupport {
   }
 
   // TODO: remove when we can.
-  ABSL_LOG(WARNING)
-      << "CalculatorContext not available. If this calculator uses "
-         "CalculatorBase, call initWithCalculatorContext instead.";
+  ABSL_LOG(WARNING) << "CalculatorContext not available. If this calculator uses "
+                       "CalculatorBase, call initWithCalculatorContext instead.";
   mediapipe::GpuSharedData* gpu_shared =
       inputSidePackets.Tag(mediapipe::kGpuSharedTagName).Get<mediapipe::GpuSharedData*>();
 
@@ -103,9 +102,8 @@ class MetalHelperLegacySupport {
   }
 
   // TODO: remove when we can.
-  ABSL_LOG(WARNING)
-      << "CalculatorContract not available. If you're calling this "
-         "from a GetContract method, call updateContract instead.";
+  ABSL_LOG(WARNING) << "CalculatorContract not available. If you're calling this "
+                       "from a GetContract method, call updateContract instead.";
   auto id = inputSidePackets->GetId(mediapipe::kGpuSharedTagName, 0);
   RET_CHECK(id.IsValid())
       << "A " << mediapipe::kGpuSharedTagName

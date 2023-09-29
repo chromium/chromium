@@ -89,8 +89,7 @@ class ModelTaskGraph : public Subgraph {
 
   template <typename Options>
   absl::StatusOr<const ModelResources*> GetOrCreateModelResources(
-      SubgraphContext* sc,
-      std::string tag_suffix = "") {
+      SubgraphContext* sc, std::string tag_suffix = "") {
     auto external_file = std::make_unique<proto::ExternalFile>();
     external_file->Swap(sc->MutableOptions<Options>()
                             ->mutable_base_options()
@@ -99,8 +98,7 @@ class ModelTaskGraph : public Subgraph {
   }
 
   absl::StatusOr<const ModelResources*> GetOrCreateModelResources(
-      SubgraphContext* sc,
-      std::unique_ptr<proto::ExternalFile> external_file,
+      SubgraphContext* sc, std::unique_ptr<proto::ExternalFile> external_file,
       std::string tag_suffix = "");
 
   // If the model resources graph service is available, creates a model asset

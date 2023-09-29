@@ -52,9 +52,8 @@ inline std::string* MediaPipeCheckOpHelper(absl::Status v, const char* msg) {
 #ifndef NDEBUG
 #define MEDIAPIPE_DCHECK_OK(val) MEDIAPIPE_CHECK_OK(val)
 #else
-#define MEDIAPIPE_DCHECK_OK(val)               \
-  while (false && (absl::OkStatus() == (val))) \
-  ABSL_LOG(FATAL)
+#define MEDIAPIPE_DCHECK_OK(val) \
+  while (false && (absl::OkStatus() == (val))) ABSL_LOG(FATAL)
 #endif
 
 #define CHECK_OK MEDIAPIPE_CHECK_OK

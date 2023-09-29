@@ -35,10 +35,9 @@ namespace mediapipe {
 namespace {
 
 #if defined(GL_DEBUG)
-#define GLCHECK(command)      \
-  command;                    \
-  if (int err = glGetError()) \
-    ABSL_LOG(ERROR) << "GL error detected: " << err;
+#define GLCHECK(command) \
+  command;               \
+  if (int err = glGetError()) ABSL_LOG(ERROR) << "GL error detected: " << err;
 #else
 #define GLCHECK(command) command
 #endif
