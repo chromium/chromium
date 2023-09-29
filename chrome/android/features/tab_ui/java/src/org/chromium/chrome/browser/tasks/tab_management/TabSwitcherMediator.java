@@ -927,8 +927,9 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
         }
 
         // Going back to the Start surface isn't handled by the TabSwitcherMediator any more, but in
-        // {@link ReturnToChromeBackPressHandler}.
-        if (mLastActiveLayoutType == LayoutType.START_SURFACE) {
+        // {@link ReturnToChromeBackPressHandler} when it isn't in incognito mode.
+        if (mLastActiveLayoutType == LayoutType.START_SURFACE
+                && !mTabModelSelector.isIncognitoSelected()) {
             return false;
         }
 
@@ -1229,8 +1230,11 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
         if (mTabModelSelector.getCurrentTab() == null) return false;
 
         // Going back to the Start surface isn't handled by the TabSwitcherMediator any more, but in
-        // {@link ReturnToChromeBackPressHandler}.
-        if (mLastActiveLayoutType == LayoutType.START_SURFACE) return false;
+        // {@link ReturnToChromeBackPressHandler} when it isn't in incognito mode.
+        if (mLastActiveLayoutType == LayoutType.START_SURFACE
+                && !mTabModelSelector.isIncognitoSelected()) {
+            return false;
+        }
 
         return true;
     }
