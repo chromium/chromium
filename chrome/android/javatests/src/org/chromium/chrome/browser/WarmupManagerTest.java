@@ -284,7 +284,7 @@ public class WarmupManagerTest {
         int layoutId = R.layout.custom_tabs_control_container;
         int toolbarId = R.layout.custom_tabs_toolbar;
         mWarmupManager.initializeViewHierarchy(mContext, layoutId, toolbarId);
-        Assert.assertTrue(mWarmupManager.hasViewHierarchyWithToolbar(layoutId));
+        Assert.assertTrue(mWarmupManager.hasViewHierarchyWithToolbar(layoutId, mContext));
     }
 
     /**
