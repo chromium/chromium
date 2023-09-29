@@ -1229,7 +1229,6 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTestWithSyncTransport,
 
   // History Sync is not active.
   ASSERT_FALSE(sync_service->GetActiveDataTypes().Has(syncer::HISTORY));
-  ASSERT_FALSE(sync_service->GetActiveDataTypes().Has(syncer::TYPED_URLS));
   ASSERT_FALSE(sync_service->GetActiveDataTypes().Has(
       syncer::HISTORY_DELETE_DIRECTIVES));
 

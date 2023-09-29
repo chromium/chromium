@@ -83,7 +83,6 @@ base::TimeDelta GetDefaultLocalChangeNudgeDelay(ModelType model_type) {
     case AUTOFILL_WALLET_USAGE:
     case CONTACT_INFO:
     case THEMES:
-    case TYPED_URLS:
     case EXTENSIONS:
     case SEARCH_ENGINES:
     case APPS:
@@ -146,7 +145,6 @@ bool CanGetCommitsFromExtensions(ModelType model_type) {
     case AUTOFILL_WALLET_OFFER:
     case AUTOFILL_WALLET_USAGE:
     case THEMES:
-    case TYPED_URLS:
     case EXTENSIONS:
     case SEARCH_ENGINES:
     case APPS:

@@ -74,15 +74,12 @@ enum ModelType {
   AUTOFILL_WALLET_USAGE,
   // A theme object.
   THEMES,
-  // A typed_url object, i.e. a URL the user has typed into the Omnibox.
-  TYPED_URLS,
   // An extension object.
   EXTENSIONS,
   // An object representing a custom search engine.
   SEARCH_ENGINES,
   // An object representing a browser session, e.g. an open tab. This is used
-  // for both "History" (together with TYPED_URLS) and "Tabs" (depending on
-  // PROXY_TABS).
+  // for "Tabs" (depending on PROXY_TABS).
   SESSIONS,
   // An app object.
   APPS,
@@ -158,8 +155,10 @@ enum ModelType {
   // real user types. By convention, we prefix them with 'PROXY_' to distinguish
   // them from normal protocol types.
   //
-  // Tab sync. This is a placeholder type, so that Sessions can be implicitly
-  // enabled for history sync and tabs sync.
+  // Tab sync. This is a placeholder type, which implicitly enables Sessions
+  // for tabs sync.
+  // TODO(crbug.com/1365291): Now that TYPED_URLS is gone, it should be possible
+  // to remove this type, and the whole concept of "proxy types".
   PROXY_TABS,
   LAST_USER_MODEL_TYPE = PROXY_TABS,
 
@@ -197,7 +196,7 @@ enum class ModelTypeForHistograms {
   kAutofillProfile = 5,
   kAutofill = 6,
   kThemes = 7,
-  kTypedUrls = 8,
+  // kDeprecatedTypedUrls = 8,
   kExtensions = 9,
   kSearchEngines = 10,
   kSessions = 11,
@@ -276,7 +275,6 @@ constexpr ModelTypeSet ProtocolTypes() {
           AUTOFILL_WALLET_OFFER,
           AUTOFILL_WALLET_USAGE,
           THEMES,
-          TYPED_URLS,
           EXTENSIONS,
           SEARCH_ENGINES,
           SESSIONS,

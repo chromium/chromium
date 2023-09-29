@@ -85,6 +85,7 @@ inline constexpr char kSyncPreferences[] = "sync.preferences";
 inline constexpr char kSyncReadingList[] = "sync.reading_list";
 inline constexpr char kSyncTabs[] = "sync.tabs";
 inline constexpr char kSyncThemes[] = "sync.themes";
+// TODO(crbug.com/1365291): Rename kSyncTypedUrls to kSyncHistory.
 inline constexpr char kSyncTypedUrls[] = "sync.typed_urls";
 inline constexpr char kSyncSavedTabGroups[] = "sync.saved_tab_groups";
 

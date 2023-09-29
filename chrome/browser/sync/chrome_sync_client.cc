@@ -681,7 +681,6 @@ ChromeSyncClient::GetControllerDelegateForModelType(syncer::ModelType type) {
     case syncer::SECURITY_EVENTS:
     case syncer::SEND_TAB_TO_SELF:
     case syncer::SESSIONS:
-    case syncer::TYPED_URLS:
       NOTREACHED();
       return base::WeakPtr<syncer::ModelTypeControllerDelegate>();
 

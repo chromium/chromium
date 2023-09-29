@@ -6,14 +6,11 @@
 
 #include <stdint.h>
 
+#include <memory>
 #include <string>
-#include <utility>
-#include <vector>
 
-#include "base/run_loop.h"
 #include "components/sync/protocol/data_type_progress_marker.pb.h"
 #include "components/sync/test/mock_invalidation.h"
-#include "components/sync/test/model_type_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace syncer {
@@ -116,7 +113,7 @@ TEST_F(NudgeTrackerTest, OriginPriorities) {
   EXPECT_EQ(sync_pb::SyncEnums::GU_TRIGGER, nudge_tracker_.GetOrigin());
 
   // A refresh request will override it.
-  nudge_tracker_.RecordLocalRefreshRequest({TYPED_URLS});
+  nudge_tracker_.RecordLocalRefreshRequest({PASSWORDS});
   EXPECT_EQ(sync_pb::SyncEnums::GU_TRIGGER, nudge_tracker_.GetOrigin());
 
   // Another local nudge will not be enough to change it.
@@ -130,7 +127,7 @@ TEST_F(NudgeTrackerTest, OriginPriorities) {
   // Neither local nudges nor refresh requests will override it.
   nudge_tracker_.RecordLocalChange(BOOKMARKS);
   EXPECT_EQ(sync_pb::SyncEnums::GU_TRIGGER, nudge_tracker_.GetOrigin());
-  nudge_tracker_.RecordLocalRefreshRequest({TYPED_URLS});
+  nudge_tracker_.RecordLocalRefreshRequest({PASSWORDS});
   EXPECT_EQ(sync_pb::SyncEnums::GU_TRIGGER, nudge_tracker_.GetOrigin());
 }
 
@@ -670,20 +667,22 @@ TEST_F(NudgeTrackerTest, IsRetryRequired_FailedCycleIncludesUpdate) {
 // Test the default nudge delays for various types.
 TEST_F(NudgeTrackerTest, NudgeDelayTest) {
   // Most data types have a medium delay.
-  EXPECT_EQ(nudge_tracker_.RecordLocalChange(TYPED_URLS),
+  EXPECT_EQ(nudge_tracker_.RecordLocalChange(CONTACT_INFO),
             nudge_tracker_.RecordLocalChange(PASSWORDS));
-  EXPECT_EQ(nudge_tracker_.RecordLocalChange(TYPED_URLS),
+  EXPECT_EQ(nudge_tracker_.RecordLocalChange(CONTACT_INFO),
             nudge_tracker_.RecordLocalChange(EXTENSIONS));
 
   // Bookmarks and preferences sometimes have automatic changes (not directly
   // caused by a user actions), so they have bigger delays.
   EXPECT_GT(nudge_tracker_.RecordLocalChange(BOOKMARKS),
-            nudge_tracker_.RecordLocalChange(TYPED_URLS));
+            nudge_tracker_.RecordLocalChange(CONTACT_INFO));
   EXPECT_EQ(nudge_tracker_.RecordLocalChange(BOOKMARKS),
             nudge_tracker_.RecordLocalChange(PREFERENCES));
 
-  // Sessions has an even bigger delay.
+  // Sessions and history have an even bigger delay.
   EXPECT_GT(nudge_tracker_.RecordLocalChange(SESSIONS),
+            nudge_tracker_.RecordLocalChange(BOOKMARKS));
+  EXPECT_GT(nudge_tracker_.RecordLocalChange(HISTORY),
             nudge_tracker_.RecordLocalChange(BOOKMARKS));
 
   // Autofill and UserEvents are "accompany types" that rely on nudges from

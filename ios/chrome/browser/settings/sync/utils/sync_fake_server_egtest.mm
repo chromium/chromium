@@ -71,7 +71,6 @@ void WaitForAutofillProfileLocallyPresent(const std::string& guid,
   WaitForEntitiesOnFakeServer(0, syncer::AUTOFILL_PROFILE);
   WaitForEntitiesOnFakeServer(0, syncer::BOOKMARKS);
   WaitForEntitiesOnFakeServer(0, syncer::HISTORY);
-  WaitForEntitiesOnFakeServer(0, syncer::TYPED_URLS);
 
   [super tearDown];
 }
@@ -86,7 +85,6 @@ void WaitForAutofillProfileLocallyPresent(const std::string& guid,
   WaitForEntitiesOnFakeServer(0, syncer::AUTOFILL_PROFILE);
   WaitForEntitiesOnFakeServer(0, syncer::BOOKMARKS);
   WaitForEntitiesOnFakeServer(0, syncer::HISTORY);
-  WaitForEntitiesOnFakeServer(0, syncer::TYPED_URLS);
 }
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
@@ -364,7 +362,7 @@ void WaitForAutofillProfileLocallyPresent(const std::string& guid,
                                        timeout:kSyncOperationTimeout];
 }
 
-// Tests that typed url is downloaded from sync server.
+// Tests that history is downloaded from the sync server.
 - (void)testSyncHistoryDownload {
   const GURL mockURL("http://not-a-real-site/");
 

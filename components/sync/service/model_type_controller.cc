@@ -89,8 +89,8 @@ void ModelTypeController::InitModelTypeController(
     // * PASSWORDS: Already supported on desktop; mobile is WIP.
     // * INCOMING_PASSWORD_SHARING_INVITATION: Depends on PASSWORDS support.
     // * PREFERENCES in all variants: Support is WIP.
-    // * History-related types (HISTORY, HISTORY_DELETE_DIRECTIVES, TYPED_URLS,
-    //   SESSIONS) are okay to *not* support transport mode.
+    // * History-related types (HISTORY, HISTORY_DELETE_DIRECTIVES, SESSIONS)
+    //   are okay to *not* support transport mode.
     // * APPS/APP_SETTINGS: Deprecated and will eventually be removed.
     // * AUTOFILL/AUTOFILL_PROFILE: Semi-deprecated; will eventually be removed
     //   or replaced by CONTACT_INFO.
@@ -116,7 +116,6 @@ void ModelTypeController::InitModelTypeController(
         AUTOFILL_WALLET_OFFER,
         AUTOFILL_WALLET_USAGE,
         THEMES,
-        TYPED_URLS,
         EXTENSIONS,
         SEARCH_ENGINES,
         SESSIONS,

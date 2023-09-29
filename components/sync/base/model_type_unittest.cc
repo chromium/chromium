@@ -71,7 +71,7 @@ TEST_F(ModelTypeTest, ModelTypeToStableIdentifier) {
   // identifiers are stable.
   EXPECT_EQ(3, ModelTypeToStableIdentifier(BOOKMARKS));
   EXPECT_EQ(7, ModelTypeToStableIdentifier(AUTOFILL));
-  EXPECT_EQ(9, ModelTypeToStableIdentifier(TYPED_URLS));
+  EXPECT_EQ(52, ModelTypeToStableIdentifier(HISTORY));
 }
 
 TEST_F(ModelTypeTest, DefaultFieldValues) {

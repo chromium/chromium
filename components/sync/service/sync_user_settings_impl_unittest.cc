@@ -104,10 +104,6 @@ TEST_F(SyncUserSettingsImplTest, PreferredTypesSyncEverything) {
       MakeSyncUserSettings(GetUserTypes());
 
   ModelTypeSet expected_types = GetUserTypes();
-  // TODO(crbug.com/1365291): TYPED_URLS is not used anymore, and in particular
-  // is not part of any UserSelectableType. Eventually TYPED_URLS should be
-  // fully removed.
-  expected_types.Remove(TYPED_URLS);
   EXPECT_TRUE(sync_user_settings->IsSyncEverythingEnabled());
   EXPECT_EQ(expected_types, GetPreferredUserTypes(*sync_user_settings));
 
@@ -218,10 +214,6 @@ TEST_F(SyncUserSettingsImplTest, PreferredTypesSyncAllOsTypes) {
       MakeSyncUserSettings(GetUserTypes());
 
   ModelTypeSet expected_types = GetUserTypes();
-  // TODO(crbug.com/1365291): TYPED_URLS is not used anymore, and in particular
-  // is not part of any UserSelectableType. Eventually TYPED_URLS should be
-  // fully removed.
-  expected_types.Remove(TYPED_URLS);
   EXPECT_TRUE(sync_user_settings->IsSyncAllOsTypesEnabled());
   EXPECT_EQ(expected_types, GetPreferredUserTypes(*sync_user_settings));
 

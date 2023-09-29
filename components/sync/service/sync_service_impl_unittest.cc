@@ -1475,7 +1475,7 @@ TEST_F(SyncServiceImplTest,
 TEST_F(SyncServiceImplTest, ShouldEnableAndDisableInvalidationsForSessions) {
   PopulatePrefsForInitialSyncFeatureSetupComplete();
   SignInWithSyncConsent();
-  InitializeService({{SESSIONS, false}, {TYPED_URLS, false}});
+  InitializeService({{SESSIONS, false}, {BOOKMARKS, false}});
   base::RunLoop().RunUntilIdle();
 
   EXPECT_CALL(*sync_invalidations_service(),

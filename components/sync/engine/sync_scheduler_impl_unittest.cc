@@ -256,8 +256,8 @@ class SyncSchedulerImplTest : public testing::Test {
                                           MakeFakeActivationResponse(NIGORI));
     model_type_registry_->ConnectDataType(THEMES,
                                           MakeFakeActivationResponse(THEMES));
-    model_type_registry_->ConnectDataType(
-        TYPED_URLS, MakeFakeActivationResponse(TYPED_URLS));
+    model_type_registry_->ConnectDataType(HISTORY,
+                                          MakeFakeActivationResponse(HISTORY));
 
     context_ = std::make_unique<SyncCycleContext>(
         connection_.get(), extensions_activity_.get(),
@@ -518,7 +518,7 @@ TEST_F(SyncSchedulerImplTest, Nudge) {
   EXPECT_CALL(*syncer(), NormalSyncShare)
       .WillOnce(
           DoAll(Invoke(SimulateNormalSuccess), RecordSyncShare(&times2, true)));
-  scheduler()->ScheduleLocalNudge(TYPED_URLS);
+  scheduler()->ScheduleLocalNudge(HISTORY);
   RunLoop();
 }
 
@@ -702,7 +702,7 @@ TEST_F(SyncSchedulerImplTest, NudgeCoalescing) {
           DoAll(Invoke(SimulateNormalSuccess), RecordSyncShare(&times, true)));
   TimeTicks optimal_time = TimeTicks::Now() + default_delay();
   scheduler()->ScheduleLocalNudge(THEMES);
-  scheduler()->ScheduleLocalNudge(TYPED_URLS);
+  scheduler()->ScheduleLocalNudge(HISTORY);
   RunLoop();
 
   ASSERT_EQ(1U, times.size());
@@ -734,7 +734,7 @@ TEST_F(SyncSchedulerImplTest, NudgeCoalescingWithDifferentTimings) {
   delay_map[THEMES] = delay;
   scheduler()->OnReceivedCustomNudgeDelays(delay_map);
   scheduler()->ScheduleLocalNudge(THEMES);
-  scheduler()->ScheduleLocalNudge(TYPED_URLS);
+  scheduler()->ScheduleLocalNudge(HISTORY);
 
   TimeTicks min_time = TimeTicks::Now();
   TimeTicks max_time = TimeTicks::Now() + delay;
@@ -768,8 +768,8 @@ TEST_F(SyncSchedulerImplTest, NudgeWithStates) {
   EXPECT_CALL(*syncer(), NormalSyncShare)
       .WillOnce(
           DoAll(Invoke(SimulateNormalSuccess), RecordSyncShare(&times2, true)));
-  scheduler()->SetHasPendingInvalidations(TYPED_URLS, true);
-  scheduler()->ScheduleInvalidationNudge(TYPED_URLS);
+  scheduler()->SetHasPendingInvalidations(HISTORY, true);
+  scheduler()->ScheduleInvalidationNudge(HISTORY);
   RunLoop();
 }
 
@@ -1134,7 +1134,7 @@ TEST_F(SyncSchedulerImplTest, TypeBackingOffAndThrottling) {
       .RetiresOnSaturation();
 
   // Sync still can throttle.
-  scheduler()->ScheduleLocalNudge(TYPED_URLS);
+  scheduler()->ScheduleLocalNudge(HISTORY);
   PumpLoop();  // TO get TypesUnblock called.
   PumpLoop();  // To get TrySyncCycleJob called.
 
@@ -1177,7 +1177,7 @@ TEST_F(SyncSchedulerImplTest, TypeThrottlingBackingOffBlocksNudge) {
   PumpLoop();  // To get PerformDelayedNudge called.
   PumpLoop();  // To get TrySyncCycleJob called
 
-  const ModelType backed_off_type = TYPED_URLS;
+  const ModelType backed_off_type = HISTORY;
 
   EXPECT_CALL(*syncer(), NormalSyncShare)
       .WillOnce(DoAll(WithArg<2>(SimulatePartialFailure(backed_off_type)),
@@ -1303,8 +1303,8 @@ TEST_F(SyncSchedulerImplTest, ConfigurationMode) {
 
   StartSyncConfiguration();
 
-  scheduler()->ScheduleLocalNudge(TYPED_URLS);
-  scheduler()->ScheduleLocalNudge(TYPED_URLS);
+  scheduler()->ScheduleLocalNudge(HISTORY);
+  scheduler()->ScheduleLocalNudge(HISTORY);
 
   SyncShareTimes times;
   EXPECT_CALL(*syncer(), ConfigureSyncShare)
@@ -1873,7 +1873,7 @@ TEST_F(SyncSchedulerImplTest, TypeBackoffAndSuccessfulSync) {
       .RetiresOnSaturation();
 
   // Do a successful Sync.
-  scheduler()->ScheduleLocalNudge(TYPED_URLS);
+  scheduler()->ScheduleLocalNudge(HISTORY);
   PumpLoop();  // TO get PerformDelayedNudge called.
   PumpLoop();  // To get TrySyncCycleJob called.
 
@@ -1914,7 +1914,7 @@ TEST_F(SyncSchedulerImplTest, TypeBackingOffAndFailureSync) {
   EXPECT_FALSE(scheduler()->IsGlobalThrottle());
 
   // Set anther backoff datatype.
-  const ModelType backed_off_type2 = TYPED_URLS;
+  const ModelType backed_off_type2 = HISTORY;
   EXPECT_CALL(*syncer(), NormalSyncShare)
       .WillOnce(DoAll(WithArg<2>(SimulatePartialFailure(backed_off_type2)),
                       Return(true)))
@@ -1968,7 +1968,7 @@ TEST_F(SyncSchedulerImplTest, InterleavedNudgesStillRestart) {
 
   // This is the tricky piece. We have a gap while the sync job is bouncing to
   // get onto the |pending_wakeup_timer_|, should be scheduled with no delay.
-  scheduler()->ScheduleLocalNudge(TYPED_URLS);
+  scheduler()->ScheduleLocalNudge(HISTORY);
   EXPECT_TRUE(BlockTimerIsRunning());
   EXPECT_EQ(base::TimeDelta(), GetPendingWakeupTimerDelay());
   EXPECT_FALSE(scheduler()->IsGlobalBackoff());
@@ -1979,14 +1979,14 @@ TEST_F(SyncSchedulerImplTest, InterleavedNudgesStillRestart) {
       .WillOnce(
           DoAll(Invoke(SimulateCommitFailed), RecordSyncShare(&times, false)));
   // Triggers the THEMES TrySyncCycleJobImpl(), which we've setup to fail. Its
-  // RestartWaiting won't schedule a delayed retry, as the TYPED_URLS nudge has
+  // RestartWaiting won't schedule a delayed retry, as the HISTORY nudge has
   // a smaller delay. We verify this by making sure the delay is still zero.
   PumpLoop();
   EXPECT_TRUE(BlockTimerIsRunning());
   EXPECT_EQ(base::TimeDelta(), GetPendingWakeupTimerDelay());
   EXPECT_TRUE(scheduler()->IsGlobalBackoff());
 
-  // Triggers TYPED_URLS PerformDelayedNudge(), which should no-op, because
+  // Triggers HISTORY PerformDelayedNudge(), which should no-op, because
   // we're no long healthy, and normal priorities shouldn't go through, but it
   // does need to setup the |pending_wakeup_timer_|. The delay should be ~60
   // seconds, so verifying it's greater than 50 should be safe.

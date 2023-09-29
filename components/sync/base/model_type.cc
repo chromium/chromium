@@ -81,9 +81,6 @@ const ModelTypeInfo kModelTypeInfoMap[] = {
     {THEMES, "THEME", "themes", "Themes",
      sync_pb::EntitySpecifics::kThemeFieldNumber,
      ModelTypeForHistograms::kThemes},
-    {TYPED_URLS, "TYPED_URL", "typed_urls", "Typed URLs",
-     sync_pb::EntitySpecifics::kTypedUrlFieldNumber,
-     ModelTypeForHistograms::kTypedUrls},
     {EXTENSIONS, "EXTENSION", "extensions", "Extensions",
      sync_pb::EntitySpecifics::kExtensionFieldNumber,
      ModelTypeForHistograms::kExtensions},
@@ -210,7 +207,7 @@ const ModelTypeInfo kModelTypeInfoMap[] = {
 static_assert(std::size(kModelTypeInfoMap) == GetNumModelTypes(),
               "kModelTypeInfoMap should have GetNumModelTypes() elements");
 
-static_assert(49 == syncer::GetNumModelTypes(),
+static_assert(48 == syncer::GetNumModelTypes(),
               "When adding a new type, update enum SyncModelTypes in enums.xml "
               "and suffix SyncModelType in histograms.xml.");
 
@@ -242,7 +239,6 @@ constexpr kSpecificsFieldNumberToModelTypeMap
         {sync_pb::EntitySpecifics::kAutofillWalletUsageFieldNumber,
          AUTOFILL_WALLET_USAGE},
         {sync_pb::EntitySpecifics::kThemeFieldNumber, THEMES},
-        {sync_pb::EntitySpecifics::kTypedUrlFieldNumber, TYPED_URLS},
         {sync_pb::EntitySpecifics::kExtensionFieldNumber, EXTENSIONS},
         {sync_pb::EntitySpecifics::kSearchEngineFieldNumber, SEARCH_ENGINES},
         {sync_pb::EntitySpecifics::kSessionFieldNumber, SESSIONS},
@@ -333,9 +329,6 @@ void AddDefaultFieldValue(ModelType type, sync_pb::EntitySpecifics* specifics) {
       break;
     case THEMES:
       specifics->mutable_theme();
-      break;
-    case TYPED_URLS:
-      specifics->mutable_typed_url();
       break;
     case EXTENSIONS:
       specifics->mutable_extension();
@@ -474,7 +467,7 @@ void internal::GetModelTypeSetFromSpecificsFieldNumberListHelper(
 }
 
 ModelType GetModelTypeFromSpecifics(const sync_pb::EntitySpecifics& specifics) {
-  static_assert(49 == syncer::GetNumModelTypes(),
+  static_assert(48 == syncer::GetNumModelTypes(),
                 "When adding new protocol types, the following type lookup "
                 "logic must be updated.");
   if (specifics.has_bookmark())
@@ -493,8 +486,6 @@ ModelType GetModelTypeFromSpecifics(const sync_pb::EntitySpecifics& specifics) {
     return AUTOFILL_WALLET_METADATA;
   if (specifics.has_theme())
     return THEMES;
-  if (specifics.has_typed_url())
-    return TYPED_URLS;
   if (specifics.has_extension())
     return EXTENSIONS;
   if (specifics.has_search_engine())
@@ -582,7 +573,7 @@ ModelType GetModelTypeFromSpecifics(const sync_pb::EntitySpecifics& specifics) {
 }
 
 ModelTypeSet EncryptableUserTypes() {
-  static_assert(49 == syncer::GetNumModelTypes(),
+  static_assert(48 == syncer::GetNumModelTypes(),
                 "If adding an unencryptable type, remove from "
                 "encryptable_user_types below.");
   ModelTypeSet encryptable_user_types = UserTypes();

@@ -104680,7 +104680,7 @@ would be helpful to identify which type is being sent.
   <int value="5" label="Autofill Profile"/>
   <int value="6" label="Autocomplete"/>
   <int value="7" label="Themes"/>
-  <int value="8" label="Typed URLs"/>
+  <int value="8" label="(Obsolete) Typed URLs"/>
   <int value="9" label="Extensions"/>
   <int value="10" label="Search Engines"/>
   <int value="11" label="Sessions"/>
