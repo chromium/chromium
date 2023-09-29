@@ -6,6 +6,7 @@
 
 #include <array>
 #include <string_view>
+#include <utility>
 #include <vector>
 
 #include "base/functional/bind.h"
@@ -44,6 +45,7 @@
 #include "ui/views/layout/layout_manager.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/view.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
 namespace chromeos::editor_menu {
@@ -53,9 +55,6 @@ namespace {
 constexpr char kWidgetName[] = "EditorMenuViewWidget";
 constexpr char16_t kContainerTitle[] = u"Editor Menu";
 
-// TODO(b/302043981): Dynamically size the editor menu view according to the
-// anchor view bounds, instead of always using this min width.
-constexpr int kContainerMinWidthDip = 320;
 constexpr int kRadiusDip = 4;
 
 constexpr gfx::Insets kTitleContainerInsets = gfx::Insets::TLBR(10, 16, 10, 10);
@@ -74,7 +73,7 @@ constexpr int kSettingsButtonBorderDip = 4;
 constexpr int kChipsContainerVerticalSpacingDip = 16;
 constexpr gfx::Insets kChipsMargin =
     gfx::Insets::TLBR(0, 8, kChipsContainerVerticalSpacingDip, 0);
-constexpr gfx::Insets kChipsContainerInsets = gfx::Insets::TLBR(0, 8, 0, 8);
+constexpr gfx::Insets kChipsContainerInsets = gfx::Insets::VH(0, 16);
 
 constexpr gfx::Insets kTextfieldContainerInsets =
     gfx::Insets::TLBR(0, 16, 10, 16);
@@ -207,8 +206,7 @@ void EditorMenuView::OnWidgetVisibilityChanged(views::Widget* widget,
 
 void EditorMenuView::UpdateBounds(const gfx::Rect& anchor_view_bounds) {
   const int editor_menu_width = GetEditorMenuWidth(anchor_view_bounds.width());
-  // TODO(b/302241013): Adjust chips container layout according to the updated
-  // editor menu width.
+  UpdateChipsContainer(editor_menu_width);
 
   GetWidget()->SetBounds(GetEditorMenuBounds(
       anchor_view_bounds,
@@ -292,42 +290,18 @@ void EditorMenuView::AddChipsContainer(
     const PresetTextQueries& preset_text_queries) {
   chips_container_ = AddChildView(std::make_unique<views::FlexLayoutView>());
   chips_container_->SetOrientation(views::LayoutOrientation::kVertical);
+  chips_container_->SetProperty(views::kMarginsKey, kChipsContainerInsets);
 
-  // Add a new row if the chip cannot fit the rest space in the current row.
-  // A simple calculation of the running width, considering the margins and
-  // paddings.
-  int running_width = 0;
-  views::View* row = nullptr;
+  // Put all the chips in a single row while we are initially creating the
+  // editor menu. This layout will be adjusted once the editor menu bounds are
+  // set.
+  auto* row = AddChipsRow();
   for (const auto& preset_text_query : preset_text_queries) {
-    auto chip = std::make_unique<EditorMenuChipView>(
+    row->AddChildView(std::make_unique<EditorMenuChipView>(
         base::BindRepeating(&EditorMenuView::OnChipButtonPressed,
                             weak_factory_.GetWeakPtr(),
                             preset_text_query.text_query_id),
-        preset_text_query);
-
-    int chip_width = chip->GetPreferredSize().width();
-    if (running_width == 0) {
-      // Add the container's left insets.
-      running_width += kChipsContainerInsets.left();
-      running_width += chip_width;
-    } else {
-      // Add the chip's left margin.
-      running_width += kChipsMargin.left();
-      running_width += chip_width;
-    }
-    // Add the containers's right insets when decide if wrap the row.
-    const bool should_wrap_row =
-        running_width + kChipsContainerInsets.right() > kContainerMinWidthDip;
-    if (row == nullptr || should_wrap_row) {
-      running_width = should_wrap_row ? 0 : running_width;
-      row = chips_container_->AddChildView(std::make_unique<views::View>());
-      auto* layout =
-          row->SetLayoutManager(std::make_unique<views::FlexLayout>());
-      layout->SetOrientation(views::LayoutOrientation::kHorizontal)
-          .SetInteriorMargin(kChipsContainerInsets)
-          .SetDefault(views::kMarginsKey, kChipsMargin);
-    }
-    chips_.emplace_back(row->AddChildView(std::move(chip)));
+        preset_text_query));
   }
 }
 
@@ -335,6 +309,53 @@ void EditorMenuView::AddTextfield() {
   textfield_ =
       AddChildView(std::make_unique<EditorMenuTextfieldView>(delegate_));
   textfield_->SetProperty(views::kMarginsKey, kTextfieldContainerInsets);
+}
+
+void EditorMenuView::UpdateChipsContainer(int editor_menu_width) {
+  // Remove chips from their current rows and transfer ownership since we want
+  // to add the chips to new rows.
+  std::vector<std::unique_ptr<EditorMenuChipView>> chips;
+  for (auto* row : chips_container_->children()) {
+    while (!row->children().empty()) {
+      chips.push_back(row->RemoveChildViewT(
+          views::AsViewClass<EditorMenuChipView>(row->children()[0])));
+    }
+  }
+
+  // Remove existing rows from the chips container and delete them.
+  chips_container_->RemoveAllChildViews();
+
+  // Re-add the chips into new rows in the chips container, adjusting the layout
+  // according to the updated editor menu width. We keep track of the running
+  // width of the current chip row and start a new row of chips whenever the
+  // chip being added can't fit into the current row.
+  const int chip_container_width =
+      editor_menu_width - kChipsContainerInsets.width();
+  int running_width = 0;
+  views::View* row = nullptr;
+  for (auto& chip : chips) {
+    const int chip_width = chip->GetPreferredSize().width();
+    if (row != nullptr && running_width + chip_width + kChipsMargin.left() <=
+                              chip_container_width) {
+      // Add the chip to the current row if it can fit (including space for
+      // padding between chips).
+      running_width += chip_width + kChipsMargin.left();
+    } else {
+      // Otherwise, create a new row for the chip.
+      row = AddChipsRow();
+      running_width = chip_width;
+    }
+    row->AddChildView(std::move(chip));
+  }
+}
+
+views::View* EditorMenuView::AddChipsRow() {
+  auto* row =
+      chips_container_->AddChildView(std::make_unique<views::FlexLayoutView>());
+  row->SetCollapseMargins(true);
+  row->SetIgnoreDefaultMainAxisMargins(true);
+  row->SetDefault(views::kMarginsKey, kChipsMargin);
+  return row;
 }
 
 void EditorMenuView::OnSettingsButtonPressed() {
