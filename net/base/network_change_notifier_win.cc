@@ -9,6 +9,7 @@
 
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -20,6 +21,7 @@
 #include "base/threading/thread.h"
 #include "base/time/time.h"
 #include "base/win/windows_version.h"
+#include "net/base/features.h"
 #include "net/base/winsock_init.h"
 #include "net/base/winsock_util.h"
 
@@ -241,7 +243,9 @@ NetworkChangeNotifierWin::RecomputeCurrentConnectionTypeModern() {
 // static
 NetworkChangeNotifier::ConnectionType
 NetworkChangeNotifierWin::RecomputeCurrentConnectionType() {
-  if (base::win::GetVersion() >= base::win::Version::WIN10_20H1) {
+  if (base::win::GetVersion() >= base::win::Version::WIN10_20H1 &&
+      base::FeatureList::IsEnabled(
+          features::kEnableGetNetworkConnectivityHintAPI)) {
     return RecomputeCurrentConnectionTypeModern();
   }
 
