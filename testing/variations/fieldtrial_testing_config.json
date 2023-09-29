@@ -3726,6 +3726,21 @@
             ]
         }
     ],
+    "CollectAndroidFrameTimelineMetricsStudy": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20230926",
+                    "enable_features": [
+                        "CollectAndroidFrameTimelineMetrics"
+                    ]
+                }
+            ]
+        }
+    ],
     "Collections": [
         {
             "platforms": [
