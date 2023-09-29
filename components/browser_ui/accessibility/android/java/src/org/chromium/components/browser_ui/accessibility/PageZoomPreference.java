@@ -109,21 +109,26 @@ public class PageZoomPreference extends Preference implements SeekBar.OnSeekBarC
         if (ContentFeatureMap.isEnabled(ContentFeatureList.SMART_ZOOM)) {
             holder.findViewById(R.id.text_size_contrast_title).setVisibility(View.VISIBLE);
             holder.findViewById(R.id.text_size_contrast_summary).setVisibility(View.VISIBLE);
+            holder.findViewById(R.id.text_size_contrast_layout_container)
+                    .setVisibility(View.VISIBLE);
 
             mTextSizeContrastCurrentLevelText =
                     (TextView) holder.findViewById(R.id.text_size_contrast_current_value_text);
             mTextSizeContrastCurrentLevelText.setText(
                     getContext().getResources().getString(R.string.text_size_contrast_level, 0));
+            mTextSizeContrastCurrentLevelText.setVisibility(View.VISIBLE);
 
             mTextSizeContrastDecreaseButton = (ChromeImageButton) holder.findViewById(
                     R.id.text_size_contrast_decrease_zoom_button);
             mTextSizeContrastDecreaseButton.setOnClickListener(
                     v -> onHandleContrastDecreaseClicked());
+            mTextSizeContrastDecreaseButton.setVisibility(View.VISIBLE);
 
             mTextSizeContrastIncreaseButton = (ChromeImageButton) holder.findViewById(
                     R.id.text_size_contrast_increase_zoom_button);
             mTextSizeContrastIncreaseButton.setOnClickListener(
                     v -> onHandleContrastIncreaseClicked());
+            mTextSizeContrastIncreaseButton.setVisibility(View.VISIBLE);
 
             mTextSizeContrastSeekBar =
                     (SeekBar) holder.findViewById(R.id.text_size_contrast_slider);
@@ -131,13 +136,8 @@ public class PageZoomPreference extends Preference implements SeekBar.OnSeekBarC
             mTextSizeContrastSeekBar.setMax(PageZoomUtils.TEXT_SIZE_CONTRAST_MAX_LEVEL);
             mTextSizeContrastFactor = mTextSizeContrastDelegate.getValue();
             mTextSizeContrastSeekBar.setProgress(mTextSizeContrastFactor);
+            mTextSizeContrastSeekBar.setVisibility(View.VISIBLE);
             updateViewsOnProgressChanged(mTextSizeContrastFactor, mTextSizeContrastSeekBar);
-
-            mTextSizeContrastCurrentLevelText.setVisibility(View.VISIBLE);
-            holder.findViewById(R.id.text_size_contrast_current_value_text)
-                    .setVisibility(View.VISIBLE);
-            holder.findViewById(R.id.text_size_contrast_summary).setVisibility(View.VISIBLE);
-            holder.findViewById(R.id.text_size_contrast_seekbar).setVisibility(View.VISIBLE);
         }
     }
 
@@ -284,5 +284,25 @@ public class PageZoomPreference extends Preference implements SeekBar.OnSeekBarC
 
     private void saveTextSizeContrastValueToPreferences() {
         mTextSizeContrastDelegate.setValue(mTextSizeContrastSeekBar.getProgress());
+    }
+
+    // Testing methods.
+
+    public SeekBar getZoomSliderForTesting() {
+        return mSeekBar;
+    }
+
+    public void setZoomValueForTesting(int progress) {
+        mSeekBar.setProgress(progress);
+        updateViewsOnProgressChanged(progress, mSeekBar);
+    }
+
+    public SeekBar getTextSizeContrastSliderForTesting() {
+        return mTextSizeContrastSeekBar;
+    }
+
+    public void setTextContrastValueForTesting(int contrast) {
+        mTextSizeContrastSeekBar.setProgress(contrast);
+        updateViewsOnProgressChanged(contrast, mTextSizeContrastSeekBar);
     }
 }
