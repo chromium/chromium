@@ -84,7 +84,10 @@ TabStripControlButton::TabStripControlButton(TabStrip* tab_strip,
   SetImageCentered(true);
   SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
 
-  paint_transparent_for_custom_image_theme_ = true;
+  // By default control buttons in the tab strip should be non-transparent for
+  // the updated Chrome refresh UX.
+  paint_transparent_for_custom_image_theme_ = !features::IsChromeRefresh2023();
+
   foreground_frame_active_color_id_ = kColorTabForegroundInactiveFrameActive;
   foreground_frame_inactive_color_id_ =
       kColorNewTabButtonCRForegroundFrameInactive;

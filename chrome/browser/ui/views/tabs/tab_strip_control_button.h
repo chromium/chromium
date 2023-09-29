@@ -106,11 +106,7 @@ class TabStripControlButton : public views::LabelButton,
     UpdateColors();
   }
 
-  bool GetPaintTransparentForCustomImageTheme() {
-    return paint_transparent_for_custom_image_theme_;
-  }
-
-  void SetPaintTransparentForCustomImageTheme(
+  void set_paint_transparent_for_custom_image_theme(
       bool paint_transparent_for_custom_image_theme) {
     paint_transparent_for_custom_image_theme_ =
         paint_transparent_for_custom_image_theme;

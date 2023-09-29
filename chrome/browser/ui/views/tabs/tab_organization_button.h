@@ -27,12 +27,13 @@ class TabOrganizationButton : public TabStripControlButton {
   void SetSession(TabOrganizationSession* session) { session_ = session; }
   TabOrganizationSession* session_for_testing() { return session_; }
 
-  // views::View
+  // TabStripControlButton:
   gfx::Size CalculatePreferredSize() const override;
 
   void ButtonPressed(const ui::Event& event);
 
  protected:
+  // TabStripControlButton:
   int GetCornerRadius() const override;
 
  private:

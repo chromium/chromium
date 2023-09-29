@@ -50,11 +50,6 @@ TabSearchButton::TabSearchButton(TabStrip* tab_strip, Edge flat_edge)
         kColorNewTabButtonCRBackgroundFrameInactive);
   }
 
-  const bool paint_transparent_for_custom_image_theme =
-      features::IsChromeRefresh2023() ? false : true;
-  SetPaintTransparentForCustomImageTheme(
-      paint_transparent_for_custom_image_theme);
-
   UpdateColors();
 }
 

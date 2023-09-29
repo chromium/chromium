@@ -39,7 +39,7 @@ TabOrganizationButton::TabOrganizationButton(TabStrip* tab_strip,
   UpdateBackgroundFrameInactiveColorId(
       kColorNewTabButtonCRBackgroundFrameInactive);
 
-  SetPaintTransparentForCustomImageTheme(false);
+  set_paint_transparent_for_custom_image_theme(false);
 
   UpdateColors();
 }
