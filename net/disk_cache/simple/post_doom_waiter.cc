@@ -27,14 +27,14 @@ SimplePostDoomWaiterTable::SimplePostDoomWaiterTable(net::CacheType cache_type)
 SimplePostDoomWaiterTable::~SimplePostDoomWaiterTable() = default;
 
 void SimplePostDoomWaiterTable::OnDoomStart(uint64_t entry_hash) {
-  DCHECK_EQ(0u, entries_pending_doom_.count(entry_hash));
-  entries_pending_doom_.insert(
+  auto [it, inserted] = entries_pending_doom_.insert(
       std::make_pair(entry_hash, std::vector<SimplePostDoomWaiter>()));
+  CHECK(inserted);
 }
 
 void SimplePostDoomWaiterTable::OnDoomComplete(uint64_t entry_hash) {
-  DCHECK_EQ(1u, entries_pending_doom_.count(entry_hash));
   auto it = entries_pending_doom_.find(entry_hash);
+  CHECK(it != entries_pending_doom_.end());
   std::vector<SimplePostDoomWaiter> to_handle_waiters;
   to_handle_waiters.swap(it->second);
   entries_pending_doom_.erase(it);

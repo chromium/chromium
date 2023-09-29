@@ -212,8 +212,8 @@ EntryResult SimpleEntryImpl::CreateEntry(EntryResultCallback callback) {
     // If we are optimistically returning before a preceeding doom, we need to
     // wait for that IO, about which we will be notified externally.
     if (optimistic_create_pending_doom_state_ != CREATE_NORMAL) {
-      DCHECK_EQ(CREATE_OPTIMISTIC_PENDING_DOOM,
-                optimistic_create_pending_doom_state_);
+      CHECK_EQ(CREATE_OPTIMISTIC_PENDING_DOOM,
+               optimistic_create_pending_doom_state_);
       state_ = STATE_IO_PENDING;
     }
   } else {
@@ -256,7 +256,7 @@ EntryResult SimpleEntryImpl::OpenOrCreateEntry(EntryResultCallback callback) {
         EntryResultCallback()));
 
     // The post-doom stuff should go through CreateEntry, not here.
-    DCHECK_EQ(CREATE_NORMAL, optimistic_create_pending_doom_state_);
+    CHECK_EQ(CREATE_NORMAL, optimistic_create_pending_doom_state_);
   } else {
     pending_operations_.push(SimpleEntryOperation::OpenOrCreateOperation(
         this, index_state, SimpleEntryOperation::ENTRY_NEEDS_CALLBACK,
@@ -285,9 +285,9 @@ net::Error SimpleEntryImpl::DoomEntry(net::CompletionOnceCallback callback) {
     if (optimistic_create_pending_doom_state_ == CREATE_NORMAL) {
       post_doom_waiting_ = backend_->OnDoomStart(entry_hash_);
     } else {
-      DCHECK_EQ(STATE_IO_PENDING, state_);
-      DCHECK_EQ(CREATE_OPTIMISTIC_PENDING_DOOM,
-                optimistic_create_pending_doom_state_);
+      CHECK_EQ(STATE_IO_PENDING, state_);
+      CHECK_EQ(CREATE_OPTIMISTIC_PENDING_DOOM,
+               optimistic_create_pending_doom_state_);
       // If we are in this state, we went ahead with making the entry even
       // though the backend was already keeping track of a doom, so it can't
       // keep track of ours. So we delay notifying it until
@@ -308,13 +308,13 @@ net::Error SimpleEntryImpl::DoomEntry(net::CompletionOnceCallback callback) {
 }
 
 void SimpleEntryImpl::SetCreatePendingDoom() {
-  DCHECK_EQ(CREATE_NORMAL, optimistic_create_pending_doom_state_);
+  CHECK_EQ(CREATE_NORMAL, optimistic_create_pending_doom_state_);
   optimistic_create_pending_doom_state_ = CREATE_OPTIMISTIC_PENDING_DOOM;
 }
 
 void SimpleEntryImpl::NotifyDoomBeforeCreateComplete() {
-  DCHECK_EQ(STATE_IO_PENDING, state_);
-  DCHECK_NE(CREATE_NORMAL, optimistic_create_pending_doom_state_);
+  CHECK_EQ(STATE_IO_PENDING, state_);
+  CHECK_NE(CREATE_NORMAL, optimistic_create_pending_doom_state_);
   if (backend_.get() && optimistic_create_pending_doom_state_ ==
                             CREATE_OPTIMISTIC_PENDING_DOOM_FOLLOWED_BY_DOOM)
     post_doom_waiting_ = backend_->OnDoomStart(entry_hash_);
