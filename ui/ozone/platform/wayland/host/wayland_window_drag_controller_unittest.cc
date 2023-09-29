@@ -43,6 +43,7 @@
 #include "ui/ozone/platform/wayland/test/test_output.h"
 #include "ui/ozone/platform/wayland/test/test_util.h"
 #include "ui/ozone/platform/wayland/test/test_wayland_server_thread.h"
+#include "ui/ozone/platform/wayland/test/test_zaura_toplevel.h"
 #include "ui/ozone/platform/wayland/test/wayland_drag_drop_test.h"
 #include "ui/platform_window/extensions/wayland_extension.h"
 #include "ui/platform_window/platform_window_delegate.h"
@@ -105,6 +106,41 @@ class WaylandWindowDragControllerTest : public WaylandDragDropTest {
     }
   }
 
+  void SendDndMotionForWindowDrag(const gfx::Point& location) {
+    WaylandDragDropTest::SendDndMotion(location);
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    // Emulate the server side logic during move loop. The server
+    // server controls the bounds only when the window is detached.
+    if (connection_->window_drag_controller()->state() !=
+        WaylandWindowDragController::State::kDetached) {
+      return;
+    }
+    // The window must exist. (should not be swallowed nor destroyed)
+    ASSERT_TRUE(window_);
+    auto& offset =
+        connection_->window_drag_controller()->drag_offset_for_testing();
+    gfx::Point new_origin = (location - offset);
+    auto* dragged_window =
+        connection_->window_drag_controller()->dragged_window_for_testing();
+    ASSERT_TRUE(dragged_window);
+    const uint32_t surface_id =
+        dragged_window->root_surface()->get_surface_id();
+    PostToServerAndWait(
+        [new_origin, surface_id](wl::TestWaylandServerThread* server) {
+          auto* surface = server->GetObject<wl::MockSurface>(surface_id);
+          ASSERT_TRUE(surface);
+          ASSERT_TRUE(surface->xdg_surface());
+          ASSERT_TRUE(surface->xdg_surface()->xdg_toplevel());
+
+          auto* aura_toplevel =
+              surface->xdg_surface()->xdg_toplevel()->zaura_toplevel();
+          ASSERT_TRUE(aura_toplevel);
+          zaura_toplevel_send_origin_change(aura_toplevel->resource(),
+                                            new_origin.x(), new_origin.y());
+        });
+#endif
+  }
+
  protected:
   using State = WaylandWindowDragController::State;
 
@@ -164,18 +200,11 @@ class WaylandWindowDragControllerTest : public WaylandDragDropTest {
   }
 };
 
-// TODO(https://crbug.com/1448391): Reenable for Lacros when adjusted for screen
-// coordinates.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_DragInsideWindowAndDrop DISABLED_DragInsideWindowAndDrop
-#else
-#define MAYBE_DragInsideWindowAndDrop DragInsideWindowAndDrop
-#endif
 // Check the following flow works as expected:
 // 1. With a single 1 window open,
 // 2. Move pointer into it, press left button, move cursor a bit (drag),
 // 3. Run move loop, drag it within the window bounds and drop.
-TEST_P(WaylandWindowDragControllerTest, MAYBE_DragInsideWindowAndDrop) {
+TEST_P(WaylandWindowDragControllerTest, DragInsideWindowAndDrop) {
   // Ensure there is no window currently focused
   EXPECT_FALSE(window_manager()->GetCurrentPointerOrTouchFocusedWindow());
   EXPECT_EQ(gfx::kNullAcceleratedWidget,
@@ -213,9 +242,9 @@ TEST_P(WaylandWindowDragControllerTest, MAYBE_DragInsideWindowAndDrop) {
         // WaylandWindowDragController::OnDragEnter. Run this via a task run.
         // Otherwise, the data offer will be reset and
         // WaylandWindowDragController will crash.
-        ScheduleTestTask(base::BindOnce(&WaylandDragDropTest::SendDndMotion,
-                                        base::Unretained(this),
-                                        gfx::Point(20, 20)));
+        ScheduleTestTask(base::BindOnce(
+            &WaylandWindowDragControllerTest::SendDndMotionForWindowDrag,
+            base::Unretained(this), gfx::Point(20, 20)));
         test_step = kDragging;
         break;
       case kDropping: {
@@ -263,19 +292,11 @@ TEST_P(WaylandWindowDragControllerTest, MAYBE_DragInsideWindowAndDrop) {
             screen_->GetLocalProcessWidgetAtPoint({20, 20}, {}));
 }
 
-// TODO(https://crbug.com/1448391): Reenable for Lacros when adjusted for screen
-// coordinates.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_DragInsideWindowAndDrop_TOUCH \
-  DISABLED_DragInsideWindowAndDrop_TOUCH
-#else
-#define MAYBE_DragInsideWindowAndDrop_TOUCH DragInsideWindowAndDrop_TOUCH
-#endif
 // Check the following flow works as expected:
 // 1. With a single window open,
 // 2. Touch down and move the touch point a bit (drag),
 // 3. Run move loop, drag it within the window bounds and drop.
-TEST_P(WaylandWindowDragControllerTest, MAYBE_DragInsideWindowAndDrop_TOUCH) {
+TEST_P(WaylandWindowDragControllerTest, DragInsideWindowAndDrop_TOUCH) {
   ASSERT_TRUE(GetWmMoveLoopHandler(*window_));
   ASSERT_TRUE(GetWaylandExtension(*window_));
 
@@ -303,7 +324,7 @@ TEST_P(WaylandWindowDragControllerTest, MAYBE_DragInsideWindowAndDrop_TOUCH) {
     EXPECT_EQ(ET_TOUCH_MOVED, event->type());
     EXPECT_EQ(gfx::Point(10, 10), screen_->GetCursorScreenPoint());
   });
-  SendDndMotion({10, 10});
+  SendDndMotionForWindowDrag({10, 10});
 
   enum TestStep { kDragging, kDropping, kDone } test_step = kDragging;
 
@@ -336,9 +357,9 @@ TEST_P(WaylandWindowDragControllerTest, MAYBE_DragInsideWindowAndDrop_TOUCH) {
   // Otherwise, we are not able to override the dispatcher and miss events.
   // This task must be scheduled so that move loop is able to be started before
   // this task is executed.
-  ScheduleTestTask(base::BindOnce(&WaylandDragDropTest::SendDndMotion,
-                                  base::Unretained(this),
-                                  gfx::Point({20, 20})));
+  ScheduleTestTask(base::BindOnce(
+      &WaylandWindowDragControllerTest::SendDndMotionForWindowDrag,
+      base::Unretained(this), gfx::Point({20, 20})));
 
   // RunMoveLoop() blocks until the dragging session ends, so resume test
   // server's run loop until it returns.
@@ -448,13 +469,6 @@ TEST_P(WaylandWindowDragControllerTest,
   SendTouchUp(0 /*touch id*/);
 }
 
-// TODO(https://crbug.com/1448391): Reenable for Lacros when adjusted for screen
-// coordinates.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_DragExitWindowAndDrop DISABLED_DragExitWindowAndDrop
-#else
-#define MAYBE_DragExitWindowAndDrop DragExitWindowAndDrop
-#endif
 // Check the following flow works as expected:
 // 1. With only 1 window open;
 // 2. Move pointer into it, press left button, move cursor a bit (drag);
@@ -462,7 +476,7 @@ TEST_P(WaylandWindowDragControllerTest,
 // 4. Drag pointer to outside the window and release the mouse button, and make
 //    sure RELEASE and EXIT mouse events are delivered even when the drop
 //    happens outside the bounds of any surface.
-TEST_P(WaylandWindowDragControllerTest, MAYBE_DragExitWindowAndDrop) {
+TEST_P(WaylandWindowDragControllerTest, DragExitWindowAndDrop) {
   // Ensure there is no window currently focused
   EXPECT_FALSE(window_manager()->GetCurrentPointerOrTouchFocusedWindow());
   EXPECT_EQ(gfx::kNullAcceleratedWidget,
@@ -500,9 +514,9 @@ TEST_P(WaylandWindowDragControllerTest, MAYBE_DragExitWindowAndDrop) {
         // WaylandWindowDragController::OnDragEnter. Run this via a task run.
         // Otherwise, the data offer will be reset and
         // WaylandWindowDragController will crash.
-        ScheduleTestTask(base::BindOnce(&WaylandDragDropTest::SendDndMotion,
-                                        base::Unretained(this),
-                                        gfx::Point(20, 20)));
+        ScheduleTestTask(base::BindOnce(
+            &WaylandWindowDragControllerTest::SendDndMotionForWindowDrag,
+            base::Unretained(this), gfx::Point(20, 20)));
         test_step = kDragging;
         break;
       case kExitedDropping: {
@@ -551,14 +565,6 @@ TEST_P(WaylandWindowDragControllerTest, MAYBE_DragExitWindowAndDrop) {
             screen_->GetLocalProcessWidgetAtPoint({20, 20}, {}));
 }
 
-// TODO(https://crbug.com/1448391): Reenable for Lacros when adjusted for screen
-// coordinates.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_DragToOtherWindowSnapDragDrop \
-  DISABLED_DragToOtherWindowSnapDragDrop
-#else
-#define MAYBE_DragToOtherWindowSnapDragDrop DragToOtherWindowSnapDragDrop
-#endif
 // Check the following flow works as expected:
 // 1. With 2 windows open,
 // 2. Focus window 1, starts dragging,
@@ -567,7 +573,7 @@ TEST_P(WaylandWindowDragControllerTest, MAYBE_DragExitWindowAndDrop) {
 // 5. Drag it a bit more (within window 2) and then calls EndMoveLoop(),
 //    emulating a window snap), and then
 // 6. With the window in "snapped" state, drag it further and then drop.
-TEST_P(WaylandWindowDragControllerTest, MAYBE_DragToOtherWindowSnapDragDrop) {
+TEST_P(WaylandWindowDragControllerTest, DragToOtherWindowSnapDragDrop) {
   // Init and open |target_window|.
   PlatformWindowInitProperties properties{gfx::Rect{80, 80}};
   properties.type = PlatformWindowType::kWindow;
@@ -624,9 +630,9 @@ TEST_P(WaylandWindowDragControllerTest, MAYBE_DragToOtherWindowSnapDragDrop) {
         // WaylandWindowDragController::OnDragEnter. Run this via a task run.
         // Otherwise, the data offer will be reset and
         // WaylandWindowDragController will crash.
-        ScheduleTestTask(base::BindOnce(&WaylandDragDropTest::SendDndMotion,
-                                        base::Unretained(this),
-                                        gfx::Point(50, 50)));
+        ScheduleTestTask(base::BindOnce(
+            &WaylandWindowDragControllerTest::SendDndMotionForWindowDrag,
+            base::Unretained(this), gfx::Point(50, 50)));
         test_step = kDragging;
         break;
       case kEnteredTarget:
@@ -676,7 +682,7 @@ TEST_P(WaylandWindowDragControllerTest, MAYBE_DragToOtherWindowSnapDragDrop) {
   EXPECT_CALL(delegate_, DispatchEvent(_)).Times(5);
   gfx::Point location(30, 30);
   for (size_t count = 1; count <= 5; ++count) {
-    SendDndMotion(location);
+    SendDndMotionForWindowDrag(location);
     location.Offset(0, 3);
   }
 
@@ -724,15 +730,6 @@ TEST_P(WaylandWindowDragControllerTest, MAYBE_DragToOtherWindowSnapDragDrop) {
             screen_->GetLocalProcessWidgetAtPoint({20, 20}, {}));
 }
 
-// TODO(https://crbug.com/1448391): Reenable for Lacros when adjusted for screen
-// coordinates.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_DragToOtherWindowSnapDragDrop_TOUCH \
-  DISABLED_DragToOtherWindowSnapDragDrop_TOUCH
-#else
-#define MAYBE_DragToOtherWindowSnapDragDrop_TOUCH \
-  DragToOtherWindowSnapDragDrop_TOUCH
-#endif
 // Check the following flow works as expected:
 // 1. With 2 windows open,
 // 2. Focus window 1, starts dragging,
@@ -741,8 +738,7 @@ TEST_P(WaylandWindowDragControllerTest, MAYBE_DragToOtherWindowSnapDragDrop) {
 // 5. Drag it a bit more (within window 2) and then calls EndMoveLoop(),
 //    emulating a window snap), and then
 // 6. With the window in "snapped" state, drag it further and then drop.
-TEST_P(WaylandWindowDragControllerTest,
-       MAYBE_DragToOtherWindowSnapDragDrop_TOUCH) {
+TEST_P(WaylandWindowDragControllerTest, DragToOtherWindowSnapDragDrop_TOUCH) {
   // Init and open |target_window|.
   PlatformWindowInitProperties properties{gfx::Rect{80, 80}};
   properties.type = PlatformWindowType::kWindow;
@@ -777,7 +773,7 @@ TEST_P(WaylandWindowDragControllerTest,
     EXPECT_EQ(ET_TOUCH_MOVED, event->type());
     EXPECT_EQ(gfx::Point(10, 10), screen_->GetCursorScreenPoint());
   });
-  SendDndMotion({10, 10});
+  SendDndMotionForWindowDrag({10, 10});
 
   auto* move_loop_handler = GetWmMoveLoopHandler(*window_);
   ASSERT_TRUE(move_loop_handler);
@@ -813,8 +809,9 @@ TEST_P(WaylandWindowDragControllerTest,
   // While in |kDetached| state, motion events are expected to be propagated
   // window bounds changed events.
   test_step = kDragging;
-  ScheduleTestTask(base::BindOnce(&WaylandDragDropTest::SendDndMotion,
-                                  base::Unretained(this), gfx::Point(50, 50)));
+  ScheduleTestTask(base::BindOnce(
+      &WaylandWindowDragControllerTest::SendDndMotionForWindowDrag,
+      base::Unretained(this), gfx::Point(50, 50)));
 
   // RunMoveLoop() blocks until the window moving ends.
   // TODO(nickdiego): Should succeed for this test case.
@@ -840,7 +837,7 @@ TEST_P(WaylandWindowDragControllerTest,
   EXPECT_CALL(delegate_, DispatchEvent(_)).Times(5);
   gfx::Point location(30, 30);
   for (size_t count = 1; count <= 5; ++count) {
-    SendDndMotion(location);
+    SendDndMotionForWindowDrag(location);
     location.Offset(0, 3);
   }
 
@@ -870,15 +867,6 @@ TEST_P(WaylandWindowDragControllerTest,
   EXPECT_FALSE(window_manager()->GetCurrentPointerOrTouchFocusedWindow());
 }
 
-// TODO(https://crbug.com/1448391): Reenable for Lacros when adjusted for screen
-// coordinates.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_DragToOtherWindowIgnoringSpuriousPointerEnterEvent \
-  DISABLED_DragToOtherWindowIgnoringSpuriousPointerEnterEvent
-#else
-#define MAYBE_DragToOtherWindowIgnoringSpuriousPointerEnterEvent \
-  DragToOtherWindowIgnoringSpuriousPointerEnterEvent
-#endif
 // Check the following flow works as expected:
 // 1. With 2 windows open,
 // 2. Focus window 1, starts dragging,
@@ -889,7 +877,7 @@ TEST_P(WaylandWindowDragControllerTest,
 // 6. Drag it a bit more (within window 2) and then calls EndMoveLoop(),
 //    emulating a window snap), and then drop.
 TEST_P(WaylandWindowDragControllerTest,
-       MAYBE_DragToOtherWindowIgnoringSpuriousPointerEnterEvent) {
+       DragToOtherWindowIgnoringSpuriousPointerEnterEvent) {
   // Init and open |target_window|.
   PlatformWindowInitProperties properties{gfx::Rect{80, 80}};
   properties.type = PlatformWindowType::kWindow;
@@ -946,9 +934,9 @@ TEST_P(WaylandWindowDragControllerTest,
         // WaylandWindowDragController::OnDragEnter. Run this via a task run.
         // Otherwise, the data offer will be reset and
         // WaylandWindowDragController will crash.
-        ScheduleTestTask(base::BindOnce(&WaylandDragDropTest::SendDndMotion,
-                                        base::Unretained(this),
-                                        gfx::Point(50, 50)));
+        ScheduleTestTask(base::BindOnce(
+            &WaylandWindowDragControllerTest::SendDndMotionForWindowDrag,
+            base::Unretained(this), gfx::Point(50, 50)));
         test_step = kDragging;
         break;
       case kEnteredTarget:
@@ -1033,7 +1021,7 @@ TEST_P(WaylandWindowDragControllerTest, DragExitAttached) {
   // Emulate a [motion => leave] event sequence and make sure the correct
   // ui::Events are dispatched in response.
   EXPECT_CALL(delegate_, DispatchEvent(_)).Times(1);
-  SendDndMotion({50, 50});
+  SendDndMotionForWindowDrag({50, 50});
 
   EXPECT_CALL(delegate_, DispatchEvent(_)).WillOnce([&](Event* event) {
     EXPECT_EQ(ET_MOUSE_DRAGGED, event->type());
@@ -1049,8 +1037,13 @@ TEST_P(WaylandWindowDragControllerTest, DragExitAttached) {
 
   EXPECT_EQ(window_.get(),
             window_manager()->GetCurrentPointerOrTouchFocusedWindow());
-  EXPECT_EQ(window_->GetWidget(),
-            screen_->GetLocalProcessWidgetAtPoint({20, 20}, {}));
+  if (window_->IsScreenCoordinatesEnabled()) {
+    EXPECT_EQ(window_->GetWidget(),
+              screen_->GetLocalProcessWidgetAtPoint({70, 70}, {}));
+  } else {
+    EXPECT_EQ(window_->GetWidget(),
+              screen_->GetLocalProcessWidgetAtPoint({20, 20}, {}));
+  }
 }
 
 // Verifies wl_data_device::leave events are properly handled and propagated
@@ -1076,7 +1069,7 @@ TEST_P(WaylandWindowDragControllerTest, DragExitAttached_TOUCH) {
   // Emulate a [motion => leave] event sequence and make sure the correct
   // ui::Events are dispatched in response.
   EXPECT_CALL(delegate_, DispatchEvent(_)).Times(1);
-  SendDndMotion({50, 50});
+  SendDndMotionForWindowDrag({50, 50});
 
   EXPECT_CALL(delegate_, DispatchEvent(_)).WillOnce([&](Event* event) {
     EXPECT_EQ(ET_TOUCH_MOVED, event->type());
@@ -1127,13 +1120,6 @@ TEST_P(WaylandWindowDragControllerTest, RestoreDuringWindowDragSession) {
   EXPECT_EQ(PlatformWindowState::kMaximized, window_->GetPlatformWindowState());
 }
 
-// TODO(https://crbug.com/1448391): Reenable for Lacros when adjusted for screen
-// coordinates.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_IgnorePointerEventsUntilDrop DISABLED_IgnorePointerEventsUntilDrop
-#else
-#define MAYBE_IgnorePointerEventsUntilDrop IgnorePointerEventsUntilDrop
-#endif
 // Check the following flow works as expected:
 //
 // 1. With a single 1 window open,
@@ -1144,7 +1130,7 @@ TEST_P(WaylandWindowDragControllerTest, RestoreDuringWindowDragSession) {
 //
 // Verifies window drag controller is resistant to issues such as
 // https://crbug.com/1148021.
-TEST_P(WaylandWindowDragControllerTest, MAYBE_IgnorePointerEventsUntilDrop) {
+TEST_P(WaylandWindowDragControllerTest, IgnorePointerEventsUntilDrop) {
   // Ensure there is no window currently focused
   EXPECT_FALSE(window_manager()->GetCurrentPointerOrTouchFocusedWindow());
   EXPECT_EQ(gfx::kNullAcceleratedWidget,
@@ -1182,9 +1168,9 @@ TEST_P(WaylandWindowDragControllerTest, MAYBE_IgnorePointerEventsUntilDrop) {
         // WaylandWindowDragController::OnDragEnter. Run this via a task run.
         // Otherwise, the data offer will be reset and
         // WaylandWindowDragController will crash.
-        ScheduleTestTask(base::BindOnce(&WaylandDragDropTest::SendDndMotion,
-                                        base::Unretained(this),
-                                        gfx::Point(100, 100)));
+        ScheduleTestTask(base::BindOnce(
+            &WaylandWindowDragControllerTest::SendDndMotionForWindowDrag,
+            base::Unretained(this), gfx::Point(100, 100)));
         test_step = kDragging;
         break;
       case kDropping: {
@@ -1274,18 +1260,8 @@ TEST_P(WaylandWindowDragControllerTest, MAYBE_IgnorePointerEventsUntilDrop) {
             screen_->GetLocalProcessWidgetAtPoint({20, 20}, {}));
 }
 
-// TODO(https://crbug.com/1448391): Reenable for Lacros when adjusted for screen
-// coordinates.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_MotionEventsSkippedWhileReattaching \
-  DISABLED_MotionEventsSkippedWhileReattaching
-#else
-#define MAYBE_MotionEventsSkippedWhileReattaching \
-  MotionEventsSkippedWhileReattaching
-#endif
 // Regression test for https://crbug.com/1169446.
-TEST_P(WaylandWindowDragControllerTest,
-       MAYBE_MotionEventsSkippedWhileReattaching) {
+TEST_P(WaylandWindowDragControllerTest, MotionEventsSkippedWhileReattaching) {
   auto* dragged_window = window_.get();
   EXPECT_TRUE(dragged_window);
 
@@ -1317,7 +1293,7 @@ TEST_P(WaylandWindowDragControllerTest,
                     self->window()->GetBoundsInDIP().origin());
           EXPECT_TRUE(change.origin_changed);
         });
-    self->SendDndMotion({30, 30});
+    self->SendDndMotionForWindowDrag({30, 30});
 
     move_loop_handler->EndMoveLoop();
 
@@ -1326,7 +1302,7 @@ TEST_P(WaylandWindowDragControllerTest,
     // propagated.
     EXPECT_EQ(State::kAttaching, self->drag_controller()->state());
     EXPECT_CALL(self->delegate(), OnBoundsChanged(_)).Times(0);
-    self->SendDndMotion({31, 31});
+    self->SendDndMotionForWindowDrag({31, 31});
   };
   ScheduleTestTask(base::BindOnce(test, base::Unretained(this),
                                   base::Unretained(move_loop_handler)));
@@ -1340,7 +1316,7 @@ TEST_P(WaylandWindowDragControllerTest,
   // controller as usual.
   EXPECT_EQ(State::kAttached, drag_controller()->state());
   EXPECT_CALL(delegate(), DispatchEvent(_)).Times(1);
-  SendDndMotion({30, 30});
+  SendDndMotionForWindowDrag({30, 30});
 
   EXPECT_CALL(delegate(), DispatchEvent(_)).Times(1);
   SendDndDrop();
@@ -1350,17 +1326,9 @@ TEST_P(WaylandWindowDragControllerTest,
   EXPECT_EQ(State::kIdle, drag_controller()->state());
 }
 
-// TODO(https://crbug.com/1448391): Reenable for Lacros when adjusted for screen
-// coordinates.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_CursorPositionIsUpdatedOnMotion \
-  DISABLED_CursorPositionIsUpdatedOnMotion
-#else
-#define MAYBE_CursorPositionIsUpdatedOnMotion CursorPositionIsUpdatedOnMotion
-#endif
 // Test that cursor position is using DIP coordinates and is updated correctly
 // on DragMotion event.
-TEST_P(WaylandWindowDragControllerTest, MAYBE_CursorPositionIsUpdatedOnMotion) {
+TEST_P(WaylandWindowDragControllerTest, CursorPositionIsUpdatedOnMotion) {
   constexpr gfx::Rect kOutputBounds(0, 0, 1920, 1080);
   PostToServerAndWait([&](wl::TestWaylandServerThread* server) {
     // Configure the first output with scale 1.
@@ -1399,7 +1367,7 @@ TEST_P(WaylandWindowDragControllerTest, MAYBE_CursorPositionIsUpdatedOnMotion) {
   EXPECT_EQ(State::kAttached, drag_controller()->state());
 
   // Now move the pointer to 10x10 location and start the test.
-  SendDndMotion(p0);
+  SendDndMotionForWindowDrag(p0);
   EXPECT_EQ(p0, screen_->GetCursorScreenPoint());
 
   auto* move_loop_handler = GetWmMoveLoopHandler(*window_);
@@ -1425,7 +1393,7 @@ TEST_P(WaylandWindowDragControllerTest, MAYBE_CursorPositionIsUpdatedOnMotion) {
       EXPECT_EQ(expected_point, screen->GetCursorScreenPoint());
 
       // Resetting cursor to the initial position.
-      self->SendDndMotion(p0);
+      self->SendDndMotionForWindowDrag(p0);
 
       // Send the window to |output|.
       const uint32_t surface_id = window->root_surface()->get_surface_id();
@@ -1451,7 +1419,7 @@ TEST_P(WaylandWindowDragControllerTest, MAYBE_CursorPositionIsUpdatedOnMotion) {
                : p1);
       expected_point += window->GetBoundsInDIP().origin().OffsetFromOrigin();
 
-      self->SendDndMotion(p1);
+      self->SendDndMotionForWindowDrag(p1);
 
       EXPECT_EQ(expected_point, screen->GetCursorScreenPoint());
       self->PostToServerAndWait([surface_id, output_id](
@@ -1529,19 +1497,10 @@ TEST_P(WaylandWindowDragControllerTest,
             screen_->GetLocalProcessWidgetAtPoint({20, 20}, {}));
 }
 
-// TODO(https://crbug.com/1448391): Reenable for Lacros when adjusted for screen
-// coordinates.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_HandleWindowsDestructionDuringMoveLoop \
-  DISABLED_HandleWindowsDestructionDuringMoveLoop
-#else
-#define MAYBE_HandleWindowsDestructionDuringMoveLoop \
-  HandleWindowsDestructionDuringMoveLoop
-#endif
 // Ensure no memory issues happen when the dragged and/or events grabber windows
 // get destroyed while the move loop is running.
 TEST_P(WaylandWindowDragControllerTest,
-       MAYBE_HandleWindowsDestructionDuringMoveLoop) {
+       HandleWindowsDestructionDuringMoveLoop) {
   // 1. Send some initial pointer events to |window_|.
   ASSERT_FALSE(window_manager()->GetCurrentPointerOrTouchFocusedWindow());
   SendPointerEnter(window_.get(), &delegate_);
@@ -1565,6 +1524,8 @@ TEST_P(WaylandWindowDragControllerTest,
   auto window_2 =
       delegate_2.CreateWaylandWindow(connection_.get(), std::move(properties));
   ASSERT_NE(gfx::kNullAcceleratedWidget, window_2->GetWidget());
+  window_2->Show(/*inactive=*/false);
+  wl::SyncDisplay(connection_->display_wrapper(), *connection_->display());
 
   // Spin the nested move loop and schedule a sequence of test steps to be
   // pefomed while it is running.
@@ -1574,8 +1535,9 @@ TEST_P(WaylandWindowDragControllerTest,
 
     // Send a motion event and verify it is correctly propagated.
     EXPECT_CALL(delegate_2, OnBoundsChanged(_)).Times(1);
-    SendDndMotion({11, 10});
+    SendDndMotionForWindowDrag({11, 10});
     EXPECT_EQ(gfx::Point(11, 10), cursor_tracker->GetCursorSurfacePoint());
+    Mock::VerifyAndClearExpectations(&delegate_2);
 
     // Destroy the window being currently dragged. This will end the drag
     // session.
@@ -1585,8 +1547,9 @@ TEST_P(WaylandWindowDragControllerTest,
     // Verify drag-and-drop events are not propagated after the drag ends.
     EXPECT_CALL(delegate_2, DispatchEvent(_)).Times(0);
     EXPECT_CALL(delegate_2, OnBoundsChanged(_)).Times(0);
-    SendDndMotion({12, 10});
+    SendDndMotionForWindowDrag({12, 10});
     drag_controller()->OnDragDrop();
+    Mock::VerifyAndClearExpectations(&delegate_2);
 
     // Verify that internal "last cursor position" is not updated after the
     // grab owner is destroyed.
@@ -1747,20 +1710,11 @@ TEST_P(WaylandWindowDragControllerTest, NoopUnlessPointerOrTouchPressed) {
   ASSERT_EQ(State::kIdle, drag_controller()->state());
 }
 
-// TODO(https://crbug.com/1448391): Reenable for Lacros when adjusted for screen
-// coordinates.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_HandleTargetWindowDestruction_DetachedState \
-  DISABLED_HandleTargetWindowDestruction_DetachedState
-#else
-#define MAYBE_HandleTargetWindowDestruction_DetachedState \
-  HandleTargetWindowDestruction_DetachedState
-#endif
 // Ensure events are handled appropriately when the target window is destroyed
 // while the move loop is running (i.e. dragging in the detached state).
 // Regression test for crbug.com/1433577.
 TEST_P(WaylandWindowDragControllerTest,
-       MAYBE_HandleTargetWindowDestruction_DetachedState) {
+       HandleTargetWindowDestruction_DetachedState) {
   // Send some initial pointer events to `window_`.
   ASSERT_FALSE(window_manager()->GetCurrentPointerOrTouchFocusedWindow());
   SendPointerEnter(window_.get(), &delegate_);
@@ -1784,6 +1738,8 @@ TEST_P(WaylandWindowDragControllerTest,
   auto window_2 =
       delegate_2.CreateWaylandWindow(connection_.get(), std::move(properties));
   ASSERT_NE(gfx::kNullAcceleratedWidget, window_2->GetWidget());
+  window_2->Show(/*inactive=*/false);
+  wl::SyncDisplay(connection_->display_wrapper(), *connection_->display());
 
   // Spin the nested move loop and schedule a sequence of test steps to be
   // pefomed while it is running.
@@ -1797,7 +1753,7 @@ TEST_P(WaylandWindowDragControllerTest,
 
     // Send a motion event and verify it is correctly propagated.
     EXPECT_CALL(delegate_2, OnBoundsChanged(_)).Times(1);
-    SendDndMotion({11, 10});
+    SendDndMotionForWindowDrag({11, 10});
     EXPECT_EQ(gfx::Point(11, 10), cursor_tracker->GetCursorSurfacePoint());
 
     // Destroy the target window (which at this point should be the origin
@@ -1816,7 +1772,7 @@ TEST_P(WaylandWindowDragControllerTest,
     EXPECT_CALL(delegate_, OnBoundsChanged(_)).Times(0);
     EXPECT_CALL(delegate_2, DispatchEvent(_)).Times(0);
     EXPECT_CALL(delegate_2, OnBoundsChanged(_)).Times(0);
-    SendDndMotion({12, 10});
+    SendDndMotionForWindowDrag({12, 10});
     drag_controller()->OnDragDrop();
 
     // Verify that internal "last cursor position" is not updated after the
@@ -1859,9 +1815,9 @@ TEST_P(WaylandWindowDragControllerTest,
   auto* cursor_tracker = connection_->wayland_cursor_position();
   ASSERT_TRUE(cursor_tracker);
 
-  SendDndMotion({11, 10});
+  SendDndMotionForWindowDrag({11, 10});
   EXPECT_EQ(gfx::Point(11, 10), cursor_tracker->GetCursorSurfacePoint());
-  SendDndMotion({12, 10});
+  SendDndMotionForWindowDrag({12, 10});
   EXPECT_EQ(gfx::Point(12, 10), cursor_tracker->GetCursorSurfacePoint());
 
   // Destroy the target window (which at this point should be the origin window,
@@ -1875,7 +1831,7 @@ TEST_P(WaylandWindowDragControllerTest,
   // Verify drag-and-drop events are not propagated after the drag session has
   // ended.
   EXPECT_CALL(delegate_, DispatchEvent(_)).Times(0);
-  SendDndMotion({13, 10});
+  SendDndMotionForWindowDrag({13, 10});
   drag_controller()->OnDragDrop();
 
   // Verifies that related state is correctly reset.
@@ -1885,17 +1841,18 @@ TEST_P(WaylandWindowDragControllerTest,
             screen_->GetLocalProcessWidgetAtPoint({20, 20}, {}));
 }
 
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+// Lacros requires aura shell.
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
                          WaylandWindowDragControllerTest,
                          Values(wl::ServerConfig{}));
+#endif
 
 INSTANTIATE_TEST_SUITE_P(
     XdgVersionStableTestWithAuraShell,
     WaylandWindowDragControllerTest,
-    Values(wl::ServerConfig{.enable_aura_shell =
-                                wl::EnableAuraShellProtocol::kEnabled},
-           wl::ServerConfig{
-               .enable_aura_shell = wl::EnableAuraShellProtocol::kEnabled,
-               .use_aura_output_manager = true}));
+    Values(wl::ServerConfig{
+        .enable_aura_shell = wl::EnableAuraShellProtocol::kEnabled,
+        .use_aura_output_manager = true}));
 
 }  // namespace ui

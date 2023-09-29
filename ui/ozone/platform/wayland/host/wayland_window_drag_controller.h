@@ -110,6 +110,8 @@ class WaylandWindowDragController : public WaylandDataDevice::DragDelegate,
 
   absl::optional<mojom::DragEventSource> drag_source() { return drag_source_; }
 
+  const gfx::Vector2d& drag_offset_for_testing() const { return drag_offset_; }
+
  private:
   class ExtendedDragSource;
 
