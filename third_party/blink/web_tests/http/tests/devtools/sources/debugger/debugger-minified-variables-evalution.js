@@ -5,6 +5,7 @@
 import {TestRunner} from 'test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 
+import * as SourceMapScopesModule from 'devtools/models/source_map_scopes/source_map_scopes.js';
 import * as SourcesModule from 'devtools/panels/sources/sources.js';
 import * as UIModule from 'devtools/ui/legacy/legacy.js';
 
@@ -45,7 +46,7 @@ import * as UIModule from 'devtools/ui/legacy/legacy.js';
   }
 
   function testAtPosition(uiSourceCode, position) {
-    return Sources.SourceMapNamesResolver
+    return SourceMapScopesModule.NamesResolver
         .resolveExpression(
             UIModule.Context.Context.instance().flavor(SDK.DebuggerModel.CallFrame), position.originText, uiSourceCode, position.line,
             position.startColumn, position.endColumn)
