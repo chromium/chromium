@@ -244,6 +244,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Tab.HasThemeColor" units="BooleanPresent"
+    expires_after="2024-09-29">
+  <owner>gambard@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    [iOS] Whether a page has a theme-color html tag set, recorded when the page
+    is fully loaded.
+  </summary>
+</histogram>
+
 <histogram name="Tab.NewTab" enum="NewTabType" expires_after="2024-02-25">
   <owner>tbergquist@chromium.org</owner>
   <owner>bsep@chromium.org</owner>

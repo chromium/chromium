@@ -149,6 +149,8 @@ void WebStateListMetricsBrowserAgent::PageLoaded(
       // enumerated histogram and log this case as well.
       break;
   }
+  base::UmaHistogramBoolean("Tab.HasThemeColor",
+                            web_state->GetThemeColor() != nil);
 }
 
 #pragma mark - BrowserObserver
