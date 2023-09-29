@@ -2591,8 +2591,8 @@ enum class ToolbarKind {
   [self.storeKitCoordinator start];
 }
 
-- (void)showDialogForPassKitPass:(PKPass*)pass {
-  if (self.passKitCoordinator.pass) {
+- (void)showDialogForPassKitPasses:(NSArray<PKPass*>*)passes {
+  if (self.passKitCoordinator.passes) {
     // Another pass is being displayed -- early return (this is unexpected).
     return;
   }
@@ -2601,7 +2601,7 @@ enum class ToolbarKind {
       [[PassKitCoordinator alloc] initWithBaseViewController:self.viewController
                                                      browser:self.browser];
 
-  self.passKitCoordinator.pass = pass;
+  self.passKitCoordinator.passes = passes;
   [self.passKitCoordinator start];
 }
 

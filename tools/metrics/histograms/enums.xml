@@ -30576,6 +30576,7 @@ Called by update_document_policy_enum.py.-->
   <int value="85" label="audio/3gpp"/>
   <int value="86" label="video/3gpp2"/>
   <int value="87" label="audio/3gpp2"/>
+  <int value="88" label="Bundled PK pass"/>
 </enum>
 
 <enum name="DownloadMobileConfigFileUI">
@@ -30639,6 +30640,8 @@ Called by update_document_policy_enum.py.-->
   <int value="1" label="Other Failure"/>
   <int value="2" label="Unauthorized Failure"/>
   <int value="3" label="Wrong MIME Type Failure"/>
+  <int value="4" label="Parsing Failure"/>
+  <int value="5" label="Partial Failure"/>
 </enum>
 
 <enum name="DownloadPathGenerationEvent">

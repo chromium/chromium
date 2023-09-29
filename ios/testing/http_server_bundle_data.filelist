@@ -6,6 +6,7 @@
 #       instructions on how to regenerate. Otherwise, do not edit.
 data/http_server_files/autofill_smoke_test.html
 data/http_server_files/browsing_prevent_default_test_page.html
+data/http_server_files/bundle.pkpasses
 data/http_server_files/chromium_logo.png
 data/http_server_files/chromium_logo_page.html
 data/http_server_files/complex_document.pdf
@@ -40,6 +41,7 @@ data/http_server_files/redchair.usdz
 data/http_server_files/redirect_refresh.html
 data/http_server_files/sample.ics
 data/http_server_files/sample.mobileconfig
+data/http_server_files/semi_bundle.pkpasses
 data/http_server_files/simple_login_form.html
 data/http_server_files/simple_signup_form.html
 data/http_server_files/single_page_wide.pdf

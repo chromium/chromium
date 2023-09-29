@@ -87,7 +87,7 @@ TEST_F(PassKitCoordinatorTest, ValidPassKitObject) {
   PKPass* pass = [[PKPass alloc] initWithData:nsdata error:nil];
   ASSERT_TRUE(pass);
 
-  coordinator_.pass = pass;
+  coordinator_.passes = @[ pass ];
   [coordinator_ start];
 
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
@@ -111,7 +111,7 @@ TEST_F(PassKitCoordinatorTest, ValidPassKitObject) {
         1);
   }
 
-  EXPECT_FALSE(coordinator_.pass);
+  EXPECT_FALSE(coordinator_.passes);
 }
 
 // Tests presenting multiple valid PKPass objects.
@@ -126,7 +126,7 @@ TEST_F(PassKitCoordinatorTest, MultiplePassKitObjects) {
   PKPass* pass = [[PKPass alloc] initWithData:nsdata error:nil];
   ASSERT_TRUE(pass);
 
-  coordinator_.pass = pass;
+  coordinator_.passes = @[ pass ];
   [coordinator_ start];
 
   EXPECT_TRUE(
@@ -144,7 +144,7 @@ TEST_F(PassKitCoordinatorTest, MultiplePassKitObjects) {
   UIViewController* presented_controller =
       base_view_controller_.presentedViewController;
 
-  coordinator_.pass = pass;
+  coordinator_.passes = @[ pass ];
   [coordinator_ start];
 
   // New UI presentation is ignored.
@@ -190,7 +190,7 @@ TEST_F(PassKitCoordinatorTest, AnotherViewControllerIsPresented) {
   PKPass* pass = [[PKPass alloc] initWithData:nsdata error:nil];
   ASSERT_TRUE(pass);
 
-  coordinator_.pass = pass;
+  coordinator_.passes = @[ pass ];
   [coordinator_ start];
 
   // New UI presentation is ignored.
@@ -207,7 +207,7 @@ TEST_F(PassKitCoordinatorTest, AnotherViewControllerIsPresented) {
 // Tests that PassKitCoordinator presents error infobar for invalid PKPass
 // object.
 TEST_F(PassKitCoordinatorTest, InvalidPassKitObject) {
-  coordinator_.pass = nil;
+  coordinator_.passes = nil;
   [coordinator_ start];
 
   infobars::InfoBarManager* infobar_manager =
@@ -219,7 +219,27 @@ TEST_F(PassKitCoordinatorTest, InvalidPassKitObject) {
   ASSERT_TRUE(delegate);
   DCHECK_EQ(l10n_util::GetStringUTF16(IDS_IOS_GENERIC_PASSKIT_ERROR),
             delegate->GetMessageText());
-  EXPECT_FALSE(coordinator_.pass);
+  EXPECT_FALSE(coordinator_.passes);
+
+  histogram_tester_.ExpectTotalCount(kUmaPresentAddPassesDialogResult, 0);
+}
+
+// Tests that PassKitCoordinator presents error infobar for invalid PKPass
+// object.
+TEST_F(PassKitCoordinatorTest, EmptyPassKitObject) {
+  coordinator_.passes = @[];
+  [coordinator_ start];
+
+  infobars::InfoBarManager* infobar_manager =
+      InfoBarManagerImpl::FromWebState(web_state_);
+  ASSERT_EQ(1U, infobar_manager->infobar_count());
+  infobars::InfoBar* infobar = infobar_manager->infobar_at(0);
+  ASSERT_TRUE(infobar->delegate());
+  auto* delegate = infobar->delegate()->AsConfirmInfoBarDelegate();
+  ASSERT_TRUE(delegate);
+  DCHECK_EQ(l10n_util::GetStringUTF16(IDS_IOS_GENERIC_PASSKIT_ERROR),
+            delegate->GetMessageText());
+  EXPECT_FALSE(coordinator_.passes);
 
   histogram_tester_.ExpectTotalCount(kUmaPresentAddPassesDialogResult, 0);
 }

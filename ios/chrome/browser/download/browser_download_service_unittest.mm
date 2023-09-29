@@ -327,3 +327,16 @@ TEST_F(BrowserDownloadServiceTest, ARKillSwitch) {
       download_controller(), &web_state_, std::move(task));
   ASSERT_EQ(0U, ar_quick_look_tab_helper()->tasks().size());
 }
+
+// Tests downloading a valid PKPass file while the kill switch is enabled.
+TEST_F(BrowserDownloadServiceTest, PassKitKillSwitch) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kPassKitKillSwitch);
+
+  ASSERT_TRUE(download_controller()->GetDelegate());
+  auto task =
+      std::make_unique<web::FakeDownloadTask>(GURL(kUrl), kPkPassMimeType);
+  download_controller()->GetDelegate()->OnDownloadCreated(
+      download_controller(), &web_state_, std::move(task));
+  EXPECT_EQ(0U, pass_kit_tab_helper()->tasks().size());
+}

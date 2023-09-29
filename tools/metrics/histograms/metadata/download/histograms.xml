@@ -477,6 +477,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Download.IOSDownloadBundledPassKitResult"
+    enum="DownloadPassKitResult" expires_after="2024-10-14">
+  <owner>sdefresne@chromium.org</owner>
+  <owner>ewannpv@chromium.org</owner>
+  <summary>
+    Recorded when a user attempts to download a bundled PassKit file on iOS.
+  </summary>
+</histogram>
+
 <histogram name="Download.IOSDownloadCalendarFileUI"
     enum="DownloadCalendarFileUI" expires_after="2023-10-25">
   <owner>sdefresne@chromium.org</owner>
@@ -579,10 +588,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.IOSDownloadPassKitResult"
-    enum="DownloadPassKitResult" expires_after="2024-02-14">
+    enum="DownloadPassKitResult" expires_after="2024-10-14">
   <owner>sdefresne@chromium.org</owner>
   <owner>ewannpv@chromium.org</owner>
-  <owner>mrefaat@chromium.org</owner>
   <summary>
     Recorded when a user attempts to download a PassKit file on iOS.
   </summary>

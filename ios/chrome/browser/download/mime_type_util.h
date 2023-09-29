@@ -20,6 +20,9 @@ extern char kVcardMimeType[];
 // MIME type for pass data.
 extern char kPkPassMimeType[];
 
+// MIME type for bundled pass data.
+extern char kPkBundledPassMimeType[];
+
 // MIME Type for 3D models.
 extern char kUsdzMimeType[];
 

@@ -16,6 +16,9 @@ BASE_DECLARE_FEATURE(kVCardKillSwitch);
 // Kill switch for AR support.
 BASE_DECLARE_FEATURE(kARKillSwitch);
 
+// Kill switch for the PassKit support.
+BASE_DECLARE_FEATURE(kPassKitKillSwitch);
+
 // Feature flag to add Incognito downloads warning.
 BASE_DECLARE_FEATURE(kIOSIncognitoDownloadsWarning);
 

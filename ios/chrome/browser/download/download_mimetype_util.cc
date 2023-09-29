@@ -10,6 +10,10 @@ DownloadMimeTypeResult GetDownloadMimeTypeResultFromMimeType(
   if (mime_type == kPkPassMimeType)
     return DownloadMimeTypeResult::PkPass;
 
+  if (mime_type == kPkBundledPassMimeType) {
+    return DownloadMimeTypeResult::kBundledPkPass;
+  }
+
   if (mime_type == kZipArchiveMimeType)
     return DownloadMimeTypeResult::ZipArchive;
 

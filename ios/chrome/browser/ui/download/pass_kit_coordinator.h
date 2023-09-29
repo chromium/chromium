@@ -42,7 +42,7 @@ enum class PresentAddPassesDialogResult {
 // If the PKPass is a valid pass, then the coordinator will present the "Add
 // pkpass UI". Otherwise, the coordinator will present the "failed to add
 // pkpass UI". Is set to null when the stop method is called.
-@property(nonatomic) PKPass* pass;
+@property(nonatomic) NSArray<PKPass*>* passes;
 
 @end
 

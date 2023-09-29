@@ -55,7 +55,9 @@ void BrowserDownloadService::OnDownloadCreated(
                                 DownloadFileUI::DownloadFilePresented,
                                 DownloadFileUI::Count);
 
-  if (task->GetMimeType() == kPkPassMimeType) {
+  if ((task->GetMimeType() == kPkPassMimeType ||
+       task->GetMimeType() == kPkBundledPassMimeType) &&
+      !base::FeatureList::IsEnabled(kPassKitKillSwitch)) {
     PassKitTabHelper* tab_helper = PassKitTabHelper::FromWebState(web_state);
     if (tab_helper)
       tab_helper->Download(std::move(task));

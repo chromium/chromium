@@ -11,6 +11,7 @@
 // MIME type of the download task.
 // Note: This enum is used to back an UMA histogram, and should be treated as
 // append-only.
+// LINT.IfChange
 enum class DownloadMimeTypeResult {
   // MIME type other than those listed below.
   Other = 0,
@@ -122,8 +123,10 @@ enum class DownloadMimeTypeResult {
   k3GPPAudio = 85,
   k3GPP2Video = 86,
   k3GPP2Audio = 87,
-  kMaxValue = k3GPP2Audio,
+  kBundledPkPass = 88,
+  kMaxValue = kBundledPkPass,
 };
+// LINT.ThenChange(/tools/metrics/histograms/enums.xml)
 
 // Returns DownloadMimeTypeResult for the given MIME type.
 DownloadMimeTypeResult GetDownloadMimeTypeResultFromMimeType(

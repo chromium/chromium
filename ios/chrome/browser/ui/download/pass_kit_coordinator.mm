@@ -47,10 +47,9 @@ PresentAddPassesDialogResult GetUmaResult(
 @end
 
 @implementation PassKitCoordinator
-@synthesize pass = _pass;
 
 - (void)start {
-  if (self.pass) {
+  if (self.passes.count > 0) {
     [self presentAddPassUI];
   } else {
     [self presentErrorUI];
@@ -60,7 +59,7 @@ PresentAddPassesDialogResult GetUmaResult(
 - (void)stop {
   [_viewController dismissViewControllerAnimated:YES completion:nil];
   _viewController = nil;
-  _pass = nil;
+  _passes = nil;
 }
 
 #pragma mark - Private
@@ -78,7 +77,8 @@ PresentAddPassesDialogResult GetUmaResult(
   if (_viewController)
     return;
 
-  _viewController = [[PKAddPassesViewController alloc] initWithPass:self.pass];
+  _viewController =
+      [[PKAddPassesViewController alloc] initWithPasses:self.passes];
   _viewController.delegate = self;
   [self.baseViewController presentViewController:_viewController
                                         animated:YES

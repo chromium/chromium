@@ -11,28 +11,34 @@
 
 #import "base/files/file_path.h"
 #import "base/memory/ptr_util.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
 #import "ios/chrome/browser/download/mime_type_util.h"
 #import "ios/chrome/browser/download/pass_kit_tab_helper_delegate.h"
+#import "ios/chrome/browser/shared/model/utils/js_unzipper.h"
 #import "ios/chrome/browser/shared/public/commands/web_content_commands.h"
 #import "ios/web/public/download/download_task.h"
 
 const char kUmaDownloadPassKitResult[] = "Download.IOSDownloadPassKitResult";
+const char kUmaDownloadBundledPassKitResult[] =
+    "Download.IOSDownloadBundledPassKitResult";
 
 namespace {
 
-// Returns DownloadPassKitResult for the given competed download task.
-DownloadPassKitResult GetUmaResult(web::DownloadTask* task) {
+// Returns DownloadPassKitResult for the given competed download task http code.
+DownloadPassKitResult GetUmaHttpResult(web::DownloadTask* task) {
   if (task->GetHttpCode() == 401 || task->GetHttpCode() == 403)
-    return DownloadPassKitResult::UnauthorizedFailure;
+    return DownloadPassKitResult::kUnauthorizedFailure;
 
-  if (task->GetMimeType() != kPkPassMimeType)
-    return DownloadPassKitResult::WrongMimeTypeFailure;
+  if (task->GetMimeType() != kPkPassMimeType &&
+      task->GetMimeType() != kPkBundledPassMimeType) {
+    return DownloadPassKitResult::kWrongMimeTypeFailure;
+  }
 
   if (task->GetErrorCode())
-    return DownloadPassKitResult::OtherFailure;
+    return DownloadPassKitResult::kOtherFailure;
 
-  return DownloadPassKitResult::Successful;
+  return DownloadPassKitResult::kSuccessful;
 }
 
 }  // namespace
@@ -49,7 +55,8 @@ PassKitTabHelper::~PassKitTabHelper() {
 }
 
 void PassKitTabHelper::Download(std::unique_ptr<web::DownloadTask> task) {
-  DCHECK_EQ(task->GetMimeType(), kPkPassMimeType);
+  DCHECK(task->GetMimeType() == kPkPassMimeType ||
+         task->GetMimeType() == kPkBundledPassMimeType);
   web::DownloadTask* task_ptr = task.get();
   // Start may call OnDownloadUpdated immediately, so add the task to the set of
   // unfinished tasks.
@@ -76,20 +83,68 @@ void PassKitTabHelper::OnDownloadUpdated(web::DownloadTask* updated_task) {
   // Stop observing the task as its ownership is transfered to the callback
   // that will destroy when it is invoked or cancelled.
   updated_task->RemoveObserver(this);
-  updated_task->GetResponseData(
-      base::BindOnce(&PassKitTabHelper::OnDownloadDataRead,
-                     weak_factory_.GetWeakPtr(), std::move(task)));
+
+  DownloadPassKitResult uma_result = GetUmaHttpResult(task.get());
+
+  if (task->GetMimeType() == kPkBundledPassMimeType) {
+    updated_task->GetResponseData(
+        base::BindOnce(&PassKitTabHelper::OnDownloadBundledPassesDataRead,
+                       weak_factory_.GetWeakPtr(), uma_result));
+  } else {
+    updated_task->GetResponseData(
+        base::BindOnce(&PassKitTabHelper::OnDownloadPassDataRead,
+                       weak_factory_.GetWeakPtr(), uma_result));
+  }
 }
 
-void PassKitTabHelper::OnDownloadDataRead(
-    std::unique_ptr<web::DownloadTask> task,
+void PassKitTabHelper::OnDownloadBundledPassesDataRead(
+    DownloadPassKitResult uma_result,
     NSData* data) {
-  DCHECK(task);
-  PKPass* pass = [[PKPass alloc] initWithData:data error:nil];
-  [handler_ showDialogForPassKitPass:pass];
+  base::WeakPtr<PassKitTabHelper> weak_pointer = weak_factory_.GetWeakPtr();
 
-  UMA_HISTOGRAM_ENUMERATION(kUmaDownloadPassKitResult, GetUmaResult(task.get()),
-                            DownloadPassKitResult::Count);
+  unzipper_ = [[JSUnzipper alloc] init];
+  [unzipper_ unzipData:data
+      completionCallback:^void(NSArray<NSData*>* result_array, NSError* error) {
+        DownloadPassKitResult inner_uma_result = uma_result;
+        if (error && inner_uma_result == DownloadPassKitResult::kSuccessful) {
+          inner_uma_result = DownloadPassKitResult::kParsingFailure;
+        }
+        if (weak_pointer) {
+          weak_pointer->OnDownloadDataAllRead(kUmaDownloadBundledPassKitResult,
+                                              inner_uma_result, result_array);
+        } else {
+          base::UmaHistogramEnumeration(kUmaDownloadBundledPassKitResult,
+                                        DownloadPassKitResult::kParsingFailure);
+        }
+      }];
+}
+
+void PassKitTabHelper::OnDownloadPassDataRead(DownloadPassKitResult uma_result,
+                                              NSData* data) {
+  NSArray<NSData*>* results = data ? @[ data ] : nil;
+  OnDownloadDataAllRead(kUmaDownloadPassKitResult, uma_result, results);
+}
+
+void PassKitTabHelper::OnDownloadDataAllRead(std::string uma_histogram,
+                                             DownloadPassKitResult uma_result,
+                                             NSArray<NSData*>* all_data) {
+  NSMutableArray<PKPass*>* passes = [NSMutableArray array];
+  for (NSData* data in all_data) {
+    // TODO(crbug.com/1487198): This should happen on background thread.
+    PKPass* pass = [[PKPass alloc] initWithData:data error:nil];
+    if (pass) {
+      [passes addObject:pass];
+    } else if (uma_result == DownloadPassKitResult::kSuccessful) {
+      uma_result = DownloadPassKitResult::kParsingFailure;
+    }
+  }
+  if (passes.count > 0 &&
+      uma_result == DownloadPassKitResult::kParsingFailure) {
+    uma_result = DownloadPassKitResult::kPartialFailure;
+  }
+  [handler_ showDialogForPassKitPasses:passes];
+
+  base::UmaHistogramEnumeration(uma_histogram, uma_result);
 }
 
 WEB_STATE_USER_DATA_KEY_IMPL(PassKitTabHelper)

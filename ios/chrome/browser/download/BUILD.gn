@@ -50,6 +50,7 @@ source_set("download") {
     "//ios/chrome/browser/overlays/public/common/confirmation:util",
     "//ios/chrome/browser/prerender",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/utils",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/ui/download:features",
     "//ios/web/common",

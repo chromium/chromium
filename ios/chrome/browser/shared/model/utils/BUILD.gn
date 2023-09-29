@@ -6,16 +6,26 @@ source_set("utils") {
   sources = [
     "first_run_util.h",
     "first_run_util.mm",
+    "js_unzipper.h",
+    "js_unzipper.mm",
     "notification_observer_bridge.h",
     "notification_observer_bridge.mm",
     "observable_boolean.h",
   ]
 
   deps = [
+    ":zip_extraction",
     "//base",
     "//ios/chrome/browser/first_run",
     "//ios/chrome/browser/shared/public/features:system_flags",
   ]
+
+  frameworks = [ "WebKit.framework" ]
+}
+
+bundle_data("zip_extraction") {
+  sources = [ "//third_party/jszip/src/dist/jszip.js" ]
+  outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
 }
 
 source_set("test_support") {

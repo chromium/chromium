@@ -14,6 +14,7 @@ char kRealityFileExtension[] = ".reality";
 // MIME types.
 char kMobileConfigurationType[] = "application/x-apple-aspen-config";
 char kPkPassMimeType[] = "application/vnd.apple.pkpass";
+char kPkBundledPassMimeType[] = "application/vnd.apple.pkpasses";
 char kVcardMimeType[] = "text/vcard";
 char kUsdzMimeType[] = "model/vnd.usdz+zip";
 char kLegacyUsdzMimeType[] = "model/usd";

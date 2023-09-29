@@ -15,6 +15,7 @@
 #include "ios/web/public/download/download_task_observer.h"
 #include "ios/web/public/web_state_user_data.h"
 
+@class JSUnzipper;
 @protocol WebContentCommands;
 namespace web {
 class DownloadTask;
@@ -23,23 +24,31 @@ class WebState;
 
 // Key of the UMA Download.IOSDownloadPassKitResult histogram.
 extern const char kUmaDownloadPassKitResult[];
+extern const char kUmaDownloadBundledPassKitResult[];
 
 // Enum for the Download.IOSDownloadPassKitResult UMA histogram to report the
 // results of the PassKit download.
-// Note: This enum is used to back an UMA histogram, and should be treated as
-// append-only.
+// Note: This enum is used to back the DownloadPassKitResult UMA enum, and
+// should be treated as append-only.
+// LINT.IfChange
 enum class DownloadPassKitResult {
-  Successful = 0,
+  kSuccessful = 0,
   // PassKit download failed for a reason other than wrong MIME type or 401/403
   // HTTP response.
-  OtherFailure,
+  kOtherFailure = 1,
   // PassKit download failed due to either a 401 or 403 HTTP response.
-  UnauthorizedFailure,
+  kUnauthorizedFailure = 2,
   // PassKit download did not download the correct MIME type. This can happen
   // when web server redirects to login page instead of returning PassKit data.
-  WrongMimeTypeFailure,
-  Count
+  kWrongMimeTypeFailure = 3,
+  // There was a failure when parsing pass kit data.
+  kParsingFailure = 4,
+  // There was a failure when parsing some pass kit data, but the parsing
+  // succeeded on some passes.
+  kPartialFailure = 5,
+  kMaxValue = kPartialFailure,
 };
+// LINT.ThenChange(/tools/metrics/histograms/enums.xml)
 
 // TabHelper which downloads pkpass file, constructs PKPass object and passes
 // that PKPass to the delegate.
@@ -68,15 +77,26 @@ class PassKitTabHelper : public web::WebStateUserData<PassKitTabHelper>,
   // web::DownloadTaskObserver overrides:
   void OnDownloadUpdated(web::DownloadTask* task) override;
 
-  // Called when the downloaded data is available.
-  void OnDownloadDataRead(std::unique_ptr<web::DownloadTask> task,
-                          NSData* data);
+  // Called when the downloaded data of bundled passkits is available.
+  void OnDownloadBundledPassesDataRead(DownloadPassKitResult uma_result,
+                                       NSData* data);
+
+  // Called when the downloaded data of a single passkit is available.
+  void OnDownloadPassDataRead(DownloadPassKitResult uma_result, NSData* data);
+
+  // Called when all the downloaded data are available.
+  void OnDownloadDataAllRead(std::string uma_histogram,
+                             DownloadPassKitResult uma_result,
+                             NSArray<NSData*>* all_data);
 
   web::WebState* web_state_;
   __weak id<WebContentCommands> handler_ = nil;
   // Set of unfinished download tasks.
   std::set<std::unique_ptr<web::DownloadTask>, base::UniquePtrComparator>
       tasks_;
+
+  // Util used for unzipping through JavaScript.
+  JSUnzipper* unzipper_;
 
   base::WeakPtrFactory<PassKitTabHelper> weak_factory_{this};
 
