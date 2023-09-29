@@ -452,6 +452,15 @@ void MediaFoundationStreamWrapper::OnDemuxerStreamRead(
         ReportEncryptionType(buffer);
       }
 
+      if (has_clear_lead_ && !switched_clear_to_encrypted_ &&
+          !buffer->end_of_stream() && buffer->decrypt_config() &&
+          buffer->decrypt_config()->encryption_scheme() !=
+              EncryptionScheme::kUnencrypted) {
+        MEDIA_LOG(INFO, media_log_)
+            << "Stream switched from clear to encrypted buffers.";
+        switched_clear_to_encrypted_ = true;
+      }
+
       // Push |buffer| to process later if needed. Otherwise, process it
       // immediately.
       if (flushed_ || !post_flush_buffers_.empty()) {
@@ -638,6 +647,7 @@ void MediaFoundationStreamWrapper::ReportEncryptionType(
     MEDIA_LOG(INFO, media_log_) << "MediaFoundationStreamWrapper: "
                                 << DemuxerStream::GetTypeName(stream_type_)
                                 << " stream is encrypted with clear lead";
+    has_clear_lead_ = true;
   }
 
   // TODO(xhwang): Report `encryption_type` to `PipelineStatistics` so it's
