@@ -27,7 +27,6 @@
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/fake_authentication_service_delegate.h"
 #import "ios/chrome/browser/tabs/features.h"
-#import "ios/chrome/browser/web_state_list/web_usage_enabler/web_usage_enabler_browser_agent.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/navigation/referrer.h"
@@ -172,11 +171,6 @@ class SessionRestorationBrowserAgentTest : public PlatformTest {
     browser_ = std::make_unique<TestBrowser>(
         chrome_browser_state_.get(),
         std::make_unique<BrowserWebStateListDelegate>());
-    // Web usage is disabled during these tests.
-    WebUsageEnablerBrowserAgent::CreateForBrowser(browser_.get());
-    web_usage_enabler_ =
-        WebUsageEnablerBrowserAgent::FromBrowser(browser_.get());
-    web_usage_enabler_->SetWebUsageEnabled(false);
   }
 
   void TearDown() override {
@@ -237,7 +231,6 @@ class SessionRestorationBrowserAgentTest : public PlatformTest {
 
   __strong NSString* session_identifier_ = nil;
   TestSessionService* test_session_service_;
-  WebUsageEnablerBrowserAgent* web_usage_enabler_;
   SessionRestorationBrowserAgent* session_restoration_agent_;
 };
 

@@ -31,7 +31,6 @@
 #import "ios/chrome/browser/web/features.h"
 #import "ios/chrome/browser/web/page_placeholder_tab_helper.h"
 #import "ios/chrome/browser/web/session_state/web_session_state_tab_helper.h"
-#import "ios/chrome/browser/web_state_list/web_usage_enabler/web_usage_enabler_browser_agent.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/session/crw_session_storage.h"
@@ -208,7 +207,6 @@ SessionRestorationBrowserAgent::SessionRestorationBrowserAgent(
     bool enable_pinned_web_states)
     : session_service_(session_service),
       web_state_list_(browser->GetWebStateList()),
-      web_enabler_(WebUsageEnablerBrowserAgent::FromBrowser(browser)),
       browser_state_(browser->GetBrowserState()),
       session_window_ios_factory_([[SessionWindowIOSFactory alloc]
           initWithWebStateList:web_state_list_]),
