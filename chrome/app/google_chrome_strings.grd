@@ -783,7 +783,7 @@ Permissions you've already given to websites and apps may apply to this account.
 
         <!-- Extension uninstall prompt -->
         <message name="IDS_EXTENSION_UNINSTALL_PROMPT_REMOVE_DATA_CHECKBOX" desc="Checkbox text to ask the user whether they want to remove associated data at uninstall time. Only used when uninstalling an app associated with a particular website.">
-          Also clear data from Chrome (<ph name="URL">$1<ex>www.google.com</ex></ph>)
+          Also delete data from Chrome (<ph name="URL">$1<ex>www.google.com</ex></ph>)
         </message>
 
         <!-- Extension alerts. -->
