@@ -1,0 +1,47 @@
+Builder "{{ .Build.Builder | formatBuilderID }}" completed with status {{.Build.Status}}
+
+<table>
+  <tr>
+    <td>Builder:</td>
+    <td>{{ .Build.Builder | formatBuilderID }}</td>
+  </tr>
+  <tr>
+    <td>Build status:</td>
+    <td><b>{{ .Build.Status }}</b></td>
+  </tr>
+  <tr>
+    <td>Previous build status:</td>
+    <td>{{ .OldStatus }}</td>
+  </tr>
+  <tr>
+    <td>Created at:</td>
+    <td>{{ .Build.CreateTime | time }}</td>
+  </tr>
+  <tr>
+    <td>Finished at:</td>
+    <td>{{ .Build.EndTime | time }}</td>
+  </tr>
+</table>
+<br/>
+
+Unsuccessful steps
+<table>
+  <tr>
+    <th scope="col">Step</th>
+    <th scope="col">Status</th>
+    <th scope="col">Summary</th>
+  </tr>
+  {{range $step := .Build.Steps }}
+    {{ if ne $step.Status 12 }}
+      <tr>
+        <td>{{$step.Name}}</td>
+        <td>{{$step.Status}}</td>
+        <td>{{$step.SummaryMarkdown | markdown}}</td>
+      </tr>
+    {{end}}
+  {{end}}
+</table>
+<br/>
+
+Build details: {{ buildUrl . }}
+<br/>
