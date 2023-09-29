@@ -148,13 +148,10 @@ std::vector<std::string> GetSortedThirdPartyIMEs(
   ime_state->GetInputMethodExtensions(&descriptors);
 
   // Filter out the IMEs not in |third_party_ime_set|.
-  descriptors.erase(
-      std::remove_if(
-          descriptors.begin(), descriptors.end(),
+      base::EraseIf(descriptors,
           [&third_party_ime_set](const InputMethodDescriptor& descriptor) {
             return !third_party_ime_set.contains(descriptor.id());
-          }),
-      descriptors.end());
+          });
 
   // A set of the elements of |ime_list|.
   std::set<std::string> ime_set;
