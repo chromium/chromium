@@ -7,6 +7,7 @@ import {BindingsTestRunner} from 'bindings_test_runner';
 
 import * as SDK from 'devtools/core/sdk/sdk.js';
 import * as BindingsModule from 'devtools/models/bindings/bindings.js';
+import * as TextUtils from 'devtools/models/text_utils/text_utils.js';
 
 (async function() {
   TestRunner.addResult(`Editing inline styles should play nice with inline scripts.\n`);
@@ -47,7 +48,7 @@ import * as BindingsModule from 'devtools/models/bindings/bindings.js';
     TestRunner.addResult('Adding rule' + i)
     await TestRunner.cssModel.addRule(styleSheetId, `.new-rule {
   --new: true;
-}`, TextUtils.TextRange.createFromLocation(0, 0));
+}`, TextUtils.TextRange.TextRange.createFromLocation(0, 0));
     await TestRunner.waitForPendingLiveLocationUpdates();
     printLocationUpdates();
     i++;

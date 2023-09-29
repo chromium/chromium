@@ -4,49 +4,51 @@
 
 import {TestRunner} from 'test_runner';
 
+import * as TextUtils from 'devtools/models/text_utils/text_utils.js';
+
 (async function() {
-  TestRunner.addResult(`Tests TextUtils.TextUtils.splitStringByRegexes.\n`);
+  TestRunner.addResult(`Tests TextUtils.TextUtils.Utils.splitStringByRegexes.\n`);
 
 
   TestRunner.runTestSuite([
     function testSimple(next) {
       var regexes = [/hello/g, /[0-9]+/g];
-      var results = TextUtils.TextUtils.splitStringByRegexes('hello123hello123', regexes);
+      var results = TextUtils.TextUtils.Utils.splitStringByRegexes('hello123hello123', regexes);
       dumpResults(results);
       next();
     },
 
     function testMatchAtStart(next) {
       var regexes = [/yes/g];
-      var results = TextUtils.TextUtils.splitStringByRegexes('yes thank you', regexes);
+      var results = TextUtils.TextUtils.Utils.splitStringByRegexes('yes thank you', regexes);
       dumpResults(results);
       next();
     },
 
     function testMatchAtEnd(next) {
       var regexes = [/you/g];
-      var results = TextUtils.TextUtils.splitStringByRegexes('yes thank you', regexes);
+      var results = TextUtils.TextUtils.Utils.splitStringByRegexes('yes thank you', regexes);
       dumpResults(results);
       next();
     },
 
     function testAvoidInnerMatch(next) {
       var regexes = [/url\("red\.com"\)/g, /red/g];
-      var results = TextUtils.TextUtils.splitStringByRegexes('image: url("red.com")', regexes);
+      var results = TextUtils.TextUtils.Utils.splitStringByRegexes('image: url("red.com")', regexes);
       dumpResults(results);
       next();
     },
 
     function testNoMatch(next) {
       var regexes = [/something/g];
-      var results = TextUtils.TextUtils.splitStringByRegexes('nothing', regexes);
+      var results = TextUtils.TextUtils.Utils.splitStringByRegexes('nothing', regexes);
       dumpResults(results);
       next();
     },
 
     function testNoMatches(next) {
       var regexes = [/something/g, /123/g, /abc/g];
-      var results = TextUtils.TextUtils.splitStringByRegexes('nothing', regexes);
+      var results = TextUtils.TextUtils.Utils.splitStringByRegexes('nothing', regexes);
       dumpResults(results);
       next();
     },
@@ -54,7 +56,7 @@ import {TestRunner} from 'test_runner';
     function testComplex(next) {
       var regexes = [/\(([^)]+)\)/g, /okay/g, /ka/g];
       var results =
-          TextUtils.TextUtils.splitStringByRegexes('Start. (okay) kit-kat okay (kale) ka( ) okay. End', regexes);
+          TextUtils.TextUtils.Utils.splitStringByRegexes('Start. (okay) kit-kat okay (kale) ka( ) okay. End', regexes);
       dumpResults(results);
       next();
     }

@@ -6,6 +6,7 @@ import {TestRunner} from 'test_runner';
 import {ElementsTestRunner} from 'elements_test_runner';
 
 import * as SDK from 'devtools/core/sdk/sdk.js';
+import * as TextUtils from 'devtools/models/text_utils/text_utils.js';
 
 (async function() {
   TestRunner.addResult(
@@ -49,35 +50,35 @@ div {}
   TestRunner.runTestSuite([
     function testSetStyle(next) {
       var header = headers.find(header => header.sourceURL.endsWith('set-style.css'));
-      TestRunner.cssModel.setStyleText(header.id, new TextUtils.TextRange(1, 5, 1, 18), 'EDITED: EDITED', true)
+      TestRunner.cssModel.setStyleText(header.id, new TextUtils.TextRange.TextRange(1, 5, 1, 18), 'EDITED: EDITED', true)
           .then(success => onEdit(header, success))
           .then(next);
     },
 
     function testSetSelector(next) {
       var header = headers.find(header => header.sourceURL.endsWith('set-selector.css'));
-      TestRunner.cssModel.setSelectorText(header.id, new TextUtils.TextRange(1, 0, 1, 3), 'EDITED')
+      TestRunner.cssModel.setSelectorText(header.id, new TextUtils.TextRange.TextRange(1, 0, 1, 3), 'EDITED')
           .then(success => onEdit(header, success))
           .then(next);
     },
 
     function testSetMedia(next) {
       var header = headers.find(header => header.sourceURL.endsWith('set-media.css'));
-      TestRunner.cssModel.setMediaText(header.id, new TextUtils.TextRange(1, 7, 1, 12), 'EDITED')
+      TestRunner.cssModel.setMediaText(header.id, new TextUtils.TextRange.TextRange(1, 7, 1, 12), 'EDITED')
           .then(success => onEdit(header, success))
           .then(next);
     },
 
     function testSetKeyframeKey(next) {
       var header = headers.find(header => header.sourceURL.endsWith('set-keyframe-key.css'));
-      TestRunner.cssModel.setKeyframeKey(header.id, new TextUtils.TextRange(1, 23, 1, 27), 'from')
+      TestRunner.cssModel.setKeyframeKey(header.id, new TextUtils.TextRange.TextRange(1, 23, 1, 27), 'from')
           .then(success => onEdit(header, success))
           .then(next);
     },
 
     function testAddRule(next) {
       var header = headers.find(header => header.sourceURL.endsWith('add-rule.css'));
-      TestRunner.cssModel.addRule(header.id, 'EDITED {}\n', new TextUtils.TextRange(1, 0, 1, 0))
+      TestRunner.cssModel.addRule(header.id, 'EDITED {}\n', new TextUtils.TextRange.TextRange(1, 0, 1, 0))
           .then(success => onEdit(header, success))
           .then(next);
     },

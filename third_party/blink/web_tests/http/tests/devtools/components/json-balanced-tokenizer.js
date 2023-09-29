@@ -4,11 +4,13 @@
 
 import {TestRunner} from 'test_runner';
 
-(async function() {
-  TestRunner.addResult(`Test TextUtils.BalancedJSONTokenizer.\n`);
+import * as TextUtils from 'devtools/models/text_utils/text_utils.js';
 
-  const BalancedJSONTokenizer = TextUtils.BalancedJSONTokenizer ||
-      TextUtils.TextUtils.BalancedJSONTokenizer;
+(async function() {
+  TestRunner.addResult(`Test TextUtils.TextUtils.BalancedJSONTokenizer.\n`);
+
+  const BalancedJSONTokenizer = TextUtils.TextUtils.BalancedJSONTokenizer ||
+      TextUtils.TextUtils.Utils.BalancedJSONTokenizer;
 
   TestRunner.runTestSuite([
     function testMatchQuotes(next) {

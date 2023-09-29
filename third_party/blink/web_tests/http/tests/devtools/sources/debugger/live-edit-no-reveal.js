@@ -6,6 +6,7 @@ import {TestRunner} from 'test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 
 import * as SourcesModule from 'devtools/panels/sources/sources.js';
+import * as TextUtils from 'devtools/models/text_utils/text_utils.js';
 
 (async function() {
   TestRunner.addResult(`Tests live edit feature.\n`);
@@ -37,7 +38,7 @@ import * as SourcesModule from 'devtools/panels/sources/sources.js';
       panel._updateLastModificationTimeForTest();
       SourcesTestRunner.replaceInSource(sourceFrame, oldText, newText);
       TestRunner.addResult('Moving cursor to (0, 0).');
-      sourceFrame.setSelection(TextUtils.TextRange.createFromLocation(0, 0));
+      sourceFrame.setSelection(TextUtils.TextRange.TextRange.createFromLocation(0, 0));
       TestRunner.addResult('Committing live edit.');
       SourcesTestRunner.commitSource(sourceFrame);
     }
@@ -71,7 +72,7 @@ import * as SourcesModule from 'devtools/panels/sources/sources.js';
       panel._lastModificationTimeoutPassedForTest();
       SourcesTestRunner.replaceInSource(sourceFrame, oldText, newText);
       TestRunner.addResult('Moving cursor to (0, 0).');
-      sourceFrame.setSelection(TextUtils.TextRange.createFromLocation(0, 0));
+      sourceFrame.setSelection(TextUtils.TextRange.TextRange.createFromLocation(0, 0));
       TestRunner.addResult('Committing live edit.');
       SourcesTestRunner.commitSource(sourceFrame);
     }

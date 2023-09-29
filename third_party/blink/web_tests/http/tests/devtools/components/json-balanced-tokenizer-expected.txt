@@ -1,4 +1,4 @@
-Test TextUtils.BalancedJSONTokenizer.
+Test TextUtils.TextUtils.BalancedJSONTokenizer.
 
 
 Running: testMatchQuotes

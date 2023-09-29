@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 
+import * as TextUtils from 'devtools/models/text_utils/text_utils.js';
+
 (async function() {
   TestRunner.addResult(`Checks that BreakpointManager.possibleBreakpoints returns correct locations\n`);
   await TestRunner.showPanel('sources');
@@ -25,16 +27,16 @@ import {SourcesTestRunner} from 'sources_test_runner';
     var breakpointManager = Bindings.breakpointManager;
 
     TestRunner.addResult('Locations for first line');
-    breakpointManager.possibleBreakpoints(uiSourceCode, new TextUtils.TextRange(0, 0, 1, 0))
+    breakpointManager.possibleBreakpoints(uiSourceCode, new TextUtils.TextRange.TextRange(0, 0, 1, 0))
         .then(dumpLocations)
         .then(() => TestRunner.addResult('All locations'))
-        .then(() => breakpointManager.possibleBreakpoints(uiSourceCode, new TextUtils.TextRange(0, 0, 6, 0)))
+        .then(() => breakpointManager.possibleBreakpoints(uiSourceCode, new TextUtils.TextRange.TextRange(0, 0, 6, 0)))
         .then(dumpLocations)
         .then(() => TestRunner.addResult('Existing location by position'))
-        .then(() => breakpointManager.possibleBreakpoints(uiSourceCode, new TextUtils.TextRange(2, 37, 2, 38)))
+        .then(() => breakpointManager.possibleBreakpoints(uiSourceCode, new TextUtils.TextRange.TextRange(2, 37, 2, 38)))
         .then(dumpLocations)
         .then(() => TestRunner.addResult('Not existing location by position'))
-        .then(() => breakpointManager.possibleBreakpoints(uiSourceCode, new TextUtils.TextRange(2, 38, 2, 39)))
+        .then(() => breakpointManager.possibleBreakpoints(uiSourceCode, new TextUtils.TextRange.TextRange(2, 38, 2, 39)))
         .then(dumpLocations)
         .then(() => SourcesTestRunner.completeDebuggerTest());
   }

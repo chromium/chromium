@@ -5,6 +5,7 @@
 import {TestRunner} from 'test_runner';
 
 import * as UIModule from 'devtools/ui/legacy/legacy.js';
+import * as TextUtils from 'devtools/models/text_utils/text_utils.js';
 
 (async function() {
   TestRunner.addResult(`Tests how utilities functions highlight text and then revert/re-apply highlighting changes.\n`);
@@ -58,7 +59,7 @@ import * as UIModule from 'devtools/ui/legacy/legacy.js';
   }
 
   function range(offset, length) {
-    return new TextUtils.SourceRange(offset, length);
+    return new TextUtils.TextRange.SourceRange(offset, length);
   }
 
   performTestForElement(textElement(['function']), [range(0, 8)]);  // Highlight whole text node.
