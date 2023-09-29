@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/check_is_test.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "components/viz/common/quads/aggregated_render_pass.h"
@@ -61,10 +62,10 @@ class VIZ_SERVICE_EXPORT OverlayProcessorWin
       const SkM44& output_color_matrix,
       const FilterOperationsMap& render_pass_filters,
       const FilterOperationsMap& render_pass_backdrop_filters,
-      SurfaceDamageRectList surface_damage_rect_list,
+      SurfaceDamageRectList surface_damage_rect_list_in_root_space,
       OutputSurfaceOverlayPlane* output_surface_plane,
       OverlayCandidateList* overlay_candidates,
-      gfx::Rect* damage_rect,
+      gfx::Rect* root_damage_rect,
       std::vector<gfx::Rect>* content_bounds) override;
 
   void set_using_dc_layers_for_testing(bool value) { using_dc_layers_ = value; }
@@ -72,6 +73,24 @@ class VIZ_SERVICE_EXPORT OverlayProcessorWin
     GetOverlayProcessor()
         ->set_frames_since_last_qualified_multi_overlays_for_testing(value);
   }
+  size_t get_previous_frame_render_pass_count() {
+    CHECK_IS_TEST();
+    return GetOverlayProcessor()->get_previous_frame_render_pass_count();
+  }
+  std::vector<AggregatedRenderPassId> get_previous_frame_render_pass_ids() {
+    CHECK_IS_TEST();
+    return GetOverlayProcessor()->get_previous_frame_render_pass_ids();
+  }
+
+  void ProcessOnDCLayerOverlayProcessorForTesting(
+      DisplayResourceProvider* resource_provider,
+      const FilterOperationsMap& render_pass_filters,
+      const FilterOperationsMap& render_pass_backdrop_filters,
+      SurfaceDamageRectList surface_damage_rect_list,
+      bool is_video_capture_enabled,
+      bool is_page_fullscreen_mode,
+      DCLayerOverlayProcessor::RenderPassOverlayDataMap&
+          render_pass_overlay_data_map);
 
  protected:
   // For testing.
