@@ -10,6 +10,7 @@
 
 #include "base/values.h"
 #include "third_party/skia/include/core/SkMatrix.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 
 namespace gfx {
 
@@ -222,6 +223,20 @@ bool RRectF::ApproximatelyEqual(const RRectF& rect, float tolerance) const {
     }
   }
   return true;
+}
+
+// static
+RRectF RRectF::ToEnclosingRRectF(const RRectF& rrect_f) {
+  return RRectF(gfx::RectF(ToEnclosingRect(rrect_f.rect())),
+                rrect_f.GetRoundedCorners());
+}
+
+gfx::RoundedCornersF RRectF::GetRoundedCorners() const {
+  auto upper_left = GetCornerRadii(Corner::kUpperLeft);
+  auto upper_right = GetCornerRadii(Corner::kUpperRight);
+  auto lower_right = GetCornerRadii(Corner::kLowerRight);
+  auto lower_left = GetCornerRadii(Corner::kLowerLeft);
+  return {upper_left.x(), upper_right.x(), lower_right.x(), lower_left.x()};
 }
 
 }  // namespace gfx
