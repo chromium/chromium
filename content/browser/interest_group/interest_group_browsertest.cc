@@ -18297,6 +18297,32 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       https_server_->GetURL(kTestOrigin, "/echoall?report_bidder")));
 }
 
+// Test to make sure that Promises configuration fields that are checked early
+// on don't actually end up running their handlers if a later config check
+// fails.
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       RunAdAuctionPromiseSideEffects) {
+  ASSERT_TRUE(NavigateToURL(shell(), https_server_->GetURL("a.test", "/echo")));
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+  console_observer.SetPattern("*I am a*");
+  EXPECT_EQ(
+      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': "
+      "sellerCurrency 'currency is checked late' for AuctionAdConfig with "
+      "seller 'https://test.com' must be a 3-letter uppercase currency code.",
+      RunAuctionAndWait(R"({
+      seller: 'https://test.com',
+      decisionLogicURL: 'https://test.com',
+      sellerCurrency: 'currency is checked late',
+      ignored: setTimeout(() => {console.log('I am a timer'); }, 1),
+      perBuyerTimeouts: { 'https://test.com': {
+          valueOf: () => { console.log('I am a side effect!') }
+        }
+      }
+  })"));
+  EXPECT_TRUE(console_observer.Wait());
+  EXPECT_EQ("I am a timer", console_observer.GetMessageAt(0));
+}
+
 }  // namespace
 
 }  // namespace content

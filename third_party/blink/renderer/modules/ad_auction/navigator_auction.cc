@@ -70,6 +70,7 @@
 #include "third_party/blink/renderer/modules/ad_auction/validate_blink_interest_group.h"
 #include "third_party/blink/renderer/modules/geolocation/geolocation_coordinates.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/heap/heap_traits.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/text/base64.h"
@@ -248,15 +249,21 @@ class NavigatorAuction::AuctionHandle final : public AbortSignal::Algorithm {
 
   ~AuctionHandle() override = default;
 
-  void AttachPromiseHandler(ScriptState& script_state,
-                            ScriptPromise promise,
-                            ScriptFunction::Callable* success_helper) {
-    promise.Then(
-        MakeGarbageCollected<ScriptFunction>(&script_state, success_helper),
-        MakeGarbageCollected<ScriptFunction>(
-            &script_state,
-            MakeGarbageCollected<NavigatorAuction::AuctionHandle::Rejected>(
-                this)));
+  void QueueAttachPromiseHandler(ScriptPromise promise,
+                                 ScriptFunction::Callable* success_helper) {
+    queued_promises_.emplace_back(promise, success_helper);
+  }
+
+  void AttachQueuedPromises(ScriptState& script_state) {
+    for (auto& [promise, success_helper] : queued_promises_) {
+      promise.Then(
+          MakeGarbageCollected<ScriptFunction>(&script_state, success_helper),
+          MakeGarbageCollected<ScriptFunction>(
+              &script_state,
+              MakeGarbageCollected<NavigatorAuction::AuctionHandle::Rejected>(
+                  this)));
+    }
+    queued_promises_.clear();
   }
 
   void Abort() { abortable_ad_auction_->Abort(); }
@@ -267,6 +274,7 @@ class NavigatorAuction::AuctionHandle final : public AbortSignal::Algorithm {
   void Trace(Visitor* visitor) const override {
     visitor->Trace(abortable_ad_auction_);
     visitor->Trace(auction_resolver_);
+    visitor->Trace(queued_promises_);
     AbortSignal::Algorithm::Trace(visitor);
   }
 
@@ -285,6 +293,7 @@ class NavigatorAuction::AuctionHandle final : public AbortSignal::Algorithm {
   }
 
  private:
+  VectorOfPairs<ScriptPromise, ScriptFunction::Callable> queued_promises_;
   HeapMojoRemote<mojom::blink::AbortableAdAuction> abortable_ad_auction_;
 
   absl::optional<bool> resolve_to_config_;
@@ -1129,7 +1138,6 @@ bool CopySellerFromIdlToMojo(ExceptionState& exception_state,
 bool CopyServerResponseFromIdlToMojo(
     NavigatorAuction::AuctionHandle* auction_handle,
     mojom::blink::AuctionAdConfigAuctionId* auction_id,
-    ScriptState& script_state,
     ExceptionState& exception_state,
     const AuctionAdConfig& input,
     mojom::blink::AuctionAdConfig& output) {
@@ -1166,8 +1174,8 @@ bool CopyServerResponseFromIdlToMojo(
     return false;
   }
 
-  auction_handle->AttachPromiseHandler(
-      script_state, input.serverResponse(),
+  auction_handle->QueueAttachPromiseHandler(
+      input.serverResponse(),
       MakeGarbageCollected<
           NavigatorAuction::AuctionHandle::ServerResponseResolved>(
           auction_handle, auction_id->Clone(), input.seller()));
@@ -1268,13 +1276,12 @@ mojom::blink::AuctionAdConfigMaybePromiseJsonPtr
 ConvertJsonPromiseFromIdlToMojo(
     NavigatorAuction::AuctionHandle* auction_handle,
     mojom::blink::AuctionAdConfigAuctionId* auction_id,
-    ScriptState& script_state,
     const AuctionAdConfig& input,
     const ScriptPromise& promise,
     mojom::blink::AuctionAdConfigField field,
     const char* field_name) {
-  auction_handle->AttachPromiseHandler(
-      script_state, promise,
+  auction_handle->QueueAttachPromiseHandler(
+      promise,
       MakeGarbageCollected<NavigatorAuction::AuctionHandle::JsonResolved>(
           auction_handle, auction_id->Clone(), field, input.seller(),
           field_name));
@@ -1286,7 +1293,6 @@ ConvertJsonPromiseFromIdlToMojo(
 void CopyAuctionSignalsFromIdlToMojo(
     NavigatorAuction::AuctionHandle* auction_handle,
     mojom::blink::AuctionAdConfigAuctionId* auction_id,
-    ScriptState& script_state,
     const AuctionAdConfig& input,
     mojom::blink::AuctionAdConfig& output) {
   DCHECK_EQ(auction_id == nullptr, auction_handle == nullptr);
@@ -1299,8 +1305,7 @@ void CopyAuctionSignalsFromIdlToMojo(
 
   output.auction_ad_config_non_shared_params->auction_signals =
       ConvertJsonPromiseFromIdlToMojo(
-          auction_handle, auction_id, script_state, input,
-          input.auctionSignals(),
+          auction_handle, auction_id, input, input.auctionSignals(),
           mojom::blink::AuctionAdConfigField::kAuctionSignals,
           "auctionSignals");
 }
@@ -1308,7 +1313,6 @@ void CopyAuctionSignalsFromIdlToMojo(
 void CopySellerSignalsFromIdlToMojo(
     NavigatorAuction::AuctionHandle* auction_handle,
     mojom::blink::AuctionAdConfigAuctionId* auction_id,
-    ScriptState& script_state,
     const AuctionAdConfig& input,
     mojom::blink::AuctionAdConfig& output) {
   if (!input.hasSellerSignals()) {
@@ -1319,8 +1323,7 @@ void CopySellerSignalsFromIdlToMojo(
 
   output.auction_ad_config_non_shared_params->seller_signals =
       ConvertJsonPromiseFromIdlToMojo(
-          auction_handle, auction_id, script_state, input,
-          input.sellerSignals(),
+          auction_handle, auction_id, input, input.sellerSignals(),
           mojom::blink::AuctionAdConfigField::kSellerSignals, "sellerSignals");
 }
 
@@ -1457,7 +1460,6 @@ String ConvertIDLStringFromV8ToMojo(const ScriptState& script_state,
 void CopyDirectFromSellerSignalsFromIdlToMojo(
     NavigatorAuction::AuctionHandle* auction_handle,
     const mojom::blink::AuctionAdConfigAuctionId* auction_id,
-    ScriptState& script_state,
     const AuctionAdConfig& input,
     mojom::blink::AuctionAdConfig& output) {
   if (!input.hasDirectFromSellerSignals()) {
@@ -1466,8 +1468,8 @@ void CopyDirectFromSellerSignalsFromIdlToMojo(
     return;
   }
 
-  auction_handle->AttachPromiseHandler(
-      script_state, input.directFromSellerSignals(),
+  auction_handle->QueueAttachPromiseHandler(
+      input.directFromSellerSignals(),
       MakeGarbageCollected<
           NavigatorAuction::AuctionHandle::DirectFromSellerSignalsResolved>(
           auction_handle, auction_id->Clone(), input.seller(), output.seller,
@@ -1479,7 +1481,6 @@ void CopyDirectFromSellerSignalsFromIdlToMojo(
 void CopyDirectFromSellerSignalsHeaderAdSlotFromIdlToMojo(
     NavigatorAuction::AuctionHandle* auction_handle,
     const mojom::blink::AuctionAdConfigAuctionId* auction_id,
-    ScriptState& script_state,
     const AuctionAdConfig& input,
     mojom::blink::AuctionAdConfig& output) {
   if (!input.hasDirectFromSellerSignalsHeaderAdSlot()) {
@@ -1487,8 +1488,8 @@ void CopyDirectFromSellerSignalsHeaderAdSlotFromIdlToMojo(
     return;
   }
 
-  auction_handle->AttachPromiseHandler(
-      script_state, input.directFromSellerSignalsHeaderAdSlot(),
+  auction_handle->QueueAttachPromiseHandler(
+      input.directFromSellerSignalsHeaderAdSlot(),
       MakeGarbageCollected<NavigatorAuction::AuctionHandle::
                                DirectFromSellerSignalsHeaderAdSlotResolved>(
           auction_handle, auction_id->Clone(), input.seller()));
@@ -1498,7 +1499,6 @@ void CopyDirectFromSellerSignalsHeaderAdSlotFromIdlToMojo(
 bool CopyAdditionalBidsFromIdlToMojo(
     NavigatorAuction::AuctionHandle* auction_handle,
     const mojom::blink::AuctionAdConfigAuctionId* auction_id,
-    ScriptState& script_state,
     ExceptionState& exception_state,
     const AuctionAdConfig& input,
     mojom::blink::AuctionAdConfig& output) {
@@ -1524,8 +1524,8 @@ bool CopyAdditionalBidsFromIdlToMojo(
     return false;
   }
 
-  auction_handle->AttachPromiseHandler(
-      script_state, input.additionalBids(),
+  auction_handle->QueueAttachPromiseHandler(
+      input.additionalBids(),
       MakeGarbageCollected<
           NavigatorAuction::AuctionHandle::AdditionalBidsResolved>(
           auction_handle, auction_id->Clone(), input.seller()));
@@ -1597,7 +1597,6 @@ ConvertNonPromisePerBuyerSignalsFromV8ToMojo(const ScriptState& script_state,
 void CopyPerBuyerSignalsFromIdlToMojo(
     NavigatorAuction::AuctionHandle* auction_handle,
     const mojom::blink::AuctionAdConfigAuctionId* auction_id,
-    ScriptState& script_state,
     const AuctionAdConfig& input,
     mojom::blink::AuctionAdConfig& output) {
   if (!input.hasPerBuyerSignals()) {
@@ -1607,8 +1606,8 @@ void CopyPerBuyerSignalsFromIdlToMojo(
     return;
   }
 
-  auction_handle->AttachPromiseHandler(
-      script_state, input.perBuyerSignals(),
+  auction_handle->QueueAttachPromiseHandler(
+      input.perBuyerSignals(),
       MakeGarbageCollected<
           NavigatorAuction::AuctionHandle::PerBuyerSignalsResolved>(
           auction_handle, auction_id->Clone(), input.seller()));
@@ -1672,7 +1671,6 @@ ConvertNonPromisePerBuyerTimeoutsFromV8ToMojo(
 void CopyPerBuyerTimeoutsFromIdlToMojo(
     NavigatorAuction::AuctionHandle* auction_handle,
     const mojom::blink::AuctionAdConfigAuctionId* auction_id,
-    ScriptState& script_state,
     const AuctionAdConfig& input,
     mojom::blink::AuctionAdConfig& output) {
   if (!input.hasPerBuyerTimeouts()) {
@@ -1682,8 +1680,8 @@ void CopyPerBuyerTimeoutsFromIdlToMojo(
     return;
   }
 
-  auction_handle->AttachPromiseHandler(
-      script_state, input.perBuyerTimeouts(),
+  auction_handle->QueueAttachPromiseHandler(
+      input.perBuyerTimeouts(),
       MakeGarbageCollected<
           NavigatorAuction::AuctionHandle::BuyerTimeoutsResolved>(
           auction_handle, auction_id->Clone(),
@@ -1696,7 +1694,6 @@ void CopyPerBuyerTimeoutsFromIdlToMojo(
 void CopyPerBuyerCumulativeTimeoutsFromIdlToMojo(
     NavigatorAuction::AuctionHandle* auction_handle,
     const mojom::blink::AuctionAdConfigAuctionId* auction_id,
-    ScriptState& script_state,
     const AuctionAdConfig& input,
     mojom::blink::AuctionAdConfig& output) {
   if (!input.hasPerBuyerCumulativeTimeouts()) {
@@ -1706,8 +1703,8 @@ void CopyPerBuyerCumulativeTimeoutsFromIdlToMojo(
     return;
   }
 
-  auction_handle->AttachPromiseHandler(
-      script_state, input.perBuyerCumulativeTimeouts(),
+  auction_handle->QueueAttachPromiseHandler(
+      input.perBuyerCumulativeTimeouts(),
       MakeGarbageCollected<
           NavigatorAuction::AuctionHandle::BuyerTimeoutsResolved>(
           auction_handle, auction_id->Clone(),
@@ -1766,7 +1763,6 @@ ConvertNonPromisePerBuyerCurrenciesFromV8ToMojo(const ScriptState& script_state,
 void CopyPerBuyerCurrenciesFromIdlToMojo(
     NavigatorAuction::AuctionHandle* auction_handle,
     const mojom::blink::AuctionAdConfigAuctionId* auction_id,
-    ScriptState& script_state,
     const AuctionAdConfig& input,
     mojom::blink::AuctionAdConfig& output) {
   if (!input.hasPerBuyerCurrencies()) {
@@ -1776,8 +1772,8 @@ void CopyPerBuyerCurrenciesFromIdlToMojo(
     return;
   }
 
-  auction_handle->AttachPromiseHandler(
-      script_state, input.perBuyerCurrencies(),
+  auction_handle->QueueAttachPromiseHandler(
+      input.perBuyerCurrencies(),
       MakeGarbageCollected<
           NavigatorAuction::AuctionHandle::BuyerCurrenciesResolved>(
           auction_handle, auction_id->Clone(), input.seller()));
@@ -2085,8 +2081,7 @@ mojom::blink::AuctionAdConfigPtr IdlAuctionConfigToMojo(
 
   if (!CopySellerFromIdlToMojo(exception_state, config, *mojo_config) ||
       !CopyServerResponseFromIdlToMojo(auction_handle, auction_id.get(),
-                                       script_state, exception_state, config,
-                                       *mojo_config) ||
+                                       exception_state, config, *mojo_config) ||
       !CopyDecisionLogicUrlFromIdlToMojo(context, exception_state, config,
                                          *mojo_config) ||
       !CopyTrustedScoringSignalsFromIdlToMojo(context, exception_state, config,
@@ -2110,8 +2105,7 @@ mojom::blink::AuctionAdConfigPtr IdlAuctionConfigToMojo(
       !CopyAuctionNonceFromIdlToMojo(context, exception_state, config,
                                      *mojo_config) ||
       !CopyAdditionalBidsFromIdlToMojo(auction_handle, auction_id.get(),
-                                       script_state, exception_state, config,
-                                       *mojo_config) ||
+                                       exception_state, config, *mojo_config) ||
       !CopyAggregationCoordinatorOriginFromIdlToMojo(exception_state, config,
                                                      *mojo_config)) {
     return mojom::blink::AuctionAdConfigPtr();
@@ -2127,22 +2121,22 @@ mojom::blink::AuctionAdConfigPtr IdlAuctionConfigToMojo(
     return mojom::blink::AuctionAdConfigPtr();
   }
 
-  CopyAuctionSignalsFromIdlToMojo(auction_handle, auction_id.get(),
-                                  script_state, config, *mojo_config);
-  CopySellerSignalsFromIdlToMojo(auction_handle, auction_id.get(), script_state,
-                                 config, *mojo_config);
+  CopyAuctionSignalsFromIdlToMojo(auction_handle, auction_id.get(), config,
+                                  *mojo_config);
+  CopySellerSignalsFromIdlToMojo(auction_handle, auction_id.get(), config,
+                                 *mojo_config);
   CopyDirectFromSellerSignalsFromIdlToMojo(auction_handle, auction_id.get(),
-                                           script_state, config, *mojo_config);
+                                           config, *mojo_config);
   CopyDirectFromSellerSignalsHeaderAdSlotFromIdlToMojo(
-      auction_handle, auction_id.get(), script_state, config, *mojo_config);
-  CopyPerBuyerSignalsFromIdlToMojo(auction_handle, auction_id.get(),
-                                   script_state, config, *mojo_config);
-  CopyPerBuyerTimeoutsFromIdlToMojo(auction_handle, auction_id.get(),
-                                    script_state, config, *mojo_config);
-  CopyPerBuyerCumulativeTimeoutsFromIdlToMojo(
-      auction_handle, auction_id.get(), script_state, config, *mojo_config);
-  CopyPerBuyerCurrenciesFromIdlToMojo(auction_handle, auction_id.get(),
-                                      script_state, config, *mojo_config);
+      auction_handle, auction_id.get(), config, *mojo_config);
+  CopyPerBuyerSignalsFromIdlToMojo(auction_handle, auction_id.get(), config,
+                                   *mojo_config);
+  CopyPerBuyerTimeoutsFromIdlToMojo(auction_handle, auction_id.get(), config,
+                                    *mojo_config);
+  CopyPerBuyerCumulativeTimeoutsFromIdlToMojo(auction_handle, auction_id.get(),
+                                              config, *mojo_config);
+  CopyPerBuyerCurrenciesFromIdlToMojo(auction_handle, auction_id.get(), config,
+                                      *mojo_config);
 
   if (mojo_config->server_response && !is_top_level) {
     // TODO(1457241): Add support for multi-level auctions including server-side
@@ -3240,8 +3234,8 @@ ScriptPromise NavigatorAuction::runAdAuction(ScriptState* script_state,
   }
 
   if (config->hasResolveToConfig()) {
-    auction_handle->AttachPromiseHandler(
-        *script_state, config->resolveToConfig(),
+    auction_handle->QueueAttachPromiseHandler(
+        config->resolveToConfig(),
         MakeGarbageCollected<
             NavigatorAuction::AuctionHandle::ResolveToConfigResolved>(
             auction_handle));
@@ -3249,6 +3243,7 @@ ScriptPromise NavigatorAuction::runAdAuction(ScriptState* script_state,
     auction_handle->SetResolveToConfig(false);
   }
 
+  auction_handle->AttachQueuedPromises(*script_state);
   ad_auction_service_->RunAdAuction(
       std::move(mojo_config), std::move(abort_receiver),
       WTF::BindOnce(&NavigatorAuction::AuctionHandle::AuctionComplete,
@@ -3531,14 +3526,13 @@ ScriptPromise NavigatorAuction::finalizeAd(ScriptState* script_state,
   // TODO(morlovich): These no longer work since promise-capable type handling
   // requires non-null auction_handle.
   CopyAuctionSignalsFromIdlToMojo(/*auction_handle=*/nullptr,
-                                  /*auction_id=*/nullptr, *script_state,
-                                  *config, *mojo_config);
+                                  /*auction_id=*/nullptr, *config,
+                                  *mojo_config);
   CopySellerSignalsFromIdlToMojo(/*auction_handle=*/nullptr,
-                                 /*auction_id=*/nullptr, *script_state, *config,
-                                 *mojo_config);
+                                 /*auction_id=*/nullptr, *config, *mojo_config);
   CopyPerBuyerSignalsFromIdlToMojo(/*auction_handle=*/nullptr,
-                                   /*auction_id=*/nullptr, *script_state,
-                                   *config, *mojo_config);
+                                   /*auction_id=*/nullptr, *config,
+                                   *mojo_config);
 
   if (!ValidateAdsObject(exception_state, ads)) {
     return ScriptPromise();
