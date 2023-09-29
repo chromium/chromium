@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/sessions/proto/storage.pb.h"
 #import "ios/chrome/browser/sessions/session_constants.h"
 #import "ios/chrome/browser/sessions/session_window_ios.h"
+#import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/order_controller.h"
 #import "ios/chrome/browser/shared/model/web_state_list/order_controller_source_from_web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/removing_indexes.h"
@@ -29,7 +30,6 @@
 #import "ios/web/public/session/crw_session_user_data.h"
 #import "ios/web/public/session/serializable_user_data_manager.h"
 #import "ios/web/public/web_state.h"
-#import "net/base/mac/url_conversions.h"
 
 namespace {
 
@@ -242,6 +242,9 @@ struct DeserializationRange {
   const int min;
   const int max;
 
+  // Returns the number of items in range.
+  int length() const { return max - min; }
+
   // Returns whether the range contains any item.
   bool empty() const { return min >= max; }
 
@@ -296,10 +299,16 @@ struct InsertionHelper {
   }
 };
 
-void DeserializeWebStateList(WebStateList& web_state_list,
-                             SessionRestorationScope scope,
-                             bool enable_pinned_web_states,
-                             const Deserializer& deserializer) {
+void DeserializeWebStateListInternal(
+    SessionRestorationScope scope,
+    bool enable_pinned_web_states,
+    const Deserializer& deserializer,
+    std::vector<web::WebState*>* restored_web_states,
+    WebStateList* web_state_list) {
+  DCHECK(web_state_list);
+  DCHECK(restored_web_states);
+  DCHECK(restored_web_states->empty());
+
   int restored_pinned_tabs_count = 0;
   const int restored_tabs_count = deserializer.GetRestoredTabsCount();
   if (enable_pinned_web_states) {
@@ -318,6 +327,27 @@ void DeserializeWebStateList(WebStateList& web_state_list,
     return;
   }
 
+  // If there is only one tab, and it is the new tab page, clobber it before
+  // restoring any tabs (this avoid having to search for the tab amongst all
+  // the ones that have been restored).
+  if (web_state_list->count() == 1) {
+    web::WebState* web_state = web_state_list->GetWebStateAt(0);
+
+    // Check for realization before checking for a pending load to prevent
+    // force-realization of the tab. An unrealized WebState cannot have a
+    // load pending anyway.
+    const bool has_pending_load =
+        web_state->IsRealized() &&
+        web_state->GetNavigationManager()->GetPendingItem();
+
+    if (!has_pending_load) {
+      const GURL last_committed_url = web_state->GetLastCommittedURL();
+      if (last_committed_url == kChromeUINewTabURL) {
+        web_state_list->CloseWebStateAt(0, WebStateList::CLOSE_USER_ACTION);
+      }
+    }
+  }
+
   // Instantiate an InsertionHelper object that will help compute the indexes
   // and flags used to insert the WebState in the WebStateList.
   //
@@ -328,8 +358,8 @@ void DeserializeWebStateList(WebStateList& web_state_list,
   // to be adjusted to compensate for that.
   const InsertionHelper helper{
       .pinned_tabs_count = restored_pinned_tabs_count,
-      .pinned_offset = web_state_list.pinned_tabs_count() - range.min,
-      .regular_offset = web_state_list.count() - range.min,
+      .pinned_offset = web_state_list->pinned_tabs_count() - range.min,
+      .regular_offset = web_state_list->count() - range.min,
   };
 
   // Get the index of the active item according to storage. If it is in
@@ -342,12 +372,17 @@ void DeserializeWebStateList(WebStateList& web_state_list,
   // some WebState may have an opener that is stored after them.
   for (int index = range.min; index < range.max; ++index) {
     std::unique_ptr<web::WebState> web_state = deserializer.RestoreTabAt(index);
-    const int inserted_index = web_state_list.InsertWebState(
+    restored_web_states->push_back(web_state.get());  // Store pointer to item.
+
+    const int inserted_index = web_state_list->InsertWebState(
         helper.insertion_index(index), std::move(web_state),
         helper.insertion_flags(index, index == active_index), WebStateOpener{});
 
     DCHECK_EQ(inserted_index, helper.insertion_index(index));
   }
+
+  // Check that all WebStates have been restored.
+  DCHECK_EQ(range.length(), static_cast<int>(restored_web_states->size()));
 
   // Restore the opener-opened relationship while taking into account that
   // some of the WebState have not been restored due to `scope`, and that
@@ -358,11 +393,10 @@ void DeserializeWebStateList(WebStateList& web_state_list,
       continue;
     }
 
-    // Use helper to compute the insertion index of the opener.
-    web::WebState* opener =
-        web_state_list.GetWebStateAt(helper.insertion_index(ref.index));
-
-    web_state_list.SetOpenerOfWebStateAt(
+    // The created WebStates are pushed in order in `restored_web_states`
+    // so the opener will be at index `ref.index - range.min`.
+    web::WebState* opener = (*restored_web_states)[ref.index - range.min];
+    web_state_list->SetOpenerOfWebStateAt(
         helper.insertion_index(index),
         WebStateOpener(opener, ref.navigation_index));
   }
@@ -487,21 +521,29 @@ void SerializeWebStateList(const WebStateList& web_state_list,
   storage.set_active_index(active_index);
 }
 
-void DeserializeWebStateList(WebStateList* web_state_list,
-                             SessionWindowIOS* session_window,
-                             SessionRestorationScope scope,
-                             bool enable_pinned_web_states,
-                             const WebStateFactory& factory) {
-  DeserializeWebStateList(
-      *web_state_list, scope, enable_pinned_web_states,
-      DeserializeFromSessionWindow(session_window, factory));
+std::vector<web::WebState*> DeserializeWebStateList(
+    WebStateList* web_state_list,
+    SessionWindowIOS* session_window,
+    SessionRestorationScope scope,
+    bool enable_pinned_web_states,
+    const WebStateFactory& factory) {
+  std::vector<web::WebState*> restored_web_states;
+  web_state_list->PerformBatchOperation(base::BindOnce(
+      &DeserializeWebStateListInternal, scope, enable_pinned_web_states,
+      DeserializeFromSessionWindow(session_window, factory),
+      &restored_web_states));
+  return restored_web_states;
 }
 
-void DeserializeWebStateList(WebStateList& web_state_list,
-                             ios::proto::WebStateListStorage storage,
-                             SessionRestorationScope scope,
-                             bool enable_pinned_web_states,
-                             const WebStateFactoryFromProto& factory) {
-  DeserializeWebStateList(web_state_list, scope, enable_pinned_web_states,
-                          DeserializeFromProto(std::move(storage), factory));
+std::vector<web::WebState*> DeserializeWebStateList(
+    WebStateList* web_state_list,
+    ios::proto::WebStateListStorage storage,
+    SessionRestorationScope scope,
+    bool enable_pinned_web_states,
+    const WebStateFactoryFromProto& factory) {
+  std::vector<web::WebState*> restored_web_states;
+  web_state_list->PerformBatchOperation(base::BindOnce(
+      &DeserializeWebStateListInternal, scope, enable_pinned_web_states,
+      DeserializeFromProto(std::move(storage), factory), &restored_web_states));
+  return restored_web_states;
 }

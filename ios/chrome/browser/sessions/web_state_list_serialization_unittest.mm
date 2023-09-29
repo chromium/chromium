@@ -12,12 +12,14 @@
 #import "ios/chrome/browser/sessions/proto/storage.pb.h"
 #import "ios/chrome/browser/sessions/session_constants.h"
 #import "ios/chrome/browser/sessions/session_window_ios.h"
+#import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/web/public/session/crw_session_storage.h"
 #import "ios/web/public/session/crw_session_user_data.h"
 #import "ios/web/public/session/serializable_user_data_manager.h"
+#import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -25,21 +27,52 @@
 
 namespace {
 
-// Creates a fake WebState with `cnt` navigation items.
-std::unique_ptr<web::WebState> CreateWebStateWithNavigationItemCount(int cnt) {
+// Creates a fake WebState with `navigation_count` navigation items (all
+// pointing to the same `url`). If `has_pending_load` is true, the last
+// item will be marked as pending.
+std::unique_ptr<web::WebState> CreateWebStateWithNavigations(
+    int navigation_count,
+    bool has_pending_load,
+    const GURL& url) {
+  auto navigation_manager = std::make_unique<web::FakeNavigationManager>();
+  for (int index = 0; index < navigation_count; ++index) {
+    navigation_manager->AddItem(url, ui::PAGE_TRANSITION_TYPED);
+  }
+
+  if (navigation_count > 0) {
+    if (has_pending_load) {
+      const int pending_item_index = navigation_count - 1;
+      navigation_manager->SetPendingItemIndex(pending_item_index);
+      navigation_manager->SetPendingItem(
+          navigation_manager->GetItemAtIndex(pending_item_index));
+    }
+  }
+
   auto web_state = std::make_unique<web::FakeWebState>();
-  web_state->SetNavigationItemCount(cnt);
+  web_state->SetNavigationManager(std::move(navigation_manager));
+  web_state->SetNavigationItemCount(navigation_count);
+  if (navigation_count > 0) {
+    web_state->SetVisibleURL(url);
+  }
+
   return web_state;
 }
 
 // Creates a fake WebState with some navigations.
 std::unique_ptr<web::WebState> CreateWebState() {
-  return CreateWebStateWithNavigationItemCount(1);
+  return CreateWebStateWithNavigations(1, false, GURL(kChromeUIVersionURL));
 }
 
 // Creates a fake WebState with no navigation items.
 std::unique_ptr<web::WebState> CreateWebStateWithNoNavigation() {
-  return CreateWebStateWithNavigationItemCount(0);
+  return CreateWebStateWithNavigations(0, false, GURL());
+}
+
+// Creates a fake WebState on NTP. If `has_pending_load`, then the last
+// item is marked as pending.
+std::unique_ptr<web::WebState> CreateWebStateOnNTP(bool has_pending_load) {
+  return CreateWebStateWithNavigations(1, has_pending_load,
+                                       GURL(kChromeUINewTabURL));
 }
 
 // Creates a fake WebState from `storage`.
@@ -53,6 +86,12 @@ std::unique_ptr<web::WebState> CreateWebStateWithWebStateID(
     web::WebStateID web_state_id) {
   return CreateWebState();
 }
+
+// Returns the unique identifier for WebState at `index` in `web_state_list`.
+web::WebStateID IdentifierAt(const WebStateList& web_state_list, int index) {
+  return web_state_list.GetWebStateAt(index)->GetUniqueIdentifier();
+}
+
 }  // namespace
 
 // Comparison operators for testing.
@@ -326,10 +365,13 @@ TEST_F(WebStateListSerializationTest, Deserialize_ObjC_PinnedEnabled_All) {
       WebStateOpener());
   ASSERT_EQ(restored_web_state_list.count(), 1);
 
-  DeserializeWebStateList(
-      &restored_web_state_list, session_window, SessionRestorationScope::kAll,
-      /* enable_pinned_web_states*/ true,
-      base::BindRepeating(&CreateWebStateWithSessionStorage));
+  const std::vector<web::WebState*> restored_web_states =
+      DeserializeWebStateList(
+          &restored_web_state_list, session_window,
+          SessionRestorationScope::kAll,
+          /*enable_pinned_web_states*/ true,
+          base::BindRepeating(&CreateWebStateWithSessionStorage));
+  EXPECT_EQ(restored_web_states.size(), 4u);
 
   ASSERT_EQ(restored_web_state_list.count(), 5);
   EXPECT_EQ(restored_web_state_list.active_index(), 2);
@@ -387,11 +429,13 @@ TEST_F(WebStateListSerializationTest,
       WebStateOpener());
   ASSERT_EQ(1, restored_web_state_list.count());
 
-  DeserializeWebStateList(
-      &restored_web_state_list, session_window,
-      SessionRestorationScope::kRegularOnly,
-      /* enable_pinned_web_states*/ true,
-      base::BindRepeating(&CreateWebStateWithSessionStorage));
+  const std::vector<web::WebState*> restored_web_states =
+      DeserializeWebStateList(
+          &restored_web_state_list, session_window,
+          SessionRestorationScope::kRegularOnly,
+          /*enable_pinned_web_states*/ true,
+          base::BindRepeating(&CreateWebStateWithSessionStorage));
+  EXPECT_EQ(restored_web_states.size(), 3u);
 
   ASSERT_EQ(restored_web_state_list.count(), 4);
   EXPECT_EQ(restored_web_state_list.active_index(), 1);
@@ -442,11 +486,13 @@ TEST_F(WebStateListSerializationTest,
       WebStateOpener());
   ASSERT_EQ(restored_web_state_list.count(), 1);
 
-  DeserializeWebStateList(
-      &restored_web_state_list, session_window,
-      SessionRestorationScope::kPinnedOnly,
-      /* enable_pinned_web_states*/ true,
-      base::BindRepeating(&CreateWebStateWithSessionStorage));
+  const std::vector<web::WebState*> restored_web_states =
+      DeserializeWebStateList(
+          &restored_web_state_list, session_window,
+          SessionRestorationScope::kPinnedOnly,
+          /*enable_pinned_web_states*/ true,
+          base::BindRepeating(&CreateWebStateWithSessionStorage));
+  EXPECT_EQ(restored_web_states.size(), 1u);
 
   ASSERT_EQ(restored_web_state_list.count(), 2);
   EXPECT_EQ(restored_web_state_list.active_index(), 1);
@@ -497,10 +543,13 @@ TEST_F(WebStateListSerializationTest, Deserialize_ObjC_PinnedDisabled_All) {
       WebStateOpener());
   ASSERT_EQ(restored_web_state_list.count(), 1);
 
-  DeserializeWebStateList(
-      &restored_web_state_list, session_window, SessionRestorationScope::kAll,
-      /* enable_pinned_web_states*/ false,
-      base::BindRepeating(&CreateWebStateWithSessionStorage));
+  const std::vector<web::WebState*> restored_web_states =
+      DeserializeWebStateList(
+          &restored_web_state_list, session_window,
+          SessionRestorationScope::kAll,
+          /*enable_pinned_web_states*/ false,
+          base::BindRepeating(&CreateWebStateWithSessionStorage));
+  EXPECT_EQ(restored_web_states.size(), 4u);
 
   ASSERT_EQ(restored_web_state_list.count(), 5);
   EXPECT_EQ(restored_web_state_list.active_index(), 2);
@@ -554,11 +603,13 @@ TEST_F(WebStateListSerializationTest,
       WebStateOpener());
   ASSERT_EQ(1, restored_web_state_list.count());
 
-  DeserializeWebStateList(
-      &restored_web_state_list, session_window,
-      SessionRestorationScope::kRegularOnly,
-      /* enable_pinned_web_states*/ false,
-      base::BindRepeating(&CreateWebStateWithSessionStorage));
+  const std::vector<web::WebState*> restored_web_states =
+      DeserializeWebStateList(
+          &restored_web_state_list, session_window,
+          SessionRestorationScope::kRegularOnly,
+          /*enable_pinned_web_states*/ false,
+          base::BindRepeating(&CreateWebStateWithSessionStorage));
+  EXPECT_EQ(restored_web_states.size(), 4u);
 
   ASSERT_EQ(restored_web_state_list.count(), 5);
   EXPECT_EQ(restored_web_state_list.active_index(), 2);
@@ -612,15 +663,186 @@ TEST_F(WebStateListSerializationTest,
       WebStateOpener());
   ASSERT_EQ(restored_web_state_list.count(), 1);
 
-  DeserializeWebStateList(
-      &restored_web_state_list, session_window,
-      SessionRestorationScope::kPinnedOnly,
-      /* enable_pinned_web_states*/ false,
-      base::BindRepeating(&CreateWebStateWithSessionStorage));
+  const std::vector<web::WebState*> restored_web_states =
+      DeserializeWebStateList(
+          &restored_web_state_list, session_window,
+          SessionRestorationScope::kPinnedOnly,
+          /*enable_pinned_web_states*/ false,
+          base::BindRepeating(&CreateWebStateWithSessionStorage));
+  EXPECT_EQ(restored_web_states.size(), 0u);
 
   ASSERT_EQ(restored_web_state_list.count(), 1);
   EXPECT_EQ(restored_web_state_list.active_index(), 0);
   EXPECT_EQ(restored_web_state_list.pinned_tabs_count(), 0);
+}
+
+// Tests deserializing into a non-empty WebStateList containing a single
+// WebState displaying the NTP and without pending navigation leads to
+// closing the old NTP tab.
+//
+// Objective-C (legacy) variant.
+TEST_F(WebStateListSerializationTest, Deserialize_ObjC_SingleTabNTP) {
+  FakeWebStateListDelegate delegate;
+  WebStateList original_web_state_list(&delegate);
+  original_web_state_list.InsertWebState(
+      0, CreateWebState(), WebStateList::INSERT_ACTIVATE, WebStateOpener());
+
+  SessionWindowIOS* session_window =
+      SerializeWebStateList(&original_web_state_list);
+
+  EXPECT_EQ(session_window.sessions.count, 1u);
+  EXPECT_EQ(session_window.selectedIndex, 0u);
+
+  // Create a WebStateList with a single tab displaying NTP.
+  WebStateList restored_web_state_list(&delegate);
+  restored_web_state_list.InsertWebState(
+      0, CreateWebStateOnNTP(/*has_pending_load*/ false),
+      WebStateList::INSERT_ACTIVATE, WebStateOpener());
+  ASSERT_EQ(restored_web_state_list.count(), 1);
+
+  // Record the WebStateID of the WebState displaying the NTP.
+  const auto ntp_web_state_id = IdentifierAt(restored_web_state_list, 0);
+
+  // Check that after restoration, the old tab displaying the NTP
+  // has been closed.
+  const std::vector<web::WebState*> restored_web_states =
+      DeserializeWebStateList(
+          &restored_web_state_list, session_window,
+          SessionRestorationScope::kAll,
+          /*enable_pinned_web_states*/ true,
+          base::BindRepeating(&CreateWebStateWithSessionStorage));
+  EXPECT_EQ(restored_web_states.size(), 1u);
+
+  ASSERT_EQ(restored_web_state_list.count(), 1);
+  EXPECT_NE(IdentifierAt(restored_web_state_list, 0), ntp_web_state_id);
+}
+
+// Tests deserializing into a non-empty WebStateList containing a single
+// WebState displaying the NTP and with a pending navigation does not
+// cause the tab to be closed.
+//
+// Objective-C (legacy) variant.
+TEST_F(WebStateListSerializationTest,
+       Deserialize_ObjC_SingleTabNTP_PendingNavigation) {
+  FakeWebStateListDelegate delegate;
+  WebStateList original_web_state_list(&delegate);
+  original_web_state_list.InsertWebState(
+      0, CreateWebState(), WebStateList::INSERT_ACTIVATE, WebStateOpener());
+
+  SessionWindowIOS* session_window =
+      SerializeWebStateList(&original_web_state_list);
+
+  EXPECT_EQ(session_window.sessions.count, 1u);
+  EXPECT_EQ(session_window.selectedIndex, 0u);
+
+  // Create a WebStateList with a single tab displaying NTP.
+  WebStateList restored_web_state_list(&delegate);
+  restored_web_state_list.InsertWebState(
+      0, CreateWebStateOnNTP(/*has_pending_load*/ true),
+      WebStateList::INSERT_ACTIVATE, WebStateOpener());
+  ASSERT_EQ(restored_web_state_list.count(), 1);
+
+  // Record the WebStateID of the WebState displaying the NTP.
+  const auto ntp_web_state_id = IdentifierAt(restored_web_state_list, 0);
+
+  // Check that after restoration, the old tab displaying the NTP
+  // has been closed.
+  const std::vector<web::WebState*> restored_web_states =
+      DeserializeWebStateList(
+          &restored_web_state_list, session_window,
+          SessionRestorationScope::kAll,
+          /*enable_pinned_web_states*/ true,
+          base::BindRepeating(&CreateWebStateWithSessionStorage));
+  EXPECT_EQ(restored_web_states.size(), 1u);
+
+  ASSERT_EQ(restored_web_state_list.count(), 2);
+  EXPECT_EQ(IdentifierAt(restored_web_state_list, 0), ntp_web_state_id);
+}
+
+// Tests deserializing an empty session into a non-empty WebStateList
+// containing a single WebState displaying the NTP and without pending
+// does not cause the tab to be closed.
+//
+// Objective-C (legacy) variant.
+TEST_F(WebStateListSerializationTest,
+       Deserialize_ObjC_SingleTabNTP_EmptySession) {
+  FakeWebStateListDelegate delegate;
+  WebStateList original_web_state_list(&delegate);
+
+  SessionWindowIOS* session_window =
+      SerializeWebStateList(&original_web_state_list);
+
+  EXPECT_EQ(session_window.sessions.count, 0u);
+  EXPECT_EQ(session_window.selectedIndex, static_cast<NSUInteger>(NSNotFound));
+
+  // Create a WebStateList with a single tab displaying NTP.
+  WebStateList restored_web_state_list(&delegate);
+  restored_web_state_list.InsertWebState(
+      0, CreateWebStateOnNTP(/*has_pending_load*/ false),
+      WebStateList::INSERT_ACTIVATE, WebStateOpener());
+  ASSERT_EQ(restored_web_state_list.count(), 1);
+
+  // Record the WebStateID of the WebState displaying the NTP.
+  const auto ntp_web_state_id = IdentifierAt(restored_web_state_list, 0);
+
+  // Check that after restoration, the old tab displaying the NTP
+  // has been closed.
+  const std::vector<web::WebState*> restored_web_states =
+      DeserializeWebStateList(
+          &restored_web_state_list, session_window,
+          SessionRestorationScope::kAll,
+          /*enable_pinned_web_states*/ true,
+          base::BindRepeating(&CreateWebStateWithSessionStorage));
+  EXPECT_EQ(restored_web_states.size(), 0u);
+
+  ASSERT_EQ(restored_web_state_list.count(), 1);
+  EXPECT_EQ(IdentifierAt(restored_web_state_list, 0), ntp_web_state_id);
+}
+
+// Tests deserializing into a non-empty WebStateList containing multiple
+// WebStates does not lead to closing those tabs, even if they all display
+// the NTP and have no pending navigation.
+//
+// Objective-C (legacy) variant.
+TEST_F(WebStateListSerializationTest, Deserialize_ObjC__MultipleNTPTabs) {
+  FakeWebStateListDelegate delegate;
+  WebStateList original_web_state_list(&delegate);
+  original_web_state_list.InsertWebState(
+      0, CreateWebState(), WebStateList::INSERT_ACTIVATE, WebStateOpener());
+
+  SessionWindowIOS* session_window =
+      SerializeWebStateList(&original_web_state_list);
+
+  EXPECT_EQ(session_window.sessions.count, 1u);
+  EXPECT_EQ(session_window.selectedIndex, 0u);
+
+  // Create a WebStateList with a single tab displaying NTP.
+  WebStateList restored_web_state_list(&delegate);
+  restored_web_state_list.InsertWebState(
+      0, CreateWebStateOnNTP(/*has_pending_load*/ false),
+      WebStateList::INSERT_ACTIVATE, WebStateOpener());
+  restored_web_state_list.InsertWebState(
+      1, CreateWebStateOnNTP(/*has_pending_load*/ false),
+      WebStateList::INSERT_NO_FLAGS, WebStateOpener());
+  ASSERT_EQ(restored_web_state_list.count(), 2);
+
+  // Record the WebStateIDs of the WebStates displaying the NTP.
+  const auto ntp_web_state_id_0 = IdentifierAt(restored_web_state_list, 0);
+  const auto ntp_web_state_id_1 = IdentifierAt(restored_web_state_list, 1);
+
+  // Check that after restoration, the old tab displaying the NTP
+  // has been closed.
+  const std::vector<web::WebState*> restored_web_states =
+      DeserializeWebStateList(
+          &restored_web_state_list, session_window,
+          SessionRestorationScope::kAll,
+          /*enable_pinned_web_states*/ true,
+          base::BindRepeating(&CreateWebStateWithSessionStorage));
+  EXPECT_EQ(restored_web_states.size(), 1u);
+
+  ASSERT_EQ(restored_web_state_list.count(), 3);
+  EXPECT_EQ(IdentifierAt(restored_web_state_list, 0), ntp_web_state_id_0);
+  EXPECT_EQ(IdentifierAt(restored_web_state_list, 1), ntp_web_state_id_1);
 }
 
 // Tests deserializing into a non-empty WebStateList works when support for
@@ -660,10 +882,13 @@ TEST_F(WebStateListSerializationTest, Deserialize_Proto_PinnedEnabled_All) {
       WebStateOpener());
   ASSERT_EQ(restored_web_state_list.count(), 1);
 
-  DeserializeWebStateList(restored_web_state_list, std::move(storage),
-                          SessionRestorationScope::kAll,
-                          /* enable_pinned_web_states*/ true,
-                          base::BindRepeating(&CreateWebStateWithWebStateID));
+  const std::vector<web::WebState*> restored_web_states =
+      DeserializeWebStateList(
+          &restored_web_state_list, std::move(storage),
+          SessionRestorationScope::kAll,
+          /*enable_pinned_web_states*/ true,
+          base::BindRepeating(&CreateWebStateWithWebStateID));
+  EXPECT_EQ(restored_web_states.size(), 4u);
 
   ASSERT_EQ(restored_web_state_list.count(), 5);
   EXPECT_EQ(restored_web_state_list.active_index(), 2);
@@ -722,10 +947,13 @@ TEST_F(WebStateListSerializationTest,
       WebStateOpener());
   ASSERT_EQ(restored_web_state_list.count(), 1);
 
-  DeserializeWebStateList(restored_web_state_list, std::move(storage),
-                          SessionRestorationScope::kRegularOnly,
-                          /* enable_pinned_web_states*/ true,
-                          base::BindRepeating(&CreateWebStateWithWebStateID));
+  const std::vector<web::WebState*> restored_web_states =
+      DeserializeWebStateList(
+          &restored_web_state_list, std::move(storage),
+          SessionRestorationScope::kRegularOnly,
+          /*enable_pinned_web_states*/ true,
+          base::BindRepeating(&CreateWebStateWithWebStateID));
+  EXPECT_EQ(restored_web_states.size(), 3u);
 
   ASSERT_EQ(restored_web_state_list.count(), 4);
   EXPECT_EQ(restored_web_state_list.active_index(), 1);
@@ -777,10 +1005,13 @@ TEST_F(WebStateListSerializationTest,
       WebStateOpener());
   ASSERT_EQ(restored_web_state_list.count(), 1);
 
-  DeserializeWebStateList(restored_web_state_list, std::move(storage),
-                          SessionRestorationScope::kPinnedOnly,
-                          /* enable_pinned_web_states*/ true,
-                          base::BindRepeating(&CreateWebStateWithWebStateID));
+  const std::vector<web::WebState*> restored_web_states =
+      DeserializeWebStateList(
+          &restored_web_state_list, std::move(storage),
+          SessionRestorationScope::kPinnedOnly,
+          /*enable_pinned_web_states*/ true,
+          base::BindRepeating(&CreateWebStateWithWebStateID));
+  EXPECT_EQ(restored_web_states.size(), 1u);
 
   ASSERT_EQ(restored_web_state_list.count(), 2);
   EXPECT_EQ(restored_web_state_list.active_index(), 1);
@@ -832,10 +1063,13 @@ TEST_F(WebStateListSerializationTest, Deserialize_Proto_PinnedDisabled_All) {
       WebStateOpener());
   ASSERT_EQ(restored_web_state_list.count(), 1);
 
-  DeserializeWebStateList(restored_web_state_list, std::move(storage),
-                          SessionRestorationScope::kAll,
-                          /* enable_pinned_web_states*/ false,
-                          base::BindRepeating(&CreateWebStateWithWebStateID));
+  const std::vector<web::WebState*> restored_web_states =
+      DeserializeWebStateList(
+          &restored_web_state_list, std::move(storage),
+          SessionRestorationScope::kAll,
+          /*enable_pinned_web_states*/ false,
+          base::BindRepeating(&CreateWebStateWithWebStateID));
+  EXPECT_EQ(restored_web_states.size(), 4u);
 
   ASSERT_EQ(restored_web_state_list.count(), 5);
   EXPECT_EQ(restored_web_state_list.active_index(), 2);
@@ -890,10 +1124,13 @@ TEST_F(WebStateListSerializationTest,
       WebStateOpener());
   ASSERT_EQ(restored_web_state_list.count(), 1);
 
-  DeserializeWebStateList(restored_web_state_list, std::move(storage),
-                          SessionRestorationScope::kRegularOnly,
-                          /* enable_pinned_web_states*/ false,
-                          base::BindRepeating(&CreateWebStateWithWebStateID));
+  const std::vector<web::WebState*> restored_web_states =
+      DeserializeWebStateList(
+          &restored_web_state_list, std::move(storage),
+          SessionRestorationScope::kRegularOnly,
+          /*enable_pinned_web_states*/ false,
+          base::BindRepeating(&CreateWebStateWithWebStateID));
+  EXPECT_EQ(restored_web_states.size(), 4u);
 
   ASSERT_EQ(restored_web_state_list.count(), 5);
   EXPECT_EQ(restored_web_state_list.active_index(), 2);
@@ -948,12 +1185,188 @@ TEST_F(WebStateListSerializationTest,
       WebStateOpener());
   ASSERT_EQ(restored_web_state_list.count(), 1);
 
-  DeserializeWebStateList(restored_web_state_list, std::move(storage),
-                          SessionRestorationScope::kPinnedOnly,
-                          /* enable_pinned_web_states*/ false,
-                          base::BindRepeating(&CreateWebStateWithWebStateID));
+  const std::vector<web::WebState*> restored_web_states =
+      DeserializeWebStateList(
+          &restored_web_state_list, std::move(storage),
+          SessionRestorationScope::kPinnedOnly,
+          /*enable_pinned_web_states*/ false,
+          base::BindRepeating(&CreateWebStateWithWebStateID));
+  EXPECT_EQ(restored_web_states.size(), 0u);
 
   ASSERT_EQ(restored_web_state_list.count(), 1);
   EXPECT_EQ(restored_web_state_list.active_index(), 0);
   EXPECT_EQ(restored_web_state_list.pinned_tabs_count(), 0);
+}
+
+// Tests deserializing into a non-empty WebStateList containing a single
+// WebState displaying the NTP and without pending navigation leads to
+// closing the old NTP tab.
+//
+// Protobuf message variant.
+TEST_F(WebStateListSerializationTest, Deserialize_Proto_SingleTabNTP) {
+  FakeWebStateListDelegate delegate;
+  WebStateList original_web_state_list(&delegate);
+  original_web_state_list.InsertWebState(
+      0, CreateWebState(), WebStateList::INSERT_ACTIVATE, WebStateOpener());
+
+  ios::proto::WebStateListStorage storage;
+  SerializeWebStateList(original_web_state_list, storage);
+
+  EXPECT_EQ(storage.items_size(), 1);
+  EXPECT_EQ(storage.active_index(), 0);
+  EXPECT_EQ(storage.pinned_item_count(), 0);
+
+  // Create a WebStateList with a single tab displaying NTP.
+  WebStateList restored_web_state_list(&delegate);
+  restored_web_state_list.InsertWebState(
+      0, CreateWebStateOnNTP(/*has_pending_load*/ false),
+      WebStateList::INSERT_ACTIVATE, WebStateOpener());
+  ASSERT_EQ(restored_web_state_list.count(), 1);
+
+  // Record the WebStateID of the WebState displaying the NTP.
+  const auto ntp_web_state_id = IdentifierAt(restored_web_state_list, 0);
+
+  // Check that after restoration, the old tab displaying the NTP
+  // has been closed.
+  const std::vector<web::WebState*> restored_web_states =
+      DeserializeWebStateList(
+          &restored_web_state_list, std::move(storage),
+          SessionRestorationScope::kAll,
+          /*enable_pinned_web_states*/ true,
+          base::BindRepeating(&CreateWebStateWithWebStateID));
+  EXPECT_EQ(restored_web_states.size(), 1u);
+
+  ASSERT_EQ(restored_web_state_list.count(), 1);
+  EXPECT_NE(IdentifierAt(restored_web_state_list, 0), ntp_web_state_id);
+}
+
+// Tests deserializing into a non-empty WebStateList containing a single
+// WebState displaying the NTP and with a pending navigation does not
+// cause the tab to be closed.
+//
+// Protobuf message variant.
+TEST_F(WebStateListSerializationTest,
+       Deserialize_Proto_SingleTabNTP_PendingNavigation) {
+  FakeWebStateListDelegate delegate;
+  WebStateList original_web_state_list(&delegate);
+  original_web_state_list.InsertWebState(
+      0, CreateWebState(), WebStateList::INSERT_ACTIVATE, WebStateOpener());
+
+  ios::proto::WebStateListStorage storage;
+  SerializeWebStateList(original_web_state_list, storage);
+
+  EXPECT_EQ(storage.items_size(), 1);
+  EXPECT_EQ(storage.active_index(), 0);
+  EXPECT_EQ(storage.pinned_item_count(), 0);
+
+  // Create a WebStateList with a single tab displaying NTP.
+  WebStateList restored_web_state_list(&delegate);
+  restored_web_state_list.InsertWebState(
+      0, CreateWebStateOnNTP(/*has_pending_load*/ true),
+      WebStateList::INSERT_ACTIVATE, WebStateOpener());
+  ASSERT_EQ(restored_web_state_list.count(), 1);
+
+  // Record the WebStateID of the WebState displaying the NTP.
+  const auto ntp_web_state_id = IdentifierAt(restored_web_state_list, 0);
+
+  // Check that after restoration, the old tab displaying the NTP
+  // has been closed.
+  const std::vector<web::WebState*> restored_web_states =
+      DeserializeWebStateList(
+          &restored_web_state_list, std::move(storage),
+          SessionRestorationScope::kAll,
+          /*enable_pinned_web_states*/ true,
+          base::BindRepeating(&CreateWebStateWithWebStateID));
+  EXPECT_EQ(restored_web_states.size(), 1u);
+
+  ASSERT_EQ(restored_web_state_list.count(), 2);
+  EXPECT_EQ(IdentifierAt(restored_web_state_list, 0), ntp_web_state_id);
+}
+
+// Tests deserializing an empty session into a non-empty WebStateList
+// containing a single WebState displaying the NTP and without pending
+// does not cause the tab to be closed.
+//
+// Protobuf message variant.
+TEST_F(WebStateListSerializationTest,
+       Deserialize_Proto_SingleTabNTP_EmptySession) {
+  FakeWebStateListDelegate delegate;
+  WebStateList original_web_state_list(&delegate);
+
+  ios::proto::WebStateListStorage storage;
+  SerializeWebStateList(original_web_state_list, storage);
+
+  EXPECT_EQ(storage.items_size(), 0);
+  EXPECT_EQ(storage.active_index(), -1);
+  EXPECT_EQ(storage.pinned_item_count(), 0);
+
+  // Create a WebStateList with a single tab displaying NTP.
+  WebStateList restored_web_state_list(&delegate);
+  restored_web_state_list.InsertWebState(
+      0, CreateWebStateOnNTP(/*has_pending_load*/ false),
+      WebStateList::INSERT_ACTIVATE, WebStateOpener());
+  ASSERT_EQ(restored_web_state_list.count(), 1);
+
+  // Record the WebStateID of the WebState displaying the NTP.
+  const auto ntp_web_state_id = IdentifierAt(restored_web_state_list, 0);
+
+  // Check that after restoration, the old tab displaying the NTP
+  // has been closed.
+  const std::vector<web::WebState*> restored_web_states =
+      DeserializeWebStateList(
+          &restored_web_state_list, std::move(storage),
+          SessionRestorationScope::kAll,
+          /*enable_pinned_web_states*/ true,
+          base::BindRepeating(&CreateWebStateWithWebStateID));
+  EXPECT_EQ(restored_web_states.size(), 0u);
+
+  ASSERT_EQ(restored_web_state_list.count(), 1);
+  EXPECT_EQ(IdentifierAt(restored_web_state_list, 0), ntp_web_state_id);
+}
+
+// Tests deserializing into a non-empty WebStateList containing multiple
+// WebStates does not lead to closing those tabs, even if they all display
+// the NTP and have no pending navigation.
+//
+// Protobuf message variant.
+TEST_F(WebStateListSerializationTest, Deserialize_Proto_MultipleNTPTabs) {
+  FakeWebStateListDelegate delegate;
+  WebStateList original_web_state_list(&delegate);
+  original_web_state_list.InsertWebState(
+      0, CreateWebState(), WebStateList::INSERT_ACTIVATE, WebStateOpener());
+
+  ios::proto::WebStateListStorage storage;
+  SerializeWebStateList(original_web_state_list, storage);
+
+  EXPECT_EQ(storage.items_size(), 1);
+  EXPECT_EQ(storage.active_index(), 0);
+  EXPECT_EQ(storage.pinned_item_count(), 0);
+
+  // Create a WebStateList with a single tab displaying NTP.
+  WebStateList restored_web_state_list(&delegate);
+  restored_web_state_list.InsertWebState(
+      0, CreateWebStateOnNTP(/*has_pending_load*/ false),
+      WebStateList::INSERT_ACTIVATE, WebStateOpener());
+  restored_web_state_list.InsertWebState(
+      1, CreateWebStateOnNTP(/*has_pending_load*/ false),
+      WebStateList::INSERT_NO_FLAGS, WebStateOpener());
+  ASSERT_EQ(restored_web_state_list.count(), 2);
+
+  // Record the WebStateIDs of the WebStates displaying the NTP.
+  const auto ntp_web_state_id_0 = IdentifierAt(restored_web_state_list, 0);
+  const auto ntp_web_state_id_1 = IdentifierAt(restored_web_state_list, 1);
+
+  // Check that after restoration, the old tab displaying the NTP
+  // has been closed.
+  const std::vector<web::WebState*> restored_web_states =
+      DeserializeWebStateList(
+          &restored_web_state_list, std::move(storage),
+          SessionRestorationScope::kAll,
+          /*enable_pinned_web_states*/ true,
+          base::BindRepeating(&CreateWebStateWithWebStateID));
+  EXPECT_EQ(restored_web_states.size(), 1u);
+
+  ASSERT_EQ(restored_web_state_list.count(), 3);
+  EXPECT_EQ(IdentifierAt(restored_web_state_list, 0), ntp_web_state_id_0);
+  EXPECT_EQ(IdentifierAt(restored_web_state_list, 1), ntp_web_state_id_1);
 }

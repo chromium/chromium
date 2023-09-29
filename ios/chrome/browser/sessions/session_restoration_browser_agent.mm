@@ -198,14 +198,6 @@ SessionWindowIOS* FilterEmptyTabs(SessionWindowIOS* session_window) {
                                       selectedIndex:selected_index];
 }
 
-// Struct representing a range of tabs.
-struct Range {
-  const int min;
-  const int max;
-
-  int size() const { return max - min; }
-};
-
 }  // namespace
 
 BROWSER_USER_DATA_KEY_IMPL(SessionRestorationBrowserAgent)
@@ -266,86 +258,28 @@ void SessionRestorationBrowserAgent::RestoreSessionWindow(
     observer.WillStartSessionRestoration();
   }
 
-  const int old_count = web_state_list_->count();
-  const int old_pinned_tabs_count = web_state_list_->pinned_tabs_count();
-  DCHECK_GE(old_count, 0);
+  // Restore the tabs (except those that would be empty).
+  const std::vector<web::WebState*> restored_web_states =
+      DeserializeWebStateList(
+          web_state_list_, FilterEmptyTabs(window), scope,
+          enable_pinned_web_states_,
+          base::BindRepeating(&web::WebState::CreateWithStorageSession,
+                              web::WebState::CreateParams(browser_state_)));
 
-  // Filter all tabs that would be empty before restoration.
-  window = FilterEmptyTabs(window);
-
-  web_state_list_->PerformBatchOperation(
-      base::BindOnce(^(WebStateList* web_state_list) {
-        web::WebState::CreateParams create_params(browser_state_);
-        DeserializeWebStateList(
-            web_state_list, window, scope, enable_pinned_web_states_,
-            base::BindRepeating(&web::WebState::CreateWithStorageSession,
-                                create_params));
-      }));
-
-  DCHECK_GE(web_state_list_->count(), old_count);
-  DCHECK_GE(web_state_list_->pinned_tabs_count(), old_pinned_tabs_count);
-
-  // If the restored tabs include pinned tabs, they would have been restored
-  // after the existing tabs, so they would range from old_pinned_tabs_count
-  // to web_state_list_->pinned_tabs_count().
-  const Range pinned_tabs_range{
-      .min = old_pinned_tabs_count,
-      .max = web_state_list_->pinned_tabs_count(),
-  };
-
-  // The remaining regular tabs would have been restored at the end of the
-  // WebStateList, so from old_count plus the number of pinned tabs restored
-  // to web_state_list_->count().
-  const Range regular_tabs_range{
-      .min = old_count + pinned_tabs_range.size(),
-      .max = web_state_list_->count(),
-  };
-
-  // Check that all the tabs have been restored.
-  DCHECK_LE(pinned_tabs_range.size() + regular_tabs_range.size(),
-            static_cast<int>(window.sessions.count));
-
-  // Collect the list of restored tabs, setup the placeholder and start
-  // fetching the favicon if possible.
-  std::vector<web::WebState*> restored_web_states;
-  for (Range range : {pinned_tabs_range, regular_tabs_range}) {
-    for (int index = range.min; index < range.max; ++index) {
-      web::WebState* web_state = web_state_list_->GetWebStateAt(index);
-      restored_web_states.push_back(web_state);
-
-      const GURL& visible_url = web_state->GetVisibleURL();
-      if (!visible_url.is_valid()) {
-        continue;
-      }
-
-      favicon::WebFaviconDriver::FromWebState(web_state)->FetchFavicon(
-          visible_url, /*is_same_document=*/false);
-
-      if (visible_url != kChromeUINewTabURL) {
-        PagePlaceholderTabHelper::FromWebState(web_state)
-            ->AddPlaceholderForNextNavigation();
-      }
+  // Setup the placeholder and start fetching the favicon for the restored
+  // tabs if necessary.
+  for (web::WebState* web_state : restored_web_states) {
+    const GURL& visible_url = web_state->GetVisibleURL();
+    if (!visible_url.is_valid()) {
+      continue;
     }
-  }
 
-  // Check that all the restored tabs have been accounted for.
-  DCHECK_EQ(pinned_tabs_range.size() + regular_tabs_range.size(),
-            static_cast<int>(restored_web_states.size()));
+    favicon::WebFaviconDriver::FromWebState(web_state)->FetchFavicon(
+        visible_url, /*is_same_document=*/false);
 
-  // If there was only one tab and it was the new tab page, clobber it.
-  if (old_count == 1 && !restored_web_states.empty()) {
-    web::WebState* web_state = web_state_list_->GetWebStateAt(0);
-
-    // An "unrealized" WebState has no pending load. Checking for realization
-    // before accessing the NavigationManager prevents accidental realization
-    // of the WebState.
-    const bool has_pending_load =
-        web_state->IsRealized() &&
-        web_state->GetNavigationManager()->GetPendingItem() != nullptr;
-
-    if (!has_pending_load &&
-        (web_state->GetLastCommittedURL() == kChromeUINewTabURL)) {
-      web_state_list_->CloseWebStateAt(0, WebStateList::CLOSE_USER_ACTION);
+    if (visible_url != kChromeUINewTabURL) {
+      PagePlaceholderTabHelper::FromWebState(web_state)
+          ->AddPlaceholderForNextNavigation();
     }
   }
 

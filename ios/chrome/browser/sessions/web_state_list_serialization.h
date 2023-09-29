@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 
 #include <memory>
+#include <vector>
 
 #include "base/functional/callback_forward.h"
 
@@ -52,20 +53,30 @@ void SerializeWebStateList(const WebStateList& web_state_list,
 // create the restored WebStates. Use `scope` to limit which WebStates
 // are created. If `enable_pinned_web_states` is false, the tabs are not
 // marked as pinned upon restoration.
-void DeserializeWebStateList(WebStateList* web_state_list,
-                             SessionWindowIOS* session_window,
-                             SessionRestorationScope scope,
-                             bool enable_pinned_web_states,
-                             const WebStateFactory& factory);
+//
+// Returns a vector containing pointer to the restored WebStates. The
+// pointers are still owned by the WebStateList, so they may become
+// invalid as soon as the list is mutated.
+std::vector<web::WebState*> DeserializeWebStateList(
+    WebStateList* web_state_list,
+    SessionWindowIOS* session_window,
+    SessionRestorationScope scope,
+    bool enable_pinned_web_states,
+    const WebStateFactory& factory);
 
 // Restores a `web_state_list` from `storage` using `factory` to create
 // the restored WebStates. Use `scope` to limit which WebStates are created.
 // If `enabled_pinned_web_states` is false, the tabs are not marked as
 // pinned upon restoration.
-void DeserializeWebStateList(WebStateList& web_state_list,
-                             ios::proto::WebStateListStorage storage,
-                             SessionRestorationScope scope,
-                             bool enable_pinned_web_states,
-                             const WebStateFactoryFromProto& factory);
+//
+// Returns a vector containing pointer to the restored WebStates. The
+// pointers are still owned by the WebStateList, so they may become
+// invalid as soon as the list is mutated.
+std::vector<web::WebState*> DeserializeWebStateList(
+    WebStateList* web_state_list,
+    ios::proto::WebStateListStorage storage,
+    SessionRestorationScope scope,
+    bool enable_pinned_web_states,
+    const WebStateFactoryFromProto& factory);
 
 #endif  // IOS_CHROME_BROWSER_SESSIONS_WEB_STATE_LIST_SERIALIZATION_H_
