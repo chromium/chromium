@@ -377,12 +377,12 @@
     </template>
     <template is="dom-if" if="[[is3pcdRedesignEnabled_]]">
       <div id="exceptionHeader3pcd">
-        <h2>$i18n{siteDataPageCustomized3pcdHeading}</h2>
+        <h2>$i18n{trackingProtectionSitesAllowedCookiesTitle}</h2>
       </div>
       <site-list id="allowExceptionsList"
           category="[[cookiesContentSettingType_]]"
           category-subtype="[[contentSetting_.ALLOW]]"
-          category-header="$i18n{siteSettings3pcdBehaviorsDescription}"
+          category-header="$i18n{trackingProtectionSitesAllowedCookiesDescription}"
           read-only-list="[[exceptionListsReadOnly_]]"
           search-filter="[[searchTerm]]"
           cookies-exception-type="third-party">
