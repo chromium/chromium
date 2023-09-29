@@ -638,12 +638,6 @@ BASE_FEATURE(kOpenscreenCastStreamingSession,
              "OpenscreenCastStreamingSession",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Controls whether or not frame drops are included in the video bitrate
-// calculation for the OpenscreenFrameSender backed VideoSender implementation.
-BASE_FEATURE(kOpenscreenVideoBitrateFactorInFrameDrops,
-             "OpenscreenVideoBitrateFactorInFrameDrops",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls whether the Mirroring Service will fetch, analyze, and store
 // information on the quality of the session using RTCP logs.
 BASE_FEATURE(kEnableRtcpReporting,
@@ -1595,6 +1589,12 @@ BASE_FEATURE(kCameraMicEffects,
 // TODO(https://crbug.com/1383333): hardware AV1 encoding should be added.
 BASE_FEATURE(kCastStreamingAv1,
              "CastStreamingAv1",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Controls whether the new exponential bitrate calculate logic is used, or
+// the legacy linear algorithm.
+BASE_FEATURE(kCastStreamingExponentialVideoBitrateAlgorithm,
+             "CastStreamingExponentialVideoBitrateAlgorithm",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCastStreamingPerformanceOverlay,

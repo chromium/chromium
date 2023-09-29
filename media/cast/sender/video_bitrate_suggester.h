@@ -25,6 +25,13 @@ class VideoBitrateSuggester {
   int GetSuggestedBitrate();
 
  private:
+  // NOTE: the exponential algorithm is currently undergoing an experiment
+  // versus the legacy implementation.
+  // TODO(https://issuetracker.google.com/302584587): determine if new algorithm
+  // is more effective.
+  void UpdateSuggestionUsingExponentialAlgorithm();
+  void UpdateSuggestionUsingLinearAlgorithm();
+
   // The method for getting the recommended bitrate.
   FrameSender::GetSuggestedVideoBitrateCB get_bitrate_cb_;
 
