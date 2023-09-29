@@ -933,6 +933,8 @@ void ToolbarView::InitLayout() {
         std::vector<ui::ElementIdentifier>{
             kToolbarForwardButtonElementId, kToolbarAvatarButtonElementId,
             kToolbarHomeButtonElementId, kToolbarChromeLabsButtonElementId},
+        PopOutIdentifierMap(),  // TODO(crbug.com/1445573): Fill in
+                                // PopOutIdentifierMap.
         kToolbarFlexOrderStart, container_view_, overflow_button_);
 
     overflow_button_->set_create_menu_model_callback(

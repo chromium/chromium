@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/views/controls/menu/menu_item_view.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/view_class_properties.h"
@@ -40,8 +41,44 @@ std::u16string GenerateMenuText(const views::View* element) {
 
 }  // namespace
 
+ToolbarController::PopOutState::PopOutState() = default;
+ToolbarController::PopOutState::~PopOutState() = default;
+
+ToolbarController::PopOutHandler::PopOutHandler(
+    ToolbarController* controller,
+    ui::ElementContext context,
+    ui::ElementIdentifier identifier,
+    ui::ElementIdentifier observed_identifier)
+    : controller_(controller),
+      identifier_(identifier),
+      observed_identifier_(observed_identifier) {
+  shown_subscription_ =
+      ui::ElementTracker::GetElementTracker()->AddElementShownCallback(
+          observed_identifier_, context,
+          base::BindRepeating(&PopOutHandler::OnElementShown,
+                              base::Unretained(this)));
+  hidden_subscription_ =
+      ui::ElementTracker::GetElementTracker()->AddElementHiddenCallback(
+          observed_identifier_, context,
+          base::BindRepeating(&PopOutHandler::OnElementHidden,
+                              base::Unretained(this)));
+}
+
+ToolbarController::PopOutHandler::~PopOutHandler() = default;
+
+void ToolbarController::PopOutHandler::OnElementShown(
+    ui::TrackedElement* element) {
+  controller_->PopOut(identifier_);
+}
+
+void ToolbarController::PopOutHandler::OnElementHidden(
+    ui::TrackedElement* element) {
+  controller_->EndPopOut(identifier_);
+}
+
 ToolbarController::ToolbarController(
     std::vector<ui::ElementIdentifier> element_ids,
+    PopOutIdentifierMap pop_out_identifier_map,
     int element_flex_order_start,
     views::View* toolbar_container_view,
     views::View* overflow_button)
@@ -55,8 +92,10 @@ ToolbarController::ToolbarController(
       continue;
     }
 
+    views::FlexSpecification* original_spec =
+        toolbar_element->GetProperty(views::kFlexBehaviorKey);
     views::FlexSpecification flex_spec;
-    if (!toolbar_element->GetProperty(views::kFlexBehaviorKey)) {
+    if (!original_spec) {
       flex_spec = views::FlexSpecification(
           views::MinimumFlexSizeRule::kPreferredSnapToZero,
           views::MaximumFlexSizeRule::kPreferred);
@@ -65,7 +104,76 @@ ToolbarController::ToolbarController(
     flex_spec = toolbar_element->GetProperty(views::kFlexBehaviorKey)
                     ->WithOrder(element_flex_order_start++);
     toolbar_element->SetProperty(views::kFlexBehaviorKey, flex_spec);
+
+    // Create pop out state and pop out handlers to support pop out.
+    auto it = pop_out_identifier_map.find(id);
+    if (it != pop_out_identifier_map.end()) {
+      auto state = std::make_unique<PopOutState>();
+      if (original_spec) {
+        state->original_spec =
+            absl::optional<views::FlexSpecification>(*original_spec);
+      }
+      state->responsive_spec = flex_spec;
+      state->handler = std::make_unique<PopOutHandler>(
+          this,
+          views::ElementTrackerViews::GetContextForView(toolbar_container_view),
+          id, it->second);
+      pop_out_state_[id] = std::move(state);
+    }
   }
+}
+
+ToolbarController::~ToolbarController() = default;
+
+bool ToolbarController::PopOut(ui::ElementIdentifier identifier) {
+  views::View* element = FindToolbarElementWithId(identifier);
+  if (!element) {
+    LOG(ERROR) << "Cannot find toolbar element id: " << identifier;
+    return false;
+  }
+  const auto it = pop_out_state_.find(identifier);
+  if (it == pop_out_state_.end()) {
+    LOG(ERROR) << "Cannot find pop out state for id:" << identifier;
+    return false;
+  }
+  if (it->second->is_popped_out) {
+    return false;
+  }
+
+  it->second->is_popped_out = true;
+
+  auto& original = it->second->original_spec;
+
+  if (original.has_value()) {
+    element->SetProperty(views::kFlexBehaviorKey, original.value());
+  } else {
+    element->ClearProperty(views::kFlexBehaviorKey);
+  }
+
+  element->parent()->InvalidateLayout();
+  return true;
+}
+
+bool ToolbarController::EndPopOut(ui::ElementIdentifier identifier) {
+  views::View* element = FindToolbarElementWithId(identifier);
+  if (!element) {
+    LOG(ERROR) << "Cannot find toolbar element id: " << identifier;
+    return false;
+  }
+  const auto it = pop_out_state_.find(identifier);
+  if (it == pop_out_state_.end()) {
+    LOG(ERROR) << "Cannot find pop out state for id:" << identifier;
+    return false;
+  }
+  if (!it->second->is_popped_out) {
+    return false;
+  }
+
+  it->second->is_popped_out = false;
+
+  element->SetProperty(views::kFlexBehaviorKey, it->second->responsive_spec);
+  element->parent()->InvalidateLayout();
+  return true;
 }
 
 bool ToolbarController::ShouldShowOverflowButton() {
@@ -113,4 +221,3 @@ ToolbarController::CreateOverflowMenuModel() {
 
 void ToolbarController::ExecuteCommand(int command_id, int event_flags) {}
 
-ToolbarController::~ToolbarController() = default;
