@@ -571,11 +571,11 @@ void SensorProvider::NotifySensorUpdated(SensorUpdate update) {
   GetLidAngleUpdate();
 }
 
-void SensorProvider::AddObserver(Observer* observer) {
+void SensorProvider::AddObserver(SensorObserver* observer) {
   observers_.AddObserver(observer);
 }
 
-void SensorProvider::RemoveObserver(Observer* observer) {
+void SensorProvider::RemoveObserver(SensorObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 }  // namespace ash

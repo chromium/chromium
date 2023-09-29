@@ -100,9 +100,9 @@ class ASH_EXPORT SensorProvider
       int32_t iio_device_id,
       const std::vector<chromeos::sensors::mojom::DeviceType>& types) override;
 
-  // Adds/Removes observers.
-  void AddObserver(Observer* observer);
-  void RemoveObserver(Observer* observer);
+  // Adds/Removes SensorObservers.
+  void AddObserver(SensorObserver* observer);
+  void RemoveObserver(SensorObserver* observer);
 
   // Starts/Stops sensor reading.
   // Changes 'sensor_read_on_' and call EnableSensorReadingInternal.
@@ -228,7 +228,7 @@ class ASH_EXPORT SensorProvider
   bool sensor_read_on_ = false;
 
   // List of all external observers.
-  base::ObserverList<Observer> observers_;
+  base::ObserverList<SensorObserver> observers_;
 
   base::WeakPtrFactory<SensorProvider> weak_ptr_factory_{this};
 };

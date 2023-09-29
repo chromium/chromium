@@ -35,7 +35,8 @@ class SensorProvider;
 // 'OnSensorUpdated' function and in this function forward sensor updates to TS
 // side. SensorPageHandler is also inheriting sensor::mojom::PageHandler, so
 // also responsible of TS side to C++ side communications.
-class SensorPageHandler : public Observer, public sensor::mojom::PageHandler {
+class SensorPageHandler : public SensorObserver,
+                          public sensor::mojom::PageHandler {
  public:
   // Enum class for file open status.
   enum class State {
@@ -80,7 +81,7 @@ class SensorPageHandler : public Observer, public sensor::mojom::PageHandler {
   void StartRecordingUpdate() override;
   void StopRecordingUpdate() override;
 
-  // Observer
+  // SensorObserver:
   void OnSensorUpdated(const SensorUpdate& update) override;
 
  private:

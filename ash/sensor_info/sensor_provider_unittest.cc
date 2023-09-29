@@ -38,7 +38,7 @@ constexpr int kFakeLidAngleId = 4;
 
 constexpr int64_t kFakeSampleData[] = {1, 2, 3};
 
-class FakeObserver : public Observer {
+class FakeObserver : public SensorObserver {
  public:
   void OnSensorUpdated(const SensorUpdate& update) override {
     for (int index = 0; index < static_cast<int>(SensorType::kSensorTypeCount);

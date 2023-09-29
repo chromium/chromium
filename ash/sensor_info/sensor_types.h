@@ -77,11 +77,11 @@ class ASH_EXPORT SensorUpdate {
       data_[static_cast<int>(SensorType::kSensorTypeCount)];
 };
 
-// Class for all potential observer.
-class ASH_EXPORT Observer : public base::CheckedObserver {
+// Class for all potential observers for sensor updates.
+class ASH_EXPORT SensorObserver : public base::CheckedObserver {
  public:
   // SensorProvider will gather updates from AccelGyroSamplesObserver. Then
-  // SensorProvider will call OnSensorUpdated to notify Observer.
+  // SensorProvider will call OnSensorUpdated to notify SensorObserver.
   virtual void OnSensorUpdated(const SensorUpdate& update) = 0;
 };
 
