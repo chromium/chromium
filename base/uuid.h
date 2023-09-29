@@ -12,7 +12,6 @@
 
 #include "base/base_export.h"
 #include "base/containers/span.h"
-#include "base/hash/hash.h"
 #include "base/strings/string_piece.h"
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
@@ -107,11 +106,7 @@ class BASE_EXPORT Uuid {
 // For runtime usage only. Do not store the result of this hash, as it may
 // change in future Chromium revisions.
 struct BASE_EXPORT UuidHash {
-  size_t operator()(const Uuid& uuid) const {
-    // TODO(crbug.com/1026195): Avoid converting to string to take the hash when
-    // the internal type is migrated to a non-string type.
-    return FastHash(uuid.AsLowercaseString());
-  }
+  size_t operator()(const Uuid& uuid) const;
 };
 
 // Stream operator so Uuid objects can be used in logging statements.

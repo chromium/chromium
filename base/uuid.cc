@@ -9,6 +9,7 @@
 
 #include <ostream>
 
+#include "base/hash/hash.h"
 #include "base/rand_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -181,6 +182,12 @@ bool Uuid::operator>=(const Uuid& other) const {
 
 std::ostream& operator<<(std::ostream& out, const Uuid& uuid) {
   return out << uuid.AsLowercaseString();
+}
+
+size_t UuidHash::operator()(const Uuid& uuid) const {
+  // TODO(crbug.com/1026195): Avoid converting to string to take the hash when
+  // the internal type is migrated to a non-string type.
+  return FastHash(uuid.AsLowercaseString());
 }
 
 }  // namespace base

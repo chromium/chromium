@@ -12,7 +12,7 @@
 
 #include "base/base_export.h"
 #include "base/containers/span.h"
-#include "base/hash/hash.h"
+#include "base/strings/string_piece_forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
@@ -80,10 +80,8 @@ class BASE_EXPORT Token {
 };
 
 // For use in std::unordered_map.
-struct TokenHash {
-  size_t operator()(const base::Token& token) const {
-    return base::HashInts64(token.high(), token.low());
-  }
+struct BASE_EXPORT TokenHash {
+  size_t operator()(const Token& token) const;
 };
 
 class Pickle;
