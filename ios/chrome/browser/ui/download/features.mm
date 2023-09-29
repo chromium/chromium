@@ -15,3 +15,7 @@ BASE_FEATURE(kARKillSwitch,
 BASE_FEATURE(kVCardKillSwitch,
              "DownloadKillSwitchVcard",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kIOSIncognitoDownloadsWarning,
+             "IOSIncognitoDownloadsWarning",
+             base::FEATURE_DISABLED_BY_DEFAULT);

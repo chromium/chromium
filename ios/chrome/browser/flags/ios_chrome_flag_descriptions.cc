@@ -607,6 +607,12 @@ const char kIOSForceTranslateEnabledName[] = "Allow force translate on iOS.";
 const char kIOSForceTranslateEnabledDescription[] =
     "Enable the translate feature when language detection failed.";
 
+const char kIOSIncognitoDownloadsWarningName[] =
+    "Enable Incognito downloads warning on iOS";
+const char kIOSIncognitoDownloadsWarningDescription[] =
+    "When enabled, users will be warned that downloaded files are saved on the "
+    "device and might be seen by other users even if they are in Incognito.";
+
 const char kIOSNewPostRestoreExperienceName[] = "New Post Restore Experience";
 const char kIOSNewPostRestoreExperienceDescription[] =
     "When enabled, a prompt will be presented after a device restore to "

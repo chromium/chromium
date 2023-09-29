@@ -1671,6 +1671,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAutofillEnableVirtualCardsDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableVirtualCards)},
+    {"ios-incognito-downloads-warning",
+     flag_descriptions::kIOSIncognitoDownloadsWarningName,
+     flag_descriptions::kIOSIncognitoDownloadsWarningDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kIOSIncognitoDownloadsWarning)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

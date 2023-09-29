@@ -511,6 +511,10 @@ extern const char kIOSEditMenuHideSearchWebDescription[];
 extern const char kIOSForceTranslateEnabledName[];
 extern const char kIOSForceTranslateEnabledDescription[];
 
+// Title and description for the flag to enable Incognito downloads education.
+extern const char kIOSIncognitoDownloadsWarningName[];
+extern const char kIOSIncognitoDownloadsWarningDescription[];
+
 // Title and description for the flag to enable the new iOS post-restore
 // sign-in prompt.
 extern const char kIOSNewPostRestoreExperienceName[];
