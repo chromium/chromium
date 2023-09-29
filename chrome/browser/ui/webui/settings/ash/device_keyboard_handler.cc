@@ -44,6 +44,8 @@ KeyboardsStateResult GetKeyboardsState() {
         result.has_external_chromeos_keyboard = true;
         break;
       case ui::KeyboardCapability::DeviceType::kDeviceExternalGenericKeyboard:
+      case ui::KeyboardCapability::DeviceType::
+          kDeviceExternalNullTopRowChromeOsKeyboard:
       case ui::KeyboardCapability::DeviceType::kDeviceExternalUnknown:
         result.has_external_generic_keyboard = true;
         break;

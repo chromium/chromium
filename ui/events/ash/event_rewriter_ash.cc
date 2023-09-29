@@ -288,6 +288,8 @@ const ModifierRemapping* GetSearchRemappedKey(
       break;
 
     case KeyboardCapability::DeviceType::kDeviceExternalGenericKeyboard:
+    case KeyboardCapability::DeviceType::
+        kDeviceExternalNullTopRowChromeOsKeyboard:
     case KeyboardCapability::DeviceType::kDeviceExternalUnknown:
       pref_name = prefs::kLanguageRemapExternalMetaKeyTo;
       break;
@@ -1405,6 +1407,8 @@ void EventRewriterAsh::RecordModifierKeyPressedAfterRemapping(
       break;
     case KeyboardCapability::DeviceType::kDeviceExternalGenericKeyboard:
     case KeyboardCapability::DeviceType::kDeviceExternalUnknown:
+    case KeyboardCapability::DeviceType::
+        kDeviceExternalNullTopRowChromeOsKeyboard:
       UMA_HISTOGRAM_ENUMERATION(
           "ChromeOS.Inputs.Keyboard.RemappedModifierPressed.External",
           modifier_key_usage_mapping->modifier_key_enum);
@@ -1449,6 +1453,8 @@ void EventRewriterAsh::RecordModifierKeyPressedBeforeRemapping(
           modifier_key_usage_mapping->modifier_key_enum);
       break;
     case KeyboardCapability::DeviceType::kDeviceExternalGenericKeyboard:
+    case KeyboardCapability::DeviceType::
+        kDeviceExternalNullTopRowChromeOsKeyboard:
     case KeyboardCapability::DeviceType::kDeviceExternalUnknown:
       UMA_HISTOGRAM_ENUMERATION(
           "ChromeOS.Inputs.Keyboard.ModifierPressed.External",

@@ -72,6 +72,8 @@ mojom::MetaKey GetMetaKeyForKeyboard(const ui::KeyboardDevice& keyboard) {
     case ui::KeyboardCapability::DeviceType::kDeviceExternalGenericKeyboard:
     case ui::KeyboardCapability::DeviceType::kDeviceExternalUnknown:
     case ui::KeyboardCapability::DeviceType::kDeviceInternalRevenKeyboard:
+    case ui::KeyboardCapability::DeviceType::
+        kDeviceExternalNullTopRowChromeOsKeyboard:
       return mojom::MetaKey::kExternalMeta;
   };
 }

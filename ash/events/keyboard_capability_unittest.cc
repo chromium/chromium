@@ -996,6 +996,18 @@ TEST_F(KeyboardCapabilityTest, TopRowLayoutWilco) {
   }
 }
 
+TEST_F(KeyboardCapabilityTest, NullTopRowDescriptor) {
+  ui::KeyboardDevice input_device(kDeviceId1, ui::INPUT_DEVICE_BLUETOOTH,
+                                  "External Keyboard");
+  fake_keyboard_manager_->AddFakeKeyboard(input_device,
+                                          "C0000 C0000 C0000 C0000",
+                                          /*has_custom_top_row=*/true);
+  EXPECT_EQ(ui::KeyboardCapability::DeviceType::
+                kDeviceExternalNullTopRowChromeOsKeyboard,
+            keyboard_capability_->GetDeviceType(input_device));
+  EXPECT_TRUE(keyboard_capability_->HasCapsLockKey(input_device));
+}
+
 class TopRowLayoutCustomTest
     : public KeyboardCapabilityTest,
       public testing::WithParamInterface<std::vector<ui::TopRowActionKey>> {

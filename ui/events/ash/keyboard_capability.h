@@ -172,6 +172,7 @@ class KeyboardCapability : public InputDeviceEventObserver {
     kDeviceInternalRevenKeyboard,
     kDeviceExternalAppleKeyboard,
     kDeviceExternalChromeOsKeyboard,
+    kDeviceExternalNullTopRowChromeOsKeyboard,
     kDeviceExternalGenericKeyboard,
     kDeviceExternalUnknown,
     kDeviceHotrodRemote,

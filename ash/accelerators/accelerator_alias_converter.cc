@@ -65,6 +65,8 @@ absl::optional<ui::KeyboardDevice> GetPriorityExternalKeyboard() {
       case DeviceType::kDeviceExternalChromeOsKeyboard:
       case DeviceType::kDeviceExternalAppleKeyboard:
       case DeviceType::kDeviceExternalGenericKeyboard:
+      case ui::KeyboardCapability::DeviceType::
+          kDeviceExternalNullTopRowChromeOsKeyboard:
       case DeviceType::kDeviceExternalUnknown:
       case DeviceType::kDeviceHotrodRemote:
       case DeviceType::kDeviceVirtualCoreKeyboard:
@@ -98,6 +100,8 @@ absl::optional<ui::KeyboardDevice> GetInternalKeyboard() {
       case DeviceType::kDeviceExternalChromeOsKeyboard:
       case DeviceType::kDeviceExternalAppleKeyboard:
       case DeviceType::kDeviceExternalGenericKeyboard:
+      case ui::KeyboardCapability::DeviceType::
+          kDeviceExternalNullTopRowChromeOsKeyboard:
       case DeviceType::kDeviceExternalUnknown:
       case DeviceType::kDeviceHotrodRemote:
       case DeviceType::kDeviceVirtualCoreKeyboard:

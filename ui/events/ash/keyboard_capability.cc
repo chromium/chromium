@@ -62,6 +62,10 @@ struct VendorProductId {
 // FKey is missing on the physical device.
 const int kCustomAbsentScanCode = 0x00;
 
+// Represents the "null" scancode used to represent the opting out of Meta +
+// F-Key rewrites functionality.
+const int kCustomNullScanCode = 0xC0000;
+
 // Hotrod controller vendor/product ids.
 const int kHotrodRemoteVendorId = 0x0471;
 const int kHotrodRemoteProductId = 0x21cc;
@@ -294,7 +298,8 @@ bool ParseKeyboardTopRowLayout(const std::string& layout_string,
 // standard F1-F12 keys.
 KeyboardCapability::DeviceType IdentifyKeyboardType(
     const KeyboardDevice& keyboard_device,
-    bool has_chromeos_top_row) {
+    bool has_chromeos_top_row,
+    bool has_null_top_row) {
   if (keyboard_device.vendor_id == kHotrodRemoteVendorId &&
       keyboard_device.product_id == kHotrodRemoteProductId) {
     VLOG(1) << "Hotrod remote '" << keyboard_device.name
@@ -318,6 +323,13 @@ KeyboardCapability::DeviceType IdentifyKeyboardType(
   }
 
   if (has_chromeos_top_row) {
+    if (has_null_top_row) {
+      VLOG(1) << "External Null Top Row keyboard '" << keyboard_device.name
+              << "' connected: id=" << keyboard_device.id;
+      return KeyboardCapability::DeviceType::
+          kDeviceExternalNullTopRowChromeOsKeyboard;
+    }
+
     // If the device was tagged as having Chrome OS top row layout it must be a
     // Chrome OS keyboard.
     VLOG(1) << "External Chrome OS keyboard '" << keyboard_device.name
@@ -369,8 +381,13 @@ IdentifyKeyboardInfo(const KeyboardDevice& keyboard) {
   std::string layout_string;
   KeyboardTopRowLayout layout;
   std::vector<uint32_t> top_row_scan_codes = GetTopRowScanCodeVector(keyboard);
+  bool null_top_row = false;
   if (!top_row_scan_codes.empty()) {
     layout = KeyboardTopRowLayout::kKbdTopRowLayoutCustom;
+    null_top_row =
+        base::ranges::all_of(top_row_scan_codes, [](const uint32_t scancode) {
+          return scancode == kCustomNullScanCode;
+        });
   } else if (!GetTopRowLayoutProperty(keyboard, layout_string) ||
              !ParseKeyboardTopRowLayout(layout_string, layout)) {
     return {KeyboardCapability::DeviceType::kDeviceUnknown,
@@ -379,7 +396,8 @@ IdentifyKeyboardInfo(const KeyboardDevice& keyboard) {
   }
 
   return {IdentifyKeyboardType(
-              keyboard, !top_row_scan_codes.empty() || !layout_string.empty()),
+              keyboard, !top_row_scan_codes.empty() || !layout_string.empty(),
+              null_top_row),
           layout, std::move(top_row_scan_codes)};
 }
 
