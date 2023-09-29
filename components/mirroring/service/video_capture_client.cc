@@ -314,7 +314,7 @@ void VideoCaptureClient::OnBufferDestroyed(int32_t buffer_id) {
     client_buffers_.erase(buffer_iter);
 }
 
-void VideoCaptureClient::OnFrameDroppedEarly(
+void VideoCaptureClient::OnFrameDropped(
     media::VideoCaptureFrameDropReason reason) {}
 
 void VideoCaptureClient::OnNewCropVersion(uint32_t crop_version) {}

@@ -66,18 +66,10 @@ class VideoCaptureControllerEventHandler {
       const ReadyBuffer& buffer,
       const std::vector<ReadyBuffer>& scaled_buffers) = 0;
 
-  // A frame was dropped early, such as by the capture process. This refers to
-  // a frame where we never called OnBufferReady().
-  //
-  // This callback is used to signal frame drops from browser process to
-  // renderer process and is named OnFrameDroppedEarly() to avoid naming clashes
-  // with VideoCaptureImpl::OnFrameDropped() which signals about frame drops in
-  // the other direction (renderer -> browser).
-  // TODO(https://crbug.com/1481448): When the UMAs are moved and the other
-  // OnFrameDropped() callback is deleted, rename this method to OnFrameDropped.
-  virtual void OnFrameDroppedEarly(
-      const VideoCaptureControllerID& id,
-      media::VideoCaptureFrameDropReason reason) = 0;
+  // A frame was dropped - OnBufferReady() was never called for this frame. In
+  // other words the frame was dropped before it reached the renderer process.
+  virtual void OnFrameDropped(const VideoCaptureControllerID& id,
+                              media::VideoCaptureFrameDropReason reason) = 0;
 
   // All subsequent buffers are guaranteed to have a crop version whose value
   // is at least |crop_version|.

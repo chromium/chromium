@@ -157,8 +157,7 @@ class MockVideoCaptureObserver final
     buffers_.erase(iter);
     OnBufferDestroyedCall(buffer_id);
   }
-  MOCK_METHOD1(OnFrameDroppedEarly,
-               void(media::VideoCaptureFrameDropReason reason));
+  MOCK_METHOD1(OnFrameDropped, void(media::VideoCaptureFrameDropReason reason));
 
   MOCK_METHOD1(OnNewCropVersion, void(uint32_t crop_version));
 

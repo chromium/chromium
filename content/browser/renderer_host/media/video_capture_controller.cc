@@ -576,7 +576,7 @@ void VideoCaptureController::OnFrameDropped(
     if (client->session_closed) {
       continue;
     }
-    client->event_handler->OnFrameDroppedEarly(client->controller_id, reason);
+    client->event_handler->OnFrameDropped(client->controller_id, reason);
   }
 }
 

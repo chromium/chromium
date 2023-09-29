@@ -105,9 +105,7 @@ class MockVideoCaptureImpl : public VideoCaptureImpl,
     NOTREACHED();
   }
 
-  MOCK_METHOD2(OnFrameDropped,
-               void(const base::UnguessableToken&,
-                    media::VideoCaptureFrameDropReason));
+  MOCK_METHOD1(OnFrameDropped, void(media::VideoCaptureFrameDropReason));
   MOCK_METHOD2(OnLog, void(const base::UnguessableToken&, const String&));
 
   PauseResumeCallback* const pause_callback_;

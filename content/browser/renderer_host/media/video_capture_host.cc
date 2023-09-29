@@ -191,7 +191,7 @@ void VideoCaptureHost::OnBufferReady(
       std::move(mojom_buffer), std::move(mojom_scaled_buffers));
 }
 
-void VideoCaptureHost::OnFrameDroppedEarly(
+void VideoCaptureHost::OnFrameDropped(
     const VideoCaptureControllerID& controller_id,
     media::VideoCaptureFrameDropReason reason) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
@@ -199,7 +199,7 @@ void VideoCaptureHost::OnFrameDroppedEarly(
       !base::Contains(device_id_to_observer_map_, controller_id)) {
     return;
   }
-  device_id_to_observer_map_[controller_id]->OnFrameDroppedEarly(reason);
+  device_id_to_observer_map_[controller_id]->OnFrameDropped(reason);
 }
 
 void VideoCaptureHost::OnFrameWithEmptyRegionCapture(

@@ -191,7 +191,7 @@ class VideoCaptureImplTest : public ::testing::Test {
                void(scoped_refptr<media::VideoFrame>,
                     std::vector<scoped_refptr<media::VideoFrame>>,
                     base::TimeTicks));
-  MOCK_METHOD1(OnFrameDroppedEarly, void(media::VideoCaptureFrameDropReason));
+  MOCK_METHOD1(OnFrameDropped, void(media::VideoCaptureFrameDropReason));
   MOCK_METHOD1(OnStateUpdate, void(VideoCaptureState));
   MOCK_METHOD1(OnDeviceFormatsInUse,
                void(const Vector<media::VideoCaptureFormat>&));
@@ -204,7 +204,7 @@ class VideoCaptureImplTest : public ::testing::Test {
     const auto frame_ready_callback = WTF::BindRepeating(
         &VideoCaptureImplTest::OnFrameReady, base::Unretained(this));
     const auto frame_dropped_callback = WTF::BindRepeating(
-        &VideoCaptureImplTest::OnFrameDroppedEarly, base::Unretained(this));
+        &VideoCaptureImplTest::OnFrameDropped, base::Unretained(this));
 
     video_capture_impl_->StartCapture(
         client_id, params, state_update_callback, frame_ready_callback,
@@ -628,13 +628,13 @@ TEST_F(VideoCaptureImplTest, ScaledBufferReceived_SoftwareAndHardware) {
   testing_io_thread.Stop();
 }
 
-TEST_F(VideoCaptureImplTest, OnFrameDroppedEarly) {
+TEST_F(VideoCaptureImplTest, OnFrameDropped) {
   EXPECT_CALL(mock_video_capture_host_, DoStart(_, session_id_, params_small_));
-  EXPECT_CALL(*this, OnFrameDroppedEarly(_));
+  EXPECT_CALL(*this, OnFrameDropped(_));
   EXPECT_CALL(mock_video_capture_host_, Stop(_));
 
   StartCapture(0, params_small_);
-  video_capture_impl_->OnFrameDroppedEarly(
+  video_capture_impl_->OnFrameDropped(
       media::VideoCaptureFrameDropReason::kBufferPoolMaxBufferCountExceeded);
   StopCapture(0);
 }

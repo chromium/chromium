@@ -98,7 +98,7 @@ class MockVideoCaptureControllerEventHandler
   MOCK_METHOD1(OnStartedUsingGpuDecode, void(const VideoCaptureControllerID&));
   MOCK_METHOD2(OnNewCropVersion,
                void(const VideoCaptureControllerID&, uint32_t));
-  MOCK_METHOD2(OnFrameDroppedEarly,
+  MOCK_METHOD2(OnFrameDropped,
                void(const VideoCaptureControllerID&,
                     media::VideoCaptureFrameDropReason));
 
@@ -984,14 +984,13 @@ TEST_F(VideoCaptureControllerTest, OnStartedForMultipleClients) {
   }
 }
 
-TEST_F(VideoCaptureControllerTest, EarlyDroppedFramesAreSignalled) {
+TEST_F(VideoCaptureControllerTest, OnFrameDroppedIsForwarded) {
   media::VideoCaptureParams requested_params;
   requested_params.requested_format = arbitrary_format_;
   controller_->AddClient(arbitrary_route_id_, client_a_.get(),
                          arbitrary_session_id_, requested_params);
 
-  // When OnFrameDropped() is called, the signal is forwarded.
-  EXPECT_CALL(*client_a_, OnFrameDroppedEarly(_, _)).Times(1);
+  EXPECT_CALL(*client_a_, OnFrameDropped(_, _)).Times(1);
   controller_->OnFrameDropped(
       media::VideoCaptureFrameDropReason::kBufferPoolMaxBufferCountExceeded);
   Mock::VerifyAndClearExpectations(client_a_.get());

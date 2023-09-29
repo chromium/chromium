@@ -213,7 +213,7 @@ class VideoCaptureTest : public testing::Test,
   }
   MOCK_METHOD1(DoOnBufferReady, void(int32_t));
   MOCK_METHOD1(OnBufferDestroyed, void(int32_t));
-  MOCK_METHOD1(OnFrameDroppedEarly, void(media::VideoCaptureFrameDropReason));
+  MOCK_METHOD1(OnFrameDropped, void(media::VideoCaptureFrameDropReason));
   MOCK_METHOD1(OnNewCropVersion, void(uint32_t));
 
   void StartCapture() {

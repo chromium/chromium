@@ -61,7 +61,7 @@ class MockVideoCaptureControllerEventHandler
                void(const VideoCaptureControllerID& id,
                     const ReadyBuffer& fullsized_buffer,
                     const std::vector<ReadyBuffer>& downscaled_buffers));
-  MOCK_METHOD2(OnFrameDroppedEarly,
+  MOCK_METHOD2(OnFrameDropped,
                void(const VideoCaptureControllerID& id,
                     media::VideoCaptureFrameDropReason reason));
   MOCK_METHOD1(OnFrameWithEmptyRegionCapture,
