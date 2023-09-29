@@ -420,13 +420,6 @@ public abstract class AsyncInitializationActivity
     }
 
     /**
-     * @return Whether the native library initialization is delayed at this point.
-     */
-    protected boolean isStartupDelayed() {
-        return mStartupDelayed;
-    }
-
-    /**
      * @return Whether the browser startup should be delayed. Note that changing this return value
      *         will have direct impact on startup performance.
      */
