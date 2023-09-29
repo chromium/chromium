@@ -194,6 +194,7 @@ source_set("eg2_tests") {
     ":eg_test_support+eg2",
     ":recent_tabs_ui_constants",
     "//base/test:test_support",
+    "//build:branding_buildflags",
     "//components/policy:policy_code_generate",
     "//components/policy/core/common:common_constants",
     "//components/strings",

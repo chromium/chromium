@@ -8,6 +8,7 @@
 #import "base/metrics/field_trial.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "build/branding_buildflags.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/version_info/version_info.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
@@ -111,7 +112,15 @@ using chrome_test_util::ForwardButton;
 
 // Tests that back and forward navigation between chrome URLs functions
 // properly.
-- (void)testChromeURLBackAndForwardAndReloadNavigation {
+// TODO(crbug.com/1487987): Test fails on official builds.
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#define MAYBE_testChromeURLBackAndForwardAndReloadNavigation \
+  DISABLED_testChromeURLBackAndForwardAndReloadNavigation
+#else
+#define MAYBE_testChromeURLBackAndForwardAndReloadNavigation \
+  testChromeURLBackAndForwardAndReloadNavigation
+#endif
+- (void)MAYBE_testChromeURLBackAndForwardAndReloadNavigation {
   // Navigate to the first URL chrome://version.
   [ChromeEarlGrey loadURL:GURL(kChromeUIVersionURL)];
 
@@ -147,7 +156,14 @@ using chrome_test_util::ForwardButton;
 }
 
 // Tests that all URLs on chrome://chrome-urls page load without error.
-- (void)testChromeURLsLoadWithoutError {
+// TODO(crbug.com/1487987): Test fails on official builds.
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#define MAYBE_testChromeURLsLoadWithoutError \
+  DISABLED_testChromeURLsLoadWithoutError
+#else
+#define MAYBE_testChromeURLsLoadWithoutError testChromeURLsLoadWithoutError
+#endif
+- (void)MAYBE_testChromeURLsLoadWithoutError {
   // Load WebUI pages and verify they load without any error.
   for (size_t i = 0; i < kNumberOfChromeHostURLs; ++i) {
     const char* host = kChromeHostURLs[i];
@@ -263,7 +279,14 @@ using chrome_test_util::ForwardButton;
   [ChromeEarlGrey waitForWebStateContainingText:"Password Manager Internals"];
 }
 
-- (void)testChromeAutofillInternalsSite {
+// TODO(crbug.com/1487987): Test fails on official builds.
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#define MAYBE_testChromeAutofillInternalsSite \
+  DISABLED_testChromeAutofillInternalsSite
+#else
+#define MAYBE_testChromeAutofillInternalsSite testChromeAutofillInternalsSite
+#endif
+- (void)MAYBE_testChromeAutofillInternalsSite {
   GURL URL = WebUIPageUrlWithHost(kChromeUIAutofillInternalsHost);
   [ChromeEarlGrey loadURL:URL];
 

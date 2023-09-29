@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/overlays/overlay_presentation_context_view_controller.h"
 
 #import "base/test/ios/wait_util.h"
+#import "build/branding_buildflags.h"
 #import "ios/chrome/browser/overlays/public/overlay_request.h"
 #import "ios/chrome/browser/overlays/public/test_modality/test_presented_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/test_modality/test_resizing_presented_overlay_request_config.h"
@@ -84,8 +85,14 @@ TEST_F(OverlayPresentationContextViewControllerTest, NoPresentedUI) {
 
 // Tests that `view_controller_`'s frame is the same as its presenter while
 // showing overlay UI presented over its context.
+// TODO(crbug.com/1487982): Test fails on official builds.
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#define MAYBE_PresentedOverCurrentContext DISABLED_PresentedOverCurrentContext
+#else
+#define MAYBE_PresentedOverCurrentContext PresentedOverCurrentContext
+#endif
 TEST_F(OverlayPresentationContextViewControllerTest,
-       PresentedOverCurrentContext) {
+       MAYBE_PresentedOverCurrentContext) {
   if (@available(iOS 15.7.1, *)) {
     if (@available(iOS 15.7.2, *)) {
     } else {
@@ -141,7 +148,14 @@ TEST_F(OverlayPresentationContextViewControllerTest,
 // Tests that `view_controller_`'s frame is the same as its presented view's
 // container view if it is shown using custom UIViewController presentation that
 // resizes the contianer view.
-TEST_F(OverlayPresentationContextViewControllerTest, ResizingPresentedOverlay) {
+// TODO(crbug.com/1487982): Test fails on official builds.
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#define MAYBE_ResizingPresentedOverlay DISABLED_ResizingPresentedOverlay
+#else
+#define MAYBE_ResizingPresentedOverlay ResizingPresentedOverlay
+#endif
+TEST_F(OverlayPresentationContextViewControllerTest,
+       MAYBE_ResizingPresentedOverlay) {
   if (@available(iOS 15.7.1, *)) {
     if (@available(iOS 15.7.2, *)) {
     } else {

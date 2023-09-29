@@ -130,6 +130,7 @@ source_set("unit_tests") {
     ":ui",
     ":util",
     "//base/test:test_support",
+    "//build:branding_buildflags",
     "//ios/chrome/browser/overlays",
     "//ios/chrome/browser/overlays/public/test_modality",
     "//ios/chrome/browser/overlays/public/web_content_area",

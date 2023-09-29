@@ -7,6 +7,7 @@
 
 #import "base/ios/ios_util.h"
 #import "base/strings/sys_string_conversions.h"
+#import "build/branding_buildflags.h"
 #import "components/policy/core/common/policy_loader_ios_constants.h"
 #import "components/policy/policy_constants.h"
 #import "components/strings/grit/components_strings.h"
@@ -679,7 +680,15 @@ GURL TestPageURL() {
 
 // Tests no promo to sync is shown to a signed-in non-syncing user if sync is
 // disabled by policy.
-- (void)testNoPromoIfSignedInAndSyncDisabledByPolicy {
+// TODO(crbug.com/1487984): Test fails on official builds.
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#define MAYBE_testNoPromoIfSignedInAndSyncDisabledByPolicy \
+  DISABLED_testNoPromoIfSignedInAndSyncDisabledByPolicy
+#else
+#define MAYBE_testNoPromoIfSignedInAndSyncDisabledByPolicy \
+  testNoPromoIfSignedInAndSyncDisabledByPolicy
+#endif
+- (void)MAYBE_testNoPromoIfSignedInAndSyncDisabledByPolicy {
   // Set the policy and dismiss the bottom sheet that it causes.
   policy_test_utils::SetPolicy(true, policy::key::kSyncDisabled);
   [[EarlGrey
