@@ -34,7 +34,7 @@ ExperimentManagerImpl* ExperimentManagerImpl::GetForProfile(Profile* profile) {
     return nullptr;
   }
 
-  if (!features::kCookieDeprecationFacilitatedTestingEnableIncognito.Get() &&
+  if (!features::kCookieDeprecationFacilitatedTestingEnableOTRProfiles.Get() &&
       profile->IsOffTheRecord()) {
     return nullptr;
   }

@@ -543,7 +543,7 @@ TEST_P(CookieDeprecationExperimentEligibilityOTRProfileTest, IsEligible) {
         features::kCookieDeprecationFacilitatedTesting,
         {{"force_eligible", "true"},
          {"use_profile_filtering", use_profile_filtering_param},
-         {"enable_incognito", "true"}});
+         {"enable_otr_profiles", "true"}});
 
     if (!use_profile_filtering) {
       EXPECT_CALL(*experiment_manager(), IsClientEligible)
@@ -561,7 +561,7 @@ TEST_P(CookieDeprecationExperimentEligibilityOTRProfileTest, IsEligible) {
         features::kCookieDeprecationFacilitatedTesting,
         {{"force_eligible", "true"},
          {"use_profile_filtering", use_profile_filtering_param},
-         {"enable_incognito", "false"}});
+         {"enable_otr_profiles", "false"}});
     EXPECT_FALSE(delegate_under_test.IsCookieDeprecationExperimentEligible());
     feature_list()->Reset();
   }

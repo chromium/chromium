@@ -112,7 +112,7 @@ class EligibilityServiceOTRProfileTest
   EligibilityServiceOTRProfileTest() {
     feature_list_.InitAndEnableFeatureWithParameters(
         features::kCookieDeprecationFacilitatedTesting,
-        {{"enable_incognito", GetParam() ? "true" : "false"}});
+        {{"enable_otr_profiles", GetParam() ? "true" : "false"}});
   }
 
  private:
@@ -120,13 +120,13 @@ class EligibilityServiceOTRProfileTest
 };
 
 TEST_P(EligibilityServiceOTRProfileTest, Creation) {
-  const bool enable_incognito = GetParam();
+  const bool enable_otr_profiles = GetParam();
 
   auto* eligibility_service =
       EligibilityServiceFactory::GetForProfile(profile_.GetOffTheRecordProfile(
           Profile::OTRProfileID::CreateUniqueForTesting(),
           /*create_if_needed=*/true));
-  EXPECT_EQ(eligibility_service != nullptr, enable_incognito);
+  EXPECT_EQ(eligibility_service != nullptr, enable_otr_profiles);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

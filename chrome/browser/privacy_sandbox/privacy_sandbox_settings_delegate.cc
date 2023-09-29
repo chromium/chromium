@@ -175,7 +175,7 @@ bool PrivacySandboxSettingsDelegate::IsCookieDeprecationExperimentEligible()
     return false;
   }
 
-  if (!features::kCookieDeprecationFacilitatedTestingEnableIncognito.Get() &&
+  if (!features::kCookieDeprecationFacilitatedTestingEnableOTRProfiles.Get() &&
       profile_->IsOffTheRecord()) {
     return false;
   }

@@ -529,7 +529,7 @@ IN_PROC_BROWSER_TEST_F(CookieDeprecationLabelEnabledBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(CookieDeprecationLabelEnabledBrowserTest,
-                       Incognito_EmptyLabelReturned) {
+                       OffTheRecord_EmptyLabelReturned) {
   auto https_server = CreateTestServer(EmbeddedTestServer::TYPE_HTTPS);
   ASSERT_TRUE(https_server->Start());
 
@@ -601,13 +601,13 @@ IN_PROC_BROWSER_TEST_F(CookieDeprecationLabelEnabledEmptyLabelBrowserTest,
   response_a_b->Done();
 }
 
-class CookieDeprecationLabelIncognitoEnabledBrowserTest
+class CookieDeprecationLabelOffTheRecordEnabledBrowserTest
     : public CookieDeprecationLabelBrowserTestBase {
  public:
-  CookieDeprecationLabelIncognitoEnabledBrowserTest() {
+  CookieDeprecationLabelOffTheRecordEnabledBrowserTest() {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         features::kCookieDeprecationFacilitatedTesting,
-        {{"label", "label_test"}, {"enable_incognito", "true"}});
+        {{"label", "label_test"}, {"enable_otr_profiles", "true"}});
   }
 
  private:
@@ -615,10 +615,11 @@ class CookieDeprecationLabelIncognitoEnabledBrowserTest
 };
 
 // Ensure that cookie deprecation labels are present in incognito mode if the
-// "enable_incognito" feature parameter is true. See also the
-// CookieDeprecationLabelEnabledBrowserTest.Incognito_EmptyLabelReturned test.
-IN_PROC_BROWSER_TEST_F(CookieDeprecationLabelIncognitoEnabledBrowserTest,
-                       Incognito_LabelReturned) {
+// "enable_otr_profiles" feature parameter is true. See also the
+// CookieDeprecationLabelEnabledBrowserTest.OffTheRecord_EmptyLabelReturned
+// test.
+IN_PROC_BROWSER_TEST_F(CookieDeprecationLabelOffTheRecordEnabledBrowserTest,
+                       OffTheRecord_LabelReturned) {
   auto https_server = CreateTestServer(EmbeddedTestServer::TYPE_HTTPS);
   ASSERT_TRUE(https_server->Start());
 
