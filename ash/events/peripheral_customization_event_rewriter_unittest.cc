@@ -1080,6 +1080,33 @@ INSTANTIATE_TEST_SUITE_P(
                                   ui::DomKey::Constant<'v'>::Character)},
         })));
 
+TEST_F(StaticShortcutActionRewritingTest, StaticShortcutDisableMouseRewriting) {
+  mouse_settings_->button_remappings.push_back(mojom::ButtonRemapping::New(
+      "",
+      mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kForward),
+      mojom::RemappingAction::NewStaticShortcutAction(
+          mojom::StaticShortcutAction::kDisable)));
+
+  TestEventRewriterContinuation continuation;
+  ui::MouseEvent mouse_pressed_event =
+      CreateMouseButtonEvent(ui::ET_MOUSE_PRESSED, ui::EF_FORWARD_MOUSE_BUTTON,
+                             ui::EF_FORWARD_MOUSE_BUTTON, kMouseDeviceId);
+  rewriter_->RewriteEvent(mouse_pressed_event,
+                          continuation.weak_ptr_factory_.GetWeakPtr());
+  ASSERT_TRUE(continuation.discarded());
+  EXPECT_EQ(nullptr, continuation.passthrough_event);
+
+  ui::MouseEvent mouse_release_event =
+      CreateMouseButtonEvent(ui::ET_MOUSE_RELEASED, ui::EF_FORWARD_MOUSE_BUTTON,
+                             ui::EF_FORWARD_MOUSE_BUTTON, kMouseDeviceId);
+
+  continuation.reset();
+  rewriter_->RewriteEvent(mouse_release_event,
+                          continuation.weak_ptr_factory_.GetWeakPtr());
+  ASSERT_TRUE(continuation.discarded());
+  EXPECT_EQ(nullptr, continuation.passthrough_event);
+}
+
 TEST_P(StaticShortcutActionRewritingTest, StaticShortcutMouseRewriting) {
   const auto& [static_shortcut_action, expected_key_event] = GetParam();
 

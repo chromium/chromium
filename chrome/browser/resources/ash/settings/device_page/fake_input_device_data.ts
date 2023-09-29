@@ -322,7 +322,7 @@ export const fakeMice: Mouse[] = [
             customizableButton: CustomizableButton.kBack,
           },
           remappingAction: {
-            staticShortcutAction: StaticShortcutAction.kCopy,
+            staticShortcutAction: StaticShortcutAction.kDisable,
           },
         },
         {
@@ -601,6 +601,12 @@ export const fakeGraphicsTablets: GraphicsTablet[] = [
 ];
 
 export const fakeMouseButtonActions: ActionChoice[] = [
+  {
+    actionType: {
+      staticShortcutAction: StaticShortcutAction.kDisable,
+    },
+    name: 'Disable',
+  },
   {
     actionType: {
       staticShortcutAction: StaticShortcutAction.kCopy,

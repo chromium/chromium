@@ -39,6 +39,8 @@ constexpr int kGraphicsTabletRemappableFlags =
 mojom::KeyEvent GetStaticShortcutAction(mojom::StaticShortcutAction action) {
   mojom::KeyEvent key_event;
   switch (action) {
+    case mojom::StaticShortcutAction::kDisable:
+      NOTREACHED_NORETURN();
     case mojom::StaticShortcutAction::kCopy:
       key_event = mojom::KeyEvent(
           ui::VKEY_C, static_cast<int>(ui::DomCode::US_C),
@@ -384,6 +386,11 @@ bool PeripheralCustomizationEventRewriter::RewriteEventFromButton(
   }
 
   if (remapping_action->is_static_shortcut_action()) {
+    if (remapping_action->get_static_shortcut_action() ==
+        mojom::StaticShortcutAction::kDisable) {
+      // Return true to discard the event.
+      return true;
+    }
     rewritten_event = RewriteEventToKeyEvent(
         event, GetStaticShortcutAction(
                    remapping_action->get_static_shortcut_action()));

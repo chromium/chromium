@@ -324,6 +324,7 @@ enum CustomizableButton {
 
 // Contains the valid set of static shortcut actions.
 enum StaticShortcutAction {
-  kCopy = 0,
-  kPaste = 1,
+  kDisable = 0,
+  kCopy = 1,
+  kPaste = 2,
 };
