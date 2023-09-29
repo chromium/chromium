@@ -77,6 +77,7 @@
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/performance_manager/public/features.h"
 #include "components/permissions/features.h"
+#include "components/plus_addresses/features.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_utils.h"
@@ -1129,6 +1130,7 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
      IDS_SETTINGS_PASSWORDS_BIOMETRIC_AUTHENTICATION_FOR_FILLING_TOGGLE_LABEL_WIN},
     {"managePasskeysSubTitle", IDS_AUTOFILL_MANAGE_PASSKEYS_SUB_TITLE_WIN},
 #endif
+    {"plusAddressSettings", IDS_PLUS_ADDRESS_SETTINGS_LABEL},
   };
 
   GURL google_password_manager_url = GetGooglePasswordManagerURL(
@@ -1220,6 +1222,9 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
       "syncEnableContactInfoDataTypeInTransportMode",
       base::FeatureList::IsEnabled(
           syncer::kSyncEnableContactInfoDataTypeInTransportMode));
+
+  html_source->AddString("plusAddressManagementUrl",
+                         plus_addresses::kPlusAddressManagementUrl.Get());
 }
 
 void AddSignOutDialogStrings(content::WebUIDataSource* html_source,

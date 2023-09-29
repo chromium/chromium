@@ -18,6 +18,7 @@ const char kEnterprisePlusAddressOAuthScopeName[] = "oauth-scope";
 const char kEnterprisePlusAddressServerUrlName[] = "server-url";
 const char kSyncWithEnterprisePlusAddressServerName[] = "sync-with-server";
 const char kEnterprisePlusAddressTimerDelayName[] = "timer-delay";
+const char kPlusAddressManagementUrlName[] = "manage-url";
 
 const base::FeatureParam<std::string> kEnterprisePlusAddressLabelOverride{
     &kFeature, kEnterprisePlusAddressLabelOverrideName, "Lorem Ipsum"};
@@ -29,4 +30,6 @@ const base::FeatureParam<bool> kSyncWithEnterprisePlusAddressServer{
     &kFeature, kSyncWithEnterprisePlusAddressServerName, false};
 const base::FeatureParam<base::TimeDelta> kEnterprisePlusAddressTimerDelay{
     &kFeature, kEnterprisePlusAddressTimerDelayName, base::Hours(24)};
+const base::FeatureParam<std::string> kPlusAddressManagementUrl{
+    &kFeature, kPlusAddressManagementUrlName, ""};
 }  // namespace plus_addresses

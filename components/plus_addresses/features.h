@@ -39,6 +39,10 @@ extern const base::FeatureParam<bool> kSyncWithEnterprisePlusAddressServer;
 COMPONENT_EXPORT(PLUS_ADDRESSES_FEATURES)
 extern const base::FeatureParam<base::TimeDelta>
     kEnterprisePlusAddressTimerDelay;
+
+COMPONENT_EXPORT(PLUS_ADDRESSES_FEATURES)
+extern const base::FeatureParam<std::string> kPlusAddressManagementUrl;
+
 }  // namespace plus_addresses
 
 #endif  // COMPONENTS_PLUS_ADDRESSES_FEATURES_H_
