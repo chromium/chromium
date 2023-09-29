@@ -183,6 +183,11 @@ let sections: Section[];
  * @param seqId - id of extracted text to pass back.
  */
 function extractText(maxChars: number, seqId: number): void {
+  // If page is reloaded, remove decorations because the external cache
+  // will need to be rebuilt with new data.
+  if (decorations.length) {
+    removeDecorations();
+  }
   sendWebKitMessage('annotations', {
     command: 'annotations.extractedText',
     text: getPageText(maxChars),

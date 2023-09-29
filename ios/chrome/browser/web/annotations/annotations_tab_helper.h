@@ -64,6 +64,9 @@ class AnnotationsTabHelper : public web::AnnotationsTextObserver,
 
   // WebStateObserver methods:
   void WebStateDestroyed(web::WebState* web_state) override;
+  void PageLoaded(
+      web::WebState* web_state,
+      web::PageLoadCompletionStatus load_completion_status) override;
 
   WEB_STATE_USER_DATA_KEY_DECL();
 
@@ -88,6 +91,10 @@ class AnnotationsTabHelper : public web::AnnotationsTextObserver,
   // list `parcels`.
   void MaybeShowParcelTrackingUI(NSArray<CustomTextCheckingResult*>* parcels);
 
+  // Puts annotations data in `match_cache_` and replaces it with a uuid key
+  // to be passed to JS and expect back in `OnClick`.
+  void BuildCache(base::Value::List& annotations_list);
+
   UIViewController* base_view_controller_ = nil;
 
   id<MiniMapCommands> mini_map_handler_ = nil;
@@ -97,6 +104,8 @@ class AnnotationsTabHelper : public web::AnnotationsTextObserver,
   web::WebState* web_state_ = nullptr;
 
   std::unique_ptr<base::Value::Dict> metadata_;
+
+  std::map<std::string, std::string> match_cache_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

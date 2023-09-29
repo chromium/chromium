@@ -82,6 +82,7 @@ class TestAnnotationTextObserver : public AnnotationsTextObserver {
                CGRect rect,
                const std::string& data) override {
     clicks_++;
+    click_data_ = data;
   }
 
   const std::string& extracted_text() const { return extracted_text_; }
@@ -90,10 +91,11 @@ class TestAnnotationTextObserver : public AnnotationsTextObserver {
   int clicks() const { return clicks_; }
   int seq_id() const { return seq_id_; }
   const base::Value::Dict& metadata() const { return metadata_; }
+  const std::string& click_data() const { return click_data_; }
   void SetAnnotations(int count) { annotations_ = count; }
 
  private:
-  std::string extracted_text_;
+  std::string extracted_text_, click_data_;
   int successes_, annotations_, clicks_, seq_id_;
   base::Value::Dict metadata_;
 };
@@ -185,8 +187,9 @@ class AnnotationTextManagerTest : public web::WebTestWithWebState {
     for (NSString* type in items) {
       for (NSString* item in items[type]) {
         NSRange range = [source rangeOfString:item];
-        annotations.Append(
-            web::ConvertMatchToAnnotation(source, range, @"data", type));
+        annotations.Append(web::ConvertMatchToAnnotation(
+            source, range, [NSString stringWithFormat:@"%@-%@", type, item],
+            type));
       }
     }
     auto* manager = AnnotationsTextManager::FromWebState(web_state());
@@ -530,6 +533,54 @@ TEST_F(AnnotationTextManagerTest, RemoveDecorationTypeTest) {
   // Make sure it's back to the original.
   manager->RemoveDecorations();
   CheckHtml(html);
+}
+
+// Tests on (simulated) navigation in web state.
+TEST_F(AnnotationTextManagerTest, NavigationClearsAnnotation) {
+  std::string text1 = "<html><body>"
+                      "<p>text</p>"
+                      "<p>annotation</p>"
+                      "<p>text</p>"
+                      "</body></html>";
+
+  LoadHtmlAndExtractText(text1);
+  NSString* source = base::SysUTF8ToNSString(observer()->extracted_text());
+  CreateAndApplyAnnotationsWithTypes(
+      source,
+      @{@"type1" : @[ @"annotation" ]}, observer()->seq_id());
+  ClickAnnotation(0);
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
+    return observer()->clicks() == 1;
+  }));
+  ASSERT_TRUE(observer()->click_data() == "type1-annotation");
+
+  std::string text2 = "<html><body>"
+                      "<p>bla</p>"
+                      "<p>blurb</p>"
+                      "<p>bla</p>"
+                      "</body></html>";
+  LoadHtmlAndExtractText(text2);
+  source = base::SysUTF8ToNSString(observer()->extracted_text());
+  CreateAndApplyAnnotationsWithTypes(
+      source,
+      @{@"type2" : @[ @"blurb" ]}, observer()->seq_id());
+  ClickAnnotation(0);
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
+    return observer()->clicks() == 2;
+  }));
+  ASSERT_TRUE(observer()->click_data() == "type2-blurb");
+
+  // Now navigate back to original text.
+  LoadHtmlAndExtractText(text1);
+  source = base::SysUTF8ToNSString(observer()->extracted_text());
+  CreateAndApplyAnnotationsWithTypes(
+      source,
+      @{@"type1" : @[ @"annotation" ]}, observer()->seq_id());
+  ClickAnnotation(0);
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
+    return observer()->clicks() == 3;
+  }));
+  ASSERT_TRUE(observer()->click_data() == "type1-annotation");
 }
 
 }  // namespace web

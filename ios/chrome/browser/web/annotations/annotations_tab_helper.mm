@@ -12,6 +12,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/task/thread_pool.h"
+#import "base/uuid.h"
 #import "base/values.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
 #import "ios/chrome/browser/mailto_handler/mailto_handler_service.h"
@@ -73,6 +74,15 @@ void AnnotationsTabHelper::WebStateDestroyed(web::WebState* web_state) {
   web_state_ = nullptr;
 }
 
+void AnnotationsTabHelper::PageLoaded(
+    web::WebState* web_state,
+    web::PageLoadCompletionStatus load_completion_status) {
+  DCHECK_EQ(web_state_, web_state);
+  if (load_completion_status == web::PageLoadCompletionStatus::SUCCESS) {
+    match_cache_.clear();
+  }
+}
+
 #pragma mark - AnnotationsTextObserver methods.
 
 void AnnotationsTabHelper::OnTextExtracted(web::WebState* web_state,
@@ -126,8 +136,11 @@ void AnnotationsTabHelper::OnClick(web::WebState* web_state,
                                    CGRect rect,
                                    const std::string& data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  NSTextCheckingResult* match =
-      web::DecodeNSTextCheckingResultData(base::SysUTF8ToNSString(data));
+  if (match_cache_.find(data) == match_cache_.end()) {
+    return;
+  }
+  NSTextCheckingResult* match = web::DecodeNSTextCheckingResultData(
+      base::SysUTF8ToNSString(match_cache_.at(data)));
   if (!match) {
     return;
   }
@@ -159,7 +172,21 @@ void AnnotationsTabHelper::ApplyDeferredProcessing(
     if (IsIOSParcelTrackingEnabled()) {
       AnnotationsTabHelper::ProcessParcelTrackingNumbers(annotations.GetList());
     }
+    BuildCache(annotations.GetList());
     manager->DecorateAnnotations(web_state_, annotations, seq_id);
+  }
+}
+
+void AnnotationsTabHelper::BuildCache(base::Value::List& annotations_list) {
+  for (size_t i = 0; i < annotations_list.size(); i++) {
+    base::Value::Dict& entity = annotations_list[i].GetDict();
+    const std::string* data = entity.FindString("data");
+    if (!data) {
+      continue;
+    }
+    const std::string key = base::Uuid::GenerateRandomV4().AsLowercaseString();
+    match_cache_[key] = *data;
+    entity.Set("data", key);
   }
 }
 
