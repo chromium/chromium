@@ -3508,6 +3508,7 @@
       'ios-wpt-fyi-rel': {
         'mixins': [
           'has_native_resultdb_integration',
+          'ioswpt-chromium-swarming-pool',
           'mac_13_x64',
           'mac_toolchain',
           'xcode_15_main',

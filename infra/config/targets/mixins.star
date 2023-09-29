@@ -628,6 +628,15 @@ targets.mixin(
 )
 
 targets.mixin(
+    name = "ioswpt-chromium-swarming-pool",
+    swarming = targets.swarming(
+        dimensions = {
+            "pool": "chromium.tests.ioswpt",
+        },
+    ),
+)
+
+targets.mixin(
     name = "isolate_profile_data",
     isolate_profile_data = True,
 )

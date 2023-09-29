@@ -499,6 +499,13 @@
       ],
     },
   },
+  'ioswpt-chromium-swarming-pool': {
+    'swarming': {
+      'dimensions': {
+        'pool': 'chromium.tests.ioswpt',
+      },
+    },
+  },
   'isolate_profile_data': {
     'isolate_profile_data': True,
   },
