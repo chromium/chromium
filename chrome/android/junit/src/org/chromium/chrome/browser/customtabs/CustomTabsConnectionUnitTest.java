@@ -149,7 +149,6 @@ public class CustomTabsConnectionUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET)
     public void onActivityLayout_CallbackIsCalledForNamedMethod() {
-        int uid = 123;
         int left = 0;
         int top = 0;
         int right = 100;
