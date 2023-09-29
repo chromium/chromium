@@ -16,6 +16,7 @@ import org.junit.runners.model.Statement;
 
 import org.chromium.base.CommandLine;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -147,6 +148,11 @@ public class TestSurveyUtils {
                 @NonNull SurveyConfig config, @NonNull SurveyUiDelegate uiDelegate) {
             return new SurveyClientImpl(
                     config, uiDelegate, mTestController, mCrashUploadPermissionSupplier);
+        }
+
+        @Override
+        public Supplier<Boolean> getCrashUploadPermissionSupplier() {
+            return mCrashUploadPermissionSupplier;
         }
     }
 

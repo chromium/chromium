@@ -24,7 +24,7 @@ SurveyUiDelegateAndroid::SurveyUiDelegateAndroid(
     ui::WindowAndroid* window) {
   JNIEnv* env = base::android::AttachCurrentThread();
   jobj_ = Java_SurveyUiDelegateBridge_createFromMessage(
-      env, reinterpret_cast<int64_t>(this), messages->java_window_android(),
+      env, reinterpret_cast<int64_t>(this), messages->GetJavaMessageWrapper(),
       window->GetJavaObject());
 }
 
