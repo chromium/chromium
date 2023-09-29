@@ -867,7 +867,7 @@ TEST_F(GoogleUpdateSettingsTest, GetHashedCohortIdTestEmptyValue) {
              .append(L"\\cohort")
              .c_str(),
          KEY_SET_VALUE)
-      .WriteValue(google_update::kRegIdField, L"");
+      .WriteValue(google_update::kRegDefaultField, L"");
   EXPECT_FALSE(GoogleUpdateSettings::GetHashedCohortId());
 }
 
@@ -880,7 +880,7 @@ TEST_F(GoogleUpdateSettingsTest, GetHashedCohortIdTestRealValue) {
              .append(L"\\cohort")
              .c_str(),
          KEY_SET_VALUE)
-      .WriteValue(google_update::kRegIdField, L"1:qesc2/qesff:qesee@0.5");
+      .WriteValue(google_update::kRegDefaultField, L"1:qesc2/qesff:qesee@0.5");
   EXPECT_TRUE(GoogleUpdateSettings::GetHashedCohortId());
   EXPECT_EQ(*GoogleUpdateSettings::GetHashedCohortId(),
             base::PersistentHash("1:qesc2/qesff"));

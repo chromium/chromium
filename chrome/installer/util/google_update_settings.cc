@@ -323,7 +323,7 @@ GoogleUpdateSettings::LoadMetricsClientInfo() {
 // static
 absl::optional<uint32_t> GoogleUpdateSettings::GetHashedCohortId() {
   absl::optional<std::wstring> id =
-      ReadGoogleUpdateCohortStrKey(google_update::kRegIdField);
+      ReadGoogleUpdateCohortStrKey(google_update::kRegDefaultField);
   if (!id) {
     return absl::nullopt;
   }
