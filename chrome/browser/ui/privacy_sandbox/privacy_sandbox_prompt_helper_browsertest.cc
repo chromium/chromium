@@ -518,6 +518,156 @@ INSTANTIATE_TEST_SUITE_P(
                     PrivacySandboxService::PromptType::kConsent,
                     PrivacySandboxService::PromptType::kNotice));
 
+struct PrivacySandboxNonNormalBrowserTestData {
+  const PrivacySandboxService::PromptType prompt_type;
+  const char* width_histogram;
+};
+
+class PrivacySandboxPromptNonNormalBrowserTest
+    : public PrivacySandboxPromptHelperTest,
+      public testing::WithParamInterface<
+          PrivacySandboxNonNormalBrowserTestData> {
+ public:
+  PrivacySandboxService::PromptType TestPromptType() override {
+    return GetParam().prompt_type;
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptNonNormalBrowserTest,
+                       NoPromptInLargeBrowser) {
+  base::HistogramTester histogram_tester;
+  EXPECT_CALL(*mock_privacy_sandbox_service(),
+              PromptOpenedForBrowser(testing::_, testing::_))
+      .Times(0);
+
+  NavigateParams params(browser(), GURL(chrome::kChromeUINewTabPageURL),
+                        ui::PAGE_TRANSITION_FIRST);
+  params.window_action = NavigateParams::SHOW_WINDOW;
+  params.disposition = WindowOpenDisposition::NEW_POPUP;
+  params.window_features.bounds = gfx::Rect(0, 0, 500, 500);
+  ui_test_utils::NavigateToURL(&params);
+
+  ValidatePromptEventEntries(
+      &histogram_tester,
+      {{PrivacySandboxPromptHelper::SettingsPrivacySandboxPromptHelperEvent::
+            kCreated,
+        1},
+       {PrivacySandboxPromptHelper::SettingsPrivacySandboxPromptHelperEvent::
+            kNonNormalBrowser,
+        1},
+       {PrivacySandboxPromptHelper::SettingsPrivacySandboxPromptHelperEvent::
+            kPromptShown,
+        0}});
+
+  histogram_tester.ExpectBucketCount(GetParam().width_histogram, true, 1);
+  histogram_tester.ExpectBucketCount(GetParam().width_histogram, false, 0);
+}
+
+IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptNonNormalBrowserTest,
+                       NoPromptInSmallBrowser) {
+  base::HistogramTester histogram_tester;
+  EXPECT_CALL(*mock_privacy_sandbox_service(),
+              PromptOpenedForBrowser(testing::_, testing::_))
+      .Times(0);
+
+  NavigateParams params(browser(), GURL(chrome::kChromeUINewTabPageURL),
+                        ui::PAGE_TRANSITION_FIRST);
+  params.window_action = NavigateParams::SHOW_WINDOW;
+  params.disposition = WindowOpenDisposition::NEW_POPUP;
+  params.window_features.bounds = gfx::Rect(0, 0, 200, 200);
+  ui_test_utils::NavigateToURL(&params);
+
+  ValidatePromptEventEntries(
+      &histogram_tester,
+      {{PrivacySandboxPromptHelper::SettingsPrivacySandboxPromptHelperEvent::
+            kCreated,
+        1},
+       {PrivacySandboxPromptHelper::SettingsPrivacySandboxPromptHelperEvent::
+            kNonNormalBrowser,
+        1},
+       {PrivacySandboxPromptHelper::SettingsPrivacySandboxPromptHelperEvent::
+            kPromptShown,
+        0}});
+
+  histogram_tester.ExpectBucketCount(GetParam().width_histogram, true, 0);
+  histogram_tester.ExpectBucketCount(GetParam().width_histogram, false, 1);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    PrivacySandboxPromptNonNormalBrowserTestInstance,
+    PrivacySandboxPromptNonNormalBrowserTest,
+    testing::Values<PrivacySandboxNonNormalBrowserTestData>(
+        PrivacySandboxNonNormalBrowserTestData{
+            PrivacySandboxService::PromptType::kM1Consent,
+            "Settings.PrivacySandbox.CanNonNormalBrowserWindowFitConsentWidth"},
+        PrivacySandboxNonNormalBrowserTestData{
+            PrivacySandboxService::PromptType::kM1NoticeEEA,
+            "Settings.PrivacySandbox.CanNonNormalBrowserWindowFitNoticeWidth"},
+        PrivacySandboxNonNormalBrowserTestData{
+            PrivacySandboxService::PromptType::kM1NoticeROW,
+            "Settings.PrivacySandbox.CanNonNormalBrowserWindowFitNoticeWidth"},
+        PrivacySandboxNonNormalBrowserTestData{
+            PrivacySandboxService::PromptType::kM1NoticeRestricted,
+            "Settings.PrivacySandbox."
+            "CanNonNormalBrowserWindowFitNoticeWidth"}));
+
+class PrivacySandboxPromptNonNormalBrowserParamTest
+    : public PrivacySandboxPromptHelperTest {
+ public:
+  PrivacySandboxService::PromptType TestPromptType() override {
+    return PrivacySandboxService::PromptType::kM1NoticeEEA;
+  }
+};
+
+class PrivacySandboxPromptNonNormalBrowserFeatureDisabledTest
+    : public PrivacySandboxPromptHelperTestWithParam {
+ public:
+  void SetUpInProcessBrowserTestFixture() override {
+    feature_list_.InitWithFeatures(
+        {},
+        {privacy_sandbox::kPrivacySandboxSuppressDialogOnNonNormalBrowsers});
+    PrivacySandboxPromptHelperTest::SetUpInProcessBrowserTestFixture();
+  }
+
+ private:
+  PrivacySandboxService::PromptType TestPromptType() override {
+    return GetParam();
+  }
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptNonNormalBrowserFeatureDisabledTest,
+                       NonNormalBrowserShowsPrompt) {
+  base::HistogramTester histogram_tester;
+  EXPECT_CALL(*mock_privacy_sandbox_service(),
+              PromptOpenedForBrowser(testing::_, testing::_))
+      .Times(1);
+
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL(url::kAboutBlankURL), WindowOpenDisposition::NEW_POPUP,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  ValidatePromptEventEntries(
+      &histogram_tester,
+      {{PrivacySandboxPromptHelper::SettingsPrivacySandboxPromptHelperEvent::
+            kCreated,
+        1},
+       {PrivacySandboxPromptHelper::SettingsPrivacySandboxPromptHelperEvent::
+            kNonNormalBrowser,
+        0},
+       {PrivacySandboxPromptHelper::SettingsPrivacySandboxPromptHelperEvent::
+            kPromptShown,
+        1}});
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    PrivacySandboxPromptNonNormalBrowserFeatureDisabledTestInstance,
+    PrivacySandboxPromptNonNormalBrowserFeatureDisabledTest,
+    testing::Values(PrivacySandboxService::PromptType::kM1Consent,
+                    PrivacySandboxService::PromptType::kM1NoticeEEA,
+                    PrivacySandboxService::PromptType::kM1NoticeROW,
+                    PrivacySandboxService::PromptType::kM1NoticeRestricted));
+
 // Checking the  `ENABLE_SEARCH_ENGINE_CHOICE` build flag is needed because the
 // test runs on Fuchsia while the search engine choice code doesn't.
 #if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)

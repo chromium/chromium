@@ -6,6 +6,11 @@
 
 namespace privacy_sandbox {
 
+// Show the Tracking Protection onboarding flow if not already onboarded.
+BASE_FEATURE(kPrivacySandboxSuppressDialogOnNonNormalBrowsers,
+             "PrivacySandboxSuppressDialogOnNonNormalBrowsers",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kPrivacySandboxSettings4,
              "PrivacySandboxSettings4",
              base::FEATURE_ENABLED_BY_DEFAULT);

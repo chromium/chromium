@@ -58,6 +58,13 @@ class PrivacySandboxPromptHelper
   FRIEND_TEST_ALL_PREFIXES(
       PrivacySandboxPromptHelperTestWithSearchEngineChoiceEnabled,
       NoPromptWhenSearchEngineChoiceDialogIsDisplayed);
+  FRIEND_TEST_ALL_PREFIXES(
+      PrivacySandboxPromptNonNormalBrowserFeatureDisabledTest,
+      NonNormalBrowserShowsPrompt);
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxPromptNonNormalBrowserTest,
+                           NoPromptInSmallBrowser);
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxPromptNonNormalBrowserTest,
+                           NoPromptInLargeBrowser);
 
   // Contains all the events that the helper goes through when attempting to
   // show a Privacy Sandbox prompt. Must be kept in sync with the
@@ -74,9 +81,10 @@ class PrivacySandboxPromptHelper
     kWindowTooSmall = 8,
     kPromptShown = 9,
     kSearchEngineChoiceDialogShown = 10,
+    kNonNormalBrowser = 11,
     // Add values above this line with a corresponding label in
     // tools/metrics/histograms/enums.xml
-    kMaxValue = kSearchEngineChoiceDialogShown,
+    kMaxValue = kNonNormalBrowser,
   };
 
   explicit PrivacySandboxPromptHelper(content::WebContents* web_contents);
