@@ -38,16 +38,23 @@ namespace ash {
 
 namespace {
 
-constexpr char kContentEditableUrl[] =
-    "data:text/html;charset=utf-8,<div id='input' contenteditable></div>";
+constexpr char kContentEditableUrl[] = R"(
+    data:text/html;charset=utf-8,<div id='input' class='editableForDictation'
+        contenteditable autofocus></div>
+)";
 constexpr char kFormattedContentEditableUrl[] = R"(
-    data:text/html;charset=utf-8,<div id='input' contenteditable>
+    data:text/html;charset=utf-8,<div id='input' class='editableForDictation'
+        contenteditable autofocus>
     <p><strong>This</strong> <b>is</b> a <em>test</em></p></div>
 )";
-constexpr char kInputUrl[] =
-    "data:text/html;charset=utf-8,<input id='input' type='text'></input>";
-constexpr char kTextAreaUrl[] =
-    "data:text/html;charset=utf-8,<textarea id='input'></textarea>";
+constexpr char kInputUrl[] = R"(
+    data:text/html;charset=utf-8,<input id='input' class='editableForDictation'
+        type='text' autofocus></input>
+)";
+constexpr char kTextAreaUrl[] = R"(
+    data:text/html;charset=utf-8,<textarea id='input'
+        class='editableForDictation' autofocus></textarea>
+)";
 constexpr char kPumpkinTestFilePath[] =
     "resources/chromeos/accessibility/accessibility_common/dictation/parse/"
     "pumpkin";
@@ -168,9 +175,6 @@ void DictationTestUtils::EnableDictation(Browser* browser) {
       break;
   }
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, GURL(url)));
-  // Put focus in the text box.
-  ASSERT_NO_FATAL_FAILURE(ASSERT_TRUE(ui_test_utils::SendKeyPressToWindowSync(
-      nullptr, ui::KeyboardCode::VKEY_TAB, false, false, false, false)));
 
   // Dictation test support references the main Dictation object, so wait for
   // the main object to be created before installing test support.
@@ -180,6 +184,9 @@ void DictationTestUtils::EnableDictation(Browser* browser) {
   // used from these tests to interact with Dictation JS. For more
   // information, see kTestSupportPath.
   SetUpTestSupport();
+
+  // Wait for focus to propagate.
+  WaitForEditableFocus();
 
   // Increase Dictation's NO_FOCUSED_IME timeout to reduce flakiness on slower
   // builds.
@@ -378,6 +385,11 @@ void DictationTestUtils::WaitForDictationJSReady() {
   ExecuteAccessibilityCommonScript(script);
 }
 
+void DictationTestUtils::WaitForEditableFocus() {
+  std::string script = "testSupport.waitForEditableFocus();";
+  ExecuteAccessibilityCommonScript(script);
+}
+
 void DictationTestUtils::WaitForPumpkinTaggerReady() {
   std::string locale =
       profile_->GetPrefs()->GetString(prefs::kAccessibilityDictationLocale);
@@ -395,7 +407,9 @@ void DictationTestUtils::WaitForPumpkinTaggerReady() {
 }
 
 void DictationTestUtils::WaitForFocusHandler() {
-  std::string script = "testSupport.waitForFocusHandler();";
+  std::string script = R"(
+    testSupport.waitForFocusHandler('editableForDictation');
+  )";
   ExecuteAccessibilityCommonScript(script);
 }
 

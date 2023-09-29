@@ -20,6 +20,43 @@ class DictationTestSupport {
     chrome.test.sendScriptResult('ready');
   }
 
+  /**
+   * TODO(b/301475127): Move this logic into AutomationTestSupport.
+   * Waits for focus to land on the editable field used in Dictation C++ tests.
+   */
+  async waitForEditableFocus() {
+    const desktop = await new Promise(resolve => {
+      chrome.automation.getDesktop(d => resolve(d));
+    });
+    const focus = await new Promise(resolve => {
+      chrome.automation.getFocus(f => resolve(f));
+    });
+    const isCorrectNode = (node) => {
+      return node && node.className === 'editableForDictation';
+    };
+
+    if (isCorrectNode(focus)) {
+      this.notifyCcTests_();
+      return;
+    }
+
+    await new Promise(resolve => {
+      const onFocusChanged = (event) => {
+        const newFocus = event.target;
+        if (isCorrectNode(newFocus)) {
+          desktop.removeEventListener(
+              chrome.automation.EventType.FOCUS, onFocusChanged);
+          resolve();
+        }
+      };
+
+      desktop.addEventListener(
+          chrome.automation.EventType.FOCUS, onFocusChanged);
+    });
+
+    this.notifyCcTests_();
+  }
+
   /** Sets Dictation timeouts for test stability. */
   setNoFocusedImeTimeout(duration) {
     this.dictation_.setNoFocusedImeTimeoutForTesting(duration);
@@ -32,11 +69,14 @@ class DictationTestSupport {
     this.notifyCcTests_();
   }
 
-  /** Waits for the FocusHandler to initialize. */
-  async waitForFocusHandler() {
+  /**
+   * Waits for the FocusHandler to initialize.
+   * @param {string} expectedClassName
+   */
+  async waitForFocusHandler(expectedClassName) {
     const focusHandler = this.dictation_.focusHandler_;
     const isReady = () => {
-      return focusHandler.isReadyForTesting();
+      return focusHandler.isReadyForTesting(expectedClassName);
     };
 
     if (isReady()) {

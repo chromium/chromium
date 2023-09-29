@@ -130,9 +130,13 @@ export class FocusHandler {
     }
   }
 
-  /** @return {boolean} */
-  isReadyForTesting() {
-    return this.active_ && this.editableNode_ !== null;
+  /**
+   * @param {string} expectedClassName
+   * @return {boolean}
+   */
+  isReadyForTesting(expectedClassName) {
+    return this.active_ && this.editableNode_ !== null &&
+        this.editableNode_.className === expectedClassName;
   }
 }
 

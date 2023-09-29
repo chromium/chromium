@@ -115,6 +115,7 @@ class DictationTestUtils {
   void SetUpPumpkinDir();
   void SetUpTestSupport();
   void WaitForDictationJSReady();
+  void WaitForEditableFocus();
   void WaitForPumpkinTaggerReady();
   void WaitForFocusHandler();
 
