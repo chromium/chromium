@@ -163,8 +163,16 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionPrintingTest, PrintCommand) {
   print_observer.WaitUntilPreviewIsReady();
 }
 
+// TODO(crbug.com/1488085): Test is flaky.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#define MAYBE_ContextMenuPrintCommandExtensionMainFrame \
+  DISABLED_ContextMenuPrintCommandExtensionMainFrame
+#else
+#define MAYBE_ContextMenuPrintCommandExtensionMainFrame \
+  ContextMenuPrintCommandExtensionMainFrame
+#endif
 IN_PROC_BROWSER_TEST_P(PDFExtensionPrintingTest,
-                       ContextMenuPrintCommandExtensionMainFrame) {
+                       MAYBE_ContextMenuPrintCommandExtensionMainFrame) {
   MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
       embedded_test_server()->GetURL("/pdf/test.pdf"));
   content::RenderFrameHost* plugin_frame = GetPluginFrame(guest);
