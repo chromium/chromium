@@ -6206,6 +6206,8 @@ crbug.com/1475772 [ Win ] external/wpt/credential-management/fedcm-hosteddomain.
 
 crbug.com/1404951 [ Win ] external/wpt/credential-management/fedcm-nonce-is-optional.https.html [ Pass Timeout ]
 
+crbug.com/1480054 [ Win ] external/wpt/credential-management/fedcm-loginhint.https.html [ Pass Timeout ]
+
 # We skip these tests in the base test suite in NeverFixTests, but we do want
 # to run them in the virtual test suite.
 crbug.com/1373766 virtual/fedcm-multi-idp/external/wpt/credential-management/fedcm-multi-idp/* [ Pass ]
