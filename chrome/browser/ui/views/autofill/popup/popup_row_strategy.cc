@@ -168,8 +168,7 @@ int PopupRowBaseStrategy::GetLineNumber() const {
 PopupSuggestionStrategy::PopupSuggestionStrategy(
     base::WeakPtr<AutofillPopupController> controller,
     int line_number)
-    : PopupRowBaseStrategy(std::move(controller), line_number),
-      popup_type_(GetController()->GetPopupType()) {}
+    : PopupRowBaseStrategy(std::move(controller), line_number) {}
 
 PopupSuggestionStrategy::~PopupSuggestionStrategy() = default;
 
