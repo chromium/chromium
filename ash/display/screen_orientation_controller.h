@@ -5,6 +5,7 @@
 #ifndef ASH_DISPLAY_SCREEN_ORIENTATION_CONTROLLER_H_
 #define ASH_DISPLAY_SCREEN_ORIENTATION_CONTROLLER_H_
 
+#include <memory>
 #include <unordered_map>
 
 #include "ash/accelerometer/accelerometer_reader.h"
@@ -44,7 +45,6 @@ class ASH_EXPORT ScreenOrientationController
       public AccelerometerReader::Observer,
       public WindowTreeHostManager::Observer,
       public TabletModeObserver,
-      public SplitViewObserver,
       public display::DisplayObserver {
  public:
   // Observer that reports changes to the state of ScreenOrientationProvider's
@@ -156,16 +156,13 @@ class ASH_EXPORT ScreenOrientationController
   void OnTabletModeEnded() override;
   void OnTabletPhysicalStateChanged() override;
 
-  // SplitViewObserver:
-  void OnSplitViewStateChanged(SplitViewController::State previous_state,
-                               SplitViewController::State state) override;
-
   // display::DisplayObserver:
   void OnWillProcessDisplayChanges() override;
   void OnDidProcessDisplayChanges() override;
 
  private:
   friend class ScreenOrientationControllerTestApi;
+  class WindowStateChangeNotifier;
 
   struct LockInfo {
     LockInfo(chromeos::OrientationType lock, aura::Window* root)
@@ -291,6 +288,8 @@ class ASH_EXPORT ScreenOrientationController
 
   // Register for DisplayObserver callbacks.
   display::ScopedDisplayObserver display_observer_{this};
+
+  std::unique_ptr<WindowStateChangeNotifier> window_state_change_notifier_;
 };
 
 }  // namespace ash

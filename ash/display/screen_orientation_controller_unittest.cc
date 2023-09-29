@@ -938,6 +938,28 @@ TEST_F(ScreenOrientationControllerTest,
   EXPECT_EQ(chromeos::OrientationType::kAny, UserLockedOrientation());
 }
 
+// Tests that the controller ignores the app-requested orientation of floated
+// windows.
+TEST_F(ScreenOrientationControllerTest, IgnoreFloatWindowOrientationLock) {
+  EnableTabletMode(true);
+
+  std::unique_ptr<aura::Window> child_window = CreateControlWindow();
+  std::unique_ptr<aura::Window> focus_window(CreateAppWindow());
+  ASSERT_EQ(display::Display::ROTATE_0, GetCurrentInternalDisplayRotation());
+  ASSERT_FALSE(RotationLocked());
+
+  AddWindowAndActivateParent(child_window.get(), focus_window.get());
+  Lock(child_window.get(), chromeos::OrientationType::kPortrait);
+  EXPECT_TRUE(RotationLocked());
+
+  // Float `focus_window`.
+  const WindowFloatWMEvent float_event(
+      chromeos::FloatStartLocation::kBottomRight);
+  WindowState::Get(focus_window.get())->OnWMEvent(&float_event);
+
+  EXPECT_FALSE(RotationLocked());
+}
+
 class SupportsClamshellAutoRotation : public ScreenOrientationControllerTest {
  public:
   SupportsClamshellAutoRotation() = default;

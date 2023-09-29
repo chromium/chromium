@@ -10,13 +10,14 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/shell.h"
 #include "ash/wm/mru_window_tracker.h"
-#include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_state.h"
+#include "ash/wm/window_state_observer.h"
 #include "ash/wm/window_util.h"
 #include "base/auto_reset.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/scoped_observation.h"
 #include "chromeos/ui/base/display_util.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/display/display.h"
@@ -121,22 +122,88 @@ std::ostream& operator<<(std::ostream& out,
   return out;
 }
 
+// `WindowStateChangeNotifier` observes an active window state change, and
+// call `ApplyLockForTopMostWindowOnInternalDisplay` when the state changes.
+class ScreenOrientationController::WindowStateChangeNotifier
+    : public wm::ActivationChangeObserver,
+      public WindowStateObserver,
+      public aura::WindowObserver {
+ public:
+  explicit WindowStateChangeNotifier(ScreenOrientationController* controller)
+      : controller_(controller) {
+    activation_observation_.Observe(Shell::Get()->activation_client());
+  }
+  WindowStateChangeNotifier(const WindowStateChangeNotifier&) = delete;
+  WindowStateChangeNotifier& operator=(const WindowStateChangeNotifier&) =
+      delete;
+  ~WindowStateChangeNotifier() override = default;
+
+  // wm::ActivationChangeObserver:
+  void OnWindowActivated(wm::ActivationChangeObserver::ActivationReason reason,
+                         aura::Window* gained_active,
+                         aura::Window* lost_active) override {
+    StartObservingWindowIfNeeded(gained_active);
+  }
+
+  // WindowStateObserver:
+  void OnPostWindowStateTypeChange(
+      WindowState* window_state,
+      chromeos::WindowStateType old_type) override {
+    controller_->ApplyLockForTopMostWindowOnInternalDisplay();
+  }
+
+  // aura::WindowObserver:
+  void OnWindowDestroying(aura::Window* window) override {
+    window_observation_.Reset();
+    window_state_observation_.Reset();
+  }
+
+ private:
+  void StartObservingWindowIfNeeded(aura::Window* window) {
+    if (window == window_observation_.GetSource()) {
+      return;
+    }
+
+    window_observation_.Reset();
+    window_state_observation_.Reset();
+
+    // Orphan window can not have WindowState.
+    if (!window || !window->parent()) {
+      return;
+    }
+
+    if (auto* const window_state = WindowState::Get(window)) {
+      window_observation_.Observe(window);
+      window_state_observation_.Observe(window_state);
+    }
+  }
+
+  const raw_ptr<ScreenOrientationController> controller_;
+
+  base::ScopedObservation<WindowState, WindowStateObserver>
+      window_state_observation_{this};
+  base::ScopedObservation<aura::Window, aura::WindowObserver>
+      window_observation_{this};
+  base::ScopedObservation<wm::ActivationClient, wm::ActivationChangeObserver>
+      activation_observation_{this};
+};
+
 ScreenOrientationController::ScreenOrientationController()
     : natural_orientation_(GetInternalDisplayNaturalOrientation()),
       ignore_display_configuration_updates_(false),
       rotation_locked_(false),
       rotation_locked_orientation_(chromeos::OrientationType::kAny),
       user_rotation_(display::Display::ROTATE_0),
-      current_rotation_(display::Display::ROTATE_0) {
+      current_rotation_(display::Display::ROTATE_0),
+      window_state_change_notifier_(
+          std::make_unique<WindowStateChangeNotifier>(this)) {
   Shell::Get()->tablet_mode_controller()->AddObserver(this);
-  SplitViewController::Get(Shell::GetPrimaryRootWindow())->AddObserver(this);
   Shell::Get()->window_tree_host_manager()->AddObserver(this);
   AccelerometerReader::GetInstance()->AddObserver(this);
 }
 
 ScreenOrientationController::~ScreenOrientationController() {
   Shell::Get()->window_tree_host_manager()->RemoveObserver(this);
-  SplitViewController::Get(Shell::GetPrimaryRootWindow())->RemoveObserver(this);
   Shell::Get()->tablet_mode_controller()->RemoveObserver(this);
   AccelerometerReader::GetInstance()->RemoveObserver(this);
   Shell::Get()->window_tree_host_manager()->RemoveObserver(this);
@@ -390,15 +457,6 @@ void ScreenOrientationController::OnTabletPhysicalStateChanged() {
     observer.OnUserRotationLockChanged();
 }
 
-void ScreenOrientationController::OnSplitViewStateChanged(
-    SplitViewController::State previous_state,
-    SplitViewController::State state) {
-  if (previous_state == SplitViewController::State::kNoSnap ||
-      state == SplitViewController::State::kNoSnap) {
-    ApplyLockForTopMostWindowOnInternalDisplay();
-  }
-}
-
 void ScreenOrientationController::OnWillProcessDisplayChanges() {
   suspend_orientation_lock_refreshes_ = true;
 }
@@ -620,13 +678,6 @@ void ScreenOrientationController::ApplyLockForTopMostWindowOnInternalDisplay() {
     return;
   }
 
-  if (SplitViewController::Get(internal_display_root)
-          ->InTabletSplitViewMode()) {
-    // While split view is enabled, ignore rotation lock set by windows.
-    LockRotationToOrientation(user_locked_orientation_);
-    return;
-  }
-
   MruWindowTracker::WindowList mru_windows(
       Shell::Get()->mru_window_tracker()->BuildWindowListIgnoreModal(
           kActiveDesk));
@@ -637,6 +688,22 @@ void ScreenOrientationController::ApplyLockForTopMostWindowOnInternalDisplay() {
 
     if (!window->TargetVisibility())
       continue;
+
+    auto* const window_state = WindowState::Get(window);
+    // If the top visible window is snapped, we ignore any window-requested
+    // rotation. Here we shouldn't rely on `SplitViewController::state()` which
+    // can be updated in `WindowStateObserver::OnPostWindowStateTypeChange()`
+    // because `ApplyLockForTopMostWindowOnInternalDisplay()` is also triggered
+    // by the same callback.
+    if (window_state->IsSnapped()) {
+      break;
+    }
+
+    // We don't respect a window-requested rotation when the window is not
+    // maximized/fullscreen.
+    if (!window_state->IsMaximized() && !window_state->IsFullscreen()) {
+      continue;
+    }
 
     if (ApplyLockForWindowIfPossible(window))
       return;
