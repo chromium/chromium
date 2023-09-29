@@ -9182,6 +9182,21 @@
             ]
         }
     ],
+    "InvalidateLocalSurfaceIdPreCommit": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Disabled_EmergencyKillSwitch",
+                    "disable_features": [
+                        "InvalidateLocalSurfaceIdPreCommit"
+                    ]
+                }
+            ]
+        }
+    ],
     "JourneysAndroidPreStable": [
         {
             "platforms": [
