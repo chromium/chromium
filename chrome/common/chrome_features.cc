@@ -303,7 +303,8 @@ BASE_FEATURE(kDesktopPWAsEnforceWebAppSettingsPolicy,
 // Enables or disables Desktop PWAs to be auto-started on OS login.
 BASE_FEATURE(kDesktopPWAsRunOnOsLogin,
              "DesktopPWAsRunOnOsLogin",
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else
              base::FEATURE_DISABLED_BY_DEFAULT
@@ -313,7 +314,12 @@ BASE_FEATURE(kDesktopPWAsRunOnOsLogin,
 // If enabled, allow-listed PWAs cannot be closed manually by the user.
 BASE_FEATURE(kDesktopPWAsPreventClose,
              "DesktopPWAsPreventClose",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_CHROMEOS)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
 
 // Runs diagnostics during start up to measure how broken web app icons are to
 // feed into metrics.

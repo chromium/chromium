@@ -323,9 +323,15 @@ void SetWebAppSettingsListPref(Profile* profile, const base::StringPiece pref) {
 
 enum class TestLacrosParam { kLacrosDisabled, kLacrosEnabled };
 
+enum class PreventCloseStatus {
+  kPreventCloseEnabled,
+  kPreventCloseDisabled,
+  kPreventCloseDefault
+};
+
 struct TestParam {
   TestLacrosParam lacros_params;
-  bool prevent_close_enabled;
+  PreventCloseStatus prevent_close_status;
 };
 
 class WebAppPolicyManagerTest : public ChromeRenderViewHostTestHarness,
@@ -468,10 +474,14 @@ class WebAppPolicyManagerTest : public ChromeRenderViewHostTestHarness,
     }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-    if (GetParam().prevent_close_enabled) {
-      enabled_features.push_back(
-          features::kDesktopPWAsEnforceWebAppSettingsPolicy);
+    enabled_features.push_back(
+        features::kDesktopPWAsEnforceWebAppSettingsPolicy);
+    if (GetParam().prevent_close_status ==
+        PreventCloseStatus::kPreventCloseEnabled) {
       enabled_features.push_back(features::kDesktopPWAsPreventClose);
+    } else if (GetParam().prevent_close_status ==
+               PreventCloseStatus::kPreventCloseDisabled) {
+      disabled_features.push_back(features::kDesktopPWAsPreventClose);
     }
 
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
@@ -1470,7 +1480,10 @@ TEST_P(WebAppPolicyManagerTest, WebAppSettingsPreventClose) {
   loop.Run();
 
 #if BUILDFLAG(IS_CHROMEOS)
-  if (GetParam().prevent_close_enabled) {
+  if (GetParam().prevent_close_status ==
+          PreventCloseStatus::kPreventCloseEnabled ||
+      GetParam().prevent_close_status ==
+          PreventCloseStatus::kPreventCloseDefault) {
     EXPECT_TRUE(IsPreventCloseEnabled(kWindowedUrl));
     EXPECT_FALSE(IsPreventCloseEnabled(kTabbedUrl));
     EXPECT_FALSE(IsPreventCloseEnabled(kNoContainerUrl));
@@ -1486,34 +1499,48 @@ TEST_P(WebAppPolicyManagerTest, WebAppSettingsPreventClose) {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
-INSTANTIATE_TEST_SUITE_P(WebAppPolicyManagerTestWithParams,
-                         WebAppPolicyManagerTest,
-                         testing::Values(
+INSTANTIATE_TEST_SUITE_P(
+    WebAppPolicyManagerTestWithParams,
+    WebAppPolicyManagerTest,
+    testing::Values(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-                             TestParam({TestLacrosParam::kLacrosDisabled,
-                                        /*prevent_close_enabled=*/false}),
-                             TestParam({TestLacrosParam::kLacrosDisabled,
-                                        /*prevent_close_enabled=*/true}),
+        TestParam({TestLacrosParam::kLacrosDisabled,
+                   /*prevent_close_status=*/PreventCloseStatus::
+                       kPreventCloseDisabled}),
+        TestParam({TestLacrosParam::kLacrosDisabled,
+                   /*prevent_close_status=*/PreventCloseStatus::
+                       kPreventCloseEnabled}),
+        TestParam({TestLacrosParam::kLacrosDisabled,
+                   /*prevent_close_status=*/PreventCloseStatus::
+                       kPreventCloseDefault}),
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-                             TestParam({TestLacrosParam::kLacrosEnabled,
-                                        /*prevent_close_enabled=*/false}),
-                             TestParam({TestLacrosParam::kLacrosEnabled,
-                                        /*prevent_close_enabled=*/true})),
-                         [](const ::testing::TestParamInfo<TestParam>& info) {
-                           std::string test_name = "Test_";
-                           if (info.param.lacros_params ==
-                               TestLacrosParam::kLacrosEnabled)
-                             test_name.append("LacrosEnabled_");
-                           else
-                             test_name.append("LacrosDisabled_");
+        TestParam({TestLacrosParam::kLacrosEnabled,
+                   /*prevent_close_status=*/PreventCloseStatus::
+                       kPreventCloseDisabled}),
+        TestParam({TestLacrosParam::kLacrosEnabled,
+                   /*prevent_close_status=*/PreventCloseStatus::
+                       kPreventCloseEnabled}),
+        TestParam({TestLacrosParam::kLacrosEnabled,
+                   /*prevent_close_status=*/PreventCloseStatus::
+                       kPreventCloseDefault})),
+    [](const ::testing::TestParamInfo<TestParam>& info) {
+      std::string test_name = "Test_";
+      if (info.param.lacros_params == TestLacrosParam::kLacrosEnabled)
+        test_name.append("LacrosEnabled_");
+      else
+        test_name.append("LacrosDisabled_");
 
-                           if (info.param.prevent_close_enabled) {
-                             test_name.append("PreventCloseEnabled");
-                           } else {
-                             test_name.append("PreventCloseDisabled");
-                           }
-                           return test_name;
-                         });
+      if (info.param.prevent_close_status ==
+          PreventCloseStatus::kPreventCloseEnabled) {
+        test_name.append("PreventCloseEnabled");
+      } else if (info.param.prevent_close_status ==
+                 PreventCloseStatus::kPreventCloseDisabled) {
+        test_name.append("PreventCloseDisabled");
+      } else {
+        test_name.append("PreventCloseDefault");
+      }
+      return test_name;
+    });
 
 class WebAppPolicyForceUnregistrationTest : public WebAppTest {
  public:
