@@ -484,7 +484,10 @@ void VideoOverlayWindowViews::OnKeyEvent(ui::KeyEvent* event) {
 #if BUILDFLAG(IS_WIN)
   if (event->type() == ui::ET_KEY_PRESSED && event->IsAltDown() &&
       event->key_code() == ui::VKEY_F4) {
-    GetController()->Close(true /* should_pause_video */);
+    PictureInPictureWindowManager::GetInstance()
+        ->ExitPictureInPictureViaWindowUi(
+            PictureInPictureWindowManager::UiBehavior::
+                kCloseWindowAndPauseVideo);
     event->SetHandled();
   }
 #endif  // BUILDFLAG(IS_WIN)
@@ -734,14 +737,23 @@ void VideoOverlayWindowViews::SetUpViews() {
           [](VideoOverlayWindowViews* overlay) {
             // Only pause the video if play/pause is available.
             const bool should_pause_video = overlay->show_play_pause_button_;
-            overlay->controller_->Close(should_pause_video);
+            PictureInPictureWindowManager::GetInstance()
+                ->ExitPictureInPictureViaWindowUi(
+                    should_pause_video
+                        ? PictureInPictureWindowManager::UiBehavior::
+                              kCloseWindowAndPauseVideo
+                        : PictureInPictureWindowManager::UiBehavior::
+                              kCloseWindowOnly);
             overlay->RecordButtonPressed(OverlayWindowControl::kClose);
           },
           base::Unretained(this)));
   auto back_to_tab_label_button =
       std::make_unique<BackToTabLabelButton>(base::BindRepeating(
           [](VideoOverlayWindowViews* overlay) {
-            overlay->controller_->CloseAndFocusInitiator();
+            PictureInPictureWindowManager::GetInstance()
+                ->ExitPictureInPictureViaWindowUi(
+                    PictureInPictureWindowManager::UiBehavior::
+                        kCloseWindowAndFocusOpener);
             overlay->RecordButtonPressed(OverlayWindowControl::kBackToTab);
           },
           base::Unretained(this)));
@@ -1422,7 +1434,10 @@ void VideoOverlayWindowViews::OnGestureEvent(ui::GestureEvent* event) {
     RecordTapGesture(OverlayWindowControl::kSkipAd);
     event->SetHandled();
   } else if (GetCloseControlsBounds().Contains(event->location())) {
-    controller_->Close(true /* should_pause_video */);
+    PictureInPictureWindowManager::GetInstance()
+        ->ExitPictureInPictureViaWindowUi(
+            PictureInPictureWindowManager::UiBehavior::
+                kCloseWindowAndPauseVideo);
     RecordTapGesture(OverlayWindowControl::kClose);
     event->SetHandled();
   } else if (GetPlayPauseControlsBounds().Contains(event->location())) {

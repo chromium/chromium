@@ -12,6 +12,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/picture_in_picture/auto_pip_setting_overlay_view.h"
+#include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/ui/views/overlay/close_image_button.h"
 #include "chrome/browser/ui/views/overlay/simple_overlay_window_image_button.h"
 #include "chrome/test/base/testing_profile.h"
@@ -468,6 +469,8 @@ TEST_F(VideoOverlayWindowViewsTest, OnlyPauseOnCloseWhenPauseIsAvailable) {
   // When the play/pause controls are visible, closing via the close button
   // should pause the video.
   overlay_window().SetPlayPauseButtonVisibility(true);
+  PictureInPictureWindowManager::GetInstance()
+      ->set_window_controller_for_testing(&pip_window_controller());
   EXPECT_CALL(pip_window_controller(), Close(true));
   close_button_clicker.NotifyClick(dummy_event);
   testing::Mock::VerifyAndClearExpectations(&pip_window_controller());
@@ -478,6 +481,8 @@ TEST_F(VideoOverlayWindowViewsTest, OnlyPauseOnCloseWhenPauseIsAvailable) {
   EXPECT_CALL(pip_window_controller(), Close(false));
   close_button_clicker.NotifyClick(dummy_event);
   testing::Mock::VerifyAndClearExpectations(&pip_window_controller());
+  PictureInPictureWindowManager::GetInstance()
+      ->set_window_controller_for_testing(nullptr);
 }
 
 TEST_F(VideoOverlayWindowViewsTest, PauseOnWidgetCloseWhenPauseAvailable) {

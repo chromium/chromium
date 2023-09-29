@@ -209,7 +209,6 @@ class PictureInPictureBrowserFrameView
   views::View* GetCloseButtonForTesting();
   views::Label* GetWindowTitleForTesting();
 
- private:
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
   enum class CloseReason {
@@ -219,6 +218,11 @@ class PictureInPictureBrowserFrameView
     kMaxValue = kCloseButton
   };
 
+  void set_close_reason(CloseReason close_reason) {
+    close_reason_ = close_reason;
+  }
+
+ private:
   CloseReason close_reason_ = CloseReason::kOther;
 
 #if RESIZE_DOCUMENT_PICTURE_IN_PICTURE_TO_DIALOG

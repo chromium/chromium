@@ -204,8 +204,21 @@ class WindowEventObserver : public ui::EventObserver {
 };
 
 void DefinitelyExitPictureInPicture(
-    PictureInPictureBrowserFrameView& frame_view) {
-  if (!PictureInPictureWindowManager::GetInstance()->ExitPictureInPicture()) {
+    PictureInPictureBrowserFrameView& frame_view,
+    PictureInPictureWindowManager::UiBehavior behavior) {
+  switch (behavior) {
+    case PictureInPictureWindowManager::UiBehavior::kCloseWindowOnly:
+    case PictureInPictureWindowManager::UiBehavior::kCloseWindowAndPauseVideo:
+      frame_view.set_close_reason(
+          PictureInPictureBrowserFrameView::CloseReason::kCloseButton);
+      break;
+    case PictureInPictureWindowManager::UiBehavior::kCloseWindowAndFocusOpener:
+      frame_view.set_close_reason(
+          PictureInPictureBrowserFrameView::CloseReason::kBackToTabButton);
+      break;
+  }
+  if (!PictureInPictureWindowManager::GetInstance()
+           ->ExitPictureInPictureViaWindowUi(behavior)) {
     // If the picture-in-picture controller has been disconnected for
     // some reason, then just manually close the window to prevent
     // getting into a state where the back to tab button no longer
@@ -497,9 +510,9 @@ PictureInPictureBrowserFrameView::PictureInPictureBrowserFrameView(
   back_to_tab_button_ = button_container_view_->AddChildView(
       std::make_unique<BackToTabButton>(base::BindRepeating(
           [](PictureInPictureBrowserFrameView* frame_view) {
-            frame_view->close_reason_ = CloseReason::kBackToTabButton;
-            PictureInPictureWindowManager::GetInstance()->FocusInitiator();
-            DefinitelyExitPictureInPicture(*frame_view);
+            DefinitelyExitPictureInPicture(
+                *frame_view, PictureInPictureWindowManager::UiBehavior::
+                                 kCloseWindowAndFocusOpener);
           },
           base::Unretained(this))));
 
@@ -507,8 +520,9 @@ PictureInPictureBrowserFrameView::PictureInPictureBrowserFrameView(
   close_image_button_ = button_container_view_->AddChildView(
       std::make_unique<CloseImageButton>(base::BindRepeating(
           [](PictureInPictureBrowserFrameView* frame_view) {
-            frame_view->close_reason_ = CloseReason::kCloseButton;
-            DefinitelyExitPictureInPicture(*frame_view);
+            DefinitelyExitPictureInPicture(
+                *frame_view,
+                PictureInPictureWindowManager::UiBehavior::kCloseWindowOnly);
           },
           base::Unretained(this))));
 

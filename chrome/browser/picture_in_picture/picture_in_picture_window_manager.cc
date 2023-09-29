@@ -142,6 +142,27 @@ PictureInPictureWindowManager::EnterVideoPictureInPicture(
   return content::PictureInPictureResult::kSuccess;
 }
 
+bool PictureInPictureWindowManager::ExitPictureInPictureViaWindowUi(
+    UiBehavior behavior) {
+  if (!pip_window_controller_) {
+    return false;
+  }
+
+  switch (behavior) {
+    case UiBehavior::kCloseWindowOnly:
+      pip_window_controller_->Close(/*should_pause_video=*/false);
+      break;
+    case UiBehavior::kCloseWindowAndPauseVideo:
+      pip_window_controller_->Close(/*should_pause_video=*/true);
+      break;
+    case UiBehavior::kCloseWindowAndFocusOpener:
+      pip_window_controller_->CloseAndFocusInitiator();
+      break;
+  }
+
+  return true;
+}
+
 bool PictureInPictureWindowManager::ExitPictureInPicture() {
   if (pip_window_controller_) {
     CloseWindowInternal();

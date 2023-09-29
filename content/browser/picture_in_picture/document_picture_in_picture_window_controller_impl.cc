@@ -107,8 +107,8 @@ void DocumentPictureInPictureWindowControllerImpl::Close(
 }
 
 void DocumentPictureInPictureWindowControllerImpl::CloseAndFocusInitiator() {
-  Close(false /* should_pause_video */);
   FocusInitiator();
+  Close(false /* should_pause_video */);
 }
 
 void DocumentPictureInPictureWindowControllerImpl::OnWindowDestroyed(

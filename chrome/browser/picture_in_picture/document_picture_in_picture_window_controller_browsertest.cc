@@ -155,6 +155,12 @@ class DocumentPictureInPictureWindowControllerBrowserTest
          ",height:", base::NumberToString(window_size.height()), "})"});
     ASSERT_EQ(true, EvalJs(active_web_contents, script));
     ASSERT_TRUE(window_controller() != nullptr);
+    // Especially on Linux, this isn't synchronous.
+    ui_test_utils::CheckWaiter(
+        base::BindRepeating(&content::RenderWidgetHostView::IsShowing,
+                            base::Unretained(GetRenderWidgetHostView())),
+        true, base::Seconds(30))
+        .Wait();
     ASSERT_TRUE(GetRenderWidgetHostView()->IsShowing());
   }
 
@@ -512,6 +518,29 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
       window_title, click_location, ui::MenuSourceType::MENU_SOURCE_MOUSE);
 
   EXPECT_EQ(false, pip_frame_view->frame()->IsMenuRunnerRunningForTesting());
+}
+
+IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
+                       WindowClosesEvenIfDisconnectedFromWindowManager) {
+  // Rarely, `PictureInPictureWindowManager` fails to close the pip browser
+  // window. It's unclear why this happens, but the pip browser frame should
+  // fall back and close itself.
+  LoadTabAndEnterPictureInPicture(browser());
+  auto* pip_web_contents = window_controller()->GetChildWebContents();
+  ASSERT_NE(nullptr, pip_web_contents);
+  WaitForPageLoad(pip_web_contents);
+  auto* browser_view = static_cast<BrowserView*>(
+      BrowserWindow::FindBrowserWindowWithWebContents(pip_web_contents));
+  auto* pip_frame_view = static_cast<PictureInPictureBrowserFrameView*>(
+      browser_view->frame()->GetFrameView());
+  // Make the window manager forget about the window controller, which will
+  // cause it to fail to close the window when asked.
+  PictureInPictureWindowManager::GetInstance()
+      ->set_window_controller_for_testing(nullptr);
+  ClickButton(
+      views::Button::AsButton(pip_frame_view->GetCloseButtonForTesting()));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(window_controller()->GetChildWebContents());
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
