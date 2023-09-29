@@ -41,6 +41,7 @@
   }
   .dropdown-voice-selection p {
     margin: 8px 0;
+    display: inline;
   }
   /* TODO(b/1465029): Investigate why chrome refresh colors don't always
      work on first launch. */
@@ -49,6 +50,9 @@
   }
   .back, .section {
     font-weight: bold;
+  }
+  .item-invisible-true {
+    visibility: hidden;
   }
   #font-size-decrease {
     margin-left: 16px;
@@ -147,11 +151,15 @@
     <template is="dom-repeat" items="[[voiceSelectionOptions_]]">
       <!--  TODO(crbug.com/1474951): show a header for each locale group before
             listing the languages of the locale -->
-      <!--  TODO(crbug.com/1474951): show currently selected language -->
       <!--  TODO(crbug.com/1474951): allow user to change language -->
       <button class="dropdown-item dropdown-voice-selection"
         on-click="onVoiceSelectClick_">
-        <p>[[item.title]]</p>
+        <span>
+          <iron-icon
+          class$="button-image item-invisible-[[!item.data.selected]]"
+            icon="read-anything:check-mark"></iron-icon>
+          <p>[[item.title]]</p>
+        </span>
         <!-- TODO(crbug.com/1474951): Show pause button when a preview is
                       playing -->
         <cr-icon-button on-click="onVoicePreviewClick_" class="button-image"
