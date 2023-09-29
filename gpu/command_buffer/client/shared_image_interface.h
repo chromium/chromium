@@ -14,6 +14,7 @@
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/gpu_export.h"
+#include "gpu/ipc/common/gpu_memory_buffer_handle_info.h"
 #include "gpu/ipc/common/gpu_memory_buffer_impl.h"
 #include "gpu/ipc/common/surface_handle.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
@@ -90,14 +91,8 @@ class GPU_EXPORT SharedImageInterface {
 
     ScopedMapping();
     static std::unique_ptr<ScopedMapping> Create(
-        gfx::GpuMemoryBufferHandle handle,
-        viz::SharedImageFormat format,
-        gfx::Size size,
-        gfx::BufferUsage buffer_usage);
-    bool Init(gfx::GpuMemoryBufferHandle handle,
-              viz::SharedImageFormat format,
-              gfx::Size size,
-              gfx::BufferUsage buffer_usage);
+        GpuMemoryBufferHandleInfo handle_info);
+    bool Init(GpuMemoryBufferHandleInfo handle_info);
 
     // ScopedMapping is essentially a wrapper around GpuMemoryBuffer for now for
     // simplicity and will be removed later.

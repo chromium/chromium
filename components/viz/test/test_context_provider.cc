@@ -339,9 +339,9 @@ TestSharedImageInterface::MapSharedImage(const gpu::Mailbox& mailbox) {
   CHECK(it != mailbox_to_gmb_handle_info_map_.end());
 
   auto handle_info = it->second;
-  return SharedImageInterface::ScopedMapping::Create(
-      handle_info.handle.Clone(), handle_info.format, handle_info.size,
-      handle_info.buffer_usage);
+  // NOTE: We pass `handle_info` by copy here to ensure that the handle is
+  // cloned and hence can be reused by subsequent calls to MapSharedImage().
+  return SharedImageInterface::ScopedMapping::Create(handle_info);
 }
 
 bool TestSharedImageInterface::CheckSharedImageExists(

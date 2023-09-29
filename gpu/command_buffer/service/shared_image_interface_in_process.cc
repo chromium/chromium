@@ -424,9 +424,8 @@ SharedImageInterfaceInProcess::MapSharedImage(const Mailbox& mailbox) {
     return nullptr;
   }
 
-  auto scoped_mapping = SharedImageInterface::ScopedMapping::Create(
-      std::move(handle_info.handle), handle_info.format, handle_info.size,
-      handle_info.buffer_usage);
+  auto scoped_mapping =
+      SharedImageInterface::ScopedMapping::Create(std::move(handle_info));
 
   if (!scoped_mapping) {
     LOG(ERROR) << "Unable to create ScopedMapping.";
