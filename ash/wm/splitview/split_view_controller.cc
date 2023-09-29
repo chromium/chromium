@@ -195,11 +195,6 @@ bool IsInTabletMode() {
   return tablet_mode_controller && tablet_mode_controller->InTabletMode();
 }
 
-bool IsInTabletTransitionMode() {
-  return chromeos::TabletState::Get()->state() !=
-         display::TabletState::kInClamshellMode;
-}
-
 void RemoveSnappingWindowFromOverviewIfApplicable(
     OverviewSession* overview_session,
     aura::Window* window) {
@@ -232,27 +227,6 @@ void TriggerWMEventToSnapWindow(WindowState* window_state,
       event_type,
       window_state->snap_ratio().value_or(chromeos::kDefaultSnapRatio));
   window_state->OnWMEvent(&window_event);
-}
-
-// TODO(b/286963080) : The removal of snap group should be handled in
-// `SnapGroup`.
-void MaybeRemoveSnapGroupContainingWindow(aura::Window* window) {
-  // Snap group should not be removed when entering overview or tablet mode, as
-  // it is not an exit point for snap group. The snap groups vector stored in
-  // `SnapGroupController` will be used later to restore the snapped state of
-  // windows in snap group on overview or tablet mode exit.
-  Shell* shell = Shell::Get();
-  if (!window || !SnapGroupController::Get() ||
-      shell->overview_controller()->InOverviewSession() ||
-      IsInTabletTransitionMode()) {
-    return;
-  }
-
-  SnapGroupController* snap_group_controller = SnapGroupController::Get();
-  if (auto* snap_group =
-          snap_group_controller->GetSnapGroupForGivenWindow(window)) {
-    snap_group_controller->RemoveSnapGroup(snap_group);
-  }
 }
 
 void StartSplitViewOverviewSession(aura::Window* window,
@@ -1228,10 +1202,6 @@ void SplitViewController::EndSplitView(EndReason end_reason) {
     RootWindowController::ForWindow(root_window_)
         ->EndSplitViewOverviewSession();
   }
-
-  // This may be an exit point for snap group as the window state changes unless
-  // split view ends due to overview starts.
-  MaybeRemoveSnapGroupContainingWindow(primary_window_);
 
   StopObserving(SnapPosition::kPrimary);
   StopObserving(SnapPosition::kSecondary);

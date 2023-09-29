@@ -5,6 +5,7 @@
 #ifndef ASH_WM_SNAP_GROUP_SNAP_GROUP_H_
 #define ASH_WM_SNAP_GROUP_SNAP_GROUP_H_
 
+#include "ash/wm/window_state_observer.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/aura/window_observer.h"
 
@@ -16,7 +17,7 @@ namespace ash {
 
 // Observes changes in the windows of the SnapGroup and manages the windows
 // accordingly.
-class SnapGroup : public aura::WindowObserver {
+class SnapGroup : public aura::WindowObserver, public WindowStateObserver {
  public:
   SnapGroup(aura::Window* window1, aura::Window* window2);
   SnapGroup(const SnapGroup&) = delete;
@@ -35,6 +36,10 @@ class SnapGroup : public aura::WindowObserver {
   // aura::WindowObserver:
   // TODO: Implement `OnWindowParentChanged`.
   void OnWindowDestroying(aura::Window* window) override;
+
+  // WindowStateObserver:
+  void OnPreWindowStateTypeChange(WindowState* window_state,
+                                  chromeos::WindowStateType old_type) override;
 
  private:
   friend class SnapGroupController;
