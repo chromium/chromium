@@ -22,9 +22,62 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="CommonScreenName">
+  <variant name="Adb-sideloading"/>
+  <variant name="Add-child"/>
+  <variant name="App-downloading"/>
+  <variant name="Assistant-optin-flow"/>
+  <variant name="Autolaunch"/>
+  <variant name="Choobe"/>
+  <variant name="Consolidated-consent"/>
+  <variant name="Cryptohome-recovery"/>
+  <variant name="Cryptohome-recovery-setup"/>
+  <variant name="Device-disabled"/>
+  <variant name="Display-size"/>
+  <variant name="Drive-pinning"/>
+  <variant name="Edu-coexistence-login"/>
+  <variant name="Encryption-migration"/>
+  <variant name="Family-link-notice"/>
+  <variant name="Fingerprint-setup"/>
+  <variant name="Gaia-password-changed"/>
+  <variant name="Gaia-signin"/>
+  <variant name="Gesture-navigation"/>
+  <variant name="Guest-tos"/>
+  <variant name="Hw-data-collection"/>
+  <variant name="Kiosk-enable"/>
+  <variant name="Local-state-error"/>
+  <variant name="Locale-switch"/>
+  <variant name="Management-transition"/>
+  <variant name="Marketing-opt-in"/>
+  <variant name="Multidevice-setup-screen"/>
+  <variant name="Offline-login"/>
+  <variant name="Os-install"/>
+  <variant name="Os-trial"/>
+  <variant name="Parental-handoff"/>
+  <variant name="Pin-setup"/>
+  <variant name="Recommend-apps"/>
+  <variant name="Reset"/>
+  <variant name="Saml-confirm-password"/>
+  <variant name="Signin-fatal-error"/>
+  <variant name="Smart-privacy-protection"/>
+  <variant name="Sync-consent"/>
+  <variant name="Terms-of-service"/>
+  <variant name="Theme-selection"/>
+  <variant name="Touchpad-scroll"/>
+  <variant name="Tpm-error-message"/>
+  <variant name="Update-required"/>
+  <variant name="User-creation"/>
+  <variant name="Wrong-hwid"/>
+</variants>
+
 <variants name="ConsumerUpdateType">
   <variant name="Mandatory"/>
   <variant name="Optional"/>
+</variants>
+
+<variants name="OnboardingType">
+  <variant name="FirstOnboarding"/>
+  <variant name="SubsequentOnboarding"/>
 </variants>
 
 <variants name="OOBEGestureNavigationPage">
@@ -118,6 +171,25 @@ chromium-metrics-reviews@google.com.
   <variant name="Offline"/>
   <variant name="Portal"/>
   <variant name="Proxy"/>
+</variants>
+
+<!-- OOBEOnlyScreenName variants must be kept in sync with the list of OOBEOnlyScreenNames in
+    chrome/browser/ash/login/oobe_metrics_helper.h-->
+
+<variants name="OOBEOnlyScreenName">
+  <variant name="Auto-enrollment-check"/>
+  <variant name="Connect"/>
+  <variant name="Consumer-update"/>
+  <variant name="Debugging"/>
+  <variant name="Demo-preferences"/>
+  <variant name="Demo-setup"/>
+  <variant name="Enterprise-enrollment"/>
+  <variant name="Gaia-info"/>
+  <variant name="Hid-detection"/>
+  <variant name="Network-selection"/>
+  <variant name="Oobe-update"/>
+  <variant name="Packaged-license"/>
+  <variant name="Quick-start"/>
 </variants>
 
 <variants name="OOBEOptionalScreens">
@@ -715,10 +787,7 @@ chromium-metrics-reviews@google.com.
     screen (before the start of the session). The time recorded includes the
     time while the device is turned off.
   </summary>
-  <token key="OnboardingType">
-    <variant name="FirstOnboarding"/>
-    <variant name="SubsequentOnboarding"/>
-  </token>
+  <token key="OnboardingType" variants="OnboardingType"/>
 </histogram>
 
 <histogram name="OOBE.OnboardingFlowStatus.{OnboardingType}"
@@ -732,10 +801,7 @@ chromium-metrics-reviews@google.com.
     &quot;Completed&quot; is recorded after the completion of the last screen in
     the onboarding flow (before the start of the session).
   </summary>
-  <token key="OnboardingType">
-    <variant name="FirstOnboarding"/>
-    <variant name="SubsequentOnboarding"/>
-  </token>
+  <token key="OnboardingType" variants="OnboardingType"/>
 </histogram>
 
 <histogram name="OOBE.OobeFlowDuration" units="ms" expires_after="2024-03-18">
@@ -846,6 +912,29 @@ chromium-metrics-reviews@google.com.
   <token key="OOBELegacyScreenName" variants="OOBELegacyScreenName"/>
 </histogram>
 
+<histogram name="OOBE.StepCompletionTime2.{CommonScreenName}.{OnboardingType}"
+    units="ms" expires_after="2024-03-26">
+  <owner>osamafathy@google.com</owner>
+  <owner>cros-oobe@google.com</owner>
+  <summary>
+    Time spent on {CommonScreenName} OOBE screen. Recorded only after exiting
+    the screen.
+  </summary>
+  <token key="CommonScreenName" variants="CommonScreenName"/>
+  <token key="OnboardingType" variants="OnboardingType"/>
+</histogram>
+
+<histogram name="OOBE.StepCompletionTime2.{OOBEOnlyScreenName}" units="ms"
+    expires_after="2024-03-26">
+  <owner>osamafathy@google.com</owner>
+  <owner>cros-oobe@google.com</owner>
+  <summary>
+    Time spent on {OOBEOnlyScreenName} OOBE screen. Recorded only after exiting
+    the screen.
+  </summary>
+  <token key="OOBEOnlyScreenName" variants="OOBEOnlyScreenName"/>
+</histogram>
+
 <histogram
     name="OOBE.StepCompletionTimeByExitReason.{OOBEScreenName_ExitReason}"
     units="ms" expires_after="2024-02-20">
@@ -878,6 +967,37 @@ chromium-metrics-reviews@google.com.
     showing screen.
   </summary>
   <token key="OOBELegacyScreenName" variants="OOBELegacyScreenName"/>
+</histogram>
+
+<histogram name="OOBE.StepShownStatus2.{CommonScreenName}.{OnboardingType}"
+    enum="BooleanShown" expires_after="2024-03-26">
+  <owner>osamafathy@google.com</owner>
+  <owner>cros-oobe@google.com</owner>
+  <summary>
+    Whether {CommonScreenName} screen was shown or not. Recorded before showing
+    screen.
+
+    The &quot;Not Shown&quot; bucket represents instances where the user reached
+    the point where the screen is usually shown, but the pre-conditions for
+    showing the screen was not met.
+  </summary>
+  <token key="CommonScreenName" variants="CommonScreenName"/>
+  <token key="OnboardingType" variants="OnboardingType"/>
+</histogram>
+
+<histogram name="OOBE.StepShownStatus2.{OOBEOnlyScreenName}"
+    enum="BooleanShown" expires_after="2024-03-26">
+  <owner>osamafathy@google.com</owner>
+  <owner>cros-oobe@google.com</owner>
+  <summary>
+    Whether {OOBEOnlyScreenName} screen was shown or not. Recorded before
+    showing screen.
+
+    The &quot;Not Shown&quot; bucket represents instances where the user reached
+    the point where the screen is usually shown, but the pre-conditions for
+    showing the screen was not met.
+  </summary>
+  <token key="OOBEOnlyScreenName" variants="OOBEOnlyScreenName"/>
 </histogram>
 
 <histogram name="OOBE.SyncConsentScreen.Behavior" enum="SyncConsentBehavior"

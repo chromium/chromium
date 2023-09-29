@@ -9,6 +9,7 @@
 #include "base/hash/sha1.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/arc/session/arc_service_launcher.h"
+#include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/fake_arc_tos_mixin.h"
@@ -321,9 +322,18 @@ IN_PROC_BROWSER_TEST_F(ConsolidatedConsentScreenTest, CrosEula) {
 }
 
 IN_PROC_BROWSER_TEST_F(ConsolidatedConsentScreenTest, Accept) {
+  // The preference `prefs::kOobeStartTime` is not set due to advancing to
+  // login.
+  PrefService* prefs = g_browser_process->local_state();
+  prefs->SetTime(prefs::kOobeStartTime, base::Time::Now());
+
   LoginAsRegularUser();
   OobeScreenWaiter(ConsolidatedConsentScreenView::kScreenId).Wait();
   test::OobeJS().CreateVisibilityWaiter(true, kLoadedDialog)->Wait();
+  histogram_tester_.ExpectTotalCount(
+      "OOBE.StepShownStatus.Consolidated-consent", 1);
+  histogram_tester_.ExpectTotalCount(
+      "OOBE.StepShownStatus2.Consolidated-consent.FirstOnboarding", 1);
 
   test::OobeJS().CreateVisibilityWaiter(true, kAcceptButton)->Wait();
   test::OobeJS().ClickOnPath(kAcceptButton);
@@ -334,7 +344,8 @@ IN_PROC_BROWSER_TEST_F(ConsolidatedConsentScreenTest, Accept) {
   histogram_tester_.ExpectTotalCount(
       "OOBE.StepCompletionTime.Consolidated-consent", 1);
   histogram_tester_.ExpectTotalCount(
-      "OOBE.StepShownStatus.Consolidated-consent", 1);
+      "OOBE.StepCompletionTime2.Consolidated-consent.FirstOnboarding", 1);
+
   histogram_tester_.ExpectTotalCount(
       "OOBE.StepCompletionTimeByExitReason.Consolidated-consent."
       "AcceptedRegular",

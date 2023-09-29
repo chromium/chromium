@@ -13,9 +13,20 @@
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/ui/webui/ash/login/auto_enrollment_check_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/consumer_update_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/demo_preferences_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/demo_setup_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/enable_debugging_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/enrollment_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/gaia_info_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/hid_detection_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/network_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
+#include "chrome/browser/ui/webui/ash/login/packaged_license_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/quick_start_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/terms_of_service_screen_handler.h"
-#include "chrome/browser/ui/webui/ash/login/welcome_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/update_screen_handler.h"
 #include "components/prefs/pref_service.h"
 #include "components/startup_metric_utils/common/startup_metric_utils.h"
 #include "components/version_info/version_info.h"
@@ -28,6 +39,11 @@ namespace {
 constexpr char kUmaScreenShownStatusName[] = "OOBE.StepShownStatus.";
 // Legacy histogram, use legacy screen names.
 constexpr char kUmaScreenCompletionTimeName[] = "OOBE.StepCompletionTime.";
+
+// Updated histograms to replace legacy ones.
+constexpr char kUmaScreenShownStatusName2[] = "OOBE.StepShownStatus2.";
+constexpr char kUmaScreenCompletionTimeName2[] = "OOBE.StepCompletionTime2.";
+
 constexpr char kUmaStepCompletionTimeByExitReasonName[] =
     "OOBE.StepCompletionTimeByExitReason.";
 constexpr char kUmaBootToOobeCompleted[] = "OOBE.BootToOOBECompleted.";
@@ -54,6 +70,24 @@ constexpr const LegacyScreenNameEntry kUmaLegacyScreenName[] = {
     {WelcomeView::kScreenId, "network"},
     {TermsOfServiceScreenView::kScreenId, "tos"}};
 
+// This list must be kept in sync with `OOBEOnlyScreenName` variants in
+// src/tools/metrics/histograms/metadata/oobe/histograms.xml file.
+const StaticOobeScreenId kOobeOnlyScreenNames[] = {
+    AutoEnrollmentCheckScreenView::kScreenId,
+    WelcomeView::kScreenId,
+    ConsumerUpdateScreenView::kScreenId,
+    EnableDebuggingScreenView::kScreenId,
+    DemoPreferencesScreenView::kScreenId,
+    DemoPreferencesScreenView::kScreenId,
+    EnrollmentScreenView::kScreenId,
+    GaiaInfoScreenView::kScreenId,
+    HIDDetectionView::kScreenId,
+    NetworkScreenView::kScreenId,
+    PackagedLicenseView::kScreenId,
+    QuickStartView::kScreenId,
+    UpdateView::kScreenId,
+};
+
 std::string GetUmaLegacyScreenName(const OobeScreenId& screen_id) {
   // Make sure to use initial UMA name if the name has changed.
   std::string uma_name = screen_id.name;
@@ -65,6 +99,28 @@ std::string GetUmaLegacyScreenName(const OobeScreenId& screen_id) {
   }
   uma_name[0] = base::ToUpperASCII(uma_name[0]);
   return uma_name;
+}
+
+std::string GetCaptializedScreenName(const OobeScreenId& screen_id) {
+  std::string id = screen_id.name;
+  id[0] = base::ToUpperASCII(id[0]);
+  return id;
+}
+
+bool IsOobeOnlyScreen(const OobeScreenId& screen_id) {
+  for (const auto& oobe_screen : kOobeOnlyScreenNames) {
+    if (screen_id == oobe_screen) {
+      return true;
+    }
+  }
+  return false;
+}
+
+std::string GetOnboardingTypeSuffix() {
+  base::Time oobe_time =
+      g_browser_process->local_state()->GetTime(prefs::kOobeStartTime);
+  return oobe_time.is_null() ? kUmaSubsequentOnboardingSuffix
+                             : kUmaFirstOnboardingSuffix;
 }
 
 }  // namespace
@@ -84,6 +140,19 @@ void OobeMetricsHelper::OnScreenShownStatusDetermined(
   std::string screen_name = GetUmaLegacyScreenName(screen);
   std::string histogram_name = kUmaScreenShownStatusName + screen_name;
   base::UmaHistogramEnumeration(histogram_name, status);
+
+  RecordUpdatedStepShownStatus(screen, status);
+}
+
+void OobeMetricsHelper::RecordUpdatedStepShownStatus(OobeScreenId screen,
+                                                     ScreenShownStatus status) {
+  // New histogram, don't use legacy screen names.
+  std::string screen_name = GetCaptializedScreenName(screen);
+  std::string histogram_name = kUmaScreenShownStatusName2 + screen_name;
+  if (!IsOobeOnlyScreen(screen)) {
+    histogram_name += "." + GetOnboardingTypeSuffix();
+  }
+  base::UmaHistogramEnumeration(histogram_name, status);
 }
 
 void OobeMetricsHelper::OnScreenExited(OobeScreenId screen,
@@ -97,13 +166,27 @@ void OobeMetricsHelper::OnScreenExited(OobeScreenId screen,
       base::TimeTicks::Now() - screen_show_times_[screen];
   base::UmaHistogramMediumTimes(histogram_name, step_time);
 
+  RecordUpdatedStepCompletionTime(screen, step_time);
+
   // Use for this histogram real screen names.
-  std::string screen_name = screen.name;
-  screen_name[0] = base::ToUpperASCII(screen_name[0]);
+  std::string screen_name = GetCaptializedScreenName(screen);
   std::string histogram_name_with_reason =
       kUmaStepCompletionTimeByExitReasonName + screen_name + "." + exit_reason;
 
   base::UmaHistogramCustomTimes(histogram_name_with_reason, step_time,
+                                base::Milliseconds(10), base::Minutes(10), 100);
+}
+
+void OobeMetricsHelper::RecordUpdatedStepCompletionTime(
+    OobeScreenId screen,
+    base::TimeDelta step_time) {
+  // New histogram, don't use legacy screen names.
+  std::string screen_name = GetCaptializedScreenName(screen);
+  std::string histogram_name = kUmaScreenCompletionTimeName2 + screen_name;
+  if (!IsOobeOnlyScreen(screen)) {
+    histogram_name += "." + GetOnboardingTypeSuffix();
+  }
+  base::UmaHistogramCustomTimes(histogram_name, step_time,
                                 base::Milliseconds(10), base::Minutes(10), 100);
 }
 
@@ -140,17 +223,15 @@ void OobeMetricsHelper::OnPreLoginOobeCompleted(
 
 void OobeMetricsHelper::OnOnboardingFlowStarted(base::Time oobe_start_time) {
   std::string onboarding_type;
-  if (oobe_start_time.is_null()) {
-    onboarding_type = kUmaSubsequentOnboardingSuffix;
-  } else {
+  if (!oobe_start_time.is_null()) {
     base::UmaHistogramCustomTimes(
         kUmaOobeStartToOnboardingStart, base::Time::Now() - oobe_start_time,
         base::Milliseconds(10), base::Minutes(30), 100);
-    onboarding_type = kUmaFirstOnboardingSuffix;
   }
 
   // Record `False` to report the `Started` bucket.
-  base::UmaHistogramBoolean(kUmaOnboardingFlowStatus + onboarding_type, false);
+  base::UmaHistogramBoolean(
+      kUmaOnboardingFlowStatus + GetOnboardingTypeSuffix(), false);
 }
 
 void OobeMetricsHelper::OnOnboadingFlowCompleted(
@@ -164,9 +245,7 @@ void OobeMetricsHelper::OnOnboadingFlowCompleted(
   }
 
   if (!onboarding_start_time.is_null()) {
-    std::string type = oobe_start_time.is_null()
-                           ? kUmaSubsequentOnboardingSuffix
-                           : kUmaFirstOnboardingSuffix;
+    std::string type = GetOnboardingTypeSuffix();
 
     // Record `True` to report the `Completed` bucket.
     base::UmaHistogramBoolean(kUmaOnboardingFlowStatus + type, true);

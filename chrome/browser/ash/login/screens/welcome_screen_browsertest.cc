@@ -219,8 +219,10 @@ IN_PROC_BROWSER_TEST_F(WelcomeScreenBrowserTest, OobeStartupTime) {
 
 IN_PROC_BROWSER_TEST_F(WelcomeScreenBrowserTest, WelcomeScreenNext) {
   test::WaitForWelcomeScreen();
+  histogram_tester_.ExpectTotalCount("OOBE.StepShownStatus2.Connect", 1);
   test::OobeJS().TapOnPath({"connect", "welcomeScreen", "getStarted"});
   WaitForScreenExit();
+  histogram_tester_.ExpectTotalCount("OOBE.StepCompletionTime2.Connect", 1);
 }
 
 // Set of browser tests for Welcome Screen Language options.

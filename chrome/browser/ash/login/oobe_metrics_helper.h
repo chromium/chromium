@@ -68,6 +68,11 @@ class OobeMetricsHelper {
   void RecordChromeVersion();
 
  private:
+  void RecordUpdatedStepShownStatus(OobeScreenId screen,
+                                    ScreenShownStatus status);
+  void RecordUpdatedStepCompletionTime(OobeScreenId screen,
+                                       base::TimeDelta step_time);
+
   // Maps screen names to last time of their shows.
   std::map<OobeScreenId, base::TimeTicks> screen_show_times_;
 };
