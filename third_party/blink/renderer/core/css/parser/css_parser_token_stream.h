@@ -260,6 +260,21 @@ class CORE_EXPORT CSSParserTokenStream {
     return CSSParserTokenRange(buffer_);
   }
 
+  // https://drafts.csswg.org/css-syntax-3/#consume-a-component-value
+  //
+  // This is similar to ConsumeUntilPeekedTypeIs, in that it returns
+  // a range to an internal buffer that's invalidated on the next call
+  // to either ConsumeComponentValue() or ConsumeUntilPeekedTypeIs(),
+  // but instead of consuming until a specified token type, it just consumes
+  // a single component value and returns the corresponding range.
+  CSSParserTokenRange ConsumeComponentValue();
+
+  CSSParserTokenRange ConsumeComponentValueIncludingWhitespace() {
+    CSSParserTokenRange range = ConsumeComponentValue();
+    ConsumeWhitespace();
+    return range;
+  }
+
   // Restarts
   // ========
   //

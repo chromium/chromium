@@ -500,7 +500,8 @@ TEST(CSSParserImplTest, RemoveImportantAnnotationIfPresent) {
   for (auto current_case : test_cases) {
     CSSTokenizer tokenizer(current_case.input);
     CSSParserTokenStream stream(tokenizer);
-    CSSTokenizedValue tokenized_value = CSSParserImpl::ConsumeValue(stream);
+    CSSTokenizedValue tokenized_value =
+        CSSParserImpl::ConsumeRestrictedPropertyValue(stream);
     SCOPED_TRACE(current_case.input);
     bool is_important =
         CSSParserImpl::RemoveImportantAnnotationIfPresent(tokenized_value);

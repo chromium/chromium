@@ -161,11 +161,19 @@ class CORE_EXPORT CSSParserImpl {
       wtf_size_t offset,
       const CSSParserContext*);
 
-  // Consumes a value from the remaining tokens in the (possibly bounded)
-  // stream.
+  // A value for a standard property has the following restriction:
+  // it can not contain braces unless it's the whole value [1].
+  // This function makes use of that restriction to early-out of the
+  // streaming tokenizer as soon as possible.
   //
-  // See also CSSParserTokenStream::Boundary.
-  static CSSTokenizedValue ConsumeValue(CSSParserTokenStream&);
+  // [1] https://github.com/w3c/csswg-drafts/issues/9317
+  static CSSTokenizedValue ConsumeRestrictedPropertyValue(
+      CSSParserTokenStream&);
+
+  // Custom properties (as well as descriptors) do not have the restriction
+  // explained above. This function will simply consume until AtEnd.
+  static CSSTokenizedValue ConsumeUnrestrictedPropertyValue(
+      CSSParserTokenStream&);
 
   static bool RemoveImportantAnnotationIfPresent(CSSTokenizedValue&);
 
@@ -282,6 +290,11 @@ class CORE_EXPORT CSSParserImpl {
                             const AtomicString& property_name,
                             bool important,
                             bool is_animation_tainted);
+
+  // Consumes tokens from the stream using the provided function, and wraps
+  // the result in a CSSTokenizedValue.
+  template <typename ConsumeFunction>
+  static CSSTokenizedValue ConsumeValue(CSSParserTokenStream&, ConsumeFunction);
 
   static std::unique_ptr<Vector<KeyframeOffset>> ConsumeKeyframeKeyList(
       const CSSParserContext*,

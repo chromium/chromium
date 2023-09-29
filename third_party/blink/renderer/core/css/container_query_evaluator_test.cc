@@ -82,7 +82,8 @@ class ContainerQueryEvaluatorTest : public PageTestBase {
             String custom_property_value) {
     CSSTokenizer tokenizer(custom_property_value);
     CSSParserTokenStream stream(tokenizer);
-    CSSTokenizedValue tokenized_value = CSSParserImpl::ConsumeValue(stream);
+    CSSTokenizedValue tokenized_value =
+        CSSParserImpl::ConsumeUnrestrictedPropertyValue(stream);
     const CSSParserContext* context =
         StrictCSSParserContext(SecureContextMode::kSecureContext);
     CSSCustomPropertyDeclaration* value =
