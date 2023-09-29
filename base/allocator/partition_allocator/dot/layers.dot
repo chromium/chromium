@@ -1,5 +1,4 @@
 digraph G {
-  graph[bgcolor=transparent]
   node[shape=box,style="filled,rounded",color=deepskyblue]
 
   subgraph cluster_tc {

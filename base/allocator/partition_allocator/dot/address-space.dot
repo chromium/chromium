@@ -2,7 +2,6 @@ digraph {
   node[shape=box]
   edge[dir=both]
   compound = true
-  bgcolor = transparent
   dpi = 192
   nodesep = 0.91
   // Allows aligning nodes in different subgraphs.

@@ -1,5 +1,4 @@
 digraph {
-  graph[bgcolor=transparent]
   node[shape=plaintext]
   edge[style=dashed, color=crimson]
 
