@@ -22,11 +22,13 @@ namespace {
 
 using autofill::AutofillKey;
 using autofill::AutofillProfile;
+using autofill_helper::AddProfile;
 using autofill_helper::GetAllAutoFillProfiles;
 using autofill_helper::GetKeyCount;
 using autofill_helper::GetProfileCount;
 using autofill_helper::RemoveKeys;
-using autofill_helper::SetProfiles;
+using autofill_helper::RemoveProfile;
+using autofill_helper::UpdateProfile;
 using sync_timing_helper::TimeMutualSyncCycle;
 
 // These numbers should be as far away from a multiple of
@@ -116,33 +118,36 @@ class AutofillProfileSyncPerfTest : public SyncTest {
 };
 
 void AutofillProfileSyncPerfTest::AddProfiles(int profile, int num_profiles) {
-  const std::vector<AutofillProfile*>& all_profiles =
-      GetAllAutoFillProfiles(profile);
-  std::vector<AutofillProfile> autofill_profiles;
-  for (AutofillProfile* autofill_profile : all_profiles) {
-    autofill_profiles.push_back(*autofill_profile);
-  }
   for (int i = 0; i < num_profiles; ++i) {
-    autofill_profiles.push_back(NextAutofillProfile());
+    AddProfile(profile, NextAutofillProfile());
   }
-  SetProfiles(profile, &autofill_profiles);
 }
 
 void AutofillProfileSyncPerfTest::UpdateProfiles(int profile) {
-  const std::vector<AutofillProfile*>& all_profiles =
-      GetAllAutoFillProfiles(profile);
-  std::vector<AutofillProfile> autofill_profiles;
-  for (AutofillProfile* autofill_profile : all_profiles) {
-    autofill_profiles.push_back(*autofill_profile);
-    autofill_profiles.back().SetRawInfo(autofill::NAME_FIRST,
-                                        base::UTF8ToUTF16(NextName()));
+  // Since `UpdateProfile()` invalidates the pointers returned by
+  // `GetAllAutoFillProfiles()`, collect the `guids` first.
+  std::vector<std::string> guids;
+  for (const AutofillProfile* autofill_profile :
+       GetAllAutoFillProfiles(profile)) {
+    guids.push_back(autofill_profile->guid());
   }
-  SetProfiles(profile, &autofill_profiles);
+  for (const std::string& guid : guids) {
+    UpdateProfile(profile, guid, autofill::AutofillType(autofill::NAME_FIRST),
+                  base::UTF8ToUTF16(NextName()));
+  }
 }
 
 void AutofillProfileSyncPerfTest::RemoveProfiles(int profile) {
-  std::vector<AutofillProfile> empty;
-  SetProfiles(profile, &empty);
+  // Since `RemoveProfile()` invalidates the pointers returned by
+  // `GetAllAutoFillProfiles()`, collect the `guids` first.
+  std::vector<std::string> guids;
+  for (const AutofillProfile* autofill_profile :
+       GetAllAutoFillProfiles(profile)) {
+    guids.push_back(autofill_profile->guid());
+  }
+  for (const std::string& guid : guids) {
+    RemoveProfile(profile, guid);
+  }
 }
 
 const AutofillProfile AutofillProfileSyncPerfTest::NextAutofillProfile() {

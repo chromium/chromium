@@ -29,6 +29,7 @@
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
+#include "components/autofill/core/browser/personal_data_manager_test_utils.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/browser/webdata/autofill_sync_bridge_util.h"
 #include "components/autofill/core/common/autofill_switches.h"
@@ -241,7 +242,8 @@ class SingleClientWalletSyncTest : public SyncTest {
 
   void AdvanceAutofillClockByOneDay() { test_clock_.Advance(base::Days(1)); }
 
-  testing::NiceMock<PersonalDataLoadedObserverMock> personal_data_observer_;
+  testing::NiceMock<autofill::PersonalDataLoadedObserverMock>
+      personal_data_observer_;
   base::HistogramTester histogram_tester_;
   autofill::TestAutofillClock test_clock_;
 };

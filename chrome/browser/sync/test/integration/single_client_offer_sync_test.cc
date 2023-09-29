@@ -13,6 +13,7 @@
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
+#include "components/autofill/core/browser/personal_data_manager_test_utils.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/protocol/model_type_state.pb.h"
 #include "components/sync/service/sync_service.h"
@@ -48,7 +49,8 @@ class SingleClientOfferSyncTest : public SyncTest {
 
  protected:
   void WaitForOnPersonalDataChanged(autofill::PersonalDataManager* pdm) {
-    testing::NiceMock<PersonalDataLoadedObserverMock> personal_data_observer;
+    testing::NiceMock<autofill::PersonalDataLoadedObserverMock>
+        personal_data_observer;
     pdm->AddObserver(&personal_data_observer);
     base::RunLoop run_loop;
     EXPECT_CALL(personal_data_observer, OnPersonalDataChanged())

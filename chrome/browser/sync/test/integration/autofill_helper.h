@@ -54,11 +54,6 @@ void RemoveKeys(int profile);
 // |profile_a| and |profile_b|. Returns true if they match.
 [[nodiscard]] bool KeysMatch(int profile_a, int profile_b);
 
-// Replaces the Autofill profiles in sync profile |profile| with
-// |autofill_profiles|.
-void SetProfiles(int profile,
-                 std::vector<autofill::AutofillProfile>* autofill_profiles);
-
 // Replaces the CreditCard profiles in sync profile |profile| with
 // |credit_cards|.
 void SetCreditCards(int profile,
@@ -137,16 +132,6 @@ class AutofillProfileChecker : public StatusChangeChecker,
   const int profile_a_;
   const int profile_b_;
   const absl::optional<unsigned int> expected_count_;
-};
-
-class PersonalDataLoadedObserverMock
-    : public autofill::PersonalDataManagerObserver {
- public:
-  PersonalDataLoadedObserverMock();
-  ~PersonalDataLoadedObserverMock() override;
-
-  MOCK_METHOD(void, OnPersonalDataChanged, (), (override));
-  MOCK_METHOD(void, OnPersonalDataFinishedProfileTasks, (), (override));
 };
 
 #endif  // CHROME_BROWSER_SYNC_TEST_INTEGRATION_AUTOFILL_HELPER_H_
