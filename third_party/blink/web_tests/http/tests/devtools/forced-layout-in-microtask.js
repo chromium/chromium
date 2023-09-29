@@ -7,7 +7,6 @@ import {PerformanceTestRunner} from 'performance_test_runner';
 
 (async function() {
   TestRunner.addResult(`Tests that Layout record has correct locations of layout being invalidated and forced.\n`);
-  await TestRunner.loadLegacyModule('timeline');
   await TestRunner.showPanel('timeline');
   await TestRunner.loadHTML(`
       <style>

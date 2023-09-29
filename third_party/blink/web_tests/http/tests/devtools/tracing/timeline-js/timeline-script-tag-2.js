@@ -8,7 +8,6 @@ import {ConsoleTestRunner} from 'console_test_runner';
 
 (async function() {
   TestRunner.addResult(`Tests the Timeline API instrumentation of a script tag with an external script.\n`);
-  await TestRunner.loadLegacyModule('timeline');
   await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('timeline');
   await TestRunner.evaluateInPagePromise(`

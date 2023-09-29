@@ -9,7 +9,6 @@ import * as TimelineModule from 'devtools/panels/timeline/timeline.js';
 
 (async function() {
   TestRunner.addResult(`Tests that paint profiler is properly update when an event is selected in Flame Chart\n`);
-  await TestRunner.loadLegacyModule('timeline');
   await TestRunner.showPanel('timeline');
   await TestRunner.loadHTML(`
     <div id="square" style="width: 40px; height: 40px"></div>

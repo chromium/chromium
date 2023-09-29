@@ -8,7 +8,6 @@ import {ApplicationTestRunner} from 'application_test_runner';
 
 (async function() {
   TestRunner.addResult(`Tests V8 code cache for WebAssembly resources using Service Workers.\n`);
-  await TestRunner.loadLegacyModule('timeline');
   await TestRunner.loadLegacyModule('console');
 
   await ApplicationTestRunner.resetState();

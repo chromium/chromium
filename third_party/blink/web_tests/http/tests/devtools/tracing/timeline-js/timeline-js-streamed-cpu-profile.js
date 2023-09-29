@@ -7,7 +7,6 @@ import {PerformanceTestRunner} from 'performance_test_runner';
 
 (async function() {
   TestRunner.addResult(`Tests streaming CPU profile within trace log.\n`);
-  await TestRunner.loadLegacyModule('timeline');
   await TestRunner.showPanel('timeline');
 
   var sessionId = '6.23';

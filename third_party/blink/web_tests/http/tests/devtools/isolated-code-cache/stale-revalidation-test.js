@@ -16,7 +16,6 @@ function waitUntilIdle() {
   // The main purpose of the test is to demonstrate that after producing the
   // code cache on the 2nd load, it gets cleared on disk by subsequent loads of
   // the subresource, even if the response instructs to reuse the old resource.
-  await TestRunner.loadLegacyModule('timeline');
   await TestRunner.showPanel('timeline');
 
   // Clear browser cache to avoid any existing entries for the fetched scripts

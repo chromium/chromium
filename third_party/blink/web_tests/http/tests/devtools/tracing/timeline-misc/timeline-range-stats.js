@@ -9,7 +9,6 @@ import * as TimelineModule from 'devtools/panels/timeline/timeline.js';
 
 (async function() {
   TestRunner.addResult(`Tests that aggregated summary in Timeline is properly computed.\n`);
-  await TestRunner.loadLegacyModule('timeline');
   await TestRunner.showPanel('timeline');
 
   var mainThread = 1;

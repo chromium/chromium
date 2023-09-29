@@ -11,7 +11,6 @@ import * as TimelineModule from 'devtools/panels/timeline/timeline.js';
 
 (async function() {
   TestRunner.addResult(`Test timeline aggregated details.\n`);
-  await TestRunner.loadLegacyModule('timeline');
   await TestRunner.showPanel('timeline');
 
   TestRunner.addResult('');

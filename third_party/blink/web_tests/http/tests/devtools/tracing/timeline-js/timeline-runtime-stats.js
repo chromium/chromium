@@ -9,7 +9,6 @@ import * as Root from 'devtools/core/root/root.js';
 
 (async function() {
   TestRunner.addResult(`Check that RuntimeCallStats are present in profile.\n`);
-  await TestRunner.loadLegacyModule('timeline');
   await TestRunner.showPanel('timeline');
   await TestRunner.loadHTML(`
       <div id="foo">

@@ -9,7 +9,6 @@ import * as TimelineModule from 'devtools/panels/timeline/timeline.js';
 
 (async function() {
   TestRunner.addResult(`Test the frames are correctly built based on trace events\n`);
-  await TestRunner.loadLegacyModule('timeline');
   await TestRunner.showPanel('timeline');
 
   var sessionId = '4.20';

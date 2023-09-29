@@ -4,7 +4,7 @@ Tests the Timeline API instrumentation of layout events with invalidations.
 Running: testLocalFrame
 first layout invalidations[
     {
-        cause : {reason: Style changed, stackTrace: test://evaluations/0/timeline-layout-with-invalidations.js:23}
+        cause : {reason: Style changed, stackTrace: test://evaluations/0/timeline-layout-with-invalidations.js:22}
         changedAttribute : undefined
         changedClass : undefined
         changedId : undefined
@@ -17,7 +17,7 @@ first layout invalidations[
 ]
 second layout invalidations[
     {
-        cause : {reason: Style changed, stackTrace: test://evaluations/0/timeline-layout-with-invalidations.js:25}
+        cause : {reason: Style changed, stackTrace: test://evaluations/0/timeline-layout-with-invalidations.js:24}
         changedAttribute : undefined
         changedClass : undefined
         changedId : undefined
@@ -32,7 +32,7 @@ second layout invalidations[
 Running: testSubframe
 first layout invalidations[
     {
-        cause : {reason: Style changed, stackTrace: test://evaluations/0/timeline-layout-with-invalidations.js:32}
+        cause : {reason: Style changed, stackTrace: test://evaluations/0/timeline-layout-with-invalidations.js:31}
         changedAttribute : undefined
         changedClass : undefined
         changedId : undefined
@@ -45,7 +45,7 @@ first layout invalidations[
 ]
 second layout invalidations[
     {
-        cause : {reason: Style changed, stackTrace: test://evaluations/0/timeline-layout-with-invalidations.js:34}
+        cause : {reason: Style changed, stackTrace: test://evaluations/0/timeline-layout-with-invalidations.js:33}
         changedAttribute : undefined
         changedClass : undefined
         changedId : undefined

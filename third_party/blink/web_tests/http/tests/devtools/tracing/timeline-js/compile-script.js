@@ -7,7 +7,6 @@ import {PerformanceTestRunner} from 'performance_test_runner';
 
 (async function() {
   TestRunner.addResult(`Tests the Timeline instrumentation for CompileScript event.\n`);
-  await TestRunner.loadLegacyModule('timeline');
   await TestRunner.showPanel('timeline');
   await TestRunner.evaluateInPagePromise(`
       function performActions() {

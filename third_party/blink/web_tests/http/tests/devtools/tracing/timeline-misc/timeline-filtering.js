@@ -9,7 +9,6 @@ import * as TimelineModule from 'devtools/panels/timeline/timeline.js';
 
 (async function() {
   TestRunner.addResult(`Test filtering in Timeline Tree View panel.\n`);
-  await TestRunner.loadLegacyModule('timeline');
   await TestRunner.showPanel('timeline');
 
   var sessionId = '4.20';

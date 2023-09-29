@@ -10,7 +10,6 @@ import * as TimelineModule from 'devtools/panels/timeline/timeline.js';
 
 (async function() {
   TestRunner.addResult(`Tests that inspector doesn't force sync layout on operations with CSSOM.Bug 315885.\n`);
-  await TestRunner.loadLegacyModule('timeline');
   await TestRunner.showPanel('timeline');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`

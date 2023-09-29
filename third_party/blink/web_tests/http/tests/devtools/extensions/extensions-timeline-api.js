@@ -9,7 +9,6 @@ import {PerformanceTestRunner} from 'performance_test_runner';
 import * as TimelineModule from 'devtools/panels/timeline/timeline.js';
 
 (async function() {
-  await TestRunner.loadLegacyModule('timeline');
   await TestRunner.showPanel('timeline');
 
   TestRunner.enableTimelineExtensionAndStart = function(callback) {

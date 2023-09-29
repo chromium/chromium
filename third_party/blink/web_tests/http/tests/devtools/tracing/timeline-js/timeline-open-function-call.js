@@ -7,7 +7,6 @@ import {PerformanceTestRunner} from 'performance_test_runner';
 
 (async function() {
   TestRunner.addResult(`Checks the FunctionCall with no closing event processed properly.\n`);
-  await TestRunner.loadLegacyModule('timeline');
   await TestRunner.showPanel('timeline');
 
   var sessionId = '6.23';

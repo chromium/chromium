@@ -7,7 +7,6 @@ import {PerformanceTestRunner} from 'performance_test_runner';
 
 (async function() {
   TestRunner.addResult(`Tests V8 code cache for javascript resources\n`);
-  await TestRunner.loadLegacyModule('timeline');
   await TestRunner.showPanel('timeline');
 
   // Clear browser cache to avoid any existing entries for the fetched

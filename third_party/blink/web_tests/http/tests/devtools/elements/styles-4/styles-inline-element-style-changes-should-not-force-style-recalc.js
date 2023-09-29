@@ -11,7 +11,6 @@ import * as TimelineModule from 'devtools/panels/timeline/timeline.js';
 (async function() {
   TestRunner.addResult(
       `Tests that inspector doesn't force styles recalc on operations with inline element styles that result in no changes.\n`);
-  await TestRunner.loadLegacyModule('timeline');
   await TestRunner.showPanel('timeline');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
