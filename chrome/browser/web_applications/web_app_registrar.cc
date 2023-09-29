@@ -531,6 +531,9 @@ bool WebAppRegistrar::IsNonLocallyInstalledAppWithUrlInScope(
 }
 
 bool WebAppRegistrar::IsShortcutApp(const webapps::AppId& app_id) const {
+  if (!GetAppById(app_id)) {
+    return false;
+  }
   // TODO(crbug.com/1469482): Record shortcut distinction explicitly instead of
   // using scope.
   return !GetAppScopeInternal(app_id).has_value();
