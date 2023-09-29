@@ -333,6 +333,14 @@ if (android_64bit_target_cpu && !skip_secondary_abi_for_cq) {
           "expectations/$target_name.$target_cpu.libs_and_assets.expected"
     }
   }
+
+  if (is_official_build) {
+    # Used for binary size monitoring.
+    create_app_bundle_minimal_apks("trichrome_webview_32_minimal_apks") {
+      deps = [ ":trichrome_webview_32_bundle" ]
+      bundle_path = "$root_build_dir/apks/TrichromeWebView32.aab"
+    }
+  }
 }
 
 # The shared library used by standalone WebView.
