@@ -37,7 +37,6 @@
 #include "base/win/scoped_localalloc.h"
 #include "base/win/windows_version.h"
 #include "chrome/installer/util/lzma_util.h"
-#include "chrome/installer/util/util_constants.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/tag.h"
 #include "chrome/updater/updater_branding.h"
@@ -409,7 +408,7 @@ ProcessExitResult InstallerMain(HMODULE module) {
   // a compressed LZMA archive of a single file.
   absl::optional<base::ScopedTempDir> base_path_owner = CreateSecureTempDir();
   if (!base_path_owner) {
-    return ProcessExitResult(static_cast<DWORD>(installer::TEMP_DIR_FAILED));
+    return ProcessExitResult(TEMP_DIR_FAILED);
   }
 
   PathString base_path;
@@ -425,7 +424,7 @@ ProcessExitResult InstallerMain(HMODULE module) {
   // Create a temp folder where the archives are unpacked.
   absl::optional<base::ScopedTempDir> temp_path = CreateSecureTempDir();
   if (!temp_path) {
-    return ProcessExitResult(static_cast<DWORD>(installer::TEMP_DIR_FAILED));
+    return ProcessExitResult(TEMP_DIR_FAILED);
   }
 
   const base::FilePath unpack_path = temp_path->GetPath();
@@ -435,7 +434,7 @@ ProcessExitResult InstallerMain(HMODULE module) {
       UnPackArchive(base::FilePath(compressed_archive.get()), unpack_path,
                     /*output_file=*/nullptr);
   if (unpack_status != UNPACK_NO_ERROR) {
-    return ProcessExitResult(static_cast<DWORD>(installer::UNPACKING_FAILED));
+    return ProcessExitResult(UNPACKING_FAILED);
   }
 
   // Unpack the uncompressed archive to extract the updater files.
@@ -444,7 +443,7 @@ ProcessExitResult InstallerMain(HMODULE module) {
   unpack_status =
       UnPackArchive(uncompressed_archive, unpack_path, /*output_file=*/nullptr);
   if (unpack_status != UNPACK_NO_ERROR) {
-    return ProcessExitResult(static_cast<DWORD>(installer::UNPACKING_FAILED));
+    return ProcessExitResult(UNPACKING_FAILED);
   }
 
   // While unpacking the binaries, we paged in a whole bunch of memory that
