@@ -1264,11 +1264,6 @@ crbug.com/591099 fast/writing-mode/percentage-height-orthogonal-writing-modes.ht
 crbug.com/835484 paint/invalidation/outline/inline-focus.html [ Failure ]
 crbug.com/591099 paint/invalidation/scroll/fixed-under-composited-fixed-scrolled.html [ Failure ]
 
-# CSS counters failures to be fixed with the new implementation
-crbug.com/990657 fast/css/counters/adding-nodes.html [ Failure ]
-crbug.com/990657 fast/css/counters/counter-reset-000.html [ Failure ]
-crbug.com/990657 fast/css/counters/nesting.html [ Failure ]
-
 # CSS Text failures
 crbug.com/750990 external/wpt/css/css-text/text-transform/text-transform-upperlower-105.html [ Failure ]
 crbug.com/750990 external/wpt/css/css-text/text-transform/text-transform-upperlower-106.html [ Failure ]
