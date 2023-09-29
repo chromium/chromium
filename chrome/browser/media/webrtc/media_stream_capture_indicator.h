@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
+#include "base/functional/function_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
@@ -166,7 +167,7 @@ class MediaStreamCaptureIndicator
   // Checks if |web_contents| or any portal WebContents in its tree is using
   // a device for capture. The type of capture is specified using |pred|.
   using WebContentsDeviceUsagePredicate =
-      base::RepeatingCallback<bool(const WebContentsDeviceUsage*)>;
+      base::FunctionRef<bool(const WebContentsDeviceUsage*)>;
   bool CheckUsage(content::WebContents* web_contents,
                   const WebContentsDeviceUsagePredicate& pred) const;
 
