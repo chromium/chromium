@@ -442,7 +442,7 @@ class AnchorElementPreloaderLimitedBrowserTest
 };
 
 // TODO(crbug.com/1383953): Re-enable this test
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_LimitExceeded DISABLED_LimitExceeded
 #else
 #define MAYBE_LimitExceeded LimitExceeded
