@@ -2404,10 +2404,6 @@ void LocalFrame::ResumeSubresourceLoading() {
   pause_handle_receivers_.Clear();
 }
 
-void LocalFrame::AnimateSnapFling(base::TimeTicks monotonic_time) {
-  GetEventHandler().AnimateSnapFling(monotonic_time);
-}
-
 SmoothScrollSequencer* LocalFrame::CreateNewSmoothScrollSequence() {
   if (!IsLocalRoot()) {
     return LocalFrameRoot().CreateNewSmoothScrollSequence();

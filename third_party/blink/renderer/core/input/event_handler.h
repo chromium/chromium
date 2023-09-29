@@ -256,8 +256,6 @@ class CORE_EXPORT EventHandler final : public GarbageCollected<EventHandler> {
     return *keyboard_event_manager_;
   }
 
-  void AnimateSnapFling(base::TimeTicks monotonic_time);
-
   void RecomputeMouseHoverStateIfNeeded();
 
   void MarkHoverStateDirty();

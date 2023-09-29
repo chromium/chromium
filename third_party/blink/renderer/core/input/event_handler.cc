@@ -1416,10 +1416,6 @@ void EventHandler::ClearDragState() {
   should_only_fire_drag_over_event_ = false;
 }
 
-void EventHandler::AnimateSnapFling(base::TimeTicks monotonic_time) {
-  scroll_manager_->AnimateSnapFling(monotonic_time);
-}
-
 void EventHandler::RecomputeMouseHoverStateIfNeeded() {
   mouse_event_manager_->RecomputeMouseHoverStateIfNeeded();
 }

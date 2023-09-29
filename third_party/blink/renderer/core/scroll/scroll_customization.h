@@ -25,8 +25,6 @@ constexpr ScrollDirection kScrollDirectionPanY =
 constexpr ScrollDirection kScrollDirectionAuto =
     kScrollDirectionPanX | kScrollDirectionPanY;
 
-CORE_EXPORT ScrollDirection GetScrollDirectionFromDeltas(double delta_x,
-                                                         double delta_y);
 }  // namespace scroll_customization
 }  // namespace blink
 

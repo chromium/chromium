@@ -3600,7 +3600,6 @@ void LocalFrameView::ServiceScrollAnimations(base::TimeTicks start_time) {
             start_time.since_origin().InSecondsF());
       }
     }
-    GetFrame().AnimateSnapFling(start_time);
     // After scroll updates, snapshot scroll state once at top of animation
     // frame.
     GetFrame().UpdateScrollSnapshots();

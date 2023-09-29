@@ -28,12 +28,10 @@ class CORE_EXPORT ScrollCustomizationCallbacks
   void RemoveApplyScroll(Node*);
   ScrollStateCallback* GetApplyScroll(Node*);
   bool InScrollPhase(Node*) const;
-  void SetInScrollPhase(Node*, bool);
 
   void Trace(Visitor* visitor) const {
     visitor->Trace(apply_scroll_callbacks_);
     visitor->Trace(distribute_scroll_callbacks_);
-    visitor->Trace(in_scrolling_phase_);
   }
 
  private:
@@ -41,7 +39,6 @@ class CORE_EXPORT ScrollCustomizationCallbacks
       HeapHashMap<WeakMember<Node>, Member<ScrollStateCallback>>;
   ScrollStateCallbackList apply_scroll_callbacks_;
   ScrollStateCallbackList distribute_scroll_callbacks_;
-  HeapHashMap<WeakMember<Node>, bool> in_scrolling_phase_;
 };
 
 }  // namespace blink

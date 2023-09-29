@@ -41,12 +41,7 @@ ScrollStateCallback* ScrollCustomizationCallbacks::GetApplyScroll(Node* node) {
 }
 
 bool ScrollCustomizationCallbacks::InScrollPhase(Node* node) const {
-  return in_scrolling_phase_.Contains(node) && in_scrolling_phase_.at(node);
-}
-
-void ScrollCustomizationCallbacks::SetInScrollPhase(Node* node, bool value) {
-  DCHECK(node);
-  in_scrolling_phase_.Set(node, value);
+  return false;
 }
 
 }  // namespace blink

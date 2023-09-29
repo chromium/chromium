@@ -681,24 +681,6 @@ void Node::CallApplyScroll(ScrollState& scroll_state) {
     callback->Invoke(&scroll_state);
 }
 
-void Node::WillBeginCustomizedScrollPhase(
-    scroll_customization::ScrollDirection direction) {
-  DCHECK(!GetScrollCustomizationCallbacks().InScrollPhase(this));
-  LayoutBox* box = GetLayoutBox();
-  if (!box)
-    return;
-
-  scroll_customization::ScrollDirection scroll_customization =
-      box->Style()->ScrollCustomization();
-
-  GetScrollCustomizationCallbacks().SetInScrollPhase(
-      this, direction & scroll_customization);
-}
-
-void Node::DidEndCustomizedScrollPhase() {
-  GetScrollCustomizationCallbacks().SetInScrollPhase(this, false);
-}
-
 Node* Node::insertBefore(Node* new_child,
                          Node* ref_child,
                          ExceptionState& exception_state) {
