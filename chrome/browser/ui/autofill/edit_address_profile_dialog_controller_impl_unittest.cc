@@ -6,6 +6,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/test/mock_callback.h"
+#include "chrome/browser/ui/autofill/test/test_autofill_bubble_handler.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
@@ -30,12 +31,21 @@ class EditAddressProfileDialogControllerImplTest
     EditAddressProfileDialogControllerImpl::CreateForWebContents(
         web_contents());
     ASSERT_THAT(controller(), ::testing::NotNull());
+    controller()->SetViewFactoryForTest(base::BindRepeating(
+        &EditAddressProfileDialogControllerImplTest::GetAutofillBubbleBase,
+        base::Unretained(this)));
     controller()->OfferEdit(profile_, /*original_profile=*/nullptr,
                             /*footer_message=*/u"", save_callback_.Get(),
                             /*is_migration_to_account=*/false);
   }
 
  protected:
+  AutofillBubbleBase* GetAutofillBubbleBase(
+      content::WebContents* web_contents,
+      EditAddressProfileDialogController* controller) {
+    return &autofill_bubble_;
+  }
+
   content::WebContents* web_contents() {
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
@@ -46,6 +56,7 @@ class EditAddressProfileDialogControllerImplTest
   }
 
   AutofillProfile profile_ = test::GetFullProfile();
+  TestAutofillBubble autofill_bubble_;
   base::MockOnceCallback<void(
       AutofillClient::SaveAddressProfileOfferUserDecision,
       AutofillProfile profile)>

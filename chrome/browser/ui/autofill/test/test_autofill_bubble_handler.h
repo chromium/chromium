@@ -54,9 +54,6 @@ class TestAutofillBubbleHandler : public AutofillBubbleHandler {
       content::WebContents* contents,
       SaveUpdateAddressProfileBubbleController* controller,
       bool is_user_gesture) override;
-  AutofillBubbleBase* ShowEditAddressProfileDialog(
-      content::WebContents* contents,
-      EditAddressProfileDialogController* controller) override;
   AutofillBubbleBase* ShowVirtualCardManualFallbackBubble(
       content::WebContents* web_contents,
       VirtualCardManualFallbackBubbleController* controller,

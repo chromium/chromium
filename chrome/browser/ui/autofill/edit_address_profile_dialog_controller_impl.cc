@@ -7,7 +7,7 @@
 
 #include "base/types/optional_util.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
-#include "chrome/browser/ui/autofill/autofill_bubble_handler.h"
+#include "chrome/browser/ui/autofill/edit_address_profile_view.h"
 #include "chrome/browser/ui/autofill/save_update_address_profile_bubble_controller_impl.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -49,10 +49,13 @@ void EditAddressProfileDialogControllerImpl::OfferEdit(
   footer_message_ = footer_message;
   on_user_decision_callback_ = std::move(on_user_decision_callback);
   is_migration_to_account_ = is_migration_to_account;
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
-  dialog_view_ = browser->window()
-                     ->GetAutofillBubbleHandler()
-                     ->ShowEditAddressProfileDialog(web_contents(), this);
+
+  if (view_factory_for_test_) {
+    dialog_view_ = view_factory_for_test_.Run(web_contents(), this);
+    return;
+  }
+
+  dialog_view_ = ShowEditAddressProfileDialogView(web_contents(), this);
 }
 
 std::u16string EditAddressProfileDialogControllerImpl::GetWindowTitle() const {
@@ -102,6 +105,11 @@ void EditAddressProfileDialogControllerImpl::HideDialog() {
     dialog_view_->Hide();
     dialog_view_ = nullptr;
   }
+}
+
+void EditAddressProfileDialogControllerImpl::SetViewFactoryForTest(
+    EditAddressProfileViewTestingFactory factory) {
+  view_factory_for_test_ = std::move(factory);
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(EditAddressProfileDialogControllerImpl);

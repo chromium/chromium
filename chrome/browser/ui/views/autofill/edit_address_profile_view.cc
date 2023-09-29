@@ -8,10 +8,13 @@
 #include <utility>
 
 #include "chrome/browser/ui/autofill/address_editor_controller.h"
+#include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/edit_address_profile_dialog_controller.h"
+#include "chrome/browser/ui/autofill/edit_address_profile_view.h"
 #include "chrome/browser/ui/views/autofill/address_editor_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/constrained_window/constrained_window_views.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/label.h"
@@ -20,6 +23,15 @@
 #include "ui/views/view_class_properties.h"
 
 namespace autofill {
+
+AutofillBubbleBase* ShowEditAddressProfileDialogView(
+    content::WebContents* web_contents,
+    EditAddressProfileDialogController* controller) {
+  EditAddressProfileView* dialog = new EditAddressProfileView(controller);
+  dialog->ShowForWebContents(web_contents);
+  constrained_window::ShowWebModalDialogViews(dialog, web_contents);
+  return dialog;
+}
 
 EditAddressProfileView::EditAddressProfileView(
     EditAddressProfileDialogController* controller)

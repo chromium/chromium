@@ -14,7 +14,6 @@ class AutofillBubbleBase;
 class LocalCardMigrationBubbleController;
 class OfferNotificationBubbleController;
 class SaveUpdateAddressProfileBubbleController;
-class EditAddressProfileDialogController;
 class SaveCardBubbleController;
 class IbanBubbleController;
 class VirtualCardManualFallbackBubbleController;
@@ -67,10 +66,6 @@ class AutofillBubbleHandler {
       content::WebContents* web_contents,
       SaveUpdateAddressProfileBubbleController* controller,
       bool is_user_gesture) = 0;
-
-  virtual AutofillBubbleBase* ShowEditAddressProfileDialog(
-      content::WebContents* web_contents,
-      EditAddressProfileDialogController* controller) = 0;
 
   virtual AutofillBubbleBase* ShowVirtualCardManualFallbackBubble(
       content::WebContents* web_contents,

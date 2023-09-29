@@ -23,6 +23,11 @@ class EditAddressProfileDialogControllerImpl
       public content::WebContentsUserData<
           EditAddressProfileDialogControllerImpl> {
  public:
+  using EditAddressProfileViewTestingFactory =
+      base::RepeatingCallback<AutofillBubbleBase*(
+          content::WebContents*,
+          EditAddressProfileDialogController*)>;
+
   EditAddressProfileDialogControllerImpl(
       const EditAddressProfileDialogControllerImpl&) = delete;
   EditAddressProfileDialogControllerImpl& operator=(
@@ -53,6 +58,8 @@ class EditAddressProfileDialogControllerImpl
 
   // content::WebContentsObserver:
   void WebContentsDestroyed() override;
+
+  void SetViewFactoryForTest(EditAddressProfileViewTestingFactory factory);
 
  private:
   explicit EditAddressProfileDialogControllerImpl(
@@ -85,6 +92,9 @@ class EditAddressProfileDialogControllerImpl
   // Whether the editor is used in the profile migration case. It is required
   // to restore the original prompt state (save or update) if it is reopened.
   bool is_migration_to_account_ = false;
+
+  // Factory used to inject the view instance into this controller in tests.
+  EditAddressProfileViewTestingFactory view_factory_for_test_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
