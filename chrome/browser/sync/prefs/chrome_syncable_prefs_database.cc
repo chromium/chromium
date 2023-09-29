@@ -289,6 +289,7 @@ enum {
   kPinnedSearchCompanionMigrationComplete = 100233,
   kTouchpadInternalSettings = 100234,
   kPointingStickInternalSettings = 100235,
+  kMouseDefaultSettings = 100236,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -602,6 +603,9 @@ const auto& SyncablePreferences() {
          {syncable_prefs_ids::kMouseAcceleration,
           syncer::OS_PRIORITY_PREFERENCES, false,
           sync_preferences::MergeBehavior::kNone}},
+        {ash::prefs::kMouseDefaultSettings,
+         {syncable_prefs_ids::kMouseDefaultSettings, syncer::OS_PREFERENCES,
+          false, sync_preferences::MergeBehavior::kNone}},
         {ash::prefs::kMouseReverseScroll,
          {syncable_prefs_ids::kMouseReverseScroll,
           syncer::OS_PRIORITY_PREFERENCES, false,

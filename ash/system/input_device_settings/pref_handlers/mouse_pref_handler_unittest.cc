@@ -115,6 +115,9 @@ class MousePrefHandlerTest : public AshTestBase {
         prefs::kMouseDeviceSettingsDictPref);
     pref_service_->registry()->RegisterDictionaryPref(
         prefs::kMouseButtonRemappingsDictPref);
+    pref_service_->registry()->RegisterDictionaryPref(
+        prefs::kMouseDefaultSettings);
+
     // We are using these test constants as a a way to differentiate values
     // retrieved from prefs or default mouse settings.
     pref_service_->registry()->RegisterBooleanPref(
@@ -228,6 +231,16 @@ class MousePrefHandlerTest : public AshTestBase {
     mouse->settings = settings.Clone();
     pref_handler_->UpdateLoginScreenMouseSettings(
         local_state(), account_id, /*mouse_policies=*/{}, *mouse);
+  }
+
+  void CallUpdateDefaultMouseSettings(const std::string& device_key,
+                                      const mojom::MouseSettings& settings) {
+    mojom::MousePtr mouse = mojom::Mouse::New();
+    mouse->settings = settings.Clone();
+    mouse->device_key = device_key;
+
+    pref_handler_->UpdateDefaultMouseSettings(pref_service_.get(),
+                                              /*mouse_policies=*/{}, *mouse);
   }
 
   mojom::MouseSettingsPtr CallInitializeMouseSettings(
@@ -781,6 +794,24 @@ TEST_F(MousePrefHandlerTest, InitializeButtonRemappings) {
   mojom::MouseSettingsPtr updated_settings =
       CallInitializeMouseSettings(kMouseKey1);
   EXPECT_EQ(button_remappings, updated_settings->button_remappings);
+}
+
+TEST_F(MousePrefHandlerTest, RememberDefaultsFromLastUpdatedSettings) {
+  mojom::MouseSettingsPtr settings = CallInitializeMouseSettings(kMouseKey1);
+  settings->swap_right = !kDefaultSwapRight;
+  settings->sensitivity = 1;
+  CallUpdateMouseSettings(kMouseKey1, *settings);
+  CallUpdateDefaultMouseSettings(kMouseKey1, *settings);
+
+  mojom::MouseSettingsPtr settings2 = CallInitializeMouseSettings(kMouseKey2);
+  EXPECT_EQ(*settings2, *settings);
+
+  settings2->sensitivity = 5;
+  CallUpdateDefaultMouseSettings(kMouseKey2, *settings2);
+
+  mojom::MouseSettingsPtr settings_duplicate =
+      CallInitializeMouseSettings(kMouseKey1);
+  EXPECT_EQ(*settings, *settings_duplicate);
 }
 
 class MouseSettingsPrefConversionTest

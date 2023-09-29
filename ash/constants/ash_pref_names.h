@@ -1860,6 +1860,12 @@ inline constexpr char kTouchpadInternalSettings[] =
 inline constexpr char kPointingStickInternalSettings[] =
     "ash.settings.pointing_stick.internal";
 
+// A dictionary pref containing the set of default mouse settings for the user.
+// This is always configured to the settings for the mouse the user last used.
+// These are applied to new mice that are connected to the system. This is
+// synced for all user devices.
+inline constexpr char kMouseDefaultSettings[] = "ash.settings.mouse.defaults";
+
 // NOTE: New prefs should start with the "ash." prefix. Existing prefs moved
 // into this file should not be renamed, since they may be synced.
 

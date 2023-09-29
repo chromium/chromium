@@ -566,6 +566,9 @@ void InputDeviceSettingsControllerImpl::RegisterProfilePrefs(
   pref_registry->RegisterDictionaryPref(
       prefs::kPointingStickInternalSettings,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  pref_registry->RegisterDictionaryPref(
+      prefs::kMouseDefaultSettings,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
 
   pref_registry->RegisterListPref(prefs::kKeyboardDeviceImpostersListPref);
   pref_registry->RegisterDictionaryPref(prefs::kMouseButtonRemappingsDictPref);
@@ -689,7 +692,7 @@ void InputDeviceSettingsControllerImpl::RefreshAllDeviceSettings() {
   }
 
   RefreshStoredLoginScreenKeyboardSettings();
-  RefreshStoredLoginScreenMouseSettings();
+  RefreshCachedMouseSettings();
   RefreshStoredLoginScreenTouchpadSettings();
   RefreshStoredLoginScreenPointingStickSettings();
 
@@ -1097,7 +1100,7 @@ void InputDeviceSettingsControllerImpl::SetMouseSettings(
       base::BindRepeating(
           &InputDeviceSettingsControllerImpl::DispatchMouseSettingsChanged,
           base::Unretained(this)));
-  RefreshStoredLoginScreenMouseSettings();
+  RefreshCachedMouseSettings();
 }
 
 void InputDeviceSettingsControllerImpl::SetPointingStickSettings(
@@ -1386,7 +1389,7 @@ void InputDeviceSettingsControllerImpl::OnMouseListUpdated(
     DispatchMouseDisconnectedAndEraseFromList(id);
   }
 
-  RefreshStoredLoginScreenMouseSettings();
+  RefreshCachedMouseSettings();
 }
 
 void InputDeviceSettingsControllerImpl::OnPointingStickListUpdated(
@@ -1748,6 +1751,21 @@ void InputDeviceSettingsControllerImpl::RefreshInternalTouchpadSettings() {
     InitializeTouchpadSettings(touchpad.get());
     DispatchTouchpadSettingsChanged(id);
   }
+}
+
+void InputDeviceSettingsControllerImpl::RefreshCachedMouseSettings() {
+  RefreshStoredLoginScreenMouseSettings();
+  RefreshMouseDefaultSettings();
+}
+
+void InputDeviceSettingsControllerImpl::RefreshMouseDefaultSettings() {
+  if (!active_pref_service_ || mice_.empty()) {
+    return;
+  }
+
+  mouse_pref_handler_->UpdateDefaultMouseSettings(
+      active_pref_service_, policy_handler_->mouse_policies(),
+      *mice_.rbegin()->second);
 }
 
 }  // namespace ash

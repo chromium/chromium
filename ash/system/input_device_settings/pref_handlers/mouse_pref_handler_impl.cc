@@ -45,18 +45,6 @@ bool GetDefaultSwapRightValue(const mojom::MousePolicies& mouse_policies) {
   return kDefaultSwapRight;
 }
 
-mojom::MouseSettingsPtr GetDefaultMouseSettings(
-    const mojom::MousePolicies& mouse_policies) {
-  mojom::MouseSettingsPtr settings = mojom::MouseSettings::New();
-  settings->swap_right = GetDefaultSwapRightValue(mouse_policies);
-  settings->sensitivity = kDefaultSensitivity;
-  settings->reverse_scrolling = kDefaultReverseScrolling;
-  settings->acceleration_enabled = kDefaultAccelerationEnabled;
-  settings->scroll_sensitivity = kDefaultSensitivity;
-  settings->scroll_acceleration = kDefaultScrollAcceleration;
-  return settings;
-}
-
 // GetMouseSettingsFromPrefs returns a mouse settings based on user prefs
 // to be used as settings for new mouses.
 mojom::MouseSettingsPtr GetMouseSettingsFromPrefs(
@@ -116,7 +104,6 @@ mojom::MouseSettingsPtr GetMouseSettingsFromPrefs(
 
 mojom::MouseSettingsPtr RetrieveMouseSettings(
     const mojom::MousePolicies& mouse_policies,
-    const mojom::Mouse& mouse,
     const base::Value::Dict& settings_dict) {
   mojom::MouseSettingsPtr settings = mojom::MouseSettings::New();
   settings->swap_right =
@@ -137,6 +124,17 @@ mojom::MouseSettingsPtr RetrieveMouseSettings(
       settings_dict.FindBool(prefs::kMouseSettingScrollAcceleration)
           .value_or(kDefaultScrollAcceleration);
   return settings;
+}
+
+mojom::MouseSettingsPtr GetDefaultMouseSettings(
+    PrefService* pref_service,
+    const mojom::MousePolicies& mouse_policies) {
+  if (pref_service) {
+    return RetrieveMouseSettings(
+        mouse_policies, pref_service->GetDict(prefs::kMouseDefaultSettings));
+  }
+
+  return RetrieveMouseSettings(mouse_policies, /*settings_dict=*/{});
 }
 
 base::Value::Dict ConvertSettingsToDict(
@@ -246,7 +244,8 @@ mojom::MouseSettingsPtr GetMouseSettingsFromOldLocalStatePrefs(
     const AccountId& account_id,
     const mojom::MousePolicies& mouse_policies,
     const mojom::Mouse& mouse) {
-  mojom::MouseSettingsPtr settings = GetDefaultMouseSettings(mouse_policies);
+  mojom::MouseSettingsPtr settings =
+      GetDefaultMouseSettings(/*pref_service=*/nullptr, mouse_policies);
   settings->swap_right =
       user_manager::KnownUser(local_state)
           .FindBoolPath(account_id, prefs::kOwnerPrimaryMouseButtonRight)
@@ -265,7 +264,7 @@ void MousePrefHandlerImpl::InitializeMouseSettings(
     const mojom::MousePolicies& mouse_policies,
     mojom::Mouse* mouse) {
   if (!pref_service) {
-    mouse->settings = GetDefaultMouseSettings(mouse_policies);
+    mouse->settings = GetDefaultMouseSettings(pref_service, mouse_policies);
     return;
   }
 
@@ -275,16 +274,16 @@ void MousePrefHandlerImpl::InitializeMouseSettings(
   ForceMouseSettingPersistence force_persistence;
 
   if (settings_dict) {
-    mouse->settings =
-        RetrieveMouseSettings(mouse_policies, *mouse, *settings_dict);
+    mouse->settings = RetrieveMouseSettings(mouse_policies, *settings_dict);
   } else if (Shell::Get()->input_device_tracker()->WasDevicePreviouslyConnected(
                  InputDeviceTracker::InputDeviceCategory::kMouse,
                  mouse->device_key)) {
     mouse->settings = GetMouseSettingsFromPrefs(pref_service, mouse_policies,
                                                 force_persistence);
   } else {
-    mouse->settings = GetDefaultMouseSettings(mouse_policies);
+    mouse->settings = GetDefaultMouseSettings(pref_service, mouse_policies);
   }
+
   if (features::IsPeripheralCustomizationEnabled()) {
     const auto& button_remappings_dict =
         pref_service->GetDict(prefs::kMouseButtonRemappingsDictPref);
@@ -331,8 +330,7 @@ void MousePrefHandlerImpl::InitializeLoginScreenMouseSettings(
       mouse->is_external ? prefs::kMouseLoginScreenExternalSettingsPref
                          : prefs::kMouseLoginScreenInternalSettingsPref);
   if (settings_dict) {
-    mouse->settings =
-        RetrieveMouseSettings(mouse_policies, *mouse, *settings_dict);
+    mouse->settings = RetrieveMouseSettings(mouse_policies, *settings_dict);
   } else {
     mouse->settings = GetMouseSettingsFromOldLocalStatePrefs(
         local_state, account_id, mouse_policies, *mouse);
@@ -387,7 +385,19 @@ void MousePrefHandlerImpl::UpdateLoginScreenMouseSettings(
 void MousePrefHandlerImpl::InitializeWithDefaultMouseSettings(
     const mojom::MousePolicies& mouse_policies,
     mojom::Mouse* mouse) {
-  mouse->settings = GetDefaultMouseSettings(mouse_policies);
+  mouse->settings =
+      GetDefaultMouseSettings(/*pref_service=*/nullptr, mouse_policies);
+}
+
+void MousePrefHandlerImpl::UpdateDefaultMouseSettings(
+    PrefService* pref_service,
+    const mojom::MousePolicies& mouse_policies,
+    const mojom::Mouse& mouse) {
+  // All settings should be persisted fully when storing defaults.
+  auto settings_dict =
+      ConvertSettingsToDict(mouse, mouse_policies, /*force_persistence=*/{true},
+                            /*existing_settings_dict=*/nullptr);
+  pref_service->SetDict(prefs::kMouseDefaultSettings, std::move(settings_dict));
 }
 
 }  // namespace ash

@@ -104231,6 +104231,7 @@ would be helpful to identify which type is being sent.
   <int value="100233" label="PinnedSearchCompanionMigrationComplete"/>
   <int value="100234" label="TouchpadInternalSettings"/>
   <int value="100235" label="PointingStickInternalSettings"/>
+  <int value="100236" label="MouseDefaultSettings"/>
   <int value="200000" label="ArticlesForYouEnabled"/>
   <int value="200001" label="ContextualSearchEnabled_IOS"/>
   <int value="200002" label="DefaultCharset_IOS"/>
