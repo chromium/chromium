@@ -2771,6 +2771,11 @@
       base_feature: "none",
     },
     {
+      name: "PageRevealEvent",
+      status: "experimental",
+      implied_by: ["ViewTransitionOnNavigation"],
+    },
+    {
       name: "PaintFlexGridSortedByOrder",
       status: "stable",
     },
@@ -3058,11 +3063,6 @@
     {
       name: "ReadableStreamTeeCloneForBranch2",
       status: "stable",
-    },
-    {
-      name: "ReadyToRenderEvent",
-      status: "experimental",
-      implied_by: ["ViewTransitionOnNavigation"],
     },
     // If enabled, the Accept-Language header will be reduced.
     {

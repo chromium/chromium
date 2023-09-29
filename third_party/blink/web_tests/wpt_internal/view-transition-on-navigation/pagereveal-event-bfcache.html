@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<title>View transitions: readytorender event fires correctly on restoration from BFCache</title>
+<title>View transitions: pagereveal event fires correctly on restoration from BFCache</title>
 <link rel="help" href="https://drafts.csswg.org/css-view-transitions-2/">
 <link rel="author" href="mailto:bokan@chromium.org">
 <script src="/resources/testharness.js"></script>
@@ -15,7 +15,7 @@ runBfcacheTest({
     // This function executes in pageA
 
     // Wait for an animation frame to ensure the the initial-load
-    // `readytorender` has already been fired so it doesn't get recorded
+    // `pagereveal` has already been fired so it doesn't get recorded
     // below.
     const raf = new Promise(resolve => requestAnimationFrame(resolve));
     await raf;
@@ -43,25 +43,25 @@ runBfcacheTest({
         restored = true;
     });
 
-    addEventListener('readytorender', () => {
-      window.event_log.push('readytorender');
+    addEventListener('pagereveal', () => {
+      window.event_log.push('pagereveal');
     });
   },
   funcAfterAssertion: async (pageA, pageB, t) => {
     let event_log = await pageA.execute_script(async () => {
       // Ensure at least one animation frame is produced to ensure
-      // readytorender must have fired.
+      // pagereveal must have fired.
       await new Promise(requestAnimationFrame);
       return window.event_log;
     });
 
     // Expect that the events seen are:
-    // pageshow.persisted, readytorender, rAF, rAF, rAF, ...
+    // pageshow.persisted, pagereveal, rAF, rAF, rAF, ...
     assert_equals(event_log.slice(0, 3).toString(),
-        'pageshow.persisted,readytorender,rAF');
+        'pageshow.persisted,pagereveal,rAF');
     for (let i = 3; i < event_log.length; ++i) {
       assert_equals(event_log[i], 'rAF',
-          'All events following readytorender should be animation frames');
+          'All events following pagereveal should be animation frames');
     }
   },
   targetOrigin: originSameOrigin,

@@ -6813,6 +6813,9 @@ interface OverscrollEvent : Event
     getter deltaX
     getter deltaY
     method constructor
+interface PageRevealEvent : Event
+    attribute @@toStringTag
+    method constructor
 interface PageTransitionEvent : Event
     attribute @@toStringTag
     getter persisted
@@ -7715,9 +7718,6 @@ interface ReadableStreamDefaultReader
     method constructor
     method read
     method releaseLock
-interface ReadyToRenderEvent : Event
-    attribute @@toStringTag
-    method constructor
 interface RelativeOrientationSensor : OrientationSensor
     attribute @@toStringTag
     method constructor
@@ -12471,6 +12471,7 @@ namespace console
     getter ononline
     getter onoverscroll
     getter onpagehide
+    getter onpagereveal
     getter onpageshow
     getter onpause
     getter onplay
@@ -12487,7 +12488,6 @@ namespace console
     getter onpopstate
     getter onprogress
     getter onratechange
-    getter onreadytorender
     getter onrejectionhandled
     getter onreset
     getter onresize
@@ -12697,6 +12697,7 @@ namespace console
     setter ononline
     setter onoverscroll
     setter onpagehide
+    setter onpagereveal
     setter onpageshow
     setter onpause
     setter onplay
@@ -12713,7 +12714,6 @@ namespace console
     setter onpopstate
     setter onprogress
     setter onratechange
-    setter onreadytorender
     setter onrejectionhandled
     setter onreset
     setter onresize

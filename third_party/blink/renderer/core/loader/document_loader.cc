@@ -1931,8 +1931,8 @@ void DocumentLoader::DidInstallNewDocument(Document* document) {
   // render opportunity after activation) since the event is fired as part of
   // updating the rendering which is suppressed until the prerender is
   // activated.
-  if (RuntimeEnabledFeatures::ReadyToRenderEventEnabled()) {
-    document->EnqueueReadyToRenderEvent();
+  if (RuntimeEnabledFeatures::PageRevealEventEnabled()) {
+    document->EnqueuePageRevealEvent();
   }
 }
 

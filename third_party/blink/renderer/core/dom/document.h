@@ -2005,7 +2005,7 @@ class CORE_EXPORT Document : public ContainerNode,
 
   bool SupportsLegacyDOMMutations();
 
-  void EnqueueReadyToRenderEvent();
+  void EnqueuePageRevealEvent();
 
  protected:
   void ClearXMLVersion() { xml_version_ = String(); }

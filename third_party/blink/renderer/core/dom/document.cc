@@ -323,7 +323,7 @@
 #include "third_party/blink/renderer/core/timing/render_blocking_metrics_reporter.h"
 #include "third_party/blink/renderer/core/timing/soft_navigation_heuristics.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_html.h"
-#include "third_party/blink/renderer/core/view_transition/ready_to_render_event.h"
+#include "third_party/blink/renderer/core/view_transition/page_reveal_event.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_supplement.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_utils.h"
 #include "third_party/blink/renderer/core/xml/parser/xml_document_parser.h"
@@ -9248,14 +9248,14 @@ bool Document::SupportsLegacyDOMMutations() {
   return legacy_dom_mutations_supported_.value();
 }
 
-void Document::EnqueueReadyToRenderEvent() {
-  CHECK(RuntimeEnabledFeatures::ReadyToRenderEventEnabled());
+void Document::EnqueuePageRevealEvent() {
+  CHECK(RuntimeEnabledFeatures::PageRevealEventEnabled());
   CHECK(dom_window_);
 
-  auto* ready_to_render_event = MakeGarbageCollected<ReadyToRenderEvent>();
-  ready_to_render_event->SetTarget(dom_window_);
-  ready_to_render_event->SetCurrentTarget(dom_window_);
-  EnqueueAnimationFrameEvent(ready_to_render_event);
+  auto* page_reveal_event = MakeGarbageCollected<PageRevealEvent>();
+  page_reveal_event->SetTarget(dom_window_);
+  page_reveal_event->SetCurrentTarget(dom_window_);
+  EnqueueAnimationFrameEvent(page_reveal_event);
 }
 
 Resource* Document::GetPendingLinkPreloadForTesting(const KURL& url) {

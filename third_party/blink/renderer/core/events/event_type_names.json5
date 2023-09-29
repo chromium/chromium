@@ -252,7 +252,7 @@
     "reading",
     "readingerror",
     "readystatechange",
-    "readytorender",
+    "pagereveal",
     "reflectionchange",
     "rejectionhandled",
     "release",

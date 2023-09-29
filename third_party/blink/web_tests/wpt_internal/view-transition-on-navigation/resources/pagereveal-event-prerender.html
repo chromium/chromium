@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<title>View transitions: readytorender event ordering on prerender activation (popup)</title>
+<title>View transitions: pagereveal event ordering on prerender activation (popup)</title>
 <link rel="help" href="https://drafts.csswg.org/css-view-transitions-2/">
 <link rel="author" href="mailto:bokan@chromium.org">
 <script src="/resources/testharness.js"></script>
@@ -63,8 +63,8 @@ if (!is_prerender_step) {
     requestAnimationFrame(() => finish(result));
   });
 
-  addEventListener('readytorender', () => {
-    result.events.push('readytorender');
+  addEventListener('pagereveal', () => {
+    result.events.push('pagereveal');
   });
 
   addEventListener('load', () => {

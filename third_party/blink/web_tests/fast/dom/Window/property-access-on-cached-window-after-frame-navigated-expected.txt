@@ -172,6 +172,7 @@ PASS oldChildWindow.onoffline is newChildWindow.onoffline
 PASS oldChildWindow.ononline is newChildWindow.ononline
 PASS oldChildWindow.onoverscroll is newChildWindow.onoverscroll
 PASS oldChildWindow.onpagehide is newChildWindow.onpagehide
+PASS oldChildWindow.onpagereveal is newChildWindow.onpagereveal
 PASS oldChildWindow.onpageshow is newChildWindow.onpageshow
 PASS oldChildWindow.onpause is newChildWindow.onpause
 PASS oldChildWindow.onplay is newChildWindow.onplay
@@ -188,7 +189,6 @@ PASS oldChildWindow.onpointerup is newChildWindow.onpointerup
 PASS oldChildWindow.onpopstate is newChildWindow.onpopstate
 PASS oldChildWindow.onprogress is newChildWindow.onprogress
 PASS oldChildWindow.onratechange is newChildWindow.onratechange
-PASS oldChildWindow.onreadytorender is newChildWindow.onreadytorender
 PASS oldChildWindow.onrejectionhandled is newChildWindow.onrejectionhandled
 PASS oldChildWindow.onreset is newChildWindow.onreset
 PASS oldChildWindow.onresize is newChildWindow.onresize

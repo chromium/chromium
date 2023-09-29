@@ -2542,10 +2542,10 @@ void WebViewImpl::SetPageLifecycleStateInternal(
   UpdateViewTransitionState(restoring_from_bfcache, storing_in_bfcache,
                             page_restore_params);
 
-  if (RuntimeEnabledFeatures::ReadyToRenderEventEnabled()) {
+  if (RuntimeEnabledFeatures::PageRevealEventEnabled()) {
     if (restoring_from_bfcache) {
       if (auto* main_frame = DynamicTo<LocalFrame>(GetPage()->MainFrame())) {
-        main_frame->GetDocument()->EnqueueReadyToRenderEvent();
+        main_frame->GetDocument()->EnqueuePageRevealEvent();
       }
     }
   }

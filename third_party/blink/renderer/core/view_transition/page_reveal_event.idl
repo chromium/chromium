@@ -6,7 +6,7 @@
 
 [
   Exposed=Window,
-  RuntimeEnabled=ReadyToRenderEvent
-] interface ReadyToRenderEvent : Event {
+  RuntimeEnabled=PageRevealEvent
+] interface PageRevealEvent : Event {
   // TODO(crbug.com/1466250): Expose viewTransition property.
 };

@@ -145,14 +145,14 @@ void PageAnimator::ServiceScriptedAnimations(
 
   // TODO(bokan): Requires an update to "update the rendering" steps in HTML.
   run_for_all_active_controllers_with_timing([&](wtf_size_t i) {
-    if (RuntimeEnabledFeatures::ReadyToRenderEventEnabled()) {
+    if (RuntimeEnabledFeatures::PageRevealEventEnabled()) {
       active_controllers[i]->DispatchEvents([](const Event* event) {
-        return event->type() == event_type_names::kReadytorender;
+        return event->type() == event_type_names::kPagereveal;
       });
     }
 
     if (RuntimeEnabledFeatures::ViewTransitionOnNavigationEnabled()) {
-      CHECK(RuntimeEnabledFeatures::ReadyToRenderEventEnabled());
+      CHECK(RuntimeEnabledFeatures::PageRevealEventEnabled());
       if (const LocalDOMWindow* window = active_controllers[i]->GetWindow()) {
         CHECK(window->document());
         if (ViewTransition* transition =

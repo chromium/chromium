@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<title>View transitions: readytorender event ordering on prerender activation</title>
+<title>View transitions: pagereveal event ordering on prerender activation</title>
 <link rel="help" href="https://drafts.csswg.org/css-view-transitions-2/">
 <link rel="author" href="mailto:bokan@chromium.org">
 <script src="/resources/testharness.js"></script>
@@ -11,7 +11,7 @@
 setup(() => assertSpeculationRulesIsSupported());
 
 const uid = token();
-const initiator_url = `resources/readytorender-event-prerender.html?uid=${uid}`;
+const initiator_url = `resources/pagereveal-event-prerender.html?uid=${uid}`;
 
 // This test opens a popup to an initiator page. That page then prerenders a
 // "prerendering" version of itself (by adding a `prerendering` query param)
@@ -35,6 +35,6 @@ promise_test(async () => {
   // frame. Ensure their order and apparance is as expected.
   const events_in_order = result.events.join(',');
   assert_equals(events_in_order,
-      'pageshow,prerenderingchange,readytorender,raf');
+      'pageshow,prerenderingchange,pagereveal,raf');
 });
 </script>

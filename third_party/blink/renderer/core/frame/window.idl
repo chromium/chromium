@@ -175,9 +175,9 @@
     //  90 is when rotated counter clockwise.
     [HighEntropy=Direct, MeasureAs=WindowOrientation, RuntimeEnabled=OrientationEvent] readonly attribute long orientation;
 
-    // Event handler attribute for the readytorender event.
+    // Event handler attribute for the pagereveal event.
     // https://drafts.csswg.org/css-view-transitions-2/#reveal-event
-    [RuntimeEnabled=ReadyToRenderEvent] attribute EventHandler onreadytorender;
+    [RuntimeEnabled=PageRevealEvent] attribute EventHandler onpagereveal;
 
     // Accessibility Object Model
     // https://github.com/WICG/aom/blob/HEAD/explainer.md
