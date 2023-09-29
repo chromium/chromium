@@ -779,15 +779,6 @@ DirectRenderer::CalculateRenderPassRequirements(
 #if BUILDFLAG(IS_WIN)
     requirements.scanout_dcomp_surface =
         render_pass->needs_synchronous_dcomp_commit;
-
-    // On Windows, the root render pass can be made transparent due to overlay
-    // processing promoting a quad as an underlay. If the format we picked does
-    // not have alpha bits, we ned to change to one that does.
-    if (requirements.alpha_type != RenderPassAlphaType::kOpaque &&
-        !requirements.format.HasAlpha()) {
-      requirements.format =
-          GetColorSpaceSharedImageFormat(requirements.color_space);
-    }
 #endif
     CHECK_EQ(requirements.alpha_type == RenderPassAlphaType::kOpaque,
              !render_pass->has_transparent_background);

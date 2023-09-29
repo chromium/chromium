@@ -179,10 +179,7 @@ gfx::DisplayColorSpaces CreateDisplayColorSpaces(
     const gfx::ColorSpace& color_space,
     float sdr_white_level) {
   gfx::DisplayColorSpaces display_color_spaces(color_space);
-  // When alpha is not needed, specify BGRX_8888 to get
-  // DXGI_ALPHA_MODE_IGNORE. This saves significant power (see
-  // https://crbug.com/1057163).
-  display_color_spaces.SetOutputBufferFormats(gfx::BufferFormat::BGRX_8888,
+  display_color_spaces.SetOutputBufferFormats(gfx::BufferFormat::BGRA_8888,
                                               gfx::BufferFormat::BGRA_8888);
   display_color_spaces.SetSDRMaxLuminanceNits(sdr_white_level);
   return display_color_spaces;
