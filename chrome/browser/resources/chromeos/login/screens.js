@@ -129,7 +129,10 @@ export const commonScreensList = [
   {tag: 'marketing-opt-in-element', id: 'marketing-opt-in'},
   {tag: 'multidevice-setup-element', id: 'multidevice-setup-screen'},
   {tag: 'offline-ad-login-element', id: 'offline-ad-login'},
-  { tag: 'online-authentication-screen-element', id: 'online-authentication-screen' },
+  {
+    tag: 'online-authentication-screen-element',
+    id: 'online-authentication-screen',
+  },
   {tag: 'oobe-reset-element', id: 'reset'},
   {
     tag: 'os-install-element',
@@ -141,7 +144,7 @@ export const commonScreensList = [
   {
     tag: 'password-selection-element',
     id: 'password-selection',
-    condition: 'isPasswordSelectionEnabledInOobe',
+    condition: 'isOobeConsumersLocalPasswordsEnabled',
   },
   {tag: 'pin-setup-element', id: 'pin-setup'},
   {tag: 'recommend-apps-element', id: 'recommend-apps'},
