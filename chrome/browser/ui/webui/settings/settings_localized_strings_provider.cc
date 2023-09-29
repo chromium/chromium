@@ -1142,7 +1142,7 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
                          l10n_util::GetStringFUTF16(
                              IDS_SETTINGS_PAYMENTS_MANAGE_CREDIT_CARDS,
                              base::UTF8ToUTF16(chrome::kPaymentMethodsURL)));
-  html_source->AddString("manageCreditCardsUrl",
+  html_source->AddString("managePaymentMethodsUrl",
                          autofill::payments::GetManageInstrumentsUrl().spec());
   html_source->AddString("addressesAndPaymentMethodsLearnMoreURL",
                          chrome::kAddressesAndPaymentMethodsLearnMoreURL);
