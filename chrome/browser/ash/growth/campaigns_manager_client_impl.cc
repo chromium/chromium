@@ -9,9 +9,12 @@
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "chrome/browser/ash/login/demo_mode/demo_mode_dimensions.h"
+#include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/component_updater/cros_component_manager.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/ash/components/growth/campaigns_manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -22,8 +25,9 @@ inline constexpr char kCampaignComponentName[] = "growth-campaigns";
 }  // namespace
 
 CampaignsManagerClientImpl::CampaignsManagerClientImpl()
-    : campaigns_manager_(
-          std::make_unique<growth::CampaignsManager>(/*client=*/this)) {}
+    : campaigns_manager_(std::make_unique<growth::CampaignsManager>(
+          /*client=*/this,
+          g_browser_process->local_state())) {}
 
 CampaignsManagerClientImpl::~CampaignsManagerClientImpl() = default;
 
@@ -39,7 +43,7 @@ void CampaignsManagerClientImpl::LoadCampaignsComponent(
   // Loads campaigns component.
   auto cros_component_manager =
       g_browser_process->platform_part()->cros_component_manager();
-  DCHECK(cros_component_manager);
+  CHECK(cros_component_manager);
 
   cros_component_manager->Load(
       kCampaignComponentName,
@@ -47,6 +51,18 @@ void CampaignsManagerClientImpl::LoadCampaignsComponent(
       component_updater::CrOSComponentManager::UpdatePolicy::kDontForce,
       base::BindOnce(&CampaignsManagerClientImpl::OnComponentDownloaded,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+bool CampaignsManagerClientImpl::IsDeviceInDemoMode() const {
+  return ash::DemoSession::IsDeviceInDemoMode();
+}
+
+bool CampaignsManagerClientImpl::IsCloudGamingDevice() const {
+  return ash::demo_mode::IsCloudGamingDevice();
+}
+
+bool CampaignsManagerClientImpl::IsFeatureAwareDevice() const {
+  return ash::demo_mode::IsFeatureAwareDevice();
 }
 
 void CampaignsManagerClientImpl::OnComponentDownloaded(

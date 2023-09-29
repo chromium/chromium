@@ -26,6 +26,9 @@ class CampaignsManagerClientImpl : public growth::CampaignsManagerClient {
   // growth::CampaignsManagerClient:
   void LoadCampaignsComponent(
       growth::CampaignComponentLoadedCallback callback) override;
+  bool IsDeviceInDemoMode() const override;
+  bool IsCloudGamingDevice() const override;
+  bool IsFeatureAwareDevice() const override;
 
  private:
   void OnComponentDownloaded(

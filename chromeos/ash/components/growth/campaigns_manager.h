@@ -14,6 +14,8 @@
 #include "chromeos/ash/components/growth/campaigns_matcher.h"
 #include "chromeos/ash/components/growth/campaigns_model.h"
 
+class PrefService;
+
 namespace growth {
 
 // A class that manages growth campaigns.
@@ -32,7 +34,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH) CampaignsManager {
     virtual void OnCampaignsLoadCompleted() = 0;
   };
 
-  explicit CampaignsManager(CampaignsManagerClient* client);
+  CampaignsManager(CampaignsManagerClient* client, PrefService* local_state);
   CampaignsManager(const CampaignsManager&) = delete;
   CampaignsManager& operator=(const CampaignsManager&) = delete;
   ~CampaignsManager();
@@ -42,6 +44,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH) CampaignsManager {
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
+
+  void SetPrefs(PrefService* prefs);
 
   // Download and install campaigns. Once installed, trigger the
   // `OnCampaignsLoaded` to install campaigns and notifier observers when

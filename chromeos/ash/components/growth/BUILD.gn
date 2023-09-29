@@ -16,7 +16,11 @@ component("growth") {
     "campaigns_model.h",
   ]
 
-  deps = [ "//base" ]
+  deps = [
+    "//ash/constants",
+    "//base",
+    "//components/prefs",
+  ]
 
   defines = [ "IS_CHROMEOS_ASH_COMPONENTS_GROWTH_IMPL" ]
 }
@@ -40,7 +44,10 @@ source_set("unit_tests") {
   deps = [
     ":growth",
     ":test_support",
+    "//ash/constants",
     "//base/test:test_support",
+    "//components/prefs:prefs",
+    "//components/prefs:test_support",
     "//testing/gmock",
     "//testing/gtest",
   ]

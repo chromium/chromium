@@ -10,6 +10,9 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/fake_cros_component_manager.h"
 #include "chrome/test/base/browser_process_platform_part_test_api_chromeos.h"
+#include "chrome/test/base/scoped_testing_local_state.h"
+#include "chrome/test/base/testing_browser_process.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -18,9 +21,9 @@ namespace {
 
 using ::component_updater::FakeCrOSComponentManager;
 
-constexpr char kCampaignsComponent[] = "growth-campaigns";
+inline constexpr char kCampaignsComponent[] = "growth-campaigns";
 
-constexpr char kTestCampaignsComponentMountedPath[] =
+inline constexpr char kTestCampaignsComponentMountedPath[] =
     "/run/imageloader/growth_campaigns";
 
 }  // namespace
@@ -38,14 +41,17 @@ class CampaignsManagerClientTest : public testing::Test {
   ~CampaignsManagerClientTest() override = default;
 
   void SetUp() override {
+    SetupProfileManager();
     InitializeCrosComponentManager();
-
     campaigns_manager_client_ = std::make_unique<CampaignsManagerClientImpl>();
   }
 
   void TearDown() override {
     cros_component_manager_ = nullptr;
     browser_process_platform_part_test_api_.ShutdownCrosComponentManager();
+    campaigns_manager_client_.reset();
+    profile_manager_->DeleteAllTestingProfiles();
+    profile_manager_.reset();
   }
 
  protected:
@@ -79,12 +85,19 @@ class CampaignsManagerClientTest : public testing::Test {
             /*load_response=*/error, install_path, mount_path));
   }
 
+  void SetupProfileManager() {
+    profile_manager_ = std::make_unique<TestingProfileManager>(
+        TestingBrowserProcess::GetGlobal());
+    ASSERT_TRUE(profile_manager_->SetUp());
+  }
+
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<CampaignsManagerClientImpl> campaigns_manager_client_;
   raw_ptr<FakeCrOSComponentManager, ExperimentalAsh> cros_component_manager_ =
       nullptr;
 
  private:
+  std::unique_ptr<TestingProfileManager> profile_manager_;
   BrowserProcessPlatformPartTestApi browser_process_platform_part_test_api_;
 };
 

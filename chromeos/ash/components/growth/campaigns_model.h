@@ -5,9 +5,8 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_GROWTH_CAMPAIGNS_MODEL_H_
 #define CHROMEOS_ASH_COMPONENTS_GROWTH_CAMPAIGNS_MODEL_H_
 
-#include "base/strings/string_number_conversions.h"
-#include "base/strings/stringprintf.h"
 #include "base/values.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace growth {
 
@@ -75,6 +74,92 @@ const Campaigns* GetCampaignsBySlot(const CampaignsPerSlot* campaigns_per_slot,
 const Targetings* GetTargetings(const Campaign* campaign);
 
 const Payload* GetPayloadBySlot(const Campaign* campaign, Slot slot);
+
+// Lists of campaigns keyed by the targeted slot. The key is the slot ID in
+// string. For example:
+// {
+//   "0": [...]
+//   "1": [...]
+// }
+using CampaignsPerSlot = base::Value::Dict;
+
+// All campaigns including proactive and reactive campaigns. For example:
+// {
+//   "proactiveCampaigns" : {
+//     "0": [...],
+//     "1": [...]
+//   },
+//   "reactiveCampaigns" : {
+//     "3": [...],
+//     "4": [...]
+//   },
+// }
+using CampaignsStore = base::Value::Dict;
+
+const CampaignsPerSlot* GetProactiveCampaigns(
+    const CampaignsStore* campaigns_store);
+
+const CampaignsPerSlot* GetReactiveCampaigns(
+    const CampaignsStore* campaigns_store);
+
+const Campaigns* GetCampaignsBySlot(const CampaignsPerSlot* campaigns_per_slot,
+                                    Slot slot);
+
+const Targetings* GetTargetings(const Campaign* campaign);
+
+const Payload* GetPayloadBySlot(const Campaign* campaign, Slot slot);
+
+class TargetingBase {
+ public:
+  explicit TargetingBase(const Targeting& targeting_dict,
+                         const char* targeting_path);
+  TargetingBase(const TargetingBase&) = delete;
+  TargetingBase& operator=(const TargetingBase) = delete;
+  ~TargetingBase();
+
+  // True if the specific targeting (e.g: demoMode) was found in the targeting
+  // dictionary. The campaign will be selected if the targeted criteria is not
+  // found and defer to the next criteria matching.
+  bool IsValid() const;
+
+ protected:
+  const base::Value::List* GetListCriteria(const char* path_suffix) const;
+  const absl::optional<bool> GetBoolCriteria(const char* path_suffix) const;
+  const std::string* GetStringCriteria(const char* path_suffix) const;
+
+ private:
+  const std::string GetCriteriaPath(const char* path_suffix) const;
+
+  // The dictionary that contains targeting definition. Owned by
+  // `CampaignsManager`.
+  const Targeting& targeting_;
+  // The targeting path.
+  const char* targeting_path_;
+};
+
+// Demo mode targeting. For example:
+// {
+//   "retailers": ["bb", "bsb"];
+//   "storeIds": ["2", "4", "6"],
+//   "country": ["US"],
+//   "capability": {
+//     "isFeatureAwareDevice": false,
+//     "isCloudGamingDevice": true,
+//   }
+// }
+class DemoModeTargeting : public TargetingBase {
+ public:
+  explicit DemoModeTargeting(const Targeting& targeting_dict);
+  DemoModeTargeting(const DemoModeTargeting&) = delete;
+  DemoModeTargeting& operator=(const DemoModeTargeting) = delete;
+  ~DemoModeTargeting();
+
+  const base::Value::List* GetStoreIds() const;
+  const base::Value::List* GetRetailers() const;
+  const base::Value::List* GetCountries() const;
+  const absl::optional<bool> TargetCloudGamingDevice() const;
+  const absl::optional<bool> TargetFeatureAwareDevice() const;
+};
 
 }  // namespace growth
 
