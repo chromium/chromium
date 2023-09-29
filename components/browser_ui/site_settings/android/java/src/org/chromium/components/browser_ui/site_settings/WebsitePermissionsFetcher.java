@@ -39,7 +39,7 @@ public class WebsitePermissionsFetcher {
     public enum WebsitePermissionsType {
         CONTENT_SETTING_EXCEPTION,
         PERMISSION_INFO,
-        EMBEDDED_PERMISSION_INFO,
+        EMBEDDED_PERMISSION,
         CHOSEN_OBJECT_INFO
     }
 
@@ -99,7 +99,7 @@ public class WebsitePermissionsFetcher {
             case ContentSettingsType.STORAGE_ACCESS:
                 if (PermissionsAndroidFeatureMap.isEnabled(
                             PermissionsAndroidFeatureList.PERMISSION_STORAGE_ACCESS)) {
-                    return WebsitePermissionsType.EMBEDDED_PERMISSION_INFO;
+                    return WebsitePermissionsType.EMBEDDED_PERMISSION;
                 }
                 return null;
             case ContentSettingsType.BLUETOOTH_GUARD:
@@ -332,10 +332,10 @@ public class WebsitePermissionsFetcher {
                     queue.add(new ExceptionInfoFetcher(contentSettingsType));
                     return;
                 case PERMISSION_INFO:
-                    queue.add(new PermissionInfoFetcher(contentSettingsType, false));
+                    queue.add(new PermissionInfoFetcher(contentSettingsType));
                     return;
-                case EMBEDDED_PERMISSION_INFO:
-                    queue.add(new PermissionInfoFetcher(contentSettingsType, true));
+                case EMBEDDED_PERMISSION:
+                    queue.add(new ExceptionInfoFetcher(contentSettingsType));
                     return;
                 case CHOSEN_OBJECT_INFO:
                     queue.add(new ChooserExceptionInfoFetcher(contentSettingsType));
@@ -378,6 +378,8 @@ public class WebsitePermissionsFetcher {
         }
 
         private void setException(int contentSettingsType) {
+            boolean isEmbeddedPermission = getPermissionsType(contentSettingsType)
+                    == WebsitePermissionsType.EMBEDDED_PERMISSION;
             for (ContentSettingException exception :
                     mWebsitePreferenceBridge.getContentSettingsExceptions(
                             mBrowserContextHandle, contentSettingsType)) {
@@ -393,7 +395,11 @@ public class WebsitePermissionsFetcher {
                         ? address
                         : WebsiteAddress.create(address).getOrigin();
                 Website site = findOrCreateSite(origin, embedder);
-                site.setContentSettingException(contentSettingsType, exception);
+                if (isEmbeddedPermission) {
+                    site.addEmbeddedPermission(exception);
+                } else {
+                    site.setContentSettingException(contentSettingsType, exception);
+                }
             }
         }
 
@@ -430,10 +436,8 @@ public class WebsitePermissionsFetcher {
             final @ContentSettingsType int mType;
             private boolean mIsEmbeddedPermission;
 
-            public PermissionInfoFetcher(
-                    @ContentSettingsType int type, boolean isEmbeddedPermission) {
+            public PermissionInfoFetcher(@ContentSettingsType int type) {
                 mType = type;
-                mIsEmbeddedPermission = isEmbeddedPermission;
             }
 
             @Override
@@ -445,11 +449,7 @@ public class WebsitePermissionsFetcher {
                     String embedder =
                             mType == ContentSettingsType.SENSORS ? null : info.getEmbedder();
                     Website site = findOrCreateSite(origin, embedder);
-                    if (mIsEmbeddedPermission) {
-                        site.addEmbeddedPermissionInfo(info);
-                    } else {
-                        site.setPermissionInfo(info);
-                    }
+                    site.setPermissionInfo(info);
                 }
             }
         }

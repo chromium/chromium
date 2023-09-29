@@ -21,17 +21,12 @@ public class PermissionInfo implements Serializable {
     private final String mOrigin;
     private final @ContentSettingsType int mContentSettingsType;
 
-    public PermissionInfo(@ContentSettingsType int type, String origin, String embedder) {
-        this(type, origin, embedder, false);
-    }
-
     public PermissionInfo(
             @ContentSettingsType int type, String origin, String embedder, boolean isEmbargoed) {
         assert WebsitePermissionsFetcher.getPermissionsType(type)
-                        == WebsitePermissionsFetcher.WebsitePermissionsType.PERMISSION_INFO
-                || WebsitePermissionsFetcher.getPermissionsType(type)
-                        == WebsitePermissionsFetcher.WebsitePermissionsType.EMBEDDED_PERMISSION_INFO
-            : "invalid type: " + type;
+                == WebsitePermissionsFetcher.WebsitePermissionsType.PERMISSION_INFO
+            : "invalid type: "
+                        + type;
         mOrigin = origin;
         mEmbedder = embedder;
         mContentSettingsType = type;

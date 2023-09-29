@@ -64,6 +64,12 @@ public class SiteDataCleaner {
         for (ChosenObjectInfo info : site.getChosenObjectInfo()) {
             info.revoke(browserContextHandle);
         }
+
+        for (var exceptions : site.getEmbeddedPermissions().values()) {
+            for (var exception : exceptions) {
+                exception.setContentSetting(browserContextHandle, ContentSettingValues.DEFAULT);
+            }
+        }
     }
 
     /**
