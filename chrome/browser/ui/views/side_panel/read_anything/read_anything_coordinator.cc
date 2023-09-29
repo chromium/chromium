@@ -78,9 +78,8 @@ ReadAnythingCoordinator::ReadAnythingCoordinator(Browser* browser)
 
 void ReadAnythingCoordinator::InitModelWithUserPrefs() {
   Browser* browser = &GetBrowser();
-  if (!browser->profile() || !browser->profile()->GetPrefs()) {
+  if (!browser->profile() || !browser->profile()->GetPrefs())
     return;
-  }
 
   // Get user's default language to check for compatible fonts.
   language::LanguageModel* language_model =
@@ -135,9 +134,9 @@ ReadAnythingCoordinator::~ReadAnythingCoordinator() {
   // Read Anything as a side panel entry observer.
   Browser* browser = &GetBrowser();
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
-  if (!browser_view) {
+  if (!browser_view)
     return;
-  }
+
   SidePanelRegistry* global_registry =
       SidePanelCoordinator::GetGlobalSidePanelRegistry(browser);
   global_registry->Deregister(
@@ -147,8 +146,8 @@ ReadAnythingCoordinator::~ReadAnythingCoordinator() {
   Observe(nullptr);
 }
 
-void ReadAnythingCoordinator::CreateAndRegisterSidePanelEntry(
-    SidePanelRegistry* registry) {
+void ReadAnythingCoordinator::CreateAndRegisterEntry(
+    SidePanelRegistry* global_registry) {
   auto side_panel_entry = std::make_unique<SidePanelEntry>(
       SidePanelEntry::Id::kReadAnything,
       l10n_util::GetStringUTF16(IDS_READING_MODE_TITLE),
@@ -157,7 +156,7 @@ void ReadAnythingCoordinator::CreateAndRegisterSidePanelEntry(
       base::BindRepeating(&ReadAnythingCoordinator::CreateContainerView,
                           base::Unretained(this)));
   side_panel_entry->AddObserver(this);
-  registry->Register(std::move(side_panel_entry));
+  global_registry->Register(std::move(side_panel_entry));
 }
 
 ReadAnythingController* ReadAnythingCoordinator::GetController() {
@@ -264,17 +263,6 @@ void ReadAnythingCoordinator::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
     const TabStripModelChange& change,
     const TabStripSelectionChange& selection) {
-  if (change.type() == TabStripModelChange::Type::kInserted) {
-    for (const auto& inserted_tab : change.GetInsert()->contents) {
-      CreateAndRegisterReadAnythingEntry(inserted_tab.contents);
-    }
-  }
-  if (change.type() == TabStripModelChange::Type::kReplaced) {
-    raw_ptr<content::WebContents> new_contents =
-        change.GetReplace()->new_contents;
-    CHECK(new_contents);
-    CreateAndRegisterReadAnythingEntry(new_contents);
-  }
   if (!selection.active_tab_changed()) {
     return;
   }

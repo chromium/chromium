@@ -98,7 +98,8 @@ void SidePanelUtil::PopulateGlobalEntries(Browser* browser,
 
   // Add read anything.
   if (features::IsReadAnythingEnabled()) {
-    ReadAnythingCoordinator::GetOrCreateForBrowser(browser);
+    ReadAnythingCoordinator::GetOrCreateForBrowser(browser)
+        ->CreateAndRegisterEntry(global_registry);
   }
 
   // Create Search Companion coordinator.

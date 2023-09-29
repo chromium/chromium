@@ -52,7 +52,7 @@ class ReadAnythingCoordinator : public BrowserUserData<ReadAnythingCoordinator>,
   explicit ReadAnythingCoordinator(Browser* browser);
   ~ReadAnythingCoordinator() override;
 
-  void CreateAndRegisterSidePanelEntry(SidePanelRegistry* registry);
+  void CreateAndRegisterEntry(SidePanelRegistry* global_registry);
   ReadAnythingController* GetController();
   ReadAnythingModel* GetModel();
 

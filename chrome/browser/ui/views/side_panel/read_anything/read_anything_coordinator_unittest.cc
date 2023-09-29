@@ -35,41 +35,12 @@ class ReadAnythingCoordinatorTest : public TestWithBrowserView {
     scoped_feature_list_.InitWithFeatures({features::kReadAnything}, {});
     TestWithBrowserView::SetUp();
 
-    // Ensure a kReadAnything entry is added to the contextual registry for the
-    // first tab.
-    AddTab(browser_view()->browser(), GURL("http://foo1.com"));
-    content::WebContents* active_contents =
-        browser_view()->GetActiveWebContents();
-    auto* tab_one_registry = SidePanelRegistry::Get(active_contents);
     side_panel_coordinator_ =
         SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser());
+    side_panel_registry_ =
+        SidePanelCoordinator::GetGlobalSidePanelRegistry(browser());
     read_anything_coordinator_ =
         ReadAnythingCoordinator::GetOrCreateForBrowser(browser());
-    contextual_registries_.push_back(tab_one_registry);
-
-    // Ensure a kReadAnything entry is added to the contextual registry for the
-    // second tab.
-    AddTab(browser_view()->browser(), GURL("http://foo2.com"));
-    active_contents = browser_view()->GetActiveWebContents();
-    auto* tab_two_registry = SidePanelRegistry::Get(active_contents);
-    contextual_registries_.push_back(tab_two_registry);
-
-    // Verify the first tab has one entry, kReadAnything.
-    browser_view()->browser()->tab_strip_model()->ActivateTabAt(0);
-    active_contents = browser_view()->GetActiveWebContents();
-    SidePanelRegistry* contextual_registry =
-        SidePanelRegistry::Get(active_contents);
-    ASSERT_EQ(contextual_registry->entries().size(), 1u);
-    EXPECT_EQ(contextual_registry->entries()[0]->key().id(),
-              SidePanelEntry::Id::kReadAnything);
-
-    // Verify the second tab has one entry, kReadAnything.
-    browser_view()->browser()->tab_strip_model()->ActivateTabAt(1);
-    active_contents = browser_view()->GetActiveWebContents();
-    contextual_registry = SidePanelRegistry::Get(active_contents);
-    ASSERT_EQ(contextual_registry->entries().size(), 1u);
-    EXPECT_EQ(contextual_registry->entries()[0]->key().id(),
-              SidePanelEntry::Id::kReadAnything);
   }
 
   // Wrapper methods around the ReadAnythingCoordinator. These do nothing more
@@ -98,8 +69,7 @@ class ReadAnythingCoordinatorTest : public TestWithBrowserView {
  protected:
   raw_ptr<SidePanelCoordinator, DanglingUntriaged> side_panel_coordinator_ =
       nullptr;
-  std::vector<raw_ptr<SidePanelRegistry, DanglingUntriaged>>
-      contextual_registries_;
+  raw_ptr<SidePanelRegistry, DanglingUntriaged> side_panel_registry_ = nullptr;
   raw_ptr<ReadAnythingCoordinator, DanglingUntriaged>
       read_anything_coordinator_ = nullptr;
 
@@ -151,7 +121,7 @@ TEST_F(ReadAnythingCoordinatorTest, ActivateCalled_ShowAndCloseSidePanel) {
 TEST_F(ReadAnythingCoordinatorTest,
        ActivateCalled_ShowAndHideReadAnythingEntry) {
   AddObserver(&coordinator_observer_);
-  SidePanelEntry* entry = contextual_registries_[0]->GetEntryForKey(
+  SidePanelEntry* entry = side_panel_registry_->GetEntryForKey(
       SidePanelEntry::Key(SidePanelEntry::Id::kReadAnything));
 
   EXPECT_CALL(coordinator_observer_, Activate(true)).Times(1);
