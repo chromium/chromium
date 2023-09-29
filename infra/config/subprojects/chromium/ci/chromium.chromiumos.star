@@ -153,6 +153,7 @@ ci.builder(
         short_name = "cfi",
     ),
     main_console_view = "main",
+    contact_team_email = "chromeos-sw-engprod@google.com",
     health_spec = health_spec.modified_default(
         build_time = struct(
             p50_mins = 100,
@@ -192,6 +193,7 @@ ci.builder(
     ),
     main_console_view = "main",
     cq_mirrors_console_view = "mirrors",
+    contact_team_email = "chromeos-sw-engprod@google.com",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
@@ -258,6 +260,7 @@ ci.builder(
     ),
     main_console_view = "main",
     cq_mirrors_console_view = "mirrors",
+    contact_team_email = "chromeos-sw-engprod@google.com",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
@@ -290,6 +293,7 @@ ci.builder(
         short_name = "arm",
     ),
     main_console_view = "main",
+    contact_team_email = "chromeos-sw-engprod@google.com",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
@@ -317,6 +321,7 @@ ci.builder(
     ),
     main_console_view = "main",
     cq_mirrors_console_view = "mirrors",
+    contact_team_email = "chromeos-sw-engprod@google.com",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
@@ -343,6 +348,7 @@ ci.builder(
         short_name = "a64",
     ),
     main_console_view = "main",
+    contact_team_email = "chromeos-sw-engprod@google.com",
 )
 
 ci.builder(
@@ -666,6 +672,7 @@ ci.builder(
     ),
     main_console_view = "main",
     cq_mirrors_console_view = "mirrors",
+    contact_team_email = "chromeos-sw-engprod@google.com",
     health_spec = health_spec.modified_default(
         build_time = struct(
             p50_mins = 150,
@@ -704,6 +711,7 @@ ci.builder(
     ),
     main_console_view = "main",
     cq_mirrors_console_view = "mirrors",
+    contact_team_email = "chromeos-sw-engprod@google.com",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
