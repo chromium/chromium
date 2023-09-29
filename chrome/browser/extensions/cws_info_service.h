@@ -183,9 +183,13 @@ class CWSInfoService : public CWSInfoServiceInterface, public KeyedService {
   // Counts the number of times the downloaded metadata was different from that
   // currently saved.
   uint32_t info_changes_ = 0;
-
   // A timer used to periodically check if CWS information needs to be fetched.
   base::OneShotTimer info_check_timer_;
+  // Time from startup to first check of CWS information.
+  int startup_delay_secs_ = 0;
+  // Time interval between fetches from CWS info server. The interval value
+  // varies +/-25% from default of 24 hours for every fetch.
+  int current_fetch_interval_secs_ = 0;
 
   // List of observers that are notified whenever new CWS information is saved.
   base::ObserverList<Observer> observers_;

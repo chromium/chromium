@@ -11,6 +11,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
+#include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
@@ -41,14 +42,14 @@ namespace {
 constexpr int kMaxExtensionIdsPerRequest = 3;
 constexpr int kMaxRetriesPerRequest = 2;
 
-constexpr int kStartupCheckDelaySeconds = 30;
 // Default check and fetch intervals.
-constexpr int kCheckIntervalSeconds = 3 * 60 * 60;
+constexpr int kCheckIntervalSeconds = 1 * 60 * 60;
 constexpr int kFetchIntervalSeconds = 24 * 60 * 60;
 // Fast mode check and fetch intervals. These intervals are used to
 // facilitate end-end testing.
+constexpr int kFastStartupCheckDelaySeconds = 30;
 constexpr int kFastCheckIntervalSeconds = 1 * 60;
-constexpr int kFastFetchIntervalSeconds = 5 * 60;
+constexpr int kFastFetchIntervalSeconds = 3 * 60;
 
 constexpr char kRequestUrl[] =
     "https://chromewebstore.googleapis.com/v2/items/-/storeMetadata:batchGet";
@@ -207,6 +208,14 @@ bool SaveInfoIfChanged(ExtensionPrefs* extension_prefs,
   return saved;
 }
 
+int GetNextFetchInterval() {
+  // jitter fetch interval by +/- 25%
+  double jitter_factor = base::RandDouble() * 0.5 + 0.75;
+  return base::FeatureList::IsEnabled(kCWSInfoFastCheck)
+             ? kFastFetchIntervalSeconds
+             : kFetchIntervalSeconds * jitter_factor;
+}
+
 }  // namespace
 
 // Stores context information about a CWS info fetch operation.
@@ -231,8 +240,14 @@ CWSInfoService::CWSInfoService(Profile* profile)
       extension_prefs_(ExtensionPrefs::Get(profile)),
       extension_registry_(ExtensionRegistry::Get(profile)),
       url_loader_factory_(profile->GetURLLoaderFactory()),
-      max_ids_per_request_(kMaxExtensionIdsPerRequest) {
-  ScheduleCheck(kStartupCheckDelaySeconds);
+      max_ids_per_request_(kMaxExtensionIdsPerRequest),
+      current_fetch_interval_secs_(GetNextFetchInterval()) {
+  // Vary the startup check out between 30s to 10min, unless FastCheck
+  // option is enabled.
+  startup_delay_secs_ = base::FeatureList::IsEnabled(kCWSInfoFastCheck)
+                            ? kFastStartupCheckDelaySeconds
+                            : base::RandInt(/*min=*/30, /*max=*/600);
+  ScheduleCheck(startup_delay_secs_);
 }
 
 CWSInfoService::CWSInfoService() = default;
@@ -298,11 +313,8 @@ void CWSInfoService::CheckAndMaybeFetchInfo() {
     base::TimeDelta elapsed_time =
         base::Time::Now() - pref_service_->GetTime(prefs::kCWSInfoTimestamp);
     // Enough time has elapsed since the last fetch.
-    int fetch_interval_seconds = base::FeatureList::IsEnabled(kCWSInfoFastCheck)
-                                     ? kFastFetchIntervalSeconds
-                                     : kFetchIntervalSeconds;
     bool data_refresh_needed =
-        elapsed_time >= base::Seconds(fetch_interval_seconds);
+        elapsed_time >= base::Seconds(current_fetch_interval_secs_);
 
     bool new_info_requested = false;
     std::unique_ptr<FetchContext> fetch_context =
@@ -315,6 +327,7 @@ void CWSInfoService::CheckAndMaybeFetchInfo() {
       // Save the fetch context and send the (first) request.
       active_fetch_ = std::move(fetch_context);
       RecordNumRequestsInFetch(active_fetch_->requests.size());
+      current_fetch_interval_secs_ = GetNextFetchInterval();
       SendRequest();
       return;
     }
@@ -543,11 +556,11 @@ std::string CWSInfoService::GetRequestURLForTesting() const {
 }
 
 int CWSInfoService::GetFetchIntervalForTesting() const {
-  return kFetchIntervalSeconds;
+  return current_fetch_interval_secs_;
 }
 
 int CWSInfoService::GetStartupDelayForTesting() const {
-  return kStartupCheckDelaySeconds;
+  return startup_delay_secs_;
 }
 
 int CWSInfoService::GetCheckIntervalForTesting() const {

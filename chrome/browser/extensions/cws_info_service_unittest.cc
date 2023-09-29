@@ -393,7 +393,7 @@ TEST_F(CWSInfoServiceTest, SchedulesStartupAndPeriodicInfoChecks) {
 
 // The service only makes requests to the CWS server if:
 // - there are extensions that are missing the store metadata info OR
-// - enough time (update interval) has elapsed since the last update
+// - enough time (fetch interval) has elapsed since the last update
 // This test verifies the latter condition.
 TEST_F(CWSInfoServiceTest, UpdatesExistingInfoAtUpdateIntervals) {
   // Add an extension to cause queries to CWS.
@@ -420,7 +420,7 @@ TEST_F(CWSInfoServiceTest, UpdatesExistingInfoAtUpdateIntervals) {
             cws_info_service_->GetCWSInfoTimestampForTesting());
 
   // Verify that no request is sent at the next check interval since the
-  // update interval has not elapsed.
+  // fetch interval has not elapsed.
   task_environment_.FastForwardBy(
       base::Seconds(cws_info_service_->GetCheckIntervalForTesting()));
   EXPECT_TRUE(VerifyStats(/*requests=*/1, /*responses=*/1, /*changes=*/1,
@@ -429,10 +429,14 @@ TEST_F(CWSInfoServiceTest, UpdatesExistingInfoAtUpdateIntervals) {
                 base::Seconds(cws_info_service_->GetCheckIntervalForTesting()),
             cws_info_service_->GetCWSInfoTimestampForTesting());
 
-  // Verify that a request is sent once the update interval has elapsed.
+  // Verify that a request is sent once the fetch interval has elapsed.
+  // Already consumed 1 check interval; compute the rest till the next fetch.
+  int remaining_check_intervals_till_next_fetch =
+      cws_info_service_->GetFetchIntervalForTesting() /
+      cws_info_service_->GetCheckIntervalForTesting();
   task_environment_.FastForwardBy(
-      base::Seconds(cws_info_service_->GetFetchIntervalForTesting()) -
-      base::Seconds(cws_info_service_->GetCheckIntervalForTesting()));
+      base::Seconds(cws_info_service_->GetCheckIntervalForTesting() *
+                    remaining_check_intervals_till_next_fetch));
   // Note the info changed count has not changed since the server response is
   // the same.
   EXPECT_TRUE(VerifyStats(/*requests=*/2, /*responses=*/2, /*changes=*/1,
