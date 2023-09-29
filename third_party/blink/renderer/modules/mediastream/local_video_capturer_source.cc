@@ -91,12 +91,6 @@ void LocalVideoCapturerSource::StopCapture() {
     std::move(stop_capture_cb_).Run();
 }
 
-void LocalVideoCapturerSource::OnFrameDropped(
-    media::VideoCaptureFrameDropReason reason) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  manager_->OnFrameDropped(session_id_, reason);
-}
-
 void LocalVideoCapturerSource::OnLog(const std::string& message) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   manager_->OnLog(session_id_, WebString::FromUTF8(message));

@@ -326,8 +326,6 @@ class TestVideoCaptureHost : public media::mojom::VideoCaptureHost {
                              GetDeviceFormatsInUseCallback callback) override {}
   void OnLog(const base::UnguessableToken& device_id,
              const std::string& reason) override {}
-  void OnFrameDropped(const base::UnguessableToken& device_id,
-                      media::VideoCaptureFrameDropReason reason) override {}
 };
 
 }  // namespace

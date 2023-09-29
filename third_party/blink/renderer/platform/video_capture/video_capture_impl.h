@@ -107,7 +107,6 @@ class PLATFORM_EXPORT VideoCaptureImpl
   // |callback| will be invoked with the results.
   void GetDeviceFormatsInUse(VideoCaptureDeviceFormatsCallback callback);
 
-  void OnFrameDropped(media::VideoCaptureFrameDropReason reason);
   void OnLog(const String& message);
 
   const media::VideoCaptureSessionId& session_id() const { return session_id_; }

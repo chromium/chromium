@@ -867,11 +867,6 @@ void VideoCaptureImpl::GetDeviceFormatsInUse(
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void VideoCaptureImpl::OnFrameDropped(
-    media::VideoCaptureFrameDropReason reason) {
-  GetVideoCaptureHost()->OnFrameDropped(device_id_, reason);
-}
-
 void VideoCaptureImpl::OnLog(const String& message) {
   GetVideoCaptureHost()->OnLog(device_id_, message);
 }
@@ -979,7 +974,7 @@ void VideoCaptureImpl::OnBufferReady(
 
   bool consume_buffer = state_ == VIDEO_CAPTURE_STATE_STARTED;
   if (!consume_buffer) {
-    OnFrameDropped(
+    OnFrameDroppedEarly(
         media::VideoCaptureFrameDropReason::kVideoCaptureImplNotInStartedState);
     GetVideoCaptureHost()->ReleaseBuffer(device_id_, buffer->buffer_id,
                                          DefaultFeedback());
@@ -1040,8 +1035,8 @@ void VideoCaptureImpl::OnBufferReady(
     scaled_frame_preparers.push_back(std::move(scaled_frame_preparer));
   }
   if (!init_successful) {
-    OnFrameDropped(media::VideoCaptureFrameDropReason::
-                       kVideoCaptureImplFailedToWrapDataAsMediaVideoFrame);
+    OnFrameDroppedEarly(media::VideoCaptureFrameDropReason::
+                            kVideoCaptureImplFailedToWrapDataAsMediaVideoFrame);
     GetVideoCaptureHost()->ReleaseBuffer(
         device_id_, frame_preparer->buffer_id(), DefaultFeedback());
     for (auto& scaled_frame_preparer : scaled_frame_preparers) {
@@ -1118,8 +1113,8 @@ void VideoCaptureImpl::OnVideoFrameReady(
     is_any_frame_not_bound |= !scaled_frame_preparer->IsVideoFrameBound();
   }
   if (is_any_frame_not_bound) {
-    OnFrameDropped(media::VideoCaptureFrameDropReason::
-                       kVideoCaptureImplFailedToWrapDataAsMediaVideoFrame);
+    OnFrameDroppedEarly(media::VideoCaptureFrameDropReason::
+                            kVideoCaptureImplFailedToWrapDataAsMediaVideoFrame);
     // Release all buffers.
     GetVideoCaptureHost()->ReleaseBuffer(
         device_id_, frame_preparer->buffer_id(), DefaultFeedback());

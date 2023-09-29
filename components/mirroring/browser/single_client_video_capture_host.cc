@@ -184,13 +184,6 @@ void SingleClientVideoCaptureHost::OnCaptureConfigurationChanged() {
   // Ignore this call.
 }
 
-void SingleClientVideoCaptureHost::OnFrameDropped(
-    const base::UnguessableToken& device_id,
-    media::VideoCaptureFrameDropReason reason) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Ignore this call.
-}
-
 void SingleClientVideoCaptureHost::OnNewCropVersion(uint32_t crop_version) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Ignore this call.

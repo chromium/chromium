@@ -117,8 +117,6 @@ class BLINK_PLATFORM_EXPORT WebVideoCaptureImplManager {
   void SuspendDevices(const MediaStreamDevices& video_devices, bool suspend);
 
   void OnLog(const media::VideoCaptureSessionId& id, const WebString& message);
-  void OnFrameDropped(const media::VideoCaptureSessionId& id,
-                      media::VideoCaptureFrameDropReason reason);
 
   // Get the feedback callback for the corresponding capture session.
   // Consumers may call the returned callback in any thread to provide

@@ -405,24 +405,6 @@ void VideoCaptureHost::GetDeviceFormatsInUse(
   std::move(callback).Run(formats_in_use);
 }
 
-void VideoCaptureHost::OnFrameDropped(
-    const base::UnguessableToken& device_id,
-    media::VideoCaptureFrameDropReason reason) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-
-  VideoCaptureControllerID controller_id(device_id);
-  auto it = controllers_.find(controller_id);
-  if (it == controllers_.end())
-    return;
-
-  const base::WeakPtr<VideoCaptureController>& controller = it->second;
-  if (controller) {
-    // TODO(https://crbug.com/1481448): Delete this callback when
-    // MediaStreamTrackImpl handles the logging and UMAs related to frame drops.
-    controller->OnFrameDroppedByRenderer(reason);
-  }
-}
-
 void VideoCaptureHost::OnNewCropVersion(const base::UnguessableToken& device_id,
                                         uint32_t crop_version) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);

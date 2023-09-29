@@ -124,12 +124,6 @@ class CONTENT_EXPORT VideoCaptureController
   void OnStartedUsingGpuDecode() override;
   void OnStopped() override;
 
-  // Frames can be dropped early (e.g. capture process) or late (e.g. renderer
-  // process). Only if the frame drop happened early do we want to forward that
-  // signal to the renderer process for the purpose of the MediaStreamTrack
-  // Statistics API counting frame drops.
-  void OnFrameDroppedByRenderer(media::VideoCaptureFrameDropReason reason);
-
   // Implementation of VideoCaptureDeviceLauncher::Callbacks interface:
   void OnDeviceLaunched(
       std::unique_ptr<LaunchedVideoCaptureDevice> device) override;
@@ -253,8 +247,6 @@ class CONTENT_EXPORT VideoCaptureController
       base::RepeatingCallback<void(VideoCaptureControllerEventHandler* client,
                                    const VideoCaptureControllerID& id)>;
   void PerformForClientsWithOpenSession(EventHandlerAction action);
-
-  void OnFrameDroppedLogging(media::VideoCaptureFrameDropReason reason);
 
   void EmitLogMessage(const std::string& message, int verbose_log_level);
 

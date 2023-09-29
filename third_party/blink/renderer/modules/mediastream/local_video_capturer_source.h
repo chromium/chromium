@@ -62,7 +62,6 @@ class MODULES_EXPORT LocalVideoCapturerSource : public VideoCapturerSource {
   void MaybeSuspend() override;
   void Resume() override;
   void StopCapture() override;
-  void OnFrameDropped(media::VideoCaptureFrameDropReason reason) override;
   void OnLog(const std::string& message) override;
   media::VideoCaptureFeedbackCB GetFeedbackCallback() const override;
 

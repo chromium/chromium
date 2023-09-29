@@ -127,10 +127,6 @@ interface VideoCaptureHost {
                         mojo_base.mojom.UnguessableToken session_id)
     => (array<VideoCaptureFormat> formats_in_use);
 
-  // Notifies the host about a frame being dropped.
-  OnFrameDropped(mojo_base.mojom.UnguessableToken device_id,
-                 media.mojom.VideoCaptureFrameDropReason reason);
-
   // Sends a log message to the VideoCaptureHost.
   OnLog(mojo_base.mojom.UnguessableToken device_id, string message);
 };

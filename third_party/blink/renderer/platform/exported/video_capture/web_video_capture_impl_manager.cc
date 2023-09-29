@@ -272,18 +272,6 @@ void WebVideoCaptureImplManager::SuspendDevices(
   }
 }
 
-void WebVideoCaptureImplManager::OnFrameDropped(
-    const media::VideoCaptureSessionId& id,
-    media::VideoCaptureFrameDropReason reason) {
-  DCHECK(render_main_task_runner_->BelongsToCurrentThread());
-  const auto it = base::ranges::find(devices_, id, &DeviceEntry::session_id);
-  if (it == devices_.end())
-    return;
-  Platform::Current()->GetIOTaskRunner()->PostTask(
-      FROM_HERE, base::BindOnce(&VideoCaptureImpl::OnFrameDropped,
-                                it->impl->GetWeakPtr(), reason));
-}
-
 void WebVideoCaptureImplManager::OnLog(const media::VideoCaptureSessionId& id,
                                        const WebString& message) {
   DCHECK(render_main_task_runner_->BelongsToCurrentThread());

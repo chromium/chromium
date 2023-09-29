@@ -74,8 +74,6 @@ class SingleClientVideoCaptureHost final
   void GetDeviceFormatsInUse(const base::UnguessableToken& device_id,
                              const base::UnguessableToken& session_id,
                              GetDeviceFormatsInUseCallback callback) override;
-  void OnFrameDropped(const base::UnguessableToken& device_id,
-                      media::VideoCaptureFrameDropReason reason) override;
   void OnLog(const base::UnguessableToken& device_id,
              const std::string& message) override;
 

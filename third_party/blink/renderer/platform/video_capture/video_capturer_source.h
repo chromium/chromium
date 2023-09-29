@@ -107,9 +107,6 @@ class PLATFORM_EXPORT VideoCapturerSource {
   // use refcounted or weak references in |new_frame_callback|.
   virtual void StopCapture() = 0;
 
-  // Indicates to the source that a frame has been dropped.
-  virtual void OnFrameDropped(media::VideoCaptureFrameDropReason reason) {}
-
   // Hints to the source that if it has an alpha channel, that alpha channel
   // will be ignored and can be discarded.
   virtual void SetCanDiscardAlpha(bool can_discard_alpha) {}

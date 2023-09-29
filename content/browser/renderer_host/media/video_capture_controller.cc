@@ -569,10 +569,9 @@ void VideoCaptureController::OnError(media::VideoCaptureError error) {
 
 void VideoCaptureController::OnFrameDropped(
     media::VideoCaptureFrameDropReason reason) {
-  OnFrameDroppedLogging(reason);
   // This method implements media::VideoFrameReceiver, which implements signals
-  // between the capture process and browser process. Therefore we'll want to
-  // forward the frame drop signal to the renderer process.
+  // between the capture process and browser process. We forward this call to
+  // the renderer process where it eventually reached the MediaStreamVideoTrack.
   for (const auto& client : controller_clients_) {
     if (client->session_closed) {
       continue;
@@ -580,15 +579,6 @@ void VideoCaptureController::OnFrameDropped(
     client->event_handler->OnFrameDroppedEarly(client->controller_id, reason);
   }
 }
-
-void VideoCaptureController::OnFrameDroppedByRenderer(
-    media::VideoCaptureFrameDropReason reason) {
-  OnFrameDroppedLogging(reason);
-}
-
-// TODO(https://crbug.com/1481448): Delete this, it's no longer used.
-void VideoCaptureController::OnFrameDroppedLogging(
-    media::VideoCaptureFrameDropReason reason) {}
 
 void VideoCaptureController::OnNewCropVersion(uint32_t crop_version) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);

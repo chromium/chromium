@@ -995,12 +995,6 @@ TEST_F(VideoCaptureControllerTest, EarlyDroppedFramesAreSignalled) {
   controller_->OnFrameDropped(
       media::VideoCaptureFrameDropReason::kBufferPoolMaxBufferCountExceeded);
   Mock::VerifyAndClearExpectations(client_a_.get());
-
-  // When OnFrameDroppedByRenderer() is called, the signal is NOT forwarded.
-  EXPECT_CALL(*client_a_, OnFrameDroppedEarly(_, _)).Times(0);
-  controller_->OnFrameDroppedByRenderer(
-      media::VideoCaptureFrameDropReason::kBufferPoolMaxBufferCountExceeded);
-  Mock::VerifyAndClearExpectations(client_a_.get());
 }
 
 TEST_F(VideoCaptureControllerTest, DeviceClientWithColorSpace) {
