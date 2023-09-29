@@ -77,8 +77,9 @@ void LogOneDriveOpenErrorUmaAfterFallback(
     ash::cloud_upload::OfficeTaskResult task_result) {
   switch (fallback_reason) {
     case ash::office_fallback::FallbackReason::kOffline:
-      UMA_HISTOGRAM_ENUMERATION(kOneDriveErrorMetricName,
-                                OfficeOneDriveOpenErrors::kOffline);
+      UMA_HISTOGRAM_ENUMERATION(
+          kOneDriveErrorMetricName,
+          ash::cloud_upload::OfficeOneDriveOpenErrors::kOffline);
       break;
     case ash::office_fallback::FallbackReason::kDriveUnavailable:
       NOTREACHED();

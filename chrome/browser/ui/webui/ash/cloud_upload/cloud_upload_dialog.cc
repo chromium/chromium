@@ -79,11 +79,6 @@ constexpr char kDriveOpenSourceVolumeMetric[] =
 constexpr char kOneDriveOpenSourceVolumeMetric[] =
     "FileBrowser.OfficeFiles.Open.SourceVolume.MicrosoftOneDrive";
 
-constexpr char kDriveTransferRequiredMetric[] =
-    "FileBrowser.OfficeFiles.Open.TransferRequired.GoogleDrive";
-constexpr char kOneDriveTransferRequiredMetric[] =
-    "FileBrowser.OfficeFiles.Open.TransferRequired.OneDrive";
-
 constexpr char kFileHandlerSelectionMetricName[] =
     "FileBrowser.OfficeFiles.Setup.FileHandlerSelection";
 
@@ -190,13 +185,12 @@ void OnGoogleDriveGetMetadata(drive::FileError error,
 
 // Logs UMA when the OneDrive task ends with an attempt to open a file.
 void LogOneDriveOpenResultUMA(OfficeTaskResult success_task_result,
-                              fm_tasks::OfficeOneDriveOpenErrors open_result) {
+                              OfficeOneDriveOpenErrors open_result) {
   UMA_HISTOGRAM_ENUMERATION(fm_tasks::kOneDriveErrorMetricName, open_result);
-  UMA_HISTOGRAM_ENUMERATION(
-      kOneDriveTaskResultMetricName,
-      open_result == fm_tasks::OfficeOneDriveOpenErrors::kSuccess
-          ? success_task_result
-          : OfficeTaskResult::kFailedToOpen);
+  UMA_HISTOGRAM_ENUMERATION(kOneDriveTaskResultMetricName,
+                            open_result == OfficeOneDriveOpenErrors::kSuccess
+                                ? success_task_result
+                                : OfficeTaskResult::kFailedToOpen);
 }
 
 // Handle system error notification "Sign in" click.
@@ -267,7 +261,7 @@ void ShowUnableToOpenNotification(Profile* profile,
 // show the generic access error notification.
 void OnGetReauthenticationRequired(
     Profile* profile,
-    base::OnceCallback<void(fm_tasks::OfficeOneDriveOpenErrors)> callback,
+    base::OnceCallback<void(OfficeOneDriveOpenErrors)> callback,
     base::expected<ODFSMetadata, base::File::Error> metadata) {
   bool reauthentication_required = false;
   if (metadata.has_value()) {
@@ -279,8 +273,8 @@ void OnGetReauthenticationRequired(
   ShowUnableToOpenNotification(profile, reauthentication_required);
   std::move(callback).Run(
       reauthentication_required
-          ? fm_tasks::OfficeOneDriveOpenErrors::kGetActionsReauthRequired
-          : fm_tasks::OfficeOneDriveOpenErrors::kGetActionsAccessDenied);
+          ? OfficeOneDriveOpenErrors::kGetActionsReauthRequired
+          : OfficeOneDriveOpenErrors::kGetActionsAccessDenied);
 }
 
 // Open file with |file_path| from ODFS |file_system|. Open in the OneDrive PWA
@@ -289,14 +283,13 @@ void OpenFileFromODFS(
     Profile* profile,
     file_system_provider::ProvidedFileSystemInterface* file_system,
     const base::FilePath& file_path,
-    base::OnceCallback<void(fm_tasks::OfficeOneDriveOpenErrors)> callback) {
+    base::OnceCallback<void(OfficeOneDriveOpenErrors)> callback) {
   GetODFSEntryMetadata(
       file_system, file_path,
       base::BindOnce(
           [](Profile* profile,
              file_system_provider::ProvidedFileSystemInterface* file_system,
-             base::OnceCallback<void(fm_tasks::OfficeOneDriveOpenErrors)>
-                 callback,
+             base::OnceCallback<void(OfficeOneDriveOpenErrors)> callback,
              base::expected<ODFSEntryMetadata, base::File::Error> metadata) {
             if (!metadata.has_value()) {
               switch (metadata.error()) {
@@ -309,8 +302,8 @@ void OpenFileFromODFS(
                   break;
                 default:
                   ShowUnableToOpenNotification(profile);
-                  std::move(callback).Run(fm_tasks::OfficeOneDriveOpenErrors::
-                                              kGetActionsGenericError);
+                  std::move(callback).Run(
+                      OfficeOneDriveOpenErrors::kGetActionsGenericError);
                   break;
               }
               return;
@@ -318,14 +311,14 @@ void OpenFileFromODFS(
             if (!metadata->url) {
               ShowUnableToOpenNotification(profile);
               std::move(callback).Run(
-                  fm_tasks::OfficeOneDriveOpenErrors::kGetActionsNoUrl);
+                  OfficeOneDriveOpenErrors::kGetActionsNoUrl);
               return;
             }
             GURL url(*metadata->url);
             if (!url.is_valid()) {
               ShowUnableToOpenNotification(profile);
               std::move(callback).Run(
-                  fm_tasks::OfficeOneDriveOpenErrors::kGetActionsInvalidUrl);
+                  OfficeOneDriveOpenErrors::kGetActionsInvalidUrl);
               return;
             }
             auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
@@ -333,28 +326,24 @@ void OpenFileFromODFS(
                                     /*event_flags=*/ui::EF_NONE, url,
                                     apps::LaunchSource::kFromFileManager,
                                     /*window_info=*/nullptr);
-            std::move(callback).Run(
-                fm_tasks::OfficeOneDriveOpenErrors::kSuccess);
+            std::move(callback).Run(OfficeOneDriveOpenErrors::kSuccess);
           },
           profile, file_system, std::move(callback)));
 }
 
 // Open office file using the ODFS |url|.
-void OpenODFSUrl(
-    Profile* profile,
-    const storage::FileSystemURL& url,
-    base::OnceCallback<void(fm_tasks::OfficeOneDriveOpenErrors)> callback) {
+void OpenODFSUrl(Profile* profile,
+                 const storage::FileSystemURL& url,
+                 base::OnceCallback<void(OfficeOneDriveOpenErrors)> callback) {
   if (!url.is_valid()) {
     LOG(ERROR) << "Invalid uploaded file URL";
-    std::move(callback).Run(
-        fm_tasks::OfficeOneDriveOpenErrors::kNoFileSystemURL);
+    std::move(callback).Run(OfficeOneDriveOpenErrors::kNoFileSystemURL);
     return;
   }
   ash::file_system_provider::util::FileSystemURLParser parser(url);
   if (!parser.Parse()) {
     LOG(ERROR) << "Path not in FSP";
-    std::move(callback).Run(
-        fm_tasks::OfficeOneDriveOpenErrors::kInvalidFileSystemURL);
+    std::move(callback).Run(OfficeOneDriveOpenErrors::kInvalidFileSystemURL);
     return;
   }
   OpenFileFromODFS(profile, parser.file_system(), parser.file_path(),

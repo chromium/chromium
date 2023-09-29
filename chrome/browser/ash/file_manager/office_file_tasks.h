@@ -55,23 +55,6 @@ enum class OfficeDriveOpenErrors {
   kMaxValue = kSuccess,
 };
 
-// List of UMA enum values for opening Office files from OneDrive, with the
-// MS365 PWA. The enum values must be kept in sync with OfficeOneDriveOpenErrors
-// in tools/metrics/histograms/enums.xml.
-enum class OfficeOneDriveOpenErrors {
-  kSuccess = 0,
-  kOffline = 1,
-  kNoProfile = 2,
-  kNoFileSystemURL = 3,
-  kInvalidFileSystemURL = 4,
-  kGetActionsGenericError = 5,
-  kGetActionsReauthRequired = 6,
-  kGetActionsInvalidUrl = 7,
-  kGetActionsNoUrl = 8,
-  kGetActionsAccessDenied = 9,
-  kMaxValue = kGetActionsAccessDenied,
-};
-
 // UMA metric name that tracks the result of using a MS Office file outside
 // of Drive.
 constexpr char kUseOutsideDriveMetricName[] =

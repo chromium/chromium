@@ -74,6 +74,28 @@ constexpr char kOneDriveMoveErrorMetricName[] =
 constexpr char kOneDriveCopyErrorMetricName[] =
     "FileBrowser.OfficeFiles.Open.IOTaskError.OneDrive.Copy";
 
+constexpr char kDriveTransferRequiredMetric[] =
+    "FileBrowser.OfficeFiles.Open.TransferRequired.GoogleDrive";
+constexpr char kOneDriveTransferRequiredMetric[] =
+    "FileBrowser.OfficeFiles.Open.TransferRequired.OneDrive";
+
+// List of UMA enum values for opening Office files from OneDrive, with the
+// MS365 PWA. The enum values must be kept in sync with OfficeOneDriveOpenErrors
+// in tools/metrics/histograms/enums.xml.
+enum class OfficeOneDriveOpenErrors {
+  kSuccess = 0,
+  kOffline = 1,
+  kNoProfile = 2,
+  kNoFileSystemURL = 3,
+  kInvalidFileSystemURL = 4,
+  kGetActionsGenericError = 5,
+  kGetActionsReauthRequired = 6,
+  kGetActionsInvalidUrl = 7,
+  kGetActionsNoUrl = 8,
+  kGetActionsAccessDenied = 9,
+  kMaxValue = kGetActionsAccessDenied,
+};
+
 // List of UMA enum value for Web Drive Office task results. The enum values
 // must be kept in sync with OfficeTaskResult in
 // tools/metrics/histograms/enums.xml.
