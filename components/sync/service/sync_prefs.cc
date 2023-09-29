@@ -544,9 +544,7 @@ const char* SyncPrefs::GetPrefNameForType(UserSelectableType type) {
     case UserSelectableType::kThemes:
       return prefs::internal::kSyncThemes;
     case UserSelectableType::kHistory:
-      // kSyncTypedUrls used here for historic reasons and pref backward
-      // compatibility.
-      return prefs::internal::kSyncTypedUrls;
+      return prefs::internal::kSyncHistory;
     case UserSelectableType::kExtensions:
       return prefs::internal::kSyncExtensions;
     case UserSelectableType::kApps:

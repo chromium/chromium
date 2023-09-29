@@ -79,14 +79,15 @@ inline constexpr char kSyncApps[] = "sync.apps";
 inline constexpr char kSyncAutofill[] = "sync.autofill";
 inline constexpr char kSyncBookmarks[] = "sync.bookmarks";
 inline constexpr char kSyncExtensions[] = "sync.extensions";
+// Note: The pref for history is called "typed_urls" for historic reasons - not
+// worth the hassle of renaming.
+inline constexpr char kSyncHistory[] = "sync.typed_urls";
 inline constexpr char kSyncPasswords[] = "sync.passwords";
 inline constexpr char kSyncPayments[] = "sync.payments";
 inline constexpr char kSyncPreferences[] = "sync.preferences";
 inline constexpr char kSyncReadingList[] = "sync.reading_list";
 inline constexpr char kSyncTabs[] = "sync.tabs";
 inline constexpr char kSyncThemes[] = "sync.themes";
-// TODO(crbug.com/1365291): Rename kSyncTypedUrls to kSyncHistory.
-inline constexpr char kSyncTypedUrls[] = "sync.typed_urls";
 inline constexpr char kSyncSavedTabGroups[] = "sync.saved_tab_groups";
 
 // Boolean used by enterprise configuration management in order to lock down

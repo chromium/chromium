@@ -158,7 +158,7 @@ TEST(BrowsingDataLifetimePolicyHandler,
   PrefValueMap prefs;
   prefs.SetBoolean(syncer::prefs::internal::kSyncAutofill, true);
   prefs.SetBoolean(syncer::prefs::internal::kSyncPreferences, true);
-  prefs.SetBoolean(syncer::prefs::internal::kSyncTypedUrls, true);
+  prefs.SetBoolean(syncer::prefs::internal::kSyncHistory, true);
   prefs.SetBoolean(syncer::prefs::internal::kSyncTabs, true);
   prefs.SetBoolean(syncer::prefs::internal::kSyncSavedTabGroups, true);
   prefs.SetBoolean(syncer::prefs::internal::kSyncPasswords, true);
@@ -218,7 +218,7 @@ TEST(BrowsingDataLifetimePolicyHandler,
       prefs.GetBoolean(syncer::prefs::internal::kSyncPreferences, &enabled));
   EXPECT_FALSE(enabled);
   ASSERT_TRUE(
-      prefs.GetBoolean(syncer::prefs::internal::kSyncTypedUrls, &enabled));
+      prefs.GetBoolean(syncer::prefs::internal::kSyncHistory, &enabled));
   EXPECT_FALSE(enabled);
   ASSERT_TRUE(prefs.GetBoolean(syncer::prefs::internal::kSyncTabs, &enabled));
   EXPECT_FALSE(enabled);
