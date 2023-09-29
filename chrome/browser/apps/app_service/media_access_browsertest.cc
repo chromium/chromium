@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/app_constants/constants.h"
@@ -421,7 +422,7 @@ IN_PROC_BROWSER_TEST_F(MediaAccessWebAppsTest, RequestAccessingMicrophone) {
   web_app::LaunchWebAppBrowser(browser()->profile(), app_id);
   web_app::NavigateToURLAndWait(browser(), GetUrl1());
 
-  // Request accessing the camera for |app_id| in the new tab.
+  // Request accessing the microphone for |app_id| in the new tab.
   content::WebContents* web_content1 = GetWebContents();
   base::OnceClosure audio_closure1 = StartMediaCapture(
       web_content1, blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE);
@@ -433,7 +434,7 @@ IN_PROC_BROWSER_TEST_F(MediaAccessWebAppsTest, RequestAccessingMicrophone) {
   ASSERT_TRUE(app_browser);
   ASSERT_NE(browser(), app_browser);
 
-  // Request accessing the camera for |app_id| in the new window.
+  // Request accessing the microphone for |app_id| in the new window.
   base::OnceClosure audio_closure2 = StartMediaCapture(
       web_content2, blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE);
   EXPECT_TRUE(AccessingMicrophone(browser()->profile(), app_id));
@@ -442,11 +443,11 @@ IN_PROC_BROWSER_TEST_F(MediaAccessWebAppsTest, RequestAccessingMicrophone) {
   web_app::CloseAndWait(app_browser);
   EXPECT_TRUE(AccessingMicrophone(browser()->profile(), app_id));
 
-  // Stop accessing the camera for |app_id| in the tab.
+  // Stop accessing the microphone for |app_id| in the tab.
   std::move(audio_closure1).Run();
   EXPECT_FALSE(AccessingMicrophone(browser()->profile(), app_id));
 
-  // Stop accessing the camera for |app_id| in the window.
+  // Stop accessing the microphone for |app_id| in the window.
   std::move(audio_closure2).Run();
   EXPECT_FALSE(AccessingMicrophone(browser()->profile(), app_id));
 }
@@ -630,6 +631,72 @@ IN_PROC_BROWSER_TEST_F(MediaAccessWebAppsTest,
   // Stop DEVICE_VIDEO_CAPTURE accessing the camera for |app_id| in the tab.
   std::move(video_closure).Run();
   EXPECT_FALSE(AccessingCamera(browser()->profile(), app_id));
+
+  web_app::CloseAndWait(browser());
+}
+
+class MediaAccessBrowserShortcutsTest : public MediaAccessWebAppsTest {
+ public:
+  std::string CreateShortcut(const GURL& url) const {
+    auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
+    web_app_info->start_url = url;
+    return web_app::test::InstallWebApp(browser()->profile(),
+                                        std::move(web_app_info));
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kCrosWebAppShortcutUiUpdate};
+};
+
+IN_PROC_BROWSER_TEST_F(MediaAccessBrowserShortcutsTest,
+                       RequestAccessingCamera) {
+  std::string shortcut_id = CreateShortcut(GetUrl1());
+
+  web_app::NavigateToURLAndWait(browser(), GetUrl1());
+
+  // Request accessing the camera for |shortcut_id| in the new tab.
+  content::WebContents* web_content = GetWebContents();
+  base::OnceClosure video_closure = StartMediaCapture(
+      web_content, blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE);
+
+  // Verify that the media access is published from the browser instead of the
+  // shortcut.
+  EXPECT_FALSE(AccessingCamera(browser()->profile(), shortcut_id));
+  EXPECT_TRUE(
+      AccessingCamera(browser()->profile(), app_constants::kChromeAppId));
+
+  // Stop accessing the camera for |shortcut_id| in the tab.
+  std::move(video_closure).Run();
+  EXPECT_FALSE(AccessingCamera(browser()->profile(), shortcut_id));
+  EXPECT_FALSE(
+      AccessingCamera(browser()->profile(), app_constants::kChromeAppId));
+
+  web_app::CloseAndWait(browser());
+}
+
+IN_PROC_BROWSER_TEST_F(MediaAccessBrowserShortcutsTest,
+                       RequestAccessingMicrophone) {
+  std::string shortcut_id = CreateShortcut(GetUrl1());
+
+  web_app::NavigateToURLAndWait(browser(), GetUrl1());
+
+  // Request accessing the microphone for |shortcut_id| in the new tab.
+  content::WebContents* web_content = GetWebContents();
+  base::OnceClosure video_closure = StartMediaCapture(
+      web_content, blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE);
+
+  // Verify that the media access is published from the browser instead of the
+  // shortcut.
+  EXPECT_FALSE(AccessingMicrophone(browser()->profile(), shortcut_id));
+  EXPECT_TRUE(
+      AccessingMicrophone(browser()->profile(), app_constants::kChromeAppId));
+
+  // Stop accessing the microphone for |shortcut_id| in the tab.
+  std::move(video_closure).Run();
+  EXPECT_FALSE(AccessingMicrophone(browser()->profile(), shortcut_id));
+  EXPECT_FALSE(
+      AccessingMicrophone(browser()->profile(), app_constants::kChromeAppId));
 
   web_app::CloseAndWait(browser());
 }
