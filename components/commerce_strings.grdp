@@ -76,10 +76,10 @@
     </message>
 
     <!-- Email consent dialog for price tracking -->
-    <message name="IDS_PRICE_TRACKING_EMAIL_CONSENT_BODY" desc="The main body text that is shown in the price drop email consent dialog offering to send an email notification when the product price drops on any site." translateable="false">
+    <message name="IDS_PRICE_TRACKING_EMAIL_CONSENT_BODY" desc="The main body text that is shown in the price drop email consent dialog offering to send an email notification when the product price drops on any site.">
       Get emails sent to <ph name="EMAIL">$1<ex>example@example.com</ex></ph> when the price of items you track drops on any site.
     </message>
-    <message name="IDS_PRICE_TRACKING_EMAIL_CONSENT_TITLE" desc="The title of the dialog that shows after a user has tracked a product asking for consent to send price drop email notifications." translateable="false">
+    <message name="IDS_PRICE_TRACKING_EMAIL_CONSENT_TITLE" desc="The title of the dialog that shows after a user has tracked a product asking for consent to send price drop email notifications.">
       Want emails when prices drop?
     </message>
     <message name="IDS_PRICE_TRACKING_EMAIL_CONSENT_LEARN_MORE_LINK_TEXT" desc="The text that will link to a help article that explains price tracking shown in the price drop email consent dialog.">
