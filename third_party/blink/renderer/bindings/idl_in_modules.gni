@@ -1061,6 +1061,7 @@ static_idl_files_in_modules = [
   "//third_party/blink/renderer/modules/webgpu/gpu_pipeline_base.idl",
   "//third_party/blink/renderer/modules/webgpu/gpu_pipeline_descriptor_base.idl",
   "//third_party/blink/renderer/modules/webgpu/gpu_pipeline_error.idl",
+  "//third_party/blink/renderer/modules/credentialmanagement/identity_credential_error.idl",
   "//third_party/blink/renderer/modules/webgpu/gpu_pipeline_layout.idl",
   "//third_party/blink/renderer/modules/webgpu/gpu_pipeline_layout_descriptor.idl",
   "//third_party/blink/renderer/modules/webgpu/gpu_primitive_state.idl",

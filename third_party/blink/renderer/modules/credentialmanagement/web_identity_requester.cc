@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/dom/scoped_abort_state.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/credential_manager_type_converters.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/identity_credential.h"
+#include "third_party/blink/renderer/modules/credentialmanagement/identity_credential_error.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
@@ -21,6 +22,7 @@ void WebIdentityRequester::OnRequestToken(
     mojom::blink::RequestTokenStatus status,
     const absl::optional<KURL>& selected_idp_config_url,
     const WTF::String& token,
+    mojom::blink::TokenErrorPtr error,
     bool is_account_auto_selected) {
   for (const auto& provider_resolver_pair : provider_to_resolver_) {
     KURL provider = provider_resolver_pair.key;
@@ -40,15 +42,25 @@ void WebIdentityRequester::OnRequestToken(
         continue;
       }
       case mojom::blink::RequestTokenStatus::kError: {
-        resolver->Reject(MakeGarbageCollected<DOMException>(
-            DOMExceptionCode::kNetworkError, "Error retrieving a token."));
+        if (!RuntimeEnabledFeatures::FedCmErrorEnabled() || !error) {
+          resolver->Reject(MakeGarbageCollected<DOMException>(
+              DOMExceptionCode::kNetworkError, "Error retrieving a token."));
+          continue;
+        }
+        resolver->Reject(MakeGarbageCollected<IdentityCredentialError>(
+            "Error retrieving a token.", error->code, error->url));
         continue;
       }
       case mojom::blink::RequestTokenStatus::kSuccess: {
         DCHECK(selected_idp_config_url);
         if (provider != selected_idp_config_url) {
-          resolver->Reject(MakeGarbageCollected<DOMException>(
-              DOMExceptionCode::kNetworkError, "Error retrieving a token."));
+          if (!RuntimeEnabledFeatures::FedCmErrorEnabled() || !error) {
+            resolver->Reject(MakeGarbageCollected<DOMException>(
+                DOMExceptionCode::kNetworkError, "Error retrieving a token."));
+            continue;
+          }
+          resolver->Reject(MakeGarbageCollected<IdentityCredentialError>(
+              "Error retrieving a token.", error->code, error->url));
           continue;
         }
         IdentityCredential* credential =
@@ -199,7 +211,8 @@ void WebIdentityRequester::AbortRequest(ScriptState* script_state) {
 
   if (!is_requesting_token_) {
     OnRequestToken(mojom::blink::RequestTokenStatus::kErrorCanceled,
-                   absl::nullopt, "", /*is_account_auto_selected=*/false);
+                   absl::nullopt, "", nullptr,
+                   /*is_account_auto_selected=*/false);
     return;
   }
 

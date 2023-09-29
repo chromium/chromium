@@ -249,6 +249,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   void OnDismissErrorDialog(
       blink::mojom::FederatedAuthRequestResult result,
       absl::optional<content::FedCmRequestIdTokenStatus> token_status,
+      absl::optional<TokenError> token_error,
       IdentityRequestDialogController::DismissReason dismiss_reason);
   void OnDialogDismissed(
       IdentityRequestDialogController::DismissReason dismiss_reason);
@@ -268,6 +269,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   void CompleteRequestWithError(
       blink::mojom::FederatedAuthRequestResult result,
       absl::optional<content::FedCmRequestIdTokenStatus> token_status,
+      absl::optional<TokenError> token_error,
       bool should_delay_callback);
 
   // Completes request. Displays a dialog if there is an error and the error is
@@ -275,6 +277,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   void CompleteRequest(
       blink::mojom::FederatedAuthRequestResult result,
       absl::optional<content::FedCmRequestIdTokenStatus> token_status,
+      absl::optional<TokenError> token_error,
       const absl::optional<GURL>& selected_idp_config_url,
       const std::string& token,
       bool should_delay_callback);

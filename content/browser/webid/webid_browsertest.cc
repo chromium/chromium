@@ -922,4 +922,42 @@ IN_PROC_BROWSER_TEST_F(WebIdAuthzBrowserTest, Authz_openPopUpWindow) {
   EXPECT_EQ(token, EvalJs(shell(), "result"));
 }
 
+class WebIdErrorBrowserTest : public WebIdBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    std::vector<base::test::FeatureRef> features;
+    features.push_back(features::kFedCmError);
+    scoped_feature_list_.InitWithFeatures(features, {});
+
+    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
+  }
+};
+
+// Verify that an IdentityCredentialError exception is returned.
+IN_PROC_BROWSER_TEST_F(WebIdErrorBrowserTest, IdentityCredentialError) {
+  IdpTestServer::ConfigDetails config_details = BuildValidConfigDetails();
+
+  // Points the id assertion endpoint to a servlet.
+  config_details.id_assertion_endpoint_url = "/error/id_assertion_endpoint.php";
+
+  // Add a servlet to serve a response for the id assertion endpoint.
+  config_details.servlets["/error/id_assertion_endpoint.php"] =
+      base::BindRepeating([](const HttpRequest& request)
+                              -> std::unique_ptr<HttpResponse> {
+        auto response = std::make_unique<BasicHttpResponse>();
+        response->set_code(net::HTTP_OK);
+        response->set_content_type("text/json");
+        response->set_content(
+            R"({"error": {"code": "invalid_request", "url": "https://idp.com/error"}})");
+        return response;
+      });
+
+  idp_server()->SetConfigResponseDetails(config_details);
+
+  std::string expected_error =
+      "a JavaScript error: \"IdentityCredentialError: Error "
+      "retrieving a token.\"\n";
+  EXPECT_EQ(expected_error, EvalJs(shell(), GetBasicRequestString()).error);
+}
+
 }  // namespace content

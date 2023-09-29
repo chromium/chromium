@@ -148,6 +148,15 @@ struct IdentityProviderGetParameters {
   RpContext context;
 };
 
+// The error which occurred during the retrieval of a token.
+struct TokenError {
+  // Type of error which resulted in an IdentityCredential not being created.
+  string? code;
+
+  // String URL where the user can learn more information about the error.
+  string? url;
+};
+
 // Create a federated sign-in request using the specified provider.
 // This interface is called from a renderer process and implemented in the
 // browser process.
@@ -160,12 +169,14 @@ interface FederatedAuthRequest {
   //   A null URL is returned if the token request failed or did not occur due
   //   to an error earlier in the flow.
   // - Raw content of the token.
+  // - The error which occurred during the retrieval of a token.
   // - Whether the account was automatically selected.
   RequestToken(array<IdentityProviderGetParameters> idp_get_params,
       CredentialMediationRequirement requirement) =>
       (RequestTokenStatus status,
       url.mojom.Url? selected_identity_provider_config_url,
       string? token,
+      TokenError? error,
       bool is_account_auto_selected);
 
   // Requests user info to be generated, given an IDP config.

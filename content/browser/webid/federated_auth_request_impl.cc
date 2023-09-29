@@ -63,6 +63,7 @@ using SignInMode = content::IdentityRequestAccount::SignInMode;
 using CompleteRequestWithErrorCallback =
     base::OnceCallback<void(blink::mojom::FederatedAuthRequestResult,
                             absl::optional<content::FedCmRequestIdTokenStatus>,
+                            absl::optional<TokenError> token_error,
                             bool)>;
 
 namespace content {
@@ -395,6 +396,7 @@ absl::optional<std::string> GetIframeOriginForDisplay(
     if (iframe_origin.opaque()) {
       std::move(callback).Run(FederatedAuthRequestResult::kError,
                               /*token_status=*/absl::nullopt,
+                              /*token_error=*/absl::nullopt,
                               /*should_delay_callback=*/false);
     }
   }
@@ -476,6 +478,7 @@ FederatedAuthRequestImpl::~FederatedAuthRequestImpl() {
     DCHECK(!logout_callback_);
     CompleteRequestWithError(FederatedAuthRequestResult::kError,
                              TokenStatus::kUnhandledRequest,
+                             /*token_error=*/absl::nullopt,
                              /*should_delay_callback=*/false);
   }
   // Calls |FederatedAuthUserInfoRequest|'s destructor to complete the user
@@ -547,7 +550,7 @@ FederatedAuthRequestImpl& FederatedAuthRequestImpl::CreateForTesting(
 void FederatedAuthRequestImpl::CompleteWalletRequest(std::string response) {
   if (!wallet_provider_) {
     std::move(wallet_request_callback_)
-        .Run(RequestTokenStatus::kError, absl::nullopt, "",
+        .Run(RequestTokenStatus::kError, absl::nullopt, "", /*error=*/nullptr,
              /*is_account_auto_selected=*/false);
     return;
   }
@@ -555,10 +558,11 @@ void FederatedAuthRequestImpl::CompleteWalletRequest(std::string response) {
   if (!response.empty()) {
     std::move(wallet_request_callback_)
         .Run(RequestTokenStatus::kSuccess, absl::nullopt, response,
+             /*error=*/nullptr,
              /*is_account_auto_selected=*/false);
   } else {
     std::move(wallet_request_callback_)
-        .Run(RequestTokenStatus::kError, absl::nullopt, "",
+        .Run(RequestTokenStatus::kError, absl::nullopt, "", /*error=*/nullptr,
              /*is_account_auto_selected=*/false);
   }
 }
@@ -633,6 +637,7 @@ void FederatedAuthRequestImpl::RequestToken(
                                   idp_get_params_ptrs[0]->providers.size() > 1u;
   if (is_multi_idp_input && !IsFedCmMultipleIdentityProvidersEnabled()) {
     std::move(callback).Run(RequestTokenStatus::kError, absl::nullopt, "",
+                            /*error=*/nullptr,
                             /*is_account_auto_selected=*/false);
     return;
   }
@@ -643,6 +648,7 @@ void FederatedAuthRequestImpl::RequestToken(
       // TODO(https://crbug.com/1416939): Support calling the MDocs API with the
       // Multi IdP API support.
       std::move(callback).Run(RequestTokenStatus::kError, absl::nullopt, "",
+                              /*error=*/nullptr,
                               /*is_account_auto_selected=*/false);
       return;
     }
@@ -652,7 +658,7 @@ void FederatedAuthRequestImpl::RequestToken(
       // TODO(https://crbug.com/1416939): Reconcile with federated identity
       // requests.
       std::move(callback).Run(RequestTokenStatus::kErrorTooManyRequests,
-                              absl::nullopt, "",
+                              absl::nullopt, "", /*error=*/nullptr,
                               /*is_account_auto_selected=*/false);
       return;
     }
@@ -665,7 +671,7 @@ void FederatedAuthRequestImpl::RequestToken(
     }
     if (!wallet_provider_) {
       std::move(wallet_request_callback_)
-          .Run(RequestTokenStatus::kError, absl::nullopt, "",
+          .Run(RequestTokenStatus::kError, absl::nullopt, "", /*error=*/nullptr,
                /*is_account_auto_selected=*/false);
       return;
     }
@@ -712,7 +718,7 @@ void FederatedAuthRequestImpl::RequestToken(
         blink::mojom::FederatedAuthRequestResult::kErrorTooManyRequests);
 
     std::move(callback).Run(RequestTokenStatus::kErrorTooManyRequests,
-                            absl::nullopt, "",
+                            absl::nullopt, "", /*error=*/nullptr,
                             /*is_account_auto_selected=*/false);
     return;
   }
@@ -767,6 +773,7 @@ void FederatedAuthRequestImpl::RequestToken(
 
   if (error_token_status) {
     CompleteRequestWithError(request_result, *error_token_status,
+                             /*token_error=*/absl::nullopt,
                              /*should_delay_callback=*/true);
     return;
   }
@@ -788,6 +795,7 @@ void FederatedAuthRequestImpl::RequestToken(
       if (!is_unique_idp) {
         CompleteRequestWithError(FederatedAuthRequestResult::kError,
                                  /*token_status=*/absl::nullopt,
+                                 /*token_error=*/absl::nullopt,
                                  /*should_delay_callback=*/false);
         return;
       }
@@ -797,6 +805,7 @@ void FederatedAuthRequestImpl::RequestToken(
       if (!network::IsOriginPotentiallyTrustworthy(idp_origin)) {
         CompleteRequestWithError(FederatedAuthRequestResult::kError,
                                  TokenStatus::kIdpNotPotentiallyTrustworthy,
+                                 /*token_error=*/absl::nullopt,
                                  /*should_delay_callback=*/false);
         return;
       }
@@ -814,6 +823,7 @@ void FederatedAuthRequestImpl::RequestToken(
               FedCmIdpSigninStatusMode::ENABLED) {
         CompleteRequestWithError(FederatedAuthRequestResult::kError,
                                  TokenStatus::kNotSignedInWithIdp,
+                                 /*token_error=*/absl::nullopt,
                                  /*should_delay_callback=*/true);
         return;
       }
@@ -823,6 +833,7 @@ void FederatedAuthRequestImpl::RequestToken(
         CompleteRequestWithError(
             FederatedAuthRequestResult::kErrorSilentMediationFailure,
             TokenStatus::kSilentMediationFailure,
+            /*token_error=*/absl::nullopt,
             /*should_delay_callback=*/false);
         return;
       }
@@ -891,6 +902,7 @@ void FederatedAuthRequestImpl::CancelTokenRequest() {
 
   CompleteRequestWithError(FederatedAuthRequestResult::kErrorCanceled,
                            TokenStatus::kAborted,
+                           /*token_error=*/absl::nullopt,
                            /*should_delay_callback=*/false);
 }
 
@@ -1203,7 +1215,9 @@ void FederatedAuthRequestImpl::OnFetchDataForIdpFailed(
 
   if (fetch_data_.pending_idps.empty() &&
       !fetch_data_.did_succeed_for_at_least_one_idp) {
-    CompleteRequestWithError(result, token_status, should_delay_callback);
+    CompleteRequestWithError(result, token_status,
+                             /*token_error=*/absl::nullopt,
+                             should_delay_callback);
     return;
   }
 
@@ -1249,6 +1263,7 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
       CompleteRequestWithError(
           FederatedAuthRequestResult::kErrorRpPageNotVisible,
           TokenStatus::kRpPageNotVisible,
+          /*token_error=*/absl::nullopt,
           /*should_delay_callback=*/true);
       return;
     }
@@ -1335,6 +1350,7 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
       CompleteRequestWithError(
           FederatedAuthRequestResult::kErrorSilentMediationFailure,
           TokenStatus::kSilentMediationFailure,
+          /*token_error=*/absl::nullopt,
           /*should_delay_callback=*/false);
       return;
     }
@@ -1430,6 +1446,7 @@ void FederatedAuthRequestImpl::HandleAccountsFetchFailure(
   if (!IsFrameVisible(render_frame_host().GetMainFrame())) {
     CompleteRequestWithError(FederatedAuthRequestResult::kErrorRpPageNotVisible,
                              TokenStatus::kRpPageNotVisible,
+                             /*token_error=*/absl::nullopt,
                              /*should_delay_callback=*/true);
     return;
   }
@@ -1445,6 +1462,7 @@ void FederatedAuthRequestImpl::HandleAccountsFetchFailure(
     CompleteRequestWithError(
         FederatedAuthRequestResult::kErrorSilentMediationFailure,
         TokenStatus::kSilentMediationFailure,
+        /*token_error=*/absl::nullopt,
         /*should_delay_callback=*/false);
     return;
   }
@@ -1672,6 +1690,7 @@ void FederatedAuthRequestImpl::OnAccountSelected(const GURL& idp_config_url,
     CompleteRequestWithError(
         FederatedAuthRequestResult::kErrorDisabledInSettings,
         TokenStatus::kDisabledInSettings,
+        /*token_error=*/absl::nullopt,
         /*should_delay_callback=*/true);
     return;
   }
@@ -1716,16 +1735,17 @@ void FederatedAuthRequestImpl::OnDismissFailureDialog(
     blink::mojom::FederatedAuthRequestResult result,
     absl::optional<TokenStatus> token_status,
     IdentityRequestDialogController::DismissReason dismiss_reason) {
-  CompleteRequestWithError(result, token_status,
+  CompleteRequestWithError(result, token_status, /*token_error=*/absl::nullopt,
                            /*should_delay_callback=*/false);
 }
 
 void FederatedAuthRequestImpl::OnDismissErrorDialog(
     blink::mojom::FederatedAuthRequestResult result,
     absl::optional<TokenStatus> token_status,
+    absl::optional<TokenError> token_error,
     IdentityRequestDialogController::DismissReason dismiss_reason) {
   // TODO(crbug.com/1478837): Record metrics for error UI
-  CompleteRequestWithError(result, token_status,
+  CompleteRequestWithError(result, token_status, token_error,
                            /*should_delay_callback=*/false);
 }
 
@@ -1763,6 +1783,7 @@ void FederatedAuthRequestImpl::OnDialogDismissed(
                                : FederatedAuthRequestResult::kError,
                            should_embargo ? TokenStatus::kShouldEmbargo
                                           : TokenStatus::kNotSelectAccount,
+                           /*token_error=*/absl::nullopt,
                            /*should_delay_callback=*/false);
 }
 
@@ -1811,6 +1832,7 @@ void FederatedAuthRequestImpl::OnContinueOnResponseReceived(
     CompleteRequestWithError(
         FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidResponse,
         TokenStatus::kIdTokenInvalidResponse,
+        /*token_error=*/absl::nullopt,
         /*should_delay_callback=*/true);
     return;
   }
@@ -1829,21 +1851,21 @@ void FederatedAuthRequestImpl::ShowErrorDialog(
       GetEmbeddingOrigin(), origin(),
       base::BindOnce(&FederatedAuthRequestImpl::CompleteRequestWithError,
                      weak_ptr_factory_.GetWeakPtr()));
+  absl::optional<TokenError> token_error =
+      error ? absl::make_optional<TokenError>(error->code, error->url)
+            : absl::nullopt;
 
   // TODO(crbug.com/1485710): Refactor IdentityCredentialTokenError
   request_dialog_controller_->ShowErrorDialog(
       GetTopFrameOriginForDisplay(GetEmbeddingOrigin()), iframe_for_display,
       FormatOriginForDisplay(url::Origin::Create(idp_config_url)),
       idp_infos_[idp_config_url]->rp_context,
-      idp_infos_[idp_config_url]->metadata,
-      error
-          ? absl::make_optional<TokenError>(TokenError{error->code, error->url})
-          : absl::nullopt,
+      idp_infos_[idp_config_url]->metadata, token_error,
       base::BindOnce(
           &FederatedAuthRequestImpl::OnDismissErrorDialog,
           weak_ptr_factory_.GetWeakPtr(),
           FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidResponse,
-          TokenStatus::kIdTokenInvalidResponse),
+          TokenStatus::kIdTokenInvalidResponse, token_error),
       error && !error->url.is_empty()
           ? base::BindOnce(&FederatedAuthRequestImpl::ShowModalDialog,
                            weak_ptr_factory_.GetWeakPtr(), error->url)
@@ -1896,6 +1918,7 @@ void FederatedAuthRequestImpl::CompleteTokenRequest(
       CompleteRequestWithError(
           FederatedAuthRequestResult::kErrorFetchingIdTokenHttpNotFound,
           TokenStatus::kIdTokenHttpNotFound,
+          /*token_error=*/absl::nullopt,
           /*should_delay_callback=*/true);
       return;
     }
@@ -1904,6 +1927,7 @@ void FederatedAuthRequestImpl::CompleteTokenRequest(
       CompleteRequestWithError(
           FederatedAuthRequestResult::kErrorFetchingIdTokenNoResponse,
           TokenStatus::kIdTokenNoResponse,
+          /*token_error=*/absl::nullopt,
           /*should_delay_callback=*/true);
       return;
     }
@@ -1912,6 +1936,7 @@ void FederatedAuthRequestImpl::CompleteTokenRequest(
       CompleteRequestWithError(
           FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidResponse,
           TokenStatus::kIdTokenInvalidResponse,
+          /*token_error=*/absl::nullopt,
           /*should_delay_callback=*/true);
       return;
     }
@@ -1920,6 +1945,7 @@ void FederatedAuthRequestImpl::CompleteTokenRequest(
       CompleteRequestWithError(
           FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidContentType,
           TokenStatus::kIdTokenInvalidContentType,
+          /*token_error=*/absl::nullopt,
           /*should_delay_callback=*/true);
       return;
     }
@@ -1979,7 +2005,8 @@ void FederatedAuthRequestImpl::CompleteTokenRequest(
       }
 
       CompleteRequest(FederatedAuthRequestResult::kSuccess,
-                      TokenStatus::kSuccess, idp->config_url, token,
+                      TokenStatus::kSuccess, /*token_error=*/absl::nullopt,
+                      idp->config_url, token,
                       /*should_delay_callback=*/false);
       return;
     }
@@ -2023,8 +2050,9 @@ void FederatedAuthRequestImpl::OnLogoutCompleted() {
 void FederatedAuthRequestImpl::CompleteRequestWithError(
     blink::mojom::FederatedAuthRequestResult result,
     absl::optional<TokenStatus> token_status,
+    absl::optional<TokenError> token_error,
     bool should_delay_callback) {
-  CompleteRequest(result, token_status,
+  CompleteRequest(result, token_status, token_error,
                   /*selected_idp_config_url=*/absl::nullopt,
                   /*token=*/"", should_delay_callback);
 }
@@ -2032,6 +2060,7 @@ void FederatedAuthRequestImpl::CompleteRequestWithError(
 void FederatedAuthRequestImpl::CompleteRequest(
     blink::mojom::FederatedAuthRequestResult result,
     absl::optional<TokenStatus> token_status,
+    absl::optional<TokenError> token_error,
     const absl::optional<GURL>& selected_idp_config_url,
     const std::string& id_token,
     bool should_delay_callback) {
@@ -2061,7 +2090,8 @@ void FederatedAuthRequestImpl::CompleteRequest(
     request_dialog_controller_->ShowIdpSigninFailureDialog(base::BindOnce(
         &FederatedAuthRequestImpl::CompleteRequest,
         weak_ptr_factory_.GetWeakPtr(), result, std::move(token_status),
-        selected_idp_config_url, id_token, should_delay_callback));
+        std::move(token_error), selected_idp_config_url, id_token,
+        should_delay_callback));
     return;
   }
 
@@ -2093,10 +2123,16 @@ void FederatedAuthRequestImpl::CompleteRequest(
     GetPageData(&render_frame_host())->SetPendingWebIdentityRequest(nullptr);
     errors_logged_to_console_ = false;
 
+    blink::mojom::TokenErrorPtr error;
+    if (token_error) {
+      error = blink::mojom::TokenError::New();
+      error->code = token_error->code;
+      error->url = token_error->url.spec();
+    }
     RequestTokenStatus status =
         FederatedAuthRequestResultToRequestTokenStatus(result);
     std::move(auth_request_token_callback_)
-        .Run(status, selected_idp_config_url, id_token,
+        .Run(status, selected_idp_config_url, id_token, std::move(error),
              is_account_auto_selected);
     auth_request_token_callback_.Reset();
   } else {
@@ -2302,7 +2338,8 @@ bool FederatedAuthRequestImpl::NotifyResolve(const std::string& token) {
   // TODO(crbug.com/1429083): handle the multi-idp case when there are
   // more than one config_urls hanging.
   CompleteRequest(FederatedAuthRequestResult::kSuccess, TokenStatus::kSuccess,
-                  absl::nullopt, token,
+                  /*token_error=*/absl::nullopt,
+                  /*selected_idp_config_url=*/absl::nullopt, token,
                   /*should_delay_callback=*/false);
   // TODO(crbug.com/1429083): handle the corner cases where CompleteRequest
   // can't actually fulfill the request.
@@ -2313,7 +2350,9 @@ void FederatedAuthRequestImpl::OnRejectRequest() {
   if (auth_request_token_callback_) {
     DCHECK(!logout_callback_);
     DCHECK(errors_logged_to_console_);
-    CompleteRequestWithError(FederatedAuthRequestResult::kError, absl::nullopt,
+    CompleteRequestWithError(FederatedAuthRequestResult::kError,
+                             /*token_status=*/absl::nullopt,
+                             /*token_error=*/absl::nullopt,
                              /*should_delay_callback=*/false);
   }
 }

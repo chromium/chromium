@@ -168,7 +168,12 @@ const struct DOMExceptionEntry {
     // Media Capture and Streams API
     // https://w3c.github.io/mediacapture-main/#overconstrainederror-interface
     {DOMExceptionCode::kOverconstrainedError, "OverconstrainedError",
-     "The desired set of constraints/capabilities cannot be met."}
+     "The desired set of constraints/capabilities cannot be met."},
+
+    // FedCM API
+    // https://fedidcg.github.io/FedCM/#browser-api-identity-credential-error-interface
+    {DOMExceptionCode::kIdentityCredentialError, "IdentityCredentialError",
+     "An attempt to retrieve an IdentityCredential has failed."}
 
     // Extra comment to keep the end of the initializer list on its own line.
 };

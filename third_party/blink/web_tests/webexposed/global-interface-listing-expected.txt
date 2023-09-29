@@ -5238,6 +5238,11 @@ interface IdentityCredential : Credential
     getter isAccountAutoSelected
     getter token
     method constructor
+interface IdentityCredentialError : DOMException
+    attribute @@toStringTag
+    getter code
+    getter url
+    method constructor
 interface IdentityProvider
     static method close
     static method getUserInfo

@@ -88,7 +88,10 @@ void FakeIdentityRequestDialogController::ShowErrorDialog(
     const IdentityProviderMetadata& idp_metadata,
     const absl::optional<TokenError>& error,
     DismissCallback dismiss_callback,
-    MoreDetailsCallback more_details_callback) {}
+    MoreDetailsCallback more_details_callback) {
+  DCHECK(dismiss_callback);
+  std::move(dismiss_callback).Run(DismissReason::kOther);
+}
 
 std::string FakeIdentityRequestDialogController::GetTitle() const {
   return title_;

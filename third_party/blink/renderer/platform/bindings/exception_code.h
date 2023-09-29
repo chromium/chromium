@@ -124,6 +124,10 @@ enum class DOMExceptionCode : ExceptionCode {
   // https://w3c.github.io/mediacapture-main/#overconstrainederror-interface
   kOverconstrainedError,
 
+  // FedCM API
+  // https://fedidcg.github.io/FedCM/#browser-api-identity-credential-error-interface
+  kIdentityCredentialError,
+
   kNumOfCodes,
 };
 
