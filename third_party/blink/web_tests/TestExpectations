@@ -6760,3 +6760,4 @@ crbug.com/1486131 [ Linux ] external/wpt/html/browsers/history/the-history-inter
 
 # Gardener 2023-09-29
 crbug.com/1481694 [ Win11 ] accessibility/selection-change-notification-on-selection-removed.html [ Failure ]
+crbug.com/1486616 [ Linux ] fast/sub-pixel/sub-pixel-composited-layers.html [ Failure Pass ]
