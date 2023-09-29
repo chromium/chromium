@@ -702,12 +702,10 @@ void ChromeUserManagerImpl::RetrieveTrustedDevicePolicies() {
   bool changed = UpdateAndCleanUpDeviceLocalAccounts(
       policy::GetDeviceLocalAccounts(cros_settings_));
 
-  // If ephemeral users are enabled and we are on the login screen, take this
-  // opportunity to clean up by removing all regular users except the owner.
+  // Remove ephemeral regular users (except the owner) when on the login screen.
   if (!IsUserLoggedIn()) {
     ScopedListPrefUpdate prefs_users_update(GetLocalState(),
                                             user_manager::kRegularUsersPref);
-    prefs_users_update->clear();
     // Take snapshot because DeleteUser called in the loop will update it.
     std::vector<user_manager::User*> users = users_;
     for (user_manager::User* user : users) {
@@ -720,9 +718,9 @@ void ChromeUserManagerImpl::RetrieveTrustedDevicePolicies() {
         user_manager::UserManager::Get()->NotifyUserRemoved(
             account_id,
             user_manager::UserRemovalReason::DEVICE_EPHEMERAL_USERS_ENABLED);
+
+        prefs_users_update->EraseValue(base::Value(account_id.GetUserEmail()));
         changed = true;
-      } else if (user->GetType() != user_manager::USER_TYPE_PUBLIC_ACCOUNT) {
-        prefs_users_update->Append(account_id.GetUserEmail());
       }
     }
   }
