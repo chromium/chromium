@@ -24,6 +24,30 @@ New Procedures and Functions
 
     The command
 
+      GLuint glTexImage2DSharedImageCHROMIUM (GLunit texture, const GLbyte *mailbox)
+
+    takes two arguments:
+
+    texture - A client-side texture.
+    mailbox - the mailbox referring to the SharedImage to assign to the
+      first level of the texture.
+
+    This function maps `texture` to the texture object of the SharedImage
+    represented by the mailbox and ensures that if `texture` is bound to a
+    target, the service-side texture gets bound to that target.
+
+    On success, this function extends the lifetime of the SharedImage
+    referenced by mailbox by taking a ref. The texture object is deleted and
+    the ref released once the calling context deletes the texture name
+    associated with the texture object, and detaches it from all framebuffer
+    objects as well as texture unit bindings.
+
+    INVALID_OPERATION is generated if <mailbox> is not associated with a
+    texture object. In this case `texture` becomes unbound. It is
+    treated in the same way as a new texture name returned by GenTextures.
+
+    The command
+
       GLuint glCreateAndTexStorage2DSharedImageCHROMIUM (const GLbyte *mailbox)
 
     takes one argument:
@@ -113,3 +137,4 @@ Revision History
     2018-10-31   Added Begin/End calls.
     2020-06-21   Added mode SHARED_IMAGE_ACCESS_MODE_OVERLAY_CHROMIUM.
     2023-01-18   Removed mode SHARED_IMAGE_ACCESS_MODE_OVERLAY_CHROMIUM.
+    2023-09-28   Added glTexImage2DSharedImageCHROMIUM().

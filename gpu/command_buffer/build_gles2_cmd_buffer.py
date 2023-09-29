@@ -4022,6 +4022,14 @@ _FUNCTION_INFO = {
     'extension': 'KHRParallelShaderCompile',
     'extension_flag': 'khr_parallel_shader_compile',
   },
+  'TexImage2DSharedImageCHROMIUM': {
+    'decoder_func': 'DoTexImage2DSharedImageCHROMIUM',
+    'type': 'PUT',
+    'extension': "CHROMIUM_shared_image",
+    'count': 16,  # GL_MAILBOX_SIZE_CHROMIUM
+    'unit_test': False,
+    'trace_level': 2,
+  },
   'CreateAndTexStorage2DSharedImageCHROMIUM': {
     'type': 'NoCommand',
     'extension': "CHROMIUM_shared_image",

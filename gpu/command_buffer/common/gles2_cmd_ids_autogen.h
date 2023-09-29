@@ -324,39 +324,40 @@
   OP(SetReadbackBufferShadowAllocationINTERNAL)                /* 565 */ \
   OP(FramebufferTextureMultiviewOVR)                           /* 566 */ \
   OP(MaxShaderCompilerThreadsKHR)                              /* 567 */ \
-  OP(CreateAndTexStorage2DSharedImageINTERNALImmediate)        /* 568 */ \
-  OP(BeginSharedImageAccessDirectCHROMIUM)                     /* 569 */ \
-  OP(EndSharedImageAccessDirectCHROMIUM)                       /* 570 */ \
-  OP(ConvertRGBAToYUVAMailboxesINTERNALImmediate)              /* 571 */ \
-  OP(ConvertYUVAMailboxesToRGBINTERNALImmediate)               /* 572 */ \
-  OP(CopySharedImageINTERNALImmediate)                         /* 573 */ \
-  OP(CopySharedImageToTextureINTERNALImmediate)                /* 574 */ \
-  OP(ReadbackARGBImagePixelsINTERNAL)                          /* 575 */ \
-  OP(WritePixelsYUVINTERNAL)                                   /* 576 */ \
-  OP(EnableiOES)                                               /* 577 */ \
-  OP(DisableiOES)                                              /* 578 */ \
-  OP(BlendEquationiOES)                                        /* 579 */ \
-  OP(BlendEquationSeparateiOES)                                /* 580 */ \
-  OP(BlendFunciOES)                                            /* 581 */ \
-  OP(BlendFuncSeparateiOES)                                    /* 582 */ \
-  OP(ColorMaskiOES)                                            /* 583 */ \
-  OP(IsEnablediOES)                                            /* 584 */ \
-  OP(ProvokingVertexANGLE)                                     /* 585 */ \
-  OP(FramebufferMemorylessPixelLocalStorageANGLE)              /* 586 */ \
-  OP(FramebufferTexturePixelLocalStorageANGLE)                 /* 587 */ \
-  OP(FramebufferPixelLocalClearValuefvANGLEImmediate)          /* 588 */ \
-  OP(FramebufferPixelLocalClearValueivANGLEImmediate)          /* 589 */ \
-  OP(FramebufferPixelLocalClearValueuivANGLEImmediate)         /* 590 */ \
-  OP(BeginPixelLocalStorageANGLEImmediate)                     /* 591 */ \
-  OP(EndPixelLocalStorageANGLEImmediate)                       /* 592 */ \
-  OP(PixelLocalStorageBarrierANGLE)                            /* 593 */ \
-  OP(FramebufferPixelLocalStorageInterruptANGLE)               /* 594 */ \
-  OP(FramebufferPixelLocalStorageRestoreANGLE)                 /* 595 */ \
-  OP(GetFramebufferPixelLocalStorageParameterfvANGLE)          /* 596 */ \
-  OP(GetFramebufferPixelLocalStorageParameterivANGLE)          /* 597 */ \
-  OP(ClipControlEXT)                                           /* 598 */ \
-  OP(PolygonModeANGLE)                                         /* 599 */ \
-  OP(PolygonOffsetClampEXT)                                    /* 600 */
+  OP(TexImage2DSharedImageCHROMIUMImmediate)                   /* 568 */ \
+  OP(CreateAndTexStorage2DSharedImageINTERNALImmediate)        /* 569 */ \
+  OP(BeginSharedImageAccessDirectCHROMIUM)                     /* 570 */ \
+  OP(EndSharedImageAccessDirectCHROMIUM)                       /* 571 */ \
+  OP(ConvertRGBAToYUVAMailboxesINTERNALImmediate)              /* 572 */ \
+  OP(ConvertYUVAMailboxesToRGBINTERNALImmediate)               /* 573 */ \
+  OP(CopySharedImageINTERNALImmediate)                         /* 574 */ \
+  OP(CopySharedImageToTextureINTERNALImmediate)                /* 575 */ \
+  OP(ReadbackARGBImagePixelsINTERNAL)                          /* 576 */ \
+  OP(WritePixelsYUVINTERNAL)                                   /* 577 */ \
+  OP(EnableiOES)                                               /* 578 */ \
+  OP(DisableiOES)                                              /* 579 */ \
+  OP(BlendEquationiOES)                                        /* 580 */ \
+  OP(BlendEquationSeparateiOES)                                /* 581 */ \
+  OP(BlendFunciOES)                                            /* 582 */ \
+  OP(BlendFuncSeparateiOES)                                    /* 583 */ \
+  OP(ColorMaskiOES)                                            /* 584 */ \
+  OP(IsEnablediOES)                                            /* 585 */ \
+  OP(ProvokingVertexANGLE)                                     /* 586 */ \
+  OP(FramebufferMemorylessPixelLocalStorageANGLE)              /* 587 */ \
+  OP(FramebufferTexturePixelLocalStorageANGLE)                 /* 588 */ \
+  OP(FramebufferPixelLocalClearValuefvANGLEImmediate)          /* 589 */ \
+  OP(FramebufferPixelLocalClearValueivANGLEImmediate)          /* 590 */ \
+  OP(FramebufferPixelLocalClearValueuivANGLEImmediate)         /* 591 */ \
+  OP(BeginPixelLocalStorageANGLEImmediate)                     /* 592 */ \
+  OP(EndPixelLocalStorageANGLEImmediate)                       /* 593 */ \
+  OP(PixelLocalStorageBarrierANGLE)                            /* 594 */ \
+  OP(FramebufferPixelLocalStorageInterruptANGLE)               /* 595 */ \
+  OP(FramebufferPixelLocalStorageRestoreANGLE)                 /* 596 */ \
+  OP(GetFramebufferPixelLocalStorageParameterfvANGLE)          /* 597 */ \
+  OP(GetFramebufferPixelLocalStorageParameterivANGLE)          /* 598 */ \
+  OP(ClipControlEXT)                                           /* 599 */ \
+  OP(PolygonModeANGLE)                                         /* 600 */ \
+  OP(PolygonOffsetClampEXT)                                    /* 601 */
 
 enum CommandId {
   kOneBeforeStartPoint =

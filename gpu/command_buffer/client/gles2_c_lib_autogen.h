@@ -1642,6 +1642,10 @@ void GL_APIENTRY GLES2FramebufferTextureMultiviewOVR(GLenum target,
 void GL_APIENTRY GLES2MaxShaderCompilerThreadsKHR(GLuint count) {
   gles2::GetGLContext()->MaxShaderCompilerThreadsKHR(count);
 }
+void GL_APIENTRY GLES2TexImage2DSharedImageCHROMIUM(GLuint texture,
+                                                    const GLbyte* mailbox) {
+  gles2::GetGLContext()->TexImage2DSharedImageCHROMIUM(texture, mailbox);
+}
 GLuint GL_APIENTRY
 GLES2CreateAndTexStorage2DSharedImageCHROMIUM(const GLbyte* mailbox) {
   return gles2::GetGLContext()->CreateAndTexStorage2DSharedImageCHROMIUM(
@@ -3170,6 +3174,10 @@ extern const NameToFunc g_gles2_function_table[] = {
     {
         "glMaxShaderCompilerThreadsKHR",
         reinterpret_cast<GLES2FunctionPointer>(glMaxShaderCompilerThreadsKHR),
+    },
+    {
+        "glTexImage2DSharedImageCHROMIUM",
+        reinterpret_cast<GLES2FunctionPointer>(glTexImage2DSharedImageCHROMIUM),
     },
     {
         "glCreateAndTexStorage2DSharedImageCHROMIUM",
