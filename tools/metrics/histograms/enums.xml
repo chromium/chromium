@@ -94309,6 +94309,20 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="2" label="Tab reopened"/>
 </enum>
 
+<enum name="ReportCheckMembershipResponseCases">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="CreateOprfRequestFailed"/>
+  <int value="2" label="OprfResponseBodyFailed"/>
+  <int value="3" label="NotHasRlweOprfResponse"/>
+  <int value="4" label="CreateQueryRequestFailed"/>
+  <int value="5" label="QueryResponseBodyFailed"/>
+  <int value="6" label="NotHasRlweQueryResponse"/>
+  <int value="7" label="ProcessQueryResponseFailed"/>
+  <int value="8" label="MembershipResponsesSizeIsNotOne"/>
+  <int value="9" label="IsNotPsmIdMember"/>
+  <int value="10" label="SuccessfullySetLocalState"/>
+</enum>
+
 <enum name="ReportingHeaderEndpointGroupOutcome">
   <obsolete>
     Moved to NetReportingHeaderEndpointGroupOutcome.

@@ -11,6 +11,7 @@
 #include "chromeos/ash/components/report/utils/network_utils.h"
 #include "chromeos/ash/components/report/utils/psm_utils.h"
 #include "chromeos/ash/components/report/utils/time_utils.h"
+#include "chromeos/ash/components/report/utils/uma_utils.h"
 #include "components/prefs/pref_service.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -108,6 +109,8 @@ void ObservationImpl::OnCheckMembershipOprfComplete(
   auto url_loader = std::move(url_loader_);
 
   int net_code = url_loader->NetError();
+  utils::RecordNetErrorCode(utils::PsmUseCase::kObservation,
+                            utils::PsmRequest::kOprf, net_code);
 
   // Convert serialized response body to oprf response protobuf.
   FresnelPsmRlweOprfResponse psm_oprf_response;
@@ -179,6 +182,8 @@ void ObservationImpl::OnCheckMembershipQueryComplete(
   auto url_loader = std::move(url_loader_);
 
   int net_code = url_loader->NetError();
+  utils::RecordNetErrorCode(utils::PsmUseCase::kObservation,
+                            utils::PsmRequest::kQuery, net_code);
 
   // Convert serialized response body to fresnel query response protobuf.
   FresnelPsmRlweQueryResponse psm_query_response;
@@ -274,6 +279,8 @@ void ObservationImpl::OnCheckInComplete(
   auto url_loader = std::move(url_loader_);
 
   int net_code = url_loader->NetError();
+  utils::RecordNetErrorCode(utils::PsmUseCase::kObservation,
+                            utils::PsmRequest::kImport, net_code);
 
   if (net_code == net::OK) {
     UpdateLocalStateOnCheckInSuccess();

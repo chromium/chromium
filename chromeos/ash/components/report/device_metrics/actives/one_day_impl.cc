@@ -4,11 +4,13 @@
 
 #include "chromeos/ash/components/report/device_metrics/actives/one_day_impl.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "chromeos/ash/components/report/prefs/fresnel_pref_names.h"
 #include "chromeos/ash/components/report/utils/device_metadata_utils.h"
 #include "chromeos/ash/components/report/utils/network_utils.h"
 #include "chromeos/ash/components/report/utils/psm_utils.h"
 #include "chromeos/ash/components/report/utils/time_utils.h"
+#include "chromeos/ash/components/report/utils/uma_utils.h"
 #include "components/prefs/pref_service.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -23,6 +25,18 @@ namespace {
 
 constexpr psm_rlwe::RlweUseCase kPsmUseCase =
     psm_rlwe::RlweUseCase::CROS_FRESNEL_DAILY;
+
+// UMA histogram names for recording if oprf response body was set.
+const char kHistogramsIsPsm1DAOprfResponseBodySet[] =
+    "Ash.Report.IsPsm1DAOprfResponseBodySet";
+
+// UMA histogram names for recording if oprf response was parsed correctly.
+const char kHistogramsIsPsm1DAOprfResponseParsedCorrectly[] =
+    "Ash.Report.IsPsm1DAOprfResponseParsedCorrectly";
+
+// UMA histogram names for recording if query response was positive or negative.
+const char kHistogramsPsmQueryMembershipResult[] =
+    "Ash.Report.PsmQueryMembershipResult";
 
 }  // namespace
 
@@ -66,6 +80,9 @@ void OneDayImpl::CheckMembershipOprf() {
   const auto status_or_oprf_request = GetPsmRlweClient()->CreateOprfRequest();
   if (!status_or_oprf_request.ok()) {
     LOG(ERROR) << "Failed to create OPRF request.";
+    utils::RecordCheckMembershipCases(
+        utils::PsmUseCase::k1DA,
+        utils::CheckMembershipResponseCases::kCreateOprfRequestFailed);
     std::move(callback_).Run();
     return;
   }
@@ -101,25 +118,40 @@ void OneDayImpl::OnCheckMembershipOprfComplete(
   auto url_loader = std::move(url_loader_);
 
   int net_code = url_loader->NetError();
+  utils::RecordNetErrorCode(utils::PsmUseCase::k1DA, utils::PsmRequest::kOprf,
+                            net_code);
 
   // Convert serialized response body to oprf response protobuf.
   FresnelPsmRlweOprfResponse psm_oprf_response;
   bool is_response_body_set = response_body.get() != nullptr;
+  base::UmaHistogramBoolean(kHistogramsIsPsm1DAOprfResponseBodySet,
+                            is_response_body_set);
 
   if (!is_response_body_set ||
       !psm_oprf_response.ParseFromString(*response_body)) {
+    base::UmaHistogramBoolean(kHistogramsIsPsm1DAOprfResponseParsedCorrectly,
+                              false);
     LOG(ERROR) << "Oprf response net code = " << net_code;
     LOG(ERROR) << "Response body was not set or could not be parsed into "
                << "FresnelPsmRlweOprfResponse proto. "
                << "Is response body set = " << is_response_body_set;
+    utils::RecordCheckMembershipCases(
+        utils::PsmUseCase::k1DA,
+        utils::CheckMembershipResponseCases::kOprfResponseBodyFailed);
     std::move(callback_).Run();
     return;
   }
+
+  base::UmaHistogramBoolean(kHistogramsIsPsm1DAOprfResponseParsedCorrectly,
+                            true);
 
   if (!psm_oprf_response.has_rlwe_oprf_response()) {
     LOG(ERROR) << "Oprf response net code = " << net_code;
     LOG(ERROR) << "FresnelPsmRlweOprfResponse is missing the actual oprf "
                   "response from server.";
+    utils::RecordCheckMembershipCases(
+        utils::PsmUseCase::k1DA,
+        utils::CheckMembershipResponseCases::kNotHasRlweOprfResponse);
     std::move(callback_).Run();
     return;
   }
@@ -137,6 +169,9 @@ void OneDayImpl::CheckMembershipQuery(
       GetPsmRlweClient()->CreateQueryRequest(oprf_response);
   if (!status_or_query_request.ok()) {
     LOG(ERROR) << "Failed to create Query request.";
+    utils::RecordCheckMembershipCases(
+        utils::PsmUseCase::k1DA,
+        utils::CheckMembershipResponseCases::kCreateQueryRequestFailed);
     std::move(callback_).Run();
     return;
   }
@@ -172,6 +207,8 @@ void OneDayImpl::OnCheckMembershipQueryComplete(
   auto url_loader = std::move(url_loader_);
 
   int net_code = url_loader->NetError();
+  utils::RecordNetErrorCode(utils::PsmUseCase::k1DA, utils::PsmRequest::kQuery,
+                            net_code);
 
   // Convert serialized response body to fresnel query response protobuf.
   FresnelPsmRlweQueryResponse psm_query_response;
@@ -183,6 +220,9 @@ void OneDayImpl::OnCheckMembershipQueryComplete(
     LOG(ERROR) << "Response body was not set or could not be parsed into "
                << "FresnelPsmRlweQueryResponse proto. "
                << "Is response body set = " << is_response_body_set;
+    utils::RecordCheckMembershipCases(
+        utils::PsmUseCase::k1DA,
+        utils::CheckMembershipResponseCases::kQueryResponseBodyFailed);
     std::move(callback_).Run();
     return;
   }
@@ -191,6 +231,9 @@ void OneDayImpl::OnCheckMembershipQueryComplete(
     LOG(ERROR) << "Query response net code = " << net_code;
     LOG(ERROR) << "FresnelPsmRlweQueryResponse is missing the actual query "
                   "response from server.";
+    utils::RecordCheckMembershipCases(
+        utils::PsmUseCase::k1DA,
+        utils::CheckMembershipResponseCases::kNotHasRlweQueryResponse);
     std::move(callback_).Run();
     return;
   }
@@ -202,6 +245,9 @@ void OneDayImpl::OnCheckMembershipQueryComplete(
 
   if (!status_or_response.ok()) {
     LOG(ERROR) << "Failed to process query response.";
+    utils::RecordCheckMembershipCases(
+        utils::PsmUseCase::k1DA,
+        utils::CheckMembershipResponseCases::kProcessQueryResponseFailed);
     std::move(callback_).Run();
     return;
   }
@@ -214,6 +260,9 @@ void OneDayImpl::OnCheckMembershipQueryComplete(
                   "single response."
                << "Size = "
                << rlwe_membership_responses.membership_responses_size();
+    utils::RecordCheckMembershipCases(
+        utils::PsmUseCase::k1DA,
+        utils::CheckMembershipResponseCases::kMembershipResponsesSizeIsNotOne);
     std::move(callback_).Run();
     return;
   }
@@ -222,6 +271,9 @@ void OneDayImpl::OnCheckMembershipQueryComplete(
       rlwe_membership_responses.membership_responses(0).membership_response();
 
   bool is_psm_id_member = membership_response.is_member();
+  base::UmaHistogramBoolean(kHistogramsPsmQueryMembershipResult,
+                            is_psm_id_member);
+
   if (is_psm_id_member) {
     LOG(ERROR) << "Check in ping was already sent earlier today.";
     SetLastPingTimestamp(GetParams()->GetActiveTs());
@@ -229,6 +281,9 @@ void OneDayImpl::OnCheckMembershipQueryComplete(
     return;
   }
 
+  utils::RecordCheckMembershipCases(
+      utils::PsmUseCase::k1DA,
+      utils::CheckMembershipResponseCases::kIsNotPsmIdMember);
   CheckIn();
 }
 
@@ -262,10 +317,15 @@ void OneDayImpl::OnCheckInComplete(std::unique_ptr<std::string> response_body) {
   auto url_loader = std::move(url_loader_);
 
   int net_code = url_loader->NetError();
+  utils::RecordNetErrorCode(utils::PsmUseCase::k1DA, utils::PsmRequest::kImport,
+                            net_code);
 
   if (net_code == net::OK) {
     // Update local state pref to record reporting device active.
     SetLastPingTimestamp(GetParams()->GetActiveTs());
+    utils::RecordCheckMembershipCases(
+        utils::PsmUseCase::k1DA,
+        utils::CheckMembershipResponseCases::kSuccessfullySetLocalState);
   } else {
     LOG(ERROR) << "Failed to check in successfully. Net code = " << net_code;
   }

@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/report/utils/pref_utils.h"
 
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "chromeos/ash/components/dbus/private_computing/private_computing_service.pb.h"
 #include "chromeos/ash/components/report/prefs/fresnel_pref_names.h"
 #include "chromeos/ash/components/report/utils/time_utils.h"
@@ -19,6 +20,10 @@ using private_computing::ChurnObservationStatus;
 using private_computing::GetStatusResponse;
 using private_computing::PrivateComputingUseCase;
 using private_computing::SaveStatusRequest;
+
+// UMA histogram names for preserved file read records.
+const char kHistogramsPreservedFileRead[] =
+    "Ash.Report.PreservedFileReadAndParsed";
 
 // |ts| must be defined and not unix epoch time.
 void WriteLocalStateTimestampIfValid(PrefService* local_state,
@@ -55,6 +60,7 @@ void WriteObservationLastPingTimestampIfValid(PrefService* local_state,
 
 void RestoreLocalStateWithPreservedFile(PrefService* local_state,
                                         GetStatusResponse response) {
+  bool read_success = true;
   for (ActiveStatus active_status : response.active_status()) {
     base::Time last_ping_ts;
     // Parse and validate the ping date before attempting to restore value.
@@ -62,6 +68,7 @@ void RestoreLocalStateWithPreservedFile(PrefService* local_state,
       bool success = base::Time::FromUTCString(
           active_status.last_ping_date().c_str(), &last_ping_ts);
       if (!success) {
+        read_success = false;
         LOG(ERROR) << "Fail to convert last ping date to ts for use case = "
                    << PrivateComputingUseCase_Name(active_status.use_case());
         continue;
@@ -110,10 +117,13 @@ void RestoreLocalStateWithPreservedFile(PrefService* local_state,
         }
         break;
       default:
+        read_success = false;
         LOG(ERROR) << "Restore local state failed - unknown use case.";
         continue;
     }
   }
+
+  base::UmaHistogramBoolean(kHistogramsPreservedFileRead, read_success);
 }
 
 SaveStatusRequest CreatePreservedFileContents(PrefService* local_state) {

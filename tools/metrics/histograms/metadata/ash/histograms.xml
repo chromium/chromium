@@ -241,6 +241,19 @@ chromium-metrics-reviews@google.com.
   <variant name=".TabletMode" summary="Animates in Tablet mode w/o split view"/>
 </variants>
 
+<variants name="PsmRequest">
+  <variant name="Import" summary="Import data request to Fresnel"/>
+  <variant name="Oprf" summary="First phase of check membership requests"/>
+  <variant name="Query" summary="Second phase of check membership requests"/>
+</variants>
+
+<variants name="PsmUseCase">
+  <variant name="1DA" summary="1 day active"/>
+  <variant name="28DA" summary="28 day active"/>
+  <variant name="Cohort" summary="Churn cohort"/>
+  <variant name="Observation" summary="Churn observation"/>
+</variants>
+
 <variants name="RecognizerLocation">
   <variant name="OnDevice" summary="Speech recognition happened on device"/>
   <variant name="ServerBased"
@@ -5911,6 +5924,90 @@ chromium-metrics-reviews@google.com.
     <variant name="Clamshell" summary="Regular mode"/>
     <variant name="Tablet" summary="Tablet mode"/>
   </token>
+</histogram>
+
+<histogram name="Ash.Report.IsPsm{PsmUseCase}OprfResponseBodySet"
+    enum="BooleanSuccess" expires_after="2024-10-01">
+  <owner>hirthanan@google.com</owner>
+  <owner>chromeos-data-team@google.com</owner>
+  <summary>
+    Record success if the PSM OPRF response for {PsmUseCase} contains a value.
+    This network request is called after browser start if the last ping
+    timestamp of the Chromebook is not known. ChromeOS only.
+  </summary>
+  <token key="PsmUseCase" variants="PsmUseCase"/>
+</histogram>
+
+<histogram name="Ash.Report.IsPsm{PsmUseCase}OprfResponseParsedCorrectly"
+    enum="BooleanSuccess" expires_after="2024-10-01">
+  <owner>hirthanan@google.com</owner>
+  <owner>chromeos-data-team@google.com</owner>
+  <summary>
+    Record success if the PSM OPRF response for {PsmUseCase} is able to be
+    parsed correctly. This network request is called after browser start if the
+    last ping timestamp of the Chromebook is not known. ChromeOS only.
+  </summary>
+  <token key="PsmUseCase" variants="PsmUseCase"/>
+</histogram>
+
+<histogram name="Ash.Report.PreservedFileReadAndParsed" enum="BooleanSuccess"
+    expires_after="2024-10-01">
+  <owner>hirthanan@google.com</owner>
+  <owner>chromeos-data-team@google.com</owner>
+  <summary>
+    Record whether the preserved file read and successfully parsed all known
+    last active UTC dates. ChromeOS only.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Report.PreservedFileWritten" enum="BooleanSuccess"
+    expires_after="2024-10-01">
+  <owner>hirthanan@google.com</owner>
+  <owner>chromeos-data-team@google.com</owner>
+  <summary>
+    Record whether the preserved file was written successfully over DBus for
+    last active UTC dates. This histogram is recorded after browser start up,
+    when the device attempts to read the preserved file storing the last known
+    UTC dates. ChromeOS only.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Report.PsmQueryMembershipResult" enum="BooleanKnown"
+    expires_after="2024-10-01">
+  <owner>hirthanan@google.com</owner>
+  <owner>chromeos-data-team@google.com</owner>
+  <summary>
+    Record whether the private set membership query response contains queried ID
+    that is known or not known. This histogram is recorded after the check
+    membership request is fulfilled by the Fresnel server. The response code
+    indicates whether the queried ID is present in the privacy complaint PSM
+    database. ChromeOS only.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Report.Psm{PsmUseCase}{PsmRequest}ResponseNetErrorCode"
+    enum="NetErrorCodes" expires_after="2024-10-01">
+  <owner>hirthanan@google.com</owner>
+  <owner>chromeos-data-team@google.com</owner>
+  <summary>
+    Emit the NetError code associated with the {PsmUseCase} {PsmRequest}
+    response. Network requests are called after the browser is instantiated and
+    the device is connected to the internet. Enum for histogram will contain 0 -
+    899. Ranges are defined //net/base/net_error_list.h;l=14-23. ChromeOS only.
+  </summary>
+  <token key="PsmUseCase" variants="PsmUseCase"/>
+  <token key="PsmRequest" variants="PsmRequest"/>
+</histogram>
+
+<histogram name="Ash.Report.{PsmUseCase}CheckMembershipCases"
+    enum="ReportCheckMembershipResponseCases" expires_after="2024-10-01">
+  <owner>qianwan@google.com</owner>
+  <owner>chromeos-data-team@google.com</owner>
+  <summary>
+    Record the number of different failed/success cases for the {PsmUseCase}
+    check membership process. ChromeOS only.
+  </summary>
+  <token key="PsmUseCase" variants="PsmUseCase"/>
 </histogram>
 
 <histogram name="Ash.Rotation.AnimationSmoothness" units="%"

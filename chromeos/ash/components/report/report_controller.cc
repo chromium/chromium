@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/report/report_controller.h"
 
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -91,6 +92,10 @@ base::OnceClosure CreateReport28DaCallback(
   return base::BindOnce(&device_metrics::TwentyEightDayImpl::Run,
                         twenty_eight_day_weak_ptr, std::move(report_cohort_cb));
 }
+
+// UMA histogram names for preserved file write records.
+const char kHistogramsPreservedFileWritten[] =
+    "Ash.Report.PreservedFileWritten";
 
 }  // namespace
 
@@ -369,10 +374,13 @@ void ReportController::OnPreservedFileReadComplete(
 
 void ReportController::OnSaveLocalStateToPreservedFileComplete(
     private_computing::SaveStatusResponse response) {
+  bool write_success = true;
   if (response.has_error_message()) {
+    write_success = false;
     LOG(ERROR) << "Failed to write to preserved file. "
                << "Error from DBus: " << response.error_message();
   }
+  base::UmaHistogramBoolean(kHistogramsPreservedFileWritten, write_success);
 
   // Device is done reporting after writing to preserved file.
   is_device_reporting_ = false;
