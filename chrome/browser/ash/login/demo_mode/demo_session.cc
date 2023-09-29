@@ -24,6 +24,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/syslog_logging.h"
 #include "base/task/thread_pool.h"
 #include "base/timer/timer.h"
 #include "base/trace_event/trace_event.h"
@@ -200,6 +201,12 @@ std::vector<LocaleInfo> GetSupportedLocales() {
     supported_locales.push_back(std::move(locale_info));
   }
   return supported_locales;
+}
+
+void RecordDemoModeDimensions() {
+  SYSLOG(INFO) << "Demo mode country: " << demo_mode::Country();
+  SYSLOG(INFO) << "Demo mode retailer: " << demo_mode::RetailerName();
+  SYSLOG(INFO) << "Demo mode store: " << demo_mode::StoreNumber();
 }
 
 }  // namespace
@@ -561,8 +568,9 @@ void DemoSession::OnSessionStateChanged() {
                          weak_ptr_factory_.GetWeakPtr()));
       break;
     case session_manager::SessionState::ACTIVE:
-      if (ShouldRemoveSplashScreen())
+      if (ShouldRemoveSplashScreen()) {
         RemoveSplashScreen();
+      }
 
       // SystemTrayClientImpl may not exist in unit tests.
       if (SystemTrayClientImpl::Get()) {
@@ -571,7 +579,10 @@ void DemoSession::OnSessionStateChanged() {
                 language::prefs::kApplicationLocale);
         SystemTrayClientImpl::Get()->SetLocaleList(GetSupportedLocales(),
                                                    current_locale_iso_code);
+        SYSLOG(INFO) << "Demo mode session current locale: "
+                     << current_locale_iso_code;
       }
+
       RestoreDefaultLocaleForNextSession();
 
       if (chromeos::PowerManagerClient::Get()) {
@@ -600,6 +611,8 @@ void DemoSession::OnSessionStateChanged() {
     default:
       break;
   }
+
+  RecordDemoModeDimensions();
 }
 
 base::FilePath DemoSession::GetDemoAppComponentPath() {
@@ -618,8 +631,11 @@ void LaunchDemoSystemWebApp() {
 }
 
 void DemoSession::OnDemoAppComponentLoaded() {
+  SYSLOG(INFO) << "Demo mode app component version"
+               << components_->app_component_version().value_or("");
   auto error = components_->app_component_error().value_or(
       component_updater::CrOSComponentManager::Error::NOT_FOUND);
+
   if (error != component_updater::CrOSComponentManager::Error::NONE) {
     LOG(WARNING) << "Error loading demo mode app component: "
                  << static_cast<int>(error);
@@ -655,6 +671,10 @@ void DemoSession::ConfigureAndStartSplashScreen() {
   base::FilePath fallback_path = components_->resources_component_path()
                                      .Append(kSplashScreensPath)
                                      .Append("en-US.jpg");
+
+  SYSLOG(INFO) << "Demo mode resources version"
+               << components_->resources_component_version().value_or("");
+
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
       base::BindOnce(&GetSplashScreenImagePath, localized_image_path,

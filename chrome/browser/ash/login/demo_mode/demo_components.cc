@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/path_service.h"
+#include "base/version.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
@@ -88,9 +89,24 @@ void DemoComponents::OnAppComponentLoaded(
     base::OnceClosure load_callback,
     component_updater::CrOSComponentManager::Error error,
     const base::FilePath& app_component_path) {
+  // Before returning saying that the app component has been loaded
+  // let's ensure that the app's version is loaded.
   app_component_error_ = error;
   default_app_component_path_ = app_component_path;
-  std::move(load_callback).Run();
+
+  auto cros_component_manager =
+      g_browser_process->platform_part()->cros_component_manager();
+
+  // cros_component_manager may be null in unit tests.
+  if (cros_component_manager) {
+    cros_component_manager->GetVersion(
+        kDemoModeAppComponentName,
+        base::BindOnce(&DemoComponents::OnAppVersionReady,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       std::move(load_callback)));
+  } else {
+    std::move(load_callback).Run();
+  }
 }
 
 void DemoComponents::LoadResourcesComponent(base::OnceClosure load_callback) {
@@ -123,6 +139,18 @@ void DemoComponents::LoadResourcesComponent(base::OnceClosure load_callback) {
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
+void DemoComponents::OnAppVersionReady(base::OnceClosure callback,
+                                       const base::Version& version) {
+  app_component_version_ = version.GetString();
+  std::move(callback).Run();
+}
+
+void DemoComponents::OnResourcesVersionReady(const base::FilePath& path,
+                                             const base::Version& version) {
+  resources_component_version_ = version.GetString();
+  OnDemoResourcesLoaded(absl::make_optional(path));
+}
+
 void DemoComponents::SetCrOSComponentLoadedForTesting(
     const base::FilePath& path,
     component_updater::CrOSComponentManager::Error error) {
@@ -139,7 +167,19 @@ void DemoComponents::InstalledComponentLoaded(
     component_updater::CrOSComponentManager::Error error,
     const base::FilePath& path) {
   resources_component_error_ = error;
-  OnDemoResourcesLoaded(absl::make_optional(path));
+
+  auto cros_component_manager =
+      g_browser_process->platform_part()->cros_component_manager();
+
+  // cros_component_manager may be null in unit tests.
+  if (cros_component_manager) {
+    cros_component_manager->GetVersion(
+        kDemoModeResourcesComponentName,
+        base::BindOnce(&DemoComponents::OnResourcesVersionReady,
+                       weak_ptr_factory_.GetWeakPtr(), path));
+  } else {
+    OnDemoResourcesLoaded(absl::make_optional(path));
+  }
 }
 
 void DemoComponents::OnDemoResourcesLoaded(
