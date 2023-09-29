@@ -106,12 +106,11 @@ CastRunnerLauncher::CastRunnerLauncher(CastRunnerFeatures runner_features) {
   FakeFeedbackService::RouteToChild(realm_builder, kCastRunnerComponentName);
 
   AddSyslogRoutesFromParent(realm_builder, kCastRunnerComponentName);
-  AddVulkanRoutesFromParent(realm_builder, kCastRunnerComponentName);
 
-  // Run an isolated font service for cast_runner.
+  // Run an isolated font service and route it to cast_runner.
   AddFontService(realm_builder, kCastRunnerComponentName);
 
-  // Run the test-ui-stack and route the protocols needed by cast_runner to it.
+  // Run the test-ui-stack and route it to cast_runner.
   AddTestUiStack(realm_builder, kCastRunnerComponentName);
 
   realm_builder.AddRoute(Route{
@@ -127,15 +126,25 @@ CastRunnerLauncher::CastRunnerLauncher(CastRunnerFeatures runner_features) {
                         .as = "config-data-for-web-instance",
                         .subdir = "web_engine"},
               Directory{.name = "root-ssl-certificates"},
+
+              // fuchsia.web/Context required and recommended protocols.
               Protocol{fuchsia::buildinfo::Provider::Name_},
-              Protocol{fuchsia::kernel::VmexResource::Name_},
+              Protocol{"fuchsia.device.NameProvider"},
+              // "fuchsia.fonts.Provider" is provided above.
+              Protocol{"fuchsia.hwinfo.Product"},
               Protocol{fuchsia::intl::PropertyProvider::Name_},
+              Protocol{fuchsia::kernel::VmexResource::Name_},
+              Protocol{"fuchsia.logger.LogSink"},
               Protocol{fuchsia::media::ProfileProvider::Name_},
               Protocol{fuchsia::memorypressure::Provider::Name_},
-              Protocol{fuchsia::net::interfaces::State::Name_},
-              Protocol{"fuchsia.posix.socket.Provider"},
               Protocol{"fuchsia.process.Launcher"},
-              Protocol{fuchsia::settings::Display::Name_},
+              Protocol{"fuchsia.sysmem.Allocator"},
+
+              // CastRunner sets ContextFeatureFlags::NETWORK by default.
+              Protocol{fuchsia::net::interfaces::State::Name_},
+              Protocol{"fuchsia.net.name.Lookup"},
+              Protocol{"fuchsia.posix.socket.Provider"},
+
               Storage{.name = "cache", .path = "/cache"},
           },
       .source = ParentRef(),
@@ -162,6 +171,16 @@ CastRunnerLauncher::CastRunnerLauncher(CastRunnerFeatures runner_features) {
             .source = ChildRef{kFakeCastAgentName},
             .targets = {ChildRef{kCastRunnerComponentName}}});
 
+  if (!(runner_features & kCastRunnerFeaturesHeadless)) {
+    // CastRunner sets ThemeType::DEFAULT when not headless.
+    AddRouteFromParent(realm_builder, kCastRunnerComponentName,
+                       fuchsia::settings::Display::Name_);
+  }
+
+  if (runner_features & kCastRunnerFeaturesVulkan) {
+    AddVulkanRoutesFromParent(realm_builder, kCastRunnerComponentName);
+  }
+
   // Either route the fake AudioDeviceEnumerator or the system one.
   if (runner_features & kCastRunnerFeaturesFakeAudioDeviceEnumerator) {
     static constexpr char kAudioDeviceEnumerator[] =
@@ -175,12 +194,17 @@ CastRunnerLauncher::CastRunnerLauncher(CastRunnerFeatures runner_features) {
               .source = ChildRef{kAudioDeviceEnumerator},
               .targets = {ChildRef{kCastRunnerComponentName}}});
   } else {
-    realm_builder.AddRoute(
-        Route{.capabilities = {Protocol{
-                  fuchsia::media::AudioDeviceEnumerator::Name_}},
-              .source = ParentRef(),
-              .targets = {ChildRef{kCastRunnerComponentName}}});
+    AddRouteFromParent(realm_builder, kCastRunnerComponentName,
+                       fuchsia::media::AudioDeviceEnumerator::Name_);
   }
+
+  // Always offer tracing to CastRunner to suppress log spam. See its CML file.
+  AddRouteFromParent(realm_builder, kCastRunnerComponentName,
+                     "fuchsia.tracing.provider.Registry");
+
+  // TODO(crbug.com/1364196) Remove once not needed to avoid log spam.
+  AddRouteFromParent(realm_builder, kCastRunnerComponentName,
+                     "fuchsia.tracing.perfetto.ProducerConnector");
 
   // Route capabilities from the cast_runner back up to the test.
   realm_builder.AddRoute(

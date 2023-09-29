@@ -35,6 +35,10 @@ void AppendCommandLineArgumentsForRealm(
 // Each test component must use a .cml fragment that routes the required
 // capabilities to `#realm_builder`.
 
+void AddRouteFromParent(component_testing::RealmBuilder& realm_builder,
+                        base::StringPiece child_name,
+                        base::StringPiece protocol_name);
+
 // Adds routes to the child component named `child_name` to satisfy that
 // child's use of syslog/client.shard.cml.
 void AddSyslogRoutesFromParent(::component_testing::RealmBuilder& realm_builder,

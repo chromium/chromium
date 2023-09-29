@@ -15,18 +15,39 @@
     },
     {
       protocol: [
+        // fuchsia.web/Context required and recommended protocols.
+        // "fuchsia.buildinfo.Provider" is provided by #build-info-service.
+        "fuchsia.device.NameProvider",
+        "fuchsia.fonts.Provider",
+        "fuchsia.hwinfo.Product",
+        // "fuchsia.intl.PropertyProvider" is provided by #intl_property_manager.
         "fuchsia.kernel.VmexResource",
-        "fuchsia.media.AudioDeviceEnumerator",
+        "fuchsia.logger.LogSink",
         "fuchsia.media.ProfileProvider",
         "fuchsia.memorypressure.Provider",
-        "fuchsia.net.interfaces.State",
-        "fuchsia.posix.socket.Provider",
         "fuchsia.process.Launcher",
-        "fuchsia.scheduler.ProfileProvider",
-        "fuchsia.settings.Display",
         "fuchsia.sysmem.Allocator",
+
+        // CastRunner sets ContextFeatureFlags::NETWORK by default.
+        "fuchsia.net.interfaces.State",
+        "fuchsia.net.name.Lookup",
+        "fuchsia.posix.socket.Provider",
+
+        // CastRunner sets ThemeType::DEFAULT when not headless.
+        "fuchsia.settings.Display",
+
+        // Used by the test UI stack and VulkanCastRunnerIntegrationTest.
         "fuchsia.tracing.provider.Registry",
         "fuchsia.vulkan.loader.Loader",
+
+        // Used by most tests.
+        "fuchsia.media.AudioDeviceEnumerator",
+
+        // Used by the test UI stack.
+        "fuchsia.scheduler.ProfileProvider",
+
+        // TODO(crbug.com/1364196) Remove once not needed to avoid log spam.
+        "fuchsia.tracing.perfetto.ProducerConnector",
       ],
       from: "parent",
       to: "#realm_builder",
