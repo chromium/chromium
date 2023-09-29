@@ -34,8 +34,8 @@ class PaymentHandlerHeaderViewUITest
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     PaymentRequestBrowserTestBase::SetUpCommandLine(command_line);
-    if (minimal_header_ux_enabled_) {
-      command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
+    if (!minimal_header_ux_enabled_) {
+      command_line->AppendSwitchASCII(switches::kDisableBlinkFeatures,
                                       "PaymentHandlerMinimalHeaderUX");
     }
   }

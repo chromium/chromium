@@ -13,6 +13,7 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/strings/grit/components_strings.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -194,9 +195,20 @@ IN_PROC_BROWSER_TEST_F(PaymentSheetViewControllerNoShippingTest,
                          DialogViewID::PAYMENT_SHEET_CONTACT_INFO_SECTION));
 }
 
-typedef PaymentRequestBrowserTestBase PaymentHandlerUITest;
+class PaymentHandlerBackButtonTest : public PaymentRequestBrowserTestBase {
+ protected:
+  PaymentHandlerBackButtonTest() = default;
 
-IN_PROC_BROWSER_TEST_F(PaymentHandlerUITest, BackReturnsToPaymentSheet) {
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    PaymentRequestBrowserTestBase::SetUpCommandLine(command_line);
+    // The back button is only present prior to the minimal header UX refresh.
+    command_line->AppendSwitchASCII(switches::kDisableBlinkFeatures,
+                                    "PaymentHandlerMinimalHeaderUX");
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(PaymentHandlerBackButtonTest,
+                       BackReturnsToPaymentSheet) {
   NavigateTo("/payment_handler.html");
 
   // Add an autofill profile so the [Continue] button is enabled.
@@ -236,7 +248,8 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerUITest, BackReturnsToPaymentSheet) {
   EXPECT_FALSE(IsViewVisible(DialogViewID::PAYMENT_APP_OPENED_WINDOW_SHEET));
 }
 
-IN_PROC_BROWSER_TEST_F(PaymentHandlerUITest, BackAbortsRequestIfSkipSheet) {
+IN_PROC_BROWSER_TEST_F(PaymentHandlerBackButtonTest,
+                       BackAbortsRequestIfSkipSheet) {
   NavigateTo("/payment_handler.html");
   std::string payment_method;
   InstallPaymentApp("a.com", "/payment_handler_sw.js", &payment_method);
