@@ -11,7 +11,8 @@ namespace ash::input_method {
 namespace {
 
 bool IsUrlAllowed(const GURL& url) {
-  return url.SchemeIs(url::kHttpsScheme);
+  return url.SchemeIs(url::kHttpsScheme) ||
+         url.spec().starts_with("chrome://os-settings/osLanguages/input");
 }
 
 }  // namespace
