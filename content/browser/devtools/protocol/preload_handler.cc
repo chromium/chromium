@@ -39,8 +39,6 @@ Preload::PrerenderFinalStatus PrerenderFinalStatusToProtocol(
       return Preload::PrerenderFinalStatusEnum::DidFailLoad;
     case PrerenderFinalStatus::kDownload:
       return Preload::PrerenderFinalStatusEnum::Download;
-    case PrerenderFinalStatus::kInProgressNavigation:
-      return Preload::PrerenderFinalStatusEnum::InProgressNavigation;
     case PrerenderFinalStatus::kInvalidSchemeNavigation:
       return Preload::PrerenderFinalStatusEnum::InvalidSchemeNavigation;
     case PrerenderFinalStatus::kInvalidSchemeRedirect:

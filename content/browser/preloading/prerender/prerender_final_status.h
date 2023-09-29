@@ -34,7 +34,7 @@ enum class PrerenderFinalStatus {
   // kCrossOriginNavigation = 4,
   kInvalidSchemeRedirect = 5,
   kInvalidSchemeNavigation = 6,
-  kInProgressNavigation = 7,
+  // kInProgressNavigation = 7,  // No longer used.
   // kNavigationRequestFailure = 8,  // No longer used.
   kNavigationRequestBlockedByCsp = 9,
   kMainFrameNavigation = 10,
