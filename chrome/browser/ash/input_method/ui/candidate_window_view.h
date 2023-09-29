@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ash/input_method/text_field_contextual_info_fetcher.h"
 #include "ui/base/ime/candidate_window.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/chromeos/ui_chromeos_export.h"
@@ -90,6 +91,11 @@ class UI_CHROMEOS_EXPORT CandidateWindowView
 
   void CandidateViewPressed(int index);
 
+  // Only used when ash::features::kImeKoreanModeSwitchDebug flag is enabled.
+  // TODO(b/302460634): Remove when no longer needed.
+  void OnTextFieldContextualInfoAvailable(
+      const ash::input_method::TextFieldContextualInfo& info);
+
   // The candidate window data model.
   ui::CandidateWindow candidate_window_;
 
@@ -112,6 +118,10 @@ class UI_CHROMEOS_EXPORT CandidateWindowView
   gfx::Size previous_shortcut_column_size_;
   gfx::Size previous_candidate_column_size_;
   gfx::Size previous_annotation_column_size_;
+
+  // Only used when ash::features::kImeKoreanModeSwitchDebug flag is enabled.
+  // TODO(b/302460634): Remove when no longer needed.
+  gfx::Rect pending_anchor_rect_;
 };
 
 BEGIN_VIEW_BUILDER(UI_CHROMEOS_EXPORT,

@@ -9,10 +9,14 @@
 
 #include <string>
 
+#include "ash/constants/ash_features.h"
+#include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/input_method/ui/candidate_view.h"
 #include "chrome/browser/ash/input_method/ui/candidate_window_constants.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/base/ime/ash/extension_ime_util.h"
+#include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
@@ -377,10 +381,47 @@ void CandidateWindowView::UpdateCandidates(
 void CandidateWindowView::SetCursorAndCompositionBounds(
     const gfx::Rect& cursor_bounds,
     const gfx::Rect& composition_bounds) {
-  if (candidate_window_.show_window_at_composition())
-    SetAnchorRect(composition_bounds);
-  else
-    SetAnchorRect(cursor_bounds);
+  if (base::FeatureList::IsEnabled(ash::features::kImeKoreanModeSwitchDebug)) {
+    auto* input_method_manager = ash::input_method::InputMethodManager::Get();
+
+    if (input_method_manager) {
+      const std::string& current_input_method_id =
+          input_method_manager->GetActiveIMEState()
+              ->GetCurrentInputMethod()
+              .id();
+
+      if (ash::extension_ime_util::IsCros1pKorean(current_input_method_id)) {
+        pending_anchor_rect_ = candidate_window_.show_window_at_composition()
+                                   ? composition_bounds
+                                   : cursor_bounds;
+        ash::input_method::GetTextFieldContextualInfo(base::BindOnce(
+            &CandidateWindowView::OnTextFieldContextualInfoAvailable,
+            base::Unretained(this)));
+        return;
+      }
+    }
+
+    if (candidate_window_.show_window_at_composition())
+      SetAnchorRect(composition_bounds);
+    else
+      SetAnchorRect(cursor_bounds);
+  }
+}
+
+void CandidateWindowView::OnTextFieldContextualInfoAvailable(
+    const ash::input_method::TextFieldContextualInfo& info) {
+  if (!base::FeatureList::IsEnabled(ash::features::kImeKoreanModeSwitchDebug)) {
+    return;
+  }
+
+  if (!info.tab_url.DomainIs("docs.google.com")) {
+    SetAnchorRect(pending_anchor_rect_);
+    return;
+  }
+
+  const gfx::Rect& display_bounds =
+      display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
+  SetAnchorRect(gfx::Rect(80, display_bounds.height() - 60, 0, 0));
 }
 
 void CandidateWindowView::MaybeInitializeCandidateViews(

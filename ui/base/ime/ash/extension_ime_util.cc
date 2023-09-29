@@ -178,5 +178,10 @@ bool IsExperimentalMultilingual(const std::string& input_method_id) {
 #endif
 }
 
+bool IsCros1pKorean(const std::string& input_method_id) {
+  return input_method_id == base::StrCat({kComponentExtensionIMEPrefix,
+                                          kXkbExtensionId, "ko-t-i0-und"});
+}
+
 }  // namespace extension_ime_util
 }  // namespace ash
