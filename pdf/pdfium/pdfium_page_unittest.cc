@@ -46,6 +46,21 @@ TEST(PDFiumPageHelperTest, ToPDFiumRotation) {
   EXPECT_EQ(ToPDFiumRotation(PageOrientation::kClockwise270), 3);
 }
 
+TEST(PDFiumPageHelperTest, ScopedUnloadPreventer) {
+  // Should not DCHECK in its dtor due to ScopedUnloadPreventer usage.
+  PDFiumPage page1(/*engine=*/nullptr, 1);
+  PDFiumPage page2(/*engine=*/nullptr, 2);
+  PDFiumPage::ScopedUnloadPreventer prevent_unload1(&page1);
+  PDFiumPage::ScopedUnloadPreventer prevent_unload2(&page2);
+  PDFiumPage::ScopedUnloadPreventer prevent_unload3(prevent_unload2);
+  PDFiumPage::ScopedUnloadPreventer prevent_unload4(&page2);
+  prevent_unload2 = prevent_unload1;
+  prevent_unload1 = prevent_unload2;
+  prevent_unload1 = prevent_unload4;
+  prevent_unload4 = prevent_unload1;
+  prevent_unload3 = prevent_unload4;
+}
+
 void CompareTextRuns(const AccessibilityTextRunInfo& expected_text_run,
                      const AccessibilityTextRunInfo& actual_text_run) {
   EXPECT_EQ(expected_text_run.len, actual_text_run.len);

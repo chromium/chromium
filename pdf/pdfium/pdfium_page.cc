@@ -384,7 +384,8 @@ PDFiumPage::~PDFiumPage() {
 }
 
 void PDFiumPage::Unload() {
-  // Do not unload while in the middle of a load.
+  // Do not unload while in the middle of a load, or if some external source
+  // expects `this` to stay loaded.
   if (preventing_unload_count_)
     return;
 
@@ -1758,6 +1759,20 @@ void PDFiumPage::MarkAvailable() {
 PDFiumPage::ScopedUnloadPreventer::ScopedUnloadPreventer(PDFiumPage* page)
     : page_(page) {
   page_->preventing_unload_count_++;
+}
+
+PDFiumPage::ScopedUnloadPreventer::ScopedUnloadPreventer(
+    const ScopedUnloadPreventer& that)
+    : ScopedUnloadPreventer(that.page_) {}
+
+PDFiumPage::ScopedUnloadPreventer& PDFiumPage::ScopedUnloadPreventer::operator=(
+    const ScopedUnloadPreventer& that) {
+  if (page_ != that.page_) {
+    page_->preventing_unload_count_--;
+    page_ = that.page_;
+    page_->preventing_unload_count_++;
+  }
+  return *this;
 }
 
 PDFiumPage::ScopedUnloadPreventer::~ScopedUnloadPreventer() {
