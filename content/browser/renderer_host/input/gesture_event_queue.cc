@@ -6,8 +6,8 @@
 
 #include "base/auto_reset.h"
 #include "base/trace_event/trace_event.h"
-#include "content/browser/renderer_host/input/touchscreen_tap_suppression_controller.h"
 #include "content/common/input/touchpad_tap_suppression_controller.h"
+#include "content/common/input/touchscreen_tap_suppression_controller.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom.h"
 #include "ui/events/blink/blink_features.h"
 #include "ui/events/blink/web_input_event_traits.h"

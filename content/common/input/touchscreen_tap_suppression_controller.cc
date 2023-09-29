@@ -2,11 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/renderer_host/input/touchscreen_tap_suppression_controller.h"
+#include "content/common/input/touchscreen_tap_suppression_controller.h"
 
 #include <utility>
-
-#include "content/browser/renderer_host/input/gesture_event_queue.h"
 
 using blink::WebInputEvent;
 

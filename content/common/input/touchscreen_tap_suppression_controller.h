@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_RENDERER_HOST_INPUT_TOUCHSCREEN_TAP_SUPPRESSION_CONTROLLER_H_
-#define CONTENT_BROWSER_RENDERER_HOST_INPUT_TOUCHSCREEN_TAP_SUPPRESSION_CONTROLLER_H_
+#ifndef CONTENT_COMMON_INPUT_TOUCHSCREEN_TAP_SUPPRESSION_CONTROLLER_H_
+#define CONTENT_COMMON_INPUT_TOUCHSCREEN_TAP_SUPPRESSION_CONTROLLER_H_
 
 #include "content/common/input/event_with_latency_info.h"
 #include "content/common/input/tap_suppression_controller.h"
@@ -31,4 +31,4 @@ class TouchscreenTapSuppressionController : public TapSuppressionController {
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_RENDERER_HOST_INPUT_TOUCHSCREEN_TAP_SUPPRESSION_CONTROLLER_H_
+#endif  // CONTENT_COMMON_INPUT_TOUCHSCREEN_TAP_SUPPRESSION_CONTROLLER_H_

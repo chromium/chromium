@@ -7,9 +7,9 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
-#include "content/browser/renderer_host/input/touchscreen_tap_suppression_controller.h"
 #include "content/common/content_export.h"
 #include "content/common/input/touchpad_tap_suppression_controller.h"
+#include "content/common/input/touchscreen_tap_suppression_controller.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
 #include "ui/events/blink/fling_booster.h"
 
