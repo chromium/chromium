@@ -13,6 +13,7 @@
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/core/common/utils.h"
+#include "components/variations/service/variations_service.h"
 
 namespace safe_browsing::hash_realtime_utils {
 // Used by tests so that more than just GOOGLE_CHROME_BRANDING bots are capable
@@ -78,9 +79,22 @@ bool IsHashRealTimeLookupEligibleInSession() {
   return HasGoogleChromeBranding() &&
          base::FeatureList::IsEnabled(kHashPrefixRealTimeLookups);
 }
+bool IsHashRealTimeLookupEligibleInSessionAndLocation(
+    absl::optional<std::string> stored_permanent_country) {
+  return IsHashRealTimeLookupEligibleInSession() &&
+         (!stored_permanent_country.has_value() ||
+          !base::Contains(GetExcludedCountries(),
+                          stored_permanent_country.value()));
+}
+absl::optional<std::string> GetCountryCode(
+    variations::VariationsService* variations_service) {
+  return variations_service ? variations_service->GetStoredPermanentCountry()
+                            : absl::optional<std::string>();
+}
 HashRealTimeSelection DetermineHashRealTimeSelection(
     bool is_off_the_record,
     PrefService* prefs,
+    absl::optional<std::string> stored_permanent_country,
     bool log_usage_histograms) {
   // All prefs used in this method must match the ones returned by
   // |GetHashRealTimeSelectionConfiguringPrefs| so that consumers listening for
@@ -89,8 +103,9 @@ HashRealTimeSelection DetermineHashRealTimeSelection(
     std::string failed_requirement_histogram_suffix;
     bool passes_requirement;
   } requirements[] = {
-      {"IneligibleForSession",
-       hash_realtime_utils::IsHashRealTimeLookupEligibleInSession()},
+      {"IneligibleForSessionOrLocation",
+       hash_realtime_utils::IsHashRealTimeLookupEligibleInSessionAndLocation(
+           stored_permanent_country)},
       {"OffTheRecord", !is_off_the_record},
       {"NotStandardProtection", safe_browsing::GetSafeBrowsingState(*prefs) ==
                                     SafeBrowsingState::STANDARD_PROTECTION},

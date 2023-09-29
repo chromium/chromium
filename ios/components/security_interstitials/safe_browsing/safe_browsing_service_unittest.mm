@@ -622,7 +622,7 @@ TEST_F(SafeBrowsingServiceTest, HashPrefixEnabled) {
                 kHashRealTimeCheck,
             client.performed_check());
   histogram_tester.ExpectBucketCount(
-      "SafeBrowsing.HPRT.Ineligible.IneligibleForSession",
+      "SafeBrowsing.HPRT.Ineligible.IneligibleForSessionOrLocation",
       /*sample=*/false,
       /*expected_bucket_count=*/1);
 
@@ -651,7 +651,7 @@ TEST_F(SafeBrowsingServiceTest, HashPrefixDisabled) {
                 kHashDatabaseCheck,
             client.performed_check());
   histogram_tester.ExpectBucketCount(
-      "SafeBrowsing.HPRT.Ineligible.IneligibleForSession",
+      "SafeBrowsing.HPRT.Ineligible.IneligibleForSessionOrLocation",
       /*sample=*/true,
       /*expected_bucket_count=*/1);
 

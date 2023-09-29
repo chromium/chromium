@@ -113,8 +113,13 @@ constexpr net::NetworkTrafficAnnotationTag kOhttpKeyTrafficAnnotation =
 bool IsEnabled(PrefService* pref_service) {
   safe_browsing::SafeBrowsingState state =
       safe_browsing::GetSafeBrowsingState(*pref_service);
+  // If this class has been created, it is already known that the session is not
+  // off-the-record and that the user's location is eligible, so
+  // |is_off_the_record| is passed through as false and
+  // |stored_permanent_country| as nullopt.
   return safe_browsing::hash_realtime_utils::DetermineHashRealTimeSelection(
-             /*is_off_the_record=*/false, pref_service) ==
+             /*is_off_the_record=*/false, pref_service,
+             /*stored_permanent_country=*/absl::nullopt) ==
              safe_browsing::hash_realtime_utils::HashRealTimeSelection::
                  kHashRealTimeService ||
          // The service is enabled when enhanced protection and

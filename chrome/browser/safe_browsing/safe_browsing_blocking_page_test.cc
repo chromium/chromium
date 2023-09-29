@@ -3894,7 +3894,8 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingBlockingPageHashRealTimeCheckTest,
       "SafeBrowsing.BrowserThrottle.TotalDelay2.HashPrefixDatabaseCheck",
       /*expected_count=*/0);
   histogram_tester.ExpectUniqueSample(
-      "SafeBrowsing.HPRT.Ineligible.IneligibleForSession", /*sample=*/false,
+      "SafeBrowsing.HPRT.Ineligible.IneligibleForSessionOrLocation",
+      /*sample=*/false,
       /*expected_bucket_count=*/1);
   histogram_tester.ExpectTotalCount(
       "interstitial.phishing.decision.from_hash_prefix_real_time_check_v5",
@@ -3912,7 +3913,8 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingBlockingPageHashRealTimeCheckTest,
       "SafeBrowsing.BrowserThrottle.TotalDelay2.HashPrefixDatabaseCheck",
       /*expected_count=*/0);
   histogram_tester.ExpectUniqueSample(
-      "SafeBrowsing.HPRT.Ineligible.IneligibleForSession", /*sample=*/false,
+      "SafeBrowsing.HPRT.Ineligible.IneligibleForSessionOrLocation",
+      /*sample=*/false,
       /*expected_bucket_count=*/1);
   histogram_tester.ExpectTotalCount(
       "interstitial.phishing.decision.from_hash_prefix_real_time_check_v5",
@@ -3930,7 +3932,8 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingBlockingPageHashRealTimeCheckFeatureOffTest,
       "SafeBrowsing.BrowserThrottle.TotalDelay2.HashPrefixDatabaseCheck",
       /*expected_count=*/1);
   histogram_tester.ExpectUniqueSample(
-      "SafeBrowsing.HPRT.Ineligible.IneligibleForSession", /*sample=*/true,
+      "SafeBrowsing.HPRT.Ineligible.IneligibleForSessionOrLocation",
+      /*sample=*/true,
       /*expected_bucket_count=*/1);
   histogram_tester.ExpectTotalCount(
       "interstitial.phishing.decision.from_hash_prefix_real_time_check_v5",

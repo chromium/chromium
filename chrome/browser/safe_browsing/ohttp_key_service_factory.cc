@@ -52,7 +52,9 @@ OhttpKeyServiceFactory::BuildServiceInstanceForBrowserContext(
     return nullptr;
   }
   if (!base::FeatureList::IsEnabled(kHashRealTimeOverOhttp) &&
-      !hash_realtime_utils::IsHashRealTimeLookupEligibleInSession()) {
+      !hash_realtime_utils::IsHashRealTimeLookupEligibleInSessionAndLocation(
+          safe_browsing::hash_realtime_utils::GetCountryCode(
+              g_browser_process->variations_service()))) {
     return nullptr;
   }
   Profile* profile = Profile::FromBrowserContext(context);

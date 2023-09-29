@@ -140,6 +140,47 @@ TEST(HashRealTimeUtilsTest,
   EXPECT_FALSE(hash_realtime_utils::IsHashRealTimeLookupEligibleInSession());
 }
 #endif
+
+TEST(HashRealTimeUtilsTest,
+     TestIsHashRealTimeLookupEligibleInSessionAndLocation) {
+  struct TestCase {
+    bool is_feature_on = true;
+    bool has_google_chrome_branding = true;
+    absl::optional<std::string> stored_permanent_country = absl::nullopt;
+    bool expected_eligibility;
+  } test_cases[] = {
+    // Lookups eligible when no country is provided.
+    {.expected_eligibility = true},
+    // Lookups eligible for US.
+    {.stored_permanent_country = "us", .expected_eligibility = true},
+    // Lookups ineligible for CN.
+    {.stored_permanent_country = "cn", .expected_eligibility = false},
+    // Lookups ineligible when the feature is disabled.
+    {.is_feature_on = false, .expected_eligibility = false},
+#if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    // Lookups ineligible because it's not a branded build.
+    {.has_google_chrome_branding = false, .expected_eligibility = false},
+#endif
+  };
+
+  for (const auto& test_case : test_cases) {
+    hash_realtime_utils::GoogleChromeBrandingPretenderForTesting apply_branding;
+    base::test::ScopedFeatureList scoped_feature_list;
+    if (test_case.is_feature_on) {
+      scoped_feature_list.InitAndEnableFeature(kHashPrefixRealTimeLookups);
+    } else {
+      scoped_feature_list.InitAndDisableFeature(kHashPrefixRealTimeLookups);
+    }
+    if (!test_case.has_google_chrome_branding) {
+      apply_branding.StopApplyingBranding();
+    }
+    EXPECT_EQ(
+        hash_realtime_utils::IsHashRealTimeLookupEligibleInSessionAndLocation(
+            test_case.stored_permanent_country),
+        test_case.expected_eligibility);
+  }
+}
+
 TEST(HashRealTimeUtilsTest, TestDetermineHashRealTimeSelection) {
   hash_realtime_utils::HashRealTimeSelection enabled_selection =
 #if BUILDFLAG(IS_ANDROID)
@@ -153,10 +194,11 @@ TEST(HashRealTimeUtilsTest, TestDetermineHashRealTimeSelection) {
     bool is_off_the_record = false;
     bool is_feature_on = true;
     bool has_google_chrome_branding = true;
+    absl::optional<std::string> stored_permanent_country = absl::nullopt;
     absl::optional<bool> lookups_allowed_by_policy = absl::nullopt;
     hash_realtime_utils::HashRealTimeSelection expected_selection;
     bool expected_log_usage_histograms = true;
-    bool expected_ineligible_for_session_log = false;
+    bool expected_ineligible_for_session_or_location_log = false;
     bool expected_off_the_record_log = false;
     bool expected_not_standard_protection_log = false;
     bool expected_not_allowed_by_policy_log = false;
@@ -173,13 +215,19 @@ TEST(HashRealTimeUtilsTest, TestDetermineHashRealTimeSelection) {
     // Lookups disabled because the feature is disabled.
     {.is_feature_on = false,
      .expected_selection = hash_realtime_utils::HashRealTimeSelection::kNone,
-     .expected_ineligible_for_session_log = true},
+     .expected_ineligible_for_session_or_location_log = true},
 #if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
     // Lookups disabled because it's not a branded build.
     {.has_google_chrome_branding = false,
      .expected_selection = hash_realtime_utils::HashRealTimeSelection::kNone,
-     .expected_ineligible_for_session_log = true},
+     .expected_ineligible_for_session_or_location_log = true},
 #endif
+    // Lookups allowed for US.
+    {.stored_permanent_country = "us", .expected_selection = enabled_selection},
+    // Lookups disabled for CN.
+    {.stored_permanent_country = "cn",
+     .expected_selection = hash_realtime_utils::HashRealTimeSelection::kNone,
+     .expected_ineligible_for_session_or_location_log = true},
     // Lookups allowed because policy allows them and nothing else prevents
     // them.
     {.lookups_allowed_by_policy = true,
@@ -190,41 +238,41 @@ TEST(HashRealTimeUtilsTest, TestDetermineHashRealTimeSelection) {
      .expected_not_allowed_by_policy_log = true},
   };
 
-  auto check_usage_histograms =
-      [](const base::HistogramTester& histogram_tester,
-         const TestCase& test_case) {
-        histogram_tester.ExpectUniqueSample(
-            /*name=*/"SafeBrowsing.HPRT.Ineligible.IneligibleForSession",
-            /*sample=*/test_case.expected_ineligible_for_session_log,
-            /*expected_bucket_count=*/1);
-        histogram_tester.ExpectUniqueSample(
-            /*name=*/"SafeBrowsing.HPRT.Ineligible.OffTheRecord",
-            /*sample=*/test_case.expected_off_the_record_log,
-            /*expected_bucket_count=*/1);
-        histogram_tester.ExpectUniqueSample(
-            /*name=*/"SafeBrowsing.HPRT.Ineligible.NotStandardProtection",
-            /*sample=*/test_case.expected_not_standard_protection_log,
-            /*expected_bucket_count=*/1);
-        histogram_tester.ExpectUniqueSample(
-            /*name=*/"SafeBrowsing.HPRT.Ineligible.NotAllowedByPolicy",
-            /*sample=*/test_case.expected_not_allowed_by_policy_log,
-            /*expected_bucket_count=*/1);
-      };
-  auto check_no_usage_histograms =
-      [](const base::HistogramTester& histogram_tester) {
-        histogram_tester.ExpectTotalCount(
-            /*name=*/"SafeBrowsing.HPRT.Ineligible.IneligibleForSession",
-            /*expected_count=*/0);
-        histogram_tester.ExpectTotalCount(
-            /*name=*/"SafeBrowsing.HPRT.Ineligible.OffTheRecord",
-            /*expected_count=*/0);
-        histogram_tester.ExpectTotalCount(
-            /*name=*/"SafeBrowsing.HPRT.Ineligible.NotStandardProtection",
-            /*expected_count=*/0);
-        histogram_tester.ExpectTotalCount(
-            /*name=*/"SafeBrowsing.HPRT.Ineligible.NotAllowedByPolicy",
-            /*expected_count=*/0);
-      };
+  auto check_usage_histograms = [](const base::HistogramTester&
+                                       histogram_tester,
+                                   const TestCase& test_case) {
+    histogram_tester.ExpectUniqueSample(
+        /*name=*/"SafeBrowsing.HPRT.Ineligible.IneligibleForSessionOrLocation",
+        /*sample=*/test_case.expected_ineligible_for_session_or_location_log,
+        /*expected_bucket_count=*/1);
+    histogram_tester.ExpectUniqueSample(
+        /*name=*/"SafeBrowsing.HPRT.Ineligible.OffTheRecord",
+        /*sample=*/test_case.expected_off_the_record_log,
+        /*expected_bucket_count=*/1);
+    histogram_tester.ExpectUniqueSample(
+        /*name=*/"SafeBrowsing.HPRT.Ineligible.NotStandardProtection",
+        /*sample=*/test_case.expected_not_standard_protection_log,
+        /*expected_bucket_count=*/1);
+    histogram_tester.ExpectUniqueSample(
+        /*name=*/"SafeBrowsing.HPRT.Ineligible.NotAllowedByPolicy",
+        /*sample=*/test_case.expected_not_allowed_by_policy_log,
+        /*expected_bucket_count=*/1);
+  };
+  auto check_no_usage_histograms = [](const base::HistogramTester&
+                                          histogram_tester) {
+    histogram_tester.ExpectTotalCount(
+        /*name=*/"SafeBrowsing.HPRT.Ineligible.IneligibleForSessionOrLocation",
+        /*expected_count=*/0);
+    histogram_tester.ExpectTotalCount(
+        /*name=*/"SafeBrowsing.HPRT.Ineligible.OffTheRecord",
+        /*expected_count=*/0);
+    histogram_tester.ExpectTotalCount(
+        /*name=*/"SafeBrowsing.HPRT.Ineligible.NotStandardProtection",
+        /*expected_count=*/0);
+    histogram_tester.ExpectTotalCount(
+        /*name=*/"SafeBrowsing.HPRT.Ineligible.NotAllowedByPolicy",
+        /*expected_count=*/0);
+  };
 
   for (const auto& test_case : test_cases) {
     hash_realtime_utils::GoogleChromeBrandingPretenderForTesting apply_branding;
@@ -247,13 +295,15 @@ TEST(HashRealTimeUtilsTest, TestDetermineHashRealTimeSelection) {
     }
     // Confirm result is correct and no histograms are logged.
     EXPECT_EQ(hash_realtime_utils::DetermineHashRealTimeSelection(
-                  test_case.is_off_the_record, &prefs),
+                  test_case.is_off_the_record, &prefs,
+                  test_case.stored_permanent_country),
               test_case.expected_selection);
     check_no_usage_histograms(histogram_tester);
     // Confirm result is still correct and relevant histograms are logged.
     EXPECT_EQ(
         hash_realtime_utils::DetermineHashRealTimeSelection(
-            test_case.is_off_the_record, &prefs, /*log_usage_histograms=*/true),
+            test_case.is_off_the_record, &prefs,
+            test_case.stored_permanent_country, /*log_usage_histograms=*/true),
         test_case.expected_selection);
     if (test_case.expected_log_usage_histograms) {
       check_usage_histograms(histogram_tester, test_case);

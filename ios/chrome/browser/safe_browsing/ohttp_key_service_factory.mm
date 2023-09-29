@@ -39,9 +39,13 @@ std::unique_ptr<KeyedService> OhttpKeyServiceFactory::BuildServiceInstanceFor(
   if (!safe_browsing_service) {
     return nullptr;
   }
+  // TODO(crbug.com/1468377): Pass through `variations_service` in
+  // `GetCountryCode` call.
   if (!base::FeatureList::IsEnabled(safe_browsing::kHashRealTimeOverOhttp) &&
       !safe_browsing::hash_realtime_utils::
-          IsHashRealTimeLookupEligibleInSession()) {
+          IsHashRealTimeLookupEligibleInSessionAndLocation(
+              safe_browsing::hash_realtime_utils::GetCountryCode(
+                  /*variations_service=*/nullptr))) {
     return nullptr;
   }
   ChromeBrowserState* chrome_browser_state =

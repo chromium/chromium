@@ -59,6 +59,7 @@ static_library("hash_realtime_utils") {
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/safe_browsing/core/common/proto:safebrowsingv5_proto",
+    "//components/variations/service",
     "//services/network/public/cpp",
   ]
 }

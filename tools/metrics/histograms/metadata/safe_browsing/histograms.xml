@@ -1227,8 +1227,8 @@ chromium-metrics-reviews@google.com.
     one of them.
   </summary>
   <token key="IneligibleReason">
-    <variant name="IneligibleForSession"
-        summary="the feature being disabled for the session"/>
+    <variant name="IneligibleForSessionOrLocation"
+        summary="the feature being disabled for the session or the location"/>
     <variant name="NotAllowedByPolicy" summary="not being allowed by policy"/>
     <variant name="NotStandardProtection"
         summary="not having standard protection"/>

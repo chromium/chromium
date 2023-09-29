@@ -5610,6 +5610,8 @@ ChromeContentBrowserClient::MaybeCreateSafeBrowsingURLLoaderThrottle(
         hash_realtime_selection =
             safe_browsing::hash_realtime_utils::DetermineHashRealTimeSelection(
                 profile->IsOffTheRecord(), profile->GetPrefs(),
+                safe_browsing::hash_realtime_utils::GetCountryCode(
+                    g_browser_process->variations_service()),
                 /*log_usage_histograms=*/true);
 
     return safe_browsing::BrowserURLLoaderThrottle::Create(

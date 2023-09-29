@@ -11,6 +11,10 @@
 
 class PrefService;
 
+namespace variations {
+class VariationsService;
+}
+
 // These are utils for hash-prefix real-time lookups.
 namespace safe_browsing::hash_realtime_utils {
 constexpr size_t kHashPrefixLength = 4;  // bytes
@@ -62,22 +66,44 @@ bool IsHashDetailRelevant(const V5::FullHash::FullHashDetail& detail);
 // Returns the 4-byte prefix of the requested 32-byte full hash.
 std::string GetHashPrefix(const std::string& full_hash);
 
-// Specifies whether hash-prefix real-time lookups are possible for the
-// browser session. This function should never take in parameters.
+// Specifies whether hash-prefix real-time lookups are possible for the browser
+// session. For cases when the user's location should not influence the logic,
+// This should be used over |IsHashRealTimeLookupEligibleInSessionAndLocation|,
+// for example for determining the settings UI description of Standard Safe
+// Browsing.
 bool IsHashRealTimeLookupEligibleInSession();
+
+// Based on the user's browser session and location, specifies whether
+// hash-prefix real-time lookups are eligible. Outside of tests,
+// |stored_permanent_country| should be determined with the helper function
+// |hash_realtime_utils::GetCountryCode|. If it's passed in as absl::nullopt,
+// the location is considered eligible.
+bool IsHashRealTimeLookupEligibleInSessionAndLocation(
+    absl::optional<std::string> stored_permanent_country);
+
+// Returns the stored permanent country. If |variations_service| is null,
+// returns absl::nullopt. This should be used only as a helper to determine the
+// country code to pass into |IsHashRealTimeLookupEligibleInSessionAndLocation|
+// and |DetermineHashRealTimeSelection|. This is separated out into a function
+// to simplify tests.
+absl::optional<std::string> GetCountryCode(
+    variations::VariationsService* variations_service);
 
 // Based on the user's settings and session, determines which hash-prefix
 // real-time lookup should be used, if any. If |log_usage_histograms| is true,
 // this will log metrics related to whether hash real-time lookups were
-// available or why not.
+// available or why not. Outside of tests, |stored_permanent_country| should be
+// determined with the helper function |hash_realtime_utils::GetCountryCode|.
+// If it's passed in as absl::nullopt, the location is considered eligible.
 HashRealTimeSelection DetermineHashRealTimeSelection(
     bool is_off_the_record,
     PrefService* prefs,
+    absl::optional<std::string> stored_permanent_country,
     bool log_usage_histograms = false);
 
-// A helper for consumers that want to recompute DetermineHashRealTimeSelection
-// when there are pref changes. This returns all prefs that modify the outcome
-// of that method.
+// A helper for consumers that want to recompute
+// |DetermineHashRealTimeSelection| when there are pref changes. This returns
+// all prefs that modify the outcome of that method.
 std::vector<const char*> GetHashRealTimeSelectionConfiguringPrefs();
 
 }  // namespace safe_browsing::hash_realtime_utils
