@@ -3,7 +3,10 @@
 # found in the LICENSE file.
 
 source_set("unit_conversion") {
-  sources = [ "test_unit_conversion.mm" ]
+  sources = [
+    "test_unit_conversion.h",
+    "test_unit_conversion.mm",
+  ]
   deps = [
     "//base",
     "//ios/public/provider/chrome/browser/unit_conversion:unit_conversion_api",

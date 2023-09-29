@@ -1,0 +1,59 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("unit_conversion") {
+  sources = [
+    "unit_conversion_coordinator.h",
+    "unit_conversion_coordinator.mm",
+    "unit_conversion_mediator.h",
+    "unit_conversion_mediator.mm",
+  ]
+  deps = [
+    ":unit_conversion_ui",
+    "//components/prefs",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/web/annotations",
+    "//ios/chrome/common:string_util",
+    "//ios/chrome/common/ui/confirmation_alert",
+    "//ios/chrome/common/ui/util",
+    "//ios/public/provider/chrome/browser/unit_conversion:unit_conversion_api",
+    "//ui/base",
+  ]
+}
+
+source_set("unit_conversion_ui") {
+  sources = [
+    "unit_conversion_consumer.h",
+    "unit_conversion_mutator.h",
+  ]
+  deps = [
+    "//components/prefs",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/common:string_util",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/confirmation_alert",
+    "//ios/chrome/common/ui/util",
+    "//ios/public/provider/chrome/browser/unit_conversion:unit_conversion_api",
+    "//ui/base",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "unit_conversion_mediator_unittest.mm" ]
+  deps = [
+    ":unit_conversion",
+    ":unit_conversion_ui",
+    "//base",
+    "//base/test:test_support",
+    "//ios/chrome/test/providers/unit_conversion",
+    "//third_party/ocmock",
+  ]
+}
