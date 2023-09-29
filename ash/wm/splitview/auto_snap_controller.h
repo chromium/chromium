@@ -11,8 +11,6 @@
 
 namespace ash {
 
-class SplitViewController;
-
 // The controller that observes the window state and performs auto snapping
 // for the window if needed. When it's created, it observes the root window
 // and all windows in a current active desk. When 1) an observed window is
@@ -21,7 +19,7 @@ class SplitViewController;
 class AutoSnapController : public wm::ActivationChangeObserver,
                            public aura::WindowObserver {
  public:
-  explicit AutoSnapController(SplitViewController* split_view_controller);
+  explicit AutoSnapController(aura::Window* root_window);
 
   AutoSnapController(const AutoSnapController&) = delete;
   AutoSnapController& operator=(const AutoSnapController&) = delete;
@@ -47,7 +45,7 @@ class AutoSnapController : public wm::ActivationChangeObserver,
   void AddWindow(aura::Window* window);
   void RemoveWindow(aura::Window* window);
 
-  raw_ptr<SplitViewController, ExperimentalAsh> split_view_controller_;
+  raw_ptr<aura::Window> root_window_;
 
   // Tracks observed windows.
   base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>

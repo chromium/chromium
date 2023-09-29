@@ -9,6 +9,7 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_utils.h"
+#include "ash/wm/splitview/auto_snap_controller.h"
 #include "ash/wm/splitview/split_view_divider.h"
 #include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/window_resizer.h"
@@ -52,10 +53,21 @@ SplitViewOverviewSession::SplitViewOverviewSession(aura::Window* window)
   auto* window_state = WindowState::Get(window);
   CHECK(window_state && window_state->IsSnapped());
   window_state->AddObserver(this);
+
+  if (IsSnapGroupEnabledInClamshellMode()) {
+    auto_snap_controller_ =
+        std::make_unique<AutoSnapController>(window->GetRootWindow());
+  }
 }
 
 SplitViewOverviewSession::~SplitViewOverviewSession() {
   WindowState::Get(window_)->RemoveObserver(this);
+}
+
+chromeos::WindowStateType SplitViewOverviewSession::GetWindowStateType() const {
+  WindowState* window_state = WindowState::Get(window_);
+  CHECK(window_state->IsSnapped());
+  return window_state->GetStateType();
 }
 
 void SplitViewOverviewSession::OnResizeLoopStarted(aura::Window* window) {

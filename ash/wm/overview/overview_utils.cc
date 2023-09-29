@@ -219,10 +219,8 @@ gfx::Rect GetGridBoundsInScreen(
   if (auto* split_view_overview_session =
           RootWindowController::ForWindow(target_root)
               ->split_view_overview_session()) {
-    auto* window_state =
-        WindowState::Get(split_view_overview_session->window());
-    CHECK(window_state->IsSnapped());
-    chromeos::WindowStateType window_state_type = window_state->GetStateType();
+    const chromeos::WindowStateType window_state_type =
+        split_view_overview_session->GetWindowStateType();
     state = window_state_type == chromeos::WindowStateType::kPrimarySnapped
                 ? SplitViewController::State::kPrimarySnapped
                 : SplitViewController::State::kSecondarySnapped;

@@ -830,7 +830,15 @@ void SplitViewController::AttachSnappingWindow(aura::Window* window,
       Shell::Get()->activation_client()->AddObserver(this);
     }
 
-    auto_snap_controller_ = std::make_unique<AutoSnapController>(this);
+    if (!IsSnapGroupEnabledInClamshellMode()) {
+      // AutoSnapController will end overview in clamshell split view if a
+      // window is not in transitional state. See
+      // `AutoSnapController::AutoSnapWindowIfNeeded()`.
+      // TODO(b/302397864): Handle this logic in
+      // `OverviewSession::OnWindowActivating()`.
+      auto_snap_controller_ =
+          std::make_unique<AutoSnapController>(root_window_);
+    }
 
     if (!IsInTabletMode() && IsInOverviewSession()) {
       // Start the clamshell split overview session. It is too late to create
@@ -1638,12 +1646,6 @@ void SplitViewController::OnOverviewModeEnded() {
 
 void SplitViewController::OnDisplayRemoved(
     const display::Display& old_display) {
-  // Display removal always triggers a window activation which ends overview,
-  // and therefore ends clamshell split view, before `OnDisplayRemoved is
-  // called. In clamshell mode, `OverviewController::CanEndOverview` always
-  // returns true, meaning that overview is guaranteed to end successfully.
-  DCHECK(!(InClamshellSplitViewMode() && IsSnapGroupEnabledInClamshellMode()));
-
   // If the `root_window_`is the root window of the display which is going to
   // be removed, there's no need to start overview.
   if (GetRootWindowSettings(root_window_)->display_id ==

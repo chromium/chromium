@@ -14,6 +14,8 @@
 
 namespace ash {
 
+class AutoSnapController;
+
 // Encapsulates the split view state with a single snapped window and
 // overview, also known as intermediate split view or the snap group creation
 // session.
@@ -37,6 +39,7 @@ class SplitViewOverviewSession : public aura::WindowObserver,
   ~SplitViewOverviewSession() override;
 
   const aura::Window* window() const { return window_; }
+  chromeos::WindowStateType GetWindowStateType() const;
 
   // aura::WindowObserver:
   void OnResizeLoopStarted(aura::Window* window) override;
@@ -55,6 +58,9 @@ class SplitViewOverviewSession : public aura::WindowObserver,
   // Records the presentation time of resize operation in clamshell split view
   // mode.
   std::unique_ptr<ui::PresentationTimeRecorder> presentation_time_recorder_;
+
+  // Observes windows and performs auto snapping if needed in clamshell mode.
+  std::unique_ptr<AutoSnapController> auto_snap_controller_;
 
   // The single snapped window in intermediate split view, with overview on
   // the opposite side.

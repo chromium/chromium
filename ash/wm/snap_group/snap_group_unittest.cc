@@ -10,6 +10,7 @@
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/root_window_controller.h"
 #include "ash/screen_util.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -59,7 +60,9 @@
 #include "ui/base/hit_test.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
+#include "ui/display/test/display_manager_test_api.h"
 #include "ui/events/event_constants.h"
+#include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/rect.h"
@@ -562,6 +565,51 @@ TEST_F(SnapGroupEntryPointArm1Test, ClamshellSplitViewBasicFunctionalities) {
   SnapTwoTestWindowsInArm1(w1.get(), w2.get());
   w1.reset();
   EXPECT_FALSE(split_view_controller()->InSplitViewMode());
+}
+
+// Tests that when there is one snapped window and overview open, creating a new
+// window, i.e. by clicking the shelf icon, will auto-snap it.
+TEST_F(SnapGroupEntryPointArm1Test, AutoSnapNewWindow) {
+  // Snap `w1` to start split view overview session.
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  SnapOneTestWindow(w1.get(),
+                    /*state_type=*/chromeos::WindowStateType::kPrimarySnapped);
+  EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+  EXPECT_TRUE(
+      RootWindowController::ForWindow(w1.get())->split_view_overview_session());
+
+  // Create a new `w2`. Test it auto-snaps and forms a snap group with `w1`.
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  EXPECT_EQ(chromeos::WindowStateType::kSecondarySnapped,
+            WindowState::Get(w2.get())->GetStateType());
+  EXPECT_TRUE(
+      SnapGroupController::Get()->AreWindowsInSnapGroup(w1.get(), w2.get()));
+}
+
+// Tests that removing a display during split view overview session doesn't
+// crash.
+TEST_F(SnapGroupEntryPointArm1Test, RemoveDisplay) {
+  UpdateDisplay("800x600,800x600");
+  display::test::DisplayManagerTestApi display_manager_test(display_manager());
+
+  // Snap `window` on the second display to start split view overview session.
+  std::unique_ptr<aura::Window> window(
+      CreateTestWindowInShellWithBounds(gfx::Rect(900, 0, 100, 100)));
+  WindowState* window_state = WindowState::Get(window.get());
+  const WindowSnapWMEvent snap_type(WM_EVENT_SNAP_PRIMARY);
+  window_state->OnWMEvent(&snap_type);
+  ASSERT_EQ(
+      display_manager_test.GetSecondaryDisplay().id(),
+      display::Screen::GetScreen()->GetDisplayNearestWindow(window.get()).id());
+  EXPECT_EQ(chromeos::WindowStateType::kPrimarySnapped,
+            window_state->GetStateType());
+  EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+  EXPECT_TRUE(RootWindowController::ForWindow(window.get())
+                  ->split_view_overview_session());
+
+  // Disconnect the second display. Test no crash.
+  UpdateDisplay("800x600");
+  base::RunLoop().RunUntilIdle();
 }
 
 // Tests the snap ratio is updated correctly when resizing the windows in a snap
@@ -1521,6 +1569,7 @@ TEST_F(SnapGroupEntryPointArm1Test, SkipPairingInOverviewWithEscapeKey) {
   SnapOneTestWindow(w1.get(), chromeos::WindowStateType::kPrimarySnapped);
   OverviewController* overview_controller = Shell::Get()->overview_controller();
   EXPECT_TRUE(overview_controller->InOverviewSession());
+  EXPECT_TRUE(GetOverviewSession()->IsWindowInOverview(w2.get()));
   EXPECT_EQ(WindowState::Get(w1.get())->GetStateType(),
             chromeos::WindowStateType::kPrimarySnapped);
   ASSERT_EQ(1u, GetOverviewSession()->grid_list().size());
