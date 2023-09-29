@@ -198,7 +198,6 @@ crbug.com/1419558 [ angle-swiftshader clang-coverage fuchsia fuchsia-board-qemu-
 
 crbug.com/1469875 [ mac graphite-enabled intel release asan ] GpuCrash_InfoForHardwareGpu [ Failure ]
 
-crbug.com/1484919 [ ventura intel-0x3e9b angle-metal graphite-enabled ] ContextLost_WebGLContextLostFromQuantity [ RetryOnFailure ]
 crbug.com/1484919 [ ventura intel-0x3e9b angle-metal graphite-enabled ] ContextLost_WebGLContextRestoredInHiddenTab [ RetryOnFailure ]
 
 #######################################################################
