@@ -92,7 +92,7 @@ class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryBoundary
                     Features.REQUESTED_WITH_HEADER_ALLOW_LIST,
                     Features.IMAGE_DRAG_DROP,
                     Features.USER_AGENT_METADATA,
-                    Features.MULTI_PROFILE + Features.DEV_SUFFIX,
+                    Features.MULTI_PROFILE,
                     Features.ATTRIBUTION_BEHAVIOR + Features.DEV_SUFFIX,
                     // Add new features above. New features must include `+ Features.DEV_SUFFIX`
                     // when they're initially added (this can be removed in a future CL). The final
@@ -191,7 +191,7 @@ class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryBoundary
             ApiCall.GET_PROFILE_NAME,
             ApiCall.GET_PROFILE_COOKIE_MANAGER,
             ApiCall.GET_PROFILE_WEB_STORAGE,
-            ApiCall.GET_PROFILE_GET_LOCATION_PERMISSIONS,
+            ApiCall.GET_PROFILE_GEO_LOCATION_PERMISSIONS,
             ApiCall.GET_PROFILE_SERVICE_WORKER_CONTROLLER,
             ApiCall.SET_WEBVIEW_PROFILE,
             ApiCall.GET_WEBVIEW_PROFILE,
@@ -298,7 +298,7 @@ class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryBoundary
         int GET_PROFILE_NAME = 88;
         int GET_PROFILE_COOKIE_MANAGER = 89;
         int GET_PROFILE_WEB_STORAGE = 90;
-        int GET_PROFILE_GET_LOCATION_PERMISSIONS = 91;
+        int GET_PROFILE_GEO_LOCATION_PERMISSIONS = 91;
         int GET_PROFILE_SERVICE_WORKER_CONTROLLER = 92;
 
         int SET_WEBVIEW_PROFILE = 93;

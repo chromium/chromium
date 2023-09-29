@@ -243,10 +243,12 @@ public class Features {
     // DropDataContentProvider.call
     public static final String IMAGE_DRAG_DROP = "IMAGE_DRAG_DROP";
 
-    // ProfileStore.getOrCreateProfileAsync
-    // ProfileStore.getProfileAsync
-    // ProfileStore.getAllProfileNamesAsync
-    // ProfileStore.deleteProfileAsync
+    // ProfileStore.getInstance
+    // ProfileStore.getOrCreateProfile
+    // ProfileStore.getProfile
+    // ProfileStore.getAllProfileNames
+    // ProfileStore.deleteProfile
+    // Profile.getName
     // Profile.getCookieManager
     // Profile.getWebStorage
     // Profile.getGeolocationPermissions

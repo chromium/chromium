@@ -54,7 +54,7 @@ public class SupportLibProfile implements ProfileBoundaryInterface {
     @NonNull
     @Override
     public GeolocationPermissions getGeoLocationPermissions() {
-        recordApiCall(ApiCall.GET_PROFILE_GET_LOCATION_PERMISSIONS);
+        recordApiCall(ApiCall.GET_PROFILE_GEO_LOCATION_PERMISSIONS);
         return mProfileImpl.getGeolocationPermissions();
     }
 

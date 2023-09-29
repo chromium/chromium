@@ -3225,10 +3225,29 @@ Unknown properties are collapsed to zero. -->
   <int value="81" label="CREATE_WEBVIEW">WebViewCompat#createWebView()</int>
   <int value="82" label="GET_STATICS">WebViewCompat#getStatics()</int>
   <int value="83" label="GET_PROFILE_STORE">ProfileStore#getInstance()</int>
-  <int value="84" label="SET_WEBVIEW_PROFILE">
+  <int value="84" label="GET_OR_CREATE_PROFILE">
+    ProfileStore#getOrCreateProfile()
+  </int>
+  <int value="85" label="GET_PROFILE">ProfileStore#getProfile()</int>
+  <int value="86" label="GET_ALL_PROFILE_NAMES">
+    ProfileStore#getAllProfileNames()
+  </int>
+  <int value="87" label="DELETE_PROFILE">ProfileStore#deleteProfile()</int>
+  <int value="88" label="GET_PROFILE_NAME">Profile#getName()</int>
+  <int value="89" label="GET_PROFILE_COOKIE_MANAGER">
+    Profile#getCookieManager()
+  </int>
+  <int value="90" label="GET_PROFILE_WEB_STORAGE">Profile#getWebStorage()</int>
+  <int value="91" label="GET_PROFILE_GEO_LOCATION_PERMISSIONS">
+    Profile#getGeolocationPermissions()
+  </int>
+  <int value="92" label="GET_PROFILE_SERVICE_WORKER_CONTROLLER">
+    Profile#getServiceWorkerController()
+  </int>
+  <int value="93" label="SET_WEBVIEW_PROFILE">
     WebViewCompat#setProfile(WebView, String)
   </int>
-  <int value="85" label="GET_WEBVIEW_PROFILE">
+  <int value="94" label="GET_WEBVIEW_PROFILE">
     WebViewCompat#getProfile(WebView)
   </int>
   <int value="95" label="SET_ATTRIBUTION_BEHAVIOR">
