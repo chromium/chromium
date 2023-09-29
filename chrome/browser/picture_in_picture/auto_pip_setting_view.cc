@@ -13,7 +13,7 @@
 // Represents the bubble top border offset, with respect to the
 // Picture-in-Picture window title bar. Used to allow the Bubble to overlap the
 // title bar.
-constexpr int kBubbleTopOffset = -2;
+constexpr int kBubbleTopOffset = -4;
 
 // Used to set the control view buttons corner radius.
 constexpr int kControlViewButtonCornerRadius = 20;
@@ -47,7 +47,7 @@ constexpr int kBubbleBorderMdShadowElevation = 2;
 constexpr gfx::Insets kBubbleMargins = gfx::Insets::TLBR(0, 20, 15, 20);
 
 // Bubble title margins.
-constexpr gfx::Insets kBubbleTitleMargins = gfx::Insets::TLBR(15, 15, 10, 15);
+constexpr gfx::Insets kBubbleTitleMargins = gfx::Insets::TLBR(15, 20, 10, 20);
 
 // Maximum origin text width, for cases where the origin needs to be
 // elided.
@@ -115,6 +115,7 @@ void AutoPipSettingView::InitBubble() {
           .SetHorizontalAlignment(gfx::ALIGN_LEFT)
           .SetElideBehavior(gfx::NO_ELIDE)
           .SetMultiLine(true)
+          .SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT)
           .SetText(std::u16string(kAutopipDescription))
           .Build());
   autopip_description_->SetSize(
@@ -195,6 +196,8 @@ void AutoPipSettingView::InitBubbleTitleView(const GURL& origin) {
           .SetHorizontalAlignment(gfx::ALIGN_LEFT)
           .SetElideBehavior(gfx::NO_ELIDE)
           .SetMultiLine(false)
+          .SetTextContext(views::style::CONTEXT_DIALOG_TITLE)
+          .SetTextStyle(views::style::STYLE_PRIMARY)
           .SetText(l10n_util::GetStringFUTF16(IDS_PERMISSIONS_BUBBLE_PROMPT,
                                               origin_text_))
           .Build());
