@@ -33,10 +33,10 @@ export interface ReadAnythingToolbar {
   };
 }
 
-interface MenuStateItem {
+interface MenuStateItem<T> {
   title: string;
   icon: string;
-  data: any;
+  data: T;
   callback: () => void;
 }
 
@@ -149,7 +149,7 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
   // If you change these fonts, please also update read_anything_constants.h
   private fontOptions_: string[] = [];
 
-  private letterSpacingOptions_: MenuStateItem[] = [
+  private letterSpacingOptions_: Array<MenuStateItem<number>> = [
     {
       title: loadTimeData.getString('letterSpacingStandardTitle'),
       icon: 'read-anything:letter-spacing-standard',
@@ -173,7 +173,7 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
     },
   ];
 
-  private lineSpacingOptions_: MenuStateItem[] = [
+  private lineSpacingOptions_: Array<MenuStateItem<number>> = [
     {
       title: loadTimeData.getString('lineSpacingStandardTitle'),
       icon: 'read-anything:line-spacing-standard',
@@ -197,7 +197,7 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
     },
   ];
 
-  private colorOptions_: MenuStateItem[] = [
+  private colorOptions_: Array<MenuStateItem<string>> = [
     {
       title: loadTimeData.getString('defaultColorTitle'),
       icon: 'read-anything:default-theme',
@@ -230,7 +230,8 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
     },
   ];
 
-  private voiceSelectionOptions_: MenuStateItem[] = [];
+  private voiceSelectionOptions_: Array<MenuStateItem<SpeechSynthesisVoice>> =
+      [];
 
   private rateOptions_: number[] = [0.5, 0.8, 1, 1.2, 1.5, 2, 3, 4];
 
@@ -333,8 +334,8 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
             parseFloat(chrome.readingMode.letterSpacing.toFixed(2))));
   }
 
-  private getIndexOfSetting_(menuArray: MenuStateItem[], dataToFind: any):
-      number {
+  private getIndexOfSetting_(
+      menuArray: Array<MenuStateItem<any>>, dataToFind: any): number {
     return menuArray.findIndex((item) => (item.data === dataToFind));
   }
 
@@ -415,15 +416,17 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
     if (this.contentPage) {
       const voices = this.contentPage.getVoices();
       this.voiceSelectionOptions_ = Object.entries(voices).reduce(
-          (aggregateVoiceList: MenuStateItem[], [_, voiceListForLang]) => ([
-            ...aggregateVoiceList,
-            ...(voiceListForLang).map(speechSynthesisVoice => ({
-                                        title: speechSynthesisVoice.name,
-                                        icon: '',
-                                        data: speechSynthesisVoice,
-                                        callback: () => {},
-                                      })),
-          ]),
+          (aggregateVoiceList: Array<MenuStateItem<SpeechSynthesisVoice>>,
+           [_, voiceListForLang]) =>
+              ([
+                ...aggregateVoiceList,
+                ...(voiceListForLang).map(speechSynthesisVoice => ({
+                                            title: speechSynthesisVoice.name,
+                                            icon: '',
+                                            data: speechSynthesisVoice,
+                                            callback: () => {},
+                                          })),
+              ]),
           []);
 
       this.openMenu_(this.$.voiceSelectionMenu, event.target as HTMLElement);
@@ -478,35 +481,36 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
     }
   }
 
-  private onLetterSpacingClick_(event: DomRepeatEvent<MenuStateItem>) {
+  private onLetterSpacingClick_(event: DomRepeatEvent<MenuStateItem<number>>) {
     this.onTextStyleClick_(
         event, ReadAnythingSettingsChange.LETTER_SPACING_CHANGE,
         this.$.letterSpacingMenu,
         ReadAnythingElement.prototype.updateLetterSpacing);
   }
 
-  private onLineSpacingClick_(event: DomRepeatEvent<MenuStateItem>) {
+  private onLineSpacingClick_(event: DomRepeatEvent<MenuStateItem<number>>) {
     this.onTextStyleClick_(
         event, ReadAnythingSettingsChange.LINE_HEIGHT_CHANGE,
         this.$.lineSpacingMenu,
         ReadAnythingElement.prototype.updateLineSpacing);
   }
 
-  private onColorClick_(event: DomRepeatEvent<MenuStateItem>) {
+  private onColorClick_(event: DomRepeatEvent<MenuStateItem<string>>) {
     this.onTextStyleClick_(
         event, ReadAnythingSettingsChange.THEME_CHANGE, this.$.colorMenu,
         ReadAnythingElement.prototype.updateThemeFromWebUi);
   }
 
-  private onVoiceSelectClick_(event: DomRepeatEvent<MenuStateItem>) {
+  private onVoiceSelectClick_(
+      event: DomRepeatEvent<MenuStateItem<SpeechSynthesisVoice>>) {
     // TODO(crbug.com/1474951): Save voice to prefs.
     if (this.contentPage) {
-      this.contentPage.setSpeechSynthesisVoice(
-          event.model.item.data as SpeechSynthesisVoice);
+      this.contentPage.setSpeechSynthesisVoice(event.model.item.data);
     }
   }
 
-  private onVoicePreviewClick_(event: DomRepeatEvent<MenuStateItem>) {
+  private onVoicePreviewClick_(
+      event: DomRepeatEvent<MenuStateItem<SpeechSynthesisVoice>>) {
     // Because the preview button is layered onto the voice-selection button,
     // the onVoiceSelectClick_() listener is also subscribed to this event. This
     // line is to make sure that the voice-selection callback is not triggered.
@@ -519,8 +523,8 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
   }
 
   private onTextStyleClick_(
-      event: DomRepeatEvent<MenuStateItem>, logVal: ReadAnythingSettingsChange,
-      menuClicked: CrActionMenuElement,
+      event: DomRepeatEvent<MenuStateItem<any>>,
+      logVal: ReadAnythingSettingsChange, menuClicked: CrActionMenuElement,
       contentPageCallback: ((data: any) => void)) {
     event.model.item.callback();
     chrome.metricsPrivate.recordEnumerationValue(
