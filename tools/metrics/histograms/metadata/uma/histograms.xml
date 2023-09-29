@@ -805,6 +805,98 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="UMA.StackProfiler.CopyStack.Event" enum="CopyStackEvent"
+    expires_after="2024-09-12">
+  <owner>iby@google.com</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Records events during StackCopierSignal::CopyStack(). For each run of
+    StackCopierSignal::CopyStack(), &quot;Started&quot; will be recorded once
+    and one of the other events (Succeeded or one of the Failed) will be
+    recorded. Only recorded on platforms that use StackCopierSignal for stack
+    profiling.
+  </summary>
+</histogram>
+
+<histogram name="UMA.StackProfiler.CopyStack.EventSignalToWaitEndTime"
+    units="microseconds" expires_after="2024-09-12">
+  <owner>iby@google.com</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    The delay between when the sampled thread signals that it has finished
+    copying the stack and when StackCopierSignal::CopyStack() receives that
+    signal. Recorded at most once per successful StackCopierSignal::CopyStack()
+    call; will not be recorded if the signal handler was unable to get a clock
+    reading for its end time. Only recorded on platforms that use
+    StackCopierSignal for stack profiling. Reported for all clients regardless
+    of TimeTicks::IsHighResolution, since all platforms that use
+    StackCopierSignal always have high-resolution timers.
+  </summary>
+</histogram>
+
+<histogram name="UMA.StackProfiler.CopyStack.HandlerRunTime"
+    units="microseconds" expires_after="2024-09-12">
+  <owner>iby@google.com</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    The total amount of time that StackCopierSignal::CopyStack()'s signal
+    handler spends running (on the sampled thread). Thus, the amount of time the
+    stack profiler is stealing from the sampled thread. Recorded at most once
+    per successful StackCopierSignal::CopyStack() call; will not be recorded if
+    the signal handler was unable to get a clock reading for its start or end
+    time. Only recorded on platforms that use StackCopierSignal for stack
+    profiling. Reported for all clients regardless of
+    TimeTicks::IsHighResolution, since all platforms that use StackCopierSignal
+    always have high-resolution timers.
+  </summary>
+</histogram>
+
+<histogram name="UMA.StackProfiler.CopyStack.ProfileThreadTotalWaitTime"
+    units="microseconds" expires_after="2024-09-12">
+  <owner>iby@google.com</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    The total amount of time that StackCopierSignal::CopyStack() spends waiting
+    for the futex to becoming signaled. Recorded once per successful
+    StackCopierSignal::CopyStack() call. Only recorded on platforms that use
+    StackCopierSignal for stack profiling. Reported for all clients regardless
+    of TimeTicks::IsHighResolution, since all platforms that use
+    StackCopierSignal always have high-resolution timers.
+  </summary>
+</histogram>
+
+<histogram name="UMA.StackProfiler.CopyStack.SignalToHandlerTime"
+    units="microseconds" expires_after="2024-09-12">
+  <owner>iby@google.com</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    The amount of time between when StackCopierSignal::CopyStack() sends a
+    signal to the sampled thread and the time the signal handler gets control of
+    the sampled thread. Recorded at most once per successful
+    StackCopierSignal::CopyStack() call; will not be recorded if the signal
+    handler was unable to get a clock reading for its start time. Only recorded
+    on platforms that use StackCopierSignal for stack profiling. Reported for
+    all clients regardless of TimeTicks::IsHighResolution, since all platforms
+    that use StackCopierSignal always have high-resolution timers.
+  </summary>
+</histogram>
+
+<histogram name="UMA.StackProfiler.CopyStack.TotalCrossThreadTime"
+    units="microseconds" expires_after="2024-09-12">
+  <owner>iby@google.com</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    The total amount of time consumed by StackCopierSignal::CopyStack() doing
+    work between itself and the sampled thread; that is, the time between when
+    it sends a signal to the other thread and the time the other thread responds
+    by signaling completion. Recorded once per successful
+    StackCopierSignal::CopyStack() call. Only recorded on platforms that use
+    StackCopierSignal for stack profiling. Reported for all clients regardless
+    of TimeTicks::IsHighResolution, since all platforms that use
+    StackCopierSignal always have high-resolution timers.
+  </summary>
+</histogram>
+
 <histogram name="UMA.Startup.LocalStateFileExistence" enum="BooleanExists"
     expires_after="2023-12-24">
   <owner>caitlinfischer@google.com</owner>

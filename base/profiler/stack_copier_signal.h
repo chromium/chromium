@@ -8,7 +8,9 @@
 #include <memory>
 
 #include "base/base_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/profiler/stack_copier.h"
+#include "base/time/tick_clock.h"
 
 namespace base {
 
@@ -30,8 +32,30 @@ class BASE_EXPORT StackCopierSignal : public StackCopier {
 
   using StackCopier::CopyStackContentsAndRewritePointers;
 
+  void set_clock_for_testing(const TickClock* clock) { clock_ = clock; }
+
+  // Events that happen during CopyStack; used for the
+  // UMA.StackProfiler.CopyStack.Event histogram. Public for use by tests.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class CopyStackEvent {
+    kStarted = 0,
+    kSucceeded = 1,
+    kSigactionFailed = 2,
+    kTgkillFailed = 3,
+    kWaitFailed = 4,
+    kMaxValue = kWaitFailed
+  };
+
  private:
+  // Records an event during a run of CopyStack to the
+  // UMA.StackProfiler.CopyStack.Event histogram.
+  static void RecordEvent(CopyStackEvent event);
+
   std::unique_ptr<ThreadDelegate> thread_delegate_;
+  // Clock used for time inside CopyStack. NOT used for getting the time in the
+  // signal handler, which always uses the real system tick clock.
+  raw_ptr<const TickClock> clock_;
 };
 
 }  // namespace base

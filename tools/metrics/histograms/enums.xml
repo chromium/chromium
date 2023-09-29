@@ -20413,6 +20413,14 @@ Called by update_net_error_codes.py.-->
   <int value="2" label="Cache miss"/>
 </enum>
 
+<enum name="CopyStackEvent">
+  <int value="0" label="Started"/>
+  <int value="1" label="Succeeded"/>
+  <int value="2" label="Sigaction failed"/>
+  <int value="3" label="Tgkill failed"/>
+  <int value="4" label="Wait failed"/>
+</enum>
+
 <enum name="CorbCanonicalMimeType">
   <summary>Coarse MIME type classification for CORB decisions.</summary>
   <int value="0" label="Html">
