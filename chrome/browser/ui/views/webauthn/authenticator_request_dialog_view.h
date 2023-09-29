@@ -22,6 +22,10 @@ namespace test {
 class AuthenticatorRequestDialogViewTestApi;
 }
 
+namespace views {
+class MdTextButton;
+}
+
 class AuthenticatorRequestSheetView;
 
 // A tab-modal dialog shown while a Web Authentication API request is active.
@@ -105,6 +109,8 @@ class AuthenticatorRequestDialogView
   raw_ptr<AuthenticatorRequestDialogModel> model_;
 
   raw_ptr<AuthenticatorRequestSheetView, DanglingUntriaged> sheet_ = nullptr;
+  raw_ptr<views::MdTextButton> other_mechanisms_button_ = nullptr;
+  raw_ptr<views::View> manage_devices_button_ = nullptr;
   std::unique_ptr<views::MenuRunner> other_mechanisms_menu_runner_;
   bool first_shown_ = false;
 
