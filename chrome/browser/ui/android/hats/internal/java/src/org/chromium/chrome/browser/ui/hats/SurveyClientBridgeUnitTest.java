@@ -25,9 +25,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
-import org.robolectric.annotation.Config;
 
-import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.ui.base.WindowAndroid;
@@ -39,7 +37,6 @@ import java.util.Map;
  * Unit test for {@link SurveyClientBridge}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(shadows = ShadowPostTask.class)
 public class SurveyClientBridgeUnitTest {
     private static final long TEST_NATIVE_POINTER = 45312L;
     private static final String TEST_TRIGGER = "trigger";
