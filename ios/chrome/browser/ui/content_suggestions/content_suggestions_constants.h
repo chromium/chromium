@@ -27,7 +27,8 @@ enum class ContentSuggestionsModuleType {
   kSafetyCheckMultiRowOverflow = 9,
   kTabResumption = 10,
   kParcelTracking = 11,
-  kMaxValue = kParcelTracking,
+  kParcelTrackingSeeMore = 12,
+  kMaxValue = kParcelTrackingSeeMore,
 };
 // LINT.ThenChange(/tools/metrics/histograms/enums.xml)
 

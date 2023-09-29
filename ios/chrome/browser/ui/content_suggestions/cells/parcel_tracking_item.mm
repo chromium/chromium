@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/cells/parcel_tracking_item.h"
 
 #import "base/time/time.h"
+#import "url/gurl.h"
 
 @implementation ParcelTrackingItem : NSObject
 @end

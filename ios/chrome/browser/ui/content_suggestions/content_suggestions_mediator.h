@@ -15,6 +15,10 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_consumer.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_recent_tab_removal_observer_bridge.h"
 
+namespace commerce {
+class ShoppingService;
+}
+
 namespace favicon {
 class LargeIconService;
 }
@@ -49,6 +53,7 @@ enum class ContentSuggestionsModuleType;
 class GURL;
 class LargeIconCache;
 @protocol NewTabPageMetricsDelegate;
+@class ParcelTrackingItem;
 class PromosManager;
 class ReadingListModel;
 @protocol SnackbarCommands;
@@ -72,6 +77,7 @@ class WebStateList;
                       syncService:(syncer::SyncService*)syncService
             authenticationService:(AuthenticationService*)authService
                   identityManager:(signin::IdentityManager*)identityManager
+                  shoppingService:(commerce::ShoppingService*)shoppingService
                           browser:(Browser*)browser NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
@@ -155,6 +161,9 @@ class WebStateList;
 
 // Returns all possible items in the Set Up List.
 - (NSArray<SetUpListItemViewData*>*)allSetUpListItems;
+
+// Returns the latest fetched tracked parcels.
+- (NSArray<ParcelTrackingItem*>*)parcelTrackingItems;
 
 @end
 

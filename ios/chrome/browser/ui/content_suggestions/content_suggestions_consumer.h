@@ -17,6 +17,7 @@ enum class ContentSuggestionsModuleType;
 enum class SetUpListItemType;
 @class SetUpListItemViewData;
 @class TabResumptionItem;
+@class ParcelTrackingItem;
 
 // MagicStackOrderChange is used in `updateMagicStackOrder:withStatus:` to
 // indicate what module has changed and how it needs to be updated.
@@ -112,6 +113,10 @@ struct MagicStackOrderChange {
 
 // Hides the tab resumption tile.
 - (void)hideTabResumption;
+
+// Indicates to the consumer to display the parcel tracking module for each
+// given `items` configuration.
+- (void)showParcelTrackingItems:(NSArray<ParcelTrackingItem*>*)items;
 
 @end
 

@@ -91,7 +91,8 @@
           freshness_impression_count + 1);
       break;
     }
-    case ContentSuggestionsModuleType::kParcelTracking: {
+    case ContentSuggestionsModuleType::kParcelTracking:
+    case ContentSuggestionsModuleType::kParcelTrackingSeeMore: {
       // Increment freshness pref since it is an impression of
       // the latest Tab Resumption results as the top module.
       int freshness_impression_count = _localState->GetInteger(

@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/drag_and_drop/url_drag_drop_handler.h"
 #import "ios/chrome/browser/ntp/set_up_list_item.h"
 #import "ios/chrome/browser/ntp/set_up_list_item_type.h"
+#import "ios/chrome/browser/parcel_tracking/parcel_tracking_util.h"
 #import "ios/chrome/browser/safety_check/ios_chrome_safety_check_manager_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -29,6 +30,8 @@
 #import "ios/chrome/browser/ui/content_suggestions/cells/magic_stack_module_container.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/magic_stack_module_container_delegate.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/multi_row_container_view.h"
+#import "ios/chrome/browser/ui/content_suggestions/cells/parcel_tracking_item.h"
+#import "ios/chrome/browser/ui/content_suggestions/cells/parcel_tracking_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/query_suggestion_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_commands.h"
@@ -102,6 +105,7 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
     UIGestureRecognizerDelegate,
     ContentSuggestionsSelectionActions,
     MagicStackModuleContainerDelegate,
+    ParcelTrackingViewDelegate,
     SetUpListItemViewTapDelegate,
     TabResumptionViewDelegate,
     URLDropDelegate,
@@ -172,6 +176,7 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
   SetUpListItemView* _setUpListAllSetItemView;
   NSMutableArray<SetUpListItemView*>* _compactedSetUpListViews;
   TabResumptionView* _tabResumptionView;
+  NSMutableArray<MagicStackModuleContainer*>* _parcelTrackingModuleContainers;
 }
 
 - (instancetype)init {
@@ -820,6 +825,44 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
   [_magicStackModuleOrder removeObjectAtIndex:moduleIndex];
 }
 
+- (void)showParcelTrackingItems:(NSArray<ParcelTrackingItem*>*)items {
+  _parcelTrackingModuleContainers = [NSMutableArray array];
+
+  if ([items count] > 2) {
+    ParcelTrackingModuleView* parcelTrackingModuleView =
+        [[ParcelTrackingModuleView alloc] initWithFrame:CGRectZero];
+    parcelTrackingModuleView.delegate = self;
+    [parcelTrackingModuleView configureView:items[0]];
+    MagicStackModuleContainer* parcelTrackingModuleContainer =
+        [[MagicStackModuleContainer alloc]
+            initWithContentView:parcelTrackingModuleView
+                           type:ContentSuggestionsModuleType::
+                                    kParcelTrackingSeeMore
+                       delegate:self];
+    [_parcelTrackingModuleContainers addObject:parcelTrackingModuleContainer];
+  } else {
+    for (ParcelTrackingItem* item in items) {
+      ParcelTrackingModuleView* parcelTrackingModuleView =
+          [[ParcelTrackingModuleView alloc] initWithFrame:CGRectZero];
+      parcelTrackingModuleView.delegate = self;
+      [parcelTrackingModuleView configureView:item];
+      MagicStackModuleContainer* parcelTrackingModuleContainer =
+          [[MagicStackModuleContainer alloc]
+              initWithContentView:parcelTrackingModuleView
+                             type:ContentSuggestionsModuleType::kParcelTracking
+                         delegate:self];
+      [_parcelTrackingModuleContainers addObject:parcelTrackingModuleContainer];
+    }
+  }
+
+  if (_magicStackRankReceived) {
+    for (MagicStackModuleContainer* parcelTrackingModuleContainer in
+             _parcelTrackingModuleContainers) {
+      [self insertModuleIntoMagicStack:parcelTrackingModuleContainer];
+    }
+  }
+}
+
 #pragma mark - SetUpListItemViewTapDelegate methods
 
 - (void)didTapSetUpListItemView:(SetUpListItemView*)view {
@@ -830,6 +873,13 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
 
 - (void)tabResumptionViewTapped {
   [self.suggestionCommandHandler openTabResumptionItem];
+}
+
+#pragma mark - ParcelTrackingViewDelegate methods
+
+- (void)loadParcelTrackingPage:(GURL)parcelTrackingURL {
+  self.urlLoadingBrowserAgent->Load(
+      UrlLoadParams::InCurrentTab(parcelTrackingURL));
 }
 
 #pragma mark - ContentSuggestionsSelectionActions
@@ -955,14 +1005,18 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
 }
 
 - (void)seeMoreWasTappedForModuleType:(ContentSuggestionsModuleType)type {
-  if (type == ContentSuggestionsModuleType::kSafetyCheckMultiRowOverflow) {
-    [self.audience didSelectSafetyCheckItem:SafetyCheckItemType::kDefault];
-    return;
-  }
-
-  if (type == ContentSuggestionsModuleType::kCompactedSetUpList) {
-    [self.audience showSetUpListShowMoreMenu];
-    return;
+  switch (type) {
+    case ContentSuggestionsModuleType::kSafetyCheckMultiRowOverflow:
+      [self.audience didSelectSafetyCheckItem:SafetyCheckItemType::kDefault];
+      break;
+    case ContentSuggestionsModuleType::kCompactedSetUpList:
+      [self.audience showSetUpListShowMoreMenu];
+      break;
+    case ContentSuggestionsModuleType::kParcelTrackingSeeMore:
+      [self.audience showMagicStackParcelList];
+      break;
+    default:
+      break;
   }
 }
 
@@ -1270,6 +1324,19 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
         }
         break;
       }
+      case ContentSuggestionsModuleType::kParcelTracking:
+      case ContentSuggestionsModuleType::kParcelTrackingSeeMore:
+        if (IsIOSParcelTrackingEnabled()) {
+          for (MagicStackModuleContainer* parcelModule in
+                   _parcelTrackingModuleContainers) {
+            // Find a parcel tracking module that hasn't been added yet.
+            if (![parcelModule superview]) {
+              [_magicStack addArrangedSubview:parcelModule];
+              break;
+            }
+          }
+        }
+        break;
       default:
         break;
     }

@@ -20,6 +20,7 @@
 #import "components/segmentation_platform/public/segmentation_platform_service.h"
 #import "components/signin/public/base/signin_pref_names.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
+#import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
 #import "ios/chrome/browser/default_browser/utils_test_support.h"
 #import "ios/chrome/browser/favicon/ios_chrome_large_icon_cache_factory.h"
 #import "ios/chrome/browser/favicon/ios_chrome_large_icon_service_factory.h"
@@ -176,6 +177,9 @@ class ContentSuggestionsMediatorTest : public PlatformTest {
                           syncService:sync_service
                 authenticationService:authentication_service
                       identityManager:identityManager
+                      shoppingService:commerce::ShoppingServiceFactory::
+                                          GetForBrowserState(
+                                              chrome_browser_state_.get())
                               browser:browser_.get()];
     mediator_.dispatcher = dispatcher_;
     mediator_.consumer = consumer_;

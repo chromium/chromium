@@ -15,6 +15,7 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/branded_images/branded_images_api.h"
 #import "ui/base/l10n/l10n_util_mac.h"
+#import "url/gurl.h"
 
 namespace {
 
@@ -96,172 +97,52 @@ const CGFloat kStatusBarCornerRadius = 3.0f;
   ParcelStatusBarView* _firstStatusBar;
   ParcelStatusBarView* _secondStatusBar;
   ParcelStatusBarView* _thirdStatusBar;
+  GURL _parcelTrackingURL;
+  UIImageView* _iconImageView;
+  UILabel* _titleLabel;
+  UILabel* _subtitleLabel;
+  UITapGestureRecognizer* _tapGestureRecognizer;
 }
 
-- (instancetype)initWithConfiguration:(ParcelTrackingItem*)config {
+- (instancetype)initWithFrame:(CGRect)frame {
   self = [super initWithFrame:CGRectZero];
   if (self) {
     [self constructView];
-
-    NSString* carrierName;
-    switch (config.parcelType) {
-      case ParcelType::kUSPS:
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
-        self.iconImageView.image = [UIImage imageNamed:kUSPSCarrier];
-#else
-        self.iconImageView.image =
-            DefaultSymbolWithPointSize(kBoxTruckFill, kIconSize);
-#endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
-        carrierName =
-            l10n_util::GetNSString(IDS_IOS_PARCEL_TRACKING_CARRIER_USPS);
-        break;
-      case ParcelType::kUPS:
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
-        self.iconImageView.image = [UIImage imageNamed:kUPSCarrier];
-#else
-        self.iconImageView.image =
-            DefaultSymbolWithPointSize(kBoxTruckFill, kIconSize);
-#endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
-        carrierName =
-            l10n_util::GetNSString(IDS_IOS_PARCEL_TRACKING_CARRIER_UPS);
-        break;
-      case ParcelType::kFedex:
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
-        self.iconImageView.image = [UIImage imageNamed:kFedexCarrier];
-#else
-        self.iconImageView.image =
-            DefaultSymbolWithPointSize(kBoxTruckFill, kIconSize);
-#endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
-        carrierName =
-            l10n_util::GetNSString(IDS_IOS_PARCEL_TRACKING_CARRIER_FEDEX);
-        break;
-      default:
-        break;
-    }
-    self.subtitleLabel.text = l10n_util::GetNSStringF(
-        IDS_IOS_CONTENT_SUGGESTIONS_PARCEL_TRACKING_MODULE_PACKAGE_INFORMATION,
-        base::SysNSStringToUTF16(carrierName),
-        base::SysNSStringToUTF16(config.parcelID));
-
-    NSString* dateString =
-        base::SysUTF16ToNSString(base::LocalizedTimeFormatWithPattern(
-            config.estimatedDeliveryTime, "EEEE MMMM d"));
-
-    // Configure the status bars (and title text color if needed) depending on
-    // status.
-    switch (config.status) {
-      case ParcelState::kNew:
-        self.titleLabel.text = l10n_util::GetNSString(
-            IDS_IOS_CONTENT_SUGGESTIONS_PARCEL_TRACKING_MODULE_PACKAGE_NEW_STATUS);
-        [_firstStatusBar configureAsError:NO lighterTone:NO];
-        [_secondStatusBar configureAsError:NO lighterTone:YES];
-        [_thirdStatusBar configureAsError:NO lighterTone:YES];
-        break;
-      case ParcelState::kLabelCreated:
-        self.titleLabel.text = l10n_util::GetNSString(
-            IDS_IOS_CONTENT_SUGGESTIONS_PARCEL_TRACKING_MODULE_PACKAGE_LABEL_CREATED_STATUS);
-        [_firstStatusBar configureAsError:NO lighterTone:NO];
-        [_secondStatusBar configureAsError:NO lighterTone:YES];
-        [_thirdStatusBar configureAsError:NO lighterTone:YES];
-        break;
-      case ParcelState::kFinished: {
-        // Use Today date descriptor if the delivery day matches the current day
-        if ([[NSCalendar currentCalendar]
-                         isDate:config.estimatedDeliveryTime.ToNSDate()
-                inSameDayAsDate:[NSDate date]]) {
-          dateString = l10n_util::GetNSString(
-              IDS_IOS_CONTENT_SUGGESTIONS_PARCEL_TRACKING_MODULE_PACKAGE_DELIVERED_TODAY);
-        }
-        self.titleLabel.text = [NSString
-            stringWithFormat:
-                @"%@ %@",
-                l10n_util::GetNSString(
-                    IDS_IOS_CONTENT_SUGGESTIONS_PARCEL_TRACKING_MODULE_PACKAGE_DELIVERED_STATUS),
-                dateString];
-        [_firstStatusBar configureAsError:NO lighterTone:NO];
-        [_secondStatusBar configureAsError:NO lighterTone:NO];
-        [_thirdStatusBar configureAsError:NO lighterTone:NO];
-        break;
-      }
-      case ParcelState::kAtPickupLocation:
-        self.titleLabel.text = l10n_util::GetNSString(
-            IDS_IOS_CONTENT_SUGGESTIONS_PARCEL_TRACKING_MODULE_PACKAGE_READY_PICKUP_STATUS);
-        [_firstStatusBar configureAsError:NO lighterTone:NO];
-        [_secondStatusBar configureAsError:NO lighterTone:NO];
-        [_thirdStatusBar configureAsError:NO lighterTone:NO];
-        break;
-      case ParcelState::kPickedUp:
-      case ParcelState::kHandedOff:
-      case ParcelState::kWithCarrier:
-        self.titleLabel.text = l10n_util::GetNSStringF(
-            IDS_IOS_CONTENT_SUGGESTIONS_PARCEL_TRACKING_MODULE_PACKAGE_ARRIVING_STATUS,
-            base::SysNSStringToUTF16(dateString));
-        [_firstStatusBar configureAsError:NO lighterTone:NO];
-        [_secondStatusBar configureAsError:NO lighterTone:NO];
-        [_thirdStatusBar configureAsError:NO lighterTone:YES];
-        break;
-      case ParcelState::kOutForDelivery:
-        self.titleLabel.text = l10n_util::GetNSStringF(
-            IDS_IOS_CONTENT_SUGGESTIONS_PARCEL_TRACKING_MODULE_PACKAGE_ARRIVING_STATUS,
-            base::SysNSStringToUTF16(l10n_util::GetNSString(
-                IDS_IOS_CONTENT_SUGGESTIONS_PARCEL_TRACKING_MODULE_PACKAGE_DELIVERED_TODAY)));
-        [_firstStatusBar configureAsError:NO lighterTone:NO];
-        [_secondStatusBar configureAsError:NO lighterTone:NO];
-        [_thirdStatusBar configureAsError:NO lighterTone:YES];
-        break;
-      case ParcelState::kDeliveryFailed:
-        self.titleLabel.text = l10n_util::GetNSString(
-            IDS_IOS_CONTENT_SUGGESTIONS_PARCEL_TRACKING_MODULE_PACKAGE_DELIVERY_ATTEMPTED_STATUS);
-        self.titleLabel.textColor = [UIColor colorNamed:kRed600Color];
-        [_firstStatusBar configureAsError:YES lighterTone:NO];
-        [_secondStatusBar configureAsError:YES lighterTone:NO];
-        [_thirdStatusBar configureAsError:YES lighterTone:YES];
-        break;
-      case ParcelState::kError:
-        self.titleLabel.text = l10n_util::GetNSString(
-            IDS_IOS_CONTENT_SUGGESTIONS_PARCEL_TRACKING_MODULE_PACKAGE_ERROR_STATUS);
-        self.titleLabel.textColor = [UIColor colorNamed:kRed600Color];
-        [_firstStatusBar configureAsError:YES lighterTone:NO];
-        [_secondStatusBar configureAsError:YES lighterTone:NO];
-        [_thirdStatusBar configureAsError:YES lighterTone:YES];
-        break;
-      case ParcelState::kCancelled:
-        self.titleLabel.text = l10n_util::GetNSString(
-            IDS_IOS_CONTENT_SUGGESTIONS_PARCEL_TRACKING_MODULE_PACKAGE_CANCELLED_STATUS);
-        self.titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
-        // No status bars.
-        [_firstStatusBar removeFromSuperview];
-        [_secondStatusBar removeFromSuperview];
-        [_thirdStatusBar removeFromSuperview];
-        break;
-      case ParcelState::kUndeliverable:
-        self.titleLabel.text = l10n_util::GetNSString(
-            IDS_IOS_CONTENT_SUGGESTIONS_PARCEL_TRACKING_MODULE_PACKAGE_UNDELIVERABLE_STATUS);
-        self.titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
-        // No status bars.
-        [_firstStatusBar removeFromSuperview];
-        [_secondStatusBar removeFromSuperview];
-        [_thirdStatusBar removeFromSuperview];
-        break;
-      case ParcelState::kReturnToSender:
-      case ParcelState::kReturnCompleted:
-        self.titleLabel.text = l10n_util::GetNSString(
-            IDS_IOS_CONTENT_SUGGESTIONS_PARCEL_TRACKING_MODULE_PACKAGE_RETURNED_TO_SENDER_STATUS);
-        self.titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
-        // No status bars.
-        [_firstStatusBar removeFromSuperview];
-        [_secondStatusBar removeFromSuperview];
-        [_thirdStatusBar removeFromSuperview];
-        break;
-      default:
-        break;
-    }
-    self.accessibilityLabel =
-        [NSString stringWithFormat:@"%@, %@", self.titleLabel.text,
-                                   self.subtitleLabel.text];
     self.isAccessibilityElement = YES;
   }
   return self;
+}
+
+- (void)configureView:(ParcelTrackingItem*)config {
+  _parcelTrackingURL = config.trackingURL;
+  _iconImageView.image = [self iconImageForParcelType:config.parcelType];
+
+  NSString* carrierName;
+  switch (config.parcelType) {
+    case ParcelType::kUSPS:
+      carrierName =
+          l10n_util::GetNSString(IDS_IOS_PARCEL_TRACKING_CARRIER_USPS);
+      break;
+    case ParcelType::kUPS:
+      carrierName = l10n_util::GetNSString(IDS_IOS_PARCEL_TRACKING_CARRIER_UPS);
+      break;
+    case ParcelType::kFedex:
+      carrierName =
+          l10n_util::GetNSString(IDS_IOS_PARCEL_TRACKING_CARRIER_FEDEX);
+      break;
+    default:
+      break;
+  }
+  _subtitleLabel.text = l10n_util::GetNSStringF(
+      IDS_IOS_CONTENT_SUGGESTIONS_PARCEL_TRACKING_MODULE_PACKAGE_INFORMATION,
+      base::SysNSStringToUTF16(carrierName),
+      base::SysNSStringToUTF16(config.parcelID));
+
+  [self updateViewForParcelStatus:config.status
+                     deliveryTime:config.estimatedDeliveryTime];
+
+  self.accessibilityLabel = [NSString
+      stringWithFormat:@"%@, %@", _titleLabel.text, _subtitleLabel.text];
 }
 
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
@@ -363,5 +244,154 @@ const CGFloat kStatusBarCornerRadius = 3.0f;
     [horizontalStackView.trailingAnchor
         constraintEqualToAnchor:self.trailingAnchor],
   ]];
+
+  // Set up the tap gesture recognizer.
+  _tapGestureRecognizer =
+      [[UITapGestureRecognizer alloc] initWithTarget:self
+                                              action:@selector(handleTap:)];
+  [self addGestureRecognizer:_tapGestureRecognizer];
 }
+
+// Returns the appropriate icon image for a `parcelType`.
+- (UIImage*)iconImageForParcelType:(ParcelType)parcelType {
+#if !BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+  return DefaultSymbolWithPointSize(kBoxTruckFill, kIconSize);
+#else
+  switch (parcelType) {
+    case ParcelType::kUSPS:
+      return [UIImage imageNamed:kUSPSCarrier];
+    case ParcelType::kUPS:
+      return [UIImage imageNamed:kUPSCarrier];
+    case ParcelType::kFedex:
+      return [UIImage imageNamed:kFedexCarrier];
+    default:
+      return nil;
+  }
+#endif
+}
+
+// Updates the title and status bars based on the parcel `status` and
+// `estimatedDeliveryTime`.
+- (void)updateViewForParcelStatus:(ParcelState)status
+                     deliveryTime:(base::Time)estimatedDeliveryTime {
+  NSString* dateString =
+      base::SysUTF16ToNSString(base::LocalizedTimeFormatWithPattern(
+          estimatedDeliveryTime, "EEEE MMMM d"));
+
+  // Configure the status bars (and title text color if needed) depending on
+  // status.
+  switch (status) {
+    case ParcelState::kNew:
+      _titleLabel.text = l10n_util::GetNSString(
+          IDS_IOS_CONTENT_SUGGESTIONS_PARCEL_TRACKING_MODULE_PACKAGE_NEW_STATUS);
+      [_firstStatusBar configureAsError:NO lighterTone:NO];
+      [_secondStatusBar configureAsError:NO lighterTone:YES];
+      [_thirdStatusBar configureAsError:NO lighterTone:YES];
+      break;
+    case ParcelState::kLabelCreated:
+      _titleLabel.text = l10n_util::GetNSString(
+          IDS_IOS_CONTENT_SUGGESTIONS_PARCEL_TRACKING_MODULE_PACKAGE_LABEL_CREATED_STATUS);
+      [_firstStatusBar configureAsError:NO lighterTone:NO];
+      [_secondStatusBar configureAsError:NO lighterTone:YES];
+      [_thirdStatusBar configureAsError:NO lighterTone:YES];
+      break;
+    case ParcelState::kFinished: {
+      // Use Today date descriptor if the delivery day matches the current day
+      if ([[NSCalendar currentCalendar] isDate:estimatedDeliveryTime.ToNSDate()
+                               inSameDayAsDate:[NSDate date]]) {
+        dateString = l10n_util::GetNSString(
+            IDS_IOS_CONTENT_SUGGESTIONS_PARCEL_TRACKING_MODULE_PACKAGE_DELIVERED_TODAY);
+      }
+      _titleLabel.text = [NSString
+          stringWithFormat:
+              @"%@ %@",
+              l10n_util::GetNSString(
+                  IDS_IOS_CONTENT_SUGGESTIONS_PARCEL_TRACKING_MODULE_PACKAGE_DELIVERED_STATUS),
+              dateString];
+      [_firstStatusBar configureAsError:NO lighterTone:NO];
+      [_secondStatusBar configureAsError:NO lighterTone:NO];
+      [_thirdStatusBar configureAsError:NO lighterTone:NO];
+      break;
+    }
+    case ParcelState::kAtPickupLocation:
+      _titleLabel.text = l10n_util::GetNSString(
+          IDS_IOS_CONTENT_SUGGESTIONS_PARCEL_TRACKING_MODULE_PACKAGE_READY_PICKUP_STATUS);
+      [_firstStatusBar configureAsError:NO lighterTone:NO];
+      [_secondStatusBar configureAsError:NO lighterTone:NO];
+      [_thirdStatusBar configureAsError:NO lighterTone:NO];
+      break;
+    case ParcelState::kPickedUp:
+    case ParcelState::kHandedOff:
+    case ParcelState::kWithCarrier:
+      _titleLabel.text = l10n_util::GetNSStringF(
+          IDS_IOS_CONTENT_SUGGESTIONS_PARCEL_TRACKING_MODULE_PACKAGE_ARRIVING_STATUS,
+          base::SysNSStringToUTF16(dateString));
+      [_firstStatusBar configureAsError:NO lighterTone:NO];
+      [_secondStatusBar configureAsError:NO lighterTone:NO];
+      [_thirdStatusBar configureAsError:NO lighterTone:YES];
+      break;
+    case ParcelState::kOutForDelivery:
+      _titleLabel.text = l10n_util::GetNSStringF(
+          IDS_IOS_CONTENT_SUGGESTIONS_PARCEL_TRACKING_MODULE_PACKAGE_ARRIVING_STATUS,
+          base::SysNSStringToUTF16(l10n_util::GetNSString(
+              IDS_IOS_CONTENT_SUGGESTIONS_PARCEL_TRACKING_MODULE_PACKAGE_DELIVERED_TODAY)));
+      [_firstStatusBar configureAsError:NO lighterTone:NO];
+      [_secondStatusBar configureAsError:NO lighterTone:NO];
+      [_thirdStatusBar configureAsError:NO lighterTone:YES];
+      break;
+    case ParcelState::kDeliveryFailed:
+      _titleLabel.text = l10n_util::GetNSString(
+          IDS_IOS_CONTENT_SUGGESTIONS_PARCEL_TRACKING_MODULE_PACKAGE_DELIVERY_ATTEMPTED_STATUS);
+      _titleLabel.textColor = [UIColor colorNamed:kRed600Color];
+      [_firstStatusBar configureAsError:YES lighterTone:NO];
+      [_secondStatusBar configureAsError:YES lighterTone:NO];
+      [_thirdStatusBar configureAsError:YES lighterTone:YES];
+      break;
+    case ParcelState::kError:
+      _titleLabel.text = l10n_util::GetNSString(
+          IDS_IOS_CONTENT_SUGGESTIONS_PARCEL_TRACKING_MODULE_PACKAGE_ERROR_STATUS);
+      _titleLabel.textColor = [UIColor colorNamed:kRed600Color];
+      [_firstStatusBar configureAsError:YES lighterTone:NO];
+      [_secondStatusBar configureAsError:YES lighterTone:NO];
+      [_thirdStatusBar configureAsError:YES lighterTone:YES];
+      break;
+    case ParcelState::kCancelled:
+      _titleLabel.text = l10n_util::GetNSString(
+          IDS_IOS_CONTENT_SUGGESTIONS_PARCEL_TRACKING_MODULE_PACKAGE_CANCELLED_STATUS);
+      _titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
+      // No status bars.
+      [_firstStatusBar removeFromSuperview];
+      [_secondStatusBar removeFromSuperview];
+      [_thirdStatusBar removeFromSuperview];
+      break;
+    case ParcelState::kUndeliverable:
+      _titleLabel.text = l10n_util::GetNSString(
+          IDS_IOS_CONTENT_SUGGESTIONS_PARCEL_TRACKING_MODULE_PACKAGE_UNDELIVERABLE_STATUS);
+      _titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
+      // No status bars.
+      [_firstStatusBar removeFromSuperview];
+      [_secondStatusBar removeFromSuperview];
+      [_thirdStatusBar removeFromSuperview];
+      break;
+    case ParcelState::kReturnToSender:
+    case ParcelState::kReturnCompleted:
+      _titleLabel.text = l10n_util::GetNSString(
+          IDS_IOS_CONTENT_SUGGESTIONS_PARCEL_TRACKING_MODULE_PACKAGE_RETURNED_TO_SENDER_STATUS);
+      _titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
+      // No status bars.
+      [_firstStatusBar removeFromSuperview];
+      [_secondStatusBar removeFromSuperview];
+      [_thirdStatusBar removeFromSuperview];
+      break;
+    default:
+      break;
+  }
+}
+
+- (void)handleTap:(UITapGestureRecognizer*)sender {
+  if (sender.state == UIGestureRecognizerStateEnded) {
+    [self.delegate loadParcelTrackingPage:_parcelTrackingURL];
+  }
+}
+
 @end

@@ -7,25 +7,24 @@
 
 #import <UIKit/UIKit.h>
 
+class GURL;
 @class ParcelTrackingItem;
+
+// Delegate for ParcelTrackingModuleView.
+@protocol ParcelTrackingViewDelegate
+
+// Indicates to the receiver to load the `parcelTrackingURL`.
+- (void)loadParcelTrackingPage:(GURL)parcelTrackingURL;
+
+@end
 
 // View for the Parcel Tracking module.
 @interface ParcelTrackingModuleView : UIView
 
-// Initializes and configures the view with `config`.
-- (instancetype)initWithConfiguration:(ParcelTrackingItem*)config
-    NS_DESIGNATED_INITIALIZER;
-- (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;
-- (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;
+// Configures this view with `config`.
+- (void)configureView:(ParcelTrackingItem*)config;
 
-// Favicon image.
-@property(nonatomic, strong) UIImageView* iconImageView;
-
-// Title of the view.
-@property(nonatomic, strong, readonly) UILabel* titleLabel;
-
-// Subtitle of the view.
-@property(nonatomic, strong, readonly) UILabel* subtitleLabel;
+@property(nonatomic, weak) id<ParcelTrackingViewDelegate> delegate;
 
 @end
 

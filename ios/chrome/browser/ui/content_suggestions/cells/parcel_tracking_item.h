@@ -11,9 +11,12 @@ namespace base {
 class Time;
 }  // namespace base
 
+class GURL;
+
 // The carrier type for a given tracked parcel.
 enum class ParcelType {
-  kUSPS = 1,
+  kUnkown = 0,
+  kUSPS,
   kUPS,
   kFedex,
 };
@@ -52,6 +55,9 @@ enum class ParcelState {
 
 // The status of the parcel.
 @property(nonatomic, assign) ParcelState status;
+
+// The URL of the parcel status page.
+@property(nonatomic, assign) GURL trackingURL;
 
 @end
 

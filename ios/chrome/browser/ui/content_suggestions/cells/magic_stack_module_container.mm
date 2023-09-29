@@ -290,6 +290,7 @@ const CGFloat kTitleStackViewTrailingMargin = 16.0f;
     case ContentSuggestionsModuleType::kSafetyCheckMultiRowOverflow:
       return l10n_util::GetNSString(IDS_IOS_SAFETY_CHECK_TITLE);
     case ContentSuggestionsModuleType::kParcelTracking:
+    case ContentSuggestionsModuleType::kParcelTrackingSeeMore:
       return l10n_util::GetNSString(
           IDS_IOS_CONTENT_SUGGESTIONS_PARCEL_TRACKING_MODULE_TITLE);
     default:
@@ -413,6 +414,7 @@ const CGFloat kTitleStackViewTrailingMargin = 16.0f;
     case ContentSuggestionsModuleType::kSetUpListAutofill:
     case ContentSuggestionsModuleType::kCompactedSetUpList:
     case ContentSuggestionsModuleType::kParcelTracking:
+    case ContentSuggestionsModuleType::kParcelTrackingSeeMore:
       return YES;
     default:
       return NO;
@@ -437,6 +439,7 @@ const CGFloat kTitleStackViewTrailingMargin = 16.0f;
   switch (_type) {
     case ContentSuggestionsModuleType::kCompactedSetUpList:
     case ContentSuggestionsModuleType::kSafetyCheckMultiRowOverflow:
+    case ContentSuggestionsModuleType::kParcelTrackingSeeMore:
       return YES;
     default:
       return NO;
@@ -476,6 +479,7 @@ const CGFloat kTitleStackViewTrailingMargin = 16.0f;
       return l10n_util::GetNSString(
           IDS_IOS_SET_UP_LIST_HIDE_MODULE_CONTEXT_MENU_TITLE);
     case ContentSuggestionsModuleType::kParcelTracking:
+    case ContentSuggestionsModuleType::kParcelTrackingSeeMore:
       return l10n_util::GetNSStringF(
           IDS_IOS_PARCEL_TRACKING_CONTEXT_MENU_TITLE,
           base::SysNSStringToUTF16(l10n_util::GetNSString(
@@ -503,6 +507,7 @@ const CGFloat kTitleStackViewTrailingMargin = 16.0f;
       return l10n_util::GetNSString(
           IDS_IOS_SET_UP_LIST_HIDE_MODULE_CONTEXT_MENU_DESCRIPTION);
     case ContentSuggestionsModuleType::kParcelTracking:
+    case ContentSuggestionsModuleType::kParcelTrackingSeeMore:
       return l10n_util::GetNSStringF(
           IDS_IOS_PARCEL_TRACKING_CONTEXT_MENU_DESCRIPTION,
           base::SysNSStringToUTF16(l10n_util::GetNSString(

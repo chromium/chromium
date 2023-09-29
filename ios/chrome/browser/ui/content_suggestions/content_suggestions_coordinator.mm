@@ -21,6 +21,7 @@
 #import "components/sync/base/features.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/tests_hook.h"
+#import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
 #import "ios/chrome/browser/discover_feed/discover_feed_service.h"
 #import "ios/chrome/browser/discover_feed/discover_feed_service_factory.h"
 #import "ios/chrome/browser/favicon/ios_chrome_large_icon_cache_factory.h"
@@ -71,6 +72,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller_audience.h"
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack_half_sheet_table_view_controller.h"
+#import "ios/chrome/browser/ui/content_suggestions/magic_stack_parcel_list_half_sheet_table_view_controller.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/types.h"
@@ -104,6 +106,7 @@
     MagicStackHalfSheetTableViewControllerDelegate,
     SafetyCheckViewDelegate,
     SetUpListDefaultBrowserPromoCoordinatorDelegate,
+    MagicStackParcelListHalfSheetTableViewControllerDelegate,
     SetUpListViewDelegate>
 
 @property(nonatomic, strong)
@@ -140,6 +143,10 @@
   // The edit half sheet for toggling all Magic Stack modules.
   MagicStackHalfSheetTableViewController*
       _magicStackHalfSheetTableViewController;
+
+  // The parcel list half sheet to see all tracked parcels.
+  MagicStackParcelListHalfSheetTableViewController*
+      _parcelListHalfSheetTableViewController;
 }
 
 - (void)start {
@@ -196,6 +203,10 @@
       IdentityManagerFactory::GetForBrowserState(
           self.browser->GetBrowserState());
 
+  commerce::ShoppingService* shoppingService =
+      commerce::ShoppingServiceFactory::GetForBrowserState(
+          self.browser->GetBrowserState());
+
   self.contentSuggestionsMediator = [[ContentSuggestionsMediator alloc]
            initWithLargeIconService:largeIconService
                      largeIconCache:cache
@@ -206,6 +217,7 @@
                         syncService:syncService
               authenticationService:authenticationService
                     identityManager:identityManager
+                    shoppingService:shoppingService
                             browser:self.browser];
   self.contentSuggestionsMediator.feedDelegate = self.feedDelegate;
   self.contentSuggestionsMediator.promosManager = promosManager;
@@ -266,6 +278,7 @@
       dismissViewControllerAnimated:NO
                          completion:nil];
   _magicStackHalfSheetTableViewController = nil;
+  [self dismissParcelListHalfSheet];
   _started = NO;
 }
 
@@ -348,6 +361,30 @@
                                   completion:nil];
 }
 
+- (void)showMagicStackParcelList {
+  _parcelListHalfSheetTableViewController =
+      [[MagicStackParcelListHalfSheetTableViewController alloc]
+          initWithParcels:[self.contentSuggestionsMediator
+                                  parcelTrackingItems]];
+  _parcelListHalfSheetTableViewController.delegate = self;
+
+  UINavigationController* navViewController = [[UINavigationController alloc]
+      initWithRootViewController:_parcelListHalfSheetTableViewController];
+
+  navViewController.modalPresentationStyle = UIModalPresentationPageSheet;
+  UISheetPresentationController* presentationController =
+      navViewController.sheetPresentationController;
+  presentationController.prefersEdgeAttachedInCompactHeight = YES;
+  presentationController.widthFollowsPreferredContentSizeWhenEdgeAttached = YES;
+  presentationController.detents = @[
+    UISheetPresentationControllerDetent.mediumDetent,
+    UISheetPresentationControllerDetent.largeDetent
+  ];
+  [self.viewController presentViewController:navViewController
+                                    animated:YES
+                                  completion:nil];
+}
+
 #pragma mark - MagicStackHalfSheetTableViewControllerDelegate
 
 - (void)dismissMagicStackHalfSheet {
@@ -355,6 +392,15 @@
       dismissViewControllerAnimated:YES
                          completion:nil];
   _magicStackHalfSheetTableViewController = nil;
+}
+
+#pragma mark - MagicStackParcelListHalfSheetTableViewControllerDelegate
+
+- (void)dismissParcelListHalfSheet {
+  [_parcelListHalfSheetTableViewController.presentingViewController
+      dismissViewControllerAnimated:YES
+                         completion:nil];
+  _parcelListHalfSheetTableViewController = nil;
 }
 
 #pragma mark - Public methods
