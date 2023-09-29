@@ -508,7 +508,6 @@
 <translation id="1410797069449661718">Бірінші қойындыға қарай айналдыру</translation>
 <translation id="1410806973194718079">Саясаттарды тексеру мүмкін емес.</translation>
 <translation id="1411400282355634827">Bluetooth құрылғыларының барлық рұқсатын қайта орнату керек пе?</translation>
-<translation id="1411724932979011919">LPA форматында жазуыңыз керек: 1$&lt;smdp address&gt;$&lt;activation code&gt;</translation>
 <translation id="1414315029670184034">Сайттардың камераңызды пайдалануына рұқсат бермеу</translation>
 <translation id="1414648216875402825">Сіз <ph name="PRODUCT_NAME" /> тұрақсыз нұсқасы жаңартудасыз, онда әлі орындалып жатқан мүмкіндіктер бар. Бұзылулар, күтпеген қателер орын алады. Сақтықпен жалғастыруыңызды сұраймыз.</translation>
 <translation id="1415708812149920388">Буферден оқу рұқсаты берілмеді</translation>
@@ -1234,7 +1233,6 @@
 <translation id="1972313920920745320">Сіз қосатын сайттар әрдайым белсенді болып қалады және олардың жады босатылмайды. <ph name="BEGIN_LINK" />Нақты бір сайттарды белсенді күйде қалдыру туралы толық ақпарат алыңыз<ph name="END_LINK" /></translation>
 <translation id="1972325230031091483">Кіріп отырған веб-бетке сәйкес контент алдын ала жүктелетіндіктен, шолу барысы жылдамдайды.</translation>
 <translation id="197288927597451399">Сақтау</translation>
-<translation id="1973313062201924554">Сіз <ph name="APP_NAME" /> қолданбасына берген рұқсаттар осы қолданбаға да беріледі.</translation>
 <translation id="1973763416111613016"><ph name="FILE_NAME" /> файлын қауіпсіз жүктеп алу мүмкін емес. Жүктеп алынғандар жолағына оралу үшін Shift+F6 пернелерін басыңыз.</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1974043046396539880">CRL тарату орындары</translation>
@@ -3925,7 +3923,6 @@
 <translation id="4100733287846229632">Құрылғыда бос орын өте аз</translation>
 <translation id="4100853287411968461">Пайдалану уақытының жаңа шектеуі</translation>
 <translation id="4101352914005291489">Жасырын SSID</translation>
-<translation id="4102469565336584882">Жарамсыз код. LPA форматында жазуыңыз керек: 1$&lt;smdp address&gt;$&lt;activation code&gt;</translation>
 <translation id="4102906002417106771">Powerwash функциясын іске қосу үшін қайта қосу</translation>
 <translation id="4104163789986725820">Э&amp;кспорттау…</translation>
 <translation id="4104944259562794668">Оны кейінірек "Параметрлер" &gt; "Қауіпсіздік және құпиялық" &gt; "Құлыптаулы экран және кіру" тармағында қосуға болады.</translation>
@@ -7078,7 +7075,6 @@
 <translation id="6757431299485455321">Басқа құрылғылардың осы хотспотты табуына көмектесіңіз.</translation>
 <translation id="6758056191028427665">Қал-жағдайыңызды айтып беріңіз.</translation>
 <translation id="6759193508432371551">Зауыттық параметрлерге қайта орнату</translation>
-<translation id="6761431452438552910">Bluetooth құрылғыңыз жұптау режимінде және маңайда болсын. Сенімді құрылғылармен ғана жұптаңыз.</translation>
 <translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6762833852331690540">Қосулы</translation>
 <translation id="676560328519657314">Google Pay қызметіндегі төлеу әдістеріңіз</translation>
@@ -7372,7 +7368,6 @@
 <translation id="6979737339423435258">Барлық уақыт</translation>
 <translation id="6980402667292348590">insert</translation>
 <translation id="6981553172137913845">Интернетті құпия пайдаланғыңыз келсе, инкогнито терезесін ашуға болады. Ол үшін нүктелер белгішесінің мәзірін басыңыз</translation>
-<translation id="6981761993313539853">Bluetooth құрылғыңыз жұптау режимінде және маңайда болсын. Сенімді құрылғылармен ғана жұптаңыз. <ph name="BEGIN_LINK_LEARN_MORE" />Толығырақ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6981982820502123353">Арнайы мүмкіндіктер</translation>
 <translation id="6983507711977005608">Жылдам тетеринг желісін ажырату</translation>
 <translation id="6983783921975806247">Тіркелген OID</translation>

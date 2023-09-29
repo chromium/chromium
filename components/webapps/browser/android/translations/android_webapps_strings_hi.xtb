@@ -1,7 +1,11 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="hi">
+<translation id="1213425325105380833">इस खाते से जुड़े डिवाइसों पर, हाल ही में इस्तेमाल किए गए वेब ऐप्लिकेशन वापस लाएं</translation>
+<translation id="2065911435109240297">अपने वेब ऐप्लिकेशन वापस लाएं</translation>
+<translation id="2111649875343992405">देखें कि किन वेब ऐप्लिकेशन को वापस लाना है</translation>
 <translation id="2139186145475833000">होम स्क्रीन में जोड़ें</translation>
+<translation id="2172982519592313442">वेब ऐप्लिकेशन देखें</translation>
 <translation id="2478076885740497414">ऐप्स इंस्टॉल करें</translation>
 <translation id="3789841737615482174">इंस्‍टॉल करें</translation>
 <translation id="3910402514791813257">इंस्टॉल नहीं किया जा सका</translation>
@@ -10,5 +14,7 @@
 <translation id="5250483651202458397">स्क्रीनशॉट. बंद करने के लिए इस पर टैप करें.</translation>
 <translation id="6990079615885386641">Google Play Store से ऐप्लिकेशन डाउनलोड करें: <ph name="APP_ACTION" /></translation>
 <translation id="7333031090786104871">पिछली साइट अब भी जोड़ी जा रही है</translation>
+<translation id="7672888405515738928">वे वेब ऐप्लिकेशन चुनें जिन्हें आपको इस डिवाइस पर वापस लाना है. यहां ऐप्लिकेशन आपके Chrome इतिहास के आधार पर दिखाए जाते हैं.</translation>
+<translation id="8163051092261298861">वेब ऐप्लिकेशन को डिवाइस पर वापस लाएं</translation>
 <translation id="962979164594783469">यह ऐप्लिकेशन इंस्टॉल करें</translation>
 </translationbundle>

@@ -510,7 +510,6 @@
 <translation id="1410797069449661718">Ոլորել դեպի առաջին ներդիրը</translation>
 <translation id="1410806973194718079">Չհաջողվեց ստուգել կանոնները</translation>
 <translation id="1411400282355634827">Զրոյացնե՞լ Bluetooth սարքերի բոլոր թույլտվությունները։</translation>
-<translation id="1411724932979011919">Մուտքագրումը պետք է լինի LPA ձևաչափով՝ 1$&lt;smdp address&gt;$&lt;activation code&gt;</translation>
 <translation id="1414315029670184034">Թույլ չտալ կայքերին օգտագործել ձեր սարքի տեսախցիկը</translation>
 <translation id="1414648216875402825">Դուք անցնում եք <ph name="PRODUCT_NAME" />-ի անկայուն տարբերակի, որը պարունակում է տվյալ պահին մշակվող գործառույթներ: Զգույշ եղեք: Կարող են առաջնալ խափանումներ և անսպասելի վրիպակներ:</translation>
 <translation id="1415708812149920388">Սեղմատախտակի ընթերցումը մերժվեց</translation>
@@ -1239,7 +1238,6 @@
 <translation id="1972313920920745320">Կայքերը, որոնք ավելացնում եք, միշտ կլինեն ակտիվ, և հիշողությունը չի ազատվի դրանցից։ <ph name="BEGIN_LINK" />Իմանալ ավելին որոշակի կայքերն ակտիվ պահելու մասին<ph name="END_LINK" /></translation>
 <translation id="1972325230031091483">Դուք ավելի արագ կդիտեք վեբ էջերը, քանի որ բովանդակությունը նախապես բեռնվում է՝ ընթացիկ բացված վեբ էջի հիման վրա։</translation>
 <translation id="197288927597451399">Տեղադրել</translation>
-<translation id="1973313062201924554">Թույլտվությունները, որոնք տրամադրում եք «<ph name="APP_NAME" />» հավելվածին, նաև կգործեն այս հավելվածի համար։</translation>
 <translation id="1973763416111613016"><ph name="FILE_NAME" /> ֆայլը հնարավոր չէ ներբեռնել անվտանգ եղանակով։ Սեղմեք Shift+F6՝ ներբեռնումների գոտու տարածք անցնելու համար։</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1974043046396539880">CRL բաշխման կետեր</translation>
@@ -3928,7 +3926,6 @@
 <translation id="4100733287846229632">Սարքի սկավառակում տարածքը ծայրահեղ քիչ է</translation>
 <translation id="4100853287411968461">Սարքի օգտագործման ժամանակի նոր սահմանափակում</translation>
 <translation id="4101352914005291489">Թաքցված SSID</translation>
-<translation id="4102469565336584882">Կոդն անվավեր է։ Մուտքագրումը պետք է լինի LPA ձևաչափով՝ 1$&lt;smdp address&gt;$&lt;activation code&gt;</translation>
 <translation id="4102906002417106771">Վերագործարկել՝ Powerwash-ը գործարկելու համար</translation>
 <translation id="4104163789986725820">Ար&amp;տահանել…</translation>
 <translation id="4104944259562794668">Այս պարամետրը կարող եք նորից միացնել՝ անցնելով Կարգավորումներ &gt; Անվտանգություն և գաղտնիություն &gt; Կողպէկրան և մուտք</translation>
@@ -7086,7 +7083,6 @@
 <translation id="6757431299485455321">Օգնել մյուս սարքերին գտնել այս թեժ կետը։</translation>
 <translation id="6758056191028427665">Կիսվեք մեզ հետ ձեր տպավորություններով:</translation>
 <translation id="6759193508432371551">Գործարանային կարգավորումների վերականգնում</translation>
-<translation id="6761431452438552910">Համոզվեք, որ ձեր Bluetooth սարքը մոտակայքում է և զուգակցման ռեժիմում։ Զուգակցեք միայն այն սարքերի հետ, որոնց վստահում եք։</translation>
 <translation id="676158322851696513">«<ph name="EXTENSION_NAME" />»</translation>
 <translation id="6762833852331690540">Միացված է</translation>
 <translation id="676560328519657314">Ձեր վճարման եղանակները Google Pay-ում</translation>
@@ -7380,7 +7376,6 @@
 <translation id="6979737339423435258">Ամբողջ ժամանակաշրջանի</translation>
 <translation id="6980402667292348590">insert</translation>
 <translation id="6981553172137913845">Կայքերը գաղտնի այցելելու համար սեղմեք երեք կետով պատկերակին՝ ինկոգնիտո պատուհան բացելու համար։</translation>
-<translation id="6981761993313539853">Համոզվեք, որ ձեր Bluetooth սարքը մոտակայքում է և զուգակցման ռեժիմում։ Զուգակցեք միայն այն սարքերի հետ, որոնց վստահում եք։ <ph name="BEGIN_LINK_LEARN_MORE" />Իմանալ ավելին<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6981982820502123353">Մատչելիությունը</translation>
 <translation id="6983507711977005608">Անջատել կապը մուտքի ակնթարթային կետի հետ</translation>
 <translation id="6983783921975806247">Գրանցված OID</translation>

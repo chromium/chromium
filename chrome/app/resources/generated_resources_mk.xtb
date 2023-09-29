@@ -511,7 +511,6 @@
 <translation id="1410797069449661718">Лизгајте кон првата картичка</translation>
 <translation id="1410806973194718079">Не може да се проверат правилата</translation>
 <translation id="1411400282355634827">Дали да се ресетираат сите дозволи за уредите со Bluetooth?</translation>
-<translation id="1411724932979011919">Кодот треба да биде во форматот LPA:1$&lt;smdp address&gt;$&lt;activation code&gt;</translation>
 <translation id="1414315029670184034">Не им дозволувај на сајтовите да ја користат камерата</translation>
 <translation id="1414648216875402825">Ажурирате во нестабилна верзија на <ph name="PRODUCT_NAME" /> која содржи карактеристики кои се во тек. Ќе настанат падови и неочекувани грешки. Продолжете со внимание.</translation>
 <translation id="1415708812149920388">Одбиен е пристапот за читање на привремената меморија</translation>
@@ -1250,7 +1249,6 @@
 <translation id="1972313920920745320">Сајтовите што ќе ги додадете секогаш ќе бидат активни и на нив нема да се ослободува меморија. <ph name="BEGIN_LINK" />Дознајте повеќе за одржувањето на активноста на конкретни сајтови<ph name="END_LINK" /></translation>
 <translation id="1972325230031091483">Ќе прелистувате побрзо бидејќи содржините се вчитуваат проактивно според вашата тековна посета на веб-страницата</translation>
 <translation id="197288927597451399">Чувај</translation>
-<translation id="1973313062201924554">Дозволите за <ph name="APP_NAME" /> ќе важат и за оваа апликација.</translation>
 <translation id="1973763416111613016"><ph name="FILE_NAME" /> не може да се преземе безбедно. Притиснете Shift + F6 за да одите до областа на лентата за преземања.</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1974043046396539880">CRL точки на дистрибуција</translation>
@@ -3944,7 +3942,6 @@
 <translation id="4100733287846229632">Просторот на уредот е критично низок</translation>
 <translation id="4100853287411968461">Ново ограничување за времето поминато на уредот</translation>
 <translation id="4101352914005291489">Скриен SSID</translation>
-<translation id="4102469565336584882">Погрешен код. Кодот треба да биде во форматот LPA:1$&lt;smdp address&gt;$&lt;activation code&gt;</translation>
 <translation id="4102906002417106771">Рестартирајте за фабричко ресетирање</translation>
 <translation id="4104163789986725820">Из&amp;вези...</translation>
 <translation id="4104944259562794668">Може да овозможите подоцна во „Поставки &gt; Приватност и безбедност &gt; Заклучен екран и најавување“</translation>
@@ -7103,7 +7100,6 @@
 <translation id="6757431299485455321">Помогни другите уреди да ја најдат точкава на пристап.</translation>
 <translation id="6758056191028427665">Оценете ја нашата работа.</translation>
 <translation id="6759193508432371551">Ресетирање до фабрички вредности</translation>
-<translation id="6761431452438552910">Проверете дали уредот со Bluetooth е во режим на спарување и во близина. Сапрувајте само доверливи уреди.</translation>
 <translation id="676158322851696513">„<ph name="EXTENSION_NAME" />“</translation>
 <translation id="6762833852331690540">Вклучено</translation>
 <translation id="676560328519657314">Вашите начини на плаќање во Google Pay</translation>
@@ -7397,7 +7393,6 @@
 <translation id="6979737339423435258">Целосната историја</translation>
 <translation id="6980402667292348590">копче insert</translation>
 <translation id="6981553172137913845">За да прелистувате приватно, кликнете на менито од иконата со точки за да отворите прозорец „Инкогнито“</translation>
-<translation id="6981761993313539853">Проверете дали уредот со Bluetooth е во режим на спарување и е во близина. Сапрувајте само доверливи уреди. <ph name="BEGIN_LINK_LEARN_MORE" />Дознајте повеќе<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6981982820502123353">Пристапност</translation>
 <translation id="6983507711977005608">Исклучување инстант врзување на мрежа</translation>
 <translation id="6983783921975806247">Регистриран OID</translation>

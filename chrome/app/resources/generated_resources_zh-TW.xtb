@@ -508,7 +508,6 @@
 <translation id="1410797069449661718">捲動至第一個分頁</translation>
 <translation id="1410806973194718079">無法檢查政策</translation>
 <translation id="1411400282355634827">要重設所有藍牙裝置權限嗎？</translation>
-<translation id="1411724932979011919">輸入的內容必須使用 LPA 格式：1$&lt;smdp address&gt;$&lt;activation code&gt;</translation>
 <translation id="1414315029670184034">禁止網站使用攝影機</translation>
 <translation id="1414648216875402825">你即將更新為不穩定的 <ph name="PRODUCT_NAME" />版本，其中含有仍在開發中的功能。系統可能會發生當機情況和無法預期的錯誤，執行時請特別注意。</translation>
 <translation id="1415708812149920388">已禁止讀取剪貼簿</translation>
@@ -1237,7 +1236,6 @@
 <translation id="1972313920920745320">清單內的網站一律會保持使用中的狀態，系統不會釋出記憶體。<ph name="BEGIN_LINK" />進一步瞭解如何讓特定網站保持使用中的狀態<ph name="END_LINK" /></translation>
 <translation id="1972325230031091483">系統會根據你目前造訪的網頁主動載入內容，幫助你加快瀏覽速度</translation>
 <translation id="197288927597451399">保留</translation>
-<translation id="1973313062201924554">如果你將權限授予「<ph name="APP_NAME" />」，這個應用程式也會取得同樣的權限。</translation>
 <translation id="1973763416111613016">無法安全下載「<ph name="FILE_NAME" />」。按下 Shift + F6 鍵即可返回下載內容列區域。</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1974043046396539880">CRL 發布點</translation>
@@ -3927,7 +3925,6 @@
 <translation id="4100733287846229632">裝置空間嚴重不足</translation>
 <translation id="4100853287411968461">新的裝置使用時間限制</translation>
 <translation id="4101352914005291489">隱藏的 SSID</translation>
-<translation id="4102469565336584882">代碼無效，輸入的內容必須使用 LPA 格式：1$&lt;smdp address&gt;$&lt;activation code&gt;</translation>
 <translation id="4102906002417106771">重新啟動以執行 Powerwash</translation>
 <translation id="4104163789986725820">匯出(&amp;X)...</translation>
 <translation id="4104944259562794668">你之後可以前往「設定」&gt;「安全性與隱私權」&gt;「螢幕鎖定和登入」加以啟用</translation>
@@ -7079,7 +7076,6 @@
 <translation id="6757431299485455321">協助其他裝置找到這個無線基地台。</translation>
 <translation id="6758056191028427665">請讓我們瞭解你的滿意度。</translation>
 <translation id="6759193508432371551">恢復原廠設定</translation>
-<translation id="6761431452438552910">請確認你的藍牙裝置放在附近，且處於配對模式。只配對你信任的裝置。</translation>
 <translation id="676158322851696513">「<ph name="EXTENSION_NAME" />」</translation>
 <translation id="6762833852331690540">開啟</translation>
 <translation id="676560328519657314">你的 Google Pay 付款方式</translation>
@@ -7373,7 +7369,6 @@
 <translation id="6979737339423435258">不限時間</translation>
 <translation id="6980402667292348590">insert 鍵</translation>
 <translation id="6981553172137913845">如果想要進行私密瀏覽，請按一下三個圓點圖示的選單，然後開啟無痕式視窗</translation>
-<translation id="6981761993313539853">請確認你的藍牙裝置放在附近，且處於配對模式。只配對你信任的裝置。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6981982820502123353">無障礙設定</translation>
 <translation id="6983507711977005608">中斷與「即時網路共用」網路的連線</translation>
 <translation id="6983783921975806247">已註冊的 OID</translation>

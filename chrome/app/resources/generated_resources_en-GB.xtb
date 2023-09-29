@@ -510,7 +510,6 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1410797069449661718">Scroll towards the first tab</translation>
 <translation id="1410806973194718079">Unable to check policies</translation>
 <translation id="1411400282355634827">Reset all Bluetooth device permissions?</translation>
-<translation id="1411724932979011919">Your entry should have the format LPA:1$&lt;smdp address&gt;$&lt;activation code&gt;</translation>
 <translation id="1414315029670184034">Don't allow sites to use your camera</translation>
 <translation id="1414648216875402825">You are updating to an unstable version of <ph name="PRODUCT_NAME" /> which contains features that are in progress. Crashes and unexpected bugs will occur. Please proceed with caution.</translation>
 <translation id="1415708812149920388">Clipboard read access denied</translation>
@@ -1249,7 +1248,6 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1972313920920745320">Websites you add will always stay active and memory won't be freed up from them. <ph name="BEGIN_LINK" />Learn more about keeping specific sites active<ph name="END_LINK" /></translation>
 <translation id="1972325230031091483">You’ll browse faster because content is proactively loaded based on your current web page visit</translation>
 <translation id="197288927597451399">Keep</translation>
-<translation id="1973313062201924554">Permissions that you allow for <ph name="APP_NAME" /> will also be allowed for this app.</translation>
 <translation id="1973763416111613016"><ph name="FILE_NAME" /> can't be downloaded securely. Press Shift + F6 to cycle to the downloads bar area.</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1974043046396539880">CRL Distribution Points</translation>
@@ -3943,7 +3941,6 @@ This can include information about installed software, files, your browser and t
 <translation id="4100733287846229632">Device space critically low</translation>
 <translation id="4100853287411968461">New screen time limit</translation>
 <translation id="4101352914005291489">Hidden SSID</translation>
-<translation id="4102469565336584882">Invalid code. Your entry should have the format LPA:1$&lt;smdp address&gt;$&lt;activation code&gt;</translation>
 <translation id="4102906002417106771">Restart to Powerwash</translation>
 <translation id="4104163789986725820">E&amp;xport...</translation>
 <translation id="4104944259562794668">You can enable it later in Settings &gt; Security and privacy &gt; Lock screen and sign-in</translation>
@@ -7100,7 +7097,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6757431299485455321">Help other devices find this hotspot.</translation>
 <translation id="6758056191028427665">Let us know how we’re doing.</translation>
 <translation id="6759193508432371551">Factory reset</translation>
-<translation id="6761431452438552910">Make sure that your Bluetooth device is in pairing mode and nearby. Only pair with devices that you trust.</translation>
 <translation id="676158322851696513">‘<ph name="EXTENSION_NAME" />’</translation>
 <translation id="6762833852331690540">On</translation>
 <translation id="676560328519657314">Your payment methods in Google Pay</translation>
@@ -7394,7 +7390,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6979737339423435258">All time</translation>
 <translation id="6980402667292348590">insert</translation>
 <translation id="6981553172137913845">To browse privately, click the dots icon menu to open an Incognito window</translation>
-<translation id="6981761993313539853">Make sure that your Bluetooth device is in pairing mode and nearby. Only pair with devices that you trust. <ph name="BEGIN_LINK_LEARN_MORE" />Learn more<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6981982820502123353">Accessibility</translation>
 <translation id="6983507711977005608">Disconnect Instant Tethering network</translation>
 <translation id="6983783921975806247">Registered OID</translation>

@@ -512,7 +512,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="1410797069449661718">Görgetés az első lap felé</translation>
 <translation id="1410806973194718079">Nem lehetséges a házirendek ellenőrzése</translation>
 <translation id="1411400282355634827">Visszaállítja az összes Bluetooth-eszközengedélyt?</translation>
-<translation id="1411724932979011919">A következő formátumban kell megadni: LPA:1$&lt;smdp-cím&gt;$&lt;aktivációs kód&gt;</translation>
 <translation id="1414315029670184034">A webhelyek nem használhatják a kamerát</translation>
 <translation id="1414648216875402825">A(z) <ph name="PRODUCT_NAME" /> instabil verziójára frissít, amely fejlesztés alatt álló funkciókat tartalmaz. Előfordulhatnak rendszerösszeomlások és váratlan programhibák. Kérjük, fokozott körültekintéssel lépjen tovább.</translation>
 <translation id="1415708812149920388">A vágólap olvasásához szükséges hozzáférés megtagadva</translation>
@@ -1254,7 +1253,6 @@ Az alkalmazások számára már megadott engedélyek erre a fiókra is érvénye
 <translation id="1972313920920745320">A hozzáadott webhelyek mindig aktívak maradnak, és a rendszer nem szabadítja fel az általuk használt memóriát. <ph name="BEGIN_LINK" />További információ adott webhelyek aktív állapotának fenntartásáról<ph name="END_LINK" />.</translation>
 <translation id="1972325230031091483">Gyorsabban böngészhet, mert a rendszer proaktív módon tölti be a tartalmat az aktuálisan felkeresett weboldal alapján.</translation>
 <translation id="197288927597451399">Megőrzés</translation>
-<translation id="1973313062201924554">A(z) <ph name="APP_NAME" /> számára megadott engedélyek erre az alkalmazásra vonatkozóan is érvényesek lesznek.</translation>
 <translation id="1973763416111613016">A következő fájlt nem lehet biztonságosan letölteni: „<ph name="FILE_NAME" />”. A Shift + F6 billentyűkombináció lenyomásával a letöltéssávhoz léphet.</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1974043046396539880">Tanúsítvány-visszavonási lista (CRL) terjesztési pontjai</translation>
@@ -3951,7 +3949,6 @@ Ide tartozhatnak a telepített szoftverekkel, valamint a fájlokkal, a böngész
 <translation id="4100733287846229632">Az eszköz nagyon kevés szabad tárhellyel rendelkezik</translation>
 <translation id="4100853287411968461">Képernyő előtt tölthető idő frissítve</translation>
 <translation id="4101352914005291489">Rejtett SSID</translation>
-<translation id="4102469565336584882">Érvénytelen kód. A következő formátumban kell megadni: LPA:1$&lt;smdp-cím&gt;$&lt;aktivációs kód&gt;</translation>
 <translation id="4102906002417106771">Újraindítás a powerwash megkezdéséhez</translation>
 <translation id="4104163789986725820">E&amp;xportálás...</translation>
 <translation id="4104944259562794668">Később a Beállítások &gt; Biztonság és adatvédelem &gt; Lezárási képernyő és bejelentkezés pontban kapcsolhatja be.</translation>
@@ -7112,7 +7109,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="6757431299485455321">Megkönnyítheti más eszközök számára ennek a hotspotnak a megtalálását.</translation>
 <translation id="6758056191028427665">Ossza meg velünk, mennyire van megelégedve munkánkkal.</translation>
 <translation id="6759193508432371551">Gyári beállítások visszaállítása</translation>
-<translation id="6761431452438552910">Győződjön meg arról, hogy a Bluetooth-eszköz párosítási módban és a közelben van. Csak olyan eszközökkel párosítson, amelyeket megbízhatónak tart.</translation>
 <translation id="676158322851696513">„<ph name="EXTENSION_NAME" />”</translation>
 <translation id="6762833852331690540">Be</translation>
 <translation id="676560328519657314">Az Ön fizetési módjai a Google Pay szolgáltatásban</translation>
@@ -7406,7 +7402,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="6979737339423435258">Mindenkori</translation>
 <translation id="6980402667292348590">insert</translation>
 <translation id="6981553172137913845">Privát böngészéshez kattintson a három pontból álló („Továbbiak”) ikonra, és nyisson inkognitó ablakot.</translation>
-<translation id="6981761993313539853">Győződjön meg róla, hogy a Bluetooth-eszköz párosítási módban és a közelben van. Csak olyan eszközökkel párosítson, amelyeket megbízhatónak tart. <ph name="BEGIN_LINK_LEARN_MORE" />További információ<ph name="END_LINK_LEARN_MORE" />.</translation>
 <translation id="6981982820502123353">Kisegítő lehetőségek</translation>
 <translation id="6983507711977005608">Lecsatlakozás az Azonnali internetmegosztás hálózatáról</translation>
 <translation id="6983783921975806247">Regisztrált OID</translation>
