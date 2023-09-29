@@ -50,6 +50,7 @@ const CountryLocaleMap& GetAllowedCountryToLocaleMap() {
     map[&kPriceInsightsRegionLaunched] = {{"us", {"en-us"}}};
     map[&kShowDiscountOnNavigationRegionLaunched] = {{"us", {"en-us"}}};
     map[&kShoppingPageTypesRegionLaunched] = {{"us", {"en-us"}}};
+    map[&kParcelTrackingRegionLaunched] = {{"us", {"en-us"}}};
 
     return map;
   }());
@@ -272,6 +273,9 @@ BASE_FEATURE(kChromeCartDomBasedHeuristics,
 BASE_FEATURE(kParcelTracking,
              "ParcelTracking",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kParcelTrackingRegionLaunched,
+             "ParcelTrackingRegionLaunched",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Params for Discount Consent V2 in the NTP Cart module.
 const char kNtpChromeCartModuleDiscountConsentNtpVariationParam[] =

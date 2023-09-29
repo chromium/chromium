@@ -793,6 +793,16 @@ bool ShoppingService::IsDiscountEligibleToShowOnNavigation() {
          account_checker_->IsAnonymizedUrlDataCollectionEnabled();
 }
 
+bool ShoppingService::IsParcelTrackingEligible() {
+  if (!IsRegionLockedFeatureEnabled(kParcelTracking,
+                                    kParcelTrackingRegionLaunched,
+                                    country_on_startup_, locale_on_startup_)) {
+    return false;
+  }
+  return account_checker_ && account_checker_->IsSignedIn() &&
+         account_checker_->IsAnonymizedUrlDataCollectionEnabled();
+}
+
 bool ShoppingService::IsShoppingPageTypesApiEnabled() {
   return IsRegionLockedFeatureEnabled(kShoppingPageTypes,
                                       kShoppingPageTypesRegionLaunched,

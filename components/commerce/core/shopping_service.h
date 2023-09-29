@@ -401,6 +401,12 @@ class ShoppingService : public KeyedService,
   // feature-related infrastructure.
   virtual bool IsDiscountEligibleToShowOnNavigation();
 
+  // Check if parcel tracking is eligible for use. This not only checks the
+  // feature flag, but also checks user's sign in state, country code, etc. The
+  // value returned here can change during runtime so it should not be used
+  // when deciding to build infrastructure.
+  virtual bool IsParcelTrackingEligible();
+
   // Starts tracking a list of parcels from a given page.
   void StartTrackingParcels(
       const std::vector<std::pair<ParcelIdentifier::Carrier, std::string>>&

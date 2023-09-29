@@ -104,6 +104,7 @@ class MockShoppingService : public commerce::ShoppingService {
   MOCK_METHOD(bool, IsMerchantViewerEnabled, (), (override));
   MOCK_METHOD(bool, IsPriceInsightsEligible, (), (override));
   MOCK_METHOD(bool, IsDiscountEligibleToShowOnNavigation, (), (override));
+  MOCK_METHOD(bool, IsParcelTrackingEligible, (), (override));
   MOCK_METHOD(void,
               GetDiscountInfoForUrls,
               (const std::vector<GURL>& urls, DiscountInfoCallback callback),
@@ -139,6 +140,7 @@ class MockShoppingService : public commerce::ShoppingService {
   void SetIsDiscountEligibleToShowOnNavigation(bool is_eligible);
   void SetResponseForGetDiscountInfoForUrls(const DiscountsMap& discounts_map);
   void SetBookmarkModelUsedForSync(bookmarks::BookmarkModel* bookmark_model);
+  void SetIsParcelTrackingEligible(bool is_eligible);
 };
 
 }  // namespace commerce

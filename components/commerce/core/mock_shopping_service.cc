@@ -247,4 +247,9 @@ void MockShoppingService::SetBookmarkModelUsedForSync(
       .WillByDefault(testing::Return(bookmark_model));
 }
 
+void MockShoppingService::SetIsParcelTrackingEligible(bool is_eligible) {
+  ON_CALL(*this, IsParcelTrackingEligible)
+      .WillByDefault(testing::Return(is_eligible));
+}
+
 }  // namespace commerce
