@@ -637,6 +637,29 @@ chromium-metrics-reviews@google.com.
   <token key="IPHFeature" variants="IPHFeature"/>
 </histogram>
 
+<histogram name="UserEducation.MessageShown.Subtype" enum="PromoSubtype"
+    expires_after="2024-09-01">
+  <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <summary>
+    Records what subtype of In-Product Help was shown to the user. The subtype
+    dictates special rules for when it can be shown. It can be normal, per-app
+    (shown once each in multiple applications), or a legal notice (must be shown
+    until explicitly acknowledged by the user).
+  </summary>
+</histogram>
+
+<histogram name="UserEducation.MessageShown.Type" enum="PromoType"
+    expires_after="2024-09-01">
+  <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <summary>
+    Records what type of In-Product Help was shown to the user. The type defines
+    the behavior of the IPH, which can be many varieties (e.g. toast, snooze,
+    custom action, etc.).
+  </summary>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>

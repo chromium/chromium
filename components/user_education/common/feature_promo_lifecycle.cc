@@ -6,6 +6,7 @@
 
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
@@ -135,6 +136,7 @@ void FeaturePromoLifecycle::OnPromoShown(
   ScopedPromoData data(storage_service_, iph_feature_);
   ++data->show_count;
   data->last_show_time = base::Time::Now();
+  RecordShown();
 }
 
 void FeaturePromoLifecycle::OnPromoShownForDemo(
@@ -228,6 +230,55 @@ void FeaturePromoLifecycle::MaybeWriteClosePromoData(CloseReason close_reason) {
       // No additional action required.
       break;
   }
+}
+
+void FeaturePromoLifecycle::RecordShown() {
+  // Record Promo shown
+  std::string action_name = "UserEducation.MessageShown";
+  base::RecordComputedAction(action_name);
+
+  // Record Promo feature ID
+  action_name.append(".");
+  action_name.append(iph_feature_->name);
+  base::RecordComputedAction(action_name);
+
+  // Record Promo type
+  UMA_HISTOGRAM_ENUMERATION("UserEducation.MessageShown.Type", promo_type_);
+  UMA_HISTOGRAM_ENUMERATION("UserEducation.MessageShown.SubType",
+                            promo_subtype_);
+  std::string type_action_name = "UserEducation.MessageShown.";
+  switch (promo_subtype_) {
+    case PromoSubtype::kNormal:
+      break;
+    case PromoSubtype::kPerApp:
+      // Ends with a period.
+      type_action_name.append("PerApp.");
+      break;
+    case PromoSubtype::kLegalNotice:
+      // Ends with a period.
+      type_action_name.append("LegalNotice.");
+      break;
+  }
+  switch (promo_type_) {
+    case PromoType::kLegacy:
+      type_action_name.append("Legacy");
+      break;
+    case PromoType::kToast:
+      type_action_name.append("Toast");
+      break;
+    case PromoType::kCustomAction:
+      type_action_name.append("CustomAction");
+      break;
+    case PromoType::kSnooze:
+      type_action_name.append("Snooze");
+      break;
+    case PromoType::kTutorial:
+      type_action_name.append("Tutorial");
+      break;
+    case PromoType::kUnspecified:
+      NOTREACHED();
+  }
+  base::RecordComputedAction(type_action_name);
 }
 
 void FeaturePromoLifecycle::MaybeRecordCloseReason(CloseReason close_reason) {

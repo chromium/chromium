@@ -91013,6 +91013,21 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="10" label="Start Password Manager Tutorial"/>
 </enum>
 
+<enum name="PromoSubtype">
+  <int value="0" label="Normal"/>
+  <int value="1" label="Per App"/>
+  <int value="2" label="Legal Notice"/>
+</enum>
+
+<enum name="PromoType">
+  <int value="0" label="Unspecified"/>
+  <int value="1" label="Toast"/>
+  <int value="2" label="Snooze"/>
+  <int value="3" label="Tutorial IPH"/>
+  <int value="4" label="Custom Action"/>
+  <int value="5" label="Legacy"/>
+</enum>
+
 <enum name="PromoWithInstructionsAction">
   <int value="0" label="Close"/>
   <int value="1" label="Open Instructions"/>

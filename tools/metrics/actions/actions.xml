@@ -38044,6 +38044,93 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="UserEducation.MessageShown">
+  <owner>mickeyburks@chromium.org</owner>
+  <description>An IPH was shown to the user.</description>
+</action>
+
+<action name="UserEducation.MessageShown.CustomAction">
+  <owner>mickeyburks@chromium.org</owner>
+  <description>A Custom Action IPH was shown to the user.</description>
+</action>
+
+<action name="UserEducation.MessageShown.IPH">
+  <owner>mickeyburks@chromium.org</owner>
+  <description>The IPH was shown to the user.</description>
+</action>
+
+<action name="UserEducation.MessageShown.Legacy">
+  <owner>mickeyburks@chromium.org</owner>
+  <description>A Legacy IPH was shown to the user.</description>
+</action>
+
+<action name="UserEducation.MessageShown.LegalNotice.CustomAction">
+  <owner>mickeyburks@chromium.org</owner>
+  <description>
+    A Legal Notice Custom Action IPH was shown to the user.
+  </description>
+</action>
+
+<action name="UserEducation.MessageShown.LegalNotice.Legacy">
+  <owner>mickeyburks@chromium.org</owner>
+  <description>A Legal Notice Legacy IPH was shown to the user.</description>
+</action>
+
+<action name="UserEducation.MessageShown.LegalNotice.Snooze">
+  <owner>mickeyburks@chromium.org</owner>
+  <description>A Legal Notice Snooze IPH was shown to the user.</description>
+</action>
+
+<action name="UserEducation.MessageShown.LegalNotice.Toast">
+  <owner>mickeyburks@chromium.org</owner>
+  <description>A Legal Notice Toast IPH was shown to the user.</description>
+</action>
+
+<action name="UserEducation.MessageShown.LegalNotice.Tutorial">
+  <owner>mickeyburks@chromium.org</owner>
+  <description>A Legal Notice Tutorial IPH was shown to the user.</description>
+</action>
+
+<action name="UserEducation.MessageShown.PerApp.CustomAction">
+  <owner>mickeyburks@chromium.org</owner>
+  <description>A Per App Custom Action IPH was shown to the user.</description>
+</action>
+
+<action name="UserEducation.MessageShown.PerApp.Legacy">
+  <owner>mickeyburks@chromium.org</owner>
+  <description>A Per App Legacy IPH was shown to the user.</description>
+</action>
+
+<action name="UserEducation.MessageShown.PerApp.Snooze">
+  <owner>mickeyburks@chromium.org</owner>
+  <description>A Per App Snooze IPH was shown to the user.</description>
+</action>
+
+<action name="UserEducation.MessageShown.PerApp.Toast">
+  <owner>mickeyburks@chromium.org</owner>
+  <description>A Per App Toast IPH was shown to the user.</description>
+</action>
+
+<action name="UserEducation.MessageShown.PerApp.Tutorial">
+  <owner>mickeyburks@chromium.org</owner>
+  <description>A Per App Tutorial IPH was shown to the user.</description>
+</action>
+
+<action name="UserEducation.MessageShown.Snooze">
+  <owner>mickeyburks@chromium.org</owner>
+  <description>A Snooze IPH was shown to the user.</description>
+</action>
+
+<action name="UserEducation.MessageShown.Toast">
+  <owner>mickeyburks@chromium.org</owner>
+  <description>A Toast IPH was shown to the user.</description>
+</action>
+
+<action name="UserEducation.MessageShown.Tutorial">
+  <owner>mickeyburks@chromium.org</owner>
+  <description>A Tutorial IPH was shown to the user.</description>
+</action>
+
 <action name="UserManager_Cleared_Legacy_User_Prefs">
   <owner>mahmadi@chromium.org</owner>
   <description>
@@ -39618,6 +39705,7 @@ should be able to be added at any place in this file.
       name="UserEducation.MessageAction.OverrideForUIRegionConflict.IPH"/>
   <affected-action name="UserEducation.MessageAction.Snooze.IPH"/>
   <affected-action name="UserEducation.MessageAction.Timeout.IPH"/>
+  <affected-action name="UserEducation.MessageShown.IPH"/>
 </action-suffix>
 
 <action-suffix separator="." ordering="suffix">

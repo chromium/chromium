@@ -91,6 +91,9 @@ class FeaturePromoLifecycle {
   // Records `PromoData` about the promo closing, unless in demo mode.
   void MaybeWriteClosePromoData(CloseReason close_reason);
 
+  // Records that an IPH was shown, including type and identity.
+  void RecordShown();
+
   // Records user actions and histograms that discern what action was taken to
   // close a promotion. Does not record in demo mode.
   void MaybeRecordCloseReason(CloseReason close_reason);

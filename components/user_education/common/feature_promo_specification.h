@@ -63,35 +63,43 @@ class FeaturePromoSpecification {
       base::RepeatingCallback<void(ui::ElementContext context,
                                    FeaturePromoHandle promo_handle)>;
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
   // Describes the type of promo. Used to configure defaults for the promo's
   // bubble.
   enum class PromoType {
     // Uninitialized/invalid specification.
-    kUnspecified,
+    kUnspecified = 0,
     // A toast-style promo.
-    kToast,
+    kToast = 1,
     // A snooze-style promo.
-    kSnooze,
+    kSnooze = 2,
     // A tutorial promo.
-    kTutorial,
+    kTutorial = 3,
     // A promo where one button is replaced by a custom action.
-    kCustomAction,
+    kCustomAction = 4,
     // A simple promo that acts like a toast but without the required
     // accessibility data.
-    kLegacy,
+    kLegacy = 5,
+    kMaxValue = kLegacy
   };
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
   // Specifies the subtype of promo. Almost all promos will be `kNormal`; using
   // some of the other special types requires being on an allowlist.
   enum class PromoSubtype {
     // A normal promo. Follows the default rules for when it can show.
-    kNormal,
+    kNormal = 0,
     // A promo designed to be shown in multiple apps (or webapps). Can show once
     // per app.
-    kPerApp,
+    kPerApp = 1,
     // A promo that must be able to be shown until explicitly acknowledged and
     // dismissed by the user. This type requires being on an allowlist.
-    kLegalNotice
+    kLegalNotice = 2,
+    kMaxValue = kLegalNotice
   };
 
   // Represents a command or command accelerator. Can be valueless (falsy) if

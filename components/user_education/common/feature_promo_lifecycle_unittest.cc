@@ -11,6 +11,8 @@
 #include "base/callback_list.h"
 #include "base/feature_list.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/task_environment.h"
 #include "components/feature_engagement/test/mock_tracker.h"
 #include "components/user_education/common/feature_promo_result.h"
@@ -103,6 +105,59 @@ class FeaturePromoLifecycleTest : public testing::Test {
     return result;
   }
 
+  auto CheckShownMetrics(const std::unique_ptr<FeaturePromoLifecycle> lifecycle,
+                         int shown_count) {
+    EXPECT_EQ(shown_count,
+              user_action_tester_.GetActionCount("UserEducation.MessageShown"));
+    EXPECT_EQ(
+        shown_count,
+        user_action_tester_.GetActionCount(base::StringPrintf(
+            "UserEducation.MessageShown.%s", lifecycle->iph_feature()->name)));
+
+    std::string name = "";
+    switch (lifecycle->promo_subtype()) {
+      case PromoSubtype::kPerApp:
+        name = "PerApp.";
+        break;
+      case PromoSubtype::kLegalNotice:
+        name = "LegalNotice.";
+        break;
+      case PromoSubtype::kNormal:
+        break;
+    }
+
+    switch (lifecycle->promo_type()) {
+      case PromoType::kLegacy:
+        name.append("Legacy");
+        break;
+      case PromoType::kToast:
+        name.append("Toast");
+        break;
+      case PromoType::kCustomAction:
+        name.append("CustomAction");
+        break;
+      case PromoType::kSnooze:
+        name.append("Snooze");
+        break;
+      case PromoType::kTutorial:
+        name.append("Tutorial");
+        break;
+      case PromoType::kUnspecified:
+        NOTREACHED();
+        return;
+    }
+
+    EXPECT_EQ(shown_count,
+              user_action_tester_.GetActionCount(base::StringPrintf(
+                  "UserEducation.MessageShown.%s", name.data())));
+    histogram_tester_.ExpectBucketCount(
+        "UserEducation.MessageShown.Type",
+        static_cast<int>(lifecycle->promo_type()), shown_count);
+    histogram_tester_.ExpectBucketCount(
+        "UserEducation.MessageShown.SubType",
+        static_cast<int>(lifecycle->promo_subtype()), shown_count);
+  }
+
  protected:
   PromoType promo_type_ = PromoType::kSnooze;
   PromoSubtype promo_subtype_ = PromoSubtype::kNormal;
@@ -113,12 +168,15 @@ class FeaturePromoLifecycleTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   testing::StrictMock<feature_engagement::test::MockTracker> tracker_;
   std::vector<base::CallbackListSubscription> help_bubble_subscriptions_;
+  base::HistogramTester histogram_tester_;
+  base::UserActionTester user_action_tester_;
 };
 
 TEST_F(FeaturePromoLifecycleTest, BubbleClosedOnDiscard) {
   auto lifecycle = CreateLifecycle(kTestIPHFeature);
   lifecycle->OnPromoShown(CreateHelpBubble(), &tracker_);
   EXPECT_CALL(tracker_, Dismissed(testing::Ref(kTestIPHFeature)));
+  CheckShownMetrics(std::move(lifecycle), /*shown_count=*/1);
   lifecycle.reset();
   EXPECT_EQ(0, num_open_bubbles_);
 }
@@ -144,6 +202,7 @@ TEST_F(FeaturePromoLifecycleTest,
 
   EXPECT_CALL(tracker_, Dismissed(testing::Ref(kTestIPHFeature)));
   lifecycle->OnContinuedPromoEnded(true);
+  CheckShownMetrics(std::move(lifecycle), /*shown_count=*/1);
   promo_data = storage_service_.ReadPromoData(kTestIPHFeature);
   EXPECT_TRUE(promo_data->is_dismissed);
   EXPECT_EQ(CloseReason::kAction, promo_data->last_dismissed_by);
@@ -186,6 +245,7 @@ TEST_F(FeaturePromoLifecycleTest, ClosePromoBubbleAndContinue_kLegalNotice) {
 
   EXPECT_CALL(tracker_, Dismissed(testing::Ref(kTestIPHFeature)));
   lifecycle->OnContinuedPromoEnded(false);
+  CheckShownMetrics(std::move(lifecycle), /*shown_count=*/1);
   EXPECT_CALL(tracker_, Dismissed).Times(0);
   promo_data = storage_service_.ReadPromoData(kTestIPHFeature);
   EXPECT_TRUE(promo_data->is_dismissed);
@@ -206,6 +266,7 @@ TEST_F(FeaturePromoLifecycleTest, ClosePromoBubbleAndContinue_kPerApp) {
 
   EXPECT_CALL(tracker_, Dismissed(testing::Ref(kTestIPHFeature)));
   lifecycle->OnContinuedPromoEnded(false);
+  CheckShownMetrics(std::move(lifecycle), /*shown_count=*/1);
   EXPECT_CALL(tracker_, Dismissed).Times(0);
   promo_data = storage_service_.ReadPromoData(kTestIPHFeature);
   EXPECT_TRUE(promo_data->is_dismissed);
