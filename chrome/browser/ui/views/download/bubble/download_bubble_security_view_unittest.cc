@@ -6,6 +6,9 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/download/bubble/download_bubble_ui_controller.h"
+#include "chrome/browser/download/chrome_download_manager_delegate.h"
+#include "chrome/browser/download/download_core_service.h"
+#include "chrome/browser/download/download_core_service_factory.h"
 #include "chrome/browser/download/download_item_model.h"
 #include "chrome/browser/download/download_item_warning_data.h"
 #include "chrome/browser/download/download_ui_model.h"
@@ -113,6 +116,29 @@ class MockDownloadBubbleSecurityViewDelegate
   const raw_ptr<download::DownloadItem> download_item2_;
 };
 
+class MockDownloadCoreService : public DownloadCoreService {
+ public:
+  MOCK_METHOD(ChromeDownloadManagerDelegate*, GetDownloadManagerDelegate, ());
+  MOCK_METHOD(DownloadUIController*, GetDownloadUIController, ());
+  MOCK_METHOD(DownloadHistory*, GetDownloadHistory, ());
+  MOCK_METHOD(extensions::ExtensionDownloadsEventRouter*,
+              GetExtensionEventRouter,
+              ());
+  MOCK_METHOD(bool, HasCreatedDownloadManager, ());
+  MOCK_METHOD(int, BlockingShutdownCount, (), (const));
+  MOCK_METHOD(void, CancelDownloads, ());
+  MOCK_METHOD(void,
+              SetDownloadManagerDelegateForTesting,
+              (std::unique_ptr<ChromeDownloadManagerDelegate> delegate));
+  MOCK_METHOD(bool, IsDownloadUiEnabled, ());
+  MOCK_METHOD(bool, IsDownloadObservedByExtension, ());
+};
+
+std::unique_ptr<KeyedService> BuildMockDownloadCoreService(
+    content::BrowserContext* browser_context) {
+  return std::make_unique<MockDownloadCoreService>();
+}
+
 }  // namespace
 
 class DownloadBubbleSecurityViewTest : public ChromeViewsTestBase {
@@ -154,6 +180,17 @@ class DownloadBubbleSecurityViewTest : public ChromeViewsTestBase {
             security_view_delegate_.get(), bubble_navigator_->GetWeakPtr(),
             bubble_delegate_, /*is_bubble_v2=*/true));
 
+    DownloadCoreServiceFactory::GetInstance()->SetTestingFactory(
+        browser_->profile(),
+        base::BindRepeating(&BuildMockDownloadCoreService));
+    MockDownloadCoreService* mock_dcs = static_cast<MockDownloadCoreService*>(
+        DownloadCoreServiceFactory::GetForBrowserContext(browser_->profile()));
+    ON_CALL(*mock_dcs, IsDownloadUiEnabled()).WillByDefault(Return(true));
+    delegate_ =
+        std::make_unique<ChromeDownloadManagerDelegate>(browser_->profile());
+    ON_CALL(*mock_dcs, GetDownloadManagerDelegate())
+        .WillByDefault(Return(delegate_.get()));
+
     // Needed to make the model not return an empty ContentId.
     ON_CALL(download_item1_, GetGuid())
         .WillByDefault(ReturnRefOfCopy(std::string("guid1")));
@@ -192,6 +229,7 @@ class DownloadBubbleSecurityViewTest : public ChromeViewsTestBase {
   }
 
   void TearDown() override {
+    delegate_.reset();
     // All windows need to be closed before tear down.
     anchor_widget_.reset();
     ChromeViewsTestBase::TearDown();
@@ -202,6 +240,7 @@ class DownloadBubbleSecurityViewTest : public ChromeViewsTestBase {
   DownloadBubbleSecurityViewTest& operator=(
       const DownloadBubbleSecurityViewTest&) = delete;
 
+  std::unique_ptr<ChromeDownloadManagerDelegate> delegate_;
   testing::NiceMock<download::MockDownloadItem> download_item1_;
   testing::NiceMock<download::MockDownloadItem> download_item2_;
   std::unique_ptr<MockDownloadBubbleSecurityViewDelegate>
@@ -537,9 +576,38 @@ TEST_F(DownloadBubbleSecurityViewTest, ReturnToPrimaryDialog) {
             DownloadBubbleContentsView::Page::kPrimary);
 }
 
-// Test that an update with DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS causes us to
+// Test that an update with an insecure download status does not cause us to
 // return to the primary dialog.
-TEST_F(DownloadBubbleSecurityViewTest, ReturnToPrimaryDialogNotDangerous) {
+TEST_F(DownloadBubbleSecurityViewTest, InsecureDontReturnToPrimaryDialog) {
+  ASSERT_TRUE(row_view1_->model()->GetBubbleUIInfo(true).HasSubpage());
+  security_view_->InitializeForDownload(*row_view1_->model());
+  EXPECT_TRUE(security_view_->IsInitialized());
+  EXPECT_EQ(security_view_->content_id(),
+            OfflineItemUtils::GetContentIdForDownload(&download_item1_));
+
+  // Update the download to be insecure but not dangerous.
+  EXPECT_CALL(download_item1_, GetDangerType())
+      .WillRepeatedly(Return(
+          download::DownloadDangerType::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS));
+  EXPECT_CALL(download_item1_, GetInsecureDownloadStatus())
+      .WillRepeatedly(
+          Return(download::DownloadItem::InsecureDownloadStatus::BLOCK));
+  EXPECT_CALL(download_item1_, GetURL())
+      .WillRepeatedly(ReturnRefOfCopy(GURL("http://insecure.com/a.exe")));
+  download_item1_.NotifyObserversDownloadUpdated();
+
+  ASSERT_TRUE(row_view1_->model()->GetBubbleUIInfo(true).HasSubpage());
+  EXPECT_TRUE(security_view_->IsInitialized());
+  EXPECT_EQ(security_view_->content_id(),
+            OfflineItemUtils::GetContentIdForDownload(&download_item1_));
+  // The update did not cause us to return to the primary page because there is
+  // a subpage.
+  EXPECT_FALSE(bubble_navigator_->last_opened_page());
+}
+
+// Test that an update where the new state does not have a subpage causes us to
+// return to the primary dialog.
+TEST_F(DownloadBubbleSecurityViewTest, ReturnToPrimaryDialogNoSubpage) {
   ASSERT_TRUE(row_view1_->model()->GetBubbleUIInfo(true).HasSubpage());
   security_view_->InitializeForDownload(*row_view1_->model());
   EXPECT_TRUE(security_view_->IsInitialized());
