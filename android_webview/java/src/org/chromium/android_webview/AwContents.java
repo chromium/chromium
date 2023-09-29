@@ -1537,6 +1537,7 @@ public class AwContents implements SmartClipProvider {
         public final boolean wasWindowFocused;
         public final @NonNull Map<String, Pair<Object, Class>> javascriptInterfaces;
         public final @Nullable WebMessageListenerInfo[] webMessageListenerInfo;
+        public final @Nullable StartupJavascriptInfo[] startupJavascriptInfo;
 
         public StateSnapshot(@NonNull AwContents awContents) {
             wasAttached = awContents.mIsAttachedToWindow;
@@ -1553,8 +1554,10 @@ public class AwContents implements SmartClipProvider {
             }
 
             // Save injected WebMessageListeners.
-            webMessageListenerInfo = AwContentsJni.get().getJsObjectsInfo(
+            webMessageListenerInfo = AwContentsJni.get().getWebMessageListenerInfos(
                     awContents.mNativeAwContents, WebMessageListenerInfo.class);
+            startupJavascriptInfo = AwContentsJni.get().getDocumentStartupJavascripts(
+                    awContents.mNativeAwContents, StartupJavascriptInfo.class);
         }
     }
 
@@ -1831,6 +1834,13 @@ public class AwContents implements SmartClipProvider {
             for (WebMessageListenerInfo info : previousWebMessageListenerInfo) {
                 addWebMessageListener(
                         info.mObjectName, info.mAllowedOriginRules, info.mHolder.getListener());
+            }
+        }
+        StartupJavascriptInfo[] previousDocumentStartupJavascripts =
+                previousState.startupJavascriptInfo;
+        if (previousDocumentStartupJavascripts != null) {
+            for (StartupJavascriptInfo info : previousDocumentStartupJavascripts) {
+                addDocumentStartJavaScript(info.mScript, info.mAllowedOriginRules);
             }
         }
     }
@@ -4866,7 +4876,10 @@ public class AwContents implements SmartClipProvider {
         String addWebMessageListener(long nativeAwContents, WebMessageListenerHolder listener,
                 String jsObjectName, String[] allowedOrigins);
         void removeWebMessageListener(long nativeAwContents, String jsObjectName);
-        WebMessageListenerInfo[] getJsObjectsInfo(long nativeAwContents, Class clazz);
+        WebMessageListenerInfo[] getWebMessageListenerInfos(long nativeAwContents, Class clazz);
+
+        StartupJavascriptInfo[] getDocumentStartupJavascripts(long nativeAwContents, Class clazz);
+
         void onConfigurationChanged(long nativeAwContents);
     }
 }

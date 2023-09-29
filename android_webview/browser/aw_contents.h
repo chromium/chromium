@@ -188,7 +188,11 @@ class AwContents : public FindHelper::Listener,
       JNIEnv* env,
       const base::android::JavaParamRef<jstring>& js_object_name);
 
-  base::android::ScopedJavaLocalRef<jobjectArray> GetJsObjectsInfo(
+  base::android::ScopedJavaLocalRef<jobjectArray> GetWebMessageListenerInfos(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jclass>& clazz);
+
+  base::android::ScopedJavaLocalRef<jobjectArray> GetDocumentStartupJavascripts(
       JNIEnv* env,
       const base::android::JavaParamRef<jclass>& clazz);
 

@@ -22,10 +22,24 @@ class RenderFrameHost;
 namespace js_injection {
 
 class OriginMatcher;
-struct DocumentStartJavaScript;
 struct JsObject;
 class JsToBrowserMessaging;
 class WebMessageHostFactory;
+
+struct DocumentStartJavaScript {
+  DocumentStartJavaScript(std::u16string script,
+                          OriginMatcher allowed_origin_rules,
+                          int32_t script_id);
+
+  DocumentStartJavaScript(DocumentStartJavaScript&) = delete;
+  DocumentStartJavaScript& operator=(DocumentStartJavaScript&) = delete;
+  DocumentStartJavaScript(DocumentStartJavaScript&&) = default;
+  DocumentStartJavaScript& operator=(DocumentStartJavaScript&&) = default;
+
+  std::u16string script_;
+  OriginMatcher allowed_origin_rules_;
+  int32_t script_id_;
+};
 
 // This class is 1:1 with WebContents, when AddWebMessageListener() is called,
 // it stores the information in this class and send them to renderer side
@@ -61,6 +75,9 @@ class JsCommunicationHost : public content::WebContentsObserver {
       const std::vector<std::string>& allowed_origin_rules);
 
   bool RemoveDocumentStartJavaScript(int script_id);
+
+  const std::vector<DocumentStartJavaScript>& GetDocumentStartJavascripts()
+      const;
 
   // Adds a new WebMessageHostFactory. For any urls that match
   // |allowed_origin_rules|, |js_object_name| is registered as a JS object that

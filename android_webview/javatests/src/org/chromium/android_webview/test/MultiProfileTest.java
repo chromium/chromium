@@ -24,7 +24,9 @@ import org.chromium.android_webview.AwBrowserContext;
 import org.chromium.android_webview.AwBrowserProcess;
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwCookieManager;
+import org.chromium.android_webview.WebMessageListener;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.test.util.RenderProcessHostUtils;
@@ -45,16 +47,16 @@ public class MultiProfileTest {
     @Rule
     public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
 
-    private TestAwContentsClient mContentsClient = new TestAwContentsClient();
+    private final TestAwContentsClient mContentsClient = new TestAwContentsClient();
 
     private AwBrowserContext getContextSync(String name, boolean createIfNeeded) throws Throwable {
         return ThreadUtils.runOnUiThreadBlockingNoException(
                 () -> { return AwBrowserContext.getNamedContext(name, createIfNeeded); });
     }
 
-    private Object setBrowserContextSync(AwContents awContents, AwBrowserContext browserContext)
+    private void setBrowserContextSync(AwContents awContents, AwBrowserContext browserContext)
             throws Throwable {
-        return ThreadUtils.runOnUiThreadBlockingNoException(() -> {
+        ThreadUtils.runOnUiThreadBlockingNoException(() -> {
             awContents.setBrowserContext(browserContext);
             return null;
         });
@@ -453,5 +455,54 @@ public class MultiProfileTest {
                 new HashSet<String>(Arrays.asList(expectedCookieNames));
         assertEquals("Found cookies list differs from expected list", expectedCookieNamesSet,
                 foundCookieNamesSet);
+    }
+
+    @Test
+    @LargeTest
+    @OnlyRunIn(MULTI_PROCESS)
+    @Feature({"AndroidWebView"})
+    public void testInjectedJavascriptIsTransferredWhenProfileChanges() throws Throwable {
+        mActivityTestRule.startBrowserProcess();
+
+        String listenerName = "injectedListener";
+        String startupScript = listenerName + ".postMessage('success');";
+        String[] injectDomains = {"*"};
+
+        final AwContents webView =
+                mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient)
+                        .getAwContents();
+        AwActivityTestRule.enableJavaScriptOnUiThread(webView);
+
+        CallbackHelper testDoneHelper = new CallbackHelper();
+
+        final WebMessageListener injectedListener =
+                (payload, sourceOrigin, isMainFrame, jsReplyProxy, ports) -> {
+            Assert.assertEquals("success", payload.getAsString());
+            testDoneHelper.notifyCalled();
+        };
+
+        // Setup a message listener and a startup script to post on to the listener.
+        mActivityTestRule.runOnUiThread(() -> {
+            webView.addWebMessageListener(listenerName, injectDomains, injectedListener);
+            webView.addDocumentStartJavaScript(startupScript, injectDomains);
+        });
+
+        // Switch the profile after the JS objects have been injected, but before content is loaded.
+        AwBrowserContext otherProfile = getContextSync("other-profile", true);
+        setBrowserContextSync(webView, otherProfile);
+
+        // Load content using the new Context.
+        try (TestWebServer server = TestWebServer.start()) {
+            server.setResponse("/", "hello, world", new ArrayList<>());
+            mActivityTestRule.loadUrlSync(
+                    webView, mContentsClient.getOnPageFinishedHelper(), server.getBaseUrl());
+            Assert.assertEquals("Injected listener was missing", "true",
+                    mActivityTestRule.executeJavaScriptAndWaitForResult(
+                            webView, mContentsClient, listenerName + " != null"));
+        }
+
+        // Wait for the test to run (see injectedListener above).
+        testDoneHelper.waitForFirst(
+                "Did not receive post message triggered by injected javascript");
     }
 }

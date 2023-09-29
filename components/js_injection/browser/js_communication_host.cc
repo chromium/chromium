@@ -67,23 +67,13 @@ struct JsObject {
   std::unique_ptr<WebMessageHostFactory> factory;
 };
 
-struct DocumentStartJavaScript {
-  DocumentStartJavaScript(std::u16string script,
-                          OriginMatcher allowed_origin_rules,
-                          int32_t script_id)
-      : script_(std::move(script)),
-        allowed_origin_rules_(allowed_origin_rules),
-        script_id_(script_id) {}
-
-  DocumentStartJavaScript(DocumentStartJavaScript&) = delete;
-  DocumentStartJavaScript& operator=(DocumentStartJavaScript&) = delete;
-  DocumentStartJavaScript(DocumentStartJavaScript&&) = default;
-  DocumentStartJavaScript& operator=(DocumentStartJavaScript&&) = default;
-
-  std::u16string script_;
-  OriginMatcher allowed_origin_rules_;
-  int32_t script_id_;
-};
+DocumentStartJavaScript::DocumentStartJavaScript(
+    std::u16string script,
+    OriginMatcher allowed_origin_rules,
+    int32_t script_id)
+    : script_(std::move(script)),
+      allowed_origin_rules_(allowed_origin_rules),
+      script_id_(script_id) {}
 
 JsCommunicationHost::AddScriptResult::AddScriptResult() = default;
 JsCommunicationHost::AddScriptResult::AddScriptResult(
@@ -137,6 +127,11 @@ bool JsCommunicationHost::RemoveDocumentStartJavaScript(int script_id) {
     }
   }
   return false;
+}
+
+const std::vector<DocumentStartJavaScript>&
+JsCommunicationHost::GetDocumentStartJavascripts() const {
+  return scripts_;
 }
 
 std::u16string JsCommunicationHost::AddWebMessageHostFactory(
