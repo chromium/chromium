@@ -25,7 +25,6 @@ import java.util.Random;
  * to collect survey related information, and update the metadata for and triggerId.
  */
 public class SurveyThrottler {
-
     /**
      * Reasons that the user was rejected from being selected for a survey
      * Note: these values cannot change and must match the SurveyFilteringResult enum in enums.xml
@@ -92,7 +91,6 @@ public class SurveyThrottler {
 
         return isRandomlySelectedForSurvey();
     }
-
 
     /** Logs in SharedPreferences that the survey prompt was displayed. */
     public void recordSurveyPromptDisplayed() {

@@ -17,6 +17,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ui/hats/SurveyClientBridge.java",
     "java/src/org/chromium/chrome/browser/ui/hats/SurveyClientFactory.java",
     "java/src/org/chromium/chrome/browser/ui/hats/SurveyClientImpl.java",
+    "java/src/org/chromium/chrome/browser/ui/hats/SurveyThrottler.java",
     "java/src/org/chromium/chrome/browser/ui/hats/SurveyUiDelegateBridge.java",
   ]
   deps = [
@@ -24,6 +25,9 @@ android_library("java") {
     "//base:base_java",
     "//base:jni_java",
     "//chrome/browser/android/lifecycle:java",
+    "//chrome/browser/first_run/android:java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/preferences:java",
     "//chrome/browser/tabmodel:java",
     "//chrome/browser/ui/android/hats:java",
     "//chrome/browser/ui/android/hats:message_ui_delegate_java",
@@ -38,6 +42,7 @@ robolectric_library("junit") {
   sources = [
     "java/src/org/chromium/chrome/browser/ui/hats/SurveyClientBridgeUnitTest.java",
     "java/src/org/chromium/chrome/browser/ui/hats/SurveyClientUnitTest.java",
+    "java/src/org/chromium/chrome/browser/ui/hats/SurveyThrottlerUnitTest.java",
     "java/src/org/chromium/chrome/browser/ui/hats/SurveyUiDelegateBridgeUnitTest.java",
   ]
   deps = [
@@ -48,6 +53,9 @@ robolectric_library("junit") {
     "//base:base_junit_test_support",
     "//base:jni_java",
     "//chrome/browser/android/lifecycle:java",
+    "//chrome/browser/first_run/android:java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/preferences:java",
     "//chrome/browser/tabmodel:java",
     "//chrome/browser/ui/android/hats:java",
     "//chrome/browser/ui/android/hats:message_ui_delegate_java",
