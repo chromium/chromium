@@ -16,18 +16,22 @@ BASE_DECLARE_FEATURE(kRelatedSearchesExtraction);
 // Config for the search results extractor.
 struct Config {
   // The ID of the related searches container.
+#if BUILDFLAG(IS_ANDROID)
+  std::string related_searches_id = "rso";
+#else
   std::string related_searches_id = "bres";
+#endif
 
 // The classname of the related searches anchor element.
 #if BUILDFLAG(IS_ANDROID)
-  std::string related_searches_anchor_classname = "iOJVmb";
+  std::string related_searches_anchor_classname = "h9P1Xd";
 #else
   std::string related_searches_anchor_classname = "k8XOCe";
 #endif
 
 // The classname of the related searches title element.
 #if BUILDFLAG(IS_ANDROID)
-  std::string related_searches_title_classname = "gkd1F";
+  std::string related_searches_title_classname = "kTSm7b";
 #else
   std::string related_searches_title_classname = "s75CSd";
 #endif
