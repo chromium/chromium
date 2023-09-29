@@ -6,6 +6,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_observer_bridge.h"
@@ -24,22 +25,27 @@
   ChromeAccountManagerService* _accountManagerService;
   std::unique_ptr<ChromeAccountManagerServiceObserverBridge>
       _accountManagerServiceObserver;
+  // Identity manager.
+  signin::IdentityManager* _identityManager;
   // Account picker configuration.
   __strong AccountPickerConfiguration* _configuration;
   // Avatar of selected identity.
   __strong UIImage* _avatar;
 }
 
-- (instancetype)initWithAccountManagerService:
-                    (ChromeAccountManagerService*)accountManagerService
-                                configuration:
-                                    (AccountPickerConfiguration*)configuration {
+- (instancetype)
+    initWithAccountManagerService:
+        (ChromeAccountManagerService*)accountManagerService
+                  identityManager:(signin::IdentityManager*)identityManager
+                    configuration:(AccountPickerConfiguration*)configuration {
   if (self = [super init]) {
     DCHECK(accountManagerService);
+    DCHECK(identityManager);
     _accountManagerService = accountManagerService;
     _accountManagerServiceObserver =
         std::make_unique<ChromeAccountManagerServiceObserverBridge>(
             self, _accountManagerService);
+    _identityManager = identityManager;
     _configuration = configuration;
   }
   return self;
@@ -47,9 +53,11 @@
 
 - (void)dealloc {
   DCHECK(!_accountManagerService);
+  DCHECK(!_identityManager);
 }
 
 - (void)disconnect {
+  _identityManager = nullptr;
   _accountManagerService = nullptr;
   _accountManagerServiceObserver.reset();
 }
@@ -82,6 +90,15 @@
   }
 
   id<SystemIdentity> identity = _accountManagerService->GetDefaultIdentity();
+
+  // If the user is signed-in, present the signed-in account.
+  if (_identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+    const CoreAccountInfo primaryAccountInfo =
+        _identityManager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+    id<SystemIdentity> primaryAccount =
+        _accountManagerService->GetIdentityWithGaiaID(primaryAccountInfo.gaia);
+    identity = primaryAccount;
+  }
 
   if (!IsConsistencyNewAccountInterfaceEnabled() && !identity) {
     [_delegate accountPickerConfirmationScreenMediatorNoIdentities:self];

@@ -144,7 +144,9 @@
   if (event.GetEventTypeFor(signin::ConsentLevel::kSignin) ==
       signin::PrimaryAccountChangeEvent::Type::kCleared) {
     [self.delegate hideSaveToPhotosSettings];
+    return;
   }
+  [self updateConsumers];
 }
 
 #pragma mark - Private
@@ -157,11 +159,16 @@
   id<SystemIdentity> savedIdentity =
       _accountManagerService->GetIdentityWithGaiaID(savedGaiaID);
 
+  // Get signed-in identity.
+  const CoreAccountInfo primaryAccountInfo =
+      _identityManager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  id<SystemIdentity> primaryAccount =
+      _accountManagerService->GetIdentityWithGaiaID(primaryAccountInfo.gaia);
+
   // Update primary consumer with the currently selected Save to Photos account,
   // if any.
   id<SystemIdentity> selectedIdentity =
-      savedIdentity ? savedIdentity
-                    : _accountManagerService->GetDefaultIdentity();
+      savedIdentity ? savedIdentity : primaryAccount;
   if (!selectedIdentity) {
     // If `selectedIdentity` is nil then there is no identity on the device so
     // Save to Photos settings should be hidden.

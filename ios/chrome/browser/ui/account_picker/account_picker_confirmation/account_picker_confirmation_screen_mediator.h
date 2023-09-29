@@ -13,6 +13,10 @@
 class ChromeAccountManagerService;
 @protocol SystemIdentity;
 
+namespace signin {
+class IdentityManager;
+}  // namespace signin
+
 // Delegate for AccountPickerConfirmationScreenMediator.
 @protocol AccountPickerConfirmationScreenMediatorDelegate <NSObject>
 
@@ -26,10 +30,11 @@ class ChromeAccountManagerService;
 @interface AccountPickerConfirmationScreenMediator : NSObject
 
 // The designated initializer.
-- (instancetype)initWithAccountManagerService:
-                    (ChromeAccountManagerService*)accountManagerService
-                                configuration:
-                                    (AccountPickerConfiguration*)configuration
+- (instancetype)
+    initWithAccountManagerService:
+        (ChromeAccountManagerService*)accountManagerService
+                  identityManager:(signin::IdentityManager*)identityManager
+                    configuration:(AccountPickerConfiguration*)configuration
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

@@ -98,10 +98,12 @@ class SaveToPhotosSettingsMediatorTest : public PlatformTest {
     fake_identity_b_ = [FakeSystemIdentity fakeIdentity2];
     system_identity_manager->AddIdentity(fake_identity_b_);
 
-    signin::MakePrimaryAccountAvailable(
+    signin::MakeAccountAvailable(
         IdentityManagerFactory::GetForBrowserState(browser_state_.get()),
-        base::SysNSStringToUTF8(fake_identity_a_.userEmail),
-        signin::ConsentLevel::kSignin);
+        signin::AccountAvailabilityOptionsBuilder()
+            .AsPrimary(signin::ConsentLevel::kSignin)
+            .WithGaiaId(base::SysNSStringToUTF8(fake_identity_a_.gaiaID))
+            .Build(base::SysNSStringToUTF8(fake_identity_a_.userEmail)));
   }
 
   void TearDown() final { [mediator_ disconnect]; }
