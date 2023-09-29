@@ -74,13 +74,25 @@ class AuthenticatorRequestSheetView : public views::View {
   // changes.
   void ReInitChildViews();
 
-  views::Label* title_label() { return title_label_; }
+  // Returns the control on this sheet that should initially have focus instead
+  // of the OK/Cancel buttons on the dialog; or returns nullptr if the regular
+  // dialog button should have focus.
+  views::View* GetInitiallyFocusedView();
 
   AuthenticatorRequestSheetModel* model() { return model_.get(); }
 
  protected:
-  // Returns the step-specific view the derived sheet wishes to provide, if any.
-  virtual std::unique_ptr<views::View> BuildStepSpecificContent();
+  // AutoFocus is a named boolean that indicates whether step-specific content
+  // should automatically get focus when displayed.
+  enum class AutoFocus {
+    kNo,
+    kYes,
+  };
+
+  // Returns the step-specific view the derived sheet wishes to provide, if any,
+  // and whether that content should be initially focused.
+  virtual std::pair<std::unique_ptr<views::View>, AutoFocus>
+  BuildStepSpecificContent();
 
  private:
   // Creates the upper half of the sheet, consisting of a pretty illustration
@@ -102,11 +114,11 @@ class AuthenticatorRequestSheetView : public views::View {
   void OnThemeChanged() override;
 
   std::unique_ptr<AuthenticatorRequestSheetModel> model_;
-  raw_ptr<views::Label> title_label_ = nullptr;
   raw_ptr<views::Button> back_arrow_button_ = nullptr;
   raw_ptr<views::ImageButton> back_arrow_ = nullptr;
   raw_ptr<views::ImageButton> close_button_ = nullptr;
   raw_ptr<views::View, DanglingUntriaged> step_specific_content_ = nullptr;
+  AutoFocus should_focus_step_specific_content_ = AutoFocus::kNo;
   raw_ptr<NonAccessibleImageView> step_illustration_image_ = nullptr;
   raw_ptr<views::AnimatedImageView> step_illustration_animation_ = nullptr;
   raw_ptr<views::Label, DanglingUntriaged> error_label_ = nullptr;

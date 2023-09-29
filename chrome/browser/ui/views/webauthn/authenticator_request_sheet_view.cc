@@ -13,17 +13,23 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/webauthn/authenticator_request_sheet_model.h"
+#include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
+#include "chrome/grit/generated_resources.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_provider.h"
+#include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/lottie/animation.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/animated_image_view.h"
+#include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -54,7 +60,6 @@ AuthenticatorRequestSheetView::AuthenticatorRequestSheetView(
 AuthenticatorRequestSheetView::~AuthenticatorRequestSheetView() = default;
 
 void AuthenticatorRequestSheetView::ReInitChildViews() {
-  title_label_ = nullptr;
   RemoveAllChildViews();
 
   // No need to add further spacing between the upper and lower half. The image
@@ -71,9 +76,20 @@ void AuthenticatorRequestSheetView::ReInitChildViews() {
   InvalidateLayout();
 }
 
-std::unique_ptr<views::View>
-AuthenticatorRequestSheetView::BuildStepSpecificContent() {
+views::View* AuthenticatorRequestSheetView::GetInitiallyFocusedView() {
+  if (should_focus_step_specific_content_ == AutoFocus::kYes) {
+    return step_specific_content_;
+  }
+  if (model()->ShouldFocusBackArrow()) {
+    return back_arrow_button_;
+  }
   return nullptr;
+}
+
+std::pair<std::unique_ptr<views::View>,
+          AuthenticatorRequestSheetView::AutoFocus>
+AuthenticatorRequestSheetView::BuildStepSpecificContent() {
+  return std::make_pair(nullptr, AutoFocus::kNo);
 }
 
 std::unique_ptr<views::View>
@@ -160,8 +176,7 @@ AuthenticatorRequestSheetView::CreateContentsBelowIllustration() {
     if (features::IsChromeRefresh2023()) {
       title_label->SetTextStyle(views::style::STYLE_HEADLINE_4);
     }
-    title_label->SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
-    title_label_ = label_container->AddChildView(title_label.release());
+    label_container->AddChildView(title_label.release());
   }
 
   std::u16string description = model()->GetStepDescription();
@@ -188,7 +203,10 @@ AuthenticatorRequestSheetView::CreateContentsBelowIllustration() {
   contents->AddChildView(label_container.release());
 
   std::unique_ptr<views::View> step_specific_content;
-  step_specific_content = BuildStepSpecificContent();
+  std::tie(step_specific_content, should_focus_step_specific_content_) =
+      BuildStepSpecificContent();
+  DCHECK(should_focus_step_specific_content_ == AutoFocus::kNo ||
+         step_specific_content);
   if (step_specific_content) {
     step_specific_content_ = step_specific_content.get();
     contents->AddChildView(step_specific_content.release());

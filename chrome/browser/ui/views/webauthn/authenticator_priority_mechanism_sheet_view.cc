@@ -14,13 +14,15 @@ AuthenticatorPriorityMechanismSheetView::
 AuthenticatorPriorityMechanismSheetView::
     ~AuthenticatorPriorityMechanismSheetView() = default;
 
-std::unique_ptr<views::View>
+std::pair<std::unique_ptr<views::View>,
+          AuthenticatorRequestSheetView::AutoFocus>
 AuthenticatorPriorityMechanismSheetView::BuildStepSpecificContent() {
   auto* sheet_model =
       static_cast<AuthenticatorPriorityMechanismSheetModel*>(model());
-  return std::make_unique<HoverListView>(
-      std::make_unique<TransportHoverListModel>(
+  return std::make_pair(
+      std::make_unique<HoverListView>(std::make_unique<TransportHoverListModel>(
           sheet_model->dialog_model()->mechanisms(),
           std::vector{
-              *sheet_model->dialog_model()->priority_mechanism_index()}));
+              *sheet_model->dialog_model()->priority_mechanism_index()})),
+      AutoFocus::kNo);
 }

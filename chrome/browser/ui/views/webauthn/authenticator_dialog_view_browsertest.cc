@@ -88,9 +88,11 @@ class TestSheetView : public AuthenticatorRequestSheetView {
   }
 
   // AuthenticatorRequestSheetView:
-  std::unique_ptr<views::View> BuildStepSpecificContent() override {
-    return std::make_unique<views::Label>(
-        test_sheet_model()->GetStepSpecificLabelText());
+  std::pair<std::unique_ptr<views::View>, AutoFocus> BuildStepSpecificContent()
+      override {
+    return std::make_pair(std::make_unique<views::Label>(
+                              test_sheet_model()->GetStepSpecificLabelText()),
+                          AutoFocus::kNo);
   }
 };
 
