@@ -523,8 +523,11 @@ CGFloat BrowserNonClientFrameViewMac::FullscreenBackingBarHeight() const {
 }
 
 int BrowserNonClientFrameViewMac::TopUIFullscreenYOffset() const {
-  if (!browser_view()->GetTabStripVisible() || !browser_view()->IsFullscreen())
+  if (!browser_view()->GetTabStripVisible() ||
+      !browser_view()->IsFullscreen() ||
+      browser_view()->UsesImmersiveFullscreenMode()) {
     return 0;
+  }
 
   CGFloat menu_bar_height =
       [[[NSApplication sharedApplication] mainMenu] menuBarHeight];
