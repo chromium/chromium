@@ -4290,7 +4290,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.ServiceWorkerBackground.StartWorker_FailStatus"
-    enum="ServiceWorkerStatusCode" expires_after="2023-04-28">
+    enum="ServiceWorkerStatusCode" expires_after="never">
+<!-- expires-never: Monitors core extension system health. -->
+
   <owner>jlulejian@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
