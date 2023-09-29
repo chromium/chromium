@@ -4,6 +4,8 @@
 
 #include "chrome/browser/sync/test/integration/two_client_web_apps_integration_test_base.h"
 
+#include "base/test/bind.h"
+#include "build/build_config.h"
 #include "chrome/browser/sync/test/integration/apps_helper.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -45,13 +47,28 @@ bool TwoClientWebAppsIntegrationTestBase::IsSyncTest() {
 
 void TwoClientWebAppsIntegrationTestBase::SyncTurnOff() {
   for (SyncServiceImplHarness* client : GetSyncClients()) {
-    client->StopSyncServiceAndClearData();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    client->service()->GetUserSettings()->SetSelectedOsTypes(
+        /*sync_everything=*/false, /*types=*/{});
+#else   // BUILDFLAG(IS_CHROMEOS_ASH)
+    client->service()->GetUserSettings()->SetSelectedTypes(
+        /*sync_everything=*/false, /*types=*/{});
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
 }
 
 void TwoClientWebAppsIntegrationTestBase::SyncTurnOn() {
   for (SyncServiceImplHarness* client : GetSyncClients()) {
     ASSERT_TRUE(client->EnableSyncFeature());
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    client->service()->GetUserSettings()->SetSelectedOsTypes(
+        /*sync_everything=*/false,
+        /*types=*/{syncer::UserSelectableOsType::kOsApps});
+#else   // BUILDFLAG(IS_CHROMEOS_ASH)
+    client->service()->GetUserSettings()->SetSelectedTypes(
+        /*sync_everything=*/false,
+        /*types=*/{syncer::UserSelectableType::kApps});
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
   AwaitWebAppQuiescence();
 }
@@ -79,7 +96,7 @@ void TwoClientWebAppsIntegrationTestBase::SetUp() {
 
 void TwoClientWebAppsIntegrationTestBase::SetUpOnMainThread() {
   WebAppsSyncTestBase::SetUpOnMainThread();
-  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(SetupClients());
 
   // To limit flakiness due to other sync types, only enable the sync type for
   // web apps.
@@ -89,14 +106,21 @@ void TwoClientWebAppsIntegrationTestBase::SetUpOnMainThread() {
         !web_app::WebAppProvider::GetForWebApps(profile)) {
       continue;
     }
+
+    ASSERT_TRUE(GetClient(i)->SetupSync(
+        base::BindLambdaForTesting([](syncer::SyncUserSettings* user_settings) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    GetSyncService(i)->GetUserSettings()->SetSelectedTypes(false, {});
-    GetSyncService(i)->GetUserSettings()->SetSelectedOsTypes(
-        false, {syncer::UserSelectableOsType::kOsApps});
+          user_settings->SetSelectedTypes(/*sync_everything=*/false,
+                                          /*types=*/{});
+          user_settings->SetSelectedOsTypes(
+              /*sync_everything=*/false,
+              /*types=*/{syncer::UserSelectableOsType::kOsApps});
 #else   // BUILDFLAG(IS_CHROMEOS_ASH)
-    GetSyncService(i)->GetUserSettings()->SetSelectedTypes(
-        false, {syncer::UserSelectableType::kApps});
+          user_settings->SetSelectedTypes(
+              /*sync_everything=*/false,
+              /*types=*/{syncer::UserSelectableType::kApps});
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+        })));
   }
 
   helper_.SetUpOnMainThread();
