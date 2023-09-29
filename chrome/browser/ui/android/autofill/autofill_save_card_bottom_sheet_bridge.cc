@@ -82,21 +82,29 @@ AutofillSaveCardBottomSheetBridge::AutofillSaveCardBottomSheetBridge(
           java_autofill_save_card_bottom_sheet_bridge) {}
 
 void AutofillSaveCardBottomSheetBridge::OnUiShown(JNIEnv* env) {
-  save_card_delegate_->OnUiShown();
+  if (save_card_delegate_) {
+    save_card_delegate_->OnUiShown();
+  }
 }
 
 void AutofillSaveCardBottomSheetBridge::OnUiAccepted(JNIEnv* env) {
-  save_card_delegate_->OnUiAccepted();
+  if (save_card_delegate_) {
+    save_card_delegate_->OnUiAccepted();
+  }
   save_card_delegate_.reset(nullptr);
 }
 
 void AutofillSaveCardBottomSheetBridge::OnUiCanceled(JNIEnv* env) {
-  save_card_delegate_->OnUiCanceled();
+  if (save_card_delegate_) {
+    save_card_delegate_->OnUiCanceled();
+  }
   save_card_delegate_.reset(nullptr);
 }
 
 void AutofillSaveCardBottomSheetBridge::OnUiIgnored(JNIEnv* env) {
-  save_card_delegate_->OnUiIgnored();
+  if (save_card_delegate_) {
+    save_card_delegate_->OnUiIgnored();
+  }
   save_card_delegate_.reset(nullptr);
 }
 
