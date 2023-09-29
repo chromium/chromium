@@ -65,5 +65,7 @@ component("system") {
     "//mojo/public/cpp/platform",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   defines = [ "MOJO_CPP_SYSTEM_IMPLEMENTATION" ]
 }

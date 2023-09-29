@@ -76,5 +76,7 @@ component("platform") {
     public += [ "named_platform_channel.h" ]
   }
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   defines = [ "IS_MOJO_CPP_PLATFORM_IMPL" ]
 }

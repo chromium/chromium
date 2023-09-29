@@ -78,6 +78,7 @@ std::unique_ptr<IPCSupport>& GetIPCSupport() {
 class GlobalStateInitializer {
  public:
   GlobalStateInitializer() = default;
+  ~GlobalStateInitializer() = delete;
 
   bool Initialize(int argc, const char* const* argv) {
     if (initialized_)
@@ -158,9 +159,9 @@ MojoResult InitializeImpl(const struct MojoInitializeOptions* options) {
     argv = options->argv;
   }
 
-  static GlobalStateInitializer global_state_initializer;
+  static base::NoDestructor<GlobalStateInitializer> global_state_initializer;
   const bool was_global_state_already_initialized =
-      !global_state_initializer.Initialize(argc, argv);
+      !global_state_initializer->Initialize(argc, argv);
 
   if (!should_initialize_ipc_support) {
     if (was_global_state_already_initialized)

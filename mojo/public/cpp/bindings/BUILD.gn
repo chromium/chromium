@@ -125,6 +125,8 @@ component("bindings_base") {
     "//mojo/public/cpp/system",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   if (enable_ipc_fuzzer) {
     all_dependent_configs = [ "//tools/ipc_fuzzer:ipc_fuzzer_config" ]
   }
@@ -254,6 +256,8 @@ component("bindings") {
     "//mojo/core/embedder",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   defines = [ "IS_MOJO_CPP_BINDINGS_IMPL" ]
 }
 
@@ -294,6 +298,8 @@ if (use_blink) {
       "map_traits_wtf_hash_map.h",
       "string_traits_wtf.h",
     ]
+
+    configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
     defines = [ "IS_MOJO_CPP_BINDINGS_BASE_IMPL" ]
 

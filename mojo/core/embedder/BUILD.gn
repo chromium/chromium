@@ -16,6 +16,8 @@ component("embedder") {
     "scoped_ipc_support.cc",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   defines = [ "IS_MOJO_CORE_EMBEDDER_IMPL" ]
 
   public_deps = [
@@ -34,6 +36,8 @@ component("embedder") {
 
 component("features") {
   output_name = "mojo_core_embedder_features"
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   defines = [ "IS_MOJO_CORE_EMBEDDER_FEATURES_IMPL" ]
 

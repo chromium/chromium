@@ -187,6 +187,8 @@ template("core_impl_source_set") {
       ]
     }
 
+    configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
     defines = []
     if (invoker.for_shared_library) {
       defines += [ "MOJO_CORE_SHARED_LIBRARY" ]
@@ -253,6 +255,7 @@ if (is_chromeos || is_linux || is_android || is_win || is_fuchsia) {
   shared_library("shared_library") {
     output_name = "mojo_core"
     sources = [ "mojo_core.cc" ]
+    configs += [ "//build/config/compiler:wexit_time_destructors" ]
     defines = [ "MOJO_CORE_SHARED_LIBRARY" ]
     deps = [
       ":impl_for_shared_library",

@@ -13,6 +13,7 @@
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
@@ -68,7 +69,7 @@ class CoreLibraryInitializer {
   CoreLibraryInitializer() = default;
   CoreLibraryInitializer(const CoreLibraryInitializer&) = delete;
   CoreLibraryInitializer& operator=(const CoreLibraryInitializer&) = delete;
-  ~CoreLibraryInitializer() = default;
+  ~CoreLibraryInitializer() = delete;
 
   MojoResult LoadLibrary(base::FilePath library_path) {
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || \
@@ -152,7 +153,7 @@ class CoreLibraryInitializer {
 extern "C" {
 
 MojoResult MojoInitialize(const struct MojoInitializeOptions* options) {
-  static mojo::CoreLibraryInitializer initializer;
+  static base::NoDestructor<mojo::CoreLibraryInitializer> initializer;
 
   base::StringPiece library_path_utf8;
   if (options) {
@@ -162,7 +163,7 @@ MojoResult MojoInitialize(const struct MojoInitializeOptions* options) {
                                           options->mojo_core_path_length);
   }
 
-  MojoResult load_result = initializer.LoadLibrary(
+  MojoResult load_result = initializer->LoadLibrary(
       base::FilePath::FromUTF8Unsafe(library_path_utf8));
   if (load_result != MOJO_RESULT_OK)
     return load_result;
