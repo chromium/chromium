@@ -116,6 +116,7 @@
 #if BUILDFLAG(IS_MAC)
 #include "device/fido/mac/authenticator_config.h"
 #include "device/fido/mac/credential_store.h"
+#include "device/fido/mac/icloud_keychain.h"
 #include "device/fido/mac/scoped_icloud_keychain_test_environment.h"
 #include "device/fido/mac/scoped_touch_id_test_environment.h"
 #endif
@@ -9047,6 +9048,20 @@ class ICloudKeychainAuthenticatorImplTest : public AuthenticatorImplTest {
         const device::FidoRequestHandlerBase::TransportAvailabilityInfo&)>;
     explicit InspectTAIAuthenticatorRequestDelegate(Callback callback)
         : callback_(std::move(callback)) {}
+
+    void ConfigureDiscoveries(
+        const url::Origin& origin,
+        const std::string& rp_id,
+        RequestSource request_source,
+        device::FidoRequestType request_type,
+        absl::optional<device::ResidentKeyRequirement> resident_key_requirement,
+        base::span<const device::CableDiscoveryData> pairings_from_extension,
+        device::FidoDiscoveryFactory* fido_discovery_factory) override {
+      // nswindow must be set for the iCloud Keychain authenticator to be
+      // discovered.
+      fido_discovery_factory->set_nswindow(
+          device::fido::icloud_keychain::kFakeNSWindowForTesting);
+    }
 
     void OnTransportAvailabilityEnumerated(
         device::FidoRequestHandlerBase::TransportAvailabilityInfo tai)
