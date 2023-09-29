@@ -18,8 +18,8 @@ testing::Message DescribeFormData(const FormData& form_data) {
   testing::Message result;
   result << "Form contains " << form_data.fields.size() << " fields:\n";
   for (const FormFieldData& field : form_data.fields) {
-    result << "type=" << field.form_control_type << ", name=" << field.name
-           << ", label=" << field.label << "\n";
+    result << "type=" << FormControlTypeToString(field.form_control_type)
+           << ", name=" << field.name << ", label=" << field.label << "\n";
   }
   return result;
 }
@@ -98,9 +98,11 @@ FormData GetFormData(const FormDescription& d) {
   f.is_form_tag = d.is_form_tag;
   for (const FieldDescription& dd : d.fields) {
     FormFieldData ff = CreateFieldByRole(dd.role);
-    ff.form_control_type = dd.form_control_type;
-    if (ff.form_control_type == "select-one" && !dd.select_options.empty())
+    ff.form_control_type = StringToFormControlType(dd.form_control_type);
+    if (ff.form_control_type == StringToFormControlType("select-one") &&
+        !dd.select_options.empty()) {
       ff.options = dd.select_options;
+    }
     ff.host_frame = dd.host_frame.value_or(f.host_frame);
     ff.unique_renderer_id =
         dd.unique_renderer_id.value_or(MakeFieldRendererId());

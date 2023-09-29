@@ -678,8 +678,9 @@ std::u16string GetStreetAddressForInput(
     const std::u16string& address_value,
     const std::string& address_language_code,
     FormFieldData* field) {
-  if (field->form_control_type == "textarea")
+  if (field->form_control_type == StringToFormControlType("textarea")) {
     return address_value;
+  }
 
   ::i18n::addressinput::AddressData address_data;
   address_data.language_code = address_language_code;
@@ -902,7 +903,7 @@ std::u16string GetValueForCreditCard(
     std::string* failure_to_fill) {
   ServerFieldType storable_type = field.Type().GetStorableType();
 
-  if (field.form_control_type == "month") {
+  if (field.form_control_type == StringToFormControlType("month")) {
     return GetExpirationForMonthControl(credit_card);
   } else {
     switch (storable_type) {

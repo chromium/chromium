@@ -329,7 +329,7 @@ bool FormField::ParseFieldSpecificsWithLegacyPattern(
 
   const AutofillField* field = scanner->Cursor();
 
-  if (!MatchesFormControlType(field->form_control_type,
+  if (!MatchesFormControlType(FormControlTypeToString(field->form_control_type),
                               match_type.field_types)) {
     return false;
   }
@@ -352,8 +352,9 @@ bool FormField::ParseFieldSpecificsWithNewPatterns(
   for (MatchPatternRef pattern_ref : patterns) {
     MatchingPattern pattern =
         projection ? (*projection)(*pattern_ref) : *pattern_ref;
-    if (!MatchesFormControlType(field->form_control_type,
-                                pattern.match_field_input_types)) {
+    if (!MatchesFormControlType(
+            FormControlTypeToString(field->form_control_type),
+            pattern.match_field_input_types)) {
       continue;
     }
 

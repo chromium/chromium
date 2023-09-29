@@ -3271,7 +3271,7 @@ void DoDynamicChangingFormFill_SelectUpdated(
                                    const FormStructure& form) {
     size_t num_found = 0u;
     for (const std::unique_ptr<AutofillField>& field : form.fields()) {
-      if (field->form_control_type == control_type) {
+      if (field->form_control_type == StringToFormControlType(control_type)) {
         ++num_found;
       }
     }

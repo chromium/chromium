@@ -123,7 +123,7 @@ FormSignature CalculateAlternativeFormSignature(const FormData& form_data) {
     if (!IsCheckable(field.check_status)) {
       // Add all supported form fields' form control types to the signature.
       base::StrAppend(&form_signature_field_types,
-                      {"&", field.form_control_type});
+                      {"&", FormControlTypeToString(field.form_control_type)});
     }
   }
 
@@ -157,8 +157,12 @@ FieldSignature CalculateFieldSignatureByNameAndType(
 
 FieldSignature CalculateFieldSignatureForField(
     const FormFieldData& field_data) {
+  FormControlType type = field_data.form_control_type;
+  if (type == FormControlType::kEmpty) {
+    type = FormControlType::kInputText;
+  }
   return CalculateFieldSignatureByNameAndType(field_data.name,
-                                              field_data.form_control_type);
+                                              FormControlTypeToString(type));
 }
 
 uint64_t StrToHash64Bit(base::StringPiece str) {

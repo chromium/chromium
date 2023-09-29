@@ -21,7 +21,8 @@ FormFieldData CreateFormField(std::string form_control_type,
                               std::string autocomplete_attribute) {
   // TODO(1465839): Use autofill helpers once they are accessible to /common.
   FormFieldData field;
-  field.form_control_type = std::move(form_control_type);
+  field.form_control_type =
+      autofill::StringToFormControlType(form_control_type);
   field.autocomplete_attribute = std::move(autocomplete_attribute);
 
   return field;

@@ -104,8 +104,9 @@ void FormStructureRationalizer::RationalizeAutocompleteAttributes(
       field->SetHtmlType(type, field->html_mode());
     };
     // Some of the following rationalization operates only on text fields.
-    bool is_text_field = field->FormControlType() == FormControlType::kText ||
-                         field->FormControlType() == FormControlType::kTextarea;
+    bool is_text_field =
+        field->FormControlType() == DeprecatedFormControlType::kText ||
+        field->FormControlType() == DeprecatedFormControlType::kTextarea;
     switch (field->html_type()) {
       case HtmlFieldType::kAdditionalName:
         if (!is_text_field) {

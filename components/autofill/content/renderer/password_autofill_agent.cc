@@ -307,8 +307,8 @@ void AnnotateFieldsWithSignatures(
   for (blink::WebFormControlElement& control_element : fields) {
     FieldSignature field_signature = CalculateFieldSignatureByNameAndType(
         control_element.NameForAutofill().Utf16(),
-        form_util::FormControlTypeToString(
-            control_element.FormControlTypeForAutofill()));
+        FormControlTypeToString(form_util::ToAutofillFormControlType(
+            control_element.FormControlTypeForAutofill())));
     SetAttributeAsync(control_element, kDebugAttributeForFieldSignature,
                       base::NumberToString(field_signature.value()));
     SetAttributeAsync(control_element, kDebugAttributeForFormSignature,
@@ -521,7 +521,7 @@ mojom::SubmissionReadinessState CalculateSubmissionReadiness(
     // block a form submission. Note: Don't use |check_status !=
     // kNotCheckable|, a radio button is considered a "checkable" element too,
     // but it should block a submission.
-    return field.form_control_type == "checkbox";
+    return field.form_control_type == StringToFormControlType("checkbox");
   };
 
   for (size_t i = username_index + 1; i < password_index; ++i) {
@@ -2111,7 +2111,8 @@ PasswordAutofillAgent::ExtractFormStructureInfo(const FormData& form_data) {
 
     FormFieldInfo& field_info = result.fields[i];
     field_info.unique_renderer_id = form_field.unique_renderer_id;
-    field_info.form_control_type = form_field.form_control_type;
+    field_info.form_control_type =
+        FormControlTypeToString(form_field.form_control_type);
     field_info.autocomplete_attribute = form_field.autocomplete_attribute;
     field_info.is_focusable = form_field.is_focusable;
   }

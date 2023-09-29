@@ -298,11 +298,11 @@ void PopulateRandomizedFieldMetadata(
                           RandomizedEncoder::FIELD_NAME, field.name_attribute,
                           /*include_checksum=*/false, metadata->mutable_name());
   }
-  if (!field.form_control_type.empty()) {
+  if (!FormControlTypeToString(field.form_control_type).empty()) {
     EncodeRandomizedValue(encoder, form_signature, field_signature,
                           RandomizedEncoder::FIELD_CONTROL_TYPE,
-                          field.form_control_type, /*include_checksum=*/false,
-                          metadata->mutable_type());
+                          FormControlTypeToString(field.form_control_type),
+                          /*include_checksum=*/false, metadata->mutable_type());
   }
   if (!field.label.empty()) {
     EncodeRandomizedValue(encoder, form_signature, field_signature,
@@ -364,10 +364,11 @@ FormStructure::FormStructure(const FormData& form)
     if (!ShouldSkipField(field))
       ++active_field_count_;
 
-    if (field.form_control_type == "password")
+    if (field.form_control_type == StringToFormControlType("password")) {
       has_password_field_ = true;
-    else
+    } else {
       all_fields_are_passwords_ = false;
+    }
 
     fields_.push_back(std::make_unique<AutofillField>(field));
   }
@@ -1418,7 +1419,8 @@ void FormStructure::EncodeFormFieldsForUpload(
     }
 
     if (is_raw_metadata_uploading_enabled) {
-      added_field->set_type(field->form_control_type);
+      added_field->set_type(
+          std::string(FormControlTypeToString(field->form_control_type)));
 
       if (!field->name.empty())
         added_field->set_name(base::UTF16ToUTF8(field->name));

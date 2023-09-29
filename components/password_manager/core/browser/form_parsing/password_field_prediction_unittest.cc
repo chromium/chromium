@@ -84,7 +84,8 @@ TEST(FormPredictionsTest, ConvertToFormPredictions) {
     FormFieldData field;
     field.unique_renderer_id = autofill::FieldRendererId(i + 1000);
     field.name = ASCIIToUTF16(test_fields[i].name);
-    field.form_control_type = test_fields[i].form_control_type;
+    field.form_control_type =
+        autofill::StringToFormControlType(test_fields[i].form_control_type);
 
     AutofillType::ServerPrediction prediction;
     prediction.server_predictions.push_back(
@@ -158,7 +159,8 @@ TEST(FormPredictionsTest, ConvertToFormPredictions_SynthesiseConfirmation) {
       FormFieldData field;
       field.unique_renderer_id = autofill::FieldRendererId(i + 1000);
       field.name = ASCIIToUTF16(test_form[i].name);
-      field.form_control_type = test_form[i].form_control_type;
+      field.form_control_type =
+          autofill::StringToFormControlType(test_form[i].form_control_type);
 
       AutofillType::ServerPrediction new_prediction;
       new_prediction.server_predictions = {

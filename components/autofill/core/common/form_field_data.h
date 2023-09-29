@@ -9,6 +9,7 @@
 
 #include <limits>
 #include <string>
+#include <string_view>
 #include <type_traits>
 #include <vector>
 
@@ -148,6 +149,10 @@ class Section {
 LogBuffer& operator<<(LogBuffer& buffer, const Section& section);
 std::ostream& operator<<(std::ostream& os, const Section& section);
 
+using FormControlType = mojom::FormControlType;
+
+LogBuffer& operator<<(LogBuffer& buffer, FormControlType type);
+
 // Stores information about a field in a form. Read more about forms and fields
 // at FormData.
 struct FormFieldData {
@@ -266,7 +271,7 @@ struct FormFieldData {
   // substring of `value`.
   uint32_t selection_start = 0;
   uint32_t selection_end = 0;
-  std::string form_control_type;
+  FormControlType form_control_type = FormControlType::kEmpty;
   std::string autocomplete_attribute;
   absl::optional<AutocompleteParsingResult> parsed_autocomplete;
   std::u16string placeholder;
@@ -356,6 +361,14 @@ struct FormFieldData {
   // user modified.
   bool force_override = false;
 };
+
+// TODO(crbug.com/1482526): Eliminate references to this function where
+// possible.
+std::string_view FormControlTypeToString(FormControlType type);
+
+// TODO(crbug.com/1482526): Eliminate references to this function where
+// possible.
+FormControlType StringToFormControlType(std::string_view type);
 
 // Serialize and deserialize FormFieldData. These are used when FormData objects
 // are serialized and deserialized.

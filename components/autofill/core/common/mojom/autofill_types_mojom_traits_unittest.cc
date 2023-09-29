@@ -300,7 +300,7 @@ TEST_F(AutofillTypeTraitsTestImpl, PassFormFieldData) {
   input.value = u"value";
   input.selection_start = 1;
   input.selection_end = 2;
-  input.form_control_type = "text";
+  input.form_control_type = FormControlType::kInputText;
   input.autocomplete_attribute = "on";
   input.parsed_autocomplete =
       AutocompleteParsingResult{.section = "autocomplete_section",

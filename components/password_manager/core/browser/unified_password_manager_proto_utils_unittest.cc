@@ -107,10 +107,10 @@ TEST(UnifiedPasswordManagerProtoUtilsTest,
   ASSERT_EQ(form.form_data.fields.size(), 2u);
   EXPECT_EQ(form.form_data.fields[0].name, kTestUsernameElementName16);
   EXPECT_EQ(form.form_data.fields[0].form_control_type,
-            kTestUsernameElementType);
+            autofill::StringToFormControlType(kTestUsernameElementType));
   EXPECT_EQ(form.form_data.fields[1].name, kTestPasswordElementName16);
   EXPECT_EQ(form.form_data.fields[1].form_control_type,
-            kTestPasswordElementType);
+            autofill::StringToFormControlType(kTestPasswordElementType));
 
   PasswordWithLocalData password_data_converted_back =
       PasswordWithLocalDataFromPassword(form);

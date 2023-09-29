@@ -144,7 +144,7 @@ FormFieldData CreateTestFormField(std::string_view label,
   field.label = base::UTF8ToUTF16(label);
   field.name = base::UTF8ToUTF16(name);
   field.value = base::UTF8ToUTF16(value);
-  field.form_control_type = type;
+  field.form_control_type = StringToFormControlType(type);
   field.is_focusable = true;
   return field;
 }

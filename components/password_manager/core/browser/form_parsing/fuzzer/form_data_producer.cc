@@ -125,8 +125,8 @@ autofill::FormData GenerateWithDataAccessor(
 
   // And finally do the same for all the fields.
   for (size_t i = 0; i < number_of_fields; ++i) {
-    result.fields[i].form_control_type =
-        accessor->ConsumeString(field_params[i].form_control_type_length);
+    result.fields[i].form_control_type = autofill::StringToFormControlType(
+        accessor->ConsumeString(field_params[i].form_control_type_length));
     result.fields[i].autocomplete_attribute =
         accessor->ConsumeString(field_params[i].autocomplete_attribute_length);
     result.fields[i].label =

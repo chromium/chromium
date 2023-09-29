@@ -99,7 +99,8 @@ std::pair<FormData, std::string> CreateFormAndServerClassification(
       field.section = Section::FromAutocomplete(
           {.section = std::string(field_template.section)});
     }
-    field.form_control_type = std::string(field_template.form_control_type);
+    field.form_control_type =
+        StringToFormControlType(field_template.form_control_type);
     field.is_focusable = field_template.is_focusable;
     field.max_length = field_template.max_length;
     field.parsed_autocomplete = field_template.parsed_autocomplete;

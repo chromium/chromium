@@ -201,21 +201,21 @@ TEST_F(AutofillRendererTest, SendForms) {
   expected.id_attribute = u"firstname";
   expected.name = expected.id_attribute;
   expected.value = std::u16string();
-  expected.form_control_type = "text";
+  expected.form_control_type = StringToFormControlType("text");
   expected.max_length = WebInputElement::DefaultMaxLength();
   EXPECT_FORM_FIELD_DATA_EQUALS(expected, forms[0].fields[0]);
 
   expected.id_attribute = u"middlename";
   expected.name = expected.id_attribute;
   expected.value = std::u16string();
-  expected.form_control_type = "text";
+  expected.form_control_type = StringToFormControlType("text");
   expected.max_length = WebInputElement::DefaultMaxLength();
   EXPECT_FORM_FIELD_DATA_EQUALS(expected, forms[0].fields[1]);
 
   expected.id_attribute = u"lastname";
   expected.name = expected.id_attribute;
   expected.value = std::u16string();
-  expected.form_control_type = "text";
+  expected.form_control_type = StringToFormControlType("text");
   expected.autocomplete_attribute = "off";
   expected.max_length = WebInputElement::DefaultMaxLength();
   EXPECT_FORM_FIELD_DATA_EQUALS(expected, forms[0].fields[2]);
@@ -224,7 +224,7 @@ TEST_F(AutofillRendererTest, SendForms) {
   expected.id_attribute = u"state";
   expected.name = expected.id_attribute;
   expected.value = u"?";
-  expected.form_control_type = "select-one";
+  expected.form_control_type = StringToFormControlType("select-one");
   expected.max_length = 0;
   EXPECT_FORM_FIELD_DATA_EQUALS(expected, forms[0].fields[3]);
 
@@ -260,7 +260,7 @@ TEST_F(AutofillRendererTest, SendForms) {
   ASSERT_EQ(1UL, forms.size());
   ASSERT_EQ(3UL, forms[0].fields.size());
 
-  expected.form_control_type = "text";
+  expected.form_control_type = StringToFormControlType("text");
   expected.max_length = WebInputElement::DefaultMaxLength();
 
   expected.id_attribute = u"second_firstname";
@@ -326,14 +326,14 @@ TEST_F(AutofillRendererTest, DynamicallyAddedUnownedFormElements) {
   expected.id_attribute = u"EMAIL_ADDRESS";
   expected.name = expected.id_attribute;
   expected.value.clear();
-  expected.form_control_type = "text";
+  expected.form_control_type = StringToFormControlType("text");
   expected.max_length = WebInputElement::DefaultMaxLength();
   EXPECT_FORM_FIELD_DATA_EQUALS(expected, forms[0].fields[7]);
 
   expected.id_attribute = u"PHONE_HOME_WHOLE_NUMBER";
   expected.name = expected.id_attribute;
   expected.value.clear();
-  expected.form_control_type = "text";
+  expected.form_control_type = StringToFormControlType("text");
   expected.max_length = WebInputElement::DefaultMaxLength();
   EXPECT_FORM_FIELD_DATA_EQUALS(expected, forms[0].fields[8]);
 }

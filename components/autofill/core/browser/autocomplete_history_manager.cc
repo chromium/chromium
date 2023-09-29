@@ -39,12 +39,11 @@ namespace {
 const int kMaxAutocompleteMenuItems = 6;
 
 bool IsTextField(const FormFieldData& field) {
-  return
-      field.form_control_type == "text" ||
-      field.form_control_type == "search" ||
-      field.form_control_type == "tel" ||
-      field.form_control_type == "url" ||
-      field.form_control_type == "email";
+  return field.form_control_type == StringToFormControlType("text") ||
+         field.form_control_type == StringToFormControlType("search") ||
+         field.form_control_type == StringToFormControlType("tel") ||
+         field.form_control_type == StringToFormControlType("url") ||
+         field.form_control_type == StringToFormControlType("email");
 }
 
 // Returns true if the field has a meaningful name.
@@ -92,7 +91,7 @@ bool AutocompleteHistoryManager::OnGetSingleFieldSuggestions(
   CancelPendingQueries(handler.get());
 
   if (!IsMeaningfulFieldName(field.name) || !client.IsAutocompleteEnabled() ||
-      field.form_control_type == "textarea" ||
+      field.form_control_type == StringToFormControlType("textarea") ||
       IsInAutofillSuggestionsDisabledExperiment()) {
     SendSuggestions({}, QueryHandler(field.global_id(), trigger_source,
                                      field.value, handler));

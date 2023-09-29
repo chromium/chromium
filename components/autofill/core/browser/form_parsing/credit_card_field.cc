@@ -276,7 +276,7 @@ bool CreditCardField::LikelyCardMonthSelectField(AutofillScanner* scanner) {
 
   AutofillField* field = scanner->Cursor();
   if (!MatchesFormControlType(
-          field->form_control_type,
+          FormControlTypeToString(field->form_control_type),
           {MatchFieldType::kSelect, MatchFieldType::kSearch})) {
     return false;
   }
@@ -311,7 +311,7 @@ bool CreditCardField::LikelyCardYearSelectField(
 
   AutofillField* field = scanner->Cursor();
   if (!MatchesFormControlType(
-          field->form_control_type,
+          FormControlTypeToString(field->form_control_type),
           {MatchFieldType::kSelect, MatchFieldType::kSearch})) {
     return false;
   }
@@ -388,9 +388,10 @@ bool CreditCardField::LikelyCardTypeSelectField(AutofillScanner* scanner) {
   AutofillField* field = scanner->Cursor();
 
   if (!MatchesFormControlType(
-          field->form_control_type,
-          {MatchFieldType::kSelect, MatchFieldType::kSearch}))
+          FormControlTypeToString(field->form_control_type),
+          {MatchFieldType::kSelect, MatchFieldType::kSearch})) {
     return false;
+  }
 
   // We set |ignore_whitespace| to true on these calls because this is actually
   // a pretty common mistake; e.g., "Master card" instead of "Mastercard".
@@ -523,8 +524,8 @@ bool CreditCardField::ParseExpirationDate(AutofillScanner* scanner,
                                           LogManager* log_manager,
                                           const LanguageCode& page_language,
                                           PatternSource pattern_source) {
-  if (!expiration_date_ && base::EqualsCaseInsensitiveASCII(
-                               scanner->Cursor()->form_control_type, "month")) {
+  if (!expiration_date_ && scanner->Cursor()->form_control_type ==
+                               StringToFormControlType("month")) {
     expiration_date_ = scanner->Cursor();
     expiration_month_ = nullptr;
     expiration_year_ = nullptr;

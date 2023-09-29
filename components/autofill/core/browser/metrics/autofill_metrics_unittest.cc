@@ -655,7 +655,7 @@ TEST_F(AutofillMetricsTest, LogRepeatedAddressTypeRationalized) {
   FieldSignature field_signature[2];
 
   FormFieldData field;
-  field.form_control_type = "text";
+  field.form_control_type = StringToFormControlType("text");
 
   field.label = u"fullname";
   field.name = u"fullname";
@@ -753,7 +753,7 @@ TEST_F(AutofillMetricsTest, LogRepeatedStateCountryTypeRationalized) {
   FieldSignature field_signature[3];
 
   FormFieldData field;
-  field.form_control_type = "text";
+  field.form_control_type = StringToFormControlType("text");
 
   field.label = u"Country";
   field.name = u"country";
@@ -772,7 +772,7 @@ TEST_F(AutofillMetricsTest, LogRepeatedStateCountryTypeRationalized) {
   field.label = u"State";
   field.name = u"state";
   field.is_focusable = false;
-  field.form_control_type = "select-one";
+  field.form_control_type = StringToFormControlType("select-one");
   form.fields.push_back(field);
   // Regardless of the order of appearance, hidden fields are rationalized
   // before their corresponding visible one.
@@ -6520,7 +6520,7 @@ class AutofillMetricsParseQueryResponseTest : public testing::Test {
     form.url = GURL("http://foo.com");
     form.main_frame_origin = url::Origin::Create(GURL("http://foo_root.com"));
     FormFieldData field;
-    field.form_control_type = "text";
+    field.form_control_type = StringToFormControlType("text");
 
     field.label = u"fullname";
     field.name = u"fullname";
@@ -6533,7 +6533,7 @@ class AutofillMetricsParseQueryResponseTest : public testing::Test {
     // Checkable fields should be ignored in parsing.
     FormFieldData checkable_field;
     checkable_field.label = u"radio_button";
-    checkable_field.form_control_type = "radio";
+    checkable_field.form_control_type = StringToFormControlType("radio");
     checkable_field.check_status =
         FormFieldData::CheckStatus::kCheckableButUnchecked;
     form.fields.push_back(checkable_field);
@@ -6547,7 +6547,7 @@ class AutofillMetricsParseQueryResponseTest : public testing::Test {
 
     field.label = u"password";
     field.name = u"password";
-    field.form_control_type = "password";
+    field.form_control_type = StringToFormControlType("password");
     form.fields.push_back(field);
 
     owned_forms_.push_back(std::make_unique<FormStructure>(form));
@@ -8150,19 +8150,19 @@ TEST_F(AutofillMetricsFromLogEventsTest, TestShowSuggestionAutofillStatus) {
   FormFieldData field;
   field.label = u"State";
   field.name = u"state";
-  field.form_control_type = "text";
+  field.form_control_type = StringToFormControlType("text");
   field.unique_renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Street";
   field.name = u"";
-  field.form_control_type = "text";
+  field.form_control_type = StringToFormControlType("text");
   field.unique_renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Number";
   field.name = u"";
-  field.form_control_type = "text";
+  field.form_control_type = StringToFormControlType("text");
   field.unique_renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
@@ -8210,7 +8210,7 @@ TEST_F(AutofillMetricsFromLogEventsTest, TestShowSuggestionAutofillStatus) {
           {UFIT::kFieldSignatureName,
            Collapse(CalculateFieldSignatureForField(form.fields[i])).value()},
           {UFIT::kFormControlTypeName,
-           base::to_underlying(FormControlType::kText)},
+           base::to_underlying(DeprecatedFormControlType::kText)},
           {UFIT::kAutocompleteStateName,
            base::to_underlying(AutofillMetrics::AutocompleteState::kNone)},
           {UFIT::kAutofillStatusVectorName, autofill_status_vector.data()[0]},
@@ -8239,19 +8239,19 @@ TEST_F(AutofillMetricsFromLogEventsTest, AddressSubmittedFormLogEvents) {
   FormFieldData field;
   field.label = u"State";
   field.name = u"state";
-  field.form_control_type = "text";
+  field.form_control_type = StringToFormControlType("text");
   field.unique_renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Street";
   field.name = u"";
-  field.form_control_type = "text";
+  field.form_control_type = StringToFormControlType("text");
   field.unique_renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Number";
   field.name = u"";
-  field.form_control_type = "text";
+  field.form_control_type = StringToFormControlType("text");
   field.unique_renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
@@ -8327,7 +8327,7 @@ TEST_F(AutofillMetricsFromLogEventsTest, AddressSubmittedFormLogEvents) {
           {UFIT::kAutofillSkippedStatusName,
            DenseSet<FieldFillingSkipReason>{status}.data()[0]},
           {UFIT::kFormControlTypeName,
-           base::to_underlying(FormControlType::kText)},
+           base::to_underlying(DeprecatedFormControlType::kText)},
           {UFIT::kAutocompleteStateName,
            base::to_underlying(AutofillMetrics::AutocompleteState::kNone)},
           {UFIT::kAutofillStatusVectorName, autofill_status_vector.data()[0]},
@@ -8435,7 +8435,7 @@ TEST_F(AutofillMetricsFromLogEventsTest, AutofillFieldInfoMetricsFieldType) {
   FormFieldData field;
   field.label = u"Last Name";
   field.name = u"lastname";
-  field.form_control_type = "text";
+  field.form_control_type = StringToFormControlType("text");
   field.autocomplete_attribute = "family-name";
   field.parsed_autocomplete = ParseAutocompleteAttribute("family-name");
   field.unique_renderer_id = test::MakeFieldRendererId();
@@ -8444,7 +8444,7 @@ TEST_F(AutofillMetricsFromLogEventsTest, AutofillFieldInfoMetricsFieldType) {
   // Heuristic value will NOT match with Autocomplete attribute.
   field.label = u"First Name";
   field.name = u"firstname";
-  field.form_control_type = "text";
+  field.form_control_type = StringToFormControlType("text");
   field.autocomplete_attribute = "additional-name";
   field.parsed_autocomplete = ParseAutocompleteAttribute("additional-name");
   field.unique_renderer_id = test::MakeFieldRendererId();
@@ -8453,7 +8453,7 @@ TEST_F(AutofillMetricsFromLogEventsTest, AutofillFieldInfoMetricsFieldType) {
   // No autocomplete attribute.
   field.label = u"Address";
   field.name = u"address";
-  field.form_control_type = "text";
+  field.form_control_type = StringToFormControlType("text");
   field.autocomplete_attribute = "off";
   field.parsed_autocomplete = ParseAutocompleteAttribute("off");
   field.unique_renderer_id = test::MakeFieldRendererId();
@@ -8462,7 +8462,7 @@ TEST_F(AutofillMetricsFromLogEventsTest, AutofillFieldInfoMetricsFieldType) {
   // Heuristic value will be unknown.
   field.label = u"Garbage label";
   field.name = u"garbage";
-  field.form_control_type = "text";
+  field.form_control_type = StringToFormControlType("text");
   field.autocomplete_attribute = "postal-code";
   field.parsed_autocomplete = ParseAutocompleteAttribute("postal-code");
   field.unique_renderer_id = test::MakeFieldRendererId();
@@ -8470,7 +8470,7 @@ TEST_F(AutofillMetricsFromLogEventsTest, AutofillFieldInfoMetricsFieldType) {
 
   field.label = u"Email";
   field.name = u"email";
-  field.form_control_type = "text";
+  field.form_control_type = StringToFormControlType("text");
   field.autocomplete_attribute = "garbage";
   field.parsed_autocomplete = ParseAutocompleteAttribute("garbage");
   field.unique_renderer_id = test::MakeFieldRendererId();
@@ -8568,7 +8568,7 @@ TEST_F(AutofillMetricsFromLogEventsTest, AutofillFieldInfoMetricsFieldType) {
         {UFIT::kTypeChangedByRationalizationName, false},
         {UFIT::kRankInFieldSignatureGroupName, 1},
         {UFIT::kFormControlTypeName,
-         base::to_underlying(FormControlType::kText)},
+         base::to_underlying(DeprecatedFormControlType::kText)},
         {UFIT::kAutocompleteStateName,
          base::to_underlying(autocomplete_states[i])},
         {UFIT::kAutofillStatusVectorName, autofill_status_vector.data()[0]},
@@ -8728,7 +8728,7 @@ TEST_F(AutofillMetricsFromLogEventsTest,
         {UFIT::kFieldSignatureName,
          Collapse(CalculateFieldSignatureForField(form.fields[i])).value()},
         {UFIT::kFormControlTypeName,
-         base::to_underlying(FormControlType::kText)},
+         base::to_underlying(DeprecatedFormControlType::kText)},
         {UFIT::kAutocompleteStateName,
          base::to_underlying(AutofillMetrics::AutocompleteState::kNone)},
         {UFIT::kAutofillStatusVectorName, autofill_status_vector.data()[0]},
@@ -8871,14 +8871,14 @@ TEST_F(AutofillMetricsFromLogEventsTest,
   FormFieldData field;
   field.label = u"Option 1";
   field.name = u"Option 1";
-  field.form_control_type = "checkbox";
+  field.form_control_type = StringToFormControlType("checkbox");
   field.check_status = FormFieldData::CheckStatus::kCheckableButUnchecked;
   field.unique_renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Option 2";
   field.name = u"Option 2";
-  field.form_control_type = "checkbox";
+  field.form_control_type = StringToFormControlType("checkbox");
   field.check_status = FormFieldData::CheckStatus::kCheckableButUnchecked;
   field.unique_renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
@@ -8909,21 +8909,21 @@ TEST_F(
   FormFieldData field;
   field.label = u"username";
   field.name = u"username";
-  field.form_control_type = "text";
+  field.form_control_type = StringToFormControlType("text");
   field.unique_renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   // Two checkable radio buttons.
   field.label = u"female";
   field.name = u"female";
-  field.form_control_type = "radio";
+  field.form_control_type = StringToFormControlType("radio");
   field.check_status = FormFieldData::CheckStatus::kCheckableButUnchecked;
   field.unique_renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"male";
   field.name = u"male";
-  field.form_control_type = "radio";
+  field.form_control_type = StringToFormControlType("radio");
   field.check_status = FormFieldData::CheckStatus::kCheckableButUnchecked;
   field.unique_renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
@@ -8931,7 +8931,7 @@ TEST_F(
   // One checkable checkbox.
   field.label = u"save";
   field.name = u"save";
-  field.form_control_type = "checkbox";
+  field.form_control_type = StringToFormControlType("checkbox");
   field.check_status = FormFieldData::CheckStatus::kCheckableButUnchecked;
   field.unique_renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
@@ -8965,27 +8965,27 @@ TEST_F(AutofillMetricsFromLogEventsTest,
   FormFieldData field;
   field.label = u"First Name";
   field.name = u"firstname";
-  field.form_control_type = "text";
+  field.form_control_type = StringToFormControlType("text");
   field.unique_renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Last Name";
   field.name = u"lastname";
-  field.form_control_type = "text";
+  field.form_control_type = StringToFormControlType("text");
   field.unique_renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   // Two checkable radio buttons.
   field.label = u"female";
   field.name = u"female";
-  field.form_control_type = "radio";
+  field.form_control_type = StringToFormControlType("radio");
   field.check_status = FormFieldData::CheckStatus::kCheckableButUnchecked;
   field.unique_renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"male";
   field.name = u"male";
-  field.form_control_type = "radio";
+  field.form_control_type = StringToFormControlType("radio");
   field.check_status = FormFieldData::CheckStatus::kCheckableButUnchecked;
   field.unique_renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
@@ -9007,9 +9007,9 @@ TEST_F(AutofillMetricsFromLogEventsTest,
   auto entries =
       test_ukm_recorder().GetEntriesByName(UkmFieldInfoType::kEntryName);
   ASSERT_EQ(4u, entries.size());
-  std::vector<FormControlType> form_control_types = {
-      FormControlType::kText, FormControlType::kText, FormControlType::kRadio,
-      FormControlType::kRadio};
+  std::vector<DeprecatedFormControlType> form_control_types = {
+      DeprecatedFormControlType::kText, DeprecatedFormControlType::kText,
+      DeprecatedFormControlType::kRadio, DeprecatedFormControlType::kRadio};
   for (size_t i = 0; i < entries.size(); ++i) {
     SCOPED_TRACE(testing::Message() << i);
     DenseSet<AutofillStatus> autofill_status_vector = {
@@ -9095,20 +9095,20 @@ TEST_F(AutofillMetricsFromLogEventsTest,
   FormFieldData field;
   field.label = u"First Name";
   field.name = u"firstname";
-  field.form_control_type = "text";
+  field.form_control_type = StringToFormControlType("text");
   field.unique_renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Last Name";
   field.name = u"lastname";
-  field.form_control_type = "text";
+  field.form_control_type = StringToFormControlType("text");
   field.unique_renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   // Selectlist.
   field.label = u"Country";
   field.name = u"country";
-  field.form_control_type = "selectlist";
+  field.form_control_type = StringToFormControlType("selectlist");
   field.unique_renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
@@ -9130,13 +9130,13 @@ TEST_F(AutofillMetricsFromLogEventsTest,
   ASSERT_EQ(3u, entries.size());
   test_ukm_recorder().ExpectEntryMetric(
       entries[0], UkmFieldInfoType::kFormControlTypeName,
-      base::to_underlying(FormControlType::kText));
+      base::to_underlying(DeprecatedFormControlType::kText));
   test_ukm_recorder().ExpectEntryMetric(
       entries[1], UkmFieldInfoType::kFormControlTypeName,
-      base::to_underlying(FormControlType::kText));
+      base::to_underlying(DeprecatedFormControlType::kText));
   test_ukm_recorder().ExpectEntryMetric(
       entries[2], UkmFieldInfoType::kFormControlTypeName,
-      base::to_underlying(FormControlType::kSelectlist));
+      base::to_underlying(DeprecatedFormControlType::kSelectlist));
 }
 
 // Tests that the field which is in a different frame than its form is recorded
@@ -9155,21 +9155,21 @@ TEST_F(AutofillMetricsFromLogEventsTest,
   FormFieldData field;
   field.label = u"First Name";
   field.name = u"firstname";
-  field.form_control_type = "text";
+  field.form_control_type = StringToFormControlType("text");
   field.host_frame = form.host_frame;
   field.unique_renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Last Name";
   field.name = u"lastname";
-  field.form_control_type = "text";
+  field.form_control_type = StringToFormControlType("text");
   field.host_frame = test::MakeLocalFrameToken(test::RandomizeFrame(true));
   field.unique_renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Email";
   field.name = u"email";
-  field.form_control_type = "text";
+  field.form_control_type = StringToFormControlType("text");
   field.host_frame = form.host_frame;
   field.unique_renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
@@ -9191,8 +9191,9 @@ TEST_F(AutofillMetricsFromLogEventsTest,
   auto entries =
       test_ukm_recorder().GetEntriesByName(UkmFieldInfoType::kEntryName);
   ASSERT_EQ(3u, entries.size());
-  std::vector<FormControlType> form_control_types = {
-      FormControlType::kText, FormControlType::kText, FormControlType::kText};
+  std::vector<DeprecatedFormControlType> form_control_types = {
+      DeprecatedFormControlType::kText, DeprecatedFormControlType::kText,
+      DeprecatedFormControlType::kText};
   for (size_t i = 0; i < entries.size(); ++i) {
     SCOPED_TRACE(testing::Message() << i);
 

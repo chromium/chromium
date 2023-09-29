@@ -53,7 +53,7 @@ void FormFieldTestBase::AddFormFieldDataWithLength(
     int max_length,
     ServerFieldType expected_type) {
   FormFieldData field_data;
-  field_data.form_control_type = control_type;
+  field_data.form_control_type = StringToFormControlType(control_type);
   field_data.name = base::UTF8ToUTF16(name);
   field_data.label = base::UTF8ToUTF16(label);
   field_data.max_length = max_length;

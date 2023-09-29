@@ -31,7 +31,7 @@ typedef std::map<ServerFieldType, std::vector<AutofillDataModel::ValidityState>>
 typedef std::map<ServerFieldType, AutofillDataModel::ValidityState>
     ServerFieldTypeValidityStateMap;
 
-enum class FormControlType {
+enum class DeprecatedFormControlType {
   kEmpty = 0,
   kOther = 1,
   kText = 2,
@@ -319,7 +319,8 @@ class AutofillField : public FormFieldData {
     return autofill_source_profile_guid_;
   }
 
-  enum FormControlType FormControlType() const;
+  // Use FormFieldData::form_control_type instead (crbug.com/1482526).
+  enum DeprecatedFormControlType FormControlType() const;
 
  private:
   explicit AutofillField(FieldSignature field_signature);

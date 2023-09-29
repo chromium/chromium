@@ -217,7 +217,7 @@ struct StructTraits<autofill::mojom::FormFieldDataDataView,
     return r.selection_end;
   }
 
-  static const std::string& form_control_type(
+  static autofill::mojom::FormControlType form_control_type(
       const autofill::FormFieldData& r) {
     return r.form_control_type;
   }

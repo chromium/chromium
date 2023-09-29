@@ -45,7 +45,8 @@ base::Value::Dict SerializeSignatureRelevantMembersInFormData(
     // Stored FormFieldData is used only for signature calculations, therefore
     // only members that are used for signature calculation are stored.
     serialized_field.Set(kNameKey, field.name);
-    serialized_field.Set(kFormControlTypeKey, field.form_control_type);
+    serialized_field.Set(kFormControlTypeKey, autofill::FormControlTypeToString(
+                                                  field.form_control_type));
     serialized_fields.Append(std::move(serialized_field));
   }
   serialized_data.Set(kFieldsKey, std::move(serialized_fields));
@@ -94,7 +95,7 @@ absl::optional<FormData> DeserializeFormData(
       return absl::nullopt;
     }
     field.name = base::UTF8ToUTF16(*field_name);
-    field.form_control_type = *field_type;
+    field.form_control_type = autofill::StringToFormControlType(*field_type);
     form_data.fields.push_back(field);
   }
   return form_data;

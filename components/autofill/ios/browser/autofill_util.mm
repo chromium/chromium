@@ -212,7 +212,8 @@ bool ExtractFormFieldData(const base::Value::Dict& field,
   }
 
   field_data->name = base::UTF8ToUTF16(*name);
-  field_data->form_control_type = *form_control_type;
+  field_data->form_control_type =
+      autofill::StringToFormControlType(*form_control_type);
 
   const std::string* unique_renderer_id =
       field.FindString("unique_renderer_id");

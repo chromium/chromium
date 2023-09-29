@@ -11,6 +11,31 @@ import "mojo/public/mojom/base/unguessable_token.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
 
+// A subset of the WebFormControlElement::Type constants supported by Autofill.
+enum FormControlType {
+  // TODO(crbug.com/1482526): Remove kEmpty. Autofill's browser code currently
+  // assumes there's an empty or unknown form control type, which is not
+  // necessary:
+  // https://html.spec.whatwg.org/multipage/input.html#attr-input-type
+  // https://html.spec.whatwg.org/multipage/form-elements.html#dom-select-type
+  // https://html.spec.whatwg.org/multipage/form-elements.html#dom-textarea-type
+  kEmpty,
+  kInputCheckbox,
+  kInputEmail,
+  kInputMonth,
+  kInputNumber,
+  kInputPassword,
+  kInputRadio,
+  kInputSearch,
+  kInputTelephone,
+  kInputText,
+  kInputUrl,
+  kSelectOne,
+  kSelectMultiple,
+  kSelectList,
+  kTextArea,
+};
+
 // The list of all HTML autocomplete field mode hints supported by Chrome.
 // See [ http://is.gd/whatwg_autocomplete ] for the full list of specced hints.
 enum HtmlFieldMode {
@@ -330,7 +355,7 @@ struct FormFieldData {
   mojo_base.mojom.String16 value;
   uint32 selection_start;
   uint32 selection_end;
-  string form_control_type;
+  FormControlType form_control_type;
   string autocomplete_attribute;
   AutocompleteParsingResult? parsed_autocomplete;
   mojo_base.mojom.String16 placeholder;

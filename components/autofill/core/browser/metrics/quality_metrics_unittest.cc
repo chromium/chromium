@@ -535,7 +535,7 @@ TEST_P(PredictionQualityMetricsTest, Classification) {
 
   FormData form = CreateForm(
       {CreateTestFormField("first", "first", ValueForType(NAME_FIRST), "text"),
-       CreateTestFormField("last", "last", ValueForType(NAME_LAST), "test"),
+       CreateTestFormField("last", "last", ValueForType(NAME_LAST), "text"),
        CreateTestFormField("Unknown", "Unknown",
                            ValueForType(actual_field_type), "text")});
 

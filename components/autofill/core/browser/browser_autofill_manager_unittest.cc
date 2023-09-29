@@ -402,7 +402,8 @@ void ExpectFilledField(const char* expected_label,
   EXPECT_EQ(UTF8ToUTF16(expected_label), field.label);
   EXPECT_EQ(UTF8ToUTF16(expected_name), field.name);
   EXPECT_EQ(UTF8ToUTF16(expected_value), field.value);
-  EXPECT_EQ(expected_form_control_type, field.form_control_type);
+  EXPECT_EQ(StringToFormControlType(expected_form_control_type),
+            field.form_control_type);
 }
 
 // Verifies that the |filled_form| has been filled with the given data.
@@ -6834,7 +6835,7 @@ void DoTestFormSubmittedControlWithDefaultValue(
   // reject default values for text fields.
   FormFieldData* state_field = form.FindFieldByName(u"state");
   ASSERT_TRUE(state_field != nullptr);
-  state_field->form_control_type = form_control_type;
+  state_field->form_control_type = StringToFormControlType(form_control_type);
   state_field->value = base::UTF8ToUTF16(kElvisAddressFillData.state);
 
   test->FormsSeen({form});

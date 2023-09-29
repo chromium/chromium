@@ -950,7 +950,8 @@ std::vector<ProcessedField> ProcessFields(
       continue;
     }
 
-    const bool is_password = field.form_control_type == "password";
+    const bool is_password = field.form_control_type ==
+                             autofill::StringToFormControlType("password");
 
     if (!field_value.empty()) {
       std::set<base::StringPiece16>& seen_values =
@@ -1048,7 +1049,8 @@ std::unique_ptr<PasswordForm> AssemblePasswordForm(
       significant_fields.accepts_webauthn_credentials;
 
   for (const FormFieldData& field : form_data.fields) {
-    if (field.form_control_type == "password" &&
+    if (field.form_control_type ==
+            autofill::StringToFormControlType("password") &&
         (field.properties_mask & FieldPropertiesFlags::kAutofilled)) {
       result->form_has_autofilled_value = true;
     }

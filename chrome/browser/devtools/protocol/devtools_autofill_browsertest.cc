@@ -461,8 +461,10 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, AddressFormFilled) {
     EXPECT_THAT(ff, FilledFieldHasAttributeWithValue16("value", ffd->value));
     EXPECT_THAT(ff,
                 Not(FilledFieldHasAttributeWithValue16("value", af->value)));
-    EXPECT_THAT(ff, FilledFieldHasAttributeWithValue("htmlType",
-                                                     af->form_control_type));
+    EXPECT_THAT(ff,
+                FilledFieldHasAttributeWithValue(
+                    "htmlType", std::string(autofill::FormControlTypeToString(
+                                    af->form_control_type))));
     EXPECT_THAT(ff,
                 FilledFieldHasAttributeWithValue16("name", af->name_attribute));
   }

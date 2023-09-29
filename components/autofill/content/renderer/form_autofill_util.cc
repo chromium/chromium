@@ -1980,36 +1980,36 @@ bool IsAutofillableElement(const WebFormControlElement& element) {
           base::FeatureList::IsEnabled(features::kAutofillEnableSelectList));
 }
 
-std::string_view FormControlTypeToString(Type type) {
+FormControlType ToAutofillFormControlType(WebFormControlElement::Type type) {
   switch (type) {
-    case Type::kInputCheckbox:
-      return "checkbox";
-    case Type::kInputEmail:
-      return "email";
-    case Type::kInputMonth:
-      return "month";
-    case Type::kInputNumber:
-      return "number";
-    case Type::kInputPassword:
-      return "password";
-    case Type::kInputRadio:
-      return "radio";
-    case Type::kInputSearch:
-      return "search";
-    case Type::kInputTelephone:
-      return "tel";
-    case Type::kInputText:
-      return "text";
-    case Type::kInputUrl:
-      return "url";
-    case Type::kSelectOne:
-      return "select-one";
-    case Type::kSelectMultiple:
-      return "select-multiple";
-    case Type::kSelectList:
-      return "selectlist";
-    case Type::kTextArea:
-      return "textarea";
+    case WebFormControlElement::Type::kInputCheckbox:
+      return FormControlType::kInputCheckbox;
+    case WebFormControlElement::Type::kInputEmail:
+      return FormControlType::kInputEmail;
+    case WebFormControlElement::Type::kInputMonth:
+      return FormControlType::kInputMonth;
+    case WebFormControlElement::Type::kInputNumber:
+      return FormControlType::kInputNumber;
+    case WebFormControlElement::Type::kInputPassword:
+      return FormControlType::kInputPassword;
+    case WebFormControlElement::Type::kInputRadio:
+      return FormControlType::kInputRadio;
+    case WebFormControlElement::Type::kInputSearch:
+      return FormControlType::kInputSearch;
+    case WebFormControlElement::Type::kInputTelephone:
+      return FormControlType::kInputTelephone;
+    case WebFormControlElement::Type::kInputText:
+      return FormControlType::kInputText;
+    case WebFormControlElement::Type::kInputUrl:
+      return FormControlType::kInputUrl;
+    case WebFormControlElement::Type::kSelectOne:
+      return FormControlType::kSelectOne;
+    case WebFormControlElement::Type::kSelectMultiple:
+      return FormControlType::kSelectMultiple;
+    case WebFormControlElement::Type::kSelectList:
+      return FormControlType::kSelectList;
+    case WebFormControlElement::Type::kTextArea:
+      return FormControlType::kTextArea;
     default:
       NOTREACHED_NORETURN();
   }
@@ -2122,7 +2122,7 @@ void WebFormControlElementToFormField(
   field->host_form_id = GetFormRendererId(form_element);
   field->form_control_ax_id = element.GetAxId();
   field->form_control_type =
-      FormControlTypeToString(element.FormControlTypeForAutofill());
+      ToAutofillFormControlType(element.FormControlTypeForAutofill());
   field->max_length =
       IsTextInput(input_element) ? input_element.MaxLength() : 0;
   field->autocomplete_attribute = GetAutocompleteAttribute(element);
@@ -2275,7 +2275,7 @@ void WebFormControlElementToFormField(
 
     // The typed value is preserved for all passwords. It is also preserved for
     // potential usernames, as long as the |value| is not deemed acceptable.
-    if (field->form_control_type == "password" ||
+    if (field->form_control_type == StringToFormControlType("password") ||
         !ScriptModifiedUsernameAcceptable(field->value, user_input,
                                           field_data_manager)) {
       field->user_input = user_input;

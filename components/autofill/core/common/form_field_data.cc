@@ -14,6 +14,7 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "build/build_config.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_util.h"
@@ -92,13 +93,18 @@ bool ReadAsInt(base::PickleIterator* iter, T* target_value) {
 
 bool DeserializeSection1(base::PickleIterator* iter,
                          FormFieldData* field_data) {
-  return iter->ReadString16(&field_data->label) &&
-         iter->ReadString16(&field_data->name) &&
-         iter->ReadString16(&field_data->value) &&
-         iter->ReadString(&field_data->form_control_type) &&
-         iter->ReadString(&field_data->autocomplete_attribute) &&
-         iter->ReadUInt64(&field_data->max_length) &&
-         iter->ReadBool(&field_data->is_autofilled);
+  std::string form_control_type;
+  bool success = iter->ReadString16(&field_data->label) &&
+                 iter->ReadString16(&field_data->name) &&
+                 iter->ReadString16(&field_data->value) &&
+                 iter->ReadString(&form_control_type) &&
+                 iter->ReadString(&field_data->autocomplete_attribute) &&
+                 iter->ReadUInt64(&field_data->max_length) &&
+                 iter->ReadBool(&field_data->is_autofilled);
+  if (success) {
+    field_data->form_control_type = StringToFormControlType(form_control_type);
+  }
+  return success;
 }
 
 bool DeserializeSection5(base::PickleIterator* iter,
@@ -325,6 +331,10 @@ std::ostream& operator<<(std::ostream& os, const Section& section) {
   return os << section.ToString();
 }
 
+LogBuffer& operator<<(LogBuffer& buffer, FormControlType type) {
+  return buffer << FormControlTypeToString(type);
+}
+
 FormFieldData::FormFieldData() = default;
 
 FormFieldData::FormFieldData(const FormFieldData&) = default;
@@ -342,22 +352,25 @@ bool FormFieldData::SameFieldAs(const FormFieldData& field) const {
 }
 
 bool FormFieldData::IsTextInputElement() const {
-  return form_control_type == "text" || form_control_type == "password" ||
-         form_control_type == "search" || form_control_type == "tel" ||
-         form_control_type == "url" || form_control_type == "email" ||
-         form_control_type == "number";
+  return form_control_type == StringToFormControlType("text") ||
+         form_control_type == StringToFormControlType("password") ||
+         form_control_type == StringToFormControlType("search") ||
+         form_control_type == StringToFormControlType("tel") ||
+         form_control_type == StringToFormControlType("url") ||
+         form_control_type == StringToFormControlType("email") ||
+         form_control_type == StringToFormControlType("number");
 }
 
 bool FormFieldData::IsPasswordInputElement() const {
-  return form_control_type == "password";
+  return form_control_type == StringToFormControlType("password");
 }
 
 bool FormFieldData::IsSelectElement() const {
-  return form_control_type == "select-one";
+  return form_control_type == StringToFormControlType("select-one");
 }
 
 bool FormFieldData::IsSelectListElement() const {
-  return form_control_type == "selectlist";
+  return form_control_type == StringToFormControlType("selectlist");
 }
 
 bool FormFieldData::IsSelectOrSelectListElement() const {
@@ -392,13 +405,98 @@ bool FormFieldData::DeepEqual(const FormFieldData& a, const FormFieldData& b) {
          IdentityTuple(a) == IdentityTuple(b);
 }
 
+std::string_view FormControlTypeToString(FormControlType type) {
+  switch (type) {
+    case FormControlType::kInputCheckbox:
+      return "checkbox";
+    case FormControlType::kInputEmail:
+      return "email";
+    case FormControlType::kInputMonth:
+      return "month";
+    case FormControlType::kInputNumber:
+      return "number";
+    case FormControlType::kInputPassword:
+      return "password";
+    case FormControlType::kInputRadio:
+      return "radio";
+    case FormControlType::kInputSearch:
+      return "search";
+    case FormControlType::kInputTelephone:
+      return "tel";
+    case FormControlType::kInputText:
+      return "text";
+    case FormControlType::kInputUrl:
+      return "url";
+    case FormControlType::kSelectOne:
+      return "select-one";
+    case FormControlType::kSelectMultiple:
+      return "select-multiple";
+    case FormControlType::kSelectList:
+      return "selectlist";
+    case FormControlType::kTextArea:
+      return "textarea";
+    case FormControlType::kEmpty:
+      return "";
+  }
+  return "invalid";
+}
+
+FormControlType StringToFormControlType(std::string_view type) {
+  if (type == "checkbox") {
+    return FormControlType::kInputCheckbox;
+  }
+  if (type == "email") {
+    return FormControlType::kInputEmail;
+  }
+  if (type == "month") {
+    return FormControlType::kInputMonth;
+  }
+  if (type == "number") {
+    return FormControlType::kInputNumber;
+  }
+  if (type == "password") {
+    return FormControlType::kInputPassword;
+  }
+  if (type == "radio") {
+    return FormControlType::kInputRadio;
+  }
+  if (type == "search") {
+    return FormControlType::kInputSearch;
+  }
+  if (type == "tel") {
+    return FormControlType::kInputTelephone;
+  }
+  if (type == "text") {
+    return FormControlType::kInputText;
+  }
+  if (type == "url") {
+    return FormControlType::kInputUrl;
+  }
+  if (type == "select-one") {
+    return FormControlType::kSelectOne;
+  }
+  if (type == "select-multiple") {
+    return FormControlType::kSelectMultiple;
+  }
+  if (type == "selectlist") {
+    return FormControlType::kSelectList;
+  }
+  if (type == "textarea") {
+    return FormControlType::kTextArea;
+  }
+  if (type == "") {
+    return FormControlType::kEmpty;
+  }
+  return FormControlType::kEmpty;
+}
+
 void SerializeFormFieldData(const FormFieldData& field_data,
                             base::Pickle* pickle) {
   pickle->WriteInt(kFormFieldDataPickleVersion);
   pickle->WriteString16(field_data.label);
   pickle->WriteString16(field_data.name);
   pickle->WriteString16(field_data.value);
-  pickle->WriteString(field_data.form_control_type);
+  pickle->WriteString(FormControlTypeToString(field_data.form_control_type));
   // We don't serialize the `parsed_autocomplete`. See http://crbug.com/1353392.
   pickle->WriteString(field_data.autocomplete_attribute);
   pickle->WriteUInt64(field_data.max_length);
