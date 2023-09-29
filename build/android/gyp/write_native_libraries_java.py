@@ -8,6 +8,7 @@
 
 import argparse
 import os
+import re
 import sys
 import zipfile
 
@@ -48,8 +49,7 @@ public class NativeLibraries {{
 
 def _FormatLibraryName(library_name):
   filename = os.path.split(library_name)[1]
-  assert filename.startswith('lib')
-  assert filename.endswith('.so')
+  assert filename.startswith('lib') and filename.endswith('.so'), filename
   # Remove lib prefix and .so suffix.
   return '"%s"' % filename[3:-3]
 
@@ -102,6 +102,14 @@ def main():
     sys.stderr.write('\n'.join(native_libraries))
     sys.stderr.write('\n')
     sys.exit(1)
+
+  # When building for robolectric in component buildS, OS=linux causes
+  # "libmirprotobuf.so.9" to be a dep. This script, as well as
+  # System.loadLibrary("name") require libraries to end with ".so", so just
+  # filter it out.
+  native_libraries = [
+      f for f in native_libraries if not re.search(r'\.so\.\d+$', f)
+  ]
 
   def bool_str(value):
     if value:

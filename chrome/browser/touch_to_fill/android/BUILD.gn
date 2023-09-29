@@ -58,7 +58,8 @@ android_library("public_java") {
 robolectric_binary("touch_to_fill_junit_tests") {
   testonly = true
   resources_package = "org.chromium.chrome.browser.touch_to_fill"
-  shared_libraries = [ "//url:libgurl_robolectric($robolectric_toolchain)" ]
+  shared_libraries =
+      [ "//chrome/android/junit:libchrome_junit_tests($robolectric_toolchain)" ]
 
   sources = [ "junit/src/org/chromium/chrome/browser/touch_to_fill/TouchToFillControllerTest.java" ]
 

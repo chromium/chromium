@@ -42,8 +42,6 @@ import org.chromium.chrome.browser.feed.webfeed.WebFeedSubscriptionRequestStatus
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
-import org.chromium.components.url_formatter.UrlFormatter;
-import org.chromium.components.url_formatter.UrlFormatterJni;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -78,8 +76,6 @@ public class CreatorMediatorTest {
     @Mock
     private UnownedUserDataSupplier<ShareDelegate> mShareDelegateSupplier;
     @Mock
-    private UrlFormatter.Natives mUrlFormatterJniMock;
-    @Mock
     private SignInInterstitialInitiator mSignInInterstitialInitiator;
 
     @Captor
@@ -108,10 +104,6 @@ public class CreatorMediatorTest {
         mJniMocker.mock(WebFeedBridge.getTestHooksForTesting(), mWebFeedBridgeJniMock);
         mJniMocker.mock(FeedReliabilityLoggingBridge.getTestHooksForTesting(),
                 mFeedReliabilityLoggingBridgeJniMock);
-        mJniMocker.mock(UrlFormatterJni.TEST_HOOKS, mUrlFormatterJniMock);
-
-        when(mUrlFormatterJniMock.formatUrlForDisplayOmitSchemePathAndTrivialSubdomains(any()))
-                .thenReturn(JUnitTestGURLs.URL_1.getSpec());
 
         when(mFeedServiceBridgeJniMock.isSignedIn()).thenReturn(true);
 

@@ -351,16 +351,37 @@ if (!is_cronet_build && target_os == "android") {
   shared_library_with_jni("libgurl_robolectric") {
     testonly = true
     enable_target = is_robolectric
-    sources = [ "android/robolectric_test_main.cc" ]
-    deps = [
-      ":gurl_android",
-      "//base",
-      "//url",
+    java_targets = [
+      ":gurl_java",
+      ":url_java",
     ]
+    deps = [ ":robolectric_jni_onload($robolectric_toolchain)" ]
+  }
+  if (is_robolectric) {
+    # Depend on this if you need to write a custom JNI_OnLoad()
+    source_set("gurl_test_init") {
+      testonly = true
+      sources = [
+        "android/gurl_test_init.cc",
+        "android/gurl_test_init.h",
+      ]
+      deps = [
+        ":gurl_android",
+        ":url",
+      ]
+    }
 
-    # Make jni.h available.
-    configs += [ "//third_party/jdk" ]
+    # Depend on this if you do not need to write a custom JNI_OnLoad()
+    source_set("robolectric_jni_onload") {
+      testonly = true
+      sources = [ "android/robolectric_jni_onload.cc" ]
+      deps = [
+        ":gurl_test_init",
+        "//base",
+      ]
 
-    java_targets = [ "//chrome/android:chrome_junit_tests" ]
+      # Make jni.h available.
+      configs += [ "//third_party/jdk" ]
+    }
   }
 }

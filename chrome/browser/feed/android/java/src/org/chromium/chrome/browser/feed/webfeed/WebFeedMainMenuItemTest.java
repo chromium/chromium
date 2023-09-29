@@ -56,7 +56,6 @@ import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.components.embedder_support.util.ShadowUrlUtilities;
 import org.chromium.components.url_formatter.UrlFormatter;
-import org.chromium.components.url_formatter.UrlFormatterJni;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.widget.LoadingView;
@@ -101,8 +100,6 @@ public final class WebFeedMainMenuItemTest {
     private Tab mTab;
     @Mock
     public WebFeedBridge.Natives mWebFeedBridgeJniMock;
-    @Mock
-    public UrlFormatter.Natives mUrlFormatterJniMock;
 
     private Activity mActivity;
     private Class<?> mCreatorActivityClass;
@@ -117,11 +114,6 @@ public final class WebFeedMainMenuItemTest {
         // Print logs to stdout.
         ShadowLog.stream = System.out;
         mJniMocker.mock(WebFeedBridge.getTestHooksForTesting(), mWebFeedBridgeJniMock);
-
-        mJniMocker.mock(UrlFormatterJni.TEST_HOOKS, mUrlFormatterJniMock);
-        doAnswer(invocation -> { return invocation.<GURL>getArgument(0).getHost(); })
-                .when(mUrlFormatterJniMock)
-                .formatUrlForDisplayOmitSchemePathAndTrivialSubdomains(any());
 
         doReturn(GURL.emptyGURL()).when(mTab).getOriginalUrl();
         doReturn(false).when(mTab).isShowingErrorPage();

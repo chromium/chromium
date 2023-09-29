@@ -6,28 +6,21 @@ package org.chromium.chrome.browser.bluetooth;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import android.app.Notification;
 import android.content.Context;
 import android.content.Intent;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.components.browser_ui.notifications.MockNotificationManagerProxy;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
-import org.chromium.components.url_formatter.UrlFormatterJni;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -40,12 +33,8 @@ import java.util.List;
 public class BluetoothNotificationManagerTest {
     private static final int NOTIFICATION_ID = 0;
     private static final GURL TEST_URL = JUnitTestGURLs.EXAMPLE_URL;
-
-    @Rule
-    public JniMocker mJniMocker = new JniMocker();
-
-    @Mock
-    private UrlFormatter.Natives mUrlFormatterJniMock;
+    private static final String TEST_URL_FORMATTED =
+            UrlFormatter.formatUrlForSecurityDisplay(TEST_URL, SchemeDisplay.OMIT_HTTP_AND_HTTPS);
 
     private MockNotificationManagerProxy mMockNotificationManager;
     private BluetoothNotificationManagerDelegate mDelegate =
@@ -101,10 +90,6 @@ public class BluetoothNotificationManagerTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mJniMocker.mock(UrlFormatterJni.TEST_HOOKS, mUrlFormatterJniMock);
-        when(mUrlFormatterJniMock.formatUrlForSecurityDisplay(
-                     any(GURL.class), eq(SchemeDisplay.OMIT_HTTP_AND_HTTPS)))
-                .then(inv -> ((GURL) (inv.getArgument(0))).getSpec());
 
         mMockNotificationManager = new MockNotificationManagerProxy();
         mManager = new BluetoothNotificationManager(mMockNotificationManager, mDelegate);
@@ -138,7 +123,7 @@ public class BluetoothNotificationManagerTest {
         assertFalse(mServiceStopped);
         assertEquals(1, mTabsBroughtToFront);
         assertNotificationEquals(
-                "Connected to a Bluetooth device", "Tap to return to https://www.example.com/");
+                "Connected to a Bluetooth device", "Tap to return to " + TEST_URL_FORMATTED);
     }
 
     @Test
@@ -149,7 +134,7 @@ public class BluetoothNotificationManagerTest {
         assertFalse(mServiceStopped);
         assertEquals(1, mTabsBroughtToFront);
         assertNotificationEquals(
-                "Scanning for Bluetooth devices", "Tap to return to https://www.example.com/");
+                "Scanning for Bluetooth devices", "Tap to return to " + TEST_URL_FORMATTED);
     }
 
     @Test
@@ -160,7 +145,7 @@ public class BluetoothNotificationManagerTest {
         assertFalse(mServiceStopped);
         assertEquals(1, mTabsBroughtToFront);
         assertNotificationEquals(
-                "Connected to a Bluetooth device", "Tap to return to https://www.example.com/");
+                "Connected to a Bluetooth device", "Tap to return to " + TEST_URL_FORMATTED);
 
         Intent intent2 = createIntent(BluetoothNotificationManager.BluetoothType.IS_SCANNING);
         mManager.onStartCommand(intent2, 0, 0);
@@ -168,7 +153,7 @@ public class BluetoothNotificationManagerTest {
         assertFalse(mServiceStopped);
         assertEquals(2, mTabsBroughtToFront);
         assertNotificationEquals(
-                "Scanning for Bluetooth devices", "Tap to return to https://www.example.com/");
+                "Scanning for Bluetooth devices", "Tap to return to " + TEST_URL_FORMATTED);
     }
 
     @Test
@@ -180,7 +165,7 @@ public class BluetoothNotificationManagerTest {
         assertEquals(1, mTabsBroughtToFront);
         assertEquals(0, mLastStartId);
         assertNotificationEquals(
-                "Connected to a Bluetooth device", "Tap to return to https://www.example.com/");
+                "Connected to a Bluetooth device", "Tap to return to " + TEST_URL_FORMATTED);
 
         Intent intent2 = createIntent(BluetoothNotificationManager.BluetoothType.NO_BLUETOOTH);
         mManager.onStartCommand(intent2, 0, /*startId=*/42);

@@ -116,8 +116,8 @@ import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.SyncService.SyncStateChangedListener;
+import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
-import org.chromium.components.url_formatter.UrlFormatterJni;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.ListObservable;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -138,6 +138,9 @@ import java.util.function.Consumer;
 @EnableFeatures({ChromeFeatureList.BOOKMARKS_REFRESH, ChromeFeatureList.SHOPPING_LIST,
         ChromeFeatureList.EMPTY_STATES})
 public class BookmarkManagerMediatorTest {
+    private static final GURL EXAMPLE_URL = JUnitTestGURLs.EXAMPLE_URL;
+    private static final String EXAMPLE_URL_FORMATTED = UrlFormatter.formatUrlForSecurityDisplay(
+            EXAMPLE_URL, SchemeDisplay.OMIT_HTTP_AND_HTTPS);
     @Rule
     public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule
@@ -178,8 +181,6 @@ public class BookmarkManagerMediatorTest {
     private BookmarkUndoController mBookmarkUndoController;
     @Mock
     private Runnable mHideKeyboardRunnable;
-    @Mock
-    private UrlFormatter.Natives mUrlFormatterJniMock;
     @Mock
     private CurrencyFormatter.Natives mCurrencyFormatterJniMock;
     @Mock
@@ -242,16 +243,16 @@ public class BookmarkManagerMediatorTest {
             mFolderId2, "Folder2", null, true, mFolderId1, true, false, 0, false, 0);
     private final BookmarkItem mFolderItem3 = new BookmarkItem(
             mFolderId3, "Folder3", null, true, mFolderId1, true, false, 0, false, 0);
-    private final BookmarkItem mBookmarkItem21 = new BookmarkItem(mBookmarkId21, "Bookmark21",
-            JUnitTestGURLs.EXAMPLE_URL, false, mFolderId2, true, false, 0, false, 0);
+    private final BookmarkItem mBookmarkItem21 = new BookmarkItem(
+            mBookmarkId21, "Bookmark21", EXAMPLE_URL, false, mFolderId2, true, false, 0, false, 0);
     private final BookmarkItem mReadingListFolderItem = new BookmarkItem(mReadingListFolderId,
             "Reading List", null, true, mRootFolderId, false, false, 0, false, 0);
-    private final BookmarkItem mReadingListItem = new BookmarkItem(mReadingListId,
-            JUnitTestGURLs.EXAMPLE_URL.getSpec(), JUnitTestGURLs.EXAMPLE_URL, false,
-            mReadingListFolderId, true, false, 0, false, 0);
+    private final BookmarkItem mReadingListItem =
+            new BookmarkItem(mReadingListId, EXAMPLE_URL.getSpec(), EXAMPLE_URL, false,
+                    mReadingListFolderId, true, false, 0, false, 0);
     private final BookmarkItem mPriceTrackedBookmarkItem =
-            new BookmarkItem(mPriceTrackedBookmarkId, "Price tracked bookmark",
-                    JUnitTestGURLs.EXAMPLE_URL, false, mMobileFolderId, true, false, 0, false, 0);
+            new BookmarkItem(mPriceTrackedBookmarkId, "Price tracked bookmark", EXAMPLE_URL, false,
+                    mMobileFolderId, true, false, 0, false, 0);
 
     private final ModelList mModelList = new ModelList();
     private final Bitmap mBitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
@@ -280,15 +281,6 @@ public class BookmarkManagerMediatorTest {
 
             // Setup Profile.
             Profile.setLastUsedProfileForTesting(mProfile);
-
-            // Setup UrlFormatter.
-            mJniMocker.mock(UrlFormatterJni.TEST_HOOKS, mUrlFormatterJniMock);
-            doAnswer(invocation -> {
-                GURL url = invocation.getArgument(0);
-                return url.getSpec();
-            })
-                    .when(mUrlFormatterJniMock)
-                    .formatUrlForSecurityDisplay(any(), anyInt());
 
             // Setup CurrencyFormatter.
             mJniMocker.mock(CurrencyFormatterJni.TEST_HOOKS, mCurrencyFormatterJniMock);
@@ -774,8 +766,7 @@ public class BookmarkManagerMediatorTest {
                 model.get(BookmarkManagerProperties.BOOKMARK_LIST_ENTRY).getBookmarkItem());
         assertEquals(mBookmarkId21, model.get(BookmarkManagerProperties.BOOKMARK_ID));
         assertEquals(mBookmarkItem21.getTitle(), model.get(ImprovedBookmarkRowProperties.TITLE));
-        assertEquals(
-                "https://www.example.com/", model.get(ImprovedBookmarkRowProperties.DESCRIPTION));
+        assertEquals(EXAMPLE_URL_FORMATTED, model.get(ImprovedBookmarkRowProperties.DESCRIPTION));
         assertNotNull(model.get(ImprovedBookmarkRowProperties.START_ICON_DRAWABLE));
         assertNotNull(model.get(ImprovedBookmarkRowProperties.START_AREA_BACKGROUND_COLOR));
         assertNull(model.get(ImprovedBookmarkRowProperties.START_ICON_TINT));
@@ -803,8 +794,7 @@ public class BookmarkManagerMediatorTest {
                 model.get(BookmarkManagerProperties.BOOKMARK_LIST_ENTRY).getBookmarkItem());
         assertEquals(mReadingListId, model.get(BookmarkManagerProperties.BOOKMARK_ID));
         assertEquals(mReadingListItem.getTitle(), model.get(ImprovedBookmarkRowProperties.TITLE));
-        assertEquals(
-                "https://www.example.com/", model.get(ImprovedBookmarkRowProperties.DESCRIPTION));
+        assertEquals(EXAMPLE_URL_FORMATTED, model.get(ImprovedBookmarkRowProperties.DESCRIPTION));
         assertNotNull(model.get(ImprovedBookmarkRowProperties.START_ICON_DRAWABLE));
     }
 
@@ -826,8 +816,7 @@ public class BookmarkManagerMediatorTest {
                 model.get(BookmarkManagerProperties.BOOKMARK_LIST_ENTRY).getBookmarkItem());
         assertEquals(mBookmarkId21, model.get(BookmarkManagerProperties.BOOKMARK_ID));
         assertEquals(mBookmarkItem21.getTitle(), model.get(ImprovedBookmarkRowProperties.TITLE));
-        assertEquals(
-                "https://www.example.com/", model.get(ImprovedBookmarkRowProperties.DESCRIPTION));
+        assertEquals(EXAMPLE_URL_FORMATTED, model.get(ImprovedBookmarkRowProperties.DESCRIPTION));
         assertNotNull(model.get(ImprovedBookmarkRowProperties.START_ICON_DRAWABLE));
         assertNotNull(model.get(ImprovedBookmarkRowProperties.START_AREA_BACKGROUND_COLOR));
         assertNull(model.get(ImprovedBookmarkRowProperties.START_ICON_TINT));

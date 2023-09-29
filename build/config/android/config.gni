@@ -18,6 +18,9 @@ declare_args() {
   is_java_debug = is_debug || incremental_install
 }
 
+# Toolchain used to create native libraries for robolectric_binary() targets.
+robolectric_toolchain = "//build/toolchain/android:robolectric_$host_cpu"
+
 # NOTE: Because Chrome OS builds may depend on targets built with the Android
 # toolchain, this GNI file may be read and processed from within Chrome OS
 # toolchains. Checking |is_android| here would therefore be too restrictive.
@@ -394,7 +397,4 @@ if (is_android || is_chromeos) {
   # Actions that use java should add this as an input so that they are rebuilt
   # when the JDK changes.
   java_path_for_inputs = "//third_party/jdk/current/bin/java.chromium"
-
-  # Toolchain used to create native libraries for robolectric_binary() targets.
-  robolectric_toolchain = "//build/toolchain/android:robolectric_$host_cpu"
 }

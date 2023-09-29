@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.media.ui;
 
-import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -17,14 +16,10 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.media.MediaSessionHelper;
 import org.chromium.components.favicon.LargeIconBridge;
-import org.chromium.components.url_formatter.UrlFormatter;
-import org.chromium.components.url_formatter.UrlFormatterJni;
 import org.chromium.content_public.browser.MediaSession;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.media_session.mojom.MediaSessionAction;
-import org.chromium.net.GURLUtils;
-import org.chromium.net.GURLUtilsJni;
 import org.chromium.services.media_session.MediaMetadata;
 import org.chromium.url.GURL;
 
@@ -37,10 +32,6 @@ import java.util.stream.Stream;
  */
 @SuppressWarnings("DoNotMock") // Mocks GURL
 public class MediaNotificationTestTabHolder {
-    @Mock
-    UrlFormatter.Natives mUrlFormatterJniMock;
-    @Mock
-    GURLUtils.Natives mGURLUtilsJniMock;
     @Mock
     WebContents mWebContents;
     @Mock
@@ -64,16 +55,6 @@ public class MediaNotificationTestTabHolder {
 
     public MediaNotificationTestTabHolder(int tabId, String url, String title, JniMocker mocker) {
         MockitoAnnotations.initMocks(this);
-        mocker.mock(UrlFormatterJni.TEST_HOOKS, mUrlFormatterJniMock);
-        // We don't want this matcher to match the current value of mUrl. Wrapping it in a matcher
-        // allows us to match on the updated value of mUrl.
-        when(mUrlFormatterJniMock.formatUrlForDisplayOmitSchemeOmitTrivialSubdomains(
-                     argThat(urlArg -> urlArg.equals(mUrl))))
-                .thenAnswer(invocation -> mUrl);
-
-        mocker.mock(GURLUtilsJni.TEST_HOOKS, mGURLUtilsJniMock);
-        when(mGURLUtilsJniMock.getOrigin(argThat(urlArg -> urlArg.equals(mUrl))))
-                .thenAnswer(invocation -> mUrl);
 
         when(mTab.getWebContents()).thenReturn(mWebContents);
         when(mTab.getId()).thenReturn(tabId);

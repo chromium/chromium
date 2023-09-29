@@ -15,18 +15,22 @@
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "build/robolectric_buildflags.h"
 #include "components/url_formatter/url_formatter.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
-#include "ui/gfx/text_constants.h"
-#include "ui/gfx/text_elider.h"
-#include "ui/gfx/text_utils.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 #include "url/url_constants.h"
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_ROBOLECTRIC)
+#include "ui/gfx/text_constants.h"  // nogncheck
+#include "ui/gfx/text_elider.h"     // nogncheck
+#include "ui/gfx/text_utils.h"      // nogncheck
+#endif
+
 namespace {
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_ROBOLECTRIC)
 const char16_t kDot = '.';
 
 // Build a path from the first |num_components| elements in |path_elements|.
@@ -94,7 +98,7 @@ std::u16string ElideComponentizedPath(
                         available_pixel_width, gfx::ELIDE_TAIL);
 }
 
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_ROBOLECTRIC)
 
 bool ShouldShowScheme(base::StringPiece scheme,
                       const url_formatter::SchemeDisplay scheme_display) {
@@ -126,7 +130,7 @@ std::u16string HostForDisplay(base::StringPiece host_in_puny) {
 
 namespace url_formatter {
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_ROBOLECTRIC)
 
 // TODO(pkasting): http://crbug.com/77883 This whole function gets
 // kerning/ligatures/etc. issues potentially wrong by assuming that the width of
@@ -326,7 +330,7 @@ std::u16string ElideHost(const GURL& url,
                         gfx::ELIDE_HEAD);
 }
 
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_ROBOLECTRIC)
 
 std::u16string FormatUrlForSecurityDisplay(const GURL& url,
                                            const SchemeDisplay scheme_display) {

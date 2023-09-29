@@ -5,13 +5,10 @@
 package org.chromium.chrome.browser.webapps;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import static org.robolectric.Shadows.shadowOf;
 
 import android.app.NotificationManager;
@@ -34,14 +31,10 @@ import org.robolectric.shadows.ShadowPendingIntent;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.notifications.PendingIntentProvider;
-import org.chromium.components.url_formatter.SchemeDisplay;
-import org.chromium.components.url_formatter.UrlFormatter;
-import org.chromium.components.url_formatter.UrlFormatterJni;
 import org.chromium.components.webapps.WebApkInstallResult;
 
 /**
@@ -59,13 +52,7 @@ public class WebApkInstallBroadcastReceiverTest {
     private final byte[] mSerializedProto = new byte[] {1, 2};
 
     @Rule
-    public JniMocker mJniMocker = new JniMocker();
-
-    @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();
-
-    @Mock
-    private UrlFormatter.Natives mUrlFormatterJniMock;
 
     private Context mContext;
     private ShadowNotificationManager mShadowNotificationManager;
@@ -80,10 +67,6 @@ public class WebApkInstallBroadcastReceiverTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mJniMocker.mock(UrlFormatterJni.TEST_HOOKS, mUrlFormatterJniMock);
-        when(mUrlFormatterJniMock.formatStringUrlForSecurityDisplay(
-                     anyString(), eq(SchemeDisplay.OMIT_HTTP_AND_HTTPS)))
-                .then(inv -> inv.getArgument(0));
 
         mContext = spy(RuntimeEnvironment.application);
         ContextUtils.initApplicationContextForTests(mContext);

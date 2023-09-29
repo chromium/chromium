@@ -15,7 +15,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties.CREDENTIAL;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties.FAVICON_OR_FALLBACK;
@@ -72,7 +71,6 @@ import org.chromium.components.favicon.IconType;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
-import org.chromium.components.url_formatter.UrlFormatterJni;
 import org.chromium.ui.modelutil.ListModel;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -92,6 +90,8 @@ import java.util.stream.StreamSupport;
 @Config(manifest = Config.NONE)
 public class TouchToFillControllerTest {
     private static final GURL TEST_URL = JUnitTestGURLs.EXAMPLE_URL;
+    private static final String TEST_URL_FORMATTED =
+            UrlFormatter.formatUrlForSecurityDisplay(TEST_URL, SchemeDisplay.OMIT_HTTP_AND_HTTPS);
     private static final String TEST_SUBDOMAIN_URL = "https://subdomain.example.xyz";
     private static final Credential ANA = new Credential(
             "Ana", "S3cr3t", "Ana", "https://m.a.xyz/", "m.a.xyz", GetLoginMatchType.PSL, 0);
@@ -107,8 +107,6 @@ public class TouchToFillControllerTest {
     public JniMocker mJniMocker = new JniMocker();
     @Rule
     public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
-    @Mock
-    private UrlFormatter.Natives mUrlFormatterJniMock;
     @Mock
     private TouchToFillComponent.Delegate mMockDelegate;
     @Mock
@@ -129,13 +127,6 @@ public class TouchToFillControllerTest {
     public void setUp() {
         UmaRecorderHolder.resetForTesting();
         MockitoAnnotations.initMocks(this);
-        mJniMocker.mock(UrlFormatterJni.TEST_HOOKS, mUrlFormatterJniMock);
-        when(mUrlFormatterJniMock.formatUrlForSecurityDisplay(
-                     any(), eq(SchemeDisplay.OMIT_HTTP_AND_HTTPS)))
-                .then(inv -> formatForSecurityDisplay(inv.getArgument(0)));
-        when(mUrlFormatterJniMock.formatStringUrlForSecurityDisplay(
-                     any(), eq(SchemeDisplay.OMIT_HTTP_AND_HTTPS)))
-                .then(inv -> formatForSecurityDisplay(inv.getArgument(0)));
 
         mMediator.initialize(mContext, mMockDelegate, mModel, mMockIconBridge, DESIRED_FAVICON_SIZE,
                 mMockFocusHelper);
@@ -162,8 +153,7 @@ public class TouchToFillControllerTest {
         assertThat(itemList.get(0).type, is(ItemType.HEADER));
         assertThat(itemList.get(0).model.get(TITLE),
                 is(mContext.getString(R.string.touch_to_fill_sheet_uniform_title)));
-        assertThat(
-                itemList.get(0).model.get(FORMATTED_URL), is(formatForSecurityDisplay(TEST_URL)));
+        assertThat(itemList.get(0).model.get(FORMATTED_URL), is(TEST_URL_FORMATTED));
         assertThat(itemList.get(0).model.get(ORIGIN_SECURE), is(true));
         assertThat(itemList.get(0).model.get(SHOW_SUBMIT_SUBTITLE), is(true));
 
@@ -193,8 +183,7 @@ public class TouchToFillControllerTest {
         assertThat(itemList.get(0).type, is(ItemType.HEADER));
         assertThat(itemList.get(0).model.get(TITLE),
                 is(mContext.getString(R.string.touch_to_fill_sheet_uniform_title)));
-        assertThat(
-                itemList.get(0).model.get(FORMATTED_URL), is(formatForSecurityDisplay(TEST_URL)));
+        assertThat(itemList.get(0).model.get(FORMATTED_URL), is(TEST_URL_FORMATTED));
         assertThat(itemList.get(0).model.get(ORIGIN_SECURE), is(true));
 
         assertThat(itemList.get(1).type, is(ItemType.CREDENTIAL));
@@ -525,16 +514,5 @@ public class TouchToFillControllerTest {
                            .map((item) -> item.type)
                            .collect(Collectors.toList()),
                 not(hasItem(ItemType.FILL_BUTTON)));
-    }
-
-    /**
-     * Helper to verify URLs formatted for security display. The real implementation calls
-     * {@link UrlFormatter}. It's not useful to actually reimplement the formatter, so just
-     * modify the string in a trivial way.
-     * @param originUrl A URL {@link String} to "format".
-     * @return A "formatted" URL {@link String}.
-     */
-    private static String formatForSecurityDisplay(GURL originUrl) {
-        return "formatted_for_security_" + originUrl.getSpec() + "_formatted_for_security";
     }
 }

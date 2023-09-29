@@ -10,8 +10,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 
 import static org.chromium.ui.test.util.MockitoHelper.doCallback;
@@ -45,8 +43,8 @@ import org.chromium.components.payments.CurrencyFormatter;
 import org.chromium.components.payments.CurrencyFormatterJni;
 import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
 import org.chromium.components.power_bookmarks.ShoppingSpecifics;
+import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
-import org.chromium.components.url_formatter.UrlFormatterJni;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
@@ -59,6 +57,9 @@ import org.chromium.url.JUnitTestGURLs;
 public class ImprovedBookmarkRowCoordinatorTest {
     private static final int CHILD_COUNT = 5;
     private static final int READING_LIST_CHILD_COUNT = 1;
+    private static final GURL EXAMPLE_URL = JUnitTestGURLs.EXAMPLE_URL;
+    private static final String EXAMPLE_URL_FORMATTED = UrlFormatter.formatUrlForSecurityDisplay(
+            EXAMPLE_URL, SchemeDisplay.OMIT_HTTP_AND_HTTPS);
 
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -76,15 +77,13 @@ public class ImprovedBookmarkRowCoordinatorTest {
 
     private final BookmarkItem mFolderItem =
             new BookmarkItem(mFolderId, "User folder", null, true, null, true, false, 0, false, 0);
-    private final BookmarkItem mBookmarkItem = new BookmarkItem(mBookmarkId, "Bookmark",
-            JUnitTestGURLs.EXAMPLE_URL, false, mFolderId, true, false, 0, false, 0);
+    private final BookmarkItem mBookmarkItem = new BookmarkItem(
+            mBookmarkId, "Bookmark", EXAMPLE_URL, false, mFolderId, true, false, 0, false, 0);
     private final BookmarkItem mReadingListFolderItem = new BookmarkItem(
             mReadingListFolderId, "Reading List", null, true, null, true, false, 0, false, 0);
     private final BookmarkItem mReadingListItem = new BookmarkItem(mReadingListId, "ReadingList",
-            JUnitTestGURLs.EXAMPLE_URL, false, mReadingListFolderId, true, false, 0, false, 0);
+            EXAMPLE_URL, false, mReadingListFolderId, true, false, 0, false, 0);
 
-    @Mock
-    private UrlFormatter.Natives mUrlFormatterJniMock;
     @Mock
     private BookmarkImageFetcher mBookmarkImageFetcher;
     @Mock
@@ -108,15 +107,6 @@ public class ImprovedBookmarkRowCoordinatorTest {
     @Before
     public void setUp() {
         mActivityScenarioRule.getScenario().onActivity((activity) -> mActivity = activity);
-
-        // Setup UrlFormatter.
-        mJniMocker.mock(UrlFormatterJni.TEST_HOOKS, mUrlFormatterJniMock);
-        doAnswer(invocation -> {
-            GURL url = invocation.getArgument(0);
-            return url.getSpec();
-        })
-                .when(mUrlFormatterJniMock)
-                .formatUrlForSecurityDisplay(any(), anyInt());
 
         // Setup BookmarkModel.
         doReturn(mBookmarkItem).when(mBookmarkModel).getBookmarkById(mBookmarkId);
@@ -188,8 +178,7 @@ public class ImprovedBookmarkRowCoordinatorTest {
 
         assertEquals("Bookmark", model.get(ImprovedBookmarkRowProperties.TITLE));
         assertTrue(model.get(ImprovedBookmarkRowProperties.DESCRIPTION_VISIBLE));
-        assertEquals(
-                "https://www.example.com/", model.get(ImprovedBookmarkRowProperties.DESCRIPTION));
+        assertEquals(EXAMPLE_URL_FORMATTED, model.get(ImprovedBookmarkRowProperties.DESCRIPTION));
         assertNull(model.get(ImprovedBookmarkRowProperties.FOLDER_COORDINATOR));
         assertEquals(mDrawable, model.get(ImprovedBookmarkRowProperties.START_ICON_DRAWABLE));
         assertNull(model.get(ImprovedBookmarkRowProperties.CONTENT_DESCRIPTION));
@@ -206,8 +195,7 @@ public class ImprovedBookmarkRowCoordinatorTest {
 
         assertEquals("Bookmark", model.get(ImprovedBookmarkRowProperties.TITLE));
         assertTrue(model.get(ImprovedBookmarkRowProperties.DESCRIPTION_VISIBLE));
-        assertEquals(
-                "https://www.example.com/", model.get(ImprovedBookmarkRowProperties.DESCRIPTION));
+        assertEquals(EXAMPLE_URL_FORMATTED, model.get(ImprovedBookmarkRowProperties.DESCRIPTION));
         assertNull(model.get(ImprovedBookmarkRowProperties.FOLDER_COORDINATOR));
         assertNull(model.get(ImprovedBookmarkRowProperties.START_ICON_DRAWABLE));
     }
@@ -219,8 +207,7 @@ public class ImprovedBookmarkRowCoordinatorTest {
 
         assertEquals("Bookmark", model.get(ImprovedBookmarkRowProperties.TITLE));
         assertTrue(model.get(ImprovedBookmarkRowProperties.DESCRIPTION_VISIBLE));
-        assertEquals(
-                "https://www.example.com/", model.get(ImprovedBookmarkRowProperties.DESCRIPTION));
+        assertEquals(EXAMPLE_URL_FORMATTED, model.get(ImprovedBookmarkRowProperties.DESCRIPTION));
         assertNull(model.get(ImprovedBookmarkRowProperties.FOLDER_COORDINATOR));
     }
 
@@ -235,8 +222,7 @@ public class ImprovedBookmarkRowCoordinatorTest {
 
         assertEquals("Bookmark", model.get(ImprovedBookmarkRowProperties.TITLE));
         assertTrue(model.get(ImprovedBookmarkRowProperties.DESCRIPTION_VISIBLE));
-        assertEquals(
-                "https://www.example.com/", model.get(ImprovedBookmarkRowProperties.DESCRIPTION));
+        assertEquals(EXAMPLE_URL_FORMATTED, model.get(ImprovedBookmarkRowProperties.DESCRIPTION));
         assertNull(model.get(ImprovedBookmarkRowProperties.FOLDER_COORDINATOR));
         assertNull(model.get(ImprovedBookmarkRowProperties.START_ICON_DRAWABLE));
     }

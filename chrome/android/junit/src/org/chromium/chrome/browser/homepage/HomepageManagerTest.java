@@ -23,7 +23,6 @@ import org.robolectric.annotation.Implements;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.common.ChromeUrlConstants;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.homepage.HomepageManagerTest.ShadowUrlFormatter;
 import org.chromium.chrome.browser.new_tab_url.DseNewTabUrlManager;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -33,19 +32,15 @@ import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
-import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
-import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
 /** Unit tests for {@link HomepageManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(shadows = {HomepageManagerTest.ShadowHomepagePolicyManager.class,
-                HomepageManagerTest.ShadowUrlUtilities.class,
-                HomepageManagerTest.ShadowPartnerBrowserCustomizations.class,
-                ShadowUrlFormatter.class})
+                HomepageManagerTest.ShadowPartnerBrowserCustomizations.class})
 public class HomepageManagerTest {
     /** Shadow for {@link HomepagePolicyManager}. */
     @Implements(HomepagePolicyManager.class)
@@ -63,14 +58,6 @@ public class HomepageManagerTest {
         }
     }
 
-    @Implements(UrlUtilities.class)
-    static class ShadowUrlUtilities {
-        @Implementation
-        public static boolean isNTPUrl(String url) {
-            return JUnitTestGURLs.NTP_NATIVE_URL.getSpec().equals(url);
-        }
-    }
-
     @Implements(PartnerBrowserCustomizations.class)
     static class ShadowPartnerBrowserCustomizations {
         private static PartnerBrowserCustomizations sPartnerBrowserCustomizations;
@@ -83,14 +70,6 @@ public class HomepageManagerTest {
         static void setPartnerBrowserCustomizations(
                 PartnerBrowserCustomizations partnerBrowserCustomizations) {
             sPartnerBrowserCustomizations = partnerBrowserCustomizations;
-        }
-    }
-
-    @Implements(UrlFormatter.class)
-    static class ShadowUrlFormatter {
-        @Implementation
-        public static GURL fixupUrl(String uri) {
-            return new GURL(uri);
         }
     }
 

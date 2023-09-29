@@ -82,8 +82,6 @@ import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.segmentation_platform.SegmentSelectionResult;
 import org.chromium.components.segmentation_platform.proto.SegmentationProto.SegmentId;
-import org.chromium.components.url_formatter.UrlFormatter;
-import org.chromium.components.url_formatter.UrlFormatterJni;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
@@ -129,8 +127,6 @@ public class ReturnToChromeUtilUnitTest {
     @Rule
     public JniMocker mJniMocker = new JniMocker();
     @Mock
-    private UrlFormatter.Natives mUrlFormatterJniMock;
-    @Mock
     private Context mContext;
     @Mock
     private TabModelSelector mTabModelSelector;
@@ -158,10 +154,6 @@ public class ReturnToChromeUtilUnitTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mJniMocker.mock(UrlFormatterJni.TEST_HOOKS, mUrlFormatterJniMock);
-        doReturn(JUnitTestGURLs.NTP_URL)
-                .when(mUrlFormatterJniMock)
-                .fixupUrl(UrlConstants.NTP_NON_NATIVE_URL);
         doReturn(JUnitTestGURLs.NTP_NATIVE_URL).when(mNtpTab).getUrl();
 
         ChromeFeatureList.sStartSurfaceAndroid.setForTesting(true);

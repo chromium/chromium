@@ -11,9 +11,6 @@ import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.when;
 
 import android.app.NotificationChannel;
 import android.app.NotificationChannelGroup;
@@ -24,27 +21,20 @@ import android.os.Build;
 import androidx.annotation.RequiresApi;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.robolectric.RuntimeEnvironment;
 
 import org.chromium.base.CollectionUtil;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.browser.notifications.NotificationSettingsBridge;
 import org.chromium.chrome.browser.notifications.R;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
 import org.chromium.components.browser_ui.notifications.channels.ChannelsInitializer;
-import org.chromium.components.url_formatter.SchemeDisplay;
-import org.chromium.components.url_formatter.UrlFormatter;
-import org.chromium.components.url_formatter.UrlFormatterJni;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -59,25 +49,10 @@ public class ChannelsInitializerTest {
     private ChannelsInitializer mChannelsInitializer;
     private NotificationManagerProxy mNotificationManagerProxy;
     private Context mContext;
-    @Rule
-    public JniMocker mJniMocker = new JniMocker();
-    @Mock
-    private UrlFormatter.Natives mUrlFormatterJniMock;
 
     @Before
     @RequiresApi(Build.VERSION_CODES.O)
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-        mJniMocker.mock(UrlFormatterJni.TEST_HOOKS, mUrlFormatterJniMock);
-        when(mUrlFormatterJniMock.formatStringUrlForSecurityDisplay(
-                     anyString(), eq(SchemeDisplay.OMIT_HTTP_AND_HTTPS)))
-                .then(inv -> {
-                    String url = inv.getArgument(0);
-                    return url != null && url.contains("://")
-                            ? url.substring(url.indexOf("://") + 3)
-                            : url;
-                });
-
         mContext = RuntimeEnvironment.getApplication();
         mNotificationManagerProxy = new NotificationManagerProxyImpl(mContext);
         mChannelsInitializer = new ChannelsInitializer(mNotificationManagerProxy,

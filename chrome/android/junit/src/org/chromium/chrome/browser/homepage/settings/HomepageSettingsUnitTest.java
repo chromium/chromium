@@ -26,8 +26,6 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.Implementation;
-import org.robolectric.annotation.Implements;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -38,14 +36,12 @@ import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.homepage.HomepagePolicyManager;
 import org.chromium.chrome.browser.homepage.HomepageTestRule;
 import org.chromium.chrome.browser.homepage.settings.HomepageMetricsEnums.HomepageLocationType;
-import org.chromium.chrome.browser.homepage.settings.HomepageSettingsUnitTest.ShadowUrlFormatter;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.components.browser_ui.widget.RadioButtonWithEditText;
 import org.chromium.components.embedder_support.util.UrlUtilities;
-import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.url.GURL;
@@ -55,7 +51,7 @@ import org.chromium.url.JUnitTestGURLs;
  * Test for {@link HomepageSettings} to check the UI components and the interactions.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(shadows = {ShadowUrlFormatter.class, ShadowLooper.class})
+@Config(shadows = {ShadowLooper.class})
 public class HomepageSettingsUnitTest {
     private static final String ASSERT_MESSAGE_SWITCH_ENABLE = "Switch should be enabled.";
     private static final String ASSERT_MESSAGE_SWITCH_DISABLE = "Switch should be disabled.";
@@ -85,14 +81,6 @@ public class HomepageSettingsUnitTest {
     private static final String TEST_URL_FOO = JUnitTestGURLs.URL_1.getSpec();
     private static final String TEST_URL_BAR = JUnitTestGURLs.URL_2.getSpec();
     private static final String CHROME_NTP = JUnitTestGURLs.NTP_URL.getSpec();
-
-    @Implements(UrlFormatter.class)
-    static class ShadowUrlFormatter {
-        @Implementation
-        public static GURL fixupUrl(String uri) {
-            return new GURL(uri);
-        }
-    }
 
     @Rule
     public HomepageTestRule mHomepageTestRule = new HomepageTestRule();

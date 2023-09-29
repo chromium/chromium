@@ -52,8 +52,6 @@ import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtilsJni;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.omnibox.OmniboxUrlEmphasizerJni;
-import org.chromium.components.url_formatter.UrlFormatter;
-import org.chromium.components.url_formatter.UrlFormatterJni;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
@@ -106,8 +104,6 @@ public class LocationBarModelUnitTest {
     @Mock
     private ChromeAutocompleteSchemeClassifier.Natives mChromeAutocompleteSchemeClassifierJni;
     @Mock
-    private UrlFormatter.Natives mUrlFormatterJniMock;
-    @Mock
     private DomDistillerUrlUtilsJni mDomDistillerUrlUtilsJni;
     @Mock
     private OmniboxUrlEmphasizerJni mOmniboxUrlEmphasizerJni;
@@ -123,7 +119,6 @@ public class LocationBarModelUnitTest {
         mJniMocker.mock(ChromeAutocompleteSchemeClassifierJni.TEST_HOOKS,
                 mChromeAutocompleteSchemeClassifierJni);
         mJniMocker.mock(LocationBarModelJni.TEST_HOOKS, mLocationBarModelJni);
-        mJniMocker.mock(UrlFormatterJni.TEST_HOOKS, mUrlFormatterJniMock);
         mJniMocker.mock(DomDistillerUrlUtilsJni.TEST_HOOKS, mDomDistillerUrlUtilsJni);
         mJniMocker.mock(OmniboxUrlEmphasizerJni.TEST_HOOKS, mOmniboxUrlEmphasizerJni);
         IncognitoCctProfileManager.setIncognitoCctProfileManagerForTesting(
