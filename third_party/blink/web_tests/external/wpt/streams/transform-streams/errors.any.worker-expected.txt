@@ -1,0 +1,24 @@
+This is a testharness.js-based test.
+PASS TransformStream errors thrown in transform put the writable and readable in an errored state
+PASS TransformStream errors thrown in flush put the writable and readable in an errored state
+PASS errored TransformStream should not enqueue new chunks
+PASS TransformStream transformer.start() rejected promise should error the stream
+PASS when controller.error is followed by a rejection, the error reason should come from controller.error
+PASS TransformStream constructor should throw when start does
+PASS when strategy.size throws inside start(), the constructor should throw the same error
+PASS when strategy.size calls controller.error() then throws, the constructor should throw the first error
+PASS cancelling the readable side should error the writable
+PASS it should be possible to error the readable between close requested and complete
+PASS an exception from transform() should error the stream if terminate has been requested but not completed
+PASS abort should set the close reason for the writable when it happens before cancel during start, and cancel should reject
+PASS abort should set the close reason for the writable when it happens before cancel during underlying sink write, but cancel should still succeed
+PASS controller.error() should do nothing the second time it is called
+FAIL controller.error() should close writable immediately after readable.cancel() promise_rejects_exactly: closed should reject with thrownError function "function() { throw e }" threw object "ignoredError: ignoredError" but we expected it to throw object "error1: bad things are happening!"
+PASS controller.error() should do nothing after readable.cancel() resolves
+PASS controller.error() should do nothing after writable.abort() has completed
+PASS controller.error() should do nothing after a transformer method has thrown an exception
+PASS erroring during write with backpressure should result in the write failing
+PASS a write() that was waiting for backpressure should reject if the writable is aborted
+PASS the readable should be errored with the reason passed to the writable abort() method
+Harness: the test ran to completion.
+
