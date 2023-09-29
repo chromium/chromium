@@ -47,6 +47,12 @@ class TestInterestGroupObserver
   // invoked.
   void WaitForAccesses(const std::vector<Entry>& expected);
 
+  // Just like WaitForAccesses(), but expects entries to be in the exact order
+  // provided. Order of events logged on auction completion / using an auction
+  // result (e.g., kBid, kWin) is not guaranteed. This should only be used for
+  // events with a guaranteed order.
+  void WaitForAccessesInOrder(const std::vector<Entry>& expected);
+
  private:
   std::vector<Entry> accesses_;
   std::vector<Entry> expected_;

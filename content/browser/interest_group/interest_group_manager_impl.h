@@ -381,6 +381,14 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
     k_anonymity_manager_ = std::move(k_anonymity_manager);
   }
 
+  // Notifies an interest group has been accessed. Used for devtools interest
+  // group view and testing.
+  //
+  // For calls that affect the database, should be invoked after the database
+  // update, so that the calls are all in the same order they're applied to the
+  // database (can't log them all before the database update, since for, e.g.,
+  // calls to retrieve all interest groups for an owner, the name may not be
+  // known until after the database has been accessed).
   void NotifyInterestGroupAccessed(InterestGroupObserver::AccessType type,
                                    const url::Origin& owner_origin,
                                    const std::string& name);
@@ -458,6 +466,13 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
                            InterestGroupUpdate update,
                            base::OnceCallback<void(bool)> callback);
 
+  // Called when a call to UpdateInterestGroup() completes. Sends a notification
+  // about the update and invokes `callback` with `success`.
+  void OnUpdateComplete(const url::Origin& owner_origin,
+                        const std::string& name,
+                        base::OnceCallback<void(bool)> callback,
+                        bool success);
+
   // Modifies the update rate limits stored in the database, with a longer delay
   // for parse failure.
   //
@@ -497,6 +512,13 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   // Constructs the AuctionAdata when the load is complete and calls the
   // provided callback.
   void OnAdAuctionDataLoadComplete(AdAuctionDataLoaderState state);
+
+  // Helper to that returns bound NotifyInterestGroupAccessed() callbacks to
+  // allow notifications to be sent after a database update.
+  base::OnceClosure CreateNotifyInterestGroupAccessedCallback(
+      InterestGroupObserver::AccessType type,
+      const url::Origin& owner_origin,
+      const std::string& name);
 
   // Owns and manages access to the InterestGroupStorage living on a different
   // thread.

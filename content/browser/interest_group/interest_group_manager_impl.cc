@@ -228,11 +228,15 @@ void InterestGroupManagerImpl::
 
 void InterestGroupManagerImpl::JoinInterestGroup(blink::InterestGroup group,
                                                  const GURL& joining_url) {
-  NotifyInterestGroupAccessed(InterestGroupObserver::kJoin, group.owner,
-                              group.name);
+  // Create notify callback first, since `group` is moved in the WithArgs()
+  // call.
+  base::OnceClosure notify_callback = CreateNotifyInterestGroupAccessedCallback(
+      InterestGroupObserver::kJoin, group.owner, group.name);
+
   blink::InterestGroupKey group_key(group.owner, group.name);
   impl_.AsyncCall(&InterestGroupStorage::JoinInterestGroup)
-      .WithArgs(std::move(group), std::move(joining_url));
+      .WithArgs(std::move(group), std::move(joining_url))
+      .Then(std::move(notify_callback));
   // This needs to happen second so that the DB row is created.
   QueueKAnonymityUpdateForInterestGroup(group_key);
 }
@@ -240,10 +244,10 @@ void InterestGroupManagerImpl::JoinInterestGroup(blink::InterestGroup group,
 void InterestGroupManagerImpl::LeaveInterestGroup(
     const blink::InterestGroupKey& group_key,
     const ::url::Origin& main_frame) {
-  NotifyInterestGroupAccessed(InterestGroupObserver::kLeave, group_key.owner,
-                              group_key.name);
   impl_.AsyncCall(&InterestGroupStorage::LeaveInterestGroup)
-      .WithArgs(group_key, main_frame);
+      .WithArgs(group_key, main_frame)
+      .Then(CreateNotifyInterestGroupAccessedCallback(
+          InterestGroupObserver::kLeave, group_key.owner, group_key.name));
 }
 
 void InterestGroupManagerImpl::ClearOriginJoinedInterestGroups(
@@ -596,7 +600,19 @@ void InterestGroupManagerImpl::UpdateInterestGroup(
                               group_key.name);
   impl_.AsyncCall(&InterestGroupStorage::UpdateInterestGroup)
       .WithArgs(group_key, std::move(update))
-      .Then(std::move(callback));
+      .Then(base::BindOnce(&InterestGroupManagerImpl::OnUpdateComplete,
+                           weak_factory_.GetWeakPtr(), group_key.owner,
+                           group_key.name, std::move(callback)));
+}
+
+void InterestGroupManagerImpl::OnUpdateComplete(
+    const url::Origin& owner_origin,
+    const std::string& name,
+    base::OnceCallback<void(bool)> callback,
+    bool success) {
+  NotifyInterestGroupAccessed(InterestGroupObserver::kUpdate, owner_origin,
+                              name);
+  std::move(callback).Run(success);
 }
 
 void InterestGroupManagerImpl::ReportUpdateFailed(
@@ -686,6 +702,15 @@ void InterestGroupManagerImpl::OnOneReportSent(
 void InterestGroupManagerImpl::TimeoutReports() {
   // TODO(qingxinwu): maybe add UMA metrics to learn how often this happens.
   report_requests_.clear();
+}
+
+base::OnceClosure
+InterestGroupManagerImpl::CreateNotifyInterestGroupAccessedCallback(
+    InterestGroupObserver::AccessType type,
+    const url::Origin& owner_origin,
+    const std::string& name) {
+  return base::BindOnce(&InterestGroupManagerImpl::NotifyInterestGroupAccessed,
+                        weak_factory_.GetWeakPtr(), type, owner_origin, name);
 }
 
 }  // namespace content

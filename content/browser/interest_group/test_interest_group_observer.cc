@@ -50,4 +50,19 @@ void TestInterestGroupObserver::WaitForAccesses(
   accesses_.clear();
 }
 
+void TestInterestGroupObserver::WaitForAccessesInOrder(
+    const std::vector<Entry>& expected) {
+  DCHECK(!run_loop_);
+  if (accesses_.size() < expected.size()) {
+    run_loop_ = std::make_unique<base::RunLoop>();
+    expected_ = expected;
+    run_loop_->Run();
+    run_loop_.reset();
+  }
+  EXPECT_THAT(accesses_, ::testing::ElementsAreArray(expected));
+
+  // Clear accesses so can be reused.
+  accesses_.clear();
+}
+
 }  // namespace content

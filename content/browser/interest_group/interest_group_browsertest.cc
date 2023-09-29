@@ -1693,6 +1693,11 @@ function provideAdditionalBids(seller, nonce, bidStringList,
     observer_->WaitForAccesses(expected);
   }
 
+  void WaitForAccessObservedInOrder(
+      const std::vector<TestInterestGroupObserver::Entry>& expected) {
+    observer_->WaitForAccessesInOrder(expected);
+  }
+
   WebContentsImpl* web_contents() const {
     return static_cast<WebContentsImpl*>(shell()->web_contents());
   }
@@ -18596,6 +18601,50 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   })"));
   EXPECT_TRUE(console_observer.Wait());
   EXPECT_EQ("I am a timer", console_observer.GetMessageAt(0));
+}
+
+// Tests the order of events observed by the InterestGroupObserver. Those events
+// are ultimately displayed in devtools, so want to provide them in a consistent
+// order.
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, NotificationOrder) {
+  GURL test_url = https_server_->GetURL("a.test", "/echo");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  url::Origin test_origin = url::Origin::Create(test_url);
+  AttachInterestGroupObserver();
+
+  EXPECT_EQ(kSuccess, EvalJs(shell(), R"(
+(async function() {
+  try {
+    // Join a same-origin interest group with no bidding script.
+    // Unlike other tests, don't wait for the join to complete
+    // before making more FLEDGE calls. The calls should still be
+    // executed in order, since they're all same-origin.
+    navigator.joinAdInterestGroup(
+        {name: 'cars', owner: document.location.origin},
+        /*joinDurationSec=*/300);
+
+    // Run an auction. Don't bother using a real decision logic URL.
+    // Since the only interest group has no bidding script, it won't
+    // need to run.
+    navigator.runAdAuction({seller: document.location.origin,
+                            decisionLogicURL: document.location.href,
+                            interestGroupBuyers: [window.location.origin]});
+
+    navigator.leaveAdInterestGroup(
+        {name: 'cars', owner: document.location.origin});
+    // No need to wait for the promises to resolve - the test will
+    // wait for the right events to be observed instead.
+    return 'success';
+  } catch (e) {
+    return e.toString();
+  }
+})())"));
+
+  // Expect events to be in order.
+  WaitForAccessObservedInOrder(
+      {{TestInterestGroupObserver::kJoin, test_origin, "cars"},
+       {TestInterestGroupObserver::kLoaded, test_origin, "cars"},
+       {TestInterestGroupObserver::kLeave, test_origin, "cars"}});
 }
 
 }  // namespace
