@@ -471,7 +471,6 @@ TEST_P(IndexedDBTest, SetForceKeepSessionState) {
 
   // Save session state. This should bypass the destruction-time deletion.
   context()->SetForceKeepSessionState();
-  base::RunLoop().RunUntilIdle();
 
   normal_path_first_party =
       GetFilePathForTesting(kNormalFirstPartyBucketLocator);

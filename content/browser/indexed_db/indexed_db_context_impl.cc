@@ -599,13 +599,8 @@ void IndexedDBContextImpl::OnBucketInfoReady(
 }
 
 void IndexedDBContextImpl::SetForceKeepSessionState() {
-  IDBTaskRunner()->PostTask(
-      FROM_HERE, base::BindOnce(
-                     [](base::WeakPtr<IndexedDBContextImpl> context) {
-                       if (context)
-                         context->force_keep_session_state_ = true;
-                     },
-                     weak_factory_.GetWeakPtr()));
+  DCHECK(IDBTaskRunner()->RunsTasksInCurrentSequence());
+  force_keep_session_state_ = true;
 }
 
 void IndexedDBContextImpl::ApplyPolicyUpdates(
