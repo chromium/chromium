@@ -18,6 +18,7 @@
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/tpcd/experiment/experiment_manager.h"
 #include "chrome/browser/tpcd/experiment/tpcd_experiment_features.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -27,6 +28,7 @@
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/tribool.h"
+#include "content/public/common/content_features.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/webapps/webapp_registry.h"
@@ -42,10 +44,18 @@ signin::Tribool GetPrivacySandboxRestrictedByAccountCapability(
       identity_manager->FindExtendedAccountInfo(core_account_info);
   return account_info.capabilities.can_run_chrome_privacy_sandbox_trials();
 }
+
+const base::FeatureParam<bool> kCookieDeprecationUseProfileFiltering{
+    &features::kCookieDeprecationFacilitatedTesting, "use_profile_filtering",
+    false};
+
 }  // namespace
 
-PrivacySandboxSettingsDelegate::PrivacySandboxSettingsDelegate(Profile* profile)
-    : profile_(profile)
+PrivacySandboxSettingsDelegate::PrivacySandboxSettingsDelegate(
+    Profile* profile,
+    tpcd::experiment::ExperimentManager* experiment_manager)
+    : profile_(profile),
+      experiment_manager_(experiment_manager)
 #if BUILDFLAG(IS_ANDROID)
       ,
       webapp_registry_(std::make_unique<WebappRegistry>())
@@ -160,16 +170,32 @@ bool PrivacySandboxSettingsDelegate::PrivacySandboxRestrictedNoticeRequired()
 
 bool PrivacySandboxSettingsDelegate::IsCookieDeprecationExperimentEligible()
     const {
-  // TODO(linnan): Returns the final client-level decision from
-  // `ExperimentManager`.
-
-  // The 3PCD experiment eligibility persists for the browser session.
-  if (!is_cookie_deprecation_experiment_eligible_.has_value()) {
-    is_cookie_deprecation_experiment_eligible_ =
-        IsCookieDeprecationExperimentCurrentlyEligible();
+  if (!base::FeatureList::IsEnabled(
+          features::kCookieDeprecationFacilitatedTesting)) {
+    return false;
   }
 
-  return *is_cookie_deprecation_experiment_eligible_;
+  if (!features::kCookieDeprecationFacilitatedTestingEnableIncognito.Get() &&
+      profile_->IsOffTheRecord()) {
+    return false;
+  }
+
+  // Uses per-profile filtering if enabled.
+  if (kCookieDeprecationUseProfileFiltering.Get()) {
+    // The 3PCD experiment eligibility persists for the browser session.
+    if (!is_cookie_deprecation_experiment_eligible_.has_value()) {
+      is_cookie_deprecation_experiment_eligible_ =
+          IsCookieDeprecationExperimentCurrentlyEligible();
+    }
+
+    return *is_cookie_deprecation_experiment_eligible_;
+  }
+
+  if (experiment_manager_) {
+    return experiment_manager_->IsClientEligible().value_or(false);
+  }
+
+  return false;
 }
 
 bool PrivacySandboxSettingsDelegate::

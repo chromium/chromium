@@ -43,17 +43,12 @@ bool EligibilityServiceFactory::ServiceIsCreatedWithBrowserContext() const {
 std::unique_ptr<KeyedService>
 EligibilityServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  if (!base::FeatureList::IsEnabled(
-          features::kCookieDeprecationFacilitatedTesting)) {
-    return nullptr;
+  Profile* profile = Profile::FromBrowserContext(context);
+  if (auto* experiment_manager =
+          ExperimentManagerImpl::GetForProfile(profile)) {
+    return std::make_unique<EligibilityService>(profile, experiment_manager);
   }
-  if (!features::kCookieDeprecationFacilitatedTestingEnableIncognito.Get() &&
-      context->IsOffTheRecord()) {
-    return nullptr;
-  }
-  return std::make_unique<EligibilityService>(
-      Profile::FromBrowserContext(context),
-      ExperimentManagerImpl::GetInstance());
+  return nullptr;
 }
 
 }  // namespace tpcd::experiment

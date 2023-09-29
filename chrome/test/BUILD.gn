@@ -199,6 +199,8 @@ static_library("test_support") {
     "../browser/signin/identity_test_environment_profile_adaptor.h",
     "../browser/signin/test_signin_client_builder.cc",
     "../browser/signin/test_signin_client_builder.h",
+    "../browser/tpcd/experiment/mock_experiment_manager.cc",
+    "../browser/tpcd/experiment/mock_experiment_manager.h",
     "../browser/ui/autofill/payments/virtual_card_enroll_bubble_controller_impl_test_api.h",
     "base/chrome_render_view_host_test_harness.cc",
     "base/chrome_render_view_host_test_harness.h",

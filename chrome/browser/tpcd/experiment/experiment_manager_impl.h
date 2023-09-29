@@ -14,12 +14,14 @@
 #include "chrome/browser/tpcd/experiment/experiment_manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+class Profile;
+
 namespace tpcd::experiment {
 
 // Can only be used on the main thread.
 class ExperimentManagerImpl : public ExperimentManager {
  public:
-  static ExperimentManagerImpl* GetInstance();
+  static ExperimentManagerImpl* GetForProfile(Profile* profile);
 
   // The final decision is recorded in a local state pref. If this is called
   // after the final decision is made, the local state pref value takes
@@ -31,6 +33,8 @@ class ExperimentManagerImpl : public ExperimentManager {
   absl::optional<bool> IsClientEligible() const override;
 
  protected:
+  static ExperimentManagerImpl* GetInstance();
+
   ExperimentManagerImpl();
   ~ExperimentManagerImpl() override;
 

@@ -19,10 +19,16 @@ class Profile;
 class WebappRegistry;
 #endif
 
+namespace tpcd::experiment {
+class ExperimentManager;
+}  // namespace tpcd::experiment
+
 class PrivacySandboxSettingsDelegate
     : public privacy_sandbox::PrivacySandboxSettings::Delegate {
  public:
-  explicit PrivacySandboxSettingsDelegate(Profile* profile);
+  PrivacySandboxSettingsDelegate(
+      Profile* profile,
+      tpcd::experiment::ExperimentManager* experiment_manager);
   ~PrivacySandboxSettingsDelegate() override;
 
   // PrivacySandboxSettings::Delegate:
@@ -61,6 +67,9 @@ class PrivacySandboxSettingsDelegate
   // TODO(linnan): Remove this field when
   // `IsCookieDeprecationExperimentEligible()` consults `ExperimentManager`.
   mutable absl::optional<bool> is_cookie_deprecation_experiment_eligible_;
+
+  // The experiment manager is a singleton and lives forever.
+  raw_ptr<tpcd::experiment::ExperimentManager> experiment_manager_;
 
 #if BUILDFLAG(IS_ANDROID)
   std::unique_ptr<WebappRegistry> webapp_registry_;

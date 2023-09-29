@@ -16,6 +16,7 @@
 #include "base/sequence_checker.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tpcd/experiment/tpcd_experiment_features.h"
 #include "chrome/browser/tpcd/experiment/tpcd_pref_names.h"
 #include "chrome/browser/tpcd/experiment/tpcd_utils.h"
@@ -27,12 +28,22 @@
 namespace tpcd::experiment {
 
 // static
-ExperimentManagerImpl* ExperimentManagerImpl::GetInstance() {
+ExperimentManagerImpl* ExperimentManagerImpl::GetForProfile(Profile* profile) {
   if (!base::FeatureList::IsEnabled(
           features::kCookieDeprecationFacilitatedTesting)) {
     return nullptr;
   }
 
+  if (!features::kCookieDeprecationFacilitatedTestingEnableIncognito.Get() &&
+      profile->IsOffTheRecord()) {
+    return nullptr;
+  }
+
+  return GetInstance();
+}
+
+// static
+ExperimentManagerImpl* ExperimentManagerImpl::GetInstance() {
   static base::NoDestructor<ExperimentManagerImpl> instance;
   return instance.get();
 }

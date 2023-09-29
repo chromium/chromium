@@ -12,7 +12,7 @@
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tpcd/experiment/eligibility_service_factory.h"
-#include "chrome/browser/tpcd/experiment/experiment_manager.h"
+#include "chrome/browser/tpcd/experiment/mock_experiment_manager.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -30,18 +30,6 @@ namespace {
 
 using ::testing::_;
 using ::testing::Return;
-
-class MockExperimentManager : public ExperimentManager {
- public:
-  MockExperimentManager() = default;
-  ~MockExperimentManager() override = default;
-
-  MOCK_METHOD(void,
-              SetClientEligibility,
-              (bool, EligibilityDecisionCallback),
-              (override));
-  MOCK_METHOD(absl::optional<bool>, IsClientEligible, (), (const, override));
-};
 
 }  // namespace
 
