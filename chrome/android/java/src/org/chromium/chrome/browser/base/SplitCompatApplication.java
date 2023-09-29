@@ -218,6 +218,7 @@ public class SplitCompatApplication extends Application {
             // created and is needed only by processes that use the ApplicationStatus api (which
             // for Chrome is just the browser process).
             ApplicationStatus.initialize(this);
+            ColdStartTracker.initialize();
 
             // Register and initialize application status listener for crashes, this needs to be
             // done as early as possible so that this value is set before any crashes are

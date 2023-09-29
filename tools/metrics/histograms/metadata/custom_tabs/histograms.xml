@@ -662,7 +662,10 @@ chromium-metrics-reviews@google.com.
   <summary>
     Startup time for a Custom Tab from the earliest point in startup to the
     first navigation commit. Split by varying degrees of warmness, from cold to
-    fully pre-loaded through mayLaunchUrl. Only reported on Android P+.
+    fully pre-loaded through mayLaunchUrl.
+
+    It is recommended to limit analysis of data to Android P+ because on prior
+    versions the cold start detection is less robust.
 
     {suffix}.
   </summary>
@@ -688,8 +691,10 @@ chromium-metrics-reviews@google.com.
   <summary>
     Startup time for a Custom Tab from the earliest point in startup to the
     Largest Contentful Paint on the first navigation. Split by varying degrees
-    of warmness, from cold to fully pre-loaded through mayLaunchUrl. Only
-    reported on Android P+.
+    of warmness, from cold to fully pre-loaded through mayLaunchUrl.
+
+    It is recommended to limit analysis of data to Android P+ because on prior
+    versions the cold start detection is less robust.
 
     {suffix}.
   </summary>

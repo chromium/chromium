@@ -10,7 +10,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Rect;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Process;
 import android.os.SystemClock;
 import android.text.TextUtils;
@@ -22,8 +21,7 @@ import androidx.browser.customtabs.CustomTabsSessionToken;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.base.SplitCompatAppComponentFactory;
-import org.chromium.chrome.browser.base.SplitCompatAppComponentFactory.ProcessCreationReason;
+import org.chromium.chrome.browser.base.ColdStartTracker;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.ClientManager.CalledWarmup;
 import org.chromium.chrome.browser.customtabs.features.TabInteractionRecorder;
@@ -250,6 +248,7 @@ public class CustomTabObserver extends EmptyTabObserver {
     }
 
     private boolean wasWarmedUp() {
+        if (mCustomTabsConnection == null) return false;
         @CalledWarmup
         int warmedState = mCustomTabsConnection.getWarmupState(mSession);
         return warmedState == CalledWarmup.SESSION_NO_WARMUP_ALREADY_CALLED
@@ -270,14 +269,9 @@ public class CustomTabObserver extends EmptyTabObserver {
     }
 
     private void recordFirstCommitNavigation(long firstCommitRealtimeMillis) {
-        // ProcessCreationReason is only available on P+.
-        if (mCustomTabsConnection == null || Build.VERSION.SDK_INT < Build.VERSION_CODES.P) return;
-
+        if (mCustomTabsConnection == null) return;
         String histogram = null;
         long duration = 0;
-        @ProcessCreationReason
-        int processCreationReason = SplitCompatAppComponentFactory.getProcessCreationReason();
-
         // Note that this will exclude Webapp launches in all cases due to either
         // mUsedHiddenTabSpeculation being null, or mIntentReceivedTimestamp being 0.
         if (mUsedHiddenTabSpeculation != null && mUsedHiddenTabSpeculation) {
@@ -290,7 +284,7 @@ public class CustomTabObserver extends EmptyTabObserver {
             if (wasWarmedUp()) {
                 duration = firstCommitRealtimeMillis - mIntentReceivedRealtimeMillis;
                 histogram = "CustomTabs.Startup.TimeToFirstCommitNavigation2.WarmedUp";
-            } else if (processCreationReason == ProcessCreationReason.ACTIVITY
+            } else if (ColdStartTracker.wasColdOnFirstActivityCreationOrNow()
                     && SimpleStartupForegroundSessionDetector.runningCleanForegroundSession()) {
                 duration = firstCommitRealtimeMillis - Process.getStartElapsedRealtime();
                 histogram = "CustomTabs.Startup.TimeToFirstCommitNavigation2.Cold";
@@ -306,14 +300,9 @@ public class CustomTabObserver extends EmptyTabObserver {
     }
 
     public void recordLargestContentfulPaint(long lcpUptimeMillis) {
-        // ProcessCreationReason is only available on P+.
-        if (mCustomTabsConnection == null || Build.VERSION.SDK_INT < Build.VERSION_CODES.P) return;
-
+        if (mCustomTabsConnection == null) return;
         String histogram = null;
         long duration = 0;
-        @ProcessCreationReason
-        int processCreationReason = SplitCompatAppComponentFactory.getProcessCreationReason();
-
         // Note that this will exclude Webapp launches in all cases due to either
         // mUsedHiddenTabSpeculation being null, or mIntentReceivedTimestamp being 0.
         if (mUsedHiddenTabSpeculation != null && mUsedHiddenTabSpeculation) {
@@ -326,7 +315,7 @@ public class CustomTabObserver extends EmptyTabObserver {
             if (wasWarmedUp()) {
                 duration = lcpUptimeMillis - mIntentReceivedUptimeMillis;
                 histogram = "CustomTabs.Startup.TimeToLargestContentfulPaint2.WarmedUp";
-            } else if (processCreationReason == ProcessCreationReason.ACTIVITY
+            } else if (ColdStartTracker.wasColdOnFirstActivityCreationOrNow()
                     && SimpleStartupForegroundSessionDetector.runningCleanForegroundSession()) {
                 duration = lcpUptimeMillis - Process.getStartUptimeMillis();
                 histogram = "CustomTabs.Startup.TimeToLargestContentfulPaint2.Cold";
