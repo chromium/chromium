@@ -70,12 +70,14 @@ void CreditCardCvcAuthenticator::Authenticate(
         *card, AutofillClient::UnmaskCardReason::kAutofill,
         weak_ptr_factory_.GetWeakPtr(), weak_ptr_factory_.GetWeakPtr(),
         last_committed_primary_main_frame_origin, *vcn_context_token,
-        *selected_challenge_option);
+        *selected_challenge_option,
+        client_->GetLastCommittedPrimaryMainFrameOrigin());
   }
 
   full_card_request_->GetFullCard(
       *card, AutofillClient::UnmaskCardReason::kAutofill,
-      weak_ptr_factory_.GetWeakPtr(), weak_ptr_factory_.GetWeakPtr());
+      weak_ptr_factory_.GetWeakPtr(), weak_ptr_factory_.GetWeakPtr(),
+      client_->GetLastCommittedPrimaryMainFrameOrigin());
 }
 
 void CreditCardCvcAuthenticator::OnFullCardRequestSucceeded(

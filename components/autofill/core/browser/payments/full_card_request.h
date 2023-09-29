@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -16,6 +17,7 @@
 #include "components/autofill/core/browser/payments/card_unmask_delegate.h"
 #include "components/autofill/core/browser/payments/payments_client.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_options.h"
+#include "url/origin.h"
 
 namespace autofill {
 
@@ -105,7 +107,7 @@ class FullCardRequest final : public CardUnmaskDelegate {
   };
 
   // The parameters should outlive the FullCardRequest.
-  FullCardRequest(RiskDataLoader* risk_data_loader,
+  FullCardRequest(AutofillClient* autofill_client,
                   payments::PaymentsClient* payments_client,
                   PersonalDataManager* personal_data_manager);
 
@@ -125,7 +127,8 @@ class FullCardRequest final : public CardUnmaskDelegate {
   void GetFullCard(const CreditCard& card,
                    AutofillClient::UnmaskCardReason reason,
                    base::WeakPtr<ResultDelegate> result_delegate,
-                   base::WeakPtr<UIDelegate> ui_delegate);
+                   base::WeakPtr<UIDelegate> ui_delegate,
+                   const url::Origin& merchant_domain_for_footprints);
 
   // Refer to the comment above `GetFullCard()` for the high level overview of
   // how this function works. The additional fields in this function are
@@ -138,16 +141,20 @@ class FullCardRequest final : public CardUnmaskDelegate {
       base::WeakPtr<UIDelegate> ui_delegate,
       const GURL& last_committed_primary_main_frame_origin,
       const std::string& vcn_context_token,
-      const CardUnmaskChallengeOption& selected_challenge_option);
+      const CardUnmaskChallengeOption& selected_challenge_option,
+      const url::Origin& merchant_domain_for_footprints);
 
-  // Retrieves the pan for |card| through a FIDO assertion and invokes
+  // Retrieves the pan for `card` through a FIDO assertion and invokes
   // Delegate::OnFullCardRequestSucceeded() or
   // Delegate::OnFullCardRequestFailed(). Only one request should be active at a
-  // time. |last_committed_primary_main_frame_origin| is the full origin of the
-  // primary main frame where the card retrieval happens. |context_token| is
-  // used for providing context of the request to the server to link related
-  // requests. |last_committed_primary_main_frame_origin| and |context_token|
-  // are populated if the full card request is for a virtual card.
+  // time. `merchant_domain_for_footprints` is the full origin of the primary
+  // frame where the unmasking happened this is used for personalization if the
+  // user is not in incognito mode. `last_committed_primary_main_frame_origin`
+  // is the full origin of the primary main frame where the card retrieval
+  // happens. `context_token` is used for providing context of the request to
+  // the server to link related requests.
+  // `last_committed_primary_main_frame_origin` and `context_token` are
+  // populated if the full card request is for a virtual card.
   //
   // If the card is local, has a non-empty GUID, and the user has updated its
   // expiration date, then this function will write the new information to
@@ -157,6 +164,7 @@ class FullCardRequest final : public CardUnmaskDelegate {
       AutofillClient::UnmaskCardReason reason,
       base::WeakPtr<ResultDelegate> result_delegate,
       base::Value::Dict fido_assertion_info,
+      const url::Origin& merchant_domain_for_footprints,
       absl::optional<GURL> last_committed_primary_main_frame_origin =
           absl::nullopt,
       absl::optional<std::string> context_token = absl::nullopt);
@@ -204,6 +212,9 @@ class FullCardRequest final : public CardUnmaskDelegate {
   // authentication methods. `last_committed_primary_main_frame_origin`,
   // `context_token`, and `selected_challenge_option` need to be specified if
   // the full card request is for a virtual card.
+  // `merchant_domain_for_footprints` is the full origin of the primary main
+  // frame where the unmasking happened that is used for personalization if the
+  // user is not in incognito mode.
   //
   // If the card is local, has a non-empty GUID, and the user has updated its
   // expiration date, then this function will write the new information to
@@ -216,7 +227,8 @@ class FullCardRequest final : public CardUnmaskDelegate {
       absl::optional<base::Value::Dict> fido_assertion_info,
       absl::optional<GURL> last_committed_primary_main_frame_origin,
       absl::optional<std::string> context_token,
-      absl::optional<CardUnmaskChallengeOption> selected_challenge_option);
+      absl::optional<CardUnmaskChallengeOption> selected_challenge_option,
+      const url::Origin& merchant_domain_for_footprints);
 
   // CardUnmaskDelegate:
   void OnUnmaskPromptAccepted(
@@ -234,8 +246,8 @@ class FullCardRequest final : public CardUnmaskDelegate {
   // Resets the state of the request.
   void Reset();
 
-  // Used to fetch risk data for this request.
-  const raw_ptr<RiskDataLoader> risk_data_loader_;
+  // The associated autofill client.
+  const raw_ref<AutofillClient> autofill_client_;
 
   // Responsible for unmasking a masked server card.
   const raw_ptr<payments::PaymentsClient> payments_client_;

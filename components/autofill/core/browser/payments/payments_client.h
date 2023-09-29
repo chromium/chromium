@@ -28,6 +28,7 @@
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_flow.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/origin.h"
 
 namespace signin {
 class AccessTokenFetcher;
@@ -130,6 +131,10 @@ class PaymentsClient {
     // A vector of signals used to share client behavior with the Payments
     // server.
     std::vector<ClientBehaviorConstants> client_behavior_signals;
+    // The origin of the primary main frame where the unmasking happened. Should
+    // only be populated when the client is not in incognito mode since it will
+    // be used for personalization.
+    absl::optional<url::Origin> merchant_domain_for_footprints;
   };
 
   // Information retrieved from an UnmaskRequest.

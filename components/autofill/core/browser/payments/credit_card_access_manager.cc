@@ -1113,6 +1113,10 @@ void CreditCardAccessManager::FetchVirtualCard() {
   virtual_card_unmask_request_details_
       .last_committed_primary_main_frame_origin =
       last_committed_primary_main_frame_origin;
+  if (!client_->IsOffTheRecord()) {
+    virtual_card_unmask_request_details_.merchant_domain_for_footprints =
+        client_->GetLastCommittedPrimaryMainFrameOrigin();
+  }
   virtual_card_unmask_request_details_.card = *card_;
   if (ShouldShowCardMetadata(*card_)) {
     virtual_card_unmask_request_details_.client_behavior_signals.push_back(

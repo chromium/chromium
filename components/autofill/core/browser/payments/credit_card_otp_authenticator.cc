@@ -48,6 +48,10 @@ void CreditCardOtpAuthenticator::OnUnmaskPromptAccepted(
     unmask_request_->last_committed_primary_main_frame_origin =
         last_committed_primary_main_frame_origin;
   }
+  if (!autofill_client_->IsOffTheRecord()) {
+    unmask_request_->merchant_domain_for_footprints =
+        autofill_client_->GetLastCommittedPrimaryMainFrameOrigin();
+  }
 
   // Populating risk data and showing OTP dialog may occur asynchronously.
   // If |risk_data_| has already been loaded, send the unmask card request.

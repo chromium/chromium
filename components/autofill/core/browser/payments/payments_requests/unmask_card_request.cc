@@ -292,6 +292,14 @@ std::string UnmaskCardRequest::GetRequestContent() {
                      std::move(virtual_card_request_info));
   }
 
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableMerchantDomainInUnmaskCardRequest) &&
+      request_details_.merchant_domain_for_footprints.has_value()) {
+    request_dict.Set(
+        "merchant_domain",
+        request_details_.merchant_domain_for_footprints->Serialize());
+  }
+
   std::string json_request;
   base::JSONWriter::Write(request_dict, &json_request);
   std::string request_content;

@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
@@ -22,36 +23,39 @@
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_tick_clock.h"
+#include "url/origin.h"
 
 namespace autofill {
 namespace payments {
 
-FullCardRequest::FullCardRequest(RiskDataLoader* risk_data_loader,
+FullCardRequest::FullCardRequest(AutofillClient* autofill_client,
                                  payments::PaymentsClient* payments_client,
                                  PersonalDataManager* personal_data_manager)
-    : risk_data_loader_(risk_data_loader),
+    : autofill_client_(CHECK_DEREF(autofill_client)),
       payments_client_(payments_client),
       personal_data_manager_(personal_data_manager),
       result_delegate_(nullptr),
       ui_delegate_(nullptr),
       should_unmask_card_(false) {
-  DCHECK(risk_data_loader_);
   DCHECK(payments_client_);
   DCHECK(personal_data_manager_);
 }
 
 FullCardRequest::~FullCardRequest() = default;
 
-void FullCardRequest::GetFullCard(const CreditCard& card,
-                                  AutofillClient::UnmaskCardReason reason,
-                                  base::WeakPtr<ResultDelegate> result_delegate,
-                                  base::WeakPtr<UIDelegate> ui_delegate) {
+void FullCardRequest::GetFullCard(
+    const CreditCard& card,
+    AutofillClient::UnmaskCardReason reason,
+    base::WeakPtr<ResultDelegate> result_delegate,
+    base::WeakPtr<UIDelegate> ui_delegate,
+    const url::Origin& merchant_domain_for_footprints) {
   DCHECK(ui_delegate);
   GetFullCardImpl(card, reason, result_delegate, ui_delegate,
                   /*fido_assertion_info=*/absl::nullopt,
                   /*last_committed_primary_main_frame_origin=*/absl::nullopt,
                   /*context_token=*/absl::nullopt,
-                  /*selected_challenge_option=*/absl::nullopt);
+                  /*selected_challenge_option=*/absl::nullopt,
+                  merchant_domain_for_footprints);
 }
 
 void FullCardRequest::GetFullVirtualCardViaCVC(
@@ -61,7 +65,8 @@ void FullCardRequest::GetFullVirtualCardViaCVC(
     base::WeakPtr<UIDelegate> ui_delegate,
     const GURL& last_committed_primary_main_frame_origin,
     const std::string& vcn_context_token,
-    const CardUnmaskChallengeOption& selected_challenge_option) {
+    const CardUnmaskChallengeOption& selected_challenge_option,
+    const url::Origin& merchant_domain_for_footprints) {
   DCHECK(ui_delegate);
   DCHECK(last_committed_primary_main_frame_origin.is_valid());
   DCHECK(!vcn_context_token.empty());
@@ -69,7 +74,7 @@ void FullCardRequest::GetFullVirtualCardViaCVC(
   GetFullCardImpl(card, reason, result_delegate, ui_delegate,
                   /*fido_assertion_info=*/absl::nullopt,
                   last_committed_primary_main_frame_origin, vcn_context_token,
-                  selected_challenge_option);
+                  selected_challenge_option, merchant_domain_for_footprints);
 }
 
 void FullCardRequest::GetFullCardViaFIDO(
@@ -77,12 +82,14 @@ void FullCardRequest::GetFullCardViaFIDO(
     AutofillClient::UnmaskCardReason reason,
     base::WeakPtr<ResultDelegate> result_delegate,
     base::Value::Dict fido_assertion_info,
+    const url::Origin& merchant_domain_for_footprints,
     absl::optional<GURL> last_committed_primary_main_frame_origin,
     absl::optional<std::string> context_token) {
   GetFullCardImpl(
       card, reason, result_delegate, nullptr, std::move(fido_assertion_info),
       std::move(last_committed_primary_main_frame_origin),
-      std::move(context_token), /*selected_challenge_option=*/absl::nullopt);
+      std::move(context_token), /*selected_challenge_option=*/absl::nullopt,
+      merchant_domain_for_footprints);
 }
 
 void FullCardRequest::GetFullCardImpl(
@@ -93,7 +100,8 @@ void FullCardRequest::GetFullCardImpl(
     absl::optional<base::Value::Dict> fido_assertion_info,
     absl::optional<GURL> last_committed_primary_main_frame_origin,
     absl::optional<std::string> context_token,
-    absl::optional<CardUnmaskChallengeOption> selected_challenge_option) {
+    absl::optional<CardUnmaskChallengeOption> selected_challenge_option,
+    const url::Origin& merchant_domain_for_footprints) {
   // Retrieval of card information should happen via CVC auth or FIDO, but not
   // both. Use |ui_delegate|'s existence as evidence of doing CVC auth and
   // |fido_assertion_info| as evidence of doing FIDO auth.
@@ -137,6 +145,9 @@ void FullCardRequest::GetFullCardImpl(
   request_->card = card;
   request_->last_committed_primary_main_frame_origin =
       last_committed_primary_main_frame_origin;
+  if (!autofill_client_->IsOffTheRecord()) {
+    request_->merchant_domain_for_footprints = merchant_domain_for_footprints;
+  }
   if (context_token)
     request_->context_token = *context_token;
   if (selected_challenge_option)
@@ -169,7 +180,7 @@ void FullCardRequest::GetFullCardImpl(
   }
 
   if (should_unmask_card_) {
-    risk_data_loader_->LoadRiskData(
+    autofill_client_->LoadRiskData(
         base::BindOnce(&FullCardRequest::OnDidGetUnmaskRiskData,
                        weak_ptr_factory_.GetWeakPtr()));
   }
