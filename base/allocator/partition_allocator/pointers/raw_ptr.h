@@ -1015,6 +1015,13 @@ constexpr auto ExperimentalAsh = base::RawPtrTraits::kExperimentalAsh;
 // This is not meant to be added manually. You can ignore this flag.
 constexpr auto LeakedDanglingUntriaged = base::RawPtrTraits::kMayDangle;
 
+// Temporary annotation for new pointers added during the renderer rewrite.
+// TODO(crbug.com/1444624): Find pre-existing dangling pointers and remove
+// this annotation.
+//
+// DO NOT ADD new occurrences of this.
+constexpr auto ExperimentalRenderer = base::RawPtrTraits::kMayDangle;
+
 // Public verson used in callbacks arguments when it is known that they might
 // receive dangling pointers. In any other cases, please
 // use one of:
