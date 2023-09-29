@@ -6458,7 +6458,7 @@
                     "params": {
                         "pwa-companion-app-id": "kncedjianpafagdchkiinagaaokkhpaa",
                         "pwa-companion-install-uri": "https://mypixelbuds-preprod.corp.google.com/",
-                        "pwa-companion-play-store-uri": ""
+                        "pwa-companion-play-store-uri": "https://play.google.com/store/apps/details?id=com.google.android.apps.wearables.maestro.companion"
                     },
                     "enable_features": [
                         "FastPairPwaCompanion"
