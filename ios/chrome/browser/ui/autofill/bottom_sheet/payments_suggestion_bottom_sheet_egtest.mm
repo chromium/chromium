@@ -82,10 +82,10 @@ id<GREYMatcher> ContinueButton() {
       l10n_util::GetNSString(IDS_IOS_PAYMENT_BOTTOM_SHEET_CONTINUE));
 }
 
-// Matcher for the bottom sheet's "No Thanks" button.
-id<GREYMatcher> NoThanksButton() {
-  return grey_accessibilityLabel(
-      l10n_util::GetNSString(IDS_IOS_PAYMENT_BOTTOM_SHEET_NO_THANKS));
+// Matcher for the bottom sheet's "Use Keyboard" button.
+id<GREYMatcher> UseKeyboardButton() {
+  return chrome_test_util::ButtonWithAccessibilityLabelId(
+      IDS_IOS_PAYMENT_BOTTOM_SHEET_USE_KEYBOARD);
 }
 
 // Matcher for the toolbar's edit button.
@@ -320,18 +320,18 @@ id<GREYMatcher> ExpirationDateLabel() {
   [[EarlGrey selectElementWithMatcher:continueButton] performAction:grey_tap()];
 }
 
-// Verify that the Payments Bottom Sheet "No Thanks" button opens the keyboard.
-// Also checks that the bottom sheet's subtitle and the credit card's expiration
-// appear as expected before dismissing the bottom sheet.
-- (void)testOpenPaymentsBottomSheetTapNoThanksShowKeyboard {
+// Verify that the Payments Bottom Sheet "Use Keyboard" button opens the
+// keyboard. Also checks that the bottom sheet's subtitle and the credit card's
+// expiration appear as expected before dismissing the bottom sheet.
+- (void)testOpenPaymentsBottomSheetTapUseKeyboardShowKeyboard {
   [self loadPaymentsPage];
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:chrome_test_util::TapWebElementWithId(kFormCardName)];
 
-  id<GREYMatcher> noThanksButton = NoThanksButton();
+  id<GREYMatcher> useKeyboardButton = UseKeyboardButton();
 
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:noThanksButton];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:useKeyboardButton];
 
   // Verify that the subtitle string appears.
   [ChromeEarlGrey
@@ -343,7 +343,8 @@ id<GREYMatcher> ExpirationDateLabel() {
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:ExpirationDateLabel()];
 
   // Dismiss the bottom sheet.
-  [[EarlGrey selectElementWithMatcher:noThanksButton] performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:useKeyboardButton]
+      performAction:grey_tap()];
 
   WaitForKeyboardToAppear();
 }

@@ -143,7 +143,7 @@
 }
 
 - (void)secondaryButtonTapped {
-  // "No thanks" button, which dismisses the bottom sheet.
+  // "Use Keyboard" button, which dismisses the bottom sheet.
   [self.viewController dismissViewControllerAnimated:YES completion:NULL];
 }
 

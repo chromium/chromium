@@ -124,7 +124,9 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
   self.primaryActionString =
       l10n_util::GetNSString(IDS_IOS_PAYMENT_BOTTOM_SHEET_CONTINUE);
   self.secondaryActionString =
-      l10n_util::GetNSString(IDS_IOS_PAYMENT_BOTTOM_SHEET_NO_THANKS);
+      l10n_util::GetNSString(IDS_IOS_PAYMENT_BOTTOM_SHEET_USE_KEYBOARD);
+  self.secondaryActionImage =
+      DefaultSymbolWithPointSize(kKeyboardSymbol, kSymbolActionPointSize);
 
   [super viewDidLoad];
 

@@ -212,7 +212,7 @@ id<GREYMatcher> NavigationBarEditButton() {
   }
 }
 
-- (void)testOpenPasswordBottomSheetTapNoThanksShowKeyboard {
+- (void)testOpenPasswordBottomSheetTapUseKeyboardShowKeyboard {
   [PasswordManagerAppInterface
       storeCredentialWithUsername:@"user"
                          password:@"password"
@@ -229,8 +229,8 @@ id<GREYMatcher> NavigationBarEditButton() {
       waitForUIElementToAppearWithMatcher:grey_accessibilityID(@"user")];
 
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
-                                   IDS_IOS_PASSWORD_BOTTOM_SHEET_NO_THANKS))]
+      selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
+                                   IDS_IOS_PASSWORD_BOTTOM_SHEET_USE_KEYBOARD)]
       performAction:grey_tap()];
 
   WaitForKeyboardToAppear();
@@ -620,8 +620,8 @@ id<GREYMatcher> NavigationBarEditButton() {
       waitForUIElementToAppearWithMatcher:grey_accessibilityID(@"user")];
 
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
-                                   IDS_IOS_PASSWORD_BOTTOM_SHEET_NO_THANKS))]
+      selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
+                                   IDS_IOS_PASSWORD_BOTTOM_SHEET_USE_KEYBOARD)]
       performAction:grey_tap()];
 
   WaitForKeyboardToAppear();
@@ -636,8 +636,8 @@ id<GREYMatcher> NavigationBarEditButton() {
       waitForUIElementToAppearWithMatcher:grey_accessibilityID(@"user")];
 
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
-                                   IDS_IOS_PASSWORD_BOTTOM_SHEET_NO_THANKS))]
+      selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
+                                   IDS_IOS_PASSWORD_BOTTOM_SHEET_USE_KEYBOARD)]
       performAction:grey_tap()];
 
   WaitForKeyboardToAppear();
@@ -652,8 +652,8 @@ id<GREYMatcher> NavigationBarEditButton() {
       waitForUIElementToAppearWithMatcher:grey_accessibilityID(@"user")];
 
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
-                                   IDS_IOS_PASSWORD_BOTTOM_SHEET_NO_THANKS))]
+      selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
+                                   IDS_IOS_PASSWORD_BOTTOM_SHEET_USE_KEYBOARD)]
       performAction:grey_tap()];
 
   WaitForKeyboardToAppear();
@@ -748,9 +748,9 @@ id<GREYMatcher> NavigationBarEditButton() {
                        IDS_IOS_PASSWORD_BOTTOM_SHEET_USE_PASSWORD))]
         assertWithMatcher:grey_notNil()];
 
-    [[EarlGrey
-        selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
-                                     IDS_IOS_PASSWORD_BOTTOM_SHEET_NO_THANKS))]
+    [[EarlGrey selectElementWithMatcher:
+                   chrome_test_util::ButtonWithAccessibilityLabelId(
+                       IDS_IOS_PASSWORD_BOTTOM_SHEET_USE_KEYBOARD)]
         assertWithMatcher:grey_notNil()];
 
     // Verify the credit card tablew view is still visible.

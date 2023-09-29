@@ -77,7 +77,9 @@
   self.primaryActionString =
       l10n_util::GetNSString(IDS_IOS_PASSWORD_BOTTOM_SHEET_USE_PASSWORD);
   self.secondaryActionString =
-      l10n_util::GetNSString(IDS_IOS_PASSWORD_BOTTOM_SHEET_NO_THANKS);
+      l10n_util::GetNSString(IDS_IOS_PASSWORD_BOTTOM_SHEET_USE_KEYBOARD);
+  self.secondaryActionImage =
+      DefaultSymbolWithPointSize(kKeyboardSymbol, kSymbolActionPointSize);
 
   [super viewDidLoad];
 }
@@ -242,7 +244,7 @@
 }
 
 - (void)confirmationAlertSecondaryAction {
-  // "No thanks" button, which dismisses the bottom sheet.
+  // "Use Keyboard" button, which dismisses the bottom sheet.
   [self dismiss];
 }
 

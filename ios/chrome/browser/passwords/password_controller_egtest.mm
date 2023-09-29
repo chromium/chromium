@@ -279,8 +279,8 @@ BOOL WaitForKeyboardToAppear() {
   [ChromeEarlGrey
       waitForUIElementToAppearWithMatcher:grey_accessibilityID(@"Eguser")];
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
-                                   IDS_IOS_PASSWORD_BOTTOM_SHEET_NO_THANKS))]
+      selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
+                                   IDS_IOS_PASSWORD_BOTTOM_SHEET_USE_KEYBOARD)]
       performAction:grey_tap()];
   [ChromeEarlGreyUI waitForAppToIdle];
   // Simulate user interacting with fields.
