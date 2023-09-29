@@ -28,6 +28,8 @@ source_set("password_sharing") {
     "password_sharing_mediator.h",
     "password_sharing_mediator.mm",
     "password_sharing_mediator_delegate.h",
+    "sharing_status_coordinator.h",
+    "sharing_status_coordinator.mm",
   ]
   deps = [
     ":password_sharing_constants",
@@ -82,6 +84,8 @@ source_set("password_sharing_ui") {
     "password_sharing_view_controller.mm",
     "recipient_info.h",
     "recipient_info.mm",
+    "sharing_status_view_controller.h",
+    "sharing_status_view_controller.mm",
   ]
   deps = [
     ":password_sharing_constants",
@@ -103,6 +107,7 @@ source_set("password_sharing_ui") {
     "//ios/chrome/common/ui/elements:popover_label_view_controller",
     "//ios/chrome/common/ui/favicon",
     "//ios/chrome/common/ui/table_view:cells_constants",
+    "//ios/chrome/common/ui/util",
     "//ui/base",
   ]
 }

@@ -3141,6 +3141,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_PASSWORD_SHARING_PASSWORD_PICKER_NEXT_BUTTON" desc="Button text for the confirm action in the password picker view in the password sharing flow. [iOS only]">
         Next
       </message>
+      <message name="IDS_IOS_PASSWORD_SHARING_STATUS_PROGRESS_TITLE" desc="Title text on the sharing status view when it is in progress. [iOS only]">
+        Sharing Password
+      </message>
       <message name="IDS_IOS_PASSWORD_SHARING_TITLE" desc="Title of the password sharing bottom sheet view. [iOS only]">
         Share Password
       </message>
