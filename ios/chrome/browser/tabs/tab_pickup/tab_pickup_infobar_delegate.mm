@@ -18,7 +18,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
-#import "ios/chrome/browser/sync/session_sync_service_factory.h"
+#import "ios/chrome/browser/sync/model/session_sync_service_factory.h"
 #import "ios/chrome/browser/synced_sessions/distant_session.h"
 #import "ios/chrome/browser/synced_sessions/distant_tab.h"
 #import "ios/chrome/browser/synced_sessions/synced_sessions.h"

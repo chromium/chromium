@@ -18,7 +18,7 @@
 #import "ios/chrome/browser/shared/public/commands/bookmarks_commands.h"
 #import "ios/chrome/browser/shared/public/commands/qr_generation_commands.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
+#import "ios/chrome/browser/sync/model/send_tab_to_self_sync_service_factory.h"
 #import "ios/chrome/browser/ui/sharing/activity_services/activities/bookmark_activity.h"
 #import "ios/chrome/browser/ui/sharing/activity_services/activities/copy_activity.h"
 #import "ios/chrome/browser/ui/sharing/activity_services/activities/find_in_page_activity.h"

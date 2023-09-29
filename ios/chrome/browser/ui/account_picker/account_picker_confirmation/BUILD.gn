@@ -28,7 +28,7 @@ source_set("account_picker_confirmation") {
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/signin:system_identity",
-    "//ios/chrome/browser/sync",
+    "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/ui/account_picker:account_picker_configuration",
     "//ios/chrome/browser/ui/account_picker:account_picker_layout",
     "//ios/chrome/browser/ui/account_picker/account_picker_screen",

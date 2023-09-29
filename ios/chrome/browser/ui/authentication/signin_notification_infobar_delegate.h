@@ -10,7 +10,7 @@
 
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/sync/service/sync_service_observer.h"
-#include "ios/chrome/browser/sync/sync_setup_service.h"
+#include "ios/chrome/browser/sync/model/sync_setup_service.h"
 #include "ui/gfx/image/image.h"
 
 @protocol ApplicationSettingsCommands;

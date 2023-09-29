@@ -13,7 +13,7 @@ source_set("tangible_sync") {
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/signin",
-    "//ios/chrome/browser/sync",
+    "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/ui/authentication/tangible_sync",
     "//ios/chrome/browser/ui/first_run:interruptible_chrome_coordinator",
     "//ios/chrome/browser/ui/first_run:screen_delegate",

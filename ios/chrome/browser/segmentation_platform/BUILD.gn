@@ -37,7 +37,7 @@ source_set("segmentation_platform") {
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/paths",
     "//ios/chrome/browser/shared/model/web_state_list",
-    "//ios/chrome/browser/sync",
+    "//ios/chrome/browser/sync/model",
   ]
   if (build_with_tflite_lib) {
     deps += [ "//components/segmentation_platform/internal:optimization_guide_segmentation_handler" ]

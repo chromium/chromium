@@ -25,7 +25,7 @@ source_set("feed_top_section") {
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/signin",
-    "//ios/chrome/browser/sync",
+    "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/ui/authentication",
     "//ios/chrome/browser/ui/authentication:signin_presenter",
     "//ios/chrome/browser/ui/authentication/cells",

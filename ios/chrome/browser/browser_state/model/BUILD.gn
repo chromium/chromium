@@ -130,9 +130,9 @@ source_set("model") {
     "//ios/chrome/browser/snapshots",
     "//ios/chrome/browser/supervised_user",
     "//ios/chrome/browser/supervised_user:sync_settings_factory",
-    "//ios/chrome/browser/sync",
-    "//ios/chrome/browser/sync:model_type_store_service_factory",
-    "//ios/chrome/browser/sync/glue",
+    "//ios/chrome/browser/sync/model",
+    "//ios/chrome/browser/sync/model:model_type_store_service_factory",
+    "//ios/chrome/browser/sync/model/glue",
     "//ios/chrome/browser/tabs_search/model:model_factory",
     "//ios/chrome/browser/text_selection/model",
     "//ios/chrome/browser/translate",
@@ -165,8 +165,8 @@ source_set("model") {
     "//ios/chrome/browser/net",
     "//ios/chrome/browser/shared/model/prefs:browser_prefs",
     "//ios/chrome/browser/signin",
-    "//ios/chrome/browser/sync",
-    "//ios/chrome/browser/sync/glue",
+    "//ios/chrome/browser/sync/model",
+    "//ios/chrome/browser/sync/model/glue",
   ]
 }
 

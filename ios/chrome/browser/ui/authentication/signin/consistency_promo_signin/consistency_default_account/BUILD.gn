@@ -26,7 +26,7 @@ source_set("consistency_default_account") {
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/signin:system_identity",
-    "//ios/chrome/browser/sync",
+    "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/ui/authentication:authentication",
     "//ios/chrome/browser/ui/authentication/enterprise:enterprise_utils",
     "//ios/chrome/browser/ui/authentication/signin/consistency_promo_signin:layout",

@@ -80,7 +80,7 @@ source_set("set_up_list") {
     "//components/sync/service",
     "//ios/chrome/browser/default_browser:utils",
     "//ios/chrome/browser/signin",
-    "//ios/chrome/browser/sync",
+    "//ios/chrome/browser/sync/model",
   ]
 }
 
@@ -145,7 +145,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/signin:fake_system_identity",
     "//ios/chrome/browser/signin:fake_system_identity_manager",
     "//ios/chrome/browser/signin:test_support",
-    "//ios/chrome/browser/sync",
+    "//ios/chrome/browser/sync/model",
     "//ios/chrome/test:test_support",
     "//ios/web/public/test:test",
     "//ios/web/public/test/fakes",

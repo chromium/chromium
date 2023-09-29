@@ -111,7 +111,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/favicon",
     "//ios/chrome/browser/segmentation_platform",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
-    "//ios/chrome/browser/sync",
+    "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/synced_sessions",
     "//ios/chrome/test:test_support",
     "//ios/web/public/test",

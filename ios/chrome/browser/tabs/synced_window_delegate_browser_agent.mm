@@ -8,7 +8,7 @@
 #import "ios/chrome/browser/sessions/ios_chrome_session_tab_helper.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/sync/ios_chrome_synced_tab_delegate.h"
+#import "ios/chrome/browser/sync/model/ios_chrome_synced_tab_delegate.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 
 BROWSER_USER_DATA_KEY_IMPL(SyncedWindowDelegateBrowserAgent)

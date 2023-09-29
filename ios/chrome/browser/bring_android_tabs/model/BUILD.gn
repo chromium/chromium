@@ -26,7 +26,7 @@ source_set("model") {
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/public/features:system_flags",
-    "//ios/chrome/browser/sync",
+    "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/synced_sessions",
     "//ios/chrome/browser/url_loading",
     "//ios/chrome/browser/url_loading:url_loading_params_header",
@@ -59,7 +59,7 @@ source_set("test_support") {
     ":model",
     "//components/prefs",
     "//components/segmentation_platform/embedder/default_model",
-    "//ios/chrome/browser/sync",
+    "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/synced_sessions",
   ]
 }
@@ -91,7 +91,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
-    "//ios/chrome/browser/sync",
+    "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/url_loading",
     "//ios/chrome/browser/url_loading:test_support",
     "//ios/web/public/test",

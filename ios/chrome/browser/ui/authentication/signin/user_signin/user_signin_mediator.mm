@@ -15,7 +15,7 @@
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/system_identity.h"
-#import "ios/chrome/browser/sync/sync_setup_service.h"
+#import "ios/chrome/browser/sync/model/sync_setup_service.h"
 #import "ios/chrome/browser/ui/authentication/authentication_flow.h"
 
 @interface UserSigninMediator ()

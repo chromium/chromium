@@ -19,7 +19,7 @@ source_set("instant_signin") {
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/ui/elements:activity_overlay",
     "//ios/chrome/browser/signin",
-    "//ios/chrome/browser/sync",
+    "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/ui/authentication",
     "//ios/chrome/browser/ui/authentication/signin:signin_protected",
     "//ios/chrome/browser/ui/authentication/unified_consent/identity_chooser",

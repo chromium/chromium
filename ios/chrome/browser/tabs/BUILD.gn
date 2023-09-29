@@ -105,7 +105,7 @@ source_set("tabs_internal") {
     "//ios/chrome/browser/ssl",
     "//ios/chrome/browser/store_kit",
     "//ios/chrome/browser/supervised_user",
-    "//ios/chrome/browser/sync",
+    "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/translate",
     "//ios/chrome/browser/ui/download:features",
     "//ios/chrome/browser/voice",

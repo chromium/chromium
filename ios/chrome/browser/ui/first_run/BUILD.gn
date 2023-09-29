@@ -71,7 +71,7 @@ source_set("first_run") {
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/shared/ui/util:terms_util",
     "//ios/chrome/browser/signin",
-    "//ios/chrome/browser/sync",
+    "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/ui/authentication",
     "//ios/chrome/browser/ui/authentication/history_sync",
     "//ios/chrome/browser/ui/authentication/signin",
@@ -235,7 +235,7 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/browser/shared/coordinator/scene:scene_testing",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/public/features",
-    "//ios/chrome/browser/sync",
+    "//ios/chrome/browser/sync/model",
     "//ios/chrome/test/app:test_support",
     "//ios/third_party/earl_grey2:app_framework+link",
   ]

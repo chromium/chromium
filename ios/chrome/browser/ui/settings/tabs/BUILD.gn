@@ -18,7 +18,7 @@ source_set("tabs") {
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
-    "//ios/chrome/browser/sync",
+    "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/tabs/inactive_tabs:features",
     "//ios/chrome/browser/tabs/tab_pickup:features",
     "//ios/chrome/browser/ui/settings/tabs/inactive_tabs",

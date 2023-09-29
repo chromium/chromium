@@ -2,7 +2,7 @@ include_rules = [
   "+ios/chrome/browser/search_engines",
   "+ios/chrome/browser/signin",
   "+ios/chrome/browser/metrics",
-  "+ios/chrome/browser/sync",
+  "+ios/chrome/browser/sync/model",
 ]
 
 specific_include_rules = {

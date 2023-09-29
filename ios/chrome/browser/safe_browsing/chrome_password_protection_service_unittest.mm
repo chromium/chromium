@@ -29,7 +29,7 @@
 #import "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
 #import "ios/chrome/browser/safe_browsing/safe_browsing_metrics_collector_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
-#import "ios/chrome/browser/sync/ios_user_event_service_factory.h"
+#import "ios/chrome/browser/sync/model/ios_user_event_service_factory.h"
 #import "ios/components/security_interstitials/safe_browsing/fake_safe_browsing_service.h"
 #import "ios/web/public/navigation/referrer.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"

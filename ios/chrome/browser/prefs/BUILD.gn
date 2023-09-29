@@ -21,6 +21,6 @@ source_set("prefs") {
     "//components/supervised_user/core/common",
     "//components/sync_preferences",
     "//ios/chrome/browser/shared/model/application_context",
-    "//ios/chrome/browser/sync/prefs",
+    "//ios/chrome/browser/sync/model/prefs",
   ]
 }

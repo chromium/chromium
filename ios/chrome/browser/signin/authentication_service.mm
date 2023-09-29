@@ -36,7 +36,7 @@
 #import "ios/chrome/browser/signin/signin_util.h"
 #import "ios/chrome/browser/signin/system_identity.h"
 #import "ios/chrome/browser/signin/system_identity_manager.h"
-#import "ios/chrome/browser/sync/sync_setup_service.h"
+#import "ios/chrome/browser/sync/model/sync_setup_service.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
 
 namespace {

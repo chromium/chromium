@@ -17,7 +17,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser_observer_bridge.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller.h"
-#import "ios/chrome/browser/sync/sync_service_factory.h"
+#import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/history/history_clear_browsing_data_coordinator.h"
 #import "ios/chrome/browser/ui/history/history_clear_browsing_data_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/history/history_coordinator_delegate.h"

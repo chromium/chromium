@@ -6,8 +6,8 @@
 
 #include "components/sync/invalidations/sync_invalidations_service.h"
 #include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/sync/sync_invalidations_service_factory.h"
-#include "ios/chrome/browser/sync/sync_service_factory.h"
+#include "ios/chrome/browser/sync/model/sync_invalidations_service_factory.h"
+#include "ios/chrome/browser/sync/model/sync_service_factory.h"
 #include "ios/chrome/common/channel_info.h"
 
 namespace web_ui {

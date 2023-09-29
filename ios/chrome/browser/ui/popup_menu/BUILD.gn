@@ -95,7 +95,7 @@ source_set("popup_menu") {
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/supervised_user",
-    "//ios/chrome/browser/sync",
+    "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/translate",
     "//ios/chrome/browser/ui/bookmarks:core",
     "//ios/chrome/browser/ui/browser_container",

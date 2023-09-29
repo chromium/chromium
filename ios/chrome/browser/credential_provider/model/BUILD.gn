@@ -47,7 +47,7 @@ if (ios_enable_credential_provider_extension) {
       "//ios/chrome/browser/shared/model/browser_state",
       "//ios/chrome/browser/signin",
       "//ios/chrome/browser/signin:system_identity",
-      "//ios/chrome/browser/sync",
+      "//ios/chrome/browser/sync/model",
       "//ios/chrome/common/app_group",
       "//ios/chrome/common/credential_provider",
       "//ios/chrome/common/credential_provider:ui",

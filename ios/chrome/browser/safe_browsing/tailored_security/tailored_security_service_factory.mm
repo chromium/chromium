@@ -9,7 +9,7 @@
 #import "ios/chrome/browser/safe_browsing/tailored_security/chrome_tailored_security_service.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
-#import "ios/chrome/browser/sync/sync_service_factory.h"
+#import "ios/chrome/browser/sync/model/sync_service_factory.h"
 
 // static
 safe_browsing::TailoredSecurityService*

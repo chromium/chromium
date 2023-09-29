@@ -4,7 +4,7 @@ include_rules = [
   "+ios/chrome/browser/sessions",
   "+ios/chrome/browser/tabs",
   "+ios/chrome/browser/signin",
-  "+ios/chrome/browser/sync",
+  "+ios/chrome/browser/sync/model",
 ]
 
 specific_include_rules = {

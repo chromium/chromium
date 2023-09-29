@@ -23,7 +23,7 @@
 #import "components/version_info/version_info.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/sync/model_type_store_service_factory.h"
+#import "ios/chrome/browser/sync/model/model_type_store_service_factory.h"
 #import "ios/chrome/common/channel_info.h"
 #import "ios/web/public/browser_state.h"
 

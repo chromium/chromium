@@ -40,7 +40,7 @@ source_set("supervised_user") {
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/signin",
-    "//ios/chrome/browser/sync",
+    "//ios/chrome/browser/sync/model",
     "//ios/components/security_interstitials",
     "//ios/net",
     "//ios/web/public/js_messaging:js_messaging",

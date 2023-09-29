@@ -23,7 +23,7 @@ specific_include_rules = {
     "+ios/chrome/browser/sessions/session_restoration_browser_agent.h",
     "+ios/chrome/browser/sessions/session_service_ios.h",
     "+ios/chrome/browser/snapshots/snapshot_browser_agent.h",
-    "+ios/chrome/browser/sync/sync_error_browser_agent.h",
+    "+ios/chrome/browser/sync/model/sync_error_browser_agent.h",
     "+ios/chrome/browser/tabs/closing_web_state_observer_browser_agent.h",
     "+ios/chrome/browser/tabs/features.h",
     "+ios/chrome/browser/tabs/synced_window_delegate_browser_agent.h",

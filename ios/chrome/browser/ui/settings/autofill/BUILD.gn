@@ -54,7 +54,7 @@ source_set("autofill") {
     "//ios/chrome/browser/shared/ui/table_view/cells",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/signin",
-    "//ios/chrome/browser/sync",
+    "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/ui/autofill:autofill_shared_ui",
     "//ios/chrome/browser/ui/autofill:autofill_ui_type",
     "//ios/chrome/browser/ui/autofill/cells",

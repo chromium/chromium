@@ -11,7 +11,7 @@
 #import "base/time/time.h"
 #import "components/sync_sessions/open_tabs_ui_delegate.h"
 #import "components/sync_sessions/session_sync_service.h"
-#import "ios/chrome/browser/sync/sync_setup_service.h"
+#import "ios/chrome/browser/sync/model/sync_setup_service.h"
 #import "ios/chrome/browser/synced_sessions/distant_session.h"
 
 namespace {

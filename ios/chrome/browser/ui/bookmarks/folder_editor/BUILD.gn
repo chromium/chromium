@@ -40,7 +40,7 @@ source_set("coordinator_impl") {
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/signin:signin",
-    "//ios/chrome/browser/sync",
+    "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/ui/bookmarks:core",
     "//ios/chrome/browser/ui/bookmarks/folder_chooser:coordinator_headers",
   ]
@@ -71,7 +71,7 @@ source_set("ui") {
     "//ios/chrome/browser/shared/ui/table_view:views",
     "//ios/chrome/browser/shared/ui/util/image",
     "//ios/chrome/browser/signin:signin",
-    "//ios/chrome/browser/sync",
+    "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/ui/bookmarks:constants",
     "//ios/chrome/browser/ui/bookmarks:core",
     "//ios/chrome/browser/ui/bookmarks:utils",

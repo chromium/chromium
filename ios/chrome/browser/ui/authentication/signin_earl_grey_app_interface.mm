@@ -36,7 +36,7 @@
 #import "ios/chrome/browser/signin/fake_system_identity_interaction_manager.h"
 #import "ios/chrome/browser/signin/fake_system_identity_manager.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
-#import "ios/chrome/browser/sync/sync_service_factory.h"
+#import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/cells/table_view_identity_cell.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/testing/earl_grey/earl_grey_app.h"

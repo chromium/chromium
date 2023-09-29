@@ -1,5 +1,5 @@
 include_rules = [
   "+ios/chrome/browser/signin",
-  "+ios/chrome/browser/sync",
+  "+ios/chrome/browser/sync/model",
   "+ios/chrome/browser/url_loading",
 ]

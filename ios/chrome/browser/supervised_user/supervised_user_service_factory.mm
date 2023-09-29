@@ -16,7 +16,7 @@
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/supervised_user/kids_chrome_management_client_factory.h"
 #import "ios/chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
-#import "ios/chrome/browser/sync/sync_service_factory.h"
+#import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "url/gurl.h"
 
 namespace {

@@ -21,7 +21,7 @@ source_set("synced_sessions") {
     "//components/sync",
     "//components/sync_device_info",
     "//ios/chrome/browser/signin",
-    "//ios/chrome/browser/sync",
+    "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/url_loading",
     "//ios/chrome/browser/url_loading:url_loading_params_header",
     "//third_party/abseil-cpp:absl",

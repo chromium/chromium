@@ -5,5 +5,5 @@ include_rules = [
   "+ios/chrome/browser/history",
   "+ios/chrome/browser/search_engines",
   "+ios/chrome/browser/signin",
-  "+ios/chrome/browser/sync",
+  "+ios/chrome/browser/sync/model",
 ]

@@ -122,7 +122,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/signin:capabilities_types",
     "//ios/chrome/browser/signin:system_identity_manager",
-    "//ios/chrome/browser/sync",
+    "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/ui/authentication/enterprise:enterprise_utils",
     "//ios/chrome/browser/ui/content_suggestions",
     "//ios/chrome/browser/ui/content_suggestions:content_suggestions_ui_util",
