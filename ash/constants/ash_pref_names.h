@@ -1855,6 +1855,11 @@ inline constexpr char kDemoModeDefaultLocale[] = "demo_mode.default_locale";
 inline constexpr char kTouchpadInternalSettings[] =
     "ash.settings.touchpad.internal";
 
+// A dictionary pref containing the set of pointing stick settings for the user.
+// This is synced for all user devices.
+inline constexpr char kPointingStickInternalSettings[] =
+    "ash.settings.pointing_stick.internal";
+
 // NOTE: New prefs should start with the "ash." prefix. Existing prefs moved
 // into this file should not be renamed, since they may be synced.
 

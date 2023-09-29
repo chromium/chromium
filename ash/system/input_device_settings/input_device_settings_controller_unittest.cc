@@ -113,10 +113,22 @@ const ui::TouchpadDevice kSampleHapticTouchpadInternal(
     0x4444,
     0,
     true);
+const ui::TouchpadDevice kSampleTouchpadExternal(26,
+                                                 ui::INPUT_DEVICE_USB,
+                                                 "kSampleTouchpadExternal",
+                                                 "",
+                                                 base::FilePath(),
+                                                 0x1111,
+                                                 0x5555,
+                                                 0);
 const ui::InputDevice kSamplePointingStickInternal(
     2,
     ui::INPUT_DEVICE_INTERNAL,
     "kSamplePointingStickInternal");
+const ui::InputDevice kSamplePointingStickExternal(
+    3,
+    ui::INPUT_DEVICE_USB,
+    "kSamplePointingStickExternal");
 const ui::InputDevice kSampleMouseUsb(3,
                                       ui::INPUT_DEVICE_USB,
                                       "kSampleMouseUsb",
@@ -281,6 +293,15 @@ class FakeInputDeviceSettingsControllerObserver
     num_keyboards_settings_updated_++;
   }
 
+  void OnTouchpadSettingsUpdated(const mojom::Touchpad& touchpad) override {
+    num_touchpad_settings_updated_++;
+  }
+
+  void OnPointingStickSettingsUpdated(
+      const mojom::PointingStick& pointing_stick) override {
+    num_pointing_stick_settings_updated_++;
+  }
+
   void OnGraphicsTabletConnected(
       const mojom::GraphicsTablet& graphics_tablet) override {
     num_graphics_tablets_connected_++;
@@ -320,6 +341,12 @@ class FakeInputDeviceSettingsControllerObserver
   uint32_t num_keyboards_settings_updated() {
     return num_keyboards_settings_updated_;
   }
+  uint32_t num_touchpad_settings_updated() {
+    return num_touchpad_settings_updated_;
+  }
+  uint32_t num_pointing_stick_settings_updated() {
+    return num_pointing_stick_settings_updated_;
+  }
   uint32_t num_graphics_tablets_settings_updated() {
     return num_graphics_tablets_settings_updated_;
   }
@@ -329,14 +356,16 @@ class FakeInputDeviceSettingsControllerObserver
   uint32_t num_tablet_buttons_pressed() { return num_tablet_buttons_pressed_; }
 
  private:
-  uint32_t num_keyboards_connected_;
-  uint32_t num_graphics_tablets_connected_;
-  uint32_t num_keyboards_settings_updated_;
-  uint32_t num_graphics_tablets_settings_updated_;
-  uint32_t num_mouse_settings_updated_;
-  uint32_t num_mouse_buttons_pressed_;
-  uint32_t num_tablet_buttons_pressed_;
-  uint32_t num_pen_buttons_pressed_;
+  uint32_t num_keyboards_connected_ = 0;
+  uint32_t num_graphics_tablets_connected_ = 0;
+  uint32_t num_keyboards_settings_updated_ = 0;
+  uint32_t num_touchpad_settings_updated_ = 0;
+  uint32_t num_pointing_stick_settings_updated_;
+  uint32_t num_graphics_tablets_settings_updated_ = 0;
+  uint32_t num_mouse_settings_updated_ = 0;
+  uint32_t num_mouse_buttons_pressed_ = 0;
+  uint32_t num_tablet_buttons_pressed_ = 0;
+  uint32_t num_pen_buttons_pressed_ = 0;
 };
 
 class InputDeviceSettingsControllerTest : public NoSessionAshTestBase {
@@ -1289,6 +1318,58 @@ TEST_F(InputDeviceSettingsControllerTest,
             mojom::TopRowActionKey::kVolumeDown);
   EXPECT_EQ(keyboard->top_row_action_keys[9],
             mojom::TopRowActionKey::kVolumeUp);
+}
+
+TEST_F(InputDeviceSettingsControllerTest, InternalTouchpadUpdatedWithPrefs) {
+  ui::DeviceDataManagerTestApi().SetTouchpadDevices(
+      {kSampleTouchpadInternal, kSampleTouchpadExternal});
+
+  PrefService* pref_service =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  base::Value::Dict updated_dict;
+  updated_dict.Set("test_key", 1);
+  pref_service->SetDict(prefs::kTouchpadInternalSettings, updated_dict.Clone());
+  EXPECT_EQ(1u, observer_->num_touchpad_settings_updated());
+
+  // If there is no internal touchpad, expect no settings updated call.
+  ui::DeviceDataManagerTestApi().SetTouchpadDevices({kSampleTouchpadExternal});
+  updated_dict.Set("test_key", 2);
+  pref_service->SetDict(prefs::kTouchpadInternalSettings, updated_dict.Clone());
+  EXPECT_EQ(1u, observer_->num_touchpad_settings_updated());
+
+  ui::DeviceDataManagerTestApi().SetTouchpadDevices({kSampleTouchpadInternal});
+  updated_dict.Set("test_key", 3);
+  pref_service->SetDict(prefs::kTouchpadInternalSettings, updated_dict.Clone());
+  EXPECT_EQ(2u, observer_->num_touchpad_settings_updated());
+}
+
+TEST_F(InputDeviceSettingsControllerTest,
+       InternalPointingStickUpdatedWithPrefs) {
+  ui::DeviceDataManagerTestApi().SetPointingStickDevices(
+      {kSamplePointingStickInternal, kSamplePointingStickExternal});
+
+  PrefService* pref_service =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  base::Value::Dict updated_dict;
+  updated_dict.Set("test_key", 1);
+  pref_service->SetDict(prefs::kPointingStickInternalSettings,
+                        updated_dict.Clone());
+  EXPECT_EQ(1u, observer_->num_pointing_stick_settings_updated());
+
+  // If there is no internal touchpad, expect no settings updated call.
+  ui::DeviceDataManagerTestApi().SetPointingStickDevices(
+      {kSamplePointingStickExternal});
+  updated_dict.Set("test_key", 2);
+  pref_service->SetDict(prefs::kPointingStickInternalSettings,
+                        updated_dict.Clone());
+  EXPECT_EQ(1u, observer_->num_pointing_stick_settings_updated());
+
+  ui::DeviceDataManagerTestApi().SetPointingStickDevices(
+      {kSamplePointingStickInternal});
+  updated_dict.Set("test_key", 3);
+  pref_service->SetDict(prefs::kPointingStickInternalSettings,
+                        updated_dict.Clone());
+  EXPECT_EQ(2u, observer_->num_pointing_stick_settings_updated());
 }
 
 }  // namespace ash

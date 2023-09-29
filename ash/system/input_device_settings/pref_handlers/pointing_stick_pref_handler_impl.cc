@@ -127,11 +127,37 @@ base::Value::Dict ConvertSettingsToDict(
   return settings_dict;
 }
 
+void UpdateInternalPointingStickImpl(
+    PrefService* pref_service,
+    const mojom::PointingStick& pointing_stick,
+    const ForcePointingStickSettingPersistence& force_persistence) {
+  CHECK(pointing_stick.settings);
+  CHECK(!pointing_stick.is_external);
+
+  base::Value::Dict existing_settings_dict =
+      pref_service->GetDict(prefs::kPointingStickInternalSettings).Clone();
+  base::Value::Dict settings_dict = ConvertSettingsToDict(
+      pointing_stick, force_persistence, &existing_settings_dict);
+
+  // Merge the new settings into the old settings so that all settings are
+  // transferred over.
+  existing_settings_dict.Merge(std::move(settings_dict));
+  pref_service->SetDict(prefs::kPointingStickInternalSettings,
+                        std::move(existing_settings_dict));
+}
+
 void UpdatePointingStickSettingsImpl(
     PrefService* pref_service,
     const mojom::PointingStick& pointing_stick,
     const ForcePointingStickSettingPersistence& force_persistence) {
   DCHECK(pointing_stick.settings);
+
+  if (!pointing_stick.is_external) {
+    UpdateInternalPointingStickImpl(pref_service, pointing_stick,
+                                    force_persistence);
+    return;
+  }
+
   base::Value::Dict devices_dict =
       pref_service->GetDict(prefs::kPointingStickDeviceSettingsDictPref)
           .Clone();
@@ -182,11 +208,20 @@ void PointingStickPrefHandlerImpl::InitializePointingStickSettings(
     return;
   }
 
-  const auto& devices_dict =
-      pref_service->GetDict(prefs::kPointingStickDeviceSettingsDictPref);
-  const auto* settings_dict = devices_dict.FindDict(pointing_stick->device_key);
-  ForcePointingStickSettingPersistence force_persistence;
+  const base::Value::Dict* settings_dict = nullptr;
+  if (!pointing_stick->is_external) {
+    settings_dict =
+        &pref_service->GetDict(prefs::kPointingStickInternalSettings);
+    if (settings_dict->empty()) {
+      settings_dict = nullptr;
+    }
+  } else {
+    const auto& devices_dict =
+        pref_service->GetDict(prefs::kPointingStickDeviceSettingsDictPref);
+    settings_dict = devices_dict.FindDict(pointing_stick->device_key);
+  }
 
+  ForcePointingStickSettingPersistence force_persistence;
   if (settings_dict) {
     pointing_stick->settings =
         RetrievePointingStickSettings(*pointing_stick, *settings_dict);

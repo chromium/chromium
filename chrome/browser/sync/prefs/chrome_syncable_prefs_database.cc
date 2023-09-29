@@ -288,6 +288,7 @@ enum {
   kPinnedActions = 100232,
   kPinnedSearchCompanionMigrationComplete = 100233,
   kTouchpadInternalSettings = 100234,
+  kPointingStickInternalSettings = 100235,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -630,6 +631,10 @@ const auto& SyncablePreferences() {
         {ash::prefs::kPointingStickAcceleration,
          {syncable_prefs_ids::kPointingStickAcceleration,
           syncer::OS_PRIORITY_PREFERENCES, false,
+          sync_preferences::MergeBehavior::kNone}},
+        {ash::prefs::kPointingStickInternalSettings,
+         {syncable_prefs_ids::kPointingStickInternalSettings,
+          syncer::OS_PREFERENCES, false,
           sync_preferences::MergeBehavior::kNone}},
         {ash::prefs::kPointingStickSensitivity,
          {syncable_prefs_ids::kPointingStickSensitivity,

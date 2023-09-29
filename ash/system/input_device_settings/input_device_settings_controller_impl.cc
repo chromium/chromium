@@ -39,6 +39,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "components/account_id/account_id.h"
 #include "components/pref_registry/pref_registry_syncable.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/known_user.h"
@@ -558,9 +559,14 @@ void InputDeviceSettingsControllerImpl::RegisterProfilePrefs(
   pref_registry->RegisterDictionaryPref(
       prefs::kPointingStickDeviceSettingsDictPref);
   pref_registry->RegisterDictionaryPref(prefs::kTouchpadDeviceSettingsDictPref);
+
   pref_registry->RegisterDictionaryPref(
       prefs::kTouchpadInternalSettings,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  pref_registry->RegisterDictionaryPref(
+      prefs::kPointingStickInternalSettings,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+
   pref_registry->RegisterListPref(prefs::kKeyboardDeviceImpostersListPref);
   pref_registry->RegisterDictionaryPref(prefs::kMouseButtonRemappingsDictPref);
   pref_registry->RegisterDictionaryPref(
@@ -627,6 +633,23 @@ void InputDeviceSettingsControllerImpl::OnActiveUserPrefServiceChanged(
   active_pref_service_ = pref_service;
   active_account_id_ = Shell::Get()->session_controller()->GetActiveAccountId();
   InitializePolicyHandler();
+
+  // Observe changes to synced prefs to ensure updates made on other devices are
+  // properly reflected.
+  pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
+  if (active_pref_service_) {
+    pref_change_registrar_->Init(active_pref_service_);
+    pref_change_registrar_->Add(
+        prefs::kPointingStickInternalSettings,
+        base::BindRepeating(&InputDeviceSettingsControllerImpl::
+                                RefreshInternalPointingStickSettings,
+                            weak_ptr_factory_.GetWeakPtr()));
+    pref_change_registrar_->Add(
+        prefs::kTouchpadInternalSettings,
+        base::BindRepeating(
+            &InputDeviceSettingsControllerImpl::RefreshInternalTouchpadSettings,
+            weak_ptr_factory_.GetWeakPtr()));
+  }
 
   // Device settings must be refreshed when the user pref service is updated,
   // but all dependencies of `InputDeviceSettingsControllerImpl` must be
@@ -1702,6 +1725,28 @@ void InputDeviceSettingsControllerImpl::DispatchCustomizablePenButtonPressed(
     const mojom::Button& button) {
   for (auto& observer : observers_) {
     observer.OnCustomizablePenButtonPressed(graphics_tablet, button);
+  }
+}
+
+void InputDeviceSettingsControllerImpl::RefreshInternalPointingStickSettings() {
+  for (auto& [id, pointing_stick] : pointing_sticks_) {
+    if (pointing_stick->is_external) {
+      continue;
+    }
+
+    InitializePointingStickSettings(pointing_stick.get());
+    DispatchPointingStickSettingsChanged(id);
+  }
+}
+
+void InputDeviceSettingsControllerImpl::RefreshInternalTouchpadSettings() {
+  for (auto& [id, touchpad] : touchpads_) {
+    if (touchpad->is_external) {
+      continue;
+    }
+
+    InitializeTouchpadSettings(touchpad.get());
+    DispatchTouchpadSettingsChanged(id);
   }
 }
 
