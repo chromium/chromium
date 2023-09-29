@@ -11,6 +11,7 @@ build_webui_tests("build") {
     "bimap_test.ts",
     "fuzzy_search_test.ts",
     "infinite_list_test.ts",
+    "tab_organization_page_test.ts",
     "tab_search_item_test.ts",
     "tab_search_media_tabs_test.ts",
     "tab_search_page_focus_test.ts",

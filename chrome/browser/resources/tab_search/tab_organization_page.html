@@ -12,19 +12,19 @@
 </style>
 
 <div class="body">
-  <div id="not-started" hidden="[[!isNotStarted_(state_)]]">
-    Placeholder: Not Started
-    <cr-button class="action-button" on-click="onCycleStateClicked_">
-      Set state to in progress
-    </cr-button>
-  </div>
-  <div id="in-progress" hidden="[[!isInProgress_(state_)]]">
+  <tab-organization-not-started
+      hidden="[[!isState_(tabOrganizationStateEnum_.NOT_STARTED, state_)]]"
+      on-organize-tabs-click="onOrganizeTabsClick_">
+  </tab-organization-not-started>
+  <div id="in-progress"
+      hidden="[[!isState_(tabOrganizationStateEnum_.IN_PROGRESS, state_)]]">
     Placeholder: In Progress
     <cr-button class="action-button" on-click="onCycleStateClicked_">
       Set state to success
     </cr-button>
   </div>
-  <div id="success" hidden="[[!isSuccess_(state_)]]">
+  <div id="success"
+      hidden="[[!isState_(tabOrganizationStateEnum_.SUCCESS, state_)]]">
     Placeholder: Success
     <cr-button class="action-button" on-click="onCycleStateClicked_">
       Set state to failure
@@ -38,7 +38,8 @@
       </cr-button>
     </div>
   </div>
-  <div id="failure" hidden="[[!isFailure_(state_)]]">
+  <div id="failure"
+      hidden="[[!isState_(tabOrganizationStateEnum_.FAILURE, state_)]]">
     Placeholder: Failure
     <cr-button class="action-button" on-click="onCycleStateClicked_">
       Set state to not started

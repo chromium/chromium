@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PageCallbackRouter, PageHandlerFactory, PageHandlerRemote, ProfileData, SwitchToTabInfo} from './tab_search.mojom-webui.js';
+import {PageCallbackRouter, PageHandlerFactory, PageHandlerRemote, ProfileData, SwitchToTabInfo, Tab} from './tab_search.mojom-webui.js';
 
 /**
  * These values are persisted to logs and should not be renumbered or re-used.
@@ -20,6 +20,8 @@ export interface TabSearchApiProxy {
 
   openRecentlyClosedEntry(
       id: number, withSearch: boolean, isTab: boolean, index: number): void;
+
+  requestTabOrganization(): Promise<{name: string, tabs: Tab[]}>;
 
   switchToTab(info: SwitchToTabInfo): void;
 
@@ -63,6 +65,10 @@ export class TabSearchApiProxyImpl implements TabSearchApiProxy {
             'Tabs.TabSearch.WebUI.IndexOfOpenRecentlyClosedEntryInUnfilteredList',
         index);
     this.handler.openRecentlyClosedEntry(id);
+  }
+
+  requestTabOrganization() {
+    return this.handler.requestTabOrganization();
   }
 
   switchToTab(info: SwitchToTabInfo) {

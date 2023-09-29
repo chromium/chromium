@@ -16,6 +16,7 @@ export class TestTabSearchApiProxy extends TestBrowserProxy implements
       'closeTab',
       'getProfileData',
       'openRecentlyClosedEntry',
+      'requestTabOrganization',
       'switchToTab',
       'saveRecentlyClosedExpandedPref',
       'showUi',
@@ -40,6 +41,11 @@ export class TestTabSearchApiProxy extends TestBrowserProxy implements
       id: number, withSearch: boolean, isTab: boolean, index: number) {
     this.methodCalled(
         'openRecentlyClosedEntry', [id, withSearch, isTab, index]);
+  }
+
+  requestTabOrganization() {
+    this.methodCalled('requestTabOrganization');
+    return Promise.resolve({name: '', tabs: []});
   }
 
   switchToTab(info: SwitchToTabInfo) {

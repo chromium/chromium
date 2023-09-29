@@ -1,0 +1,40 @@
+<style>
+  cr-button {
+    align-self: flex-end;
+    width: fit-content;
+  }
+
+  .body {
+    color: var(--cr-secondary-text-color);
+    font-size: 13px;
+    font-weight: 400;
+  }
+
+  .column {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .text-container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .title {
+    color: var(--cr-primary-text-color);
+    font-size: 14px;
+    font-weight: 500;
+  }
+</style>
+
+<div class="column">
+  <div class="text-container">
+    <div class="title">$i18n{notStartedTitle}</div>
+    <div class="body">$i18n{notStartedBody}</div>
+  </div>
+  <cr-button class="action-button" on-click="onOrganizeTabsClick_">
+    $i18n{notStartedButton}
+  </cr-button>
+</div>

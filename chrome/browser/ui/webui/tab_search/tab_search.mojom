@@ -177,6 +177,9 @@ interface PageHandler {
   // Open a recently closed tab or tab group.
   OpenRecentlyClosedEntry(int32 session_id);
 
+  // Manually trigger a new tab organization request and return the result.
+  RequestTabOrganization() => (string name, array<Tab> tabs);
+
   // Save a user's preference for the state of the expandable 'Recently Closed'
   // list section.
   SaveRecentlyClosedExpandedPref(bool expanded);
