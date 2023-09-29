@@ -29,9 +29,37 @@ ServiceWorkerData::ServiceWorkerData(
       activation_sequence_(std::move(activation_sequence)),
       context_(context),
       v8_schema_registry_(new V8SchemaRegistry),
-      bindings_system_(std::move(bindings_system)) {}
+      bindings_system_(std::move(bindings_system)) {
+  proxy_->GetAssociatedInterfaceRegistry().AddInterface<mojom::ServiceWorker>(
+      base::BindRepeating(&ServiceWorkerData::OnServiceWorkerRequest,
+                          weak_ptr_factory_.GetWeakPtr()));
+}
 
 ServiceWorkerData::~ServiceWorkerData() = default;
+
+void ServiceWorkerData::OnServiceWorkerRequest(
+    mojo::PendingAssociatedReceiver<mojom::ServiceWorker> receiver) {
+  receiver_.reset();
+  receiver_.Bind(std::move(receiver));
+}
+
+void ServiceWorkerData::UpdatePermissions(PermissionSet active_permissions,
+                                          PermissionSet withheld_permissions) {
+  DCHECK(worker_thread_util::IsWorkerThread());
+
+  const ExtensionId& extension_id = context_->GetExtensionID();
+  const Extension* extension =
+      RendererExtensionRegistry::Get()->GetByID(extension_id);
+  if (!extension) {
+    return;
+  }
+  extension->permissions_data()->SetPermissions(
+      std::make_unique<const PermissionSet>(std::move(active_permissions)),
+      std::make_unique<const PermissionSet>(std::move(withheld_permissions)));
+
+  bindings_system_->UpdateBindings(extension_id, /*permissions_changed=*/true,
+                                   Dispatcher::GetWorkerScriptContextSet());
+}
 
 mojom::ServiceWorkerHost* ServiceWorkerData::GetServiceWorkerHost() {
   if (!service_worker_host_.is_bound()) {
