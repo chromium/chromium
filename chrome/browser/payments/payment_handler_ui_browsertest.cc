@@ -119,35 +119,6 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestActivationlessShowTest,
   ExpectEvent2(JourneyLogger::Event2::kActivationlessShow, false);
 }
 
-// Test that a browser reload does not allow a consecutive activationless show.
-IN_PROC_BROWSER_TEST_F(PaymentRequestActivationlessShowTest,
-                       WithBrowserReload) {
-  std::string payment_method =
-      https_server()->GetURL("a.com", "/orenpay.test/pay").spec();
-  NavigateTo("b.com", "/payment_handler_status.html");
-  std::string show_js = content::JsReplace("getStatus($1)", payment_method);
-
-  // The first call to show() without a user gesture succeeds.
-  ResetEventWaiterForSingleEvent(TestEvent::kConnectionTerminated);
-  EXPECT_EQ(
-      "success",
-      content::EvalJs(GetActiveWebContents(), show_js,
-                      content::EvalJsOptions::EXECUTE_SCRIPT_NO_USER_GESTURE));
-  ExpectEvent2(JourneyLogger::Event2::kActivationlessShow, true);
-  WaitForObservedEvent();
-
-  // Reload the page.
-  NavigateTo("b.com", "/payment_handler_status.html");
-
-  // A second call to show() without a user gesture gives an error, even after
-  // a browser page reload.
-  EXPECT_THAT(
-      content::EvalJs(GetActiveWebContents(), show_js,
-                      content::EvalJsOptions::EXECUTE_SCRIPT_NO_USER_GESTURE)
-          .ExtractString(),
-      ::testing::HasSubstr(errors::kCannotShowWithoutUserActivation));
-}
-
 // Test that activationless show() call is not allowed with the
 // PaymentRequetsAllowOneActivationlessShow feature disabled.
 class PaymentRequestActivationlessShowDisabledTest

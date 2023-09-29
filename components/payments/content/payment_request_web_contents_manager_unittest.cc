@@ -111,6 +111,16 @@ TEST_F(PaymentRequestWebContentsManagerTest, HadActivationlessShow) {
   manager_->RecordActivationlessShow();
   ASSERT_TRUE(manager_->HadActivationlessShow());
 
+  // A browser reload should not reset the activationless show state.
+  {
+    auto navigation_simulator =
+        content::NavigationSimulator::CreateBrowserInitiated(
+            GURL("http://example2.test"), web_contents());
+    navigation_simulator->Start();
+    navigation_simulator->Commit();
+    ASSERT_TRUE(manager_->HadActivationlessShow());
+  }
+
   // A browser initiated navigation should reset the activationless show state.
   {
     auto navigation_simulator =
