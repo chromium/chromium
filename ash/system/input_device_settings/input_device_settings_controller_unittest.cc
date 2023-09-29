@@ -246,6 +246,16 @@ class FakeKeyboardPrefHandler : public KeyboardPrefHandler {
     num_initialize_default_keyboard_settings_calls_++;
   }
 
+  void UpdateDefaultChromeOSKeyboardSettings(
+      PrefService* pref_service,
+      const mojom::KeyboardPolicies& keyboard_policies,
+      const mojom::Keyboard& keyboard) override {}
+
+  void UpdateDefaultNonChromeOSKeyboardSettings(
+      PrefService* pref_service,
+      const mojom::KeyboardPolicies& keyboard_policies,
+      const mojom::Keyboard& keyboard) override {}
+
   uint32_t num_keyboard_settings_initialized() {
     return num_keyboard_settings_initialized_;
   }

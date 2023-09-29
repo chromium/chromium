@@ -18,6 +18,7 @@
 #include "components/spellcheck/browser/pref_names.h"
 #include "components/supervised_user/core/common/buildflags.h"
 #include "components/sync/base/model_type.h"
+#include "components/sync_preferences/syncable_prefs_database.h"
 #include "components/translate/core/browser/translate_prefs.h"
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_pref_names.h"
@@ -290,6 +291,8 @@ enum {
   kTouchpadInternalSettings = 100234,
   kPointingStickInternalSettings = 100235,
   kMouseDefaultSettings = 100236,
+  kKeyboardDefaultChromeOSSettings = 100237,
+  kKeyboardDefaultNonChromeOSSettings = 100238,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -579,6 +582,14 @@ const auto& SyncablePreferences() {
         {ash::prefs::kFilesAppUIPrefsMigrated,
          {syncable_prefs_ids::kFilesAppUIPrefsMigrated, syncer::OS_PREFERENCES,
           false, sync_preferences::MergeBehavior::kNone}},
+        {ash::prefs::kKeyboardDefaultChromeOSSettings,
+         {syncable_prefs_ids::kKeyboardDefaultChromeOSSettings,
+          syncer::OS_PREFERENCES, false,
+          sync_preferences::MergeBehavior::kNone}},
+        {ash::prefs::kKeyboardDefaultNonChromeOSSettings,
+         {syncable_prefs_ids::kKeyboardDefaultNonChromeOSSettings,
+          syncer::OS_PREFERENCES, false,
+          sync_preferences::MergeBehavior::kNone}},
         {ash::prefs::kLaunchPaletteOnEjectEvent,
          {syncable_prefs_ids::kLaunchPaletteOnEjectEvent,
           syncer::OS_PREFERENCES, false,

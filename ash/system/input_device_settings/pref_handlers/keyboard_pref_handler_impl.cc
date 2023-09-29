@@ -13,6 +13,7 @@
 #include "ash/system/input_device_settings/input_device_settings_pref_names.h"
 #include "ash/system/input_device_settings/input_device_settings_utils.h"
 #include "ash/system/input_device_settings/input_device_tracker.h"
+#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_map.h"
 #include "base/strings/string_number_conversions.h"
@@ -80,14 +81,15 @@ bool GetDefaultTopRowAreFKeysValue(
                               : kDefaultTopRowAreFKeys;
 }
 
-bool IsChromeOSKeyboard(mojom::MetaKey meta_key) {
-  return meta_key == mojom::MetaKey::kLauncher ||
-         meta_key == mojom::MetaKey::kSearch;
+bool ShouldAddExtendedFkeyProperties(const mojom::Keyboard& keyboard) {
+  return ::features::AreF11AndF12ShortcutsEnabled() &&
+         IsChromeOSKeyboard(keyboard);
 }
 
-bool ShouldAddExtendedFkeyProperties(mojom::MetaKey meta_key) {
-  return ::features::AreF11AndF12ShortcutsEnabled() &&
-         IsChromeOSKeyboard(meta_key);
+const char* GetDefaultKeyboardPref(const mojom::Keyboard& keyboard) {
+  return IsChromeOSKeyboard(keyboard)
+             ? prefs::kKeyboardDefaultChromeOSSettings
+             : prefs::kKeyboardDefaultNonChromeOSSettings;
 }
 
 bool GetDefaultSuppressMetaFkeyRewritesValue(
@@ -104,34 +106,6 @@ bool GetDefaultSuppressMetaFkeyRewritesValue(
   }
 
   return kDefaultSuppressMetaFKeyRewrites;
-}
-
-mojom::KeyboardSettingsPtr GetDefaultKeyboardSettings(
-    const mojom::KeyboardPolicies& keyboard_policies,
-    const mojom::Keyboard& keyboard) {
-  mojom::KeyboardSettingsPtr settings = mojom::KeyboardSettings::New();
-  settings->suppress_meta_fkey_rewrites =
-      GetDefaultSuppressMetaFkeyRewritesValue(keyboard_policies, keyboard);
-  settings->top_row_are_fkeys =
-      GetDefaultTopRowAreFKeysValue(keyboard_policies, keyboard);
-  // Switch control and command for Apple keyboards.
-  if (keyboard.meta_key == mojom::MetaKey::kCommand) {
-    settings->modifier_remappings[ui::mojom::ModifierKey::kControl] =
-        ui::mojom::ModifierKey::kMeta;
-    settings->modifier_remappings[ui::mojom::ModifierKey::kMeta] =
-        ui::mojom::ModifierKey::kControl;
-  }
-
-  if (features::IsAltClickAndSixPackCustomizationEnabled()) {
-    settings->six_pack_key_remappings = mojom::SixPackKeyInfo::New();
-  }
-
-  if (ShouldAddExtendedFkeyProperties(keyboard.meta_key)) {
-    settings->f11 = kDefaultFkey;
-    settings->f12 = kDefaultFkey;
-  }
-
-  return settings;
 }
 
 int GetSixPackKeyPrefCount(PrefService* prefs, const char* pref_name) {
@@ -162,8 +136,13 @@ ui::mojom::SixPackShortcutModifier GetSixPackShortcutModifierFromSettingsDict(
 // frequently. When dealing with the grouped 6-pack keys
 // (PageUp/PageDown, Home/End), both prefs will be used when determining what
 // value to set to avoid setting inconsistent values for similar 6-pack keys.
+// If `prefs` is nullptr, return defaults.
 mojom::SixPackKeyInfoPtr GetSixPackKeyRemappings(PrefService* prefs) {
   mojom::SixPackKeyInfoPtr six_pack_key_info = mojom::SixPackKeyInfo::New();
+  if (!prefs) {
+    return six_pack_key_info;
+  }
+
   const auto page_up_down_modifier = GetSixPackKeyModifierFromPrefCount(
       GetSixPackKeyPrefCount(prefs, prefs::kKeyEventRemappedToSixPackPageDown) +
       GetSixPackKeyPrefCount(prefs, prefs::kKeyEventRemappedToSixPackPageUp));
@@ -268,7 +247,7 @@ mojom::KeyboardSettingsPtr GetKeyboardSettingsFromGlobalPrefs(
     settings->six_pack_key_remappings = GetSixPackKeyRemappings(prefs);
   }
 
-  if (ShouldAddExtendedFkeyProperties(keyboard.meta_key)) {
+  if (ShouldAddExtendedFkeyProperties(keyboard)) {
     settings->f11 = kDefaultFkey;
     settings->f12 = kDefaultFkey;
   }
@@ -302,26 +281,13 @@ mojom::SixPackKeyInfoPtr RetrieveSixPackRemappings(
   }
 }
 
-mojom::KeyboardSettingsPtr RetrieveKeyboardSettings(
-    const mojom::KeyboardPolicies& keyboard_policies,
-    const mojom::Keyboard& keyboard,
-    const base::Value::Dict& settings_dict) {
-  mojom::KeyboardSettingsPtr settings = mojom::KeyboardSettings::New();
-  settings->suppress_meta_fkey_rewrites =
-      settings_dict.FindBool(prefs::kKeyboardSettingSuppressMetaFKeyRewrites)
-          .value_or(GetDefaultSuppressMetaFkeyRewritesValue(keyboard_policies,
-                                                            keyboard));
-  settings->top_row_are_fkeys =
-      settings_dict.FindBool(prefs::kKeyboardSettingTopRowAreFKeys)
-          .value_or(GetDefaultTopRowAreFKeysValue(keyboard_policies, keyboard));
+base::flat_map<ui::mojom::ModifierKey, ui::mojom::ModifierKey>
+RetrieveModifierRemappings(const mojom::Keyboard& keyboard,
+                           const base::Value::Dict& modifier_remappings_dict) {
+  base::flat_map<ui::mojom::ModifierKey, ui::mojom::ModifierKey>
+      modifier_remappings;
 
-  const auto* modifier_remappings_dict =
-      settings_dict.FindDict(prefs::kKeyboardSettingModifierRemappings);
-  if (!modifier_remappings_dict) {
-    return settings;
-  }
-
-  for (const auto [from, to] : *modifier_remappings_dict) {
+  for (const auto [from, to] : modifier_remappings_dict) {
     // `from` must be a string which can be converted to an int and `to` must be
     // an int.
     int from_int, to_int;
@@ -343,10 +309,79 @@ mojom::KeyboardSettingsPtr RetrieveKeyboardSettings(
     const ui::mojom::ModifierKey to_key =
         static_cast<ui::mojom::ModifierKey>(to_int);
 
-    settings->modifier_remappings[from_key] = to_key;
+    // Do not add modifier remappings for modifier keys that do not exist on the
+    // given keyboard.
+    if (!base::Contains(keyboard.modifier_keys, from_key)) {
+      continue;
+    }
+
+    modifier_remappings[from_key] = to_key;
+  }
+
+  return modifier_remappings;
+}
+
+mojom::KeyboardSettingsPtr RetrieveKeyboardSettings(
+    PrefService* pref_service,
+    const mojom::KeyboardPolicies& keyboard_policies,
+    const mojom::Keyboard& keyboard,
+    const base::Value::Dict& settings_dict) {
+  mojom::KeyboardSettingsPtr settings = mojom::KeyboardSettings::New();
+  settings->suppress_meta_fkey_rewrites =
+      settings_dict.FindBool(prefs::kKeyboardSettingSuppressMetaFKeyRewrites)
+          .value_or(GetDefaultSuppressMetaFkeyRewritesValue(keyboard_policies,
+                                                            keyboard));
+  settings->top_row_are_fkeys =
+      settings_dict.FindBool(prefs::kKeyboardSettingTopRowAreFKeys)
+          .value_or(GetDefaultTopRowAreFKeysValue(keyboard_policies, keyboard));
+
+  const auto* modifier_remappings_dict =
+      settings_dict.FindDict(prefs::kKeyboardSettingModifierRemappings);
+  if (modifier_remappings_dict) {
+    settings->modifier_remappings =
+        RetrieveModifierRemappings(keyboard, *modifier_remappings_dict);
+  } else {
+    // Switch control and command for Apple keyboards. In all other cases for
+    // other types of keyboards, the empty map of `modifier_remappings` is
+    // correct, however for apple keyboards, the default is different.
+    if (keyboard.meta_key == mojom::MetaKey::kCommand) {
+      settings->modifier_remappings[ui::mojom::ModifierKey::kControl] =
+          ui::mojom::ModifierKey::kMeta;
+      settings->modifier_remappings[ui::mojom::ModifierKey::kMeta] =
+          ui::mojom::ModifierKey::kControl;
+    }
+  }
+
+  if (features::IsAltClickAndSixPackCustomizationEnabled()) {
+    settings->six_pack_key_remappings =
+        RetrieveSixPackRemappings(pref_service, settings_dict);
+  }
+
+  if (ShouldAddExtendedFkeyProperties(keyboard)) {
+    settings->f11 = static_cast<ui::mojom::ExtendedFkeysModifier>(
+        settings_dict.FindInt(prefs::kKeyboardSettingF11)
+            .value_or(static_cast<int>(kDefaultFkey)));
+    settings->f12 = static_cast<ui::mojom::ExtendedFkeysModifier>(
+        settings_dict.FindInt(prefs::kKeyboardSettingF12)
+            .value_or(static_cast<int>(kDefaultFkey)));
   }
 
   return settings;
+}
+
+mojom::KeyboardSettingsPtr GetDefaultKeyboardSettings(
+    PrefService* pref_service,
+    const mojom::KeyboardPolicies& keyboard_policies,
+    const mojom::Keyboard& keyboard) {
+  if (pref_service) {
+    const auto& default_settings_dict =
+        pref_service->GetDict(GetDefaultKeyboardPref(keyboard));
+    return RetrieveKeyboardSettings(pref_service, keyboard_policies, keyboard,
+                                    default_settings_dict);
+  }
+
+  return RetrieveKeyboardSettings(pref_service, keyboard_policies, keyboard,
+                                  /*settings_dict=*/{});
 }
 
 base::Value::Dict ConvertSettingsToDict(
@@ -402,7 +437,7 @@ base::Value::Dict ConvertSettingsToDict(
                       std::move(six_pack_key_remappings));
   }
 
-  if (ShouldAddExtendedFkeyProperties(keyboard.meta_key)) {
+  if (ShouldAddExtendedFkeyProperties(keyboard)) {
     settings_dict.Set(prefs::kKeyboardSettingF11,
                       static_cast<int>(keyboard.settings->f11.value()));
     settings_dict.Set(prefs::kKeyboardSettingF12,
@@ -467,8 +502,8 @@ mojom::KeyboardSettingsPtr GetKeyboardSettingsFromOldLocalStatePrefs(
     const AccountId& account_id,
     const mojom::KeyboardPolicies& keyboard_policies,
     mojom::Keyboard& keyboard) {
-  mojom::KeyboardSettingsPtr settings =
-      GetDefaultKeyboardSettings(keyboard_policies, keyboard);
+  mojom::KeyboardSettingsPtr settings = GetDefaultKeyboardSettings(
+      /*pref_service=*/nullptr, keyboard_policies, keyboard);
 
   settings->modifier_remappings = GetModifierRemappingsKnownUser(
       user_manager::KnownUser(local_state), account_id, keyboard);
@@ -487,7 +522,7 @@ void KeyboardPrefHandlerImpl::InitializeKeyboardSettings(
     mojom::Keyboard* keyboard) {
   if (!pref_service) {
     keyboard->settings =
-        GetDefaultKeyboardSettings(keyboard_policies, *keyboard);
+        GetDefaultKeyboardSettings(pref_service, keyboard_policies, *keyboard);
     return;
   }
 
@@ -497,22 +532,8 @@ void KeyboardPrefHandlerImpl::InitializeKeyboardSettings(
   ForceKeyboardSettingPersistence force_persistence;
 
   if (settings_dict) {
-    keyboard->settings =
-        RetrieveKeyboardSettings(keyboard_policies, *keyboard, *settings_dict);
-    if (features::IsAltClickAndSixPackCustomizationEnabled()) {
-      keyboard->settings->six_pack_key_remappings =
-          RetrieveSixPackRemappings(pref_service, *settings_dict);
-    }
-
-    if (ShouldAddExtendedFkeyProperties(keyboard->meta_key)) {
-      keyboard->settings->f11 = static_cast<ui::mojom::ExtendedFkeysModifier>(
-          settings_dict->FindInt(prefs::kKeyboardSettingF11)
-              .value_or(static_cast<int>(kDefaultFkey)));
-      keyboard->settings->f12 = static_cast<ui::mojom::ExtendedFkeysModifier>(
-          settings_dict->FindInt(prefs::kKeyboardSettingF11)
-              .value_or(static_cast<int>(kDefaultFkey)));
-    }
-
+    keyboard->settings = RetrieveKeyboardSettings(
+        pref_service, keyboard_policies, *keyboard, *settings_dict);
   } else if (Shell::Get()->input_device_tracker()->WasDevicePreviouslyConnected(
                  InputDeviceTracker::InputDeviceCategory::kKeyboard,
                  keyboard->device_key)) {
@@ -520,7 +541,7 @@ void KeyboardPrefHandlerImpl::InitializeKeyboardSettings(
         pref_service, keyboard_policies, *keyboard, force_persistence);
   } else {
     keyboard->settings =
-        GetDefaultKeyboardSettings(keyboard_policies, *keyboard);
+        GetDefaultKeyboardSettings(pref_service, keyboard_policies, *keyboard);
   }
   DCHECK(keyboard->settings);
 
@@ -562,8 +583,8 @@ void KeyboardPrefHandlerImpl::InitializeLoginScreenKeyboardSettings(
       keyboard->is_external ? prefs::kKeyboardLoginScreenExternalSettingsPref
                             : prefs::kKeyboardLoginScreenInternalSettingsPref);
   if (settings_dict) {
-    keyboard->settings =
-        RetrieveKeyboardSettings(keyboard_policies, *keyboard, *settings_dict);
+    keyboard->settings = RetrieveKeyboardSettings(
+        /*pref_service=*/nullptr, keyboard_policies, *keyboard, *settings_dict);
   } else {
     keyboard->settings = GetKeyboardSettingsFromOldLocalStatePrefs(
         local_state, account_id, keyboard_policies, *keyboard);
@@ -603,7 +624,34 @@ void KeyboardPrefHandlerImpl::UpdateLoginScreenKeyboardSettings(
 void KeyboardPrefHandlerImpl::InitializeWithDefaultKeyboardSettings(
     const mojom::KeyboardPolicies& keyboard_policies,
     mojom::Keyboard* keyboard) {
-  keyboard->settings = GetDefaultKeyboardSettings(keyboard_policies, *keyboard);
+  keyboard->settings = GetDefaultKeyboardSettings(/*pref_service=*/nullptr,
+                                                  keyboard_policies, *keyboard);
+}
+
+void KeyboardPrefHandlerImpl::UpdateDefaultChromeOSKeyboardSettings(
+    PrefService* pref_service,
+    const mojom::KeyboardPolicies& keyboard_policies,
+    const mojom::Keyboard& keyboard) {
+  CHECK(IsChromeOSKeyboard(keyboard));
+  // All settings should be persisted fully when storing defaults.
+  auto settings_dict = ConvertSettingsToDict(
+      keyboard, keyboard_policies, /*force_persistence=*/{true},
+      /*existing_settings_dict=*/nullptr);
+  pref_service->SetDict(prefs::kKeyboardDefaultChromeOSSettings,
+                        std::move(settings_dict));
+}
+
+void KeyboardPrefHandlerImpl::UpdateDefaultNonChromeOSKeyboardSettings(
+    PrefService* pref_service,
+    const mojom::KeyboardPolicies& keyboard_policies,
+    const mojom::Keyboard& keyboard) {
+  CHECK(!IsChromeOSKeyboard(keyboard));
+  // All settings should be persisted fully when storing defaults.
+  auto settings_dict = ConvertSettingsToDict(
+      keyboard, keyboard_policies, /*force_persistence=*/{true},
+      /*existing_settings_dict=*/nullptr);
+  pref_service->SetDict(prefs::kKeyboardDefaultNonChromeOSSettings,
+                        std::move(settings_dict));
 }
 
 }  // namespace ash

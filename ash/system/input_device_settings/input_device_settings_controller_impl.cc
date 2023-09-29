@@ -569,6 +569,12 @@ void InputDeviceSettingsControllerImpl::RegisterProfilePrefs(
   pref_registry->RegisterDictionaryPref(
       prefs::kMouseDefaultSettings,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  pref_registry->RegisterDictionaryPref(
+      prefs::kKeyboardDefaultChromeOSSettings,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  pref_registry->RegisterDictionaryPref(
+      prefs::kKeyboardDefaultNonChromeOSSettings,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
 
   pref_registry->RegisterListPref(prefs::kKeyboardDeviceImpostersListPref);
   pref_registry->RegisterDictionaryPref(prefs::kMouseButtonRemappingsDictPref);
@@ -691,7 +697,7 @@ void InputDeviceSettingsControllerImpl::RefreshAllDeviceSettings() {
     DispatchPointingStickSettingsChanged(id);
   }
 
-  RefreshStoredLoginScreenKeyboardSettings();
+  RefreshCachedKeyboardSettings();
   RefreshCachedMouseSettings();
   RefreshStoredLoginScreenTouchpadSettings();
   RefreshStoredLoginScreenPointingStickSettings();
@@ -1032,7 +1038,7 @@ void InputDeviceSettingsControllerImpl::SetKeyboardSettings(
       base::BindRepeating(
           &InputDeviceSettingsControllerImpl::DispatchKeyboardSettingsChanged,
           base::Unretained(this)));
-  RefreshStoredLoginScreenKeyboardSettings();
+  RefreshCachedKeyboardSettings();
 }
 
 void InputDeviceSettingsControllerImpl::SetTouchpadSettings(
@@ -1355,7 +1361,7 @@ void InputDeviceSettingsControllerImpl::OnKeyboardListUpdated(
     DispatchKeyboardDisconnectedAndEraseFromList(id);
   }
 
-  RefreshStoredLoginScreenKeyboardSettings();
+  RefreshCachedKeyboardSettings();
 }
 
 void InputDeviceSettingsControllerImpl::OnTouchpadListUpdated(
@@ -1758,6 +1764,11 @@ void InputDeviceSettingsControllerImpl::RefreshCachedMouseSettings() {
   RefreshMouseDefaultSettings();
 }
 
+void InputDeviceSettingsControllerImpl::RefreshCachedKeyboardSettings() {
+  RefreshStoredLoginScreenKeyboardSettings();
+  RefreshKeyboardDefaultSettings();
+}
+
 void InputDeviceSettingsControllerImpl::RefreshMouseDefaultSettings() {
   if (!active_pref_service_ || mice_.empty()) {
     return;
@@ -1766,6 +1777,36 @@ void InputDeviceSettingsControllerImpl::RefreshMouseDefaultSettings() {
   mouse_pref_handler_->UpdateDefaultMouseSettings(
       active_pref_service_, policy_handler_->mouse_policies(),
       *mice_.rbegin()->second);
+}
+
+void InputDeviceSettingsControllerImpl::RefreshKeyboardDefaultSettings() {
+  if (!active_pref_service_) {
+    return;
+  }
+
+  auto chromeos_iter =
+      base::ranges::find(keyboards_.rbegin(), keyboards_.rend(), /*value=*/true,
+                         [](const auto& keyboard) {
+                           return IsChromeOSKeyboard(*keyboard.second);
+                         });
+  auto non_chromeos_iter =
+      base::ranges::find(keyboards_.rbegin(), keyboards_.rend(),
+                         /*value=*/false, [](const auto& keyboard) {
+                           return IsChromeOSKeyboard(*keyboard.second);
+                           ;
+                         });
+
+  if (chromeos_iter != keyboards_.rend()) {
+    keyboard_pref_handler_->UpdateDefaultChromeOSKeyboardSettings(
+        active_pref_service_, policy_handler_->keyboard_policies(),
+        *chromeos_iter->second);
+  }
+
+  if (non_chromeos_iter != keyboards_.rend()) {
+    keyboard_pref_handler_->UpdateDefaultNonChromeOSKeyboardSettings(
+        active_pref_service_, policy_handler_->keyboard_policies(),
+        *non_chromeos_iter->second);
+  }
 }
 
 }  // namespace ash

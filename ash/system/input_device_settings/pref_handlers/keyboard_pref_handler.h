@@ -58,6 +58,22 @@ class ASH_EXPORT KeyboardPrefHandler {
   virtual void InitializeWithDefaultKeyboardSettings(
       const mojom::KeyboardPolicies& keyboard_policies,
       mojom::Keyboard* keyboard) = 0;
+
+  // Updates the default settings with the settings from the given keyboard.
+  // These settings are applied to other ChromeOS keyboards that are connected
+  // for the first time.
+  virtual void UpdateDefaultChromeOSKeyboardSettings(
+      PrefService* pref_service,
+      const mojom::KeyboardPolicies& keyboard_policies,
+      const mojom::Keyboard& keyboard) = 0;
+
+  // Updates the default settings with the settings from the given keyboard.
+  // These settings are applied to other Non-ChromeOS keyboards that are
+  // connected for the first time.
+  virtual void UpdateDefaultNonChromeOSKeyboardSettings(
+      PrefService* pref_service,
+      const mojom::KeyboardPolicies& keyboard_policies,
+      const mojom::Keyboard& keyboard) = 0;
 };
 
 }  // namespace ash

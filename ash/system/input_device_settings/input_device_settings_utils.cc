@@ -4,6 +4,7 @@
 
 #include "ash/system/input_device_settings/input_device_settings_utils.h"
 
+#include "ash/public/mojom/input_device_settings.mojom-shared.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "ash/system/input_device_settings/input_device_settings_pref_names.h"
 #include "base/containers/fixed_flat_set.h"
@@ -327,6 +328,11 @@ mojom::ButtonRemappingPtr ConvertDictToButtonRemapping(
 
   return mojom::ButtonRemapping::New(*name, std::move(button),
                                      std::move(remapping_action));
+}
+
+bool IsChromeOSKeyboard(const mojom::Keyboard& keyboard) {
+  return keyboard.meta_key == mojom::MetaKey::kLauncher ||
+         keyboard.meta_key == mojom::MetaKey::kSearch;
 }
 
 }  // namespace ash

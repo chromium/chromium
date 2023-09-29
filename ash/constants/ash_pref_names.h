@@ -1866,6 +1866,21 @@ inline constexpr char kPointingStickInternalSettings[] =
 // synced for all user devices.
 inline constexpr char kMouseDefaultSettings[] = "ash.settings.mouse.defaults";
 
+// A dictionary pref containing the set of default ChromeOS keyboard settings
+// for the user. This is always configured to the settings for the ChromeOS
+// keyboard the user last used. These are applied to new ChromeOS keyboards that
+// are connected to the system. This is synced for all user devices.
+inline constexpr char kKeyboardDefaultChromeOSSettings[] =
+    "ash.settings.keyboard.chromeos_defaults";
+
+// A dictionary pref containing the set of default non-ChromeOS keyboard
+// settings for the user. This is always configured to the settings for the
+// non-ChromeOS keyboard the user last used. These are applied to new
+// non-ChromeOS keyboards that are connected to the system. This is synced for
+// all user devices.
+inline constexpr char kKeyboardDefaultNonChromeOSSettings[] =
+    "ash.settings.keyboard.non_chromeos_defaults";
+
 // NOTE: New prefs should start with the "ash." prefix. Existing prefs moved
 // into this file should not be renamed, since they may be synced.
 

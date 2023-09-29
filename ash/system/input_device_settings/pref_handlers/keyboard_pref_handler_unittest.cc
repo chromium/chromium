@@ -133,6 +133,10 @@ class KeyboardPrefHandlerTest : public AshTestBase {
         prefs::kKeyboardDeviceSettingsDictPref);
     pref_service_->registry()->RegisterBooleanPref(prefs::kSendFunctionKeys,
                                                    kGlobalSendFunctionKeys);
+    pref_service_->registry()->RegisterDictionaryPref(
+        prefs::kKeyboardDefaultChromeOSSettings);
+    pref_service_->registry()->RegisterDictionaryPref(
+        prefs::kKeyboardDefaultNonChromeOSSettings);
 
     // Register Integer prefs which determine how we remap modifiers.
     pref_service_->registry()->RegisterIntegerPref(
@@ -241,10 +245,40 @@ class KeyboardPrefHandlerTest : public AshTestBase {
                                                      *keyboard);
   }
 
+  void CallUpdateDefaultChromeOSKeyboardSettings(
+      const std::string& device_key,
+      const mojom::KeyboardSettings& settings) {
+    mojom::KeyboardPtr keyboard = mojom::Keyboard::New();
+    keyboard->settings = settings.Clone();
+    keyboard->device_key = device_key;
+    keyboard->meta_key = mojom::MetaKey::kLauncher;
+
+    pref_handler_->UpdateDefaultChromeOSKeyboardSettings(
+        pref_service_.get(),
+        /*keyboard_policies=*/{}, *keyboard);
+  }
+
+  void CallUpdateDefaultNonChromeOSKeyboardSettings(
+      const std::string& device_key,
+      const mojom::KeyboardSettings& settings) {
+    mojom::KeyboardPtr keyboard = mojom::Keyboard::New();
+    keyboard->settings = settings.Clone();
+    keyboard->device_key = device_key;
+    keyboard->meta_key = mojom::MetaKey::kExternalMeta;
+
+    pref_handler_->UpdateDefaultNonChromeOSKeyboardSettings(
+        pref_service_.get(),
+        /*keyboard_policies=*/{}, *keyboard);
+  }
+
   mojom::KeyboardSettingsPtr CallInitializeKeyboardSettings(
       const std::string& device_key) {
     mojom::KeyboardPtr keyboard = mojom::Keyboard::New();
     keyboard->device_key = device_key;
+    keyboard->modifier_keys = {
+        ui::mojom::ModifierKey::kAlt,       ui::mojom::ModifierKey::kControl,
+        ui::mojom::ModifierKey::kAssistant, ui::mojom::ModifierKey::kBackspace,
+        ui::mojom::ModifierKey::kMeta,      ui::mojom::ModifierKey::kEscape};
 
     pref_handler_->InitializeKeyboardSettings(
         pref_service_.get(), /*keyboard_policies=*/{}, keyboard.get());
@@ -253,7 +287,12 @@ class KeyboardPrefHandlerTest : public AshTestBase {
 
   mojom::KeyboardSettingsPtr CallInitializeKeyboardSettings(
       const mojom::Keyboard& keyboard) {
-    const auto keyboard_ptr = keyboard.Clone();
+    auto keyboard_ptr = keyboard.Clone();
+    keyboard_ptr->modifier_keys = {
+        ui::mojom::ModifierKey::kAlt,       ui::mojom::ModifierKey::kControl,
+        ui::mojom::ModifierKey::kAssistant, ui::mojom::ModifierKey::kBackspace,
+        ui::mojom::ModifierKey::kMeta,      ui::mojom::ModifierKey::kEscape};
+
     pref_handler_->InitializeKeyboardSettings(
         pref_service_.get(), /*keyboard_policies=*/{}, keyboard_ptr.get());
     return std::move(keyboard_ptr->settings);
@@ -262,7 +301,11 @@ class KeyboardPrefHandlerTest : public AshTestBase {
   mojom::KeyboardSettingsPtr CallInitializeLoginScreenKeyboardSettings(
       const AccountId& account_id,
       const mojom::Keyboard& keyboard) {
-    const auto keyboard_ptr = keyboard.Clone();
+    auto keyboard_ptr = keyboard.Clone();
+    keyboard_ptr->modifier_keys = {
+        ui::mojom::ModifierKey::kAlt,       ui::mojom::ModifierKey::kControl,
+        ui::mojom::ModifierKey::kAssistant, ui::mojom::ModifierKey::kBackspace,
+        ui::mojom::ModifierKey::kMeta,      ui::mojom::ModifierKey::kEscape};
 
     pref_handler_->InitializeLoginScreenKeyboardSettings(
         local_state(), account_id, /*keyboard_policies=*/{},
@@ -920,6 +963,41 @@ TEST_F(KeyboardPrefHandlerTest, SixPackKeyRemappings_RetrieveSettings) {
   settings = CallInitializeKeyboardSettings(kKeyboardKey1);
   EXPECT_EQ(ui::mojom::SixPackShortcutModifier::kAlt,
             settings->six_pack_key_remappings->page_up);
+}
+
+TEST_F(KeyboardPrefHandlerTest, RememberDefaultsFromLastUpdatedSettings) {
+  mojom::Keyboard chromeos_keyboard;
+  chromeos_keyboard.device_key = kKeyboardKey2;
+  chromeos_keyboard.meta_key = mojom::MetaKey::kLauncher;
+
+  mojom::Keyboard non_chromeos_keyboard;
+  non_chromeos_keyboard.device_key = kKeyboardKey3;
+  non_chromeos_keyboard.meta_key = mojom::MetaKey::kExternalMeta;
+  non_chromeos_keyboard.modifier_keys = {ui::mojom::ModifierKey::kControl};
+
+  mojom::KeyboardSettingsPtr settings =
+      CallInitializeKeyboardSettings(kKeyboardKey1);
+  settings->top_row_are_fkeys = !kDefaultTopRowAreFKeys;
+  settings->suppress_meta_fkey_rewrites = !kDefaultSuppressMetaFKeyRewrites;
+
+  CallUpdateKeyboardSettings(kKeyboardKey1, *settings);
+  CallUpdateDefaultChromeOSKeyboardSettings(kKeyboardKey1, *settings);
+
+  pref_handler_->InitializeKeyboardSettings(
+      pref_service_.get(), /*keyboard_policies=*/{}, &chromeos_keyboard);
+  EXPECT_EQ(*settings, *chromeos_keyboard.settings);
+
+  settings->top_row_are_fkeys = kDefaultTopRowAreFKeys;
+  settings->suppress_meta_fkey_rewrites = kDefaultSuppressMetaFKeyRewrites;
+  settings->modifier_remappings[ui::mojom::ModifierKey::kControl] =
+      ui::mojom::ModifierKey::kVoid;
+  settings->f11.reset();
+  settings->f12.reset();
+  CallUpdateDefaultNonChromeOSKeyboardSettings(kKeyboardKey1, *settings);
+
+  pref_handler_->InitializeKeyboardSettings(
+      pref_service_.get(), /*keyboard_policies=*/{}, &non_chromeos_keyboard);
+  EXPECT_EQ(*settings, *non_chromeos_keyboard.settings);
 }
 
 class KeyboardSettingsPrefConversionTest
