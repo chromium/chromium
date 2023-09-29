@@ -3043,7 +3043,7 @@ TEST_F(DeviceStatusCollectorTest, TestGraphicsStatus) {
     em::DisplayInfo* display_info = fakeGraphicsStatus.add_displays();
     display_info->set_resolution_width(1920 * i);
     display_info->set_resolution_height(1080 * i);
-    display_info->set_refresh_rate(60 * i);
+    display_info->set_refresh_rate(60.0f * i);
     display_info->set_is_internal(i == 1);
   }
 

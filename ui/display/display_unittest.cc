@@ -74,11 +74,11 @@ TEST(DisplayTest, ForcedDeviceScaleFactor) {
 TEST(DisplayTest, DisplayFrequency) {
   Display display(0, gfx::Rect(0, 0, 100, 100));
 
-  display.set_display_frequency(60);
-  EXPECT_EQ(60, display.display_frequency());
+  display.set_display_frequency(60.0f);
+  EXPECT_EQ(60.0f, display.display_frequency());
 
-  display.set_display_frequency(120);
-  EXPECT_EQ(120, display.display_frequency());
+  display.set_display_frequency(120.0f);
+  EXPECT_EQ(120.0f, display.display_frequency());
 }
 
 TEST(DisplayTest, DisplayLabel) {

@@ -370,8 +370,8 @@ std::vector<display::Display> BuildDisplaysFromXRandRInfo(
     display.set_depth_per_component(bits_per_component);
 
     // Set monitor refresh rate
-    int refresh_rate = static_cast<int>(
-        GetRefreshRateFromXRRModeInfo(resources->modes, crtc->mode));
+    float refresh_rate =
+        GetRefreshRateFromXRRModeInfo(resources->modes, crtc->mode);
     display.set_display_frequency(refresh_rate);
   }
 
