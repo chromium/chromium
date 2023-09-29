@@ -1065,11 +1065,12 @@ public class StartSurfaceCoordinator implements StartSurface {
 
         // The following |fake*| values mean the values of the fake search box; |real*| values
         // mean the values of the real search box.
-        int fakeHeight = mIsSurfacePolishEnabled
-                ? getPixelSize(R.dimen.ntp_search_box_height_polish)
-                : getPixelSize(R.dimen.ntp_search_box_height);
         int realHeight = getPixelSize(R.dimen.toolbar_height_no_shadow) - realVerticalMargin * 2;
-        int fakeAndRealHeightDiff = fakeHeight - realHeight;
+        int fakeHeightForAnimation = getPixelSize(R.dimen.ntp_search_box_height);
+        int fakeHeightBeforeAnimation = mIsSurfacePolishEnabled
+                ? getPixelSize(R.dimen.ntp_search_box_height_polish)
+                : fakeHeightForAnimation;
+        int heightReducedBeforeRealAnimation = fakeHeightBeforeAnimation - fakeHeightForAnimation;
 
         int fakeEndPadding = mIsSurfacePolishEnabled
                 ? getPixelSize(R.dimen.fake_search_box_end_padding)
@@ -1094,6 +1095,8 @@ public class StartSurfaceCoordinator implements StartSurface {
                 : getPixelSize(R.dimen.tasks_surface_location_bar_url_button_start_margin);
         // realLensButtonStartMargin is 0;
 
+        TasksView tasksView = mTasksSurface != null ? (TasksView) mTasksSurface.getView() : mView;
+
         mOffsetChangedListenerToGenerateScrollEvents = (appBarLayout, verticalOffset) -> {
             for (ScrollListener scrollListener : mScrollListeners) {
                 scrollListener.onHeaderOffsetChanged(verticalOffset);
@@ -1103,7 +1106,35 @@ public class StartSurfaceCoordinator implements StartSurface {
                     mStartSurfaceMediator.getTopToolbarPlaceholderHeight()
                     + (mStartSurfaceMediator.isLogoVisible() ? logoInSurfaceHeight : 0)
                     - realVerticalMargin;
+            int startPointToReduceHeight =
+                    fakeSearchBoxToRealSearchBoxTop - heightReducedBeforeRealAnimation;
+
             int scrolledHeight = -verticalOffset;
+
+            int fakeHeight;
+            if (mIsSurfacePolishEnabled) {
+                if (scrolledHeight < fakeSearchBoxToRealSearchBoxTop
+                        && scrolledHeight >= startPointToReduceHeight) {
+                    // Reduce both the search box and its container's height before the animation.
+                    fakeHeight = fakeHeightBeforeAnimation;
+                    int reducedHeight = MathUtils.clamp(scrolledHeight - startPointToReduceHeight,
+                            0, heightReducedBeforeRealAnimation);
+                    int newHeight = fakeHeight - reducedHeight;
+                    tasksView.updateFakeSearchBoxLayoutAndContainer(newHeight);
+                    return;
+                } else if (scrolledHeight >= fakeSearchBoxToRealSearchBoxTop) {
+                    // Have reduced both the search box and its container's height and is in
+                    // animation.
+                    fakeHeight = fakeHeightForAnimation;
+                } else {
+                    // Haven't started to reduce both the search box and its container's height.
+                    fakeHeight = fakeHeightBeforeAnimation;
+                }
+            } else {
+                fakeHeight = fakeHeightBeforeAnimation;
+            }
+
+            int fakeAndRealHeightDiff = fakeHeight - realHeight;
             // When the fake search box top is scrolled to the search box top, start to reduce
             // fake search box's height until it's the same as the real search box.
             int reducedHeight = MathUtils.clamp(
@@ -1113,15 +1144,13 @@ public class StartSurfaceCoordinator implements StartSurface {
             // This function should be called together with
             // StartSurfaceToolbarMediator#updateTranslationY, which scroll up the start surface
             // toolbar together with the header.
-            TasksView tasksView =
-                    mTasksSurface != null ? (TasksView) mTasksSurface.getView() : mView;
             tasksView.updateFakeSearchBox(fakeHeight - reducedHeight, reducedHeight,
                     (int) (fakeEndPadding * (1 - expansionFraction)),
                     SearchEngineLogoUtils.getInstance().shouldShowSearchEngineLogo(false)
                             ? realTranslationX * expansionFraction
                             : 0,
                     (int) (fakeButtonSize + (realButtonSize - fakeButtonSize) * expansionFraction),
-                    (int) (fakeLensButtonStartMargin * (1 - expansionFraction)));
+                    (int) (fakeLensButtonStartMargin * (1 - expansionFraction)), fakeHeight);
         };
     }
 

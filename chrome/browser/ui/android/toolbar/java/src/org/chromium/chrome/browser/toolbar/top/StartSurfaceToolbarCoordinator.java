@@ -352,17 +352,6 @@ public class StartSurfaceToolbarCoordinator {
         }
         mFakeSearchBoxOffsetForSurfacePolishLogoInToolbar = toolbarPlaceholderHeight
                 + getDimenPixel(R.dimen.start_surface_fake_search_box_top_margin);
-
-        // Add the vertical distance, which equals the height of the fake omnibox minus the
-        // height of the real omnibox, and the top margin of the real omnibox.
-        // This ensures that the bottom edges of both the fake and real search boxes align
-        // perfectly. In this way, the fake omnibox overlaps with the real one and
-        // can be smoothly replaced by it.
-        int heightDifference = getDimenPixel(R.dimen.ntp_search_box_height_polish)
-                - getDimenPixel(R.dimen.modern_toolbar_background_size)
-                - getDimenPixel(R.dimen.location_bar_vertical_margin);
-        mFakeSearchBoxOffsetForSurfacePolishMoveDownLogo += heightDifference;
-        mFakeSearchBoxOffsetForSurfacePolishLogoInToolbar += heightDifference;
     }
 
     public TabCountProvider getIncognitoToggleTabCountProviderForTesting() {
