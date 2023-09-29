@@ -123,8 +123,6 @@ blink_platform_sources("loader") {
     "fetch/unique_identifier.h",
     "fetch/url_loader/cached_metadata_handler.cc",
     "fetch/url_loader/cached_metadata_handler.h",
-    "fetch/url_loader/code_cache_loader.cc",
-    "fetch/url_loader/code_cache_loader.h",
     "fetch/url_loader/dedicated_or_shared_worker_fetch_context_impl.cc",
     "fetch/url_loader/dedicated_or_shared_worker_fetch_context_impl.h",
     "fetch/url_loader/mojo_url_loader_client.cc",

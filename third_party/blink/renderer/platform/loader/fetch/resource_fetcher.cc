@@ -57,7 +57,6 @@
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/scheduler/web_scoped_virtual_time_pauser.h"
-#include "third_party/blink/public/platform/web_code_cache_loader.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
@@ -1601,11 +1600,11 @@ std::unique_ptr<URLLoader> ResourceFetcher::CreateURLLoader(
                                           back_forward_cache_loader_helper_);
 }
 
-std::unique_ptr<WebCodeCacheLoader> ResourceFetcher::CreateCodeCacheLoader() {
+CodeCacheHost* ResourceFetcher::GetCodeCacheHost() {
   DCHECK(!GetProperties().IsDetached());
   // TODO(http://crbug.com/1252983): Revert this to DCHECK.
   CHECK(loader_factory_);
-  return loader_factory_->CreateCodeCacheLoader();
+  return loader_factory_->GetCodeCacheHost();
 }
 
 void ResourceFetcher::AddToMemoryCacheIfNeeded(const FetchParameters& params,

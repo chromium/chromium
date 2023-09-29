@@ -115,8 +115,6 @@ class BLINK_PLATFORM_EXPORT DedicatedOrSharedWorkerFetchContextImpl final
   std::unique_ptr<URLLoaderFactory> WrapURLLoaderFactory(
       CrossVariantMojoRemote<network::mojom::URLLoaderFactoryInterfaceBase>
           url_loader_factory) override;
-  std::unique_ptr<WebCodeCacheLoader> CreateCodeCacheLoader(
-      CodeCacheHost*) override;
   void WillSendRequest(WebURLRequest&) override;
   WebVector<std::unique_ptr<URLLoaderThrottle>> CreateThrottles(
       const WebURLRequest& request) override;

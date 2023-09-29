@@ -1862,8 +1862,6 @@ static_library("test_support") {
     "graphics/test/mock_frame_sink_bundle.h",
     "graphics/test/mock_image_decoder.h",
     "graphics/test/mock_paint_canvas.h",
-    "testing/code_cache_loader_mock.cc",
-    "testing/code_cache_loader_mock.h",
     "testing/compositor_test.cc",
     "testing/compositor_test.h",
     "testing/empty_web_media_player.cc",

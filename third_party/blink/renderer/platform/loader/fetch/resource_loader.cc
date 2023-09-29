@@ -34,6 +34,7 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/checked_math.h"
@@ -58,7 +59,6 @@
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/public/platform/web_code_cache_loader.h"
 #include "third_party/blink/public/platform/web_data.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/public/platform/web_url_error.h"
@@ -72,6 +72,7 @@
 #include "third_party/blink/renderer/platform/loader/cors/cors.h"
 #include "third_party/blink/renderer/platform/loader/cors/cors_error_string.h"
 #include "third_party/blink/renderer/platform/loader/fetch/back_forward_cache_loader_helper.h"
+#include "third_party/blink/renderer/platform/loader/fetch/code_cache_host.h"
 #include "third_party/blink/renderer/platform/loader/fetch/console_logger.h"
 #include "third_party/blink/renderer/platform/loader/fetch/detachable_use_counter.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_context.h"
@@ -229,11 +230,12 @@ class ResourceLoader::CodeCacheRequest {
   USING_FAST_MALLOC(ResourceLoader::CodeCacheRequest);
 
  public:
-  CodeCacheRequest(std::unique_ptr<WebCodeCacheLoader> code_cache_loader,
+  CodeCacheRequest(CodeCacheHost* code_cache_host,
                    const KURL& url,
                    LoaderFreezeMode freeze_mode)
       : status_(kNoRequestSent),
-        code_cache_loader_(std::move(code_cache_loader)),
+        code_cache_host_(code_cache_host ? code_cache_host->GetWeakPtr()
+                                         : nullptr),
         url_(url),
         freeze_mode_(freeze_mode),
         should_use_source_hash_(
@@ -277,13 +279,13 @@ class ResourceLoader::CodeCacheRequest {
                                 mojo_base::BigBuffer data,
                                 ResourceLoader* resource_loader);
 
-  // Send |cache_code| if we got a response from code_cache_loader and the
+  // Send `cache_code` if we got a response from `code_cache_host_` and the
   // url_loader.
   void MaybeSendCachedCode(mojo_base::BigBuffer data,
                            ResourceLoader* resource_loader);
 
   CodeCacheRequestStatus status_;
-  std::unique_ptr<WebCodeCacheLoader> code_cache_loader_;
+  base::WeakPtr<CodeCacheHost> code_cache_host_;
   const WebURL url_;
   LoaderFreezeMode freeze_mode_ = LoaderFreezeMode::kNone;
   mojo_base::BigBuffer cached_code_;
@@ -304,7 +306,7 @@ class ResourceLoader::CodeCacheRequest {
 bool ResourceLoader::CodeCacheRequest::FetchFromCodeCache(
     URLLoader* url_loader,
     ResourceLoader* resource_loader) {
-  if (!code_cache_loader_) {
+  if (!code_cache_host_) {
     return false;
   }
   DCHECK_EQ(status_, kNoRequestSent);
@@ -315,13 +317,12 @@ bool ResourceLoader::CodeCacheRequest::FetchFromCodeCache(
   // This directly calls the URLLoader's SetDefersLoading without going through
   // ResourceLoader.
   url_loader->Freeze(LoaderFreezeMode::kStrict);
-
-  WebCodeCacheLoader::FetchCodeCacheCallback callback =
+  auto callback =
       WTF::BindOnce(&ResourceLoader::CodeCacheRequest::DidReceiveCachedCode,
                     weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now(),
                     WrapWeakPersistent(resource_loader));
   auto cache_type = resource_loader->GetCodeCacheType();
-  code_cache_loader_->FetchFromCodeCache(cache_type, url_, std::move(callback));
+  (*code_cache_host_)->FetchCachedCode(cache_type, url_, std::move(callback));
   return true;
 }
 
@@ -396,16 +397,11 @@ void ResourceLoader::CodeCacheRequest::MaybeSendCachedCode(
   auto ClearCachedCodeIfPresent = [&]() {
     if (data.size() != 0) {
       auto cache_type = resource_loader->GetCodeCacheType();
-      // TODO(crbug/1245526): Return early if we don't have a valid
-      // code_cache_loader_. This shouldn't happen but looks like we are hitting
-      // this case sometimes. This is a temporary fix to see if it fixes crashes
-      // and we should investigate why the code_cache_loader_ isn't valid here
-      // if this fixes the crashes. It is OK to return early here since the
-      // entry can be cleared on the next fetch.
-      if (!code_cache_loader_) {
+      // `code_cache_host_` may have been deleted due to teardown ordering.
+      if (!code_cache_host_) {
         return;
       }
-      code_cache_loader_->ClearCodeCacheEntry(cache_type, url_);
+      (*code_cache_host_)->ClearCodeCacheEntry(cache_type, url_);
     }
   };
 
@@ -670,7 +666,7 @@ void ResourceLoader::StartWith(const ResourceRequestHead& request) {
 
   if (ShouldFetchCodeCache()) {
     code_cache_request_ = std::make_unique<CodeCacheRequest>(
-        fetcher_->CreateCodeCacheLoader(), request.Url(),
+        fetcher_->GetCodeCacheHost(), request.Url(),
         fetcher_->GetProperties().FreezeMode());
   }
 

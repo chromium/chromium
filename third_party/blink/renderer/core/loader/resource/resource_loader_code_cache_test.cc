@@ -3,11 +3,15 @@
 // found in the LICENSE file.
 
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/bind.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
+#include "third_party/blink/public/mojom/loader/code_cache.mojom-blink.h"
 #include "third_party/blink/renderer/core/loader/resource/script_resource.h"
 #include "third_party/blink/renderer/platform/exported/wrapped_resource_response.h"
 #include "third_party/blink/renderer/platform/loader/fetch/cached_metadata.h"
+#include "third_party/blink/renderer/platform/loader/fetch/code_cache_host.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader.h"
 #include "third_party/blink/renderer/platform/loader/fetch/script_cached_metadata_handler.h"
@@ -15,14 +19,48 @@
 #include "third_party/blink/renderer/platform/loader/testing/mock_fetch_context.h"
 #include "third_party/blink/renderer/platform/loader/testing/test_resource_fetcher_properties.h"
 #include "third_party/blink/renderer/platform/scheduler/test/fake_task_runner.h"
-#include "third_party/blink/renderer/platform/testing/code_cache_loader_mock.h"
 #include "third_party/blink/renderer/platform/testing/mock_context_lifecycle_notifier.h"
 #include "third_party/blink/renderer/platform/testing/noop_url_loader.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support_with_mock_scheduler.h"
+#include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 
 namespace blink {
 namespace {
+
+using FetchCachedCodeCallback =
+    mojom::blink::CodeCacheHost::FetchCachedCodeCallback;
+using ProcessCodeCacheRequestCallback =
+    base::RepeatingCallback<void(FetchCachedCodeCallback)>;
+
+class DummyCodeCacheHost final : public mojom::blink::CodeCacheHost {
+ public:
+  explicit DummyCodeCacheHost(
+      ProcessCodeCacheRequestCallback process_code_cache_request_callback)
+      : process_code_cache_request_callback_(
+            std::move(process_code_cache_request_callback)) {}
+
+  // mojom::blink::CodeCacheHost implementations
+  void DidGenerateCacheableMetadata(mojom::blink::CodeCacheType cache_type,
+                                    const KURL& url,
+                                    base::Time expected_response_time,
+                                    mojo_base::BigBuffer data) override {}
+  void FetchCachedCode(mojom::blink::CodeCacheType cache_type,
+                       const KURL& url,
+                       FetchCachedCodeCallback callback) override {
+    process_code_cache_request_callback_.Run(std::move(callback));
+  }
+  void ClearCodeCacheEntry(mojom::blink::CodeCacheType cache_type,
+                           const KURL& url) override {}
+  void DidGenerateCacheableMetadataInCacheStorage(
+      const KURL& url,
+      base::Time expected_response_time,
+      mojo_base::BigBuffer data,
+      const WTF::String& cache_storage_cache_name) override {}
+
+ private:
+  ProcessCodeCacheRequestCallback process_code_cache_request_callback_;
+};
 
 class ResourceLoaderCodeCacheTest : public testing::Test {
  protected:
@@ -44,8 +82,16 @@ class ResourceLoaderCodeCacheTest : public testing::Test {
   class CodeCacheTestLoaderFactory : public ResourceFetcher::LoaderFactory {
    public:
     explicit CodeCacheTestLoaderFactory(
-        scoped_refptr<CodeCacheLoaderMock::Controller> controller)
-        : controller_(std::move(controller)) {}
+        ProcessCodeCacheRequestCallback process_code_cache_request_callback) {
+      mojo::PendingRemote<mojom::blink::CodeCacheHost> pending_remote;
+      mojo::MakeSelfOwnedReceiver(
+          std::make_unique<DummyCodeCacheHost>(
+              std::move(process_code_cache_request_callback)),
+          pending_remote.InitWithNewPipeAndPassReceiver());
+      code_cache_host_ = std::make_unique<CodeCacheHost>(
+          mojo::Remote<mojom::blink::CodeCacheHost>(std::move(pending_remote)));
+    }
+
     std::unique_ptr<URLLoader> CreateURLLoader(
         const ResourceRequest& request,
         const ResourceLoaderOptions& options,
@@ -55,12 +101,12 @@ class ResourceLoaderCodeCacheTest : public testing::Test {
         override {
       return std::make_unique<NoopURLLoader>(std::move(freezable_task_runner));
     }
-    std::unique_ptr<WebCodeCacheLoader> CreateCodeCacheLoader() override {
-      return std::make_unique<CodeCacheLoaderMock>(controller_);
+    CodeCacheHost* GetCodeCacheHost() override {
+      return code_cache_host_.get();
     }
 
    private:
-    scoped_refptr<CodeCacheLoaderMock::Controller> controller_;
+    std::unique_ptr<CodeCacheHost> code_cache_host_;
   };
 
   void CommonSetup(const char* url_string = nullptr) {
@@ -70,12 +116,14 @@ class ResourceLoaderCodeCacheTest : public testing::Test {
     SchemeRegistry::RegisterURLSchemeAsCodeCacheWithHashing(
         "codecachewithhashing");
 
+    base::RunLoop run_loop;
     auto* properties = MakeGarbageCollected<TestResourceFetcherProperties>();
     FetchContext* context = MakeGarbageCollected<MockFetchContext>();
-    controller_ = base::MakeRefCounted<CodeCacheLoaderMock::Controller>();
-    controller_->DelayResponse();
-    auto* loader_factory =
-        MakeGarbageCollected<CodeCacheTestLoaderFactory>(controller_);
+    auto* loader_factory = MakeGarbageCollected<CodeCacheTestLoaderFactory>(
+        base::BindLambdaForTesting([&](FetchCachedCodeCallback callback) {
+          code_cache_response_callback_ = std::move(callback);
+          run_loop.Quit();
+        }));
     auto* fetcher = MakeResourceFetcher(properties, context, loader_factory);
 
     KURL url(url_string ? url_string
@@ -91,6 +139,7 @@ class ResourceLoaderCodeCacheTest : public testing::Test {
     resource_ = ScriptResource::Fetch(
         params, fetcher, nullptr, ScriptResource::kNoStreaming,
         kNoCompileHintsProducer, kNoCompileHintsConsumer);
+    run_loop.Run();
     loader_ = resource_->Loader();
 
     response_ = ResourceResponse(url);
@@ -131,6 +180,11 @@ class ResourceLoaderCodeCacheTest : public testing::Test {
     return serialized_data;
   }
 
+  void Respond(base::Time time, mojo_base::BigBuffer data) {
+    std::move(code_cache_response_callback_).Run(time, std::move(data));
+    test::RunPendingTasks();
+  }
+
   ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
       platform_;
 
@@ -138,7 +192,7 @@ class ResourceLoaderCodeCacheTest : public testing::Test {
   Persistent<ScriptResource> resource_;
   Persistent<ResourceLoader> loader_;
   ResourceResponse response_;
-  scoped_refptr<CodeCacheLoaderMock::Controller> controller_;
+  FetchCachedCodeCallback code_cache_response_callback_;
 };
 
 TEST_F(ResourceLoaderCodeCacheTest, WebUICodeCacheEmptyResponseFirst) {
@@ -150,7 +204,7 @@ TEST_F(ResourceLoaderCodeCacheTest, WebUICodeCacheEmptyResponseFirst) {
   EXPECT_FALSE(resource_->CodeCacheSize());
 
   // An empty code cache response means no data was found.
-  controller_->Respond(base::Time(), mojo_base::BigBuffer());
+  Respond(base::Time(), mojo_base::BigBuffer());
 
   // No code cache data was present.
   EXPECT_FALSE(resource_->CodeCacheSize());
@@ -160,7 +214,7 @@ TEST_F(ResourceLoaderCodeCacheTest, WebUICodeCacheEmptyResponseSecond) {
   CommonSetup();
 
   // An empty code cache response means no data was found.
-  controller_->Respond(base::Time(), mojo_base::BigBuffer());
+  Respond(base::Time(), mojo_base::BigBuffer());
 
   // Nothing has changed yet because the content response hasn't arrived yet.
   EXPECT_FALSE(resource_->CodeCacheSize());
@@ -180,9 +234,8 @@ TEST_F(ResourceLoaderCodeCacheTest, WebUICodeCacheFullResponseFirst) {
   EXPECT_FALSE(resource_->CodeCacheSize());
 
   std::vector<uint8_t> cache_data{2, 3, 4, 5, 6};
-  controller_->Respond(
-      base::Time(),
-      mojo_base::BigBuffer(MakeSerializedCodeCacheData(cache_data)));
+  Respond(base::Time(),
+          mojo_base::BigBuffer(MakeSerializedCodeCacheData(cache_data)));
 
   // Code cache data was present.
   EXPECT_EQ(resource_->CodeCacheSize(),
@@ -193,9 +246,8 @@ TEST_F(ResourceLoaderCodeCacheTest, WebUICodeCacheFullResponseSecond) {
   CommonSetup();
 
   std::vector<uint8_t> cache_data{2, 3, 4, 5, 6};
-  controller_->Respond(
-      base::Time(),
-      mojo_base::BigBuffer(MakeSerializedCodeCacheData(cache_data)));
+  Respond(base::Time(),
+          mojo_base::BigBuffer(MakeSerializedCodeCacheData(cache_data)));
 
   // Nothing has changed yet because the content response hasn't arrived yet.
   EXPECT_FALSE(resource_->CodeCacheSize());
@@ -211,9 +263,8 @@ TEST_F(ResourceLoaderCodeCacheTest, WebUICodeCacheFullHttpsScheme) {
   CommonSetup("https://www.example.com/");
 
   std::vector<uint8_t> cache_data{2, 3, 4, 5, 6};
-  controller_->Respond(
-      base::Time(),
-      mojo_base::BigBuffer(MakeSerializedCodeCacheData(cache_data)));
+  Respond(base::Time(),
+          mojo_base::BigBuffer(MakeSerializedCodeCacheData(cache_data)));
 
   // Nothing has changed yet because the content response hasn't arrived yet.
   EXPECT_FALSE(resource_->CodeCacheSize());
@@ -229,10 +280,9 @@ TEST_F(ResourceLoaderCodeCacheTest, WebUICodeCacheInvalidOuterType) {
   CommonSetup();
 
   std::vector<uint8_t> cache_data{2, 3, 4, 5, 6};
-  controller_->Respond(
-      base::Time(),
-      mojo_base::BigBuffer(MakeSerializedCodeCacheData(
-          cache_data, {}, 0, CachedMetadataHandler::kSingleEntryWithTag)));
+  Respond(base::Time(),
+          mojo_base::BigBuffer(MakeSerializedCodeCacheData(
+              cache_data, {}, 0, CachedMetadataHandler::kSingleEntryWithTag)));
 
   // Nothing has changed yet because the content response hasn't arrived yet.
   EXPECT_FALSE(resource_->CodeCacheSize());
@@ -248,9 +298,8 @@ TEST_F(ResourceLoaderCodeCacheTest, WebUICodeCacheHashCheckSuccess) {
 
   std::vector<uint8_t> cache_data{2, 3, 4, 5, 6};
   String source_text("alert('hello world');");
-  controller_->Respond(
-      base::Time(), mojo_base::BigBuffer(
-                        MakeSerializedCodeCacheData(cache_data, source_text)));
+  Respond(base::Time(), mojo_base::BigBuffer(MakeSerializedCodeCacheData(
+                            cache_data, source_text)));
 
   // Nothing has changed yet because the content response hasn't arrived yet.
   EXPECT_FALSE(resource_->CodeCacheSize());
@@ -283,9 +332,8 @@ TEST_F(ResourceLoaderCodeCacheTest, WebUICodeCacheHashCheckFailure) {
 
   std::vector<uint8_t> cache_data{2, 3, 4, 5, 6};
   String source_text("alert('hello world');");
-  controller_->Respond(
-      base::Time(), mojo_base::BigBuffer(
-                        MakeSerializedCodeCacheData(cache_data, source_text)));
+  Respond(base::Time(), mojo_base::BigBuffer(MakeSerializedCodeCacheData(
+                            cache_data, source_text)));
 
   // Nothing has changed yet because the content response hasn't arrived yet.
   EXPECT_FALSE(resource_->CodeCacheSize());

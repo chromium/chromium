@@ -19,6 +19,7 @@
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"
+#include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/web_url_request_extra_data.h"
 #include "third_party/blink/renderer/platform/exported/wrapped_resource_response.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -34,7 +35,6 @@
 #include "third_party/blink/renderer/platform/loader/testing/mock_fetch_context.h"
 #include "third_party/blink/renderer/platform/loader/testing/test_resource_fetcher_properties.h"
 #include "third_party/blink/renderer/platform/network/http_names.h"
-#include "third_party/blink/renderer/platform/testing/code_cache_loader_mock.h"
 #include "third_party/blink/renderer/platform/testing/mock_context_lifecycle_notifier.h"
 #include "third_party/blink/renderer/platform/testing/noop_url_loader.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support_with_mock_scheduler.h"
@@ -95,9 +95,7 @@ class ResourceLoaderTest : public testing::Test {
         override {
       return std::make_unique<NoopURLLoader>(std::move(freezable_task_runner));
     }
-    std::unique_ptr<WebCodeCacheLoader> CreateCodeCacheLoader() override {
-      return std::make_unique<CodeCacheLoaderMock>();
-    }
+    CodeCacheHost* GetCodeCacheHost() override { return nullptr; }
   };
 
   static scoped_refptr<base::SingleThreadTaskRunner> CreateTaskRunner() {

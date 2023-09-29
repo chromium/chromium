@@ -66,6 +66,7 @@ namespace blink {
 
 enum class ResourceType : uint8_t;
 class BackForwardCacheLoaderHelper;
+class CodeCacheHost;
 class DetachableConsoleLogger;
 class DetachableUseCounter;
 class DetachableResourceFetcherProperties;
@@ -78,7 +79,6 @@ class ResourceError;
 class ResourceLoadObserver;
 class SubresourceWebBundle;
 class SubresourceWebBundleList;
-class WebCodeCacheLoader;
 struct ResourceFetcherInit;
 struct ResourceLoaderOptions;
 
@@ -117,8 +117,8 @@ class PLATFORM_EXPORT ResourceFetcher
         scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner,
         BackForwardCacheLoaderHelper*) = 0;
 
-    // Create a code cache loader to fetch data from code caches.
-    virtual std::unique_ptr<WebCodeCacheLoader> CreateCodeCacheLoader() = 0;
+    // Get a code cache host to fetch data from code caches.
+    virtual CodeCacheHost* GetCodeCacheHost() = 0;
   };
 
   // ResourceFetcher creators are responsible for setting consistent objects
@@ -174,9 +174,8 @@ class PLATFORM_EXPORT ResourceFetcher
   // Create a loader. This cannot be called after ClearContext is called.
   std::unique_ptr<URLLoader> CreateURLLoader(const ResourceRequestHead&,
                                              const ResourceLoaderOptions&);
-  // Create a code cache loader. This cannot be called after ClearContext is
-  // called.
-  std::unique_ptr<WebCodeCacheLoader> CreateCodeCacheLoader();
+  // Get a code cache host. This cannot be called after ClearContext is called.
+  CodeCacheHost* GetCodeCacheHost();
 
   Resource* CachedResource(const KURL&) const;
 

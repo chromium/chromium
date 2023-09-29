@@ -30,7 +30,7 @@ class LoaderFactoryForWorker : public ResourceFetcher::LoaderFactory {
       scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner,
       BackForwardCacheLoaderHelper*) override;
-  std::unique_ptr<WebCodeCacheLoader> CreateCodeCacheLoader() override;
+  CodeCacheHost* GetCodeCacheHost() override;
 
  private:
   const Member<WorkerOrWorkletGlobalScope> global_scope_;

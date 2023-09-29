@@ -192,13 +192,8 @@ std::unique_ptr<URLLoader> LoaderFactoryForFrame::CreateURLLoader(
                         back_forward_cache_loader_helper, std::move(throttles));
 }
 
-std::unique_ptr<WebCodeCacheLoader>
-LoaderFactoryForFrame::CreateCodeCacheLoader() {
-  if (document_loader_->GetCodeCacheHost() == nullptr) {
-    return nullptr;
-  }
-  return blink::WebCodeCacheLoader::Create(
-      document_loader_->GetCodeCacheHost());
+CodeCacheHost* LoaderFactoryForFrame::GetCodeCacheHost() {
+  return document_loader_->GetCodeCacheHost();
 }
 
 void LoaderFactoryForFrame::IssueKeepAliveHandleIfRequested(

@@ -24,7 +24,6 @@
 #include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"
 #include "third_party/blink/public/platform/url_loader_throttle_provider.h"
 #include "third_party/blink/public/platform/weak_wrapper_resource_load_info_notifier.h"
-#include "third_party/blink/public/platform/web_code_cache_loader.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/public/platform/web_url_request_extra_data.h"
 #include "third_party/blink/public/platform/websocket_handshake_throttle_provider.h"
@@ -367,12 +366,6 @@ DedicatedOrSharedWorkerFetchContextImpl::WrapURLLoaderFactory(
       base::MakeRefCounted<network::WrapperSharedURLLoaderFactory>(
           std::move(url_loader_factory)),
       cors_exempt_header_list_, terminate_sync_load_event_);
-}
-
-std::unique_ptr<WebCodeCacheLoader>
-DedicatedOrSharedWorkerFetchContextImpl::CreateCodeCacheLoader(
-    CodeCacheHost* code_cache_host) {
-  return WebCodeCacheLoader::Create(code_cache_host);
 }
 
 void DedicatedOrSharedWorkerFetchContextImpl::WillSendRequest(

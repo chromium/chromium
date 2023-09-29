@@ -41,7 +41,7 @@ class CORE_EXPORT LoaderFactoryForFrame final
       scoped_refptr<base::SingleThreadTaskRunner>,
       scoped_refptr<base::SingleThreadTaskRunner>,
       BackForwardCacheLoaderHelper*) override;
-  std::unique_ptr<WebCodeCacheLoader> CreateCodeCacheLoader() override;
+  CodeCacheHost* GetCodeCacheHost() override;
 
  private:
   void IssueKeepAliveHandleIfRequested(

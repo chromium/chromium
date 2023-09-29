@@ -11,7 +11,6 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/exported/wrapped_resource_request.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
-#include "third_party/blink/renderer/platform/testing/code_cache_loader_mock.h"
 #include "third_party/blink/renderer/platform/testing/url_loader_mock_factory.h"
 
 namespace blink {
@@ -35,9 +34,7 @@ class TestLoaderFactory : public ResourceFetcher::LoaderFactory {
     return mock_factory_->CreateURLLoader();
   }
 
-  std::unique_ptr<WebCodeCacheLoader> CreateCodeCacheLoader() override {
-    return std::make_unique<CodeCacheLoaderMock>();
-  }
+  CodeCacheHost* GetCodeCacheHost() override { return nullptr; }
 
  private:
   URLLoaderMockFactory* mock_factory_;

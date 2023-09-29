@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/fileapi/public_url_manager.h"
 #include "third_party/blink/renderer/core/workers/worker_or_worklet_global_scope.h"
 #include "third_party/blink/renderer/platform/exported/wrapped_resource_request.h"
+#include "third_party/blink/renderer/platform/loader/fetch/code_cache_host.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader_options.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/url_loader.h"
@@ -125,9 +126,8 @@ std::unique_ptr<URLLoader> LoaderFactoryForWorker::CreateURLLoader(
       std::move(throttles));
 }
 
-std::unique_ptr<WebCodeCacheLoader>
-LoaderFactoryForWorker::CreateCodeCacheLoader() {
-  return web_context_->CreateCodeCacheLoader(global_scope_->GetCodeCacheHost());
+CodeCacheHost* LoaderFactoryForWorker::GetCodeCacheHost() {
+  return global_scope_->GetCodeCacheHost();
 }
 
 }  // namespace blink

@@ -6,13 +6,17 @@
 
 #include "base/debug/stack_trace.h"
 #include "base/functional/bind.h"
+#include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "mojo/public/cpp/base/big_buffer.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
+#include "third_party/blink/public/mojom/loader/code_cache.mojom-blink.h"
 #include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/public/platform/web_url_request_extra_data.h"
+#include "third_party/blink/renderer/platform/loader/fetch/code_cache_host.h"
 #include "third_party/blink/renderer/platform/loader/fetch/raw_resource.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/loader/fetch/unique_identifier.h"
@@ -23,36 +27,16 @@
 #include "third_party/blink/renderer/platform/loader/testing/test_resource_fetcher_properties.h"
 #include "third_party/blink/renderer/platform/testing/mock_context_lifecycle_notifier.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support_with_mock_scheduler.h"
+#include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
 namespace blink {
 
 namespace {
 
+using FetchCachedCodeCallback =
+    mojom::blink::CodeCacheHost::FetchCachedCodeCallback;
 using ProcessCodeCacheRequestCallback =
-    base::RepeatingCallback<void(WebCodeCacheLoader::FetchCodeCacheCallback)>;
-
-// A mock code cache loader that calls the processing function whenever it
-// receives fetch requests.
-class TestCodeCacheLoader : public WebCodeCacheLoader {
- public:
-  explicit TestCodeCacheLoader(ProcessCodeCacheRequestCallback callback)
-      : process_request_(callback) {}
-  ~TestCodeCacheLoader() override = default;
-
-  // WebCodeCacheLoader methods:
-  void FetchFromCodeCache(
-      mojom::blink::CodeCacheType cache_type,
-      const WebURL& url,
-      WebCodeCacheLoader::FetchCodeCacheCallback callback) override {
-    process_request_.Run(std::move(callback));
-  }
-
-  void ClearCodeCacheEntry(mojom::blink::CodeCacheType cache_type,
-                           const WebURL& url) override {}
-
- private:
-  ProcessCodeCacheRequestCallback process_request_;
-};
+    base::RepeatingCallback<void(FetchCachedCodeCallback)>;
 
 // A mock URLLoader to know the status of defers flag.
 class TestURLLoader final : public URLLoader {
@@ -100,14 +84,49 @@ class TestURLLoader final : public URLLoader {
   LoaderFreezeMode* const freeze_mode_ptr_;
 };
 
+class DummyCodeCacheHost final : public mojom::blink::CodeCacheHost {
+ public:
+  explicit DummyCodeCacheHost(
+      ProcessCodeCacheRequestCallback process_code_cache_request_callback)
+      : process_code_cache_request_callback_(
+            std::move(process_code_cache_request_callback)) {}
+
+  // mojom::blink::CodeCacheHost implementations
+  void DidGenerateCacheableMetadata(mojom::blink::CodeCacheType cache_type,
+                                    const KURL& url,
+                                    base::Time expected_response_time,
+                                    mojo_base::BigBuffer data) override {}
+  void FetchCachedCode(mojom::blink::CodeCacheType cache_type,
+                       const KURL& url,
+                       FetchCachedCodeCallback callback) override {
+    process_code_cache_request_callback_.Run(std::move(callback));
+  }
+  void ClearCodeCacheEntry(mojom::blink::CodeCacheType cache_type,
+                           const KURL& url) override {}
+  void DidGenerateCacheableMetadataInCacheStorage(
+      const KURL& url,
+      base::Time expected_response_time,
+      mojo_base::BigBuffer data,
+      const WTF::String& cache_storage_cache_name) override {}
+
+ private:
+  ProcessCodeCacheRequestCallback process_code_cache_request_callback_;
+};
+
 class DeferTestLoaderFactory final : public ResourceFetcher::LoaderFactory {
  public:
   DeferTestLoaderFactory(
       LoaderFreezeMode* const freeze_mode_ptr,
       ProcessCodeCacheRequestCallback process_code_cache_request_callback)
-      : freeze_mode_ptr_(freeze_mode_ptr),
-        process_code_cache_request_callback_(
-            process_code_cache_request_callback) {}
+      : freeze_mode_ptr_(freeze_mode_ptr) {
+    mojo::PendingRemote<mojom::blink::CodeCacheHost> pending_remote;
+    mojo::MakeSelfOwnedReceiver(
+        std::make_unique<DummyCodeCacheHost>(
+            std::move(process_code_cache_request_callback)),
+        pending_remote.InitWithNewPipeAndPassReceiver());
+    code_cache_host_ = std::make_unique<CodeCacheHost>(
+        mojo::Remote<mojom::blink::CodeCacheHost>(std::move(pending_remote)));
+  }
 
   // LoaderFactory implementations
   std::unique_ptr<URLLoader> CreateURLLoader(
@@ -119,16 +138,13 @@ class DeferTestLoaderFactory final : public ResourceFetcher::LoaderFactory {
     return std::make_unique<TestURLLoader>(freeze_mode_ptr_);
   }
 
-  std::unique_ptr<WebCodeCacheLoader> CreateCodeCacheLoader() override {
-    return std::make_unique<TestCodeCacheLoader>(
-        process_code_cache_request_callback_);
-  }
+  CodeCacheHost* GetCodeCacheHost() override { return code_cache_host_.get(); }
 
  private:
   // Points to |ResourceLoaderDefersLoadingTest::freeze_mode_|.
   LoaderFreezeMode* const freeze_mode_ptr_;
 
-  ProcessCodeCacheRequestCallback process_code_cache_request_callback_;
+  std::unique_ptr<CodeCacheHost> code_cache_host_;
 };
 
 }  // namespace
@@ -141,10 +157,12 @@ class ResourceLoaderDefersLoadingTest : public testing::Test {
         base::Unretained(this)));
   }
 
-  void SaveCodeCacheCallback(
-      WebCodeCacheLoader::FetchCodeCacheCallback callback) {
+  void SaveCodeCacheCallback(FetchCachedCodeCallback callback) {
     // Store the callback to send back a response.
     code_cache_response_callback_ = std::move(callback);
+    if (save_code_cache_callback_done_closure_) {
+      std::move(save_code_cache_callback_done_closure_).Run();
+    }
   }
 
   ResourceFetcher* CreateFetcher() {
@@ -163,8 +181,13 @@ class ResourceLoaderDefersLoadingTest : public testing::Test {
     process_code_cache_request_callback_ = callback;
   }
 
+  void SetSaveCodeCacheCallbackDoneClosure(base::OnceClosure closure) {
+    save_code_cache_callback_done_closure_ = std::move(closure);
+  }
+
   ProcessCodeCacheRequestCallback process_code_cache_request_callback_;
-  WebCodeCacheLoader::FetchCodeCacheCallback code_cache_response_callback_;
+  FetchCachedCodeCallback code_cache_response_callback_;
+
   // Passed to TestURLLoader (via |platform_|) and updated when its Freeze
   // method is called.
   LoaderFreezeMode freeze_mode_ = LoaderFreezeMode::kNone;
@@ -174,6 +197,7 @@ class ResourceLoaderDefersLoadingTest : public testing::Test {
       platform_;
 
  private:
+  base::OnceClosure save_code_cache_callback_done_closure_;
   base::test::SingleThreadTaskEnvironment task_environment_;
 };
 
@@ -186,33 +210,18 @@ TEST_F(ResourceLoaderDefersLoadingTest, CodeCacheFetchCheckDefers) {
   FetchParameters fetch_parameters =
       FetchParameters::CreateForTest(std::move(request));
 
+  base::RunLoop run_loop;
+  SetSaveCodeCacheCallbackDoneClosure(run_loop.QuitClosure());
   Resource* resource = RawResource::Fetch(fetch_parameters, fetcher, nullptr);
 
   // After code cache fetch it should have deferred URLLoader.
   DCHECK_EQ(freeze_mode_, LoaderFreezeMode::kStrict);
   DCHECK(resource);
+
+  run_loop.Run();
   std::move(code_cache_response_callback_).Run(base::Time(), {});
+  test::RunPendingTasks();
   // Once the response is received it should be reset.
-  DCHECK_EQ(freeze_mode_, LoaderFreezeMode::kNone);
-}
-
-TEST_F(ResourceLoaderDefersLoadingTest, CodeCacheFetchSyncReturn) {
-  SetCodeCacheProcessFunction(base::BindRepeating(
-      [](WebCodeCacheLoader::FetchCodeCacheCallback callback) {
-        std::move(callback).Run(base::Time(), {});
-      }));
-
-  auto* fetcher = CreateFetcher();
-
-  ResourceRequest request;
-  request.SetUrl(test_url_);
-  request.SetRequestContext(mojom::blink::RequestContextType::FETCH);
-  FetchParameters fetch_parameters =
-      FetchParameters::CreateForTest(std::move(request));
-
-  Resource* resource = RawResource::Fetch(fetch_parameters, fetcher, nullptr);
-  DCHECK(resource);
-  // The callback would be called so it should not be deferred.
   DCHECK_EQ(freeze_mode_, LoaderFreezeMode::kNone);
 }
 
@@ -225,6 +234,8 @@ TEST_F(ResourceLoaderDefersLoadingTest, ChangeDefersToFalse) {
   FetchParameters fetch_parameters =
       FetchParameters::CreateForTest(std::move(request));
 
+  base::RunLoop run_loop;
+  SetSaveCodeCacheCallbackDoneClosure(run_loop.QuitClosure());
   Resource* resource = RawResource::Fetch(fetch_parameters, fetcher, nullptr);
   DCHECK_EQ(freeze_mode_, LoaderFreezeMode::kStrict);
 
@@ -233,6 +244,12 @@ TEST_F(ResourceLoaderDefersLoadingTest, ChangeDefersToFalse) {
   ResourceLoader* loader = resource->Loader();
   loader->SetDefersLoading(LoaderFreezeMode::kNone);
   DCHECK_EQ(freeze_mode_, LoaderFreezeMode::kStrict);
+
+  run_loop.Run();
+  std::move(code_cache_response_callback_).Run(base::Time(), {});
+  test::RunPendingTasks();
+  // Once the response is received it should be reset.
+  DCHECK_EQ(freeze_mode_, LoaderFreezeMode::kNone);
 }
 
 TEST_F(ResourceLoaderDefersLoadingTest, ChangeDefersToTrue) {
@@ -244,6 +261,8 @@ TEST_F(ResourceLoaderDefersLoadingTest, ChangeDefersToTrue) {
   FetchParameters fetch_parameters =
       FetchParameters::CreateForTest(std::move(request));
 
+  base::RunLoop run_loop;
+  SetSaveCodeCacheCallbackDoneClosure(run_loop.QuitClosure());
   Resource* resource = RawResource::Fetch(fetch_parameters, fetcher, nullptr);
   DCHECK_EQ(freeze_mode_, LoaderFreezeMode::kStrict);
 
@@ -251,7 +270,9 @@ TEST_F(ResourceLoaderDefersLoadingTest, ChangeDefersToTrue) {
   loader->SetDefersLoading(LoaderFreezeMode::kStrict);
   DCHECK_EQ(freeze_mode_, LoaderFreezeMode::kStrict);
 
+  run_loop.Run();
   std::move(code_cache_response_callback_).Run(base::Time(), {});
+  test::RunPendingTasks();
   // Since it was requested to be deferred, it should be reset to the
   // correct value.
   DCHECK_EQ(freeze_mode_, LoaderFreezeMode::kStrict);
@@ -266,6 +287,8 @@ TEST_F(ResourceLoaderDefersLoadingTest, ChangeDefersToBfcacheDefer) {
   FetchParameters fetch_parameters =
       FetchParameters::CreateForTest(std::move(request));
 
+  base::RunLoop run_loop;
+  SetSaveCodeCacheCallbackDoneClosure(run_loop.QuitClosure());
   Resource* resource = RawResource::Fetch(fetch_parameters, fetcher, nullptr);
   DCHECK_EQ(freeze_mode_, LoaderFreezeMode::kStrict);
 
@@ -273,7 +296,9 @@ TEST_F(ResourceLoaderDefersLoadingTest, ChangeDefersToBfcacheDefer) {
   loader->SetDefersLoading(LoaderFreezeMode::kBufferIncoming);
   DCHECK_EQ(freeze_mode_, LoaderFreezeMode::kStrict);
 
+  run_loop.Run();
   std::move(code_cache_response_callback_).Run(base::Time(), {});
+  test::RunPendingTasks();
   // Since it was requested to be deferred, it should be reset to the
   // correct value.
   DCHECK_EQ(freeze_mode_, LoaderFreezeMode::kBufferIncoming);
@@ -288,6 +313,8 @@ TEST_F(ResourceLoaderDefersLoadingTest, ChangeDefersMultipleTimes) {
 
   FetchParameters fetch_parameters =
       FetchParameters::CreateForTest(std::move(request));
+  base::RunLoop run_loop;
+  SetSaveCodeCacheCallbackDoneClosure(run_loop.QuitClosure());
   Resource* resource = RawResource::Fetch(fetch_parameters, fetcher, nullptr);
   DCHECK_EQ(freeze_mode_, LoaderFreezeMode::kStrict);
 
@@ -298,7 +325,9 @@ TEST_F(ResourceLoaderDefersLoadingTest, ChangeDefersMultipleTimes) {
   loader->SetDefersLoading(LoaderFreezeMode::kNone);
   DCHECK_EQ(freeze_mode_, LoaderFreezeMode::kStrict);
 
+  run_loop.Run();
   std::move(code_cache_response_callback_).Run(base::Time(), {});
+  test::RunPendingTasks();
   DCHECK_EQ(freeze_mode_, LoaderFreezeMode::kNone);
 }
 

@@ -87,9 +87,7 @@ class NoopLoaderFactory final : public ResourceFetcher::LoaderFactory {
       BackForwardCacheLoaderHelper*) override {
     return std::make_unique<NoopURLLoader>(std::move(freezable_task_runner));
   }
-  std::unique_ptr<WebCodeCacheLoader> CreateCodeCacheLoader() override {
-    return std::make_unique<CodeCacheLoaderMock>();
-  }
+  CodeCacheHost* GetCodeCacheHost() override { return nullptr; }
 
   class NoopURLLoader final : public URLLoader {
    public:
