@@ -246,7 +246,7 @@ public class GroupTabPickerDialog extends OverDragBottomDialogFragment<GroupTabP
         public void onClick(View v, float x, float y) {
             ArkLogger.e(this, "moveToNewGroup group id=" + tabGroup.getId());
             if (tabGroup.getId() == ITab.INVALID_TAB_INDEX) {
-                ITabGroup newGroup = new GroupTab(tabGroup.getParentGroup());
+                ITabGroup newGroup = new GroupTab(tabGroup.getSelector(), tabGroup.getParentGroup());
                 if (tabGroup.moveToNewGroup(newGroup, true)) {
                     moveToNewGroup(newGroup);
                 } else {
@@ -289,7 +289,7 @@ public class GroupTabPickerDialog extends OverDragBottomDialogFragment<GroupTabP
                                             TabInfo tabInfo = TabInfo.create(ITab.INVALID_TAB_INDEX,
                                                     tabGroup.getId(), true);
                                             tabInfo.setTitle(text);
-                                            ITabGroup newGroup = new GroupTab(tabGroup, tabInfo);
+                                            ITabGroup newGroup = new GroupTab(tabGroup.getSelector(), tabGroup, tabInfo);
                                             getData().add(0, new TreeMultiData(parent, newGroup));
                                             mRecycler.notifyItemInserted(position + 1);
                                         })

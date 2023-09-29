@@ -242,19 +242,22 @@ Frame* FrameTree::FindFrameForNavigationInternal(
     const KURL& url,
     FrameLoadRequest* request) const {
   LOG(ERROR) << "FrameTree::FindFrameForNavigationInternal name=" << name
-    << " isNull=" << name.IsNull() << " url=" << url;
+    << " isNull=" << name.IsNull() << " url=" << url
+    << " url.ProtocolIsInHTTPFamily=" << url.ProtocolIsInHTTPFamily();
   if (EqualIgnoringASCIICase(name, "_current")) {
     UseCounter::Count(
         blink::DynamicTo<blink::LocalFrame>(this_frame_.Get())->GetDocument(),
         WebFeature::kTargetCurrent);
   }
 
-  if (EqualIgnoringASCIICase(name, "_self") ||
-      EqualIgnoringASCIICase(name, "_current") || name.IsEmpty()) {
-    // TODO remove
-    // request->SetNoOpener();
-    return nullptr;
-    // return this_frame_;
+  if (EqualIgnoringASCIICase(name, "_self")
+      || EqualIgnoringASCIICase(name, "_current")
+      || name.IsEmpty()) {
+      if (url.ProtocolIsInHTTPFamily()) {
+        return nullptr;
+      } else {
+        return this_frame_;
+      }
   }
 
   if (EqualIgnoringASCIICase(name, "_top"))

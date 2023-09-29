@@ -135,7 +135,8 @@ public class TabSearchFragment extends BaseSwipeBackFragment {
                     .setContent("确定将选中的" + tabMultiData.mSelectedSet.size() + "个标签页组成群组？")
                     .setPositiveButton((fragment, which) -> {
                         ITabGroup currentGroup = TabGroupManager.global().getTabGroup(false);
-                        ITabGroup newGroup = new GroupTab(null, TabInfo.create(-1, true));
+                        ITabGroup newGroup = new GroupTab(TabGroupManager.global(),
+                                null, TabInfo.create(-1, true));
                         // add new group
                         currentGroup.moveToNewGroup(newGroup, false);
                         for (ITab tab : tabMultiData.mSelectedSet) {

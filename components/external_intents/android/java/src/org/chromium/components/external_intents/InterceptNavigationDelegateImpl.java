@@ -329,6 +329,9 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
     }
 
     private void logBlockedNavigationToDevToolsConsole(GURL url) {
+        if (mClient.getWebContents() == null) {
+            return;
+        }
         int resId = mExternalNavHandler.canExternalAppHandleUrl(url)
                 ? R.string.blocked_navigation_warning
                 : R.string.unreachable_navigation_warning;

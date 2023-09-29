@@ -652,10 +652,6 @@ public class ArkCompositorViewHolder extends FrameLayout
         if (mOnscreenContentProvider != null) mOnscreenContentProvider.destroy();
         mContentView.removeOnHierarchyChangeListener(this);
 
-        if (mTabContentManager != null) {
-            mTabContentManager.destroy();
-        }
-
         mSwipeRefreshHandler.destroy();
 
         if (mCallback != null) {
@@ -1498,11 +1494,11 @@ public class ArkCompositorViewHolder extends FrameLayout
 
             @Override
             public void onSelectionChanged(String selection, boolean hasSelection) {
-                ArkLogger.e(TAG, "onSelectionChanged selection=" + selection + " hasSelection=" + hasSelection);
-                if (TextUtils.isEmpty(selection) || !hasSelection) {
+                ArkLogger.e(TAG, "onSelectionChanged selection=" + selection
+                        + " hasSelection=" + hasSelection);
+                if (TextUtils.isEmpty(selection)) {
                     hide();
                 } else {
-                    show();
                     if (smartSearchDialog != null) {
                         smartSearchDialog.updateKeyword(selection);
                     }
@@ -1511,9 +1507,13 @@ public class ArkCompositorViewHolder extends FrameLayout
 
             @Override
             public void onSelectionEvent(@SelectionEventType int eventType, float posXPix, float posYPix) {
-                ArkLogger.e(TAG, "onSelectionEvent eventType=" + eventType);
+                ArkLogger.e(TAG, "onSelectionEvent eventType=" + eventType
+                        + " selectText=" + controller.getSelectedText());
                 if (SelectionEventType.SELECTION_HANDLES_SHOWN == eventType) {
                     show();
+                    if (smartSearchDialog != null) {
+                        smartSearchDialog.updateKeyword(controller.getSelectedText());
+                    }
                 } else if (SelectionEventType.SELECTION_HANDLES_CLEARED == eventType) {
                     hide();
                 }
@@ -1686,7 +1686,6 @@ public class ArkCompositorViewHolder extends FrameLayout
 //        mLayoutManager.showLayout(LayoutType.BROWSING, false);
 
         onBackPressedCallback.setEnabled(mTabVisible != null && mTabVisible.canGoBack());
-
     }
 
     /**

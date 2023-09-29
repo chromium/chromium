@@ -280,10 +280,6 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
         return mTab;
     }
 
-    public void loadInNewTab(WebContents webContents, LoadUrlParams params) {
-        mTab.getParentGroup().openInNewTab(mTab, webContents, params);
-    }
-
     public IPage loadInNewPage(WebContents webContents, LoadUrlParams params) {
         IPage page = mTab.openNewPage();
         ArkWebContents arkWeb = new ArkWebContents.Builder(page.getPageInfo())
@@ -1515,11 +1511,6 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
         if (mArkWeb == null) return;
 
         mArkWeb.detach(this);
-
-        if (mViewAndroidDelegate != null) {
-            mViewAndroidDelegate.destroy();
-            mViewAndroidDelegate = null;
-        }
 
         updateInteractableState();
 

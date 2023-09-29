@@ -433,9 +433,11 @@ class AXPosition {
         // If this is a "before text" or an "after text" tree position, it's
         // pointing to the anchor itself, which we've determined to be
         // unignored.
+        /*
         DCHECK(!IsLeaf() || child_index_ == BEFORE_TEXT || child_index_ == 0)
             << "\"Before text\" and \"after text\" tree positions are only "
                "valid on leaf nodes.";
+        */
         if (child_index_ == BEFORE_TEXT || IsLeaf())
           return false;
 

@@ -15,6 +15,7 @@ import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabState;
+import org.chromium.chrome.browser.tab.TabUserAgent;
 import org.chromium.chrome.browser.tab.WebContentsState;
 import org.chromium.chrome.browser.tab.WebContentsStateBridge;
 import org.chromium.chrome.browser.tabmodel.TabList;
@@ -247,7 +248,7 @@ public class ArkTabStore {
         // changed.
         tabState.themeColor = TabState.UNSPECIFIED_THEME_COLOR;
         tabState.rootId = Tab.INVALID_TAB_ID;
-        tabState.userAgent = 0;
+        tabState.userAgent = TabUserAgent.DEFAULT;
         return tabState;
     }
 
@@ -287,6 +288,7 @@ public class ArkTabStore {
         @Override
         protected Void doInBackground() {
             mStateSaved = saveTabState(mId, mEncrypted, mState);
+            ArkLogger.e(TAG, "saveTabState pageId=" + mId + " mStateSaved=" + mStateSaved);
             return null;
         }
 

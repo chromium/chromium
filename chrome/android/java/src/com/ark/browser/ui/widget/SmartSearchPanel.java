@@ -18,11 +18,11 @@ import androidx.core.view.ViewCompat;
 import androidx.customview.widget.ViewDragHelper;
 
 import com.ark.browser.core.ArkCompositorViewHolder;
-import com.ark.browser.core.ArkNavigationHandler;
 import com.ark.browser.core.ArkWindowAndroid;
 import com.ark.browser.tab.ArkTabImpl;
 import com.ark.browser.tab.EmptyTabInfoObserver;
 import com.ark.browser.tab.TabCacheManager;
+import com.ark.browser.tab.TabGroupManager;
 import com.ark.browser.tab.TabInfo;
 import com.ark.browser.tab.TabInfoObserver;
 import com.ark.browser.tab.core.ChildTab;
@@ -608,7 +608,18 @@ public class SmartSearchPanel extends FrameLayout {
             TabInfo info = TabInfo.create(-103, -1, true);
             info.setLocked(true);
             info.setIncognito(false);
-            mFloatTabGroup = new GroupTab(null, info) {
+            mFloatTabGroup = new GroupTab(new TabGroupManager.BaseSelector() {
+                @NonNull
+                @Override
+                public ITabGroup getCurrentTabGroup() {
+                    return mFloatTabGroup;
+                }
+
+                @Override
+                public void selectGroup(ITabGroup group) {
+
+                }
+            }, null, info) {
 
                 @Override
                 public void onIndexChanged(int index) {

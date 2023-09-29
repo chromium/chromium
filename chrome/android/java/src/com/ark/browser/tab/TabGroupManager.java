@@ -174,6 +174,12 @@ public class TabGroupManager {
 
         void notifyChanged();
 
+        void selectGroup(ITabGroup group);
+
+        void notifyTabMoved(ITab tab, ITabGroup oldGroup);
+
+        void notifyTabSelected(ITab tab);
+
         void addObserver(TabManagerObserver observer);
 
         void removeObserver(TabManagerObserver observer);
@@ -182,7 +188,7 @@ public class TabGroupManager {
 
     }
 
-    private static abstract class BaseSelector implements Selector {
+    public static abstract class BaseSelector implements Selector {
 
         private final ObserverList<TabManagerObserver> mObservers = new ObserverList<>();
 
@@ -300,13 +306,13 @@ public class TabGroupManager {
             info.setLocked(true);
             info.setIncognito(false);
             info.setTitle("Root Default");
-            tabGroups.add(new GroupTab(null, info));
+            tabGroups.add(new GroupTab(this, null, info));
 
             info = TabInfo.create(ID_INCOGNITO, -1, true);
             info.setLocked(true);
             info.setIncognito(true);
             info.setTitle("Root Incognito");
-            tabGroups.add(new GroupTab(null, info));
+            tabGroups.add(new GroupTab(this, null, info));
         }
 
         public static GlobalSelector getInstance() {
@@ -388,6 +394,7 @@ public class TabGroupManager {
                     }
                 }
             }
+            mTabContentManager.destroy();
             mCurrentIndex = 0;
             super.destroy();
         }

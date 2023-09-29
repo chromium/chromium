@@ -192,6 +192,9 @@ public class TabContentManager {
      * Called after native library is loaded.
      */
     public void initWithNative() {
+        if (mNativeTabContentManager != 0) {
+            return;
+        }
         int compressionQueueMaxSize =
                 mContext.getResources().getInteger(R.integer.default_compression_queue_size);
         int writeQueueMaxSize =

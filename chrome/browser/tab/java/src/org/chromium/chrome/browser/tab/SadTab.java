@@ -76,7 +76,9 @@ public class SadTab extends EmptyTabObserver implements UserData, TabViewProvide
         if (mTab.getWebContents() == null) return;
 
         // Make sure we are not adding the "Aw, snap" view over an existing one.
-        assert mView == null;
+        if (mView != null) {
+            return;
+        }
         mSadTabSuccessiveRefreshCounter++;
         mView = createView(context, suggestionAction, buttonAction, showSendFeedbackView(),
                 mTab.isIncognito());

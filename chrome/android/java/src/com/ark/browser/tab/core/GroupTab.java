@@ -2,7 +2,7 @@ package com.ark.browser.tab.core;
 
 import android.util.AtomicFile;
 
-import androidx.annotation.Nullable;
+import androidx.annotation.NonNull;
 
 import com.ark.browser.tab.ArkTabImpl;
 import com.ark.browser.tab.PageInfo;
@@ -50,30 +50,37 @@ public class GroupTab implements ITabGroup {
 
     private final Runnable mSaveRunnable = this::saveGroupFile;
 
+    private final TabGroupManager.Selector mSelector;
+
     private AsyncTask<DataInputStream> mPrefetchTabGroupTask;
 
-    public GroupTab(ITabGroup parent) {
-        this(parent, TabInfo.create(parent.getId(), true));
+    public GroupTab(TabGroupManager.Selector selector, ITabGroup parent) {
+        this(selector, parent, TabInfo.create(parent.getId(), true));
     }
 
-    public GroupTab(ITabGroup parent, TabInfo tabInfo) {
-        this(parent, tabInfo, new ArrayList<>(0));
+    public GroupTab(TabGroupManager.Selector selector, ITabGroup parent, TabInfo tabInfo) {
+        this(selector, parent, tabInfo, new ArrayList<>(0));
         File groupFile = ArkTabDao.getTabFile(tabInfo.getId());
         if (groupFile.exists()) {
             mPrefetchTabGroupTask = ArkTabDao.readFileAsync(groupFile);
         }
     }
 
-    public GroupTab(ITabGroup parent, TabInfo tabInfo, List<ITab> tabs) {
-        this(parent, tabInfo, tabs, new ObserverList<>());
+    private GroupTab(TabGroupManager.Selector selector, ITabGroup parent, TabInfo tabInfo, List<ITab> tabs) {
+        this(selector, parent, tabInfo, tabs, new ObserverList<>());
     }
 
-    private GroupTab(ITabGroup parent, TabInfo tabInfo, List<ITab> tabs, ObserverList<TabInfoObserver> observers) {
+    private GroupTab(TabGroupManager.Selector selector, ITabGroup parent, TabInfo tabInfo, List<ITab> tabs, ObserverList<TabInfoObserver> observers) {
+        mSelector = selector;
         mParentTab = parent;
         mObservers = observers;
         mObservers.disableThreadAsserts();
         mTabInfo = tabInfo;
         mTabList = tabs;
+    }
+
+    public TabGroupManager.Selector getSelector() {
+        return mSelector;
     }
 
     @Override
@@ -88,7 +95,7 @@ public class GroupTab implements ITabGroup {
 
     @Override
     public ITab cloneByGroupTab(ITabGroup group) {
-        GroupTab tab = new GroupTab(group, mTabInfo, new ArrayList<>(mTabList), mObservers);
+        GroupTab tab = new GroupTab(mSelector, group, mTabInfo, new ArrayList<>(mTabList), mObservers);
         mTabInfo.setParentId(group.getId());
         tab.mPrefetchTabGroupTask = mPrefetchTabGroupTask;
         return tab;
@@ -365,7 +372,7 @@ public class GroupTab implements ITabGroup {
 //        nativeTab.loadInNewPage();
 
         // TODO optimise
-//        TabGroupManager.global().notifyChanged();
+//        mSelector.notifyChanged();
         for (TabInfoObserver obs : mObservers) {
             obs.didAddTab(newTab, type);
         }
@@ -381,7 +388,7 @@ public class GroupTab implements ITabGroup {
         List<ITab> tabs = new ArrayList<>(0);
         TabInfo tabInfo = TabInfo.create(getId(), true, System.currentTimeMillis());
         tabInfo.setLaunchType(type);
-        GroupTab newGroup = new GroupTab(this, tabInfo, tabs);
+        GroupTab newGroup = new GroupTab(mSelector, this, tabInfo, tabs);
 
         int index;
         int lastId;
@@ -407,7 +414,7 @@ public class GroupTab implements ITabGroup {
         ArkLogger.d(TAG, "openInNewGroup group=" + newGroup.getTabInfo());
 
         // TODO optimise
-        TabGroupManager.global().selectGroup(newGroup);
+        mSelector.selectGroup(newGroup);
         for (TabInfoObserver obs : mObservers) {
             ArkLogger.d(GroupTab.this, "selectTabInfo obs=" + obs);
             obs.didSelectTab(newGroup, TabSelectionType.FROM_USER, lastId);
@@ -506,11 +513,10 @@ public class GroupTab implements ITabGroup {
                     current = parent;
                     parent = parent.getParentGroup();
                 }
-                TabGroupManager.global().selectGroup(tab.getParentGroup());
+                mSelector.selectGroup(tab.getParentGroup());
             }
 
-            // TODO optimise
-            TabGroupManager.global().notifyTabMoved(tab, oldParent);
+            mSelector.notifyTabMoved(tab, oldParent);
             for (TabInfoObserver observer : mObservers) {
                 observer.didMoveTab(tab);
             }
@@ -739,7 +745,7 @@ public class GroupTab implements ITabGroup {
         }
     }
 
-    public static ITab restoreTab(@Nullable ITabGroup parent, int tabId) {
+    public static ITab restoreTab(@NonNull ITabGroup parent, int tabId) {
         File tabFile = ArkTabDao.getTabFile(tabId);
         ArkLogger.e(ChildTab.class, "from id=" + tabId + " tabFile=" + tabFile);
         try {
@@ -751,13 +757,13 @@ public class GroupTab implements ITabGroup {
         }
     }
 
-    private static ITab restoreTab(@Nullable ITabGroup parent, File tabFile) throws IOException {
+    private static ITab restoreTab(@NonNull ITabGroup parent, File tabFile) throws IOException {
         try (DataInputStream stream = ArkTabDao.readFileAtomic(tabFile)) {
             return restoreTab(parent, stream);
         }
     }
 
-    private static ITab restoreTab(@Nullable ITabGroup parent, DataInputStream is) throws IOException {
+    private static ITab restoreTab(@NonNull ITabGroup parent, DataInputStream is) throws IOException {
         TabInfo newTabInfo = TabInfo.create(is);
 
         int count = is.readInt();
@@ -767,7 +773,7 @@ public class GroupTab implements ITabGroup {
 
         if (isGroup) {
             List<ITab> tabs = new ArrayList<>();
-            ITabGroup newGroupTab = new GroupTab(parent, newTabInfo, tabs);
+            ITabGroup newGroupTab = new GroupTab(parent.getSelector(), parent, newTabInfo, tabs);
             for (int i = 0; i < count; i++) {
                 int childId = is.readInt();
                 ITab newTab = restoreTab(newGroupTab, childId);

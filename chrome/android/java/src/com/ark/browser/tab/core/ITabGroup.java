@@ -31,6 +31,8 @@ public interface ITabGroup extends ITab {
 
     void init();
 
+    TabGroupManager.Selector getSelector();
+
     @Override
     default String getTitle() {
         if (TextUtils.isEmpty(getTabInfo().getTitle())) {
@@ -197,8 +199,7 @@ public interface ITabGroup extends ITab {
         onIndexChanged(indexOf(iTab));
         tab.selectPage(page);
 
-        // TODO optimise
-        TabGroupManager.global().notifyTabSelected(iTab);
+        getSelector().notifyTabSelected(iTab);
         for (TabInfoObserver obs : getObservers()) {
             ArkLogger.d(ITabGroup.this, "selectTabInfo obs=" + obs);
             obs.didSelectTab(iTab, TabSelectionType.FROM_USER, lastPageId);
@@ -254,13 +255,13 @@ public interface ITabGroup extends ITab {
                 ThreadPool.postOnUIThread(() -> {
                     tab.remove();
                     // TODO optimise
-//                    TabGroupManager.global().notifyChanged();
+//                    getSelector().notifyChanged();
                     for (TabInfoObserver obs : getObservers()) {
                         obs.didCloseTab(id, isIncognito());
                     }
                 });
             } else {
-//                TabGroupManager.global().notifyChanged();
+//                getSelector().notifyChanged();
                 for (TabInfoObserver obs : getObservers()) {
                     obs.didRemoveTab(tab);
                 }
