@@ -339,6 +339,14 @@ class EolNotificationTest : public MixinBasedInProcessBrowserTest,
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    EolNotificationTest,
+    ::testing::Values(TestCase::kIncentivesDisabled,
+                      TestCase::kIncentivesWithoutOffer,
+                      TestCase::kIncentivesWithOffer,
+                      TestCase::kIncentivesWithOfferAndAUEWarning));
+
 // Tests that verify EOL notifications are not shown on managed devices.
 class ManagedDeviceEolNotificationTest
     : public MixinBasedInProcessBrowserTest,
@@ -369,6 +377,14 @@ class ManagedDeviceEolNotificationTest
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ManagedDeviceEolNotificationTest,
+    ::testing::Values(TestCase::kIncentivesDisabled,
+                      TestCase::kIncentivesWithoutOffer,
+                      TestCase::kIncentivesWithOffer,
+                      TestCase::kIncentivesWithOfferAndAUEWarning));
 
 // Tests that verify EOL notifications with incentives are not shown for child
 // users.
@@ -401,27 +417,34 @@ class ChildUserEolNotificationTest
 
 INSTANTIATE_TEST_SUITE_P(
     All,
-    EolNotificationTest,
-    ::testing::Values(TestCase::kIncentivesDisabled,
-                      TestCase::kIncentivesWithoutOffer,
-                      TestCase::kIncentivesWithOffer,
-                      TestCase::kIncentivesWithOfferAndAUEWarning));
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    ManagedDeviceEolNotificationTest,
-    ::testing::Values(TestCase::kIncentivesDisabled,
-                      TestCase::kIncentivesWithoutOffer,
-                      TestCase::kIncentivesWithOffer,
-                      TestCase::kIncentivesWithOfferAndAUEWarning));
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
     ChildUserEolNotificationTest,
     ::testing::Values(TestCase::kIncentivesDisabled,
                       TestCase::kIncentivesWithoutOffer,
                       TestCase::kIncentivesWithOffer,
                       TestCase::kIncentivesWithOfferAndAUEWarning));
+
+class SuppressedNotificationTest : public MixinBasedInProcessBrowserTest,
+                                   public ::testing::WithParamInterface<bool> {
+ public:
+  SuppressedNotificationTest() {
+    scoped_feature_list_.InitWithFeatureState(
+        features::kSuppressFirstEolWarning, SuppressFirstWarningEnabled());
+  }
+
+  bool SuppressFirstWarningEnabled() { return GetParam(); }
+
+ protected:
+  EolStatusMixin eol_status_mixin_{&mixin_host_};
+  NotificationDisplayServiceMixin notifications_mixin_{&mixin_host_};
+  ash::LoggedInUserMixin logged_in_user_mixin_{
+      &mixin_host_, LoggedInUserMixin::LogInType::kRegular,
+      embedded_test_server(), this};
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All, SuppressedNotificationTest, testing::Bool());
 
 IN_PROC_BROWSER_TEST_P(EolNotificationTest, ShowNotificationForEolApproaching) {
   ASSERT_EQ(TimeSetupResult::kSuccess,
@@ -924,6 +947,51 @@ IN_PROC_BROWSER_TEST_P(ChildUserEolNotificationTest, NoTrayNotice) {
 
   EXPECT_FALSE(SystemTrayTestApi().IsBubbleViewVisible(
       VIEW_ID_QS_EOL_NOTICE_BUTTON, /*open_tray=*/true));
+}
+
+// Test that the eol notification is not shown when just within 180 days, when
+// first eol warning is suppressed.
+IN_PROC_BROWSER_TEST_P(SuppressedNotificationTest,
+                       EolNotificationSupressed180DaysBefore) {
+  // Set eol date to be 173 days in the future.
+  ASSERT_EQ(TimeSetupResult::kSuccess,
+            eol_status_mixin_.SetUpTime(
+                /*now_string=*/"12 May 2023", /*eol_string=*/"1 November 2023",
+                /*profile_creation_string=*/"05 December 2021"));
+
+  logged_in_user_mixin_.LogInUser();
+
+  NotificationDisplayServiceTester* notification_display_service =
+      notifications_mixin_.WaitForDisplayService();
+  ASSERT_TRUE(notification_display_service);
+
+  base::RunLoop().RunUntilIdle();
+
+  absl::optional<message_center::Notification> notification =
+      notification_display_service->GetNotification(kEolNotificationId);
+  EXPECT_EQ(SuppressFirstWarningEnabled(), !notification);
+}
+
+// Test that the eol notification is shown when just within 90 days.
+IN_PROC_BROWSER_TEST_P(SuppressedNotificationTest,
+                       EolNotificationShown90DaysBefore) {
+  // Set eol date to be 83 days in the future.
+  ASSERT_EQ(TimeSetupResult::kSuccess,
+            eol_status_mixin_.SetUpTime(
+                /*now_string=*/"12 May 2023", /*eol_string=*/"3 August 2023",
+                /*profile_creation_string=*/"05 December 2021"));
+
+  logged_in_user_mixin_.LogInUser();
+
+  NotificationDisplayServiceTester* notification_display_service =
+      notifications_mixin_.WaitForDisplayService();
+  ASSERT_TRUE(notification_display_service);
+
+  base::RunLoop().RunUntilIdle();
+
+  absl::optional<message_center::Notification> notification =
+      notification_display_service->GetNotification(kEolNotificationId);
+  EXPECT_TRUE(notification);
 }
 
 }  // namespace ash
