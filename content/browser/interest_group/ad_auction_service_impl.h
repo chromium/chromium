@@ -65,6 +65,10 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
                           const std::string& name,
                           LeaveInterestGroupCallback callback) override;
   void LeaveInterestGroupForDocument() override;
+  void ClearOriginJoinedInterestGroups(
+      const url::Origin& owner,
+      const std::vector<std::string>& interest_groups_to_keep,
+      ClearOriginJoinedInterestGroupsCallback callback) override;
   void UpdateAdInterestGroups() override;
   void CreateAuctionNonce(CreateAuctionNonceCallback callback) override;
   void RunAdAuction(

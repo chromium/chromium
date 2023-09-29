@@ -308,6 +308,7 @@ namespace {
 // pending operations are dropped on destruction / navigation away.
 const int kMaxActiveCrossSiteJoins = 20;
 const int kMaxActiveCrossSiteLeaves = 20;
+const int kMaxActiveCrossSiteClears = 20;
 
 // Error string builders.
 
@@ -2840,6 +2841,10 @@ NavigatorAuction::NavigatorAuction(Navigator& navigator)
           kMaxActiveCrossSiteLeaves,
           WTF::BindRepeating(&NavigatorAuction::StartLeave,
                              WrapWeakPersistent(this))),
+      queued_cross_site_clears_(
+          kMaxActiveCrossSiteClears,
+          WTF::BindRepeating(&NavigatorAuction::StartClear,
+                             WrapWeakPersistent(this))),
       ad_auction_service_(navigator.GetExecutionContext()) {
   navigator.GetExecutionContext()->GetBrowserInterfaceBroker().GetInterface(
       ad_auction_service_.BindNewPipeAndPassReceiver(
@@ -3131,6 +3136,93 @@ ScriptPromise NavigatorAuction::leaveAdInterestGroup(
   // According to the spec, implicit leave bypasses permission policy.
   return From(ExecutionContext::From(script_state), navigator)
       .leaveAdInterestGroupForDocument(script_state, exception_state);
+}
+
+ScriptPromise NavigatorAuction::clearOriginJoinedAdInterestGroups(
+    ScriptState* script_state,
+    const String owner_string,
+    const Vector<String> interest_groups_to_keep,
+    ExceptionState& exception_state) {
+  scoped_refptr<const SecurityOrigin> owner = ParseOrigin(owner_string);
+  if (!owner) {
+    exception_state.ThrowTypeError("owner '" + owner_string +
+                                   "' must be a valid https origin.");
+    return ScriptPromise();
+  }
+
+  if (ExecutionContext::From(script_state)->GetSecurityOrigin()->Protocol() !=
+      url::kHttpsScheme) {
+    exception_state.ThrowSecurityError(
+        "May only clearOriginJoinedAdInterestGroups from an https origin.");
+    return ScriptPromise();
+  }
+
+  bool is_cross_origin = !ExecutionContext::From(script_state)
+                              ->GetSecurityOrigin()
+                              ->IsSameOriginWith(owner.get());
+
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
+  ScriptPromise promise = resolver->Promise();
+  mojom::blink::AdAuctionService::LeaveInterestGroupCallback callback =
+      resolver->WrapCallbackInScriptScope(
+          WTF::BindOnce(&NavigatorAuction::ClearComplete,
+                        WrapWeakPersistent(this), is_cross_origin));
+
+  PendingClear pending_clear{owner, interest_groups_to_keep,
+                             std::move(callback)};
+  if (is_cross_origin) {
+    queued_cross_site_clears_.Enqueue(std::move(pending_clear));
+  } else {
+    StartClear(std::move(pending_clear));
+  }
+
+  return promise;
+}
+
+/* static */
+ScriptPromise NavigatorAuction::clearOriginJoinedAdInterestGroups(
+    ScriptState* script_state,
+    Navigator& navigator,
+    const String owner,
+    ExceptionState& exception_state) {
+  return clearOriginJoinedAdInterestGroups(script_state, navigator, owner,
+                                           Vector<String>(), exception_state);
+}
+
+/* static */
+ScriptPromise NavigatorAuction::clearOriginJoinedAdInterestGroups(
+    ScriptState* script_state,
+    Navigator& navigator,
+    const String owner,
+    const Vector<String> interest_groups_to_keep,
+    ExceptionState& exception_state) {
+  if (!navigator.DomWindow()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidAccessError,
+                                      "The document has no window associated.");
+    return ScriptPromise();
+  }
+  RecordCommonFledgeUseCounters(navigator.DomWindow()->document());
+  ExecutionContext* context = ExecutionContext::From(script_state);
+  if (!context->IsFeatureEnabled(
+          mojom::blink::PermissionsPolicyFeature::kJoinAdInterestGroup)) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotAllowedError,
+        "Feature join-ad-interest-group is not enabled by Permissions Policy");
+    return ScriptPromise();
+  }
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kAdInterestGroupAPIRestrictedPolicyByDefault) &&
+      FeatureWouldBeBlockedByRestrictedPermissionsPolicy(navigator)) {
+    AddWarningMessageToConsole(
+        *context,
+        WarningPermissionsPolicy("join-ad-interest-group",
+                                 "clearOriginJoinedAdInterestGroups"));
+  }
+
+  return From(context, navigator)
+      .clearOriginJoinedAdInterestGroups(
+          script_state, owner, interest_groups_to_keep, exception_state);
 }
 
 void NavigatorAuction::updateAdInterestGroups() {
@@ -3617,6 +3709,29 @@ void NavigatorAuction::LeaveComplete(bool is_cross_origin,
         resolver->GetScriptState()->GetIsolate(),
         DOMExceptionCode::kNotAllowedError,
         "Permission to leave interest group denied."));
+    return;
+  }
+  resolver->Resolve();
+}
+
+void NavigatorAuction::StartClear(PendingClear&& pending_clear) {
+  ad_auction_service_->ClearOriginJoinedInterestGroups(
+      pending_clear.owner, pending_clear.interest_groups_to_keep,
+      std::move(pending_clear.callback));
+}
+
+void NavigatorAuction::ClearComplete(bool is_cross_origin,
+                                     ScriptPromiseResolver* resolver,
+                                     bool failed_well_known_check) {
+  if (is_cross_origin) {
+    queued_cross_site_clears_.OnComplete();
+  }
+
+  if (failed_well_known_check) {
+    resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
+        resolver->GetScriptState()->GetIsolate(),
+        DOMExceptionCode::kNotAllowedError,
+        "Permission to leave interest groups denied."));
     return;
   }
   resolver->Resolve();

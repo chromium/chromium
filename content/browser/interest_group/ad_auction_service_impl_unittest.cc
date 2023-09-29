@@ -703,6 +703,8 @@ class AdAuctionServiceImplTest : public RenderViewHostTestHarness {
         /*enabled_features=*/{blink::features::kInterestGroupStorage,
                               blink::features::kAdInterestGroupAPI,
                               blink::features::kFledge,
+                              blink::features::
+                                  kFledgeClearOriginJoinedAdInterestGroups,
                               blink::features::kFledgeNegativeTargeting},
         /*disabled_features=*/{});
     fenced_frame_feature_list_.InitAndEnableFeatureWithParameters(
@@ -899,6 +901,26 @@ class AdAuctionServiceImplTest : public RenderViewHostTestHarness {
     interest_service.set_disconnect_handler(run_loop.QuitClosure());
     interest_service->LeaveInterestGroup(
         owner, name, base::BindOnce([](bool failed_well_known_check) {
+          ADD_FAILURE() << "This callback should not be invoked.";
+        }));
+    run_loop.Run();
+  }
+
+  // Calls ClearOriginJoinedInterestGroups() with the provided parameters, and
+  // expects the pipe to be closed, as happens when the renderer makes an
+  // invalid call.
+  void ClearOriginJoinedInterestGroupsAndExpectPipeClosed(
+      const url::Origin& owner,
+      RenderFrameHost* rfh = nullptr) {
+    mojo::Remote<blink::mojom::AdAuctionService> interest_service;
+    AdAuctionServiceImpl::CreateMojoService(
+        rfh ? rfh : main_rfh(), interest_service.BindNewPipeAndPassReceiver());
+
+    base::RunLoop run_loop;
+    interest_service.set_disconnect_handler(run_loop.QuitClosure());
+    interest_service->ClearOriginJoinedInterestGroups(
+        owner, /*interest_groups_to_keep=*/{},
+        base::BindOnce([](bool failed_well_known_check) {
           ADD_FAILURE() << "This callback should not be invoked.";
         }));
     run_loop.Run();
@@ -1215,9 +1237,21 @@ TEST_F(AdAuctionServiceImplTest, JoinMassiveInterestGroupFails) {
   ASSERT_EQ(groups.size(), 0u);
 }
 
-// Non-HTTPS interest groups should be rejected, and result in the pipe being
-// closed.
-TEST_F(AdAuctionServiceImplTest, LeaveInterestGroupOriginNotHttps) {
+// Trying to leave Non-HTTPS interest groups should not be possible, and result
+// in the pipe being closed. Can't check there's an HTTP group that isn't left,
+// since it should be impossible to join one in the first place.
+TEST_F(AdAuctionServiceImplTest, LeaveClearInterestGroupOriginNotHttps) {
+  const GURL kHttpUrl = GURL("http://a.test/");
+  const url::Origin kHttpOrigin = url::Origin::Create(kHttpUrl);
+
+  NavigateAndCommit(kUrlA);
+  LeaveInterestGroupAndExpectPipeClosed(kHttpOrigin, kInterestGroupName);
+  ClearOriginJoinedInterestGroupsAndExpectPipeClosed(kHttpOrigin);
+}
+
+// Non-HTTPS interest origins should not be able to leave groups should be
+// rejected, and result in the pipe being closed.
+TEST_F(AdAuctionServiceImplTest, LeaveClearInterestGroupFrameNotHttps) {
   const GURL kHttpUrl = GURL("http://a.test/");
   const url::Origin kHttpOrigin = url::Origin::Create(kHttpUrl);
 
@@ -1229,6 +1263,12 @@ TEST_F(AdAuctionServiceImplTest, LeaveInterestGroupOriginNotHttps) {
   // The request should be rejected.
   NavigateAndCommit(kHttpUrl);
   LeaveInterestGroupAndExpectPipeClosed(kOriginA, kInterestGroupName);
+  EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
+
+  // Clearing shouldn't leave the IG, even if it's incorrectly executed, since
+  // the joining origin is wrong, but still make sure there's no effect, just in
+  // case.
+  ClearOriginJoinedInterestGroupsAndExpectPipeClosed(kOriginA);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
 }
 
@@ -6873,12 +6913,14 @@ TEST_F(AdAuctionServiceImplRestrictedPermissionsPolicyTest,
       kUpdateUrlPath, base::StringPrintf(R"({"biddingLogicURL": "%s%s"})",
                                          kOriginStringC, kNewBiddingUrlPath));
 
-  NavigateAndCommit(kUrlC);
-
+  // Join an interest group for origin C from an origin A URL. Do it manually
+  // to bypass permissions checks. It's important to join it from an A URL to
+  // make sure that the ClearOriginJoinedInterestGroups() has no effect,
+  // in addition to the pipe being closed.
   blink::InterestGroup interest_group = CreateInterestGroup();
   interest_group.owner = kOriginC;
   interest_group.bidding_url = kUrlC.Resolve(kBiddingUrlPath);
-  JoinInterestGroupAndFlush(interest_group);
+  manager_->JoinInterestGroup(interest_group, kUrlA);
 
   NavigateAndCommit(kUrlA);
   EXPECT_EQ(1, GetJoinCount(kOriginC, kInterestGroupName));
@@ -6910,6 +6952,9 @@ TEST_F(AdAuctionServiceImplRestrictedPermissionsPolicyTest,
             base::StringPrintf("%s%s", kOriginStringC, kBiddingUrlPath));
 
   LeaveInterestGroupAndExpectPipeClosed(kOriginC, kInterestGroupName, subframe);
+  EXPECT_EQ(1, GetJoinCount(kOriginC, kInterestGroupName));
+
+  ClearOriginJoinedInterestGroupsAndExpectPipeClosed(kOriginC, subframe);
   EXPECT_EQ(1, GetJoinCount(kOriginC, kInterestGroupName));
 }
 

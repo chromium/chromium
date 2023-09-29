@@ -159,6 +159,19 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
       network::mojom::URLLoaderFactory& url_loader_factory,
       blink::mojom::AdAuctionService::LeaveInterestGroupCallback callback);
 
+  // Much like CheckPermissionsAndJoinInterestGroup(), except for an operation
+  // that leaves all interest groups previously joined from the main frame
+  // origin, except those listed in `interest_groups_to_keep`.
+  void CheckPermissionsAndClearOriginJoinedInterestGroups(
+      const url::Origin& owner,
+      const std::vector<std::string>& interest_groups_to_keep,
+      const url::Origin& main_frame_origin,
+      const url::Origin& frame_origin,
+      const net::NetworkIsolationKey& network_isolation_key,
+      bool report_result_only,
+      network::mojom::URLLoaderFactory& url_loader_factory,
+      blink::mojom::AdAuctionService::LeaveInterestGroupCallback callback);
+
   // Joins an interest group. If the interest group does not exist, a new one
   // is created based on the provided group information. If the interest group
   // exists, the existing interest group is overwritten. In either case a join
@@ -167,9 +180,16 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   // Remove the interest group if it exists.
   void LeaveInterestGroup(const blink::InterestGroupKey& group_key,
                           const url::Origin& main_frame);
-  // Loads all interest groups owned by `owner`, then updates their definitions
-  // by fetching their `dailyUpdateUrl`. Interest group updates that fail to
-  // load or validate are skipped, but other updates will proceed.
+  // Removes all interest groups owned by `owner` joined from
+  // `main_frame_origin` except `interest_groups_to_keep`, if they exist.
+  void ClearOriginJoinedInterestGroups(
+      url::Origin owner,
+      std::set<std::string> interest_groups_to_keep,
+      url::Origin main_frame_origin);
+  // Loads all interest groups owned by `owner`, then updates their
+  // definitions by fetching their `dailyUpdateUrl`. Interest group updates
+  // that fail to load or validate are skipped, but other updates will
+  // proceed.
   void UpdateInterestGroupsOfOwner(
       const url::Origin& owner,
       network::mojom::ClientSecurityStatePtr client_security_state,
@@ -392,10 +412,10 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
     base::OnceCallback<void(BiddingAndAuctionData)> callback;
   };
 
-  // Callbacks for CheckPermissionsAndJoinInterestGroup() and
-  // CheckPermissionsAndLeaveInterestGroup(), respectively. Call
-  // JoinInterestGroup() and LeaveInterestGroup() if the results of the
-  // permissions check allows it.
+  // Callbacks for CheckPermissionsAndJoinInterestGroup(),
+  // CheckPermissionsAndLeaveInterestGroup(), and
+  // CheckPermissionsAndClearOriginJoinedInterestGroups(), respectively. Perform
+  // requested operation if the results of the permissions check allows it.
   void OnJoinInterestGroupPermissionsChecked(
       blink::InterestGroup group,
       const GURL& joining_url,
@@ -406,6 +426,13 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   void OnLeaveInterestGroupPermissionsChecked(
       const blink::InterestGroupKey& group_key,
       const url::Origin& main_frame,
+      bool report_result_only,
+      blink::mojom::AdAuctionService::LeaveInterestGroupCallback callback,
+      bool can_leave);
+  void OnClearOriginJoinedInterestGroupsPermissionsChecked(
+      url::Origin owner,
+      std::set<std::string> interest_groups_to_keep,
+      url::Origin main_frame_origin,
       bool report_result_only,
       blink::mojom::AdAuctionService::LeaveInterestGroupCallback callback,
       bool can_leave);

@@ -233,6 +233,28 @@ void AdAuctionServiceImpl::LeaveInterestGroupForDocument() {
       main_frame_origin_);
 }
 
+void AdAuctionServiceImpl::ClearOriginJoinedInterestGroups(
+    const url::Origin& owner,
+    const std::vector<std::string>& interest_groups_to_keep,
+    ClearOriginJoinedInterestGroupsCallback callback) {
+  if (!JoinOrLeaveApiAllowedFromRenderer(owner)) {
+    return;
+  }
+
+  // If the interest group leave API is not allowed for this origin, report the
+  // result of the permissions check, but don't actually join the interest
+  // group. The return value of IsInterestGroupAPIAllowed() is potentially
+  // affected by a user's browser configuration, which shouldn't be leaked to
+  // sites to protect against fingerprinting.
+  bool report_result_only = !IsInterestGroupAPIAllowed(
+      ContentBrowserClient::InterestGroupApiOperation::kLeave, owner);
+
+  GetInterestGroupManager().CheckPermissionsAndClearOriginJoinedInterestGroups(
+      owner, interest_groups_to_keep, main_frame_origin_, origin(),
+      GetFrame()->GetNetworkIsolationKey(), report_result_only,
+      *GetFrameURLLoaderFactory(), std::move(callback));
+}
+
 void AdAuctionServiceImpl::UpdateAdInterestGroups() {
   // If the interest group API is not allowed for this context by Permissions
   // Policy, do nothing

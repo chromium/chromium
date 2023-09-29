@@ -1770,6 +1770,51 @@ bool DoClearClusteredBiddingGroups(sql::Database& db,
   return transaction.Commit();
 }
 
+// Leaves all the interest groups joined on `joining_origin` except
+// `interest_groups_to_keep`.
+bool DoClearOriginJoinedInterestGroups(
+    sql::Database& db,
+    const url::Origin owner,
+    const std::set<std::string>& interest_groups_to_keep,
+    const url::Origin joining_origin) {
+  sql::Transaction transaction(&db);
+  if (!transaction.Begin()) {
+    return false;
+  }
+
+  // Have to select interest groups and then use DoRemoveInterestGroup() in
+  // order to remove data in other tables about any removed groups. Can't just
+  // do a single delete.
+
+  // clang-format off
+  sql::Statement same_cluster_groups(
+    db.GetCachedStatement(SQL_FROM_HERE,
+      "SELECT name "
+      "FROM interest_groups "
+      "WHERE owner = ? AND joining_origin = ?"));
+  // clang-format on
+
+  if (!same_cluster_groups.is_valid()) {
+    return false;
+  }
+
+  same_cluster_groups.Reset(true);
+  same_cluster_groups.BindString(0, Serialize(owner));
+  same_cluster_groups.BindString(1, Serialize(joining_origin));
+
+  while (same_cluster_groups.Step()) {
+    std::string name = same_cluster_groups.ColumnString(0);
+    if (interest_groups_to_keep.find(name) != interest_groups_to_keep.end()) {
+      continue;
+    }
+    if (!DoRemoveInterestGroup(
+            db, blink::InterestGroupKey(owner, std::move(name)))) {
+      return false;
+    }
+  }
+  return transaction.Commit();
+}
+
 bool DoLoadInterestGroup(sql::Database& db,
                          const blink::InterestGroupKey& group_key,
                          blink::InterestGroup& group,
@@ -3515,6 +3560,21 @@ void InterestGroupStorage::LeaveInterestGroup(
   }
 
   if (!DoRemoveInterestGroup(*db_, group_key)) {
+    DLOG(ERROR) << "Could not leave interest group: " << db_->GetErrorMessage();
+  }
+}
+
+void InterestGroupStorage::ClearOriginJoinedInterestGroups(
+    const url::Origin& owner,
+    const std::set<std::string>& interest_groups_to_keep,
+    const url::Origin& main_frame_origin) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!EnsureDBInitialized()) {
+    return;
+  }
+
+  if (!DoClearOriginJoinedInterestGroups(*db_, owner, interest_groups_to_keep,
+                                         main_frame_origin)) {
     DLOG(ERROR) << "Could not leave interest group: " << db_->GetErrorMessage();
   }
 }

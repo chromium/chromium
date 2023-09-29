@@ -6464,6 +6464,7 @@ interface Navigator
     method canLoadAdAuctionFencedFrame
     method canShare
     method clearAppBadge
+    method clearOriginJoinedAdInterestGroups
     method constructor
     method createAuctionNonce
     method createHandwritingRecognizer

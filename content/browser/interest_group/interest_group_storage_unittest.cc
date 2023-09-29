@@ -16,6 +16,7 @@
 #include "base/run_loop.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -58,6 +59,23 @@ class InterestGroupStorageTest : public testing::Test {
          {"max_groups_per_owner", "10"},
          {"max_ops_before_maintenance", "100"},
          {"max_storage_per_owner", "2048"}});
+  }
+
+  // Returns a summary of all interest groups. Each interest group is returned
+  // as a string of the form:
+  // "<origin>;<name>". This allows for easily checking that only the expected
+  // interest groups remain.
+  std::vector<std::string> GetInterestGroupSummary(
+      InterestGroupStorage& storage) {
+    std::vector<content::StorageInterestGroup> groups =
+        storage.GetAllInterestGroupsUnfilteredForTesting();
+    std::vector<std::string> summary;
+    for (const auto& group : groups) {
+      summary.emplace_back(base::StringPrintf(
+          "%s;%s", group.interest_group.owner.Serialize().c_str(),
+          group.interest_group.name.c_str()));
+    }
+    return summary;
   }
 
   std::unique_ptr<InterestGroupStorage> CreateStorage() {
@@ -403,6 +421,143 @@ TEST_F(InterestGroupStorageTest, JoinJoinLeave) {
   origins = storage->GetAllInterestGroupOwners();
   EXPECT_EQ(1u, origins.size());
   EXPECT_EQ(test_origin, origins[0]);
+}
+
+// Test ClearOriginJoinedInterestGroups().
+//
+// Join the following interest groups:
+// * With joining origin A, join 3 interest groups with owner B, 2 with an
+//   `executionMode` of "group-by-origin".
+// * With joining origin A, join 1 interest group with owner C.
+// * With joining origin site C, join 1 interest group with owner B.
+//
+// Then call ClearOriginJoinedInterestGroups() from origin A with owner B
+// a number of times, making sure that only the expected IGs are deleted
+// each time.
+TEST_F(InterestGroupStorageTest, ClearOriginJoinedInterestGroups) {
+  const url::Origin kOriginA = url::Origin::Create(GURL("https://a.test"));
+  const url::Origin kOriginB = url::Origin::Create(GURL("https://b.test"));
+  const url::Origin kOriginC = url::Origin::Create(GURL("https://c.test"));
+  const char kName1[] = "name1";
+  const char kName2[] = "name2";
+  const char kName3[] = "name3";
+  const char kName4[] = "name4";
+
+  std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
+
+  // Join 3 interest groups owned by kOriginB on kOriginA, with kName1, kName2,
+  // and kName3. The latter two have "group-by-origin" execution mode.
+  storage->JoinInterestGroup(NewInterestGroup(kOriginB, kName1),
+                             kOriginA.GetURL());
+  InterestGroup interest_group = NewInterestGroup(kOriginB, kName2);
+  interest_group.execution_mode =
+      blink::InterestGroup::ExecutionMode::kGroupedByOriginMode;
+  storage->JoinInterestGroup(interest_group, kOriginA.GetURL());
+  interest_group = NewInterestGroup(kOriginB, kName3);
+  interest_group.execution_mode =
+      blink::InterestGroup::ExecutionMode::kGroupedByOriginMode;
+  storage->JoinInterestGroup(interest_group, kOriginA.GetURL());
+
+  // Join an interest group owned by kOriginC from kOriginA. This should not be
+  // left by when calling ClearOriginJoinedInterestGroups() from kOriginA for
+  // kOriginB's interest groups.
+  storage->JoinInterestGroup(NewInterestGroup(kOriginC, kName1),
+                             kOriginA.GetURL());
+
+  // Join an interest group owned by kOriginB from kOriginC. This should not be
+  // left by when calling ClearOriginJoinedInterestGroups() from kOriginA for
+  // kOriginB's interest groups.
+  storage->JoinInterestGroup(NewInterestGroup(kOriginB, kName4),
+                             kOriginC.GetURL());
+
+  // Clear all of origin B's interest groups joined from origin B. This should
+  // leave no interest groups.
+  storage->ClearOriginJoinedInterestGroups(kOriginB, {},
+                                           /*main_frame_origin=*/kOriginB);
+  EXPECT_THAT(GetInterestGroupSummary(*storage),
+              testing::UnorderedElementsAre(
+                  // Origin B's groups that were joined on origin A.
+                  "https://b.test;name1", "https://b.test;name2",
+                  "https://b.test;name3",
+                  // Other groups.
+                  "https://c.test;name1", "https://b.test;name4"));
+
+  // Leave all of origin's B's interest groups joined from origin A, except for
+  // a list that contains all of the groups actually joined that way (plus an
+  // extra group). No groups should be left.
+  storage->ClearOriginJoinedInterestGroups(
+      kOriginB, {kName1, kName2, kName3, "not-present-group"},
+      /*main_frame_origin=*/kOriginA);
+  EXPECT_THAT(GetInterestGroupSummary(*storage),
+              testing::UnorderedElementsAre(
+                  // Origin B's groups that were joined on origin A.
+                  "https://b.test;name1", "https://b.test;name2",
+                  "https://b.test;name3",
+                  // Other groups.
+                  "https://c.test;name1", "https://b.test;name4"));
+
+  // Leave all of origin's B's interest groups joined from origin A, except for
+  // kName1 and kName3. Only the kName2 group should be left. Despite kName2 and
+  // kName3 groups both having "group-by-origin" execution mode, group kName3
+  // should not have been left.
+  storage->ClearOriginJoinedInterestGroups(kOriginB, {kName1, kName3},
+                                           /*main_frame_origin=*/kOriginA);
+  EXPECT_THAT(GetInterestGroupSummary(*storage),
+              testing::UnorderedElementsAre(
+                  // Origin B's groups that were joined on origin A.
+                  "https://b.test;name1", "https://b.test;name3",
+                  // Other groups.
+                  "https://c.test;name1", "https://b.test;name4"));
+
+  // Leave all of origin's B's interest groups joined from origin A.
+  storage->ClearOriginJoinedInterestGroups(kOriginB, {},
+                                           /*main_frame_origin=*/kOriginA);
+  EXPECT_THAT(GetInterestGroupSummary(*storage),
+              testing::UnorderedElementsAre("https://c.test;name1",
+                                            "https://b.test;name4"));
+}
+
+// Make sure that ClearOriginJoinedInterestGroups() clears join, bid, and win
+// history.
+TEST_F(InterestGroupStorageTest, ClearOriginJoinedInterestGroupsClearsHistory) {
+  const url::Origin kOrigin = url::Origin::Create(GURL("https://a.test"));
+  const char kName[] = "name";
+  const blink::InterestGroupKey kGroupKey(kOrigin, kName);
+
+  std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
+
+  storage->JoinInterestGroup(NewInterestGroup(kOrigin, kName),
+                             kOrigin.GetURL());
+
+  // Increment each history count by 1.
+  storage->JoinInterestGroup(NewInterestGroup(kOrigin, kName),
+                             kOrigin.GetURL());
+  storage->RecordInterestGroupBids({kGroupKey});
+  storage->RecordInterestGroupWin(kGroupKey, "{\"url\": \"https://ad.test\"}");
+
+  // Check the group is in the expected state.
+  absl::optional<content::StorageInterestGroup> group =
+      storage->GetInterestGroup(kGroupKey);
+  ASSERT_TRUE(group);
+  EXPECT_EQ(2, group->bidding_browser_signals->join_count);
+  EXPECT_EQ(1, group->bidding_browser_signals->bid_count);
+  EXPECT_EQ(1u, group->bidding_browser_signals->prev_wins.size());
+
+  // Clear the group.
+  storage->ClearOriginJoinedInterestGroups(kOrigin, {},
+                                           /*main_frame_origin=*/kOrigin);
+  EXPECT_FALSE(storage->GetInterestGroup(kGroupKey));
+
+  // Join the group again.
+  storage->JoinInterestGroup(NewInterestGroup(kOrigin, kName),
+                             kOrigin.GetURL());
+
+  // Check that none of the history was retained.
+  group = storage->GetInterestGroup(kGroupKey);
+  ASSERT_TRUE(group);
+  EXPECT_EQ(1, group->bidding_browser_signals->join_count);
+  EXPECT_EQ(0, group->bidding_browser_signals->bid_count);
+  EXPECT_EQ(0u, group->bidding_browser_signals->prev_wins.size());
 }
 
 // Join 5 interest groups in the same origin, and one interest group in another

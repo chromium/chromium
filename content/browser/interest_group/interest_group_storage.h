@@ -68,6 +68,14 @@ class CONTENT_EXPORT InterestGroupStorage {
   // Remove the interest group if it exists.
   void LeaveInterestGroup(const blink::InterestGroupKey& group_key,
                           const url::Origin& main_frame);
+
+  // Removes all interest groups owned by `owner` joined from
+  // `main_frame_origin` except `interest_groups_to_keep`, if they exist.
+  void ClearOriginJoinedInterestGroups(
+      const url::Origin& owner,
+      const std::set<std::string>& interest_groups_to_keep,
+      const url::Origin& main_frame_origin);
+
   // Updates the interest group `name` of `owner` with the populated fields of
   // `update`.
   //

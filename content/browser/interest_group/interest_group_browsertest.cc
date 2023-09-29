@@ -676,7 +676,7 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
  public:
   InterestGroupBrowserTest() {
     feature_list_.InitWithFeatures(
-        /*`enabled_features`=*/
+        /*enabled_features=*/
         {blink::features::kInterestGroupStorage,
          blink::features::kFledgeBiddingAndAuctionServer,
          features::kPrivacySandboxAdsAPIsOverride,
@@ -685,6 +685,7 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
          blink::features::kFledgeNegativeTargeting,
          blink::features::kBiddingAndScoringDebugReportingAPI,
          blink::features::kFledgeDirectFromSellerSignalsHeaderAdSlot,
+         blink::features::kFledgeClearOriginJoinedAdInterestGroups,
          blink::features::kFencedFramesM119Features,
          features::kBackForwardCache},
         /*disabled_features=*/
@@ -1002,6 +1003,103 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
     return result;
   }
 
+  // Attempts to leave all interest groups joined by the current frame owned be
+  // `owner` except for `groups_to_keep`. Returns kSuccess if the operation
+  // claims to have succeeded, and the exception message on failure.
+  //
+  // If `execution_target` is non-null, uses it as the target. Otherwise, uses
+  // shell().
+  [[nodiscard]] std::string ClearOriginJoinedInterestGroups(
+      const url::Origin& owner,
+      const absl::optional<std::vector<std::string>>& groups_to_keep =
+          absl::nullopt,
+      const absl::optional<ToRenderFrameHost> execution_target =
+          absl::nullopt) {
+    ToRenderFrameHost target = execution_target ? *execution_target : shell();
+    if (!groups_to_keep) {
+      return EvalJs(target, JsReplace(R"(
+(async function() {
+  try {
+    await navigator.clearOriginJoinedAdInterestGroups($1);
+    return 'success';
+  } catch (e) {
+    return e.toString();
+  }
+})())",
+                                      owner))
+          .ExtractString();
+    }
+
+    base::Value::List name_list;
+    for (const auto& group : *groups_to_keep) {
+      name_list.Append(group);
+    }
+    return EvalJs(target, JsReplace(R"(
+(async function() {
+  try {
+    await navigator.clearOriginJoinedAdInterestGroups($1, $2);
+    return 'success';
+  } catch (e) {
+    return e.toString();
+  }
+})())",
+                                    owner, base::Value(std::move(name_list))))
+        .ExtractString();
+  }
+
+  // Wrapper around ClearOriginJoinedInterestGroups() that also checks that the
+  // correct set of interest groups were left.
+  [[nodiscard]] std::string ClearOriginJoinedInterestGroupsAndVerify(
+      const url::Origin& owner,
+      const absl::optional<std::vector<std::string>>& groups_to_keep =
+          absl::nullopt,
+      const absl::optional<ToRenderFrameHost> execution_target =
+          absl::nullopt) {
+    ToRenderFrameHost target = execution_target ? *execution_target : shell();
+
+    content::RenderFrameHost* main_frame =
+        content::WebContents::FromRenderFrameHost(target.render_frame_host())
+            ->GetPrimaryMainFrame();
+    url::Origin main_frame_origin = main_frame->GetLastCommittedOrigin();
+
+    std::vector<content::StorageInterestGroup> initial_groups =
+        GetAllInterestGroupDetails();
+
+    std::string result = ClearOriginJoinedInterestGroups(owner, groups_to_keep,
+                                                         execution_target);
+
+    bool success = (result == kSuccess);
+
+    for (const auto& group : initial_groups) {
+      const std::string& name = group.interest_group.name;
+      int final_join_count = GetJoinCount(group.interest_group.owner, name);
+
+      // If the leave failed, nothing should have changed.
+      if (!success) {
+        EXPECT_EQ(group.bidding_browser_signals->join_count, final_join_count);
+        continue;
+      }
+
+      if (owner != group.interest_group.owner ||
+          main_frame_origin != group.joining_origin) {
+        // Groups with different origins or joined by different origins should
+        // not be modified in any way.
+        EXPECT_EQ(group.bidding_browser_signals->join_count, final_join_count);
+      } else if (groups_to_keep &&
+                 std::find(groups_to_keep->begin(), groups_to_keep->end(),
+                           name) != groups_to_keep->end()) {
+        // Interest groups that are excluded by name also should not be
+        // modified.
+        EXPECT_EQ(group.bidding_browser_signals->join_count, final_join_count);
+      } else {
+        // Other interest groups should have been left.
+        EXPECT_EQ(0, final_join_count);
+      }
+    }
+
+    return result;
+  }
+
   std::vector<url::Origin> GetAllInterestGroupsOwners() {
     std::vector<url::Origin> interest_group_owners;
     base::RunLoop run_loop;
@@ -1029,13 +1127,23 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
     return interest_groups;
   }
 
+  std::vector<content::StorageInterestGroup> GetAllInterestGroupDetails() {
+    std::vector<content::StorageInterestGroup> interest_groups;
+    for (const auto& owner : GetAllInterestGroupsOwners()) {
+      std::vector<content::StorageInterestGroup> owner_groups =
+          GetInterestGroupsForOwner(owner);
+      interest_groups.insert(interest_groups.end(),
+                             std::make_move_iterator(owner_groups.begin()),
+                             std::make_move_iterator(owner_groups.end()));
+    }
+    return interest_groups;
+  }
+
   std::vector<blink::InterestGroupKey> GetAllInterestGroups() {
     std::vector<blink::InterestGroupKey> interest_groups;
-    for (const auto& owner : GetAllInterestGroupsOwners()) {
-      for (const auto& storage_group : GetInterestGroupsForOwner(owner)) {
-        interest_groups.emplace_back(storage_group.interest_group.owner,
-                                     storage_group.interest_group.name);
-      }
+    for (const auto& storage_group : GetAllInterestGroupDetails()) {
+      interest_groups.emplace_back(storage_group.interest_group.owner,
+                                   storage_group.interest_group.name);
     }
     return interest_groups;
   }
@@ -1461,6 +1569,39 @@ function provideAdditionalBids(seller, nonce, bidStringList,
   return 'done';
 })())",
                                   name.c_str(), origin.Serialize().c_str())));
+  }
+
+  // Expects that permission policy will prevent
+  // clearOriginJoinedAdInterestGroups() from being invoked. Checks both the 1-
+  // and 2-argument overloads.
+  void ExpectNotAllowedToClearOriginJoinedInterestGroups(
+      const url::Origin& origin,
+      RenderFrameHost* execution_target) {
+    const char kExpectedError[] =
+        "NotAllowedError: Failed to execute "
+        "'clearOriginJoinedAdInterestGroups' on 'Navigator': Feature "
+        "join-ad-interest-group is not enabled by Permissions Policy";
+    EXPECT_EQ(kExpectedError, EvalJs(execution_target, JsReplace(R"(
+(async function() {
+  try {
+    await navigator.clearOriginJoinedAdInterestGroups($1);
+  } catch (e) {
+    return e.toString();
+  }
+  return 'done';
+})())",
+                                                                 origin)));
+
+    EXPECT_EQ(kExpectedError, EvalJs(execution_target, JsReplace(R"(
+(async function() {
+  try {
+    await navigator.clearOriginJoinedAdInterestGroups($1, ['name1', 'name2']);
+  } catch (e) {
+    return e.toString();
+  }
+  return 'done';
+})())",
+                                                                 origin)));
   }
 
   void ExpectNotAllowedToRunAdAuction(const url::Origin& origin,
@@ -2125,6 +2266,64 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
               testing::UnorderedElementsAreArray(expected_groups));
 }
 
+IN_PROC_BROWSER_TEST_F(
+    InterestGroupBrowserTest,
+    SameOriginClearOriginJoinedInterestGroupsWithoutGroupsToKeep) {
+  GURL test_url_a = https_server_->GetURL("a.test", "/echo");
+  url::Origin test_origin_a = url::Origin::Create(test_url_a);
+  ASSERT_TRUE(test_url_a.SchemeIs(url::kHttpsScheme));
+  ASSERT_TRUE(NavigateToURL(shell(), test_url_a));
+
+  // These joins should all succeed.
+  EXPECT_EQ(kSuccess, JoinInterestGroupAndVerify(test_origin_a, "name1"));
+  EXPECT_EQ(kSuccess, JoinInterestGroupAndVerify(test_origin_a, "name2"));
+  EXPECT_EQ(kSuccess, JoinInterestGroupAndVerify(test_origin_a, "name3"));
+
+  // Directly join an interest group from a different main frame origin. This
+  // should not be left by the clear call.
+  manager_->JoinInterestGroup(
+      blink::TestInterestGroupBuilder(test_origin_a, "name4").Build(),
+      /*joining_url=*/https_server_->GetURL("b.test", "/echo"));
+
+  EXPECT_EQ(kSuccess, ClearOriginJoinedInterestGroupsAndVerify(test_origin_a));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    InterestGroupBrowserTest,
+    SameOriginClearOriginJoinedInterestGroupsWithGroupsToKeep) {
+  const char kName1[] = "name1";
+  const char kName2[] = "name2";
+  const char kName3[] = "name3";
+  const char kName4[] = "name4";
+  GURL test_url_a = https_server_->GetURL("a.test", "/echo");
+  url::Origin test_origin_a = url::Origin::Create(test_url_a);
+  ASSERT_TRUE(test_url_a.SchemeIs(url::kHttpsScheme));
+  ASSERT_TRUE(NavigateToURL(shell(), test_url_a));
+
+  // These joins should all succeed.
+  EXPECT_EQ(kSuccess, JoinInterestGroupAndVerify(test_origin_a, kName1));
+  EXPECT_EQ(kSuccess, JoinInterestGroupAndVerify(test_origin_a, kName2));
+  EXPECT_EQ(kSuccess, JoinInterestGroupAndVerify(test_origin_a, kName3));
+
+  // Directly join an interest group from a different main frame origin. This
+  // should not be left by the clear call.
+  manager_->JoinInterestGroup(
+      blink::TestInterestGroupBuilder(test_origin_a, kName4).Build(),
+      https_server_->GetURL("b.test", "/echo"));
+
+  // Progressively reduce the number of interest groups to keep. Each request
+  // should succeed. These calls should all check that the right set of interest
+  // groups were left.
+  EXPECT_EQ(kSuccess,
+            ClearOriginJoinedInterestGroupsAndVerify(
+                test_origin_a, /*groups_to_keep=*/{{kName1, kName2, kName3}}));
+  EXPECT_EQ(kSuccess,
+            ClearOriginJoinedInterestGroupsAndVerify(
+                test_origin_a, /*groups_to_keep=*/{{kName1, kName3}}));
+  EXPECT_EQ(kSuccess, ClearOriginJoinedInterestGroupsAndVerify(
+                          test_origin_a, /*groups_to_keep=*/{{}}));
+}
+
 // Can't join or leave interest groups from http://localhost, even though it's
 // a "secure context" (since it's potentially trustworthy).
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, CantJoinLeaveHttpLocalhost) {
@@ -2143,6 +2342,13 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, CantJoinLeaveHttpLocalhost) {
       "May only leaveAdInterestGroup from an https origin.",
       LeaveInterestGroup(url::Origin::Create(GURL("https://example.org/")),
                          "cars"));
+
+  EXPECT_EQ(
+      "SecurityError: Failed to execute 'clearOriginJoinedAdInterestGroups' on "
+      "'Navigator': May only clearOriginJoinedAdInterestGroups from an https "
+      "origin.",
+      ClearOriginJoinedInterestGroups(
+          url::Origin::Create(GURL("https://example.org/"))));
 }
 
 // Test the case of a cross-origin iframe joining and leaving same-origin
@@ -2168,16 +2374,15 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   RenderFrameHost* iframe = parent->child_at(0)->current_frame_host();
 
   // Both joining and leaving should work.
-  EXPECT_EQ(kSuccess,
-            JoinInterestGroupAndVerify(
-                group_origin, kGroup,
-                /*priority=*/0, /*execution_mode=*/
-                blink::InterestGroup::ExecutionMode::kCompatibilityMode,
-                /*bidding_url=*/absl::nullopt,
-                /*ads=*/absl::nullopt,
-                /*ad_components=*/absl::nullopt, iframe));
+  EXPECT_EQ(kSuccess, JoinInterestGroupAndVerify(group_origin, kGroup, iframe));
   EXPECT_EQ(kSuccess,
             LeaveInterestGroupAndVerify(group_origin, kGroup, iframe));
+
+  // clearOriginJoinedAdInterestGroups() should also work.
+  EXPECT_EQ(kSuccess, JoinInterestGroupAndVerify(group_origin, kGroup, iframe));
+  EXPECT_EQ(kSuccess,
+            ClearOriginJoinedInterestGroupsAndVerify(
+                group_origin, /*groups_to_keep=*/absl::nullopt, iframe));
 }
 
 // Test cross-origin joining/leaving of interest groups, in the case an IG owner
@@ -2199,6 +2404,9 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   // Leaving the group should fail.
   EXPECT_EQ("NotAllowedError: Permission to leave interest group denied.",
             LeaveInterestGroupAndVerify(allow_join_origin, kGroup));
+  EXPECT_EQ("NotAllowedError: Permission to leave interest groups denied.",
+            ClearOriginJoinedInterestGroupsAndVerify(
+                url::Origin::Create(GURL("https://example.org/"))));
 }
 
 // Test cross-origin joining/leaving of interest groups, in the case an IG owner
@@ -2223,7 +2431,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
             JoinInterestGroupAndVerify(allow_leave_origin, kJoinSucceedsGroup));
 
   // Navigate to a cross-origin URL.
-  ASSERT_TRUE(NavigateToURL(shell(), https_server_->GetURL("b.test", "/echo")));
+  GURL cross_origin_url = https_server_->GetURL("b.test", "/echo");
+  ASSERT_TRUE(NavigateToURL(shell(), cross_origin_url));
 
   // Try to join an `allow_leave_origin` group, which should fail.
   EXPECT_EQ("NotAllowedError: Permission to join interest group denied.",
@@ -2232,6 +2441,22 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   // Leaving the group that was successfully joined earlier should succeed.
   EXPECT_EQ(kSuccess, LeaveInterestGroupAndVerify(allow_leave_origin,
                                                   kJoinSucceedsGroup));
+
+  // Clearing interest groups joined from the current origin should succeed. To
+  // test, join a URL from both navigate to origins directly (bypassing
+  // .well-known checks), and then call
+  // ClearOriginJoinedInterestGroupsAndVerify(), which should only leave the one
+  // joined from the currently navigated to URL.
+  manager_->JoinInterestGroup(
+      blink::TestInterestGroupBuilder(allow_leave_origin, kJoinSucceedsGroup)
+          .Build(),
+      /*joining_url=*/allow_leave_url.EmptyGURL());
+  manager_->JoinInterestGroup(
+      blink::TestInterestGroupBuilder(allow_leave_origin, kJoinFailsGroup)
+          .Build(),
+      /*joining_url=*/cross_origin_url.EmptyGURL());
+  EXPECT_EQ(kSuccess,
+            ClearOriginJoinedInterestGroupsAndVerify(allow_leave_origin));
 }
 
 // Test cross-origin joining/leaving of interest groups from an iframe, in the
@@ -2272,6 +2497,10 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   // Leaving the group should fail.
   EXPECT_EQ("NotAllowedError: Permission to leave interest group denied.",
             LeaveInterestGroupAndVerify(allow_join_origin, kGroup, iframe));
+  // Clearing should fail as well.
+  EXPECT_EQ("NotAllowedError: Permission to leave interest groups denied.",
+            ClearOriginJoinedInterestGroupsAndVerify(
+                allow_join_origin, /*groups_to_keep=*/absl::nullopt, iframe));
 }
 
 // Test cross-origin joining/leaving of interest groups from an iframe, in the
@@ -2336,6 +2565,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        CrossOriginJoinLeaveBlockedByContentBrowserClient) {
   const char kGroup1[] = "aardvarks";
   const char kGroup2[] = "wombats";
+  const char kGroup3[] = "wallabies";
 
   // Interest groups operations are not allowed on "*.d.test" by the
   // ContentBrowserClient. One allows only joins, one only leaves, which should
@@ -2361,7 +2591,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       /*joining_url=*/https_server_->GetURL("allow-leave.d.test", "/"));
 
   // Navigate to a cross-origin URL.
-  ASSERT_TRUE(NavigateToURL(shell(), https_server_->GetURL("b.test", "/echo")));
+  GURL cross_origin_url = https_server_->GetURL("b.test", "/echo");
+  ASSERT_TRUE(NavigateToURL(shell(), cross_origin_url));
 
   // Join/leave calls for `allow_join_origin` should claim joining succeeded,
   // and leaving failed, but neither call should actually affect what interest
@@ -2380,6 +2611,19 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   // The user should still be in kGroup2, but not kGroup1, for both origins.
   std::vector<blink::InterestGroupKey> expected_groups = {
       {allow_join_origin, kGroup2}, {allow_leave_origin, kGroup2}};
+  EXPECT_THAT(GetAllInterestGroups(),
+              testing::UnorderedElementsAreArray(expected_groups));
+
+  // Clearing should claim to succeed as as well, but do nothing. Join an
+  // interest group directly from the current page, bypassing checks, so there's
+  // an interest group that should not be left to check.
+  manager_->JoinInterestGroup(blink::TestInterestGroupBuilder(
+                                  /*owner=*/allow_leave_origin,
+                                  /*name=*/kGroup3)
+                                  .Build(),
+                              /*joining_url=*/cross_origin_url);
+  EXPECT_EQ(kSuccess, ClearOriginJoinedInterestGroups(allow_leave_origin));
+  expected_groups.emplace_back(allow_leave_origin, kGroup3);
   EXPECT_THAT(GetAllInterestGroups(),
               testing::UnorderedElementsAreArray(expected_groups));
 }
@@ -3723,8 +3967,27 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
         {
           name: 'cars',
           owner: 'https://invalid^&',
-        },
-        /*joinDurationSec=*/1);
+        });
+  } catch (e) {
+    return e.toString();
+  }
+  return 'done';
+})())"));
+  WaitForAccessObserved({});
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       ClearOriginJoinedInterestGroupsInvalidOwner) {
+  ASSERT_TRUE(NavigateToURL(shell(), https_server_->GetURL("a.test", "/echo")));
+  AttachInterestGroupObserver();
+
+  EXPECT_EQ(
+      "TypeError: Failed to execute 'clearOriginJoinedAdInterestGroups' on "
+      "'Navigator': owner 'https://invalid^&' must be a valid https origin.",
+      EvalJs(shell(), R"(
+(async function() {
+  try {
+    await navigator.clearOriginJoinedAdInterestGroups('https://invalid^&');
   } catch (e) {
     return e.toString();
   }
@@ -13794,6 +14057,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, FeaturesDisabledByHttpHeader) {
         https_server_->GetURL("a.test", "/interest_group/decision_logic.js"),
         execution_target);
     ExpectNotAllowedToLeaveInterestGroup(origin, "cars", execution_target);
+    ExpectNotAllowedToClearOriginJoinedInterestGroups(origin, execution_target);
   }
 }
 
@@ -13815,6 +14079,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       https_server_->GetURL("a.test", "/interest_group/decision_logic.js"),
       same_origin_iframe);
   ExpectNotAllowedToLeaveInterestGroup(origin, "cars", same_origin_iframe);
+  ExpectNotAllowedToClearOriginJoinedInterestGroups(origin, same_origin_iframe);
 }
 
 // Interest group APIs succeeded (i.e., feature join-ad-interest-group is
@@ -13899,7 +14164,17 @@ IN_PROC_BROWSER_TEST_F(InterestGroupRestrictedPermissionsPolicyBrowserTest,
                   execution_target));
 
     EXPECT_EQ("done", UpdateInterestGroupsInJS(execution_target));
-    EXPECT_EQ(kSuccess, LeaveInterestGroup(origin, "cars", execution_target));
+    EXPECT_EQ(kSuccess,
+              LeaveInterestGroupAndVerify(origin, "cars", execution_target));
+
+    // Join another interest group and make sure
+    // clearOriginJoinedAdInterestGroups() works as well.
+    EXPECT_EQ(kSuccess, JoinInterestGroupAndVerify(
+                            /*owner=*/origin,
+                            /*name=*/"bacon", execution_target));
+    EXPECT_EQ(kSuccess, ClearOriginJoinedInterestGroupsAndVerify(
+                            origin, absl::nullopt, execution_target));
+
     EXPECT_TRUE(console_observer.messages().empty());
   }
 }
