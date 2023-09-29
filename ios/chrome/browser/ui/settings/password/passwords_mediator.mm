@@ -9,7 +9,7 @@
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/password_manager/core/browser/leak_detection_dialog_utils.h"
-#import "components/password_manager/core/browser/password_manager_util.h"
+#import "components/password_manager/core/browser/password_manager_client.h"
 #import "components/password_manager/core/browser/password_sync_util.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/sync/service/sync_service_utils.h"
@@ -121,8 +121,8 @@ using password_manager::features::IsPasswordCheckupEnabled;
   _currentState = _passwordCheckManager->GetPasswordCheckState();
   [self updateConsumerPasswordCheckState:_currentState];
   [self.consumer
-      setSavingPasswordsToAccount:password_manager_util::GetPasswordSyncState(
-                                      _syncService) !=
+      setSavingPasswordsToAccount:password_manager::sync_util::
+                                      GetPasswordSyncState(_syncService) !=
                                   password_manager::SyncState::kNotSyncing];
 }
 
@@ -430,8 +430,8 @@ using password_manager::features::IsPasswordCheckupEnabled;
 
 - (void)onSyncStateChanged {
   [self.consumer
-      setSavingPasswordsToAccount:password_manager_util::GetPasswordSyncState(
-                                      _syncService) !=
+      setSavingPasswordsToAccount:password_manager::sync_util::
+                                      GetPasswordSyncState(_syncService) !=
                                   password_manager::SyncState::kNotSyncing];
 }
 

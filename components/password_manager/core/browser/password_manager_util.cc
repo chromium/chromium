@@ -45,8 +45,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/sync/service/sync_service.h"
-#include "components/sync/service/sync_user_settings.h"
 #include "url/url_util.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -85,29 +83,6 @@ void UpdateMetadataForUsage(PasswordForm* credential) {
   // Remove alternate usernames. At this point we assume that we have found
   // the right username.
   credential->all_alternative_usernames.clear();
-}
-
-password_manager::SyncState GetPasswordSyncState(
-    const syncer::SyncService* sync_service) {
-  if (!sync_service ||
-      !sync_service->GetActiveDataTypes().Has(syncer::PASSWORDS)) {
-    return password_manager::SyncState::kNotSyncing;
-  }
-
-  if (sync_service->IsSyncFeatureActive()) {
-    return sync_service->GetUserSettings()->IsUsingExplicitPassphrase()
-               ? password_manager::SyncState::kSyncingWithCustomPassphrase
-               : password_manager::SyncState::kSyncingNormalEncryption;
-  }
-
-  DCHECK(base::FeatureList::IsEnabled(
-      password_manager::features::kEnablePasswordsAccountStorage));
-
-  return sync_service->GetUserSettings()->IsUsingExplicitPassphrase()
-             ? password_manager::SyncState::
-                   kAccountPasswordsActiveWithCustomPassphrase
-             : password_manager::SyncState::
-                   kAccountPasswordsActiveNormalEncryption;
 }
 
 void TrimUsernameOnlyCredentials(

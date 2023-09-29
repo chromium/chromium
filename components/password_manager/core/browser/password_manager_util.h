@@ -33,10 +33,6 @@ namespace autofill {
 class AutofillClient;
 }  // namespace autofill
 
-namespace syncer {
-class SyncService;
-}
-
 class PrefService;
 
 namespace password_manager_util {
@@ -56,11 +52,6 @@ enum class GetLoginMatchType {
 
 // Update |credential| to reflect usage.
 void UpdateMetadataForUsage(password_manager::PasswordForm* credential);
-
-// Reports whether and how passwords are currently synced. In particular, for a
-// null |sync_service| returns NOT_SYNCING.
-password_manager::SyncState GetPasswordSyncState(
-    const syncer::SyncService* sync_service);
 
 // Removes Android username-only credentials from |android_credentials|.
 // Transforms federated credentials into non zero-click ones.

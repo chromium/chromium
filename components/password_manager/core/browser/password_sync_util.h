@@ -17,6 +17,7 @@ class IdentityManager;
 
 namespace password_manager {
 
+enum class SyncState;
 struct PasswordForm;
 
 namespace sync_util {
@@ -67,6 +68,11 @@ absl::optional<std::string> GetSyncingAccount(
 // value if the user is syncing or signed in and opted in to account storage.
 absl::optional<std::string> GetAccountForSaving(
     const PrefService* pref_service,
+    const syncer::SyncService* sync_service);
+
+// Reports whether and how passwords are currently synced. In particular, for a
+// null |sync_service| returns NOT_SYNCING.
+password_manager::SyncState GetPasswordSyncState(
     const syncer::SyncService* sync_service);
 
 }  // namespace sync_util

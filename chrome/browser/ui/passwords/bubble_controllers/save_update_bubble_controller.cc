@@ -21,8 +21,8 @@
 #include "components/password_manager/core/browser/manage_passwords_referrer.h"
 #include "components/password_manager/core/browser/password_feature_manager.h"
 #include "components/password_manager/core/browser/password_form_metrics_recorder.h"
-#include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_store_interface.h"
+#include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/password_manager/core/browser/reauth_purpose.h"
 #include "components/password_manager/core/browser/smart_bubble_stats_store.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
@@ -94,7 +94,7 @@ bool IsSyncUser(Profile* profile) {
   const syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(profile);
   password_manager::SyncState sync_state =
-      password_manager_util::GetPasswordSyncState(sync_service);
+      password_manager::sync_util::GetPasswordSyncState(sync_service);
   return sync_state == password_manager::SyncState::kSyncingNormalEncryption ||
          sync_state ==
              password_manager::SyncState::kSyncingWithCustomPassphrase;

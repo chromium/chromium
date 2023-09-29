@@ -6,8 +6,10 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/features/password_manager_features_util.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -130,6 +132,29 @@ absl::optional<std::string> GetAccountForSaving(
     return sync_service->GetAccountInfo().email;
   }
   return absl::nullopt;
+}
+
+password_manager::SyncState GetPasswordSyncState(
+    const syncer::SyncService* sync_service) {
+  if (!sync_service ||
+      !sync_service->GetActiveDataTypes().Has(syncer::PASSWORDS)) {
+    return password_manager::SyncState::kNotSyncing;
+  }
+
+  if (sync_service->IsSyncFeatureActive()) {
+    return sync_service->GetUserSettings()->IsUsingExplicitPassphrase()
+               ? password_manager::SyncState::kSyncingWithCustomPassphrase
+               : password_manager::SyncState::kSyncingNormalEncryption;
+  }
+
+  DCHECK(base::FeatureList::IsEnabled(
+      password_manager::features::kEnablePasswordsAccountStorage));
+
+  return sync_service->GetUserSettings()->IsUsingExplicitPassphrase()
+             ? password_manager::SyncState::
+                   kAccountPasswordsActiveWithCustomPassphrase
+             : password_manager::SyncState::
+                   kAccountPasswordsActiveNormalEncryption;
 }
 
 }  // namespace sync_util

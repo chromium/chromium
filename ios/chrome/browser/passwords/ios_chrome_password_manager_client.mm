@@ -21,8 +21,8 @@
 #import "components/password_manager/core/browser/password_manager.h"
 #import "components/password_manager/core/browser/password_manager_constants.h"
 #import "components/password_manager/core/browser/password_manager_driver.h"
-#import "components/password_manager/core/browser/password_manager_util.h"
 #import "components/password_manager/core/browser/password_requirements_service.h"
+#import "components/password_manager/core/browser/password_sync_util.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/password_manager/ios/password_manager_ios_util.h"
 #import "components/sync/service/sync_service.h"
@@ -91,7 +91,7 @@ IOSChromePasswordManagerClient::~IOSChromePasswordManagerClient() = default;
 SyncState IOSChromePasswordManagerClient::GetPasswordSyncState() const {
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForBrowserState(bridge_.browserState);
-  return password_manager_util::GetPasswordSyncState(sync_service);
+  return password_manager::sync_util::GetPasswordSyncState(sync_service);
 }
 
 bool IOSChromePasswordManagerClient::PromptUserToChooseCredentials(

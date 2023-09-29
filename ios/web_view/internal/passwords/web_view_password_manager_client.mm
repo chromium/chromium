@@ -11,7 +11,7 @@
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/password_manager/core/browser/password_form.h"
-#include "components/password_manager/core/browser/password_manager_util.h"
+#import "components/password_manager/core/browser/password_sync_util.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/password_manager/ios/password_manager_ios_util.h"
 #import "ios/web_view/internal/app/application_context.h"
@@ -104,7 +104,7 @@ WebViewPasswordManagerClient::WebViewPasswordManagerClient(
 WebViewPasswordManagerClient::~WebViewPasswordManagerClient() = default;
 
 SyncState WebViewPasswordManagerClient::GetPasswordSyncState() const {
-  return password_manager_util::GetPasswordSyncState(sync_service_);
+  return password_manager::sync_util::GetPasswordSyncState(sync_service_);
 }
 
 bool WebViewPasswordManagerClient::PromptUserToChooseCredentials(

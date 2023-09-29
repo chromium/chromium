@@ -8,7 +8,8 @@
 #include "build/build_config.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/features/password_manager_features_util.h"
-#include "components/password_manager/core/browser/password_manager_util.h"
+#include "components/password_manager/core/browser/password_manager_client.h"
+#include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/service/sync_service.h"
@@ -24,7 +25,7 @@ PasswordFeatureManagerImpl::PasswordFeatureManagerImpl(
       sync_service_(sync_service) {}
 
 bool PasswordFeatureManagerImpl::IsGenerationEnabled() const {
-  switch (password_manager_util::GetPasswordSyncState(sync_service_)) {
+  switch (password_manager::sync_util::GetPasswordSyncState(sync_service_)) {
     case SyncState::kNotSyncing:
       return ShouldShowAccountStorageOptIn();
     case SyncState::kSyncingWithCustomPassphrase:

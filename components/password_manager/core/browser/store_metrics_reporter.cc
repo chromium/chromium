@@ -17,11 +17,12 @@
 #include "components/password_manager/core/browser/features/password_manager_features_util.h"
 #include "components/password_manager/core/browser/password_feature_manager.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
-#include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_reuse_detector.h"
 #include "components/password_manager/core/browser/password_reuse_manager.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
+#include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
@@ -688,7 +689,7 @@ StoreMetricsReporter::StoreMetricsReporter(
           sync_service, identity_manager);
 
   custom_passphrase_enabled_ = IsCustomPassphraseEnabled(
-      password_manager_util::GetPasswordSyncState(sync_service));
+      password_manager::sync_util::GetPasswordSyncState(sync_service));
 
   is_opted_in_account_storage_ =
       features_util::IsOptedInForAccountStorage(prefs, sync_service);
