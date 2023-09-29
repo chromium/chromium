@@ -43,7 +43,9 @@ class KAnonymityServiceClientTest : public testing::Test {
 
  protected:
   void SetUp() override {
-    feature_list_.InitAndEnableFeature(network::features::kPrivateStateTokens);
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{network::features::kPrivateStateTokens},
+        /*disabled_features=*/{features::kKAnonymityServiceOHTTPRequests});
     TestingProfile::Builder builder;
     builder.SetSharedURLLoaderFactory(
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(

@@ -818,7 +818,7 @@ BASE_FEATURE(kKioskEnableSystemWebApps,
 // When enabled, allows other features to use the k-Anonymity Service.
 BASE_FEATURE(kKAnonymityService,
              "KAnonymityService",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Origin to use for requests to the k-Anonymity Auth server to get trust
 // tokens.
@@ -828,7 +828,8 @@ constexpr base::FeatureParam<std::string> kKAnonymityServiceAuthServer{
 
 // Origin to use as a relay for OHTTP requests to the k-Anonymity Join server.
 constexpr base::FeatureParam<std::string> kKAnonymityServiceJoinRelayServer{
-    &kKAnonymityService, "KAnonymityServiceJoinRelayServer", ""};
+    &kKAnonymityService, "KAnonymityServiceJoinRelayServer",
+    "https://google-ohttp-relay-join.fastly-edge.com/"};
 
 // Origin to use to notify the k-Anonymity Join server of group membership.
 constexpr base::FeatureParam<std::string> kKAnonymityServiceJoinServer{
@@ -842,7 +843,8 @@ constexpr base::FeatureParam<base::TimeDelta> kKAnonymityServiceJoinInterval{
 
 // Origin to use as a relay for OHTTP requests to the k-Anonymity Query server.
 constexpr base::FeatureParam<std::string> kKAnonymityServiceQueryRelayServer{
-    &kKAnonymityService, "KAnonymityServiceQueryRelayServer", ""};
+    &kKAnonymityService, "KAnonymityServiceQueryRelayServer",
+    "https://google-ohttp-relay-query.fastly-edge.com/"};
 
 // Origin to use to request k-anonymity status from the k-Anonymity Query
 // server.
@@ -859,7 +861,7 @@ constexpr base::FeatureParam<base::TimeDelta> kKAnonymityServiceQueryInterval{
 // Query k-anonymity servers.
 BASE_FEATURE(kKAnonymityServiceOHTTPRequests,
              "KAnonymityServiceOHTTPRequests",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, the k-Anonymity Service can use a persistent storage to cache
 // public keys.
