@@ -451,10 +451,9 @@ BASE_FEATURE(kDigestAuthEnableSecureAlgorithms,
 // When enabled, partitioned storage will be allowed even if third-party cookies
 // are disabled by default. Partitioned storage will not be allowed if
 // third-party cookies are disabled due to a specific rule.
-// TODO(crbug.com/1468277): Default enable when UI work is complete.
 BASE_FEATURE(kThirdPartyPartitionedStorageAllowedByDefault,
              "ThirdPartyPartitionedStorageAllowedByDefault",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPriorityHeader,
              "PriorityHeader",
