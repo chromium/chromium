@@ -4,12 +4,14 @@
 
 #import "ios/chrome/browser/ui/settings/password/password_manager_view_controller.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/functional/bind.h"
 #import "base/strings/string_piece.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/bind.h"
 #import "base/test/ios/wait_util.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/keyed_service/core/service_access_type.h"
@@ -36,6 +38,7 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
+#import "ios/chrome/browser/ui/settings/cells/inline_promo_cell.h"
 #import "ios/chrome/browser/ui/settings/cells/inline_promo_item.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_check_item.h"
 #import "ios/chrome/browser/ui/settings/password/password_manager_view_controller+private.h"
@@ -1523,6 +1526,80 @@ TEST_F(PasswordManagerViewControllerTest, WidgetPromo) {
   EXPECT_NSEQ(item.promoImage,
               [UIImage imageNamed:kWidgetPromoDisabledImageName]);
   SetEditing(false);
+
+  [GetPasswordManagerViewController() settingsWillBeDismissed];
+}
+
+// Tests that the right metric is logged when tapping the widget promo's close
+// button.
+TEST_F(PasswordManagerViewControllerTest, WidgetPromoCloseButtonMetric) {
+  // Enable Password Manager widget promo feature.
+  base::test::ScopedFeatureList feature_list(
+      feature_engagement::kIPHiOSPromoPasswordManagerWidgetFeature);
+
+  AddSavedForm1();
+
+  // Make Password Manager show the promo.
+  GetPasswordManagerViewController().shouldShowPasswordManagerWidgetPromo = YES;
+  [GetPasswordManagerViewController() reloadData];
+
+  // Bucket count should be zero.
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectBucketCount(kPasswordManagerWidgetPromoActionHistogram,
+                                     PasswordManagerWidgetPromoAction::kClose,
+                                     0);
+
+  NSIndexPath* index_path = [NSIndexPath
+      indexPathForRow:0
+            inSection:GetSectionIndex(SectionIdentifierWidgetPromo)];
+  InlinePromoCell* cell = base::apple::ObjCCastStrict<InlinePromoCell>(
+      [GetPasswordManagerViewController() tableView:controller().tableView
+                              cellForRowAtIndexPath:index_path]);
+
+  // Simulate tap on promo's close button.
+  [cell.closeButton sendActionsForControlEvents:UIControlEventTouchUpInside];
+
+  // Bucket count should now be one.
+  histogram_tester.ExpectBucketCount(kPasswordManagerWidgetPromoActionHistogram,
+                                     PasswordManagerWidgetPromoAction::kClose,
+                                     1);
+
+  [GetPasswordManagerViewController() settingsWillBeDismissed];
+}
+
+// Tests that the right metric is logged when tapping the widget promo's more
+// info button.
+TEST_F(PasswordManagerViewControllerTest, WidgetPromoMoreInfoButtonMetric) {
+  // Enable Password Manager widget promo feature.
+  base::test::ScopedFeatureList feature_list(
+      feature_engagement::kIPHiOSPromoPasswordManagerWidgetFeature);
+
+  AddSavedForm1();
+
+  // Make Password Manager show the promo.
+  GetPasswordManagerViewController().shouldShowPasswordManagerWidgetPromo = YES;
+  [GetPasswordManagerViewController() reloadData];
+
+  // Bucket count should be zero.
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectBucketCount(
+      kPasswordManagerWidgetPromoActionHistogram,
+      PasswordManagerWidgetPromoAction::kOpenInstructions, 0);
+
+  NSIndexPath* index_path = [NSIndexPath
+      indexPathForRow:0
+            inSection:GetSectionIndex(SectionIdentifierWidgetPromo)];
+  InlinePromoCell* cell = base::apple::ObjCCastStrict<InlinePromoCell>(
+      [GetPasswordManagerViewController() tableView:controller().tableView
+                              cellForRowAtIndexPath:index_path]);
+
+  // Simulate tap on promo's more info button.
+  [cell.moreInfoButton sendActionsForControlEvents:UIControlEventTouchUpInside];
+
+  // Bucket count should now be one.
+  histogram_tester.ExpectBucketCount(
+      kPasswordManagerWidgetPromoActionHistogram,
+      PasswordManagerWidgetPromoAction::kOpenInstructions, 1);
 
   [GetPasswordManagerViewController() settingsWillBeDismissed];
 }

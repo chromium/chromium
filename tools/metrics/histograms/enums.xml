@@ -91000,6 +91000,11 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="10" label="Start Password Manager Tutorial"/>
 </enum>
 
+<enum name="PromoWithInstructionsAction">
+  <int value="0" label="Close"/>
+  <int value="1" label="Open Instructions"/>
+</enum>
+
 <enum name="ProtectorError">
   <obsolete>
     Deprecated 8/2013. No longer generated.

@@ -2009,6 +2009,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.PasswordManager.WidgetPromo.Action"
+    enum="PromoWithInstructionsAction" expires_after="2024-03-12">
+  <owner>noemies@google.com</owner>
+  <owner>bling-transactions@google.com</owner>
+  <summary>
+    [iOS Only] Tracks the actions taken by the user on the Password Manager
+    widget promo.
+  </summary>
+</histogram>
+
 <histogram name="IOS.Permission.Modal.Events" enum="IOSPermissionEvent"
     expires_after="2024-01-10">
   <owner>ewannpv@chromium.org</owner>

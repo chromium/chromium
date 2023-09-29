@@ -61,6 +61,20 @@ extern NSString* const kWidgetPromoId;
 // button.
 extern NSString* const kWidgetPromoCloseButtonId;
 
+// Name of histogram tracking actions taken on the Password Manager widget
+// promo.
+extern const char kPasswordManagerWidgetPromoActionHistogram[];
+
+// Enum for the IOS.PasswordManager.WidgetPromo.Action histogram. Keep in sync
+// with the "PromoWithInstructionsAction" enum.
+// LINT.IfChange
+enum class PasswordManagerWidgetPromoAction {
+  kClose = 0,             // The user closed the promo.
+  kOpenInstructions = 1,  // The user opened the instruction view.
+  kMaxValue = kOpenInstructions,
+};
+// LINT.ThenChange(src/tools/metrics/histograms/enums.xml:PromoWithInstructionsAction)
+
 // Sections of the password settings
 typedef NS_ENUM(NSInteger, PasswordSectionIdentifier) {
   SectionIdentifierSavedPasswords = kSectionIdentifierEnumZero,
