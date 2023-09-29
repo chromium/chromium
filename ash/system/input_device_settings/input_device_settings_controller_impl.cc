@@ -173,6 +173,7 @@ mojom::MousePtr BuildMojomMouse(const ui::InputDevice& mouse) {
   mojom::MousePtr mojom_mouse = mojom::Mouse::New();
   mojom_mouse->id = mouse.id;
   mojom_mouse->name = mouse.name;
+  mojom_mouse->customization_restriction = GetCustomizationRestriction(mouse);
   mojom_mouse->device_key =
       Shell::Get()->input_device_key_alias_manager()->GetAliasedDeviceKey(
           mouse);
@@ -1616,7 +1617,8 @@ void InputDeviceSettingsControllerImpl::StartObservingButtons(DeviceId id) {
           ->peripheral_customization_event_rewriter();
   CHECK(rewriter);
   auto* mouse = FindMouse(id);
-  if (mouse) {
+  if (mouse && mouse->customization_restriction ==
+                   ash::mojom::CustomizationRestriction::kAllowCustomizations) {
     const auto* duplicate_ids =
         duplicate_id_finder_->GetDuplicateDeviceIds(mouse->id);
     for (const auto& duplicate_id : *duplicate_ids) {

@@ -145,6 +145,14 @@ const ui::InputDevice kSampleGraphicsTablet(4,
                                             /*vendor=*/0x0004,
                                             /*product=*/0x0005,
                                             /*version=*/0x0006);
+const ui::InputDevice kSampleUncustomizableMouse(5,
+                                                 ui::INPUT_DEVICE_USB,
+                                                 "kSampleUncustomizableMouse",
+                                                 /*phys=*/"",
+                                                 /*sys_path=*/base::FilePath(),
+                                                 /*vendor=*/0xffff,
+                                                 /*product=*/0xffff,
+                                                 /*version=*/0x0009);
 
 constexpr char kUserEmail1[] = "example1@abc.com";
 constexpr char kUserEmail2[] = "joy@abc.com";
@@ -1203,6 +1211,19 @@ TEST_F(InputDeviceSettingsControllerTest, ObservingButtons) {
   controller_->StartObservingButtons(kSampleTouchpadInternal.id);
   ASSERT_EQ(0u, rewriter->mice_to_observe().size());
   ASSERT_EQ(0u, rewriter->graphics_tablets_to_observe().size());
+}
+
+TEST_F(InputDeviceSettingsControllerTest, ObservingUncustomizableMouseButtons) {
+  ui::DeviceDataManagerTestApi().SetMouseDevices({kSampleUncustomizableMouse});
+
+  auto* rewriter = Shell::Get()
+                       ->event_rewriter_controller()
+                       ->peripheral_customization_event_rewriter();
+
+  controller_->StartObservingButtons(kSampleUncustomizableMouse.id);
+  ASSERT_EQ(0u, rewriter->mice_to_observe().size());
+  EXPECT_FALSE(
+      rewriter->mice_to_observe().contains(kSampleUncustomizableMouse.id));
 }
 
 TEST_F(InputDeviceSettingsControllerTest, ObservingButtonsDuplicateIds) {

@@ -147,6 +147,11 @@ export type StaticShortcutAction =
 export const StaticShortcutAction =
     InputDeviceSettingsTypes.StaticShortcutAction;
 
+export type CustomizationRestriction =
+    InputDeviceSettingsTypes.CustomizationRestriction;
+export const CustomizationRestriction =
+    InputDeviceSettingsTypes.CustomizationRestriction;
+
 export interface KeyboardObserverInterface {
   // Fired when the keyboard list is updated.
   onKeyboardListUpdated(keyboards: Keyboard[]): void;

@@ -80,18 +80,22 @@ const ::ash::mojom::PointingStick kPointingStick2 =
                                 /*id=*/6,
                                 /*device_key=*/"fake-device-key6",
                                 ::ash::mojom::PointingStickSettings::New());
-const ::ash::mojom::Mouse kMouse1 =
-    ::ash::mojom::Mouse(/*name=*/"Razer Basilisk V3",
-                        /*is_external=*/false,
-                        /*id=*/7,
-                        /*device_key=*/"fake-device-key7",
-                        ::ash::mojom::MouseSettings::New());
-const ::ash::mojom::Mouse kMouse2 =
-    ::ash::mojom::Mouse(/*name=*/"MX Anywhere 2S",
-                        /*is_external=*/true,
-                        /*id=*/8,
-                        /*device_key=*/"fake-device-key8",
-                        ::ash::mojom::MouseSettings::New());
+const ::ash::mojom::Mouse kMouse1 = ::ash::mojom::Mouse(
+    /*name=*/"Razer Basilisk V3",
+    /*is_external=*/false,
+    /*id=*/7,
+    /*device_key=*/"fake-device-key7",
+    /*customization_restriction=*/
+    ::ash::mojom::CustomizationRestriction::kAllowCustomizations,
+    ::ash::mojom::MouseSettings::New());
+const ::ash::mojom::Mouse kMouse2 = ::ash::mojom::Mouse(
+    /*name=*/"MX Anywhere 2S",
+    /*is_external=*/true,
+    /*id=*/8,
+    /*device_key=*/"fake-device-key8",
+    /*customization_restriction=*/
+    ::ash::mojom::CustomizationRestriction::kAllowCustomizations,
+    ::ash::mojom::MouseSettings::New());
 const ::ash::mojom::GraphicsTablet kGraphicsTablet1 =
     ::ash::mojom::GraphicsTablet(
         /*name=*/"Wacom Intuos S",

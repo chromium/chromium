@@ -112,6 +112,10 @@ ASH_EXPORT bool IsKeyboardPretendingToBeMouse(const ui::InputDevice& device);
 // Returns whether the given keyboard is ChromeOS layout keyboard.
 ASH_EXPORT bool IsChromeOSKeyboard(const mojom::Keyboard& keyboard);
 
+// This helper function checks the customization restriction.
+ASH_EXPORT mojom::CustomizationRestriction GetCustomizationRestriction(
+    const ui::InputDevice& device);
+
 }  // namespace ash
 
 #endif  // ASH_SYSTEM_INPUT_DEVICE_SETTINGS_INPUT_DEVICE_SETTINGS_UTILS_H_

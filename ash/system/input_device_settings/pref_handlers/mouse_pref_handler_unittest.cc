@@ -222,6 +222,8 @@ class MousePrefHandlerTest : public AshTestBase {
     mojom::MousePtr mouse = mojom::Mouse::New();
     mouse->settings = settings.Clone();
     mouse->device_key = device_key;
+    mouse->customization_restriction =
+        mojom::CustomizationRestriction::kAllowCustomizations;
 
     pref_handler_->UpdateMouseSettings(pref_service_.get(),
                                        /*mouse_policies=*/{}, *mouse);
@@ -251,6 +253,8 @@ class MousePrefHandlerTest : public AshTestBase {
       const std::string& device_key) {
     mojom::MousePtr mouse = mojom::Mouse::New();
     mouse->device_key = device_key;
+    mouse->customization_restriction =
+        mojom::CustomizationRestriction::kAllowCustomizations;
 
     pref_handler_->InitializeMouseSettings(pref_service_.get(),
                                            /*mouse_policies=*/{}, mouse.get());

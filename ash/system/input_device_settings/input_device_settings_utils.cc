@@ -138,6 +138,18 @@ const base::Value::List* GetLoginScreenButtonRemappingList(
   return &list_value->GetList();
 }
 
+mojom::CustomizationRestriction GetCustomizationRestriction(
+    const ui::InputDevice& device) {
+  // TODO(wangdanny): Update uncustomizable mice set with devices' vid and pid.
+  static constexpr auto kUncustomizableMice =
+      base::MakeFixedFlatSet<VendorProductId>({
+          {0xffff, 0xffff},  // Fake data for testing.
+      });
+  return kUncustomizableMice.contains({device.vendor_id, device.product_id})
+             ? mojom::CustomizationRestriction::kDisallowCustomizations
+             : mojom::CustomizationRestriction::kAllowCustomizations;
+}
+
 bool IsKeyboardPretendingToBeMouse(const ui::InputDevice& device) {
   static base::NoDestructor<base::flat_set<VendorProductId>> logged_devices;
   static constexpr auto kKeyboardsPretendingToBeMice =

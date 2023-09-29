@@ -120,7 +120,8 @@
         </settings-slider>
       </div>
     </template>
-    <template is="dom-if" if="[[isPeripheralCustomizationEnabled_]]">
+    <template is="dom-if" if="[[showCustomizeButtonRow(
+        customizationRestriction,isPeripheralCustomizationEnabled_)]]">
       <cr-link-row id="customizeMouseButtons"
         class="hr bottom-divider" on-click="onCustomizeButtonsClick"
         aria-describedby="mouseName"

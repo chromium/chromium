@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AcceleratorAction, ActionChoice, CustomizableButton, ExtendedFkeysModifier, GraphicsTablet, Keyboard, MetaKey, ModifierKey, Mouse, PointingStick, SimulateRightClickModifier, SixPackKeyInfo, SixPackShortcutModifier, StaticShortcutAction, Stylus, TopRowActionKey, Touchpad, Vkey} from './input_device_settings_types.js';
+import {AcceleratorAction, ActionChoice, CustomizableButton, CustomizationRestriction, ExtendedFkeysModifier, GraphicsTablet, Keyboard, MetaKey, ModifierKey, Mouse, PointingStick, SimulateRightClickModifier, SixPackKeyInfo, SixPackShortcutModifier, StaticShortcutAction, Stylus, TopRowActionKey, Touchpad, Vkey} from './input_device_settings_types.js';
 
 const defaultSixPackKeyRemappings: SixPackKeyInfo = {
   pageDown: SixPackShortcutModifier.kSearch,
@@ -308,6 +308,7 @@ export const fakeMice: Mouse[] = [
     deviceKey: 'test:key',
     name: 'Razer Basilisk V3',
     isExternal: true,
+    customizationRestriction: CustomizationRestriction.kAllowCustomizations,
     settings: {
       swapRight: true,
       sensitivity: 5,
@@ -372,6 +373,7 @@ export const fakeMice: Mouse[] = [
     deviceKey: 'test:key',
     name: 'MX Anywhere 2S',
     isExternal: false,
+    customizationRestriction: CustomizationRestriction.kAllowCustomizations,
     settings: {
       swapRight: false,
       sensitivity: 1,
@@ -415,6 +417,7 @@ export const fakeMice2: Mouse[] = [
     deviceKey: 'test:key',
     name: 'Fake Razer Basilisk V3',
     isExternal: true,
+    customizationRestriction: CustomizationRestriction.kDisallowCustomizations,
     settings: {
       swapRight: true,
       sensitivity: 5,

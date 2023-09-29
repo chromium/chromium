@@ -235,7 +235,9 @@ void UpdateMouseSettingsImpl(
   pref_service->SetDict(std::string(prefs::kMouseDeviceSettingsDictPref),
                         std::move(devices_dict));
 
-  if (features::IsPeripheralCustomizationEnabled()) {
+  if (features::IsPeripheralCustomizationEnabled() &&
+      mouse.customization_restriction ==
+          mojom::CustomizationRestriction::kAllowCustomizations) {
     UpdateButtonRemappingDictPref(pref_service, mouse);
   }
 }
@@ -317,8 +319,9 @@ void MousePrefHandlerImpl::InitializeMouseSettings(
                    ? SettingsUpdatedMetricsInfo::Category::kDefault
                    : SettingsUpdatedMetricsInfo::Category::kFirstEver;
   }
-
-  if (features::IsPeripheralCustomizationEnabled()) {
+  if (features::IsPeripheralCustomizationEnabled() &&
+      mouse->customization_restriction ==
+          mojom::CustomizationRestriction::kAllowCustomizations) {
     const auto& button_remappings_dict =
         pref_service->GetDict(prefs::kMouseButtonRemappingsDictPref);
     const auto* button_remappings_list =
@@ -377,7 +380,9 @@ void MousePrefHandlerImpl::InitializeLoginScreenMouseSettings(
     mouse->settings->swap_right = mouse_policies.swap_right_policy->value;
   }
 
-  if (features::IsPeripheralCustomizationEnabled()) {
+  if (features::IsPeripheralCustomizationEnabled() &&
+      mouse->customization_restriction ==
+          mojom::CustomizationRestriction::kAllowCustomizations) {
     const auto* button_remappings_list = GetLoginScreenButtonRemappingList(
         local_state, account_id,
         prefs::kMouseLoginScreenButtonRemappingListPref);
@@ -406,7 +411,9 @@ void MousePrefHandlerImpl::UpdateLoginScreenMouseSettings(
           absl::make_optional<base::Value>(ConvertSettingsToDict(
               mouse, mouse_policies, /*force_persistence=*/{}, settings_dict)));
 
-  if (features::IsPeripheralCustomizationEnabled()) {
+  if (features::IsPeripheralCustomizationEnabled() &&
+      mouse.customization_restriction ==
+          mojom::CustomizationRestriction::kAllowCustomizations) {
     const auto* button_remapping_list_pref =
         prefs::kMouseLoginScreenButtonRemappingListPref;
     user_manager::KnownUser(local_state)

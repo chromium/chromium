@@ -151,6 +151,8 @@ struct Mouse {
   // "vendor_id:product_id" where the ids are 16-bit hex in lowercase.
   // Example: 5022:18d1.
   string device_key;
+  // Used to check customization restriction of the mouse.
+  CustomizationRestriction customization_restriction;
   MouseSettings settings;
 };
 
@@ -327,4 +329,12 @@ enum StaticShortcutAction {
   kDisable = 0,
   kCopy = 1,
   kPaste = 2,
+};
+
+// Contains the customization restrictions of the devices.
+enum CustomizationRestriction {
+  // Full access to customization feature with no restrictions.
+  kAllowCustomizations = 0,
+  // Completely disable the customization feature.
+  kDisallowCustomizations = 1,
 };
