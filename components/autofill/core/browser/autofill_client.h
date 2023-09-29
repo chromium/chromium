@@ -43,6 +43,14 @@
 
 class PrefService;
 
+namespace compose {
+class ComposeManager;
+}
+
+namespace plus_addresses {
+class PlusAddressService;
+}
+
 namespace signin {
 class IdentityManager;
 }
@@ -64,10 +72,6 @@ namespace webauthn {
 class InternalAuthenticator;
 }
 #endif
-
-namespace plus_addresses {
-class PlusAddressService;
-}
 
 namespace autofill {
 
@@ -427,6 +431,9 @@ class AutofillClient : public RiskDataLoader {
   // When the enterprise plus address feature is supported, gets the
   // KeyedService that manages that data.
   virtual plus_addresses::PlusAddressService* GetPlusAddressService();
+
+  // Returns the `ComposeManager` instance for the tab of this client.
+  virtual compose::ComposeManager* GetComposeManager();
 
   // Orchestrates UI for enterprise plus address creation; no-op except on
   // supported platforms.

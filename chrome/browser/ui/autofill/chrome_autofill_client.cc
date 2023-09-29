@@ -158,6 +158,10 @@
 #include "components/zoom/zoom_controller.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/compose/chrome_compose_client.h"
+#endif
+
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 #include "chrome/browser/autofill/autofill_ml_prediction_model_service_factory.h"
 #include "components/autofill/core/browser/ml_model/autofill_ml_prediction_model_handler.h"
@@ -254,6 +258,15 @@ IbanManager* ChromeAutofillClient::GetIbanManager() {
   Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
   return IbanManagerFactory::GetForProfile(profile);
+}
+
+compose::ComposeManager* ChromeAutofillClient::GetComposeManager() {
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+  auto* client = ChromeComposeClient::FromWebContents(web_contents());
+  return client ? &client->manager() : nullptr;
+#else
+  return nullptr;
+#endif
 }
 
 plus_addresses::PlusAddressService*
@@ -621,7 +634,7 @@ void ChromeAutofillClient::ShowMandatoryReauthOptInConfirmation() {
 #endif
 }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_ANDROID)
 void ChromeAutofillClient::HideVirtualCardEnrollBubbleAndIconIfVisible() {
   VirtualCardEnrollBubbleControllerImpl::CreateForWebContents(web_contents());
   VirtualCardEnrollBubbleControllerImpl* controller =

@@ -68,6 +68,10 @@ IbanManager* AutofillClient::GetIbanManager() {
   return nullptr;
 }
 
+compose::ComposeManager* AutofillClient::GetComposeManager() {
+  return nullptr;
+}
+
 plus_addresses::PlusAddressService* AutofillClient::GetPlusAddressService() {
   return nullptr;
 }

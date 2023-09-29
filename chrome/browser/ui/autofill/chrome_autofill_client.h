@@ -112,6 +112,7 @@ class ChromeAutofillClient : public ContentAutofillClient,
   AutocompleteHistoryManager* GetAutocompleteHistoryManager() override;
   IbanManager* GetIbanManager() override;
   plus_addresses::PlusAddressService* GetPlusAddressService() override;
+  compose::ComposeManager* GetComposeManager() override;
   void OfferPlusAddressCreation(
       const url::Origin& main_frame_origin,
       plus_addresses::PlusAddressCallback callback) override;

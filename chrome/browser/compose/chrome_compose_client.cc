@@ -14,3 +14,5 @@ ChromeComposeClient::~ChromeComposeClient() = default;
 void ChromeComposeClient::ShowComposeDialog(ComposeDialogCallback callback) {
   // TODO(b/301609035) Add the compose dialog call here.
 }
+
+WEB_CONTENTS_USER_DATA_KEY_IMPL(ChromeComposeClient);
