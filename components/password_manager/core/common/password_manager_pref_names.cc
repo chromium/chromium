@@ -23,7 +23,6 @@ const char kOfferToSavePasswordsEnabledGMS[] =
     "profile.save_passwords_enabed_gms";
 const char kSavePasswordsSuspendedByError[] =
     "profile.save_passwords_suspended_by_error";
-const char kSettingsMigratedToUPM[] = "profile.settings_migrated_to_upm";
 const char kSettingsMigratedToUPMLocal[] =
     "profile.settings_migrated_to_upm_local";
 

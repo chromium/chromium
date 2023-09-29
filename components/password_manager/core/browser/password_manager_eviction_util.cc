@@ -42,7 +42,6 @@ void EvictCurrentUser(int api_error_code, PrefService* prefs) {
       password_manager::prefs::kCurrentMigrationVersionToGoogleMobileServices,
       0);
   prefs->SetDouble(password_manager::prefs::kTimeOfLastMigrationAttempt, 0.0);
-  prefs->SetBoolean(password_manager::prefs::kSettingsMigratedToUPM, false);
 
   base::UmaHistogramBoolean("PasswordManager.UnenrolledFromUPMDueToErrors",
                             true);

@@ -65,10 +65,6 @@ extern const char kOfferToSavePasswordsEnabledGMS[];
 // can only be stricter than any policy applied
 extern const char kSavePasswordsSuspendedByError[];
 
-// Boolean value indicating whether the regular prefs were migrated to UPM
-// settings for syncing users.
-extern const char kSettingsMigratedToUPM[];
-
 // Boolean value indicating whether the regular prefs that apply to the local
 // password store were migrated to UPM settings. It will be set to true
 // automatically if there is nothing to migrate.

@@ -67,8 +67,6 @@ PasswordManagerEvictionUtilTest::PasswordManagerEvictionUtilTest() {
       0);
   test_pref_service_.registry()->RegisterDoublePref(
       password_manager::prefs::kTimeOfLastMigrationAttempt, 0.0);
-  test_pref_service_.registry()->RegisterBooleanPref(
-      password_manager::prefs::kSettingsMigratedToUPM, false);
 }
 
 PasswordManagerEvictionUtilTest::~PasswordManagerEvictionUtilTest() = default;
@@ -79,8 +77,6 @@ TEST_F(PasswordManagerEvictionUtilTest, EvictsUser) {
       1);
   pref_service()->SetDouble(
       password_manager::prefs::kTimeOfLastMigrationAttempt, 20.22);
-  pref_service()->SetBoolean(password_manager::prefs::kSettingsMigratedToUPM,
-                             true);
 
   base::HistogramTester histogram_tester;
 
@@ -101,8 +97,6 @@ TEST_F(PasswordManagerEvictionUtilTest, EvictsUser) {
   EXPECT_EQ(pref_service()->GetDouble(
                 password_manager::prefs::kTimeOfLastMigrationAttempt),
             0.0);
-  EXPECT_FALSE(pref_service()->GetBoolean(
-      password_manager::prefs::kSettingsMigratedToUPM));
 
   histogram_tester.ExpectUniqueSample(kUnenrollmentHistogram, true, 1);
   histogram_tester.ExpectUniqueSample(kUnenrollmentReasonHistogram,

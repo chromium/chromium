@@ -949,6 +949,13 @@ constexpr char kSyncInitialSyncFeatureSetupCompleteOnAsh[] =
 inline constexpr char kPrivacySandboxManuallyControlled[] =
     "privacy_sandbox.manually_controlled";
 
+// Deprecated 09/2023.
+// Boolean value indicating whether the regular prefs were migrated to UPM
+// settings for syncing users.
+#if BUILDFLAG(IS_ANDROID)
+const char kSettingsMigratedToUPM[] = "profile.settings_migrated_to_upm";
+#endif
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1329,6 +1336,9 @@ void RegisterProfilePrefsForMigration(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   registry->RegisterBooleanPref(kSyncInitialSyncFeatureSetupCompleteOnAsh,
                                 false);
+#endif
+#if BUILDFLAG(IS_ANDROID)
+  registry->RegisterBooleanPref(kSettingsMigratedToUPM, false);
 #endif
 }
 
@@ -2499,6 +2509,9 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   profile_prefs->ClearPref(kPrivacySandboxManuallyControlled);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   profile_prefs->ClearPref(kSyncInitialSyncFeatureSetupCompleteOnAsh);
+#endif
+#if BUILDFLAG(IS_ANDROID)
+  profile_prefs->ClearPref(kSettingsMigratedToUPM);
 #endif
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
