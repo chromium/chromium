@@ -21,19 +21,43 @@
 
 IpProtectionConfigProvider::IpProtectionConfigProvider(
     signin::IdentityManager* identity_manager,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     Profile* profile)
-    : identity_manager_(identity_manager),
-      profile_(profile),
-      url_loader_factory_(url_loader_factory),
-      ip_protection_config_http_(
-          std::make_unique<IpProtectionConfigHttp>(url_loader_factory_.get())),
-      blind_sign_auth_(std::make_unique<quiche::BlindSignAuth>(
-          ip_protection_config_http_.get(),
-          privacy::ppn::BlindSignAuthOptions())),
-      bsa_(blind_sign_auth_.get()) {
+    : identity_manager_(identity_manager), profile_(profile) {
   CHECK(identity_manager);
   identity_manager_->AddObserver(this);
+}
+
+void IpProtectionConfigProvider::SetUp() {
+  if (!ip_protection_config_http_) {
+    if (!url_loader_factory_) {
+      CHECK(profile_);
+      url_loader_factory_ = profile_->GetDefaultStoragePartition()
+                                ->GetURLLoaderFactoryForBrowserProcess();
+    }
+    ip_protection_config_http_ =
+        std::make_unique<IpProtectionConfigHttp>(url_loader_factory_.get());
+  }
+  if (!bsa_) {
+    if (!blind_sign_auth_) {
+      blind_sign_auth_ = std::make_unique<quiche::BlindSignAuth>(
+          ip_protection_config_http_.get(),
+          privacy::ppn::BlindSignAuthOptions());
+    }
+    bsa_ = blind_sign_auth_.get();
+  }
+}
+
+void IpProtectionConfigProvider::SetUpForTesting(
+    std::unique_ptr<IpProtectionConfigHttp> ip_protection_config_http,
+    quiche::BlindSignAuthInterface* bsa) {
+  // Carefully destroy any existing values in the correct order.
+  ip_protection_config_http_ = nullptr;
+  url_loader_factory_ = nullptr;
+  ip_protection_config_http_ = std::move(ip_protection_config_http);
+
+  bsa_ = nullptr;
+  blind_sign_auth_ = nullptr;
+  bsa_ = bsa;
 }
 
 IpProtectionConfigProvider::~IpProtectionConfigProvider() = default;
@@ -43,6 +67,7 @@ void IpProtectionConfigProvider::TryGetAuthTokens(
     TryGetAuthTokensCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   CHECK(!is_shutting_down_);
+  SetUp();
 
   // The `batch_size` is cast to an `int` for use by BlindSignAuth, so check for
   // overflow here.
@@ -63,6 +88,10 @@ void IpProtectionConfigProvider::TryGetAuthTokens(
 }
 
 void IpProtectionConfigProvider::GetProxyList(GetProxyListCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK(!is_shutting_down_);
+  SetUp();
+
   ip_protection_config_http_->GetProxyConfig(base::BindOnce(
       [](GetProxyListCallback callback,
          absl::StatusOr<ip_protection::GetProxyConfigResponse> response) {
@@ -155,7 +184,6 @@ void IpProtectionConfigProvider::FetchBlindSignedToken(
     signin::AccessTokenInfo access_token_info,
     uint32_t batch_size,
     TryGetAuthTokensCallback callback) {
-  DCHECK(bsa_);
   auto bsa_get_tokens_start_time = base::TimeTicks::Now();
   bsa_->GetTokens(
       access_token_info.token, batch_size,
@@ -433,16 +461,4 @@ void IpProtectionConfigProvider::OnErrorStateOfRefreshTokenUpdatedForAccount(
     last_try_get_auth_tokens_backoff_ = base::TimeDelta::Max();
     return;
   }
-}
-
-void IpProtectionConfigProvider::SetIpProtectionConfigHttpForTesting(
-    std::unique_ptr<IpProtectionConfigHttp> ip_protection_config_http) {
-  // `blind_sign_auth_` carries a raw pointer to `ip_protection_config_http_`,
-  // and `bsa_` is a raw pointer to `blind_sign_auth_`, so carefully update
-  // those without leaving dangling pointers.
-  bsa_ = nullptr;
-  blind_sign_auth_ = std::make_unique<quiche::BlindSignAuth>(
-      ip_protection_config_http.get(), privacy::ppn::BlindSignAuthOptions());
-  bsa_ = blind_sign_auth_.get();
-  ip_protection_config_http_ = std::move(ip_protection_config_http);
 }

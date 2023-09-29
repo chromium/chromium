@@ -64,8 +64,6 @@ IpProtectionConfigProviderFactory::BuildServiceInstanceForBrowserContext(
   Profile* profile = Profile::FromBrowserContext(context);
   return std::make_unique<IpProtectionConfigProvider>(
       IdentityManagerFactory::GetForProfile(profile),
-      profile->GetDefaultStoragePartition()
-          ->GetURLLoaderFactoryForBrowserProcess(),
       profile);
 }
 

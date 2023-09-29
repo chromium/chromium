@@ -74,18 +74,9 @@ class IpProtectionConfigProvider
  public:
   IpProtectionConfigProvider(
       signin::IdentityManager* identity_manager,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       Profile* profile);
 
   ~IpProtectionConfigProvider() override;
-
-  void SetBlindSignAuthInterfaceForTesting(
-      quiche::BlindSignAuthInterface* bsa) {
-    bsa_ = bsa;
-  }
-
-  void SetIpProtectionConfigHttpForTesting(
-      std::unique_ptr<IpProtectionConfigHttp> ip_protection_config_http);
 
   // Get a batch of blind-signed auth tokens.
   //
@@ -114,6 +105,11 @@ class IpProtectionConfigProvider
     return receiver_id_for_testing_;
   }
 
+  // Like `SetUp()`, but providing values for each of the member variables.
+  void SetUpForTesting(
+      std::unique_ptr<IpProtectionConfigHttp> ip_protection_config_http_,
+      quiche::BlindSignAuthInterface* bsa);
+
   // Base time deltas for calculating `try_again_after`.
   static constexpr base::TimeDelta kNotEligibleBackoff = base::Days(1);
   static constexpr base::TimeDelta kTransientBackoff = base::Seconds(5);
@@ -124,6 +120,11 @@ class IpProtectionConfigProvider
   FRIEND_TEST_ALL_PREFIXES(IpProtectionConfigProviderTest, CalculateBackoff);
   FRIEND_TEST_ALL_PREFIXES(IpProtectionConfigProviderBrowserTest,
                            BackoffTimeResetAfterProfileAvailabilityChange);
+
+  // Set up `ip_protection_config_http_` and `bsa_`, if not already initialized.
+  // This accomplishes lazy loading of these components to break dependency
+  // loops in browser startup.
+  void SetUp();
 
   // Calls the IdentityManager asynchronously to request the OAuth token for the
   // logged in user.

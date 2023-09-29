@@ -140,12 +140,12 @@ class IpProtectionConfigProviderTest : public testing::Test {
             base::Time::FromTimeT(absl::ToTimeT(absl_expiration_time_))) {}
 
   void SetUp() override {
-    getter_ = std::make_unique<IpProtectionConfigProvider>(
-        IdentityManager(),
-        base::MakeRefCounted<network::TestSharedURLLoaderFactory>(),
-        /*profile=*/nullptr);
+    getter_ = std::make_unique<IpProtectionConfigProvider>(IdentityManager(),
+                                                           /*profile=*/nullptr);
     bsa_ = std::make_unique<MockBlindSignAuth>();
-    getter_->SetBlindSignAuthInterfaceForTesting(bsa_.get());
+    getter_->SetUpForTesting(
+        std::make_unique<MockIpProtectionConfigHttp>(absl::nullopt),
+        bsa_.get());
   }
 
   void TearDown() override { getter_->Shutdown(); }
@@ -556,8 +556,8 @@ TEST_F(IpProtectionConfigProviderTest, CalculateBackoff) {
 
 TEST_F(IpProtectionConfigProviderTest, GetProxyList) {
   std::vector<std::string> proxy_list = {"proxy1", "proxy2"};
-  getter_->SetIpProtectionConfigHttpForTesting(
-      std::make_unique<MockIpProtectionConfigHttp>(proxy_list));
+  getter_->SetUpForTesting(
+      std::make_unique<MockIpProtectionConfigHttp>(proxy_list), bsa_.get());
 
   base::test::TestFuture<const absl::optional<std::vector<std::string>>&>
       proxy_list_future;
@@ -568,9 +568,6 @@ TEST_F(IpProtectionConfigProviderTest, GetProxyList) {
 }
 
 TEST_F(IpProtectionConfigProviderTest, GetProxyListFailure) {
-  getter_->SetIpProtectionConfigHttpForTesting(
-      std::make_unique<MockIpProtectionConfigHttp>(absl::nullopt));
-
   base::test::TestFuture<const absl::optional<std::vector<std::string>>&>
       proxy_list_future;
   getter_->GetProxyList(proxy_list_future.GetCallback());
