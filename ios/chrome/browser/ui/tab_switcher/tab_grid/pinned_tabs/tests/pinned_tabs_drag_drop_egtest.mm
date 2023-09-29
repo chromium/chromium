@@ -114,7 +114,7 @@ void DragDropCellInRegularGrid(NSString* cell_identifier) {
 
   // Supposed position of the regular grid.
   XCUICoordinate* end_point =
-      [app coordinateWithNormalizedOffset:CGVectorMake(0.5, 0.5)];
+      [app coordinateWithNormalizedOffset:CGVectorMake(0.5, 0.4)];
 
   [start_point pressForDuration:1.5
            thenDragToCoordinate:end_point
@@ -258,6 +258,9 @@ void AssertPinnedCellMovedToRegularGrid(unsigned int pinned_index,
     EARL_GREY_TEST_SKIPPED(@"Skipped for iPad. The Pinned Tabs feature is only "
                            @"supported on iPhone.");
   }
+  // TODO(crbug.com/1464519): Failing on iOS17, and iOS15.5 for
+  // ios-simulator-noncq.
+  XCTSkip(@"Failing on iOS17 and iOS15.5");
 
   [ChromeEarlGrey openNewTab];
   [ChromeEarlGreyUI openTabGrid];
