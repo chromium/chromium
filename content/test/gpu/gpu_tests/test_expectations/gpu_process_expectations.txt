@@ -137,7 +137,7 @@ crbug.com/1378476 [ mac mac-arm64 ] GpuProcess_swiftshader_for_webgl [ Skip ]
 ###################
 # Non-"Skip" expectations go here to suppress regular flakes/failures.
 
-
+crbug.com/1487800 [ android android-sm-a135m ] GpuProcess_visibility [ RetryOnFailure ]
 
 
 
