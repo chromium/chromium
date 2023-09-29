@@ -225,8 +225,6 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
   bool IsLiveRunningServiceWorker(int64_t service_worker_version_id) override;
   service_manager::InterfaceProvider& GetRemoteInterfaces(
       int64_t service_worker_version_id) override;
-  blink::AssociatedInterfaceProvider& GetRemoteAssociatedInterfaces(
-      int64_t service_worker_version_id) override;
 
   scoped_refptr<ServiceWorkerRegistration> GetLiveRegistration(
       int64_t registration_id);

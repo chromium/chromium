@@ -28,7 +28,6 @@ class Uuid;
 }
 
 namespace blink {
-class AssociatedInterfaceProvider;
 class StorageKey;
 }  // namespace blink
 
@@ -286,13 +285,6 @@ class CONTENT_EXPORT ServiceWorkerContext {
   // interfaces exposed by the Service Worker. CHECKs if
   // `IsLiveRunningServiceWorker()` returns false.
   virtual service_manager::InterfaceProvider& GetRemoteInterfaces(
-      int64_t service_worker_version_id) = 0;
-
-  // Returns the AssociatedInterfaceProvider for the worker specified by
-  // `service_worker_version_id`. The caller can use InterfaceProvider to bind
-  // interfaces exposed by the Service Worker. CHECKs if
-  // `IsLiveRunningServiceWorker()` returns false.
-  virtual blink::AssociatedInterfaceProvider& GetRemoteAssociatedInterfaces(
       int64_t service_worker_version_id) = 0;
 
  protected:

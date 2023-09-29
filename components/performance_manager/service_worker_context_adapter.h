@@ -104,8 +104,6 @@ class ServiceWorkerContextAdapter
   bool IsLiveRunningServiceWorker(int64_t service_worker_version_id) override;
   service_manager::InterfaceProvider& GetRemoteInterfaces(
       int64_t service_worker_version_id) override;
-  blink::AssociatedInterfaceProvider& GetRemoteAssociatedInterfaces(
-      int64_t service_worker_version_id) override;
 
   // content::ServiceWorkerContextObserver:
   void OnRegistrationCompleted(const GURL& scope) override;
