@@ -613,14 +613,14 @@ class BrowserAutofillManagerTest : public testing::Test {
         std::make_unique<MockAutofillDownloadManager>(&autofill_client_));
 
     browser_autofill_manager_->set_touch_to_fill_delegate(
-        std::make_unique<MockTouchToFillDelegate>());
+        std::make_unique<NiceMock<MockTouchToFillDelegate>>());
     ON_CALL(touch_to_fill_delegate(), GetManager())
         .WillByDefault(Return(browser_autofill_manager_.get()));
     ON_CALL(touch_to_fill_delegate(), IsShowingTouchToFill())
         .WillByDefault(Return(false));
 
     browser_autofill_manager_->set_fast_checkout_delegate(
-        std::make_unique<MockFastCheckoutDelegate>());
+        std::make_unique<NiceMock<MockFastCheckoutDelegate>>());
     ON_CALL(fast_checkout_delegate(), IsShowingFastCheckoutUI())
         .WillByDefault(Return(false));
 
