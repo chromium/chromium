@@ -145,7 +145,7 @@ void AssertTryAgainButtonOnPage() {
       LocalizedString(@"IDS_IOS_SAFE_MODE_SENDING_CRASH_REPORT"));
 }
 
-// Tests that a start NTP is shown after 2 crashes.
+// Tests that an NTP is shown after 2 crashes.
 - (void)testPostCrashNTP {
   [SafeModeAppInterface setFailedStartupAttemptCount:0];
   [ChromeEarlGrey closeAllTabsInCurrentMode];
@@ -169,18 +169,7 @@ void AssertTryAgainButtonOnPage() {
   [ChromeEarlGrey waitForMainTabCount:3];
   [ChromeEarlGrey waitForIncognitoTabCount:1];
 
-  // Verify Shortcuts module title is visible in Magic Stack.
-  [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityID(l10n_util::GetNSString(
-                     IDS_IOS_CONTENT_SUGGESTIONS_SHORTCUTS_MODULE_TITLE))]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_accessibilityID(kMagicStackScrollViewAccessibilityIdentifier)]
-      performAction:grey_swipeFastInDirection(kGREYDirectionLeft)];
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
-                                   IDS_IOS_TAB_RESUMPTION_TITLE))]
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
       assertWithMatcher:grey_sufficientlyVisible()];
   [SafeModeAppInterface setFailedStartupAttemptCount:0];
 }
