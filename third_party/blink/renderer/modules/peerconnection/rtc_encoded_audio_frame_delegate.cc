@@ -92,17 +92,8 @@ Vector<uint32_t> RTCEncodedAudioFrameDelegate::ContributingSources() const {
 
 absl::optional<uint64_t> RTCEncodedAudioFrameDelegate::AbsCaptureTime() const {
   base::AutoLock lock(lock_);
-  if (webrtc_frame_ &&
-      webrtc_frame_->GetDirection() ==
-          webrtc::TransformableFrameInterface::Direction::kReceiver) {
-    webrtc::TransformableAudioFrameInterface* incoming_audio_frame =
-        static_cast<webrtc::TransformableAudioFrameInterface*>(
-            webrtc_frame_.get());
-
-    return incoming_audio_frame->AbsoluteCaptureTimestamp();
-  }
-
-  return absl::nullopt;
+  return webrtc_frame_ ? webrtc_frame_->AbsoluteCaptureTimestamp()
+                       : absl::nullopt;
 }
 
 std::unique_ptr<webrtc::TransformableAudioFrameInterface>
