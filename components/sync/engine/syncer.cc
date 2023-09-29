@@ -41,8 +41,6 @@ SyncerErrorValueForUma GetSyncerErrorValueForUma(
       return SyncerErrorValueForUma::kServerReturnNotMyBirthday;
     case THROTTLED:
       return SyncerErrorValueForUma::kServerReturnThrottled;
-    case CLEAR_PENDING:
-      return SyncerErrorValueForUma::kServerReturnClearPending;
     case TRANSIENT_ERROR:
       return SyncerErrorValueForUma::kServerReturnTransientError;
     case MIGRATION_DONE:

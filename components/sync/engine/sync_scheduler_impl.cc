@@ -59,7 +59,6 @@ bool ShouldRequestEarlyExit(const SyncProtocolError& error) {
       return false;
     case NOT_MY_BIRTHDAY:
     case CLIENT_DATA_OBSOLETE:
-    case CLEAR_PENDING:
     case DISABLED_BY_ADMIN:
     case ENCRYPTION_OBSOLETE:
       // If we send terminate sync early then |sync_cycle_ended| notification

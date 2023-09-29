@@ -368,7 +368,6 @@ const char* ProtoEnumToString(sync_pb::SyncEnums::ErrorType error_type) {
     ENUM_CASE(sync_pb::SyncEnums, SUCCESS);
     ENUM_CASE(sync_pb::SyncEnums, NOT_MY_BIRTHDAY);
     ENUM_CASE(sync_pb::SyncEnums, THROTTLED);
-    ENUM_CASE(sync_pb::SyncEnums, CLEAR_PENDING);
     ENUM_CASE(sync_pb::SyncEnums, TRANSIENT_ERROR);
     ENUM_CASE(sync_pb::SyncEnums, MIGRATION_DONE);
     ENUM_CASE(sync_pb::SyncEnums, DISABLED_BY_ADMIN);

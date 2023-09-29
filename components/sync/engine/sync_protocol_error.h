@@ -21,9 +21,6 @@ enum SyncProtocolErrorType {
   // Server is busy. Try later.
   THROTTLED,
 
-  // Clear user data is being currently executed by the server.
-  CLEAR_PENDING,
-
   // Server cannot service the request now.
   TRANSIENT_ERROR,
 

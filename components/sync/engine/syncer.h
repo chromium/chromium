@@ -40,7 +40,7 @@ enum class SyncerErrorValueForUma {
   kServerReturnThrottled = 8,
   kServerReturnTransientError = 9,
   kServerReturnMigrationDone = 10,
-  kServerReturnClearPending = 11,
+  // Deprecated: kServerReturnClearPending = 11,
   kServerReturnNotMyBirthday = 12,
   kServerReturnConflict = 13,
   kServerResponseValidationFailed = 14,

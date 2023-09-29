@@ -66,8 +66,6 @@ SyncProtocolErrorType PBErrorTypeToSyncProtocolErrorType(
       return NOT_MY_BIRTHDAY;
     case sync_pb::SyncEnums::THROTTLED:
       return THROTTLED;
-    case sync_pb::SyncEnums::CLEAR_PENDING:
-      return CLEAR_PENDING;
     case sync_pb::SyncEnums::TRANSIENT_ERROR:
       return TRANSIENT_ERROR;
     case sync_pb::SyncEnums::MIGRATION_DONE:
@@ -128,8 +126,7 @@ SyncProtocolError ErrorCodeToSyncProtocolError(
     const sync_pb::SyncEnums::ErrorType& error_type) {
   SyncProtocolError error;
   error.error_type = PBErrorTypeToSyncProtocolErrorType(error_type);
-  if (error_type == sync_pb::SyncEnums::CLEAR_PENDING ||
-      error_type == sync_pb::SyncEnums::NOT_MY_BIRTHDAY ||
+  if (error_type == sync_pb::SyncEnums::NOT_MY_BIRTHDAY ||
       error_type == sync_pb::SyncEnums::ENCRYPTION_OBSOLETE) {
     error.action = DISABLE_SYNC_ON_CLIENT;
   } else if (error_type == sync_pb::SyncEnums::CLIENT_DATA_OBSOLETE) {
@@ -346,7 +343,6 @@ SyncerError SyncerProtoUtil::HandleClientToServerMessageResponse(
       should_report_success = true;
       break;
     case TRANSIENT_ERROR:
-    case CLEAR_PENDING:
     case NOT_MY_BIRTHDAY:
     case DISABLED_BY_ADMIN:
     case CLIENT_DATA_OBSOLETE:
