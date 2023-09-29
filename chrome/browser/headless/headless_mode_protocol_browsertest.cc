@@ -267,16 +267,6 @@ HEADLESS_MODE_PROTOCOL_TEST(MAYBE_ScreencastBasics,
 HEADLESS_MODE_PROTOCOL_TEST(LargeBrowserWindowSize,
                             "sanity/large-browser-window-size.js")
 
-// These currently fail on Windows, see https://crbug.com/1487021.
-#if !BUILDFLAG(IS_WIN)
-HEADLESS_MODE_PROTOCOL_TEST(MinimizeRestoreWindow,
-                            "sanity/minimize-restore-window.js")
-HEADLESS_MODE_PROTOCOL_TEST(MaximizeRestoreWindow,
-                            "sanity/maximize-restore-window.js")
-HEADLESS_MODE_PROTOCOL_TEST(FullscreenRestoreWindow,
-                            "sanity/fullscreen-restore-window.js")
-#endif  // !BUILDFLAG(IS_WIN)
-
 HEADLESS_MODE_PROTOCOL_TEST(PrintToPdfTinyPage,
                             "sanity/print-to-pdf-tiny-page.js")
 

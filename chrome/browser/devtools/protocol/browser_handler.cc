@@ -166,13 +166,14 @@ Response BrowserHandler::SetWindowBounds(
     }
     window->Minimize();
   } else if (window_state == "normal") {
-    if (window->IsFullscreen()) {
+    if (window->IsFullscreen())
       window->GetExclusiveAccessContext()->ExitFullscreen();
-    } else if (window->IsMinimized() || window->IsMaximized()) {
+    else if (window->IsMinimized())
+      window->Show();
+    else if (window->IsMaximized())
       window->Restore();
-    } else if (set_bounds) {
+    else if (set_bounds)
       window->SetBounds(bounds);
-    }
   } else {
     NOTREACHED();
   }
