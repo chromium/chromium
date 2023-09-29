@@ -11075,7 +11075,7 @@ const FeatureEntry kFeatureEntries[] = {
 
 #if BUILDFLAG(ENABLE_HLS_DEMUXER)
     {"enable-builtin-hls", flag_descriptions::kEnableBuiltinHlsName,
-     flag_descriptions::kEnableBuiltinHlsDescription, kOsAndroid,
+     flag_descriptions::kEnableBuiltinHlsDescription, kOsAll,
      FEATURE_VALUE_TYPE(media::kBuiltInHlsPlayer)},
 #endif
 
