@@ -705,7 +705,7 @@ BASE_FEATURE(kFeatureManagementDriveFsBulkPinning,
 // the files and open in web apps, but not to open/read/write CSE files locally.
 BASE_FEATURE(kDriveFsShowCSEFiles,
              "DriveFsShowCSEFiles",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables support for the dropdown panel.
 BASE_FEATURE(kDropdownPanel,
