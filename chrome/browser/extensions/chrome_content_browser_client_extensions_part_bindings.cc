@@ -32,6 +32,8 @@ void ChromeContentBrowserClientExtensionsPart::ExposeInterfacesToRenderer(
       &ExtensionsGuestView::CreateForExtensions, host->GetID()));
   associated_registry->AddInterface<mojom::RendererHost>(base::BindRepeating(
       &RendererStartupHelper::BindForRenderer, host->GetID()));
+  associated_registry->AddInterface<mojom::ServiceWorkerHost>(
+      base::BindRepeating(&ServiceWorkerHost::BindReceiver, host->GetID()));
   associated_registry
       ->AddInterface<extensions::mojom::RendererAutomationRegistry>(
           base::BindRepeating(&AutomationEventRouter::BindForRenderer,
@@ -45,18 +47,9 @@ void ChromeContentBrowserClientExtensionsPart::
         blink::AssociatedInterfaceRegistry& associated_registry) {
   CHECK(service_worker_version_info.process_id !=
         content::ChildProcessHost::kInvalidUniqueID);
-  associated_registry.AddInterface<mojom::ServiceWorkerHost>(
-      base::BindRepeating(&ServiceWorkerHost::BindReceiver,
-                          service_worker_version_info.process_id));
   associated_registry.AddInterface<mojom::RendererHost>(
       base::BindRepeating(&RendererStartupHelper::BindForRenderer,
                           service_worker_version_info.process_id));
-  associated_registry
-      .AddInterface<extensions::mojom::RendererAutomationRegistry>(
-          base::BindRepeating(&AutomationEventRouter::BindForRenderer,
-                              service_worker_version_info.process_id));
-  associated_registry.AddInterface<mojom::EventRouter>(base::BindRepeating(
-      &EventRouter::BindForRenderer, service_worker_version_info.process_id));
 }
 
 }  // namespace extensions

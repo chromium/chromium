@@ -6,21 +6,29 @@
 
 #include "content/public/renderer/worker_thread.h"
 #include "extensions/common/constants.h"
-#include "extensions/renderer/service_worker_data.h"
-#include "extensions/renderer/worker_thread_dispatcher.h"
+#include "third_party/abseil-cpp/absl/base/attributes.h"
 #include "third_party/blink/public/web/modules/service_worker/web_service_worker_context_proxy.h"
 
 namespace extensions {
 namespace worker_thread_util {
 
+namespace {
+ABSL_CONST_INIT thread_local blink::WebServiceWorkerContextProxy*
+    worker_context_proxy = nullptr;
+}
+
 bool IsWorkerThread() {
   return content::WorkerThread::GetCurrentId() != kMainThreadId;
 }
 
+void SetWorkerContextProxy(blink::WebServiceWorkerContextProxy* context_proxy) {
+  worker_context_proxy = context_proxy;
+}
+
 bool HasWorkerContextProxyInteraction() {
   DCHECK(IsWorkerThread());
-  ServiceWorkerData* data = WorkerThreadDispatcher::GetServiceWorkerData();
-  return data && data->worker_context_proxy()->IsWindowInteractionAllowed();
+  return worker_context_proxy &&
+         worker_context_proxy->IsWindowInteractionAllowed();
 }
 
 }  // namespace worker_thread_util

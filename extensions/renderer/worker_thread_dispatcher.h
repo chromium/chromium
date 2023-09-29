@@ -16,16 +16,19 @@
 #include "content/public/renderer/worker_thread.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/extension_messages.h"
+#include "extensions/common/mojom/automation_registry.mojom.h"
+#include "extensions/common/mojom/event_dispatcher.mojom.h"
+#include "extensions/common/mojom/event_router.mojom.h"
+#include "extensions/common/mojom/service_worker_host.mojom.h"
 #include "ipc/ipc_sync_message_filter.h"
+#include "mojo/public/cpp/bindings/associated_receiver_set.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "services/accessibility/public/mojom/automation.mojom.h"
 
 namespace base {
 class SingleThreadTaskRunner;
 class UnguessableToken;
-}  // namespace base
-
-namespace blink {
-class WebServiceWorkerContextProxy;
+class Uuid;
 }
 
 namespace content {
@@ -52,7 +55,8 @@ struct PortId;
 // worker thread (this TODO formerly referred to content::ThreadSafeSender
 // which no longer exists).
 class WorkerThreadDispatcher : public content::RenderThreadObserver,
-                               public IPC::Sender {
+                               public IPC::Sender,
+                               public mojom::EventDispatcher {
  public:
   WorkerThreadDispatcher();
 
@@ -74,12 +78,24 @@ class WorkerThreadDispatcher : public content::RenderThreadObserver,
   bool Send(IPC::Message* message) override;
 
   void AddWorkerData(
-      blink::WebServiceWorkerContextProxy* proxy,
       int64_t service_worker_version_id,
       base::UnguessableToken activation_sequence,
       ScriptContext* script_context,
       std::unique_ptr<NativeExtensionBindingsSystem> bindings_system);
   void RemoveWorkerData(int64_t service_worker_version_id);
+
+  // Called when a service worker context was initialized.
+  void DidInitializeContext(int64_t service_worker_version_id);
+
+  // Called when a service worker context started running.
+  void DidStartContext(const GURL& service_worker_scope,
+                       int64_t service_worker_version_id);
+  // Called when a service worker context was destroyed.
+  void DidStopContext(const GURL& service_worker_scope,
+                      int64_t service_worker_version_id);
+
+  void RequestWorker(mojom::RequestParamsPtr params);
+  void SendResponseAck(const base::Uuid& request_uuid);
 
   // content::RenderThreadObserver:
   bool OnControlMessageReceived(const IPC::Message& message) override;
@@ -114,6 +130,11 @@ class WorkerThreadDispatcher : public content::RenderThreadObserver,
                                     base::Value::Dict filter,
                                     bool add_lazy_listener);
 
+  // Uses the RendererAutomationRegistry to connect the Automation remote. Uses
+  // the IO thread to bind the RendererAutomationRegistryRemote, if needed.
+  void SendBindAutomation(
+      mojo::PendingAssociatedRemote<ax::mojom::Automation> pending_remote);
+
   // Posts mojom::EventRouter::RemoveListenerForServiceWorker to the IO thread
   // to call it with GetEventRouterOnIO().
   void SendRemoveEventListener(const std::string& extension_id,
@@ -137,10 +158,30 @@ class WorkerThreadDispatcher : public content::RenderThreadObserver,
                                        int worker_thread_id,
                                        base::Value::Dict filter,
                                        bool remove_lazy_listener);
+
+  // NOTE: This must be called on the IO thread because it can call
+  // SyncMessageFilter::GetRemoteAssociatedInterface() which must be called on
+  // the IO thread.
+  // TODO(https://crbug.com/1364183): Obtain these interfaces at the worker
+  // thread once `AssociatedInterfaceRegistry` for ServiceWorker is added.
+  mojom::EventRouter* GetEventRouterOnIO();
+  mojom::ServiceWorkerHost* GetServiceWorkerHostOnIO();
+  mojom::RendererAutomationRegistry* GetAutomationRegistryOnIO();
+
+  mojo::PendingAssociatedRemote<mojom::EventDispatcher> BindEventDispatcher(
+      int worker_thread_id);
+  void UnbindEventDispatcher(int worker_thread_id);
+
+  // Mojo interface implementation, called from the main thread.
+  void DispatchEvent(mojom::DispatchEventParamsPtr params,
+                     base::Value::List event_args) override;
+
  private:
   static bool HandlesMessageOnWorkerThread(const IPC::Message& message);
   static void ForwardIPC(int worker_thread_id, const IPC::Message& message);
   static void UpdateBindingsOnWorkerThread(const ExtensionId& extension_id);
+  static void DispatchEventOnWorkerThread(mojom::DispatchEventParamsPtr params,
+                                          base::Value::List event_args);
 
   void OnMessageReceivedOnWorkerThread(int worker_thread_id,
                                        const IPC::Message& message);
@@ -164,6 +205,9 @@ class WorkerThreadDispatcher : public content::RenderThreadObserver,
                               const PortId& port_id,
                               const std::string& error_message);
 
+  void DispatchEventHelper(mojom::DispatchEventParamsPtr params,
+                           base::Value::List event_args);
+
   // IPC sender. Belongs to the render thread, but thread safe.
   scoped_refptr<IPC::SyncMessageFilter> message_filter_;
 
@@ -171,6 +215,15 @@ class WorkerThreadDispatcher : public content::RenderThreadObserver,
   IDToTaskRunnerMap task_runner_map_;
   base::Lock task_runner_map_lock_;
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
+  mojo::AssociatedRemote<mojom::EventRouter> event_router_remote_;
+  mojo::AssociatedRemote<mojom::ServiceWorkerHost> service_worker_host_;
+  mojo::AssociatedRemote<mojom::RendererAutomationRegistry>
+      renderer_automation_registry_remote_;
+
+  // The set of receivers for mojom::EventDispatcher. `event_dispatcher_ids`
+  // keeps track which receiver is associated to the worker thread.
+  mojo::AssociatedReceiverSet<mojom::EventDispatcher> event_dispatchers_;
+  std::map<int /*worker_thread_id*/, mojo::ReceiverId> event_dispatcher_ids_;
 };
 
 }  // namespace extensions
