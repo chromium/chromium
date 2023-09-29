@@ -32,6 +32,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kAppAutoLaunched[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kAppOemManifestFile[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kArcAvailability[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kArcAvailable[];
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kArcBlockKeyMint[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kArcDataCleanupOnStart[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kArcDisableAppSync[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kArcDisableDownloadProvider[];

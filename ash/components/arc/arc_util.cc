@@ -554,7 +554,10 @@ bool ShouldUseVirtioBlkData(PrefService* prefs) {
 bool ShouldUseArcKeyMint() {
   auto version = GetArcAndroidSdkVersionAsInt();
   return version >= kArcVersionT && version < kMaxArcVersion &&
-         base::FeatureList::IsEnabled(kSwitchToKeyMintOnT);
+         base::FeatureList::IsEnabled(kSwitchToKeyMintOnT) &&
+         (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+              ash::switches::kArcBlockKeyMint) ||
+          base::FeatureList::IsEnabled(kSwitchToKeyMintOnTOverride));
 }
 
 int GetDaysUntilArcVmDataMigrationDeadline(PrefService* prefs) {

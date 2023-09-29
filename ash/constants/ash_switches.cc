@@ -69,6 +69,9 @@ const char kArcAvailability[] = "arc-availability";
 // Signals the availability of the ARC instance on this device.
 const char kArcAvailable[] = "arc-available";
 
+// Switch that blocks KeyMint. When KeyMint is blocked, Keymaster is enabled.
+const char kArcBlockKeyMint[] = "arc-block-keymint";
+
 // Flag that forces ARC data be cleaned on each start.
 const char kArcDataCleanupOnStart[] = "arc-data-cleanup-on-start";
 

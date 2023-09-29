@@ -414,8 +414,7 @@ vm_tools::concierge::StartArcVmRequest CreateStartArcVmRequest(
   mini_instance_request->set_enable_privacy_hub_for_chrome(
       base::FeatureList::IsEnabled(ash::features::kCrosPrivacyHub));
   if (GetArcAndroidSdkVersionAsInt() == kArcVersionT) {
-    mini_instance_request->set_arc_switch_to_keymint(
-        base::FeatureList::IsEnabled(kSwitchToKeyMintOnT));
+    mini_instance_request->set_arc_switch_to_keymint(ShouldUseArcKeyMint());
   }
 
   request.set_enable_broadcast_anr_prenotify(
