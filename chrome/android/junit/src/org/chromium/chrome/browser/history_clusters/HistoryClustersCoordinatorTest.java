@@ -11,6 +11,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.doReturn;
@@ -48,11 +49,10 @@ import org.robolectric.shadows.ShadowLooper;
 import org.chromium.base.Promise;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.ChromeRobolectricTestRunner;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
-import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -65,7 +65,6 @@ import org.chromium.components.favicon.LargeIconBridgeJni;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.ClipboardImpl;
-import org.chromium.ui.display.DisplayAndroidManager;
 import org.chromium.url.GURL;
 
 import java.io.Serializable;
@@ -78,7 +77,7 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 /** Unit tests for HistoryClustersCoordinator. */
-@RunWith(BaseRobolectricTestRunner.class)
+@RunWith(ChromeRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @CommandLineFlags.
 Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, ChromeSwitches.DISABLE_NATIVE_INITIALIZATION})
@@ -214,7 +213,6 @@ public class HistoryClustersCoordinatorTest {
 
     @Before
     public void setUp() {
-        resetStaticState();
         jniMocker.mock(LargeIconBridgeJni.TEST_HOOKS, mMockLargeIconBridgeJni);
         doReturn(1L).when(mMockLargeIconBridgeJni).init();
         HistoryClustersBridge.setInstanceForTesting(mHistoryClustersBridge);
@@ -242,7 +240,6 @@ public class HistoryClustersCoordinatorTest {
     @After
     public void tearDown() {
         mActivityScenario.close();
-        resetStaticState();
     }
 
     @Test
@@ -575,11 +572,6 @@ public class HistoryClustersCoordinatorTest {
                 return;
             }
         }
-        assertFalse(true);
-    }
-
-    private static void resetStaticState() {
-        DisplayAndroidManager.resetInstanceForTesting();
-        TabWindowManagerSingleton.resetTabModelSelectorFactoryForTesting();
+        fail();
     }
 }
