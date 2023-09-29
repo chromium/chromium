@@ -27,6 +27,7 @@
 #include "extensions/renderer/extensions_renderer_client.h"
 #include "extensions/renderer/native_extension_bindings_system.h"
 #include "extensions/renderer/script_context.h"
+#include "extensions/renderer/service_worker_data.h"
 #include "extensions/renderer/trace_util.h"
 #include "extensions/renderer/worker_thread_dispatcher.h"
 #include "ipc/ipc_sync_channel.h"
@@ -345,7 +346,9 @@ class WorkerThreadIPCMessageSender : public IPCMessageSender {
     params->worker_thread_id = worker_thread_id;
     params->service_worker_version_id = service_worker_version_id_;
 
-    dispatcher_->RequestWorker(std::move(params));
+    WorkerThreadDispatcher::GetServiceWorkerData()
+        ->GetServiceWorkerHost()
+        ->RequestWorker(std::move(params));
   }
 
   void SendResponseAckIPC(ScriptContext* context,
@@ -354,7 +357,9 @@ class WorkerThreadIPCMessageSender : public IPCMessageSender {
     CHECK(context->IsForServiceWorker());
     CHECK_NE(kMainThreadId, content::WorkerThread::GetCurrentId());
 
-    dispatcher_->SendResponseAck(request_uuid);
+    WorkerThreadDispatcher::GetServiceWorkerData()
+        ->GetServiceWorkerHost()
+        ->WorkerResponseAck(request_uuid);
   }
 
   void SendAddUnfilteredEventListenerIPC(
@@ -365,10 +370,14 @@ class WorkerThreadIPCMessageSender : public IPCMessageSender {
     DCHECK_NE(blink::mojom::kInvalidServiceWorkerVersionId,
               context->service_worker_version_id());
 
-    dispatcher_->SendAddEventListener(
-        context->GetExtensionID(), context->service_worker_scope(), event_name,
-        context->service_worker_version_id(),
-        content::WorkerThread::GetCurrentId());
+    WorkerThreadDispatcher::GetServiceWorkerData()
+        ->GetEventRouter()
+        ->AddListenerForServiceWorker(
+            context->GetExtensionID(), event_name,
+            mojom::ServiceWorkerContext::New(
+                context->service_worker_scope(),
+                context->service_worker_version_id(),
+                content::WorkerThread::GetCurrentId()));
   }
 
   void SendRemoveUnfilteredEventListenerIPC(
@@ -379,10 +388,14 @@ class WorkerThreadIPCMessageSender : public IPCMessageSender {
     DCHECK_NE(blink::mojom::kInvalidServiceWorkerVersionId,
               context->service_worker_version_id());
 
-    dispatcher_->SendRemoveEventListener(
-        context->GetExtensionID(), context->service_worker_scope(), event_name,
-        context->service_worker_version_id(),
-        content::WorkerThread::GetCurrentId());
+    WorkerThreadDispatcher::GetServiceWorkerData()
+        ->GetEventRouter()
+        ->RemoveListenerForServiceWorker(
+            context->GetExtensionID(), event_name,
+            mojom::ServiceWorkerContext::New(
+                context->service_worker_scope(),
+                context->service_worker_version_id(),
+                content::WorkerThread::GetCurrentId()));
   }
 
   void SendAddUnfilteredLazyEventListenerIPC(
@@ -391,8 +404,11 @@ class WorkerThreadIPCMessageSender : public IPCMessageSender {
     DCHECK(context->IsForServiceWorker());
     DCHECK_NE(kMainThreadId, content::WorkerThread::GetCurrentId());
 
-    dispatcher_->SendAddEventLazyListener(
-        context->GetExtensionID(), context->service_worker_scope(), event_name);
+    WorkerThreadDispatcher::GetServiceWorkerData()
+        ->GetEventRouter()
+        ->AddLazyListenerForServiceWorker(context->GetExtensionID(),
+                                          context->service_worker_scope(),
+                                          event_name);
   }
 
   void SendRemoveUnfilteredLazyEventListenerIPC(
@@ -401,8 +417,11 @@ class WorkerThreadIPCMessageSender : public IPCMessageSender {
     DCHECK(context->IsForServiceWorker());
     DCHECK_NE(kMainThreadId, content::WorkerThread::GetCurrentId());
 
-    dispatcher_->SendRemoveEventLazyListener(
-        context->GetExtensionID(), context->service_worker_scope(), event_name);
+    WorkerThreadDispatcher::GetServiceWorkerData()
+        ->GetEventRouter()
+        ->RemoveLazyListenerForServiceWorker(context->GetExtensionID(),
+                                             context->service_worker_scope(),
+                                             event_name);
   }
 
   void SendAddFilteredEventListenerIPC(ScriptContext* context,
@@ -414,10 +433,15 @@ class WorkerThreadIPCMessageSender : public IPCMessageSender {
     DCHECK_NE(blink::mojom::kInvalidServiceWorkerVersionId,
               context->service_worker_version_id());
 
-    dispatcher_->SendAddEventFilteredListener(
-        context->GetExtensionID(), context->service_worker_scope(), event_name,
-        context->service_worker_version_id(),
-        content::WorkerThread::GetCurrentId(), filter.Clone(), is_lazy);
+    WorkerThreadDispatcher::GetServiceWorkerData()
+        ->GetEventRouter()
+        ->AddFilteredListenerForServiceWorker(
+            context->GetExtensionID(), event_name,
+            mojom::ServiceWorkerContext::New(
+                context->service_worker_scope(),
+                context->service_worker_version_id(),
+                content::WorkerThread::GetCurrentId()),
+            filter.Clone(), is_lazy);
   }
 
   void SendRemoveFilteredEventListenerIPC(ScriptContext* context,
@@ -429,11 +453,15 @@ class WorkerThreadIPCMessageSender : public IPCMessageSender {
     DCHECK_NE(blink::mojom::kInvalidServiceWorkerVersionId,
               context->service_worker_version_id());
 
-    dispatcher_->SendRemoveEventFilteredListener(
-        context->GetExtensionID(), context->service_worker_scope(), event_name,
-        context->service_worker_version_id(),
-        content::WorkerThread::GetCurrentId(), filter.Clone(),
-        remove_lazy_listener);
+    WorkerThreadDispatcher::GetServiceWorkerData()
+        ->GetEventRouter()
+        ->RemoveFilteredListenerForServiceWorker(
+            context->GetExtensionID(), event_name,
+            mojom::ServiceWorkerContext::New(
+                context->service_worker_scope(),
+                context->service_worker_version_id(),
+                content::WorkerThread::GetCurrentId()),
+            filter.Clone(), remove_lazy_listener);
   }
 
   void SendBindAutomationIPC(
@@ -441,7 +469,9 @@ class WorkerThreadIPCMessageSender : public IPCMessageSender {
       mojo::PendingAssociatedRemote<ax::mojom::Automation> pending_remote)
       override {
     CHECK(context->IsForServiceWorker());
-    dispatcher_->SendBindAutomation(std::move(pending_remote));
+    WorkerThreadDispatcher::GetServiceWorkerData()
+        ->GetAutomationRegistry()
+        ->BindAutomation(std::move(pending_remote));
   }
 
   void SendOpenMessageChannel(ScriptContext* script_context,
