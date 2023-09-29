@@ -148,6 +148,9 @@ struct IndividualSettings {
   // all times.
   ExtensionManagement::ToolbarPinMode toolbar_pin =
       ExtensionManagement::ToolbarPinMode::kDefaultUnpinned;
+
+  // Boolean to indicate whether the extension can navigate to file URLs.
+  bool file_url_navigation_allowed{false};
 };
 
 // Global extension management settings, applicable to all extensions.

@@ -358,6 +358,10 @@ class ExtensionManagementServiceTest : public testing::Test {
     extension_management_->cws_info_service_ = cws_info_service;
   }
 
+  bool IsFileUrlNavigationAllowed(const ExtensionId& extension_id) {
+    return extension_management_->IsFileUrlNavigationAllowed(extension_id);
+  }
+
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
   raw_ptr<sync_preferences::TestingPrefServiceSyncable> pref_service_;
@@ -1377,6 +1381,21 @@ TEST_F(ExtensionManagementServiceTest,
   EXPECT_TRUE(extension_management_->IsAllowedByUnpublishedAvailabilityPolicy(
       normal_extension.get()));
   SetCWSInfoService(nullptr);
+}
+
+TEST_F(ExtensionManagementServiceTest, IsFileUrlNavigationAllowed) {
+  EXPECT_EQ(IsFileUrlNavigationAllowed(kTargetExtension), false);
+  EXPECT_EQ(IsFileUrlNavigationAllowed(kTargetExtension2), false);
+
+  SetExampleDictPref(base::StringPrintf(
+      R"({
+    "%s": {
+      "file_url_navigation_allowed": true
+    }
+  })",
+      kTargetExtension));
+  EXPECT_EQ(IsFileUrlNavigationAllowed(kTargetExtension), true);
+  EXPECT_EQ(IsFileUrlNavigationAllowed(kTargetExtension2), false);
 }
 
 // Tests the flag value indicating that extensions are blocklisted by default.

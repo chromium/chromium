@@ -3975,7 +3975,8 @@
               "blocked_permissions": [
                 "history"
               ],
-              "toolbar_pin": "force_pinned"
+              "toolbar_pin": "force_pinned",
+              "file_url_navigation_allowed": true
             },
             "bcdefghijklmnopabcdefghijklmnopa": {
               "installation_mode": "force_installed",

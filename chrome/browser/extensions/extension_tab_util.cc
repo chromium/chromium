@@ -22,6 +22,7 @@
 #include "chrome/browser/extensions/api/tabs/tabs_constants.h"
 #include "chrome/browser/extensions/browser_extension_window_controller.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
+#include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -870,7 +871,10 @@ base::expected<GURL, std::string> ExtensionTabUtil::PrepareURLForNavigation(
   if (url.SchemeIsFile() &&
       !util::AllowFileAccess(extension->id(), browser_context) &&
       base::FeatureList::IsEnabled(
-          extensions_features::kRestrictFileURLNavigation)) {
+          extensions_features::kRestrictFileURLNavigation) &&
+      !extensions::ExtensionManagementFactory::GetForBrowserContext(
+           browser_context)
+           ->IsFileUrlNavigationAllowed(extension->id())) {
     return base::unexpected(
         tabs_constants::kFileUrlsNotAllowedInExtensionNavigations);
   }

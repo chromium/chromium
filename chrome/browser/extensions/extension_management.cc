@@ -472,6 +472,11 @@ ExtensionIdSet ExtensionManagement::GetForcePinnedList() const {
   return force_pinned_list;
 }
 
+bool ExtensionManagement::IsFileUrlNavigationAllowed(const ExtensionId& id) {
+  auto* setting = GetSettingsForId(id);
+  return setting && setting->file_url_navigation_allowed;
+}
+
 bool ExtensionManagement::CheckMinimumVersion(const Extension* extension,
                                               std::string* required_version) {
   auto* setting = GetSettingsForId(extension->id());

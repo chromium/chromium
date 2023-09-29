@@ -232,6 +232,12 @@ bool IndividualSettings::Parse(const base::Value::Dict& dict,
     }
   }
 
+  const absl::optional<bool> is_file_url_navigation_allowed =
+      dict.FindBool(schema_constants::kFileUrlNavigationAllowed);
+  if (is_file_url_navigation_allowed) {
+    file_url_navigation_allowed = is_file_url_navigation_allowed.value();
+  }
+
   return true;
 }
 
