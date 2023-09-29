@@ -122,8 +122,9 @@ class EGLImageBackingFactoryThreadSafeTest
   }
 
   void SetUp() override {
-    if (!IsEglImageSupported())
-      return;
+    if (!IsEglImageSupported()) {
+      GTEST_SKIP();
+    }
 
 #if BUILDFLAG(IS_ANDROID)
     auto* command_line = base::CommandLine::ForCurrentProcess();
@@ -255,9 +256,6 @@ class CreateAndValidateSharedImageRepresentations {
 // Intent of this test is to create at thread safe backing and test if all
 // representations are working.
 TEST_P(EGLImageBackingFactoryThreadSafeTest, BasicThreadSafe) {
-  if (!IsEglImageSupported())
-    return;
-
   CreateAndValidateSharedImageRepresentations shared_image(
       backing_factory_.get(), get_format(), /*is_thread_safe=*/true,
       &mailbox_manager_, shared_image_manager_.get(),
@@ -268,9 +266,6 @@ TEST_P(EGLImageBackingFactoryThreadSafeTest, BasicThreadSafe) {
 // Intent of this test is to create at thread safe backing with initial pixel
 // data and test if all representations are working.
 TEST_P(EGLImageBackingFactoryThreadSafeTest, BasicInitialData) {
-  if (!IsEglImageSupported())
-    return;
-
   CreateAndValidateSharedImageRepresentations shared_image(
       backing_factory_.get(), get_format(), /*is_thread_safe=*/true,
       &mailbox_manager_, shared_image_manager_.get(),
@@ -283,9 +278,6 @@ TEST_P(EGLImageBackingFactoryThreadSafeTest, BasicInitialData) {
 // group. One thread will be writing to the backing and other thread will be
 // reading from it.
 TEST_P(EGLImageBackingFactoryThreadSafeTest, OneWriterOneReader) {
-  if (!IsEglImageSupported())
-    return;
-
   // Create it on 1st SharedContextState |context_state_|.
   CreateAndValidateSharedImageRepresentations shared_image(
       backing_factory_.get(), get_format(), /*is_thread_safe=*/true,
@@ -360,10 +352,6 @@ TEST_P(EGLImageBackingFactoryThreadSafeTest, OneWriterOneReader) {
 #if BUILDFLAG(USE_DAWN) && BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
 // Test to check interaction between Dawn and skia GL representations.
 TEST_F(EGLImageBackingFactoryThreadSafeTest, Dawn_SkiaGL) {
-  if (!IsEglImageSupported()) {
-    return;
-  }
-
   // Create a Dawm OpenGLES device.
   dawn::native::Instance instance;
   instance.DiscoverDefaultPhysicalDevices();
