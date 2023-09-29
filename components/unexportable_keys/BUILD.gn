@@ -27,6 +27,8 @@ static_library("unexportable_keys") {
     "unexportable_key_tasks.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   public_deps = [
     "//base",
     "//components/keyed_service/core",
