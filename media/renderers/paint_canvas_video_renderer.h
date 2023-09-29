@@ -197,6 +197,15 @@ class MEDIA_EXPORT PaintCanvasVideoRenderer {
                             bool flip_y,
                             bool premultiply_alpha);
 
+  // Copies VideoFrame contents to the `destination` shared image. if
+  // `use_visible_rect` is set to true, only `VideoFrame::visible_rect()`
+  // portion is copied, otherwise copies all underlying buffer.
+  [[nodiscard]] gpu::SyncToken CopyVideoFrameToSharedImage(
+      viz::RasterContextProvider* raster_context_provider,
+      scoped_refptr<VideoFrame> video_frame,
+      const gpu::MailboxHolder& destination,
+      bool use_visible_rect);
+
   // In general, We hold the most recently painted frame to increase the
   // performance for the case that the same frame needs to be painted
   // repeatedly. Call this function if you are sure the most recent frame will

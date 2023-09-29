@@ -2122,6 +2122,48 @@ bool PaintCanvasVideoRenderer::UpdateLastImage(
   return true;
 }
 
+gpu::SyncToken PaintCanvasVideoRenderer::CopyVideoFrameToSharedImage(
+    viz::RasterContextProvider* raster_context_provider,
+    scoped_refptr<VideoFrame> video_frame,
+    const gpu::MailboxHolder& destination,
+    bool use_visible_rect) {
+  auto* ri = raster_context_provider->RasterInterface();
+
+  // If we have single source shared image (either single-plane,
+  // legacy-multiplanar with external sampler, or multiplanar), just use
+  // CopySharedImage().
+  if (video_frame->NumTextures() == 1) {
+    const auto& source = video_frame->mailbox_holder(0);
+    auto source_rect = use_visible_rect ? video_frame->visible_rect()
+                                        : gfx::Rect(video_frame->coded_size());
+    ri->WaitSyncTokenCHROMIUM(source.sync_token.GetConstData());
+    ri->WaitSyncTokenCHROMIUM(destination.sync_token.GetConstData());
+    ri->CopySharedImage(source.mailbox, destination.mailbox,
+                        destination.texture_target, 0, 0, source_rect.x(),
+                        source_rect.y(), source_rect.width(),
+                        source_rect.height(), GL_FALSE, GL_FALSE);
+  } else {
+    VideoFrameYUVConverter::GrParams yuv_gr_params;
+    yuv_gr_params.use_visible_rect = use_visible_rect;
+
+    // TODO(vasilyt): Add caching support
+    VideoFrameYUVConverter::ConvertYUVVideoFrameNoCaching(
+        video_frame.get(), raster_context_provider, destination, yuv_gr_params);
+  }
+
+  gpu::SyncToken sync_token;
+  ri->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
+
+  // If VideoFrame has textures, we need to update SyncToken or to keep frame
+  // alive until gpu is done with copy if `read_lock_fences_enabled` is set.
+  // This is to make sure decoder doesn't re-use frame before copy is done.
+  if (video_frame->HasTextures()) {
+    SynchronizeVideoFrameRead(std::move(video_frame), ri,
+                              raster_context_provider->ContextSupport());
+  }
+  return sync_token;
+}
+
 PaintCanvasVideoRenderer::YUVTextureCache::YUVTextureCache() = default;
 PaintCanvasVideoRenderer::YUVTextureCache::~YUVTextureCache() {
   Reset();
