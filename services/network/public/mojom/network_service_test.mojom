@@ -18,9 +18,6 @@ import "services/network/public/mojom/http_cache_backend_file_operations.mojom";
 import "services/network/public/mojom/ip_endpoint.mojom";
 import "services/network/public/mojom/transferable_socket.mojom";
 
-[EnableIf=is_android]
-import "services/network/public/mojom/system_dns_config_observer.mojom";
-
 // Maps to net::RuleBasedHostResolverProc::Rule::ResolverType.
 //
 // TODO(https://crbug.com/1298106) Deduplicate this enum's definition.
@@ -181,18 +178,6 @@ interface NetworkServiceTest {
   // configuration.
   [Sync]
   ReplaceSystemDnsConfig() => ();
-
-  // Register a DNS listener `observer` to the network service.
-  // `observer.OnConfigchanged()` is called when SystemDnsConfigChangeNotifier::
-  // Observer::OnSystemDnsConfigChanged() happens in the network service.
-  //
-  // Note that SystemDnsConfigObserver is supposed to notice system DNS change
-  // in the browser UI thread to the network service.
-  // However for content_browser testing, this methods is used to determine the
-  // network service receives a system DNS config from the browser UI thread.
-  [Sync, EnableIf=is_android]
-  AddSystemDnsConfigObserver(
-    pending_remote<SystemDnsConfigObserver> observer) => ();
 
   // Set the DoH configuration to be used during tests.
   [Sync]

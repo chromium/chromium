@@ -1398,10 +1398,6 @@ mojom("mojom") {
     public_deps += [ "//services/proxy_resolver_win/public/mojom" ]
   }
 
-  if (is_android) {
-    sources += [ "system_dns_config_observer.mojom" ]
-  }
-
   enabled_features = []
 
   # TODO(crbug/598073): When moving the service implementation to
@@ -1577,25 +1573,6 @@ mojom("mojom") {
       traits_public_deps = [ "//net" ]
     },
   ]
-
-  if (is_android) {
-    cpp_typemaps += [
-      {
-        types = [
-          {
-            mojom = "network.mojom.DnsConfig"
-            cpp = "::net::DnsConfig"
-          },
-        ]
-        traits_headers = [ "//services/network/public/cpp/system_dns_config_observer_mojom_traits.h" ]
-        traits_sources = [ "//services/network/public/cpp/system_dns_config_observer_mojom_traits.cc" ]
-        traits_public_deps = [
-          "//net",
-          "//services/network/public/cpp:cpp_base",
-        ]
-      },
-    ]
-  }
 
   if (enable_reporting) {
     cpp_typemaps += [
