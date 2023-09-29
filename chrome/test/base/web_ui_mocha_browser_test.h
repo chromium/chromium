@@ -10,6 +10,10 @@
 #include "chrome/test/base/devtools_agent_coverage_observer.h"
 #include "chrome/test/base/in_process_browser_test.h"
 
+namespace content {
+class WebContents;
+}  // namespace content
+
 // Inherit from this class to run WebUI tests that are using Mocha.
 class WebUIMochaBrowserTest : public InProcessBrowserTest {
  public:
@@ -28,18 +32,30 @@ class WebUIMochaBrowserTest : public InProcessBrowserTest {
   //                     chrome://<test_loader_host_>/test_loader.html and load
   //                     it directly from chrome://<test_loader_host>. Defaults
   //                     to false.
-  virtual void RunTest(const std::string& file,
-                       const std::string& trigger,
-                       const bool& skip_test_loader);
+  void RunTest(const std::string& file,
+               const std::string& trigger,
+               const bool& skip_test_loader);
 
   // Convenience overloaded version of the RunTest above, which uses the default
   // value for `skip_test_loader`.
-  virtual void RunTest(const std::string& file, const std::string& trigger);
+  void RunTest(const std::string& file, const std::string& trigger);
 
   // Convenience overloaded version of the RunTest above, which uses
   // `skip_test_loader=true`.
-  virtual void RunTestWithoutTestLoader(const std::string& file,
-                                        const std::string& trigger);
+  void RunTestWithoutTestLoader(const std::string& file,
+                                const std::string& trigger);
+
+  // Similar to RunTest() but also accepts WebContents instance, for
+  // cases where the test loads the WebContents to be tested in an
+  // unconventional way.
+  // Note: Unlike other RunTestXYZ methods above, this method does not
+  // internally call FAIL on test failure, instead it returns an AssertionResult
+  // that needs to be manually checked by callers.
+  testing::AssertionResult RunTestOnWebContents(
+      content::WebContents* web_contents,
+      const std::string& file,
+      const std::string& trigger,
+      const bool& skip_test_loader);
 
   // Hook for subclasses that need to perform additional setup steps that
   // involve the WebContents, before the Mocha test runs.
@@ -55,6 +71,14 @@ class WebUIMochaBrowserTest : public InProcessBrowserTest {
   void set_test_loader_host(const std::string& host);
 
  private:
+  // Helper that performs setup steps normally done by test_loader.html, invoked
+  // in tests that don't use test_loader.html. Specifically:
+  //  1) Programmatically loads mocha.js and mocha_adapter_simple.js.
+  //  2) Programmatically loads the Mocha test file.
+  testing::AssertionResult SimulateTestLoader(
+      content::WebContents* web_contents,
+      const std::string& file);
+
   // The host to use when invoking the test loader URL, like
   // "chrome://<host>/test_loader.html=...". Defaults to
   // `chrome::kChromeUIWebUITestHost`.

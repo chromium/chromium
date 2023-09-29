@@ -126,33 +126,31 @@ void WebUIMochaBrowserTest::RunTest(const std::string& file,
   // test runs.
   OnWebContentsAvailable(web_contents);
 
+  ASSERT_TRUE(
+      RunTestOnWebContents(web_contents, file, trigger, skip_test_loader));
+}
+
+testing::AssertionResult WebUIMochaBrowserTest::RunTestOnWebContents(
+    content::WebContents* web_contents,
+    const std::string& file,
+    const std::string& trigger,
+    const bool& skip_test_loader) {
+  testing::AssertionResult result(testing::AssertionFailure());
+
   if (skip_test_loader) {
     // Perform setup steps normally done by test_loader.html.
-    // TODO(dpapad): Figure out why moving this logic in a private
-    // SimulateTestloaderSteps() helper method causes ASSERT_TRUE() failures to
-    // not propagate to the parent caller. Inlining logic here as a workaround.
-
-    // Step 1: Programmatically loads mocha.js and mocha_adapter_simple.js.
-    std::string loadMochaScript(base::StringPrintf(
-        R"(
-      async function load() {
-        await import('chrome://%s/mocha.js');
-        await import('chrome://%s/mocha_adapter_simple.js');
-      }
-      load();)",
-        chrome::kChromeUIWebUITestHost, chrome::kChromeUIWebUITestHost));
-    ASSERT_TRUE(ExecJs(web_contents->GetPrimaryMainFrame(), loadMochaScript));
-
-    // Step 2: Programmatically loads the Mocha test file.
-    std::string loadTestModuleScript(
-        base::StringPrintf("import('chrome://%s/%s');",
-                           chrome::kChromeUIWebUITestHost, file.c_str()));
-    ASSERT_TRUE(
-        ExecJs(web_contents->GetPrimaryMainFrame(), loadTestModuleScript));
+    result = SimulateTestLoader(web_contents, file);
+    if (!result) {
+      return result;
+    }
   }
 
   // Trigger the Mocha tests, and wait for completion.
-  ASSERT_TRUE(ExecJs(web_contents->GetPrimaryMainFrame(), trigger));
+  result = ExecJs(web_contents->GetPrimaryMainFrame(), trigger);
+  if (!result) {
+    return result;
+  }
+
   bool success = WaitForTestToFinish(web_contents);
 
   // Report code coverage metrics.
@@ -167,15 +165,46 @@ void WebUIMochaBrowserTest::RunTest(const std::string& file,
   }
 
   if (!success) {
-    FAIL() << "Mocha test failures detected in file: " << file
-           << ", triggered by '" << trigger << "'";
+    testing::Message msg;
+    msg << "Mocha test failures detected in file: " << file
+        << ", triggered by '" << trigger << "'";
+    return testing::AssertionFailure(msg);
   }
+
+  return testing::AssertionSuccess();
 }
 
 void WebUIMochaBrowserTest::RunTestWithoutTestLoader(
     const std::string& file,
     const std::string& trigger) {
   RunTest(file, trigger, /*skip_test_loader=*/true);
+}
+
+testing::AssertionResult WebUIMochaBrowserTest::SimulateTestLoader(
+    content::WebContents* web_contents,
+    const std::string& file) {
+  // Step 1: Programmatically loads mocha.js and mocha_adapter_simple.js.
+  std::string loadMochaScript(base::StringPrintf(
+      R"(
+async function load() {
+  await import('chrome://%s/mocha.js');
+  await import('chrome://%s/mocha_adapter_simple.js');
+}
+load();
+)",
+      chrome::kChromeUIWebUITestHost, chrome::kChromeUIWebUITestHost));
+
+  testing::AssertionResult result =
+      ExecJs(web_contents->GetPrimaryMainFrame(), loadMochaScript);
+  if (!result) {
+    return result;
+  }
+
+  // Step 2: Programmatically loads the Mocha test file.
+  std::string loadTestModuleScript(
+      base::StringPrintf("import('chrome://%s/%s');",
+                         chrome::kChromeUIWebUITestHost, file.c_str()));
+  return ExecJs(web_contents->GetPrimaryMainFrame(), loadTestModuleScript);
 }
 
 void WebUIMochaFocusTest::OnWebContentsAvailable(
