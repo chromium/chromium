@@ -1,0 +1,9 @@
+specific_include_rules = {
+    # This file lives in the Chromium repo and can safely depend on base.
+    "testdata_utils_impl\.cc": [
+        "+base/base_paths.h",
+        "+base/files/file_path.h",
+        "+base/path_service.h",
+        "+base/threading/thread_restrictions.h",
+    ],
+}
