@@ -1,0 +1,6 @@
+specific_include_rules = {
+  # Provides the canonical access point for this type
+  "fixed_array.h": [
+    "+third_party/abseil-cpp/absl/container/fixed_array.h",
+  ],
+}

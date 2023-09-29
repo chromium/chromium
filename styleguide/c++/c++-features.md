@@ -1624,6 +1624,24 @@ Banned due to overlap with `base/ranges/algorithm.h`. Use the `base/ranges/`
 facilities instead.
 ***
 
+### FixedArray <sup>[banned]</sup>
+
+```c++
+absl::FixedArray<MyObj> objs_;
+```
+
+**Description:** A fixed size array like `std::array`, but with size determined
+at runtime instead of compile time.
+
+**Documentation:**
+[fixed_array.h](https://source.chromium.org/chromium/chromium/src/+/main:third_party/abseil-cpp/absl/container/fixed_array.h)
+
+**Notes:**
+*** promo
+Direct construction is banned due to the risk of UB with uninitialized
+trivially-default-constructible types. Instead use `base/types/fixed_array.h`,
+which is a light-weight wrapper that deletes the problematic constructor.
+
 ### FunctionRef <sup>[banned]</sup>
 
 ```c++
@@ -1846,7 +1864,6 @@ absl::btree_map
 absl::btree_set
 absl::btree_multimap
 absl::btree_multiset
-absl::FixedArray
 ```
 
 **Description:** Alternatives to STL containers designed to be more efficient

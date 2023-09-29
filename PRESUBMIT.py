@@ -917,6 +917,19 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
       [_THIRD_PARTY_EXCEPT_BLINK],  # Not an error in third_party folders.
     ),
     BanRule(
+      r'/\babsl::FixedArray\b',
+      (
+        'absl::FixedArray is banned. Use base::FixedArray instead.',
+      ),
+      True,
+      [
+        # base::FixedArray provides canonical access.
+        r'^base/types/fixed_array.h',
+        # Not an error in third_party folders.
+        _THIRD_PARTY_EXCEPT_BLINK,
+      ],
+    ),
+    BanRule(
       r'/\babsl::FunctionRef\b',
       (
         'absl::FunctionRef is banned. Use base::FunctionRef instead.',
