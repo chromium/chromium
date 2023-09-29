@@ -66,14 +66,31 @@ class PolicyApplicator {
         const base::flat_set<std::string>& new_cellular_policy_guids) = 0;
   };
 
-  // |handler| must outlive this object.
-  // |modified_policy_guids| must not be nullptr and will be empty afterwards.
+  struct Options {
+    Options();
+    Options(Options&& other);
+    Options& operator=(Options&& other);
+    Options(const Options&) = delete;
+    Options& operator=(const Options&) = delete;
+    ~Options();
+
+    // Merges this `Options` instance with `other`, ORing the requested
+    // operation flags.
+    void Merge(const Options& other);
+
+    // When this is set to true, all managed configurations with at least one
+    // "Recommended" field will be reset to only contain the managed settings.
+    bool reset_recommended_managed_configs = false;
+  };
+
+  // `handler` and `managed_cellular_pref_handler` must outlive this object.
   PolicyApplicator(const NetworkProfile& profile,
                    base::flat_map<std::string, base::Value::Dict> all_policies,
                    base::Value::Dict global_network_config,
                    ConfigurationHandler* handler,
                    ManagedCellularPrefHandler* managed_cellular_pref_handler,
-                   base::flat_set<std::string> modified_policy_guids);
+                   base::flat_set<std::string> modified_policy_guids,
+                   Options options);
 
   PolicyApplicator(const PolicyApplicator&) = delete;
   PolicyApplicator& operator=(const PolicyApplicator&) = delete;
@@ -160,6 +177,7 @@ class PolicyApplicator {
   NetworkProfile profile_;
   base::flat_map<std::string, base::Value::Dict> all_policies_;
   base::Value::Dict global_network_config_;
+  const Options options_;
 
   base::flat_set<std::string> remaining_policy_guids_;
   base::flat_set<std::string> pending_get_entry_calls_;

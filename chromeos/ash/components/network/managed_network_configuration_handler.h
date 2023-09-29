@@ -225,6 +225,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandler {
   // installed from policy. The network list should be updated at this point.
   virtual void OnCellularPoliciesApplied(const NetworkProfile& profile) = 0;
 
+  // Triggers performing tasks to wipe network configuration elements marked as
+  // ephemeral by device policy.
+  virtual void TriggerEphemeralNetworkConfigActions() = 0;
+
   // Return true if AllowCellularSimLock policy is enabled.
   virtual bool AllowCellularSimLock() const = 0;
 

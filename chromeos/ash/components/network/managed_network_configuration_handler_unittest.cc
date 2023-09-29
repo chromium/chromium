@@ -11,6 +11,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/values_test_util.h"
@@ -128,14 +129,25 @@ class TestNetworkPolicyObserver : public NetworkPolicyObserver {
     policies_applied_count_++;
   }
 
+  void PoliciesChanged(const std::string& userhash) override {
+    if (userhash.empty() && on_shared_profile_policies_changed_) {
+      std::move(on_shared_profile_policies_changed_).Run();
+    }
+  }
+
   int GetPoliciesAppliedCountAndReset() {
     int count = policies_applied_count_;
     policies_applied_count_ = 0;
     return count;
   }
 
+  void RunOnSharedProfilePoliciesChanged(base::OnceClosure action) {
+    on_shared_profile_policies_changed_ = std::move(action);
+  }
+
  private:
   int policies_applied_count_ = 0;
+  base::OnceClosure on_shared_profile_policies_changed_;
 };
 
 }  // namespace
@@ -1270,6 +1282,382 @@ TEST_F(ManagedNetworkConfigurationHandlerTest,
   EXPECT_THAT(*properties,
               DictionaryHasValue(shill::kPassphraseProperty,
                                  base::Value("policy's passphrase")));
+}
+
+// There is a policy with a Recommended field.
+// The RecommendedValuesAreEphemeralAccessor policy is not enabled.
+// Tests that initial policy application does not reset "Recommended" fields,
+// even when `TriggerEphemeralNetworkConfigActions` is called.
+TEST_F(ManagedNetworkConfigurationHandlerTest,
+       ResetRecommendedFields_Disabled_Initial) {
+  policy_util::SetEphemeralNetworkPoliciesEnabled();
+
+  InitializeStandardProfiles();
+  const std::string kOriginalEntryPath = "orig_entry_path";
+  base::Value::Dict original_wifi_config = base::test::ParseJsonDict(R"(
+    {
+      "AutoConnect": true,
+      "GUID": "guid_wifi1",
+      "Mode": "managed",
+      "EAP.EAP": "PEAP",
+      "EAP.Identity": "user_identity",
+      "EAP.Password": "user_password",
+      "Profile": "/profile/default",
+      "SecurityClass": "802_1x",
+      "SaveCredentials": true,
+      "Type": "wifi",
+      "WiFi.HexSSID": "7769666931",
+      "UIData": "{\"onc_source\":\"device_policy\"}"
+    })");
+  GetShillProfileClient()->AddEntry(
+      NetworkProfileHandler::GetSharedProfilePath(), kOriginalEntryPath,
+      std::move(original_wifi_config));
+
+  // Call TriggerEphemeralNetworkConfigActions when policies are available
+  // In production code, EphemeralNetworkConfigHandler will do this.
+  policy_observer_.RunOnSharedProfilePoliciesChanged(base::BindOnce(
+      &ManagedNetworkConfigurationHandlerImpl::
+          TriggerEphemeralNetworkConfigActions,
+      base::Unretained(managed_network_configuration_handler_.get())));
+
+  const char* const onc_policy = R"(
+    {
+      "GlobalNetworkConfiguration": {
+      },
+      "NetworkConfigurations": [
+        {
+          "GUID": "guid_wifi1",
+          "Type": "WiFi",
+          "Name": "Managed wifi1",
+          "WiFi": {
+            "HexSSID": "7769666931", // "wifi1"
+            "SSID": "wifi1",
+            "Security": "WPA-EAP",
+            "EAP": {
+              "Outer": "PEAP",
+              "Inner": "MSCHAPv2",
+              "SaveCredentials": true,
+              "Recommended": ["Identity", "Password"]
+            }
+          }
+        }
+      ],
+      "Type": "UnencryptedConfiguration"
+    })";
+  EXPECT_TRUE(SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY, std::string(),
+                        base::test::ParseJsonDict(onc_policy)));
+  base::RunLoop().RunUntilIdle();
+
+  // The entry still exists and has kept the user-provided Passphrase.
+  std::string profile_path;
+  absl::optional<base::Value::Dict> resulting_properties =
+      GetShillProfileClient()->GetService(kOriginalEntryPath, &profile_path);
+  ASSERT_TRUE(resulting_properties);
+  EXPECT_THAT(*resulting_properties,
+              DictionaryHasValue(shill::kEapPasswordProperty,
+                                 base::Value("user_password")));
+}
+
+// There is a policy with a Recommended field.
+// The RecommendedValuesAreEphemeralAccessor policy is enabled.
+// Tests that initial policy application resets "Recommended" fields by
+// re-creating the configuration.
+TEST_F(ManagedNetworkConfigurationHandlerTest,
+       ResetRecommendedFields_Enabled_Initial) {
+  policy_util::SetEphemeralNetworkPoliciesEnabled();
+
+  InitializeStandardProfiles();
+  const std::string kOriginalEntryPath = "orig_entry_path";
+  base::Value::Dict original_wifi_config = base::test::ParseJsonDict(R"(
+    {
+      "AutoConnect": true,
+      "GUID": "guid_wifi1",
+      "Mode": "managed",
+      "EAP.EAP": "PEAP",
+      "EAP.Identity": "user_identity",
+      "EAP.Password": "user_password",
+      "Profile": "/profile/default",
+      "SecurityClass": "802_1x",
+      "SaveCredentials": true,
+      "Type": "wifi",
+      "WiFi.HexSSID": "7769666931",
+      "UIData": "{\"onc_source\":\"device_policy\"}"
+    })");
+  GetShillProfileClient()->AddEntry(
+      NetworkProfileHandler::GetSharedProfilePath(), kOriginalEntryPath,
+      std::move(original_wifi_config));
+
+  // Call TriggerEphemeralNetworkConfigActions when policies are available
+  // In production code, EphemeralNetworkConfigHandler will do this.
+  policy_observer_.RunOnSharedProfilePoliciesChanged(base::BindOnce(
+      &ManagedNetworkConfigurationHandlerImpl::
+          TriggerEphemeralNetworkConfigActions,
+      base::Unretained(managed_network_configuration_handler_.get())));
+
+  const char* const onc_policy = R"(
+    {
+      "GlobalNetworkConfiguration": {
+        "RecommendedValuesAreEphemeral": true
+      },
+      "NetworkConfigurations": [
+        {
+          "GUID": "guid_wifi1",
+          "Type": "WiFi",
+          "Name": "Managed wifi1",
+          "WiFi": {
+            "HexSSID": "7769666931", // "wifi1"
+            "SSID": "wifi1",
+            "Security": "WPA-EAP",
+            "EAP": {
+              "Outer": "PEAP",
+              "Inner": "MSCHAPv2",
+              "SaveCredentials": true,
+              "Recommended": ["Identity", "Password"]
+            }
+          }
+        }
+      ],
+      "Type": "UnencryptedConfiguration"
+    })";
+  EXPECT_TRUE(SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY, std::string(),
+                        base::test::ParseJsonDict(onc_policy)));
+  base::RunLoop().RunUntilIdle();
+
+  // The original entry has been wiped.
+  EXPECT_FALSE(GetShillProfileClient()->HasService(kOriginalEntryPath));
+
+  // A new one has been created.
+  std::string service_path =
+      GetShillServiceClient()->FindServiceMatchingGUID("guid_wifi1");
+  ASSERT_FALSE(service_path.empty());
+  const base::Value::Dict* properties =
+      GetShillServiceClient()->GetServiceProperties(service_path);
+  ASSERT_TRUE(properties);
+  EXPECT_THAT(properties->FindString(shill::kEapPasswordProperty),
+              testing::IsNull());
+}
+
+// There is a policy with a Recommended field.
+// The RecommendedValuesAreEphemeralAccessor policy is enabled.
+// Tests that a `TriggerEphemeralNetworkConfigActions` call triggered after the
+// initial policy application leads to clearing of the Recommended fields by
+// re-creating the configuration.
+TEST_F(ManagedNetworkConfigurationHandlerTest,
+       ResetRecommendedFields_Enabled_AfterInitialApplication) {
+  policy_util::SetEphemeralNetworkPoliciesEnabled();
+
+  const std::string kOncWifiGuid = "guid_wifi1";
+  const std::string kTestPassword = "test_password";
+
+  InitializeStandardProfiles();
+  const std::string onc_policy = base::StringPrintf(R"(
+    {
+      "GlobalNetworkConfiguration": {
+        "RecommendedValuesAreEphemeral": true
+      },
+      "NetworkConfigurations": [
+        {
+          "GUID": "%s",
+          "Type": "WiFi",
+          "Name": "Managed wifi1",
+          "WiFi": {
+            "HexSSID": "7769666931", // "wifi1"
+            "SSID": "wifi1",
+            "Security": "WPA-EAP",
+            "EAP": {
+              "Outer": "PEAP",
+              "Inner": "MSCHAPv2",
+              "SaveCredentials": true,
+              "Recommended": ["Identity", "Password"]
+            }
+          }
+        }
+      ],
+      "Type": "UnencryptedConfiguration"
+    })",
+                                                    kOncWifiGuid.c_str());
+  EXPECT_TRUE(SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY, std::string(),
+                        base::test::ParseJsonDict(onc_policy)));
+  base::RunLoop().RunUntilIdle();
+
+  // Set a recommended field.
+  std::string initial_service_path =
+      GetShillServiceClient()->FindServiceMatchingGUID(kOncWifiGuid);
+  EXPECT_TRUE(GetShillServiceClient()->SetServiceProperty(
+      initial_service_path, shill::kEapPasswordProperty,
+      base::Value(kTestPassword)));
+
+  managed_network_configuration_handler_
+      ->TriggerEphemeralNetworkConfigActions();
+  base::RunLoop().RunUntilIdle();
+
+  // The config does not have the recommended field value anymore.
+  std::string new_service_path =
+      GetShillServiceClient()->FindServiceMatchingGUID(kOncWifiGuid);
+  {
+    const base::Value::Dict* properties =
+        GetShillServiceClient()->GetServiceProperties(new_service_path);
+    ASSERT_TRUE(properties);
+    EXPECT_THAT(properties->FindString(shill::kEapPasswordProperty),
+                testing::IsNull());
+  }
+
+  // Set a recommended field again.
+  EXPECT_TRUE(GetShillServiceClient()->SetServiceProperty(
+      new_service_path, shill::kEapPasswordProperty,
+      base::Value(kTestPassword)));
+
+  // Re-apply policy.
+  EXPECT_TRUE(SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY, std::string(),
+                        base::test::ParseJsonDict(onc_policy)));
+  base::RunLoop().RunUntilIdle();
+
+  // The re-application of policy (without TriggerEphemeralNetworkConfigActions)
+  // did not wipe the recommended field or re-create the entry.
+  {
+    const base::Value::Dict* properties =
+        GetShillServiceClient()->GetServiceProperties(new_service_path);
+    ASSERT_TRUE(properties);
+    EXPECT_THAT(*properties, DictionaryHasValue(shill::kEapPasswordProperty,
+                                                base::Value(kTestPassword)));
+  }
+}
+
+// There is a policy with a Recommended field.
+// The RecommendedValuesAreEphemeralAccessor policy is enabled.
+// The feature flags/policies guarding it are however disabled.
+TEST_F(ManagedNetworkConfigurationHandlerTest,
+       ResetRecommendedFields_Enabled_FeatureOff) {
+  InitializeStandardProfiles();
+  const std::string kOriginalEntryPath = "orig_entry_path";
+  base::Value::Dict original_wifi_config = base::test::ParseJsonDict(R"(
+    {
+      "AutoConnect": true,
+      "GUID": "guid_wifi1",
+      "Mode": "managed",
+      "EAP.EAP": "PEAP",
+      "EAP.Identity": "user_identity",
+      "EAP.Password": "user_password",
+      "Profile": "/profile/default",
+      "SecurityClass": "802_1x",
+      "SaveCredentials": true,
+      "Type": "wifi",
+      "WiFi.HexSSID": "7769666931",
+      "UIData": "{\"onc_source\":\"device_policy\"}"
+    })");
+  GetShillProfileClient()->AddEntry(
+      NetworkProfileHandler::GetSharedProfilePath(), kOriginalEntryPath,
+      std::move(original_wifi_config));
+
+  // Don't call TriggerEphemeralNetworkConfigActions - it will only be called in
+  // production code if the feature is enabled.
+  const char* const onc_policy = R"(
+    {
+      "GlobalNetworkConfiguration": {
+        "RecommendedValuesAreEphemeral": true
+      },
+      "NetworkConfigurations": [
+        {
+          "GUID": "guid_wifi1",
+          "Type": "WiFi",
+          "Name": "Managed wifi1",
+          "WiFi": {
+            "HexSSID": "7769666931", // "wifi1"
+            "SSID": "wifi1",
+            "Security": "WPA-EAP",
+            "EAP": {
+              "Outer": "PEAP",
+              "Inner": "MSCHAPv2",
+              "SaveCredentials": true,
+              "Recommended": ["Identity", "Password"]
+            }
+          }
+        }
+      ],
+      "Type": "UnencryptedConfiguration"
+    })";
+  EXPECT_TRUE(SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY, std::string(),
+                        base::test::ParseJsonDict(onc_policy)));
+  base::RunLoop().RunUntilIdle();
+
+  // The entry still exists and has kept the user-provided Passphrase.
+  std::string profile_path;
+  absl::optional<base::Value::Dict> resulting_properties =
+      GetShillProfileClient()->GetService(kOriginalEntryPath, &profile_path);
+  ASSERT_TRUE(resulting_properties);
+  EXPECT_THAT(*resulting_properties,
+              DictionaryHasValue(shill::kEapPasswordProperty,
+                                 base::Value("user_password")));
+}
+
+// There is a policy with no Recommended field.
+// The RecommendedValuesAreEphemeralAccessor policy is enabled.
+// Tests that initial policy application does not attempt to re-create the
+// configuration (because no field in there is Recommended).
+TEST_F(ManagedNetworkConfigurationHandlerTest,
+       ResetRecommendedFields_Enabled_NoFieldRecommended_Initial) {
+  policy_util::SetEphemeralNetworkPoliciesEnabled();
+
+  InitializeStandardProfiles();
+  const std::string kOriginalEntryPath = "orig_entry_path";
+  base::Value::Dict original_wifi_config = base::test::ParseJsonDict(R"(
+    {
+      "AutoConnect": true,
+      "GUID": "guid_wifi1",
+      "Mode": "managed",
+      "EAP.EAP": "PEAP",
+      "EAP.Identity": "user_identity",
+      "EAP.Password": "user_password",
+      "Profile": "/profile/default",
+      "SecurityClass": "802_1x",
+      "SaveCredentials": true,
+      "Type": "wifi",
+      "WiFi.HexSSID": "7769666931",
+      "UIData": "{\"onc_source\":\"device_policy\"}"
+    })");
+  GetShillProfileClient()->AddEntry(
+      NetworkProfileHandler::GetSharedProfilePath(), kOriginalEntryPath,
+      std::move(original_wifi_config));
+
+  // Call TriggerEphemeralNetworkConfigActions when policies are available
+  // In production code, EphemeralNetworkConfigHandler will do this.
+  policy_observer_.RunOnSharedProfilePoliciesChanged(base::BindOnce(
+      &ManagedNetworkConfigurationHandlerImpl::
+          TriggerEphemeralNetworkConfigActions,
+      base::Unretained(managed_network_configuration_handler_.get())));
+
+  const char* const onc_policy = R"(
+    {
+      "GlobalNetworkConfiguration": {
+        "RecommendedValuesAreEphemeral": true
+      },
+      "NetworkConfigurations": [
+        {
+          "GUID": "guid_wifi1",
+          "Type": "WiFi",
+          "Name": "Managed wifi1",
+          "WiFi": {
+            "HexSSID": "7769666931", // "wifi1"
+            "SSID": "wifi1",
+            "Security": "WPA-EAP",
+            "EAP": {
+              "Outer": "PEAP",
+              "Inner": "MSCHAPv2",
+              "SaveCredentials": true,
+              "Identity": "user_identity",
+              "Password": "user_password"
+            }
+          }
+        }
+      ],
+      "Type": "UnencryptedConfiguration"
+    })";
+  EXPECT_TRUE(SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY, std::string(),
+                        base::test::ParseJsonDict(onc_policy)));
+  base::RunLoop().RunUntilIdle();
+
+  // The original entry has been preserved.
+  EXPECT_TRUE(GetShillProfileClient()->HasService(kOriginalEntryPath));
 }
 
 TEST_F(ManagedNetworkConfigurationHandlerTest, AutoConnectDisallowed) {

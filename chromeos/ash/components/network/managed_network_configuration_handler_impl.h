@@ -141,6 +141,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandlerImpl
   void NotifyPolicyAppliedToNetwork(
       const std::string& service_path) const override;
 
+  void TriggerEphemeralNetworkConfigActions() override;
+
   void TriggerCellularPolicyApplication(
       const NetworkProfile& profile,
       const base::flat_set<std::string>& new_cellular_policy_guids);
@@ -211,6 +213,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandlerImpl
     // Holds the set of ONC NetworkConfiguration GUIDs which have been modified
     // since network policy has been last applied.
     base::flat_set<std::string> modified_policy_guids;
+    // Additional PolicyApplicator options.
+    PolicyApplicator::Options options;
     // If true, network policy application needs to happen for this shill
     // profile, i.e. there were network policy changes that have not been
     // applied yet. Note that this can be true even if |modified_policy_guids|
@@ -323,7 +327,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandlerImpl
   // changed.
   void ApplyOrQueuePolicies(const std::string& userhash,
                             base::flat_set<std::string> modified_policies,
-                            bool can_affect_other_networks);
+                            bool can_affect_other_networks,
+                            PolicyApplicator::Options options);
 
   void SchedulePolicyApplication(const std::string& userhash);
   void StartPolicyApplication(const std::string& userhash);

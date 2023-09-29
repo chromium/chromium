@@ -103,18 +103,43 @@ void CopyRequiredCellularProperties(
 
 }  // namespace
 
+PolicyApplicator::Options::Options() = default;
+
+PolicyApplicator::Options::Options(PolicyApplicator::Options&& other) {
+  reset_recommended_managed_configs = other.reset_recommended_managed_configs;
+  // Reset the moved-from object to its default-constructed state.
+  other.reset_recommended_managed_configs = false;
+}
+
+PolicyApplicator::Options& PolicyApplicator::Options::operator=(
+    PolicyApplicator::Options&& other) {
+  reset_recommended_managed_configs = other.reset_recommended_managed_configs;
+  // Reset the moved-from object to its default-constructed state.
+  other.reset_recommended_managed_configs = false;
+
+  return *this;
+}
+
+PolicyApplicator::Options::~Options() = default;
+
+void PolicyApplicator::Options::Merge(const PolicyApplicator::Options& other) {
+  reset_recommended_managed_configs |= other.reset_recommended_managed_configs;
+}
+
 PolicyApplicator::PolicyApplicator(
     const NetworkProfile& profile,
     base::flat_map<std::string, base::Value::Dict> all_policies,
     base::Value::Dict global_network_config,
     ConfigurationHandler* handler,
     ManagedCellularPrefHandler* managed_cellular_pref_handler,
-    base::flat_set<std::string> modified_policy_guids)
+    base::flat_set<std::string> modified_policy_guids,
+    Options options)
     : handler_(handler),
       managed_cellular_pref_handler_(managed_cellular_pref_handler),
       profile_(profile),
       all_policies_(std::move(all_policies)),
       global_network_config_(std::move(global_network_config)),
+      options_(std::move(options)),
       remaining_policy_guids_(std::move(modified_policy_guids)) {}
 
 PolicyApplicator::~PolicyApplicator() {
@@ -297,21 +322,27 @@ void PolicyApplicator::ApplyOncPolicy(const std::string& entry_identifier,
                                       const base::Value::Dict& new_policy,
                                       base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
   const bool policy_guid_changed = (old_guid != new_guid);
+  const bool force_reset = policy_util::AreEphemeralNetworkPoliciesEnabled() &&
+                           options_.reset_recommended_managed_configs &&
+                           policy_util::HasAnyRecommendedField(new_policy);
   const bool policy_contents_changed =
       base::Contains(remaining_policy_guids_, new_guid);
   remaining_policy_guids_.erase(new_guid);
 
-  if (!policy_guid_changed && !policy_contents_changed) {
+  if (!policy_guid_changed && !policy_contents_changed && !force_reset) {
     VLOG(1) << "Not updating existing managed configuration with guid "
             << new_guid << " because the policy didn't change.";
     std::move(callback).Run();
     return;
   }
 
-  const base::Value::Dict* user_settings =
-      ui_data ? ui_data->GetUserSettingsDictionary() : nullptr;
+  const base::Value::Dict* user_settings = nullptr;
+  if (!force_reset) {
+    // TODO(b/260832333): We may also want to explicitly keep auth credentials
+    // which are currently not part of |ui_data|.
+    user_settings = ui_data ? ui_data->GetUserSettingsDictionary() : nullptr;
+  }
   base::Value::Dict new_shill_properties =
       policy_util::CreateShillConfiguration(profile_, new_guid,
                                             &global_network_config_,
@@ -333,7 +364,7 @@ void PolicyApplicator::ApplyOncPolicy(const std::string& entry_identifier,
   const bool identifying_properties_match =
       shill_property_util::DoIdentifyingPropertiesMatch(new_shill_properties,
                                                         entry_properties);
-  if (!policy_guid_changed && identifying_properties_match) {
+  if (!policy_guid_changed && identifying_properties_match && !force_reset) {
     NET_LOG(EVENT) << "Updating previously managed configuration with the "
                    << "updated policy " << new_guid << ".";
     WriteNewShillConfiguration(std::move(new_shill_properties),
@@ -343,7 +374,8 @@ void PolicyApplicator::ApplyOncPolicy(const std::string& entry_identifier,
                    << new_guid
                    << " [policy_guid_changed=" << policy_guid_changed
                    << ", identifying_propreties_match="
-                   << identifying_properties_match << "]";
+                   << identifying_properties_match
+                   << ", force_reset=" << force_reset << "]";
     // In general, old entries should at first be deleted before new
     // configurations are written to prevent inconsistencies. Therefore, we
     // delay the writing of the new config here until ~PolicyApplicator.

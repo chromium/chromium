@@ -567,7 +567,7 @@ void ManagedNetworkConfigurationHandlerImpl::SetPolicy(
 
   ApplyOrQueuePolicies(
       userhash, policies->ApplyOncNetworkConfigurationList(network_configs_onc),
-      /*can_affect_other_networks=*/true);
+      /*can_affect_other_networks=*/true, /*options=*/{});
 
   for (auto& observer : observers_)
     observer.PoliciesChanged(userhash);
@@ -587,7 +587,14 @@ bool ManagedNetworkConfigurationHandlerImpl::IsAnyPolicyApplicationRunning()
 void ManagedNetworkConfigurationHandlerImpl::ApplyOrQueuePolicies(
     const std::string& userhash,
     base::flat_set<std::string> modified_policies,
-    bool can_affect_other_networks) {
+    bool can_affect_other_networks,
+    PolicyApplicator::Options options) {
+  // Note that this will default-construct a PolicyApplicationInfo if none
+  // exists for the shill profile identifier by |userhash| yet.
+  PolicyApplicationInfo& policy_application_info =
+      policy_application_info_map_[userhash];
+  policy_application_info.options.Merge(options);
+
   const NetworkProfile* profile =
       network_profile_handler_->GetProfileForUserhash(userhash);
   if (!profile) {
@@ -606,10 +613,6 @@ void ManagedNetworkConfigurationHandlerImpl::ApplyOrQueuePolicies(
     return;
   }
 
-  // Note that this will default-construct a PolicyApplicationInfo if none
-  // exists for the shill profile identifier by |userhash| yet.
-  PolicyApplicationInfo& policy_application_info =
-      policy_application_info_map_[userhash];
   policy_application_info.modified_policy_guids.insert(
       std::make_move_iterator(modified_policies.begin()),
       std::make_move_iterator(modified_policies.end()));
@@ -656,11 +659,16 @@ void ManagedNetworkConfigurationHandlerImpl::StartPolicyApplication(
   base::flat_set<std::string> modified_guids;
   policy_application_info.modified_policy_guids.swap(modified_guids);
 
+  PolicyApplicator::Options options =
+      std::move(policy_application_info.options);
+  policy_application_info.options = {};
+
   policy_application_info.running_policy_applicator =
       std::make_unique<PolicyApplicator>(
           *profile, policies->GetGuidToPolicyMap(),
           policies->GetGlobalNetworkConfig()->Clone(), this,
-          managed_cellular_pref_handler_, std::move(modified_guids));
+          managed_cellular_pref_handler_, std::move(modified_guids),
+          std::move(options));
   policy_application_info.running_policy_applicator->Run();
 }
 
@@ -671,7 +679,8 @@ void ManagedNetworkConfigurationHandlerImpl::SetProfileWideVariableExpansions(
       userhash,
       GetOrCreatePoliciesForUser(userhash)->SetProfileWideExpansions(
           std::move(expansions)),
-      /*can_affect_other_networks=*/false);
+      /*can_affect_other_networks=*/false,
+      /*options=*/{});
 }
 
 bool ManagedNetworkConfigurationHandlerImpl::SetResolvedClientCertificate(
@@ -684,7 +693,7 @@ bool ManagedNetworkConfigurationHandlerImpl::SetResolvedClientCertificate(
   if (!change_had_effect)
     return false;
   ApplyOrQueuePolicies(userhash, {guid},
-                       /*can_affect_other_networks=*/false);
+                       /*can_affect_other_networks=*/false, /*options=*/{});
   return true;
 }
 
@@ -709,7 +718,7 @@ void ManagedNetworkConfigurationHandlerImpl::OnProfileAdded(
   // can affect unmanaged networks (see ApplyGlobalPolicyOnUnmanagedEntry in
   // PolicyApplicator), so set can_affect_other_networks to true.
   ApplyOrQueuePolicies(profile.userhash, policies->GetAllPolicyGuids(),
-                       /*can_affect_other_networks=*/true);
+                       /*can_affect_other_networks=*/true, /*options=*/{});
 }
 
 void ManagedNetworkConfigurationHandlerImpl::OnProfileRemoved(
@@ -1411,6 +1420,17 @@ ManagedNetworkConfigurationHandlerImpl::FindGlobalPolicyString(
   }
 
   return global_network_config->FindString(key);
+}
+
+void ManagedNetworkConfigurationHandlerImpl::
+    TriggerEphemeralNetworkConfigActions() {
+  DCHECK(policy_util::AreEphemeralNetworkPoliciesEnabled());
+
+  PolicyApplicator::Options options;
+  options.reset_recommended_managed_configs = RecommendedValuesAreEphemeral();
+  ApplyOrQueuePolicies(
+      /*userhash=*/std::string(), /*modified_policies=*/{},
+      /*can_affect_other_networks=*/true, std::move(options));
 }
 
 }  // namespace ash
