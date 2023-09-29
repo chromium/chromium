@@ -1255,6 +1255,17 @@ omnibox::GroupConfig_SideType AutocompleteResult::GetSideTypeForSuggestionGroup(
   return it->second.side_type();
 }
 
+omnibox::GroupConfig_RenderType
+AutocompleteResult::GetRenderTypeForSuggestionGroup(
+    omnibox::GroupId suggestion_group_id) const {
+  auto it = suggestion_groups_map().find(suggestion_group_id);
+  if (it == suggestion_groups_map().end()) {
+    return omnibox::GroupConfig_RenderType_DEFAULT_VERTICAL;
+  }
+
+  return it->second.render_type();
+}
+
 void AutocompleteResult::MergeSuggestionGroupsMap(
     const omnibox::GroupConfigMap& suggestion_groups_map) {
   for (const auto& entry : suggestion_groups_map) {

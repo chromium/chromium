@@ -1267,10 +1267,12 @@ void AutocompleteController::UpdateKeywordDescriptions(
 
 void AutocompleteController::UpdateAssistedQueryStats(
     AutocompleteResult* result) {
+  using omnibox::metrics::ChromeSearchboxStats;
+
   if (result->empty())
     return;
 
-  omnibox::metrics::ChromeSearchboxStats searchbox_stats;
+  ChromeSearchboxStats searchbox_stats;
   searchbox_stats.set_client_name("chrome");
 
   // Build the impressions string (the AQS part after ".").
@@ -1279,8 +1281,29 @@ void AutocompleteController::UpdateAssistedQueryStats(
   int num_zero_prefix_suggestions_shown = 0;
   absl::optional<omnibox::SuggestType> last_type;
   base::flat_set<omnibox::SuggestSubtype> last_subtypes = {};
+  omnibox::GroupId previous_group_id = omnibox::GROUP_INVALID;
+  std::vector<size_t> match_index_to_position(result->size());
+  size_t match_position = 0;
+
   for (size_t index = 0; index < result->size(); ++index) {
     AutocompleteMatch* match = result->match_at(index);
+
+    // Consider all AutocompleteMatches belonging to a Horizontal render group
+    // as a single element. If suggestion group ID has not changed, and the
+    // group render type is horizontal, we won't create a separate entry for
+    // this suggestion.
+    omnibox::GroupId group_id =
+        match->suggestion_group_id.value_or(omnibox::GROUP_INVALID);
+    omnibox::GroupConfig_RenderType render_type =
+        result->GetRenderTypeForSuggestionGroup(group_id);
+    if (group_id == previous_group_id &&
+        render_type == omnibox::GroupConfig_RenderType_HORIZONTAL) {
+      // All elements in a Horizontal Render Group share the same index.
+      match_index_to_position[index] = match_position - 1;
+      continue;
+    }
+    previous_group_id = group_id;
+
     omnibox::SuggestType type = match->suggest_type;
     auto subtypes = match->subtypes;
     ExtendMatchSubtypes(*match, &subtypes);
@@ -1295,8 +1318,9 @@ void AutocompleteController::UpdateAssistedQueryStats(
     }
 
     auto* available_suggestion = searchbox_stats.add_available_suggestions();
-    available_suggestion->set_index(index);
+    available_suggestion->set_index(match_position);
     available_suggestion->set_type(type);
+    match_index_to_position[index] = match_position++;
     for (const auto subtype : subtypes) {
       available_suggestion->add_subtypes(subtype);
     }
@@ -1335,23 +1359,25 @@ void AutocompleteController::UpdateAssistedQueryStats(
 
     match->search_terms_args->searchbox_stats = searchbox_stats;
 
-    std::string selected_index;
+    std::string selected_position;
     // Prevent trivial suggestions from getting credit for being selected.
     if (!match->IsTrivialAutocompletion()) {
-      DCHECK_LT(static_cast<int>(index),
+      match_position = match_index_to_position[index];
+      DCHECK_LT(static_cast<int>(match_position),
                 match->search_terms_args->searchbox_stats
                     .available_suggestions_size());
-      const auto& selected_suggestion =
-          match->search_terms_args->searchbox_stats.available_suggestions(
-              index);
-      DCHECK_EQ(static_cast<int>(index), selected_suggestion.index());
+      auto* selected_suggestion =
+          match->search_terms_args->searchbox_stats
+              .mutable_available_suggestions(match_position);
+      DCHECK_EQ(static_cast<int>(match_position), selected_suggestion->index());
+      selected_suggestion->set_type(match->suggest_type);
       match->search_terms_args->searchbox_stats.mutable_assisted_query_info()
-          ->MergeFrom(selected_suggestion);
+          ->MergeFrom(*selected_suggestion);
 
-      selected_index = base::StringPrintf("%" PRIuS, index);
+      selected_position = base::StringPrintf("%" PRIuS, match_position);
     }
     match->search_terms_args->assisted_query_stats = base::StringPrintf(
-        "chrome.%s.%s", selected_index.c_str(), autocompletions.c_str());
+        "chrome.%s.%s", selected_position.c_str(), autocompletions.c_str());
 
     // Duplicate AQS/SBS for eligible ActionsInSuggest.
     // TODO(1418077): rather than computing the `action_uri`, keep the
