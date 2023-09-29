@@ -62,6 +62,11 @@ class AppServerWin : public AppServer {
   // function runs on a COM RPC thread when the WRL module is destroyed.
   void Stop();
 
+  // Restores all COM interfaces in the registry just to be sure the interfaces
+  // entries exist.
+  // TODO(crbug.com/1484803): remove once we know why E_NOINTERFACE happens.
+  bool RestoreComInterfaces(bool is_internal);
+
  private:
   ~AppServerWin() override;
 

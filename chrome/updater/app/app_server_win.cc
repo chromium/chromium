@@ -264,6 +264,10 @@ void AppServerWin::Stop() {
                               }));
 }
 
+bool AppServerWin::RestoreComInterfaces(bool is_internal) {
+  return InstallComInterfaces(updater_scope(), is_internal);
+}
+
 HRESULT AppServerWin::RegisterClassObjects() {
   // Register COM class objects that are under either the ActiveSystem or the
   // ActiveUser group.

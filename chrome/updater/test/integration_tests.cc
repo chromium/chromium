@@ -65,9 +65,12 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/registry.h"
+#include "chrome/updater/app/server/win/updater_idl.h"
+#include "chrome/updater/app/server/win/updater_internal_idl.h"
 #include "chrome/updater/app/server/win/updater_legacy_idl.h"
 #include "chrome/updater/test_scope.h"
 #include "chrome/updater/util/win_util.h"
+#include "chrome/updater/win/setup/setup_util.h"
 #include "chrome/updater/win/ui/l10n_util.h"
 #include "chrome/updater/win/ui/resources/updater_installer_strings.h"
 #include "chrome/updater/win/win_constants.h"
@@ -894,6 +897,66 @@ TEST_F(IntegrationTest, UpdateApp) {
   ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(&test_server));
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
+
+#if BUILDFLAG(IS_WIN)
+TEST_F(IntegrationTest, UpdateAppSucceedsEvenAfterDeletingInterfaces) {
+  ScopedServer test_server(test_commands_);
+  ASSERT_NO_FATAL_FAILURE(Install());
+
+  // Delete IUpdaterXXX, used by `InstallApp` via `RegisterApp`.
+  // Delete IUpdaterInternal, used by the `wake` task.
+  {
+    const UpdaterScope scope = GetTestScope();
+    for (const IID& iid : [&scope]() -> std::vector<IID> {
+           switch (scope) {
+             case UpdaterScope::kUser:
+               return {
+                   __uuidof(IUpdaterUser),
+                   __uuidof(IUpdaterCallbackUser),
+                   __uuidof(IUpdaterInternalUser),
+                   __uuidof(IUpdaterInternalCallbackUser),
+               };
+             case UpdaterScope::kSystem:
+               return {
+                   __uuidof(IUpdaterSystem),
+                   __uuidof(IUpdaterCallbackSystem),
+                   __uuidof(IUpdaterInternalSystem),
+                   __uuidof(IUpdaterInternalCallbackSystem),
+               };
+           }
+         }()) {
+      LONG result =
+          base::win::RegKey(UpdaterScopeToHKeyRoot(scope), L"", DELETE)
+              .DeleteKey(GetComIidRegistryPath(iid).c_str());
+      ASSERT_TRUE(result == ERROR_SUCCESS || result == ERROR_FILE_NOT_FOUND);
+    }
+  }
+
+  const std::string kAppId("test");
+  ASSERT_NO_FATAL_FAILURE(InstallApp(kAppId));
+  base::Version v1("1");
+  ASSERT_NO_FATAL_FAILURE(ExpectUpdateSequence(
+      &test_server, kAppId, "", UpdateService::Priority::kBackground,
+      base::Version("0.1"), v1));
+
+  ASSERT_NO_FATAL_FAILURE(RunWake(0));
+
+  base::Version v2("2");
+  const std::string kInstallDataIndex("test_install_data_index");
+  ASSERT_NO_FATAL_FAILURE(
+      ExpectUpdateSequence(&test_server, kAppId, kInstallDataIndex,
+                           UpdateService::Priority::kForeground, v1, v2));
+  ASSERT_NO_FATAL_FAILURE(Update(kAppId, kInstallDataIndex));
+
+  ASSERT_TRUE(WaitForUpdaterExit());
+  ASSERT_NO_FATAL_FAILURE(ExpectAppVersion(kAppId, v2));
+  ASSERT_NO_FATAL_FAILURE(ExpectLastChecked());
+  ASSERT_NO_FATAL_FAILURE(ExpectLastStarted());
+
+  ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(&test_server));
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 TEST_F(IntegrationTest, NoCheckWhenLastCheckedRecently) {
   ScopedServer test_server(test_commands_);

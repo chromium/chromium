@@ -80,6 +80,11 @@ std::vector<T> JoinVectors(const std::vector<T>& vector1,
   return joined_vector;
 }
 
+// Installs the COM interfaces and corresponding typelibs in the registry for
+// the updater at the given `scope` and `is_internal`. Returns `true` on
+// success.
+bool InstallComInterfaces(UpdaterScope scope, bool is_internal);
+
 // Adds work items to `list` to install the interface `iid`.
 void AddInstallComInterfaceWorkItems(HKEY root,
                                      const base::FilePath& typelib_path,

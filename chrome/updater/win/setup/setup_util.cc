@@ -218,6 +218,24 @@ std::vector<CLSID> GetServers(bool is_internal, UpdaterScope scope) {
   return is_internal ? GetSideBySideServers(scope) : GetActiveServers(scope);
 }
 
+bool InstallComInterfaces(UpdaterScope scope, bool is_internal) {
+  VLOG(1) << __func__ << ": scope: " << scope
+          << ": is_internal: " << is_internal;
+  const absl::optional<base::FilePath> versioned_directory =
+      GetVersionedInstallDirectory(scope);
+  if (!versioned_directory) {
+    return false;
+  }
+  const base::FilePath updater_path =
+      versioned_directory->Append(GetExecutableRelativePath());
+  std::unique_ptr<WorkItemList> list(WorkItem::CreateWorkItemList());
+  for (const auto& iid : GetInterfaces(is_internal, scope)) {
+    AddInstallComInterfaceWorkItems(UpdaterScopeToHKeyRoot(scope), updater_path,
+                                    iid, list.get());
+  }
+  return list->Do();
+}
+
 // Adds work items to `list` to install the interface `iid`.
 void AddInstallComInterfaceWorkItems(HKEY root,
                                      const base::FilePath& typelib_path,
