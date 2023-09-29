@@ -1488,6 +1488,12 @@ void InjectNTP(Browser* browser) {
     }
   }
 
+  if (_signedInAccountsVC) {
+    // Don't handle intents if the user has the Signed In Accounts view
+    // controller presented on the screen.
+    return NO;
+  }
+
   return YES;
 }
 
