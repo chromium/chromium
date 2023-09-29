@@ -1509,12 +1509,13 @@ void InjectNTP(Browser* browser) {
 }
 
 - (void)showHistory {
+  CHECK(!self.currentInterface.incognito)
+      << "Current interface is incognito and should NOT show history. Call "
+         "this on regular interface.";
   self.historyCoordinator = [[HistoryCoordinator alloc]
       initWithBaseViewController:self.currentInterface.viewController
                          browser:self.mainInterface.browser];
-  self.historyCoordinator.loadStrategy =
-      self.currentInterface.incognito ? UrlLoadStrategy::ALWAYS_IN_INCOGNITO
-                                      : UrlLoadStrategy::NORMAL;
+  self.historyCoordinator.loadStrategy = UrlLoadStrategy::NORMAL;
   self.historyCoordinator.delegate = self;
   [self.historyCoordinator start];
 }

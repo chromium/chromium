@@ -130,19 +130,6 @@ void UrlLoadingBrowserAgent::Load(const UrlLoadParams& params) {
       Dispatch(fixed_params);
       break;
     }
-    case UrlLoadStrategy::ALWAYS_IN_INCOGNITO: {
-      ChromeBrowserState* browser_state = browser_->GetBrowserState();
-      if (params.disposition == WindowOpenDisposition::CURRENT_TAB &&
-          !browser_state->IsOffTheRecord()) {
-        DCHECK(incognito_loader_);
-        incognito_loader_->Load(params);
-      } else {
-        UrlLoadParams fixed_params = params;
-        fixed_params.in_incognito = YES;
-        Dispatch(fixed_params);
-      }
-      break;
-    }
     case UrlLoadStrategy::NORMAL: {
       Dispatch(params);
       break;

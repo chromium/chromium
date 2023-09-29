@@ -15,7 +15,6 @@ enum class UrlLoadStrategy {
   NORMAL = 0,
 
   ALWAYS_NEW_FOREGROUND_TAB = 1 << 0,
-  ALWAYS_IN_INCOGNITO = 1 << 1,
 };
 
 // UrlLoadingService wrapper around web::NavigationManager::WebLoadParams,
