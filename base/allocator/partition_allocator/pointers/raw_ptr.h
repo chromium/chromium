@@ -636,10 +636,14 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
             typename U = T,
             RawPtrTraits CopyTraits = Traits,
             typename Unused = std::enable_if_t<
-                !raw_ptr_traits::IsPtrArithmeticAllowed(CopyTraits) &&
                 !std::is_void<typename std::remove_cv<U>::type>::value &&
                 partition_alloc::internal::is_offset_type<Z>>>
-  U& operator[](Z delta_elems) const = delete;
+  U& operator[](Z delta_elems) const {
+    static_assert(
+        raw_ptr_traits::IsPtrArithmeticAllowed(Traits),
+        "cannot index raw_ptr unless AllowPtrArithmetic trait is present.");
+    return wrapped_ptr_[delta_elems];
+  }
 
   // Do not disable operator+() and operator-().
   // They provide OOB checks, which prevent from assigning an arbitrary value to

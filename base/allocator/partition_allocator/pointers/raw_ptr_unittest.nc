@@ -300,7 +300,7 @@ void WontCompile() {
   raw_ptr<int> ptr2 = ptr - 1;
 }
 
-#elif defined(DISABLED_NCTEST_BAN_PTR_INDEX) // [r"overload resolution selected deleted operator"]
+#elif defined(DISABLED_NCTEST_BAN_PTR_INDEX) // [r"static assertion failed due to requirement '.*IsPtrArithmeticAllowed.*'"]
 
 int WontCompile() {
   raw_ptr<int> ptr = new int(3);
