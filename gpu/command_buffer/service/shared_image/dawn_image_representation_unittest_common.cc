@@ -11,6 +11,28 @@ namespace gpu {
 namespace {
 constexpr size_t kBufferSizeMinAlignment = 256;
 
+void CopyTexelToBuffer(const wgpu::CommandEncoder& encoder,
+                       const wgpu::Texture& texture,
+                       uint32_t x,
+                       uint32_t y,
+                       const wgpu::Buffer& buffer) {
+  wgpu::ImageCopyBuffer buffer_copy;
+  buffer_copy.buffer = buffer;
+  buffer_copy.layout =
+      wgpu::TextureDataLayout{.bytesPerRow = kBufferSizeMinAlignment};
+
+  wgpu::ImageCopyTexture texture_copy;
+  texture_copy.texture = texture;
+  texture_copy.mipLevel = 0;
+  texture_copy.origin = wgpu::Origin3D{.x = x, .y = y, .z = 0};
+
+  wgpu::Extent3D extend = {1, 1, 1};
+
+  encoder.CopyTextureToBuffer(&texture_copy, &buffer_copy, &extend);
+}
+
+}  // namespace
+
 wgpu::ShaderModule CreateShaderModule(const wgpu::Device& device,
                                       const char* source) {
   wgpu::ShaderModuleWGSLDescriptor wgsl_desc;
@@ -83,28 +105,6 @@ wgpu::TextureView CreateTextureView(const wgpu::Texture& texture,
   descriptor.aspect = aspect;
   return texture.CreateView(&descriptor);
 }
-
-void CopyTexelToBuffer(const wgpu::CommandEncoder& encoder,
-                       const wgpu::Texture& texture,
-                       uint32_t x,
-                       uint32_t y,
-                       const wgpu::Buffer& buffer) {
-  wgpu::ImageCopyBuffer buffer_copy;
-  buffer_copy.buffer = buffer;
-  buffer_copy.layout =
-      wgpu::TextureDataLayout{.bytesPerRow = kBufferSizeMinAlignment};
-
-  wgpu::ImageCopyTexture texture_copy;
-  texture_copy.texture = texture;
-  texture_copy.mipLevel = 0;
-  texture_copy.origin = wgpu::Origin3D{.x = x, .y = y, .z = 0};
-
-  wgpu::Extent3D extend = {1, 1, 1};
-
-  encoder.CopyTextureToBuffer(&texture_copy, &buffer_copy, &extend);
-}
-
-}  // namespace
 
 void RunDawnVideoSamplingTest(
     wgpu::Device device,

@@ -14,6 +14,27 @@ void RunDawnVideoSamplingTest(
     uint8_t expected_y_value,
     uint8_t expected_u_value,
     uint8_t expected_v_value);
-}
 
+wgpu::ShaderModule CreateShaderModule(const wgpu::Device& device,
+                                      const char* source);
+
+wgpu::RenderPipeline CreateRenderPipeline(
+    const wgpu::Device& device,
+    wgpu::ShaderModule vs_module,
+    wgpu::ShaderModule fs_module,
+    wgpu::TextureFormat render_pass_color_format);
+
+wgpu::Buffer CreateBuffer(const wgpu::Device& device,
+                          uint32_t size,
+                          wgpu::BufferUsage usage);
+
+wgpu::Texture CreateTexture(const wgpu::Device& device,
+                            uint32_t width,
+                            uint32_t height,
+                            wgpu::TextureUsage usage,
+                            wgpu::TextureFormat format);
+
+wgpu::TextureView CreateTextureView(const wgpu::Texture& texture,
+                                    wgpu::TextureAspect aspect);
+}  // namespace gpu
 #endif
