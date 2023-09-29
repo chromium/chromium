@@ -4,6 +4,26 @@
 
 import("//build/config/ios/asset_catalog.gni")
 
+group("resources") {
+  deps = [
+    ":empty_pixel",
+    ":extension_icon",
+  ]
+}
+
+# The extension only use one app icon.
+# As a consequence, the asset compiler will not output any Assets.car file,
+# which is not supported by the toolchain.
+# To solve the issue, add an empty unused image.
+imageset("empty_pixel") {
+  sources = [
+    "empty_pixel.imageset/Contents.json",
+    "empty_pixel.imageset/empty_pixel.png",
+    "empty_pixel.imageset/empty_pixel@2x.png",
+    "empty_pixel.imageset/empty_pixel@3x.png",
+  ]
+}
+
 appiconset("extension_icon") {
   sources = [
     "ExtensionIcon.appiconset/Contents.json",

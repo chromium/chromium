@@ -27,7 +27,7 @@ ios_appex_bundle("appex") {
   output_name = "open_extension"
   deps = [
     "//ios/chrome/open_extension:open",
-    "//ios/chrome/open_extension/resources:extension_icon",
+    "//ios/chrome/open_extension/resources",
   ]
 
   bundle_deps_filter = [ "//third_party/icu:icudata" ]
