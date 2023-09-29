@@ -9,6 +9,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
+#include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/util/affiliation.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
@@ -174,6 +175,13 @@ bool CanUseAccessToken(const BinaryUploadService::Request& request,
     return true;
   }
 
+  // In the unaffiliated case, we only return an access token for profile
+  // based policies.
+  if (base::FeatureList::IsEnabled(
+          enterprise_connectors::kEnableRelaxedAffiliationCheck)) {
+    return chrome::enterprise_util::IsProfileAffiliated(profile) ||
+           request.per_profile_request();
+  }
   return chrome::enterprise_util::IsProfileAffiliated(profile);
 }
 
