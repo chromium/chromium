@@ -180,6 +180,7 @@ source_set("eg2_tests") {
     ":eg_test_support+eg2",
     "//base",
     "//base/test:test_support",
+    "//build:branding_buildflags",
     "//components/enterprise",
     "//components/enterprise:test_support",
     "//components/policy:policy_code_generate",

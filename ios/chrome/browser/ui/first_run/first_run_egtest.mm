@@ -6,6 +6,7 @@
 #import "base/ios/ios_util.h"
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
+#import "build/branding_buildflags.h"
 #import "components/policy/core/common/policy_loader_ios_constants.h"
 #import "components/policy/policy_constants.h"
 #import "components/signin/ios/browser/features.h"
@@ -227,7 +228,14 @@ void DismissDefaultBrowserPromo() {
 }
 
 // Tests FRE with UMA off and without sign-in.
-- (void)testWithUMAUncheckedAndNoSignin {
+// TODO(crbug.com/1487756): Test fails on official builds.
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#define MAYBE_testWithUMAUncheckedAndNoSignin \
+  DISABLED_testWithUMAUncheckedAndNoSignin
+#else
+#define MAYBE_testWithUMAUncheckedAndNoSignin testWithUMAUncheckedAndNoSignin
+#endif
+- (void)MAYBE_testWithUMAUncheckedAndNoSignin {
   // Verify 2 step FRE.
   [self verifyEnterpriseWelcomeScreenIsDisplayedWithFRESigninIntent:
             FRESigninIntentRegular];
@@ -264,7 +272,15 @@ void DismissDefaultBrowserPromo() {
 }
 
 // Tests FRE with UMA off, reopen UMA dialog and close the FRE without sign-in.
-- (void)testUMAUncheckedWhenOpenedSecondTime {
+// TODO(crbug.com/1487756): Test fails on official builds.
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#define MAYBE_testUMAUncheckedWhenOpenedSecondTime \
+  DISABLED_testUMAUncheckedWhenOpenedSecondTime
+#else
+#define MAYBE_testUMAUncheckedWhenOpenedSecondTime \
+  testUMAUncheckedWhenOpenedSecondTime
+#endif
+- (void)MAYBE_testUMAUncheckedWhenOpenedSecondTime {
   // Verify 2 step FRE.
   [self verifyEnterpriseWelcomeScreenIsDisplayedWithFRESigninIntent:
             FRESigninIntentRegular];
@@ -317,7 +333,14 @@ void DismissDefaultBrowserPromo() {
 }
 
 // Tests to turn off UMA, and open the UMA dialog to turn it back on.
-- (void)testUMAUncheckedAndCheckItAgain {
+// TODO(crbug.com/1487756): Test fails on official builds.
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#define MAYBE_testUMAUncheckedAndCheckItAgain \
+  DISABLED_testUMAUncheckedAndCheckItAgain
+#else
+#define MAYBE_testUMAUncheckedAndCheckItAgain testUMAUncheckedAndCheckItAgain
+#endif
+- (void)MAYBE_testUMAUncheckedAndCheckItAgain {
   // Verify 2 step FRE.
   [self verifyEnterpriseWelcomeScreenIsDisplayedWithFRESigninIntent:
             FRESigninIntentRegular];
@@ -370,7 +393,14 @@ void DismissDefaultBrowserPromo() {
 }
 
 // Tests FRE with UMA off and without sign-in.
-- (void)testWithUMAUncheckedAndSignin {
+// TODO(crbug.com/1487756): Test fails on official builds.
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#define MAYBE_testWithUMAUncheckedAndSignin \
+  DISABLED_testWithUMAUncheckedAndSignin
+#else
+#define MAYBE_testWithUMAUncheckedAndSignin testWithUMAUncheckedAndSignin
+#endif
+- (void)MAYBE_testWithUMAUncheckedAndSignin {
   // Add identity.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];

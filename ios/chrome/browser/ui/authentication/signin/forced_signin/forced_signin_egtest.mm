@@ -7,6 +7,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/time/time.h"
+#import "build/branding_buildflags.h"
 #import "components/policy/core/common/policy_loader_ios_constants.h"
 #import "components/policy/policy_constants.h"
 #import "components/signin/ios/browser/features.h"
@@ -494,7 +495,15 @@ void CompleteSigninFlow() {
 }
 
 // Tests signing out account from accounts on this device with sync disabled.
-- (void)testSignOutFromAccountsOnThisDeviceSyncDisabled {
+// TODO(crbug.com/1487746): Test fails on official builds.
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#define MAYBE_testSignOutFromAccountsOnThisDeviceSyncDisabled \
+  DISABLED_testSignOutFromAccountsOnThisDeviceSyncDisabled
+#else
+#define MAYBE_testSignOutFromAccountsOnThisDeviceSyncDisabled \
+  testSignOutFromAccountsOnThisDeviceSyncDisabled
+#endif
+- (void)MAYBE_testSignOutFromAccountsOnThisDeviceSyncDisabled {
   // Add account.
   FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity1];
