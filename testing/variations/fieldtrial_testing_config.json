@@ -4141,9 +4141,21 @@
     "ConsolidatedIPCForProxyCreation": [
         {
             "platforms": [
-                "android"
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
             ],
             "experiments": [
+                {
+                    "name": "Enabled_non_android_20230928",
+                    "enable_features": [
+                        "ConsolidatedIPCForProxyCreation"
+                    ]
+                },
                 {
                     "name": "Enabled_20230323",
                     "enable_features": [
