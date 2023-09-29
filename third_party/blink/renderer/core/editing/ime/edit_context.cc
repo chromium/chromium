@@ -445,6 +445,7 @@ void EditContext::CancelComposition() {
                           composition_range_end_, selection_start_,
                           selection_end_);
 
+  DispatchTextFormatEvent(WebVector<ui::ImeTextSpan>());
   DispatchCompositionEndEvent(g_empty_string);
   ClearCompositionState();
 }
@@ -566,8 +567,10 @@ bool EditContext::CommitText(const WebString& text,
                           actual_replacement_range.EndOffset(),
                           selection_start_, selection_end_);
   // Fire composition end event.
-  if (!text.IsEmpty() && has_composition_)
+  if (!text.IsEmpty() && has_composition_) {
+    DispatchTextFormatEvent(WebVector<ui::ImeTextSpan>());
     DispatchCompositionEndEvent(text);
+  }
 
   ClearCompositionState();
   return true;
@@ -580,7 +583,7 @@ bool EditContext::FinishComposingText(
   String text;
   if (has_composition_) {
     text = text_.Substring(composition_range_start_, composition_range_end_);
-    // Fire composition end event.
+    DispatchTextFormatEvent(WebVector<ui::ImeTextSpan>());
     DispatchCompositionEndEvent(text);
   } else {
     text = text_.Substring(selection_start_, selection_end_);
@@ -591,8 +594,6 @@ bool EditContext::FinishComposingText(
     selection_end_ = selection_end_ + text.length();
   }
 
-  // TODO(snianu): also need to fire formatupdate here to remove formats from
-  // the previous compositions?
   ClearCompositionState();
   return true;
 }
