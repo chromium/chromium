@@ -1052,10 +1052,9 @@ public class FeedStreamTest {
         assertEquals(2, mContentManager.getItemCount());
         assertEquals("a", mContentManager.getContent(1).getKey());
         FeedListContentManager.FeedContent content = mContentManager.getContent(1);
-        assertThat(mContentManager.getContent(1),
-                instanceOf(FeedListContentManager.NativeViewContent.class));
+        assertThat(content, instanceOf(FeedListContentManager.NativeViewContent.class));
         FeedListContentManager.NativeViewContent nativeViewContent =
-                (FeedListContentManager.NativeViewContent) mContentManager.getContent(1);
+                (FeedListContentManager.NativeViewContent) content;
 
         FrameLayout layout = new FrameLayout(mActivity);
 
@@ -1077,10 +1076,9 @@ public class FeedStreamTest {
         assertEquals(2, mContentManager.getItemCount());
         assertEquals("a", mContentManager.getContent(1).getKey());
         FeedListContentManager.FeedContent content = mContentManager.getContent(1);
-        assertThat(mContentManager.getContent(1),
-                instanceOf(FeedListContentManager.NativeViewContent.class));
+        assertThat(content, instanceOf(FeedListContentManager.NativeViewContent.class));
         FeedListContentManager.NativeViewContent nativeViewContent =
-                (FeedListContentManager.NativeViewContent) mContentManager.getContent(1);
+                (FeedListContentManager.NativeViewContent) content;
 
         FrameLayout layout = new FrameLayout(mActivity);
 
