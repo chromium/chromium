@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
+#import "ios/chrome/browser/ui/authentication/authentication_ui_util.h"
 #import "ios/chrome/browser/ui/authentication/history_sync/history_sync_coordinator.h"
 
 @interface HistorySyncPopupCoordinator () <
@@ -195,6 +196,19 @@
   _navigationController.presentationController.delegate = nil;
   _navigationController = nil;
   [self viewWasDismissedWithResult:SigninCoordinatorResultCanceledByUser];
+}
+
+#pragma mark - NSObject
+
+- (NSString*)description {
+  return [NSString
+      stringWithFormat:
+          @"<%@: %p, authenticationService: %p, historySyncCoordinator: %@, "
+          @"presented: %@, accessPoint: %d>",
+          self.class.description, self, _authenticationService,
+          _historySyncCoordinator,
+          ViewControllerPresentationStatusDescription(_navigationController),
+          static_cast<int>(_accessPoint)];
 }
 
 @end
