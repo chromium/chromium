@@ -43,17 +43,11 @@ static int UpdatePos(int pos, int step, int max_size) {
 AudioFifo::AudioFifo(int channels, int frames)
     : audio_bus_(AudioBus::Create(channels, frames)),
       max_frames_(frames),
-      frames_pushed_(0),
-      frames_consumed_(0),
+      frames_(0),
       read_pos_(0),
       write_pos_(0) {}
 
 AudioFifo::~AudioFifo() = default;
-
-int AudioFifo::frames() const {
-  int delta = frames_pushed_ - frames_consumed_;
-  return delta;
-}
 
 void AudioFifo::Push(const AudioBus* source) {
   Push(source, source->frames());
@@ -65,16 +59,16 @@ void AudioFifo::Push(const AudioBus* source, int source_size) {
   DCHECK_LE(source_size, source->frames());
 
   // Ensure that there is space for the new data in the FIFO.
-  CHECK_LE(source_size + frames(), max_frames_);
+  CHECK_LE(source_size + frames_, max_frames_);
 
   TRACE_EVENT_BEGIN2(TRACE_DISABLED_BY_DEFAULT("audio"), "AudioFifo::Push",
-                     "this", static_cast<void*>(this), "fifo frames", frames());
+                     "this", static_cast<void*>(this), "fifo frames", frames_);
 
   // Figure out if wrapping is needed and if so what segment sizes we need
   // when adding the new audio bus content to the FIFO.
   int append_size = 0;
   int wrap_size = 0;
-  GetSizes(write_pos_, max_frames(), source_size, &append_size, &wrap_size);
+  GetSizes(write_pos_, max_frames_, source_size, &append_size, &wrap_size);
 
   // Copy all channels from the source to the FIFO. Wrap around if needed.
   for (int ch = 0; ch < source->channels(); ++ch) {
@@ -89,9 +83,9 @@ void AudioFifo::Push(const AudioBus* source, int source_size) {
     }
   }
 
-  frames_pushed_ += source_size;
-  DCHECK_LE(frames(), max_frames());
-  write_pos_ = UpdatePos(write_pos_, source_size, max_frames());
+  frames_ += source_size;
+  DCHECK_LE(frames_, max_frames_);
+  write_pos_ = UpdatePos(write_pos_, source_size, max_frames_);
   TRACE_EVENT_END1(TRACE_DISABLED_BY_DEFAULT("audio"), "AudioFifo::Push",
                    "frames", source_size);
 }
@@ -103,21 +97,21 @@ void AudioFifo::Consume(AudioBus* destination,
   DCHECK_EQ(destination->channels(), audio_bus_->channels());
 
   // It is not possible to ask for more data than what is available in the FIFO.
-  CHECK_LE(frames_to_consume, frames());
+  CHECK_LE(frames_to_consume, frames_);
 
   // A copy from the FIFO to |destination| will only be performed if the
   // allocated memory in |destination| is sufficient.
   CHECK_LE(frames_to_consume + start_frame, destination->frames());
 
   TRACE_EVENT_BEGIN2(TRACE_DISABLED_BY_DEFAULT("audio"), "AudioFifo::Consume",
-                     "this", static_cast<void*>(this), "fifo frames", frames());
+                     "this", static_cast<void*>(this), "fifo frames", frames_);
 
   // Figure out if wrapping is needed and if so what segment sizes we need
   // when removing audio bus content from the FIFO.
   int consume_size = 0;
   int wrap_size = 0;
-  GetSizes(read_pos_, max_frames(), frames_to_consume,
-           &consume_size, &wrap_size);
+  GetSizes(read_pos_, max_frames_, frames_to_consume, &consume_size,
+           &wrap_size);
 
   // For all channels, remove the requested amount of data from the FIFO
   // and copy the content to the destination. Wrap around if needed.
@@ -134,15 +128,14 @@ void AudioFifo::Consume(AudioBus* destination,
     }
   }
 
-  frames_consumed_ += frames_to_consume;
-  read_pos_ = UpdatePos(read_pos_, frames_to_consume, max_frames());
+  frames_ -= frames_to_consume;
+  read_pos_ = UpdatePos(read_pos_, frames_to_consume, max_frames_);
   TRACE_EVENT_END1(TRACE_DISABLED_BY_DEFAULT("audio"), "AudioFifo::Consume",
                    "frames", frames_to_consume);
 }
 
 void AudioFifo::Clear() {
-  frames_pushed_ = 0;
-  frames_consumed_ = 0;
+  frames_ = 0;
   read_pos_ = 0;
   write_pos_ = 0;
 }
