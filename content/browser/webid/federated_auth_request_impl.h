@@ -243,12 +243,8 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
                          const std::string& account_id,
                          bool is_sign_in);
   void OnDismissFailureDialog(
-      blink::mojom::FederatedAuthRequestResult result,
-      absl::optional<content::FedCmRequestIdTokenStatus> token_status,
       IdentityRequestDialogController::DismissReason dismiss_reason);
   void OnDismissErrorDialog(
-      blink::mojom::FederatedAuthRequestResult result,
-      absl::optional<content::FedCmRequestIdTokenStatus> token_status,
       absl::optional<TokenError> token_error,
       IdentityRequestDialogController::DismissReason dismiss_reason);
   void OnDialogDismissed(

@@ -1493,9 +1493,7 @@ void FederatedAuthRequestImpl::HandleAccountsFetchFailure(
       FormatOriginForDisplay(idp_origin), idp_info->rp_context,
       idp_info->metadata,
       base::BindOnce(&FederatedAuthRequestImpl::OnDismissFailureDialog,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     FederatedAuthRequestResult::kError,
-                     TokenStatus::kNotSignedInWithIdp),
+                     weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&FederatedAuthRequestImpl::ShowModalDialog,
                      weak_ptr_factory_.GetWeakPtr(), signin_url_));
   fedcm_metrics_->RecordMismatchDialogShown();
@@ -1732,21 +1730,45 @@ void FederatedAuthRequestImpl::OnAccountSelected(const GURL& idp_config_url,
 }
 
 void FederatedAuthRequestImpl::OnDismissFailureDialog(
-    blink::mojom::FederatedAuthRequestResult result,
-    absl::optional<TokenStatus> token_status,
     IdentityRequestDialogController::DismissReason dismiss_reason) {
-  CompleteRequestWithError(result, token_status, /*token_error=*/absl::nullopt,
+  // Clicking the close button and swiping away the account chooser are more
+  // intentional than other ways of dismissing the account chooser such as
+  // the virtual keyboard showing on Android. Dismissal through closing the
+  // pop-up window is not embargoed since the user has taken some action to
+  // continue to open the pop-up window.
+  bool should_embargo = false;
+  switch (dismiss_reason) {
+    case IdentityRequestDialogController::DismissReason::kCloseButton:
+    case IdentityRequestDialogController::DismissReason::kSwipe:
+      should_embargo = true;
+      break;
+    default:
+      break;
+  }
+
+  fedcm_metrics_->RecordCancelReason(dismiss_reason);
+
+  if (should_embargo) {
+    api_permission_delegate_->RecordDismissAndEmbargo(GetEmbeddingOrigin());
+  }
+
+  CompleteRequestWithError(should_embargo
+                               ? FederatedAuthRequestResult::kShouldEmbargo
+                               : FederatedAuthRequestResult::kError,
+                           should_embargo ? TokenStatus::kShouldEmbargo
+                                          : TokenStatus::kNotSignedInWithIdp,
+                           /*token_error=*/absl::nullopt,
                            /*should_delay_callback=*/false);
 }
 
 void FederatedAuthRequestImpl::OnDismissErrorDialog(
-    blink::mojom::FederatedAuthRequestResult result,
-    absl::optional<TokenStatus> token_status,
     absl::optional<TokenError> token_error,
     IdentityRequestDialogController::DismissReason dismiss_reason) {
   // TODO(crbug.com/1478837): Record metrics for error UI
-  CompleteRequestWithError(result, token_status, token_error,
-                           /*should_delay_callback=*/false);
+  CompleteRequestWithError(
+      FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidResponse,
+      TokenStatus::kIdTokenInvalidResponse, token_error,
+      /*should_delay_callback=*/false);
 }
 
 void FederatedAuthRequestImpl::OnDialogDismissed(
@@ -1861,11 +1883,8 @@ void FederatedAuthRequestImpl::ShowErrorDialog(
       FormatOriginForDisplay(url::Origin::Create(idp_config_url)),
       idp_infos_[idp_config_url]->rp_context,
       idp_infos_[idp_config_url]->metadata, token_error,
-      base::BindOnce(
-          &FederatedAuthRequestImpl::OnDismissErrorDialog,
-          weak_ptr_factory_.GetWeakPtr(),
-          FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidResponse,
-          TokenStatus::kIdTokenInvalidResponse, token_error),
+      base::BindOnce(&FederatedAuthRequestImpl::OnDismissErrorDialog,
+                     weak_ptr_factory_.GetWeakPtr(), token_error),
       error && !error->url.is_empty()
           ? base::BindOnce(&FederatedAuthRequestImpl::ShowModalDialog,
                            weak_ptr_factory_.GetWeakPtr(), error->url)
@@ -2400,7 +2419,6 @@ void FederatedAuthRequestImpl::AcceptConfirmIdpSigninDialogForDevtools() {
 void FederatedAuthRequestImpl::DismissConfirmIdpSigninDialogForDevtools() {
   // These values match what HandleAccountsFetchFailure passes.
   OnDismissFailureDialog(
-      FederatedAuthRequestResult::kError, TokenStatus::kNotSignedInWithIdp,
       IdentityRequestDialogController::DismissReason::kOther);
 }
 

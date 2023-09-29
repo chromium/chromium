@@ -286,6 +286,7 @@ enum class AccountsDialogAction {
 enum class IdpSigninStatusMismatchDialogAction {
   kNone,
   kClose,
+  kClosePopup,
 };
 
 struct MockConfiguration {
@@ -665,6 +666,11 @@ class TestDialogController
         base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE, base::BindOnce(std::move(dismiss_callback),
                                       DismissReason::kCloseButton));
+        break;
+      case IdpSigninStatusMismatchDialogAction::kClosePopup:
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE,
+            base::BindOnce(std::move(dismiss_callback), DismissReason::kOther));
         break;
       case IdpSigninStatusMismatchDialogAction::kNone:
         break;
@@ -3301,7 +3307,7 @@ TEST_F(FederatedAuthRequestImplTest, IdpSigninStatusTestShowFailureUi) {
   configuration.idp_signin_status_mismatch_dialog_action =
       IdpSigninStatusMismatchDialogAction::kClose;
   RequestExpectations expectations = {
-      RequestTokenStatus::kError, FederatedAuthRequestResult::kError,
+      RequestTokenStatus::kError, FederatedAuthRequestResult::kShouldEmbargo,
       /*standalone_console_message=*/absl::nullopt,
       /*selected_idp_config_url=*/absl::nullopt};
   RunAuthTest(kDefaultRequestParameters, expectations, configuration);
@@ -5012,6 +5018,54 @@ TEST_F(FederatedAuthRequestImplTest, InvalidResponseErrorDialogDisabled) {
 
   EXPECT_TRUE(DidFetch(FetchedEndpoint::TOKEN));
   EXPECT_FALSE(dialog_controller_state_.did_show_error_dialog);
+}
+
+// Test that permission is embargoed upon closing a mismatch dialog.
+TEST_F(FederatedAuthRequestImplTest, IdpSigninStatusCloseMismatchEmbargo) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmIdpSigninStatusEnabled);
+
+  test_permission_delegate_
+      ->idp_signin_statuses_[OriginFromString(kProviderUrlFull)] = true;
+
+  MockConfiguration configuration = kConfigurationValid;
+  configuration.idp_info[kProviderUrlFull].accounts_response.parse_status =
+      ParseStatus::kInvalidResponseError;
+  configuration.idp_signin_status_mismatch_dialog_action =
+      IdpSigninStatusMismatchDialogAction::kClose;
+  RequestExpectations expectations = {
+      RequestTokenStatus::kError, FederatedAuthRequestResult::kShouldEmbargo,
+      /*standalone_console_message=*/absl::nullopt,
+      /*selected_idp_config_url=*/absl::nullopt};
+  RunAuthTest(kDefaultRequestParameters, expectations, configuration);
+
+  EXPECT_TRUE(did_show_idp_signin_status_mismatch_dialog());
+  EXPECT_TRUE(test_api_permission_delegate_->embargoed_origins_.count(
+      main_test_rfh()->GetLastCommittedOrigin()));
+}
+
+// Test that permission is not embargoed upon closing an IDP sign-in flow
+// pop-up.
+TEST_F(FederatedAuthRequestImplTest, IdpSigninStatusClosePopupEmbargo) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmIdpSigninStatusEnabled);
+
+  test_permission_delegate_
+      ->idp_signin_statuses_[OriginFromString(kProviderUrlFull)] = true;
+
+  MockConfiguration configuration = kConfigurationValid;
+  configuration.idp_info[kProviderUrlFull].accounts_response.parse_status =
+      ParseStatus::kInvalidResponseError;
+  configuration.idp_signin_status_mismatch_dialog_action =
+      IdpSigninStatusMismatchDialogAction::kClosePopup;
+  RequestExpectations expectations = {
+      RequestTokenStatus::kError, FederatedAuthRequestResult::kError,
+      /*standalone_console_message=*/absl::nullopt,
+      /*selected_idp_config_url=*/absl::nullopt};
+  RunAuthTest(kDefaultRequestParameters, expectations, configuration);
+
+  EXPECT_TRUE(did_show_idp_signin_status_mismatch_dialog());
+  EXPECT_TRUE(test_api_permission_delegate_->embargoed_origins_.empty());
 }
 
 }  // namespace content
