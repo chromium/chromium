@@ -6,6 +6,20 @@
   #onOffText[on] {
     color: var(--cros-text-color-prominent);
   }
+
+  .subsection {
+    padding-inline-end: var(--cr-section-padding);
+    padding-inline-start: var(--cr-section-indent-padding);
+  }
+
+  .subsection > cr-link-row {
+    padding-inline-end: 0;
+    padding-inline-start: 0;
+  }
+
+  h2 {
+    padding-inline-start: var(--cr-section-padding);
+  }
 </style>
 <div class="settings-box first">
   <div class="start settings-box-text" aria-hidden="true">
@@ -49,3 +63,20 @@
     </template>
   </div>
 </template>
+<div class="hr"></div>
+<div id="websitesSection">
+  <h2 id="websitesSectionTitle">$i18n{websitesSectionTitle}</h2>
+  <cr-link-row
+      id="managePermissionsInChromeRow"
+      class="subsection"
+      start-icon="os-settings:chrome"
+      label="$i18n{manageMicPermissionsInChromeText}"
+      on-click="onManagePermissionsInChromeRowClick_"
+      hidden="[[!prefs.ash.user.microphone_allowed.value]]"
+      external>
+  </cr-link-row>
+  <div id="noWebsiteHasAccessText" class="settings-box-text subsection"
+      hidden="[[prefs.ash.user.microphone_allowed.value]]">
+    $i18n{noWebsiteCanUseMicText}
+  </div>
+</div>

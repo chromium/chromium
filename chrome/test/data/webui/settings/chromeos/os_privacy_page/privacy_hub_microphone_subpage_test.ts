@@ -5,7 +5,7 @@
 import 'chrome://os-settings/lazy_load.js';
 
 import {MediaDevicesProxy, PrivacyHubBrowserProxyImpl, SettingsPrivacyHubMicrophoneSubpage} from 'chrome://os-settings/lazy_load.js';
-import {CrToggleElement, PaperTooltipElement, Router} from 'chrome://os-settings/os_settings.js';
+import {CrLinkRowElement, CrToggleElement, PaperTooltipElement, Router} from 'chrome://os-settings/os_settings.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {DomRepeat, flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -273,4 +273,53 @@ suite('<settings-privacy-hub-microphone-subpage>', () => {
           }
         }
       });
+
+  function getManagePermissionsInChromeRow(): CrLinkRowElement {
+    const managePermissionsInChromeRow =
+        privacyHubMicrophoneSubpage.shadowRoot!.querySelector<CrLinkRowElement>(
+            '#managePermissionsInChromeRow');
+    assertTrue(!!managePermissionsInChromeRow);
+    return managePermissionsInChromeRow;
+  }
+
+  function getNoWebsiteHasAccessTextRow(): HTMLDivElement {
+    const noWebsiteHasAccessTextRow =
+        privacyHubMicrophoneSubpage.shadowRoot!.querySelector<HTMLDivElement>(
+            '#noWebsiteHasAccessText');
+    assertTrue(!!noWebsiteHasAccessTextRow);
+    return noWebsiteHasAccessTextRow;
+  }
+
+
+  test('Websites section texts', async () => {
+    assertEquals(
+        privacyHubMicrophoneSubpage.i18n('websitesSectionTitle'),
+        privacyHubMicrophoneSubpage.shadowRoot!
+            .querySelector('#websitesSectionTitle')!.textContent!.trim());
+
+    assertEquals(
+        privacyHubMicrophoneSubpage.i18n('manageMicPermissionsInChromeText'),
+        getManagePermissionsInChromeRow().label);
+
+    assertEquals(
+        privacyHubMicrophoneSubpage.i18n('noWebsiteCanUseMicText'),
+        getNoWebsiteHasAccessTextRow().textContent!.trim());
+  });
+
+  test('Websites section when microphone allowed', async () => {
+    assertFalse(getManagePermissionsInChromeRow().hidden);
+    assertTrue(getNoWebsiteHasAccessTextRow().hidden);
+  });
+
+  test('Websites section when microphone not allowed', async () => {
+    mediaDevices.addDevice('audioinput', 'Fake Microphone');
+    await waitAfterNextRender(privacyHubMicrophoneSubpage);
+
+    // Toggle microphone access.
+    getMicrophoneCrToggle().click();
+    await waitAfterNextRender(privacyHubMicrophoneSubpage);
+
+    assertTrue(getManagePermissionsInChromeRow().hidden);
+    assertFalse(getNoWebsiteHasAccessTextRow().hidden);
+  });
 });

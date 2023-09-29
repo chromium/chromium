@@ -6104,6 +6104,15 @@ Press &amp; hold keyboard keys to see accent marks and special characters. This 
   <message name="IDS_OS_SETTINGS_HW_DATA_USAGE_TOGGLE_DESC" desc="The description of the checkbox to enable/disable device hardware data collection and usage in ChromeOS Flex.">
     Let Google use your hardware data to help improve <ph name="DEVICE_OS">$1<ex>ChromeOS Flex</ex></ph>. If you decline, this data is still sent to Google to determine proper updates, but is not stored or used otherwise.
   </message>
+  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_WEBSITES_SECTION_TITLE" translateable="false" desc="The title of the Websites section of the privacy hub sensor subpages.">
+    Websites
+  </message>
+  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_MANAGE_MIC_PERMISSIONS_IN_CHROME_TEXT" translateable="false" desc="The label of the Chrome row in the Websites section of the microphone subpage. This row is displayed when microphone is allowed.">
+    Manage site microphone permissions in Chrome
+  </message>
+  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_NO_WEBSITE_CAN_USE_MIC_TEXT" translateable="false" desc="The text displayed in the Websites section of the microphone subpage when microphone is not allowed.">
+    No website is allowed to use your microphone
+  </message>
 
 
   <!-- On Startup (OS settings) -->

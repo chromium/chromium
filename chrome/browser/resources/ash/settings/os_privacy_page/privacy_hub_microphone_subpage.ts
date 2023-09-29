@@ -134,6 +134,10 @@ export class SettingsPrivacyHubMicrophoneSubpage extends
   private computeShouldDisableMicrophoneToggle_(): boolean {
     return this.microphoneHardwareToggleActive_ || this.isMicListEmpty_;
   }
+
+  private onManagePermissionsInChromeRowClick_(): void {
+    window.open('chrome://settings/content/microphone');
+  }
 }
 
 declare global {

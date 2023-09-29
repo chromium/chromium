@@ -446,6 +446,12 @@ void PrivacySection::AddLoadTimeData(content::WebUIDataSource* html_source) {
        IDS_OS_SETTINGS_PRIVACY_HUB_GEOLOCATION_TOGGLE_DESC},
       {"microphoneHwToggleTooltip",
        IDS_OS_SETTINGS_PRIVACY_HUB_HW_MICROPHONE_TOGGLE_TOOLTIP},
+      {"websitesSectionTitle",
+       IDS_OS_SETTINGS_PRIVACY_HUB_WEBSITES_SECTION_TITLE},
+      {"manageMicPermissionsInChromeText",
+       IDS_OS_SETTINGS_PRIVACY_HUB_MANAGE_MIC_PERMISSIONS_IN_CHROME_TEXT},
+      {"noWebsiteCanUseMicText",
+       IDS_OS_SETTINGS_PRIVACY_HUB_NO_WEBSITE_CAN_USE_MIC_TEXT},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
