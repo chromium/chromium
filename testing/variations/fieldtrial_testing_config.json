@@ -6806,11 +6806,11 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledF-4",
+                    "name": "EnabledF-5",
                     "params": {
                         "close_should_proceed": "true",
                         "default_browser_variant": "new",
-                        "group_name": "EnabledF-4",
+                        "group_name": "EnabledF-5",
                         "signin_promo_variant": "sign-in",
                         "with_default_browser_step": "yes"
                     },
