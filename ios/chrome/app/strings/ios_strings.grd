@@ -1762,7 +1762,7 @@ See your search engine’s instructions for deleting your search history, if app
         See More
       </message>
       <message name="IDS_IOS_MAGIC_STACK_EDIT_MODAL_TITLE" desc="The title of the edit modal for the Magic Stack. [Length: 10em]">
-        Edit Cards
+        Edit Carousel
       </message>
       <message name="IDS_IOS_MANAGE_YOUR_GOOGLE_ACCOUNT_TITLE" desc="Title for the view in the Settings to open 'Google Account' web page.">
         Manage Your Google Account
