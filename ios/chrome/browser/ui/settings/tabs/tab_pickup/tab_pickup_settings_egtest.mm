@@ -4,6 +4,7 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "build/branding_buildflags.h"
 #import "components/sync/base/features.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/tabs/tab_pickup/features.h"
@@ -161,7 +162,13 @@ id<GREYMatcher> TabPickupPrivacyFooterGoogleServicesLink() {
 }
 
 // Ensures that tab pickup settings links are correctly working.
-- (void)testTabPickupSettingsLinks {
+// TODO(crbug.com/1487979): Test fails on official builds.
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#define MAYBE_testTabPickupSettingsLinks DISABLED_testTabPickupSettingsLinks
+#else
+#define MAYBE_testTabPickupSettingsLinks testTabPickupSettingsLinks
+#endif
+- (void)MAYBE_testTabPickupSettingsLinks {
   SignInAndSync();
 
   OpenTabsSettings();

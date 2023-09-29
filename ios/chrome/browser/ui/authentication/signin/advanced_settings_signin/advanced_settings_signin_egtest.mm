@@ -6,6 +6,7 @@
 #import "base/ios/ios_util.h"
 #import "base/test/ios/wait_util.h"
 #import "base/time/time.h"
+#import "build/branding_buildflags.h"
 #import "components/bookmarks/common/bookmark_features.h"
 #import "components/bookmarks/common/storage_type.h"
 #import "components/strings/grit/components_strings.h"
@@ -105,7 +106,13 @@ void WaitForSettingDoneButton() {
 // Tests that signing in, tapping the Settings link on the confirmation screen
 // and closing the advanced sign-in settings correctly leaves the user signed
 // in.
-- (void)testSignInOpenSyncSettings {
+// TODO(crbug.com/1487981): Test fails on official builds.
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#define MAYBE_testSignInOpenSyncSettings DISABLED_testSignInOpenSyncSettings
+#else
+#define MAYBE_testSignInOpenSyncSettings testSignInOpenSyncSettings
+#endif
+- (void)MAYBE_testSignInOpenSyncSettings {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
@@ -158,7 +165,15 @@ void WaitForSettingDoneButton() {
 // Tests that a user that signs in and gives sync consent can sign
 // out through the "Sign out and Turn Off Sync" > "Clear Data" option in Sync
 // settings.
-- (void)testSignInOpenSyncSettingsSignOutAndTurnOffSyncWithClearData {
+// TODO(crbug.com/1487981): Test fails on official builds.
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#define MAYBE_testSignInOpenSyncSettingsSignOutAndTurnOffSyncWithClearData \
+  DISABLED_testSignInOpenSyncSettingsSignOutAndTurnOffSyncWithClearData
+#else
+#define MAYBE_testSignInOpenSyncSettingsSignOutAndTurnOffSyncWithClearData \
+  testSignInOpenSyncSettingsSignOutAndTurnOffSyncWithClearData
+#endif
+- (void)MAYBE_testSignInOpenSyncSettingsSignOutAndTurnOffSyncWithClearData {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
@@ -207,7 +222,15 @@ void WaitForSettingDoneButton() {
 // Tests that a user that signs in and gives sync consent can sign
 // out through the "Sign out and Turn Off Sync" > "Keep Data" option in Sync
 // setting.
-- (void)testSignInOpenSyncSettingsSignOutAndTurnOffSyncWithKeepData {
+// TODO(crbug.com/1487981): Test fails on official builds.
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#define MAYBE_testSignInOpenSyncSettingsSignOutAndTurnOffSyncWithKeepData \
+  DISABLED_testSignInOpenSyncSettingsSignOutAndTurnOffSyncWithKeepData
+#else
+#define MAYBE_testSignInOpenSyncSettingsSignOutAndTurnOffSyncWithKeepData \
+  testSignInOpenSyncSettingsSignOutAndTurnOffSyncWithKeepData
+#endif
+- (void)MAYBE_testSignInOpenSyncSettingsSignOutAndTurnOffSyncWithKeepData {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
@@ -273,7 +296,15 @@ void WaitForSettingDoneButton() {
 
 // Tests that a user account with a sync password displays a sync error
 // message after sign-in.
-- (void)testSigninOpenSyncSettingsWithPasswordError {
+// TODO(crbug.com/1487981): Test fails on official builds.
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#define MAYBE_testSigninOpenSyncSettingsWithPasswordError \
+  DISABLED_testSigninOpenSyncSettingsWithPasswordError
+#else
+#define MAYBE_testSigninOpenSyncSettingsWithPasswordError \
+  testSigninOpenSyncSettingsWithPasswordError
+#endif
+- (void)MAYBE_testSigninOpenSyncSettingsWithPasswordError {
   [ChromeEarlGrey addBookmarkWithSyncPassphrase:kPassphrase];
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];

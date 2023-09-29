@@ -81,6 +81,7 @@ source_set("eg2_tests") {
   deps = [
     "//base",
     "//base/test:test_support",
+    "//build:branding_buildflags",
     "//components/bookmarks/common",
     "//components/strings",
     "//components/sync/base:features",
