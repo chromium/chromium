@@ -16,6 +16,7 @@
 #include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/to_string.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "components/account_id/account_id.h"
@@ -232,6 +233,11 @@ class KeyboardPrefHandlerTest : public AshTestBase {
 
     pref_handler_->UpdateKeyboardSettings(pref_service_.get(),
                                           /*keyboard_policies=*/{}, *keyboard);
+  }
+
+  void CallUpdateKeyboardSettings(const mojom::Keyboard& keyboard) {
+    pref_handler_->UpdateKeyboardSettings(pref_service_.get(),
+                                          /*keyboard_policies=*/{}, keyboard);
   }
 
   void CallUpdateLoginScreenKeyboardSettings(
@@ -703,15 +709,19 @@ TEST_F(KeyboardPrefHandlerTest, ModifierRemappingsFromGlobalPrefs) {
             ui::mojom::ModifierKey::kEscape);
 }
 
-TEST_F(KeyboardPrefHandlerTest, SwichControlAndCommandForAppleKeyboard) {
+TEST_F(KeyboardPrefHandlerTest, SwitchControlAndCommandForAppleKeyboard) {
   mojom::Keyboard keyboard;
   keyboard.device_key = kKeyboardKey1;
   keyboard.meta_key = mojom::MetaKey::kCommand;
   mojom::KeyboardSettingsPtr settings =
       CallInitializeKeyboardSettings(keyboard);
 
+  ASSERT_TRUE(
+      settings->modifier_remappings.contains(ui::mojom::ModifierKey::kControl));
   ASSERT_EQ(settings->modifier_remappings.at(ui::mojom::ModifierKey::kControl),
             ui::mojom::ModifierKey::kMeta);
+  ASSERT_TRUE(
+      settings->modifier_remappings.contains(ui::mojom::ModifierKey::kMeta));
   ASSERT_EQ(settings->modifier_remappings.at(ui::mojom::ModifierKey::kMeta),
             ui::mojom::ModifierKey::kControl);
 }
@@ -1094,6 +1104,53 @@ TEST_F(KeyboardPrefHandlerTest, ExtendedFkeysOnlyAddedForChromeOSKeyboards) {
       CallInitializeKeyboardSettings(keyboard);
   EXPECT_FALSE(settings->f11.has_value());
   EXPECT_FALSE(settings->f12.has_value());
+}
+
+TEST_F(KeyboardPrefHandlerTest, AppleKeyboardDefaultRemappingsNotSaved) {
+  mojom::Keyboard keyboard;
+  keyboard.meta_key = mojom::MetaKey::kCommand;
+  keyboard.device_key = kKeyboardKey1;
+  keyboard.is_external = true;
+
+  // Initial settings for Apple keyboard contain Control -> Meta and Meta ->
+  // Control.
+  keyboard.settings = CallInitializeKeyboardSettings(keyboard);
+  EXPECT_EQ(
+      ui::mojom::ModifierKey::kControl,
+      keyboard.settings->modifier_remappings.at(ui::mojom::ModifierKey::kMeta));
+  EXPECT_EQ(ui::mojom::ModifierKey::kMeta,
+            keyboard.settings->modifier_remappings.at(
+                ui::mojom::ModifierKey::kControl));
+
+  // Since this is the default remapping, the dict in prefs should be empty.
+  auto* settings_dict = GetSettingsDictForDeviceKey(kKeyboardKey1);
+  ASSERT_TRUE(settings_dict);
+  auto* modifier_remapping_dict =
+      settings_dict->FindDict(prefs::kKeyboardSettingModifierRemappings);
+  ASSERT_TRUE(modifier_remapping_dict);
+  EXPECT_TRUE(modifier_remapping_dict->empty());
+
+  keyboard.settings->modifier_remappings.erase(ui::mojom::ModifierKey::kMeta);
+  CallUpdateKeyboardSettings(keyboard);
+
+  // Since Meta -> Meta now, this entry should exist in prefs.
+  settings_dict = GetSettingsDictForDeviceKey(kKeyboardKey1);
+  ASSERT_TRUE(settings_dict);
+  modifier_remapping_dict =
+      settings_dict->FindDict(prefs::kKeyboardSettingModifierRemappings);
+  ASSERT_TRUE(modifier_remapping_dict);
+  ASSERT_FALSE(modifier_remapping_dict->empty());
+  EXPECT_EQ(static_cast<int>(ui::mojom::ModifierKey::kMeta),
+            *modifier_remapping_dict->FindInt(base::ToString(
+                static_cast<int>(ui::mojom::ModifierKey::kMeta))));
+
+  // Verify when re-initialized from prefs that Meta -> Meta and Ctrl -> Meta.
+  keyboard.settings = CallInitializeKeyboardSettings(keyboard);
+  EXPECT_FALSE(keyboard.settings->modifier_remappings.contains(
+      ui::mojom::ModifierKey::kMeta));
+  EXPECT_EQ(ui::mojom::ModifierKey::kMeta,
+            keyboard.settings->modifier_remappings.at(
+                ui::mojom::ModifierKey::kControl));
 }
 
 }  // namespace ash

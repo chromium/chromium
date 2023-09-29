@@ -81,6 +81,14 @@ bool GetDefaultTopRowAreFKeysValue(
                               : kDefaultTopRowAreFKeys;
 }
 
+bool IsAppleKeyboardDefaultModifierRemapping(ui::mojom::ModifierKey from,
+                                             ui::mojom::ModifierKey to) {
+  return (from == ui::mojom::ModifierKey::kMeta &&
+          to == ui::mojom::ModifierKey::kControl) ||
+         (from == ui::mojom::ModifierKey::kControl &&
+          to == ui::mojom::ModifierKey::kMeta);
+}
+
 bool ShouldAddExtendedFkeyProperties(const mojom::Keyboard& keyboard) {
   return ::features::AreF11AndF12ShortcutsEnabled() &&
          IsChromeOSKeyboard(keyboard);
@@ -308,6 +316,9 @@ RetrieveModifierRemappings(const mojom::Keyboard& keyboard,
         static_cast<ui::mojom::ModifierKey>(from_int);
     const ui::mojom::ModifierKey to_key =
         static_cast<ui::mojom::ModifierKey>(to_int);
+    if (from_key == to_key) {
+      continue;
+    }
 
     // Do not add modifier remappings for modifier keys that do not exist on the
     // given keyboard.
@@ -316,6 +327,20 @@ RetrieveModifierRemappings(const mojom::Keyboard& keyboard,
     }
 
     modifier_remappings[from_key] = to_key;
+  }
+
+  if (keyboard.meta_key == mojom::MetaKey::kCommand) {
+    if (!modifier_remappings_dict.contains(base::NumberToString(
+            static_cast<int>(ui::mojom::ModifierKey::kMeta)))) {
+      modifier_remappings[ui::mojom::ModifierKey::kMeta] =
+          ui::mojom::ModifierKey::kControl;
+    }
+
+    if (!modifier_remappings_dict.contains(base::NumberToString(
+            static_cast<int>(ui::mojom::ModifierKey::kControl)))) {
+      modifier_remappings[ui::mojom::ModifierKey::kControl] =
+          ui::mojom::ModifierKey::kMeta;
+    }
   }
 
   return modifier_remappings;
@@ -341,15 +366,8 @@ mojom::KeyboardSettingsPtr RetrieveKeyboardSettings(
     settings->modifier_remappings =
         RetrieveModifierRemappings(keyboard, *modifier_remappings_dict);
   } else {
-    // Switch control and command for Apple keyboards. In all other cases for
-    // other types of keyboards, the empty map of `modifier_remappings` is
-    // correct, however for apple keyboards, the default is different.
-    if (keyboard.meta_key == mojom::MetaKey::kCommand) {
-      settings->modifier_remappings[ui::mojom::ModifierKey::kControl] =
-          ui::mojom::ModifierKey::kMeta;
-      settings->modifier_remappings[ui::mojom::ModifierKey::kMeta] =
-          ui::mojom::ModifierKey::kControl;
-    }
+    settings->modifier_remappings =
+        RetrieveModifierRemappings(keyboard, /*modifier_remappings_dict=*/{});
   }
 
   if (features::IsAltClickAndSixPackCustomizationEnabled()) {
@@ -382,6 +400,46 @@ mojom::KeyboardSettingsPtr GetDefaultKeyboardSettings(
 
   return RetrieveKeyboardSettings(pref_service, keyboard_policies, keyboard,
                                   /*settings_dict=*/{});
+}
+
+base::Value::Dict ConvertModifierRemappingsToDict(
+    const mojom::Keyboard& keyboard) {
+  // Modifier remappings get stored in a dict by casting the
+  // `ui::mojom::ModifierKey` enum to ints. Since `base::Value::Dict` only
+  // supports strings as keys, this is then converted into a string.
+  base::Value::Dict modifier_remappings;
+  for (const auto& [from, to] : keyboard.settings->modifier_remappings) {
+    // Avoid saving modifier remappings that are default for apple keyboards.
+    if (keyboard.meta_key == mojom::MetaKey::kCommand &&
+        IsAppleKeyboardDefaultModifierRemapping(from, to)) {
+      continue;
+    }
+
+    modifier_remappings.Set(base::NumberToString(static_cast<int>(from)),
+                            static_cast<int>(to));
+  }
+
+  // Since Apple keyboards default remaps Meta -> Control and Control -> Meta,
+  // this must be taken in to account when saving prefs so we store them when
+  // they are non-default.
+  if (keyboard.meta_key == mojom::MetaKey::kCommand) {
+    if (!keyboard.settings->modifier_remappings.contains(
+            ui::mojom::ModifierKey::kMeta)) {
+      modifier_remappings.Set(
+          base::NumberToString(static_cast<int>(ui::mojom::ModifierKey::kMeta)),
+          static_cast<int>(ui::mojom::ModifierKey::kMeta));
+    }
+
+    if (!keyboard.settings->modifier_remappings.contains(
+            ui::mojom::ModifierKey::kControl)) {
+      modifier_remappings.Set(
+          base::NumberToString(
+              static_cast<int>(ui::mojom::ModifierKey::kControl)),
+          static_cast<int>(ui::mojom::ModifierKey::kControl));
+    }
+  }
+
+  return modifier_remappings;
 }
 
 base::Value::Dict ConvertSettingsToDict(
@@ -444,16 +502,8 @@ base::Value::Dict ConvertSettingsToDict(
                       static_cast<int>(keyboard.settings->f12.value()));
   }
 
-  // Modifier remappings get stored in a dict by casting the
-  // `ui::mojom::ModifierKey` enum to ints. Since `base::Value::Dict` only
-  // supports strings as keys, this is then converted into a string.
-  base::Value::Dict modifier_remappings;
-  for (const auto& [from, to] : keyboard.settings->modifier_remappings) {
-    modifier_remappings.Set(base::NumberToString(static_cast<int>(from)),
-                            static_cast<int>(to));
-  }
   settings_dict.Set(prefs::kKeyboardSettingModifierRemappings,
-                    std::move(modifier_remappings));
+                    ConvertModifierRemappingsToDict(keyboard));
   return settings_dict;
 }
 
