@@ -8,9 +8,6 @@ In 2023Q3, we started to move source of Git dependencies from DEPS files to Git
 submodules. While we do our best to hide complexities of submodules, some will
 be exposed.
 
-IMPORTANT NOTE: Due to a bug in fsmonitor, we encourage you to disable it until
-the underlying bug is fixed. More details in https://crbug.com/1475405.
-
 [TOC]
 
 ## A quick introduction to Git submoduldes
