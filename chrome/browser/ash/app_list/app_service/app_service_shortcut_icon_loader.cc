@@ -119,6 +119,8 @@ void AppServiceShortcutIconLoader::OnLoadIcon(
       gfx::ImageSkiaOperations::CreateIconWithBadge(
           icon_value->uncompressed, badge_icon_value->uncompressed);
 
+  icon_map_[shortcut_id.value()] = icon_with_badge;
+
   delegate()->OnAppImageUpdated(shortcut_id.value(), icon_with_badge);
 
   // TODO(crbug.com/1412708): Add badge icon field in metadata and set the badge
