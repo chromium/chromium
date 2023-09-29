@@ -18,7 +18,7 @@ namespace {
 void OnSnapshotAck(base::OnceClosure closure,
                    base::WeakPtr<NavigationRequest> navigation_request,
                    const blink::ViewTransitionState& view_transition_state) {
-  if (navigation_request && !view_transition_state.elements.empty()) {
+  if (navigation_request && view_transition_state.HasElements()) {
     navigation_request->SetViewTransitionState(
         std::move(view_transition_state));
   }

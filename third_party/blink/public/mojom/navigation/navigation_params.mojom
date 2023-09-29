@@ -565,10 +565,12 @@ struct CommitNavigationParams {
   // `PerformanceNavigationTiming` APIs.
   network.mojom.NavigationDeliveryType navigation_delivery_type = kDefault;
 
-  // Holds texture references (stored in the GPU process) and geometry state for
-  // the previous Document displayed by this frame. This is used to support
-  // transitions when navigating between same-origin Documents.
-  // See https://drafts.csswg.org/css-view-transitions-1/ for details.
+  // Holds texture references (stored in the GPU process), geometry state, and
+  // select CSS property values from the previous Document displayed by this
+  // frame. This is used to support transitions when navigating between
+  // same-origin Documents. Note that this is only set and used for same-origin
+  // navigations. See https://drafts.csswg.org/css-view-transitions-2/ for
+  // details.
   blink.mojom.ViewTransitionState? view_transition_state;
 
   // If any, the task ID of the initiator of the navigation. This is restricted
