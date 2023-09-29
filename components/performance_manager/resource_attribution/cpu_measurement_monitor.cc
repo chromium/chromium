@@ -107,17 +107,17 @@ void ValidateCPUTimeResult(const CPUTimeResult& result) {
 }
 
 // Adds the measurement in `delta` to `result`. The start time of `delta` must
-// immediately follow the end time of `result`. Used for adding successive
-// measurements of process, frame and worker contexts.
+// follow the end time of `result`. Used for adding successive measurements of
+// process, frame and worker contexts. There may be gaps between deltas, such as
+// if a process died and was restarted.
 void ApplySequentialDelta(CPUTimeResult& result, const CPUTimeResult& delta) {
   CHECK(!IsEmptyCPUTimeResult(delta));
   ValidateCPUTimeResult(delta);
   if (IsEmptyCPUTimeResult(result)) {
     result = delta;
   } else {
-    // Successive measurement periods should be back to back.
     ValidateCPUTimeResult(result);
-    CHECK_EQ(result.metadata.measurement_time, delta.start_time);
+    CHECK_LE(result.metadata.measurement_time, delta.start_time);
     result.metadata.measurement_time = delta.metadata.measurement_time;
     result.cumulative_cpu += delta.cumulative_cpu;
   }
@@ -307,7 +307,10 @@ void CPUMeasurementMonitor::OnProcessLifetimeChange(
     return;
   }
   // Only handle process start notifications (which is when the pid is
-  // assigned), not exit notifications.
+  // assigned), not exit notifications. Note the pid can be reassigned if a
+  // process dies and a new one is started for the same ProcessNode - in that
+  // case MonitorCPUUsage will reset the measurements and start monitoring the
+  // new process from scratch.
   if (!process_node->GetProcess().IsValid()) {
     return;
   }
@@ -315,11 +318,7 @@ void CPUMeasurementMonitor::OnProcessLifetimeChange(
   if (process_node->GetProcessType() != content::PROCESS_TYPE_RENDERER) {
     return;
   }
-  if (!base::Contains(cpu_measurement_map_, process_node)) {
-    // Process isn't being measured yet so it must have been created while
-    // measurements were already started.
-    MonitorCPUUsage(process_node);
-  }
+  MonitorCPUUsage(process_node);
 }
 
 void CPUMeasurementMonitor::OnBeforeProcessNodeRemoved(
@@ -400,10 +399,16 @@ void CPUMeasurementMonitor::MonitorCPUUsage(const ProcessNode* process_node) {
   // TODO(crbug.com/1471683): Measure other process types, just don't distribute
   // the measurements to frames and workers.
   CHECK_EQ(process_node->GetProcessType(), content::PROCESS_TYPE_RENDERER);
-  const auto& [it, was_inserted] = cpu_measurement_map_.emplace(
+
+  // If a process crashes and is restarted, a new process can be assigned to the
+  // same ProcessNode (and the same ProcessContext). When that happens
+  // OnProcessLifetimeChange will call MonitorCPUUsage again for the same node,
+  // creating a new CPUMeasurement that starts measuring the new process from 0.
+  // ApplyMeasurementDeltas will add the new measurements and the old
+  // measurements in the same ProcessContext.
+  cpu_measurement_map_.insert_or_assign(
       process_node,
       CPUMeasurement(cpu_measurement_delegate_factory_.Run(process_node)));
-  CHECK(was_inserted);
 }
 
 void CPUMeasurementMonitor::UpdateAllCPUMeasurements() {
