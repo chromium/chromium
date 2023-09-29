@@ -7,12 +7,13 @@
 
 #include <map>
 #include <memory>
+#include <unordered_map>
 #include <vector>
 
 #include "base/containers/fixed_flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "printing/buildflags/buildflags.h"
-#include "ui/base/glib/glib_signal.h"
+#include "ui/base/glib/scoped_gsignal.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/font_render_params.h"
 #include "ui/gtk/gtk_ui_platform.h"
@@ -113,35 +114,26 @@ class GtkUi : public ui::LinuxUiAndTheme {
  private:
   using TintMap = std::map<int, color_utils::HSL>;
 
-  CHROMEG_CALLBACK_1(GtkUi, void, OnThemeChanged, GtkSettings*, GtkParamSpec*);
+  void OnThemeChanged(GtkSettings* settings, GtkParamSpec* param);
 
-  CHROMEG_CALLBACK_1(GtkUi,
-                     void,
-                     OnCursorThemeNameChanged,
-                     GtkSettings*,
-                     GtkParamSpec*);
+  void OnCursorThemeNameChanged(GtkSettings* settings, GtkParamSpec* param);
 
-  CHROMEG_CALLBACK_1(GtkUi,
-                     void,
-                     OnCursorThemeSizeChanged,
-                     GtkSettings*,
-                     GtkParamSpec*);
+  void OnCursorThemeSizeChanged(GtkSettings* settings, GtkParamSpec* param);
 
-  CHROMEG_CALLBACK_1(GtkUi,
-                     void,
-                     OnDeviceScaleFactorMaybeChanged,
-                     void*,
-                     GParamSpec*);
+  void OnGtkXftDpiChanged(GtkSettings* settings, GParamSpec* param);
 
-  CHROMEG_CALLBACK_1(GtkUi, void, OnMonitorAdded, GdkDisplay*, GdkMonitor*);
+  void OnScreenResolutionChanged(GdkScreen* screen, GParamSpec* param);
 
-  CHROMEG_CALLBACK_3(GtkUi,
-                     void,
-                     OnMonitorsChanged,
-                     GListModel*,
-                     guint,
-                     guint,
-                     guint);
+  void OnMonitorChanged(GdkMonitor* monitor, GParamSpec* param);
+
+  void OnMonitorAdded(GdkDisplay* display, GdkMonitor* monitor);
+
+  void OnMonitorRemoved(GdkDisplay* display, GdkMonitor* monitor);
+
+  void OnMonitorsChanged(GListModel* list,
+                         guint position,
+                         guint removed,
+                         guint added);
 
   // Loads all GTK-provided settings.
   void LoadGtkValues();
@@ -212,6 +204,11 @@ class GtkUi : public ui::LinuxUiAndTheme {
   // Objects to notify when the window frame button order changes.
   base::ObserverList<ui::WindowButtonOrderObserver>::Unchecked
       window_button_order_observer_list_;
+
+  std::vector<ScopedGSignal> signals_;
+  // Two signals are registered for each monitor, so keep them in a pair.
+  std::unordered_map<GdkMonitor*, std::pair<ScopedGSignal, ScopedGSignal>>
+      monitor_signals_;
 };
 
 }  // namespace gtk

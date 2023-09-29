@@ -5,9 +5,11 @@
 #ifndef UI_GTK_SELECT_FILE_DIALOG_LINUX_GTK_H_
 #define UI_GTK_SELECT_FILE_DIALOG_LINUX_GTK_H_
 
+#include <vector>
+
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
-#include "ui/base/glib/glib_signal.h"
+#include "ui/base/glib/scoped_gsignal.h"
 #include "ui/gtk/gtk_util.h"
 #include "ui/shell_dialogs/select_file_dialog_linux.h"
 
@@ -48,7 +50,7 @@ class SelectFileDialogLinuxGtk : public ui::SelectFileDialogLinux,
   struct DialogState {
     DialogState();
     DialogState(void* params,
-                unsigned long signal_handler_id,
+                std::vector<ScopedGSignal> signals,
                 aura::Window* parent,
                 base::OnceClosure reenable_parent_events);
     DialogState(DialogState&& other);
@@ -58,7 +60,7 @@ class SelectFileDialogLinuxGtk : public ui::SelectFileDialogLinux,
     // User-supplied data
     raw_ptr<void> params = nullptr;
 
-    unsigned long signal_handler_id = 0;
+    std::vector<ScopedGSignal> signals;
 
     raw_ptr<aura::Window> parent = nullptr;
 
@@ -122,38 +124,20 @@ class SelectFileDialogLinuxGtk : public ui::SelectFileDialogLinux,
                                   gfx::NativeWindow parent);
 
   // Callback for when the user responds to a Save As or Open File dialog.
-  CHROMEG_CALLBACK_1(SelectFileDialogLinuxGtk,
-                     void,
-                     OnSelectSingleFileDialogResponse,
-                     GtkWidget*,
-                     int);
+  void OnSelectSingleFileDialogResponse(GtkWidget* dialog, int response_id);
 
   // Callback for when the user responds to a Select Folder dialog.
-  CHROMEG_CALLBACK_1(SelectFileDialogLinuxGtk,
-                     void,
-                     OnSelectSingleFolderDialogResponse,
-                     GtkWidget*,
-                     int);
+  void OnSelectSingleFolderDialogResponse(GtkWidget* dialog, int response_id);
 
   // Callback for when the user responds to a Open Multiple Files dialog.
-  CHROMEG_CALLBACK_1(SelectFileDialogLinuxGtk,
-                     void,
-                     OnSelectMultiFileDialogResponse,
-                     GtkWidget*,
-                     int);
+  void OnSelectMultiFileDialogResponse(GtkWidget* dialog, int response_id);
 
   // Callback for when the file chooser gets destroyed.
-  CHROMEG_CALLBACK_0(SelectFileDialogLinuxGtk,
-                     void,
-                     OnFileChooserDestroy,
-                     GtkWidget*);
+  void OnFileChooserDestroy(GtkWidget* dialog);
 
   // Callback for when we update the preview for the selection. Only used on
   // GTK3.
-  CHROMEG_CALLBACK_0(SelectFileDialogLinuxGtk,
-                     void,
-                     OnUpdatePreview,
-                     GtkWidget*);
+  void OnUpdatePreview(GtkWidget* dialog);
 
   // Only used on GTK3 since GTK4 provides its own preview.
   // The GtkImage widget for showing previews of selected images.

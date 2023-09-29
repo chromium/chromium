@@ -8,7 +8,6 @@
 #include "base/callback_list.h"
 #include "base/no_destructor.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "ui/base/glib/glib_signal.h"
 #include "ui/base/glib/scoped_gobject.h"
 #include "ui/native_theme/native_theme_base.h"
 

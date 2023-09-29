@@ -15,8 +15,8 @@
 #include "printing/print_dialog_linux_interface.h"
 #include "printing/printing_context_linux.h"
 #include "ui/aura/window_observer.h"
-#include "ui/base/glib/glib_signal.h"
 #include "ui/base/glib/scoped_gobject.h"
+#include "ui/base/glib/scoped_gsignal.h"
 #include "ui/gtk/gtk_compat.h"
 
 namespace printing {
@@ -64,7 +64,7 @@ class PrintDialogGtk : public printing::PrintDialogLinuxInterface,
   ~PrintDialogGtk() override;
 
   // Handles dialog response.
-  CHROMEG_CALLBACK_1(PrintDialogGtk, void, OnResponse, GtkWidget*, int);
+  void OnResponse(GtkWidget* dialog, int response_id);
 
   // Prints document named |document_name|.
   void SendDocumentToPrinter(const std::u16string& document_name);
@@ -92,6 +92,8 @@ class PrintDialogGtk : public printing::PrintDialogLinuxInterface,
   base::OnceClosure reenable_parent_events_;
 
   base::FilePath path_to_pdf_;
+
+  ScopedGSignal signal_;
 };
 
 #endif  // UI_GTK_PRINTING_PRINT_DIALOG_GTK_H_

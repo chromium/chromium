@@ -7,6 +7,7 @@
 #include <xcb/xcb.h>
 #include <xcb/xproto.h>
 
+#include "base/functional/bind.h"
 #include "ui/base/x/x11_util.h"
 #include "ui/gfx/x/event.h"
 #include "ui/gtk/gtk_compat.h"
@@ -107,23 +108,22 @@ void ProcessGdkEvent(GdkEvent* gdk_event) {
 GtkEventLoopX11::GtkEventLoopX11(GtkWidget* widget) {
   if (gtk::GtkCheckVersion(4)) {
     surface_ = gtk_native_get_surface(gtk_widget_get_native(widget));
-    signal_id_ =
-        g_signal_connect(surface_, "event", G_CALLBACK(OnEventThunk), this);
+    signal_ = ScopedGSignal(
+        surface_, "event",
+        base::BindRepeating(&GtkEventLoopX11::OnEvent, base::Unretained(this)));
   } else {
     gdk_event_handler_set(DispatchGdkEvent, nullptr, nullptr);
   }
 }
 
 GtkEventLoopX11::~GtkEventLoopX11() {
-  if (gtk::GtkCheckVersion(4)) {
-    g_signal_handler_disconnect(surface_, signal_id_);
-  } else {
+  if (!gtk::GtkCheckVersion(4)) {
     gdk_event_handler_set(reinterpret_cast<GdkEventFunc>(gtk_main_do_event),
                           nullptr, nullptr);
   }
 }
 
-gboolean GtkEventLoopX11::OnEvent(GdkEvent* gdk_event) {
+gboolean GtkEventLoopX11::OnEvent(GdkSurface* surface, GdkEvent* gdk_event) {
   DCHECK(gtk::GtkCheckVersion(4));
   ProcessGdkEvent(gdk_event);
   return false;

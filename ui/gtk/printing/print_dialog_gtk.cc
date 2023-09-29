@@ -444,7 +444,10 @@ void PrintDialogGtk::ShowDialog(
                                           has_selection);
   gtk_print_unix_dialog_set_settings(GTK_PRINT_UNIX_DIALOG(dialog_),
                                      gtk_settings_);
-  g_signal_connect(dialog_, "response", G_CALLBACK(OnResponseThunk), this);
+  // Unretained is safe since we own `signal_`.
+  signal_ = ScopedGSignal(
+      dialog_, "response",
+      base::BindRepeating(&PrintDialogGtk::OnResponse, base::Unretained(this)));
   gtk_widget_show(dialog_);
 
   gtk::GtkUi::GetPlatform()->ShowGtkWindow(GTK_WINDOW(dialog_));
@@ -501,9 +504,7 @@ void PrintDialogGtk::ReleaseDialog() {
 }
 
 void PrintDialogGtk::OnResponse(GtkWidget* dialog, int response_id) {
-  int num_matched_handlers = g_signal_handlers_disconnect_by_func(
-      dialog_, reinterpret_cast<gpointer>(&OnResponseThunk), this);
-  CHECK_EQ(1, num_matched_handlers);
+  signal_.Reset();
 
   gtk_widget_hide(dialog_);
   if (reenable_parent_events_) {
