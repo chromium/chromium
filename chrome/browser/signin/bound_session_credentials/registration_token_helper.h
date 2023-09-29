@@ -99,6 +99,7 @@ class RegistrationTokenHelper {
 
   // Callback for `SignSlowlyAsync()`.
   void OnDataSigned(
+      crypto::SignatureVerifier::SignatureAlgorithm algorithm,
       unexportable_keys::ServiceErrorOr<std::vector<uint8_t>> result);
 
   const raw_ref<unexportable_keys::UnexportableKeyService>

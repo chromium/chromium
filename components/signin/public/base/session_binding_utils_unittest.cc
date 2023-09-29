@@ -161,9 +161,19 @@ TEST(SessionBindingUtilsTest,
 }
 
 TEST(SessionBindingUtilsTest, AppendSignatureToHeaderAndPayload) {
-  std::string result = AppendSignatureToHeaderAndPayload(
-      "abc.efg", std::vector<uint8_t>({1, 2, 3}));
+  absl::optional<std::string> result = AppendSignatureToHeaderAndPayload(
+      "abc.efg",
+      crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256,
+      std::vector<uint8_t>({1, 2, 3}));
   EXPECT_EQ(result, "abc.efg.AQID");
+}
+
+TEST(SessionBindingUtilsTest,
+     AppendSignatureToHeaderAndPayloadInvalidECDSASignature) {
+  absl::optional<std::string> result = AppendSignatureToHeaderAndPayload(
+      "abc.efg", crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256,
+      std::vector<uint8_t>({1, 2, 3}));
+  EXPECT_EQ(result, absl::nullopt);
 }
 
 }  // namespace signin

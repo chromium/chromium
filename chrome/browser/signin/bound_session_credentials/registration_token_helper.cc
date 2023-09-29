@@ -102,9 +102,11 @@ void RegistrationTokenHelper::OnKeyGenerated(
   }
   key_id_ = *result;
 
+  crypto::SignatureVerifier::SignatureAlgorithm algorithm =
+      *unexportable_key_service_->GetAlgorithm(key_id_);
   absl::optional<std::string> header_and_payload =
       header_and_payload_generator_.Run(
-          *unexportable_key_service_->GetAlgorithm(key_id_),
+          algorithm,
           *unexportable_key_service_->GetSubjectPublicKeyInfo(key_id_),
           base::Time::Now());
 
@@ -119,10 +121,11 @@ void RegistrationTokenHelper::OnKeyGenerated(
       key_id_, base::as_bytes(base::make_span(header_and_payload_)),
       kTaskPriority,
       base::BindOnce(&RegistrationTokenHelper::OnDataSigned,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(), algorithm));
 }
 
 void RegistrationTokenHelper::OnDataSigned(
+    crypto::SignatureVerifier::SignatureAlgorithm algorithm,
     unexportable_keys::ServiceErrorOr<std::vector<uint8_t>> result) {
   if (!result.has_value()) {
     // TODO(alexilin): Record a histogram.
@@ -130,12 +133,18 @@ void RegistrationTokenHelper::OnDataSigned(
     return;
   }
   const std::vector<uint8_t>& signature = *result;
-  std::string registration_token =
-      signin::AppendSignatureToHeaderAndPayload(header_and_payload_, signature);
+  absl::optional<std::string> registration_token =
+      signin::AppendSignatureToHeaderAndPayload(header_and_payload_, algorithm,
+                                                signature);
+  if (!registration_token.has_value()) {
+    // TODO(alexilin): Record a histogram.
+    std::move(callback_).Run(absl::nullopt);
+    return;
+  }
 
   std::vector<uint8_t> wrapped_key =
       *unexportable_key_service_->GetWrappedKey(key_id_);
 
-  std::move(callback_).Run(
-      Result(key_id_, std::move(wrapped_key), std::move(registration_token)));
+  std::move(callback_).Run(Result(key_id_, std::move(wrapped_key),
+                                  std::move(registration_token).value()));
 }

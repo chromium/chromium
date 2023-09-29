@@ -50,6 +50,7 @@ static_library("base") {
   deps = [
     "//build:chromeos_buildflags",
     "//components/prefs",
+    "//third_party/boringssl",
     "//third_party/icu:icui18n",
     "//third_party/re2",
   ]

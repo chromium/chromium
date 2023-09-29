@@ -13,6 +13,7 @@
 #include "components/unexportable_keys/service_error.h"
 #include "components/unexportable_keys/unexportable_key_loader.h"
 #include "components/unexportable_keys/unexportable_key_service.h"
+#include "crypto/signature_verifier.h"
 #include "url/gurl.h"
 
 namespace {
@@ -24,13 +25,15 @@ unexportable_keys::BackgroundTaskPriority kSessionBindingPriority =
 
 std::string CreateAssertionToken(
     const std::string& header_and_payload,
+    crypto::SignatureVerifier::SignatureAlgorithm algorithm,
     unexportable_keys::ServiceErrorOr<std::vector<uint8_t>> signature) {
   if (!signature.has_value()) {
     return std::string();
   }
 
   return signin::AppendSignatureToHeaderAndPayload(header_and_payload,
-                                                   *signature);
+                                                   algorithm, *signature)
+      .value_or(std::string());
 }
 }  // namespace
 
@@ -77,9 +80,11 @@ void SessionBindingHelper::SignAssertionToken(
     return;
   }
 
+  crypto::SignatureVerifier::SignatureAlgorithm algorithm =
+      *unexportable_key_service_->GetAlgorithm(*binding_key);
   absl::optional<std::string> header_and_payload =
       signin::CreateKeyAssertionHeaderAndPayload(
-          *unexportable_key_service_->GetAlgorithm(*binding_key),
+          algorithm,
           *unexportable_key_service_->GetSubjectPublicKeyInfo(*binding_key),
           session_id_, challenge, destination_url, kSessionBindingNamespace);
 
@@ -91,6 +96,6 @@ void SessionBindingHelper::SignAssertionToken(
   unexportable_key_service_->SignSlowlyAsync(
       *binding_key, base::as_bytes(base::make_span(*header_and_payload)),
       kSessionBindingPriority,
-      base::BindOnce(&CreateAssertionToken, *header_and_payload)
+      base::BindOnce(&CreateAssertionToken, *header_and_payload, algorithm)
           .Then(std::move(callback)));
 }
