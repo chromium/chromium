@@ -403,6 +403,7 @@ ts_library("build_ts") {
     "mock_timer_test.ts",
     "mock_timer.ts",
     "polymer_test_util.ts",
+    "test_api.ts",
     "test_browser_proxy.ts",
     "test_mock.ts",
     "test_open_window_proxy.ts",
