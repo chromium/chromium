@@ -33,6 +33,7 @@
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/privacy_sandbox/privacy_sandbox_test_util.h"
 #include "components/services/storage/shared_storage/shared_storage_manager.h"
+#include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/common/content_features.h"
@@ -2185,8 +2186,18 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
   histogram_tester_.ExpectUniqueSample(kWorkletNumPerPageHistogram, 1, 1);
 }
 
+// TODO(crbug.com/1485061): Test is flaky on ChromeOS and Windows.
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
+#define MAYBE_SelectUrl_FunctionError DISABLED_SelectUrl_FunctionError
+#else
+#define MAYBE_SelectUrl_FunctionError SelectUrl_FunctionError
+#endif
 IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
-                       SelectUrl_FunctionError) {
+                       MAYBE_SelectUrl_FunctionError) {
+  // TODO(crbug.com/1485061): Test is flaky on linux-bfcache-rel.
+  if (!content::BackForwardCache::IsBackForwardCacheFeatureEnabled()) {
+    return;
+  }
   Set3rdPartyCookieAndMainHostAttestationSettingsThenNavigateToMainHostPage();
 
   GURL script_url =
