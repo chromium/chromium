@@ -2584,9 +2584,12 @@ static_library("browser") {
     deps += [
       "//chrome/browser/companion/visual_search:flags",
       "//chrome/browser/manta/proto:manta_proto",
-      "//components/compose/core/browser",
       "//components/user_education/common",
     ]
+  }
+
+  if (!is_android && !is_chromeos) {
+    deps += [ "//components/compose/core/browser" ]
   }
 
   if (enable_screen_ai_service) {
