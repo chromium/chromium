@@ -6,19 +6,13 @@
 # Example script that "installs" an app by writing some values to the install
 # path.
 
-declare appid="{AE098195-B8DB-4A49-8E23-84FCACB61FF1}"
-declare system=0
-declare company="Google"
-declare production_version="1.0.0.0"
-declare install_path="install_result.txt"
-
+declare appname=MockApp
+declare company="Chromium"
+declare product_version="1.0.0.0"
 for i in "$@"; do
   case $i in
-    --system)
-      system=1
-      ;;
-    --appid=*)
-     appid="${i#*=}"
+    --appname=*)
+     appname="${i#*=}"
      ;;
     --company=*)
      company="${i#*=}"
@@ -26,18 +20,25 @@ for i in "$@"; do
     --product_version=*)
      product_version="${i#*=}"
      ;;
-    --install_path=*)
-     install_path="${i#*=}"
-     ;;
     *)
       ;;
   esac
 done
 
-mkdir -p $(dirname ${install_path})
-cat << EOF > ${install_path}
-system=${system}
-appid=${appid}
-company=${company}
-product_version=${production_version}
+declare -r install_file="app.json"
+if [[ "${OSTYPE}" =~ ^"darwin" ]]; then
+  declare -r install_path="/Library/Application Support/${company}/${appname}"
+else
+  declare -r install_path="/opt/${company}/${appname}"
+fi
+
+mkdir -p "${install_path}"
+cat << EOF > "${install_path}/${install_file}"
+{
+  "app": "${appname}",
+  "company": "${company}",
+  "pv": "${product_version}"
+}
 EOF
+
+echo "Installed ${appname} version ${product_version} at: ${install_path}."
