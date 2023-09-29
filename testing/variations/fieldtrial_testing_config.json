@@ -3452,6 +3452,21 @@
             ]
         }
     ],
+    "ChromeOSPrintingIppUsb": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IppFirstSetupForUsbPrinters"
+                    ]
+                }
+            ]
+        }
+    ],
     "ChromeOSRawPSIMetrics": [
         {
             "platforms": [
