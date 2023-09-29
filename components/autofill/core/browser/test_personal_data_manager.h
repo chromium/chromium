@@ -57,10 +57,6 @@ class TestPersonalDataManager : public PersonalDataManager {
   void UpdateCreditCard(const CreditCard& credit_card) override;
   void AddFullServerCreditCard(const CreditCard& credit_card) override;
   const std::string& GetDefaultCountryCodeForNewAddress() const override;
-  void SetProfilesForAllSources(
-      std::vector<AutofillProfile>* profiles) override;
-  bool SetProfilesForSource(base::span<const AutofillProfile> new_profiles,
-                            AutofillProfile::Source source) override;
   void LoadProfiles() override;
   void LoadCreditCards() override;
   void LoadCreditCardCloudTokenData() override;

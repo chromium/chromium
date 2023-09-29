@@ -542,49 +542,6 @@ TEST_F(PersonalDataManagerTest, GetProfilesForSettings) {
       ElementsAre(Pointee(kLocalOrSyncableProfile), Pointee(kAccountProfile)));
 }
 
-// Tests that `SetProfilesForAllSources()` overwrites profiles with the correct
-// source.
-TEST_F(PersonalDataManagerTest, SetProfiles) {
-  AutofillProfile kAccountProfile = test::GetFullProfile();
-  kAccountProfile.set_source_for_testing(AutofillProfile::Source::kAccount);
-  AutofillProfile kLocalProfile = test::GetFullProfile();
-
-  // Set `kAccount` profiles only.
-  std::vector<AutofillProfile> profiles = {kAccountProfile};
-  personal_data_->SetProfilesForAllSources(&profiles);
-  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
-  EXPECT_THAT(
-      personal_data_->GetProfilesFromSource(AutofillProfile::Source::kAccount),
-      ElementsAre(Pointee(kAccountProfile)));
-  EXPECT_TRUE(
-      personal_data_
-          ->GetProfilesFromSource(AutofillProfile::Source::kLocalOrSyncable)
-          .empty());
-
-  // Set `kLocalOrSyncable` profiles only. This clear the existing `kAccount`
-  // profiles
-  profiles = {kLocalProfile};
-  personal_data_->SetProfilesForAllSources(&profiles);
-  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
-  EXPECT_TRUE(
-      personal_data_->GetProfilesFromSource(AutofillProfile::Source::kAccount)
-          .empty());
-  EXPECT_THAT(personal_data_->GetProfilesFromSource(
-                  AutofillProfile::Source::kLocalOrSyncable),
-              ElementsAre(Pointee(kLocalProfile)));
-
-  // Set profiles of both sources.
-  profiles = {kAccountProfile, kLocalProfile};
-  personal_data_->SetProfilesForAllSources(&profiles);
-  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
-  EXPECT_THAT(
-      personal_data_->GetProfilesFromSource(AutofillProfile::Source::kAccount),
-      ElementsAre(Pointee(kAccountProfile)));
-  EXPECT_THAT(personal_data_->GetProfilesFromSource(
-                  AutofillProfile::Source::kLocalOrSyncable),
-              ElementsAre(Pointee(kLocalProfile)));
-}
-
 // Adding, updating, removing operations without waiting in between.
 TEST_F(PersonalDataManagerTest, AddRemoveUpdateProfileSequence) {
   AutofillProfile profile(test::GetFullProfile());

@@ -138,24 +138,6 @@ const std::string& TestPersonalDataManager::GetDefaultCountryCodeForNewAddress()
   return default_country_code_;
 }
 
-void TestPersonalDataManager::SetProfilesForAllSources(
-    std::vector<AutofillProfile>* profiles) {
-  // Copy all the profiles. Called by functions like
-  // PersonalDataManager::SaveImportedProfile, which impact metrics.
-  ClearProfiles();
-  for (const auto& profile : *profiles)
-    AddProfile(profile);
-}
-
-bool TestPersonalDataManager::SetProfilesForSource(
-    base::span<const AutofillProfile> new_profiles,
-    AutofillProfile::Source source) {
-  GetProfileStorage(source).clear();
-  for (const AutofillProfile& profile : new_profiles)
-    AddProfile(profile);
-  return true;
-}
-
 void TestPersonalDataManager::LoadProfiles() {
   // Overridden to avoid a trip to the database. This should be a no-op except
   // for the side-effect of logging the profile count.

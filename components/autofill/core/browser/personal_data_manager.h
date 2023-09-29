@@ -557,16 +557,6 @@ class PersonalDataManager : public KeyedService,
   // Returns whether sync's integration with payments is on.
   virtual bool IsAutofillWalletImportEnabled() const;
 
-  // Partitions `new_profiles` by their sources and sets
-  // `synced_local_profiles_` and `account_profiles_` to the corresponding
-  // profiles. Updates the web database by adding, updating and removing
-  // profiles, depending on the difference of the current state and
-  // `new_profiles`. `synced_local_profiles_` and `account_profiles_` need to be
-  // updated at the end of the function, since some tasks cannot tolerate
-  // database delays.
-  virtual void SetProfilesForAllSources(
-      std::vector<AutofillProfile>* new_profiles);
-
   // Sets |credit_cards_| to the contents of |credit_cards| and updates the web
   // database by adding, updating and removing credit cards.
   void SetCreditCards(std::vector<CreditCard>* credit_cards);
@@ -743,13 +733,6 @@ class PersonalDataManager : public KeyedService,
   AutofillProfileUpdateStrikeDatabase* GetProfileUpdateStrikeDatabase();
   virtual const AutofillProfileUpdateStrikeDatabase*
   GetProfileUpdateStrikeDatabase() const;
-
-  // Like `SetProfilesForAllSources()`, but assumes that all profiles in
-  // `new_profiles` have the given `source`.
-  // Returns true if a change happened.
-  virtual bool SetProfilesForSource(
-      base::span<const AutofillProfile> new_profiles,
-      AutofillProfile::Source source);
 
   // Loads the saved profiles from the web database.
   virtual void LoadProfiles();
@@ -930,9 +913,10 @@ class PersonalDataManager : public KeyedService,
   void RemoveAutofillProfileByGUIDAndBlankCreditCardReference(
       const std::string& guid);
 
-  // Add/Update/Remove |profile| on DB. |enforced| should be true when the
-  // add/update should happen regardless of an existing/equal profile.
-  void AddProfileToDB(const AutofillProfile& profile, bool enforced = false);
+  // Add/Update/Removes a profile in AutofillTable asynchronously. The changes
+  // only surface in the PDM after the task on the DB sequence has finished.
+  // TODO(crbug.cm/1420547): `enforced` should not be used. Remove it.
+  void AddProfileToDB(const AutofillProfile& profile);
   void UpdateProfileInDB(const AutofillProfile& profile, bool enforced = false);
   void RemoveProfileFromDB(const std::string& guid);
 
@@ -955,8 +939,6 @@ class PersonalDataManager : public KeyedService,
   // Remove the change from the |ongoing_profile_changes_|, handle next task or
   // Refresh.
   void OnProfileChangeDone(const std::string& guid);
-  // Clear |ongoing_profile_changes_|.
-  void ClearOnGoingProfileChanges();
 
   // Returns if there are any pending queries to the web database.
   bool HasPendingQueries();

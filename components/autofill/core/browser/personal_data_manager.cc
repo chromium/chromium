@@ -1815,83 +1815,6 @@ const CreditCard* PersonalDataManager::GetServerCardForLocalCard(
   return nullptr;
 }
 
-void PersonalDataManager::SetProfilesForAllSources(
-    std::vector<AutofillProfile>* new_profiles) {
-  if (!database_helper_->GetLocalDatabase()) {
-    return;
-  }
-
-  ClearOnGoingProfileChanges();
-
-  const auto split_point = base::ranges::partition(
-      *new_profiles, [](const AutofillProfile& profile) {
-        return profile.source() == AutofillProfile::Source::kLocalOrSyncable;
-      });
-  bool change_happened =
-      SetProfilesForSource({new_profiles->begin(), split_point},
-                           AutofillProfile::Source::kLocalOrSyncable);
-  change_happened |= SetProfilesForSource({split_point, new_profiles->end()},
-                                          AutofillProfile::Source::kAccount);
-
-  if (!change_happened) {
-    // When a change happens (add, update, remove), we would consequently call
-    // `NotifyPersonalDataChanged()` which notifies the tests to stop waiting.
-    // Otherwise, we need to stop them by calling the function directly.
-    NotifyPersonalDataObserver();
-  }
-}
-
-bool PersonalDataManager::SetProfilesForSource(
-    base::span<const AutofillProfile> new_profiles,
-    AutofillProfile::Source source) {
-  DCHECK(
-      base::ranges::all_of(new_profiles, [&](const AutofillProfile& profile) {
-        return profile.source() == source;
-      }));
-
-  // Means that a profile was added, removed or updated.
-  bool change_happened = false;
-
-  std::vector<std::unique_ptr<AutofillProfile>>& profiles =
-      GetProfileStorage(source);
-
-  // Any profiles that are not in the new profile list should be removed from
-  // the web database
-  for (const auto& it : profiles) {
-    if (!FindByGUID(new_profiles, it->guid())) {
-      RemoveProfileFromDB(it->guid());
-      change_happened = true;
-    }
-  }
-
-  // Update the web database with the new and existing profiles.
-  for (const AutofillProfile& it : new_profiles) {
-    const auto* existing_profile = GetProfileByGUID(it.guid());
-    // In `SetProfilesForSource()`, exceptionally, profiles are directly added/
-    // updated on the `profiles` before they are ready to be added or get
-    // updated in the database. Enforce the changes to make sure the database is
-    // also updated.
-    if (existing_profile) {
-      if (!existing_profile->EqualsForUpdatePurposes(it)) {
-        UpdateProfileInDB(it, /*enforced=*/true);
-        change_happened = true;
-      }
-    } else if (!FindByContents(profiles, it)) {
-      AddProfileToDB(it, /*enforced=*/true);
-      change_happened = true;
-    }
-  }
-
-  if (change_happened) {
-    // Copy in the new profiles.
-    profiles.clear();
-    for (const AutofillProfile& it : new_profiles) {
-      profiles.push_back(std::make_unique<AutofillProfile>(it));
-    }
-  }
-  return change_happened;
-}
-
 bool PersonalDataManager::IsProfileMigrationBlocked(
     const std::string& guid) const {
   AutofillProfile* profile = GetProfileByGUID(guid);
@@ -2555,8 +2478,7 @@ void PersonalDataManager::ConvertWalletAddressesAndUpdateWalletCards() {
   AutofillAddressConversionCompleted();
 }
 
-void PersonalDataManager::AddProfileToDB(const AutofillProfile& profile,
-                                         bool enforced) {
+void PersonalDataManager::AddProfileToDB(const AutofillProfile& profile) {
   if (profile.IsEmpty(app_locale_)) {
     NotifyPersonalDataObserver();
     return;
@@ -2565,16 +2487,14 @@ void PersonalDataManager::AddProfileToDB(const AutofillProfile& profile,
   if (!ProfileChangesAreOngoing(profile.guid())) {
     const std::vector<std::unique_ptr<AutofillProfile>>& profiles =
         GetProfileStorage(profile.source());
-    if (!enforced && (FindByGUID(profiles, profile.guid()) ||
-                      FindByContents(profiles, profile))) {
+    if (FindByGUID(profiles, profile.guid()) ||
+        FindByContents(profiles, profile)) {
       NotifyPersonalDataObserver();
       return;
     }
   }
   ongoing_profile_changes_[profile.guid()].emplace_back(
       AutofillProfileChange::ADD, profile);
-  if (enforced)
-    ongoing_profile_changes_[profile.guid()].back().set_enforced();
   HandleNextProfileChange(profile.guid());
 }
 
@@ -2650,8 +2570,7 @@ void PersonalDataManager::HandleNextProfileChange(const std::string& guid) {
   if (change_type == AutofillProfileChange::ADD) {
     const std::vector<std::unique_ptr<AutofillProfile>>& profiles =
         GetProfileStorage(profile.source());
-    if (!change.enforced() &&
-        (profile_exists || FindByContents(profiles, profile))) {
+    if (profile_exists || FindByContents(profiles, profile)) {
       OnProfileChangeDone(guid);
       return;
     }
@@ -2693,10 +2612,6 @@ void PersonalDataManager::OnProfileChangeDone(const std::string& guid) {
     NotifyPersonalDataObserver();
     HandleNextProfileChange(guid);
   }
-}
-
-void PersonalDataManager::ClearOnGoingProfileChanges() {
-  ongoing_profile_changes_.clear();
 }
 
 bool PersonalDataManager::HasPendingQueries() {
