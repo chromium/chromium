@@ -49,6 +49,10 @@ namespace base::trace_event {
 class TracedValue;
 }  // namespace base::trace_event
 
+namespace gfx {
+struct GpuExtraInfo;
+}
+
 namespace gl {
 class GLShareGroup;
 }
@@ -118,10 +122,13 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelManager
   GpuChannelManagerDelegate* delegate() const { return delegate_; }
   GpuWatchdogThread* watchdog() const { return watchdog_; }
 
-  GpuChannel* EstablishChannel(const base::UnguessableToken& channel_token,
-                               int client_id,
-                               uint64_t client_tracing_id,
-                               bool is_gpu_host);
+  GpuChannel* EstablishChannel(
+      const base::UnguessableToken& channel_token,
+      int client_id,
+      uint64_t client_tracing_id,
+      bool is_gpu_host,
+      const gfx::GpuExtraInfo& gpu_extra_info,
+      gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory);
 
   void SetChannelClientPid(int client_id, base::ProcessId client_pid);
   void SetChannelDiskCacheHandle(int client_id,

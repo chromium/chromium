@@ -49,9 +49,11 @@
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/ipc/common/command_buffer_id.h"
 #include "gpu/ipc/common/gpu_channel.mojom.h"
+#include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "gpu/ipc/service/gles2_command_buffer_stub.h"
 #include "gpu/ipc/service/gpu_channel_manager.h"
 #include "gpu/ipc/service/gpu_channel_manager_delegate.h"
+#include "gpu/ipc/service/gpu_memory_buffer_factory.h"
 #include "gpu/ipc/service/image_decode_accelerator_stub.h"
 #include "gpu/ipc/service/raster_command_buffer_stub.h"
 #include "gpu/ipc/service/webgpu_command_buffer_stub.h"
@@ -69,6 +71,10 @@
 #include "components/viz/common/overlay_state/win/overlay_state_service.h"
 #include "gpu/ipc/service/dcomp_texture_win.h"
 #endif
+
+#if BUILDFLAG(IS_OZONE)
+#include "ui/ozone/public/ozone_platform.h"
+#endif  // BUILDFLAG(IS_OZONE)
 
 namespace gpu {
 
@@ -107,6 +113,20 @@ bool TryRegisterOverlayStateObserver(
 }
 #endif  // BUILDFLAG(IS_WIN)
 
+bool WillGetGmbConfigFromGpu() {
+#if BUILDFLAG(IS_OZONE)
+  // Ozone/X11 requires gpu initialization to be done before it can determine
+  // what formats gmb can use. This limitation comes from the requirement to
+  // have GLX bindings initialized. The buffer formats will be passed through
+  // gpu extra info.
+  return ui::OzonePlatform::GetInstance()
+      ->GetPlatformProperties()
+      .fetch_buffer_formats_for_gmb_on_gpu;
+#else
+  return false;
+#endif
+}
+
 }  // namespace
 
 // This filter does the following:
@@ -123,6 +143,8 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelMessageFilter
       const base::UnguessableToken& channel_token,
       Scheduler* scheduler,
       ImageDecodeAcceleratorWorker* image_decode_accelerator_worker,
+      const gfx::GpuExtraInfo& gpu_extra_info,
+      gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory,
       scoped_refptr<base::SingleThreadTaskRunner> main_task_runner);
   GpuChannelMessageFilter(const GpuChannelMessageFilter&) = delete;
   GpuChannelMessageFilter& operator=(const GpuChannelMessageFilter&) = delete;
@@ -166,6 +188,8 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelMessageFilter
   void FlushDeferredRequests(
       std::vector<mojom::DeferredRequestPtr> requests) override;
 
+  bool IsNativeBufferSupported(gfx::BufferFormat buffer_format,
+                               gfx::BufferUsage buffer_usage);
   void GetGpuMemoryBufferHandleInfo(
       const gpu::Mailbox& mailbox,
       GetGpuMemoryBufferHandleInfoCallback callback) override;
@@ -234,6 +258,10 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelMessageFilter
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
 
   scoped_refptr<ImageDecodeAcceleratorStub> image_decode_accelerator_stub_;
+  const gfx::GpuExtraInfo gpu_extra_info_;
+  gpu::GpuMemoryBufferConfigurationSet supported_gmb_configurations_;
+  bool supported_gmb_configurations_inited_ = false;
+  raw_ptr<gpu::GpuMemoryBufferFactory> gpu_memory_buffer_factory_ = nullptr;
   base::ThreadChecker io_thread_checker_;
 
   bool allow_process_kill_for_testing_ = false;
@@ -246,6 +274,8 @@ GpuChannelMessageFilter::GpuChannelMessageFilter(
     const base::UnguessableToken& channel_token,
     Scheduler* scheduler,
     ImageDecodeAcceleratorWorker* image_decode_accelerator_worker,
+    const gfx::GpuExtraInfo& gpu_extra_info,
+    gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory,
     scoped_refptr<base::SingleThreadTaskRunner> main_task_runner)
     : gpu_channel_(gpu_channel),
       channel_token_(channel_token),
@@ -256,7 +286,9 @@ GpuChannelMessageFilter::GpuChannelMessageFilter(
               image_decode_accelerator_worker,
               gpu_channel,
               static_cast<int32_t>(
-                  GpuChannelReservedRoutes::kImageDecodeAccelerator))) {
+                  GpuChannelReservedRoutes::kImageDecodeAccelerator))),
+      gpu_extra_info_(gpu_extra_info),
+      gpu_memory_buffer_factory_(gpu_memory_buffer_factory) {
   // GpuChannel and CommandBufferStub implementations assume that it is not
   // possible to simultaneously execute tasks on these two task runners.
   DCHECK_EQ(main_task_runner_, gpu_channel->task_runner());
@@ -366,6 +398,30 @@ void GpuChannelMessageFilter::FlushDeferredRequests(
   }
 
   scheduler_->ScheduleTasks(std::move(tasks));
+}
+
+bool GpuChannelMessageFilter::IsNativeBufferSupported(
+    gfx::BufferFormat buffer_format,
+    gfx::BufferUsage buffer_usage) {
+  // Note that we are initializing the |supported_gmb_configurations_| here to
+  // make sure gpu service have already initialized and required metadata like
+  // supported buffer configurations have already been sent from browser
+  // process to GPU process for wayland.
+  if (!supported_gmb_configurations_inited_) {
+    supported_gmb_configurations_inited_ = true;
+    if (WillGetGmbConfigFromGpu()) {
+#if defined(USE_OZONE_PLATFORM_X11)
+      for (const auto& config : gpu_extra_info_.gpu_memory_buffer_support_x11) {
+        supported_gmb_configurations_.emplace(config);
+      }
+#endif
+    } else {
+      supported_gmb_configurations_ =
+          gpu::GpuMemoryBufferSupport::GetNativeGpuMemoryBufferConfigurations();
+    }
+  }
+  return base::Contains(supported_gmb_configurations_,
+                        gfx::BufferUsageAndFormat(buffer_usage, buffer_format));
 }
 
 void GpuChannelMessageFilter::GetGpuMemoryBufferHandleInfo(
@@ -571,7 +627,9 @@ GpuChannel::GpuChannel(
     int32_t client_id,
     uint64_t client_tracing_id,
     bool is_gpu_host,
-    ImageDecodeAcceleratorWorker* image_decode_accelerator_worker)
+    ImageDecodeAcceleratorWorker* image_decode_accelerator_worker,
+    const gfx::GpuExtraInfo& gpu_extra_info,
+    gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory)
     : gpu_channel_manager_(gpu_channel_manager),
       scheduler_(scheduler),
       sync_point_manager_(sync_point_manager),
@@ -586,6 +644,8 @@ GpuChannel::GpuChannel(
           channel_token,
           scheduler,
           image_decode_accelerator_worker,
+          gpu_extra_info,
+          gpu_memory_buffer_factory,
           std::move(task_runner))) {
   DCHECK(gpu_channel_manager_);
   DCHECK(client_id_);
@@ -629,12 +689,15 @@ std::unique_ptr<GpuChannel> GpuChannel::Create(
     int32_t client_id,
     uint64_t client_tracing_id,
     bool is_gpu_host,
-    ImageDecodeAcceleratorWorker* image_decode_accelerator_worker) {
+    ImageDecodeAcceleratorWorker* image_decode_accelerator_worker,
+    const gfx::GpuExtraInfo& gpu_extra_info,
+    gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory) {
   auto gpu_channel = base::WrapUnique(new GpuChannel(
       gpu_channel_manager, channel_token, scheduler, sync_point_manager,
       std::move(share_group), std::move(task_runner), std::move(io_task_runner),
       client_id, client_tracing_id, is_gpu_host,
-      image_decode_accelerator_worker));
+      image_decode_accelerator_worker, gpu_extra_info,
+      gpu_memory_buffer_factory));
 
   if (!gpu_channel->CreateSharedImageStub()) {
     LOG(ERROR) << "GpuChannel: Failed to create SharedImageStub";

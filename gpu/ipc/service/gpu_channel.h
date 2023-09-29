@@ -48,6 +48,7 @@ namespace gpu {
 class DCOMPTexture;
 class GpuChannelManager;
 class GpuChannelMessageFilter;
+class GpuMemoryBufferFactory;
 class ImageDecodeAcceleratorWorker;
 class Scheduler;
 class SharedImageStub;
@@ -74,7 +75,9 @@ class GPU_IPC_SERVICE_EXPORT GpuChannel : public IPC::Listener,
       int32_t client_id,
       uint64_t client_tracing_id,
       bool is_gpu_host,
-      ImageDecodeAcceleratorWorker* image_decode_accelerator_worker);
+      ImageDecodeAcceleratorWorker* image_decode_accelerator_worker,
+      const gfx::GpuExtraInfo& gpu_extra_info,
+      gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory);
 
   // Init() sets up the underlying IPC channel.  Use a separate method because
   // we don't want to do that in tests.
@@ -228,7 +231,9 @@ class GPU_IPC_SERVICE_EXPORT GpuChannel : public IPC::Listener,
              int32_t client_id,
              uint64_t client_tracing_id,
              bool is_gpu_host,
-             ImageDecodeAcceleratorWorker* image_decode_accelerator_worker);
+             ImageDecodeAcceleratorWorker* image_decode_accelerator_worker,
+             const gfx::GpuExtraInfo& gpu_extra_info,
+             gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory);
 
   void OnDestroyCommandBuffer(int32_t route_id);
 

@@ -493,7 +493,9 @@ GpuChannel* GpuChannelManager::EstablishChannel(
     const base::UnguessableToken& channel_token,
     int client_id,
     uint64_t client_tracing_id,
-    bool is_gpu_host) {
+    bool is_gpu_host,
+    const gfx::GpuExtraInfo& gpu_extra_info,
+    gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   // Remove existing GPU channel with same client id before creating
@@ -511,7 +513,8 @@ GpuChannel* GpuChannelManager::EstablishChannel(
   std::unique_ptr<GpuChannel> gpu_channel = GpuChannel::Create(
       this, channel_token, scheduler_, sync_point_manager_, share_group_,
       task_runner_, io_task_runner_, client_id, client_tracing_id, is_gpu_host,
-      image_decode_accelerator_worker_);
+      image_decode_accelerator_worker_, gpu_extra_info,
+      gpu_memory_buffer_factory);
 
   if (!gpu_channel)
     return nullptr;

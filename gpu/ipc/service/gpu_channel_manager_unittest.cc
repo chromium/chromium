@@ -132,7 +132,8 @@ TEST_F(GpuChannelManagerTest, EstablishChannel) {
 
   ASSERT_TRUE(channel_manager());
   GpuChannel* channel = channel_manager()->EstablishChannel(
-      base::UnguessableToken::Create(), kClientId, kClientTracingId, false);
+      base::UnguessableToken::Create(), kClientId, kClientTracingId, false,
+      gfx::GpuExtraInfo(), /*gpu_memory_buffer_factory=*/nullptr);
   EXPECT_TRUE(channel);
   EXPECT_EQ(channel_manager()->LookupChannel(kClientId), channel);
 }
