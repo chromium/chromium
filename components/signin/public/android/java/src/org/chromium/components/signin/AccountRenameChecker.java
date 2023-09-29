@@ -4,7 +4,6 @@
 
 package org.chromium.components.signin;
 
-import android.accounts.Account;
 import android.content.Context;
 
 import androidx.annotation.Nullable;
@@ -19,6 +18,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.Promise;
 import org.chromium.base.task.AsyncTask;
+import org.chromium.components.signin.base.CoreAccountInfo;
 
 import java.io.IOException;
 import java.util.List;
@@ -97,12 +97,12 @@ public final class AccountRenameChecker {
      * that exists in the given list of accounts; otherwise a {@link Promise} of null.
      */
     public Promise<String> getNewNameOfRenamedAccountAsync(
-            String oldAccountEmail, List<Account> accounts) {
+            String oldAccountEmail, List<CoreAccountInfo> coreAccountInfos) {
         final Promise<String> newNamePromise = new Promise<>();
         new AsyncTask<String>() {
             @Override
             protected String doInBackground() {
-                return getNewNameOfRenamedAccount(oldAccountEmail, accounts);
+                return getNewNameOfRenamedAccount(oldAccountEmail, coreAccountInfos);
             }
 
             @Override
@@ -115,10 +115,11 @@ public final class AccountRenameChecker {
 
     @WorkerThread
     private @Nullable String getNewNameOfRenamedAccount(
-            String oldAccountEmail, List<Account> accounts) {
+            String oldAccountEmail, List<CoreAccountInfo> coreAccountInfos) {
         String newAccountEmail = mDelegate.getNewNameOfRenamedAccount(oldAccountEmail);
         while (newAccountEmail != null) {
-            if (AccountUtils.findAccountByName(accounts, newAccountEmail) != null) {
+            if (AccountUtils.findCoreAccountInfoByEmail(coreAccountInfos, newAccountEmail)
+                    != null) {
                 break;
             }
             // When the new name does not exist in the list, continue to search if it is

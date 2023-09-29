@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.signin.services;
 
-import android.accounts.Account;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -33,6 +32,7 @@ import org.chromium.components.browser_ui.util.AvatarGenerator;
 import org.chromium.components.signin.AccountEmailDomainDisplayability;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.base.AccountInfo;
+import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.AccountInfoService;
 import org.chromium.components.signin.identitymanager.AccountInfoServiceProvider;
 
@@ -191,30 +191,35 @@ public class ProfileDataCache implements AccountInfoService.Observer {
      * Sets a {@link BadgeConfig} for a given account, and then populates the cache with the new
      * Badge.
      *
-     * @param account The account for which to set this badge.
+     * @param accountEmail The account email for which to set this badge.
      * @param badgeResId Resource id of the badge to be attached. If 0 then the current Badge is
      * removed.
      *
      * If both a per-account and default badge are set, the per-account badge takes precedence.
+     *
+     * TODO(crbug.com/1462264): Replace accountEmail with CoreAccountId or CoreAccountInfo.
      */
-    public void setBadge(Account account, @DrawableRes int badgeResId) {
-        if (((badgeResId == 0) && !mPerAccountBadgeConfig.containsKey(account.name))
-                || ((badgeResId != 0) && mPerAccountBadgeConfig.containsKey(account.name)
-                        && (mPerAccountBadgeConfig.get(account.name).getBadgeResId()
-                                == badgeResId))) {
-            // Update is a no-op.  Skip the work below, both as an optimization and to avoid a
-            // loop whereby the ProfileDataCache user might call back into this function as a
-            // result of the notification callback.
+    public void setBadge(String accountEmail, @DrawableRes int badgeResId) {
+        if (badgeResId == 0 && !mPerAccountBadgeConfig.containsKey(accountEmail)) {
+            // Update is a no-op. There is no badgeResId and accountEmail has no per-account
+            // badge config set.
+            return;
+        }
+        if (badgeResId != 0 && mPerAccountBadgeConfig.containsKey(accountEmail)
+                && mPerAccountBadgeConfig.get(accountEmail).getBadgeResId() == badgeResId) {
+            // Update is a no-op. The per-account badge set to accountEmail is the same as the
+            // badgeResId.
             return;
         }
 
         if (badgeResId != 0) {
-            mPerAccountBadgeConfig.put(account.name, new BadgeConfig(mContext, badgeResId));
+            mPerAccountBadgeConfig.put(accountEmail, new BadgeConfig(mContext, badgeResId));
         } else {
-            mPerAccountBadgeConfig.remove(account.name);
+            mPerAccountBadgeConfig.remove(accountEmail);
         }
-        AccountInfoServiceProvider.getPromise().then(
-                accountInfoService -> { populateCacheForAccount(accountInfoService, account); });
+        AccountInfoServiceProvider.getPromise().then(accountInfoService -> {
+            populateCacheForAccount(accountInfoService, accountEmail);
+        });
     }
 
     /**
@@ -265,15 +270,17 @@ public class ProfileDataCache implements AccountInfoService.Observer {
     }
 
     private void populateCache(AccountInfoService accountInfoService) {
-        AccountManagerFacadeProvider.getInstance().getAccounts().then(accounts -> {
-            for (Account account : accounts) {
-                populateCacheForAccount(accountInfoService, account);
+        AccountManagerFacadeProvider.getInstance().getCoreAccountInfos().then(coreAccountInfos -> {
+            for (CoreAccountInfo coreAccountInfo : coreAccountInfos) {
+                populateCacheForAccount(accountInfoService, coreAccountInfo.getEmail());
             }
         });
     }
 
-    private void populateCacheForAccount(AccountInfoService accountInfoService, Account account) {
-        accountInfoService.getAccountInfoByEmail(account.name).then(this::onAccountInfoUpdated);
+    // TODO(crbug.com/1462264): Replace accountEmail with CoreAccountId or CoreAccountInfo.
+    private void populateCacheForAccount(
+            AccountInfoService accountInfoService, String accountEmail) {
+        accountInfoService.getAccountInfoByEmail(accountEmail).then(this::onAccountInfoUpdated);
     }
 
     private void updateCacheAndNotifyObservers(String email, Bitmap avatar, String fullName,

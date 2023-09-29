@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.signin;
 
-import android.accounts.Account;
 import android.content.Context;
 
 import androidx.annotation.VisibleForTesting;
@@ -32,6 +31,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvi
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.GAIAServiceType;
+import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.ui.base.WindowAndroid;
@@ -87,9 +87,10 @@ final class SigninBridge {
                     SigninAccessPoint.WEB_SIGNIN);
             return;
         }
-        final List<Account> accounts = AccountUtils.getAccountsIfFulfilledOrEmpty(
-                AccountManagerFacadeProvider.getInstance().getAccounts());
-        if (accounts.isEmpty()) {
+        final List<CoreAccountInfo> coreAccountInfos =
+                AccountUtils.getCoreAccountInfosIfFulfilledOrEmpty(
+                        AccountManagerFacadeProvider.getInstance().getCoreAccountInfos());
+        if (coreAccountInfos.isEmpty()) {
             SigninMetricsUtils.logAccountConsistencyPromoAction(
                     AccountConsistencyPromoAction.SUPPRESSED_NO_ACCOUNTS,
                     SigninAccessPoint.WEB_SIGNIN);

@@ -75,7 +75,7 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
 
     private @GAIAServiceType int mGaiaServiceType = GAIAServiceType.GAIA_SERVICE_TYPE_NONE;
 
-    private String mSignedInAccountName;
+    private CoreAccountInfo mSignedInCoreAccountInfo;
     private ProfileDataCache mProfileDataCache;
     private @Nullable SyncService.SyncSetupInProgressHandle mSyncSetupInProgressHandle;
 
@@ -139,25 +139,31 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
 
         if (getPreferenceScreen() != null) getPreferenceScreen().removeAll();
 
-        mSignedInAccountName =
+        String signedInAccountEmail =
                 CoreAccountInfo.getEmailFrom(IdentityServicesProvider.get()
                                                      .getIdentityManager(getProfile())
                                                      .getPrimaryAccountInfo(ConsentLevel.SIGNIN));
-        if (mSignedInAccountName == null) {
+        List<CoreAccountInfo> coreAccountInfos = AccountUtils.getCoreAccountInfosIfFulfilledOrEmpty(
+                AccountManagerFacadeProvider.getInstance().getCoreAccountInfos());
+        if (signedInAccountEmail == null || coreAccountInfos.isEmpty()) {
             // The AccountManagementFragment can only be shown when the user is signed in. If the
             // user is signed out, exit the fragment.
             getActivity().finish();
             return;
         }
+        mSignedInCoreAccountInfo =
+                AccountUtils.findCoreAccountInfoByEmail(coreAccountInfos, signedInAccountEmail);
+        assert mSignedInCoreAccountInfo != null;
 
         DisplayableProfileData profileData =
-                mProfileDataCache.getProfileDataOrDefault(mSignedInAccountName);
+                mProfileDataCache.getProfileDataOrDefault(mSignedInCoreAccountInfo.getEmail());
         getActivity().setTitle(SyncSettingsUtils.getDisplayableFullNameOrEmailWithPreference(
                 profileData, getContext(), SyncSettingsUtils.TitlePreference.FULL_NAME));
         addPreferencesFromResource(R.xml.account_management_preferences);
         configureSignOutSwitch();
         configureChildAccountPreferences();
-        AccountManagerFacadeProvider.getInstance().getAccounts().then(this::updateAccountsList);
+        AccountManagerFacadeProvider.getInstance().getCoreAccountInfos().then(
+                this::updateAccountsList);
     }
 
     /**
@@ -188,7 +194,7 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
                             ? R.string.sign_out_and_turn_off_sync
                             : R.string.sign_out);
             signOutPreference.setOnPreferenceClickListener(preference -> {
-                if (!isVisible() || !isResumed() || mSignedInAccountName == null) {
+                if (!isVisible() || !isResumed() || mSignedInCoreAccountInfo == null) {
                     return false;
                 }
 
@@ -237,12 +243,12 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
         }
     }
 
-    private void updateAccountsList(List<Account> accounts) {
+    private void updateAccountsList(List<CoreAccountInfo> coreAccountInfos) {
         // This method is called asynchronously on accounts fetched from AccountManagerFacade.
         // Make sure the fragment is alive before updating preferences.
         if (!isResumed()) return;
 
-        setAccountBadges(accounts);
+        setAccountBadges(coreAccountInfos);
 
         PreferenceCategory accountsCategory = findPreference(PREF_ACCOUNTS_CATEGORY);
         if (accountsCategory == null) {
@@ -252,33 +258,34 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
         }
         accountsCategory.removeAll();
 
-        accountsCategory.addPreference(
-                createAccountPreference(AccountUtils.createAccountFromName(mSignedInAccountName)));
+        accountsCategory.addPreference(createAccountPreference(mSignedInCoreAccountInfo));
         accountsCategory.addPreference(
                 createDividerPreference(R.layout.account_divider_preference));
         accountsCategory.addPreference(createManageYourGoogleAccountPreference());
         accountsCategory.addPreference(createDividerPreference(R.layout.divider_preference));
 
-        for (Account account : accounts) {
-            if (!mSignedInAccountName.equals(account.name)) {
-                accountsCategory.addPreference(createAccountPreference(account));
+        for (CoreAccountInfo coreAccountInfo : coreAccountInfos) {
+            if (!mSignedInCoreAccountInfo.equals(coreAccountInfo)) {
+                accountsCategory.addPreference(createAccountPreference(coreAccountInfo));
             }
         }
         accountsCategory.addPreference(createAddAccountPreference());
     }
 
-    private Preference createAccountPreference(Account account) {
+    private Preference createAccountPreference(CoreAccountInfo coreAccountInfo) {
         Preference accountPreference = new Preference(getStyledContext());
         accountPreference.setLayoutResource(R.layout.account_management_account_row);
 
         DisplayableProfileData profileData =
-                mProfileDataCache.getProfileDataOrDefault(account.name);
+                mProfileDataCache.getProfileDataOrDefault(coreAccountInfo.getEmail());
         accountPreference.setTitle(SyncSettingsUtils.getDisplayableFullNameOrEmailWithPreference(
                 profileData, getContext(), SyncSettingsUtils.TitlePreference.EMAIL));
         accountPreference.setIcon(profileData.getImage());
 
-        accountPreference.setOnPreferenceClickListener(SyncSettingsUtils.toOnClickListener(
-                this, () -> SigninUtils.openSettingsForAccount(getActivity(), account)));
+        accountPreference.setOnPreferenceClickListener(SyncSettingsUtils.toOnClickListener(this,
+                ()
+                        -> SigninUtils.openSettingsForAccount(
+                                getActivity(), coreAccountInfo.getEmail())));
 
         return accountPreference;
     }
@@ -348,13 +355,14 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
         return getPreferenceManager().getContext();
     }
 
-    private void setAccountBadges(List<Account> accounts) {
-        for (Account account : accounts) {
+    private void setAccountBadges(List<CoreAccountInfo> coreAccountInfos) {
+        for (CoreAccountInfo coreAccountInfo : coreAccountInfos) {
+            Account account = CoreAccountInfo.getAndroidAccountFrom(coreAccountInfo);
             AccountManagerFacadeProvider.getInstance().checkChildAccountStatus(
                     account, (isChild, childAccount) -> {
                         if (isChild) {
                             mProfileDataCache.setBadge(
-                                    childAccount, R.drawable.ic_account_child_20dp);
+                                    childAccount.name, R.drawable.ic_account_child_20dp);
                         }
                     });
         }
@@ -363,7 +371,8 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
     // ProfileDataCache.Observer implementation:
     @Override
     public void onProfileDataUpdated(String accountEmail) {
-        AccountManagerFacadeProvider.getInstance().getAccounts().then(this::updateAccountsList);
+        AccountManagerFacadeProvider.getInstance().getCoreAccountInfos().then(
+                this::updateAccountsList);
     }
 
     // SignOutDialogListener implementation:

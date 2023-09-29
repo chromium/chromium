@@ -55,11 +55,11 @@ public class SigninChecker implements AccountTrackerService.Observer {
     }
 
     private void validateAccountSettings() {
-        mAccountManagerFacade.getAccounts().then(accounts -> {
+        mAccountManagerFacade.getCoreAccountInfos().then(coreAccountInfos -> {
             mAccountTrackerService.seedAccountsIfNeeded(() -> {
                 mSigninManager.runAfterOperationInProgress(() -> {
-                    validatePrimaryAccountExists(accounts, /*accountsChanged=*/false);
-                    checkChildAccount(accounts);
+                    validatePrimaryAccountExists(coreAccountInfos, /*accountsChanged=*/false);
+                    checkChildAccount(coreAccountInfos);
                 });
             });
         });
@@ -69,11 +69,10 @@ public class SigninChecker implements AccountTrackerService.Observer {
      * This method is invoked every time the accounts on device are seeded.
      */
     @Override
-    public void onAccountsSeeded(List<CoreAccountInfo> accountInfos, boolean accountsChanged) {
-        final List<Account> accounts = AccountUtils.toAndroidAccounts(accountInfos);
+    public void onAccountsSeeded(List<CoreAccountInfo> coreAccountInfos, boolean accountsChanged) {
         mSigninManager.runAfterOperationInProgress(() -> {
-            validatePrimaryAccountExists(accounts, accountsChanged);
-            checkChildAccount(accounts);
+            validatePrimaryAccountExists(coreAccountInfos, accountsChanged);
+            checkChildAccount(coreAccountInfos);
         });
     }
 
@@ -84,7 +83,8 @@ public class SigninChecker implements AccountTrackerService.Observer {
     /**
      * Validates that the primary account exists on device.
      */
-    private void validatePrimaryAccountExists(List<Account> accounts, boolean accountsChanged) {
+    private void validatePrimaryAccountExists(
+            List<CoreAccountInfo> coreAccountInfos, boolean accountsChanged) {
         final CoreAccountInfo oldAccount =
                 mSigninManager.getIdentityManager().getPrimaryAccountInfo(ConsentLevel.SIGNIN);
         boolean oldSyncConsent =
@@ -94,9 +94,9 @@ public class SigninChecker implements AccountTrackerService.Observer {
             // Do nothing if user is not signed in
             return;
         }
-        if (AccountUtils.findAccountByName(accounts, oldAccount.getEmail()) != null) {
-            // Reload the accounts if the primary account is still on device and this is triggered
-            // by an accounts change event.
+        if (coreAccountInfos.contains(oldAccount)) {
+            // Reload the coreAccountInfos if the primary account is still on device and this is
+            // triggered by an coreAccountInfos change event.
             if (accountsChanged) {
                 mSigninManager.reloadAllAccountsFromSystem(oldAccount.getId());
             }
@@ -104,7 +104,7 @@ public class SigninChecker implements AccountTrackerService.Observer {
         }
         // Check whether the primary account is renamed to another account when it is not on device
         AccountRenameChecker.get()
-                .getNewNameOfRenamedAccountAsync(oldAccount.getEmail(), accounts)
+                .getNewNameOfRenamedAccountAsync(oldAccount.getEmail(), coreAccountInfos)
                 .then(newAccountName -> {
                     if (newAccountName != null) {
                         // Sign in to the new account if the current primary account is renamed to
@@ -141,9 +141,9 @@ public class SigninChecker implements AccountTrackerService.Observer {
         }, false);
     }
 
-    private void checkChildAccount(List<Account> accounts) {
-        AccountUtils.checkChildAccountStatusLegacy(
-                mAccountManagerFacade, accounts, this::onChildAccountStatusReady);
+    private void checkChildAccount(List<CoreAccountInfo> coreAccountInfos) {
+        AccountUtils.checkChildAccountStatus(
+                mAccountManagerFacade, coreAccountInfos, this::onChildAccountStatusReady);
     }
 
     private void onChildAccountStatusReady(boolean isChild, @Nullable Account childAccount) {

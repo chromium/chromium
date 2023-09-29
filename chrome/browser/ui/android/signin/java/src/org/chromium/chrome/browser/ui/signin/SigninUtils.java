@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.ui.signin;
 
-import android.accounts.Account;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -14,6 +13,7 @@ import android.text.TextUtils;
 
 import org.chromium.base.IntentUtils;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
+import org.chromium.components.signin.AccountUtils;
 
 /**
  * Helper functions for sign-in and accounts.
@@ -27,16 +27,17 @@ public final class SigninUtils {
     /**
      * Opens a Settings page to configure settings for a single account.
      * @param activity Activity to use when starting the Activity.
-     * @param account The account for which the Settings page should be opened.
+     * @param accountEmail The account email for which the Settings page should be opened.
      * @return Whether or not Android accepted the Intent.
      */
-    public static boolean openSettingsForAccount(Activity activity, Account account) {
+    public static boolean openSettingsForAccount(Activity activity, String accountEmail) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             // ACCOUNT_SETTINGS_ACTION no longer works on Android O+, always open all accounts page.
             return openSettingsForAllAccounts(activity);
         }
         Intent intent = new Intent(ACCOUNT_SETTINGS_ACTION);
-        intent.putExtra(ACCOUNT_SETTINGS_ACCOUNT_KEY, account);
+        intent.putExtra(
+                ACCOUNT_SETTINGS_ACCOUNT_KEY, AccountUtils.createAccountFromName(accountEmail));
         return IntentUtils.safeStartActivity(activity, intent);
     }
 
