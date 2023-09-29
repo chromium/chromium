@@ -10572,9 +10572,10 @@
             ],
             "experiments": [
                 {
-                    "name": "Redesigned_Quests_ML_20230913",
+                    "name": "Redesigned_Quests_MR_ML_20230929",
                     "params": {
                         "NtpHistoryClustersModuleCategoriesBoostlistParam": "/m/testparsinglogicboost,/m/testparsinglogicboost-2",
+                        "NtpModulesOrderParam": "drive",
                         "NtpRealboxWidthBehaviorParam": "wide"
                     },
                     "enable_features": [
@@ -10583,6 +10584,7 @@
                         "NtpHistoryClustersModule",
                         "NtpHistoryClustersModuleCategories",
                         "NtpHistoryClustersModuleUseModelRanking",
+                        "NtpModulesOrder",
                         "NtpModulesRedesigned",
                         "NtpRealboxIsTall",
                         "NtpRealboxWidthBehavior"
