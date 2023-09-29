@@ -204,11 +204,14 @@ public class CredManHelperRobolectricTest {
         int result =
                 mCredManHelper.startGetRequest(mContext, mFrameHost, mRequestOptions, mOriginString,
                         /*isCrossOrigin=*/false, /*maybeClientDataHash=*/null,
-                        mCallback::onSignResponse, mErrorCallback);
+                        mCallback::onSignResponse, mErrorCallback, /*ignoreGpm=*/false);
 
         assertThat(result).isEqualTo(AuthenticatorStatus.SUCCESS);
         FakeAndroidCredManGetRequest credManRequest = mCredentialManager.getGetRequest();
         assertThat(credManRequest).isNotNull();
+        assertThat(credManRequest.getData().containsKey(
+                           "androidx.credentials.BUNDLE_KEY_PREFER_UI_BRANDING_COMPONENT_NAME"))
+                .isTrue();
         assertThat(credManRequest.getOrigin()).isEqualTo(mOriginString);
         assertThat(credManRequest.getCredentialOptions()).hasSize(1);
         FakeAndroidCredentialOption option = credManRequest.getCredentialOptions().get(0);
@@ -219,6 +222,9 @@ public class CredManHelperRobolectricTest {
                 .isEqualTo("{serialized_get_request}");
         assertThat(option.getCandidateQueryData().containsKey("com.android.chrome.CHANNEL"))
                 .isTrue();
+        assertThat(
+                option.getCandidateQueryData().getBoolean("com.android.chrome.GPM_IGNORE", false))
+                .isFalse();
         assertThat(option.isSystemProviderRequired()).isFalse();
         assertThat(mCallback.getStatus()).isEqualTo(Integer.valueOf(AuthenticatorStatus.SUCCESS));
         verify(mBrowserBridge, never()).onCredManUiClosed(any(), anyBoolean());
@@ -234,7 +240,7 @@ public class CredManHelperRobolectricTest {
         int result =
                 mCredManHelper.startGetRequest(mContext, mFrameHost, mRequestOptions, mOriginString,
                         /*isCrossOrigin=*/false, mMaybeClientDataHash, mCallback::onSignResponse,
-                        mErrorCallback);
+                        mErrorCallback, /*ignoreGpm=*/false);
 
         assertThat(result).isEqualTo(AuthenticatorStatus.SUCCESS);
         FakeAndroidCredManGetRequest credManRequest = mCredentialManager.getGetRequest();
@@ -257,7 +263,7 @@ public class CredManHelperRobolectricTest {
         int result =
                 mCredManHelper.startGetRequest(mContext, mFrameHost, mRequestOptions, mOriginString,
                         /*isCrossOrigin=*/false, mMaybeClientDataHash, mCallback::onSignResponse,
-                        mErrorCallback);
+                        mErrorCallback, /*ignoreGpm=*/false);
 
         assertThat(result).isEqualTo(AuthenticatorStatus.SUCCESS);
         FakeAndroidCredManGetRequest credManRequest = mCredentialManager.getGetRequest();
@@ -279,7 +285,7 @@ public class CredManHelperRobolectricTest {
         int result =
                 mCredManHelper.startGetRequest(mContext, mFrameHost, mRequestOptions, mOriginString,
                         /*isCrossOrigin=*/false, mMaybeClientDataHash, mCallback::onSignResponse,
-                        mErrorCallback);
+                        mErrorCallback, /*ignoreGpm=*/false);
 
         assertThat(result).isEqualTo(AuthenticatorStatus.SUCCESS);
         verify(mErrorCallback, times(1)).onResult(AuthenticatorStatus.NOT_ALLOWED_ERROR);
@@ -297,7 +303,7 @@ public class CredManHelperRobolectricTest {
         int result =
                 mCredManHelper.startGetRequest(mContext, mFrameHost, mRequestOptions, mOriginString,
                         /*isCrossOrigin=*/false, mMaybeClientDataHash, mCallback::onSignResponse,
-                        mErrorCallback);
+                        mErrorCallback, /*ignoreGpm=*/false);
 
         assertThat(result).isEqualTo(AuthenticatorStatus.SUCCESS);
         verify(mErrorCallback, times(1)).onResult(AuthenticatorStatus.UNKNOWN_ERROR);
@@ -313,7 +319,8 @@ public class CredManHelperRobolectricTest {
 
         mCredManHelper.startPrefetchRequest(mContext, mFrameHost, mRequestOptions, mOriginString,
                 /*isCrossOrigin=*/false,
-                /*maybeClientDataHash=*/null, mCallback::onSignResponse, mErrorCallback, mBarrier);
+                /*maybeClientDataHash=*/null, mCallback::onSignResponse, mErrorCallback, mBarrier,
+                /*ignoreGpm=*/false);
 
         verify(mBarrier, never()).onCredManFailed(anyInt());
         ArgumentCaptor<Runnable> credManCallSuccessfulRunback =
@@ -351,7 +358,8 @@ public class CredManHelperRobolectricTest {
 
         mCredManHelper.startPrefetchRequest(mContext, mFrameHost, mRequestOptions, mOriginString,
                 /*isCrossOrigin=*/false,
-                /*maybeClientDataHash=*/null, mCallback::onSignResponse, mErrorCallback, mBarrier);
+                /*maybeClientDataHash=*/null, mCallback::onSignResponse, mErrorCallback, mBarrier,
+                /*ignoreGpm=*/false);
 
         verify(mBarrier, never()).onCredManFailed(eq(0));
         verify(mBarrier, times(1)).onCredManFailed(eq(AuthenticatorStatus.UNKNOWN_ERROR));
@@ -369,7 +377,8 @@ public class CredManHelperRobolectricTest {
 
         mCredManHelper.startPrefetchRequest(mContext, mFrameHost, mRequestOptions, mOriginString,
                 /*isCrossOrigin=*/false,
-                /*maybeClientDataHash=*/null, mCallback::onSignResponse, mErrorCallback, mBarrier);
+                /*maybeClientDataHash=*/null, mCallback::onSignResponse, mErrorCallback, mBarrier,
+                /*ignoreGpm=*/false);
         ArgumentCaptor<Runnable> credManCallSuccessfulRunback =
                 ArgumentCaptor.forClass(Runnable.class);
         verify(mBarrier).onCredManSuccessful(credManCallSuccessfulRunback.capture());
@@ -392,7 +401,8 @@ public class CredManHelperRobolectricTest {
 
         mCredManHelper.startPrefetchRequest(mContext, mFrameHost, mRequestOptions, mOriginString,
                 /*isCrossOrigin=*/false,
-                /*maybeClientDataHash=*/null, mCallback::onSignResponse, mErrorCallback, mBarrier);
+                /*maybeClientDataHash=*/null, mCallback::onSignResponse, mErrorCallback, mBarrier,
+                /*ignoreGpm=*/false);
 
         verify(mBarrier, never()).onCredManFailed(anyInt());
         ArgumentCaptor<Runnable> credManCallSuccessfulRunback =
@@ -428,7 +438,8 @@ public class CredManHelperRobolectricTest {
 
         mCredManHelper.startPrefetchRequest(mContext, mFrameHost, mRequestOptions, mOriginString,
                 /*isCrossOrigin=*/false,
-                /*maybeClientDataHash=*/null, mCallback::onSignResponse, mErrorCallback, mBarrier);
+                /*maybeClientDataHash=*/null, mCallback::onSignResponse, mErrorCallback, mBarrier,
+                /*ignoreGpm=*/false);
 
         verify(mBarrier, never()).onCredManFailed(anyInt());
         ArgumentCaptor<Runnable> credManCallSuccessfulRunback =
@@ -472,5 +483,27 @@ public class CredManHelperRobolectricTest {
                 .onPasswordCredentialReceived(any(), eq(username), eq(password));
         verify(mMetricsHelper, times(1))
                 .reportGetCredentialMetrics(eq(CredManGetRequestEnum.SUCCESS_PASSWORD), any());
+    }
+
+    @Test
+    @SmallTest
+    public void testStartGetRequest_ignoreGpm_DisablesBrandingAndHasBooleanInBundle() {
+        mCredManHelper.startGetRequest(mContext, mFrameHost, mRequestOptions, mOriginString,
+                /*isCrossOrigin=*/false, /*maybeClientDataHash=*/null, mCallback::onSignResponse,
+                mErrorCallback, /*ignoreGpm=*/true);
+
+        FakeAndroidCredManGetRequest credManRequest = mCredentialManager.getGetRequest();
+        assertThat(credManRequest).isNotNull();
+        assertThat(credManRequest.getData().containsKey(
+                           "androidx.credentials.BUNDLE_KEY_PREFER_UI_BRANDING_COMPONENT_NAME"))
+                .isFalse();
+        assertThat(credManRequest.getCredentialOptions()).hasSize(1);
+        FakeAndroidCredentialOption option = credManRequest.getCredentialOptions().get(0);
+        assertThat(option).isNotNull();
+        assertThat(option.getType()).isEqualTo("androidx.credentials.TYPE_PUBLIC_KEY_CREDENTIAL");
+        assertThat(option.getCandidateQueryData().containsKey("com.android.chrome.GPM_IGNORE"))
+                .isTrue();
+        assertThat(option.getCandidateQueryData().getBoolean("com.android.chrome.GPM_IGNORE"))
+                .isTrue();
     }
 }

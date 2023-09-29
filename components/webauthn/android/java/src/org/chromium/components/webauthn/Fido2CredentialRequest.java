@@ -355,7 +355,7 @@ public class Fido2CredentialRequest
                 mCredManHelper.startPrefetchRequest(mContext, mFrameHost, options,
                         convertOriginToString(origin), mIsCrossOrigin,
                         /*maybeClientDataHash=*/null, callback, this::returnErrorAndResetCallback,
-                        mBarrier);
+                        mBarrier, /*ignoreGpm=*/false);
             } else if (hasAllowCredentials && mPlayServicesAvailable) {
                 // If the allowlist contains non-discoverable credentials then
                 // the request needs to be routed directly to Play Services.
@@ -368,7 +368,7 @@ public class Fido2CredentialRequest
                                         /*credentialId=*/null));
                 int response = mCredManHelper.startGetRequest(mContext, mFrameHost, options,
                         convertOriginToString(origin), mIsCrossOrigin, maybeClientDataHash,
-                        callback, this::returnErrorAndResetCallback);
+                        callback, this::returnErrorAndResetCallback, /*ignoreGpm=*/false);
                 if (response != AuthenticatorStatus.SUCCESS) returnErrorAndResetCallback(response);
             }
             return;
@@ -404,7 +404,7 @@ public class Fido2CredentialRequest
                 mBarrier.resetAndSetWaitStatus(Barrier.Mode.BOTH);
                 mCredManHelper.startPrefetchRequest(context, frameHost, options, callerOriginString,
                         hasAllowCredentials, maybeClientDataHash, callback,
-                        this::returnErrorAndResetCallback, mBarrier);
+                        this::returnErrorAndResetCallback, mBarrier, /*ignoreGpm=*/true);
             } else {
                 mBarrier.resetAndSetWaitStatus(Barrier.Mode.ONLY_FIDO_2_API);
             }
@@ -629,7 +629,7 @@ public class Fido2CredentialRequest
                     mCredManHelper.startGetRequest(mContext, mFrameHost, options,
                             convertOriginToString(callerOrigin), mIsCrossOrigin,
                             maybeClientDataHash, mGetAssertionCallback,
-                            this::returnErrorAndResetCallback);
+                            this::returnErrorAndResetCallback, /*ignoreGpm=*/false);
                 });
     }
 
@@ -665,7 +665,7 @@ public class Fido2CredentialRequest
         // so route to CredMan.
         mCredManHelper.startGetRequest(mContext, mFrameHost, options,
                 convertOriginToString(callerOrigin), mIsCrossOrigin, maybeClientDataHash,
-                mGetAssertionCallback, this::returnErrorAndResetCallback);
+                mGetAssertionCallback, this::returnErrorAndResetCallback, /*ignoreGpm=*/false);
     }
 
     private void maybeDispatchGetAssertionRequest(PublicKeyCredentialRequestOptions options,
