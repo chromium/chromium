@@ -475,6 +475,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="UpdateEngine.EnterpriseUpdateInvalidatedResult"
+    enum="BooleanSuccess" expires_after="2024-05-01">
+  <owner>artyomchen@google.com</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
+  <summary>
+    This metric is reported every time the updates are invalidated due to the
+    enterprise policy. Reports whether the update was able to be invalidated.
+
+    This metric is specific to Chrome OS.
+  </summary>
+</histogram>
+
 <histogram name="UpdateEngine.FailedUpdateCount" units="count"
     expires_after="2024-03-03">
   <owner>kimjae@chromium.org</owner>
