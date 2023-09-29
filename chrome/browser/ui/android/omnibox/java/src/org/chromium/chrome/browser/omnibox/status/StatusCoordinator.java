@@ -10,6 +10,7 @@ import android.view.View;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
@@ -125,6 +126,14 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
         updateVerboseStatusVisibility();
         mLocationBarDataProvider.addObserver(this);
         mStatusView.setBrowserControlsVisibilityDelegate(browserControlsVisibilityDelegate);
+
+        if (isSearchEngineStatusIconVisible()) {
+            setTooltipText(R.string.accessibility_menu_info);
+            setHoverHighlight(R.drawable.status_view_ripple);
+        } else {
+            setTooltipText(Resources.ID_NULL);
+            setHoverHighlight(Resources.ID_NULL);
+        }
     }
 
     /** Signals that native initialization has completed. */
@@ -164,6 +173,16 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
     /** Set the x translation of the status view. */
     public void setTranslationX(float translationX) {
         mMediator.setTranslationX(translationX);
+    }
+
+    /** Set the tooltip text of the status view. */
+    public void setTooltipText(@StringRes int tooltipTextResId) {
+        mMediator.setTooltipText(tooltipTextResId);
+    }
+
+    /** Set the hover highlight of the status view. */
+    public void setHoverHighlight(@DrawableRes int hoverHighlightResId) {
+        mMediator.setHoverHighlight(hoverHighlightResId);
     }
 
     /**

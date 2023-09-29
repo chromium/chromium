@@ -94,6 +94,7 @@ public final class StatusMediatorUnitTest {
     private @Mock Tab mTab;
 
     private @Mock WebContents mWebContents;
+    private @Mock StatusView mStatusView;
 
     Context mContext;
     Resources mResources;
@@ -156,6 +157,26 @@ public final class StatusMediatorUnitTest {
         mMediator.setShowIconsWhenUrlFocused(true);
         Assert.assertEquals(R.drawable.ic_logo_googleg_20dp,
                 mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getIconResForTesting());
+    }
+
+    @Test
+    @SmallTest
+    public void testStatusViewHoverActions() {
+        // Tooltip and hover highlight should be set when StatusViewIcon is visible.
+        mMediator.setStatusIconShown(true);
+        StatusViewBinder.applyStatusIconAndTooltipProperties(mModel, mStatusView);
+        Assert.assertEquals(R.string.accessibility_menu_info,
+                mModel.get(StatusProperties.STATUS_VIEW_TOOLTIP_TEXT));
+        Assert.assertEquals(R.drawable.status_view_ripple,
+                mModel.get(StatusProperties.STATUS_VIEW_HOVER_HIGHLIGHT));
+
+        // Tooltip and hover highlight should NOT be set when StatusViewIcon is gone.
+        mMediator.setStatusIconShown(false);
+        StatusViewBinder.applyStatusIconAndTooltipProperties(mModel, mStatusView);
+        Assert.assertEquals(
+                Resources.ID_NULL, mModel.get(StatusProperties.STATUS_VIEW_TOOLTIP_TEXT));
+        Assert.assertEquals(
+                Resources.ID_NULL, mModel.get(StatusProperties.STATUS_VIEW_HOVER_HIGHLIGHT));
     }
 
     @Test

@@ -784,6 +784,14 @@ public class StatusMediator
         mModel.set(StatusProperties.TRANSLATION_X, translationX);
     }
 
+    void setTooltipText(@StringRes int tooltipTextResId) {
+        mModel.set(StatusProperties.STATUS_VIEW_TOOLTIP_TEXT, tooltipTextResId);
+    }
+
+    void setHoverHighlight(@DrawableRes int hoverHighlightResId) {
+        mModel.set(StatusProperties.STATUS_VIEW_HOVER_HIGHLIGHT, hoverHighlightResId);
+    }
+
     public void onUrlChanged() {
         var currentTab = mLocationBarDataProvider.getTab();
         if (mProfileSupplier.hasValue() && currentTab != null) {
