@@ -66,8 +66,7 @@ public class SurveyThrottlerUnitTest {
     public void testPromptDisplayedBefore() {
         final String triggerId1 = "triggerId1";
         int dateOfYear = 1;
-        RiggedSurveyThrottler throttler1 =
-                new RiggedSurveyThrottler(true, dateOfYear, triggerId1, 0);
+        RiggedSurveyThrottler throttler1 = new RiggedSurveyThrottler(true, dateOfYear, triggerId1);
         throttler1.recordSurveyPromptDisplayed();
         try (HistogramWatcher ignored = HistogramWatcher.newSingleRecordWatcher(
                      "Android.Survey.SurveyFilteringResults",
@@ -87,7 +86,7 @@ public class SurveyThrottlerUnitTest {
         mSharedPref.writeLong(prefKey1, System.currentTimeMillis());
 
         RiggedSurveyThrottler throttler2 = new RiggedSurveyThrottler(
-                /*randomlySelected=*/true, dateOfYear, triggerId2, 0);
+                /*randomlySelected=*/true, dateOfYear, triggerId2);
 
         try (HistogramWatcher ignored = HistogramWatcher.newSingleRecordWatcher(
                      "Android.Survey.SurveyFilteringResults",
@@ -133,22 +132,6 @@ public class SurveyThrottlerUnitTest {
     }
 
     @Test
-    public void testDownloadAttemptsWithinCap() {
-        RiggedSurveyThrottler throttler = new RiggedSurveyThrottler(/*randomlySelected=*/true,
-                /*dayOfYear=*/1, TEST_TRIGGER_ID, 1);
-        Assert.assertTrue("Download allowed within cap", throttler.canShowSurvey());
-    }
-
-    @Test
-    public void testStartDownloadIfEligibleTask_DownloadReachCap() {
-        RiggedSurveyThrottler throttler = new RiggedSurveyThrottler(/*randomlySelected=*/true,
-                /*dayOfYear=*/1, TEST_TRIGGER_ID, 1);
-        // Assume download attempted previously.
-        throttler.recordDownloadAttempted();
-        Assert.assertFalse("Download exceed cap.", throttler.canShowSurvey());
-    }
-
-    @Test
     public void testEligibilityFirstTimeRollingDoesNotQualify() {
         RiggedSurveyThrottler throttler =
                 new RiggedSurveyThrottler(/*randomlySelected=*/false, /*dayOfYear=*/1);
@@ -180,15 +163,14 @@ public class SurveyThrottlerUnitTest {
         private final boolean mRandomlySelected;
         private final int mDayOfYear;
 
-        RiggedSurveyThrottler(
-                boolean randomlySelected, int dayOfYear, String triggerId, int maxDownloadCap) {
-            super(triggerId, 0.5f, maxDownloadCap);
+        RiggedSurveyThrottler(boolean randomlySelected, int dayOfYear, String triggerId) {
+            super(triggerId, 0.5f);
             mRandomlySelected = randomlySelected;
             mDayOfYear = dayOfYear;
         }
 
         RiggedSurveyThrottler(boolean randomlySelected, int dayOfYear) {
-            this(randomlySelected, dayOfYear, TEST_TRIGGER_ID, 0);
+            this(randomlySelected, dayOfYear, TEST_TRIGGER_ID);
         }
 
         @Override

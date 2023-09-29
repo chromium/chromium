@@ -3873,6 +3873,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Android.Survey.DownloadAttemptsBeforeAccepted" units="units"
     expires_after="2024-01-27">
+  <obsolete>
+    Removed from code in Sep 2023.
+  </obsolete>
   <owner>skym@chromium.org</owner>
   <owner>wenyufu@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>

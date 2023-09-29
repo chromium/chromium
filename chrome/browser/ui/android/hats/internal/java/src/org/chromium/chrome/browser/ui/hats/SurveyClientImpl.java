@@ -55,7 +55,7 @@ class SurveyClientImpl implements SurveyClient {
         mController = controller;
         mCrashUploadPermissionSupplier = crashUploadPermissionSupplier;
 
-        mThrottler = new SurveyThrottler(mConfig.mTriggerId, (float) mConfig.mProbability, 0);
+        mThrottler = new SurveyThrottler(mConfig.mTriggerId, (float) mConfig.mProbability);
         mAggregatedSurveyPsd = new HashMap<>();
     }
 
@@ -135,7 +135,6 @@ class SurveyClientImpl implements SurveyClient {
         }
         mController.downloadSurvey(mActivityRef.get(), mConfig.mTriggerId,
                 this::onSurveyDownloadSucceeded, this::onSurveyDownloadFailed);
-        mThrottler.recordDownloadAttempted();
     }
 
     private void onSurveyDownloadSucceeded() {
@@ -186,7 +185,6 @@ class SurveyClientImpl implements SurveyClient {
             return;
         }
         mThrottler.recordSurveyPromptDisplayed();
-        mThrottler.recordSurveyAccepted();
         mController.showSurveyIfAvailable(mActivityRef.get(), mConfig.mTriggerId, 0,
                 mLifecycleDispatcher, mAggregatedSurveyPsd);
         if (mLifecycleDispatcher != null && mLifecycleObserver != null) {

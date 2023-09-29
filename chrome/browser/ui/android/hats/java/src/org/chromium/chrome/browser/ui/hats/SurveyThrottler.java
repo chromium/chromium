@@ -25,7 +25,6 @@ import java.util.Random;
  * to collect survey related information, and update the metadata for and triggerId.
  */
 public class SurveyThrottler {
-    private static final int DOWNLOAD_ATTEMPTS_HIST_NUM_BUCKETS = 20;
 
     /**
      * Reasons that the user was rejected from being selected for a survey
@@ -54,23 +53,17 @@ public class SurveyThrottler {
     private final float mProbability;
 
     private final String mPrefKeyPromptDisplayed;
-    private final String mPrefKeyDownloadAttempts;
-    private final int mMaxDownloadAttempts;
 
     /**
      * @param triggerId The trigger Id for the given survey.
      * @param probability The rate an eligible user is randomly selected for the survey.
-     * @param maxDownloadCap Max number of downloads allowed.
      */
-    public SurveyThrottler(String triggerId, float probability, int maxDownloadCap) {
+    public SurveyThrottler(String triggerId, float probability) {
         mTriggerId = triggerId;
         mProbability = probability;
-        mMaxDownloadAttempts = maxDownloadCap;
 
         mPrefKeyPromptDisplayed =
                 ChromePreferenceKeys.CHROME_SURVEY_PROMPT_DISPLAYED_TIMESTAMP.createKey(mTriggerId);
-        mPrefKeyDownloadAttempts =
-                ChromePreferenceKeys.CHROME_SURVEY_DOWNLOAD_ATTEMPTS.createKey(mTriggerId);
     }
 
     /**
@@ -97,32 +90,14 @@ public class SurveyThrottler {
             return false;
         }
 
-        if (!isDownloadAttemptAllowed()) {
-            // TODO(wenyufu): Add new FilteringResult for download attempts.
-            return false;
-        }
-
         return isRandomlySelectedForSurvey();
     }
 
-    /**  Record a survey download is attempted. */
-    public void recordDownloadAttempted() {
-        SharedPreferencesManager.getInstance().incrementInt(mPrefKeyDownloadAttempts);
-    }
 
     /** Logs in SharedPreferences that the survey prompt was displayed. */
     public void recordSurveyPromptDisplayed() {
         SharedPreferencesManager preferences = SharedPreferencesManager.getInstance();
         preferences.writeLong(mPrefKeyPromptDisplayed, System.currentTimeMillis());
-    }
-
-    /** Logs in SharedPreferences that the survey is accepted. */
-    public void recordSurveyAccepted() {
-        int downloadAttemptsMade =
-                SharedPreferencesManager.getInstance().readInt(mPrefKeyDownloadAttempts, 0);
-        RecordHistogram.recordLinearCountHistogram("Android.Survey.DownloadAttemptsBeforeAccepted",
-                downloadAttemptsMade, 1, DOWNLOAD_ATTEMPTS_HIST_NUM_BUCKETS,
-                DOWNLOAD_ATTEMPTS_HIST_NUM_BUCKETS + 1);
     }
 
     /**
@@ -163,12 +138,6 @@ public class SurveyThrottler {
         SharedPreferencesManager preferences = SharedPreferencesManager.getInstance();
         // TODO(https://crbug.com/1195928): Get an expiration date from feature flag.
         return preferences.readLong(mPrefKeyPromptDisplayed, -1L) != -1L;
-    }
-
-    private boolean isDownloadAttemptAllowed() {
-        int downloadAttemptsMade =
-                SharedPreferencesManager.getInstance().readInt(mPrefKeyDownloadAttempts, 0);
-        return mMaxDownloadAttempts <= 0 || downloadAttemptsMade < mMaxDownloadAttempts;
     }
 
     @VisibleForTesting
