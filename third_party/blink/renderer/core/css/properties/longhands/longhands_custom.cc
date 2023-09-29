@@ -8167,7 +8167,8 @@ const CSSValue* TextSpacingTrim::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style) const {
-  return CSSIdentifierValue::Create(style.TextSpacingTrim());
+  return CSSIdentifierValue::Create(
+      style.GetFontDescription().GetTextSpacingTrim());
 }
 
 const CSSValue* TextTransform::CSSValueFromComputedStyleInternal(

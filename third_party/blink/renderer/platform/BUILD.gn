@@ -751,6 +751,7 @@ component("platform") {
     "fonts/shaping/stretchy_operator_shaper.h",
     "fonts/shaping/text_auto_space.cc",
     "fonts/shaping/text_auto_space.h",
+    "fonts/shaping/text_spacing_trim.h",
     "fonts/simple_font_data.cc",
     "fonts/simple_font_data.h",
     "fonts/skia/font_cache_skia.cc",

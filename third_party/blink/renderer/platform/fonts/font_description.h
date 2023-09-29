@@ -43,6 +43,7 @@
 #include "third_party/blink/renderer/platform/fonts/font_variant_numeric.h"
 #include "third_party/blink/renderer/platform/fonts/font_width_variant.h"
 #include "third_party/blink/renderer/platform/fonts/opentype/font_settings.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/text_spacing_trim.h"
 #include "third_party/blink/renderer/platform/fonts/text_rendering_mode.h"
 #include "third_party/blink/renderer/platform/fonts/typesetting_features.h"
 #include "third_party/blink/renderer/platform/text/layout_locale.h"
@@ -247,6 +248,9 @@ class PLATFORM_EXPORT FontDescription {
            Family().FamilyName() == font_family_names::kMonospace;
   }
   Kerning GetKerning() const { return static_cast<Kerning>(fields_.kerning_); }
+  TextSpacingTrim GetTextSpacingTrim() const {
+    return static_cast<TextSpacingTrim>(fields_.text_spacing_trim_);
+  }
   FontVariantEastAsian VariantEastAsian() const {
     return FontVariantEastAsian::InitializeFromUnsigned(
         fields_.variant_east_asian_);
@@ -369,6 +373,9 @@ class PLATFORM_EXPORT FontDescription {
   void SetKerning(Kerning kerning) {
     fields_.kerning_ = kerning;
     UpdateTypesettingFeatures();
+  }
+  void SetTextSpacingTrim(TextSpacingTrim text_spacing_trim) {
+    fields_.text_spacing_trim_ = static_cast<unsigned>(text_spacing_trim);
   }
   void SetKeywordSize(unsigned s) { fields_.keyword_size_ = s; }
   void SetFontSmoothing(FontSmoothingMode smoothing) {
@@ -557,6 +564,7 @@ class PLATFORM_EXPORT FontDescription {
     unsigned font_optical_sizing_ : 1;
     unsigned has_size_adjust_descriptor_ : 1;
     unsigned variant_position_ : 2;
+    unsigned text_spacing_trim_ : kTextSpacingTrimBitCount;
 
     unsigned hash_category_ : 2;  // HashCategory
   };
