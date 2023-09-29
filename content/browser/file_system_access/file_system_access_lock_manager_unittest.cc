@@ -6,6 +6,7 @@
 
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
@@ -15,8 +16,8 @@
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/test/test_file_system_context.h"
-#include "storage/common/file_system/file_system_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features_generated.h"
 
 namespace content {
 
@@ -29,7 +30,10 @@ static constexpr char kTestMountPoint[] = "testfs";
 class FileSystemAccessLockManagerTest : public testing::Test {
  public:
   FileSystemAccessLockManagerTest()
-      : task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {}
+      : task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {
+    scoped_feature_list.InitAndEnableFeature(
+        blink::features::kFileSystemAccessLockingScheme);
+  }
 
   void SetUp() override {
     ASSERT_TRUE(dir_.CreateUniqueTempDir());
@@ -139,6 +143,8 @@ class FileSystemAccessLockManagerTest : public testing::Test {
   scoped_refptr<storage::FileSystemContext> file_system_context_;
   scoped_refptr<ChromeBlobStorageContext> chrome_blob_context_;
   scoped_refptr<FileSystemAccessManagerImpl> manager_;
+
+  base::test::ScopedFeatureList scoped_feature_list;
 };
 
 TEST_F(FileSystemAccessLockManagerTest, ExclusiveLock) {

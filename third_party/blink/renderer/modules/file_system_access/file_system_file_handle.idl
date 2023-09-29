@@ -36,7 +36,7 @@
         RaisesException,
         Measure,
         Exposed=DedicatedWorker,
-        RuntimeEnabled=FileSystemAccessAccessHandleLockingScheme
+        RuntimeEnabled=FileSystemAccessLockingScheme
     ] Promise<FileSystemSyncAccessHandle> createSyncAccessHandle(
       FileSystemCreateSyncAccessHandleOptions options);
 

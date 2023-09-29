@@ -4,10 +4,12 @@
 
 #include "content/browser/file_system_access/file_system_access_access_handle_host_impl.h"
 
+#include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "content/browser/file_system_access/file_system_access_capacity_allocation_host_impl.h"
 #include "content/browser/file_system_access/file_system_access_file_delegate_host_impl.h"
 #include "storage/browser/file_system/file_system_context.h"
+#include "third_party/blink/public/common/features_generated.h"
 
 namespace content {
 
@@ -30,6 +32,9 @@ FileSystemAccessAccessHandleHostImpl::FileSystemAccessAccessHandleHostImpl(
       on_close_callback_(std::move(on_close_callback)),
       lock_(std::move(lock)) {
   DCHECK(manager_);
+  CHECK(lock_->IsExclusive() ||
+        base::FeatureList::IsEnabled(
+            blink::features::kFileSystemAccessLockingScheme));
 
   DCHECK(manager_->context()->is_incognito() ==
          file_delegate_receiver.is_valid());

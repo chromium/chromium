@@ -2806,7 +2806,6 @@ interface FileSystemObserver
     method unobserve
 interface FileSystemWritableFileStream : WritableStream
     attribute @@toStringTag
-    getter mode
     method constructor
     method seek
     method truncate

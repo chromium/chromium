@@ -49,6 +49,7 @@
 #include "storage/common/file_system/file_system_types.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom-shared.h"
 #include "url/gurl.h"
@@ -61,7 +62,10 @@ using storage::FileSystemURL;
 class FileSystemAccessFileHandleImplTest : public testing::Test {
  public:
   FileSystemAccessFileHandleImplTest()
-      : task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {}
+      : task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {
+    scoped_feature_list.InitAndEnableFeature(
+        blink::features::kFileSystemAccessLockingScheme);
+  }
 
   void SetUp() override {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
@@ -236,6 +240,8 @@ class FileSystemAccessFileHandleImplTest : public testing::Test {
           FixedFileSystemAccessPermissionGrant::PermissionStatus::DENIED,
           base::FilePath());
   std::unique_ptr<FileSystemAccessFileHandleImpl> handle_;
+
+  base::test::ScopedFeatureList scoped_feature_list;
 };
 
 class FileSystemAccessAccessHandleTest

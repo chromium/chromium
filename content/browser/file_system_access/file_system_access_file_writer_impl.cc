@@ -4,6 +4,7 @@
 
 #include "content/browser/file_system_access/file_system_access_file_writer_impl.h"
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
@@ -13,7 +14,7 @@
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_operation.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"
-#include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom.h"
+#include "third_party/blink/public/common/features_generated.h"
 
 using blink::mojom::FileSystemAccessStatus;
 using storage::FileSystemOperation;
@@ -49,6 +50,9 @@ FileSystemAccessFileWriterImpl::FileSystemAccessFileWriterImpl(
       has_transient_user_activation_(has_transient_user_activation),
       auto_close_(auto_close) {
   CHECK_EQ(swap_url.type(), url.type());
+  CHECK(!lock_->IsExclusive() ||
+        base::FeatureList::IsEnabled(
+            blink::features::kFileSystemAccessLockingScheme));
   CHECK(swap_lock_->IsExclusive());
 
   receiver_.set_disconnect_handler(base::BindOnce(

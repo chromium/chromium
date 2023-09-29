@@ -1726,11 +1726,6 @@
       base_feature: "none",
     },
     {
-      name: "FileSystemAccessAccessHandleLockingScheme",
-      status: "experimental",
-      base_feature: "none",
-    },
-    {
       // In-development features for the File System Access API.
       name: "FileSystemAccessAPIExperimental",
       status: "experimental",
@@ -1751,6 +1746,9 @@
       name: "FileSystemAccessLocal",
       status: {"Android": "test", "default": "stable"},
       base_feature: "none",
+    },
+    {
+      name: "FileSystemAccessLockingScheme",
     },
     {
       // OPFS File System Access API.

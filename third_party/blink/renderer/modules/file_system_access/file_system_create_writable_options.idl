@@ -12,6 +12,6 @@ dictionary FileSystemCreateWritableOptions {
   boolean keepExistingData = false;
   [RuntimeEnabled=FileSystemAccessAPIExperimental] boolean autoClose = false;
   [
-    RuntimeEnabled=FileSystemAccessAccessHandleLockingScheme
+    RuntimeEnabled=FileSystemAccessLockingScheme
   ] FileSystemWritableFileStreamMode mode = "siloed";
 };

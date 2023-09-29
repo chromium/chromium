@@ -6757,3 +6757,9 @@ crbug.com/1486616 [ Linux ] fast/sub-pixel/sub-pixel-composited-layers.html [ Fa
 crbug.com/1487880 [ Linux ] external/wpt/html/semantics/interactive-elements/the-details-element/toggleEvent.html [ Failure Pass ]
 crbug.com/1487886 [ Linux ] external/wpt/long-animation-frame/tentative/loaf-trusted-types.html [ Pass Timeout ]
 crbug.com/1487899 [ Linux ] fast/canvas/canvas-toBlob-jpeg-medium-quality.html [ Failure Pass ]
+
+# TODO(crbug.com/1399685): These tests should be added to exclusive_tests in
+# VirtualTestSuites fsa-locking-scheme but linting prevents this.
+external/wpt/fs/FileSystemFileHandle-cross-primitive-locking.https.tentative.worker.html [ Skip Failure ]
+external/wpt/fs/FileSystemFileHandle-sync-access-handle-lock-modes.https.tentative.worker.html [ Skip Failure ]
+external/wpt/fs/FileSystemFileHandle-writable-file-stream-lock-modes.https.tentative.worker.html [ Skip Failure ]
