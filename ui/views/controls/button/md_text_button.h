@@ -76,6 +76,7 @@ class VIEWS_EXPORT MdTextButton : public LabelButton {
   void UpdateTextColor();
   void UpdateBackgroundColor() override;
   void UpdateColors();
+  void UpdateIconColor();
 
   ui::ButtonStyle style_ = ui::ButtonStyle::kDefault;
 

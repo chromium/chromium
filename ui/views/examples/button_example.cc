@@ -171,33 +171,6 @@ class FabButton : public views::MdTextButton {
 BEGIN_METADATA(FabButton, views::MdTextButton)
 END_METADATA
 
-class IconAndTextButton : public views::MdTextButton {
- public:
-  METADATA_HEADER(IconAndTextButton);
-  IconAndTextButton(PressedCallback callback,
-                    const std::u16string& text,
-                    const gfx::VectorIcon& icon)
-      : MdTextButton(callback, text), icon_(icon) {}
-  IconAndTextButton(const IconAndTextButton&) = delete;
-  IconAndTextButton& operator=(const IconAndTextButton&) = delete;
-  ~IconAndTextButton() override = default;
-
-  void OnThemeChanged() override {
-    views::MdTextButton::OnThemeChanged();
-
-    // Use the text color for the associated vector image.
-    SetImageModel(
-        views::Button::ButtonState::STATE_NORMAL,
-        ui::ImageModel::FromVectorIcon(*icon_, label()->GetEnabledColor()));
-  }
-
- private:
-  const raw_ref<const gfx::VectorIcon> icon_;
-};
-
-BEGIN_METADATA(IconAndTextButton, views::MdTextButton)
-END_METADATA
-
 ButtonExample::ButtonExample() : ExampleBase("Button") {
   ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
   icon_ = rb.GetImageNamed(IDR_CLOSE_H).ToImageSkia();
@@ -240,6 +213,9 @@ void ButtonExample::CreateExampleView(View* container) {
                                    .CopyAddressTo(&md_text_button_)
                                    .SetStyle(ui::ButtonStyle::kText)
                                    .SetText(u"Material Text"),
+                               Builder<MdTextButton>()
+                                   .CopyAddressTo(&md_icon_text_button_)
+                                   .SetText(u"Material Text with Icon"),
                                Builder<ImageButton>()
                                    .CopyAddressTo(&image_button_)
                                    .SetAccessibleName(l10n_util::GetStringUTF16(
@@ -249,12 +225,9 @@ void ButtonExample::CreateExampleView(View* container) {
                                        &ButtonExample::ImageButtonPressed,
                                        base::Unretained(this))))
                   .Build();
-
-  view->AddChildView(std::make_unique<IconAndTextButton>(
-      base::BindRepeating(&ButtonExample::ImageButtonPressed,
-                          base::Unretained(this)),
-      l10n_util::GetStringUTF16(IDS_COLORED_DIALOG_CHOOSER_BUTTON),
-      views::kInfoIcon));
+  md_icon_text_button_->SetImageModel(
+      views::Button::ButtonState::STATE_NORMAL,
+      ui::ImageModel::FromVectorIcon(views::kInfoIcon));
   view->AddChildView(std::make_unique<FabButton>(
       base::BindRepeating(&ButtonExample::ImageButtonPressed,
                           base::Unretained(this)),

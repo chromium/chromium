@@ -324,10 +324,24 @@ void MdTextButton::UpdateBackgroundColor() {
           features::IsChromeRefresh2023() /* should_border_scale */)));
 }
 
+void MdTextButton::UpdateIconColor() {
+  if (features::IsChromeRefresh2023() && HasImage(ButtonState::STATE_NORMAL)) {
+    auto image_model = GetImageModel(ButtonState::STATE_NORMAL);
+    if (image_model.IsVectorIcon()) {
+      LabelButton::SetImageModel(ButtonState::STATE_NORMAL,
+                                 ui::ImageModel::FromVectorIcon(
+                                     *image_model.GetVectorIcon().vector_icon(),
+                                     LabelButton::GetCurrentTextColor(),
+                                     image_model.GetVectorIcon().icon_size()));
+    }
+  }
+}
+
 void MdTextButton::UpdateColors() {
   if (GetWidget()) {
     UpdateTextColor();
     UpdateBackgroundColor();
+    UpdateIconColor();
     SchedulePaint();
   }
 }
