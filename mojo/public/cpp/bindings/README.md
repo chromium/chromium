@@ -713,6 +713,37 @@ ValuePtr value = Value::NewIntValue(42);
 LOG(INFO) << "Value is " << value->get_string_value();  // DCHECK!
 ```
 
+### Features
+
+Mojom `feature` generates a `base::FeatureList` with the given `name` and
+`default_state` (`true` => `ENABLED_BY_DEFAULT`). The feature can be accessed
+and tested in C++ using the mapped name even if it is not used to mark any
+interfaces or methods.
+
+```mojom
+module experiment.mojom;
+
+// Introduce a new runtime feature flag.
+feature kUseElevator {
+  const string name = "UseElevator";
+  const bool default_state = false;
+};
+```
+
+```cpp
+#include "base/feature_list.h"
+#include "experiment.mojom-features.h"
+
+if (base::FeatureList::IsEnabled(experiment::mojom::kUseElevator)) {
+  LOG(INFO) << "Going up....";
+}
+```
+
+```sh
+./chrome --enable-features=UseElevator
+# Going up....
+```
+
 ### Sending Interfaces Over Interfaces
 
 We know how to create interface pipes and use their Remote and PendingReceiver endpoints

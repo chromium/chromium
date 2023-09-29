@@ -1,0 +1,4 @@
+{%- if enable_kythe_annotations %}
+// @generated_from: {{feature|get_full_mojom_name_for_kind()}}
+{%- endif %}
+{{ export_attribute }}  BASE_DECLARE_FEATURE({{ feature.name }});

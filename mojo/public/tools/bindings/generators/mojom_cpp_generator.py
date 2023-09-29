@@ -302,7 +302,8 @@ class Generator(generator.Generator):
     """
     m = self.module
     return (len(m.enums) > 0 and len(m.structs) == 0 and len(m.interfaces) == 0
-            and len(m.unions) == 0 and len(m.constants) == 0)
+            and len(m.unions) == 0 and len(m.constants) == 0
+            and len(m.features) == 0)
 
   def _ReferencesAnyNativeType(self):
     """Returns whether this module uses native types directly or indirectly.
@@ -349,6 +350,7 @@ class Generator(generator.Generator):
         "export_header": self.export_header,
         "extra_public_headers": self._GetExtraPublicHeaders(),
         "extra_traits_headers": self._GetExtraTraitsHeaders(),
+        "features": self.module.features,
         "for_blink": self.for_blink,
         "imports": self.module.imports,
         "typemap_forward_declarations": typemap_forward_declarations,
@@ -390,6 +392,7 @@ class Generator(generator.Generator):
         "cpp_enum_without_namespace": GetEnumNameWithoutNamespace,
         "default_value": self._DefaultValue,
         "expression_to_text": self._ExpressionToText,
+        "feature_name": self._FeatureName,
         "format_constant_declaration": self._FormatConstantDeclaration,
         "format_enum_constant_declaration": self._FormatEnumConstantDeclaration,
         "get_container_validate_params_ctor_args":
@@ -411,6 +414,7 @@ class Generator(generator.Generator):
         "is_bool_kind": mojom.IsBoolKind,
         "is_default_constructible": self._IsDefaultConstructible,
         "is_enum_kind": mojom.IsEnumKind,
+        "is_feature_on_by_default": self._IsFeatureOnByDefault,
         "is_nullable_value_kind_packed_field":
         pack.IsNullableValueKindPackedField,
         "is_primary_nullable_value_kind_packed_field":
@@ -426,6 +430,7 @@ class Generator(generator.Generator):
         "is_any_handle_or_interface_kind": mojom.IsAnyHandleOrInterfaceKind,
         "is_associated_kind": mojom.IsAssociatedKind,
         "is_float_kind": mojom.IsFloatKind,
+        "is_feature_kind": mojom.IsFeatureKind,
         "is_hashable": self._IsHashableKind,
         "is_map_kind": mojom.IsMapKind,
         "is_nullable_kind": mojom.IsNullableKind,
@@ -483,6 +488,10 @@ class Generator(generator.Generator):
   def _GenerateModuleParamsDataHeader(self):
     return self._GetJinjaExports()
 
+  @UseJinja("module-features.h.tmpl")
+  def _GenerateModuleFeaturesHeader(self):
+    return self._GetJinjaExports()
+
   @UseJinjaForImportedTemplate
   def _GenerateModuleFromImportedTemplate(self, path_to_template, filename):
     return self._GetJinjaExports()
@@ -500,6 +509,8 @@ class Generator(generator.Generator):
       else:
         self.WriteWithComment(self._GenerateModuleSharedHeader(),
                               "%s-shared.h" % self.module.path)
+        self.WriteWithComment(self._GenerateModuleFeaturesHeader(),
+                              "%s-features.h" % self.module.path)
         self.WriteWithComment(self._GenerateModuleSharedInternalHeader(),
                               "%s-shared-internal.h" % self.module.path)
         self.WriteWithComment(self._GenerateModuleSharedSource(),
@@ -742,6 +753,24 @@ class Generator(generator.Generator):
       return self.typemap[self._GetFullMojomNameForKind(
           kind)]["default_constructible"]
     return True
+
+  def _IsFeatureOnByDefault(self, kind):
+    # Chromium expects features to have a 'default_state' bool field.
+    if not mojom.IsFeatureKind(kind):
+      return False
+    for constant in kind.constants:
+      if constant.name == "default_state":
+        return constant.value == "true"
+    return False
+
+  def _FeatureName(self, kind):
+    # Chromium expects features to have a 'name' const string field.
+    if not mojom.IsFeatureKind(kind):
+      return ""
+    for constant in kind.constants:
+      if constant.name == "name":
+        return constant.value
+    return ""
 
   def _IsMoveOnlyKind(self, kind):
     if self._IsTypemappedKind(kind):
