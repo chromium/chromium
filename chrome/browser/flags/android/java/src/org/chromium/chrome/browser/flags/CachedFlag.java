@@ -16,10 +16,24 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Flags of this type may be used before native is loaded and return the value read
- * from native and cached to SharedPreferences in a previous run.
+ * CachedFlags are Flags that may be used before native is loaded and the FeatureList is
+ * initialized.
  *
- * @see {@link #isEnabled()}
+ * They return a flag value read from native in a previous run, using SharedPreferences as
+ * persistence.
+ *
+ * @see {@link #isEnabled()} for more details about the logic.
+ *
+ * To cache a flag from ChromeFeatureList:
+ * - Create a static CachedFlag object in {@link ChromeFeatureList} "sMyFlag"
+ * - Add it to the list {@link ChromeFeatureList#sFlagsCachedFullBrowser}
+ * - Call {@code ChromeFeatureList.sMyFlag.isEnabled()} to query whether the cached flag is enabled.
+ *   Consider this the source of truth for whether the flag is turned on in the current session.
+ *
+ * Metrics caveat: For cached flags that are queried before native is initialized, when a new
+ * experiment configuration is received the metrics reporting system will record metrics as if the
+ * experiment is enabled despite the experimental behavior not yet taking effect. This will be
+ * remedied on the next process restart.
  */
 public class CachedFlag extends Flag {
     private final boolean mDefaultValue;
@@ -147,7 +161,14 @@ public class CachedFlag extends Flag {
         }
     }
 
-    static void setFeaturesForTesting(Map<String, Boolean> features) {
+    /**
+     * Sets the feature flags to use in JUnit and instrumentation tests.
+     *
+     * @deprecated Do not call this from tests; use @EnableFeatures/@DisableFeatures annotations
+     * instead.
+     */
+    @Deprecated
+    public static void setFeaturesForTesting(Map<String, Boolean> features) {
         for (Map.Entry<String, Boolean> entry : features.entrySet()) {
             CachedFlag possibleCachedFlag = ChromeFeatureList.sAllCachedFlags.get(entry.getKey());
             if (possibleCachedFlag != null) {

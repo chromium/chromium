@@ -102,7 +102,7 @@ import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.firstrun.ForcedSigninProcessor;
 import org.chromium.chrome.browser.flags.ActivityType;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
+import org.chromium.chrome.browser.flags.CachedFlagsSafeMode;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSessionState;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -420,7 +420,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     @Override
     protected void onPreCreate() {
         incrementCounter(ChromePreferenceKeys.UMA_ON_PRECREATE_COUNTER);
-        CachedFeatureFlags.onStartOrResumeCheckpoint();
+        CachedFlagsSafeMode.getInstance().onStartOrResumeCheckpoint();
         super.onPreCreate();
         initializeBackPressHandling();
     }
@@ -428,7 +428,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     @Override
     protected void onAbortCreate() {
         super.onAbortCreate();
-        CachedFeatureFlags.onPauseCheckpoint();
+        CachedFlagsSafeMode.getInstance().onPauseCheckpoint();
     }
 
     @Override

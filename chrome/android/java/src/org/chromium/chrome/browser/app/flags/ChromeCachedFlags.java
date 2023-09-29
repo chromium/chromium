@@ -130,7 +130,7 @@ public class ChromeCachedFlags {
         tryToCatchMissingParameters(fieldTrialsToCache);
         CachedFeatureFlags.cacheFieldTrialParameters(fieldTrialsToCache);
 
-        CachedFeatureFlags.onEndCheckpoint();
+        CachedFlagsSafeMode.getInstance().onEndCheckpoint();
         mIsFinishedCachingNativeFlags = true;
     }
 

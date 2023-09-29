@@ -9,6 +9,7 @@ import org.chromium.base.CommandLine;
 import org.chromium.chrome.browser.flags.AllCachedFieldTrialParameters;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.CachedFieldTrialParameter;
+import org.chromium.chrome.browser.flags.CachedFlag;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -121,7 +122,7 @@ public class FieldTrials {
             for (String enabledFeature : enableFeaturesSet) {
                 enabledFeaturesMap.put(cleanupFeatureName(enabledFeature), true);
             }
-            CachedFeatureFlags.setFeaturesForTesting(enabledFeaturesMap);
+            CachedFlag.setFeaturesForTesting(enabledFeaturesMap);
         }
 
         if (forceFieldTrials == null || forceFieldTrialParams == null || enableFeatures == null) {

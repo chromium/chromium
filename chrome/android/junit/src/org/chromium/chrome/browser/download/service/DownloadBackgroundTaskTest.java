@@ -27,15 +27,15 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.background_task_scheduler.ChromeNativeBackgroundTaskDelegate;
 import org.chromium.chrome.browser.download.DownloadManagerService;
 import org.chromium.chrome.browser.download.DownloadNotificationService;
 import org.chromium.chrome.browser.download.DownloadUtils;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.ProfileKey;
+import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.background_task_scheduler.BackgroundTask.TaskFinishedCallback;
 import org.chromium.components.background_task_scheduler.BackgroundTaskScheduler;
 import org.chromium.components.background_task_scheduler.BackgroundTaskSchedulerFactory;
@@ -46,13 +46,11 @@ import org.chromium.components.background_task_scheduler.TaskInfo.OneOffInfo;
 import org.chromium.components.background_task_scheduler.TaskParameters;
 import org.chromium.components.download.DownloadTaskType;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /** Unit tests for {@link org.chromium.chrome.browser.download.service.DownloadBackgroundTask}. */
 @RunWith(BaseRobolectricTestRunner.class)
 // TODO(crbug/1483735): Update this to 34 once robolectric support is added.
 @Config(manifest = Config.NONE, sdk = 33)
+@EnableFeatures(ChromeFeatureList.DOWNLOADS_MIGRATE_TO_JOBS_API)
 public class DownloadBackgroundTaskTest {
     @Rule
     public JniMocker mJniMocker = new JniMocker();
@@ -102,15 +100,8 @@ public class DownloadBackgroundTaskTest {
         return TaskParameters.create(taskId).build();
     }
 
-    private void setupFeatures(boolean enableJobsAPI) {
-        Map<String, Boolean> features = new HashMap<>();
-        features.put(ChromeFeatureList.DOWNLOADS_MIGRATE_TO_JOBS_API, true);
-        CachedFeatureFlags.setFeaturesForTesting(features);
-    }
-
     @Before
     public void setup() {
-        setupFeatures(/*enableJobsAPI=*/true);
         MockitoAnnotations.initMocks(this);
         mJniMocker.mock(DownloadBackgroundTaskJni.TEST_HOOKS, mNativeMock);
         DownloadManagerService.setDownloadManagerService(mDownloadManagerService);
@@ -196,7 +187,8 @@ public class DownloadBackgroundTaskTest {
     @Test
     @Feature({"Download"})
     public void testIsUserInitiatedJobForDisabledFeature() {
-        setupFeatures(/*enableJobsAPI=*/false);
+        // TODO(crbug.com/1487364): This should use
+        // @DisableFeatures(ChromeFeatureList.DOWNLOADS_MIGRATE_TO_JOBS_API).
         DownloadUtils.setMinSdkVersionForUserInitiatedJobsForTesting(33);
         Assert.assertTrue(DownloadUtils.isUserInitiatedJob(
                 TaskIds.DOWNLOAD_AUTO_RESUMPTION_UNMETERED_JOB_ID));

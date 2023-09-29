@@ -163,7 +163,7 @@ public class CachedFlagsSafeMode {
      * Call when all flags have been cached. Signals that the current configuration is safe. It will
      * be saved to be used in Safe Mode.
      */
-    void onEndCheckpoint() {
+    public void onEndCheckpoint() {
         if (mEndCheckpointWritten.getAndSet(true)) {
             // Limit to one reset per run.
             return;

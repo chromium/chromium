@@ -66,13 +66,13 @@ public class Features extends FeaturesBase {
     @Override
     protected void applyForJUnit() {
         super.applyForJUnit();
-        CachedFeatureFlags.setFeaturesForTesting(mRegisteredState);
+        CachedFlag.setFeaturesForTesting(mRegisteredState);
     }
 
     @Override
     protected void applyForInstrumentation() {
         super.applyForInstrumentation();
-        CachedFeatureFlags.setFeaturesForTesting(mRegisteredState);
+        CachedFlag.setFeaturesForTesting(mRegisteredState);
         FieldTrials.getInstance().applyFieldTrials();
     }
 
