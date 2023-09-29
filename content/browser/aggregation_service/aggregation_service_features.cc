@@ -18,6 +18,6 @@ const base::FeatureParam<std::string>
 
 BASE_FEATURE(kPrivacySandboxAggregationServiceReportPadding,
              "PrivacySandboxAggregationServiceReportPadding",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace content
