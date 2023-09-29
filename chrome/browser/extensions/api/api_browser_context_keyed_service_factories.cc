@@ -57,6 +57,10 @@
 #include "chrome/browser/extensions/api/terminal/terminal_private_api.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/extensions/api/image_writer_private/image_writer_controller_lacros.h"
+#endif
+
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 #include "chrome/browser/extensions/api/pdf_viewer_private/pdf_viewer_private_event_router_factory.h"
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
@@ -81,6 +85,9 @@ void EnsureApiBrowserContextKeyedServiceFactoriesBuilt() {
   extensions::FontSettingsAPI::GetFactoryInstance();
   extensions::HistoryAPI::GetFactoryInstance();
   extensions::IdentityAPI::GetFactoryInstance();
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  extensions::image_writer::ImageWriterControllerLacros::GetFactoryInstance();
+#endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   extensions::InputImeAPI::GetFactoryInstance();
 #endif

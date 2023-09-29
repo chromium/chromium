@@ -293,6 +293,9 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     "CleanupManagerLacros",
     "ClipboardAPI",
     "ExternalLogoutRequestEventHandler",
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+    "ImageWriterControllerLacros",
+#endif
     "ManualTestHeartbeatEvent",
     "MediaNotificationService",
     "SessionStateChangedEventDispatcher",
