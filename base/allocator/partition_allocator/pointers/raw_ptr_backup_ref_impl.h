@@ -476,8 +476,6 @@ struct RawPtrBackupRefImpl {
   // This is for accounting only, used by unit tests.
   PA_ALWAYS_INLINE static constexpr void IncrementSwapCountForTest() {}
   PA_ALWAYS_INLINE static constexpr void IncrementLessCountForTest() {}
-  PA_ALWAYS_INLINE static constexpr void
-  IncrementPointerToMemberOperatorCountForTest() {}
 
  private:
   // We've evaluated several strategies (inline nothing, various parts, or

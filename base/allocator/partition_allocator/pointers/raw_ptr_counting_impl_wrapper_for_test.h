@@ -70,11 +70,6 @@ struct RawPtrCountingImplWrapperForTest
     ++wrapped_ptr_less_cnt;
   }
 
-  PA_ALWAYS_INLINE static constexpr void
-  IncrementPointerToMemberOperatorCountForTest() {
-    ++pointer_to_member_operator_cnt;
-  }
-
   template <typename T>
   PA_ALWAYS_INLINE static constexpr T* WrapRawPtrForDuplication(T* ptr) {
     ++wrap_raw_ptr_for_dup_cnt;
