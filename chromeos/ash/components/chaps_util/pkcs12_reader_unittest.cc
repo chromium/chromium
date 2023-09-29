@@ -5,6 +5,9 @@
 #include <vector>
 
 #include "chromeos/ash/components/chaps_util/pkcs12_reader.h"
+#include "crypto/scoped_test_nss_db.h"
+#include "net/test/cert_test_util.h"
+#include "net/test/test_data_directory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/boringssl/src/include/openssl/mem.h"
 #include "third_party/boringssl/src/include/openssl/x509.h"
@@ -41,6 +44,10 @@ struct BIGNUMDeleter {
 using ScopedBIGNUM = std::unique_ptr<BIGNUM, BIGNUMDeleter>;
 ScopedBIGNUM BIGNUMNew() {
   return ScopedBIGNUM(BN_new());
+}
+
+scoped_refptr<net::X509Certificate> GetTestCert() {
+  return net::ImportCertFromFile(net::GetTestCertsDirectory(), "ok_cert.pem");
 }
 
 // Tests for testing methods in chaps_util_helper.cc
@@ -93,7 +100,7 @@ class Pkcs12ReaderTest : public ::testing::Test {
                                /*set=*/0);
   }
 
-  void SetOrgDataToX509Name(X509_NAME* X509_name) {
+  void SetOrgDataWithoutCNToX509Name(X509_NAME* X509_name) {
     // Country
     unsigned char country_name[] = "DE";
     SetFieldToX509Name(X509_name, "C", country_name);
@@ -101,11 +108,17 @@ class Pkcs12ReaderTest : public ::testing::Test {
     // Company/Organization
     unsigned char org_name[] = "Test company";
     SetFieldToX509Name(X509_name, "O", org_name);
+  }
+
+  void SetOrgDataToX509Name(X509_NAME* X509_name) {
+    // Country name and Company/Organization name
+    SetOrgDataWithoutCNToX509Name(X509_name);
 
     // Common name
-    unsigned char common_name[] = "common_name";
-    SetFieldToX509Name(X509_name, "CN", common_name);
+    SetFieldToX509Name(X509_name, "CN", common_name_);
   }
+
+  unsigned char common_name_[12] = "common name";
 
  protected:
   std::unique_ptr<Pkcs12Reader> pkcs12Reader_;
@@ -314,16 +327,8 @@ TEST_F(Pkcs12ReaderTest, GetLabel) {
     EXPECT_EQ(result, Pkcs12ReaderStatusCode::kPkcs12CertIssuerNameMissed);
   }
 
-  // Empty object for the issuer, operation will succeed.
-  {
-    ScopedX509 cert = X509New();
-
-    Pkcs12ReaderStatusCode result = GetLabel(cert.get());
-    EXPECT_EQ(result, Pkcs12ReaderStatusCode::kSuccess);
-  }
-
-  // Certificate with normal issuer name, operation will succeed.
-  // Check only import success, values are checked in ChapsUtilImplTest.
+  // Certificate with present friendly name (alias), operation will
+  // succeed. Label is taken from friendly name (alias).
   {
     ScopedX509 cert = X509New();
     ScopedX509_NAME subject = X509NameNew();
@@ -331,10 +336,135 @@ TEST_F(Pkcs12ReaderTest, GetLabel) {
     // This only sets org name, country and common name.
     SetOrgDataToX509Name(subject.get());
     X509_set_subject_name(cert.get(), subject.get());
+    unsigned char alias[20] = "new alias";
+    std::string expected_label(reinterpret_cast<char*>(alias));
+    X509_alias_set1(cert.get(), alias, std::size(alias));
     std::string label;
 
     Pkcs12ReaderStatusCode result = pkcs12Reader_->GetLabel(cert.get(), label);
+
     EXPECT_EQ(result, Pkcs12ReaderStatusCode::kSuccess);
+    EXPECT_EQ(label.c_str(), expected_label);
+  }
+
+  // Certificate with no friendly name (alias), but with defined issuer name,
+  // operation will succeed. Label will be taken from CN.
+  {
+    ScopedX509 cert = X509New();
+    ScopedX509_NAME subject = X509NameNew();
+
+    // This only sets org name, country and common name.
+    SetOrgDataToX509Name(subject.get());
+    X509_set_subject_name(cert.get(), subject.get());
+    std::string expected_label(reinterpret_cast<char*>(common_name_));
+    std::string label;
+
+    Pkcs12ReaderStatusCode result = pkcs12Reader_->GetLabel(cert.get(), label);
+
+    EXPECT_EQ(result, Pkcs12ReaderStatusCode::kSuccess);
+    EXPECT_EQ(label.c_str(), expected_label);
+  }
+
+  // Certificate with no friendly name (alias) and with empty subject name,
+  // operation will fail with kPkcs12CNExtractionFailed.
+  {
+    ScopedX509 cert = X509New();
+    std::string label;
+
+    Pkcs12ReaderStatusCode result = pkcs12Reader_->GetLabel(cert.get(), label);
+    EXPECT_TRUE(label.empty());
+    EXPECT_EQ(result, Pkcs12ReaderStatusCode::kPkcs12CNExtractionFailed);
+  }
+}
+
+TEST_F(Pkcs12ReaderTest, isCertsWithNicknamesInSlots) {
+  // Empty nickname, isCertsWithNicknamesInSlot returns fail.
+  {
+    std::string nickname = "";
+    bool is_nickname_present = false;
+
+    Pkcs12ReaderStatusCode result =
+        pkcs12Reader_->IsCertWithNicknameInSlots(nickname, is_nickname_present);
+    EXPECT_EQ(result, Pkcs12ReaderStatusCode::kPkcs12MissedNickname);
+  }
+
+  // Not defined nickname, isCertsWithNicknamesInSlot returns fail.
+  {
+    std::string not_defined_nickname;
+    bool is_nickname_present = false;
+
+    Pkcs12ReaderStatusCode result = pkcs12Reader_->IsCertWithNicknameInSlots(
+        not_defined_nickname, is_nickname_present);
+    EXPECT_EQ(result, Pkcs12ReaderStatusCode::kPkcs12MissedNickname);
+  }
+
+  // Not testing normal case, it is tested with certificate in
+  // chaps_util_impl_unittest.cc
+}
+
+TEST_F(Pkcs12ReaderTest, FindKeyByCert) {
+  crypto::ScopedTestNSSDB nss_test_db_;
+
+  // Empty certificate, operation will fail.
+  {
+    PK11SlotInfo* slot = nullptr;
+    scoped_refptr<net::X509Certificate> cert = nullptr;
+
+    Pkcs12ReaderStatusCode result =
+        pkcs12Reader_->DoesKeyForCertExist(slot, cert);
+    EXPECT_EQ(result, Pkcs12ReaderStatusCode::kPkcs12CertIssuerNameMissed);
+  }
+
+  // Empty slot, operation will fail.
+  {
+    PK11SlotInfo* slot = nullptr;
+    scoped_refptr<net::X509Certificate> cert = GetTestCert();
+
+    Pkcs12ReaderStatusCode result =
+        pkcs12Reader_->DoesKeyForCertExist(slot, cert);
+    EXPECT_EQ(result, Pkcs12ReaderStatusCode::kMissedSlotInfo);
+  }
+
+  // Slot and cert provided, it is a test slot, so key will be missed.
+  {
+    scoped_refptr<net::X509Certificate> cert = GetTestCert();
+
+    Pkcs12ReaderStatusCode result =
+        pkcs12Reader_->DoesKeyForCertExist(nss_test_db_.slot(), cert);
+    EXPECT_EQ(result, Pkcs12ReaderStatusCode::kKeyDataMissed);
+  }
+}
+
+TEST_F(Pkcs12ReaderTest, FindKeyByDERCert) {
+  crypto::ScopedTestNSSDB nss_test_db_;
+
+  // Empty certificate, operation will fail.
+  {
+    PK11SlotInfo* slot = nullptr;
+    scoped_refptr<net::X509Certificate> cert = nullptr;
+
+    Pkcs12ReaderStatusCode result =
+        pkcs12Reader_->DoesKeyForDerCertExist(slot, cert);
+    EXPECT_EQ(result, Pkcs12ReaderStatusCode::kPkcs12CertIssuerNameMissed);
+  }
+
+  // Empty slot, operation will fail.
+  {
+    PK11SlotInfo* slot = nullptr;
+    scoped_refptr<net::X509Certificate> cert = GetTestCert();
+
+    Pkcs12ReaderStatusCode result =
+        pkcs12Reader_->DoesKeyForDerCertExist(slot, cert);
+    EXPECT_EQ(result, Pkcs12ReaderStatusCode::kMissedSlotInfo);
+  }
+
+  // Slot and cert provided, it is a test slot, so key will be missed.
+  {
+    scoped_refptr<net::X509Certificate> cert = GetTestCert();
+
+    Pkcs12ReaderStatusCode result =
+        pkcs12Reader_->DoesKeyForDerCertExist(nss_test_db_.slot(), cert);
+    EXPECT_EQ(result, Pkcs12ReaderStatusCode::kKeyDataMissed);
   }
 }
 

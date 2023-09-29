@@ -36,13 +36,13 @@ class COMPONENT_EXPORT(CHAPS_UTIL) ChapsUtilImpl : public ChapsUtil {
                                const std::string& password,
                                bool is_software_backed) override;
 
-  // Public for testing, allows replacing ChapsPkcs12Helper.
+  // Public for testing, allows replacing Pkcs12Reader.
   bool ImportPkcs12CertificateImpl(
       PK11SlotInfo* slot,
       const std::vector<uint8_t>& pkcs12_data,
       const std::string& password,
       const bool is_software_backed,
-      const Pkcs12Reader& pkcs12_helper1 = Pkcs12Reader());
+      const Pkcs12Reader& pkcs12_reader = Pkcs12Reader());
 
   // If called with true, every slot is assumed to be a chaps-provided slot.
   void SetIsChapsProvidedSlotForTesting(
