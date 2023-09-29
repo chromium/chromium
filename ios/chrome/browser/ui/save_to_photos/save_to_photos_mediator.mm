@@ -68,6 +68,7 @@ void StartMediatorHelper(__weak SaveToPhotosMediator* mediator,
   NSData* _imageData;
   id<SystemIdentity> _identity;
   BOOL _userTappedSuccessSnackbarButton;
+  base::TimeTicks _uploadStart;
 }
 
 #pragma mark - Initialization
@@ -256,6 +257,7 @@ void StartMediatorHelper(__weak SaveToPhotosMediator* mediator,
       base::BindOnce(^(PhotosService::UploadResult result) {
         [weakSelf photosServiceFinishedUploadWithResult:result];
       });
+  _uploadStart = base::TimeTicks::Now();
   _photosService->UploadImage(_imageName, _imageData, _identity,
                               base::DoNothing(),
                               std::move(uploadCompletionCallback));
@@ -265,8 +267,12 @@ void StartMediatorHelper(__weak SaveToPhotosMediator* mediator,
 - (void)photosServiceFinishedUploadWithResult:
     (const PhotosService::UploadResult&)result {
   if (result.successful) {
+    base::UmaHistogramTimes("IOS.SaveToPhotos.UploadSuccessLatency",
+                            base::TimeTicks::Now() - _uploadStart);
     [self showSnackbarWithSuccessMessageAndOpenButton];
   } else {
+    base::UmaHistogramTimes("IOS.SaveToPhotos.UploadFailureLatency",
+                            base::TimeTicks::Now() - _uploadStart);
     __weak __typeof(self) weakSelf = self;
     [self showTryAgainOrCancelAlertWithTryAgainBlock:^{
       [weakSelf tryUploadImage];
