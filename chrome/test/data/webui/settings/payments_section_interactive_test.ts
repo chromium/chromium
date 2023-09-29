@@ -183,8 +183,11 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
     const firstEntry = section.$.paymentsList.shadowRoot!.querySelector(
         'settings-iban-list-entry');
     assertTrue(!!firstEntry);
-    const menuButton = firstEntry.$.ibanMenu;
+    assertFalse(!!firstEntry.shadowRoot!.querySelector('#remoteIbanLink'));
+    const menuButton =
+        firstEntry.shadowRoot!.querySelector<HTMLElement>('#ibanMenu');
     assertTrue(!!menuButton);
+
     menuButton.click();
     flush();
 

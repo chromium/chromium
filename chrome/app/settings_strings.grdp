@@ -488,7 +488,7 @@
   <message name="IDS_SETTINGS_MULTIPLE_MIGRATABLE_CARDS_INFO" desc="Display text under the save cards to Google Pay label. This text indicates user has multiple migratable cards on this device.">
     Right now, you have some cards that can only be used on this device
   </message>
-  <message name="IDS_SETTINGS_REMOTE_CREDIT_CARD_LINK_LABEL" desc="The title and ARIA (accessibility) label for a link in chrome://settings/payments that opens the credit card settings on https://pay.google.com. Note that the ARIA role and the link icon already convey that this is a link that will be opened when you click on it. Therefore, the message does not contain a verb.">
+  <message name="IDS_SETTINGS_REMOTE_PAYMENT_METHODS_LINK_LABEL" desc="The title and ARIA (accessibility) label for a link in chrome://settings/payments that opens the payment methods settings on https://pay.google.com. Note that the ARIA role and the link icon already convey that this is a link that will be opened when you click on it. Therefore, the message does not contain a verb.">
     Your payment methods in Google Pay
   </message>
   <message name="IDS_SETTINGS_NAME_ON_CREDIT_CARD" desc="The title for the input that lets users modify the name on the credit card.">

@@ -7,13 +7,13 @@
  * page.
  */
 
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import '../i18n_setup.js';
 import '../settings_shared.css.js';
 import './passwords_shared.css.js';
 
 import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
-import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './iban_list_entry.html.js';
@@ -27,12 +27,6 @@ declare global {
   interface HTMLElementEventMap {
     'dots-iban-menu-click': DotsIbanMenuClickEvent;
   }
-}
-
-export interface SettingsIbanListEntryElement {
-  $: {
-    ibanMenu: CrButtonElement,
-  };
 }
 
 const SettingsIbanListEntryElementBase = I18nMixin(PolymerElement);
@@ -56,8 +50,22 @@ export class SettingsIbanListEntryElement extends
 
   iban: chrome.autofillPrivate.IbanEntry;
 
-  get dotsMenu(): HTMLElement {
-    return this.$.ibanMenu;
+  get dotsMenu(): HTMLElement|null {
+    return this.shadowRoot!.getElementById('ibanMenu');
+  }
+
+  /**
+   * The 3-dot menu should be shown if the IBAN is a local IBAN.
+   */
+  private showDotsMenu_(): boolean {
+    return !!this.iban.metadata!.isLocal;
+  }
+
+  /**
+   * The Google Payments icon should be shown if the IBAN is a server IBAN.
+   */
+  private shouldShowGooglePaymentsIndicator_(): boolean {
+    return !this.iban.metadata!.isLocal;
   }
 
   /**
@@ -69,7 +77,7 @@ export class SettingsIbanListEntryElement extends
       composed: true,
       detail: {
         iban: this.iban,
-        anchorElement: this.$.ibanMenu,
+        anchorElement: this.dotsMenu,
       },
     }));
   }
