@@ -196,6 +196,10 @@ class WebAppUiManager {
   // if there isn't one that is already open.
   virtual content::WebContents* CreateNewTab() = 0;
 
+  // Check if a tab is the currently active tab in the browser.
+  virtual bool IsWebContentsActiveTabInBrowser(
+      content::WebContents* web_contents) = 0;
+
   // Triggers the web app install dialog on the specified |web_contents| if
   // there is an installable web app. This will show the dialog even if the app
   // is already installed.

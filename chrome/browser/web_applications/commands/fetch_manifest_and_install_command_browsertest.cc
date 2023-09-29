@@ -73,7 +73,9 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandTest, MultipleInstalls) {
       "manifest_test_page.html");
   EXPECT_TRUE(NavigateAndAwaitInstallabilityCheck(browser(), test_url));
 
-  // Schedule two installs and both succeed.
+  // Schedule two installs. The second should fail because the first will cause
+  // a navigation (because reparenting somehow changes visiblity, which is
+  // wrong, but fine).
   base::RunLoop loop;
   provider().scheduler().FetchManifestAndInstall(
       webapps::WebappInstallSource::MENU_BROWSER_TAB,
@@ -91,13 +93,14 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandTest, MultipleInstalls) {
       webapps::WebappInstallSource::MENU_BROWSER_TAB,
       browser()->tab_strip_model()->GetActiveWebContents()->GetWeakPtr(),
       /*bypass_service_worker_check=*/false, CreateDialogCallback(),
-      base::BindLambdaForTesting(
-          [&](const webapps::AppId& app_id, webapps::InstallResultCode code) {
-            EXPECT_EQ(code, webapps::InstallResultCode::kSuccessNewInstall);
-            EXPECT_TRUE(
-                provider().registrar_unsafe().IsLocallyInstalled(app_id));
-            loop.Quit();
-          }),
+      base::BindLambdaForTesting([&](const webapps::AppId& app_id,
+                                     webapps::InstallResultCode code) {
+        EXPECT_EQ(
+            code,
+            webapps::InstallResultCode::kCancelledDueToMainFrameNavigation);
+        EXPECT_FALSE(provider().registrar_unsafe().IsLocallyInstalled(app_id));
+        loop.Quit();
+      }),
       /*use_fallback=*/false);
   loop.Run();
 }

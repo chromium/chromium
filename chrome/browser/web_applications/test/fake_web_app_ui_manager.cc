@@ -171,6 +171,11 @@ content::WebContents* FakeWebAppUiManager::CreateNewTab() {
   return nullptr;
 }
 
+bool FakeWebAppUiManager::IsWebContentsActiveTabInBrowser(
+     content::WebContents* web_contents) {
+  return true;
+}
+
 void FakeWebAppUiManager::TriggerInstallDialog(
     content::WebContents* web_contents) {}
 

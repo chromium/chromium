@@ -89,6 +89,8 @@ class FakeWebAppUiManager : public WebAppUiManager {
       base::WeakPtr<Profile> profile) override;
 #endif
   content::WebContents* CreateNewTab() override;
+  bool IsWebContentsActiveTabInBrowser(
+       content::WebContents* web_contents) override;
   void TriggerInstallDialog(content::WebContents* web_contents) override;
 
   void PresentUserUninstallDialog(

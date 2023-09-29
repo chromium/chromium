@@ -395,6 +395,14 @@ content::WebContents* WebAppUiManagerImpl::CreateNewTab() {
   return handle->GetWebContents();
 }
 
+bool WebAppUiManagerImpl::IsWebContentsActiveTabInBrowser(
+    content::WebContents* web_contents) {
+  Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+  return browser &&
+         browser->tab_strip_model() &&
+         browser->tab_strip_model()->GetActiveWebContents() == web_contents;
+}
+
 void WebAppUiManagerImpl::TriggerInstallDialog(
     content::WebContents* web_contents) {
   web_app::CreateWebAppFromManifest(

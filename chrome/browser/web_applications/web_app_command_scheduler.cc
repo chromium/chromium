@@ -121,6 +121,7 @@ void WebAppCommandScheduler::FetchManifestAndInstall(
       std::make_unique<FetchManifestAndInstallCommand>(
           install_surface, std::move(contents), bypass_service_worker_check,
           std::move(dialog_callback), std::move(callback), use_fallback,
+          provider_->ui_manager().GetWeakPtr(),
           provider_->web_contents_manager().CreateDataRetriever()),
       location);
 }
