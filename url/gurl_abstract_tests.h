@@ -11,7 +11,7 @@
 // by parametrizing the tests with a class that has to expose the following
 // members:
 //   using UrlType = ...;
-//   static UrlType CreateUrlFromString(base::StringPiece s);
+//   static UrlType CreateUrlFromString(std::string_view s);
 //   static bool IsAboutBlank(const UrlType& url);
 //   static bool IsAboutSrcdoc(const UrlType& url);
 template <typename TUrlTraits>
@@ -23,7 +23,7 @@ class AbstractUrlTest : public testing::Test {
   // avoid hitting: explicit qualification required to use member 'IsAboutBlank'
   // from dependent base class.
   using UrlType = typename TUrlTraits::UrlType;
-  UrlType CreateUrlFromString(base::StringPiece s) {
+  UrlType CreateUrlFromString(std::string_view s) {
     return TUrlTraits::CreateUrlFromString(s);
   }
   bool IsAboutBlank(const UrlType& url) {

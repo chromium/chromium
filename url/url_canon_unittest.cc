@@ -2757,7 +2757,7 @@ TEST(URLCanonTest, DefaultPortForScheme) {
 
 TEST(URLCanonTest, FindWindowsDriveLetter) {
   struct TestCase {
-    base::StringPiece spec;
+    std::string_view spec;
     int begin;
     int end;  // -1 for end of spec
     int expected_drive_letter_pos;
@@ -2871,7 +2871,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 TEST_P(URLCanonAsciiPercentEncodePathTest, UnescapePathCharHistogram) {
   struct TestCase {
-    base::StringPiece path;
+    std::string_view path;
     base::HistogramBase::Count cnt;
   } cases[] = {
       {"/a", 0},

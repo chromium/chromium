@@ -4,7 +4,8 @@
 
 // Functions for canonicalizing "file:" URLs.
 
-#include "base/strings/string_piece.h"
+#include <string_view>
+
 #include "base/strings/string_util.h"
 #include "url/url_canon.h"
 #include "url/url_canon_internal.h"
@@ -18,13 +19,13 @@ namespace {
 bool IsLocalhost(const char* spec, int begin, int end) {
   if (begin > end)
     return false;
-  return base::StringPiece(&spec[begin], end - begin) == "localhost";
+  return std::string_view(&spec[begin], end - begin) == "localhost";
 }
 
 bool IsLocalhost(const char16_t* spec, int begin, int end) {
   if (begin > end)
     return false;
-  return base::StringPiece16(&spec[begin], end - begin) == u"localhost";
+  return std::u16string_view(&spec[begin], end - begin) == u"localhost";
 }
 
 template <typename CHAR>

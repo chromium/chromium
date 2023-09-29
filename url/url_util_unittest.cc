@@ -6,7 +6,8 @@
 
 #include <stddef.h>
 
-#include "base/strings/string_piece.h"
+#include <string_view>
+
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest-message.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -588,7 +589,7 @@ TEST_F(URLUtilTest, TestDomainIs) {
 }
 
 namespace {
-absl::optional<std::string> CanonicalizeSpec(base::StringPiece spec,
+absl::optional<std::string> CanonicalizeSpec(std::string_view spec,
                                              bool trim_path_end) {
   std::string canonicalized;
   StdStringCanonOutput output(&canonicalized);

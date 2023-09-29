@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <ostream>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <utility>
 
@@ -20,7 +21,6 @@
 #include "base/debug/crash_logging.h"
 #include "base/pickle.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/trace_event/base_tracing.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "base/unguessable_token.h"
@@ -79,8 +79,8 @@ Origin::~Origin() = default;
 
 // static
 absl::optional<Origin> Origin::UnsafelyCreateTupleOriginWithoutNormalization(
-    base::StringPiece scheme,
-    base::StringPiece host,
+    std::string_view scheme,
+    std::string_view host,
     uint16_t port) {
   SchemeHostPort tuple(std::string(scheme), std::string(host), port,
                        SchemeHostPort::CHECK_CANONICALIZATION);
@@ -91,8 +91,8 @@ absl::optional<Origin> Origin::UnsafelyCreateTupleOriginWithoutNormalization(
 
 // static
 absl::optional<Origin> Origin::UnsafelyCreateOpaqueOriginWithoutNormalization(
-    base::StringPiece precursor_scheme,
-    base::StringPiece precursor_host,
+    std::string_view precursor_scheme,
+    std::string_view precursor_host,
     uint16_t precursor_port,
     const Origin::Nonce& nonce) {
   SchemeHostPort precursor(std::string(precursor_scheme),
@@ -249,7 +249,7 @@ bool Origin::CanBeDerivedFrom(const GURL& url) const {
   return url.scheme() == tuple_.scheme();
 }
 
-bool Origin::DomainIs(base::StringPiece canonical_domain) const {
+bool Origin::DomainIs(std::string_view canonical_domain) const {
   return !opaque() && url::DomainIs(tuple_.host(), canonical_domain);
 }
 

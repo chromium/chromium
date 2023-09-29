@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/strings/string_piece.h"
 #include "url/third_party/mozilla/url_parse.h"
 #include "url/url_canon.h"
 #include "url/url_constants.h"
@@ -204,12 +203,12 @@ bool GetStandardSchemeType(const char16_t* spec,
 // input domain should match host canonicalization rules. i.e. it should be
 // lowercase except for escape chars.
 COMPONENT_EXPORT(URL)
-bool DomainIs(base::StringPiece canonical_host,
-              base::StringPiece canonical_domain);
+bool DomainIs(std::string_view canonical_host,
+              std::string_view canonical_domain);
 
 // Returns true if the hostname is an IP address. Note: this function isn't very
 // cheap, as it must re-parse the host to verify.
-COMPONENT_EXPORT(URL) bool HostIsIPAddress(base::StringPiece host);
+COMPONENT_EXPORT(URL) bool HostIsIPAddress(std::string_view host);
 
 // URL library wrappers --------------------------------------------------------
 

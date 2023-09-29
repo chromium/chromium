@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/strings/string_piece.h"
+#include <string_view>
+
 #include "base/test/perf_time_logger.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -13,7 +14,7 @@
 namespace {
 
 TEST(URLParse, FullURL) {
-  constexpr base::StringPiece kUrl =
+  constexpr std::string_view kUrl =
       "http://me:pass@host/foo/bar.html;param?query=yes#ref";
 
   url::Parsed parsed;
@@ -24,16 +25,16 @@ TEST(URLParse, FullURL) {
   timer.Done();
 }
 
-constexpr base::StringPiece kTypicalUrl1 =
+constexpr std::string_view kTypicalUrl1 =
     "http://www.google.com/"
     "search?q=url+parsing&ie=utf-8&oe=utf-8&aq=t&rls=org.mozilla:en-US:"
     "official&client=firefox-a";
 
-constexpr base::StringPiece kTypicalUrl2 =
+constexpr std::string_view kTypicalUrl2 =
     "http://www.amazon.com/Stephen-King-Thrillers-Horror-People/dp/0766012336/"
     "ref=sr_1_2/133-4144931-4505264?ie=UTF8&s=books&qid=2144880915&sr=8-2";
 
-constexpr base::StringPiece kTypicalUrl3 =
+constexpr std::string_view kTypicalUrl3 =
     "http://store.apple.com/1-800-MY-APPLE/WebObjects/AppleStore.woa/wa/"
     "RSLID?nnmm=browse&mco=578E9744&node=home/desktop/mac_pro";
 

@@ -1167,7 +1167,7 @@ class GURLTestTraits {
  public:
   using UrlType = GURL;
 
-  static UrlType CreateUrlFromString(base::StringPiece s) { return GURL(s); }
+  static UrlType CreateUrlFromString(std::string_view s) { return GURL(s); }
   static bool IsAboutBlank(const UrlType& url) { return url.IsAboutBlank(); }
   static bool IsAboutSrcdoc(const UrlType& url) { return url.IsAboutSrcdoc(); }
 

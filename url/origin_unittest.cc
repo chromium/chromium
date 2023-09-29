@@ -76,8 +76,8 @@ class OriginTest : public ::testing::Test {
   // Wrappers around url::Origin methods to expose it to tests.
 
   absl::optional<Origin> UnsafelyCreateOpaqueOriginWithoutNormalization(
-      base::StringPiece precursor_scheme,
-      base::StringPiece precursor_host,
+      std::string_view precursor_scheme,
+      std::string_view precursor_host,
       uint16_t precursor_port,
       const Origin::Nonce& nonce) {
     return Origin::UnsafelyCreateOpaqueOriginWithoutNormalization(
@@ -371,8 +371,8 @@ TEST_F(OriginTest, UnsafelyCreateUniqueOnInvalidInput) {
 
 TEST_F(OriginTest, UnsafelyCreateUniqueViaEmbeddedNulls) {
   struct TestCases {
-    base::StringPiece scheme;
-    base::StringPiece host;
+    std::string_view scheme;
+    std::string_view host;
     uint16_t port = 80;
   } cases[] = {{{"http\0more", 9}, {"example.com", 11}},
                {{"http\0", 5}, {"example.com", 11}},

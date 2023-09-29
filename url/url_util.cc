@@ -147,18 +147,6 @@ enum WhitespaceRemovalPolicy {
   DO_NOT_REMOVE_WHITESPACE,
 };
 
-// This template converts a given character type to the corresponding
-// StringPiece type.
-template<typename CHAR> struct CharToStringPiece {
-};
-template<> struct CharToStringPiece<char> {
-  typedef base::StringPiece Piece;
-};
-template <>
-struct CharToStringPiece<char16_t> {
-  typedef base::StringPiece16 Piece;
-};
-
 // Given a string and a range inside the string, compares it to the given
 // lower-case |compare_to| buffer.
 template<typename CHAR>
@@ -168,8 +156,7 @@ inline bool DoCompareSchemeComponent(const CHAR* spec,
   if (component.is_empty())
     return compare_to[0] == 0;  // When component is empty, match empty scheme.
   return base::EqualsCaseInsensitiveASCII(
-      typename CharToStringPiece<CHAR>::Piece(&spec[component.begin],
-                                              component.len),
+      std::basic_string_view(&spec[component.begin], component.len),
       compare_to);
 }
 
@@ -185,8 +172,7 @@ bool DoIsInSchemes(const CHAR* spec,
 
   for (const SchemeWithType& scheme_with_type : schemes) {
     if (base::EqualsCaseInsensitiveASCII(
-            typename CharToStringPiece<CHAR>::Piece(&spec[scheme.begin],
-                                                    scheme.len),
+            std::basic_string_view(&spec[scheme.begin], scheme.len),
             scheme_with_type.scheme)) {
       *type = scheme_with_type.type;
       return true;
@@ -735,8 +721,8 @@ bool FindAndCompareScheme(const char16_t* str,
   return DoFindAndCompareScheme(str, str_len, compare, found_scheme);
 }
 
-bool DomainIs(base::StringPiece canonical_host,
-              base::StringPiece canonical_domain) {
+bool DomainIs(std::string_view canonical_host,
+              std::string_view canonical_domain) {
   if (canonical_host.empty() || canonical_domain.empty())
     return false;
 
@@ -754,7 +740,7 @@ bool DomainIs(base::StringPiece canonical_host,
   const char* host_first_pos =
       canonical_host.data() + host_len - canonical_domain.length();
 
-  if (base::StringPiece(host_first_pos, canonical_domain.length()) !=
+  if (std::string_view(host_first_pos, canonical_domain.length()) !=
       canonical_domain) {
     return false;
   }
@@ -771,7 +757,7 @@ bool DomainIs(base::StringPiece canonical_host,
   return true;
 }
 
-bool HostIsIPAddress(base::StringPiece host) {
+bool HostIsIPAddress(std::string_view host) {
   STACK_UNINITIALIZED url::RawCanonOutputT<char, 128> ignored_output;
   url::CanonHostInfo host_info;
   url::CanonicalizeIPAddress(host.data(), Component(0, host.length()),

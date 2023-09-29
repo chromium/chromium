@@ -4,7 +4,7 @@
 
 #include "url/mojom/origin_mojom_traits.h"
 
-#include "base/strings/string_piece.h"
+#include <string_view>
 
 namespace mojo {
 
@@ -12,7 +12,7 @@ namespace mojo {
 bool StructTraits<url::mojom::OriginDataView, url::Origin>::Read(
     url::mojom::OriginDataView data,
     url::Origin* out) {
-  base::StringPiece scheme, host;
+  std::string_view scheme, host;
   absl::optional<base::UnguessableToken> nonce_if_opaque;
   if (!data.ReadScheme(&scheme) || !data.ReadHost(&host) ||
       !data.ReadNonceIfOpaque(&nonce_if_opaque))

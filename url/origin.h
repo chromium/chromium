@@ -9,12 +9,12 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/component_export.h"
 #include "base/debug/alias.h"
 #include "base/debug/crash_logging.h"
 #include "base/gtest_prod_util.h"
-#include "base/strings/string_piece_forward.h"
 #include "base/strings/string_util.h"
 #include "base/trace_event/base_tracing_forward.h"
 #include "base/unguessable_token.h"
@@ -191,8 +191,8 @@ class COMPONENT_EXPORT(URL) Origin {
   // dangerous recanonicalization); other potential callers should prefer the
   // 'GURL'-based constructor.
   static absl::optional<Origin> UnsafelyCreateTupleOriginWithoutNormalization(
-      base::StringPiece scheme,
-      base::StringPiece host,
+      std::string_view scheme,
+      std::string_view host,
       uint16_t port);
 
   // Creates an origin without sanity checking that the host is canonicalized.
@@ -277,7 +277,7 @@ class COMPONENT_EXPORT(URL) Origin {
   GURL GetURL() const;
 
   // Same as GURL::DomainIs. If |this| origin is opaque, then returns false.
-  bool DomainIs(base::StringPiece canonical_domain) const;
+  bool DomainIs(std::string_view canonical_domain) const;
 
   // Allows Origin to be used as a key in STL (for example, a std::set or
   // std::map).
@@ -418,8 +418,8 @@ class COMPONENT_EXPORT(URL) Origin {
   // back and forth over IPC (as transitioning through GURL would risk
   // potentially dangerous recanonicalization).
   static absl::optional<Origin> UnsafelyCreateOpaqueOriginWithoutNormalization(
-      base::StringPiece precursor_scheme,
-      base::StringPiece precursor_host,
+      std::string_view precursor_scheme,
+      std::string_view precursor_host,
       uint16_t precursor_port,
       const Nonce& nonce);
 
