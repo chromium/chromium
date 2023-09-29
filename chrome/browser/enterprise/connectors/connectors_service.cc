@@ -500,9 +500,10 @@ ConnectorsService::GetBrowserDmToken() const {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 absl::optional<ConnectorsService::DmToken>
 ConnectorsService::GetProfileDmToken() const {
-  if (!CanUseProfileDmToken())
+  if (!base::FeatureList::IsEnabled(kEnableRelaxedAffiliationCheck) &&
+      !CanUseProfileDmToken()) {
     return absl::nullopt;
-
+  }
   Profile* profile = Profile::FromBrowserContext(context_);
 
   policy::UserCloudPolicyManager* policy_manager =
