@@ -383,6 +383,9 @@ ViewTransitionStyleTracker::ViewTransitionStyleTracker(
     element_data->mix_blend_mode =
         static_cast<BlendMode>(transition_state_element.mix_blend_mode);
 
+    element_data->color_scheme =
+        String::FromUTF8(transition_state_element.color_scheme);
+
     CHECK_LE(transition_state_element.text_orientation,
              static_cast<std::underlying_type_t<ETextOrientation>>(
                  ETextOrientation::kMaxEnumValue));
@@ -1005,6 +1008,7 @@ bool ViewTransitionStyleTracker::RunPostPrePaintSteps() {
     WritingMode writing_mode;
     BlendMode blend_mode;
     ETextOrientation text_orientation;
+    String color_scheme;
     absl::optional<gfx::RectF> captured_rect_in_layout_space;
 
     if (element_data->target_element->IsDocumentElement()) {
@@ -1017,11 +1021,18 @@ bool ViewTransitionStyleTracker::RunPostPrePaintSteps() {
       writing_mode = layout_object->StyleRef().GetWritingMode();
       blend_mode = layout_object->StyleRef().GetBlendMode();
       text_orientation = layout_object->StyleRef().GetTextOrientation();
+      const CSSValue* color_scheme_value =
+          CSSProperty::Get(CSSPropertyID::kColorScheme)
+              .CSSValueFromComputedStyle(layout_object->StyleRef(),
+                                         /*layout_object=*/nullptr,
+                                         /*allow_visited_style=*/false);
+      color_scheme =
+          color_scheme_value ? color_scheme_value->CssText() : "normal";
     } else {
       ComputeLiveElementGeometry(
           max_capture_size, *layout_object, container_properties,
           visual_overflow_rect_in_layout_space, writing_mode, blend_mode,
-          text_orientation, captured_rect_in_layout_space);
+          text_orientation, color_scheme, captured_rect_in_layout_space);
     }
 
     if (!element_data->container_properties.empty() &&
@@ -1031,6 +1042,7 @@ bool ViewTransitionStyleTracker::RunPostPrePaintSteps() {
         writing_mode == element_data->container_writing_mode &&
         blend_mode == element_data->mix_blend_mode &&
         text_orientation == element_data->text_orientation &&
+        color_scheme == element_data->color_scheme &&
         captured_rect_in_layout_space ==
             element_data->captured_rect_in_layout_space) {
       continue;
@@ -1054,6 +1066,7 @@ bool ViewTransitionStyleTracker::RunPostPrePaintSteps() {
     element_data->container_writing_mode = writing_mode;
     element_data->mix_blend_mode = blend_mode;
     element_data->text_orientation = text_orientation;
+    element_data->color_scheme = color_scheme;
     element_data->captured_rect_in_layout_space = captured_rect_in_layout_space;
 
     PseudoId live_content_element = HasLiveNewContent()
@@ -1102,6 +1115,7 @@ void ViewTransitionStyleTracker::ComputeLiveElementGeometry(
     WritingMode& writing_mode,
     BlendMode& blend_mode,
     ETextOrientation& text_orientation,
+    String& color_scheme,
     absl::optional<gfx::RectF>& captured_rect_in_layout_space) const {
   DCHECK(!layout_object.IsLayoutView());
 
@@ -1179,6 +1193,12 @@ void ViewTransitionStyleTracker::ComputeLiveElementGeometry(
   writing_mode = layout_object.StyleRef().GetWritingMode();
   blend_mode = layout_object.StyleRef().GetBlendMode();
   text_orientation = layout_object.StyleRef().GetTextOrientation();
+  const CSSValue* color_scheme_value =
+      CSSProperty::Get(CSSPropertyID::kColorScheme)
+          .CSSValueFromComputedStyle(layout_object.StyleRef(),
+                                     /*layout_object=*/nullptr,
+                                     /*allow_visited_style=*/false);
+  color_scheme = color_scheme_value ? color_scheme_value->CssText() : "normal";
 
   container_properties = ContainerProperties(border_box_size_in_css_space,
                                              snapshot_matrix_in_css_space);
@@ -1486,6 +1506,7 @@ ViewTransitionState ViewTransitionStyleTracker::GetViewTransitionState() const {
         element_data->mix_blend_mode);
     element.text_orientation = static_cast<decltype(element.text_orientation)>(
         element_data->text_orientation);
+    element.color_scheme = element_data->color_scheme.Utf8();
   }
 
   // TODO(khushalsagar): Need to send offsets to retain positioning of
@@ -1579,7 +1600,7 @@ CSSStyleSheet& ViewTransitionStyleTracker::UAStyleSheet() {
     builder.AddContainerStyles(
         view_transition_name, element_data->container_properties.back(),
         element_data->container_writing_mode, element_data->mix_blend_mode,
-        element_data->text_orientation);
+        element_data->text_orientation, element_data->color_scheme);
 
     // This sets up the styles to animate the pseudo-elements as described in
     // https://drafts.csswg.org/css-view-transitions-1/#setup-transition-pseudo-elements-algorithm.

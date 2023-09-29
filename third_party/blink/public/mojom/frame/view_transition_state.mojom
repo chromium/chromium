@@ -33,6 +33,7 @@ struct ViewTransitionElement {
   uint8 container_writing_mode;
   uint8 mix_blend_mode;
   uint8 text_orientation;
+  string color_scheme;
 };
 
 // This represents a document state necessary to initiate a view transition for

@@ -63,6 +63,11 @@ struct BLINK_COMMON_EXPORT
     return r.text_orientation;
   }
 
+  static const std::string& color_scheme(
+      const blink::ViewTransitionElement& r) {
+    return r.color_scheme;
+  }
+
   static bool Read(blink::mojom::ViewTransitionElementDataView r,
                    blink::ViewTransitionElement* out);
 };

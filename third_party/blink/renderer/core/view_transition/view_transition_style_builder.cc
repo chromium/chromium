@@ -135,7 +135,8 @@ void ViewTransitionStyleBuilder::AddContainerStyles(
     const ContainerProperties& properties,
     WritingMode writing_mode,
     BlendMode blend_mode,
-    ETextOrientation text_orientation) {
+    ETextOrientation text_orientation,
+    const String& color_scheme) {
   std::ostringstream writing_mode_stream;
   writing_mode_stream << writing_mode;
 
@@ -148,6 +149,7 @@ void ViewTransitionStyleBuilder::AddContainerStyles(
         writing-mode: %s;
         mix-blend-mode: %s;
         text-orientation: %s;
+        color-scheme: %s;
       )CSS",
       properties.border_box_size_in_css_space.width.ToFloat(),
       properties.border_box_size_in_css_space.height.ToFloat(),
@@ -158,7 +160,7 @@ void ViewTransitionStyleBuilder::AddContainerStyles(
           .c_str(),
       writing_mode_stream.str().c_str(),
       BlendModeToString(blend_mode).Utf8().c_str(),
-      TextOrientationToString(text_orientation));
+      TextOrientationToString(text_orientation), color_scheme.Utf8().c_str());
 
   AddRules(kGroupTagName, tag, rule_builder.ReleaseString());
 }

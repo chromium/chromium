@@ -266,6 +266,9 @@ class ViewTransitionStyleTracker
     // The mix blend mode to use for the container.
     BlendMode mix_blend_mode = BlendMode::kNormal;
 
+    // The color scheme keywords to use.
+    String color_scheme;
+
     // Text orientation to use for the container.
     ETextOrientation text_orientation = ETextOrientation::kMixed;
   };
@@ -311,6 +314,7 @@ class ViewTransitionStyleTracker
       WritingMode&,
       BlendMode&,
       ETextOrientation&,
+      String& color_scheme,
       absl::optional<gfx::RectF>& captured_rect_in_layout_space) const;
 
   Member<Document> document_;

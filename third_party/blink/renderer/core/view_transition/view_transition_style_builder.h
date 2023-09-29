@@ -32,7 +32,8 @@ class ViewTransitionStyleBuilder {
                           const ContainerProperties& properties,
                           WritingMode writing_mode,
                           BlendMode blend_mode,
-                          ETextOrientation text_orientation);
+                          ETextOrientation text_orientation,
+                          const String& color_scheme);
 
   String Build();
 

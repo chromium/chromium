@@ -40,6 +40,7 @@ struct BLINK_COMMON_EXPORT ViewTransitionElement {
   uint8_t container_writing_mode = 0;
   uint8_t mix_blend_mode = 0;
   uint8_t text_orientation = 0;
+  std::string color_scheme;
 };
 
 struct BLINK_COMMON_EXPORT ViewTransitionState {

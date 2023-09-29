@@ -341,6 +341,10 @@ The test verifies functionality of querying style information for view-transitio
                                         name : text-orientation
                                         value : mixed
                                     }
+                                    [6] : {
+                                        name : color-scheme
+                                        value : normal
+                                    }
                                 ]
                                 shorthandEntries : [
                                 ]
@@ -566,6 +570,10 @@ The test verifies functionality of querying style information for view-transitio
                                     [5] : {
                                         name : text-orientation
                                         value : mixed
+                                    }
+                                    [6] : {
+                                        name : color-scheme
+                                        value : normal
                                     }
                                 ]
                                 shorthandEntries : [
@@ -2240,6 +2248,10 @@ Dumping styles for : ::view-transition-group with id root{
                                 name : text-orientation
                                 value : mixed
                             }
+                            [6] : {
+                                name : color-scheme
+                                value : normal
+                            }
                         ]
                         shorthandEntries : [
                         ]
@@ -3274,6 +3286,10 @@ Dumping styles for : ::view-transition-group with id shared{
                             [5] : {
                                 name : text-orientation
                                 value : mixed
+                            }
+                            [6] : {
+                                name : color-scheme
+                                value : normal
                             }
                         ]
                         shorthandEntries : [
