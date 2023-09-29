@@ -36,6 +36,8 @@ aggregate_vector_icons("chrome_vector_icons") {
     "bookmarkbar_touch_overflow.icon",
     "bookmarks_chrome_refresh.icon",
     "bookmarks_lists_menu.icon",
+    "bookmarks_manager.icon",
+    "bookmarks_side_panel.icon",
     "browser_logo.icon",
     "browser_tools.icon",
     "browser_tools_chrome_refresh.icon",

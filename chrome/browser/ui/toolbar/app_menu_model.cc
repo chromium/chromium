@@ -877,6 +877,13 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
       }
       LogMenuAction(MENU_ACTION_SHOW_BOOKMARK_BAR);
       break;
+    case IDC_SHOW_BOOKMARK_SIDE_PANEL:
+      if (!uma_action_recorded_) {
+        UMA_HISTOGRAM_MEDIUM_TIMES(
+            "WrenchMenu.TimeToAction.ShowBookmarkSidePanel", delta);
+      }
+      LogMenuAction(MENU_ACTION_SHOW_BOOKMARK_SIDE_PANEL);
+      break;
     case IDC_SHOW_BOOKMARK_MANAGER:
       if (!uma_action_recorded_) {
         UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.ShowBookmarkMgr",

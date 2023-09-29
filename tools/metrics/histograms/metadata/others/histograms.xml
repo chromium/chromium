@@ -15012,6 +15012,7 @@ regressions. -->
     <variant name="ShowAddresses"/>
     <variant name="ShowBookmarkBar"/>
     <variant name="ShowBookmarkMgr"/>
+    <variant name="ShowBookmarkSidePanel"/>
     <variant name="ShowChromeLabs"/>
     <variant name="ShowDownloads"/>
     <variant name="ShowHistory"/>
