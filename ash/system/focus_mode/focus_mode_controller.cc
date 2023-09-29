@@ -9,7 +9,9 @@
 #include "ash/shell.h"
 #include "ash/system/do_not_disturb_notification_controller.h"
 #include "ash/system/focus_mode/focus_mode_tray.h"
+#include "ash/system/focus_mode/focus_mode_util.h"
 #include "ash/system/status_area_widget.h"
+#include "base/time/time.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "ui/message_center/message_center.h"
@@ -127,7 +129,7 @@ void FocusModeController::OnActiveUserSessionChanged(
 void FocusModeController::ExtendActiveSessionDuration() {
   CHECK(in_focus_session_);
   end_time_ += kExtendDuration;
-  session_duration_ += kExtendDuration;
+  SetSessionDuration(session_duration_ + kExtendDuration);
 
   // Update all observers that may be using `end_time_` or `session_duration_`,
   // the countdown view UI timers for example, so they don't have to wait for
@@ -146,6 +148,20 @@ void FocusModeController::ExtendActiveSessionDuration() {
           DoNotDisturbNotificationController::Get()) {
     notification_controller->MaybeUpdateNotification();
   }
+}
+
+void FocusModeController::SetSessionDuration(
+    const base::TimeDelta& new_session_duration) {
+  if (session_duration_ == new_session_duration) {
+    return;
+  }
+
+  // We do not immediately commit the change directly to the user prefs because
+  // the user has not yet indicated their preferred timer duration by starting
+  // the timer.
+  session_duration_ =
+      std::clamp(new_session_duration, focus_mode_util::kMinimumDuration,
+                 focus_mode_util::kMaximumDuration);
 }
 
 void FocusModeController::OnTimerTick() {

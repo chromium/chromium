@@ -10,20 +10,27 @@
 #include "ash/ash_export.h"
 #include "base/time/time.h"
 
-namespace ash::focus_mode_util {
+namespace ash {
+
+class SystemTextfield;
+
+namespace focus_mode_util {
+
+constexpr base::TimeDelta kMinimumDuration = base::Minutes(1);
+constexpr base::TimeDelta kMaximumDuration = base::Minutes(300);
 
 enum class TimeFormatType {
-  // Times formatted with `kDigital` type include seconds, minutes, and hours in
-  // a numeric width, without removing leading zeros. Used in the labels under
-  // the progress bar in the countdown view, for example "4:30".
+  // Times formatted with `kDigital` type include seconds, minutes, and hours
+  // in a numeric width, without removing leading zeros. Used in the labels
+  // under the progress bar in the countdown view, for example "4:30".
   kDigital,
   // Times formatted with `kFull` type include seconds, minutes, and hours in
   // short width. Used in the time remaining timer in the countdown view, for
   // example "4 min, 30 sec".
   kFull,
   // Times formatted with `kMinutesOnly` type include hours only when focus is
-  // active, and minutes in a short width. Used in the time remaining display in
-  // the detailed view, for example "4 min".
+  // active, and minutes in a short width. Used in the time remaining display
+  // in the detailed view, for example "4 min".
   kMinutesOnly,
 };
 
@@ -33,9 +40,8 @@ enum class TimeFormatType {
 // `TimeFormatType::kDigital` removes the hour if it is a leading zero. For
 // example "0:30", "4:30", "1:04:30".
 // `TimeFormatType::kFull` removes the hour if it is a leading zero and the
-// minute if it is a leading zero. For example "30 sec", "4 min, 30 sec", "1 hr,
-// 4 min, 30 sec".
-// When focus is active:
+// minute if it is a leading zero. For example "30 sec", "4 min, 30 sec", "1
+// hr, 4 min, 30 sec". When focus is active:
 //   `TimeFormatType::kMinutesOnly` removes the seconds and removes the hour
 //   when it is a leading zero. For example "0 min", "4 min", "1 hr, 4 min".
 // When focus is not active:
@@ -57,6 +63,12 @@ ASH_EXPORT std::u16string GetFormattedClockString(const base::Time end_time);
 ASH_EXPORT std::u16string GetNotificationTitleForFocusSession(
     const base::Time end_time);
 
-}  // namespace ash::focus_mode_util
+// Reads the `timer_textfield`'s text and converts it to an integer.
+ASH_EXPORT int GetTimerTextfieldInputInMinutes(
+    SystemTextfield* timer_textfield);
+
+}  // namespace focus_mode_util
+
+}  // namespace ash
 
 #endif  // ASH_SYSTEM_FOCUS_MODE_FOCUS_MODE_UTIL_H_

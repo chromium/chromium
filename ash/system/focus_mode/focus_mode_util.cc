@@ -8,6 +8,7 @@
 
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/system_textfield.h"
 #include "ash/system/focus_mode/focus_mode_controller.h"
 #include "ash/system/model/clock_model.h"
 #include "ash/system/model/system_tray_model.h"
@@ -104,6 +105,19 @@ std::u16string GetNotificationTitleForFocusSession(const base::Time end_time) {
   return l10n_util::GetStringFUTF16(
       IDS_ASH_DO_NOT_DISTURB_NOTIFICATION_IN_FOCUS_MODE_TITLE,
       GetFormattedClockString(end_time));
+}
+
+int GetTimerTextfieldInputInMinutes(SystemTextfield* timer_textfield) {
+  // If the user is trying to adjust the session duration while the textfield is
+  // empty, we default to the last session duration that was set on the focus
+  // mode controller.
+  int duration_minutes;
+  if (!base::StringToInt(timer_textfield->GetText(), &duration_minutes)) {
+    duration_minutes =
+        FocusModeController::Get()->session_duration().InMinutes();
+  }
+
+  return duration_minutes;
 }
 
 }  // namespace ash::focus_mode_util

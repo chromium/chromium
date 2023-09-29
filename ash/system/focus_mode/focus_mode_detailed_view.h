@@ -12,11 +12,16 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/message_center/message_center_observer.h"
 
+namespace views {
+class BoxLayoutView;
+}
+
 namespace ash {
 
 class HoverHighlightView;
 class RoundedContainer;
 class Switch;
+class SystemTextfield;
 
 // This view displays the focus panel settings that a user can set.
 class ASH_EXPORT FocusModeDetailedView
@@ -32,10 +37,13 @@ class ASH_EXPORT FocusModeDetailedView
   ~FocusModeDetailedView() override;
 
  private:
+  class TimerTextfieldController;
+
   friend class FocusModeDetailedViewTest;
 
   // TrayDetailedView:
   void HandleViewClicked(views::View* view) override {}
+  void AddedToWidget() override;
 
   // message_center::MessageCenterObserver:
   void OnQuietModeChanged(bool in_quiet_mode) override;
@@ -46,6 +54,15 @@ class ASH_EXPORT FocusModeDetailedView
 
   // Creates the row with functionality to start and stop focus mode.
   void CreateToggleView();
+
+  // Creates and populates the `timer_view_container_`. If we are in a focus
+  // mode session, then it creates `timer_setting_view_` and adds it to the
+  // `timer_view_container_`.
+  void CreateTimerView();
+
+  // Creates the row that allows for the user to adjust or set the timer
+  // duration for the focus mode session.
+  void CreateTimerSettingView();
 
   // Creates the DND rounded container.
   void CreateDoNotDisturbContainer();
@@ -60,12 +77,29 @@ class ASH_EXPORT FocusModeDetailedView
   // Starts `clock_timer_`.
   void StartClockTimer();
 
+  // Increments or decrements the session duration by one step.
+  // This is only used outside of a focus session.
+  void AdjustInactiveSessionDuration(bool decrement);
+
+  // Called whenever the session duration is adjusted.
+  void OnInactiveSessionDurationChanged();
+
+  // Sets the session duration for the focus controller and calls
+  // `OnInactiveSessionDurationChanged`.
+  void SetInactiveSessionDuration(base::TimeDelta duration);
+
   // This view contains a description of the focus session, as well as a toggle
   // button for staring/ending focus mode.
   raw_ptr<HoverHighlightView> toggle_view_ = nullptr;
+  // Container that holds a header and the `timer_setting_view_`.
+  raw_ptr<RoundedContainer> timer_view_container_ = nullptr;
   // This view contains the timer view for the user to adjust the focus session
-  // duration.
-  raw_ptr<RoundedContainer> timer_view_ = nullptr;
+  // duration when we are not in a focus session.
+  raw_ptr<views::BoxLayoutView> timer_setting_view_ = nullptr;
+  // Textfield that the user can use to set the timer duration.
+  raw_ptr<SystemTextfield> timer_textfield_ = nullptr;
+  // Handles input validation and events for the `timer_textfield`.
+  std::unique_ptr<TimerTextfieldController> timer_textfield_controller_;
   // This view contains controls for selecting the focus scene (background +
   // audio), as well as volume controls.
   raw_ptr<RoundedContainer> scene_view_ = nullptr;
