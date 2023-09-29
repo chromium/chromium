@@ -289,6 +289,7 @@ template("single_gcc_toolchain") {
 
     cc = compiler_prefix + invoker.cc
     cxx = compiler_prefix + invoker.cxx
+
     # "asm" doesn't support any of toolchain_cc_wrapper, toolchain_uses_goma and
     # toolchain_uses_remoteexec. The coverage flags are also nonsensical on
     # assembler runs.
@@ -891,16 +892,7 @@ template("clang_toolchain") {
     ar = "${prefix}/llvm-ar"
     nm = "${prefix}/llvm-nm"
 
-    forward_variables_from(invoker,
-                           [
-                             "strip",
-                             "default_shlib_subdir",
-                             "dwp",
-                             "enable_linker_map",
-                             "loadable_module_extension",
-                             "propagates_configs",
-                             "use_unstripped_as_runtime_outputs",
-                           ])
+    forward_variables_from(invoker, "*", [ "toolchain_args" ])
 
     toolchain_args = {
       if (defined(invoker.toolchain_args)) {

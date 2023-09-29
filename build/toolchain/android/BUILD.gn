@@ -135,4 +135,8 @@ clang_toolchain("robolectric_$host_cpu") {
     current_cpu = host_cpu
     is_robolectric = true
   }
+
+  # TODO(crbug.com/1487407): Figure out why robolectric tests fail with component builds.
+  toolchain_args.is_component_build = false
+  shlib_extension = ".so"
 }
