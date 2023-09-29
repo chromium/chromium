@@ -860,9 +860,11 @@ void BubbleDialogDelegate::BubbleUmaLogger::LogMetric(
     void (*uma_func)(const std::string&, Value),
     std::string histogram_name,
     Value value) const {
+  if (!base::FeatureList::IsEnabled(::features::kBubbleMetricsApi)) {
+    return;
+  }
   uma_func(base::StrCat({"Bubble.All.", histogram_name}), value);
-  if (bubble_name_.has_value() &&
-      base::FeatureList::IsEnabled(::features::kBubbleMetricsApi)) {
+  if (bubble_name_.has_value()) {
     uma_func(base::StrCat({"Bubble.", *bubble_name_, ".", histogram_name}),
              value);
   }
