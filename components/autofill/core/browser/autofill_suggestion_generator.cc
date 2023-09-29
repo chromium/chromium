@@ -272,8 +272,8 @@ AutofillSuggestionGenerator::GetProfilesToSuggest(
   // Don't show two suggestions if one is a subset of the other.
   // Duplicates across sources are resolved in favour of `kAccount` profiles.
   std::vector<const AutofillProfile*> unique_matched_profiles =
-      suggestion_selection::DeduplicatedProfilesForSuggestions(
-          matched_profiles, type, field_types, comparator);
+      DeduplicatedProfilesForSuggestions(matched_profiles, type, field_types,
+                                         comparator);
 
   return unique_matched_profiles;
 }
@@ -358,6 +358,75 @@ AutofillSuggestionGenerator::CreateSuggestionsFromProfiles(
       app_locale);
 
   return suggestions;
+}
+
+// TODO(crbug.com/1417975): Remove `trigger_field_type` when
+// `kAutofillUseAddressRewriterInProfileSubsetComparison` launches.
+std::vector<const AutofillProfile*>
+AutofillSuggestionGenerator::DeduplicatedProfilesForSuggestions(
+    const std::vector<const AutofillProfile*>& matched_profiles,
+    const AutofillType& trigger_field_type,
+    const ServerFieldTypeSet& field_types,
+    const AutofillProfileComparator& comparator) {
+  // TODO(crbug.com/1417975): Remove when
+  // `kAutofillUseAddressRewriterInProfileSubsetComparison` launches.
+  std::vector<std::u16string> suggestion_main_text;
+  for (const AutofillProfile* profile : matched_profiles) {
+    suggestion_main_text.push_back(suggestion_selection::GetSuggestionMainText(
+        profile, trigger_field_type, comparator.app_locale()));
+  }
+
+  std::vector<const AutofillProfile*> unique_matched_profiles;
+  // Limit number of unique profiles as having too many makes the
+  // browser hang due to drawing calculations (and is also not
+  // very useful for the user).
+  for (size_t a = 0;
+       a < matched_profiles.size() &&
+       unique_matched_profiles.size() < kMaxUniqueSuggestedProfilesCount;
+       ++a) {
+    bool include = true;
+    const AutofillProfile* profile_a = matched_profiles[a];
+    for (size_t b = 0; b < matched_profiles.size(); ++b) {
+      const AutofillProfile* profile_b = matched_profiles[b];
+
+      // TODO(crbug.com/1417975): Remove when
+      // `kAutofillUseAddressRewriterInProfileSubsetComparison` launches.
+      if (profile_a == profile_b ||
+          !comparator.Compare(suggestion_main_text[a],
+                              suggestion_main_text[b])) {
+        continue;
+      }
+
+      if (!profile_a->IsSubsetOfForFieldSet(comparator, *profile_b,
+                                            field_types)) {
+        continue;
+      }
+
+      if (!profile_b->IsSubsetOfForFieldSet(comparator, *profile_a,
+                                            field_types)) {
+        // One-way subset. Don't include profile A.
+        include = false;
+        break;
+      }
+
+      // The profiles are identical and only one should be included.
+      // Prefer `kAccount` profiles over `kLocalOrSyncable` ones. In case the
+      // profiles have the same source, prefer the earlier one (since the
+      // profiles are pre-sorted by their relevance).
+      const bool prefer_a_over_b =
+          profile_a->source() == profile_b->source()
+              ? a < b
+              : profile_a->source() == AutofillProfile::Source::kAccount;
+      if (!prefer_a_over_b) {
+        include = false;
+        break;
+      }
+    }
+    if (include) {
+      unique_matched_profiles.push_back(profile_a);
+    }
+  }
+  return unique_matched_profiles;
 }
 
 std::vector<Suggestion>

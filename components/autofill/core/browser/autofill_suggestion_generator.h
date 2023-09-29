@@ -39,6 +39,11 @@ class PersonalDataManager;
 // address profile Autofill.
 class AutofillSuggestionGenerator {
  public:
+  // As of November 2018, displaying 10 suggestions cover at least 99% of the
+  // indices clicked by our users. The suggestions will also refine as they
+  // type.
+  static constexpr size_t kMaxUniqueSuggestedProfilesCount = 10;
+
   AutofillSuggestionGenerator(AutofillClient* autofill_client,
                               PersonalDataManager* personal_data);
   ~AutofillSuggestionGenerator();
@@ -64,9 +69,9 @@ class AutofillSuggestionGenerator {
       AutofillSuggestionTriggerSource trigger_source);
 
   // Returns a list of profiles that will be displayed as suggestions to the
-  // user. This involved many steps from fetching the profiles to matching with
-  // `field_contents`, and deduplicating based on `field_types`, which are the
-  // relevant types for the current suggestion.
+  // user, sorted by their relevance. This involves many steps from fetching the
+  // profiles to matching with `field_contents`, and deduplicating based on
+  // `field_types`, which are the relevant types for the current suggestion.
   std::vector<const AutofillProfile*> GetProfilesToSuggest(
       const AutofillType& type,
       const std::u16string& field_contents,
@@ -170,6 +175,17 @@ class AutofillSuggestionGenerator {
                                         bool card_linked_offer_available) const;
 
  private:
+  // Dedupes the given profiles based on if one is a subset of the other for
+  // suggestions represented by `field_types`. The function returns at most
+  // `kMaxUniqueSuggestedProfilesCount` profiles. `field_types` stores all of
+  // the ServerFieldTypes relevant for the current suggestions, including that
+  // of the field on which the user is currently focused.
+  std::vector<const AutofillProfile*> DeduplicatedProfilesForSuggestions(
+      const std::vector<const AutofillProfile*>& matched_profiles,
+      const AutofillType& trigger_field_type,
+      const ServerFieldTypeSet& field_types,
+      const AutofillProfileComparator& comparator);
+
   // Return the texts shown as the first line of the suggestion, based on the
   // `credit_card` and the focused field `type`. The first index in the pair
   // represents the main text, and the second index represents the minor text.

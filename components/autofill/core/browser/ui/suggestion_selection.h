@@ -15,13 +15,11 @@
 namespace autofill {
 
 class AutofillProfile;
-class AutofillProfileComparator;
 class AutofillType;
 
 namespace suggestion_selection {
 
 extern const size_t kMaxSuggestedProfilesCount;
-extern const size_t kMaxUniqueSuggestedProfilesCount;
 
 // Sets the `popup_item_id` for `suggestion` depending on
 // `last_filling_granularity`. If the `last_filling_granularity` for a certain
@@ -71,17 +69,6 @@ std::vector<const AutofillProfile*> GetPrefixMatchedProfiles(
     const std::string& app_locale,
     bool field_is_autofilled,
     const std::vector<AutofillProfile*>& profiles);
-
-// Dedupes the given profiles based on if one is a subset of the other for
-// suggestions represented by `field_types`. The function returns at most
-// `kMaxUniqueSuggestedProfilesCount` profiles. `field_types` stores all of the
-// ServerFieldTypes relevant for the current suggestions, including that of the
-// field on which the user is currently focused.
-std::vector<const AutofillProfile*> DeduplicatedProfilesForSuggestions(
-    const std::vector<const AutofillProfile*>& matched_profiles,
-    const AutofillType& trigger_field_type,
-    const ServerFieldTypeSet& field_types,
-    const AutofillProfileComparator& comparator);
 
 // Returns whether the `suggestion_canon` is a valid match given
 // `field_contents_canon`.

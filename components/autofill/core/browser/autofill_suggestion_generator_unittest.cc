@@ -17,6 +17,7 @@
 #include "components/autofill/core/browser/autofill_granular_filling_utils.h"
 #include "components/autofill/core/browser/autofill_suggestion_generator.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_wallet_usage_data.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
@@ -206,7 +207,7 @@ class AutofillSuggestionGeneratorTest : public testing::Test {
 // Tests that special characters will be used while prefix matching the user's
 // field input with the available emails to suggest.
 TEST_F(AutofillSuggestionGeneratorTest,
-       GetProfilesForSuggestions_UseSpecialCharactersInEmail) {
+       GetProfilesToSuggest_UseSpecialCharactersInEmail) {
   AutofillProfile profile_1, profile_2;
   profile_1.SetRawInfo(EMAIL_ADDRESS, u"test@email.xyz");
   profile_2.SetRawInfo(EMAIL_ADDRESS, u"test1@email.xyz");
@@ -222,7 +223,7 @@ TEST_F(AutofillSuggestionGeneratorTest,
   EXPECT_EQ(*profiles[0], profile_1);
 }
 
-TEST_F(AutofillSuggestionGeneratorTest, GetProfilesForSuggestions_HideSubsets) {
+TEST_F(AutofillSuggestionGeneratorTest, GetProfilesToSuggest_HideSubsets) {
   AutofillProfile profile;
   test::SetProfileInfo(&profile, "Marion", "Mitchell", "Morrison",
                        "johnwayne@me.xyz", "Fox",
@@ -261,13 +262,13 @@ TEST_F(AutofillSuggestionGeneratorTest, GetProfilesForSuggestions_HideSubsets) {
   EXPECT_EQ(profiles[1]->GetRawInfo(ADDRESS_HOME_STATE), u"TX");
 }
 
-TEST_F(AutofillSuggestionGeneratorTest,
-       GetProfilesForSuggestions_SuggestionsLimit) {
-  // Drawing takes noticeable time when there are more than 10 profiles.
-  // Therefore, we keep only the 10 first suggested profiles.
+// Drawing takes noticeable time when there are more than 10 profiles.
+// Therefore, we keep only the 10 first suggested profiles.
+TEST_F(AutofillSuggestionGeneratorTest, GetProfilesToSuggest_SuggestionsLimit) {
   std::vector<AutofillProfile> profiles;
   for (size_t i = 0;
-       i < 2 * suggestion_selection::kMaxUniqueSuggestedProfilesCount; i++) {
+       i < 2 * AutofillSuggestionGenerator::kMaxUniqueSuggestedProfilesCount;
+       i++) {
     AutofillProfile profile;
     test::SetProfileInfo(&profile, base::StringPrintf("Marion%zu", i).c_str(),
                          "Mitchell", "Morrison", "johnwayne@me.xyz", "Fox",
@@ -281,16 +282,15 @@ TEST_F(AutofillSuggestionGeneratorTest,
       suggestion_generator()->GetProfilesToSuggest(AutofillType(NAME_FIRST),
                                                    u"Ma", false, {});
 
-  ASSERT_EQ(2 * suggestion_selection::kMaxUniqueSuggestedProfilesCount,
+  ASSERT_EQ(2 * AutofillSuggestionGenerator::kMaxUniqueSuggestedProfilesCount,
             personal_data()->GetProfiles().size());
-  ASSERT_EQ(suggestion_selection::kMaxUniqueSuggestedProfilesCount,
+  ASSERT_EQ(AutofillSuggestionGenerator::kMaxUniqueSuggestedProfilesCount,
             suggested_profiles.size());
 }
 
-TEST_F(AutofillSuggestionGeneratorTest,
-       GetProfilesForSuggestions_ProfilesLimit) {
-  // Deduping takes noticeable time when there are more than 50 profiles.
-  // Therefore, keep only the 50 first pre-dedupe matching profiles.
+// Deduping takes noticeable time when there are more than 50 profiles.
+// Therefore, keep only the 50 first pre-dedupe matching profiles.
+TEST_F(AutofillSuggestionGeneratorTest, GetProfilesToSuggest_ProfilesLimit) {
   std::vector<AutofillProfile> profiles;
   for (size_t i = 0; i < suggestion_selection::kMaxSuggestedProfilesCount;
        i++) {
@@ -332,9 +332,9 @@ TEST_F(AutofillSuggestionGeneratorTest,
             profiles.front().GetRawInfo(NAME_FIRST));
 }
 
-// Tests that GetProfilesForSuggestions orders its suggestions based on the
+// Tests that GetProfilesToSuggest orders its suggestions based on the
 // ranking formula.
-TEST_F(AutofillSuggestionGeneratorTest, GetProfilesForSuggestions_Ranking) {
+TEST_F(AutofillSuggestionGeneratorTest, GetProfilesToSuggest_Ranking) {
   // Set up the profiles. They are named with number suffixes X so the X is the
   // order in which they should be ordered by the ranking formula.
   AutofillProfile profile3;
@@ -373,9 +373,9 @@ TEST_F(AutofillSuggestionGeneratorTest, GetProfilesForSuggestions_Ranking) {
   EXPECT_EQ(suggested_profiles[2]->GetRawInfo(NAME_FIRST), u"Marion3");
 }
 
-// Tests that GetProfilesForSuggestions returns all profiles suggestions.
+// Tests that GetProfilesToSuggest returns all profiles suggestions.
 TEST_F(AutofillSuggestionGeneratorTest,
-       GetProfilesForSuggestions_NumberOfSuggestions) {
+       GetProfilesToSuggest_NumberOfSuggestions) {
   // Set up 3 different profiles.
   AutofillProfile profile1;
   test::SetProfileInfo(&profile1, "Marion1", "Mitchell", "Morrison",
@@ -407,7 +407,7 @@ TEST_F(AutofillSuggestionGeneratorTest,
 
 // Tests that phone number types are correctly deduplicated for suggestions.
 TEST_F(AutofillSuggestionGeneratorTest,
-       GetProfilesForSuggestions_PhoneNumberDeduplication) {
+       GetProfilesToSuggest_PhoneNumberDeduplication) {
   // Set up 2 different profiles.
   AutofillProfile profile1;
   profile1.SetRawInfo(NAME_FULL, u"First Middle Last");
@@ -453,7 +453,7 @@ TEST_F(AutofillSuggestionGeneratorTest,
 // Tests that disused profiles are suppressed when suppression is enabled and
 // the input field is empty.
 TEST_F(AutofillSuggestionGeneratorTest,
-       GetProfilesForSuggestions_SuppressDisusedProfilesOnEmptyField) {
+       GetProfilesToSuggest_SuppressDisusedProfilesOnEmptyField) {
   // Set up 2 different profiles.
   AutofillProfile profile1;
   test::SetProfileInfo(&profile1, "Marion1", "Mitchell", "Morrison",
@@ -505,6 +505,114 @@ TEST_F(AutofillSuggestionGeneratorTest,
     EXPECT_EQ(1U, suggested_profiles.size());
     EXPECT_EQ(u"Marion2", suggested_profiles[0]->GetRawInfo(NAME_FIRST));
   }
+}
+
+// Give two suggestions with the same name, and no other field to compare.
+// Expect only one unique suggestion.
+TEST_F(AutofillSuggestionGeneratorTest, GetProfilesToSuggest_SingleDedupe) {
+  AutofillProfile profile_1 = test::GetFullProfile();
+  profile_1.set_use_count(10);
+  AutofillProfile profile_2 = test::GetFullProfile();
+  personal_data()->AddProfile(profile_1);
+  personal_data()->AddProfile(profile_2);
+
+  std::vector<const AutofillProfile*> profiles_to_suggest =
+      suggestion_generator()->GetProfilesToSuggest(
+          AutofillType(NAME_FIRST), u"", /*field_is_autofilled=*/false, {});
+
+  ASSERT_EQ(1U, profiles_to_suggest.size());
+}
+
+// Given two suggestions with the same name and one with a different, and also
+// last name field to compare, Expect all profiles listed as unique suggestions.
+TEST_F(AutofillSuggestionGeneratorTest, GetProfilesToSuggest_MultipleDedupe) {
+  std::vector<AutofillProfile> profiles(3);
+  profiles[0].SetRawInfo(NAME_FIRST, u"Bob");
+  profiles[0].SetRawInfo(NAME_LAST, u"Morrison");
+  profiles[0].set_use_count(10);
+  personal_data()->AddProfile(profiles[0]);
+
+  profiles[1].SetRawInfo(NAME_FIRST, u"Bob");
+  profiles[1].SetRawInfo(NAME_LAST, u"Parker");
+  profiles[1].set_use_count(5);
+  personal_data()->AddProfile(profiles[1]);
+
+  profiles[2].SetRawInfo(NAME_FIRST, u"Mary");
+  profiles[2].SetRawInfo(NAME_LAST, u"Parker");
+  personal_data()->AddProfile(profiles[2]);
+
+  std::vector<const AutofillProfile*> profiles_to_suggest =
+      suggestion_generator()->GetProfilesToSuggest(
+          AutofillType(NAME_FIRST), u"", /*field_is_autofilled=*/false,
+          {NAME_FIRST, NAME_LAST});
+
+  EXPECT_EQ(3U, profiles_to_suggest.size());
+}
+
+// Test the limit of number of deduplicated profiles.
+TEST_F(AutofillSuggestionGeneratorTest, GetProfilesToSuggest_DedupeLimit) {
+  std::vector<AutofillProfile> profiles;
+  for (size_t i = 0;
+       i < AutofillSuggestionGenerator::kMaxUniqueSuggestedProfilesCount + 1;
+       i++) {
+    AutofillProfile profile;
+    profile.SetRawInfo(NAME_FULL,
+                       base::UTF8ToUTF16(base::StringPrintf("Bob %zu Doe", i)));
+    profile.set_use_count(
+        AutofillSuggestionGenerator::kMaxUniqueSuggestedProfilesCount + 10 - i);
+    profiles.push_back(profile);
+    personal_data()->AddProfile(profile);
+  }
+
+  std::vector<const AutofillProfile*> profiles_to_suggest =
+      suggestion_generator()->GetProfilesToSuggest(
+          AutofillType(NAME_FULL), u"", /*field_is_autofilled=*/false,
+          {NAME_FULL});
+
+  ASSERT_EQ(AutofillSuggestionGenerator::kMaxUniqueSuggestedProfilesCount,
+            profiles_to_suggest.size());
+
+  // All profiles are different.
+  for (size_t i = 0; i < profiles_to_suggest.size(); i++) {
+    EXPECT_EQ(profiles_to_suggest[i]->guid(), profiles[i].guid()) << i;
+  }
+}
+
+TEST_F(AutofillSuggestionGeneratorTest,
+       GetProfilesToSuggest_EmptyMatchingProfiles) {
+  ASSERT_EQ(0U, suggestion_generator()
+                    ->GetProfilesToSuggest(AutofillType(NAME_FIRST), u"",
+                                           /*field_is_autofilled=*/false, {})
+                    .size());
+}
+
+// Tests that `kAccount` profiles are preferred over `kLocalOrSyncable` profile
+// in case of a duplicate.
+TEST_F(AutofillSuggestionGeneratorTest,
+       GetProfilesToSuggest_kAccountPrecedence) {
+  // Create two profiles that only differ by their source.
+  AutofillProfile profile_1;
+  profile_1.SetRawInfo(NAME_FULL, u"First Last");
+  profile_1.set_source_for_testing(AutofillProfile::Source::kAccount);
+  personal_data()->AddProfile(profile_1);
+
+  AutofillProfile profile_2;
+  profile_2.SetRawInfo(NAME_FULL, u"First Last");
+  profile_2.set_source_for_testing(AutofillProfile::Source::kLocalOrSyncable);
+  // Set high use count for profile 2 so that it has greater ranking than
+  // profile_1
+  profile_2.set_use_count(100);
+  personal_data()->AddProfile(profile_2);
+
+  std::vector<const AutofillProfile*> profiles_to_suggest =
+      suggestion_generator()->GetProfilesToSuggest(
+          AutofillType(NAME_FULL), u"", /*field_is_autofilled=*/false,
+          {NAME_FULL});
+
+  ASSERT_EQ(1u, profiles_to_suggest.size());
+  EXPECT_EQ(profile_1.guid(), profiles_to_suggest[0]->guid());
+  EXPECT_EQ(AutofillProfile::Source::kAccount,
+            profiles_to_suggest[0]->source());
 }
 
 TEST_F(AutofillSuggestionGeneratorTest, CreateSuggestionsFromProfiles) {
@@ -748,17 +856,6 @@ TEST_F(AutofillSuggestionGeneratorTest,
                        "216 Broadway St", "", "Lowell", "MA", "01854", "US",
                        "19784523366");
 
-  // The profiles' use dates and counts are set make this test deterministic.
-  // The suggestion created with data from profile1 should be ranked higher
-  // than profile2's associated suggestion. This ensures that profile1's
-  // suggestion is the first element in the collection returned by
-  // GetProfilesForSuggestions.
-  profile1.set_use_date(AutofillClock::Now());
-  profile1.set_use_count(10);
-  profile2.set_use_date(AutofillClock::Now() - base::Days(10));
-  profile2.set_use_count(1);
-
-  EXPECT_TRUE(profile1.HasGreaterRankingThan(&profile2, AutofillClock::Now()));
   EXPECT_THAT(
       suggestion_generator()->CreateSuggestionsFromProfiles(
           {&profile1, &profile2},
@@ -798,16 +895,6 @@ TEST_F(AutofillSuggestionGeneratorTest,
   test::SetProfileInfo(&profile2, "María", "", "Lòpez", "maria@aol.com", "",
                        "11 Elkins St", "", "Boston", "MA", "02127", "US",
                        "6172686862");
-
-  // The profiles' use dates and counts are set make this test deterministic.
-  // The suggestion created with data from profile1 should be ranked higher
-  // than profile2's associated suggestion. This ensures that profile1's
-  // suggestion is the first element in the collection returned by
-  // GetProfilesForSuggestions.
-  profile1.set_use_date(AutofillClock::Now());
-  profile1.set_use_count(10);
-  profile2.set_use_date(AutofillClock::Now() - base::Days(10));
-  profile2.set_use_count(1);
 
   // Tests a form with name, email address, and phone number fields.
   EXPECT_THAT(
@@ -864,16 +951,6 @@ TEST_F(AutofillSuggestionGeneratorTest,
   test::SetProfileInfo(&profile2, "María", "", "Lòpez", "maria@aol.com", "",
                        "11 Elkins St", "", "Boston", "MA", "02127", "US",
                        "6172686862");
-
-  // The profiles' use dates and counts are set make this test deterministic.
-  // The suggestion created with data from profile1 should be ranked higher
-  // than profile2's associated suggestion. This ensures that profile1's
-  // suggestion is the first element in the collection returned by
-  // GetProfilesForSuggestions.
-  profile1.set_use_date(AutofillClock::Now());
-  profile1.set_use_count(10);
-  profile2.set_use_date(AutofillClock::Now() - base::Days(10));
-  profile2.set_use_count(1);
 
   // Tests a form with name, email address, and phone number fields.
   EXPECT_THAT(
