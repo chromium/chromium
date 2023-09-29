@@ -414,7 +414,9 @@ void WaylandInputMethodContext::SetSurroundingText(
     LOG(ERROR) << "selection_range is not bounded by text_range: "
                << selection_range.ToString() << ", " << text_range.ToString();
     // Make a crash report for further investigation in the future.
-    base::debug::DumpWithoutCrashing();
+    // Temporarily disabling crash dump for release.
+    // TODO(crbug.com/1457178): restore this.
+    // base::debug::DumpWithoutCrashing();
     return;
   }
 
