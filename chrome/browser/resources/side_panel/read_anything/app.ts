@@ -177,6 +177,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   private utterancesToSpeak_: SpeechSynthesisUtterance[] = [];
   private currentUtteranceIndex_: number = 0;
   private previousHighlight_: HTMLElement|null;
+  private currentColorSuffix_: string;
 
   // If the WebUI toolbar should be shown. This happens when the WebUI feature
   // flag is enabled.
@@ -845,10 +846,10 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   }
 
   updateHighlight(show: boolean) {
-    // TODO(crbug.com/1474951): This is a placeholder color. Use the UX color
-    // once finalized.
+    const highlightBackground =
+        this.getCurrentHighlightColorVar(this.currentColorSuffix_);
     this.updateStyles({
-      '--current-highlight-bg-color': show ? 'var(--google-yellow-400)' :
+      '--current-highlight-bg-color': show ? highlightBackground :
                                              'transparent',
     });
   }
@@ -856,12 +857,17 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   // TODO(crbug.com/1465029): This method should be renamed to updateTheme()
   // and replace the one below once we've removed the Views toolbar.
   updateThemeFromWebUi(colorSuffix: string) {
+    this.currentColorSuffix_ = colorSuffix;
     const emptyStateBodyColor = colorSuffix ?
         this.getEmptyStateBodyColorFromWebUi_(colorSuffix) :
         'var(--color-side-panel-card-secondary-foreground)';
     this.updateStyles({
       '--background-color': this.getBackgroundColorVar(colorSuffix),
       '--foreground-color': this.getForegroundColorVar(colorSuffix),
+      '--current-highlight-bg-color':
+          this.getCurrentHighlightColorVar(colorSuffix),
+      '--previous-highlight-color':
+          this.getPreviousHighlightColorVar(colorSuffix),
       '--sp-empty-state-heading-color':
           `var(--color-read-anything-foreground${colorSuffix})`,
       '--sp-empty-state-body-color': emptyStateBodyColor,
@@ -871,6 +877,14 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       '--visited-link-color':
           `var(--color-read-anything-link-visited${colorSuffix})`,
     });
+  }
+
+  getCurrentHighlightColorVar(colorSuffix: string) {
+    return `var(--color-current-read-aloud-highlight${colorSuffix})`;
+  }
+
+  getPreviousHighlightColorVar(colorSuffix: string) {
+    return `var(--color-previous-read-aloud-highlight${colorSuffix})`;
   }
 
   getBackgroundColorVar(colorSuffix: string) {

@@ -764,26 +764,33 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorReadAnythingBackgroundDark] = {gfx::kGoogleGrey900};
   mixer[kColorReadAnythingBackgroundLight] = {gfx::kGoogleGrey100};
   mixer[kColorReadAnythingBackgroundYellow] = {gfx::kGoogleYellow100};
+  // The Read Anything themes need to be hard coded because they do not
+  // change with the chrome theme, which is the purpose of the Read Anything
+  // feature.
   mixer[kColorReadAnythingForeground] = {
       dark_mode ? kColorReadAnythingForegroundDark
                 : kColorReadAnythingForegroundLight};
-  mixer[kColorReadAnythingForegroundBlue] = ui::PickGoogleColorTwoBackgrounds(
-      kColorReadAnythingForegroundLight,
-      kColorReadAnythingDropdownBackgroundBlue,
-      kColorReadAnythingDropdownSelectedBlue,
-      color_utils::kMinimumReadableContrastRatio);
-  mixer[kColorReadAnythingForegroundDark] = ui::PickGoogleColorTwoBackgrounds(
-      gfx::kGoogleGrey200, kColorReadAnythingDropdownBackgroundDark,
-      kColorReadAnythingDropdownSelectedDark,
-      color_utils::kMinimumReadableContrastRatio);
-  mixer[kColorReadAnythingForegroundLight] = ui::PickGoogleColorTwoBackgrounds(
-      gfx::kGoogleGrey800, kColorReadAnythingBackgroundLight,
-      kColorReadAnythingDropdownSelectedLight,
-      color_utils::kMinimumReadableContrastRatio);
-  mixer[kColorReadAnythingForegroundYellow] = ui::PickGoogleColorTwoBackgrounds(
-      kColorReadAnythingForegroundLight, kColorReadAnythingBackgroundYellow,
-      kColorReadAnythingDropdownSelectedYellow,
-      color_utils::kMinimumReadableContrastRatio);
+  mixer[kColorReadAnythingForegroundBlue] = {SkColorSetRGB(31, 31, 31)};
+  mixer[kColorReadAnythingForegroundDark] = {SkColorSetRGB(227, 227, 227)};
+  mixer[kColorReadAnythingForegroundLight] = {SkColorSetRGB(31, 31, 31)};
+  mixer[kColorReadAnythingForegroundYellow] = {SkColorSetRGB(31, 31, 31)};
+  mixer[kColorCurrentReadAloudHighlight] = {
+      dark_mode ? kColorCurrentReadAloudHighlightDark
+                : kColorCurrentReadAloudHighlightLight};
+  mixer[kColorCurrentReadAloudHighlightDark] = {
+      SkColorSetARGB(25, 253, 252, 251)};
+  mixer[kColorCurrentReadAloudHighlightLight] = {
+      SkColorSetARGB(15, 31, 31, 31)};
+  mixer[kColorCurrentReadAloudHighlightBlue] = {SkColorSetARGB(15, 31, 31, 31)};
+  mixer[kColorCurrentReadAloudHighlightYellow] = {
+      SkColorSetARGB(15, 31, 31, 31)};
+  mixer[kColorPreviousReadAloudHighlight] = {
+      dark_mode ? kColorPreviousReadAloudHighlightDark
+                : kColorPreviousReadAloudHighlightLight};
+  mixer[kColorPreviousReadAloudHighlightDark] = {SkColorSetRGB(199, 199, 199)};
+  mixer[kColorPreviousReadAloudHighlightLight] = {SkColorSetRGB(71, 71, 71)};
+  mixer[kColorPreviousReadAloudHighlightBlue] = {SkColorSetRGB(71, 71, 71)};
+  mixer[kColorPreviousReadAloudHighlightYellow] = {SkColorSetRGB(71, 71, 71)};
   mixer[kColorReadAnythingSeparator] = {dark_mode
                                             ? kColorReadAnythingSeparatorDark
                                             : kColorReadAnythingSeparatorLight};
