@@ -316,16 +316,14 @@ source_set("anonymous_tokens_tests") {
     "src/anonymous_tokens/cpp/shared/proto_utils_test.cc",
   ]
 
-  # TODO(awillia): Figure out how to get the testdata properly bundled on iOS so
-  # that these tests won't all fail on the ios-simulator trybot.
-  if (!is_ios) {
-    sources += [
-      "src/anonymous_tokens/cpp/client/anonymous_tokens_rsa_bssa_client_test.cc",
-      "src/anonymous_tokens/cpp/crypto/anonymous_tokens_pb_openssl_converters_test.cc",
-      "src/anonymous_tokens/cpp/crypto/rsa_blind_signer_test.cc",
-      "src/anonymous_tokens/cpp/crypto/rsa_ssa_pss_verifier_test.cc",
-    ]
-  }
+  # TODO(awillia): Add these tests back in once they no longer fail due to building with the wrong
+  # testdata_utils.h file.
+  #  sources += [
+  #    "src/anonymous_tokens/cpp/client/anonymous_tokens_rsa_bssa_client_test.cc",
+  #    "src/anonymous_tokens/cpp/crypto/anonymous_tokens_pb_openssl_converters_test.cc",
+  #    "src/anonymous_tokens/cpp/crypto/rsa_blind_signer_test.cc",
+  #    "src/anonymous_tokens/cpp/crypto/rsa_ssa_pss_verifier_test.cc",
+  #  ]
   data = [ "src/anonymous_tokens/testdata/" ]
   configs += [ ":anonymous_tokens_internal_config" ]
   public_configs = [ ":anonymous_tokens_config" ]
