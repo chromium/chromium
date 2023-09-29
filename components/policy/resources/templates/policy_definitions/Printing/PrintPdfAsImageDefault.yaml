@@ -10,8 +10,6 @@ desc: |-
         For <ph name="MS_WIN_NAME">Microsoft® Windows®</ph> or <ph name="MAC_OS_NAME">macOS</ph> this policy only has an effect if <ph name="PRINT_PDF_AS_IMAGE_AVAILABILITY_POLICY_NAME">PrintPdfAsImageAvailability</ph> is also enabled.
 example_value: true
 features:
-  can_be_mandatory: false
-  can_be_recommended: true
   dynamic_refresh: true
   per_profile: true
 future_on:
