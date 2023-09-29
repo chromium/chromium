@@ -4,6 +4,7 @@
 
 // clang-format off
 import {define as crUiDefine} from '../../../common/js/ui.js';
+import {decorate} from '../../../common/js/cr_ui.js';
 
 import {ListSelectionModel} from './list_selection_model.js';
 import {ListSelectionController} from './list_selection_controller.js';
@@ -17,22 +18,25 @@ import {ListItem} from './list_item.js';
  * except the multiple columns layout.
  */
 
-
 /**
- * Creates a new grid item element.
  * @param {*} dataItem The data item.
- * @constructor
- * @extends {ListItem}
+ * @returns {!GridItem}
  */
-export function GridItem(dataItem) {
+export function createGridItem(dataItem) {
   const el = document.createElement('li');
   el.dataItem = dataItem;
-  el.__proto__ = GridItem.prototype;
-  return el;
+  return decorate(el, ListItem);
 }
 
-GridItem.prototype = {
-  __proto__: ListItem.prototype,
+/** Creates a new grid item element. */
+export class GridItem extends ListItem {
+  /** Unused, see the decorate() method instead. */
+  constructor() {
+    super();
+
+    /** @type {*} */
+    this.dataItem;
+  }
 
   /**
    * Called when an element is decorated as a grid item.
@@ -40,8 +44,8 @@ GridItem.prototype = {
   decorate() {
     ListItem.prototype.decorate.apply(this, arguments);
     this.textContent = this.dataItem;
-  },
-};
+  }
+}
 
 /**
  * Creates a new grid element.
@@ -64,10 +68,10 @@ Grid.prototype = {
 
   /**
    * Function used to create grid items.
-   * @type {function(new:GridItem, *)}
+   * @type {function(*): GridItem}
    * @override
    */
-  itemConstructor_: GridItem,
+  itemConstructor_: createGridItem,
 
   /**
    * Whether or not the rows on list have various heights.

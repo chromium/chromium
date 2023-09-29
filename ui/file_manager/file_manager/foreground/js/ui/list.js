@@ -10,7 +10,7 @@ import {define as crUiDefine} from '../../../common/js/ui.js';
 
 import {ListSelectionModel} from './list_selection_model.js';
 import {ListSelectionController} from './list_selection_controller.js';
-import {ListItem} from './list_item.js';
+import {ListItem, createListItem} from './list_item.js';
 // clang-format on
 
 /**
@@ -98,14 +98,14 @@ List.prototype = {
 
   /**
    * Function used to create grid items.
-   * @type {function(new:ListItem, *)}
-   * @private
+   * @type {function(*): ListItem}
+   * @protected
    */
-  itemConstructor_: ListItem,
+  itemConstructor_: createListItem,
 
   /**
    * Function used to create grid items.
-   * @return {function(new:ListItem, *)}
+   * @return {function(*): ListItem}
    */
   get itemConstructor() {
     return this.itemConstructor_;
@@ -883,7 +883,7 @@ List.prototype = {
    * @return {!ListItem} The newly created list item.
    */
   createItem(value) {
-    const item = new this.itemConstructor_(value);
+    const item = this.itemConstructor_(value);
     item.label = value;
     if (typeof item.decorate === 'function') {
       item.decorate();

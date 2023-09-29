@@ -31,7 +31,6 @@ js_library("table") {
     "//ash/webui/common/resources:cr_deprecated",
     "//ui/file_manager/file_manager/common/js:array_data_model",
     "//ui/file_manager/file_manager/foreground/js/ui:list",
-    "//ui/file_manager/file_manager/foreground/js/ui:list_item",
     "//ui/file_manager/file_manager/foreground/js/ui:list_single_selection_model",
   ]
 }
@@ -55,7 +54,6 @@ js_library("table_list") {
   deps = [
     "//ash/webui/common/resources:cr_deprecated",
     "//ui/file_manager/file_manager/foreground/js/ui:list",
-    "//ui/file_manager/file_manager/foreground/js/ui:list_item",
   ]
 }
 

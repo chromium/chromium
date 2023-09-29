@@ -4,7 +4,6 @@
 
 import {ArrayDataModel} from '../../../common/js/array_data_model.js';
 
-import {ListItem} from './list_item.d.js';
 import {ListSelectionModel} from './list_selection_model.js';
 
 export class List extends HTMLUListElement {

@@ -47,7 +47,6 @@ group("js_modules") {
     ":install_linux_package_dialog",
     ":list",
     ":list_container",
-    ":list_item",
     ":list_selection_controller",
     ":list_selection_model",
     ":list_single_selection_model",
@@ -295,7 +294,6 @@ js_library("file_grid") {
     ":file_tap_handler",
     ":grid",
     ":list",
-    ":list_item",
     ":list_selection_model",
     "//ash/webui/common/resources:assert",
     "//ash/webui/common/resources:cr_deprecated",
@@ -456,7 +454,6 @@ js_library("file_table_list") {
     ":file_list_selection_model",
     ":file_tap_handler",
     ":list",
-    ":list_item",
     ":list_selection_controller",
     ":list_selection_model",
     "table:table",
@@ -535,7 +532,6 @@ js_library("gear_menu") {
 js_library("grid") {
   deps = [
     ":list",
-    ":list_item",
     ":list_selection_controller",
     ":list_selection_model",
     "//ui/file_manager/file_manager/common/js:ui",
@@ -576,7 +572,6 @@ js_library("import_crostini_image_dialog") {
 
 js_library("list") {
   deps = [
-    ":list_item",
     ":list_selection_controller",
     ":list_selection_model",
     "//ash/webui/common/resources:cr_deprecated",
@@ -599,7 +594,6 @@ js_library("list_container") {
     ":file_grid",
     ":file_table",
     ":list",
-    ":list_item",
     ":list_selection_model",
     ":list_single_selection_model",
     "//ash/webui/common/resources:assert",
@@ -609,10 +603,6 @@ js_library("list_container") {
     "//ui/file_manager/file_manager/foreground/js:file_list_model",
     "//ui/file_manager/file_manager/foreground/js:list_thumbnail_loader",
   ]
-}
-
-js_library("list_item") {
-  deps = [ "//ash/webui/common/resources:cr_deprecated" ]
 }
 
 js_library("list_selection_controller") {

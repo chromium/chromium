@@ -190,7 +190,6 @@ static_js_files = [
   "file_manager/foreground/js/ui/install_linux_package_dialog.js",
   "file_manager/foreground/js/ui/list.js",
   "file_manager/foreground/js/ui/list_container.js",
-  "file_manager/foreground/js/ui/list_item.js",
   "file_manager/foreground/js/ui/list_selection_controller.js",
   "file_manager/foreground/js/ui/list_selection_model.js",
   "file_manager/foreground/js/ui/list_single_selection_model.js",
@@ -217,6 +216,7 @@ static_js_files = [
 ts_files = [
   # Common.
   "file_manager/common/js/api.ts",
+  "file_manager/common/js/cr_ui.ts",
   "file_manager/common/js/dom_utils.ts",
   "file_manager/common/js/entry_utils.ts",
   "file_manager/common/js/file_tasks.ts",
@@ -277,6 +277,7 @@ ts_files = [
   "file_manager/widgets/xf_tree.ts",
   "file_manager/widgets/xf_tree_item.ts",
   "file_manager/widgets/xf_password_dialog.ts",
+  "file_manager/foreground/js/ui/list_item.ts",
   "file_manager/foreground/js/ui/banners/drive_bulk_pinning_banner.ts",
   "file_manager/foreground/js/ui/banners/drive_low_individual_space_banner.ts",
   "file_manager/foreground/js/ui/banners/drive_low_shared_drive_space_banner.ts",
@@ -456,7 +457,6 @@ checked_in_dts_files = [
   "file_manager/definitions/navigator_connection.d.ts",
   "file_manager/foreground/js/ui/command.d.ts",
   "file_manager/foreground/js/ui/list.d.ts",
-  "file_manager/foreground/js/ui/list_item.d.ts",
   "file_manager/foreground/js/ui/grid.d.ts",
   "file_manager/foreground/js/ui/menu_item.d.ts",
   "file_manager/foreground/js/ui/multi_menu_button.d.ts",
