@@ -49499,6 +49499,9 @@ Called by update_permissions_policy_enum.py.-->
   <int value="11" label="Internal server error"/>
   <int value="12" label="Quota exceeded"/>
   <int value="13" label="Device has too many registrations"/>
+  <int value="14" label="Too many subscribers"/>
+  <int value="15" label="Invalid target version"/>
+  <int value="16" label="FIS auth error"/>
 </enum>
 
 <enum name="GCMSendMessageStatus">
