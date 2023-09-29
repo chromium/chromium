@@ -38,6 +38,7 @@ import org.chromium.blink.mojom.PublicKeyCredentialCreationOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialDescriptor;
 import org.chromium.blink.mojom.PublicKeyCredentialRequestOptions;
 import org.chromium.blink.mojom.ResidentKeyRequirement;
+import org.chromium.components.webauthn.Barrier;
 import org.chromium.components.webauthn.CredManHelper;
 import org.chromium.components.webauthn.CredManMetricsHelper;
 import org.chromium.components.webauthn.CredManMetricsHelper.CredManCreateRequestEnum;
@@ -69,6 +70,8 @@ public class CredManHelperRobolectricTest {
     private WebAuthnBrowserBridge mBrowserBridge;
     @Mock
     private Callback<Integer> mErrorCallback;
+    @Mock
+    private Barrier mBarrier;
 
     private CredManHelper.BridgeProvider mBridgeProvider = new CredManHelper.BridgeProvider() {
         @Override
@@ -308,12 +311,16 @@ public class CredManHelperRobolectricTest {
     public void testStartPrefetchRequest_default_success() {
         mRequestOptions.isConditional = true;
 
-        int result = mCredManHelper.startPrefetchRequest(mContext, mFrameHost, mRequestOptions,
-                mOriginString,
+        mCredManHelper.startPrefetchRequest(mContext, mFrameHost, mRequestOptions, mOriginString,
                 /*isCrossOrigin=*/false,
-                /*maybeClientDataHash=*/null, mCallback::onSignResponse, mErrorCallback);
+                /*maybeClientDataHash=*/null, mCallback::onSignResponse, mErrorCallback, mBarrier);
 
-        assertThat(result).isEqualTo(AuthenticatorStatus.SUCCESS);
+        verify(mBarrier, never()).onCredManFailed(anyInt());
+        ArgumentCaptor<Runnable> credManCallSuccessfulRunback =
+                ArgumentCaptor.forClass(Runnable.class);
+        verify(mBarrier).onCredManSuccessful(credManCallSuccessfulRunback.capture());
+        credManCallSuccessfulRunback.getValue().run();
+
         FakeAndroidCredManGetRequest credManRequest = mCredentialManager.getGetRequest();
         assertThat(credManRequest).isNotNull();
         assertThat(credManRequest.getOrigin()).isEqualTo(mOriginString);
@@ -342,13 +349,12 @@ public class CredManHelperRobolectricTest {
         mCredentialManager.setErrorResponse(new FakeAndroidCredManException(
                 "android.credentials.GetCredentialException.TYPE_UNKNOWN", "Message"));
 
-        int result = mCredManHelper.startPrefetchRequest(mContext, mFrameHost, mRequestOptions,
-                mOriginString,
+        mCredManHelper.startPrefetchRequest(mContext, mFrameHost, mRequestOptions, mOriginString,
                 /*isCrossOrigin=*/false,
-                /*maybeClientDataHash=*/null, mCallback::onSignResponse, mErrorCallback);
+                /*maybeClientDataHash=*/null, mCallback::onSignResponse, mErrorCallback, mBarrier);
 
-        assertThat(result).isEqualTo(AuthenticatorStatus.SUCCESS);
-        verify(mErrorCallback, times(1)).onResult(AuthenticatorStatus.UNKNOWN_ERROR);
+        verify(mBarrier, never()).onCredManFailed(eq(0));
+        verify(mBarrier, times(1)).onCredManFailed(eq(AuthenticatorStatus.UNKNOWN_ERROR));
         verify(mMetricsHelper, times(1))
                 .recordCredmanPrepareRequestHistogram(eq(CredManPrepareRequestEnum.SENT_REQUEST));
         verify(mMetricsHelper, times(1))
@@ -363,10 +369,15 @@ public class CredManHelperRobolectricTest {
 
         mCredManHelper.startPrefetchRequest(mContext, mFrameHost, mRequestOptions, mOriginString,
                 /*isCrossOrigin=*/false,
-                /*maybeClientDataHash=*/null, mCallback::onSignResponse, mErrorCallback);
+                /*maybeClientDataHash=*/null, mCallback::onSignResponse, mErrorCallback, mBarrier);
+        ArgumentCaptor<Runnable> credManCallSuccessfulRunback =
+                ArgumentCaptor.forClass(Runnable.class);
+        verify(mBarrier).onCredManSuccessful(credManCallSuccessfulRunback.capture());
+        credManCallSuccessfulRunback.getValue().run();
+
         mCredManHelper.cancelConditionalGetAssertion(mFrameHost);
 
-        verify(mErrorCallback, times(1)).onResult(AuthenticatorStatus.ABORT_ERROR);
+        verify(mBarrier, times(1)).onCredManCancelled();
         verify(mBrowserBridge, times(1)).cleanupCredManRequest(any());
         verify(mBrowserBridge, never()).onCredManUiClosed(any(), anyBoolean());
         verify(mMetricsHelper, never()).reportGetCredentialMetrics(anyInt(), any());
@@ -379,12 +390,16 @@ public class CredManHelperRobolectricTest {
         ArgumentCaptor<Callback<Boolean>> callbackCaptor = ArgumentCaptor.forClass(Callback.class);
         mRequestOptions.isConditional = true;
 
-        int result = mCredManHelper.startPrefetchRequest(mContext, mFrameHost, mRequestOptions,
-                mOriginString,
+        mCredManHelper.startPrefetchRequest(mContext, mFrameHost, mRequestOptions, mOriginString,
                 /*isCrossOrigin=*/false,
-                /*maybeClientDataHash=*/null, mCallback::onSignResponse, mErrorCallback);
+                /*maybeClientDataHash=*/null, mCallback::onSignResponse, mErrorCallback, mBarrier);
 
-        assertThat(result).isEqualTo(AuthenticatorStatus.SUCCESS);
+        verify(mBarrier, never()).onCredManFailed(anyInt());
+        ArgumentCaptor<Runnable> credManCallSuccessfulRunback =
+                ArgumentCaptor.forClass(Runnable.class);
+        verify(mBarrier).onCredManSuccessful(credManCallSuccessfulRunback.capture());
+        credManCallSuccessfulRunback.getValue().run();
+
         verify(mMetricsHelper, times(1)).recordCredmanPrepareRequestDuration(anyLong());
 
         // Setup the test for startGetRequest:
@@ -411,12 +426,16 @@ public class CredManHelperRobolectricTest {
         ArgumentCaptor<Callback<Boolean>> callbackCaptor = ArgumentCaptor.forClass(Callback.class);
         mRequestOptions.isConditional = true;
 
-        int result = mCredManHelper.startPrefetchRequest(mContext, mFrameHost, mRequestOptions,
-                mOriginString,
+        mCredManHelper.startPrefetchRequest(mContext, mFrameHost, mRequestOptions, mOriginString,
                 /*isCrossOrigin=*/false,
-                /*maybeClientDataHash=*/null, mCallback::onSignResponse, mErrorCallback);
+                /*maybeClientDataHash=*/null, mCallback::onSignResponse, mErrorCallback, mBarrier);
 
-        assertThat(result).isEqualTo(AuthenticatorStatus.SUCCESS);
+        verify(mBarrier, never()).onCredManFailed(anyInt());
+        ArgumentCaptor<Runnable> credManCallSuccessfulRunback =
+                ArgumentCaptor.forClass(Runnable.class);
+        verify(mBarrier).onCredManSuccessful(credManCallSuccessfulRunback.capture());
+        credManCallSuccessfulRunback.getValue().run();
+
         verify(mMetricsHelper, times(1)).recordCredmanPrepareRequestDuration(anyLong());
         FakeAndroidCredManGetRequest credManRequest = mCredentialManager.getGetRequest();
         assertThat(credManRequest).isNotNull();

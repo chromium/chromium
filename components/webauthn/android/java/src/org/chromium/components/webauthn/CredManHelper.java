@@ -64,6 +64,7 @@ public class CredManHelper {
     private static final String TYPE_PASSKEY = CRED_MAN_PREFIX + "TYPE_PUBLIC_KEY_CREDENTIAL";
 
     private Callback<Integer> mErrorCallback;
+    private Barrier mBarrier;
     private boolean mIsCrossOrigin;
     private boolean mPlayServicesAvailable;
     private boolean mRequestPasswords;
@@ -231,18 +232,18 @@ public class CredManHelper {
 
     /**
      * Queries credential availability using the Android 14 CredMan API.
-     * Returns `AuthenticatorStatus.SUCCESS` if the request is successfully sent to the platform.
      */
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
-    public int startPrefetchRequest(Context context, RenderFrameHost frameHost,
+    public void startPrefetchRequest(Context context, RenderFrameHost frameHost,
             PublicKeyCredentialRequestOptions options, String originString, boolean isCrossOrigin,
             byte[] maybeClientDataHash, GetAssertionResponseCallback getCallback,
-            Callback<Integer> errorCallback) {
+            Callback<Integer> errorCallback, Barrier barrier) {
         long startTimeMs = SystemClock.elapsedRealtime();
         mContext = context;
         mFrameHost = frameHost;
         mErrorCallback = errorCallback;
         mIsCrossOrigin = isCrossOrigin;
+        mBarrier = barrier;
 
         // The Android 14 APIs have to be called via reflection until Chromium
         // builds with the Android 14 SDK by default.
@@ -257,7 +258,7 @@ public class CredManHelper {
                 Log.e(TAG, "CredMan prepareGetCredential call failed: %s",
                         getCredManExceptionType(e) + " (" + e.getMessage() + ")");
                 mConditionalUiState = ConditionalUiState.NONE;
-                mErrorCallback.onResult(AuthenticatorStatus.UNKNOWN_ERROR);
+                mBarrier.onCredManFailed(AuthenticatorStatus.UNKNOWN_ERROR);
                 mMetricsHelper.recordCredmanPrepareRequestHistogram(
                         CredManPrepareRequestEnum.FAILURE);
             }
@@ -282,19 +283,22 @@ public class CredManHelper {
                 } catch (ReflectiveOperationException e) {
                     Log.e(TAG, "Reflection failed; are you running on Android 14?", e);
                     mConditionalUiState = ConditionalUiState.NONE;
-                    mErrorCallback.onResult(AuthenticatorStatus.UNKNOWN_ERROR);
+                    mBarrier.onCredManFailed(AuthenticatorStatus.UNKNOWN_ERROR);
                     mMetricsHelper.recordCredmanPrepareRequestHistogram(
                             CredManPrepareRequestEnum.FAILURE);
                     return;
                 }
 
                 mConditionalUiState = ConditionalUiState.WAITING_FOR_SELECTION;
-                mBridgeProvider.getBridge().onCredManConditionalRequestPending(
-                        mFrameHost, hasPublicKeyCredentials, (requestPasswords) -> {
-                            setRequestPasswords(requestPasswords);
-                            startGetRequest(mContext, mFrameHost, options, originString,
-                                    isCrossOrigin, maybeClientDataHash, getCallback, errorCallback);
-                        });
+                mBarrier.onCredManSuccessful(() -> {
+                    mBridgeProvider.getBridge().onCredManConditionalRequestPending(
+                            mFrameHost, hasPublicKeyCredentials, (requestPasswords) -> {
+                                setRequestPasswords(requestPasswords);
+                                startGetRequest(mContext, mFrameHost, options, originString,
+                                        isCrossOrigin, maybeClientDataHash, getCallback,
+                                        errorCallback);
+                            });
+                });
                 mMetricsHelper.recordCredmanPrepareRequestHistogram(hasPublicKeyCredentials
                                 ? CredManPrepareRequestEnum.SUCCESS_HAS_RESULTS
                                 : CredManPrepareRequestEnum.SUCCESS_NO_RESULTS);
@@ -312,7 +316,8 @@ public class CredManHelper {
                 mConditionalUiState = ConditionalUiState.NONE;
                 mMetricsHelper.recordCredmanPrepareRequestHistogram(
                         CredManPrepareRequestEnum.COULD_NOT_SEND_REQUEST);
-                return AuthenticatorStatus.NOT_ALLOWED_ERROR;
+                mBarrier.onCredManFailed(AuthenticatorStatus.NOT_ALLOWED_ERROR);
+                return;
             }
 
             final Object manager = credentialManagerService(mContext);
@@ -329,9 +334,8 @@ public class CredManHelper {
             mConditionalUiState = ConditionalUiState.NONE;
             mMetricsHelper.recordCredmanPrepareRequestHistogram(
                     CredManPrepareRequestEnum.COULD_NOT_SEND_REQUEST);
-            return AuthenticatorStatus.UNKNOWN_ERROR;
+            mBarrier.onCredManFailed(AuthenticatorStatus.UNKNOWN_ERROR);
         }
-        return AuthenticatorStatus.SUCCESS;
     }
 
     public void setNoCredentialsFallback(Runnable noCredentialsFallback) {
@@ -363,7 +367,7 @@ public class CredManHelper {
                 if (mConditionalUiState == ConditionalUiState.CANCEL_PENDING) {
                     mConditionalUiState = ConditionalUiState.NONE;
                     mBridgeProvider.getBridge().cleanupCredManRequest(mFrameHost);
-                    mErrorCallback.onResult(AuthenticatorStatus.ABORT_ERROR);
+                    mBarrier.onCredManCancelled();
                     return;
                 }
                 if (errorType.equals(CRED_MAN_EXCEPTION_GET_CREDENTIAL_TYPE_USER_CANCEL)) {
@@ -403,7 +407,7 @@ public class CredManHelper {
                     notifyBrowserOnCredManClosed(false);
                     mConditionalUiState = ConditionalUiState.NONE;
                     mBridgeProvider.getBridge().cleanupCredManRequest(mFrameHost);
-                    mErrorCallback.onResult(AuthenticatorStatus.ABORT_ERROR);
+                    mBarrier.onCredManCancelled();
                     return;
                 }
                 Bundle data;
@@ -525,12 +529,12 @@ public class CredManHelper {
         switch (mConditionalUiState) {
             case WAITING_FOR_CREDENTIAL_LIST:
                 mConditionalUiState = ConditionalUiState.CANCEL_PENDING;
-                mErrorCallback.onResult(AuthenticatorStatus.ABORT_ERROR);
+                mBarrier.onCredManCancelled();
                 break;
             case WAITING_FOR_SELECTION:
                 mBridgeProvider.getBridge().cleanupCredManRequest(frameHost);
                 mConditionalUiState = ConditionalUiState.NONE;
-                mErrorCallback.onResult(AuthenticatorStatus.ABORT_ERROR);
+                mBarrier.onCredManCancelled();
                 break;
             case REQUEST_SENT_TO_PLATFORM:
                 // If the platform successfully completes the getAssertion then cancelation is

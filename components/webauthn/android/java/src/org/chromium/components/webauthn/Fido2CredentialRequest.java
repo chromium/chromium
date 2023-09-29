@@ -15,10 +15,8 @@ import android.util.Pair;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
-import androidx.annotation.OptIn;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
-import androidx.core.os.BuildCompat;
 
 import com.google.android.gms.tasks.Task;
 
@@ -105,6 +103,7 @@ public class Fido2CredentialRequest
     private MakeCredentialResponseCallback mMakeCredentialCallback;
     private FidoErrorResponseCallback mErrorCallback;
     private CredManHelper mCredManHelper;
+    private Barrier mBarrier;
     // mFrameHost is null in makeCredential requests. For getAssertion requests
     // it's non-null for conditional requests and may be non-null in other
     // requests.
@@ -146,6 +145,7 @@ public class Fido2CredentialRequest
         mIntentSender = intentSender;
         mPlayServicesAvailable = Fido2ApiCallHelper.getInstance().arePlayServicesAvailable();
         mCredManHelper = new CredManHelper(this, mPlayServicesAvailable);
+        mBarrier = new Barrier(this::returnErrorAndResetCallback);
     }
 
     private void returnErrorAndResetCallback(int error) {
@@ -157,11 +157,10 @@ public class Fido2CredentialRequest
         mMakeCredentialCallback = null;
     }
 
-    @OptIn(markerClass = androidx.core.os.BuildCompat.PrereleaseSdkCheck.class)
     private boolean isCredManEnabled() {
         if (sCredManSupport == CredManSupport.NOT_EVALUATED) {
             if (!mOverrideVersionCheckForTesting) {
-                if (!BuildCompat.isAtLeastU()) {
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
                     sCredManSupport = CredManSupport.DISABLED;
                 } else {
                     int packageVersion = PackageUtils.getPackageVersion("com.google.android.gms");
@@ -190,6 +189,15 @@ public class Fido2CredentialRequest
         return mIsHybridRequest
                 && DeviceFeatureMap.isEnabled(
                         DeviceFeatureList.WEBAUTHN_ANDROID_CRED_MAN_FOR_HYBRID);
+    }
+
+    private Barrier.Mode getBarrierMode() {
+        if (!isCredManEnabled()) return Barrier.Mode.ONLY_FIDO_2_API;
+        if (mIsHybridRequest) return Barrier.Mode.ONLY_CRED_MAN;
+        return DeviceFeatureMap.getInstance().getFieldTrialParamByFeatureAsBoolean(
+                       DeviceFeatureList.WEBAUTHN_ANDROID_CRED_MAN, "gpm_in_cred_man", false)
+                ? Barrier.Mode.ONLY_CRED_MAN
+                : Barrier.Mode.BOTH;
     }
 
     /**
@@ -340,12 +348,14 @@ public class Fido2CredentialRequest
         // Payments should still go through Google Play Services. Also, if the request has
         // pre-hashed PRF inputs then we cannot represent that in JSON and so can only forward to
         // Play Services.
-        if (payment == null && !options.extensions.prfInputsHashed && isCredManEnabled()) {
+        if (payment == null && !options.extensions.prfInputsHashed
+                && getBarrierMode() == Barrier.Mode.ONLY_CRED_MAN) {
             if (options.isConditional) {
-                int response = mCredManHelper.startPrefetchRequest(mContext, mFrameHost, options,
+                mBarrier.resetAndSetWaitStatus(Barrier.Mode.ONLY_CRED_MAN);
+                mCredManHelper.startPrefetchRequest(mContext, mFrameHost, options,
                         convertOriginToString(origin), mIsCrossOrigin,
-                        /*maybeClientDataHash=*/null, callback, this::returnErrorAndResetCallback);
-                if (response != AuthenticatorStatus.SUCCESS) returnErrorAndResetCallback(response);
+                        /*maybeClientDataHash=*/null, callback, this::returnErrorAndResetCallback,
+                        mBarrier);
             } else if (hasAllowCredentials && mPlayServicesAvailable) {
                 // If the allowlist contains non-discoverable credentials then
                 // the request needs to be routed directly to Play Services.
@@ -389,12 +399,24 @@ public class Fido2CredentialRequest
             // Enumerate credentials from Play Services so that we can show the
             // picker in Chrome UI.
             final byte[] finalClientDataHash = clientDataHash;
+
+            if (getBarrierMode() == Barrier.Mode.BOTH) {
+                mBarrier.resetAndSetWaitStatus(Barrier.Mode.BOTH);
+                mCredManHelper.startPrefetchRequest(context, frameHost, options, callerOriginString,
+                        hasAllowCredentials, maybeClientDataHash, callback,
+                        this::returnErrorAndResetCallback, mBarrier);
+            } else {
+                mBarrier.resetAndSetWaitStatus(Barrier.Mode.ONLY_FIDO_2_API);
+            }
             mConditionalUiState = ConditionalUiState.WAITING_FOR_CREDENTIAL_LIST;
             Fido2ApiCallHelper.getInstance().invokeFido2GetCredentials(options.relyingPartyId,
                     (credentials)
-                            -> onWebAuthnCredentialDetailsListReceived(
-                                    options, callerOriginString, finalClientDataHash, credentials),
-                    this::onBinderCallException);
+                            -> mBarrier.onFido2ApiSuccessful(
+                                    ()
+                                            -> onWebAuthnCredentialDetailsListReceived(options,
+                                                    callerOriginString, finalClientDataHash,
+                                                    credentials)),
+                    (e) -> mBarrier.onFido2ApiFailed(AuthenticatorStatus.NOT_ALLOWED_ERROR));
             return;
         }
 
@@ -406,12 +428,12 @@ public class Fido2CredentialRequest
         switch (mConditionalUiState) {
             case WAITING_FOR_CREDENTIAL_LIST:
                 mConditionalUiState = ConditionalUiState.CANCEL_PENDING;
-                returnErrorAndResetCallback(AuthenticatorStatus.ABORT_ERROR);
+                mBarrier.onFido2ApiCancelled();
                 break;
             case WAITING_FOR_SELECTION:
                 mBrowserBridge.cleanupRequest(frameHost);
                 mConditionalUiState = ConditionalUiState.NONE;
-                returnErrorAndResetCallback(AuthenticatorStatus.ABORT_ERROR);
+                mBarrier.onFido2ApiCancelled();
                 break;
             case REQUEST_SENT_TO_PLATFORM:
                 // If the platform successfully completes the getAssertion then cancelation is
@@ -426,7 +448,7 @@ public class Fido2CredentialRequest
 
     public void handleIsUserVerifyingPlatformAuthenticatorAvailableRequest(
             Context context, IsUvpaaResponseCallback callback) {
-        if (isCredManEnabled()) {
+        if (getBarrierMode() == Barrier.Mode.ONLY_CRED_MAN) {
             callback.onIsUserVerifyingPlatformAuthenticatorAvailableResponse(true);
             return;
         }
@@ -508,6 +530,10 @@ public class Fido2CredentialRequest
 
     public void setCredManHelperForTesting(CredManHelper helper) {
         mCredManHelper = helper;
+    }
+
+    public void setBarrierForTesting(Barrier barrier) {
+        mBarrier = barrier;
     }
 
     private void onWebAuthnCredentialDetailsListReceived(PublicKeyCredentialRequestOptions options,
@@ -774,7 +800,7 @@ public class Fido2CredentialRequest
                 if (mConditionalUiState == ConditionalUiState.CANCEL_PENDING) {
                     mConditionalUiState = ConditionalUiState.NONE;
                     mBrowserBridge.cleanupRequest(mFrameHost);
-                    returnErrorAndResetCallback(AuthenticatorStatus.ABORT_ERROR);
+                    mBarrier.onFido2ApiCancelled();
                 } else {
                     // The user can try again by selecting another conditional UI credential.
                     mConditionalUiState = ConditionalUiState.WAITING_FOR_SELECTION;

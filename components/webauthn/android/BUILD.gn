@@ -20,6 +20,7 @@ android_library("java") {
     "java/src/org/chromium/components/webauthn/AuthenticatorFactory.java",
     "java/src/org/chromium/components/webauthn/AuthenticatorImpl.java",
     "java/src/org/chromium/components/webauthn/AuthenticatorIncognitoConfirmationBottomsheet.java",
+    "java/src/org/chromium/components/webauthn/Barrier.java",
     "java/src/org/chromium/components/webauthn/CredManHelper.java",
     "java/src/org/chromium/components/webauthn/CredManMetricsHelper.java",
     "java/src/org/chromium/components/webauthn/Fido2Api.java",
