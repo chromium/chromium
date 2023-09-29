@@ -384,8 +384,6 @@ class CC_EXPORT InputHandler : public InputDelegateForCompositor {
                                        gfx::PointF* offset);
   virtual bool ScrollLayerTo(ElementId element_id, const gfx::PointF& offset);
 
-  virtual bool ScrollingShouldSwitchtoMainThread();
-
   // Sets the initial and target offset for scroll snapping for the currently
   // scrolling node and the given natural displacement. Also sets the target
   // element of the snap's scrolling animation.
@@ -522,13 +520,6 @@ class CC_EXPORT InputHandler : public InputDelegateForCompositor {
   LayerTreeImpl& ActiveTree();
   LayerTreeImpl& ActiveTree() const;
 
-  bool IsMainThreadScrolling(const InputHandler::ScrollStatus& status,
-                             const ScrollNode* scroll_node) const;
-
-  bool IsTouchDraggingScrollbar(
-      LayerImpl* first_scrolling_layer_or_drawn_scrollbar,
-      ui::ScrollInputType type);
-
   void UpdateRootLayerStateForSynchronousInputHandler();
 
   // Called during ScrollBegin once a scroller was successfully latched to
@@ -554,16 +545,6 @@ class CC_EXPORT InputHandler : public InputDelegateForCompositor {
   void ScrollLatchedScroller(ScrollState* scroll_state,
                              base::TimeDelta delayed_by);
 
-  // Determines whether the given scroll node can scroll on the compositor
-  // thread or if there are any reasons it must be scrolled on the main thread
-  // or not at all. Note: in general, this is not sufficient to determine if a
-  // scroll can occur on the compositor thread. If hit testing to a scroll
-  // node, the caller must also check whether the hit point intersects a
-  // non-fast-scrolling-region of any ancestor scrolling layers. Can be removed
-  // after scroll unification https://crbug.com/476553.
-  InputHandler::ScrollStatus TryScroll(const ScrollTree& scroll_tree,
-                                       ScrollNode* scroll_node) const;
-
   enum class SnapReason { kGestureScrollEnd, kScrollOffsetAnimationFinished };
 
   // Creates an animation curve and returns true if we need to update the
@@ -584,24 +565,6 @@ class CC_EXPORT InputHandler : public InputDelegateForCompositor {
       const LayerImpl* layer,
       const LayerImpl* first_layer_scrollable_or_opaque_to_hit_test,
       ScrollNode*& out_node_to_scroll) const;
-
-  // Similar to above but includes complicated logic to determine whether the
-  // ScrollNode is able to be scrolled on the compositor or requires main
-  // thread scrolling. If main thread scrolling is required
-  // |scroll_on_main_thread| is set to true and the reason is given in
-  // |main_thread_scrolling_reason| to on of the enum values in
-  // main_thread_scrolling_reason.h. Can be removed after scroll unification
-  // https://crbug.com/476553.
-  ScrollNode* FindScrollNodeForCompositedScrolling(
-      const gfx::PointF& device_viewport_point,
-      LayerImpl* layer_hit_by_point,
-      bool* scroll_on_main_thread,
-      uint32_t* main_thread_scrolling_reason);
-
-  // Return all ScrollNode indices that have an associated layer with a non-fast
-  // region that intersects the point.
-  base::flat_set<int> NonFastScrollableNodes(
-      const gfx::PointF& device_viewport_point) const;
 
   // Returns the ScrollNode we should use to scroll, accounting for viewport
   // scroll chaining rules.

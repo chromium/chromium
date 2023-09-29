@@ -1078,12 +1078,7 @@ void LayerTreeHost::UpdateScrollOffsetFromImpl(
         //
         // But if the scroll was NOT realized on the compositor, we need a
         // commit to push the transform change.
-        //
-        // Skip this if scroll unification is disabled as we will not set
-        // ScrollNode::is_composited in that case.
-        //
-        if (base::FeatureList::IsEnabled(features::kScrollUnification) &&
-            !scroll_tree.CanRealizeScrollsOnCompositor(*scroll_node)) {
+        if (!scroll_tree.CanRealizeScrollsOnCompositor(*scroll_node)) {
           SetNeedsCommit();
         }
       }

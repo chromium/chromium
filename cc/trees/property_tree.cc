@@ -1601,7 +1601,6 @@ gfx::PointF ScrollTree::GetScrollOffsetForScrollTimeline(
     const ScrollNode& scroll_node) const {
   gfx::PointF offset = current_scroll_offset(scroll_node.element_id);
   if (!property_trees()->is_main_thread() &&
-      base::FeatureList::IsEnabled(features::kScrollUnification) &&
       !CanRealizeScrollsOnCompositor(scroll_node)) {
     // Ignore impl-thread scroll delta if the scroll can't be realized on
     // compositor because the main thread is the source of truth in the case.

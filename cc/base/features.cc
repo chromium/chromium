@@ -40,11 +40,6 @@ BASE_FEATURE(kRemoveMobileViewportDoubleTap,
              "RemoveMobileViewportDoubleTap",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Design doc: bit.ly/scrollunification
-BASE_FEATURE(kScrollUnification,
-             "ScrollUnification",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kScrollSnapCoveringAvoidNestedSnapAreas,
              "ScrollSnapCoveringAvoidNestedSnapAreas",
              base::FEATURE_ENABLED_BY_DEFAULT);

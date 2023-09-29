@@ -225,16 +225,13 @@ void LayerTreeImpl::DidUpdateScrollOffset(ElementId id) {
   }
 
   // This bit controls whether we'll update the transform node based on a
-  // changed scroll offset. If scroll unification is off, we always do this
-  // because the scroll handling code will only invoke a scroll update on nodes
-  // that can compositor scroll. However, with scroll unification, we can
-  // mutate scroll nodes which have main thread scrolling reasons, or aren't
-  // backed by a layer at all. In those cases, we don't want to produce any
-  // immediate changes in the compositor, we want the scroll to propagate
-  // through Blink in a commit and have Blink update properties, paint,
-  // compositing, etc. Thus, we avoid mutating the transform tree in this case.
+  // changed scroll offset. We can mutate scroll nodes which have main thread
+  // scrolling reasons, or aren't backed by a layer at all, but in those cases
+  // we don't want to produce any immediate changes in the compositor. Instead
+  // we want the scroll to propagate through Blink in a commit and have Blink
+  // update properties, paint, compositing, etc. Thus, we avoid mutating the
+  // transform tree in this case.
   bool should_realize_scroll_on_compositor =
-      !base::FeatureList::IsEnabled(features::kScrollUnification) ||
       scroll_tree.CanRealizeScrollsOnCompositor(*scroll_node);
 
   // A ScrollNode may have an invalid transform_id if its scroller is
@@ -2431,21 +2428,6 @@ static void FindClosestMatchingLayer(const gfx::PointF& screen_space_point,
   }
 }
 
-LayerImpl* LayerTreeImpl::FindFirstScrollingLayerOrScrollbarThatIsHitByPoint(
-    const gfx::PointF& screen_space_point) {
-  if (layer_list_.empty())
-    return nullptr;
-
-  FindClosestMatchingLayerState state;
-  LayerImpl* root_layer = layer_list_[0].get();
-  auto HitTestScrollingLayerOrScrollbarFunctor = [](const LayerImpl* layer) {
-    return layer->HitTestable() && layer->IsScrollerOrScrollbar();
-  };
-  FindClosestMatchingLayer(screen_space_point, root_layer,
-                           HitTestScrollingLayerOrScrollbarFunctor, &state);
-  return state.closest_match;
-}
-
 struct HitTestVisibleScrollableOrTouchableFunctor {
   bool operator()(LayerImpl* layer) const { return layer->HitTestable(); }
 };
@@ -2507,28 +2489,6 @@ LayerImpl* LayerTreeImpl::FindLayerThatIsHitByPointInWheelEventHandlerRegion(
   FindWheelEventHandlerLayerFunctor func = {screen_space_point};
   return FindLayerThatIsHitByPointInEventHandlerRegion(screen_space_point,
                                                        func);
-}
-
-std::vector<const LayerImpl*>
-LayerTreeImpl::FindLayersHitByPointInNonFastScrollableRegion(
-    const gfx::PointF& screen_space_point) {
-  std::vector<const LayerImpl*> layers;
-  if (layer_list_.empty())
-    return layers;
-  if (!UpdateDrawProperties())
-    return layers;
-  for (const auto* layer : *this) {
-    if (layer->non_fast_scrollable_region().IsEmpty())
-      continue;
-    if (!PointHitsLayer(layer, screen_space_point, nullptr))
-      continue;
-    if (PointHitsRegion(screen_space_point, layer->ScreenSpaceTransform(),
-                        layer->non_fast_scrollable_region(), layer)) {
-      layers.push_back(layer);
-    }
-  }
-
-  return layers;
 }
 
 std::vector<const LayerImpl*>

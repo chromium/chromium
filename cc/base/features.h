@@ -21,14 +21,6 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kSynchronizedScrolling);
 // or content=initial-scale=1.0
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kRemoveMobileViewportDoubleTap);
 
-// When enabled, all scrolling is performed on the compositor thread -
-// delegating only the hit test to Blink. This causes Blink to send additional
-// information in the scroll property tree. When a scroll can't be hit tested
-// on the compositor, it will post a hit test task to Blink and continue the
-// scroll when that resolves. For details, see:
-// https://docs.google.com/document/d/1smLAXs-DSLLmkEt4FIPP7PVglJXOcwRc7A5G0SEwxaY/edit
-CC_BASE_EXPORT BASE_DECLARE_FEATURE(kScrollUnification);
-
 // When enabled, scrolling within a covering snap area avoids or snaps to inner
 // nested areas, avoiding resting on positions which do not snap the inner area.
 // E.g. when scrolling within snap area A, it will stop either before/after

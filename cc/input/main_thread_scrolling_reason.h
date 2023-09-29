@@ -76,25 +76,6 @@ struct CC_EXPORT MainThreadScrollingReason {
       kPreferNonCompositedScrolling | kNotOpaqueForTextAndLCDText |
       kCantPaintScrollingBackgroundAndLCDText;
 
-  // Returns true if the given MainThreadScrollingReason can be set by the main
-  // thread.
-  static bool MainThreadCanSetScrollReasons(uint32_t reasons) {
-    constexpr uint32_t reasons_set_by_main_thread =
-        kHasBackgroundAttachmentFixedObjects | kPopupNoThreadedInput |
-        kPreferNonCompositedScrolling | kBackgroundNeedsRepaintOnScroll |
-        kNotOpaqueForTextAndLCDText | kCantPaintScrollingBackgroundAndLCDText;
-    return (reasons & reasons_set_by_main_thread) == reasons;
-  }
-
-  // Returns true if the given MainThreadScrollingReason can be set by the
-  // compositor.
-  static bool CompositorCanSetScrollReasons(uint32_t reasons) {
-    constexpr uint32_t reasons_set_by_compositor =
-        kNonFastScrollableRegion | kFailedHitTest | kNoScrollingLayer |
-        kWheelEventHandlerRegion | kTouchEventHandlerRegion;
-    return (reasons & reasons_set_by_compositor) == reasons;
-  }
-
   // Returns true if there are any reasons that prevented the scroller
   // from being composited.
   static bool HasNonCompositedScrollReasons(uint32_t reasons) {

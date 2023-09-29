@@ -612,9 +612,6 @@ class CC_EXPORT LayerTreeImpl {
   void UnregisterScrollbar(ScrollbarLayerImplBase* scrollbar_layer);
   ScrollbarSet ScrollbarsFor(ElementId scroll_element_id) const;
 
-  LayerImpl* FindFirstScrollingLayerOrScrollbarThatIsHitByPoint(
-      const gfx::PointF& screen_space_point);
-
   LayerImpl* FindLayerThatIsHitByPoint(const gfx::PointF& screen_space_point);
 
   LayerImpl* FindLayerThatIsHitByPointInTouchHandlerRegion(
@@ -623,9 +620,6 @@ class CC_EXPORT LayerTreeImpl {
   LayerImpl* FindLayerThatIsHitByPointInWheelEventHandlerRegion(
       const gfx::PointF& screen_space_point);
 
-  // Return all layers with a hit non-fast scrollable region.
-  std::vector<const LayerImpl*> FindLayersHitByPointInNonFastScrollableRegion(
-      const gfx::PointF& screen_space_point);
   // Returns all layers up to the first scroller, scrollbar layer or a layer
   // opaque to hit test, inclusive. The returned vector is sorted in order of
   // top most come first. The back of the vector will be the scrollable layer
