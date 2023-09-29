@@ -271,10 +271,9 @@ def _RunLint(create_cache,
                                                    extra_manifest_paths,
                                                    min_sdk_version,
                                                    android_sdk_version)
-  # Just use a hardcoded name, since we may have different target names (and
-  # thus different manifest_paths) using the same lint baseline. Eg.
-  # trichrome_chrome_bundle and trichrome_chrome_32_64_bundle.
-  lint_android_manifest_path = os.path.join(lint_gen_dir, 'AndroidManifest.xml')
+  # Include the rebased manifest_path in the lint generated path so that it is
+  # clear in error messages where the original AndroidManifest.xml came from.
+  lint_android_manifest_path = os.path.join(lint_gen_dir, manifest_path)
   _WriteXmlFile(android_manifest_tree.getroot(), lint_android_manifest_path)
 
   resource_root_dir = os.path.join(lint_gen_dir, _RES_ZIP_DIR)

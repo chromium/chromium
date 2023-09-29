@@ -95,7 +95,7 @@
         errorLine1="  &lt;application android:label=&quot;@string/product_name_android&quot; android:name=&quot;org.chromium.chromoting.RemotingApplication&quot; android:icon=&quot;@mipmap/ic_launcher&quot; android:theme=&quot;@style/BaseTheme&quot; android:allowBackup=&quot;false&quot; android:resizeableActivity=&quot;true&quot; android:supportsPictureInPicture=&quot;false&quot;>"
         errorLine2="                                                                                                                                                                                                                ~~~~~">
         <location
-            file="gen/remoting/android/remoting_apk__lint/AndroidManifest.xml"
+            file="gen/remoting/android/remoting_apk__lint/gen/remoting/android/AndroidManifest.xml"
             line="16"
             column="209"/>
     </issue>
@@ -126,7 +126,7 @@
         id="RtlEnabled"
         message="The project references RTL attributes, but does not explicitly enable or disable RTL support with `android:supportsRtl` in the manifest">
         <location
-            file="gen/remoting/android/remoting_apk__lint/AndroidManifest.xml"/>
+            file="gen/remoting/android/remoting_apk__lint/gen/remoting/android/AndroidManifest.xml"/>
     </issue>
 
 </issues>

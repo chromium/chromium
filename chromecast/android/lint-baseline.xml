@@ -62,7 +62,7 @@
         errorLine1="&lt;manifest xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot; xmlns:tools=&quot;http://schemas.android.com/tools&quot; package=&quot;org.chromium.chromecast.shell&quot;>"
         errorLine2=" ~~~~~~~~">
         <location
-            file="gen/chromecast/cast_shell_apk__lint/AndroidManifest.xml"
+            file="gen/chromecast/cast_shell_apk__lint/gen/cast_shell_manifest/AndroidManifest.xml"
             line="2"
             column="2"/>
     </issue>
@@ -73,7 +73,7 @@
         errorLine1="&lt;manifest xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot; xmlns:tools=&quot;http://schemas.android.com/tools&quot; package=&quot;org.chromium.chromecast.shell&quot;>"
         errorLine2=" ~~~~~~~~">
         <location
-            file="gen/chromecast/cast_shell_apk__lint/AndroidManifest.xml"
+            file="gen/chromecast/cast_shell_apk__lint/gen/cast_shell_manifest/AndroidManifest.xml"
             line="2"
             column="2"/>
     </issue>
@@ -93,7 +93,7 @@
         id="RtlEnabled"
         message="The project references RTL attributes, but does not explicitly enable or disable RTL support with `android:supportsRtl` in the manifest">
         <location
-            file="gen/chromecast/cast_shell_apk__lint/AndroidManifest.xml"/>
+            file="gen/chromecast/cast_shell_apk__lint/gen/cast_shell_manifest/AndroidManifest.xml"/>
     </issue>
 
 </issues>
