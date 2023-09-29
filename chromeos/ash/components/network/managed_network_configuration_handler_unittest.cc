@@ -1660,6 +1660,214 @@ TEST_F(ManagedNetworkConfigurationHandlerTest,
   EXPECT_TRUE(GetShillProfileClient()->HasService(kOriginalEntryPath));
 }
 
+// There is an unmanaged entry.
+// The UserCreatedNetworkConfigurationsAreEphemeral policy is not enabled.
+// Tests that initial policy application does not delete the entry even when
+// `TriggerEphemeralNetworkConfigActions` is called.
+TEST_F(ManagedNetworkConfigurationHandlerTest,
+       RemoveUnmanagedConfigs_Disabled_Initial) {
+  policy_util::SetEphemeralNetworkPoliciesEnabled();
+
+  InitializeStandardProfiles();
+  SetUpEntry("policy/shill_unmanaged_wifi1.json",
+             NetworkProfileHandler::GetSharedProfilePath(), "old_entry_path");
+  ASSERT_TRUE(GetShillProfileClient()->HasService("old_entry_path"));
+
+  policy_observer_.RunOnSharedProfilePoliciesChanged(base::BindOnce(
+      &ManagedNetworkConfigurationHandlerImpl::
+          TriggerEphemeralNetworkConfigActions,
+      base::Unretained(managed_network_configuration_handler_.get())));
+
+  const char* const onc_policy = R"(
+    {
+      "GlobalNetworkConfiguration": {
+      },
+      "Type": "UnencryptedConfiguration"
+    })";
+  EXPECT_TRUE(SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY, std::string(),
+                        base::test::ParseJsonDict(onc_policy)));
+  base::RunLoop().RunUntilIdle();
+
+  // The entry still exists.
+  EXPECT_TRUE(GetShillProfileClient()->HasService("old_entry_path"));
+}
+
+// There is an unmanaged entry.
+// The UserCreatedNetworkConfigurationsAreEphemeral policy is enabled.
+// Tests that initial policy application deletes the entry when
+// `TriggerEphemeralNetworkConfigActions` is called.
+TEST_F(ManagedNetworkConfigurationHandlerTest,
+       RemoveUnmanagedConfigs_Enabled_Initial) {
+  policy_util::SetEphemeralNetworkPoliciesEnabled();
+
+  InitializeStandardProfiles();
+  SetUpEntry("policy/shill_unmanaged_wifi1.json",
+             NetworkProfileHandler::GetSharedProfilePath(), "old_entry_path");
+
+  ASSERT_TRUE(GetShillProfileClient()->HasService("old_entry_path"));
+
+  policy_observer_.RunOnSharedProfilePoliciesChanged(base::BindOnce(
+      &ManagedNetworkConfigurationHandlerImpl::
+          TriggerEphemeralNetworkConfigActions,
+      base::Unretained(managed_network_configuration_handler_.get())));
+
+  const char* const onc_policy = R"(
+    {
+      "GlobalNetworkConfiguration": {
+        "UserCreatedNetworkConfigurationsAreEphemeral": true
+      },
+      "Type": "UnencryptedConfiguration"
+    })";
+  EXPECT_TRUE(SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY, std::string(),
+                        base::test::ParseJsonDict(onc_policy)));
+  base::RunLoop().RunUntilIdle();
+
+  // The entry has been removed.
+  EXPECT_FALSE(GetShillProfileClient()->HasService("old_entry_path"));
+}
+
+// There is an unmanaged entry.
+// The UserCreatedNetworkConfigurationsAreEphemeral policy is enabled.
+// The feature flags/policies guarding it are however disabled.
+TEST_F(ManagedNetworkConfigurationHandlerTest,
+       RemoveUnmanagedConfigs_Enabled_FeatureOff) {
+  InitializeStandardProfiles();
+  SetUpEntry("policy/shill_unmanaged_wifi1.json",
+             NetworkProfileHandler::GetSharedProfilePath(), "old_entry_path");
+
+  ASSERT_TRUE(GetShillProfileClient()->HasService("old_entry_path"));
+
+  // Don't call TriggerEphemeralNetworkConfigActions - it will only be called in
+  // production code if the feature is enabled.
+
+  const char* const onc_policy = R"(
+    {
+      "GlobalNetworkConfiguration": {
+        "UserCreatedNetworkConfigurationsAreEphemeral": true
+      },
+      "Type": "UnencryptedConfiguration"
+    })";
+  EXPECT_TRUE(SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY, std::string(),
+                        base::test::ParseJsonDict(onc_policy)));
+  base::RunLoop().RunUntilIdle();
+
+  // The entry is still there
+  EXPECT_TRUE(GetShillProfileClient()->HasService("old_entry_path"));
+}
+
+// There is an unmanaged entry.
+// The UserCreatedNetworkConfigurationsAreEphemeral policy is enabled.
+// Tests that a `TriggerEphemeralNetworkConfigActions` call triggered after the
+// initial policy application leads to deletion of the unmanaged entry.
+TEST_F(ManagedNetworkConfigurationHandlerTest,
+       RemoveUnmanagedConfigs_Enabled_AfterInitialApplication) {
+  policy_util::SetEphemeralNetworkPoliciesEnabled();
+
+  InitializeStandardProfiles();
+  SetUpEntry("policy/shill_unmanaged_wifi1.json",
+             NetworkProfileHandler::GetSharedProfilePath(), "old_entry_path");
+  ASSERT_TRUE(GetShillProfileClient()->HasService("old_entry_path"));
+
+  const char* const onc_policy = R"(
+    {
+      "GlobalNetworkConfiguration": {
+        "UserCreatedNetworkConfigurationsAreEphemeral": true
+      },
+      "Type": "UnencryptedConfiguration"
+    })";
+  EXPECT_TRUE(SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY, std::string(),
+                        base::test::ParseJsonDict(onc_policy)));
+  base::RunLoop().RunUntilIdle();
+
+  // The entry is still there.
+  EXPECT_TRUE(GetShillProfileClient()->HasService("old_entry_path"));
+
+  managed_network_configuration_handler_
+      ->TriggerEphemeralNetworkConfigActions();
+  base::RunLoop().RunUntilIdle();
+
+  // The entry has been removed.
+  EXPECT_FALSE(GetShillProfileClient()->HasService("old_entry_path"));
+
+  // Re-create it and test that re-applying policies does not trigger the
+  // "ephemeral network config" actions.
+  SetUpEntry("policy/shill_unmanaged_wifi1.json", kUser1ProfilePath,
+             "old_entry_path");
+  ASSERT_TRUE(GetShillProfileClient()->HasService("old_entry_path"));
+
+  EXPECT_TRUE(SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY, std::string(),
+                        base::test::ParseJsonDict(onc_policy)));
+  base::RunLoop().RunUntilIdle();
+
+  // The entry is still there
+  EXPECT_TRUE(GetShillProfileClient()->HasService("old_entry_path"));
+}
+
+// There is a policy with a Recommended field.
+// The RecommendedValuesAreEphemeralAccessor policy is enabled.
+// Tests that initial policy application does not reset "Recommended" fields,
+// if `TriggerEphemeralNetworkConfigActions` is not called.
+TEST_F(ManagedNetworkConfigurationHandlerTest,
+       NoEphemeralNetworkConfigActionsTriggered) {
+  // Don't call `TriggerEphemeralNetworkConfigActions`.
+  const std::string original_entry_path = "orig_entry_path";
+  base::Value::Dict original_wifi_config = base::test::ParseJsonDict(R"(
+    {
+      "AutoConnect": true,
+      "GUID": "guid_wifi1",
+      "Mode": "managed",
+      "EAP.EAP": "PEAP",
+      "EAP.Identity": "user_identity",
+      "EAP.Password": "user_password",
+      "Profile": "/profile/default",
+      "SecurityClass": "802_1x",
+      "SaveCredentials": true,
+      "Type": "wifi",
+      "WiFi.HexSSID": "7769666931",
+      "UIData": "{\"onc_source\":\"device_policy\"}"
+    })");
+  GetShillProfileClient()->AddEntry(
+      NetworkProfileHandler::GetSharedProfilePath(), original_entry_path,
+      std::move(original_wifi_config));
+
+  const char* const onc_policy = R"(
+    {
+      "GlobalNetworkConfiguration": {
+      },
+      "NetworkConfigurations": [
+        {
+          "GUID": "guid_wifi1",
+          "Type": "WiFi",
+          "Name": "Managed wifi1",
+          "WiFi": {
+            "HexSSID": "7769666931", // "wifi1"
+            "SSID": "wifi1",
+            "Security": "WPA-EAP",
+            "EAP": {
+              "Outer": "PEAP",
+              "Inner": "MSCHAPv2",
+              "SaveCredentials": true,
+              "Recommended": ["Identity", "Password"]
+            }
+          }
+        }
+      ],
+      "Type": "UnencryptedConfiguration"
+    })";
+  EXPECT_TRUE(SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY, std::string(),
+                        base::test::ParseJsonDict(onc_policy)));
+  base::RunLoop().RunUntilIdle();
+
+  // The entry still exists and has kept the user-provided Passphrase.
+  std::string profile_path;
+  absl::optional<base::Value::Dict> resulting_properties =
+      GetShillProfileClient()->GetService(original_entry_path, &profile_path);
+  ASSERT_TRUE(resulting_properties);
+  EXPECT_THAT(*resulting_properties,
+              DictionaryHasValue(shill::kEapPasswordProperty,
+                                 base::Value("user_password")));
+}
+
 TEST_F(ManagedNetworkConfigurationHandlerTest, AutoConnectDisallowed) {
   InitializeStandardProfiles();
 

@@ -107,15 +107,19 @@ PolicyApplicator::Options::Options() = default;
 
 PolicyApplicator::Options::Options(PolicyApplicator::Options&& other) {
   reset_recommended_managed_configs = other.reset_recommended_managed_configs;
+  remove_unmanaged_configs = other.remove_unmanaged_configs;
   // Reset the moved-from object to its default-constructed state.
   other.reset_recommended_managed_configs = false;
+  other.remove_unmanaged_configs = false;
 }
 
 PolicyApplicator::Options& PolicyApplicator::Options::operator=(
     PolicyApplicator::Options&& other) {
   reset_recommended_managed_configs = other.reset_recommended_managed_configs;
+  remove_unmanaged_configs = other.remove_unmanaged_configs;
   // Reset the moved-from object to its default-constructed state.
   other.reset_recommended_managed_configs = false;
+  other.remove_unmanaged_configs = false;
 
   return *this;
 }
@@ -124,6 +128,7 @@ PolicyApplicator::Options::~Options() = default;
 
 void PolicyApplicator::Options::Merge(const PolicyApplicator::Options& other) {
   reset_recommended_managed_configs |= other.reset_recommended_managed_configs;
+  remove_unmanaged_configs |= other.remove_unmanaged_configs;
 }
 
 PolicyApplicator::PolicyApplicator(
@@ -401,6 +406,15 @@ void PolicyApplicator::ApplyGlobalPolicyOnUnmanagedEntry(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // The entry wasn't managed and doesn't match any current policy. Global
   // network settings have to be applied.
+
+  if (options_.remove_unmanaged_configs) {
+    DCHECK(policy_util::AreEphemeralNetworkPoliciesEnabled());
+    NET_LOG(EVENT) << "Removing unmanaged entry " << entry_identifier
+                   << " due to ephemeral networks policy.";
+    DeleteEntry(entry_identifier, std::move(callback));
+    return;
+  }
+
   base::Value::Dict shill_properties_to_update;
   policy_util::SetShillPropertiesForGlobalPolicy(
       entry_properties, global_network_config_, shill_properties_to_update);

@@ -1428,6 +1428,8 @@ void ManagedNetworkConfigurationHandlerImpl::
 
   PolicyApplicator::Options options;
   options.reset_recommended_managed_configs = RecommendedValuesAreEphemeral();
+  options.remove_unmanaged_configs =
+      UserCreatedNetworkConfigurationsAreEphemeral();
   ApplyOrQueuePolicies(
       /*userhash=*/std::string(), /*modified_policies=*/{},
       /*can_affect_other_networks=*/true, std::move(options));

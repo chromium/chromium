@@ -81,6 +81,9 @@ class PolicyApplicator {
     // When this is set to true, all managed configurations with at least one
     // "Recommended" field will be reset to only contain the managed settings.
     bool reset_recommended_managed_configs = false;
+
+    // When this is set to true, all unmanaged configurations will be removed.
+    bool remove_unmanaged_configs = false;
   };
 
   // `handler` and `managed_cellular_pref_handler` must outlive this object.
