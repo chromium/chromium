@@ -54,6 +54,9 @@
   .item-invisible-true {
     visibility: hidden;
   }
+  .display-false {
+    display: none;
+  }
   #font-size-decrease {
     margin-left: 16px;
   }
@@ -151,7 +154,6 @@
     <template is="dom-repeat" items="[[voiceSelectionOptions_]]">
       <!--  TODO(crbug.com/1474951): show a header for each locale group before
             listing the languages of the locale -->
-      <!--  TODO(crbug.com/1474951): allow user to change language -->
       <button class="dropdown-item dropdown-voice-selection"
         on-click="onVoiceSelectClick_">
         <span>
@@ -160,10 +162,14 @@
             icon="read-anything:check-mark"></iron-icon>
           <p>[[item.title]]</p>
         </span>
-        <!-- TODO(crbug.com/1474951): Show pause button when a preview is
-                      playing -->
-        <cr-icon-button on-click="onVoicePreviewClick_" class="button-image"
+        <cr-icon-button on-click="onVoicePreviewClick_"
+          class$="button-image display-[[!item.data.previewPlaying]]"
           iron-icon="read-anything-20:play-circle"></cr-icon-button>
+        <!-- TODO(crbug.com/1474951) Pause the preview when pause button is
+                   pressed -->
+        <cr-icon-button on-click="onVoicePreviewClick_"
+          class$="button-image display-[[item.data.previewPlaying]]"
+          iron-icon="read-anything-20:pause-circle"></cr-icon-button>
       </button>
     </template>
   </cr-action-menu>

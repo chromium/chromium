@@ -461,6 +461,23 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     utterance.pitch = defaultUtteranceSettings.pitch;
     utterance.rate = defaultUtteranceSettings.rate;
 
+    // TODO(crbug.com/1474951): Add tests for pause button
+    utterance.onstart = event => {
+      const toolbar = this.shadowRoot?.getElementById('toolbar');
+      assert(toolbar);
+      if (toolbar instanceof ReadAnythingToolbar) {
+        toolbar.showVoicePreviewPlaying(event.utterance.voice);
+      }
+    };
+
+    utterance.onend = () => {
+      const toolbar = this.shadowRoot?.getElementById('toolbar');
+      assert(toolbar);
+      if (toolbar instanceof ReadAnythingToolbar) {
+        toolbar.showVoicePreviewDone();
+      }
+    };
+
     this.synth.speak(utterance);
   }
 

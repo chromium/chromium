@@ -36,6 +36,7 @@ export interface ReadAnythingToolbar {
 interface VoiceDropdown {
   voice: SpeechSynthesisVoice;
   selected: boolean;
+  previewPlaying: boolean;
 }
 
 interface MenuStateItem<T> {
@@ -370,6 +371,33 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
     ReadAnythingToolbar.maybeUpdateMoreOptions(toolbar);
   }
 
+  showVoicePreviewPlaying(voice: SpeechSynthesisVoice|null) {
+    if (!voice) {
+      return;
+    }
+    this.voiceSelectionOptions_ = this.voiceSelectionOptions_.map(
+        ({data, ...rest}) => ({
+          ...rest,
+          data: {
+            voice: data.voice,
+            selected: data.selected,
+            previewPlaying: this.voicesAreEqual_(data.voice, voice),
+          },
+        }));
+  }
+
+  showVoicePreviewDone() {
+    this.voiceSelectionOptions_ =
+        this.voiceSelectionOptions_.map(({data, ...rest}) => ({
+                                          ...rest,
+                                          data: {
+                                            voice: data.voice,
+                                            selected: data.selected,
+                                            previewPlaying: false,
+                                          },
+                                        }));
+  }
+
   updateUiForPausing() {
     const shadowRoot = this.shadowRoot;
     assert(shadowRoot);
@@ -424,6 +452,7 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
         voice1.localService === voice2.localService &&
         voice1.name === voice2.name && voice1.voiceURI === voice2.voiceURI;
   }
+
   // TODO(crbug.com/1474951): Add unit tests
   private onVoiceSelectionMenuClick_(event: MouseEvent) {
     if (this.contentPage) {
@@ -443,6 +472,7 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
                                               selected: this.voicesAreEqual_(
                                                   selectedVoice,
                                                   speechSynthesisVoice),
+                                              previewPlaying: false,
                                             },
                                             callback: () => {},
                                           })),
@@ -533,6 +563,7 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
             data: {
               voice: data.voice,
               selected: this.voicesAreEqual_(selectedVoice, data.voice),
+              previewPlaying: false,
             },
           }));
     }
