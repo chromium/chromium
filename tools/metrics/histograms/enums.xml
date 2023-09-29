@@ -78053,6 +78053,14 @@ Called by update_net_trust_anchors.py.-->
   <int value="11" label="Has image and inline reply and grouped"/>
 </enum>
 
+<enum name="NotifierCollisionSurfaceType">
+  <int value="0" label="None"/>
+  <int value="1" label="Shelf Pod Bubble"/>
+  <int value="2" label="Slider Bubble"/>
+  <int value="3" label="Extended Hotseat"/>
+  <int value="4" label="Slider Bubble And Extended Hotseat"/>
+</enum>
+
 <enum name="NotifierType">
   <int value="0" label="Application"/>
   <int value="1" label="Arc++"/>

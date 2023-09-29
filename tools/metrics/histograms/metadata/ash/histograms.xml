@@ -4640,14 +4640,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.NotificationPopup.OnTopOfBubbleCount" units="popups"
-    expires_after="2024-08-22">
+<histogram name="Ash.NotificationPopup.OnTopOfSurfacesPopupCount"
+    units="popups" expires_after="2024-08-22">
   <owner>leandre@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
-    Record the number of popups that show up on top of a tray bubble. Emitted
-    when a tray bubble is shown or change height, and when there's a new
-    notification popup added when a tray bubble is open.
+    Records the number of popups that show up on top of a UI surface. Emitted
+    when the UI surface is shown or changes height when popup notifications are
+    visible, and when there's a new notification popup added when the UI surface
+    is visible.
+  </summary>
+</histogram>
+
+<histogram name="Ash.NotificationPopup.OnTopOfSurfacesType"
+    enum="NotifierCollisionSurfaceType" expires_after="2024-08-22">
+  <owner>leandre@chromium.org</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Records the type of UI surface that popup notifications are shown on top of.
+    Emitted when the UI surface is shown or changes height when popup
+    notifications are visible, and when there's a new notification popup added
+    when the UI surface is visible.
   </summary>
 </histogram>
 

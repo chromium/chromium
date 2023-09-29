@@ -52,6 +52,21 @@ class ASH_EXPORT AshMessagePopupCollection
   // message popup widget.
   static const char kMessagePopupWidgetName[];
 
+  // All the types of surfaces that can make popup collection shift up. Used
+  // inside of `NotifierCollisionHandler` for metrics collection. Make sure to
+  // keep this in sync with `NotifierCollisionSurfaceType` in
+  // tools/metrics/histograms/enums.xml.
+  enum class NotifierCollisionSurfaceType {
+    // Default value. Ideally this should never be recorded in the metrics.
+    kNone = 0,
+
+    kShelfPodBubble = 1,
+    kSliderBubble = 2,
+    kExtendedHotseat = 3,
+    kSliderBubbleAndExtendedHotseat = 4,
+    kMaxValue = kSliderBubbleAndExtendedHotseat
+  };
+
   explicit AshMessagePopupCollection(Shelf* shelf);
 
   AshMessagePopupCollection(const AshMessagePopupCollection&) = delete;
@@ -106,7 +121,8 @@ class ASH_EXPORT AshMessagePopupCollection
                                    public SystemTrayObserver,
                                    public TabletModeObserver {
    public:
-    NotifierCollisionHandler(AshMessagePopupCollection* popup_collection);
+    explicit NotifierCollisionHandler(
+        AshMessagePopupCollection* popup_collection);
 
     NotifierCollisionHandler(const NotifierCollisionHandler&) = delete;
     NotifierCollisionHandler& operator=(const NotifierCollisionHandler&) =
@@ -120,7 +136,7 @@ class ASH_EXPORT AshMessagePopupCollection
     // Calculates the offset that is applied to the popup collection's baseline.
     // It considers the extended hotseat, corner anchored shelf pod bubbles and
     // slider bubbles.
-    int CalculateBaselineOffset() const;
+    int CalculateBaselineOffset();
 
     // SystemTrayObserver:
     void OnFocusLeavingSystemTray(bool reverse) override {}
@@ -141,9 +157,12 @@ class ASH_EXPORT AshMessagePopupCollection
     // corner anchored shelf pod bubble is not open.
     int CalculateSliderOffset() const;
 
-    // Records the number of popups whose baseline was shifted up every time
-    // every time a baseline offset is applied.
-    void RecordBaselineShiftedUp(int popup_count);
+    // Records metrics for the count of popups when it is put on top of a
+    // surface.
+    void RecordOnTopOfSurfacesPopupCount();
+
+    // Records surface type when there are popup(s) on top of that surface.
+    void RecordSurfaceType();
 
     // TabletModeObserver:
     void OnTabletModeStarted() override;
@@ -157,6 +176,12 @@ class ASH_EXPORT AshMessagePopupCollection
                                HotseatState new_state) override;
 
     raw_ptr<AshMessagePopupCollection> const popup_collection_;
+
+    // Keeps track of the current baseline offset and surface type for metrics
+    // collection purpose.
+    int baseline_offset_ = 0;
+    NotifierCollisionSurfaceType surface_type_ =
+        NotifierCollisionSurfaceType::kNone;
   };
 
   // message_center::MessageView::Observer:

@@ -34,6 +34,7 @@
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "base/command_line.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -54,6 +55,7 @@
 #include "ui/message_center/views/notification_control_buttons_view.h"
 #include "ui/message_center/views/notification_view_base.h"
 #include "ui/views/controls/button/label_button.h"
+#include "ui/wm/core/window_util.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -1019,11 +1021,14 @@ TEST_P(AshMessagePopupCollectionTest,
   }
 }
 
-// TODO(b/300003350): Reenable test when metric is fixed.
-TEST_P(AshMessagePopupCollectionTest,
-       DISABLED_BaselineShiftedUpHistogramRecorded) {
+TEST_P(AshMessagePopupCollectionTest, HistogramRecordedForShelfPodBubble) {
+  using SurfaceType = AshMessagePopupCollection::NotifierCollisionSurfaceType;
+
   base::HistogramTester histogram_tester;
-  const std::string histogram_name = "Ash.NotificationPopup.BaselineShiftedUp";
+  const std::string popup_count_histogram_name =
+      "Ash.NotificationPopup.OnTopOfSurfacesPopupCount";
+  const std::string surface_type_histogram_name =
+      "Ash.NotificationPopup.OnTopOfSurfacesType";
 
   AddNotification();
 
@@ -1032,16 +1037,20 @@ TEST_P(AshMessagePopupCollectionTest,
 
   // Notification popups will be closed on QS bubble open pre-QS revamp.
   if (!IsQsRevampEnabled()) {
-    histogram_tester.ExpectBucketCount(histogram_name, 1, 0);
+    histogram_tester.ExpectBucketCount(popup_count_histogram_name, 1, 0);
     return;
   }
 
   if (IsNotifierCollisionEnabled()) {
     // The popup should appear on top of the bubble and histogram is recorded.
-    histogram_tester.ExpectBucketCount(histogram_name, 1, 1);
+    histogram_tester.ExpectBucketCount(popup_count_histogram_name, 1, 1);
+    histogram_tester.ExpectBucketCount(surface_type_histogram_name,
+                                       SurfaceType::kShelfPodBubble, 1);
   } else {
     // The popup stays the same if the feature is disabled.
-    histogram_tester.ExpectBucketCount(histogram_name, 1, 0);
+    histogram_tester.ExpectBucketCount(popup_count_histogram_name, 1, 0);
+    histogram_tester.ExpectBucketCount(surface_type_histogram_name,
+                                       SurfaceType::kShelfPodBubble, 0);
   }
 
   // Add another notification. Histogram should also be recorded with the
@@ -1049,7 +1058,7 @@ TEST_P(AshMessagePopupCollectionTest,
   AddNotification();
   AnimateUntilIdle();
 
-  histogram_tester.ExpectBucketCount(histogram_name, 2,
+  histogram_tester.ExpectBucketCount(popup_count_histogram_name, 2,
                                      IsNotifierCollisionEnabled() ? 1 : 0);
 
   // Close and re-open the bubble. Histogram should be recorded again.
@@ -1057,8 +1066,123 @@ TEST_P(AshMessagePopupCollectionTest,
   bubble_widget->CloseNow();
   unified_system_tray->ShowBubble();
 
-  histogram_tester.ExpectBucketCount(histogram_name, 2,
+  histogram_tester.ExpectBucketCount(popup_count_histogram_name, 2,
                                      IsNotifierCollisionEnabled() ? 2 : 0);
+  histogram_tester.ExpectBucketCount(surface_type_histogram_name,
+                                     SurfaceType::kShelfPodBubble,
+                                     IsNotifierCollisionEnabled() ? 2 : 0);
+}
+
+TEST_P(AshMessagePopupCollectionTest, HistogramRecordedForSliderAndHotseat) {
+  if (!IsQsRevampEnabled()) {
+    return;
+  }
+
+  using SurfaceType = AshMessagePopupCollection::NotifierCollisionSurfaceType;
+
+  base::HistogramTester histogram_tester;
+  const std::string popup_count_histogram_name =
+      "Ash.NotificationPopup.OnTopOfSurfacesPopupCount";
+  const std::string surface_type_histogram_name =
+      "Ash.NotificationPopup.OnTopOfSurfacesType";
+
+  AddNotification();
+
+  auto* unified_system_tray = GetPrimaryUnifiedSystemTray();
+  unified_system_tray->ShowVolumeSliderBubble();
+
+  if (IsNotifierCollisionEnabled()) {
+    // The popup should appear on top of the bubble and histogram is recorded.
+    histogram_tester.ExpectBucketCount(popup_count_histogram_name, 1, 1);
+    histogram_tester.ExpectBucketCount(surface_type_histogram_name,
+                                       SurfaceType::kSliderBubble, 1);
+  } else {
+    // The popup stays the same if the feature is disabled.
+    histogram_tester.ExpectBucketCount(popup_count_histogram_name, 1, 0);
+    histogram_tester.ExpectBucketCount(surface_type_histogram_name,
+                                       SurfaceType::kSliderBubble, 0);
+  }
+
+  TabletModeControllerTestApi().EnterTabletMode();
+  std::unique_ptr<aura::Window> window =
+      CreateTestWindow(gfx::Rect(0, 0, 400, 400));
+  wm::ActivateWindow(window.get());
+  ASSERT_EQ(HotseatState::kHidden,
+            GetPrimaryShelf()->shelf_layout_manager()->hotseat_state());
+
+  // Dragging up to show the hotseat.
+  gfx::Rect display_bounds =
+      display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
+  const gfx::Point start = display_bounds.bottom_center();
+  const gfx::Point end = start + gfx::Vector2d(0, -80);
+  GetEventGenerator()->GestureScrollSequence(
+      start, end, /*duration=*/base::Milliseconds(100),
+      /*steps=*/4);
+  ASSERT_EQ(HotseatState::kExtended,
+            GetPrimaryShelf()->shelf_layout_manager()->hotseat_state());
+
+  // Histogram should be recorded accordingly to the adjusted baseline.
+  if (IsNotifierCollisionEnabled()) {
+    histogram_tester.ExpectBucketCount(
+        surface_type_histogram_name,
+        SurfaceType::kSliderBubbleAndExtendedHotseat, 1);
+  } else {
+    histogram_tester.ExpectBucketCount(
+        surface_type_histogram_name,
+        SurfaceType::kSliderBubbleAndExtendedHotseat, 0);
+    histogram_tester.ExpectBucketCount(surface_type_histogram_name,
+                                       SurfaceType::kExtendedHotseat, 1);
+  }
+
+  unified_system_tray->CloseSecondaryBubbles();
+  if (IsNotifierCollisionEnabled()) {
+    histogram_tester.ExpectBucketCount(surface_type_histogram_name,
+                                       SurfaceType::kExtendedHotseat, 1);
+  }
+}
+
+TEST_P(AshMessagePopupCollectionTest, HistogramNotRecordedWhenAllPopupsClosed) {
+  if (!IsQsRevampEnabled() || !IsNotifierCollisionEnabled()) {
+    return;
+  }
+
+  using SurfaceType = AshMessagePopupCollection::NotifierCollisionSurfaceType;
+
+  base::HistogramTester histogram_tester;
+  const std::string popup_count_histogram_name =
+      "Ash.NotificationPopup.OnTopOfSurfacesPopupCount";
+  const std::string surface_type_histogram_name =
+      "Ash.NotificationPopup.OnTopOfSurfacesType";
+
+  UpdateDisplay("801x800");
+
+  AddNotification(/*has_image=*/true);
+  ASSERT_TRUE(GetLastPopUpAdded());
+
+  auto* unified_system_tray = GetPrimaryUnifiedSystemTray();
+  unified_system_tray->ShowBubble();
+
+  // Histogram is recorded when open the bubble.
+  histogram_tester.ExpectBucketCount(popup_count_histogram_name, 1, 1);
+  histogram_tester.ExpectBucketCount(surface_type_histogram_name,
+                                     SurfaceType::kShelfPodBubble, 1);
+
+  // Increase the bubble height so that there's not enough space to display the
+  // popups on top of it. Note that this only works with screen height of 800
+  // (set above), and the test might fail if we change the height of bubble
+  // width or notification width in the future.
+  auto* bubble_widget = unified_system_tray->bubble()->GetBubbleWidget();
+  auto bubble_bounds = bubble_widget->GetWindowBoundsInScreen();
+  bubble_widget->SetBounds(gfx::Rect(bubble_bounds.x(), bubble_bounds.y() - 100,
+                                     bubble_bounds.width(),
+                                     bubble_bounds.height() + 100));
+
+  ASSERT_FALSE(GetLastPopUpAdded());
+
+  // Histogram should not be recorded in this case.
+  histogram_tester.ExpectBucketCount(popup_count_histogram_name, 1, 1);
+  histogram_tester.ExpectBucketCount(surface_type_histogram_name,
+                                     SurfaceType::kShelfPodBubble, 1);
 }
 
 TEST_P(AshMessagePopupCollectionTest, NotificationAddedOnTrayBubbleOpen) {
