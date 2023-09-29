@@ -22,6 +22,16 @@ namespace {
 
 constexpr base::TimeDelta kSyncTaskTimeout = base::Seconds(30);
 
+std::vector<std::unique_ptr<PasswordForm>> ConvertToUniquePtr(
+    std::vector<PasswordForm> forms) {
+  std::vector<std::unique_ptr<PasswordForm>> result;
+  result.reserve(forms.size());
+  for (auto& form : forms) {
+    result.push_back(std::make_unique<PasswordForm>(std::move(form)));
+  }
+  return result;
+}
+
 }  // namespace
 
 LoginDatabaseAsyncHelper::LoginDatabaseAsyncHelper(
@@ -98,7 +108,7 @@ bool LoginDatabaseAsyncHelper::Initialize(
 
 LoginsResultOrError LoginDatabaseAsyncHelper::GetAllLogins() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::vector<std::unique_ptr<PasswordForm>> forms;
+  std::vector<PasswordForm> forms;
 
   if (!login_db_) {
     return PasswordStoreBackendError(
@@ -112,27 +122,27 @@ LoginsResultOrError LoginDatabaseAsyncHelper::GetAllLogins() {
         PasswordStoreBackendErrorType::kUncategorized,
         PasswordStoreBackendErrorRecoveryType::kUnrecoverable);
   }
-  return forms;
+  return ConvertToUniquePtr(std::move(forms));
 }
 
 LoginsResultOrError LoginDatabaseAsyncHelper::GetAutofillableLogins() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::vector<std::unique_ptr<PasswordForm>> results;
+  std::vector<PasswordForm> results;
   if (!login_db_ || !login_db_->GetAutofillableLogins(&results)) {
     return PasswordStoreBackendError(
         PasswordStoreBackendErrorType::kUncategorized,
         PasswordStoreBackendErrorRecoveryType::kUnrecoverable);
   }
-  return results;
+  return ConvertToUniquePtr(std::move(results));
 }
 
 LoginsResultOrError LoginDatabaseAsyncHelper::FillMatchingLogins(
     const std::vector<PasswordFormDigest>& forms,
     bool include_psl) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::vector<std::unique_ptr<PasswordForm>> results;
+  std::vector<PasswordForm> results;
   for (const auto& form : forms) {
-    std::vector<std::unique_ptr<PasswordForm>> matched_forms;
+    std::vector<PasswordForm> matched_forms;
     if (!login_db_ || !login_db_->GetLogins(form, include_psl, &matched_forms))
       return PasswordStoreBackendError(
           PasswordStoreBackendErrorType::kUncategorized,
@@ -141,7 +151,7 @@ LoginsResultOrError LoginDatabaseAsyncHelper::FillMatchingLogins(
                    std::make_move_iterator(matched_forms.begin()),
                    std::make_move_iterator(matched_forms.end()));
   }
-  return results;
+  return ConvertToUniquePtr(std::move(results));
 }
 
 PasswordChangesOrError LoginDatabaseAsyncHelper::AddLogin(
@@ -233,15 +243,15 @@ PasswordChangesOrError LoginDatabaseAsyncHelper::RemoveLoginsByURLAndTime(
     base::OnceCallback<void(bool)> sync_completion) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   BeginTransaction();
-  std::vector<std::unique_ptr<PasswordForm>> forms;
+  std::vector<PasswordForm> forms;
   PasswordStoreChangeList changes;
   bool success = login_db_ && login_db_->GetLoginsCreatedBetween(
                                   delete_begin, delete_end, &forms);
   if (success) {
     for (const auto& form : forms) {
       PasswordStoreChangeList remove_changes;
-      if (url_filter.Run(form->url) &&
-          login_db_->RemoveLogin(*form, &remove_changes)) {
+      if (url_filter.Run(form.url) &&
+          login_db_->RemoveLogin(form, &remove_changes)) {
         std::move(remove_changes.begin(), remove_changes.end(),
                   std::back_inserter(changes));
       }
@@ -281,15 +291,16 @@ PasswordChangesOrError LoginDatabaseAsyncHelper::RemoveLoginsByURLAndTime(
 PasswordStoreChangeList LoginDatabaseAsyncHelper::DisableAutoSignInForOrigins(
     const base::RepeatingCallback<bool(const GURL&)>& origin_filter) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::vector<std::unique_ptr<PasswordForm>> forms;
+  std::vector<PasswordForm> forms;
   PasswordStoreChangeList changes;
   if (!login_db_ || !login_db_->GetAutoSignInLogins(&forms))
     return changes;
 
   std::set<GURL> origins_to_update;
   for (const auto& form : forms) {
-    if (origin_filter.Run(form->url))
-      origins_to_update.insert(form->url);
+    if (origin_filter.Run(form.url)) {
+      origins_to_update.insert(form.url);
+    }
   }
 
   std::set<GURL> origins_updated;
@@ -299,8 +310,8 @@ PasswordStoreChangeList LoginDatabaseAsyncHelper::DisableAutoSignInForOrigins(
   }
 
   for (const auto& form : forms) {
-    if (origins_updated.count(form->url)) {
-      changes.emplace_back(PasswordStoreChange::UPDATE, *form);
+    if (origins_updated.count(form.url)) {
+      changes.emplace_back(PasswordStoreChange::UPDATE, std::move(form));
     }
   }
   return changes;
@@ -420,14 +431,14 @@ FormRetrievalResult LoginDatabaseAsyncHelper::ReadAllCredentials(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!login_db_)
     return FormRetrievalResult::kDbError;
-  std::vector<std::unique_ptr<PasswordForm>> forms;
+  std::vector<PasswordForm> forms;
   FormRetrievalResult result = login_db_->GetAllLogins(&forms);
   for (const auto& form : forms) {
-    DCHECK(form->primary_key.has_value());
+    CHECK(form.primary_key.has_value());
     key_to_specifics_map->emplace(
-        form->primary_key->value(),
+        form.primary_key->value(),
         std::make_unique<sync_pb::PasswordSpecificsData>(
-            SpecificsDataFromPassword(*form, /*base_password_data=*/{})));
+            SpecificsDataFromPassword(form, /*base_password_data=*/{})));
   }
 
   return result;

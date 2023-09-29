@@ -114,41 +114,36 @@ class LoginDatabase {
   // and federated credentials.
   // |should_PSL_matching_apply| controls if the PSL matches are included or
   // only the exact matches.
-  [[nodiscard]] bool GetLogins(
-      const PasswordFormDigest& form,
-      bool should_PSL_matching_apply,
-      std::vector<std::unique_ptr<PasswordForm>>* forms);
+  [[nodiscard]] bool GetLogins(const PasswordFormDigest& form,
+                               bool should_PSL_matching_apply,
+                               std::vector<PasswordForm>* forms);
 
   // Gets all logins created from |begin| onwards (inclusive) and before |end|.
   // You may use a null Time value to do an unbounded search in either
   // direction. |forms| must not be null and will be used to return
   // the results.
-  [[nodiscard]] bool GetLoginsCreatedBetween(
-      base::Time begin,
-      base::Time end,
-      std::vector<std::unique_ptr<PasswordForm>>* forms);
+  [[nodiscard]] bool GetLoginsCreatedBetween(base::Time begin,
+                                             base::Time end,
+                                             std::vector<PasswordForm>* forms);
 
   // Gets the complete list of all credentials.
   [[nodiscard]] FormRetrievalResult GetAllLogins(
-      std::vector<std::unique_ptr<PasswordForm>>* forms);
+      std::vector<PasswordForm>* forms);
 
   // Gets list of logins which match |signon_realm| and |username|.
   [[nodiscard]] FormRetrievalResult GetLoginsBySignonRealmAndUsername(
       const std::string& signon_realm,
       const std::u16string& username,
-      std::vector<std::unique_ptr<PasswordForm>>* forms);
+      std::vector<PasswordForm>* forms);
 
   // Gets the complete list of not blocklisted credentials.
-  [[nodiscard]] bool GetAutofillableLogins(
-      std::vector<std::unique_ptr<PasswordForm>>* forms);
+  [[nodiscard]] bool GetAutofillableLogins(std::vector<PasswordForm>* forms);
 
   // Gets the complete list of blocklisted credentials.
-  [[nodiscard]] bool GetBlocklistLogins(
-      std::vector<std::unique_ptr<PasswordForm>>* forms);
+  [[nodiscard]] bool GetBlocklistLogins(std::vector<PasswordForm>* forms);
 
   // Gets the list of auto-sign-inable credentials.
-  [[nodiscard]] bool GetAutoSignInLogins(
-      std::vector<std::unique_ptr<PasswordForm>>* forms);
+  [[nodiscard]] bool GetAutoSignInLogins(std::vector<PasswordForm>* forms);
 
   // Deletes the login database file on disk, and creates a new, empty database.
   // This can be used after migrating passwords to some other store, to ensure
@@ -291,23 +286,17 @@ class LoginDatabase {
   void ReportDuplicateCredentialsMetrics();
 
   // Fills |form| from the values in the given statement (which is assumed to be
-  // of the form used by the Get*Logins methods). If
-  // |decrypt_and_fill_password_value| is set to true, it tries to decrypt the
-  // stored password and returns the EncryptionResult from decrypting the
-  // password in |s|; if not ENCRYPTION_RESULT_SUCCESS, |form| is not filled. If
-  // |decrypt_and_fill_password_value| is set to false, it always returns
-  // ENCRYPTION_RESULT_SUCCESS.
-  [[nodiscard]] EncryptionResult InitPasswordFormFromStatement(
-      sql::Statement& s,
-      bool decrypt_and_fill_password_value,
-      PasswordForm* form) const;
+  // of the form used by the Get*Logins methods).
+  // WARNING: Password value itself is absent, callers have to decrypt it if
+  // needed.
+  [[nodiscard]] PasswordForm GetFormWithoutPasswordFromStatement(
+      sql::Statement& s) const;
 
   // Gets all blocklisted or all non-blocklisted (depending on |blocklisted|)
   // credentials. On success returns true and overwrites |forms| with the
   // result.
-  bool GetAllLoginsWithBlocklistSetting(
-      bool blocklisted,
-      std::vector<std::unique_ptr<PasswordForm>>* forms);
+  bool GetAllLoginsWithBlocklistSetting(bool blocklisted,
+                                        std::vector<PasswordForm>* forms);
 
   // Returns the DB primary key for the specified |form| and decrypted/encrypted
   // password. Returns {-1, "", ""} if the row for this |form| is not found.
@@ -324,19 +313,19 @@ class LoginDatabase {
   [[nodiscard]] FormRetrievalResult StatementToForms(
       sql::Statement* statement,
       const PasswordFormDigest* matched_form,
-      std::vector<std::unique_ptr<PasswordForm>>* forms);
+      std::vector<PasswordForm>* forms);
 
   // Initializes all the *_statement_ data members with appropriate SQL
   // fragments based on |builder|.
   void InitializeStatementStrings(const SQLTableBuilder& builder);
 
-  // Sets the `in_store` member of `form` to either kProfileStore or
-  // kAccountStore depending on the value of `is_account_store_`.
-  void FillFormInStore(PasswordForm* form) const;
+  // Returns either kProfileStore or kAccountStore depending on the value of
+  // `is_account_store_`.
+  PasswordForm::Store GetStore() const;
 
-  // Reads the insecure credentials corresponding to the `form->primary_key`
-  // from the database and fills them into `form->password_issues`.
-  void PopulateFormWithPasswordIssues(PasswordForm* form) const;
+  // Returns insecure credentials corresponding to the `primary_key`.
+  base::flat_map<InsecureType, InsecurityMetadata> GetPasswordIssues(
+      FormPrimaryKey primary_key) const;
 
   // Updates data in the `insecure_credentials_table_` with the password issues
   // data from `password_issues`. Returns whether any insecure credential entry
@@ -345,10 +334,8 @@ class LoginDatabase {
       FormPrimaryKey primary_key,
       const base::flat_map<InsecureType, InsecurityMetadata>& password_issues);
 
-  // Reads the `password_notes` table for the notes with `form->primary_key` and
-  // fills the `form->notes` field. If there are no notes for
-  // `form->primary_key`, the form is set to empty notes.
-  void PopulateFormWithNotes(PasswordForm* form) const;
+  // Returns password notes corresponding to `primary_key`.
+  std::vector<PasswordNote> GetPasswordNotes(FormPrimaryKey primary_key) const;
 
   // Updates the `password_notes` table if `notes` changed for `primary_key`.
   void UpdatePasswordNotes(FormPrimaryKey primary_key,
