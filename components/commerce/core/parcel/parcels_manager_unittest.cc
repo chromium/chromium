@@ -130,6 +130,7 @@ class MockServerProxy : public ParcelsServerProxy {
                 const std::vector<ParcelIdentifier>& parcel_identifiers,
                 const std::string& source_page_domain,
                 ParcelsServerProxy::GetParcelStatusCallback callback) {
+              CHECK_EQ(parcel_identifiers[0].tracking_id(), tracking_id);
               std::move(callback).Run(succeeded,
                                       BuildParcelStatus(tracking_id, state));
             });

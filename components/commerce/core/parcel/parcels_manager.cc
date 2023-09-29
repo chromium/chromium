@@ -27,6 +27,7 @@ std::vector<ParcelIdentifier> ConvertParcelIdentifier(
     ParcelIdentifier id;
     id.set_carrier(identifier.first);
     id.set_tracking_id(identifier.second);
+    result.emplace_back(std::move(id));
   }
   return result;
 }
