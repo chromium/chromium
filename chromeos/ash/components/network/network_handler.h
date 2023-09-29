@@ -27,6 +27,7 @@ class CellularPolicyHandler;
 class ClientCertResolver;
 class ConnectionInfoMetricsLogger;
 class EnterpriseManagedMetadataStore;
+class EphemeralNetworkPoliciesEnablementHandler;
 class ESimPolicyLoginMetricsLogger;
 class GeolocationHandler;
 class HiddenNetworkHandler;
@@ -147,6 +148,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkHandler {
 
   void Init();
 
+  // Called when ephemeral network policies become enabled.
+  void OnEphemeralNetworkPoliciesEnabled();
+
   // The order of these determines the (inverse) destruction order.
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   const std::unique_ptr<NetworkStateHandler> network_state_handler_;
@@ -197,6 +201,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkHandler {
   std::unique_ptr<GeolocationHandler> geolocation_handler_;
   std::unique_ptr<UIProxyConfigService> ui_proxy_config_service_;
   std::unique_ptr<NetworkMetadataStore> network_metadata_store_;
+  std::unique_ptr<EphemeralNetworkPoliciesEnablementHandler>
+      ephemeral_network_policies_enablement_handler_;
 
   // True when the device is managed by policy.
   bool is_enterprise_managed_ = false;

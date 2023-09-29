@@ -18,6 +18,7 @@
 #include "chromeos/ash/components/network/cellular_policy_handler.h"
 #include "chromeos/ash/components/network/client_cert_resolver.h"
 #include "chromeos/ash/components/network/enterprise_managed_metadata_store.h"
+#include "chromeos/ash/components/network/ephemeral_network_policies_enablement_handler.h"
 #include "chromeos/ash/components/network/geolocation_handler.h"
 #include "chromeos/ash/components/network/hidden_network_handler.h"
 #include "chromeos/ash/components/network/hotspot_allowed_flag_handler.h"
@@ -47,6 +48,7 @@
 #include "chromeos/ash/components/network/network_sms_handler.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
+#include "chromeos/ash/components/network/policy_util.h"
 #include "chromeos/ash/components/network/prohibited_technologies_handler.h"
 #include "chromeos/ash/components/network/proxy/ui_proxy_config_service.h"
 #include "chromeos/ash/components/network/stub_cellular_networks_provider.h"
@@ -106,6 +108,20 @@ NetworkHandler::NetworkHandler()
   geolocation_handler_.reset(new GeolocationHandler());
   if (ash::features::IsCellularCarrierLockEnabled()) {
     network_3gpp_handler_.reset(new Network3gppHandler());
+  }
+
+  // Only watch ephemeral network policies enablement if ephemeral network
+  // policies should be enabled by the feature or if the device policy to enable
+  // ephemeral network policies should be respected.
+  if (features::AreEphemeralNetworkPoliciesEnabled() ||
+      features::CanEphemeralNetworkPoliciesBeEnabledByPolicy()) {
+    // base::Unretained is safe because
+    // `ephemeral_network_policies_enablement_handler_` is a member of
+    // NetworkHandler so it will be destroyed before `this`.
+    ephemeral_network_policies_enablement_handler_ =
+        std::make_unique<EphemeralNetworkPoliciesEnablementHandler>(
+            base::BindOnce(&NetworkHandler::OnEphemeralNetworkPoliciesEnabled,
+                           base::Unretained(this)));
   }
 }
 
@@ -263,9 +279,16 @@ void NetworkHandler::InitializePrefServices(
     text_message_provider_->SetNetworkMetadataStore(
         network_metadata_store_.get());
   }
+  if (ephemeral_network_policies_enablement_handler_) {
+    ephemeral_network_policies_enablement_handler_->SetDevicePrefs(
+        device_prefs);
+  }
 }
 
 void NetworkHandler::ShutdownPrefServices() {
+  if (ephemeral_network_policies_enablement_handler_) {
+    ephemeral_network_policies_enablement_handler_->SetDevicePrefs(nullptr);
+  }
   cellular_esim_profile_handler_->SetDevicePrefs(nullptr);
   managed_cellular_pref_handler_->SetDevicePrefs(nullptr);
   ui_proxy_config_service_.reset();
@@ -414,6 +437,11 @@ void NetworkHandler::SetIsEnterpriseManaged(bool is_enterprise_managed) {
     enterprise_managed_metadata_store_->set_is_enterprise_managed(
         is_enterprise_managed);
   }
+}
+
+void NetworkHandler::OnEphemeralNetworkPoliciesEnabled() {
+  // TODO(b/300880332): Instantiate EphemeralNetworkConfigurationHandler.
+  DCHECK(policy_util::AreEphemeralNetworkPoliciesEnabled());
 }
 
 }  // namespace ash

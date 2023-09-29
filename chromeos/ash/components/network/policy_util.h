@@ -118,6 +118,23 @@ COMPONENT_EXPORT(CHROMEOS_NETWORK)
 absl::optional<SmdxActivationCode> GetSmdxActivationCodeFromONC(
     const base::Value::Dict& onc_config);
 
+// When this is called, `AreEphemeralNetworkPoliciesEnabled()` will return true
+// until the process is restarted (or
+// ResetEphemeralNetworkPoliciesEnabledForTesting is called).
+COMPONENT_EXPORT(CHROMEOS_NETWORK)
+void SetEphemeralNetworkPoliciesEnabled();
+
+// Resets the effect of SetEphemeralNetworkPoliciesEnabled.
+// This is for unittests only - supporting this properly in production code
+// would be difficult (e.g. no DCHECKs that the feature is enabled in posted
+// tasks).
+COMPONENT_EXPORT(CHROMEOS_NETWORK)
+void ResetEphemeralNetworkPoliciesEnabledForTesting();
+
+// Returns true if ephemeral network policies are enabled.
+COMPONENT_EXPORT(CHROMEOS_NETWORK)
+bool AreEphemeralNetworkPoliciesEnabled();
+
 }  // namespace policy_util
 }  // namespace ash
 

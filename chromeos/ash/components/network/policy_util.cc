@@ -37,6 +37,10 @@ const char kActivationCodePattern[] = R"((^LPA\:1\$[a-zA-Z0-9.\-+*\/:%]*\$))";
 
 namespace {
 
+// When this is true, ephemeral network policies have been enabled by device
+// policy.
+bool g_ephemeral_network_policies_enabled_by_policy = false;
+
 std::string GetString(const base::Value::Dict& dict, const char* key) {
   const std::string* value = dict.FindString(key);
   return value ? *value : std::string();
@@ -571,6 +575,18 @@ absl::optional<SmdxActivationCode> GetSmdxActivationCodeFromONC(
                  << "configuration. Expected either an SM-DP+ activation code "
                  << "or an SM-DS activation code but got neither.";
   return absl::nullopt;
+}
+
+void SetEphemeralNetworkPoliciesEnabled() {
+  g_ephemeral_network_policies_enabled_by_policy = true;
+}
+
+void ResetEphemeralNetworkPoliciesEnabledForTesting() {
+  g_ephemeral_network_policies_enabled_by_policy = false;
+}
+
+bool AreEphemeralNetworkPoliciesEnabled() {
+  return g_ephemeral_network_policies_enabled_by_policy;
 }
 
 }  // namespace ash::policy_util
