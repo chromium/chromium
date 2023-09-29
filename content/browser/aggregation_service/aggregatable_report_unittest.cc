@@ -1050,17 +1050,17 @@ TEST_P(AggregatableReportTest, AggregationCoordinator_ProcessingUrlSet) {
   } kTestCases[] = {
       {
           absl::nullopt,
-          {GURL("https://aws.example.test/.well-known/aggregation-service/"
+          {GURL("https://aws.example.test/.well-known/aggregation-service/v1/"
                 "public-keys")},
       },
       {
           url::Origin::Create(GURL("https://aws.example.test")),
-          {GURL("https://aws.example.test/.well-known/aggregation-service/"
+          {GURL("https://aws.example.test/.well-known/aggregation-service/v1/"
                 "public-keys")},
       },
       {
           url::Origin::Create(GURL("https://gcp.example.test")),
-          {GURL("https://gcp.example.test/.well-known/aggregation-service/"
+          {GURL("https://gcp.example.test/.well-known/aggregation-service/v1/"
                 "public-keys")},
       },
       {

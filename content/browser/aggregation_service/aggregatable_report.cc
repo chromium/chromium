@@ -63,7 +63,7 @@ constexpr char kOperationKey[] = "operation";
 GURL GetProcessingUrl(const url::Origin& origin) {
   GURL::Replacements replacements;
   static constexpr char kEndpointPath[] =
-      ".well-known/aggregation-service/public-keys";
+      ".well-known/aggregation-service/v1/public-keys";
   replacements.SetPathStr(kEndpointPath);
   return origin.GetURL().ReplaceComponents(replacements);
 }
