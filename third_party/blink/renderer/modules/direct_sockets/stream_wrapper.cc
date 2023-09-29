@@ -42,7 +42,9 @@ class ForwardingUnderlyingSource : public UnderlyingSourceBase {
     return ScriptPromise::CastUndefined(script_state);
   }
 
-  ScriptPromise Cancel(ScriptState* script_state, ScriptValue reason) override {
+  ScriptPromise Cancel(ScriptState* script_state,
+                       ScriptValue reason,
+                       ExceptionState&) override {
     readable_stream_wrapper_->CloseStream();
     return ScriptPromise::CastUndefined(script_state);
   }

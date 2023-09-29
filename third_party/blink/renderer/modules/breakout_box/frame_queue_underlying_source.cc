@@ -125,7 +125,8 @@ ScriptPromise FrameQueueUnderlyingSource<NativeFrameType>::Start(
 template <typename NativeFrameType>
 ScriptPromise FrameQueueUnderlyingSource<NativeFrameType>::Cancel(
     ScriptState* script_state,
-    ScriptValue reason) {
+    ScriptValue reason,
+    ExceptionState&) {
   DCHECK(realm_task_runner_->RunsTasksInCurrentSequence());
   Close();
   return ScriptPromise::CastUndefined(script_state);

@@ -13,7 +13,7 @@
 interface UnderlyingSourceBase {
     [CallWith=ScriptState, ImplementedAs=startWrapper] Promise<void> start(ReadableStreamDefaultController stream);
     [CallWith=ScriptState] Promise<void> pull();
-    [CallWith=ScriptState, ImplementedAs=cancelWrapper] Promise<void> cancel(optional any reason);
+    [CallWith=ScriptState, RaisesException, ImplementedAs=cancelWrapper] Promise<void> cancel(optional any reason);
 
     // This only exists to prevent Object.prototype.type being accessed.
     [CallWith=ScriptState] readonly attribute any type;

@@ -335,10 +335,9 @@ void BodyStreamBuffer::Tee(BodyStreamBuffer** branch1,
 }
 
 ScriptPromise BodyStreamBuffer::Cancel(ScriptState* script_state,
-                                       ScriptValue reason) {
+                                       ScriptValue reason,
+                                       ExceptionState& exception_state) {
   if (underlying_byte_source_) {
-    ExceptionState exception_state(script_state->GetIsolate(),
-                                   ExceptionContextType::kUnknown, "", "");
     ScriptPromise cancel_promise = underlying_byte_source_->Cancel(
         ToV8(reason, script_state->GetContext()->Global(),
              script_state->GetIsolate()),
@@ -351,7 +350,7 @@ ScriptPromise BodyStreamBuffer::Cancel(ScriptState* script_state,
     }
   } else {
     CHECK(underlying_source_);
-    return underlying_source_->Cancel(script_state, reason);
+    return underlying_source_->Cancel(script_state, reason, exception_state);
   }
 }
 

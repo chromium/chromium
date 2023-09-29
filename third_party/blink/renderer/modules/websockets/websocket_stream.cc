@@ -43,7 +43,9 @@ class WebSocketStream::UnderlyingSource final : public UnderlyingSourceBase {
 
   // UnderlyingSourceBase implementation.
   ScriptPromise pull(ScriptState*) override;
-  ScriptPromise Cancel(ScriptState*, ScriptValue reason) override;
+  ScriptPromise Cancel(ScriptState*,
+                       ScriptValue reason,
+                       ExceptionState&) override;
 
   // API for WebSocketStream.
   void DidReceiveTextMessage(const String&);
@@ -124,10 +126,11 @@ ScriptPromise WebSocketStream::UnderlyingSource::pull(
 
 ScriptPromise WebSocketStream::UnderlyingSource::Cancel(
     ScriptState* script_state,
-    ScriptValue reason) {
+    ScriptValue reason,
+    ExceptionState& exception_state) {
   DVLOG(1) << "WebSocketStream::UnderlyingSource " << this << " Cancel()";
   closed_ = true;
-  creator_->CloseMaybeWithReason(reason);
+  creator_->CloseMaybeWithReason(reason, exception_state);
   return ScriptPromise::CastUndefined(script_state);
 }
 
@@ -214,7 +217,7 @@ ScriptPromise WebSocketStream::UnderlyingSink::close(
     ExceptionState& exception_state) {
   DVLOG(1) << "WebSocketStream::UnderlyingSink " << this << " close()";
   closed_ = true;
-  creator_->CloseWithUnspecifiedCode();
+  creator_->CloseWithUnspecifiedCode(exception_state);
   DCHECK(!close_resolver_);
   close_resolver_ = MakeGarbageCollected<ScriptPromiseResolver>(
       script_state, exception_state.GetContext());
@@ -228,7 +231,7 @@ ScriptPromise WebSocketStream::UnderlyingSink::abort(
   DVLOG(1) << "WebSocketStream::UnderlyingSink " << this << " abort()";
 
   closed_ = true;
-  creator_->CloseMaybeWithReason(reason);
+  creator_->CloseMaybeWithReason(reason, exception_state);
   return ScriptPromise::CastUndefined(script_state);
 }
 
@@ -666,12 +669,9 @@ void WebSocketStream::Connect(ScriptState* script_state,
 
 // If |maybe_reason| contains a valid code and reason, then closes with it,
 // otherwise closes with unspecified code and reason.
-void WebSocketStream::CloseMaybeWithReason(ScriptValue maybe_reason) {
+void WebSocketStream::CloseMaybeWithReason(ScriptValue maybe_reason,
+                                           ExceptionState& exception_state) {
   DVLOG(1) << "WebSocketStream " << this << " CloseMaybeWithReason()";
-
-  // Exceptions thrown here are ignored.
-  ExceptionState exception_state(script_state_->GetIsolate(),
-                                 ExceptionContextType::kUnknown, "", "");
   WebSocketCloseInfo* info = NativeValueTraits<WebSocketCloseInfo>::NativeValue(
       script_state_->GetIsolate(), maybe_reason.V8Value(), exception_state);
   if (!exception_state.HadException() && info->hasCode()) {
@@ -684,14 +684,12 @@ void WebSocketStream::CloseMaybeWithReason(ScriptValue maybe_reason) {
   if (exception_state.HadException()) {
     exception_state.ClearException();
   }
-  CloseWithUnspecifiedCode();
+  CloseWithUnspecifiedCode(exception_state);
 }
 
-void WebSocketStream::CloseWithUnspecifiedCode() {
+void WebSocketStream::CloseWithUnspecifiedCode(
+    ExceptionState& exception_state) {
   DVLOG(1) << "WebSocketStream " << this << " CloseWithUnspecifiedCode()";
-
-  ExceptionState exception_state(script_state_->GetIsolate(),
-                                 ExceptionContextType::kUnknown, "", "");
   CloseInternal(WebSocketChannel::kCloseEventCodeNotSpecified, String(),
                 exception_state);
   DCHECK(!exception_state.HadException());

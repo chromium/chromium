@@ -78,7 +78,9 @@ class TestUnderlyingSource final : public UnderlyingSourceBase {
     ++index_;
     return ScriptPromise::CastUndefined(script_state);
   }
-  ScriptPromise Cancel(ScriptState* script_state, ScriptValue reason) override {
+  ScriptPromise Cancel(ScriptState* script_state,
+                       ScriptValue reason,
+                       ExceptionState&) override {
     cancelled_ = true;
     cancel_reason_ = reason;
     return ScriptPromise::CastUndefined(script_state);

@@ -102,9 +102,9 @@ class MODULES_EXPORT WebSocketStream final
   // Closes the connection. If |maybe_reason| is an object with a valid "code"
   // property and optionally a valid "reason" property, will use them as the
   // code and reason, otherwise will close with unspecified close.
-  void CloseMaybeWithReason(ScriptValue maybe_reason);
+  void CloseMaybeWithReason(ScriptValue maybe_reason, ExceptionState&);
 
-  void CloseWithUnspecifiedCode();
+  void CloseWithUnspecifiedCode(ExceptionState&);
   void CloseInternal(int code,
                      const String& reason,
                      ExceptionState& exception_state);

@@ -34,9 +34,13 @@ class CORE_EXPORT UnderlyingSourceBase
 
   virtual ScriptPromise pull(ScriptState*);
 
-  ScriptPromise cancelWrapper(ScriptState*);
-  ScriptPromise cancelWrapper(ScriptState*, ScriptValue reason);
-  virtual ScriptPromise Cancel(ScriptState*, ScriptValue reason);
+  ScriptPromise cancelWrapper(ScriptState*, ExceptionState&);
+  ScriptPromise cancelWrapper(ScriptState*,
+                              ScriptValue reason,
+                              ExceptionState&);
+  virtual ScriptPromise Cancel(ScriptState*,
+                               ScriptValue reason,
+                               ExceptionState&);
 
   ScriptValue type(ScriptState*) const;
 

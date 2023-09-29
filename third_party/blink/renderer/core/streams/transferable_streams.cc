@@ -900,12 +900,12 @@ class ConcatenatingUnderlyingSource final : public UnderlyingSourceBase {
     return promise->GetScriptPromise(script_state);
   }
 
-  ScriptPromise Cancel(ScriptState* script_state, ScriptValue reason) override {
+  ScriptPromise Cancel(ScriptState* script_state,
+                       ScriptValue reason,
+                       ExceptionState& exception_state) override {
     if (has_finished_reading_stream1_) {
-      return source2_->Cancel(script_state, reason);
+      return source2_->Cancel(script_state, reason, exception_state);
     }
-    ExceptionState exception_state(script_state->GetIsolate(),
-                                   ExceptionContextType::kUnknown, "", "");
     ScriptPromise cancel_promise1 =
         reader_for_stream1_->cancel(script_state, reason, exception_state);
     if (exception_state.HadException()) {

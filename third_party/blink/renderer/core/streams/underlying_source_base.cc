@@ -34,21 +34,27 @@ ScriptPromise UnderlyingSourceBase::pull(ScriptState* script_state) {
   return ScriptPromise::CastUndefined(script_state);
 }
 
-ScriptPromise UnderlyingSourceBase::cancelWrapper(ScriptState* script_state) {
+ScriptPromise UnderlyingSourceBase::cancelWrapper(
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
   v8::Isolate* isolate = script_state->GetIsolate();
   return cancelWrapper(script_state,
-                       ScriptValue(isolate, v8::Undefined(isolate)));
+                       ScriptValue(isolate, v8::Undefined(isolate)),
+                       exception_state);
 }
 
-ScriptPromise UnderlyingSourceBase::cancelWrapper(ScriptState* script_state,
-                                                  ScriptValue reason) {
+ScriptPromise UnderlyingSourceBase::cancelWrapper(
+    ScriptState* script_state,
+    ScriptValue reason,
+    ExceptionState& exception_state) {
   DCHECK(controller_);  // startWrapper() must have been called
   controller_->Deactivate();
-  return Cancel(script_state, reason);
+  return Cancel(script_state, reason, exception_state);
 }
 
 ScriptPromise UnderlyingSourceBase::Cancel(ScriptState* script_state,
-                                           ScriptValue reason) {
+                                           ScriptValue reason,
+                                           ExceptionState&) {
   return ScriptPromise::CastUndefined(script_state);
 }
 

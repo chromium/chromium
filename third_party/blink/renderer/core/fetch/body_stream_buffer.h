@@ -85,7 +85,7 @@ class CORE_EXPORT BodyStreamBuffer final
                     ExceptionState&);
   void Tee(BodyStreamBuffer**, BodyStreamBuffer**, ExceptionState&);
 
-  ScriptPromise Cancel(ScriptState*, ScriptValue reason);
+  ScriptPromise Cancel(ScriptState*, ScriptValue reason, ExceptionState&);
 
   // ExecutionContextLifecycleObserver
   void ContextDestroyed() override;

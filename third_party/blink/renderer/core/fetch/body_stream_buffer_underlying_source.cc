@@ -33,7 +33,8 @@ ScriptPromise BodyStreamBufferUnderlyingSource::pull(
 
 ScriptPromise BodyStreamBufferUnderlyingSource::Cancel(
     ScriptState* script_state,
-    ScriptValue reason) {
+    ScriptValue reason,
+    ExceptionState&) {
   DCHECK_EQ(script_state, script_state_);
   Controller()->Close();
   body_stream_buffer_->CancelConsumer();

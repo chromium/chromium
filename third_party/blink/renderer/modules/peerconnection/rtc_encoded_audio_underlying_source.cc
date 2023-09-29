@@ -44,7 +44,8 @@ ScriptPromise RTCEncodedAudioUnderlyingSource::pull(ScriptState* script_state) {
 }
 
 ScriptPromise RTCEncodedAudioUnderlyingSource::Cancel(ScriptState* script_state,
-                                                      ScriptValue reason) {
+                                                      ScriptValue reason,
+                                                      ExceptionState&) {
   DCHECK(task_runner_->BelongsToCurrentThread());
   if (disconnect_callback_)
     std::move(disconnect_callback_).Run();
