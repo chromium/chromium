@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/send_tab_to_self/send_tab_to_self_browser_agent.h"
+#import "ios/chrome/browser/send_tab_to_self/model/send_tab_to_self_browser_agent.h"
 
 #import <memory>
 

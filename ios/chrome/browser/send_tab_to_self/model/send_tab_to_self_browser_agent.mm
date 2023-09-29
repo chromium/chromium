@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/send_tab_to_self/send_tab_to_self_browser_agent.h"
+#import "ios/chrome/browser/send_tab_to_self/model/send_tab_to_self_browser_agent.h"
 
 #import <memory>
 #import <string>
@@ -22,7 +22,7 @@
 #import "ios/chrome/browser/infobars/infobar_ios.h"
 #import "ios/chrome/browser/infobars/infobar_manager_impl.h"
 #import "ios/chrome/browser/infobars/infobar_utils.h"
-#import "ios/chrome/browser/send_tab_to_self/ios_send_tab_to_self_infobar_delegate.h"
+#import "ios/chrome/browser/send_tab_to_self/model/ios_send_tab_to_self_infobar_delegate.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"

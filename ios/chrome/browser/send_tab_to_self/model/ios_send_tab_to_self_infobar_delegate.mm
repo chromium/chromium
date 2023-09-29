@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/send_tab_to_self/ios_send_tab_to_self_infobar_delegate.h"
+#import "ios/chrome/browser/send_tab_to_self/model/ios_send_tab_to_self_infobar_delegate.h"
 
 #import <Foundation/Foundation.h>
 
@@ -56,18 +56,21 @@ IOSSendTabToSelfInfoBarDelegate::IOSSendTabToSelfInfoBarDelegate(
                   object:nil
                    queue:nil
               usingBlock:^(NSNotification* note) {
-                if (!weakPtr)
+                if (!weakPtr) {
                   return;
+                }
 
                 // Ignore the notification if it was sent by `weakPtr` (i.e. the
                 // instance that responded first to the send to self infobar)
-                if (note.object == weakPtr->registration_)
+                if (note.object == weakPtr->registration_) {
                   return;
+                }
 
                 infobars::InfoBar* infobar = weakPtr->infobar();
                 infobars::InfoBarManager* owner = infobar->owner();
-                if (!owner)
+                if (!owner) {
                   return;
+                }
 
                 owner->RemoveInfoBar(infobar);
               }];

@@ -28,7 +28,7 @@ source_set("activities") {
     "//components/prefs",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/reading_list",
-    "//ios/chrome/browser/send_tab_to_self",
+    "//ios/chrome/browser/send_tab_to_self/model",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",

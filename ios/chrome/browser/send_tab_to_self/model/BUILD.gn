@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("send_tab_to_self") {
+source_set("model") {
   sources = [
     "ios_send_tab_to_self_infobar_delegate.h",
     "ios_send_tab_to_self_infobar_delegate.mm",
@@ -40,7 +40,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [ "send_tab_to_self_browser_agent_unittest.mm" ]
   deps = [
-    ":send_tab_to_self",
+    ":model",
     "//base",
     "//base/test:test_support",
     "//components/keyed_service/ios",

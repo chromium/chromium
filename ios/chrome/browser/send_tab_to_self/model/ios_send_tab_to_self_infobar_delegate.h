@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_SEND_TAB_TO_SELF_IOS_SEND_TAB_TO_SELF_INFOBAR_DELEGATE_H_
-#define IOS_CHROME_BROWSER_SEND_TAB_TO_SELF_IOS_SEND_TAB_TO_SELF_INFOBAR_DELEGATE_H_
+#ifndef IOS_CHROME_BROWSER_SEND_TAB_TO_SELF_MODEL_IOS_SEND_TAB_TO_SELF_INFOBAR_DELEGATE_H_
+#define IOS_CHROME_BROWSER_SEND_TAB_TO_SELF_MODEL_IOS_SEND_TAB_TO_SELF_INFOBAR_DELEGATE_H_
 
 #include <CoreFoundation/CoreFoundation.h>
 
@@ -35,7 +35,6 @@ class IOSSendTabToSelfInfoBarDelegate : public ConfirmInfoBarDelegate {
   ~IOSSendTabToSelfInfoBarDelegate() override;
 
  private:
-
   // ConfirmInfoBarDelegate:
   InfoBarDelegate::InfoBarIdentifier GetIdentifier() const override;
   int GetButtons() const override;
@@ -63,4 +62,4 @@ class IOSSendTabToSelfInfoBarDelegate : public ConfirmInfoBarDelegate {
 
 }  // namespace send_tab_to_self
 
-#endif  // IOS_CHROME_BROWSER_SEND_TAB_TO_SELF_IOS_SEND_TAB_TO_SELF_INFOBAR_DELEGATE_H_
+#endif  // IOS_CHROME_BROWSER_SEND_TAB_TO_SELF_MODEL_IOS_SEND_TAB_TO_SELF_INFOBAR_DELEGATE_H_
