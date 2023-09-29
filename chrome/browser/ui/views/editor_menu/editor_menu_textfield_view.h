@@ -36,15 +36,12 @@ class EditorMenuTextfieldView : public views::View,
   EditorMenuTextfieldView& operator=(const EditorMenuTextfieldView&) = delete;
   ~EditorMenuTextfieldView() override;
 
-  views::ImageButton* CreateArrowButton(
-      const base::RepeatingClosure& button_callback);
-
   views::ImageButton* arrow_button() { return arrow_button_; }
   views::Textfield* textfield() { return textfield_; }
 
   // views::View:
+  void Layout() override;
   void AddedToWidget() override;
-  int GetHeightForWidth(int width) const override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
   // views::TextfieldController:
@@ -52,8 +49,6 @@ class EditorMenuTextfieldView : public views::View,
                        const std::u16string& new_contents) override;
   bool HandleKeyEvent(views::Textfield* sender,
                       const ui::KeyEvent& key_event) override;
-
-  void OnTextfieldFocusChanged();
 
  private:
   void InitLayout();
