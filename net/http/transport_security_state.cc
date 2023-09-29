@@ -500,7 +500,9 @@ TransportSecurityState::CheckCTRequirements(
            ct::CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS ||
        policy_compliance == ct::CTPolicyCompliance::CT_POLICY_BUILD_NOT_TIMELY);
 
-  CTRequirementLevel ct_required = CTRequirementLevel::DEFAULT;
+  CTRequirementLevel ct_required = g_ct_required_for_testing
+                                       ? CTRequirementLevel::REQUIRED
+                                       : CTRequirementLevel::NOT_REQUIRED;
   if (require_ct_delegate_) {
     // Allow the delegate to override the CT requirement state.
     ct_required = require_ct_delegate_->IsCTRequiredForHost(
@@ -511,14 +513,7 @@ TransportSecurityState::CheckCTRequirements(
       return complies ? CT_REQUIREMENTS_MET : CT_REQUIREMENTS_NOT_MET;
     case CTRequirementLevel::NOT_REQUIRED:
       return CT_NOT_REQUIRED;
-    case CTRequirementLevel::DEFAULT:
-      break;
   }
-
-  if (g_ct_required_for_testing) {
-    return complies ? CT_REQUIREMENTS_MET : CT_REQUIREMENTS_NOT_MET;
-  }
-  return CT_NOT_REQUIRED;
 }
 
 void TransportSecurityState::SetDelegate(

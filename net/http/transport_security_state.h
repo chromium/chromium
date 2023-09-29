@@ -90,11 +90,6 @@ class NET_EXPORT TransportSecurityState {
       // The host is explicitly not required to supply Certificate
       // Transparency information that complies with the CT policy.
       NOT_REQUIRED,
-
-      // The delegate makes no statements, positive or negative, about
-      // requiring the host to supply Certificate Transparency information,
-      // allowing the default behaviour to happen.
-      DEFAULT,
     };
 
     // Called by the TransportSecurityState, allows the Delegate to override

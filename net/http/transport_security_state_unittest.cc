@@ -1202,36 +1202,6 @@ TEST_F(TransportSecurityStateTest, RequireCTConsultsDelegate) {
             cert.get(), SignedCertificateTimestampAndStatusList(),
             ct::CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS));
   }
-
-  // If the Delegate is in the default state, then it should return the same
-  // result as if there was no delegate in the first place.
-  {
-    TransportSecurityState state;
-    const TransportSecurityState::CTRequirementsStatus original_status =
-        state.CheckCTRequirements(
-            HostPortPair("www.example.com", 443), true, hashes, cert.get(),
-            cert.get(), SignedCertificateTimestampAndStatusList(),
-            ct::CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS);
-
-    MockRequireCTDelegate default_require_ct_delegate;
-    EXPECT_CALL(default_require_ct_delegate, IsCTRequiredForHost(_, _, _))
-        .WillRepeatedly(Return(CTRequirementLevel::DEFAULT));
-    state.SetRequireCTDelegate(&default_require_ct_delegate);
-    EXPECT_EQ(
-        original_status,
-        state.CheckCTRequirements(
-            HostPortPair("www.example.com", 443), true, hashes, cert.get(),
-            cert.get(), SignedCertificateTimestampAndStatusList(),
-            ct::CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS));
-
-    state.SetRequireCTDelegate(nullptr);
-    EXPECT_EQ(
-        original_status,
-        state.CheckCTRequirements(
-            HostPortPair("www.example.com", 443), true, hashes, cert.get(),
-            cert.get(), SignedCertificateTimestampAndStatusList(),
-            ct::CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS));
-  }
 }
 
 enum class CTEmergencyDisableSwitchKind {
