@@ -244,7 +244,8 @@ crbug.com/1453832 [ win nvidia ] OverlayModeTraceTest_DirectComposition_Video_VP
 crbug.com/1446057 [ win10 amd-0x7340 angle-d3d11 ] VideoPathTraceTest_DirectComposition_Video_SW_Decode [ Failure ]
 
 # Android devices
-crbug.com/1487723 [ android android-SHIELD-Android-TV ] TraceTest_CSS3DBlueBox [ RetryOnFailure ]
+crbug.com/1487723 [ android android-shield-android-tv ] TraceTest_CSS3DBlueBox [ RetryOnFailure ]
+crbug.com/1487723 [ android android-shield-android-tv ] TraceTest_SolidColorBackground [ RetryOnFailure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
