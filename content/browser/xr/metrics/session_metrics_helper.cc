@@ -12,6 +12,8 @@
 #include "base/metrics/histogram_macros.h"
 #include "content/browser/xr/metrics/session_timer.h"
 #include "content/browser/xr/metrics/webxr_session_tracker.h"
+#include "content/browser/xr/service/xr_runtime_manager_impl.h"
+#include "content/browser/xr/webxr_internals/mojom/webxr_internals.mojom.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
@@ -149,8 +151,16 @@ SessionMetricsHelper::StartImmersiveSession(
   DVLOG(1) << __func__;
   DCHECK(!webxr_immersive_session_tracker_);
 
-  session_timer_ = std::make_unique<SessionTimer>();
+  session_timer_ = std::make_unique<SessionTimer>(session_options.trace_id);
   session_timer_->StartSession();
+
+  webxr::mojom::SessionStartedRecordPtr session_started_record =
+      webxr::mojom::SessionStartedRecord::New();
+  session_started_record->trace_id = session_timer_->GetTraceId();
+  session_started_record->started_time = session_timer_->GetStartTime();
+  XRRuntimeManagerImpl::GetOrCreateInstance()
+      ->GetLoggerManager()
+      .RecordSessionStarted(std::move(session_started_record));
 
   // TODO(crbug.com/1061899): The code here assumes that it's called on
   // behalf of the active frame, which is not always true.
@@ -175,7 +185,17 @@ void SessionMetricsHelper::StopAndRecordImmersiveSession() {
     return;
   }
 
-  webxr_immersive_session_tracker_->SetSessionEnd(base::Time::Now());
+  base::Time stop_time = base::Time::Now();
+
+  webxr::mojom::SessionStoppedRecordPtr session_stopped_record =
+      webxr::mojom::SessionStoppedRecord::New();
+  session_stopped_record->trace_id = session_timer_->GetTraceId();
+  session_stopped_record->stopped_time = stop_time;
+  XRRuntimeManagerImpl::GetOrCreateInstance()
+      ->GetLoggerManager()
+      .RecordSessionStopped(std::move(session_stopped_record));
+
+  webxr_immersive_session_tracker_->SetSessionEnd(stop_time);
   webxr_immersive_session_tracker_->ukm_entry()->SetDuration(
       webxr_immersive_session_tracker_->GetRoundedDurationInSeconds());
   webxr_immersive_session_tracker_->RecordEntry();

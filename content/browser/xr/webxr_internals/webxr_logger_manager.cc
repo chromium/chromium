@@ -16,13 +16,40 @@ WebXrLoggerManager::WebXrLoggerManager() = default;
 
 WebXrLoggerManager::~WebXrLoggerManager() = default;
 
-void WebXrLoggerManager::RecordSessionRequest(
-    webxr::mojom::SessionRequestRecordPtr session_request_record) {
+void WebXrLoggerManager::RecordSessionRequested(
+    webxr::mojom::SessionRequestedRecordPtr session_requested_record) {
   for (const auto& remote : remote_set_) {
-    remote->AddXrSessionRequest(session_request_record->Clone());
+    remote->LogXrSessionRequested(session_requested_record->Clone());
   }
 
-  session_request_records_.push_back(std::move(session_request_record));
+  session_requested_records_.push_back(std::move(session_requested_record));
+}
+
+void WebXrLoggerManager::RecordSessionRejected(
+    webxr::mojom::SessionRejectedRecordPtr session_rejected_record) {
+  for (const auto& remote : remote_set_) {
+    remote->LogXrSessionRejected(session_rejected_record->Clone());
+  }
+
+  session_rejected_records_.push_back(std::move(session_rejected_record));
+}
+
+void WebXrLoggerManager::RecordSessionStarted(
+    webxr::mojom::SessionStartedRecordPtr session_started_record) {
+  for (const auto& remote : remote_set_) {
+    remote->LogXrSessionStarted(session_started_record->Clone());
+  }
+
+  session_started_records_.push_back(std::move(session_started_record));
+}
+
+void WebXrLoggerManager::RecordSessionStopped(
+    webxr::mojom::SessionStoppedRecordPtr session_stopped_record) {
+  for (const auto& remote : remote_set_) {
+    remote->LogXrSessionStopped(session_stopped_record->Clone());
+  }
+
+  session_stopped_records_.push_back(std::move(session_stopped_record));
 }
 
 void WebXrLoggerManager::SubscribeToEvents(
@@ -33,8 +60,20 @@ void WebXrLoggerManager::SubscribeToEvents(
 
   // Send all previously received options to the remote before adding it to the
   // set.
-  for (const auto& request_record : session_request_records_) {
-    remote->AddXrSessionRequest(request_record->Clone());
+  for (const auto& requested_record : session_requested_records_) {
+    remote->LogXrSessionRequested(requested_record->Clone());
+  }
+
+  for (const auto& rejected_record : session_rejected_records_) {
+    remote->LogXrSessionRejected(rejected_record->Clone());
+  }
+
+  for (const auto& started_record : session_started_records_) {
+    remote->LogXrSessionStarted(started_record->Clone());
+  }
+
+  for (const auto& stopped_record : session_stopped_records_) {
+    remote->LogXrSessionStopped(stopped_record->Clone());
   }
 
   remote_set_.Add(std::move(remote));

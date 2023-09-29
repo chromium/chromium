@@ -24,14 +24,26 @@ class WebXrLoggerManager {
   WebXrLoggerManager(const WebXrLoggerManager&) = delete;
   WebXrLoggerManager& operator=(const WebXrLoggerManager&) = delete;
 
-  void RecordSessionRequest(
-      webxr::mojom::SessionRequestRecordPtr session_request_record);
+  void RecordSessionRequested(
+      webxr::mojom::SessionRequestedRecordPtr session_requested_record);
+  void RecordSessionRejected(
+      webxr::mojom::SessionRejectedRecordPtr session_rejected_record);
+  void RecordSessionStarted(
+      webxr::mojom::SessionStartedRecordPtr session_started_record);
+  void RecordSessionStopped(
+      webxr::mojom::SessionStoppedRecordPtr session_stopped_record);
+
   void SubscribeToEvents(
       mojo::PendingRemote<webxr::mojom::XRInternalsSessionListener>
           pending_remote);
 
  private:
-  std::vector<webxr::mojom::SessionRequestRecordPtr> session_request_records_;
+  std::vector<webxr::mojom::SessionRequestedRecordPtr>
+      session_requested_records_;
+  std::vector<webxr::mojom::SessionRejectedRecordPtr> session_rejected_records_;
+  std::vector<webxr::mojom::SessionStartedRecordPtr> session_started_records_;
+  std::vector<webxr::mojom::SessionStoppedRecordPtr> session_stopped_records_;
+
   mojo::RemoteSet<webxr::mojom::XRInternalsSessionListener> remote_set_;
 };
 

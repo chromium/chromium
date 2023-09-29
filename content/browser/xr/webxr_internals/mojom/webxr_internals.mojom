@@ -15,10 +15,34 @@ struct DeviceInfo {
     string gpu_gl_renderer;
 };
 
-// Human readable information about the session request
-struct SessionRequestRecord {
+// Human readable information about the session requested record.
+struct SessionRequestedRecord {
     device.mojom.XRSessionOptions options;
     mojo_base.mojom.Time requested_time;
+};
+
+// Human readable information about the session rejected record.
+struct SessionRejectedRecord {
+    // ID of this request, used for tracing.
+    uint64 trace_id;
+    device.mojom.RequestSessionError failure_reason;
+    mojo_base.mojom.Time rejected_time;
+    string failure_reason_description;
+    array<device.mojom.XRSessionFeature> rejected_features;
+};
+
+// Human readable information about the session started record.
+struct SessionStartedRecord {
+    // ID of this request, used for tracing.
+    uint64 trace_id;
+    mojo_base.mojom.Time started_time;
+};
+
+// Human readable information about the session stopped record.
+struct SessionStoppedRecord {
+    // ID of this request, used for tracing.
+    uint64 trace_id;
+    mojo_base.mojom.Time stopped_time;
 };
 
 // Interface for controlling WebXR Internals.
@@ -37,6 +61,15 @@ interface WebXrInternalsHandler {
 // Used by webxr internals WebUI to query browser process about session
 // events.
 interface XRInternalsSessionListener {
-    // Begin listening for updates to add session request.
-    AddXrSessionRequest(SessionRequestRecord session_request_record);
+    // Begin listening for updates to log session requested record.
+    LogXrSessionRequested(SessionRequestedRecord session_requested_record);
+
+    // Begin listening for updates to log session rejected record.
+    LogXrSessionRejected(SessionRejectedRecord session_rejected_record);
+
+    // Begin listening for updates to log session started record.
+    LogXrSessionStarted(SessionStartedRecord session_started_record);
+
+    // Begin listening for updates to log session stopped record.
+    LogXrSessionStopped(SessionStoppedRecord session_stopped_record);
 };

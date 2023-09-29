@@ -196,7 +196,7 @@ class MockVRService {
 
       // If there were no successful results, returns a null session.
       return {
-        result: {failureReason: vrMojom.RequestSessionError.NO_RUNTIME_FOUND}
+        result: {failureReason: xrSessionMojom.RequestSessionError.NO_RUNTIME_FOUND}
       };
     });
   }

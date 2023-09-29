@@ -14,18 +14,21 @@ namespace content {
 // destruction.
 class SessionTimer {
  public:
-  explicit SessionTimer();
+  explicit SessionTimer(size_t trace_id);
 
   virtual ~SessionTimer();
 
   SessionTimer(const SessionTimer&) = delete;
   SessionTimer& operator=(const SessionTimer&) = delete;
 
+  base::Time GetStartTime();
+  size_t GetTraceId();
   void StartSession();
   void StopSession();
 
  private:
   base::Time start_time_;
+  size_t trace_id_;
 };
 
 }  // namespace content

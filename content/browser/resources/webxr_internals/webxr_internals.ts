@@ -9,8 +9,7 @@ import {assert} from 'chrome://resources/js/assert_ts.js';
 import {getRequiredElement} from 'chrome://resources/js/util_ts.js';
 
 import {BrowserProxy} from './browser_proxy.js';
-import {SessionRequestRecord} from './webxr_internals.mojom-webui.js';
-
+import {SessionRejectedRecord, SessionRequestedRecord, SessionStartedRecord, SessionStoppedRecord} from './webxr_internals.mojom-webui.js';
 
 let browserProxy: BrowserProxy;
 
@@ -69,9 +68,24 @@ async function renderSessionsInfo() {
 
   const table = document.createElement('session-info-table');
 
-  browserProxy.getBrowserCallback().addXrSessionRequest.addListener(
-      (sessionRequestRecord: SessionRequestRecord) => {
-        table.addRow(sessionRequestRecord);
+  browserProxy.getBrowserCallback().logXrSessionRequested.addListener(
+      (sessionRequestedRecord: SessionRequestedRecord) => {
+        table.addSessionRequestedRow(sessionRequestedRecord);
+      });
+
+  browserProxy.getBrowserCallback().logXrSessionRejected.addListener(
+      (sessionRejectedRecord: SessionRejectedRecord) => {
+        table.addSessionRejectedRow(sessionRejectedRecord);
+      });
+
+  browserProxy.getBrowserCallback().logXrSessionStarted.addListener(
+      (sessionStartedRecord: SessionStartedRecord) => {
+        table.addSessionStartedRow(sessionStartedRecord);
+      });
+
+  browserProxy.getBrowserCallback().logXrSessionStopped.addListener(
+      (sessionStoppedRecord: SessionStoppedRecord) => {
+        table.addSessionStoppedRow(sessionStoppedRecord);
       });
 
   sessionInfoConent.appendChild(table);

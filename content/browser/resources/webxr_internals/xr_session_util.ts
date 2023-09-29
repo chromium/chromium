@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {XRDepthDataFormat, XRDepthUsage, XRSessionFeature, XRSessionMode} from './xr_session.mojom-webui.js';
+import {RequestSessionError, XRDepthDataFormat, XRDepthUsage, XRSessionFeature, XRSessionMode} from './xr_session.mojom-webui.js';
 
 export function depthFormatToString(format: XRDepthDataFormat): string {
   switch (format) {
@@ -21,6 +21,32 @@ export function depthUsageToString(usage: XRDepthUsage): string {
       return 'CPU';
     case XRDepthUsage.kGPUOptimized:
       return 'GPU';
+    default:
+      return '';
+  }
+}
+
+export function requestSessionErrorToString(
+    requestSessionError: RequestSessionError): string {
+  switch (requestSessionError) {
+    case RequestSessionError.EXISTING_IMMERSIVE_SESSION:
+      return 'EXISTING_IMMERSIVE_SESSION';
+    case RequestSessionError.INVALID_CLIENT:
+      return 'INVALID_CLIENT';
+    case RequestSessionError.USER_DENIED_CONSENT:
+      return 'USER_DENIED_CONSENT';
+    case RequestSessionError.NO_RUNTIME_FOUND:
+      return 'NO_RUNTIME_FOUND';
+    case RequestSessionError.UNKNOWN_RUNTIME_ERROR:
+      return 'UNKNOWN_RUNTIME_ERROR';
+    case RequestSessionError.RUNTIME_INSTALL_FAILURE:
+      return 'RUNTIMES_CHANGED';
+    case RequestSessionError.RUNTIMES_CHANGED:
+      return 'EXISTING_IMMERSIVE_SESSION';
+    case RequestSessionError.FULLSCREEN_ERROR:
+      return 'FULLSCREEN_ERROR';
+    case RequestSessionError.UNKNOWN_FAILURE:
+      return 'UNKNOWN_FAILURE';
     default:
       return '';
   }
