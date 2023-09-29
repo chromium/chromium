@@ -13,6 +13,7 @@
 #include "base/values.h"
 #include "extensions/browser/extension_function.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace content {
 class BrowserContext;
@@ -72,17 +73,16 @@ base::Value::Dict ToDict(absl::optional<base::ValueView> val);
 // If |val| is a list, return it as one, otherwise create an empty one.
 base::Value::List ToList(absl::optional<base::ValueView> val);
 
+// Currently, we allow either a string for the args, which is parsed to a list,
+// or an already-constructed list.
+using ArgsType = absl::variant<std::string, base::Value::List>;
+
 // Run |function| with |args| and return the result. Adds an error to the
 // current test if |function| returns an error. Takes ownership of
 // |function|. The caller takes ownership of the result.
 absl::optional<base::Value> RunFunctionWithDelegateAndReturnSingleResult(
     scoped_refptr<ExtensionFunction> function,
-    const std::string& args,
-    std::unique_ptr<ExtensionFunctionDispatcher> dispatcher,
-    FunctionMode mode);
-absl::optional<base::Value> RunFunctionWithDelegateAndReturnSingleResult(
-    scoped_refptr<ExtensionFunction> function,
-    base::Value::List args,
+    ArgsType args,
     std::unique_ptr<ExtensionFunctionDispatcher> dispatcher,
     FunctionMode mode);
 
@@ -90,24 +90,17 @@ absl::optional<base::Value> RunFunctionWithDelegateAndReturnSingleResult(
 // implementation of the Delegate.
 absl::optional<base::Value> RunFunctionAndReturnSingleResult(
     scoped_refptr<ExtensionFunction> function,
-    const std::string& args,
-    content::BrowserContext* context);
-absl::optional<base::Value> RunFunctionAndReturnSingleResult(
-    scoped_refptr<ExtensionFunction> function,
-    const std::string& args,
+    ArgsType args,
     content::BrowserContext* context,
-    FunctionMode mode);
+    FunctionMode mode = FunctionMode::kNone);
 
 // Run |function| with |args| and return the resulting error. Adds an error to
 // the current test if |function| returns a result. Takes ownership of
 // |function|.
 std::string RunFunctionAndReturnError(scoped_refptr<ExtensionFunction> function,
-                                      const std::string& args,
+                                      ArgsType args,
                                       content::BrowserContext* context,
-                                      FunctionMode mode);
-std::string RunFunctionAndReturnError(scoped_refptr<ExtensionFunction> function,
-                                      const std::string& args,
-                                      content::BrowserContext* context);
+                                      FunctionMode mode = FunctionMode::kNone);
 
 // Create and run |function| with |args|. Works with both synchronous and async
 // functions. Ownership of |function| remains with the caller.
@@ -120,15 +113,11 @@ std::string RunFunctionAndReturnError(scoped_refptr<ExtensionFunction> function,
 // we're going to need to frob for all the different extension functions. But
 // we can refactor when we see what is needed.
 bool RunFunction(scoped_refptr<ExtensionFunction> function,
-                 const std::string& args,
+                 ArgsType args,
                  content::BrowserContext* context,
                  FunctionMode mode = FunctionMode::kNone);
 bool RunFunction(scoped_refptr<ExtensionFunction> function,
-                 const std::string& args,
-                 std::unique_ptr<ExtensionFunctionDispatcher> dispatcher,
-                 FunctionMode mode);
-bool RunFunction(scoped_refptr<ExtensionFunction> function,
-                 base::Value::List args,
+                 ArgsType args,
                  std::unique_ptr<ExtensionFunctionDispatcher> dispatcher,
                  FunctionMode mode);
 
