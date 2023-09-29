@@ -85,7 +85,8 @@ TEST_F(WmPixelDiffTest, OverviewAndDesksBarBasic) {
       overview_widget3));
 }
 
-TEST_F(WmPixelDiffTest, OverviewTabletSnap) {
+// TODO(crbug.com/1479278): Test is flaky.
+TEST_F(WmPixelDiffTest, DISABLED_OverviewTabletSnap) {
   UpdateDisplay("1600x1000");
 
   ShellTestApi().SetTabletModeEnabledForTest(true);
