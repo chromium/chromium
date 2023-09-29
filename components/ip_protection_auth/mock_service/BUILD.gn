@@ -1,0 +1,13 @@
+import("//build/config/android/config.gni")
+import("//build/config/android/rules.gni")
+
+android_library("ip_protection_auth_service_mock_java") {
+  sources = [ "java/src/org/chromium/components/ip_protection_auth/mock_service/IpProtectionAuthServiceMock.java" ]
+
+  deps = [
+    "//components/ip_protection_auth/common/aidl:ip_protection_aidl_java",
+    "//components/ip_protection_auth/common/proto:ip_protection_auth_proto_java",
+    "//third_party/android_deps:protobuf_lite_runtime_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+  ]
+}

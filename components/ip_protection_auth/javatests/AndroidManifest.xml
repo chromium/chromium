@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2023 The Chromium Authors
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="org.chromium.components.ip_protection_auth">
+  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+  <application android:label="Ip Protection Auth">
+    <service android:name="org.chromium.components.ip_protection_auth.mock_service.IpProtectionAuthServiceMock"
+          android:exported="true" />
+  </application>
+</manifest>

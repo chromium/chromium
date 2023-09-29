@@ -365,6 +365,7 @@ group("gn_all") {
         "//chrome/android/webapk/shell_apk/prepare_upload_dir:prepare_webapk_shell_upload_dir",
         "//chrome/test:android_browsertests",
         "//components:components_junit_tests",
+        "//components/ip_protection_auth/javatests:ip_protection_auth_test_apk",
         "//content/public/android:content_junit_tests",
         "//content/shell/android:content_shell_apk",
         "//device:device_junit_tests",
