@@ -8,6 +8,9 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <memory>
+#include <vector>
+
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/container/inlined_vector.h"
 #include "ui/events/gesture_detection/gesture_detection_export.h"
