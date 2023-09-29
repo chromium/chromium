@@ -78,14 +78,13 @@ std::vector<const AutofillProfile*> GetPrefixMatchedProfiles(
 // ServerFieldTypes relevant for the current suggestions, including that of the
 // field on which the user is currently focused.
 std::vector<const AutofillProfile*> DeduplicatedProfilesForSuggestions(
-    const AutofillType& type,
+    const std::vector<const AutofillProfile*>& matched_profiles,
+    const AutofillType& trigger_field_type,
     const ServerFieldTypeSet& field_types,
-    const AutofillProfileComparator& comparator,
-    const std::vector<const AutofillProfile*> matched_profiles);
+    const AutofillProfileComparator& comparator);
 
-// Returns whether the |suggestion_canon| is valid considering the
-// |field_contents_canon|, the |type|, |is_masked_server_card|, and
-// |field_is_autofilled|.
+// Returns whether the `suggestion_canon` is a valid match given
+// `field_contents_canon`.
 bool IsValidSuggestionForFieldContents(std::u16string suggestion_canon,
                                        std::u16string field_contents_canon,
                                        const AutofillType& type,

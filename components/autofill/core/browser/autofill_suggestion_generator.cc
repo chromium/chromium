@@ -273,7 +273,7 @@ AutofillSuggestionGenerator::GetProfilesToSuggest(
   // Duplicates across sources are resolved in favour of `kAccount` profiles.
   std::vector<const AutofillProfile*> unique_matched_profiles =
       suggestion_selection::DeduplicatedProfilesForSuggestions(
-          type, field_types, comparator, matched_profiles);
+          matched_profiles, type, field_types, comparator);
 
   return unique_matched_profiles;
 }

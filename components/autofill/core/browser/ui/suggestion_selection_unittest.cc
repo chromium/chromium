@@ -149,8 +149,8 @@ TEST_F(SuggestionSelectionTest, GetUniqueSuggestions_SingleDedupe) {
                                                           profile2.get()};
 
   std::vector<const AutofillProfile*> unique_matched_profiles =
-      DeduplicatedProfilesForSuggestions(AutofillType(NAME_FIRST), {},
-                                         comparator_, profile_pointers);
+      DeduplicatedProfilesForSuggestions(
+          profile_pointers, AutofillType(NAME_FIRST), {}, comparator_);
 
   ASSERT_EQ(1U, unique_matched_profiles.size());
   EXPECT_EQ(profile1.get(), unique_matched_profiles[0]);
@@ -171,8 +171,8 @@ TEST_F(SuggestionSelectionTest, GetUniqueSuggestions_MultipleDedupe) {
       profile1.get(), profile2.get(), profile3.get()};
 
   std::vector<const AutofillProfile*> unique_matched_profiles =
-      DeduplicatedProfilesForSuggestions(AutofillType(NAME_FIRST), {NAME_LAST},
-                                         comparator_, profile_pointers);
+      DeduplicatedProfilesForSuggestions(
+          profile_pointers, AutofillType(NAME_FIRST), {NAME_LAST}, comparator_);
 
   ASSERT_EQ(3U, unique_matched_profiles.size());
 
@@ -189,25 +189,25 @@ TEST_F(SuggestionSelectionTest, GetUniqueSuggestions_DedupeLimit) {
   }
 
   // Map all the pointers into an array that has the right type.
-  std::vector<const AutofillProfile*> profiles_pointers;
-  base::ranges::transform(profiles_data, std::back_inserter(profiles_pointers),
+  std::vector<const AutofillProfile*> profile_pointers;
+  base::ranges::transform(profiles_data, std::back_inserter(profile_pointers),
                           &std::unique_ptr<AutofillProfile>::get);
 
   std::vector<const AutofillProfile*> unique_matched_profiles =
-      DeduplicatedProfilesForSuggestions(AutofillType(NAME_FIRST), {NAME_LAST},
-                                         comparator_, profiles_pointers);
+      DeduplicatedProfilesForSuggestions(
+          profile_pointers, AutofillType(NAME_FIRST), {NAME_LAST}, comparator_);
 
   ASSERT_EQ(kMaxUniqueSuggestedProfilesCount, unique_matched_profiles.size());
 
   // All profiles are different.
   for (size_t i = 0; i < unique_matched_profiles.size(); i++) {
-    ASSERT_EQ(profiles_pointers[i], unique_matched_profiles[i]);
+    ASSERT_EQ(profile_pointers[i], unique_matched_profiles[i]);
   }
 }
 
 TEST_F(SuggestionSelectionTest, GetUniqueSuggestions_EmptyMatchingProfiles) {
-  ASSERT_EQ(0U, DeduplicatedProfilesForSuggestions(AutofillType(NAME_FIRST),
-                                                   {NAME_LAST}, comparator_, {})
+  ASSERT_EQ(0U, DeduplicatedProfilesForSuggestions({}, AutofillType(NAME_FIRST),
+                                                   {NAME_LAST}, comparator_)
                     .size());
 }
 
@@ -221,12 +221,12 @@ TEST_F(SuggestionSelectionTest, GetUniqueSuggestions_kAccount) {
   local_profile->set_source_for_testing(
       AutofillProfile::Source::kLocalOrSyncable);
   // Place `account_profile` behind `local_profile`.
-  std::vector<const AutofillProfile*> profiles = {local_profile.get(),
-                                                  account_profile.get()};
+  std::vector<const AutofillProfile*> profile_pointers = {
+      local_profile.get(), account_profile.get()};
 
   std::vector<const AutofillProfile*> unique_matched_profiles =
-      DeduplicatedProfilesForSuggestions(AutofillType(NAME_FIRST), {},
-                                         comparator_, profiles);
+      DeduplicatedProfilesForSuggestions(
+          profile_pointers, AutofillType(NAME_FIRST), {}, comparator_);
   // Usually, duplicates are resolved in favour of the earlier profile. Expect
   // that this is not the case when profiles of different sources are involved.
   EXPECT_THAT(unique_matched_profiles, ElementsAre(account_profile.get()));

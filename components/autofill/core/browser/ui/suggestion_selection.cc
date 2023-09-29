@@ -417,8 +417,9 @@ std::vector<const AutofillProfile*> GetPrefixMatchedProfiles(
 #endif  // BUILDFLAG(IS_ANDROID)
 
     std::u16string value = GetSuggestionMainText(profile, type, app_locale);
-    if (value.empty())
+    if (value.empty()) {
       continue;
+    }
 
     std::u16string suggestion_canon =
         NormalizeForComparisonForType(value, type.GetStorableType());
@@ -432,55 +433,66 @@ std::vector<const AutofillProfile*> GetPrefixMatchedProfiles(
   return matched_profiles;
 }
 
+// TODO(crbug.com/1417975): Remove `trigger_field_type` when
+// `kAutofillUseAddressRewriterInProfileSubsetComparison` launches.
 std::vector<const AutofillProfile*> DeduplicatedProfilesForSuggestions(
-    const AutofillType& type,
+    const std::vector<const AutofillProfile*>& matched_profiles,
+    const AutofillType& trigger_field_type,
     const ServerFieldTypeSet& field_types,
-    const AutofillProfileComparator& comparator,
-    const std::vector<const AutofillProfile*> matched_profiles) {
-  std::vector<const AutofillProfile*> unique_matched_profiles;
+    const AutofillProfileComparator& comparator) {
+  // TODO(crbug.com/1417975): Remove when
+  // `kAutofillUseAddressRewriterInProfileSubsetComparison` launches.
   std::vector<std::u16string> suggestion_main_text;
   for (const AutofillProfile* profile : matched_profiles) {
-    suggestion_main_text.push_back(
-        GetSuggestionMainText(profile, type, comparator.app_locale()));
+    suggestion_main_text.push_back(GetSuggestionMainText(
+        profile, trigger_field_type, comparator.app_locale()));
   }
 
+  std::vector<const AutofillProfile*> unique_matched_profiles;
   // Limit number of unique profiles as having too many makes the
   // browser hang due to drawing calculations (and is also not
   // very useful for the user).
-  for (size_t i = 0;
-       i < matched_profiles.size() &&
+  for (size_t a = 0;
+       a < matched_profiles.size() &&
        unique_matched_profiles.size() < kMaxUniqueSuggestedProfilesCount;
-       ++i) {
+       ++a) {
     bool include = true;
-    const AutofillProfile* profile_a = matched_profiles[i];
-    for (size_t j = 0; j < matched_profiles.size(); ++j) {
-      const AutofillProfile* profile_b = matched_profiles[j];
-      // Check if profile A is a subset of profile B. If not, continue.
-      if (i == j ||
-          !comparator.Compare(suggestion_main_text[i],
-                              suggestion_main_text[j]) ||
-          !profile_a->IsSubsetOfForFieldSet(comparator, *profile_b,
+    const AutofillProfile* profile_a = matched_profiles[a];
+    for (size_t b = 0; b < matched_profiles.size(); ++b) {
+      const AutofillProfile* profile_b = matched_profiles[b];
+
+      // TODO(crbug.com/1417975): Remove when
+      // `kAutofillUseAddressRewriterInProfileSubsetComparison` launches.
+      if (profile_a == profile_b ||
+          !comparator.Compare(suggestion_main_text[a],
+                              suggestion_main_text[b])) {
+        continue;
+      }
+
+      if (!profile_a->IsSubsetOfForFieldSet(comparator, *profile_b,
                                             field_types)) {
         continue;
       }
 
-      // Check if profile B is also a subset of profile A. If so, the
-      // profiles are identical and only one should be included.
+      if (!profile_b->IsSubsetOfForFieldSet(comparator, *profile_a,
+                                            field_types)) {
+        // One-way subset. Don't include profile A.
+        include = false;
+        break;
+      }
+
+      // The profiles are identical and only one should be included.
       // Prefer `kAccount` profiles over `kLocalOrSyncable` ones. In case the
       // profiles have the same source, prefer the earlier one (since the
       // profiles are pre-sorted by their relevance).
       const bool prefer_a_over_b =
           profile_a->source() == profile_b->source()
-              ? i < j
+              ? a < b
               : profile_a->source() == AutofillProfile::Source::kAccount;
-      if (prefer_a_over_b && profile_b->IsSubsetOfForFieldSet(
-                                 comparator, *profile_a, field_types)) {
-        continue;
+      if (!prefer_a_over_b) {
+        include = false;
+        break;
       }
-
-      // One-way subset. Don't include profile A.
-      include = false;
-      break;
     }
     if (include) {
       unique_matched_profiles.push_back(profile_a);
