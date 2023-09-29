@@ -238,6 +238,7 @@
       "symbol_level": 0,
       "target_os": "chromeos",
       "use_clang_coverage": true,
+      "use_dummy_lastchange": true,
       "use_remoteexec": true
     }
   },
@@ -258,6 +259,7 @@
         "symbol_level": 0,
         "target_os": "chromeos",
         "use_clang_coverage": true,
+        "use_dummy_lastchange": true,
         "use_goma": false,
         "use_remoteexec": false
       }
@@ -277,6 +279,7 @@
         "symbol_level": 0,
         "target_os": "chromeos",
         "use_clang_coverage": true,
+        "use_dummy_lastchange": true,
         "use_remoteexec": true
       }
     }
