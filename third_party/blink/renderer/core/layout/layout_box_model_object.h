@@ -178,8 +178,6 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
   // it. If there are no filters, it returns its argument.
   PhysicalRect ApplyFiltersToRect(const PhysicalRect&) const;
 
-  bool UsesCompositedScrolling() const;
-
   // These return the CSS computed padding values.
   LayoutUnit ComputedCSSPaddingTop() const {
     NOT_DESTROYED();

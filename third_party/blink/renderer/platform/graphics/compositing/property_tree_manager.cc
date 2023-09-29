@@ -246,12 +246,10 @@ uint32_t PropertyTreeManager::GetMainThreadScrollingReasons(
 bool PropertyTreeManager::UsesCompositedScrolling(
     const cc::LayerTreeHost& host,
     const ScrollPaintPropertyNode& scroll) {
-  DCHECK(RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled());
   const auto* property_trees = host.property_trees();
   const auto* cc_scroll = property_trees->scroll_tree().Node(
       scroll.CcNodeId(property_trees->sequence_number()));
-  DCHECK(cc_scroll);
-  return cc_scroll->is_composited;
+  return cc_scroll && cc_scroll->is_composited;
 }
 
 void PropertyTreeManager::SetupRootTransformNode() {

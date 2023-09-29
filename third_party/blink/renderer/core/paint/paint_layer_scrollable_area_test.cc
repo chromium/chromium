@@ -1170,10 +1170,9 @@ TEST_P(MAYBE_PaintLayerScrollableAreaTest,
 
   EXPECT_TRUE(scrollable_area->ScrollbarsHiddenIfOverlay());
 
-  // This will be false because
-  // cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText. See
-  // PaintLayerScrollableArea::ComputeNeedsCompositedScrollingInternal.
-  EXPECT_FALSE(scrollable_area->NeedsCompositedScrolling());
+  // This is false because we prefer LCD-text by default and the scroller
+  // doesn't have an opaque background to preserve LCD-text if composited.
+  EXPECT_FALSE(scrollable_area->UsesCompositedScrolling());
 
   scrollable_area->SetScrollOffset(ScrollOffset(0, 20),
                                    mojom::blink::ScrollType::kCompositor);

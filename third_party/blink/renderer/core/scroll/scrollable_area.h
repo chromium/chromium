@@ -411,10 +411,7 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
   virtual void RegisterForAnimation() {}
   virtual void DeregisterForAnimation() {}
 
-  virtual bool UsesCompositedScrolling() const {
-    NOTREACHED();
-    return false;
-  }
+  virtual bool UsesCompositedScrolling() const = 0;
   virtual bool ShouldScrollOnMainThread() const { return false; }
 
   // Overlay scrollbars can "fade-out" when inactive. This value should only be

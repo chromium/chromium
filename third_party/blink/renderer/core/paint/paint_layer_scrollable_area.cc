@@ -528,13 +528,7 @@ void PaintLayerScrollableArea::UpdateScrollOffset(
 
   if (IsExplicitScrollType(scroll_type) ||
       scroll_type == mojom::blink::ScrollType::kScrollStart) {
-    // We don't need to show scrollbars for kCompositor scrolls unless the
-    // scrollbar is non-composited (!NeedsCompositorScrolling). See
-    // PaintLayerScrollableArea::ShouldDirectlyCompositeScrollbar.
-    if (scroll_type != mojom::blink::ScrollType::kCompositor ||
-        !NeedsCompositedScrolling()) {
-      ShowNonMacOverlayScrollbars();
-    }
+    ShowNonMacOverlayScrollbars();
     GetScrollAnchor()->Clear();
   }
   if (ContentCaptureManager* manager = frame_view->GetFrame()

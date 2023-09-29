@@ -428,15 +428,12 @@ class CORE_EXPORT PaintLayerScrollableArea final
   // Rectangle encompassing the scroll corner and resizer rect.
   gfx::Rect ScrollCornerAndResizerRect() const;
 
-  // The difference between this function and NeedsCompositedScrolling() is
-  // that this function returns the composited scrolling status based on paint
-  // properties which are updated based on the latter.
+  // Returns true if the scroll node is currently composited in cc.
   bool UsesCompositedScrolling() const override;
 
   // In CompositeScrollAfterPaint, NeedsCompositedScrolling() is false if
   // composited scrolling will be determined after paint.
-  // TODO(crbug.com/1414885): We may need to redefine these functions for
-  // CompositeScrollAfterPaint.
+  // TODO(crbug.com/1414885): Remove these functions.
   void UpdateNeedsCompositedScrolling(
       bool force_prefer_compositing_to_lcd_text);
   bool NeedsCompositedScrolling() const { return needs_composited_scrolling_; }

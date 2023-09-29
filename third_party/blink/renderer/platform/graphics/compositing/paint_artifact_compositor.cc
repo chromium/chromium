@@ -1095,7 +1095,6 @@ uint32_t PaintArtifactCompositor::GetMainThreadScrollingReasons(
 
 bool PaintArtifactCompositor::UsesCompositedScrolling(
     const ScrollPaintPropertyNode& scroll) const {
-  DCHECK(RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled());
   CHECK(root_layer_);
   if (!root_layer_->layer_tree_host()) {
     return false;

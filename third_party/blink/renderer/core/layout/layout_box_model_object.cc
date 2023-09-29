@@ -92,16 +92,6 @@ bool NeedsAnchorPositionScrollData(Element& element,
 LayoutBoxModelObject::LayoutBoxModelObject(ContainerNode* node)
     : LayoutObject(node) {}
 
-bool LayoutBoxModelObject::UsesCompositedScrolling() const {
-  NOT_DESTROYED();
-
-  // TODO(crbug.com/1414885): We may need to redefine this function for
-  // CompositeScrollAfterPaint.
-  const auto* properties = FirstFragment().PaintProperties();
-  return properties && properties->ScrollTranslation() &&
-         properties->ScrollTranslation()->HasDirectCompositingReasons();
-}
-
 LayoutBoxModelObject::~LayoutBoxModelObject() = default;
 
 void LayoutBoxModelObject::WillBeDestroyed() {

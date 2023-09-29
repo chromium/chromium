@@ -997,6 +997,9 @@ void ScrollableArea::ShowNonMacOverlayScrollbars() {
 
   // Don't do this for composited scrollbars. These scrollbars are handled
   // by separate code in cc::ScrollbarAnimationController.
+  // TODO(crbug.com/1229864): We may want to always composite overlay
+  // scrollbars to avoid the bug and the duplicated code for composited and
+  // non-composited overlay scrollbars.
   if (UsesCompositedScrolling())
     return;
 

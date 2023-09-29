@@ -216,10 +216,12 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     return false;
   }
 
-  // Returns whether this object needs a scroll paint property tree node. These
-  // are a requirement for composited scrolling but are also created for
-  // non-composited scrollers.
+  // Returns whether this object needs a scroll paint property tree node.
   bool NeedsScrollNode(CompositingReasons direct_compositing_reasons) const;
+
+  // Returns true if this LayoutBox has a scroll paint property node and the
+  // node is currently composited in cc.
+  bool UsesCompositedScrolling() const;
 
   // Use this with caution! No type checking is done!
   LayoutBox* FirstChildBox() const;
