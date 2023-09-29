@@ -260,8 +260,9 @@ void ErrorScreen::ShowImpl() {
     return;
   }
 
-  const bool is_closeable =
-      LoginDisplayHost::default_host()->HasUserPods() && !is_persistent_;
+  const bool is_closeable = LoginDisplayHost::default_host() &&
+                            LoginDisplayHost::default_host()->HasUserPods() &&
+                            !is_persistent_;
   view_->ShowScreenWithParam(is_closeable);
   LOG(WARNING) << "Network error screen message is shown";
   NetworkHandler::Get()->network_state_handler()->RequestPortalDetection();
