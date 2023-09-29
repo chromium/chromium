@@ -136,7 +136,8 @@ std::vector<std::unique_ptr<base::Unwinder>> CreateCoreUnwinders(
   // vector.
   std::vector<std::unique_ptr<base::Unwinder>> unwinders;
   unwinders.push_back(stack_unwinder_module->CreateNativeUnwinder(
-      map_delegate.get(), reinterpret_cast<uintptr_t>(&__executable_start)));
+      map_delegate.get(), reinterpret_cast<uintptr_t>(&__executable_start),
+      /*is_java_name_hashing_enabled=*/false));
   unwinders.push_back(chrome_unwinder_creator->Create());
   return unwinders;
 }

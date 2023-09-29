@@ -60,7 +60,7 @@ class NativeUnwinderAndroid : public Unwinder,
   // outlives this object.
   NativeUnwinderAndroid(uintptr_t exclude_module_with_base_address,
                         NativeUnwinderAndroidMapDelegate* map_delegate,
-                        bool is_java_name_hashing_enabled = false);
+                        bool is_java_name_hashing_enabled);
   ~NativeUnwinderAndroid() override;
 
   NativeUnwinderAndroid(const NativeUnwinderAndroid&) = delete;

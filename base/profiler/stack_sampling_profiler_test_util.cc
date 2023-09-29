@@ -128,7 +128,8 @@ NativeUnwinderAndroidMapDelegateForTesting* GetMapDelegateForTesting() {
 std::unique_ptr<NativeUnwinderAndroid> CreateNativeUnwinderAndroidForTesting(
     uintptr_t exclude_module_with_base_address) {
   return std::make_unique<NativeUnwinderAndroid>(
-      exclude_module_with_base_address, GetMapDelegateForTesting());
+      exclude_module_with_base_address, GetMapDelegateForTesting(),
+      /*is_java_name_hashing_enabled=*/false);
 }
 
 std::unique_ptr<Unwinder> CreateChromeUnwinderAndroidForTesting(
