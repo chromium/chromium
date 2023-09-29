@@ -101,7 +101,7 @@ class WebAppFrameToolbarTestHelper {
   GURL LoadTestPageWithDataAndGetURL(
       net::test_server::EmbeddedTestServer* embedded_test_server,
       base::ScopedTempDir* temp_dir,
-      const char kTestHTML[]);
+      base::StringPiece test_html);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEB_APPS_FRAME_TOOLBAR_WEB_APP_FRAME_TOOLBAR_TEST_HELPER_H_

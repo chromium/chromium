@@ -92,86 +92,82 @@ GURL WebAppFrameToolbarTestHelper::
     LoadWindowControlsOverlayTestPageWithDataAndGetURL(
         net::test_server::EmbeddedTestServer* embedded_test_server,
         base::ScopedTempDir* temp_dir) {
-  constexpr char kTestHTML[] =
-      "<!DOCTYPE html>"
-      "<style>"
-      "  body {"
-      "    background: blue;"
-      "  }"
-      "  @media (display-mode: window-controls-overlay) {"
-      "    body {"
-      "      background: red;"
-      "    }"
-      "  }"
-      "  #draggable {"
-      "     app-region: drag;"
-      "     position: absolute;"
-      "     top: 100px;"
-      "     left: 100px;"
-      "     height: 10px;"
-      "     width: 10px;"
-      "  }"
-      "  #non-draggable {"
-      "     app-region: no-drag;"
-      "     position: relative;"
-      "     top: 5px;"
-      "     left: 5px;"
-      "     height: 2px;"
-      "     width: 2px;"
-      "  }"
-      "  #target {"
-      "     padding-left: env(titlebar-area-x);"
-      "     padding-right: env(titlebar-area-width);"
-      "     padding-top: env(titlebar-area-y);"
-      "     padding-bottom: env(titlebar-area-height);"
-      "  }"
-      "</style>"
-      "<div id=\"draggable\">"
-      "  <div id=\"non-draggable\"></div>"
-      "</div>"
-      "<div id=\"target\"></div>";
-
-  return LoadTestPageWithDataAndGetURL(embedded_test_server, temp_dir,
-                                       kTestHTML);
+  return LoadTestPageWithDataAndGetURL(embedded_test_server, temp_dir, R"(
+    <!DOCTYPE html>
+    <style>
+    body {
+      background: blue;
+    }
+    @media (display-mode: window-controls-overlay) {
+      body {
+        background: red;
+      }
+    }
+    #draggable {
+      app-region: drag;
+      position: absolute;
+      top: 100px;
+      left: 100px;
+      height: 10px;
+      width: 10px;
+    }
+    #non-draggable {
+      app-region: no-drag;
+      position: relative;
+      top: 5px;
+      left: 5px;
+      height: 2px;
+      width: 2px;
+    }
+    #target {
+      padding-left: env(titlebar-area-x);
+      padding-right: env(titlebar-area-width);
+      padding-top: env(titlebar-area-y);
+      padding-bottom: env(titlebar-area-height);
+    }
+    </style>
+    <div id='draggable'>
+      <div id='non-draggable'></div>
+    </div>
+    <div id='target'></div>
+    )");
 }
 
 GURL WebAppFrameToolbarTestHelper::
     LoadWholeAppIsDraggableTestPageWithDataAndGetURL(
         net::test_server::EmbeddedTestServer* embedded_test_server,
         base::ScopedTempDir* temp_dir) {
-  constexpr char kTestHTML[] =
-      "<!DOCTYPE html>"
-      "<style>"
-      "  div {"
-      "    app-region: drag;"
-      "    width: 100%;"
-      "    height: 100%;"
-      "    padding: 0px;"
-      "    margin: 0px;"
-      "    position: absolute;"
-      "  }"
-      "  body {"
-      "    padding: 0px;"
-      "    margin: 0px;"
-      "  }"
-      "</style>"
-      "<div>Hello draggable world</div>";
-
-  return LoadTestPageWithDataAndGetURL(embedded_test_server, temp_dir,
-                                       kTestHTML);
+  return LoadTestPageWithDataAndGetURL(embedded_test_server, temp_dir, R"(
+    <!DOCTYPE html>
+    <style>
+      div {
+        app-region: drag;
+        width: 100%;
+        height: 100%;
+        padding: 0px;
+        margin: 0px;
+        position: absolute;
+      }
+      body {
+        padding: 0px;
+        margin: 0px;
+      }
+    </style>
+    <div>Hello draggable world</div>
+  )");
 }
 
 GURL WebAppFrameToolbarTestHelper::LoadTestPageWithDataAndGetURL(
     net::test_server::EmbeddedTestServer* embedded_test_server,
     base::ScopedTempDir* temp_dir,
-    const char kTestHTML[]) {
+    base::StringPiece test_html) {
   // Write kTestHTML to a temporary file that can be later reached at
   // http://127.0.0.1/test_file_*.html.
   static int s_test_file_number = 1;
   base::FilePath file_path = temp_dir->GetPath().AppendASCII(
       base::StringPrintf("test_file_%d.html", s_test_file_number++));
   base::ScopedAllowBlockingForTesting allow_temp_file_writing;
-  base::WriteFile(file_path, kTestHTML);
+  base::WriteFile(file_path, test_html);
   GURL url =
       embedded_test_server->GetURL("/" + file_path.BaseName().AsUTF8Unsafe());
   return url;
@@ -197,16 +193,16 @@ gfx::Rect WebAppFrameToolbarTestHelper::GetXYWidthHeightRect(
 
 void WebAppFrameToolbarTestHelper::SetupGeometryChangeCallback(
     content::WebContents* web_contents) {
-  EXPECT_TRUE(
-      ExecJs(web_contents->GetPrimaryMainFrame(),
-             "var geometrychangeCount = 0;"
-             "document.title = 'beforegeometrychange';"
-             "navigator.windowControlsOverlay.ongeometrychange = (e) => {"
-             "  geometrychangeCount++;"
-             "  overlay_rect_from_event = e.titlebarAreaRect;"
-             "  overlay_visible_from_event = e.visible;"
-             "  document.title = 'ongeometrychange';"
-             "}"));
+  EXPECT_TRUE(ExecJs(web_contents->GetPrimaryMainFrame(), R"(
+    var geometrychangeCount = 0;
+    document.title = 'beforegeometrychange';
+    navigator.windowControlsOverlay.ongeometrychange = (e) => {
+      geometrychangeCount++;
+      overlay_rect_from_event = e.titlebarAreaRect;
+      overlay_visible_from_event = e.visible;
+      document.title = 'ongeometrychange';
+    }
+  )"));
 }
 
 // TODO(https://crbug.com/1277860): Flaky.
