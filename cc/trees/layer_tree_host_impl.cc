@@ -514,8 +514,7 @@ LayerTreeHostImpl::~LayerTreeHostImpl() {
   DCHECK(!image_decode_cache_holder_);
   DCHECK(!single_thread_synchronous_task_graph_runner_);
 
-  if (input_delegate_)
-    input_delegate_->WillShutdown();
+  DetachInputDelegateAndRenderFrameObserver();
 
   // The layer trees must be destroyed before the LayerTreeHost. Also, if they
   // are holding onto any resources, destroying them will release them, before
@@ -4051,7 +4050,9 @@ void LayerTreeHostImpl::UpdateImageDecodingHints(
 void LayerTreeHostImpl::SetRenderFrameObserver(
     std::unique_ptr<RenderFrameMetadataObserver> observer) {
   render_frame_metadata_observer_ = std::move(observer);
-  render_frame_metadata_observer_->BindToCurrentSequence();
+  if (render_frame_metadata_observer_) {
+    render_frame_metadata_observer_->BindToCurrentSequence();
+  }
 }
 
 void LayerTreeHostImpl::WillScrollContent(ElementId element_id) {
@@ -4102,6 +4103,14 @@ void LayerTreeHostImpl::BindToInputHandler(
     std::unique_ptr<InputDelegateForCompositor> delegate) {
   input_delegate_ = std::move(delegate);
   input_delegate_->SetPrefersReducedMotion(prefers_reduced_motion_);
+}
+
+void LayerTreeHostImpl::DetachInputDelegateAndRenderFrameObserver() {
+  if (input_delegate_) {
+    input_delegate_->WillShutdown();
+  }
+  input_delegate_ = nullptr;
+  SetRenderFrameObserver(nullptr);
 }
 
 void LayerTreeHostImpl::SetVisualDeviceViewportSize(

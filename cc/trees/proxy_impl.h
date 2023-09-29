@@ -81,6 +81,8 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
       base::WritableSharedMemoryMapping ukm_smoothness_data);
   void SetRenderFrameObserver(
       std::unique_ptr<RenderFrameMetadataObserver> observer);
+  void DetachInputDelegateAndRenderFrameObserver(
+      CompletionEvent* completion_event);
 
   void MainFrameWillHappenOnImplForTesting(CompletionEvent* completion,
                                            bool* main_frame_will_happen);

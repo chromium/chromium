@@ -959,6 +959,12 @@ void ProxyImpl::SetRenderFrameObserver(
   host_impl_->SetRenderFrameObserver(std::move(observer));
 }
 
+void ProxyImpl::DetachInputDelegateAndRenderFrameObserver(
+    CompletionEvent* completion_event) {
+  host_impl_->DetachInputDelegateAndRenderFrameObserver();
+  completion_event->Signal();
+}
+
 ProxyImpl::DataForCommit::DataForCommit(
     std::unique_ptr<ScopedCommitCompletionEvent> commit_completion_event,
     std::unique_ptr<CommitState> commit_state,

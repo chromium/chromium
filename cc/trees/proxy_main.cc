@@ -588,6 +588,18 @@ void ProxyMain::SetTargetLocalSurfaceId(
                                 target_local_surface_id));
 }
 
+void ProxyMain::DetachInputDelegateAndRenderFrameObserver() {
+  DCHECK(IsMainThread());
+  auto completion_event = std::make_unique<CompletionEvent>(
+      base::WaitableEvent::ResetPolicy::MANUAL);
+  ImplThreadTaskRunner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&ProxyImpl::DetachInputDelegateAndRenderFrameObserver,
+                     base::Unretained(proxy_impl_.get()),
+                     completion_event.get()));
+  completion_event->Wait();
+}
+
 bool ProxyMain::RequestedAnimatePending() {
   return max_requested_pipeline_stage_ >= ANIMATE_PIPELINE_STAGE;
 }

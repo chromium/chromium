@@ -51,6 +51,10 @@ class CC_EXPORT Proxy {
   virtual void SetTargetLocalSurfaceId(
       const viz::LocalSurfaceId& target_local_surface_id) = 0;
 
+  // Detaches the InputDelegateForCompositor (InputHandler) bound on the
+  // compositor thread.
+  virtual void DetachInputDelegateAndRenderFrameObserver() = 0;
+
   // Returns true if an animate or commit has been requested, and hasn't
   // completed yet.
   virtual bool RequestedAnimatePending() = 0;

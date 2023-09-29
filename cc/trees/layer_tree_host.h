@@ -385,6 +385,10 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   // the input handling thread.
   const base::WeakPtr<CompositorDelegateForInput>& GetDelegateForInput() const;
 
+  // Detaches the InputDelegateForCompositor (InputHandler) and
+  // RenderFrameMetadataObserver bound on the compositor thread synchronously.p
+  void DetachInputDelegateAndRenderFrameObserver();
+
   // Debugging and benchmarks ---------------------------------
   void SetDebugState(const LayerTreeDebugState& debug_state);
   const LayerTreeDebugState& GetDebugState() const;

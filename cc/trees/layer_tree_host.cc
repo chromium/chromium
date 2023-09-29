@@ -1171,6 +1171,11 @@ LayerTreeHost::GetDelegateForInput() const {
   return compositor_delegate_weak_ptr_;
 }
 
+void LayerTreeHost::DetachInputDelegateAndRenderFrameObserver() {
+  DCHECK(IsMainThread());
+  proxy_->DetachInputDelegateAndRenderFrameObserver();
+}
+
 void LayerTreeHost::UpdateBrowserControlsState(BrowserControlsState constraints,
                                                BrowserControlsState current,
                                                bool animate) {

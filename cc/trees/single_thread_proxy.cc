@@ -309,6 +309,13 @@ void SingleThreadProxy::SetTargetLocalSurfaceId(
   host_impl_->SetTargetLocalSurfaceId(target_local_surface_id);
 }
 
+void SingleThreadProxy::DetachInputDelegateAndRenderFrameObserver() {
+  DCHECK(task_runner_provider_->IsMainThread());
+
+  DebugScopedSetImplThread impl(task_runner_provider_);
+  host_impl_->DetachInputDelegateAndRenderFrameObserver();
+}
+
 bool SingleThreadProxy::RequestedAnimatePending() {
   DCHECK(task_runner_provider_->IsMainThread());
   return animate_requested_ || update_layers_requested_ || commit_requested_ ||

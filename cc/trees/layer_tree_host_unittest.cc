@@ -57,6 +57,7 @@
 #include "cc/test/push_properties_counting_layer_impl.h"
 #include "cc/test/render_pass_test_utils.h"
 #include "cc/test/skia_common.h"
+#include "cc/test/stub_input_handler_client.h"
 #include "cc/test/test_layer_tree_frame_sink.h"
 #include "cc/trees/clip_node.h"
 #include "cc/trees/compositor_commit_data.h"
@@ -11080,6 +11081,108 @@ class LayerTreeHostTestDamagePropagatesFromViewTransitionSurface
   const gfx::Rect unrelated_layer_rect_ = gfx::Rect(40, 40, 10, 10);
 };
 MULTI_THREAD_TEST_F(LayerTreeHostTestDamagePropagatesFromViewTransitionSurface);
+
+class LayerTreeHostTestDetachInputDelegateAndRenderFrameObserver
+    : public LayerTreeTest,
+      StubInputHandlerClient {
+ public:
+  void BeginTest() override {
+    impl_task_runner_ =
+        layer_tree_host()->GetTaskRunnerProvider()->ImplThreadTaskRunner();
+
+    layer_tree_host()->SetRenderFrameObserver(
+        std::make_unique<FakeRenderFrameMetadataObserver>(this));
+
+    CompletionEvent event;
+    impl_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &LayerTreeHostTestDetachInputDelegateAndRenderFrameObserver::
+                SetUpInputHandlerOnImpl,
+            base::Unretained(this), base::Unretained(&event),
+            layer_tree_host()->GetDelegateForInput()));
+    event.Wait();
+
+    PostSetNeedsCommitToMainThread();
+  }
+
+  void DidCommit() override {
+    layer_tree_host()->DetachInputDelegateAndRenderFrameObserver();
+
+    CompletionEvent event;
+    impl_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &LayerTreeHostTestDetachInputDelegateAndRenderFrameObserver::
+                AssertDestroyedOnImpl,
+            base::Unretained(this), base::Unretained(&event)));
+    event.Wait();
+
+    EndTest();
+  }
+
+ private:
+  class FakeRenderFrameMetadataObserver : public RenderFrameMetadataObserver {
+   public:
+    FakeRenderFrameMetadataObserver(
+        LayerTreeHostTestDetachInputDelegateAndRenderFrameObserver* test)
+        : test_(test) {}
+
+    ~FakeRenderFrameMetadataObserver() override {
+      CHECK(is_bound_);
+      CHECK(!test_->did_shutdown_render_frame_observer_);
+      test_->did_shutdown_render_frame_observer_ = true;
+    }
+
+    void BindToCurrentSequence() override {
+      CHECK(!is_bound_);
+      is_bound_ = true;
+    }
+    void OnRenderFrameSubmission(
+        const RenderFrameMetadata& render_frame_metadata,
+        viz::CompositorFrameMetadata* compositor_frame_metadata,
+        bool force_send) override {}
+#if BUILDFLAG(IS_ANDROID)
+    void DidEndScroll() override {}
+#endif
+
+   private:
+    raw_ptr<LayerTreeHostTestDetachInputDelegateAndRenderFrameObserver> test_;
+    bool is_bound_ = false;
+  };
+
+  // InputHandlerClient implementation, invoked on impl thread.
+  void WillShutdown() override {
+    CHECK(impl_task_runner_->BelongsToCurrentThread());
+    EXPECT_FALSE(did_shutdown_input_handler_);
+    did_shutdown_input_handler_ = true;
+  }
+
+  void SetUpInputHandlerOnImpl(
+      CompletionEvent* event,
+      base::WeakPtr<CompositorDelegateForInput> compositor_delegate) {
+    CHECK(compositor_delegate);
+    base::WeakPtr<InputHandler> input_handler =
+        InputHandler::Create(*compositor_delegate);
+    CHECK(input_handler);
+    input_handler->BindToClient(this);
+    event->Signal();
+  }
+
+  void AssertDestroyedOnImpl(CompletionEvent* event) {
+    EXPECT_TRUE(did_shutdown_input_handler_);
+    EXPECT_TRUE(did_shutdown_render_frame_observer_);
+    event->Signal();
+  }
+
+  // Can be accessed on both threads.
+  scoped_refptr<base::SingleThreadTaskRunner> impl_task_runner_;
+
+  // Accessed only on the impl thread.
+  bool did_shutdown_input_handler_ = false;
+  bool did_shutdown_render_frame_observer_ = false;
+};
+MULTI_THREAD_TEST_F(LayerTreeHostTestDetachInputDelegateAndRenderFrameObserver);
 
 }  // namespace
 }  // namespace cc

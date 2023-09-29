@@ -600,6 +600,7 @@ cc_test_static_library("test_support") {
     "test/solid_color_content_layer_client.h",
     "test/stub_decode_cache.cc",
     "test/stub_decode_cache.h",
+    "test/stub_input_handler_client.h",
     "test/stub_layer_tree_host_client.cc",
     "test/stub_layer_tree_host_client.h",
     "test/stub_layer_tree_host_single_thread_client.cc",
