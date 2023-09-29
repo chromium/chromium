@@ -42,7 +42,8 @@ enum class ManifestUpdateResult {
   kAppIdentityUpdateRejectedAndUninstalled = 16,
   kAppIsIsolatedWebApp = 17,
   kCancelledDueToMainFrameNavigation = 18,
-  kMaxValue = kCancelledDueToMainFrameNavigation,
+  kShortcutIgnoresManifest = 19,
+  kMaxValue = kShortcutIgnoresManifest,
 };
 
 std::ostream& operator<<(std::ostream& os, ManifestUpdateResult result);

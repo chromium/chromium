@@ -56,6 +56,8 @@ std::ostream& operator<<(std::ostream& os, ManifestUpdateResult result) {
       return os << "kAppIsIsolatedWebApp";
     case ManifestUpdateResult::kCancelledDueToMainFrameNavigation:
       return os << "kCancelledDueToMainFrameNavigation";
+    case ManifestUpdateResult::kShortcutIgnoresManifest:
+      return os << "kkShortcutIgnoresManifest";
   }
 }
 

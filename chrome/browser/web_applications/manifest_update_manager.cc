@@ -33,6 +33,7 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
+#include "components/webapps/browser/features.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -235,6 +236,15 @@ void ManifestUpdateManager::MaybeUpdate(
     // Manifests of Isolated Web Apps are only updated when a new version of the
     // app is installed.
     NotifyResult(url, *app_id, ManifestUpdateResult::kAppIsIsolatedWebApp);
+    return;
+  }
+
+  if (provider_->registrar_unsafe().IsShortcutApp(*app_id) &&
+      base::FeatureList::IsEnabled(
+          webapps::features::kCreateShortcutIgnoresManifest)) {
+    // When we create shortcut ignores manifest, we should update manifest for
+    // shortcuts.
+    NotifyResult(url, *app_id, ManifestUpdateResult::kShortcutIgnoresManifest);
     return;
   }
 
