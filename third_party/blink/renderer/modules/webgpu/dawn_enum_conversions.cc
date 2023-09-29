@@ -842,6 +842,8 @@ WGPUVertexFormat AsDawnEnum(const V8GPUVertexFormat& webgpu_enum) {
       return WGPUVertexFormat_Sint32x3;
     case V8GPUVertexFormat::Enum::kSint32X4:
       return WGPUVertexFormat_Sint32x4;
+    case V8GPUVertexFormat::Enum::kUnorm1010102:
+      return WGPUVertexFormat_Unorm10_10_10_2;
   }
 }
 
