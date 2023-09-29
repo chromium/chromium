@@ -359,5 +359,61 @@ promise_test(async t => {
   assert_element_states(elements, [1, 0, 0], "states after insertion by parser");
 }, "closing as a result of parsing doesn't depend on attribute order");
 
+promise_test(async t => {
+  container.innerHTML = `
+    <details name="a" id="e0" open></details>
+    <details name="a" id="e1"></details>
+  `;
+  let elements = [ document.getElementById("e0"),
+                   document.getElementById("e1") ];
+
+  assert_element_states(elements, [1, 0], "states before first mutation");
+
+  let make_details = () => {
+    let e = document.createElement("details");
+    e.setAttribute("name", "a");
+    return e;
+  };
+
+  let watch_e0 = new EventWatcher(t, elements[0], ['toggle']);
+  let watch_e1 = new EventWatcher(t, elements[1], ['toggle']);
+
+  let expect_opening = async (watcher) => {
+    await watcher.wait_for(['toggle'], {record: 'all'}).then((events) => {
+      assert_equals(events[0].oldState, "closed");
+      assert_equals(events[0].newState, "open");
+    });
+  };
+
+  let expect_closing = async (watcher) => {
+    await watcher.wait_for(['toggle'], {record: 'all'}).then((events) => {
+      assert_equals(events[0].oldState, "open");
+      assert_equals(events[0].newState, "closed");
+    });
+  };
+
+  await expect_opening(watch_e0);
+
+  // Test appending an open element in the group.
+  let new1 = make_details();
+  let watch_new1 = new EventWatcher(t, new1, ['toggle']);
+  new1.open = true;
+  await expect_opening(watch_new1);
+  container.appendChild(new1);
+  await expect_closing(watch_new1);
+
+  // Test appending a closed element in the group.
+  let new2 = make_details();
+  let watch_new2 = new EventWatcher(t, new2, ['toggle']);
+  container.appendChild(new2);
+
+  // Test inserting an open element at the start of the group.
+  let new3 = make_details();
+  new3.open = true; // this time do this before creating the EventWatcher
+  let watch_new3 = new EventWatcher(t, new3, ['toggle']);
+  await expect_opening(watch_new3);
+  container.insertBefore(new3, elements[0]);
+  await expect_closing(watch_new3);
+}, "handling of insertion of elements into group");
 
 </script>
