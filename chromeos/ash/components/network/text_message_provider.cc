@@ -40,7 +40,7 @@ void TextMessageProvider::MessageReceivedFromNetwork(
 
   NET_LOG(EVENT) << "Allowing text message from network with guid: " << guid;
   for (auto& observer : observers_) {
-    observer.MessageReceived(message_data);
+    observer.MessageReceived(guid, message_data);
   }
 }
 
@@ -58,14 +58,44 @@ void TextMessageProvider::PoliciesChanged(const std::string& userhash) {
   }
 }
 
+void TextMessageProvider::LogTextMessageNotificationMetrics(
+    const std::string& guid) {
+  auto notification_suppression_state = CellularNetworkMetricsLogger::
+      NotificationSuppressionState::kNotSuppressed;
+
+  // Policy suppression state takes precedence over user set suppression state.
+  if (IsAllowTextMessagesPolicySet()) {
+    if (*policy_suppression_state_ ==
+        PolicyTextMessageSuppressionState::kSuppress) {
+      notification_suppression_state = CellularNetworkMetricsLogger::
+          NotificationSuppressionState::kPolicySuppressed;
+    }
+  } else if (IsMessageSuppressedByUser(guid)) {
+    notification_suppression_state = CellularNetworkMetricsLogger::
+        NotificationSuppressionState::kUserSuppressed;
+  }
+
+  CellularNetworkMetricsLogger::LogTextMessageNotificationSuppressionState(
+      notification_suppression_state);
+}
+
+bool TextMessageProvider::IsAllowTextMessagesPolicySet() {
+  return policy_suppression_state_.has_value() &&
+         *policy_suppression_state_ !=
+             PolicyTextMessageSuppressionState::kUnset;
+}
+
+bool TextMessageProvider::IsMessageSuppressedByUser(const std::string& guid) {
+  return network_metadata_store_->GetUserTextMessageSuppressionState(guid) ==
+         UserTextMessageSuppressionState::kSuppress;
+}
+
 bool TextMessageProvider::ShouldAllowTextMessages(const std::string& guid) {
-  if (policy_suppression_state_.has_value() &&
-      *policy_suppression_state_ != PolicyTextMessageSuppressionState::kUnset) {
+  if (IsAllowTextMessagesPolicySet()) {
     return *policy_suppression_state_ ==
            PolicyTextMessageSuppressionState::kAllow;
   }
-  return network_metadata_store_->GetUserTextMessageSuppressionState(guid) ==
-         UserTextMessageSuppressionState::kAllow;
+  return !IsMessageSuppressedByUser(guid);
 }
 
 void TextMessageProvider::AddObserver(Observer* observer) {

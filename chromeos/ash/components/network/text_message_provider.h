@@ -26,7 +26,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) TextMessageProvider
     ~Observer() override = default;
 
     // Called when a new message arrives.
-    virtual void MessageReceived(const TextMessageData& message_data) {}
+    virtual void MessageReceived(const std::string& guid,
+                                 const TextMessageData& message_data) {}
   };
 
   TextMessageProvider();
@@ -49,10 +50,16 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) TextMessageProvider
                 managed_network_configuration_handler);
   void SetNetworkMetadataStore(NetworkMetadataStore* network_metadata_store);
 
+  // Logs the success metrics for the AllowTextMessage feature. Called after a
+  // notification is received.
+  void LogTextMessageNotificationMetrics(const std::string& guid);
+
  private:
   friend class TextMessageProviderTest;
 
   bool ShouldAllowTextMessages(const std::string& guid);
+  bool IsAllowTextMessagesPolicySet();
+  bool IsMessageSuppressedByUser(const std::string& guid);
 
   absl::optional<PolicyTextMessageSuppressionState> policy_suppression_state_;
 

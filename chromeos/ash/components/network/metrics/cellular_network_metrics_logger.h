@@ -97,6 +97,15 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularNetworkMetricsLogger
     kMaxValue = kTextMessagesSuppress,
   };
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class NotificationSuppressionState {
+    kNotSuppressed = 0,
+    kUserSuppressed = 1,
+    kPolicySuppressed = 2,
+    kMaxValue = kPolicySuppressed,
+  };
+
   static constexpr char kCreateCustomApnResultHistogram[] =
       "Network.Ash.Cellular.Apn.CreateCustomApn.Result";
   static constexpr char kCreateCustomApnAuthenticationTypeHistogram[] =
@@ -225,6 +234,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularNetworkMetricsLogger
       "Network.Ash.Cellular.AllowTextMessages.User.SuppressionState";
   static constexpr char kPolicyAllowTextMessagesSuppressionStateHistogram[] =
       "Network.Ash.Cellular.AllowTextMessages.Policy.SuppressionState";
+  static constexpr char kAllowTextMessagesNotificationSuppressionState[] =
+      "Network.Ash.Cellular.AllowTextMessages.NotificationSuppressionState";
 
   CellularNetworkMetricsLogger(
       NetworkStateHandler* network_state_handler,
@@ -289,6 +300,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularNetworkMetricsLogger
       ash::UserTextMessageSuppressionState state);
   static void LogPolicyTextMessageSuppressionState(
       ash::PolicyTextMessageSuppressionState state);
+
+  static void LogTextMessageNotificationSuppressionState(
+      NotificationSuppressionState state);
 
  private:
   // ConnectionInfoMetricsLogger::Observer:

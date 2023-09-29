@@ -14,6 +14,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "chromeos/ash/components/network/metrics/cellular_network_metrics_logger.h"
 #include "chromeos/ash/components/network/network_event_log.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_sms_handler.h"
@@ -81,7 +82,8 @@ SmsObserver::~SmsObserver() {
   }
 }
 
-void SmsObserver::MessageReceived(const TextMessageData& message_data) {
+void SmsObserver::MessageReceived(const std::string& guid,
+                                  const TextMessageData& message_data) {
   CHECK(features::IsSuppressTextMessagesEnabled());
 
   if (!message_data.text.has_value() || message_data.text->empty()) {
@@ -97,6 +99,12 @@ void SmsObserver::MessageReceived(const TextMessageData& message_data) {
   // messages feature flag is removed.
   ShowNotification(/*message=*/nullptr, *message_data.text,
                    *message_data.number, message_id_);
+
+  if (NetworkHandler::IsInitialized()) {
+    NetworkHandler::Get()
+        ->text_message_provider()
+        ->LogTextMessageNotificationMetrics(guid);
+  }
 }
 
 void SmsObserver::MessageReceived(const base::Value::Dict& message) {

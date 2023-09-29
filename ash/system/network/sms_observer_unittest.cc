@@ -10,8 +10,15 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/ash/components/network/fake_network_metadata_store.h"
+#include "chromeos/ash/components/network/metrics/cellular_network_metrics_logger.h"
+#include "chromeos/ash/components/network/network_handler.h"
+#include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "chromeos/ash/components/network/network_sms_handler.h"
+#include "chromeos/ash/components/network/text_message_suppression_state.h"
+#include "components/onc/onc_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -24,6 +31,8 @@ using message_center::MessageCenter;
 namespace ash {
 
 namespace {
+
+constexpr char kTestGuid[] = "TestGuid";
 
 base::Value::Dict CreateMessage(const char* kDefaultMessage,
                                 const char* kDefaultNumber,
@@ -69,6 +78,9 @@ class SmsObserverTest
     AshTestBase::SetUp();
     if (GetParam().use_suppress_text_message_flag) {
       features_.InitAndEnableFeature(ash::features::kSuppressTextMessages);
+      test_helper_ = std::make_unique<NetworkHandlerTestHelper>();
+      NetworkHandler::Get()->text_message_provider()->SetNetworkMetadataStore(
+          &network_metadata_store_);
     } else {
       features_.InitAndDisableFeature(ash::features::kSuppressTextMessages);
     }
@@ -82,15 +94,25 @@ class SmsObserverTest
       TextMessageData message_data(GetStringOptional(kDefaultNumber),
                                    GetStringOptional(kDefaultMessage),
                                    GetStringOptional(kDefaultTimestamp));
-      GetSmsObserver()->MessageReceived(message_data);
+      GetSmsObserver()->MessageReceived(kTestGuid, message_data);
     } else {
       GetSmsObserver()->MessageReceived(
           CreateMessage(kDefaultMessage, kDefaultNumber, kDefaultTimestamp));
     }
   }
 
+  NetworkMetadataStore* network_metadata_store() {
+    return &network_metadata_store_;
+  }
+
+  ManagedNetworkConfigurationHandler* managed_network_configuration_handler() {
+    return NetworkHandler::Get()->managed_network_configuration_handler();
+  }
+
  private:
   base::test::ScopedFeatureList features_;
+  std::unique_ptr<NetworkHandlerTestHelper> test_helper_;
+  FakeNetworkMetadataStore network_metadata_store_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -163,6 +185,136 @@ TEST_P(SmsObserverTest, MultipleTextMessages) {
       ASSERT_TRUE(false);
     }
   }
+}
+
+class SmsObserverSuppressTextMessagesEnabled : public SmsObserverTest {
+ public:
+  void SetUp() override {
+    SmsObserverTest::SetUp();
+    histogram_tester_ = std::make_unique<base::HistogramTester>();
+  }
+  void ChangeUserSuppressionState(UserTextMessageSuppressionState state) {
+    network_metadata_store()->SetUserTextMessageSuppressionState(kTestGuid,
+                                                                 state);
+  }
+
+  void ChangePolicySuppressionState(PolicyTextMessageSuppressionState state) {
+    std::string state_onc;
+    switch (state) {
+      case PolicyTextMessageSuppressionState::kUnset:
+        state_onc = ::onc::cellular::kTextMessagesUnset;
+        break;
+      case PolicyTextMessageSuppressionState::kAllow:
+        state_onc = ::onc::cellular::kTextMessagesAllow;
+        break;
+      case PolicyTextMessageSuppressionState::kSuppress:
+        state_onc = ::onc::cellular::kTextMessagesSuppress;
+        break;
+    }
+
+    base::Value::Dict global_config;
+    global_config.Set(::onc::global_network_config::kAllowTextMessages,
+                      state_onc);
+    managed_network_configuration_handler()->SetPolicy(
+        ::onc::ONC_SOURCE_DEVICE_POLICY, /*userhash=*/std::string(),
+        base::Value::List(), global_config);
+    base::RunLoop().RunUntilIdle();
+  }
+
+  void AssertHistogramCounts(size_t user_suppressed_count,
+                             size_t policy_suppressed_count,
+                             size_t not_suppressed_count) {
+    histogram_tester_->ExpectBucketCount(
+        CellularNetworkMetricsLogger::
+            kAllowTextMessagesNotificationSuppressionState,
+        CellularNetworkMetricsLogger::NotificationSuppressionState::
+            kUserSuppressed,
+        /*expected_count=*/user_suppressed_count);
+
+    histogram_tester_->ExpectBucketCount(
+        CellularNetworkMetricsLogger::
+            kAllowTextMessagesNotificationSuppressionState,
+        CellularNetworkMetricsLogger::NotificationSuppressionState::
+            kPolicySuppressed,
+        /*expected_count=*/policy_suppressed_count);
+
+    histogram_tester_->ExpectBucketCount(
+        CellularNetworkMetricsLogger::
+            kAllowTextMessagesNotificationSuppressionState,
+        CellularNetworkMetricsLogger::NotificationSuppressionState::
+            kNotSuppressed,
+        /*expected_count=*/not_suppressed_count);
+
+    size_t total_count =
+        user_suppressed_count + policy_suppressed_count + not_suppressed_count;
+    histogram_tester_->ExpectTotalCount(
+        CellularNetworkMetricsLogger::
+            kAllowTextMessagesNotificationSuppressionState,
+        /*expected_count=*/total_count);
+  }
+
+ private:
+  std::unique_ptr<base::HistogramTester> histogram_tester_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    SmsObserverTests,
+    SmsObserverSuppressTextMessagesEnabled,
+    testing::ValuesIn<SmsObserverTestCase>({
+        {"SuppressTextMessageFlagEnabled", true},
+    }),
+    [](const testing::TestParamInfo<
+        SmsObserverSuppressTextMessagesEnabled::ParamType>& info) {
+      return info.param.test_name;
+    });
+
+TEST_P(SmsObserverSuppressTextMessagesEnabled, SuccessGuardRailMetricsTest) {
+  base::HistogramTester histogram_tester;
+
+  AssertHistogramCounts(/*user_suppressed_count=*/0u,
+                        /*policy_suppressed_count=*/0u,
+                        /*not_suppressed_count=*/0u);
+  ChangeUserSuppressionState(UserTextMessageSuppressionState::kAllow);
+  ChangePolicySuppressionState(PolicyTextMessageSuppressionState::kUnset);
+  SimulateMessageReceived();
+  AssertHistogramCounts(/*user_suppressed_count=*/0u,
+                        /*policy_suppressed_count=*/0u,
+                        /*not_suppressed_count=*/1u);
+
+  ChangeUserSuppressionState(UserTextMessageSuppressionState::kSuppress);
+  ChangePolicySuppressionState(PolicyTextMessageSuppressionState::kUnset);
+  SimulateMessageReceived();
+  AssertHistogramCounts(/*user_suppressed_count=*/1u,
+                        /*policy_suppressed_count=*/0u,
+                        /*not_suppressed_count=*/1u);
+
+  ChangeUserSuppressionState(UserTextMessageSuppressionState::kAllow);
+  ChangePolicySuppressionState(PolicyTextMessageSuppressionState::kAllow);
+  SimulateMessageReceived();
+  AssertHistogramCounts(/*user_suppressed_count=*/1u,
+                        /*policy_suppressed_count=*/0u,
+                        /*not_suppressed_count=*/2u);
+
+  ChangeUserSuppressionState(UserTextMessageSuppressionState::kSuppress);
+  ChangePolicySuppressionState(PolicyTextMessageSuppressionState::kAllow);
+  SimulateMessageReceived();
+  AssertHistogramCounts(/*user_suppressed_count=*/1u,
+                        /*policy_suppressed_count=*/0u,
+                        /*not_suppressed_count=*/3u);
+
+  ChangeUserSuppressionState(UserTextMessageSuppressionState::kSuppress);
+  ChangePolicySuppressionState(PolicyTextMessageSuppressionState::kSuppress);
+  SimulateMessageReceived();
+  AssertHistogramCounts(/*user_suppressed_count=*/1u,
+                        /*policy_suppressed_count=*/1u,
+                        /*not_suppressed_count=*/3u);
+
+  ChangeUserSuppressionState(UserTextMessageSuppressionState::kAllow);
+  ChangePolicySuppressionState(PolicyTextMessageSuppressionState::kSuppress);
+  SimulateMessageReceived();
+  AssertHistogramCounts(/*user_suppressed_count=*/1u,
+                        /*policy_suppressed_count=*/2u,
+                        /*not_suppressed_count=*/3u);
 }
 
 }  // namespace ash

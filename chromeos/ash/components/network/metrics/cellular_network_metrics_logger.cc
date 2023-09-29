@@ -423,6 +423,14 @@ void CellularNetworkMetricsLogger::LogPolicyTextMessageSuppressionState(
       kPolicyAllowTextMessagesSuppressionStateHistogram, histogram_type);
 }
 
+// static
+void CellularNetworkMetricsLogger::CellularNetworkMetricsLogger::
+    LogTextMessageNotificationSuppressionState(
+        NotificationSuppressionState state) {
+  base::UmaHistogramEnumeration(kAllowTextMessagesNotificationSuppressionState,
+                                state);
+}
+
 void CellularNetworkMetricsLogger::OnConnectionResult(
     const std::string& guid,
     const absl::optional<std::string>& shill_error) {

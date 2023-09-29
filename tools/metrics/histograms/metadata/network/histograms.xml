@@ -117,6 +117,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Network.Ash.Cellular.AllowTextMessages.TextMessageNotificationSuppressionState"
+    enum="NotificationSuppressionState" expires_after="2024-06-01">
+  <owner>gordonseto@google.com</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <summary>
+    Records the received text message notification suppression state. This is
+    emitted whenever a text message notification is received.
+  </summary>
+</histogram>
+
 <histogram name="Network.Ash.Cellular.AllowTextMessages.User.SuppressionState"
     enum="UserTextMessageSuppressionState" expires_after="2024-06-01">
   <owner>gordonseto@google.com</owner>

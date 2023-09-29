@@ -38,7 +38,8 @@ class TestObserver : public TextMessageProvider::Observer {
   TestObserver() = default;
   ~TestObserver() override = default;
 
-  void MessageReceived(const TextMessageData& message_data) override {
+  void MessageReceived(const std::string& guid,
+                       const TextMessageData& message_data) override {
     text_messages_.emplace_back(message_data.number, message_data.text,
                                 message_data.timestamp);
   }

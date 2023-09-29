@@ -78024,6 +78024,12 @@ Called by update_net_trust_anchors.py.-->
   <int value="2" label="Dismiss"/>
 </enum>
 
+<enum name="NotificationSuppressionState">
+  <int value="0" label="NotSuppressed"/>
+  <int value="1" label="UserSuppressed"/>
+  <int value="2" label="PolicySuppressed"/>
+</enum>
+
 <enum name="NotificationTypeDetailed">
   <int value="0" label="ChromeApp priority=-2"/>
   <int value="1" label="ChromeApp priority=-2 requireInteraction"/>
