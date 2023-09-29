@@ -97,9 +97,12 @@ class PlusAddressClient {
   // they all use `loaders_for_creation_` and have the same return type.
   void OnCreateOrReservePlusAddressComplete(
       UrlLoaderList::iterator it,
+      PlusAddressNetworkRequestType type,
+      base::Time request_start,
       PlusAddressCallback callback,
       std::unique_ptr<std::string> response);
-  void OnGetAllPlusAddressesComplete(PlusAddressMapCallback callback,
+  void OnGetAllPlusAddressesComplete(base::Time request_start,
+                                     PlusAddressMapCallback callback,
                                      std::unique_ptr<std::string> response);
   // Initiates a network request for an OAuth token, and may only be
   // called by GetAuthToken. This also must be run on the UI thread.

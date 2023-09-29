@@ -5,6 +5,11 @@
 #ifndef COMPONENTS_PLUS_ADDRESSES_PLUS_ADDRESS_METRICS_H_
 #define COMPONENTS_PLUS_ADDRESSES_PLUS_ADDRESS_METRICS_H_
 
+#include "base/time/time.h"
+#include "components/plus_addresses/plus_address_types.h"
+
+class GoogleServiceAuthError;
+
 namespace plus_addresses {
 // A small, stateless utility class for logging metrics. It will handle autofill
 // metrics, plus_address_service metrics, and user interaction metrics.
@@ -38,6 +43,21 @@ class PlusAddressMetrics {
   static void RecordAutofillSuggestionEvent(
       PlusAddressAutofillSuggestionEvent
           plus_address_autofill_suggestion_event);
+  // Log latency of `request`.
+  static void RecordNetworkRequestLatency(PlusAddressNetworkRequestType type,
+                                          base::TimeDelta request_latency);
+  // Log the status code of the response to `request`.
+  static void RecordNetworkRequestResponseCode(
+      PlusAddressNetworkRequestType type,
+      int response_code);
+  // Log the size of the response to `request`.
+  static void RecordNetworkRequestResponseSize(
+      PlusAddressNetworkRequestType type,
+      int response_size);
+  // Log the OAuth errors that occur when PlusAddressClient requests a token.
+  static void RecordNetworkRequestOauthError(GoogleServiceAuthError error);
+  static std::string PlusAddressNetworkRequestTypeToString(
+      PlusAddressNetworkRequestType type);
 };
 }  // namespace plus_addresses
 

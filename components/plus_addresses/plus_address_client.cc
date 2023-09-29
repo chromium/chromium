@@ -9,6 +9,7 @@
 #include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
 #include "components/plus_addresses/features.h"
+#include "components/plus_addresses/plus_address_metrics.h"
 #include "components/plus_addresses/plus_address_parser.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "components/signin/public/base/consent_level.h"
@@ -19,6 +20,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
@@ -212,6 +214,7 @@ void PlusAddressClient::CreatePlusAddress(const std::string& site,
                      base::Unretained(this),
                      loaders_for_creation_.insert(loaders_for_creation_.begin(),
                                                   std::move(loader)),
+                     PlusAddressNetworkRequestType::kGetOrCreate, clock_->Now(),
                      std::move(callback)),
       network::SimpleURLLoader::kMaxBoundedStringDownloadSize);
 }
@@ -258,6 +261,7 @@ void PlusAddressClient::ReservePlusAddress(const std::string& site,
                      base::Unretained(this),
                      loaders_for_creation_.insert(loaders_for_creation_.begin(),
                                                   std::move(loader)),
+                     PlusAddressNetworkRequestType::kReserve, clock_->Now(),
                      std::move(callback)),
       network::SimpleURLLoader::kMaxBoundedStringDownloadSize);
 }
@@ -306,6 +310,7 @@ void PlusAddressClient::ConfirmPlusAddress(const std::string& site,
                      base::Unretained(this),
                      loaders_for_creation_.insert(loaders_for_creation_.begin(),
                                                   std::move(loader)),
+                     PlusAddressNetworkRequestType::kCreate, clock_->Now(),
                      std::move(callback)),
       network::SimpleURLLoader::kMaxBoundedStringDownloadSize);
 }
@@ -344,22 +349,33 @@ void PlusAddressClient::GetAllPlusAddresses(PlusAddressMapCallback callback) {
       url_loader_factory_.get(),
       base::BindOnce(&PlusAddressClient::OnGetAllPlusAddressesComplete,
                      // Safe since this class owns the loader_for_sync_.
-                     base::Unretained(this), std::move(callback)),
+                     base::Unretained(this), clock_->Now(),
+                     std::move(callback)),
       // TODO(b/301984623) - Measure average downloadsize and change this.
       network::SimpleURLLoader::kMaxBoundedStringDownloadSize);
 }
 
 void PlusAddressClient::OnCreateOrReservePlusAddressComplete(
     UrlLoaderList::iterator it,
+    PlusAddressNetworkRequestType type,
+    base::Time request_start,
     PlusAddressCallback callback,
     std::unique_ptr<std::string> response) {
-  // TODO (b/301071850): Add metrics to measure error or healthy request here
-  // with SimpleUrlLoader::NetError().
+  // Record relevant metrics.
+  std::unique_ptr<network::SimpleURLLoader> loader = std::move(*it);
+  PlusAddressMetrics::RecordNetworkRequestLatency(
+      type, clock_->Now() - request_start);
+  if (loader && loader->ResponseInfo() && loader->ResponseInfo()->headers) {
+    PlusAddressMetrics::RecordNetworkRequestResponseCode(
+        type, loader->ResponseInfo()->headers->response_code());
+  }
+  // Destroy the loader before returning.
   loaders_for_creation_.erase(it);
   if (!response) {
-    // The request has failed.
     return;
   }
+  PlusAddressMetrics::RecordNetworkRequestResponseSize(type, response->size());
+  // Parse the response & return it via callback.
   data_decoder::DataDecoder::ParseJsonIsolated(
       *response,
       base::BindOnce(&PlusAddressParser::ParsePlusAddressFromV1Create)
@@ -374,16 +390,26 @@ void PlusAddressClient::OnCreateOrReservePlusAddressComplete(
 }
 
 void PlusAddressClient::OnGetAllPlusAddressesComplete(
+    base::Time request_start,
     PlusAddressMapCallback callback,
     std::unique_ptr<std::string> response) {
-  // TODO (b/301071850): Add metrics to measure error or healthy request here
-  // with SimpleUrlLoader::NetError().
+  // Record relevant metrics.
+  PlusAddressMetrics::RecordNetworkRequestLatency(
+      PlusAddressNetworkRequestType::kList, clock_->Now() - request_start);
+  if (loader_for_sync_ && loader_for_sync_->ResponseInfo() &&
+      loader_for_sync_->ResponseInfo()->headers) {
+    PlusAddressMetrics::RecordNetworkRequestResponseCode(
+        PlusAddressNetworkRequestType::kList,
+        loader_for_sync_->ResponseInfo()->headers->response_code());
+  }
+  // Destroy the loader before returning.
   loader_for_sync_.reset();
   if (!response) {
-    // The request has failed.
     return;
   }
-
+  PlusAddressMetrics::RecordNetworkRequestResponseSize(
+      PlusAddressNetworkRequestType::kList, response->size());
+  // Parse the response & return it via callback.
   data_decoder::DataDecoder::ParseJsonIsolated(
       *response,
       base::BindOnce(&PlusAddressParser::ParsePlusAddressMapFromV1List)
@@ -432,6 +458,7 @@ void PlusAddressClient::OnTokenFetched(
     signin::AccessTokenInfo access_token_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   access_token_fetcher_.reset();
+  PlusAddressMetrics::RecordNetworkRequestOauthError(error);
   if (error.state() == GoogleServiceAuthError::NONE) {
     access_token_info_ = access_token_info;
     // Run stored callbacks.
@@ -441,7 +468,6 @@ void PlusAddressClient::OnTokenFetched(
     }
   } else {
     access_token_request_error_ = error;
-    // TODO (kaklilu): Replace this log with Histogram of OAuth errors.
     VLOG(1) << "PlusAddressClient failed to get OAuth token:"
             << error.ToString();
   }

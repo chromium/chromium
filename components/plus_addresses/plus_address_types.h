@@ -17,6 +17,15 @@ typedef base::OnceCallback<void(const std::string&)> PlusAddressCallback;
 typedef std::unordered_map<std::string, std::string> PlusAddressMap;
 typedef base::OnceCallback<void(const PlusAddressMap&)> PlusAddressMapCallback;
 
+// Defined for use in metrics and to share code for certain network-requests.
+enum class PlusAddressNetworkRequestType {
+  kGetOrCreate = 0,
+  kList = 1,
+  kReserve = 2,
+  kCreate = 3,
+  kMaxValue = kCreate,
+};
+
 }  // namespace plus_addresses
 
 #endif  // COMPONENTS_PLUS_ADDRESSES_PLUS_ADDRESS_TYPES_H_
