@@ -88,7 +88,7 @@ size_t GetRegistryLengthInTrimmedHost(base::StringPiece host,
       g_graph, g_graph_length, private_filter == INCLUDE_PRIVATE_REGISTRIES,
       host, &length);
 
-  DCHECK_LE(length, host.size());
+  CHECK_LE(length, host.size());
 
   // No rule found in the registry.
   if (type == kDafsaNotFound) {
@@ -109,8 +109,8 @@ size_t GetRegistryLengthInTrimmedHost(base::StringPiece host,
     if (length == host.size())
       return 0;
 
-    DCHECK_LE(length + 2, host.size());
-    DCHECK_EQ('.', host[host.size() - length - 1]);
+    CHECK_LE(length + 2, host.size());
+    CHECK_EQ('.', host[host.size() - length - 1]);
 
     const size_t preceding_dot =
         host.find_last_of('.', host.size() - length - 2);
@@ -140,7 +140,7 @@ size_t GetRegistryLengthInTrimmedHost(base::StringPiece host,
     return host.length() - first_dot - 1;
   }
 
-  DCHECK_NE(type, kDafsaNotFound);
+  CHECK_NE(type, kDafsaNotFound);
 
   // If a complete match, then the host is the registry itself, so return 0.
   if (length == host.size())
@@ -179,7 +179,7 @@ size_t GetRegistryLengthImpl(base::StringPiece host,
 base::StringPiece GetDomainAndRegistryImpl(
     base::StringPiece host,
     PrivateRegistryFilter private_filter) {
-  DCHECK(!host.empty());
+  CHECK(!host.empty());
 
   // Find the length of the registry for this host.
   const size_t registry_length =
@@ -188,12 +188,9 @@ base::StringPiece GetDomainAndRegistryImpl(
     return base::StringPiece();  // No registry.
   // The "2" in this next line is 1 for the dot, plus a 1-char minimum preceding
   // subcomponent length.
-  DCHECK(host.length() >= 2);
-  if (registry_length > (host.length() - 2)) {
-    NOTREACHED() <<
-        "Host does not have at least one subcomponent before registry!";
-    return base::StringPiece();
-  }
+  CHECK_GE(host.length(), 2u);
+  CHECK_LE(registry_length, host.length() - 2)
+      << "Host does not have at least one subcomponent before registry!";
 
   // Move past the dot preceding the registry, and search for the next previous
   // dot.  Return the host from after that dot, or the whole host when there is
