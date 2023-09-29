@@ -13,6 +13,7 @@
 #include <type_traits>
 #include <utility>
 
+#include "base/allocator/partition_allocator/flags.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/cxx20_is_constant_evaluated.h"
@@ -68,7 +69,7 @@ namespace content::responsiveness {
 class Calculator;
 }
 
-namespace base {
+namespace partition_alloc::internal {
 
 // NOTE: All methods should be `PA_ALWAYS_INLINE`. raw_ptr is meant to be a
 // lightweight replacement of a raw pointer, hence performance is critical.
@@ -121,39 +122,22 @@ enum class RawPtrTraits : unsigned {
   //
   // Test only.
   kDummyForTest = (1 << 11),
-};
 
-// Used to combine RawPtrTraits:
-constexpr RawPtrTraits operator|(RawPtrTraits a, RawPtrTraits b) {
-  return static_cast<RawPtrTraits>(static_cast<unsigned>(a) |
-                                   static_cast<unsigned>(b));
-}
-constexpr RawPtrTraits operator&(RawPtrTraits a, RawPtrTraits b) {
-  return static_cast<RawPtrTraits>(static_cast<unsigned>(a) &
-                                   static_cast<unsigned>(b));
-}
-constexpr RawPtrTraits operator~(RawPtrTraits a) {
-  return static_cast<RawPtrTraits>(~static_cast<unsigned>(a));
-}
+  kAllMask = kMayDangle | kDisableHooks | kAllowPtrArithmetic |
+             kExperimentalAsh | kUseCountingWrapperForTest | kDummyForTest,
+};
+// Template specialization to use |PA_DEFINE_OPERATORS_FOR_FLAGS| without
+// |kMaxValue| declaration.
+template <>
+constexpr inline RawPtrTraits kAllFlags<RawPtrTraits> = RawPtrTraits::kAllMask;
+PA_DEFINE_OPERATORS_FOR_FLAGS(RawPtrTraits);
+
+}  // namespace partition_alloc::internal
+
+namespace base {
+using partition_alloc::internal::RawPtrTraits;
 
 namespace raw_ptr_traits {
-
-constexpr bool Contains(RawPtrTraits a, RawPtrTraits b) {
-  return (a & b) != RawPtrTraits::kEmpty;
-}
-
-constexpr RawPtrTraits Remove(RawPtrTraits a, RawPtrTraits b) {
-  return a & ~b;
-}
-
-constexpr bool AreValid(RawPtrTraits traits) {
-  return Remove(traits, RawPtrTraits::kMayDangle | RawPtrTraits::kDisableHooks |
-                            RawPtrTraits::kAllowPtrArithmetic |
-                            RawPtrTraits::kExperimentalAsh |
-                            RawPtrTraits::kUseCountingWrapperForTest |
-                            RawPtrTraits::kDummyForTest) ==
-         RawPtrTraits::kEmpty;
-}
 
 // IsSupportedType<T>::value answers whether raw_ptr<T> 1) compiles and 2) is
 // always safe at runtime.  Templates that may end up using `raw_ptr<T>` should
@@ -231,20 +215,19 @@ struct IsSupportedType<T,
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 template <RawPtrTraits Traits>
 using UnderlyingImplForTraits = internal::RawPtrBackupRefImpl<
-    /*AllowDangling=*/Contains(Traits, RawPtrTraits::kMayDangle),
-    /*ExperimentalAsh=*/Contains(Traits, RawPtrTraits::kExperimentalAsh)>;
+    /*AllowDangling=*/ContainsFlags(Traits, RawPtrTraits::kMayDangle),
+    /*ExperimentalAsh=*/ContainsFlags(Traits, RawPtrTraits::kExperimentalAsh)>;
 
 #elif BUILDFLAG(USE_ASAN_UNOWNED_PTR)
 template <RawPtrTraits Traits>
-using UnderlyingImplForTraits =
-    internal::RawPtrAsanUnownedImpl<Contains(Traits,
-                                             RawPtrTraits::kAllowPtrArithmetic),
-                                    Contains(Traits, RawPtrTraits::kMayDangle)>;
+using UnderlyingImplForTraits = internal::RawPtrAsanUnownedImpl<
+    ContainsFlags(Traits, RawPtrTraits::kAllowPtrArithmetic),
+    ContainsFlags(Traits, RawPtrTraits::kMayDangle)>;
 
 #elif BUILDFLAG(USE_HOOKABLE_RAW_PTR)
 template <RawPtrTraits Traits>
 using UnderlyingImplForTraits = internal::RawPtrHookableImpl<
-    /*EnableHooks=*/!Contains(Traits, RawPtrTraits::kDisableHooks)>;
+    /*EnableHooks=*/!ContainsFlags(Traits, RawPtrTraits::kDisableHooks)>;
 
 #else
 template <RawPtrTraits Traits>
@@ -253,7 +236,7 @@ using UnderlyingImplForTraits = internal::RawPtrNoOpImpl;
 
 constexpr bool IsPtrArithmeticAllowed(RawPtrTraits Traits) {
 #if BUILDFLAG(ENABLE_POINTER_ARITHMETIC_TRAIT_CHECK)
-  return Contains(Traits, RawPtrTraits::kAllowPtrArithmetic);
+  return ContainsFlags(Traits, RawPtrTraits::kAllowPtrArithmetic);
 #else
   return true;
 #endif
@@ -276,9 +259,9 @@ namespace raw_ptr_traits {
 // wrapper.
 template <RawPtrTraits Traits>
 using ImplForTraits = std::conditional_t<
-    Contains(Traits, RawPtrTraits::kUseCountingWrapperForTest),
+    ContainsFlags(Traits, RawPtrTraits::kUseCountingWrapperForTest),
     test::RawPtrCountingImplWrapperForTest<
-        Remove(Traits, RawPtrTraits::kUseCountingWrapperForTest)>,
+        RemoveFlags(Traits, RawPtrTraits::kUseCountingWrapperForTest)>,
     UnderlyingImplForTraits<Traits>>;
 
 }  // namespace raw_ptr_traits
@@ -306,7 +289,7 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
   static_assert(std::is_same_v<Impl, internal::RawPtrNoOpImpl>);
 #endif  // !BUILDFLAG(USE_PARTITION_ALLOC)
 
-  static_assert(raw_ptr_traits::AreValid(Traits), "Unknown raw_ptr trait(s)");
+  static_assert(AreValidFlags(Traits), "Unknown raw_ptr trait(s)");
   static_assert(raw_ptr_traits::IsSupportedType<T>::value,
                 "raw_ptr<T> doesn't work with this kind of pointee type T");
 
@@ -916,7 +899,7 @@ inline constexpr bool IsRawPtrMayDangleV = false;
 
 template <typename T, RawPtrTraits Traits>
 inline constexpr bool IsRawPtrMayDangleV<raw_ptr<T, Traits>> =
-    raw_ptr_traits::Contains(Traits, RawPtrTraits::kMayDangle);
+    ContainsFlags(Traits, RawPtrTraits::kMayDangle);
 
 // Template helpers for working with T* or raw_ptr<T>.
 template <typename T>

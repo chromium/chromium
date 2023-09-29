@@ -25,15 +25,14 @@ struct DerivedUnrelated : Unrelated {};
 #if defined(NCTEST_INVALID_RAW_PTR_TRAIT)  // [r"Unknown raw_ptr trait\(s\)"]
 
 void WontCompile() {
-  constexpr auto InvalidRawPtrTrait =
-      ~base::RawPtrTraits::kEmpty;
+  constexpr auto InvalidRawPtrTrait = static_cast<base::RawPtrTraits>(-1);
   raw_ptr<int, InvalidRawPtrTrait> p;
 }
 
 #elif defined(NCTEST_INVALID_RAW_PTR_TRAIT_OF_MANY)  // [r"Unknown raw_ptr trait\(s\)"]
 
 void WontCompile() {
-  constexpr auto InvalidRawPtrTrait = ~base::RawPtrTraits::kEmpty;
+  constexpr auto InvalidRawPtrTrait = static_cast<base::RawPtrTraits>(-1);
   raw_ptr<int, DisableDanglingPtrDetection | InvalidRawPtrTrait>
       p;
 }
@@ -212,35 +211,35 @@ void WontCompile() {
 #endif  // !BUILDFLAG(HAS_64_BIT_POINTERS)
 }
 
-#elif defined(NCTEST_CROSS_KIND_CONVERSION_FROM_MAY_DANGLE) // [r"static assertion failed due to requirement '\(base::RawPtrTraits\)0U == \(\(base::RawPtrTraits\)1U \| RawPtrTraits::kMayDangle\)'"]
+#elif defined(NCTEST_CROSS_KIND_CONVERSION_FROM_MAY_DANGLE) // [r"static assertion failed due to requirement '\(partition_alloc::internal::RawPtrTraits\)0U == \(\(partition_alloc::internal::RawPtrTraits\)1U \| RawPtrTraits::kMayDangle\)'"]
 
 void WontCompile() {
   raw_ptr<int, base::RawPtrTraits::kMayDangle> ptr = new int(3);
   [[maybe_unused]] raw_ptr<int> ptr2(ptr);
 }
 
-#elif defined(NCTEST_CROSS_KIND_CONVERSION_FROM_DUMMY) // [r"static assertion failed due to requirement '\(base::RawPtrTraits\)1U == \(\(base::RawPtrTraits\)2048U \| RawPtrTraits::kMayDangle\)'"]
+#elif defined(NCTEST_CROSS_KIND_CONVERSION_FROM_DUMMY) // [r"static assertion failed due to requirement '\(partition_alloc::internal::RawPtrTraits\)1U == \(\(partition_alloc::internal::RawPtrTraits\)2048U \| RawPtrTraits::kMayDangle\)'"]
 
 void WontCompile() {
   raw_ptr<int, base::RawPtrTraits::kDummyForTest> ptr = new int(3);
   [[maybe_unused]] raw_ptr<int, base::RawPtrTraits::kMayDangle> ptr2(ptr);
 }
 
-#elif defined(NCTEST_CROSS_KIND_MOVE_CONVERSION_FROM_MAY_DANGLE) // [r"static assertion failed due to requirement '\(base::RawPtrTraits\)0U == \(\(base::RawPtrTraits\)1U \| RawPtrTraits::kMayDangle\)'"]
+#elif defined(NCTEST_CROSS_KIND_MOVE_CONVERSION_FROM_MAY_DANGLE) // [r"static assertion failed due to requirement '\(partition_alloc::internal::RawPtrTraits\)0U == \(\(partition_alloc::internal::RawPtrTraits\)1U \| RawPtrTraits::kMayDangle\)'"]
 
 void WontCompile() {
   raw_ptr<int, base::RawPtrTraits::kMayDangle> ptr = new int(3);
   [[maybe_unused]] raw_ptr<int> ptr2(std::move(ptr));
 }
 
-#elif defined(NCTEST_CROSS_KIND_MOVE_CONVERSION_FROM_DUMMY) // [r"static assertion failed due to requirement '\(base::RawPtrTraits\)1U == \(\(base::RawPtrTraits\)2048U \| RawPtrTraits::kMayDangle\)'"]
+#elif defined(NCTEST_CROSS_KIND_MOVE_CONVERSION_FROM_DUMMY) // [r"static assertion failed due to requirement '\(partition_alloc::internal::RawPtrTraits\)1U == \(\(partition_alloc::internal::RawPtrTraits\)2048U \| RawPtrTraits::kMayDangle\)'"]
 
 void WontCompile() {
   raw_ptr<int, base::RawPtrTraits::kDummyForTest> ptr = new int(3);
   [[maybe_unused]] raw_ptr<int, base::RawPtrTraits::kMayDangle> ptr2(std::move(ptr));
 }
 
-#elif defined(NCTEST_CROSS_KIND_ASSIGNMENT_FROM_MAY_DANGLE) // [r"static assertion failed due to requirement '\(base::RawPtrTraits\)0U == \(\(base::RawPtrTraits\)1U \| RawPtrTraits::kMayDangle\)'"]
+#elif defined(NCTEST_CROSS_KIND_ASSIGNMENT_FROM_MAY_DANGLE) // [r"static assertion failed due to requirement '\(partition_alloc::internal::RawPtrTraits\)0U == \(\(partition_alloc::internal::RawPtrTraits\)1U \| RawPtrTraits::kMayDangle\)'"]
 
 void WontCompile() {
   raw_ptr<int, base::RawPtrTraits::kMayDangle> ptr = new int(3);
@@ -248,7 +247,7 @@ void WontCompile() {
   ptr2 = ptr;
 }
 
-#elif defined(NCTEST_CROSS_KIND_ASSIGNMENT_FROM_DUMMY) // [r"static assertion failed due to requirement '\(base::RawPtrTraits\)1U == \(\(base::RawPtrTraits\)2048U \| RawPtrTraits::kMayDangle\)'"]
+#elif defined(NCTEST_CROSS_KIND_ASSIGNMENT_FROM_DUMMY) // [r"static assertion failed due to requirement '\(partition_alloc::internal::RawPtrTraits\)1U == \(\(partition_alloc::internal::RawPtrTraits\)2048U \| RawPtrTraits::kMayDangle\)'"]
 
 void WontCompile() {
   raw_ptr<int, base::RawPtrTraits::kDummyForTest> ptr = new int(3);
@@ -256,7 +255,7 @@ void WontCompile() {
   ptr2 = ptr;
 }
 
-#elif defined(NCTEST_CROSS_KIND_MOVE_ASSIGNMENT_FROM_MAY_DANGLE) // [r"static assertion failed due to requirement '\(base::RawPtrTraits\)0U == \(\(base::RawPtrTraits\)1U \| RawPtrTraits::kMayDangle\)'"]
+#elif defined(NCTEST_CROSS_KIND_MOVE_ASSIGNMENT_FROM_MAY_DANGLE) // [r"static assertion failed due to requirement '\(partition_alloc::internal::RawPtrTraits\)0U == \(\(partition_alloc::internal::RawPtrTraits\)1U \| RawPtrTraits::kMayDangle\)'"]
 
 void WontCompile() {
   raw_ptr<int, base::RawPtrTraits::kMayDangle> ptr = new int(3);
@@ -264,7 +263,7 @@ void WontCompile() {
   ptr2 = std::move(ptr);
 }
 
-#elif defined(NCTEST_CROSS_KIND_MOVE_ASSIGNMENT_FROM_DUMMY) // [r"static assertion failed due to requirement '\(base::RawPtrTraits\)1U == \(\(base::RawPtrTraits\)2048U \| RawPtrTraits::kMayDangle\)'"]
+#elif defined(NCTEST_CROSS_KIND_MOVE_ASSIGNMENT_FROM_DUMMY) // [r"static assertion failed due to requirement '\(partition_alloc::internal::RawPtrTraits\)1U == \(\(partition_alloc::internal::RawPtrTraits\)2048U \| RawPtrTraits::kMayDangle\)'"]
 
 void WontCompile() {
   raw_ptr<int, base::RawPtrTraits::kDummyForTest> ptr = new int(3);
