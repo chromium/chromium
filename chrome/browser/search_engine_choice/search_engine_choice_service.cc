@@ -191,6 +191,10 @@ bool SearchEngineChoiceService::CanShowDialog(Browser& browser) {
 }
 
 bool SearchEngineChoiceService::HasUserMadeChoice() const {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kForceSearchEngineChoiceScreen)) {
+    return false;
+  }
   PrefService* pref_service = profile_->GetPrefs();
   return pref_service->GetInt64(
       prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp);
