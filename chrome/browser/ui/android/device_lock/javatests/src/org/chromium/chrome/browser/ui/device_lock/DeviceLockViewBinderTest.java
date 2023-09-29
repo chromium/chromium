@@ -101,9 +101,9 @@ public class DeviceLockViewBinderTest extends BlankUiTestActivityTestCase {
                 getActivity().getResources().getString(
                         R.string.device_lock_existing_lock_description),
                 mView.getDescription().getText());
-        assertEquals("The notice text should not change.",
+        assertEquals("The notice text should match the version for a pre-existing device lock..",
                 getActivity().getResources().getString(R.string.device_lock_notice),
-                mView.getNotice().getText());
+                mView.getNoticeText().getText());
         assertEquals(
                 "The continue button text should match the version for a pre-existing device lock.",
                 getActivity().getResources().getString(R.string.got_it),
@@ -117,22 +117,20 @@ public class DeviceLockViewBinderTest extends BlankUiTestActivityTestCase {
     @Test
     @UiThreadTest
     @SmallTest
-    public void testDeviceLockView_supportsPINCreationIntent_showsAppropriateTexts() {
+    public void testDeviceLockView_noPreExistingLock_showsAppropriateTexts() {
         mViewModel.set(PREEXISTING_DEVICE_LOCK, false);
-        mViewModel.set(DEVICE_SUPPORTS_PIN_CREATION_INTENT, true);
 
-        assertEquals("The title text should match the version for creating a device lock directly.",
+        assertEquals("The title text should match the version for creating a device lock.",
                 getActivity().getResources().getString(R.string.device_lock_title),
                 mView.getTitle().getText());
         assertEquals("The description text should match the version for creating a "
-                        + "device lock directly.",
+                        + "device lock.",
                 getActivity().getResources().getString(R.string.device_lock_description),
                 mView.getDescription().getText());
-        assertEquals("The notice text should not change.",
-                getActivity().getResources().getString(R.string.device_lock_notice),
-                mView.getNotice().getText());
-        assertEquals("The continue button should match the version for creating a "
-                        + "device lock directly.",
+        assertEquals("The notice text should match the version for creating a device lock.",
+                getActivity().getResources().getString(R.string.device_lock_creation_notice),
+                mView.getNoticeText().getText());
+        assertEquals("The continue button should match the version for creating a device lock.",
                 getActivity().getResources().getString(R.string.device_lock_create_lock_button),
                 mView.getContinueButton().getText());
         assertEquals("The continue button should always be visible.", View.VISIBLE,
@@ -144,39 +142,11 @@ public class DeviceLockViewBinderTest extends BlankUiTestActivityTestCase {
     @Test
     @UiThreadTest
     @SmallTest
-    public void testDeviceLockView_doesNotSupportPINCreationIntent_showsAppropriateTexts() {
-        mViewModel.set(PREEXISTING_DEVICE_LOCK, false);
-        mViewModel.set(DEVICE_SUPPORTS_PIN_CREATION_INTENT, false);
-
-        assertEquals("The title text should match the version for creating a "
-                        + "device lock through settings.",
-                getActivity().getResources().getString(R.string.device_lock_title),
-                mView.getTitle().getText());
-        assertEquals("The description text should match the version for creating a "
-                        + "device lock through settings.",
-                getActivity().getResources().getString(
-                        R.string.device_lock_through_settings_description),
-                mView.getDescription().getText());
-        assertEquals("The notice text should not change.",
-                getActivity().getResources().getString(R.string.device_lock_notice),
-                mView.getNotice().getText());
-        assertEquals("The continue button should match the version for creating a "
-                        + "device lock through settings.",
-                getActivity().getResources().getString(R.string.device_lock_create_lock_button),
-                mView.getContinueButton().getText());
-        assertEquals("The continue button should always be visible.", View.VISIBLE,
-                mView.getContinueButton().getVisibility());
-        assertEquals("The dismiss button should always be visible", View.VISIBLE,
-                mView.getDismissButton().getVisibility());
-    }
-
-    @Test
-    @UiThreadTest
-    @SmallTest
-    public void testDeviceLockView_inSignInFlow_dismissButtonHasDismissedSignInText() {
+    public void
+    testDeviceLockView_inSignInFlowWithPreExistingLock_dismissButtonHasDismissedSignInText() {
         mViewModel.set(IN_SIGN_IN_FLOW, true);
+        mViewModel.set(PREEXISTING_DEVICE_LOCK, true);
 
-        verifyPageText();
         assertEquals("The dismiss button should show fre dismissal text when in the sign in flow.",
                 mView.getDismissButton().getText(),
                 getActivity().getResources().getString(R.string.signin_fre_dismiss_button));
@@ -185,10 +155,21 @@ public class DeviceLockViewBinderTest extends BlankUiTestActivityTestCase {
     @Test
     @UiThreadTest
     @SmallTest
+    public void testDeviceLockView_inSignInFlowWithNoPreExistingLock_dismissButtonHasNotNowText() {
+        mViewModel.set(IN_SIGN_IN_FLOW, true);
+        mViewModel.set(PREEXISTING_DEVICE_LOCK, false);
+
+        assertEquals("The dismiss button should show 'not now' text when in the sign in flow.",
+                mView.getDismissButton().getText(),
+                getActivity().getResources().getString(R.string.dialog_not_now));
+    }
+
+    @Test
+    @UiThreadTest
+    @SmallTest
     public void testDeviceLockView_notInSignInFlow_dismissButtonHasNoThanksText() {
         mViewModel.set(IN_SIGN_IN_FLOW, false);
 
-        verifyPageText();
         assertEquals(
                 "The dismiss button should show 'no thanks' text when not in the sign in flow.",
                 mView.getDismissButton().getText(),
@@ -243,14 +224,5 @@ public class DeviceLockViewBinderTest extends BlankUiTestActivityTestCase {
         mView.getDismissButton().performClick();
         assertTrue("A click on the dismiss button should trigger the dismissal handler.",
                 mDismissButtonClicked.get());
-    }
-
-    private void verifyPageText() {
-        assertEquals("The title text should not change.", mView.getTitle().getText(),
-                getActivity().getResources().getString(R.string.device_lock_title));
-        assertEquals("The description text should not change.", mView.getDescription().getText(),
-                getActivity().getResources().getString(R.string.device_lock_description));
-        assertEquals("The notice text should not change.", mView.getNotice().getText(),
-                getActivity().getResources().getString(R.string.device_lock_notice));
     }
 }

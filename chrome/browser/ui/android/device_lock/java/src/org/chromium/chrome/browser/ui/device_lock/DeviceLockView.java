@@ -21,7 +21,7 @@ import org.chromium.components.browser_ui.widget.DualControlLayout;
 public class DeviceLockView extends LinearLayout {
     private TextView mTitle;
     private TextView mDescription;
-    private TextView mNotice;
+    private TextView mNoticeText;
     private DualControlLayout mButtonBar;
     private Button mContinueButton;
     private Button mDismissButton;
@@ -42,7 +42,7 @@ public class DeviceLockView extends LinearLayout {
         super.onFinishInflate();
         mTitle = findViewById(R.id.device_lock_title);
         mDescription = findViewById(R.id.device_lock_description);
-        mNotice = findViewById(R.id.device_lock_notice);
+        mNoticeText = findViewById(R.id.device_lock_notice);
 
         mDismissButton = DualControlLayout.createButtonForLayout(getContext(), false, "", null);
         mDismissButton.setLayoutParams(new ViewGroup.LayoutParams(
@@ -66,8 +66,8 @@ public class DeviceLockView extends LinearLayout {
         return mDescription;
     }
 
-    TextView getNotice() {
-        return mNotice;
+    TextView getNoticeText() {
+        return mNoticeText;
     }
 
     TextView getContinueButton() {

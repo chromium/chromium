@@ -32,11 +32,11 @@ found in the LICENSE file.
                 android:layout_width="match_parent"
                 android:layout_height="136dp"
                 android:layout_alignParentTop="true"
-                android:adjustViewBounds="true"
-                android:scaleType="centerInside"
+                android:adjustViewBounds="false"
+                android:scaleType="fitCenter"
                 android:layout_centerHorizontal="true"
                 android:background="@color/signin_header_animation_background"
-                app:srcCompat="@drawable/device_lock_illustration"
+                app:srcCompat="@drawable/device_lock_alert_illustration"
                 tools:ignore="ContentDescription"/>
 
             <TextView
@@ -61,16 +61,33 @@ found in the LICENSE file.
                 android:text="@string/device_lock_description"
                 android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
 
-            <TextView
-                android:id="@+id/device_lock_notice"
+            <FrameLayout
+                android:id="@+id/device_lock_notice_container"
                 android:layout_below="@id/device_lock_description"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginEnd="16dp"
-                android:text="@string/device_lock_notice"
-                android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
+                android:layout_margin="16dp"
+                android:padding="16dp"
+                android:layout_gravity="center"
+                android:background="@drawable/rounded_corner_card">
+
+                <org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables
+                    android:id="@+id/device_lock_notice"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="start|center_vertical"
+                    android:maxLines="1"
+                    android:drawableStart="@drawable/ic_error_outline_red_24dp"
+                    android:drawablePadding="4dp"
+                    android:ellipsize="end"
+                    android:text="@string/device_lock_notice"
+                    app:drawableTint="@color/device_lock_illustration_red"
+                    app:drawableWidth="18dp"
+                    app:drawableHeight="18dp"
+                    style="@style/TextAppearance.DeviceLockNotice" />
+
+            </FrameLayout>
+
         </RelativeLayout>
 
     </ScrollView>

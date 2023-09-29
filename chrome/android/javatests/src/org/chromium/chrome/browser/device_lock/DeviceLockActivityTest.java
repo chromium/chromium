@@ -51,7 +51,7 @@ public class DeviceLockActivityTest {
     @MediumTest
     public void testDeviceLockReady_finishesActivityWithResultOk() {
         launchActivity();
-        onView(withText(R.string.device_lock_title)).check(matches(isDisplayed()));
+        onView(withText(R.string.device_lock_description)).check(matches(isDisplayed()));
 
         mDeviceLockActivity.onDeviceLockReady();
         assertEquals("Activity should be finished", mDeviceLockActivity.isFinishing(), true);
@@ -64,7 +64,7 @@ public class DeviceLockActivityTest {
     @MediumTest
     public void testDeviceLockRefused_finishesActivityWithResultCanceled() {
         launchActivity();
-        onView(withText(R.string.device_lock_title)).check(matches(isDisplayed()));
+        onView(withText(R.string.device_lock_description)).check(matches(isDisplayed()));
 
         mDeviceLockActivity.onDeviceLockRefused();
 
