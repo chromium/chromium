@@ -414,6 +414,11 @@ const OncFieldSignature global_network_configuration_fields[] = {
      &kStringListSignature},
     {::onc::global_network_config::kBlockedHexSSIDs, &kStringListSignature},
     {::onc::global_network_config::kDisableNetworkTypes, &kStringListSignature},
+    {::onc::global_network_config::kRecommendedValuesAreEphemeral,
+     &kBoolSignature},
+    {::onc::global_network_config::
+         kUserCreatedNetworkConfigurationsAreEphemeral,
+     &kBoolSignature},
     {nullptr}};
 
 const OncFieldSignature certificate_fields[] = {

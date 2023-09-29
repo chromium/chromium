@@ -554,6 +554,9 @@ const char* const kAllowTextMessages = "AllowTextMessages";
 const char kBlacklistedHexSSIDs[] = "BlacklistedHexSSIDs";  // Deprecated
 const char kBlockedHexSSIDs[] = "BlockedHexSSIDs";
 const char kDisableNetworkTypes[] = "DisableNetworkTypes";
+const char kRecommendedValuesAreEphemeral[] = "RecommendedValuesAreEphemeral";
+const char kUserCreatedNetworkConfigurationsAreEphemeral[] =
+    "UserCreatedNetworkConfigurationsAreEphemeral";
 }  // global_network_config
 
 namespace device_state {

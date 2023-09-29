@@ -38,6 +38,7 @@
 #include "chromeos/ash/components/network/network_policy_observer.h"
 #include "chromeos/ash/components/network/network_profile_handler.h"
 #include "chromeos/ash/components/network/network_state.h"
+#include "chromeos/ash/components/network/policy_util.h"
 #include "chromeos/ash/components/network/prohibited_technologies_handler.h"
 #include "chromeos/ash/components/network/proxy/ui_proxy_config_service.h"
 #include "chromeos/ash/components/network/technology_state_controller.h"
@@ -1477,6 +1478,50 @@ TEST_F(ManagedNetworkConfigurationHandlerTest,
   EXPECT_FALSE(managed_handler()->AllowOnlyPolicyWiFiToConnectIfAvailable());
   EXPECT_FALSE(managed_handler()->AllowOnlyPolicyNetworksToAutoconnect());
   EXPECT_TRUE(managed_handler()->GetBlockedHexSSIDs().empty());
+}
+
+TEST_F(ManagedNetworkConfigurationHandlerTest,
+       RecommendedValuesAreEphemeralAccessor) {
+  policy_util::SetEphemeralNetworkPoliciesEnabled();
+
+  EXPECT_FALSE(managed_handler()->RecommendedValuesAreEphemeral());
+
+  const char* const onc_policy = R"(
+      {
+        "GlobalNetworkConfiguration": {
+          "RecommendedValuesAreEphemeral": true
+        },
+        "Type": "UnencryptedConfiguration"
+      })";
+  EXPECT_TRUE(SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY, std::string(),
+                        base::test::ParseJsonDict(onc_policy)));
+  FastForwardProfileRefreshDelay();
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(managed_handler()->RecommendedValuesAreEphemeral());
+}
+
+TEST_F(ManagedNetworkConfigurationHandlerTest,
+       UserCreatedNetworkConfigurationsAreEphemeral) {
+  policy_util::SetEphemeralNetworkPoliciesEnabled();
+
+  EXPECT_FALSE(
+      managed_handler()->UserCreatedNetworkConfigurationsAreEphemeral());
+
+  const char* const onc_policy = R"(
+      {
+        "GlobalNetworkConfiguration": {
+          "UserCreatedNetworkConfigurationsAreEphemeral": true
+        },
+        "Type": "UnencryptedConfiguration"
+      })";
+  EXPECT_TRUE(SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY, std::string(),
+                        base::test::ParseJsonDict(onc_policy)));
+  FastForwardProfileRefreshDelay();
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(
+      managed_handler()->UserCreatedNetworkConfigurationsAreEphemeral());
 }
 
 TEST_F(ManagedNetworkConfigurationHandlerTest, AllowCellularSimLock) {

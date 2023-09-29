@@ -552,6 +552,9 @@ extern const char* const kAllowTextMessages;
 COMPONENT_EXPORT(ONC) extern const char kBlacklistedHexSSIDs[];  // Deprecated
 COMPONENT_EXPORT(ONC) extern const char kBlockedHexSSIDs[];
 COMPONENT_EXPORT(ONC) extern const char kDisableNetworkTypes[];
+COMPONENT_EXPORT(ONC) extern const char kRecommendedValuesAreEphemeral[];
+COMPONENT_EXPORT(ONC)
+extern const char kUserCreatedNetworkConfigurationsAreEphemeral[];
 }  // namespace global_network_config
 
 namespace device_state {

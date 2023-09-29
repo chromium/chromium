@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <string_view>
 #include <utility>
 
 #include "base/containers/contains.h"
@@ -375,7 +376,7 @@ std::string JoinStringRange(const std::vector<const char*>& strings,
 }  // namespace
 
 bool Validator::IsInDevicePolicy(base::Value::Dict* result,
-                                 const std::string& field_name) {
+                                 std::string_view field_name) {
   if (result->contains(field_name)) {
     if (onc_source_ != ::onc::ONC_SOURCE_DEVICE_POLICY) {
       std::ostringstream msg;
@@ -1081,29 +1082,23 @@ bool Validator::ValidateGlobalNetworkConfiguration(base::Value::Dict* result) {
     }
   }
 
-  // Validate that kAllowTextMessages, kAllowCellularSimLock,
-  // kAllowCellularHotspot, kDisableNetworkTypes, kAllowOnlyPolicyWiFiToConnect,
-  // kAllowOnlyPolicyCellularNetworks and kBlockedHexSSIDs are only allowed in
-  // device policy.
-  if (!IsInDevicePolicy(result,
-                        ::onc ::global_network_config::kAllowTextMessages) ||
-      !IsInDevicePolicy(result,
-                        ::onc ::global_network_config::kAllowCellularSimLock) ||
-      !IsInDevicePolicy(result,
-                        ::onc ::global_network_config::kAllowCellularHotspot) ||
-      !IsInDevicePolicy(result,
-                        ::onc::global_network_config::kDisableNetworkTypes) ||
-      !IsInDevicePolicy(
-          result,
-          ::onc::global_network_config::kAllowOnlyPolicyCellularNetworks) ||
-      !IsInDevicePolicy(
-          result,
-          ::onc::global_network_config::kAllowOnlyPolicyWiFiToConnect) ||
-      !IsInDevicePolicy(result, ::onc::global_network_config::
-                                    kAllowOnlyPolicyWiFiToConnectIfAvailable) ||
-      !IsInDevicePolicy(result,
-                        ::onc::global_network_config::kBlockedHexSSIDs)) {
-    return false;
+  // Validate that these are only allowed in device policy.
+  const std::string_view kDevicePolicyOnlyKeys[] = {
+      ::onc::global_network_config::kAllowTextMessages,
+      ::onc::global_network_config::kAllowCellularSimLock,
+      ::onc::global_network_config::kAllowCellularHotspot,
+      ::onc::global_network_config::kDisableNetworkTypes,
+      ::onc::global_network_config::kAllowOnlyPolicyCellularNetworks,
+      ::onc::global_network_config::kAllowOnlyPolicyWiFiToConnect,
+      ::onc::global_network_config::kAllowOnlyPolicyWiFiToConnectIfAvailable,
+      ::onc::global_network_config::kBlockedHexSSIDs,
+      ::onc::global_network_config::kRecommendedValuesAreEphemeral,
+      ::onc::global_network_config::
+          kUserCreatedNetworkConfigurationsAreEphemeral};
+  for (std::string_view key : kDevicePolicyOnlyKeys) {
+    if (!IsInDevicePolicy(result, key)) {
+      return false;
+    }
   }
 
   // Ensure the list contains only legitimate network type identifiers.

@@ -194,6 +194,17 @@ INSTANTIATE_TEST_SUITE_P(
                   &kToplevelConfigurationSignature,
                   true,
                   ::onc::ONC_SOURCE_DEVICE_POLICY),
+        // RecommendedValuesAreEphemeral is only allowed for device policies.
+        OncParams("managed_toplevel_with_recommended_values_ephemeral.onc",
+                  &kToplevelConfigurationSignature,
+                  true,
+                  ::onc::ONC_SOURCE_DEVICE_POLICY),
+        // UserCreatedNetworkConfigurationsAreEphemeral is only allowed for
+        // device policies.
+        OncParams("managed_toplevel_with_user_created_configs_ephemeral.onc",
+                  &kToplevelConfigurationSignature,
+                  true,
+                  ::onc::ONC_SOURCE_DEVICE_POLICY),
         OncParams("managed_toplevel_l2tpipsec.onc",
                   &kToplevelConfigurationSignature,
                   true),

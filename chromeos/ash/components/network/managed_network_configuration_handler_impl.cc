@@ -1033,6 +1033,22 @@ bool ManagedNetworkConfigurationHandlerImpl::
       .value_or(false);
 }
 
+bool ManagedNetworkConfigurationHandlerImpl::RecommendedValuesAreEphemeral()
+    const {
+  DCHECK(policy_util::AreEphemeralNetworkPoliciesEnabled());
+  return FindGlobalPolicyBool(
+             ::onc::global_network_config::kRecommendedValuesAreEphemeral)
+      .value_or(false);
+}
+
+bool ManagedNetworkConfigurationHandlerImpl::
+    UserCreatedNetworkConfigurationsAreEphemeral() const {
+  DCHECK(policy_util::AreEphemeralNetworkPoliciesEnabled());
+  return FindGlobalPolicyBool(::onc::global_network_config::
+                                  kUserCreatedNetworkConfigurationsAreEphemeral)
+      .value_or(false);
+}
+
 std::vector<std::string>
 ManagedNetworkConfigurationHandlerImpl::GetBlockedHexSSIDs() const {
   const base::Value::List* blocked_value =

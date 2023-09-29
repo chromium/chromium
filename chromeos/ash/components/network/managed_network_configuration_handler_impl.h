@@ -153,6 +153,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandlerImpl
   bool AllowOnlyPolicyWiFiToConnect() const override;
   bool AllowOnlyPolicyWiFiToConnectIfAvailable() const override;
   bool AllowOnlyPolicyNetworksToAutoconnect() const override;
+  bool RecommendedValuesAreEphemeral() const override;
+  bool UserCreatedNetworkConfigurationsAreEphemeral() const override;
   std::vector<std::string> GetBlockedHexSSIDs() const override;
 
   // NetworkProfileObserver overrides

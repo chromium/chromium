@@ -240,6 +240,21 @@ warns admins of the implications of mis-using this policy for Chrome OS.
       connections may still be established successfully but will be
       closed shortly after that by the Chrome OS connection manager.
 
+* **RecommendedValuesAreEphemeral**
+    * (optional, defaults to false) - **boolean**
+    * When this field is set to true, settings of device-wide policy-provided
+      network configurations marked as "Recommended" will be regarded as
+      ephemeral. These settings will be reverted to the policy-recommended (or
+      default) value on reboot (startup), logout, and when the device has been
+      idle.
+
+* **UserCreatedNetworkConfigurationsAreEphemeral**
+    * (optional, defaults to false) - **boolean**
+    * When this field is set to true, device-wide network configurations created
+      by the user will be regarded as ephemeral.  These network configurations
+      will be deleted on reboot (startup), logout, and when the device has been
+      idle.
+
 ## Network Configuration
 
 Field **NetworkConfigurations** is an array of

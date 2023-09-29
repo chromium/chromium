@@ -244,6 +244,13 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandler {
   // Return true if the AllowOnlyPolicyNetworksToAutoconnect policy is enabled.
   virtual bool AllowOnlyPolicyNetworksToAutoconnect() const = 0;
 
+  // Return true if the RecommendedValuesAreEphemeral policy is enabled.
+  virtual bool RecommendedValuesAreEphemeral() const = 0;
+
+  // Return true if the UserCreatedNetworkConfigurationsAreEphemeral policy is
+  // enabled.
+  virtual bool UserCreatedNetworkConfigurationsAreEphemeral() const = 0;
+
   // Returns the value for the AllowTextMessages policy.
   virtual PolicyTextMessageSuppressionState GetAllowTextMessages() const = 0;
 
