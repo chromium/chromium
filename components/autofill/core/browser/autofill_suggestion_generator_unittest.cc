@@ -292,8 +292,8 @@ TEST_F(AutofillSuggestionGeneratorTest, GetProfilesToSuggest_SuggestionsLimit) {
 // Therefore, keep only the 50 first pre-dedupe matching profiles.
 TEST_F(AutofillSuggestionGeneratorTest, GetProfilesToSuggest_ProfilesLimit) {
   std::vector<AutofillProfile> profiles;
-  for (size_t i = 0; i < suggestion_selection::kMaxSuggestedProfilesCount;
-       i++) {
+  for (size_t i = 0;
+       i < AutofillSuggestionGenerator::kMaxSuggestedProfilesCount; i++) {
     AutofillProfile profile;
 
     test::SetProfileInfo(
@@ -325,7 +325,7 @@ TEST_F(AutofillSuggestionGeneratorTest, GetProfilesToSuggest_ProfilesLimit) {
       suggestion_generator()->GetProfilesToSuggest(AutofillType(NAME_FIRST),
                                                    u"Ma", false, {});
 
-  ASSERT_EQ(suggestion_selection::kMaxSuggestedProfilesCount + 1,
+  ASSERT_EQ(AutofillSuggestionGenerator::kMaxSuggestedProfilesCount + 1,
             personal_data()->GetProfiles().size());
   ASSERT_EQ(1U, suggested_profiles.size());
   EXPECT_EQ(suggested_profiles.front()->GetRawInfo(NAME_FIRST),
@@ -613,6 +613,46 @@ TEST_F(AutofillSuggestionGeneratorTest,
   EXPECT_EQ(profile_1.guid(), profiles_to_suggest[0]->guid());
   EXPECT_EQ(AutofillProfile::Source::kAccount,
             profiles_to_suggest[0]->source());
+}
+
+TEST_F(AutofillSuggestionGeneratorTest,
+       GetProfilesToSuggest_GetMatchingProfile) {
+  AutofillProfile marion_profile;
+  marion_profile.SetRawInfo(NAME_FIRST, u"Marion");
+  personal_data()->AddProfile(marion_profile);
+
+  AutofillProfile bob_profile;
+  bob_profile.SetRawInfo(NAME_FIRST, u"Bob");
+  personal_data()->AddProfile(bob_profile);
+
+  std::vector<const AutofillProfile*> profiles_to_suggest =
+      suggestion_generator()->GetProfilesToSuggest(
+          AutofillType(NAME_FIRST), u"Mar", /*field_is_autofilled=*/false, {});
+
+  ASSERT_EQ(1U, profiles_to_suggest.size());
+  EXPECT_EQ(marion_profile.guid(), profiles_to_suggest[0]->guid());
+}
+
+TEST_F(AutofillSuggestionGeneratorTest,
+       GetProfilesToSuggest_NoMatchingProfile) {
+  AutofillProfile bob_profile;
+  bob_profile.SetRawInfo(NAME_FIRST, u"Bob");
+  personal_data()->AddProfile(bob_profile);
+
+  std::vector<const AutofillProfile*> profiles_to_suggest =
+      suggestion_generator()->GetProfilesToSuggest(
+          AutofillType(NAME_FIRST), u"Mar", /*field_is_autofilled=*/false, {});
+
+  ASSERT_TRUE(profiles_to_suggest.empty());
+}
+
+TEST_F(AutofillSuggestionGeneratorTest,
+       GetProfilesToSuggest_EmptyProfilesInput) {
+  std::vector<const AutofillProfile*> profiles_to_suggest =
+      suggestion_generator()->GetProfilesToSuggest(
+          AutofillType(NAME_FIRST), u"Mar", /*field_is_autofilled=*/false, {});
+
+  ASSERT_TRUE(profiles_to_suggest.empty());
 }
 
 TEST_F(AutofillSuggestionGeneratorTest, CreateSuggestionsFromProfiles) {

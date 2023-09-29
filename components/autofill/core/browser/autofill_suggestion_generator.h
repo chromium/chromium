@@ -44,6 +44,10 @@ class AutofillSuggestionGenerator {
   // type.
   static constexpr size_t kMaxUniqueSuggestedProfilesCount = 10;
 
+  // As of November 2018, 50 profiles should be more than enough to cover at
+  // least 99% of all times the dropdown is shown.
+  static constexpr size_t kMaxSuggestedProfilesCount = 50;
+
   AutofillSuggestionGenerator(AutofillClient* autofill_client,
                               PersonalDataManager* personal_data);
   ~AutofillSuggestionGenerator();
@@ -185,6 +189,17 @@ class AutofillSuggestionGenerator {
       const AutofillType& trigger_field_type,
       const ServerFieldTypeSet& field_types,
       const AutofillProfileComparator& comparator);
+
+  // Matches based on prefix search, and limits number of profiles.
+  // Returns the top matching profiles based on prefix search. At most
+  // `kMaxSuggestedProfilesCount` are returned.
+  std::vector<const AutofillProfile*> GetPrefixMatchedProfiles(
+      const std::vector<AutofillProfile*>& profiles,
+      const AutofillType& trigger_field_type,
+      const std::u16string& raw_field_contents,
+      const std::u16string& field_contents_canon,
+      const std::string& app_locale,
+      bool field_is_autofilled);
 
   // Return the texts shown as the first line of the suggestion, based on the
   // `credit_card` and the focused field `type`. The first index in the pair

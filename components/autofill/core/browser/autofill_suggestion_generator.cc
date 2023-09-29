@@ -264,9 +264,9 @@ AutofillSuggestionGenerator::GetProfilesToSuggest(
   }
 
   std::vector<const AutofillProfile*> matched_profiles =
-      suggestion_selection::GetPrefixMatchedProfiles(
-          type, field_contents, field_contents_canon,
-          personal_data_->app_locale(), field_is_autofilled, sorted_profiles);
+      GetPrefixMatchedProfiles(
+          sorted_profiles, type, field_contents, field_contents_canon,
+          personal_data_->app_locale(), field_is_autofilled);
 
   const AutofillProfileComparator comparator(personal_data_->app_locale());
   // Don't show two suggestions if one is a subset of the other.
@@ -427,6 +427,52 @@ AutofillSuggestionGenerator::DeduplicatedProfilesForSuggestions(
     }
   }
   return unique_matched_profiles;
+}
+
+std::vector<const AutofillProfile*>
+AutofillSuggestionGenerator::GetPrefixMatchedProfiles(
+    const std::vector<AutofillProfile*>& profiles,
+    const AutofillType& trigger_field_type,
+    const std::u16string& raw_field_contents,
+    const std::u16string& field_contents_canon,
+    const std::string& app_locale,
+    bool field_is_autofilled) {
+  std::vector<const AutofillProfile*> matched_profiles;
+  for (const AutofillProfile* profile : profiles) {
+    if (matched_profiles.size() == kMaxSuggestedProfilesCount) {
+      break;
+    }
+    // Don't offer to fill the exact same value again. If detailed suggestions
+    // with different secondary data is available, it would appear to offer
+    // refilling the whole form with something else. E.g. the same name with a
+    // work and a home address would appear twice but a click would be a noop.
+    // TODO(fhorschig): Consider refilling form instead (at least on Android).
+#if BUILDFLAG(IS_ANDROID)
+    if (field_is_autofilled &&
+        profile->GetRawInfo(trigger_field_type.GetStorableType()) ==
+            raw_field_contents) {
+      continue;
+    }
+#endif  // BUILDFLAG(IS_ANDROID)
+
+    std::u16string main_text = suggestion_selection::GetSuggestionMainText(
+        profile, trigger_field_type, app_locale);
+
+    // Discard profiles that do not have a value for the trigger field.
+    if (main_text.empty()) {
+      continue;
+    }
+
+    std::u16string suggestion_canon =
+        suggestion_selection::NormalizeForComparisonForType(
+            main_text, trigger_field_type.GetStorableType());
+    if (suggestion_selection::IsValidSuggestionForFieldContents(
+            suggestion_canon, field_contents_canon, trigger_field_type,
+            /*is_masked_server_card=*/false, field_is_autofilled)) {
+      matched_profiles.push_back(profile);
+    }
+  }
+  return matched_profiles;
 }
 
 std::vector<Suggestion>

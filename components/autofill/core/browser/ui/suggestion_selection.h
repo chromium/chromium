@@ -19,8 +19,6 @@ class AutofillType;
 
 namespace suggestion_selection {
 
-extern const size_t kMaxSuggestedProfilesCount;
-
 // Sets the `popup_item_id` for `suggestion` depending on
 // `last_filling_granularity`. If the `last_filling_granularity` for a certain
 // form was group filling, also add labels to give users feedback about the next
@@ -58,17 +56,6 @@ std::u16string GetSuggestionMainText(const AutofillProfile* profile,
 // entered into.
 std::u16string NormalizeForComparisonForType(const std::u16string& text,
                                              ServerFieldType type);
-
-// Matches based on prefix search, and limits number of profiles.
-// Returns the top matching profiles based on prefix search. At most
-// `kMaxSuggestedProfilesCount` are returned.
-std::vector<const AutofillProfile*> GetPrefixMatchedProfiles(
-    const AutofillType& type,
-    const std::u16string& raw_field_contents,
-    const std::u16string& field_contents_canon,
-    const std::string& app_locale,
-    bool field_is_autofilled,
-    const std::vector<AutofillProfile*>& profiles);
 
 // Returns whether the `suggestion_canon` is a valid match given
 // `field_contents_canon`.

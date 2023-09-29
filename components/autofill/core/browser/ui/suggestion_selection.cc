@@ -282,10 +282,6 @@ void AddFooterChildSuggestions(
 
 }  // namespace
 
-// As of November 2018, 50 profiles should be more than enough to cover at least
-// 99% of all times the dropdown is shown.
-constexpr size_t kMaxSuggestedProfilesCount = 50;
-
 std::u16string GetSuggestionMainText(const AutofillProfile* profile,
                                      const AutofillType& type,
                                      const std::string& app_locale) {
@@ -385,48 +381,6 @@ std::u16string NormalizeForComparisonForType(const std::u16string& text,
     return RemoveDiacriticsAndConvertToLowerCase(text);
   }
   return AutofillProfileComparator::NormalizeForComparison(text);
-}
-
-std::vector<const AutofillProfile*> GetPrefixMatchedProfiles(
-    const AutofillType& type,
-    const std::u16string& raw_field_contents,
-    const std::u16string& field_contents_canon,
-    const std::string& app_locale,
-    bool field_is_autofilled,
-    const std::vector<AutofillProfile*>& profiles) {
-  std::vector<const AutofillProfile*> matched_profiles;
-
-  for (const AutofillProfile* profile : profiles) {
-    if (matched_profiles.size() == kMaxSuggestedProfilesCount) {
-      break;
-    }
-    // Don't offer to fill the exact same value again. If detailed suggestions
-    // with different secondary data is available, it would appear to offer
-    // refilling the whole form with something else. E.g. the same name with a
-    // work and a home address would appear twice but a click would be a noop.
-    // TODO(fhorschig): Consider refilling form instead (at least on Android).
-#if BUILDFLAG(IS_ANDROID)
-    if (field_is_autofilled &&
-        profile->GetRawInfo(type.GetStorableType()) == raw_field_contents) {
-      continue;
-    }
-#endif  // BUILDFLAG(IS_ANDROID)
-
-    std::u16string value = GetSuggestionMainText(profile, type, app_locale);
-    if (value.empty()) {
-      continue;
-    }
-
-    std::u16string suggestion_canon =
-        NormalizeForComparisonForType(value, type.GetStorableType());
-    if (IsValidSuggestionForFieldContents(
-            suggestion_canon, field_contents_canon, type,
-            /* is_masked_server_card= */ false, field_is_autofilled)) {
-      matched_profiles.push_back(profile);
-    }
-  }
-
-  return matched_profiles;
 }
 
 bool IsValidSuggestionForFieldContents(std::u16string suggestion_canon,
