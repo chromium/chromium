@@ -15285,28 +15285,6 @@
             ]
         }
     ],
-    "SendTabToSelfSigninPromo": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_3",
-                    "enable_features": [
-                        "SendTabToSelfSigninPromo"
-                    ]
-                }
-            ]
-        }
-    ],
     "SendTabToSelfV2": [
         {
             "platforms": [
