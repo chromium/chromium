@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/metrics/histogram_functions.h"
 #include "components/page_image_service/features.h"
 #include "components/page_image_service/metrics_util.h"
 #include "components/sync/service/sync_service.h"
@@ -21,6 +22,15 @@ void RunConsentThrottleCallback(
     bool success) {
   std::move(callback).Run(success ? PageImageServiceConsentStatus::kSuccess
                                   : PageImageServiceConsentStatus::kFailure);
+}
+
+PageImageServiceConsentStatus ConsentStatusToUmaStatus(
+    absl::optional<bool> consent_status) {
+  if (!consent_status) {
+    return PageImageServiceConsentStatus::kTimedOut;
+  }
+  return consent_status.value() ? PageImageServiceConsentStatus::kSuccess
+                                : PageImageServiceConsentStatus::kFailure;
 }
 
 }  // namespace
@@ -58,6 +68,7 @@ ImageServiceConsentHelper::~ImageServiceConsentHelper() = default;
 
 void ImageServiceConsentHelper::EnqueueRequest(
     base::OnceCallback<void(PageImageServiceConsentStatus)> callback) {
+  base::UmaHistogramBoolean("PageImageService.ConsentStatusRequestCount", true);
   if (consent_throttle_) {
     consent_throttle_->EnqueueRequest(
         base::BindOnce(&RunConsentThrottleCallback, std::move(callback)));
@@ -126,6 +137,10 @@ absl::optional<bool> ImageServiceConsentHelper::GetConsentStatus() {
 
 void ImageServiceConsentHelper::OnTimeoutExpired() {
   for (auto& request_callback : enqueued_request_callbacks_) {
+    // Report consent status on timeout for each request to compare against the
+    // number of all requests.
+    base::UmaHistogramEnumeration("PageImageService.ConsentStatusOnTimeout",
+                                  ConsentStatusToUmaStatus(GetConsentStatus()));
     std::move(request_callback).Run(PageImageServiceConsentStatus::kTimedOut);
   }
   enqueued_request_callbacks_.clear();

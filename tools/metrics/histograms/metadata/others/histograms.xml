@@ -9451,13 +9451,38 @@ chromium-metrics-reviews@google.com.
   <token key="ClientId" variants="PageImageServiceClientId"/>
 </histogram>
 
+<histogram name="PageImageService.ConsentStatusOnTimeout"
+    enum="PageImageServiceConsentStatus" expires_after="2024-02-20">
+  <owner>tommycli@chromium.org</owner>
+  <owner>chrome-journeys@google.com</owner>
+  <component>UI&gt;Browser&gt;Journeys</component>
+  <summary>
+    Records the result of the URL consent check after timeout has expired.
+    Recorded for each request which was enqueued by the time when timeout
+    happened.
+  </summary>
+</histogram>
+
+<histogram name="PageImageService.ConsentStatusRequestCount" enum="Boolean"
+    expires_after="2024-02-20">
+  <owner>tommycli@chromium.org</owner>
+  <owner>chrome-journeys@google.com</owner>
+  <component>UI&gt;Browser&gt;Journeys</component>
+  <summary>
+    Recorded on each URL consent check request. This metric is used to compare
+    numbers with consent check result in PageImageService.ConsentStatus.
+  </summary>
+</histogram>
+
 <histogram name="PageImageService.ConsentStatus{ClientId}"
     enum="PageImageServiceConsentStatus" expires_after="2024-02-20">
   <owner>tommycli@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
   <component>UI&gt;Browser&gt;Journeys</component>
   <summary>
-    Records the result of the URL consent check for this request.
+    Records the result of the URL consent check for this request. The number of
+    consent check requests is recorded in
+    PageImageService.ConsentStatusRequestCount.
 
     Note that only success and failure are captured if the &quot;old&quot;
     unified consent throttle is used.
