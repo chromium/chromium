@@ -1975,7 +1975,7 @@ deps = {
     Var('chromium_git') + '/external/github.com/gpuweb/cts.git' + '@' + 'f2b59e03621238d0d0fd6305be2c406ce3e45ac2',
 
   'src/third_party/webrtc':
-    Var('webrtc_git') + '/src.git' + '@' + '191dd8811f1d8d986411241a964b24805eb2e0de',
+    Var('webrtc_git') + '/src.git' + '@' + 'a61b334a12c7556c64887e1c553fd822d060881d',
 
   # Wuffs' canonical repository is at github.com/google/wuffs, but we use
   # Skia's mirror of Wuffs, the same as in upstream Skia's DEPS file.
