@@ -35,9 +35,6 @@ using storage::FileSystemURL;
 namespace ash::cloud_upload {
 namespace {
 
-constexpr char kUploadResultMetricName[] =
-    "FileBrowser.OfficeFiles.Open.UploadResult.OneDrive";
-
 // Runs the callback provided to `OneDriveUploadHandler::Upload`.
 void OnUploadDone(scoped_refptr<OneDriveUploadHandler> one_drive_upload_handler,
                   OneDriveUploadHandler::UploadCallback callback,
@@ -154,7 +151,7 @@ void OneDriveUploadHandler::Run(UploadCallback callback) {
 void OneDriveUploadHandler::OnEndUpload(
     base::expected<storage::FileSystemURL, std::string> url,
     OfficeFilesUploadResult result_metric) {
-  UMA_HISTOGRAM_ENUMERATION(kUploadResultMetricName, result_metric);
+  UMA_HISTOGRAM_ENUMERATION(kOneDriveUploadResultMetricName, result_metric);
   if (url.has_value()) {
     // Resolve notifications.
     if (notification_manager_) {

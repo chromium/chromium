@@ -74,6 +74,11 @@ constexpr char kOneDriveMoveErrorMetricName[] =
 constexpr char kOneDriveCopyErrorMetricName[] =
     "FileBrowser.OfficeFiles.Open.IOTaskError.OneDrive.Copy";
 
+constexpr char kDriveOpenSourceVolumeMetric[] =
+    "FileBrowser.OfficeFiles.Open.SourceVolume.GoogleDrive";
+constexpr char kOneDriveOpenSourceVolumeMetric[] =
+    "FileBrowser.OfficeFiles.Open.SourceVolume.MicrosoftOneDrive";
+
 constexpr char kDriveTransferRequiredMetric[] =
     "FileBrowser.OfficeFiles.Open.TransferRequired.GoogleDrive";
 constexpr char kOneDriveTransferRequiredMetric[] =
@@ -97,6 +102,17 @@ enum class OfficeOneDriveOpenErrors {
   kConversionToODFSUrlError = 11,
   kEmailsDoNotMatch = 12,
   kMaxValue = kEmailsDoNotMatch,
+};
+
+// Records the source volume that an office file is opened from. These values
+// represent the source volume types that are only relevant to office file
+// handling code - the rest are obtained from file_manager::VolumeType.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class OfficeFilesSourceVolume {
+  kUnknown = 100,
+  kMicrosoftOneDrive = 101,
 };
 
 // List of UMA enum value for Web Drive Office task results. The enum values

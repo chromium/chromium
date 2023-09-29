@@ -74,11 +74,6 @@ constexpr char kAndroidOneDriveAuthority[] =
     "com.microsoft.skydrive.content.StorageAccessProvider";
 constexpr char kNotificationId[] = "cloud_upload_open_failure";
 
-constexpr char kDriveOpenSourceVolumeMetric[] =
-    "FileBrowser.OfficeFiles.Open.SourceVolume.GoogleDrive";
-constexpr char kOneDriveOpenSourceVolumeMetric[] =
-    "FileBrowser.OfficeFiles.Open.SourceVolume.MicrosoftOneDrive";
-
 constexpr char kFileHandlerSelectionMetricName[] =
     "FileBrowser.OfficeFiles.Setup.FileHandlerSelection";
 
@@ -97,17 +92,6 @@ enum class OfficeSetupFileHandler {
   kOtherLocalHandler = 4,
   kQuickOffice = 5,
   kMaxValue = kQuickOffice,
-};
-
-// Records the source volume that an office file is opened from. These values
-// represent the source volume types that are only relevant to office file
-// handling code - the rest are obtained from file_manager::VolumeType.
-//
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class OfficeFilesSourceVolume {
-  kUnknown = 100,
-  kMicrosoftOneDrive = 101,
 };
 
 // Represents (as a bitmask) whether or not Microsoft 365 PWA and ODFS are set
