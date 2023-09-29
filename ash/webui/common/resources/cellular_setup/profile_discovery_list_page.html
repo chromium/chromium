@@ -4,10 +4,6 @@
       margin-top: -20px;
     }
 
-    profile-discovery-list-item {
-      height: 64px;
-    }
-
     #container {
       height: 230px;
       margin-top: 20px;
@@ -15,8 +11,9 @@
       overflow-y: auto;
     }
 
-    iron-list > *:not(:first-of-type) {
-      border-top: var(--cr-separator-line);
+    /* Override the styling used for the focused item */
+    [scrollable] iron-list > :not(.no-outline):focus {
+      background-color: transparent !important;
     }
   </style>
   <base-page>
