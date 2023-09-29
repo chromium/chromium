@@ -385,6 +385,7 @@ source_set("eg2_tests") {
     ":feature_flags",
     "//base",
     "//base/test:test_support",
+    "//build:branding_buildflags",
     "//components/feed/core/shared_prefs:feed_shared_prefs",
     "//components/feed/core/v2/public/ios:feed_ios_public",
     "//components/signin/internal/identity_manager",

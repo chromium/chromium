@@ -10,6 +10,7 @@
 #import "base/memory/ptr_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "build/branding_buildflags.h"
 #import "components/version_info/version_info.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
@@ -333,7 +334,15 @@ void LongPressAndDragTabInTabStrip(NSString* moving_tab_identifier,
 // Regression test for crbug.com/1482622. Tests that a pre-rendered tab doesn't
 // lead to an incorrect data source, as can be seen after opening a new tab in
 // the background before the pre-rendered tab.
-- (void)testOpenTabInTabStripBeforePrerenderedTab {
+// TODO(crbug.com/1487677): Test fails on official builds.
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#define MAYBE_testOpenTabInTabStripBeforePrerenderedTab \
+  DISABLED_testOpenTabInTabStripBeforePrerenderedTab
+#else
+#define MAYBE_testOpenTabInTabStripBeforePrerenderedTab \
+  testOpenTabInTabStripBeforePrerenderedTab
+#endif
+- (void)MAYBE_testOpenTabInTabStripBeforePrerenderedTab {
   if (![ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(
         @"Skipped for iPhone. The test makes use of the tab strip.");

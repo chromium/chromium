@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "build/branding_buildflags.h"
 #import "ios/chrome/browser/variations/variations_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
@@ -117,7 +118,14 @@
 //
 // Corresponds to VariationsSafeModeBrowserTest.ThreeCrashesTriggerSafeMode in
 // variations_safe_mode_browsertest.cc.
-- (void)testThreeCrashesTriggerSafeMode {
+// TODO(crbug.com/1487978): Test fails on official builds.
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#define MAYBE_testThreeCrashesTriggerSafeMode \
+  DISABLED_testThreeCrashesTriggerSafeMode
+#else
+#define MAYBE_testThreeCrashesTriggerSafeMode testThreeCrashesTriggerSafeMode
+#endif
+- (void)MAYBE_testThreeCrashesTriggerSafeMode {
   [VariationsAppInterface setTestSafeSeedAndSignature];
 
   // Persist the local state pref changes made above and in setUp().
@@ -194,7 +202,13 @@
 //
 // Corresponds to VariationsSafeModeBrowserTest.DoNotTriggerSafeMode in
 // variations_safe_mode_browsertest.cc.
-- (void)testDoNotTriggerSafeMode {
+// TODO(crbug.com/1487978): Test fails on official builds.
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#define MAYBE_testDoNotTriggerSafeMode DISABLED_testDoNotTriggerSafeMode
+#else
+#define MAYBE_testDoNotTriggerSafeMode testDoNotTriggerSafeMode
+#endif
+- (void)MAYBE_testDoNotTriggerSafeMode {
   [VariationsAppInterface setTestSafeSeedAndSignature];
   // Neither a crash streak of 2 nor a fetch failure streak of 24 will trigger
   // variations safe mode in the next session.

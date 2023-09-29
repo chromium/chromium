@@ -128,6 +128,7 @@ source_set("eg2_tests") {
     ":eg_test_support+eg2",
     "//base",
     "//base/test:test_support",
+    "//build:branding_buildflags",
     "//components/metrics",
     "//components/prefs",
     "//components/variations:test_support",

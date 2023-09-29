@@ -93,6 +93,7 @@ source_set("eg2_tests") {
   testonly = true
   sources = [ "prerender_egtest.mm" ]
   deps = [
+    "//build:branding_buildflags",
     "//components/version_info",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/ui/content_suggestions:constants",
