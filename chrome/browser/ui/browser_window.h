@@ -22,7 +22,6 @@
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/bookmarks/bookmark_bar.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_bubble_type.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
@@ -46,16 +45,16 @@
 #endif
 
 class Browser;
-class SharingDialog;
-struct SharingDialogData;
+class DownloadBubbleUIController;
 class DownloadShelf;
 class ExclusiveAccessContext;
 class ExtensionsContainer;
 class FindBar;
 class GURL;
 class LocationBar;
+class SharingDialog;
 class StatusBubble;
-class DownloadBubbleUIController;
+struct SharingDialogData;
 
 namespace autofill {
 class AutofillBubbleHandler;
@@ -75,10 +74,6 @@ namespace qrcode_generator {
 class QRCodeGeneratorBubbleView;
 }  // namespace qrcode_generator
 
-namespace signin_metrics {
-enum class AccessPoint;
-}
-
 namespace send_tab_to_self {
 class SendTabToSelfBubbleView;
 }  // namespace send_tab_to_self
@@ -87,6 +82,10 @@ namespace sharing_hub {
 class ScreenshotCapturedBubble;
 class SharingHubBubbleView;
 }  // namespace sharing_hub
+
+namespace signin_metrics {
+enum class AccessPoint;
+}
 
 namespace ui {
 class ColorProvider;
