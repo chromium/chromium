@@ -51,6 +51,13 @@ void RecordActionMetrics(TrackingProtectionOnboarding::NoticeAction action) {
   }
 }
 
+void ClearAllPrefs(PrefService* pref_service) {
+  pref_service->ClearPref(prefs::kTrackingProtectionOnboardingStatus);
+  pref_service->ClearPref(prefs::kTrackingProtectionEligibleSince);
+  pref_service->ClearPref(prefs::kTrackingProtectionOnboardedSince);
+  pref_service->ClearPref(prefs::kTrackingProtectionOnboardingAcked);
+}
+
 }  // namespace
 
 TrackingProtectionOnboarding::TrackingProtectionOnboarding(
@@ -69,6 +76,13 @@ TrackingProtectionOnboarding::TrackingProtectionOnboarding(
       base::BindRepeating(
           &TrackingProtectionOnboarding::OnOnboardingAckedChanged,
           base::Unretained(this)));
+
+  // If we're resetting eligibility, let's clear all our prefs first.
+  if (base::FeatureList::IsEnabled(
+          privacy_sandbox::
+              kTrackingProtectionOnboardingResetEligibilityForTesting)) {
+    ClearAllPrefs(pref_service_);
+  }
 
   // If we're forcing eligibility, then let' set it now.
   if (base::FeatureList::IsEnabled(

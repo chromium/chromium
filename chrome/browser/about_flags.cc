@@ -8359,6 +8359,16 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          privacy_sandbox::kTrackingProtectionOnboardingForceEligibility)},
 
+    {"tracking-protection-onboarding-reset-eligibility-for-testing",
+     flag_descriptions::
+         kTrackingProtectionOnboardingResetEligibilityForTestingName,
+     flag_descriptions::
+         kTrackingProtectionOnboardingResetEligibilityForTestingDescription,
+     kOsDesktop | kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         privacy_sandbox::
+             kTrackingProtectionOnboardingResetEligibilityForTesting)},
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {kClipboardHistoryLongpressInternalName,
      flag_descriptions::kClipboardHistoryLongpressName,

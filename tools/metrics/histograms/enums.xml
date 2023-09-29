@@ -64181,6 +64181,8 @@ from previous Chrome versions.
   <int value="-436470115" label="TouchpadAndWheelScrollLatching:enabled"/>
   <int value="-435914745" label="ClipboardContentSetting:disabled"/>
   <int value="-435636565" label="EnableLensPing:disabled"/>
+  <int value="-435410583"
+      label="TrackingProtectionOnboardingResetEligibilityForTesting:disabled"/>
   <int value="-434474445" label="OmniboxSteadyStateBackgroundColor:enabled"/>
   <int value="-433879402"
       label="EnableAmbientAuthenticationInIncognito:disabled"/>
@@ -65223,6 +65225,8 @@ from previous Chrome versions.
   <int value="79595680" label="OmniboxTabSwitchSuggestions:enabled"/>
   <int value="79729295" label="WebBundles:enabled"/>
   <int value="80036427" label="AutofillEnableCardProductName:disabled"/>
+  <int value="80225926"
+      label="TrackingProtectionOnboardingResetEligibilityForTesting:enabled"/>
   <int value="82303171" label="AccountIdMigration:disabled"/>
   <int value="82489049" label="AutofillSaveCardUiExperiment:enabled"/>
   <int value="82922831" label="NtpHistoryClustersModuleDiscounts:enabled"/>

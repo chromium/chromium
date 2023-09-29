@@ -3425,6 +3425,12 @@ const char kTrackingProtectionOnboardingForceEligibilityName[] =
 const char kTrackingProtectionOnboardingForceEligibilityDescription[] =
     "Enables the onboarding flow for Tracking Protections";
 
+const char kTrackingProtectionOnboardingResetEligibilityForTestingName[] =
+    "Reset Tracking Protection Onboarding";
+const char
+    kTrackingProtectionOnboardingResetEligibilityForTestingDescription[] =
+        "Resets the tracking protection onboarding profile data on startup";
+
 const char kUserBypassUIName[] = "User Bypass UI";
 const char kUserBypassUIDescription[] = "Enables the User Bypass UI. ";
 

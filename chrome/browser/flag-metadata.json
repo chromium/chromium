@@ -8076,6 +8076,14 @@
     "expiry_milestone": 125
   },
   {
+    "name": "tracking-protection-onboarding-reset-eligibility-for-testing",
+    "owners": [
+      "boujane@google.com",
+      "koilos@google.com"
+    ],
+    "expiry_milestone": 125
+  },
+  {
     "name": "traffic-counters",
     "owners": ["khorimoto", "cros-connectivity@google.com"],
     "expiry_milestone": 120
