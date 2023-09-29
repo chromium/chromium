@@ -15,7 +15,7 @@
 
 namespace blink {
 
-class HTMLFormElement;
+class Element;
 class HistoryItem;
 class SerializedScriptValue;
 
@@ -34,7 +34,7 @@ struct CORE_EXPORT NavigateEventDispatchParams
   const NavigateEventType event_type;
   const WebFrameLoadType frame_load_type;
   UserNavigationInvolvement involvement = UserNavigationInvolvement::kNone;
-  Member<HTMLFormElement> form;
+  Member<Element> source_element;
   scoped_refptr<SerializedScriptValue> state_object;
   Member<HistoryItem> destination_item;
   bool is_browser_initiated = false;

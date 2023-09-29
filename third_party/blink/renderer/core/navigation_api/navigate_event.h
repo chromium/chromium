@@ -67,6 +67,7 @@ class NavigateEvent final : public Event,
   String downloadRequest() const { return download_request_; }
   ScriptValue info() const { return info_; }
   bool hasUAVisualTransition() const { return has_ua_visual_transition_; }
+  Element* sourceElement() const { return source_element_; }
   void intercept(NavigationInterceptOptions*, ExceptionState&);
   void commit(ExceptionState&);
 
@@ -117,6 +118,7 @@ class NavigateEvent final : public Event,
   String download_request_;
   ScriptValue info_;
   bool has_ua_visual_transition_ = false;
+  Member<Element> source_element_;
   absl::optional<V8NavigationFocusReset> focus_reset_behavior_ = absl::nullopt;
   absl::optional<V8NavigationScrollBehavior> scroll_behavior_ = absl::nullopt;
   absl::optional<V8NavigationCommitBehavior> commit_behavior_ = absl::nullopt;

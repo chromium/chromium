@@ -154,7 +154,7 @@ inline FormSubmission::FormSubmission(
     const KURL& action,
     const AtomicString& target,
     const AtomicString& content_type,
-    HTMLFormElement* form,
+    Element* submitter,
     scoped_refptr<EncodedFormData> data,
     const Event* event,
     NavigationPolicy navigation_policy,
@@ -172,7 +172,7 @@ inline FormSubmission::FormSubmission(
       action_(action),
       target_(target),
       content_type_(content_type),
-      form_(form),
+      submitter_(submitter),
       form_data_(std::move(data)),
       navigation_policy_(navigation_policy),
       triggering_event_info_(triggering_event_info),
@@ -324,7 +324,11 @@ FormSubmission* FormSubmission::Create(HTMLFormElement* form,
                                  *resource_request);
   frame_request.SetNavigationPolicy(NavigationPolicyFromEvent(event));
   frame_request.SetClientRedirectReason(reason);
-  frame_request.SetForm(form);
+  if (submit_button) {
+    frame_request.SetSourceElement(submit_button);
+  } else {
+    frame_request.SetSourceElement(form);
+  }
   frame_request.SetTriggeringEventInfo(triggering_event_info);
   AtomicString target_or_base_target = frame_request.CleanNavigationTarget(
       copied_attributes.Target().empty() ? document.BaseTarget()
@@ -365,8 +369,8 @@ FormSubmission* FormSubmission::Create(HTMLFormElement* form,
 
   return MakeGarbageCollected<FormSubmission>(
       copied_attributes.Method(), action_url, target_or_base_target,
-      encoding_type, form, std::move(form_data), event,
-      frame_request.GetNavigationPolicy(), triggering_event_info, reason,
+      encoding_type, frame_request.GetSourceElement(), std::move(form_data),
+      event, frame_request.GetNavigationPolicy(), triggering_event_info, reason,
       std::move(resource_request), target_frame, load_type,
       form->GetDocument().domWindow(),
       form->GetDocument().GetFrame()->GetLocalFrameToken(),
@@ -378,7 +382,7 @@ FormSubmission* FormSubmission::Create(HTMLFormElement* form,
 }
 
 void FormSubmission::Trace(Visitor* visitor) const {
-  visitor->Trace(form_);
+  visitor->Trace(submitter_);
   visitor->Trace(target_frame_);
   visitor->Trace(origin_window_);
 }
@@ -387,7 +391,7 @@ void FormSubmission::Navigate() {
   FrameLoadRequest frame_request(origin_window_.Get(), *resource_request_);
   frame_request.SetNavigationPolicy(navigation_policy_);
   frame_request.SetClientRedirectReason(reason_);
-  frame_request.SetForm(form_);
+  frame_request.SetSourceElement(submitter_);
   frame_request.SetTriggeringEventInfo(triggering_event_info_);
   frame_request.SetInitiatorFrameToken(initiator_frame_token_);
   frame_request.SetInitiatorPolicyContainerKeepAliveHandle(

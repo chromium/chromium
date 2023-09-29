@@ -494,7 +494,6 @@ void HTMLFormElement::ScheduleFormSubmission(
   DCHECK(form_submission->Method() == FormSubmission::kPostMethod ||
          form_submission->Method() == FormSubmission::kGetMethod);
   DCHECK(form_submission->Data());
-  DCHECK(form_submission->Form());
   if (form_submission->Action().IsEmpty())
     return;
   if (GetExecutionContext()->IsSandboxed(

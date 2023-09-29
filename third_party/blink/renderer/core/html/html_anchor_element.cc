@@ -470,6 +470,7 @@ void HTMLAnchorElement::NavigateToHyperlink(ResourceRequest request,
   FrameLoadRequest frame_request(window, request);
   frame_request.SetNavigationPolicy(navigation_policy);
   frame_request.SetClientRedirectReason(ClientNavigationReason::kAnchorClick);
+  frame_request.SetSourceElement(this);
   const AtomicString& target =
       frame_request.CleanNavigationTarget(GetEffectiveTarget());
   if (HasRel(kRelationNoReferrer)) {
@@ -624,6 +625,7 @@ void HTMLAnchorElement::HandleClick(Event& event) {
     if (event.isTrusted())
       params->involvement = UserNavigationInvolvement::kActivation;
     params->download_filename = download_attr;
+    params->source_element = this;
     if (window->navigation()->DispatchNavigateEvent(params) !=
         NavigationApi::DispatchResult::kContinue) {
       return;

@@ -702,8 +702,8 @@ void FrameLoader::StartNavigation(FrameLoadRequest& request,
                                       frame_load_type,
                                       IsOnInitialEmptyDocument()),
         resource_request.HasUserGesture(), origin_window->GetSecurityOrigin(),
-        /*is_synchronously_committed=*/true, request.GetTriggeringEventInfo(),
-        /*is_browser_initiated=*/false,
+        /*is_synchronously_committed=*/true, request.GetSourceElement(),
+        request.GetTriggeringEventInfo(), /*is_browser_initiated=*/false,
         /*soft_navigation_heuristics_task_id=*/absl::nullopt);
     return;
   }
@@ -785,7 +785,7 @@ void FrameLoader::StartNavigation(FrameLoadRequest& request,
                              frame_->DomWindow()->GetSecurityOrigin()))) {
     auto* params = MakeGarbageCollected<NavigateEventDispatchParams>(
         url, NavigateEventType::kCrossDocument, frame_load_type);
-    params->form = request.Form();
+    params->source_element = request.GetSourceElement();
     if (request.GetTriggeringEventInfo() ==
         mojom::blink::TriggeringEventInfo::kFromTrustedEvent) {
       params->involvement = UserNavigationInvolvement::kActivation;

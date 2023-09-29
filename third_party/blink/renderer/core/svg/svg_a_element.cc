@@ -141,6 +141,7 @@ void SVGAElement::DefaultEventHandler(Event& event) {
       frame_request.SetNavigationPolicy(NavigationPolicyFromEvent(&event));
       frame_request.SetClientRedirectReason(
           ClientNavigationReason::kAnchorClick);
+      frame_request.SetSourceElement(this);
       frame_request.SetTriggeringEventInfo(
           event.isTrusted()
               ? mojom::blink::TriggeringEventInfo::kFromTrustedEvent

@@ -8136,7 +8136,7 @@ TEST_F(WebFrameTest, SameDocumentHistoryNavigationCommitType) {
       item->Url(), WebFrameLoadType::kBackForward, item.Get(),
       ClientRedirectPolicy::kNotClientRedirect,
       false /* has_transient_user_activation */, /*initiator_origin=*/nullptr,
-      /*is_synchronously_committed=*/false,
+      /*is_synchronously_committed=*/false, /*source_element=*/nullptr,
       mojom::blink::TriggeringEventInfo::kNotFromEvent,
       /*is_browser_initiated=*/true,
       /*soft_navigation_heuristics_task_id=*/absl::nullopt);

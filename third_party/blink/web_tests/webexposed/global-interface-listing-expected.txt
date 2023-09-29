@@ -6333,6 +6333,7 @@ interface NavigateEvent : Event
     getter info
     getter navigationType
     getter signal
+    getter sourceElement
     getter userInitiated
     method commit
     method constructor

@@ -92,7 +92,7 @@ TEST_F(NavigationApiTest, BrowserInitiatedSameDocumentBackForward) {
       url, WebFrameLoadType::kBackForward, MakeHistoryItemFor(url, key),
       ClientRedirectPolicy::kNotClientRedirect,
       false /* has_transient_user_activation */, nullptr /* initiator_origin */,
-      false /* is_synchronously_committed */,
+      false /* is_synchronously_committed */, /*source_element=*/nullptr,
       mojom::blink::TriggeringEventInfo::kNotFromEvent,
       true /* is_browser_initiated */, absl::nullopt);
   EXPECT_EQ(result1, mojom::blink::CommitResult::Ok);
@@ -105,7 +105,7 @@ TEST_F(NavigationApiTest, BrowserInitiatedSameDocumentBackForward) {
       url, WebFrameLoadType::kBackForward, MakeHistoryItemFor(url, key),
       ClientRedirectPolicy::kNotClientRedirect,
       false /* has_transient_user_activation */, nullptr /* initiator_origin */,
-      false /* is_synchronously_committed */,
+      false /* is_synchronously_committed */, /*source_element=*/nullptr,
       mojom::blink::TriggeringEventInfo::kNotFromEvent,
       true /* is_browser_initiated */, absl::nullopt);
   EXPECT_EQ(result2, mojom::blink::CommitResult::Aborted);
@@ -116,7 +116,7 @@ TEST_F(NavigationApiTest, BrowserInitiatedSameDocumentBackForward) {
       url, WebFrameLoadType::kBackForward, MakeHistoryItemFor(url, key),
       ClientRedirectPolicy::kNotClientRedirect,
       false /* has_transient_user_activation */, nullptr /* initiator_origin */,
-      false /* is_synchronously_committed */,
+      false /* is_synchronously_committed */, /*source_element=*/nullptr,
       mojom::blink::TriggeringEventInfo::kNotFromEvent,
       true /* is_browser_initiated */, absl::nullopt);
   EXPECT_EQ(result3, mojom::blink::CommitResult::Ok);
@@ -152,7 +152,7 @@ TEST_F(NavigationApiTest, BrowserInitiatedSameDocumentBackForwardUncancelable) {
       url, WebFrameLoadType::kBackForward, MakeHistoryItemFor(url, key),
       ClientRedirectPolicy::kNotClientRedirect,
       /*has_transient_user_activation=*/false, /*initiator_origin=*/nullptr,
-      /*is_synchronously_committed=*/false,
+      /*is_synchronously_committed=*/false, /*source_element=*/nullptr,
       mojom::blink::TriggeringEventInfo::kNotFromEvent,
       /*is_browser_initiated=*/true,
       /*soft_navigation_heuristics_task_id=*/absl::nullopt);
@@ -185,7 +185,7 @@ TEST_F(NavigationApiTest, BrowserInitiatedSameDocumentBackForwardWindowStop) {
       url, WebFrameLoadType::kBackForward, MakeHistoryItemFor(url, key),
       ClientRedirectPolicy::kNotClientRedirect,
       false /* has_transient_user_activation */, nullptr /* initiator_origin */,
-      false /* is_synchronously_committed */,
+      false /* is_synchronously_committed */, /*source_element=*/nullptr,
       mojom::blink::TriggeringEventInfo::kNotFromEvent,
       true /* is_browser_initiated */, absl::nullopt);
   EXPECT_EQ(result1, mojom::blink::CommitResult::Ok);
@@ -198,7 +198,7 @@ TEST_F(NavigationApiTest, BrowserInitiatedSameDocumentBackForwardWindowStop) {
       url, WebFrameLoadType::kBackForward, MakeHistoryItemFor(url, key),
       ClientRedirectPolicy::kNotClientRedirect,
       false /* has_transient_user_activation */, nullptr /* initiator_origin */,
-      false /* is_synchronously_committed */,
+      false /* is_synchronously_committed */, /*source_element=*/nullptr,
       mojom::blink::TriggeringEventInfo::kNotFromEvent,
       true /* is_browser_initiated */, absl::nullopt);
   EXPECT_EQ(result2, mojom::blink::CommitResult::Aborted);
@@ -209,7 +209,7 @@ TEST_F(NavigationApiTest, BrowserInitiatedSameDocumentBackForwardWindowStop) {
       url, WebFrameLoadType::kBackForward, MakeHistoryItemFor(url, key),
       ClientRedirectPolicy::kNotClientRedirect,
       false /* has_transient_user_activation */, nullptr /* initiator_origin */,
-      false /* is_synchronously_committed */,
+      false /* is_synchronously_committed */, /*source_element=*/nullptr,
       mojom::blink::TriggeringEventInfo::kNotFromEvent,
       true /* is_browser_initiated */, absl::nullopt);
   EXPECT_EQ(result3, mojom::blink::CommitResult::Ok);

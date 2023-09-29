@@ -746,8 +746,18 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
 
   init->setUserInitiated(params->involvement !=
                          UserNavigationInvolvement::kNone);
-  if (params->form && params->form->Method() == FormSubmission::kPostMethod) {
-    init->setFormData(FormData::Create(params->form, ASSERT_NO_EXCEPTION));
+  if (params->source_element) {
+    HTMLFormElement* form =
+        DynamicTo<HTMLFormElement>(params->source_element.Get());
+    if (!form) {
+      if (auto* control =
+              DynamicTo<HTMLFormControlElement>(params->source_element.Get())) {
+        form = control->formOwner();
+      }
+    }
+    if (form && form->Method() == FormSubmission::kPostMethod) {
+      init->setFormData(FormData::Create(form, ASSERT_NO_EXCEPTION));
+    }
   }
   if (ongoing_api_method_tracker_) {
     init->setInfo(ongoing_api_method_tracker_->GetInfo());
@@ -755,6 +765,10 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
   auto* controller = AbortController::Create(script_state);
   init->setSignal(controller->signal());
   init->setDownloadRequest(params->download_filename);
+  if (params->source_element &&
+      params->source_element->GetExecutionContext() == window_) {
+    init->setSourceElement(params->source_element);
+  }
   // This unique_ptr needs to be in the function's scope, to maintain the
   // SoftNavigationEventScope until the event handler runs.
   std::unique_ptr<SoftNavigationEventScope> soft_navigation_scope;

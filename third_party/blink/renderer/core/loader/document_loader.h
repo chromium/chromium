@@ -103,6 +103,7 @@ class ContentSecurityPolicy;
 class CodeCacheHost;
 class Document;
 class DocumentParser;
+class Element;
 class Frame;
 class FrameLoader;
 class HistoryItem;
@@ -300,6 +301,7 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
       bool has_transient_user_activation,
       const SecurityOrigin* initiator_origin,
       bool is_synchronously_committed,
+      Element* source_element,
       mojom::blink::TriggeringEventInfo,
       bool is_browser_initiated,
       absl::optional<scheduler::TaskAttributionId>

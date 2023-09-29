@@ -70,7 +70,8 @@ NavigateEvent::NavigateEvent(ExecutionContext* context,
                 ? init->info()
                 : ScriptValue(context->GetIsolate(),
                               v8::Undefined(context->GetIsolate()))),
-      has_ua_visual_transition_(init->hasUAVisualTransition()) {
+      has_ua_visual_transition_(init->hasUAVisualTransition()),
+      source_element_(init->sourceElement()) {
   CHECK(IsA<LocalDOMWindow>(context));
   CHECK(!controller_ || controller_->signal() == signal_);
 }
@@ -501,6 +502,7 @@ void NavigateEvent::Trace(Visitor* visitor) const {
   visitor->Trace(signal_);
   visitor->Trace(form_data_);
   visitor->Trace(info_);
+  visitor->Trace(source_element_);
   visitor->Trace(navigation_action_promises_list_);
   visitor->Trace(navigation_action_handlers_list_);
 }

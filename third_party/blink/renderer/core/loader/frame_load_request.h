@@ -51,6 +51,7 @@
 
 namespace blink {
 
+class Element;
 class HTMLFormElement;
 class LocalDOMWindow;
 class KURL;
@@ -118,8 +119,9 @@ struct CORE_EXPORT FrameLoadRequest {
     source_location_ = std::move(source_location);
   }
 
-  HTMLFormElement* Form() const { return form_; }
-  void SetForm(HTMLFormElement* form) { form_ = form; }
+  HTMLFormElement* Form() const;
+  Element* GetSourceElement() const { return source_element_; }
+  void SetSourceElement(Element* element) { source_element_ = element; }
 
   ShouldSendReferrer GetShouldSendReferrer() const {
     return should_send_referrer_;
@@ -229,7 +231,7 @@ struct CORE_EXPORT FrameLoadRequest {
   NavigationPolicy navigation_policy_ = kNavigationPolicyCurrentTab;
   mojom::blink::TriggeringEventInfo triggering_event_info_ =
       mojom::blink::TriggeringEventInfo::kNotFromEvent;
-  HTMLFormElement* form_ = nullptr;
+  Element* source_element_ = nullptr;
   ShouldSendReferrer should_send_referrer_;
   scoped_refptr<const DOMWrapperWorld> world_;
   scoped_refptr<base::RefCountedData<mojo::Remote<mojom::blink::BlobURLToken>>>

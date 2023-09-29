@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/events/current_input_event.h"
 #include "third_party/blink/renderer/core/fileapi/public_url_manager.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
@@ -120,6 +121,16 @@ FrameLoadRequest::FrameLoadRequest(
     LocalDOMWindow* origin_window,
     const ResourceRequestHead& resource_request_head)
     : FrameLoadRequest(origin_window, ResourceRequest(resource_request_head)) {}
+
+HTMLFormElement* FrameLoadRequest::Form() const {
+  if (IsA<HTMLFormElement>(source_element_)) {
+    return To<HTMLFormElement>(source_element_);
+  }
+  if (IsA<HTMLFormControlElement>(source_element_)) {
+    return To<HTMLFormControlElement>(source_element_)->formOwner();
+  }
+  return nullptr;
+}
 
 bool FrameLoadRequest::CanDisplay(const KURL& url) const {
   DCHECK(!origin_window_ || origin_window_->GetSecurityOrigin() ==

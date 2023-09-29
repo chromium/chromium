@@ -1404,6 +1404,7 @@ mojom::CommitResult DocumentLoader::CommitSameDocumentNavigation(
     bool has_transient_user_activation,
     const SecurityOrigin* initiator_origin,
     bool is_synchronously_committed,
+    Element* source_element,
     mojom::blink::TriggeringEventInfo triggering_event_info,
     bool is_browser_initiated,
     absl::optional<scheduler::TaskAttributionId>
@@ -1470,6 +1471,7 @@ mojom::CommitResult DocumentLoader::CommitSameDocumentNavigation(
                mojom::blink::TriggeringEventInfo::kFromTrustedEvent) {
       params->involvement = UserNavigationInvolvement::kActivation;
     }
+    params->source_element = source_element;
     params->destination_item = history_item;
     params->is_browser_initiated = is_browser_initiated;
     params->is_synchronously_committed_same_document =
