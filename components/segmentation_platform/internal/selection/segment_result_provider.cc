@@ -32,16 +32,6 @@ float ComputeDiscreteMapping(const std::string& discrete_mapping_key,
   return rank;
 }
 
-const proto::SegmentInfo* FilterSegmentInfoBySource(
-    const std::map<ModelSource, SegmentInfo>& available_segments,
-    ModelSource needed_source) {
-  auto it = available_segments.find(needed_source);
-  if (it == available_segments.end()) {
-    return nullptr;
-  }
-  return &it->second;
-}
-
 class SegmentResultProviderImpl : public SegmentResultProvider {
  public:
   SegmentResultProviderImpl(SegmentInfoDatabase* segment_database,
@@ -67,13 +57,8 @@ class SegmentResultProviderImpl : public SegmentResultProvider {
     std::unordered_map<ModelSource,
                        raw_ptr<ModelProvider, AcrossTasksDanglingUntriaged>>
         model_providers;
-    std::map<ModelSource, SegmentInfo> copied_segment_info;
     std::unique_ptr<GetResultOptions> options;
   };
-
-  void OnGetSegmentInfo(
-      std::unique_ptr<GetResultOptions> options,
-      std::unique_ptr<SegmentInfoDatabase::SegmentInfoList> available_segments);
 
   // TODO (b/294267021) : Refactor this enum to give fallback source to execute.
   // `fallback_action` tells us whether to get score from database or execute
@@ -127,20 +112,8 @@ class SegmentResultProviderImpl : public SegmentResultProvider {
 void SegmentResultProviderImpl::GetSegmentResult(
     std::unique_ptr<GetResultOptions> options) {
   const SegmentId segment_id = options->segment_id;
-  auto available_segments =
-      segment_database_->GetSegmentInfoForBothModels({segment_id});
-  OnGetSegmentInfo(std::move(options), std::move(available_segments));
-}
-
-void SegmentResultProviderImpl::OnGetSegmentInfo(
-    std::unique_ptr<GetResultOptions> options,
-    std::unique_ptr<SegmentInfoDatabase::SegmentInfoList> available_segments) {
-  const SegmentId segment_id = options->segment_id;
   auto request_state = std::make_unique<RequestState>();
   request_state->options = std::move(options);
-  for (const auto& it : *available_segments) {
-    request_state->copied_segment_info[it.second->model_source()] = *it.second;
-  }
   request_state->model_providers[ModelSource::SERVER_MODEL_SOURCE] =
       execution_service_ ? execution_service_->GetModelProvider(
                                segment_id, ModelSource::SERVER_MODEL_SOURCE)
@@ -250,8 +223,8 @@ void SegmentResultProviderImpl::GetCachedModelScore(
     std::unique_ptr<RequestState> request_state,
     ModelSource model_source,
     ResultCallbackWithState callback) {
-  const proto::SegmentInfo* db_segment_info = FilterSegmentInfoBySource(
-      request_state->copied_segment_info, model_source);
+  const auto* db_segment_info = segment_database_->GetCachedSegmentInfo(
+      request_state->options->segment_id, model_source);
   if (!db_segment_info) {
     VLOG(1) << __func__ << ": segment="
             << SegmentId_Name(request_state->options->segment_id)
@@ -301,8 +274,8 @@ void SegmentResultProviderImpl::ExecuteModelAndGetScore(
     std::unique_ptr<RequestState> request_state,
     ModelSource model_source,
     ResultCallbackWithState callback) {
-  const proto::SegmentInfo* segment_info = FilterSegmentInfoBySource(
-      request_state->copied_segment_info, model_source);
+  const auto* segment_info = segment_database_->GetCachedSegmentInfo(
+      request_state->options->segment_id, model_source);
   if (!segment_info) {
     VLOG(1) << __func__ << ": segment="
             << SegmentId_Name(request_state->options->segment_id)
@@ -333,11 +306,9 @@ void SegmentResultProviderImpl::ExecuteModelAndGetScore(
 
   ModelProvider* provider = request_state->model_providers[model_source];
   auto request = std::make_unique<ExecutionRequest>();
-  // The pointer is kept alive by the `request_state`.
-  request->segment_info = segment_info;
-  request->record_metrics_for_default =
-      model_source == ModelSource::DEFAULT_MODEL_SOURCE;
   request->input_context = request_state->options->input_context;
+  request->segment_id = segment_info->segment_id();
+  request->model_source = model_source;
 
   request->callback =
       base::BindOnce(&SegmentResultProviderImpl::OnModelExecuted,
@@ -353,16 +324,22 @@ void SegmentResultProviderImpl::OnModelExecuted(
     ModelSource model_source,
     ResultCallbackWithState callback,
     std::unique_ptr<ModelExecutionResult> result) {
-  const proto::SegmentInfo* segment_info = FilterSegmentInfoBySource(
-      request_state->copied_segment_info, model_source);
-
+  SegmentId segment_id = request_state->options->segment_id;
   ResultState state = ResultState::kUnknown;
   proto::PredictionResult prediction_result;
   std::unique_ptr<SegmentResult> segment_result;
 
+  const auto* segment_info =
+      segment_database_->GetCachedSegmentInfo(segment_id, model_source);
+  if (!segment_info) {
+    RunCallback(segment_id, std::move(request_state), std::move(segment_result),
+                std::move(callback), /*success=*/false);
+    return;
+  }
+
+  bool is_default_model = model_source == ModelSource::DEFAULT_MODEL_SOURCE;
   bool success = result->status == ModelExecutionStatus::kSuccess &&
                  !result->scores.empty();
-  bool is_default_model = model_source == ModelSource::DEFAULT_MODEL_SOURCE;
 
   if (success) {
     state = is_default_model ? ResultState::kDefaultModelExecutionScoreUsed
@@ -379,30 +356,28 @@ void SegmentResultProviderImpl::OnModelExecuted(
             << " model executed successfully. Result: "
             << segmentation_platform::PredictionResultToDebugString(
                    prediction_result)
-            << " for segment "
-            << proto::SegmentId_Name(request_state->options->segment_id);
+            << " for segment " << proto::SegmentId_Name(segment_id);
   } else {
     state = is_default_model ? ResultState::kDefaultModelExecutionFailed
                              : ResultState::kServerModelExecutionFailed;
     segment_result = std::make_unique<SegmentResult>(state);
     VLOG(1) << __func__ << ": " << (is_default_model ? "Default" : "Server")
             << " model execution failed"
-            << " for segment "
-            << proto::SegmentId_Name(request_state->options->segment_id);
+            << " for segment " << proto::SegmentId_Name(segment_id);
   }
 
   if (request_state->options->save_results_to_db) {
     segment_database_->SaveSegmentResult(
-        segment_info->segment_id(), model_source,
+        segment_id, model_source,
         success ? absl::make_optional(prediction_result) : absl::nullopt,
         base::BindOnce(&SegmentResultProviderImpl::RunCallback,
-                       weak_ptr_factory_.GetWeakPtr(),
-                       segment_info->segment_id(), std::move(request_state),
-                       std::move(segment_result), std::move(callback)));
+                       weak_ptr_factory_.GetWeakPtr(), segment_id,
+                       std::move(request_state), std::move(segment_result),
+                       std::move(callback)));
     return;
   }
-  RunCallback(segment_info->segment_id(), std::move(request_state),
-              std::move(segment_result), std::move(callback), success);
+  RunCallback(segment_id, std::move(request_state), std::move(segment_result),
+              std::move(callback), success);
 }
 
 void SegmentResultProviderImpl::PostResultCallback(

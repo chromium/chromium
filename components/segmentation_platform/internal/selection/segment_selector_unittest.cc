@@ -144,7 +144,8 @@ class SegmentSelectorTest : public testing::Test {
     mock_model_manager_ = std::make_unique<MockModelManager>();
     execution_service_->InitForTesting(
         std::move(query_processor),
-        std::make_unique<ModelExecutorImpl>(&clock_, mock_query_processor_),
+        std::make_unique<ModelExecutorImpl>(&clock_, segment_database_.get(),
+                                            mock_query_processor_),
         nullptr, mock_model_manager_.get());
   }
 

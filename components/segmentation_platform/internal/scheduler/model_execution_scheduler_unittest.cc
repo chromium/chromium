@@ -90,7 +90,7 @@ class ModelExecutionSchedulerTest : public testing::Test {
 };
 
 MATCHER_P(IsForTarget, segment_id, "") {
-  return arg->segment_info->segment_id() == segment_id;
+  return arg->segment_id == segment_id;
 }
 
 TEST_F(ModelExecutionSchedulerTest, OnNewModelInfoReady) {

@@ -54,6 +54,7 @@ class ModelExecutorTest : public testing::Test {
   ~ModelExecutorTest() override = default;
 
   void SetUp() override {
+    segment_database_ = std::make_unique<test::TestSegmentInfoDatabase>();
     signal_database_ = std::make_unique<MockSignalDatabase>();
     clock_.SetNow(base::Time::Now());
   }
@@ -63,13 +64,15 @@ class ModelExecutorTest : public testing::Test {
     // Allow for the SegmentationModelExecutor owned by ModelProvider
     // to be destroyed.
     RunUntilIdle();
+    segment_database_.reset();
+    signal_database_.reset();
   }
 
   void CreateModelExecutor() {
     feature_list_query_processor_ =
         std::make_unique<processing::MockFeatureListQueryProcessor>();
     model_executor_ = std::make_unique<ModelExecutorImpl>(
-        &clock_, feature_list_query_processor_.get());
+        &clock_, segment_database_.get(), feature_list_query_processor_.get());
   }
 
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
@@ -77,9 +80,12 @@ class ModelExecutorTest : public testing::Test {
   void ExecuteModel(const proto::SegmentInfo& info,
                     ModelProvider* model,
                     std::unique_ptr<ModelExecutionResult> expected) {
+    segment_database_->UpdateSegment(info.segment_id(), info.model_source(),
+                                     info, base::DoNothing());
     base::RunLoop loop;
     auto request = std::make_unique<ExecutionRequest>();
-    request->segment_info = &info;
+    request->segment_id = info.segment_id();
+    request->model_source = info.model_source();
     request->model_provider = model;
     request->save_result_to_db = false;
     request->callback = base::BindOnce(&ModelExecutorTest::OnExecutionCallback,
@@ -103,6 +109,7 @@ class ModelExecutorTest : public testing::Test {
 
   MockModelProvider mock_model_;
   base::SimpleTestClock clock_;
+  std::unique_ptr<test::TestSegmentInfoDatabase> segment_database_;
   std::unique_ptr<MockSignalDatabase> signal_database_;
 
   std::unique_ptr<processing::MockFeatureListQueryProcessor>
@@ -114,6 +121,7 @@ TEST_F(ModelExecutorTest, MetadataTests) {
   CreateModelExecutor();
   proto::SegmentInfo segment_info;
   segment_info.set_segment_id(kSegmentId);
+  segment_info.set_model_source(ModelSource::SERVER_MODEL_SOURCE);
 
   EXPECT_CALL(mock_model_, ModelAvailable()).WillRepeatedly(Return(true));
   ExecuteModel(segment_info, &mock_model_,
@@ -134,6 +142,7 @@ TEST_F(ModelExecutorTest, ModelNotReady) {
 
   proto::SegmentInfo segment_info;
   segment_info.set_segment_id(kSegmentId);
+  segment_info.set_model_source(ModelSource::SERVER_MODEL_SOURCE);
   auto& model_metadata = *segment_info.mutable_model_metadata();
   model_metadata.set_bucket_duration(14);
   model_metadata.set_time_unit(proto::TimeUnit::UNKNOWN_TIME_UNIT);
@@ -150,12 +159,11 @@ TEST_F(ModelExecutorTest, FailedFeatureProcessing) {
   CreateModelExecutor();
 
   // Initialize with required metadata.
-  test::TestSegmentInfoDatabase metadata_writer;
   const SegmentId segment_id = kSegmentId;
-  metadata_writer.SetBucketDuration(segment_id, 3, proto::TimeUnit::HOUR);
+  segment_database_->SetBucketDuration(segment_id, 3, proto::TimeUnit::HOUR);
   std::string user_action_name = "some_user_action";
-  metadata_writer.AddUserActionFeature(segment_id, user_action_name, 3, 3,
-                                       proto::Aggregation::BUCKETED_COUNT);
+  segment_database_->AddUserActionFeature(segment_id, user_action_name, 3, 3,
+                                          proto::Aggregation::BUCKETED_COUNT);
 
   EXPECT_CALL(*feature_list_query_processor_,
               ProcessFeatureList(
@@ -169,7 +177,8 @@ TEST_F(ModelExecutorTest, FailedFeatureProcessing) {
   EXPECT_CALL(mock_model_, ModelAvailable()).WillRepeatedly(Return(true));
   EXPECT_CALL(mock_model_, ExecuteModelWithInput(_, _)).Times(0);
 
-  ExecuteModel(*metadata_writer.FindOrCreateSegment(segment_id), &mock_model_,
+  ExecuteModel(*segment_database_->FindOrCreateSegment(segment_id),
+               &mock_model_,
                std::make_unique<ModelExecutionResult>(
                    ModelExecutionStatus::kSkippedInvalidMetadata));
 
@@ -179,7 +188,8 @@ TEST_F(ModelExecutorTest, FailedFeatureProcessing) {
                   FeatureListQueryProcessor::ProcessOption::kInputsOnly, _))
       .WillOnce(RunOnceCallback<6>(/*error=*/true, ModelProvider::Request(),
                                    ModelProvider::Response()));
-  ExecuteModel(*metadata_writer.FindOrCreateSegment(segment_id), &mock_model_,
+  ExecuteModel(*segment_database_->FindOrCreateSegment(segment_id),
+               &mock_model_,
                std::make_unique<ModelExecutionResult>(
                    ModelExecutionStatus::kSkippedInvalidMetadata));
 }
@@ -188,11 +198,10 @@ TEST_F(ModelExecutorTest, ExecuteModelWithMultipleFeatures) {
   CreateModelExecutor();
 
   // Initialize with required metadata.
-  test::TestSegmentInfoDatabase metadata_writer;
-  metadata_writer.SetBucketDuration(kSegmentId, 3, proto::TimeUnit::HOUR);
+  segment_database_->SetBucketDuration(kSegmentId, 3, proto::TimeUnit::HOUR);
   std::string user_action_name = "some_user_action";
-  metadata_writer.AddUserActionFeature(kSegmentId, user_action_name, 3, 3,
-                                       proto::Aggregation::BUCKETED_COUNT);
+  segment_database_->AddUserActionFeature(kSegmentId, user_action_name, 3, 3,
+                                          proto::Aggregation::BUCKETED_COUNT);
   const ModelProvider::Request inputs{1, 2, 3, 4, 5, 6, 7};
 
   EXPECT_CALL(*feature_list_query_processor_,
@@ -209,7 +218,7 @@ TEST_F(ModelExecutorTest, ExecuteModelWithMultipleFeatures) {
           RunOnceCallback<1>(absl::optional<ModelProvider::Response>{{0.8}}));
 
   ExecuteModel(
-      *metadata_writer.FindOrCreateSegment(kSegmentId), &mock_model_,
+      *segment_database_->FindOrCreateSegment(kSegmentId), &mock_model_,
       std::make_unique<ModelExecutionResult>(ModelProvider::Request(inputs),
                                              ModelProvider::Response(1, 0.8)));
 }

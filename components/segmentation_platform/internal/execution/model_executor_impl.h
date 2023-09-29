@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/clock.h"
+#include "components/segmentation_platform/internal/database/segment_info_database.h"
 #include "components/segmentation_platform/internal/execution/execution_request.h"
 #include "components/segmentation_platform/internal/execution/model_executor.h"
 #include "components/segmentation_platform/public/model_provider.h"
@@ -33,6 +34,7 @@ class ModelExecutorImpl : public ModelExecutor {
  public:
   ModelExecutorImpl(
       base::Clock* clock,
+      SegmentInfoDatabase* segment_db,
       processing::FeatureListQueryProcessor* feature_list_query_processor);
   ~ModelExecutorImpl() override;
 
@@ -75,6 +77,8 @@ class ModelExecutorImpl : public ModelExecutor {
                                  std::unique_ptr<ModelExecutionResult> result);
 
   const raw_ptr<base::Clock> clock_;
+
+  const raw_ptr<SegmentInfoDatabase> segment_db_;
 
   // Feature list processor for processing a model metadata's feature list.
   const raw_ptr<processing::FeatureListQueryProcessor>

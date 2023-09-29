@@ -11,6 +11,7 @@
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "base/trace_event/typed_macros.h"
+#include "components/segmentation_platform/internal/database/segment_info_database.h"
 #include "components/segmentation_platform/internal/execution/execution_request.h"
 #include "components/segmentation_platform/internal/execution/processing/feature_list_query_processor.h"
 #include "components/segmentation_platform/internal/segmentation_ukm_helper.h"
@@ -59,6 +60,7 @@ struct ModelExecutorImpl::ExecutionState {
   // https://crbug.com/1021571.
   std::unique_ptr<ModelExecutionTraceEvent> trace_event;
 
+  SegmentId segment_id = SegmentId::OPTIMIZATION_TARGET_UNKNOWN;
   proto::SegmentInfo segment_info;
   raw_ptr<ModelProvider, AcrossTasksDanglingUntriaged> model_provider = nullptr;
   bool record_metrics_for_default = false;
@@ -84,24 +86,34 @@ ModelExecutorImpl::ModelExecutionTraceEvent::~ModelExecutionTraceEvent() {
 
 ModelExecutorImpl::ModelExecutorImpl(
     base::Clock* clock,
+    SegmentInfoDatabase* segment_db,
     processing::FeatureListQueryProcessor* feature_list_query_processor)
     : clock_(clock),
+      segment_db_(segment_db),
       feature_list_query_processor_(feature_list_query_processor) {}
 
 ModelExecutorImpl::~ModelExecutorImpl() = default;
 
 void ModelExecutorImpl::ExecuteModel(
     std::unique_ptr<ExecutionRequest> request) {
-  const proto::SegmentInfo& segment_info = *request->segment_info;
-  SegmentId segment_id = segment_info.segment_id();
+  DCHECK_NE(request->segment_id, SegmentId::OPTIMIZATION_TARGET_UNKNOWN);
+  DCHECK_NE(request->model_source, ModelSource::UNKNOWN_MODEL_SOURCE);
+  const proto::SegmentInfo* segment_info = segment_db_->GetCachedSegmentInfo(
+      request->segment_id, request->model_source);
+  SegmentId segment_id = request->segment_id;
 
   // Create an ExecutionState that will stay with this request until it has been
   // fully processed.
   auto state = std::make_unique<ExecutionState>();
-  state->segment_info = segment_info;
+  state->segment_id = request->segment_id;
+  // TODO(ssid): Make segment_info optional in ExecutionState.
+  if (segment_info) {
+    state->segment_info = *segment_info;
+  }
 
   state->model_provider = request->model_provider;
-  state->record_metrics_for_default = request->record_metrics_for_default;
+  state->record_metrics_for_default =
+      request->model_source == ModelSource::DEFAULT_MODEL_SOURCE;
 
   state->callback = std::move(request->callback);
   state->total_execution_start_time = clock_->Now();
@@ -109,7 +121,8 @@ void ModelExecutorImpl::ExecuteModel(
   ModelExecutionTraceEvent trace_event("ModelExecutorImpl::ExecuteModel",
                                        *state);
 
-  if (!state->model_provider || !state->model_provider->ModelAvailable()) {
+  if (!segment_info || !request->model_provider ||
+      !request->model_provider->ModelAvailable()) {
     RunModelExecutionCallback(*state, std::move(state->callback),
                               std::make_unique<ModelExecutionResult>(
                                   ModelExecutionStatus::kSkippedModelNotReady));
@@ -117,7 +130,7 @@ void ModelExecutorImpl::ExecuteModel(
   }
 
   // It is required to have a valid and well formed segment info.
-  if (metadata_utils::ValidateSegmentInfo(segment_info) !=
+  if (metadata_utils::ValidateSegmentInfo(*segment_info) !=
       metadata_utils::ValidationResult::kValidationSuccess) {
     RunModelExecutionCallback(
         *state, std::move(state->callback),
@@ -127,9 +140,9 @@ void ModelExecutorImpl::ExecuteModel(
   }
 
   state->upload_tensors =
-      SegmentationUkmHelper::GetInstance()->IsUploadRequested(segment_info);
+      SegmentationUkmHelper::GetInstance()->IsUploadRequested(*segment_info);
   feature_list_query_processor_->ProcessFeatureList(
-      segment_info.model_metadata(), request->input_context, segment_id,
+      segment_info->model_metadata(), request->input_context, segment_id,
       clock_->Now(), base::Time(),
       FeatureListQueryProcessor::ProcessOption::kInputsOnly,
       base::BindOnce(&ModelExecutorImpl::OnProcessingFeatureListComplete,
@@ -240,11 +253,10 @@ void ModelExecutorImpl::RunModelExecutionCallback(
     ModelExecutionCallback callback,
     std::unique_ptr<ModelExecutionResult> result) {
   stats::RecordModelExecutionDurationTotal(
-      state.segment_info.segment_id(), result->status,
+      state.segment_id, result->status,
       clock_->Now() - state.total_execution_start_time);
-  stats::RecordModelExecutionStatus(state.segment_info.segment_id(),
-                                    state.record_metrics_for_default,
-                                    result->status);
+  stats::RecordModelExecutionStatus(
+      state.segment_id, state.record_metrics_for_default, result->status);
   std::move(callback).Run(std::move(result));
 }
 
