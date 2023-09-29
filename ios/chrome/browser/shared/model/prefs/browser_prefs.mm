@@ -90,6 +90,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_prefs.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
+#import "ios/chrome/browser/ui/ntp/metrics/feed_metrics_constants.h"
 #import "ios/chrome/browser/voice/voice_search_prefs_registration.h"
 #import "ios/chrome/browser/web/font_size/font_size_tab_helper.h"
 #import "ios/web/common/features.h"
@@ -541,6 +542,8 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
 
   registry->RegisterBooleanPref(prefs::kPasswordSharingFlowHasBeenEntered,
                                 false);
+  // Preference related to feed.
+  registry->RegisterTimePref(kActivityBucketLastReportedDateKey, base::Time());
 }
 
 // This method should be periodically pruned of year+ old migrations.
@@ -678,6 +681,19 @@ void MigrateObsoleteBrowserStatePrefs(PrefService* prefs) {
   prefs->ClearPref(kObsoleteIosSettingsPromoAlreadySeen);
   prefs->ClearPref(kObsoleteIosSettingsSigninPromoDisplayedCount);
   prefs->ClearPref(kPrivacySandboxManuallyControlled);
+
+  // Added 09/2023.
+  // TODO(crbug.com/1486770) To be removed after a few milestones.
+  {
+    NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+    NSString* key = @(kActivityBucketLastReportedDateKey);
+    NSDate* value = [defaults objectForKey:key];
+    if (value != nil) {
+      [defaults removeObjectForKey:key];
+      prefs->SetTime(kActivityBucketLastReportedDateKey,
+                     base::Time::FromNSDate(value));
+    }
+  }
 }
 
 void MigrateObsoleteUserDefault(void) {

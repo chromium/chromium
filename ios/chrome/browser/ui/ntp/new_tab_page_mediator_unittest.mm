@@ -102,7 +102,9 @@ class NewTabPageMediatorTest : public PlatformTest {
                discoverFeedService:discover_feed_service];
     header_consumer_ = OCMProtocolMock(@protocol(NewTabPageHeaderConsumer));
     mediator_.headerConsumer = header_consumer_;
-    feed_metrics_recorder_ = [[FeedMetricsRecorder alloc] init];
+    PrefService* prefs = chrome_browser_state_->GetPrefs();
+    feed_metrics_recorder_ =
+        [[FeedMetricsRecorder alloc] initWithPrefService:prefs];
     mediator_.feedMetricsRecorder = feed_metrics_recorder_;
     histogram_tester_.reset(new base::HistogramTester());
   }

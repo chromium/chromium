@@ -10,6 +10,7 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/time/time.h"
+#import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/discover_feed/discover_feed_refresher.h"
 #import "ios/chrome/browser/ntp/features.h"
 #import "ios/chrome/browser/ui/ntp/feed_control_delegate.h"
@@ -17,6 +18,13 @@
 #import "ios/chrome/browser/ui/ntp/metrics/feed_session_recorder.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_follow_delegate.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_metrics_delegate.h"
+
+namespace {
+
+// The number of days for the Activity Buckets calculations.
+constexpr base::TimeDelta kRangeForActivityBuckets = base::Days(28);
+
+}  // namespace
 
 using feed::FeedEngagementType;
 using feed::FeedUserActionType;
@@ -86,9 +94,21 @@ using feed::FeedUserActionType;
 // YES if the NTP is visible.
 @property(nonatomic, assign) BOOL isNTPVisible;
 
+// The ChromeBrowserState PrefService.
+@property(nonatomic, assign) PrefService* prefService;
+
 @end
 
 @implementation FeedMetricsRecorder
+
+- (instancetype)initWithPrefService:(PrefService*)prefService {
+  DCHECK(prefService);
+  self = [super init];
+  if (self) {
+    _prefService = prefService;
+  }
+  return self;
+}
 
 #pragma mark - Properties
 
@@ -915,22 +935,21 @@ using feed::FeedUserActionType;
 
 // Calculates the amount of dates the user has been active for the past 28 days.
 - (void)computeActivityBuckets {
-  NSDate* now = [NSDate date];
+  const base::Time now = base::Time::Now();
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
 
-  NSDate* lastActivityBucketReported = base::apple::ObjCCast<NSDate>(
-      [defaults objectForKey:kActivityBucketLastReportedDateKey]);
-  // If the `lastActivityBucketReported` does not exist, set it to now to
+  base::Time lastActivityBucket =
+      self.prefService->GetTime(kActivityBucketLastReportedDateKey);
+  // If the `lastActivityBucket` is not set, set it to now to
   // prevent the first day from logging a metric.
-  if (!lastActivityBucketReported) {
-    lastActivityBucketReported = now;
-    [defaults setObject:lastActivityBucketReported
-                 forKey:kActivityBucketLastReportedDateKey];
+  if (lastActivityBucket == base::Time()) {
+    lastActivityBucket = now;
+    self.prefService->SetTime(kActivityBucketLastReportedDateKey,
+                              lastActivityBucket);
   }
 
-  // Check if the last time the activity was reported is more than 24 hrs ago,
-  // and return for performance.
-  if ([now timeIntervalSinceDate:lastActivityBucketReported] < (24 * 60 * 60)) {
+  // Nothing to do if the activity was reported recently.
+  if ((now - lastActivityBucket) < base::Days(1)) {
     return;
   }
 
@@ -949,10 +968,9 @@ using feed::FeedUserActionType;
 
   // Check for dates > 28 days and remove older items.
   NSMutableIndexSet* toDelete = [[NSMutableIndexSet alloc] init];
-  for (NSUInteger i = 0; i < lastReportedArray.count; i++) {
-    if ([now timeIntervalSinceDate:[lastReportedArray objectAtIndex:i]] /
-            (24 * 60 * 60) >
-        kRangeForActivityBucketsInDays) {
+  for (NSUInteger i = 0; i < lastReportedArray.count; ++i) {
+    const base::Time date = base::Time::FromNSDate(lastReportedArray[i]);
+    if ((now - date) > kRangeForActivityBuckets) {
       [toDelete addIndex:i];
     } else {
       break;
@@ -992,7 +1010,8 @@ using feed::FeedUserActionType;
 
   // Activity Buckets Daily Run.
   [self recordActivityBuckets:activityBucket];
-  [defaults setObject:now forKey:kActivityBucketLastReportedDateKey];
+  self.prefService->SetTime(kActivityBucketLastReportedDateKey,
+                            base::Time::Now());
 }
 
 // Records the engagement buckets.

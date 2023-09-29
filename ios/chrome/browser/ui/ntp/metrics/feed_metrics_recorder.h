@@ -17,10 +17,11 @@ class DiscoverFeedRefresher;
 @protocol FeedControlDelegate;
 @protocol NewTabPageFollowDelegate;
 @protocol NewTabPageMetricsDelegate;
+class PrefService;
 
 namespace base {
 class Time;
-}
+}  // namespace base
 
 // Records different metrics for the NTP feeds.
 @interface FeedMetricsRecorder : NSObject <FeedRefreshStateTracker>
@@ -39,6 +40,11 @@ class Time;
 
 // Delegate for reporting feed actions to the NTP metrics recorder.
 @property(nonatomic, weak) id<NewTabPageMetricsDelegate> NTPMetricsDelegate;
+
+- (instancetype)initWithPrefService:(PrefService*)prefService
+    NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)init NS_UNAVAILABLE;
 
 // Records the trigger where a feed refresh is requested.
 + (void)recordFeedRefreshTrigger:(FeedRefreshTrigger)trigger;

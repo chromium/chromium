@@ -9,7 +9,6 @@ const int kGoodVisitTimeInFeedSeconds = 60;
 const int kNonShortClickSeconds = 10;
 const int kMinutesBetweenSessions = 5;
 const int kMaxCardsInFeed = 50;
-const int kRangeForActivityBucketsInDays = 28;
 
 NSString* const kArticleVisitTimestampKey = @"ShortClickInteractionTimestamp";
 NSString* const kLongFeedVisitTimeAggregateKey =
@@ -27,8 +26,8 @@ NSString* const kLastInteractionTimeForFollowingGoodVisits =
     @"LastInteractionTimeForGoodVisitsFollowing";
 NSString* const kLastDayTimeInFeedReportedKey = @"LastDayTimeInFeedReported";
 NSString* const kTimeSpentInFeedAggregateKey = @"TimeSpentInFeedAggregate";
-NSString* const kActivityBucketLastReportedDateKey =
-    @"ActivityBucketLastReportedDate";
+const char kActivityBucketLastReportedDateKey[] =
+    "ActivityBucketLastReportedDate";
 NSString* const kActivityBucketLastReportedDateArrayKey =
     @"ActivityBucketLastReportedDateArray";
 NSString* const kActivityBucketKey = @"FeedActivityBucket";

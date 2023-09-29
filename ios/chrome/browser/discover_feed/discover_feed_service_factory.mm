@@ -58,7 +58,8 @@ DiscoverFeedServiceFactory::BuildServiceInstanceFor(
       AuthenticationServiceFactory::GetForBrowserState(browser_state);
   configuration.identityManager =
       IdentityManagerFactory::GetForBrowserState(browser_state);
-  configuration.metricsRecorder = [[FeedMetricsRecorder alloc] init];
+  configuration.metricsRecorder = [[FeedMetricsRecorder alloc]
+      initWithPrefService:browser_state->GetPrefs()];
   configuration.ssoService = GetApplicationContext()->GetSSOService();
   configuration.templateURLService =
       ios::TemplateURLServiceFactory::GetForBrowserState(browser_state);

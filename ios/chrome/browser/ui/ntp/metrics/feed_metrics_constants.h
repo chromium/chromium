@@ -31,9 +31,6 @@ extern const int kMinutesBetweenSessions;
 // The max amount of cards in the Discover Feed.
 extern const int kMaxCardsInFeed;
 
-// The number of days for the Activity Buckets calculations.
-extern const int kRangeForActivityBucketsInDays;
-
 // Stores the time when the user visits an article on the feed.
 extern NSString* const kArticleVisitTimestampKey;
 // Stores the time elapsed on the feed when the user leaves.
@@ -51,7 +48,7 @@ extern NSString* const kLastDayTimeInFeedReportedKey;
 // Stores the time spent on the feed for a day.
 extern NSString* const kTimeSpentInFeedAggregateKey;
 // Stores the last time the activity bucket was reported.
-extern NSString* const kActivityBucketLastReportedDateKey;
+extern const char kActivityBucketLastReportedDateKey[];
 // Stores the last 28 days of activity bucket reported days.
 extern NSString* const kActivityBucketLastReportedDateArrayKey;
 // Stores the latest activity bucket the user was on.
