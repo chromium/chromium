@@ -2,7 +2,11 @@
   :host {
     background: var(--emoji-picker-container-color);
     border-radius: 4px; /* TODO: might need to be 8 querying with UX */
-    box-shadow: var(--cr-elevation-2);
+    /*
+     * TODO(b/263055563): Remove --cr-elevation reference once jelly is fully
+     * launched.
+     */
+    box-shadow: var(--cros-elevation-2-shadow, --cr-elevation-2);
     display: grid;
     grid-template-columns: max-content max-content max-content;
     grid-template-rows: max-content max-content;

@@ -77,7 +77,11 @@
   }
 
   #tooltip::part(tooltip) {
-    box-shadow: var(--cr-elevation-1);
+    /*
+     * TODO(b/263055563): Remove --cr-elevation reference once jelly is fully
+     * launched.
+     */
+    box-shadow: var(--cros-elevation-1-shadow, --cr-elevation-1);
     font: var(--cros-annotation-1-font);
     margin: 4px;
     padding: 4px 8px 4px 8px;

@@ -110,7 +110,11 @@
 
   #searchShadow {
     background-color: var(--emoji-picker-container-color);
-    box-shadow: var(--cr-elevation-2);
+    /*
+     * TODO(b/263055563): Remove --cr-elevation reference once jelly is fully
+     * launched.
+     */
+    box-shadow: var(--cros-elevation-2-shadow, --cr-elevation-2);
     display: flex;
     margin-bottom: 7px;
     margin-inline-end: calc(0px - var(--emoji-picker-side-padding));
