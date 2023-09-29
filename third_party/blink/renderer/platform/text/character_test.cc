@@ -23,11 +23,23 @@ testing::AssertionResult IsCJKIdeographOrSymbolWithMessage(UChar32 codepoint) {
                                      << " is not a CJKIdeographOrSymbol.";
 }
 
-TEST(CharacterTest, HammerEmojiVsCJKIdeographOrSymbol) {
-  for (UChar32 test_char = 0; test_char < kMaxCodepoint; test_char++) {
-    if (Character::IsEmojiEmojiDefault(test_char)) {
-      EXPECT_TRUE(IsCJKIdeographOrSymbolWithMessage(test_char));
+// Test Unicode-derived functions work as intended.
+// These functions may need to be adjusted if Unicode changes.
+TEST(CharacterTest, Derived) {
+  for (UChar32 ch = 0; ch < kMaxCodepoint; ++ch) {
+    if (Character::IsEmojiEmojiDefault(ch)) {
+      EXPECT_TRUE(IsCJKIdeographOrSymbolWithMessage(ch));
     }
+
+    const UBlockCode block = ublock_getCode(ch);
+    EXPECT_EQ(Character::IsBlockCjkSymbolsAndPunctuation(ch),
+              block == UBLOCK_CJK_SYMBOLS_AND_PUNCTUATION);
+    EXPECT_EQ(Character::IsBlockHalfwidthAndFullwidthForms(ch),
+              block == UBLOCK_HALFWIDTH_AND_FULLWIDTH_FORMS);
+
+    const UEastAsianWidth eaw = Character::EastAsianWidth(ch);
+    EXPECT_EQ(Character::IsEastAsianWidthFullwidth(ch),
+              eaw == UEastAsianWidth::U_EA_FULLWIDTH);
   }
 }
 

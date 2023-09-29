@@ -55,6 +55,22 @@ class PLATFORM_EXPORT Character {
     return character >= lower_bound && character <= upper_bound;
   }
 
+  // Commonly used Unicode Blocks in CSS specs.
+  // https://www.unicode.org/Public/UNIDATA/Blocks.txt
+  static bool IsBlockCjkSymbolsAndPunctuation(UChar32 ch) {
+    return IsInRange(ch, 0x3000, 0x303F);
+  }
+  static bool IsBlockHalfwidthAndFullwidthForms(UChar32 ch) {
+    return IsInRange(ch, 0xFF00, 0xFFEF);
+  }
+
+  // East Asian Width: https://unicode.org/reports/tr11/
+  static UEastAsianWidth EastAsianWidth(UChar32 ch) {
+    return static_cast<UEastAsianWidth>(
+        u_getIntPropertyValue(ch, UCHAR_EAST_ASIAN_WIDTH));
+  }
+  static bool IsEastAsianWidthFullwidth(UChar32 ch);
+
   static inline bool IsUnicodeVariationSelector(UChar32 character) {
     // http://www.unicode.org/Public/UCD/latest/ucd/StandardizedVariants.html
     return IsInRange(character, 0x180B,
@@ -219,6 +235,15 @@ class PLATFORM_EXPORT Character {
   static bool IsCJKIdeographOrSymbolSlow(UChar32);
   static bool IsHangulSlow(UChar32);
 };
+
+inline bool Character::IsEastAsianWidthFullwidth(UChar32 ch) {
+  // All EAW=F characters are in the "Halfwidth and Fullwidth forms" block,
+  // except U+3000 IDEOGRAPHIC SPACE.
+  // https://util.unicode.org/UnicodeJsps/list-unicodeset.jsp?a=[:ea=F:]
+  return ch == kIdeographicSpaceCharacter ||
+         (IsBlockHalfwidthAndFullwidthForms(ch) &&
+          EastAsianWidth(ch) == UEastAsianWidth::U_EA_FULLWIDTH);
+}
 
 }  // namespace blink
 

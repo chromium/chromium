@@ -16,12 +16,6 @@ namespace blink {
 
 namespace {
 
-inline bool IsCjkSymbolsAndPunctuationOrEastAsianFullwidth(UChar ch) {
-  return (ch >= 0x3000 && ch <= 0x303F) ||
-         static_cast<UEastAsianWidth>(u_getIntPropertyValue(
-             ch, UCHAR_EAST_ASIAN_WIDTH)) == UEastAsianWidth::U_EA_FULLWIDTH;
-}
-
 // Get `CharType` from the glyph bounding box.
 HanKerning::CharType GetType(const SkRect& bound,
                              float em,
@@ -87,14 +81,15 @@ HanKerning::CharType HanKerning::GetCharType(UChar ch,
     case kKatakanaMiddleDot:          // U+30FB
       return CharType::kMiddle;
   }
-  const auto gc = static_cast<UCharCategory>(u_charType(ch));
-  if (gc == UCharCategory::U_START_PUNCTUATION &&
-      IsCjkSymbolsAndPunctuationOrEastAsianFullwidth(ch)) {
-    return CharType::kOpen;
-  }
-  if (gc == UCharCategory::U_END_PUNCTUATION &&
-      IsCjkSymbolsAndPunctuationOrEastAsianFullwidth(ch)) {
-    return CharType::kClose;
+  if (Character::IsBlockCjkSymbolsAndPunctuation(ch) ||
+      Character::IsEastAsianWidthFullwidth(ch)) {
+    const auto gc = static_cast<UCharCategory>(u_charType(ch));
+    if (gc == UCharCategory::U_START_PUNCTUATION) {
+      return CharType::kOpen;
+    }
+    if (gc == UCharCategory::U_END_PUNCTUATION) {
+      return CharType::kClose;
+    }
   }
   return CharType::kOther;
 }
