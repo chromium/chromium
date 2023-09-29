@@ -11,22 +11,11 @@ namespace em = enterprise_management;
 
 namespace policy {
 
-// static
-//
-// Note we deliberately use a number that doesn't fit in an int32 to discover
-// truncation errors.
-int64_t RemoteCommandBuilder::g_last_command_id_ = (1LL << 35) + 1;
-
-RemoteCommandBuilder::RemoteCommandBuilder() {
-  result_.set_command_id(g_last_command_id_ + 1);
-}
-
 enterprise_management::RemoteCommand RemoteCommandBuilder::Build() {
   return std::move(result_);
 }
 
 RemoteCommandBuilder& RemoteCommandBuilder::SetCommandId(int64_t value) {
-  g_last_command_id_ = value;
   result_.set_command_id(value);
   return *this;
 }

@@ -48,6 +48,11 @@ std::unique_ptr<HttpResponse> RequestHandlerForRemoteCommands::HandleRequest(
   const em::DeviceRemoteCommandRequest remote_command_request =
       device_management_request.remote_command_request();
 
+  if (remote_command_request.has_last_command_unique_id()) {
+    state->AddRemoteCommandAcked(
+        remote_command_request.last_command_unique_id());
+  }
+
   for (auto result : remote_command_request.command_results()) {
     LOG(INFO) << "remote command result: " << result.command_id() << " "
               << result.result();

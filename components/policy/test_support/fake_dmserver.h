@@ -184,6 +184,23 @@ class FakeDMServer : public policy::EmbeddedPolicyTestServer {
   // Triggers Shutting down the fake_dmserver_main and the grpc server.
   void TriggerShutdown();
 
+  // Writes the remote command result to the reactor, it will be triggered
+  // from RemoteCommandsWaitOperation::OnRemoteCommandResultAvailable.
+  void OnWaitRemoteCommandResultDone(
+      remote_commands::RemoteCommandsServiceHandler::WaitRemoteCommandResult::
+          Reactor*,
+      int64_t,
+      RemoteCommandsWaitOperation*,
+      bool);
+  // Writes the ack to the reactor, it will be triggered
+  // from RemoteCommandsWaitOperation::OnRemoteCommandAcked.
+  void OnWaitRemoteCommandAckDone(
+      remote_commands::RemoteCommandsServiceHandler::WaitRemoteCommandAcked::
+          Reactor*,
+      int64_t,
+      RemoteCommandsWaitOperation*,
+      bool);
+
   // Handles the RemoteCommandsService gRPC request SendRemoteCommand.
   void HandleSendRemoteCommand(
       remote_commands::SendRemoteCommandRequest request,
@@ -196,6 +213,13 @@ class FakeDMServer : public policy::EmbeddedPolicyTestServer {
   void HandleWaitRemoteCommandResult(
       remote_commands::WaitRemoteCommandResultRequest request,
       remote_commands::RemoteCommandsServiceHandler::WaitRemoteCommandResult::
+          Reactor* reactor);
+  // Handles the RemoteCommandsService gRPC request WaitRemoteCommandAcked. If
+  // the result isn't available withing 10 seconds, the grpc call will be
+  // cancelled.
+  void HandleWaitRemoteCommandAcked(
+      remote_commands::WaitRemoteCommandAckedRequest request,
+      remote_commands::RemoteCommandsServiceHandler::WaitRemoteCommandAcked::
           Reactor* reactor);
 
   // Erase the wait operation from the waiters_ set.

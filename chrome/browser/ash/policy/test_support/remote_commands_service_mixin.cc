@@ -31,14 +31,14 @@ RemoteCommandsServiceMixin::~RemoteCommandsServiceMixin() = default;
 enterprise_management::RemoteCommandResult
 RemoteCommandsServiceMixin::SendRemoteCommand(
     const enterprise_management::RemoteCommand& command) {
-  AddPendingRemoteCommand(command);
+  int64_t command_id = AddPendingRemoteCommand(command);
   SendDeviceRemoteCommandsRequest();
-  return WaitForResult(command.command_id());
+  return WaitForResult(command_id);
 }
 
-void RemoteCommandsServiceMixin::AddPendingRemoteCommand(
+int64_t RemoteCommandsServiceMixin::AddPendingRemoteCommand(
     const enterprise_management::RemoteCommand& command) {
-  remote_commands_state().AddPendingRemoteCommand(command);
+  return remote_commands_state().AddPendingRemoteCommand(command);
 }
 
 void RemoteCommandsServiceMixin::SendDeviceRemoteCommandsRequest() {
@@ -49,6 +49,11 @@ enterprise_management::RemoteCommandResult
 RemoteCommandsServiceMixin::WaitForResult(int64_t command_id) {
   return RemoteCommandsResultWaiter(&remote_commands_state(), command_id)
       .WaitAndGetResult();
+}
+
+void RemoteCommandsServiceMixin::WaitForAcked(int64_t command_id) {
+  return RemoteCommandsResultWaiter(&remote_commands_state(), command_id)
+      .WaitAndGetAck();
 }
 
 RemoteCommandsService& RemoteCommandsServiceMixin::remote_commands_service() {
@@ -63,6 +68,10 @@ RemoteCommandsService& RemoteCommandsServiceMixin::remote_commands_service() {
 RemoteCommandsState& RemoteCommandsServiceMixin::remote_commands_state() {
   return CHECK_DEREF(
       policy_test_server_mixin_->server()->remote_commands_state());
+}
+
+void RemoteCommandsServiceMixin::SetCurrentIdForTesting(int64_t id) {
+  remote_commands_state().SetCurrentIdForTesting(id);
 }
 
 }  // namespace policy

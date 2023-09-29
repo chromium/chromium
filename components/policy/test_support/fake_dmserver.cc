@@ -69,11 +69,11 @@ constexpr int64_t kDefaultServerStopTimeoutMs = 100;
 static remote_commands::WaitRemoteCommandResultResponse
 BuildWaitRemoteCommandResultResponse(const em::RemoteCommandResult& result) {
   remote_commands::WaitRemoteCommandResultResponse resp;
-  em::RemoteCommandResult* rcResult = resp.mutable_result();
-  rcResult->set_result(result.result());
-  rcResult->set_command_id(result.command_id());
-  rcResult->set_timestamp(result.timestamp());
-  rcResult->set_payload(result.payload());
+  em::RemoteCommandResult* remote_command_result = resp.mutable_result();
+  remote_command_result->set_result(result.result());
+  remote_command_result->set_command_id(result.command_id());
+  remote_command_result->set_timestamp(result.timestamp());
+  remote_command_result->set_payload(result.payload());
   return resp;
 }
 
@@ -152,44 +152,50 @@ void ParseFlags(const base::CommandLine& command_line,
   }
 }
 
+enum class RemoteCommandsWaitType { kAcknowledged, kResultAvailable };
+
 class RemoteCommandsWaitOperation
     : public policy::RemoteCommandsState::Observer {
  public:
+  // Callback for a RemoteCommandsWaitOperation.
+  // `wait_operation` will refer to the RemoteCommandsWaitOperation object that
+  // invoked the callback. If `success` is true, the `RemoteCommandsWaitType`
+  // has happened, otherwise the wait timed out.
+  using RemoteCommandsWaitCallback =
+      base::OnceCallback<void(RemoteCommandsWaitOperation* wait_operation,
+                              bool success)>;
+
   RemoteCommandsWaitOperation(
-      policy::RemoteCommandsState*,
-      remote_commands::RemoteCommandsServiceHandler::WaitRemoteCommandResult::
-          Reactor*,
-      base::OnceCallback<void(RemoteCommandsWaitOperation*)>);
+      policy::RemoteCommandsState* remote_commands_state,
+      RemoteCommandsWaitType wait_type,
+      RemoteCommandsWaitOperation::RemoteCommandsWaitCallback wait_callback);
 
   ~RemoteCommandsWaitOperation() override;
 
   void OnRemoteCommandResultAvailable(int64_t command_id) override;
+  void OnRemoteCommandAcked(int64_t command_id) override;
   void OnTimeout();
 
  private:
   const raw_ptr<policy::RemoteCommandsState> remote_commands_state_;
-  const raw_ptr<remote_commands::RemoteCommandsServiceHandler::
-                    WaitRemoteCommandResult::Reactor>
-      reactor_;
+  const RemoteCommandsWaitType wait_type_;
+  RemoteCommandsWaitCallback wait_callback_;
   base::ScopedObservation<policy::RemoteCommandsState,
                           policy::RemoteCommandsState::Observer>
       state_observation_{this};
   // Timer that fires to prevent indefinite wait if the remote command result
   // takes too long.
   base::OneShotTimer result_timeout_timer_;
-  // Callback to erase the wait operation.
-  base::OnceCallback<void(RemoteCommandsWaitOperation*)> erase_cb_;
   base::WeakPtrFactory<RemoteCommandsWaitOperation> weak_ptr_factory_{this};
 };
 
 RemoteCommandsWaitOperation::RemoteCommandsWaitOperation(
     policy::RemoteCommandsState* remote_commands_state,
-    remote_commands::RemoteCommandsServiceHandler::WaitRemoteCommandResult::
-        Reactor* reactor,
-    base::OnceCallback<void(RemoteCommandsWaitOperation*)> erase_cb)
+    RemoteCommandsWaitType wait_type,
+    RemoteCommandsWaitOperation::RemoteCommandsWaitCallback wait_callback)
     : remote_commands_state_(remote_commands_state),
-      reactor_(reactor),
-      erase_cb_(std::move(erase_cb)) {
+      wait_type_(wait_type),
+      wait_callback_(std::move(wait_callback)) {
   state_observation_.Observe(remote_commands_state);
   // Start a timer for 10 seconds to wait for the remote command result.
   result_timeout_timer_.Start(
@@ -202,27 +208,33 @@ RemoteCommandsWaitOperation::~RemoteCommandsWaitOperation() = default;
 
 void RemoteCommandsWaitOperation::OnRemoteCommandResultAvailable(
     int64_t command_id) {
-  em::RemoteCommandResult result;
+  if (wait_type_ != RemoteCommandsWaitType::kResultAvailable) {
+    return;
+  }
   const bool result_available =
-      remote_commands_state_->GetRemoteCommandResult(command_id, &result);
+      remote_commands_state_->IsRemoteCommandResultAvailable(command_id);
   // The result must be available now.
   CHECK(result_available);
-  remote_commands::WaitRemoteCommandResultResponse resp;
-  em::RemoteCommandResult* rcResult = resp.mutable_result();
-  rcResult->set_result(result.result());
-  rcResult->set_command_id(result.command_id());
-  rcResult->set_timestamp(result.timestamp());
-  rcResult->set_payload(result.payload());
-  reactor_->Write(std::move(resp));
-  // Erase the wait operation from the set and delete its pointer.
-  std::move(erase_cb_).Run(this);
+  // Invoke the wait callback OnWaitRemoteCommandResultDone to write the result
+  // to the reactor.
+  std::move(wait_callback_).Run(this, result_available);
+}
+
+void RemoteCommandsWaitOperation::OnRemoteCommandAcked(int64_t command_id) {
+  if (wait_type_ != RemoteCommandsWaitType::kAcknowledged) {
+    return;
+  }
+  const bool command_acked =
+      remote_commands_state_->IsRemoteCommandAcked(command_id);
+  // The command must be acknowledged now.
+  CHECK(command_acked);
+  // Invoke the wait callback OnWaitRemoteCommandAckDone to write the ack to the
+  // reactor.
+  std::move(wait_callback_).Run(this, command_acked);
 }
 
 void RemoteCommandsWaitOperation::OnTimeout() {
-  reactor_->Write(grpc::Status(
-      grpc::StatusCode::CANCELLED,
-      "Timeout waiting for remote command result took more than 10 seconds"));
-  std::move(erase_cb_).Run(this);
+  std::move(wait_callback_).Run(this, false);
 }
 
 FakeDMServer::FakeDMServer(const std::string& policy_blob_path,
@@ -268,6 +280,12 @@ void FakeDMServer::StartGrpcServer() {
           base::SingleThreadTaskRunner::GetCurrentDefault(),
           base::BindRepeating(&FakeDMServer::HandleWaitRemoteCommandResult,
                               weak_ptr_factory_.GetWeakPtr())));
+  grpc_server_->SetHandler<
+      remote_commands::RemoteCommandsServiceHandler::WaitRemoteCommandAcked>(
+      base::BindPostTask(
+          base::SingleThreadTaskRunner::GetCurrentDefault(),
+          base::BindRepeating(&FakeDMServer::HandleWaitRemoteCommandAcked,
+                              weak_ptr_factory_.GetWeakPtr())));
   auto status = grpc_server_->Start(grpc_unix_socket_uri_);
   // Browser runtime must crash if the runtime service failed to start to avoid
   // the process to dangle without any proper connection to the Cast Core.
@@ -281,9 +299,35 @@ void FakeDMServer::HandleSendRemoteCommand(
         reactor) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(fake_dmserver_main_sequence_checker_);
   LOG(INFO) << "Processing SendRemoteCommand grpc request.";
-  remote_commands_state()->AddPendingRemoteCommand(request.remote_command());
+  int64_t command_id = remote_commands_state()->AddPendingRemoteCommand(
+      request.remote_command());
   remote_commands::SendRemoteCommandResponse resp;
-  resp.set_command_id(request.remote_command().command_id());
+  resp.set_command_id(command_id);
+  reactor->Write(std::move(resp));
+}
+
+void FakeDMServer::OnWaitRemoteCommandResultDone(
+    remote_commands::RemoteCommandsServiceHandler::WaitRemoteCommandResult::
+        Reactor* reactor,
+    int64_t command_id,
+    RemoteCommandsWaitOperation* wait_operation,
+    bool wait_success) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(fake_dmserver_main_sequence_checker_);
+  auto it = waiters_.find(wait_operation);
+  CHECK(it != waiters_.end());
+  waiters_.erase(it);
+
+  if (!wait_success) {
+    reactor->Write(grpc::Status(
+        grpc::StatusCode::CANCELLED,
+        "Timeout waiting for remote command result took more than 10 seconds"));
+    return;
+  }
+  em::RemoteCommandResult result;
+  bool result_available =
+      remote_commands_state()->GetRemoteCommandResult(command_id, &result);
+  CHECK(result_available);
+  auto resp = BuildWaitRemoteCommandResultResponse(result);
   reactor->Write(std::move(resp));
 }
 
@@ -302,14 +346,64 @@ void FakeDMServer::HandleWaitRemoteCommandResult(
     // Insert the wait operation into the set and bind the erase function to
     // erase it if the result is available.
     waiters_.insert(std::make_unique<RemoteCommandsWaitOperation>(
-        remote_commands_state(), reactor,
-        base::BindOnce(&FakeDMServer::EraseWaitOperation,
-                       weak_ptr_factory_.GetWeakPtr())));
+        remote_commands_state(), RemoteCommandsWaitType::kResultAvailable,
+        base::BindOnce(&FakeDMServer::OnWaitRemoteCommandResultDone,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       base::Unretained(reactor), command_id)));
     return;
   }
   LOG(INFO) << "Remote command result is available. Resolving the grpc call.";
   auto resp = BuildWaitRemoteCommandResultResponse(result);
   reactor->Write(std::move(resp));
+}
+
+void FakeDMServer::OnWaitRemoteCommandAckDone(
+    remote_commands::RemoteCommandsServiceHandler::WaitRemoteCommandAcked::
+        Reactor* reactor,
+    int64_t command_id,
+    RemoteCommandsWaitOperation* wait_operation,
+    bool wait_success) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(fake_dmserver_main_sequence_checker_);
+  auto it = waiters_.find(wait_operation);
+  CHECK(it != waiters_.end());
+  waiters_.erase(it);
+
+  if (!wait_success) {
+    reactor->Write(grpc::Status(
+        grpc::StatusCode::CANCELLED,
+        "Timeout waiting for remote command result took more than 10 seconds"));
+    return;
+  }
+  bool command_acked =
+      remote_commands_state()->IsRemoteCommandAcked(command_id);
+  CHECK(command_acked);
+  reactor->Write(grpc::Status(grpc::StatusCode::OK,
+                              "The remote command was acknowledged"));
+}
+
+void FakeDMServer::HandleWaitRemoteCommandAcked(
+    remote_commands::WaitRemoteCommandAckedRequest request,
+    remote_commands::RemoteCommandsServiceHandler::WaitRemoteCommandAcked::
+        Reactor* reactor) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(fake_dmserver_main_sequence_checker_);
+  LOG(INFO) << "Processing WaitRemoteCommandAcked grpc request.";
+  int64_t command_id = request.command_id();
+  bool command_acked =
+      remote_commands_state()->IsRemoteCommandAcked(command_id);
+  if (!command_acked) {
+    LOG(INFO) << "Remote command isn't acknowledged yet.";
+    // Insert the wait operation into the set and bind the erase function to
+    // erase it if the command is acknowledged.
+    waiters_.insert(std::make_unique<RemoteCommandsWaitOperation>(
+        remote_commands_state(), RemoteCommandsWaitType::kAcknowledged,
+        base::BindOnce(&FakeDMServer::OnWaitRemoteCommandAckDone,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       base::Unretained(reactor), command_id)));
+    return;
+  }
+  LOG(INFO) << "Remote command is acknowledged. Resolving the grpc call.";
+  reactor->Write(grpc::Status(grpc::StatusCode::OK,
+                              "The remote command was acknowledged"));
 }
 
 bool FakeDMServer::StartFakeServer() {

@@ -49,7 +49,6 @@ namespace {
 constexpr char kTestUserEmail[] = "test@example.com";
 constexpr char kTestAffiliationId[] = "test_affiliation_id";
 constexpr char kNewPlatformVersion[] = "1235.0.0";
-constexpr int kCommandId = 1;
 static const AccountId kTestAccountId = AccountId::FromUserEmailGaiaId(
     kTestUserEmail,
     signin::GetTestGaiaIdForEmail(kTestUserEmail));
@@ -234,8 +233,8 @@ class OsUpdatesReporterPowerwashBrowserTest
     return result;
   }
 
-  void AddPendingRemoteCommand(const em::RemoteCommand& command) {
-    policy_test_server_mixin_.server()
+  int64_t AddPendingRemoteCommand(em::RemoteCommand& command) {
+    return policy_test_server_mixin_.server()
         ->remote_commands_state()
         ->AddPendingRemoteCommand(command);
   }
@@ -253,12 +252,11 @@ IN_PROC_BROWSER_TEST_F(OsUpdatesReporterPowerwashBrowserTest, RemotePowerwash) {
 
   em::RemoteCommand command;
   command.set_type(em::RemoteCommand_Type_DEVICE_REMOTE_POWERWASH);
-  command.set_command_id(kCommandId);
-  AddPendingRemoteCommand(command);
+  int64_t command_id = AddPendingRemoteCommand(command);
 
   InitializePolicyManager();
   TriggerRemoteCommandsFetch();
-  em::RemoteCommandResult result = WaitForResult(kCommandId);
+  em::RemoteCommandResult result = WaitForResult(command_id);
 
   EXPECT_EQ(result.result(), em::RemoteCommandResult_ResultType_RESULT_SUCCESS);
   const Record& update_record = GetNextOsEventsRecord(&observer);
