@@ -2197,6 +2197,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_PARCEL_TRACKING_INFOBAR_PACKAGE_UNTRACKED_SUBTITLE" desc="Text for the subtitle string of the infobar that is displayed after a package is untracked.">
         This package has been successfully untracked.
       </message>
+      <message name="IDS_IOS_PARCEL_TRACKING_OPT_IN_ENABLE_TRACKING" desc="Text for the button that allows the user to enable parcel tracking.">
+        Enable Tracking
+      </message>
       <message name="IDS_IOS_PARCEL_TRACKING_OPT_IN_PRIMARY_ACTION" desc="Text for the primary action string of the parcel tracking opt-in half-sheet screen.">
         Always Track Detected Packages
       </message>
