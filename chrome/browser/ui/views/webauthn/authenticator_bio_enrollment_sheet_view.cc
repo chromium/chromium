@@ -7,7 +7,6 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
 #include "chrome/browser/ui/views/webauthn/ring_progress_bar.h"
-#include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/vector_icons.h"
 
@@ -36,8 +35,7 @@ AuthenticatorBioEnrollmentSheetView::AuthenticatorBioEnrollmentSheetView(
 AuthenticatorBioEnrollmentSheetView::~AuthenticatorBioEnrollmentSheetView() =
     default;
 
-std::pair<std::unique_ptr<views::View>,
-          AuthenticatorRequestSheetView::AutoFocus>
+std::unique_ptr<views::View>
 AuthenticatorBioEnrollmentSheetView::BuildStepSpecificContent() {
   auto* bio_model = static_cast<AuthenticatorBioEnrollmentSheetModel*>(model());
   double target = CalculateProgressFor(bio_model->bio_samples_remaining(),
@@ -66,7 +64,7 @@ AuthenticatorBioEnrollmentSheetView::BuildStepSpecificContent() {
   ring_progress_bar->SetValue(initial, target);
   animation_container->AddChildView(std::move(ring_progress_bar));
 
-  return std::make_pair(std::move(animation_container), AutoFocus::kNo);
+  return animation_container;
 }
 
 bool AuthenticatorBioEnrollmentSheetView::AcceleratorPressed(

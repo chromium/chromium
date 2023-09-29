@@ -28,8 +28,7 @@ class AuthenticatorBioEnrollmentSheetView
 
  private:
   // AuthenticatorRequestSheetView:
-  std::pair<std::unique_ptr<views::View>, AutoFocus> BuildStepSpecificContent()
-      override;
+  std::unique_ptr<views::View> BuildStepSpecificContent() override;
 
   // views::View:
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
