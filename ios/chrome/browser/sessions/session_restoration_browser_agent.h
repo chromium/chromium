@@ -19,7 +19,6 @@
 #import "ios/web/public/web_state_observer.h"
 
 class AllWebStateObservationForwarder;
-class ChromeBrowserState;
 @class SessionWindowIOS;
 @class SessionWindowIOSFactory;
 class SessionRestorationObserver;
@@ -117,13 +116,11 @@ class SessionRestorationBrowserAgent
   // The service object which handles the actual saving of sessions.
   SessionServiceIOS* session_service_ = nullptr;
 
-  // The list of web states to be saved.
-  WebStateList* web_state_list_ = nullptr;
+  // The Browser containing the WebStates to be saved.
+  Browser* browser_ = nullptr;
 
-
+  // List of registered observers.
   base::ObserverList<SessionRestorationObserver, true> observers_;
-
-  ChromeBrowserState* browser_state_ = nullptr;
 
   // SessionWindowIOSFactory used to create session data for saving.
   SessionWindowIOSFactory* session_window_ios_factory_ = nullptr;

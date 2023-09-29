@@ -9,3 +9,13 @@ SessionRestorationServiceImpl::SessionRestorationServiceImpl() = default;
 SessionRestorationServiceImpl::~SessionRestorationServiceImpl() = default;
 
 void SessionRestorationServiceImpl::Shutdown() {}
+
+void SessionRestorationServiceImpl::AddObserver(
+    SessionRestorationObserver* observer) {
+  observers_.AddObserver(observer);
+}
+
+void SessionRestorationServiceImpl::RemoveObserver(
+    SessionRestorationObserver* observer) {
+  observers_.RemoveObserver(observer);
+}

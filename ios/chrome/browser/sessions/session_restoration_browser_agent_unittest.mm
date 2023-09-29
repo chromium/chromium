@@ -14,8 +14,8 @@
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper_delegate.h"
 #import "ios/chrome/browser/sessions/ios_chrome_session_tab_helper.h"
 #import "ios/chrome/browser/sessions/session_restoration_browser_agent.h"
-#import "ios/chrome/browser/sessions/session_restoration_observer.h"
 #import "ios/chrome/browser/sessions/session_window_ios.h"
+#import "ios/chrome/browser/sessions/test_session_restoration_observer.h"
 #import "ios/chrome/browser/sessions/test_session_service.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -125,22 +125,6 @@ SessionWindowIOS* CreateSessionWindow(SessionInfo<N> session_info) {
   return [[SessionWindowIOS alloc] initWithSessions:sessions
                                       selectedIndex:session_info.active_index];
 }
-
-class TestRestorationObserver : public SessionRestorationObserver {
- public:
-  bool restore_started() { return restore_started_; }
-  int restored_web_states_count() { return restored_web_states_count_; }
-
- private:
-  void WillStartSessionRestoration() override { restore_started_ = true; }
-  void SessionRestorationFinished(
-      const std::vector<web::WebState*>& restored_web_states) override {
-    restored_web_states_count_ = restored_web_states.size();
-  }
-
-  bool restore_started_ = false;
-  int restored_web_states_count_ = -1;
-};
 
 class SessionRestorationBrowserAgentTest : public PlatformTest {
  public:
@@ -823,7 +807,7 @@ TEST_F(SessionRestorationBrowserAgentTest, ObserverCalledWithRestore) {
                     /*pinned=*/false,
                     /*background=*/false);
 
-  TestRestorationObserver observer;
+  TestSessionRestorationObserver observer;
   session_restoration_agent_->AddObserver(&observer);
 
   SessionWindowIOS* window =

@@ -31,7 +31,22 @@ source_set("sessions") {
 
 source_set("restoration_observer") {
   sources = [ "session_restoration_observer.h" ]
-  deps = [ "//base" ]
+  public_deps = [ "//base" ]
+}
+
+source_set("restoration_observer_helper") {
+  sources = [
+    "session_restoration_observer_helper.h",
+    "session_restoration_observer_helper.mm",
+  ]
+  deps = [
+    ":restoration_agent",
+    ":restoration_observer",
+    ":session_restoration_service",
+    ":session_restoration_service_factory",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/web/common:features",
+  ]
 }
 
 source_set("restoration_agent") {
@@ -124,15 +139,8 @@ source_set("session_saving") {
 }
 
 source_set("session_restoration_service") {
-  sources = [
-    "session_restoration_service.cc",
-    "session_restoration_service.h",
-  ]
-  deps = [
-    "//base",
-    "//components/keyed_service/core",
-    "//ios/web/common:features",
-  ]
+  sources = [ "session_restoration_service.h" ]
+  deps = [ "//components/keyed_service/core" ]
 }
 
 source_set("session_restoration_service_impl") {
@@ -151,6 +159,7 @@ source_set("session_restoration_service_impl") {
     "session_restoration_web_state_observer.mm",
   ]
   deps = [
+    ":restoration_observer",
     ":session_restoration_service",
     "//base",
     "//components/sessions:session_id",
@@ -173,6 +182,7 @@ source_set("session_restoration_service_factory") {
     "//base",
     "//components/keyed_service/ios",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/web/common:features",
   ]
 }
 
@@ -220,10 +230,13 @@ source_set("test_support") {
   sources = [
     "proto_util.cc",
     "proto_util.h",
+    "test_session_restoration_observer.h",
+    "test_session_restoration_observer.mm",
     "test_session_service.h",
     "test_session_service.mm",
   ]
   deps = [
+    ":restoration_observer",
     ":session_service",
     "//base",
     "//ios/chrome/browser/sessions/proto",
@@ -250,8 +263,10 @@ source_set("unit_tests") {
     "session_internal_util_unittest.mm",
     "session_migration_unittest.mm",
     "session_restoration_browser_agent_unittest.mm",
+    "session_restoration_observer_helper_unittest.mm",
     "session_restoration_scroll_observer_unittest.mm",
     "session_restoration_service_factory_unittest.cc",
+    "session_restoration_service_impl_unittest.mm",
     "session_restoration_web_state_list_observer_unittest.mm",
     "session_restoration_web_state_observer_unittest.mm",
     "session_service_ios_unittest.mm",
@@ -263,6 +278,7 @@ source_set("unit_tests") {
     ":resources_unit_tests",
     ":restoration_agent",
     ":restoration_observer",
+    ":restoration_observer_helper",
     ":serialisation",
     ":session_constants",
     ":session_internal_util",
