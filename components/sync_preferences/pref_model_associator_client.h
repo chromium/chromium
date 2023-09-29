@@ -24,18 +24,6 @@ class PrefModelAssociatorClient
   PrefModelAssociatorClient& operator=(const PrefModelAssociatorClient&) =
       delete;
 
-  // Returns true if the preference named |pref_name| is a list preference
-  // whose server value is merged with local value during synchronisation.
-  // TODO(crbug.com/1485960): Remove this method.
-  virtual bool IsMergeableListPreference(
-      const std::string& pref_name) const = 0;
-
-  // Returns true if the preference named |pref_name| is a dictionary preference
-  // whose server value is merged with local value during synchronisation.
-  // TODO(crbug.com/1485960): Remove this method.
-  virtual bool IsMergeableDictionaryPreference(
-      const std::string& pref_name) const = 0;
-
   // Returns the merged value if the client wants to apply a custom merging
   // strategy to the preference named |pref_name| with local value |local_value|
   // and server-provided value |server_value|. Otherwise, returns |nullptr| and

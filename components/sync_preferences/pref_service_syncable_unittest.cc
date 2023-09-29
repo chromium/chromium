@@ -402,15 +402,6 @@ class TestPrefModelAssociatorClient : public PrefModelAssociatorClient {
       const TestPrefModelAssociatorClient&) = delete;
 
   // PrefModelAssociatorClient implementation.
-  bool IsMergeableListPreference(const std::string& pref_name) const override {
-    return pref_name == kMergeableListPrefName;
-  }
-
-  bool IsMergeableDictionaryPreference(
-      const std::string& pref_name) const override {
-    return pref_name == kMergeableDictPrefName;
-  }
-
   base::Value MaybeMergePreferenceValues(
       const std::string& pref_name,
       const base::Value& local_value,

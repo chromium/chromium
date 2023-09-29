@@ -131,15 +131,6 @@ class TestPrefModelAssociatorClient : public PrefModelAssociatorClient {
       : syncable_prefs_database_(kSyncablePrefsDatabase) {}
 
   // PrefModelAssociatorClient implementation.
-  bool IsMergeableListPreference(const std::string& pref_name) const override {
-    return false;
-  }
-
-  bool IsMergeableDictionaryPreference(
-      const std::string& pref_name) const override {
-    return false;
-  }
-
   base::Value MaybeMergePreferenceValues(
       const std::string& pref_name,
       const base::Value& local_value,
@@ -1196,15 +1187,6 @@ class MergeTestPrefModelAssociatorClient : public PrefModelAssociatorClient {
       : syncable_prefs_database_(kSyncablePrefsDatabase) {}
 
   // PrefModelAssociatorClient implementation.
-  bool IsMergeableListPreference(const std::string& pref_name) const override {
-    return pref_name == kMergeableListPref;
-  }
-
-  bool IsMergeableDictionaryPreference(
-      const std::string& pref_name) const override {
-    return pref_name == kMergeableDictPref1 || pref_name == kMergeableDictPref2;
-  }
-
   base::Value MaybeMergePreferenceValues(
       const std::string& pref_name,
       const base::Value& local_value,

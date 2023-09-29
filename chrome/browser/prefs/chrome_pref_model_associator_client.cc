@@ -22,28 +22,6 @@ ChromePrefModelAssociatorClient::ChromePrefModelAssociatorClient() = default;
 
 ChromePrefModelAssociatorClient::~ChromePrefModelAssociatorClient() = default;
 
-bool ChromePrefModelAssociatorClient::IsMergeableListPreference(
-    const std::string& pref_name) const {
-  return (pref_name == prefs::kURLsToRestoreOnStartup) ||
-         (pref_name == prefs::kPinnedActions);
-}
-
-bool ChromePrefModelAssociatorClient::IsMergeableDictionaryPreference(
-    const std::string& pref_name) const {
-  if (pref_name == sync_preferences::kSyncableMergeableDictPrefForTesting) {
-    CHECK_IS_TEST();
-    return true;
-  }
-
-  const content_settings::WebsiteSettingsRegistry& registry =
-      *content_settings::WebsiteSettingsRegistry::GetInstance();
-  for (const content_settings::WebsiteSettingsInfo* info : registry) {
-    if (info->pref_name() == pref_name)
-      return true;
-  }
-  return false;
-}
-
 base::Value ChromePrefModelAssociatorClient::MaybeMergePreferenceValues(
     const std::string& pref_name,
     const base::Value& local_value,

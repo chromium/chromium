@@ -12,22 +12,6 @@ IOSChromePrefModelAssociatorClient::IOSChromePrefModelAssociatorClient() {}
 
 IOSChromePrefModelAssociatorClient::~IOSChromePrefModelAssociatorClient() {}
 
-bool IOSChromePrefModelAssociatorClient::IsMergeableListPreference(
-    const std::string& pref_name) const {
-  return false;
-}
-
-bool IOSChromePrefModelAssociatorClient::IsMergeableDictionaryPreference(
-    const std::string& pref_name) const {
-  const content_settings::WebsiteSettingsRegistry& registry =
-      *content_settings::WebsiteSettingsRegistry::GetInstance();
-  for (const content_settings::WebsiteSettingsInfo* info : registry) {
-    if (info->pref_name() == pref_name)
-      return true;
-  }
-  return false;
-}
-
 base::Value IOSChromePrefModelAssociatorClient::MaybeMergePreferenceValues(
     const std::string& pref_name,
     const base::Value& local_value,

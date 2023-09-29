@@ -401,22 +401,6 @@ void PrefModelAssociator::RegisterPref(const std::string& name) {
       << "Preference " << name
       << " has not been added to syncable prefs allowlist, or has incorrect "
          "data.";
-  // TODO(crbug.com/1474375): Remove these DCHECKs when removing
-  // PrefModelAssociatorClient::IsMergeable*Preference() methods.
-  DCHECK(!client_ || client_->IsMergeableListPreference(name) ==
-                         (client_->GetSyncablePrefsDatabase()
-                              .GetSyncablePrefMetadata(name)
-                              ->merge_behavior() ==
-                          MergeBehavior::kMergeableListWithRewriteOnUpdate))
-      << "Preference " << name
-      << " has invalid merge behavior listed in the syncable prefs database.";
-  DCHECK(!client_ ||
-         client_->IsMergeableDictionaryPreference(name) ==
-             (client_->GetSyncablePrefsDatabase()
-                  .GetSyncablePrefMetadata(name)
-                  ->merge_behavior() == MergeBehavior::kMergeableDict))
-      << "Preference " << name
-      << " has invalid merge behavior listed in the syncable prefs database.";
 
   registered_preferences_.insert(name);
 }

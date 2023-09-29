@@ -23,9 +23,6 @@ class ChromePrefModelAssociatorClient
   ~ChromePrefModelAssociatorClient() override;
 
   // sync_preferences::PrefModelAssociatorClient implementation.
-  bool IsMergeableListPreference(const std::string& pref_name) const override;
-  bool IsMergeableDictionaryPreference(
-      const std::string& pref_name) const override;
   base::Value MaybeMergePreferenceValues(
       const std::string& pref_name,
       const base::Value& local_value,
