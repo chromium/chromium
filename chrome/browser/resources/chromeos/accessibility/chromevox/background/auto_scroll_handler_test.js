@@ -18,7 +18,7 @@ ChromeVoxAutoScrollHandlerTest = class extends ChromeVoxE2ETest {
       importModule(
           'AutoScrollHandler', '/chromevox/background/auto_scroll_handler.js'),
       importModule(
-          'ChromeVoxState', '/chromevox/background/chromevox_state.js'),
+          'ChromeVoxRange', '/chromevox/background/chromevox_range.js'),
       importModule('CursorRange', '/common/cursors/range.js'),
     ]);
 
@@ -180,7 +180,7 @@ AX_TEST_F(
       const firstItemCursor = CursorRange.fromNode(list.firstChild);
       const lastItemCursor = CursorRange.fromNode(list.lastChild);
 
-      ChromeVoxState.instance.navigateToRange(firstItemCursor);
+      ChromeVoxRange.navigateTo(firstItemCursor);
 
       assertTrue(handler.onCommandNavigation(
           lastItemCursor, constants.Dir.FORWARD, /*pred=*/ null,
@@ -198,7 +198,7 @@ AX_TEST_F(
       const firstItemCursor = CursorRange.fromNode(list.firstChild);
       const lastItemCursor = CursorRange.fromNode(list.lastChild);
 
-      ChromeVoxState.instance.navigateToRange(lastItemCursor);
+      ChromeVoxRange.navigateTo(lastItemCursor);
 
       // Make scrolling action void, so that the second invocation should be
       // ignored.

@@ -7,7 +7,7 @@ import {AutomationUtil} from '../../../common/automation_util.js';
 import {constants} from '../../../common/constants.js';
 import {CursorRange} from '../../../common/cursors/range.js';
 import {ChromeVoxEvent} from '../../common/custom_automation_event.js';
-import {ChromeVoxState} from '../chromevox_state.js';
+import {ChromeVoxRange} from '../chromevox_range.js';
 
 import {EditableLine} from './editable_line.js';
 import {AutomationEditableText} from './editable_text.js';
@@ -149,8 +149,7 @@ export class TextEditHandler {
     const after = AutomationUtil.findNextNode(
         this.node_, Dir.FORWARD, AutomationPredicate.object,
         {skipInitialSubtree: true});
-    ChromeVoxState.instance.navigateToRange(
-        CursorRange.fromNode(after ?? this.node_));
+    ChromeVoxRange.navigateTo(CursorRange.fromNode(after ?? this.node_));
   }
 
   /**

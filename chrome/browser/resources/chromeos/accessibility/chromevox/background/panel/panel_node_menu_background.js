@@ -16,7 +16,7 @@ import {BridgeContext} from '../../common/bridge_constants.js';
 import {Msgs} from '../../common/msgs.js';
 import {PanelBridge} from '../../common/panel_bridge.js';
 import {PanelNodeMenuData, PanelNodeMenuId, PanelNodeMenuItemData} from '../../common/panel_menu_data.js';
-import {ChromeVoxState} from '../chromevox_state.js';
+import {ChromeVoxRange} from '../chromevox_range.js';
 import {Output} from '../output/output.js';
 import {OutputCustomEvent} from '../output/output_types.js';
 
@@ -104,8 +104,7 @@ export class PanelNodeMenuBackground {
 
         const callbackId = new BridgeCallbackId(
             BridgeContext.BACKGROUND,
-            () => ChromeVoxState.instance.navigateToRange(
-                CursorRange.fromNode(node)));
+            () => ChromeVoxRange.navigateTo(CursorRange.fromNode(node)));
         const isActive = node === this.node_ && this.isActivated_;
         const menuId = this.menuId_;
         this.addMenuItemFromData_({title, callbackId, isActive, menuId});

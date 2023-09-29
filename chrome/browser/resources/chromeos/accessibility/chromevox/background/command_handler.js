@@ -809,7 +809,7 @@ export class CommandHandler extends CommandHandlerInterface {
         ChromeVox.earcons.playEarcon(EarconId.WRAP);
       }
 
-      ChromeVoxState.instance.navigateToRange(
+      ChromeVoxRange.navigateTo(
           currentRange, undefined, speechProps, skipSettingSelection);
     }
 
@@ -1091,7 +1091,7 @@ export class CommandHandler extends CommandHandlerInterface {
       actionNode = actionNode.parent;
     }
     if (actionNode.inPageLinkTarget) {
-      ChromeVoxState.instance.navigateToRange(
+      ChromeVoxRange.navigateTo(
           CursorRange.fromNode(actionNode.inPageLinkTarget));
       return;
     }
