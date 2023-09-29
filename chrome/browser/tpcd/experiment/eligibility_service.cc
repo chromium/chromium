@@ -54,11 +54,11 @@ void EligibilityService::BroadcastProfileEligibility() {
 
   experiment_manager_->SetClientEligibility(
       IsProfileEligible(),
-      base::BindOnce(&EligibilityService::OnClientEligibilityChanged,
+      base::BindOnce(&EligibilityService::MarkProfileEligibility,
                      weak_factory_.GetWeakPtr()));
 }
 
-void EligibilityService::OnClientEligibilityChanged(bool is_eligible) {
+void EligibilityService::MarkProfileEligibility(bool is_eligible) {
   // For each storage partition, update the cookie deprecation label to the
   // updated value from the CookieDeprecationLabelManager.
   profile_->ForEachLoadedStoragePartition(
@@ -70,10 +70,6 @@ void EligibilityService::OnClientEligibilityChanged(bool is_eligible) {
         }
       }));
 
-  MarkProfileEligibility(is_eligible);
-}
-
-void EligibilityService::MarkProfileEligibility(bool is_eligible) {
   // Update the eligibility for the onboarding UX flow. Check that the user is
   // in Mode B (kDisable3PCookies is true).
   if (onboarding_service_ && kDisable3PCookies.Get()) {

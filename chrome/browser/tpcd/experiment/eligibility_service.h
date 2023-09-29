@@ -35,9 +35,6 @@ class EligibilityService : public KeyedService {
   friend class EligibilityServiceFactory;
   friend class EligibilityServiceBrowserTest;
 
-  // OnClientEligibilityChanged should only be called for currently loaded
-  // profiles when the ExperimentManager computes a client eligibility.
-  void OnClientEligibilityChanged(bool is_eligible);
   // MarkProfileEligibility should be called for all profiles to set their
   // eligibility, whether currently loaded or created later.
   void MarkProfileEligibility(bool is_eligible);
