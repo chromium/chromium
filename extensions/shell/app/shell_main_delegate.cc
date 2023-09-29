@@ -42,6 +42,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "base/base_paths_win.h"
+#include "base/process/process_info.h"
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "base/nix/xdg_util.h"
 #elif BUILDFLAG(IS_MAC)
@@ -79,17 +80,24 @@ base::FilePath GetDataPath() {
 }
 
 void InitLogging() {
+  uint32_t logging_dest = logging::LOG_TO_ALL;
   base::FilePath log_path;
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kLogFile)) {
     log_path = base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
         switches::kLogFile);
+#if BUILDFLAG(IS_WIN)
+  } else if (base::IsCurrentProcessInAppContainer()) {
+    // Sandboxed appcontainer processes are unable to resolve the default log
+    // file path without asserting.
+    logging_dest = (logging_dest & ~logging::LOG_TO_FILE);
+#endif
   } else {
     log_path = GetDataPath().Append(FILE_PATH_LITERAL("app_shell.log"));
   }
 
   // Set up log initialization settings.
   logging::LoggingSettings settings;
-  settings.logging_dest = logging::LOG_TO_ALL;
+  settings.logging_dest = logging_dest;
   settings.log_file_path = log_path.value().c_str();
 
   // Replace the old log file if this is the first process.
