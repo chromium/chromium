@@ -116,6 +116,10 @@
   .showing {
     animation-direction: reverse;
   }
+
+  paper-tooltip {
+    --paper-tooltip-min-width: max-content;
+  }
 </style>
 
 <div id="header-wrapper">
@@ -147,16 +151,22 @@
         </div>
         <template is="dom-if" if="[[buttonIcon]]">
           <cr-icon-button iron-icon="[[buttonIcon]]" id="mainButton"
-              on-click="onItemButtonClick_" actionable>
+              on-click="onItemButtonClick_" actionable
+              aria-label$="[[getButtonAriaLabelForOrigin_(item.origin)]]"
+              on-focus="onShowTooltip_" on-mouseenter="onShowTooltip_">
           </cr-icon-button>
         </template>
         <template is="dom-if" if="[[moreActionVisible]]">
           <cr-icon-button class="icon-more-vert" id="moreActionButton"
               on-click="onMoreActionClick_" title="$i18n{moreActions}"
+              aria-label$="[[getMoreButtonAriaLabelForOrigin_(item.origin)]]"
               actionable>
           </cr-icon-button>
         </template>
       </div>
     </template>
   </div>
+  <paper-tooltip fit-to-visible-bounds manual-mode position="top" offset="3">
+    [[buttonTooltipText]]
+  </paper-tooltip>
 </template>

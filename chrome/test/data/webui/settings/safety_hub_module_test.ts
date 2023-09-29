@@ -73,6 +73,8 @@ suite('SafetyHubModule', function() {
   test('testItemButton', async function() {
     await assignAndShowTestData();
     testElement.buttonIcon = 'cr20:block';
+    testElement.buttonAriaLabelId =
+        'safetyCheckNotificationPermissionReviewDontAllowAriaLabel';
     flush();
 
     // User clicks the button of the 2nd item in the list.
@@ -118,5 +120,34 @@ suite('SafetyHubModule', function() {
 
     assertFalse(isVisible(testElement.shadowRoot!.querySelector('#line')));
     assertFalse(isVisible(testElement.shadowRoot!.querySelector('#siteList')));
+  });
+
+  test('testTooltip', async function() {
+    // Check the item list is filled with the data.
+    const text = 'Dummy tooltip text';
+    await assignAndShowTestData();
+    testElement.buttonIcon = 'cr20:block';
+    testElement.buttonAriaLabelId =
+        'safetyCheckNotificationPermissionReviewDontAllowAriaLabel';
+    testElement.buttonTooltipText = text;
+    flush();
+
+    // Check that the tooltip is not visible.
+    let tooltip = testElement.shadowRoot!.querySelector('paper-tooltip');
+    assertTrue(!!tooltip);
+    assertFalse(isVisible(tooltip));
+
+    // User focuses the button of the 2nd item in the list.
+    const item = getEntries()[1]!;
+    const button = item.querySelector('cr-icon-button');
+    assertTrue(!!button);
+    button.focus();
+    flush();
+
+    // Check that the tooltip gets visible with the correct text.
+    tooltip = testElement.shadowRoot!.querySelector('paper-tooltip');
+    assertTrue(!!tooltip);
+    assertTrue(isVisible(tooltip));
+    assertEquals(text, tooltip!.textContent!.trim());
   });
 });

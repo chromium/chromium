@@ -10,11 +10,17 @@
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
+import 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 import '../settings_shared.css.js';
 import '../site_favicon.js';
+import '../i18n_setup.js';
 
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {TooltipMixin} from '../tooltip_mixin.js';
 
 import {getTemplate} from './safety_hub_module.html.js';
 
@@ -36,7 +42,11 @@ export interface SiteInfoWithTarget extends SiteInfo {
   target: EventTarget;
 }
 
-export class SettingsSafetyHubModuleElement extends PolymerElement {
+const SettingsSafetyHubModuleElementBase =
+    TooltipMixin(I18nMixin(PolymerElement));
+
+export class SettingsSafetyHubModuleElement extends
+    SettingsSafetyHubModuleElementBase {
   static get is() {
     return 'settings-safety-hub-module';
   }
@@ -66,14 +76,24 @@ export class SettingsSafetyHubModuleElement extends PolymerElement {
         value: 'cr:error',
       },
 
-      // The icon for button of the list item.
+      // The icon for the button of the list item.
       buttonIcon: String,
+
+      // The string ID for the aria label for the button of the list item.
+      buttonAriaLabelId: String,
+
+      // The string for the tooltip for the button of the list item.
+      buttonTooltipText: String,
 
       // Whether the more action button is visible.
       moreActionVisible: {
         type: Boolean,
         value: false,
       },
+
+      // The string ID for the aria label for the more action button of the list
+      // item.
+      moreButtonAriaLabelId: String,
     };
   }
 
@@ -82,6 +102,9 @@ export class SettingsSafetyHubModuleElement extends PolymerElement {
   subheader: string|TrustedHTML;
   headerIcon: string;
   buttonIcon: string;
+  buttonAriaLabelId: string;
+  buttonTooltipText: string;
+  moreButtonAriaLabelId: string;
   moreActionVisible: boolean;
 
   private modelUpdateDelayMsForTesting_: number|null = null;
@@ -238,8 +261,23 @@ export class SettingsSafetyHubModuleElement extends PolymerElement {
     }));
   }
 
+  private onShowTooltip_(e: DomRepeatEvent<SiteInfo>) {
+    e.stopPropagation();
+    const tooltip = this.shadowRoot!.querySelector('paper-tooltip');
+    assert(tooltip);
+    this.showTooltipAtTarget(tooltip, e.target!);
+  }
+
   private sanitizeInnerHtml_(rawString: string): TrustedHTML {
     return sanitizeInnerHtml(rawString);
+  }
+
+  private getButtonAriaLabelForOrigin_(origin: string): string {
+    return this.i18n(this.buttonAriaLabelId, origin);
+  }
+
+  private getMoreButtonAriaLabelForOrigin_(origin: string): string {
+    return this.i18n(this.moreButtonAriaLabelId, origin);
   }
 }
 
