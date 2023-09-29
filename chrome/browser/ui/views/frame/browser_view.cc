@@ -4876,12 +4876,20 @@ bool BrowserView::IsFeaturePromoActive(const base::Feature& iph_feature) const {
              iph_feature, user_education::FeaturePromoStatus::kContinued);
 }
 
-bool BrowserView::CanShowFeaturePromo(const base::Feature& iph_feature) const {
-  return initialized_ && feature_promo_controller_ &&
-         feature_promo_controller_->CanShowPromo(iph_feature);
+user_education::FeaturePromoResult BrowserView::CanShowFeaturePromo(
+    const base::Feature& iph_feature) const {
+  if (!initialized_) {
+    return user_education::FeaturePromoResult::kError;
+  }
+
+  if (!feature_promo_controller_) {
+    return user_education::FeaturePromoResult::kBlockedByContext;
+  }
+
+  return feature_promo_controller_->CanShowPromo(iph_feature);
 }
 
-bool BrowserView::MaybeShowFeaturePromo(
+user_education::FeaturePromoResult BrowserView::MaybeShowFeaturePromo(
     const base::Feature& iph_feature,
     user_education::FeaturePromoController::BubbleCloseCallback close_callback,
     user_education::FeaturePromoSpecification::FormatParameters body_params,
@@ -4892,11 +4900,15 @@ bool BrowserView::MaybeShowFeaturePromo(
   if (!initialized_) {
     LOG(ERROR) << "Attempting to show IPH " << iph_feature.name
                << " before browser initialization; IPH will not be shown.";
-    return false;
+    return user_education::FeaturePromoResult::kError;
   }
-  return feature_promo_controller_ &&
-         feature_promo_controller_->MaybeShowPromo(
-             iph_feature, std::move(close_callback), body_params, title_params);
+
+  if (!feature_promo_controller_) {
+    return user_education::FeaturePromoResult::kBlockedByContext;
+  }
+
+  return feature_promo_controller_->MaybeShowPromo(
+      iph_feature, std::move(close_callback), body_params, title_params);
 }
 
 bool BrowserView::MaybeShowStartupFeaturePromo(

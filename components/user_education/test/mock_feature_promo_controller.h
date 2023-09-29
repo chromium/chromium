@@ -20,8 +20,11 @@ class MockFeaturePromoController : public FeaturePromoController {
   ~MockFeaturePromoController() override;
 
   // FeaturePromoController:
-  MOCK_METHOD(bool, CanShowPromo, (const base::Feature&), (const, override));
-  MOCK_METHOD(bool,
+  MOCK_METHOD(FeaturePromoResult,
+              CanShowPromo,
+              (const base::Feature&),
+              (const, override));
+  MOCK_METHOD(FeaturePromoResult,
               MaybeShowPromo,
               (const base::Feature&,
                BubbleCloseCallback,
@@ -36,7 +39,7 @@ class MockFeaturePromoController : public FeaturePromoController {
                FeaturePromoSpecification::FormatParameters,
                FeaturePromoSpecification::FormatParameters),
               (override));
-  MOCK_METHOD(bool,
+  MOCK_METHOD(FeaturePromoResult,
               MaybeShowPromoForDemoPage,
               (const base::Feature&,
                BubbleCloseCallback,

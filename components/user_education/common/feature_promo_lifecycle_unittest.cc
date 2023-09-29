@@ -13,6 +13,7 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "components/feature_engagement/test/mock_tracker.h"
+#include "components/user_education/common/feature_promo_result.h"
 #include "components/user_education/common/feature_promo_specification.h"
 #include "components/user_education/common/feature_promo_storage_service.h"
 #include "components/user_education/common/help_bubble_params.h"
@@ -74,10 +75,12 @@ class FeaturePromoLifecycleTest : public testing::Test {
     promo_subtype_ = promo_subtype;
   }
 
-  bool is_snoozeable() const {
+  FeaturePromoResult GetSnoozedResult() const {
     return promo_subtype() == PromoSubtype::kNormal &&
-           (promo_type() == PromoType::kSnooze ||
-            promo_type() == PromoType::kTutorial);
+                   (promo_type() == PromoType::kSnooze ||
+                    promo_type() == PromoType::kTutorial)
+               ? FeaturePromoResult::kSnoozed
+               : FeaturePromoResult::Success();
   }
 
   std::unique_ptr<FeaturePromoLifecycle> CreateLifecycle(
@@ -321,10 +324,12 @@ TEST_P(FeaturePromoLifecycleTypesTest, BlockDismissedIPH) {
   EXPECT_CALL(tracker_, Dismissed);
   lifecycle->OnPromoEnded(CloseReason::kDismiss);
   lifecycle = CreateLifecycle(kTestIPHFeature);
-  const bool expect_can_show = promo_subtype() == PromoSubtype::kNormal &&
-                               (promo_type() == PromoType::kLegacy ||
-                                promo_type() == PromoType::kToast ||
-                                promo_type() == PromoType::kCustomAction);
+  const auto expect_can_show = (promo_subtype() == PromoSubtype::kNormal &&
+                                (promo_type() == PromoType::kLegacy ||
+                                 promo_type() == PromoType::kToast ||
+                                 promo_type() == PromoType::kCustomAction))
+                                   ? FeaturePromoResult::Success()
+                                   : FeaturePromoResult::kPermanentlyDismissed;
   EXPECT_EQ(expect_can_show, lifecycle->CanShow());
   storage_service_.Reset(kTestIPHFeature);
   lifecycle = CreateLifecycle(kTestIPHFeature);
@@ -337,7 +342,7 @@ TEST_P(FeaturePromoLifecycleTypesTest, BlockSnoozedIPH) {
   EXPECT_CALL(tracker_, Dismissed);
   lifecycle->OnPromoEnded(CloseReason::kSnooze);
   lifecycle = CreateLifecycle(kTestIPHFeature);
-  EXPECT_EQ(!is_snoozeable(), lifecycle->CanShow());
+  EXPECT_EQ(GetSnoozedResult(), lifecycle->CanShow());
   storage_service_.Reset(kTestIPHFeature);
   lifecycle = CreateLifecycle(kTestIPHFeature);
   EXPECT_TRUE(lifecycle->CanShow());
@@ -349,7 +354,7 @@ TEST_P(FeaturePromoLifecycleTypesTest, ReleaseSnoozedIPH) {
   EXPECT_CALL(tracker_, Dismissed);
   lifecycle->OnPromoEnded(CloseReason::kSnooze);
   lifecycle = CreateLifecycle(kTestIPHFeature);
-  EXPECT_EQ(!is_snoozeable(), lifecycle->CanShow());
+  EXPECT_EQ(GetSnoozedResult(), lifecycle->CanShow());
   task_environment_.FastForwardBy(
       FeaturePromoLifecycle::kDefaultSnoozeDuration);
   lifecycle = CreateLifecycle(kTestIPHFeature);
@@ -370,10 +375,10 @@ TEST_P(FeaturePromoLifecycleTypesTest, MultipleIPH) {
   lifecycle->OnPromoEnded(CloseReason::kSnooze);
 
   lifecycle = CreateLifecycle(kTestIPHFeature);
-  EXPECT_EQ(!is_snoozeable(), lifecycle->CanShow());
+  EXPECT_EQ(GetSnoozedResult(), lifecycle->CanShow());
 
   lifecycle = CreateLifecycle(kTestIPHFeature2);
-  EXPECT_EQ(!is_snoozeable(), lifecycle->CanShow());
+  EXPECT_EQ(GetSnoozedResult(), lifecycle->CanShow());
 
   task_environment_.FastForwardBy(
       FeaturePromoLifecycle::kDefaultSnoozeDuration - base::Hours(1));
@@ -382,7 +387,7 @@ TEST_P(FeaturePromoLifecycleTypesTest, MultipleIPH) {
   EXPECT_TRUE(lifecycle->CanShow());
 
   lifecycle = CreateLifecycle(kTestIPHFeature2);
-  EXPECT_EQ(!is_snoozeable(), lifecycle->CanShow());
+  EXPECT_EQ(GetSnoozedResult(), lifecycle->CanShow());
 
   task_environment_.FastForwardBy(base::Hours(1));
 
@@ -397,7 +402,7 @@ TEST_P(FeaturePromoLifecycleTypesTest, SnoozeNonInteractedIPH) {
   lifecycle.reset();
 
   lifecycle = CreateLifecycle(kTestIPHFeature);
-  EXPECT_EQ(!is_snoozeable(), lifecycle->CanShow());
+  EXPECT_EQ(GetSnoozedResult(), lifecycle->CanShow());
 
   task_environment_.FastForwardBy(
       FeaturePromoLifecycle::kDefaultSnoozeDuration);
@@ -427,7 +432,7 @@ TEST_P(FeaturePromoLifecycleAppTest, IPHBlockedPerApp) {
 
   // That app should no longer allow showing.
   lifecycle = CreateLifecycle(kTestIPHFeature, kAppName);
-  EXPECT_FALSE(lifecycle->CanShow());
+  EXPECT_EQ(FeaturePromoResult::kPermanentlyDismissed, lifecycle->CanShow());
 
   // However a different app should be allowed.
   lifecycle = CreateLifecycle(kTestIPHFeature, kAppName2);
@@ -440,9 +445,9 @@ TEST_P(FeaturePromoLifecycleAppTest, IPHBlockedPerApp) {
 
   // Now both apps should be blocked.
   lifecycle = CreateLifecycle(kTestIPHFeature, kAppName);
-  EXPECT_FALSE(lifecycle->CanShow());
+  EXPECT_EQ(FeaturePromoResult::kPermanentlyDismissed, lifecycle->CanShow());
   lifecycle = CreateLifecycle(kTestIPHFeature, kAppName2);
-  EXPECT_FALSE(lifecycle->CanShow());
+  EXPECT_EQ(FeaturePromoResult::kPermanentlyDismissed, lifecycle->CanShow());
 
   // But a different IPH should not be blocked.
   lifecycle = CreateLifecycle(kTestIPHFeature2, kAppName);

@@ -95,6 +95,7 @@ DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOneOffIPHElementId);
 using user_education::FeaturePromoController;
 using user_education::FeaturePromoHandle;
 using user_education::FeaturePromoRegistry;
+using user_education::FeaturePromoResult;
 using user_education::FeaturePromoSpecification;
 using user_education::FeaturePromoStatus;
 using user_education::FeaturePromoStorageService;
@@ -277,7 +278,8 @@ TEST_F(BrowserFeaturePromoControllerTest, AsksBackendIfPromoShouldBeShown) {
   // If the backend says no, the controller says no.
   EXPECT_CALL(*mock_tracker_, WouldTriggerHelpUI(Ref(kTestIPHFeature)))
       .WillOnce(Return(false));
-  EXPECT_FALSE(controller_->CanShowPromo(kTestIPHFeature));
+  EXPECT_EQ(FeaturePromoResult::kBlockedByConfig,
+            controller_->CanShowPromo(kTestIPHFeature));
 
   // If the backend says yes, the controller says yes.
   EXPECT_CALL(*mock_tracker_, WouldTriggerHelpUI(Ref(kTestIPHFeature)))
@@ -306,7 +308,8 @@ TEST_F(BrowserFeaturePromoControllerTest, AsksBackendToShowStartupPromo) {
   UNCALLED_MOCK_CALLBACK(FeaturePromoController::StartupPromoCallback,
                          callback);
   EXPECT_CALL_IN_SCOPE(
-      callback, Run(Ref(kTestIPHFeature), false),
+      callback,
+      Run(Ref(kTestIPHFeature), FeaturePromoResult(FeaturePromoResult::kError)),
       controller_->MaybeShowStartupPromo(kTestIPHFeature, callback.Get()));
 }
 
@@ -331,7 +334,8 @@ TEST_F(BrowserFeaturePromoControllerTest, BubbleBlocksCanShowPromo) {
   EXPECT_CALL(*mock_tracker_, WouldTriggerHelpUI(Ref(kTutorialIPHFeature)))
       .WillRepeatedly(Return(true));
   EXPECT_TRUE(controller_->MaybeShowPromo(kTestIPHFeature));
-  EXPECT_FALSE(controller_->CanShowPromo(kTutorialIPHFeature));
+  EXPECT_EQ(FeaturePromoResult::kBlockedByPromo,
+            controller_->CanShowPromo(kTutorialIPHFeature));
   EXPECT_CALL(*mock_tracker_, Dismissed(Ref(kTestIPHFeature))).Times(1);
   EXPECT_TRUE(controller_->EndPromo(
       kTestIPHFeature,
@@ -350,7 +354,8 @@ TEST_F(BrowserFeaturePromoControllerTest, ShowsStartupBubble) {
   UNCALLED_MOCK_CALLBACK(FeaturePromoController::StartupPromoCallback,
                          callback);
 
-  EXPECT_CALL_IN_SCOPE(callback, Run(Ref(kTestIPHFeature), true),
+  EXPECT_CALL_IN_SCOPE(callback,
+                       Run(Ref(kTestIPHFeature), FeaturePromoResult::Success()),
                        EXPECT_TRUE(controller_->MaybeShowStartupPromo(
                            kTestIPHFeature, callback.Get())));
   EXPECT_EQ(FeaturePromoStatus::kBubbleShowing,
@@ -381,8 +386,10 @@ TEST_F(BrowserFeaturePromoControllerTest, ShowStartupBlockedWithAsyncCallback) {
       controller_->MaybeShowStartupPromo(kTestIPHFeature, callback.Get()));
   EXPECT_EQ(FeaturePromoStatus::kQueuedForStartup,
             controller_->GetPromoStatus(kTestIPHFeature));
-  EXPECT_CALL_IN_SCOPE(callback, Run(Ref(kTestIPHFeature), false),
-                       run_loop.Run());
+  EXPECT_CALL_IN_SCOPE(
+      callback,
+      Run(Ref(kTestIPHFeature), FeaturePromoResult(FeaturePromoResult::kError)),
+      run_loop.Run());
   EXPECT_EQ(FeaturePromoStatus::kNotRunning,
             controller_->GetPromoStatus(kTestIPHFeature));
 }
@@ -412,7 +419,8 @@ TEST_F(BrowserFeaturePromoControllerTest, ShowStartupBubbleWithAsyncCallback) {
       controller_->MaybeShowStartupPromo(kTestIPHFeature, callback.Get()));
   EXPECT_EQ(FeaturePromoStatus::kQueuedForStartup,
             controller_->GetPromoStatus(kTestIPHFeature));
-  EXPECT_CALL_IN_SCOPE(callback, Run(Ref(kTestIPHFeature), true),
+  EXPECT_CALL_IN_SCOPE(callback,
+                       Run(Ref(kTestIPHFeature), FeaturePromoResult::Success()),
                        run_loop.Run());
   EXPECT_EQ(FeaturePromoStatus::kBubbleShowing,
             controller_->GetPromoStatus(kTestIPHFeature));
@@ -1219,10 +1227,10 @@ class BrowserFeaturePromoControllerViewsTest
     return Check([this, args...]() {
       EXPECT_CALL(*mock_tracker_,
                   ShouldTriggerHelpUI(Ref(kStringTestIPHFeature)))
-          .WillOnce(Return(true));
+          .WillOnce(Return(FeaturePromoResult::Success()));
 
-      return controller_->MaybeShowPromo(kStringTestIPHFeature,
-                                         base::DoNothing(), args...);
+      return static_cast<bool>(controller_->MaybeShowPromo(
+          kStringTestIPHFeature, base::DoNothing(), args...));
     });
   }
 };

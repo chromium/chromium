@@ -643,8 +643,9 @@ class BrowserView : public BrowserWindow,
 
   BrowserFeaturePromoController* GetFeaturePromoController() override;
   bool IsFeaturePromoActive(const base::Feature& iph_feature) const override;
-  bool CanShowFeaturePromo(const base::Feature& iph_feature) const override;
-  bool MaybeShowFeaturePromo(
+  user_education::FeaturePromoResult CanShowFeaturePromo(
+      const base::Feature& iph_feature) const override;
+  user_education::FeaturePromoResult MaybeShowFeaturePromo(
       const base::Feature& iph_feature,
       user_education::FeaturePromoController::BubbleCloseCallback
           close_callback = base::DoNothing(),

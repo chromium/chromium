@@ -11,6 +11,7 @@
 #include "base/strings/string_piece_forward.h"
 #include "base/time/time.h"
 #include "components/feature_engagement/public/tracker.h"
+#include "components/user_education/common/feature_promo_result.h"
 #include "components/user_education/common/feature_promo_specification.h"
 #include "components/user_education/common/feature_promo_storage_service.h"
 
@@ -46,7 +47,7 @@ class FeaturePromoLifecycle {
   // Returns whether the policy and previous usage of this IPH would allow it to
   // be shown again; for example, a snoozeable IPH cannot show if it is
   // currently in the snooze period.
-  bool CanShow() const;
+  FeaturePromoResult CanShow() const;
 
   // Notifies that the promo was shown. `tracker` will be used to release the
   // feature when the promo ends.

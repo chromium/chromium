@@ -591,7 +591,8 @@ class BrowserWindow : public ui::BaseWindow {
   // USAGE NOTE: Only call this method if figuring out whether to try to show an
   // IPH would involve significant expense. This method may itself have
   // non-trivial cost.
-  virtual bool CanShowFeaturePromo(const base::Feature& iph_feature) const = 0;
+  virtual user_education::FeaturePromoResult CanShowFeaturePromo(
+      const base::Feature& iph_feature) const = 0;
 
   // Maybe shows an in-product help promo. Returns true if the promo is shown.
   // In cases where there is no promo controller, immediately returns false.
@@ -602,7 +603,7 @@ class BrowserWindow : public ui::BaseWindow {
   // If determining whether to call this method would involve significant
   // expense, you *may* first call `CanShowFeaturePromo()` before doing the
   // required computation; otherwise just call this method.
-  virtual bool MaybeShowFeaturePromo(
+  virtual user_education::FeaturePromoResult MaybeShowFeaturePromo(
       const base::Feature& iph_feature,
       user_education::FeaturePromoController::BubbleCloseCallback
           close_callback = base::DoNothing(),

@@ -2,9 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/run_loop.h"
-#include "base/strings/stringprintf.h"
-#include "base/task/single_thread_task_runner.h"
+#include <sstream>
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -14,6 +12,7 @@
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/test/scoped_iph_feature_list.h"
+#include "components/user_education/common/feature_promo_controller.h"
 #include "components/user_education/common/product_messaging_controller.h"
 #include "content/public/test/browser_test.h"
 
@@ -51,16 +50,17 @@ class ProductMessagingControllerUiTest : public InteractiveBrowserTest {
     });
   }
 
-  auto CheckShowPromo(bool should_show) {
+  auto CheckShowPromo(user_education::FeaturePromoResult expected_result) {
+    std::ostringstream oss;
+    oss << "CheckShowPromo(" << expected_result << ")";
     return std::move(
         CheckResult(
             [this]() {
               return browser()->window()->MaybeShowFeaturePromo(
                   feature_engagement::kIPHDesktopTabGroupsNewGroupFeature);
             },
-            should_show)
-            .SetDescription(base::StringPrintf(
-                "CheckShowPromo(%s)", should_show ? "true" : "false")));
+            expected_result)
+            .SetDescription(oss.str().c_str()));
   }
 
   auto EnsureHandle() {
@@ -87,8 +87,10 @@ class ProductMessagingControllerUiTest : public InteractiveBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(ProductMessagingControllerUiTest, NoticeBlocksIPH) {
-  RunTestSequence(ObserveState(kFeatureEngagementInitializedState, browser()),
-                  WaitForState(kFeatureEngagementInitializedState, true),
-                  QueueNotice(), CheckShowPromo(false), FlushEvents(),
-                  EnsureHandle(), ReleaseHandle(), CheckShowPromo(true));
+  RunTestSequence(
+      ObserveState(kFeatureEngagementInitializedState, browser()),
+      WaitForState(kFeatureEngagementInitializedState, true), QueueNotice(),
+      CheckShowPromo(user_education::FeaturePromoResult::kBlockedByUi),
+      FlushEvents(), EnsureHandle(), ReleaseHandle(),
+      CheckShowPromo(user_education::FeaturePromoResult::Success()));
 }

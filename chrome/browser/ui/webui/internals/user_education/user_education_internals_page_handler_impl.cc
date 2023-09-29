@@ -209,14 +209,36 @@ void UserEducationInternalsPageHandlerImpl::ShowFeaturePromo(
           ->window()
           ->GetFeaturePromoController();
 
-  bool showed_promo =
+  const auto showed_promo =
       feature_promo_controller->MaybeShowPromoForDemoPage(*feature);
 
-  if (showed_promo) {
-    std::move(callback).Run(std::string());
-  } else {
-    std::move(callback).Run(std::string("Failed to show IPH"));
+  std::string reason;
+  if (!showed_promo) {
+    using Failure = user_education::FeaturePromoResult::Failure;
+    switch (*showed_promo.failure()) {
+      case Failure::kBlockedByContext:
+        reason = "Cannot show IPH in this browser window.";
+        break;
+      case Failure::kBlockedByPromo:
+        reason = "Failed to show IPH due to high-priority IPH.";
+        break;
+      case Failure::kBlockedByUi:
+        reason = "Cannot show IPH due to conflicting UI or missing anchor.";
+        break;
+      case Failure::kCanceled:
+        reason = "IPH was canceled before it could be shown.";
+        break;
+      case Failure::kError:
+        reason = "Internal error.";
+        break;
+      case Failure::kBlockedByConfig:
+      case Failure::kFeatureDisabled:
+      case Failure::kPermanentlyDismissed:
+      case Failure::kSnoozed:
+        reason = "Unexpected failure (should not happen for demo).";
+    }
   }
+  std::move(callback).Run(reason);
 }
 
 const std::string

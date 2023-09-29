@@ -22,6 +22,7 @@
 #include "components/user_education/common/feature_promo_handle.h"
 #include "components/user_education/common/feature_promo_lifecycle.h"
 #include "components/user_education/common/feature_promo_registry.h"
+#include "components/user_education/common/feature_promo_result.h"
 #include "components/user_education/common/feature_promo_specification.h"
 #include "components/user_education/common/feature_promo_storage_service.h"
 #include "components/user_education/common/help_bubble.h"
@@ -74,7 +75,7 @@ class FeaturePromoController {
   using BubbleCloseCallback = base::OnceClosure;
   using StartupPromoCallback =
       base::OnceCallback<void(const base::Feature& iph_feature,
-                              bool promo_shown)>;
+                              FeaturePromoResult promo_result)>;
 
   FeaturePromoController();
   FeaturePromoController(const FeaturePromoController& other) = delete;
@@ -89,7 +90,8 @@ class FeaturePromoController {
   // expensive, this is a slightly less expensive out (but please note that it
   // is not zero cost; a number of prefs and application states do need to be
   // queried).
-  virtual bool CanShowPromo(const base::Feature& iph_feature) const = 0;
+  virtual FeaturePromoResult CanShowPromo(
+      const base::Feature& iph_feature) const = 0;
 
   // Starts the promo if possible. Returns whether it started.
   // |iph_feature| must be an IPH feature defined in
@@ -111,7 +113,7 @@ class FeaturePromoController {
   // |FeaturePromoControllerViews::MaybeShowPromoWithParams()|. Prefer
   // statically registering params with FeaturePromoRegistry and using
   // this method when possible.
-  virtual bool MaybeShowPromo(
+  virtual FeaturePromoResult MaybeShowPromo(
       const base::Feature& iph_feature,
       BubbleCloseCallback close_callback = base::DoNothing(),
       FeaturePromoSpecification::FormatParameters body_params =
@@ -175,7 +177,7 @@ class FeaturePromoController {
 
   // Starts a promo with the settings for skipping any logging or filtering
   // provided by the implementation for MaybeShowPromo.
-  virtual bool MaybeShowPromoForDemoPage(
+  virtual FeaturePromoResult MaybeShowPromoForDemoPage(
       const base::Feature& iph_feature,
       BubbleCloseCallback close_callback = base::DoNothing(),
       FeaturePromoSpecification::FormatParameters body_params =
@@ -250,13 +252,15 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
   }
 
   // FeaturePromoController:
-  bool CanShowPromo(const base::Feature& iph_feature) const override;
-  bool MaybeShowPromo(const base::Feature& iph_feature,
-                      BubbleCloseCallback close_callback = base::DoNothing(),
-                      FeaturePromoSpecification::FormatParameters body_params =
-                          FeaturePromoSpecification::NoSubstitution(),
-                      FeaturePromoSpecification::FormatParameters title_params =
-                          FeaturePromoSpecification::NoSubstitution()) override;
+  FeaturePromoResult CanShowPromo(
+      const base::Feature& iph_feature) const override;
+  FeaturePromoResult MaybeShowPromo(
+      const base::Feature& iph_feature,
+      BubbleCloseCallback close_callback = base::DoNothing(),
+      FeaturePromoSpecification::FormatParameters body_params =
+          FeaturePromoSpecification::NoSubstitution(),
+      FeaturePromoSpecification::FormatParameters title_params =
+          FeaturePromoSpecification::NoSubstitution()) override;
   bool MaybeShowStartupPromo(
       const base::Feature& iph_feature,
       StartupPromoCallback promo_callback = base::DoNothing(),
@@ -270,7 +274,7 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
   bool HasPromoBeenDismissed(const base::Feature& iph_feature,
                              FeaturePromoStorageService::CloseReason*
                                  close_reason = nullptr) const override;
-  bool MaybeShowPromoForDemoPage(
+  FeaturePromoResult MaybeShowPromoForDemoPage(
       const base::Feature& iph_feature,
       BubbleCloseCallback close_callback = base::DoNothing(),
       FeaturePromoSpecification::FormatParameters body_params =
@@ -304,9 +308,8 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
   friend BrowserFeaturePromoControllerTest;
   friend FeaturePromoLifecycleUiTest;
 
-  // For IPH not registered with |FeaturePromoRegistry|. Only use this
-  // if it is infeasible to pre-register your IPH.
-  bool MaybeShowPromoCommon(
+  // Common logic for showing feature promos.
+  FeaturePromoResult MaybeShowPromoCommon(
       const base::Feature& iph_feature,
       bool for_demo,
       BubbleCloseCallback close_callback,
@@ -413,7 +416,7 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
   //
   // The optional parameters `spec`, `lifecycle`, and `anchor_element` will be
   // populated on success, if specified.
-  bool CanShowPromoCommon(
+  FeaturePromoResult CanShowPromoCommon(
       const base::Feature& iph_feature,
       bool for_demo,
       const FeaturePromoSpecification** spec = nullptr,
