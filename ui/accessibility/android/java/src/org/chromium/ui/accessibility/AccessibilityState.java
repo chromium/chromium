@@ -825,6 +825,7 @@ public class AccessibilityState {
         contentResolver.unregisterContentObserver(sDisplayInversionEnabledObserver);
         contentResolver.unregisterContentObserver(sTextContrastObserver);
         sState = null;
+        sPreInitCachedValuePerformGesturesEnabled = null;
         sInitialized = false;
         sExtraStateInitialized = false;
         sDisplayInversionEnabled = false;
