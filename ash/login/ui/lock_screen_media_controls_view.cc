@@ -506,13 +506,7 @@ void LockScreenMediaControlsView::MediaSessionInfoChanged(
     return;
   }
 
-  // We only consider the session as sensitive if its metadata comes from an OTR
-  // session and the kHideIncognitoMediaMetadata flag is off. When the flag is
-  // on, the session's metadata is obscured (in Incognito mode), so don't need
-  // to hide the media controls.
-  bool is_sensitive =
-      !base::FeatureList::IsEnabled(media::kHideIncognitoMediaMetadata) &&
-      session_info->is_sensitive;
+  bool is_sensitive = session_info->is_sensitive;
 
   // If the session is marked as sensitive then don't show the controls.
   if (is_sensitive && !IsDrawn()) {

@@ -1039,7 +1039,13 @@ MediaSessionImpl::GetMediaSessionInfoSync() {
   info->is_controllable = IsControllable();
 
   // If the browser context is off the record then it should be sensitive.
-  info->is_sensitive = web_contents()->GetBrowserContext()->IsOffTheRecord();
+  // This is used as a proxy to hide the metadata from sensitive surfaces such
+  // as the lock screen.
+  // TODO(1484490): Remove this field once the new feature to hide metadata from
+  // sensitive profiles is launched.
+  info->is_sensitive =
+      web_contents()->GetBrowserContext()->IsOffTheRecord() &&
+      !base::FeatureList::IsEnabled(media::kHideIncognitoMediaMetadata);
 
   info->picture_in_picture_state =
       web_contents()->HasPictureInPictureVideo() ||

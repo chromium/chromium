@@ -19,7 +19,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/timer/mock_timer.h"
 #include "components/media_message_center/media_controls_progress_view.h"
-#include "media/base/media_switches.h"
 #include "services/media_session/public/cpp/test/test_media_controller.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -528,11 +527,7 @@ TEST_F(LockScreenMediaControlsViewTest, CloseButtonVisibility) {
   EXPECT_FALSE(CloseButtonHasImage());
 }
 
-TEST_F(LockScreenMediaControlsViewTest,
-       MediaControlsNotShownIfSensitiveWithHideMetadataFeatureFlagDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_feature_list_.InitAndDisableFeature(
-      media::kHideIncognitoMediaMetadata);
+TEST_F(LockScreenMediaControlsViewTest, MediaControlsNotShownIfSensitive) {
   SimulateMediaSessionChanged(
       media_session::mojom::MediaPlaybackState::kPlaying,
       /*is_sensitive=*/true);
@@ -540,13 +535,10 @@ TEST_F(LockScreenMediaControlsViewTest,
   EXPECT_FALSE(media_controls_view_->IsDrawn());
 }
 
-TEST_F(LockScreenMediaControlsViewTest,
-       MediaControlsShownIfSensitiveWithHideMetadataFeatureFlagEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_feature_list_.InitAndEnableFeature(media::kHideIncognitoMediaMetadata);
+TEST_F(LockScreenMediaControlsViewTest, MediaControlsShownIfNotSensitive) {
   SimulateMediaSessionChanged(
       media_session::mojom::MediaPlaybackState::kPlaying,
-      /*is_sensitive=*/true);
+      /*is_sensitive=*/false);
 
   EXPECT_TRUE(media_controls_view_->IsDrawn());
 }

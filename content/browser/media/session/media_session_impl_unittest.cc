@@ -21,6 +21,7 @@
 #include "content/public/test/test_renderer_host.h"
 #include "content/test/test_web_contents.h"
 #include "media/base/media_content_type.h"
+#include "media/base/media_switches.h"
 #include "services/media_session/public/cpp/features.h"
 #include "services/media_session/public/cpp/test/audio_focus_test_util.h"
 #include "services/media_session/public/cpp/test/mock_media_session.h"
@@ -680,22 +681,6 @@ TEST_F(MediaSessionImplTest, SourceId_DifferentBrowserContext) {
   EXPECT_NE(GetMediaSession()->GetSourceId(), other_session->GetSourceId());
 }
 
-TEST_F(MediaSessionImplTest, SessionInfoSensitive) {
-  EXPECT_FALSE(browser_context()->IsOffTheRecord());
-  EXPECT_FALSE(media_session::test::GetMediaSessionInfoSync(GetMediaSession())
-                   ->is_sensitive);
-}
-
-TEST_F(MediaSessionImplTest, SessionInfoSensitive_OffTheRecord) {
-  auto other_context = std::make_unique<TestBrowserContext>();
-  other_context->set_is_off_the_record(true);
-  auto other_contents = TestWebContents::Create(other_context.get(), nullptr);
-  MediaSessionImpl* other_session = MediaSessionImpl::Get(other_contents.get());
-
-  EXPECT_TRUE(other_context->IsOffTheRecord());
-  EXPECT_TRUE(media_session::test::GetMediaSessionInfoSync(other_session)
-                  ->is_sensitive);
-}
 
 TEST_F(MediaSessionImplTest, SessionInfoPictureInPicture) {
   WebContentsImpl* web_contents_impl =
@@ -831,6 +816,58 @@ TEST_F(MediaSessionImplWithMediaSessionClientTest, SessionInfoHideMetadata) {
   client_.SetShouldHideMetadata(true);
   EXPECT_TRUE(media_session::test::GetMediaSessionInfoSync(GetMediaSession())
                   ->hide_metadata);
+}
+
+class MediaSessionImplIsSensitive : public MediaSessionImplTest,
+                                    public ::testing::WithParamInterface<bool> {
+ public:
+  MediaSessionImplIsSensitive()
+      : is_incognito_media_feature_enabled_(GetParam()) {}
+
+  void SetUp() override {
+    MediaSessionImplTest::SetUp();
+
+    if (is_incognito_media_feature_enabled_) {
+      scoped_feature_list_.InitAndEnableFeature(
+          media::kHideIncognitoMediaMetadata);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          media::kHideIncognitoMediaMetadata);
+    }
+  }
+
+  void TearDown() override {
+    scoped_feature_list_.Reset();
+    MediaSessionImplTest::TearDown();
+  }
+
+  bool is_incognito_media_feature_enabled_;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(MediaSessionImplIsSensitive,
+                         MediaSessionImplIsSensitive,
+                         testing::Bool());
+
+TEST_P(MediaSessionImplIsSensitive, SessionInfo_IsSensitive_NormalSession) {
+  EXPECT_FALSE(browser_context()->IsOffTheRecord());
+
+  EXPECT_FALSE(media_session::test::GetMediaSessionInfoSync(GetMediaSession())
+                   ->is_sensitive);
+}
+
+TEST_P(MediaSessionImplIsSensitive, SessionInfo_IsSensitive_OffTheRecord) {
+  auto other_context = std::make_unique<TestBrowserContext>();
+  other_context->set_is_off_the_record(true);
+  auto other_contents = TestWebContents::Create(other_context.get(), nullptr);
+  MediaSessionImpl* other_session = MediaSessionImpl::Get(other_contents.get());
+
+  EXPECT_TRUE(other_context->IsOffTheRecord());
+  EXPECT_EQ(!is_incognito_media_feature_enabled_,
+            media_session::test::GetMediaSessionInfoSync(other_session)
+                ->is_sensitive);
 }
 
 // Tests for throttling duration updates.
