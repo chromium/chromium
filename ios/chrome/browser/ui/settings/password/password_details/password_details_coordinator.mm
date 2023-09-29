@@ -17,8 +17,6 @@
 #import "components/prefs/pref_service.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/credential_provider_promo/features.h"
-#import "ios/chrome/browser/passwords/ios_chrome_password_check_manager.h"
-#import "ios/chrome/browser/passwords/ios_chrome_password_check_manager_factory.h"
 #import "ios/chrome/browser/passwords/password_tab_helper.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
@@ -33,7 +31,6 @@
 #import "ios/chrome/browser/shared/public/commands/credential_provider_promo_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_consumer.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_coordinator_delegate.h"
@@ -163,16 +160,12 @@ using password_manager::features::IsAuthOnEntryV2Enabled;
   }
 
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
-  self.mediator = [[PasswordDetailsMediator alloc]
-         initWithPasswords:credentials
-               displayName:displayName
-      passwordCheckManager:IOSChromePasswordCheckManagerFactory::
-                               GetForBrowserState(browserState)
-                                   .get()
-               prefService:browserState->GetPrefs()
-               syncService:SyncServiceFactory::GetForBrowserState(browserState)
-                   context:_context
-                  delegate:self];
+  self.mediator =
+      [[PasswordDetailsMediator alloc] initWithPasswords:credentials
+                                             displayName:displayName
+                                            browserState:browserState
+                                                 context:_context
+                                                delegate:self];
   self.mediator.consumer = self.viewController;
   self.viewController.handler = self;
   self.viewController.delegate = self.mediator;

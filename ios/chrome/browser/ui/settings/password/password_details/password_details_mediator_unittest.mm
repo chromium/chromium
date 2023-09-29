@@ -131,14 +131,11 @@ class PasswordDetailsMediatorTest : public PlatformTest {
         stringWithUTF8String:affiliated_group().GetDisplayName().c_str()];
 
     mediator_ = [[PasswordDetailsMediator alloc]
-           initWithPasswords:GetAffiliatedGroupCredentials()
-                 displayName:display_name()
-        passwordCheckManager:password_check_manager()
-                 prefService:browser_state_->GetPrefs()
-                 syncService:SyncServiceFactory::GetForBrowserState(
-                                 browser_state_.get())
-                     context:DetailsContext::kPasswordSettings
-                    delegate:nil];
+        initWithPasswords:GetAffiliatedGroupCredentials()
+              displayName:display_name()
+             browserState:browser_state_.get()
+                  context:DetailsContext::kPasswordSettings
+                 delegate:nil];
     mediator_.consumer = consumer_;
   }
 

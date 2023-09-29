@@ -17,12 +17,7 @@ struct CredentialUIEntry;
 class SavedPasswordsPresenter;
 }  // namespace password_manager
 
-namespace syncer {
-class SyncService;
-}  // namespace syncer
-
-class PrefService;
-class IOSChromePasswordCheckManager;
+class ChromeBrowserState;
 @protocol PasswordDetailsConsumer;
 @protocol PasswordDetailsMediatorDelegate;
 
@@ -33,15 +28,13 @@ class IOSChromePasswordCheckManager;
 // Vector of CredentialUIEntry is converted to an array of PasswordDetails and
 // passed to a consumer with the display name (title) for the Password Details
 // view.
-- (instancetype)
-       initWithPasswords:
-           (const std::vector<password_manager::CredentialUIEntry>&)credentials
-             displayName:(NSString*)displayName
-    passwordCheckManager:(scoped_refptr<IOSChromePasswordCheckManager>)manager
-             prefService:(PrefService*)prefService
-             syncService:(syncer::SyncService*)syncService
-                 context:(DetailsContext)context
-                delegate:(id<PasswordDetailsMediatorDelegate>)delegate
+- (instancetype)initWithPasswords:
+                    (const std::vector<password_manager::CredentialUIEntry>&)
+                        credentials
+                      displayName:(NSString*)displayName
+                     browserState:(ChromeBrowserState*)browserState
+                          context:(DetailsContext)context
+                         delegate:(id<PasswordDetailsMediatorDelegate>)delegate
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
