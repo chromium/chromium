@@ -86,9 +86,6 @@ const int kMainIntentCheckDelay = 1;
         [[AppState alloc] initWithStartupInformation:_startupInformation];
     _pushNotificationDelegate =
         [[PushNotificationDelegate alloc] initWithAppState:_appState];
-    // TODO:(crbug.com/1487183) Move APNS device registration further down
-    // startup sequence.
-    [PushNotificationUtil registerDeviceWithAPNS];
     [_mainController setAppState:_appState];
   }
   return self;
@@ -369,6 +366,10 @@ const int kMainIntentCheckDelay = 1;
           base::RecordAction(base::UserMetricsAction("IOSOpenByViewIntent"));
         }
       });
+
+  if (_startupInformation.isColdStart) {
+    [PushNotificationUtil registerDeviceWithAPNS];
+  }
 
   [_appState applicationWillEnterForeground:UIApplication.sharedApplication
                             metricsMediator:_metricsMediator
