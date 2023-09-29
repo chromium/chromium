@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 import './scanning_mojom_imports.js';
 
-import {ColorMode, PageSize, Scanner, ScanSource} from 'chrome://scanning/scanning.mojom-webui.js';
+import {ColorMode, PageSize} from 'chrome://scanning/scanning.mojom-webui.js';
 import {alphabeticalCompare} from 'chrome://scanning/scanning_app_util.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';

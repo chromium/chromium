@@ -12,6 +12,8 @@ mojom("mojom") {
 
   webui_module_path = "/ash/webui/scanning"
 
+  use_typescript_sources = true
+
   public_deps = [ "//mojo/public/mojom/base" ]
 
   cpp_typemaps = [

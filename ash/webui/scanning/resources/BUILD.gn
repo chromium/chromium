@@ -62,13 +62,13 @@ build_webui("build") {
   ]
 
   mojo_files = [
-    "$root_gen_dir/mojom-webui/ash/webui/common/mojom/accessibility_features.mojom-webui.js",
-    "$root_gen_dir/mojom-webui/ash/webui/scanning/mojom/scanning.mojom-webui.js",
+    "$root_gen_dir/ash/webui/common/mojom/accessibility_features.mojom-webui.ts",
+    "$root_gen_dir/ash/webui/scanning/mojom/scanning.mojom-webui.ts",
   ]
 
   mojo_files_deps = [
-    "//ash/webui/common/mojom:mojom_webui_js",
-    "//ash/webui/scanning/mojom:mojom_webui_js",
+    "//ash/webui/common/mojom:mojom_ts__generator",
+    "//ash/webui/scanning/mojom:mojom_ts__generator",
   ]
 
   ts_tsconfig_base = "tsconfig.json"
