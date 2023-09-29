@@ -3209,27 +3209,11 @@ if (current_toolchain == default_toolchain) {
         bundle_path = "$root_build_dir/apks/MonochromePublic.aab"
       }
 
-      _monochrome_minimal_apks_filename = "MonochromePublic.minimal.apks"
+      _minimal_apks_filename = "MonochromePublic.minimal.apks"
       android_resource_sizes_test(
           "resource_sizes_monochrome_public_minimal_apks") {
-        file_path = "$root_build_dir/apks/${_monochrome_minimal_apks_filename}"
+        file_path = "$root_build_dir/apks/${_minimal_apks_filename}"
         data_deps = [ ":monochrome_public_minimal_apks" ]
-      }
-
-      if (android_64bit_target_cpu && !skip_secondary_abi_for_cq) {
-        # Used for binary size monitoring.
-        create_app_bundle_minimal_apks("monochrome_32_public_minimal_apks") {
-          deps = [ ":monochrome_32_public_bundle" ]
-          bundle_path = "$root_build_dir/apks/MonochromePublic32.aab"
-        }
-
-        _monochrome_32_minimal_apks_filename = "MonochromePublic32.minimal.apks"
-        android_resource_sizes_test(
-            "resource_sizes_monochrome_32_public_minimal_apks") {
-          file_path =
-              "$root_build_dir/apks/${_monochrome_32_minimal_apks_filename}"
-          data_deps = [ ":monochrome_32_public_minimal_apks" ]
-        }
       }
     }
 
@@ -3284,82 +3268,43 @@ if (current_toolchain == default_toolchain) {
         trichrome_webview_basename = _trichrome_webview_basename
       }
 
-      if (android_64bit_target_cpu && !skip_secondary_abi_for_cq) {
-        _trichrome_library_32_basename = "TrichromeLibrary32.apk"
-        _trichrome_chrome_32_basename = "TrichromeChrome32.minimal.apks"
-        _trichrome_webview_32_basename = "TrichromeWebView32.minimal.apks"
-        _ssargs_32_filename = "Trichrome32.ssargs"
-
-        write_ssargs_trichrome("ssargs_trichrome_32") {
-          ssargs_path = "$root_build_dir/apks/${_ssargs_32_filename}"
-          abi_filter = android_app_secondary_abi
-          symbols_dir = "android_clang_arm/lib.unstripped"
-          trichrome_library_basename = _trichrome_library_32_basename
-          trichrome_chrome_basename = _trichrome_chrome_32_basename
-          trichrome_webview_basename = _trichrome_webview_32_basename
-        }
+      # Used for binary size monitoring.
+      create_app_bundle_minimal_apks("trichrome_chrome_minimal_apks") {
+        deps = [ ":$_main_trichrome_chrome_bundle_target" ]
+        bundle_path = "$root_build_dir/apks/TrichromeChrome.aab"
       }
 
-      if (android_64bit_target_cpu && !skip_secondary_abi_for_cq) {
-        # Used for binary size monitoring.
-        create_app_bundle_minimal_apks("trichrome_chrome_32_minimal_apks") {
-          deps = [ ":trichrome_chrome_32_bundle" ]
-          bundle_path = "$root_build_dir/apks/TrichromeChrome32.aab"
-        }
-        group("trichrome_32_minimal_apks") {
-          deps = [
-            ":trichrome_chrome_32_minimal_apks",
-            ":trichrome_library_32_apk",
-            "//android_webview:trichrome_webview_32_minimal_apks",
-          ]
-        }
-        _trichrome_library_basename_for_size = _trichrome_library_32_basename
-        _trichrome_chrome_basename_for_size = _trichrome_chrome_32_basename
-        _trichrome_webview_basename_for_size = _trichrome_webview_32_basename
-        _symbol_dir_for_size = "android_clang_arm/lib.unstripped"
-        _ssargs_filename_for_size = _ssargs_32_filename
-        _mapping_files_for_size = [
-          "apks/TrichromeChrome32.aab.mapping",
-          "apks/TrichromeWebView32.aab.mapping",
+      group("trichrome_minimal_apks") {
+        deps = [
+          ":$_main_trichrome_library_apk_target",
+          ":trichrome_chrome_minimal_apks",
+          "//android_webview:trichrome_webview_minimal_apks",
         ]
-      } else {
-        # Used for binary size monitoring.
-        create_app_bundle_minimal_apks("trichrome_chrome_minimal_apks") {
-          deps = [ ":$_main_trichrome_chrome_bundle_target" ]
-          bundle_path = "$root_build_dir/apks/TrichromeChrome.aab"
-        }
-        group("trichrome_32_minimal_apks") {
-          deps = [
-            ":$_main_trichrome_library_apk_target",
-            ":trichrome_chrome_minimal_apks",
-            "//android_webview:trichrome_webview_minimal_apks",
-          ]
-        }
-        _trichrome_library_basename_for_size = _trichrome_library_basename
-        _trichrome_chrome_basename_for_size = _trichrome_chrome_basename
-        _trichrome_webview_basename_for_size = _trichrome_webview_basename
-        _symbol_dir_for_size = "lib.unstripped"
-        _ssargs_filename_for_size = _ssargs_filename
-        _mapping_files_for_size = [
-          "apks/TrichromeChrome.aab.mapping",
-          "apks/TrichromeWebView.aab.mapping",
-        ]
+      }
+
+      # For 32-bit this is an alias.
+      # TODO(crbug.com/1414410) For 64-bit make this build 32-bit Trichrome.
+      group("trichrome_32_minimal_apks") {
+        deps = [ ":trichrome_minimal_apks" ]
       }
 
       android_resource_sizes_test("resource_sizes_trichrome") {
         apk_name = "Trichrome"
         trichrome_library_path =
-            "$root_build_dir/apks/$_trichrome_library_basename_for_size"
+            "$root_build_dir/apks/$_trichrome_library_basename"
         trichrome_chrome_path =
-            "$root_build_dir/apks/$_trichrome_chrome_basename_for_size"
+            "$root_build_dir/apks/$_trichrome_chrome_basename"
         trichrome_webview_path =
-            "$root_build_dir/apks/$_trichrome_webview_basename_for_size"
-        data_deps = [ ":trichrome_32_minimal_apks" ]
+            "$root_build_dir/apks/$_trichrome_webview_basename"
+        data_deps = [ ":trichrome_minimal_apks" ]
       }
 
       android_size_bot_config("resource_size_config_trichrome") {
         name = "Trichrome"
-        mapping_files = _mapping_files_for_size
+        mapping_files = [
+          "apks/TrichromeChrome.aab.mapping",
+          "apks/TrichromeWebView.aab.mapping",
+        ]
 
         # Save mapping files since they are needed by:
         # 1) Checking for ForTesting methods.
@@ -3367,18 +3312,18 @@ if (current_toolchain == default_toolchain) {
         # Save apk and unstripped library because they are needed for collecting
         # disassembly of large symbols.
         archive_files = mapping_files + [
-                          "apks/$_trichrome_library_basename_for_size",
-                          "apks/$_trichrome_chrome_basename_for_size",
-                          "apks/$_trichrome_webview_basename_for_size",
-                          "${_symbol_dir_for_size}/libmonochrome__combined.so",
+                          "apks/$_trichrome_library_basename",
+                          "apks/$_trichrome_chrome_basename",
+                          "apks/$_trichrome_webview_basename",
+                          "lib.unstripped/libmonochrome__combined.so",
                         ]
         to_resource_sizes_py = {
           apk_name = "apks/resource_size_config_trichrome"
-          trichrome_library = "apks/$_trichrome_library_basename_for_size"
-          trichrome_chrome = "apks/$_trichrome_chrome_basename_for_size"
-          trichrome_webview = "apks/$_trichrome_webview_basename_for_size"
+          trichrome_library = "apks/$_trichrome_library_basename"
+          trichrome_chrome = "apks/$_trichrome_chrome_basename"
+          trichrome_webview = "apks/$_trichrome_webview_basename"
         }
-        supersize_input_file = "apks/$_ssargs_filename_for_size"
+        supersize_input_file = "apks/$_ssargs_filename"
       }
     }
   }
