@@ -193,7 +193,13 @@ suite('nearby-contact-visibility', () => {
     visibilityElement.set('settings.visibility', Visibility.kSelectedContacts);
     await waitAfterNextRender(visibilityElement);
 
-    assertToggleState(/*all=*/ false, /*some=*/ true, /*no=*/ false);
+    if (loadTimeData.getValue('isSelfShareEnabled')) {
+      assertSelfShareToggleState(
+          /*contacts=*/ true, /*yourDevices=*/ false, /*no=*/ false);
+      areContactCheckBoxesVisibleAndAllContactsToggledOff();
+    } else {
+      assertToggleState(/*all=*/ false, /*some=*/ true, /*no=*/ false);
+    }
     assertFalse(isZeroStateVisible());
     assertFalse(isNoContactsSectionVisible());
     assertTrue(isDownloadContactsFailedVisible());
@@ -242,7 +248,12 @@ suite('nearby-contact-visibility', () => {
     // need to wait for the next render to see if the zero
     await waitAfterNextRender(visibilityElement);
 
-    assertToggleState(/*all=*/ false, /*some=*/ false, /*no=*/ false);
+    if (loadTimeData.getValue('isSelfShareEnabled')) {
+      assertSelfShareToggleState(
+          /*contacts=*/ false, /*yourDevices=*/ false, /*no=*/ false);
+    } else {
+      assertToggleState(/*all=*/ false, /*some=*/ false, /*no=*/ false);
+    }
     assertTrue(isZeroStateVisible());
     assertFalse(isNoContactsSectionVisible());
   });
@@ -255,8 +266,13 @@ suite('nearby-contact-visibility', () => {
         // need to wait for the next render to see results
         await waitAfterNextRender(visibilityElement);
 
-        assertToggleState(
-            /*all=*/ true, /*some=*/ false, /*no=*/ false);
+        if (loadTimeData.getValue('isSelfShareEnabled')) {
+          assertSelfShareToggleState(
+              /*contacts=*/ true, /*yourDevices=*/ false, /*no=*/ false);
+        } else {
+          assertToggleState(
+              /*all=*/ true, /*some=*/ false, /*no=*/ false);
+        }
         assertFalse(isZeroStateVisible());
         assertFalse(areContactCheckBoxesVisibleAndAllContactsToggledOff());
         assertFalse(isNoContactsSectionVisible());
@@ -271,9 +287,14 @@ suite('nearby-contact-visibility', () => {
 
         // need to wait for the next render to see results
         await waitAfterNextRender(visibilityElement);
-
-        assertToggleState(
-            /*all=*/ false, /*some=*/ true, /*no=*/ false);
+        if (loadTimeData.getValue('isSelfShareEnabled')) {
+          assertSelfShareToggleState(
+              /*contacts=*/ true, /*yourDevices=*/ false, /*no=*/ false);
+          areContactCheckBoxesVisibleAndAllContactsToggledOff();
+        } else {
+          assertToggleState(
+              /*all=*/ false, /*some=*/ true, /*no=*/ false);
+        }
         assertFalse(isZeroStateVisible());
         assertTrue(areContactCheckBoxesVisibleAndAllContactsToggledOff());
         assertFalse(isNoContactsSectionVisible());
@@ -285,7 +306,12 @@ suite('nearby-contact-visibility', () => {
     // need to wait for the next render to see results
     await waitAfterNextRender(visibilityElement);
 
-    assertToggleState(/*all=*/ false, /*some=*/ false, /*no=*/ true);
+    if (loadTimeData.getValue('isSelfShareEnabled')) {
+      assertSelfShareToggleState(
+          /*contacts=*/ false, /*yourDevices=*/ false, /*no=*/ true);
+    } else {
+      assertToggleState(/*all=*/ false, /*some=*/ false, /*no=*/ true);
+    }
     assertFalse(isZeroStateVisible());
     assertEquals(visibilityElement.querySelectorAll('#contactList').length, 0);
     assertFalse(isNoContactsSectionVisible());
@@ -302,7 +328,12 @@ suite('nearby-contact-visibility', () => {
         // need to wait for the next render to see results
         await waitAfterNextRender(visibilityElement);
 
-        assertToggleState(/*all=*/ true, /*some=*/ false, /*no=*/ false);
+        if (loadTimeData.getValue('isSelfShareEnabled')) {
+          assertSelfShareToggleState(
+              /*contacts=*/ true, /*yourDevices=*/ false, /*no=*/ false);
+        } else {
+          assertToggleState(/*all=*/ true, /*some=*/ false, /*no=*/ false);
+        }
         assertFalse(isZeroStateVisible());
         assertFalse(areContactCheckBoxesVisibleAndAllContactsToggledOff());
         assertTrue(isNoContactsSectionVisible());
