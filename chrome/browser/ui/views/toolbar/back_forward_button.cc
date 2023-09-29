@@ -49,6 +49,7 @@ BackForwardButton::BackForwardButton(Direction direction,
         l10n_util::GetStringUTF8(IDS_ACCDESCRIPTION_BACK));
     SetID(VIEW_ID_BACK_BUTTON);
     SetProperty(views::kElementIdentifierKey, kToolbarBackButtonElementId);
+    set_menu_identifier(kToolbarBackButtonMenuElementId);
   } else {
     SetVectorIcons(features::IsChromeRefresh2023()
                        ? vector_icons::kForwardArrowChromeRefreshIcon
@@ -60,6 +61,7 @@ BackForwardButton::BackForwardButton(Direction direction,
         l10n_util::GetStringUTF8(IDS_ACCDESCRIPTION_FORWARD));
     SetID(VIEW_ID_FORWARD_BUTTON);
     SetProperty(views::kElementIdentifierKey, kToolbarForwardButtonElementId);
+    set_menu_identifier(kToolbarForwardButtonMenuElementId);
   }
 }
 

@@ -25,6 +25,7 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
@@ -426,6 +427,7 @@ SubmenuView* MenuItemView::CreateSubmenu() {
     return submenu_;
 
   submenu_ = new SubmenuView(this);
+  submenu_->SetProperty(kElementIdentifierKey, submenu_id_);
 
 #if BUILDFLAG(IS_MAC)
   // All MenuItemViews of Type kSubMenu have a respective SubmenuView.
@@ -463,6 +465,16 @@ SubmenuView* MenuItemView::GetSubmenu() const {
 
 bool MenuItemView::SubmenuIsShowing() const {
   return HasSubmenu() && GetSubmenu()->IsShowing();
+}
+
+void MenuItemView::SetSubmenuId(ui::ElementIdentifier id) {
+  CHECK(type_ == Type::kSubMenu || type_ == Type::kActionableSubMenu)
+      << "SetSubmenuId called on menu item with type "
+      << static_cast<int>(type_);
+  submenu_id_ = id;
+  if (submenu_) {
+    submenu_->SetProperty(kElementIdentifierKey, id);
+  }
 }
 
 void MenuItemView::SetTitle(const std::u16string& title) {

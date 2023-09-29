@@ -8,6 +8,9 @@
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
+#include "base/run_loop.h"
+#include "base/test/bind.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
@@ -15,10 +18,13 @@
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/interaction/element_identifier.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/menu/menu_runner.h"
+#include "ui/views/interaction/element_tracker_views.h"
 
 namespace test {
 
@@ -195,6 +201,27 @@ TEST_F(ToolbarButtonUITest, ShowMenu) {
   EXPECT_FALSE(test_api.menu_runner());
   EXPECT_EQ(views::Button::STATE_NORMAL, button_->GetState());
 }
+
+// Widget activation on Mac in unit tests is not reliable, so this will also be
+// covered by e.g. `ToolbarViewTest.BackButtonMenu`.
+#if !BUILDFLAG(IS_MAC)
+TEST_F(ToolbarButtonUITest, ShowMenuWithIdentifier) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kMenuId);
+
+  test::ToolbarButtonTestApi test_api(button_);
+  button_->set_menu_identifier(kMenuId);
+  base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
+  const auto subscription =
+      ui::ElementTracker::GetElementTracker()->AddElementShownCallback(
+          kMenuId, views::ElementTrackerViews::GetContextForView(button_),
+          base::BindLambdaForTesting(
+              [&run_loop](ui::TrackedElement*) { run_loop.Quit(); }));
+
+  button_->ShowContextMenu(gfx::Point(), ui::MENU_SOURCE_MOUSE);
+  run_loop.Run();
+  test_api.menu_runner()->Cancel();
+}
+#endif  // !BUILDFLAG(IS_MAC)
 
 // Test deleting a ToolbarButton while its menu is showing.
 TEST_F(ToolbarButtonUITest, DeleteWithMenu) {

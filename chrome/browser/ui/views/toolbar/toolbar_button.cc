@@ -535,8 +535,10 @@ void ToolbarButton::ShowDropDownMenu(ui::MenuSourceType source_type) {
       model_.get(), base::BindRepeating(&ToolbarButton::OnMenuClosed,
                                         base::Unretained(this)));
   menu_model_adapter_->set_triggerable_event_flags(GetTriggerableEventFlags());
+  auto* const root = menu_model_adapter_->CreateMenu();
+  root->SetSubmenuId(menu_identifier_);
   menu_runner_ = std::make_unique<views::MenuRunner>(
-      menu_model_adapter_->CreateMenu(), views::MenuRunner::HAS_MNEMONICS);
+      root, views::MenuRunner::HAS_MNEMONICS);
   menu_runner_->RunMenuAt(GetWidget(), nullptr, menu_anchor_bounds,
                           views::MenuAnchorPosition::kTopLeft, source_type);
 }

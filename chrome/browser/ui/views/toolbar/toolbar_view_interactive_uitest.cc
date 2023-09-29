@@ -20,6 +20,7 @@
 #include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_command_controller.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/view_ids.h"
@@ -28,12 +29,16 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "ui/base/interaction/element_identifier.h"
+#include "ui/base/test/ui_controls.h"
+#include "ui/base/ui_base_types.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view.h"
@@ -41,14 +46,14 @@
 
 using bookmarks::BookmarkModel;
 
-class ToolbarViewTest : public InProcessBrowserTest {
+class ToolbarViewTest : public InteractiveBrowserTest {
  public:
   ToolbarViewTest() = default;
   ToolbarViewTest(const ToolbarViewTest&) = delete;
   ToolbarViewTest& operator=(const ToolbarViewTest&) = delete;
 
   void SetUpOnMainThread() override {
-    InProcessBrowserTest::SetUpOnMainThread();
+    InteractiveBrowserTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
   }
 
@@ -258,4 +263,26 @@ IN_PROC_BROWSER_TEST_F(ToolbarViewTest,
           ->toolbar()
           ->extensions_container();
   EXPECT_EQ(nullptr, extensions_container);
+}
+
+// Verifies that the identifiers for the pop-up menus are properly assigned so
+// that the menu can be located by tests when it is shown.
+//
+// The back button is just one example for which the menu identifier is defined.
+IN_PROC_BROWSER_TEST_F(ToolbarViewTest, BackButtonMenu) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsId);
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url1 = embedded_test_server()->GetURL("/title1.html");
+  const GURL url2 = embedded_test_server()->GetURL("/title2.html");
+  const GURL url3 = embedded_test_server()->GetURL("/title3.html");
+  RunTestSequence(
+      InstrumentTab(kWebContentsId), NavigateWebContents(kWebContentsId, url1),
+      NavigateWebContents(kWebContentsId, url2),
+      NavigateWebContents(kWebContentsId, url3),
+      // Show the context menu.
+      MoveMouseTo(kToolbarBackButtonElementId), ClickMouse(ui_controls::RIGHT),
+      WaitForShow(kToolbarBackButtonMenuElementId),
+      // Dismiss the context menu by clicking on it.
+      MoveMouseTo(kToolbarBackButtonMenuElementId), ClickMouse(),
+      WaitForHide(kToolbarBackButtonMenuElementId));
 }

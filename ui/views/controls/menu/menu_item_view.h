@@ -16,6 +16,7 @@
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/menu_separator_types.h"
 #include "ui/base/themed_vector_icon.h"
@@ -241,6 +242,10 @@ class VIEWS_EXPORT MenuItemView : public View {
 
   // Returns true if this menu item has a submenu and it is showing
   bool SubmenuIsShowing() const;
+
+  // Sets the identifier of the submenu, if there is one, or to a future submenu
+  // that would be created.
+  void SetSubmenuId(ui::ElementIdentifier submenu_id);
 
   // Returns the parent menu item.
   MenuItemView* GetParentMenuItem() { return parent_menu_item_; }
@@ -614,6 +619,9 @@ class VIEWS_EXPORT MenuItemView : public View {
 
   // Submenu, created via CreateSubmenu.
   raw_ptr<SubmenuView, DanglingUntriaged> submenu_ = nullptr;
+
+  // Identifier to assign to a submenu if one is created.
+  ui::ElementIdentifier submenu_id_;
 
   std::u16string title_;
   std::u16string secondary_title_;

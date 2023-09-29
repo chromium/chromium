@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/chrome_views_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/base/theme_provider.h"
@@ -127,6 +128,11 @@ class ToolbarButton : public views::LabelButton,
   void AfterPropertyChange(const void* key, int64_t old_value) override;
 
   ui::MenuModel* menu_model() { return model_.get(); }
+
+  void set_menu_identifier(ui::ElementIdentifier menu_identifier) {
+    menu_identifier_ = menu_identifier;
+  }
+  ui::ElementIdentifier menu_identifier() const { return menu_identifier_; }
 
  protected:
   // Returns if menu should be shown. Override this to change default behavior.
@@ -295,6 +301,9 @@ class ToolbarButton : public views::LabelButton,
 
   // Menu runner to display drop down menu.
   std::unique_ptr<views::MenuRunner> menu_runner_;
+
+  // Optional identifier for the menu when it runs.
+  ui::ElementIdentifier menu_identifier_;
 
   // Vector icons for the ToolbarButton. The icon is chosen based on touch-ui.
   // Reacts to theme changes using default colors.
