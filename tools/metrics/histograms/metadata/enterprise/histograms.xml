@@ -939,6 +939,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.DeviceTrust.Key.LoadPersistedKeyResult"
+    enum="DTLoadPersistedKeyResult" expires_after="2024-06-01">
+  <owner>seblalancette@google.com</owner>
+  <owner>cbe-device-trust-eng@google.com</owner>
+  <summary>
+    Recorded when a key loading attempt was made with an enum value representing
+    either a successful attempt, or different possible errors.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.DeviceTrust.Key.Signing.Latency.{Variant}"
     units="ms" expires_after="2024-06-01">
   <owner>seblalancette@chromium.org</owner>

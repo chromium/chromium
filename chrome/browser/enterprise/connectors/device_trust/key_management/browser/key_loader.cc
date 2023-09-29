@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/check.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/key_loader_impl.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/network/mojo_key_network_delegate.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -17,19 +18,28 @@ KeyLoader::DTCLoadKeyResult::DTCLoadKeyResult(LoadPersistedKeyResult result)
 
 KeyLoader::DTCLoadKeyResult::DTCLoadKeyResult(
     scoped_refptr<SigningKeyPair> key_pair)
-    : key_pair(key_pair), result(LoadPersistedKeyResult::kSuccess) {}
+    : key_pair(key_pair), result(LoadPersistedKeyResult::kSuccess) {
+  CHECK(key_pair);
+}
 
 KeyLoader::DTCLoadKeyResult::DTCLoadKeyResult(
     int status_code,
     scoped_refptr<SigningKeyPair> key_pair)
     : status_code(status_code),
       key_pair(key_pair),
-      result(LoadPersistedKeyResult::kSuccess) {}
+      result(LoadPersistedKeyResult::kSuccess) {
+  CHECK(key_pair);
+}
 
 KeyLoader::DTCLoadKeyResult::~DTCLoadKeyResult() = default;
 
+KeyLoader::DTCLoadKeyResult::DTCLoadKeyResult(const DTCLoadKeyResult& other) =
+    default;
 KeyLoader::DTCLoadKeyResult::DTCLoadKeyResult(DTCLoadKeyResult&& other) =
     default;
+
+KeyLoader::DTCLoadKeyResult& KeyLoader::DTCLoadKeyResult::operator=(
+    const KeyLoader::DTCLoadKeyResult& other) = default;
 KeyLoader::DTCLoadKeyResult& KeyLoader::DTCLoadKeyResult::operator=(
     KeyLoader::DTCLoadKeyResult&& other) = default;
 

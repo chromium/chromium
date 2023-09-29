@@ -31066,6 +31066,13 @@ Called by update_document_policy_enum.py.-->
   <int value="1" label="EC"/>
 </enum>
 
+<enum name="DTLoadPersistedKeyResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Not Found"/>
+  <int value="2" label="Malformed Key"/>
+  <int value="3" label="Unknown"/>
+</enum>
+
 <enum name="DTLS_SRTPCryptoSuite">
   <summary>
     DTLS/SRTP crypto suites from the IANA registry as specified at

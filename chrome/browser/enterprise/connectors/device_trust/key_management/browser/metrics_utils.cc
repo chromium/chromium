@@ -17,6 +17,8 @@ namespace {
 constexpr char kLoadedKeyTrustLevelHistogram[] =
     "Enterprise.DeviceTrust.Key.TrustLevel";
 constexpr char kLoadedKeyTypeHistogram[] = "Enterprise.DeviceTrust.Key.Type";
+constexpr char kLoadPersistedKeyResultHistogram[] =
+    "Enterprise.DeviceTrust.Key.LoadPersistedKeyResult";
 constexpr char kKeyCreationResultHistogram[] =
     "Enterprise.DeviceTrust.Key.CreationResult";
 constexpr char kKeyRotationResultHistogram[] =
@@ -81,7 +83,10 @@ DTKeyRotationResult ResultFromStatus(KeyRotationCommand::Status status) {
 }  // namespace
 
 void LogKeyLoadingResult(
-    absl::optional<DeviceTrustKeyManager::KeyMetadata> key_metadata) {
+    absl::optional<DeviceTrustKeyManager::KeyMetadata> key_metadata,
+    LoadPersistedKeyResult result) {
+  base::UmaHistogramEnumeration(kLoadPersistedKeyResultHistogram, result);
+
   if (!key_metadata.has_value()) {
     return;
   }

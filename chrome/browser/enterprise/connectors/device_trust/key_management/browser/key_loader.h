@@ -41,10 +41,10 @@ class KeyLoader {
 
     ~DTCLoadKeyResult();
 
-    DTCLoadKeyResult& operator=(const DTCLoadKeyResult& other) = delete;
-    DTCLoadKeyResult(const DTCLoadKeyResult& other) = delete;
-
+    DTCLoadKeyResult(const DTCLoadKeyResult& other);
     DTCLoadKeyResult(DTCLoadKeyResult&&);
+
+    DTCLoadKeyResult& operator=(const DTCLoadKeyResult& other);
     DTCLoadKeyResult& operator=(DTCLoadKeyResult&&);
 
     // HTTP response code from the key upload request.

@@ -7,6 +7,7 @@
 
 #include "base/time/time.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/commands/key_rotation_command.h"
+#include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/key_persistence_delegate.h"
 #include "components/enterprise/browser/device_trust/device_trust_key_manager.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -59,9 +60,11 @@ enum class DTSynchronizationError {
 };
 
 // Logs the `key_metadata` trust level and type. If it is not defined
-// (i.e. absl::nullopt), nothing is logged.
+// (i.e. absl::nullopt), nothing is logged. Also logs the `result` enum
+// value.
 void LogKeyLoadingResult(
-    absl::optional<DeviceTrustKeyManager::KeyMetadata> key_metadata);
+    absl::optional<DeviceTrustKeyManager::KeyMetadata> key_metadata,
+    LoadPersistedKeyResult result);
 
 // Logs the key rotation result based on the value of `status`. Also, if
 // `had_nonce` is false, it will be logged as a key creation flow.
