@@ -55,6 +55,7 @@ HTML_FILENAME = os.path.join('webgpu-cts', 'test_page.html')
 JAVASCRIPT_DURATION = 'javascript_duration'
 MAY_EXONERATE = 'may_exonerate'
 MESSAGE_TYPE_CONNECTION_ACK = 'CONNECTION_ACK'
+MESSAGE_TYPE_INFRA_FAILURE = 'INFRA_FAILURE'
 MESSAGE_TYPE_TEST_STARTED = 'TEST_STARTED'
 MESSAGE_TYPE_TEST_HEARTBEAT = 'TEST_HEARTBEAT'
 MESSAGE_TYPE_TEST_STATUS = 'TEST_STATUS'
@@ -387,6 +388,7 @@ class WebGpuCtsIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
       return SLOW_MULTIPLIER
     return 1
 
+  #pylint: disable=too-many-branches
   def HandleMessageLoop(self, first_load) -> WebGpuTestResult:
     """Helper function to handle the loop for the message protocol.
 
@@ -448,6 +450,9 @@ class WebGpuCtsIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
               'Hit %.3f second global timeout. Message state: %s' %
               (global_timeout, message_state))
 
+        if response_type == MESSAGE_TYPE_INFRA_FAILURE:
+          self.fail(response['message'])
+
         if response_type == MESSAGE_TYPE_TEST_STARTED:
           # If we ever want the adapter information from WebGPU, we would
           # retrieve it from the message here. However, to avoid pylint
@@ -489,6 +494,7 @@ class WebGpuCtsIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
       finally:
         self._test_duration = time.time() - start_time
     return result
+  # pylint: enable=too-many-branches
 
   def HandleDurationTagOnFailure(self, message_state: Dict[str, bool],
                                  test_timeout: float) -> None:
