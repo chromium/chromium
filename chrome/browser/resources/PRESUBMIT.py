@@ -133,6 +133,7 @@ def CheckNoNewJs(input_api, output_api):
   EXCLUDED_PATHS = [
     'chrome/browser/resources/.eslintrc',
     'chrome/browser/resources/about_sys/',
+    'chrome/browser/resources/ash/settings/.eslintrc',
     'chrome/browser/resources/bluetooth_internals/',
     'chrome/browser/resources/chromeos/',
     'chrome/browser/resources/device_log_ui/',
