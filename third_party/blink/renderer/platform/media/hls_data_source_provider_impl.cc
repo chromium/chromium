@@ -135,6 +135,25 @@ HlsDataSourceProviderImpl::HlsDataSourceProviderImpl(
       tick_clock);
 }
 
+HlsDataSourceProviderImpl::~HlsDataSourceProviderImpl() {
+  DCHECK(main_task_runner_->BelongsToCurrentThread());
+  // MultiBufferDataSource relies on a weak pointer reference to
+  // `buffered_data_source_host_`, so any instance of MBDS _MUST_ be aborted
+  // before `buffered_data_source_host_` is deleted.
+  for (auto* const data_source : GetActiveDataSources()) {
+    data_source->Abort();
+  }
+}
+
+void HlsDataSourceProviderImpl::RequestDataSourceInternal(
+    std::unique_ptr<MultiBufferDataSource> data_source,
+    RequestCb callback) {
+  auto* mb_data_source_ptr = data_source.get();
+  mb_data_source_ptr->Initialize(base::BindOnce(
+      &Self::DataSourceInitialized, weak_factory_.GetWeakPtr(),
+      std::move(data_source), absl::nullopt, std::move(callback)));
+}
+
 void HlsDataSourceProviderImpl::RequestDataSource(
     GURL uri,
     absl::optional<media::hls::types::ByteRange> range,
@@ -150,11 +169,7 @@ void HlsDataSourceProviderImpl::RequestDataSource(
       buffered_data_source_host_.get(),
       base::BindRepeating(&Self::NotifyDownloading, weak_factory_.GetWeakPtr(),
                           uri.spec()));
-
-  auto* mb_data_source_ptr = mb_data_source.get();
-  mb_data_source_ptr->Initialize(
-      base::BindOnce(&Self::DataSourceInitialized, weak_factory_.GetWeakPtr(),
-                     std::move(mb_data_source), range, std::move(callback)));
+  RequestDataSourceInternal(std::move(mb_data_source), std::move(callback));
 }
 
 const std::deque<MultiBufferDataSource*>&

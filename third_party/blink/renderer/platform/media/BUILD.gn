@@ -149,6 +149,10 @@ source_set("unit_tests") {
     "//third_party/blink/renderer/platform:test_support",
   ]
 
+  if (enable_hls_demuxer) {
+    sources += [ "hls_data_source_provider_impl_unittest.cc" ]
+  }
+
   if (media_use_ffmpeg || !is_android) {
     sources += [
       "buffered_data_source_host_impl_unittest.cc",

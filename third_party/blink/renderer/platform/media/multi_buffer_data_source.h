@@ -68,7 +68,7 @@ class PLATFORM_EXPORT MultiBufferDataSource
   //
   // Method called on the render thread.
   using InitializeCB = base::OnceCallback<void(bool)>;
-  void Initialize(InitializeCB init_cb);
+  virtual void Initialize(InitializeCB init_cb);
 
   // Adjusts the buffering algorithm based on the given preload value.
   void SetPreload(media::DataSource::Preload preload) override;

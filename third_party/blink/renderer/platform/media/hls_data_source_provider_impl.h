@@ -13,6 +13,7 @@
 #include "base/types/pass_key.h"
 #include "media/base/media_log.h"
 #include "media/filters/hls_data_source_provider.h"
+#include "third_party/blink/renderer/platform/platform_export.h"
 
 namespace blink {
 
@@ -21,16 +22,24 @@ class BufferedDataSourceHostImpl;
 class MultiBufferDataSource;
 class HlsDataSourceImpl;
 
-class HlsDataSourceProviderImpl : public media::HlsDataSourceProvider {
+class PLATFORM_EXPORT HlsDataSourceProviderImpl
+    : public media::HlsDataSourceProvider {
   using Self = HlsDataSourceProviderImpl;
 
  public:
+  ~HlsDataSourceProviderImpl() override;
   HlsDataSourceProviderImpl(
       media::MediaLog* media_log,
       UrlIndex* url_index,
       scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
       scoped_refptr<base::SequencedTaskRunner> media_task_runner,
       const base::TickClock* tick_clock);
+
+  void RequestMockDataSourceForTesting(
+      std::unique_ptr<MultiBufferDataSource> mock_ds,
+      RequestCb callback) {
+    RequestDataSourceInternal(std::move(mock_ds), std::move(callback));
+  }
 
   // `media::DataSourceProvider` implementation
   void RequestDataSource(GURL uri,
@@ -48,6 +57,10 @@ class HlsDataSourceProviderImpl : public media::HlsDataSourceProvider {
                                  std::unique_ptr<MultiBufferDataSource>);
 
  private:
+  void RequestDataSourceInternal(
+      std::unique_ptr<MultiBufferDataSource> data_source,
+      RequestCb callback);
+
   void NotifyDataSourceProgress();
 
   void NotifyDownloading(const std::string& uri, bool is_downloading);
