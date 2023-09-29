@@ -39,8 +39,7 @@ declare_args() {
 
   # If true, optimize for size.
   # Default to favoring speed over size for platforms not listed below.
-  optimize_for_size =
-      !is_high_end_android && (is_android || is_ios || is_castos)
+  optimize_for_size = !is_high_end_android && (is_android || is_castos)
 }
 
 declare_args() {
