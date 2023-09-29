@@ -1,3 +1,7 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 #include "chrome/browser/ash/game_mode/testing/game_mode_controller_test_base.h"
 
 namespace game_mode {

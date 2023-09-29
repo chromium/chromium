@@ -1040,6 +1040,8 @@ source_set("ash") {
     "diagnostics/diagnostics_browser_delegate_impl.h",
     "display/quirks_manager_delegate_impl.cc",
     "display/quirks_manager_delegate_impl.h",
+    "display/variable_refresh_rate_controller.cc",
+    "display/variable_refresh_rate_controller.h",
     "drive/drive_integration_service.cc",
     "drive/drive_integration_service.h",
     "drive/drivefs_native_message_host_ash.cc",

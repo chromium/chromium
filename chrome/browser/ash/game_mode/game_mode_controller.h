@@ -7,6 +7,8 @@
 
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_state_observer.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/timer/timer.h"
@@ -16,7 +18,13 @@
 
 namespace game_mode {
 
+namespace {
+
 using GameMode = ash::ResourcedClient::GameMode;
+
+typedef base::RepeatingCallback<void(GameMode)> NotifySetGameModeCallback;
+
+}  // namespace
 
 inline const char* TimeInGameModeHistogramName(GameMode mode) {
   if (mode == GameMode::BOREALIS)
@@ -42,7 +50,9 @@ inline const char* GameModeResultHistogramName(GameMode mode) {
 
 // When a Borealis or ARC game app game enters full screen, game mode is
 // enabled. Game Mode is actually enabled as a result of multiple sets of
-// criteria being fulfilled, each checked in sequence.
+// criteria being fulfilled, each checked in sequence. The GameModeController
+// additionally exposes an Observer interface which allows clients to subscribe
+// to changes in the game mode state.
 //
 // When one criteria set is met, a new criteria object is constructed which
 // is responsible for checking the next criteria, and is owned by the prior
@@ -107,7 +117,9 @@ class GameModeController : public aura::client::FocusChangeObserver {
     // by the GameModeEnabler regardless of resourced signaling, which allows
     // A/B testing of the effect of optimizations on time spent playing the
     // game.
-    GameModeEnabler(GameMode mode, bool signal_resourced);
+    GameModeEnabler(GameMode mode,
+                    bool signal_resourced,
+                    NotifySetGameModeCallback notify_set_game_mode_callback);
     ~GameModeEnabler() override;
 
     GameMode mode() const override;
@@ -124,6 +136,7 @@ class GameModeController : public aura::client::FocusChangeObserver {
 
     const GameMode mode_;
     const bool signal_resourced_;
+    const NotifySetGameModeCallback notify_set_game_mode_callback_;
   };
 
   static GameMode ModeOfWindow(aura::Window* window);
@@ -132,7 +145,8 @@ class GameModeController : public aura::client::FocusChangeObserver {
                         public aura::WindowObserver {
    public:
     WindowTracker(ash::WindowState* window_state,
-                  std::unique_ptr<WindowTracker> previous_focused);
+                  std::unique_ptr<WindowTracker> previous_focused,
+                  NotifySetGameModeCallback notify_set_game_mode_callback);
     ~WindowTracker() override;
 
     // Overridden from WindowObserver
@@ -151,10 +165,22 @@ class GameModeController : public aura::client::FocusChangeObserver {
     base::ScopedObservation<aura::Window, aura::WindowObserver>
         window_observer_{this};
     std::unique_ptr<GameModeCriteria> game_mode_criteria_;
+    const NotifySetGameModeCallback notify_set_game_mode_callback_;
   };
+
+  // Observer class which subscribes to changes in the GameMode state.
+  class Observer : public base::CheckedObserver {
+   public:
+    virtual void OnSetGameMode(GameMode game_mode) = 0;
+  };
+
+  void AddObserver(Observer* obs);
+  void RemoveObserver(Observer* obs);
+  void NotifySetGameMode(GameMode game_mode);
 
  private:
   std::unique_ptr<WindowTracker> focused_;
+  base::ObserverList<Observer> observers_;
 };
 
 }  // namespace game_mode

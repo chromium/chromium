@@ -290,5 +290,33 @@ TEST_F(GameModeControllerForArcTest, DisabledOnContainer) {
   EXPECT_EQ(0, fake_resourced_client_->get_enter_game_mode_count());
 }
 
+TEST_F(GameModeControllerForArcTest, TriggersObserver) {
+  MockGameModeObserver mock_game_mode_observer;
+  game_mode_controller_->AddObserver(&mock_game_mode_observer);
+
+  arc_app_test_.app_instance()->set_app_category_of_pkg(
+      "org.funstuff.client", arc::mojom::AppCategory::kGame);
+
+  auto game_widget = arc::ArcTaskWindowBuilder()
+                         .SetTaskId(42)
+                         .SetPackageName("org.funstuff.client")
+                         .BuildOwnsNativeWidget();
+  game_widget->Show();
+
+  fake_resourced_client_->set_set_game_mode_response(
+      ash::ResourcedClient::GameMode::OFF);
+
+  EXPECT_CALL(mock_game_mode_observer,
+              OnSetGameMode(testing::Eq(GameMode::ARC)));
+  game_widget->SetFullscreen(true);
+
+  EXPECT_CALL(mock_game_mode_observer,
+              OnSetGameMode(testing::Eq(GameMode::OFF)));
+  game_widget->SetFullscreen(false);
+
+  testing::Mock::VerifyAndClear(&mock_game_mode_observer);
+  game_mode_controller_->RemoveObserver(&mock_game_mode_observer);
+}
+
 }  // namespace
 }  // namespace game_mode

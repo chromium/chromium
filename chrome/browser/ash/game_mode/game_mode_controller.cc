@@ -35,7 +35,10 @@ class ArcGameModeCriteria : public GameModeController::GameModeCriteria {
  public:
   // Constructs an instance using the task ID of the window it is associated
   // with.
-  explicit ArcGameModeCriteria(aura::Window* window) {
+  ArcGameModeCriteria(
+      aura::Window* window,
+      const NotifySetGameModeCallback notify_set_game_mode_callback)
+      : notify_set_game_mode_callback_(notify_set_game_mode_callback) {
     // For ARC container boards, Game Mode optimizations are not available
     // (b/248972198).
     if (!arc::IsArcVmEnabled())
@@ -101,7 +104,7 @@ class ArcGameModeCriteria : public GameModeController::GameModeCriteria {
   void Enable() {
     bool signal_resourced = base::FeatureList::IsEnabled(arc::kGameModeFeature);
     enabler_ = std::make_unique<GameModeController::GameModeEnabler>(
-        GameMode::ARC, signal_resourced);
+        GameMode::ARC, signal_resourced, notify_set_game_mode_callback_);
   }
 
   raw_ptr<arc::ConnectionHolder<arc::mojom::AppInstance, arc::mojom::AppHost>,
@@ -109,6 +112,7 @@ class ArcGameModeCriteria : public GameModeController::GameModeCriteria {
       connection_;
 
   std::unique_ptr<GameModeController::GameModeEnabler> enabler_;
+  const NotifySetGameModeCallback notify_set_game_mode_callback_;
 
   // This must come last to make sure weak pointers are invalidated first.
   base::WeakPtrFactory<ArcGameModeCriteria> weak_ptr_factory_{this};
@@ -162,14 +166,23 @@ void GameModeController::OnWindowFocused(aura::Window* gained_focus,
 
   auto mode = ModeOfWindow(window);
   VLOG(4) << "Focused window game mode type: " << static_cast<int>(mode);
-  if (mode != GameMode::OFF)
-    focused_ = std::make_unique<WindowTracker>(window_state,
-                                               std::move(maybe_keep_focused));
+  if (mode != GameMode::OFF) {
+    focused_ = std::make_unique<WindowTracker>(
+        window_state, std::move(maybe_keep_focused),
+        base::BindRepeating(
+            &GameModeController::NotifySetGameMode,
+            // This is safe because the callback is only used by WindowTracker
+            // and GameModeCriteria, which are owned by (or transitively owned
+            // by) GameModeController. Therefore |this| cannot be stale.
+            base::Unretained(this)));
+  }
 }
 
 GameModeController::WindowTracker::WindowTracker(
     ash::WindowState* window_state,
-    std::unique_ptr<WindowTracker> previous_focus) {
+    std::unique_ptr<WindowTracker> previous_focus,
+    NotifySetGameModeCallback notify_set_game_mode_callback)
+    : notify_set_game_mode_callback_(notify_set_game_mode_callback) {
   auto* window = window_state->window();
   auto mode = ModeOfWindow(window);
 
@@ -221,9 +234,11 @@ void GameModeController::WindowTracker::UpdateGameModeStatus(
     // Borealis has no further criteria than the window being fullscreen and
     // focused, already guaranteed by WindowTracker existing.
     game_mode_criteria_ = std::make_unique<GameModeEnabler>(
-        GameMode::BOREALIS, /*signal_resourced=*/true);
+        GameMode::BOREALIS, /*signal_resourced=*/true,
+        notify_set_game_mode_callback_);
   } else if (mode == GameMode::ARC) {
-    game_mode_criteria_ = std::make_unique<ArcGameModeCriteria>(window);
+    game_mode_criteria_ = std::make_unique<ArcGameModeCriteria>(
+        window, notify_set_game_mode_callback_);
   } else {
     LOG(DFATAL) << "Unknown GameMode: " << static_cast<int>(mode);
   }
@@ -238,10 +253,16 @@ void GameModeController::WindowTracker::OnWindowDestroying(
 
 bool GameModeController::GameModeEnabler::should_record_failure;
 
-GameModeController::GameModeEnabler::GameModeEnabler(GameMode mode,
-                                                     bool signal_resourced)
-    : mode_(mode), signal_resourced_(signal_resourced) {
+GameModeController::GameModeEnabler::GameModeEnabler(
+    GameMode mode,
+    bool signal_resourced,
+    NotifySetGameModeCallback notify_set_game_mode_callback)
+    : mode_(mode),
+      signal_resourced_(signal_resourced),
+      notify_set_game_mode_callback_(notify_set_game_mode_callback) {
   DCHECK(mode != GameMode::OFF);
+
+  notify_set_game_mode_callback_.Run(mode_);
 
   if (!signal_resourced)
     return;
@@ -261,9 +282,10 @@ GameModeController::GameModeEnabler::GameModeEnabler(GameMode mode,
 
 GameModeController::GameModeEnabler::~GameModeEnabler() {
   auto time_in_mode = began_.Elapsed();
-
   base::UmaHistogramLongTimes100(TimeInGameModeHistogramName(mode_),
                                  time_in_mode);
+
+  notify_set_game_mode_callback_.Run(GameMode::OFF);
 
   if (!signal_resourced_)
     return;
@@ -299,6 +321,20 @@ void GameModeController::GameModeEnabler::OnSetGameMode(
                                   GameModeResult::kFailed);
     // Only record failures once per entry into gamemode.
     GameModeEnabler::should_record_failure = false;
+  }
+}
+
+void GameModeController::AddObserver(Observer* obs) {
+  observers_.AddObserver(obs);
+}
+
+void GameModeController::RemoveObserver(Observer* obs) {
+  observers_.RemoveObserver(obs);
+}
+
+void GameModeController::NotifySetGameMode(GameMode game_mode) {
+  for (auto& obs : observers_) {
+    obs.OnSetGameMode(game_mode);
   }
 }
 

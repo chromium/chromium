@@ -209,5 +209,21 @@ TEST_F(GameModeControllerForBorealisTest, WindowLosesFocusAndGoesFullscreen) {
   EXPECT_EQ(0, fake_resourced_client_->get_enter_game_mode_count());
 }
 
+TEST_F(GameModeControllerForBorealisTest, TriggersObserver) {
+  MockGameModeObserver mock_game_mode_observer;
+  game_mode_controller_->AddObserver(&mock_game_mode_observer);
+  EXPECT_CALL(mock_game_mode_observer,
+              OnSetGameMode(testing::Eq(GameMode::BOREALIS)));
+  std::unique_ptr<views::Widget> test_widget =
+      CreateFakeWidget("org.chromium.guest_os.borealis.foo", true);
+
+  EXPECT_CALL(mock_game_mode_observer,
+              OnSetGameMode(testing::Eq(GameMode::OFF)));
+  test_widget->SetFullscreen(false);
+
+  testing::Mock::VerifyAndClear(&mock_game_mode_observer);
+  game_mode_controller_->RemoveObserver(&mock_game_mode_observer);
+}
+
 }  // namespace
 }  // namespace game_mode

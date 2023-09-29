@@ -18,6 +18,7 @@ class ArcWindowWatcher;
 class NetworkPortalNotificationController;
 class NewWindowDelegateProvider;
 class NightLightClient;
+class VariableRefreshRateController;
 class VideoConferenceTrayController;
 }  // namespace ash
 
@@ -72,7 +73,7 @@ class ChromeShelfControllerInitializer;
 }
 
 // Browser initialization for Ash UI. Only use this for Ash specific
-// intitialization (e.g. initialization of chrome/browser/ui/ash classes).
+// initialization (e.g. initialization of chrome/browser/ui/ash classes).
 class ChromeBrowserMainExtraPartsAsh : public ChromeBrowserMainExtraParts {
  public:
   // Returns the single instance. Returns null early in startup and late in
@@ -146,6 +147,8 @@ class ChromeBrowserMainExtraPartsAsh : public ChromeBrowserMainExtraParts {
   std::unique_ptr<internal::ChromeShelfControllerInitializer>
       chrome_shelf_controller_initializer_;
   std::unique_ptr<DesksClient> desks_client_;
+  std::unique_ptr<ash::VariableRefreshRateController>
+      variable_refresh_rate_controller_;
 
 #if BUILDFLAG(ENABLE_WAYLAND_SERVER)
   std::unique_ptr<ExoParts> exo_parts_;
