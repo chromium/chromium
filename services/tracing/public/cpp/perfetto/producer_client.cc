@@ -265,7 +265,7 @@ void ProducerClient::StopDataSource(uint64_t id,
     }
   }
 
-  LOG(DFATAL) << "Invalid data source ID.";
+  DLOG(ERROR) << "Invalid data source ID.";
 }
 
 void ProducerClient::Flush(uint64_t flush_request_id,
