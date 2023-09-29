@@ -212,13 +212,6 @@ void ChromeContentVerifierDelegate::VerifyFailed(
 
   const VerifyInfo info = GetVerifyInfo(*extension);
 
-  SYSLOG(WARNING) << "Corruption detected in extension " << extension_id
-                  << " installed at: " << extension->path().value()
-                  << ", from webstore: " << info.is_from_webstore
-                  << ", corruption reason: " << reason
-                  << ", should be repaired: " << info.should_repair
-                  << ", extension location: " << extension->location();
-
   if (reason == ContentVerifyJob::MISSING_ALL_HASHES) {
     // If the failure was due to hashes missing, only "enforce_strict" would
     // disable the extension, but not "enforce".
@@ -239,6 +232,13 @@ void ChromeContentVerifierDelegate::VerifyFailed(
       return;
     }
   }
+
+  SYSLOG(WARNING) << "Corruption detected in extension " << extension_id
+                  << " installed at: " << extension->path().value()
+                  << ", from webstore: " << info.is_from_webstore
+                  << ", corruption reason: " << reason
+                  << ", should be repaired: " << info.should_repair
+                  << ", extension location: " << extension->location();
 
   const bool should_disable = info.mode >= VerifyInfo::Mode::ENFORCE;
   // Configuration when we should repair extension, but not disable it, is
