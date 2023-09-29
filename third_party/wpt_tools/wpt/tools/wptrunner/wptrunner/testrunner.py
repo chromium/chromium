@@ -402,10 +402,26 @@ class TestRunnerManager(threading.Thread):
         except Exception:
             message = "Uncaught exception in TestRunnerManager.run:\n"
             message += traceback.format_exc()
-            self.logger.error(message)
+            self.logger.critical(message)
             raise
         finally:
             self.logger.debug("TestRunnerManager main loop terminating, starting cleanup")
+
+            skipped_tests = []
+            while True:
+                _, _, test, _, _ = self.get_next_test()
+                if test is None:
+                    break
+                skipped_tests.append(test)
+
+            if skipped_tests:
+                self.logger.critical(
+                    f"Tests left in the queue: {skipped_tests[0].id!r} "
+                    f"and {len(skipped_tests) - 1} others"
+                )
+                for test in skipped_tests[1:]:
+                    self.logger.debug("Test left in the queue: {test[0].id!r}")
+
             force_stop = (not isinstance(self.state, RunnerManagerState.stop) or
                           self.state.force_stop)
             self.stop_runner(force=force_stop)

@@ -11,7 +11,6 @@ from . import config
 from . import products
 from . import wpttest
 from .formatters import chromium, wptreport, wptscreenshot
-from manifest import mputil  # type: ignore
 
 def abs_path(path):
     return os.path.abspath(os.path.expanduser(path))
@@ -614,6 +613,7 @@ def check_args(kwargs):
             sys.exit(1)
 
     if kwargs["processes"] is None:
+        from manifest import mputil  # type: ignore
         kwargs["processes"] = mputil.max_parallelism() if kwargs["fully_parallel"] else 1
 
     if kwargs["debugger"] is not None:

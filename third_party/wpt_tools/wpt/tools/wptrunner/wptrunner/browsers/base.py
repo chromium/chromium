@@ -404,7 +404,8 @@ class WebDriverBrowser(Browser):
         return ExecutorBrowser, {"webdriver_url": self.url,
                                  "host": self.host,
                                  "port": self.port,
-                                 "pac": self.pac}
+                                 "pac": self.pac,
+                                 "env": self.env}
 
     def settings(self, test):
         self._pac = test.environment.get("pac", None) if self._supports_pac else None

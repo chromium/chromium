@@ -2209,6 +2209,27 @@ class WebKit(Browser):
     def version(self, binary=None, webdriver_binary=None):
         return None
 
+class Ladybird(Browser):
+    product = "ladybird"
+    requirements = None
+
+    def download(self, dest=None, channel=None, rename=None):
+        raise NotImplementedError
+
+    def install(self, dest=None, channel=None):
+        raise NotImplementedError
+
+    def find_binary(self, venv_path=None, channel=None):
+        return which("ladybird")
+
+    def find_webdriver(self, venv_path=None, channel=None):
+        return which("WebDriver")
+
+    def install_webdriver(self, dest=None, channel=None, browser_binary=None):
+        raise NotImplementedError
+
+    def version(self, binary=None, webdriver_binary=None):
+        return None
 
 class WebKitTestRunner(Browser):
     """Interface for WebKitTestRunner.

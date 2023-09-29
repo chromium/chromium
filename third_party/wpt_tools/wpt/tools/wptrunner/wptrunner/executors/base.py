@@ -654,7 +654,8 @@ class WdspecExecutor(TestExecutor):
                           "timeout_multiplier": self.timeout_multiplier,
                           "browser": {
                               "binary": self.binary,
-                              "args": self.binary_args
+                              "args": self.binary_args,
+                              "env": self.browser.env,
                           },
                           "webdriver": {
                               "binary": self.webdriver_binary,
