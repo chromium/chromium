@@ -11,7 +11,7 @@
 #include "base/test/mock_callback.h"
 #include "chrome/browser/plus_addresses/plus_address_service_factory.h"
 #include "chrome/browser/profiles/profile_test_util.h"
-#include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/plus_addresses/features.h"
 #include "components/plus_addresses/plus_address_metrics.h"
 #include "content/public/browser/browser_context.h"
@@ -50,35 +50,39 @@ class MockPlusAddressService : public PlusAddressService {
 
 // Testing very basic functionality for now. As UI complexity increases, this
 // class will grow and mutate.
-class PlusAddressCreationControllerAndroidEnabledTest : public testing::Test {
+class PlusAddressCreationControllerAndroidEnabledTest
+    : public ChromeRenderViewHostTestHarness {
  public:
+  PlusAddressCreationControllerAndroidEnabledTest()
+      : override_profile_selections_(
+            PlusAddressServiceFactory::GetInstance(),
+            PlusAddressServiceFactory::CreateProfileSelections()) {}
+
+  void SetUp() override {
+    ChromeRenderViewHostTestHarness::SetUp();
+    PlusAddressServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+        browser_context(),
+        base::BindRepeating(&PlusAddressCreationControllerAndroidEnabledTest::
+                                PlusAddressServiceTestFactory,
+                            base::Unretained(this)));
+  }
   std::unique_ptr<KeyedService> PlusAddressServiceTestFactory(
       content::BrowserContext* context) {
     return std::make_unique<MockPlusAddressService>();
   }
 
  protected:
-  content::BrowserTaskEnvironment task_environment_;
   base::test::ScopedFeatureList features_{kFeature};
+  // Ensures that the feature is known to be enabled, such that
+  // `PlusAddressServiceFactory` doesn't bail early with a null return.
+  profiles::testing::ScopedProfileSelectionsForFactoryTesting
+      override_profile_selections_;
   base::HistogramTester histogram_tester_;
 };
 
 TEST_F(PlusAddressCreationControllerAndroidEnabledTest, DirectCallback) {
-  // Ensure that the feature is known to be enabled, such that
-  // `PlusAddressServiceFactory` doesn't bail early with a null return.
-  profiles::testing::ScopedProfileSelectionsForFactoryTesting
-      overide_profile_selections(
-          PlusAddressServiceFactory::GetInstance(),
-          PlusAddressServiceFactory::CreateProfileSelections());
-
-  TestingProfile test_profile;
   std::unique_ptr<content::WebContents> web_contents =
-      content::WebContentsTester::CreateTestWebContents(&test_profile, nullptr);
-  PlusAddressServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-      &test_profile,
-      base::BindRepeating(&PlusAddressCreationControllerAndroidEnabledTest::
-                              PlusAddressServiceTestFactory,
-                          base::Unretained(this)));
+      ChromeRenderViewHostTestHarness::CreateTestWebContents();
 
   PlusAddressCreationControllerAndroid::CreateForWebContents(
       web_contents.get());
@@ -101,21 +105,8 @@ TEST_F(PlusAddressCreationControllerAndroidEnabledTest, DirectCallback) {
 }
 
 TEST_F(PlusAddressCreationControllerAndroidEnabledTest, ModalCanceled) {
-  // Ensure that the feature is known to be enabled, such that
-  // `PlusAddressServiceFactory` doesn't bail early with a null return.
-  profiles::testing::ScopedProfileSelectionsForFactoryTesting
-      overide_profile_selections(
-          PlusAddressServiceFactory::GetInstance(),
-          PlusAddressServiceFactory::CreateProfileSelections());
-
-  TestingProfile test_profile;
   std::unique_ptr<content::WebContents> web_contents =
-      content::WebContentsTester::CreateTestWebContents(&test_profile, nullptr);
-  PlusAddressServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-      &test_profile,
-      base::BindRepeating(&PlusAddressCreationControllerAndroidEnabledTest::
-                              PlusAddressServiceTestFactory,
-                          base::Unretained(this)));
+      ChromeRenderViewHostTestHarness::CreateTestWebContents();
 
   PlusAddressCreationControllerAndroid::CreateForWebContents(
       web_contents.get());
@@ -137,23 +128,29 @@ TEST_F(PlusAddressCreationControllerAndroidEnabledTest, ModalCanceled) {
               PlusAddressMetrics::PlusAddressModalEvent::kModalCanceled, 1)));
 }
 
-class PlusAddressCreationControllerAndroidDisabledTest
-    : public ::testing::Test {
- public:
-  void SetUp() override { features_.InitAndDisableFeature(kFeature); }
-
- private:
-  content::BrowserTaskEnvironment task_environment_;
-  base::test::ScopedFeatureList features_;
-};
-
 // With the feature disabled, the `KeyedService` is not present; ensure this is
 // handled. While this code path should not be called in that case, it is
 // validated here for safety.
+class PlusAddressCreationControllerAndroidDisabledTest
+    : public ChromeRenderViewHostTestHarness {
+ public:
+  void SetUp() override {
+    features_.InitAndDisableFeature(kFeature);
+    ChromeRenderViewHostTestHarness::SetUp();
+    PlusAddressServiceFactory::GetInstance()->SetTestingFactory(
+        browser_context(),
+        base::BindRepeating(
+            [](content::BrowserContext* profile)
+                -> std::unique_ptr<KeyedService> { return nullptr; }));
+  }
+
+ private:
+  base::test::ScopedFeatureList features_;
+};
+
 TEST_F(PlusAddressCreationControllerAndroidDisabledTest, ConfirmedNullService) {
-  TestingProfile profile;
   std::unique_ptr<content::WebContents> web_contents =
-      content::WebContentsTester::CreateTestWebContents(&profile, nullptr);
+      ChromeRenderViewHostTestHarness::CreateTestWebContents();
 
   PlusAddressCreationControllerAndroid::CreateForWebContents(
       web_contents.get());
@@ -162,15 +159,9 @@ TEST_F(PlusAddressCreationControllerAndroidDisabledTest, ConfirmedNullService) {
   controller->set_suppress_ui_for_testing(true);
 
   base::MockOnceCallback<void(const std::string&)> callback;
+  EXPECT_CALL(callback, Run).Times(0);
   controller->OfferCreation(url::Origin::Create(GURL("https://test.example")),
                             callback.Get());
-
-  PlusAddressServiceFactory::GetInstance()->SetTestingFactory(
-      &profile, base::BindRepeating(
-                    [](content::BrowserContext* profile)
-                        -> std::unique_ptr<KeyedService> { return nullptr; }));
-  EXPECT_CALL(callback, Run).Times(0);
-
   controller->OnConfirmed();
 }
 
