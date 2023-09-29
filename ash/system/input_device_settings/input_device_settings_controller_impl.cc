@@ -564,6 +564,9 @@ void InputDeviceSettingsControllerImpl::RegisterProfilePrefs(
       prefs::kTouchpadInternalSettings,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
   pref_registry->RegisterDictionaryPref(
+      prefs::kTouchpadDefaultSettings,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  pref_registry->RegisterDictionaryPref(
       prefs::kPointingStickInternalSettings,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
   pref_registry->RegisterDictionaryPref(
@@ -699,7 +702,7 @@ void InputDeviceSettingsControllerImpl::RefreshAllDeviceSettings() {
 
   RefreshCachedKeyboardSettings();
   RefreshCachedMouseSettings();
-  RefreshStoredLoginScreenTouchpadSettings();
+  RefreshCachedTouchpadSettings();
   RefreshStoredLoginScreenPointingStickSettings();
 
   if (features::IsPeripheralCustomizationEnabled()) {
@@ -1072,7 +1075,7 @@ void InputDeviceSettingsControllerImpl::SetTouchpadSettings(
       base::BindRepeating(
           &InputDeviceSettingsControllerImpl::DispatchTouchpadSettingsChanged,
           base::Unretained(this)));
-  RefreshStoredLoginScreenTouchpadSettings();
+  RefreshCachedTouchpadSettings();
 }
 
 void InputDeviceSettingsControllerImpl::SetMouseSettings(
@@ -1378,7 +1381,7 @@ void InputDeviceSettingsControllerImpl::OnTouchpadListUpdated(
     DispatchTouchpadDisconnectedAndEraseFromList(id);
   }
 
-  RefreshStoredLoginScreenTouchpadSettings();
+  RefreshCachedTouchpadSettings();
 }
 
 void InputDeviceSettingsControllerImpl::OnMouseListUpdated(
@@ -1769,6 +1772,11 @@ void InputDeviceSettingsControllerImpl::RefreshCachedKeyboardSettings() {
   RefreshKeyboardDefaultSettings();
 }
 
+void InputDeviceSettingsControllerImpl::RefreshCachedTouchpadSettings() {
+  RefreshStoredLoginScreenTouchpadSettings();
+  RefreshTouchpadDefaultSettings();
+}
+
 void InputDeviceSettingsControllerImpl::RefreshMouseDefaultSettings() {
   if (!active_pref_service_ || mice_.empty()) {
     return;
@@ -1807,6 +1815,15 @@ void InputDeviceSettingsControllerImpl::RefreshKeyboardDefaultSettings() {
         active_pref_service_, policy_handler_->keyboard_policies(),
         *non_chromeos_iter->second);
   }
+}
+
+void InputDeviceSettingsControllerImpl::RefreshTouchpadDefaultSettings() {
+  if (!active_pref_service_ || touchpads_.empty()) {
+    return;
+  }
+
+  touchpad_pref_handler_->UpdateDefaultTouchpadSettings(
+      active_pref_service_, *touchpads_.rbegin()->second);
 }
 
 }  // namespace ash

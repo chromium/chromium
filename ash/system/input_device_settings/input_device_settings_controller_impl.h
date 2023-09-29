@@ -181,11 +181,13 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
   // are updated.
   void RefreshMouseDefaultSettings();
   void RefreshKeyboardDefaultSettings();
+  void RefreshTouchpadDefaultSettings();
 
   // Refreshes all cached settings which includes defaults and login screen
   // settings.
   void RefreshCachedMouseSettings();
   void RefreshCachedKeyboardSettings();
+  void RefreshCachedTouchpadSettings();
 
   mojom::Mouse* FindMouse(DeviceId id);
   mojom::Touchpad* FindTouchpad(DeviceId id);

@@ -293,6 +293,7 @@ enum {
   kMouseDefaultSettings = 100236,
   kKeyboardDefaultChromeOSSettings = 100237,
   kKeyboardDefaultNonChromeOSSettings = 100238,
+  kTouchpadDefaultSettings = 100239,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -762,6 +763,9 @@ const auto& SyncablePreferences() {
          {syncable_prefs_ids::kTouchpadAcceleration,
           syncer::OS_PRIORITY_PREFERENCES, false,
           sync_preferences::MergeBehavior::kNone}},
+        {ash::prefs::kTouchpadDefaultSettings,
+         {syncable_prefs_ids::kTouchpadDefaultSettings, syncer::OS_PREFERENCES,
+          false, sync_preferences::MergeBehavior::kNone}},
         {ash::prefs::kTouchpadHapticClickSensitivity,
          {syncable_prefs_ids::kTouchpadHapticClickSensitivity,
           syncer::OS_PRIORITY_PREFERENCES, false,

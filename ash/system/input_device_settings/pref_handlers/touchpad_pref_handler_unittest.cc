@@ -128,6 +128,8 @@ class TouchpadPrefHandlerTest : public AshTestBase {
         prefs::kTouchpadDeviceSettingsDictPref);
     pref_service_->registry()->RegisterDictionaryPref(
         prefs::kTouchpadInternalSettings);
+    pref_service_->registry()->RegisterDictionaryPref(
+        prefs::kTouchpadDefaultSettings);
     // We are using these test constants as a a way to differentiate values
     // retrieved from prefs or default touchpad settings.
     pref_service_->registry()->RegisterIntegerPref(prefs::kTouchpadSensitivity,
@@ -311,6 +313,17 @@ class TouchpadPrefHandlerTest : public AshTestBase {
     touchpad->settings = settings.Clone();
     pref_handler_->UpdateLoginScreenTouchpadSettings(local_state(), account_id,
                                                      *touchpad);
+  }
+
+  void CallUpdateDefaultTouchpadSettings(
+      const std::string& device_key,
+      const mojom::TouchpadSettings& settings) {
+    mojom::TouchpadPtr touchpad = mojom::Touchpad::New();
+    touchpad->settings = settings.Clone();
+    touchpad->device_key = device_key;
+
+    pref_handler_->UpdateDefaultTouchpadSettings(pref_service_.get(),
+                                                 *touchpad);
   }
 
   mojom::TouchpadSettingsPtr CallInitializeTouchpadSettings(
@@ -765,6 +778,26 @@ TEST_F(TouchpadPrefHandlerTest, SimulateRightClickSettingFlagDisabled) {
   const auto* settings_dict = GetSettingsDict(kTouchpadKey1);
   EXPECT_FALSE(
       settings_dict->contains(prefs::kTouchpadSettingSimulateRightClick));
+}
+
+TEST_F(TouchpadPrefHandlerTest, RememberDefaultsFromLastUpdatedSettings) {
+  mojom::TouchpadSettingsPtr settings =
+      CallInitializeTouchpadSettings(kTouchpadKey1);
+  settings->reverse_scrolling = !kDefaultReverseScrolling;
+  settings->sensitivity = 1;
+  CallUpdateTouchpadSettings(kTouchpadKey1, *settings);
+  CallUpdateDefaultTouchpadSettings(kTouchpadKey1, *settings);
+
+  mojom::TouchpadSettingsPtr settings2 =
+      CallInitializeTouchpadSettings(kTouchpadKey2);
+  EXPECT_EQ(*settings2, *settings);
+
+  settings2->sensitivity = 5;
+  CallUpdateDefaultTouchpadSettings(kTouchpadKey2, *settings2);
+
+  mojom::TouchpadSettingsPtr settings_duplicate =
+      CallInitializeTouchpadSettings(kTouchpadKey1);
+  EXPECT_EQ(*settings, *settings_duplicate);
 }
 
 class TouchpadSettingsPrefConversionTest

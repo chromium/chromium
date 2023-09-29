@@ -1881,6 +1881,12 @@ inline constexpr char kKeyboardDefaultChromeOSSettings[] =
 inline constexpr char kKeyboardDefaultNonChromeOSSettings[] =
     "ash.settings.keyboard.non_chromeos_defaults";
 
+// A dictionary pref containing the set of default touchpad settings for the
+// user. These are applied to new touchpads that are connected to the system.
+// This is synced for all user devices.
+inline constexpr char kTouchpadDefaultSettings[] =
+    "ash.settings.touchpad.defaults";
+
 // NOTE: New prefs should start with the "ash." prefix. Existing prefs moved
 // into this file should not be renamed, since they may be synced.
 
