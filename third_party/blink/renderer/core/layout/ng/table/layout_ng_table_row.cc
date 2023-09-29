@@ -13,8 +13,7 @@
 
 namespace blink {
 
-LayoutNGTableRow::LayoutNGTableRow(Element* element)
-    : LayoutNGMixin<LayoutBlock>(element) {}
+LayoutNGTableRow::LayoutNGTableRow(Element* element) : LayoutBlock(element) {}
 
 LayoutNGTableRow* LayoutNGTableRow::CreateAnonymousWithParent(
     const LayoutObject& parent) {
@@ -112,21 +111,21 @@ void LayoutNGTableRow::AddChild(LayoutObject* child,
     before_child = SplitAnonymousBoxesAroundChild(before_child);
 
   DCHECK(!before_child || before_child->IsTableCell());
-  LayoutNGMixin<LayoutBlock>::AddChild(child, before_child);
+  LayoutBlock::AddChild(child, before_child);
 }
 
 void LayoutNGTableRow::RemoveChild(LayoutObject* child) {
   NOT_DESTROYED();
   if (LayoutNGTable* table = Table())
     table->TableGridStructureChanged();
-  LayoutNGMixin<LayoutBlock>::RemoveChild(child);
+  LayoutBlock::RemoveChild(child);
 }
 
 void LayoutNGTableRow::WillBeRemovedFromTree() {
   NOT_DESTROYED();
   if (LayoutNGTable* table = Table())
     table->TableGridStructureChanged();
-  LayoutNGMixin<LayoutBlock>::WillBeRemovedFromTree();
+  LayoutBlock::WillBeRemovedFromTree();
 }
 
 void LayoutNGTableRow::StyleDidChange(StyleDifference diff,
@@ -139,7 +138,7 @@ void LayoutNGTableRow::StyleDidChange(StyleDifference diff,
       table->GridBordersChanged();
     }
   }
-  LayoutNGMixin<LayoutBlock>::StyleDidChange(diff, old_style);
+  LayoutBlock::StyleDidChange(diff, old_style);
 }
 
 LayoutBox* LayoutNGTableRow::CreateAnonymousBoxWithSameTypeAs(

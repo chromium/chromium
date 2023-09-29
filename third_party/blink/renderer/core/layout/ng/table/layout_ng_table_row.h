@@ -8,7 +8,7 @@
 #include "base/dcheck_is_on.h"
 #include "base/notreached.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/layout/ng/layout_ng_block.h"
+#include "third_party/blink/renderer/core/layout/layout_block.h"
 
 namespace blink {
 
@@ -17,7 +17,7 @@ class LayoutNGTableSection;
 class LayoutNGTable;
 
 // Every child of LayoutNGTableRow must be LayoutNGTableCell.
-class CORE_EXPORT LayoutNGTableRow : public LayoutNGBlock {
+class CORE_EXPORT LayoutNGTableRow : public LayoutBlock {
  public:
   explicit LayoutNGTableRow(Element*);
 
@@ -91,8 +91,7 @@ class CORE_EXPORT LayoutNGTableRow : public LayoutNGBlock {
  protected:
   bool IsOfType(LayoutObjectType type) const override {
     NOT_DESTROYED();
-    return type == kLayoutObjectTableRow ||
-           LayoutNGMixin<LayoutBlock>::IsOfType(type);
+    return type == kLayoutObjectTableRow || LayoutBlock::IsOfType(type);
   }
 
   // Table section paints background specially.

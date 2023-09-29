@@ -5,11 +5,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_MATHML_LAYOUT_NG_MATHML_BLOCK_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_MATHML_LAYOUT_NG_MATHML_BLOCK_H_
 
-#include "third_party/blink/renderer/core/layout/ng/layout_ng_block.h"
+#include "third_party/blink/renderer/core/layout/layout_block.h"
 
 namespace blink {
 
-class LayoutNGMathMLBlock : public LayoutNGBlock {
+class LayoutNGMathMLBlock : public LayoutBlock {
  public:
   explicit LayoutNGMathMLBlock(Element*);
 

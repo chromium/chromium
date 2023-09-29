@@ -5,11 +5,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_FRAME_SET_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_FRAME_SET_H_
 
-#include "third_party/blink/renderer/core/layout/ng/layout_ng_block.h"
+#include "third_party/blink/renderer/core/layout/layout_block.h"
 
 namespace blink {
 
-class LayoutFrameSet final : public LayoutNGBlock {
+class LayoutFrameSet final : public LayoutBlock {
  public:
   explicit LayoutFrameSet(Element*);
 

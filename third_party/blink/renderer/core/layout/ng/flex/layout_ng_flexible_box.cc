@@ -17,7 +17,7 @@
 namespace blink {
 
 LayoutNGFlexibleBox::LayoutNGFlexibleBox(Element* element)
-    : LayoutNGMixin<LayoutBlock>(element) {}
+    : LayoutBlock(element) {}
 
 bool LayoutNGFlexibleBox::HasTopOverflow() const {
   const auto& style = StyleRef();
@@ -73,7 +73,7 @@ bool LayoutNGFlexibleBox::IsChildAllowed(LayoutObject* object,
     // optgroups.
     return object->GetNode() == &select->InnerElement();
   }
-  return LayoutNGMixin<LayoutBlock>::IsChildAllowed(object, style);
+  return LayoutBlock::IsChildAllowed(object, style);
 }
 
 void LayoutNGFlexibleBox::SetNeedsLayoutForDevtools() {

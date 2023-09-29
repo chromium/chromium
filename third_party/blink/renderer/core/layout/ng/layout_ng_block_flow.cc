@@ -13,19 +13,18 @@
 namespace blink {
 
 LayoutNGBlockFlow::LayoutNGBlockFlow(ContainerNode* node)
-    : LayoutNGMixin<LayoutBlockFlow>(node) {}
+    : LayoutBlockFlow(node) {}
 
 LayoutNGBlockFlow::~LayoutNGBlockFlow() = default;
 
 void LayoutNGBlockFlow::Trace(Visitor* visitor) const {
   visitor->Trace(ng_inline_node_data_);
-  LayoutNGMixin<LayoutBlockFlow>::Trace(visitor);
+  LayoutBlockFlow::Trace(visitor);
 }
 
 bool LayoutNGBlockFlow::IsOfType(LayoutObjectType type) const {
   NOT_DESTROYED();
-  return type == kLayoutObjectNGBlockFlow ||
-         LayoutNGMixin<LayoutBlockFlow>::IsOfType(type);
+  return type == kLayoutObjectNGBlockFlow || LayoutBlockFlow::IsOfType(type);
 }
 
 void LayoutNGBlockFlow::StyleDidChange(StyleDifference diff,

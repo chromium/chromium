@@ -8,7 +8,7 @@
 #include "base/dcheck_is_on.h"
 #include "base/notreached.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/layout/ng/layout_ng_block.h"
+#include "third_party/blink/renderer/core/layout/layout_block.h"
 #include "third_party/blink/renderer/core/layout/ng/table/ng_table_layout_algorithm_types.h"
 
 namespace blink {
@@ -96,7 +96,7 @@ enum SkipEmptySectionsValue { kDoNotSkipEmptySections, kSkipEmptySections };
 // The validation state is a IsTableColumnsConstraintsDirty flag
 // on LayoutObject. They are invalidated inside
 // LayoutObject::SetNeeds*Layout.
-class CORE_EXPORT LayoutNGTable : public LayoutNGBlock {
+class CORE_EXPORT LayoutNGTable : public LayoutBlock {
  public:
   explicit LayoutNGTable(Element*);
   ~LayoutNGTable() override;
@@ -213,8 +213,7 @@ class CORE_EXPORT LayoutNGTable : public LayoutNGBlock {
  protected:
   bool IsOfType(LayoutObjectType type) const override {
     NOT_DESTROYED();
-    return type == kLayoutObjectTable ||
-           LayoutNGMixin<LayoutBlock>::IsOfType(type);
+    return type == kLayoutObjectTable || LayoutBlock::IsOfType(type);
   }
 
   // Table paints background specially.

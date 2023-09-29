@@ -6,8 +6,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_FLEX_LAYOUT_NG_FLEXIBLE_BOX_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/layout/layout_block.h"
 #include "third_party/blink/renderer/core/layout/ng/flex/ng_flex_data.h"
-#include "third_party/blink/renderer/core/layout/ng/layout_ng_block.h"
 
 namespace blink {
 
@@ -17,7 +17,7 @@ namespace blink {
 // anywhere, because neither paint nor ancestor layout needs it. So the NG flex
 // layout algorithm will fill one of these in when devtools requests it.
 
-class CORE_EXPORT LayoutNGFlexibleBox : public LayoutNGBlock {
+class CORE_EXPORT LayoutNGFlexibleBox : public LayoutBlock {
  public:
   explicit LayoutNGFlexibleBox(Element*);
 
@@ -46,8 +46,7 @@ class CORE_EXPORT LayoutNGFlexibleBox : public LayoutNGBlock {
 
   bool IsOfType(LayoutObjectType type) const override {
     NOT_DESTROYED();
-    return type == kLayoutObjectNGFlexibleBox ||
-           LayoutNGMixin<LayoutBlock>::IsOfType(type);
+    return type == kLayoutObjectNGFlexibleBox || LayoutBlock::IsOfType(type);
   }
 };
 

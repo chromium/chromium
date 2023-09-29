@@ -7,18 +7,14 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
-#include "third_party/blink/renderer/core/layout/ng/layout_ng_block.h"
 
 namespace blink {
 
 enum class NGBaselineAlgorithmType;
 struct NGInlineNodeData;
 
-extern template class CORE_EXTERN_TEMPLATE_EXPORT
-    LayoutNGMixin<LayoutBlockFlow>;
-
 // This overrides the default layout block algorithm to use Layout NG.
-class CORE_EXPORT LayoutNGBlockFlow : public LayoutNGMixin<LayoutBlockFlow> {
+class CORE_EXPORT LayoutNGBlockFlow : public LayoutBlockFlow {
  public:
   explicit LayoutNGBlockFlow(ContainerNode*);
   ~LayoutNGBlockFlow() override;

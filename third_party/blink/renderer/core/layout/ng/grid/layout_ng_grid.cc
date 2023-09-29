@@ -8,8 +8,7 @@
 
 namespace blink {
 
-LayoutNGGrid::LayoutNGGrid(Element* element)
-    : LayoutNGMixin<LayoutBlock>(element) {}
+LayoutNGGrid::LayoutNGGrid(Element* element) : LayoutBlock(element) {}
 
 void LayoutNGGrid::AddChild(LayoutObject* new_child,
                             LayoutObject* before_child) {

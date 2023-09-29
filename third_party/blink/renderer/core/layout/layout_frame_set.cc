@@ -10,7 +10,7 @@
 
 namespace blink {
 
-LayoutFrameSet::LayoutFrameSet(Element* element) : LayoutNGBlock(element) {
+LayoutFrameSet::LayoutFrameSet(Element* element) : LayoutBlock(element) {
   DCHECK(IsA<HTMLFrameSetElement>(element));
 }
 
@@ -21,7 +21,7 @@ const char* LayoutFrameSet::GetName() const {
 
 bool LayoutFrameSet::IsOfType(LayoutObjectType type) const {
   NOT_DESTROYED();
-  return type == kLayoutObjectFrameSet || LayoutNGBlock::IsOfType(type);
+  return type == kLayoutObjectFrameSet || LayoutBlock::IsOfType(type);
 }
 
 bool LayoutFrameSet::IsChildAllowed(LayoutObject* child,
@@ -32,12 +32,12 @@ bool LayoutFrameSet::IsChildAllowed(LayoutObject* child,
 
 void LayoutFrameSet::AddChild(LayoutObject* new_child,
                               LayoutObject* before_child) {
-  LayoutNGBlock::AddChild(new_child, before_child);
+  LayoutBlock::AddChild(new_child, before_child);
   To<HTMLFrameSetElement>(GetNode())->DirtyEdgeInfoAndFullPaintInvalidation();
 }
 
 void LayoutFrameSet::RemoveChild(LayoutObject* child) {
-  LayoutNGBlock::RemoveChild(child);
+  LayoutBlock::RemoveChild(child);
   if (DocumentBeingDestroyed()) {
     return;
   }

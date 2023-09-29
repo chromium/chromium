@@ -11,14 +11,13 @@
 namespace blink {
 
 LayoutNGMathMLBlock::LayoutNGMathMLBlock(Element* element)
-    : LayoutNGMixin<LayoutBlock>(element) {
-}
+    : LayoutBlock(element) {}
 
 bool LayoutNGMathMLBlock::IsOfType(LayoutObjectType type) const {
   return type == kLayoutObjectMathML ||
          (type == kLayoutObjectMathMLRoot && GetNode() &&
           GetNode()->HasTagName(mathml_names::kMathTag)) ||
-         LayoutNGMixin<LayoutBlock>::IsOfType(type);
+         LayoutBlock::IsOfType(type);
 }
 
 bool LayoutNGMathMLBlock::IsChildAllowed(LayoutObject* child,
@@ -29,12 +28,12 @@ bool LayoutNGMathMLBlock::IsChildAllowed(LayoutObject* child,
 bool LayoutNGMathMLBlock::CanHaveChildren() const {
   if (GetNode() && GetNode()->HasTagName(mathml_names::kMspaceTag))
     return false;
-  return LayoutNGMixin<LayoutBlock>::CanHaveChildren();
+  return LayoutBlock::CanHaveChildren();
 }
 
 void LayoutNGMathMLBlock::StyleDidChange(StyleDifference diff,
                                          const ComputedStyle* old_style) {
-  LayoutNGMixin<LayoutBlock>::StyleDidChange(diff, old_style);
+  LayoutBlock::StyleDidChange(diff, old_style);
   if (!old_style)
     return;
   if (IsA<MathMLUnderOverElement>(GetNode()) &&

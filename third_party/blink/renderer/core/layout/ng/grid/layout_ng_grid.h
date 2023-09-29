@@ -6,13 +6,12 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_GRID_LAYOUT_NG_GRID_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/layout/layout_block.h"
 #include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_data.h"
-#include "third_party/blink/renderer/core/layout/ng/layout_ng_block.h"
-#include "third_party/blink/renderer/core/layout/ng/layout_ng_mixin.h"
 
 namespace blink {
 
-class CORE_EXPORT LayoutNGGrid : public LayoutNGBlock {
+class CORE_EXPORT LayoutNGGrid : public LayoutBlock {
  public:
   explicit LayoutNGGrid(Element*);
 
@@ -45,8 +44,7 @@ class CORE_EXPORT LayoutNGGrid : public LayoutNGBlock {
  protected:
   bool IsOfType(LayoutObjectType type) const override {
     NOT_DESTROYED();
-    return type == kLayoutObjectNGGrid ||
-           LayoutNGMixin<LayoutBlock>::IsOfType(type);
+    return type == kLayoutObjectNGGrid || LayoutBlock::IsOfType(type);
   }
 
  private:

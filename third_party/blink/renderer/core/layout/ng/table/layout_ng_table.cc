@@ -37,14 +37,13 @@ inline bool NeedsTableSection(const LayoutObject& object) {
 
 }  // namespace
 
-LayoutNGTable::LayoutNGTable(Element* element)
-    : LayoutNGMixin<LayoutBlock>(element) {}
+LayoutNGTable::LayoutNGTable(Element* element) : LayoutBlock(element) {}
 
 LayoutNGTable::~LayoutNGTable() = default;
 
 void LayoutNGTable::Trace(Visitor* visitor) const {
   visitor->Trace(cached_table_borders_);
-  LayoutNGBlock::Trace(visitor);
+  LayoutBlock::Trace(visitor);
 }
 
 LayoutNGTable* LayoutNGTable::CreateAnonymousWithParent(
@@ -316,7 +315,7 @@ void LayoutNGTable::AddChild(LayoutObject* child, LayoutObject* before_child) {
 void LayoutNGTable::RemoveChild(LayoutObject* child) {
   NOT_DESTROYED();
   TableGridStructureChanged();
-  LayoutNGMixin<LayoutBlock>::RemoveChild(child);
+  LayoutBlock::RemoveChild(child);
 }
 
 void LayoutNGTable::StyleDidChange(StyleDifference diff,
@@ -334,7 +333,7 @@ void LayoutNGTable::StyleDidChange(StyleDifference diff,
     if (borders_changed || collapse_changed)
       GridBordersChanged();
   }
-  LayoutNGMixin<LayoutBlock>::StyleDidChange(diff, old_style);
+  LayoutBlock::StyleDidChange(diff, old_style);
 }
 
 LayoutBox* LayoutNGTable::CreateAnonymousBoxWithSameTypeAs(
@@ -361,8 +360,8 @@ PhysicalRect LayoutNGTable::OverflowClipRect(
       clip_rect.size.height = LayoutUnit(infinite_rect.height());
     }
   } else {
-    clip_rect = LayoutNGMixin<LayoutBlock>::OverflowClipRect(
-        location, overlay_scrollbar_clip_behavior);
+    clip_rect = LayoutBlock::OverflowClipRect(location,
+                                              overlay_scrollbar_clip_behavior);
   }
   // TODO(1142929)
   // We cannot handle table hidden overflow with captions correctly.
@@ -402,7 +401,7 @@ LayoutUnit LayoutNGTable::BorderLeft() const {
         .ConvertToPhysical(Style()->GetWritingDirection())
         .left;
   }
-  return LayoutNGMixin<LayoutBlock>::BorderLeft();
+  return LayoutBlock::BorderLeft();
 }
 
 LayoutUnit LayoutNGTable::BorderRight() const {
@@ -414,7 +413,7 @@ LayoutUnit LayoutNGTable::BorderRight() const {
         .ConvertToPhysical(Style()->GetWritingDirection())
         .right;
   }
-  return LayoutNGMixin<LayoutBlock>::BorderRight();
+  return LayoutBlock::BorderRight();
 }
 
 LayoutUnit LayoutNGTable::BorderTop() const {
@@ -426,7 +425,7 @@ LayoutUnit LayoutNGTable::BorderTop() const {
         .ConvertToPhysical(Style()->GetWritingDirection())
         .top;
   }
-  return LayoutNGMixin<LayoutBlock>::BorderTop();
+  return LayoutBlock::BorderTop();
 }
 
 LayoutUnit LayoutNGTable::BorderBottom() const {
@@ -438,35 +437,35 @@ LayoutUnit LayoutNGTable::BorderBottom() const {
         .ConvertToPhysical(Style()->GetWritingDirection())
         .bottom;
   }
-  return LayoutNGMixin<LayoutBlock>::BorderBottom();
+  return LayoutBlock::BorderBottom();
 }
 
 LayoutUnit LayoutNGTable::PaddingTop() const {
   NOT_DESTROYED();
   if (ShouldCollapseBorders())
     return LayoutUnit();
-  return LayoutNGMixin<LayoutBlock>::PaddingTop();
+  return LayoutBlock::PaddingTop();
 }
 
 LayoutUnit LayoutNGTable::PaddingBottom() const {
   NOT_DESTROYED();
   if (ShouldCollapseBorders())
     return LayoutUnit();
-  return LayoutNGMixin<LayoutBlock>::PaddingBottom();
+  return LayoutBlock::PaddingBottom();
 }
 
 LayoutUnit LayoutNGTable::PaddingLeft() const {
   NOT_DESTROYED();
   if (ShouldCollapseBorders())
     return LayoutUnit();
-  return LayoutNGMixin<LayoutBlock>::PaddingLeft();
+  return LayoutBlock::PaddingLeft();
 }
 
 LayoutUnit LayoutNGTable::PaddingRight() const {
   NOT_DESTROYED();
   if (ShouldCollapseBorders())
     return LayoutUnit();
-  return LayoutNGMixin<LayoutBlock>::PaddingRight();
+  return LayoutBlock::PaddingRight();
 }
 
 // Effective column index is index of columns with mergeable
