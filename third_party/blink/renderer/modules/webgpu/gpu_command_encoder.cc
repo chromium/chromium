@@ -51,6 +51,45 @@ bool ConvertToDawn(const GPURenderPassColorAttachment* in,
 
 namespace {
 
+// Dawn represents `undefined` as the special uint32_t value
+// WGPU_QUERY_SET_INDEX_UNDEFINED (0xFFFF'FFFF). Blink must make sure that an
+// actual value of 0xFFFF'FFFF coming in from JS is not treated as
+// WGPU_QUERY_SET_INDEX_UNDEFINED, so it injects an error in that case.
+template <typename GPUTimestampWrites, typename WGPUTimestampWrites>
+const char* ValidateAndConvertTimestampWrites(
+    const GPUTimestampWrites* webgpu_desc,
+    WGPUTimestampWrites* dawn_desc) {
+  DCHECK(webgpu_desc);
+  DCHECK(webgpu_desc->querySet());
+
+  uint32_t beginningOfPassWriteIndex = 0;
+  if (webgpu_desc->hasBeginningOfPassWriteIndex()) {
+    beginningOfPassWriteIndex = webgpu_desc->beginningOfPassWriteIndex();
+    if (beginningOfPassWriteIndex == WGPU_QUERY_SET_INDEX_UNDEFINED) {
+      return "beginningOfPassWriteIndex is too large";
+    }
+  } else {
+    beginningOfPassWriteIndex = WGPU_QUERY_SET_INDEX_UNDEFINED;
+  }
+
+  uint32_t endOfPassWriteIndex = 0;
+  if (webgpu_desc->hasEndOfPassWriteIndex()) {
+    endOfPassWriteIndex = webgpu_desc->endOfPassWriteIndex();
+    if (endOfPassWriteIndex == WGPU_QUERY_SET_INDEX_UNDEFINED) {
+      return "endOfPassWriteIndex is too large";
+    }
+  } else {
+    endOfPassWriteIndex = WGPU_QUERY_SET_INDEX_UNDEFINED;
+  }
+
+  *dawn_desc = {};
+  dawn_desc->querySet = webgpu_desc->querySet()->GetHandle();
+  dawn_desc->beginningOfPassWriteIndex = beginningOfPassWriteIndex;
+  dawn_desc->endOfPassWriteIndex = endOfPassWriteIndex;
+
+  return nullptr;
+}
+
 WGPURenderPassDepthStencilAttachment AsDawnType(
     GPUDevice* device,
     const GPURenderPassDepthStencilAttachment* webgpu_desc) {
@@ -175,8 +214,17 @@ GPURenderPassEncoder* GPUCommandEncoder::beginRenderPass(
     dawn_desc.occlusionQuerySet = AsDawnType(descriptor->occlusionQuerySet());
   }
 
+  WGPURenderPassTimestampWrites timestampWrites = {};
   if (descriptor->hasTimestampWrites()) {
-    // TODO(dawn:1800): Re-enable timestamp queries.
+    GPURenderPassTimestampWrites* timestamp_writes =
+        descriptor->timestampWrites();
+    const char* error =
+        ValidateAndConvertTimestampWrites(timestamp_writes, &timestampWrites);
+    if (error) {
+      GetProcs().commandEncoderInjectValidationError(GetHandle(), error);
+    } else {
+      dawn_desc.timestampWrites = &timestampWrites;
+    }
   }
 
   WGPURenderPassDescriptorMaxDrawCount max_draw_count = {};
@@ -205,8 +253,17 @@ GPUComputePassEncoder* GPUCommandEncoder::beginComputePass(
     dawn_desc.label = label.c_str();
   }
 
+  WGPUComputePassTimestampWrites timestampWrites = {};
   if (descriptor->hasTimestampWrites()) {
-    // TODO(dawn:1800): Re-enable timestamp queries.
+    GPUComputePassTimestampWrites* timestamp_writes =
+        descriptor->timestampWrites();
+    const char* error =
+        ValidateAndConvertTimestampWrites(timestamp_writes, &timestampWrites);
+    if (error) {
+      GetProcs().commandEncoderInjectValidationError(GetHandle(), error);
+    } else {
+      dawn_desc.timestampWrites = &timestampWrites;
+    }
   }
 
   GPUComputePassEncoder* encoder = MakeGarbageCollected<GPUComputePassEncoder>(

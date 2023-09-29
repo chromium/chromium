@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL GPUCommandEncoder promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'requestDevice' on 'GPUAdapter': Unsupported feature: timestamp-query"
-Harness: the test ran to completion.
-
