@@ -36,7 +36,7 @@ public class BaseFlagTestRule implements TestRule {
     private void tearDown() {
         FeatureList.setTestFeatures(null);
         Flag.resetFlagsForTesting();
-        CachedFeatureFlags.resetFlagsForTesting();
+        CachedFlagUtils.resetFlagsForTesting();
     }
 
     static final String FEATURE_A = "FeatureA";

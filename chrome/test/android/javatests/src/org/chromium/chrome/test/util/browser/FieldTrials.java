@@ -7,7 +7,6 @@ package org.chromium.chrome.test.util.browser;
 import org.chromium.base.BaseSwitches;
 import org.chromium.base.CommandLine;
 import org.chromium.chrome.browser.flags.AllCachedFieldTrialParameters;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.CachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.CachedFlag;
 
@@ -19,7 +18,7 @@ import java.util.Set;
 
 /**
  * Helps with setting Field Trial parameters during instrumentation tests. It parses the field
- * trials info from CommandLine, and applies the overrides to {@link CachedFeatureFlags}.
+ * trials info from CommandLine, and applies the overrides to {@link CachedFlag}.
  */
 public class FieldTrials {
     private static FieldTrials sInstance;

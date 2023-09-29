@@ -22,9 +22,9 @@ import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.features.branding.BrandingController;
 import org.chromium.chrome.browser.feed.FeedPlaceholderLayout;
 import org.chromium.chrome.browser.firstrun.FirstRunUtils;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.CachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.CachedFlag;
+import org.chromium.chrome.browser.flags.CachedFlagUtils;
 import org.chromium.chrome.browser.flags.CachedFlagsSafeMode;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.notifications.chime.ChimeFeatures;
@@ -76,7 +76,7 @@ public class ChromeCachedFlags {
         if (mIsFinishedCachingNativeFlags) return;
         FirstRunUtils.cacheFirstRunPrefs();
 
-        CachedFeatureFlags.cacheNativeFlags(ChromeFeatureList.sFlagsCachedFullBrowser);
+        CachedFlagUtils.cacheNativeFlags(ChromeFeatureList.sFlagsCachedFullBrowser);
         cacheAdditionalNativeFlags();
 
         //clang-format off
@@ -128,7 +128,7 @@ public class ChromeCachedFlags {
                 BackPressManager.TAB_HISTORY_RECOVER);
         // clang-format on
         tryToCatchMissingParameters(fieldTrialsToCache);
-        CachedFeatureFlags.cacheFieldTrialParameters(fieldTrialsToCache);
+        CachedFlagUtils.cacheFieldTrialParameters(fieldTrialsToCache);
 
         CachedFlagsSafeMode.getInstance().onEndCheckpoint();
         mIsFinishedCachingNativeFlags = true;
@@ -160,8 +160,8 @@ public class ChromeCachedFlags {
      */
     public void cacheMinimalBrowserFlags() {
         cacheMinimalBrowserFlagsTimeFromNativeTime();
-        CachedFeatureFlags.cacheNativeFlags(ChromeFeatureList.sFlagsCachedInMinimalBrowser);
-        CachedFeatureFlags.cacheFieldTrialParameters(MINIMAL_BROWSER_FIELD_TRIALS);
+        CachedFlagUtils.cacheNativeFlags(ChromeFeatureList.sFlagsCachedInMinimalBrowser);
+        CachedFlagUtils.cacheFieldTrialParameters(MINIMAL_BROWSER_FIELD_TRIALS);
     }
 
     /**

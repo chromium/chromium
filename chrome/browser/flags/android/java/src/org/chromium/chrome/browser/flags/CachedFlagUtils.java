@@ -11,7 +11,7 @@ import java.util.List;
  *
  * TODO(crbug.com/1442347): Rename this to CachedFlagUtils.
  */
-public class CachedFeatureFlags {
+public class CachedFlagUtils {
     /**
      * Caches flags that must take effect on startup but are set via native code.
      */

@@ -18,7 +18,7 @@ import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 
 /**
  * Unit tests to verify @EnableFeatures() and @DisableFeatures() work for
- * {@link CachedFeatureFlags}.
+ * {@link CachedFlag}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures(ChromeFeatureList.TEST_DEFAULT_DISABLED)

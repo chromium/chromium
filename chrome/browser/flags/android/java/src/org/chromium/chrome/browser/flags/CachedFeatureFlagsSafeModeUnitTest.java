@@ -23,10 +23,7 @@ import org.chromium.chrome.browser.flags.CachedFlagsSafeMode.Behavior;
 import java.util.Arrays;
 
 /**
- * Unit Tests for the Safe Mode mechanism for {@link CachedFeatureFlags}.
- *
- * Tests the public API {@link CachedFeatureFlags} rather than the implementation
- * {@link CachedFlagsSafeMode}.
+ * Unit Tests for {@link CachedFlagsSafeMode}, the Safe Mode mechanism for {@link CachedFlag}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
 public class CachedFeatureFlagsSafeModeUnitTest {
@@ -386,8 +383,8 @@ public class CachedFeatureFlagsSafeModeUnitTest {
                 OK_FEATURE, DOUBLE_PARAM_NAME, Double.toString(DOUBLE_PARAM_NATIVE_1));
         testValues.addFieldTrialParamOverride(OK_FEATURE, STRING_PARAM_NAME, STRING_PARAM_NATIVE_1);
         FeatureList.setTestValues(testValues);
-        CachedFeatureFlags.cacheNativeFlags(Arrays.asList(sCrashyFeature, sOkFeature));
-        CachedFeatureFlags.cacheFieldTrialParameters(
+        CachedFlagUtils.cacheNativeFlags(Arrays.asList(sCrashyFeature, sOkFeature));
+        CachedFlagUtils.cacheFieldTrialParameters(
                 Arrays.asList(BOOL_PARAM, INT_PARAM, DOUBLE_PARAM, STRING_PARAM));
 
         clearMemory();
@@ -581,8 +578,8 @@ public class CachedFeatureFlagsSafeModeUnitTest {
         testValues.addFieldTrialParamOverride(OK_FEATURE, STRING_PARAM_NAME, stringParamValue);
         FeatureList.setTestValues(testValues);
 
-        CachedFeatureFlags.cacheNativeFlags(Arrays.asList(sCrashyFeature, sOkFeature));
-        CachedFeatureFlags.cacheFieldTrialParameters(
+        CachedFlagUtils.cacheNativeFlags(Arrays.asList(sCrashyFeature, sOkFeature));
+        CachedFlagUtils.cacheFieldTrialParameters(
                 Arrays.asList(BOOL_PARAM, INT_PARAM, DOUBLE_PARAM, STRING_PARAM));
 
         CachedFlagsSafeMode.getInstance().onEndCheckpoint();
@@ -616,7 +613,7 @@ public class CachedFeatureFlagsSafeModeUnitTest {
     }
 
     private static void clearMemory() {
-        CachedFeatureFlags.resetFlagsForTesting();
+        CachedFlagUtils.resetFlagsForTesting();
         CachedFlagsSafeMode.getInstance().clearMemoryForTesting();
     }
 }

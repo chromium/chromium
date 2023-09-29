@@ -9,9 +9,9 @@ android_library("java") {
   sources = [
     "android/java/src/org/chromium/chrome/browser/flags/AllCachedFieldTrialParameters.java",
     "android/java/src/org/chromium/chrome/browser/flags/BooleanCachedFieldTrialParameter.java",
-    "android/java/src/org/chromium/chrome/browser/flags/CachedFeatureFlags.java",
     "android/java/src/org/chromium/chrome/browser/flags/CachedFieldTrialParameter.java",
     "android/java/src/org/chromium/chrome/browser/flags/CachedFlag.java",
+    "android/java/src/org/chromium/chrome/browser/flags/CachedFlagUtils.java",
     "android/java/src/org/chromium/chrome/browser/flags/CachedFlagsSafeMode.java",
     "android/java/src/org/chromium/chrome/browser/flags/ChromeFeatureList.java",
     "android/java/src/org/chromium/chrome/browser/flags/ChromeFeatureMap.java",

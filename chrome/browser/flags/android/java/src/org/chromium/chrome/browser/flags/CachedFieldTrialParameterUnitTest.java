@@ -96,7 +96,7 @@ public class CachedFieldTrialParameterUnitTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        CachedFeatureFlags.resetFlagsForTesting();
+        CachedFlagUtils.resetFlagsForTesting();
         CachedFlag.resetDiskForTesting();
 
         TestValues testValues = new TestValues();
@@ -121,7 +121,7 @@ public class CachedFieldTrialParameterUnitTest {
 
     @After
     public void tearDown() {
-        CachedFeatureFlags.resetFlagsForTesting();
+        CachedFlagUtils.resetFlagsForTesting();
         CachedFlag.resetDiskForTesting();
         FeatureList.setTestValues(null);
     }
@@ -133,14 +133,14 @@ public class CachedFieldTrialParameterUnitTest {
 
     @Test
     public void testNativeInitialized_getsFromChromeFeatureList() {
-        CachedFeatureFlags.cacheFieldTrialParameters(PARAMS_TO_CACHE);
+        CachedFlagUtils.cacheFieldTrialParameters(PARAMS_TO_CACHE);
         assertValuesAreFromNative();
     }
 
     @Test
     public void testConsistency() {
         assertValuesAreDefault();
-        CachedFeatureFlags.cacheFieldTrialParameters(PARAMS_TO_CACHE);
+        CachedFlagUtils.cacheFieldTrialParameters(PARAMS_TO_CACHE);
 
         // Should still return the values previously returned
         assertValuesAreDefault();
@@ -149,10 +149,10 @@ public class CachedFieldTrialParameterUnitTest {
     @Test
     public void testNativeNotInitializedPrefsCached_getsFromPrefs() {
         // Cache to disk
-        CachedFeatureFlags.cacheFieldTrialParameters(PARAMS_TO_CACHE);
+        CachedFlagUtils.cacheFieldTrialParameters(PARAMS_TO_CACHE);
 
         // Simulate a second run
-        CachedFeatureFlags.resetFlagsForTesting();
+        CachedFlagUtils.resetFlagsForTesting();
 
         // Set different values in native which shouldn't be used
         TestValues testValues = new TestValues();
@@ -185,7 +185,7 @@ public class CachedFieldTrialParameterUnitTest {
         AllCachedFieldTrialParameters.setForTesting(FEATURE_B, ALL_PARAM_TEST_OVERRIDE);
 
         // Should not take priority over the overrides
-        CachedFeatureFlags.cacheFieldTrialParameters(PARAMS_TO_CACHE);
+        CachedFlagUtils.cacheFieldTrialParameters(PARAMS_TO_CACHE);
 
         assertEquals(STRING_PARAM_TEST_OVERRIDE, STRING_PARAM.getValue());
         assertEquals(BOOLEAN_PARAM_TEST_OVERRIDE, BOOLEAN_PARAM.getValue());

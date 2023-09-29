@@ -30,7 +30,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * Controls Safe Mode for {@link CachedFeatureFlags}.
+ * Controls Safe Mode for {@link CachedFlag}.
  *
  * Safe Mode is a mechanism that allows Chrome to prevent crashes gated behind flags used before
  * native from becoming a crash loop that cannot be recovered from by disabling the experiment.
