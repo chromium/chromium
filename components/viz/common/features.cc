@@ -317,7 +317,7 @@ BASE_FEATURE(kDrawImmediatelyWhenInteractive,
 // cases in production.
 BASE_FEATURE(kInvalidateLocalSurfaceIdPreCommit,
              "InvalidateLocalSurfaceIdPreCommit",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsDelegatedCompositingEnabled() {
   return base::FeatureList::IsEnabled(kDelegatedCompositing);
