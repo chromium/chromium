@@ -11,6 +11,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/protobuf_matchers.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -23,6 +24,7 @@
 #include "components/variations/proto/variations_seed.pb.h"
 #include "components/variations/variations_switches.h"
 #include "components/variations/variations_test_utils.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/zlib/google/compression_utils.h"
 
@@ -30,8 +32,15 @@
 #include "components/variations/android/variations_seed_bridge.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chromeos/ash/components/dbus/featured/fake_featured_client.h"
+#include "chromeos/ash/components/dbus/featured/featured.pb.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 namespace variations {
 namespace {
+
+using ::base::EqualsProto;
 
 // The sentinel value that may be stored as the latest variations seed value in
 // prefs to indicate that the latest seed is identical to the safe seed.
@@ -1452,5 +1461,176 @@ TEST_P(VariationsSeedStoreFirstRunPrefsTest, FirstRunPrefsAllowed) {
             prefs.GetString(prefs::kVariationsCompressedSeed));
 }
 #endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+const featured::SeedDetails CreateDummySafeSeed(
+    ClientFilterableState* client_state,
+    base::Time fetch_time_to_store) {
+  featured::SeedDetails expected_seed;
+  expected_seed.set_b64_compressed_data(kTestSeedData.base64_compressed_data);
+  expected_seed.set_signature(kTestSeedData.base64_signature);
+  expected_seed.set_milestone(92);
+  expected_seed.set_locale(client_state->locale);
+  expected_seed.set_date(
+      client_state->reference_date.ToDeltaSinceWindowsEpoch().InMilliseconds());
+  expected_seed.set_permanent_consistency_country(
+      client_state->permanent_consistency_country);
+  expected_seed.set_session_consistency_country(
+      client_state->session_consistency_country);
+  expected_seed.set_fetch_time(
+      fetch_time_to_store.ToDeltaSinceWindowsEpoch().InMilliseconds());
+  return expected_seed;
+}
+
+// Checks that |platform_data| and |expected_data| deserialize to the same
+// VariationsSeed proto.
+// |platform_data| and |expected_data| are base64_compressed forms of seed data.
+void ExpectSeedData(const std::string& platform_data,
+                    const std::string& expected_data) {
+  std::string decoded_platform_data;
+  EXPECT_TRUE(base::Base64Decode(platform_data, &decoded_platform_data));
+  std::string uncompressed_decoded_platform_data;
+  EXPECT_TRUE(compression::GzipUncompress(decoded_platform_data,
+                                          &uncompressed_decoded_platform_data));
+  VariationsSeed platform_seed;
+  EXPECT_TRUE(
+      platform_seed.ParseFromString(uncompressed_decoded_platform_data));
+
+  std::string decoded_expected_data;
+  EXPECT_TRUE(base::Base64Decode(expected_data, &decoded_expected_data));
+  std::string uncompressed_decoded_expected_data;
+  EXPECT_TRUE(compression::GzipUncompress(decoded_expected_data,
+                                          &uncompressed_decoded_expected_data));
+  VariationsSeed expected_seed;
+  EXPECT_TRUE(
+      expected_seed.ParseFromString(uncompressed_decoded_expected_data));
+
+  EXPECT_THAT(platform_seed, EqualsProto(expected_seed));
+}
+
+// Manually verifying each field in featured::SeedDetails rather than using
+// EqualsProto is necessary because the
+// featured::SeedDetails::b64_compressed_data field may be different between
+// |platform| and |expected| even if the data unserializes to the same
+// VariationsSeed. This could be caused by implementation differences between
+// different versions of compression::GzipCompress.
+//
+// To accurately compare two featured::SeedDetails protos, the
+// `b64_compressed_data` should be deserialized into a VariationsSeed proto and
+// the two VariationsSeed protos should be compared.
+void ExpectSafeSeed(const featured::SeedDetails& platform,
+                    const featured::SeedDetails expected) {
+  ExpectSeedData(platform.b64_compressed_data(),
+                 expected.b64_compressed_data());
+  EXPECT_EQ(platform.locale(), expected.locale());
+  EXPECT_EQ(platform.milestone(), expected.milestone());
+  EXPECT_EQ(platform.permanent_consistency_country(),
+            expected.permanent_consistency_country());
+  EXPECT_EQ(platform.session_consistency_country(),
+            expected.session_consistency_country());
+  EXPECT_EQ(platform.signature(), expected.signature());
+  EXPECT_EQ(platform.date(), expected.date());
+  EXPECT_EQ(platform.fetch_time(), expected.fetch_time());
+}
+
+TEST(VariationsSeedStoreTest, SendSafeSeedToPlatform_SucceedFirstAttempt) {
+  TestingPrefServiceSimple prefs;
+  VariationsSeedStore::RegisterPrefs(prefs.registry());
+  SignatureVerifyingVariationsSeedStore seed_store(&prefs);
+
+  ash::featured::FeaturedClient::InitializeFake();
+  ash::featured::FakeFeaturedClient* client =
+      ash::featured::FakeFeaturedClient::Get();
+  client->AddResponse(true);
+
+  std::unique_ptr<ClientFilterableState> client_state =
+      CreateDummyClientFilterableState();
+  base::Time now = base::Time::Now();
+  const base::Time fetch_time_to_store = now - base::Hours(1);
+  featured::SeedDetails expected_platform_seed =
+      CreateDummySafeSeed(client_state.get(), fetch_time_to_store);
+  std::string expected_seed_data;
+  ASSERT_TRUE(base::Base64Decode(kTestSeedData.base64_uncompressed_data,
+                                 &expected_seed_data));
+
+  // Verify that storing the safe seed succeeded.
+  EXPECT_TRUE(seed_store.StoreSafeSeed(
+      expected_seed_data, expected_platform_seed.signature(),
+      expected_platform_seed.milestone(), *client_state, fetch_time_to_store));
+
+  // Verify that the validated safe seed was received on Platform.
+  ExpectSafeSeed(client->latest_safe_seed(), expected_platform_seed);
+  EXPECT_EQ(client->handle_seed_fetched_attempts(), 1);
+
+  ash::featured::FeaturedClient::Shutdown();
+}
+
+TEST(VariationsSeedStoreTest, SendSafeSeedToPlatform_FailFirstAttempt) {
+  TestingPrefServiceSimple prefs;
+  VariationsSeedStore::RegisterPrefs(prefs.registry());
+  SignatureVerifyingVariationsSeedStore seed_store(&prefs);
+
+  ash::featured::FeaturedClient::InitializeFake();
+  ash::featured::FakeFeaturedClient* client =
+      ash::featured::FakeFeaturedClient::Get();
+  client->AddResponse(false);
+  client->AddResponse(true);
+
+  std::unique_ptr<ClientFilterableState> client_state =
+      CreateDummyClientFilterableState();
+  base::Time now = base::Time::Now();
+  const base::Time fetch_time_to_store = now - base::Hours(1);
+  featured::SeedDetails expected_platform_seed =
+      CreateDummySafeSeed(client_state.get(), fetch_time_to_store);
+  std::string expected_seed_data;
+  ASSERT_TRUE(base::Base64Decode(kTestSeedData.base64_uncompressed_data,
+                                 &expected_seed_data));
+
+  // Verify that storing the safe seed succeeded.
+  EXPECT_TRUE(seed_store.StoreSafeSeed(
+      expected_seed_data, expected_platform_seed.signature(),
+      expected_platform_seed.milestone(), *client_state, fetch_time_to_store));
+
+  // Verify that the validated safe seed was received on Platform.
+  ExpectSafeSeed(client->latest_safe_seed(), expected_platform_seed);
+  EXPECT_EQ(client->handle_seed_fetched_attempts(), 2);
+
+  ash::featured::FeaturedClient::Shutdown();
+}
+
+TEST(VariationsSeedStoreTest, SendSafeSeedToPlatform_FailTwoAttempts) {
+  TestingPrefServiceSimple prefs;
+  VariationsSeedStore::RegisterPrefs(prefs.registry());
+  SignatureVerifyingVariationsSeedStore seed_store(&prefs);
+
+  ash::featured::FeaturedClient::InitializeFake();
+  ash::featured::FakeFeaturedClient* client =
+      ash::featured::FakeFeaturedClient::Get();
+  client->AddResponse(false);
+  client->AddResponse(false);
+
+  std::unique_ptr<ClientFilterableState> client_state =
+      CreateDummyClientFilterableState();
+  base::Time now = base::Time::Now();
+  const base::Time fetch_time_to_store = now - base::Hours(1);
+  featured::SeedDetails seed =
+      CreateDummySafeSeed(client_state.get(), fetch_time_to_store);
+  std::string seed_data;
+  ASSERT_TRUE(
+      base::Base64Decode(kTestSeedData.base64_uncompressed_data, &seed_data));
+
+  // Verify that storing the safe seed succeeded.
+  EXPECT_TRUE(seed_store.StoreSafeSeed(seed_data, seed.signature(),
+                                       seed.milestone(), *client_state,
+                                       fetch_time_to_store));
+
+  // Verify that the validated safe seed was not received on Platform.
+  featured::SeedDetails empty_seed;
+  EXPECT_THAT(client->latest_safe_seed(), EqualsProto(empty_seed));
+  EXPECT_EQ(client->handle_seed_fetched_attempts(), 2);
+
+  ash::featured::FeaturedClient::Shutdown();
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace variations

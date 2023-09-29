@@ -75,13 +75,6 @@ static_library("service") {
     "//services/network/public/cpp",
     "//ui/base",
   ]
-
-  if (is_chromeos_ash) {
-    deps += [
-      "//chromeos/ash/components/dbus/featured",
-      "//chromeos/ash/components/dbus/featured:proto",
-    ]
-  }
 }
 
 source_set("unit_tests") {
@@ -117,11 +110,4 @@ source_set("unit_tests") {
     "//services/network/public/cpp",
     "//testing/gtest",
   ]
-
-  if (is_chromeos_ash) {
-    deps += [
-      "//chromeos/ash/components/dbus/featured",
-      "//chromeos/ash/components/dbus/featured:proto",
-    ]
-  }
 }

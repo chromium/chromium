@@ -141,6 +141,13 @@ component("variations") {
   if (is_android) {
     deps += [ "//components/variations/android:variations_jni" ]
   }
+
+  if (is_chromeos_ash) {
+    deps += [
+      "//chromeos/ash/components/dbus/featured",
+      "//chromeos/ash/components/dbus/featured:proto",
+    ]
+  }
 }
 
 if (is_android) {
@@ -257,6 +264,13 @@ source_set("unit_tests") {
     "//third_party/zlib/google:compression_utils",
     "//url",
   ]
+
+  if (is_chromeos_ash) {
+    deps += [
+      "//chromeos/ash/components/dbus/featured",
+      "//chromeos/ash/components/dbus/featured:proto",
+    ]
+  }
 }
 
 # Convenience testing target

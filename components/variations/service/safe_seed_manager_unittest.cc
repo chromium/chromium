@@ -11,7 +11,6 @@
 #include "base/command_line.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
-#include "build/chromeos_buildflags.h"
 #include "components/metrics/clean_exit_beacon.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/variations/client_filterable_state.h"
@@ -21,11 +20,6 @@
 #include "components/variations/variations_switches.h"
 #include "components/variations/variations_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/ash/components/dbus/featured/fake_featured_client.h"
-#include "chromeos/ash/components/dbus/featured/featured.pb.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace variations {
 
@@ -179,83 +173,6 @@ TEST_F(SafeSeedManagerTest,
   EXPECT_EQ(base::Time(), seed_store.date());
   EXPECT_EQ(base::Time(), seed_store.fetch_time());
 }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-TEST_F(SafeSeedManagerTest, GetSafeSeedStateForPlatform) {
-  SafeSeedManager safe_seed_manager(&prefs_);
-  FakeSeedStore seed_store(&prefs_);
-  SetDefaultActiveState(&safe_seed_manager, &prefs_);
-
-  featured::SeedDetails platform_seed =
-      safe_seed_manager.GetSafeSeedStateForPlatform();
-
-  EXPECT_EQ(kTestSeed, platform_seed.compressed_data());
-  EXPECT_EQ(kTestSignature, platform_seed.signature());
-  EXPECT_EQ(kTestSeedMilestone, platform_seed.milestone());
-  EXPECT_EQ(kTestLocale, platform_seed.locale());
-  EXPECT_EQ(kTestPermanentConsistencyCountry,
-            platform_seed.permanent_consistency_country());
-  EXPECT_EQ(kTestSessionConsistencyCountry,
-            platform_seed.session_consistency_country());
-  EXPECT_EQ(base::Time::UnixEpoch().ToDeltaSinceWindowsEpoch().InMilliseconds(),
-            platform_seed.date());
-  EXPECT_EQ(GetTestFetchTime().ToDeltaSinceWindowsEpoch().InMilliseconds(),
-            platform_seed.fetch_time());
-}
-
-TEST_F(SafeSeedManagerTest, SendSafeSeedToPlatform_SucceedFirstAttempt) {
-  SafeSeedManager safe_seed_manager(&prefs_);
-  FakeSeedStore seed_store(&prefs_);
-  SetDefaultActiveState(&safe_seed_manager, &prefs_);
-
-  ash::featured::FeaturedClient::InitializeFake();
-  ash::featured::FakeFeaturedClient* client =
-      ash::featured::FakeFeaturedClient::Get();
-  client->AddResponse(true);
-
-  safe_seed_manager.RecordSuccessfulFetch(&seed_store);
-  ExpectDefaultActiveState(seed_store);
-  EXPECT_EQ(client->handle_seed_fetched_attempts(), 1);
-
-  ash::featured::FeaturedClient::Shutdown();
-}
-
-TEST_F(SafeSeedManagerTest, SendSafeSeedToPlatform_FailFirstAttempt) {
-  SafeSeedManager safe_seed_manager(&prefs_);
-  FakeSeedStore seed_store(&prefs_);
-  SetDefaultActiveState(&safe_seed_manager, &prefs_);
-
-  ash::featured::FeaturedClient::InitializeFake();
-  ash::featured::FakeFeaturedClient* client =
-      ash::featured::FakeFeaturedClient::Get();
-  client->AddResponse(false);
-  client->AddResponse(true);
-
-  safe_seed_manager.RecordSuccessfulFetch(&seed_store);
-  ExpectDefaultActiveState(seed_store);
-  EXPECT_EQ(client->handle_seed_fetched_attempts(), 2);
-
-  ash::featured::FeaturedClient::Shutdown();
-}
-
-TEST_F(SafeSeedManagerTest, SendSafeSeedToPlatform_FailTwoAttempts) {
-  SafeSeedManager safe_seed_manager(&prefs_);
-  FakeSeedStore seed_store(&prefs_);
-  SetDefaultActiveState(&safe_seed_manager, &prefs_);
-
-  ash::featured::FeaturedClient::InitializeFake();
-  ash::featured::FakeFeaturedClient* client =
-      ash::featured::FakeFeaturedClient::Get();
-  client->AddResponse(false);
-  client->AddResponse(false);
-
-  safe_seed_manager.RecordSuccessfulFetch(&seed_store);
-  ExpectDefaultActiveState(seed_store);
-  EXPECT_EQ(client->handle_seed_fetched_attempts(), 2);
-
-  ash::featured::FeaturedClient::Shutdown();
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 TEST_F(SafeSeedManagerTest, FetchFailureMetrics_DefaultPrefs) {
   base::HistogramTester histogram_tester;

@@ -45,9 +45,15 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DBUS_FEATURED) FakeFeaturedClient
     return handle_seed_fetched_attempts_;
   }
 
+  // Returns the safe seed received from HandleSeedFetched. Used for testing.
+  const ::featured::SeedDetails& latest_safe_seed() const {
+    return latest_safe_seed_;
+  }
+
  private:
   base::queue<bool> responses_;
   size_t handle_seed_fetched_attempts_ = 0;
+  ::featured::SeedDetails latest_safe_seed_;
 };
 
 }  // namespace ash::featured

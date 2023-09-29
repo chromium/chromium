@@ -1,5 +1,4 @@
 include_rules = [
-  "+chromeos/ash/components/dbus/featured",
   "+components/encrypted_messages",
   "+components/language/core/browser",
   "+components/metrics",
