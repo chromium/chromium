@@ -35067,6 +35067,13 @@ Called by update_document_policy_enum.py.-->
 <enum name="ExpandedApRoVerificationStatus">
   <int value="-4096" label="Success"/>
   <int value="20135176" label="SignedWithTestRootKey"/>
+  <int value="33554688" label="SWWPDisabledBlank"/>
+  <int value="33592572" label="SWWPDisabled94FC"/>
+  <int value="33601788" label="SWWPDisabledB8FC"/>
+  <int value="45613312" label="WPSR1IsBlankB8"/>
+  <int value="257578052" label="GSCVDLockedToZZCR444"/>
+  <int value="257578228" label="GSCVDLockedToZZCR4F4"/>
+  <int value="257578340" label="GSCVDLockedToZZCR564"/>
   <int value="268435456" label="SettingNotProvisioned"/>
   <int value="285212672" label="NonZeroGbbFlags"/>
 </enum>
