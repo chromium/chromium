@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/containers/contains.h"
+#include "base/containers/cxx20_erase_vector.h"
 #include "base/feature_list.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
@@ -546,8 +547,9 @@ std::vector<CreditCard> AutofillSuggestionGenerator::GetOrderedCardsToSuggest(
   if (suppress_disused_cards) {
     const base::Time min_last_used =
         AutofillClock::Now() - kDisusedDataModelTimeDelta;
-    AutofillSuggestionGenerator::RemoveExpiredCreditCardsNotUsedSinceTimestamp(
-        AutofillClock::Now(), min_last_used, &available_cards);
+    AutofillSuggestionGenerator::
+        RemoveExpiredLocalCreditCardsNotUsedSinceTimestamp(min_last_used,
+                                                           available_cards);
   }
 
   std::vector<CreditCard> cards_to_suggest;
@@ -639,28 +641,20 @@ AutofillSuggestionGenerator::GetPromoCodeSuggestionsFromPromoCodeOffers(
 }
 
 // static
-void AutofillSuggestionGenerator::RemoveExpiredCreditCardsNotUsedSinceTimestamp(
-    base::Time comparison_time,
-    base::Time min_last_used,
-    std::vector<CreditCard*>* cards) {
-  const size_t original_size = cards->size();
-  // Split the vector into two groups
-  // 1. All server cards, unexpired local cards, or local cards that have been
-  // used after |min_last_used|;
-  // 2. Expired local cards that have not been used since |min_last_used|;
-  // then delete the latter.
-  cards->erase(std::stable_partition(
-                   cards->begin(), cards->end(),
-                   [comparison_time, min_last_used](const CreditCard* c) {
-                     return !c->IsExpired(comparison_time) ||
-                            c->use_date() >= min_last_used ||
-                            c->record_type() !=
-                                CreditCard::RecordType::kLocalCard;
-                   }),
-               cards->end());
-  const size_t num_cards_supressed = original_size - cards->size();
+void AutofillSuggestionGenerator::
+    RemoveExpiredLocalCreditCardsNotUsedSinceTimestamp(
+        base::Time min_last_used,
+        std::vector<CreditCard*>& cards) {
+  const size_t original_size = cards.size();
+  base::EraseIf(cards, [comparison_time = AutofillClock::Now(),
+                        min_last_used](const CreditCard* card) {
+    return card->IsExpired(comparison_time) &&
+           card->use_date() < min_last_used &&
+           card->record_type() == CreditCard::RecordType::kLocalCard;
+  });
+  const size_t num_cards_suppressed = original_size - cards.size();
   AutofillMetrics::LogNumberOfCreditCardsSuppressedForDisuse(
-      num_cards_supressed);
+      num_cards_suppressed);
 }
 
 std::u16string AutofillSuggestionGenerator::GetDisplayNicknameForCreditCard(

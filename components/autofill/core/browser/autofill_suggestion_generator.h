@@ -129,13 +129,11 @@ class AutofillSuggestionGenerator {
   static std::vector<Suggestion> GetPromoCodeSuggestionsFromPromoCodeOffers(
       const std::vector<const AutofillOfferData*>& promo_code_offers);
 
-  // Remove credit cards that are expired at |comparison_time| and not used
-  // since |min_last_used| from |cards|. The relative ordering of |cards| is
-  // maintained.
-  static void RemoveExpiredCreditCardsNotUsedSinceTimestamp(
-      base::Time comparison_time,
+  // Removes expired local credit cards not used since `min_last_used` from
+  // `cards`. The relative ordering of `cards` is maintained.
+  static void RemoveExpiredLocalCreditCardsNotUsedSinceTimestamp(
       base::Time min_last_used,
-      std::vector<CreditCard*>* cards);
+      std::vector<CreditCard*>& cards);
 
   // Return a nickname for the |card| to display. This is generally the nickname
   // stored in |card|, unless |card| exists as a local and a server copy. In

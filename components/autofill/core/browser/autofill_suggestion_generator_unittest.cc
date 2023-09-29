@@ -1405,8 +1405,9 @@ TEST_F(AutofillSuggestionGeneratorTest,
 
     // Filter the cards while capturing histograms.
     base::HistogramTester histogram_tester;
-    AutofillSuggestionGenerator::RemoveExpiredCreditCardsNotUsedSinceTimestamp(
-        kNow, kNow - base::Days(175), &cards);
+    AutofillSuggestionGenerator::
+        RemoveExpiredLocalCreditCardsNotUsedSinceTimestamp(
+            kNow - base::Days(175), cards);
 
     // Validate that we get the expected filtered cards and histograms.
     EXPECT_EQ(expected_cards, cards);
@@ -1427,8 +1428,9 @@ TEST_F(AutofillSuggestionGeneratorTest,
 
     // Filter the cards while capturing histograms.
     base::HistogramTester histogram_tester;
-    AutofillSuggestionGenerator::RemoveExpiredCreditCardsNotUsedSinceTimestamp(
-        kNow, kNow - base::Days(115), &cards);
+    AutofillSuggestionGenerator::
+        RemoveExpiredLocalCreditCardsNotUsedSinceTimestamp(
+            kNow - base::Days(115), cards);
 
     // Validate that we get the expected filtered cards and histograms.
     EXPECT_EQ(expected_cards, cards);
@@ -1452,8 +1454,8 @@ TEST_F(AutofillSuggestionGeneratorTest,
 
     // Filter the cards while capturing histograms.
     base::HistogramTester histogram_tester;
-    AutofillSuggestionGenerator::RemoveExpiredCreditCardsNotUsedSinceTimestamp(
-        kNow, k115DaysAgo, &cards);
+    AutofillSuggestionGenerator::
+        RemoveExpiredLocalCreditCardsNotUsedSinceTimestamp(k115DaysAgo, cards);
 
     // Validate that we have the right cards. Iterate of the the shuffled
     // primary copy and the filtered copy at the same time. making sure that
@@ -1489,8 +1491,9 @@ TEST_F(AutofillSuggestionGeneratorTest,
 
     // Filter the cards while capturing histograms.
     base::HistogramTester histogram_tester;
-    AutofillSuggestionGenerator::RemoveExpiredCreditCardsNotUsedSinceTimestamp(
-        kNow, kNow - base::Days(720), &cards);
+    AutofillSuggestionGenerator::
+        RemoveExpiredLocalCreditCardsNotUsedSinceTimestamp(
+            kNow - base::Days(720), cards);
 
     // Validate that we get the expected filtered cards and histograms.
     EXPECT_EQ(all_card_ptrs, cards);
@@ -1508,8 +1511,9 @@ TEST_F(AutofillSuggestionGeneratorTest,
 
     // Filter the cards while capturing histograms.
     base::HistogramTester histogram_tester;
-    AutofillSuggestionGenerator::RemoveExpiredCreditCardsNotUsedSinceTimestamp(
-        kNow, kNow + base::Days(1), &cards);
+    AutofillSuggestionGenerator::
+        RemoveExpiredLocalCreditCardsNotUsedSinceTimestamp(kNow + base::Days(1),
+                                                           cards);
 
     // Validate that we get the expected filtered cards and histograms.
     EXPECT_TRUE(cards.empty());
@@ -1529,8 +1533,9 @@ TEST_F(AutofillSuggestionGeneratorTest,
 
     // Filter the cards while capturing histograms.
     base::HistogramTester histogram_tester;
-    AutofillSuggestionGenerator::RemoveExpiredCreditCardsNotUsedSinceTimestamp(
-        kNow, kNow + base::Days(1), &cards);
+    AutofillSuggestionGenerator::
+        RemoveExpiredLocalCreditCardsNotUsedSinceTimestamp(kNow + base::Days(1),
+                                                           cards);
 
     // Validate that we get the expected filtered cards and histograms.
     EXPECT_EQ(1U, cards.size());
