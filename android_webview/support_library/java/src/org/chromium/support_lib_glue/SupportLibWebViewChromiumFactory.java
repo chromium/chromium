@@ -93,7 +93,7 @@ class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryBoundary
                     Features.IMAGE_DRAG_DROP,
                     Features.USER_AGENT_METADATA,
                     Features.MULTI_PROFILE,
-                    Features.ATTRIBUTION_BEHAVIOR + Features.DEV_SUFFIX,
+                    Features.ATTRIBUTION_BEHAVIOR,
                     // Add new features above. New features must include `+ Features.DEV_SUFFIX`
                     // when they're initially added (this can be removed in a future CL). The final
                     // feature should have a trailing comma for cleaner diffs.
