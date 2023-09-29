@@ -27,8 +27,8 @@ import {buttonsAreEqual} from './input_device_settings_utils.js';
 const NO_REMAPPING_OPTION_LABEL = 'none';
 const KEY_COMBINATION_OPTION_LABEL = 'key combination';
 const OPEN_DIALOG_OPTION_LABEL = 'open key combination dialog';
-const ACTION_PREFIX = 'action';
-const HARDCODED_ACTION_PREFIX = 'hardcodedAction';
+const ACCELERATOR_ACTION_PREFIX = 'acceleratorAction';
+const STATICS_SHORTCUT_ACTION_PREFIX = 'staticShortcutAction';
 
 /**
  * Bit mask of modifiers.
@@ -277,19 +277,20 @@ export class CustomizeButtonRowElement extends CustomizeButtonRowElementBase {
     // pages, and pass it as a value instead of creating fake data here.
     for (const actionChoice of this.actionList) {
       const acceleratorAction = actionChoice.actionType.acceleratorAction;
-      const hardcodedAction = actionChoice.actionType.hardcodedAction;
+      const staticShortcutAction = actionChoice.actionType.staticShortcutAction;
       if (acceleratorAction !== undefined) {
-        // Prepend an action prefix to distinguish it from the hardcodedAction
-        // enum.
+        // Prepend an acceleratorAction prefix to distinguish it from the
+        // StaticShortcutAction enum.
         this.buttonMapTargets_.push({
-          value: ACTION_PREFIX + acceleratorAction.toString(),
+          value: ACCELERATOR_ACTION_PREFIX + acceleratorAction.toString(),
           name: actionChoice.name,
         });
-      } else if (hardcodedAction !== undefined) {
-        // Prepend a hardcodedAction prefix to distinguish it from the action
-        // enum.
+      } else if (staticShortcutAction !== undefined) {
+        // Prepend a staticShortcutAction prefix to distinguish it from the
+        // AcceleratorAction enum.
         this.buttonMapTargets_.push({
-          value: HARDCODED_ACTION_PREFIX + hardcodedAction.toString(),
+          value:
+              STATICS_SHORTCUT_ACTION_PREFIX + staticShortcutAction.toString(),
           name: actionChoice.name,
         });
       }
@@ -305,18 +306,21 @@ export class CustomizeButtonRowElement extends CustomizeButtonRowElementBase {
     // Set the dropdown option label to default 'Key combination'.
     this.keyCombinationLabel_ = this.i18n('keyCombinationOptionLabel');
 
-    // For accelerator actions, the remappingAction.action value is number.
-    const action = this.buttonRemapping_.remappingAction?.action;
-    const keyEvent = this.buttonRemapping_.remappingAction?.keyEvent;
-    // For hardcoded actions, the remappingAction.hardcodedAction value is
+    // For accelerator actions, the remappingAction.acceleratorAction value is
     // number.
-    const hardcodedAction =
-        this.buttonRemapping_.remappingAction?.hardcodedAction;
-    if (action !== undefined && !isNaN(action)) {
-      // Prepend an action prefix to distinguish it from the hardcodedAction
-      // enum.
-      const originalAction = ACTION_PREFIX + action.toString();
-      this.initializeDropdown_(originalAction, dropdown);
+    const acceleratorAction =
+        this.buttonRemapping_.remappingAction?.acceleratorAction;
+    const keyEvent = this.buttonRemapping_.remappingAction?.keyEvent;
+    // For static shortcut actions, the remappingAction.staticShortcutAction
+    // value is number.
+    const staticShortcutAction =
+        this.buttonRemapping_.remappingAction?.staticShortcutAction;
+    if (acceleratorAction !== undefined && !isNaN(acceleratorAction)) {
+      // Prepend an acceleratorAction prefix to distinguish it from the
+      // staticShortcutAction enum.
+      const originalAcceleratorAction =
+          ACCELERATOR_ACTION_PREFIX + acceleratorAction.toString();
+      this.initializeDropdown_(originalAcceleratorAction, dropdown);
     } else if (keyEvent) {
       this.set('fakePref_.value', KEY_COMBINATION_OPTION_LABEL);
       this.keyCombinationLabel_ = getKeyCombinationLabel(keyEvent) ??
@@ -326,12 +330,13 @@ export class CustomizeButtonRowElement extends CustomizeButtonRowElementBase {
         dropdown.value = KEY_COMBINATION_OPTION_LABEL;
         this.prevChoice_ = dropdown.value;
       });
-    } else if (hardcodedAction !== undefined && !isNaN(hardcodedAction)) {
-      // Prepend a hardcodedAction prefix to distinguish it from the action
-      // enum.
-      const originalHardcodedAction =
-          HARDCODED_ACTION_PREFIX + hardcodedAction.toString();
-      this.initializeDropdown_(originalHardcodedAction, dropdown);
+    } else if (
+        staticShortcutAction !== undefined && !isNaN(staticShortcutAction)) {
+      // Prepend a staticShortcutAction prefix to distinguish it from
+      // the acceleratorAction enum.
+      const originalStaticShortcutAction =
+          STATICS_SHORTCUT_ACTION_PREFIX + staticShortcutAction.toString();
+      this.initializeDropdown_(originalStaticShortcutAction, dropdown);
     } else {
       this.set('fakePref_.value', NO_REMAPPING_OPTION_LABEL);
       microTask.run(() => {
@@ -374,19 +379,20 @@ export class CustomizeButtonRowElement extends CustomizeButtonRowElementBase {
     }
     // Otherwise the button is remapped to a remappingAction.
     let remappingAction: RemappingAction|undefined = undefined;
-    if (this.fakePref_.value.startsWith(ACTION_PREFIX)) {
-      // Remove the action prefix to get the real enum value.
-      this.fakePref_.value = this.fakePref_.value.slice(ACTION_PREFIX.length);
+    if (this.fakePref_.value.startsWith(ACCELERATOR_ACTION_PREFIX)) {
+      // Remove the acceleratorAction prefix to get the real enum value.
+      this.fakePref_.value =
+          this.fakePref_.value.slice(ACCELERATOR_ACTION_PREFIX.length);
       remappingAction = {
-        action: Number(this.fakePref_.value),
+        acceleratorAction: Number(this.fakePref_.value),
       };
     }
-    if (this.fakePref_.value.startsWith(HARDCODED_ACTION_PREFIX)) {
-      // Remove the hardcodedAction prefix to get the real enum value.
+    if (this.fakePref_.value.startsWith(STATICS_SHORTCUT_ACTION_PREFIX)) {
+      // Remove the staticShortcutAction prefix to get the real enum value.
       this.fakePref_.value =
-          this.fakePref_.value.slice(HARDCODED_ACTION_PREFIX.length);
+          this.fakePref_.value.slice(STATICS_SHORTCUT_ACTION_PREFIX.length);
       remappingAction = {
-        hardcodedAction: Number(this.fakePref_.value),
+        staticShortcutAction: Number(this.fakePref_.value),
       };
     }
     const updatedRemapping: ButtonRemapping = {

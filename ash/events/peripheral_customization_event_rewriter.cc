@@ -36,16 +36,16 @@ constexpr int kGraphicsTabletRemappableFlags =
     ui::EF_RIGHT_MOUSE_BUTTON | ui::EF_BACK_MOUSE_BUTTON |
     ui::EF_FORWARD_MOUSE_BUTTON | ui::EF_MIDDLE_MOUSE_BUTTON;
 
-mojom::KeyEvent GetHardCodedAction(mojom::HardCodedAction action) {
+mojom::KeyEvent GetStaticShortcutAction(mojom::StaticShortcutAction action) {
   mojom::KeyEvent key_event;
   switch (action) {
-    case mojom::HardCodedAction::kCopy:
+    case mojom::StaticShortcutAction::kCopy:
       key_event = mojom::KeyEvent(
           ui::VKEY_C, static_cast<int>(ui::DomCode::US_C),
           static_cast<int>(ui::DomKey::Constant<'c'>::Character),
           ui::EF_CONTROL_DOWN);
       break;
-    case mojom::HardCodedAction::kPaste:
+    case mojom::StaticShortcutAction::kPaste:
       key_event = mojom::KeyEvent(
           ui::VKEY_V, static_cast<int>(ui::DomCode::US_V),
           static_cast<int>(ui::DomKey::Constant<'v'>::Character),
@@ -365,14 +365,14 @@ bool PeripheralCustomizationEventRewriter::RewriteEventFromButton(
     return false;
   }
 
-  if (remapping_action->is_action()) {
+  if (remapping_action->is_accelerator_action()) {
     if (event.type() == ui::ET_KEY_PRESSED ||
         event.type() == ui::ET_MOUSE_PRESSED) {
       // Every accelerator supported by peripheral customization is not impacted
       // by the accelerator passed. Therefore, passing an empty accelerator will
       // cause no issues.
       Shell::Get()->accelerator_controller()->PerformActionIfEnabled(
-          remapping_action->get_action(), /*accelerator=*/{});
+          remapping_action->get_accelerator_action(), /*accelerator=*/{});
     }
 
     return true;
@@ -383,9 +383,10 @@ bool PeripheralCustomizationEventRewriter::RewriteEventFromButton(
     rewritten_event = RewriteEventToKeyEvent(event, *key_event);
   }
 
-  if (remapping_action->is_hardcoded_action()) {
+  if (remapping_action->is_static_shortcut_action()) {
     rewritten_event = RewriteEventToKeyEvent(
-        event, GetHardCodedAction(remapping_action->get_hardcoded_action()));
+        event, GetStaticShortcutAction(
+                   remapping_action->get_static_shortcut_action()));
   }
 
   return false;

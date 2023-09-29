@@ -120,12 +120,13 @@ constexpr char kButtonRemappings[] = "button_remappings";
 constexpr char kButtonRemappingName[] = "name";
 constexpr char kButtonRemappingCustomizableButton[] = "customizable_button";
 constexpr char kButtonRemappingKeyboardCode[] = "vkey";
-constexpr char kButtonRemappingAction[] = "action";
+constexpr char kButtonRemappingAcceleratorAction[] = "accelerator_action";
 constexpr char kButtonRemappingKeyEvent[] = "key_event";
 constexpr char kButtonRemappingDomCode[] = "dom_code";
 constexpr char kButtonRemappingDomKey[] = "dom_key";
 constexpr char kButtonRemappingModifiers[] = "modifiers";
-constexpr char kButtonRemappingHardCodedAction[] = "hardcoded_action";
+constexpr char kButtonRemappingStaticShortcutAction[] =
+    "static_shortcut_action";
 
 }  // namespace ash::prefs
 

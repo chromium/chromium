@@ -32,7 +32,8 @@ const mojom::ButtonRemapping button_remapping1(
     /*button=*/
     mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kBack),
     /*remapping_action=*/
-    mojom::RemappingAction::NewAction(ash::AcceleratorAction::kBrightnessDown));
+    mojom::RemappingAction::NewAcceleratorAction(
+        ash::AcceleratorAction::kBrightnessDown));
 const mojom::ButtonRemapping button_remapping2(
     /*name=*/"test2",
     /*button=*/
@@ -201,8 +202,10 @@ TEST_F(GraphicsTabletPrefHandlerTest, UpdateLoginScreenGraphicsTabletSettings) {
       static_cast<int>(button_remapping1.button->get_customizable_button()),
       *tablet_button_remapping.FindInt(
           prefs::kButtonRemappingCustomizableButton));
-  EXPECT_EQ(static_cast<int>(button_remapping1.remapping_action->get_action()),
-            *tablet_button_remapping.FindInt(prefs::kButtonRemappingAction));
+  EXPECT_EQ(static_cast<int>(
+                button_remapping1.remapping_action->get_accelerator_action()),
+            *tablet_button_remapping.FindInt(
+                prefs::kButtonRemappingAcceleratorAction));
   ASSERT_NE(nullptr, updated_pen_button_remapping_list);
   ASSERT_EQ(0u, updated_pen_button_remapping_list->size());
 }
@@ -264,7 +267,7 @@ TEST_F(GraphicsTabletPrefHandlerTest, UpdateSettings) {
   updated_button_remapping1->button =
       mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kExtra);
   updated_button_remapping1->remapping_action =
-      mojom::RemappingAction::NewAction(
+      mojom::RemappingAction::NewAcceleratorAction(
           ash::AcceleratorAction::kCycleBackwardMru);
   std::vector<mojom::ButtonRemappingPtr> updated_tablet_button_remappings1;
   std::vector<mojom::ButtonRemappingPtr> updated_pen_button_remappings1;
@@ -295,9 +298,9 @@ TEST_F(GraphicsTabletPrefHandlerTest, UpdateSettings) {
   EXPECT_EQ(static_cast<int>(
                 updated_button_remapping1->button->get_customizable_button()),
             *updated_dict.FindInt(prefs::kButtonRemappingCustomizableButton));
-  EXPECT_EQ(static_cast<int>(
-                updated_button_remapping1->remapping_action->get_action()),
-            *updated_dict.FindInt(prefs::kButtonRemappingAction));
+  EXPECT_EQ(static_cast<int>(updated_button_remapping1->remapping_action
+                                 ->get_accelerator_action()),
+            *updated_dict.FindInt(prefs::kButtonRemappingAcceleratorAction));
 
   // Verify if the graphics tablet1 pen button remappings are updated.
   auto* updated_graphics_tablet1_pen_button_remappings =

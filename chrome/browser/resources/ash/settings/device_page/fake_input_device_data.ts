@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AcceleratorAction, ActionChoice, CustomizableButton, ExtendedFkeysModifier, GraphicsTablet, HardCodedAction, Keyboard, MetaKey, ModifierKey, Mouse, PointingStick, SimulateRightClickModifier, SixPackKeyInfo, SixPackShortcutModifier, Stylus, TopRowActionKey, Touchpad, Vkey} from './input_device_settings_types.js';
+import {AcceleratorAction, ActionChoice, CustomizableButton, ExtendedFkeysModifier, GraphicsTablet, Keyboard, MetaKey, ModifierKey, Mouse, PointingStick, SimulateRightClickModifier, SixPackKeyInfo, SixPackShortcutModifier, StaticShortcutAction, Stylus, TopRowActionKey, Touchpad, Vkey} from './input_device_settings_types.js';
 
 const defaultSixPackKeyRemappings: SixPackKeyInfo = {
   pageDown: SixPackShortcutModifier.kSearch,
@@ -322,7 +322,7 @@ export const fakeMice: Mouse[] = [
             customizableButton: CustomizableButton.kBack,
           },
           remappingAction: {
-            hardcodedAction: HardCodedAction.kCopy,
+            staticShortcutAction: StaticShortcutAction.kCopy,
           },
         },
         {
@@ -331,7 +331,7 @@ export const fakeMice: Mouse[] = [
             customizableButton: CustomizableButton.kForward,
           },
           remappingAction: {
-            action: AcceleratorAction.kCycleForwardMru,
+            acceleratorAction: AcceleratorAction.kCycleForwardMru,
           },
         },
         {
@@ -401,7 +401,7 @@ export const fakeMice: Mouse[] = [
             customizableButton: CustomizableButton.kMiddle,
           },
           remappingAction: {
-            action: AcceleratorAction.kToggleClipboardHistory,
+            acceleratorAction: AcceleratorAction.kToggleClipboardHistory,
           },
         },
       ],
@@ -492,7 +492,7 @@ export const fakeGraphicsTablets: GraphicsTablet[] = [
             vkey: Vkey.kNum0,
           },
           remappingAction: {
-            action: AcceleratorAction.kCycleBackwardMru,
+            acceleratorAction: AcceleratorAction.kCycleBackwardMru,
           },
         },
         {
@@ -501,7 +501,7 @@ export const fakeGraphicsTablets: GraphicsTablet[] = [
             vkey: Vkey.kNum1,
           },
           remappingAction: {
-            action: AcceleratorAction.kCycleForwardMru,
+            acceleratorAction: AcceleratorAction.kCycleForwardMru,
           },
         },
       ],
@@ -551,7 +551,7 @@ export const fakeGraphicsTablets: GraphicsTablet[] = [
             vkey: Vkey.kNum0,
           },
           remappingAction: {
-            action: AcceleratorAction.kBrightnessUp,
+            acceleratorAction: AcceleratorAction.kBrightnessUp,
           },
         },
         {
@@ -560,7 +560,7 @@ export const fakeGraphicsTablets: GraphicsTablet[] = [
             vkey: Vkey.kNum1,
           },
           remappingAction: {
-            action: AcceleratorAction.kBrightnessDown,
+            acceleratorAction: AcceleratorAction.kBrightnessDown,
           },
         },
       ],
@@ -603,13 +603,13 @@ export const fakeGraphicsTablets: GraphicsTablet[] = [
 export const fakeMouseButtonActions: ActionChoice[] = [
   {
     actionType: {
-      hardcodedAction: HardCodedAction.kCopy,
+      staticShortcutAction: StaticShortcutAction.kCopy,
     },
     name: 'Copy',
   },
   {
     actionType: {
-      hardcodedAction: HardCodedAction.kPaste,
+      staticShortcutAction: StaticShortcutAction.kPaste,
     },
     name: 'Paste',
   },

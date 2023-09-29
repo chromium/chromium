@@ -116,7 +116,7 @@ suite('FakeInputDeviceSettings', () => {
           vkey: 0,
         },
         remappingAction: {
-          action: 0,
+          acceleratorAction: 0,
         },
       },
     ];

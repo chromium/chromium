@@ -142,8 +142,10 @@ export type KeyEvent =
 export type CustomizableButton = InputDeviceSettingsTypes.CustomizableButton;
 export const CustomizableButton = InputDeviceSettingsTypes.CustomizableButton;
 
-export type HardCodedAction = InputDeviceSettingsTypes.HardCodedAction;
-export const HardCodedAction = InputDeviceSettingsTypes.HardCodedAction;
+export type StaticShortcutAction =
+    InputDeviceSettingsTypes.StaticShortcutAction;
+export const StaticShortcutAction =
+    InputDeviceSettingsTypes.StaticShortcutAction;
 
 export interface KeyboardObserverInterface {
   // Fired when the keyboard list is updated.

@@ -279,7 +279,8 @@ struct GraphicsTabletSettings {
 };
 
 // Contains all information needed to apply remappings from a button to
-// either an action or key event and display it within the settings app.
+// either an acceleration action or key event or static shortcut action
+// and display it within the settings app.
 struct ButtonRemapping {
   // Human-readable label of the button remapping which user can rename.
   string name;
@@ -287,12 +288,12 @@ struct ButtonRemapping {
   RemappingAction? remapping_action;
 };
 
-// Represents the remapping action which can be either a key event or action
-// or hardcoded action.
+// Represents the remapping action which can be either a key event or
+// acceleration action or static shortcut action.
 union RemappingAction {
-  ash.mojom.AcceleratorAction action;
+  ash.mojom.AcceleratorAction accelerator_action;
   KeyEvent key_event;
-  HardCodedAction hardcoded_action;
+  StaticShortcutAction static_shortcut_action;
 };
 
 // Represents the key event the button remaps to.
@@ -321,8 +322,8 @@ enum CustomizableButton {
   kSide = 6,
 };
 
-// Contains the valid set of hardcoded actions.
-enum HardCodedAction {
+// Contains the valid set of static shortcut actions.
+enum StaticShortcutAction {
   kCopy = 0,
   kPaste = 1,
 };

@@ -46,7 +46,8 @@ const mojom::ButtonRemapping button_remapping1(
     /*button=*/
     mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kBack),
     /*remapping_action=*/
-    mojom::RemappingAction::NewAction(ash::AcceleratorAction::kBrightnessDown));
+    mojom::RemappingAction::NewAcceleratorAction(
+        ash::AcceleratorAction::kBrightnessDown));
 
 const mojom::MouseSettings kMouseSettingsDefault(
     /*swap_right=*/kDefaultSwapRight,
@@ -350,8 +351,10 @@ TEST_F(MousePrefHandlerTest, UpdateLoginScreenButtonRemappingList) {
   EXPECT_EQ(
       static_cast<int>(button_remapping1.button->get_customizable_button()),
       *button_remapping.FindInt(prefs::kButtonRemappingCustomizableButton));
-  EXPECT_EQ(static_cast<int>(button_remapping1.remapping_action->get_action()),
-            *button_remapping.FindInt(prefs::kButtonRemappingAction));
+  EXPECT_EQ(
+      static_cast<int>(
+          button_remapping1.remapping_action->get_accelerator_action()),
+      *button_remapping.FindInt(prefs::kButtonRemappingAcceleratorAction));
 }
 
 TEST_F(MousePrefHandlerTest, UpdateLoginScreenMouseSettings) {
@@ -747,8 +750,10 @@ TEST_F(MousePrefHandlerTest, UpdateButtonRemapping) {
       *updated_button_remapping_dict.FindInt(
           prefs::kButtonRemappingCustomizableButton));
   EXPECT_EQ(
-      static_cast<int>(button_remappings[0]->remapping_action->get_action()),
-      *updated_button_remapping_dict.FindInt(prefs::kButtonRemappingAction));
+      static_cast<int>(
+          button_remappings[0]->remapping_action->get_accelerator_action()),
+      *updated_button_remapping_dict.FindInt(
+          prefs::kButtonRemappingAcceleratorAction));
 }
 
 TEST_F(MousePrefHandlerTest, InitializeButtonRemappings) {

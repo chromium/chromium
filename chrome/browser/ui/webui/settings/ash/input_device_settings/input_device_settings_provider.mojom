@@ -17,7 +17,7 @@ struct ActionChoice {
 // within settings.
 union ActionType {
   ash.mojom.AcceleratorAction accelerator_action;
-  ash.mojom.HardCodedAction hardcoded_action;
+  ash.mojom.StaticShortcutAction static_shortcut_action;
 };
 
 // Interface for observing keyboard settings changes in OSSettings SWA.

@@ -751,7 +751,7 @@ TEST_F(InputDeviceSettingsControllerTest, GraphicsTabletSettingsAreValid) {
       /*button=*/
       button->Clone(),
       /*remapping_action=*/
-      mojom::RemappingAction::NewAction(
+      mojom::RemappingAction::NewAcceleratorAction(
           ash::AcceleratorAction::kBrightnessDown));
   std::vector<mojom::ButtonRemappingPtr> tablet_button_remappings;
   std::vector<mojom::ButtonRemappingPtr> pen_button_remappings;
@@ -889,7 +889,7 @@ TEST_F(InputDeviceSettingsControllerTest, RecordSetMouseSettingsValidMetric) {
       /*button=*/
       mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kBack),
       /*remapping_action=*/
-      mojom::RemappingAction::NewAction(
+      mojom::RemappingAction::NewAcceleratorAction(
           ash::AcceleratorAction::kBrightnessDown));
   std::vector<mojom::ButtonRemappingPtr> button_remappings;
   button_remappings.push_back(button_remapping.Clone());

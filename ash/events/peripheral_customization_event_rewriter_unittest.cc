@@ -343,9 +343,10 @@ TEST_F(PeripheralCustomizationEventRewriterTest, KeyEventActionRewriting) {
   TestAcceleratorObserver accelerator_observer;
   TestEventRewriterContinuation continuation;
 
-  mouse_settings_->button_remappings.push_back(mojom::ButtonRemapping::New(
-      "", mojom::Button::NewVkey(ui::VKEY_A),
-      mojom::RemappingAction::NewAction(AcceleratorAction::kBrightnessDown)));
+  mouse_settings_->button_remappings.push_back(
+      mojom::ButtonRemapping::New("", mojom::Button::NewVkey(ui::VKEY_A),
+                                  mojom::RemappingAction::NewAcceleratorAction(
+                                      AcceleratorAction::kBrightnessDown)));
 
   rewriter_->RewriteEvent(CreateKeyButtonEvent(ui::ET_KEY_PRESSED, ui::VKEY_A),
                           continuation.weak_ptr_factory_.GetWeakPtr());
@@ -369,7 +370,8 @@ TEST_F(PeripheralCustomizationEventRewriterTest, MouseEventActionRewriting) {
   mouse_settings_->button_remappings.push_back(mojom::ButtonRemapping::New(
       "",
       mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kMiddle),
-      mojom::RemappingAction::NewAction(AcceleratorAction::kLaunchApp0)));
+      mojom::RemappingAction::NewAcceleratorAction(
+          AcceleratorAction::kLaunchApp0)));
 
   rewriter_->RewriteEvent(
       CreateMouseButtonEvent(ui::ET_MOUSE_PRESSED, ui::EF_MIDDLE_MOUSE_BUTTON,
@@ -1054,23 +1056,23 @@ TEST_P(ModifierRewritingTest, MouseEvent) {
             ConvertToString(*continuation.passthrough_event));
 }
 
-class HardcodedActionRewritingTest
+class StaticShortcutActionRewritingTest
     : public PeripheralCustomizationEventRewriterTest,
       public testing::WithParamInterface<
-          std::tuple<mojom::HardCodedAction, ui::KeyEvent>> {};
+          std::tuple<mojom::StaticShortcutAction, ui::KeyEvent>> {};
 
 INSTANTIATE_TEST_SUITE_P(
     All,
-    HardcodedActionRewritingTest,
+    StaticShortcutActionRewritingTest,
     testing::ValuesIn(
-        std::vector<std::tuple<mojom::HardCodedAction, ui::KeyEvent>>({
-            {mojom::HardCodedAction::kCopy,
+        std::vector<std::tuple<mojom::StaticShortcutAction, ui::KeyEvent>>({
+            {mojom::StaticShortcutAction::kCopy,
              CreateKeyButtonEvent(ui::ET_KEY_PRESSED,
                                   ui::VKEY_C,
                                   ui::EF_CONTROL_DOWN,
                                   ui::DomCode::US_C,
                                   ui::DomKey::Constant<'c'>::Character)},
-            {mojom::HardCodedAction::kPaste,
+            {mojom::StaticShortcutAction::kPaste,
              CreateKeyButtonEvent(ui::ET_KEY_PRESSED,
                                   ui::VKEY_V,
                                   ui::EF_CONTROL_DOWN,
@@ -1078,13 +1080,13 @@ INSTANTIATE_TEST_SUITE_P(
                                   ui::DomKey::Constant<'v'>::Character)},
         })));
 
-TEST_P(HardcodedActionRewritingTest, HardcodedMouseRewriting) {
-  const auto& [hardcoded_action, expected_key_event] = GetParam();
+TEST_P(StaticShortcutActionRewritingTest, StaticShortcutMouseRewriting) {
+  const auto& [static_shortcut_action, expected_key_event] = GetParam();
 
   mouse_settings_->button_remappings.push_back(mojom::ButtonRemapping::New(
       "",
       mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kForward),
-      mojom::RemappingAction::NewHardcodedAction(hardcoded_action)));
+      mojom::RemappingAction::NewStaticShortcutAction(static_shortcut_action)));
 
   TestEventRewriterContinuation continuation;
   ui::MouseEvent mouse_pressed_event =
@@ -1117,20 +1119,23 @@ TEST_P(HardcodedActionRewritingTest, HardcodedMouseRewriting) {
             ConvertToString(*continuation.passthrough_event));
 }
 
-TEST_P(HardcodedActionRewritingTest, HardcodedGraphicsTabletRewriting) {
-  const auto& [hardcoded_action, expected_key_event] = GetParam();
+TEST_P(StaticShortcutActionRewritingTest,
+       StaticShortcutGraphicsTabletRewriting) {
+  const auto& [static_shortcut_action, expected_key_event] = GetParam();
   graphics_tablet_settings_->pen_button_remappings.push_back(
       mojom::ButtonRemapping::New(
           "",
           mojom::Button::NewCustomizableButton(
               mojom::CustomizableButton::kForward),
-          mojom::RemappingAction::NewHardcodedAction(hardcoded_action)));
+          mojom::RemappingAction::NewStaticShortcutAction(
+              static_shortcut_action)));
   graphics_tablet_settings_->tablet_button_remappings.push_back(
       mojom::ButtonRemapping::New(
           "",
           mojom::Button::NewCustomizableButton(
               mojom::CustomizableButton::kBack),
-          mojom::RemappingAction::NewHardcodedAction(hardcoded_action)));
+          mojom::RemappingAction::NewStaticShortcutAction(
+              static_shortcut_action)));
 
   TestEventRewriterContinuation continuation;
 

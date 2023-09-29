@@ -29,7 +29,8 @@ const mojom::ButtonRemapping button_remapping1(
     /*button=*/
     mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kBack),
     /*remapping_action=*/
-    mojom::RemappingAction::NewAction(ash::AcceleratorAction::kBrightnessDown));
+    mojom::RemappingAction::NewAcceleratorAction(
+        ash::AcceleratorAction::kBrightnessDown));
 const mojom::ButtonRemapping button_remapping2(
     /*name=*/"test2",
     /*button=*/
@@ -51,7 +52,8 @@ const mojom::ButtonRemapping button_remapping5(
     /*name=*/"test5",
     /*button=*/mojom::Button::NewVkey(::ui::KeyboardCode::VKEY_3),
     /*remapping_action=*/
-    mojom::RemappingAction::NewHardcodedAction(mojom::HardCodedAction::kCopy));
+    mojom::RemappingAction::NewStaticShortcutAction(
+        mojom::StaticShortcutAction::kCopy));
 }  // namespace
 
 class DeviceKeyTest : public testing::TestWithParam<
@@ -116,8 +118,9 @@ TEST(ConvertButtonRemappingToDict, ConvertButtonRemappingToDict) {
   EXPECT_EQ(
       static_cast<int>(button_remapping1.button->get_customizable_button()),
       *dict1.FindInt(prefs::kButtonRemappingCustomizableButton));
-  EXPECT_EQ(static_cast<int>(button_remapping1.remapping_action->get_action()),
-            *dict1.FindInt(prefs::kButtonRemappingAction));
+  EXPECT_EQ(static_cast<int>(
+                button_remapping1.remapping_action->get_accelerator_action()),
+            *dict1.FindInt(prefs::kButtonRemappingAcceleratorAction));
 
   const base::Value::Dict dict2 =
       ConvertButtonRemappingToDict(button_remapping2);
@@ -175,7 +178,8 @@ TEST(ConvertButtonRemappingToDict, ConvertButtonRemappingToDict) {
   EXPECT_EQ(static_cast<int>(button_remapping4.button->get_vkey()),
             *dict4.FindInt(prefs::kButtonRemappingKeyboardCode));
   EXPECT_EQ(nullptr, dict4.FindDict(prefs::kButtonRemappingKeyEvent));
-  EXPECT_EQ(absl::nullopt, dict4.FindInt(prefs::kButtonRemappingAction));
+  EXPECT_EQ(absl::nullopt,
+            dict4.FindInt(prefs::kButtonRemappingAcceleratorAction));
 
   const base::Value::Dict dict5 =
       ConvertButtonRemappingToDict(button_remapping5);
@@ -184,21 +188,24 @@ TEST(ConvertButtonRemappingToDict, ConvertButtonRemappingToDict) {
   EXPECT_EQ(static_cast<int>(button_remapping5.button->get_vkey()),
             *dict5.FindInt(prefs::kButtonRemappingKeyboardCode));
   EXPECT_EQ(nullptr, dict5.FindDict(prefs::kButtonRemappingKeyEvent));
-  EXPECT_EQ(absl::nullopt, dict5.FindInt(prefs::kButtonRemappingAction));
-  EXPECT_EQ(static_cast<int>(
-                button_remapping5.remapping_action->get_hardcoded_action()),
-            dict5.FindInt(prefs::kButtonRemappingHardCodedAction));
+  EXPECT_EQ(absl::nullopt,
+            dict5.FindInt(prefs::kButtonRemappingAcceleratorAction));
+  EXPECT_EQ(
+      static_cast<int>(
+          button_remapping5.remapping_action->get_static_shortcut_action()),
+      dict5.FindInt(prefs::kButtonRemappingStaticShortcutAction));
 }
 
 TEST(ConvertDictToButtonRemapping, ConvertDictToButtonRemapping) {
-  // Valid dict with name, customizable button and action fields.
+  // Valid dict with name, customizable button and accelerator action fields.
   base::Value::Dict dict1;
   dict1.Set(prefs::kButtonRemappingName, button_remapping1.name);
   dict1.Set(
       prefs::kButtonRemappingCustomizableButton,
       static_cast<int>(button_remapping1.button->get_customizable_button()));
-  dict1.Set(prefs::kButtonRemappingAction,
-            static_cast<int>(button_remapping1.remapping_action->get_action()));
+  dict1.Set(prefs::kButtonRemappingAcceleratorAction,
+            static_cast<int>(
+                button_remapping1.remapping_action->get_accelerator_action()));
 
   mojom::ButtonRemappingPtr remapping1 = ConvertDictToButtonRemapping(dict1);
   EXPECT_EQ(*dict1.FindString(prefs::kButtonRemappingName), remapping1->name);
@@ -206,9 +213,10 @@ TEST(ConvertDictToButtonRemapping, ConvertDictToButtonRemapping) {
   EXPECT_EQ(static_cast<mojom::CustomizableButton>(
                 *dict1.FindInt(prefs::kButtonRemappingCustomizableButton)),
             remapping1->button->get_customizable_button());
-  EXPECT_TRUE(remapping1->remapping_action->is_action());
-  EXPECT_EQ(static_cast<uint>(*dict1.FindInt(prefs::kButtonRemappingAction)),
-            remapping1->remapping_action->get_action());
+  EXPECT_TRUE(remapping1->remapping_action->is_accelerator_action());
+  EXPECT_EQ(static_cast<uint>(
+                *dict1.FindInt(prefs::kButtonRemappingAcceleratorAction)),
+            remapping1->remapping_action->get_accelerator_action());
 
   // Valid dict with name, customizable button and key event fields.
   base::Value::Dict dict2;
@@ -317,7 +325,8 @@ TEST(ConvertDictToButtonRemapping, ConvertDictToButtonRemapping) {
   EXPECT_EQ(static_cast<::ui::KeyboardCode>(
                 *dict4.FindInt(prefs::kButtonRemappingKeyboardCode)),
             remapping4->button->get_vkey());
-  EXPECT_EQ(absl::nullopt, dict4.FindInt(prefs::kButtonRemappingAction));
+  EXPECT_EQ(absl::nullopt,
+            dict4.FindInt(prefs::kButtonRemappingAcceleratorAction));
   EXPECT_EQ(nullptr, dict4.FindDict(prefs::kButtonRemappingKeyEvent));
 
   // Invalid dict with customizable button and vkey fields.
@@ -344,25 +353,27 @@ TEST(ConvertDictToButtonRemapping, ConvertDictToButtonRemapping) {
   mojom::ButtonRemappingPtr remapping7 = ConvertDictToButtonRemapping(dict7);
   EXPECT_FALSE(remapping7);
 
-  // Invalid dict with key event and action fields.
+  // Invalid dict with key event and accelerator action fields.
   base::Value::Dict dict8;
   dict8.Set(prefs::kButtonRemappingName, button_remapping3.name);
   dict8.Set(prefs::kButtonRemappingKeyboardCode,
             static_cast<int>(button_remapping3.button->get_vkey()));
   dict8.Set(prefs::kButtonRemappingKeyEvent, std::move(dict3_key_event));
-  dict8.Set(prefs::kButtonRemappingAction,
-            static_cast<int>(button_remapping1.remapping_action->get_action()));
+  dict8.Set(prefs::kButtonRemappingAcceleratorAction,
+            static_cast<int>(
+                button_remapping1.remapping_action->get_accelerator_action()));
   mojom::ButtonRemappingPtr remapping8 = ConvertDictToButtonRemapping(dict8);
   EXPECT_FALSE(remapping8);
 
-  // Valid dict with name, vkey and hardcoded action fields.
+  // Valid dict with name, vkey and static shortcut action fields.
   base::Value::Dict dict9;
   dict9.Set(prefs::kButtonRemappingName, button_remapping5.name);
   dict9.Set(prefs::kButtonRemappingKeyboardCode,
             static_cast<int>(button_remapping5.button->get_vkey()));
-  dict9.Set(prefs::kButtonRemappingHardCodedAction,
-            static_cast<int>(
-                button_remapping5.remapping_action->get_hardcoded_action()));
+  dict9.Set(
+      prefs::kButtonRemappingStaticShortcutAction,
+      static_cast<int>(
+          button_remapping5.remapping_action->get_static_shortcut_action()));
 
   mojom::ButtonRemappingPtr remapping9 = ConvertDictToButtonRemapping(dict9);
   EXPECT_EQ(*dict9.FindString(prefs::kButtonRemappingName), remapping9->name);
@@ -370,10 +381,10 @@ TEST(ConvertDictToButtonRemapping, ConvertDictToButtonRemapping) {
   EXPECT_EQ(static_cast<::ui::KeyboardCode>(
                 *dict9.FindInt(prefs::kButtonRemappingKeyboardCode)),
             remapping9->button->get_vkey());
-  EXPECT_TRUE(remapping9->remapping_action->is_hardcoded_action());
-  EXPECT_EQ(static_cast<mojom::HardCodedAction>(
-                *dict9.FindInt(prefs::kButtonRemappingHardCodedAction)),
-            remapping9->remapping_action->get_hardcoded_action());
+  EXPECT_TRUE(remapping9->remapping_action->is_static_shortcut_action());
+  EXPECT_EQ(static_cast<mojom::StaticShortcutAction>(
+                *dict9.FindInt(prefs::kButtonRemappingStaticShortcutAction)),
+            remapping9->remapping_action->get_static_shortcut_action());
 }
 
 TEST(ConvertButtonRemappingArrayToList, ConvertButtonRemappingArrayToList) {
@@ -390,8 +401,9 @@ TEST(ConvertButtonRemappingArrayToList, ConvertButtonRemappingArrayToList) {
   EXPECT_EQ(
       static_cast<int>(button_remapping1.button->get_customizable_button()),
       *dict1.FindInt(prefs::kButtonRemappingCustomizableButton));
-  EXPECT_EQ(static_cast<int>(button_remapping1.remapping_action->get_action()),
-            *dict1.FindInt(prefs::kButtonRemappingAction));
+  EXPECT_EQ(static_cast<int>(
+                button_remapping1.remapping_action->get_accelerator_action()),
+            *dict1.FindInt(prefs::kButtonRemappingAcceleratorAction));
 
   ASSERT_TRUE(list[1].is_dict());
   const auto& dict2 = list[1].GetDict();
@@ -420,14 +432,15 @@ TEST(ConvertButtonRemappingArrayToList, ConvertButtonRemappingArrayToList) {
 }
 
 TEST(ConvertListToButtonRemappingArray, ConvertListToButtonRemappingArray) {
-  // Valid dict with name, customizable button and action fields.
+  // Valid dict with name, customizable button and accelerator action fields.
   base::Value::Dict dict1;
   dict1.Set(prefs::kButtonRemappingName, button_remapping1.name);
   dict1.Set(
       prefs::kButtonRemappingCustomizableButton,
       static_cast<int>(button_remapping1.button->get_customizable_button()));
-  dict1.Set(prefs::kButtonRemappingAction,
-            static_cast<int>(button_remapping1.remapping_action->get_action()));
+  dict1.Set(prefs::kButtonRemappingAcceleratorAction,
+            static_cast<int>(
+                button_remapping1.remapping_action->get_accelerator_action()));
 
   // Invalid dict without name field.
   base::Value::Dict dict2;
@@ -475,9 +488,10 @@ TEST(ConvertListToButtonRemappingArray, ConvertListToButtonRemappingArray) {
   EXPECT_EQ(static_cast<mojom::CustomizableButton>(
                 *dict1.FindInt(prefs::kButtonRemappingCustomizableButton)),
             remapping1->button->get_customizable_button());
-  EXPECT_TRUE(remapping1->remapping_action->is_action());
-  EXPECT_EQ(static_cast<uint>(*dict1.FindInt(prefs::kButtonRemappingAction)),
-            remapping1->remapping_action->get_action());
+  EXPECT_TRUE(remapping1->remapping_action->is_accelerator_action());
+  EXPECT_EQ(static_cast<uint>(
+                *dict1.FindInt(prefs::kButtonRemappingAcceleratorAction)),
+            remapping1->remapping_action->get_accelerator_action());
 
   mojom::ButtonRemappingPtr remapping2 = std::move(array[1]);
   EXPECT_EQ(*dict3.FindString(prefs::kButtonRemappingName), remapping2->name);

@@ -21,7 +21,7 @@ namespace ash::settings {
 namespace {
 
 using ActionTypeVariant =
-    absl::variant<AcceleratorAction, ::ash::mojom::HardCodedAction>;
+    absl::variant<AcceleratorAction, ::ash::mojom::StaticShortcutAction>;
 
 // Used to represent a constant version of the mojom::ActionChoice struct.
 struct ActionChoice {
@@ -41,8 +41,8 @@ constexpr ActionChoice kMouseButtonOptions[] = {
     {"Turn on high contrast", AcceleratorAction::kToggleHighContrast},
     {"Turn on magnifier", AcceleratorAction::kToggleFullscreenMagnifier},
     {"Turn on dictation", AcceleratorAction::kEnableOrToggleDictation},
-    {"Copy", ::ash::mojom::HardCodedAction::kCopy},
-    {"Paste", ::ash::mojom::HardCodedAction::kPaste},
+    {"Copy", ::ash::mojom::StaticShortcutAction::kCopy},
+    {"Paste", ::ash::mojom::StaticShortcutAction::kPaste},
 };
 
 // TODO(dpad): Update list to official list of actions.
@@ -57,17 +57,17 @@ constexpr ActionChoice kGraphicsTabletOptions[] = {
     {"Turn on high contrast", AcceleratorAction::kToggleHighContrast},
     {"Turn on magnifier", AcceleratorAction::kToggleFullscreenMagnifier},
     {"Turn on dictation", AcceleratorAction::kEnableOrToggleDictation},
-    {"Copy", ::ash::mojom::HardCodedAction::kCopy},
-    {"Paste", ::ash::mojom::HardCodedAction::kPaste},
+    {"Copy", ::ash::mojom::StaticShortcutAction::kCopy},
+    {"Paste", ::ash::mojom::StaticShortcutAction::kPaste},
 };
 
-mojom::ActionTypePtr GetActionType(AcceleratorAction action) {
-  return mojom::ActionType::NewAcceleratorAction(action);
+mojom::ActionTypePtr GetActionType(AcceleratorAction accelerator_action) {
+  return mojom::ActionType::NewAcceleratorAction(accelerator_action);
 }
 
 mojom::ActionTypePtr GetActionType(
-    ::ash::mojom::HardCodedAction hardcoded_action) {
-  return mojom::ActionType::NewHardcodedAction(hardcoded_action);
+    ::ash::mojom::StaticShortcutAction static_shortcut_action) {
+  return mojom::ActionType::NewStaticShortcutAction(static_shortcut_action);
 }
 
 mojom::ActionTypePtr GetActionTypeFromVariant(ActionTypeVariant variant) {

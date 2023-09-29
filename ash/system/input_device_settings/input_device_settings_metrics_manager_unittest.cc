@@ -276,13 +276,15 @@ TEST_F(InputDeviceSettingsMetricsManagerTest, RecordMouseSettings) {
   mouse.device_key = kExternalMouseId;
   mouse.settings = mojom::MouseSettings::New();
   mouse.settings->sensitivity = kSampleSensitivity;
-  mouse.settings->button_remappings.push_back(mojom::ButtonRemapping::New(
-      "my-vkey", mojom::Button::NewVkey(ui::VKEY_A),
-      mojom::RemappingAction::NewAction(AcceleratorAction::kBrightnessDown)));
+  mouse.settings->button_remappings.push_back(
+      mojom::ButtonRemapping::New("my-vkey", mojom::Button::NewVkey(ui::VKEY_A),
+                                  mojom::RemappingAction::NewAcceleratorAction(
+                                      AcceleratorAction::kBrightnessDown)));
   mouse.settings->button_remappings.push_back(mojom::ButtonRemapping::New(
       "middle-button",
       mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kMiddle),
-      mojom::RemappingAction::NewAction(AcceleratorAction::kMediaPlay)));
+      mojom::RemappingAction::NewAcceleratorAction(
+          AcceleratorAction::kMediaPlay)));
 
   base::HistogramTester histogram_tester;
   SimulateUserLogin(kUser1);
@@ -502,25 +504,25 @@ TEST_F(InputDeviceSettingsMetricsManagerTest, RecordGraphicsTabletSettings) {
   graphics_tablet.settings->pen_button_remappings.push_back(
       mojom::ButtonRemapping::New("pen-vkey",
                                   mojom::Button::NewVkey(ui::VKEY_C),
-                                  mojom::RemappingAction::NewAction(
+                                  mojom::RemappingAction::NewAcceleratorAction(
                                       AcceleratorAction::kBrightnessDown)));
   graphics_tablet.settings->pen_button_remappings.push_back(
-      mojom::ButtonRemapping::New(
-          "pen-middle-button",
-          mojom::Button::NewCustomizableButton(
-              mojom::CustomizableButton::kMiddle),
-          mojom::RemappingAction::NewAction(AcceleratorAction::kMediaPlay)));
+      mojom::ButtonRemapping::New("pen-middle-button",
+                                  mojom::Button::NewCustomizableButton(
+                                      mojom::CustomizableButton::kMiddle),
+                                  mojom::RemappingAction::NewAcceleratorAction(
+                                      AcceleratorAction::kMediaPlay)));
   graphics_tablet.settings->tablet_button_remappings.push_back(
       mojom::ButtonRemapping::New("tablet-vkey",
                                   mojom::Button::NewVkey(ui::VKEY_B),
-                                  mojom::RemappingAction::NewAction(
+                                  mojom::RemappingAction::NewAcceleratorAction(
                                       AcceleratorAction::kBrightnessDown)));
   graphics_tablet.settings->tablet_button_remappings.push_back(
-      mojom::ButtonRemapping::New(
-          "tablet-right-button",
-          mojom::Button::NewCustomizableButton(
-              mojom::CustomizableButton::kRight),
-          mojom::RemappingAction::NewAction(AcceleratorAction::kMediaPlay)));
+      mojom::ButtonRemapping::New("tablet-right-button",
+                                  mojom::Button::NewCustomizableButton(
+                                      mojom::CustomizableButton::kRight),
+                                  mojom::RemappingAction::NewAcceleratorAction(
+                                      AcceleratorAction::kMediaPlay)));
 
   base::HistogramTester histogram_tester;
   SimulateUserLogin(kUser1);
