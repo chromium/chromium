@@ -47,7 +47,7 @@ public class SurveyClientFactory {
     public static void setInstanceForTesting(SurveyClientFactory testFactory) {
         var origin = sInstance;
         sInstance = testFactory;
-        sHasInstanceForTesting = true;
+        sHasInstanceForTesting = (testFactory != null);
         ResettersForTesting.register(() -> {
             sInstance = origin;
             sHasInstanceForTesting = false;

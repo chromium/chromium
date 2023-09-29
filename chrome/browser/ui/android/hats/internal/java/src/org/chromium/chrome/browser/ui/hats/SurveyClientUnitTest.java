@@ -264,14 +264,22 @@ public class SurveyClientUnitTest {
             client.showSurvey(mActivity, mLifecycleDispatcher, bitValues, stringValues);
         });
 
+        // Provide extra string values without bit values.
+        stringValues.clear();
+        bitValues.clear();
+        stringValues.put("stringField", "value");
+        stringValues.put("stringField2", "value2");
+        Assert.assertThrows("Extra string PSDs were provided.", AssertionError.class, () -> {
+            client.showSurvey(mActivity, mLifecycleDispatcher, bitValues, stringValues);
+        });
+
         // Provide both value.
         stringValues.clear();
         bitValues.clear();
         stringValues.put("stringField", "value");
         bitValues.put("bitField", true);
-        Assert.assertThrows("Expected PSD(s) are missing.", AssertionError.class, () -> {
-            client.showSurvey(mActivity, mLifecycleDispatcher, bitValues, stringValues);
-        });
+        // All the PSDs are ready. Should not throw errors anymore.
+        client.showSurvey(mActivity, mLifecycleDispatcher, bitValues, stringValues);
     }
 
     private SurveyConfig newSurveyConfigWithoutPsd() {

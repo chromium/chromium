@@ -56,26 +56,39 @@ public class TestSurveyUtils {
     }
 
     /**
+     * Force survey to show if SurveyClientImpl is used in test. This will bypass the throttler
+     * check in the background.
+     */
+    static void forceShowSurveyForTesting(Boolean doForce) {
+        SurveyClientImpl.setForceShowSurveyForTesting(doForce);
+    }
+
+    static TestSurveyFactory setUpTestSurveyFactory() throws ExecutionException {
+        TestSurveyFactory factory = TestThreadUtils.runOnUiThreadBlocking(TestSurveyFactory::new);
+        SurveyClientFactory.setInstanceForTesting(factory);
+        return factory;
+    }
+
+    /**
      * Create a test-only survey component. In test environment:
      *  - The survey throttler check will be ignored and always pass.
      *  - Crash upload will be allowed all the time.
      */
     public static class TestSurveyComponentRule implements TestRule {
-        String mLastShownTriggerId;
-        Map<String, String> mLastShownSurveyPsd;
+        private TestSurveyFactory mTestSurveyFactory;
 
         /**
          * Return the trigger ID of the last shown survey.
          */
         public String getLastShownTriggerId() {
-            return mLastShownTriggerId;
+            return mTestSurveyFactory.getLastShownTriggerId();
         }
 
         /**
          * Return the set of PSD of the last shown survey.
          */
         public Map<String, String> getLastShownSurveyPsd() {
-            return mLastShownSurveyPsd;
+            return mTestSurveyFactory.getLastShownSurveyPsd();
         }
 
         @Override
@@ -83,15 +96,14 @@ public class TestSurveyUtils {
             return new Statement() {
                 @Override
                 public void evaluate() throws Throwable {
+                    // Append switch so throttler always passes for the survey.
                     CommandLine.getInstance().appendSwitch(
                             ChromeSwitches.CHROME_FORCE_ENABLE_SURVEY);
                     CommandLine.getInstance().appendSwitch(
                             ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE);
 
                     try {
-                        TestSurveyFactory factory =
-                                TestThreadUtils.runOnUiThreadBlocking(TestSurveyFactory::new);
-                        SurveyClientFactory.setInstanceForTesting(factory);
+                        mTestSurveyFactory = setUpTestSurveyFactory();
                         base.evaluate();
                     } catch (ExecutionException e) {
                         throw new RuntimeException(e);
@@ -99,53 +111,70 @@ public class TestSurveyUtils {
                 }
             };
         }
+    }
+
+    /**
+     * Test impl of factory that generate SurveyClient using test set up.
+     */
+    static class TestSurveyFactory extends SurveyClientFactory {
+        private final AlwaysSucceedSurveyController mTestController;
+        private final ObservableSupplierImpl<Boolean> mCrashUploadPermissionSupplier;
+
+        TestSurveyFactory() {
+            super(null);
+            mTestController = new AlwaysSucceedSurveyController();
+            mCrashUploadPermissionSupplier = new ObservableSupplierImpl<>();
+            mCrashUploadPermissionSupplier.set(true);
+        }
 
         /**
-         * Test impl of factory that generate SurveyClient using test set up.
+         * Return the trigger ID of the last shown survey.
          */
-        private class TestSurveyFactory extends SurveyClientFactory {
-            private final AlwaysSucceedSurveyController mTestController;
-            private final ObservableSupplierImpl<Boolean> mCrashUploadPermissionSupplier;
-
-            TestSurveyFactory() {
-                super(null);
-                mTestController = new AlwaysSucceedSurveyController();
-                mCrashUploadPermissionSupplier = new ObservableSupplierImpl<>();
-                mCrashUploadPermissionSupplier.set(true);
-            }
-
-            @Override
-            @Nullable
-            public SurveyClient createClient(
-                    @NonNull SurveyConfig config, @NonNull SurveyUiDelegate uiDelegate) {
-                return new SurveyClientImpl(
-                        config, uiDelegate, mTestController, mCrashUploadPermissionSupplier);
-            }
+        String getLastShownTriggerId() {
+            return mTestController.mLastShownTriggerId;
         }
 
-        private class AlwaysSucceedSurveyController implements SurveyController {
-            @Override
-            public void downloadSurvey(Context context, String triggerId,
-                    Runnable onSuccessRunnable, Runnable onFailureRunnable) {
-                onSuccessRunnable.run();
-            }
-
-            @Override
-            public void showSurveyIfAvailable(Activity activity, String triggerId,
-                    int displayLogoResId, @Nullable ActivityLifecycleDispatcher lifecycleDispatcher,
-                    @Nullable Map<String, String> psd) {
-                mLastShownTriggerId = triggerId;
-                mLastShownSurveyPsd = psd;
-            }
-
-            @Override
-            public boolean isSurveyExpired(String triggerId) {
-                return false;
-            }
-
-            @Override
-            public void destroy() {}
+        /**
+         * Return the set of PSD of the last shown survey.
+         */
+        Map<String, String> getLastShownSurveyPsd() {
+            return mTestController.mLastShownSurveyPsd;
         }
+
+        @Override
+        @Nullable
+        public SurveyClient createClient(
+                @NonNull SurveyConfig config, @NonNull SurveyUiDelegate uiDelegate) {
+            return new SurveyClientImpl(
+                    config, uiDelegate, mTestController, mCrashUploadPermissionSupplier);
+        }
+    }
+
+    private static class AlwaysSucceedSurveyController implements SurveyController {
+        String mLastShownTriggerId;
+        Map<String, String> mLastShownSurveyPsd;
+
+        @Override
+        public void downloadSurvey(Context context, String triggerId, Runnable onSuccessRunnable,
+                Runnable onFailureRunnable) {
+            onSuccessRunnable.run();
+        }
+
+        @Override
+        public void showSurveyIfAvailable(Activity activity, String triggerId, int displayLogoResId,
+                @Nullable ActivityLifecycleDispatcher lifecycleDispatcher,
+                @Nullable Map<String, String> psd) {
+            mLastShownTriggerId = triggerId;
+            mLastShownSurveyPsd = psd;
+        }
+
+        @Override
+        public boolean isSurveyExpired(String triggerId) {
+            return false;
+        }
+
+        @Override
+        public void destroy() {}
     }
 
     /**

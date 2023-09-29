@@ -7,17 +7,39 @@ import("//third_party/jni_zero/jni_zero.gni")
 
 android_library("test_support_java") {
   testonly = true
-  sources =
-      [ "java/src/org/chromium/chrome/browser/ui/hats/TestSurveyUtils.java" ]
+  srcjar_deps = [ ":jni_headers" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/ui/hats/TestSurveyUtils.java",
+    "java/src/org/chromium/chrome/browser/ui/hats/TestSurveyUtilsBridge.java",
+  ]
+  public_deps = [ "//chrome/browser/ui/android/hats:java" ]
   deps = [
     "//base:base_java",
+    "//base:jni_java",
     "//chrome/browser/android/lifecycle:java",
     "//chrome/browser/flags:java",
-    "//chrome/browser/ui/android/hats:java",
     "//chrome/browser/ui/android/hats/internal:controller_java",
     "//chrome/browser/ui/android/hats/internal:java",
     "//content/public/test/android:content_java_test_support",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/junit:junit",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "test_survey_utils_bridge.cc",
+    "test_survey_utils_bridge.h",
+  ]
+  deps = [
+    ":jni_headers",
+    "//base:base",
+  ]
+}
+
+generate_jni("jni_headers") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/ui/hats/TestSurveyUtilsBridge.java",
   ]
 }

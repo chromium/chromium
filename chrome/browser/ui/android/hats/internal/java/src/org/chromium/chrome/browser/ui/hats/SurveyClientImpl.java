@@ -10,6 +10,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.TaskTraits;
@@ -27,6 +28,13 @@ import java.util.Map;
 // TODO(crbug/1400731): Add metrics and refine the logging in this class.
 class SurveyClientImpl implements SurveyClient {
     private static final String TAG = "SurveyClient";
+
+    /**
+     * When set, bypass the AsyncTask to read throttler in the background, and ignore whether the
+     * current activity is alive. Set for unit testing / native tests.
+     */
+    private static Boolean sForceShowSurveyForTesting;
+
     private final SurveyConfig mConfig;
     private final SurveyUiDelegate mUiDelegate;
     private final SurveyController mController;
@@ -95,13 +103,17 @@ class SurveyClientImpl implements SurveyClient {
                     + stringField;
             mAggregatedSurveyPsd.put(stringField, surveyPsdStringValues.get(stringField));
         }
-        for (var bitField : mConfig.mPsdStringDataFields) {
+        for (var bitField : mConfig.mPsdBitDataFields) {
             assert surveyPsdBitValues.get(bitField) != null : "Undefined bit fields: " + bitField;
             mAggregatedSurveyPsd.put(bitField, surveyPsdBitValues.get(bitField) ? "true" : "false");
         }
     }
 
     private void showSurveyIfEligible() {
+        if (sForceShowSurveyForTesting != null) {
+            startSurveyDownload(sForceShowSurveyForTesting);
+            return;
+        }
         AsyncTask<Boolean> throttlerTask = new AsyncTask<>() {
             @Override
             protected Boolean doInBackground() {
@@ -167,8 +179,9 @@ class SurveyClientImpl implements SurveyClient {
     private void onSurveyAccepted() {
         Log.d(TAG, "Survey accepted.");
         assert mActivityRef != null;
-        if (mActivityRef.get() == null || mActivityRef.get().isFinishing()
-                || mActivityRef.get().isDestroyed()) {
+        if (sForceShowSurveyForTesting == null
+                && (mActivityRef.get() == null || mActivityRef.get().isFinishing()
+                        || mActivityRef.get().isDestroyed())) {
             destroy(false);
             return;
         }
@@ -236,5 +249,10 @@ class SurveyClientImpl implements SurveyClient {
 
     boolean isDestroyed() {
         return mIsDestroyed;
+    }
+
+    static void setForceShowSurveyForTesting(Boolean forcedResult) {
+        sForceShowSurveyForTesting = forcedResult;
+        ResettersForTesting.register(() -> sForceShowSurveyForTesting = null);
     }
 }
