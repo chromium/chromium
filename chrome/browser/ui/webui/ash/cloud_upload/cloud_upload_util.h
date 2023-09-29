@@ -93,7 +93,10 @@ enum class OfficeOneDriveOpenErrors {
   kGetActionsInvalidUrl = 7,
   kGetActionsNoUrl = 8,
   kGetActionsAccessDenied = 9,
-  kMaxValue = kGetActionsAccessDenied,
+  kGetActionsNoEmail = 10,
+  kConversionToODFSUrlError = 11,
+  kEmailsDoNotMatch = 12,
+  kMaxValue = kEmailsDoNotMatch,
 };
 
 // List of UMA enum value for Web Drive Office task results. The enum values

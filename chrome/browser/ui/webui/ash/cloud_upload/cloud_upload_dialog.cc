@@ -355,18 +355,20 @@ void OpenODFSUrl(Profile* profile,
 // open them from ODFS in the MS 365 PWA.
 void OpenAndroidOneDriveUrls(
     Profile* profile,
-    const std::vector<storage::FileSystemURL>& android_onedrive_urls) {
+    const std::vector<storage::FileSystemURL>& android_onedrive_urls,
+    base::OnceCallback<void(OfficeOneDriveOpenErrors)> callback) {
   for (const auto& android_onedrive_url : android_onedrive_urls) {
     absl::optional<ODFSFileSystemAndPath> fs_and_path =
         AndroidOneDriveUrlToODFS(profile, android_onedrive_url);
     if (!fs_and_path.has_value()) {
       // TODO(b/269364287): Handle when Android OneDrive file can't be opened.
       LOG(ERROR) << "Android OneDrive Url cannot be converted to ODFS";
+      std::move(callback).Run(
+          OfficeOneDriveOpenErrors::kConversionToODFSUrlError);
       return;
     }
-    OpenFileFromODFS(
-        profile, fs_and_path->file_system, fs_and_path->file_path_within_odfs,
-        base::BindOnce(&LogOneDriveOpenResultUMA, OfficeTaskResult::kOpened));
+    OpenFileFromODFS(profile, fs_and_path->file_system,
+                     fs_and_path->file_path_within_odfs, std::move(callback));
   }
 }
 
@@ -537,7 +539,8 @@ void CloudOpenTask::OpenOrMoveFiles() {
     transfer_required_ = OfficeFilesTransferRequired::kNotRequired;
     UMA_HISTOGRAM_ENUMERATION(kOneDriveTransferRequiredMetric,
                               OfficeFilesTransferRequired::kNotRequired);
-    OpenAndroidOneDriveUrlsIfAccountMatchedODFS();
+    OpenAndroidOneDriveUrlsIfAccountMatchedODFS(
+        base::BindOnce(&LogOneDriveOpenResultUMA, OfficeTaskResult::kOpened));
   } else {
     // The files need to be moved.
     auto operation =
@@ -696,19 +699,23 @@ absl::optional<std::string> GetEmailFromAndroidOneDriveRootDoc(
   return components[1];
 }
 
-void CloudOpenTask::OpenAndroidOneDriveUrlsIfAccountMatchedODFS() {
+void CloudOpenTask::OpenAndroidOneDriveUrlsIfAccountMatchedODFS(
+    base::OnceCallback<void(OfficeOneDriveOpenErrors)> callback) {
   // Get email account associated with Android OneDrive.
   std::string authority;
   std::string root_document_id;
   base::FilePath path;
   if (!arc::ParseDocumentsProviderUrl(file_urls_.front(), &authority,
                                       &root_document_id, &path)) {
+    std::move(callback).Run(OfficeOneDriveOpenErrors::kInvalidFileSystemURL);
     return;
   }
 
   absl::optional<std::string> android_onedrive_email =
       GetEmailFromAndroidOneDriveRootDoc(root_document_id);
   if (!android_onedrive_email.has_value()) {
+    std::move(callback).Run(
+        OfficeOneDriveOpenErrors::kConversionToODFSUrlError);
     return;
   }
 
@@ -718,11 +725,14 @@ void CloudOpenTask::OpenAndroidOneDriveUrlsIfAccountMatchedODFS() {
   if (!fs_and_path.has_value()) {
     // TODO(b/269364287): Handle when Android OneDrive file can't be opened.
     LOG(ERROR) << "Android OneDrive Url cannot be converted to ODFS";
+    std::move(callback).Run(
+        OfficeOneDriveOpenErrors::kConversionToODFSUrlError);
     return;
   }
-  GetODFSMetadata(fs_and_path->file_system,
-                  base::BindOnce(&CloudOpenTask::CheckEmailAndOpenURLs, this,
-                                 android_onedrive_email.value()));
+  GetODFSMetadata(
+      fs_and_path->file_system,
+      base::BindOnce(&CloudOpenTask::CheckEmailAndOpenURLs, this,
+                     android_onedrive_email.value(), std::move(callback)));
 }
 
 absl::optional<ODFSFileSystemAndPath> AndroidOneDriveUrlToODFS(
@@ -778,22 +788,26 @@ absl::optional<ODFSFileSystemAndPath> AndroidOneDriveUrlToODFS(
 
 void CloudOpenTask::CheckEmailAndOpenURLs(
     const std::string& android_onedrive_email,
+    base::OnceCallback<void(OfficeOneDriveOpenErrors)> callback,
     base::expected<ODFSMetadata, base::File::Error> metadata_or_error) {
   if (!metadata_or_error.has_value()) {
     LOG(ERROR) << "Failed to get user email: " << metadata_or_error.error();
+    std::move(callback).Run(OfficeOneDriveOpenErrors::kGetActionsGenericError);
     return;
   }
   if (metadata_or_error->user_email.empty()) {
     LOG(ERROR) << "User email is empty";
+    std::move(callback).Run(OfficeOneDriveOpenErrors::kGetActionsNoEmail);
     return;
   }
   // Query whether the account logged into Android OneDrive is the
   // same as ODFS.
   if (android_onedrive_email == metadata_or_error->user_email) {
-    OpenAndroidOneDriveUrls(profile_, file_urls_);
+    OpenAndroidOneDriveUrls(profile_, file_urls_, std::move(callback));
   } else {
     LOG(ERROR) << "Email accounts associated with ODFS and "
                   "Android OneDrive don't match.";
+    std::move(callback).Run(OfficeOneDriveOpenErrors::kEmailsDoNotMatch);
   }
 }
 

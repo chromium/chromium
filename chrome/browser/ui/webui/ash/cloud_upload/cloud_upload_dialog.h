@@ -166,9 +166,11 @@ class CloudOpenTask : public BrowserListObserver,
   void OpenOrMoveFiles();
   void OpenAlreadyHostedDriveUrls();
   void OpenODFSUrls(const OfficeTaskResult task_result_uma);
-  void OpenAndroidOneDriveUrlsIfAccountMatchedODFS();
+  void OpenAndroidOneDriveUrlsIfAccountMatchedODFS(
+      base::OnceCallback<void(OfficeOneDriveOpenErrors)> callback);
   void CheckEmailAndOpenURLs(
       const std::string& android_onedrive_email,
+      base::OnceCallback<void(OfficeOneDriveOpenErrors)> callback,
       base::expected<cloud_upload::ODFSMetadata, base::File::Error>
           metadata_or_error);
 

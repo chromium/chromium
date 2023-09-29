@@ -79028,6 +79028,9 @@ Called by update_net_trust_anchors.py.-->
   <int value="7" label="getActions: invalid URL"/>
   <int value="8" label="getActions: no URL"/>
   <int value="9" label="getActions: access denied"/>
+  <int value="10" label="getActions: no email"/>
+  <int value="11" label="Conversion to ODFS URL error"/>
+  <int value="12" label="Emails do not match"/>
 </enum>
 
 <enum name="OfficeOpenExtensions">
