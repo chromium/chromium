@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ui/views/editor_menu/editor_menu_chip_view.h"
+#include "chrome/browser/ui/views/editor_menu/editor_menu_gradient_badge.h"
 #include "chrome/browser/ui/views/editor_menu/editor_menu_textfield_view.h"
 #include "chrome/browser/ui/views/editor_menu/editor_menu_view_delegate.h"
 #include "chrome/browser/ui/views/editor_menu/utils/pre_target_handler.h"
@@ -27,14 +28,12 @@
 #include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_owner.h"
-#include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/geometry/rounded_corners_f.h"
-#include "ui/gfx/skia_paint_util.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
+#include "ui/views/badge_painter.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/textfield/textfield.h"
@@ -59,13 +58,6 @@ constexpr int kRadiusDip = 4;
 
 constexpr gfx::Insets kTitleContainerInsets = gfx::Insets::TLBR(10, 16, 10, 10);
 
-constexpr char16_t kBadgeText[] = u"Experiment";
-constexpr gfx::Insets kBadgeInsets = gfx::Insets::VH(0, 8);
-constexpr int kBadgeHorizontalPaddingDip = 8;
-constexpr int kBadgeVerticalPaddingDip = 8;
-constexpr SkColor kBadgeBackgroundColorStart = SkColorSetRGB(0xB5, 0xC4, 0xFF);
-constexpr SkColor kBadgeBackgroundColorEnd = SkColorSetRGB(0xB3, 0xEF, 0xD4);
-
 constexpr char16_t kSettingsTooltipString[] = u"Settings";
 constexpr int kSettingsIconSizeDip = 20;
 constexpr int kSettingsButtonBorderDip = 4;
@@ -77,48 +69,6 @@ constexpr gfx::Insets kChipsContainerInsets = gfx::Insets::VH(0, 16);
 
 constexpr gfx::Insets kTextfieldContainerInsets =
     gfx::Insets::TLBR(0, 16, 10, 16);
-
-// A background that fills the canvas with rounded corners and gradient colors.
-class GradientRoundedRectBackground : public views::Background {
- public:
-  GradientRoundedRectBackground(float radius,
-                                SkColor start_color,
-                                SkColor end_color)
-      : radii_(gfx::RoundedCornersF{radius}),
-        start_color_(start_color),
-        end_color_(end_color) {}
-
-  GradientRoundedRectBackground(const GradientRoundedRectBackground&) = delete;
-  GradientRoundedRectBackground& operator=(
-      const GradientRoundedRectBackground&) = delete;
-
-  ~GradientRoundedRectBackground() override = default;
-
-  // views::Background:
-  void Paint(gfx::Canvas* canvas, views::View* view) const override {
-    const auto& bounds = view->GetContentsBounds();
-    gfx::Rect rect(bounds);
-    SkPath path;
-    SkScalar radii[8] = {radii_.upper_left(),  radii_.upper_left(),
-                         radii_.upper_right(), radii_.upper_right(),
-                         radii_.lower_right(), radii_.lower_right(),
-                         radii_.lower_left(),  radii_.lower_left()};
-    path.addRoundRect(gfx::RectToSkRect(rect), radii);
-
-    cc::PaintFlags flags;
-    flags.setBlendMode(SkBlendMode::kSrcOver);
-    flags.setShader(gfx::CreateGradientShader(
-        bounds.left_center(), bounds.right_center(), start_color_, end_color_));
-    flags.setAntiAlias(true);
-    flags.setStyle(cc::PaintFlags::kFill_Style);
-    canvas->DrawPath(path, flags);
-  }
-
- private:
-  const gfx::RoundedCornersF radii_;
-  const SkColor start_color_;
-  const SkColor end_color_;
-};
 
 }  // namespace
 
@@ -242,20 +192,11 @@ void EditorMenuView::AddTitleContainer() {
       views::style::STYLE_HEADLINE_5));
   title->SetEnabledColorId(ui::kColorSysOnSurface);
 
-  auto* badge =
-      title_container_->AddChildView(std::make_unique<views::FlexLayoutView>());
-  badge->SetMainAxisAlignment(views::LayoutAlignment::kCenter);
-  badge->SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
-  badge->SetProperty(views::kMarginsKey, kBadgeInsets);
-  auto* text = badge->AddChildView(std::make_unique<views::Label>(
-      kBadgeText, views::style::CONTEXT_LABEL, views::style::STYLE_BODY_2));
-  text->SetEnabledColorId(ui::kColorSysOnSurface);
-  badge->SetPreferredSize(gfx::Size(
-      text->GetPreferredSize().width() + 2 * kBadgeHorizontalPaddingDip,
-      text->GetPreferredSize().height() + 2 * kBadgeVerticalPaddingDip));
-  float radius = badge->GetPreferredSize().height() / 2.0f;
-  badge->SetBackground(std::make_unique<GradientRoundedRectBackground>(
-      radius, kBadgeBackgroundColorStart, kBadgeBackgroundColorEnd));
+  auto* badge = title_container_->AddChildView(
+      std::make_unique<EditorMenuGradientBadge>());
+  badge->SetProperty(
+      views::kMarginsKey,
+      gfx::Insets::VH(0, views::BadgePainter::kBadgeHorizontalMargin));
 
   auto* spacer =
       title_container_->AddChildView(std::make_unique<views::View>());
