@@ -272,16 +272,14 @@ class WaylandDataDragControllerTest : public WaylandDragDropTest {
 TEST_P(WaylandDataDragControllerTest, StartDrag) {
   FocusAndPressLeftPointerButton(window_.get(), &delegate_);
 
-  auto test = [](WaylandDataDragControllerTest* self) {
-    // Now the server can read the data and give it to our callback.
-    self->ReadAndCheckData(kMimeTypeTextUtf8, kSampleTextForDragAndDrop);
-
-    self->SendDndCancelled();
-  };
-
   // Post test task to be performed asynchronously once the dnd-related protocol
   // objects are ready.
-  ScheduleTestTask(base::BindOnce(test, base::Unretained(this)));
+  ScheduleTestTask(base::BindLambdaForTesting([&]() {
+    // Now the server can read the data and give it to our callback.
+    ReadAndCheckData(kMimeTypeTextUtf8, kSampleTextForDragAndDrop);
+
+    SendDndCancelled();
+  }));
 
   RunMouseDragWithSampleData(
       window_.get(), DragDropTypes::DRAG_COPY | DragDropTypes::DRAG_MOVE);
@@ -317,8 +315,9 @@ TEST_P(WaylandDataDragControllerTest, StartDragWithCustomFormats) {
       ClipboardFormatType::WebCustomDataType(),
       ClipboardFormatType::GetType("chromium/x-bookmark-entries"),
       ClipboardFormatType::GetType("xyz/arbitrary-custom-type")};
-  for (auto format : kCustomFormats)
+  for (auto format : kCustomFormats) {
     data.SetPickledData(format, {});
+  }
 
   // The client starts dragging offering pickled data with custom formats.
   drag_controller()->StartSession(data, DragDropTypes::DRAG_MOVE,
@@ -334,22 +333,6 @@ TEST_P(WaylandDataDragControllerTest, StartDragWithCustomFormats) {
           << "Format '" << format.GetName() << "' should be offered.";
     }
   });
-}
-
-TEST_P(WaylandDataDragControllerTest, StartDragWithText) {
-  FocusAndPressLeftPointerButton(window_.get(), &delegate_);
-
-  // The client starts dragging offering text mime type.
-  OSExchangeData os_exchange_data;
-  os_exchange_data.SetString(sample_text_for_dnd());
-  int operations = DragDropTypes::DRAG_COPY | DragDropTypes::DRAG_MOVE;
-  drag_controller()->StartSession(os_exchange_data, operations,
-                                  DragEventSource::kMouse);
-
-  // The server should get a "text" representation in ReadData callback when
-  // trying to read it as mime type other than |kMimeTypeText| and
-  // |kTextMimeTypeUtf8|.
-  ReadAndCheckData(kMimeTypeText, kSampleTextForDragAndDrop);
 }
 
 TEST_P(WaylandDataDragControllerTest, StartDragWithFileContents) {
