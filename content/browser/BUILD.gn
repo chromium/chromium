@@ -1092,8 +1092,6 @@ source_set("browser") {
     "indexed_db/indexed_db_database_callbacks.h",
     "indexed_db/indexed_db_database_error.cc",
     "indexed_db/indexed_db_database_error.h",
-    "indexed_db/indexed_db_dispatcher_host.cc",
-    "indexed_db/indexed_db_dispatcher_host.h",
     "indexed_db/indexed_db_external_object.cc",
     "indexed_db/indexed_db_external_object.h",
     "indexed_db/indexed_db_external_object_storage.cc",

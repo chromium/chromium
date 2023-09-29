@@ -46,7 +46,6 @@
 #include "content/browser/indexed_db/indexed_db_class_factory.h"
 #include "content/browser/indexed_db/indexed_db_connection.h"
 #include "content/browser/indexed_db/indexed_db_database.h"
-#include "content/browser/indexed_db/indexed_db_dispatcher_host.h"
 #include "content/browser/indexed_db/indexed_db_factory.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_operations.h"
 #include "content/browser/indexed_db/indexed_db_quota_client.h"
@@ -122,7 +121,6 @@ IndexedDBContextImpl::IndexedDBContextImpl(
                      // BLOCK_SHUTDOWN to support clearing session-only storage.
                      base::TaskShutdownBehavior::BLOCK_SHUTDOWN}))),
       io_task_runner_(std::move(io_task_runner)),
-      dispatcher_host_(this),
       base_data_path_(base_data_path.empty() ? base::FilePath()
                                              : base_data_path),
       force_keep_session_state_(false),
@@ -217,10 +215,8 @@ void IndexedDBContextImpl::BindIndexedDBImpl(
   if (bucket_info.has_value()) {
     bucket = bucket_info.value();
   }
-  dispatcher_host_.AddReceiver(
-      IndexedDBDispatcherHost::ReceiverContext(
-          bucket, std::move(client_state_checker_remote)),
-      std::move(receiver));
+  GetIDBFactory()->AddReceiver(bucket, std::move(client_state_checker_remote),
+                               std::move(receiver));
 }
 
 void IndexedDBContextImpl::GetUsage(GetUsageCallback usage_callback) {
@@ -896,7 +892,7 @@ std::vector<base::FilePath> IndexedDBContextImpl::GetStoragePaths(
   return paths;
 }
 
-const base::FilePath IndexedDBContextImpl::GetDataPath(
+base::FilePath IndexedDBContextImpl::GetDataPath(
     const storage::BucketLocator& bucket_locator) const {
   if (is_incognito()) {
     return base::FilePath();

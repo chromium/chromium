@@ -27,7 +27,6 @@
 #include "components/services/storage/public/mojom/quota_client.mojom.h"
 #include "components/services/storage/public/mojom/storage_policy_update.mojom.h"
 #include "content/browser/indexed_db/indexed_db_backing_store.h"
-#include "content/browser/indexed_db/indexed_db_dispatcher_host.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -193,7 +192,7 @@ class CONTENT_EXPORT IndexedDBContextImpl
   std::vector<base::FilePath> GetStoragePaths(
       const storage::BucketLocator& bucket_locator) const;
 
-  const base::FilePath GetDataPath(
+  base::FilePath GetDataPath(
       const storage::BucketLocator& bucket_locator) const;
   const base::FilePath GetFirstPartyDataPathForTesting() const;
 
@@ -224,6 +223,8 @@ class CONTENT_EXPORT IndexedDBContextImpl
 
  private:
   friend class base::RefCountedThreadSafe<IndexedDBContextImpl>;
+  friend class IndexedDBTest;
+  friend class IndexedDBFactoryTest;
 
   class IndexedDBGetUsageAndQuotaCallback;
 
@@ -304,7 +305,6 @@ class CONTENT_EXPORT IndexedDBContextImpl
 
   const scoped_refptr<base::SequencedTaskRunner> idb_task_runner_;
   const scoped_refptr<base::TaskRunner> io_task_runner_;
-  IndexedDBDispatcherHost dispatcher_host_;
 
   // Bound and accessed on the `idb_task_runner_`.
   mojo::Remote<storage::mojom::BlobStorageContext> blob_storage_context_;

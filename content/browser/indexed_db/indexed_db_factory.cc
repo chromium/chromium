@@ -49,13 +49,17 @@
 #include "content/browser/indexed_db/indexed_db_connection.h"
 #include "content/browser/indexed_db/indexed_db_context_impl.h"
 #include "content/browser/indexed_db/indexed_db_data_format_version.h"
+#include "content/browser/indexed_db/indexed_db_database_callbacks.h"
 #include "content/browser/indexed_db/indexed_db_database_error.h"
+#include "content/browser/indexed_db/indexed_db_factory_client.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_operations.h"
+#include "content/browser/indexed_db/indexed_db_pending_connection.h"
 #include "content/browser/indexed_db/indexed_db_pre_close_task_queue.h"
 #include "content/browser/indexed_db/indexed_db_reporting.h"
 #include "content/browser/indexed_db/indexed_db_task_helper.h"
 #include "content/browser/indexed_db/indexed_db_tombstone_sweeper.h"
 #include "content/browser/indexed_db/indexed_db_transaction.h"
+#include "content/browser/indexed_db/transaction_impl.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
 #include "third_party/leveldatabase/env_chromium.h"
 
@@ -190,12 +194,35 @@ IndexedDBFactory::~IndexedDBFactory() {
       this);
 }
 
-void IndexedDBFactory::GetDatabaseInfo(
-    const storage::BucketInfo& bucket,
-    const base::FilePath& data_directory,
-    blink::mojom::IDBFactory::GetDatabaseInfoCallback callback) {
+void IndexedDBFactory::AddReceiver(
+    absl::optional<storage::BucketInfo> bucket,
+    mojo::PendingAssociatedRemote<storage::mojom::IndexedDBClientStateChecker>
+        client_state_checker_remote,
+    mojo::PendingReceiver<blink::mojom::IDBFactory> pending_receiver) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  receivers_.Add(
+      this, std::move(pending_receiver),
+      ReceiverContext(bucket, std::move(client_state_checker_remote)));
+}
+
+void IndexedDBFactory::GetDatabaseInfo(GetDatabaseInfoCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT0("IndexedDB", "IndexedDBFactory::GetDatabaseInfo");
+
+  const absl::optional<storage::BucketInfo>& bucket =
+      receivers_.current_context().bucket;
+
+  // Return error if failed to retrieve bucket from the QuotaManager.
+  if (!bucket) {
+    std::move(callback).Run(
+        {}, blink::mojom::IDBError::New(
+                blink::mojom::IDBException::kUnknownError, u"Internal error."));
+    return;
+  }
+
+  const storage::BucketLocator bucket_locator = bucket->ToBucketLocator();
+  const base::FilePath data_directory = context_->GetDataPath(bucket_locator);
+
   IndexedDBBucketContextHandle bucket_context_handle;
   leveldb::Status s;
   IndexedDBDatabaseError error;
@@ -203,9 +230,8 @@ void IndexedDBFactory::GetDatabaseInfo(
   // Note: Any data loss information here is not piped up to the renderer, and
   // will be lost.
   std::tie(bucket_context_handle, s, error, std::ignore, std::ignore) =
-      GetOrCreateBucketContext(bucket, data_directory,
+      GetOrCreateBucketContext(*bucket, data_directory,
                                /*create_if_missing=*/false);
-  const storage::BucketLocator bucket_locator = bucket.ToBucketLocator();
   if (!bucket_context_handle.IsHeld() ||
       !bucket_context_handle.bucket_context()) {
     if (s.IsNotFound()) {
@@ -238,21 +264,55 @@ void IndexedDBFactory::GetDatabaseInfo(
 }
 
 void IndexedDBFactory::Open(
+    mojo::PendingAssociatedRemote<blink::mojom::IDBFactoryClient>
+        pending_factory_client,
+    mojo::PendingAssociatedRemote<blink::mojom::IDBDatabaseCallbacks>
+        database_callbacks_remote,
     const std::u16string& name,
-    std::unique_ptr<IndexedDBPendingConnection> connection,
-    const storage::BucketInfo& bucket,
-    const base::FilePath& data_directory,
-    scoped_refptr<IndexedDBClientStateCheckerWrapper> client_state_checker) {
+    int64_t version,
+    mojo::PendingAssociatedReceiver<blink::mojom::IDBTransaction>
+        transaction_receiver,
+    int64_t transaction_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT0("IndexedDB", "IndexedDBFactory::Open");
-  const storage::BucketLocator bucket_locator = bucket.ToBucketLocator();
+
+  const absl::optional<storage::BucketInfo>& bucket =
+      receivers_.current_context().bucket;
+
+  // Return error if failed to retrieve bucket from the QuotaManager.
+  if (!bucket) {
+    IndexedDBFactoryClient(std::move(pending_factory_client),
+                           context_->IDBTaskRunner())
+        .OnError(IndexedDBDatabaseError(
+            blink::mojom::IDBException::kUnknownError, u"Internal error."));
+    return;
+  }
+
+  // TODO(dgrogan): Don't let a non-existing database be opened (and therefore
+  // created) if this origin is already over quota.
+
+  auto callbacks = std::make_unique<IndexedDBFactoryClient>(
+      std::move(pending_factory_client), context_->IDBTaskRunner());
+  auto database_callbacks = base::MakeRefCounted<IndexedDBDatabaseCallbacks>(
+      context_.get(), std::move(database_callbacks_remote),
+      context_->IDBTaskRunner().get());
+
+  const storage::BucketLocator bucket_locator = bucket->ToBucketLocator();
+  const base::FilePath data_directory = context_->GetDataPath(bucket_locator);
+
+  auto create_transaction_callback = base::BindOnce(
+      &TransactionImpl::CreateAndBind, std::move(transaction_receiver));
+  auto connection = std::make_unique<IndexedDBPendingConnection>(
+      std::move(callbacks), std::move(database_callbacks), transaction_id,
+      version, std::move(create_transaction_callback));
+
   IndexedDBDatabase::Identifier unique_identifier(bucket_locator, name);
   IndexedDBBucketContextHandle bucket_context_handle;
   leveldb::Status s;
   IndexedDBDatabaseError error;
   std::tie(bucket_context_handle, s, error, connection->data_loss_info,
            connection->was_cold_open) =
-      GetOrCreateBucketContext(bucket, data_directory,
+      GetOrCreateBucketContext(*bucket, data_directory,
                                /*create_if_missing=*/true);
   if (!bucket_context_handle.IsHeld() ||
       !bucket_context_handle.bucket_context()) {
@@ -264,8 +324,9 @@ void IndexedDBFactory::Open(
   }
   auto it = bucket_context_handle->databases().find(name);
   if (it != bucket_context_handle->databases().end()) {
-    it->second->ScheduleOpenConnection(std::move(connection),
-                                       std::move(client_state_checker));
+    it->second->ScheduleOpenConnection(
+        std::move(connection),
+        receivers_.current_context().client_state_checker);
     return;
   }
   auto database = std::make_unique<IndexedDBDatabase>(
@@ -275,19 +336,34 @@ void IndexedDBFactory::Open(
   // CreateDatabaseDeleteClosure can be called synchronously.
   auto* database_ptr = database.get();
   bucket_context_handle->AddDatabase(name, std::move(database));
-  database_ptr->ScheduleOpenConnection(std::move(connection),
-                                       std::move(client_state_checker));
+  database_ptr->ScheduleOpenConnection(
+      std::move(connection), receivers_.current_context().client_state_checker);
 }
 
 void IndexedDBFactory::DeleteDatabase(
+    mojo::PendingAssociatedRemote<blink::mojom::IDBFactoryClient>
+        pending_factory_client,
     const std::u16string& name,
-    std::unique_ptr<IndexedDBFactoryClient> factory_client,
-    const storage::BucketInfo& bucket,
-    const base::FilePath& data_directory,
     bool force_close) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT0("IndexedDB", "IndexedDBFactory::DeleteDatabase");
-  const storage::BucketLocator bucket_locator = bucket.ToBucketLocator();
+
+  const absl::optional<storage::BucketInfo>& bucket =
+      receivers_.current_context().bucket;
+
+  // Return error if failed to retrieve bucket from the QuotaManager.
+  if (!bucket) {
+    IndexedDBFactoryClient(std::move(pending_factory_client),
+                           context_->IDBTaskRunner())
+        .OnError(IndexedDBDatabaseError(
+            blink::mojom::IDBException::kUnknownError, u"Internal error."));
+    return;
+  }
+
+  auto factory_client = std::make_unique<IndexedDBFactoryClient>(
+      std::move(pending_factory_client), context_->IDBTaskRunner());
+
+  const storage::BucketLocator bucket_locator = bucket->ToBucketLocator();
   IndexedDBDatabase::Identifier unique_identifier(bucket_locator, name);
   IndexedDBBucketContextHandle bucket_context_handle;
   leveldb::Status s;
@@ -295,7 +371,7 @@ void IndexedDBFactory::DeleteDatabase(
   // Note: Any data loss information here is not piped up to the renderer, and
   // will be lost.
   std::tie(bucket_context_handle, s, error, std::ignore, std::ignore) =
-      GetOrCreateBucketContext(bucket, data_directory,
+      GetOrCreateBucketContext(*bucket, context_->GetDataPath(bucket_locator),
                                /*create_if_missing=*/true);
   if (!bucket_context_handle.IsHeld() ||
       !bucket_context_handle.bucket_context()) {
@@ -377,7 +453,7 @@ void IndexedDBFactory::HandleBackingStoreCorruption(
     const IndexedDBDatabaseError& error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(context_);
-  base::FilePath path_base = context_->GetDataPath(bucket_locator);
+  const base::FilePath path_base = context_->GetDataPath(bucket_locator);
 
   // The message may contain the database path, which may be considered
   // sensitive data, and those strings are passed to the extension, so strip it.
@@ -626,8 +702,7 @@ IndexedDBFactory::GetOrCreateBucketContext(const storage::BucketInfo& bucket,
   // TODO(dmurph) Have these factories be given in the constructor, or as
   // arguments to this method.
   DefaultLevelDBScopesFactory scopes_factory;
-  std::unique_ptr<PartitionedLockManager> lock_manager =
-      std::make_unique<PartitionedLockManager>();
+  auto lock_manager = std::make_unique<PartitionedLockManager>();
   IndexedDBDataLossInfo data_loss_info;
   std::unique_ptr<IndexedDBBackingStore> backing_store;
   bool disk_full = false;
@@ -1012,12 +1087,6 @@ bool IndexedDBFactory::IsDatabaseOpen(
   return base::Contains(it->second->databases(), name);
 }
 
-bool IndexedDBFactory::IsBackingStoreOpen(
-    const storage::BucketLocator& bucket_locator) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return base::Contains(bucket_contexts_, bucket_locator.id);
-}
-
 bool IndexedDBFactory::OnMemoryDump(
     const base::trace_event::MemoryDumpArgs& args,
     base::trace_event::ProcessMemoryDump* pmd) {
@@ -1049,5 +1118,18 @@ void IndexedDBFactory::CallOnDatabaseDeletedForTesting(
     OnDatabaseDeletedCallback callback) {
   call_on_database_deleted_for_testing_ = std::move(callback);
 }
+
+IndexedDBFactory::ReceiverContext::ReceiverContext(
+    absl::optional<storage::BucketInfo> bucket,
+    mojo::PendingAssociatedRemote<storage::mojom::IndexedDBClientStateChecker>
+        client_state_checker_remote)
+    : bucket(bucket),
+      client_state_checker(
+          base::MakeRefCounted<IndexedDBClientStateCheckerWrapper>(
+              std::move(client_state_checker_remote))) {}
+
+IndexedDBFactory::ReceiverContext::ReceiverContext(
+    IndexedDBFactory::ReceiverContext&&) noexcept = default;
+IndexedDBFactory::ReceiverContext::~ReceiverContext() = default;
 
 }  // namespace content

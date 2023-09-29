@@ -24,6 +24,7 @@
 #include "base/time/time.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scopes_factory.h"
+#include "components/services/storage/privileged/mojom/indexed_db_client_state_checker.mojom.h"
 #include "components/services/storage/public/cpp/buckets/bucket_id.h"
 #include "components/services/storage/public/cpp/buckets/bucket_info.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
@@ -52,7 +53,9 @@ class IndexedDBContextImpl;
 class IndexedDBDatabase;
 class TransactionalLevelDBDatabase;
 
-class CONTENT_EXPORT IndexedDBFactory : base::trace_event::MemoryDumpProvider {
+class CONTENT_EXPORT IndexedDBFactory
+    : public blink::mojom::IDBFactory,
+      public base::trace_event::MemoryDumpProvider {
  public:
   IndexedDBFactory(IndexedDBContextImpl* context,
                    base::Clock* clock);
@@ -62,21 +65,27 @@ class CONTENT_EXPORT IndexedDBFactory : base::trace_event::MemoryDumpProvider {
 
   ~IndexedDBFactory() override;
 
-  void GetDatabaseInfo(
-      const storage::BucketInfo& bucket,
-      const base::FilePath& data_directory,
-      blink::mojom::IDBFactory::GetDatabaseInfoCallback callback);
-  void Open(
-      const std::u16string& name,
-      std::unique_ptr<IndexedDBPendingConnection> connection,
-      const storage::BucketInfo& bucket,
-      const base::FilePath& data_directory,
-      scoped_refptr<IndexedDBClientStateCheckerWrapper> client_state_checker);
-  void DeleteDatabase(const std::u16string& name,
-                      std::unique_ptr<IndexedDBFactoryClient> factory_client,
-                      const storage::BucketInfo& bucket,
-                      const base::FilePath& data_directory,
-                      bool force_close);
+  void AddReceiver(
+      absl::optional<storage::BucketInfo> bucket,
+      mojo::PendingAssociatedRemote<storage::mojom::IndexedDBClientStateChecker>
+          client_state_checker_remote,
+      mojo::PendingReceiver<blink::mojom::IDBFactory> pending_receiver);
+
+  // blink::mojom::IDBFactory implementation:
+  void GetDatabaseInfo(GetDatabaseInfoCallback callback) override;
+  void Open(mojo::PendingAssociatedRemote<blink::mojom::IDBFactoryClient>
+                factory_client,
+            mojo::PendingAssociatedRemote<blink::mojom::IDBDatabaseCallbacks>
+                database_callbacks_remote,
+            const std::u16string& name,
+            int64_t version,
+            mojo::PendingAssociatedReceiver<blink::mojom::IDBTransaction>
+                transaction_receiver,
+            int64_t transaction_id) override;
+  void DeleteDatabase(mojo::PendingAssociatedRemote<
+                          blink::mojom::IDBFactoryClient> factory_client,
+                      const std::u16string& name,
+                      bool force_close) override;
 
   void HandleBackingStoreFailure(const storage::BucketLocator& bucket_locator);
   void HandleBackingStoreCorruption(storage::BucketLocator bucket_locator,
@@ -161,6 +170,29 @@ class CONTENT_EXPORT IndexedDBFactory : base::trace_event::MemoryDumpProvider {
   FRIEND_TEST_ALL_PREFIXES(IndexedDBTest,
                            ForceCloseOpenDatabasesOnCommitFailureThirdParty);
 
+  // The data structure that stores everything bound to the receiver. This will
+  // be stored together with the receiver in the `mojo::ReceiverSet`.
+  struct ReceiverContext {
+    ReceiverContext(absl::optional<storage::BucketInfo> bucket,
+                    mojo::PendingAssociatedRemote<
+                        storage::mojom::IndexedDBClientStateChecker>
+                        client_state_checker_remote);
+
+    ~ReceiverContext();
+
+    ReceiverContext(const ReceiverContext&) = delete;
+    ReceiverContext(ReceiverContext&&) noexcept;
+    ReceiverContext& operator=(const ReceiverContext&) = delete;
+    ReceiverContext& operator=(ReceiverContext&&) = delete;
+
+    // The `bucket` might be null if `QuotaDatabase::GetDatabase()` fails
+    // during the IndexedDB binding.
+    absl::optional<storage::BucketInfo> bucket;
+    // This is needed when the checker needs to be copied to another holder,
+    // e.g. `IndexedDBConnection`s that are opened through this dispatcher.
+    scoped_refptr<IndexedDBClientStateCheckerWrapper> client_state_checker;
+  };
+
   // `path_base` is the directory that will contain the database directory, the
   // blob directory, and any data loss info. `database_path` is the directory
   // for the leveldb database, and `blob_path` is the directory to store blob
@@ -196,7 +228,6 @@ class CONTENT_EXPORT IndexedDBFactory : base::trace_event::MemoryDumpProvider {
   // Testing helpers, so unit tests don't need to grovel through internal state.
   bool IsDatabaseOpen(const storage::BucketLocator& bucket_locator,
                       const std::u16string& name) const;
-  bool IsBackingStoreOpen(const storage::BucketLocator& bucket_locator) const;
 
   bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
                     base::trace_event::ProcessMemoryDump* pmd) override;
@@ -215,6 +246,8 @@ class CONTENT_EXPORT IndexedDBFactory : base::trace_event::MemoryDumpProvider {
   std::set<storage::BucketLocator> backends_opened_since_startup_;
 
   OnDatabaseDeletedCallback call_on_database_deleted_for_testing_;
+
+  mojo::ReceiverSet<blink::mojom::IDBFactory, ReceiverContext> receivers_;
 
   // Weak pointers from this factory are used to bind the
   // RunTaskForBucket() function, which deletes the

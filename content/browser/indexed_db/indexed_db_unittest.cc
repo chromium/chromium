@@ -15,6 +15,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -32,6 +33,7 @@
 #include "content/browser/indexed_db/indexed_db_leveldb_coding.h"
 #include "content/browser/indexed_db/mock_indexed_db_database_callbacks.h"
 #include "content/browser/indexed_db/mock_indexed_db_factory_client.h"
+#include "content/browser/indexed_db/mock_mojo_indexed_db_database_callbacks.h"
 #include "content/browser/indexed_db/mock_mojo_indexed_db_factory_client.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -49,6 +51,12 @@ using blink::IndexedDBDatabaseMetadata;
 
 namespace content {
 namespace {
+
+ACTION_TEMPLATE(MoveArgPointee,
+                HAS_1_TEMPLATE_PARAMS(int, k),
+                AND_1_VALUE_PARAMS(out)) {
+  *out = std::move(*::testing::get<k>(args));
+}
 
 base::FilePath CreateAndReturnTempDir(base::ScopedTempDir* temp_dir) {
   CHECK(temp_dir->CreateUniqueTempDir());
@@ -87,8 +95,12 @@ std::unique_ptr<LevelDBLock> LockForTesting(const base::FilePath& file_name) {
 
 }  // namespace
 
-class IndexedDBTest : public testing::Test,
-                      public testing::WithParamInterface<bool> {
+class IndexedDBTest
+    : public testing::Test,
+      // The first boolean toggles the Storage Partitioning feature. The second
+      // boolean controls the type of StorageKey to run the test on (first or
+      // third party).
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
   blink::StorageKey kNormalFirstPartyStorageKey;
   storage::BucketLocator kNormalFirstPartyBucketLocator;
@@ -246,6 +258,9 @@ class IndexedDBTest : public testing::Test,
       }
     }
 
+    // Wait for mojo pipes to flush or there may be leaks.
+    task_environment_.RunUntilIdle();
+
     if (temp_dir_.IsValid())
       ASSERT_TRUE(temp_dir_.Delete());
   }
@@ -257,7 +272,9 @@ class IndexedDBTest : public testing::Test,
     return path_future.Take();
   }
 
-  bool IsThirdPartyStoragePartitioningEnabled() { return GetParam(); }
+  bool IsThirdPartyStoragePartitioningEnabled() {
+    return std::get<0>(GetParam());
+  }
 
   scoped_refptr<IndexedDBClientStateCheckerWrapper>
   CreateTestClientStateWrapper() {
@@ -273,6 +290,71 @@ class IndexedDBTest : public testing::Test,
     return success.Get();
   }
 
+  void BindIndexedDBFactory(
+      mojo::PendingAssociatedRemote<storage::mojom::IndexedDBClientStateChecker>
+          checker_remote,
+      mojo::PendingReceiver<blink::mojom::IDBFactory> receiver,
+      storage::QuotaErrorOr<storage::BucketInfo> bucket_info) {
+    context()->BindIndexedDBImpl(std::move(checker_remote), std::move(receiver),
+                                 bucket_info);
+  }
+
+  blink::StorageKey GetTestStorageKey() {
+    const bool first_party = std::get<1>(GetParam());
+    return first_party
+               ? blink::StorageKey::CreateFromStringForTesting("http://test/")
+               : blink::StorageKey::Create(
+                     url::Origin::Create(GURL("http://test/")),
+                     net::SchemefulSite(GURL("http://rando/")),
+                     blink::mojom::AncestorChainBit::kCrossSite);
+  }
+
+  // Opens a database connection, runs `action`, and verifies that the
+  // connection was forced closed.
+  void VerifyForcedClosedCalled(base::OnceClosure action,
+                                storage::BucketInfo* out_info = nullptr) {
+    storage::BucketInfo bucket_info = InitBucket(GetTestStorageKey());
+    if (out_info) {
+      *out_info = bucket_info;
+    }
+    storage::BucketLocator bucket_locator = bucket_info.ToBucketLocator();
+    base::FilePath test_path = GetFilePathForTesting(bucket_locator);
+
+    // Bind the IDBFactory.
+    mojo::PendingAssociatedRemote<storage::mojom::IndexedDBClientStateChecker>
+        checker_remote;
+    BindIndexedDBFactory(std::move(checker_remote),
+                         factory_remote_.BindNewPipeAndPassReceiver(),
+                         bucket_info);
+
+    // Open new connection/database, wait for success.
+    MockMojoIndexedDBFactoryClient client;
+    MockMojoIndexedDBDatabaseCallbacks database_callbacks;
+    base::RunLoop run_loop;
+    // It's necessary to hang onto the database connection or the connection
+    // will shut itself down and there will be no `ForcedClosed()`.
+    mojo::PendingAssociatedRemote<blink::mojom::IDBDatabase> pending_database;
+    EXPECT_CALL(client, MockedOpenSuccess)
+        .WillOnce(
+            testing::DoAll(MoveArgPointee<0>(&pending_database),
+                           ::base::test::RunClosure(run_loop.QuitClosure())));
+    mojo::AssociatedRemote<blink::mojom::IDBTransaction> transaction_remote;
+    factory_remote_->Open(client.CreateInterfacePtrAndBind(),
+                          database_callbacks.CreateInterfacePtrAndBind(),
+                          u"opendb", /*version=*/0,
+                          transaction_remote.BindNewEndpointAndPassReceiver(),
+                          /*host_transaction_id=*/0);
+    run_loop.Run();
+    EXPECT_TRUE(base::DirectoryExists(test_path));
+
+    // Expect that deleting the data force closes the open database connection.
+    base::RunLoop run_loop2;
+    EXPECT_CALL(database_callbacks, ForcedClose())
+        .WillOnce(::base::test::RunClosure(run_loop2.QuitClosure()));
+    std::move(action).Run();
+    run_loop2.Run();
+  }
+
  protected:
   IndexedDBContextImpl* context() const { return context_.get(); }
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -283,12 +365,15 @@ class IndexedDBTest : public testing::Test,
   scoped_refptr<storage::MockQuotaManager> quota_manager_;
   scoped_refptr<storage::MockQuotaManagerProxy> quota_manager_proxy_;
   scoped_refptr<IndexedDBContextImpl> context_;
+  mojo::Remote<blink::mojom::IDBFactory> factory_remote_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
     IndexedDBTest,
-    testing::Bool());
+    // See class comment for meaning of params. Tests in this suite don't use
+    // the second param.
+    testing::Combine(testing::Bool(), testing::Values(true)));
 
 TEST_P(IndexedDBTest, ClearSessionOnlyDatabases) {
   base::FilePath normal_path_first_party;
@@ -422,150 +507,80 @@ TEST_P(IndexedDBTest, SetForceKeepSessionState) {
   EXPECT_TRUE(base::DirectoryExists(session_only_path_third_party));
 }
 
-class ForceCloseFactoryClient : public IndexedDBFactoryClient {
- public:
-  ForceCloseFactoryClient(scoped_refptr<IndexedDBContextImpl> idb_context,
-                          const storage::BucketInfo& bucket_info)
-      : IndexedDBFactoryClient(mojo::NullAssociatedRemote(),
-                               idb_context->IDBTaskRunner()),
-        idb_context_(idb_context),
-        bucket_locator_(bucket_info.ToBucketLocator()) {}
-  ~ForceCloseFactoryClient() override = default;
+// Tests that parameterize whether they act on first or third party storage key
+// buckets.
+using IndexedDBTestFirstOrThirdParty = IndexedDBTest;
 
-  ForceCloseFactoryClient(const ForceCloseFactoryClient&) = delete;
-  ForceCloseFactoryClient& operator=(const ForceCloseFactoryClient&) = delete;
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    IndexedDBTestFirstOrThirdParty,
+    // See base class comment for meaning of params. Tests in this suite operate
+    // against both first and third party storage keys.
+    testing::Combine(testing::Bool(), testing::Bool()));
 
-  void OnOpenSuccess(std::unique_ptr<IndexedDBConnection> connection,
-                     const IndexedDBDatabaseMetadata& metadata) override {
-    connection_ = std::move(connection);
-  }
-
-  IndexedDBConnection* connection() { return connection_.get(); }
-
- private:
-  scoped_refptr<IndexedDBContextImpl> idb_context_;
-  storage::BucketLocator bucket_locator_;
-  std::unique_ptr<IndexedDBConnection> connection_;
-};
-
-TEST_P(IndexedDBTest, ForceCloseOpenDatabasesOnDeleteFirstParty) {
-  const blink::StorageKey kTestStorageKey =
-      blink::StorageKey::CreateFromStringForTesting("http://test/");
-  storage::BucketInfo bucket_info = InitBucket(kTestStorageKey);
-  storage::BucketLocator bucket_locator = bucket_info.ToBucketLocator();
-
-  auto open_db_callbacks =
-      base::MakeRefCounted<MockIndexedDBDatabaseCallbacks>();
-  auto closed_db_callbacks =
-      base::MakeRefCounted<MockIndexedDBDatabaseCallbacks>();
-  auto open_db_factory_client =
-      std::make_unique<ForceCloseFactoryClient>(context(), bucket_info);
-  auto closed_db_factory_client =
-      std::make_unique<ForceCloseFactoryClient>(context(), bucket_info);
-  base::FilePath test_path = GetFilePathForTesting(bucket_locator);
-
-  const int64_t host_transaction_id = 0;
-  const int64_t version = 0;
-
-  IndexedDBFactory* factory = context()->GetIDBFactory();
-
-  factory->Open(
-      u"opendb",
-      std::make_unique<IndexedDBPendingConnection>(
-          std::make_unique<ThunkFactoryClient>(*open_db_factory_client),
-          open_db_callbacks, host_transaction_id, version, base::DoNothing()),
-      bucket_info, context()->GetDataPath(bucket_locator),
-      CreateTestClientStateWrapper());
-  EXPECT_TRUE(base::DirectoryExists(test_path));
-
-  factory->Open(
-      u"closeddb",
-      std::make_unique<IndexedDBPendingConnection>(
-          std::make_unique<ThunkFactoryClient>(*closed_db_factory_client),
-          closed_db_callbacks, host_transaction_id, version, base::DoNothing()),
-      bucket_info, context()->GetDataPath(bucket_locator),
-      CreateTestClientStateWrapper());
-  RunPostedTasks();
-  ASSERT_TRUE(closed_db_factory_client->connection());
-  closed_db_factory_client->connection()->AbortTransactionsAndClose(
-      IndexedDBConnection::CloseErrorHandling::kAbortAllReturnLastError);
-  RunPostedTasks();
-
-  context()->ForceClose(
-      bucket_locator.id,
-      storage::mojom::ForceCloseReason::FORCE_CLOSE_DELETE_ORIGIN,
-      base::DoNothing());
-  EXPECT_TRUE(open_db_callbacks->forced_close_called());
-  EXPECT_FALSE(closed_db_callbacks->forced_close_called());
-
-  RunPostedTasks();
-
-  EXPECT_TRUE(DeleteForStorageKeySync(kTestStorageKey));
+// Verifies that the IDB connection is force closed and the directory is deleted
+// when the bucket is deleted.
+TEST_P(IndexedDBTestFirstOrThirdParty, ForceCloseOpenDatabasesOnDelete) {
+  storage::BucketInfo bucket_info;
+  VerifyForcedClosedCalled(
+      base::BindOnce(
+          base::IgnoreResult(&IndexedDBTest::DeleteForStorageKeySync),
+          base::Unretained(this), GetTestStorageKey()),
+      &bucket_info);
+  // Additionally, the directory should be deleted.
+  base::FilePath test_path =
+      GetFilePathForTesting(bucket_info.ToBucketLocator());
   EXPECT_FALSE(base::DirectoryExists(test_path));
 }
 
-TEST_P(IndexedDBTest, ForceCloseOpenDatabasesOnDeleteThirdParty) {
-  const blink::StorageKey kTestStorageKey =
-      blink::StorageKey::Create(url::Origin::Create(GURL("http://test/")),
-                                net::SchemefulSite(GURL("http://rando/")),
-                                blink::mojom::AncestorChainBit::kCrossSite);
-  storage::BucketInfo bucket_info = InitBucket(kTestStorageKey);
-  storage::BucketLocator bucket_locator = bucket_info.ToBucketLocator();
-
-  auto open_db_callbacks =
-      base::MakeRefCounted<MockIndexedDBDatabaseCallbacks>();
-  auto closed_db_callbacks =
-      base::MakeRefCounted<MockIndexedDBDatabaseCallbacks>();
-  auto open_db_factory_client =
-      std::make_unique<ForceCloseFactoryClient>(context(), bucket_info);
-  auto closed_db_factory_client =
-      std::make_unique<ForceCloseFactoryClient>(context(), bucket_info);
-  base::FilePath test_path = GetFilePathForTesting(bucket_locator);
-
-  const int64_t host_transaction_id = 0;
-  const int64_t version = 0;
-
-  IndexedDBFactory* factory = context()->GetIDBFactory();
-
-  factory->Open(
-      u"opendb",
-      std::make_unique<IndexedDBPendingConnection>(
-          std::make_unique<ThunkFactoryClient>(*open_db_factory_client),
-          open_db_callbacks, host_transaction_id, version, base::DoNothing()),
-      bucket_info, context()->GetDataPath(bucket_locator),
-      CreateTestClientStateWrapper());
-  EXPECT_TRUE(base::DirectoryExists(test_path));
-
-  factory->Open(
-      u"closeddb",
-      std::make_unique<IndexedDBPendingConnection>(
-          std::make_unique<ThunkFactoryClient>(*closed_db_factory_client),
-          closed_db_callbacks, host_transaction_id, version, base::DoNothing()),
-      bucket_info, context()->GetDataPath(bucket_locator),
-      CreateTestClientStateWrapper());
-  RunPostedTasks();
-  ASSERT_TRUE(closed_db_factory_client->connection());
-  closed_db_factory_client->connection()->AbortTransactionsAndClose(
-      IndexedDBConnection::CloseErrorHandling::kAbortAllReturnLastError);
-  RunPostedTasks();
-
-  context()->ForceClose(
-      bucket_locator.id,
-      storage::mojom::ForceCloseReason::FORCE_CLOSE_DELETE_ORIGIN,
-      base::DoNothing());
-  EXPECT_TRUE(open_db_callbacks->forced_close_called());
-  EXPECT_FALSE(closed_db_callbacks->forced_close_called());
-
-  RunPostedTasks();
-
-  EXPECT_TRUE(DeleteForStorageKeySync(kTestStorageKey));
-
-  EXPECT_FALSE(base::DirectoryExists(test_path));
+// Verifies that the IDB connection is force closed when the backing store has
+// an error.
+TEST_P(IndexedDBTestFirstOrThirdParty, ForceCloseOpenDatabasesOnCommitFailure) {
+  storage::BucketInfo bucket_info;
+  VerifyForcedClosedCalled(
+      base::BindOnce(
+          [](IndexedDBFactory* factory, storage::BucketInfo* bucket_info) {
+            factory->HandleBackingStoreFailure(bucket_info->ToBucketLocator());
+          },
+          context()->GetIDBFactory(), &bucket_info),
+      &bucket_info);
 }
 
-TEST_P(IndexedDBTest, DeleteFailsIfDirectoryLockedFirstParty) {
-  const blink::StorageKey kTestStorageKey =
-      blink::StorageKey::CreateFromStringForTesting("http://test/");
+// Verifies that the IDB connection is force closed when the database is deleted
+// via the mojo API.
+TEST_P(IndexedDBTestFirstOrThirdParty,
+       ForceCloseOpenDatabasesOnDeleteDatabase) {
+  storage::BucketInfo bucket_info;
+  VerifyForcedClosedCalled(
+      base::BindOnce(
+          [](mojo::Remote<blink::mojom::IDBFactory>* factory_remote) {
+            MockMojoIndexedDBFactoryClient delete_client;
+            (*factory_remote)
+                ->DeleteDatabase(delete_client.CreateInterfacePtrAndBind(),
+                                 u"opendb",
+                                 /*force_close=*/true);
+          },
+          &this->factory_remote_),
+      &bucket_info);
+  base::FilePath test_path =
+      GetFilePathForTesting(bucket_info.ToBucketLocator());
+  EXPECT_TRUE(base::DirectoryExists(test_path));
+}
+
+// Verifies that the IDB connection is force closed when the context is
+// destroyed.
+TEST_P(IndexedDBTestFirstOrThirdParty,
+       ForceCloseOpenDatabasesOnContextDestroyed) {
+  storage::BucketInfo bucket_info;
+  VerifyForcedClosedCalled(
+      base::BindOnce(&IndexedDBFactory::ContextDestroyed,
+                     base::Unretained(context()->GetIDBFactory())),
+      &bucket_info);
+  EXPECT_FALSE(context()->GetIDBFactory()->GetBucketContext(bucket_info.id));
+}
+
+TEST_P(IndexedDBTestFirstOrThirdParty, DeleteFailsIfDirectoryLocked) {
+  const blink::StorageKey kTestStorageKey = GetTestStorageKey();
   storage::BucketInfo bucket_info = InitBucket(kTestStorageKey);
   storage::BucketLocator bucket_locator = bucket_info.ToBucketLocator();
 
@@ -584,105 +599,6 @@ TEST_P(IndexedDBTest, DeleteFailsIfDirectoryLockedFirstParty) {
   EXPECT_FALSE(success_future.Get());
 
   EXPECT_TRUE(base::DirectoryExists(test_path));
-}
-
-TEST_P(IndexedDBTest, DeleteFailsIfDirectoryLockedThirdParty) {
-  const blink::StorageKey kTestStorageKey =
-      blink::StorageKey::Create(url::Origin::Create(GURL("http://test/")),
-                                net::SchemefulSite(GURL("http://rando/")),
-                                blink::mojom::AncestorChainBit::kCrossSite);
-  storage::BucketInfo bucket_info = InitBucket(kTestStorageKey);
-  storage::BucketLocator bucket_locator = bucket_info.ToBucketLocator();
-
-  base::FilePath test_path = GetFilePathForTesting(bucket_locator);
-  ASSERT_TRUE(base::CreateDirectory(test_path));
-
-  auto lock = LockForTesting(test_path);
-  ASSERT_TRUE(lock);
-
-  base::test::TestFuture<bool> success_future;
-  context()->IDBTaskRunner()->PostTask(
-      FROM_HERE, base::BindLambdaForTesting([&]() {
-        context()->DeleteForStorageKey(kTestStorageKey,
-                                       success_future.GetCallback());
-      }));
-  EXPECT_FALSE(success_future.Get());
-
-  EXPECT_TRUE(base::DirectoryExists(test_path));
-}
-
-TEST_P(IndexedDBTest, ForceCloseOpenDatabasesOnCommitFailureFirstParty) {
-  const blink::StorageKey kTestStorageKey =
-      blink::StorageKey::CreateFromStringForTesting("http://test/");
-  auto bucket_info = storage::BucketInfo();
-  bucket_info.id = storage::BucketId::FromUnsafeValue(5);
-  bucket_info.storage_key = kTestStorageKey;
-  bucket_info.name = storage::kDefaultBucketName;
-  auto bucket_locator = bucket_info.ToBucketLocator();
-
-  auto* factory = static_cast<IndexedDBFactory*>(context()->GetIDBFactory());
-
-  const int64_t transaction_id = 1;
-
-  auto callbacks = std::make_unique<MockIndexedDBFactoryClient>();
-  auto db_callbacks = base::MakeRefCounted<MockIndexedDBDatabaseCallbacks>();
-  auto connection = std::make_unique<IndexedDBPendingConnection>(
-      std::make_unique<ThunkFactoryClient>(*callbacks), db_callbacks,
-      transaction_id, IndexedDBDatabaseMetadata::DEFAULT_VERSION,
-      base::DoNothing());
-  factory->Open(u"db", std::move(connection), bucket_info,
-                context()->GetDataPath(bucket_locator),
-                CreateTestClientStateWrapper());
-  RunPostedTasks();
-
-  ASSERT_TRUE(callbacks->connection());
-
-  EXPECT_TRUE(factory->IsBackingStoreOpen(bucket_locator));
-
-  // Simulate the write failure.
-  leveldb::Status status = leveldb::Status::IOError("Simulated failure");
-  factory->HandleBackingStoreFailure(bucket_locator);
-
-  EXPECT_TRUE(db_callbacks->forced_close_called());
-  EXPECT_FALSE(factory->IsBackingStoreOpen(bucket_locator));
-}
-
-TEST_P(IndexedDBTest, ForceCloseOpenDatabasesOnCommitFailureThirdParty) {
-  const blink::StorageKey kTestStorageKey =
-      blink::StorageKey::Create(url::Origin::Create(GURL("http://test/")),
-                                net::SchemefulSite(GURL("http://rando/")),
-                                blink::mojom::AncestorChainBit::kCrossSite);
-  auto bucket_info = storage::BucketInfo();
-  bucket_info.id = storage::BucketId::FromUnsafeValue(5);
-  bucket_info.storage_key = kTestStorageKey;
-  bucket_info.name = storage::kDefaultBucketName;
-  auto bucket_locator = bucket_info.ToBucketLocator();
-
-  auto* factory = static_cast<IndexedDBFactory*>(context()->GetIDBFactory());
-
-  const int64_t transaction_id = 1;
-
-  auto callbacks = std::make_unique<MockIndexedDBFactoryClient>();
-  auto db_callbacks = base::MakeRefCounted<MockIndexedDBDatabaseCallbacks>();
-  auto connection = std::make_unique<IndexedDBPendingConnection>(
-      std::make_unique<ThunkFactoryClient>(*callbacks), db_callbacks,
-      transaction_id, IndexedDBDatabaseMetadata::DEFAULT_VERSION,
-      base::DoNothing());
-  factory->Open(u"db", std::move(connection), bucket_info,
-                context()->GetDataPath(bucket_locator),
-                CreateTestClientStateWrapper());
-  RunPostedTasks();
-
-  ASSERT_TRUE(callbacks->connection());
-
-  EXPECT_TRUE(factory->IsBackingStoreOpen(bucket_locator));
-
-  // Simulate the write failure.
-  leveldb::Status status = leveldb::Status::IOError("Simulated failure");
-  factory->HandleBackingStoreFailure(bucket_locator);
-
-  EXPECT_TRUE(db_callbacks->forced_close_called());
-  EXPECT_FALSE(factory->IsBackingStoreOpen(bucket_locator));
 }
 
 TEST(PartitionedLockManager, TestRangeDifferences) {
