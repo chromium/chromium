@@ -489,12 +489,44 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
    */
   openLinkInNewWindow_(linkSelector, linkUrl) {
     const linkElement = this.shadowRoot.querySelector(linkSelector);
-    linkElement.setAttribute('href', linkUrl);
-    linkElement.setAttribute('target', '_blank');
+    if (linkElement) {
+      linkElement.setAttribute('href', linkUrl);
+      linkElement.setAttribute('target', '_blank');
+    }
+  }
+
+  /**
+   * When the feedback app is launched from OOBE or the login screen, the
+   * categoryTag is set to "Login".
+   * @returns {boolean} True if the categoryTag is Login.
+   * @private
+   */
+  isUserLoggedOut_() {
+    return this.feedbackContext && this.feedbackContext.categoryTag === 'Login';
   }
 
   /** @private */
   setPrivacyNote_() {
+    if (this.isUserLoggedOut_()) {
+      this.setPrivacyNoteForLoggedOutUsers_();
+    } else {
+      this.setPrivacyNoteForLoggedInUsers_();
+    }
+  }
+
+  /** @private */
+  setPrivacyNoteForLoggedOutUsers_() {
+    this.privacyNote_ = this.i18nAdvanced('privacyNoteLoggedOut', {
+      substitutions: [
+        FEEDBACK_PRIVACY_POLICY_URL,
+        FEEDBACK_TERMS_OF_SERVICE_URL,
+        FEEDBACK_LEGAL_HELP_URL,
+      ],
+    });
+  }
+
+  /** @private */
+  setPrivacyNoteForLoggedInUsers_() {
     this.privacyNote_ = this.i18nAdvanced('privacyNote', {attrs: ['id']});
 
     this.openLinkInNewWindow_('#legalHelpPageUrl', FEEDBACK_LEGAL_HELP_URL);
@@ -597,6 +629,8 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
           '#performanceTraceLink',
           `chrome://slow_trace/tracing.zip#${this.feedbackContext.traceId}`);
     }
+    // Update the privacy note when the feedback context changed.
+    this.setPrivacyNote_();
   }
 
   /**

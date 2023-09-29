@@ -3963,6 +3963,9 @@
         <message name="IDS_FEEDBACK_TOOL_PRIVACY_NOTE" desc="Text for the privacy note included in the feedback app">
           Go to the <ph name="BEGIN_LINK1">&lt;a id="legalHelpPageUrl"&gt;</ph>Legal Help page<ph name="END_LINK1">&lt;/a&gt;</ph> to request content changes for legal reasons. Some account and system information may be sent to Google. We will use the information you give us to help address technical issues and to improve our services, subject to our <ph name="BEGIN_LINK2">&lt;a id="privacyPolicyUrl"&gt;</ph>Privacy Policy<ph name="END_LINK2">&lt;/a&gt;</ph> and <ph name="BEGIN_LINK3">&lt;a id="termsOfServiceUrl"&gt;</ph>Terms of Service<ph name="END_LINK3">&lt;/a&gt;</ph>.
         </message>
+        <message name="IDS_FEEDBACK_TOOL_PRIVACY_NOTE_LOGGED_OUT" desc="Text for the privacy note included in the feedback app when users are logged out">
+          Some account and system information may be sent to Google. We use this information to help address technical issues and improve our services, subject to our Privacy Policy (<ph name="privacyPolicyUrl">$1<ex>https://policies.google.com/privacy</ex></ph>) and Terms of Service (<ph name="termsOfServiceUrl">$2<ex>https://policies.google.com/terms</ex></ph>). To request content changes, go to Legal Help (<ph name="legalHelpPageUrl">$3<ex>https://support.google.com/legal/answer/3110420</ex></ph>).
+        </message>
         <message name="IDS_FEEDBACK_TOOL_MAY_BE_SHARED_NOTE" desc="Text to inform all users that their feedback may be shared">
           We may share feedback submitted via this form with our partners to troubleshoot bugs and other issues that you report to us. Don’t include sensitive information such as passwords.
         </message>
