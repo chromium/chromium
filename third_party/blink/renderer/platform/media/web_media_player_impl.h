@@ -925,12 +925,6 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   // unimportant.
   bool suppress_destruction_errors_ = false;
 
-  // TODO(dalecurtis): The following comment is inaccurate as this value is also
-  // used for, for example, data URLs.
-  // Used for HLS playback and in certain fallback paths (e.g. on older devices
-  // that can't support the unified media pipeline).
-  GURL loaded_url_ ALLOW_DISCOURAGED_TYPE("Avoids conversion in media code");
-
   // NOTE: |using_media_player_renderer_| is set based on the usage of a
   // MediaResource::Type::URL in StartPipeline(). This works because
   // MediaPlayerRendererClientFactory is the only factory that uses

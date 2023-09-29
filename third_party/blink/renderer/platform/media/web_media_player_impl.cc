@@ -816,16 +816,18 @@ void WebMediaPlayerImpl::DoLoad(LoadType load_type,
 #endif  // BUILDFLAG(IS_ANDROID)
 
   // Note: `url` may be very large, take care when making copies.
-  loaded_url_ = GURL(url);
+  demuxer_manager_->SetLoadedUrl(GURL(url));
   load_type_ = load_type;
 
-  ReportMetrics(load_type, loaded_url_, *frame_, media_log_.get());
+  ReportMetrics(load_type, demuxer_manager_->LoadedUrl(), *frame_,
+                media_log_.get());
 
   // Set subresource URL for crash reporting; will be truncated to 256 bytes.
   static base::debug::CrashKeyString* subresource_url =
       base::debug::AllocateCrashKeyString("subresource_url",
                                           base::debug::CrashKeySize::Size256);
-  base::debug::SetCrashKeyString(subresource_url, loaded_url_.spec());
+  base::debug::SetCrashKeyString(subresource_url,
+                                 demuxer_manager_->LoadedUrl().spec());
 
   SetNetworkState(WebMediaPlayer::kNetworkStateLoading);
   SetReadyState(WebMediaPlayer::kReadyStateHaveNothing);
@@ -841,15 +843,17 @@ void WebMediaPlayerImpl::DoLoad(LoadType load_type,
 
   media_metrics_provider_->Initialize(
       load_type == kLoadTypeMediaSource,
-      load_type == kLoadTypeURL ? GetMediaURLScheme(loaded_url_)
-                                : media::mojom::MediaURLScheme::kUnknown,
+      load_type == kLoadTypeURL
+          ? GetMediaURLScheme(demuxer_manager_->LoadedUrl())
+          : media::mojom::MediaURLScheme::kUnknown,
       media::mojom::MediaStreamType::kNone);
 
   // If a demuxer override was specified or a Media Source pipeline will be
   // used, the pipeline can start immediately.
   if (demuxer_manager_->HasDemuxerOverride() ||
       load_type == kLoadTypeMediaSource ||
-      loaded_url_.SchemeIs(media::remoting::kRemotingScheme)) {
+      demuxer_manager_->LoadedUrl().SchemeIs(
+          media::remoting::kRemotingScheme)) {
     StartPipeline();
     return;
   }
@@ -857,14 +861,14 @@ void WebMediaPlayerImpl::DoLoad(LoadType load_type,
   // Short circuit the more complex loading path for data:// URLs. Sending
   // them through the network based loading path just wastes memory and causes
   // worse performance since reads become asynchronous.
-  if (loaded_url_.SchemeIs(url::kDataScheme)) {
+  if (demuxer_manager_->LoadedUrl().SchemeIs(url::kDataScheme)) {
     std::string mime_type, charset, data;
-    if (!net::DataURL::Parse(loaded_url_, &mime_type, &charset, &data) ||
+    if (!net::DataURL::Parse(demuxer_manager_->LoadedUrl(), &mime_type,
+                             &charset, &data) ||
         data.empty()) {
       return MemoryDataSourceInitialized(false, 0);
     }
     size_t data_size = data.size();
-    demuxer_manager_->SetLoadedUrl(loaded_url_);
     demuxer_manager_->SetDataSource(
         std::make_unique<media::MemoryDataSource>(std::move(data)));
     MemoryDataSourceInitialized(true, data_size);
@@ -1791,9 +1795,6 @@ void WebMediaPlayerImpl::StopForDemuxerReset() {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
   DCHECK(pipeline_controller_);
   pipeline_controller_->Stop();
-  // Note: Does not consider the full redirect chain, which could contain
-  // undetected mixed content.
-  demuxer_manager_->SetLoadedUrl(loaded_url_);
 
   // delete the thread dumper on the media thread.
   media_task_runner_->DeleteSoon(FROM_HERE,
@@ -1807,7 +1808,7 @@ bool WebMediaPlayerImpl::IsSecurityOriginCryptographic() const {
 }
 
 void WebMediaPlayerImpl::UpdateLoadedUrl(const GURL& url) {
-  loaded_url_ = url;
+  demuxer_manager_->SetLoadedUrl(url);
 }
 
 void WebMediaPlayerImpl::DemuxerRequestsSeek(base::TimeDelta seek_time) {
@@ -2601,8 +2602,8 @@ void WebMediaPlayerImpl::SetPoster(const WebURL& poster) {
 void WebMediaPlayerImpl::MemoryDataSourceInitialized(bool success,
                                                      size_t data_size) {
   if (success) {
-    // Replace `loaded_url_` with an empty data:// URL since it may be large.
-    loaded_url_ = GURL("data:,");
+    // Replace the loaded url with an empty data:// URL since it may be large.
+    demuxer_manager_->SetLoadedUrl(GURL("data:,"));
 
     // Mark all the data as buffered.
     buffered_data_source_host_->SetTotalBytes(data_size);
@@ -3398,7 +3399,8 @@ bool WebMediaPlayerImpl::DoesOverlaySupportMetadata() const {
 void WebMediaPlayerImpl::UpdateRemotePlaybackCompatibility(bool is_compatible) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
 
-  client_->RemotePlaybackCompatibilityChanged(loaded_url_, is_compatible);
+  client_->RemotePlaybackCompatibilityChanged(demuxer_manager_->LoadedUrl(),
+                                              is_compatible);
 }
 
 void WebMediaPlayerImpl::ForceStaleStateForTesting(ReadyState target_state) {

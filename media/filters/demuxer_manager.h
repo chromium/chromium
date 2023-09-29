@@ -128,6 +128,7 @@ class MEDIA_EXPORT DemuxerManager {
 
   void OnPipelineError(PipelineStatus error);
   void SetLoadedUrl(GURL url);
+  const GURL& LoadedUrl() const;
 #if BUILDFLAG(ENABLE_HLS_DEMUXER) || BUILDFLAG(IS_ANDROID)
   void PopulateHlsHistograms(bool cryptographic_url);
   PipelineStatus SelectHlsFallbackMechanism(bool cryptographic_url);
@@ -231,6 +232,7 @@ class MEDIA_EXPORT DemuxerManager {
   // Used for MediaUrlDemuxer when playing HLS content, as well as
   // FFmpegDemuxer in most cases. Also used for creating MemoryDataSource
   // objects.
+  // Note: this may be very large, take care when making copies.
   GURL loaded_url_;
 
   // The data source for creating a demuxer. This should be null when using

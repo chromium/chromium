@@ -221,6 +221,10 @@ void DemuxerManager::SetLoadedUrl(GURL url) {
   loaded_url_ = std::move(url);
 }
 
+const GURL& DemuxerManager::LoadedUrl() const {
+  return loaded_url_;
+}
+
 #if BUILDFLAG(ENABLE_HLS_DEMUXER) || BUILDFLAG(IS_ANDROID)
 
 void DemuxerManager::PopulateHlsHistograms(bool cryptographic_url) {
@@ -371,6 +375,22 @@ PipelineStatus DemuxerManager::CreateDemuxer(
     return DEMUXER_ERROR_COULD_NOT_OPEN;
   }
 
+  // We can only do a universal suspend for posters, unless the flag is enabled.
+  auto suspended_mode = Pipeline::StartType::kSuspendAfterMetadataForAudioOnly;
+  if (has_poster || base::FeatureList::IsEnabled(kPreloadMetadataLazyLoad)) {
+    suspended_mode = Pipeline::StartType::kSuspendAfterMetadata;
+  }
+
+#if BUILDFLAG(ENABLE_HLS_DEMUXER)
+  if (hls_fallback_ == HlsFallbackImplementation::kBuiltinHlsPlayer ||
+      loaded_url_.path_piece().ends_with(".m3u8")) {
+    SetDemuxer(CreateHlsDemuxer());
+    return std::move(on_demuxer_created)
+        .Run(demuxer_.get(), suspended_mode, /*is_streaming=*/false,
+             /*is_static=*/false);
+  }
+#endif  // BUILDFLAG(ENABLE_HLS_DEMUXER)
+
 #if BUILDFLAG(IS_ANDROID)
   const bool media_player_hls =
       hls_fallback_ == HlsFallbackImplementation::kMediaPlayer;
@@ -382,15 +402,6 @@ PipelineStatus DemuxerManager::CreateDemuxer(
              /*is_static = */ false);
   }
 #endif
-
-#if BUILDFLAG(ENABLE_HLS_DEMUXER)
-  if (hls_fallback_ == HlsFallbackImplementation::kBuiltinHlsPlayer) {
-    SetDemuxer(CreateHlsDemuxer());
-    return std::move(on_demuxer_created)
-        .Run(demuxer_.get(), Pipeline::StartType::kNormal,
-             /*is_streaming=*/false, /*is_static=*/false);
-  }
-#endif  // BUILDFLAG(ENABLE_HLS_DEMUXER)
 
   // TODO(sandersd): FileSystem objects may also be non-static, but due to our
   // caching layer such situations are broken already. http://crbug.com/593159
@@ -426,11 +437,6 @@ PipelineStatus DemuxerManager::CreateDemuxer(
              is_static);
   }
 
-  // We can only do a universal suspend for posters, unless the flag is enabled.
-  auto suspended_mode = Pipeline::StartType::kSuspendAfterMetadataForAudioOnly;
-  if (has_poster || base::FeatureList::IsEnabled(kPreloadMetadataLazyLoad)) {
-    suspended_mode = Pipeline::StartType::kSuspendAfterMetadata;
-  }
   return std::move(on_demuxer_created)
       .Run(demuxer_.get(), suspended_mode, IsStreaming(), is_static);
 }
