@@ -38,7 +38,7 @@ class IsolateDaemon(AbstractContextManager):
             ScopedFfxConfig('discovery.zedboot.enabled', 'false'),
             ScopedFfxConfig('fastboot.reboot.reconnect_timeout', '120'),
             ScopedFfxConfig('log.level', 'debug')
-        ] + extra_inits or []
+        ] + (extra_inits or [])
 
     def __enter__(self):
         # Updating configurations to meet the requirement of isolate.
