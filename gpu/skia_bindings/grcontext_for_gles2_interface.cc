@@ -17,6 +17,7 @@
 #include "gpu/skia_bindings/gles2_implementation_with_grcontext_support.h"
 #include "third_party/skia/include/gpu/GrContextOptions.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
+#include "third_party/skia/include/gpu/ganesh/gl/GrGLDirectContext.h"
 #include "third_party/skia/include/gpu/gl/GrGLInterface.h"
 
 namespace skia_bindings {
@@ -40,7 +41,7 @@ GrContextForGLES2Interface::GrContextForGLES2Interface(
   options.fSupportBilerpFromGlyphAtlas = support_bilerp_from_flyph_atlas;
   sk_sp<GrGLInterface> interface(
       skia_bindings::CreateGLES2InterfaceBindings(gl, context_support));
-  gr_context_ = GrDirectContext::MakeGL(std::move(interface), options);
+  gr_context_ = GrDirectContexts::MakeGL(std::move(interface), options);
   if (gr_context_) {
     gr_context_->setResourceCacheLimit(max_resource_cache_bytes);
     context_support_->SetGrContext(gr_context_.get());

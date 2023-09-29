@@ -9,6 +9,7 @@
 #include "gpu/command_buffer/client/gles2_lib.h"
 #include "gpu/skia_bindings/gl_bindings_skia_cmd_buffer.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
+#include "third_party/skia/include/gpu/ganesh/gl/GrGLDirectContext.h"
 #include "third_party/skia/include/gpu/gl/GrGLInterface.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -21,7 +22,7 @@ CmdBufferSurfaceProvider::CmdBufferSurfaceProvider() {
   sk_sp<const GrGLInterface> gr_interface =
       skia_bindings::CreateGLES2InterfaceBindings(gles2_implementation,
                                                   gles2_implementation);
-  gr_context_ = GrDirectContext::MakeGL(std::move(gr_interface));
+  gr_context_ = GrDirectContexts::MakeGL(std::move(gr_interface));
   DCHECK(gr_context_);
 }
 
