@@ -92,9 +92,15 @@ def __rewrite_rewrapper(ctx, cmd):
             return
     if not cfg_file:
         fail("couldn't find rewrapper cfg file in %s" % str(cmd.args))
+    reproxy_config = rewrapper_cfg.parse(ctx, cfg_file)
+    if cmd.outputs[0] == ctx.fs.canonpath("./obj/third_party/abseil-cpp/absl/functional/any_invocable_test/any_invocable_test.o"):
+        # need longer timeout for any_invocable_test.o crbug.com/1484474
+        reproxy_config.update({
+            "exec_timeout": "4m",
+        })
     ctx.actions.fix(
         args = args,
-        reproxy_config = json.encode(rewrapper_cfg.parse(ctx, cfg_file)),
+        reproxy_config = json.encode(reproxy_config)
     )
 
 def __strip_rewrapper(ctx, cmd):
