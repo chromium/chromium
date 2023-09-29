@@ -57,6 +57,7 @@ constexpr auto kKeyboardBlocklist = base::MakeFixedFlatSet<DeviceId>({
     {0x045e, 0x0745},  // Microsoft Wireless Mobile Mouse 6000
     {0x045e, 0x07a2},  // Microsoft Sculpt Comfort Mouse
     {0x045e, 0x0821},  // Microsoft Surface Precision Mouse
+    {0x045e, 0x0827},  // Microsoft Modern Mobile Mouse
     {0x045e, 0x082a},  // Microsoft Pro IntelliMouse
     {0x045e, 0x082f},  // Microsoft Bluetooth Mouse
     {0x045e, 0x0845},  // Microsoft Ocean Plastic Mouse
@@ -64,6 +65,7 @@ constexpr auto kKeyboardBlocklist = base::MakeFixedFlatSet<DeviceId>({
     {0x045e, 0x095d},  // Microsoft Surface Mobile Mouse
     {0x045e, 0x0b05},  // Xbox One Elite Series 2 gamepad
     {0x046d, 0x4026},  // Logitech T400
+    {0x046d, 0x404a},  // Logitech MX Anywhere 2 (Unifying)
     {0x046d, 0x405e},  // Logitech M720 Triathlon (Unifying)
     {0x046d, 0x4069},  // Logitech MX Master 2S (Unifying) // nocheck
     {0x046d, 0x406b},  // Logitech M585 (Unifying)
@@ -90,20 +92,27 @@ constexpr auto kKeyboardBlocklist = base::MakeFixedFlatSet<DeviceId>({
     {0x046d, 0xb024},  // Logitech G604 Lightspeed Gaming Mouse (Bluetooth)
     {0x046d, 0xb503},  // Logitech Spotlight Presentation Remote (Bluetooth)
     {0x046d, 0xb505},  // Logitech R500 (Bluetooth)
+    {0x046d, 0xc087},  // Logitech G703
     {0x046d, 0xc088},  // Logitech G Pro Wireless (USB)
     {0x046d, 0xc08b},  // Logitech G502 Hero
+    {0x046d, 0xc091},  // Logitech G903
     {0x046d, 0xc092},  // Logitech G203 LIGHTSYNC
     {0x046d, 0xc093},  // Logitech M500s
     {0x046d, 0xc094},  // Logitech G Pro Wireless X Superlight (USB)
+    {0x046d, 0xc09d},  // Logitech G203
     {0x046d, 0xc53e},  // Logitech Spotlight Presentation Remote (USB dongle)
     {0x04b4, 0x121f},  // SteelSeries Ikari
     {0x056e, 0x0134},  // Elecom Enelo IR LED Mouse 350
     {0x056e, 0x0141},  // Elecom EPRIM Blue LED 5 button mouse 228
     {0x056e, 0x0159},  // Elecom Blue LED Mouse 203
     {0x05e0, 0x1200},  // Symbol Technologies / Zebra LS2208 barcode scanner
+    {0x093a, 0x2533},  // CyberPower Mouse
+    {0x0951, 0x16d3},  // HyperX Pulsefire Surge
+    {0x0951, 0x16de},  // HyperX Pulsefire Core
     {0x0951, 0x16e2},  // HyperX Pulsefire Dart
     {0x0951, 0x1727},  // HyperX Pulsefire Haste Gaming Mouse
     {0x0b05, 0x1949},  // ASUS ROG Strix Impact II
+    {0x0b33, 0x3022},  // Contour Design RollerMouse Pro
     {0x0c45, 0x7403},  // RDing FootSwitch1F1
     {0x1038, 0x0470},  // SteelSeries Reaper Edge
     {0x1038, 0x0471},  // SteelSeries Rival Rescuer
@@ -252,6 +261,7 @@ constexpr auto kKeyboardBlocklist = base::MakeFixedFlatSet<DeviceId>({
     {0x1050, 0x0010},  // Yubico.com Yubikey
     {0x1050, 0x0407},  // Yubico.com Yubikey 4 OTP+U2F+CCID
     {0x12cf, 0x0490},  // Acer Cestus 325
+    {0x1532, 0x005c},  // Razer DeathAdder Elite
     {0x1532, 0x0062},  // Razer Atheris
     {0x1532, 0x0071},  // Razer DeathAdder Essential - White
     {0x1532, 0x0078},  // Razer Viper
@@ -270,10 +280,14 @@ constexpr auto kKeyboardBlocklist = base::MakeFixedFlatSet<DeviceId>({
     {0x17ef, 0x6123},  // Lenovo USB-C Wired Compact Mouse
     {0x1b1c, 0x1b7a},  // Corsair Sabre Pro Champion Gaming Mouse
     {0x1b1c, 0x1b94},  // Corsair Katar Pro Wireless (USB dongle)
+    {0x1b1c, 0x1b9e},  // Corsair M65 RGB
     {0x1bae, 0x1b1c},  // Corsair Katar Pro Wireless (Bluetooth)
+    {0x1b1c, 0x1bac},  // Corsair Katar Pro
     {0x1bcf, 0x08a0},  // Kensington Pro Fit Full-size
-    {0x1e7d, 0x2c88},  // ROCCAT Cone Pro
+    {0x1e7d, 0x2c88},  // ROCCAT Kone Pro
+    {0x1e7d, 0x2c8a},  // ROCCAT Kone Pro Air
     {0x1e7d, 0x2ca6},  // ROCCAT Burst Pro Air (USB dongle)
+    {0x1e7d, 0x2cab},  // ROCCAT Burst Pro Air
     {0x2201, 0x0100},  // AirTurn PEDpro
     {0x256c, 0x006d},  // Huion HS64
     {0x258a, 0x1007},  // Acer Cestus 330
@@ -281,6 +295,7 @@ constexpr auto kKeyboardBlocklist = base::MakeFixedFlatSet<DeviceId>({
     {0x28bd, 0x0914},  // XP-Pen Star G640
     {0x28bd, 0x091f},  // XP-Pen Artist 12 Pro
     {0x28bd, 0x0928},  // XP-Pen Deco mini7W
+    {0x5043, 0x5442},  // Ploopy Trackball
 });
 
 constexpr DeviceId kStylusButtonDevices[] = {

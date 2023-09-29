@@ -784,6 +784,7 @@ void InputDeviceSettingsMetricsManager::RecordKeyboardMouseComboDeviceMetric(
           "046d:4024",  // Logitech K400
           "046d:404d",  // Logitech K400+
           "046d:c548",  // Logitech BOLT Receiver
+          "17ef:60e1",  // Lenovo TrackPoint Keyboard II
           "17ef:60ee",  // Lenovo TrackPoint Keyboard II
           "17ef:609f",  // Lenovo 100 USB-A Wireless Combo Keyboard and Mouse
       });
