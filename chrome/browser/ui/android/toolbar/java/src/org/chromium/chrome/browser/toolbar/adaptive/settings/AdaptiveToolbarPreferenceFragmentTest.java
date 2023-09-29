@@ -42,7 +42,7 @@ import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 /**
- * Tests for {@link AdaptiveToolbarPreferenceFragment}.
+ * Tests for {@link AdaptiveToolbarSettingsFragment}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
@@ -83,14 +83,14 @@ public class AdaptiveToolbarPreferenceFragmentTest {
     @Test
     @SmallTest
     public void testSelectShortcuts() {
-        FragmentScenario<AdaptiveToolbarPreferenceFragment> scenario =
-                FragmentScenario.launchInContainer(AdaptiveToolbarPreferenceFragment.class,
+        FragmentScenario<AdaptiveToolbarSettingsFragment> scenario =
+                FragmentScenario.launchInContainer(AdaptiveToolbarSettingsFragment.class,
                         Bundle.EMPTY, R.style.Theme_Chromium_Settings);
         scenario.onFragment(fragment -> {
             mSwitchPreference = (ChromeSwitchPreference) fragment.findPreference(
-                    AdaptiveToolbarPreferenceFragment.PREF_TOOLBAR_SHORTCUT_SWITCH);
+                    AdaptiveToolbarSettingsFragment.PREF_TOOLBAR_SHORTCUT_SWITCH);
             mRadioPreference = (RadioButtonGroupAdaptiveToolbarPreference) fragment.findPreference(
-                    AdaptiveToolbarPreferenceFragment.PREF_ADAPTIVE_RADIO_GROUP);
+                    AdaptiveToolbarSettingsFragment.PREF_ADAPTIVE_RADIO_GROUP);
 
             Assert.assertFalse(SharedPreferencesManager.getInstance().contains(
                     ADAPTIVE_TOOLBAR_CUSTOMIZATION_ENABLED));
@@ -162,12 +162,12 @@ public class AdaptiveToolbarPreferenceFragmentTest {
     @SmallTest
     @EnableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_TRANSLATE)
     public void testTranslateOption_Enabled() {
-        FragmentScenario<AdaptiveToolbarPreferenceFragment> scenario =
-                FragmentScenario.launchInContainer(AdaptiveToolbarPreferenceFragment.class,
+        FragmentScenario<AdaptiveToolbarSettingsFragment> scenario =
+                FragmentScenario.launchInContainer(AdaptiveToolbarSettingsFragment.class,
                         Bundle.EMPTY, R.style.Theme_Chromium_Settings);
         scenario.onFragment(fragment -> {
             mRadioPreference = (RadioButtonGroupAdaptiveToolbarPreference) fragment.findPreference(
-                    AdaptiveToolbarPreferenceFragment.PREF_ADAPTIVE_RADIO_GROUP);
+                    AdaptiveToolbarSettingsFragment.PREF_ADAPTIVE_RADIO_GROUP);
 
             // Select Translate.
             Assert.assertEquals(R.id.adaptive_option_translate,
@@ -189,12 +189,12 @@ public class AdaptiveToolbarPreferenceFragmentTest {
         // Set initial preference to translate.
         SharedPreferencesManager.getInstance().writeInt(
                 ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS, AdaptiveToolbarButtonVariant.TRANSLATE);
-        FragmentScenario<AdaptiveToolbarPreferenceFragment> scenario =
-                FragmentScenario.launchInContainer(AdaptiveToolbarPreferenceFragment.class,
+        FragmentScenario<AdaptiveToolbarSettingsFragment> scenario =
+                FragmentScenario.launchInContainer(AdaptiveToolbarSettingsFragment.class,
                         Bundle.EMPTY, R.style.Theme_Chromium_Settings);
         scenario.onFragment(fragment -> {
             mRadioPreference = (RadioButtonGroupAdaptiveToolbarPreference) fragment.findPreference(
-                    AdaptiveToolbarPreferenceFragment.PREF_ADAPTIVE_RADIO_GROUP);
+                    AdaptiveToolbarSettingsFragment.PREF_ADAPTIVE_RADIO_GROUP);
 
             // Translate option should be hidden, and we should have reverted back to "Auto".
             Assert.assertEquals(R.id.adaptive_option_translate,
@@ -213,12 +213,12 @@ public class AdaptiveToolbarPreferenceFragmentTest {
     @SmallTest
     @EnableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_ADD_TO_BOOKMARKS)
     public void testAddToBookmarksOption_Enabled() {
-        FragmentScenario<AdaptiveToolbarPreferenceFragment> scenario =
-                FragmentScenario.launchInContainer(AdaptiveToolbarPreferenceFragment.class,
+        FragmentScenario<AdaptiveToolbarSettingsFragment> scenario =
+                FragmentScenario.launchInContainer(AdaptiveToolbarSettingsFragment.class,
                         Bundle.EMPTY, R.style.Theme_Chromium_Settings);
         scenario.onFragment(fragment -> {
             mRadioPreference = (RadioButtonGroupAdaptiveToolbarPreference) fragment.findPreference(
-                    AdaptiveToolbarPreferenceFragment.PREF_ADAPTIVE_RADIO_GROUP);
+                    AdaptiveToolbarSettingsFragment.PREF_ADAPTIVE_RADIO_GROUP);
 
             // Select Add to bookmarks.
             Assert.assertEquals(R.id.adaptive_option_add_to_bookmarks,
@@ -241,12 +241,12 @@ public class AdaptiveToolbarPreferenceFragmentTest {
         // Set initial preference to add to bookmarks.
         SharedPreferencesManager.getInstance().writeInt(ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS,
                 AdaptiveToolbarButtonVariant.ADD_TO_BOOKMARKS);
-        FragmentScenario<AdaptiveToolbarPreferenceFragment> scenario =
-                FragmentScenario.launchInContainer(AdaptiveToolbarPreferenceFragment.class,
+        FragmentScenario<AdaptiveToolbarSettingsFragment> scenario =
+                FragmentScenario.launchInContainer(AdaptiveToolbarSettingsFragment.class,
                         Bundle.EMPTY, R.style.Theme_Chromium_Settings);
         scenario.onFragment(fragment -> {
             mRadioPreference = (RadioButtonGroupAdaptiveToolbarPreference) fragment.findPreference(
-                    AdaptiveToolbarPreferenceFragment.PREF_ADAPTIVE_RADIO_GROUP);
+                    AdaptiveToolbarSettingsFragment.PREF_ADAPTIVE_RADIO_GROUP);
 
             // Add to bookmarks option should be hidden, and we should have reverted back to "Auto".
             Assert.assertEquals(R.id.adaptive_option_add_to_bookmarks,
@@ -267,12 +267,12 @@ public class AdaptiveToolbarPreferenceFragmentTest {
     public void testReadAloudOption_Enabled() {
         AdaptiveToolbarFeatures.setProfile(mProfile);
         UnifiedConsentServiceBridge.setUrlKeyedAnonymizedDataCollectionEnabled(true);
-        FragmentScenario<AdaptiveToolbarPreferenceFragment> scenario =
-                FragmentScenario.launchInContainer(AdaptiveToolbarPreferenceFragment.class,
+        FragmentScenario<AdaptiveToolbarSettingsFragment> scenario =
+                FragmentScenario.launchInContainer(AdaptiveToolbarSettingsFragment.class,
                         Bundle.EMPTY, R.style.Theme_Chromium_Settings);
         scenario.onFragment(fragment -> {
             mRadioPreference = (RadioButtonGroupAdaptiveToolbarPreference) fragment.findPreference(
-                    AdaptiveToolbarPreferenceFragment.PREF_ADAPTIVE_RADIO_GROUP);
+                    AdaptiveToolbarSettingsFragment.PREF_ADAPTIVE_RADIO_GROUP);
 
             // Select Read Aloud.
             Assert.assertEquals(R.id.adaptive_option_read_aloud,
@@ -294,12 +294,12 @@ public class AdaptiveToolbarPreferenceFragmentTest {
         // Set initial preference to Read Aloud.
         SharedPreferencesManager.getInstance().writeInt(
                 ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS, AdaptiveToolbarButtonVariant.READ_ALOUD);
-        FragmentScenario<AdaptiveToolbarPreferenceFragment> scenario =
-                FragmentScenario.launchInContainer(AdaptiveToolbarPreferenceFragment.class,
+        FragmentScenario<AdaptiveToolbarSettingsFragment> scenario =
+                FragmentScenario.launchInContainer(AdaptiveToolbarSettingsFragment.class,
                         Bundle.EMPTY, R.style.Theme_Chromium_Settings);
         scenario.onFragment(fragment -> {
             mRadioPreference = (RadioButtonGroupAdaptiveToolbarPreference) fragment.findPreference(
-                    AdaptiveToolbarPreferenceFragment.PREF_ADAPTIVE_RADIO_GROUP);
+                    AdaptiveToolbarSettingsFragment.PREF_ADAPTIVE_RADIO_GROUP);
 
             // Read Aloud option should be hidden, and we should have reverted back to
             // "Auto".

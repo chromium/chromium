@@ -34,7 +34,7 @@ import org.chromium.chrome.browser.toolbar.ButtonDataImpl;
 import org.chromium.chrome.browser.toolbar.ButtonDataProvider;
 import org.chromium.chrome.browser.toolbar.ButtonDataProvider.ButtonDataObserver;
 import org.chromium.chrome.browser.toolbar.R;
-import org.chromium.chrome.browser.toolbar.adaptive.settings.AdaptiveToolbarPreferenceFragment;
+import org.chromium.chrome.browser.toolbar.adaptive.settings.AdaptiveToolbarSettingsFragment;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.ui.permissions.AndroidPermissionDelegate;
@@ -102,7 +102,7 @@ public class AdaptiveToolbarButtonController
             if (id == R.id.customize_adaptive_button_menu_id) {
                 RecordUserAction.record("MobileAdaptiveMenuCustomize");
                 settingsLauncher.launchSettingsActivity(
-                        context, AdaptiveToolbarPreferenceFragment.class);
+                        context, AdaptiveToolbarSettingsFragment.class);
                 return;
             }
             assert false : "unknown adaptive button menu id: " + id;

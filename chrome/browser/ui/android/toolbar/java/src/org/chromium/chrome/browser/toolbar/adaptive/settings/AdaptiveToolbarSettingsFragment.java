@@ -27,7 +27,7 @@ import java.lang.ref.WeakReference;
 /**
  * Fragment that allows the user to configure toolbar shorcut preferences.
  */
-public class AdaptiveToolbarPreferenceFragment extends PreferenceFragmentCompat {
+public class AdaptiveToolbarSettingsFragment extends PreferenceFragmentCompat {
     /** The key for the switch taggle on the setting page. */
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     public static final String PREF_TOOLBAR_SHORTCUT_SWITCH = "toolbar_shortcut_switch";

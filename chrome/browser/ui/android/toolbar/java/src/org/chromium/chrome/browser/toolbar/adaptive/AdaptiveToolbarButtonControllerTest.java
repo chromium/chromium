@@ -51,7 +51,7 @@ import org.chromium.chrome.browser.toolbar.ButtonDataImpl;
 import org.chromium.chrome.browser.toolbar.ButtonDataProvider;
 import org.chromium.chrome.browser.toolbar.ButtonDataProvider.ButtonDataObserver;
 import org.chromium.chrome.browser.toolbar.R;
-import org.chromium.chrome.browser.toolbar.adaptive.settings.AdaptiveToolbarPreferenceFragment;
+import org.chromium.chrome.browser.toolbar.adaptive.settings.AdaptiveToolbarSettingsFragment;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
@@ -243,7 +243,7 @@ public class AdaptiveToolbarButtonControllerTest {
         adaptiveToolbarButtonController.destroy();
 
         verify(settingsLauncher)
-                .launchSettingsActivity(activity, AdaptiveToolbarPreferenceFragment.class);
+                .launchSettingsActivity(activity, AdaptiveToolbarSettingsFragment.class);
     }
 
     @Test

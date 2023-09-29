@@ -92,7 +92,7 @@ found in the LICENSE file.
         android:order="16"
         android:title="@string/options_homepage_title"/>
     <Preference
-        android:fragment="org.chromium.chrome.browser.toolbar.adaptive.settings.AdaptiveToolbarPreferenceFragment"
+        android:fragment="org.chromium.chrome.browser.toolbar.adaptive.settings.AdaptiveToolbarSettingsFragment"
         android:key="toolbar_shortcut"
         android:order="17"
         android:title="@string/toolbar_shortcut"/>

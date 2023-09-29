@@ -49,7 +49,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/toolbar/adaptive/OptionalNewTabButtonController.java",
     "java/src/org/chromium/chrome/browser/toolbar/adaptive/TranslateToolbarButtonController.java",
     "java/src/org/chromium/chrome/browser/toolbar/adaptive/settings/AdaptiveToolbarHeaderPreference.java",
-    "java/src/org/chromium/chrome/browser/toolbar/adaptive/settings/AdaptiveToolbarPreferenceFragment.java",
+    "java/src/org/chromium/chrome/browser/toolbar/adaptive/settings/AdaptiveToolbarSettingsFragment.java",
     "java/src/org/chromium/chrome/browser/toolbar/adaptive/settings/RadioButtonGroupAdaptiveToolbarPreference.java",
     "java/src/org/chromium/chrome/browser/toolbar/bottom/BottomControlsContentDelegate.java",
     "java/src/org/chromium/chrome/browser/toolbar/bottom/BottomControlsCoordinator.java",
