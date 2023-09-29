@@ -45,9 +45,6 @@
 + (void)addURLRewriterForHosts:(NSArray<NSString*>*)hosts
                         onPort:(NSString*)port;
 
-// Resets the address bar preference.
-+ (void)resetAddressBarPreference;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_SETTINGS_APP_INTERFACE_H_

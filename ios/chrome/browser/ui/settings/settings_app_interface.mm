@@ -121,11 +121,4 @@ bool HostToLocalHostRewrite(GURL* url, web::BrowserState* browser_state) {
       ->AddTransientURLRewriter(&HostToLocalHostRewrite);
 }
 
-+ (void)resetAddressBarPreference {
-  ChromeBrowserState* browserState =
-      chrome_test_util::GetOriginalBrowserState();
-  PrefService* preferences = browserState->GetPrefs();
-  preferences->SetBoolean(prefs::kBottomOmnibox, false);
-}
-
 @end
