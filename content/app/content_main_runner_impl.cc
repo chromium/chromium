@@ -418,6 +418,7 @@ void PreSandboxInit() {
   // files.
   base::SysInfo::AmountOfPhysicalMemory();
   base::SysInfo::NumberOfProcessors();
+  base::SysInfo::NumberOfEfficientProcessors();
 
   // Pre-acquire resources needed by BoringSSL. See
   // https://boringssl.googlesource.com/boringssl/+/HEAD/SANDBOXING.md
