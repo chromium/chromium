@@ -599,12 +599,13 @@ std::pair<base::Value, base::Value> DualLayerUserPrefStore::UnmergeValue(
     const std::string& pref_name,
     base::Value value,
     uint32_t flags) const {
-  DCHECK(ShouldSetValueInAccountStore(pref_name));
+  CHECK(ShouldSetValueInAccountStore(pref_name));
 
   // Note: There is no "standard" unmerging logic for list or scalar prefs.
   // TODO(crbug.com/1416479): Allow support for custom unmerge logic.
-  if (pref_model_associator_client_->IsMergeableDictionaryPreference(
-          pref_name)) {
+  if (pref_model_associator_client_->GetSyncablePrefsDatabase()
+          .GetSyncablePrefMetadata(pref_name)
+          ->merge_behavior() == MergeBehavior::kMergeableDict) {
     // Per crbug.com/1430854, it is possible for the value to not be of dict
     // type. However, in this case, whatever is the type of `value` it's bound
     // to be correct, as UnmergeValue() is called by setters which in turn are
