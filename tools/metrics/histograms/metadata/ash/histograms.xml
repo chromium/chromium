@@ -6216,34 +6216,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.Shelf.Palette.Usage.AutoOpened" enum="PaletteTrayOptions"
-    expires_after="2021-12-12">
-  <obsolete>
-    Kept to view historical data.
-  </obsolete>
-  <owner>amehfooz@chromium.org</owner>
-  <owner>cros-status-area@google.com</owner>
-  <owner>gzadina@chromium.org</owner>
-  <summary>
-    Recorded every time that the palette option has been selected from the
-    palette that has been opened automatically (by a stylus eject event).
-  </summary>
-</histogram>
-
-<histogram name="Ash.Shelf.Palette.Usage.Shortcut" enum="PaletteTrayOptions"
-    expires_after="2021-12-12">
-  <obsolete>
-    Kept to view historical data.
-  </obsolete>
-  <owner>amehfooz@chromium.org</owner>
-  <owner>cros-status-area@google.com</owner>
-  <owner>gzadina@chromium.org</owner>
-  <summary>
-    Recorded every time that the palette option has been selected by means other
-    that the palette menu (e.g. stylus barrel button or a keyboard accelerator).
-  </summary>
-</histogram>
-
 <histogram name="Ash.Shelf.ShowStackedHotseat" enum="Boolean"
     expires_after="2024-09-24">
   <owner>jiamingc@google.com</owner>
