@@ -257,6 +257,11 @@ class LocalPrinterHandlerDefaultTestBase : public testing::Test {
                 /*sandboxed=*/false);
       }
 #endif  // BUILDFLAG(IS_WIN)
+
+      // Client registration is normally covered by `PrintPreviewUI`, so mimic
+      // that here.
+      service_manager_client_id_ =
+          PrintBackendServiceManager::GetInstance().RegisterQueryClient();
 #else
       NOTREACHED();
 #endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
@@ -272,6 +277,8 @@ class LocalPrinterHandlerDefaultTestBase : public testing::Test {
 
   void TearDown() override {
     if (UseService()) {
+      PrintBackendServiceManager::GetInstance().UnregisterClient(
+          service_manager_client_id_);
 #if BUILDFLAG(IS_WIN)
       service_task_runner_->DeleteSoon(
           FROM_HERE, std::move(sandboxed_print_backend_service_));
@@ -418,6 +425,7 @@ class LocalPrinterHandlerDefaultTestBase : public testing::Test {
   std::unique_ptr<PrintBackendServiceTestImpl> sandboxed_print_backend_service_;
   std::unique_ptr<PrintBackendServiceTestImpl>
       unsandboxed_print_backend_service_;
+  PrintBackendServiceManager::ClientId service_manager_client_id_;
 
 #if BUILDFLAG(IS_WIN)
   scoped_refptr<base::SingleThreadTaskRunner> service_task_runner_;

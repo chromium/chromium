@@ -788,6 +788,10 @@ const mojo::Remote<mojom::PrintBackendService>&
 PrintBackendServiceManager::GetService(const RemoteId& remote_id,
                                        ClientType client_type,
                                        bool sandboxed) {
+  // Performance is improved if a service is launched ahead of the time it will
+  // be needed by client callers.
+  DCHECK_GT(GetClientsRegisteredCount(), 0u);
+
   if (sandboxed_service_remote_for_test_) {
     // The presence of a sandboxed remote for testing signals a testing
     // environment.  If no unsandboxed test service was provided for fallback
@@ -798,10 +802,6 @@ PrintBackendServiceManager::GetService(const RemoteId& remote_id,
 
     return *sandboxed_service_remote_for_test_;
   }
-
-  // Performance is improved if a service is launched ahead of the time it will
-  // be needed by client callers.
-  DCHECK_GT(GetClientsRegisteredCount(), 0u);
 
   if (sandboxed) {
     // On the first print that will try to use sandboxed service, make note that
