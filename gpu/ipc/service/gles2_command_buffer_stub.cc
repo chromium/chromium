@@ -229,6 +229,8 @@ gpu::ContextResult GLES2CommandBufferStub::Initialize(
     display = keyed_display;
   }
 
+  manager->delegate()->UpdateGPUInfoGL(display);
+
   if (offscreen) {
     if (!surface_format.IsCompatible(default_surface->GetFormat())) {
       DVLOG(1) << __FUNCTION__ << ": Hit the OwnOffscreenSurface path";

@@ -74,6 +74,9 @@ class TestGpuChannelManagerDelegate : public GpuChannelManagerDelegate {
 
   Scheduler* GetGpuScheduler() override { return scheduler_; }
 
+  void UpdateGPUInfo() override {}
+  void UpdateGPUInfoGL(gl::GLDisplay* display) override {}
+
  private:
   bool is_exiting_ = false;
   const raw_ptr<Scheduler> scheduler_;

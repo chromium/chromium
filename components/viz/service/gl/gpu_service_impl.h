@@ -128,8 +128,8 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
 
   ~GpuServiceImpl() override;
 
-  void UpdateGPUInfo();
-  void UpdateGPUInfoGL();
+  void UpdateGPUInfo() override;
+  void UpdateGPUInfoGL(gl::GLDisplay* display) override;
 
   void InitializeWithHost(
       mojo::PendingRemote<mojom::GpuHost> gpu_host,
