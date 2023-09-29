@@ -338,6 +338,42 @@ public class TabSwitcherTabletTest {
         assertNotNull("TabSwitcher view should be inflated", tabSwitcherViewHolder);
     }
 
+    // Regression test for crbug.com/1487114.
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.START_SURFACE_REFACTOR,
+            ChromeFeatureList.DEFER_TAB_SWITCHER_LAYOUT_CREATION})
+    public void
+    testGridTabSwitcher_DeferredTabSwitcherLayoutCreation_RefactorEnabled()
+            throws ExecutionException {
+        prepareTabs(2, 0);
+        // Verifies that the dialog visibility supplier doesn't crash when closing a Tab without the
+        // grid tab switcher is inflated.
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            sActivityTestRule.getActivity().getCurrentTabModel().closeTab(
+                    sActivityTestRule.getActivity().getActivityTab());
+        });
+
+        Layout layout =
+                sActivityTestRule.getActivity().getLayoutManager().getTabSwitcherLayoutForTesting();
+        assertNull("StartSurface layout should not be initialized", layout);
+        ViewStub tabSwitcherStub = (ViewStub) sActivityTestRule.getActivity().findViewById(
+                R.id.tab_switcher_view_holder_stub);
+        assertTrue("TabSwitcher view stub should not be inflated",
+                tabSwitcherStub.getParent() != null);
+
+        // Click tab switcher button
+        TabUiTestHelper.enterTabSwitcher(sActivityTestRule.getActivity());
+
+        layout =
+                sActivityTestRule.getActivity().getLayoutManager().getTabSwitcherLayoutForTesting();
+        assertTrue("OverviewLayout should be TabSwitcherAndStartSurfaceLayout layout",
+                layout instanceof TabSwitcherLayout);
+        ViewGroup tabSwitcherViewHolder =
+                sActivityTestRule.getActivity().findViewById(R.id.tab_switcher_view_holder);
+        assertNotNull("TabSwitcher view should be inflated", tabSwitcherViewHolder);
+    }
+
     @Test
     @MediumTest
     public void testEmptyStateView() throws Exception {

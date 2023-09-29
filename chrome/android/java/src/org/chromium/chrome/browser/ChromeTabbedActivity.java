@@ -706,7 +706,9 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         // If the refactor is enabled, we create grid tab switcher directly instead of via start
         // surface.
         if (isStartSurfaceRefactorEnabled()) {
-            if (!ChromeFeatureList.sDeferTabSwitcherLayoutCreation.isEnabled()) {
+            // Until Start Surface Refactor is launched, Tablets create the GridTabSwitcher through
+            // this method.
+            if (!ChromeFeatureList.sDeferTabSwitcherLayoutCreation.isEnabled() || isTablet()) {
                 createGridTabSwitcher(compositorViewHolder, tabSwitcherContainer);
             }
             if (ReturnToChromeUtil.isStartSurfaceEnabled(this)) {
