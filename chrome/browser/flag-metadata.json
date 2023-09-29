@@ -345,12 +345,17 @@
   {
     "name": "arc-switch-to-keymint-daemon",
     "owners": [ "yaohuali" ],
-    "expiry_milestone": 122
+    "expiry_milestone": 123
   },
   {
     "name": "arc-switch-to-keymint-on-t",
     "owners": [ "yaohuali" ],
-    "expiry_milestone": 122
+    "expiry_milestone": 123
+  },
+  {
+    "name": "arc-switch-to-keymint-on-t-override",
+    "owners": [ "yaohuali" ],
+    "expiry_milestone": 123
   },
   {
     "name": "arc-sync-install-priority",

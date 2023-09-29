@@ -66671,6 +66671,7 @@ from previous Chrome versions.
   <int value="768287307" label="OmniboxCr2023Umbrella:enabled"/>
   <int value="768675159" label="FastPairDebugMetadata:enabled"/>
   <int value="768855962" label="PaymentRequestBasicCard:enabled"/>
+  <int value="768900239" label="ArcSwitchToKeyMintOnTOverride:disabled"/>
   <int value="770680432" label="DecodeLossyWebPImagesToYUV:enabled"/>
   <int value="772272625" label="simplify-https-indicator"/>
   <int value="772348426" label="AffiliationBasedMatching:enabled"/>
@@ -68722,6 +68723,7 @@ from previous Chrome versions.
       label="AllowDefaultWebAppMigrationForChromeOsManagedUsers:disabled"/>
   <int value="1790111294" label="CustomizeChromeColorExtraction:enabled"/>
   <int value="1790384966" label="StylusRichGestures:enabled"/>
+  <int value="1790721876" label="ArcSwitchToKeyMintOnTOverride:enabled"/>
   <int value="1792609232" label="NTPShortcuts:enabled"/>
   <int value="1793023585"
       label="ClickToCallContextMenuForSelectedText:disabled"/>

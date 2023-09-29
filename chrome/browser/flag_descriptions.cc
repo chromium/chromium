@@ -5478,6 +5478,11 @@ const char kArcSwitchToKeyMintOnTDesc[] =
     "Switch from Keymaster to KeyMint on ARC-T. Must be switched on/off at the "
     "same time with \"Switch to KeyMint Daemon\"";
 
+const char kArcSwitchToKeyMintOnTOverrideName[] =
+    "Override switch to KeyMint on ARC-T.";
+const char kArcSwitchToKeyMintOnTOverrideDesc[] =
+    "Override the block on certain boards to switch from Keymaster to KeyMint";
+
 const char kArcSyncInstallPriorityName[] =
     "Enable supporting install priority for synced ARC apps.";
 const char kArcSyncInstallPriorityDescription[] =

@@ -3168,6 +3168,9 @@ extern const char kArcSwitchToKeyMintDaemonDesc[];
 extern const char kArcSwitchToKeyMintOnTName[];
 extern const char kArcSwitchToKeyMintOnTDesc[];
 
+extern const char kArcSwitchToKeyMintOnTOverrideName[];
+extern const char kArcSwitchToKeyMintOnTOverrideDesc[];
+
 extern const char kArcSyncInstallPriorityName[];
 extern const char kArcSyncInstallPriorityDescription[];
 
