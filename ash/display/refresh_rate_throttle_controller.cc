@@ -13,28 +13,10 @@
 
 namespace ash {
 namespace {
-// Do not throttle until battery percent is below this threshold,
-// regardless of AC state.
-// TODO(b/291809001): Remove this constant and associate logic after further
-// investigation into whether or not there should be any kind of battery
-// threshold.
-const float kThrottleThreshold = 100.f;
-// Always throttle if battery percent is below this threshold, regardless
-// of AC state.
-const float kLowBatteryThreshold = 5.0f;
 
 display::RefreshRateThrottleState GetDesiredThrottleState(
     const PowerStatus* status) {
   if (status->IsBatterySaverActive()) {
-    return display::kRefreshRateThrottleEnabled;
-  }
-
-  // TODO (b/296235469): Remove the below checks once Battery Saver Mode is
-  // launched.
-  if (status->GetBatteryPercent() > kThrottleThreshold) {
-    return display::kRefreshRateThrottleDisabled;
-  }
-  if (status->GetBatteryPercent() < kLowBatteryThreshold) {
     return display::kRefreshRateThrottleEnabled;
   }
   if (!status->IsMainsChargerConnected()) {

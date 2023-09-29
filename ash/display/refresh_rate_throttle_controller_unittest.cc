@@ -34,13 +34,6 @@ using display::test::ActionLogger;
 using display::test::TestNativeDisplayDelegate;
 using power_manager::PowerSupplyProperties;
 
-// Battery level at which throttling should happen for all AC states.
-const float kVeryLowBatteryLevel = 4.0f;
-// Battery level at which throttling should happen for unplugged states.
-const float kLowBatteryLevel = 19.0f;
-// Battery level at which throttling should not happen.
-const float kRegularBatteryLevel = 21.0f;
-
 std::unique_ptr<DisplayMode> MakeDisplayMode(int width,
                                              int height,
                                              bool is_interlaced,
@@ -143,7 +136,7 @@ TEST_F(RefreshRateThrottleControllerTest, ShouldNotThrottleOnAC) {
 
   // Set power state to indicate the device is on AC.
   PowerStatus::Get()->SetProtoForTesting(
-      BuildFakePowerSupplyProperties(PowerSupplyProperties::AC, 100.0));
+      BuildFakePowerSupplyProperties(PowerSupplyProperties::AC, 100.f));
   controller_->OnPowerStatusChanged();
 
   // Expect the new state to be unchanged.
@@ -170,10 +163,10 @@ TEST_F(RefreshRateThrottleControllerTest, ShouldThrottleWithBatterySaverMode) {
     EXPECT_EQ(snapshot->current_mode()->refresh_rate(), 120.f);
   }
 
-  // Set power state to indicate the device is on battery, greater than 20%, and
+  // Set power state to indicate the device is on AC, and
   // Battery Saver Mode is enabled.
-  PowerStatus::Get()->SetProtoForTesting(BuildFakePowerSupplyProperties(
-      PowerSupplyProperties::DISCONNECTED, kRegularBatteryLevel));
+  PowerStatus::Get()->SetProtoForTesting(
+      BuildFakePowerSupplyProperties(PowerSupplyProperties::AC, 100.f));
   PowerStatus::Get()->SetBatterySaverStateForTesting(true);
   controller_->OnPowerStatusChanged();
 
@@ -186,7 +179,7 @@ TEST_F(RefreshRateThrottleControllerTest, ShouldThrottleWithBatterySaverMode) {
   }
 }
 
-TEST_F(RefreshRateThrottleControllerTest, ShouldThrottleOnLowBattery) {
+TEST_F(RefreshRateThrottleControllerTest, ShouldThrottleOnBattery) {
   constexpr int64_t kDisplayId = 12345;
   std::vector<std::unique_ptr<DisplaySnapshot>> snapshots;
   snapshots.push_back(BuildDualRefreshPanelSnapshot(
@@ -201,10 +194,9 @@ TEST_F(RefreshRateThrottleControllerTest, ShouldThrottleOnLowBattery) {
     EXPECT_EQ(snapshot->current_mode()->refresh_rate(), 120.f);
   }
 
-  // Set power state to indicate the device is on battery and battery is lower
-  // than 20%.
+  // Set power state to indicate the device is on battery.
   PowerStatus::Get()->SetProtoForTesting(BuildFakePowerSupplyProperties(
-      PowerSupplyProperties::DISCONNECTED, kLowBatteryLevel));
+      PowerSupplyProperties::DISCONNECTED, 80.0f));
   controller_->OnPowerStatusChanged();
 
   // Expect the new state to be 60 Hz.
@@ -233,7 +225,7 @@ TEST_F(RefreshRateThrottleControllerTest, ShouldNotAffectExternalDisplay) {
 
   // Set power state to indicate the device is on battery and battery is low.
   PowerStatus::Get()->SetProtoForTesting(BuildFakePowerSupplyProperties(
-      PowerSupplyProperties::DISCONNECTED, kVeryLowBatteryLevel));
+      PowerSupplyProperties::DISCONNECTED, 10.f));
   controller_->OnPowerStatusChanged();
 
   // Expect the state to be unchanged.
@@ -261,8 +253,8 @@ TEST_F(RefreshRateThrottleControllerTest, ShouldThrottleOnUSBCharger) {
   }
 
   // Set power state to indicate the device is on a low powered charger.
-  PowerStatus::Get()->SetProtoForTesting(BuildFakePowerSupplyProperties(
-      PowerSupplyProperties::USB, kLowBatteryLevel));
+  PowerStatus::Get()->SetProtoForTesting(
+      BuildFakePowerSupplyProperties(PowerSupplyProperties::USB, 10.f));
   controller_->OnPowerStatusChanged();
 
   // Expect the new state to be 60 Hz.
@@ -271,50 +263,6 @@ TEST_F(RefreshRateThrottleControllerTest, ShouldThrottleOnUSBCharger) {
     ASSERT_NE(snapshot, nullptr);
     ASSERT_NE(snapshot->current_mode(), nullptr);
     EXPECT_EQ(snapshot->current_mode()->refresh_rate(), 60.f);
-  }
-}
-
-TEST_F(RefreshRateThrottleControllerTest, ShouldThrottleOnVeryLowBattery) {
-  constexpr int64_t kDisplayId = 12345;
-  std::vector<std::unique_ptr<DisplaySnapshot>> snapshots;
-  snapshots.push_back(BuildDualRefreshPanelSnapshot(
-      kDisplayId, display::DISPLAY_CONNECTION_TYPE_INTERNAL));
-  SetUpDisplays(snapshots);
-
-  // Expect the initial state to be 120 Hz.
-  {
-    const DisplaySnapshot* snapshot = GetDisplaySnapshot(kDisplayId);
-    ASSERT_NE(snapshot, nullptr);
-    ASSERT_NE(snapshot->current_mode(), nullptr);
-    EXPECT_EQ(snapshot->current_mode()->refresh_rate(), 120.f);
-  }
-
-  // Set power state to indicate the device is on a high-powered charger,
-  // but the battery is critically low.
-  PowerStatus::Get()->SetProtoForTesting(BuildFakePowerSupplyProperties(
-      PowerSupplyProperties::AC, kVeryLowBatteryLevel));
-  controller_->OnPowerStatusChanged();
-
-  // Expect the new state to be 60 Hz.
-  {
-    const DisplaySnapshot* snapshot = GetDisplaySnapshot(kDisplayId);
-    ASSERT_NE(snapshot, nullptr);
-    ASSERT_NE(snapshot->current_mode(), nullptr);
-    EXPECT_EQ(snapshot->current_mode()->refresh_rate(), 60.f);
-  }
-
-  // Set the power state to indicate the device has charged above
-  // critical level.
-  PowerStatus::Get()->SetProtoForTesting(BuildFakePowerSupplyProperties(
-      PowerSupplyProperties::AC, kLowBatteryLevel));
-  controller_->OnPowerStatusChanged();
-
-  // Expect the new state to be 120 Hz.
-  {
-    const DisplaySnapshot* snapshot = GetDisplaySnapshot(kDisplayId);
-    ASSERT_NE(snapshot, nullptr);
-    ASSERT_NE(snapshot->current_mode(), nullptr);
-    EXPECT_EQ(snapshot->current_mode()->refresh_rate(), 120.f);
   }
 }
 
