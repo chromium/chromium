@@ -12613,7 +12613,6 @@
     "Prerender2DUIConfidenceCutoff": [
         {
             "platforms": [
-                "android",
                 "linux",
                 "mac",
                 "windows",
@@ -12622,7 +12621,7 @@
             ],
             "experiments": [
                 {
-                    "name": "ExperimentalConfidenceCutoff_20230706",
+                    "name": "ExperimentalConfidenceCutoff_20230929",
                     "params": {
                         "preconnect_dui_confidence_cutoff": "0.3",
                         "prerender_dui_confidence_cutoff": "0.5"
@@ -12632,7 +12631,7 @@
                     ]
                 },
                 {
-                    "name": "Control_20230706",
+                    "name": "Control_20230929",
                     "disable_features": [
                         "AutocompleteActionPredictorConfidenceCutoff"
                     ]
