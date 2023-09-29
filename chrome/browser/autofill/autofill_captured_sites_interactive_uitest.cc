@@ -48,6 +48,7 @@
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/user_prefs/user_prefs.h"
 #include "components/variations/variations_switches.h"
 #include "content/public/test/browser_test.h"
@@ -294,6 +295,9 @@ class AutofillCapturedSitesInteractiveTest
                 test::ServerCacheReplayer::kOptionSplitRequestsByForm)));
 
     metrics_scraper_ = MetricsScraper::MaybeCreate(GetParam().site_name);
+
+    browser()->profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled,
+                                                 false);
   }
 
   void TearDownOnMainThread() override {
