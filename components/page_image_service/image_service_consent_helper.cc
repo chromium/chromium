@@ -16,8 +16,6 @@ namespace page_image_service {
 
 namespace {
 
-constexpr base::TimeDelta kTimeout = base::Seconds(10);
-
 void RunConsentThrottleCallback(
     base::OnceCallback<void(PageImageServiceConsentStatus)> callback,
     bool success) {
@@ -30,10 +28,12 @@ void RunConsentThrottleCallback(
 ImageServiceConsentHelper::ImageServiceConsentHelper(
     syncer::SyncService* sync_service,
     syncer::ModelType model_type)
-    : sync_service_(sync_service), model_type_(model_type) {
-  base::TimeDelta timeout_duration =
-      base::Seconds(GetFieldTrialParamByFeatureAsInt(
-          kImageServiceObserveSyncDownloadStatus, "timeout_seconds", 10));
+    : sync_service_(sync_service),
+      model_type_(model_type),
+      timeout_duration_(base::Seconds(GetFieldTrialParamByFeatureAsInt(
+          kImageServiceObserveSyncDownloadStatus,
+          "timeout_seconds",
+          10))) {
   if (base::FeatureList::IsEnabled(kImageServiceObserveSyncDownloadStatus)) {
     sync_service_observer_.Observe(sync_service);
   } else if (model_type == syncer::ModelType::BOOKMARKS) {
@@ -43,12 +43,12 @@ ImageServiceConsentHelper::ImageServiceConsentHelper(
             NewPersonalizedBookmarksDataCollectionConsentHelper(
                 sync_service,
                 /*require_sync_feature_enabled=*/true),
-        timeout_duration);
+        timeout_duration_);
   } else if (model_type == syncer::ModelType::HISTORY_DELETE_DIRECTIVES) {
     consent_throttle_ = std::make_unique<unified_consent::ConsentThrottle>(
         unified_consent::UrlKeyedDataCollectionConsentHelper::
             NewPersonalizedDataCollectionConsentHelper(sync_service),
-        timeout_duration);
+        timeout_duration_);
   } else {
     NOTREACHED();
   }
@@ -75,7 +75,7 @@ void ImageServiceConsentHelper::EnqueueRequest(
   enqueued_request_callbacks_.emplace_back(std::move(callback));
   if (!request_processing_timer_.IsRunning()) {
     request_processing_timer_.Start(
-        FROM_HERE, kTimeout,
+        FROM_HERE, timeout_duration_,
         base::BindOnce(&ImageServiceConsentHelper::OnTimeoutExpired,
                        weak_ptr_factory_.GetWeakPtr()));
   }

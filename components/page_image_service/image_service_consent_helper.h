@@ -70,6 +70,9 @@ class ImageServiceConsentHelper : public syncer::SyncServiceObserver {
   // Consent throttle to be used if sync service is not being directly observed.
   std::unique_ptr<unified_consent::ConsentThrottle> consent_throttle_;
 
+  // The duration to wait before returning some answer back for the request.
+  const base::TimeDelta timeout_duration_;
+
   base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
       sync_service_observer_{this};
 
