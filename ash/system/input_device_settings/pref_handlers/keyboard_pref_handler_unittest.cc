@@ -12,6 +12,7 @@
 #include "ash/system/input_device_settings/input_device_settings_defaults.h"
 #include "ash/system/input_device_settings/input_device_settings_pref_names.h"
 #include "ash/system/input_device_settings/input_device_tracker.h"
+#include "ash/system/input_device_settings/settings_updated_metrics_info.h"
 #include "ash/test/ash_test_base.h"
 #include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
@@ -138,6 +139,8 @@ class KeyboardPrefHandlerTest : public AshTestBase {
         prefs::kKeyboardDefaultChromeOSSettings);
     pref_service_->registry()->RegisterDictionaryPref(
         prefs::kKeyboardDefaultNonChromeOSSettings);
+    pref_service_->registry()->RegisterDictionaryPref(
+        prefs::kKeyboardUpdateSettingsMetricInfo);
 
     // Register Integer prefs which determine how we remap modifiers.
     pref_service_->registry()->RegisterIntegerPref(
@@ -1008,6 +1011,59 @@ TEST_F(KeyboardPrefHandlerTest, RememberDefaultsFromLastUpdatedSettings) {
   pref_handler_->InitializeKeyboardSettings(
       pref_service_.get(), /*keyboard_policies=*/{}, &non_chromeos_keyboard);
   EXPECT_EQ(*settings, *non_chromeos_keyboard.settings);
+}
+
+TEST_F(KeyboardPrefHandlerTest, SettingsUpdateMetricTest) {
+  const auto settings1 = CallInitializeKeyboardSettings(kKeyboardKey1);
+
+  // When its the first device of the type the category should be kFirstEver.
+  {
+    const auto& metric_dict =
+        pref_service_->GetDict(prefs::kKeyboardUpdateSettingsMetricInfo);
+    ASSERT_TRUE(metric_dict.contains(kKeyboardKey1));
+
+    auto metrics_info = SettingsUpdatedMetricsInfo::FromDict(
+        *metric_dict.FindDict(kKeyboardKey1));
+    ASSERT_TRUE(metrics_info);
+    EXPECT_EQ(SettingsUpdatedMetricsInfo::Category::kFirstEver,
+              metrics_info->category());
+  }
+
+  // When its taken off the the defaults, the category should be kDefault.
+  {
+    CallUpdateDefaultChromeOSKeyboardSettings(kKeyboardKey1, *settings1);
+    CallInitializeKeyboardSettings(kKeyboardKey2);
+    const auto& metric_dict =
+        pref_service_->GetDict(prefs::kKeyboardUpdateSettingsMetricInfo);
+    ASSERT_TRUE(metric_dict.contains(kKeyboardKey2));
+
+    auto metrics_info = SettingsUpdatedMetricsInfo::FromDict(
+        *metric_dict.FindDict(kKeyboardKey2));
+    ASSERT_TRUE(metrics_info);
+    EXPECT_EQ(SettingsUpdatedMetricsInfo::Category::kDefault,
+              metrics_info->category());
+  }
+
+  // When its taken from synced prefs on a different device, category should
+  // match.
+  {
+    auto devices_dict =
+        pref_service_->GetDict(prefs::kKeyboardDeviceSettingsDictPref).Clone();
+    devices_dict.Set(kKeyboardKey3, base::Value::Dict());
+    pref_service_->SetDict(prefs::kKeyboardDeviceSettingsDictPref,
+                           std::move(devices_dict));
+
+    CallInitializeKeyboardSettings(kKeyboardKey3);
+    const auto& metric_dict =
+        pref_service_->GetDict(prefs::kKeyboardUpdateSettingsMetricInfo);
+    ASSERT_TRUE(metric_dict.contains(kKeyboardKey3));
+
+    auto metrics_info = SettingsUpdatedMetricsInfo::FromDict(
+        *metric_dict.FindDict(kKeyboardKey3));
+    ASSERT_TRUE(metrics_info);
+    EXPECT_EQ(SettingsUpdatedMetricsInfo::Category::kSynced,
+              metrics_info->category());
+  }
 }
 
 class KeyboardSettingsPrefConversionTest

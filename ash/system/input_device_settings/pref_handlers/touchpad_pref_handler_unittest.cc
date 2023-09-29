@@ -11,6 +11,7 @@
 #include "ash/system/input_device_settings/input_device_settings_defaults.h"
 #include "ash/system/input_device_settings/input_device_settings_pref_names.h"
 #include "ash/system/input_device_settings/input_device_tracker.h"
+#include "ash/system/input_device_settings/settings_updated_metrics_info.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/account_id/account_id.h"
@@ -130,6 +131,9 @@ class TouchpadPrefHandlerTest : public AshTestBase {
         prefs::kTouchpadInternalSettings);
     pref_service_->registry()->RegisterDictionaryPref(
         prefs::kTouchpadDefaultSettings);
+    pref_service_->registry()->RegisterDictionaryPref(
+        prefs::kTouchpadUpdateSettingsMetricInfo);
+
     // We are using these test constants as a a way to differentiate values
     // retrieved from prefs or default touchpad settings.
     pref_service_->registry()->RegisterIntegerPref(prefs::kTouchpadSensitivity,
@@ -798,6 +802,59 @@ TEST_F(TouchpadPrefHandlerTest, RememberDefaultsFromLastUpdatedSettings) {
   mojom::TouchpadSettingsPtr settings_duplicate =
       CallInitializeTouchpadSettings(kTouchpadKey1);
   EXPECT_EQ(*settings, *settings_duplicate);
+}
+
+TEST_F(TouchpadPrefHandlerTest, SettingsUpdateMetricTest) {
+  const auto settings1 = CallInitializeTouchpadSettings(kTouchpadKey1);
+
+  // When its the first device of the type the category should be kFirstEver.
+  {
+    const auto& metric_dict =
+        pref_service_->GetDict(prefs::kTouchpadUpdateSettingsMetricInfo);
+    ASSERT_TRUE(metric_dict.contains(kTouchpadKey1));
+
+    auto metrics_info = SettingsUpdatedMetricsInfo::FromDict(
+        *metric_dict.FindDict(kTouchpadKey1));
+    ASSERT_TRUE(metrics_info);
+    EXPECT_EQ(SettingsUpdatedMetricsInfo::Category::kFirstEver,
+              metrics_info->category());
+  }
+
+  // When its taken off the the defaults, the category should be kDefault.
+  {
+    CallUpdateDefaultTouchpadSettings(kTouchpadKey1, *settings1);
+    CallInitializeTouchpadSettings(kTouchpadKey2);
+    const auto& metric_dict =
+        pref_service_->GetDict(prefs::kTouchpadUpdateSettingsMetricInfo);
+    ASSERT_TRUE(metric_dict.contains(kTouchpadKey2));
+
+    auto metrics_info = SettingsUpdatedMetricsInfo::FromDict(
+        *metric_dict.FindDict(kTouchpadKey2));
+    ASSERT_TRUE(metrics_info);
+    EXPECT_EQ(SettingsUpdatedMetricsInfo::Category::kDefault,
+              metrics_info->category());
+  }
+
+  // When its taken from synced prefs on a different device, category should
+  // match.
+  {
+    auto devices_dict =
+        pref_service_->GetDict(prefs::kTouchpadDeviceSettingsDictPref).Clone();
+    devices_dict.Set(kTouchpadKey3, base::Value::Dict());
+    pref_service_->SetDict(prefs::kTouchpadDeviceSettingsDictPref,
+                           std::move(devices_dict));
+
+    CallInitializeTouchpadSettings(kTouchpadKey3);
+    const auto& metric_dict =
+        pref_service_->GetDict(prefs::kTouchpadUpdateSettingsMetricInfo);
+    ASSERT_TRUE(metric_dict.contains(kTouchpadKey3));
+
+    auto metrics_info = SettingsUpdatedMetricsInfo::FromDict(
+        *metric_dict.FindDict(kTouchpadKey3));
+    ASSERT_TRUE(metrics_info);
+    EXPECT_EQ(SettingsUpdatedMetricsInfo::Category::kSynced,
+              metrics_info->category());
+  }
 }
 
 class TouchpadSettingsPrefConversionTest

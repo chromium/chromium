@@ -14,6 +14,7 @@
 #include "ash/system/input_device_settings/input_device_settings_pref_names.h"
 #include "ash/system/input_device_settings/input_device_settings_utils.h"
 #include "ash/system/input_device_settings/input_device_tracker.h"
+#include "ash/system/input_device_settings/settings_updated_metrics_info.h"
 #include "base/check.h"
 #include "base/values.h"
 #include "components/account_id/account_id.h"
@@ -254,6 +255,33 @@ mojom::MouseSettingsPtr GetMouseSettingsFromOldLocalStatePrefs(
   return settings;
 }
 
+bool HasDefaultSettings(PrefService* pref_service) {
+  const auto* pref = pref_service->FindPreference(prefs::kMouseDefaultSettings);
+  return pref && pref->HasUserSetting();
+}
+
+void InitializeSettingsUpdateMetricInfo(
+    PrefService* pref_service,
+    const mojom::Mouse& mouse,
+    SettingsUpdatedMetricsInfo::Category category) {
+  CHECK(pref_service);
+
+  const auto& settings_metric_info =
+      pref_service->GetDict(prefs::kMouseUpdateSettingsMetricInfo);
+  const auto* device_metric_info = settings_metric_info.Find(mouse.device_key);
+  if (device_metric_info) {
+    return;
+  }
+
+  auto updated_metric_info = settings_metric_info.Clone();
+
+  const SettingsUpdatedMetricsInfo metrics_info(category, base::Time::Now());
+  updated_metric_info.Set(mouse.device_key, metrics_info.ToDict());
+
+  pref_service->SetDict(prefs::kMouseUpdateSettingsMetricInfo,
+                        std::move(updated_metric_info));
+}
+
 }  // namespace
 
 MousePrefHandlerImpl::MousePrefHandlerImpl() = default;
@@ -271,17 +299,23 @@ void MousePrefHandlerImpl::InitializeMouseSettings(
   const auto& devices_dict =
       pref_service->GetDict(prefs::kMouseDeviceSettingsDictPref);
   const auto* settings_dict = devices_dict.FindDict(mouse->device_key);
-  ForceMouseSettingPersistence force_persistence;
 
+  ForceMouseSettingPersistence force_persistence;
+  SettingsUpdatedMetricsInfo::Category category;
   if (settings_dict) {
+    category = SettingsUpdatedMetricsInfo::Category::kSynced;
     mouse->settings = RetrieveMouseSettings(mouse_policies, *settings_dict);
   } else if (Shell::Get()->input_device_tracker()->WasDevicePreviouslyConnected(
                  InputDeviceTracker::InputDeviceCategory::kMouse,
                  mouse->device_key)) {
+    category = SettingsUpdatedMetricsInfo::Category::kDefault;
     mouse->settings = GetMouseSettingsFromPrefs(pref_service, mouse_policies,
                                                 force_persistence);
   } else {
     mouse->settings = GetDefaultMouseSettings(pref_service, mouse_policies);
+    category = HasDefaultSettings(pref_service)
+                   ? SettingsUpdatedMetricsInfo::Category::kDefault
+                   : SettingsUpdatedMetricsInfo::Category::kFirstEver;
   }
 
   if (features::IsPeripheralCustomizationEnabled()) {
@@ -295,6 +329,7 @@ void MousePrefHandlerImpl::InitializeMouseSettings(
     }
   }
   DCHECK(mouse->settings);
+  InitializeSettingsUpdateMetricInfo(pref_service, *mouse, category);
 
   UpdateMouseSettingsImpl(pref_service, mouse_policies, *mouse,
                           force_persistence);

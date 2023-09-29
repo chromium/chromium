@@ -579,6 +579,14 @@ void InputDeviceSettingsControllerImpl::RegisterProfilePrefs(
       prefs::kKeyboardDefaultNonChromeOSSettings,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
 
+  pref_registry->RegisterDictionaryPref(
+      prefs::kKeyboardUpdateSettingsMetricInfo);
+  pref_registry->RegisterDictionaryPref(prefs::kMouseUpdateSettingsMetricInfo);
+  pref_registry->RegisterDictionaryPref(
+      prefs::kTouchpadUpdateSettingsMetricInfo);
+  pref_registry->RegisterDictionaryPref(
+      prefs::kPointingStickUpdateSettingsMetricInfo);
+
   pref_registry->RegisterListPref(prefs::kKeyboardDeviceImpostersListPref);
   pref_registry->RegisterDictionaryPref(prefs::kMouseButtonRemappingsDictPref);
   pref_registry->RegisterDictionaryPref(
@@ -607,6 +615,12 @@ void InputDeviceSettingsControllerImpl::OnActiveUserPrefServiceChanged(
     pref_service->SetDict(prefs::kPointingStickDeviceSettingsDictPref, {});
     pref_service->SetDict(prefs::kTouchpadDeviceSettingsDictPref, {});
     pref_service->SetList(prefs::kKeyboardDeviceImpostersListPref, {});
+
+    pref_service->ClearPref(prefs::kKeyboardUpdateSettingsMetricInfo);
+    pref_service->ClearPref(prefs::kMouseUpdateSettingsMetricInfo);
+    pref_service->ClearPref(prefs::kTouchpadUpdateSettingsMetricInfo);
+    pref_service->ClearPref(prefs::kPointingStickUpdateSettingsMetricInfo);
+
     DeleteLoginScreenSettingsPrefWhenInputDeviceSettingsSplitDisabled(
         local_state_);
     return;

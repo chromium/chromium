@@ -12,6 +12,7 @@
 #include "ash/system/input_device_settings/input_device_settings_pref_names.h"
 #include "ash/system/input_device_settings/input_device_settings_utils.h"
 #include "ash/system/input_device_settings/input_device_tracker.h"
+#include "ash/system/input_device_settings/settings_updated_metrics_info.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/account_id/account_id.h"
@@ -28,6 +29,7 @@ const std::string kDictFakeValue = "fake_value";
 
 const std::string kMouseKey1 = "device_key1";
 const std::string kMouseKey2 = "device_key2";
+const std::string kMouseKey3 = "device_key3";
 
 constexpr char kUserEmail[] = "example@email.com";
 constexpr char kUserEmail2[] = "example2@email.com";
@@ -117,6 +119,8 @@ class MousePrefHandlerTest : public AshTestBase {
         prefs::kMouseButtonRemappingsDictPref);
     pref_service_->registry()->RegisterDictionaryPref(
         prefs::kMouseDefaultSettings);
+    pref_service_->registry()->RegisterDictionaryPref(
+        prefs::kMouseUpdateSettingsMetricInfo);
 
     // We are using these test constants as a a way to differentiate values
     // retrieved from prefs or default mouse settings.
@@ -812,6 +816,59 @@ TEST_F(MousePrefHandlerTest, RememberDefaultsFromLastUpdatedSettings) {
   mojom::MouseSettingsPtr settings_duplicate =
       CallInitializeMouseSettings(kMouseKey1);
   EXPECT_EQ(*settings, *settings_duplicate);
+}
+
+TEST_F(MousePrefHandlerTest, SettingsUpdateMetricTest) {
+  const auto settings1 = CallInitializeMouseSettings(kMouseKey1);
+
+  // When its the first device of the type the category should be kFirstEver.
+  {
+    const auto& metric_dict =
+        pref_service_->GetDict(prefs::kMouseUpdateSettingsMetricInfo);
+    ASSERT_TRUE(metric_dict.contains(kMouseKey1));
+
+    auto metrics_info =
+        SettingsUpdatedMetricsInfo::FromDict(*metric_dict.FindDict(kMouseKey1));
+    ASSERT_TRUE(metrics_info);
+    EXPECT_EQ(SettingsUpdatedMetricsInfo::Category::kFirstEver,
+              metrics_info->category());
+  }
+
+  // When its taken off the the defaults, the category should be kDefault.
+  {
+    CallUpdateDefaultMouseSettings(kMouseKey1, *settings1);
+    CallInitializeMouseSettings(kMouseKey2);
+    const auto& metric_dict =
+        pref_service_->GetDict(prefs::kMouseUpdateSettingsMetricInfo);
+    ASSERT_TRUE(metric_dict.contains(kMouseKey2));
+
+    auto metrics_info =
+        SettingsUpdatedMetricsInfo::FromDict(*metric_dict.FindDict(kMouseKey2));
+    ASSERT_TRUE(metrics_info);
+    EXPECT_EQ(SettingsUpdatedMetricsInfo::Category::kDefault,
+              metrics_info->category());
+  }
+
+  // When its taken from synced prefs on a different device, category should
+  // match.
+  {
+    auto devices_dict =
+        pref_service_->GetDict(prefs::kMouseDeviceSettingsDictPref).Clone();
+    devices_dict.Set(kMouseKey3, base::Value::Dict());
+    pref_service_->SetDict(prefs::kMouseDeviceSettingsDictPref,
+                           std::move(devices_dict));
+
+    CallInitializeMouseSettings(kMouseKey3);
+    const auto& metric_dict =
+        pref_service_->GetDict(prefs::kMouseUpdateSettingsMetricInfo);
+    ASSERT_TRUE(metric_dict.contains(kMouseKey3));
+
+    auto metrics_info =
+        SettingsUpdatedMetricsInfo::FromDict(*metric_dict.FindDict(kMouseKey3));
+    ASSERT_TRUE(metrics_info);
+    EXPECT_EQ(SettingsUpdatedMetricsInfo::Category::kSynced,
+              metrics_info->category());
+  }
 }
 
 class MouseSettingsPrefConversionTest

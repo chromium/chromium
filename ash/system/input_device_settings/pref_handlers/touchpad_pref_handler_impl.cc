@@ -13,6 +13,7 @@
 #include "ash/system/input_device_settings/input_device_settings_pref_names.h"
 #include "ash/system/input_device_settings/input_device_settings_utils.h"
 #include "ash/system/input_device_settings/input_device_tracker.h"
+#include "ash/system/input_device_settings/settings_updated_metrics_info.h"
 #include "base/check.h"
 #include "base/values.h"
 #include "components/account_id/account_id.h"
@@ -394,6 +395,35 @@ mojom::TouchpadSettingsPtr GetTouchpadSettingsFromOldLocalStatePrefs(
   return settings;
 }
 
+bool HasDefaultSettings(PrefService* pref_service) {
+  const auto* pref =
+      pref_service->FindPreference(prefs::kTouchpadDefaultSettings);
+  return pref && pref->HasUserSetting();
+}
+
+void InitializeSettingsUpdateMetricInfo(
+    PrefService* pref_service,
+    const mojom::Touchpad& touchpad,
+    SettingsUpdatedMetricsInfo::Category category) {
+  CHECK(pref_service);
+
+  const auto& settings_metric_info =
+      pref_service->GetDict(prefs::kTouchpadUpdateSettingsMetricInfo);
+  const auto* device_metric_info =
+      settings_metric_info.Find(touchpad.device_key);
+  if (device_metric_info) {
+    return;
+  }
+
+  auto updated_metric_info = settings_metric_info.Clone();
+
+  const SettingsUpdatedMetricsInfo metrics_info(category, base::Time::Now());
+  updated_metric_info.Set(touchpad.device_key, metrics_info.ToDict());
+
+  pref_service->SetDict(prefs::kTouchpadUpdateSettingsMetricInfo,
+                        std::move(updated_metric_info));
+}
+
 }  // namespace
 
 TouchpadPrefHandlerImpl::TouchpadPrefHandlerImpl() = default;
@@ -420,18 +450,25 @@ void TouchpadPrefHandlerImpl::InitializeTouchpadSettings(
   }
 
   ForceTouchpadSettingPersistence force_persistence;
+  SettingsUpdatedMetricsInfo::Category category;
   if (settings_dict) {
+    category = SettingsUpdatedMetricsInfo::Category::kSynced;
     touchpad->settings =
         RetrieveTouchpadSettings(pref_service, *touchpad, *settings_dict);
   } else if (Shell::Get()->input_device_tracker()->WasDevicePreviouslyConnected(
                  InputDeviceTracker::InputDeviceCategory::kTouchpad,
                  touchpad->device_key)) {
+    category = SettingsUpdatedMetricsInfo::Category::kDefault;
     touchpad->settings =
         GetTouchpadSettingsFromPrefs(pref_service, force_persistence);
   } else {
+    category = HasDefaultSettings(pref_service)
+                   ? SettingsUpdatedMetricsInfo::Category::kDefault
+                   : SettingsUpdatedMetricsInfo::Category::kFirstEver;
     touchpad->settings = GetDefaultTouchpadSettings(pref_service, *touchpad);
   }
   DCHECK(touchpad->settings);
+  InitializeSettingsUpdateMetricInfo(pref_service, *touchpad, category);
 
   UpdateTouchpadSettingsImpl(pref_service, *touchpad, force_persistence);
 }

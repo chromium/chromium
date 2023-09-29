@@ -10,12 +10,15 @@
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "ash/shell.h"
 #include "ash/system/input_device_settings/input_device_settings_defaults.h"
+#include "ash/system/input_device_settings/input_device_settings_metrics_manager.h"
 #include "ash/system/input_device_settings/input_device_settings_pref_names.h"
 #include "ash/system/input_device_settings/input_device_settings_utils.h"
 #include "ash/system/input_device_settings/input_device_tracker.h"
+#include "ash/system/input_device_settings/settings_updated_metrics_info.h"
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_map.h"
+#include "base/json/values_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/time/time.h"
@@ -561,6 +564,36 @@ mojom::KeyboardSettingsPtr GetKeyboardSettingsFromOldLocalStatePrefs(
   return settings;
 }
 
+bool HasDefaultSettings(PrefService* pref_service,
+                        const mojom::Keyboard& keyboard) {
+  const auto* pref =
+      pref_service->FindPreference(GetDefaultKeyboardPref(keyboard));
+  return pref && pref->HasUserSetting();
+}
+
+void InitializeSettingsUpdateMetricInfo(
+    PrefService* pref_service,
+    const mojom::Keyboard& keyboard,
+    SettingsUpdatedMetricsInfo::Category category) {
+  CHECK(pref_service);
+
+  const auto& settings_metric_info =
+      pref_service->GetDict(prefs::kKeyboardUpdateSettingsMetricInfo);
+  const auto* device_metric_info =
+      settings_metric_info.Find(keyboard.device_key);
+  if (device_metric_info) {
+    return;
+  }
+
+  auto updated_metric_info = settings_metric_info.Clone();
+
+  const SettingsUpdatedMetricsInfo metrics_info(category, base::Time::Now());
+  updated_metric_info.Set(keyboard.device_key, metrics_info.ToDict());
+
+  pref_service->SetDict(prefs::kKeyboardUpdateSettingsMetricInfo,
+                        std::move(updated_metric_info));
+}
+
 }  // namespace
 
 KeyboardPrefHandlerImpl::KeyboardPrefHandlerImpl() = default;
@@ -579,21 +612,28 @@ void KeyboardPrefHandlerImpl::InitializeKeyboardSettings(
   const auto& devices_dict =
       pref_service->GetDict(prefs::kKeyboardDeviceSettingsDictPref);
   const auto* settings_dict = devices_dict.FindDict(keyboard->device_key);
-  ForceKeyboardSettingPersistence force_persistence;
 
+  ForceKeyboardSettingPersistence force_persistence;
+  SettingsUpdatedMetricsInfo::Category category;
   if (settings_dict) {
+    category = SettingsUpdatedMetricsInfo::Category::kSynced;
     keyboard->settings = RetrieveKeyboardSettings(
         pref_service, keyboard_policies, *keyboard, *settings_dict);
   } else if (Shell::Get()->input_device_tracker()->WasDevicePreviouslyConnected(
                  InputDeviceTracker::InputDeviceCategory::kKeyboard,
                  keyboard->device_key)) {
+    category = SettingsUpdatedMetricsInfo::Category::kDefault;
     keyboard->settings = GetKeyboardSettingsFromGlobalPrefs(
         pref_service, keyboard_policies, *keyboard, force_persistence);
   } else {
     keyboard->settings =
         GetDefaultKeyboardSettings(pref_service, keyboard_policies, *keyboard);
+    category = HasDefaultSettings(pref_service, *keyboard)
+                   ? SettingsUpdatedMetricsInfo::Category::kDefault
+                   : SettingsUpdatedMetricsInfo::Category::kFirstEver;
   }
   DCHECK(keyboard->settings);
+  InitializeSettingsUpdateMetricInfo(pref_service, *keyboard, category);
 
   UpdateKeyboardSettingsImpl(pref_service, keyboard_policies, *keyboard,
                              force_persistence);

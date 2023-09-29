@@ -8,9 +8,14 @@
 #include "ash/public/cpp/accelerator_actions.h"
 #include "ash/public/mojom/input_device_settings.mojom-shared.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
+#include "ash/shell.h"
+#include "ash/system/input_device_settings/input_device_settings_pref_names.h"
+#include "ash/system/input_device_settings/settings_updated_metrics_info.h"
 #include "ash/test/ash_test_base.h"
+#include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "device/udev_linux/fake_udev_loader.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/ash/mojom/extended_fkeys_modifier.mojom-shared.h"
@@ -24,6 +29,10 @@
 namespace ash {
 
 namespace {
+
+using TimePeriod = SettingsUpdatedMetricsInfo::TimePeriod;
+using Category = SettingsUpdatedMetricsInfo::Category;
+
 constexpr char kExternalKeyboardId[] = "test:external";
 constexpr char kExternalChromeOSKeyboardId[] = "test:chromeos";
 constexpr char kInternalKeyboardDeviceKey[] = "test:internal";
@@ -41,6 +50,27 @@ constexpr char kUser2[] = "user2@gmail.com";
 constexpr char kKbdTopRowPropertyName[] = "CROS_KEYBOARD_TOP_ROW_LAYOUT";
 constexpr char kKbdTopRowLayout1Tag[] = "1";
 constexpr int kKeyboardInternalId = 1;
+
+constexpr struct TimePeriodMetricData {
+  TimePeriod time_period;
+  base::TimeDelta time_delta;
+  base::StringPiece metric_name;
+} kTimePeriodMetricData[] = {
+    {TimePeriod::kOneHour, base::Minutes(0), "OneHour"},
+    {TimePeriod::kThreeHours, base::Hours(2), "ThreeHours"},
+    {TimePeriod::kOneDay, base::Hours(8), "OneDay"},
+    {TimePeriod::kThreeDays, base::Days(2), "ThreeDays"},
+    {TimePeriod::kOneWeek, base::Days(5), "OneWeek"}};
+
+constexpr struct CategoryMetricNameData {
+  Category category;
+  base::StringPiece metric_name;
+} kCategoryMetricNameData[] = {
+    {Category::kFirstEver, "FirstEver"},
+    {Category::kDefault, "FromDefaults"},
+    {Category::kSynced, "Synced"},
+
+};
 
 }  // namespace
 
@@ -706,6 +736,142 @@ TEST_F(InputDeviceSettingsMetricsManagerTest,
   histogram_tester.ExpectUniqueSample(
       "ChromeOS.Settings.Device.Keyboard.External.Modifiers.NumberOfKeysReset",
       /*sample=*/3u, /*expected_bucket_count=*/1u);
+}
+
+class SettingsUpdatedTimePeriodMetricsTest
+    : public InputDeviceSettingsMetricsManagerTest,
+      public testing::WithParamInterface<
+          std::tuple<TimePeriodMetricData, CategoryMetricNameData>> {
+ public:
+  void SetUp() override {
+    InputDeviceSettingsMetricsManagerTest::SetUp();
+    std::tie(time_period_metric_data_, category_metric_name_data_) = GetParam();
+    ;
+  }
+
+ protected:
+  TimePeriodMetricData time_period_metric_data_;
+  CategoryMetricNameData category_metric_name_data_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SettingsUpdatedTimePeriodMetricsTest,
+    testing::Combine(testing::ValuesIn(kTimePeriodMetricData),
+                     testing::ValuesIn(kCategoryMetricNameData)),
+    ([](const testing::TestParamInfo<
+         std::tuple<TimePeriodMetricData, CategoryMetricNameData>>& info) {
+      const auto& [time_period_metric_data, category_metric_name_data] =
+          info.param;
+      return base::StrCat({time_period_metric_data.metric_name, "_",
+                           category_metric_name_data.metric_name});
+    }));
+
+TEST_P(SettingsUpdatedTimePeriodMetricsTest, KeyboardMetrics) {
+  mojom::Keyboard keyboard;
+  keyboard.device_key = kExternalKeyboardId;
+  keyboard.settings = mojom::KeyboardSettings::New();
+  mojom::KeyboardSettings old_settings;
+
+  SettingsUpdatedMetricsInfo metrics_info(
+      category_metric_name_data_.category,
+      base::Time::Now() - time_period_metric_data_.time_delta);
+  base::Value::Dict updated_dict;
+  updated_dict.Set(kExternalKeyboardId, metrics_info.ToDict());
+
+  PrefService* pref_service =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  pref_service->SetDict(prefs::kKeyboardUpdateSettingsMetricInfo,
+                        std::move(updated_dict));
+
+  base::HistogramTester histogram_tester;
+  manager_->RecordKeyboardChangedMetrics(keyboard, old_settings);
+
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat({"ChromeOS.Settings.Device.Keyboard.SettingsUpdated.",
+                    category_metric_name_data_.metric_name, ".",
+                    time_period_metric_data_.metric_name}),
+      1, 1);
+}
+
+TEST_P(SettingsUpdatedTimePeriodMetricsTest, MouseMetrics) {
+  mojom::Mouse mouse;
+  mouse.device_key = kExternalMouseId;
+  mouse.settings = mojom::MouseSettings::New();
+  mojom::MouseSettings old_settings;
+
+  SettingsUpdatedMetricsInfo metrics_info(
+      category_metric_name_data_.category,
+      base::Time::Now() - time_period_metric_data_.time_delta);
+  base::Value::Dict updated_dict;
+  updated_dict.Set(kExternalMouseId, metrics_info.ToDict());
+
+  PrefService* pref_service =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  pref_service->SetDict(prefs::kMouseUpdateSettingsMetricInfo,
+                        std::move(updated_dict));
+
+  base::HistogramTester histogram_tester;
+  manager_->RecordMouseChangedMetrics(mouse, old_settings);
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat({"ChromeOS.Settings.Device.Mouse.SettingsUpdated.",
+                    category_metric_name_data_.metric_name, ".",
+                    time_period_metric_data_.metric_name}),
+      1, 1);
+}
+
+TEST_P(SettingsUpdatedTimePeriodMetricsTest, TouchpadMetrics) {
+  mojom::Touchpad touchpad;
+  touchpad.device_key = kExternalTouchpadId;
+  touchpad.settings = mojom::TouchpadSettings::New();
+  mojom::TouchpadSettings old_settings;
+
+  SettingsUpdatedMetricsInfo metrics_info(
+      category_metric_name_data_.category,
+      base::Time::Now() - time_period_metric_data_.time_delta);
+  base::Value::Dict updated_dict;
+  updated_dict.Set(kExternalTouchpadId, metrics_info.ToDict());
+
+  PrefService* pref_service =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  pref_service->SetDict(prefs::kTouchpadUpdateSettingsMetricInfo,
+                        std::move(updated_dict));
+
+  base::HistogramTester histogram_tester;
+  manager_->RecordTouchpadChangedMetrics(touchpad, old_settings);
+
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat({"ChromeOS.Settings.Device.Touchpad.SettingsUpdated.",
+                    category_metric_name_data_.metric_name, ".",
+                    time_period_metric_data_.metric_name}),
+      1, 1);
+}
+
+TEST_P(SettingsUpdatedTimePeriodMetricsTest, PointingStickMetrics) {
+  mojom::PointingStick touchpad;
+  touchpad.device_key = kPointingStickId;
+  touchpad.settings = mojom::PointingStickSettings::New();
+  mojom::PointingStickSettings old_settings;
+
+  SettingsUpdatedMetricsInfo metrics_info(
+      category_metric_name_data_.category,
+      base::Time::Now() - time_period_metric_data_.time_delta);
+  base::Value::Dict updated_dict;
+  updated_dict.Set(kPointingStickId, metrics_info.ToDict());
+
+  PrefService* pref_service =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  pref_service->SetDict(prefs::kPointingStickUpdateSettingsMetricInfo,
+                        std::move(updated_dict));
+
+  base::HistogramTester histogram_tester;
+  manager_->RecordPointingStickChangedMetrics(touchpad, old_settings);
+
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat({"ChromeOS.Settings.Device.PointingStick.SettingsUpdated.",
+                    category_metric_name_data_.metric_name, ".",
+                    time_period_metric_data_.metric_name}),
+      1, 1);
 }
 
 }  // namespace ash

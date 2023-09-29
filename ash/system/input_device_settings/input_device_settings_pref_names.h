@@ -88,6 +88,15 @@ constexpr char kSixPackKeyInsert[] = "insert";
 constexpr char kKeyboardSettingF11[] = "f11";
 constexpr char kKeyboardSettingF12[] = "f12";
 
+constexpr char kKeyboardUpdateSettingsMetricInfo[] =
+    "settings.keyboard.update_settings_info";
+constexpr char kMouseUpdateSettingsMetricInfo[] =
+    "settings.mouse.update_settings_info";
+constexpr char kTouchpadUpdateSettingsMetricInfo[] =
+    "settings.touchpad.update_settings_info";
+constexpr char kPointingStickUpdateSettingsMetricInfo[] =
+    "settings.pointing_stick.update_settings_info";
+
 // Mouse settings dictionary keys.
 constexpr char kMouseSettingSwapRight[] = "swap_right";
 constexpr char kMouseSettingSensitivity[] = "sensitivity";

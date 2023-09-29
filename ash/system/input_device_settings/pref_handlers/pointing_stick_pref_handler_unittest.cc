@@ -12,6 +12,7 @@
 #include "ash/system/input_device_settings/input_device_settings_defaults.h"
 #include "ash/system/input_device_settings/input_device_settings_pref_names.h"
 #include "ash/system/input_device_settings/input_device_tracker.h"
+#include "ash/system/input_device_settings/settings_updated_metrics_info.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/account_id/account_id.h"
@@ -90,6 +91,8 @@ class PointingStickPrefHandlerTest : public AshTestBase {
         prefs::kPointingStickDeviceSettingsDictPref);
     pref_service_->registry()->RegisterDictionaryPref(
         prefs::kPointingStickInternalSettings);
+    pref_service_->registry()->RegisterDictionaryPref(
+        prefs::kPointingStickUpdateSettingsMetricInfo);
 
     pref_service_->registry()->RegisterIntegerPref(
         prefs::kPointingStickSensitivity, kDefaultSensitivity);
@@ -561,6 +564,46 @@ TEST_F(PointingStickPrefHandlerTest, DefaultNotPersistedUntilUpdated) {
   EXPECT_TRUE(settings_dict->contains(prefs::kPointingStickSettingSwapRight));
   CheckPointingStickSettingsAndDictAreEqual(kPointingStickSettingsDefault,
                                             *settings_dict);
+}
+
+TEST_F(PointingStickPrefHandlerTest, SettingsUpdateMetricTest) {
+  const auto settings1 =
+      CallInitializePointingStickSettings(kPointingStickKey1);
+
+  // When its the first device of the type the category should be kFirstEver.
+  {
+    const auto& metric_dict =
+        pref_service_->GetDict(prefs::kPointingStickUpdateSettingsMetricInfo);
+    ASSERT_TRUE(metric_dict.contains(kPointingStickKey1));
+
+    auto metrics_info = SettingsUpdatedMetricsInfo::FromDict(
+        *metric_dict.FindDict(kPointingStickKey1));
+    ASSERT_TRUE(metrics_info);
+    EXPECT_EQ(SettingsUpdatedMetricsInfo::Category::kFirstEver,
+              metrics_info->category());
+  }
+
+  // When its taken from synced prefs on a different device, category should
+  // match.
+  {
+    auto devices_dict =
+        pref_service_->GetDict(prefs::kPointingStickDeviceSettingsDictPref)
+            .Clone();
+    devices_dict.Set(kPointingStickKey2, base::Value::Dict());
+    pref_service_->SetDict(prefs::kPointingStickDeviceSettingsDictPref,
+                           std::move(devices_dict));
+
+    CallInitializePointingStickSettings(kPointingStickKey2);
+    const auto& metric_dict =
+        pref_service_->GetDict(prefs::kPointingStickUpdateSettingsMetricInfo);
+    ASSERT_TRUE(metric_dict.contains(kPointingStickKey2));
+
+    auto metrics_info = SettingsUpdatedMetricsInfo::FromDict(
+        *metric_dict.FindDict(kPointingStickKey2));
+    ASSERT_TRUE(metrics_info);
+    EXPECT_EQ(SettingsUpdatedMetricsInfo::Category::kSynced,
+              metrics_info->category());
+  }
 }
 
 class PointingStickSettingsPrefConversionTest

@@ -13,6 +13,7 @@
 #include "ash/system/input_device_settings/input_device_settings_pref_names.h"
 #include "ash/system/input_device_settings/input_device_settings_utils.h"
 #include "ash/system/input_device_settings/input_device_tracker.h"
+#include "ash/system/input_device_settings/settings_updated_metrics_info.h"
 #include "base/check.h"
 #include "base/values.h"
 #include "components/account_id/account_id.h"
@@ -195,6 +196,29 @@ mojom::PointingStickSettingsPtr GetPointingStickSettingsFromOldLocalStatePrefs(
   return settings;
 }
 
+void InitializeSettingsUpdateMetricInfo(
+    PrefService* pref_service,
+    const mojom::PointingStick& pointing_stick,
+    SettingsUpdatedMetricsInfo::Category category) {
+  CHECK(pref_service);
+
+  const auto& settings_metric_info =
+      pref_service->GetDict(prefs::kPointingStickUpdateSettingsMetricInfo);
+  const auto* device_metric_info =
+      settings_metric_info.Find(pointing_stick.device_key);
+  if (device_metric_info) {
+    return;
+  }
+
+  auto updated_metric_info = settings_metric_info.Clone();
+
+  const SettingsUpdatedMetricsInfo metrics_info(category, base::Time::Now());
+  updated_metric_info.Set(pointing_stick.device_key, metrics_info.ToDict());
+
+  pref_service->SetDict(prefs::kPointingStickUpdateSettingsMetricInfo,
+                        std::move(updated_metric_info));
+}
+
 }  // namespace
 
 PointingStickPrefHandlerImpl::PointingStickPrefHandlerImpl() = default;
@@ -222,18 +246,25 @@ void PointingStickPrefHandlerImpl::InitializePointingStickSettings(
   }
 
   ForcePointingStickSettingPersistence force_persistence;
+  SettingsUpdatedMetricsInfo::Category category;
   if (settings_dict) {
+    category = SettingsUpdatedMetricsInfo::Category::kSynced;
     pointing_stick->settings =
         RetrievePointingStickSettings(*pointing_stick, *settings_dict);
   } else if (Shell::Get()->input_device_tracker()->WasDevicePreviouslyConnected(
                  InputDeviceTracker::InputDeviceCategory::kPointingStick,
                  pointing_stick->device_key)) {
+    category = SettingsUpdatedMetricsInfo::Category::kDefault;
     pointing_stick->settings =
         GetPointingStickSettingsFromPrefs(pref_service, force_persistence);
   } else {
+    // Pointing Stick currently does not do syncing defaults like other devices
+    // as only internal pointing sticks are supported in the first place.
+    category = SettingsUpdatedMetricsInfo::Category::kFirstEver;
     pointing_stick->settings = GetDefaultPointingStickSettings();
   }
   DCHECK(pointing_stick->settings);
+  InitializeSettingsUpdateMetricInfo(pref_service, *pointing_stick, category);
 
   UpdatePointingStickSettingsImpl(pref_service, *pointing_stick,
                                   force_persistence);

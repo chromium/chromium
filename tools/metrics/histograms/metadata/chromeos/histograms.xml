@@ -159,6 +159,25 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   </variant>
 </variants>
 
+<variants name="InputDeviceSettingsDeviceTypes">
+<!-- The variants are the possible device types used with input device settings. -->
+
+  <variant name="Keyboard"/>
+  <variant name="Mouse"/>
+  <variant name="PointingStick"/>
+  <variant name="Touchpad"/>
+</variants>
+
+<variants name="InputDeviceSettingsUpdatedTimePeriods">
+<!-- The variants are the possible time periods that the settings updated metrics will be published within. -->
+
+  <variant name="OneDay"/>
+  <variant name="OneHour"/>
+  <variant name="OneWeek"/>
+  <variant name="ThreeDays"/>
+  <variant name="ThreeHours"/>
+</variants>
+
 <histogram name="ChromeOS.AnomalousProcCount.AttemptedMemfdExec"
     units="processes" expires_after="2024-01-31">
   <owner>enlightened@chromium.org</owner>
@@ -2768,6 +2787,47 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
     <variant name="PointingStick"/>
     <variant name="Touchpad"/>
   </token>
+</histogram>
+
+<histogram
+    name="ChromeOS.Settings.Device.{DeviceType}.SettingsUpdated.FirstEver.{TimePeriod}"
+    units="times updated" expires_after="2024-06-25">
+  <owner>dpad@google.com</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the number of times settings were updated for the first ever
+    connected {DeviceType} within the given time period of {TimePeriod}.
+  </summary>
+  <token key="DeviceType" variants="InputDeviceSettingsDeviceTypes"/>
+  <token key="TimePeriod" variants="InputDeviceSettingsUpdatedTimePeriods"/>
+</histogram>
+
+<histogram
+    name="ChromeOS.Settings.Device.{DeviceType}.SettingsUpdated.FromDefaults.{TimePeriod}"
+    units="times updated" expires_after="2024-06-25">
+  <owner>dpad@google.com</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the number of times {DeviceType} settings were updated when they
+    were initially taken from the user's defaults within the time period of
+    {TimePeriod}.
+  </summary>
+  <token key="DeviceType" variants="InputDeviceSettingsDeviceTypes"/>
+  <token key="TimePeriod" variants="InputDeviceSettingsUpdatedTimePeriods"/>
+</histogram>
+
+<histogram
+    name="ChromeOS.Settings.Device.{DeviceType}.SettingsUpdated.Synced.{TimePeriod}"
+    units="times updated" expires_after="2024-06-25">
+  <owner>dpad@google.com</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the number of times {DeviceType} settings were updated when the
+    settings were taken from synced settings within the time period of
+    {TimePeriod}.
+  </summary>
+  <token key="DeviceType" variants="InputDeviceSettingsDeviceTypes"/>
+  <token key="TimePeriod" variants="InputDeviceSettingsUpdatedTimePeriods"/>
 </histogram>
 
 <histogram
