@@ -20,6 +20,15 @@
 
 namespace content {
 
+namespace {
+
+enum class TestFileSystemType {
+  kBucket,
+  kLocal,
+};
+
+}  // namespace
+
 // Helpful macros to reduce the boilerplate script in the tests below.
 
 // Resolves a promise with a serialized copy of the first `records` fired in the
@@ -44,20 +53,39 @@ namespace content {
      promiseResolve(serializedRecords); \
    };"
 
-#define START_OBSERVING_LOCAL_FILE \
-  "const [file] = await self.showOpenFilePicker();    \
-   const observer = new FileSystemObserver(onChange);  \
-   await observer.observe(file);"
+#define GET_LOCAL_FILE "const [file] = await self.showOpenFilePicker();"
+#define GET_BUCKET_FILE                                  \
+  "const root = await navigator.storage.getDirectory();" \
+  "const file = await root.getFileHandle('file', { create: true });"
+#define GET_LOCAL_DIRECTORY "const dir = await self.showDirectoryPicker();"
+#define GET_BUCKET_DIRECTORY \
+  "const dir = await navigator.storage.getDirectory();"
 
-#define START_OBSERVING_LOCAL_DIRECTORY \
-  "const dir = await self.showDirectoryPicker();    \
-   const observer = new FileSystemObserver(onChange);  \
-   await observer.observe(dir);"
+#define GET_FILE(file_system_type)                            \
+  +std::string(file_system_type == TestFileSystemType::kLocal \
+                   ? GET_LOCAL_FILE                           \
+                   : GET_BUCKET_FILE) +
 
-#define START_RECURSIVELY_OBSERVING_LOCAL_DIRECTORY \
-  "const dir = await self.showDirectoryPicker();    \
-   const observer = new FileSystemObserver(onChange);  \
-   await observer.observe(dir, { recursive: true });"
+#define GET_DIRECTORY(file_system_type)                       \
+  +std::string(file_system_type == TestFileSystemType::kLocal \
+                   ? GET_LOCAL_DIRECTORY                      \
+                   : GET_BUCKET_DIRECTORY) +
+
+#define START_OBSERVING_FILE(file_system_type)                \
+  +std::string(file_system_type == TestFileSystemType::kLocal \
+                   ? GET_LOCAL_FILE                           \
+                   : GET_BUCKET_FILE) +                       \
+      "const observer = new FileSystemObserver(onChange);  \
+       await observer.observe(file);"
+
+#define START_OBSERVING_DIRECTORY(file_system_type, recursive) \
+  +std::string(file_system_type == TestFileSystemType::kLocal  \
+                   ? GET_LOCAL_DIRECTORY                       \
+                   : GET_BUCKET_DIRECTORY) +                   \
+      JsReplace(                                               \
+          "const observer = new FileSystemObserver(onChange);  \
+           await observer.observe(dir, { recursive: $1 });",   \
+          recursive) +
 
 #define WRITE_TO_FILE \
   "const writable = await file.createWritable();  \
@@ -75,7 +103,6 @@ namespace content {
 // TODO(https://crbug.com/1019297): Consider making these WPTs, and adding a
 // lot more of them. For example:
 //   - change types
-//   - watching non-local file systems
 //   - observing a handle without permission should fail
 //   - changes should not be reported to swap files
 //   - changes should not be reported if permission to the handle is lost
@@ -174,17 +201,108 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessObserveWithFlagBrowserTest,
              "const observer = new FileSystemObserver(() => {}); })()"));
 }
 
+IN_PROC_BROWSER_TEST_F(FileSystemAccessObserveWithFlagBrowserTest,
+                       NothingToUnobserve) {
+  EXPECT_TRUE(NavigateToURL(shell(), test_url_));
+
+  // Calling unobserve() without a corresponding observe() should be a no-op.
+  EXPECT_TRUE(ExecJs(shell(),
+                     "(async () => {"
+                     "const observer = new FileSystemObserver(() => {});"
+                     "const root = await navigator.storage.getDirectory();"
+                     "observer.unobserve(root); })()"));
+}
+
+IN_PROC_BROWSER_TEST_F(FileSystemAccessObserveWithFlagBrowserTest,
+                       NothingToDisconnect) {
+  EXPECT_TRUE(NavigateToURL(shell(), test_url_));
+
+  // Calling disconnect() multiple times should be a no-op.
+  EXPECT_TRUE(ExecJs(shell(),
+                     "(async () => {"
+                     "const observer = new FileSystemObserver(() => {});"
+                     "observer.disconnect();"
+                     "observer.disconnect(); })()"));
+}
+
+IN_PROC_BROWSER_TEST_F(FileSystemAccessObserveWithFlagBrowserTest,
+                       UnobserveIsIdempotent) {
+  EXPECT_TRUE(NavigateToURL(shell(), test_url_));
+
+  // unobserve() may be called several times without crashing.
+  EXPECT_TRUE(ExecJs(shell(),
+                     "(async () => {"
+                     "const observer = new FileSystemObserver(() => {});"
+                     "const root = await navigator.storage.getDirectory();"
+                     "observer.unobserve(root);"
+                     "observer.unobserve(root);"
+                     "observer.unobserve(root); })()"));
+}
+
+IN_PROC_BROWSER_TEST_F(FileSystemAccessObserveWithFlagBrowserTest,
+                       DisconnectIsIdempotent) {
+  EXPECT_TRUE(NavigateToURL(shell(), test_url_));
+
+  // disconnect() may be called several times without crashing.
+  EXPECT_TRUE(ExecJs(shell(),
+                     "(async () => {"
+                     "const observer = new FileSystemObserver(() => {});"
+                     "observer.disconnect();"
+                     "observer.disconnect();"
+                     "observer.disconnect(); })()"));
+}
+
 class FileSystemAccessObserverBrowserTest
-    : public FileSystemAccessObserverBrowserTestBase {
+    : public FileSystemAccessObserverBrowserTestBase,
+      public testing::WithParamInterface<TestFileSystemType> {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     // Enable experimental web platform features to enable read/write access.
     command_line->AppendSwitch(
         switches::kEnableExperimentalWebPlatformFeatures);
   }
+
+  TestFileSystemType GetTestFileSystemType() const { return GetParam(); }
+
+  bool SupportsReportingModifiedPath() const {
+    if (GetTestFileSystemType() == TestFileSystemType::kBucket) {
+      return true;
+    }
+
+    // TODO(https://crbug.com/1425601): Some platforms do not support reporting
+    // the modified path.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+    return true;
+#else
+    return false;
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  }
 };
 
-IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverBrowserTest, CreateObserver) {
+// `base::FilePatchWatcher` is not implemented on Fuchsia. See
+// https://crbug.com/851641. Instead, just check that attempting to observe
+// a handle does not crash.
+#if BUILDFLAG(IS_FUCHSIA)
+IN_PROC_BROWSER_TEST_F(FileSystemAccessObserveWithFlagBrowserTest,
+                       ObservingLocalFileIsNotSupportedOnFuchsia) {
+  base::FilePath file_path = CreateFileToBePicked();
+
+  const std::string script =
+      // clang-format off
+      "(async () => {"
+         CREATE_PROMISE_AND_RESOLVERS
+         START_OBSERVING_FILE(TestFileSystemType::kLocal)
+         WRITE_TO_FILE
+         SET_CHANGE_TIMEOUT
+      "})()";
+  // clang-format on
+  auto result = EvalJs(shell(), script);
+  EXPECT_TRUE(result.error.find("did not support") != std::string::npos)
+      << result.error;
+}
+#endif  // BUILDFLAG(IS_FUCHSIA)
+
+IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest, CreateObserver) {
   EXPECT_TRUE(NavigateToURL(shell(), test_url_));
 
   EXPECT_TRUE(
@@ -193,46 +311,30 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverBrowserTest, CreateObserver) {
              "const observer = new FileSystemObserver(() => {}); })()"));
 }
 
-// Local file system access - including the open*Picker() methods used here - is
-// not supported on Android or iOS. See https://crbug.com/1011535.
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverBrowserTest, ObserveFile) {
+IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest, ObserveFile) {
   base::FilePath file_path = CreateFileToBePicked();
 
   const std::string script =
       // clang-format off
       "(async () => {"
          CREATE_PROMISE_AND_RESOLVERS
-         START_OBSERVING_LOCAL_FILE
+         START_OBSERVING_FILE(GetTestFileSystemType())
          WRITE_TO_FILE
          SET_CHANGE_TIMEOUT
       "})()";
   // clang-format on
-  auto result = EvalJs(shell(), script);
-#if BUILDFLAG(IS_FUCHSIA)
-  // `base::FilePatchWatcher` is not implemented on Fuchsia. See
-  // https://crbug.com/851641. Instead, just check that attempting to observe a
-  // handle does not crash.
-  EXPECT_TRUE(result.error.find("did not support") != std::string::npos)
-      << result.error;
-#else
-  auto records = result.ExtractList();
+  auto records = EvalJs(shell(), script).ExtractList();
   EXPECT_THAT(records.GetList(), testing::Not(testing::IsEmpty()));
-#endif  // BUILDFLAG(IS_FUCHSIA)
 }
 
-// `base::FilePatchWatcher` is not implemented on Fuchsia. See
-// https://crbug.com/851641. This test would otherwise be the same as above, so
-// just skip it.
-#if !BUILDFLAG(IS_FUCHSIA)
-IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverBrowserTest, ObserveFileRename) {
+IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest, ObserveFileRename) {
   base::FilePath file_path = CreateFileToBePicked();
 
   const std::string script =
       // clang-format off
       "(async () => {"
          CREATE_PROMISE_AND_RESOLVERS
-         START_OBSERVING_LOCAL_FILE
+         START_OBSERVING_FILE(GetTestFileSystemType())
          "await file.move('newName.txt');"
          SET_CHANGE_TIMEOUT
       "})()";
@@ -240,105 +342,91 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverBrowserTest, ObserveFileRename) {
   auto records = EvalJs(shell(), script).ExtractList();
   EXPECT_THAT(records.GetList(), testing::Not(testing::IsEmpty()));
 }
-#endif  // !BUILDFLAG(IS_FUCHSIA)
 
-IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverBrowserTest, ObserveDirectory) {
+IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest, ObserveDirectory) {
   base::FilePath dir_path = CreateDirectoryToBePicked();
 
   const std::string script =
       // clang-format off
       "(async () => {"
          CREATE_PROMISE_AND_RESOLVERS
-         START_OBSERVING_LOCAL_DIRECTORY
+         START_OBSERVING_DIRECTORY(GetTestFileSystemType(), /*recursive=*/false)
          "await dir.getFileHandle('newFile.txt', { create: true });"
          SET_CHANGE_TIMEOUT
       "})()";
   // clang-format on
-  auto result = EvalJs(shell(), script);
-#if BUILDFLAG(IS_FUCHSIA)
-  // `base::FilePatchWatcher` is not implemented on Fuchsia. See
-  // https://crbug.com/851641. Instead, just check that attempting to observe a
-  // handle does not crash.
-  EXPECT_TRUE(result.error.find("did not support") != std::string::npos)
-      << result.error;
-#else
-  auto records = result.ExtractList();
+  auto records = EvalJs(shell(), script).ExtractList();
   EXPECT_THAT(records.GetList(), testing::Not(testing::IsEmpty()));
-#endif  // BUILDFLAG(IS_FUCHSIA)
 }
 
-IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverBrowserTest,
+IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
                        ObserveDirectoryRecursively) {
   base::FilePath dir_path = CreateDirectoryToBePicked();
-  {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    base::CreateDirectory(dir_path.AppendASCII("sub1"));
-    base::CreateDirectory(dir_path.AppendASCII("sub1").AppendASCII("sub2"));
-  }
+
+  // Set up the directory structure.
+  const std::string pre_script =
+      // clang-format off
+      "(async () => {"
+         GET_DIRECTORY(GetTestFileSystemType())
+         "const s1 = await dir.getDirectoryHandle('sub1', { create: true });"
+         "await s1.getDirectoryHandle('sub2', { create: true });"
+      "})()";
+  // clang-format on
+  ASSERT_TRUE(ExecJs(shell(), pre_script));
 
   // The creation of 'newFile.txt' should trigger a change record.
   const std::string script =
       // clang-format off
       "(async () => {"
          CREATE_PROMISE_AND_RESOLVERS
-         START_RECURSIVELY_OBSERVING_LOCAL_DIRECTORY
+         START_OBSERVING_DIRECTORY(GetTestFileSystemType(), /*recursive=*/true)
          "const subDir1 = await dir.getDirectoryHandle('sub1');"
          "const subDir2 = await subDir1.getDirectoryHandle('sub2');"
+         // Creating the file should trigger an event.
          "await subDir2.getFileHandle('newFile.txt', { create: true });"
          SET_CHANGE_TIMEOUT
       "})()";
   // clang-format on
-  auto result = EvalJs(shell(), script);
-#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_IOS)
-  // `base::FilePatchWatcher` is not implemented on Fuchsia. See
-  // https://crbug.com/851641. Instead, just check that attempting to observe a
-  // handle does not crash.
-  // Meanwhile, recursive watches are not supported on iOS.
-  EXPECT_TRUE(result.error.find("did not support") != std::string::npos)
-      << result.error;
-#else
-  auto records = result.ExtractList();
+  auto records = EvalJs(shell(), script).ExtractList();
   EXPECT_THAT(records.GetList(), testing::Not(testing::IsEmpty()));
-#endif  // BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_IOS)
 }
 
-#if !BUILDFLAG(IS_FUCHSIA)
-
-IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverBrowserTest,
+IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
                        ObserveThenUnobserve) {
   base::FilePath file_path = CreateFileToBePicked();
 
   // Calling unobserve() on an active observation should not crash.
-  const char* script =
+  const std::string script =
       // clang-format off
       "(async () => {"
          CREATE_PROMISE_AND_RESOLVERS
-         START_OBSERVING_LOCAL_FILE
+         START_OBSERVING_FILE(GetTestFileSystemType())
          "observer.unobserve(file);"
       "})()";
   // clang-format on
   EXPECT_TRUE(ExecJs(shell(), script));
 }
 
-IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverBrowserTest,
+IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
                        ObserveThenUnobserveUnrelated) {
   base::FilePath file_path = CreateFileToBePicked();
 
   // Calling unobserve() with a handle unrelated to any active observations
   // should not crash.
-  const char* script =
+  const std::string script =
       // clang-format off
       "(async () => {"
          CREATE_PROMISE_AND_RESOLVERS
-         START_OBSERVING_LOCAL_FILE
-         "const unrelatedDir = await navigator.storage.getDirectory();"
-         "observer.unobserve(unrelatedDir);"
+         START_OBSERVING_FILE(GetTestFileSystemType())
+         "const r = await navigator.storage.getDirectory();"
+         "const otherFile = await r.getFileHandle('other', { create: true });"
+         "observer.unobserve(otherFile);"
       "})()";
   // clang-format on
   EXPECT_TRUE(ExecJs(shell(), script));
 }
 
-IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverBrowserTest,
+IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
                        NoChangesAfterUnobserve) {
   base::FilePath file_path = CreateFileToBePicked();
 
@@ -346,7 +434,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverBrowserTest,
       // clang-format off
       "(async () => {"
          CREATE_PROMISE_AND_RESOLVERS
-         START_OBSERVING_LOCAL_FILE
+         START_OBSERVING_FILE(GetTestFileSystemType())
          "observer.unobserve(file);"
          WRITE_TO_FILE
          SET_CHANGE_TIMEOUT
@@ -356,23 +444,23 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverBrowserTest,
   EXPECT_THAT(records.GetList(), testing::IsEmpty());
 }
 
-IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverBrowserTest,
+IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
                        ObserveThenDisconnect) {
   base::FilePath file_path = CreateFileToBePicked();
 
   // Calling disconnect() with active observations should not crash.
-  const char* script =
+  const std::string script =
       // clang-format off
       "(async () => {"
          CREATE_PROMISE_AND_RESOLVERS
-         START_OBSERVING_LOCAL_FILE
+         START_OBSERVING_FILE(GetTestFileSystemType())
          "observer.disconnect();"
       "})()";
   // clang-format on
   EXPECT_TRUE(ExecJs(shell(), script));
 }
 
-IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverBrowserTest,
+IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
                        NoChangesAfterDisconnect) {
   base::FilePath file_path = CreateFileToBePicked();
 
@@ -380,7 +468,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverBrowserTest,
       // clang-format off
       "(async () => {"
          CREATE_PROMISE_AND_RESOLVERS
-         START_OBSERVING_LOCAL_FILE
+         START_OBSERVING_FILE(GetTestFileSystemType())
          "observer.disconnect();"
          WRITE_TO_FILE
          SET_CHANGE_TIMEOUT
@@ -392,7 +480,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverBrowserTest,
 
 // TODO(https://crbug.com/1019297): Add a ReObserveAfterUnobserve test once the
 // unobserve() method is no longer racy. See https://crrev.com/c/4814709.
-IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverBrowserTest,
+IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
                        ReObserveAfterDisconnect) {
   base::FilePath file_path = CreateFileToBePicked();
 
@@ -401,7 +489,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverBrowserTest,
       // clang-format off
       "(async () => {"
          CREATE_PROMISE_AND_RESOLVERS
-         START_OBSERVING_LOCAL_FILE
+         START_OBSERVING_FILE(GetTestFileSystemType())
          "observer.disconnect();"
          "await observer.observe(file);"
          WRITE_TO_FILE
@@ -412,7 +500,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverBrowserTest,
   EXPECT_THAT(records.GetList(), testing::Not(testing::IsEmpty()));
 }
 
-IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverBrowserTest,
+IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
                        ObserveFileReportsModifiedType) {
   base::FilePath file_path = CreateFileToBePicked();
 
@@ -420,7 +508,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverBrowserTest,
       // clang-format off
       "(async () => {"
          CREATE_PROMISE_AND_RESOLVERS
-         START_OBSERVING_LOCAL_FILE
+         START_OBSERVING_FILE(GetTestFileSystemType())
          WRITE_TO_FILE
          SET_CHANGE_TIMEOUT
       "})()";
@@ -433,7 +521,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverBrowserTest,
               testing::StrEq("modified"));
 }
 
-IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverBrowserTest,
+IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
                        ObserveFileReportsCorrectHandle) {
   base::FilePath file_path = CreateFileToBePicked();
 
@@ -448,7 +536,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverBrowserTest,
          "  promiseResolve(await file.isSameEntry(record.root) &&"
          "                 await file.isSameEntry(record.changedHandle));"
          "};"
-         START_OBSERVING_LOCAL_FILE
+         START_OBSERVING_FILE(GetTestFileSystemType())
          WRITE_TO_FILE
          SET_CHANGE_TIMEOUT
       "})()";
@@ -456,7 +544,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverBrowserTest,
   EXPECT_TRUE(EvalJs(shell(), script).ExtractBool());
 }
 
-IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverBrowserTest,
+IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
                        ObserveFileReportsCorrectRelativePathComponents) {
   base::FilePath file_path = CreateFileToBePicked();
 
@@ -464,7 +552,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverBrowserTest,
       // clang-format off
       "(async () => {"
          CREATE_PROMISE_AND_RESOLVERS
-         START_OBSERVING_LOCAL_FILE
+         START_OBSERVING_FILE(GetTestFileSystemType())
          WRITE_TO_FILE
          SET_CHANGE_TIMEOUT
       "})()";
@@ -478,9 +566,15 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverBrowserTest,
       testing::IsEmpty());
 }
 
-IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverBrowserTest,
+IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
                        ObserveDirectoryReportsCorrectHandle) {
   base::FilePath dir_path = CreateDirectoryToBePicked();
+
+  // TODO(https://crbug.com/1425601): Some platforms do not report the modified
+  // path. In these cases, `changedHandle` will always be the handle passed to
+  // observe().
+  const std::string changed_handle =
+      SupportsReportingModifiedPath() ? "subDir" : "dir";
 
   const std::string script =
       // clang-format off
@@ -489,23 +583,22 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverBrowserTest,
          "async function onChange(records, observer) {"
          "  const record = records[0];"
          "  promiseResolve(await dir.isSameEntry(record.root) &&"
-  // TODO(https://crbug.com/1425601): Some platforms do not report the modified
-  // path. In these cases, `changedHandle` will always be the same as `root`.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-         "                 await subDir.isSameEntry(record.changedHandle));"
-#else
-         "                 await dir.isSameEntry(record.changedHandle));"
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+         "await "+ changed_handle +".isSameEntry(record.changedHandle));"
          "};"
-         START_OBSERVING_LOCAL_DIRECTORY
-         "const subDir = await dir.getDirectoryHandle('sub', { create:true });"
+         GET_DIRECTORY(GetTestFileSystemType())
+         // Create and declare `subDir` before starting the observation, to
+         // ensure it's declared by the time the `onChange` callback is called.
+         "const subDir = await dir.getDirectoryHandle('sub', { create: true });"
+         "const observer = new FileSystemObserver(onChange);"
+         "await observer.observe(dir, { recursive: false });;"
+         "await subDir.remove();"
          SET_CHANGE_TIMEOUT
       "})()";
   // clang-format on
   EXPECT_TRUE(EvalJs(shell(), script).ExtractBool());
 }
 
-IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverBrowserTest,
+IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
                        ObserveDirectoryReportsCorrectRelativePathComponents) {
   base::FilePath dir_path = CreateDirectoryToBePicked();
 
@@ -513,92 +606,32 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverBrowserTest,
       // clang-format off
       "(async () => {"
          CREATE_PROMISE_AND_RESOLVERS
-         START_OBSERVING_LOCAL_DIRECTORY
-         "const subDir = await dir.getDirectoryHandle('sub', { create: true });"
+         START_OBSERVING_DIRECTORY(GetTestFileSystemType(), /*recursive=*/false)
+         "await dir.getDirectoryHandle('sub', { create: true });"
          SET_CHANGE_TIMEOUT
       "})()";
   // clang-format on
   auto records = EvalJs(shell(), script).ExtractList();
   ASSERT_THAT(records.GetList(), testing::Not(testing::IsEmpty()));
-  // TODO(https://crbug.com/1425601): Some platforms do not report the modified
-  // path. In these cases, `relativePathComponents` will always be empty.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  const auto relative_path_component_matcher = testing::SizeIs(1);
-#else
-  const auto relative_path_component_matcher = testing::IsEmpty();
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  const auto relative_path_component_matcher = testing::Conditional(
+      SupportsReportingModifiedPath(), testing::SizeIs(1), testing::IsEmpty());
   EXPECT_THAT(
       *records.GetList().front().GetDict().FindList("relativePathComponents"),
       relative_path_component_matcher);
 }
 
-#endif  // !BUILDFLAG(IS_FUCHSIA)
-
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-
-IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverBrowserTest, ObserveBucketFS) {
-  // TODO(https://crbug.com/1019297): The BucketFS is not yet supported.
-
-  EXPECT_TRUE(NavigateToURL(shell(), test_url_));
-
-  auto result = EvalJs(shell(),
-                       "(async () => {"
-                       "const root = await navigator.storage.getDirectory();"
-                       "const observer = new FileSystemObserver(() => {});"
-                       "await observer.observe(root); })()");
-  EXPECT_TRUE(result.error.find("did not support") != std::string::npos)
-      << result.error;
-}
-
-IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverBrowserTest,
-                       NothingToUnobserve) {
-  EXPECT_TRUE(NavigateToURL(shell(), test_url_));
-
-  // Calling unobserve() without a corresponding observe() should be a no-op.
-  EXPECT_TRUE(ExecJs(shell(),
-                     "(async () => {"
-                     "const observer = new FileSystemObserver(() => {});"
-                     "const root = await navigator.storage.getDirectory();"
-                     "observer.unobserve(root); })()"));
-}
-
-IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverBrowserTest,
-                       NothingToDisconnect) {
-  EXPECT_TRUE(NavigateToURL(shell(), test_url_));
-
-  // Calling disconnect() multiple times should be a no-op.
-  EXPECT_TRUE(ExecJs(shell(),
-                     "(async () => {"
-                     "const observer = new FileSystemObserver(() => {});"
-                     "observer.disconnect();"
-                     "observer.disconnect(); })()"));
-}
-
-IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverBrowserTest,
-                       UnobserveIsIdempotent) {
-  EXPECT_TRUE(NavigateToURL(shell(), test_url_));
-
-  // unobserve() may be called several times without crashing.
-  EXPECT_TRUE(ExecJs(shell(),
-                     "(async () => {"
-                     "const observer = new FileSystemObserver(() => {});"
-                     "const root = await navigator.storage.getDirectory();"
-                     "observer.unobserve(root);"
-                     "observer.unobserve(root);"
-                     "observer.unobserve(root); })()"));
-}
-
-IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverBrowserTest,
-                       DisconnectIsIdempotent) {
-  EXPECT_TRUE(NavigateToURL(shell(), test_url_));
-
-  // disconnect() may be called several times without crashing.
-  EXPECT_TRUE(ExecJs(shell(),
-                     "(async () => {"
-                     "const observer = new FileSystemObserver(() => {});"
-                     "observer.disconnect();"
-                     "observer.disconnect();"
-                     "observer.disconnect(); })()"));
-}
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    FileSystemAccessObserverBrowserTest,
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS) || BUILDFLAG(IS_FUCHSIA)
+    // Local file system access - including the open*Picker() methods used here
+    // - is not supported on Android or iOS. See https://crbug.com/1011535.
+    // Meanwhile, `base::FilePatchWatcher` is not implemented on Fuchsia. See
+    // https://crbug.com/851641.
+    testing::Values(TestFileSystemType::kBucket)
+#else
+    testing::Values(TestFileSystemType::kBucket, TestFileSystemType::kLocal)
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS) || BUILDFLAG(IS_FUCHSIA)
+);
 
 }  // namespace content

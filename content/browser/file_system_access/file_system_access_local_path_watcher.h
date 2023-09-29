@@ -22,6 +22,7 @@ class FileSystemAccessLocalPathWatcher : public FileSystemAccessChangeSource {
  public:
   FileSystemAccessLocalPathWatcher(
       FileSystemAccessWatchScope scope,
+      scoped_refptr<storage::FileSystemContext> file_system_context,
       base::PassKey<FileSystemAccessWatcherManager> pass_key);
   FileSystemAccessLocalPathWatcher(const FileSystemAccessLocalPathWatcher&) =
       delete;

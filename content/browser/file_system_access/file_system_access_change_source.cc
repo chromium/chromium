@@ -8,9 +8,27 @@
 
 namespace content {
 
+namespace {
+
+storage::FileSystemURL ToFileSystemURL(storage::FileSystemContext& context,
+                                       const storage::FileSystemURL& root_url,
+                                       const base::FilePath& relative_path) {
+  auto result = context.CreateCrackedFileSystemURL(
+      root_url.storage_key(), root_url.mount_type(),
+      root_url.virtual_path().Append(relative_path));
+  if (root_url.bucket()) {
+    result.SetBucket(root_url.bucket().value());
+  }
+  return result;
+}
+
+}  // namespace
+
 FileSystemAccessChangeSource::FileSystemAccessChangeSource(
-    FileSystemAccessWatchScope scope)
-    : scope_(std::move(scope)) {}
+    FileSystemAccessWatchScope scope,
+    scoped_refptr<storage::FileSystemContext> file_system_context)
+    : scope_(std::move(scope)),
+      file_system_context_(std::move(file_system_context)) {}
 
 FileSystemAccessChangeSource::~FileSystemAccessChangeSource() {
   for (auto& observer : observers_) {
@@ -70,12 +88,30 @@ FileSystemAccessChangeSource::AsWeakPtr() {
 }
 
 void FileSystemAccessChangeSource::NotifyOfChange(
+    const storage::FileSystemURL& changed_url,
+    bool error) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(scope().Contains(changed_url));
+  CHECK(changed_url.is_valid());
+
+  for (RawChangeObserver& observer : observers_) {
+    observer.OnRawChange(changed_url, error);
+  }
+}
+
+void FileSystemAccessChangeSource::NotifyOfChange(
     const base::FilePath& relative_path,
     bool error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(!relative_path.IsAbsolute());
+  CHECK(!relative_path.ReferencesParent());
 
-  for (auto& observer : observers_) {
-    observer.OnRawChange(this, relative_path, error);
+  const storage::FileSystemURL& root_url = scope().root_url();
+  CHECK(root_url.is_valid());
+
+  for (RawChangeObserver& observer : observers_) {
+    observer.OnRawChange(
+        ToFileSystemURL(*file_system_context_, root_url, relative_path), error);
   }
 }
 

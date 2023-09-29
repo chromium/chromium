@@ -12,6 +12,7 @@
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/run_until.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -26,12 +27,19 @@
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_web_contents_factory.h"
 #include "content/test/test_web_contents.h"
+#include "storage/browser/file_system/external_mount_points.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
+#include "storage/browser/test/mock_quota_manager.h"
+#include "storage/browser/test/mock_quota_manager_proxy.h"
+#include "storage/browser/test/mock_special_storage_policy.h"
+#include "storage/browser/test/quota_manager_proxy_sync.h"
 #include "storage/browser/test/test_file_system_context.h"
+#include "storage/common/file_system/file_system_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_directory_handle.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom-shared.h"
 
 namespace content {
@@ -40,6 +48,8 @@ using Change = FileSystemAccessWatcherManager::Observation::Change;
 using Observation = FileSystemAccessWatcherManager::Observation;
 
 namespace {
+
+constexpr char kTestMountPoint[] = "testfs";
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_IOS)
 void SpinEventLoopForABit() {
@@ -105,8 +115,11 @@ class ChangeAccumulator {
 // changes.
 class FakeChangeSource : public FileSystemAccessChangeSource {
  public:
-  explicit FakeChangeSource(FileSystemAccessWatchScope scope)
-      : FileSystemAccessChangeSource(std::move(scope)) {}
+  explicit FakeChangeSource(
+      FileSystemAccessWatchScope scope,
+      scoped_refptr<storage::FileSystemContext> file_system_context)
+      : FileSystemAccessChangeSource(std::move(scope),
+                                     std::move(file_system_context)) {}
   FakeChangeSource(const FakeChangeSource&) = delete;
   FakeChangeSource& operator=(const FakeChangeSource&) = delete;
   ~FakeChangeSource() override = default;
@@ -156,8 +169,20 @@ class FileSystemAccessWatcherManagerTest : public testing::Test {
     web_contents_ = web_contents_factory_.CreateWebContents(&browser_context_);
     static_cast<TestWebContents*>(web_contents_)->NavigateAndCommit(kTestUrl);
 
+    quota_manager_ = base::MakeRefCounted<storage::MockQuotaManager>(
+        /*is_incognito=*/false, dir_.GetPath(),
+        base::SingleThreadTaskRunner::GetCurrentDefault(),
+        special_storage_policy_);
+    quota_manager_proxy_ = base::MakeRefCounted<storage::MockQuotaManagerProxy>(
+        quota_manager_.get(),
+        base::SingleThreadTaskRunner::GetCurrentDefault().get());
+
     file_system_context_ = storage::CreateFileSystemContextForTesting(
-        /*quota_manager_proxy=*/nullptr, dir_.GetPath());
+        quota_manager_proxy_.get(), dir_.GetPath());
+
+    storage::ExternalMountPoints::GetSystemInstance()->RegisterFileSystem(
+        kTestMountPoint, storage::kFileSystemTypeLocal,
+        storage::FileSystemMountOption(), dir_.GetPath());
 
     chrome_blob_context_ = base::MakeRefCounted<ChromeBlobStorageContext>();
     chrome_blob_context_->InitializeOnIOThread(base::FilePath(),
@@ -167,10 +192,19 @@ class FileSystemAccessWatcherManagerTest : public testing::Test {
         file_system_context_, chrome_blob_context_,
         /*permission_context=*/nullptr,
         /*off_the_record=*/false);
+
+    manager_->BindReceiver(kBindingContext,
+                           manager_remote_.BindNewPipeAndPassReceiver());
   }
 
   void TearDown() override {
+    storage::ExternalMountPoints::GetSystemInstance()->RevokeFileSystem(
+        kTestMountPoint);
+
+    manager_remote_.reset();
     manager_.reset();
+    file_system_context_.reset();
+    chrome_blob_context_.reset();
     task_environment_.RunUntilIdle();
     EXPECT_TRUE(dir_.Delete());
   }
@@ -179,8 +213,46 @@ class FileSystemAccessWatcherManagerTest : public testing::Test {
     return manager_->watcher_manager();
   }
 
+  storage::QuotaErrorOr<storage::BucketLocator>
+  CreateSandboxFileSystemAndGetDefaultBucket() {
+    base::test::TestFuture<
+        blink::mojom::FileSystemAccessErrorPtr,
+        mojo::PendingRemote<blink::mojom::FileSystemAccessDirectoryHandle>>
+        future;
+    manager_remote_->GetSandboxedFileSystem(future.GetCallback());
+    blink::mojom::FileSystemAccessErrorPtr get_fs_result;
+    mojo::PendingRemote<blink::mojom::FileSystemAccessDirectoryHandle>
+        directory_remote;
+    std::tie(get_fs_result, directory_remote) = future.Take();
+    EXPECT_EQ(get_fs_result->status, blink::mojom::FileSystemAccessStatus::kOk);
+    mojo::Remote<blink::mojom::FileSystemAccessDirectoryHandle> root(
+        std::move(directory_remote));
+    EXPECT_TRUE(root);
+
+    storage::QuotaManagerProxySync quota_manager_proxy_sync(
+        quota_manager_proxy_.get());
+
+    // Check default bucket exists.
+    return quota_manager_proxy_sync
+        .GetBucket(kTestStorageKey, storage::kDefaultBucketName,
+                   blink::mojom::StorageType::kTemporary)
+        .transform([&](storage::BucketInfo result) {
+          EXPECT_EQ(result.name, storage::kDefaultBucketName);
+          EXPECT_EQ(result.storage_key, kTestStorageKey);
+          EXPECT_GT(result.id.value(), 0);
+          return result.ToBucketLocator();
+        });
+  }
+
  protected:
   const GURL kTestUrl = GURL("http://example.com/foo");
+  const blink::StorageKey kTestStorageKey =
+      blink::StorageKey::CreateFromStringForTesting("https://example.com/test");
+  const int kProcessId = 1;
+  const int kFrameRoutingId = 2;
+  const GlobalRenderFrameHostId kFrameId{kProcessId, kFrameRoutingId};
+  const FileSystemAccessManagerImpl::BindingContext kBindingContext = {
+      kTestStorageKey, kTestUrl, kFrameId};
 
   BrowserTaskEnvironment task_environment_;
 
@@ -189,9 +261,14 @@ class FileSystemAccessWatcherManagerTest : public testing::Test {
   TestBrowserContext browser_context_;
   TestWebContentsFactory web_contents_factory_;
 
+  scoped_refptr<storage::MockSpecialStoragePolicy> special_storage_policy_;
   scoped_refptr<storage::FileSystemContext> file_system_context_;
   scoped_refptr<ChromeBlobStorageContext> chrome_blob_context_;
+  scoped_refptr<storage::MockQuotaManager> quota_manager_;
+  scoped_refptr<storage::MockQuotaManagerProxy> quota_manager_proxy_;
+
   scoped_refptr<FileSystemAccessManagerImpl> manager_;
+  mojo::Remote<blink::mojom::FileSystemAccessManager> manager_remote_;
 
   raw_ptr<WebContents> web_contents_;
 };
@@ -204,8 +281,8 @@ TEST_F(FileSystemAccessWatcherManagerTest, BasicRegistration) {
       FileSystemAccessEntryFactory::PathType::kLocal, dir_path);
 
   EXPECT_FALSE(watcher_manager().HasObservationsForTesting());
-  EXPECT_FALSE(watcher_manager().HasSourcesForTesting());
 
+  absl::optional<FileSystemAccessWatchScope> observation_scope = absl::nullopt;
   {
     base::test::TestFuture<base::expected<
         std::unique_ptr<Observation>, blink::mojom::FileSystemAccessErrorPtr>>
@@ -220,14 +297,17 @@ TEST_F(FileSystemAccessWatcherManagerTest, BasicRegistration) {
     EXPECT_TRUE(
         watcher_manager().HasObservationForTesting(observation.value().get()));
 
-    // A source should have been created to cover the scope of the observation.
-    EXPECT_TRUE(watcher_manager().HasSourcesForTesting());
+    // A source should have been created to cover the scope of the observation
+    observation_scope = observation.value()->scope();
+    EXPECT_TRUE(watcher_manager().HasSourceContainingScopeForTesting(
+        *observation_scope));
   }
 
   // Destroying an observation unregisters it with the manager and removes the
   // respective source.
   EXPECT_FALSE(watcher_manager().HasObservationsForTesting());
-  EXPECT_FALSE(watcher_manager().HasSourcesForTesting());
+  EXPECT_FALSE(
+      watcher_manager().HasSourceContainingScopeForTesting(*observation_scope));
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA) &&
         // !BUILDFLAG(IS_IOS)
@@ -237,15 +317,15 @@ TEST_F(FileSystemAccessWatcherManagerTest, BasicRegistrationUnownedSource) {
   auto file_url = manager_->CreateFileSystemURLFromPath(
       FileSystemAccessEntryFactory::PathType::kLocal, file_path);
 
+  auto scope = FileSystemAccessWatchScope::GetScopeForFileWatch(file_url);
   {
-    FakeChangeSource source(
-        FileSystemAccessWatchScope::GetScopeForFileWatch(file_url));
+    FakeChangeSource source(scope, file_system_context_);
     watcher_manager().RegisterSource(&source);
     EXPECT_TRUE(watcher_manager().HasSourceForTesting(&source));
   }
 
   // Destroying a source unregisters it with the manager.
-  EXPECT_FALSE(watcher_manager().HasSourcesForTesting());
+  EXPECT_FALSE(watcher_manager().HasSourceContainingScopeForTesting(scope));
 }
 
 TEST_F(FileSystemAccessWatcherManagerTest, UnownedSource) {
@@ -254,7 +334,8 @@ TEST_F(FileSystemAccessWatcherManagerTest, UnownedSource) {
       FileSystemAccessEntryFactory::PathType::kLocal, file_path);
 
   FakeChangeSource source(
-      FileSystemAccessWatchScope::GetScopeForFileWatch(file_url));
+      FileSystemAccessWatchScope::GetScopeForFileWatch(file_url),
+      file_system_context_);
   watcher_manager().RegisterSource(&source);
   EXPECT_TRUE(watcher_manager().HasSourceForTesting(&source));
 
@@ -285,7 +366,8 @@ TEST_F(FileSystemAccessWatcherManagerTest, SourceFailsInitialization) {
       FileSystemAccessEntryFactory::PathType::kLocal, file_path);
 
   FakeChangeSource source(
-      FileSystemAccessWatchScope::GetScopeForFileWatch(file_url));
+      FileSystemAccessWatchScope::GetScopeForFileWatch(file_url),
+      file_system_context_);
   watcher_manager().RegisterSource(&source);
   EXPECT_TRUE(watcher_manager().HasSourceForTesting(&source));
 
@@ -313,7 +395,8 @@ TEST_F(FileSystemAccessWatcherManagerTest, RemoveObservation) {
       FileSystemAccessEntryFactory::PathType::kLocal, file_path);
 
   FakeChangeSource source(
-      FileSystemAccessWatchScope::GetScopeForFileWatch(file_url));
+      FileSystemAccessWatchScope::GetScopeForFileWatch(file_url),
+      file_system_context_);
   watcher_manager().RegisterSource(&source);
   EXPECT_TRUE(watcher_manager().HasSourceForTesting(&source));
 
@@ -344,16 +427,53 @@ TEST_F(FileSystemAccessWatcherManagerTest, RemoveObservation) {
   EXPECT_FALSE(watcher_manager().HasObservationsForTesting());
 }
 
-TEST_F(FileSystemAccessWatcherManagerTest, UnsupportedScope) {
-  // TODO(https://crbug.com/1019297): Sandboxed backends are not yet supported.
-  auto temporary_url = storage::FileSystemURL::CreateForTest(
-      GURL("filesystem:http://chromium.org/temporary/i/has/a.bucket"));
+TEST_F(FileSystemAccessWatcherManagerTest, ObserveBucketFS) {
+  ASSERT_OK_AND_ASSIGN(auto default_bucket,
+                       CreateSandboxFileSystemAndGetDefaultBucket());
+  auto test_dir_url = file_system_context_->CreateCrackedFileSystemURL(
+      kTestStorageKey, storage::kFileSystemTypeTemporary,
+      base::FilePath::FromUTF8Unsafe("test/foo/bar"));
+  test_dir_url.SetBucket(default_bucket);
 
   // Attempting to observe the given file will fail.
   base::test::TestFuture<base::expected<std::unique_ptr<Observation>,
                                         blink::mojom::FileSystemAccessErrorPtr>>
       get_observation_future;
-  watcher_manager().GetFileObservation(temporary_url,
+  watcher_manager().GetFileObservation(test_dir_url,
+                                       get_observation_future.GetCallback());
+  ASSERT_TRUE(get_observation_future.Get().has_value());
+  ChangeAccumulator accumulator(get_observation_future.Take().value());
+  EXPECT_TRUE(
+      watcher_manager().HasObservationForTesting(accumulator.observation()));
+
+  base::test::TestFuture<base::File::Error> create_file_future;
+  manager_->DoFileSystemOperation(
+      FROM_HERE, &storage::FileSystemOperationRunner::CreateDirectory,
+      create_file_future.GetCallback(), test_dir_url,
+      /*exclusive=*/false, /*recursive=*/true);
+  ASSERT_EQ(create_file_future.Get(), base::File::Error::FILE_OK);
+
+  // TODO(https://crbug.com/1486978): Expect changes for recursively-created
+  // intermediate directories.
+  Change expected_change{test_dir_url, /*error=*/false};
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return testing::Matches(testing::Contains(expected_change))(
+        accumulator.changes());
+  }));
+}
+
+TEST_F(FileSystemAccessWatcherManagerTest, UnsupportedScope) {
+  // TODO(https://crbug.com/1019297): External backends are not yet supported.
+  base::FilePath test_external_path =
+      base::FilePath::FromUTF8Unsafe(kTestMountPoint).AppendASCII("foo");
+  auto external_url = manager_->CreateFileSystemURLFromPath(
+      FileSystemAccessEntryFactory::PathType::kExternal, test_external_path);
+
+  // Attempting to observe the given file will fail.
+  base::test::TestFuture<base::expected<std::unique_ptr<Observation>,
+                                        blink::mojom::FileSystemAccessErrorPtr>>
+      get_observation_future;
+  watcher_manager().GetFileObservation(external_url,
                                        get_observation_future.GetCallback());
   ASSERT_FALSE(get_observation_future.Get().has_value());
   EXPECT_EQ(get_observation_future.Get().error()->status,
@@ -371,14 +491,16 @@ TEST_F(FileSystemAccessWatcherManagerTest, OverlappingSourceScopes) {
       FileSystemAccessEntryFactory::PathType::kLocal, file_path);
 
   FakeChangeSource source_for_file(
-      FileSystemAccessWatchScope::GetScopeForFileWatch(file_url));
+      FileSystemAccessWatchScope::GetScopeForFileWatch(file_url),
+      file_system_context_);
   watcher_manager().RegisterSource(&source_for_file);
   EXPECT_TRUE(watcher_manager().HasSourceForTesting(&source_for_file));
 
   // Add another source which covers the scope of `source_for_file`, and more.
   FakeChangeSource source_for_dir(
       FileSystemAccessWatchScope::GetScopeForDirectoryWatch(
-          dir_url, /*is_recursive=*/true));
+          dir_url, /*is_recursive=*/true),
+      file_system_context_);
   watcher_manager().RegisterSource(&source_for_dir);
   EXPECT_TRUE(watcher_manager().HasSourceForTesting(&source_for_dir));
 
@@ -417,7 +539,8 @@ TEST_F(FileSystemAccessWatcherManagerTest, OverlappingObservationScopes) {
       FileSystemAccessEntryFactory::PathType::kLocal, file_path);
 
   FakeChangeSource source(FileSystemAccessWatchScope::GetScopeForDirectoryWatch(
-      dir_url, /*is_recursive=*/true));
+                              dir_url, /*is_recursive=*/true),
+                          file_system_context_);
   watcher_manager().RegisterSource(&source);
   EXPECT_TRUE(watcher_manager().HasSourceForTesting(&source));
 
@@ -466,7 +589,8 @@ TEST_F(FileSystemAccessWatcherManagerTest, ErroredChange) {
       FileSystemAccessEntryFactory::PathType::kLocal, file_path);
 
   FakeChangeSource source(
-      FileSystemAccessWatchScope::GetScopeForFileWatch(file_url));
+      FileSystemAccessWatchScope::GetScopeForFileWatch(file_url),
+      file_system_context_);
   watcher_manager().RegisterSource(&source);
   EXPECT_TRUE(watcher_manager().HasSourceForTesting(&source));
 
@@ -497,7 +621,8 @@ TEST_F(FileSystemAccessWatcherManagerTest, ChangeAtRelativePath) {
       FileSystemAccessEntryFactory::PathType::kLocal, dir_path);
 
   FakeChangeSource source(FileSystemAccessWatchScope::GetScopeForDirectoryWatch(
-      dir_url, /*is_recursive=*/true));
+                              dir_url, /*is_recursive=*/true),
+                          file_system_context_);
   watcher_manager().RegisterSource(&source);
   EXPECT_TRUE(watcher_manager().HasSourceForTesting(&source));
 
@@ -604,7 +729,8 @@ TEST_F(FileSystemAccessWatcherManagerTest,
   ChangeAccumulator accumulator(get_observation_future.Take().value());
   EXPECT_TRUE(
       watcher_manager().HasObservationForTesting(accumulator.observation()));
-  EXPECT_TRUE(watcher_manager().HasSourcesForTesting());
+  EXPECT_TRUE(watcher_manager().HasSourceContainingScopeForTesting(
+      accumulator.observation()->scope()));
 
   // Delete a file in the sub-directory. This should _not_ be reported to
   // `accumulator`.
@@ -646,7 +772,8 @@ TEST_F(FileSystemAccessWatcherManagerTest, WatchLocalDirectoryRecursively) {
   ChangeAccumulator accumulator(get_observation_future.Take().value());
   EXPECT_TRUE(
       watcher_manager().HasObservationForTesting(accumulator.observation()));
-  EXPECT_TRUE(watcher_manager().HasSourcesForTesting());
+  EXPECT_TRUE(watcher_manager().HasSourceContainingScopeForTesting(
+      accumulator.observation()->scope()));
 
   // TODO(https://crbug.com/1432064): Ensure that no events are reported by this
   // point.

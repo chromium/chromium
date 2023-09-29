@@ -14,8 +14,10 @@
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/test/test_file_system_context.h"
+#include "storage/common/file_system/file_system_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/files/file_util.h"
@@ -62,6 +64,8 @@ TEST_F(FileSystemAccessWatchScopeTest, FileScope) {
 
   EXPECT_TRUE(scope.Contains(scope));
   EXPECT_TRUE(scope.Contains(file_url));
+  EXPECT_FALSE(scope.Contains(
+      FileSystemAccessWatchScope::GetScopeForAllBucketFileSystems()));
 
   absl::optional<base::SafeBaseName> sibling_name =
       base::SafeBaseName::Create(FILE_PATH_LITERAL("sibling"));
@@ -110,6 +114,8 @@ TEST_F(FileSystemAccessWatchScopeTest, DirectoryScope) {
 
   EXPECT_TRUE(scope.Contains(scope));
   EXPECT_TRUE(scope.Contains(dir_url));
+  EXPECT_FALSE(scope.Contains(
+      FileSystemAccessWatchScope::GetScopeForAllBucketFileSystems()));
 
   absl::optional<base::SafeBaseName> sibling_name =
       base::SafeBaseName::Create(FILE_PATH_LITERAL("sibling"));
@@ -171,6 +177,8 @@ TEST_F(FileSystemAccessWatchScopeTest, RecursiveDirectoryScope) {
 
   EXPECT_TRUE(scope.Contains(scope));
   EXPECT_TRUE(scope.Contains(dir_url));
+  EXPECT_FALSE(scope.Contains(
+      FileSystemAccessWatchScope::GetScopeForAllBucketFileSystems()));
 
   absl::optional<base::SafeBaseName> sibling_name =
       base::SafeBaseName::Create(FILE_PATH_LITERAL("sibling"));
@@ -219,6 +227,23 @@ TEST_F(FileSystemAccessWatchScopeTest, RecursiveDirectoryScope) {
 
   // TODO(https://crbug.com/1019297): Test that URLs from different file systems
   // return are out of scope.
+}
+
+TEST_F(FileSystemAccessWatchScopeTest, AllBucketFileSystemsScope) {
+  auto scope = FileSystemAccessWatchScope::GetScopeForAllBucketFileSystems();
+
+  EXPECT_TRUE(scope.Contains(scope));
+
+  auto dir_url = CreateFileSystemURLFromPath(dir_.GetPath());
+  ASSERT_EQ(dir_url.type(), storage::FileSystemType::kFileSystemTypeLocal);
+  EXPECT_FALSE(scope.Contains(dir_url));
+
+  auto bucket_url = storage::FileSystemURL::CreateForTest(
+      blink::StorageKey(), storage::kFileSystemTypeTemporary,
+      base::FilePath::FromASCII("testing"));
+  ASSERT_EQ(bucket_url.type(),
+            storage::FileSystemType::kFileSystemTypeTemporary);
+  EXPECT_TRUE(scope.Contains(bucket_url));
 }
 
 }  // namespace content

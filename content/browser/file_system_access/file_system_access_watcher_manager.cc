@@ -10,12 +10,14 @@
 #include "base/check.h"
 #include "base/containers/cxx20_erase_list.h"
 #include "base/functional/bind.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "base/types/pass_key.h"
 #include "build/buildflag.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
+#include "content/browser/file_system_access/file_system_access_bucket_path_watcher.h"
 #include "content/browser/file_system_access/file_system_access_change_source.h"
 #include "content/browser/file_system_access/file_system_access_error.h"
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
@@ -33,27 +35,6 @@
         // !BUILDFLAG(IS_FUCHSIA)
 
 namespace content {
-
-namespace {
-
-FileSystemAccessWatcherManager::Observation::Change ToChange(
-    storage::FileSystemContext& context,
-    const storage::FileSystemURL& root_url,
-    const base::FilePath& relative_path,
-    bool error) {
-  CHECK(!relative_path.IsAbsolute());
-  CHECK(!relative_path.ReferencesParent());
-
-  auto result = context.CreateCrackedFileSystemURL(
-      root_url.storage_key(), root_url.mount_type(),
-      root_url.virtual_path().Append(relative_path));
-  if (root_url.bucket()) {
-    result.SetBucket(root_url.bucket().value());
-  }
-  return {std::move(result), error};
-}
-
-}  // namespace
 
 FileSystemAccessWatcherManager::Observation::Observation(
     FileSystemAccessWatcherManager* watcher_manager,
@@ -84,7 +65,12 @@ void FileSystemAccessWatcherManager::Observation::NotifyOfChanges(
 FileSystemAccessWatcherManager::FileSystemAccessWatcherManager(
     FileSystemAccessManagerImpl* manager,
     base::PassKey<FileSystemAccessManagerImpl> /*pass_key*/)
-    : manager_(manager) {}
+    : manager_(manager),
+      bucket_path_watcher_(std::make_unique<FileSystemAccessBucketPathWatcher>(
+          base::WrapRefCounted(manager_->context()),
+          base::PassKey<FileSystemAccessWatcherManager>())) {
+  RegisterSource(bucket_path_watcher_.get());
+}
 
 FileSystemAccessWatcherManager::~FileSystemAccessWatcherManager() = default;
 
@@ -136,14 +122,9 @@ void FileSystemAccessWatcherManager::GetDirectoryObservation(
 }
 
 void FileSystemAccessWatcherManager::OnRawChange(
-    FileSystemAccessChangeSource* source,
-    const base::FilePath& relative_path,
+    const storage::FileSystemURL& changed_url,
     bool error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  auto change = ToChange(*manager()->context(), source->scope().root_url(),
-                         relative_path, error);
-  const storage::FileSystemURL changed_url = change.url;
 
   // TODO(https://crbug.com/1019297):
   //   - Batch changes.
@@ -151,7 +132,8 @@ void FileSystemAccessWatcherManager::OnRawChange(
   //     swap files.
   //   - Discard changes corresponding to non-fully-active pages.
 
-  const std::list<Observation::Change> changes = {std::move(change)};
+  const std::list<Observation::Change> changes = {
+      {.url = changed_url, .error = error}};
   for (auto& observation : observations_) {
     if (observation.scope().Contains(changed_url)) {
       observation.NotifyOfChanges(
@@ -201,6 +183,15 @@ void FileSystemAccessWatcherManager::RemoveObserver(Observation* observation) {
                  return source->scope().Contains(observation.scope());
                });
   });
+}
+
+bool FileSystemAccessWatcherManager::HasSourceContainingScopeForTesting(
+    const FileSystemAccessWatchScope& scope) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return base::ranges::any_of(
+      all_sources_, [&scope](const FileSystemAccessChangeSource* source) {
+        return source->scope().Contains(scope);
+      });
 }
 
 void FileSystemAccessWatcherManager::EnsureSourceIsInitializedForScope(
@@ -294,8 +285,15 @@ std::unique_ptr<FileSystemAccessChangeSource>
 FileSystemAccessWatcherManager::CreateOwnedSourceForScope(
     FileSystemAccessWatchScope scope) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(scope.root_url().is_valid());
 
-  if (scope.root_url().type() != storage::kFileSystemTypeLocal) {
+  if (scope.root_url().mount_type() !=
+      storage::FileSystemType::kFileSystemTypeLocal) {
+    // We should never have to create an owned source for a bucket file system,
+    // since `bucket_path_watcher_` covers all possible bucket scopes.
+    CHECK(scope.root_url().type() !=
+          storage::FileSystemType::kFileSystemTypeTemporary);
+
     // TODO(https://crbug.com/1019297): Support non-local file systems.
     return nullptr;
   }
@@ -308,7 +306,8 @@ FileSystemAccessWatcherManager::CreateOwnedSourceForScope(
   return nullptr;
 #else
   auto new_source = std::make_unique<FileSystemAccessLocalPathWatcher>(
-      std::move(scope), base::PassKey<FileSystemAccessWatcherManager>());
+      std::move(scope), base::WrapRefCounted(manager()->context()),
+      base::PassKey<FileSystemAccessWatcherManager>());
   RegisterSource(new_source.get());
   return new_source;
 #endif  //  BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS) || BUILDFLAG(IS_FUCHSIA)

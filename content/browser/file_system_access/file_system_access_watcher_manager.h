@@ -16,6 +16,7 @@
 #include "base/sequence_checker.h"
 #include "base/types/expected.h"
 #include "base/types/pass_key.h"
+#include "content/browser/file_system_access/file_system_access_bucket_path_watcher.h"
 #include "content/browser/file_system_access/file_system_access_change_source.h"
 #include "content/browser/file_system_access/file_system_access_watch_scope.h"
 #include "content/common/content_export.h"
@@ -120,8 +121,7 @@ class CONTENT_EXPORT FileSystemAccessWatcherManager
                                GetObservationCallback get_observation_callback);
 
   // FileSystemAccessChangeSource::RawChangeObserver:
-  void OnRawChange(FileSystemAccessChangeSource* source,
-                   const base::FilePath& relative_path,
+  void OnRawChange(const storage::FileSystemURL& changed_url,
                    bool error) override;
   void OnSourceBeingDestroyed(FileSystemAccessChangeSource* source) override;
 
@@ -141,14 +141,12 @@ class CONTENT_EXPORT FileSystemAccessWatcherManager
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return observations_.HasObserver(observation);
   }
-  bool HasSourcesForTesting() const {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return source_observations_.IsObservingAnySource();
-  }
   bool HasSourceForTesting(FileSystemAccessChangeSource* source) const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return source_observations_.IsObservingSource(source);
   }
+  bool HasSourceContainingScopeForTesting(
+      const FileSystemAccessWatchScope& scope) const;
 
   FileSystemAccessManagerImpl* manager() { return manager_; }
 
@@ -178,6 +176,15 @@ class CONTENT_EXPORT FileSystemAccessWatcherManager
 
   // The manager which owns this instance.
   const raw_ptr<FileSystemAccessManagerImpl> manager_;
+
+  // Watches changes to the all bucket file systems. Though this is technically
+  // a change source which is owned by this instance, it is not included in
+  // `owned_sources_` simply because this watcher should never be revoked.
+  // TODO(https://crbug.com/1019297): Consider making the lifetime of this
+  // watcher match other owned sources; creating an instance on-demand and then
+  // destroying it when it is no longer needed.
+  std::unique_ptr<FileSystemAccessBucketPathWatcher> bucket_path_watcher_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   base::flat_set<std::unique_ptr<FileSystemAccessObserverHost>,
                  base::UniquePtrComparator>

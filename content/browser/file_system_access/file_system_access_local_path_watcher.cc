@@ -35,8 +35,10 @@ scoped_refptr<base::SequencedTaskRunner> CreateFilePathWatcherTaskRunner() {
 
 FileSystemAccessLocalPathWatcher::FileSystemAccessLocalPathWatcher(
     FileSystemAccessWatchScope scope,
+    scoped_refptr<storage::FileSystemContext> file_system_context,
     base::PassKey<FileSystemAccessWatcherManager> /*pass_key*/)
-    : FileSystemAccessChangeSource(std::move(scope)),
+    : FileSystemAccessChangeSource(std::move(scope),
+                                   std::move(file_system_context)),
       watcher_(CreateFilePathWatcherTaskRunner()) {}
 
 FileSystemAccessLocalPathWatcher::~FileSystemAccessLocalPathWatcher() = default;
