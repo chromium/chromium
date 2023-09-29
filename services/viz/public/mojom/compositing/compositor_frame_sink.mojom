@@ -44,6 +44,11 @@ interface CompositorFrameSink {
   // receive such BeginFrames, others will still receive the signals separately.
   SetWantsBeginFrameAcks();
 
+  // Lets the display compositor know that the client wants to use unsolicited
+  // compositor frame submission to indicate that it wants to receive subsequent
+  // BeginFrame events, as if SetNeedsBeginFrame(true) is called.
+  SetAutoNeedsBeginFrame();
+
   // Submits a CompositorFrame to the display compositor that will be presented
   // to screen the next time frames from all CompositorFrameSinks are aggregated
   // to produce a display CompositorFrame. If a client wishes to allocate a new

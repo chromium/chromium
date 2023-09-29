@@ -529,6 +529,10 @@ void CompositorFrameSinkSupport::SetWantsBeginFrameAcks() {
   wants_begin_frame_acks_ = true;
 }
 
+void CompositorFrameSinkSupport::SetAutoNeedsBeginFrame() {
+  auto_needs_begin_frame_ = true;
+}
+
 bool CompositorFrameSinkSupport::WantsAnimateOnlyBeginFrames() const {
   return wants_animate_only_begin_frames_;
 }
@@ -666,7 +670,7 @@ SubmitResult CompositorFrameSinkSupport::MaybeSubmitCompositorFrame(
     absl::optional<HitTestRegionList> hit_test_region_list,
     uint64_t submit_time,
     mojom::CompositorFrameSink::SubmitCompositorFrameSyncCallback callback) {
-  if (!client_needs_begin_frame_ && features::IsAutoNeedsBeginFrameEnabled()) {
+  if (!client_needs_begin_frame_ && auto_needs_begin_frame_) {
     handling_auto_needs_begin_frame_ = true;
     SetNeedsBeginFrame(true);
     handling_auto_needs_begin_frame_ = false;

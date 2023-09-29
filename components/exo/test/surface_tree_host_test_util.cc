@@ -7,7 +7,6 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
-#include "components/viz/common/features.h"
 
 namespace exo::test {
 
@@ -16,20 +15,20 @@ void SetFrameSubmissionFeatureFlags(base::test::ScopedFeatureList* feature_list,
   switch (frame_submission) {
     case FrameSubmissionType::kNoReactive: {
       feature_list->InitWithFeatures(
-          /*enabled_features=*/{kExoReactiveFrameSubmission},
-          /*disabled_features=*/{});
+          /*enabled_features=*/{},
+          /*disabled_features=*/{kExoReactiveFrameSubmission});
       break;
     }
     case FrameSubmissionType::kReactive_NoAutoNeedsBeginFrame: {
       feature_list->InitWithFeatures(
           /*enabled_features=*/{kExoReactiveFrameSubmission},
-          /*disabled_features=*/{features::kAutoNeedsBeginFrame});
+          /*disabled_features=*/{kExoAutoNeedsBeginFrame});
       break;
     }
     case FrameSubmissionType::kReactive_AutoNeedsBeginFrame: {
       feature_list->InitWithFeatures(
           /*enabled_features=*/{kExoReactiveFrameSubmission,
-                                features::kAutoNeedsBeginFrame},
+                                kExoAutoNeedsBeginFrame},
           /*disabled_features=*/{});
       break;
     }

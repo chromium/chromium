@@ -675,22 +675,11 @@ class OnBeginFrameAcksSurfaceSynchronizationTest
 
 OnBeginFrameAcksSurfaceSynchronizationTest::
     OnBeginFrameAcksSurfaceSynchronizationTest() {
-  std::vector<base::test::FeatureRef> enabled_features;
-  std::vector<base::test::FeatureRef> disabled_features;
-
   if (BeginFrameAcksEnabled()) {
-    enabled_features.push_back(features::kOnBeginFrameAcks);
+    scoped_feature_list_.InitAndEnableFeature(features::kOnBeginFrameAcks);
   } else {
-    disabled_features.push_back(features::kOnBeginFrameAcks);
+    scoped_feature_list_.InitAndDisableFeature(features::kOnBeginFrameAcks);
   }
-
-  if (AutoNeedsBeginFrame()) {
-    enabled_features.push_back(features::kAutoNeedsBeginFrame);
-  } else {
-    disabled_features.push_back(features::kAutoNeedsBeginFrame);
-  }
-
-  scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
 }
 
 void OnBeginFrameAcksSurfaceSynchronizationTest::SetUp() {
@@ -699,6 +688,11 @@ void OnBeginFrameAcksSurfaceSynchronizationTest::SetUp() {
     parent_support().SetWantsBeginFrameAcks();
     child_support1().SetWantsBeginFrameAcks();
     child_support2().SetWantsBeginFrameAcks();
+  }
+  if (AutoNeedsBeginFrame()) {
+    parent_support().SetAutoNeedsBeginFrame();
+    child_support1().SetAutoNeedsBeginFrame();
+    child_support2().SetAutoNeedsBeginFrame();
   }
 }
 

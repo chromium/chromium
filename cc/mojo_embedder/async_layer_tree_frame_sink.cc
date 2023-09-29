@@ -80,7 +80,6 @@ AsyncLayerTreeFrameSink::AsyncLayerTreeFrameSink(
       auto_needs_begin_frame_(params->auto_needs_begin_frame),
       use_begin_frame_presentation_feedback_(
           params->use_begin_frame_presentation_feedback) {
-  CHECK(!auto_needs_begin_frame_ || features::IsAutoNeedsBeginFrameEnabled());
   DETACH_FROM_THREAD(thread_checker_);
 }
 
@@ -128,6 +127,9 @@ bool AsyncLayerTreeFrameSink::BindToClient(LayerTreeFrameSinkClient* client) {
   if (wants_animate_only_begin_frames_)
     compositor_frame_sink_->SetWantsAnimateOnlyBeginFrames();
   compositor_frame_sink_ptr_->SetWantsBeginFrameAcks();
+  if (auto_needs_begin_frame_) {
+    compositor_frame_sink_ptr_->SetAutoNeedsBeginFrame();
+  }
 
   compositor_frame_sink_ptr_->InitializeCompositorFrameSinkType(
       viz::mojom::CompositorFrameSinkType::kLayerTree);

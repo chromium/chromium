@@ -1293,13 +1293,11 @@ TEST_P(OnBeginFrameAcksCompositorFrameSinkSupportTest,
   EXPECT_FALSE(BeginFrameArgsAreEquivalent(args, received_args));
 }
 
-// Validates that if AutoNeedsBeginFrame is enabled, an unsolicited frame
-// indicates the client wants to receive subsequent BeginFrames, as if
-// SetNeedsBeginFrame(true) is called.
+// Validates that if the client wants AutoNeedsBeginFrame, an unsolicited frame
+// starts subsequent BeginFrames, as if SetNeedsBeginFrame(true) is called.
 TEST_P(OnBeginFrameAcksCompositorFrameSinkSupportTest,
        AutoNeedsBeginFrameOnUnsolicitedFrame) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kAutoNeedsBeginFrame);
+  support_->SetAutoNeedsBeginFrame();
 
   EXPECT_FALSE(client_needs_begin_frame(support_.get()));
 

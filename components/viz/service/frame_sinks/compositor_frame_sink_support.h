@@ -184,6 +184,7 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
   void SetNeedsBeginFrame(bool needs_begin_frame);
   void SetWantsAnimateOnlyBeginFrames();
   void SetWantsBeginFrameAcks();
+  void SetAutoNeedsBeginFrame();
   void DidNotProduceFrame(const BeginFrameAck& ack);
   void SubmitCompositorFrame(
       const LocalSurfaceId& local_surface_id,
@@ -417,6 +418,7 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
 
   bool wants_animate_only_begin_frames_ = false;
   bool wants_begin_frame_acks_ = false;
+  bool auto_needs_begin_frame_ = false;
 
   // Indicates the FrameSinkBundle to which this sink belongs, if any.
   absl::optional<FrameSinkBundleId> bundle_id_;
