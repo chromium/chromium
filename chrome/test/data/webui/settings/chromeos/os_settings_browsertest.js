@@ -211,7 +211,6 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
  //   'ApnSubpage', 'apn_subpage_tests.js',
  //   {enabled: ['ash::features::kApnRevamp']}
  // ],
- ['AppsPage', 'apps_page_test.js'],
  ['AppManagementFileHandlingItem', 'app_management/file_handling_item_test.js'],
  ['AppManagementManagedApps', 'app_management/managed_apps_test.js'],
  ['AppManagementToggleRow', 'app_management/toggle_row_test.js'],
@@ -721,6 +720,7 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
    'OsAppsPageAppNotificationsPageAppNotificationsSubpage',
    'os_apps_page/app_notifications_page/app_notifications_subpage_test.js'
  ],
+ ['OsAppsPage', 'os_apps_page/os_apps_page_test.js'],
  [
    'OsAppsPageManageIsolatedWebAppsPageManageIsolatedWebAppsSubpage',
    'os_apps_page/manage_isolated_web_apps_page/manage_isolated_web_apps_subpage_test.js'

@@ -23,7 +23,6 @@ build_webui_tests("build") {
   files = [
     "apn_subpage_tests.js",
     "apn_detail_dialog_tests.js",
-    "apps_page_test.js",
     "cellular_networks_list_test.js",
     "cellular_roaming_toggle_button_test.js",
     "crostini_extra_containers_subpage_test.js",
@@ -54,7 +53,6 @@ build_webui_tests("build") {
     "personalization_page_with_personalization_hub_test.js",
     "search_engine_test.js",
     "test_about_page_browser_proxy_chromeos.js",
-    "test_android_apps_browser_proxy.js",
     "test_api.ts",
     "test_bluetooth_page_browser_proxy.js",
     "test_crostini_browser_proxy.js",
@@ -203,6 +201,9 @@ build_webui_tests("build") {
     "os_apps_page/app_notifications_page/fake_app_notification_handler.ts",
 
     "os_apps_page/manage_isolated_web_apps_page/manage_isolated_web_apps_subpage_test.ts",
+
+    "os_apps_page/os_apps_page_test.ts",
+    "os_apps_page/test_android_apps_browser_proxy.ts",
 
     "os_bluetooth_page/os_bluetooth_change_device_name_dialog_test.ts",
     "os_bluetooth_page/os_bluetooth_device_detail_subpage_tests.js",

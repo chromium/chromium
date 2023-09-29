@@ -28,7 +28,7 @@ import {Route, Router, routes} from '../router.js';
 import {AndroidAppsBrowserProxyImpl, AndroidAppsInfo} from './android_apps_browser_proxy.js';
 import {getTemplate} from './android_apps_subpage.html.js';
 
-interface SettingsAndroidAppsSubpageElement {
+export interface SettingsAndroidAppsSubpageElement {
   $: {
     confirmDisableDialog: CrDialogElement,
   };
@@ -39,7 +39,7 @@ const GOOGLE_PLAY_STORE_URL = 'https://play.google.com/store/';
 const SettingsAndroidAppsSubpageElementBase =
     DeepLinkingMixin(RouteObserverMixin(PrefsMixin(I18nMixin(PolymerElement))));
 
-class SettingsAndroidAppsSubpageElement extends
+export class SettingsAndroidAppsSubpageElement extends
     SettingsAndroidAppsSubpageElementBase {
   static get is() {
     return 'settings-android-apps-subpage' as const;

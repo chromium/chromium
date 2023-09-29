@@ -188,7 +188,7 @@ export {TtsVoiceSubpageBrowserProxy, TtsVoiceSubpageBrowserProxyImpl} from './os
 export {AboutPageBrowserProxyImpl, BrowserChannel, UpdateStatus} from './os_about_page/about_page_browser_proxy.js';
 export {DeviceNameBrowserProxyImpl} from './os_about_page/device_name_browser_proxy.js';
 export {DeviceNameState, SetDeviceNameResult} from './os_about_page/device_name_util.js';
-export {AndroidAppsBrowserProxyImpl} from './os_apps_page/android_apps_browser_proxy.js';
+export {AndroidAppsBrowserProxy, AndroidAppsBrowserProxyImpl} from './os_apps_page/android_apps_browser_proxy.js';
 export {addApp, AppManagementActions, changeApp, removeApp, updateSelectedAppId, updateSubAppToParentAppId} from './os_apps_page/app_management_page/actions.js';
 export {AppManagementBrowserProxy, AppManagementComponentBrowserProxy} from './os_apps_page/app_management_page/browser_proxy.js';
 export {PluginVmBrowserProxy, PluginVmBrowserProxyImpl} from './os_apps_page/app_management_page/plugin_vm_page/plugin_vm_browser_proxy.js';
@@ -196,6 +196,7 @@ export {reduceAction, updateApps} from './os_apps_page/app_management_page/reduc
 export {AppManagementPageState, AppManagementStore} from './os_apps_page/app_management_page/store.js';
 export {AppManagementStoreMixin} from './os_apps_page/app_management_page/store_mixin.js';
 export {setAppNotificationProviderForTesting} from './os_apps_page/app_notifications_page/mojo_interface_provider.js';
+export {OsSettingsAppsPageElement} from './os_apps_page/os_apps_page.js';
 export {OsBluetoothDevicesSubpageBrowserProxy, OsBluetoothDevicesSubpageBrowserProxyImpl} from './os_bluetooth_page/os_bluetooth_devices_subpage_browser_proxy.js';
 export {SettingsBluetoothPageElement} from './os_bluetooth_page/os_bluetooth_page.js';
 export {SettingsBluetoothPairingDialogElement} from './os_bluetooth_page/os_bluetooth_pairing_dialog.js';

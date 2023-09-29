@@ -68,7 +68,7 @@ export function isAppInstalled(app: AppWithNotifications): boolean {
 const OsSettingsAppsPageElementBase = DeepLinkingMixin(RouteOriginMixin(
     PrefsMixin(AppManagementStoreMixin(I18nMixin(PolymerElement)))));
 
-class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
+export class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
   static get is() {
     return 'os-settings-apps-page' as const;
   }
