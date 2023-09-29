@@ -743,19 +743,9 @@ FontSizeAdjust StyleBuilderConverterBase::ConvertFontSizeAdjust(
     return FontBuilder::InitialSizeAdjust();
   }
 
-  float computed_font_size =
-      state.ParentStyle() ? state.ParentStyle()->ComputedFontSize() : 0;
-  const SimpleFontData* font_data =
-      state.ParentStyle() ? state.ParentStyle()->GetFont().PrimaryFont()
-                          : nullptr;
   if (identifier_value &&
       identifier_value->GetValueID() == CSSValueID::kFromFont) {
-    absl::optional<float> aspect_value = FontSizeFunctions::FontAspectValue(
-        font_data, FontSizeAdjust::Metric::kExHeight, computed_font_size);
-    return FontSizeAdjust(aspect_value.has_value()
-                              ? aspect_value.value()
-                              : FontSizeAdjust::kFontSizeAdjustNone,
-                          true);
+    return FontSizeAdjust(FontSizeAdjust::kFontSizeAdjustNone, true);
   }
 
   if (value.IsPrimitiveValue()) {
@@ -777,12 +767,7 @@ FontSizeAdjust StyleBuilderConverterBase::ConvertFontSizeAdjust(
 
   DCHECK(To<CSSIdentifierValue>(pair.Second()).GetValueID() ==
          CSSValueID::kFromFont);
-  absl::optional<float> aspect_value =
-      FontSizeFunctions::FontAspectValue(font_data, metric, computed_font_size);
-  return FontSizeAdjust(aspect_value.has_value()
-                            ? aspect_value.value()
-                            : FontSizeAdjust::kFontSizeAdjustNone,
-                        metric, true);
+  return FontSizeAdjust(FontSizeAdjust::kFontSizeAdjustNone, metric, true);
 }
 
 FontSizeAdjust StyleBuilderConverter::ConvertFontSizeAdjust(

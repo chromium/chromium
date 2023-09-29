@@ -247,11 +247,12 @@ absl::optional<float> FontSizeFunctions::MetricsMultiplierAdjustedFontSize(
     const FontDescription& font_description) {
   DCHECK(font_data);
   const float computed_size = font_description.ComputedSize();
-  if (!computed_size) {
+  const FontSizeAdjust size_adjust = font_description.SizeAdjust();
+  if (!computed_size ||
+      size_adjust.Value() == FontSizeAdjust::kFontSizeAdjustNone) {
     return absl::nullopt;
   }
 
-  const FontSizeAdjust size_adjust = font_description.SizeAdjust();
   float aspect_value = AspectValue(font_data->GetFontMetrics(),
                                    size_adjust.GetMetric(), computed_size);
   if (!aspect_value) {

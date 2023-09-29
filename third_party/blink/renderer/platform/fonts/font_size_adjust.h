@@ -28,7 +28,9 @@ class PLATFORM_EXPORT FontSizeAdjust {
 
   static constexpr float kFontSizeAdjustNone = -1;
 
-  explicit operator bool() const { return value_ != kFontSizeAdjustNone; }
+  explicit operator bool() const {
+    return value_ != kFontSizeAdjustNone || is_from_font_;
+  }
   bool operator==(const FontSizeAdjust& other) const {
     return value_ == other.Value() && metric_ == other.GetMetric() &&
            is_from_font_ == other.IsFromFont();

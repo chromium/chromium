@@ -374,6 +374,17 @@ void FontBuilder::UpdateAdjustedSize(FontDescription& font_description,
     return;
   }
 
+  FontSizeAdjust size_adjust = font_description.SizeAdjust();
+  if (size_adjust.IsFromFont() &&
+      size_adjust.Value() == FontSizeAdjust::kFontSizeAdjustNone) {
+    absl::optional<float> aspect_value = FontSizeFunctions::FontAspectValue(
+        font_data, size_adjust.GetMetric(), font_description.ComputedSize());
+    font_description.SetSizeAdjust(FontSizeAdjust(
+        aspect_value.has_value() ? aspect_value.value()
+                                 : FontSizeAdjust::kFontSizeAdjustNone,
+        size_adjust.GetMetric(), size_adjust.IsFromFont()));
+  }
+
   if (auto adjusted_size = FontSizeFunctions::MetricsMultiplierAdjustedFontSize(
           font_data, font_description)) {
     font_description.SetAdjustedSize(adjusted_size.value());
