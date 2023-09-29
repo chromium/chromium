@@ -76,6 +76,17 @@ class PopupCellWithButtonView : public PopupCellView,
   void SetCellButton(std::unique_ptr<views::ImageButton> cell_button);
   views::ImageButton* GetCellButtonForTest() { return button_; }
 
+  // Determines under which conditions the button (if there is one) is visible.
+  enum class CellButtonBehavior {
+    // The button is only visible if the cell or the button are selected or
+    // hovered.
+    kShowOnHoverOrSelect,
+    // The button is always visible.
+    kShowAlways,
+  };
+  // Sets the visibility behavior of the cell button.
+  void SetCellButtonBehavior(CellButtonBehavior cell_button_behavior);
+
   // Returns the view that contains the button or `nullptr` if no button is set.
   views::View* GetButtonContainer() { return button_placeholder_; }
 
@@ -95,12 +106,19 @@ class PopupCellWithButtonView : public PopupCellView,
   void HandleKeyPressEventFocusOnButton();
   void HandleKeyPressEventFocusOnContent();
 
+  // Returns whether the cell button (if there is one) should be visible.
+  bool ShouldCellButtonBeVisible() const;
+
   raw_ptr<views::ImageButton> button_ = nullptr;
   raw_ptr<ButtonPlaceholder> button_placeholder_ = nullptr;
 
   // Whether the button has been focused. Used for accessibility and arrow
   // navigation purposes.
   bool button_focused_ = false;
+
+  CellButtonBehavior cell_button_behavior_ =
+      CellButtonBehavior::kShowOnHoverOrSelect;
+
   // TODO(crbug.com/1417187): Remove once the work-around is fixed.
   std::u16string button_accessible_name_;
 };

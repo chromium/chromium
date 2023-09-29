@@ -35,10 +35,11 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_utils.h"
 
+namespace autofill {
+
 using ::testing::Return;
 using ::testing::StrictMock;
-
-namespace autofill {
+using CellButtonBehavior = PopupCellWithButtonView::CellButtonBehavior;
 
 class PopupCellWithButtonViewTest : public ChromeViewsTestBase {
  public:
@@ -71,7 +72,9 @@ class PopupCellWithButtonViewTest : public ChromeViewsTestBase {
   }
 
   views::ImageButton* CreateRowAndGetButton(
-      base::RepeatingClosure button_callback = base::DoNothing()) {
+      base::RepeatingClosure button_callback = base::DoNothing(),
+      CellButtonBehavior cell_button_behavior =
+          CellButtonBehavior::kShowOnHoverOrSelect) {
     auto cell = std::make_unique<PopupCellWithButtonView>(
         /*should_ignore_mouse_observed_outside_item_bounds_check=*/true);
     cell->SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -79,6 +82,7 @@ class PopupCellWithButtonViewTest : public ChromeViewsTestBase {
     cell->AddChildView(std::make_unique<views::Label>(u"Some label"));
     cell->SetAccessibilityDelegate(
         std::make_unique<TestAccessibilityDelegate>());
+    cell->SetCellButtonBehavior(cell_button_behavior);
     cell->SetCellButton(
         std::make_unique<views::ImageButton>(std::move(button_callback)));
     views::ImageButton* button = cell->GetCellButtonForTest();
@@ -100,14 +104,28 @@ class PopupCellWithButtonViewTest : public ChromeViewsTestBase {
 TEST_F(PopupCellWithButtonViewTest, ShowsOrHideButtonOnSelected) {
   views::ImageButton* button = CreateRowAndGetButton();
 
-  // Show delete button if row is selected.
-  ASSERT_FALSE(button->GetVisible());
+  // The button is shown if the row is selected.
+  EXPECT_FALSE(button->GetVisible());
   view().SetSelected(true);
-  ASSERT_TRUE(button->GetVisible());
+  EXPECT_TRUE(button->GetVisible());
 
-  // Hide delete button if row is not selected.
+  // The button is hidden if the row is not selected.
   view().SetSelected(false);
-  ASSERT_FALSE(button->GetVisible());
+  EXPECT_FALSE(button->GetVisible());
+}
+
+// Tests that the cell button is always visible for
+// `CellButtonBehavior::kShowAlways`.
+TEST_F(PopupCellWithButtonViewTest, DoNotHideButtonForShowAlwaysBehavior) {
+  views::ImageButton* button = CreateRowAndGetButton(
+      /*button_callback=*/base::DoNothing(), CellButtonBehavior::kShowAlways);
+
+  EXPECT_TRUE(button->GetVisible());
+  view().SetSelected(true);
+  EXPECT_TRUE(button->GetVisible());
+
+  view().SetSelected(false);
+  EXPECT_TRUE(button->GetVisible());
 }
 
 TEST_F(PopupCellWithButtonViewTest,

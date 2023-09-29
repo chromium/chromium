@@ -137,11 +137,19 @@ void PopupCellWithButtonView::SetCellButton(
   button_placeholder_->SetLayoutManager(std::make_unique<views::BoxLayout>());
   button_placeholder_->SetPreferredSize(cell_button->GetPreferredSize());
   button_ = button_placeholder_->AddChildView(std::move(cell_button));
-  button_->SetVisible(selected_);
+  button_->SetVisible(ShouldCellButtonBeVisible());
   button_->SetButtonController(std::make_unique<CellButtonController>(
       button_, this,
       std::make_unique<views::Button::DefaultButtonControllerDelegate>(
           button_.get())));
+}
+
+void PopupCellWithButtonView::SetCellButtonBehavior(
+    CellButtonBehavior cell_button_behavior) {
+  cell_button_behavior_ = cell_button_behavior;
+  if (button_) {
+    button_->SetVisible(ShouldCellButtonBeVisible());
+  }
 }
 
 void PopupCellWithButtonView::HandleKeyPressEventFocusOnButton() {
@@ -226,11 +234,14 @@ void PopupCellWithButtonView::SetSelected(bool selected) {
   // announces "delete jon". This does not happen if the button has no
   // accessible name.
   if (button_) {
-    button_->SetVisible(selected);
+    button_->SetVisible(ShouldCellButtonBeVisible());
     button_->SetAccessibleName(u"");
   }
 
   autofill::PopupCellView::SetSelected(selected);
+  if (button_) {
+    button_->SetVisible(ShouldCellButtonBeVisible());
+  }
 
   // There are cases where SetSelect is called with the same value as before
   // but we still want to refresh the style. For example in the case where there
@@ -272,6 +283,15 @@ void PopupCellWithButtonView::UpdateSelectedAndRunCallback(bool selected) {
   if (base::RepeatingClosure callback =
           selected_ ? on_selected_callback_ : on_unselected_callback_) {
     callback.Run();
+  }
+}
+
+bool PopupCellWithButtonView::ShouldCellButtonBeVisible() const {
+  switch (cell_button_behavior_) {
+    case CellButtonBehavior::kShowOnHoverOrSelect:
+      return selected_;
+    case CellButtonBehavior::kShowAlways:
+      return true;
   }
 }
 
