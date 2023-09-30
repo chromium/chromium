@@ -13,12 +13,12 @@ import {assert} from 'chrome://resources/js/assert_ts.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {FocusConfig} from '../../focus_config.js';
-import {HatsBrowserProxyImpl, TrustSafetyInteraction} from '../../hats_browser_proxy.js';
-import {loadTimeData} from '../../i18n_setup.js';
-import {MetricsBrowserProxy, MetricsBrowserProxyImpl} from '../../metrics_browser_proxy.js';
-import {routes} from '../../route.js';
-import {Router} from '../../router.js';
+import {FocusConfig} from '../focus_config.js';
+import {HatsBrowserProxyImpl, TrustSafetyInteraction} from '../hats_browser_proxy.js';
+import {loadTimeData} from '../i18n_setup.js';
+import {MetricsBrowserProxy, MetricsBrowserProxyImpl} from '../metrics_browser_proxy.js';
+import {routes} from '../route.js';
+import {Router} from '../router.js';
 
 import {getTemplate} from './privacy_sandbox_page.html.js';
 
