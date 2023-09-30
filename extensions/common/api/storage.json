@@ -100,7 +100,7 @@
               "parameters": [
                 {
                   "name": "bytesInUse",
-                  "type": "integer",
+                  "type": "number",
                   "description": "Amount of space being used in storage, in bytes."
                 }
               ]

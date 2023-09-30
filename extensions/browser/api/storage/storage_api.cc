@@ -353,7 +353,7 @@ StorageStorageAreaGetBytesInUseFunction::RunWithStorage(ValueStore* storage) {
       return BadMessage();
   }
 
-  return WithArguments(static_cast<int>(bytes_in_use));
+  return WithArguments(static_cast<double>(bytes_in_use));
 }
 
 ExtensionFunction::ResponseValue
@@ -385,10 +385,9 @@ StorageStorageAreaGetBytesInUseFunction::RunInSession() {
       return BadMessage();
   }
 
-  // Checked cast should not overflow since `bytes_in_use` is guaranteed to be a
-  // small number, due to the quota limits we have in place for in-memory
-  // storage
-  return WithArguments(base::checked_cast<int>(bytes_in_use));
+  // Checked cast should not overflow since a double can represent up to 2*53
+  // bytes before a loss of precision.
+  return WithArguments(base::checked_cast<double>(bytes_in_use));
 }
 
 ExtensionFunction::ResponseValue StorageStorageAreaSetFunction::RunWithStorage(

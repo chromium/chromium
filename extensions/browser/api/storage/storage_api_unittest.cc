@@ -4,6 +4,9 @@
 
 #include "extensions/browser/api/storage/storage_api.h"
 
+#include "stdint.h"
+
+#include <limits>
 #include <memory>
 #include <set>
 
@@ -212,6 +215,100 @@ TEST_F(StorageApiUnittest, StorageAreaOnChangedOnlyOneListener) {
 
   EXPECT_TRUE(base::Contains(event_observer.events(),
                              api::storage::OnChanged::kEventName));
+}
+
+// This is a regression test for crbug.com/1483828.
+TEST_F(StorageApiUnittest, GetBytesInUseIntOverflow) {
+  // A fake value store that only implements the overloads of GetBytesInUse().
+  class FakeValueStore : public value_store::ValueStore {
+   public:
+    explicit FakeValueStore(size_t bytes_in_use)
+        : bytes_in_use_(bytes_in_use) {}
+
+    size_t GetBytesInUse(const std::string& key) override {
+      return bytes_in_use_;
+    }
+
+    size_t GetBytesInUse(const std::vector<std::string>& keys) override {
+      return bytes_in_use_;
+    }
+
+    size_t GetBytesInUse() override { return bytes_in_use_; }
+
+    ReadResult Get(const std::string& key) override {
+      NOTREACHED();
+      return ReadResult(Status());
+    }
+
+    ReadResult Get(const std::vector<std::string>& keys) override {
+      NOTREACHED();
+      return ReadResult(Status());
+    }
+
+    ReadResult Get() override {
+      NOTREACHED();
+      return ReadResult(Status());
+    }
+
+    WriteResult Set(WriteOptions options,
+                    const std::string& key,
+                    const base::Value& value) override {
+      NOTREACHED();
+      return WriteResult(Status());
+    }
+
+    WriteResult Set(WriteOptions options,
+                    const base::Value::Dict& values) override {
+      NOTREACHED();
+      return WriteResult(Status());
+    }
+
+    WriteResult Remove(const std::string& key) override {
+      NOTREACHED();
+      return WriteResult(Status());
+    }
+
+    WriteResult Remove(const std::vector<std::string>& keys) override {
+      NOTREACHED();
+      return WriteResult(Status());
+    }
+
+    WriteResult Clear() override {
+      NOTREACHED();
+      return WriteResult(Status());
+    }
+
+   private:
+    size_t bytes_in_use_ = 0;
+  };
+
+  static constexpr struct TestCase {
+    size_t bytes_in_use;
+    double result;
+  } test_cases[] = {
+      {1, 1.0},
+      {std::numeric_limits<int>::max(), std::numeric_limits<int>::max()},
+      // Test the overflow case from the bug. It's enough to have a value
+      // that exceeds the max value that an int can represent.
+      {static_cast<size_t>(std::numeric_limits<int>::max()) + 1,
+       static_cast<size_t>(std::numeric_limits<int>::max()) + 1}};
+
+  for (const auto& test_case : test_cases) {
+    FakeValueStore value_store(test_case.bytes_in_use);
+    auto function =
+        base::MakeRefCounted<StorageStorageAreaGetBytesInUseFunction>();
+    // Call into the protected member function to avoid dealing with how the
+    // base class gets the StorageArea to use. Set `args` to a base::Value
+    // "none" so we get the total bytes in use.
+    base::Value::List args;
+    args.Append(base::Value());
+    function->SetArgs(std::move(args));
+    function->RunWithStorage(&value_store);
+    const base::Value::List* results = function->GetResultListForTest();
+    ASSERT_TRUE(results);
+    ASSERT_EQ(1u, results->size());
+    EXPECT_EQ(test_case.result, (*results)[0]);
+  }
 }
 
 }  // namespace extensions
