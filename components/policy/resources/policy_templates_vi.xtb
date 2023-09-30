@@ -5770,6 +5770,7 @@ Chính sách này luôn có hiệu lực đối với <ph name="PRODUCT_OS_NAME"
 <translation id="6042407236638640864">Cho phép các trang có tiêu đề <ph name="CACHE_CONTROL_NO_STORE_NAME" /> chuyển vào bộ nhớ đệm cho thao tác tiến/lùi</translation>
 <translation id="604243460476563291">Tắt chức năng chuyển tệp trong các kết nối hỗ trợ từ xa từ quản trị viên doanh nghiệp</translation>
 <translation id="6042629184389251062">Không cho phép thu thập chỉ số nhập dưới dạng URL</translation>
+<translation id="6045733613334942660">Trình điều khiển máy quét</translation>
 <translation id="6046615715547751255">Không cho phép các biện pháp kiểm soát báo cáo chi tiết</translation>
 <translation id="6048199181629830227">Bật tính năng quản lý nguồn điện khi chuyển đổi vào giờ cao điểm</translation>
 <translation id="6048690591359317353">Không cho phép người dùng ngắt kết nối hoặc sửa đổi VPN theo cách thủ công</translation>
@@ -7678,6 +7679,7 @@ Về mặt chức năng thì việc không đặt chính sách này tương đư
       Nếu bạn không đặt chính sách này, thì chế độ cài đặt mặc định sẽ là <ph name="LACROS_AVAILABILITY_LACROS_DISALLOWED_VALUE" /> đối với người dùng do doanh nghiệp quản lý và là <ph name="LACROS_AVAILABILITY_USER_CHOICE_VALUE" /> đối với người dùng không được quản lý.
 
       Trong tương lai, bạn có thể dùng giá trị <ph name="LACROS_AVAILABILITY_LACROS_ONLY_VALUE" /> để đặt <ph name="LACROS_NAME" /> làm trình duyệt duy nhất sử dụng được trên <ph name="PRODUCT_OS_NAME" />.</translation>
+<translation id="751071954873065775">Chọn DLC (Nội dung tải xuống được) cần tải xuống trước</translation>
 <translation id="7512065400265675158">Tiêu đề của yêu cầu HTTP <ph name="USER_AGENT_HEADER_NAME" /> được lên lịch để giảm bớt. Để tạo điều kiện cho hoạt động thử nghiệm và khả năng tương thích, chính sách này có thể bật tính năng giảm thiểu cho mọi trang web hoặc tắt tính năng bản dùng thử theo nguyên gốc hoặc bản thử nghiệm để bật tính năng này.
 
       Để tìm hiểu thêm về <ph name="USER_AGENT_REDUCTION_FEATURE_NAME" /> và tiến trình của tác nhân này, hãy đọc tại đây:
@@ -9206,6 +9208,9 @@ Nếu bạn đặt chính sách này thành Tắt, thì hệ thống sẽ không
 
 Nếu bạn đặt chính sách này thành Tắt, thì <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> sẽ không hoạt động trên bất cứ trang web nào.</translation>
 <translation id="8860894781631833477">Người dùng có thể định cấu hình kênh phát hành <ph name="PRODUCT_OS_NAME" /></translation>
+<translation id="8862086508140571198">Chính sách này cho phép thiết lập một danh sách DLC (Nội dung tải xuống được) cần tải xuống sớm nhất có thể. Sau đó, tất cả người dùng trên thiết bị có thể sử dụng DLC đã tải xuống.
+
+Điều này rất hữu ích khi quản trị viên biết rằng những người dùng thiết bị có thể sẽ sử dụng một tính năng cần có DLC.</translation>
 <translation id="8864975621965365890">Loại bỏ lời nhắc từ chối xuất hiện khi một trang web được hiển thị bởi <ph name="PRODUCT_FRAME_NAME" />.</translation>
 <translation id="8865404058177794289">Sử dụng chế độ cài đặt mặc định cho tuỳ chọn kiểm tra việc sử dụng khoá RSA</translation>
 <translation id="8866430022832109569">Báo cáo về khoảng không quảng cáo trên ứng dụng</translation>
