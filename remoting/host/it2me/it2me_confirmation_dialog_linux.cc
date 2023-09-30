@@ -19,7 +19,7 @@
 #include "base/timer/timer.h"
 #include "remoting/base/string_resources.h"
 #include "remoting/host/it2me/it2me_confirmation_dialog.h"
-#include "ui/base/glib/glib_signal.h"
+#include "ui/base/glib/scoped_gsignal.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace remoting {
@@ -51,11 +51,7 @@ class It2MeConfirmationDialogLinux : public It2MeConfirmationDialog {
   void Hide();
 
   // Handles user input from the dialog.
-  CHROMEG_CALLBACK_1(It2MeConfirmationDialogLinux,
-                     void,
-                     OnResponse,
-                     GtkDialog*,
-                     int);
+  void OnResponse(GtkDialog* dialog, int response_id);
 
   // This field is not a raw_ptr<> because of a static_cast not related by
   // inheritance.
@@ -64,6 +60,8 @@ class It2MeConfirmationDialogLinux : public It2MeConfirmationDialog {
   ResultCallback result_callback_;
 
   base::OneShotTimer dialog_timer_;
+
+  ScopedGSignal signal_;
 };
 
 It2MeConfirmationDialogLinux::It2MeConfirmationDialogLinux() {}
@@ -117,8 +115,10 @@ void It2MeConfirmationDialogLinux::CreateWindow(
 
   gtk_window_set_keep_above(GTK_WINDOW(confirmation_window_), true);
 
-  g_signal_connect(confirmation_window_, "response",
-                   G_CALLBACK(OnResponseThunk), this);
+  signal_ = ScopedGSignal(
+      GTK_DIALOG(confirmation_window_), "response",
+      base::BindRepeating(&It2MeConfirmationDialogLinux::OnResponse,
+                          base::Unretained(this)));
 
   GtkWidget* content_area =
       gtk_dialog_get_content_area(GTK_DIALOG(confirmation_window_));

@@ -39,8 +39,8 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/icu/source/common/unicode/unistr.h"
 #include "third_party/icu/source/i18n/unicode/coll.h"
-#include "ui/base/glib/glib_signal.h"
 #include "ui/base/glib/scoped_gobject.h"
+#include "ui/base/glib/scoped_gsignal.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #include "remoting/host/xsession_chooser_ui.inc"
@@ -87,12 +87,19 @@ class SessionDialog {
                          choices_[i].comment.c_str(), -1);
     }
 
-    g_signal_connect(gtk_builder_get_object(ui_, "session_list"),
-                     "row-activated", G_CALLBACK(OnRowActivatedThunk), this);
-    g_signal_connect(gtk_builder_get_object(ui_, "ok_button"), "clicked",
-                     G_CALLBACK(OnOkClickedThunk), this);
-    g_signal_connect(gtk_builder_get_object(ui_, "dialog"), "delete-event",
-                     G_CALLBACK(OnCloseThunk), this);
+    auto connect = [&](auto* sender, const char* detailed_signal,
+                       auto receiver) {
+      // Unretained() is safe since SessionDialog will own the ScopedGSignal.
+      signals_.emplace_back(
+          sender, detailed_signal,
+          base::BindRepeating(receiver, base::Unretained(this)));
+    };
+    connect(GTK_TREE_VIEW(gtk_builder_get_object(ui_, "session_list")),
+            "row-activated", &SessionDialog::OnRowActivated);
+    connect(GTK_BUTTON(gtk_builder_get_object(ui_, "ok_button")), "clicked",
+            &SessionDialog::OnOkClicked);
+    connect(GTK_WIDGET(gtk_builder_get_object(ui_, "dialog")), "delete-event",
+            &SessionDialog::OnClose);
   }
 
   void Show() {
@@ -107,20 +114,18 @@ class SessionDialog {
     }
   }
 
-  CHROMEG_CALLBACK_2(SessionDialog,
-                     void,
-                     OnRowActivated,
-                     GtkTreeView*,
-                     GtkTreePath*,
-                     GtkTreeViewColumn*);
-  CHROMEG_CALLBACK_0(SessionDialog, void, OnOkClicked, GtkButton*);
-  CHROMEG_CALLBACK_1(SessionDialog, gboolean, OnClose, GtkWidget*, GdkEvent*);
+  void OnRowActivated(GtkTreeView* session_list,
+                      GtkTreePath* path,
+                      GtkTreeViewColumn*);
+  void OnOkClicked(GtkButton* button);
+  gboolean OnClose(GtkWidget* dialog, GdkEvent*);
 
   enum Columns { INDEX_COLUMN, NAME_COLUMN, COMMENT_COLUMN, NUM_COLUMNS };
   std::vector<XSession> choices_;
   base::OnceCallback<void(XSession)> callback_;
   base::OnceClosure cancel_callback_;
   ScopedGObject<GtkBuilder> ui_;
+  std::vector<ScopedGSignal> signals_;
 
   SessionDialog(const SessionDialog&) = delete;
   SessionDialog& operator=(const SessionDialog&) = delete;

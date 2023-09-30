@@ -5,9 +5,11 @@
 #include <gtk/gtk.h>
 
 #include <memory>
+#include <vector>
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/numerics/math_constants.h"
@@ -16,7 +18,7 @@
 #include "remoting/base/string_resources.h"
 #include "remoting/host/client_session_control.h"
 #include "remoting/host/host_window.h"
-#include "ui/base/glib/glib_signal.h"
+#include "ui/base/glib/scoped_gsignal.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace remoting {
@@ -37,27 +39,11 @@ class DisconnectWindowGtk : public HostWindow {
       override;
 
  private:
-  CHROMEG_CALLBACK_1(DisconnectWindowGtk,
-                     gboolean,
-                     OnDelete,
-                     GtkWidget*,
-                     GdkEvent*);
-  CHROMEG_CALLBACK_0(DisconnectWindowGtk, void, OnClicked, GtkButton*);
-  CHROMEG_CALLBACK_1(DisconnectWindowGtk,
-                     gboolean,
-                     OnConfigure,
-                     GtkWidget*,
-                     GdkEventConfigure*);
-  CHROMEG_CALLBACK_1(DisconnectWindowGtk,
-                     gboolean,
-                     OnDraw,
-                     GtkWidget*,
-                     cairo_t*);
-  CHROMEG_CALLBACK_1(DisconnectWindowGtk,
-                     gboolean,
-                     OnButtonPress,
-                     GtkWidget*,
-                     GdkEventButton*);
+  gboolean OnDelete(GtkWidget* window, GdkEvent* event);
+  void OnClicked(GtkButton* button);
+  gboolean OnConfigure(GtkWidget* widget, GdkEventConfigure* event);
+  gboolean OnDraw(GtkWidget* widget, cairo_t* cr);
+  gboolean OnButtonPress(GtkWidget* widget, GdkEventButton* event);
 
   // Used to disconnect the client session.
   base::WeakPtr<ClientSessionControl> client_session_control_;
@@ -72,6 +58,8 @@ class DisconnectWindowGtk : public HostWindow {
   // notifications.
   int current_width_;
   int current_height_;
+
+  std::vector<ScopedGSignal> signals_;
 };
 
 // Helper function for creating a rectangular path with rounded corners, as
@@ -171,8 +159,15 @@ void DisconnectWindowGtk::Start(
   disconnect_window_ = gtk_window_new(GTK_WINDOW_TOPLEVEL);
   GtkWindow* window = GTK_WINDOW(disconnect_window_);
 
-  g_signal_connect(disconnect_window_, "delete-event",
-                   G_CALLBACK(OnDeleteThunk), this);
+  auto connect = [&](auto* sender, const char* detailed_signal, auto receiver) {
+    // Unretained() is safe since DisconnectWindowGtk will own the
+    // ScopedGSignal.
+    signals_.emplace_back(
+        sender, detailed_signal,
+        base::BindRepeating(receiver, base::Unretained(this)));
+  };
+
+  connect(disconnect_window_, "delete-event", &DisconnectWindowGtk::OnDelete);
   gtk_window_set_title(window,
                        l10n_util::GetStringUTF8(IDS_PRODUCT_NAME).c_str());
   gtk_window_set_resizable(window, FALSE);
@@ -193,7 +188,7 @@ void DisconnectWindowGtk::Start(
 #if !GTK_CHECK_VERSION(3, 90, 0)
   gtk_widget_set_app_paintable(disconnect_window_, TRUE);
 #endif
-  g_signal_connect(disconnect_window_, "draw", G_CALLBACK(OnDrawThunk), this);
+  connect(disconnect_window_, "draw", &DisconnectWindowGtk::OnDraw);
 
   // Handle window resizing, to regenerate the background pixmap and window
   // shape bitmap.  The stored width & height need to be initialized here
@@ -201,15 +196,15 @@ void DisconnectWindowGtk::Start(
   // window would be remembered, preventing the generation of bitmaps for the
   // new window).
   current_height_ = current_width_ = 0;
-  g_signal_connect(disconnect_window_, "configure-event",
-                   G_CALLBACK(OnConfigureThunk), this);
+  connect(disconnect_window_, "configure-event",
+          &DisconnectWindowGtk::OnConfigure);
 
   // Handle mouse events to allow the user to drag the window around.
 #if !GTK_CHECK_VERSION(3, 90, 0)
   gtk_widget_set_events(disconnect_window_, GDK_BUTTON_PRESS_MASK);
 #endif
-  g_signal_connect(disconnect_window_, "button-press-event",
-                   G_CALLBACK(OnButtonPressThunk), this);
+  connect(disconnect_window_, "button-press-event",
+          &DisconnectWindowGtk::OnButtonPress);
 
   // All magic numbers taken from screen shots provided by UX.
   // The alignment sets narrow margins at the top and bottom, compared with
@@ -241,7 +236,8 @@ void DisconnectWindowGtk::Start(
   gtk_box_pack_end(GTK_BOX(button_row), button_, FALSE, FALSE, 0);
 #endif
 
-  g_signal_connect(button_, "clicked", G_CALLBACK(OnClickedThunk), this);
+  connect(GTK_BUTTON(button_.get()), "clicked",
+          &DisconnectWindowGtk::OnClicked);
 
   message_ = gtk_label_new(nullptr);
 #if GTK_CHECK_VERSION(3, 90, 0)

@@ -20,7 +20,7 @@
 #include "remoting/host/linux/wayland_utils.h"
 #include "remoting/proto/control.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "ui/base/glib/glib_signal.h"
+#include "ui/base/glib/scoped_gsignal.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/gfx/x/event.h"
@@ -63,10 +63,7 @@ class GdkLayoutMonitorOnGtkThread : public x11::EventObserver {
   void OnEvent(const x11::Event& event) override;
 
   void QueryLayout();
-  CHROMEG_CALLBACK_0(GdkLayoutMonitorOnGtkThread,
-                     void,
-                     OnKeysChanged,
-                     GdkKeymap*);
+  void OnKeysChanged(GdkKeymap* keymap);
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   base::WeakPtr<KeyboardLayoutMonitorLinux> weak_ptr_;
   raw_ptr<x11::Connection> connection_;
@@ -74,7 +71,7 @@ class GdkLayoutMonitorOnGtkThread : public x11::EventObserver {
   raw_ptr<GdkDisplay> display_ = nullptr;
   raw_ptr<GdkKeymap> keymap_ = nullptr;
   int current_group_ = 0;
-  gulong handler_id_ = 0;
+  ScopedGSignal signal_;
 };
 
 class KeyboardLayoutMonitorLinux : public KeyboardLayoutMonitor {
@@ -121,8 +118,7 @@ GdkLayoutMonitorOnGtkThread::GdkLayoutMonitorOnGtkThread(
 
 GdkLayoutMonitorOnGtkThread::~GdkLayoutMonitorOnGtkThread() {
   DCHECK(g_main_context_is_owner(g_main_context_default()));
-  if (handler_id_) {
-    g_signal_handler_disconnect(keymap_, handler_id_);
+  if (display_) {
     connection_->RemoveEventObserver(this);
   }
 }
@@ -164,8 +160,10 @@ void GdkLayoutMonitorOnGtkThread::Start() {
   connection_->AddEventObserver(this);
 
   keymap_ = gdk_keymap_get_for_display(display_);
-  handler_id_ = g_signal_connect(keymap_, "keys-changed",
-                                 G_CALLBACK(OnKeysChangedThunk), this);
+  signal_ = ScopedGSignal(
+      keymap_, "keys-changed",
+      base::BindRepeating(&GdkLayoutMonitorOnGtkThread::OnKeysChanged,
+                          base::Unretained(this)));
   QueryLayout();
 }
 
