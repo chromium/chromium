@@ -142,7 +142,7 @@ void FencedFrameTestHelper::NavigateFencedFrameUsingFledge(
       const FLEDGE_DECISION_URL = "/interest_group/decision_logic.js";
 
       const page_origin = new URL($1).origin;
-      const bidding_url = new URL(FLEDGE_BIDDING_URL, page_origin)
+      const bidding_url = new URL(FLEDGE_BIDDING_URL, page_origin);
       const interest_group = {
         name: 'testAd1',
         owner: page_origin,
@@ -154,8 +154,6 @@ void FencedFrameTestHelper::NavigateFencedFrameUsingFledge(
       // ad interest group while the test runs.
       await navigator.joinAdInterestGroup(
           interest_group, /*durationSeconds=*/3000000);
-
-      const url_to_navigate = new URL(FLEDGE_DECISION_URL, page_origin);
 
       const auction_config = {
         seller: page_origin,
