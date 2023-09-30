@@ -567,6 +567,9 @@ void ExtensionPrefs::UpdateExtensionPrefInternal(
   DCHECK(crx_file::id_util::IdIsValid(extension_id));
   ScopedExtensionPrefUpdate update(prefs_, extension_id);
   update->Set(pref.name, std::move(data_value));
+  for (auto& observer : observer_list_) {
+    observer.OnExtensionPrefsUpdated(extension_id);
+  }
 }
 
 void ExtensionPrefs::UpdateExtensionPref(
@@ -582,6 +585,9 @@ void ExtensionPrefs::UpdateExtensionPref(
     update->Set(key, *std::move(data_value));
   } else {
     update->Remove(key);
+  }
+  for (auto& observer : observer_list_) {
+    observer.OnExtensionPrefsUpdated(extension_id);
   }
 }
 

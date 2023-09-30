@@ -11,6 +11,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/crx_file/id_util.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_web_ui.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_prefs_factory.h"
 #include "extensions/browser/extension_registry.h"
@@ -131,6 +132,17 @@ class SafetyCheckExtensionsHandlerTest : public testing::Test {
     extensions::ExtensionRegistry::Get(profile_.get())->AddEnabled(extension);
   }
 
+  void RemoveExtension(const std::string& name) {
+    extensions::ExtensionPrefs::Get(profile_.get())->DeleteExtensionPrefs(name);
+  }
+
+  void AcknowledgeSafetyCheck(const std::string& name) {
+    extensions::ExtensionPrefs::Get(profile_.get())
+        ->UpdateExtensionPref(name, "ack_safety_check_warning",
+                              base::Value(true));
+  }
+
+  content::TestWebUI web_ui_;
   content::BrowserTaskEnvironment browser_task_environment_;
   std::unique_ptr<TestingProfile> profile_;
   testing::NiceMock<MockCWSInfoService> mock_cws_info_service_;
@@ -140,6 +152,11 @@ class SafetyCheckExtensionsHandlerTest : public testing::Test {
 void SafetyCheckExtensionsHandlerTest::SetUp() {
   TestingProfile::Builder builder;
   profile_ = builder.Build();
+  safety_check_handler_ =
+      std::make_unique<settings::SafetyCheckExtensionsHandler>(profile_.get());
+  safety_check_handler_->SetCWSInfoServiceForTest(&mock_cws_info_service_);
+  safety_check_handler_.get()->set_web_ui(&web_ui_);
+  safety_check_handler_.get()->AllowJavascript();
 }
 
 TEST_F(SafetyCheckExtensionsHandlerTest,
@@ -154,9 +171,6 @@ TEST_F(SafetyCheckExtensionsHandlerTest,
   // Extensions installed by policies will be ignored by the safety
   // check. So extension 7 will not trigger the handler.
   AddExtension("TestExtension7", ManifestLocation::kExternalPolicyDownload);
-  safety_check_handler_ =
-      std::make_unique<settings::SafetyCheckExtensionsHandler>(profile_.get());
-  safety_check_handler_->SetCWSInfoServiceForTest(&mock_cws_info_service_);
   // Ensure that the mock CWSInfo service returns the needed information.
   EXPECT_CALL(mock_cws_info_service_, GetCWSInfo)
       .Times(6)
@@ -171,4 +185,17 @@ TEST_F(SafetyCheckExtensionsHandlerTest,
   EXPECT_EQ(4, GetNumberOfExtensionsThatNeedReview());
 }
 
+TEST_F(SafetyCheckExtensionsHandlerTest, OnExtensionPrefsDeletedTest) {
+  // Create fake extensions for our pref service to load and test that
+  // the `web_ui_` has recorded no events
+  AddExtension("TestExtension1", ManifestLocation::kInternal);
+  EXPECT_EQ(0u, web_ui_.call_data().size());
+  // After `AcknowledgeSafetyCheck` one event should have been fired.
+  AcknowledgeSafetyCheck(crx_file::id_util::GenerateId("TestExtension1"));
+  EXPECT_EQ(1u, web_ui_.call_data().size());
+  // After `RemoveExtension` one additional event should have been fired
+  // making two total events.
+  RemoveExtension("TestExtension1");
+  EXPECT_EQ(2u, web_ui_.call_data().size());
+}
 }  // namespace extensions
