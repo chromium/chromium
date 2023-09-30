@@ -31,8 +31,10 @@
 #include "third_party/blink/renderer/core/workers/dedicated_worker_global_scope.h"
 
 #include <memory>
+
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/types/pass_key.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/worker_main_script_load_parameters.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
@@ -88,10 +90,10 @@ DedicatedWorkerGlobalScope* DedicatedWorkerGlobalScope::Create(
   Vector<network::mojom::blink::ContentSecurityPolicyPtr> response_csp =
       std::move(creation_params->response_content_security_policies);
   auto* global_scope = MakeGarbageCollected<DedicatedWorkerGlobalScope>(
-      std::move(creation_params), thread, time_origin,
-      std::move(inherited_trial_features), begin_frame_provider_params,
-      parent_cross_origin_isolated_capability, parent_is_isolated_context,
-      std::move(dedicated_worker_host),
+      base::PassKey<DedicatedWorkerGlobalScope>(), std::move(creation_params),
+      thread, time_origin, std::move(inherited_trial_features),
+      begin_frame_provider_params, parent_cross_origin_isolated_capability,
+      parent_is_isolated_context, std::move(dedicated_worker_host),
       std::move(back_forward_cache_controller_host));
 
   if (global_scope->IsOffMainThreadScriptFetchDisabled()) {
@@ -125,6 +127,7 @@ DedicatedWorkerGlobalScope::ParseCreationParams(
 }
 
 DedicatedWorkerGlobalScope::DedicatedWorkerGlobalScope(
+    base::PassKey<DedicatedWorkerGlobalScope>,
     std::unique_ptr<GlobalScopeCreationParams> creation_params,
     DedicatedWorkerThread* thread,
     base::TimeTicks time_origin,

@@ -33,6 +33,7 @@
 
 #include <memory>
 
+#include "base/types/pass_key.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom-blink.h"
 #include "third_party/blink/public/mojom/worker/dedicated_worker_host.mojom-blink.h"
@@ -71,6 +72,7 @@ class CORE_EXPORT DedicatedWorkerGlobalScope final : public WorkerGlobalScope {
   // Do not call this. Use Create() instead. This is public only for
   // MakeGarbageCollected.
   DedicatedWorkerGlobalScope(
+      base::PassKey<DedicatedWorkerGlobalScope>,
       std::unique_ptr<GlobalScopeCreationParams>,
       DedicatedWorkerThread*,
       base::TimeTicks time_origin,
