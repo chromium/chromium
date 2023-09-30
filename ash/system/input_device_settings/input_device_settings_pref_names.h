@@ -55,6 +55,9 @@ constexpr char kPointingStickDeviceSettingsDictPref[] =
     "settings.pointing_stick.devices";
 constexpr char kTouchpadDeviceSettingsDictPref[] = "settings.touchpad.devices";
 
+// Dictionary pref containing the internal keyboard's settings.
+constexpr char kKeyboardInternalSettings[] = "settings.keyboard.internal";
+
 // Pref which contains a list of previously seen imposter keyboards that we know
 // to be valid (ie false positives).
 constexpr char kKeyboardDeviceImpostersListPref[] =

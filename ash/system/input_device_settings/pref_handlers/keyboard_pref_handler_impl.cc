@@ -510,12 +510,43 @@ base::Value::Dict ConvertSettingsToDict(
   return settings_dict;
 }
 
+void UpdateInternalKeyboardSettingsImpl(
+    PrefService* pref_service,
+    const mojom::KeyboardPolicies& keyboard_policies,
+    const mojom::Keyboard& keyboard,
+    const ForceKeyboardSettingPersistence& force_persistence) {
+  CHECK(keyboard.settings);
+  CHECK(!keyboard.is_external);
+
+  base::Value::Dict existing_settings_dict =
+      pref_service->GetDict(prefs::kKeyboardInternalSettings).Clone();
+  base::Value::Dict settings_dict = ConvertSettingsToDict(
+      keyboard, keyboard_policies, force_persistence, &existing_settings_dict);
+
+  // Merge all settings except modifier remappings. Modifier remappings need
+  // to overwrite what was previously stored.
+  auto modifier_remappings_dict =
+      settings_dict.Extract(prefs::kKeyboardSettingModifierRemappings);
+  existing_settings_dict.Merge(std::move(settings_dict));
+  existing_settings_dict.Set(prefs::kKeyboardSettingModifierRemappings,
+                             std::move(*modifier_remappings_dict));
+
+  pref_service->SetDict(prefs::kKeyboardInternalSettings,
+                        std::move(existing_settings_dict));
+}
+
 void UpdateKeyboardSettingsImpl(
     PrefService* pref_service,
     const mojom::KeyboardPolicies& keyboard_policies,
     const mojom::Keyboard& keyboard,
     const ForceKeyboardSettingPersistence& force_persistence) {
   DCHECK(keyboard.settings);
+
+  if (!keyboard.is_external) {
+    UpdateInternalKeyboardSettingsImpl(pref_service, keyboard_policies,
+                                       keyboard, force_persistence);
+    return;
+  }
 
   base::Value::Dict devices_dict =
       pref_service->GetDict(prefs::kKeyboardDeviceSettingsDictPref).Clone();
@@ -609,9 +640,17 @@ void KeyboardPrefHandlerImpl::InitializeKeyboardSettings(
     return;
   }
 
-  const auto& devices_dict =
-      pref_service->GetDict(prefs::kKeyboardDeviceSettingsDictPref);
-  const auto* settings_dict = devices_dict.FindDict(keyboard->device_key);
+  const base::Value::Dict* settings_dict = nullptr;
+  if (!keyboard->is_external) {
+    settings_dict = &pref_service->GetDict(prefs::kKeyboardInternalSettings);
+    if (settings_dict->empty()) {
+      settings_dict = nullptr;
+    }
+  } else {
+    const auto& devices_dict =
+        pref_service->GetDict(prefs::kKeyboardDeviceSettingsDictPref);
+    settings_dict = devices_dict.FindDict(keyboard->device_key);
+  }
 
   ForceKeyboardSettingPersistence force_persistence;
   SettingsUpdatedMetricsInfo::Category category;

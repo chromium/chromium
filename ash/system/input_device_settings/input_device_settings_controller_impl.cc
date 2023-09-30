@@ -37,6 +37,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/to_string.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/values.h"
 #include "components/account_id/account_id.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -560,6 +561,7 @@ void InputDeviceSettingsControllerImpl::RegisterProfilePrefs(
   pref_registry->RegisterDictionaryPref(
       prefs::kPointingStickDeviceSettingsDictPref);
   pref_registry->RegisterDictionaryPref(prefs::kTouchpadDeviceSettingsDictPref);
+  pref_registry->RegisterDictionaryPref(prefs::kKeyboardInternalSettings);
 
   pref_registry->RegisterDictionaryPref(
       prefs::kTouchpadInternalSettings,
@@ -617,6 +619,7 @@ void InputDeviceSettingsControllerImpl::OnActiveUserPrefServiceChanged(
     pref_service->SetDict(prefs::kTouchpadDeviceSettingsDictPref, {});
     pref_service->SetList(prefs::kKeyboardDeviceImpostersListPref, {});
 
+    pref_service->ClearPref(prefs::kKeyboardInternalSettings);
     pref_service->ClearPref(prefs::kKeyboardUpdateSettingsMetricInfo);
     pref_service->ClearPref(prefs::kMouseUpdateSettingsMetricInfo);
     pref_service->ClearPref(prefs::kTouchpadUpdateSettingsMetricInfo);
@@ -648,6 +651,14 @@ void InputDeviceSettingsControllerImpl::OnActiveUserPrefServiceChanged(
                           std::move(updated_touchpad_dict));
     pref_service->SetDict(prefs::kKeyboardDeviceSettingsDictPref,
                           std::move(updated_keyboard_dict));
+
+    // Remove six pack remappings from internal keyboard as well.
+    base::Value::Dict updated_internal_keyboard_dict =
+        pref_service->GetDict(prefs::kKeyboardInternalSettings).Clone();
+    updated_internal_keyboard_dict.Remove(
+        prefs::kKeyboardSettingSixPackKeyRemappings);
+    pref_service->SetDict(prefs::kKeyboardInternalSettings,
+                          std::move(updated_internal_keyboard_dict));
 
     pref_service->ClearPref(prefs::kRemapToRightClickNotificationsRemaining);
     pref_service->ClearPref(prefs::kSixPackKeyDeleteNotificationsRemaining);
