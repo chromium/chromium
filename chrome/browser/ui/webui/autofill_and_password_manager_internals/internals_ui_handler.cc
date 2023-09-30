@@ -20,6 +20,7 @@
 #include "content/public/browser/browsing_data_filter_builder.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "services/network/public/mojom/content_security_policy.mojom.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "components/password_manager/core/browser/password_manager_eviction_util.h"
@@ -33,6 +34,9 @@ void CreateAndAddInternalsHTMLSource(Profile* profile,
                                      const std::string& source_name) {
   content::WebUIDataSource* source =
       content::WebUIDataSource::CreateAndAdd(profile, source_name);
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::ScriptSrc,
+      "script-src chrome://resources chrome://webui-test 'self';");
   source->AddResourcePath("autofill_and_password_manager_internals.js",
                           IDR_AUTOFILL_AND_PASSWORD_MANAGER_INTERNALS_JS);
   source->SetDefaultResource(IDR_AUTOFILL_AND_PASSWORD_MANAGER_INTERNALS_HTML);
