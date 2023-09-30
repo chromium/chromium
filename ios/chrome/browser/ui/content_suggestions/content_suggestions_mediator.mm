@@ -50,6 +50,7 @@
 #import "ios/chrome/browser/ntp/set_up_list_prefs.h"
 #import "ios/chrome/browser/ntp_tiles/most_visited_sites_observer_bridge.h"
 #import "ios/chrome/browser/ntp_tiles/tab_resumption/tab_resumption_prefs.h"
+#import "ios/chrome/browser/parcel_tracking/parcel_tracking_prefs.h"
 #import "ios/chrome/browser/parcel_tracking/parcel_tracking_util.h"
 #import "ios/chrome/browser/passwords/password_checkup_utils.h"
 #import "ios/chrome/browser/policy/policy_util.h"
@@ -506,6 +507,24 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 
 - (NSArray<ParcelTrackingItem*>*)parcelTrackingItems {
   return _parcelTrackingItems;
+}
+
+- (void)disableParcelTracking {
+  DisableParcelTracking(_localState);
+
+  // Find all parcel tracking modules and remove them.
+  for (NSUInteger i = 0; i < [_latestMagicStackOrder count]; i++) {
+    ContentSuggestionsModuleType type =
+        (ContentSuggestionsModuleType)[_latestMagicStackOrder[i] intValue];
+    if (type == ContentSuggestionsModuleType::kParcelTracking ||
+        type == ContentSuggestionsModuleType::kParcelTrackingSeeMore) {
+      MagicStackOrderChange change{MagicStackOrderChange::Type::kRemove};
+      change.old_module = type;
+      change.index = [self indexForMagicStackModule:type];
+      CHECK(change.index != NSNotFound);
+      [self.consumer updateMagicStackOrder:change];
+    }
+  }
 }
 
 #pragma mark - IdentityManagerObserverBridgeDelegate

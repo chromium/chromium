@@ -159,6 +159,9 @@ class WebStateList;
 // Disables and hides the Safety Check module, `type`, in the Magic Stack.
 - (void)disableSafetyCheck:(ContentSuggestionsModuleType)type;
 
+// Disables and hides the parcel tracking module.
+- (void)disableParcelTracking;
+
 // Returns all possible items in the Set Up List.
 - (NSArray<SetUpListItemViewData*>*)allSetUpListItems;
 

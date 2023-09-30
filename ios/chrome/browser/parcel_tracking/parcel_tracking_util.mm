@@ -6,6 +6,8 @@
 
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/consent_level.h"
+#import "ios/chrome/browser/parcel_tracking/parcel_tracking_prefs.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
@@ -16,7 +18,8 @@ BASE_FEATURE(kIOSParcelTracking,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsIOSParcelTrackingEnabled() {
-  return base::FeatureList::IsEnabled(kIOSParcelTracking);
+  return base::FeatureList::IsEnabled(kIOSParcelTracking) &&
+         !IsParcelTrackingDisabled(GetApplicationContext()->GetLocalState());
 }
 
 bool IsUserEligibleParcelTrackingOptInPrompt(

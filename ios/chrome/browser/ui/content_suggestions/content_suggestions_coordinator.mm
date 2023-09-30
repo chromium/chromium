@@ -39,6 +39,7 @@
 #import "ios/chrome/browser/safety_check/ios_chrome_safety_check_manager_factory.h"
 #import "ios/chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
+#import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -95,6 +96,7 @@
 #import "ios/chrome/browser/ui/start_surface/start_surface_recent_tab_browser_agent.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_util.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/web_state.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -147,6 +149,10 @@
   // The parcel list half sheet to see all tracked parcels.
   MagicStackParcelListHalfSheetTableViewController*
       _parcelListHalfSheetTableViewController;
+
+  // The coordinator used to present a modal alert for the parcel tracking
+  // module.
+  AlertCoordinator* _parcelTrackingAlertCoordinator;
 }
 
 - (void)start {
@@ -279,6 +285,7 @@
                          completion:nil];
   _magicStackHalfSheetTableViewController = nil;
   [self dismissParcelListHalfSheet];
+  [self dismissParcelTrackingAlertCoordinator];
   _started = NO;
 }
 
@@ -333,6 +340,11 @@
     case ContentSuggestionsModuleType::kCompactedSetUpList:
       [self.contentSuggestionsMediator disableSetUpList];
       break;
+    case ContentSuggestionsModuleType::kParcelTracking:
+    case ContentSuggestionsModuleType::kParcelTrackingSeeMore: {
+      [self presentParcelTrackingAlertCoordinator];
+      break;
+    }
     default:
       break;
   }
@@ -757,6 +769,51 @@
                           params:params
                       originView:view];
   [self.sharingCoordinator start];
+}
+
+// Presents the parcel tracking alert modal.
+- (void)presentParcelTrackingAlertCoordinator {
+  _parcelTrackingAlertCoordinator = [[AlertCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser
+                           title:
+                               l10n_util::GetNSString(
+                                   IDS_IOS_PARCEL_TRACKING_MODULE_HIDE_ALERT_TITLE)
+                         message:
+                             l10n_util::GetNSStringF(
+                                 IDS_IOS_PARCEL_TRACKING_MODULE_HIDE_ALERT_DESCRIPTION,
+                                 base::SysNSStringToUTF16(l10n_util::GetNSString(
+                                     IDS_IOS_CONTENT_SUGGESTIONS_PARCEL_TRACKING_MODULE_TITLE)))];
+
+  __weak ContentSuggestionsCoordinator* weakSelf = self;
+  __weak ContentSuggestionsMediator* weakMediator =
+      self.contentSuggestionsMediator;
+  [_parcelTrackingAlertCoordinator
+      addItemWithTitle:
+          l10n_util::GetNSStringF(
+              IDS_IOS_PARCEL_TRACKING_CONTEXT_MENU_DESCRIPTION,
+              base::SysNSStringToUTF16(l10n_util::GetNSString(
+                  IDS_IOS_CONTENT_SUGGESTIONS_PARCEL_TRACKING_MODULE_TITLE)))
+                action:^{
+                  [weakMediator disableParcelTracking];
+                  [weakSelf dismissParcelTrackingAlertCoordinator];
+                }
+                 style:UIAlertActionStyleDefault];
+  [_parcelTrackingAlertCoordinator
+      addItemWithTitle:l10n_util::GetNSString(
+                           IDS_IOS_PARCEL_TRACKING_MODULE_HIDE_ALERT_CANCEL)
+                action:^{
+                  [weakSelf dismissParcelTrackingAlertCoordinator];
+                }
+                 style:UIAlertActionStyleCancel];
+
+  [_parcelTrackingAlertCoordinator start];
+}
+
+// Dismisses the parcel tracking alert modal.
+- (void)dismissParcelTrackingAlertCoordinator {
+  [_parcelTrackingAlertCoordinator stop];
+  _parcelTrackingAlertCoordinator = nil;
 }
 
 @end

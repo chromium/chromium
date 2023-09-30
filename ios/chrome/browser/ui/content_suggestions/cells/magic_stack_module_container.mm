@@ -480,10 +480,7 @@ const CGFloat kTitleStackViewTrailingMargin = 16.0f;
           IDS_IOS_SET_UP_LIST_HIDE_MODULE_CONTEXT_MENU_TITLE);
     case ContentSuggestionsModuleType::kParcelTracking:
     case ContentSuggestionsModuleType::kParcelTrackingSeeMore:
-      return l10n_util::GetNSStringF(
-          IDS_IOS_PARCEL_TRACKING_CONTEXT_MENU_TITLE,
-          base::SysNSStringToUTF16(l10n_util::GetNSString(
-              IDS_IOS_CONTENT_SUGGESTIONS_PARCEL_TRACKING_MODULE_TITLE)));
+      return l10n_util::GetNSString(IDS_IOS_PARCEL_TRACKING_CONTEXT_MENU_TITLE);
     default:
       NOTREACHED_NORETURN();
   }

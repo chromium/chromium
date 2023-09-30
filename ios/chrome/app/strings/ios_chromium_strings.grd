@@ -444,7 +444,7 @@ Things to consider:
         other {Chromium will help track these packages on the New Tab Page.}}
       </message>
       <message name="IDS_IOS_PARCEL_TRACKING_MODULE_HIDE_ALERT_DESCRIPTION" desc="Description for the alert dialog warning the user they are about to hide the parcel tracking module.">
-          If you hide "<ph name="Module_Name"><ex>Package Tracking</ex>$1</ph>", Chromium will no longer auto-track your future packages.
+          If you hide "<ph name="Module_Name"><ex>Package Tracking</ex>$1</ph>", Chromium will no longer auto-track your future packages and will delete all your past package tracking data.
       </message>
       <message name="IDS_IOS_PARCEL_TRACKING_OPT_IN_TITLE" desc="Text for the title string of the parcel tracking opt-in half-sheet screen.">
         Auto-Track Your Packages on Chromium

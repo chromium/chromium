@@ -31,15 +31,28 @@ source_set("parcel_tracking_step") {
   sources = [ "parcel_tracking_step.h" ]
 }
 
+source_set("prefs") {
+  sources = [
+    "parcel_tracking_prefs.h",
+    "parcel_tracking_prefs.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/prefs",
+  ]
+}
+
 source_set("util") {
   sources = [
     "parcel_tracking_util.h",
     "parcel_tracking_util.mm",
   ]
   deps = [
+    ":prefs",
     "//base",
     "//components/prefs",
     "//components/signin/public/base",
+    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/signin",

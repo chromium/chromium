@@ -4627,6 +4627,9 @@ Your data was encrypted with your passphrase on <ph name="TIME">$2<ex>Sept 1, 20
       <message name="IDS_IOS_PARCEL_TRACKING_MODULE_HIDE_ALERT_TITLE" desc="Title for the alert dialog warning the user they are about to hide the parcel tracking module.">
           Hiding this Card will Turn Off Auto-Tracking for Future Packages
       </message>
+      <message name="IDS_IOS_PARCEL_TRACKING_MODULE_HIDE_ALERT_CANCEL" desc="Title for the item to cancel disabling the Parcel Tracking feature. ">
+          Cancel
+      </message>
       <message name="IDS_IOS_PARCEL_TRACKING_CARRIER_FEDEX" desc="Name of FEDEX Carrier">
           FEDEX
       </message>
