@@ -88,11 +88,11 @@
     testColumnRowCSSParsing("gridItemWithAfterSpan", "span 2", "span 8");
     testColumnRowCSSParsing("gridItemWithOnlySpan", "auto", "auto");
     testColumnRowCSSParsing("gridItemWithAutoElement", "auto", "auto");
-    testColumnRowCSSParsing("gridItemWithCustomIdent", "first", "last");
+    testColumnRowCSSParsing("gridItemWithCustomIdent", "first / auto", "last / auto");
     testColumnRowCSSParsing("gridItemWithNumberCustomIdent", "2 first", "3 last");
     testColumnRowCSSParsing("gridItemWithSpanCustomIdentElement", "span first", "span last");
     testColumnRowCSSParsing("gridItemWithSpanNumberCustomIdentElement", "span 2 first", "span 3 last");
-    testColumnRowCSSParsing("gridItemWithArea", "firstArea", "thirdArea");
+    testColumnRowCSSParsing("gridItemWithArea", "firstArea / auto", "thirdArea / auto");
 
     debug("");
     debug("Test the initial value");
@@ -107,13 +107,13 @@
     debug("Test getting and setting grid-column-start and grid-row-start through JS");
     testColumnStartRowStartJSParsing("18", "66");
     testColumnStartRowStartJSParsing("-55", "-40");
-    testColumnStartRowStartJSParsing("nav", "last", "nav", "last");
+    testColumnStartRowStartJSParsing("nav", "last", "nav / auto", "last / auto");
     testColumnStartRowStartJSParsing("span 3", "span 20");
     testColumnStartRowStartJSParsing("span nav", "span last", "span nav", "span last");
     testColumnStartRowStartJSParsing("auto", "auto");
-    testColumnStartRowStartJSParsing("thirdArea", "secondArea");
-    testColumnStartRowStartJSParsing("nonExistentArea", "secondArea");
-    testColumnStartRowStartJSParsing("secondArea", "nonExistentArea");
+    testColumnStartRowStartJSParsing("thirdArea", "secondArea", "thirdArea / auto", "secondArea / auto");
+    testColumnStartRowStartJSParsing("nonExistentArea", "secondArea", "nonExistentArea / auto", "secondArea / auto");
+    testColumnStartRowStartJSParsing("secondArea", "nonExistentArea", "secondArea / auto", "nonExistentArea / auto");
 
     debug("");
     debug("Test setting grid-column-start and grid-row-start to 'inherit' through JS");

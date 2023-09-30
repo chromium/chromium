@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/core/css/css_pending_system_font_value.h"
 #include "third_party/blink/renderer/core/css/css_value_pair.h"
 #include "third_party/blink/renderer/core/css/css_value_pool.h"
+#include "third_party/blink/renderer/core/css/cssom_utils.h"
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
 #include "third_party/blink/renderer/core/css/properties/css_property_instances.h"
 #include "third_party/blink/renderer/core/css/properties/longhand.h"
@@ -574,9 +575,9 @@ String StylePropertySerializer::SerializeShorthand(
     case CSSPropertyID::kGridTemplate:
       return GetShorthandValueForGridTemplate(gridTemplateShorthand());
     case CSSPropertyID::kGridColumn:
-      return GetShorthandValue(gridColumnShorthand(), " / ");
+      return GetShorthandValueForGridLine(gridColumnShorthand());
     case CSSPropertyID::kGridRow:
-      return GetShorthandValue(gridRowShorthand(), " / ");
+      return GetShorthandValueForGridLine(gridRowShorthand());
     case CSSPropertyID::kGridArea:
       return GetShorthandValueForGridArea(gridAreaShorthand());
     case CSSPropertyID::kGap:
@@ -2027,30 +2028,71 @@ String StylePropertySerializer::GetShorthandValueForGrid(
 String StylePropertySerializer::GetShorthandValueForGridArea(
     const StylePropertyShorthand& shorthand) const {
   const String separator = " / ";
+
+  DCHECK_EQ(shorthand.length(), 4u);
+  const CSSValue* grid_row_start =
+      property_set_.GetPropertyCSSValue(*shorthand.properties()[0]);
+  const CSSValue* grid_column_start =
+      property_set_.GetPropertyCSSValue(*shorthand.properties()[1]);
+  const CSSValue* grid_row_end =
+      property_set_.GetPropertyCSSValue(*shorthand.properties()[2]);
+  const CSSValue* grid_column_end =
+      property_set_.GetPropertyCSSValue(*shorthand.properties()[3]);
+
+  // `grid-row-end` depends on `grid-row-start`, and `grid-column-end` depends
+  // on on `grid-column-start`, but what's not consistent is that
+  // `grid-column-start` has a dependency on `grid-row-start`. For more details,
+  // see https://www.w3.org/TR/css-grid-2/#placement-shorthands
+  const bool include_column_start =
+      CSSOMUtils::IncludeDependentGridLineEndValue(grid_row_start,
+                                                   grid_column_start);
+  const bool include_row_end = CSSOMUtils::IncludeDependentGridLineEndValue(
+      grid_row_start, grid_row_end);
+  const bool include_column_end = CSSOMUtils::IncludeDependentGridLineEndValue(
+      grid_column_start, grid_column_end);
+
   StringBuilder result;
 
-  unsigned last_index = shorthand.length();
-  // Work backwards to determine the final non-initial index. For `grid-area`
-  // the initial value is `auto`.
-  for (; last_index > 1; --last_index) {
-    const CSSValue* value = property_set_.GetPropertyCSSValue(
-        *shorthand.properties()[last_index - 1]);
-    if ((!IsA<CSSIdentifierValue>(value) ||
-         (To<CSSIdentifierValue>(value)->GetValueID() != CSSValueID::kAuto))) {
-      break;
-    }
+  // `grid-row-start` is always included.
+  result.Append(grid_row_start->CssText());
+
+  // If `IncludeDependentGridLineEndValue` returns true for a property,
+  // all preceding values must be included.
+  if (include_column_start || include_row_end || include_column_end) {
+    result.Append(separator);
+    result.Append(grid_column_start->CssText());
+  }
+  if (include_row_end || include_column_end) {
+    result.Append(separator);
+    result.Append(grid_row_end->CssText());
+  }
+  if (include_column_end) {
+    result.Append(separator);
+    result.Append(grid_column_end->CssText());
   }
 
-  for (size_t i = 0; i < last_index; ++i) {
-    const CSSValue* value =
-        property_set_.GetPropertyCSSValue(*shorthand.properties()[i]);
-    String value_text = value->CssText();
+  return result.ReleaseString();
+}
 
-    if (!result.empty()) {
-      result.Append(separator);
-    }
-    result.Append(value_text);
+String StylePropertySerializer::GetShorthandValueForGridLine(
+    const StylePropertyShorthand& shorthand) const {
+  const String separator = " / ";
+
+  DCHECK_EQ(shorthand.length(), 2u);
+  const CSSValue* line_start =
+      property_set_.GetPropertyCSSValue(*shorthand.properties()[0]);
+  const CSSValue* line_end =
+      property_set_.GetPropertyCSSValue(*shorthand.properties()[1]);
+
+  StringBuilder result;
+
+  // `grid-line-start` is always included.
+  result.Append(line_start->CssText());
+  if (CSSOMUtils::IncludeDependentGridLineEndValue(line_start, line_end)) {
+    result.Append(separator);
+    result.Append(line_end->CssText());
   }
+
   return result.ReleaseString();
 }
 

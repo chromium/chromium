@@ -1940,7 +1940,7 @@ const CSSValue* GridArea::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject* layout_object,
     bool allow_visited_style) const {
-  return ComputedStyleUtils::ValuesForGridShorthand(
+  return ComputedStyleUtils::ValuesForGridAreaShorthand(
       gridAreaShorthand(), style, layout_object, allow_visited_style);
 }
 
@@ -1977,7 +1977,7 @@ const CSSValue* GridColumn::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject* layout_object,
     bool allow_visited_style) const {
-  return ComputedStyleUtils::ValuesForGridShorthand(
+  return ComputedStyleUtils::ValuesForGridLineShorthand(
       gridColumnShorthand(), style, layout_object, allow_visited_style);
 }
 
@@ -2271,7 +2271,7 @@ const CSSValue* GridRow::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject* layout_object,
     bool allow_visited_style) const {
-  return ComputedStyleUtils::ValuesForGridShorthand(
+  return ComputedStyleUtils::ValuesForGridLineShorthand(
       gridRowShorthand(), style, layout_object, allow_visited_style);
 }
 

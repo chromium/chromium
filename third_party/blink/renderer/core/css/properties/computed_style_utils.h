@@ -286,6 +286,14 @@ class CORE_EXPORT ComputedStyleUtils {
                                               const ComputedStyle&,
                                               const LayoutObject*,
                                               bool allow_visited_style);
+  static CSSValueList* ValuesForGridAreaShorthand(const StylePropertyShorthand&,
+                                                  const ComputedStyle&,
+                                                  const LayoutObject*,
+                                                  bool allow_visited_style);
+  static CSSValueList* ValuesForGridLineShorthand(const StylePropertyShorthand&,
+                                                  const ComputedStyle&,
+                                                  const LayoutObject*,
+                                                  bool allow_visited_style);
   static CSSValueList* ValuesForSidesShorthand(const StylePropertyShorthand&,
                                                const ComputedStyle&,
                                                const LayoutObject*,

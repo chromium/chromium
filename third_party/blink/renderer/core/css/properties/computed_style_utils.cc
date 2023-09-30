@@ -45,6 +45,7 @@
 #include "third_party/blink/renderer/core/css/cssom/css_unit_value.h"
 #include "third_party/blink/renderer/core/css/cssom/css_unparsed_value.h"
 #include "third_party/blink/renderer/core/css/cssom/css_unsupported_color.h"
+#include "third_party/blink/renderer/core/css/cssom_utils.h"
 #include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/css/properties/shorthands.h"
@@ -3611,8 +3612,6 @@ CSSValueList* ComputedStyleUtils::ValuesForGridShorthand(
     const LayoutObject* layout_object,
     bool allow_visited_style) {
   // Trailing non-initial values should be dropped.
-  // TODO(kschmi): Also handle `<custom-ident>` behavior, where if only
-  // one is specified for columns, rows also apply that value.
   unsigned last_index = shorthand.length();
   // Work backwards to determine the final non-initial index. For grid
   // shorthands, we can drop all trailing `none` and `auto` values.
@@ -3621,8 +3620,7 @@ CSSValueList* ComputedStyleUtils::ValuesForGridShorthand(
         shorthand.properties()[last_index - 1]->CSSValueFromComputedStyle(
             style, layout_object, allow_visited_style);
     if ((!IsA<CSSIdentifierValue>(value) ||
-         (To<CSSIdentifierValue>(value)->GetValueID() != CSSValueID::kNone &&
-          To<CSSIdentifierValue>(value)->GetValueID() != CSSValueID::kAuto))) {
+         (To<CSSIdentifierValue>(value)->GetValueID() != CSSValueID::kNone))) {
       break;
     }
   }
@@ -3635,6 +3633,82 @@ CSSValueList* ComputedStyleUtils::ValuesForGridShorthand(
     DCHECK(value);
     list->Append(*value);
   }
+  return list;
+}
+
+CSSValueList* ComputedStyleUtils::ValuesForGridAreaShorthand(
+    const StylePropertyShorthand& shorthand,
+    const ComputedStyle& style,
+    const LayoutObject* layout_object,
+    bool allow_visited_style) {
+  DCHECK_EQ(shorthand.length(), 4u);
+
+  const CSSValue* grid_row_start =
+      shorthand.properties()[0]->CSSValueFromComputedStyle(style, layout_object,
+                                                           allow_visited_style);
+  const CSSValue* grid_column_start =
+      shorthand.properties()[1]->CSSValueFromComputedStyle(style, layout_object,
+                                                           allow_visited_style);
+  const CSSValue* grid_row_end =
+      shorthand.properties()[2]->CSSValueFromComputedStyle(style, layout_object,
+                                                           allow_visited_style);
+  const CSSValue* grid_column_end =
+      shorthand.properties()[3]->CSSValueFromComputedStyle(style, layout_object,
+                                                           allow_visited_style);
+
+  // `grid-row-end` depends on `grid-row-start`, and `grid-column-end` depends
+  // on on `grid-column-start`, but what's not consistent is that
+  // `grid-column-start` has a dependency on `grid-row-start`. For more details,
+  // see https://www.w3.org/TR/css-grid-2/#placement-shorthands
+  const bool include_column_start =
+      CSSOMUtils::IncludeDependentGridLineEndValue(grid_row_start,
+                                                   grid_column_start);
+  const bool include_row_end = CSSOMUtils::IncludeDependentGridLineEndValue(
+      grid_row_start, grid_row_end);
+  const bool include_column_end = CSSOMUtils::IncludeDependentGridLineEndValue(
+      grid_column_start, grid_column_end);
+
+  CSSValueList* list = CSSValueList::CreateSlashSeparated();
+
+  // `grid-row-start` is always included.
+  list->Append(*grid_row_start);
+
+  // If `IncludeDependentGridLineEndValue` returns true for a property,
+  // all preceding values must be included.
+  if (include_column_start || include_row_end || include_column_end) {
+    list->Append(*grid_column_start);
+  }
+  if (include_row_end || include_column_end) {
+    list->Append(*grid_row_end);
+  }
+  if (include_column_end) {
+    list->Append(*grid_column_end);
+  }
+
+  return list;
+}
+
+CSSValueList* ComputedStyleUtils::ValuesForGridLineShorthand(
+    const StylePropertyShorthand& shorthand,
+    const ComputedStyle& style,
+    const LayoutObject* layout_object,
+    bool allow_visited_style) {
+  DCHECK_EQ(shorthand.length(), 2u);
+
+  const CSSValue* line_start =
+      shorthand.properties()[0]->CSSValueFromComputedStyle(style, layout_object,
+                                                           allow_visited_style);
+  const CSSValue* line_end =
+      shorthand.properties()[1]->CSSValueFromComputedStyle(style, layout_object,
+                                                           allow_visited_style);
+  CSSValueList* list = CSSValueList::CreateSlashSeparated();
+
+  // `grid-line-start` is always included.
+  list->Append(*line_start);
+  if (CSSOMUtils::IncludeDependentGridLineEndValue(line_start, line_end)) {
+    list->Append(*line_end);
+  }
+
   return list;
 }
 

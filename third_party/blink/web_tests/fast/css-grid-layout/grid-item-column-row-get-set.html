@@ -120,11 +120,11 @@
     testColumnRowCSSParsing("gridItemWith2AutoElement", "auto" , "auto", "auto", "auto", "auto", "auto");
     testColumnRowCSSParsing("gridItemWithBothShortLongHandElement", "10 / 11", "4 / 5", "10", "11", "4", "5");
     testColumnRowCSSParsing("gridItemWithNoSpaceElement", "auto / 1", "5", "auto", "1", "5", "auto");
-    testColumnRowCSSParsing("gridItemWithCustomIdent", "first / first", "last / last", "first", "first", "last", "last");
-    testColumnRowCSSParsing("gridItemWithNonExistingCustomIdent", "nav / nav", "foo / foo", "nav", "nav", "foo", "foo");
+    testColumnRowCSSParsing("gridItemWithCustomIdent", "first", "last", "first", "first", "last", "last");
+    testColumnRowCSSParsing("gridItemWithNonExistingCustomIdent", "nav", "foo", "nav", "nav", "foo", "foo");
     testColumnRowCSSParsing("gridItemWithSpanCustomIdent", "1 / span first", "-1 / span last", "1", "span first", "-1", "span last");
     testColumnRowCSSParsing("gridItemWithSpanNumberCustomIdent", "1 / span 3 first", "-1 / span 2 last", "1", "span 3 first", "-1", "span 2 last");
-    testColumnRowCSSParsing("gridItemWithSingleNamedGridArea", "thirdArea / thirdArea", "firstArea / firstArea", "thirdArea", "thirdArea", "firstArea", "firstArea");
+    testColumnRowCSSParsing("gridItemWithSingleNamedGridArea", "thirdArea", "firstArea", "thirdArea", "thirdArea", "firstArea", "firstArea");
     testColumnRowCSSParsing("gridItemWithNamedGridAreaAndSpan", "thirdArea / span 1", "firstArea / span 2", "thirdArea", "span 1", "firstArea", "span 2");
 
     debug("");

@@ -424,6 +424,8 @@ blink_core_sources_css = [
   "cssom/style_property_map_read_only_main_thread.h",
   "cssom/style_value_factory.cc",
   "cssom/style_value_factory.h",
+  "cssom_utils.cc",
+  "cssom_utils.h",
   "document_style_environment_variables.cc",
   "document_style_environment_variables.h",
   "document_style_sheet_collection.cc",

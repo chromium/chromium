@@ -48,12 +48,12 @@ getComputedStyle(el).getPropertyValue('grid-row-start') is 1
 
 
 el.style.setProperty('grid-column', 'auto')
-el.style.getPropertyValue('grid-column') is auto / auto
+el.style.getPropertyValue('grid-column') is auto
 getComputedStyle(el).getPropertyValue('grid-column') is auto
 
 
 el.style.setProperty('grid-row', '1')
-el.style.getPropertyValue('grid-row') is 1 / auto
+el.style.getPropertyValue('grid-row') is 1
 getComputedStyle(el).getPropertyValue('grid-row') is 1
 
 

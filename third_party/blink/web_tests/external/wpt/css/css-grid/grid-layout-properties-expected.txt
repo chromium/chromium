@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 140 tests; 131 PASS, 9 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 140 tests; 137 PASS, 3 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS display: grid
 PASS display: inline-grid
 PASS grid-template-columns
@@ -109,26 +109,26 @@ PASS grid-column-end.span <integer> <custom-ident>
 PASS grid-column-end.reset
 PASS grid-column
 PASS grid-column.initial
-FAIL grid-column.auto assert_equals: auto expected "auto" but got "auto / auto"
+PASS grid-column.auto
 PASS grid-column.<custom-ident>
-FAIL grid-column.<integer> start assert_equals: <integer> start expected "1" but got "1 / auto"
+PASS grid-column.<integer> start
 PASS grid-column.<integer>
 PASS grid-column.<integer> <ident>
 PASS grid-column.span <integer>
 PASS grid-column.span <custom-ident>
 PASS grid-column.span <integer> <custom-ident>
-FAIL grid-column.reset assert_equals: reset expected "auto" but got "auto / auto"
+PASS grid-column.reset
 PASS grid-row
 PASS grid-row.initial
-FAIL grid-row.auto assert_equals: auto expected "auto" but got "auto / auto"
+PASS grid-row.auto
 PASS grid-row.<custom-ident>
-FAIL grid-row.<integer> start assert_equals: <integer> start expected "1" but got "1 / auto"
+PASS grid-row.<integer> start
 PASS grid-row.<integer>
 PASS grid-row.<integer> <ident>
 PASS grid-row.span <integer>
 PASS grid-row.span <custom-ident>
 PASS grid-row.span <integer> <custom-ident>
-FAIL grid-row.reset assert_equals: reset expected "auto" but got "auto / auto"
+PASS grid-row.reset
 PASS grid-area
 PASS grid-area.initial
 PASS grid-area.auto
