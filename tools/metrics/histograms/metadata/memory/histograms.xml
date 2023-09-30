@@ -2530,6 +2530,20 @@ chromium-metrics-reviews@google.com.
   <token key="VmName" variants="VmmSwapVmName"/>
 </histogram>
 
+<histogram name="Memory.VmmSwap.{VmName}.DisableReason"
+    enum="VmmSwapDisableReason" expires_after="2024-01-31">
+  <owner>kawasin@google.com</owner>
+  <owner>sstan@google.com</owner>
+  <summary>
+    Tracks events that would cause vmm-swap to be disabled. This is sent
+    regardless of whether or not vmm-swap was actually active - i.e. alongside
+    both &quot;.ActiveAfterEnableDuration&quot; and
+    &quot;.InactiveNoEnableDuration&quot;. Each event type is broken down into
+    two enum values - one for the inactive and one for the active case.
+  </summary>
+  <token key="VmName" variants="VmmSwapVmName"/>
+</histogram>
+
 <histogram name="Memory.VmmSwap.{VmName}.InactiveBeforeEnableDuration"
     units="Hours" expires_after="2024-01-31">
   <owner>kawasin@google.com</owner>
@@ -2578,6 +2592,19 @@ chromium-metrics-reviews@google.com.
     hot pages are not swapped out but kept in the memory. The durations are
     measured every 10 minutes to estimate the average duration. This is sent
     when vmm-swap is disabled.
+  </summary>
+  <token key="VmName" variants="VmmSwapVmName"/>
+</histogram>
+
+<histogram name="Memory.VmmSwap.{VmName}.PolicyResult"
+    enum="VmmSwapPolicyResult" expires_after="2024-01-31">
+  <owner>kawasin@google.com</owner>
+  <owner>sstan@google.com</owner>
+  <summary>
+    Tracks the policy decision made when deciding how to handle a swap enable
+    dbus request. Indicates if a request was accepted or why it was rejected.
+    Each decision result is further broken down into whether it occured while
+    handling an initial enable request or a maintenance request.
   </summary>
   <token key="VmName" variants="VmmSwapVmName"/>
 </histogram>

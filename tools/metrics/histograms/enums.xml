@@ -112015,6 +112015,28 @@ Full version information for the fingerprint enum values:
   <int value="6" label="Failed recording migrated tag in the VK"/>
 </enum>
 
+<enum name="VmmSwapDisableReason">
+  <int value="0" label="VM shutdown while active"/>
+  <int value="1" label="VM shutdown while inactive"/>
+  <int value="2" label="Low disk space while active"/>
+  <int value="3" label="Low disk space while inactive"/>
+  <int value="4" label="Disable request while active"/>
+  <int value="5" label="Disable request while inactive"/>
+</enum>
+
+<enum name="VmmSwapPolicyResult">
+  <int value="0" label="Approve enable request"/>
+  <int value="1" label="Cool down reject on enable request"/>
+  <int value="2" label="Usage reject on enable request"/>
+  <int value="3" label="TBW limit on enable request"/>
+  <int value="4" label="Low disk on enable request"/>
+  <int value="5" label="Approve maintenance request"/>
+  <int value="6" label="Cool down reject on maintenance request"/>
+  <int value="7" label="Usage reject on maintenance request"/>
+  <int value="8" label="TBW limit on maintenance request"/>
+  <int value="9" label="Low disk on maintenance request"/>
+</enum>
+
 <enum name="VmmSwapState">
   <int value="0" label="Enabled"/>
   <int value="1" label="Disabled"/>
