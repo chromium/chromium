@@ -7236,6 +7236,8 @@
           "--xcode-build-version",
           "15a240d",
           "--xctest",
+          "--shards",
+          "2",
           "--xcode-parallelization",
           "--extra-app-args=--disable-field-trial-config"
         ],
@@ -7288,6 +7290,8 @@
           "--xcode-build-version",
           "15a240d",
           "--xctest",
+          "--shards",
+          "2",
           "--xcode-parallelization",
           "--extra-app-args=--disable-field-trial-config"
         ],
@@ -7340,6 +7344,8 @@
           "--xcode-build-version",
           "15a240d",
           "--xctest",
+          "--shards",
+          "2",
           "--xcode-parallelization",
           "--extra-app-args=--disable-field-trial-config"
         ],
@@ -7375,7 +7381,7 @@
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 6
+          "shards": 4
         },
         "test": "ios_chrome_settings_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_settings_eg2tests_module/",
@@ -7392,6 +7398,8 @@
           "--xcode-build-version",
           "15a240d",
           "--xctest",
+          "--shards",
+          "2",
           "--xcode-parallelization",
           "--extra-app-args=--disable-field-trial-config"
         ],
@@ -7427,7 +7435,7 @@
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 6
+          "shards": 4
         },
         "test": "ios_chrome_settings_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_settings_eg2tests_module/",
@@ -7650,6 +7658,8 @@
           "--xcode-build-version",
           "15a240d",
           "--xctest",
+          "--shards",
+          "2",
           "--xcode-parallelization",
           "--extra-app-args=--disable-field-trial-config"
         ],
@@ -7702,6 +7712,8 @@
           "--xcode-build-version",
           "15a240d",
           "--xctest",
+          "--shards",
+          "2",
           "--xcode-parallelization",
           "--extra-app-args=--disable-field-trial-config"
         ],
@@ -9899,6 +9911,8 @@
           "--xcode-build-version",
           "15a240d",
           "--xctest",
+          "--shards",
+          "2",
           "--xcode-parallelization",
           "--record-video",
           "failed_only"
@@ -9951,6 +9965,8 @@
           "--xcode-build-version",
           "15a240d",
           "--xctest",
+          "--shards",
+          "2",
           "--xcode-parallelization",
           "--record-video",
           "failed_only"
@@ -10003,6 +10019,8 @@
           "--xcode-build-version",
           "15a240d",
           "--xctest",
+          "--shards",
+          "2",
           "--xcode-parallelization",
           "--record-video",
           "failed_only"
@@ -10055,6 +10073,8 @@
           "--xcode-build-version",
           "15a240d",
           "--xctest",
+          "--shards",
+          "2",
           "--xcode-parallelization",
           "--record-video",
           "failed_only"
@@ -10107,6 +10127,8 @@
           "--xcode-build-version",
           "15a240d",
           "--xctest",
+          "--shards",
+          "2",
           "--xcode-parallelization",
           "--record-video",
           "failed_only"
@@ -10159,6 +10181,8 @@
           "--xcode-build-version",
           "15a240d",
           "--xctest",
+          "--shards",
+          "2",
           "--xcode-parallelization",
           "--record-video",
           "failed_only"
@@ -10211,6 +10235,8 @@
           "--xcode-build-version",
           "15a240d",
           "--xctest",
+          "--shards",
+          "2",
           "--xcode-parallelization",
           "--record-video",
           "failed_only"
@@ -10263,6 +10289,8 @@
           "--xcode-build-version",
           "15a240d",
           "--xctest",
+          "--shards",
+          "2",
           "--xcode-parallelization",
           "--record-video",
           "failed_only"
@@ -10315,6 +10343,8 @@
           "--xcode-build-version",
           "15a240d",
           "--xctest",
+          "--shards",
+          "2",
           "--xcode-parallelization",
           "--record-video",
           "failed_only"
@@ -10350,7 +10380,7 @@
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 6
+          "shards": 4
         },
         "test": "ios_chrome_settings_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_settings_eg2tests_module/",
@@ -10367,6 +10397,8 @@
           "--xcode-build-version",
           "15a240d",
           "--xctest",
+          "--shards",
+          "2",
           "--xcode-parallelization",
           "--record-video",
           "failed_only"
@@ -10402,7 +10434,7 @@
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 6
+          "shards": 4
         },
         "test": "ios_chrome_settings_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_settings_eg2tests_module/",
@@ -10625,6 +10657,8 @@
           "--xcode-build-version",
           "15a240d",
           "--xctest",
+          "--shards",
+          "2",
           "--xcode-parallelization",
           "--record-video",
           "failed_only"
@@ -10677,6 +10711,8 @@
           "--xcode-build-version",
           "15a240d",
           "--xctest",
+          "--shards",
+          "2",
           "--xcode-parallelization",
           "--record-video",
           "failed_only"
@@ -15871,6 +15907,8 @@
           "--xcode-build-version",
           "15a240d",
           "--xctest",
+          "--shards",
+          "2",
           "--xcode-parallelization"
         ],
         "merge": {
@@ -15921,6 +15959,8 @@
           "--xcode-build-version",
           "15a240d",
           "--xctest",
+          "--shards",
+          "2",
           "--xcode-parallelization"
         ],
         "merge": {
@@ -15971,6 +16011,8 @@
           "--xcode-build-version",
           "15a240d",
           "--xctest",
+          "--shards",
+          "2",
           "--xcode-parallelization"
         ],
         "merge": {
@@ -16004,7 +16046,7 @@
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 6
+          "shards": 4
         },
         "test": "ios_chrome_settings_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_settings_eg2tests_module/",
@@ -16021,6 +16063,8 @@
           "--xcode-build-version",
           "15a240d",
           "--xctest",
+          "--shards",
+          "2",
           "--xcode-parallelization"
         ],
         "merge": {
@@ -16054,7 +16098,7 @@
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 6
+          "shards": 4
         },
         "test": "ios_chrome_settings_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_settings_eg2tests_module/",
@@ -16269,6 +16313,8 @@
           "--xcode-build-version",
           "15a240d",
           "--xctest",
+          "--shards",
+          "2",
           "--xcode-parallelization"
         ],
         "merge": {
@@ -16319,6 +16365,8 @@
           "--xcode-build-version",
           "15a240d",
           "--xctest",
+          "--shards",
+          "2",
           "--xcode-parallelization"
         ],
         "merge": {
@@ -20333,6 +20381,8 @@
           "--xcode-build-version",
           "15a240d",
           "--xctest",
+          "--shards",
+          "2",
           "--xcode-parallelization"
         ],
         "merge": {
@@ -20366,7 +20416,7 @@
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 6
+          "shards": 4
         },
         "test": "ios_chrome_settings_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_settings_eg2tests_module/",
@@ -20385,6 +20435,8 @@
           "--xcode-build-version",
           "15a240d",
           "--xctest",
+          "--shards",
+          "2",
           "--xcode-parallelization"
         ],
         "merge": {
@@ -20418,7 +20470,7 @@
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 6
+          "shards": 4
         },
         "test": "ios_chrome_settings_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_settings_eg2tests_module/",
@@ -20437,6 +20489,8 @@
           "--xcode-build-version",
           "15a240d",
           "--xctest",
+          "--shards",
+          "2",
           "--xcode-parallelization"
         ],
         "merge": {
@@ -20470,7 +20524,7 @@
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 6
+          "shards": 4
         },
         "test": "ios_chrome_settings_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_settings_eg2tests_module/",
@@ -20489,6 +20543,8 @@
           "--xcode-build-version",
           "15a240d",
           "--xctest",
+          "--shards",
+          "2",
           "--xcode-parallelization"
         ],
         "merge": {
@@ -20522,7 +20578,7 @@
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 6
+          "shards": 4
         },
         "test": "ios_chrome_settings_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_settings_eg2tests_module/",
@@ -20953,6 +21009,8 @@
           "--xcode-build-version",
           "15a240d",
           "--xctest",
+          "--shards",
+          "2",
           "--xcode-parallelization"
         ],
         "merge": {
@@ -21005,6 +21063,8 @@
           "--xcode-build-version",
           "15a240d",
           "--xctest",
+          "--shards",
+          "2",
           "--xcode-parallelization"
         ],
         "merge": {
@@ -21057,6 +21117,8 @@
           "--xcode-build-version",
           "15a240d",
           "--xctest",
+          "--shards",
+          "2",
           "--xcode-parallelization"
         ],
         "merge": {
@@ -21109,6 +21171,8 @@
           "--xcode-build-version",
           "15a240d",
           "--xctest",
+          "--shards",
+          "2",
           "--xcode-parallelization"
         ],
         "merge": {
@@ -25904,6 +25968,8 @@
           "--xcode-build-version",
           "15a240d",
           "--xctest",
+          "--shards",
+          "2",
           "--xcode-parallelization",
           "--record-video",
           "failed_only"
@@ -25956,6 +26022,8 @@
           "--xcode-build-version",
           "15a240d",
           "--xctest",
+          "--shards",
+          "2",
           "--xcode-parallelization",
           "--record-video",
           "failed_only"
@@ -26008,6 +26076,8 @@
           "--xcode-build-version",
           "15a240d",
           "--xctest",
+          "--shards",
+          "2",
           "--xcode-parallelization",
           "--record-video",
           "failed_only"
@@ -26060,6 +26130,8 @@
           "--xcode-build-version",
           "15a240d",
           "--xctest",
+          "--shards",
+          "2",
           "--xcode-parallelization",
           "--record-video",
           "failed_only"
@@ -26095,7 +26167,7 @@
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 6
+          "shards": 4
         },
         "test": "ios_chrome_settings_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_settings_eg2tests_module/",
@@ -26112,6 +26184,8 @@
           "--xcode-build-version",
           "15a240d",
           "--xctest",
+          "--shards",
+          "2",
           "--xcode-parallelization",
           "--record-video",
           "failed_only"
@@ -26147,7 +26221,7 @@
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 6
+          "shards": 4
         },
         "test": "ios_chrome_settings_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_settings_eg2tests_module/",
@@ -26164,6 +26238,8 @@
           "--xcode-build-version",
           "15a240d",
           "--xctest",
+          "--shards",
+          "2",
           "--xcode-parallelization",
           "--record-video",
           "failed_only"
@@ -26199,7 +26275,7 @@
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 6
+          "shards": 4
         },
         "test": "ios_chrome_settings_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_settings_eg2tests_module/",
@@ -26216,6 +26292,8 @@
           "--xcode-build-version",
           "15a240d",
           "--xctest",
+          "--shards",
+          "2",
           "--xcode-parallelization",
           "--record-video",
           "failed_only"
@@ -26251,7 +26329,7 @@
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 6
+          "shards": 4
         },
         "test": "ios_chrome_settings_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_settings_eg2tests_module/",
@@ -26680,6 +26758,8 @@
           "--xcode-build-version",
           "15a240d",
           "--xctest",
+          "--shards",
+          "2",
           "--xcode-parallelization",
           "--record-video",
           "failed_only"
@@ -26732,6 +26812,8 @@
           "--xcode-build-version",
           "15a240d",
           "--xctest",
+          "--shards",
+          "2",
           "--xcode-parallelization",
           "--record-video",
           "failed_only"
@@ -26784,6 +26866,8 @@
           "--xcode-build-version",
           "15a240d",
           "--xctest",
+          "--shards",
+          "2",
           "--xcode-parallelization",
           "--record-video",
           "failed_only"
@@ -26836,6 +26920,8 @@
           "--xcode-build-version",
           "15a240d",
           "--xctest",
+          "--shards",
+          "2",
           "--xcode-parallelization",
           "--record-video",
           "failed_only"
@@ -30260,6 +30346,8 @@
           "--xcode-build-version",
           "15a240d",
           "--xctest",
+          "--shards",
+          "2",
           "--xcode-parallelization",
           "--record-video",
           "failed_only"
@@ -30312,6 +30400,8 @@
           "--xcode-build-version",
           "15a240d",
           "--xctest",
+          "--shards",
+          "2",
           "--xcode-parallelization",
           "--record-video",
           "failed_only"
@@ -30364,6 +30454,8 @@
           "--xcode-build-version",
           "15a240d",
           "--xctest",
+          "--shards",
+          "2",
           "--xcode-parallelization",
           "--record-video",
           "failed_only"
@@ -30416,6 +30508,8 @@
           "--xcode-build-version",
           "15a240d",
           "--xctest",
+          "--shards",
+          "2",
           "--xcode-parallelization",
           "--record-video",
           "failed_only"
@@ -30451,7 +30545,7 @@
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 6
+          "shards": 4
         },
         "test": "ios_chrome_settings_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_settings_eg2tests_module/",
@@ -30468,6 +30562,8 @@
           "--xcode-build-version",
           "15a240d",
           "--xctest",
+          "--shards",
+          "2",
           "--xcode-parallelization",
           "--record-video",
           "failed_only"
@@ -30503,7 +30599,7 @@
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 6
+          "shards": 4
         },
         "test": "ios_chrome_settings_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_settings_eg2tests_module/",
@@ -30520,6 +30616,8 @@
           "--xcode-build-version",
           "15a240d",
           "--xctest",
+          "--shards",
+          "2",
           "--xcode-parallelization",
           "--record-video",
           "failed_only"
@@ -30555,7 +30653,7 @@
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 6
+          "shards": 4
         },
         "test": "ios_chrome_settings_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_settings_eg2tests_module/",
@@ -30881,6 +30979,8 @@
           "--xcode-build-version",
           "15a240d",
           "--xctest",
+          "--shards",
+          "2",
           "--xcode-parallelization",
           "--record-video",
           "failed_only"
@@ -30933,6 +31033,8 @@
           "--xcode-build-version",
           "15a240d",
           "--xctest",
+          "--shards",
+          "2",
           "--xcode-parallelization",
           "--record-video",
           "failed_only"
@@ -30985,6 +31087,8 @@
           "--xcode-build-version",
           "15a240d",
           "--xctest",
+          "--shards",
+          "2",
           "--xcode-parallelization",
           "--record-video",
           "failed_only"
@@ -34394,6 +34498,8 @@
           "--xcode-build-version",
           "15a240d",
           "--xctest",
+          "--shards",
+          "2",
           "--xcode-parallelization",
           "--record-video",
           "failed_only"
@@ -34446,6 +34552,8 @@
           "--xcode-build-version",
           "15a240d",
           "--xctest",
+          "--shards",
+          "2",
           "--xcode-parallelization",
           "--record-video",
           "failed_only"
@@ -34498,6 +34606,8 @@
           "--xcode-build-version",
           "15a240d",
           "--xctest",
+          "--shards",
+          "2",
           "--xcode-parallelization",
           "--record-video",
           "failed_only"
@@ -34533,7 +34643,7 @@
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 6
+          "shards": 4
         },
         "test": "ios_chrome_settings_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_settings_eg2tests_module/",
@@ -34550,6 +34660,8 @@
           "--xcode-build-version",
           "15a240d",
           "--xctest",
+          "--shards",
+          "2",
           "--xcode-parallelization",
           "--record-video",
           "failed_only"
@@ -34585,7 +34697,7 @@
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 6
+          "shards": 4
         },
         "test": "ios_chrome_settings_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_settings_eg2tests_module/",
@@ -34808,6 +34920,8 @@
           "--xcode-build-version",
           "15a240d",
           "--xctest",
+          "--shards",
+          "2",
           "--xcode-parallelization",
           "--record-video",
           "failed_only"
@@ -34860,6 +34974,8 @@
           "--xcode-build-version",
           "15a240d",
           "--xctest",
+          "--shards",
+          "2",
           "--xcode-parallelization",
           "--record-video",
           "failed_only"

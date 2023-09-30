@@ -4633,24 +4633,6 @@ targets.legacy_basic_suite(
     name = "ios_eg2_cq_tests",
     tests = {
         "ios_chrome_integration_eg2tests_module": targets.legacy_test_config(
-            swarming = targets.swarming(
-                shards = 8,
-            ),
-        ),
-        "ios_web_shell_eg2tests_module": None,
-    },
-)
-
-# Test suites in ios_eg2_cq_tests_parallel should be the same test suites as
-# ios_eg2_cq_tests. The swarming shards between the versions can differ.
-# Effectiveness of ios_parallel_simulators is determined by
-# the number of test classes in the suite and the number of swarming shards.
-# For ios_parallel_simulators to be most effective there should be twice as
-# many test classes in the suite as there are swarming shards.
-targets.legacy_basic_suite(
-    name = "ios_eg2_cq_tests_parallel",
-    tests = {
-        "ios_chrome_integration_eg2tests_module": targets.legacy_test_config(
             mixins = [
                 "ios_parallel_simulators",
             ],
@@ -4662,43 +4644,8 @@ targets.legacy_basic_suite(
     },
 )
 
-# Test suites in ios_eg2_tests_parallel should be the same test suites as
-# ios_eg2_tests. The swarming shards between the versions can differ.
-# Effectiveness of ios_parallel_simulators is determined by
-# the number of test classes in the suite and the number of swarming shards.
-# For ios_parallel_simulators to be most effective there should be twice as
-# many test classes in the suite as there are swarming shards.
 targets.legacy_basic_suite(
     name = "ios_eg2_tests",
-    tests = {
-        "ios_chrome_bookmarks_eg2tests_module": None,
-        "ios_chrome_settings_eg2tests_module": targets.legacy_test_config(
-            swarming = targets.swarming(
-                shards = 6,
-            ),
-        ),
-        "ios_chrome_signin_eg2tests_module": targets.legacy_test_config(
-            swarming = targets.swarming(
-                shards = 6,
-            ),
-        ),
-        "ios_chrome_smoke_eg2tests_module": None,
-        "ios_chrome_ui_eg2tests_module": targets.legacy_test_config(
-            swarming = targets.swarming(
-                shards = 12,
-            ),
-        ),
-        "ios_chrome_web_eg2tests_module": targets.legacy_test_config(
-            swarming = targets.swarming(
-                shards = 2,
-            ),
-        ),
-        "ios_showcase_eg2tests_module": None,
-    },
-)
-
-targets.legacy_basic_suite(
-    name = "ios_eg2_tests_parallel",
     tests = {
         "ios_chrome_bookmarks_eg2tests_module": None,
         "ios_chrome_settings_eg2tests_module": targets.legacy_test_config(
