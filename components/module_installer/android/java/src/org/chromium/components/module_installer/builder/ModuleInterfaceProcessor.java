@@ -85,6 +85,7 @@ public class ModuleInterfaceProcessor extends AbstractProcessor {
                 ClassName.get("org.chromium.components.module_installer.engine", "InstallListener");
         TypeName installEngineInterface =
                 ClassName.get("org.chromium.components.module_installer.engine", "InstallEngine");
+        TypeName contextClassName = ClassName.get("android.content", "Context");
 
         FieldSpec classNameString =
                 FieldSpec.builder(ClassName.get(String.class), "sModuleClassString")
@@ -98,6 +99,12 @@ public class ModuleInterfaceProcessor extends AbstractProcessor {
                                    .initializer("new $T($S, $T.class, sModuleClassString)",
                                            moduleClassName, moduleName, moduleInterface)
                                    .build();
+
+        MethodSpec getContext = MethodSpec.methodBuilder("getContext")
+                                        .returns(contextClassName)
+                                        .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
+                                        .addStatement("return sModule.getContext()")
+                                        .build();
 
         MethodSpec isInstalled = MethodSpec.methodBuilder("isInstalled")
                                          .returns(TypeName.BOOLEAN)
@@ -158,6 +165,7 @@ public class ModuleInterfaceProcessor extends AbstractProcessor {
                 .addMethod(getImpl)
                 .addMethod(getInstallEngine)
                 .addMethod(setInstallEngine)
+                .addMethod(getContext)
                 .build();
     }
 
