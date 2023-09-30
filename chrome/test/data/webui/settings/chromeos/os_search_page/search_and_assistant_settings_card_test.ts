@@ -2,13 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {OsSettingsRoutes, Router, routes, SearchAndAssistantSettingsCardElement} from 'chrome://os-settings/os_settings.js';
+/**
+ * @fileoverview
+ * Suite of browser tests for the Search and Assistant settings card element.
+ * This suite of tests runs when the OsSettingsRevampWayfinding feature flag is
+ * both enabled and disabled.
+ */
+
+import {OsSettingsRoutes, Router, routes, SearchAndAssistantSettingsCardElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util_ts.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 interface SubpageTriggerData {
   triggerSelector: string;
@@ -108,4 +115,50 @@ suite('<search-and-assistant-settings-card>', () => {
               `${triggerSelector} should be focused.`);
         });
   });
+
+  if (isRevampWayfindingEnabled) {
+    test('Content recommendations toggle is visible', () => {
+      createSearchAndAssistantCard();
+      const contentRecommendationsToggle =
+          searchAndAssistantSettingsCard.shadowRoot!.querySelector(
+              '#contentRecommendationsToggle');
+      assertTrue(isVisible(contentRecommendationsToggle));
+    });
+
+    test('Content recommendations toggle reflects pref value', () => {
+      createSearchAndAssistantCard();
+      const fakePrefs = {
+        settings: {
+          suggested_content_enabled: {
+            value: true,
+          },
+        },
+      };
+      searchAndAssistantSettingsCard.prefs = fakePrefs;
+      flush();
+
+      const contentRecommendationsToggle =
+          searchAndAssistantSettingsCard.shadowRoot!
+              .querySelector<SettingsToggleButtonElement>(
+                  '#contentRecommendationsToggle');
+      assertTrue(!!contentRecommendationsToggle);
+
+      assertTrue(contentRecommendationsToggle.checked);
+      assertTrue(searchAndAssistantSettingsCard.get(
+          'prefs.settings.suggested_content_enabled.value'));
+
+      contentRecommendationsToggle.click();
+      assertFalse(contentRecommendationsToggle.checked);
+      assertFalse(searchAndAssistantSettingsCard.get(
+          'prefs.settings.suggested_content_enabled.value'));
+    });
+  } else {
+    test('Content recommendations toggle is not visible', () => {
+      createSearchAndAssistantCard();
+      const contentRecommendationsToggle =
+          searchAndAssistantSettingsCard.shadowRoot!.querySelector(
+              '#contentRecommendationsToggle');
+      assertFalse(isVisible(contentRecommendationsToggle));
+    });
+  }
 });

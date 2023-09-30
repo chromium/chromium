@@ -68,19 +68,28 @@ export class SearchAndAssistantSettingsCardElement extends
         type: Object,
         value: () => new Set<Setting>([Setting.kPreferredSearchEngine]),
       },
+
+      isRevampWayfindingEnabled_: {
+        type: Boolean,
+        value() {
+          return isRevampWayfindingEnabled();
+        },
+        readOnly: true,
+      },
     };
   }
 
   prefs: PrefsState;
   private isAssistantAllowed_: boolean;
+  private isRevampWayfindingEnabled_: boolean;
   private shouldShowQuickAnswersSettings_: boolean;
 
   constructor() {
     super();
 
     /** RouteOriginMixin overrde */
-    this.route = isRevampWayfindingEnabled() ? routes.SYSTEM_PREFERENCES :
-                                               routes.OS_SEARCH;
+    this.route = this.isRevampWayfindingEnabled_ ? routes.SYSTEM_PREFERENCES :
+                                                   routes.OS_SEARCH;
   }
 
   override ready(): void {

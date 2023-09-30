@@ -169,9 +169,9 @@ async function parametrizedPrivacyHubSubpageTestsuite(
     flush();
 
     // The default state of the pref is disabled.
-    const suggestedContent =
-        privacyHubSubpage.shadowRoot!
-            .querySelector<SettingsToggleButtonElement>('#suggested-content');
+    const suggestedContent = privacyHubSubpage.shadowRoot!
+                                 .querySelector<SettingsToggleButtonElement>(
+                                     '#contentRecommendationsToggle');
     assert(suggestedContent);
     assertFalse(suggestedContent.checked);
   });
@@ -189,9 +189,9 @@ async function parametrizedPrivacyHubSubpageTestsuite(
     flush();
 
     // The checkbox reflects the updated pref state.
-    const suggestedContent =
-        privacyHubSubpage.shadowRoot!
-            .querySelector<SettingsToggleButtonElement>('#suggested-content');
+    const suggestedContent = privacyHubSubpage.shadowRoot!
+                                 .querySelector<SettingsToggleButtonElement>(
+                                     '#contentRecommendationsToggle');
     assert(suggestedContent);
     assertTrue(suggestedContent.checked);
   });

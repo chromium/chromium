@@ -68,7 +68,7 @@ suite('<os-settings-privacy-page>', () => {
         document.body.appendChild(privacyPage);
         flush();
 
-        assertFalse(elementExists('#suggested-content'));
+        assertFalse(elementExists('#contentRecommendationsToggle'));
       });
 
   test('Suggested content, pref disabled', () => {
@@ -83,7 +83,7 @@ suite('<os-settings-privacy-page>', () => {
     // The default state of the pref is disabled.
     const suggestedContent =
         privacyPage.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-            '#suggested-content');
+            '#contentRecommendationsToggle');
     assertTrue(!!suggestedContent);
     assertFalse(suggestedContent.checked);
   });
@@ -122,7 +122,7 @@ suite('<os-settings-privacy-page>', () => {
     // The checkbox reflects the updated pref state.
     const suggestedContent =
         privacyPage.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-            '#suggested-content');
+            '#contentRecommendationsToggle');
     assertTrue(!!suggestedContent);
     assertTrue(suggestedContent.checked);
   });

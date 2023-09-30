@@ -28,4 +28,13 @@
         role-description="$i18n{subpageArrowRoleDescription}">
     </cr-link-row>
   </template>
+  <template is="dom-if" if="[[isRevampWayfindingEnabled_]]">
+    <settings-toggle-button id="contentRecommendationsToggle"
+        class="hr"
+        pref="{{prefs.settings.suggested_content_enabled}}"
+        label="$i18n{enableSuggestedContent}"
+        sub-label="$i18n{enableSuggestedContentDesc}"
+        learn-more-url="$i18n{suggestedContentLearnMoreURL}">
+    </settings-toggle-button>
+  </template>
 </settings-card>
