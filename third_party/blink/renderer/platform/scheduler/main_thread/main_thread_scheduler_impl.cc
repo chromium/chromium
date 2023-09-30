@@ -1154,6 +1154,8 @@ void MainThreadSchedulerImpl::SetHaveSeenABlockingGestureForTesting(
 }
 
 void MainThreadSchedulerImpl::PerformMicrotaskCheckpoint() {
+  TRACE_EVENT("toplevel", "BlinkScheduler_PerformMicrotaskCheckpoint");
+
   // This will fallback to execute the microtask checkpoint for the
   // default EventLoop for the isolate.
   if (isolate())
@@ -2413,6 +2415,8 @@ void MainThreadSchedulerImpl::OnTaskCompleted(
     const base::sequence_manager::Task& task,
     TaskQueue::TaskTiming* task_timing,
     base::LazyNow* lazy_now) {
+  TRACE_EVENT("renderer.scheduler", "BlinkScheduler_OnTaskCompleted");
+
   // Microtasks may detach the task queue and invalidate |queue|.
   PerformMicrotaskCheckpoint();
 
