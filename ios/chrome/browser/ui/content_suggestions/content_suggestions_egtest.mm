@@ -159,25 +159,23 @@ void TapMoreButtonIfVisible() {
   AppLaunchConfiguration config;
   config.features_enabled.push_back(kEnableFeedAblation);
   if ([self isRunningTest:@selector
-            (DISABLE_testSetUpListDismissItemsWithSyncToSigninDisabled)] ||
+            (testSetUpListDismissItemsWithSyncToSigninDisabled)] ||
       [self isRunningTest:@selector
-            (DISABLE_testSetUpListSigninWithSyncToSigninDisabled)] ||
+            (testSetUpListSigninWithSyncToSigninDisabled)] ||
       [self isRunningTest:@selector
-            (DISABLE_testSetUpListSigninSwipeToDismissWithSyncToSigninDisabled
-                )]) {
+            (testSetUpListSigninSwipeToDismissWithSyncToSigninDisabled)]) {
     config.features_disabled.push_back(
         syncer::kReplaceSyncPromosWithSignInPromos);
   }
   if ([self isRunningTest:@selector
-            (DISABLE_testSetUpListDismissItemsWithSyncToSigninEnabled)] ||
+            (testSetUpListDismissItemsWithSyncToSigninEnabled)] ||
       [self isRunningTest:@selector
-            (DISABLE_testSetUpListSigninWithSyncToSigninEnabled)]) {
+            (testSetUpListSigninWithSyncToSigninEnabled)]) {
     config.features_enabled.push_back(
         syncer::kReplaceSyncPromosWithSignInPromos);
     config.features_enabled.push_back(kConsistencyNewAccountInterface);
   }
-  if ([self isRunningTest:@selector
-            (DISABLE_testMagicStackSetUpListCompleteAllItems)] ||
+  if ([self isRunningTest:@selector(testMagicStackSetUpListCompleteAllItems)] ||
       [self isRunningTest:@selector(testMagicStackEditButton)]) {
     config.features_enabled.push_back(kMagicStack);
   } else {
@@ -344,8 +342,7 @@ void TapMoreButtonIfVisible() {
 
 // Tests that the SetUpList can be expanded and unexpanded by touching the
 // "expand" button at the bottom of the list.
-// TODO(crbug.com/1487190) Reenable flaky tests.
-- (void)DISABLE_testSetUpListExpands {
+- (void)testSetUpListExpands {
   [self prepareToTestSetUpList];
 
   id<GREYMatcher> signinItem = grey_accessibilityID(set_up_list::kSignInItemID);
@@ -377,8 +374,7 @@ void TapMoreButtonIfVisible() {
 // Tests that each item opens the appropriate UI flow and that dismissing that
 // UI marks the item complete. Also tests that the "All Set" view appears when
 // all items are complete.
-// TODO(crbug.com/1487190) Reenable flaky tests.
-- (void)DISABLE_testSetUpListDismissItemsWithSyncToSigninDisabled {
+- (void)testSetUpListDismissItemsWithSyncToSigninDisabled {
   [self prepareToTestSetUpList];
 
   // Tap the signin item.
@@ -444,8 +440,7 @@ void TapMoreButtonIfVisible() {
 // Tests that each item opens the appropriate UI flow and that dismissing that
 // UI marks the item complete. Also tests that the "All Set" view appears when
 // all items are complete.
-// TODO(crbug.com/1487190) Reenable flaky tests.
-- (void)DISABLE_testSetUpListDismissItemsWithSyncToSigninEnabled {
+- (void)testSetUpListDismissItemsWithSyncToSigninEnabled {
   [self prepareToTestSetUpList];
 
   // Tap the signin item.
@@ -511,8 +506,7 @@ void TapMoreButtonIfVisible() {
 
 // Tests that the signin UI flow works and that the signin item is marked
 // complete when signin is completed.
-// TODO(crbug.com/1487190) Reenable flaky tests.
-- (void)DISABLE_testSetUpListSigninWithSyncToSigninDisabled {
+- (void)testSetUpListSigninWithSyncToSigninDisabled {
   [self prepareToTestSetUpList];
   [SigninEarlGrey addFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
 
@@ -543,8 +537,7 @@ void TapMoreButtonIfVisible() {
 
 // Tests that the signin UI flow works and that the signin item is marked
 // complete when signin is completed.
-// TODO(crbug.com/1487190) Reenable flaky tests.
-- (void)DISABLE_testSetUpListSigninWithSyncToSigninEnabled {
+- (void)testSetUpListSigninWithSyncToSigninEnabled {
   [self prepareToTestSetUpList];
   [SigninEarlGrey addFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
 
@@ -565,8 +558,7 @@ void TapMoreButtonIfVisible() {
 // Note that if SyncToSignin is enabled, then the signin screen is replaced
 // by a bottom sheet which can't be dismissed by swiping, so this test
 // doesn't apply.
-// TODO(crbug.com/1487190) Reenable flaky tests.
-- (void)DISABLE_testSetUpListSigninSwipeToDismissWithSyncToSigninDisabled {
+- (void)testSetUpListSigninSwipeToDismissWithSyncToSigninDisabled {
   [self prepareToTestSetUpList];
   [SigninEarlGrey addFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
 
@@ -605,8 +597,7 @@ void TapMoreButtonIfVisible() {
   [[EarlGrey selectElementWithMatcher:syncView] assertWithMatcher:grey_nil()];
 }
 
-// TODO(crbug.com/1487190) Reenable flaky tests.
-- (void)DISABLE_testMagicStackSetUpListCompleteAllItems {
+- (void)testMagicStackSetUpListCompleteAllItems {
   [self prepareToTestSetUpListInMagicStack];
 
   // Tap the signin item.

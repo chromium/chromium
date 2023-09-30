@@ -8,6 +8,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/ntp/set_up_list_item_type.h"
 #import "ios/chrome/browser/ntp/set_up_list_prefs.h"
 #import "ios/chrome/browser/search_engines/template_url_service_factory.h"
@@ -52,6 +53,7 @@ using set_up_list_prefs::SetUpListItemState;
 
 + (void)resetSetUpListPrefs {
   PrefService* localState = GetApplicationContext()->GetLocalState();
+  localState->ClearPref(set_up_list_prefs::kDisabled);
   SetUpListItemState unknown = SetUpListItemState::kUnknown;
   set_up_list_prefs::SetItemState(localState, SetUpListItemType::kSignInSync,
                                   unknown);
