@@ -8,6 +8,7 @@ import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.res.Configuration;
+import android.graphics.Typeface;
 import android.view.ActionMode;
 import android.view.View;
 
@@ -202,7 +203,7 @@ public class LocationBarCoordinator
         final boolean isIncognito =
                 incognitoStateProvider != null && incognitoStateProvider.isIncognitoSelected();
         mUrlCoordinator =
-                new UrlBarCoordinator((UrlBar) mUrlBar, windowDelegate, actionModeCallback,
+                new UrlBarCoordinator(context, (UrlBar) mUrlBar, windowDelegate, actionModeCallback,
                         mCallbackController.makeCancelable(mLocationBarMediator::onUrlFocusChange),
                         mLocationBarMediator, windowAndroid.getKeyboardDelegate(), isIncognito,
                         reportExceptionCallback);
@@ -729,5 +730,17 @@ public class LocationBarCoordinator
     public int getSuggestionBackgroundColor(boolean isIncognito) {
         return isIncognito ? mSuggestionIncognitoBackgroundColor
                            : mSuggestionStandardBackgroundColor;
+    }
+
+    /** @see LocationBarMediator#setUrlBarHintTextColorForSurfacePolish(boolean, boolean) */
+    public void setUrlBarHintTextColorForSurfacePolish(
+            boolean useColorfulOmniboxType, boolean usePreviousHintTextColor) {
+        mLocationBarMediator.setUrlBarHintTextColorForSurfacePolish(
+                useColorfulOmniboxType, usePreviousHintTextColor);
+    }
+
+    /** @see LocationBarMediator#setUrlBarTypeface(Typeface) */
+    public void setUrlBarTypeface(Typeface typeface) {
+        mLocationBarMediator.setUrlBarTypeface(typeface);
     }
 }

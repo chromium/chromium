@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.omnibox;
 
+import android.graphics.Typeface;
 import android.view.ActionMode;
 
 import org.chromium.base.Callback;
@@ -120,10 +121,20 @@ class UrlBarProperties {
             new WritableObjectPropertyKey<>();
 
     /**
-     * Specifies the color scheme. It can be light or dark because of a publisher defined color,
-     * incognito, or the default theme that follows dynamic colors.
+     * Specifies the typeface for url bar text.
      */
-    public static final WritableIntPropertyKey BRANDED_COLOR_SCHEME = new WritableIntPropertyKey();
+    public static final WritableObjectPropertyKey<Typeface> TYPEFACE =
+            new WritableObjectPropertyKey<>();
+
+    /**
+     * Specifies the color for url bar text.
+     */
+    public static final WritableIntPropertyKey TEXT_COLOR = new WritableIntPropertyKey();
+
+    /**
+     * Specifies the color for url bar hint text.
+     */
+    public static final WritableIntPropertyKey HINT_TEXT_COLOR = new WritableIntPropertyKey();
 
     /**
      * Specifies whether incognito colors should be used in the view, meaning baseline dark theme
@@ -143,6 +154,6 @@ class UrlBarProperties {
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {ACTION_MODE_CALLBACK, ALLOW_FOCUS, AUTOCOMPLETE_TEXT, DELEGATE,
                     FOCUS_CHANGE_CALLBACK, SHOW_CURSOR, TEXT_CONTEXT_MENU_DELEGATE, TEXT_STATE,
-                    URL_DIRECTION_LISTENER, URL_TEXT_CHANGE_LISTENER, BRANDED_COLOR_SCHEME,
-                    INCOGNITO_COLORS_ENABLED, WINDOW_DELEGATE, HAS_URL_SUGGESTIONS};
+                    URL_DIRECTION_LISTENER, URL_TEXT_CHANGE_LISTENER, INCOGNITO_COLORS_ENABLED,
+                    WINDOW_DELEGATE, HAS_URL_SUGGESTIONS, TYPEFACE, TEXT_COLOR, HINT_TEXT_COLOR};
 }

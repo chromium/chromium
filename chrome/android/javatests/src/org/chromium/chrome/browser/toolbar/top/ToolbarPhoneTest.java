@@ -12,6 +12,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -35,8 +36,10 @@ import androidx.test.espresso.matcher.ViewMatchers.Visibility;
 import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Matchers;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -48,6 +51,8 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.base.test.params.ParameterAnnotations;
+import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -59,6 +64,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.layouts.LayoutTestUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
+import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -73,7 +79,7 @@ import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.optional_button.OptionalButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.top.ToolbarPhone.NtpSearchBoxDrawable;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
-import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.NewTabPageTestUtils;
@@ -84,13 +90,15 @@ import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
+import org.chromium.ui.test.util.NightModeTestUtils;
 import org.chromium.ui.test.util.UiRestriction;
 import org.chromium.ui.test.util.ViewUtils;
 
 /**
  * Instrumentation tests for {@link ToolbarPhone}.
  */
-@RunWith(ChromeJUnit4ClassRunner.class)
+@RunWith(ParameterizedRunner.class)
+@ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
 public class ToolbarPhoneTest {
@@ -122,6 +130,18 @@ public class ToolbarPhoneTest {
     private MenuButton mMenuButton;
     private OmniboxTestUtils mOmnibox;
 
+    @ParameterAnnotations.UseMethodParameterBefore(NightModeTestUtils.NightModeParams.class)
+    public void setupNightMode(boolean nightModeEnabled) {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            ChromeNightModeTestUtils.setUpNightModeForChromeActivity(nightModeEnabled);
+        });
+    }
+
+    @BeforeClass
+    public static void setUpBeforeActivityLaunched() {
+        ChromeNightModeTestUtils.setUpNightModeBeforeChromeActivityLaunched();
+    }
+
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
@@ -130,6 +150,11 @@ public class ToolbarPhoneTest {
         mToolbar = mActivityTestRule.getActivity().findViewById(R.id.toolbar);
         mToolbarButtonsContainer = mToolbar.findViewById(R.id.toolbar_buttons);
         mOmnibox = new OmniboxTestUtils(mActivityTestRule.getActivity());
+    }
+
+    @AfterClass
+    public static void tearDownAfterActivityDestroyed() {
+        ChromeNightModeTestUtils.tearDownNightModeAfterChromeActivityDestroyed();
     }
 
     @Test
@@ -522,7 +547,7 @@ public class ToolbarPhoneTest {
         });
 
         if (isTabToGtsAnimationEnabled) {
-            Assert.assertFalse(
+            assertFalse(
                     "Tab switcher button should not be clickable", tabSwitcherButton.isClickable());
         }
 
@@ -576,7 +601,7 @@ public class ToolbarPhoneTest {
         });
 
         if (isTabToGtsAnimationEnabled) {
-            Assert.assertFalse(
+            assertFalse(
                     "Tab switcher button should not be clickable", tabSwitcherButton.isClickable());
         }
 
@@ -623,7 +648,7 @@ public class ToolbarPhoneTest {
                     tabList == null ? null : tabList.findViewHolderForAdapterPosition(0);
             if (viewHolder != null) {
                 viewHolder.itemView.performClick();
-                Assert.assertFalse("Clickable should be false during transition.",
+                assertFalse("Clickable should be false during transition.",
                         tabSwitcherButton.isClickable());
                 return true;
             }
@@ -631,7 +656,7 @@ public class ToolbarPhoneTest {
         });
 
         if (isTabToGtsAnimationEnabled) {
-            Assert.assertFalse(
+            assertFalse(
                     "Tab switcher button should not be clickable", tabSwitcherButton.isClickable());
         }
         CriteriaHelper.pollUiThread(() -> mToolbar.getVisibility() == View.VISIBLE);
@@ -805,6 +830,32 @@ public class ToolbarPhoneTest {
         // Focus on the Omnibox.
         mOmnibox.requestFocus();
         assertNotEquals(expectColor, toolbarBackgroundDrawable.getColor());
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.SURFACE_POLISH})
+    @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
+    public void testRealSearchBoxAppearanceChange(boolean nightModeEnabled) {
+        View iconBackground = mToolbar.findViewById(R.id.location_bar_status_icon_bg);
+
+        assertEquals(false, mToolbar.isLocationBarShownInNTP());
+        assertEquals(View.INVISIBLE, iconBackground.getVisibility());
+
+        // Load the new tab page.
+        mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
+        Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        NewTabPageTestUtils.waitForNtpLoaded(tab);
+        assertEquals(true, mToolbar.isLocationBarShownInNTP());
+        if (nightModeEnabled) {
+            assertEquals(View.INVISIBLE, iconBackground.getVisibility());
+        } else {
+            assertEquals(View.VISIBLE, iconBackground.getVisibility());
+        }
+
+        // Focus on the Omnibox.
+        mOmnibox.requestFocus();
+        assertEquals(View.INVISIBLE, iconBackground.getVisibility());
     }
 
     private static class TestControlsVisibilityDelegate

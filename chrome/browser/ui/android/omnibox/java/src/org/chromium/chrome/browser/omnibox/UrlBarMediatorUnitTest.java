@@ -21,7 +21,9 @@ import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.omnibox.UrlBarViewBinderUnitTest.ShadowOmniboxResourceProvider;
 import org.chromium.components.omnibox.OmniboxUrlEmphasizer;
 import org.chromium.components.omnibox.OmniboxUrlEmphasizer.UrlEmphasisColorSpan;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -32,7 +34,7 @@ import org.chromium.ui.modelutil.PropertyObservable.PropertyObserver;
  * Unit tests for {@link UrlBarMediator}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
+@Config(manifest = Config.NONE, shadows = {ShadowOmniboxResourceProvider.class})
 public class UrlBarMediatorUnitTest {
     @Mock
     UrlBar.UrlTextChangeListener mMockUrlTextListener;
@@ -49,7 +51,8 @@ public class UrlBarMediatorUnitTest {
         MockitoAnnotations.initMocks(this);
 
         mModel = new PropertyModel(UrlBarProperties.ALL_KEYS);
-        mMediator = new UrlBarMediator(mModel, mFocusChangeCallback) {
+        mMediator = new UrlBarMediator(
+                ContextUtils.getApplicationContext(), mModel, mFocusChangeCallback) {
             @Override
             protected String sanitizeTextForPaste(String text) {
                 return text.trim();

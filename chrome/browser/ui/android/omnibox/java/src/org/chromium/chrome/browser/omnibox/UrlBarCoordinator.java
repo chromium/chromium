@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.omnibox;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.view.ActionMode;
 import android.view.inputmethod.InputMethodManager;
 
@@ -46,6 +47,7 @@ public class UrlBarCoordinator implements UrlBarEditingTextStateProvider, UrlFoc
         int SELECT_END = 1;
     }
 
+    private final Context mContext;
     private UrlBar mUrlBar;
     private UrlBarMediator mMediator;
     private KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
@@ -58,6 +60,7 @@ public class UrlBarCoordinator implements UrlBarEditingTextStateProvider, UrlFoc
     /**
      * Constructs a coordinator for the given UrlBar view.
      *
+     * @param context The current Android's context.
      * @param urlBar The {@link UrlBar} view this coordinator encapsulates.
      * @param windowDelegate Delegate for accessing and mutating window properties, e.g. soft input
      *         mode.
@@ -71,11 +74,13 @@ public class UrlBarCoordinator implements UrlBarEditingTextStateProvider, UrlFoc
      *         using {@link #setIncognitoColorsEnabled(boolean)}.
      * @param reportExceptionCallback A {@link Callback} to report exceptions.
      */
-    public UrlBarCoordinator(@NonNull UrlBar urlBar, @Nullable WindowDelegate windowDelegate,
+    public UrlBarCoordinator(Context context, @NonNull UrlBar urlBar,
+            @Nullable WindowDelegate windowDelegate,
             @NonNull ActionMode.Callback actionModeCallback,
             @NonNull Callback<Boolean> focusChangeCallback, @NonNull UrlBarDelegate delegate,
             @NonNull KeyboardVisibilityDelegate keyboardVisibilityDelegate, boolean isIncognito,
             Callback<Throwable> reportExceptionCallback) {
+        mContext = context;
         mUrlBar = urlBar;
         urlBar.setTag(R.id.report_exception_callback, reportExceptionCallback);
         mKeyboardVisibilityDelegate = keyboardVisibilityDelegate;
@@ -91,7 +96,7 @@ public class UrlBarCoordinator implements UrlBarEditingTextStateProvider, UrlFoc
                         .build();
         PropertyModelChangeProcessor.create(model, urlBar, UrlBarViewBinder::bind);
 
-        mMediator = new UrlBarMediator(model, this::onUrlFocusChangeInternal);
+        mMediator = new UrlBarMediator(mContext, model, this::onUrlFocusChangeInternal);
         mKeyboardVisibilityDelegate.addKeyboardVisibilityListener(this);
     }
 
@@ -285,5 +290,17 @@ public class UrlBarCoordinator implements UrlBarEditingTextStateProvider, UrlFoc
         mUrlBar.onFinishNativeInitialization();
         mShouldShowModernizeVisualUpdate =
                 OmniboxFeatures.shouldShowModernizeVisualUpdate(mUrlBar.getContext());
+    }
+
+    /** @see UrlBarMediator#setUrlBarHintTextColorForSurfacePolish(boolean, boolean, int) */
+    public void setUrlBarHintTextColorForSurfacePolish(boolean useColorfulOmniboxType,
+            boolean usePreviousHintTextColor, @BrandedColorScheme int brandedColorScheme) {
+        mMediator.setUrlBarHintTextColorForSurfacePolish(
+                useColorfulOmniboxType, usePreviousHintTextColor, brandedColorScheme);
+    }
+
+    /** @see UrlBarMediator#setUrlBarTypeface(Typeface) */
+    public void setUrlBarTypeface(Typeface typeface) {
+        mMediator.setUrlBarTypeface(typeface);
     }
 }

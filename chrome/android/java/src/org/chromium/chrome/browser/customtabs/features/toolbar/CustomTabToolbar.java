@@ -1007,8 +1007,8 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             mEphemeralTabCoordinatorSupplier = ephemeralTabCoordinatorSupplier;
             mLocationBarDataProvider.addObserver(this);
             mModalDialogManagerSupplier = modalDialogManagerSupplier;
-            mUrlCoordinator = new UrlBarCoordinator((UrlBar) mUrlBar, /*windowDelegate=*/null,
-                    actionModeCallback,
+            mUrlCoordinator = new UrlBarCoordinator(getContext(), (UrlBar) mUrlBar,
+                    /*windowDelegate=*/null, actionModeCallback,
                     /*focusChangeCallback=*/
                     (unused)
                             -> {},

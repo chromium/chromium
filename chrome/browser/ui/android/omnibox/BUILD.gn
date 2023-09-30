@@ -423,6 +423,7 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/omnibox/UrlBarDataTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/UrlBarMediatorUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/UrlBarUnitTest.java",
+    "java/src/org/chromium/chrome/browser/omnibox/UrlBarViewBinderUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/geo/GeolocationHeaderUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/geo/PlatformNetworksManagerTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/geo/VisibleNetworksTest.java",

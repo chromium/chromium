@@ -32,6 +32,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.TooltipCompat;
 
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.components.browser_ui.widget.ChromeTransitionDrawable;
@@ -106,6 +107,15 @@ public class StatusView extends LinearLayout {
         mStatusExtraSpace = findViewById(R.id.location_bar_verbose_status_extra_space);
 
         configureAccessibilityDescriptions();
+
+        if (ChromeFeatureList.sSurfacePolish.isEnabled()) {
+            // Set Icon background size
+            ViewGroup.LayoutParams params = mIconBackground.getLayoutParams();
+            int iconBackgroundSize = getResources().getDimensionPixelSize(
+                    R.dimen.location_bar_status_icon_bg_size_polish);
+            params.width = iconBackgroundSize;
+            params.height = iconBackgroundSize;
+        }
     }
 
     /**
@@ -372,6 +382,10 @@ public class StatusView extends LinearLayout {
     void setStatusIconAlpha(float alpha) {
         if (mIconView == null) return;
         mIconView.setAlpha(alpha);
+
+        if (mIconBackground != null && mIconBackground.getVisibility() == VISIBLE) {
+            mIconBackground.setAlpha(alpha);
+        }
     }
 
     /** Specify the status icon visibility. */

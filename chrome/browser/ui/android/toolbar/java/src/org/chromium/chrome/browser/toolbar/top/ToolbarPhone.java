@@ -18,6 +18,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
@@ -260,6 +261,7 @@ public class ToolbarPhone extends ToolbarLayout
     private boolean mIsShowingStartSurfaceTabSwitcher;
     private NtpSearchBoxDrawable mNtpSearchBoxBackground;
     private int mHomeSurfaceToolbarBackgroundColor;
+    private boolean mHasFocus;
 
     /**
      * Used to specify the visual state of the toolbar.
@@ -289,6 +291,14 @@ public class ToolbarPhone extends ToolbarLayout
     private boolean mInLayoutTransition;
 
     private final boolean mIsSurfacePolishEnabled;
+    private final boolean mIsSurfacePolishOmniboxColorEnabled;
+
+    // For both Start Surface and NTP, when the surface polish flag is enabled, we will change the
+    // appearance(G logo background, search text color and style) of the real search box after it is
+    // pinned at top when scrolling up the surface. This variable is used to distinguish whether the
+    // current page is Start Surface or NTP and we have changed the appearance of the real search
+    // box.
+    private boolean mHasSetLocationBarStyling;
 
     // The following are some properties used during animation.  We use explicit property classes
     // to avoid the cost of reflection for each animation setup.
@@ -318,9 +328,11 @@ public class ToolbarPhone extends ToolbarLayout
         mToolbarSidePadding = OmniboxResourceProvider.getToolbarSidePadding(context);
         mBackgroundHeightIncreaseWhenFocus =
                 OmniboxResourceProvider.getToolbarOnFocusHeightIncrease(context);
-        mIsSurfacePolishEnabled = ChromeFeatureList.sSurfacePolish.isEnabled();
         mHomeSurfaceToolbarBackgroundColor = ChromeColors.getSurfaceColor(
                 getContext(), R.dimen.home_surface_background_color_elevation);
+        mIsSurfacePolishEnabled = ChromeFeatureList.sSurfacePolish.isEnabled();
+        mIsSurfacePolishOmniboxColorEnabled = mIsSurfacePolishEnabled
+                && StartSurfaceConfiguration.SURFACE_POLISH_OMNIBOX_COLOR.getValue();
     }
 
     @Override
@@ -1934,7 +1946,7 @@ public class ToolbarPhone extends ToolbarLayout
             if (isShowingStartSurfaceHomepage && !isRealSearchBoxFocused) {
                 // Update the location bar background when being in the Start Surface.
                 mActiveLocationBarBackground = AppCompatResources.getDrawable(getContext(),
-                        StartSurfaceConfiguration.SURFACE_POLISH_OMNIBOX_COLOR.getValue()
+                        mIsSurfacePolishOmniboxColorEnabled
                                 ? R.drawable.home_surface_search_box_background_colorful
                                 : R.drawable.home_surface_search_box_background_neutral);
             } else if (isLocationBarShownInNTP()) {
@@ -1946,8 +1958,8 @@ public class ToolbarPhone extends ToolbarLayout
                     updateToNtpBackground();
                 }
             } else {
-                // Update the location bar background when entering the search page or other non-NTP
-                // tabs from the Start Surface.
+                // Update the location bar background when entering the search results page or other
+                // non-NTP tabs from the Start Surface.
                 mActiveLocationBarBackground = mLocationBarBackground;
             }
         }
@@ -2119,11 +2131,15 @@ public class ToolbarPhone extends ToolbarLayout
     public void onUrlFocusChange(final boolean hasFocus) {
         super.onUrlFocusChange(hasFocus);
 
+        mHasFocus = hasFocus;
+
         updateBackground(hasFocus);
         if (!hasFocus && mShouldShowModernizeVisualUpdate
                 && !OmniboxFeatures.shouldShowActiveColorOnOmnibox()) {
             mLocationBar.setStatusIconBackgroundVisibility(false);
         }
+
+        updateLocationBarForSurfacePolish(computeVisualState(), mHasFocus);
 
         if (mToggleTabStackButton != null) mToggleTabStackButton.setClickable(!hasFocus);
         triggerUrlFocusAnimation(hasFocus);
@@ -2442,6 +2458,57 @@ public class ToolbarPhone extends ToolbarLayout
         return getToolbarDataProvider().getPrimaryColor();
     }
 
+    /**
+     * Update the appearance (logo background, search text's color and style) of the location bar
+     * based on the state of the current page.
+     * For Start Surface and NTP, while not on the search results page, the real search box's search
+     * text has a particular color and style. The style would be "google-sans-medium" and the color
+     * would be colorOnSurface or colorOnPrimaryContainer based on whether the variant
+     * SURFACE_POLISH_OMNIBOX_COLOR is enabled or not. When being in light mode, there is also a
+     * round white background for the G logo. For other situations such as browser tabs, and search
+     * result pages, the real search box will stay the same.
+     * @param visualState The Visual State of the current page.
+     * @param hasFocus True if the current page is search results page.
+     */
+    @VisibleForTesting
+    void updateLocationBarForSurfacePolish(@VisualState int visualState, boolean hasFocus) {
+        if (!mIsSurfacePolishEnabled) {
+            return;
+        }
+
+        Typeface typeface;
+        boolean isNightMode = ColorUtils.inNightMode(getContext());
+        // If the current page is Start surface or NTP instead of the search results page or other
+        // browser tabs.
+        boolean isStartOrNtp =
+                (visualState == VisualState.NEW_TAB_NORMAL || mIsShowingStartSurfaceHomepage)
+                && !hasFocus;
+        if (isStartOrNtp) {
+            // If the real omnibox's appearance has been changed, we don't change it again.
+            if (!mHasSetLocationBarStyling) {
+                mHasSetLocationBarStyling = true;
+
+                mLocationBar.setStatusIconBackgroundVisibility(!isNightMode);
+
+                mLocationBar.setUrlBarHintTextColorForSurfacePolish(
+                        mIsSurfacePolishOmniboxColorEnabled, /*usePreviousHintTextColor*/ false);
+                typeface = Typeface.create("google-sans-medium", Typeface.NORMAL);
+                mLocationBar.setUrlBarTypeface(typeface);
+            }
+        } else if (mHasSetLocationBarStyling) {
+            // We only need to change back the appearance of the real search box when the current
+            // page is not Start surface or NTP and we haven't changed back the appearance yet.
+            mHasSetLocationBarStyling = false;
+
+            mLocationBar.setStatusIconBackgroundVisibility(false);
+
+            mLocationBar.setUrlBarHintTextColorForSurfacePolish(
+                    mIsSurfacePolishOmniboxColorEnabled, /*usePreviousHintTextColor*/ true);
+            typeface = Typeface.defaultFromStyle(Typeface.NORMAL);
+            mLocationBar.setUrlBarTypeface(typeface);
+        }
+    }
+
     private void updateVisualsForLocationBarState() {
         TraceEvent.begin("ToolbarPhone.updateVisualsForLocationBarState");
         // These are used to skip setting state unnecessarily while in the tab switcher.
@@ -2450,6 +2517,7 @@ public class ToolbarPhone extends ToolbarLayout
 
         @VisualState
         int newVisualState = computeVisualState();
+        updateLocationBarForSurfacePolish(newVisualState, mHasFocus);
 
         if (newVisualState == VisualState.NEW_TAB_NORMAL && mHomeButton != null) {
             mHomeButton.setAccessibilityTraversalBefore(R.id.toolbar_buttons);
