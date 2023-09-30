@@ -38,7 +38,7 @@ import {Route, routes} from '../router.js';
 import {getTemplate} from './internet_known_networks_subpage.html.js';
 import {PasspointListenerMixin, PasspointListenerMixinInterface} from './passpoint_listener_mixin.js';
 
-interface SettingsInternetKnownNetworksPageElement {
+export interface SettingsInternetKnownNetworksPageElement {
   $: {
     dotsMenu: CrActionMenuElement,
     subscriptionDotsMenu: CrActionMenuElement,
@@ -58,7 +58,7 @@ const SettingsInternetKnownNetworksPageElementBase =
                 CrPolicyNetworkBehaviorMojoInterface&
                 PasspointListenerMixinInterface>;
 
-class SettingsInternetKnownNetworksPageElement extends
+export class SettingsInternetKnownNetworksPageElement extends
     SettingsInternetKnownNetworksPageElementBase {
   static get is() {
     return 'settings-internet-known-networks-subpage' as const;

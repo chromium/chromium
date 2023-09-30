@@ -394,14 +394,6 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
  ['GuestOsSharedPaths', 'guest_os/guest_os_shared_paths_test.js'],
  ['GuestOsSharedUsbDevices', 'guest_os/guest_os_shared_usb_devices_test.js'],
  [
-   'InternetKnownNetworksSubpage', 'internet_known_networks_subpage_tests.js', {
-     enabled: [
-       'ash::features::kPasspointARCSupport',
-       'ash::features::kPasspointSettings',
-     ]
-   }
- ],
- [
    'InternetPage', 'internet_page_tests.js', {
      enabled: [
        'ash::features::kApnRevamp',
@@ -445,6 +437,15 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
    'internet_page/internet_detail_subpage_tests.js', {
      enabled: [
        'ash::features::kApnRevamp',
+       'ash::features::kPasspointARCSupport',
+       'ash::features::kPasspointSettings',
+     ]
+   }
+ ],
+ [
+   'InternetPageInternetKnownNetworksSubpage',
+   'internet_page/internet_known_networks_subpage_test.js', {
+     enabled: [
        'ash::features::kPasspointARCSupport',
        'ash::features::kPasspointSettings',
      ]
