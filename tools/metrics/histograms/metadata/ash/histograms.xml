@@ -4092,11 +4092,34 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.LacrosMigrationStatus" enum="LacrosMigrationStatus"
     expires_after="2024-03-10">
+  <obsolete>
+    Deprecated Sep 2023. See the new metrics Ash.LacrosMigrationStatus2 for data
+    collected for M119 and after.
+  </obsolete>
+<!-- TODO(crbug.com/1486209): Remove once Ash.LacrosMigrationStatus2 is in stable -->
+
   <owner>ythjkt@chromium.org</owner>
   <owner>hidehiko@chromium.org</owner>
   <summary>
     Migration status from Ash to Lacros. It shows whether the user has migrated
     from Ash to Lacros and if they did with which migration mode.
+  </summary>
+</histogram>
+
+<histogram name="Ash.LacrosMigrationStatus2" enum="LacrosMigrationStatus"
+    expires_after="2024-03-10">
+  <owner>ythjkt@chromium.org</owner>
+  <owner>hidehiko@chromium.org</owner>
+  <summary>
+    Migration status from Ash to Lacros. It shows whether the user has migrated
+    from Ash to Lacros and if they did with which migration mode.
+
+    The same as &quot;Ash.LacrosMigrationStatus&quot; but further splits
+    'Uncompleted' into 'Uncompleted' and 'MaxAttemptReached'. Uncompleted means
+    the user hasn't completed migration but has not reached its retry limit,
+    meaning the migration will be attempted at the next chance. Meanwhile
+    MaxAttemptReached means it failed more than the number of times allowed and
+    won't be attempted again.
   </summary>
 </histogram>
 

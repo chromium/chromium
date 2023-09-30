@@ -28,6 +28,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chromeos/ash/components/standalone_browser/lacros_availability.h"
+#include "chromeos/ash/components/standalone_browser/migrator_util.h"
 #include "chromeos/crosapi/cpp/crosapi_constants.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "components/component_updater/component_updater_service.h"
@@ -866,6 +867,12 @@ MigrationStatus GetMigrationStatus(PrefService* local_state,
       GetCompletedMigrationMode(local_state, user->username_hash());
 
   if (!mode.has_value()) {
+    if (ash::standalone_browser::migrator_util::
+            IsMigrationAttemptLimitReachedForUser(local_state,
+                                                  user->username_hash())) {
+      return MigrationStatus::kMaxAttemptReached;
+    }
+
     return MigrationStatus::kUncompleted;
   }
 

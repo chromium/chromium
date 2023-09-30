@@ -119,7 +119,7 @@ enum class MigrationMode {
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 //
-// This enum corresponds to MoveMigratorTaskStatus in histograms.xml
+// This enum corresponds to LacrosMigrationStatus* in histograms.xml
 // and enums.xml.
 enum class MigrationStatus {
   kLacrosNotEnabled = 0,  // Lacros is not enabled.
@@ -127,7 +127,9 @@ enum class MigrationStatus {
   kSkippedForNewUser = 2,  // Migration is skipped for new users.
   kCopyCompleted = 3,      // Migration was completed with `CopyMigratior`.
   kMoveCompleted = 4,      // Migration was completed with `MoveMigrator`.
-  kMaxValue = kMoveCompleted,
+  kMaxAttemptReached = 5,  // Migration failed or skipped more than
+                           // `kMaxMigrationAttemptCount` times.
+  kMaxValue = kMaxAttemptReached,
 };
 
 // Specifies the mode Lacros is currently running.
@@ -206,7 +208,7 @@ extern const char kLaunchOnLoginPref[];
 extern const char kDataVerPref[];
 
 // Used to get field data on how much users have migrated to Lacros.
-constexpr char kLacrosMigrationStatus[] = "Ash.LacrosMigrationStatus";
+constexpr char kLacrosMigrationStatus[] = "Ash.LacrosMigrationStatus2";
 
 // Registers user profile preferences related to the lacros-chrome binary.
 void RegisterProfilePrefs(PrefRegistrySimple* registry);

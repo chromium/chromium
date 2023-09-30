@@ -58058,6 +58058,9 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   </int>
   <int value="3" label="Completed via copy"/>
   <int value="4" label="Completed via move"/>
+  <int value="5" label="Reached its retry limit">
+    Migration failed or skipped more than the number of attempts allowed.
+  </int>
 </enum>
 
 <enum name="LanguageDetectionComparison">

@@ -27,6 +27,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/standalone_browser/lacros_availability.h"
+#include "chromeos/ash/components/standalone_browser/migrator_util.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "components/account_id/account_id.h"
@@ -109,6 +110,8 @@ class BrowserUtilTest : public testing::Test {
   void SetUp() override {
     fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
     browser_util::RegisterLocalStatePrefs(pref_service_.registry());
+    ash::standalone_browser::migrator_util::RegisterLocalStatePrefs(
+        pref_service_.registry());
     ash::system::StatisticsProvider::SetTestProvider(&statistics_provider_);
   }
 
@@ -692,6 +695,22 @@ TEST_F(BrowserUtilTest, GetMigrationStatus) {
 
   EXPECT_EQ(GetMigrationStatus(&pref_service_, user),
             MigrationStatus::kUncompleted);
+
+  {
+    for (int i = 0;
+         i < ash::standalone_browser::migrator_util::kMaxMigrationAttemptCount;
+         i++) {
+      ash::standalone_browser::migrator_util::
+          UpdateMigrationAttemptCountForUser(&pref_service_,
+                                             user->username_hash());
+    }
+
+    EXPECT_EQ(GetMigrationStatus(&pref_service_, user),
+              MigrationStatus::kMaxAttemptReached);
+
+    ash::standalone_browser::migrator_util::ClearMigrationAttemptCountForUser(
+        &pref_service_, user->username_hash());
+  }
 
   {
     browser_util::SetProfileMigrationCompletedForUser(
