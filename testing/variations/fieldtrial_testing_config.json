@@ -11169,6 +11169,9 @@
                     "name": "Enabled_ZPSPrefetchOnSRP",
                     "enable_features": [
                         "ZeroSuggestPrefetchingOnSRP"
+                    ],
+                    "disable_features": [
+                        "ZeroSuggestPrefetchingOnWeb"
                     ]
                 },
                 {
