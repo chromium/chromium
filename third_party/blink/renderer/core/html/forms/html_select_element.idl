@@ -57,4 +57,7 @@
     void setCustomValidity(DOMString error);
 
     readonly attribute NodeList labels;
+
+    // https://github.com/whatwg/html/pull/9754
+    [RaisesException, RuntimeEnabled=HTMLSelectElementShowPicker] void showPicker();
 };

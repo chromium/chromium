@@ -887,6 +887,8 @@ class CORE_EXPORT LocalFrame final
   // Sets a ResourceCache hosted by another frame in a different renderer.
   void SetResourceCacheRemote(mojo::PendingRemote<mojom::blink::ResourceCache>);
 
+  bool IsSameOrigin();
+
  private:
   friend class FrameNavigationDisabler;
   // LocalFrameMojoHandler is a part of LocalFrame.

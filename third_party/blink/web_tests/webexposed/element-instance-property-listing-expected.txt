@@ -990,6 +990,7 @@ html element select
     property selectedIndex
     property selectedOptions
     property setCustomValidity
+    property showPicker
     property size
     property type
     property validationMessage

@@ -2289,13 +2289,9 @@ void HTMLInputElement::showPicker(ExceptionState& exception_state) {
   // https://github.com/whatwg/html/issues/6909#issuecomment-917138991
   if (type() != input_type_names::kFile && type() != input_type_names::kColor &&
       frame) {
-    const SecurityOrigin* security_origin =
-        frame->GetSecurityContext()->GetSecurityOrigin();
-    const SecurityOrigin* top_security_origin =
-        frame->Tree().Top().GetSecurityContext()->GetSecurityOrigin();
-    if (!security_origin->IsSameOriginWith(top_security_origin)) {
+    if (!frame->IsSameOrigin()) {
       exception_state.ThrowSecurityError(
-          "HTMLInputElement::showPicker() called from cross-origin iframe.");
+          "showPicker() called from cross-origin iframe.");
       return;
     }
   }

@@ -4703,6 +4703,7 @@ interface HTMLSelectElement : HTMLElement
     method remove
     method reportValidity
     method setCustomValidity
+    method showPicker
     setter autocomplete
     setter disabled
     setter length

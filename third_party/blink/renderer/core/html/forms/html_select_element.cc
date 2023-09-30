@@ -1451,4 +1451,35 @@ const ComputedStyle* HTMLSelectElement::OptionStyle() const {
   return select_type_->OptionStyle();
 }
 
+// Show the option list for this select element.
+// https://github.com/whatwg/html/pull/9754
+void HTMLSelectElement::showPicker(ExceptionState& exception_state) {
+  LocalFrame* frame = GetDocument().GetFrame();
+  // In cross-origin iframes it should throw a "SecurityError" DOMException
+  if (frame) {
+    if (!frame->IsSameOrigin()) {
+      exception_state.ThrowSecurityError(
+          "showPicker() called from cross-origin iframe.");
+      return;
+    }
+  }
+
+  if (IsDisabledFormControl()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "showPicker() cannot "
+                                      "be used on immutable controls.");
+    return;
+  }
+
+  if (!LocalFrame::HasTransientUserActivation(frame)) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kNotAllowedError,
+                                      "showPicker() requires a user gesture.");
+    return;
+  }
+
+  if (UsesMenuList()) {
+    ShowPopup();
+  }
+}
+
 }  // namespace blink

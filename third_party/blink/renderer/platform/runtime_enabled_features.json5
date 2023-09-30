@@ -2048,6 +2048,10 @@
       status: "stable",
     },
     {
+      name: "HTMLSelectElementShowPicker",
+      status: "experimental",
+    },
+    {
       name: "HTMLSelectListElement",
       status: "experimental",
       base_feature: "none",

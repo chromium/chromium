@@ -83,6 +83,8 @@ class CORE_EXPORT HTMLSelectElement final
   unsigned ListBoxSize() const;
   bool IsMultiple() const { return is_multiple_; }
 
+  void showPicker(ExceptionState&);
+
   bool UsesMenuList() const { return uses_menu_list_; }
 
   void add(const V8UnionHTMLOptGroupElementOrHTMLOptionElement* element,
