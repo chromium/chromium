@@ -36,7 +36,7 @@ class WebGpuCompatCtsIntegrationTest(
 
   @classmethod
   def ExpectationsFiles(cls) -> List[str]:
-    return [EXPECTATIONS_FILE]
+    return []
 
 
 def load_tests(_loader: unittest.TestLoader, _tests: Any,
