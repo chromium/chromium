@@ -7,6 +7,7 @@
 #include "base/barrier_closure.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/scoped_observation.h"
@@ -210,6 +211,62 @@ class DocumentPictureInPictureWindowControllerBrowserTest
           AcrossTasksDanglingUntriaged>
       pip_window_controller_ = nullptr;
   base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Helper class that waits without polling a run loop until a condition is met.
+// Note that it does not ever check the condition itself; some other thing, like
+// an observer (see below), must notice that the condition is set as part of
+// running the RunLoop.  One must derive a subclass to do whatever specific type
+// of checks are required.
+class TestConditionWaiter {
+ public:
+  // `check_cb` should return true if the condition is satisfied, and false if
+  // it is not.  Will return once the condition is satisfied.  Because browser
+  // tests have a timeout, we don't bother with one here.
+  //
+  // Will return immediately if `check_cb` is initially true.  Otherwise, it's
+  // up to the subclass to call `CheckCondition()` to check the condition.
+  // Probably, these calls are the result of work being run on the RunLoop.
+  void Wait(base::RepeatingCallback<bool()> check_cb) {
+    check_cb_ = std::move(check_cb);
+    base::RunLoop run_loop_;
+    quit_closure_ = run_loop_.QuitClosure();
+    if (!check_cb_.Run()) {
+      run_loop_.Run();
+    }
+  }
+
+ protected:
+  // Check the condition callback, and stop the run loop if it's happy.  It's up
+  // to the subclass to call this when the state changes.
+  void CheckCondition() {
+    if (check_cb_.Run()) {
+      quit_closure_.Run();
+    }
+  }
+
+ private:
+  base::RepeatingClosure quit_closure_;
+  base::RepeatingCallback<bool()> check_cb_;
+};
+
+// Specialization of `TestConditionWaiter` that's useful for many types of
+// observers.  The template argument is the observer type (e.g.,
+// views::WidgetObserver).  Derive from this class, and implement whatever
+// methods on `ObserverType` you need.  The subclass should call
+// `CheckCondition()` to see if the condition is met.
+template <typename ObserverType>
+class TestObserverWaiter : public TestConditionWaiter, public ObserverType {
+ public:
+  // Same as `TestConditionWaiter::Wait()`, except it registers and unregisters
+  // the observer on `y`.  It also guarantees that all calls to `check_cb` will
+  // be made while `this` is registered to observe `y`.
+  template <typename ObservedType>
+  void Wait(ObservedType* y, base::RepeatingCallback<bool()> check_cb) {
+    y->AddObserver(this);
+    TestConditionWaiter::Wait(std::move(check_cb));
+    y->RemoveObserver(this);
+  }
 };
 
 }  // namespace
@@ -578,6 +635,94 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
   ASSERT_EQ(expected_size, window->GetBoundsInScreen().size());
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
+                       WindowBoundsAreCached) {
+  // Create a Document PiP window with any size.  We want to be sure that this
+  // fits in the display comfortably.
+  const gfx::Size size(400, 410);
+  auto display = display::Display::GetDefaultDisplay();
+  ASSERT_LE(size.width(), display.size().width() * 0.8);
+  ASSERT_LE(size.height(), display.size().height() * 0.8);
+
+  LoadTabAndEnterPictureInPicture(browser(), size);
+  auto* pip_web_contents = window_controller()->GetChildWebContents();
+  ASSERT_NE(nullptr, pip_web_contents);
+  WaitForPageLoad(pip_web_contents);
+  auto* browser_view = BrowserView::GetBrowserViewForNativeWindow(
+      pip_web_contents->GetTopLevelNativeWindow());
+  ASSERT_TRUE(browser_view);
+
+  // Wait for the window origin location to be set. This is needed to eliminate
+  // test flakiness.
+  CheckOriginSet(browser_view);
+
+  // Get the bounds, which might not be the same size we asked for.
+  gfx::Rect window_bounds = browser_view->GetBounds();
+
+  // Move the window and change the size.  Make sure that it stays on-screen.
+  // Also make sure it gets smaller, in case one of the bounds was clipped to
+  // the display size.
+  ASSERT_GE(window_bounds.x(), 10);
+  ASSERT_GE(window_bounds.y(), 10);
+  window_bounds -= gfx::Vector2d(10, 10);
+#if !BUILDFLAG(IS_LINUX)
+  // During resize, aura on linux posts delayed work to update the size:
+  //
+  // PictureInPictureWindowManager::UpdateCachedBounds()
+  // views::Widget::OnNativeWidgetSizeChanged()
+  // views::DesktopNativeWidgetAura::OnHostResized()
+  // aura::WindowTreeHost::OnHostResizedInPixels()
+  // aura::WindowTreeHostPlatform::OnBoundsChanged()
+  // BrowserDesktopWindowTreeHostLinux::OnBoundsChanged()
+  // ui::X11Window::NotifyBoundsChanged()
+  // ui::X11Window::DelayedResize()
+  // base::internal::CancelableCallbackImpl<>::ForwardOnce<>()
+  //
+  // This starts when the window is opened, so the posted work tries to set the
+  // size to what we requested above.
+  //
+  // If the test is fast enough to update the bounds before the original posted
+  // work completes, then the posted work will cause a cache update back to the
+  // original size.  Luckily, the position isn't updated so we can at least make
+  // sure that the cache is doing something, even on linux.
+  //
+  // On other platforms, we change the size here to test both.
+  window_bounds.set_size(
+      {window_bounds.width() - 10, window_bounds.height() - 10});
+#endif  // !BUILDFLAG(IS_LINUX)
+
+  browser_view->SetBounds(window_bounds);
+
+  // Wait for the bounds to change.  It would be nice if we didn't need to
+  // explicitly create a variable.  A temporary would do it, but it seems like
+  // temporaries and anonymous types don't work well together.
+  struct : TestObserverWaiter<views::WidgetObserver> {
+    void OnWidgetBoundsChanged(views::Widget*,
+                               const gfx::Rect& bounds) override {
+      CheckCondition();
+    }
+  } waiter;
+  waiter.Wait(browser_view->GetWidget(),
+              base::BindRepeating(
+                  [](const gfx::Rect& expected, BrowserView* browser_view) {
+                    return expected == browser_view->GetBounds();
+                  },
+                  window_bounds, browser_view));
+
+  // Open a new pip window, and make sure that it's not in the same place it was
+  // last time.
+  LoadTabAndEnterPictureInPicture(browser(), size);
+  auto* pip_web_contents_2 = window_controller()->GetChildWebContents();
+  ASSERT_NE(nullptr, pip_web_contents_2);
+  WaitForPageLoad(pip_web_contents_2);
+  auto* browser_view_2 = BrowserView::GetBrowserViewForNativeWindow(
+      pip_web_contents_2->GetTopLevelNativeWindow());
+
+  // The new window should match the bounds we set for the old one, which differ
+  // from the default.
+  EXPECT_EQ(browser_view_2->GetBounds(), window_bounds);
+}
 
 INSTANTIATE_TEST_SUITE_P(WindowSizes,
                          DocumentPictureInPictureWindowControllerBrowserTest,

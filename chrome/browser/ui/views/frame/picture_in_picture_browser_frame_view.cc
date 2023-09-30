@@ -264,11 +264,6 @@ void PictureInPictureBrowserFrameView::ChildDialogObserverHelper::
       new_bounds.size() != latest_child_dialog_forced_bounds_.size()) {
     latest_user_desired_bounds_.set_size(new_bounds.size());
 
-    // Update the bounds for this window as well.  It might be possible to
-    // remove `latest_user_desired_bounds_`, but likely it's not worth it.
-    PictureInPictureWindowManager::GetInstance()->UpdateCachedBounds(
-        new_bounds);
-
     // At this point, we'll no longer resize when the child dialog closes, so
     // reset the state to normal.
     resizing_state_ = ResizingState::kNormal;
@@ -996,6 +991,12 @@ void PictureInPictureBrowserFrameView::OnWidgetDestroying(
 #if RESIZE_DOCUMENT_PICTURE_IN_PICTURE_TO_DIALOG
   child_dialog_observer_helper_.reset();
 #endif  // RESIZE_DOCUMENT_PICTURE_IN_PICTURE_TO_DIALOG
+}
+
+void PictureInPictureBrowserFrameView::OnWidgetBoundsChanged(
+    views::Widget* widget,
+    const gfx::Rect& new_bounds) {
+  PictureInPictureWindowManager::GetInstance()->UpdateCachedBounds(new_bounds);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
