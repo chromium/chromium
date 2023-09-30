@@ -1214,6 +1214,9 @@ export function FeedbackFlowTestSuite() {
             '"descriptionPlaceholder":"fake description placeholder",' +
             '"fromAssistant": true, ' +
             '"fromAutofill": true, ' +
+            '"fromSettingsSearch": true, ' +
+            '"hasLinkedCrossDevicePhone": true, ' +
+            '"isInternalAccount": true, ' +
             '"pageUrl":"chrome://flags/",' +
             '"systemInformation":[' +
             '  {' +
@@ -1237,6 +1240,9 @@ export function FeedbackFlowTestSuite() {
         '{"fake key1":"fake value1"}', feedbackContext.autofillMetadata);
     assertTrue(feedbackContext.fromAssistant);
     assertTrue(feedbackContext.fromAutofill);
+    assertTrue(feedbackContext.fromSettingsSearch);
+    assertTrue(feedbackContext.hasLinkedCrossDevicePhone);
+    assertTrue(feedbackContext.isInternalAccount);
 
     assertEquals('fake description', page.getDescriptionTemplateForTesting());
     assertEquals(
@@ -1250,7 +1256,7 @@ export function FeedbackFlowTestSuite() {
   });
 
   // Test that when dialog args is present, it will be used to populate the
-  // feedback context. Most info are empty or with default values.
+  // feedback context. All fields are empty/absent.
   test(
       'Create_feedback_context_from_dialogArguments_if_present_empty',
       async () => {
@@ -1258,16 +1264,6 @@ export function FeedbackFlowTestSuite() {
         const chromeGetVariableValue = chrome.getVariableValue;
         // Mock the chrome.getVariableValue to return dialogArguments.
         const mockChromeGetVariableValue = (message) => {
-          if (message === 'dialogArguments') {
-            return '{' +
-                '"autofillMetadata":{},' +
-                '"categoryTag":"",' +
-                '"fromAssistant": false, ' +
-                '"fromAutofill": false, ' +
-                '"pageUrl":"",' +
-                '"systemInformation":[]' +
-                '}';
-          }
           return '{}';
         };
         chrome.getVariableValue = mockChromeGetVariableValue;
@@ -1275,12 +1271,15 @@ export function FeedbackFlowTestSuite() {
         await initializePage();
 
         const feedbackContext = getFeedbackContext_();
-        assertTrue(!feedbackContext.categoryTag);
-        assertTrue(!feedbackContext.extraDiagnostics);
-        assertTrue(!feedbackContext.pageUrl.url);
+        assertEquals('', feedbackContext.categoryTag);
+        assertEquals('', feedbackContext.extraDiagnostics);
+        assertEquals('', feedbackContext.pageUrl.url);
         assertEquals('{}', feedbackContext.autofillMetadata);
         assertFalse(feedbackContext.fromAssistant);
         assertFalse(feedbackContext.fromAutofill);
+        assertFalse(feedbackContext.fromSettingsSearch);
+        assertFalse(feedbackContext.isInternalAccount);
+        assertFalse(feedbackContext.hasLinkedCrossDevicePhone);
 
         assertTrue(!page.getDescriptionTemplateForTesting());
         assertTrue(!page.getDescriptionPlaceholderTextForTesting());
