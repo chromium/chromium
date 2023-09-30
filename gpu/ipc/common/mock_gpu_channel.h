@@ -44,6 +44,11 @@ class MockGpuChannel : public mojom::GpuChannel {
                void(mojom::ScheduleImageDecodeParamsPtr, uint64_t));
   MOCK_METHOD1(FlushDeferredRequests,
                void(std::vector<mojom::DeferredRequestPtr>));
+  MOCK_METHOD4(CreateGpuMemoryBuffer,
+               void(const gfx::Size&,
+                    const viz::SharedImageFormat&,
+                    gfx::BufferUsage,
+                    CreateGpuMemoryBufferCallback));
   MOCK_METHOD2(GetGpuMemoryBufferHandleInfo,
                void(const gpu::Mailbox&, GetGpuMemoryBufferHandleInfoCallback));
 #if BUILDFLAG(IS_ANDROID)

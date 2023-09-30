@@ -27,6 +27,12 @@ constexpr int32_t kGrShaderCacheClientId = -2;
 // use a unique namespace for these shaders.
 constexpr int32_t kGraphiteDawnClientId = -3;
 
+// This ID is used for all the renderer/browser clients which will be using
+// MappabelSharedImages.
+// TODO(crbug.com/1486934) : Use of ClientId by MappableSI will go away once we
+// stop using GpuMemoryBufferFactory in service side to create and cache GMBs.
+constexpr int32_t kMappableSIClientId = -4;
+
 inline bool IsReservedClientId(int32_t client_id) {
   return client_id < 0;
 }

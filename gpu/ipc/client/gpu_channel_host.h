@@ -117,6 +117,13 @@ class GPU_EXPORT GpuChannelHost
   // Generate a route ID guaranteed to be unique for this channel.
   int32_t GenerateRouteID();
 
+  // Creates a GpuMemoryBufferHandle in service side on the IO thread. This is a
+  // blocking call and will block the calling client.
+  void CreateGpuMemoryBuffer(const gfx::Size& size,
+                             const viz::SharedImageFormat& format,
+                             gfx::BufferUsage buffer_usage,
+                             gfx::GpuMemoryBufferHandle* handle);
+
   void GetGpuMemoryBufferHandleInfo(const Mailbox& mailbox,
                                     gfx::GpuMemoryBufferHandle* handle,
                                     viz::SharedImageFormat* format,

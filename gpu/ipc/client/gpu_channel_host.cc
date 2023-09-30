@@ -175,6 +175,15 @@ int32_t GpuChannelHost::GenerateRouteID() {
   return next_route_id_.GetNext();
 }
 
+void GpuChannelHost::CreateGpuMemoryBuffer(
+    const gfx::Size& size,
+    const viz::SharedImageFormat& format,
+    gfx::BufferUsage buffer_usage,
+    gfx::GpuMemoryBufferHandle* buffer_handle) {
+  GetGpuChannel().CreateGpuMemoryBuffer(size, format, buffer_usage,
+                                        buffer_handle);
+}
+
 void GpuChannelHost::GetGpuMemoryBufferHandleInfo(
     const Mailbox& mailbox,
     gfx::GpuMemoryBufferHandle* handle,

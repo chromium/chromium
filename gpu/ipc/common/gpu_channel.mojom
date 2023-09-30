@@ -168,6 +168,13 @@ interface GpuChannel {
   // Sends a batch of DeferredRequests to be executed by the service.
   FlushDeferredRequests(array<DeferredRequest> requests);
 
+  // Create a GpuMemoryBuffer on IO thread. Note that this needs to be a
+  // blocking call on calling client's thread in order to return the
+  // GpuMemoryBufferHandle before it's used to create a mailbox from it.
+  [Sync] CreateGpuMemoryBuffer(gfx.mojom.Size size,
+  viz.mojom.SharedImageFormat format, gfx.mojom.BufferUsage buffer_usage)
+  => (gfx.mojom.GpuMemoryBufferHandle buffer_handle);
+
   // Gets the GpuMemoryBufferHandle for the corresponding `mailbox` from
   // service side. Note that this needs to be a blocking call on calling
   // client's thread in order to return the GpuMemoryBufferHandle and other

@@ -40,6 +40,7 @@
 #include "base/trace_event/process_memory_dump.h"
 #include "base/trace_event/trace_event.h"
 #include "base/unguessable_token.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/common/context_creation_attribs.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/service/mailbox_manager.h"
@@ -49,6 +50,8 @@
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/ipc/common/command_buffer_id.h"
 #include "gpu/ipc/common/gpu_channel.mojom.h"
+#include "gpu/ipc/common/gpu_client_ids.h"
+#include "gpu/ipc/common/gpu_memory_buffer_impl_shared_memory.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "gpu/ipc/service/gles2_command_buffer_stub.h"
 #include "gpu/ipc/service/gpu_channel_manager.h"
@@ -190,6 +193,10 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelMessageFilter
 
   bool IsNativeBufferSupported(gfx::BufferFormat buffer_format,
                                gfx::BufferUsage buffer_usage);
+  void CreateGpuMemoryBuffer(const gfx::Size& size,
+                             const viz::SharedImageFormat& format,
+                             gfx::BufferUsage buffer_usage,
+                             CreateGpuMemoryBufferCallback callback) override;
   void GetGpuMemoryBufferHandleInfo(
       const gpu::Mailbox& mailbox,
       GetGpuMemoryBufferHandleInfoCallback callback) override;
@@ -422,6 +429,62 @@ bool GpuChannelMessageFilter::IsNativeBufferSupported(
   }
   return base::Contains(supported_gmb_configurations_,
                         gfx::BufferUsageAndFormat(buffer_usage, buffer_format));
+}
+
+void GpuChannelMessageFilter::CreateGpuMemoryBuffer(
+    const gfx::Size& size,
+    const viz::SharedImageFormat& format,
+    gfx::BufferUsage buffer_usage,
+    CreateGpuMemoryBufferCallback callback) {
+  if (!format.is_single_plane()) {
+    // Only single plane format is supported as of now.
+    LOG(ERROR) << "Invalid format." << format.ToString();
+    std::move(callback).Run(gfx::GpuMemoryBufferHandle());
+    return;
+  }
+
+  if (!viz::HasEquivalentBufferFormat(format)) {
+    // Client GMB code still operates on BufferFormat so the SharedImageFormat
+    // received here must have an equivalent BufferFormat.
+    LOG(ERROR) << "Invalid format." << format.ToString();
+    std::move(callback).Run(gfx::GpuMemoryBufferHandle());
+    return;
+  }
+  auto buffer_format = SinglePlaneSharedImageFormatToBufferFormat(format);
+  gfx::GpuMemoryBufferHandle handle;
+
+  // Hardcoding the GpuMemoryBufferId to 1 here instead of having a different
+  // value for each handle. GpuMemoryBufferId is used as a cache key in
+  // GpuMemoryBufferFactory but since we immediately call
+  // DestroyGpuMemoryBuffer here, this value does not matter.
+  // kMappableSIClientId and GpuMemoryBufferId(1) will ensure that the cache key
+  // is always unique and does not clash with non-mappable GMB cases.
+  auto id = gfx::GpuMemoryBufferId(1);
+  if (IsNativeBufferSupported(buffer_format, buffer_usage)) {
+    handle = gpu_memory_buffer_factory_->CreateGpuMemoryBuffer(
+        id, size, /*framebuffer_size=*/size, buffer_format, buffer_usage,
+        kMappableSIClientId, /*surface_handle=*/0);
+
+    // Note that this removes the handle from the cache in
+    // GpuMemoryBufferFactory. Shared image backings caches the handle and still
+    // has the ref. So the handle is still alive until the mailbox is destroyed.
+    // This is only needed since we are currently using GpuMemoryBufferFactory.
+    // TODO(crbug.com/1486934) : Once we remove the GMB abstraction and starts
+    // using a separate factory to create the native buffers, we can stop
+    // caching the handles in them and hence remove this destroy api.
+    gpu_memory_buffer_factory_->DestroyGpuMemoryBuffer(id, kMappableSIClientId);
+  } else {
+    if (gpu::GpuMemoryBufferImplSharedMemory::IsUsageSupported(buffer_usage) &&
+        gpu::GpuMemoryBufferImplSharedMemory::IsSizeValidForFormat(
+            size, buffer_format)) {
+      handle = gpu::GpuMemoryBufferImplSharedMemory::CreateGpuMemoryBuffer(
+          id, size, buffer_format, buffer_usage);
+    }
+  }
+  if (handle.is_null()) {
+    LOG(ERROR) << "Buffer Handle is null.";
+  }
+  std::move(callback).Run(std::move(handle));
 }
 
 void GpuChannelMessageFilter::GetGpuMemoryBufferHandleInfo(
