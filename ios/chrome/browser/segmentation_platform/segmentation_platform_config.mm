@@ -77,10 +77,6 @@ void IOSFieldTrialRegisterImpl::RegisterSubsegmentFieldTrialIfNeeded(
     group_name = FeedUserSegment::GetSubsegmentName(subsegment_rank);
   }
 
-  if (segment_id == SegmentId::CROSS_DEVICE_USER_SEGMENT) {
-    group_name = CrossDeviceUserSegment::GetSubsegmentName(subsegment_rank);
-  }
-
   if (!group_name) {
     return;
   }

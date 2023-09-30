@@ -159,6 +159,17 @@ const char kAdaptiveToolbarModelLabelAddToBookmarks[] = "AddToBookmarks";
 const char kContextualPageActionModelLabelPriceTracking[] = "price_tracking";
 const char kContextualPageActionModelLabelReaderMode[] = "reader_mode";
 
+// Labels for cross device segment.
+const char kNoCrossDeviceUsage[] = "NoCrossDeviceUsage";
+const char kCrossDeviceMobile[] = "CrossDeviceMobile";
+const char kCrossDeviceDesktop[] = "CrossDeviceDesktop";
+const char kCrossDeviceTablet[] = "CrossDeviceTablet";
+const char kCrossDeviceMobileAndDesktop[] = "CrossDeviceMobileAndDesktop";
+const char kCrossDeviceMobileAndTablet[] = "CrossDeviceMobileAndTablet";
+const char kCrossDeviceDesktopAndTablet[] = "CrossDeviceDesktopAndTablet";
+const char kCrossDeviceAllDeviceTypes[] = "CrossDeviceAllDeviceTypes";
+const char kCrossDeviceOther[] = "CrossDeviceOther";
+
 // Labels for search user model.
 // Any updates to these strings need to also update the field trials allowlist
 // in go/segmentation-field-trials-map.
