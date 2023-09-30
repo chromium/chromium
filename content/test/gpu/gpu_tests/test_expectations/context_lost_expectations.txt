@@ -196,8 +196,7 @@ crbug.com/1419583 [ linux amd-0x7340 angle-vulkan ] ContextLost_WebGLContextRest
 
 crbug.com/1419558 [ angle-swiftshader clang-coverage fuchsia fuchsia-board-qemu-x64 google-0xc0de ] ContextLost_WebGLContextLostFromQuantity [ Failure ]
 
-crbug.com/1469875 [ mac graphite-enabled intel release asan ] GpuCrash_InfoForHardwareGpu [ Failure ]
-
+crbug.com/1484919 [ ventura intel-0x3e9b angle-metal graphite-enabled ] ContextLost_WebGLContextLostFromQuantity [ RetryOnFailure ]
 crbug.com/1484919 [ ventura intel-0x3e9b angle-metal graphite-enabled ] ContextLost_WebGLContextRestoredInHiddenTab [ RetryOnFailure ]
 
 #######################################################################
