@@ -8,6 +8,8 @@
 #ifndef CONTENT_PUBLIC_COMMON_CONTENT_FEATURES_H_
 #define CONTENT_PUBLIC_COMMON_CONTENT_FEATURES_H_
 
+#include <string>
+
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
@@ -52,6 +54,8 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kCompositeBGColorAnimation);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kCookieDeprecationFacilitatedTesting);
 CONTENT_EXPORT extern const base::FeatureParam<bool>
     kCookieDeprecationFacilitatedTestingEnableOTRProfiles;
+CONTENT_EXPORT extern const base::FeatureParam<std::string>
+    kCookieDeprecationLabel;
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kCooperativeScheduling);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kCrashReporting);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kDevicePosture);

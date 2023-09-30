@@ -97,6 +97,10 @@ class PerSessionSettingsUserActionTracker;
 }  // namespace settings
 }  // namespace ash
 
+namespace tpcd::experiment {
+class ExperimentManagerImpl;
+}
+
 // This class limits and documents access to metrics service helper methods.
 // Since these methods are private, each user has to be explicitly declared
 // as a 'friend' below.
@@ -156,6 +160,7 @@ class ChromeMetricsServiceAccessor : public metrics::MetricsServiceAccessor {
   friend class feed::WebFeedSubscriptionCoordinator;
   friend class HttpsFirstModeService;
   friend class ash::DemoSession;
+  friend class tpcd::experiment::ExperimentManagerImpl;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   friend class ChromeCameraAppUIDelegate;

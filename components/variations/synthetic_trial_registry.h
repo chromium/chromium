@@ -19,6 +19,11 @@ class MetricsService;
 class MetricsServiceAccessor;
 }  // namespace metrics
 
+namespace tpcd::experiment {
+FORWARD_DECLARE_TEST(ExperimentManagerImplSyntheticTrialTest,
+                     RegistersSyntheticTrial);
+}  // namespace tpcd::experiment
+
 namespace variations {
 
 struct ActiveGroupId;
@@ -89,8 +94,11 @@ class COMPONENT_EXPORT(VARIATIONS) SyntheticTrialRegistry {
                            GetSyntheticFieldTrialsOlderThanSuffix);
   FRIEND_TEST_ALL_PREFIXES(SyntheticTrialRegistryTest,
                            GetSyntheticFieldTrialActiveGroups);
-  FRIEND_TEST_ALL_PREFIXES(VariationsCrashKeysTest, BasicFunctionality);
   FRIEND_TEST_ALL_PREFIXES(SyntheticTrialRegistryTest, NotifyObserver);
+  FRIEND_TEST_ALL_PREFIXES(VariationsCrashKeysTest, BasicFunctionality);
+  FRIEND_TEST_ALL_PREFIXES(
+      ::tpcd::experiment::ExperimentManagerImplSyntheticTrialTest,
+      RegistersSyntheticTrial);
 
   // Registers a field trial name and group to be used to annotate UMA and UKM
   // reports with a particular Chrome configuration state.

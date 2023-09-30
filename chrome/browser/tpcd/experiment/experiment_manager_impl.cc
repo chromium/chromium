@@ -4,6 +4,7 @@
 
 #include "chrome/browser/tpcd/experiment/experiment_manager_impl.h"
 
+#include <string>
 #include <utility>
 
 #include "base/check.h"
@@ -16,16 +17,24 @@
 #include "base/sequence_checker.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tpcd/experiment/tpcd_experiment_features.h"
 #include "chrome/browser/tpcd/experiment/tpcd_pref_names.h"
 #include "chrome/browser/tpcd/experiment/tpcd_utils.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/variations/synthetic_trials.h"
 #include "content/public/common/content_features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace tpcd::experiment {
+
+// TODO(b/302798031): This flag is needed to deflake
+// ExperimentManagerImplSyntheticTrialTest on CQ. Remove once test is fixed.
+const base::FeatureParam<bool> kForceProfilesEligibleForTesting{
+    &features::kCookieDeprecationFacilitatedTesting, "force_profiles_eligible",
+    false};
 
 // static
 ExperimentManagerImpl* ExperimentManagerImpl::GetForProfile(Profile* profile) {
@@ -52,11 +61,6 @@ ExperimentManagerImpl::ExperimentManagerImpl() {
   CHECK(base::FeatureList::IsEnabled(
       features::kCookieDeprecationFacilitatedTesting));
 
-  // If in force eligible mode, there's no work for the manager to do.
-  if (kForceEligibleForTesting.Get()) {
-    return;
-  }
-
   PrefService* local_state = g_browser_process->local_state();
   CHECK(local_state);
 
@@ -68,9 +72,10 @@ ExperimentManagerImpl::ExperimentManagerImpl() {
     local_state->ClearPref(prefs::kTPCDExperimentClientState);
   }
 
-  // If client eligibility is already known, there's no work for the manager to
-  // do.
+  // If client eligibility is already known, do not recompute it.
   if (IsClientEligible().has_value()) {
+    // The user must be re-registered to the synthetic trial on restart.
+    UpdateSyntheticTrialRegistration();
     return;
   }
 
@@ -101,21 +106,44 @@ void ExperimentManagerImpl::SetClientEligibility(
 
   // Wait to run callback when decision is made in
   // `CaptureEligibilityInLocalStatePref`
-  client_is_eligible_ = client_is_eligible_ && is_eligible;
+  if (!kForceProfilesEligibleForTesting.Get()) {
+    client_is_eligible_ = client_is_eligible_ && is_eligible;
+  }
   callbacks_.push_back(std::move(on_eligibility_decision_callback));
 }
 
 void ExperimentManagerImpl::CaptureEligibilityInLocalStatePref() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Update kTPCDExperimentClientState in the local state prefs.
   g_browser_process->local_state()->SetInteger(
       prefs::kTPCDExperimentClientState,
       client_is_eligible_
           ? static_cast<int>(utils::ExperimentState::kEligible)
           : static_cast<int>(utils::ExperimentState::kIneligible));
+
+  // Register or unregister for the synthetic trial based on the new
+  // eligibility local state pref.
+  UpdateSyntheticTrialRegistration();
+
+  // Run the EligibilityDecisionCallback for every profile that marked its
+  // eligibility.
   for (auto& callback : callbacks_) {
     std::move(callback).Run(client_is_eligible_);
   }
   callbacks_.clear();
+}
+
+void ExperimentManagerImpl::UpdateSyntheticTrialRegistration() {
+  absl::optional<bool> is_client_eligible = IsClientEligible();
+  CHECK(is_client_eligible.has_value());
+
+  std::string group_name = *is_client_eligible
+                               ? features::kCookieDeprecationLabel.Get()
+                               : kSyntheticTrialInvalidGroupName;
+  ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
+      kSyntheticTrialName, group_name,
+      variations::SyntheticTrialAnnotationMode::kCurrentLog);
 }
 
 absl::optional<bool> ExperimentManagerImpl::IsClientEligible() const {

@@ -4,8 +4,6 @@
 
 #include "chrome/browser/tpcd/experiment/tpcd_experiment_features.h"
 
-#include <string>
-
 #include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
 #include "content/public/common/content_features.h"

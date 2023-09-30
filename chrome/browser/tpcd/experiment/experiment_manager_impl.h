@@ -18,6 +18,9 @@ class Profile;
 
 namespace tpcd::experiment {
 
+inline constexpr char kSyntheticTrialName[] = "ChromeTPCDExperiment";
+inline constexpr char kSyntheticTrialInvalidGroupName[] = "invalid";
+
 // Can only be used on the main thread.
 class ExperimentManagerImpl : public ExperimentManager {
  public:
@@ -40,12 +43,20 @@ class ExperimentManagerImpl : public ExperimentManager {
 
  private:
   friend base::NoDestructor<ExperimentManagerImpl>;
+
   bool client_is_eligible_ GUARDED_BY_CONTEXT(sequence_checker_) = true;
   std::vector<EligibilityDecisionCallback> callbacks_
       GUARDED_BY_CONTEXT(sequence_checker_);
   SEQUENCE_CHECKER(sequence_checker_);
 
+  // Commit the computed eligibility to the local state pref, once the timer
+  // expires. This function is called at most once per global runtime - never if
+  // the local state pref already exists on startup.
   void CaptureEligibilityInLocalStatePref();
+  // Register for the synthetic trial (or unregister using the "invalid" group).
+  // Uses IsClientEligible() to determine eligibility, so the local state pref
+  // must be set when this function is called.
+  void UpdateSyntheticTrialRegistration();
 };
 
 }  // namespace tpcd::experiment
