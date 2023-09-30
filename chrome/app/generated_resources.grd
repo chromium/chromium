@@ -9919,6 +9919,9 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       <message name="IDS_PICTURE_IN_PICTURE_NEXT_SLIDE_CONTROL_ACCESSIBLE_TEXT" desc="Accessible text label used for the controls button in the Picture-in-Picture window. The button invokes next slide action.">
         Next slide
       </message>
+      <message name="IDS_AUTO_PICTURE_IN_PICTURE_DESCRIPTION" desc="Auto Picture-in-Picture description displayed in the permissions prompt UI">
+        Enter picture-in-picture automatically, so you can use it on top of other tabs and windows.
+      </message>
 
       <!-- Load State -->
       <message name="IDS_LOAD_STATE_WAITING_FOR_SOCKET_SLOT" desc="Status text when Chrome is at its connection limit, and is waiting for a URL request to complete to free up a connection.">

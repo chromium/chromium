@@ -29,11 +29,6 @@ constexpr int kLayoutBetweenChildSpacing = 8;
 constexpr int kDescriptionViewWidth = 280;
 constexpr int kDescriptionViewHeight = 32;
 
-// Short AutoPiP Description. To be displayed below the Bubble title.
-// TODO(crbug.com/1465529): Localize this.
-constexpr char16_t kAutopipDescription[] =
-    u"Enter picture-in-picture if you switch tabs on certain sites.";
-
 // Bubble fixed width.
 constexpr int kBubbleFixedWidth = 320;
 
@@ -116,7 +111,8 @@ void AutoPipSettingView::InitBubble() {
           .SetElideBehavior(gfx::NO_ELIDE)
           .SetMultiLine(true)
           .SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT)
-          .SetText(std::u16string(kAutopipDescription))
+          .SetText(l10n_util::GetStringUTF16(
+              IDS_AUTO_PICTURE_IN_PICTURE_DESCRIPTION))
           .Build());
   autopip_description_->SetSize(
       gfx::Size(kDescriptionViewWidth, kDescriptionViewHeight));
