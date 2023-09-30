@@ -1,0 +1,16 @@
+<style include="settings-shared"></style>
+
+<settings-card header-text="$i18n{onStartupSettingsCardTitle}">
+  <div class="settings-box">
+    <div class="start settings-box-text" aria-hidden="true">
+      $i18n{onStartupTitle}
+      <div class="secondary">$i18n{onStartupDescription}</div>
+    </div>
+    <settings-dropdown-menu id="onStartupDropdown"
+        label="$i18n{onStartupTitle}"
+        pref="{{prefs.settings.restore_apps_and_pages}}"
+        menu-options="[[onStartupDropdownOptions_]]"
+        deep-link-focus-id$="[[Setting.kRestoreAppsAndPages]]">
+    </settings-dropdown-menu>
+  </div>
+</settings-card>

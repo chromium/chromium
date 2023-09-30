@@ -123,7 +123,7 @@ suite('<os-apps-page> available settings rows', () => {
 
   test('Only App Management is shown', () => {
     loadTimeData.overrideValues({
-      showStartup: false,
+      shouldShowStartup: false,
       androidAppsVisible: false,
     });
     initPage();
@@ -135,7 +135,7 @@ suite('<os-apps-page> available settings rows', () => {
 
   test('Android Apps and App Management are shown', () => {
     loadTimeData.overrideValues({
-      showStartup: false,
+      shouldShowStartup: false,
       androidAppsVisible: true,
     });
     initPage();
@@ -147,7 +147,7 @@ suite('<os-apps-page> available settings rows', () => {
 
   test('Android Apps, On Startup, and App Management are shown', () => {
     loadTimeData.overrideValues({
-      showStartup: true,
+      shouldShowStartup: true,
       androidAppsVisible: true,
     });
     initPage();

@@ -16,6 +16,7 @@ import '../os_settings_page/os_settings_subpage.js';
 import '../os_reset_page/reset_settings_card.js';
 import '../os_search_page/search_and_assistant_settings_card.js';
 import '../settings_shared.css.js';
+import './startup_settings_card.js';
 import './storage_and_power_settings_card.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
@@ -23,7 +24,7 @@ import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {isAssistantAllowed, isExternalStorageEnabled, isGuest, isPowerwashAllowed, isRevampWayfindingEnabled, shouldShowQuickAnswersSettings} from '../common/load_time_booleans.js';
+import {isAssistantAllowed, isExternalStorageEnabled, isGuest, isPowerwashAllowed, isRevampWayfindingEnabled, shouldShowQuickAnswersSettings, shouldShowStartup} from '../common/load_time_booleans.js';
 import {PrefsState} from '../common/types.js';
 import {Section} from '../mojom-webui/routes.mojom-webui.js';
 import {LanguageHelper, LanguagesModel} from '../os_languages_page/languages_types.js';
@@ -123,6 +124,17 @@ export class SettingsSystemPreferencesPageElement extends
           return !!routes.OFFICE;
         },
       },
+
+      /**
+       * Determines if the startup settings card is visible.
+       */
+      shouldShowStartupSettingsCard_: {
+        type: Boolean,
+        value: () => {
+          return shouldShowStartup();
+        },
+        readOnly: true,
+      },
     };
   }
 
@@ -148,6 +160,9 @@ export class SettingsSystemPreferencesPageElement extends
   // Search and Assistant subsection
   private shouldShowQuickAnswersSettings_: boolean;
   private isAssistantAllowed_: boolean;
+
+  // Startup subsection
+  private readonly shouldShowStartupSettingsCard_: boolean;
 
   // Storage and Power subsection
   private isExternalStorageEnabled_: boolean;

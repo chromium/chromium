@@ -715,6 +715,8 @@ void AppsSection::AddOnStartupTimeData(content::WebUIDataSource* html_source) {
       ash::features::IsOsSettingsRevampWayfindingEnabled();
 
   webui::LocalizedString kLocalizedStrings[] = {
+      {"onStartupSettingsCardTitle",
+       IDS_OS_SETTINGS_ON_STARTUP_SETTINGS_CARD_TITLE},
       {"onStartupTitle", kIsRevampEnabled
                              ? IDS_OS_SETTINGS_REVAMP_ON_STARTUP_TITLE
                              : IDS_OS_SETTINGS_ON_STARTUP_TITLE},
@@ -726,7 +728,7 @@ void AppsSection::AddOnStartupTimeData(content::WebUIDataSource* html_source) {
 
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
-  html_source->AddBoolean("showStartup", ShouldShowStartup(profile()));
+  html_source->AddBoolean("shouldShowStartup", ShouldShowStartup(profile()));
 }
 
 void AppsSection::UpdateAndroidSearchTags() {

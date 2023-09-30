@@ -1006,6 +1006,11 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
    {enabled: ['ash::features::kOsSettingsRevampWayfinding']},
  ],
  [
+   'SystemPreferencesPageStartupSettingsCard',
+   'system_preferences_page/startup_settings_card_test.js',
+   {enabled: ['ash::features::kOsSettingsRevampWayfinding']},
+ ],
+ [
    'SystemPreferencesPageStorageAndPowerSettingsCard',
    'system_preferences_page/storage_and_power_settings_card_test.js',
    {enabled: ['ash::features::kOsSettingsRevampWayfinding']},

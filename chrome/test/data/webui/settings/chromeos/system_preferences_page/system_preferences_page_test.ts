@@ -287,6 +287,36 @@ suite('<settings-system-preferences-page>', () => {
         });
   });
 
+  suite('Startup subsection', () => {
+    suite('When startup settings are available', () => {
+      setup(() => {
+        loadTimeData.overrideValues({shouldShowStartup: false});
+      });
+
+      test('Startup settings card is not visible', async () => {
+        await createPage();
+
+        const startupSettingsCard =
+            page.shadowRoot!.querySelector('startup-settings-card');
+        assertFalse(isVisible(startupSettingsCard));
+      });
+    });
+
+    suite('When startup settings are not available', () => {
+      setup(() => {
+        loadTimeData.overrideValues({shouldShowStartup: true});
+      });
+
+      test('Startup settings card is visible', async () => {
+        await createPage();
+
+        const startupSettingsCard =
+            page.shadowRoot!.querySelector('startup-settings-card');
+        assertTrue(isVisible(startupSettingsCard));
+      });
+    });
+  });
+
   suite('Storage and power subsection', () => {
     test('Storage and power settings card is visible', async () => {
       await createPage();
