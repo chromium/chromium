@@ -40,6 +40,7 @@
 #include "components/download/public/common/download_file_impl.h"
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/download_item_impl.h"
+#include "components/download/public/common/download_stats.h"
 #include "components/download/public/common/download_task_runner.h"
 #include "components/download/public/common/parallel_download_configs.h"
 #include "content/browser/download/download_manager_impl.h"
@@ -765,10 +766,8 @@ class ReceivedSlicesCountingObserver : public DownloadCountingObserver {
 class ErrorStreamCountingObserver : public DownloadCountingObserver {
  private:
   bool IsCountReached(download::DownloadItem* download, int count) override {
-    std::unique_ptr<base::HistogramSamples> samples =
-        histogram_tester_.GetHistogramSamplesSinceCreation(
-            "Download.ParallelDownload.CreationFailureReason");
-    return samples->TotalCount() == count;
+    return download::GetParallelRequestCreationFailureCountForTesting() ==
+           count;
   }
 
  private:

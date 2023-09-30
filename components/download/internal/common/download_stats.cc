@@ -560,9 +560,20 @@ void RecordParallelizableDownloadCount(DownloadCountTypes type,
                                 DOWNLOAD_COUNT_TYPES_LAST_ENTRY);
 }
 
+namespace {
+int g_parallel_download_creation_failure_count_ = 0;
+}
+
 void RecordParallelRequestCreationFailure(DownloadInterruptReason reason) {
-  base::UmaHistogramSparse("Download.ParallelDownload.CreationFailureReason",
-                           reason);
+  // This used to log a metric; however there is a test that checks how many
+  // times that metric (and thus this method) was called. Ultimately that should
+  // be refactored; but for now instead of logging the metric, just increment
+  // a counter.
+  g_parallel_download_creation_failure_count_++;
+}
+
+int GetParallelRequestCreationFailureCountForTesting() {
+  return g_parallel_download_creation_failure_count_;
 }
 
 DownloadConnectionSecurity CheckDownloadConnectionSecurity(
