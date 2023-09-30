@@ -32,6 +32,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.Log;
 import org.chromium.base.StreamUtil;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.ThreadUtils;
@@ -368,13 +369,29 @@ public class ClipboardImpl
         return ApiHelperForO.getTimestamp(description);
     }
 
+    private String mLastText;
+
     @Override
     public void setText(final String text) {
-        setPrimaryClipNoException(ClipData.newPlainText("text", text));
+        Log.e("ClipboardImpl", "setText text=" + text);
+        if (TextUtils.equals(text, mLastText)) {
+            return;
+        }
+        if (sInterceptor != null) {
+            sInterceptor.onSetTextToClipboard(text, new Runnable() {
+                @Override
+                public void run() {
+                    mLastText = null;
+                }
+            });
+        } else {
+            setPrimaryClipNoException(ClipData.newPlainText("text", text));
+        }
     }
 
     @Override
     public boolean setTextFromUser(String text) {
+        Log.e("ClipboardImpl", "setTextFromUser text=" + text);
         return setPrimaryClipNoException(ClipData.newPlainText("text", text));
     }
 

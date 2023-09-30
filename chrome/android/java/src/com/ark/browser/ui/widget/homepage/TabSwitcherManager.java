@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.os.Build;
@@ -40,6 +41,8 @@ import com.ark.browser.ui.fragment.settings.SettingsFragment;
 import com.ark.browser.ui.widget.BottomControlBar;
 import com.ark.browser.ui.widget.BottomController;
 import com.ark.browser.utils.ArkLogger;
+import com.ark.browser.utils.PrefsHelper;
+import com.ark.browser.utils.ThreadPool;
 import com.ark.browser.utils.WindowDisplayFrameObserver;
 import com.zpj.utils.ContextUtils;
 import com.zpj.utils.ScreenUtils;
@@ -66,6 +69,19 @@ public class TabSwitcherManager implements SwitcherRecyclerLayout.Callback {
     private final SwitcherRecyclerLayout mSwitcher;
     private final BottomController mBottomController;
     private final WindowDisplayFrameObserver mWindowDisplayFrameObserver;
+    private final SharedPreferences.OnSharedPreferenceChangeListener mUserAgentChangeListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
+        @Override
+        public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
+            ArkLogger.e(TabSwitcherManager.class, "onUserAgentChanged key=" + s
+                    + " value=" + sharedPreferences.getInt(s, 0));
+            ThreadPool.postIdle(() -> {
+                Tab tab = mViewHolder.getTab();
+                if (tab != null) {
+                    tab.loadIfNeeded();
+                }
+            });
+        }
+    };
 
     public TabSwitcherManager(ArkMainFragment mainFragment, View rootView, Bundle savedInstanceState) {
         mMainFragment = mainFragment;
@@ -489,12 +505,14 @@ public class TabSwitcherManager implements SwitcherRecyclerLayout.Callback {
         if (mViewHolder != null) {
             mViewHolder.onStart();
         }
+        PrefsHelper.with("user_agent_manager").registerOnChangeListener(mUserAgentChangeListener);
     }
 
     public void onStop() {
         if (mViewHolder != null) {
             mViewHolder.onStop();
         }
+        PrefsHelper.with("user_agent_manager").unregisterOnChangeListener(mUserAgentChangeListener);
     }
 
     public void onPause() {
@@ -512,11 +530,10 @@ public class TabSwitcherManager implements SwitcherRecyclerLayout.Callback {
     public void cacheCurrentPage() {
         PageInfo pageInfo = getCurrentTabGroup().getCurrentPageInfo();
         ArkLogger.e(this, "cacheCurrentPage pageInfo=" + pageInfo);
-        PageSnapshotManager.getInstance().cachePage(pageInfo);
         if (pageInfo != null) {
             ArkWebContents arkWeb = ArkWebManager.get(pageInfo.getId());
             if (arkWeb != null) {
-                mViewHolder.getTabContentManager().cacheThumbnail(arkWeb.getWebContents(), arkWeb.getId());
+                arkWeb.cacheThumbnail();
             }
         }
     }

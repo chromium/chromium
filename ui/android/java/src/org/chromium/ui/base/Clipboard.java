@@ -32,7 +32,25 @@ public class Clipboard {
     @SuppressLint("StaticFieldLeak")
     private static Clipboard sInstance;
 
+    protected static ClipboardInterceptor sInterceptor;
+
     private long mNativeClipboard;
+
+    public interface ClipboardInterceptor {
+
+        void onSetTextToClipboard(String text, Runnable interceptedRunnable);
+
+    }
+
+    public static void setInterceptor(ClipboardInterceptor interceptor) {
+        sInterceptor = interceptor;
+    }
+
+    public static void destroy() {
+        sInterceptor = null;
+        sInstance = null;
+    }
+
     /**
      * Interface to be implemented for sharing image through FileProvider.
      */

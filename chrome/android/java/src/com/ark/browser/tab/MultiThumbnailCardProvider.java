@@ -21,6 +21,7 @@ import android.util.Size;
 import androidx.annotation.ColorInt;
 
 import com.ark.browser.core.ArkWebManager;
+import com.ark.browser.tab.core.IPage;
 import com.ark.browser.tab.core.ITab;
 import com.ark.browser.tab.core.ITabGroup;
 import com.zpj.utils.ScreenUtils;
@@ -431,6 +432,29 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
 //            return;
 //        }
 
+    }
+
+    @Override
+    public void getPageThumbnailWithCallback(IPage page, Size thumbnailSize, Callback<Bitmap> callback, boolean forceUpdate, boolean writeToCache, boolean isSelected) {
+        getPageThumbnailWithCallback(page.getPageInfo(), thumbnailSize, callback, forceUpdate, writeToCache, isSelected);
+    }
+
+    @Override
+    public void getPageThumbnailWithCallback(PageInfo pageInfo, Size thumbnailSize, Callback<Bitmap> callback, boolean forceUpdate, boolean writeToCache, boolean isSelected) {
+        if (!mTabListFaviconProvider.isInitialized()) {
+            initWithNative();
+        }
+        if (pageInfo == null) {
+            callback.onResult(null);
+            return;
+        }
+        int pageId = pageInfo.getId();
+        WebContents webContents = null;
+        if (forceUpdate) {
+            webContents = ArkWebManager.getWebContents(pageId);
+        }
+        mTabContentManager.getTabThumbnailWithCallback(webContents, pageId, callback,
+                forceUpdate, writeToCache);
     }
 
     public static @ColorInt int getMiniThumbnailPlaceholderColor(

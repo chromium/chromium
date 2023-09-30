@@ -354,7 +354,6 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
                                 arkWeb.getWebContents(), tabState.contentsState,
                                 isHidden(), false)) {
                             ArkLogger.e(TAG, "selectPage restoreFromState url=" + mArkWeb.getUrl().getSpec());
-                            ContentUtils.setUserAgentOverride(mArkWeb.getWebContents(), UserAgentManager.getUserAgentByUrl(arkWeb.getUrl()));
                             loadIfNeeded();
                             return;
                         }
@@ -471,7 +470,7 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
             mWebContentsDelegate.setDelegate(tabDelegateFactory.createWebContentsDelegate(this));
         }
 
-        loadIfNeeded();
+//        loadIfNeeded();
 
         // Notify the event to observers only when we do the reparenting task, not when we simply
         // switch window in which case a new window is non-null but delegate is null.
@@ -698,10 +697,11 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
             return false;
         }
 
-        if (mArkWeb != null) {
+        if (mArkWeb != null && !mArkWeb.isDestroyed()) {
             mArkWeb.loadIfNecessary();
+            return true;
         }
-        return true;
+        return false;
     }
 
     @Override

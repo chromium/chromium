@@ -1,5 +1,6 @@
 package com.ark.browser.core;
 
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.text.TextUtils;
 
@@ -11,13 +12,17 @@ import com.ark.browser.adblock.AdblockPlusHelper;
 import com.ark.browser.core.utils.ContentUtils;
 import com.ark.browser.settings.AppConfig;
 import com.ark.browser.tab.ArkTabImpl;
+import com.ark.browser.tab.MultiThumbnailCardProvider;
 import com.ark.browser.tab.PageInfo;
 import com.ark.browser.tab.PageSnapshotManager;
+import com.ark.browser.tab.TabGroupManager;
+import com.ark.browser.tab.ThumbnailProvider;
 import com.ark.browser.tab.core.IPage;
 import com.ark.browser.utils.ArkLogger;
 import com.zpj.bus.EventLiveData;
 import com.zpj.utils.PrefsHelper;
 
+import org.chromium.base.Callback;
 import org.chromium.chrome.browser.WarmupManager;
 import org.chromium.chrome.browser.WebContentsFactory;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
@@ -327,13 +332,12 @@ public class ArkWebContents {
                     });
             return;
         }
-        ContentUtils.setUserAgentOverride(mWebContents, UserAgentManager.getUserAgentByUrl(getUrl()));
+        updateUserAgent(getUrl());
         getWebContents().getNavigationController().reload(true);
     }
 
     public void reloadIgnoringCache() {
-        //            switchUserAgentIfNeeded();
-        ContentUtils.setUserAgentOverride(mWebContents, UserAgentManager.getUserAgentByUrl(getUrl()));
+        updateUserAgent(getUrl());
         mWebContents.getNavigationController().reloadBypassingCache(true);
     }
 
@@ -448,6 +452,7 @@ public class ArkWebContents {
 
     public void loadIfNecessary() {
         ArkLogger.e(this, "loadIfNecessary id=" + mPageInfo.getId());
+        updateUserAgent(getUrl());
         mWebContents.getNavigationController().loadIfNecessary();
     }
 
@@ -472,7 +477,7 @@ public class ArkWebContents {
 //        JavascriptInjector mInjector = JavascriptInjector.fromWebContents(mWebContents, true);
 //        mInjector.addPossiblyUnsafeInterface(this, "ark_bridge", ArkTabImpl.JavascriptInterface.class);
 
-        loadIfNecessary();
+//        loadIfNecessary();
     }
 
     public void detach(ArkTabImpl tab) {
@@ -535,25 +540,52 @@ public class ArkWebContents {
         }
 
         params.setUrl(fixedUrl.getSpec());
-        ContentUtils.setUserAgentOverride(mWebContents, UserAgentManager.getUserAgentByUrl(fixedUrl));
-
+        updateUserAgent(fixedUrl);
         loadUrl(params);
         return Tab.TabLoadStatus.DEFAULT_PAGE_LOAD;
+    }
+
+    private String mUserAgentKey;
+
+    private void updateUserAgent(GURL url) {
+        UserAgentManager.UserAgent userAgent = UserAgentManager.getUserAgentByUrl(url);
+        if (mUserAgentKey == null || !mUserAgentKey.equals(userAgent.getKey())) {
+            ContentUtils.setUserAgentOverride(mWebContents, userAgent);
+            mUserAgentKey = userAgent.getKey();
+        }
     }
 
     public int getDefaultThemeColor() {
         return AppConfig.isNightMode() ? Color.BLACK : Color.WHITE;
     }
 
+    private ThumbnailProvider mThumbnailProvider;
+
     public void updateThemeColor() {
-        PageSnapshotManager.getInstance().loadSnapshot(getId(), bitmap -> {
-            int themeColor = bitmap == null
-                    ? (mPageInfo.getThemeColor() == 0
-                    ? getDefaultThemeColor() : mPageInfo.getThemeColor())
-                    : bitmap.getPixel(1, 1);
-            mPageInfo.setThemeColor(themeColor);
-            mWebContents.notifyChangeThemeColor();
-        });
+        if (mTab == null) {
+            return;
+        }
+        if (isDestroyed()) {
+            return;
+        }
+        if (mThumbnailProvider == null) {
+            mThumbnailProvider = new MultiThumbnailCardProvider(mTab.getContext(),
+                    TabGroupManager.global().getTabContentManager());
+        }
+        mThumbnailProvider.getPageThumbnailWithCallback(mPageInfo, null, new Callback<Bitmap>() {
+            @Override
+            public void onResult(Bitmap bitmap) {
+                if (isDestroyed()) {
+                    return;
+                }
+                int themeColor = bitmap == null
+                        ? (mPageInfo.getThemeColor() == 0
+                        ? getDefaultThemeColor() : mPageInfo.getThemeColor())
+                        : bitmap.getPixel(1, 1);
+                mPageInfo.setThemeColor(themeColor);
+                mWebContents.notifyChangeThemeColor();
+            }
+        }, false, false, false);
     }
 
     public void cacheThumbnail() {

@@ -7,6 +7,7 @@ package com.ark.browser.tab;
 import android.graphics.Bitmap;
 import android.util.Size;
 
+import com.ark.browser.tab.core.IPage;
 import com.ark.browser.tab.core.ITab;
 
 import org.chromium.base.Callback;
@@ -23,4 +24,12 @@ public interface ThumbnailProvider {
     void getTabThumbnailWithCallback(ITab tab, Size thumbnailSize,
                                      Callback<Bitmap> callback,
                                      boolean forceUpdate, boolean writeToCache, boolean isSelected);
+
+    void getPageThumbnailWithCallback(IPage page, Size thumbnailSize,
+                                     Callback<Bitmap> callback,
+                                     boolean forceUpdate, boolean writeToCache, boolean isSelected);
+
+    void getPageThumbnailWithCallback(PageInfo pageInfo, Size thumbnailSize,
+                                      Callback<Bitmap> callback,
+                                      boolean forceUpdate, boolean writeToCache, boolean isSelected);
 }

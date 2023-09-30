@@ -30,6 +30,7 @@ import com.ark.browser.event.LoadUrlEvent;
 import com.ark.browser.tab.TabCacheManager;
 import com.ark.browser.tab.TabGroupManager;
 import com.ark.browser.ui.fragment.base.BaseFragment;
+import com.ark.browser.ui.fragment.dialog.ClipboardInterceptDialog;
 import com.ark.browser.ui.fragment.dialog.DownloadDialog;
 import com.ark.browser.ui.fragment.dialog.ExitDialog;
 import com.ark.browser.ui.widget.homepage.TabSwitcherManager;
@@ -37,6 +38,7 @@ import com.ark.browser.utils.ArkLogger;
 import com.ark.browser.utils.ThreadPool;
 import com.zpj.bus.Consumer;
 import com.zpj.bus.ZBus;
+import com.zpj.fragmentation.dialog.IDialog;
 import com.zpj.fragmentation.dialog.ZDialog;
 import com.zpj.fragmentation.helper.BlockActionQueue;
 import com.zpj.toast.ZToast;
@@ -69,6 +71,7 @@ import org.chromium.components.messages.MessageQueueDelegate;
 import org.chromium.components.messages.MessagesFactory;
 import org.chromium.components.messages.MessagesMetrics;
 import org.chromium.net.ConnectionType;
+import org.chromium.ui.base.Clipboard;
 import org.chromium.url.GURL;
 
 public class ArkMainFragment extends BaseFragment implements
@@ -179,6 +182,20 @@ public class ArkMainFragment extends BaseFragment implements
                             .setConflict(dialogType == DownloadLocationDialogType.NAME_CONFLICT)
                             .show(activity);
                 }
+            }
+        });
+
+        Clipboard.setInterceptor(new Clipboard.ClipboardInterceptor() {
+            @Override
+            public void onSetTextToClipboard(String text, Runnable interceptedRunnable) {
+                ClipboardInterceptDialog.newInstance(text)
+                        .setOnDismissListener(new IDialog.OnDismissListener<ClipboardInterceptDialog>() {
+                            @Override
+                            public void onDismiss(ClipboardInterceptDialog dialog) {
+                                interceptedRunnable.run();
+                            }
+                        })
+                        .show(context);
             }
         });
 
@@ -376,6 +393,8 @@ public class ArkMainFragment extends BaseFragment implements
 
     @Override
     public void onDestroyView() {
+        DownloadDialogBridge.setDownloadDialogFactory(null);
+        Clipboard.destroy();
         if (mBottomSheetController != null) {
             BottomSheetControllerFactory.detach(mBottomSheetController);
             mBottomSheetController.destroy();

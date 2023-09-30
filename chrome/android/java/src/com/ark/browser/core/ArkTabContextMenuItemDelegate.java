@@ -105,7 +105,7 @@ public class ArkTabContextMenuItemDelegate implements ContextMenuItemDelegate {
 
     @Override
     public void onSaveToClipboard(String text, int clipboardType) {
-        Clipboard.getInstance().setText(text);
+        Clipboard.getInstance().setTextFromUser(text);
     }
 
     @Override
