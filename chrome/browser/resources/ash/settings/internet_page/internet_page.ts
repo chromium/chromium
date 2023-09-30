@@ -180,6 +180,19 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
         value: false,
       },
 
+      /**
+       * True if VPN is prohibited by policy, or an always-on Android VPN is
+       * enforced by policy and users are prohibited by policy from manually
+       * disconnecting from it.
+       */
+      disableVpnUi_: {
+        type: Boolean,
+        computed: 'shouldDisableVpnUi_(vpnIsProhibited_,' +
+            'prefs.vpn_config_allowed.*' +
+            'prefs.arc.vpn.*,' +
+            'prefs.arc.vpn.always_on.*)',
+      },
+
       globalPolicy_: Object,
 
       /**
@@ -340,6 +353,7 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
   private isConnectedToNonCellularNetwork_: boolean;
   private isCreateCustomApnButtonDisabled_: boolean;
   private isHotspotFeatureEnabled_: boolean;
+  private disableVpnUi_: boolean;
   private knownNetworksType_: NetworkType;
   private networkConfig_: CrosNetworkConfigInterface;
   private passpointSubscription_: PasspointSubscription|undefined;
@@ -801,7 +815,7 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
   }
 
   private onAddVpnClick_(): void {
-    if (!this.vpnIsProhibited_) {
+    if (!this.disableVpnUi_) {
       this.showConfig_(true /* configAndConnect */, NetworkType.kVPN);
     }
   }
@@ -872,6 +886,23 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
       return true;
     }
     return this.allowAddWiFiConnection_(globalPolicy, managedNetworkAvailable);
+  }
+
+  private shouldDisableVpnUi_(): boolean {
+    if (this.vpnIsProhibited_) {
+      return true;
+    }
+
+    if (!this.prefs) {
+      return false;
+    }
+
+    const isVpnConfigProhibited =
+        this.prefs.vpn_config_allowed && !this.prefs.vpn_config_allowed.value;
+    const hasAlwaysOnVpnWithLockdown = this.prefs.arc && this.prefs.arc.vpn &&
+        this.prefs.arc.vpn.always_on && this.prefs.arc.vpn.always_on.lockdown &&
+        this.prefs.arc.vpn.always_on.lockdown.value;
+    return isVpnConfigProhibited && hasAlwaysOnVpnWithLockdown;
   }
 
   private getAddThirdPartyVpnLabel_(provider: VpnProvider): string {

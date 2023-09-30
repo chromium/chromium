@@ -44,6 +44,26 @@ suite('InternetPage', function() {
   /** @type {?CrosHotspotConfigInterface} */
   let hotspotConfig = null;
 
+  /** @type {Object} */
+  const prefs_ = {
+    'vpn_config_allowed': {
+      key: 'vpn_config_allowed',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: true,
+    },
+    'arc': {
+      'vpn': {
+        'always_on': {
+          'lockdown': {
+            key: 'lockdown',
+            type: chrome.settingsPrivate.PrefType.BOOLEAN,
+            value: false,
+          },
+        },
+      },
+    },
+  };
+
   suiteSetup(function() {
     // Disable animations so sub-pages open within one event loop.
     testing.Test.disableAnimationsAndTransitions();
@@ -58,6 +78,18 @@ suite('InternetPage', function() {
   function setNetworksForTest(networks) {
     mojoApi_.resetForTest();
     mojoApi_.addNetworksForTest(networks);
+  }
+
+  /**
+   * @param {boolean} arcVpnAlwaysOnLockdownPrefValue
+   * @param {boolean} vpnConfigAllowedPrefValue
+   */
+  function setDoesDisconnectProhibitedAlwaysOnVpnPrefs(
+      arcVpnAlwaysOnLockdownPrefValue, vpnConfigAllowedPrefValue) {
+    prefs_.arc.vpn.always_on.lockdown.value = arcVpnAlwaysOnLockdownPrefValue;
+    prefs_.vpn_config_allowed.value = vpnConfigAllowedPrefValue;
+
+    internetPage.prefs = Object.assign({}, prefs_);
   }
 
   /**
@@ -159,6 +191,9 @@ suite('InternetPage', function() {
     document.body.appendChild(internetPage);
     networkSummary_ = internetPage.shadowRoot.querySelector('network-summary');
     assertTrue(!!networkSummary_);
+    setDoesDisconnectProhibitedAlwaysOnVpnPrefs(
+        /*arcVpnAlwaysOnLockdownPrefValue=*/ false,
+        /*vpnConfigAllowedPrefValue=*/ false);
     return flushAsync().then(() => {
       return Promise.all([
         mojoApi_.whenCalled('getNetworkStateList'),
@@ -331,9 +366,20 @@ suite('InternetPage', function() {
         button.expanded = true;
       }
 
+      function addVpnNetworkAndSetDeviceState(vpnProhibited) {
+        setNetworksForTest([
+          OncMojo.getDefaultNetworkState(NetworkType.kVPN, 'vpn'),
+        ]);
+        mojoApi_.setDeviceStateForTest({
+          type: NetworkType.kVPN,
+          deviceState: vpnProhibited ? DeviceStateType.kProhibited :
+                                       DeviceStateType.kAllowed,
+        });
+      }
+
       test(
-          'should show add VPN button when allow only policy WiFi networks ' +
-              'to connect is enabled',
+          'should show disabled add VPN button when allow only policy ' +
+              'WiFi networks to connect is enabled and VPN is prohibited',
           async function() {
             await init();
             internetPage.globalPolicy_ = {
@@ -341,65 +387,133 @@ suite('InternetPage', function() {
             };
             clickAddConnectionsButton();
 
-            setNetworksForTest([
-              OncMojo.getDefaultNetworkState(NetworkType.kVPN, 'vpn'),
-            ]);
-            mojoApi_.setDeviceStateForTest({
-              type: NetworkType.kVPN,
-              deviceState: DeviceStateType.kEnabled,
-            });
+            addVpnNetworkAndSetDeviceState(/* vpnProhibited= */ true);
 
             return flushAsync().then(() => {
               assertTrue(isVisible(
                   internetPage.shadowRoot.querySelector('#add-vpn-label')));
-            });
-          });
-
-      test(
-          'should show VPN policy indicator when VPN is disabled',
-          async function() {
-            await init();
-            clickAddConnectionsButton();
-
-            setNetworksForTest([
-              OncMojo.getDefaultNetworkState(NetworkType.kVPN, 'vpn'),
-            ]);
-            mojoApi_.setDeviceStateForTest({
-              type: NetworkType.kVPN,
-              deviceState: DeviceStateType.kProhibited,
-            });
-
-            return flushAsync().then(() => {
-              assertTrue(isVisible(internetPage.shadowRoot.querySelector(
-                  '#vpnPolicyIndicator')));
               assertTrue(
-                  isVisible(networkSummary_.shadowRoot.querySelector('#VPN')
-                                .shadowRoot.querySelector('#policyIndicator')));
+                  internetPage.shadowRoot.querySelector('#add-vpn-button')
+                      .disabled);
             });
           });
 
       test(
-          'should not show VPN policy indicator when VPN is enabled',
+          'should show enabled add VPN button when allow only policy ' +
+              'WiFi networks to connect is enabled and VPN is allowed',
           async function() {
             await init();
+            internetPage.globalPolicy_ = {
+              allowOnlyPolicyWifiNetworksToConnect: true,
+            };
             clickAddConnectionsButton();
 
-            setNetworksForTest([
-              OncMojo.getDefaultNetworkState(NetworkType.kVPN, 'vpn'),
-            ]);
-            mojoApi_.setDeviceStateForTest({
-              type: NetworkType.kVPN,
-              deviceState: DeviceStateType.kEnabled,
-            });
+            addVpnNetworkAndSetDeviceState(/* vpnProhibited= */ false);
 
             return flushAsync().then(() => {
-              assertFalse(isVisible(internetPage.shadowRoot.querySelector(
-                  '#vpnPolicyIndicator')));
+              assertTrue(isVisible(
+                  internetPage.shadowRoot.querySelector('#add-vpn-label')));
               assertFalse(
-                  isVisible(networkSummary_.shadowRoot.querySelector('#VPN')
-                                .shadowRoot.querySelector('#policyIndicator')));
+                  internetPage.shadowRoot.querySelector('#add-vpn-button')
+                      .disabled);
             });
           });
+
+      [{
+        vpnProhibited: true,
+        alwaysOnVpn: false,
+        manualDisconnectionAllowed: false,
+      },
+       {
+         vpnProhibited: true,
+         alwaysOnVpn: false,
+         manualDisconnectionAllowed: true,
+       },
+       {
+         vpnProhibited: true,
+         alwaysOnVpn: true,
+         manualDisconnectionAllowed: false,
+       },
+       {
+         vpnProhibited: true,
+         alwaysOnVpn: true,
+         manualDisconnectionAllowed: true,
+       },
+       {
+         vpnProhibited: false,
+         alwaysOnVpn: false,
+         manualDisconnectionAllowed: false,
+       },
+       {
+         vpnProhibited: false,
+         alwaysOnVpn: false,
+         manualDisconnectionAllowed: true,
+       },
+       {
+         vpnProhibited: false,
+         alwaysOnVpn: true,
+         manualDisconnectionAllowed: false,
+       },
+       {
+         vpnProhibited: false,
+         alwaysOnVpn: true,
+         manualDisconnectionAllowed: true,
+       },
+      ].forEach(({
+                  vpnProhibited,
+                  arcVpnAlwaysOnLockdownPrefValue,
+                  manualDisconnectionAllowed,
+                }) => {
+        test(
+            `VPNs prohibited by policy: ${
+                vpnProhibited}, always on VPN exist by policy: ${
+                arcVpnAlwaysOnLockdownPrefValue}, manual disconnection` +
+                `allowed by policy: ${manualDisconnectionAllowed}`,
+            async () => {
+              await init();
+
+              clickAddConnectionsButton();
+
+              addVpnNetworkAndSetDeviceState(vpnProhibited);
+
+              setDoesDisconnectProhibitedAlwaysOnVpnPrefs(
+                  /* arcVpnAlwaysOnLockdownPrefValue= */
+                  arcVpnAlwaysOnLockdownPrefValue,
+                  /* vpnConfigAllowedPrefValue= */ manualDisconnectionAllowed);
+
+              return flushAsync().then(() => {
+                const vpnPolicyIndicator =
+                    internetPage.shadowRoot.querySelector(
+                        '#vpnPolicyIndicator');
+                const policyIndicator =
+                    networkSummary_.shadowRoot.querySelector('#VPN')
+                        .shadowRoot.querySelector('#policyIndicator');
+
+                if (vpnProhibited ||
+                    (arcVpnAlwaysOnLockdownPrefValue &&
+                     !manualDisconnectionAllowed)) {
+                  assertTrue(isVisible(vpnPolicyIndicator));
+
+                } else {
+                  assertFalse(isVisible(vpnPolicyIndicator));
+                }
+
+                if (vpnProhibited) {
+                  assertTrue(isVisible(policyIndicator));
+                } else {
+                  // Note: Users are still allowed to configure existing VPNs
+                  // they set previously if |alwaysOnVpn| is true and
+                  // |manualDisconnectionAllowed| is false.
+                  // TODO(http://b/302390893): Consider renaming
+                  // |vpn_config_allowed| pref to something like
+                  // "manual_disconnection_allowed", or discuss with DPanel team
+                  // about rewording
+                  //  https://screenshot.googleplex.com/4KLUdLUtPsvNMDT
+                  assertFalse(isVisible(policyIndicator));
+                }
+              });
+            });
+      });
     });
 
     test('Deep link to mobile on/off toggle', async () => {
