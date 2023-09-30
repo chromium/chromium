@@ -448,31 +448,6 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
   return true;
 }
 
-[[nodiscard]] bool TryToCopyAdditionalBidKey(
-    const base::Value::Dict& dict,
-    InterestGroupUpdate& interest_group_update) {
-  const std::string* maybe_additional_bid_key =
-      dict.FindString("additionalBidKey");
-  if (!maybe_additional_bid_key) {
-    return true;
-  }
-  std::string decoded_additional_bid_key;
-  if (!base::Base64Decode(*maybe_additional_bid_key,
-                          &decoded_additional_bid_key,
-                          base::Base64DecodePolicy::kForgiving)) {
-    // Failed to base64 decode the additional bid key.
-    return false;
-  }
-  if (decoded_additional_bid_key.size() != ED25519_PUBLIC_KEY_LEN) {
-    return false;
-  }
-  interest_group_update.additional_bid_key.emplace();
-  std::copy(decoded_additional_bid_key.begin(),
-            decoded_additional_bid_key.end(),
-            interest_group_update.additional_bid_key->data());
-  return true;
-}
-
 absl::optional<InterestGroupUpdate> ParseUpdateJson(
     const blink::InterestGroupKey& group_key,
     const data_decoder::DataDecoder::ValueOrError& result) {
@@ -587,9 +562,6 @@ absl::optional<InterestGroupUpdate> ParseUpdateJson(
     return absl::nullopt;
   }
   if (!TryToCopyAuctionServerRequestFlags(*dict, interest_group_update)) {
-    return absl::nullopt;
-  }
-  if (!TryToCopyAdditionalBidKey(*dict, interest_group_update)) {
     return absl::nullopt;
   }
   return interest_group_update;

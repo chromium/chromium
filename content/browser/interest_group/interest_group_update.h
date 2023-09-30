@@ -52,7 +52,6 @@ struct CONTENT_EXPORT InterestGroupUpdate {
   absl::optional<base::flat_map<std::string, std::vector<std::string>>>
       size_groups;
   absl::optional<blink::AuctionServerRequestFlags> auction_server_request_flags;
-  absl::optional<blink::InterestGroup::AdditionalBidKey> additional_bid_key;
 };
 
 }  // namespace content

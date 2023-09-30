@@ -426,6 +426,13 @@ bool ValidateBlinkInterestGroup(const mojom::blink::InterestGroup& group,
     return false;
   }
 
+  if (group.additional_bid_key && group.update_url) {
+    error =
+        "Interest groups that provide a value of additionalBidKey "
+        "for negative targeting must not provide an updateURL.";
+    return false;
+  }
+
   if (group.aggregation_coordinator_origin &&
       group.aggregation_coordinator_origin->Protocol() != url::kHttpsScheme) {
     error_field_name = "aggregationCoordinatorOrigin";

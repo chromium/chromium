@@ -2268,9 +2268,6 @@ bool DoUpdateInterestGroup(sql::Database& db,
     stored_group.auction_server_request_flags =
         *update.auction_server_request_flags;
   }
-  if (update.additional_bid_key) {
-    stored_group.additional_bid_key = std::move(update.additional_bid_key);
-  }
 
   if (!stored_group.IsValid()) {
     // TODO(behamilton): Report errors to devtools.
