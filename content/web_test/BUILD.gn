@@ -146,16 +146,17 @@ static_library("web_test_browser") {
   ]
 
   if (is_mac) {
-    sources += [
-      "browser/web_test_browser_main_platform_support_mac.mm",
-      "browser/web_test_shell_platform_delegate_mac.mm",
-    ]
+    sources += [ "browser/web_test_shell_platform_delegate_mac.mm" ]
   } else if (toolkit_views && !is_castos) {
     sources += [ "browser/web_test_shell_platform_delegate_views.cc" ]
   } else if (is_ios) {
     sources += [ "browser/web_test_shell_platform_delegate_ios.mm" ]
   } else {
     sources += [ "browser/web_test_shell_platform_delegate_aura.cc" ]
+  }
+
+  if (is_apple) {
+    sources += [ "browser/web_test_browser_main_platform_support_mac.mm" ]
   }
 
   if (is_win) {
