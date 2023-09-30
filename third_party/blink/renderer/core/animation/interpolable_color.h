@@ -78,6 +78,10 @@ class CORE_EXPORT InterpolableColor : public InterpolableValue {
     return std::unique_ptr<InterpolableColor>(RawClone());
   }
 
+  std::unique_ptr<InterpolableColor> CloneAndZero() const {
+    return std::unique_ptr<InterpolableColor>(RawCloneAndZero());
+  }
+
   void Composite(const InterpolableColor& other, double fraction);
 
  private:

@@ -6,6 +6,8 @@
 
 #include <memory>
 #include "third_party/blink/renderer/core/animation/css_color_interpolation_type.h"
+#include "third_party/blink/renderer/core/animation/interpolable_color.h"
+#include "third_party/blink/renderer/core/animation/interpolable_value.h"
 #include "third_party/blink/renderer/core/animation/underlying_value.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_shadow_value.h"
@@ -21,7 +23,7 @@ std::unique_ptr<InterpolableLength> MaybeConvertLength(
   return InterpolableLength::CreatePixels(0);
 }
 
-std::unique_ptr<InterpolableValue> MaybeConvertColor(const CSSValue* value) {
+std::unique_ptr<InterpolableColor> MaybeConvertColor(const CSSValue* value) {
   if (value)
     return CSSColorInterpolationType::MaybeCreateInterpolableColor(*value);
   return CSSColorInterpolationType::CreateInterpolableColor(
@@ -34,7 +36,7 @@ InterpolableShadow::InterpolableShadow(
     std::unique_ptr<InterpolableLength> y,
     std::unique_ptr<InterpolableLength> blur,
     std::unique_ptr<InterpolableLength> spread,
-    std::unique_ptr<InterpolableValue> color,
+    std::unique_ptr<InterpolableColor> color,
     ShadowStyle shadow_style)
     : x_(std::move(x)),
       y_(std::move(y)),
@@ -88,7 +90,7 @@ std::unique_ptr<InterpolableShadow> InterpolableShadow::MaybeConvertCSSValue(
       MaybeConvertLength(shadow->blur.Get());
   std::unique_ptr<InterpolableLength> spread =
       MaybeConvertLength(shadow->spread.Get());
-  std::unique_ptr<InterpolableValue> color = MaybeConvertColor(shadow->color);
+  std::unique_ptr<InterpolableColor> color = MaybeConvertColor(shadow->color);
 
   // If any of the conversations failed, we can't represent this CSSValue.
   if (!x || !y || !blur || !spread || !color)
@@ -103,9 +105,18 @@ std::unique_ptr<InterpolableShadow> InterpolableShadow::MaybeConvertCSSValue(
 PairwiseInterpolationValue InterpolableShadow::MaybeMergeSingles(
     std::unique_ptr<InterpolableValue> start,
     std::unique_ptr<InterpolableValue> end) {
-  if (To<InterpolableShadow>(start.get())->shadow_style_ !=
-      To<InterpolableShadow>(end.get())->shadow_style_)
+  InterpolableShadow* start_shadow = To<InterpolableShadow>(start.get());
+  InterpolableShadow* end_shadow = To<InterpolableShadow>(end.get());
+
+  if (start_shadow->shadow_style_ != end_shadow->shadow_style_) {
     return nullptr;
+  }
+
+  // Confirm that both colors are in the same colorspace and adjust if
+  // necessary.
+  InterpolableColor::SetupColorInterpolationSpaces(*start_shadow->color_.get(),
+                                                   *end_shadow->color_.get());
+
   return PairwiseInterpolationValue(std::move(start), std::move(end));
 }
 

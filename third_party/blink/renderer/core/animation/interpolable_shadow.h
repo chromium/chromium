@@ -7,6 +7,7 @@
 
 #include <memory>
 #include "base/notreached.h"
+#include "third_party/blink/renderer/core/animation/interpolable_color.h"
 #include "third_party/blink/renderer/core/animation/interpolable_length.h"
 #include "third_party/blink/renderer/core/animation/interpolable_value.h"
 #include "third_party/blink/renderer/core/animation/interpolation_value.h"
@@ -31,7 +32,7 @@ class InterpolableShadow : public InterpolableValue {
                      std::unique_ptr<InterpolableLength> y,
                      std::unique_ptr<InterpolableLength> blur,
                      std::unique_ptr<InterpolableLength> spread,
-                     std::unique_ptr<InterpolableValue> color,
+                     std::unique_ptr<InterpolableColor> color,
                      ShadowStyle);
 
   static std::unique_ptr<InterpolableShadow> Create(const ShadowData&,
@@ -78,7 +79,7 @@ class InterpolableShadow : public InterpolableValue {
   std::unique_ptr<InterpolableLength> y_;
   std::unique_ptr<InterpolableLength> blur_;
   std::unique_ptr<InterpolableLength> spread_;
-  std::unique_ptr<InterpolableValue> color_;
+  std::unique_ptr<InterpolableColor> color_;
 
   ShadowStyle shadow_style_;
 };
