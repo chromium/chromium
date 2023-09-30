@@ -8,6 +8,7 @@
 #include <sstream>
 #include <type_traits>
 
+#include "base/hash/hash.h"
 #include "base/values.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

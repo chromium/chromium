@@ -14,6 +14,7 @@
 #include "base/base_paths_android.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/hash/hash.h"
 #include "base/i18n/rtl.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/persistent_histogram_allocator.h"

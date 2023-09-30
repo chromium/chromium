@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/command_line.h"
+#include "base/hash/hash.h"
 #include "base/strings/string_util.h"
 #include "third_party/blink/common/permissions_policy/permissions_policy_features_generated.h"
 #include "third_party/blink/common/permissions_policy/permissions_policy_features_internal.h"
