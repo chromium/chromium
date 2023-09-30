@@ -264,6 +264,21 @@ Polymer({
     },
 
     /**
+     * This is a ManagedBoolean that represents a device-policy-enforced false
+     * value. It is used to present a policy-disabled toggle for "Share network"
+     * when user-created networks are ephemeral. It is never mutated.
+     * @private {!ManagedBoolean}
+     */
+    shareNetworkEphemeralDisabled_: {
+      type: Object,
+      value: {
+        activeValue: false,
+        policySource: PolicySource.kDevicePolicyEnforced,
+        policyValue: false,
+      },
+    },
+
+    /**
      * Whether the device should automatically connect to the network.
      * @private
      */
@@ -906,7 +921,7 @@ Polymer({
       return;
     }
     if (!this.shareIsVisible_()) {
-      this.shareNetwork_ = false;
+      this.shareNetwork_ = this.shareDefault;
       return;
     }
     if (this.shareAllowEnable) {
@@ -1823,6 +1838,27 @@ Polymer({
       return false;
     }
     return true;
+  },
+
+  /**
+   * Returns true if the network configured by this UI element is ephemeral
+   * according to enterprise policy.
+   * @return {boolean}
+   * @private
+   */
+  networkIsEphemeral_() {
+    if (!loadTimeData.getBoolean('ephemeralNetworkPoliciesEnabled')) {
+      return false;
+    }
+    if (!this.globalPolicy_ ||
+        !this.globalPolicy_.userCreatedNetworkConfigurationsAreEphemeral) {
+      return false;
+    }
+    if (!this.managedProperties_) {
+      return false;
+    }
+    // Only user-created networks are ephemeral with this policy.
+    return this.managedProperties_.source === OncSource.kNone;
   },
 
   /**

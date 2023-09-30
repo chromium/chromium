@@ -264,13 +264,20 @@
   </template>
 
   <!-- Share (WiFi) -->
-  <template is="dom-if" if="[[shareIsVisible_(managedProperties_)]]"
-      restamp>
-    <network-config-toggle id="share" label="[[i18n('networkConfigShare')]]"
-        checked="{{shareNetwork_}}" on-change="onShareChanged_"
-        disabled="[[!shareIsEnabled_(configProperties_.*,
-                  eapProperties_.*, shareAllowEnable)]]">
-    </network-config-toggle>
+  <template is="dom-if" if="[[shareIsVisible_(managedProperties_, globalPolicy_)]]" restamp>
+    <!-- TODO: b/302726243 - Reuse just one network-config-toggle -->
+    <template is="dom-if" if="[[!networkIsEphemeral_(managedProperties_, globalPolicy_)]]" restamp>
+      <network-config-toggle id="share" label="[[i18n('networkConfigShare')]]"
+          checked="{{shareNetwork_}}" on-change="onShareChanged_"
+          disabled="[[!shareIsEnabled_(configProperties_.*,
+                    eapProperties_.*, shareAllowEnable)]]">
+      </network-config-toggle>
+    </template>
+    <template is="dom-if" if="[[networkIsEphemeral_(managedProperties_, globalPolicy_)]]" restamp>
+      <network-config-toggle id="shareEphemeralDisabled" label="[[i18n('networkConfigShare')]]"
+          property="{{shareNetworkEphemeralDisabled_}}">
+      </network-config-toggle>
+    </template>
   </template>
 
   <!-- AutoConnect (WiFi) -->

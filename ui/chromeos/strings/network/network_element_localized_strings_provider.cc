@@ -10,6 +10,7 @@
 #include "build/build_config.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/components/network/network_connection_handler.h"
+#include "chromeos/ash/components/network/policy_util.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/login/localized_values_builder.h"
 #include "components/strings/grit/components_strings.h"
@@ -549,6 +550,10 @@ void AddConfigLocalizedStrings(content::WebUIDataSource* html_source) {
   html_source->AddBoolean(
       "eapDefaultCasWithoutSubjectVerificationAllowed",
       ash::features::IsEapDefaultCasWithoutSubjectVerificationAllowed());
+
+  html_source->AddBoolean(
+      "ephemeralNetworkPoliciesEnabled",
+      ash::policy_util::AreEphemeralNetworkPoliciesEnabled());
 }
 
 void AddErrorLocalizedStrings(content::WebUIDataSource* html_source) {
