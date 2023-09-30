@@ -3631,6 +3631,8 @@ TEST_F(CrosNetworkConfigTest, GetGlobalPolicy) {
   ASSERT_EQ(2u, policy->blocked_hex_ssids.size());
   EXPECT_EQ("blocked_ssid1", policy->blocked_hex_ssids[0]);
   EXPECT_EQ("blocked_ssid2", policy->blocked_hex_ssids[1]);
+  EXPECT_FALSE(policy->recommended_values_are_ephemeral);
+  EXPECT_FALSE(policy->user_created_network_configurations_are_ephemeral);
 }
 
 TEST_F(CrosNetworkConfigTest, GlobalPolicyApplied) {
@@ -3658,7 +3660,60 @@ TEST_F(CrosNetworkConfigTest, GlobalPolicyApplied) {
   EXPECT_FALSE(policy->allow_only_policy_wifi_networks_to_connect_if_available);
   EXPECT_FALSE(policy->dns_queries_monitored);
   EXPECT_FALSE(policy->report_xdr_events_enabled);
+  EXPECT_FALSE(policy->recommended_values_are_ephemeral);
+  EXPECT_FALSE(policy->user_created_network_configurations_are_ephemeral);
   EXPECT_EQ(1, observer()->GetPolicyAppliedCount(/*userhash=*/std::string()));
+}
+
+TEST_F(CrosNetworkConfigTest,
+       GetGlobalPolicy_EphemeralNetworkPolicies_Disabled) {
+  base::Value::Dict global_config;
+  global_config.Set(
+      ::onc::global_network_config::kRecommendedValuesAreEphemeral, true);
+  global_config.Set(::onc::global_network_config::
+                        kUserCreatedNetworkConfigurationsAreEphemeral,
+                    true);
+  managed_network_configuration_handler()->SetPolicy(
+      ::onc::ONC_SOURCE_DEVICE_POLICY, /*userhash=*/std::string(),
+      /*network_configs_onc=*/base::Value::List(), global_config);
+  base::RunLoop().RunUntilIdle();
+  mojom::GlobalPolicyPtr policy = GetGlobalPolicy();
+  ASSERT_TRUE(policy);
+  EXPECT_FALSE(policy->recommended_values_are_ephemeral);
+  EXPECT_FALSE(policy->user_created_network_configurations_are_ephemeral);
+}
+
+TEST_F(CrosNetworkConfigTest,
+       GetGlobalPolicy_EphemeralNetworkPolicies_Enabled) {
+  policy_util::SetEphemeralNetworkPoliciesEnabled();
+
+  base::Value::Dict global_config;
+  global_config.Set(
+      ::onc::global_network_config::kRecommendedValuesAreEphemeral, true);
+  managed_network_configuration_handler()->SetPolicy(
+      ::onc::ONC_SOURCE_DEVICE_POLICY, /*userhash=*/std::string(),
+      /*network_configs_onc=*/base::Value::List(), global_config);
+  base::RunLoop().RunUntilIdle();
+  {
+    mojom::GlobalPolicyPtr policy = GetGlobalPolicy();
+    ASSERT_TRUE(policy);
+    EXPECT_TRUE(policy->recommended_values_are_ephemeral);
+    EXPECT_FALSE(policy->user_created_network_configurations_are_ephemeral);
+  }
+
+  global_config.Set(::onc::global_network_config::
+                        kUserCreatedNetworkConfigurationsAreEphemeral,
+                    true);
+  managed_network_configuration_handler()->SetPolicy(
+      ::onc::ONC_SOURCE_DEVICE_POLICY, /*userhash=*/std::string(),
+      /*network_configs_onc=*/base::Value::List(), global_config);
+  base::RunLoop().RunUntilIdle();
+  {
+    mojom::GlobalPolicyPtr policy = GetGlobalPolicy();
+    ASSERT_TRUE(policy);
+    EXPECT_TRUE(policy->recommended_values_are_ephemeral);
+    EXPECT_TRUE(policy->user_created_network_configurations_are_ephemeral);
+  }
 }
 
 TEST_F(CrosNetworkConfigTest, StartConnect) {

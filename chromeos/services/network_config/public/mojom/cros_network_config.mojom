@@ -405,7 +405,8 @@ struct ApnProperties {
   // free-form entry in the future.
   // TODO(b/249550650) Remove attach after APN Revamp feature
   // has been completely transitioned.
-  // TODO(b/249550650) Add all new properties to the onc_spec.md documentation.
+  // TODO(b/249550650) Add all new properties to the
+  // //components/onc/docs/onc_spec.md documentation.
   string? attach;
   // The state property will be used by Chrome to determine whether a custom APN
   // is disabled by the user or not. Chrome will filter out disabled APNs before
@@ -811,8 +812,8 @@ struct TrafficCounterProperties {
   uint32 user_specified_reset_day;
 };
 
-// Managed properties provided by getManagedProperties. See onc_spec.md for
-// details about each property.
+// Managed properties provided by getManagedProperties. See
+// //components/onc/docs/onc_spec.md for details about each property.
 struct ManagedProperties {
   // Typed properties for compatibility with NetworkStateProperties.
   ConnectionStateType connection_state = kNotConnected;
@@ -914,7 +915,8 @@ struct SubjectAltName {
 };
 
 // Subset of currently implemented config properties in the UI. Additional
-// optional propreties from onc_spec.md may be added as needed.
+// optional properties from //components/onc/docs/onc_spec.md may be added as
+// needed.
 struct IPSecConfigProperties {
   string authentication_type;
   string? client_cert_pkcs11_id;
@@ -931,7 +933,8 @@ struct IPSecConfigProperties {
 };
 
 // Subset of currently implemented config properties in the UI. Additional
-// optional propreties from onc_spec.md may be added as needed.
+// optional properties from //components/onc/docs/onc_spec.md may be added as
+// needed.
 struct L2TPConfigProperties {
   bool lcp_echo_disabled = false;
   string? password;
@@ -940,7 +943,8 @@ struct L2TPConfigProperties {
 };
 
 // Subset of currently implemented config properties in the UI. Additional
-// optional propreties from onc_spec.md may be added as needed.
+// optional properties from //components/onc/docs/onc_spec.md may be added as
+// needed.
 struct OpenVPNConfigProperties {
   string? client_cert_pkcs11_id;
   string? client_cert_type;
@@ -1085,6 +1089,14 @@ struct GlobalPolicy {
 
   // List of blocked networks which can not be connected to.
   array<string> blocked_hex_ssids;
+
+  // If true, ChromeOS wipes "Recommended" values in shared managed networks on
+  // some occasions (see //components/onc/docs/onc_spec.md).
+  bool recommended_values_are_ephemeral = false;
+
+  // If true, ChromeOS deletes shared non-managed on some occasions (see
+  // //components/onc/docs/onc_spec.md).
+  bool user_created_network_configurations_are_ephemeral = false;
 };
 
 // VPN providers for type kExtension and kArc are set via SetVpnProviders and

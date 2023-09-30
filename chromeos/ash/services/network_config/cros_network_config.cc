@@ -39,6 +39,7 @@
 #include "chromeos/ash/components/network/network_type_pattern.h"
 #include "chromeos/ash/components/network/network_util.h"
 #include "chromeos/ash/components/network/onc/onc_translation_tables.h"
+#include "chromeos/ash/components/network/policy_util.h"
 #include "chromeos/ash/components/network/prohibited_technologies_handler.h"
 #include "chromeos/ash/components/network/proxy/ui_proxy_config_service.h"
 #include "chromeos/ash/components/network/technology_state_controller.h"
@@ -3034,6 +3035,20 @@ void CrosNetworkConfig::GetGlobalPolicy(GetGlobalPolicyCallback callback) {
       global_policy_dict, ::onc::global_network_config::kBlockedHexSSIDs);
   if (blocked_hex_ssids) {
     result->blocked_hex_ssids = std::move(*blocked_hex_ssids);
+  }
+
+  if (policy_util::AreEphemeralNetworkPoliciesEnabled()) {
+    result->recommended_values_are_ephemeral =
+        GetBoolean(global_policy_dict,
+                   ::onc::global_network_config::kRecommendedValuesAreEphemeral,
+                   /*value_if_key_missing_from_dict=*/
+                   result->recommended_values_are_ephemeral);
+    result->user_created_network_configurations_are_ephemeral =
+        GetBoolean(global_policy_dict,
+                   ::onc::global_network_config::
+                       kUserCreatedNetworkConfigurationsAreEphemeral,
+                   /*value_if_key_missing_from_dict=*/
+                   result->user_created_network_configurations_are_ephemeral);
   }
 
   std::move(callback).Run(std::move(result));
