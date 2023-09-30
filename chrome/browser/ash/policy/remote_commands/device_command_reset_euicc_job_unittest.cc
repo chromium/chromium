@@ -104,6 +104,11 @@ class DeviceCommandResetEuiccJobTest : public ChromeAshTestBase {
     VerifyEuiccProfileCount(/*expected_count=*/2u);
   }
 
+  void TearDown() override {
+    helper_.reset();
+    ChromeAshTestBase::TearDown();
+  }
+
  protected:
   std::unique_ptr<RemoteCommandJob> CreateResetEuiccJob(
       base::TimeTicks issued_time) {

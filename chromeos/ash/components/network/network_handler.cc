@@ -18,6 +18,7 @@
 #include "chromeos/ash/components/network/cellular_policy_handler.h"
 #include "chromeos/ash/components/network/client_cert_resolver.h"
 #include "chromeos/ash/components/network/enterprise_managed_metadata_store.h"
+#include "chromeos/ash/components/network/ephemeral_network_configuration_handler.h"
 #include "chromeos/ash/components/network/ephemeral_network_policies_enablement_handler.h"
 #include "chromeos/ash/components/network/geolocation_handler.h"
 #include "chromeos/ash/components/network/hidden_network_handler.h"
@@ -440,8 +441,10 @@ void NetworkHandler::SetIsEnterpriseManaged(bool is_enterprise_managed) {
 }
 
 void NetworkHandler::OnEphemeralNetworkPoliciesEnabled() {
-  // TODO(b/300880332): Instantiate EphemeralNetworkConfigurationHandler.
   DCHECK(policy_util::AreEphemeralNetworkPoliciesEnabled());
+  ephemeral_network_configuration_handler_ =
+      std::make_unique<EphemeralNetworkConfigurationHandler>(
+          managed_network_configuration_handler_.get());
 }
 
 }  // namespace ash
