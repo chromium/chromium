@@ -430,7 +430,7 @@ class CellularNetworksListElement extends CellularNetworksListElementBase {
         MultiDeviceFeatureState.ENABLED_BY_USER;
   }
 
-  private onEsimLearnMoreClicked_(event: CustomEvent<{event: Event}>): void {
+  private onAddEsimLinkClicked_(event: CustomEvent<{event: Event}>): void {
     event.detail.event.preventDefault();
     event.stopPropagation();
 
@@ -580,34 +580,37 @@ class CellularNetworksListElement extends CellularNetworksListElementBase {
   }
 
   /**
-   * Return true if the "No available eSIM profiles" subtext message or
-   * download eSIM profile link should be shown in eSIM section. This message
-   * should not be shown when adding new eSIM profiles.
+   * Return true if there are currently no eSIM networks configured. This
+   * message should not be shown when adding new eSIM profiles.
    */
-  private shouldShowNoEsimMessageOrDownloadLink_(
+  private shouldShowEsimNoNetworksMessage_(
       inhibitReason: InhibitReason,
       eSimNetworks: NetworkList.NetworkListItemType[],
       eSimPendingProfiles: NetworkList.CustomItemState[]): boolean {
-    if (inhibitReason === InhibitReason.kInstallingProfile ||
-        inhibitReason === InhibitReason.kRefreshingProfileList) {
+    if (inhibitReason === InhibitReason.kRefreshingProfileList) {
       return false;
     }
 
     return !this.shouldShowNetworkSublist_(eSimNetworks, eSimPendingProfiles);
   }
 
-  /**
-   * Return true if the "No available eSIM profiles" subtext message should be
-   * shown in eSIM section. This message should not be shown when the download
-   * eSIM profile link is shown.
-   */
-  private shouldShowNoEsimSubtextMessage_(): boolean {
-    if (this.globalPolicy &&
-        this.globalPolicy.allowOnlyPolicyCellularNetworks) {
+  private shouldShowAddEsimNetworksMessage_(inhibitReason: InhibitReason):
+      boolean {
+    if (inhibitReason === InhibitReason.kInstallingProfile ||
+        (this.globalPolicy &&
+         this.globalPolicy.allowOnlyPolicyCellularNetworks)) {
       return true;
     }
 
     return false;
+  }
+
+  private getEsimNoNetworksMessage_(inhibitReason: InhibitReason): string {
+    if (inhibitReason === InhibitReason.kInstallingProfile) {
+      return this.i18n('cellularNetworkInstallingProfile');
+    }
+
+    return this.i18n('eSimNetworkNotSetup');
   }
 }
 
