@@ -54,6 +54,7 @@ class GURL;
 class LargeIconCache;
 @protocol NewTabPageMetricsDelegate;
 @class ParcelTrackingItem;
+enum class ParcelType;
 class PromosManager;
 class ReadingListModel;
 @protocol SnackbarCommands;
@@ -161,6 +162,12 @@ class WebStateList;
 
 // Disables and hides the parcel tracking module.
 - (void)disableParcelTracking;
+
+// Indicates that `parcelID` should be untracked.
+- (void)untrackParcel:(NSString*)parcelID;
+
+// Indicates that `parcelID` should be tracked.
+- (void)trackParcel:(NSString*)parcelID carrier:(ParcelType)carrier;
 
 // Returns all possible items in the Set Up List.
 - (NSArray<SetUpListItemViewData*>*)allSetUpListItems;

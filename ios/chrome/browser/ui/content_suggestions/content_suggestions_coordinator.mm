@@ -55,6 +55,7 @@
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
+#import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
@@ -413,6 +414,28 @@
       dismissViewControllerAnimated:YES
                          completion:nil];
   _parcelListHalfSheetTableViewController = nil;
+}
+
+- (void)untrackParcel:(NSString*)parcelID carrier:(ParcelType)carrier {
+  [self.contentSuggestionsMediator untrackParcel:parcelID];
+
+  id<SnackbarCommands> snackbarHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), SnackbarCommands);
+  __weak __typeof(self) weakSelf = self;
+  [snackbarHandler
+      showSnackbarWithMessage:
+          l10n_util::GetNSString(IDS_IOS_PARCEL_TRACKING_UNTRACK_SNACKBAR_TITLE)
+                   buttonText:l10n_util::GetNSString(
+                                  IDS_IOS_SNACKBAR_ACTION_UNDO)
+                messageAction:^{
+                  __strong __typeof(weakSelf) strongSelf = weakSelf;
+                  if (!strongSelf) {
+                    return;
+                  }
+                  [strongSelf.contentSuggestionsMediator trackParcel:parcelID
+                                                             carrier:carrier];
+                }
+             completionAction:nil];
 }
 
 #pragma mark - Public methods

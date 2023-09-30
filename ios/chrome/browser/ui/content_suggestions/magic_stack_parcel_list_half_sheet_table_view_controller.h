@@ -9,12 +9,16 @@
 
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller.h"
 
+enum class ParcelType;
 @class ParcelTrackingItem;
 
 @protocol MagicStackParcelListHalfSheetTableViewControllerDelegate
 
 // Indicates to the receiver to dismiss the parcel list half sheet.
 - (void)dismissParcelListHalfSheet;
+
+// Indicates to the receiver to stop tracking `parcelID`.
+- (void)untrackParcel:(NSString*)parcelID carrier:(ParcelType)carrier;
 
 @end
 

@@ -22,3 +22,11 @@ imageset("ntp_most_visited_tile") {
     "ntp_most_visited_tile.imageset/ntp_most_visited_tile@3x.png",
   ]
 }
+
+imageset("untrack_parcel") {
+  sources = [
+    "untrack_parcel.imageset/Contents.json",
+    "untrack_parcel.imageset/untrack_parcel@2x.png",
+    "untrack_parcel.imageset/untrack_parcel@3x.png",
+  ]
+}

@@ -41,6 +41,7 @@ source_set("cells") {
     ":constants",
     "resources:magic_stack_placeholder_module",
     "resources:ntp_most_visited_tile",
+    "resources:untrack_parcel",
     "//base",
     "//components/ntp_tiles",
     "//ios/chrome/app/strings",

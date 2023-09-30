@@ -4624,11 +4624,17 @@ Your data was encrypted with your passphrase on <ph name="TIME">$2<ex>Sept 1, 20
       <message name="IDS_IOS_PARCEL_TRACKING_CONTEXT_MENU_TITLE" desc="Title for the long-press context menu of the parcel tracking module.">
           This card helps you keep track of your packages and give you important delivery updates.
       </message>
+      <message name="IDS_IOS_PARCEL_TRACKING_CONTEXT_MENU_UNTRACK" desc="Title for the untrack parcel option of the parcel tracking module.">
+          Untrack this package
+      </message>
       <message name="IDS_IOS_PARCEL_TRACKING_MODULE_HIDE_ALERT_TITLE" desc="Title for the alert dialog warning the user they are about to hide the parcel tracking module.">
-          Hiding this Card will Turn Off Auto-Tracking for Future Packages
+          Hiding this Card will Remove All Your Package Tracking Data
       </message>
       <message name="IDS_IOS_PARCEL_TRACKING_MODULE_HIDE_ALERT_CANCEL" desc="Title for the item to cancel disabling the Parcel Tracking feature. ">
           Cancel
+      </message>
+      <message name="IDS_IOS_PARCEL_TRACKING_UNTRACK_SNACKBAR_TITLE" desc="Title for the snackbar indicating a parcel has been untracked. ">
+          Stopped tracking this package
       </message>
       <message name="IDS_IOS_PARCEL_TRACKING_CARRIER_FEDEX" desc="Name of FEDEX Carrier">
           FEDEX

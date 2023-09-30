@@ -527,6 +527,23 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
   }
 }
 
+- (void)untrackParcel:(NSString*)parcelID {
+  _shoppingService->StopTrackingParcel(base::SysNSStringToUTF8(parcelID),
+                                       base::BindOnce(^(bool){
+                                       }));
+}
+
+- (void)trackParcel:(NSString*)parcelID carrier:(ParcelType)carrier {
+  commerce::ParcelIdentifier::Carrier carrierValue =
+      [self carrierValueForParcelType:carrier];
+  _shoppingService->StartTrackingParcels(
+      {std::make_pair(carrierValue, base::SysNSStringToUTF8(parcelID))},
+      std::string(),
+      base::BindOnce(
+          ^(bool, std::unique_ptr<std::vector<commerce::ParcelTrackingStatus>>){
+          }));
+}
+
 #pragma mark - IdentityManagerObserverBridgeDelegate
 
 // Called when a user changes the syncing state.
@@ -1537,6 +1554,20 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
     return ParcelType::kUSPS;
   }
   return ParcelType::kUnkown;
+}
+
+- (commerce::ParcelIdentifier::Carrier)carrierValueForParcelType:
+    (ParcelType)parcelType {
+  switch (parcelType) {
+    case ParcelType::kUSPS:
+      return commerce::ParcelIdentifier::Carrier(4);
+    case ParcelType::kUPS:
+      return commerce::ParcelIdentifier::Carrier(2);
+    case ParcelType::kFedex:
+      return commerce::ParcelIdentifier::Carrier(1);
+    default:
+      return commerce::ParcelIdentifier::Carrier(0);
+  }
 }
 
 // Returns the index rank of `moduleType`.
