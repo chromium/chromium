@@ -57,6 +57,7 @@ class InterestGroupStorageTest : public testing::Test {
         blink::features::kInterestGroupStorage,
         {{"max_owners", "10"},
          {"max_groups_per_owner", "10"},
+         {"max_negative_groups_per_owner", "30"},
          {"max_ops_before_maintenance", "100"},
          {"max_storage_per_owner", "2048"}});
   }
@@ -100,6 +101,20 @@ class InterestGroupStorageTest : public testing::Test {
     result.expiry = base::Time::Now() + base::Days(30);
     result.execution_mode =
         blink::InterestGroup::ExecutionMode::kCompatibilityMode;
+    return result;
+  }
+
+  InterestGroup NewNegativeInterestGroup(url::Origin owner, std::string name) {
+    constexpr blink::InterestGroup::AdditionalBidKey kAdditionalBidKey = {
+        0x7d, 0x4d, 0x0e, 0x7f, 0x61, 0x53, 0xa6, 0x9b, 0x62, 0x42, 0xb5,
+        0x22, 0xab, 0xbe, 0xe6, 0x85, 0xfd, 0xa4, 0x42, 0x0f, 0x88, 0x34,
+        0xb1, 0x08, 0xc3, 0xbd, 0xae, 0x36, 0x9e, 0xf5, 0x49, 0xfa};
+
+    InterestGroup result;
+    result.owner = owner;
+    result.name = name;
+    result.additional_bid_key = kAdditionalBidKey;
+    result.expiry = base::Time::Now() + base::Days(30);
     return result;
   }
 
@@ -1248,7 +1263,7 @@ TEST_F(InterestGroupStorageTest, DeleteOwnerJoinerPair) {
 
 // Maintenance should prune the number of interest groups and interest group
 // owners based on the set limit.
-TEST_F(InterestGroupStorageTest, JoinTooManyGroupNames) {
+TEST_F(InterestGroupStorageTest, JoinTooManyRegularGroupNames) {
   base::HistogramTester histograms;
   const size_t kExcessOwners = 10;
   const url::Origin test_origin =
@@ -1288,6 +1303,63 @@ TEST_F(InterestGroupStorageTest, JoinTooManyGroupNames) {
   ASSERT_EQ(max_groups_per_owner, interest_groups.size());
   histograms.ExpectBucketCount("Storage.InterestGroup.PerSiteCount",
                                max_groups_per_owner, 1);
+  histograms.ExpectTotalCount("Storage.InterestGroup.PerSiteCount", 2);
+
+  std::vector<std::string> remaining_groups;
+  for (const auto& db_group : interest_groups) {
+    remaining_groups.push_back(db_group.interest_group.name);
+  }
+  std::vector<std::string> remaining_groups_expected(
+      added_groups.begin() + kExcessOwners, added_groups.end());
+  EXPECT_THAT(remaining_groups,
+              UnorderedElementsAreArray(remaining_groups_expected));
+  histograms.ExpectTotalCount("Storage.InterestGroup.DBSize", 1);
+  histograms.ExpectTotalCount("Storage.InterestGroup.DBMaintenanceTime", 1);
+}
+
+// Maintenance should prune the number of interest groups and interest group
+// owners based on the set limit.
+TEST_F(InterestGroupStorageTest, JoinTooManyNegativeGroupNames) {
+  base::HistogramTester histograms;
+  const size_t kExcessOwners = 10;
+  const url::Origin test_origin =
+      url::Origin::Create(GURL("https://owner.example.com"));
+  const size_t max_negative_groups_per_owner =
+      blink::features::kInterestGroupStorageMaxNegativeGroupsPerOwner.Get();
+  const size_t num_groups = max_negative_groups_per_owner + kExcessOwners;
+  std::vector<std::string> added_groups;
+
+  std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
+  for (size_t i = 0; i < num_groups; i++) {
+    const std::string group_name = base::NumberToString(i);
+    // Allow time to pass so that they have different expiration times.
+    // This makes which groups get removed deterministic as they are sorted by
+    // expiration time.
+    task_environment().FastForwardBy(base::Microseconds(1));
+
+    storage->JoinInterestGroup(
+        NewNegativeInterestGroup(test_origin, group_name),
+        test_origin.GetURL());
+    added_groups.push_back(group_name);
+  }
+
+  std::vector<url::Origin> origins = storage->GetAllInterestGroupOwners();
+  EXPECT_EQ(1u, origins.size());
+
+  std::vector<StorageInterestGroup> interest_groups =
+      storage->GetInterestGroupsForOwner(test_origin);
+  EXPECT_EQ(num_groups, interest_groups.size());
+  histograms.ExpectBucketCount("Storage.InterestGroup.PerSiteCount", num_groups,
+                               1);
+
+  // Allow enough idle time to trigger maintenance.
+  task_environment().FastForwardBy(InterestGroupStorage::kIdlePeriod +
+                                   base::Seconds(1));
+
+  interest_groups = storage->GetInterestGroupsForOwner(test_origin);
+  ASSERT_EQ(max_negative_groups_per_owner, interest_groups.size());
+  histograms.ExpectBucketCount("Storage.InterestGroup.PerSiteCount",
+                               max_negative_groups_per_owner, 1);
   histograms.ExpectTotalCount("Storage.InterestGroup.PerSiteCount", 2);
 
   std::vector<std::string> remaining_groups;

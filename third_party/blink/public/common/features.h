@@ -505,6 +505,8 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kInterestGroupStorageMaxGroupsPerOwner;
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
+    kInterestGroupStorageMaxNegativeGroupsPerOwner;
+BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kInterestGroupStorageMaxOpsBeforeMaintenance;
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kIsolateSandboxedIframes);

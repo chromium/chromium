@@ -168,10 +168,13 @@ class CONTENT_EXPORT InterestGroupStorage {
   const base::FilePath path_to_database_;
   // Maximum number of interest groups, or interest group owners to keep in the
   // database.
-  // Set by the related blink::feature parameters kInterestGroupStorageMaxOwners
-  // and kInterestGroupStorageMaxGroupsPerOwner.
+  // Set by the related blink::feature parameters
+  // kInterestGroupStorageMaxOwners,
+  // kInterestGroupStorageMaxGroupsPerOwner, and
+  // kInterestGroupStorageMaxNegativeGroupsPerOwner.
   const size_t max_owners_;
-  const size_t max_owner_interest_groups_;
+  const size_t max_owner_regular_interest_groups_;
+  const size_t max_owner_negative_interest_groups_;
   const size_t max_owner_storage_size_;
 
   // Maximum number of operations allowed between maintenance calls.
