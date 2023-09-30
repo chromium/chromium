@@ -40,6 +40,7 @@
 #include "chromeos/ash/components/network/network_policy_observer.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "chromeos/ash/services/network_config/cros_network_config.h"
+#include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_observer.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "components/account_id/account_id.h"
@@ -2645,10 +2646,10 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationEphemeralActionsEnabledTest,
 
   // Verify that the recommended EAP.Identity of the managed wifi service has
   // been wiped.
+  absl::optional<std::string> new_service_path =
+      shill_service_client_test_->FindServiceMatchingGUID(kGuidWifi1);
+  ASSERT_TRUE(new_service_path);
   {
-    absl::optional<std::string> new_service_path =
-        shill_service_client_test_->FindServiceMatchingGUID(kGuidWifi1);
-    ASSERT_TRUE(new_service_path);
     const base::Value::Dict* shill_properties =
         shill_service_client_test_->GetServiceProperties(*new_service_path);
     ASSERT_TRUE(shill_properties);
@@ -2661,6 +2662,57 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationEphemeralActionsEnabledTest,
 
   // Verify that the unmanaged wifi service has been wiped.
   EXPECT_FALSE(shill_profile_client_test_->HasService(kServiceWifi2));
+
+  // Set EAP.Identity back to a non-empty value.
+  shill_service_client_test_->SetServiceProperty(*new_service_path,
+                                                 shill::kEapIdentityProperty,
+                                                 base::Value(kUserIdentity));
+
+  // Simulate that the device goes to sleep and wakes up, and expect that it
+  // leads to this entry getting deleted and then re-created without
+  // "EAP.Identity" again. Internally this process is implemented as a policy
+  // application, so we can use that to detect the end of the process.
+  ScopedNetworkPolicyApplicationObserver network_policy_application_observer;
+  chromeos::FakePowerManagerClient::Get()->SendSuspendDone(base::Minutes(10));
+  network_policy_application_observer.WaitPoliciesApplied(
+      /*userhash=*/std::string());
+
+  // Verify that the recommended EAP.Identity of the recreated managed wifi
+  // service has been wiped again.
+  new_service_path =
+      shill_service_client_test_->FindServiceMatchingGUID(kGuidWifi1);
+  ASSERT_TRUE(new_service_path);
+  {
+    const base::Value::Dict* shill_properties =
+        shill_service_client_test_->GetServiceProperties(*new_service_path);
+    ASSERT_TRUE(shill_properties);
+    EXPECT_THAT(shill_properties->FindString(shill::kEapIdentityProperty),
+                IsNull());
+  }
+
+  // Simulate user log-in
+  LoginUser(test_account_id_);
+
+  // Set EAP.Identity back to a non-empty value.
+  shill_service_client_test_->SetServiceProperty(*new_service_path,
+                                                 shill::kEapIdentityProperty,
+                                                 base::Value(kUserIdentity));
+
+  // Simulate that the device goes to sleep and wakes up.
+  chromeos::FakePowerManagerClient::Get()->SendSuspendDone(base::Minutes(10));
+  base::RunLoop().RunUntilIdle();
+
+  // Verify that the recommended EAP.Identity of the managed wifi service has
+  // not been wiped because the "ephemeral actions" don't apply within active
+  // sessions.
+  {
+    const base::Value::Dict* shill_properties =
+        shill_service_client_test_->GetServiceProperties(*new_service_path);
+    ASSERT_TRUE(shill_properties);
+    EXPECT_THAT(*shill_properties,
+                DictionaryHasValue(shill::kEapIdentityProperty,
+                                   base::Value("user_identity")));
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationEphemeralActionsDisabledTest,
