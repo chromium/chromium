@@ -72,6 +72,12 @@ constexpr struct CategoryMetricNameData {
 
 };
 
+mojom::KeyboardSettingsPtr CreateNewKeyboardSettings() {
+  mojom::KeyboardSettingsPtr settings = mojom::KeyboardSettings::New();
+  settings->six_pack_key_remappings = mojom::SixPackKeyInfo::New();
+  return settings;
+}
+
 }  // namespace
 
 class InputDeviceSettingsMetricsManagerTest : public AshTestBase {
@@ -134,7 +140,7 @@ TEST_F(InputDeviceSettingsMetricsManagerTest, RecordsKeyboardSettings) {
   keyboard_external.device_key = kExternalKeyboardId;
   keyboard_external.is_external = true;
   keyboard_external.meta_key = mojom::MetaKey::kCommand;
-  keyboard_external.settings = mojom::KeyboardSettings::New();
+  keyboard_external.settings = CreateNewKeyboardSettings();
   auto& settings_external = *keyboard_external.settings;
   settings_external.top_row_are_fkeys = true;
   settings_external.modifier_remappings = {
@@ -145,7 +151,7 @@ TEST_F(InputDeviceSettingsMetricsManagerTest, RecordsKeyboardSettings) {
   keyboard_external_chromeos.device_key = kExternalChromeOSKeyboardId;
   keyboard_external_chromeos.is_external = true;
   keyboard_external_chromeos.meta_key = mojom::MetaKey::kSearch;
-  keyboard_external_chromeos.settings = mojom::KeyboardSettings::New();
+  keyboard_external_chromeos.settings = CreateNewKeyboardSettings();
   auto& settings_external_chromeos = *keyboard_external_chromeos.settings;
   settings_external_chromeos.top_row_are_fkeys = false;
   settings_external_chromeos.six_pack_key_remappings =
@@ -161,7 +167,7 @@ TEST_F(InputDeviceSettingsMetricsManagerTest, RecordsKeyboardSettings) {
   AddFakeKeyboard(ui::KeyboardDevice(kKeyboardInternalId,
                                      ui::InputDeviceType::INPUT_DEVICE_INTERNAL,
                                      "keyboard_internal"));
-  keyboard_internal.settings = mojom::KeyboardSettings::New();
+  keyboard_internal.settings = CreateNewKeyboardSettings();
   auto& settings_internal = *keyboard_internal.settings;
   settings_internal.top_row_are_fkeys = true;
   settings_internal.six_pack_key_remappings = mojom::SixPackKeyInfo::New();
@@ -262,14 +268,14 @@ TEST_F(InputDeviceSettingsMetricsManagerTest, RecordMetricOncePerKeyboard) {
   keyboard_external.device_key = kExternalKeyboardId;
   keyboard_external.is_external = true;
   keyboard_external.meta_key = mojom::MetaKey::kCommand;
-  keyboard_external.settings = mojom::KeyboardSettings::New();
+  keyboard_external.settings = CreateNewKeyboardSettings();
   auto& settings_external = *keyboard_external.settings;
   settings_external.top_row_are_fkeys = true;
 
   mojom::Keyboard keyboard_internal;
   keyboard_internal.device_key = kInternalKeyboardDeviceKey;
   keyboard_internal.is_external = false;
-  keyboard_internal.settings = mojom::KeyboardSettings::New();
+  keyboard_internal.settings = CreateNewKeyboardSettings();
   auto& settings_internal = *keyboard_internal.settings;
   settings_internal.top_row_are_fkeys = true;
 
@@ -615,7 +621,7 @@ TEST_F(InputDeviceSettingsMetricsManagerTest, RecordModifierRemappingMetrics) {
       ui::mojom::ModifierKey::kMeta,
       ui::mojom::ModifierKey::kAssistant,
   };
-  keyboard.settings = mojom::KeyboardSettings::New();
+  keyboard.settings = CreateNewKeyboardSettings();
   keyboard.settings->modifier_remappings = {
       {ui::mojom::ModifierKey::kMeta, ui::mojom::ModifierKey::kControl},
   };
@@ -635,7 +641,7 @@ TEST_F(InputDeviceSettingsMetricsManagerTest, RecordModifierRemappingMetrics) {
       /*sample=*/1u, /*expected_bucket_count=*/1u);
 
   const auto old_settings = std::move(keyboard.settings);
-  keyboard.settings = mojom::KeyboardSettings::New();
+  keyboard.settings = CreateNewKeyboardSettings();
   keyboard.settings->modifier_remappings = {
       {ui::mojom::ModifierKey::kAlt, ui::mojom::ModifierKey::kControl},
       {ui::mojom::ModifierKey::kMeta, ui::mojom::ModifierKey::kCapsLock},
@@ -664,7 +670,7 @@ TEST_F(InputDeviceSettingsMetricsManagerTest,
   mojom::Keyboard keyboard;
   keyboard.device_key = kExternalKeyboardId;
   keyboard.is_external = false;
-  keyboard.settings = mojom::KeyboardSettings::New();
+  keyboard.settings = CreateNewKeyboardSettings();
   keyboard.modifier_keys = {
       ui::mojom::ModifierKey::kMeta,      ui::mojom::ModifierKey::kControl,
       ui::mojom::ModifierKey::kAlt,       ui::mojom::ModifierKey::kCapsLock,
@@ -720,13 +726,13 @@ TEST_F(InputDeviceSettingsMetricsManagerTest,
       ui::mojom::ModifierKey::kEscape,    ui::mojom::ModifierKey::kBackspace,
       ui::mojom::ModifierKey::kAssistant,
   };
-  keyboard->settings = mojom::KeyboardSettings::New();
+  keyboard->settings = CreateNewKeyboardSettings();
   keyboard->settings->modifier_remappings = {
       {ui::mojom::ModifierKey::kAlt, ui::mojom::ModifierKey::kCapsLock},
       {ui::mojom::ModifierKey::kMeta, ui::mojom::ModifierKey::kAssistant}};
 
   base::HistogramTester histogram_tester;
-  const auto default_settings = mojom::KeyboardSettings::New();
+  const auto default_settings = CreateNewKeyboardSettings();
   default_settings->modifier_remappings = {
       {ui::mojom::ModifierKey::kControl, ui::mojom::ModifierKey::kMeta},
       {ui::mojom::ModifierKey::kMeta, ui::mojom::ModifierKey::kControl}};
@@ -770,8 +776,9 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_P(SettingsUpdatedTimePeriodMetricsTest, KeyboardMetrics) {
   mojom::Keyboard keyboard;
   keyboard.device_key = kExternalKeyboardId;
-  keyboard.settings = mojom::KeyboardSettings::New();
+  keyboard.settings = CreateNewKeyboardSettings();
   mojom::KeyboardSettings old_settings;
+  old_settings.six_pack_key_remappings = mojom::SixPackKeyInfo::New();
 
   SettingsUpdatedMetricsInfo metrics_info(
       category_metric_name_data_.category,

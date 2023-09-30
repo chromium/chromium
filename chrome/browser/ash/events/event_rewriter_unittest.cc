@@ -1809,8 +1809,9 @@ TEST_F(EventRewriterTest, TestRewriteCapsLockMod3InUse) {
 // TODO(crbug.com/1179893): Remove once the feature is enabled permanently.
 TEST_F(EventRewriterTest, TestRewriteExtendedKeysAltVariantsOld) {
   Preferences::RegisterProfilePrefs(prefs()->registry());
-  scoped_feature_list_.InitAndDisableFeature(
-      ::features::kImprovedKeyboardShortcuts);
+  scoped_feature_list_.InitWithFeatures(
+      {}, {::features::kImprovedKeyboardShortcuts,
+           features::kAltClickAndSixPackCustomization});
   TestNonAppleKeyboardVariants({
       // Alt+Backspace -> Delete
       {ui::ET_KEY_PRESSED,
@@ -1883,6 +1884,8 @@ TEST_F(EventRewriterTest, TestRewriteExtendedKeysAltVariantsOld) {
 // is disabled.
 TEST_F(EventRewriterTest, TestRewriteExtendedKeysAltVariantsM92) {
   Preferences::RegisterProfilePrefs(prefs()->registry());
+  scoped_feature_list_.InitAndDisableFeature(
+      features::kAltClickAndSixPackCustomization);
   TestNonAppleKeyboardVariants({
       // Alt+Backspace -> Delete
       {ui::ET_KEY_PRESSED,
@@ -1955,8 +1958,9 @@ TEST_F(EventRewriterTest, TestRewriteExtendedKeysAltVariantsM92) {
 // kDeprecateAltBasedSixPack enabled.
 TEST_F(EventRewriterTest, TestRewriteExtendedKeysAltVariants) {
   Preferences::RegisterProfilePrefs(prefs()->registry());
-  scoped_feature_list_.InitAndEnableFeature(
-      ::features::kDeprecateAltBasedSixPack);
+  scoped_feature_list_.InitWithFeatures(
+      {::features::kDeprecateAltBasedSixPack},
+      {features::kAltClickAndSixPackCustomization});
   // All the previously supported Alt based rewrites no longer have any
   // effect. The Search workarounds no longer take effect and the Search+Key
   // portion is rewritten as expected.
@@ -2045,8 +2049,9 @@ TEST_F(EventRewriterTest, TestRewriteExtendedKeysAltVariants) {
 // TODO(crbug.com/1179893): Remove once the feature is enabled permanently.
 TEST_F(EventRewriterTest, TestRewriteExtendedKeyInsertOld) {
   Preferences::RegisterProfilePrefs(prefs()->registry());
-  scoped_feature_list_.InitAndDisableFeature(
-      ::features::kImprovedKeyboardShortcuts);
+  scoped_feature_list_.InitWithFeatures(
+      {}, {::features::kImprovedKeyboardShortcuts,
+           features::kAltClickAndSixPackCustomization});
   TestNonAppleKeyboardVariants({
       // Period -> Period
       {ui::ET_KEY_PRESSED,
@@ -2071,8 +2076,9 @@ TEST_F(EventRewriterTest, TestRewriteExtendedKeyInsertOld) {
 
 TEST_F(EventRewriterTest, TestRewriteExtendedKeyInsertDeprecatedNotification) {
   Preferences::RegisterProfilePrefs(prefs()->registry());
-  scoped_feature_list_.InitAndEnableFeature(
-      ::features::kImprovedKeyboardShortcuts);
+  scoped_feature_list_.InitWithFeatures(
+      {::features::kImprovedKeyboardShortcuts},
+      {features::kAltClickAndSixPackCustomization});
   TestNonAppleKeyboardVariants({
       // Period -> Period
       {ui::ET_KEY_PRESSED,
@@ -2104,8 +2110,9 @@ TEST_F(EventRewriterTest, TestRewriteExtendedKeyInsertDeprecatedNotification) {
 // TODO(crbug.com/1179893): Rename once the feature is enabled permanently.
 TEST_F(EventRewriterTest, TestRewriteExtendedKeyInsertNew) {
   Preferences::RegisterProfilePrefs(prefs()->registry());
-  scoped_feature_list_.InitAndEnableFeature(
-      ::features::kImprovedKeyboardShortcuts);
+  scoped_feature_list_.InitWithFeatures(
+      {::features::kImprovedKeyboardShortcuts},
+      {features::kAltClickAndSixPackCustomization});
   TestNonAppleKeyboardVariants({
       // Search+Shift+Backspace -> Insert
       {ui::ET_KEY_PRESSED,
@@ -2123,6 +2130,8 @@ TEST_F(EventRewriterTest, TestRewriteExtendedKeyInsertNew) {
 }
 
 TEST_F(EventRewriterTest, TestRewriteExtendedKeysSearchVariants) {
+  scoped_feature_list_.InitAndDisableFeature(
+      features::kAltClickAndSixPackCustomization);
   Preferences::RegisterProfilePrefs(prefs()->registry());
   TestNonAppleKeyboardVariants({
       // Search+Backspace -> Delete
@@ -2168,7 +2177,8 @@ TEST_F(EventRewriterTest, TestRewriteExtendedKeysSearchVariants) {
 
 TEST_F(EventRewriterTest, TestNumberRowIsNotRewritten) {
   Preferences::RegisterProfilePrefs(prefs()->registry());
-
+  scoped_feature_list_.InitAndDisableFeature(
+      features::kAltClickAndSixPackCustomization);
   TestNonAppleNonCustomLayoutKeyboardVariants({
       // The number row should not be rewritten without Search key.
       {ui::ET_KEY_PRESSED,
@@ -4330,6 +4340,8 @@ TEST_F(EventRewriterTest, TestRewriteFunctionKeysInvalidLayout) {
 TEST_F(EventRewriterTest, TestRewriteExtendedKeysWithControlRemapped) {
   // Remap Control to Search.
   Preferences::RegisterProfilePrefs(prefs()->registry());
+  scoped_feature_list_.InitAndDisableFeature(
+      features::kAltClickAndSixPackCustomization);
   IntegerPrefMember search;
   InitModifierKeyPref(&search, ::prefs::kLanguageRemapControlKeyTo,
                       ui::mojom::ModifierKey::kControl,
@@ -4761,6 +4773,8 @@ void EventRewriterTest::DontRewriteIfNotRewritten(int right_click_flags) {
 }
 
 TEST_F(EventRewriterTest, DontRewriteIfNotRewritten_AltClickIsRightClick) {
+  scoped_feature_list_.InitAndDisableFeature(
+      features::kAltClickAndSixPackCustomization);
   DontRewriteIfNotRewritten(ui::EF_LEFT_MOUSE_BUTTON | ui::EF_ALT_DOWN);
   EXPECT_EQ(message_center_.NotificationCount(), 0u);
 }
@@ -4768,15 +4782,17 @@ TEST_F(EventRewriterTest, DontRewriteIfNotRewritten_AltClickIsRightClick) {
 TEST_F(EventRewriterTest, DontRewriteIfNotRewritten_AltClickIsRightClick_New) {
   // Enabling the kImprovedKeyboardShortcuts feature does not change alt+click
   // behavior or create a notification.
-  scoped_feature_list_.InitAndEnableFeature(
-      ::features::kImprovedKeyboardShortcuts);
+  scoped_feature_list_.InitWithFeatures(
+      {::features::kImprovedKeyboardShortcuts},
+      {features::kAltClickAndSixPackCustomization});
   DontRewriteIfNotRewritten(ui::EF_LEFT_MOUSE_BUTTON | ui::EF_ALT_DOWN);
   EXPECT_EQ(message_center_.NotificationCount(), 0u);
 }
 
 TEST_F(EventRewriterTest, DontRewriteIfNotRewritten_SearchClickIsRightClick) {
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kUseSearchClickForRightClick);
+  scoped_feature_list_.InitWithFeatures(
+      {features::kUseSearchClickForRightClick},
+      {features::kAltClickAndSixPackCustomization});
   DontRewriteIfNotRewritten(ui::EF_LEFT_MOUSE_BUTTON | ui::EF_COMMAND_DOWN);
   EXPECT_EQ(message_center_.NotificationCount(), 0u);
 }
@@ -4784,13 +4800,17 @@ TEST_F(EventRewriterTest, DontRewriteIfNotRewritten_SearchClickIsRightClick) {
 TEST_F(EventRewriterTest, DontRewriteIfNotRewritten_AltClickDeprecated) {
   // Pressing search+click with alt+click deprecated works, but does not
   // generate a notification.
-  scoped_feature_list_.InitAndEnableFeature(::features::kDeprecateAltClick);
+  scoped_feature_list_.InitWithFeatures(
+      {::features::kDeprecateAltClick},
+      {features::kAltClickAndSixPackCustomization});
   DontRewriteIfNotRewritten(ui::EF_LEFT_MOUSE_BUTTON | ui::EF_COMMAND_DOWN);
   EXPECT_EQ(message_center_.NotificationCount(), 0u);
 }
 
 TEST_F(EventRewriterTest, DeprecatedAltClickGeneratesNotification) {
-  scoped_feature_list_.InitAndEnableFeature(::features::kDeprecateAltClick);
+  scoped_feature_list_.InitWithFeatures(
+      {::features::kDeprecateAltClick},
+      {features::kAltClickAndSixPackCustomization});
   ui::DeviceDataManager* device_data_manager =
       ui::DeviceDataManager::GetInstance();
   std::vector<ui::TouchpadDevice> touchpad_devices(1);
@@ -5030,6 +5050,9 @@ TEST_F(EventRewriterAshTest, MouseWheelEventModifiersRewritten) {
 
 // Tests edge cases of key event rewriting (see https://crbug.com/913209).
 TEST_F(EventRewriterAshTest, KeyEventRewritingEdgeCases) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kAltClickAndSixPackCustomization);
   std::vector<std::unique_ptr<ui::Event>> events;
 
   // Edge case 1: Press the Launcher button first. Then press the Up Arrow

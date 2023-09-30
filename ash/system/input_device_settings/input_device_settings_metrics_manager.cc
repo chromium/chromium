@@ -167,6 +167,7 @@ ui::mojom::SixPackShortcutModifier GetSixPackKeyModifier(
     const mojom::Keyboard& keyboard,
     ui::KeyboardCode key_code) {
   CHECK(ui::KeyboardCapability::IsSixPackKey(key_code));
+  CHECK(keyboard.settings->six_pack_key_remappings);
   switch (key_code) {
     case ui::VKEY_DELETE:
       return keyboard.settings->six_pack_key_remappings->del;
@@ -461,6 +462,7 @@ void InputDeviceSettingsMetricsManager::RecordKeyboardChangedMetrics(
   }
 
   if (features::IsAltClickAndSixPackCustomizationEnabled()) {
+    CHECK(keyboard.settings->six_pack_key_remappings);
     if (keyboard.settings->six_pack_key_remappings->del !=
         old_settings.six_pack_key_remappings->del) {
       RecordSixPackKeyInfo(keyboard, ui::VKEY_DELETE,

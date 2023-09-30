@@ -36,6 +36,7 @@
 namespace ash {
 
 namespace {
+
 constexpr char kUserEmail[] = "example@email.com";
 constexpr char kUserEmail2[] = "example2@email.com";
 const AccountId account_id_1 = AccountId::FromUserEmail(kUserEmail);
@@ -54,7 +55,7 @@ const mojom::KeyboardSettings kKeyboardSettingsDefault(
     /*modifier_remappings=*/{},
     /*top_row_are_fkeys=*/kDefaultTopRowAreFKeys,
     /*suppress_meta_fkey_rewrites=*/kDefaultSuppressMetaFKeyRewrites,
-    /*six_pack_key_remappings=*/{},
+    mojom::SixPackKeyInfo::New(),
     kDefaultFkey,
     kDefaultFkey);
 
@@ -62,7 +63,7 @@ const mojom::KeyboardSettings kKeyboardSettingsNotDefault(
     /*modifier_remappings=*/{},
     /*top_row_are_fkeys=*/!kDefaultTopRowAreFKeys,
     /*suppress_meta_fkey_rewrites=*/!kDefaultSuppressMetaFKeyRewrites,
-    /*six_pack_key_remappings=*/{},
+    mojom::SixPackKeyInfo::New(),
     kDefaultFkey,
     kDefaultFkey);
 
@@ -70,7 +71,7 @@ const mojom::KeyboardSettings kKeyboardSettings1(
     /*modifier_remappings=*/{},
     /*top_row_are_fkeys=*/false,
     /*suppress_meta_fkey_rewrites=*/false,
-    /*six_pack_key_remappings=*/{},
+    mojom::SixPackKeyInfo::New(),
     kDefaultFkey,
     kDefaultFkey);
 
@@ -81,7 +82,7 @@ const mojom::KeyboardSettings kKeyboardSettings2(
                               ui::mojom::ModifierKey::kVoid}},
     /*top_row_are_fkeys=*/true,
     /*suppress_meta_fkey_rewrites=*/true,
-    /*six_pack_key_remappings=*/{},
+    mojom::SixPackKeyInfo::New(),
     kDefaultFkey,
     kDefaultFkey);
 
@@ -96,9 +97,10 @@ const mojom::KeyboardSettings kKeyboardSettings3(
                               ui::mojom::ModifierKey::kAssistant}},
     /*top_row_are_fkeys=*/true,
     /*suppress_meta_fkey_rewrites=*/false,
-    /*six_pack_key_remappings=*/{},
+    mojom::SixPackKeyInfo::New(),
     kDefaultFkey,
     kDefaultFkey);
+
 }  // namespace
 
 class KeyboardPrefHandlerTest : public AshTestBase {
@@ -115,6 +117,7 @@ class KeyboardPrefHandlerTest : public AshTestBase {
 
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kInputDeviceSettingsSplit,
+                              features::kAltClickAndSixPackCustomization,
                               ::features::kSupportF11AndF12KeyShortcuts},
         /*disabled_features=*/{});
 
@@ -938,9 +941,12 @@ TEST_F(KeyboardPrefHandlerTest, SixPackKeyRemappings_Default) {
 }
 
 TEST_F(KeyboardPrefHandlerTest, SixPackKeyRemappings_Group) {
-  CallInitializeKeyboardSettings(kKeyboardKey1);
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kAltClickAndSixPackCustomization);
+  {
+    base::test::ScopedFeatureList disable_feature_list;
+    disable_feature_list.InitAndDisableFeature(
+        features::kAltClickAndSixPackCustomization);
+    CallInitializeKeyboardSettings(kKeyboardKey1);
+  }
 
   pref_service_->SetUserPref(prefs::kKeyEventRemappedToSixPackPageUp,
                              base::Value(15));
@@ -955,9 +961,12 @@ TEST_F(KeyboardPrefHandlerTest, SixPackKeyRemappings_Group) {
 }
 
 TEST_F(KeyboardPrefHandlerTest, SixPackKeyRemappings_RetrieveSettings) {
-  CallInitializeKeyboardSettings(kKeyboardKey1);
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kAltClickAndSixPackCustomization);
+  {
+    base::test::ScopedFeatureList disable_feature_list;
+    disable_feature_list.InitAndDisableFeature(
+        features::kAltClickAndSixPackCustomization);
+    CallInitializeKeyboardSettings(kKeyboardKey1);
+  }
 
   pref_service_->SetUserPref(prefs::kKeyEventRemappedToSixPackPageUp,
                              base::Value(15));

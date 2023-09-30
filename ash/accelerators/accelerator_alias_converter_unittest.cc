@@ -333,6 +333,7 @@ TEST_F(AcceleratorAliasConverterTest, MetaFKeyRewritesSuppressed) {
                                           kKbdTopRowLayoutUnspecified);
 
   mojom::KeyboardSettings settings;
+  settings.six_pack_key_remappings = mojom::SixPackKeyInfo::New();
   settings.top_row_are_fkeys = true;
   settings.suppress_meta_fkey_rewrites = false;
   Shell::Get()->input_device_settings_controller()->SetKeyboardSettings(

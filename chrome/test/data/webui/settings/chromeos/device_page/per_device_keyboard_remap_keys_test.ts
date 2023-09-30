@@ -313,12 +313,9 @@ suite('<settings-per-device-keyboard-remap-keys>', () => {
   test('Keyboard description populated correctly', async () => {
     await initializePerDeviceKeyboardRemapKeys();
     assertTrue(page.get('isInitialized'));
-    assertEquals(
-        'For ERGO K860, choose an action for each key', getPageDescription());
+    assertEquals('ERGO K860', getPageDescription());
     await changeKeyboardExternalState(/* isExternal= */ false);
-    assertEquals(
-        'For Built-in Keyboard, choose an action for each key',
-        getPageDescription());
+    assertEquals('Built-in Keyboard', getPageDescription());
   });
 
   test(

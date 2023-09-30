@@ -108,8 +108,10 @@ class TouchpadPrefHandlerTest : public AshTestBase {
 
   // testing::Test:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kInputDeviceSettingsSplit);
+    scoped_feature_list_.InitWithFeatures(
+        {features::kInputDeviceSettingsSplit,
+         features::kAltClickAndSixPackCustomization},
+        {});
     AshTestBase::SetUp();
     InitializePrefService();
     pref_handler_ = std::make_unique<TouchpadPrefHandlerImpl>();
@@ -937,9 +939,13 @@ INSTANTIATE_TEST_SUITE_P(
             {0, 5, ui::mojom::SimulateRightClickModifier::kSearch}}));
 
 TEST_P(TouchpadSettingsSimulateRightClickTest, SimulateRightClickSetting) {
-  CallInitializeTouchpadSettings(kTouchpadKey1);
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kAltClickAndSixPackCustomization);
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(
+        features::kAltClickAndSixPackCustomization);
+    CallInitializeTouchpadSettings(kTouchpadKey1);
+  }
+
   SetSimulateRightClickPrefs(alt_count, search_count);
   const auto settings = CallInitializeTouchpadSettings(kTouchpadKey1);
   EXPECT_EQ(expected, settings->simulate_right_click);
@@ -947,9 +953,13 @@ TEST_P(TouchpadSettingsSimulateRightClickTest, SimulateRightClickSetting) {
 
 TEST_P(TouchpadSettingsSimulateRightClickTest,
        SimulateRightClickSettingInternal) {
-  CallInitializeTouchpadSettings(kTouchpadKey1, /*is_external=*/false);
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kAltClickAndSixPackCustomization);
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(
+        features::kAltClickAndSixPackCustomization);
+    CallInitializeTouchpadSettings(kTouchpadKey1, /*is_external=*/false);
+  }
+
   SetSimulateRightClickPrefs(alt_count, search_count);
   const auto settings =
       CallInitializeTouchpadSettings(kTouchpadKey1, /*is_external=*/false);

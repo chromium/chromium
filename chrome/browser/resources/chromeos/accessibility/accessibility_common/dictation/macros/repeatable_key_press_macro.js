@@ -340,8 +340,7 @@ export class NavStartText extends RepeatableKeyPressMacro {
   doKeyPress() {
     // TODO(b/259397131): Migrate this implementation to use
     // chrome.automation.setDocumentSelection.
-    EventGenerator.sendKeyPress(
-        KeyCode.LEFT, {search: true, ctrl: true}, /*useRewriters=*/ true);
+    EventGenerator.sendKeyPress(KeyCode.HOME, {ctrl: true});
   }
 }
 
@@ -358,8 +357,7 @@ export class NavEndText extends RepeatableKeyPressMacro {
   doKeyPress() {
     // TODO(b/259397131): Migrate this implementation to use
     // chrome.automation.setDocumentSelection.
-    EventGenerator.sendKeyPress(
-        KeyCode.RIGHT, {search: true, ctrl: true}, /*useRewriters=*/ true);
+    EventGenerator.sendKeyPress(KeyCode.END, {ctrl: true});
   }
 }
 

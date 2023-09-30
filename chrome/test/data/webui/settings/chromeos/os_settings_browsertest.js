@@ -305,13 +305,22 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
  ],
  [
    'DevicePagePerDeviceKeyboardRemapKeys',
-   'device_page/per_device_keyboard_remap_keys_test.js',
-   {enabled: ['ash::features::kInputDeviceSettingsSplit']}
+   'device_page/per_device_keyboard_remap_keys_test.js', {
+     enabled: [
+       'ash::features::kInputDeviceSettingsSplit',
+       'ash::features::kAltClickAndSixPackCustomization'
+     ]
+   }
  ],
  [
    'DevicePagePerDeviceKeyboardSubsection',
    'device_page/per_device_keyboard_subsection_test.js',
-   {enabled: ['ash::features::kInputDeviceSettingsSplit']},
+   {
+     enabled: [
+       'ash::features::kInputDeviceSettingsSplit',
+       'ash::features::kAltClickAndSixPackCustomization'
+     ]
+   },
  ],
  [
    'DevicePagePerDeviceMouse', 'device_page/per_device_mouse_test.js',

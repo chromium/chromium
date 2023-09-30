@@ -214,6 +214,12 @@ class FakeDeviceManager {
   std::vector<ui::InputDevice> fake_graphics_tablet_devices_;
 };
 
+mojom::KeyboardSettingsPtr CreateNewKeyboardSettings() {
+  mojom::KeyboardSettingsPtr settings = mojom::KeyboardSettings::New();
+  settings->six_pack_key_remappings = mojom::SixPackKeyInfo::New();
+  return settings;
+}
+
 }  // namespace
 
 class FakeKeyboardPrefHandler : public KeyboardPrefHandler {
@@ -222,7 +228,7 @@ class FakeKeyboardPrefHandler : public KeyboardPrefHandler {
       PrefService* pref_service,
       const mojom::KeyboardPolicies& keyboard_policies,
       mojom::Keyboard* keyboard) override {
-    keyboard->settings = mojom::KeyboardSettings::New();
+    keyboard->settings = CreateNewKeyboardSettings();
     num_keyboard_settings_initialized_++;
   }
 
@@ -402,6 +408,7 @@ class InputDeviceSettingsControllerTest : public NoSessionAshTestBase {
     scoped_feature_list_.InitWithFeatures(
         {features::kPeripheralCustomization,
          features::kInputDeviceSettingsSplit,
+         features::kAltClickAndSixPackCustomization,
          ::features::kSupportF11AndF12KeyShortcuts},
         {});
     NoSessionAshTestBase::SetUp();
@@ -692,8 +699,10 @@ TEST_F(InputDeviceSettingsControllerTest, KeyboardSettingsUpdated) {
 
   EXPECT_EQ(observer_->num_keyboards_connected(), 1u);
   EXPECT_EQ(keyboard_pref_handler_->num_keyboard_settings_initialized(), 1u);
+
+  auto settings = CreateNewKeyboardSettings();
   controller_->SetKeyboardSettings((DeviceId)kSampleKeyboardUsb.id,
-                                   mojom::KeyboardSettings::New());
+                                   std::move(settings));
 
   EXPECT_EQ(observer_->num_keyboards_settings_updated(), 1u);
   EXPECT_EQ(keyboard_pref_handler_->num_keyboard_settings_updated(), 1u);
@@ -729,7 +738,7 @@ TEST_F(InputDeviceSettingsControllerTest, UpdateLoginScreenSettings) {
   controller_->OnLoginScreenFocusedPodChanged(account_id_1);
   ui::DeviceDataManagerTestApi().SetKeyboardDevices({kSampleKeyboardUsb});
   controller_->SetKeyboardSettings((DeviceId)kSampleKeyboardUsb.id,
-                                   mojom::KeyboardSettings::New());
+                                   CreateNewKeyboardSettings());
   task_runner_->RunUntilIdle();
   EXPECT_EQ(keyboard_pref_handler_->num_keyboard_settings_updated(), 1u);
   // Expect multiple calls to persist settings to the login screen prefs due to:
@@ -744,7 +753,7 @@ TEST_F(InputDeviceSettingsControllerTest, KeyboardSettingsAreValid) {
                                           kKbdTopRowLayout1Tag);
   EXPECT_EQ(observer_->num_keyboards_connected(), 1u);
   EXPECT_EQ(keyboard_pref_handler_->num_keyboard_settings_initialized(), 1u);
-  const mojom::KeyboardSettingsPtr settings = mojom::KeyboardSettings::New();
+  const mojom::KeyboardSettingsPtr settings = CreateNewKeyboardSettings();
   settings->suppress_meta_fkey_rewrites = !kDefaultSuppressMetaFKeyRewrites;
   controller_->SetKeyboardSettings((DeviceId)kSampleKeyboardInternal.id,
                                    settings.Clone());
@@ -836,13 +845,13 @@ TEST_F(InputDeviceSettingsControllerTest,
   fake_keyboard_manager_->AddFakeKeyboard(kSampleKeyboardInternal,
                                           kKbdTopRowLayout1Tag);
   controller_->SetKeyboardSettings((DeviceId)kSampleKeyboardInternal.id,
-                                   mojom::KeyboardSettings::New());
+                                   CreateNewKeyboardSettings());
   histogram_tester.ExpectBucketCount(
       "ChromeOS.Settings.Device.Keyboard.SetSettingsSucceeded", true,
       /*expected_count=*/1u);
 
   // Set keyboard with invalid settings.
-  const mojom::KeyboardSettingsPtr settings = mojom::KeyboardSettings::New();
+  const mojom::KeyboardSettingsPtr settings = CreateNewKeyboardSettings();
   settings->suppress_meta_fkey_rewrites = !kDefaultSuppressMetaFKeyRewrites;
   controller_->SetKeyboardSettings((DeviceId)kSampleKeyboardInternal.id,
                                    settings.Clone());
@@ -963,7 +972,7 @@ TEST_F(InputDeviceSettingsControllerTest, KeyboardSettingsUpdatedInvalidId) {
   EXPECT_EQ(observer_->num_keyboards_connected(), 1u);
   EXPECT_EQ(keyboard_pref_handler_->num_keyboard_settings_initialized(), 1u);
   controller_->SetKeyboardSettings((DeviceId)kSampleKeyboardUsb.id + 1,
-                                   mojom::KeyboardSettings::New());
+                                   CreateNewKeyboardSettings());
 
   EXPECT_EQ(observer_->num_keyboards_settings_updated(), 0u);
   EXPECT_EQ(keyboard_pref_handler_->num_keyboard_settings_updated(), 0u);
@@ -980,7 +989,7 @@ TEST_F(InputDeviceSettingsControllerTest, KeyboardSettingsUpdateMultiple) {
   EXPECT_EQ(observer_->num_keyboards_connected(), 2u);
   EXPECT_EQ(keyboard_pref_handler_->num_keyboard_settings_initialized(), 2u);
   controller_->SetKeyboardSettings((DeviceId)kSampleKeyboardUsb.id,
-                                   mojom::KeyboardSettings::New());
+                                   CreateNewKeyboardSettings());
   EXPECT_EQ(observer_->num_keyboards_settings_updated(), 2u);
   EXPECT_EQ(keyboard_pref_handler_->num_keyboard_settings_updated(), 1u);
 }
@@ -1008,7 +1017,7 @@ TEST_F(InputDeviceSettingsControllerTest, RecordsMetricsSettings) {
       /*expected_count=*/6u);
 
   // Test Metrics Updates when setKeyboardSettings is called.
-  auto updated_settings = mojom::KeyboardSettings::New();
+  auto updated_settings = CreateNewKeyboardSettings();
   updated_settings.get()->top_row_are_fkeys = true;
   controller_->SetKeyboardSettings(kSampleKeyboardUsb.id,
                                    std::move(updated_settings));
@@ -1040,7 +1049,8 @@ TEST_F(InputDeviceSettingsControllerTest, GetGeneralizedTopRowAreFKeys) {
   // If there is only internal keyboard, return its top_row_are_fkeys value.
   ui::DeviceDataManagerTestApi().SetKeyboardDevices({kSampleKeyboardInternal});
 
-  auto internal_keyboard_settings = mojom::KeyboardSettings::New();
+  auto internal_keyboard_settings = CreateNewKeyboardSettings();
+  ;
   internal_keyboard_settings->top_row_are_fkeys = true;
   controller_->SetKeyboardSettings((DeviceId)kSampleKeyboardInternal.id,
                                    internal_keyboard_settings.Clone());
@@ -1051,7 +1061,8 @@ TEST_F(InputDeviceSettingsControllerTest, GetGeneralizedTopRowAreFKeys) {
   ui::DeviceDataManagerTestApi().SetKeyboardDevices(
       {kSampleKeyboardInternal, kSampleKeyboardUsb, kSampleKeyboardUsb2});
 
-  auto settings = mojom::KeyboardSettings::New();
+  auto settings = CreateNewKeyboardSettings();
+  ;
   settings->top_row_are_fkeys = true;
   controller_->SetKeyboardSettings((DeviceId)kSampleKeyboardUsb.id,
                                    settings.Clone());
@@ -1064,7 +1075,7 @@ TEST_F(InputDeviceSettingsControllerTest,
   ui::DeviceDataManagerTestApi().SetKeyboardDevices({kSampleKeyboardInternal});
   EXPECT_EQ(observer_->num_keyboards_connected(), 1u);
   EXPECT_EQ(keyboard_pref_handler_->num_keyboard_settings_initialized(), 1u);
-  const mojom::KeyboardSettingsPtr settings = mojom::KeyboardSettings::New();
+  const mojom::KeyboardSettingsPtr settings = CreateNewKeyboardSettings();
   settings->top_row_are_fkeys = !kDefaultTopRowAreFKeys;
   controller_->SetKeyboardSettings((DeviceId)kSampleKeyboardInternal.id,
                                    settings.Clone());
@@ -1110,7 +1121,7 @@ TEST_F(InputDeviceSettingsControllerTest, RestoreDefaultKeyboardRemappings) {
   base::HistogramTester histogram_tester;
 
   ui::DeviceDataManagerTestApi().SetKeyboardDevices({kSampleKeyboardInternal});
-  const mojom::KeyboardSettingsPtr settings = mojom::KeyboardSettings::New();
+  const mojom::KeyboardSettingsPtr settings = CreateNewKeyboardSettings();
   settings->top_row_are_fkeys = kDefaultTopRowAreFKeys;
   settings->modifier_remappings[ui::mojom::ModifierKey::kMeta] =
       ui::mojom::ModifierKey::kAlt;
@@ -1360,18 +1371,18 @@ TEST_F(InputDeviceSettingsControllerTest, InternalTouchpadUpdatedWithPrefs) {
   base::Value::Dict updated_dict;
   updated_dict.Set("test_key", 1);
   pref_service->SetDict(prefs::kTouchpadInternalSettings, updated_dict.Clone());
-  EXPECT_EQ(1u, observer_->num_touchpad_settings_updated());
+  EXPECT_EQ(2u, observer_->num_touchpad_settings_updated());
 
   // If there is no internal touchpad, expect no settings updated call.
   ui::DeviceDataManagerTestApi().SetTouchpadDevices({kSampleTouchpadExternal});
   updated_dict.Set("test_key", 2);
   pref_service->SetDict(prefs::kTouchpadInternalSettings, updated_dict.Clone());
-  EXPECT_EQ(1u, observer_->num_touchpad_settings_updated());
+  EXPECT_EQ(2u, observer_->num_touchpad_settings_updated());
 
   ui::DeviceDataManagerTestApi().SetTouchpadDevices({kSampleTouchpadInternal});
   updated_dict.Set("test_key", 3);
   pref_service->SetDict(prefs::kTouchpadInternalSettings, updated_dict.Clone());
-  EXPECT_EQ(2u, observer_->num_touchpad_settings_updated());
+  EXPECT_EQ(4u, observer_->num_touchpad_settings_updated());
 }
 
 TEST_F(InputDeviceSettingsControllerTest,

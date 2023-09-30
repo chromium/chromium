@@ -17,6 +17,7 @@ mojom::InputDeviceSettingsPolicyPtr GetBooleanPreferencePolicy(
     const std::string& pref_name) {
   mojom::InputDeviceSettingsPolicyPtr policy;
 
+  CHECK(pref_service);
   const auto* pref = pref_service->FindPreference(pref_name);
   if (!pref) {
     return policy;
@@ -89,10 +90,12 @@ void InputDeviceSettingsPolicyHandler::RefreshKeyboardPolicies(bool notify) {
         pref_change_registrar_.prefs(), prefs::kSendFunctionKeys);
   }
 
-  keyboard_policies_.enable_meta_fkey_rewrites_policy =
-      GetBooleanPreferencePolicy(
-          pref_change_registrar_local_state_.prefs(),
-          prefs::kDeviceSwitchFunctionKeysBehaviorEnabled);
+  if (pref_change_registrar_local_state_.prefs()) {
+    keyboard_policies_.enable_meta_fkey_rewrites_policy =
+        GetBooleanPreferencePolicy(
+            pref_change_registrar_local_state_.prefs(),
+            prefs::kDeviceSwitchFunctionKeysBehaviorEnabled);
+  }
 
   if (notify) {
     keyboard_policy_callback_.Run();
