@@ -632,7 +632,7 @@ void VpxVideoEncoder::ChangeOptions(const Options& options,
         options.frame_size.height() > originally_configured_size_.height()) {
       auto status = EncoderStatus(
           EncoderStatus::Codes::kEncoderUnsupportedConfig,
-          "libvpx/VP9 doesn't support dynamically increasing frame dimentions");
+          "libvpx/VP9 doesn't support dynamically increasing frame dimensions");
       std::move(done_cb).Run(std::move(status));
       return;
     }
