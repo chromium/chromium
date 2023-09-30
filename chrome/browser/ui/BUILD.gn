@@ -3243,6 +3243,8 @@ static_library("ui") {
       "webui/ash/settings/pages/people/account_manager_ui_handler.h",
       "webui/ash/settings/pages/printing/cups_printers_handler.cc",
       "webui/ash/settings/pages/printing/cups_printers_handler.h",
+      "webui/ash/settings/pages/system_preferences/startup_section.cc",
+      "webui/ash/settings/pages/system_preferences/startup_section.h",
       "webui/ash/settings/search/search_concept.h",
       "webui/ash/settings/search/search_handler.cc",
       "webui/ash/settings/search/search_handler.h",

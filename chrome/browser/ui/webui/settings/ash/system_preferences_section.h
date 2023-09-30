@@ -8,6 +8,7 @@
 #include "base/values.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/date_time/date_time_section.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/files/files_section.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/system_preferences/startup_section.h"
 #include "chrome/browser/ui/webui/settings/ash/languages_section.h"
 #include "chrome/browser/ui/webui/settings/ash/os_settings_section.h"
 #include "chrome/browser/ui/webui/settings/ash/power_section.h"
@@ -24,8 +25,8 @@ namespace ash::settings {
 class SearchTagRegistry;
 
 // Provides UI strings and search tags for System Preferences settings.
-// Includes the Date & Time, Files, Languages, Power, Reset, Search, and Storage
-// sections.
+// Includes the Date & Time, Files, Languages, Power, Reset, Search, Startup,
+// and Storage sections.
 class SystemPreferencesSection : public OsSettingsSection {
  public:
   SystemPreferencesSection(Profile* profile,
@@ -51,6 +52,7 @@ class SystemPreferencesSection : public OsSettingsSection {
   PowerSection power_subsection_;
   ResetSection reset_subsection_;
   SearchSection search_subsection_;
+  StartupSection startup_subsection_;
   StorageSection storage_subsection_;
 };
 

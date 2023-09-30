@@ -6,6 +6,7 @@
 
 #include "chrome/browser/ui/webui/ash/settings/pages/date_time/date_time_section.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/files/files_section.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/system_preferences/startup_section.h"
 #include "chrome/browser/ui/webui/settings/ash/languages_section.h"
 #include "chrome/browser/ui/webui/settings/ash/power_section.h"
 #include "chrome/browser/ui/webui/settings/ash/reset_section.h"
@@ -35,6 +36,7 @@ SystemPreferencesSection::SystemPreferencesSection(
       power_subsection_(profile, search_tag_registry, pref_service),
       reset_subsection_(profile, search_tag_registry),
       search_subsection_(profile, search_tag_registry),
+      startup_subsection_(profile, search_tag_registry),
       storage_subsection_(profile, search_tag_registry) {
   CHECK(profile);
   CHECK(search_tag_registry);
@@ -51,6 +53,7 @@ void SystemPreferencesSection::AddLoadTimeData(
   power_subsection_.AddLoadTimeData(html_source);
   reset_subsection_.AddLoadTimeData(html_source);
   search_subsection_.AddLoadTimeData(html_source);
+  startup_subsection_.AddLoadTimeData(html_source);
   storage_subsection_.AddLoadTimeData(html_source);
 
   webui::LocalizedString kLocalizedStrings[] = {
@@ -68,6 +71,7 @@ void SystemPreferencesSection::AddHandlers(content::WebUI* web_ui) {
   power_subsection_.AddHandlers(web_ui);
   reset_subsection_.AddHandlers(web_ui);
   search_subsection_.AddHandlers(web_ui);
+  startup_subsection_.AddHandlers(web_ui);
   storage_subsection_.AddHandlers(web_ui);
 }
 
@@ -95,6 +99,7 @@ bool SystemPreferencesSection::LogMetric(mojom::Setting setting,
          power_subsection_.LogMetric(setting, value) ||
          reset_subsection_.LogMetric(setting, value) ||
          search_subsection_.LogMetric(setting, value) ||
+         startup_subsection_.LogMetric(setting, value) ||
          storage_subsection_.LogMetric(setting, value);
 }
 
@@ -106,6 +111,7 @@ void SystemPreferencesSection::RegisterHierarchy(
   power_subsection_.RegisterHierarchy(generator);
   reset_subsection_.RegisterHierarchy(generator);
   search_subsection_.RegisterHierarchy(generator);
+  startup_subsection_.RegisterHierarchy(generator);
   storage_subsection_.RegisterHierarchy(generator);
 }
 

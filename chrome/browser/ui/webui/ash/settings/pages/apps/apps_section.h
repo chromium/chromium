@@ -10,6 +10,7 @@
 #include "base/values.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/system_preferences/startup_section.h"
 #include "chrome/browser/ui/webui/settings/ash/os_settings_section.h"
 #include "components/prefs/pref_change_registrar.h"
 
@@ -56,10 +57,10 @@ class AppsSection : public OsSettingsSection,
 
   void AddAndroidAppStrings(content::WebUIDataSource* html_source);
   void AddPluginVmLoadTimeData(content::WebUIDataSource* html_source);
-  void AddOnStartupTimeData(content::WebUIDataSource* html_source);
 
   void UpdateAndroidSearchTags();
 
+  absl::optional<StartupSection> startup_subsection_;
   raw_ptr<PrefService, ExperimentalAsh> pref_service_;
   raw_ptr<ArcAppListPrefs, ExperimentalAsh> arc_app_list_prefs_;
   raw_ptr<apps::AppServiceProxy, ExperimentalAsh> app_service_proxy_;

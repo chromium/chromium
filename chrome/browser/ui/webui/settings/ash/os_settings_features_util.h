@@ -20,11 +20,14 @@ bool IsDeviceEnterpriseManaged();
 bool IsPowerwashAllowed();
 
 // Determines whether the Parental Controls section of People settings should be
-// shown for |profile|.
+// shown for `profile`.
 bool ShouldShowParentalControlSettings(const Profile* profile);
 
-// Determines whether Android External Storage is enabled for |profile|.
+// Determines whether Android External Storage is enabled for `profile`.
 bool IsExternalStorageEnabled(const Profile* profile);
+
+// Determines if app restore settings are available for `profile`.
+bool IsAppRestoreAvailableForProfile(const Profile* profile);
 
 }  // namespace ash::settings
 

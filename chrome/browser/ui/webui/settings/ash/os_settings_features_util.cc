@@ -6,16 +6,15 @@
 
 #include "ash/components/arc/arc_features.h"
 #include "base/feature_list.h"
+#include "chrome/browser/ash/app_restore/full_restore_service_factory.h"
 #include "chrome/browser/ash/arc/arc_util.h"
+#include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/policy/core/common/management/management_service.h"
-
 #include "components/user_manager/user_manager.h"
-
-#include "chrome/browser/ash/login/users/chrome_user_manager.h"
 
 namespace ash::settings {
 
@@ -52,6 +51,11 @@ bool ShouldShowParentalControlSettings(const Profile* profile) {
 bool IsExternalStorageEnabled(const Profile* profile) {
   return base::FeatureList::IsEnabled(arc::kUsbStorageUIFeature) &&
          arc::IsArcPlayStoreEnabledForProfile(profile);
+}
+
+bool IsAppRestoreAvailableForProfile(const Profile* profile) {
+  return full_restore::FullRestoreServiceFactory::
+      IsFullRestoreAvailableForProfile(profile);
 }
 
 }  // namespace ash::settings
