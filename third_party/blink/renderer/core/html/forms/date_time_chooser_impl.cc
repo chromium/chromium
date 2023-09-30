@@ -130,6 +130,10 @@ void DateTimeChooserImpl::WriteDocument(SharedBuffer* data) {
 
   data->Append(ChooserResourceLoader::GetPickerCommonStyleSheet());
   data->Append(ChooserResourceLoader::GetSuggestionPickerStyleSheet());
+  if (RuntimeEnabledFeatures::SuggestionPickerDarkModeSupportEnabled()) {
+    data->Append(
+        ChooserResourceLoader::GetSuggestionPickerDarkModeStyleSheet());
+  }
   data->Append(ChooserResourceLoader::GetCalendarPickerStyleSheet());
   if (parameters_->type == input_type_names::kTime ||
       parameters_->type == input_type_names::kDatetimeLocal) {

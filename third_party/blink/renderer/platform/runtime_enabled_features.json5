@@ -3649,6 +3649,10 @@
       base_feature: "none",
     },
     {
+      name: "SuggestionPickerDarkModeSupport",
+      status: "stable",
+    },
+    {
       name: "SvgCrossOriginAttribute",
       status: "stable",
     },
