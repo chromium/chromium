@@ -12,6 +12,7 @@
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
 #include "components/autofill/core/browser/payments/credit_card_otp_authenticator.h"
+#include "components/autofill/core/browser/payments/credit_card_risk_based_authenticator.h"
 #include "components/autofill/core/browser/payments/full_card_request.h"
 
 #if !BUILDFLAG(IS_IOS)
@@ -25,12 +26,14 @@ namespace autofill {
 #if BUILDFLAG(IS_IOS)
 class TestAuthenticationRequester
     : public CreditCardCvcAuthenticator::Requester,
-      public CreditCardOtpAuthenticator::Requester {
+      public CreditCardOtpAuthenticator::Requester,
+      public CreditCardRiskBasedAuthenticator::Requester {
 #else
 class TestAuthenticationRequester
     : public CreditCardCvcAuthenticator::Requester,
       public CreditCardFidoAuthenticator::Requester,
-      public CreditCardOtpAuthenticator::Requester {
+      public CreditCardOtpAuthenticator::Requester,
+      public CreditCardRiskBasedAuthenticator::Requester {
 #endif
  public:
   TestAuthenticationRequester();
@@ -59,6 +62,11 @@ class TestAuthenticationRequester
   void OnOtpAuthenticationComplete(
       const CreditCardOtpAuthenticator::OtpAuthenticationResponse& response)
       override;
+
+  // CreditCardRiskBasedAuthenticator::Requester:
+  void OnRiskBasedAuthenticationComplete(
+      const CreditCardRiskBasedAuthenticator::RiskBasedAuthenticationResponse&
+          response) override;
 
   base::WeakPtr<TestAuthenticationRequester> GetWeakPtr();
 

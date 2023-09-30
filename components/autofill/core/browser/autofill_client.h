@@ -95,6 +95,7 @@ class CreditCard;
 class CreditCardCvcAuthenticator;
 enum class CreditCardFetchResult;
 class CreditCardOtpAuthenticator;
+class CreditCardRiskBasedAuthenticator;
 class FormDataImporter;
 class Iban;
 class IbanManager;
@@ -448,6 +449,7 @@ class AutofillClient : public RiskDataLoader {
   // Can be null on unsupported platforms.
   virtual CreditCardCvcAuthenticator* GetCvcAuthenticator();
   virtual CreditCardOtpAuthenticator* GetOtpAuthenticator();
+  virtual CreditCardRiskBasedAuthenticator* GetRiskBasedAuthenticator();
 
   // Creates and returns a SingleFieldFormFillRouter using the
   // AutocompleteHistoryManager, IbanManager and MerchantPromoCodeManager

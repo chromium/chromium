@@ -103,6 +103,10 @@ CreditCardOtpAuthenticator* AutofillClient::GetOtpAuthenticator() {
   return nullptr;
 }
 
+CreditCardRiskBasedAuthenticator* AutofillClient::GetRiskBasedAuthenticator() {
+  return nullptr;
+}
+
 AutofillOfferManager* AutofillClient::GetAutofillOfferManager() {
   return nullptr;
 }
