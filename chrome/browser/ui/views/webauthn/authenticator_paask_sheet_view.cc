@@ -33,19 +33,22 @@ class LinkLabelButton : public views::LabelButton {
   }
 };
 
-std::unique_ptr<views::View>
+std::pair<std::unique_ptr<views::View>,
+          AuthenticatorRequestSheetView::AutoFocus>
 AuthenticatorPaaskSheetView::BuildStepSpecificContent() {
   AuthenticatorRequestDialogModel* const dialog_model =
       reinterpret_cast<AuthenticatorPaaskSheetModel*>(model())->dialog_model();
   // This context is only shown when USB fallback is an option.
   if (!dialog_model->cable_should_suggest_usb()) {
-    return nullptr;
+    return std::make_pair(nullptr, AutoFocus::kNo);
   }
 
-  return std::make_unique<LinkLabelButton>(
-      base::BindRepeating(&AuthenticatorPaaskSheetView::OnLinkClicked,
-                          base::Unretained(this)),
-      l10n_util::GetStringUTF16(IDS_WEBAUTHN_CABLEV2_SERVERLINK_TROUBLE));
+  return std::make_pair(
+      std::make_unique<LinkLabelButton>(
+          base::BindRepeating(&AuthenticatorPaaskSheetView::OnLinkClicked,
+                              base::Unretained(this)),
+          l10n_util::GetStringUTF16(IDS_WEBAUTHN_CABLEV2_SERVERLINK_TROUBLE)),
+      AutoFocus::kNo);
 }
 
 void AuthenticatorPaaskSheetView::OnLinkClicked(const ui::Event&) {

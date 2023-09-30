@@ -34,7 +34,8 @@ class AuthenticatorSelectAccountSheetView
   }
 
   // AuthenticatorRequestSheetView:
-  std::unique_ptr<views::View> BuildStepSpecificContent() override;
+  std::pair<std::unique_ptr<views::View>, AutoFocus> BuildStepSpecificContent()
+      override;
 
   // AccountHoverListModel::Delegate:
   void CredentialSelected(size_t index) override;
