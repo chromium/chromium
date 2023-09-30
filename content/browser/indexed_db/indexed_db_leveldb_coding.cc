@@ -446,7 +446,7 @@ bool DecodeStringWithLength(StringPiece* slice, std::u16string* value) {
   if (slice->size() < bytes)
     return false;
 
-  StringPiece subpiece(slice->begin(), bytes);
+  StringPiece subpiece = slice->substr(0, bytes);
   slice->remove_prefix(bytes);
   if (!DecodeString(&subpiece, value))
     return false;
@@ -1428,19 +1428,19 @@ bool KeyPrefix::Decode(StringPiece* slice, KeyPrefix* result) {
     return false;
 
   {
-    StringPiece tmp(slice->begin(), database_id_bytes);
+    StringPiece tmp = slice->substr(0, database_id_bytes);
     if (!DecodeInt(&tmp, &result->database_id_))
       return false;
   }
   slice->remove_prefix(database_id_bytes);
   {
-    StringPiece tmp(slice->begin(), object_store_id_bytes);
+    StringPiece tmp = slice->substr(0, object_store_id_bytes);
     if (!DecodeInt(&tmp, &result->object_store_id_))
       return false;
   }
   slice->remove_prefix(object_store_id_bytes);
   {
-    StringPiece tmp(slice->begin(), index_id_bytes);
+    StringPiece tmp = slice->substr(0, index_id_bytes);
     if (!DecodeInt(&tmp, &result->index_id_))
       return false;
   }

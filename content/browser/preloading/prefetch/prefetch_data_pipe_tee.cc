@@ -118,9 +118,8 @@ void PrefetchDataPipeTee::OnReadable(MojoResult result,
           buffer_.append(static_cast<const char*>(read_data), num_bytes);
           if (target_.first) {
             WriteData(
-                ResetTarget({}),
-                std::string_view(buffer_.data() + buffer_.size() - num_bytes,
-                                 num_bytes));
+                ResetTarget({}),  //
+                std::string_view(buffer_).substr(buffer_.size() - num_bytes));
           }
           break;
         }
