@@ -965,7 +965,7 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
  ],
  [
    'PersonalizationPageWithPersonalizationHub',
-   'personalization_page_with_personalization_hub_test.js',
+   'personalization_page/personalization_page_with_personalization_hub_test.js',
  ],
  [
    'SettingsSchedulerSlider',

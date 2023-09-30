@@ -228,6 +228,7 @@ export {OsToolbarElement} from './os_toolbar/os_toolbar.js';
 export {ParentalControlsBrowserProxy, ParentalControlsBrowserProxyImpl} from './parental_controls_page/parental_controls_browser_proxy.js';
 export {SettingsParentalControlsPageElement} from './parental_controls_page/parental_controls_page.js';
 export {PersonalizationHubBrowserProxy, PersonalizationHubBrowserProxyImpl} from './personalization_page/personalization_hub_browser_proxy.js';
+export {SettingsPersonalizationPageElement} from './personalization_page/personalization_page.js';
 export {createRouter as createRouterForTesting, Route, Router, routes} from './router.js';
 export {getPersonalizationSearchHandler, setPersonalizationSearchHandlerForTesting} from './search/personalization_search_handler.js';
 export {getSettingsSearchHandler, setSettingsSearchHandlerForTesting} from './search/settings_search_handler.js';

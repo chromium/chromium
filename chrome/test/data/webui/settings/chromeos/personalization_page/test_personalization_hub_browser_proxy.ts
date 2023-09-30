@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {PersonalizationHubBrowserProxy} from 'chrome://os-settings/os_settings.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
-/** @implements {PersonalizationHubBrowserProxy} */
-export class TestPersonalizationHubBrowserProxy extends TestBrowserProxy {
+export class TestPersonalizationHubBrowserProxy extends TestBrowserProxy
+    implements PersonalizationHubBrowserProxy {
   constructor() {
     super(['openPersonalizationHub']);
   }
 
-  /** @override */
-  openPersonalizationHub() {
+  openPersonalizationHub(): void {
     this.methodCalled('openPersonalizationHub');
   }
 }
