@@ -102,8 +102,15 @@ gfx::Rect PrintContext::PageRect(wtf_size_t page_number) const {
     return gfx::Rect();
   }
   const LayoutView& layout_view = *frame_->GetDocument()->GetLayoutView();
+
+  if (!use_printing_layout_) {
+    // Remote frames end up here.
+    return ToPixelSnappedRect(layout_view.DocumentRect());
+  }
+
   const auto& fragments = layout_view.GetPhysicalFragment(0)->Children();
   CHECK_GE(fragments.size(), 1u);
+  DCHECK(fragments[0]->IsFragmentainerBox());
 
   // Make sure that the page number is within the range of pages that were laid
   // out. In cases of monolithic overflow (a large image sliced into multiple

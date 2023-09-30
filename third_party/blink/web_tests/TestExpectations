@@ -5647,6 +5647,7 @@ crbug.com/1090628 external/wpt/infrastructure/reftest/reftest_match_fail-print.h
 crbug.com/1090628 external/wpt/infrastructure/reftest/reftest_mismatch_fail-print.html [ Failure ]
 crbug.com/1090628 external/wpt/infrastructure/reftest/reftest_mismatch_page_margins-print.html [ Failure ]
 crbug.com/1090628 external/wpt/css/printing/fragmented-inline-block-002-print.html [ Failure ]
+crbug.com/1487479 external/wpt/css/printing/remote-origin-iframe-print.html [ Failure ]
 
 crbug.com/1367113 fast/dom/shadow/event-path-load.html [ Crash Failure Pass Timeout ]
 crbug.com/1367113 http/tests/security/cors-check-for-cached-image.html [ Crash Failure Pass Timeout ]
