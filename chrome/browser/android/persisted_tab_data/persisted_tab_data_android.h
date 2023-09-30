@@ -94,7 +94,7 @@ class PersistedTabDataAndroid
   GetCachedCallbackMap();
 
   static void RunCallbackOnUIThread(
-      TabAndroid* tab_android,
+      base::WeakPtr<TabAndroid> tab_android,
       const void* user_data_key,
       PersistedTabDataAndroid* persisted_tab_data_android);
 
