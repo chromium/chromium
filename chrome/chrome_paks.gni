@@ -149,6 +149,7 @@ template("chrome_extra_paks") {
     if (!is_android) {
       # New paks should be added here by default.
       sources += [
+        "$root_gen_dir/chrome/about_sys_resources.pak",
         "$root_gen_dir/chrome/access_code_cast_resources.pak",
         "$root_gen_dir/chrome/app_service_internals_resources.pak",
         "$root_gen_dir/chrome/bookmarks_resources.pak",

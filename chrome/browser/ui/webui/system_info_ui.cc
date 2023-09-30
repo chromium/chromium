@@ -25,7 +25,8 @@
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/url_constants.h"
-#include "chrome/grit/browser_resources.h"
+#include "chrome/grit/about_sys_resources.h"
+#include "chrome/grit/about_sys_resources_map.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feedback/system_logs/system_logs_fetcher.h"
 #include "content/public/browser/browser_thread.h"
@@ -63,10 +64,9 @@ void CreateAndAddSystemInfoUIDataSource(Profile* profile) {
   };
   html_source->AddLocalizedStrings(kStrings);
 
-  html_source->AddResourcePath("about_sys.js", IDR_ABOUT_SYS_JS);
-  html_source->AddResourcePath("about_sys.css", IDR_ABOUT_SYS_CSS);
-  html_source->SetDefaultResource(IDR_ABOUT_SYS_HTML);
-  html_source->UseStringsJs();
+  webui::SetupWebUIDataSource(
+      html_source, base::make_span(kAboutSysResources, kAboutSysResourcesSize),
+      IDR_ABOUT_SYS_ABOUT_SYS_HTML);
 }
 
 }  // namespace

@@ -4,9 +4,10 @@
 
 import './strings.m.js';
 
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {$} from 'chrome://resources/js/util_ts.js';
+import {getRequiredElement} from 'chrome://resources/js/util_ts.js';
 
 // Contents of lines that act as delimiters for multi-line values.
 const DELIM_START = '---------- START ----------';
@@ -21,42 +22,45 @@ const CROS_MD_DOC_URL =
     'https://chromium.googlesource.com/chromiumos/platform2/+/HEAD/debugd/docs/log_entries.md';
 // </if>
 
-function getValueDivForButton(button) {
-  return $('div-' + button.id.substr(4));
+function getValueDivForButton(button: HTMLElement): HTMLElement {
+  return getRequiredElement('div-' + button.id.substr(4));
 }
 
-function getButtonForValueDiv(valueDiv) {
-  return $('btn-' + valueDiv.id.substr(4));
+function getButtonForValueDiv(valueDiv: HTMLElement): HTMLElement {
+  return getRequiredElement('btn-' + valueDiv.id.substr(4));
 }
 
-function handleDragOver(e) {
-  e.dataTransfer.dropEffect = 'copy';
+function handleDragOver(e: DragEvent) {
+  e.dataTransfer!.dropEffect = 'copy';
   e.preventDefault();
 }
 
-function handleDrop(e) {
-  const file = e.dataTransfer.files[0];
+function handleDrop(e: DragEvent) {
+  const file = e.dataTransfer!.files[0];
   if (file) {
     e.preventDefault();
     importLog(file);
   }
 }
 
-function showError(fileName) {
-  $('status').textContent = loadTimeData.getStringF('parseError', fileName);
+function showError(fileName: string) {
+  getRequiredElement('status').textContent =
+      loadTimeData.getStringF('parseError', fileName);
 }
 
 /**
  * Toggles whether an item is collapsed or expanded.
  */
-function changeCollapsedStatus() {
-  const valueDiv = getValueDivForButton(this);
-  if (valueDiv.parentNode.className === 'number-collapsed') {
-    valueDiv.parentNode.className = 'number-expanded';
-    this.textContent = loadTimeData.getString('collapseBtn');
+function changeCollapsedStatus(button: HTMLElement) {
+  const valueDiv = getValueDivForButton(button);
+  const parent = valueDiv.parentElement;
+  assert(parent);
+  if (parent.className === 'number-collapsed') {
+    parent.className = 'number-expanded';
+    button.textContent = loadTimeData.getString('collapseBtn');
   } else {
-    valueDiv.parentNode.className = 'number-collapsed';
-    this.textContent = loadTimeData.getString('expandBtn');
+    parent.className = 'number-collapsed';
+    button.textContent = loadTimeData.getString('expandBtn');
   }
 }
 
@@ -64,12 +68,12 @@ function changeCollapsedStatus() {
  * Collapses all log items.
  */
 function collapseAll() {
-  const valueDivs = document.getElementsByClassName('stat-value');
-  for (let i = 0; i < valueDivs.length; i++) {
-    const button = getButtonForValueDiv(valueDivs[i]);
+  const valueDivs = document.body.querySelectorAll<HTMLElement>('.stat-value');
+  for (const valueDiv of valueDivs) {
+    const button = getButtonForValueDiv(valueDiv);
     if (button && button.className !== 'button-hidden') {
       button.textContent = loadTimeData.getString('expandBtn');
-      valueDivs[i].parentNode.className = 'number-collapsed';
+      valueDiv.parentElement!.className = 'number-collapsed';
     }
   }
 }
@@ -78,29 +82,28 @@ function collapseAll() {
  * Expands all log items.
  */
 function expandAll() {
-  const valueDivs = document.getElementsByClassName('stat-value');
-  for (let i = 0; i < valueDivs.length; i++) {
-    const button = getButtonForValueDiv(valueDivs[i]);
+  const valueDivs = document.body.querySelectorAll<HTMLElement>('.stat-value');
+  for (const valueDiv of valueDivs) {
+    const button = getButtonForValueDiv(valueDiv);
     if (button && button.className !== 'button-hidden') {
       button.textContent = loadTimeData.getString('collapseBtn');
-      valueDivs[i].parentNode.className = 'number-expanded';
+      valueDiv.parentElement!.className = 'number-expanded';
     }
   }
 }
 
 /**
  * Read in a log asynchronously, calling parseSystemLog if successful.
- * @param {File} file The file to read.
  */
-function importLog(file) {
+function importLog(file: File) {
   if (file && file.size <= MAX_FILE_SIZE) {
     const reader = new FileReader();
     reader.onload = function() {
-      if (parseSystemLog(this.result)) {
+      if (parseSystemLog(reader.result as string)) {
         // Reset table title and status
-        $('tableTitle').textContent =
+        getRequiredElement('tableTitle').textContent =
             loadTimeData.getStringF('logFileTableTitle', file.name);
-        $('status').textContent = '';
+        getRequiredElement('status').textContent = '';
       } else {
         showError(file.name);
       }
@@ -113,20 +116,18 @@ function importLog(file) {
 
 /**
  * Replace characters that are invalid as part of an id for querySelector.
- * @param {string} name
- * @return {string} The sanitized name
  */
-function getSanitizedName(name) {
+function getSanitizedName(name: string): string {
   return name.replace(/[^a-zA-Z0-9]/g, '-');
 }
 
 /**
  * For a particular log entry, create the DOM node representing it in the
  * log entry table.
- * @param{log} A dictionary with the keys statName and statValue
- * @return{Element} The DOM node for the given log entry.
+ * @param A dictionary with the keys statName and statValue
+ * @return The DOM node for the given log entry.
  */
-function createNodeForLogEntry(log) {
+function createNodeForLogEntry(log: SystemLog): HTMLElement {
   const row = document.createElement('tr');
 
   const nameCell = document.createElement('td');
@@ -161,7 +162,7 @@ function createNodeForLogEntry(log) {
   const button = document.createElement('button');
   button.id = 'btn-' + getSanitizedName(log.statName) + '-value';
   button.className = 'expand-status';
-  button.onclick = changeCollapsedStatus;
+  button.onclick = () => changeCollapsedStatus(button);
   buttonCell.appendChild(button);
   row.appendChild(buttonCell);
 
@@ -185,43 +186,48 @@ function createNodeForLogEntry(log) {
   return row;
 }
 
+interface SystemLog {
+  statName: string;
+  statValue: string;
+}
+
 /**
  * Given a list of log entries, replace the contents of the log entry table
  * with those entries. The log entries are passed as a list of dictionaries
  * containing the keys statName and statValue.
- * @param {systemInfo} The log entries to insert into the DOM.
+ * @param The log entries to insert into the DOM.
  */
-function updateLogEntries(systemInfo) {
+function updateLogEntries(systemInfo: SystemLog[]) {
   const fragment = document.createDocumentFragment();
   systemInfo.forEach(logEntry => {
     const node = createNodeForLogEntry(logEntry);
     fragment.appendChild(node);
   });
-  const table = $('details');
+  const table = getRequiredElement('details');
 
   // Delete any existing log entries in the table
-  table.innerHTML = trustedTypes.emptyHTML;
+  table.innerHTML = window.trustedTypes!.emptyHTML;
   table.appendChild(fragment);
 }
 
 /**
  * Callback called when system info has been fetched. The log entries are passed
  * as a list of dictionaries containing the keys statName and statValue.
- * @param {systemInfo} The fetched log entries.
+ * @param The fetched log entries.
  */
-function returnSystemInfo(systemInfo) {
+function returnSystemInfo(systemInfo: SystemLog[]) {
   updateLogEntries(systemInfo);
-  const spinner = $('loadingIndicator');
+  const spinner = getRequiredElement('loadingIndicator');
   spinner.style.display = 'none';
   spinner.style.animationPlayState = 'paused';
 }
 
 /**
  * Convert text-based log into list of name-value pairs.
- * @param {string} text The raw text of a log.
- * @return {boolean} True if the log was parsed successfully.
+ * @param text The raw text of a log.
+ * @return True if the log was parsed successfully.
  */
-function parseSystemLog(text) {
+function parseSystemLog(text: string): boolean {
   const details = [];
   const lines = text.split('\n');
   for (let i = 0, len = lines.length; i < len; i++) {
@@ -230,7 +236,7 @@ function parseSystemLog(text) {
       continue;
     }
 
-    const delimiter = lines[i].indexOf('=');
+    const delimiter = lines[i]!.indexOf('=');
     if (delimiter <= 0) {
       if (i === lines.length - 1) {
         break;
@@ -239,11 +245,11 @@ function parseSystemLog(text) {
       return false;
     }
 
-    const name = lines[i].substring(0, delimiter);
+    const name = lines[i]!.substring(0, delimiter);
     let value = '';
     // Set value if non-empty
-    if (lines[i].length > delimiter + 1) {
-      value = lines[i].substring(delimiter + 1);
+    if (lines[i]!.length > delimiter + 1) {
+      value = lines[i]!.substring(delimiter + 1);
     }
 
     // Delimiters are based on kMultilineIndicatorString, kMultilineStartString,
@@ -251,7 +257,7 @@ function parseSystemLog(text) {
     // If these change, we should check for both the old and new versions.
     if (value === '<multiline>') {
       // Skip start delimiter.
-      if (i === len - 1 || lines[++i].indexOf(DELIM_START) === -1) {
+      if (i === len - 1 || lines[++i]!.indexOf(DELIM_START) === -1) {
         return false;
       }
 
@@ -270,8 +276,6 @@ function parseSystemLog(text) {
     details.push({'statName': name, 'statValue': value});
   }
 
-
-
   updateLogEntries(details);
 
   return true;
@@ -280,10 +284,10 @@ function parseSystemLog(text) {
 document.addEventListener('DOMContentLoaded', function() {
   sendWithPromise('requestSystemInfo').then(returnSystemInfo);
 
-  $('collapseAll').onclick = collapseAll;
-  $('expandAll').onclick = expandAll;
+  getRequiredElement('collapseAll').onclick = collapseAll;
+  getRequiredElement('expandAll').onclick = expandAll;
 
-  const tp = $('t');
+  const tp = getRequiredElement('t');
   tp.addEventListener('dragover', handleDragOver, false);
   tp.addEventListener('drop', handleDrop, false);
 });

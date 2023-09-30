@@ -24,6 +24,7 @@ group("resources") {
       ":app_icon_resources",
       ":component_extension_resources",
       ":dev_ui_paks",
+      "about_sys:resources",
       "access_code_cast:resources",
       "app_service_internals:resources",
       "bookmarks:resources",

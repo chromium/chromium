@@ -8,7 +8,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
-#include "chrome/grit/browser_resources.h"
+#include "chrome/grit/about_sys_resources.h"
 #include "chrome/grit/feedback_resources.h"
 #include "chrome/grit/feedback_resources_map.h"
 #include "chrome/grit/generated_resources.h"
@@ -102,7 +102,7 @@ void CreateAndAddFeedbackHTMLSource(Profile* profile) {
 
   // Register the CSS file from chrome://system manually as that style is
   // re-used by chrome://feedback/html/sys_info.html.
-  source->AddResourcePath("css/about_sys.css", IDR_ABOUT_SYS_CSS);
+  source->AddResourcePath("css/about_sys.css", IDR_ABOUT_SYS_ABOUT_SYS_CSS);
 
   source->UseStringsJs();
 
