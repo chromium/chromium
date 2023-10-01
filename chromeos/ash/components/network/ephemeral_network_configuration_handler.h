@@ -24,9 +24,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) EphemeralNetworkConfigurationHandler
  public:
   // `managed_network_configuration_handler` must outlive the lifetime of this
   // object.
+  // `was_enterprise_managed_at_startup` should be true if the device was
+  // already enterprise-enrolled at ash-chrome startup time.
   explicit EphemeralNetworkConfigurationHandler(
-      ManagedNetworkConfigurationHandler*
-          managed_network_configuration_handler);
+      ManagedNetworkConfigurationHandler* managed_network_configuration_handler,
+      bool was_enterprise_managed_at_startup);
 
   ~EphemeralNetworkConfigurationHandler() override;
 
@@ -72,6 +74,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) EphemeralNetworkConfigurationHandler
   base::ScopedObservation<chromeos::PowerManagerClient,
                           chromeos::PowerManagerClient::Observer>
       power_manager_client_observation_{this};
+
+  const bool was_enterprise_managed_at_startup_;
 
   // This is true when any ephemeral network settings are active - i.e. the
   // device is not in a user session and one of the ephemeral network

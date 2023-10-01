@@ -17,9 +17,11 @@
 namespace ash {
 
 EphemeralNetworkConfigurationHandler::EphemeralNetworkConfigurationHandler(
-    ManagedNetworkConfigurationHandler* managed_network_configuration_handler)
+    ManagedNetworkConfigurationHandler* managed_network_configuration_handler,
+    bool was_enterprise_managed_at_startup)
     : managed_network_configuration_handler_(
-          managed_network_configuration_handler) {
+          managed_network_configuration_handler),
+      was_enterprise_managed_at_startup_(was_enterprise_managed_at_startup) {
   DCHECK(policy_util::AreEphemeralNetworkPoliciesEnabled());
 
   CHECK(LoginState::IsInitialized());
@@ -86,14 +88,19 @@ void EphemeralNetworkConfigurationHandler::Activate() {
   CHECK(power_manager_client);
   power_manager_client_observation_.Observe(power_manager_client);
 
-  // Trigger initial wiping of ephemeral network data if this is the first
-  // policy application where ephemeral actions should be active.
+  // Trigger initial wiping of ephemeral network data if the device was already
+  // enterprise-enrolled and this is the first policy application where
+  // ephemeral actions should be active.
+  //
+  // Wiping on enterprise enrollment is skipped to avoid a disruptive network
+  // change when enterprise enrollment is performed on a user-created network
+  // configuration.
   //
   // Note that if another one of the policies becomes active after this already
   // happened, its enforcement will not be re-triggered on the policy change but
   // only on the next regular trigger (ash-chrome start / wake up from sleep).
   // This could be changed in the future.
-  if (!has_applied_ephemeral_policies_) {
+  if (was_enterprise_managed_at_startup_ && !has_applied_ephemeral_policies_) {
     has_applied_ephemeral_policies_ = true;
     managed_network_configuration_handler_
         ->TriggerEphemeralNetworkConfigActions();

@@ -65,7 +65,8 @@ TEST_F(EphemeralNetworkConfigurationHandlerTest,
 
   ephemeral_network_configuration_handler_ =
       std::make_unique<EphemeralNetworkConfigurationHandler>(
-          &mock_managed_network_configuration_handler_);
+          &mock_managed_network_configuration_handler_,
+          /*was_enterprise_managed_at_startup=*/true);
 
   testing::Mock::VerifyAndClearExpectations(
       &mock_managed_network_configuration_handler_);
@@ -96,7 +97,8 @@ TEST_F(EphemeralNetworkConfigurationHandlerTest,
 
   ephemeral_network_configuration_handler_ =
       std::make_unique<EphemeralNetworkConfigurationHandler>(
-          &mock_managed_network_configuration_handler_);
+          &mock_managed_network_configuration_handler_,
+          /*was_enterprise_managed_at_startup=*/true);
 
   // Apply policies enabling ephemeral network policy actions.
   EXPECT_CALL(mock_managed_network_configuration_handler_,
@@ -120,6 +122,50 @@ TEST_F(EphemeralNetworkConfigurationHandlerTest,
       /*userhash=*/std::string());
 }
 
+// If the device enterprise-enrolls on the sign-in screen, no ephemeral network
+// config actions are triggered even if the ephemeral network policies are
+// enabled according to the newly applied device policy.
+TEST_F(EphemeralNetworkConfigurationHandlerTest,
+       InitialPolicyChange_SignInScreen_Enrollment) {
+  LoginState::Get()->SetLoggedInState(LoginState::LOGGED_IN_NONE,
+                                      LoginState::LOGGED_IN_USER_NONE);
+
+  // At EphemeralNetworkConfigurationHandler construction time the policies have
+  // not been applied yet.
+  EXPECT_CALL(mock_managed_network_configuration_handler_,
+              RecommendedValuesAreEphemeral())
+      .WillRepeatedly(Return(false));
+
+  ephemeral_network_configuration_handler_ =
+      std::make_unique<EphemeralNetworkConfigurationHandler>(
+          &mock_managed_network_configuration_handler_,
+          /*was_enterprise_managed_at_startup=*/false);
+
+  EXPECT_CALL(mock_managed_network_configuration_handler_,
+              TriggerEphemeralNetworkConfigActions())
+      .Times(0);
+
+  // Mark as enterprise-enrolled and apply policies enabling ephemeral network
+  // policy actions.
+  EXPECT_CALL(mock_managed_network_configuration_handler_,
+              RecommendedValuesAreEphemeral())
+      .WillRepeatedly(Return(true));
+
+  ephemeral_network_configuration_handler_->TriggerPoliciesChangedForTesting(
+      /*userhash=*/std::string());
+
+  testing::Mock::VerifyAndClearExpectations(
+      &mock_managed_network_configuration_handler_);
+
+  // A follow-up policy change also doesn't trigger
+  // TriggerEphemeralNetworkConfigActions.
+  EXPECT_CALL(mock_managed_network_configuration_handler_,
+              TriggerEphemeralNetworkConfigActions())
+      .Times(0);
+  ephemeral_network_configuration_handler_->TriggerPoliciesChangedForTesting(
+      /*userhash=*/std::string());
+}
+
 // The device is not on the sign-in screen, so the
 // EphemeralNetworkConfigurationHandler does not triggrer
 // TriggerEphemeralNetworkConfigActions on network policy application.
@@ -136,7 +182,8 @@ TEST_F(EphemeralNetworkConfigurationHandlerTest,
 
   ephemeral_network_configuration_handler_ =
       std::make_unique<EphemeralNetworkConfigurationHandler>(
-          &mock_managed_network_configuration_handler_);
+          &mock_managed_network_configuration_handler_,
+          /*was_enterprise_managed_at_startup=*/true);
 
   EXPECT_CALL(mock_managed_network_configuration_handler_,
               RecommendedValuesAreEphemeral())
@@ -165,7 +212,8 @@ TEST_F(EphemeralNetworkConfigurationHandlerTest,
 
   ephemeral_network_configuration_handler_ =
       std::make_unique<EphemeralNetworkConfigurationHandler>(
-          &mock_managed_network_configuration_handler_);
+          &mock_managed_network_configuration_handler_,
+          /*was_enterprise_managed_at_startup=*/true);
 
   EXPECT_CALL(mock_managed_network_configuration_handler_,
               TriggerEphemeralNetworkConfigActions())
@@ -184,7 +232,8 @@ TEST_F(EphemeralNetworkConfigurationHandlerTest,
 
   ephemeral_network_configuration_handler_ =
       std::make_unique<EphemeralNetworkConfigurationHandler>(
-          &mock_managed_network_configuration_handler_);
+          &mock_managed_network_configuration_handler_,
+          /*was_enterprise_managed_at_startup=*/true);
 
   EXPECT_CALL(mock_managed_network_configuration_handler_,
               RecommendedValuesAreEphemeral())
@@ -230,7 +279,8 @@ TEST_F(EphemeralNetworkConfigurationHandlerTest,
 
   ephemeral_network_configuration_handler_ =
       std::make_unique<EphemeralNetworkConfigurationHandler>(
-          &mock_managed_network_configuration_handler_);
+          &mock_managed_network_configuration_handler_,
+          /*was_enterprise_managed_at_startup=*/true);
 
   EXPECT_CALL(mock_managed_network_configuration_handler_,
               UserCreatedNetworkConfigurationsAreEphemeral())
@@ -274,7 +324,8 @@ TEST_F(EphemeralNetworkConfigurationHandlerTest, SuspendDoneSpurious_Active) {
 
   ephemeral_network_configuration_handler_ =
       std::make_unique<EphemeralNetworkConfigurationHandler>(
-          &mock_managed_network_configuration_handler_);
+          &mock_managed_network_configuration_handler_,
+          /*was_enterprise_managed_at_startup=*/true);
 
   EXPECT_CALL(mock_managed_network_configuration_handler_,
               RecommendedValuesAreEphemeral())
@@ -296,7 +347,8 @@ TEST_F(EphemeralNetworkConfigurationHandlerTest, SuspendDoneReal_NotActive) {
 
   ephemeral_network_configuration_handler_ =
       std::make_unique<EphemeralNetworkConfigurationHandler>(
-          &mock_managed_network_configuration_handler_);
+          &mock_managed_network_configuration_handler_,
+          /*was_enterprise_managed_at_startup=*/true);
 
   EXPECT_CALL(mock_managed_network_configuration_handler_,
               RecommendedValuesAreEphemeral())
@@ -321,7 +373,8 @@ TEST_F(EphemeralNetworkConfigurationHandlerTest, SuspendDoneReal_NoPolicy) {
 
   ephemeral_network_configuration_handler_ =
       std::make_unique<EphemeralNetworkConfigurationHandler>(
-          &mock_managed_network_configuration_handler_);
+          &mock_managed_network_configuration_handler_,
+          /*was_enterprise_managed_at_startup=*/true);
 
   EXPECT_CALL(mock_managed_network_configuration_handler_,
               TriggerEphemeralNetworkConfigActions())

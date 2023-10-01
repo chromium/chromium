@@ -152,6 +152,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkHandler {
   // Called when ephemeral network policies become enabled.
   void OnEphemeralNetworkPoliciesEnabled();
 
+  // True when the device was manged by device policy at initialization time.
+  // TODO: b/302726243 - Introduce
+  // InstallAttributes::WasEnterpriseManagedAtStartup to avoid this.
+  const bool was_enterprise_managed_at_startup_;
+
   // The order of these determines the (inverse) destruction order.
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   const std::unique_ptr<NetworkStateHandler> network_state_handler_;

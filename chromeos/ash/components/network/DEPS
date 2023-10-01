@@ -5,6 +5,7 @@ include_rules = [
   "+base",
   "+base/component_export.h",
   "+chromeos/ash/components/feature_usage",
+  "+chromeos/ash/components/install_attributes",
   "+chromeos/ash/components/login/login_state",
   "+chromeos/ash/components/dbus",
   "+chromeos/ash/services/hotspot_config/public",

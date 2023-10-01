@@ -8,6 +8,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/task/single_thread_task_runner.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/network/auto_connect_handler.h"
 #include "chromeos/ash/components/network/cellular_connection_handler.h"
 #include "chromeos/ash/components/network/cellular_esim_installer.h"
@@ -61,7 +62,10 @@ namespace ash {
 static NetworkHandler* g_network_handler = NULL;
 
 NetworkHandler::NetworkHandler()
-    : task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
+    : was_enterprise_managed_at_startup_(
+          InstallAttributes::IsInitialized() &&
+          InstallAttributes::Get()->IsEnterpriseManaged()),
+      task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       network_state_handler_(new NetworkStateHandler()) {
   network_device_handler_.reset(new NetworkDeviceHandlerImpl());
   cellular_inhibitor_.reset(new CellularInhibitor());
@@ -444,7 +448,8 @@ void NetworkHandler::OnEphemeralNetworkPoliciesEnabled() {
   DCHECK(policy_util::AreEphemeralNetworkPoliciesEnabled());
   ephemeral_network_configuration_handler_ =
       std::make_unique<EphemeralNetworkConfigurationHandler>(
-          managed_network_configuration_handler_.get());
+          managed_network_configuration_handler_.get(),
+          was_enterprise_managed_at_startup_);
 }
 
 }  // namespace ash

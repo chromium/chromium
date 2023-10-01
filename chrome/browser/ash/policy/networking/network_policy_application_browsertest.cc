@@ -34,6 +34,7 @@
 #include "chromeos/ash/components/dbus/shill/shill_profile_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_property_changed_observer.h"
 #include "chromeos/ash/components/dbus/shill/shill_service_client.h"
+#include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/ash/components/network/managed_network_configuration_handler.h"
 #include "chromeos/ash/components/network/network_cert_loader.h"
 #include "chromeos/ash/components/network/network_handler.h"
@@ -87,6 +88,9 @@ constexpr char kServiceWifi4[] = "/service/4";
 constexpr char kUIDataKeyUserSettings[] = "user_settings";
 
 constexpr char kUserIdentity[] = "user_identity";
+
+constexpr char kTestDomain[] = "test_domain";
+constexpr char kTestDeviceId[] = "test_device_id";
 
 constexpr char kOncRecommendedFieldsWorkaroundActionHistogram[] =
     "Network.Ethernet.Policy.OncRecommendedFieldsWorkaroundAction";
@@ -437,6 +441,7 @@ std::vector<std::string> GetStaticNameServersFromShillProperties(
 class NetworkPolicyApplicationTest : public ash::LoginManagerTest {
  public:
   NetworkPolicyApplicationTest() : LoginManagerTest() {
+    MarkEnterpriseEnrolled();
     login_mixin_.AppendRegularUsers(1);
     test_account_id_ = login_mixin_.users()[0].account_id;
   }
@@ -500,6 +505,10 @@ class NetworkPolicyApplicationTest : public ash::LoginManagerTest {
     cros_network_config_.reset();
 
     LoginManagerTest::TearDownOnMainThread();
+  }
+
+  void MarkEnterpriseEnrolled() {
+    stub_install_attributes_.Get()->SetCloudManaged(kTestDomain, kTestDeviceId);
   }
 
   // Sets the DeviceEphemeralNetworkPoliciesEnabled policy to `value`.
@@ -805,6 +814,8 @@ class NetworkPolicyApplicationTest : public ash::LoginManagerTest {
           DanglingUntriaged | ExperimentalAsh>
       shill_device_client_test_ = nullptr;
 
+  ash::ScopedStubInstallAttributes stub_install_attributes_;
+
   AccountId test_account_id_;
 
   std::unique_ptr<ash::network_config::CrosNetworkConfig> cros_network_config_;
@@ -869,6 +880,22 @@ class NetworkPolicyApplicationEphemeralActionsDisabledTest
         /*enabled_features=*/{ash::features::
                                   kEphemeralNetworkPoliciesEnabledPolicy},
         /*disabled_features=*/{ash::features::kEphemeralNetworkPolicies});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// A variant of NetworkPolicyApplicationTest which enables the
+// EphemeralNetworkPolicies feature and the device is not enterprise enrolled at
+// startup.
+class NetworkPolicyApplicationEphemeralActionsEnabledUnenrolledTest
+    : public NetworkPolicyApplicationTest {
+ public:
+  NetworkPolicyApplicationEphemeralActionsEnabledUnenrolledTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        ash::features::kEphemeralNetworkPolicies);
+    stub_install_attributes_.Get()->Clear();
   }
 
  private:
@@ -2713,6 +2740,63 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationEphemeralActionsEnabledTest,
                 DictionaryHasValue(shill::kEapIdentityProperty,
                                    base::Value("user_identity")));
   }
+}
+
+IN_PROC_BROWSER_TEST_F(
+    NetworkPolicyApplicationEphemeralActionsEnabledUnenrolledTest,
+    EphemeralActions_NoWipeOnEnterpriseEnrollment) {
+  constexpr char kGuidWifi1[] = "guid_wifi_1";
+  AddSharedDevicePolicyMschapv2Service(kServiceWifi1, kGuidWifi1, "wifi1",
+                                       kUserIdentity);
+  AddPskWifiService(kServiceWifi2, "unmanaged_wifi2_guid", "UnmanagedWifi2",
+                    shill::kStateIdle);
+  shill_profile_client_test_->AddService(kSharedProfilePath, kServiceWifi2);
+
+  // The device changes state to enterprise-enrolled here, simulating enterprise
+  // enrollment with incoming device policy.
+  MarkEnterpriseEnrolled();
+  const std::string kDeviceONC = base::StringPrintf(
+      R"(
+      {
+        "GlobalNetworkConfiguration": {
+          "RecommendedValuesAreEphemeral": true,
+          "UserCreatedNetworkConfigurationsAreEphemeral": true
+        },
+        "NetworkConfigurations": [
+          {
+            "GUID": "%s",
+            "Type": "WiFi",
+            "Name": "Managed wifi1",
+            "WiFi": {
+              "HexSSID": "7769666931", // "wifi1"
+              "SSID": "wifi1",
+              "Security": "WPA-EAP",
+              "EAP": {
+                "Outer": "PEAP",
+                "Inner": "MSCHAPv2",
+                "SaveCredentials": true,
+                "Recommended": ["Identity", "Password"]
+              }
+            }
+          }
+        ],
+        "Type": "UnencryptedConfiguration"
+      })",
+      kGuidWifi1);
+  SetDeviceOpenNetworkConfiguration(kDeviceONC,
+                                    /*wait_applied=*/true);
+
+  // Verify that the unmanaged wifi service has not been wiped.
+  EXPECT_TRUE(shill_profile_client_test_->HasService(kServiceWifi2));
+
+  // Simulate that the device goes to sleep and wakes up, and check that the
+  // unmanaged wifi gets wiped then.
+  ScopedNetworkPolicyApplicationObserver network_policy_application_observer;
+  chromeos::FakePowerManagerClient::Get()->SendSuspendDone(base::Minutes(10));
+  network_policy_application_observer.WaitPoliciesApplied(
+      /*userhash=*/std::string());
+
+  EXPECT_FALSE(shill_profile_client_test_->HasService(kServiceWifi2));
 }
 
 IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationEphemeralActionsDisabledTest,
