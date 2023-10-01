@@ -96,7 +96,11 @@ RefcountedKeyedServiceFactory::GetServiceForContext(void* context,
 scoped_refptr<RefcountedKeyedService> RefcountedKeyedServiceFactory::Associate(
     void* context,
     scoped_refptr<RefcountedKeyedService> service) {
-  DCHECK(!base::Contains(mapping_, context));
+  // If `context` is already in `mapping_`, then something has gone wrong in
+  // initializing services. This can lead to a service being freed without
+  // calling `Shutdown`, which can lead to undefined behavior.
+  // TODO(crbug.com/1487955): convert to CHECK
+  DUMP_WILL_BE_CHECK(!base::Contains(mapping_, context));
   // Only count non-null services
   if (service)
     GetRefcountedKeyedServicesCount()[context]++;
