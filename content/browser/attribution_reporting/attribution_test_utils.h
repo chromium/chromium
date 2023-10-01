@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
-#include "base/functional/function_ref.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "components/attribution_reporting/aggregatable_values.h"
@@ -24,7 +23,6 @@
 #include "components/attribution_reporting/test_utils.h"
 #include "components/attribution_reporting/trigger_registration.h"
 #include "content/browser/attribution_reporting/aggregatable_histogram_contribution.h"
-#include "content/browser/attribution_reporting/attribution_config.h"
 #include "content/browser/attribution_reporting/attribution_info.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_storage_delegate.h"
@@ -63,18 +61,6 @@ base::Uuid DefaultExternalReportID();
 absl::optional<base::Time> GetReportWindowTimeForTesting(
     absl::optional<base::TimeDelta> declared_window,
     base::Time source_time);
-
-AttributionConfig::RateLimitConfig RateLimitWith(
-    base::FunctionRef<void(AttributionConfig::RateLimitConfig&)> f);
-
-AttributionConfig::EventLevelLimit EventLevelLimitWith(
-    base::FunctionRef<void(content::AttributionConfig::EventLevelLimit&)> f);
-
-AttributionConfig::AggregateLimit AggregateLimitWith(
-    base::FunctionRef<void(content::AttributionConfig::AggregateLimit&)> f);
-
-AttributionConfig AttributionConfigWith(
-    base::FunctionRef<void(AttributionConfig&)> f);
 
 // Helper class to construct a StorableSource for tests using default data.
 // StorableSource members are not mutable after construction requiring a

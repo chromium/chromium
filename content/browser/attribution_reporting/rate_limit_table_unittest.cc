@@ -282,15 +282,15 @@ class RateLimitTableTest : public testing::Test {
 TEST_F(RateLimitTableTest,
        AttributionAllowedForAttributionCountLimit_ScopedCorrectly) {
   constexpr base::TimeDelta kTimeWindow = base::Days(1);
-  delegate_.set_rate_limits(
-      RateLimitWith([kTimeWindow](AttributionConfig::RateLimitConfig& r) {
-        r.time_window = kTimeWindow;
-        r.max_source_registration_reporting_origins =
-            std::numeric_limits<int64_t>::max();
-        r.max_attribution_reporting_origins =
-            std::numeric_limits<int64_t>::max();
-        r.max_attributions = 2;
-      }));
+  delegate_.set_rate_limits([kTimeWindow]() {
+    AttributionConfig::RateLimitConfig r;
+    r.time_window = kTimeWindow;
+    r.max_source_registration_reporting_origins =
+        std::numeric_limits<int64_t>::max();
+    r.max_attribution_reporting_origins = std::numeric_limits<int64_t>::max();
+    r.max_attributions = 2;
+    return r;
+  }());
 
   const base::Time now = base::Time::Now();
 
@@ -362,15 +362,15 @@ TEST_F(RateLimitTableTest,
 
 TEST_F(RateLimitTableTest,
        AttributionAllowedForAttributionCountLimit_SourceTypesCombined) {
-  delegate_.set_rate_limits(
-      RateLimitWith([](AttributionConfig::RateLimitConfig& r) {
-        r.time_window = base::Days(1);
-        r.max_source_registration_reporting_origins =
-            std::numeric_limits<int64_t>::max();
-        r.max_attribution_reporting_origins =
-            std::numeric_limits<int64_t>::max();
-        r.max_attributions = 2;
-      }));
+  delegate_.set_rate_limits([]() {
+    AttributionConfig::RateLimitConfig r;
+    r.time_window = base::Days(1);
+    r.max_source_registration_reporting_origins =
+        std::numeric_limits<int64_t>::max();
+    r.max_attribution_reporting_origins = std::numeric_limits<int64_t>::max();
+    r.max_attributions = 2;
+    return r;
+  }());
 
   const auto navigation_source =
       SourceBuilder()
@@ -450,14 +450,14 @@ const struct {
 
 TEST_F(RateLimitTableTest, SourceAllowedForReportingOriginLimit) {
   constexpr base::TimeDelta kTimeWindow = base::Days(1);
-  delegate_.set_rate_limits(
-      RateLimitWith([kTimeWindow](AttributionConfig::RateLimitConfig& r) {
-        r.time_window = kTimeWindow;
-        r.max_source_registration_reporting_origins = 2;
-        r.max_attribution_reporting_origins =
-            std::numeric_limits<int64_t>::max();
-        r.max_attributions = std::numeric_limits<int64_t>::max();
-      }));
+  delegate_.set_rate_limits([kTimeWindow]() {
+    AttributionConfig::RateLimitConfig r;
+    r.time_window = kTimeWindow;
+    r.max_source_registration_reporting_origins = 2;
+    r.max_attribution_reporting_origins = std::numeric_limits<int64_t>::max();
+    r.max_attributions = std::numeric_limits<int64_t>::max();
+    return r;
+  }());
 
   const base::Time now = base::Time::Now();
 
@@ -505,13 +505,13 @@ TEST_F(RateLimitTableTest, SourceAllowedForReportingOriginLimit) {
 TEST_F(RateLimitTableTest,
        SourceAllowedForReportingOriginPerSourceReportingSiteLimit) {
   constexpr base::TimeDelta kTimeWindow = base::Days(1);
-  delegate_.set_rate_limits(
-      RateLimitWith([kTimeWindow](AttributionConfig::RateLimitConfig& r) {
-        r.max_attribution_reporting_origins =
-            std::numeric_limits<int64_t>::max();
-        r.max_attributions = std::numeric_limits<int64_t>::max();
-        r.origins_per_site_window = kTimeWindow;
-      }));
+  delegate_.set_rate_limits([kTimeWindow]() {
+    AttributionConfig::RateLimitConfig r;
+    r.max_attribution_reporting_origins = std::numeric_limits<int64_t>::max();
+    r.max_attributions = std::numeric_limits<int64_t>::max();
+    r.origins_per_site_window = kTimeWindow;
+    return r;
+  }());
 
   const base::Time now = base::Time::Now();
 
@@ -575,14 +575,15 @@ TEST_F(RateLimitTableTest,
 
 TEST_F(RateLimitTableTest, AttributionAllowedForReportingOriginLimit) {
   constexpr base::TimeDelta kTimeWindow = base::Days(1);
-  delegate_.set_rate_limits(
-      RateLimitWith([kTimeWindow](AttributionConfig::RateLimitConfig& r) {
-        r.time_window = kTimeWindow;
-        r.max_source_registration_reporting_origins =
-            std::numeric_limits<int64_t>::max();
-        r.max_attribution_reporting_origins = 2;
-        r.max_attributions = std::numeric_limits<int64_t>::max();
-      }));
+  delegate_.set_rate_limits([kTimeWindow]() {
+    AttributionConfig::RateLimitConfig r;
+    r.time_window = kTimeWindow;
+    r.max_source_registration_reporting_origins =
+        std::numeric_limits<int64_t>::max();
+    r.max_attribution_reporting_origins = 2;
+    r.max_attributions = std::numeric_limits<int64_t>::max();
+    return r;
+  }());
 
   const base::Time now = base::Time::Now();
 
@@ -613,13 +614,14 @@ TEST_F(RateLimitTableTest, AttributionAllowedForReportingOriginLimit) {
 
 TEST_F(RateLimitTableTest,
        ReportingOriginLimits_IndependentForSourcesAndAttributions) {
-  delegate_.set_rate_limits(
-      RateLimitWith([](AttributionConfig::RateLimitConfig& r) {
-        r.time_window = base::Days(1);
-        r.max_source_registration_reporting_origins = 2;
-        r.max_attribution_reporting_origins = 1;
-        r.max_attributions = std::numeric_limits<int64_t>::max();
-      }));
+  delegate_.set_rate_limits([]() {
+    AttributionConfig::RateLimitConfig r;
+    r.time_window = base::Days(1);
+    r.max_source_registration_reporting_origins = 2;
+    r.max_attribution_reporting_origins = 1;
+    r.max_attributions = std::numeric_limits<int64_t>::max();
+    return r;
+  }());
 
   const base::Time now = base::Time::Now();
 
@@ -854,15 +856,15 @@ TEST_F(RateLimitTableTest, ClearDataForOriginsInRange) {
 }
 
 TEST_F(RateLimitTableTest, AddRateLimit_DeletesExpiredRows) {
-  delegate_.set_rate_limits(
-      RateLimitWith([](AttributionConfig::RateLimitConfig& r) {
-        r.time_window = base::Minutes(2);
-        r.max_source_registration_reporting_origins =
-            std::numeric_limits<int64_t>::max();
-        r.max_attribution_reporting_origins =
-            std::numeric_limits<int64_t>::max();
-        r.max_attributions = INT_MAX;
-      }));
+  delegate_.set_rate_limits([]() {
+    AttributionConfig::RateLimitConfig r;
+    r.time_window = base::Minutes(2);
+    r.max_source_registration_reporting_origins =
+        std::numeric_limits<int64_t>::max();
+    r.max_attribution_reporting_origins = std::numeric_limits<int64_t>::max();
+    r.max_attributions = INT_MAX;
+    return r;
+  }());
 
   delegate_.set_delete_expired_rate_limits_frequency(base::Minutes(4));
 
@@ -943,15 +945,15 @@ TEST_F(RateLimitTableTest, AddFakeSourceForAttribution_OneRowPerDestination) {
 }
 
 TEST_F(RateLimitTableTest, AddRateLimitSource_DeletesExpiredRows) {
-  delegate_.set_rate_limits(
-      RateLimitWith([](AttributionConfig::RateLimitConfig& r) {
-        r.time_window = base::Minutes(2);
-        r.max_source_registration_reporting_origins =
-            std::numeric_limits<int64_t>::max();
-        r.max_attribution_reporting_origins =
-            std::numeric_limits<int64_t>::max();
-        r.max_attributions = INT_MAX;
-      }));
+  delegate_.set_rate_limits([]() {
+    AttributionConfig::RateLimitConfig r;
+    r.time_window = base::Minutes(2);
+    r.max_source_registration_reporting_origins =
+        std::numeric_limits<int64_t>::max();
+    r.max_attribution_reporting_origins = std::numeric_limits<int64_t>::max();
+    r.max_attributions = INT_MAX;
+    return r;
+  }());
 
   delegate_.set_delete_expired_rate_limits_frequency(base::Minutes(4));
 
@@ -1395,13 +1397,13 @@ class RateLimitTableFieldTrialLimitsTest : public RateLimitTableTest {
 TEST_F(RateLimitTableFieldTrialLimitsTest,
        SourceAllowedForReportingOriginPerSourceReportingSiteLimit) {
   constexpr base::TimeDelta kTimeWindow = base::Days(1);
-  delegate_.set_rate_limits(
-      RateLimitWith([kTimeWindow](AttributionConfig::RateLimitConfig& r) {
-        r.max_attribution_reporting_origins =
-            std::numeric_limits<int64_t>::max();
-        r.max_attributions = std::numeric_limits<int64_t>::max();
-        r.origins_per_site_window = kTimeWindow;
-      }));
+  delegate_.set_rate_limits([kTimeWindow]() {
+    AttributionConfig::RateLimitConfig r;
+    r.max_attribution_reporting_origins = std::numeric_limits<int64_t>::max();
+    r.max_attributions = std::numeric_limits<int64_t>::max();
+    r.origins_per_site_window = kTimeWindow;
+    return r;
+  }());
 
   const base::Time now = base::Time::Now();
 
