@@ -77,6 +77,12 @@
 namespace exo {
 namespace {
 
+bool IsRadiiUniform(const gfx::RoundedCornersF& radii) {
+  return radii.upper_left() == radii.upper_right() &&
+         radii.lower_left() == radii.lower_right() &&
+         radii.upper_left() == radii.lower_left();
+}
+
 // The accelerator keys used to close ShellSurfaces.
 const struct {
   ui::KeyboardCode keycode;
@@ -182,10 +188,10 @@ class CustomFrameView : public ash::NonClientFrameViewAsh {
       return;
     }
 
+    // TODO(crbug.com/1415486): Support variable window radii.
+    DCHECK(IsRadiiUniform(window_radii.value()));
+
     if (GetFrameEnabled()) {
-      // TODO(crbug.com/1415486): Support variable radius corner for
-      // header_view.
-      DCHECK_EQ(window_radii->upper_left(), window_radii->upper_right());
       header_view_->SetHeaderCornerRadius(window_radii->upper_left());
     }
 
@@ -1958,11 +1964,24 @@ void ShellSurfaceBase::UpdateShadowRoundedCorners() {
   aura::Window* window = widget_->GetNativeWindow();
   ui::Shadow* shadow = wm::ShadowController::GetShadowForWindow(window);
 
-  const ash::WindowState* window_state = ash::WindowState::Get(window);
-  if (shadow && window_state) {
-    shadow->SetRoundedCornerRadius(
-        window_state->IsPip() ? chromeos::kPipRoundedCornerRadius : 0);
+  if (!shadow) {
+    return;
   }
+
+  int shadow_radius = 0;
+
+  const ash::WindowState* window_state = ash::WindowState::Get(window);
+  if (window_state && window_state->IsPip()) {
+    shadow_radius = chromeos::kPipRoundedCornerRadius;
+  } else if (chromeos::features::IsRoundedWindowsEnabled() &&
+             window_corners_radii_dp_) {
+    // TODO(crbug.com/1415486): Support shadow with variable radius corners.
+    // We expect to have windows with same rounded corners.
+    DCHECK(IsRadiiUniform(window_corners_radii_dp_.value()));
+    shadow_radius = window_corners_radii_dp_->upper_left();
+  }
+
+  shadow->SetRoundedCornerRadius(shadow_radius);
 }
 
 void ShellSurfaceBase::UpdateFrameType() {
@@ -2140,12 +2159,6 @@ void ShellSurfaceBase::CommitWidget() {
   UpdateFrameType();
   UpdateWidgetBounds();
   UpdateHostWindowSizeAndRootSurfaceOrigin();
-  gfx::Rect bounds = geometry_;
-  if (!bounds.IsEmpty() && !widget_->GetNativeWindow()->GetProperty(
-                               aura::client::kUseWindowBoundsForShadow)) {
-    SetBoundsForShadows(absl::make_optional(bounds));
-  }
-  UpdateShadow();
 
   // System modal container is used by clients to implement overlay
   // windows using a single ShellSurface instance.  If hit-test
@@ -2174,7 +2187,16 @@ void ShellSurfaceBase::CommitWidget() {
   UpdateHostWindowOrigin();
   UpdateShape();
 
+  gfx::Rect bounds = geometry_;
+  if (!bounds.IsEmpty() && !widget_->GetNativeWindow()->GetProperty(
+                               aura::client::kUseWindowBoundsForShadow)) {
+    SetBoundsForShadows(absl::make_optional(bounds));
+  }
+
+  // The calling order matters. Updated window radius is need to correctly
+  // update the radius of the shadow.
   UpdateWindowRoundedCorners();
+  UpdateShadow();
 
   // Don't show yet if the shell surface doesn't have content or is minimized
   // while waiting for content.

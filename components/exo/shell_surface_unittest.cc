@@ -7,10 +7,8 @@
 #include <sstream>
 #include <vector>
 
-#include "ash/accessibility/accessibility_delegate.h"
 #include "ash/constants/ash_constants.h"
 #include "ash/frame/non_client_frame_view_ash.h"
-#include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
@@ -21,12 +19,13 @@
 #include "ash/wm/wm_event.h"
 #include "ash/wm/workspace_controller_test_api.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/app_restore/window_properties.h"
 #include "components/exo/buffer.h"
+#include "components/exo/client_controlled_shell_surface.h"
 #include "components/exo/permission.h"
 #include "components/exo/security_delegate.h"
 #include "components/exo/shell_surface_util.h"
@@ -59,6 +58,7 @@
 #include "ui/display/types/display_constants.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/shadow_controller.h"
@@ -2804,6 +2804,51 @@ TEST_F(ShellSurfaceTest, ShadowBoundsWithScaleFactor) {
       wm::ShadowController::GetShadowForWindow(widget->GetNativeWindow());
   ASSERT_TRUE(shadow);
   EXPECT_EQ(gfx::Rect(0, 0, 256, 256), shadow->content_bounds());
+}
+
+TEST_F(ShellSurfaceTest, ShadowRoundedCornersForRoundedWindows) {
+  constexpr gfx::Point kOrigin(20, 20);
+  constexpr int kWindowCornerRadius = 12;
+
+  base::test::ScopedFeatureList scoped_feature_list(
+      chromeos::features::kRoundedWindows);
+
+  std::unique_ptr<ShellSurface> shell_surface =
+      test::ShellSurfaceBuilder({256, 256})
+          .SetOrigin(kOrigin)
+          .SetWindowState(chromeos::WindowStateType::kNormal)
+          .SetFrame(SurfaceFrameType::NORMAL)
+          .BuildShellSurface();
+
+  Surface* root_surface = shell_surface->root_surface();
+
+  root_surface->Commit();
+  views::Widget* widget = shell_surface->GetWidget();
+  ASSERT_TRUE(widget);
+
+  aura::Window* window = widget->GetNativeWindow();
+  ui::Shadow* shadow = wm::ShadowController::GetShadowForWindow(window);
+  ASSERT_TRUE(shadow);
+
+  // Window shadow radius needs to match the window radius.
+  EXPECT_EQ(shadow->rounded_corner_radius_for_testing(), 0);
+
+  // Have a window with radius of 12dp.
+  shell_surface->SetWindowCornerRadii(
+      gfx::RoundedCornersF(kWindowCornerRadius));
+  root_surface->Commit();
+
+  shadow = wm::ShadowController::GetShadowForWindow(window);
+  ASSERT_TRUE(shadow);
+  EXPECT_EQ(shadow->rounded_corner_radius_for_testing(), kWindowCornerRadius);
+
+  // Have a window with radius of 0dp.
+  shell_surface->SetWindowCornerRadii(gfx::RoundedCornersF());
+  root_surface->Commit();
+
+  shadow = wm::ShadowController::GetShadowForWindow(window);
+  ASSERT_TRUE(shadow);
+  EXPECT_EQ(shadow->rounded_corner_radius_for_testing(), 0);
 }
 
 // Make sure that resize shadow does not update until commit when the window

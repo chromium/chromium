@@ -27,6 +27,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "cc/paint/display_item_list.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/window_pin_type.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/caption_buttons/caption_button_model.h"
@@ -593,6 +594,46 @@ TEST_P(ClientControlledShellSurfaceTest, Frame) {
   EXPECT_EQ(normal_window_bounds, widget->GetWindowBoundsInScreen());
   EXPECT_EQ(client_bounds,
             frame_view->GetClientBoundsForWindowBounds(normal_window_bounds));
+}
+
+TEST_P(ClientControlledShellSurfaceTest,
+       ShadowRoundedCornersWithPipTransition) {
+  constexpr gfx::Point kOrigin(20, 20);
+  constexpr int kPipCornerRadius = 8;
+
+  base::test::ScopedFeatureList scoped_feature_list(
+      chromeos::features::kRoundedWindows);
+
+  std::unique_ptr<ClientControlledShellSurface> shell_surface =
+      test::ShellSurfaceBuilder({256, 256})
+          .SetOrigin(kOrigin)
+          .SetWindowState(chromeos::WindowStateType::kNormal)
+          .SetFrame(SurfaceFrameType::NORMAL)
+          .BuildClientControlledShellSurface();
+
+  Surface* root_surface = shell_surface->root_surface();
+
+  root_surface->Commit();
+  views::Widget* widget = shell_surface->GetWidget();
+  ASSERT_TRUE(widget);
+
+  aura::Window* window = widget->GetNativeWindow();
+  ui::Shadow* shadow = wm::ShadowController::GetShadowForWindow(window);
+  ASSERT_TRUE(shadow);
+  EXPECT_EQ(shadow->rounded_corner_radius_for_testing(), 0);
+
+  shell_surface->SetPip();
+  root_surface->Commit();
+
+  shadow = wm::ShadowController::GetShadowForWindow(window);
+  ASSERT_TRUE(shadow);
+  EXPECT_EQ(shadow->rounded_corner_radius_for_testing(), kPipCornerRadius);
+
+  shell_surface->UnsetPip();
+  root_surface->Commit();
+
+  ASSERT_TRUE(shadow);
+  EXPECT_EQ(shadow->rounded_corner_radius_for_testing(), 0);
 }
 
 namespace {
