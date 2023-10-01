@@ -3881,8 +3881,8 @@ enum WebFeature {
   kSandboxViaFencedFrame = 4541,
   kVisibilityStateObserver = 4542,
   kV8CompileHintsMagicAll = 4543,
-  kTextWrapBalance = 4544,
-  kTextWrapBalanceFail = 4545,
+  kOBSOLETE_TextWrapBalance = 4544,
+  kOBSOLETE_TextWrapBalanceFail = 4545,
   kAttributionReportingCrossAppWeb = 4546,
   kSecurePaymentConfirmationActivationlessShow = 4547,
   kServiceWorkerBypassFetchHandlerForAllWithRaceNetworkRequest = 4548,
@@ -3931,8 +3931,8 @@ enum WebFeature {
   kClientHintsUAFormFactor = 4591,
   kURLSearchParamsHasFnBehaviourDiverged = 4592,
   kURLSearchParamsDeleteFnBehaviourDiverged = 4593,
-  kTextWrapPretty = 4594,
-  kTextWrapPrettyFail = 4595,
+  kOBSOLETE_TextWrapPretty = 4594,
+  kOBSOLETE_TextWrapPrettyFail = 4595,
   kContainerQueryEvalUnknown = 4596,
   kEventTimingPresentationPromiseResolvedAfterReport = 4597,
   kGetCoalescedEventsInInsecureContext = 4598,
@@ -4010,6 +4010,8 @@ enum WebFeature {
   kOutOfFlowAlignSelfBothInsets = 4670,
   kV8WebAssemblyJSStringBuiltins = 4671,
   kObservableConstructor = 4672,
+  kTextWrapBalance = 4673,
+  kTextWrapPretty = 4674,
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
   // Also, run update_use_counter_feature_enum.py in

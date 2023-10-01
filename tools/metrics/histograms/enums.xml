@@ -44059,8 +44059,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4541" label="SandboxViaFencedFrame"/>
   <int value="4542" label="VisibilityStateObserver"/>
   <int value="4543" label="V8CompileHintsMagicAll"/>
-  <int value="4544" label="TextWrapBalance"/>
-  <int value="4545" label="TextWrapBalanceFail"/>
+  <int value="4544" label="OBSOLETE_TextWrapBalance"/>
+  <int value="4545" label="OBSOLETE_TextWrapBalanceFail"/>
   <int value="4546" label="AttributionReportingCrossAppWeb"/>
   <int value="4547" label="SecurePaymentConfirmationActivationlessShow"/>
   <int value="4548"
@@ -44112,8 +44112,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4591" label="ClientHintsUAFormFactor"/>
   <int value="4592" label="URLSearchParamsHasFnBehaviourDiverged"/>
   <int value="4593" label="URLSearchParamsDeleteFnBehaviourDiverged"/>
-  <int value="4594" label="TextWrapPretty"/>
-  <int value="4595" label="TextWrapPrettyFail"/>
+  <int value="4594" label="OBSOLETE_TextWrapPretty"/>
+  <int value="4595" label="OBSOLETE_TextWrapPrettyFail"/>
   <int value="4596" label="ContainerQueryEvalUnknown"/>
   <int value="4597" label="EventTimingPresentationPromiseResolvedAfterReport"/>
   <int value="4598" label="GetCoalescedEventsInInsecureContext"/>
@@ -44191,6 +44191,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4670" label="OutOfFlowAlignSelfBothInsets"/>
   <int value="4671" label="V8WebAssemblyJSStringBuiltins"/>
   <int value="4672" label="ObservableConstructor"/>
+  <int value="4673" label="TextWrapBalance"/>
+  <int value="4674" label="TextWrapPretty"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

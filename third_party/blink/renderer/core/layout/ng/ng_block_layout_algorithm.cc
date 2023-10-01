@@ -525,18 +525,18 @@ const NGLayoutResult* NGBlockLayoutAlgorithm::LayoutInlineChild(
   const TextWrap wrap = node.Style().GetTextWrap();
   if (UNLIKELY(wrap == TextWrap::kPretty)) {
     DCHECK(RuntimeEnabledFeatures::CSSTextWrapPrettyEnabled());
+    UseCounter::Count(node.GetDocument(), WebFeature::kTextWrapPretty);
     if (!node.IsScoreLineBreakDisabled()) {
       return LayoutWithOptimalInlineChildLayoutContext<kMaxLinesForOptimal>(
           node);
     }
-    UseCounter::Count(node.GetDocument(), WebFeature::kTextWrapPrettyFail);
   } else if (UNLIKELY(wrap == TextWrap::kBalance) &&
              RuntimeEnabledFeatures::CSSTextWrapBalanceByScoreEnabled()) {
+    UseCounter::Count(node.GetDocument(), WebFeature::kTextWrapBalance);
     if (!node.IsScoreLineBreakDisabled()) {
       return LayoutWithOptimalInlineChildLayoutContext<kMaxLinesForBalance>(
           node);
     }
-    UseCounter::Count(node.GetDocument(), WebFeature::kTextWrapBalanceFail);
   }
   return LayoutWithSimpleInlineChildLayoutContext(node);
 }

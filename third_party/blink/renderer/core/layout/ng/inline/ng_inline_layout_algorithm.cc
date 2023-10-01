@@ -162,7 +162,6 @@ class NGLineBreakStrategy {
         if (!score_line_break_context_->LineBreakPoints().empty()) {
           UMA_HISTOGRAM_TIMES("Renderer.Layout.TextWrapBalance",
                               timer.Elapsed());
-          UseCounter::Count(node.GetDocument(), WebFeature::kTextWrapBalance);
           return;
         }
       }
@@ -181,14 +180,12 @@ class NGLineBreakStrategy {
           score_line_break_context_->LineInfoList().Clear();
         }
         UMA_HISTOGRAM_TIMES("Renderer.Layout.TextWrapBalance", timer.Elapsed());
-        UseCounter::Count(node.GetDocument(), WebFeature::kTextWrapBalance);
         return;
       }
     }
 
     UMA_HISTOGRAM_TIMES("Renderer.Layout.TextWrapBalance.Fail",
                         timer.Elapsed());
-    UseCounter::Count(node.GetDocument(), WebFeature::kTextWrapBalanceFail);
   }
 
   void Optimize(const NGInlineNode& node,
@@ -209,7 +206,6 @@ class NGLineBreakStrategy {
       // suspending the context.
       UMA_HISTOGRAM_TIMES("Renderer.Layout.TextWrapPretty.Fail",
                           timer.Elapsed());
-      UseCounter::Count(node.GetDocument(), WebFeature::kTextWrapPrettyFail);
       return;
     }
     NGScoreLineBreaker optimizer(node, space, line_widths, break_token,
@@ -221,11 +217,9 @@ class NGLineBreakStrategy {
     }
     if (!score_line_break_context_->LineBreakPoints().empty()) {
       UMA_HISTOGRAM_TIMES("Renderer.Layout.TextWrapPretty", timer.Elapsed());
-      UseCounter::Count(node.GetDocument(), WebFeature::kTextWrapPretty);
     } else {
       UMA_HISTOGRAM_TIMES("Renderer.Layout.TextWrapPretty.Fail",
                           timer.Elapsed());
-      UseCounter::Count(node.GetDocument(), WebFeature::kTextWrapPrettyFail);
     }
   }
 

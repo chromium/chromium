@@ -381,10 +381,8 @@ TEST_P(DisabledByLineBreakerTest, Data) {
     }
     </style>
   )HTML") + data.html);
-  EXPECT_NE(data.disabled,
-            GetDocument().IsUseCounted(WebFeature::kTextWrapPretty));
-  EXPECT_EQ(data.disabled,
-            GetDocument().IsUseCounted(WebFeature::kTextWrapPrettyFail));
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kTextWrapBalance));
+  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kTextWrapPretty));
 
   const NGInlineNode node = GetInlineNodeByElementId("target");
   const LayoutUnit width = FragmentWidth(node);
@@ -475,17 +473,17 @@ TEST_F(NGScoreLineBreakerTest, UseCountNotCountedForWrap) {
   SetBodyInnerHTML(R"HTML(
     <div>012</div>
   )HTML");
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kTextWrapBalance));
   EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kTextWrapPretty));
-  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kTextWrapPrettyFail));
 }
 
 TEST_F(NGScoreLineBreakerTest, UseCountNotCountedForBalance) {
   ScopedCSSTextWrapPrettyForTest enable(true);
   SetBodyInnerHTML(R"HTML(
-    <div style="text-wrap: balance>012</div>
+    <div style="text-wrap: balance">012</div>
   )HTML");
+  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kTextWrapBalance));
   EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kTextWrapPretty));
-  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kTextWrapPrettyFail));
 }
 
 }  // namespace blink
