@@ -13,6 +13,7 @@
 #include "chromeos/ash/components/network/network_policy_observer.h"
 #include "chromeos/ash/components/network/policy_util.h"
 #include "chromeos/dbus/power/power_manager_client.h"
+#include "chromeos/dbus/power_manager/idle.pb.h"
 
 namespace ash {
 
@@ -119,6 +120,19 @@ void EphemeralNetworkConfigurationHandler::SuspendDone(
   // A zero value for the suspend duration indicates that the suspend was
   // canceled. Ignore the notification if that's the case.
   if (sleep_duration.is_zero()) {
+    return;
+  }
+  if (!active_) {
+    return;
+  }
+  has_applied_ephemeral_policies_ = true;
+  managed_network_configuration_handler_
+      ->TriggerEphemeralNetworkConfigActions();
+}
+
+void EphemeralNetworkConfigurationHandler::ScreenIdleStateChanged(
+    const power_manager::ScreenIdleState& screen_idle_state) {
+  if (!screen_idle_state.off()) {
     return;
   }
   if (!active_) {

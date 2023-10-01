@@ -13,6 +13,7 @@
 #include "chromeos/ash/components/network/policy_util.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power/power_manager_client.h"
+#include "chromeos/dbus/power_manager/idle.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -41,6 +42,12 @@ class EphemeralNetworkConfigurationHandlerTest : public testing::Test {
       const EphemeralNetworkConfigurationHandlerTest&) = delete;
 
  protected:
+  void NotifyScreenIdleOffChanged(bool off) {
+    power_manager::ScreenIdleState proto;
+    proto.set_off(off);
+    fake_power_manager_client_.SendScreenIdleStateChanged(proto);
+  }
+
   MockManagedNetworkConfigurationHandler
       mock_managed_network_configuration_handler_;
   chromeos::FakePowerManagerClient fake_power_manager_client_;
@@ -380,6 +387,97 @@ TEST_F(EphemeralNetworkConfigurationHandlerTest, SuspendDoneReal_NoPolicy) {
               TriggerEphemeralNetworkConfigActions())
       .Times(0);
   fake_power_manager_client_.SendSuspendDone(base::Minutes(10));
+}
+
+// When the screen is turned off and a "ephemeral network config"
+// (RecommendedValuesAreEphemeral) policy is active,
+// TriggerEphemeralNetworkConfigActions is triggered.
+TEST_F(EphemeralNetworkConfigurationHandlerTest, ScreenIdleState_Active) {
+  LoginState::Get()->SetLoggedInState(LoginState::LOGGED_IN_NONE,
+                                      LoginState::LOGGED_IN_USER_NONE);
+
+  ephemeral_network_configuration_handler_ =
+      std::make_unique<EphemeralNetworkConfigurationHandler>(
+          &mock_managed_network_configuration_handler_,
+          /*was_enterprise_managed_at_startup=*/true);
+
+  EXPECT_CALL(mock_managed_network_configuration_handler_,
+              RecommendedValuesAreEphemeral())
+      .WillRepeatedly(Return(true));
+
+  // Initial policy application
+  EXPECT_CALL(mock_managed_network_configuration_handler_,
+              TriggerEphemeralNetworkConfigActions())
+      .Times(1);
+  ephemeral_network_configuration_handler_->TriggerPoliciesChangedForTesting(
+      /*userhash=*/std::string());
+
+  testing::Mock::VerifyAndClearExpectations(
+      &mock_managed_network_configuration_handler_);
+
+  // Screen turns off due to inactivity.
+  EXPECT_CALL(mock_managed_network_configuration_handler_,
+              TriggerEphemeralNetworkConfigActions())
+      .Times(1);
+  NotifyScreenIdleOffChanged(/*off=*/true);
+
+  testing::Mock::VerifyAndClearExpectations(
+      &mock_managed_network_configuration_handler_);
+
+  // Other notifications (such as turn screen on) don't have an effect.
+  EXPECT_CALL(mock_managed_network_configuration_handler_,
+              TriggerEphemeralNetworkConfigActions())
+      .Times(0);
+
+  NotifyScreenIdleOffChanged(/*off=*/false);
+
+  testing::Mock::VerifyAndClearExpectations(
+      &mock_managed_network_configuration_handler_);
+
+  // But turning screen off on the sign-in screen has a repeated effect.
+  EXPECT_CALL(mock_managed_network_configuration_handler_,
+              TriggerEphemeralNetworkConfigActions())
+      .Times(1);
+  NotifyScreenIdleOffChanged(/*off=*/true);
+
+  testing::Mock::VerifyAndClearExpectations(
+      &mock_managed_network_configuration_handler_);
+
+  // After entering an active session, the screen turning off does not trigger
+  // TriggerEphemeralNetworkConfigActions - it should only happen on the sign-in
+  // screen.
+  LoginState::Get()->SetLoggedInState(
+      LoginState::LOGGED_IN_ACTIVE, LoginState::LOGGED_IN_USER_PUBLIC_ACCOUNT);
+  EXPECT_CALL(mock_managed_network_configuration_handler_,
+              TriggerEphemeralNetworkConfigActions())
+      .Times(0);
+  NotifyScreenIdleOffChanged(/*off=*/true);
+}
+
+// When the screen is turned off due to inactivity no "ephemeral network config"
+// policy is active, TriggerEphemeralNetworkConfigActions is not triggered.
+TEST_F(EphemeralNetworkConfigurationHandlerTest, ScreenIdleState_NotActive) {
+  LoginState::Get()->SetLoggedInState(LoginState::LOGGED_IN_NONE,
+                                      LoginState::LOGGED_IN_USER_NONE);
+
+  ephemeral_network_configuration_handler_ =
+      std::make_unique<EphemeralNetworkConfigurationHandler>(
+          &mock_managed_network_configuration_handler_,
+          /*was_enterprise_managed_at_startup=*/true);
+
+  EXPECT_CALL(mock_managed_network_configuration_handler_,
+              RecommendedValuesAreEphemeral())
+      .WillRepeatedly(Return(false));
+  EXPECT_CALL(mock_managed_network_configuration_handler_,
+              UserCreatedNetworkConfigurationsAreEphemeral())
+      .WillRepeatedly(Return(false));
+  ephemeral_network_configuration_handler_->TriggerPoliciesChangedForTesting(
+      /*userhash=*/std::string());
+
+  EXPECT_CALL(mock_managed_network_configuration_handler_,
+              TriggerEphemeralNetworkConfigActions())
+      .Times(0);
+  NotifyScreenIdleOffChanged(/*off=*/true);
 }
 
 }  // namespace ash

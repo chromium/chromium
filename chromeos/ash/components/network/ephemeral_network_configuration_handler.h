@@ -15,8 +15,19 @@
 #include "chromeos/ash/components/network/network_policy_observer.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 
+namespace power_manager {
+class ScreenIdleState;
+}  // namespace power_manager
+
 namespace ash {
 
+// Triggers ephemeral network configuration actions on the sign-in screen when
+// one of the ephemeral network policies is set to true and a one of the
+// following triggers happen:
+// - Initial policy application on startup IFF the device had already been
+//   enterprise enrolled,
+// - Device comes back from sleep,
+// - Screen is turned off due to inactivity.
 class COMPONENT_EXPORT(CHROMEOS_NETWORK) EphemeralNetworkConfigurationHandler
     : public LoginState::Observer,
       public NetworkPolicyObserver,
@@ -61,6 +72,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) EphemeralNetworkConfigurationHandler
 
   // chromeos::PowerManagerClient::Observer:
   void SuspendDone(base::TimeDelta sleep_duration) override;
+  void ScreenIdleStateChanged(
+      const power_manager::ScreenIdleState& screen_idle_state) override;
 
   // Unowned.
   raw_ptr<ManagedNetworkConfigurationHandler>
