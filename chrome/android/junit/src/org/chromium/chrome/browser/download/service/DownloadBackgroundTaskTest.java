@@ -35,6 +35,7 @@ import org.chromium.chrome.browser.download.DownloadUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.ProfileKey;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.background_task_scheduler.BackgroundTask.TaskFinishedCallback;
 import org.chromium.components.background_task_scheduler.BackgroundTaskScheduler;
@@ -186,13 +187,12 @@ public class DownloadBackgroundTaskTest {
     }
     @Test
     @Feature({"Download"})
+    @DisableFeatures(ChromeFeatureList.DOWNLOADS_MIGRATE_TO_JOBS_API)
     public void testIsUserInitiatedJobForDisabledFeature() {
-        // TODO(crbug.com/1487364): This should use
-        // @DisableFeatures(ChromeFeatureList.DOWNLOADS_MIGRATE_TO_JOBS_API).
         DownloadUtils.setMinSdkVersionForUserInitiatedJobsForTesting(33);
-        Assert.assertTrue(DownloadUtils.isUserInitiatedJob(
+        Assert.assertFalse(DownloadUtils.isUserInitiatedJob(
                 TaskIds.DOWNLOAD_AUTO_RESUMPTION_UNMETERED_JOB_ID));
-        Assert.assertTrue(DownloadUtils.isUserInitiatedJob(
+        Assert.assertFalse(DownloadUtils.isUserInitiatedJob(
                 TaskIds.DOWNLOAD_AUTO_RESUMPTION_ANY_NETWORK_JOB_ID));
         Assert.assertFalse(
                 DownloadUtils.isUserInitiatedJob(TaskIds.DOWNLOAD_AUTO_RESUMPTION_JOB_ID));
