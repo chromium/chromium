@@ -50,9 +50,16 @@ constexpr char kEligibleGroupName[] = "eligible";
 class ExperimentManagerImplBrowserTest : public InProcessBrowserTest {
  public:
   explicit ExperimentManagerImplBrowserTest(
-      bool force_profiles_eligible = false) {
+      bool force_profiles_eligible_chromeos = false) {
+    // Force profile eligibility on ChromeOS. There is a flaky issue where
+    // `SetClientEligibility` is sometimes called twice, the second time with an
+    // ineligible profile even if the first was eligible.
+#if !BUILDFLAG(IS_CHROMEOS)
+    force_profiles_eligible_chromeos = false;
+#endif  // !BUILDFLAG(IS_ANDROID)
     std::string force_profiles_eligible_str =
-        force_profiles_eligible ? "true" : "false";
+        force_profiles_eligible_chromeos ? "true" : "false";
+
     feature_list_.InitAndEnableFeatureWithParameters(
         features::kCookieDeprecationFacilitatedTesting,
         {{"disable_3p_cookies", "true"},
@@ -80,7 +87,8 @@ class ExperimentManagerImplSyntheticTrialTest
  public:
   ExperimentManagerImplSyntheticTrialTest()
       : ExperimentManagerImplBrowserTest(
-            /*force_profiles_eligible=*/GetParam().new_state_eligible) {}
+            /*force_profiles_eligible_chromeos=*/GetParam()
+                .new_state_eligible) {}
 };
 
 IN_PROC_BROWSER_TEST_P(ExperimentManagerImplSyntheticTrialTest,
