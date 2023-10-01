@@ -204,6 +204,15 @@ export class SettingsSelectToSpeakSubpageElement extends
         },
       },
 
+      selectToSpeakLearnMoreUrl_: {
+        type: String,
+        value() {
+          return loadTimeData.getBoolean('isKioskModeActive') ?
+              '' :
+              loadTimeData.getString('selectToSpeakLearnMoreUrl');
+        },
+      },
+
       /**
        * Used by DeepLinkingMixin to focus this page's deep links.
        */
@@ -239,6 +248,7 @@ export class SettingsSelectToSpeakSubpageElement extends
   private localVoicesMenuOptions_: DropdownMenuOptionList;
   private networkVoicesMenuOptions_: DropdownMenuOptionList;
   private voicePreviewText_: string;
+  private selectToSpeakLearnMoreUrl_: string;
   private enhancedNetworkVoicePreviewText_: string;
   private appLocale_ = '';
   private selectToSpeakBrowserProxy_: SelectToSpeakSubpageBrowserProxy;
