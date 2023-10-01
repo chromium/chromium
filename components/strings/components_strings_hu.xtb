@@ -326,7 +326,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1618571384971354160">Járművontatás és közúti segítségnyújtás</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1622571349153632031">Vegetáriánus konyha</translation>
-<translation id="162285686621567578">A webhelyet a szülőd letiltotta.</translation>
 <translation id="1622966923835127638">Üzlet/pénzügy</translation>
 <translation id="1623104350909869708">Akadályozza meg, hogy ez az oldal további párbeszédablakokat hozzon létre.</translation>
 <translation id="1633137413609266904">{0,plural, =1{A fájl megnyitását rendszergazdai házirend tiltja}other{# fájl megnyitását rendszergazdai házirend tiltja}}</translation>
@@ -1859,7 +1858,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4852429274334674023">Operációs rendszerek</translation>
 <translation id="4854853140771946034">Új jegyzet gyors létrehozása a Google Keep szolgáltatással</translation>
 <translation id="485902285759009870">Kód ellenőrzése…</translation>
-<translation id="4862630594858951805">Szeretne e-mailt kapni, ha csökkennek az árak?</translation>
 <translation id="4864406669374375262">Verzió-karakterlánc vágólapra másolva</translation>
 <translation id="486459320933704969">A szülődnek vagy a gondviselődnek jóvá kell hagynia a webhely felkeresését</translation>
 <translation id="4866506163384898554">A kurzor megjelenítéséhez nyomja le a következő billentyűkombinációt: |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />|</translation>
@@ -2747,7 +2745,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6710594484020273272">&lt;Írja be a keresési kifejezést&gt;</translation>
 <translation id="671076103358959139">Regisztrációs token</translation>
 <translation id="6711464428925977395">Valami gond van a proxyszerverrel, vagy a cím nem megfelelő.</translation>
-<translation id="6716013836112872184">E-mailt küldünk a(z) <ph name="EMAIL" /> e-mail-címre, ha valamelyik webhelyen csökken az ár.</translation>
 <translation id="6716672519412350405">A(z) <ph name="URL" /> 3D-s térképet szeretne készíteni az Ön környezetéről, és követni szeretné a kamera pozícióját</translation>
 <translation id="6718612893943028815">Engedélyezi a kamera használatát?</translation>
 <translation id="6721164594124191969">Címkék (fényes)</translation>

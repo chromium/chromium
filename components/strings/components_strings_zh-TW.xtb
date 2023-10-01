@@ -326,7 +326,6 @@
 <translation id="1618571384971354160">拖吊與道路救援服務</translation>
 <translation id="1620510694547887537">攝影機</translation>
 <translation id="1622571349153632031">素食料理</translation>
-<translation id="162285686621567578">家長已封鎖這個網站。</translation>
 <translation id="1622966923835127638">商業金融</translation>
 <translation id="1623104350909869708">防止這個網頁產生其他對話方塊</translation>
 <translation id="1633137413609266904">{0,plural, =1{根據系統管理員政策，你無法開啟這個檔案}other{根據系統管理員政策，你無法開啟這 # 個檔案}}</translation>
@@ -1860,7 +1859,6 @@
 <translation id="4852429274334674023">作業系統</translation>
 <translation id="4854853140771946034">在 Google Keep 中快速建立新記事</translation>
 <translation id="485902285759009870">正在驗證動態密碼...</translation>
-<translation id="4862630594858951805">想在商品降價時收到電子郵件通知嗎？</translation>
 <translation id="4864406669374375262">已將版本字串複製到剪貼簿</translation>
 <translation id="486459320933704969">你必須獲得家長或監護人許可，才能造訪這個網站</translation>
 <translation id="4866506163384898554">按下 |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| 即可顯示游標</translation>
@@ -2748,7 +2746,6 @@
 <translation id="6710594484020273272">&lt;輸入搜尋字詞&gt;</translation>
 <translation id="671076103358959139">註冊憑證：</translation>
 <translation id="6711464428925977395">Proxy 伺服器發生錯誤，或是位址不正確。</translation>
-<translation id="6716013836112872184">商品在任何網站上降價時，系統會傳送電子郵件到 <ph name="EMAIL" />。</translation>
 <translation id="6716672519412350405"><ph name="URL" /> 要求根據你的周遭環境建立 3D 地圖並追蹤攝影機位置</translation>
 <translation id="6718612893943028815">要使用攝影機嗎？</translation>
 <translation id="6721164594124191969">標籤 (光面)</translation>

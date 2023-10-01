@@ -326,7 +326,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1618571384971354160">Bärgning och vägassistans</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1622571349153632031">Vegetarisk mat</translation>
-<translation id="162285686621567578">Den här webbplatsen blockeras av din förälder.</translation>
 <translation id="1622966923835127638">Företagsekonomi</translation>
 <translation id="1623104350909869708">Hindra sidan från att skapa fler dialogrutor</translation>
 <translation id="1633137413609266904">{0,plural, =1{Möjligheten att öppna den här filen blockeras av administratörspolicyn}other{Möjligheten att öppna # filer blockeras av administratörspolicyn}}</translation>
@@ -1861,7 +1860,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="4852429274334674023">Operativsystem</translation>
 <translation id="4854853140771946034">Skapa en ny anteckning i Google Keep snabbt</translation>
 <translation id="485902285759009870">Koden verifieras …</translation>
-<translation id="4862630594858951805">Vill du få e-postmeddelanden när priset sänks?</translation>
 <translation id="4864406669374375262">Versionssträngen har kopierats till urklipp</translation>
 <translation id="486459320933704969">En förälder eller vårdnadshavare måste godkänna att du besöker webbplatsen</translation>
 <translation id="4866506163384898554">Tryck på |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| om du vill att markören ska visas</translation>
@@ -2749,7 +2747,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="6710594484020273272">&lt;Ange sökterm&gt;</translation>
 <translation id="671076103358959139">Registreringstoken:</translation>
 <translation id="6711464428925977395">Något är fel med proxyservern eller så är adressen felaktig.</translation>
-<translation id="6716013836112872184">Få e-postmeddelanden till <ph name="EMAIL" /> när priset sänks på en webbplats.</translation>
 <translation id="6716672519412350405"><ph name="URL" /> skapa en 3D-karta över dina omgivningar och registrera kamerans position</translation>
 <translation id="6718612893943028815">Vill du använda kameran?</translation>
 <translation id="6721164594124191969">Etiketter (blanka)</translation>

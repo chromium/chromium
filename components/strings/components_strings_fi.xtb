@@ -326,7 +326,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="1618571384971354160">Hinaus- ja tiepalvelut</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1622571349153632031">Kasvisruokavalio</translation>
-<translation id="162285686621567578">Vanhempasi on estänyt tämän verkkosivuston.</translation>
 <translation id="1622966923835127638">Yritysrahoitus</translation>
 <translation id="1623104350909869708">Estä tätä sivua luomasta muita viestejä</translation>
 <translation id="1633137413609266904">{0,plural, =1{Järjestelmänvalvojakäytäntö on estänyt tämän tiedoston avaamisen}other{Järjestelmänvalvojakäytäntö on estänyt # tiedoston avaamisen}}</translation>
@@ -1862,7 +1861,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="4852429274334674023">Käyttöjärjestelmät</translation>
 <translation id="4854853140771946034">Luo uusi muistiinpano nopeasti Google Keepissa</translation>
 <translation id="485902285759009870">Vahvistetaan koodia…</translation>
-<translation id="4862630594858951805">Haluatko sähköpostia, kun hinta laskee?</translation>
 <translation id="4864406669374375262">Versiomerkkijono kopioitu leikepöydälle</translation>
 <translation id="486459320933704969">Vanhemman tai huoltajan on hyväksyttävä käyntisi tällä sivustolla</translation>
 <translation id="4866506163384898554">Näytä kohdistin painamalla |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />|</translation>
@@ -2750,7 +2748,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="6710594484020273272">&lt;Anna hakukysely&gt;</translation>
 <translation id="671076103358959139">Käyttöönottotunnus:</translation>
 <translation id="6711464428925977395">Välityspalvelimessa on jotain vikaa tai osoite on virheellinen.</translation>
-<translation id="6716013836112872184">Voit saada sähköpostia osoitteeseen <ph name="EMAIL" />, kun hinta laskee jollakin sivustolla.</translation>
 <translation id="6716672519412350405"><ph name="URL" /> pyytää lupaa luoda 3D-kartan ympäristöstäsi ja seurata kameran asentoa</translation>
 <translation id="6718612893943028815">Käytetäänkö kameraa?</translation>
 <translation id="6721164594124191969">Etiketit (kiiltävä)</translation>

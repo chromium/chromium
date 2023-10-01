@@ -326,7 +326,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="1618571384971354160">Grues i assistència en carretera</translation>
 <translation id="1620510694547887537">Càmera</translation>
 <translation id="1622571349153632031">Cuina vegetariana</translation>
-<translation id="162285686621567578">El teu pare o mare ha bloquejat aquest lloc web.</translation>
 <translation id="1622966923835127638">Finances empresarials</translation>
 <translation id="1623104350909869708">Impedeix que aquesta pàgina creï quadres de diàleg addicionals</translation>
 <translation id="1633137413609266904">{0,plural, =1{La política de l'administrador ha bloquejat l'opció d'obrir aquest fitxer}other{La política de l'administrador ha bloquejat l'opció d'obrir # fitxers}}</translation>
@@ -1861,7 +1860,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4852429274334674023">Sistemes operatius</translation>
 <translation id="4854853140771946034">Crea una nota nova a Google Keep ràpidament</translation>
 <translation id="485902285759009870">S'està verificant el codi...</translation>
-<translation id="4862630594858951805">Vols rebre correus electrònics quan el preu baixi?</translation>
 <translation id="4864406669374375262">S'ha copiat la cadena de versió al porta-retalls</translation>
 <translation id="486459320933704969">El teu pare, mare o tutor ha de dir si pots visitar aquest lloc web</translation>
 <translation id="4866506163384898554">Prem |<ph name="ACCELERATOR1" />|+|<ph name="ACCELERATOR2" />| perquè es mostri el cursor</translation>
@@ -2749,7 +2747,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6710594484020273272">&lt;Escriviu el terme de cerca&gt;</translation>
 <translation id="671076103358959139">Testimoni d'inscripció:</translation>
 <translation id="6711464428925977395">Hi ha hagut algun problema amb el servidor intermediari o l'adreça no és correcta.</translation>
-<translation id="6716013836112872184">Rep correus electrònics a <ph name="EMAIL" /> quan el preu baixi en qualsevol lloc web.</translation>
 <translation id="6716672519412350405"><ph name="URL" /> vol crear un mapa en 3D del teu entorn i fer un seguiment de la posició de la càmera</translation>
 <translation id="6718612893943028815">Vols utilitzar la càmera?</translation>
 <translation id="6721164594124191969">Etiquetes (brillants)</translation>

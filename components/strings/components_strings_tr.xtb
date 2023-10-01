@@ -326,7 +326,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1618571384971354160">Çekici ve yol yardım hizmetleri</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1622571349153632031">Vejetaryen mutfağı</translation>
-<translation id="162285686621567578">Bu web sitesi, anne veya babanız tarafından engellendi.</translation>
 <translation id="1622966923835127638">İşletme Maliyesi</translation>
 <translation id="1623104350909869708">Bu sayfanın daha fazla iletişim kutusu oluşturmasını önle</translation>
 <translation id="1633137413609266904">{0,plural, =1{Bu dosyanın açılması yönetici politikası tarafından engellendi}other{# dosyanın açılması yönetici politikası tarafından engellendi}}</translation>
@@ -1861,7 +1860,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="4852429274334674023">İşletim sistemleri</translation>
 <translation id="4854853140771946034">Google Keep'te hızlıca yeni bir not oluşturun</translation>
 <translation id="485902285759009870">Kod doğrulanıyor...</translation>
-<translation id="4862630594858951805">Fiyat düştüğünde e-posta almak ister misiniz?</translation>
 <translation id="4864406669374375262">Sürüm dizesi, panoya kopyalandı</translation>
 <translation id="486459320933704969">Bir anne veya babanın ya da velinin, bu web sitesini ziyaret etmenizin uygun olduğunu belirtmesi gerekir</translation>
 <translation id="4866506163384898554">İmlecinizi göstermek için |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| tuşlarına basın</translation>
@@ -2749,7 +2747,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6710594484020273272">&lt;Arama terimini yazın&gt;</translation>
 <translation id="671076103358959139">Kayıt Jetonu:</translation>
 <translation id="6711464428925977395">Proxy sunucusunda bir sorun var veya adres yanlış.</translation>
-<translation id="6716013836112872184">Ürünün fiyatı herhangi bir sitede düştüğünde <ph name="EMAIL" /> adresine e-posta alın.</translation>
 <translation id="6716672519412350405"><ph name="URL" />, çevrenizin 3D haritasını oluşturmak ve kamera konumunu takip etmek istiyor</translation>
 <translation id="6718612893943028815">Kamera kullanılsın mı?</translation>
 <translation id="6721164594124191969">Etiketler (Parlak)</translation>

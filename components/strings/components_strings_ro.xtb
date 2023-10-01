@@ -326,7 +326,6 @@
 <translation id="1618571384971354160">Remorcare și asistență rutieră</translation>
 <translation id="1620510694547887537">Cameră</translation>
 <translation id="1622571349153632031">Bucătărie pentru vegetarieni</translation>
-<translation id="162285686621567578">Site-ul este blocat de părintele tău.</translation>
 <translation id="1622966923835127638">Finanțe comerciale</translation>
 <translation id="1623104350909869708">Restricționați capacitatea acestei pagini de a crea casete de dialog suplimentare</translation>
 <translation id="1633137413609266904">{0,plural, =1{Deschiderea acestui fișier este blocată de politica implementată de administrator}few{Deschiderea a # fișiere este blocată de politica implementată de administrator}other{Deschiderea a # de fișiere este blocată de politica implementată de administrator}}</translation>
@@ -1861,7 +1860,6 @@
 <translation id="4852429274334674023">Sisteme de operare</translation>
 <translation id="4854853140771946034">Creează rapid o notă în Google Keep</translation>
 <translation id="485902285759009870">Codul se verifică...</translation>
-<translation id="4862630594858951805">Vrei să primești e-mailuri când scade prețul?</translation>
 <translation id="4864406669374375262">Șirul versiunii s-a copiat în clipboard</translation>
 <translation id="486459320933704969">Părintele sau tutorele trebuie să spună că poți accesa acest site</translation>
 <translation id="4866506163384898554">Apasă pe |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| pentru a afișa cursorul</translation>
@@ -2749,7 +2747,6 @@
 <translation id="6710594484020273272">&lt;Introdu termenul de căutare&gt;</translation>
 <translation id="671076103358959139">Indicativ de înregistrare:</translation>
 <translation id="6711464428925977395">A apărut o problemă la serverul proxy sau adresa nu este corectă.</translation>
-<translation id="6716013836112872184">Primește e-mailuri trimise la <ph name="EMAIL" /> când prețul scade pe orice site.</translation>
 <translation id="6716672519412350405"><ph name="URL" /> dorește să creeze o hartă 3D a lucrurilor din jurul tău și să urmărească poziția camerei video</translation>
 <translation id="6718612893943028815">Folosești camera foto?</translation>
 <translation id="6721164594124191969">Etichete (lucioase)</translation>

@@ -326,7 +326,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="1618571384971354160">Derek mobil &amp; bantuan di jalan</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1622571349153632031">Masakan vegetarian</translation>
-<translation id="162285686621567578">Situs ini diblokir oleh orang tuamu.</translation>
 <translation id="1622966923835127638">Keuangan Bisnis</translation>
 <translation id="1623104350909869708">Cegah dialog lain dari halaman ini.</translation>
 <translation id="1633137413609266904">{0,plural, =1{Pembukaan file ini diblokir oleh kebijakan administrator}other{Pembukaan # file diblokir oleh kebijakan administrator}}</translation>
@@ -1861,7 +1860,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="4852429274334674023">Sistem operasi</translation>
 <translation id="4854853140771946034">Buat catatan baru di Google Keep dengan cepat</translation>
 <translation id="485902285759009870">Memverifikasi kode ...</translation>
-<translation id="4862630594858951805">Ingin mendapatkan email jika ada penurunan harga?</translation>
 <translation id="4864406669374375262">String versi disalin ke papan klip</translation>
 <translation id="486459320933704969">Orang tua atau wali harus menyatakan bahwa kamu boleh membuka situs ini</translation>
 <translation id="4866506163384898554">Tekan |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| untuk menampilkan kursor</translation>
@@ -2749,7 +2747,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="6710594484020273272">&lt;Ketik istilah penelusuran&gt;</translation>
 <translation id="671076103358959139">Token Pendaftaran:</translation>
 <translation id="6711464428925977395">Ada yang salah dengan server proxy, atau alamat tidak benar.</translation>
-<translation id="6716013836112872184">Dapatkan email yang dikirim ke <ph name="EMAIL" /> jika ada penurunan harga di situs mana pun.</translation>
 <translation id="6716672519412350405"><ph name="URL" /> ingin membuat peta 3D untuk area di sekeliling Anda dan melacak posisi kamera</translation>
 <translation id="6718612893943028815">Gunakan kamera?</translation>
 <translation id="6721164594124191969">Label (Mengilap)</translation>

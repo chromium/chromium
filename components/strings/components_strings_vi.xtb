@@ -326,7 +326,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="1618571384971354160">Dịch vụ cứu hộ phương tiện</translation>
 <translation id="1620510694547887537">Máy ảnh</translation>
 <translation id="1622571349153632031">Món chay</translation>
-<translation id="162285686621567578">Cha mẹ bạn đã chặn trang web này.</translation>
 <translation id="1622966923835127638">Tài chính doanh nghiệp</translation>
 <translation id="1623104350909869708">Ngăn trang này tạo hộp thoại bổ sung</translation>
 <translation id="1633137413609266904">{0,plural, =1{Chính sách của quản trị viên không cho phép mở tệp này}other{Chính sách của quản trị viên không cho phép mở # tệp}}</translation>
@@ -1861,7 +1860,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4852429274334674023">Hệ điều hành</translation>
 <translation id="4854853140771946034">Tạo nhanh một ghi chú mới trong Google Keep</translation>
 <translation id="485902285759009870">Đang xác minh mã...</translation>
-<translation id="4862630594858951805">Bạn muốn nhận email khi sản phẩm giảm giá?</translation>
 <translation id="4864406669374375262">Đã sao chép chuỗi phiên bản vào bảng nhớ tạm</translation>
 <translation id="486459320933704969">Bạn phải được cha/mẹ hoặc người giám hộ cho phép truy cập trang web này</translation>
 <translation id="4866506163384898554">Nhấn |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| để con trỏ xuất hiện</translation>
@@ -2749,7 +2747,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6710594484020273272">&lt;Nhập cụm từ tìm kiếm&gt;</translation>
 <translation id="671076103358959139">Mã đăng ký:</translation>
 <translation id="6711464428925977395">Đã xảy ra sự cố với máy chủ proxy hoặc địa chỉ không chính xác.</translation>
-<translation id="6716013836112872184">Nhận email về địa chỉ <ph name="EMAIL" /> khi sản phẩm giảm giá trên bất cứ trang web nào.</translation>
 <translation id="6716672519412350405"><ph name="URL" /> muốn tạo bản đồ 3D về các khu vực xung quanh bạn và theo dõi thông tin vị trí của máy ảnh</translation>
 <translation id="6718612893943028815">Sử dụng camera?</translation>
 <translation id="6721164594124191969">Nhãn (Bóng)</translation>

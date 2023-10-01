@@ -326,7 +326,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="1618571384971354160">Pag-tow at pag-alalay sa kalsada</translation>
 <translation id="1620510694547887537">Camera</translation>
 <translation id="1622571349153632031">Pang-vegetarian na cuisine</translation>
-<translation id="162285686621567578">Na-block ng iyong magulang ang website na ito.</translation>
 <translation id="1622966923835127638">Pananalapi ng Negosyo</translation>
 <translation id="1623104350909869708">Pigilan ang pahinang ito sa paggawa ng mga karagdagang dialog</translation>
 <translation id="1633137413609266904">{0,plural, =1{Na-block ng patakaran ng administrator ang pagbubukas ng file na ito}one{Na-block ng patakaran ng administrator ang pagbubukas ng # file}other{Na-block ng patakaran ng administrator ang pagbubukas ng # na file}}</translation>
@@ -1861,7 +1860,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="4852429274334674023">Mga operating system</translation>
 <translation id="4854853140771946034">Gumawa ng bagong tala sa Google Keep nang mabilis</translation>
 <translation id="485902285759009870">Vine-verify ang code...</translation>
-<translation id="4862630594858951805">Gusto mo bang makatanggap ng mga email kapag bumaba ang presyo?</translation>
 <translation id="4864406669374375262">Nakopya sa clipboard ang string ng bersyong ito</translation>
 <translation id="486459320933704969">Kailangang sabihin ng magulang o tagapag-alaga na OK na bisitahin mo ang website na ito</translation>
 <translation id="4866506163384898554">Pindutin ang |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| para ipakita ang iyong cursor</translation>
@@ -2749,7 +2747,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6710594484020273272">&lt;I-type ang termino para sa paghahanap&gt;</translation>
 <translation id="671076103358959139">Token sa Pag-enroll</translation>
 <translation id="6711464428925977395">May problema sa proxy server, o mali ang address.</translation>
-<translation id="6716013836112872184">Makatanggap ng mga email sa <ph name="EMAIL" /> kapag bumaba ang presyo sa anumang site.</translation>
 <translation id="6716672519412350405">Gusto ng <ph name="URL" /> na gumawa ng 3D na mapa ng iyong kapaligiran at subaybayan ang posisyon ng camera</translation>
 <translation id="6718612893943028815">Gamitin ang camera?</translation>
 <translation id="6721164594124191969">Mga Label (Glossy)</translation>

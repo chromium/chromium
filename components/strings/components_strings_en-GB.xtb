@@ -326,7 +326,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1618571384971354160">Towing and roadside assistance</translation>
 <translation id="1620510694547887537">Camera</translation>
 <translation id="1622571349153632031">Vegetarian cuisine</translation>
-<translation id="162285686621567578">This website is blocked by your parent.</translation>
 <translation id="1622966923835127638">Business Finance</translation>
 <translation id="1623104350909869708">Prevent this page from creating additional dialogues</translation>
 <translation id="1633137413609266904">{0,plural, =1{Opening this file is blocked by administrator policy}other{Opening # files is blocked by administrator policy}}</translation>
@@ -1861,7 +1860,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4852429274334674023">Operating systems</translation>
 <translation id="4854853140771946034">Create a new note in Google Keep quickly</translation>
 <translation id="485902285759009870">Verifying code…</translation>
-<translation id="4862630594858951805">Want emails when the price drops?</translation>
 <translation id="4864406669374375262">Copied version string to clipboard</translation>
 <translation id="486459320933704969">A parent or guardian has to say that it's OK for you to visit this website</translation>
 <translation id="4866506163384898554">Press |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| to show your cursor</translation>
@@ -2749,7 +2747,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6710594484020273272">&lt;Type search term&gt;</translation>
 <translation id="671076103358959139">Enrolment Token:</translation>
 <translation id="6711464428925977395">There is something wrong with the proxy server or the address is incorrect.</translation>
-<translation id="6716013836112872184">Get emails sent to <ph name="EMAIL" /> when the price drops on any site.</translation>
 <translation id="6716672519412350405"><ph name="URL" /> wants to create a 3D map of your surroundings and track camera position</translation>
 <translation id="6718612893943028815">Use camera?</translation>
 <translation id="6721164594124191969">Labels (glossy)</translation>

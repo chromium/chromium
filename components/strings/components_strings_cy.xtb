@@ -326,7 +326,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="1618571384971354160">Tynnu a chymorth ar ochr y ffordd</translation>
 <translation id="1620510694547887537">Camera</translation>
 <translation id="1622571349153632031">Coginio llysieuol</translation>
-<translation id="162285686621567578">Mae'r wefan hon wedi'i rhwystro gan eich rhiant.</translation>
 <translation id="1622966923835127638">Cyllid Busnes</translation>
 <translation id="1623104350909869708">Atal y dudalen hon rhag creu dialogau ychwanegol</translation>
 <translation id="1633137413609266904">{0,plural, =1{Mae agor y ffeil hon wedi'i rwystro gan bolisi gweinyddwr}zero{Mae agor # ffeil wedi'i rwystro gan bolisi gweinyddwr}two{Mae agor # ffeil wedi'i rwystro gan bolisi gweinyddwr}few{Mae agor # ffeil wedi'i rwystro gan bolisi gweinyddwr}many{Mae agor # ffeil wedi'i rwystro gan bolisi gweinyddwr}other{Mae agor # ffeil wedi'i rwystro gan bolisi gweinyddwr}}</translation>
@@ -1861,7 +1860,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="4852429274334674023">Systemau gweithredu</translation>
 <translation id="4854853140771946034">Creu nodyn newydd yn Google Keep yn gyflym</translation>
 <translation id="485902285759009870">Wrthi'n dilysu'r cod...</translation>
-<translation id="4862630594858951805">Eisiau e-byst pan fo'r pris yn gostwng?</translation>
 <translation id="4864406669374375262">Llinyn fersiwn wedi'i gopïo i'r clipfwrdd</translation>
 <translation id="486459320933704969">Mae'n rhaid i riant neu warcheidwad ddweud ei bod yn iawn i ti ymweld â'r wefan hon</translation>
 <translation id="4866506163384898554">Pwyswch |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| i ddangos eich cyrchwr</translation>
@@ -2749,7 +2747,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="6710594484020273272">&lt;Teipio term chwilio&gt;</translation>
 <translation id="671076103358959139">Tocyn Cofrestru:</translation>
 <translation id="6711464428925977395">Mae rhywbeth o'i le ar y dirprwy weinydd, neu mae'r cyfeiriad yn anghywir.</translation>
-<translation id="6716013836112872184">Cael e-byst wedi'u hanfon at <ph name="EMAIL" /> pan fo'r pris yn gostwng ar unrhyw wefan.</translation>
 <translation id="6716672519412350405">Mae <ph name="URL" /> eisiau creu map 3D o'ch amgylchoedd ac olrhain safle'r camera</translation>
 <translation id="6718612893943028815">Defnyddio camera?</translation>
 <translation id="6721164594124191969">Labeli (Sglein)</translation>

@@ -326,7 +326,6 @@
 <translation id="1618571384971354160">یدک‌کشی و کمک کنار جاده‌ای</translation>
 <translation id="1620510694547887537">دوربین</translation>
 <translation id="1622571349153632031">غذای ویژه گیاه‌خواران</translation>
-<translation id="162285686621567578">این وب‌سایت را ولی‌تان مسدود کرده است.</translation>
 <translation id="1622966923835127638">تأمین مالی کسب‌وکار</translation>
 <translation id="1623104350909869708">جلوگیری از ایجاد پنجره‌های اضافی توسط این صفحه</translation>
 <translation id="1633137413609266904">{0,plural, =1{خط‌مشی سرپرست باز کردن این فایل را مسدود کرده است}one{خط‌مشی سرپرست باز کردن # فایل را مسدود کرده است}other{خط‌مشی سرپرست باز کردن # فایل را مسدود کرده است}}</translation>
@@ -1861,7 +1860,6 @@
 <translation id="4852429274334674023">سیستم‌عامل</translation>
 <translation id="4854853140771946034">‏ایجاد سریع یادداشت جدید در Google Keep</translation>
 <translation id="485902285759009870">درحال تأیید کد…</translation>
-<translation id="4862630594858951805">مایلید اگر قیمت کاهش پیدا کرد ایمیل دریافت کنید؟</translation>
 <translation id="4864406669374375262">رشته نسخه در بریده‌دان کپی شد</translation>
 <translation id="486459320933704969">ولی یا سرپرست باید بازدید شما از این وب‌سایت را تأیید کند</translation>
 <translation id="4866506163384898554">برای نمایش نشانگر، |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| را فشار دهید</translation>
@@ -2749,7 +2747,6 @@
 <translation id="6710594484020273272">&lt;عبارت جستجو را تایپ کنید&gt;</translation>
 <translation id="671076103358959139">کد ثبت‌نام:</translation>
 <translation id="6711464428925977395">مشکلی در سرور پروکسی وجود دارد یا این آدرس درست نیست.</translation>
-<translation id="6716013836112872184">اگر قیمت در هر سایتی کاهش پیدا کند، ایمیلی به <ph name="EMAIL" /> ارسال می‌شود.</translation>
 <translation id="6716672519412350405"><ph name="URL" /> می‌خواهد نقشه‌ای سه‌بعدی از محیط ایجاد کند و موقعیت دوربین را ردیابی کند</translation>
 <translation id="6718612893943028815">از دوربین استفاده شود؟</translation>
 <translation id="6721164594124191969">برچسب (براق)</translation>

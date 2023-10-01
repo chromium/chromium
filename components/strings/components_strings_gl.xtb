@@ -326,7 +326,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1618571384971354160">Traslado de vehículos e asistencia na estrada</translation>
 <translation id="1620510694547887537">Cámara</translation>
 <translation id="1622571349153632031">Cociña vexetariana</translation>
-<translation id="162285686621567578">O teu pai ou nai bloqueou este sitio web.</translation>
 <translation id="1622966923835127638">Finanzas empresariais</translation>
 <translation id="1623104350909869708">Evitar que esta páxina cree caixas de diálogo adicionais</translation>
 <translation id="1633137413609266904">{0,plural, =1{A política do administrador non permite abrir este ficheiro}other{A política do administrador non permite abrir # ficheiros}}</translation>
@@ -1861,7 +1860,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4852429274334674023">Sistemas operativos</translation>
 <translation id="4854853140771946034">Crear rapidamente unha nota nova en Google Keep</translation>
 <translation id="485902285759009870">Verificando código…</translation>
-<translation id="4862630594858951805">Queres recibir un correo electrónico cando baixe o prezo?</translation>
 <translation id="4864406669374375262">Copiouse a cadea de versión no portapapeis</translation>
 <translation id="486459320933704969">Para poderes visitar este sitio web, ten que darche permiso o teu pai, nai, titor ou titora</translation>
 <translation id="4866506163384898554">Para que se mostre o cursor, preme |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />|</translation>
@@ -2749,7 +2747,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6710594484020273272">&lt;Escribe un termo de busca&gt;</translation>
 <translation id="671076103358959139">Token de inscrición:</translation>
 <translation id="6711464428925977395">Produciuse un erro co servidor proxy ou o enderezo é incorrecto.</translation>
-<translation id="6716013836112872184">Recibe correos electrónicos en <ph name="EMAIL" /> cando baixe o prezo en calquera sitio.</translation>
 <translation id="6716672519412350405"><ph name="URL" /> quere crear un mapa 3D do que te rodea e facer un seguimento da posición da cámara</translation>
 <translation id="6718612893943028815">Queres usar a cámara?</translation>
 <translation id="6721164594124191969">Etiquetas (brillo)</translation>

@@ -326,7 +326,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="1618571384971354160">Odtahové a asistenční služby</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1622571349153632031">Vegetariánská kuchyně</translation>
-<translation id="162285686621567578">Tento web váš rodič zablokoval.</translation>
 <translation id="1622966923835127638">Obchod/finance</translation>
 <translation id="1623104350909869708">Bránit této stránce ve vytváření dalších dialogových oken</translation>
 <translation id="1633137413609266904">{0,plural, =1{Otevření tohoto souboru je blokováno zásadami administrátora}few{Otevření # souborů je blokováno zásadami administrátora}many{Otevření # souboru je blokováno zásadami administrátora}other{Otevření # souborů je blokováno zásadami administrátora}}</translation>
@@ -1857,7 +1856,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="4852429274334674023">Operační systémy</translation>
 <translation id="4854853140771946034">Rychle vytvořit novou poznámku v aplikaci Google Keep</translation>
 <translation id="485902285759009870">Ověřování kódu…</translation>
-<translation id="4862630594858951805">Chcete dostávat e‑maily, když cena klesne?</translation>
 <translation id="4864406669374375262">Řetězec verze byl zkopírován do schránky</translation>
 <translation id="486459320933704969">Tvůj rodič nebo zákonný zástupce musí potvrdit, že web můžeš navštívit</translation>
 <translation id="4866506163384898554">Kurzor zobrazíte stisknutím kláves |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />|</translation>
@@ -2744,7 +2742,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6710594484020273272">&lt;Zadejte vyhledávací dotaz&gt;</translation>
 <translation id="671076103358959139">Registrační token:</translation>
 <translation id="6711464428925977395">Došlo k chybě proxy serveru nebo jste zadali nesprávnou adresu.</translation>
-<translation id="6716013836112872184">Nechte si zaslat e‑maily na adresu <ph name="EMAIL" />, když cena na jakémkoli webu klesne.</translation>
 <translation id="6716672519412350405">Web <ph name="URL" /> chce vytvořit 3D mapu vašeho okolí a sledovat polohu kamery</translation>
 <translation id="6718612893943028815">Použít kameru?</translation>
 <translation id="6721164594124191969">Štítky (lesklé)</translation>

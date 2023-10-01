@@ -326,7 +326,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="1618571384971354160">Pukseerimine ja maanteeabi</translation>
 <translation id="1620510694547887537">Kaamera</translation>
 <translation id="1622571349153632031">Taimetoiduköök</translation>
-<translation id="162285686621567578">Sinu vanem on selle veebisaidi blokeerinud.</translation>
 <translation id="1622966923835127638">Äri/finants</translation>
 <translation id="1623104350909869708">Keela sellel lehel lisadialoogide loomine</translation>
 <translation id="1633137413609266904">{0,plural, =1{Selle faili avamine on administraatori reegliga blokeeritud}other{# faili avamine on administraatori reegliga blokeeritud}}</translation>
@@ -1861,7 +1860,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="4852429274334674023">Operatsioonisüsteemid</translation>
 <translation id="4854853140771946034">Rakenduses Google Keep kiirelt uue märkuse loomine</translation>
 <translation id="485902285759009870">Koodi kinnitamine …</translation>
-<translation id="4862630594858951805">Kas soovite e-kirju, kui hind langeb?</translation>
 <translation id="4864406669374375262">Versiooni string kopeeriti lõikelauale</translation>
 <translation id="486459320933704969">Vanem või eestkostja peab andma sulle loa selle veebisaidi külastamiseks</translation>
 <translation id="4866506163384898554">Vajutage kursori kuvamiseks klahve |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />|</translation>
@@ -2749,7 +2747,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6710594484020273272">&lt;Sisestage otsingutermin&gt;</translation>
 <translation id="671076103358959139">Registreerimismärk:</translation>
 <translation id="6711464428925977395">Puhverserveriga on midagi valesti või aadress on vale.</translation>
-<translation id="6716013836112872184">Kui hind mõnel saidil langeb, saate e-kirjad aadressile <ph name="EMAIL" />.</translation>
 <translation id="6716672519412350405"><ph name="URL" /> soovib luua teid ümbritsevast 3D-kaardi ja jälgida kaamera asendit</translation>
 <translation id="6718612893943028815">Kas kasutada kaamerat?</translation>
 <translation id="6721164594124191969">Etiketid (läikega)</translation>

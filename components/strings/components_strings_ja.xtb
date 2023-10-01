@@ -326,7 +326,6 @@
 <translation id="1618571384971354160">牽引サービス、ロード アシスタンス</translation>
 <translation id="1620510694547887537">カメラ</translation>
 <translation id="1622571349153632031">ベジタリアン料理</translation>
-<translation id="162285686621567578">このウェブサイトは保護者によってブロックされています。</translation>
 <translation id="1622966923835127638">アセット ファイナンス</translation>
 <translation id="1623104350909869708">このページで追加のダイアログが作成されないようにする</translation>
 <translation id="1633137413609266904">{0,plural, =1{このファイルは管理者が設定したポリシーによって開けないようブロックされています}other{# 個のファイルが、管理者が設定したポリシーによって開けないようブロックされています}}</translation>
@@ -1861,7 +1860,6 @@
 <translation id="4852429274334674023">オペレーティング システム</translation>
 <translation id="4854853140771946034">Google Keep で新しいメモをすばやく作成します</translation>
 <translation id="485902285759009870">コードを確認しています...</translation>
-<translation id="4862630594858951805">値下げがあったときにメールでお知らせしますか？</translation>
 <translation id="4864406669374375262">バージョン文字列をクリップボードにコピーしました</translation>
 <translation id="486459320933704969">保護者の方から、このウェブサイトを開いてもよいという承認をもらう必要があります</translation>
 <translation id="4866506163384898554">カーソルを表示するには |<ph name="ACCELERATOR1" />|+|<ph name="ACCELERATOR2" />| を押します</translation>
@@ -2749,7 +2747,6 @@
 <translation id="6710594484020273272">&lt;検索キーワードを入力&gt;</translation>
 <translation id="671076103358959139">登録トークン:</translation>
 <translation id="6711464428925977395">プロキシ サーバーに問題がある、またはアドレスが正しくありません。</translation>
-<translation id="6716013836112872184">値下げしたサイトがあったときに、<ph name="EMAIL" /> にメールでお知らせします。</translation>
 <translation id="6716672519412350405"><ph name="URL" /> が周囲の 3D マップの作成とカメラ位置の追跡を求めています</translation>
 <translation id="6718612893943028815">カメラを使用しますか？</translation>
 <translation id="6721164594124191969">ラベル（光沢）</translation>

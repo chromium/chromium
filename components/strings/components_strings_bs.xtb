@@ -326,7 +326,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="1618571384971354160">Usluge vuče i pomoći na putu</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1622571349153632031">Vegetarijanska kuhinja</translation>
-<translation id="162285686621567578">Tvoj roditelj je blokirao ovu web lokaciju.</translation>
 <translation id="1622966923835127638">Poslovne finansije</translation>
 <translation id="1623104350909869708">Spriječi da ova stranica kreira dodatne dijaloške okvire</translation>
 <translation id="1633137413609266904">{0,plural, =1{Administratorska pravila blokiraju otvaranje ovog fajla}one{Administratorska pravila blokiraju otvaranje # fajla}few{Administratorska pravila blokiraju otvaranje # fajlova}other{Administratorska pravila blokiraju otvaranje # fajlova}}</translation>
@@ -1861,7 +1860,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="4852429274334674023">Operativni sistemi</translation>
 <translation id="4854853140771946034">Brzo kreirajte novu bilješku u Google Keepu</translation>
 <translation id="485902285759009870">Potvrda koda...</translation>
-<translation id="4862630594858951805">Želite primati e-poruke kada cijena bude niža?</translation>
 <translation id="4864406669374375262">Niz s informacijama o verziji je kopiran u međumemoriju</translation>
 <translation id="486459320933704969">Roditelj ili staratelj mora reći da možeš posjetiti ovu web lokaciju</translation>
 <translation id="4866506163384898554">Pritisnite |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| da prikažete kursor</translation>
@@ -2749,7 +2747,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="6710594484020273272">&lt;Unesite pojam za pretraživanje&gt;</translation>
 <translation id="671076103358959139">Token za prijavu:</translation>
 <translation id="6711464428925977395">Nešto nije uredu s proksi serverom ili je adresa netačna.</translation>
-<translation id="6716013836112872184">Primajte e-poruke na <ph name="EMAIL" /> kada cijena bude niža na bilo kojoj web lokaciji.</translation>
 <translation id="6716672519412350405"><ph name="URL" /> želi kreirati 3D mapu vašeg okruženja i pratiti položaj kamere</translation>
 <translation id="6718612893943028815">Koristiti kameru?</translation>
 <translation id="6721164594124191969">Naljepnice (sjajne)</translation>

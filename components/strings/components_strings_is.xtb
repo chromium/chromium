@@ -326,7 +326,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="1618571384971354160">Dráttarbílar og vegaaðstoð</translation>
 <translation id="1620510694547887537">Myndavél</translation>
 <translation id="1622571349153632031">Grænmetisfæði</translation>
-<translation id="162285686621567578">Foreldri þitt setti þetta vefsvæði á bannlista.</translation>
 <translation id="1622966923835127638">Viðskiptafjármál</translation>
 <translation id="1623104350909869708">Koma í veg fyrir að þessi síða búi til fleiri glugga.</translation>
 <translation id="1633137413609266904">{0,plural, =1{Regla kerfisstjóra kemur í veg fyrir að hægt sé að opna þessa skrá}one{Regla kerfisstjóra kemur í veg fyrir að hægt sé að opna # skrá}other{Regla kerfisstjóra kemur í veg fyrir að hægt sé að opna # skrár}}</translation>
@@ -1861,7 +1860,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="4852429274334674023">Stýrikerfi</translation>
 <translation id="4854853140771946034">Búa til nýja glósu í Google Keep á skjótan hátt</translation>
 <translation id="485902285759009870">Staðfestir kóða...</translation>
-<translation id="4862630594858951805">Viltu fá tölvupóst þegar verðið lækkar?</translation>
 <translation id="4864406669374375262">Útgáfustrengur vistaður á klippiborð</translation>
 <translation id="486459320933704969">Foreldri eða forráðamaður verður að samþykkja að þú opnir þetta vefsvæði</translation>
 <translation id="4866506163384898554">Ýttu á |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| til að sýna bendilinn</translation>
@@ -2749,7 +2747,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="6710594484020273272">&lt;Sláðu inn leitarorð&gt;</translation>
 <translation id="671076103358959139">Skráningarlykill:</translation>
 <translation id="6711464428925977395">Eitthvað amar að staðgengilsþjóninum, eða þá að slóðin er röng.</translation>
-<translation id="6716013836112872184">Fáðu sendan tölvupóst á <ph name="EMAIL" /> þegar verðið lækkar á hvaða vefsvæði sem er.</translation>
 <translation id="6716672519412350405"><ph name="URL" /> vill búa til þrívíddarkort af umhverfinu og rekja staðsetningu myndavélarinnar</translation>
 <translation id="6718612893943028815">Nota myndavél?</translation>
 <translation id="6721164594124191969">Merkimiðar (glans)</translation>

@@ -326,7 +326,6 @@
 <translation id="1618571384971354160">견인 및 긴급출동 서비스</translation>
 <translation id="1620510694547887537">카메라</translation>
 <translation id="1622571349153632031">채식주의자 음식</translation>
-<translation id="162285686621567578">부모님이 차단한 웹사이트입니다.</translation>
 <translation id="1622966923835127638">경영/금융</translation>
 <translation id="1623104350909869708">이 페이지가 추가적인 대화를 생성하지 않도록 차단</translation>
 <translation id="1633137413609266904">{0,plural, =1{관리자 정책에 의해 이 파일의 열기가 차단되었습니다.}other{관리자 정책에 의해 파일 #개의 열기가 차단되었습니다.}}</translation>
@@ -1861,7 +1860,6 @@
 <translation id="4852429274334674023">운영체제</translation>
 <translation id="4854853140771946034">Google Keep에서 빠르게 새 메모 만들기</translation>
 <translation id="485902285759009870">코드 인증 중...</translation>
-<translation id="4862630594858951805">가격이 인하되면 이메일을 받고 싶으신가요?</translation>
 <translation id="4864406669374375262">버전 문자열이 클립보드에 복사되었습니다.</translation>
 <translation id="486459320933704969">부모님 또는 보호자가 이 웹사이트를 방문해도 괜찮다고 말해야 합니다.</translation>
 <translation id="4866506163384898554">커서를 표시하려면 |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| 키를 누르세요.</translation>
@@ -2749,7 +2747,6 @@
 <translation id="6710594484020273272">&lt;검색어 입력&gt;</translation>
 <translation id="671076103358959139">등록 토큰:</translation>
 <translation id="6711464428925977395">프록시 서버에 문제가 발생했거나 주소가 잘못되었습니다.</translation>
-<translation id="6716013836112872184">사이트에서 가격이 인하되면 <ph name="EMAIL" /> 주소로 이메일이 전송됩니다.</translation>
 <translation id="6716672519412350405"><ph name="URL" />에서 주변 환경의 3D 지도를 생성하고 카메라 위치를 추적하려고 합니다.</translation>
 <translation id="6718612893943028815">카메라를 사용하시겠습니까?</translation>
 <translation id="6721164594124191969">라벨(유광)</translation>
