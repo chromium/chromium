@@ -890,7 +890,7 @@ BASE_FEATURE(kEphemeralNetworkPolicies,
 // find some issue with the policy processing.
 BASE_FEATURE(kEphemeralNetworkPoliciesEnabledPolicy,
              "EphemeralNetworkPoliciesEnabledPolicy",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables Device End Of Lifetime warning notifications.
 BASE_FEATURE(kEolWarningNotifications,
