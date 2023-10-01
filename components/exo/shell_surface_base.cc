@@ -10,7 +10,6 @@
 #include "ash/frame/non_client_frame_view_ash.h"
 #include "ash/metrics/login_unlock_throughput_recorder.h"
 #include "ash/public/cpp/rounded_corner_utils.h"
-#include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/desks_controller.h"
@@ -143,29 +142,57 @@ class CustomFrameView : public ash::NonClientFrameViewAsh {
 
   // Overridden from views::NonClientFrameView:
   void UpdateWindowRoundedCorners() override {
-    if (!GetFrameEnabled()) {
+    if (!chromeos::features::IsRoundedWindowsEnabled() && GetFrameEnabled()) {
+      header_view_->SetHeaderCornerRadius(
+          chromeos::GetFrameCornerRadius(frame()->GetNativeWindow()));
+    }
+
+    if (!GetWidget()) {
       return;
     }
 
-    if (!chromeos::features::IsRoundedWindowsEnabled()) {
-      header_view_->SetHeaderCornerRadius(
-          chromeos::GetFrameCornerRadius(frame()->GetNativeWindow()));
+    // TODO(b/302034956): Use `ApplyRoundedCornersToSurfaceTree()` to round pip
+    // window as well.
+    // Round a pip window. Pip windows are rounded by applying rounded corner
+    // to host window using ui::Layer API.
+    const ash::WindowState* window_state =
+        ash::WindowState::Get(GetWidget()->GetNativeWindow());
+
+    // When un-pipped (window state changed from pip), we must undo the
+    // rounded corners from the host_window.
+    const int pip_corner_radius =
+        window_state->IsPip() ? chromeos::kPipRoundedCornerRadius : 0;
+    const gfx::RoundedCornersF pip_radii(pip_corner_radius);
+
+    ui::Layer* layer = shell_surface_->host_window()->layer();
+    if (layer->rounded_corner_radii() != pip_radii) {
+      layer->SetRoundedCornerRadius(pip_radii);
+      layer->SetIsFastRoundedCorner(/*enable=*/!pip_radii.IsEmpty());
+    }
+
+    // If we have a pip window, ignore `window_radii`.
+    if (window_state->IsPip()) {
       return;
     }
 
     absl::optional<gfx::RoundedCornersF> window_radii =
         shell_surface_->window_corners_radii();
 
-    if (!window_radii) {
+    if (!chromeos::features::IsRoundedWindowsEnabled() || !window_radii) {
       return;
     }
 
-    // TODO(crbug.com/1415486): Support variable radius corner for header_view.
-    DCHECK_EQ(window_radii->upper_left(), window_radii->upper_right());
-    header_view_->SetHeaderCornerRadius(window_radii->upper_left());
+    if (GetFrameEnabled()) {
+      // TODO(crbug.com/1415486): Support variable radius corner for
+      // header_view.
+      DCHECK_EQ(window_radii->upper_left(), window_radii->upper_right());
+      header_view_->SetHeaderCornerRadius(window_radii->upper_left());
+    }
 
     const gfx::RoundedCornersF root_surface_radii = {
-        0, 0, window_radii->lower_right(), window_radii->lower_left()};
+        GetFrameEnabled() ? 0 : window_radii->upper_left(),
+        GetFrameEnabled() ? 0 : window_radii->upper_right(),
+        window_radii->lower_right(), window_radii->lower_left()};
 
     Surface* root_surface = shell_surface_->root_surface();
     DCHECK(root_surface);
@@ -1919,19 +1946,21 @@ void ShellSurfaceBase::UpdateShadow() {
     if (!CanActivate())
       shadow->SetElevation(wm::kShadowElevationMenuOrTooltip);
 
-    UpdateCornerRadius();
+    UpdateShadowRoundedCorners();
   }
 }
 
-void ShellSurfaceBase::UpdateCornerRadius() {
-  if (!widget_)
+void ShellSurfaceBase::UpdateShadowRoundedCorners() {
+  if (!widget_) {
     return;
+  }
 
-  ash::WindowState* window_state =
-      ash::WindowState::Get(widget_->GetNativeWindow());
-  if (window_state) {
-    ash::SetCornerRadius(
-        window_state->window(), host_window()->layer(),
+  aura::Window* window = widget_->GetNativeWindow();
+  ui::Shadow* shadow = wm::ShadowController::GetShadowForWindow(window);
+
+  const ash::WindowState* window_state = ash::WindowState::Get(window);
+  if (shadow && window_state) {
+    shadow->SetRoundedCornerRadius(
         window_state->IsPip() ? chromeos::kPipRoundedCornerRadius : 0);
   }
 }
@@ -1942,7 +1971,7 @@ void ShellSurfaceBase::UpdateFrameType() {
 }
 
 void ShellSurfaceBase::UpdateWindowRoundedCorners() {
-  // If non_client_view is not avaliable, it means that widget_ is neither a
+  // If non_client_view is not available, it means that widget_ is neither a
   // normal window or a bubble. Therefore it should not have any decorations
   // including a rounded window.
   if (!widget_ || !widget_->non_client_view()) {
@@ -2144,6 +2173,7 @@ void ShellSurfaceBase::CommitWidget() {
 
   UpdateHostWindowOrigin();
   UpdateShape();
+
   UpdateWindowRoundedCorners();
 
   // Don't show yet if the shell surface doesn't have content or is minimized

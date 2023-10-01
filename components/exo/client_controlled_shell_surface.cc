@@ -1216,7 +1216,6 @@ bool ClientControlledShellSurface::OnPreWidgetCommit() {
                                                pending_window_state_)) {
     client_controlled_state_->set_next_bounds_change_animation_type(
         animation_type);
-    UpdateCornerRadius();
   }
 
   if (wasPip && !window_state->IsMinimized()) {
