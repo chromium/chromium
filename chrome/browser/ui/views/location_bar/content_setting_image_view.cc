@@ -130,12 +130,8 @@ void ContentSettingImageView::Update() {
   content::WebContents* web_contents =
       delegate_->GetContentSettingWebContents();
 
-  // Calling Update() with a nullptr WebContents will hide the image.
-  content_setting_image_model_->Update(
-      delegate_->ShouldHideContentSettingImage(
-          content_setting_image_model_->image_type())
-          ? nullptr
-          : web_contents);
+  bool force_hide = delegate_->ShouldHideContentSettingImage();
+  content_setting_image_model_->Update(force_hide ? nullptr : web_contents);
   SetTooltipText(content_setting_image_model_->get_tooltip());
 
   if (!content_setting_image_model_->is_visible()) {

@@ -991,55 +991,8 @@ SkColor LocationBarView::GetIconLabelBubbleBackgroundColor() const {
   return GetColorProvider()->GetColor(kColorLocationBarBackground);
 }
 
-bool LocationBarView::ShouldHideContentSettingImage(ImageType type) {
-  // Content setting icons are hidden at the same time as page action icons.
-  if (ShouldHidePageActionIcons()) {
-    return true;
-  }
-
-  auto* web_contents = GetWebContents();
-  if (web_contents) {
-    auto* hcsm = HostContentSettingsMapFactory::GetForProfile(profile_);
-    switch (type) {
-      case ImageType::COOKIES:
-      case ImageType::IMAGES:
-      case ImageType::JAVASCRIPT:
-      case ImageType::POPUPS:
-        break;
-      case ImageType::GEOLOCATION: {
-        ContentSetting value =
-            hcsm->GetContentSetting(web_contents->GetLastCommittedURL(), GURL(),
-                                    ContentSettingsType::GEOLOCATION);
-        return value == CONTENT_SETTING_ASK;
-      }
-      case ImageType::MIXEDSCRIPT:
-      case ImageType::PROTOCOL_HANDLERS:
-        break;
-      case ImageType::MEDIASTREAM: {
-        ContentSetting mic_value =
-            hcsm->GetContentSetting(web_contents->GetLastCommittedURL(), GURL(),
-                                    ContentSettingsType::MEDIASTREAM_MIC);
-
-        ContentSetting camera_value =
-            hcsm->GetContentSetting(web_contents->GetLastCommittedURL(), GURL(),
-                                    ContentSettingsType::MEDIASTREAM_CAMERA);
-        return mic_value == CONTENT_SETTING_ASK &&
-               camera_value == CONTENT_SETTING_ASK;
-      }
-      case ImageType::ADS:
-      case ImageType::AUTOMATIC_DOWNLOADS:
-      case ImageType::MIDI_SYSEX:
-      case ImageType::SOUND:
-      case ImageType::FRAMEBUST:
-      case ImageType::SENSORS:
-      case ImageType::NOTIFICATIONS_QUIET_PROMPT:
-      case ImageType::CLIPBOARD_READ_WRITE:
-      case ImageType::STORAGE_ACCESS:
-      case ImageType::NUM_IMAGE_TYPES:
-        break;
-    }
-  }
-  return false;
+bool LocationBarView::ShouldHideContentSettingImage() {
+  return ShouldHidePageActionIcons();
 }
 
 content::WebContents* LocationBarView::GetContentSettingWebContents() {

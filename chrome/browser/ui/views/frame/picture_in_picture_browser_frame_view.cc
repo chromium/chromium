@@ -952,8 +952,7 @@ SkColor PictureInPictureBrowserFrameView::GetIconLabelBubbleBackgroundColor()
 ///////////////////////////////////////////////////////////////////////////////
 // ContentSettingImageView::Delegate implementations:
 
-bool PictureInPictureBrowserFrameView::ShouldHideContentSettingImage(
-    ImageType type) {
+bool PictureInPictureBrowserFrameView::ShouldHideContentSettingImage() {
   return false;
 }
 
