@@ -11,7 +11,6 @@
 #include "base/functional/callback_forward.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
-#include "content/public/browser/global_routing_id.h"
 #include "services/network/public/mojom/attribution.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

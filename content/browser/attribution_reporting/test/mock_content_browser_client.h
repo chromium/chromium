@@ -36,12 +36,12 @@ class MockAttributionReportingContentBrowserClientBase : public SuperClass {
 
   MOCK_METHOD(bool,
               ShouldUseOsWebSourceAttributionReporting,
-              (RenderFrameHost * rfh),
+              (RenderFrameHost*),
               (override));
 
   MOCK_METHOD(bool,
               ShouldUseOsWebTriggerAttributionReporting,
-              (RenderFrameHost * rfh),
+              (RenderFrameHost*),
               (override));
 
   MOCK_METHOD(bool,
