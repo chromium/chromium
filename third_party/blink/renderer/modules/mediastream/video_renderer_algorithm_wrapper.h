@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "media/base/media_util.h"
 #include "media/base/time_source.h"
@@ -49,7 +50,7 @@ class VideoRendererAlgorithmWrapper {
   enum RendererAlgorithm { kDefault, kLowLatency };
 
   const media::TimeSource::WallClockTimeCB wall_clock_time_cb_;
-  media::MediaLog* media_log_;
+  raw_ptr<media::MediaLog, ExperimentalRenderer> media_log_;
   RendererAlgorithm renderer_algorithm_;
   std::unique_ptr<media::VideoRendererAlgorithm>
       default_rendering_frame_buffer_;

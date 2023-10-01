@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -103,7 +104,7 @@ class PLATFORM_EXPORT P2PSocketClientImpl
   THREAD_CHECKER(thread_checker_);
   const bool batch_packets_;
   int socket_id_;
-  blink::P2PSocketClientDelegate* delegate_;
+  raw_ptr<blink::P2PSocketClientDelegate, ExperimentalRenderer> delegate_;
   State state_;
 
   // Packets sent with rtc::PacketOptions::batchable being true are collected

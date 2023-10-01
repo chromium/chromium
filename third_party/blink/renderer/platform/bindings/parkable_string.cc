@@ -10,6 +10,7 @@
 #include "base/allocator/partition_allocator/partition_alloc.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
@@ -177,7 +178,7 @@ struct BackgroundTaskParams final {
 
   const scoped_refptr<base::SingleThreadTaskRunner> callback_task_runner;
   const scoped_refptr<ParkableStringImpl> string;
-  const void* data;
+  raw_ptr<const void, ExperimentalRenderer> data;
   const size_t size;
   std::unique_ptr<ReservedChunk> reserved_chunk;
 };
@@ -712,7 +713,7 @@ void ParkableStringImpl::CompressInBackground(
   // Compression touches the string.
   AsanUnpoisonString(params->string->string_);
   bool ok;
-  base::StringPiece data(reinterpret_cast<const char*>(params->data),
+  base::StringPiece data(reinterpret_cast<const char*>(params->data.get()),
                          params->size);
   std::unique_ptr<Vector<uint8_t>> compressed;
 

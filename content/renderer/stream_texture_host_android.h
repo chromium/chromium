@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
 #include "gpu/ipc/common/gpu_channel.mojom.h"
@@ -79,7 +80,7 @@ class CONTENT_EXPORT StreamTextureHost
       absl::optional<gpu::VulkanYCbCrInfo> ycbcr_info) override;
 
   int32_t route_id_;
-  Listener* listener_;
+  raw_ptr<Listener, ExperimentalRenderer> listener_;
   scoped_refptr<gpu::GpuChannelHost> channel_;
   uint32_t release_id_ = 0;
 

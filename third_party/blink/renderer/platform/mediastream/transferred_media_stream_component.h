@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIASTREAM_TRANSFERRED_MEDIA_STREAM_COMPONENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIASTREAM_TRANSFERRED_MEDIA_STREAM_COMPONENT_H_
 
+#include "base/memory/raw_ptr.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_track.h"
 #include "third_party/blink/renderer/platform/audio/audio_source_provider.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
@@ -74,7 +75,7 @@ class PLATFORM_EXPORT TransferredMediaStreamComponent final
 
  private:
   struct AddSinkArgs {
-    WebMediaStreamSink* sink;
+    raw_ptr<WebMediaStreamSink, ExperimentalRenderer> sink;
     VideoCaptureDeliverFrameCB callback;
     MediaStreamVideoSink::IsSecure is_secure;
     MediaStreamVideoSink::UsesAlpha uses_alpha;

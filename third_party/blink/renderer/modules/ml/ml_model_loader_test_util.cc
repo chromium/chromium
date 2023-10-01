@@ -39,7 +39,7 @@ ScopedSetMLServiceBinder::ScopedSetMLServiceBinder(FakeMLService* ml_service,
                                                    const V8TestingScope& scope)
     : interface_broker_(
           scope.GetExecutionContext()->GetBrowserInterfaceBroker()) {
-  interface_broker_.SetBinderForTesting(
+  interface_broker_->SetBinderForTesting(
       MLService::Name_,
       WTF::BindRepeating(&FakeMLService::BindFakeService,
                          // Safe to WTF::Unretained, we unregister the
@@ -48,7 +48,8 @@ ScopedSetMLServiceBinder::ScopedSetMLServiceBinder(FakeMLService* ml_service,
 }
 
 ScopedSetMLServiceBinder::~ScopedSetMLServiceBinder() {
-  interface_broker_.SetBinderForTesting(MLService::Name_, base::NullCallback());
+  interface_broker_->SetBinderForTesting(MLService::Name_,
+                                         base::NullCallback());
 }
 
 FakeMLModelLoader::FakeMLModelLoader() = default;

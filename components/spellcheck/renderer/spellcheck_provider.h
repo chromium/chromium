@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/containers/id_map.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "components/spellcheck/common/spellcheck.mojom.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
@@ -163,10 +164,11 @@ class SpellCheckProvider : public content::RenderFrameObserver,
   int last_identifier_;
 
   // Weak pointer to shared (per renderer) spellcheck data.
-  SpellCheck* spellcheck_;
+  raw_ptr<SpellCheck, ExperimentalRenderer> spellcheck_;
 
   // Not owned. |embedder_provider_| should outlive SpellCheckProvider.
-  service_manager::LocalInterfaceProvider* embedder_provider_;
+  raw_ptr<service_manager::LocalInterfaceProvider, ExperimentalRenderer>
+      embedder_provider_;
 
   // Interface to the SpellCheckHost.
   mojo::Remote<spellcheck::mojom::SpellCheckHost> spell_check_host_;

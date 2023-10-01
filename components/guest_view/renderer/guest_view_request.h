@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "v8/include/v8-forward.h"
@@ -50,9 +51,9 @@ class GuestViewAttachRequest {
  private:
   void OnAcknowledged();
 
-  GuestViewContainer* const container_;
+  const raw_ptr<GuestViewContainer, ExperimentalRenderer> container_;
   v8::Global<v8::Function> callback_;
-  v8::Isolate* const isolate_;
+  const raw_ptr<v8::Isolate, ExperimentalRenderer> isolate_;
   const int render_frame_routing_id_;
   const int guest_instance_id_;
   const base::Value::Dict params_;

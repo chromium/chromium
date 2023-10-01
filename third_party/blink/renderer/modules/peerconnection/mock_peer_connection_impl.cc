@@ -11,6 +11,7 @@
 
 #include "base/check_op.h"
 #include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "third_party/blink/renderer/modules/peerconnection/mock_data_channel_impl.h"
@@ -110,7 +111,8 @@ class MockDtmfSender : public DtmfSenderInterface {
   int inter_tone_gap() const override { return inter_tone_gap_; }
 
  private:
-  DtmfSenderObserverInterface* observer_ = nullptr;
+  raw_ptr<DtmfSenderObserverInterface, ExperimentalRenderer> observer_ =
+      nullptr;
   std::string tones_;
   int duration_ = 0;
   int inter_tone_gap_ = 0;

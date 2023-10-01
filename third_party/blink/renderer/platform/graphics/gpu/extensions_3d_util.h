@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
@@ -46,7 +47,7 @@ class PLATFORM_EXPORT Extensions3DUtil final {
   Extensions3DUtil(gpu::gles2::GLES2Interface*);
   void InitializeExtensions();
 
-  gpu::gles2::GLES2Interface* gl_;
+  raw_ptr<gpu::gles2::GLES2Interface, ExperimentalRenderer> gl_;
   HashSet<String> enabled_extensions_;
   HashSet<String> requestable_extensions_;
   bool is_valid_;

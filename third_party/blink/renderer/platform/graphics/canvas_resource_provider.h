@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_CANVAS_RESOURCE_PROVIDER_H_
 
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "cc/paint/skia_paint_canvas.h"
 #include "cc/raster/playback_image_provider.h"
@@ -391,7 +392,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
   size_t max_recorded_op_bytes_;
   size_t max_pinned_image_bytes_;
 
-  CanvasResourceHost* resource_host_ = nullptr;
+  raw_ptr<CanvasResourceHost, ExperimentalRenderer> resource_host_ = nullptr;
 
   bool clear_frame_ = true;
   FlushReason last_flush_reason_ = FlushReason::kNone;

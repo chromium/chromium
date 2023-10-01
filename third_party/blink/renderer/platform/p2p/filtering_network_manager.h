@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_P2P_FILTERING_NETWORK_MANAGER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_P2P_FILTERING_NETWORK_MANAGER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
@@ -97,7 +98,7 @@ class FilteringNetworkManager : public rtc::NetworkManagerBase,
   // The class is created by the main thread but used by the worker thread.
   THREAD_CHECKER(thread_checker_);
 
-  media::MediaPermission* media_permission_;
+  raw_ptr<media::MediaPermission, ExperimentalRenderer> media_permission_;
 
   int pending_permission_checks_ = 0;
 

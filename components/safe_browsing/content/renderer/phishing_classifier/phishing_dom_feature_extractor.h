@@ -14,6 +14,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/tick_clock.h"
 #include "third_party/blink/public/web/web_document.h"
@@ -121,10 +122,11 @@ class PhishingDOMFeatureExtractor {
   // description of which features are computed.
   void InsertFeatures();
 
-  const base::TickClock* clock_;
+  raw_ptr<const base::TickClock, ExperimentalRenderer> clock_;
 
   // The output parameters from the most recent call to ExtractFeatures().
-  FeatureMap* features_;  // The caller keeps ownership of this.
+  raw_ptr<FeatureMap, ExperimentalRenderer>
+      features_;  // The caller keeps ownership of this.
   DoneCallback done_callback_;
 
   // The current (sub-)document that we are processing.  May be a null document

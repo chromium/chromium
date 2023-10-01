@@ -9,6 +9,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "cc/paint/paint_canvas.h"
 #include "cc/resources/shared_bitmap_id_registrar.h"
@@ -192,13 +193,13 @@ class CONTENT_EXPORT PepperGraphics2DHost
       const gpu::SyncToken& sync_token,
       bool lost);
 
-  RendererPpapiHost* renderer_ppapi_host_;
+  raw_ptr<RendererPpapiHost, ExperimentalRenderer> renderer_ppapi_host_;
 
   scoped_refptr<PPB_ImageData_Impl> image_data_;
 
   // Non-owning pointer to the plugin instance this context is currently bound
   // to, if any. If the context is currently unbound, this will be NULL.
-  PepperPluginInstanceImpl* bound_instance_;
+  raw_ptr<PepperPluginInstanceImpl, ExperimentalRenderer> bound_instance_;
 
   // Keeps track of all drawing commands queued before a Flush call.
   struct QueuedOperation;

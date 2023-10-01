@@ -9,6 +9,7 @@
 
 #include "base/containers/contains.h"
 #include "base/dcheck_is_on.h"
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread_restrictions.h"
 #include "cc/trees/raster_context_provider_wrapper.h"
@@ -122,7 +123,8 @@ class Context : public media::RenderableGpuMemoryBufferVideoFramePool::Context {
     return manager;
   }
 
-  media::GpuVideoAcceleratorFactories* gpu_factories_;
+  raw_ptr<media::GpuVideoAcceleratorFactories, ExperimentalRenderer>
+      gpu_factories_;
   scoped_refptr<viz::RasterContextProvider> raster_context_provider_;
 };
 

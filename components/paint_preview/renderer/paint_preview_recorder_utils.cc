@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/paint/paint_image.h"
@@ -146,7 +147,7 @@ class OpConverterAndTracker {
   }
 
  private:
-  PaintPreviewTracker* tracker_;
+  raw_ptr<PaintPreviewTracker, ExperimentalRenderer> tracker_;
   absl::variant<absl::monostate, cc::DrawImageOp, cc::DrawImageRectOp>
       converted_op_;
 };

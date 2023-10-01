@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_PEERCONNECTION_GPU_CODEC_SUPPORT_WAITER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_PEERCONNECTION_GPU_CODEC_SUPPORT_WAITER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "media/video/gpu_video_accelerator_factories.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -26,7 +27,8 @@ class GpuCodecSupportWaiter {
  private:
   bool IsCodecSupportKnown(bool is_encoder) const;
 
-  media::GpuVideoAcceleratorFactories* gpu_factories_;
+  raw_ptr<media::GpuVideoAcceleratorFactories, ExperimentalRenderer>
+      gpu_factories_;
 
   const absl::optional<base::TimeDelta> wait_timeout_ms_;
 };

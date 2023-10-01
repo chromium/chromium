@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_task_queue.h"
@@ -110,9 +111,10 @@ class PLATFORM_EXPORT FrameTaskQueueController {
   static MainThreadTaskQueue::QueueType QueueTypeFromQueueTraits(
       MainThreadTaskQueue::QueueTraits);
 
-  MainThreadSchedulerImpl* const main_thread_scheduler_impl_;
-  FrameSchedulerImpl* const frame_scheduler_impl_;
-  Delegate* const delegate_;
+  const raw_ptr<MainThreadSchedulerImpl, ExperimentalRenderer>
+      main_thread_scheduler_impl_;
+  const raw_ptr<FrameSchedulerImpl, ExperimentalRenderer> frame_scheduler_impl_;
+  const raw_ptr<Delegate, ExperimentalRenderer> delegate_;
 
   using TaskQueueMap =
       WTF::HashMap<MainThreadTaskQueue::QueueTraitsKeyType,

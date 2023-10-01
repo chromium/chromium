@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/graphics/gpu/xr_webgl_drawing_buffer.h"
 
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/GLES2/gl2extchromium.h"
@@ -39,7 +40,7 @@ class ScopedPixelLocalStorageInterrupt {
   }
 
  private:
-  blink::DrawingBuffer::Client* const client_;
+  const raw_ptr<blink::DrawingBuffer::Client, ExperimentalRenderer> client_;
 };
 
 }  // namespace

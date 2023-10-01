@@ -10,6 +10,7 @@
 #include <set>
 
 #include "base/containers/unique_ptr_adapters.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/weak_ptr.h"
 #include "device/gamepad/public/cpp/gamepads.h"
@@ -56,7 +57,7 @@ class GamepadController : public base::SupportsWeakPtr<GamepadController> {
         mojo::PendingRemote<device::mojom::GamepadObserver> observer) override;
 
    private:
-    GamepadController* controller_;
+    raw_ptr<GamepadController, ExperimentalRenderer> controller_;
     mojo::Receiver<device::mojom::GamepadMonitor> receiver_{this};
     mojo::Remote<device::mojom::GamepadObserver> observer_remote_;
     std::bitset<device::Gamepads::kItemsLengthCap> missed_dispatches_;
@@ -102,7 +103,8 @@ class GamepadController : public base::SupportsWeakPtr<GamepadController> {
   base::ReadOnlySharedMemoryRegion shared_memory_region_;
   base::WritableSharedMemoryMapping shared_memory_mapping_;
 
-  device::GamepadHardwareBuffer* gamepads_ = nullptr;
+  raw_ptr<device::GamepadHardwareBuffer, ExperimentalRenderer> gamepads_ =
+      nullptr;
 
   base::WeakPtrFactory<GamepadController> weak_factory_{this};
 };

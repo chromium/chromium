@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_PEERCONNECTION_RTC_VIDEO_DECODER_FACTORY_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_PEERCONNECTION_RTC_VIDEO_DECODER_FACTORY_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "third_party/blink/renderer/platform/peerconnection/gpu_codec_support_waiter.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -56,7 +57,8 @@ class PLATFORM_EXPORT RTCVideoDecoderFactory
 
  private:
   void CheckAndWaitDecoderSupportStatusIfNeeded() const;
-  media::GpuVideoAcceleratorFactories* gpu_factories_;
+  raw_ptr<media::GpuVideoAcceleratorFactories, ExperimentalRenderer>
+      gpu_factories_;
   base::WeakPtr<media::DecoderFactory> decoder_factory_;
 
   scoped_refptr<base::SequencedTaskRunner> media_task_runner_;

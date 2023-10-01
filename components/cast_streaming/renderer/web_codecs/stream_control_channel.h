@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
@@ -67,7 +68,7 @@ class StreamControlChannel : public mojom::DemuxerConnector,
   bool has_javascript_been_configured_ = false;
   EnableReceiverCallback enable_receiver_callback_;
 
-  Client* const client_;
+  const raw_ptr<Client, ExperimentalRenderer> client_;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 

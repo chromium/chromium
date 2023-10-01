@@ -11,6 +11,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
@@ -230,7 +231,8 @@ class MODULES_EXPORT WebMediaPlayerMSCompositor
   // is not |nullptr| while the compositor is actively using this
   // VideoFrameProvider. This will be set to |nullptr| when the compositor stops
   // serving this VideoFrameProvider.
-  cc::VideoFrameProvider::Client* video_frame_provider_client_;
+  raw_ptr<cc::VideoFrameProvider::Client, ExperimentalRenderer>
+      video_frame_provider_client_;
 
   // |current_frame_| is updated only on compositor thread. The object it
   // holds can be freed on the compositor thread if it is the last to hold a

@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TESTING_URL_LOADER_MOCK_H_
 
 #include <memory>
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -81,8 +82,8 @@ class URLLoaderMock : public URLLoader {
  private:
   void Cancel();
 
-  URLLoaderMockFactoryImpl* factory_ = nullptr;
-  URLLoaderClient* client_ = nullptr;
+  raw_ptr<URLLoaderMockFactoryImpl, ExperimentalRenderer> factory_ = nullptr;
+  raw_ptr<URLLoaderClient, ExperimentalRenderer> client_ = nullptr;
   bool is_deferred_ = false;
 
   base::WeakPtrFactory<URLLoaderMock> weak_factory_{this};

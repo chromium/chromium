@@ -13,6 +13,7 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/supports_user_data.h"
@@ -46,7 +47,7 @@ struct APIEventPerContextData : public base::SupportsUserData::Data {
 
   // The associated v8::Isolate. Since this object is cleaned up at context
   // destruction, this should always be valid.
-  v8::Isolate* isolate;
+  raw_ptr<v8::Isolate, ExperimentalRenderer> isolate;
 
   // A map from event name -> event emitter.
   std::map<std::string, v8::Global<v8::Object>> emitters;

@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "extensions/renderer/bindings/api_binding_types.h"
 #include "v8/include/v8.h"
@@ -114,7 +115,7 @@ class APIBindingHooks {
 
   // The request handler used to resolve asynchronous responses associated with
   // handle request hooks. Guaranteed to outlive this object.
-  APIRequestHandler* const request_handler_;
+  const raw_ptr<APIRequestHandler, ExperimentalRenderer> request_handler_;
 
   std::unique_ptr<APIBindingHooksDelegate> delegate_;
 

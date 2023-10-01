@@ -10,6 +10,7 @@
 
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/message_loop/message_pump.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
@@ -77,7 +78,7 @@ class MainThreadTest : public testing::Test {
   base::SimpleTestTickClock clock_;
   std::unique_ptr<MainThreadSchedulerImpl> scheduler_;
   std::unique_ptr<ScopedSchedulerOverrider> scheduler_overrider_;
-  Thread* thread_;
+  raw_ptr<Thread, ExperimentalRenderer> thread_;
 };
 
 TEST_F(MainThreadTest, TestTaskObserver) {

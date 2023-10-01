@@ -11,6 +11,7 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread_checker.h"
 #include "content/common/content_export.h"
@@ -124,7 +125,8 @@ class CONTENT_EXPORT RendererWebAudioDeviceImpl
   const blink::WebAudioLatencyHint latency_hint_;
 
   // The WebAudio renderer's callback; directs to `AudioDestination::Render()`.
-  media::AudioRendererSink::RenderCallback* const webaudio_callback_;
+  const raw_ptr<media::AudioRendererSink::RenderCallback, ExperimentalRenderer>
+      webaudio_callback_;
 
   // To avoid the need for locking, ensure the control methods of the
   // blink::WebAudioDevice implementation are called on the same thread.

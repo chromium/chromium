@@ -5,6 +5,7 @@
 #ifndef CONTENT_RENDERER_PEPPER_PEPPER_IN_PROCESS_RESOURCE_CREATION_H_
 #define CONTENT_RENDERER_PEPPER_PEPPER_IN_PROCESS_RESOURCE_CREATION_H_
 
+#include "base/memory/raw_ptr.h"
 #include "content/renderer/pepper/resource_creation_impl.h"
 #include "ppapi/proxy/connection.h"
 
@@ -67,7 +68,7 @@ class PepperInProcessResourceCreation : public ResourceCreationImpl {
 
  private:
   // Non-owning pointer to the host for the current plugin.
-  RendererPpapiHostImpl* host_impl_;
+  raw_ptr<RendererPpapiHostImpl, ExperimentalRenderer> host_impl_;
 };
 
 }  // namespace content

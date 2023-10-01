@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_SURFACE_LAYER_BRIDGE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_SURFACE_LAYER_BRIDGE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
 #include "components/viz/common/surfaces/surface_id.h"
@@ -66,7 +67,7 @@ class PLATFORM_EXPORT SurfaceLayerBridge
   scoped_refptr<cc::SolidColorLayer> solid_color_layer_;
 
   // The |observer_| handles unregistering the contents layer on its own.
-  WebSurfaceLayerBridgeObserver* observer_;
+  raw_ptr<WebSurfaceLayerBridgeObserver, ExperimentalRenderer> observer_;
   cc::UpdateSubmissionStateCB update_submission_state_callback_;
   viz::ParentLocalSurfaceIdAllocator parent_local_surface_id_allocator_;
   mojo::Receiver<blink::mojom::blink::EmbeddedFrameSinkClient> receiver_{this};

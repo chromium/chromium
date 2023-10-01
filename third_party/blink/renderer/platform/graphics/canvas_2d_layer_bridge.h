@@ -29,6 +29,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/rand_util.h"
 #include "build/build_config.h"
@@ -156,7 +157,8 @@ class PLATFORM_EXPORT Canvas2DLayerBridge {
   };
   mutable SnapshotState snapshot_state_;
 
-  CanvasResourceHost* resource_host_;
+  raw_ptr<CanvasResourceHost, ExperimentalRenderer> resource_host_;
+  viz::TransferableResource previous_frame_resource_;
 
   absl::optional<cc::PaintRecord> last_recording_;
 

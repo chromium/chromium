@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_THERMAL_RESOURCE_H_
 
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
@@ -60,7 +61,8 @@ class MODULES_EXPORT ThermalResource : public webrtc::Resource {
 
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
   base::Lock lock_;
-  webrtc::ResourceListener* listener_ GUARDED_BY(&lock_) = nullptr;
+  raw_ptr<webrtc::ResourceListener, ExperimentalRenderer> listener_
+      GUARDED_BY(&lock_) = nullptr;
   mojom::blink::DeviceThermalState measurement_ GUARDED_BY(&lock_) =
       mojom::blink::DeviceThermalState::kUnknown;
   size_t measurement_id_ GUARDED_BY(&lock_) = 0u;

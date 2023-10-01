@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
@@ -251,7 +252,7 @@ class WatchTimeReporterTest
     }
 
    private:
-    WatchTimeReporterTest* parent_;
+    raw_ptr<WatchTimeReporterTest, ExperimentalRenderer> parent_;
   };
 
   class FakeMediaMetricsProvider : public media::mojom::MediaMetricsProvider {
@@ -302,7 +303,7 @@ class WatchTimeReporterTest
     void SetAudioPipelineInfo(const media::AudioPipelineInfo& info) override {}
 
    private:
-    WatchTimeReporterTest* parent_;
+    raw_ptr<WatchTimeReporterTest, ExperimentalRenderer> parent_;
   };
 
   WatchTimeReporterTest()

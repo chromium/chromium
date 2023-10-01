@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "v8/include/v8-forward.h"
 
 namespace extensions {
@@ -45,7 +46,7 @@ class SafeBuiltins {
   v8::Local<v8::Object> GetPromise() const;
 
  private:
-  ScriptContext* context_;
+  raw_ptr<ScriptContext, ExperimentalRenderer> context_;
 };
 
 }  //  namespace extensions

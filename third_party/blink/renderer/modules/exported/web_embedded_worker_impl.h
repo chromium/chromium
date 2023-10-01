@@ -33,6 +33,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/cache_storage/cache_storage.mojom-blink-forward.h"
@@ -103,7 +104,8 @@ class MODULES_EXPORT WebEmbeddedWorkerImpl final : public WebEmbeddedWorker {
       const WebFetchClientSettingsObject& passed_settings_object);
 
   // Client must remain valid through the entire life time of the worker.
-  WebServiceWorkerContextClient* const worker_context_client_;
+  const raw_ptr<WebServiceWorkerContextClient, ExperimentalRenderer>
+      worker_context_client_;
 
   std::unique_ptr<ServiceWorkerThread> worker_thread_;
 

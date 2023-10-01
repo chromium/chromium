@@ -33,6 +33,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/types/expected.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
@@ -715,7 +716,7 @@ class OpenCursorCallback final : public NativeEventListener {
   }
 
  private:
-  v8_inspector::V8InspectorSession* v8_session_;
+  raw_ptr<v8_inspector::V8InspectorSession, ExperimentalRenderer> v8_session_;
   Member<ScriptState> script_state_;
   std::unique_ptr<RequestDataCallback> request_callback_;
   int skip_count_;
@@ -796,7 +797,7 @@ class DataLoader final : public ExecutableWithDatabase<RequestDataCallback> {
         skip_count_(skip_count),
         page_size_(page_size) {}
 
-  v8_inspector::V8InspectorSession* v8_session_;
+  raw_ptr<v8_inspector::V8InspectorSession, ExperimentalRenderer> v8_session_;
   std::unique_ptr<RequestDataCallback> request_callback_;
   String object_store_name_;
   String index_name_;
@@ -958,7 +959,7 @@ class GetMetadataListener final : public NativeEventListener {
   void NotifySubtaskDone(scoped_refptr<GetMetadata> owner,
                          const String& error) const;
   scoped_refptr<GetMetadata> owner_;
-  int64_t* result_;
+  raw_ptr<int64_t, ExperimentalRenderer> result_;
 };
 
 class GetMetadata final : public ExecutableWithDatabase<GetMetadataCallback> {

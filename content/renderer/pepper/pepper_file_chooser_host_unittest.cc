@@ -12,6 +12,7 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "content/public/test/render_view_test.h"
@@ -90,7 +91,7 @@ class MockFileChooser : public FileChooser {
       const base::FilePath& directory_path,
       EnumerateChosenDirectoryCallback callback) override {}
 
-  blink::BrowserInterfaceBrokerProxy* broker_;
+  raw_ptr<blink::BrowserInterfaceBrokerProxy, ExperimentalRenderer> broker_;
   mojo::ReceiverSet<FileChooser> receivers_;
   OpenFileChooserCallback callback_;
   FileChooserParamsPtr params_;

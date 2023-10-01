@@ -7,6 +7,7 @@
 
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "media/base/scoped_async_trace.h"
@@ -111,7 +112,8 @@ class MODULES_EXPORT ApplyConstraintsProcessor final
   std::unique_ptr<ScopedMediaStreamTrace> video_device_request_trace_;
 
   // TODO(crbug.com/704136): Change to use Member.
-  blink::MediaStreamVideoSource* video_source_ = nullptr;
+  raw_ptr<blink::MediaStreamVideoSource, ExperimentalRenderer> video_source_ =
+      nullptr;
   base::OnceClosure request_completed_cb_;
 
   const Member<LocalFrame> frame_;

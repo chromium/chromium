@@ -62,7 +62,8 @@ class BLINK_PLATFORM_EXPORT URLLoaderFactory {
  protected:
   scoped_refptr<network::SharedURLLoaderFactory> loader_factory_;
   Vector<String> cors_exempt_header_list_;
-  base::WaitableEvent* terminate_sync_load_event_ = nullptr;
+  raw_ptr<base::WaitableEvent, ExperimentalRenderer>
+      terminate_sync_load_event_ = nullptr;
 };
 
 // A test version of the above factory interface, which supports cloning the

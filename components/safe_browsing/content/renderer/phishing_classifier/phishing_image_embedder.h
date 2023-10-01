@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/safe_browsing/content/renderer/phishing_classifier/phishing_visual_feature_extractor.h"
 #include "components/safe_browsing/content/renderer/phishing_classifier/scorer.h"
@@ -73,7 +74,8 @@ class PhishingImageEmbedder {
   // Clears the current state of the ImageEmbedder.
   void Clear();
 
-  content::RenderFrame* render_frame_;  // owns us.
+  raw_ptr<content::RenderFrame, ExperimentalRenderer>
+      render_frame_;  // owns us.
   std::unique_ptr<PhishingVisualFeatureExtractor> visual_extractor_;
 
   // State for any in-progress image embedding extraction.

@@ -11,6 +11,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/sync_socket.h"
 #include "content/renderer/pepper/pepper_device_enumeration_host_helper.h"
@@ -68,13 +69,13 @@ class PepperAudioOutputHost : public ppapi::host::ResourceHost {
   void SendOpenReply(int32_t result);
 
   // Non-owning pointer.
-  RendererPpapiHostImpl* renderer_ppapi_host_;
+  raw_ptr<RendererPpapiHostImpl, ExperimentalRenderer> renderer_ppapi_host_;
 
   ppapi::host::ReplyMessageContext open_context_;
 
   // Audio output object that we delegate audio IPC through.
   // We don't own this pointer but are responsible for calling Shutdown on it.
-  PepperPlatformAudioOutputDev* audio_output_;
+  raw_ptr<PepperPlatformAudioOutputDev, ExperimentalRenderer> audio_output_;
 
   PepperDeviceEnumerationHostHelper enumeration_helper_;
 };

@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "extensions/renderer/ipc_message_sender.h"
 #include "extensions/renderer/object_backed_native_handler.h"
@@ -65,7 +66,7 @@ class APIActivityLogger : public ObjectBackedNativeHandler {
   //
   // Valid to use so long as there's a valid ScriptContext associated with the
   // call-site.
-  IPCMessageSender* ipc_sender_ = nullptr;
+  raw_ptr<IPCMessageSender, ExperimentalRenderer> ipc_sender_ = nullptr;
 };
 
 }  // namespace extensions

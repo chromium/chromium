@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
@@ -100,7 +101,8 @@ class CONTENT_EXPORT WebServiceWorkerProviderImpl
   // |provider_client_| is implemented by blink::SWContainer and this pointer's
   // nullified when its execution context is destroyed. (|this| is attached to
   // the same context, but could live longer until the context is GC'ed)
-  blink::WebServiceWorkerProviderClient* provider_client_;
+  raw_ptr<blink::WebServiceWorkerProviderClient, ExperimentalRenderer>
+      provider_client_;
 
   base::WeakPtrFactory<WebServiceWorkerProviderImpl> weak_factory_{this};
 };

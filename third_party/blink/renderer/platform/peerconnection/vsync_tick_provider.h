@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
@@ -81,7 +82,7 @@ class PLATFORM_EXPORT VSyncTickProvider : public MetronomeSource::TickProvider {
     kDrivenByVSync
   };
 
-  VSyncProvider& vsync_provider_;
+  const raw_ref<VSyncProvider, ExperimentalRenderer> vsync_provider_;
   const scoped_refptr<base::SequencedTaskRunner> sequence_;
   SEQUENCE_CHECKER(sequence_checker_);
 

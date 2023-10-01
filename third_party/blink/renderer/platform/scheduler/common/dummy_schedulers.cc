@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/scheduler/public/dummy_schedulers.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_scheduler_impl.h"
@@ -213,7 +214,7 @@ class SimpleThread : public MainThread {
   bool IsCurrentThread() const { return WTF::IsMainThread(); }
 
  private:
-  ThreadScheduler* scheduler_;
+  raw_ptr<ThreadScheduler, ExperimentalRenderer> scheduler_;
 };
 
 class DummyWebMainThreadScheduler : public WebThreadScheduler,

@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -100,7 +101,8 @@ class MODULES_EXPORT MojoAudioOutputIPC
       receiver_{this};
   mojo::Remote<media::mojom::blink::AudioOutputStreamProvider> stream_provider_;
   mojo::Remote<media::mojom::blink::AudioOutputStream> stream_;
-  media::AudioOutputIPCDelegate* delegate_ = nullptr;
+  raw_ptr<media::AudioOutputIPCDelegate, ExperimentalRenderer> delegate_ =
+      nullptr;
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
 
   // To make sure we don't send an "authorization completed" callback for a

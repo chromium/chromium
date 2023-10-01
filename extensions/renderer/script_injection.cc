@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
@@ -68,7 +69,7 @@ class ScriptInjection::FrameWatcher : public content::RenderFrameObserver {
   void WillDetach() override { injection_->invalidate_render_frame(); }
   void OnDestruct() override { injection_->invalidate_render_frame(); }
 
-  ScriptInjection* injection_;
+  raw_ptr<ScriptInjection, ExperimentalRenderer> injection_;
 };
 
 ScriptInjection::ScriptInjection(

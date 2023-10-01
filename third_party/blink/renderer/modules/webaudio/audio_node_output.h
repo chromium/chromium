@@ -26,6 +26,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_AUDIO_NODE_OUTPUT_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_AUDIO_NODE_OUTPUT_H_
 
+#include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node.h"
@@ -91,14 +92,14 @@ class MODULES_EXPORT AudioNodeOutput final {
 
  private:
   // Can be called from any thread.
-  AudioHandler& Handler() const { return handler_; }
+  AudioHandler& Handler() const { return *handler_; }
   DeferredTaskHandler& GetDeferredTaskHandler() const {
-    return handler_.GetDeferredTaskHandler();
+    return handler_->GetDeferredTaskHandler();
   }
 
   // This reference is safe because the AudioHandler owns this AudioNodeOutput
   // object.
-  AudioHandler& handler_;
+  const raw_ref<AudioHandler, ExperimentalRenderer> handler_;
 
   // fanOutCount() is the number of AudioNodeInputs that we're connected to.
   // This method should not be called in audio thread rendering code, instead

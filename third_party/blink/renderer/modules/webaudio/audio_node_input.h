@@ -26,6 +26,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_AUDIO_NODE_INPUT_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_AUDIO_NODE_INPUT_H_
 
+#include "base/memory/raw_ref.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_summing_junction.h"
@@ -56,7 +57,7 @@ class MODULES_EXPORT AudioNodeInput final : public AudioSummingJunction {
   void DidUpdate() override;
 
   // Can be called from any thread.
-  AudioHandler& Handler() const { return handler_; }
+  AudioHandler& Handler() const { return *handler_; }
 
   // pull() processes all of the AudioNodes connected to us.
   // In the case of multiple connections it sums the result into an internal
@@ -84,7 +85,7 @@ class MODULES_EXPORT AudioNodeInput final : public AudioSummingJunction {
  private:
   // This reference is safe because the AudioHandler owns this AudioNodeInput
   // object.
-  AudioHandler& handler_;
+  const raw_ref<AudioHandler, ExperimentalRenderer> handler_;
 
   // m_disabledOutputs contains the AudioNodeOutputs which are disabled (will
   // not be processed) by the audio graph rendering.  But, from JavaScript's

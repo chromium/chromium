@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "content/common/content_export.h"
 #include "content/public/renderer/renderer_ppapi_host.h"
 #include "content/renderer/pepper/content_renderer_pepper_host_factory.h"
@@ -132,11 +133,11 @@ class RendererPpapiHostImpl : public RendererPpapiHost {
   // make sure it's not trying to spoof another instance.
   PepperPluginInstanceImpl* GetAndValidateInstance(PP_Instance instance) const;
 
-  PluginModule* module_;  // Non-owning pointer.
+  raw_ptr<PluginModule, ExperimentalRenderer> module_;  // Non-owning pointer.
 
   // The dispatcher we use to send messagse when the plugin is out-of-process.
   // Will be null when running in-process. Non-owning pointer.
-  ppapi::proxy::HostDispatcher* dispatcher_;
+  raw_ptr<ppapi::proxy::HostDispatcher, ExperimentalRenderer> dispatcher_;
 
   std::unique_ptr<ppapi::host::PpapiHost> ppapi_host_;
 

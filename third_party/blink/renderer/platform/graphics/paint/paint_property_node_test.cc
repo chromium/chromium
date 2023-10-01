@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/graphics/paint/paint_property_node.h"
 
+#include "base/memory/raw_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/graphics/paint/property_tree_state.h"
 #include "third_party/blink/renderer/platform/testing/paint_property_test_helpers.h"
@@ -15,7 +16,7 @@ class PaintPropertyNodeTest : public testing::Test {
  protected:
   template <typename NodeType>
   struct Tree {
-    const NodeType* root;
+    raw_ptr<const NodeType, ExperimentalRenderer> root;
     scoped_refptr<NodeType> ancestor;
     scoped_refptr<NodeType> child1;
     scoped_refptr<NodeType> child2;

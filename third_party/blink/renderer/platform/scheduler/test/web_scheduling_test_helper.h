@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -64,7 +65,7 @@ class WebSchedulingTestHelper {
                      const Vector<TestTaskSpecEntry>& test_spec);
 
  private:
-  Delegate& delegate_;
+  const raw_ref<Delegate, ExperimentalRenderer> delegate_;
   Vector<std::unique_ptr<WebSchedulingTaskQueue>> task_queues_;
   Vector<std::unique_ptr<WebSchedulingTaskQueue>> continuation_task_queues_;
 };

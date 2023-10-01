@@ -7,6 +7,7 @@
 #include <stdint.h>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/bind_post_task.h"
@@ -806,7 +807,7 @@ class AudioTrackRecorderTest : public testing::TestWithParam<ATRTestParams> {
   int excess_input_ = 0;
 
   // Decoder for verifying data was properly encoded.
-  OpusDecoder* opus_decoder_ = nullptr;
+  raw_ptr<OpusDecoder, ExperimentalRenderer> opus_decoder_ = nullptr;
   std::unique_ptr<float[]> opus_buffer_;
   int opus_buffer_size_;
 

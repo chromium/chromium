@@ -29,6 +29,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_key.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -145,7 +146,7 @@ class MODULES_EXPORT IDBKeyRange final : public ScriptWrappable {
   // Non-owning reference to the range's upper key.
   //
   // Points to either upper_if_distinct_ or lower_, or is null.
-  IDBKey* const upper_;
+  const raw_ptr<IDBKey, ExperimentalRenderer> upper_;
 
   const LowerBoundType lower_type_;
   const UpperBoundType upper_type_;

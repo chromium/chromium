@@ -10,6 +10,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
@@ -108,7 +109,7 @@ class SingleThreadIdleTaskRunner
   scoped_refptr<base::SingleThreadTaskRunner> control_task_runner_;
   std::multimap<base::TimeTicks, DelayedIdleTask> delayed_idle_tasks_
       ALLOW_DISCOURAGED_TYPE("TODO(crbug.com/1404327)");
-  Delegate* delegate_;  // NOT OWNED
+  raw_ptr<Delegate, ExperimentalRenderer> delegate_;  // NOT OWNED
   base::WeakPtr<SingleThreadIdleTaskRunner> weak_scheduler_ptr_;
   base::WeakPtrFactory<SingleThreadIdleTaskRunner> weak_factory_{this};
 };

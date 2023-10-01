@@ -12,6 +12,7 @@
 #include <string>
 
 #include "base/containers/id_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
@@ -248,7 +249,8 @@ class CONTENT_EXPORT RendererBlinkPlatformImpl : public BlinkPlatformImpl {
   bool is_locked_to_site_;
 
   // NOT OWNED
-  blink::scheduler::WebThreadScheduler* main_thread_scheduler_;
+  raw_ptr<blink::scheduler::WebThreadScheduler, ExperimentalRenderer>
+      main_thread_scheduler_;
 
   // Event that signals `io_thread_id_` is set and ready to be read.
   mutable base::WaitableEvent io_thread_id_ready_event_;

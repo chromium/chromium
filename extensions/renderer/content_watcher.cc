@@ -8,6 +8,7 @@
 
 #include <set>
 
+#include "base/memory/raw_ref.h"
 #include "base/strings/string_piece.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_frame_observer.h"
@@ -169,11 +170,13 @@ void ContentWatcher::OnWatchPages(
         : css_selectors(css_selectors) {}
 
     bool Visit(content::RenderFrame* frame) override {
-      FrameContentWatcher::Get(frame)->UpdateCSSSelectors(css_selectors);
+      FrameContentWatcher::Get(frame)->UpdateCSSSelectors(*css_selectors);
       return true;  // Continue visiting.
     }
 
-    const blink::WebVector<blink::WebString>& css_selectors;
+    const raw_ref<const blink::WebVector<blink::WebString>,
+                  ExperimentalRenderer>
+        css_selectors;
   };
   WatchSelectors visitor(css_selectors_);
   content::RenderFrame::ForEach(&visitor);

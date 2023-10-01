@@ -15,6 +15,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/synchronization/waitable_event.h"
@@ -233,7 +234,8 @@ class RTCVideoDecoderAdapter::Impl {
   void OnDecodeDone(media::DecoderStatus status);
   void OnOutput(scoped_refptr<media::VideoFrame> frame);
 
-  media::GpuVideoAcceleratorFactories* const gpu_factories_;
+  const raw_ptr<media::GpuVideoAcceleratorFactories, ExperimentalRenderer>
+      gpu_factories_;
 
   // Set on Initialize().
   std::unique_ptr<media::MediaLog> media_log_;
@@ -242,7 +244,8 @@ class RTCVideoDecoderAdapter::Impl {
 
   int32_t outstanding_decode_requests_ = 0;
   absl::optional<base::TimeTicks> start_time_;
-  webrtc::DecodedImageCallback* decode_complete_callback_ = nullptr;
+  raw_ptr<webrtc::DecodedImageCallback, ExperimentalRenderer>
+      decode_complete_callback_ = nullptr;
   int32_t consecutive_error_count_ = 0;
   // Requests that have not been submitted to the decoder yet.
   WTF::Deque<scoped_refptr<media::DecoderBuffer>> pending_buffers_;

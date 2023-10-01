@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "media/learning/common/learning_task_controller.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -77,7 +78,8 @@ class LearningExperimentHelperTest : public testing::Test {
   }
 
   LearningTask task_;
-  MockLearningTaskController* controller_raw_ = nullptr;
+  raw_ptr<MockLearningTaskController, ExperimentalRenderer> controller_raw_ =
+      nullptr;
   std::unique_ptr<LearningExperimentHelper> helper_;
 
   FeatureDictionary dict_;

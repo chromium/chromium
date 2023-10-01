@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_ML_ML_MODEL_LOADER_TEST_UTIL_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ML_ML_MODEL_LOADER_TEST_UTIL_H_
 
+#include "base/memory/raw_ref.h"
 #include "components/ml/mojom/ml_service.mojom-blink.h"
 #include "components/ml/mojom/web_platform_model.mojom-blink.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -52,7 +53,8 @@ class ScopedSetMLServiceBinder {
   ~ScopedSetMLServiceBinder();
 
  private:
-  const BrowserInterfaceBrokerProxy& interface_broker_;
+  const raw_ref<const BrowserInterfaceBrokerProxy, ExperimentalRenderer>
+      interface_broker_;
 };
 
 // A fake MLModelLoader Mojo interface implementation that backs a Blink

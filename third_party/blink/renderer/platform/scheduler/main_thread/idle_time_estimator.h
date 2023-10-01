@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_MAIN_THREAD_IDLE_TIME_ESTIMATOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_MAIN_THREAD_IDLE_TIME_ESTIMATOR_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/task/task_observer.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
@@ -48,7 +49,8 @@ class PLATFORM_EXPORT IdleTimeEstimator : public base::TaskObserver {
 
  private:
   cc::RollingTimeDeltaHistory per_frame_compositor_task_runtime_;
-  const base::TickClock* time_source_;  // NOT OWNED
+  raw_ptr<const base::TickClock, ExperimentalRenderer>
+      time_source_;  // NOT OWNED
   double estimation_percentile_;
 
   base::TimeTicks task_start_time_;

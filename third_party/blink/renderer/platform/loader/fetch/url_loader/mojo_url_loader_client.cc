@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "mojo/public/cpp/system/data_pipe_drainer.h"
@@ -257,7 +258,7 @@ class MojoURLLoaderClient::BodyBuffer final
     owner_->FlushDeferredMessages();
   }
 
-  MojoURLLoaderClient* const owner_;
+  const raw_ptr<MojoURLLoaderClient, ExperimentalRenderer> owner_;
   mojo::ScopedDataPipeProducerHandle writable_;
   mojo::SimpleWatcher writable_watcher_;
   std::unique_ptr<mojo::DataPipeDrainer> pipe_drainer_;

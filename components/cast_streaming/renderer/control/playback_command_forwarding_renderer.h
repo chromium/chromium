@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "media/base/renderer.h"
@@ -136,7 +137,7 @@ class PlaybackCommandForwardingRenderer : public media::Renderer,
   // MojoRendererInitialize().
   mojo::AssociatedRemote<media::mojom::RendererClient> remote_renderer_client_;
 
-  RendererClient* upstream_renderer_client_;
+  raw_ptr<RendererClient, ExperimentalRenderer> upstream_renderer_client_;
 
   base::RepeatingTimer send_timestamp_update_caller_;
 

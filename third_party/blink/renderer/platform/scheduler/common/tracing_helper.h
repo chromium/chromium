@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/typed_macros.h"
@@ -90,7 +91,8 @@ class TraceableVariable {
   virtual void OnTraceLogEnabled() = 0;
 
  private:
-  TraceableVariableController* const controller_;  // Not owned.
+  const raw_ptr<TraceableVariableController, ExperimentalRenderer>
+      controller_;  // Not owned.
 };
 
 // TRACE_EVENT macros define static variable to cache a pointer to the state

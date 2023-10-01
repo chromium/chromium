@@ -7,6 +7,7 @@
 #include <unordered_map>
 
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
@@ -56,7 +57,7 @@ class SpellCheckProvider::DictionaryUpdateObserverImpl
   void OnDictionaryUpdated(const WebVector<WebString>& words_added) override;
 
  private:
-  SpellCheckProvider* owner_;
+  raw_ptr<SpellCheckProvider, ExperimentalRenderer> owner_;
 };
 
 SpellCheckProvider::DictionaryUpdateObserverImpl::DictionaryUpdateObserverImpl(

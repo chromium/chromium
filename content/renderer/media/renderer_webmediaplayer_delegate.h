@@ -11,6 +11,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/containers/id_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/default_tick_clock.h"
@@ -134,7 +135,7 @@ class CONTENT_EXPORT RendererWebMediaPlayerDelegate
 
   // Clock used for calculating when players have become stale. May be
   // overridden for testing.
-  const base::TickClock* tick_clock_;
+  raw_ptr<const base::TickClock, ExperimentalRenderer> tick_clock_;
 
   // Players with a video track.
   base::flat_set<int> players_with_video_;

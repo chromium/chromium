@@ -29,6 +29,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBDATABASE_DATABASE_THREAD_H_
 
 #include <memory>
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/thread_annotations.h"
@@ -84,7 +85,7 @@ class DatabaseThread final : public GarbageCollected<DatabaseThread> {
 
   std::unique_ptr<SQLTransactionClient> transaction_client_;
   CrossThreadPersistent<SQLTransactionCoordinator> transaction_coordinator_;
-  base::WaitableEvent* cleanup_sync_;
+  raw_ptr<base::WaitableEvent, ExperimentalRenderer> cleanup_sync_;
 
   base::Lock termination_requested_lock_;
   bool termination_requested_ GUARDED_BY(termination_requested_lock_);

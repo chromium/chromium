@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "extensions/common/mojom/event_dispatcher.mojom-forward.h"
 #include "extensions/renderer/bindings/api_binding_types.h"
 #include "extensions/renderer/bindings/api_event_listeners.h"
@@ -114,7 +115,7 @@ class APIEventHandler {
 
   // The exception handler associated with the bindings system; guaranteed to
   // outlive this object.
-  ExceptionHandler* const exception_handler_;
+  const raw_ptr<ExceptionHandler, ExperimentalRenderer> exception_handler_;
 
   // The response validator used to verify event arguments. Only non-null if
   // validation is enabled.

@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_ADAPTERS_ICE_TRANSPORT_PROXY_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_ADAPTERS_ICE_TRANSPORT_PROXY_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
@@ -88,7 +89,7 @@ class IceTransportProxy final {
   // Since the Host is deleted on the host thread (via OnTaskRunnerDeleter), as
   // long as this is alive it is safe to post tasks to it (using unretained).
   std::unique_ptr<IceTransportHost, base::OnTaskRunnerDeleter> host_;
-  Delegate* const delegate_;
+  const raw_ptr<Delegate, ExperimentalRenderer> delegate_;
 
   // This handle notifies scheduler about an active connection associated
   // with a frame. Handle should be destroyed when connection is closed.

@@ -9,6 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
@@ -177,7 +178,8 @@ class MediaStreamRemoteVideoSourceTest : public ::testing::Test {
   scoped_refptr<webrtc::VideoTrackSourceInterface> webrtc_video_source_;
   scoped_refptr<webrtc::VideoTrackInterface> webrtc_video_track_;
   // |remote_source_| is owned by |source_|.
-  MediaStreamRemoteVideoSourceUnderTest* remote_source_ = nullptr;
+  raw_ptr<MediaStreamRemoteVideoSourceUnderTest, ExperimentalRenderer>
+      remote_source_ = nullptr;
   Persistent<MediaStreamSource> source_;
   int number_of_successful_track_starts_ = 0;
   int number_of_failed_track_starts_ = 0;

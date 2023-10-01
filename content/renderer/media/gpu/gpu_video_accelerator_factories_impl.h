@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/callback_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
@@ -199,7 +200,8 @@ class CONTENT_EXPORT GpuVideoAcceleratorFactoriesImpl
 
   gfx::ColorSpace rendering_color_space_;
 
-  gpu::GpuMemoryBufferManager* const gpu_memory_buffer_manager_;
+  const raw_ptr<gpu::GpuMemoryBufferManager, ExperimentalRenderer>
+      gpu_memory_buffer_manager_;
 };
 
 }  // namespace content

@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/common/accessibility/read_anything.mojom.h"
 #include "chrome/renderer/accessibility/read_anything_app_model.h"
 #include "components/services/screen_ai/buildflags/buildflags.h"
@@ -228,7 +229,7 @@ class ReadAnythingAppController
                           int letter_spacing);
   void SetLanguageForTesting(const std::string& language_code);
 
-  content::RenderFrame* render_frame_;
+  raw_ptr<content::RenderFrame, ExperimentalRenderer> render_frame_;
   std::unique_ptr<AXTreeDistiller> distiller_;
   mojo::Remote<read_anything::mojom::UntrustedPageHandlerFactory>
       page_handler_factory_;

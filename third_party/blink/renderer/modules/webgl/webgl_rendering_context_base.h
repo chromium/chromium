@@ -30,6 +30,7 @@
 
 #include "base/check_op.h"
 #include "base/containers/lru_cache.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/numerics/checked_math.h"
 #include "base/task/single_thread_task_runner.h"
 #include "device/vr/public/mojom/vr_service.mojom-blink.h"
@@ -1062,7 +1063,10 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
     }
 
    private:
-    Member<T>& extension_field_;
+    // `extension_field_` is not a `raw_ref` because `Member<T>` denotes
+    // a type managed by Oilpan, i.e. memory that is not managed by
+    // PartitionAlloc.
+    RAW_PTR_EXCLUSION Member<T>& extension_field_;
     // ExtensionTracker holds it's own reference to the extension to ensure
     // that it is not deleted before this object's destructor is called
     Member<T> extension_;

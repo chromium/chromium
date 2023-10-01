@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "extensions/renderer/bindings/api_binding_types.h"
 #include "extensions/renderer/bindings/binding_access_checker.h"
@@ -179,7 +180,7 @@ class APISignature {
   std::unique_ptr<APISignature::ReturnsAsync> returns_async_;
 
   // The associated access checker; required to outlive this object.
-  const BindingAccessChecker* access_checker_;
+  raw_ptr<const BindingAccessChecker, ExperimentalRenderer> access_checker_;
 
   // A developer-readable method signature string, lazily set.
   mutable std::string expected_signature_;

@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "v8/include/v8.h"
@@ -76,7 +77,7 @@ class ActivityLogConverterStrategyTest : public testing::Test {
     return v8::Local<v8::Context>::New(isolate_, context_);
   }
 
-  v8::Isolate* isolate_;
+  raw_ptr<v8::Isolate, ExperimentalRenderer> isolate_;
   v8::HandleScope handle_scope_;
   v8::Global<v8::Context> context_;
   v8::Context::Scope context_scope_;

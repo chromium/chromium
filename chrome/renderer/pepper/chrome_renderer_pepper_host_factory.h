@@ -5,6 +5,7 @@
 #ifndef CHROME_RENDERER_PEPPER_CHROME_RENDERER_PEPPER_HOST_FACTORY_H_
 #define CHROME_RENDERER_PEPPER_CHROME_RENDERER_PEPPER_HOST_FACTORY_H_
 
+#include "base/memory/raw_ptr.h"
 #include "ppapi/host/host_factory.h"
 
 namespace content {
@@ -31,7 +32,7 @@ class ChromeRendererPepperHostFactory : public ppapi::host::HostFactory {
 
  private:
   // Not owned by this object.
-  content::RendererPpapiHost* host_;
+  raw_ptr<content::RendererPpapiHost, ExperimentalRenderer> host_;
 };
 
 #endif  // CHROME_RENDERER_PEPPER_CHROME_RENDERER_PEPPER_HOST_FACTORY_H_

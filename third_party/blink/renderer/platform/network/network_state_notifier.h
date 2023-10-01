@@ -28,6 +28,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/rand_util.h"
 #include "base/synchronization/lock.h"
@@ -117,9 +118,9 @@ class PLATFORM_EXPORT NetworkStateNotifier {
     ~NetworkStateObserverHandle();
 
    private:
-    NetworkStateNotifier* notifier_;
+    raw_ptr<NetworkStateNotifier, ExperimentalRenderer> notifier_;
     ObserverType type_;
-    NetworkStateObserver* observer_;
+    raw_ptr<NetworkStateObserver, ExperimentalRenderer> observer_;
     scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   };
 

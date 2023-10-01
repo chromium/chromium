@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequence_manager/test/sequence_manager_for_test.h"
 #include "base/task/single_thread_task_runner.h"
@@ -84,7 +85,7 @@ class TestObject {
   ~TestObject() { ++(*counter_); }
 
  private:
-  int* counter_;
+  raw_ptr<int, ExperimentalRenderer> counter_;
 };
 
 }  // namespace

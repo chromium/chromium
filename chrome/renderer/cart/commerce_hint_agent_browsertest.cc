@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
@@ -441,9 +442,10 @@ class CommerceHintAgentTest : public PlatformBrowserTest {
 
   base::test::ScopedFeatureList scoped_feature_list_;
 #if !BUILDFLAG(IS_ANDROID)
-  CartService* service_;
+  raw_ptr<CartService, ExperimentalRenderer> service_;
 #endif
-  cart::CommerceHintService* commerce_hint_service_;
+  raw_ptr<cart::CommerceHintService, ExperimentalRenderer>
+      commerce_hint_service_;
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
   bool satisfied_;

@@ -29,6 +29,7 @@
  */
 
 #include "third_party/blink/public/platform/web_url_request_extra_data.h"
+#include "base/memory/raw_ptr.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
@@ -44,7 +45,7 @@ class RequestTestExtraData : public WebURLRequestExtraData {
  private:
   ~RequestTestExtraData() override { *alive_ = false; }
 
-  bool* alive_;
+  raw_ptr<bool, ExperimentalRenderer> alive_;
 };
 
 }  // anonymous namespace

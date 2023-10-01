@@ -8,6 +8,7 @@
 #include <memory>
 #include <set>
 
+#include "base/memory/raw_ptr.h"
 #include "base/profiler/unwinder.h"
 #include "v8/include/v8-unwinder.h"
 
@@ -87,7 +88,7 @@ class V8Unwinder : public base::Unwinder {
                     const base::ModuleCache::Module* b) const;
   };
 
-  v8::Isolate* const isolate_;
+  const raw_ptr<v8::Isolate, ExperimentalRenderer> isolate_;
   const v8::JSEntryStubs js_entry_stubs_;
   const v8::MemoryRange embedded_code_range_;
 

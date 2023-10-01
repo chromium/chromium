@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/task/sequence_manager/sequence_manager.h"
@@ -33,7 +34,7 @@ class TestObject {
   ~TestObject() { ++(*counter_); }
 
  private:
-  int* counter_;
+  raw_ptr<int, ExperimentalRenderer> counter_;
 };
 
 }  // namespace

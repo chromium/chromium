@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <utility>
+#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/exported/wrapped_resource_request.h"
@@ -37,7 +38,7 @@ class TestLoaderFactory : public ResourceFetcher::LoaderFactory {
   CodeCacheHost* GetCodeCacheHost() override { return nullptr; }
 
  private:
-  URLLoaderMockFactory* mock_factory_;
+  raw_ptr<URLLoaderMockFactory, ExperimentalRenderer> mock_factory_;
 };
 
 }  // namespace blink

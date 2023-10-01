@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "content/common/content_export.h"
@@ -55,7 +56,7 @@ class CONTENT_EXPORT FlingingRendererClient
  private:
   scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
 
-  media::RendererClient* client_;
+  raw_ptr<media::RendererClient, ExperimentalRenderer> client_;
 
   media::RemotePlayStateChangeCB remote_play_state_change_cb_;
 

@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "extensions/renderer/native_handler.h"
 #include "v8/include/v8-forward.h"
 
@@ -31,7 +32,7 @@ class BindingGeneratingNativeHandler : public NativeHandler {
   v8::Local<v8::Object> NewInstance() override;
 
  private:
-  ScriptContext* context_;
+  raw_ptr<ScriptContext, ExperimentalRenderer> context_;
   std::string api_name_;
   std::string bind_to_;
 };

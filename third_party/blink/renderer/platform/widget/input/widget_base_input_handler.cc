@@ -8,6 +8,7 @@
 #include <stdint.h>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -261,7 +262,7 @@ class WidgetBaseInputHandler::HandlingState {
   // Whether the event we are handling is a touch start or move.
   bool touch_start_or_move_;
 
-  HandlingState* previous_state_;
+  raw_ptr<HandlingState, ExperimentalRenderer> previous_state_;
   bool previous_was_handling_input_;
   base::WeakPtr<WidgetBaseInputHandler> input_handler_;
 };

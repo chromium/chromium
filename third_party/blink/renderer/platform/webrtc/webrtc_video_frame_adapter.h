@@ -7,6 +7,7 @@
 
 #include "base/feature_list.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
 #include "base/time/default_tick_clock.h"
@@ -62,7 +63,7 @@ class PLATFORM_EXPORT WebRtcVideoFrameAdapter
     };
     base::Lock buffer_lock_;
     Vector<BufferEntry> free_buffers_ GUARDED_BY(buffer_lock_);
-    const base::TickClock* tick_clock_;
+    raw_ptr<const base::TickClock, ExperimentalRenderer> tick_clock_;
   };
 
   class PLATFORM_EXPORT SharedResources
@@ -126,7 +127,8 @@ class PLATFORM_EXPORT WebRtcVideoFrameAdapter
     scoped_refptr<viz::RasterContextProvider> raster_context_provider_
         GUARDED_BY(context_provider_lock_);
 
-    media::GpuVideoAcceleratorFactories* gpu_factories_;
+    raw_ptr<media::GpuVideoAcceleratorFactories, ExperimentalRenderer>
+        gpu_factories_;
 
     base::Lock feedback_lock_;
 

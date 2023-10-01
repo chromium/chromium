@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_BLOB_TESTING_FAKE_BLOB_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_BLOB_TESTING_FAKE_BLOB_H_
 
+#include "base/memory/raw_ptr.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom-blink.h"
 
@@ -43,7 +44,7 @@ class FakeBlob : public mojom::blink::Blob {
  protected:
   String uuid_;
   String body_;
-  State* state_;
+  raw_ptr<State, ExperimentalRenderer> state_;
 };
 
 }  // namespace blink

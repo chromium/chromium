@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "components/crx_file/id_util.h"
@@ -107,7 +108,7 @@ class NativeRendererMessagingServiceTest
  private:
   std::unique_ptr<NativeRendererMessagingService> messaging_service_;
 
-  ScriptContext* script_context_ = nullptr;
+  raw_ptr<ScriptContext, ExperimentalRenderer> script_context_ = nullptr;
   scoped_refptr<const Extension> extension_;
 };
 

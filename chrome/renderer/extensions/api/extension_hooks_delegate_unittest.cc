@@ -4,6 +4,7 @@
 
 #include "chrome/renderer/extensions/api/extension_hooks_delegate.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "content/public/common/content_constants.h"
 #include "extensions/common/api/messaging/messaging_endpoint.h"
@@ -80,7 +81,7 @@ class ExtensionHooksDelegateTest
  private:
   std::unique_ptr<NativeRendererMessagingService> messaging_service_;
 
-  ScriptContext* script_context_ = nullptr;
+  raw_ptr<ScriptContext, ExperimentalRenderer> script_context_ = nullptr;
   scoped_refptr<const Extension> extension_;
 };
 

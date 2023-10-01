@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_BREAKOUT_BOX_PUSHABLE_MEDIA_STREAM_AUDIO_SOURCE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_BREAKOUT_BOX_PUSHABLE_MEDIA_STREAM_AUDIO_SOURCE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
@@ -70,7 +71,7 @@ class MODULES_EXPORT PushableMediaStreamAudioSource
     // It is not necessary to guard it with |lock_| to read its value on
     // |main_task_runner_|. This helps avoid deadlocks in
     // Stop()/OnSourceDestroyedOrStopped() interactions.
-    PushableMediaStreamAudioSource* source_;
+    raw_ptr<PushableMediaStreamAudioSource, ExperimentalRenderer> source_;
     // The same apples to |is_running_|, but since it does not have complex
     // interactions with owners, like |source_| does, we always guard it for
     // simplicity.

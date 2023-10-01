@@ -6,6 +6,7 @@
 #define EXTENSIONS_RENDERER_GC_CALLBACK_H_
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
@@ -49,7 +50,7 @@ class GCCallback {
   void OnContextInvalidated();
 
   // The context which owns |object_|.
-  ScriptContext* context_;
+  raw_ptr<ScriptContext, ExperimentalRenderer> context_;
 
   // A task runner associated with the frame for the context.
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;

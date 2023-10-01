@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "url/gurl.h"
 
@@ -47,7 +48,7 @@ class ExtensionURLLoaderThrottle : public blink::URLLoaderThrottle {
   // blink::URLLoaderThrottle:
   void DetachFromCurrentSequence() override;
 
-  ExtensionThrottleManager* manager_ = nullptr;
+  raw_ptr<ExtensionThrottleManager, ExperimentalRenderer> manager_ = nullptr;
   GURL start_request_url_;
 };
 

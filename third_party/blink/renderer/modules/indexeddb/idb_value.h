@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_transfer_token.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-blink-forward.h"
@@ -115,7 +116,7 @@ class MODULES_EXPORT IDBValue final {
   // Used to register memory externally allocated by the IDBValue, and to
   // unregister that memory in the destructor. Unused in other construction
   // paths.
-  v8::Isolate* isolate_ = nullptr;
+  raw_ptr<v8::Isolate, ExperimentalRenderer> isolate_ = nullptr;
   int64_t external_allocated_size_ = 0;
 };
 

@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "media/base/media_log.h"
@@ -85,7 +86,7 @@ class MultiBufferDataSource::ReadOperation {
  private:
   const int64_t position_;
   const int size_;
-  uint8_t* data_;
+  raw_ptr<uint8_t, ExperimentalRenderer> data_;
   media::DataSource::ReadCB callback_;
 };
 

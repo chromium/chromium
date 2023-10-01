@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/raw_ref.h"
 #include "third_party/blink/renderer/modules/xr/xr_input_source.h"
 #include "third_party/blink/renderer/modules/xr/xr_joint_space.h"
 #include "third_party/blink/renderer/modules/xr/xr_utils.h"
@@ -28,7 +29,7 @@ class XRHandIterationSource final
       return false;
 
     key = V8XRHandJoint(static_cast<V8XRHandJoint::Enum>(index_));
-    value = joints_.at(index_);
+    value = joints_->at(index_);
     index_++;
     return true;
   }
@@ -40,7 +41,8 @@ class XRHandIterationSource final
 
  private:
   wtf_size_t index_;
-  const HeapVector<Member<XRJointSpace>>& joints_;
+  const raw_ref<const HeapVector<Member<XRJointSpace>>, ExperimentalRenderer>
+      joints_;
   Member<XRHand> xr_hand_;  // Owner object of `joints_`
 };
 

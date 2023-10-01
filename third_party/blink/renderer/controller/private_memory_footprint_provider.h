@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CONTROLLER_PRIVATE_MEMORY_FOOTPRINT_PROVIDER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CONTROLLER_PRIVATE_MEMORY_FOOTPRINT_PROVIDER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "third_party/blink/renderer/controller/controller_export.h"
 #include "third_party/blink/renderer/controller/memory_usage_monitor.h"
@@ -44,7 +45,7 @@ class CONTROLLER_EXPORT PrivateMemoryFootprintProvider
   void SetPrivateMemoryFootprint(uint64_t private_memory_footprint_bytes);
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-  const base::TickClock* clock_;
+  raw_ptr<const base::TickClock, ExperimentalRenderer> clock_;
 };
 
 }  // namespace blink

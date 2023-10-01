@@ -5,6 +5,7 @@
 #ifndef CONTENT_RENDERER_NAVIGATION_CLIENT_H_
 #define CONTENT_RENDERER_NAVIGATION_CLIENT_H_
 
+#include "base/memory/raw_ptr.h"
 #include "content/common/frame.mojom.h"
 #include "content/common/navigation_client.mojom.h"
 #include "content/public/common/alternative_error_page_override_info.mojom.h"
@@ -94,7 +95,7 @@ class NavigationClient : mojom::NavigationClient {
       this};
   mojo::Remote<mojom::NavigationRendererCancellationListener>
       renderer_cancellation_listener_remote_;
-  RenderFrameImpl* render_frame_;
+  raw_ptr<RenderFrameImpl, ExperimentalRenderer> render_frame_;
   // See NavigationState::was_initiated_in_this_frame for details.
   bool was_initiated_in_this_frame_ = false;
 

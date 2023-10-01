@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "v8/include/v8-forward.h"
 
 namespace extensions {
@@ -73,8 +74,8 @@ class SendMessageTester {
                                 Method method,
                                 v8::Local<v8::Value>& out_value);
 
-  TestIPCMessageSender* ipc_sender_;
-  ScriptContext* script_context_;
+  raw_ptr<TestIPCMessageSender, ExperimentalRenderer> ipc_sender_;
+  raw_ptr<ScriptContext, ExperimentalRenderer> script_context_;
   int next_port_id_;
   std::string api_namespace_;
 };

@@ -215,7 +215,7 @@ void AXNodeDataAOMPropertyClient::AddStringProperty(AOMStringProperty property,
     default:
       return;
   }
-  node_data_.AddStringAttribute(attribute, value.Utf8());
+  node_data_->AddStringAttribute(attribute, value.Utf8());
 }
 
 void AXNodeDataAOMPropertyClient::AddBooleanProperty(
@@ -229,7 +229,7 @@ void AXNodeDataAOMPropertyClient::AddBooleanProperty(
     default:
       return;
   }
-  node_data_.AddBoolAttribute(attribute, value);
+  node_data_->AddBoolAttribute(attribute, value);
 }
 
 void AXNodeDataAOMPropertyClient::AddFloatProperty(AOMFloatProperty property,
@@ -252,7 +252,7 @@ void AXNodeDataAOMPropertyClient::AddRelationProperty(
   if (!ax_target)
     return;
 
-  node_data_.AddIntAttribute(attribute, ax_target->AXObjectID());
+  node_data_->AddIntAttribute(attribute, ax_target->AXObjectID());
 }
 
 void AXNodeDataAOMPropertyClient::AddRelationListProperty(
@@ -287,7 +287,7 @@ void AXNodeDataAOMPropertyClient::AddRelationListProperty(
     }
   }
 
-  node_data_.AddIntListAttribute(attribute, ax_ids);
+  node_data_->AddIntListAttribute(attribute, ax_ids);
 }
 
 }  // namespace blink

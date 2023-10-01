@@ -14,6 +14,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "third_party/icu/source/common/unicode/uscript.h"
 
 namespace base {
@@ -198,7 +199,7 @@ class SpellcheckWordIterator {
 
   // The language-specific attributes used for filtering out non-word
   // characters.
-  const SpellcheckCharAttribute* attribute_;
+  raw_ptr<const SpellcheckCharAttribute, ExperimentalRenderer> attribute_;
 
   // The break iterator.
   std::unique_ptr<base::i18n::BreakIterator> iterator_;

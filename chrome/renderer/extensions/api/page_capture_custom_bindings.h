@@ -5,6 +5,7 @@
 #ifndef CHROME_RENDERER_EXTENSIONS_API_PAGE_CAPTURE_CUSTOM_BINDINGS_H_
 #define CHROME_RENDERER_EXTENSIONS_API_PAGE_CAPTURE_CUSTOM_BINDINGS_H_
 
+#include "base/memory/raw_ptr.h"
 #include "extensions/renderer/object_backed_native_handler.h"
 
 namespace extensions {
@@ -25,7 +26,7 @@ class PageCaptureCustomBindings : public ObjectBackedNativeHandler {
   void SendResponseAck(const v8::FunctionCallbackInfo<v8::Value>& args);
 
   // The IPCMessageSender for this context. Must outlive this class.
-  IPCMessageSender* const ipc_message_sender_;
+  const raw_ptr<IPCMessageSender, ExperimentalRenderer> ipc_message_sender_;
 };
 
 }  // namespace extensions

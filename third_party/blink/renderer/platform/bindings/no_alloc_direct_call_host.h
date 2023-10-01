@@ -30,6 +30,8 @@
 
 #include "base/check.h"
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -74,17 +76,18 @@ class PLATFORM_EXPORT NoAllocDirectCallHost {
   // Methods used by NoAllocDirectCallScope
   //========================================
 
-  cppgc::HeapHandle& heap_handle() { return heap_handle_; }
+  cppgc::HeapHandle& heap_handle() { return *heap_handle_; }
   void EnterNoAllocDirectCallScope(v8::FastApiCallbackOptions*);
   void ExitNoAllocDirectCallScope();
 
  private:
   // We cache the heap handle here to avoid accessing thread-local storage
   // (ThreadState::Current) on each NADC method call.
-  cppgc::HeapHandle& heap_handle_;
+  const raw_ref<cppgc::HeapHandle, ExperimentalRenderer> heap_handle_;
 
   WTF::Vector<DeferrableAction> deferred_actions_;
-  v8::FastApiCallbackOptions* callback_options_ = nullptr;
+  raw_ptr<v8::FastApiCallbackOptions, ExperimentalRenderer> callback_options_ =
+      nullptr;
 };
 
 class NoAllocDirectCallScope {

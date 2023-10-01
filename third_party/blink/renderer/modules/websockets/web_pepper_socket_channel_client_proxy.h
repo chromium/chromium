@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 #include <memory>
+#include "base/memory/raw_ptr.h"
 #include "third_party/blink/renderer/modules/websockets/web_pepper_socket_impl.h"
 #include "third_party/blink/renderer/modules/websockets/websocket_channel_client.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -63,7 +64,7 @@ class WebPepperSocketChannelClientProxy final
   }
 
  private:
-  WebPepperSocketImpl* impl_;
+  raw_ptr<WebPepperSocketImpl, ExperimentalRenderer> impl_;
 };
 
 }  // namespace blink

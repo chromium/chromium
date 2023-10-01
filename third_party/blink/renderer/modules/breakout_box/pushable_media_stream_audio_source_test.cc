@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/breakout_box/pushable_media_stream_audio_source.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -123,7 +124,7 @@ class FakeMediaStreamAudioSink : public WebMediaStreamAudioSink {
   int expected_frames_ = 0;
   int expected_sample_rate_ = 0;
   bool expect_data_on_audio_task_runner_ = true;
-  media::AudioBus* expected_data_ = nullptr;
+  raw_ptr<media::AudioBus, ExperimentalRenderer> expected_data_ = nullptr;
   base::TimeTicks expected_time_;
 
   bool did_receive_format_change_ = false;
@@ -221,7 +222,8 @@ class PushableMediaStreamAudioSourceTest
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> audio_task_runner_;
 
-  PushableMediaStreamAudioSource* pushable_audio_source_;
+  raw_ptr<PushableMediaStreamAudioSource, ExperimentalRenderer>
+      pushable_audio_source_;
   scoped_refptr<PushableMediaStreamAudioSource::Broker> broker_;
 };
 

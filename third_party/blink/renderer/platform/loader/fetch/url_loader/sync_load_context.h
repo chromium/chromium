@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_URL_LOADER_SYNC_LOAD_CONTEXT_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_URL_LOADER_SYNC_LOAD_CONTEXT_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/waitable_event_watcher.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/timer/timer.h"
@@ -121,7 +122,7 @@ class BLINK_PLATFORM_EXPORT SyncLoadContext : public ResourceRequestClient {
   // This raw pointer will remain valid for the lifetime of this object because
   // it remains on the stack until |event_| is signaled.
   // Set to null after CompleteRequest() is called.
-  SyncLoadResponse* response_;
+  raw_ptr<SyncLoadResponse, ExperimentalRenderer> response_;
 
   // Used when handling a redirect. It is set in OnReceivedRedirect(), and
   // called when FollowRedirect() is called from the original thread.
@@ -131,7 +132,7 @@ class BLINK_PLATFORM_EXPORT SyncLoadContext : public ResourceRequestClient {
   // independent thread and set to nullptr in `FollowRedirect()` or
   // `CancelRedirect()` on the same thread after `redirect_or_response_event_`
   // is signaled, which protects it against race condition.
-  SyncLoadContext** context_for_redirect_;
+  raw_ptr<SyncLoadContext*, ExperimentalRenderer> context_for_redirect_;
 
   enum class Mode { kInitial, kDataPipe, kBlob };
   Mode mode_ = Mode::kInitial;

@@ -26,6 +26,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_STORAGE_STORAGE_NAMESPACE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_STORAGE_STORAGE_NAMESPACE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/common/dom_storage/session_storage_namespace_id.h"
@@ -126,7 +127,7 @@ class MODULES_EXPORT StorageNamespace final
   HeapHashSet<WeakMember<InspectorDOMStorageAgent>> inspector_agents_;
 
   // Lives globally.
-  StorageController* controller_;
+  raw_ptr<StorageController, ExperimentalRenderer> controller_;
   String namespace_id_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   // `StorageNamespace` is a per-Page object and doesn't have any

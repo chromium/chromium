@@ -11,6 +11,7 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "cc/trees/layer_tree_frame_sink_client.h"
@@ -64,7 +65,7 @@ class SoftwareDevice : public viz::SoftwareOutputDevice {
   void EndPaint() override {}
 
  private:
-  SkCanvas** canvas_;
+  raw_ptr<SkCanvas*, ExperimentalRenderer> canvas_;
 };
 
 // This is used with resourceless software draws.

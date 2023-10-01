@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/cached_metadata_handler.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -72,7 +73,7 @@ class CodeCacheHostMockImpl : public mojom::blink::CodeCacheHost {
     sim_->CacheMetadataInCacheStorage(url);
   }
 
-  MockGeneratedCodeCache* sim_;
+  raw_ptr<MockGeneratedCodeCache, ExperimentalRenderer> sim_;
 };
 
 ResourceResponse CreateTestResourceResponse() {

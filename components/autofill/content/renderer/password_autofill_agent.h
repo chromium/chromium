@@ -12,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/strong_alias.h"
 #include "build/build_config.h"
@@ -522,7 +523,8 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
 
   base::WeakPtr<AutofillAgent> autofill_agent_;
 
-  PasswordGenerationAgent* password_generation_agent_;  // Weak reference.
+  raw_ptr<PasswordGenerationAgent, ExperimentalRenderer>
+      password_generation_agent_;  // Weak reference.
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   PagePasswordsAnalyser page_passwords_analyser_;

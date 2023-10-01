@@ -985,7 +985,7 @@ void UserMediaProcessor::GenerateStreamForCurrentRequestInfo(
 WebMediaStreamDeviceObserver*
 UserMediaProcessor::GetMediaStreamDeviceObserver() {
   auto* media_stream_device_observer =
-      media_stream_device_observer_for_testing_;
+      media_stream_device_observer_for_testing_.get();
   if (frame_) {  // Can be null for tests.
     auto* web_frame =
         static_cast<WebLocalFrame*>(WebFrame::FromCoreFrame(frame_));

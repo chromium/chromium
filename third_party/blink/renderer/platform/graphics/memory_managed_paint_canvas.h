@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_MEMORY_MANAGED_PAINT_CANVAS_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_MEMORY_MANAGED_PAINT_CANVAS_H_
 
+#include "base/memory/raw_ptr.h"
 #include "cc/paint/paint_canvas.h"
 #include "cc/paint/record_paint_canvas.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -55,7 +56,7 @@ class PLATFORM_EXPORT MemoryManagedPaintCanvas final
           IntWithZeroKeyHashTraits<cc::PaintImage::ContentId>>
       cached_image_ids_;
 
-  Client* client_;
+  raw_ptr<Client, ExperimentalRenderer> client_;
 };
 
 }  // namespace blink

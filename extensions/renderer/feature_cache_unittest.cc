@@ -5,6 +5,7 @@
 #include "extensions/renderer/feature_cache.h"
 
 #include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
 #include "components/crx_file/id_util.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/common/extension.h"
@@ -27,7 +28,7 @@ namespace {
 
 struct FakeContext {
   Feature::Context context_type;
-  const Extension* extension;
+  raw_ptr<const Extension, ExperimentalRenderer> extension;
   const GURL url;
 };
 

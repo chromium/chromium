@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
@@ -160,7 +161,7 @@ class MediaFactory {
 
   // The render frame we're helping. RenderFrameImpl owns this factory, so the
   // pointer will always be valid.
-  RenderFrameImpl* render_frame_;
+  raw_ptr<RenderFrameImpl, ExperimentalRenderer> render_frame_;
 
   // The media interface provider attached to this frame, lazily initialized.
   std::unique_ptr<MediaInterfaceFactory> media_interface_factory_;
@@ -171,11 +172,13 @@ class MediaFactory {
   // Handy pointer to RenderFrame's browser interface broker. Null until
   // SetupMojo(). Lifetime matches that of the owning |render_frame_|. Will
   // always be valid once assigned.
-  blink::BrowserInterfaceBrokerProxy* interface_broker_ = nullptr;
+  raw_ptr<blink::BrowserInterfaceBrokerProxy, ExperimentalRenderer>
+      interface_broker_ = nullptr;
 
   // Manages play, pause notifications for WebMediaPlayer implementations; its
   // lifetime is tied to the RenderFrame via the RenderFrameObserver interface.
-  media::RendererWebMediaPlayerDelegate* media_player_delegate_ = nullptr;
+  raw_ptr<media::RendererWebMediaPlayerDelegate, ExperimentalRenderer>
+      media_player_delegate_ = nullptr;
 
   // The CDM and decoder factory attached to this frame, lazily initialized.
   std::unique_ptr<media::DefaultDecoderFactory> decoder_factory_;

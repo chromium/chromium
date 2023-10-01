@@ -528,8 +528,8 @@ void AudioDestination::RequestRender(size_t frames_requested,
       resampler_->ResampleInternal(RenderQuantumFrames(), resampler_bus_.get());
     } else {
       // Process WebAudio graph and push the rendered output to FIFO.
-      callback_.Render(render_bus_.get(), RenderQuantumFrames(),
-                       output_position_, metric_reporter_.GetMetric());
+      callback_->Render(render_bus_.get(), RenderQuantumFrames(),
+                        output_position_, metric_reporter_.GetMetric());
     }
 
     fifo_->Push(render_bus_.get());
@@ -542,8 +542,8 @@ void AudioDestination::RequestRender(size_t frames_requested,
 
 void AudioDestination::ProvideResamplerInput(int resampler_frame_delay,
                                              AudioBus* dest) {
-  callback_.Render(dest, RenderQuantumFrames(), output_position_,
-                   metric_reporter_.GetMetric());
+  callback_->Render(dest, RenderQuantumFrames(), output_position_,
+                    metric_reporter_.GetMetric());
 }
 
 void AudioDestination::SendLogMessage(const String& message) const {

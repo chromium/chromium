@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_WORKER_NON_MAIN_THREAD_IMPL_H_
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
@@ -113,7 +114,7 @@ class PLATFORM_EXPORT NonMainThreadImpl : public NonMainThread {
     // loop.
     scoped_refptr<base::SingleThreadTaskRunner> internal_task_runner_;
 
-    NonMainThreadImpl* thread_;
+    raw_ptr<NonMainThreadImpl, ExperimentalRenderer> thread_;
 
     // The following variables are "owned" by the worker thread
     std::unique_ptr<base::sequence_manager::SequenceManager> sequence_manager_;
@@ -121,7 +122,7 @@ class PLATFORM_EXPORT NonMainThreadImpl : public NonMainThread {
     std::unique_ptr<scheduler::NonMainThreadSchedulerBase>
         non_main_thread_scheduler_;
     scoped_refptr<base::SingleThreadTaskRunner> default_task_runner_;
-    base::RunLoop* run_loop_;
+    raw_ptr<base::RunLoop, ExperimentalRenderer> run_loop_;
     bool supports_gc_;
     std::unique_ptr<GCSupport> gc_support_;
   };

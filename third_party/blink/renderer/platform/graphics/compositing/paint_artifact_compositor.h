@@ -9,6 +9,7 @@
 
 #include "base/dcheck_is_on.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "cc/layers/content_layer_client.h"
 #include "cc/layers/layer_collections.h"
@@ -120,11 +121,16 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
   ~PaintArtifactCompositor() override;
 
   struct ViewportProperties {
-    const TransformPaintPropertyNode* overscroll_elasticity_transform = nullptr;
-    const TransformPaintPropertyNode* page_scale = nullptr;
-    const TransformPaintPropertyNode* inner_scroll_translation = nullptr;
-    const ClipPaintPropertyNode* outer_clip = nullptr;
-    const TransformPaintPropertyNode* outer_scroll_translation = nullptr;
+    raw_ptr<const TransformPaintPropertyNode, ExperimentalRenderer>
+        overscroll_elasticity_transform = nullptr;
+    raw_ptr<const TransformPaintPropertyNode, ExperimentalRenderer> page_scale =
+        nullptr;
+    raw_ptr<const TransformPaintPropertyNode, ExperimentalRenderer>
+        inner_scroll_translation = nullptr;
+    raw_ptr<const ClipPaintPropertyNode, ExperimentalRenderer> outer_clip =
+        nullptr;
+    raw_ptr<const TransformPaintPropertyNode, ExperimentalRenderer>
+        outer_scroll_translation = nullptr;
   };
 
   // Updates the cc layer list and property trees to match those provided in
@@ -326,7 +332,7 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
 
   scoped_refptr<cc::Layer> root_layer_;
   struct SynthesizedClipEntry {
-    const ClipPaintPropertyNode* key;
+    raw_ptr<const ClipPaintPropertyNode, ExperimentalRenderer> key;
     std::unique_ptr<SynthesizedClip> synthesized_clip;
     bool in_use;
   };

@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/bind_post_task.h"
 #include "base/time/time.h"
@@ -71,8 +72,8 @@ class FakeMediaStreamVideoSink : public MediaStreamVideoSink {
   }
 
  private:
-  base::TimeTicks* const capture_time_;
-  media::VideoFrameMetadata* const metadata_;
+  const raw_ptr<base::TimeTicks, ExperimentalRenderer> capture_time_;
+  const raw_ptr<media::VideoFrameMetadata, ExperimentalRenderer> metadata_;
   base::OnceClosure got_frame_cb_;
 };
 
@@ -166,9 +167,10 @@ class MediaStreamVideoCapturerSourceTest : public testing::Test {
 
   Persistent<MediaStreamSource> stream_source_;
   MockMojoMediaStreamDispatcherHost mock_dispatcher_host_;
-  MediaStreamVideoCapturerSource*
-      video_capturer_source_;          // owned by |stream_source_|.
-  MockVideoCapturerSource* delegate_;  // owned by |source_|.
+  raw_ptr<MediaStreamVideoCapturerSource, ExperimentalRenderer>
+      video_capturer_source_;  // owned by |stream_source_|.
+  raw_ptr<MockVideoCapturerSource, ExperimentalRenderer>
+      delegate_;  // owned by |source_|.
   String stream_source_id_;
   bool source_stopped_;
   bool stop_capture_flag_ = false;

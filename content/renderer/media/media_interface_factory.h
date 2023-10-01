@@ -6,6 +6,7 @@
 #define CONTENT_RENDERER_MEDIA_MEDIA_INTERFACE_FACTORY_H_
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/unguessable_token.h"
@@ -90,7 +91,8 @@ class MediaInterfaceFactory final : public media::mojom::InterfaceFactory {
   media::mojom::InterfaceFactory* GetMediaInterfaceFactory();
   void OnConnectionError();
 
-  blink::BrowserInterfaceBrokerProxy* interface_broker_;
+  raw_ptr<blink::BrowserInterfaceBrokerProxy, ExperimentalRenderer>
+      interface_broker_;
   mojo::Remote<media::mojom::InterfaceFactory> media_interface_factory_;
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;

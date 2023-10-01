@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "cc/layers/texture_layer.h"
 #include "cc/layers/texture_layer_client.h"
@@ -170,13 +171,13 @@ class TestPlugin : public blink::WebPlugin, public cc::TextureLayerClient {
       const gpu::SyncToken& sync_token,
       bool lost);
 
-  TestRunner* test_runner_;
-  blink::WebPluginContainer* container_;
-  blink::WebLocalFrame* web_local_frame_;
+  raw_ptr<TestRunner, ExperimentalRenderer> test_runner_;
+  raw_ptr<blink::WebPluginContainer, ExperimentalRenderer> container_;
+  raw_ptr<blink::WebLocalFrame, ExperimentalRenderer> web_local_frame_;
 
   gfx::Rect rect_;
   scoped_refptr<ContextProviderRef> context_provider_;
-  gpu::gles2::GLES2Interface* gl_;
+  raw_ptr<gpu::gles2::GLES2Interface, ExperimentalRenderer> gl_;
   gpu::Mailbox mailbox_;
   gpu::SyncToken sync_token_;
   scoped_refptr<cc::CrossThreadSharedBitmap> shared_bitmap_;

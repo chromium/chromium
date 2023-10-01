@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/platform/network/network_state_notifier.h"
 
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -1065,7 +1066,7 @@ class OnlineStateObserver : public NetworkStateNotifier::NetworkStateObserver {
     handle_.reset();
     task_runner_->RunUntilIdle();
   }
-  FakeTaskRunner* task_runner_;
+  raw_ptr<FakeTaskRunner, ExperimentalRenderer> task_runner_;
   std::unique_ptr<NetworkStateNotifier::NetworkStateObserverHandle> handle_;
   int count = 0;
 };

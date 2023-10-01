@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
@@ -123,7 +124,7 @@ class PLATFORM_EXPORT EventLoop final : public WTF::RefCounted<EventLoop> {
   static void RunEndOfCheckpointTasks(v8::Isolate* isolat, void* data);
 
   WeakPersistent<Delegate> delegate_;
-  v8::Isolate* isolate_;
+  raw_ptr<v8::Isolate, ExperimentalRenderer> isolate_;
   bool loop_enabled_ = true;
   bool register_complete_callback_ = false;
   Deque<base::OnceClosure> pending_microtasks_;

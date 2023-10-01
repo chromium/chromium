@@ -7,6 +7,7 @@
 #include "base/check.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "components/guest_view/common/guest_view.mojom.h"
 #include "components/guest_view/common/guest_view_constants.h"
@@ -250,7 +251,7 @@ class V8BinderContext {
     callback->Run(args);
   }
 
-  v8::Isolate* const isolate_;
+  const raw_ptr<v8::Isolate, ExperimentalRenderer> isolate_;
   v8::HandleScope handle_scope_;
   v8::Local<v8::Context> context_;
   v8::Context::Scope context_scope_;

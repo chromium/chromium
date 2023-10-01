@@ -41,7 +41,7 @@ void SimpleMainThreadScheduler::RemoveRAILModeObserver(
 void SimpleMainThreadScheduler::ForEachMainThreadIsolate(
     base::RepeatingCallback<void(v8::Isolate* isolate)> callback) {
   if (isolate_) {
-    callback.Run(isolate_);
+    callback.Run(isolate_.get());
   }
 }
 

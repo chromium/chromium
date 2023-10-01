@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_metrics_helper.h"
 
 #include <memory>
+#include "base/memory/raw_ptr.h"
 #include "base/task/sequence_manager/test/fake_task.h"
 #include "base/task/sequence_manager/test/sequence_manager_for_test.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -200,7 +201,8 @@ class MainThreadMetricsHelperTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<MainThreadSchedulerImpl> scheduler_;
-  MainThreadMetricsHelper* metrics_helper_;  // NOT OWNED
+  raw_ptr<MainThreadMetricsHelper, ExperimentalRenderer>
+      metrics_helper_;  // NOT OWNED
   std::unique_ptr<base::HistogramTester> histogram_tester_;
   std::unique_ptr<FakePageScheduler> playing_view_ =
       FakePageScheduler::Builder().SetIsAudioPlaying(true).Build();

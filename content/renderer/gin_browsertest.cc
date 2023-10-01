@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "content/public/test/render_view_test.h"
 #include "gin/handle.h"
 #include "gin/per_isolate_data.h"
@@ -32,7 +33,7 @@ class TestGinObject : public gin::Wrappable<TestGinObject> {
   TestGinObject(bool* alive) : alive_(alive) { *alive_ = true; }
   ~TestGinObject() override { *alive_ = false; }
 
-  bool* alive_;
+  raw_ptr<bool, ExperimentalRenderer> alive_;
 };
 
 gin::WrapperInfo TestGinObject::kWrapperInfo = { gin::kEmbedderNativeGin };

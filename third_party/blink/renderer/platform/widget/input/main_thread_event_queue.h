@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -174,7 +175,7 @@ class PLATFORM_EXPORT MainThreadEventQueue
   friend class QueuedWebInputEvent;
   friend class MainThreadEventQueueTest;
   friend class MainThreadEventQueueInitializationTest;
-  MainThreadEventQueueClient* client_;
+  raw_ptr<MainThreadEventQueueClient, ExperimentalRenderer> client_;
   bool last_touch_start_forced_nonblocking_due_to_fling_;
   bool needs_low_latency_;
   bool needs_unbuffered_input_for_debugger_;

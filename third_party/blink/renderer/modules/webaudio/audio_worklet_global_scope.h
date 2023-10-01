@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_AUDIO_WORKLET_GLOBAL_SCOPE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_AUDIO_WORKLET_GLOBAL_SCOPE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "third_party/blink/public/common/messaging/message_port_channel.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_param_descriptor.h"
@@ -134,7 +135,8 @@ class MODULES_EXPORT AudioWorkletGlobalScope final : public WorkletGlobalScope {
   // AudioWorkletObjectProxy manages the cross-thread messaging to
   // AudioWorkletMessagingProxy on the main thread. AudioWorkletObjectProxy
   // outlives AudioWorkletGlobalScope, this raw pointer is safe.
-  AudioWorkletObjectProxy* object_proxy_ = nullptr;
+  raw_ptr<AudioWorkletObjectProxy, ExperimentalRenderer> object_proxy_ =
+      nullptr;
 };
 
 template <>

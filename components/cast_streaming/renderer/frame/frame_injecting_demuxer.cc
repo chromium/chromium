@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
@@ -58,7 +59,7 @@ class StreamTimestampOffsetTracker
 
   base::TimeDelta audio_position_ = {};
   base::TimeDelta offset_ = {};
-  media::DemuxerHost* demuxer_host_ = nullptr;
+  raw_ptr<media::DemuxerHost, ExperimentalRenderer> demuxer_host_ = nullptr;
 };
 
 namespace {

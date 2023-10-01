@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/containers/queue.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
@@ -91,7 +92,8 @@ class VEAEncoder final : public VideoTrackRecorder::Encoder,
 
   void ConfigureEncoder(const gfx::Size& size, bool use_native_input);
 
-  media::GpuVideoAcceleratorFactories* const gpu_factories_;
+  const raw_ptr<media::GpuVideoAcceleratorFactories, ExperimentalRenderer>
+      gpu_factories_;
   const media::VideoCodecProfile codec_;
   const absl::optional<uint8_t> level_;
   const media::Bitrate::Mode bitrate_mode_;

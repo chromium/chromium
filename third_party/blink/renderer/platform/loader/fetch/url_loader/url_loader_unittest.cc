@@ -10,6 +10,7 @@
 
 #include "base/command_line.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
@@ -416,7 +417,7 @@ class URLLoaderTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_;
   mojo::ScopedDataPipeProducerHandle body_handle_;
   std::unique_ptr<TestURLLoaderClient> client_;
-  MockResourceRequestSender* sender_ = nullptr;
+  raw_ptr<MockResourceRequestSender, ExperimentalRenderer> sender_ = nullptr;
 };
 
 TEST_F(URLLoaderTest, Success) {

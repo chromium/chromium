@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner_helpers.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ppapi/c/pp_var.h"
@@ -103,7 +104,7 @@ class PepperWebPluginImpl : public blink::WebPlugin {
   scoped_refptr<PepperPluginInstanceImpl> instance_;
   gfx::Rect plugin_rect_;
   PP_Var instance_object_;
-  blink::WebPluginContainer* container_;
+  raw_ptr<blink::WebPluginContainer, ExperimentalRenderer> container_;
 };
 
 }  // namespace content

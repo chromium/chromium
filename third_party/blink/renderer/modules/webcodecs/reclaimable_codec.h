@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -123,7 +124,7 @@ class MODULES_EXPORT ReclaimableCodec
   // Whether this codec is holding on to platform resources.
   bool is_applying_pressure_ = false;
 
-  const base::TickClock* tick_clock_;
+  raw_ptr<const base::TickClock, ExperimentalRenderer> tick_clock_;
 
   // Period of time after which a codec is considered to be inactive.
   base::TimeDelta inactivity_threshold_;

@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -114,7 +115,7 @@ class IDBDatabaseGetAllResultSinkImpl
 
  private:
   mojo::Receiver<mojom::blink::IDBDatabaseGetAllResultSink> receiver_;
-  IDBRequestQueueItem* owner_;
+  raw_ptr<IDBRequestQueueItem, ExperimentalRenderer> owner_;
   bool key_only_;
 
   WTF::Vector<mojom::blink::IDBReturnValuePtr> values_;

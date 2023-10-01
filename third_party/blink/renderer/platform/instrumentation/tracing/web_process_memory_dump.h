@@ -9,6 +9,7 @@
 #include <unordered_map>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/trace_event/heap_profiler_allocation_context.h"
 #include "base/trace_event/memory_dump_request_args.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/web_memory_allocator_dump.h"
@@ -147,7 +148,8 @@ class PLATFORM_EXPORT WebProcessMemoryDump final {
 
   // The underlying ProcessMemoryDump instance to which the
   // createMemoryAllocatorDump() calls will be proxied to.
-  base::trace_event::ProcessMemoryDump* process_memory_dump_;  // Not owned.
+  raw_ptr<base::trace_event::ProcessMemoryDump, ExperimentalRenderer>
+      process_memory_dump_;  // Not owned.
 
   // TODO(ssid): Remove it once this information is added to ProcessMemoryDump.
   base::trace_event::MemoryDumpLevelOfDetail level_of_detail_;

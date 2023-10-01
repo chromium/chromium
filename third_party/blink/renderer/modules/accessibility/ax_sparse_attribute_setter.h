@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_ACCESSIBILITY_AX_SPARSE_ATTRIBUTE_SETTER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ACCESSIBILITY_AX_SPARSE_ATTRIBUTE_SETTER_H_
 
+#include "base/memory/raw_ref.h"
 #include "third_party/blink/renderer/core/aom/accessible_node.h"
 #include "third_party/blink/renderer/core/aom/accessible_node_list.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object.h"
@@ -44,7 +45,7 @@ class AXNodeDataAOMPropertyClient : public AOMPropertyClient {
 
  private:
   Persistent<AXObjectCacheImpl> ax_object_cache_;
-  ui::AXNodeData& node_data_;
+  const raw_ref<ui::AXNodeData, ExperimentalRenderer> node_data_;
 };
 
 }  // namespace blink

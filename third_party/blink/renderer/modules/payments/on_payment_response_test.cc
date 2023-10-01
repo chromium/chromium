@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
@@ -406,7 +407,7 @@ class PaymentResponseFunction : public ScriptFunction::Callable {
   }
 
  private:
-  ScriptValue* const value_;
+  const raw_ptr<ScriptValue, ExperimentalRenderer> value_;
 };
 
 // If the merchant requests shipping information, the resolved show() promise

@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_COMPOSITING_PAINT_CHUNKS_TO_CC_LAYER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_COMPOSITING_PAINT_CHUNKS_TO_CC_LAYER_H_
 
+#include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "cc/input/layer_selection_bound.h"
 #include "cc/paint/display_item_list.h"
@@ -34,7 +35,7 @@ struct RasterUnderInvalidationCheckingParams {
         interest_rect(interest_rect),
         debug_name(debug_name) {}
 
-  RasterInvalidationTracking& tracking;
+  const raw_ref<RasterInvalidationTracking, ExperimentalRenderer> tracking;
   gfx::Rect interest_rect;
   String debug_name;
 };

@@ -10,6 +10,7 @@
 
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
@@ -78,8 +79,8 @@ class FrameReference {
   blink::WebView* view();
 
  private:
-  blink::WebView* view_;
-  blink::WebLocalFrame* frame_;
+  raw_ptr<blink::WebView, ExperimentalRenderer> view_;
+  raw_ptr<blink::WebLocalFrame, ExperimentalRenderer> frame_;
 };
 
 // Helper to ensure that quit closures for Mojo response are called.

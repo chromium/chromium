@@ -15,6 +15,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/simple_test_tick_clock.h"
@@ -124,8 +125,8 @@ class FakeMultiBufferDataProvider : public MultiBuffer::DataProvider {
   int32_t max_blocks_after_defer_;
   size_t file_size_;
   bool must_read_whole_file_;
-  MultiBuffer* multibuffer_;
-  media::TestRandom* rnd_;
+  raw_ptr<MultiBuffer, ExperimentalRenderer> multibuffer_;
+  raw_ptr<media::TestRandom, ExperimentalRenderer> rnd_;
 };
 
 }  // namespace
@@ -221,7 +222,7 @@ class TestMultiBuffer : public MultiBuffer {
   int32_t max_blocks_after_defer_;
   bool must_read_whole_file_;
   int32_t writers_created_;
-  media::TestRandom* rnd_;
+  raw_ptr<media::TestRandom, ExperimentalRenderer> rnd_;
 };
 
 class MultiBufferTest : public testing::Test {
@@ -550,7 +551,7 @@ class ReadHelper {
   int64_t end_;
   int64_t max_read_size_;
   int64_t read_size_;
-  media::TestRandom* rnd_;
+  raw_ptr<media::TestRandom, ExperimentalRenderer> rnd_;
   MultiBufferReader reader_;
 };
 

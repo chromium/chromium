@@ -2,6 +2,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_GPU_MEMORY_BUFFER_IMAGE_COPY_H_
 
 #include <memory>
+#include "base/memory/raw_ptr.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -28,8 +29,8 @@ class PLATFORM_EXPORT GpuMemoryBufferImageCopy {
   bool EnsureDestImage(const gfx::Size&);
   void CleanupDestImage();
 
-  gpu::gles2::GLES2Interface* const gl_;
-  gpu::SharedImageInterface* const sii_;
+  const raw_ptr<gpu::gles2::GLES2Interface, ExperimentalRenderer> gl_;
+  const raw_ptr<gpu::SharedImageInterface, ExperimentalRenderer> sii_;
   std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer_;
   gfx::Size dest_image_size_;
   gpu::Mailbox dest_mailbox_;

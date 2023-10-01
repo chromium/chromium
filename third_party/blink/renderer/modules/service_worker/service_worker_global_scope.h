@@ -32,6 +32,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
@@ -627,7 +628,7 @@ class MODULES_EXPORT ServiceWorkerGlobalScope final
   Member<::blink::ServiceWorker> service_worker_;
 
   // Registry of interfaces exposed to the browser from Service Workers.
-  InterfaceRegistry* const interface_registry_;
+  const raw_ptr<InterfaceRegistry, ExperimentalRenderer> interface_registry_;
 
   // Map from service worker version id to JavaScript ServiceWorker object in
   // current execution context.

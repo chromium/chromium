@@ -105,7 +105,7 @@ int SQLiteStatement::Prepare() {
     wtf_size_t length_including_null_character =
         static_cast<wtf_size_t>(query.length()) + 1;
 
-    error = sqlite3_prepare_v3(database_.Sqlite3Handle(), query.c_str(),
+    error = sqlite3_prepare_v3(database_->Sqlite3Handle(), query.c_str(),
                                length_including_null_character,
                                /* prepFlags= */ 0, statement.get(), tail.get());
   }
@@ -114,7 +114,7 @@ int SQLiteStatement::Prepare() {
   if (error != SQLITE_OK) {
     SQL_DVLOG(1) << "sqlite3_prepare_v3 failed (" << error << ")\n"
                  << query << "\n"
-                 << sqlite3_errmsg(database_.Sqlite3Handle());
+                 << sqlite3_errmsg(database_->Sqlite3Handle());
   } else if (*tail && **tail) {
     error = SQLITE_ERROR;
   }
@@ -131,13 +131,13 @@ int SQLiteStatement::Step() {
 
   // The database needs to update its last changes count before each statement
   // in order to compute properly the lastChanges() return value.
-  database_.UpdateLastChangesCount();
+  database_->UpdateLastChangesCount();
 
   SQL_DVLOG(1) << "SQL - step - " << query_;
   int error = sqlite3_step(statement_);
   if (error != SQLITE_DONE && error != SQLITE_ROW) {
     SQL_DVLOG(1) << "sqlite3_step failed (" << error << " )\nQuery - " << query_
-                 << "\nError - " << sqlite3_errmsg(database_.Sqlite3Handle());
+                 << "\nError - " << sqlite3_errmsg(database_->Sqlite3Handle());
   }
 
   return restrictError(error);

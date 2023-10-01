@@ -553,7 +553,7 @@ void GraphicsContext::DrawTextInternal(const Font& font,
                                        DOMNodeId node_id,
                                        const AutoDarkMode& auto_dark_mode) {
   DarkModeFlags dark_mode_flags(this, auto_dark_mode, flags);
-  if (sk_sp<SkTextBlob> text_blob = paint_controller_.CachedTextBlob()) {
+  if (sk_sp<SkTextBlob> text_blob = paint_controller_->CachedTextBlob()) {
     canvas_->drawTextBlob(text_blob, point.x(), point.y(), node_id,
                           dark_mode_flags);
     return;
@@ -664,7 +664,7 @@ void GraphicsContext::DrawBidiText(
                               custom_font_not_ready_action, flags,
                               printing_ ? Font::DrawType::kGlyphsAndClusters
                                         : Font::DrawType::kGlyphsOnly)) {
-          paint_controller_.SetTextPainted();
+          paint_controller_->SetTextPainted();
         }
       });
 }
@@ -773,7 +773,7 @@ void GraphicsContext::SetImagePainted(bool report_paint_timing) {
     return;
   }
 
-  paint_controller_.SetImagePainted();
+  paint_controller_->SetImagePainted();
 }
 
 cc::PaintFlags::FilterQuality GraphicsContext::ComputeFilterQuality(

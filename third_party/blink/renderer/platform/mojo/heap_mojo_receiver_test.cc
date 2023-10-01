@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/null_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -58,7 +59,7 @@ class ReceiverOwner : public GarbageCollected<ReceiverOwner<Mode>>,
   void GetPort(mojo::PendingReceiver<sample::blink::Port> port) override {}
 
   HeapMojoReceiver<sample::blink::Service, ReceiverOwner, Mode> receiver_;
-  HeapMojoReceiverGCBaseTest<Mode>* test_;
+  raw_ptr<HeapMojoReceiverGCBaseTest<Mode>, ExperimentalRenderer> test_;
 };
 
 template <HeapMojoWrapperMode Mode>

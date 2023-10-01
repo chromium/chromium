@@ -12,6 +12,7 @@
 #include "base/containers/contains.h"
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -202,8 +203,9 @@ class ResourceMultiBufferDataProviderTest : public testing::Test {
   std::unique_ptr<WebAssociatedURLLoader> CreateUrlLoader(
       const WebAssociatedURLLoaderOptions& options) {
     auto url_loader = std::make_unique<NiceMock<MockWebAssociatedURLLoader>>();
-    EXPECT_CALL(*url_loader.get(),
-                LoadAsynchronously(Truly(CorrectAcceptEncoding), loader_));
+    EXPECT_CALL(
+        *url_loader.get(),
+        LoadAsynchronously(Truly(CorrectAcceptEncoding), loader_.get()));
     return url_loader;
   }
 
@@ -217,7 +219,7 @@ class ResourceMultiBufferDataProviderTest : public testing::Test {
   scoped_refptr<UrlData> url_data_;
   scoped_refptr<UrlData> redirected_to_;
   // The loader is owned by the UrlData above.
-  ResourceMultiBufferDataProvider* loader_;
+  raw_ptr<ResourceMultiBufferDataProvider, ExperimentalRenderer> loader_;
 
   uint8_t data_[kDataSize];
 };

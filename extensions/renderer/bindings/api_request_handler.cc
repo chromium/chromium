@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "content/public/renderer/v8_value_converter.h"
 #include "extensions/renderer/bindings/api_binding_util.h"
@@ -47,7 +48,8 @@ class APIRequestHandler::ArgumentAdapter {
   mojom::ExtraResponseDataPtr TakeExtraData() { return std::move(extra_data_); }
 
  private:
-  const base::Value::List* base_arguments_ = nullptr;
+  raw_ptr<const base::Value::List, ExperimentalRenderer> base_arguments_ =
+      nullptr;
   mutable std::vector<v8::Local<v8::Value>> v8_arguments_;
   mojom::ExtraResponseDataPtr extra_data_ = nullptr;
 };
@@ -159,7 +161,7 @@ class APIRequestHandler::AsyncResultHandler {
   // This is guaranteed to be valid while the AsyncResultHandler is valid
   // because the ExceptionHandler lives for the duration of the bindings
   // system, similar to the APIRequestHandler (which owns this).
-  ExceptionHandler* exception_handler_ = nullptr;
+  raw_ptr<ExceptionHandler, ExperimentalRenderer> exception_handler_ = nullptr;
 
   // Custom callback handlers.
   v8::Global<v8::Function> custom_callback_;

@@ -17,6 +17,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "v8/include/v8-array-buffer.h"
 #include "v8/include/v8-container.h"
@@ -83,7 +84,7 @@ class V8ValueConverterImpl::FromV8ValueState {
     }
 
    private:
-    FromV8ValueState* state_;
+    raw_ptr<FromV8ValueState, ExperimentalRenderer> state_;
   };
 
   explicit FromV8ValueState(bool avoid_identity_hash_for_testing)
@@ -176,7 +177,7 @@ class V8ValueConverterImpl::ScopedUniquenessGuard {
 
  private:
   typedef std::multimap<int, v8::Local<v8::Object> > HashToHandleMap;
-  V8ValueConverterImpl::FromV8ValueState* state_;
+  raw_ptr<V8ValueConverterImpl::FromV8ValueState, ExperimentalRenderer> state_;
   v8::Local<v8::Object> value_;
   bool is_valid_;
 };
@@ -241,8 +242,8 @@ v8::Local<v8::Value> V8ValueConverterImpl::ToV8ValueImpl(
     v8::Local<v8::Object> creation_context,
     base::ValueView value) const {
   struct Visitor {
-    const V8ValueConverterImpl* converter;
-    v8::Isolate* isolate;
+    raw_ptr<const V8ValueConverterImpl, ExperimentalRenderer> converter;
+    raw_ptr<v8::Isolate, ExperimentalRenderer> isolate;
     v8::Local<v8::Object> creation_context;
 
     v8::Local<v8::Value> operator()(absl::monostate value) {

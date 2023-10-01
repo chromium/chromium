@@ -7,6 +7,7 @@
 
 #include <map>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequence_manager/task_queue.h"
 #include "base/task/single_thread_task_runner.h"
@@ -131,7 +132,8 @@ class PLATFORM_EXPORT WorkerSchedulerImpl : public WorkerScheduler {
   SchedulingLifecycleState lifecycle_state_ =
       SchedulingLifecycleState::kNotThrottled;
 
-  WorkerThreadScheduler* thread_scheduler_;  // NOT OWNED
+  raw_ptr<WorkerThreadScheduler, ExperimentalRenderer>
+      thread_scheduler_;  // NOT OWNED
 
   bool is_disposed_ = false;
   uint32_t paused_count_ = 0;

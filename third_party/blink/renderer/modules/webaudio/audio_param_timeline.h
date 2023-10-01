@@ -31,6 +31,7 @@
 
 #include <tuple>
 
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_destination_node.h"
@@ -297,7 +298,7 @@ class AudioParamTimeline {
     const double time2;
 
     // The current event, and its index in the event vector.
-    const ParamEvent* event;
+    raw_ptr<const ParamEvent, ExperimentalRenderer> event;
     const int event_index;
   };
 

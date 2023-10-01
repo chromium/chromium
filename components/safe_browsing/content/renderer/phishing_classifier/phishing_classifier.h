@@ -26,6 +26,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/safe_browsing/content/renderer/phishing_classifier/scorer.h"
@@ -147,7 +148,7 @@ class PhishingClassifier {
   // Clears the current state of the PhishingClassifier.
   void Clear();
 
-  content::RenderFrame* render_frame_;  // owns us
+  raw_ptr<content::RenderFrame, ExperimentalRenderer> render_frame_;  // owns us
   std::unique_ptr<PhishingUrlFeatureExtractor> url_extractor_;
   std::unique_ptr<PhishingDOMFeatureExtractor> dom_extractor_;
   std::unique_ptr<PhishingTermFeatureExtractor> term_extractor_;
@@ -156,7 +157,8 @@ class PhishingClassifier {
   // State for any in-progress extraction.
   std::unique_ptr<FeatureMap> features_;
   std::unique_ptr<std::set<uint32_t>> shingle_hashes_;
-  const std::u16string* page_text_;  // owned by the caller
+  raw_ptr<const std::u16string, ExperimentalRenderer>
+      page_text_;  // owned by the caller
   std::unique_ptr<SkBitmap> bitmap_;
   std::unique_ptr<VisualFeatures> visual_features_;
   DoneCallback done_callback_;

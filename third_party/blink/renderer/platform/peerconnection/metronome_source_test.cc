@@ -7,6 +7,7 @@
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/synchronization/waitable_event.h"
@@ -40,7 +41,8 @@ class MetronomeSourceTest : public ::testing::Test {
  public:
   std::unique_ptr<MockTickProvider> tick_provider_{
       std::make_unique<MockTickProvider>()};
-  MockTickProvider* tick_provider_ptr_ = tick_provider_.get();
+  raw_ptr<MockTickProvider, ExperimentalRenderer> tick_provider_ptr_ =
+      tick_provider_.get();
   std::unique_ptr<MetronomeSource> source_{
       std::make_unique<MetronomeSource>(std::move(tick_provider_))};
 };

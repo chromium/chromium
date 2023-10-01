@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/json/json_values.h"
 
+#include "base/memory/raw_ref.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -15,10 +16,10 @@ class JSONValueDeletionVerifier : public JSONValue {
  public:
   JSONValueDeletionVerifier(int& counter) : counter_(counter) {}
 
-  ~JSONValueDeletionVerifier() override { ++counter_; }
+  ~JSONValueDeletionVerifier() override { ++(*counter_); }
 
  private:
-  int& counter_;
+  const raw_ref<int, ExperimentalRenderer> counter_;
 };
 
 }  // namespace

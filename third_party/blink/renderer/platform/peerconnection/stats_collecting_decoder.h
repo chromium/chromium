@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_PEERCONNECTION_STATS_COLLECTING_DECODER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_PEERCONNECTION_STATS_COLLECTING_DECODER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "third_party/blink/renderer/platform/peerconnection/stats_collector.h"
@@ -66,7 +67,8 @@ class PLATFORM_EXPORT StatsCollectingDecoder
                absl::optional<uint8_t> qp) override;
 
   const std::unique_ptr<webrtc::VideoDecoder> decoder_;
-  webrtc::DecodedImageCallback* decoded_callback_{nullptr};
+  raw_ptr<webrtc::DecodedImageCallback, ExperimentalRenderer> decoded_callback_{
+      nullptr};
 
   // Lock for variables that are accessed in both Decode() and Decoded(). This
   // is needed because Decode() and Decoded() may be called simultaneously on

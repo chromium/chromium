@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include "base/memory/raw_ptr.h"
 #include "ppapi/host/resource_host.h"
 #include "ppapi/shared_impl/media_stream_buffer_manager.h"
 
@@ -67,7 +68,7 @@ class PepperMediaStreamTrackHostBase
   // Message handlers:
   int32_t OnHostMsgClose(ppapi::host::HostMessageContext* context);
 
-  RendererPpapiHost* host_;
+  raw_ptr<RendererPpapiHost, ExperimentalRenderer> host_;
 
   ppapi::MediaStreamBufferManager buffer_manager_;
 };

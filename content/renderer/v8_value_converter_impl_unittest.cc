@@ -11,6 +11,7 @@
 #include <memory>
 
 #include "base/containers/span.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
@@ -53,7 +54,7 @@ class ScopedAvoidIdentityHashForTesting {
   ~ScopedAvoidIdentityHashForTesting();
 
  private:
-  content::V8ValueConverterImpl* converter_;
+  raw_ptr<content::V8ValueConverterImpl, ExperimentalRenderer> converter_;
 };
 
 ScopedAvoidIdentityHashForTesting::ScopedAvoidIdentityHashForTesting(
@@ -261,7 +262,7 @@ class V8ValueConverterImplTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   gin::IsolateHolder isolate_holder_;
   v8::Isolate::Scope isolate_scope_;
-  v8::Isolate* isolate_ = nullptr;
+  raw_ptr<v8::Isolate, ExperimentalRenderer> isolate_ = nullptr;
 
   // Context for the JavaScript in the test.
   v8::Persistent<v8::Context> context_;

@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "content/public/renderer/renderer_ppapi_host.h"
 #include "content/renderer/pepper/content_renderer_pepper_host_factory.h"
 #include "ppapi/host/ppapi_host.h"
@@ -65,7 +66,7 @@ class MockRendererPpapiHost : public RendererPpapiHost {
   ppapi::proxy::ResourceMessageTestSink sink_;
   ppapi::host::PpapiHost ppapi_host_;
 
-  RenderFrame* render_frame_;
+  raw_ptr<RenderFrame, ExperimentalRenderer> render_frame_;
   PP_Instance pp_instance_;
 
   bool has_user_gesture_;

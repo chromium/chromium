@@ -11,6 +11,7 @@
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -62,7 +63,7 @@ class SearchBoxIconURLHelper: public SearchBox::IconURLHelper {
       override;
 
  private:
-  const SearchBox* search_box_;
+  raw_ptr<const SearchBox, ExperimentalRenderer> search_box_;
 };
 
 SearchBoxIconURLHelper::SearchBoxIconURLHelper(const SearchBox* search_box)

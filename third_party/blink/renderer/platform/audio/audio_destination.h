@@ -31,6 +31,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
@@ -189,7 +190,7 @@ class PLATFORM_EXPORT AudioDestination final
 
   // Accessed by rendering thread: the render callback function of WebAudio
   // engine. (i.e. DestinationNode)
-  AudioIOCallback& callback_;
+  const raw_ref<AudioIOCallback, ExperimentalRenderer> callback_;
 
   // Accessed by rendering thread.
   size_t frames_elapsed_ = 0;

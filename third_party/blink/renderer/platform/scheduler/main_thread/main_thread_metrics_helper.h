@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_MAIN_THREAD_MAIN_THREAD_METRICS_HELPER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_MAIN_THREAD_MAIN_THREAD_METRICS_HELPER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/rand_util.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -65,7 +66,8 @@ class PLATFORM_EXPORT MainThreadMetricsHelper : public MetricsHelper {
  private:
   void ReportLowThreadLoadForPageAlmostIdleSignal(int load_percentage);
 
-  MainThreadSchedulerImpl* main_thread_scheduler_;  // NOT OWNED
+  raw_ptr<MainThreadSchedulerImpl, ExperimentalRenderer>
+      main_thread_scheduler_;  // NOT OWNED
 
   // Set to true when OnRendererShutdown is called. Used to ensure that metrics
   // that need to cross IPC boundaries aren't sent, as they cause additional

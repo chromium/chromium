@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
 #include "ppapi/c/dev/ppb_device_ref_dev.h"
@@ -106,7 +107,7 @@ class CONTENT_EXPORT PepperDeviceEnumerationHostHelper {
                             const std::vector<ppapi::DeviceRefData>& devices);
 
   // Non-owning pointers.
-  ppapi::host::ResourceHost* resource_host_;
+  raw_ptr<ppapi::host::ResourceHost, ExperimentalRenderer> resource_host_;
   base::WeakPtr<Delegate> delegate_;
 
   PP_DeviceType_Dev device_type_;

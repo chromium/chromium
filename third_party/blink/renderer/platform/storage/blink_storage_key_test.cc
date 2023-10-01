@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/storage/blink_storage_key.h"
 
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
@@ -367,9 +368,13 @@ TEST(BlinkStorageKeyTest, FromWireReturnValue) {
 
   const struct TestCase {
     scoped_refptr<const SecurityOrigin> origin;
-    const BlinkSchemefulSite& top_level_site;
-    const BlinkSchemefulSite& top_level_site_if_third_party_enabled;
-    const absl::optional<base::UnguessableToken>& nonce;
+    // These members are excluded from `raw_ptr` rewriting because
+    // they are test-only and add a ton of churn in the test case
+    // below.
+    RAW_PTR_EXCLUSION const BlinkSchemefulSite& top_level_site;
+    RAW_PTR_EXCLUSION const BlinkSchemefulSite&
+        top_level_site_if_third_party_enabled;
+    RAW_PTR_EXCLUSION const absl::optional<base::UnguessableToken>& nonce;
     AncestorChainBit ancestor_chain_bit;
     AncestorChainBit ancestor_chain_bit_if_third_party_enabled;
     bool result;

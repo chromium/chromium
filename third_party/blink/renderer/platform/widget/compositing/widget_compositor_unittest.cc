@@ -6,6 +6,7 @@
 
 #include <tuple>
 
+#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "cc/test/layer_tree_test.h"
@@ -69,7 +70,7 @@ class FakeWidgetCompositor : public WidgetCompositor {
 
   cc::LayerTreeHost* LayerTreeHost() const override { return layer_tree_host_; }
 
-  cc::LayerTreeHost* layer_tree_host_;
+  raw_ptr<cc::LayerTreeHost, ExperimentalRenderer> layer_tree_host_;
 };
 
 class WidgetCompositorTest : public cc::LayerTreeTest {

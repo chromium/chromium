@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "v8/include/v8-forward.h"
@@ -54,15 +55,16 @@ class StorageArea {
                                          v8::Local<v8::Object> wrapper);
 
  private:
-  APIRequestHandler* request_handler_;
+  raw_ptr<APIRequestHandler, ExperimentalRenderer> request_handler_;
 
-  APIEventHandler* event_handler_;
+  raw_ptr<APIEventHandler, ExperimentalRenderer> event_handler_;
 
-  const APITypeReferenceMap* type_refs_;
+  raw_ptr<const APITypeReferenceMap, ExperimentalRenderer> type_refs_;
 
   std::string name_;
 
-  const BindingAccessChecker* const access_checker_;
+  const raw_ptr<const BindingAccessChecker, ExperimentalRenderer>
+      access_checker_;
 };
 
 }  // namespace extensions

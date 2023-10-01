@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
 #include "ppapi/host/host_message_context.h"
@@ -61,10 +62,10 @@ class CONTENT_EXPORT PepperFileChooserHost
                               const std::vector<int>& browser_ids);
 
   // Non-owning pointer.
-  RendererPpapiHost* renderer_ppapi_host_;
+  raw_ptr<RendererPpapiHost, ExperimentalRenderer> renderer_ppapi_host_;
 
   ppapi::host::ReplyMessageContext reply_context_;
-  CompletionHandler* handler_;
+  raw_ptr<CompletionHandler, ExperimentalRenderer> handler_;
 
   base::WeakPtrFactory<PepperFileChooserHost> weak_factory_{this};
 };

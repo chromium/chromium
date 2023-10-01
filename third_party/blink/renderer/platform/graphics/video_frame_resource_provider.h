@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_VIDEO_FRAME_RESOURCE_PROVIDER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_VIDEO_FRAME_RESOURCE_PROVIDER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "cc/trees/layer_tree_settings.h"
 #include "components/viz/client/client_resource_provider.h"
@@ -63,7 +64,7 @@ class PLATFORM_EXPORT VideoFrameResourceProvider {
  private:
   const cc::LayerTreeSettings settings_;
 
-  viz::RasterContextProvider* context_provider_;
+  raw_ptr<viz::RasterContextProvider, ExperimentalRenderer> context_provider_;
   std::unique_ptr<viz::ClientResourceProvider> resource_provider_;
   std::unique_ptr<media::VideoResourceUpdater> resource_updater_;
   bool use_sync_primitives_ = false;

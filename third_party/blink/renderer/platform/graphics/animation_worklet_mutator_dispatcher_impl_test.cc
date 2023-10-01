@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/graphics/animation_worklet_mutator_dispatcher_impl.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -110,7 +111,7 @@ class AnimationWorkletMutatorDispatcherImplTest : public ::testing::Test {
   void TearDown() override { mutator_ = nullptr; }
 
   std::unique_ptr<::testing::StrictMock<MockCompositorMutatorClient>> client_;
-  AnimationWorkletMutatorDispatcherImpl* mutator_;
+  raw_ptr<AnimationWorkletMutatorDispatcherImpl, ExperimentalRenderer> mutator_;
 };
 
 std::unique_ptr<AnimationWorkletDispatcherInput> CreateTestMutatorInput() {

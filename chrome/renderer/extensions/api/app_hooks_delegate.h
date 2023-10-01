@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "extensions/renderer/bindings/api_binding_hooks_delegate.h"
 #include "v8/include/v8.h"
@@ -67,13 +68,13 @@ class AppHooksDelegate : public APIBindingHooksDelegate {
   void OnAppInstallStateResponse(int request_id, const std::string& state);
 
   // Dispatcher handle. Not owned.
-  Dispatcher* dispatcher_ = nullptr;
+  raw_ptr<Dispatcher, ExperimentalRenderer> dispatcher_ = nullptr;
 
-  APIRequestHandler* request_handler_ = nullptr;
+  raw_ptr<APIRequestHandler, ExperimentalRenderer> request_handler_ = nullptr;
 
   // IPC sender used for activity log call.
   // Not owned. This is owned by NativeExtensionBindingsSystem.
-  IPCMessageSender* ipc_sender_ = nullptr;
+  raw_ptr<IPCMessageSender, ExperimentalRenderer> ipc_sender_ = nullptr;
 
   base::WeakPtrFactory<AppHooksDelegate> weak_factory_{this};
 };

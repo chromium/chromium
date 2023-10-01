@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "gin/wrappable.h"
 #include "v8/include/v8.h"
 
@@ -126,16 +127,16 @@ class APIBindingJSUtil final : public gin::Wrappable<APIBindingJSUtil> {
                                v8::Local<v8::Value> arguments_to_validate);
 
   // Type references. Guaranteed to outlive this object.
-  APITypeReferenceMap* const type_refs_;
+  const raw_ptr<APITypeReferenceMap, ExperimentalRenderer> type_refs_;
 
   // The request handler. Guaranteed to outlive this object.
-  APIRequestHandler* const request_handler_;
+  const raw_ptr<APIRequestHandler, ExperimentalRenderer> request_handler_;
 
   // The event handler. Guaranteed to outlive this object.
-  APIEventHandler* const event_handler_;
+  const raw_ptr<APIEventHandler, ExperimentalRenderer> event_handler_;
 
   // The exception handler. Guaranteed to outlive this object.
-  ExceptionHandler* const exception_handler_;
+  const raw_ptr<ExceptionHandler, ExperimentalRenderer> exception_handler_;
 };
 
 }  // namespace extensions

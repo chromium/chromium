@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_LAYOUT_LOCALE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_LAYOUT_LOCALE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/text/hyphenation.h"
 #include "third_party/blink/renderer/platform/text/quotes_data.h"
@@ -98,7 +99,7 @@ class PLATFORM_EXPORT LayoutLocale : public RefCounted<LayoutLocale> {
   mutable scoped_refptr<QuotesData> quotes_data_;
 
   // hb_language_t is defined in hb.h, which not all files can include.
-  const hb_language_impl_t* harfbuzz_language_;
+  raw_ptr<const hb_language_impl_t, ExperimentalRenderer> harfbuzz_language_;
 
   UScriptCode script_;
   mutable UScriptCode script_for_han_;

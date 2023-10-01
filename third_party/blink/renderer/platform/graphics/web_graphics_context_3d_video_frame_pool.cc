@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_video_frame_pool.h"
 
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/context_support.h"
@@ -96,7 +97,7 @@ class Context : public media::RenderableGpuMemoryBufferVideoFramePool::Context {
 
   base::WeakPtr<blink::WebGraphicsContext3DProviderWrapper>
       weak_context_provider_;
-  gpu::GpuMemoryBufferManager* gmb_manager_;
+  raw_ptr<gpu::GpuMemoryBufferManager, ExperimentalRenderer> gmb_manager_;
 };
 
 }  // namespace

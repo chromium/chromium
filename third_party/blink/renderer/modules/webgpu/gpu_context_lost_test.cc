@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/mock_callback.h"
 #include "gpu/command_buffer/client/webgpu_interface_stub.h"
@@ -51,7 +52,8 @@ class WebGPUContextProviderForTest
   void CallLostContextCallback() { lost_context_callback_.Run(); }
 
  private:
-  base::MockCallback<base::OnceClosure>* destruction_callback_;
+  raw_ptr<base::MockCallback<base::OnceClosure>, ExperimentalRenderer>
+      destruction_callback_;
   base::RepeatingClosure lost_context_callback_;
 };
 

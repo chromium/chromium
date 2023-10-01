@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_scheduler.h"
 
 #include <memory>
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -66,7 +67,7 @@ class MockClient final : public GarbageCollected<MockClient>,
  private:
   Member<DetachableConsoleLogger> console_logger_ =
       MakeGarbageCollected<DetachableConsoleLogger>();
-  MockClientDelegate* delegate_;
+  raw_ptr<MockClientDelegate, ExperimentalRenderer> delegate_;
   bool was_run_ = false;
 };
 

@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "media/base/limits.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -210,15 +211,23 @@ class MediaStreamConstraintsUtilVideoDeviceTest : public testing::Test {
   }
 
   VideoDeviceCaptureCapabilities capabilities_;
-  const VideoInputDeviceCapabilities* default_device_;
-  const VideoInputDeviceCapabilities* low_res_device_;
-  const VideoInputDeviceCapabilities* high_res_device_;
-  const VideoInputDeviceCapabilities* invalid_frame_rate_device_;
+  raw_ptr<const VideoInputDeviceCapabilities, ExperimentalRenderer>
+      default_device_;
+  raw_ptr<const VideoInputDeviceCapabilities, ExperimentalRenderer>
+      low_res_device_;
+  raw_ptr<const VideoInputDeviceCapabilities, ExperimentalRenderer>
+      high_res_device_;
+  raw_ptr<const VideoInputDeviceCapabilities, ExperimentalRenderer>
+      invalid_frame_rate_device_;
   // Closest formats to the default settings.
-  const media::VideoCaptureFormat* default_closest_format_;
-  const media::VideoCaptureFormat* low_res_closest_format_;
-  const media::VideoCaptureFormat* high_res_closest_format_;
-  const media::VideoCaptureFormat* high_res_highest_format_;
+  raw_ptr<const media::VideoCaptureFormat, ExperimentalRenderer>
+      default_closest_format_;
+  raw_ptr<const media::VideoCaptureFormat, ExperimentalRenderer>
+      low_res_closest_format_;
+  raw_ptr<const media::VideoCaptureFormat, ExperimentalRenderer>
+      high_res_closest_format_;
+  raw_ptr<const media::VideoCaptureFormat, ExperimentalRenderer>
+      high_res_highest_format_;
 
   MockConstraintFactory constraint_factory_;
 };

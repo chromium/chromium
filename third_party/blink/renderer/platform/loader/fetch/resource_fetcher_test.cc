@@ -32,6 +32,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
@@ -662,7 +663,7 @@ class RequestSameResourceOnComplete
   String DebugName() const override { return "RequestSameResourceOnComplete"; }
 
  private:
-  URLLoaderMockFactory* mock_factory_;
+  raw_ptr<URLLoaderMockFactory, ExperimentalRenderer> mock_factory_;
   bool notify_finished_called_ = false;
   scoped_refptr<const SecurityOrigin> source_origin_;
 };
@@ -753,7 +754,7 @@ class ServeRequestsOnCompleteClient final
   String DebugName() const override { return "ServeRequestsOnCompleteClient"; }
 
  private:
-  URLLoaderMockFactory* mock_factory_;
+  raw_ptr<URLLoaderMockFactory, ExperimentalRenderer> mock_factory_;
 };
 
 // Regression test for http://crbug.com/594072.

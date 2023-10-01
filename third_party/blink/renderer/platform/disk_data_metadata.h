@@ -10,6 +10,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 
 namespace blink {
@@ -45,7 +46,7 @@ class PLATFORM_EXPORT ReservedChunk {
   std::unique_ptr<DiskDataMetadata> Take();
 
  private:
-  DiskDataAllocator* allocator_;
+  raw_ptr<DiskDataAllocator, ExperimentalRenderer> allocator_;
   std::unique_ptr<DiskDataMetadata> metadata_;
 };
 

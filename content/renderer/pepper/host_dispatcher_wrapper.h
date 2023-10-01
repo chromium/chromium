@@ -5,6 +5,7 @@
 #ifndef CONTENT_RENDERER_PEPPER_HOST_DISPATCHER_WRAPPER_H_
 #define CONTENT_RENDERER_PEPPER_HOST_DISPATCHER_WRAPPER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/process/process_handle.h"
 #include "base/task/single_thread_task_runner.h"
@@ -59,7 +60,7 @@ class HostDispatcherWrapper {
   ppapi::proxy::HostDispatcher* dispatcher() { return dispatcher_.get(); }
 
  private:
-  PluginModule* module_;
+  raw_ptr<PluginModule, ExperimentalRenderer> module_;
 
   base::ProcessId peer_pid_;
 

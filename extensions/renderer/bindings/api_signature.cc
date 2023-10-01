@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/containers/contains.h"
+#include "base/memory/raw_ref.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
@@ -160,9 +161,12 @@ class ArgumentParser {
   virtual void SetCallback(v8::Local<v8::Function> callback) = 0;
 
   v8::Local<v8::Context> context_;
-  const std::vector<std::unique_ptr<ArgumentSpec>>& signature_;
-  const std::vector<v8::Local<v8::Value>>& provided_arguments_;
-  const APITypeReferenceMap& type_refs_;
+  const raw_ref<const std::vector<std::unique_ptr<ArgumentSpec>>,
+                ExperimentalRenderer>
+      signature_;
+  const raw_ref<const std::vector<v8::Local<v8::Value>>, ExperimentalRenderer>
+      provided_arguments_;
+  const raw_ref<const APITypeReferenceMap, ExperimentalRenderer> type_refs_;
   PromisesAllowed promises_allowed_;
   binding::AsyncResponseType async_type_ = binding::AsyncResponseType::kNone;
   std::string error_;
@@ -251,7 +255,7 @@ class BaseValueArgumentParser : public ArgumentParser {
 };
 
 bool ArgumentParser::ParseArgumentsImpl(bool signature_has_callback) {
-  if (provided_arguments_.size() > signature_.size()) {
+  if (provided_arguments_->size() > signature_->size()) {
     error_ = api_errors::NoMatchingSignature();
     return false;
   }
@@ -262,23 +266,24 @@ bool ArgumentParser::ParseArgumentsImpl(bool signature_has_callback) {
   bool allow_omitted_final_argument =
       signature_has_callback && promises_allowed_ == PromisesAllowed::kAllowed;
 
-  std::vector<v8::Local<v8::Value>> resolved_arguments(signature_.size());
-  if (!ResolveArguments(provided_arguments_, signature_, &resolved_arguments,
+  std::vector<v8::Local<v8::Value>> resolved_arguments(signature_->size());
+  if (!ResolveArguments(*provided_arguments_, *signature_, &resolved_arguments,
                         0u, allow_omitted_final_argument)) {
     error_ = api_errors::NoMatchingSignature();
     return false;
   }
-  DCHECK_EQ(resolved_arguments.size(), signature_.size());
+  DCHECK_EQ(resolved_arguments.size(), signature_->size());
 
   size_t end_size =
-      signature_has_callback ? signature_.size() - 1 : signature_.size();
+      signature_has_callback ? signature_->size() - 1 : signature_->size();
   for (size_t i = 0; i < end_size; ++i) {
-    if (!ParseArgument(*signature_[i], resolved_arguments[i]))
+    if (!ParseArgument(*(*signature_)[i], resolved_arguments[i])) {
       return false;
+    }
   }
 
   if (signature_has_callback &&
-      !ParseCallback(*signature_.back(), resolved_arguments.back())) {
+      !ParseCallback(*signature_->back(), resolved_arguments.back())) {
     return false;
   }
 
@@ -316,7 +321,7 @@ bool ArgumentParser::ResolveArguments(
       // For null/undefined, just use an empty handle. It'll be normalized to
       // null in ParseArgument().
       (*result)[index] = v8::Local<v8::Value>();
-    } else if (expected[0]->IsCorrectType(provided[0], type_refs_, &error_)) {
+    } else if (expected[0]->IsCorrectType(provided[0], *type_refs_, &error_)) {
       can_match = true;
       (*result)[index] = provided[0];
     }
@@ -376,8 +381,8 @@ bool ArgumentParser::ParseArgument(const ArgumentSpec& spec,
 
   // ResolveArguments() should verify that all arguments are at least the
   // correct type.
-  DCHECK(spec.IsCorrectType(value, type_refs_, &error_));
-  if (!spec.ParseArgument(context_, value, type_refs_, GetBaseBuffer(),
+  DCHECK(spec.IsCorrectType(value, *type_refs_, &error_));
+  if (!spec.ParseArgument(context_, value, *type_refs_, GetBaseBuffer(),
                           GetV8Buffer(), &parse_error_)) {
     error_ = api_errors::ArgumentError(spec.name(), parse_error_);
     return false;
@@ -409,7 +414,7 @@ bool ArgumentParser::ParseCallback(const ArgumentSpec& spec,
 
   // Note: callbacks are set through SetCallback() rather than through the
   // buffered argument.
-  if (!spec.ParseArgument(context_, value, type_refs_, nullptr, nullptr,
+  if (!spec.ParseArgument(context_, value, *type_refs_, nullptr, nullptr,
                           &parse_error_)) {
     error_ = api_errors::ArgumentError(spec.name(), parse_error_);
     return false;

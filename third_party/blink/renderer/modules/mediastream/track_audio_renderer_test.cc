@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/mediastream/track_audio_renderer.h"
 
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
@@ -233,7 +234,7 @@ class TrackAudioRendererTest : public testing::TestWithParam<bool> {
   int total_frames_captured_ = 0;
   int frames_captured_since_last_reconfig_ = 0;
 
-  FakeMediaStreamAudioSource* fake_source_;
+  raw_ptr<FakeMediaStreamAudioSource, ExperimentalRenderer> fake_source_;
 };
 
 TEST_P(TrackAudioRendererTest, SingleCapture) {

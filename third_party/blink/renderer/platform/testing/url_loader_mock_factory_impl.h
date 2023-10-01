@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TESTING_URL_LOADER_MOCK_FACTORY_IMPL_H_
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/web_url.h"
@@ -104,7 +105,7 @@ class URLLoaderMockFactoryImpl : public URLLoaderMockFactory {
   static bool ReadFile(const base::FilePath& file_path,
                        scoped_refptr<SharedBuffer>& data);
 
-  URLLoaderTestDelegate* delegate_ = nullptr;
+  raw_ptr<URLLoaderTestDelegate, ExperimentalRenderer> delegate_ = nullptr;
 
   // The loaders that have not being served data yet.
   using LoaderToRequestMap =
@@ -125,7 +126,7 @@ class URLLoaderMockFactoryImpl : public URLLoaderMockFactory {
   using ProtocolToResponseMap = HashMap<String, ResponseInfo>;
   ProtocolToResponseMap protocol_to_response_info_;
 
-  TestingPlatformSupport* platform_;
+  raw_ptr<TestingPlatformSupport, ExperimentalRenderer> platform_;
 };
 
 }  // namespace blink

@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "content/public/renderer/render_frame.h"
@@ -310,7 +311,7 @@ class MainThreadIPCMessageSender : public IPCMessageSender {
     return renderer_host_.get();
   }
 
-  content::RenderThread* const render_thread_;
+  const raw_ptr<content::RenderThread, ExperimentalRenderer> render_thread_;
   mojo::AssociatedRemote<mojom::EventRouter> event_router_remote_;
   mojo::AssociatedRemote<mojom::RendererHost> renderer_host_;
   mojo::AssociatedRemote<extensions::mojom::RendererAutomationRegistry>
@@ -557,8 +558,9 @@ class WorkerThreadIPCMessageSender : public IPCMessageSender {
     return renderer_host_.get();
   }
 
-  WorkerThreadDispatcher* const dispatcher_;
-  blink::WebServiceWorkerContextProxy* const context_proxy_;
+  const raw_ptr<WorkerThreadDispatcher, ExperimentalRenderer> dispatcher_;
+  const raw_ptr<blink::WebServiceWorkerContextProxy, ExperimentalRenderer>
+      context_proxy_;
   const int64_t service_worker_version_id_;
   absl::optional<ExtensionId> extension_id_;
   mojo::AssociatedRemote<mojom::RendererHost> renderer_host_;

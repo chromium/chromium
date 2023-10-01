@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_PAINT_UNDER_INVALIDATION_CHECKER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_PAINT_UNDER_INVALIDATION_CHECKER_H_
 
+#include "base/memory/raw_ref.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -59,7 +60,7 @@ class PaintUnderInvalidationChecker {
   DisplayItemList& OldDisplayItemList();
   DisplayItemList& NewDisplayItemList();
 
-  PaintController& paint_controller_;
+  const raw_ref<PaintController, ExperimentalRenderer> paint_controller_;
 
   // Points to the cached display item which is expected to match the nextnew
   // display item.

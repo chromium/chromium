@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "media/base/audio_parameters.h"
@@ -39,7 +40,7 @@ class MediaStreamAudioProcessor::PlayoutListener {
  private:
   // TODO(crbug.com/704136): Replace with Member at some point.
   scoped_refptr<WebRtcAudioDeviceImpl> const playout_data_source_;
-  WebRtcPlayoutDataSource::Sink* const sink_;
+  const raw_ptr<WebRtcPlayoutDataSource::Sink, ExperimentalRenderer> sink_;
 };
 
 MediaStreamAudioProcessor::MediaStreamAudioProcessor(

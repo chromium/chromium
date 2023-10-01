@@ -11,6 +11,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "third_party/blink/public/platform/media/multi_buffer.h"
@@ -96,7 +97,7 @@ class PLATFORM_EXPORT ResourceMultiBufferDataProvider
   // We don't need (or want) a scoped_refptr for this one, because
   // we are owned by it. Note that we may change this when we encounter
   // a redirect because we actually change ownership.
-  UrlData* url_data_;
+  raw_ptr<UrlData, ExperimentalRenderer> url_data_;
 
   // Temporary storage for incoming data.
   std::list<scoped_refptr<media::DataBuffer>> fifo_;

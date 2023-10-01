@@ -11,6 +11,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -498,7 +499,7 @@ class FakeServiceWorkerContainerHost
 
  private:
   int get_controller_service_worker_count_ = 0;
-  FakeControllerServiceWorker* fake_controller_;
+  raw_ptr<FakeControllerServiceWorker, ExperimentalRenderer> fake_controller_;
   mojo::ReceiverSet<blink::mojom::ServiceWorkerContainerHost> receivers_;
 };
 

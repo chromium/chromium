@@ -29,6 +29,7 @@
 #include "base/check_op.h"
 #include "base/dcheck_is_on.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/delay_policy.h"
 #include "base/task/delayed_task_handle.h"
@@ -120,7 +121,7 @@ class PLATFORM_EXPORT TimerBase {
   base::Location location_;
   scoped_refptr<base::SingleThreadTaskRunner> web_task_runner_;
   // The tick clock used to calculate the run time for scheduled tasks.
-  const base::TickClock* tick_clock_ = nullptr;
+  raw_ptr<const base::TickClock, ExperimentalRenderer> tick_clock_ = nullptr;
   base::subtle::DelayPolicy delay_policy_;
 
 #if DCHECK_IS_ON()

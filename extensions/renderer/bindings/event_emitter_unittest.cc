@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ref.h"
 #include "base/values.h"
 #include "extensions/common/mojom/event_dispatcher.mojom.h"
 #include "extensions/renderer/bindings/api_binding_test.h"
@@ -141,17 +142,17 @@ TEST_F(EventEmitterUnittest, ListenersDestroyingContext) {
   v8::Local<v8::Context> context = MainContext();
 
   struct ListenerClosureData {
-    EventEmitterUnittest& test;
+    const raw_ref<EventEmitterUnittest, ExperimentalRenderer> test;
     bool did_invalidate_context;
-  } closure_data = {*this, false};
+  } closure_data = {raw_ref(*this), false};
 
   // A wrapper that just calls DisposeContextWrapper() on the curried in data.
   auto listener_wrapper = [](const v8::FunctionCallbackInfo<v8::Value>& info) {
     ASSERT_TRUE(info.Data()->IsExternal());
     auto& data = *static_cast<ListenerClosureData*>(
         info.Data().As<v8::External>()->Value());
-    data.test.DisposeContextWrapper(&data.did_invalidate_context,
-                                    info.GetIsolate()->GetCurrentContext());
+    data.test->DisposeContextWrapper(&data.did_invalidate_context,
+                                     info.GetIsolate()->GetCurrentContext());
   };
 
   ListenerTracker tracker;

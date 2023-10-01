@@ -6,6 +6,7 @@
 
 #include <tuple>
 
+#include "base/memory/raw_ref.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
@@ -31,7 +32,7 @@ class MockFileSystemAccessManager
   MockFileSystemAccessManager(BrowserInterfaceBrokerProxy& broker,
                               base::OnceClosure reached_callback)
       : reached_callback_(std::move(reached_callback)), broker_(broker) {
-    broker_.SetBinderForTesting(
+    broker_->SetBinderForTesting(
         mojom::blink::FileSystemAccessManager::Name_,
         WTF::BindRepeating(
             &MockFileSystemAccessManager::BindFileSystemAccessManager,
@@ -39,15 +40,15 @@ class MockFileSystemAccessManager
   }
   MockFileSystemAccessManager(BrowserInterfaceBrokerProxy& broker)
       : broker_(broker) {
-    broker_.SetBinderForTesting(
+    broker_->SetBinderForTesting(
         mojom::blink::FileSystemAccessManager::Name_,
         WTF::BindRepeating(
             &MockFileSystemAccessManager::BindFileSystemAccessManager,
             WTF::Unretained(this)));
   }
   ~MockFileSystemAccessManager() override {
-    broker_.SetBinderForTesting(mojom::blink::FileSystemAccessManager::Name_,
-                                {});
+    broker_->SetBinderForTesting(mojom::blink::FileSystemAccessManager::Name_,
+                                 {});
   }
 
   using ChooseEntriesResponseCallback =
@@ -104,7 +105,7 @@ class MockFileSystemAccessManager
   base::OnceClosure reached_callback_;
   ChooseEntriesResponseCallback choose_entries_response_callback_;
   mojo::ReceiverSet<mojom::blink::FileSystemAccessManager> receivers_;
-  BrowserInterfaceBrokerProxy& broker_;
+  const raw_ref<BrowserInterfaceBrokerProxy, ExperimentalRenderer> broker_;
 };
 
 class GlobalFileSystemAccessTest : public PageTestBase {

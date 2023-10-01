@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "components/autofill/content/common/mojom/autofill_driver.mojom.h"
 #include "components/autofill/core/common/save_password_progress_logger.h"
 
@@ -42,7 +43,8 @@ class RendererSavePasswordProgressLogger : public SavePasswordProgressLogger {
  private:
   // Used by SendLog to send the logs to the browser.
   // |password_manager_driver_| needs to outlive the logger.
-  mojom::PasswordManagerDriver* password_manager_driver_;
+  raw_ptr<mojom::PasswordManagerDriver, ExperimentalRenderer>
+      password_manager_driver_;
 };
 
 }  // namespace autofill

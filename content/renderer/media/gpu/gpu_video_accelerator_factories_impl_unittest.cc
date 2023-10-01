@@ -8,6 +8,7 @@
 #include <cstddef>
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/gtest_util.h"
@@ -426,7 +427,7 @@ class GpuVideoAcceleratorFactoriesImplTest : public testing::Test {
         gpu::kNullSurfaceHandle, nullptr, content::kGpuStreamPriorityDefault,
         gpu::ContextCreationAttribs(), GURL());
     ON_CALL(*mock_context_provider_, GetCommandBufferProxy())
-        .WillByDefault(Return(gpu_command_buffer_proxy_));
+        .WillByDefault(Return(gpu_command_buffer_proxy_.get()));
   }
 
   std::unique_ptr<CodecFactory> CreateCodecFactory(
@@ -494,7 +495,8 @@ class GpuVideoAcceleratorFactoriesImplTest : public testing::Test {
   viz::TestGpuMemoryBufferManager gpu_memory_buffer_manager_;
   scoped_refptr<TestGpuChannelHost> gpu_channel_host_;
   scoped_refptr<MockContextProviderCommandBuffer> mock_context_provider_;
-  gpu::CommandBufferProxyImpl* gpu_command_buffer_proxy_;
+  raw_ptr<gpu::CommandBufferProxyImpl, ExperimentalRenderer>
+      gpu_command_buffer_proxy_;
 
   FakeVEAProviderImpl fake_vea_provider_;
 

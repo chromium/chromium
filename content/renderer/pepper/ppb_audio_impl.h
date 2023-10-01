@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/sync_socket.h"
@@ -63,7 +64,7 @@ class PPB_Audio_Impl : public ppapi::Resource,
 
   // PluginDelegate audio object that we delegate audio IPC through. We don't
   // own this pointer but are responsible for calling Shutdown on it.
-  PepperPlatformAudioOutput* audio_;
+  raw_ptr<PepperPlatformAudioOutput, ExperimentalRenderer> audio_;
 };
 
 }  // namespace content

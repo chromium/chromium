@@ -21,6 +21,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_SEGMENTED_STRING_H_
 
 #include "base/check_op.h"
+#include "base/memory/raw_ptr.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
@@ -354,7 +355,8 @@ class PLATFORM_EXPORT SegmentedString {
   bool closed_;
   bool empty_;
   UChar current_char_;
-  const SegmentedString* next_segmented_string_ = nullptr;
+  raw_ptr<const SegmentedString, ExperimentalRenderer> next_segmented_string_ =
+      nullptr;
 };
 
 }  // namespace blink

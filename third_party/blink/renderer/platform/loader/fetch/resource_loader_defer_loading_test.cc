@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader.h"
 
 #include "base/debug/stack_trace.h"
@@ -81,7 +82,7 @@ class TestURLLoader final : public URLLoader {
 
  private:
   // Points to |ResourceLoaderDefersLoadingTest::freeze_mode_|.
-  LoaderFreezeMode* const freeze_mode_ptr_;
+  const raw_ptr<LoaderFreezeMode, ExperimentalRenderer> freeze_mode_ptr_;
 };
 
 class DummyCodeCacheHost final : public mojom::blink::CodeCacheHost {
@@ -142,7 +143,7 @@ class DeferTestLoaderFactory final : public ResourceFetcher::LoaderFactory {
 
  private:
   // Points to |ResourceLoaderDefersLoadingTest::freeze_mode_|.
-  LoaderFreezeMode* const freeze_mode_ptr_;
+  const raw_ptr<LoaderFreezeMode, ExperimentalRenderer> freeze_mode_ptr_;
 
   std::unique_ptr<CodeCacheHost> code_cache_host_;
 };

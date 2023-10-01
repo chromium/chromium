@@ -36,6 +36,7 @@
 
 #include "base/containers/span.h"
 #include "base/functional/function_ref.h"
+#include "base/memory/raw_ptr.h"
 #include "cc/layers/texture_layer_client.h"
 #include "cc/resources/cross_thread_shared_bitmap.h"
 #include "cc/resources/shared_bitmap_id_registrar.h"
@@ -408,7 +409,8 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
    private:
     scoped_refptr<DrawingBuffer> drawing_buffer_;
     // The previous state restorer, in case restorers are nested.
-    ScopedStateRestorer* previous_state_restorer_ = nullptr;
+    raw_ptr<ScopedStateRestorer, ExperimentalRenderer>
+        previous_state_restorer_ = nullptr;
     bool clear_state_dirty_ = false;
     bool pixel_pack_parameters_dirty_ = false;
     bool texture_binding_dirty_ = false;
@@ -606,14 +608,14 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   void ResolveAndPresentSwapChainIfNeeded();
 
   // Weak, reset by beginDestruction.
-  Client* client_ = nullptr;
+  raw_ptr<Client, ExperimentalRenderer> client_ = nullptr;
 
   const PreserveDrawingBuffer preserve_drawing_buffer_;
   const WebGLVersion webgl_version_;
 
   std::unique_ptr<WebGraphicsContext3DProviderWrapper> context_provider_;
   // Lifetime is tied to the m_contextProvider.
-  gpu::gles2::GLES2Interface* gl_;
+  raw_ptr<gpu::gles2::GLES2Interface, ExperimentalRenderer> gl_;
   std::unique_ptr<Extensions3DUtil> extensions_util_;
   gfx::Size size_;
   const bool discard_framebuffer_supported_;
@@ -637,7 +639,7 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   // The current state restorer, which is used to track state dirtying. It is an
   // error to dirty state shared with WebGL while there is no existing state
   // restorer.
-  ScopedStateRestorer* state_restorer_ = nullptr;
+  raw_ptr<ScopedStateRestorer, ExperimentalRenderer> state_restorer_ = nullptr;
 
   // This is used when the user requests either a depth or stencil buffer.
   GLuint depth_stencil_buffer_ = 0;

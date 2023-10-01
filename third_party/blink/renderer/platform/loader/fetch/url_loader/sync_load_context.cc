@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -83,14 +84,15 @@ class SyncLoadContext::SignalHelper final {
     }
     if (timeout_timer_) {
       DCHECK_NE(base::TimeDelta::Max(), timeout);
-      timeout_timer_->Start(FROM_HERE, timeout, context_,
+      timeout_timer_->Start(FROM_HERE, timeout, context_.get(),
                             &SyncLoadContext::OnTimeout);
     }
   }
 
-  SyncLoadContext* context_;
-  base::WaitableEvent* redirect_or_response_event_;
-  base::WaitableEvent* abort_event_;
+  raw_ptr<SyncLoadContext, ExperimentalRenderer> context_;
+  raw_ptr<base::WaitableEvent, ExperimentalRenderer>
+      redirect_or_response_event_;
+  raw_ptr<base::WaitableEvent, ExperimentalRenderer> abort_event_;
   base::WaitableEventWatcher abort_watcher_;
   absl::optional<base::OneShotTimer> timeout_timer_;
 };

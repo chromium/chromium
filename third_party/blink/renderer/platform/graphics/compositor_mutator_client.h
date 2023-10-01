@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_COMPOSITOR_MUTATOR_CLIENT_H_
 
 #include <memory>
+#include "base/memory/raw_ptr.h"
 #include "cc/trees/layer_tree_mutator.h"
 #include "third_party/blink/renderer/platform/graphics/mutator_client.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -33,7 +34,7 @@ class PLATFORM_EXPORT CompositorMutatorClient : public cc::LayerTreeMutator,
 
  private:
   std::unique_ptr<AnimationWorkletMutatorDispatcherImpl> mutator_;
-  cc::LayerTreeMutatorClient* client_;
+  raw_ptr<cc::LayerTreeMutatorClient, ExperimentalRenderer> client_;
 };
 
 }  // namespace blink

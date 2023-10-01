@@ -9,6 +9,7 @@
 #include <unordered_map>
 
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list_types.h"
 #include "content/common/content_export.h"
@@ -121,7 +122,8 @@ class CONTENT_EXPORT AXImageAnnotator : public base::CheckedObserver {
   std::string GetDocumentUrl() const;
 
   // Weak, owns us.
-  RenderAccessibilityImpl* const render_accessibility_;
+  const raw_ptr<RenderAccessibilityImpl, ExperimentalRenderer>
+      render_accessibility_;
 
   // A pointer to the automatic image annotation service.
   mojo::Remote<image_annotation::mojom::Annotator> annotator_;

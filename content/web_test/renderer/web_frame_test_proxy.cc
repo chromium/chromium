@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "content/web_test/renderer/web_frame_test_proxy.h"
+#include "base/memory/raw_ptr.h"
 
 #include "components/plugins/renderer/plugin_placeholder.h"
 #include "content/public/renderer/render_frame_observer.h"
@@ -224,7 +225,7 @@ class TestRenderFrameObserver : public RenderFrameObserver {
     render_frame()->GetWebFrame()->PrintEnd();
   }
 
-  TestRunner* const test_runner_;
+  const raw_ptr<TestRunner, ExperimentalRenderer> test_runner_;
 };
 
 }  // namespace

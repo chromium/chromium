@@ -9,6 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
@@ -134,7 +135,7 @@ class DecoderBufferProviderImpl : public DecoderBufferProvider<TConfigType> {
   NewBufferCb new_buffer_callback_;
   std::unique_ptr<media::cast::DecoderBufferReader> buffer_reader_;
   DeletionCb deletion_callback_;
-  Client* client_;
+  raw_ptr<Client, ExperimentalRenderer> client_;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 

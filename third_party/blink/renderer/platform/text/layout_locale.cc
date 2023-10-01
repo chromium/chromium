@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/text/layout_locale.h"
 
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "third_party/blink/renderer/platform/language.h"
 #include "third_party/blink/renderer/platform/text/hyphenation.h"
@@ -28,9 +29,10 @@ struct PerThreadData {
           scoped_refptr<LayoutLocale>,
           CaseFoldingHashTraits<AtomicString>>
       locale_map;
-  const LayoutLocale* default_locale = nullptr;
-  const LayoutLocale* system_locale = nullptr;
-  const LayoutLocale* default_locale_for_han = nullptr;
+  raw_ptr<const LayoutLocale, ExperimentalRenderer> default_locale = nullptr;
+  raw_ptr<const LayoutLocale, ExperimentalRenderer> system_locale = nullptr;
+  raw_ptr<const LayoutLocale, ExperimentalRenderer> default_locale_for_han =
+      nullptr;
   bool default_locale_for_han_computed = false;
   String current_accept_languages;
 };
@@ -42,7 +44,7 @@ PerThreadData& GetPerThreadData() {
 
 struct DelimiterConfig {
   ULocaleDataDelimiterType type;
-  UChar* result;
+  raw_ptr<UChar, ExperimentalRenderer> result;
 };
 // Use  ICU ulocdata to find quote delimiters for an ICU locale
 // https://unicode-org.github.io/icu-docs/apidoc/dev/icu4c/ulocdata_8h.html#a0bf1fdd1a86918871ae2c84b5ce8421f

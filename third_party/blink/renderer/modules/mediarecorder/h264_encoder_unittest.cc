@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/thread_pool.h"
@@ -139,7 +140,8 @@ class H264EncoderFixture : public ::testing::Test {
   const absl::optional<media::VideoCodecProfile> profile_;
   const absl::optional<uint8_t> level_;
   const uint32_t bitrate_;
-  media::MockVideoEncoderMetricsProvider* mock_metrics_provider_;
+  raw_ptr<media::MockVideoEncoderMetricsProvider, ExperimentalRenderer>
+      mock_metrics_provider_;
   H264Encoder encoder_;
 };
 

@@ -5,6 +5,7 @@
 #ifndef EXTENSIONS_RENDERER_API_DEFINITIONS_NATIVES_H_
 #define EXTENSIONS_RENDERER_API_DEFINITIONS_NATIVES_H_
 
+#include "base/memory/raw_ptr.h"
 #include "extensions/renderer/object_backed_native_handler.h"
 #include "v8/include/v8-forward.h"
 
@@ -29,7 +30,7 @@ class ApiDefinitionsNatives : public ObjectBackedNativeHandler {
       const v8::FunctionCallbackInfo<v8::Value>& args);
 
   // Not owned.
-  Dispatcher* dispatcher_;
+  raw_ptr<Dispatcher, ExperimentalRenderer> dispatcher_;
 };
 
 }  // namespace extensions

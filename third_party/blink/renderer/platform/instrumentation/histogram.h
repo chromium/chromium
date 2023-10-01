@@ -6,6 +6,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_INSTRUMENTATION_HISTOGRAM_H_
 
 #include <stdint.h>
+#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/default_tick_clock.h"
@@ -36,7 +38,7 @@ class PLATFORM_EXPORT CustomCountHistogram {
  protected:
   explicit CustomCountHistogram(base::HistogramBase*);
 
-  base::HistogramBase* histogram_;
+  raw_ptr<base::HistogramBase, ExperimentalRenderer> histogram_;
 };
 
 template <typename Derived>
@@ -50,17 +52,17 @@ class ScopedUsHistogramTimerBase {
 
   ScopedUsHistogramTimerBase(CustomCountHistogram& counter,
                              const base::TickClock* clock)
-      : clock_(*clock), start_time_(clock_.NowTicks()), counter_(counter) {}
+      : clock_(*clock), start_time_(clock_->NowTicks()), counter_(counter) {}
 
   ~ScopedUsHistogramTimerBase() {
     if (Derived::ShouldRecord())
-      counter_.CountMicroseconds(clock_.NowTicks() - start_time_);
+      counter_->CountMicroseconds(clock_->NowTicks() - start_time_);
   }
 
  private:
-  const base::TickClock& clock_;
+  const raw_ref<const base::TickClock, ExperimentalRenderer> clock_;
   base::TimeTicks start_time_;
-  CustomCountHistogram& counter_;
+  const raw_ref<CustomCountHistogram, ExperimentalRenderer> counter_;
 };
 
 class ScopedUsHistogramTimer

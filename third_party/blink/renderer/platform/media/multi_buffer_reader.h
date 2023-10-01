@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "third_party/blink/public/platform/media/multi_buffer.h"
@@ -140,7 +141,7 @@ class PLATFORM_EXPORT MultiBufferReader : public MultiBuffer::Reader {
   void Call(base::OnceClosure cb) const;
 
   // The multibuffer we're wrapping, not owned.
-  MultiBuffer* multibuffer_;
+  raw_ptr<MultiBuffer, ExperimentalRenderer> multibuffer_;
 
   // We're not interested in reading past this position.
   int64_t end_;

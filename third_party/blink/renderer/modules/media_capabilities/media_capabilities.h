@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIA_CAPABILITIES_MEDIA_CAPABILITIES_H_
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "media/base/video_codecs.h"  // for media::VideoCodecProfile
 #include "media/learning/mojo/public/cpp/mojo_learning_task_controller.h"
@@ -215,10 +216,12 @@ class MODULES_EXPORT MediaCapabilities final
   HeapHashMap<int, Member<PendingCallbackState>> pending_cb_map_;
 
   // Makes it possible to override the WebrtcDecodingInfoHandler in tests.
-  WebrtcDecodingInfoHandler* webrtc_decoding_info_handler_for_test_ = nullptr;
+  raw_ptr<WebrtcDecodingInfoHandler, ExperimentalRenderer>
+      webrtc_decoding_info_handler_for_test_ = nullptr;
 
   // Makes it possible to override the WebrtcEncodingInfoHandler in tests.
-  WebrtcEncodingInfoHandler* webrtc_encoding_info_handler_for_test_ = nullptr;
+  raw_ptr<WebrtcEncodingInfoHandler, ExperimentalRenderer>
+      webrtc_encoding_info_handler_for_test_ = nullptr;
 };
 
 }  // namespace blink

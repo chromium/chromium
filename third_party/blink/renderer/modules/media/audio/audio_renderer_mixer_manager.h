@@ -12,6 +12,7 @@
 
 #include "base/check_op.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/unguessable_token.h"
 #include "media/audio/audio_device_description.h"
@@ -159,7 +160,7 @@ class BLINK_MODULES_EXPORT AudioRendererMixerManager final
   // AudioRendererMixerManager to keep track explicitly (v.s. RefCounted which
   // is implicit) of the number of outstanding AudioRendererMixers.
   struct AudioRendererMixerReference {
-    media::AudioRendererMixer* mixer;
+    raw_ptr<media::AudioRendererMixer, ExperimentalRenderer> mixer;
     size_t ref_count;
   };
 

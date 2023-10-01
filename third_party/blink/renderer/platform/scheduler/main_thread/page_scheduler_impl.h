@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/common/lazy_now.h"
 #include "base/task/sequence_manager/task_queue.h"
@@ -233,7 +234,7 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
 
   TraceableVariableController tracing_controller_;
   HashSet<FrameSchedulerImpl*> frame_schedulers_;
-  MainThreadSchedulerImpl* main_thread_scheduler_;
+  raw_ptr<MainThreadSchedulerImpl, ExperimentalRenderer> main_thread_scheduler_;
   Persistent<AgentGroupSchedulerImpl> agent_group_scheduler_;
 
   PageVisibilityState page_visibility_;
@@ -289,7 +290,7 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
   //    AllowUnalignedWakeUpIfNoRecentWakeUp() on this pool.
   std::unique_ptr<WakeUpBudgetPool> cross_origin_intensive_wake_up_budget_pool_;
 
-  PageScheduler::Delegate* delegate_;
+  raw_ptr<PageScheduler::Delegate, ExperimentalRenderer> delegate_;
   CancelableClosureHolder do_throttle_cpu_time_callback_;
   CancelableClosureHolder do_intensively_throttle_wake_ups_callback_;
   CancelableClosureHolder reset_had_recent_title_or_favicon_update_;

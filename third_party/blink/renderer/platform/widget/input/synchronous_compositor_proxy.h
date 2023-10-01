@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/writable_shared_memory_region.h"
 #include "components/viz/common/frame_timing_details_map.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -112,7 +113,8 @@ class SynchronousCompositorProxy : public blink::SynchronousInputHandler,
   DemandDrawHwCallback hardware_draw_reply_;
   DemandDrawSwCallback software_draw_reply_;
   ZoomByCallback zoom_by_reply_;
-  SynchronousLayerTreeFrameSink* layer_tree_frame_sink_ = nullptr;
+  raw_ptr<SynchronousLayerTreeFrameSink, ExperimentalRenderer>
+      layer_tree_frame_sink_ = nullptr;
   bool begin_frame_paused_ = false;
 
  private:
@@ -122,7 +124,7 @@ class SynchronousCompositorProxy : public blink::SynchronousInputHandler,
 
   struct SharedMemoryWithSize;
 
-  InputHandlerProxy* const input_handler_proxy_;
+  const raw_ptr<InputHandlerProxy, ExperimentalRenderer> input_handler_proxy_;
   mojo::Remote<mojom::blink::SynchronousCompositorControlHost> control_host_;
   mojo::AssociatedRemote<mojom::blink::SynchronousCompositorHost> host_;
   mojo::AssociatedReceiver<mojom::blink::SynchronousCompositor> receiver_{this};

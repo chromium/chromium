@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/subresource_filter/content/mojom/subresource_filter.mojom.h"
 #include "components/subresource_filter/content/renderer/ad_resource_tracker.h"
@@ -148,7 +149,7 @@ class SubresourceFilterAgent
       const blink::RemoteFrameToken& placeholder_token) override;
 
   // Owned by the ChromeContentRendererClient and outlives us.
-  UnverifiedRulesetDealer* ruleset_dealer_;
+  raw_ptr<UnverifiedRulesetDealer, ExperimentalRenderer> ruleset_dealer_;
 
   mojom::ActivationState activation_state_for_next_document_;
 

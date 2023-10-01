@@ -8,6 +8,7 @@
 #include <map>
 #include <set>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/types/strong_alias.h"
 #include "net/http/http_response_info.h"
@@ -401,7 +402,7 @@ class PLATFORM_EXPORT ResourceLoadScheduler final
 
   const Member<DetachableConsoleLogger> console_logger_;
 
-  const base::Clock* clock_;
+  raw_ptr<const base::Clock, ExperimentalRenderer> clock_;
 
   ThrottleOptionOverride throttle_option_override_;
 

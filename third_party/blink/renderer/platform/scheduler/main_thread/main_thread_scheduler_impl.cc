@@ -2295,7 +2295,8 @@ void MainThreadSchedulerImpl::EndAgentGroupSchedulerScope() {
   TRACE_EVENT_NESTABLE_ASYNC_END1(
       TRACE_DISABLED_BY_DEFAULT("renderer.scheduler"),
       agent_group_scheduler_scope.trace_event_scope_name,
-      agent_group_scheduler_scope.trace_event_scope_id, "agent_group_scheduler",
+      agent_group_scheduler_scope.trace_event_scope_id.get(),
+      "agent_group_scheduler",
       static_cast<void*>(
           agent_group_scheduler_scope.current_agent_group_scheduler));
 

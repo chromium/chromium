@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_converter.h"
 #include "media/base/audio_fifo.h"
@@ -67,7 +68,7 @@ class AudioTrackOpusEncoder : public AudioTrackEncoder,
   // Buffer for passing AudioBus data from the converter to the encoder.
   std::unique_ptr<float[]> buffer_;
 
-  OpusEncoder* opus_encoder_;
+  raw_ptr<OpusEncoder, ExperimentalRenderer> opus_encoder_;
 };
 
 }  // namespace blink

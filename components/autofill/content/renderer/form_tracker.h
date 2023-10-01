@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_CONTENT_RENDERER_FORM_TRACKER_H_
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
@@ -152,7 +153,8 @@ class FormTracker : public content::RenderFrameObserver,
   bool user_gesture_required_ = true;
   blink::WebFormElement last_interacted_form_;
   blink::WebFormControlElement last_interacted_formless_element_;
-  blink::WebFormElementObserver* form_element_observer_ = nullptr;
+  raw_ptr<blink::WebFormElementObserver, ExperimentalRenderer>
+      form_element_observer_ = nullptr;
 
   SEQUENCE_CHECKER(form_tracker_sequence_checker_);
 

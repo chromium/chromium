@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "content/public/renderer/render_frame_observer.h"
@@ -189,7 +190,7 @@ class ExtensionFrameHelper
   // The id of the browser window the render frame is attached to.
   int browser_window_id_ = -1;
 
-  Dispatcher* extension_dispatcher_;
+  raw_ptr<Dispatcher, ExperimentalRenderer> extension_dispatcher_;
 
   // Whether or not the current document element has been created. This starts
   // true as the initial empty document is already created when this class is

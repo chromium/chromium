@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/platform/graphics/parkable_image.h"
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -173,7 +174,7 @@ class ParkableImageBaseTest : public ::testing::Test {
 
  private:
   base::test::TaskEnvironment task_env_;
-  InMemoryDataAllocator* allocator_for_testing_;
+  raw_ptr<InMemoryDataAllocator, ExperimentalRenderer> allocator_for_testing_;
 };
 
 // Parking is enabled for these tests.

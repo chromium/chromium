@@ -16,6 +16,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -164,7 +165,7 @@ class ProxyAsyncDnsResolverFactory final
   }
 
  private:
-  IpcPacketSocketFactory* ipc_psf_;
+  raw_ptr<IpcPacketSocketFactory, ExperimentalRenderer> ipc_psf_;
 };
 
 std::string WorkerThreadName() {

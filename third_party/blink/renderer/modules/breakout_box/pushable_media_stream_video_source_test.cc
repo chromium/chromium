@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/breakout_box/pushable_media_stream_video_source.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/bind_post_task.h"
 #include "base/time/time.h"
@@ -56,9 +57,9 @@ class FakeMediaStreamVideoSink : public MediaStreamVideoSink {
   }
 
  private:
-  base::TimeTicks* const capture_time_;
-  media::VideoFrameMetadata* const metadata_;
-  gfx::Size* const natural_size_;
+  const raw_ptr<base::TimeTicks, ExperimentalRenderer> capture_time_;
+  const raw_ptr<media::VideoFrameMetadata, ExperimentalRenderer> metadata_;
+  const raw_ptr<gfx::Size, ExperimentalRenderer> natural_size_;
   base::OnceClosure got_frame_cb_;
 };
 
@@ -103,7 +104,8 @@ class PushableMediaStreamVideoSourceTest : public testing::Test {
   ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform_;
 
   Persistent<MediaStreamSource> stream_source_;
-  PushableMediaStreamVideoSource* pushable_video_source_;
+  raw_ptr<PushableMediaStreamVideoSource, ExperimentalRenderer>
+      pushable_video_source_;
 };
 
 TEST_F(PushableMediaStreamVideoSourceTest, StartAndStop) {

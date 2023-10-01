@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "extensions/common/mojom/host_id.mojom-forward.h"
 #include "extensions/common/mojom/run_location.mojom-shared.h"
@@ -128,7 +129,7 @@ class ScriptInjection {
   std::unique_ptr<ScriptInjector> injector_;
 
   // The RenderFrame into which this should inject the script.
-  content::RenderFrame* render_frame_;
+  raw_ptr<content::RenderFrame, ExperimentalRenderer> render_frame_;
 
   // The associated injection host.
   std::unique_ptr<const InjectionHost> injection_host_;
