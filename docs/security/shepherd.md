@@ -26,11 +26,11 @@ bugs, you may want to reference these to see if there's an established stance.
 
 ## What Is A Security Shepherd?
 
-A security shepherd is a member of a rotation
-that occurs in 1-week time slots, starting on Tuesdays and ending the following
-Monday. There is a primary and secondary shepherd on each rotation. All
-shepherds are Googlers and so some links on this page might not be externally
-accessible (or indeed locked down to just Chrome Security Googlers).
+A security shepherd is a member of a rotation that occurs in two different time
+slots: Tues to Thurs or Fri to Mon. There is a primary and secondary shepherd on
+each rotation. All shepherds are Googlers and so some links on this page might
+not be externally accessible (or indeed locked down to just Chrome Security
+Googlers).
 
 [Here is the rotation
 schedule](https://docs.google.com/spreadsheets/d/10sLYZbi6QfLcXrhO-j5eSc82uc7NKnBz_o1pR9y8h7U/edit#gid=0).
