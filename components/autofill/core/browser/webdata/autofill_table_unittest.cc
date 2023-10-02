@@ -1116,10 +1116,10 @@ TEST_F(AutofillTableTest, Iban) {
   iban.SetRawInfo(IBAN_VALUE, u"IE12 BOFI 9000 0112 3456 78");
   iban.set_nickname(u"My doctor's IBAN");
 
-  EXPECT_TRUE(table_->AddIban(iban));
+  EXPECT_TRUE(table_->AddLocalIban(iban));
 
   // Get the inserted IBAN.
-  std::unique_ptr<Iban> db_iban = table_->GetIban(iban.guid());
+  std::unique_ptr<Iban> db_iban = table_->GetLocalIban(iban.guid());
   ASSERT_TRUE(db_iban);
   EXPECT_EQ(guid, db_iban->guid());
   sql::Statement s_work(db_->GetSQLConnection()->GetUniqueStatement(
@@ -1137,9 +1137,9 @@ TEST_F(AutofillTableTest, Iban) {
   another_iban.SetRawInfo(IBAN_VALUE, u"DE91 1000 0000 0123 4567 89");
   another_iban.set_nickname(u"My brother's IBAN");
 
-  EXPECT_TRUE(table_->AddIban(another_iban));
+  EXPECT_TRUE(table_->AddLocalIban(another_iban));
 
-  db_iban = table_->GetIban(another_iban.guid());
+  db_iban = table_->GetLocalIban(another_iban.guid());
   ASSERT_TRUE(db_iban);
 
   EXPECT_EQ(another_guid, db_iban->guid());
@@ -1154,8 +1154,8 @@ TEST_F(AutofillTableTest, Iban) {
   // Update the another_iban.
   another_iban.SetRawInfo(IBAN_VALUE, u"GB98 MIDL 0700 9312 3456 78");
   another_iban.set_nickname(u"My teacher's IBAN");
-  EXPECT_TRUE(table_->UpdateIban(another_iban));
-  db_iban = table_->GetIban(another_iban.guid());
+  EXPECT_TRUE(table_->UpdateLocalIban(another_iban));
+  db_iban = table_->GetLocalIban(another_iban.guid());
   ASSERT_TRUE(db_iban);
   EXPECT_EQ(another_guid, db_iban->guid());
   sql::Statement s_target_updated(db_->GetSQLConnection()->GetUniqueStatement(
@@ -1167,8 +1167,8 @@ TEST_F(AutofillTableTest, Iban) {
   EXPECT_FALSE(s_target_updated.Step());
 
   // Remove the 'Target' IBAN.
-  EXPECT_TRUE(table_->RemoveIban(another_iban.guid()));
-  db_iban = table_->GetIban(another_iban.guid());
+  EXPECT_TRUE(table_->RemoveLocalIban(another_iban.guid()));
+  db_iban = table_->GetLocalIban(another_iban.guid());
   EXPECT_FALSE(db_iban);
 }
 
@@ -1323,13 +1323,13 @@ TEST_F(AutofillTableTest, ClearLocalPaymentMethodsData) {
   std::unique_ptr<CreditCard> db_card = table_->GetCreditCard(card.guid());
   EXPECT_EQ(card.cvc(), db_card->cvc());
   Iban iban = test::GetIban();
-  EXPECT_TRUE(table_->AddIban(iban));
+  EXPECT_TRUE(table_->AddLocalIban(iban));
 
   // After calling ClearLocalPaymentMethodsData, the local_stored_cvc,
   // credit_cards, and local_ibans tables should be empty.
   table_->ClearLocalPaymentMethodsData();
   EXPECT_FALSE(table_->GetCreditCard(card.guid()));
-  EXPECT_FALSE(table_->GetIban(iban.guid()));
+  EXPECT_FALSE(table_->GetLocalIban(iban.guid()));
   sql::Statement s(db_->GetSQLConnection()->GetUniqueStatement(
       "SELECT guid FROM local_stored_cvc WHERE guid=?"));
   s.BindString(0, card.guid());

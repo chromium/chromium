@@ -1186,7 +1186,7 @@ WebDatabaseTable::TypeKey AutofillTable::GetTypeKey() const {
 }
 
 bool AutofillTable::CreateTablesIfNecessary() {
-  return InitMainTable() && InitCreditCardsTable() && InitIbansTable() &&
+  return InitMainTable() && InitCreditCardsTable() && InitLocalIbansTable() &&
          InitMaskedCreditCardsTable() && InitUnmaskedCreditCardsTable() &&
          InitServerCardMetadataTable() && InitServerAddressesTable() &&
          InitServerAddressMetadataTable() && InitAutofillSyncMetadataTable() &&
@@ -1980,7 +1980,7 @@ void AutofillTable::SetServerProfiles(
   SetServerProfilesAndMetadata(profiles, /*update_metadata=*/true);
 }
 
-bool AutofillTable::AddIban(const Iban& iban) {
+bool AutofillTable::AddLocalIban(const Iban& iban) {
   sql::Statement s;
   InsertBuilder(db_, s, kLocalIbansTable,
                 {kGuid, kUseCount, kUseDate, kValueEncrypted, kNickname});
@@ -1992,10 +1992,10 @@ bool AutofillTable::AddIban(const Iban& iban) {
   return true;
 }
 
-bool AutofillTable::UpdateIban(const Iban& iban) {
+bool AutofillTable::UpdateLocalIban(const Iban& iban) {
   DCHECK(base::Uuid::ParseCaseInsensitive(iban.guid()).is_valid());
 
-  std::unique_ptr<Iban> old_iban = GetIban(iban.guid());
+  std::unique_ptr<Iban> old_iban = GetLocalIban(iban.guid());
   if (!old_iban) {
     return false;
   }
@@ -2015,12 +2015,12 @@ bool AutofillTable::UpdateIban(const Iban& iban) {
   return result;
 }
 
-bool AutofillTable::RemoveIban(const std::string& guid) {
+bool AutofillTable::RemoveLocalIban(const std::string& guid) {
   DCHECK(base::Uuid::ParseCaseInsensitive(guid).is_valid());
   return DeleteWhereColumnEq(db_, kLocalIbansTable, kGuid, guid);
 }
 
-std::unique_ptr<Iban> AutofillTable::GetIban(const std::string& guid) {
+std::unique_ptr<Iban> AutofillTable::GetLocalIban(const std::string& guid) {
   DCHECK(base::Uuid::ParseCaseInsensitive(guid).is_valid());
   sql::Statement s;
   SelectBuilder(db_, s, kLocalIbansTable,
@@ -2034,7 +2034,7 @@ std::unique_ptr<Iban> AutofillTable::GetIban(const std::string& guid) {
   return IbanFromStatement(s, *autofill_table_encryptor_);
 }
 
-bool AutofillTable::GetIbans(std::vector<std::unique_ptr<Iban>>* ibans) {
+bool AutofillTable::GetLocalIbans(std::vector<std::unique_ptr<Iban>>* ibans) {
   DCHECK(ibans);
   ibans->clear();
 
@@ -2044,7 +2044,7 @@ bool AutofillTable::GetIbans(std::vector<std::unique_ptr<Iban>>* ibans) {
 
   while (s.Step()) {
     std::string guid = s.ColumnString(0);
-    std::unique_ptr<Iban> iban = GetIban(guid);
+    std::unique_ptr<Iban> iban = GetLocalIban(guid);
     if (!iban)
       return false;
     ibans->push_back(std::move(iban));
@@ -3967,7 +3967,7 @@ bool AutofillTable::InitCreditCardsTable() {
                                  {kNickname, "VARCHAR"}});
 }
 
-bool AutofillTable::InitIbansTable() {
+bool AutofillTable::InitLocalIbansTable() {
   return CreateTableIfNotExists(db_, kLocalIbansTable,
                                 {{kGuid, "VARCHAR PRIMARY KEY"},
                                  {kUseCount, "INTEGER NOT NULL DEFAULT 0"},

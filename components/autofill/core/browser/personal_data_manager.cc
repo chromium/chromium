@@ -969,7 +969,7 @@ std::string PersonalDataManager::AddIban(Iban iban) {
   }
 
   // Add the new IBAN to the web database.
-  database_helper_->GetLocalDatabase()->AddIban(iban);
+  database_helper_->GetLocalDatabase()->AddLocalIban(iban);
 
   // Refresh our local cache and send notifications to observers.
   Refresh();
@@ -981,7 +981,7 @@ std::string PersonalDataManager::UpdateIban(const Iban& iban) {
     return std::string();
 
   // Make the update.
-  database_helper_->GetLocalDatabase()->UpdateIban(iban);
+  database_helper_->GetLocalDatabase()->UpdateLocalIban(iban);
 
   // Refresh our local cache and send notifications to observers.
   Refresh();
@@ -1319,7 +1319,7 @@ void PersonalDataManager::RemoveByGUID(const std::string& guid) {
     // Refresh our local cache and send notifications to observers.
     Refresh();
   } else if (FindByGUID(local_ibans_, guid)) {
-    database_helper_->GetLocalDatabase()->RemoveIban(guid);
+    database_helper_->GetLocalDatabase()->RemoveLocalIban(guid);
     // Refresh our local cache and send notifications to observers.
     Refresh();
   } else {
@@ -2136,7 +2136,7 @@ void PersonalDataManager::LoadIbans() {
   CancelPendingServerQuery(&pending_server_ibans_query_);
 
   pending_local_ibans_query_ =
-      database_helper_->GetLocalDatabase()->GetIbans(this);
+      database_helper_->GetLocalDatabase()->GetLocalIbans(this);
   if (database_helper_->GetServerDatabase()) {
     pending_server_ibans_query_ =
         database_helper_->GetServerDatabase()->GetServerIbans(this);

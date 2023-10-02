@@ -188,17 +188,17 @@ class AutofillWebDataBackendImpl
   std::unique_ptr<WDTypedResult> GetServerCreditCards(WebDatabase* db);
 
   // Returns a vector of local/server IBANs from the web database.
-  std::unique_ptr<WDTypedResult> GetIbans(WebDatabase* db);
+  std::unique_ptr<WDTypedResult> GetLocalIbans(WebDatabase* db);
   std::unique_ptr<WDTypedResult> GetServerIbans(WebDatabase* db);
 
-  // Adds an IBAN to the web database. Valid only for local IBANs.
-  WebDatabase::State AddIban(const Iban& iban, WebDatabase* db);
+  // Adds an IBAN to the web database.
+  WebDatabase::State AddLocalIban(const Iban& iban, WebDatabase* db);
 
-  // Updates an IBAN in the web database. Valid only for local IBANs.
-  WebDatabase::State UpdateIban(const Iban& iban, WebDatabase* db);
+  // Updates an IBAN in the web database.
+  WebDatabase::State UpdateLocalIban(const Iban& iban, WebDatabase* db);
 
-  // Removes an IBAN from the web database. Valid only for local IBANs.
-  WebDatabase::State RemoveIban(const std::string& guid, WebDatabase* db);
+  // Removes an IBAN from the web database.
+  WebDatabase::State RemoveLocalIban(const std::string& guid, WebDatabase* db);
 
   // Server credit cards can be masked (only last 4 digits stored) or unmasked
   // (all data stored). These toggle between the two states.

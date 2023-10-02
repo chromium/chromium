@@ -701,21 +701,21 @@ class AutofillTable : public WebDatabaseTable,
   // the given ones.
   void SetServerProfiles(const std::vector<AutofillProfile>& profiles);
 
-  // Records a single IBAN in the iban table.
-  bool AddIban(const Iban& iban);
+  // Records a single IBAN in the local_ibans table.
+  bool AddLocalIban(const Iban& iban);
 
   // Updates the database values for the specified IBAN.
-  bool UpdateIban(const Iban& iban);
+  bool UpdateLocalIban(const Iban& iban);
 
-  // Removes a row from the ibans table. |guid| is the identifier of the
+  // Removes a row from the local_ibans table. `guid` is the identifier of the
   // IBAN to remove.
-  bool RemoveIban(const std::string& guid);
+  bool RemoveLocalIban(const std::string& guid);
 
-  // Retrieves an IBAN with the given |guid|.
-  std::unique_ptr<Iban> GetIban(const std::string& guid);
+  // Retrieves an IBAN with the given `guid`.
+  std::unique_ptr<Iban> GetLocalIban(const std::string& guid);
 
   // Retrieves the local IBANs in the database.
-  bool GetIbans(std::vector<std::unique_ptr<Iban>>* ibans);
+  bool GetLocalIbans(std::vector<std::unique_ptr<Iban>>* ibans);
 
   // Records a single credit card in the credit_cards table.
   bool AddCreditCard(const CreditCard& credit_card);
@@ -1030,7 +1030,7 @@ class AutofillTable : public WebDatabaseTable,
 
   bool InitMainTable();
   bool InitCreditCardsTable();
-  bool InitIbansTable();
+  bool InitLocalIbansTable();
   bool InitLegacyProfilesTable();
   bool InitLegacyProfileAddressesTable();
   bool InitLegacyProfileNamesTable();
