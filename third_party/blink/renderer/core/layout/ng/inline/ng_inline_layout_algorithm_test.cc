@@ -47,6 +47,19 @@ class NGInlineLayoutAlgorithmTest : public NGBaseLayoutAlgorithmTest {
     }
     return ostream.str();
   }
+
+  PhysicalRect TextAreaFirstLineRect(const char* id) {
+    HTMLTextAreaElement* textarea = To<HTMLTextAreaElement>(GetElementById(id));
+    DCHECK(textarea);
+
+    NGInlineCursor cursor(*To<LayoutBlockFlow>(
+        textarea->InnerEditorElement()->GetLayoutObject()));
+    cursor.MoveToFirstLine();
+    EXPECT_TRUE(cursor.IsNotNull());
+
+    return PhysicalRect(cursor.Current().OffsetInContainerFragment(),
+                        cursor.Current().Size());
+  }
 };
 
 TEST_F(NGInlineLayoutAlgorithmTest, Types) {
@@ -774,31 +787,27 @@ TEST_F(NGInlineLayoutAlgorithmTest, LineBoxWithHangingWidthRTLRightAligned) {
       "}");
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
-    <textarea dir="rtl" id="hangingDoesntOverflow">abc  </textarea>
-    <textarea dir="rtl" id="hangingOverflows">abc        </textarea>
+    <textarea dir="rtl" id="a">abc  </textarea>
+    <textarea dir="rtl" id="b">abc  nextLine</textarea>
+    <textarea dir="rtl" id="c">abc        </textarea>
+    <textarea dir="rtl" id="d">abc        nextLine</textarea>
   )HTML");
 
-  HTMLTextAreaElement* hanging_doesnt_overflow =
-      To<HTMLTextAreaElement>(GetElementById("hangingDoesntOverflow"));
-  NGInlineCursor hanging_doesnt_overflow_cursor(*To<LayoutBlockFlow>(
-      hanging_doesnt_overflow->InnerEditorElement()->GetLayoutObject()));
-  hanging_doesnt_overflow_cursor.MoveToFirstLine();
-  EXPECT_TRUE(hanging_doesnt_overflow_cursor.IsNotNull());
-  PhysicalRect hanging_doesnt_overflow_rect(
-      hanging_doesnt_overflow_cursor.Current().OffsetInContainerFragment(),
-      hanging_doesnt_overflow_cursor.Current().Size());
-  EXPECT_EQ(PhysicalRect(70, 0, 30, 10), hanging_doesnt_overflow_rect);
+  // Trailing spaces conditionally hang since the line is followed by a line
+  // break, and the line doesn't overflow, so they as treated as not hanging.
+  EXPECT_EQ(PhysicalRect(50, 0, 50, 10), TextAreaFirstLineRect("a"));
 
-  HTMLTextAreaElement* hanging_overflows =
-      To<HTMLTextAreaElement>(GetElementById("hangingOverflows"));
-  NGInlineCursor hanging_overflows_cursor(*To<LayoutBlockFlow>(
-      hanging_overflows->InnerEditorElement()->GetLayoutObject()));
-  hanging_overflows_cursor.MoveToFirstLine();
-  EXPECT_TRUE(hanging_overflows_cursor.IsNotNull());
-  PhysicalRect hanging_overflows_rect(
-      hanging_overflows_cursor.Current().OffsetInContainerFragment(),
-      hanging_overflows_cursor.Current().Size());
-  EXPECT_EQ(PhysicalRect(70, 0, 30, 10), hanging_overflows_rect);
+  // The hanging width doesn't overflow, and it unconditionally hangs because
+  // it's not followed by a line break.
+  EXPECT_EQ(PhysicalRect(70, 0, 30, 10), TextAreaFirstLineRect("b"));
+
+  // Trailing spaces conditionally hang since the line is followed by a line
+  // break, and the line overflows, so only the overflowing width hangs.
+  EXPECT_EQ(PhysicalRect(0, 0, 100, 10), TextAreaFirstLineRect("c"));
+
+  // The hanging width overflows, and it unconditionally hangs because
+  // it's not followed by a line break.
+  EXPECT_EQ(PhysicalRect(70, 0, 30, 10), TextAreaFirstLineRect("d"));
 }
 
 TEST_F(NGInlineLayoutAlgorithmTest, LineBoxWithHangingWidthRTLCenterAligned) {
@@ -812,36 +821,42 @@ TEST_F(NGInlineLayoutAlgorithmTest, LineBoxWithHangingWidthRTLCenterAligned) {
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
     <textarea dir="rtl" id="a">abc  </textarea>
-    <textarea dir="rtl" id="b">abc      </textarea>
+    <textarea dir="rtl" id="b">abc  nextLine</textarea>
+    <textarea dir="rtl" id="c">abc      </textarea>
+    <textarea dir="rtl" id="d">abc      nextLine</textarea>
+    <textarea dir="rtl" id="e">abc        </textarea>
+    <textarea dir="rtl" id="f">abc        nextLine</textarea>
   )HTML");
 
-  HTMLTextAreaElement* a_textarea =
-      To<HTMLTextAreaElement>(GetElementById("a"));
-  NGInlineCursor a_cursor(*To<LayoutBlockFlow>(
-      a_textarea->InnerEditorElement()->GetLayoutObject()));
-  a_cursor.MoveToFirstLine();
-  EXPECT_TRUE(a_cursor.IsNotNull());
-  PhysicalRect a_rect(a_cursor.Current().OffsetInContainerFragment(),
-                      a_cursor.Current().Size());
-  // The line size is 30px and the hanging width is 20px. The rectangle
-  // containing the line and the hanging width is centered, so its right edge
-  // is at (100 + 30 + 20)/2 = 75px. Since the line's base direction is RTL, the
-  // text is at the right and its left edge is at 75px - 30 = 45px.
-  EXPECT_EQ(PhysicalRect(45, 0, 30, 10), a_rect);
+  // The line size is 30px and the trailing spaces are 20px. For a, those spaces
+  // conditionally hang, and since the line doesn't overflow, they don't
+  // actually hang. Therefore, the rectangle containing the line and trailing
+  // spaces is centered, so its left edge is at (100 - 30 - 20)/2 = 25.
+  // For b, those spaces hang unconditionally, so the rectangle containing the
+  // line without the trailing spaces is centered, with its left edge at
+  // (100 - 30)/2 = 35.
+  EXPECT_EQ(PhysicalRect(25, 0, 50, 10), TextAreaFirstLineRect("a"));
+  EXPECT_EQ(PhysicalRect(35, 0, 30, 10), TextAreaFirstLineRect("b"));
 
-  HTMLTextAreaElement* b_textarea =
-      To<HTMLTextAreaElement>(GetElementById("b"));
-  NGInlineCursor b_cursor(*To<LayoutBlockFlow>(
-      b_textarea->InnerEditorElement()->GetLayoutObject()));
-  b_cursor.MoveToFirstLine();
-  EXPECT_TRUE(b_cursor.IsNotNull());
-  PhysicalRect b_rect(b_cursor.Current().OffsetInContainerFragment(),
-                      b_cursor.Current().Size());
-  // The line size is 30px and the hanging width is 60px. The rectangle
-  // containing the line and the hanging width is centered, so its right edge
-  // is at (100 + 30 + 60)/2 = 95px. Since the line's base direction is RTL, the
-  // text is at the right and its left edge is at 95px - 30 = 65px.
-  EXPECT_EQ(PhysicalRect(65, 0, 30, 10), b_rect);
+  // The line size is 30px and the trailing spaces are 60px. For c, those spaces
+  // conditionally hang, and since the line doesn't overflow, they don't
+  // actually hang. Therefore, the rectangle containing the line and trailing
+  // spaces is centered, so its left edge is at (100 - 30 - 60)/2 = 5.
+  // For d, those spaces hang unconditionally, so the rectangle containing the
+  // line without the trailing spaces is centered, with its left edge at
+  // (100 - 30)/2 = 35.
+  EXPECT_EQ(PhysicalRect(5, 0, 90, 10), TextAreaFirstLineRect("c"));
+  EXPECT_EQ(PhysicalRect(35, 0, 30, 10), TextAreaFirstLineRect("d"));
+
+  // The line size is 30px and the trailing spaces are 80px. For e, those spaces
+  // conditionally hang, so only the 10px that overflow the line actually hang.
+  // Therefore, the rectangle containing the line and non-hanging spaces is
+  // centered, so its left edge is at (100 - 30 - 70)/2 = 0.
+  // For b, those spaces hang unconditionally, so the rectangle containing the
+  // line without the trailing spaces is centered, with its left edge at
+  // (100 - 30)/2 = 35.
+  EXPECT_EQ(PhysicalRect(0, 0, 100, 10), TextAreaFirstLineRect("e"));
+  EXPECT_EQ(PhysicalRect(35, 0, 30, 10), TextAreaFirstLineRect("f"));
 }
 
 #undef MAYBE_VerticalAlignBottomReplaced

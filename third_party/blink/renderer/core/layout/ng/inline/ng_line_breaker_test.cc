@@ -74,9 +74,7 @@ class NGLineBreakerTest : public RenderingTest {
 
       break_token = line_info.BreakToken();
       if (fill_first_space_ && lines.empty()) {
-        first_should_hang_trailing_space_ =
-            line_info.ShouldHangTrailingSpaces();
-        first_hang_width_ = line_info.HangWidthForAlignment();
+        first_hang_width_ = line_info.HangWidth();
       }
       lines.push_back(std::make_pair(ToString(line_info.Results(), node),
                                      line_info.Results().back().item_index));
@@ -135,7 +133,6 @@ class NGLineBreakerTest : public RenderingTest {
   }
 
   Vector<NGLineBreaker::WhitespaceState> trailing_whitespaces_;
-  bool first_should_hang_trailing_space_;
   LayoutUnit first_hang_width_;
 };
 
@@ -617,33 +614,33 @@ TEST_P(NGWhitespaceStateTest, WhitespaceState) {
 struct TrailingSpaceWidthTestData {
   const char* html;
   const char* white_space;
-  unsigned trailing_space_width;
-} trailing_space_width_test_data[] = {
-    {" ", "pre", 1},
-    {"   ", "pre", 3},
-    {"1 ", "pre", 1},
-    {"1  ", "pre", 2},
-    {"1<span> </span>", "pre", 1},
-    {"<span>1 </span> ", "pre", 2},
-    {"1<span> </span> ", "pre", 2},
-    {"1 <span> </span> ", "pre", 3},
-    {"1 \t", "pre", 3},
-    {"1  \n", "pre", 2},
-    {"1  <br>", "pre", 2},
+  unsigned hanging_space_width;
+} trailing_space_width_test_data[] = {{" ", "pre", 0},
+                                      {"   ", "pre", 0},
+                                      {"1 ", "pre", 0},
+                                      {"1  ", "pre", 0},
+                                      {"1<span> </span>", "pre", 0},
+                                      {"<span>1 </span> ", "pre", 0},
+                                      {"1<span> </span> ", "pre", 0},
+                                      {"1 <span> </span> ", "pre", 0},
+                                      {"1 \t", "pre", 0},
+                                      {"1  \n", "pre", 0},
+                                      {"1  <br>", "pre", 0},
 
-    {" ", "pre-wrap", 1},
-    {"   ", "pre-wrap", 3},
-    {"1 ", "pre-wrap", 1},
-    {"1  ", "pre-wrap", 2},
-    {"1<span> </span>", "pre-wrap", 1},
-    {"<span>1 </span> ", "pre-wrap", 2},
-    {"1<span> </span> ", "pre-wrap", 2},
-    {"1 <span> </span> ", "pre-wrap", 3},
-    {"1 \t", "pre-wrap", 3},
-    {"1  <br>", "pre-wrap", 2},
-    {"12 1234", "pre-wrap", 1},
-    {"12  1234", "pre-wrap", 2},
-};
+                                      {" ", "pre-wrap", 0},
+                                      {"   ", "pre-wrap", 0},
+                                      {"1 ", "pre-wrap", 0},
+                                      {"1  ", "pre-wrap", 0},
+                                      {"1<span> </span>", "pre-wrap", 0},
+                                      {"<span>1 </span> ", "pre-wrap", 0},
+                                      {"1<span> </span> ", "pre-wrap", 0},
+                                      {"1 <span> </span> ", "pre-wrap", 0},
+                                      {"1 \t", "pre-wrap", 0},
+                                      {"1  <br>", "pre-wrap", 0},
+                                      {"12 1234", "pre-wrap", 1},
+                                      {"12  1234", "pre-wrap", 2},
+                                      {"12  <br>1234", "pre-wrap", 0},
+                                      {"12    ", "pre-wrap", 1}};
 
 class NGTrailingSpaceWidthTest
     : public NGLineBreakerTest,
@@ -672,11 +669,7 @@ TEST_P(NGTrailingSpaceWidthTest, TrailingSpaceWidth) {
   )HTML");
 
   BreakLines(node, LayoutUnit(50), nullptr, true);
-  if (first_should_hang_trailing_space_) {
-    EXPECT_EQ(first_hang_width_, LayoutUnit(10) * data.trailing_space_width);
-  } else {
-    EXPECT_EQ(first_hang_width_, LayoutUnit());
-  }
+  EXPECT_EQ(first_hang_width_, LayoutUnit(10) * data.hanging_space_width);
 }
 
 TEST_F(NGLineBreakerTest, FullyCollapsedSpaces) {

@@ -159,8 +159,13 @@ unsigned NGLineInfo::InflowEndOffset() const {
 }
 
 bool NGLineInfo::ShouldHangTrailingSpaces() const {
-  if (!HasTrailingSpaces())
+  if (RuntimeEnabledFeatures::
+          HangingWhitespaceDoesNotDependOnAlignmentEnabled()) {
+    return true;
+  }
+  if (!HasTrailingSpaces()) {
     return false;
+  }
   if (!line_style_->ShouldWrapLine()) {
     return false;
   }
@@ -193,15 +198,53 @@ bool NGLineInfo::IsHyphenated() const {
 
 void NGLineInfo::UpdateTextAlign() {
   text_align_ = GetTextAlign(IsLastLine());
-  allow_hang_for_alignment_ = false;
 
-  if (HasTrailingSpaces() && line_style_->ShouldWrapLine()) {
-    if (ShouldHangTrailingSpaces()) {
-      hang_width_ = ComputeTrailingSpaceWidth(&end_offset_for_justify_);
-      allow_hang_for_alignment_ = true;
-      return;
+  if (RuntimeEnabledFeatures::
+          HangingWhitespaceDoesNotDependOnAlignmentEnabled()) {
+    allow_hang_for_alignment_ = true;
+
+    if (HasTrailingSpaces()) {
+      bool should_hang;
+      bool hang_is_conditional = false;
+      switch (line_style_->GetWhiteSpaceCollapse()) {
+        case WhiteSpaceCollapse::kCollapse:
+        case WhiteSpaceCollapse::kPreserveBreaks:
+          should_hang = true;
+          break;
+        case WhiteSpaceCollapse::kPreserve:
+          should_hang = line_style_->ShouldWrapLine();
+          hang_is_conditional = HasForcedBreak() || IsLastLine();
+          break;
+        case WhiteSpaceCollapse::kBreakSpaces:
+          should_hang = false;
+      }
+
+      if (should_hang) {
+        hang_width_ = ComputeTrailingSpaceWidth(&end_offset_for_justify_);
+
+        // Conditional hang: only the part of the trailing spaces that overflow
+        // the line actually hang.
+        // https://drafts.csswg.org/css-text-4/#conditionally-hang
+        if (hang_is_conditional) {
+          hang_width_ = std::min(hang_width_, Width() - available_width_)
+                            .ClampNegativeToZero();
+        }
+        return;
+      }
     }
-    hang_width_ = ComputeTrailingSpaceWidth();
+
+    hang_width_ = LayoutUnit();
+  } else {
+    allow_hang_for_alignment_ = false;
+
+    if (HasTrailingSpaces() && line_style_->ShouldWrapLine()) {
+      if (ShouldHangTrailingSpaces()) {
+        hang_width_ = ComputeTrailingSpaceWidth(&end_offset_for_justify_);
+        allow_hang_for_alignment_ = true;
+        return;
+      }
+      hang_width_ = ComputeTrailingSpaceWidth();
+    }
   }
 
   if (text_align_ == ETextAlign::kJustify)
