@@ -66,10 +66,6 @@ android_apk("aw_net_test_support_apk") {
   # Used as an additional_apk in test scripts.
   never_incremental = true
 
-  # Multidex requires a custom Application class to initialize it. Simpler to
-  # just disable it.
-  enable_multidex = false
-
   deps = [ ":aw_net_java_test_support" ]
   android_manifest = "java/AndroidManifest.xml"
   apk_name = "ChromiumNetTestAwSupport"

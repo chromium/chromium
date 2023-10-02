@@ -2491,7 +2491,6 @@ if (current_toolchain == default_toolchain) {
   chrome_public_apk_or_module_tmpl("chrome_public_apk") {
     target_type = "android_apk"
     apk_name = "ChromePublic"
-    enable_multidex = is_java_debug
     art_profile_path = "//chrome/android/baseline_profiles/profile.txt"
   }
 

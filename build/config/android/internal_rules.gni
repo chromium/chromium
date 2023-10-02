@@ -1492,9 +1492,6 @@ if (enable_java_templates) {
     _proguard_enabled =
         defined(invoker.proguard_enabled) && invoker.proguard_enabled
     _is_dex_merging = defined(invoker.input_dex_filearg)
-    _enable_multidex =
-        !defined(invoker.enable_multidex) || invoker.enable_multidex
-    _enable_main_dex_list = _enable_multidex && _min_sdk_version < 21
     _enable_desugar = !defined(invoker.enable_desugar) || invoker.enable_desugar
     _desugar_needs_classpath = _enable_desugar
 
@@ -1523,10 +1520,6 @@ if (enable_java_templates) {
     if (defined(invoker.custom_assertion_handler)) {
       assert(_proguard_enabled,
              "Proguard is required to support the custom assertion handler.")
-    }
-
-    if (_enable_main_dex_list) {
-      _main_dex_rules = "//build/android/main_dex_classes.flags"
     }
 
     if (_desugar_needs_classpath || _proguard_enabled) {
@@ -1594,22 +1587,6 @@ if (enable_java_templates) {
           args += [ "--apply-mapping=$_rebased_apply_mapping_path" ]
         }
 
-        if (_enable_main_dex_list) {
-          if (defined(invoker.extra_main_dex_proguard_config)) {
-            args += [
-              "--main-dex-rules-path",
-              rebase_path(invoker.extra_main_dex_proguard_config,
-                          root_build_dir),
-            ]
-            inputs += [ invoker.extra_main_dex_proguard_config ]
-          }
-          args += [
-            "--main-dex-rules-path",
-            rebase_path(_main_dex_rules, root_build_dir),
-          ]
-          inputs += [ _main_dex_rules ]
-        }
-
         if (defined(invoker.output)) {
           output_path = invoker.output
         } else if (!defined(proguard_mapping_path)) {
@@ -1663,7 +1640,7 @@ if (enable_java_templates) {
           "--depfile",
           rebase_path(depfile, root_build_dir),
           "--output",
-          rebase_path(outputs[0], root_build_dir),
+          rebase_path(invoker.output, root_build_dir),
           "--min-api=$_min_sdk_version",
           "--r8-jar-path",
           rebase_path(_d8_path, root_build_dir),
@@ -1684,25 +1661,6 @@ if (enable_java_templates) {
             "--incremental-dir",
             rebase_path("$target_out_dir/$target_name", root_build_dir),
           ]
-        }
-
-        if (_enable_multidex) {
-          args += [ "--multi-dex" ]
-          if (_enable_main_dex_list) {
-            if (defined(invoker.extra_main_dex_proguard_config)) {
-              args += [
-                "--main-dex-rules-path",
-                rebase_path(invoker.extra_main_dex_proguard_config,
-                            root_build_dir),
-              ]
-              inputs += [ invoker.extra_main_dex_proguard_config ]
-            }
-            args += [
-              "--main-dex-rules-path",
-              rebase_path(_main_dex_rules, root_build_dir),
-            ]
-            inputs += [ _main_dex_rules ]
-          }
         }
         if (_is_library) {
           args += [ "--library" ]
@@ -2175,8 +2133,6 @@ if (enable_java_templates) {
   #   proguard_file: (optional)
   #       Path to proguard configuration file for this apk target.
   #
-  #   proguard_file_main_dex: (optional)
-  #
   template("compile_resources") {
     forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
 
@@ -2335,14 +2291,6 @@ if (enable_java_templates) {
       _args += [
         "--proguard-file",
         rebase_path(invoker.proguard_file, root_build_dir),
-      ]
-    }
-
-    if (defined(invoker.proguard_file_main_dex)) {
-      _outputs += [ invoker.proguard_file_main_dex ]
-      _args += [
-        "--proguard-file-main-dex",
-        rebase_path(invoker.proguard_file_main_dex, root_build_dir),
       ]
     }
 
@@ -4148,7 +4096,6 @@ if (enable_java_templates) {
             deps += _header_classpath_deps + _unprocessed_jar_deps
           }
 
-          enable_multidex = false
           is_library = true
 
           # proguard_configs listed on java_library targets need to be marked

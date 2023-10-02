@@ -12,7 +12,6 @@ template("remoting_apk_tmpl") {
 
     if (!is_java_debug) {
       proguard_enabled = true
-      enable_multidex = false
 
       # -checkdiscard checks fail due to -dontoptimize.
       enable_proguard_checks = false

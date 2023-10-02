@@ -314,7 +314,6 @@ template("test") {
         "android_manifest_dep",
         "android_manifest_template",
         "app_as_shared_lib",
-        "enable_multidex",
         "product_config_java_packages",
         "loadable_modules",
         "loadable_module_deps",

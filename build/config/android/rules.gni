@@ -1546,7 +1546,7 @@ if (enable_java_templates && is_android) {
   # Combines all dependent .jar files into a single proguarded .dex file.
   #
   # Variables:
-  #   output: Path to the output dex.
+  #   output: Path to the output .dex or .dex.jar.
   #   proguard_enabled: Whether to enable R8.
   #   proguard_configs: List of proguard configs.
   #   proguard_enable_obfuscation: Whether to enable obfuscation (default=true).
@@ -1595,7 +1595,6 @@ if (enable_java_templates && is_android) {
                                  ])
       deps = [ ":$_build_config_target_name" ] + _deps
       build_config = _build_config
-      enable_multidex = false
       output = invoker.output
       if (defined(proguard_enabled) && proguard_enabled) {
         # The individual dependencies would have caught real missing deps in
@@ -1880,7 +1879,6 @@ if (enable_java_templates && is_android) {
   # Variables:
   #   use_final_fields: True to use final fields. When false, all other
   #       variables must not be set.
-  #   enable_multidex: Value for ENABLE_MULTIDEX.
   #   min_sdk_version: Value for MIN_SDK_VERSION.
   #   bundles_supported: Whether or not this target can be treated as a bundle.
   #   resources_version_variable:
@@ -1923,9 +1921,6 @@ if (enable_java_templates && is_android) {
       if (invoker.use_final_fields) {
         forward_variables_from(invoker, [ "deps" ])
         defines += [ "USE_FINAL" ]
-        if (invoker.enable_multidex) {
-          defines += [ "ENABLE_MULTIDEX" ]
-        }
         if (defined(invoker.min_sdk_version)) {
           defines += [ "_MIN_SDK_VERSION=${invoker.min_sdk_version}" ]
         }
@@ -2118,8 +2113,6 @@ if (enable_java_templates && is_android) {
     }
 
     _omit_dex = defined(invoker.omit_dex) && invoker.omit_dex
-    _enable_multidex =
-        !defined(invoker.enable_multidex) || invoker.enable_multidex
 
     if (!_is_bundle_module) {
       _final_apk_path = invoker.final_apk_path
@@ -2305,11 +2298,6 @@ if (enable_java_templates && is_android) {
 
     _final_deps = [ ":$_java_target_name" ]
 
-    _enable_main_dex_list = _enable_multidex && _min_sdk_version < 21
-    if (_enable_main_dex_list) {
-      _generated_proguard_main_dex_config =
-          "$_base_path.resources.main-dex-proguard.txt"
-    }
     _generated_proguard_config = "$_base_path.resources.proguard.txt"
 
     if (defined(_shared_resources_allowlist_target)) {
@@ -2399,9 +2387,6 @@ if (enable_java_templates && is_android) {
       emit_ids_out_path = _compile_resources_emit_ids_out
       size_info_path = _res_size_info_path
       proguard_file = _generated_proguard_config
-      if (_enable_main_dex_list) {
-        proguard_file_main_dex = _generated_proguard_main_dex_config
-      }
 
       build_config = _build_config
       build_config_dep = ":$_build_config_target"
@@ -2624,7 +2609,6 @@ if (enable_java_templates && is_android) {
         bundles_supported = _bundles_supported
         use_final_fields = true
         assertions_implicitly_enabled = _assertions_implicitly_enabled
-        enable_multidex = _enable_multidex
         is_incremental_install = _incremental_apk
         write_clang_profiling_data =
             use_clang_coverage && _generate_native_libraries_java
@@ -2797,7 +2781,6 @@ if (enable_java_templates && is_android) {
         proguard_enabled = _proguard_enabled
         build_config = _build_config
         output = _final_dex_path
-        enable_multidex = _enable_multidex
         deps = [
           ":$_build_config_target",
           ":$_java_target_name",
@@ -2845,12 +2828,6 @@ if (enable_java_templates && is_android) {
         # rather than dex files.
         if (!defined(enable_desugar)) {
           ignore_desugar_missing_deps = true
-        }
-
-        if (_enable_main_dex_list) {
-          # Generates main-dex config.
-          deps += [ ":$_compile_resources_target" ]
-          extra_main_dex_proguard_config = _generated_proguard_main_dex_config
         }
       }
 
@@ -3241,7 +3218,6 @@ if (enable_java_templates && is_android) {
             "deps",
             "enable_lint",
             "enable_jni_multiplexing",
-            "enable_multidex",
             "enable_proguard_checks",
             "enforce_resource_overlays_in_tests",
             "expected_android_manifest",
@@ -3389,7 +3365,6 @@ if (enable_java_templates && is_android) {
             "data_deps",
             "deps",
             "enable_jni_multiplexing",
-            "enable_multidex",
             "expected_android_manifest",
             "expected_android_manifest_base",
             "expected_android_manifest_library_version_offset",
@@ -4439,9 +4414,6 @@ if (enable_java_templates && is_android) {
   #
   #    proguard_enable_obfuscation: Whether to enable obfuscation (default=true)
   #
-  #    enable_multidex: Optional. Enable multidexing of optimized modules jars
-  #      when using synchronized proguarding. Only applies to base module.
-  #
   #    proguard_android_sdk_dep: Optional. android_system_java_prebuilt() target
   #      used as a library jar for synchronized proguarding.
   #
@@ -4537,9 +4509,6 @@ if (enable_java_templates && is_android) {
       _dex_target = "${_target_name}__dex"
       _proguard_mapping_path = "${_bundle_path}.mapping"
     }
-
-    assert(_proguard_enabled || !defined(invoker.enable_multidex),
-           "Bundle only adds dexing step if proguarding is enabled.")
 
     if (defined(invoker.extra_modules)) {
       _module_count = 0

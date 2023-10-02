@@ -9,10 +9,6 @@ android_apk("media_router_test_support_apk") {
   # Used as an additional_apk in test scripts.
   never_incremental = true
 
-  # Multidex requires a custom Application class to initialize it. Simpler to
-  # just disable it.
-  enable_multidex = false
-
   deps = [
     "//components/media_router/test/android/cast_emulator:cast_emulator_java",
   ]
