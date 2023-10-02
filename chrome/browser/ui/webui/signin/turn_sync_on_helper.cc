@@ -267,8 +267,8 @@ void TurnSyncOnHelper::TurnSyncOnInternal() {
   // last authenticated account of the current profile, then Chrome will show a
   // confirmation dialog before starting sync.
   // TODO(skym): Warn for high risk upgrade scenario (https://crbug.com/572754).
-  std::string last_email =
-      profile_->GetPrefs()->GetString(prefs::kGoogleServicesLastUsername);
+  std::string last_email = profile_->GetPrefs()->GetString(
+      prefs::kGoogleServicesLastSyncingUsername);
   delegate_->ShowMergeSyncDataConfirmation(
       last_email, account_info_.email,
       base::BindOnce(&TurnSyncOnHelper::OnMergeAccountConfirmation,

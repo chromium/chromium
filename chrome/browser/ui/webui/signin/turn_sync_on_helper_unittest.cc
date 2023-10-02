@@ -1234,9 +1234,9 @@ TEST_F(TurnSyncOnHelperTest, CrossAccountAbort) {
   expected_merge_data_previous_email_ = kPreviousEmail;
   expected_merge_data_new_email_ = kEmail;
   // Configure the test.
-  profile()->GetPrefs()->SetString(prefs::kGoogleServicesLastUsername,
+  profile()->GetPrefs()->SetString(prefs::kGoogleServicesLastSyncingUsername,
                                    kPreviousEmail);
-  profile()->GetPrefs()->SetString(prefs::kGoogleServicesLastGaiaId,
+  profile()->GetPrefs()->SetString(prefs::kGoogleServicesLastSyncingGaiaId,
                                    kPreviousGaiaId);
   // Signin flow.
   CreateTurnOnSyncHelper(TurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT);
@@ -1256,9 +1256,9 @@ TEST_F(TurnSyncOnHelperTest, CrossAccountAbortAlreadyManaged) {
   expected_merge_data_previous_email_ = kPreviousEmail;
   expected_merge_data_new_email_ = kEmail;
   // Configure the test.
-  profile()->GetPrefs()->SetString(prefs::kGoogleServicesLastUsername,
+  profile()->GetPrefs()->SetString(prefs::kGoogleServicesLastSyncingUsername,
                                    kPreviousEmail);
-  profile()->GetPrefs()->SetString(prefs::kGoogleServicesLastGaiaId,
+  profile()->GetPrefs()->SetString(prefs::kGoogleServicesLastSyncingGaiaId,
                                    kPreviousGaiaId);
   user_policy_signin_service()->set_dm_token("foo");
   user_policy_signin_service()->set_client_id("bar");
@@ -1284,9 +1284,9 @@ TEST_F(TurnSyncOnHelperTest, CrossAccountContinue) {
   SetExpectationsForSyncStartupCompleted(profile());
   // Configure the test.
   merge_data_choice_ = signin::SIGNIN_CHOICE_CONTINUE;
-  profile()->GetPrefs()->SetString(prefs::kGoogleServicesLastUsername,
+  profile()->GetPrefs()->SetString(prefs::kGoogleServicesLastSyncingUsername,
                                    kPreviousEmail);
-  profile()->GetPrefs()->SetString(prefs::kGoogleServicesLastGaiaId,
+  profile()->GetPrefs()->SetString(prefs::kGoogleServicesLastSyncingGaiaId,
                                    kPreviousGaiaId);
   // Signin flow.
   CreateTurnOnSyncHelper(TurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT);
@@ -1309,9 +1309,9 @@ TEST_F(TurnSyncOnHelperTest, CrossAccountContinueAlreadyManaged) {
   SetExpectationsForSyncStartupCompleted(profile());
   // Configure the test.
   merge_data_choice_ = signin::SIGNIN_CHOICE_CONTINUE;
-  profile()->GetPrefs()->SetString(prefs::kGoogleServicesLastUsername,
+  profile()->GetPrefs()->SetString(prefs::kGoogleServicesLastSyncingUsername,
                                    kPreviousEmail);
-  profile()->GetPrefs()->SetString(prefs::kGoogleServicesLastGaiaId,
+  profile()->GetPrefs()->SetString(prefs::kGoogleServicesLastSyncingGaiaId,
                                    kPreviousGaiaId);
   user_policy_signin_service()->set_dm_token("foo");
   user_policy_signin_service()->set_client_id("bar");
@@ -1345,9 +1345,9 @@ TEST_F(TurnSyncOnHelperTest, CrossAccountNewProfile) {
   SetExpectationsForSyncStartupCompletedForNextProfileCreated();
   // Configure the test.
   merge_data_choice_ = signin::SIGNIN_CHOICE_NEW_PROFILE;
-  profile()->GetPrefs()->SetString(prefs::kGoogleServicesLastUsername,
+  profile()->GetPrefs()->SetString(prefs::kGoogleServicesLastSyncingUsername,
                                    kPreviousEmail);
-  profile()->GetPrefs()->SetString(prefs::kGoogleServicesLastGaiaId,
+  profile()->GetPrefs()->SetString(prefs::kGoogleServicesLastSyncingGaiaId,
                                    kPreviousGaiaId);
   // Signin flow.
   ProfileWaiter profile_waiter;

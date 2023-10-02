@@ -108071,7 +108071,7 @@ Full version information for the fingerprint enum values:
   <int value="3" label="kRestoreOnStartup"/>
   <int value="4" label="kURLsToRestoreOnStartup"/>
   <int value="5" label="extensions::pref_names::kExtensions"/>
-  <int value="6" label="kGoogleServicesLastUsername"/>
+  <int value="6" label="kGoogleServicesLastSyncingUsername"/>
   <int value="7" label="kSearchProviderOverrides"/>
   <int value="8" label="kDefaultSearchProviderSearchURL (Obsolete 12/2016)"/>
   <int value="9" label="kDefaultSearchProviderKeyword (Obsolete 12/2016)"/>
@@ -108089,7 +108089,7 @@ Full version information for the fingerprint enum values:
   <int value="21" label="kGoogleServicesUsername (Obsolete 9/2019)"/>
   <int value="22" label="kSwReporterPromptSeed (Obsolete 9/2023)"/>
   <int value="23" label="kGoogleServicesAccountId"/>
-  <int value="24" label="kGoogleServicesLastAccountId"/>
+  <int value="24" label="kGoogleServicesLastSyncingAccountId"/>
   <int value="25" label="kSettingsResetPromptPromptWave (Obsolete 9/2023)"/>
   <int value="26"
       label="kSettingsResetPromptLastTriggeredForDefaultSearch (Obsolete

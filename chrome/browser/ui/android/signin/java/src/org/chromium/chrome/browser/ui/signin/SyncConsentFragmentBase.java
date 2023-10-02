@@ -810,7 +810,7 @@ public abstract class SyncConsentFragmentBase extends Fragment
                 new ConfirmSyncDataStateMachineDelegate(
                         requireContext(), getChildFragmentManager(), mModalDialogManager),
                 UserPrefs.get(Profile.getLastUsedRegularProfile())
-                        .getString(Pref.GOOGLE_SERVICES_LAST_USERNAME),
+                        .getString(Pref.GOOGLE_SERVICES_LAST_SYNCING_USERNAME),
                 mSelectedAccountEmail, new ConfirmSyncDataStateMachine.Listener() {
                     @Override
                     public void onConfirm(boolean wipeData) {

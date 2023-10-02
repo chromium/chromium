@@ -2282,15 +2282,17 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs) {
   profile_prefs->ClearPref(kOriginTrialPrefKey);
 
   // Once this migration is complete, the tracked preference
-  // `kGoogleServicesLastAccountIdDeprecated` can be removed.
+  // `kGoogleServicesLastSyncingAccountIdDeprecated` can be removed.
   if (profile_prefs->HasPrefPath(
-          prefs::kGoogleServicesLastAccountIdDeprecated)) {
-    std::string account_id =
-        profile_prefs->GetString(prefs::kGoogleServicesLastAccountIdDeprecated);
-    profile_prefs->ClearPref(prefs::kGoogleServicesLastAccountIdDeprecated);
+          prefs::kGoogleServicesLastSyncingAccountIdDeprecated)) {
+    std::string account_id = profile_prefs->GetString(
+        prefs::kGoogleServicesLastSyncingAccountIdDeprecated);
+    profile_prefs->ClearPref(
+        prefs::kGoogleServicesLastSyncingAccountIdDeprecated);
     bool is_email = account_id.find('@') != std::string::npos;
     if (!is_email && !account_id.empty()) {
-      profile_prefs->SetString(prefs::kGoogleServicesLastGaiaId, account_id);
+      profile_prefs->SetString(prefs::kGoogleServicesLastSyncingGaiaId,
+                               account_id);
     }
   }
 

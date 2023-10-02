@@ -205,7 +205,7 @@ void PasswordManagerSettingsServiceAndroidImplTest::RegisterPrefs() {
   test_pref_service_.registry()->RegisterBooleanPref(
       password_manager::prefs::kAutoSignInEnabledGMS, true);
   test_pref_service_.registry()->RegisterStringPref(
-      ::prefs::kGoogleServicesLastUsername, kTestAccount);
+      ::prefs::kGoogleServicesLastSyncingUsername, kTestAccount);
   test_pref_service_.registry()->RegisterBooleanPref(
       password_manager::prefs::kUnenrolledFromGoogleMobileServicesDueToErrors,
       false);

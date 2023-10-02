@@ -126,8 +126,9 @@ const prefs::TrackedPreferenceMetadata kTrackedPrefs[] = {
     {5, extensions::pref_names::kExtensions, EnforcementLevel::NO_ENFORCEMENT,
      PrefTrackingStrategy::SPLIT, ValueType::IMPERSONAL},
 #endif
-    {6, prefs::kGoogleServicesLastUsername, EnforcementLevel::ENFORCE_ON_LOAD,
-     PrefTrackingStrategy::ATOMIC, ValueType::PERSONAL},
+    {6, prefs::kGoogleServicesLastSyncingUsername,
+     EnforcementLevel::ENFORCE_ON_LOAD, PrefTrackingStrategy::ATOMIC,
+     ValueType::PERSONAL},
     {7, prefs::kSearchProviderOverrides, EnforcementLevel::ENFORCE_ON_LOAD,
      PrefTrackingStrategy::ATOMIC, ValueType::IMPERSONAL},
 #if !BUILDFLAG(IS_ANDROID)
@@ -155,10 +156,10 @@ const prefs::TrackedPreferenceMetadata kTrackedPrefs[] = {
      PrefTrackingStrategy::ATOMIC, ValueType::IMPERSONAL},
     {23, prefs::kGoogleServicesAccountId, EnforcementLevel::ENFORCE_ON_LOAD,
      PrefTrackingStrategy::ATOMIC, ValueType::PERSONAL},
-    // This is being migrated to `kGoogleServicesLastGaiaId` since 2022/10, and
-    // should move to `CleanupDeprecatedTrackedPreferences()` in
+    // This is being migrated to `kGoogleServicesLastSyncingGaiaId` since
+    // 2022/10, and should move to `CleanupDeprecatedTrackedPreferences()` in
     // pref_hash_filter.cc when that migration completes.
-    {24, prefs::kGoogleServicesLastAccountIdDeprecated,
+    {24, prefs::kGoogleServicesLastSyncingAccountIdDeprecated,
      EnforcementLevel::ENFORCE_ON_LOAD, PrefTrackingStrategy::ATOMIC,
      ValueType::PERSONAL},
     {29, prefs::kMediaStorageIdSalt, EnforcementLevel::ENFORCE_ON_LOAD,

@@ -641,7 +641,7 @@
     self.shouldShowSignInPromo = _signinPromoViewMediator.showSpinner;
   } else {
     const std::string lastSignedInGaiaId =
-        _prefService->GetString(prefs::kGoogleServicesLastGaiaId);
+        _prefService->GetString(prefs::kGoogleServicesLastSyncingGaiaId);
     // If the last signed-in user did not remove data during sign-out, don't
     // show the signin promo.
     self.shouldShowSignInPromo = lastSignedInGaiaId.empty();

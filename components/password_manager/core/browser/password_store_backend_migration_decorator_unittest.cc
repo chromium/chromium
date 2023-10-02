@@ -39,8 +39,8 @@ class PasswordStoreBackendMigrationDecoratorTest : public testing::Test {
                                           kLastMigrationAttemptTime);
     prefs_.registry()->RegisterBooleanPref(
         prefs::kRequiresMigrationAfterSyncStatusChange, false);
-    prefs_.registry()->RegisterStringPref(::prefs::kGoogleServicesLastUsername,
-                                          "testaccount@gmail.com");
+    prefs_.registry()->RegisterStringPref(
+        ::prefs::kGoogleServicesLastSyncingUsername, "testaccount@gmail.com");
     prefs_.registry()->RegisterBooleanPref(
         prefs::kUnenrolledFromGoogleMobileServicesDueToErrors, false);
     prefs_.registry()->RegisterIntegerPref(

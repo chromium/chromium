@@ -114,7 +114,7 @@
     if (base::FeatureList::IsEnabled(syncer::kEnableBookmarksAccountStorage)) {
       PrefService* prefs = browserState->GetPrefs();
       const std::string lastSignedInGaiaId =
-          prefs->GetString(prefs::kGoogleServicesLastGaiaId);
+          prefs->GetString(prefs::kGoogleServicesLastSyncingGaiaId);
       // If the last signed-in user did not remove data during sign-out, don't
       // show the signin promo.
       if (lastSignedInGaiaId.empty()) {

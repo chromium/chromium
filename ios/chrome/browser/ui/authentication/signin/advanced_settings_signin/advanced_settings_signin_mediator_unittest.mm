@@ -72,9 +72,10 @@ class AdvancedSettingsSigninMediatorTest : public PlatformTest {
   PrefService* GetPrefService() {
     TestingPrefServiceSimple* prefs = new TestingPrefServiceSimple();
     PrefRegistrySimple* registry = prefs->registry();
-    registry->RegisterStringPref(prefs::kGoogleServicesLastUsername,
+    registry->RegisterStringPref(prefs::kGoogleServicesLastSyncingUsername,
                                  kTestEmail);
-    registry->RegisterStringPref(prefs::kGoogleServicesLastGaiaId, kTestGaiaID);
+    registry->RegisterStringPref(prefs::kGoogleServicesLastSyncingGaiaId,
+                                 kTestGaiaID);
     return prefs;
   }
 

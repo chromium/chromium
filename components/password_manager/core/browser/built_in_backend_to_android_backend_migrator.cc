@@ -271,7 +271,7 @@ void BuiltInBackendToAndroidBackendMigrator::PrepareForMigration(
     // Migrate non-syncable data that is associated with a previously
     // synced account from the android backend to the built-in backend.
     android_backend_->GetAllLoginsForAccountAsync(
-        prefs_->GetString(::prefs::kGoogleServicesLastUsername),
+        prefs_->GetString(::prefs::kGoogleServicesLastSyncingUsername),
         base::BindOnce(
             &BuiltInBackendToAndroidBackendMigrator::MigrateNonSyncableData,
             weak_ptr_factory_.GetWeakPtr(), built_in_backend_));

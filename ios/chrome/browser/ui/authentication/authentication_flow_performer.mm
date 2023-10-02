@@ -221,7 +221,7 @@ NSString* const kAuthenticationSnackbarCategory =
     // previously syncing account (if any).
     lastSyncingEmail =
         base::SysUTF8ToNSString(browserState->GetPrefs()->GetString(
-            prefs::kGoogleServicesLastUsername));
+            prefs::kGoogleServicesLastSyncingUsername));
   }
 
   if (authenticationService->HasPrimaryIdentityManaged(
@@ -304,19 +304,19 @@ NSString* const kAuthenticationSnackbarCategory =
 - (BOOL)shouldHandleMergeCaseForIdentity:(id<SystemIdentity>)identity
                        browserStatePrefs:(PrefService*)prefs {
   const std::string lastSignedInGaiaId =
-      prefs->GetString(prefs::kGoogleServicesLastGaiaId);
+      prefs->GetString(prefs::kGoogleServicesLastSyncingGaiaId);
   if (!lastSignedInGaiaId.empty()) {
     // Merge case exists if the id of the previously signed in account is
     // different from the one of the account being signed in.
     return lastSignedInGaiaId != base::SysNSStringToUTF8(identity.gaiaID);
   }
 
-  // kGoogleServicesLastGaiaId pref might not have been populated yet,
-  // check the old kGoogleServicesLastUsername pref.
+  // kGoogleServicesLastSyncingGaiaId pref might not have been populated yet,
+  // check the old kGoogleServicesLastSyncingUsername pref.
   const std::string currentSignedInEmail =
       base::SysNSStringToUTF8(identity.userEmail);
   const std::string lastSignedInEmail =
-      prefs->GetString(prefs::kGoogleServicesLastUsername);
+      prefs->GetString(prefs::kGoogleServicesLastSyncingUsername);
   return !lastSignedInEmail.empty() &&
          !gaia::AreEmailsSame(currentSignedInEmail, lastSignedInEmail);
 }

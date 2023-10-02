@@ -74,8 +74,8 @@ class BuiltInBackendToAndroidBackendMigratorTest : public testing::Test {
                                           0.0);
     prefs_.registry()->RegisterBooleanPref(
         prefs::kRequiresMigrationAfterSyncStatusChange, false);
-    prefs_.registry()->RegisterStringPref(::prefs::kGoogleServicesLastUsername,
-                                          "testaccount@gmail.com");
+    prefs_.registry()->RegisterStringPref(
+        ::prefs::kGoogleServicesLastSyncingUsername, "testaccount@gmail.com");
     prefs_.registry()->RegisterBooleanPref(
         prefs::kUnenrolledFromGoogleMobileServicesDueToErrors, false);
     prefs_.registry()->RegisterIntegerPref(
@@ -647,7 +647,7 @@ class BuiltInBackendToAndroidBackendMigratorTestMetrics
     prefs()->registry()->RegisterBooleanPref(
         prefs::kRequiresMigrationAfterSyncStatusChange, false);
     prefs()->registry()->RegisterStringPref(
-        ::prefs::kGoogleServicesLastUsername, "testaccount@gmail.com");
+        ::prefs::kGoogleServicesLastSyncingUsername, "testaccount@gmail.com");
     prefs()->registry()->RegisterBooleanPref(
         prefs::kUnenrolledFromGoogleMobileServicesDueToErrors, false);
     prefs()->registry()->RegisterIntegerPref(

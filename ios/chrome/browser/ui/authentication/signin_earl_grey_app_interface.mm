@@ -106,7 +106,8 @@
   std::string emailAddress = base::SysNSStringToUTF8(identity.userEmail);
   PrefService* prefService =
       chrome_test_util::GetOriginalBrowserState()->GetPrefs();
-  prefService->SetString(prefs::kGoogleServicesLastUsername, emailAddress);
+  prefService->SetString(prefs::kGoogleServicesLastSyncingUsername,
+                         emailAddress);
   ShowSigninCommand* command = [[ShowSigninCommand alloc]
       initWithOperation:AuthenticationOperation::kSigninAndSyncReauth
             accessPoint:signin_metrics::AccessPoint::

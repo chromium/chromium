@@ -139,10 +139,11 @@ PrimaryAccountManager::~PrimaryAccountManager() {
 
 // static
 void PrimaryAccountManager::RegisterProfilePrefs(PrefRegistrySimple* registry) {
-  registry->RegisterStringPref(prefs::kGoogleServicesLastAccountIdDeprecated,
+  registry->RegisterStringPref(
+      prefs::kGoogleServicesLastSyncingAccountIdDeprecated, std::string());
+  registry->RegisterStringPref(prefs::kGoogleServicesLastSyncingGaiaId,
                                std::string());
-  registry->RegisterStringPref(prefs::kGoogleServicesLastGaiaId, std::string());
-  registry->RegisterStringPref(prefs::kGoogleServicesLastUsername,
+  registry->RegisterStringPref(prefs::kGoogleServicesLastSyncingUsername,
                                std::string());
   registry->RegisterStringPref(prefs::kGoogleServicesAccountId, std::string());
   registry->RegisterBooleanPref(prefs::kGoogleServicesConsentedToSync, false);
@@ -308,9 +309,9 @@ void PrimaryAccountManager::SetSyncPrimaryAccountInternal(
   // Go ahead and update the last signed in account info here as well. Once a
   // user is signed in the corresponding preferences should match. Doing it here
   // as opposed to on signin allows us to catch the upgrade scenario.
-  scoped_pref_commit.SetString(prefs::kGoogleServicesLastGaiaId,
+  scoped_pref_commit.SetString(prefs::kGoogleServicesLastSyncingGaiaId,
                                account_info.gaia);
-  scoped_pref_commit.SetString(prefs::kGoogleServicesLastUsername,
+  scoped_pref_commit.SetString(prefs::kGoogleServicesLastSyncingUsername,
                                account_info.email);
 }
 
@@ -339,7 +340,7 @@ void PrimaryAccountManager::RecordHadPreviousSyncAccount() const {
   }
 
   const std::string& last_gaia_id_with_sync_enabled =
-      client_->GetPrefs()->GetString(prefs::kGoogleServicesLastGaiaId);
+      client_->GetPrefs()->GetString(prefs::kGoogleServicesLastSyncingGaiaId);
   const bool existed_primary_account_with_sync =
       !last_gaia_id_with_sync_enabled.empty();
 

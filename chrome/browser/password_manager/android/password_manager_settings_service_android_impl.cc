@@ -311,8 +311,8 @@ void PasswordManagerSettingsServiceAndroidImpl::FetchSettings() {
   CHECK(bridge_helper_);
   for (PasswordManagerSetting setting : kAllPasswordSettings) {
     bridge_helper_->GetPasswordSettingValue(
-        SyncingAccount(
-            pref_service_->GetString(::prefs::kGoogleServicesLastUsername)),
+        SyncingAccount(pref_service_->GetString(
+            ::prefs::kGoogleServicesLastSyncingUsername)),
         setting);
   }
 }

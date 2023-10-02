@@ -74,8 +74,8 @@ class AddAccountSigninManagerTest : public PlatformTest {
     PlatformTest::SetUp();
 
     PrefService* prefs = browser_state_->GetPrefs();
-    prefs->SetString(prefs::kGoogleServicesLastUsername, kTestEmail);
-    prefs->SetString(prefs::kGoogleServicesLastGaiaId, kTestGaiaID);
+    prefs->SetString(prefs::kGoogleServicesLastSyncingUsername, kTestEmail);
+    prefs->SetString(prefs::kGoogleServicesLastSyncingGaiaId, kTestGaiaID);
 
     base_view_controller_ = [[UIViewController alloc] init];
     base_view_controller_.view.backgroundColor = UIColor.blueColor;
@@ -223,8 +223,8 @@ TEST_F(AddAccountSigninManagerTest, AddAccountWithoutEmailWithUserCancel) {
 TEST_F(AddAccountSigninManagerTest,
        AddAccountWithoutEmailWithSuccessNoLastKnowSyncAccount) {
   PrefService* prefs = browser_state_->GetPrefs();
-  prefs->ClearPref(prefs::kGoogleServicesLastUsername);
-  prefs->ClearPref(prefs::kGoogleServicesLastGaiaId);
+  prefs->ClearPref(prefs::kGoogleServicesLastSyncingUsername);
+  prefs->ClearPref(prefs::kGoogleServicesLastSyncingGaiaId);
 
   // Verify that completion was called with canceled result state.
   FakeSystemIdentityInteractionManager.identity = fake_identity_;

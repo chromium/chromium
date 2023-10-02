@@ -99,7 +99,7 @@ public class FullScreenSyncPromoTest {
                 .thenReturn(mIdentityManagerMock);
         when(mUserPrefsNativeMock.get(Profile.getLastUsedRegularProfile()))
                 .thenReturn(mPrefServiceMock);
-        when(mPrefServiceMock.getString(Pref.GOOGLE_SERVICES_LAST_USERNAME)).thenReturn("");
+        when(mPrefServiceMock.getString(Pref.GOOGLE_SERVICES_LAST_SYNCING_USERNAME)).thenReturn("");
     }
 
     @After
@@ -152,7 +152,7 @@ public class FullScreenSyncPromoTest {
     @Test
     public void manuallySignedOutReturnsFalse() {
         mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
-        when(mPrefServiceMock.getString(Pref.GOOGLE_SERVICES_LAST_USERNAME))
+        when(mPrefServiceMock.getString(Pref.GOOGLE_SERVICES_LAST_SYNCING_USERNAME))
                 .thenReturn(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
         mPrefManager.setSigninPromoLastShownVersion(38);
         Assert.assertFalse(FullScreenSyncPromoUtil.launchPromoIfNeeded(

@@ -99,8 +99,8 @@ SigninUIError CanOfferSignin(Profile* profile,
     // With force sign in enabled, cross account sign in is not allowed.
     if (signin_util::IsForceSigninEnabled() &&
         IsCrossAccountError(profile, gaia_id)) {
-      std::string last_email =
-          profile->GetPrefs()->GetString(prefs::kGoogleServicesLastUsername);
+      std::string last_email = profile->GetPrefs()->GetString(
+          prefs::kGoogleServicesLastSyncingUsername);
       return SigninUIError::ProfileWasUsedByAnotherAccount(email, last_email);
     }
   }
@@ -111,6 +111,6 @@ SigninUIError CanOfferSignin(Profile* profile,
 bool IsCrossAccountError(Profile* profile, const std::string& gaia_id) {
   DCHECK(!gaia_id.empty());
   std::string last_gaia_id =
-      profile->GetPrefs()->GetString(prefs::kGoogleServicesLastGaiaId);
+      profile->GetPrefs()->GetString(prefs::kGoogleServicesLastSyncingGaiaId);
   return !last_gaia_id.empty() && gaia_id != last_gaia_id;
 }
