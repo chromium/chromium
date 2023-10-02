@@ -4,12 +4,16 @@
 
 #import "ios/chrome/browser/ui/settings/password/password_sharing/sharing_status_view_controller.h"
 
+#import "base/strings/sys_string_conversions.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/authentication/authentication_constants.h"
+#import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/util/button_util.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
@@ -29,6 +33,7 @@ const CGFloat kShieldLockSize = 30.0;
 const CGFloat kVerticalSpacing = 16.0;
 const CGFloat kTopPadding = 20.0;
 const CGFloat kBottomPadding = 42.0;
+const CGFloat kHorizontalPadding = 16.0;
 
 // Durations of specific parts of the animation.
 const CGFloat kImagesSlidingOutDuration = 1.0;
@@ -68,6 +73,13 @@ const CGFloat kImagesSlidingInDistance = 51;
 // Animates progress bar and shield lock disappearing and profile images sliding
 // to the middle.
 @property(nonatomic, strong) UIViewPropertyAnimator* imagesSlidingInAnimation;
+
+// Contains the information that sharing is in progress at first and then is
+// modified to convey the result status.
+@property(nonatomic, strong) UILabel* titleLabel;
+
+// The button that cancels the sharing process.
+@property(nonatomic, strong) UIButton* cancelButton;
 
 @end
 
@@ -115,13 +127,13 @@ const CGFloat kImagesSlidingInDistance = 51;
   [view addSubview:cancelButton];
 
   [NSLayoutConstraint activateConstraints:@[
-    // Animation container consraints.
+    // Animation container constraints.
     [animationView.topAnchor constraintEqualToAnchor:view.topAnchor
                                             constant:kTopPadding],
     [animationView.leadingAnchor constraintEqualToAnchor:view.leadingAnchor
-                                                constant:kVerticalSpacing],
+                                                constant:kHorizontalPadding],
     [animationView.trailingAnchor constraintEqualToAnchor:view.trailingAnchor
-                                                 constant:-kVerticalSpacing],
+                                                 constant:-kHorizontalPadding],
     [animationView.centerXAnchor constraintEqualToAnchor:view.centerXAnchor],
 
     // Sender image constraints.
@@ -252,6 +264,7 @@ const CGFloat kImagesSlidingInDistance = 51;
   title.adjustsFontForContentSizeCategory = YES;
   title.textColor = [UIColor colorNamed:kTextPrimaryColor];
   title.textAlignment = NSTextAlignmentCenter;
+  self.titleLabel = title;
   return title;
 }
 
@@ -264,6 +277,7 @@ const CGFloat kImagesSlidingInDistance = 51;
   [cancelButton addTarget:self
                    action:@selector(cancelButtonTapped)
          forControlEvents:UIControlEventTouchUpInside];
+  self.cancelButton = cancelButton;
   return cancelButton;
 }
 
@@ -329,9 +343,116 @@ const CGFloat kImagesSlidingInDistance = 51;
                   recipientImage.center.x - kImagesSlidingInDistance,
                   recipientImage.center.y);
             }];
+  [self.imagesSlidingInAnimation
+      addCompletion:^(UIViewAnimatingPosition finalPosition) {
+        [weakSelf displaySuccessStatus];
+      }];
+}
+
+// Creates a UITextView with subtitle and footer defaults.
+- (UITextView*)createTextView {
+  UITextView* view = [[UITextView alloc] init];
+  view.textAlignment = NSTextAlignmentCenter;
+  view.translatesAutoresizingMaskIntoConstraints = NO;
+  view.adjustsFontForContentSizeCategory = YES;
+  view.editable = NO;
+  view.selectable = YES;
+  view.scrollEnabled = NO;
+  view.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
+  return view;
+}
+
+// Adds link attribute to the specified `range` of the `view`.
+- (void)addLinkAttributeToTextView:(UITextView*)view range:(NSRange)range {
+  NSMutableAttributedString* newView = [[NSMutableAttributedString alloc]
+      initWithAttributedString:view.attributedText];
+  [newView addAttribute:NSLinkAttributeName value:@"" range:range];
+  view.attributedText = newView;
+}
+
+// Helper to create the subtitle.
+- (UITextView*)createSubtitle {
+  UITextView* subtitle = [self createTextView];
+  subtitle.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+  subtitle.textColor = [UIColor colorNamed:kTextPrimaryColor];
+
+  // TODO(crbug.com/1463882): Add passing name and link values and bolding them.
+  StringWithTags stringWithTags =
+      ParseStringWithLinks(base::SysUTF16ToNSString(l10n_util::GetStringFUTF16(
+          IDS_IOS_PASSWORD_SHARING_SUCCESS_SUBTITLE, u"", u"")));
+  subtitle.text = stringWithTags.string;
+  [self addLinkAttributeToTextView:subtitle range:stringWithTags.ranges[0]];
+
+  return subtitle;
+}
+
+// Helper to create the footer.
+- (UITextView*)createFooter {
+  UITextView* footer = [self createTextView];
+  footer.font = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
+  footer.textColor = [UIColor colorNamed:kTextSecondaryColor];
+
+  // TODO(crbug.com/1463882): Add passing link value.
+  StringWithTags stringWithTags =
+      ParseStringWithLinks(base::SysUTF16ToNSString(l10n_util::GetStringFUTF16(
+          IDS_IOS_PASSWORD_SHARING_SUCCESS_FOOTNOTE, u"")));
+  footer.text = stringWithTags.string;
+  [self addLinkAttributeToTextView:footer range:stringWithTags.ranges[0]];
+
+  return footer;
+}
+
+// Helper for creating the done button.
+- (UIButton*)createDoneButton {
+  UIButton* doneButton = PrimaryActionButton(YES);
+  [doneButton addTarget:self
+                 action:@selector(doneButtonTapped)
+       forControlEvents:UIControlEventTouchUpInside];
+  [doneButton setTitle:l10n_util::GetNSString(IDS_DONE)
+              forState:UIControlStateNormal];
+  doneButton.titleLabel.adjustsFontSizeToFitWidth = YES;
+  return doneButton;
+}
+
+// Replaces text of the title label, cancel button with done button and adds a
+// subtitle and a footer.
+// TODO(crbug.com/1463882): Add test.
+- (void)displaySuccessStatus {
+  UILabel* titleLabel = self.titleLabel;
+  titleLabel.text =
+      l10n_util::GetNSString(IDS_IOS_PASSWORD_SHARING_SUCCESS_TITLE);
+  self.cancelButton.hidden = YES;
+
+  UIView* view = self.view;
+  UIStackView* verticalStack = [[UIStackView alloc] initWithArrangedSubviews:@[
+    [self createSubtitle], [self createFooter], [self createDoneButton]
+  ]];
+  verticalStack.axis = UILayoutConstraintAxisVertical;
+  verticalStack.spacing = kVerticalSpacing;
+  verticalStack.translatesAutoresizingMaskIntoConstraints = NO;
+  [view addSubview:verticalStack];
+
+  [NSLayoutConstraint activateConstraints:@[
+    [verticalStack.topAnchor constraintEqualToAnchor:titleLabel.bottomAnchor
+                                            constant:kVerticalSpacing],
+    [verticalStack.leadingAnchor constraintEqualToAnchor:view.leadingAnchor
+                                                constant:kHorizontalPadding],
+    [verticalStack.trailingAnchor constraintEqualToAnchor:view.trailingAnchor
+                                                 constant:-kHorizontalPadding],
+    [verticalStack.bottomAnchor constraintEqualToAnchor:view.bottomAnchor
+                                               constant:-kBottomPadding],
+  ]];
+
+  [view setNeedsLayout];
+  [view layoutIfNeeded];
 }
 
 - (void)cancelButtonTapped {
+  // TODO(crbug.com/1463882): Implement.
+}
+
+// Handles done buttons clicks by dismissing the view.
+- (void)doneButtonTapped {
   // TODO(crbug.com/1463882): Implement.
 }
 
