@@ -44,10 +44,6 @@ BASE_DECLARE_FEATURE(kGPayAppDynamicUpdate);
 // credential store APIs, or if it can only rely on the user-profile database.
 BASE_DECLARE_FEATURE(kSecurePaymentConfirmationUseCredentialStoreAPIs);
 
-// Enables using webauthn extensions through the secure payment confirmation
-// API.
-BASE_DECLARE_FEATURE(kSecurePaymentConfirmationExtensions);
-
 #if !BUILDFLAG(IS_ANDROID)
 // Desktop only, if enabled PaymentHandler will use the new minimal header UX.
 // See https://crbug.com/1385136.

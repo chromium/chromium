@@ -11229,8 +11229,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-secure-payment-confirmation-extensions",
      flag_descriptions::kSecurePaymentConfirmationExtensionsName,
      flag_descriptions::kSecurePaymentConfirmationExtensionsDescription, kOsAll,
-     FEATURE_VALUE_TYPE(
-         payments::features::kSecurePaymentConfirmationExtensions)},
+     FEATURE_VALUE_TYPE(blink::features::kSecurePaymentConfirmationExtensions)},
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"enable-runtime-counters-telemetry",

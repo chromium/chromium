@@ -14,10 +14,14 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_client_inputs.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_client_outputs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_device_public_key_inputs.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_device_public_key_outputs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_large_blob_inputs.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_large_blob_outputs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_payment_inputs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_prf_inputs.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_prf_outputs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_prf_values.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authenticator_selection_criteria.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_cable_authentication_data.h"
@@ -170,6 +174,92 @@ TypeConverter<blink::Credential*, CredentialInfoPtr>::Convert(
   }
   NOTREACHED();
   return nullptr;
+}
+
+static blink::DOMArrayBuffer* VectorToDOMArrayBuffer(
+    const Vector<uint8_t> buffer) {
+  return blink::DOMArrayBuffer::Create(static_cast<const void*>(buffer.data()),
+                                       buffer.size());
+}
+
+#if BUILDFLAG(IS_ANDROID)
+static Vector<Vector<uint32_t>> UvmEntryToArray(
+    const Vector<blink::mojom::blink::UvmEntryPtr>& user_verification_methods) {
+  Vector<Vector<uint32_t>> uvm_array;
+  for (const auto& uvm : user_verification_methods) {
+    Vector<uint32_t> uvmEntry = {uvm->user_verification_method,
+                                 uvm->key_protection_type,
+                                 uvm->matcher_protection_type};
+    uvm_array.push_back(uvmEntry);
+  }
+  return uvm_array;
+}
+#endif
+
+// static template <>
+blink::AuthenticationExtensionsClientOutputs*
+TypeConverter<blink::AuthenticationExtensionsClientOutputs*,
+              blink::mojom::blink::AuthenticationExtensionsClientOutputsPtr>::
+    Convert(const blink::mojom::blink::AuthenticationExtensionsClientOutputsPtr&
+                extensions) {
+  auto* extension_outputs =
+      blink::AuthenticationExtensionsClientOutputs::Create();
+  if (extensions->echo_appid_extension) {
+    extension_outputs->setAppid(extensions->appid_extension);
+  }
+#if BUILDFLAG(IS_ANDROID)
+  if (extensions->echo_user_verification_methods) {
+    extension_outputs->setUvm(
+        UvmEntryToArray(std::move(*extensions->user_verification_methods)));
+  }
+#endif
+  if (extensions->echo_large_blob) {
+    DCHECK(blink::RuntimeEnabledFeatures::
+               WebAuthenticationLargeBlobExtensionEnabled());
+    blink::AuthenticationExtensionsLargeBlobOutputs* large_blob_outputs =
+        blink::AuthenticationExtensionsLargeBlobOutputs::Create();
+    if (extensions->large_blob) {
+      large_blob_outputs->setBlob(
+          VectorToDOMArrayBuffer(std::move(*extensions->large_blob)));
+    }
+    if (extensions->echo_large_blob_written) {
+      large_blob_outputs->setWritten(extensions->large_blob_written);
+    }
+    extension_outputs->setLargeBlob(large_blob_outputs);
+  }
+  if (extensions->get_cred_blob) {
+    extension_outputs->setGetCredBlob(
+        VectorToDOMArrayBuffer(std::move(*extensions->get_cred_blob)));
+  }
+  if (extensions->device_public_key) {
+    blink::AuthenticationExtensionsDevicePublicKeyOutputs*
+        device_public_key_outputs =
+            blink::AuthenticationExtensionsDevicePublicKeyOutputs::Create();
+    device_public_key_outputs->setAuthenticatorOutput(VectorToDOMArrayBuffer(
+        std::move(extensions->device_public_key->authenticator_output)));
+    device_public_key_outputs->setSignature(VectorToDOMArrayBuffer(
+        std::move(extensions->device_public_key->signature)));
+    extension_outputs->setDevicePubKey(device_public_key_outputs);
+  }
+  if (extensions->echo_prf) {
+    auto* prf_outputs = blink::AuthenticationExtensionsPRFOutputs::Create();
+    if (extensions->prf_results) {
+      auto* values = blink::AuthenticationExtensionsPRFValues::Create();
+      values->setFirst(
+          MakeGarbageCollected<blink::V8UnionArrayBufferOrArrayBufferView>(
+              VectorToDOMArrayBuffer(
+                  std::move(extensions->prf_results->first))));
+      if (extensions->prf_results->second) {
+        values->setSecond(
+            MakeGarbageCollected<blink::V8UnionArrayBufferOrArrayBufferView>(
+                VectorToDOMArrayBuffer(
+                    std::move(extensions->prf_results->second.value()))));
+      }
+      prf_outputs->setResults(values);
+    }
+    extension_outputs->setPrf(prf_outputs);
+  }
+  return extension_outputs;
 }
 
 // static helper method.

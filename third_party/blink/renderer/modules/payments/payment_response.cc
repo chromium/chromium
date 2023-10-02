@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/modules/payments/payment_state_resolver.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -28,7 +29,30 @@ using payments::mojom::blink::SecurePaymentConfirmationResponsePtr;
 v8::Local<v8::Value> BuildDetails(
     ScriptState* script_state,
     const String& json,
-    SecurePaymentConfirmationResponsePtr secure_payment_confirmation) {
+    SecurePaymentConfirmationResponsePtr secure_payment_confirmation,
+    mojom::blink::GetAssertionAuthenticatorResponsePtr
+        get_assertion_authentication_response) {
+  if (RuntimeEnabledFeatures::SecurePaymentConfirmationExtensionsEnabled()) {
+    if (get_assertion_authentication_response) {
+      const auto& info = get_assertion_authentication_response->info;
+      auto* authenticator_response =
+          MakeGarbageCollected<AuthenticatorAssertionResponse>(
+              std::move(info->client_data_json),
+              std::move(info->authenticator_data),
+              std::move(get_assertion_authentication_response->signature),
+              get_assertion_authentication_response->user_handle);
+
+      auto* result = MakeGarbageCollected<PublicKeyCredential>(
+          get_assertion_authentication_response->info->id,
+          DOMArrayBuffer::Create(static_cast<const void*>(info->raw_id.data()),
+                                 info->raw_id.size()),
+          authenticator_response,
+          get_assertion_authentication_response->authenticator_attachment,
+          ConvertTo<AuthenticationExtensionsClientOutputs*>(
+              get_assertion_authentication_response->extensions));
+      return result->Wrap(script_state).ToLocalChecked();
+    }
+  }
   if (secure_payment_confirmation) {
     const auto& info = secure_payment_confirmation->credential_info;
     auto* authenticator_response =
@@ -86,9 +110,11 @@ PaymentResponse::PaymentResponse(
       payment_state_resolver_(payment_state_resolver) {
   DCHECK(payment_state_resolver_);
   ScriptState::Scope scope(script_state);
-  details_.Set(script_state->GetIsolate(),
-               BuildDetails(script_state, response->stringified_details,
-                            std::move(response->secure_payment_confirmation)));
+  details_.Set(
+      script_state->GetIsolate(),
+      BuildDetails(script_state, response->stringified_details,
+                   std::move(response->secure_payment_confirmation),
+                   std::move(response->get_assertion_authenticator_response)));
 }
 
 PaymentResponse::~PaymentResponse() = default;
@@ -106,9 +132,11 @@ void PaymentResponse::Update(
   payer_email_ = response->payer->email;
   payer_phone_ = response->payer->phone;
   ScriptState::Scope scope(script_state);
-  details_.Set(script_state->GetIsolate(),
-               BuildDetails(script_state, response->stringified_details,
-                            std::move(response->secure_payment_confirmation)));
+  details_.Set(
+      script_state->GetIsolate(),
+      BuildDetails(script_state, response->stringified_details,
+                   std::move(response->secure_payment_confirmation),
+                   std::move(response->get_assertion_authenticator_response)));
 }
 
 void PaymentResponse::UpdatePayerDetail(

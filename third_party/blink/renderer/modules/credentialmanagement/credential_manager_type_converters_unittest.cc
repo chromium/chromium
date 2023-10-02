@@ -5,14 +5,19 @@
 #include "third_party/blink/renderer/modules/credentialmanagement/credential_manager_type_converters.h"
 
 #include "mojo/public/cpp/bindings/type_converter.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom-blink.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_client_inputs.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_client_outputs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_device_public_key_inputs.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_device_public_key_outputs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_large_blob_inputs.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_large_blob_outputs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_prf_inputs.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_prf_outputs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_prf_values.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_cable_authentication_data.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_credential_request_options_context.h"
@@ -45,6 +50,202 @@ TEST(CredentialManagerTypeConvertersTest, RpContextTest) {
             ConvertTo<RpContext>(V8Context(V8Context::Enum::kUse)));
   EXPECT_EQ(RpContext::kContinue,
             ConvertTo<RpContext>(V8Context(V8Context::Enum::kContinue)));
+}
+
+TEST(CredentialManagerTypeConvertersTest,
+     AuthenticationExtensionsClientOutputs_appidNotSet) {
+  auto mojo_type =
+      blink::mojom::blink::AuthenticationExtensionsClientOutputs::New();
+  mojo_type->echo_appid_extension = false;
+
+  auto* blink_type =
+      ConvertTo<blink::AuthenticationExtensionsClientOutputs*>(mojo_type);
+
+  EXPECT_FALSE(blink_type->hasAppid());
+}
+
+TEST(CredentialManagerTypeConvertersTest,
+     AuthenticationExtensionsClientOutputs_appidSetTrue) {
+  auto mojo_type =
+      blink::mojom::blink::AuthenticationExtensionsClientOutputs::New();
+  mojo_type->echo_appid_extension = true;
+  mojo_type->appid_extension = true;
+
+  auto* blink_type =
+      ConvertTo<blink::AuthenticationExtensionsClientOutputs*>(mojo_type);
+
+  EXPECT_TRUE(blink_type->hasAppid());
+  EXPECT_TRUE(blink_type->appid());
+}
+
+#if BUILDFLAG(IS_ANDROID)
+TEST(CredentialManagerTypeConvertersTest,
+     AuthenticationExtensionsClientOutputs_userVerificationMethods) {
+  auto mojo_type =
+      blink::mojom::blink::AuthenticationExtensionsClientOutputs::New();
+  mojo_type->echo_user_verification_methods = true;
+  mojo_type->user_verification_methods =
+      Vector<blink::mojom::blink::UvmEntryPtr>();
+  mojo_type->user_verification_methods->emplace_back(
+      blink::mojom::blink::UvmEntry::New(/*user_verification_method=*/1,
+                                         /*key_protection_type=*/2,
+                                         /*matcher_protection_type=*/3));
+  mojo_type->user_verification_methods->emplace_back(
+      blink::mojom::blink::UvmEntry::New(/*user_verification_method=*/4,
+                                         /*key_protection_type=*/5,
+                                         /*matcher_protection_type=*/6));
+
+  auto* blink_type =
+      ConvertTo<blink::AuthenticationExtensionsClientOutputs*>(mojo_type);
+
+  EXPECT_TRUE(blink_type->hasUvm());
+  EXPECT_THAT(blink_type->uvm(),
+              ::testing::ElementsAre(Vector<uint32_t>{1, 2, 3},
+                                     Vector<uint32_t>{4, 5, 6}));
+}
+#endif
+
+MATCHER_P(DOMArrayBufferEqualTo, vector, "") {
+  if (arg->ByteLength() != std::size(vector)) {
+    return false;
+  }
+  uint8_t* data = (uint8_t*)arg->Data();
+  return std::equal(data, data + arg->ByteLength(), std::begin(vector));
+}
+
+MATCHER_P(UnionDOMArrayBufferOrViewEqualTo, vector, "") {
+  blink::DOMArrayBuffer* buffer = arg->IsArrayBuffer()
+                                      ? arg->GetAsArrayBuffer()
+                                      : arg->GetAsArrayBufferView()->buffer();
+  if (buffer->ByteLength() != std::size(vector)) {
+    return false;
+  }
+  uint8_t* data = (uint8_t*)buffer->Data();
+  return std::equal(data, data + buffer->ByteLength(), std::begin(vector));
+}
+
+TEST(CredentialManagerTypeConvertersTest,
+     AuthenticationExtensionsClientOutputs_largeBlobEmpty) {
+  auto mojo_type =
+      blink::mojom::blink::AuthenticationExtensionsClientOutputs::New();
+  mojo_type->echo_large_blob = true;
+
+  auto* blink_type =
+      ConvertTo<blink::AuthenticationExtensionsClientOutputs*>(mojo_type);
+
+  EXPECT_TRUE(blink_type->hasLargeBlob());
+  EXPECT_FALSE(blink_type->largeBlob()->hasBlob());
+  EXPECT_FALSE(blink_type->largeBlob()->hasWritten());
+}
+
+TEST(CredentialManagerTypeConvertersTest,
+     AuthenticationExtensionsClientOutputs_largeBlobRead) {
+  auto mojo_type =
+      blink::mojom::blink::AuthenticationExtensionsClientOutputs::New();
+  mojo_type->echo_large_blob = true;
+  mojo_type->large_blob = Vector<uint8_t>({1, 2, 3});
+
+  auto* blink_type =
+      ConvertTo<blink::AuthenticationExtensionsClientOutputs*>(mojo_type);
+
+  EXPECT_TRUE(blink_type->hasLargeBlob());
+  EXPECT_THAT(blink_type->largeBlob()->blob(),
+              DOMArrayBufferEqualTo(Vector<uint8_t>{1, 2, 3}));
+}
+
+TEST(CredentialManagerTypeConvertersTest,
+     AuthenticationExtensionsClientOutputs_largeBlobWritten) {
+  auto mojo_type =
+      blink::mojom::blink::AuthenticationExtensionsClientOutputs::New();
+  mojo_type->echo_large_blob = true;
+  mojo_type->echo_large_blob_written = true;
+  mojo_type->large_blob_written = true;
+
+  auto* blink_type =
+      ConvertTo<blink::AuthenticationExtensionsClientOutputs*>(mojo_type);
+
+  EXPECT_TRUE(blink_type->hasLargeBlob());
+  EXPECT_TRUE(blink_type->largeBlob()->written());
+}
+
+TEST(CredentialManagerTypeConvertersTest,
+     AuthenticationExtensionsClientOutputs_credBlob) {
+  auto mojo_type =
+      blink::mojom::blink::AuthenticationExtensionsClientOutputs::New();
+  mojo_type->get_cred_blob = Vector<uint8_t>{1, 2, 3};
+
+  auto* blink_type =
+      ConvertTo<blink::AuthenticationExtensionsClientOutputs*>(mojo_type);
+
+  EXPECT_TRUE(blink_type->hasGetCredBlob());
+  EXPECT_THAT(blink_type->getCredBlob(),
+              DOMArrayBufferEqualTo(Vector<uint8_t>{1, 2, 3}));
+}
+
+TEST(CredentialManagerTypeConvertersTest,
+     AuthenticationExtensionsClientOutputs_devicePublicKey) {
+  auto mojo_type =
+      blink::mojom::blink::AuthenticationExtensionsClientOutputs::New();
+  mojo_type->device_public_key =
+      blink::mojom::blink::DevicePublicKeyResponse::New(
+          /*authenticator_output=*/Vector<uint8_t>{1, 2, 3},
+          /*signature=*/Vector<uint8_t>{4, 5, 6});
+
+  auto* blink_type =
+      ConvertTo<blink::AuthenticationExtensionsClientOutputs*>(mojo_type);
+
+  EXPECT_TRUE(blink_type->hasDevicePubKey());
+  EXPECT_TRUE(blink_type->devicePubKey()->hasAuthenticatorOutput());
+  EXPECT_THAT(blink_type->devicePubKey()->authenticatorOutput(),
+              DOMArrayBufferEqualTo(Vector<uint8_t>{1, 2, 3}));
+  EXPECT_TRUE(blink_type->devicePubKey()->hasSignature());
+  EXPECT_THAT(blink_type->devicePubKey()->signature(),
+              DOMArrayBufferEqualTo(Vector<uint8_t>{4, 5, 6}));
+}
+
+TEST(CredentialManagerTypeConvertersTest,
+     AuthenticationExtensionsClientOutputs_prf) {
+  auto mojo_type =
+      blink::mojom::blink::AuthenticationExtensionsClientOutputs::New();
+  mojo_type->echo_prf = true;
+  mojo_type->prf_results = blink::mojom::blink::PRFValues::New(
+      /*id=*/absl::nullopt,
+      /*first=*/Vector<uint8_t>{1, 2, 3},
+      /*second=*/absl::nullopt);
+
+  auto* blink_type =
+      ConvertTo<blink::AuthenticationExtensionsClientOutputs*>(mojo_type);
+
+  EXPECT_TRUE(blink_type->hasPrf());
+  EXPECT_TRUE(blink_type->prf()->hasResults());
+  blink::AuthenticationExtensionsPRFValues* prf_results =
+      blink_type->prf()->results();
+  EXPECT_TRUE(prf_results->hasFirst());
+  EXPECT_THAT(prf_results->first(),
+              UnionDOMArrayBufferOrViewEqualTo(Vector<uint8_t>{1, 2, 3}));
+  EXPECT_FALSE(prf_results->hasSecond());
+}
+
+TEST(CredentialManagerTypeConvertersTest,
+     AuthenticationExtensionsClientOutputs_prfWithSecond) {
+  auto mojo_type =
+      blink::mojom::blink::AuthenticationExtensionsClientOutputs::New();
+  mojo_type->echo_prf = true;
+  mojo_type->prf_results = blink::mojom::blink::PRFValues::New(
+      /*id=*/absl::nullopt,
+      /*first=*/Vector<uint8_t>{1, 2, 3},
+      /*second=*/Vector<uint8_t>{4, 5, 6});
+
+  auto* blink_type =
+      ConvertTo<blink::AuthenticationExtensionsClientOutputs*>(mojo_type);
+
+  EXPECT_TRUE(blink_type->hasPrf());
+  EXPECT_TRUE(blink_type->prf()->hasResults());
+  blink::AuthenticationExtensionsPRFValues* blink_prf_values =
+      blink_type->prf()->results();
+  EXPECT_TRUE(blink_prf_values->hasSecond());
+  EXPECT_THAT(blink_prf_values->second(),
+              UnionDOMArrayBufferOrViewEqualTo(Vector<uint8_t>{4, 5, 6}));
 }
 
 TEST(CredentialManagerTypeConvertersTest,

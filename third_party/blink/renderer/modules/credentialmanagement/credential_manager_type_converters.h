@@ -17,6 +17,7 @@
 
 namespace blink {
 class AuthenticationExtensionsClientInputs;
+class AuthenticationExtensionsClientOutputs;
 class AuthenticationExtensionsDevicePublicKeyInputs;
 class AuthenticationExtensionsPRFInputs;
 class AuthenticationExtensionsPRFValues;
@@ -54,6 +55,14 @@ struct TypeConverter<blink::Credential*,
                      blink::mojom::blink::CredentialInfoPtr> {
   static blink::Credential* Convert(
       const blink::mojom::blink::CredentialInfoPtr&);
+};
+
+template <>
+struct MODULES_EXPORT TypeConverter<
+    blink::AuthenticationExtensionsClientOutputs*,
+    blink::mojom::blink::AuthenticationExtensionsClientOutputsPtr> {
+  static blink::AuthenticationExtensionsClientOutputs* Convert(
+      const blink::mojom::blink::AuthenticationExtensionsClientOutputsPtr&);
 };
 
 // blink::mojom::blink::Authenticator ---------------------------------------

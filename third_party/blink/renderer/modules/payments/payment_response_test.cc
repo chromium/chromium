@@ -14,11 +14,13 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_payment_validation_errors.h"
+#include "third_party/blink/renderer/modules/credentialmanagement/public_key_credential.h"
 #include "third_party/blink/renderer/modules/payments/payment_address.h"
 #include "third_party/blink/renderer/modules/payments/payment_state_resolver.h"
 #include "third_party/blink/renderer/modules/payments/payment_test_helper.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 namespace {
@@ -93,6 +95,83 @@ TEST(PaymentResponseTest, DataCopiedOver) {
 
   ASSERT_TRUE(transaction_id.V8Value()->IsNumber());
   EXPECT_EQ(123, transaction_id.V8Value().As<v8::Number>()->Value());
+}
+
+MATCHER_P(ArrayBufferEqualTo, other_buffer, "equal to") {
+  if (arg->ByteLength() != std::size(other_buffer)) {
+    return false;
+  }
+
+  uint8_t* data = (uint8_t*)arg->Data();
+  return std::equal(data, data + arg->ByteLength(), std::begin(other_buffer));
+}
+
+// Calls getClientExtensionResults on the given public_key_credential.
+static v8::Local<v8::Object> GetClientExtensionResults(
+    V8TestingScope& scope,
+    v8::Local<v8::Object> public_key_credential) {
+  v8::Local<v8::Function> get_client_extension_results_method =
+      public_key_credential.As<v8::Object>()
+          ->Get(scope.GetContext(),
+                V8String(scope.GetIsolate(), "getClientExtensionResults"))
+          .ToLocalChecked()
+          .As<v8::Function>();
+  return get_client_extension_results_method
+      ->Call(scope.GetContext(), public_key_credential,
+             /*argc=*/0,
+             /*argv=*/nullptr)
+      .ToLocalChecked()
+      .As<v8::Object>();
+}
+
+// Gets a v8 object property of array_buffer type.
+static v8::Local<v8::ArrayBuffer> GetArrayBuffer(V8TestingScope& scope,
+                                                 v8::Local<v8::Object>& object,
+                                                 const char* property_key) {
+  return object
+      ->Get(scope.GetContext(), V8String(scope.GetIsolate(), property_key))
+      .ToLocalChecked()
+      .As<v8::ArrayBuffer>();
+}
+
+TEST(PaymentResponseTest,
+     PaymentResponseDetailsContainsSpcExtensionsDevicePublicKey) {
+  ScopedSecurePaymentConfirmationExtensionsForTest extensions_flag(true);
+  V8TestingScope scope;
+  payments::mojom::blink::PaymentResponsePtr input =
+      BuildPaymentResponseForTest();
+  input->get_assertion_authenticator_response =
+      blink::mojom::blink::GetAssertionAuthenticatorResponse::New();
+  input->get_assertion_authenticator_response->info =
+      blink::mojom::blink::CommonCredentialInfo::New();
+  input->get_assertion_authenticator_response->info->id = "rpid";
+  input->get_assertion_authenticator_response->extensions =
+      blink::mojom::blink::AuthenticationExtensionsClientOutputs::New();
+  input->get_assertion_authenticator_response->extensions->device_public_key =
+      mojom::blink::DevicePublicKeyResponse::New(
+          /*authenticator_output=*/WTF::Vector<uint8_t>{1, 2, 3},
+          /*signature=*/WTF::Vector<uint8_t>{4, 5, 6});
+  MockPaymentStateResolver* complete_callback =
+      MakeGarbageCollected<MockPaymentStateResolver>();
+
+  PaymentResponse* output = MakeGarbageCollected<PaymentResponse>(
+      scope.GetScriptState(), std::move(input), /*shipping_address=*/nullptr,
+      complete_callback, "request_id");
+
+  v8::Local<v8::Object> details =
+      output->details(scope.GetScriptState()).V8Value().As<v8::Object>();
+  v8::Local<v8::Object> device_pub_key =
+      GetClientExtensionResults(scope, details)
+          ->Get(scope.GetContext(),
+                V8String(scope.GetIsolate(), "devicePubKey"))
+          .ToLocalChecked()
+          .As<v8::Object>();
+  v8::Local<v8::ArrayBuffer> authenticator_output =
+      GetArrayBuffer(scope, device_pub_key, "authenticatorOutput");
+  EXPECT_THAT(authenticator_output, ArrayBufferEqualTo(WTF::Vector{1, 2, 3}));
+  v8::Local<v8::ArrayBuffer> signature =
+      GetArrayBuffer(scope, device_pub_key, "signature");
+  EXPECT_THAT(signature, ArrayBufferEqualTo(WTF::Vector{4, 5, 6}));
 }
 
 TEST(PaymentResponseTest,

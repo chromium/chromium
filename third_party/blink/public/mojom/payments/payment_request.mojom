@@ -29,11 +29,21 @@ struct PaymentResponse {
   string? shipping_option;
   PayerDetail payer;
 
+  // The assertion for secure payment confirmation.
+  // This member is deprecated in favor of the
+  // get_assertion_authenticator_response below and can be removed once flag
+  // SecurePaymentConfirmationExtensions is removed.
   SecurePaymentConfirmationResponse? secure_payment_confirmation;
+
+  // The assertion for secure payment confirmation.
+  // This member replaces secure_payment_confirmation above behind the
+  // SecurePaymentConfirmationExtensions flag.
+  blink.mojom.GetAssertionAuthenticatorResponse? get_assertion_authenticator_response;
 };
 
 // A response for the "secure-payment-confirmation" payment method. A subset of
-// blink.mojom.GetAssertionAuthenticatorResponse.
+// blink.mojom.GetAssertionAuthenticatorResponse. This struct can be removed
+// once flag SecurePaymentConfirmationExtensions is removed.
 struct SecurePaymentConfirmationResponse {
   blink.mojom.CommonCredentialInfo credential_info;
   array<uint8> signature;

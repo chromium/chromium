@@ -830,6 +830,24 @@ void OnGetAssertionComplete(
     AuthenticationExtensionsClientOutputsPtr& extensions =
         credential->extensions;
 
+    if (RuntimeEnabledFeatures::SecurePaymentConfirmationExtensionsEnabled()) {
+      AuthenticationExtensionsClientOutputs* extension_outputs =
+          ConvertTo<AuthenticationExtensionsClientOutputs*>(
+              credential->extensions);
+#if BUILDFLAG(IS_ANDROID)
+      if (extensions->echo_user_verification_methods) {
+        UseCounter::Count(resolver->GetExecutionContext(),
+                          WebFeature::kCredentialManagerGetSuccessWithUVM);
+      }
+#endif
+      resolver->Resolve(MakeGarbageCollected<PublicKeyCredential>(
+          credential->info->id,
+          VectorToDOMArrayBuffer(std::move(credential->info->raw_id)),
+          authenticator_response, credential->authenticator_attachment,
+          extension_outputs));
+      return;
+    }
+
     AuthenticationExtensionsClientOutputs* extension_outputs =
         AuthenticationExtensionsClientOutputs::Create();
     if (extensions->echo_appid_extension) {
