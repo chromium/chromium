@@ -1382,10 +1382,10 @@ NGLineBreaker::BreakResult NGLineBreaker::BreakText(
 
   } breaker(this, &item, &item_shape_result);
 
-  // Use kStartShouldBeSafe if at the beginning of a line.
   unsigned options = ShapingLineBreaker::kDefaultOptions;
-  if (item_result->StartOffset() != line_info->StartOffset())
-    options |= ShapingLineBreaker::kDontReshapeStart;
+  if (item_result->StartOffset() == line_info->StartOffset()) {
+    options |= ShapingLineBreaker::kStartOfLine;
+  }
 
   // Reshaping between the last character and trailing spaces is needed only
   // when we need accurate end position, because kerning between trailing spaces

@@ -68,9 +68,8 @@ class PLATFORM_EXPORT ShapingLineBreaker {
   // based on the shaping results for the entire paragraph.
   enum Options {
     kDefaultOptions = 0,
-    // Disable reshpaing the start edge even if the start offset is not safe-
-    // to-break. Set if this is not at the start edge of a wrapped line.
-    kDontReshapeStart = 1 << 0,
+    // Set when the start is at the start of a wrapped line.
+    kStartOfLine = 1 << 0,
     // Disable reshaping the end edge if it is at a breakable space, even if it
     // is not safe-to-break. Good for performance if accurate width is not
     // critical.

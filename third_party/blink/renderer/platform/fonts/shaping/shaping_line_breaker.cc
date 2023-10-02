@@ -265,9 +265,10 @@ scoped_refptr<const ShapeResultView> ShapingLineBreaker::ShapeLine(
   unsigned candidate_break =
       result_->CachedOffsetForPosition(end_position) + range_start;
 
-  unsigned first_safe = (options & kDontReshapeStart)
-                            ? start
-                            : result_->CachedNextSafeToBreakOffset(start);
+  // When it's not at the start of a wrapped line, disable reshaping.
+  unsigned first_safe = (options & kStartOfLine)
+                            ? result_->CachedNextSafeToBreakOffset(start)
+                            : start;
   DCHECK_GE(first_safe, start);
   if (candidate_break >= range_end) {
     // The |result_| does not have glyphs to fill the available space,
@@ -584,9 +585,7 @@ scoped_refptr<const ShapeResultView> ShapingLineBreaker::ShapeLineAt(
 
   unsigned first_safe;
   scoped_refptr<const ShapeResult> line_start_result;
-  if (options & kDontReshapeStart) {
-    first_safe = start;
-  } else {
+  if (options & kStartOfLine) {
     first_safe = result_->CachedNextSafeToBreakOffset(start);
     DCHECK_GE(first_safe, start);
     if (first_safe != start) {
@@ -597,6 +596,8 @@ scoped_refptr<const ShapeResultView> ShapingLineBreaker::ShapeLineAt(
       }
       line_start_result = Shape(start, first_safe);
     }
+  } else {
+    first_safe = start;
   }
 
   unsigned last_safe;
