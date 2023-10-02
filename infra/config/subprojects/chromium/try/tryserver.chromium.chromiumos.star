@@ -153,6 +153,9 @@ try_.builder(
     mirrors = [
         "ci/lacros-amd64-generic-rel-skylab",
     ],
+    tryjob = try_.job(
+        experiment_percentage = 1,
+    ),
 )
 
 try_.builder(

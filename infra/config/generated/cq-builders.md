@@ -628,6 +628,9 @@ as required builders.
 * [ios-simulator-siso](https://ci.chromium.org/p/chromium/builders/try/ios-simulator-siso) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""ios-simulator-siso""))
   * Experiment percentage: 10.0
 
+* [lacros-amd64-generic-rel-skylab](https://ci.chromium.org/p/chromium/builders/try/lacros-amd64-generic-rel-skylab) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""lacros-amd64-generic-rel-skylab""))
+  * Experiment percentage: 1.0
+
 * [linux-chromeos-siso-rel](https://ci.chromium.org/p/chromium/builders/try/linux-chromeos-siso-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-chromeos-siso-rel""))
   * Experiment percentage: 10.0
 
