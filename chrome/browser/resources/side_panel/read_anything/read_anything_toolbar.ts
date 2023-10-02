@@ -7,6 +7,7 @@ import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/cr_icons.css.js';
 import '//resources/cr_elements/icons.html.js';
 import '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import '//resources/cr_elements/md_select.css.js';
 import './icons.html.js';
 
 import {AnchorAlignment, CrActionMenuElement, ShowAtPositionConfig} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
@@ -242,16 +243,6 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
 
   private textStyleOptions_: MenuButton[] = [
     {
-      id: 'font-size',
-      icon: 'read-anything:font-size',
-      menuToOpen: () => this.$.fontSizeMenu,
-    },
-    {
-      id: 'font',
-      icon: 'read-anything:font',
-      menuToOpen: () => this.$.fontMenu,
-    },
-    {
       id: 'color',
       icon: 'read-anything:color',
       menuToOpen: () => this.$.colorMenu,
@@ -283,14 +274,28 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
   override connectedCallback() {
     super.connectedCallback();
     this.isReadAloudEnabled_ = chrome.readingMode.isReadAloudEnabled;
+    if (this.isReadAloudEnabled_) {
+      this.textStyleOptions_.unshift(
+          {
+            id: 'font-size',
+            icon: 'read-anything:font-size',
+            menuToOpen: () => this.$.fontSizeMenu,
+          },
+          {
+            id: 'font',
+            icon: 'read-anything:font',
+            menuToOpen: () => this.$.fontMenu,
+          },
+      );
+
+      const shadowRoot = this.shadowRoot;
+      assert(shadowRoot);
+      const toolbar = shadowRoot.getElementById('toolbar-container');
+      assert(toolbar);
+      new ResizeObserver(this.onToolbarResize_).observe(toolbar);
+    }
 
     this.updateFonts();
-
-    const shadowRoot = this.shadowRoot;
-    assert(shadowRoot);
-    const toolbar = shadowRoot.getElementById('toolbar-container');
-    assert(toolbar);
-    new ResizeObserver(this.onToolbarResize_).observe(toolbar);
   }
 
   private onToolbarResize_(entries: ResizeObserverEntry[]) {
@@ -299,17 +304,31 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
     ReadAnythingToolbar.maybeUpdateMoreOptions(toolbar);
   }
 
-  restoreSettingsFromPrefs(colorSuffix?: string) {
-    const fontNodes = Array.from(this.$.fontMenu.children);
-    fontNodes.forEach((element) => {
-      if (element instanceof HTMLButtonElement) {
-        if (!element.innerText) {
-          return;
-        }
-        // Update the font of each button to be the same as the font text.
-        element.style.fontFamily = element.innerText;
+  private setFontForFontOptions_() {
+    let fontOptions: Element[];
+    if (this.isReadAloudEnabled_) {
+      fontOptions = Array.from(this.$.fontMenu.children);
+    } else {
+      const shadowRoot = this.shadowRoot;
+      assert(shadowRoot);
+      const select =
+          shadowRoot.getElementById('font-select') as HTMLSelectElement;
+      assert(select);
+      fontOptions = Array.from(select.options);
+    }
+
+    fontOptions.forEach(element => {
+      assert(element instanceof HTMLElement);
+      if (!element.innerText) {
+        return;
       }
+      // Update the font of each button to be the same as the font text.
+      element.style.fontFamily = element.innerText;
     });
+  }
+
+  restoreSettingsFromPrefs(colorSuffix?: string) {
+    this.setFontForFontOptions_();
 
     if (this.isReadAloudEnabled_) {
       const speechRate = parseFloat(chrome.readingMode.speechRate.toFixed(1));
@@ -607,6 +626,14 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
     this.setCheckMarkForMenu_(this.$.fontMenu, event.model.index);
 
     this.closeMenus_();
+  }
+
+  private onFontSelectValueChange_(event: Event) {
+    const fontName = (event.target as HTMLSelectElement).value;
+    chrome.readingMode.onFontChange(fontName);
+    if (this.contentPage) {
+      this.contentPage.updateFont(fontName);
+    }
   }
 
   private onRateClick_(event: DomRepeatEvent<number>) {

@@ -1,11 +1,12 @@
-<style include="cr-icons">
+<style include="cr-icons md-select">
   iron-icon {
     --icon-size: 16px;
     height: var(--icon-size);
     width: var(--icon-size);
-    padding: 0 8px 0 0;
   }
   cr-icon-button {
+    --cr-icon-button-icon-size: 16px;
+    --cr-icon-button-size: 24px;
     margin: 10px 4px;
   }
   :host-context([chrome-refresh-2023]) #play-pause {
@@ -14,8 +15,6 @@
     color: var(--color-side-panel-entry-icon);
   }
   :host-context([chrome-refresh-2023]) cr-icon-button {
-    --cr-icon-button-icon-size: 16px;
-    --cr-icon-button-size: 24px;
     color: var(--color-sys-on-surface-subtle);
   }
   :host-context([chrome-refresh-2023]) .dropdown-item:focus {
@@ -72,10 +71,27 @@
   #toolbar-container {
     overflow: visible;
     white-space: nowrap;
-    max-height: 50px;
+    max-height: 60px;
   }
   #more, cr-icon-button#moreOptionsMenu {
     display: none;
+  }
+  .separator {
+    display: inline;
+    width: 20px;
+    height: 0px;
+    transform: rotate(-90deg);
+    margin: 10px 4px;
+  }
+  .md-select {
+    --md-select-width: fit-content;
+    margin: 10px 8px;
+  }
+  :host-context([chrome-refresh-2023]) .md-select {
+    --md-select-text-color: var(--cr-primary-text-color);
+  }
+  :host-context([chrome-refresh-2023]) .md-select option {
+    --md-select-option-bg-color: var(--color-sys-base-container-elevated);
   }
 </style>
 <div id="toolbar-container" class="toolbar-container">
@@ -118,6 +134,31 @@
       on-click="onHighlightClick_">
     </cr-icon-button>
   </span>
+
+  <template is="dom-if" if="[[!isReadAloudEnabled_]]">
+    <select id="font-select" class="md-select"
+            on-change="onFontSelectValueChange_">
+      <template id="fontTemplate" is="dom-repeat" items="[[fontOptions_]]">
+        <option value="[[item]]">[[item]]</option>
+      </template>
+    </select>
+    <hr class="separator">
+    <cr-icon-button
+        id="font-size-decrease-old"
+        class="toolbar-button"
+        iron-icon="read-anything:font-size-decrease-old"
+        on-click="onFontSizeDecreaseClick_">
+    </cr-icon-button>
+    <cr-icon-button
+        id="font-size-increase-old"
+        class="toolbar-button"
+        iron-icon="read-anything:font-size-increase-old"
+        on-click="onFontSizeIncreaseClick_">
+    </cr-icon-button>
+  </template>
+
+  <hr class="separator">
+
   <template is="dom-repeat" items="[[textStyleOptions_]]">
     <cr-icon-button
       class="toolbar-button"

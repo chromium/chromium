@@ -333,8 +333,10 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
         loadTimeData.getString('readAnythingLoadingMessage');
     this.emptyStateSubheading_ = '';
     this.hasContent_ = false;
-    this.synth.cancel();
-    this.onSpeechStopped();
+    if (this.isReadAloudEnabled_) {
+      this.synth.cancel();
+      this.onSpeechStopped();
+    }
   }
 
   // TODO(crbug.com/1474951): Handle focus changes for speech, including
