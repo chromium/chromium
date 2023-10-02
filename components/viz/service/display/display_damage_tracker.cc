@@ -99,7 +99,8 @@ void DisplayDamageTracker::ProcessSurfaceDamage(
     const BeginFrameAck& ack,
     bool display_damaged,
     HandleInteraction handle_interaction) {
-  TRACE_EVENT1("viz", "DisplayDamageTracker::SurfaceDamaged", "surface_id",
+  TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("viz.surface_lifetime"),
+               "DisplayDamageTracker::SurfaceDamaged", "surface_id",
                surface_id.ToString());
 
   has_surface_damage_due_to_interaction_ |=
@@ -227,8 +228,9 @@ bool DisplayDamageTracker::CheckBeginFrameSourceId(uint64_t source_id) {
 
 void DisplayDamageTracker::OnSurfaceDamageExpected(const SurfaceId& surface_id,
                                                    const BeginFrameArgs& args) {
-  TRACE_EVENT1("viz", "DisplayDamageTracker::SurfaceDamageExpected",
-               "surface_id", surface_id.ToString());
+  TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("viz.surface_lifetime"),
+               "DisplayDamageTracker::SurfaceDamageExpected", "surface_id",
+               surface_id.ToString());
 
   // Insert a new state for the surface if we don't know of it yet. We don't
   // use OnSurfaceCreated() for this, because it may not be called if a
