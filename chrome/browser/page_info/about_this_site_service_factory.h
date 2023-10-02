@@ -32,7 +32,7 @@ class AboutThisSiteServiceFactory : public ProfileKeyedServiceFactory {
   ~AboutThisSiteServiceFactory() override;
 
   // BrowserContextKeyedServiceFactory:
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* profile) const override;
 
   bool ServiceIsCreatedWithBrowserContext() const override;

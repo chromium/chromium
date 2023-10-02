@@ -45,7 +45,8 @@ AboutThisSiteServiceFactory::AboutThisSiteServiceFactory()
 AboutThisSiteServiceFactory::~AboutThisSiteServiceFactory() = default;
 
 // BrowserContextKeyedServiceFactory:
-KeyedService* AboutThisSiteServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+AboutThisSiteServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* browser_context) const {
   if (!page_info::IsAboutThisSiteFeatureEnabled(
           g_browser_process->GetApplicationLocale()))
@@ -53,7 +54,7 @@ KeyedService* AboutThisSiteServiceFactory::BuildServiceInstanceFor(
 
   Profile* profile = Profile::FromBrowserContext(browser_context);
 
-  return new page_info::AboutThisSiteService(
+  return std::make_unique<page_info::AboutThisSiteService>(
       std::make_unique<ChromeAboutThisSiteServiceClient>(
           OptimizationGuideKeyedServiceFactory::GetForProfile(profile),
           profile->IsOffTheRecord(), profile->GetPrefs()),
