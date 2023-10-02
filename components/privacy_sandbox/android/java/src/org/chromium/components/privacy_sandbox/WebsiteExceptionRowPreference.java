@@ -14,12 +14,18 @@ import androidx.preference.PreferenceViewHolder;
 import org.chromium.components.browser_ui.settings.ChromeImageViewPreference;
 import org.chromium.components.browser_ui.settings.FaviconViewUtils;
 import org.chromium.components.browser_ui.site_settings.Website;
+import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.url.GURL;
 
 /** Represents a row element for the 3PCD exceptions site list. */
 public class WebsiteExceptionRowPreference extends ChromeImageViewPreference {
+    /** Interface for the callback when the exception is deleted. */
+    public interface WebsiteExceptionDeletedCallback {
+        void refreshBlockingExceptions();
+    }
+
     // Whether the favicon has been fetched already.
     private boolean mFaviconFetchInProgress;
 
@@ -29,15 +35,18 @@ public class WebsiteExceptionRowPreference extends ChromeImageViewPreference {
 
     private Context mContext;
 
+    private WebsiteExceptionDeletedCallback mCallback;
+
     private static final String ANY_SUBDOMAIN_PATTERN = "[*.]";
 
-    WebsiteExceptionRowPreference(
-            Context context, Website site, TrackingProtectionDelegate delegate) {
+    WebsiteExceptionRowPreference(Context context, Website site,
+            TrackingProtectionDelegate delegate, WebsiteExceptionDeletedCallback callback) {
         super(context);
         mSite = site;
         mFaviconFetchInProgress = false;
         mDelegate = delegate;
         mContext = context;
+        mCallback = callback;
 
         setTitle(site.getTitle());
         if (mDelegate.getSiteSettingsDelegate(mContext).isUserBypassUIEnabled()) {
@@ -94,6 +103,8 @@ public class WebsiteExceptionRowPreference extends ChromeImageViewPreference {
     }
 
     private void deleteException() {
-        // TODO(b/295926938): Implement.
+        mSite.setContentSetting(mDelegate.getBrowserContext(), ContentSettingsType.COOKIES,
+                ContentSettingValues.DEFAULT);
+        mCallback.refreshBlockingExceptions();
     }
 }

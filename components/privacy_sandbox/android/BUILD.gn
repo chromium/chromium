@@ -25,6 +25,7 @@ android_library("java") {
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_fragment_fragment_java",
     "//third_party/androidx:androidx_preference_preference_java",
+    "//ui/android:ui_no_recycler_view_java",
     "//url:gurl_java",
   ]
 }
@@ -32,6 +33,7 @@ android_library("java") {
 android_resources("java_resources") {
   sources = [ "java/res/xml/tracking_protection_preferences.xml" ]
   deps = [
+    "//components/browser_ui/strings/android:browser_ui_strings_grd",
     "//components/browser_ui/styles/android:java_resources",
     "//components/strings:components_strings_grd",
   ]

@@ -17,6 +17,7 @@ include_rules = [
   "+content/public/browser/interest_group_api_operation.h",
   "+content/public/browser/render_frame_host.h",
   "+ui/base",
+  "+ui/android",
   "+third_party/blink/public/common/features.h",
   "+third_party/blink/public/mojom/devtools/console_message.mojom.h"
 ]
