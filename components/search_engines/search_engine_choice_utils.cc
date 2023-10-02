@@ -16,6 +16,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/search_engines/search_engines_switches.h"
+#include "components/search_engines/template_url_service.h"
 #include "components/signin/public/base/signin_switches.h"
 
 namespace search_engines {
@@ -113,7 +114,8 @@ bool ShouldShowUpdatedSettings(PrefService& profile_prefs) {
 }
 
 bool ShouldShowChoiceScreen(const policy::PolicyService& policy_service,
-                            const ProfileProperties& profile_properties) {
+                            const ProfileProperties& profile_properties,
+                            TemplateURLService* template_url_service) {
   if (!base::FeatureList::IsEnabled(switches::kSearchEngineChoice)) {
     return false;
   }
@@ -132,6 +134,21 @@ bool ShouldShowChoiceScreen(const policy::PolicyService& policy_service,
   // Force-enable the choice screen for testing the screen itself.
   if (command_line->HasSwitch(switches::kForceSearchEngineChoiceScreen)) {
     return true;
+  }
+
+  // TODO(b/302687046): Change `template_url_service` to a reference once the
+  // code is updated on iOS side.
+  if (template_url_service) {
+    // A custom search engine will have a `prepopulate_id` of 0.
+    const int kCustomSearchEnginePrepopulateId = 0;
+    const TemplateURL* default_search_engine =
+        template_url_service->GetDefaultSearchProvider();
+    // Don't show the dialog if the user as a custom search engine set a
+    // default.
+    if (default_search_engine->prepopulate_id() ==
+        kCustomSearchEnginePrepopulateId) {
+      return false;
+    }
   }
 
   PrefService& prefs = CHECK_DEREF(profile_properties.pref_service.get());

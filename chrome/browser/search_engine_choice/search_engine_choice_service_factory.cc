@@ -80,10 +80,14 @@ bool SearchEngineChoiceServiceFactory::IsProfileEligibleForChoiceScreen(
   is_regular_profile &= !profile.IsGuestSession();
 #endif
 
+  TemplateURLService* template_url_service =
+      TemplateURLServiceFactory::GetForProfile(&profile);
   return search_engines::ShouldShowChoiceScreen(
       policy_service,
-      /*profile_properties=*/{.is_regular_profile = is_regular_profile,
-                              .pref_service = profile.GetPrefs()});
+      /*profile_properties=*/
+      {.is_regular_profile = is_regular_profile,
+       .pref_service = profile.GetPrefs()},
+      template_url_service);
 }
 
 std::unique_ptr<KeyedService>

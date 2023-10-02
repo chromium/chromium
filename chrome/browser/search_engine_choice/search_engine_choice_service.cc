@@ -24,8 +24,6 @@
 
 namespace {
 bool g_dialog_disabled_for_testing = false;
-// A custom search engine would have a `prepopulate_id` of 0.
-const int kCustomSearchEngineId = 0;
 
 // Checks that the profile is the first profile that sees the search engine
 // choice dialog.
@@ -79,9 +77,11 @@ void SearchEngineChoiceService::NotifyChoiceMade(int prepopulate_id) {
       prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp,
       base::Time::Now().ToDeltaSinceWindowsEpoch().InSeconds());
 
+  // A custom search engine would have a `prepopulate_id` of 0.
   // Having a custom search engine displayed on the choice screen would mean
   // that it is already the default search engine so we don't need to change
   // anything.
+  const int kCustomSearchEngineId = 0;
   if (prepopulate_id != kCustomSearchEngineId) {
     std::unique_ptr<TemplateURLData> search_engine =
         TemplateURLPrepopulateData::GetPrepopulatedEngine(pref_service,
@@ -156,6 +156,10 @@ bool SearchEngineChoiceService::IsShowingDialog(Browser* browser) {
 
 std::vector<std::unique_ptr<TemplateURLData>>
 SearchEngineChoiceService::GetSearchEngines() {
+  // We call `GetPrepopulatedEngines` instead of
+  // `GetSearchProvidersUsingLoadedEngines` because the latter will return the
+  // list of search engines that might have been modified by the user (by
+  // changing the engine's keyword in settings for example).
   PrefService* pref_service = profile_->GetPrefs();
   TemplateURLService* template_url_service =
       TemplateURLServiceFactory::GetForProfile(&profile_.get());
@@ -186,14 +190,6 @@ bool SearchEngineChoiceService::CanShowDialog(Browser& browser) {
 
   // Don't show the dialog if the default search engine is set by an extension.
   if (template_url_service_->IsExtensionControlledDefaultSearch()) {
-    return false;
-  }
-
-  // Don't show the dialog for users who set a custom search engine as default.
-  const TemplateURL* default_search_engine =
-      template_url_service_->GetDefaultSearchProvider();
-  CHECK(default_search_engine);
-  if (default_search_engine->prepopulate_id() == kCustomSearchEngineId) {
     return false;
   }
 

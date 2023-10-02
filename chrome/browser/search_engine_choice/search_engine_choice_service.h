@@ -69,6 +69,9 @@ class SearchEngineChoiceService : public KeyedService {
   bool WasChoiceMadeInFRE() const;
 
   // Returns the list of search engines.
+  // The search engine details returned by this function will be the canonical
+  // ones and will not be affected by changes in search engine details from the
+  // settings page.
   // Virtual to be able to mock in tests.
   virtual std::vector<std::unique_ptr<TemplateURLData>> GetSearchEngines();
 
