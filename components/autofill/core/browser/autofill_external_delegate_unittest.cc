@@ -520,6 +520,7 @@ TEST_F(AutofillExternalDelegateUnitTest, ShowDeleteDialog) {
 TEST_F(AutofillExternalDelegateUnitTest, UserCancelsDeletion) {
   IssueOnQuery();
 
+  base::HistogramTester histogram;
   const std::string guid = base::Uuid().AsLowercaseString();
   ON_CALL(personal_data_manager_, GetProfileByGUID(guid))
       .WillByDefault(Return(&profile_));
@@ -542,6 +543,7 @@ TEST_F(AutofillExternalDelegateUnitTest, UserCancelsDeletion) {
   external_delegate_->DidAcceptSuggestion(
       suggestion, 0,
       AutofillSuggestionTriggerSource::kFormControlElementClicked);
+  histogram.ExpectUniqueSample("Autofill.ExtendedMenu.DeleteAddress", 0, 1);
 }
 
 // Test that the correct Autofill profile is deleted when the user accepts the
@@ -549,6 +551,7 @@ TEST_F(AutofillExternalDelegateUnitTest, UserCancelsDeletion) {
 TEST_F(AutofillExternalDelegateUnitTest, UserAcceptsDeletion) {
   IssueOnQuery();
 
+  base::HistogramTester histogram;
   const std::string guid = base::Uuid().AsLowercaseString();
   ON_CALL(personal_data_manager_, GetProfileByGUID(guid))
       .WillByDefault(Return(&profile_));
@@ -573,6 +576,7 @@ TEST_F(AutofillExternalDelegateUnitTest, UserAcceptsDeletion) {
       AutofillSuggestionTriggerSource::kFormControlElementClicked);
 
   external_delegate_->OnPersonalDataFinishedProfileTasks();
+  histogram.ExpectUniqueSample("Autofill.ExtendedMenu.DeleteAddress", 1, 1);
 }
 
 // Test the situation when AutofillExternalDelegate is destroyed before the

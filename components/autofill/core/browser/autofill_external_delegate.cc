@@ -29,6 +29,7 @@
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/metrics/address_rewriter_in_profile_subset_metrics.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/metrics/granular_filling_metrics.h"
 #include "components/autofill/core/browser/metrics/suggestions_list_metrics.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -603,6 +604,7 @@ void AutofillExternalDelegate::OnAddressEditorClosed(
 
 void AutofillExternalDelegate::OnDeleteDialogClosed(const std::string& guid,
                                                     bool user_accepted_delete) {
+  autofill_metrics::LogDeleteAddressProfileDialogClosed(user_accepted_delete);
   if (user_accepted_delete) {
     PersonalDataManager* pdm = manager_->client().GetPersonalDataManager();
     if (!pdm_observation_.IsObserving()) {

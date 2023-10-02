@@ -1685,6 +1685,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Autofill.ExtendedMenu.DeleteAddress"
+    enum="BooleanAutofillExtendedMenuDeleteAddress" expires_after="2024-10-01">
+  <owner>tchudakov@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    This metric measures how many users Clicked on the Delete Address option in
+    the extended Autofill menu and the next action. The metric is logged when
+    the user closes the delete address profile dialog.
+  </summary>
+</histogram>
+
 <histogram
     name="Autofill.ExtractNewForms.ShallowEqualityDiffersFromDeepEquality"
     enum="FormDataEquality" expires_after="M108">
