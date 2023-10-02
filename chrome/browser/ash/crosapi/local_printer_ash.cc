@@ -401,6 +401,18 @@ void LocalPrinterAsh::OnServerPrintersChanged(
   }
 }
 
+void LocalPrinterAsh::OnLocalPrintersUpdated() {
+  CHECK(ash::features::IsLocalPrinterObservingEnabled());
+
+  Profile* profile = GetProfile();
+  DCHECK(profile);
+  const std::vector<mojom::LocalDestinationInfoPtr> printers =
+      ConvertPrintersToMojom(GetLocalPrinters(profile));
+  for (const auto& remote : local_printers_observer_remotes_) {
+    remote->OnLocalPrintersUpdated(mojo::Clone(printers));
+  }
+}
+
 void LocalPrinterAsh::GetPrinters(GetPrintersCallback callback) {
   std::move(callback).Run(
       ConvertPrintersToMojom(GetLocalPrinters(GetProfile())));
@@ -684,6 +696,21 @@ void LocalPrinterAsh::AddPrintJobObserver(
       break;
   }
   std::move(callback).Run();
+}
+
+void LocalPrinterAsh::AddLocalPrintersObserver(
+    mojo::PendingRemote<mojom::LocalPrintersObserver> remote,
+    AddLocalPrintersObserverCallback callback) {
+  CHECK(ash::features::IsLocalPrinterObservingEnabled());
+
+  Profile* profile = GetProfile();
+  DCHECK(profile);
+  ash::CupsPrintersManager* printers_manager =
+      ash::CupsPrintersManagerFactory::GetForBrowserContext(profile);
+  printers_manager->AddLocalPrintersObserver(this);
+
+  local_printers_observer_remotes_.Add(std::move(remote));
+  std::move(callback).Run(ConvertPrintersToMojom(GetLocalPrinters(profile)));
 }
 
 void LocalPrinterAsh::GetOAuthAccessToken(

@@ -272,6 +272,14 @@ enum PrintJobSource {
  kExtension,
 };
 
+// This interface is used to notify Lacros about local printer events.
+[Stable]
+interface LocalPrintersObserver {
+  // Fires for any update to a local printer and sends the full set of connected
+  // local printers.
+  OnLocalPrintersUpdated@0(array<LocalDestinationInfo> printers);
+};
+
 // This union of structs represents the OAuth-related status of a printer.
 [Stable]
 struct OAuthNotNeeded {};
@@ -364,4 +372,9 @@ interface LocalPrinter {
   [MinVersion=5]
   GetIppClientInfo@15(string printer_id)
     => (array<printing.mojom.IppClientInfo> settings);
+
+  // Adds a local printers observer.
+  [MinVersion=6]
+  AddLocalPrintersObserver@16(pending_remote<LocalPrintersObserver> observer)
+      => (array<LocalDestinationInfo> printers);
 };
