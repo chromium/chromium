@@ -82,7 +82,9 @@ void SoftNavigationHeuristics::ResetHeuristic() {
   did_reset_paints_ = false;
 }
 
-void SoftNavigationHeuristics::UserInitiatedClick(ScriptState* script_state) {
+void SoftNavigationHeuristics::UserInitiatedInteraction(
+    ScriptState* script_state,
+    bool is_unfocused_keydown) {
   // Set task ID to the current one.
   ThreadScheduler* scheduler = ThreadScheduler::Current();
   DCHECK(scheduler);
@@ -91,11 +93,20 @@ void SoftNavigationHeuristics::UserInitiatedClick(ScriptState* script_state) {
     return;
   }
   ResetHeuristic();
+  CHECK(script_state);
+  if (is_unfocused_keydown) {
+    // TODO(https://crbug.com/1479052): investigate if we need to consider
+    // including the current task also for other cases.
+    scheduler::TaskAttributionInfo* task = tracker->RunningTask(script_state);
+    if (task) {
+      potential_soft_navigation_task_ids_.insert(task->Id().value());
+    }
+  }
   tracker->RegisterObserver(this);
   SetIsTrackingSoftNavigationHeuristicsOnDocument(true);
   user_click_timestamp_ = base::TimeTicks::Now();
   TRACE_EVENT_INSTANT("scheduler",
-                      "SoftNavigationHeuristics::UserInitiatedClick");
+                      "SoftNavigationHeuristics::UserInitiatedInteraction");
 }
 
 bool SoftNavigationHeuristics::IsCurrentTaskDescendantOfClickEventHandler(
