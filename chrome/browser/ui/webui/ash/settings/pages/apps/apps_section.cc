@@ -502,7 +502,8 @@ void AppsSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   AddPluginVmLoadTimeData(html_source);
   AddBorealisStrings(html_source);
 
-  if (!kIsRevampEnabled) {
+  // Startup subsection exists only when OsSettingsRevampWayfinding is disabled.
+  if (startup_subsection_) {
     startup_subsection_->AddLoadTimeData(html_source);
   }
 }
@@ -616,7 +617,8 @@ void AppsSection::RegisterHierarchy(HierarchyGenerator* generator) const {
       mojom::SearchResultDefaultRank::kMedium,
       mojom::kArcVmUsbPreferencesSubpagePath);
 
-  if (!ash::features::IsOsSettingsRevampWayfindingEnabled()) {
+  // Startup subsection exists only when OsSettingsRevampWayfinding is disabled.
+  if (startup_subsection_) {
     startup_subsection_->RegisterHierarchy(generator);
   }
 }

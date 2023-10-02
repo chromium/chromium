@@ -498,7 +498,8 @@ void AboutSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
                          base::UTF8ToUTF16(safetyInfoLink));
 #endif
 
-  if (kIsRevampEnabled) {
+  // Crostini subsection exists only when OsSettingsRevampWayfinding is enabled.
+  if (crostini_subsection_) {
     crostini_subsection_->AddLoadTimeData(html_source);
   }
 }
@@ -510,7 +511,8 @@ void AboutSection::AddHandlers(content::WebUI* web_ui) {
     web_ui->AddMessageHandler(std::make_unique<DeviceNameHandler>());
   }
 
-  if (ash::features::IsOsSettingsRevampWayfindingEnabled()) {
+  // Crostini subsection exists only when OsSettingsRevampWayfinding is enabled.
+  if (crostini_subsection_) {
     crostini_subsection_->AddHandlers(web_ui);
   }
 }
@@ -546,10 +548,6 @@ void AboutSection::RegisterHierarchy(HierarchyGenerator* generator) const {
   generator->RegisterTopLevelSetting(mojom::Setting::kDiagnostics);
   generator->RegisterTopLevelSetting(mojom::Setting::kFirmwareUpdates);
 
-  if (ash::features::IsOsSettingsRevampWayfindingEnabled()) {
-    crostini_subsection_->RegisterHierarchy(generator);
-  }
-
   // Detailed build info.
   generator->RegisterTopLevelSubpage(
       IDS_SETTINGS_ABOUT_PAGE_DETAILED_BUILD_INFO,
@@ -561,6 +559,10 @@ void AboutSection::RegisterHierarchy(HierarchyGenerator* generator) const {
       mojom::Setting::kCopyDetailedBuildInfo};
   RegisterNestedSettingBulk(mojom::Subpage::kDetailedBuildInfo,
                             kDetailedBuildInfoSettings, generator);
+
+  if (crostini_subsection_) {
+    crostini_subsection_->RegisterHierarchy(generator);
+  }
 }
 
 bool AboutSection::ShouldShowAUToggle(user_manager::User* active_user) {
