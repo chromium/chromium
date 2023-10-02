@@ -1011,6 +1011,7 @@ if (is_chromeos && is_chromeos_device) {
         "../browser/ui/ash/app_list/app_list_integration_test.cc",
         "../browser/ui/ash/quick_settings_integration_test.cc",
         "../browser/ui/ash/shelf/shelf_integration_test.cc",
+        "base/chromeos/crosier/helper/test_sudo_helper_client_test.cc",
         "base/chromeos/crosier/upstart_test.cc",
 
         # These cannot live in ":test_support" because they use
@@ -1022,6 +1023,7 @@ if (is_chromeos && is_chromeos_device) {
 
       deps += [
         "//chrome/test/base/chromeos/crosier:proto",
+        "//chrome/test/base/chromeos/crosier/helper:common",
         "//chromeos/services/machine_learning/public/cpp",
       ]
 

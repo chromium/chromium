@@ -18,17 +18,18 @@ namespace {
 
 void Usage() {
   printf("Usage:\n");
-  printf("  %s -- [remote command]\n", base::CommandLine::ForCurrentProcess()
-                                           ->GetProgram()
-                                           .BaseName()
-                                           .value()
-                                           .c_str());
+  printf("  %s --%s=<server socket path> -- [remote command]\n",
+         base::CommandLine::ForCurrentProcess()
+             ->GetProgram()
+             .BaseName()
+             .value()
+             .c_str(),
+         crosier::kSwitchSocketPath);
 }
 
-bool RunCommand(const std::string_view server_path,
-                const std::string_view command) {
+bool RunCommand(const std::string_view command) {
   LOG(INFO) << "Run: " << command;
-  return TestSudoHelperClient(server_path).RunCommand(command).return_code == 0;
+  return TestSudoHelperClient().RunCommand(command).return_code == 0;
 }
 
 }  // namespace
@@ -44,8 +45,6 @@ int main(int argc, char** argv) {
     Usage();
     return 0;
   }
-  const std::string server_path =
-      command->GetSwitchValueASCII(crosier::kSwitchSocketPath);
 
   auto args = command->GetArgs();
   if (args.empty()) {
@@ -53,5 +52,5 @@ int main(int argc, char** argv) {
     return 0;
   }
 
-  return RunCommand(server_path, base::JoinString(args, " ")) ? 0 : -1;
+  return RunCommand(base::JoinString(args, " ")) ? 0 : -1;
 }

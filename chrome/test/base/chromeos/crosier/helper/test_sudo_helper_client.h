@@ -9,6 +9,7 @@
 #include <string_view>
 
 #include "base/files/scoped_file.h"
+#include "base/values.h"
 
 namespace base {
 class FilePath;
@@ -27,7 +28,7 @@ class TestSudoHelperClient {
     std::string output;  // stdout and stderr combined.
   };
 
-  explicit TestSudoHelperClient(const std::string_view server_path);
+  TestSudoHelperClient();
   TestSudoHelperClient(const TestSudoHelperClient&) = delete;
   TestSudoHelperClient& operator=(const TestSudoHelperClient&) = delete;
   ~TestSudoHelperClient();
@@ -42,6 +43,8 @@ class TestSudoHelperClient {
 
  private:
   base::ScopedFD ConnectToServer(const base::FilePath& client_path);
+
+  Result SendDictAndGetResult(const base::Value::Dict& dict);
 
   // Socket path where `test_sudo_helper` server is listening. By default,
   // it is `kTestSudoHelperServerSocketPath`.
