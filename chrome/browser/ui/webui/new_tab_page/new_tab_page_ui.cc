@@ -988,14 +988,13 @@ void NewTabPageUI::OnCustomBackgroundImageUpdated() {
            : absl::optional<CustomBackground>())
           .value_or(CustomBackground())
           .custom_background_url;
-  url::EncodeURIComponent(custom_background_url.spec().c_str(),
-                          custom_background_url.spec().size(), &encoded_url);
+  url::EncodeURIComponent(custom_background_url.spec(), &encoded_url);
   update.Set(
       "backgroundImageUrl",
       encoded_url.length() > 0
           ? base::StrCat(
                 {"chrome-untrusted://new-tab-page/custom_background_image?url=",
-                 std::string(encoded_url.data(), encoded_url.length())})
+                 encoded_url.view()})
           : "");
   content::WebUIDataSource::Update(profile_, chrome::kChromeUINewTabPageHost,
                                    std::move(update));

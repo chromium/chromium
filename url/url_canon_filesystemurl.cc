@@ -36,7 +36,7 @@ bool DoCanonicalizeFileSystemURL(const CHAR* spec,
   // Scheme (known, so we don't bother running it through the more
   // complicated scheme canonicalizer).
   new_parsed->scheme.begin = output->length();
-  output->Append("filesystem:", 11);
+  output->Append("filesystem:");
   new_parsed->scheme.len = 10;
 
   if (!inner_parsed || !inner_parsed->scheme.is_valid())
@@ -46,7 +46,7 @@ bool DoCanonicalizeFileSystemURL(const CHAR* spec,
   SchemeType inner_scheme_type = SCHEME_WITH_HOST_PORT_AND_USER_INFORMATION;
   if (CompareSchemeComponent(spec, inner_parsed->scheme, url::kFileScheme)) {
     new_inner_parsed.scheme.begin = output->length();
-    output->Append("file://", 7);
+    output->Append("file://");
     new_inner_parsed.scheme.len = 4;
     success &= CanonicalizePath(spec, inner_parsed->path, output,
                                 &new_inner_parsed.path);

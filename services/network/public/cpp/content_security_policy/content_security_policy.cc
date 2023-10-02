@@ -482,10 +482,9 @@ bool ParsePath(base::StringPiece path, mojom::CSPSource* csp_source) {
     return false;
 
   url::RawCanonOutputT<char16_t> unescaped;
-  url::DecodeURLEscapeSequences(path.data(), path.size(),
-                                url::DecodeURLMode::kUTF8OrIsomorphic,
+  url::DecodeURLEscapeSequences(path, url::DecodeURLMode::kUTF8OrIsomorphic,
                                 &unescaped);
-  base::UTF16ToUTF8(unescaped.data(), unescaped.length(), &csp_source->path);
+  csp_source->path = base::UTF16ToUTF8(unescaped.view());
 
   return true;
 }

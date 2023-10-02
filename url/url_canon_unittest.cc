@@ -2801,33 +2801,33 @@ TEST(URLCanonTest, IDNToASCII) {
 
   // Basic ASCII test.
   std::u16string str = u"hello";
-  EXPECT_TRUE(IDNToASCII(str.data(), str.length(), &output));
+  EXPECT_TRUE(IDNToASCII(str, &output));
   EXPECT_EQ(u"hello", std::u16string(output.data()));
   output.set_length(0);
 
   // Mixed ASCII/non-ASCII.
   str = u"hellö";
-  EXPECT_TRUE(IDNToASCII(str.data(), str.length(), &output));
+  EXPECT_TRUE(IDNToASCII(str, &output));
   EXPECT_EQ(u"xn--hell-8qa", std::u16string(output.data()));
   output.set_length(0);
 
   // All non-ASCII.
   str = u"你好";
-  EXPECT_TRUE(IDNToASCII(str.data(), str.length(), &output));
+  EXPECT_TRUE(IDNToASCII(str, &output));
   EXPECT_EQ(u"xn--6qq79v", std::u16string(output.data()));
   output.set_length(0);
 
   // Characters that need mapping (the resulting Punycode is the encoding for
   // "1⁄4").
   str = u"¼";
-  EXPECT_TRUE(IDNToASCII(str.data(), str.length(), &output));
+  EXPECT_TRUE(IDNToASCII(str, &output));
   EXPECT_EQ(u"xn--14-c6t", std::u16string(output.data()));
   output.set_length(0);
 
   // String to encode already starts with "xn--", and all ASCII. Should not
   // modify the string.
   str = u"xn--hell-8qa";
-  EXPECT_TRUE(IDNToASCII(str.data(), str.length(), &output));
+  EXPECT_TRUE(IDNToASCII(str, &output));
   EXPECT_EQ(u"xn--hell-8qa", std::u16string(output.data()));
   output.set_length(0);
 
@@ -2835,7 +2835,7 @@ TEST(URLCanonTest, IDNToASCII) {
   // Should fail, due to a special case: if the label starts with "xn--", it
   // should be parsed as Punycode, which must be all ASCII.
   str = u"xn--hellö";
-  EXPECT_FALSE(IDNToASCII(str.data(), str.length(), &output));
+  EXPECT_FALSE(IDNToASCII(str, &output));
   output.set_length(0);
 
   // String to encode already starts with "xn--", and mixed ASCII/non-ASCII.
@@ -2843,7 +2843,7 @@ TEST(URLCanonTest, IDNToASCII) {
   // which would be a valid ASCII character, U+0044, if the high byte were
   // ignored.
   str = u"xn--1⁄4";
-  EXPECT_FALSE(IDNToASCII(str.data(), str.length(), &output));
+  EXPECT_FALSE(IDNToASCII(str, &output));
   output.set_length(0);
 }
 

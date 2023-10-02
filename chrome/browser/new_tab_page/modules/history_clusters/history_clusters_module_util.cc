@@ -179,15 +179,13 @@ history::Cluster GenerateSampleCluster(int64_t cluster_id,
 
   std::string kSampleSearchQuery = "google store products";
   url::RawCanonOutputT<char> encoded_query;
-  url::EncodeURIComponent(kSampleSearchQuery.c_str(),
-                          kSampleSearchQuery.length(), &encoded_query);
+  url::EncodeURIComponent(kSampleSearchQuery, &encoded_query);
   sample_visits.insert(
       sample_visits.begin(),
-      GenerateSampleVisit(
-          0, kSampleSearchQuery + " - Google Search",
-          GURL("https://www.google.com/search?q=" +
-               std::string(encoded_query.data(), encoded_query.length())),
-          false));
+      GenerateSampleVisit(0, kSampleSearchQuery + " - Google Search",
+                          GURL("https://www.google.com/search?q=" +
+                               std::string(encoded_query.view())),
+                          false));
 
   return history::Cluster(
       cluster_id, sample_visits, {},

@@ -42,14 +42,12 @@ bool ExpandURITemplateImpl(
 }
 
 absl::optional<std::string> AsciiUrlDecodeImpl(std::string_view input) {
-  std::string input_encoded = std::string(input);
   url::RawCanonOutputW<1024> canon_output;
-  url::DecodeURLEscapeSequences(input_encoded.c_str(), input_encoded.length(),
-                                url::DecodeURLMode::kUTF8, &canon_output);
+  url::DecodeURLEscapeSequences(input, url::DecodeURLMode::kUTF8,
+                                &canon_output);
   std::string output;
   output.reserve(canon_output.length());
-  for (int i = 0; i < canon_output.length(); i++) {
-    const uint16_t c = reinterpret_cast<uint16_t*>(canon_output.data())[i];
+  for (uint16_t c : canon_output.view()) {
     if (c > std::numeric_limits<signed char>::max()) {
       return absl::nullopt;
     }

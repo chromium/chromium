@@ -214,9 +214,7 @@ bool DoIDNHost(const char16_t* src, size_t src_len, CanonOutput* output) {
   }
 
   StackBufferW wide_output;
-  if (!IDNToASCII(url_escaped_host.data(),
-                  url_escaped_host.length(),
-                  &wide_output)) {
+  if (!IDNToASCII(url_escaped_host.view(), &wide_output)) {
     // Some error, give up. This will write some reasonable looking
     // representation of the string to the output.
     AppendInvalidNarrowString(src, 0, src_len, output);
@@ -406,7 +404,7 @@ void DoHost(const CHAR* spec,
     // we just leave it in place.
     if (host_info->IsIPAddress()) {
       output->set_length(output_begin);
-      output->Append(canon_ip.data(), canon_ip.length());
+      output->Append(canon_ip.view());
     }
   } else {
     // Canonicalization failed. Set BROKEN to notify the caller.

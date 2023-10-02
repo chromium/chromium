@@ -216,11 +216,10 @@ base::StringPiece GetDomainAndRegistryAsStringPiece(
 // These two functions append the given string as-is to the given output,
 // converting to UTF-8 if necessary.
 void AppendInvalidString(base::StringPiece str, url::CanonOutput* output) {
-  output->Append(str.data(), str.length());
+  output->Append(str);
 }
 void AppendInvalidString(base::StringPiece16 str, url::CanonOutput* output) {
-  std::string utf8 = base::UTF16ToUTF8(str);
-  output->Append(utf8.data(), utf8.length());
+  output->Append(base::UTF16ToUTF8(str));
 }
 
 // Backend for PermissiveGetHostRegistryLength that handles both UTF-8 and

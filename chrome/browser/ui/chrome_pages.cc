@@ -232,11 +232,9 @@ void ShowSiteSettingsImpl(Browser* browser, Profile* profile, const GURL& url) {
                                 url.SchemeIs(chrome::kIsolatedAppScheme))) {
     std::string origin_string = site_origin.Serialize();
     url::RawCanonOutputT<char> percent_encoded_origin;
-    url::EncodeURIComponent(origin_string.c_str(), origin_string.length(),
-                            &percent_encoded_origin);
-    link_destination = chrome::kChromeUISiteDetailsPrefixURL +
-                       std::string(percent_encoded_origin.data(),
-                                   percent_encoded_origin.length());
+    url::EncodeURIComponent(origin_string, &percent_encoded_origin);
+    link_destination = base::StrCat(
+        {chrome::kChromeUISiteDetailsPrefixURL, percent_encoded_origin.view()});
   }
   NavigateParams params(profile, GURL(link_destination),
                         ui::PAGE_TRANSITION_TYPED);

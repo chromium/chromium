@@ -72,11 +72,10 @@ absl::optional<std::string> ExtractPhoneNumber(
 std::string GetUnescapedURLContent(const GURL& url) {
   std::string content_string(url.GetContent());
   url::RawCanonOutputT<char16_t> unescaped_content;
-  url::DecodeURLEscapeSequences(content_string.data(), content_string.size(),
+  url::DecodeURLEscapeSequences(content_string,
                                 url::DecodeURLMode::kUTF8OrIsomorphic,
                                 &unescaped_content);
-  return base::UTF16ToUTF8(
-      std::u16string(unescaped_content.data(), unescaped_content.length()));
+  return base::UTF16ToUTF8(unescaped_content.view());
 }
 
 }  // namespace

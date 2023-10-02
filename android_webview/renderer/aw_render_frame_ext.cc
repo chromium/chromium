@@ -79,11 +79,10 @@ bool RemovePrefixAndAssignIfMatches(const base::StringPiece& prefix,
 
   if (base::StartsWith(spec, prefix)) {
     url::RawCanonOutputW<1024> output;
-    url::DecodeURLEscapeSequences(
-        spec.data() + prefix.length(), spec.length() - prefix.length(),
-        url::DecodeURLMode::kUTF8OrIsomorphic, &output);
-    *dest =
-        base::UTF16ToUTF8(base::StringPiece16(output.data(), output.length()));
+    url::DecodeURLEscapeSequences(spec.substr(prefix.length()),
+                                  url::DecodeURLMode::kUTF8OrIsomorphic,
+                                  &output);
+    *dest = base::UTF16ToUTF8(output.view());
     return true;
   }
   return false;

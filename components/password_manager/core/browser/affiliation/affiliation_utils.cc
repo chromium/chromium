@@ -103,8 +103,7 @@ bool CanonicalizeHashComponent(const base::StringPiece& input_hash,
       CanonicalizeBase64Padding(&base64_encoded_hash) &&
       ContainsOnlyAlphanumericAnd(base64_encoded_hash,
                                   kBase64NonAlphanumericChars)) {
-    canonical_output->Append(base64_encoded_hash.data(),
-                             base64_encoded_hash.size());
+    canonical_output->Append(base64_encoded_hash);
     canonical_output->push_back('@');
     return true;
   }
@@ -127,7 +126,7 @@ bool CanonicalizePackageNameComponent(
   if (!package_name.empty() &&
       ContainsOnlyAlphanumericAnd(package_name,
                                   kPackageNameNonAlphanumericChars)) {
-    canonical_output->Append(package_name.data(), package_name.size());
+    canonical_output->Append(package_name);
     return true;
   }
   return false;

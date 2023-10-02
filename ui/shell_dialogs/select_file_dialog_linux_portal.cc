@@ -865,11 +865,9 @@ SelectFileDialogLinuxPortal::DialogInfo::ConvertUrisToPaths(
     encoded_path.remove_prefix(strlen(kFileUriPrefix));
 
     url::RawCanonOutputT<char16_t> decoded_path;
-    url::DecodeURLEscapeSequences(encoded_path.data(), encoded_path.size(),
-                                  url::DecodeURLMode::kUTF8OrIsomorphic,
-                                  &decoded_path);
-    paths.emplace_back(base::UTF16ToUTF8(
-        base::StringPiece16(decoded_path.data(), decoded_path.length())));
+    url::DecodeURLEscapeSequences(
+        encoded_path, url::DecodeURLMode::kUTF8OrIsomorphic, &decoded_path);
+    paths.emplace_back(base::UTF16ToUTF8(decoded_path.view()));
   }
 
   return paths;

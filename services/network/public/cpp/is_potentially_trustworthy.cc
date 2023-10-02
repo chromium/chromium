@@ -65,8 +65,7 @@ bool PatternCanMatchIpV4Host(const std::string& hostname_pattern) {
     if (component == "*") {
       wildcards_replaced += "0";
     } else {
-      wildcards_replaced =
-          wildcards_replaced.append(component.begin(), component.end());
+      wildcards_replaced += component;
     }
   }
 

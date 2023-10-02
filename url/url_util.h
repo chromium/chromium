@@ -299,15 +299,14 @@ enum class DecodeURLMode {
 
 // Unescapes the given string using URL escaping rules.
 COMPONENT_EXPORT(URL)
-void DecodeURLEscapeSequences(const char* input,
-                              int length,
+void DecodeURLEscapeSequences(std::string_view input,
                               DecodeURLMode mode,
                               CanonOutputW* output);
 
 // Escapes the given string as defined by the JS method encodeURIComponent. See
 // https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/encodeURIComponent
 COMPONENT_EXPORT(URL)
-void EncodeURIComponent(const char* input, int length, CanonOutput* output);
+void EncodeURIComponent(std::string_view input, CanonOutput* output);
 
 // Returns true if `c` is a character that does not require escaping in
 // encodeURIComponent.

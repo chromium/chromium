@@ -833,19 +833,18 @@ bool ReplaceComponents(const char* spec,
                              charset_converter, output, out_parsed);
 }
 
-void DecodeURLEscapeSequences(const char* input,
-                              int length,
+void DecodeURLEscapeSequences(std::string_view input,
                               DecodeURLMode mode,
                               CanonOutputW* output) {
-  if (length <= 0)
+  if (input.empty()) {
     return;
+  }
 
   STACK_UNINITIALIZED RawCanonOutputT<char> unescaped_chars;
-  size_t length_size_t = static_cast<size_t>(length);
-  for (size_t i = 0; i < length_size_t; i++) {
+  for (size_t i = 0; i < input.length(); i++) {
     if (input[i] == '%') {
       unsigned char ch;
-      if (DecodeEscaped(input, &i, length_size_t, &ch)) {
+      if (DecodeEscaped(input.data(), &i, input.length(), &ch)) {
         unescaped_chars.push_back(ch);
       } else {
         // Invalid escape sequence, copy the percent literal.
@@ -894,13 +893,13 @@ void DecodeURLEscapeSequences(const char* input,
   }
 }
 
-void EncodeURIComponent(const char* input, int length, CanonOutput* output) {
-  for (int i = 0; i < length; ++i) {
-    unsigned char c = static_cast<unsigned char>(input[i]);
-    if (IsComponentChar(c))
+void EncodeURIComponent(std::string_view input, CanonOutput* output) {
+  for (unsigned char c : input) {
+    if (IsComponentChar(c)) {
       output->push_back(c);
-    else
+    } else {
       AppendEscapedChar(c, output);
+    }
   }
 }
 

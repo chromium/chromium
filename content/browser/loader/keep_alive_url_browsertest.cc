@@ -70,8 +70,8 @@ constexpr char kFetchLaterEndpoint[] = "/fetch-later";
 // Encodes the given `url` using the JS method encodeURIComponent.
 std::string EncodeURL(const GURL& url) {
   url::RawCanonOutputT<char> buffer;
-  url::EncodeURIComponent(url.spec().data(), url.spec().size(), &buffer);
-  return std::string(buffer.data(), buffer.length());
+  url::EncodeURIComponent(url.spec(), &buffer);
+  return std::string(buffer.view());
 }
 
 MATCHER(IsFrameHidden,

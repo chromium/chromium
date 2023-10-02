@@ -4,6 +4,7 @@
 
 #include "components/arc/common/intent_helper/link_handler_model.h"
 
+#include <string_view>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -28,25 +29,25 @@ namespace {
 constexpr int kMaxValueLen = 2048;
 
 bool GetQueryValue(const GURL& url,
-                   const std::string& key_to_find,
+                   std::string_view key_to_find,
                    std::u16string* out) {
-  const std::string str(url.query());
+  const std::string_view str = url.query_piece();
 
   url::Component query(0, str.length());
   url::Component key;
   url::Component value;
 
-  while (url::ExtractQueryKeyValue(str.c_str(), &query, &key, &value)) {
+  while (url::ExtractQueryKeyValue(str.data(), &query, &key, &value)) {
     if (value.is_empty())
       continue;
     if (str.substr(key.begin, key.len) == key_to_find) {
       if (value.len >= kMaxValueLen)
         return false;
       url::RawCanonOutputW<kMaxValueLen> output;
-      url::DecodeURLEscapeSequences(str.c_str() + value.begin, value.len,
+      url::DecodeURLEscapeSequences(str.substr(value.begin, value.len),
                                     url::DecodeURLMode::kUTF8OrIsomorphic,
                                     &output);
-      *out = std::u16string(output.data(), output.length());
+      *out = std::u16string(output.view());
       return true;
     }
   }

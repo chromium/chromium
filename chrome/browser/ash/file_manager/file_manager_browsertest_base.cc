@@ -1792,8 +1792,8 @@ class DocumentsProviderTestVolume : public TestVolume {
 
   std::string EncodeURI(const std::string& component) {
     url::RawCanonOutputT<char> encoded;
-    url::EncodeURIComponent(component.c_str(), component.size(), &encoded);
-    return {encoded.data(), static_cast<size_t>(encoded.length())};
+    url::EncodeURIComponent(component, &encoded);
+    return std::string(encoded.view());
   }
 };
 

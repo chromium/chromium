@@ -11,6 +11,7 @@
 #include <ostream>
 
 #include "base/check_op.h"
+#include "base/numerics/safe_conversions.h"
 #include "third_party/icu/source/common/unicode/uidna.h"
 #include "third_party/icu/source/common/unicode/utypes.h"
 #include "url/url_canon_icu.h"
@@ -90,7 +91,7 @@ UIDNA* GetUIDNA() {
 // conversions in our code. In addition, consider using icu::IDNA's UTF-8/ASCII
 // version with StringByteSink. That way, we can avoid C wrappers and additional
 // string conversion.
-bool IDNToASCII(const char16_t* src, int src_len, CanonOutputW* output) {
+bool IDNToASCII(std::u16string_view src, CanonOutputW* output) {
   DCHECK(output->length() == 0);  // Output buffer is assumed empty.
 
   UIDNA* uidna = GetUIDNA();
@@ -98,8 +99,9 @@ bool IDNToASCII(const char16_t* src, int src_len, CanonOutputW* output) {
   while (true) {
     UErrorCode err = U_ZERO_ERROR;
     UIDNAInfo info = UIDNA_INFO_INITIALIZER;
-    int output_length = uidna_nameToASCII(uidna, src, src_len, output->data(),
-                                          output->capacity(), &info, &err);
+    int output_length = uidna_nameToASCII(
+        uidna, src.data(), base::checked_cast<int32_t>(src.size()),
+        output->data(), output->capacity(), &info, &err);
 
     // Ignore various errors for web compatibility. The options are specified
     // by the WHATWG URL Standard. See

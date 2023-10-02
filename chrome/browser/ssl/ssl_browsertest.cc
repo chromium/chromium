@@ -353,8 +353,8 @@ class ChromeContentBrowserClientForMixedContentTest
 
 std::string EncodeQuery(const std::string& query) {
   url::RawCanonOutputT<char> buffer;
-  url::EncodeURIComponent(query.data(), query.size(), &buffer);
-  return std::string(buffer.data(), buffer.length());
+  url::EncodeURIComponent(query, &buffer);
+  return std::string(buffer.view());
 }
 
 // Returns the Sha256 hash of the SPKI of |cert|.

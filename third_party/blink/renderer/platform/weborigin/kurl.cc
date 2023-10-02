@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
 #include <algorithm>
+#include <string_view>
 
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
@@ -112,7 +113,7 @@ class KURLCharsetConverter final : public url::CharsetConverter {
     std::string encoded =
         encoding_->Encode(String(input, static_cast<unsigned>(input_length)),
                           WTF::kURLEncodedEntitiesForUnencodables);
-    output->Append(encoded.c_str(), encoded.length());
+    output->Append(encoded);
   }
 
  private:
@@ -792,8 +793,7 @@ void KURL::SetPath(const String& input) {
 String DecodeURLEscapeSequences(const String& string, DecodeURLMode mode) {
   StringUTF8Adaptor string_utf8(string);
   url::RawCanonOutputT<char16_t> unescaped;
-  url::DecodeURLEscapeSequences(string_utf8.data(), string_utf8.size(), mode,
-                                &unescaped);
+  url::DecodeURLEscapeSequences(string_utf8.AsStringPiece(), mode, &unescaped);
   return StringImpl::Create8BitIfPossible(
       reinterpret_cast<UChar*>(unescaped.data()),
       base::checked_cast<wtf_size_t>(unescaped.length()));
@@ -808,8 +808,7 @@ String EncodeWithURLEscapeSequences(const String& not_encoded_string) {
   if (buffer.capacity() < input_length * 3)
     buffer.Resize(input_length * 3);
 
-  url::EncodeURIComponent(utf8.c_str(), static_cast<wtf_size_t>(input_length),
-                          &buffer);
+  url::EncodeURIComponent(utf8, &buffer);
   String escaped(buffer.data(), static_cast<unsigned>(buffer.length()));
   // Unescape '/'; it's safe and much prettier.
   escaped.Replace("%2F", "/");

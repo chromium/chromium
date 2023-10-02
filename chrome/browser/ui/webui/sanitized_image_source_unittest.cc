@@ -207,13 +207,12 @@ TEST_F(SanitizedImageSourceTest, GooglePhotosImage) {
 
   // Encode a URL so that it can be used as a param value.
   url::RawCanonOutputT<char> encoded_url;
-  url::EncodeURIComponent(kImageUrl, std::size(kImageUrl), &encoded_url);
+  url::EncodeURIComponent(kImageUrl, &encoded_url);
   EXPECT_GT(encoded_url.length(), 0u);
-  base::StringPiece encoded_url_str(encoded_url.data(), encoded_url.length());
 
   // Verify that param-formatted requests can be sent with auth tokens.
   sanitized_image_source_->StartDataRequest(
-      GURL(base::StrCat({chrome::kChromeUIImageURL, "?url=", encoded_url_str,
+      GURL(base::StrCat({chrome::kChromeUIImageURL, "?url=", encoded_url.view(),
                          "&isGooglePhotos=true"})),
       content::WebContents::Getter(), callback.Get());
   ASSERT_EQ(1, test_url_loader_factory_.NumPending());
@@ -228,7 +227,7 @@ TEST_F(SanitizedImageSourceTest, GooglePhotosImage) {
 
   // Verify that param-formatted requests can be sent without auth tokens.
   sanitized_image_source_->StartDataRequest(
-      GURL(base::StrCat({chrome::kChromeUIImageURL, "?url=", encoded_url_str,
+      GURL(base::StrCat({chrome::kChromeUIImageURL, "?url=", encoded_url.view(),
                          "&isGooglePhotos=false"})),
       content::WebContents::Getter(), callback.Get());
   EXPECT_FALSE(identity_test_env.IsAccessTokenRequestPending());
@@ -238,7 +237,8 @@ TEST_F(SanitizedImageSourceTest, GooglePhotosImage) {
           net::HttpRequestHeaders::kAuthorization));
 
   sanitized_image_source_->StartDataRequest(
-      GURL(base::StrCat({chrome::kChromeUIImageURL, "?url=", encoded_url_str})),
+      GURL(base::StrCat(
+          {chrome::kChromeUIImageURL, "?url=", encoded_url.view()})),
       content::WebContents::Getter(), callback.Get());
   EXPECT_FALSE(identity_test_env.IsAccessTokenRequestPending());
 
@@ -249,7 +249,7 @@ TEST_F(SanitizedImageSourceTest, GooglePhotosImage) {
 
   // Verify that no download is attempted when authentication fails.
   sanitized_image_source_->StartDataRequest(
-      GURL(base::StrCat({chrome::kChromeUIImageURL, "?url=", encoded_url_str,
+      GURL(base::StrCat({chrome::kChromeUIImageURL, "?url=", encoded_url.view(),
                          "&isGooglePhotos=true"})),
       content::WebContents::Getter(), callback.Get());
   ASSERT_EQ(4, test_url_loader_factory_.NumPending());
@@ -262,15 +262,12 @@ TEST_F(SanitizedImageSourceTest, GooglePhotosImage) {
   // Verify that no auth token is sent for URLs not served by Google Photos.
   constexpr char kBadImageUrl[] = "https://foo.com/img.png";
   url::RawCanonOutputT<char> encoded_bad_url;
-  url::EncodeURIComponent(kBadImageUrl, std::size(kBadImageUrl),
-                          &encoded_bad_url);
+  url::EncodeURIComponent(kBadImageUrl, &encoded_bad_url);
   EXPECT_GT(encoded_bad_url.length(), 0u);
-  base::StringPiece encoded_bad_url_str(encoded_bad_url.data(),
-                                        encoded_bad_url.length());
 
   sanitized_image_source_->StartDataRequest(
       GURL(base::StrCat({chrome::kChromeUIImageURL, "?url=",
-                         encoded_bad_url_str, "&isGooglePhotos=true"})),
+                         encoded_bad_url.view(), "&isGooglePhotos=true"})),
       content::WebContents::Getter(), callback.Get());
   EXPECT_FALSE(identity_test_env.IsAccessTokenRequestPending());
   ASSERT_EQ(5, test_url_loader_factory_.NumPending());

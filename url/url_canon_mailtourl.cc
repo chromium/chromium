@@ -45,7 +45,7 @@ bool DoCanonicalizeMailtoURL(const URLComponentSource<CHAR>& source,
   // Scheme (known, so we don't bother running it through the more
   // complicated scheme canonicalizer).
   new_parsed->scheme.begin = output->length();
-  output->Append("mailto:", 7);
+  output->Append("mailto:");
   new_parsed->scheme.len = 6;
 
   bool success = true;

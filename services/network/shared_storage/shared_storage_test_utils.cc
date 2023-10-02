@@ -126,10 +126,9 @@ HandleSharedStorageRequestMultiple(
   if (base::StartsWith(path, MakeSharedStorageRedirectPrefix()) &&
       !query.empty()) {
     url::RawCanonOutputT<char16_t> decode_output;
-    url::DecodeURLEscapeSequences(query.c_str(), query.size(),
-                                  url::DecodeURLMode::kUTF8, &decode_output);
-    location = base::UTF16ToUTF8(
-        std::u16string(decode_output.data(), decode_output.length()));
+    url::DecodeURLEscapeSequences(query, url::DecodeURLMode::kUTF8,
+                                  &decode_output);
+    location = base::UTF16ToUTF8(decode_output.view());
   }
   if (write_header.has_value()) {
     return location.has_value()

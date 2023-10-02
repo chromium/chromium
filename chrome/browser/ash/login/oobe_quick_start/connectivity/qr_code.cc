@@ -8,6 +8,7 @@
 
 #include "base/base64.h"
 #include "base/containers/span.h"
+#include "base/strings/strcat.h"
 #include "components/qr_code_generator/qr_code_generator.h"
 #include "url/url_util.h"
 
@@ -50,15 +51,13 @@ std::vector<uint8_t> QRCode::GetQRCodeData() {
   std::string shared_secret_base64;
   base::Base64Encode(shared_secret_str, &shared_secret_base64);
   url::RawCanonOutputT<char> shared_secret_base64_uriencoded;
-  url::EncodeURIComponent(shared_secret_base64.data(),
-                          shared_secret_base64.size(),
+  url::EncodeURIComponent(shared_secret_base64,
                           &shared_secret_base64_uriencoded);
 
-  std::string url = "https://signin.google/qs/" + advertising_id_.ToString() +
-                    "?key=" +
-                    std::string(shared_secret_base64_uriencoded.data(),
-                                shared_secret_base64_uriencoded.length()) +
-                    "&t=" + std::string(kDeviceTypeQueryParamValue);
+  std::string url =
+      base::StrCat({"https://signin.google/qs/", advertising_id_.ToString(),
+                    "?key=", shared_secret_base64_uriencoded.view(),
+                    "&t=", kDeviceTypeQueryParamValue});
 
   return std::vector<uint8_t>(url.begin(), url.end());
 }

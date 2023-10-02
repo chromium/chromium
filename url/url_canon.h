@@ -8,6 +8,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <string_view>
+
 #include "base/component_export.h"
 #include "base/export_template.h"
 #include "base/memory/raw_ptr_exclusion.h"
@@ -57,6 +59,11 @@ class CanonOutputT {
   // write the data, then use set_size() to declare the new length().
   size_t capacity() const { return buffer_len_; }
 
+  // Returns the contents of the buffer as a string_view.
+  std::basic_string_view<T> view() const {
+    return std::basic_string_view<T>(data(), length());
+  }
+
   // Called by the user of this class to get the output. The output will NOT
   // be NULL-terminated. Call length() to get the
   // length.
@@ -101,6 +108,8 @@ class CanonOutputT {
     memcpy(buffer_ + cur_len_, str, str_len * sizeof(T));
     cur_len_ += str_len;
   }
+
+  void Append(std::basic_string_view<T> str) { Append(str.data(), str.size()); }
 
   void ReserveSizeIfNeeded(size_t estimated_size) {
     // Reserve a bit extra to account for escaped chars.
@@ -278,7 +287,7 @@ const char16_t* RemoveURLWhitespace(const char16_t* input,
 //
 // On error, returns false. The output in this case is undefined.
 COMPONENT_EXPORT(URL)
-bool IDNToASCII(const char16_t* src, int src_len, CanonOutputW* output);
+bool IDNToASCII(std::u16string_view src, CanonOutputW* output);
 
 // Piece-by-piece canonicalizers ----------------------------------------------
 //
