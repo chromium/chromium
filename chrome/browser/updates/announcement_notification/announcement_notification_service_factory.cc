@@ -33,10 +33,11 @@ AnnouncementNotificationServiceFactory::GetForProfile(Profile* profile) {
       GetInstance()->GetServiceForBrowserContext(profile, true /* create */));
 }
 
-KeyedService* AnnouncementNotificationServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+AnnouncementNotificationServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   if (context->IsOffTheRecord()) {
-    return new EmptyAnnouncementNotificationService();
+    return std::make_unique<EmptyAnnouncementNotificationService>();
   }
 
   Profile* profile = Profile::FromBrowserContext(context);

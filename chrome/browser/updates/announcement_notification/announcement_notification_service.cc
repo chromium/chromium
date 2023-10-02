@@ -240,13 +240,13 @@ void AnnouncementNotificationService::RegisterProfilePrefs(
 }
 
 // static
-AnnouncementNotificationService* AnnouncementNotificationService::Create(
-    Profile* profile,
-    PrefService* pref_service,
-    std::unique_ptr<Delegate> delegate,
-    base::Clock* clock) {
-  return new AnnouncementNotificationServiceImpl(profile, pref_service,
-                                                 std::move(delegate), clock);
+std::unique_ptr<AnnouncementNotificationService>
+AnnouncementNotificationService::Create(Profile* profile,
+                                        PrefService* pref_service,
+                                        std::unique_ptr<Delegate> delegate,
+                                        base::Clock* clock) {
+  return std::make_unique<AnnouncementNotificationServiceImpl>(
+      profile, pref_service, std::move(delegate), clock);
 }
 
 // static
