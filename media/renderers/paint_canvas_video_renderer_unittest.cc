@@ -1095,7 +1095,7 @@ class PaintCanvasVideoRendererWithGLTest : public testing::Test {
     renderer_.CopyVideoFrameTexturesToGLTexture(
         media_context_.get(), destination_gl, frame, target, texture, GL_RGBA,
         GL_RGBA, GL_UNSIGNED_BYTE, 0, false /* premultiply_alpha */,
-        false /* flip_y */);
+        false /* flip_y */, /*allow_shared_image_for_direct_upload=*/true);
 
     gfx::Size expected_size = frame->visible_rect().size();
 
@@ -1254,7 +1254,7 @@ TEST_F(PaintCanvasVideoRendererWithGLTest, CopyVideoFrameYUVDataToGLTexture) {
   renderer_.CopyVideoFrameYUVDataToGLTexture(
       media_context_.get(), destination_gl, cropped_frame(), target, texture,
       GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, 0, false /* premultiply_alpha */,
-      false /* flip_y */);
+      false /* flip_y */, /*allow_shared_image_for_direct_upload=*/true);
 
   gfx::Size expected_size = cropped_frame()->visible_rect().size();
 
@@ -1286,7 +1286,7 @@ TEST_F(PaintCanvasVideoRendererWithGLTest,
   renderer_.CopyVideoFrameYUVDataToGLTexture(
       media_context_.get(), destination_gl, cropped_frame(), target, texture,
       GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, 0, false /* premultiply_alpha */,
-      true /* flip_y */);
+      true /* flip_y */, /*allow_shared_image_for_direct_upload=*/true);
 
   gfx::Size expected_size = cropped_frame()->visible_rect().size();
 

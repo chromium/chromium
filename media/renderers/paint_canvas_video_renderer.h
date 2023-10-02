@@ -116,6 +116,13 @@ class MEDIA_EXPORT PaintCanvasVideoRenderer {
   // Copy the contents of |video_frame| to |texture| of |destination_gl|.
   //
   // The format of |video_frame| must be VideoFrame::NATIVE_TEXTURE.
+  // `allow_shared_image_for_direct_upload` specifies whether it is possible to
+  // use a temporary SharedImage to perform a GPU-GPU upload from the video
+  // frame's texture(s) to the destination texture. This requires that the
+  // caller keep `texture` alive, and should be set to false in contexts where
+  // that is not the case.
+  // TODO(986480): Remove `allow_shared_image_for_direct_upload` once
+  // VideoDecoderShim no longer calls this function.
   bool CopyVideoFrameTexturesToGLTexture(
       viz::RasterContextProvider* raster_context_provider,
       gpu::gles2::GLES2Interface* destination_gl,
@@ -127,7 +134,8 @@ class MEDIA_EXPORT PaintCanvasVideoRenderer {
       unsigned int type,
       int level,
       bool premultiply_alpha,
-      bool flip_y);
+      bool flip_y,
+      bool allow_shared_image_for_direct_upload);
 
   // Copy the CPU-side YUV contents of |video_frame| to texture |texture| in
   // context |destination_gl|.
@@ -147,7 +155,8 @@ class MEDIA_EXPORT PaintCanvasVideoRenderer {
       unsigned int type,
       int level,
       bool premultiply_alpha,
-      bool flip_y);
+      bool flip_y,
+      bool allow_shared_image_for_direct_upload);
 
   // Calls texImage2D where the texture image data source is the contents of
   // |video_frame|. Texture |texture| needs to be created and bound to |target|
@@ -258,6 +267,17 @@ class MEDIA_EXPORT PaintCanvasVideoRenderer {
   bool PrepareVideoFrame(scoped_refptr<VideoFrame> video_frame,
                          viz::RasterContextProvider* raster_context_provider,
                          const gpu::MailboxHolder& dest_holder);
+
+  bool UploadVideoFrameToGLTextureViaSharedImage(
+      viz::RasterContextProvider* raster_context_provider,
+      gpu::gles2::GLES2Interface* destination_gl,
+      scoped_refptr<VideoFrame> video_frame,
+      unsigned int target,
+      unsigned int texture,
+      unsigned int internal_format,
+      unsigned int format,
+      unsigned int type,
+      bool flip_y);
 
   bool UploadVideoFrameToGLTexture(
       viz::RasterContextProvider* raster_context_provider,
