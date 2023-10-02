@@ -631,6 +631,7 @@ void RulesMonitorService::UpdateDynamicRulesInternal(
   // only up to 1 updateDynamicRules/updateSessionRules call is in progress. See
   // the usage of `ApiCallQueue`.
   RuleCounts shared_rules_limit(GetDynamicAndSessionRuleLimit(),
+                                GetDynamicAndSessionRuleLimit(),
                                 GetRegexRuleLimit());
   RuleCounts session_rules_count =
       GetRuleCounts(extension_id, kSessionRulesetID);
@@ -682,6 +683,7 @@ void RulesMonitorService::UpdateSessionRulesInternal(
     RuleCounts dynamic_rule_count =
         GetRuleCounts(extension_id, kDynamicRulesetID);
     RuleCounts shared_rule_limit(GetDynamicAndSessionRuleLimit(),
+                                 GetDynamicAndSessionRuleLimit(),
                                  GetRegexRuleLimit());
     RuleCounts available_limit = shared_rule_limit - dynamic_rule_count;
     if (new_rules.size() > available_limit.rule_count) {
@@ -871,7 +873,7 @@ void RulesMonitorService::OnInitialRulesetsLoadedFromDisk(
   RuleCounts static_rule_limit(
       global_rules_tracker_.GetAvailableAllocation(load_data.extension_id) +
           GetStaticGuaranteedMinimumRuleCount(),
-      GetRegexRuleLimit());
+      /*unsafe_rule_count=*/absl::nullopt, GetRegexRuleLimit());
 
   for (RulesetInfo& ruleset : load_data.rulesets) {
     if (!ruleset.did_load_successfully()) {

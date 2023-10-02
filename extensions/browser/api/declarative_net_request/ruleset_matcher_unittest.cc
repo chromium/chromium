@@ -1110,12 +1110,23 @@ TEST_F(RulesetMatcherTest, RegexSubstitution) {
 TEST_F(RulesetMatcherTest, RulesCount) {
   size_t kNumNonRegexRules = 20;
   size_t kNumRegexRules = 10;
+
+  // Rules that are not block or allow rules are considered unsafe for dynamic
+  // rulesets. Make some of the rules these types as well.
+  size_t kNumUnsafeNonRegexRules = 5;
+  size_t kNumUnsafeRegexRules = 3;
+
   std::vector<TestRule> rules;
   int id = kMinValidID;
   for (size_t i = 0; i < kNumNonRegexRules; ++i, ++id) {
     TestRule rule = CreateGenericRule();
     rule.id = id;
     rule.condition->url_filter = std::to_string(id);
+    if (i < kNumUnsafeNonRegexRules) {
+      rule.action->type = "redirect";
+      rule.action->redirect.emplace();
+      rule.action->redirect->url = "http://google.com";
+    }
     rules.push_back(rule);
   }
 
@@ -1124,6 +1135,11 @@ TEST_F(RulesetMatcherTest, RulesCount) {
     rule.id = id;
     rule.condition->url_filter.reset();
     rule.condition->regex_filter = std::to_string(id);
+    if (i < kNumUnsafeRegexRules) {
+      rule.action->type = std::string("modifyHeaders");
+      rule.action->response_headers = std::vector<TestHeaderInfo>(
+          {TestHeaderInfo("HEADER3", "append", "VALUE3")});
+    }
     rules.push_back(rule);
   }
 
@@ -1131,6 +1147,18 @@ TEST_F(RulesetMatcherTest, RulesCount) {
   ASSERT_TRUE(CreateVerifiedMatcher(rules, CreateTemporarySource(), &matcher));
   ASSERT_TRUE(matcher);
   EXPECT_EQ(kNumRegexRules + kNumNonRegexRules, matcher->GetRulesCount());
+  // For static rulesets, no rules are considered unsafe.
+  EXPECT_EQ(absl::nullopt, matcher->GetUnsafeRulesCount());
+  EXPECT_EQ(kNumRegexRules, matcher->GetRegexRulesCount());
+
+  // Recreate `matcher` for a dynamic ruleset to test that unsafe rule count is
+  // calculated correctly.
+  ASSERT_TRUE(CreateVerifiedMatcher(
+      rules, CreateTemporarySource(kDynamicRulesetID), &matcher));
+  ASSERT_TRUE(matcher);
+  EXPECT_EQ(kNumRegexRules + kNumNonRegexRules, matcher->GetRulesCount());
+  EXPECT_EQ(kNumUnsafeNonRegexRules + kNumUnsafeRegexRules,
+            matcher->GetUnsafeRulesCount());
   EXPECT_EQ(kNumRegexRules, matcher->GetRegexRulesCount());
 
   // Also verify the rules count for an empty matcher.
@@ -1138,6 +1166,7 @@ TEST_F(RulesetMatcherTest, RulesCount) {
       CreateVerifiedMatcher({} /* rules */, CreateTemporarySource(), &matcher));
   ASSERT_TRUE(matcher);
   EXPECT_EQ(0u, matcher->GetRulesCount());
+  EXPECT_EQ(absl::nullopt, matcher->GetUnsafeRulesCount());
   EXPECT_EQ(0u, matcher->GetRegexRulesCount());
 }
 

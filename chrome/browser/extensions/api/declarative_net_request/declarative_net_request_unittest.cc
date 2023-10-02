@@ -1518,7 +1518,8 @@ TEST_P(SingleRulesetTest, SharedDynamicAndSessionRuleLimits) {
 
   const RulesMonitorService* service =
       RulesMonitorService::Get(browser_context());
-  RuleCounts expected_count(100 /* rule_count */, 0 /* regex_rule_count */);
+  RuleCounts expected_count(/*rule_count=*/100, /*unsafe_rule_count=*/0,
+                            /*regex_rule_count=*/0);
   EXPECT_EQ(expected_count,
             service->GetRuleCounts(extension()->id(), kDynamicRulesetID));
   EXPECT_EQ(expected_count,
@@ -1549,18 +1550,19 @@ TEST_P(SingleRulesetTest, SharedDynamicAndSessionRegexRuleLimits) {
     session_rules.push_back(CreateGenericRule(rule_id++));
 
   ASSERT_NO_FATAL_FAILURE(
-      RunUpdateRulesFunction(*extension(), {} /* rule_ids_to_remove */,
+      RunUpdateRulesFunction(*extension(), /*rule_ids_to_remove=*/{},
                              session_rules, RulesetScope::kSession));
 
   // Add the same number of dynamic rules, it should succeed as well.
   std::vector<TestRule> dynamic_rules = session_rules;
   ASSERT_NO_FATAL_FAILURE(
-      RunUpdateRulesFunction(*extension(), {} /*   rule_ids_to_remove */,
+      RunUpdateRulesFunction(*extension(), /*rule_ids_to_remove=*/{},
                              dynamic_rules, RulesetScope::kDynamic));
 
   const RulesMonitorService* service =
       RulesMonitorService::Get(browser_context());
-  RuleCounts expected_count(60 /* rule_count */, 50 /* regex_rule_count */);
+  RuleCounts expected_count(/*rule_count=*/60, /*unsafe_rule_count=*/0,
+                            /*regex_rule_count=*/50);
   EXPECT_EQ(expected_count,
             service->GetRuleCounts(extension()->id(), kDynamicRulesetID));
   EXPECT_EQ(expected_count,
@@ -1569,20 +1571,20 @@ TEST_P(SingleRulesetTest, SharedDynamicAndSessionRegexRuleLimits) {
   // Adding more regex based dynamic or session rules should fail.
   std::string expected_error = kDynamicRegexRuleCountExceeded;
   ASSERT_NO_FATAL_FAILURE(RunUpdateRulesFunction(
-      *extension(), {} /*   rule_ids_to_remove */, {CreateRegexRule(rule_id++)},
+      *extension(), /*rule_ids_to_remove=*/{}, {CreateRegexRule(rule_id++)},
       RulesetScope::kDynamic, &expected_error));
   expected_error = kSessionRegexRuleCountExceeded;
   ASSERT_NO_FATAL_FAILURE(RunUpdateRulesFunction(
-      *extension(), {} /*   rule_ids_to_remove */, {CreateRegexRule(rule_id++)},
+      *extension(), /*rule_ids_to_remove=*/{}, {CreateRegexRule(rule_id++)},
       RulesetScope::kSession, &expected_error));
 
   // Adding non-regex dynamic or session rules should still succeed.
   ASSERT_NO_FATAL_FAILURE(RunUpdateRulesFunction(
-      *extension(), {} /*   rule_ids_to_remove */,
-      {CreateGenericRule(rule_id++)}, RulesetScope::kDynamic));
+      *extension(), /*rule_ids_to_remove=*/{}, {CreateGenericRule(rule_id++)},
+      RulesetScope::kDynamic));
   ASSERT_NO_FATAL_FAILURE(RunUpdateRulesFunction(
-      *extension(), {} /*   rule_ids_to_remove */,
-      {CreateGenericRule(rule_id++)}, RulesetScope::kSession));
+      *extension(), /*rule_ids_to_remove=*/{}, {CreateGenericRule(rule_id++)},
+      RulesetScope::kSession));
 
   expected_count.rule_count++;
   EXPECT_EQ(expected_count,

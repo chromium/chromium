@@ -352,6 +352,9 @@ std::ostream& operator<<(std::ostream& output, LoadRulesetResult result) {
 std::ostream& operator<<(std::ostream& output, const RuleCounts& count) {
   output << "\nRuleCounts\n";
   output << "|rule_count| " << count.rule_count << "\n";
+  if (count.unsafe_rule_count.has_value()) {
+    output << "|unsafe_rule_count| " << *(count.unsafe_rule_count) << "\n";
+  }
   output << "|regex_rule_count| " << count.regex_rule_count << "\n";
   return output;
 }

@@ -7,28 +7,42 @@
 
 #include <cstddef>
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
 namespace extensions::declarative_net_request {
 
 // Represents the pair of total rule count and regex rule count for a ruleset.
 struct RuleCounts {
   RuleCounts();
-  RuleCounts(size_t rule_count, size_t regex_rule_count);
+  RuleCounts(size_t rule_count,
+             absl::optional<size_t> unsafe_rule_count,
+             size_t regex_rule_count);
 
   RuleCounts& operator+=(const RuleCounts& that);
 
-  // This CHECKs that counts in |that| are smaller than or equal to the one in
-  // |this|.
+  // This CHECKs that counts in `that` are smaller than or equal to the one in
+  // `this`.
+  // TODO(crbug.com/1485747): Only regex rules will share a counter between the
+  // dynamic and session rulesets, so this can be removed.
   RuleCounts& operator-=(const RuleCounts& that);
 
+  // Tracks the total rule count of a ruleset.
   size_t rule_count = 0;
+  // Tracks the "unsafe" rule count of a ruleset (see `ComputeUnsafeRuleCount`
+  // inside ruleset_matcher.cc for what constitutes an "unsafe" rule). This is
+  // only counted for dynamic or session rulesets and is null for static
+  // rulesets.
+  absl::optional<size_t> unsafe_rule_count = absl::nullopt;
+  // Tracks the total regex rule count of a ruleset.
   size_t regex_rule_count = 0;
-  // TODO(crbug.com/1485747): Add an unsafe_rule_count here.
 };
 
 RuleCounts operator+(const RuleCounts& lhs, const RuleCounts& rhs);
 
-// This CHECKs that counts in |rhs| are smaller than or equal to the one in
-// |lhs|.
+// This CHECKs that counts in `rhs` are smaller than or equal to the one in
+// `lhs`.
+// TODO(crbug.com/1485747): Only regex rules will share a counter between the
+// dynamic and session rulesets, so this can be removed.
 RuleCounts operator-(const RuleCounts& lhs, const RuleCounts& rhs);
 
 bool operator==(const RuleCounts& lhs, const RuleCounts& rhs);

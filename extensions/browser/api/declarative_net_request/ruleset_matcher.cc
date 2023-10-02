@@ -13,12 +13,39 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "extensions/browser/api/declarative_net_request/constants.h"
+#include "extensions/browser/api/declarative_net_request/flat/extension_ruleset_generated.h"
 #include "extensions/browser/api/declarative_net_request/request_action.h"
 #include "extensions/browser/api/declarative_net_request/rule_counts.h"
 #include "extensions/browser/api/declarative_net_request/utils.h"
+#include "extensions/common/api/declarative_net_request/constants.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace extensions {
-namespace declarative_net_request {
+namespace extensions::declarative_net_request {
+
+namespace {
+
+using ExtensionMetadataList =
+    flatbuffers::Vector<flatbuffers::Offset<flat::UrlRuleMetadata>>;
+
+size_t ComputeUnsafeRuleCount(const ExtensionMetadataList* metadata_list) {
+  size_t unsafe_rule_count = 0;
+  for (const auto* url_rule_metadata : *metadata_list) {
+    flat::ActionType rule_action_type = url_rule_metadata->action();
+    if (rule_action_type != flat::ActionType_block &&
+        rule_action_type != flat::ActionType_allow &&
+        rule_action_type != flat::ActionType_allow_all_requests &&
+        rule_action_type != flat::ActionType_upgrade_scheme) {
+      unsafe_rule_count++;
+    }
+  }
+  return unsafe_rule_count;
+}
+
+bool IsRulesetStatic(const RulesetID& id) {
+  return id != kDynamicRulesetID && id != kSessionRulesetID;
+}
+
+}  // namespace
 
 RulesetMatcher::RulesetMatcher(std::string ruleset_data,
                                RulesetID id,
@@ -33,7 +60,11 @@ RulesetMatcher::RulesetMatcher(std::string ruleset_data,
       regex_matcher_(extension_id,
                      id,
                      root_->regex_rules(),
-                     root_->extension_metadata()) {}
+                     root_->extension_metadata()) {
+  if (!IsRulesetStatic(id)) {
+    unsafe_rule_count_ = ComputeUnsafeRuleCount(root_->extension_metadata());
+  }
+}
 
 RulesetMatcher::~RulesetMatcher() = default;
 
@@ -159,12 +190,16 @@ size_t RulesetMatcher::GetRulesCount() const {
          regex_matcher_.GetRulesCount();
 }
 
+absl::optional<size_t> RulesetMatcher::GetUnsafeRulesCount() const {
+  return unsafe_rule_count_;
+}
+
 size_t RulesetMatcher::GetRegexRulesCount() const {
   return regex_matcher_.GetRulesCount();
 }
 
 RuleCounts RulesetMatcher::GetRuleCounts() const {
-  return RuleCounts(GetRulesCount(), GetRegexRulesCount());
+  return RuleCounts(GetRulesCount(), unsafe_rule_count_, GetRegexRulesCount());
 }
 
 void RulesetMatcher::OnRenderFrameCreated(content::RenderFrameHost* host) {
@@ -200,5 +235,4 @@ const base::flat_set<int>& RulesetMatcher::GetDisabledRuleIdsForTesting()
   return url_pattern_index_matcher_.GetDisabledRuleIdsForTesting();
 }
 
-}  // namespace declarative_net_request
-}  // namespace extensions
+}  // namespace extensions::declarative_net_request
