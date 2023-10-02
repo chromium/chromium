@@ -2073,6 +2073,20 @@ bool AccessibilityTreeContainsNodeWithName(BrowserAccessibility* node,
   return false;
 }
 
+bool AccessibilityTreeContainsNodeWithName(WebContents* web_contents,
+                                           base::StringPiece name) {
+  WebContentsImpl* web_contents_impl =
+      static_cast<WebContentsImpl*>(web_contents);
+  RenderFrameHostImpl* main_frame = static_cast<RenderFrameHostImpl*>(
+      web_contents_impl->GetPrimaryMainFrame());
+  BrowserAccessibilityManager* main_frame_manager =
+      main_frame->browser_accessibility_manager();
+
+  return !main_frame_manager ||
+         AccessibilityTreeContainsNodeWithName(
+             main_frame_manager->GetBrowserAccessibilityRoot(), name);
+}
+
 void WaitForAccessibilityTreeToChange(WebContents* web_contents) {
   AccessibilityNotificationWaiter accessibility_waiter(
       web_contents, ui::AXMode(), ax::mojom::Event::kNone);

@@ -1013,6 +1013,11 @@ void WaitForAccessibilityFocusChange();
 // Retrieve information about the node that's focused in the accessibility tree.
 ui::AXNodeData GetFocusedAccessibilityNodeInfo(WebContents* web_contents);
 
+// Check if the accessibility tree associated with a given `web_contents`
+// contains a node with the given name.
+bool AccessibilityTreeContainsNodeWithName(WebContents* web_contents,
+                                           base::StringPiece name);
+
 // This is intended to be a robust way to assert that the accessibility
 // tree eventually gets into the correct state, without worrying about
 // the exact ordering of events received while getting there. Blocks
