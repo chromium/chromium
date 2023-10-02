@@ -1411,7 +1411,13 @@ TEST_F(IntegrationTest, MAYBE_InstallLowerVersion) {
 #endif
 #endif
 
-TEST_F(IntegrationTest, UpdateServiceStress) {
+// TODO(crbug.com/1488344): Re-enable this test.
+#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
+#define MAYBE_UpdateServiceStress DISABLED_UpdateServiceStress
+#else
+#define MAYBE_UpdateServiceStress UpdateServiceStress
+#endif  // BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
+TEST_F(IntegrationTest, MAYBE_UpdateServiceStress) {
   ASSERT_NO_FATAL_FAILURE(Install());
   ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
   ASSERT_NO_FATAL_FAILURE(StressUpdateService());
