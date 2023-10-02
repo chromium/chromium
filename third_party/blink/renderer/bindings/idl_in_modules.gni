@@ -1000,7 +1000,6 @@ static_idl_files_in_modules = [
   "//third_party/blink/renderer/modules/webgl/webgl_uniform_location.idl",
   "//third_party/blink/renderer/modules/webgl/webgl_vertex_array_object.idl",
   "//third_party/blink/renderer/modules/webgl/webgl_vertex_array_object_oes.idl",
-  "//third_party/blink/renderer/modules/webgl/webgl_video_texture.idl",
   "//third_party/blink/renderer/modules/webgpu/gpu.idl",
   "//third_party/blink/renderer/modules/webgpu/gpu_adapter.idl",
   "//third_party/blink/renderer/modules/webgpu/gpu_adapter_info.idl",

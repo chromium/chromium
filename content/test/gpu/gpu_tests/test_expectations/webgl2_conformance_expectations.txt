@@ -131,7 +131,6 @@
 [ android qualcomm ] WebglExtension_EXT_texture_compression_bptc [ Skip ]
 [ android qualcomm ] WebglExtension_EXT_texture_compression_rgtc [ Skip ]
 [ desktop no-passthrough ] WebglExtension_EXT_color_buffer_half_float [ Skip ]
-crbug.com/776222 [ android ] WebglExtension_WEBGL_video_texture [ Skip ]
 crbug.com/1058744 [ no-passthrough ] WebglExtension_OES_draw_buffers_indexed [ Skip ]
 
 # Extensions unavailable on Android.

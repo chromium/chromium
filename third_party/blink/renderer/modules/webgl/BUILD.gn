@@ -183,9 +183,6 @@ blink_modules_sources("webgl") {
     "webgl_vertex_array_object_base.h",
     "webgl_vertex_array_object_oes.cc",
     "webgl_vertex_array_object_oes.h",
-    "webgl_video_texture.cc",
-    "webgl_video_texture.h",
-    "webgl_video_texture_enum.h",
   ]
 
   # The modules/webgl/ directly is a larger module, and

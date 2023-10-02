@@ -129,14 +129,6 @@ class MEDIA_EXPORT PaintCanvasVideoRenderer {
       bool premultiply_alpha,
       bool flip_y);
 
-  // TODO(776222): Remove this function from PaintCanvasVideoRenderer.
-  static bool PrepareVideoFrameForWebGL(
-      viz::RasterContextProvider* raster_context_provider,
-      gpu::gles2::GLES2Interface* gl,
-      scoped_refptr<VideoFrame> video_frame,
-      unsigned int target,
-      unsigned int texture);
-
   // Copy the CPU-side YUV contents of |video_frame| to texture |texture| in
   // context |destination_gl|.
   // |level|, |internal_format|, |type| specify target texture |texture|.
