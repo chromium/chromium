@@ -387,6 +387,9 @@
 <translation id="1372618949173323717">停用 JavaScript</translation>
 <translation id="1376119291123231789">启用高级电池充电模式</translation>
 <translation id="1376765488559847650">云端上传</translation>
+<translation id="1379689277107868399">如果此政策设为 DoNotPrompt 或未设置，<ph name="PRODUCT_NAME" /> 不会自动提示用户重新向浏览器验证身份。
+
+如果此政策设为 PromptInTab，当用户的身份验证到期时，系统会立即在新标签页中打开 Google 登录页面。这种情况仅发生于使用 <ph name="CHROME_SYNC_NAME" />时。</translation>
 <translation id="1384459581748403878">参考页面：<ph name="REFERENCE_URL" /></translation>
 <translation id="1384594066274112751">此政策旨在确保与其指定（使用 <ph name="URL_BLOCKLIST_POLICY_NAME" /> 过滤器格式）的一个或多个格式匹配的任何网址都绝不会被浏览器舍弃。
       这适用于内存压力和高效率模式舍弃。
@@ -3478,6 +3481,7 @@
 <translation id="3977304360459208438">在传输层安全协议 (TLS) 中使用 3DES 加密套件的默认设置</translation>
 <translation id="3979738908158213640">有权在 SAML 身份验证过程中执行设备认证的网址</translation>
 <translation id="3982322576186033243">禁止在 TLS 握手时使用不安全哈希</translation>
+<translation id="3982465141749620677">在标签页中提示重新验证身份</translation>
 <translation id="3983162212222338509">系统 DNS 解析可能在网络进程中运行，也可能在网络进程外运行，或部分在网络进程中、部分在网络进程外运行，具体取决于系统配置和功能标志。</translation>
 <translation id="3986700049001404598">允许用户通过 Chrome 任务管理器终止进程</translation>
 <translation id="398884292557092447">如果此政策设为 True 或未设置，则用户可以控制界面中的信用卡信息自动填充建议。
@@ -6341,6 +6345,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
       如果您未设置此政策，用户便可自行选择代理设置。
 
       注意：如需查看详细示例，请访问 Chromium 项目 ( https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett )。</translation>
+<translation id="6559643481486165125">不提示重新验证身份</translation>
 <translation id="656130159911161669">ChromeOS 更新会忽略自助服务终端应用清单中定义的版本</translation>
 <translation id="6561396069801924653">在系统任务栏菜单中显示无障碍选项</translation>
 <translation id="6562889469672829421">系统应在设备闲置多久（以毫秒为单位）后调暗屏幕</translation>
@@ -8889,6 +8894,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="8744844164152340112">控制用于在 OOBE 期间和会话期间呈现界面的主题（深色/浅色/自动）。
       自动模式会于日出和日落时自动在深色主题和浅色主题之间切换。
       最好使用此政策，以便用户能在系统设置中更改主题。</translation>
+<translation id="8744997936011793680">提示用户重新向个人资料验证身份</translation>
 <translation id="8749536858950505376">将此政策设为 True 会使大号光标保持开启状态。将此政策设为 False 会使大号光标会保持关闭状态。
 
       如果您设置了此政策，用户便无法更改该功能的状态。如果您未设置此政策，大号光标最初会处于关闭状态，但用户可随时开启它。</translation>

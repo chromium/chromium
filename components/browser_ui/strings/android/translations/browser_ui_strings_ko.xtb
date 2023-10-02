@@ -55,6 +55,7 @@
 <translation id="2030769033451695672">탭하여 <ph name="URL_OF_THE_CURRENT_TAB" />(으)로 돌아가기</translation>
 <translation id="2079545284768500474">실행취소</translation>
 <translation id="2091887806945687916">소리</translation>
+<translation id="2096716221239095980">모든 데이터 삭제</translation>
 <translation id="2117655453726830283">다음 슬라이드</translation>
 <translation id="2148716181193084225">오늘</translation>
 <translation id="216989819110952009">도로시와 친구들은 녹색 안경으로 눈을 보호했지만, 처음에는 멋진 도시의 광채에 눈이 부셨습니다.</translation>
@@ -115,7 +116,6 @@
 <translation id="2913331724188855103">사이트에서 쿠키 데이터를 저장하고 읽도록 허용(권장)</translation>
 <translation id="2932883381142163287">악용사례 신고</translation>
 <translation id="2968755619301702150">인증서 뷰어</translation>
-<translation id="300526633675317032">웹사이트 저장공간 <ph name="SIZE_IN_KB" />가 모두 삭제됩니다.</translation>
 <translation id="3008272652534848354">권한 재설정</translation>
 <translation id="301521992641321250">자동으로 차단됨</translation>
 <translation id="3069226013421428034">특정 사이트에 대해 서드 파티 로그인을 허용합니다.</translation>
@@ -192,7 +192,6 @@
 <translation id="4278390842282768270">허용됨</translation>
 <translation id="429312253194641664">사이트에서 미디어 재생 중</translation>
 <translation id="42981349822642051">펼치기</translation>
-<translation id="4336434711095810371">모든 데이터 삭제</translation>
 <translation id="4338831206024587507"><ph name="DOMAIN" />의 모든 사이트</translation>
 <translation id="4402755511846832236">사용자가 현재 기기를 사용 중인지 사이트에서 알 수 없도록 차단합니다.</translation>
 <translation id="4412992751769744546">서드 파티 쿠키 허용</translation>
@@ -283,6 +282,7 @@
 <translation id="5922853908706496913">화면 공유</translation>
 <translation id="5922967540311291836">서드 파티 쿠키 차단:</translation>
 <translation id="5939518447894949180">초기화</translation>
+<translation id="5964247741333118902">삽입한 콘텐츠</translation>
 <translation id="5968921426641056619">웹 주소 입력</translation>
 <translation id="5975083100439434680">축소</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
@@ -351,6 +351,7 @@
 <translation id="7180611975245234373">새로고침</translation>
 <translation id="7188508872042490670">기기 내 사이트 데이터</translation>
 <translation id="7203150201908454328">펼쳐짐</translation>
+<translation id="7219254577985949841">사이트 데이터를 삭제하시겠습니까?</translation>
 <translation id="723171743924126238">이미지 선택</translation>
 <translation id="7243308994586599757">화면 하단에서 옵션 선택 가능</translation>
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" />개 선택됨</translation>

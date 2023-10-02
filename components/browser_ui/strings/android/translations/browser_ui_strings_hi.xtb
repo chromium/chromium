@@ -55,6 +55,7 @@
 <translation id="2030769033451695672"><ph name="URL_OF_THE_CURRENT_TAB" /> पर वापस जाने के लिए टैप करें</translation>
 <translation id="2079545284768500474">पहले जैसा करें</translation>
 <translation id="2091887806945687916">आवाज़</translation>
+<translation id="2096716221239095980">सारा डेटा मिटाएं</translation>
 <translation id="2117655453726830283">अगली स्लाइड</translation>
 <translation id="2148716181193084225">आज</translation>
 <translation id="216989819110952009">यहां तक कि आंखों के बचाव के लिए हरे रंग का चश्मा पहनने के बावजूद, डोरोथी और उनके दोस्त शुरुआत में इस शानदार शहर को देखने पर हैरान थे.</translation>
@@ -115,7 +116,6 @@
 <translation id="2913331724188855103">साइटों को कुकी डेटा सेव करने और पढ़ने की अनुमति दें (सुझाए गए)</translation>
 <translation id="2932883381142163287">बुरे बर्ताव की शिकायत करें</translation>
 <translation id="2968755619301702150">प्रमाणपत्र व्यूअर</translation>
-<translation id="300526633675317032">इससे वेबसाइट की पूरी <ph name="SIZE_IN_KB" /> मेमोरी साफ़ हो जाएगी.</translation>
 <translation id="3008272652534848354">अनुमतियां रीसेट करें</translation>
 <translation id="301521992641321250">ऑटोमैटिक रूप से ब्लॉक है</translation>
 <translation id="3069226013421428034">किसी साइट पर, तीसरे पक्ष के खाते से साइन इन करने की अनुमति दें.</translation>
@@ -192,7 +192,6 @@
 <translation id="4278390842282768270">अनुमति है</translation>
 <translation id="429312253194641664">किसी साइट पर मीडिया चल रहा है</translation>
 <translation id="42981349822642051">विस्तृत करें</translation>
-<translation id="4336434711095810371">सारा डेटा मिटाएं</translation>
 <translation id="4338831206024587507"><ph name="DOMAIN" /> की सभी साइटें</translation>
 <translation id="4402755511846832236">साइटों को यह जानने से रोकें कि आप इस डिवाइस का इस्तेमाल कब करते हैं</translation>
 <translation id="4412992751769744546">तृतीय-पक्ष कुकी को अनुमति दें</translation>
@@ -283,6 +282,7 @@
 <translation id="5922853908706496913">आपकी स्क्रीन शेयर की जा रही है</translation>
 <translation id="5922967540311291836">तीसरे पक्ष की कुकी ब्लॉक करें:</translation>
 <translation id="5939518447894949180">रीसेट करें</translation>
+<translation id="5964247741333118902">एम्बेड किया गया कॉन्टेंट</translation>
 <translation id="5968921426641056619">वेब पता डालें</translation>
 <translation id="5975083100439434680">ज़ूम आउट</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
@@ -351,6 +351,7 @@
 <translation id="7180611975245234373">रीफ्रेश करें</translation>
 <translation id="7188508872042490670">उपयोगकर्ता के डिवाइस पर साइट डेटा</translation>
 <translation id="7203150201908454328">विस्तृत</translation>
+<translation id="7219254577985949841">क्या आपको साइट डेटा मिटाना है?</translation>
 <translation id="723171743924126238">फ़ोटो चुनें</translation>
 <translation id="7243308994586599757">विकल्‍प स्‍क्रीन के नीचे उपलब्‍ध हैं</translation>
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> चुने गए</translation>

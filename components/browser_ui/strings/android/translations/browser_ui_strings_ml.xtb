@@ -55,6 +55,7 @@
 <translation id="2030769033451695672"><ph name="URL_OF_THE_CURRENT_TAB" /> എന്നതിലേക്ക് മടങ്ങാൻ ടാപ്പ് ചെയ്യുക</translation>
 <translation id="2079545284768500474">പഴയപടിയാക്കുക</translation>
 <translation id="2091887806945687916">ശബ്‌ദം</translation>
+<translation id="2096716221239095980">എല്ലാ ഡാറ്റയും ഇല്ലാതാക്കുക</translation>
 <translation id="2117655453726830283">അടുത്ത സ്ലൈഡ്</translation>
 <translation id="2148716181193084225">ഇന്ന്</translation>
 <translation id="216989819110952009">ഡോറോത്തിയും അവളുടെ സുഹൃത്തുക്കളും ധരിച്ചിരുന്ന പച്ചക്കണ്ണടകൾക്ക് പോലും ആ കാഴ്‌ചയുടെ തീക്ഷ്‌ണതയെ പ്രതിരോധിക്കാൻ കഴിഞ്ഞില്ല</translation>
@@ -115,7 +116,6 @@
 <translation id="2913331724188855103">കുക്കി ഡാറ്റ സംരക്ഷിക്കുന്നതിനും വായിക്കുന്നതിനും സൈറ്റുകളെ അനുവദിക്കുക (ശുപാർശചെയ്‌തത്)</translation>
 <translation id="2932883381142163287">ദുരുപയോഗം റിപ്പോര്‍ട്ട് ചെയ്യുക</translation>
 <translation id="2968755619301702150">സർട്ടിഫിക്കറ്റ് വ്യൂവർ</translation>
-<translation id="300526633675317032">ഇത് വെബ്‌സൈറ്റ് സ്‌റ്റോറേജിലെ <ph name="SIZE_IN_KB" /> പൂർണ്ണമായും മായ്‌ക്കും.</translation>
 <translation id="3008272652534848354">അനുമതികൾ പുനഃസജ്ജീകരിക്കുക</translation>
 <translation id="301521992641321250">സ്വയമേവ ബ്ലോക്കുചെയ്‌തു</translation>
 <translation id="3069226013421428034">നിർദ്ദിഷ്ട സൈറ്റിനായി മൂന്നാം കക്ഷി സൈൻ ഇൻ അനുവദിക്കുക.</translation>
@@ -192,7 +192,6 @@
 <translation id="4278390842282768270">അനുവദനീയം</translation>
 <translation id="429312253194641664">സൈറ്റ്, മീഡിയ പ്ലേ ചെയ്യുന്നു</translation>
 <translation id="42981349822642051">വികസിപ്പിക്കുക</translation>
-<translation id="4336434711095810371">എല്ലാ ഡാറ്റയും മായ്ക്കുക</translation>
 <translation id="4338831206024587507"><ph name="DOMAIN" /> എന്നതിന് കീഴിലുള്ള എല്ലാ സൈറ്റുകളും</translation>
 <translation id="4402755511846832236">നിങ്ങൾ ഈ ഉപകരണം സജീവമായി ഉപയോഗിക്കുന്നത് അറിയുന്നതിൽ നിന്ന് സൈറ്റുകളെ ബ്ലോക്ക് ചെയ്യുന്നു</translation>
 <translation id="4412992751769744546">മൂന്നാം കക്ഷി കുക്കികളെ അനുവദിക്കുക</translation>
@@ -283,6 +282,7 @@
 <translation id="5922853908706496913">നിങ്ങളുടെ സ്‌ക്രീൻ പങ്കിടുന്നു</translation>
 <translation id="5922967540311291836">മൂന്നാം-കക്ഷി കുക്കികള്‍ ബ്ലോക്ക് ചെയ്യുക:</translation>
 <translation id="5939518447894949180">റീസെറ്റ് ചെയ്യുക</translation>
+<translation id="5964247741333118902">ഉൾച്ചേർത്ത ഉള്ളടക്കം</translation>
 <translation id="5968921426641056619">വെബ് വിലാസം നൽകുക</translation>
 <translation id="5975083100439434680">സൂം ഔട്ട് ചെയ്യുക</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
@@ -351,6 +351,7 @@
 <translation id="7180611975245234373">റീഫ്രഷ് ചെയ്യുക</translation>
 <translation id="7188508872042490670">ഉപകരണത്തിലുള്ള സൈറ്റ് ഡാറ്റ</translation>
 <translation id="7203150201908454328">വിപുലീകരിച്ചത്</translation>
+<translation id="7219254577985949841">സൈറ്റ് ഡാറ്റ ഇല്ലാതാക്കണോ?</translation>
 <translation id="723171743924126238">ചിത്രങ്ങൾ തിരഞ്ഞെടുക്കുക</translation>
 <translation id="7243308994586599757">സ്‌ക്രീനിന്റെ ചുവടെ ഓപ്‌ഷനുകൾ ലഭ്യമാണ്</translation>
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> എണ്ണം തിരഞ്ഞെടുത്തു</translation>

@@ -294,7 +294,6 @@ Berdasarkan interaksi Anda dengan situs, seperti login ke akun secara rutin, sit
 Private state token meningkatkan privasi di web dan tidak dapat digunakan untuk menemukan identitas Anda.</translation>
 <translation id="2581165646603367611">Tindakan ini akan mengosongkan cache dan menghapus cookie, serta data lain dari situs yang dianggap tidak penting oleh Chrome.</translation>
 <translation id="2587052924345400782">Versi baru telah tersedia</translation>
-<translation id="2589302627584222634">Buat kunci profil</translation>
 <translation id="2593272815202181319">Monospace</translation>
 <translation id="2603212228005142861">Login untuk mengelola preferensi Anda</translation>
 <translation id="260403163289591229">Mengikuti</translation>
@@ -476,7 +475,6 @@ Private state token meningkatkan privasi di web dan tidak dapat digunakan untuk 
 <translation id="3479552764303398839">Jangan sekarang</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /> konten yang disarankan</translation>
 <translation id="3495219333887281978">Sheet bawah untuk tombol login terbuka setengah.</translation>
-<translation id="3498338220321963224">Data yang Anda simpan akan dihapus jika kunci profil dihapus nanti.</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="350276055892098337">Urutkan dari yang terlama</translation>
 <translation id="3507132249039706973">Perlindungan Standar aktif</translation>
@@ -650,7 +648,6 @@ Private state token meningkatkan privasi di web dan tidak dapat digunakan untuk 
 <translation id="4405636711880428279">Hapus kartu virtual Anda?</translation>
 <translation id="4409271659088619928">Mesin telusur Anda adalah <ph name="DSE" />. Lihat petunjuknya untuk menghapus histori penelusuran Anda, jika memungkinkan.</translation>
 <translation id="4415276339145661267">Kelola Akun Google Anda</translation>
-<translation id="4417111749295506837">Untuk menyinkronkan info Chrome dan menjaga keamanan data Anda di mobil, Anda harus membuat kunci profil. Anda akan menggunakan kode atau sandi setiap kali masuk ke mobil.</translation>
 <translation id="4425140285732600465">Memantau harga. Dapatkan notifikasi jika ada diskon di situs mana pun.</translation>
 <translation id="442518031075347249">Anda tidak akan dapat menggunakan kartu virtual dengan Google Pay lagi. <ph name="BEGIN_LINK1" />Pelajari kartu virtual lebih lanjut<ph name="END_LINK1" /></translation>
 <translation id="4428065317363009941">Personalisasi iklan</translation>
@@ -962,7 +959,6 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />reset sinkronisasi<ph name="
 <translation id="5964869237734432770">Hentikan deskripsi gambar</translation>
 <translation id="5966233851250124270">Chrome akan mengingat pilihan Anda</translation>
 <translation id="5979084224081478209">Periksa sandi</translation>
-<translation id="5985186846584605773">Buat kunci profil untuk mobil Anda</translation>
 <translation id="5995726099713306770">Download halaman lagi?</translation>
 <translation id="6000066717592683814">Tetap menggunakan Google</translation>
 <translation id="6000203700195075278">Ikuti kembali</translation>
@@ -1031,7 +1027,6 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="6364438453358674297">Hapus saran dari histori?</translation>
 <translation id="6380100320871303656">Lebih sering melakukan pramuat halaman yang menurut Chrome mungkin akan Anda buka. Setelan ini dapat mengakibatkan peningkatan penggunaan data.</translation>
 <translation id="6382848304055775421">Mengekspor</translation>
-<translation id="6391355955030242704">Untuk menyinkronkan info Chrome dan menjaga keamanan data Anda di mobil, Anda harus membuat kunci profil di setelan keamanan Anda. Anda akan menggunakan kode atau sandi setiap kali masuk ke mobil.</translation>
 <translation id="6394791151443660613">Telusuri: <ph name="SEARCH_QUERY" /></translation>
 <translation id="6395288395575013217">LINK</translation>
 <translation id="6397616442223433927">Kembali online</translation>

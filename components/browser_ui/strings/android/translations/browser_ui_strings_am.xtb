@@ -55,6 +55,7 @@
 <translation id="2030769033451695672">ወደ <ph name="URL_OF_THE_CURRENT_TAB" /> ለመመለስ መታ ያድርጉ</translation>
 <translation id="2079545284768500474">ቀልብስ</translation>
 <translation id="2091887806945687916">ድምፅ</translation>
+<translation id="2096716221239095980">ሁሉንም ውሂብ ሰርዝ</translation>
 <translation id="2117655453726830283">ቀጣይ ተንሸራታች</translation>
 <translation id="2148716181193084225">ዛሬ</translation>
 <translation id="216989819110952009">ዓይኖች በአረንጓዴ መነጽሮች ቢጠበቁም ዶሮቲ እና ጓደኞቿ በመጀመሪያ ላይ ፈዘው ነበር በ</translation>
@@ -115,7 +116,6 @@
 <translation id="2913331724188855103">ጣቢያዎች የኩኪ ውሂብ እንዲያስቀምጡ እና እንዲያነቡ ይፍቀዱ (የሚመከር)</translation>
 <translation id="2932883381142163287">የአላግባብ መጠቀምን ሪፖርት ያድርጉ</translation>
 <translation id="2968755619301702150">የእውቅና ማረጋገጫ መመልከቻ</translation>
-<translation id="300526633675317032">ይህ ሁሉንም <ph name="SIZE_IN_KB" /> የድር ጣቢያ ማከማቻ ያጸዳል።</translation>
 <translation id="3008272652534848354">ፈቃዶችን ዳግም ያቀናብሩ</translation>
 <translation id="301521992641321250">በራስ-ሰር ታግዷል</translation>
 <translation id="3069226013421428034">ለአንድ የተወሰነ ጣቢያ የሦስተኛ ወገን መግባትን ይፍቀዱ።</translation>
@@ -192,7 +192,6 @@
 <translation id="4278390842282768270">ተፈቅዷል</translation>
 <translation id="429312253194641664">አንድ ጣቢያ ሚዲያን በማጫወት ላይ ነው</translation>
 <translation id="42981349822642051">ዘርጋ</translation>
-<translation id="4336434711095810371">ሁሉንም ውሂብ አጽዳ</translation>
 <translation id="4338831206024587507">በ<ph name="DOMAIN" /> ስር ያሉ ሁሉም ጣቢያዎች</translation>
 <translation id="4402755511846832236">እርስዎ ይህን መሣሪያ በንቃት ሲጠቀሙ ጣቢያዎች እንዳያውቁ ያግዱ</translation>
 <translation id="4412992751769744546">የሶስተኛ ወገን ኩኪዎችን ፍቀድ</translation>
@@ -283,6 +282,7 @@
 <translation id="5922853908706496913">ማያ ገጽዎን በማጋራት ላይ</translation>
 <translation id="5922967540311291836">የሶስተኛ ወገን ኩኪዎችን ያግዱ፦</translation>
 <translation id="5939518447894949180">ዳግም አስጀምር</translation>
+<translation id="5964247741333118902">የተከተተ ይዘት</translation>
 <translation id="5968921426641056619">የድር አድራሻን ያስገቡ</translation>
 <translation id="5975083100439434680">አሳንስ</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" />፣ <ph name="WARNING_MESSAGE" /></translation>
@@ -351,6 +351,7 @@
 <translation id="7180611975245234373">አድስ</translation>
 <translation id="7188508872042490670">በመሣሪያ ላይ ያለ የጣቢያ ውሂብ</translation>
 <translation id="7203150201908454328">ተዘርግቷል</translation>
+<translation id="7219254577985949841">የጣቢያ ውሂብ ይሰረዝ?</translation>
 <translation id="723171743924126238">ምስሎችን ይምረጡ</translation>
 <translation id="7243308994586599757">አማራጮች ከማያ ገጹ ግርጌ አጠገብ ይገኛሉ</translation>
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> ተመርጠዋል</translation>

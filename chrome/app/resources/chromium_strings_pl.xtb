@@ -335,7 +335,6 @@ Chromium nie może odzyskać ustawień.</translation>
 <translation id="7467949745582939695">Uruchomić ponownie Chromium?</translation>
 <translation id="7483335560992089831">Nie można zainstalować tej samej wersji Chromium co obecnie uruchomiona. Zamknij Chromium i spróbuj ponownie.</translation>
 <translation id="753534427205733210">{0,plural, =1{Chromium uruchomi się ponownie za 1 minutę}few{Chromium uruchomi się ponownie za # minuty}many{Chromium uruchomi się ponownie za # minut}other{Chromium uruchomi się ponownie za # minuty}}</translation>
-<translation id="7561906087460245826">Wyczyść też dane z Chromium (<ph name="URL" />)</translation>
 <translation id="7582945390259497898">Chromium może oszacować Twoje zainteresowania. Witryna, którą później odwiedzisz, może o nie zapytać i na tej podstawie spersonalizować wyświetlane reklamy.</translation>
 <translation id="7583399374488819119">Instalator <ph name="COMPANY_NAME" /></translation>
 <translation id="761356813943268536">Chromium używa Twojej kamery i mikrofonu.</translation>

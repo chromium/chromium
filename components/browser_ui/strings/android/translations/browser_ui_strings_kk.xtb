@@ -55,6 +55,7 @@
 <translation id="2030769033451695672"><ph name="URL_OF_THE_CURRENT_TAB" /> қойындысына оралу үшін түртіңіз.</translation>
 <translation id="2079545284768500474">Қайтару</translation>
 <translation id="2091887806945687916">Дыбыс</translation>
+<translation id="2096716221239095980">Барлық деректі жою</translation>
 <translation id="2117655453726830283">Келесі слайд</translation>
 <translation id="2148716181193084225">Бүгін</translation>
 <translation id="216989819110952009">Жасыл көзілдірік таққан Дороти мен оның достары қалаға алғаш келгенде, оның ғажайып көркіне таңғалды.</translation>
@@ -115,7 +116,6 @@
 <translation id="2913331724188855103">Сайттарға cookie деректерін сақтауға және оқуға рұқсат беру (ұсынылған)</translation>
 <translation id="2932883381142163287">Бұзақылық туралы хабарлау</translation>
 <translation id="2968755619301702150">Сертификат көру құралы</translation>
-<translation id="300526633675317032">Вебсайттың барлық деректері жойылады (<ph name="SIZE_IN_KB" />).</translation>
 <translation id="3008272652534848354">Рұқсаттарды бастапқы күйіне қайтару</translation>
 <translation id="301521992641321250">Автоматты түрде блокталған</translation>
 <translation id="3069226013421428034">Белгілі бір сайт үшін бөгде қызметтер арқылы кіруге рұқсат беру.</translation>
@@ -192,7 +192,6 @@
 <translation id="4278390842282768270">Рұқсат етілген</translation>
 <translation id="429312253194641664">Сайтта мультимедиа ойнатылуда</translation>
 <translation id="42981349822642051">Жаю</translation>
-<translation id="4336434711095810371">Барлық деректі өшіру</translation>
 <translation id="4338831206024587507"><ph name="DOMAIN" /> доменіндегі барлық сайт</translation>
 <translation id="4402755511846832236">Сайттарды бөгеу арқылы олардың құрылғыны қашан белсенді пайдаланғаныңыз туралы ақпаратты алуына жол берілмейді.</translation>
 <translation id="4412992751769744546">Үшінші тарап cookie файлдарына рұқсат беру</translation>
@@ -283,6 +282,7 @@
 <translation id="5922853908706496913">Экранды бөлісіп жатырсыз.</translation>
 <translation id="5922967540311291836">Үшінші тарап cookie файлдарын бөгеу:</translation>
 <translation id="5939518447894949180">Қалпына келтіру</translation>
+<translation id="5964247741333118902">Ендірілген контент</translation>
 <translation id="5968921426641056619">Веб-мекенжайды енгізіңіз</translation>
 <translation id="5975083100439434680">Кішірейту</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
@@ -351,6 +351,7 @@
 <translation id="7180611975245234373">Жаңарту</translation>
 <translation id="7188508872042490670">Құрылғыдағы сайт деректері</translation>
 <translation id="7203150201908454328">Кеңейтілген</translation>
+<translation id="7219254577985949841">Сайт деректерін жою керек пе?</translation>
 <translation id="723171743924126238">Кескіндерді таңдау</translation>
 <translation id="7243308994586599757">Опциялар экранның төменгі жағында тұрады</translation>
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> таңдалды</translation>

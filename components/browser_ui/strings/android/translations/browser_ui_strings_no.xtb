@@ -55,6 +55,7 @@
 <translation id="2030769033451695672">Trykk for å gå tilbake til <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">Angre</translation>
 <translation id="2091887806945687916">Lyd</translation>
+<translation id="2096716221239095980">Slett alle data</translation>
 <translation id="2117655453726830283">Neste lysbilde</translation>
 <translation id="2148716181193084225">I dag</translation>
 <translation id="216989819110952009">Selv om øynene deres var beskyttet av de grønne brillene, ble Dorothy og vennene hennes overveldet ved synet av</translation>
@@ -115,7 +116,6 @@
 <translation id="2913331724188855103">Tillat at nettsteder lagrer og leser data i informasjonskapsler (anbefales)</translation>
 <translation id="2932883381142163287">Rapportér uriktig bruk</translation>
 <translation id="2968755619301702150">Visningsprogram for sertifikater</translation>
-<translation id="300526633675317032">Dette sletter alle dataene (<ph name="SIZE_IN_KB" />) fra nettstedslagringen.</translation>
 <translation id="3008272652534848354">Tilbakestill tillatelser</translation>
 <translation id="301521992641321250">Automatisk blokkert</translation>
 <translation id="3069226013421428034">Tillat tredjepartspålogging for et bestemt nettsted.</translation>
@@ -192,7 +192,6 @@
 <translation id="4278390842282768270">Tillatt</translation>
 <translation id="429312253194641664">Et nettsted spiller av medier</translation>
 <translation id="42981349822642051">Vis</translation>
-<translation id="4336434711095810371">Slett alle data</translation>
 <translation id="4338831206024587507">Alle nettsteder under <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">Blokkér nettsteder fra å vite når du bruker denne enheten aktivt</translation>
 <translation id="4412992751769744546">Tillat informasjonskapsler fra tredjeparter</translation>
@@ -283,6 +282,7 @@
 <translation id="5922853908706496913">Deler skjermen din</translation>
 <translation id="5922967540311291836">Blokker informasjonskapsler fra tredjeparter:</translation>
 <translation id="5939518447894949180">Tilbakestill</translation>
+<translation id="5964247741333118902">Innebygd innhold</translation>
 <translation id="5968921426641056619">Skriv inn en nettadresse</translation>
 <translation id="5975083100439434680">Zoom ut</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
@@ -351,6 +351,7 @@
 <translation id="7180611975245234373">Last inn på nytt</translation>
 <translation id="7188508872042490670">Nettstedsdata på enheten</translation>
 <translation id="7203150201908454328">Utvidet</translation>
+<translation id="7219254577985949841">Vil du slette nettstedsdata?</translation>
 <translation id="723171743924126238">Velg bilder</translation>
 <translation id="7243308994586599757">Du finner alternativer ved bunnen av skjermen</translation>
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> er valgt</translation>

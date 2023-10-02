@@ -339,7 +339,6 @@ Chromium 無法復原您的設定。</translation>
 <translation id="7467949745582939695">要重新啟動 Chromium 嗎？</translation>
 <translation id="7483335560992089831">無法安裝這個版本的 Chromium，因為目前正在執行相同版本。請關閉 Chromium，然後再試一次。</translation>
 <translation id="753534427205733210">{0,plural, =1{Chromium 將於 1 分鐘後重新啟動}other{Chromium 將於 # 分鐘後重新啟動}}</translation>
-<translation id="7561906087460245826">一併清除 Chromium 的資料 (<ph name="URL" />)</translation>
 <translation id="7582945390259497898">Chromium 可以推測您的興趣。您日後瀏覽的網站可向 Chromium 要求查看您的興趣，以便向您顯示個人化廣告。</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" /> 安裝程式</translation>
 <translation id="761356813943268536">Chromium 正在使用您的相機和麥克風。</translation>

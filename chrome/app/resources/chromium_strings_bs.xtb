@@ -340,7 +340,6 @@ Chromium ne može vratiti vaše postavke.</translation>
 <translation id="7467949745582939695">Ponovo pokrenuti Chromium?</translation>
 <translation id="7483335560992089831">Nije moguće instalirati istu verziju Chromiuma koja je trenutno pokrenuta. Zatvorite Chromium i pokušajte ponovo.</translation>
 <translation id="753534427205733210">{0,plural, =1{Chromium će se ponovo pokrenuti za 1 minutu}one{Chromium će se ponovo pokrenuti za # minutu}few{Chromium će se ponovo pokrenuti za # minuta}other{Chromium će se ponovo pokrenuti za # minuta}}</translation>
-<translation id="7561906087460245826">Obriši i podatke iz Chromiuma (<ph name="URL" />)</translation>
 <translation id="7582945390259497898">Chromium može procijeniti vaša interesovanja. Kasnije, web lokacija koju ste posjetili može zatražiti od Chromiuma da pogleda vaša interesovanja radi personalizacije oglasa koje vidite.</translation>
 <translation id="7583399374488819119">Alat za instaliranje preglednika <ph name="COMPANY_NAME" /></translation>
 <translation id="761356813943268536">Chromium koristi vašu kameru i mikrofon.</translation>

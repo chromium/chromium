@@ -294,7 +294,6 @@ Dzēšot pārlūkošanas vēsturi (visu vai konkrētas vietnes vēsturi), tiek d
 Privātā stāvokļa pilnvaras uzlabo konfidencialitāti tīmeklī. Tās nevar izmantot, lai uzzinātu, kas jūs esat.</translation>
 <translation id="2581165646603367611">Tādējādi tiks dzēsti sīkfaili, kešatmiņa un citi vietņu dati, kas pārlūkā Chrome netiek uzskatīti par svarīgiem.</translation>
 <translation id="2587052924345400782">Pieejama jaunāka versija</translation>
-<translation id="2589302627584222634">Iestatīt profila bloķēšanu</translation>
 <translation id="2593272815202181319">Vienplatuma</translation>
 <translation id="2603212228005142861">Pierakstieties, lai pārvaldītu preferences</translation>
 <translation id="260403163289591229">Sekojat</translation>
@@ -476,7 +475,6 @@ Privātā stāvokļa pilnvaras uzlabo konfidencialitāti tīmeklī. Tās nevar i
 <translation id="3479552764303398839">Vēlāk</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" /> par ieteikto saturu.</translation>
 <translation id="3495219333887281978">Pierakstīšanās ekrāna apakšdaļas lapa ir atvērta pusekrāna augstumā.</translation>
-<translation id="3498338220321963224">Ja profila bloķēšana vēlāk tiks noņemta, jūsu saglabātie dati tiks dzēsti.</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="350276055892098337">Kārtot pēc vecākās</translation>
 <translation id="3507132249039706973">Ir ieslēgta standarta aizsardzība.</translation>
@@ -650,7 +648,6 @@ Privātā stāvokļa pilnvaras uzlabo konfidencialitāti tīmeklī. Tās nevar i
 <translation id="4405636711880428279">Vai noņemt virtuālo karti?</translation>
 <translation id="4409271659088619928">Jūsu meklētājprogramma ir <ph name="DSE" />. Skatiet tās norādījumus par meklēšanas vēstures dzēšanu, ja šāda iespēja ir pieejama.</translation>
 <translation id="4415276339145661267">Google konta pārvaldība</translation>
-<translation id="4417111749295506837">Lai pārlūkā Chrome sinhronizētu savu informāciju un gādātu par datu drošību, ir jāiestata profila bloķēšana. Ikreiz, kad iekāpsiet automašīnā, jūs izmantosiet kodu vai paroli.</translation>
 <translation id="4425140285732600465">Notiek cenas izsekošana. Saņemiet paziņojumus, ja kādā vietnē tiek konstatēts cenas kritums.</translation>
 <translation id="442518031075347249">Vairs nevarēsiet izmantot virtuālo karti pakalpojumā Google Pay. <ph name="BEGIN_LINK1" />Uzziniet vairāk par virtuālajām kartēm<ph name="END_LINK1" />.</translation>
 <translation id="4428065317363009941">Reklāmu personalizēšana</translation>
@@ -962,7 +959,6 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />atiestatiet sinhronizāci
 <translation id="5964869237734432770">Atspējot attēlu aprakstus</translation>
 <translation id="5966233851250124270">Pārlūkā Chrome tiks saglabāta jūsu izvēle.</translation>
 <translation id="5979084224081478209">Pārbaudīt paroles</translation>
-<translation id="5985186846584605773">Automašīnas profila bloķēšanas iestatīšana</translation>
 <translation id="5995726099713306770">Vai vēlaties vēlreiz lejupielādēt lapu?</translation>
 <translation id="6000066717592683814">Arī turpmāk izmantot Google</translation>
 <translation id="6000203700195075278">Atsākt sekošanu</translation>
@@ -1031,7 +1027,6 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="6364438453358674297">Vai noņemt ieteikumu no vēstures?</translation>
 <translation id="6380100320871303656">Biežāk tiek iepriekš ielādētas lapas, ko jūs varētu apmeklēt saskaņā ar Chrome rīcībā esošajiem datiem. Šī iestatījuma rezultātā var palielināties datu lietojums.</translation>
 <translation id="6382848304055775421">Notiek eksportēšana</translation>
-<translation id="6391355955030242704">Lai pārlūkā Chrome sinhronizētu savu informāciju un gādātu par datu drošību, drošības iestatījumos ir jāiestata profila bloķēšana. Ikreiz, kad iekāpsiet automašīnā, jūs izmantosiet kodu vai paroli.</translation>
 <translation id="6394791151443660613">Meklēt: <ph name="SEARCH_QUERY" /></translation>
 <translation id="6395288395575013217">SAITE</translation>
 <translation id="6397616442223433927">Esat tiešsaistē</translation>

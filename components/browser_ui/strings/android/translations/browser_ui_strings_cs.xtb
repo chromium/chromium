@@ -55,6 +55,7 @@
 <translation id="2030769033451695672">Klepnutím se vrátíte na web <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">Vrátit zpět</translation>
 <translation id="2091887806945687916">Zvuk</translation>
+<translation id="2096716221239095980">Vymazat všechna data</translation>
 <translation id="2117655453726830283">Další snímek</translation>
 <translation id="2148716181193084225">Dnes</translation>
 <translation id="216989819110952009">I přestože měli oči chráněné zelenými brýlemi, Dorotka a její přátelé byli oslněni</translation>
@@ -115,7 +116,6 @@
 <translation id="2913331724188855103">Povolit webům ukládat a číst data souborů cookie (doporučeno)</translation>
 <translation id="2932883381142163287">Nahlásit zneužití</translation>
 <translation id="2968755619301702150">Prohlížeč certifikátů</translation>
-<translation id="300526633675317032">Tímto vymažete celé úložiště webů (<ph name="SIZE_IN_KB" />).</translation>
 <translation id="3008272652534848354">Resetovat oprávnění</translation>
 <translation id="301521992641321250">Automaticky blokováno</translation>
 <translation id="3069226013421428034">Povolení přihlášení třetích stran na konkrétní web.</translation>
@@ -192,7 +192,6 @@
 <translation id="4278390842282768270">Povoleno</translation>
 <translation id="429312253194641664">Web přehrává média</translation>
 <translation id="42981349822642051">Rozbalit</translation>
-<translation id="4336434711095810371">Vymazat všechna data</translation>
 <translation id="4338831206024587507">Všechny weby v doméně <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">Nedovolit webům zjistit, kdy aktivně používáte toto zařízení</translation>
 <translation id="4412992751769744546">Povolit cookies třetích stran</translation>
@@ -283,6 +282,7 @@
 <translation id="5922853908706496913">Sdílíte obrazovku</translation>
 <translation id="5922967540311291836">Blokovat soubory cookie třetích stran:</translation>
 <translation id="5939518447894949180">Resetovat</translation>
+<translation id="5964247741333118902">Vložený obsah</translation>
 <translation id="5968921426641056619">Zadejte webovou adresu</translation>
 <translation id="5975083100439434680">Oddálit</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
@@ -351,6 +351,7 @@
 <translation id="7180611975245234373">Obnovit</translation>
 <translation id="7188508872042490670">Data webu v zařízení</translation>
 <translation id="7203150201908454328">Rozbaleno</translation>
+<translation id="7219254577985949841">Vymazat data webu?</translation>
 <translation id="723171743924126238">Vyberte fotky</translation>
 <translation id="7243308994586599757">Možnosti jsou k dispozici ve spodní části obrazovky</translation>
 <translation id="7250468141469952378">Vybráno: <ph name="ITEM_COUNT" /></translation>

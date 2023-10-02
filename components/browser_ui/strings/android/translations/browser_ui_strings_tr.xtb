@@ -55,6 +55,7 @@
 <translation id="2030769033451695672"><ph name="URL_OF_THE_CURRENT_TAB" /> sekmesine dönmek için dokunun</translation>
 <translation id="2079545284768500474">Geri al</translation>
 <translation id="2091887806945687916">Ses</translation>
+<translation id="2096716221239095980">Tüm verileri sil</translation>
 <translation id="2117655453726830283">Sonraki slayt</translation>
 <translation id="2148716181193084225">Bugün</translation>
 <translation id="216989819110952009">Gözlüklerin korumasına rağmen Dorothy ve arkadaşlarının, bu harika şehrin güzelliği karşısında gözleri kamaştı</translation>
@@ -115,7 +116,6 @@
 <translation id="2913331724188855103">Sitelerin, çerez verilerini kaydetmelerine ve okumalarına izin ver (önerilir)</translation>
 <translation id="2932883381142163287">Kötüye kullanım bildir</translation>
 <translation id="2968755619301702150">Sertifika görüntüleyici</translation>
-<translation id="300526633675317032">Bu işlem <ph name="SIZE_IN_KB" /> olan web sitesi depolama alanının tamamını temizleyecek.</translation>
 <translation id="3008272652534848354">İzinleri sıfırla</translation>
 <translation id="301521992641321250">Otomatik olarak engellendi</translation>
 <translation id="3069226013421428034">Belirli bir sitede üçüncü taraf oturum açmaya izin verin.</translation>
@@ -192,7 +192,6 @@
 <translation id="4278390842282768270">İzin veriliyor</translation>
 <translation id="429312253194641664">Bir site medya oynatıyor</translation>
 <translation id="42981349822642051">Genişlet</translation>
-<translation id="4336434711095810371">Tüm verileri temizle</translation>
 <translation id="4338831206024587507"><ph name="DOMAIN" /> altındaki tüm siteler</translation>
 <translation id="4402755511846832236">Bu cihazı etkin olarak kullandığınızda sitelerin bunu bilmesi engellenir</translation>
 <translation id="4412992751769744546">Üçüncü taraf çerezlerine izin ver</translation>
@@ -283,6 +282,7 @@
 <translation id="5922853908706496913">Ekranınız paylaşılıyor</translation>
 <translation id="5922967540311291836">Üçüncü taraf çerezlerini engelle:</translation>
 <translation id="5939518447894949180">Sıfırla</translation>
+<translation id="5964247741333118902">Yerleştirilmiş içerik</translation>
 <translation id="5968921426641056619">Web adresini girin</translation>
 <translation id="5975083100439434680">Uzaklaştır</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
@@ -351,6 +351,7 @@
 <translation id="7180611975245234373">Yenile</translation>
 <translation id="7188508872042490670">Cihaz üzerindeki site verileri</translation>
 <translation id="7203150201908454328">Genişletilmiş</translation>
+<translation id="7219254577985949841">Site verileri silinsin mi?</translation>
 <translation id="723171743924126238">Resim seç</translation>
 <translation id="7243308994586599757">Sayfanın altına yakın bir yerde kullanılabilen seçenekler</translation>
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> öğe seçildi</translation>

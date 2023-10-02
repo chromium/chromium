@@ -55,6 +55,7 @@
 <translation id="2030769033451695672">Натисніть, щоб повернутися на сторінку <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">Відмінити</translation>
 <translation id="2091887806945687916">Звук</translation>
+<translation id="2096716221239095980">Видалити всі дані</translation>
 <translation id="2117655453726830283">Наступний слайд</translation>
 <translation id="2148716181193084225">Сьогодні</translation>
 <translation id="216989819110952009">Навіть попри захист зелених окулярів Дороті та її друзі були приголомшені сяйвом</translation>
@@ -115,7 +116,6 @@
 <translation id="2913331724188855103">Дозволити сайтам зберігати та розпізнавати дані файлів cookie (рекомендується)</translation>
 <translation id="2932883381142163287">Повідомити про порушення</translation>
 <translation id="2968755619301702150">Перегляд сертифікатів</translation>
-<translation id="300526633675317032">Буде видалено всі дані сайтів (<ph name="SIZE_IN_KB" />).</translation>
 <translation id="3008272652534848354">Скинути дозволи</translation>
 <translation id="301521992641321250">Блокується автоматично</translation>
 <translation id="3069226013421428034">Дозволити вхід через сторонні сервіси для певного сайту.</translation>
@@ -192,7 +192,6 @@
 <translation id="4278390842282768270">Дозволено</translation>
 <translation id="429312253194641664">Сайт відтворює медіа-вміст</translation>
 <translation id="42981349822642051">Розгорнути</translation>
-<translation id="4336434711095810371">Видалити всі дані</translation>
 <translation id="4338831206024587507">Усі сайти домену <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">Блокувати сайтам інформацію про те, чи ви активно використовуєте цей пристрій</translation>
 <translation id="4412992751769744546">Дозволити сторонні файли cookie</translation>
@@ -283,6 +282,7 @@
 <translation id="5922853908706496913">Доступ до вашого екрана</translation>
 <translation id="5922967540311291836">Блокувати сторонні файли cookie:</translation>
 <translation id="5939518447894949180">Скинути</translation>
+<translation id="5964247741333118902">Вбудований контент</translation>
 <translation id="5968921426641056619">Введіть веб-адресу</translation>
 <translation id="5975083100439434680">Зменшити масштаб</translation>
 <translation id="5976059395673079613">"<ph name="PERMISSION" />" – <ph name="WARNING_MESSAGE" /></translation>
@@ -351,6 +351,7 @@
 <translation id="7180611975245234373">Оновити</translation>
 <translation id="7188508872042490670">Дані сайтів на пристрої</translation>
 <translation id="7203150201908454328">Розгорнуто</translation>
+<translation id="7219254577985949841">Видалити дані сайту?</translation>
 <translation id="723171743924126238">Вибрати зображення</translation>
 <translation id="7243308994586599757">Опції можна знайти внизу екрана</translation>
 <translation id="7250468141469952378">Вибрано <ph name="ITEM_COUNT" /></translation>

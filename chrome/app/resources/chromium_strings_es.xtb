@@ -340,7 +340,6 @@ Chromium no puede recuperar tu configuración.</translation>
 <translation id="7467949745582939695">¿Reiniciar Chromium?</translation>
 <translation id="7483335560992089831">No se puede instalar la misma versión de Chromium que se está ejecutando actualmente. Cierra Chromium y vuelve a intentarlo.</translation>
 <translation id="753534427205733210">{0,plural, =1{Chromium se reiniciará dentro de 1 minuto}other{Chromium se reiniciará dentro de # minutos}}</translation>
-<translation id="7561906087460245826">Borrar también los datos de Chromium (<ph name="URL" />)</translation>
 <translation id="7582945390259497898">Chromium estima tus intereses. Después, un sitio que visites puede pedirle a Chromium consultar tus intereses para personalizar los anuncios que veas.</translation>
 <translation id="7583399374488819119">Instalador de <ph name="COMPANY_NAME" /></translation>
 <translation id="761356813943268536">Chromium está utilizando la cámara y el micrófono.</translation>

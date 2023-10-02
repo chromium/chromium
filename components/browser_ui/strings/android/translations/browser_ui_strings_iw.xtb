@@ -55,6 +55,7 @@
 <translation id="2030769033451695672">כדי לחזור אל <ph name="URL_OF_THE_CURRENT_TAB" />, יש להקיש כאן</translation>
 <translation id="2079545284768500474">ביטול הפעולה</translation>
 <translation id="2091887806945687916">צליל</translation>
+<translation id="2096716221239095980">מחיקת כל הנתונים</translation>
 <translation id="2117655453726830283">לשקף הבא</translation>
 <translation id="2148716181193084225">היום</translation>
 <translation id="216989819110952009">אפילו שהרכיבו משקפיים ירוקות שהגנו על עיניהם, דורותי וחבריה נדהמו כשהגיעו לראשונה</translation>
@@ -115,7 +116,6 @@
 <translation id="2913331724188855103">‏אתרים יוכלו לשמור ולקרוא נתונים של קובצי Cookie (מומלץ)</translation>
 <translation id="2932883381142163287">דיווח על שימוש לרעה</translation>
 <translation id="2968755619301702150">מציג האישורים</translation>
-<translation id="300526633675317032">פעולה זו תמחק את כל נתוני האתר המאוחסנים (<ph name="SIZE_IN_KB" />).</translation>
 <translation id="3008272652534848354">איפוס הרשאות</translation>
 <translation id="301521992641321250">נחסמה אוטומטית</translation>
 <translation id="3069226013421428034">אישור הכניסה של צד שלישי לאתר ספציפי.</translation>
@@ -192,7 +192,6 @@
 <translation id="4278390842282768270">מותר</translation>
 <translation id="429312253194641664">אתר מסוים מפעיל מדיה</translation>
 <translation id="42981349822642051">הרחבה</translation>
-<translation id="4336434711095810371">ניקוי כל הנתונים</translation>
 <translation id="4338831206024587507">כל האתרים בדומיין <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">אתרים לא יוכלו לדעת מתי המכשיר הזה משמש אותך באופן פעיל</translation>
 <translation id="4412992751769744546">‏התר קובצי Cookie של צד שלישי</translation>
@@ -283,6 +282,7 @@
 <translation id="5922853908706496913">מתבצע שיתוף מסך</translation>
 <translation id="5922967540311291836">‏חסימת קובצי cookie של צד שלישי:</translation>
 <translation id="5939518447894949180">איפוס</translation>
+<translation id="5964247741333118902">תוכן מוטמע</translation>
 <translation id="5968921426641056619">צריך להזין כתובת אינטרנט</translation>
 <translation id="5975083100439434680">התרחקות</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
@@ -351,6 +351,7 @@
 <translation id="7180611975245234373">רענון</translation>
 <translation id="7188508872042490670">נתונים מאתרים ששמורים במכשיר</translation>
 <translation id="7203150201908454328">מורחב</translation>
+<translation id="7219254577985949841">למחוק את הנתונים מהאתר?</translation>
 <translation id="723171743924126238">בחירת תמונות</translation>
 <translation id="7243308994586599757">אפשרויות הזמינות באזור החלק התחתון של המסך</translation>
 <translation id="7250468141469952378">נבחרו <ph name="ITEM_COUNT" /></translation>

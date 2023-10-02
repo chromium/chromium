@@ -55,6 +55,7 @@
 <translation id="2030769033451695672">Додирните да бисте се вратили на <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">Опозови</translation>
 <translation id="2091887806945687916">Звук</translation>
+<translation id="2096716221239095980">Избриши све податке</translation>
 <translation id="2117655453726830283">Следећи слајд</translation>
 <translation id="2148716181193084225">Данас</translation>
 <translation id="216989819110952009">Иако су им очи биле заштићене зеленим наочарима, Дороти и њене пријатеље у почетку су задивили</translation>
@@ -115,7 +116,6 @@
 <translation id="2913331724188855103">Дозволи сајтовима да чувају и читају податке колачића (препоручује се)</translation>
 <translation id="2932883381142163287">Пријави злоупотребу</translation>
 <translation id="2968755619301702150">Приказивач сертификата</translation>
-<translation id="300526633675317032">Овим ћете обрисати цео меморијски простор веб-сајта од <ph name="SIZE_IN_KB" />.</translation>
 <translation id="3008272652534848354">Ресетуј дозволе</translation>
 <translation id="301521992641321250">Аутоматски је блокирано</translation>
 <translation id="3069226013421428034">Дозволите пријављивање трећих страна за одређени сајт.</translation>
@@ -192,7 +192,6 @@
 <translation id="4278390842282768270">Дозвољено</translation>
 <translation id="429312253194641664">Сајт пушта медијски садржај</translation>
 <translation id="42981349822642051">Проширите</translation>
-<translation id="4336434711095810371">Обриши све податке</translation>
 <translation id="4338831206024587507">Сви сајтови у оквиру домена <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">Не дозволите сајтовима да знају када активно користите овај уређај</translation>
 <translation id="4412992751769744546">Дозволи колачиће треће стране</translation>
@@ -283,6 +282,7 @@
 <translation id="5922853908706496913">Дели се екран</translation>
 <translation id="5922967540311291836">Блокирајте колачиће трећих страна:</translation>
 <translation id="5939518447894949180">Ресетуј</translation>
+<translation id="5964247741333118902">Уграђен садржај</translation>
 <translation id="5968921426641056619">Унесите веб-адресу</translation>
 <translation id="5975083100439434680">Умањивање</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
@@ -351,6 +351,7 @@
 <translation id="7180611975245234373">Освежи</translation>
 <translation id="7188508872042490670">Подаци о сајтовима на уређају</translation>
 <translation id="7203150201908454328">Проширено</translation>
+<translation id="7219254577985949841">Желите да избришете податке сајта?</translation>
 <translation id="723171743924126238">Изаберите слике</translation>
 <translation id="7243308994586599757">Опције су доступне у дну екрана</translation>
 <translation id="7250468141469952378">Изабрали сте <ph name="ITEM_COUNT" /></translation>

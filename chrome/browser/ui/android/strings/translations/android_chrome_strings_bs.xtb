@@ -294,7 +294,6 @@ Na osnovu vaše interakcije s web lokacijom, kao što je redovna prijava na rač
 Privatni tokeni stanja poboljšavaju zaštitu privatnosti na webu i ne mogu se koristiti za utvrđivanje vašeg identiteta.</translation>
 <translation id="2581165646603367611">Na ovaj način će se obrisati kolačići, keš memorija i drugi podaci s web lokacija za koje Chrome smatra da su nebitne.</translation>
 <translation id="2587052924345400782">Dostupna je nova verzija</translation>
-<translation id="2589302627584222634">Kreirajte zaključavanje profila</translation>
 <translation id="2593272815202181319">Monospace</translation>
 <translation id="2603212228005142861">Prijavite se da upravljate postavkama</translation>
 <translation id="260403163289591229">Pratite</translation>
@@ -476,7 +475,6 @@ Privatni tokeni stanja poboljšavaju zaštitu privatnosti na webu i ne mogu se k
 <translation id="3479552764303398839">Ne sada</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /> o predloženom sadržaju</translation>
 <translation id="3495219333887281978">Donja tabela za prijavu je otvorena na pola visine.</translation>
-<translation id="3498338220321963224">Vaši sačuvani podaci će biti potpuno izbrisani ako kasnije uklonite zaključavanje profila.</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="350276055892098337">Poredaj od najstarijeg</translation>
 <translation id="3507132249039706973">Standardna zaštita je uključena</translation>
@@ -650,7 +648,6 @@ Privatni tokeni stanja poboljšavaju zaštitu privatnosti na webu i ne mogu se k
 <translation id="4405636711880428279">Ukloniti virtuelnu karticu?</translation>
 <translation id="4409271659088619928">Vaš pretraživač je <ph name="DSE" />. Ako je primjenjivo, pogledajte uputstva pretraživača da saznate kako izbrisati historiju pretraživanja.</translation>
 <translation id="4415276339145661267">Upravljajte Google računom</translation>
-<translation id="4417111749295506837">Da sinhronizirate Chrome informacije i zaštitite podatke u automobilu, morate kreirati zaključavanje profila. Koristit ćete kôd ili lozinku svaki put kada uđete u automobil.</translation>
 <translation id="4425140285732600465">Praćenje cijene. Primajte obavještenja ako cijena padne na bilo kojoj web lokaciji.</translation>
 <translation id="442518031075347249">Više nećete moći koristiti virtuelnu karticu s Google Payom. <ph name="BEGIN_LINK1" />Saznajte više o virtuelnim karticama<ph name="END_LINK1" /></translation>
 <translation id="4428065317363009941">Personalizacija oglasa</translation>
@@ -962,7 +959,6 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />poništite sinhronizaciju<p
 <translation id="5964869237734432770">Zaustavi opise slika</translation>
 <translation id="5966233851250124270">Chrome će zapamtiti vaš izbor</translation>
 <translation id="5979084224081478209">Provjeri lozinke</translation>
-<translation id="5985186846584605773">Kreirajte zaključavanje profila za automobil</translation>
 <translation id="5995726099713306770">Ponovo preuzeti stranicu?</translation>
 <translation id="6000066717592683814">Zadrži Google</translation>
 <translation id="6000203700195075278">Prati ponovo</translation>
@@ -1031,7 +1027,6 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="6364438453358674297">Ukloniti prijedloge iz historije?</translation>
 <translation id="6380100320871303656">Češće predučitavanje stranica za koje Chrome smatra da ćete ih vjerovatno posjetiti. Ova postavka može dovesti do povećanog korištenja podataka.</translation>
 <translation id="6382848304055775421">Izvoz</translation>
-<translation id="6391355955030242704">Da sinhronizirate Chrome informacije i zaštitite podatke u automobilu, morate kreirati zaključavanje profila u sigurnosnim postavkama. Koristit ćete kôd ili lozinku svaki put kada uđete u automobil.</translation>
 <translation id="6394791151443660613">Pretraživanje: <ph name="SEARCH_QUERY" /></translation>
 <translation id="6395288395575013217">LINK</translation>
 <translation id="6397616442223433927">Ponovo na mreži</translation>

@@ -55,6 +55,7 @@
 <translation id="2030769033451695672">Trokit për t'u kthyer te <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">Zhbëj</translation>
 <translation id="2091887806945687916">Tingulli</translation>
+<translation id="2096716221239095980">Fshi të gjitha të dhënat</translation>
 <translation id="2117655453726830283">Diapozitivi tjetër</translation>
 <translation id="2148716181193084225">Sot</translation>
 <translation id="216989819110952009">Edhe pse mbanin syzet e gjelbra mbi sy, në fillim Dorotia dhe miqtë e saj u verbuan nga</translation>
@@ -115,7 +116,6 @@
 <translation id="2913331724188855103">Lejo faqet të ruajnë dhe lexojnë të dhënat e kukive (rekomandohet)</translation>
 <translation id="2932883381142163287">Raporto abuzim</translation>
 <translation id="2968755619301702150">Shikuesi i certifikatave</translation>
-<translation id="300526633675317032">Kjo do të pastrojë të gjitha <ph name="SIZE_IN_KB" /> të hapësirës ruajtëse të uebsajtit.</translation>
 <translation id="3008272652534848354">Rivendos autorizimet</translation>
 <translation id="301521992641321250">Bllokuar automatikisht</translation>
 <translation id="3069226013421428034">Lejo identifikimin e palëve të treta për një sajt specifik.</translation>
@@ -192,7 +192,6 @@
 <translation id="4278390842282768270">Të lejuara</translation>
 <translation id="429312253194641664">Një sajt po luan media</translation>
 <translation id="42981349822642051">Zgjero</translation>
-<translation id="4336434711095810371">Pastro të gjitha të dhënat</translation>
 <translation id="4338831206024587507">Të gjitha sajtet nën domenin <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">Blloko sajtet që të mos e dinë kur ti e përdor këtë pajisje në mënyrë aktive</translation>
 <translation id="4412992751769744546">Lejo kukit e palëve të treta</translation>
@@ -283,6 +282,7 @@
 <translation id="5922853908706496913">Po ndan ekranin tënd</translation>
 <translation id="5922967540311291836">Blloko kukit e palëve të treta</translation>
 <translation id="5939518447894949180">Rivendos</translation>
+<translation id="5964247741333118902">Përmbajtjet e integruara</translation>
 <translation id="5968921426641056619">Fut adresën e uebit</translation>
 <translation id="5975083100439434680">Zvogëlo</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
@@ -351,6 +351,7 @@
 <translation id="7180611975245234373">Rifresko</translation>
 <translation id="7188508872042490670">Të dhënat e sajteve në pajisje</translation>
 <translation id="7203150201908454328">I zgjeruar</translation>
+<translation id="7219254577985949841">Të fshihen të dhënat e sajtit?</translation>
 <translation id="723171743924126238">Zgjidh imazhet</translation>
 <translation id="7243308994586599757">Opsionet janë të disponueshme pranë fundit të ekranit</translation>
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> të zgjedhura</translation>

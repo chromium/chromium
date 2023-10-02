@@ -5819,6 +5819,7 @@ Para o <ph name="PRODUCT_OS_NAME" />, ela sempre é eficaz.</translation>
 <translation id="6042407236638640864">Permitir que as páginas com o cabeçalho <ph name="CACHE_CONTROL_NO_STORE_NAME" /> sejam inseridas no cache de avanço e retorno</translation>
 <translation id="604243460476563291">Desativar a transferência de arquivos em conexões de suporte remoto de administradores corporativos</translation>
 <translation id="6042629184389251062">A coleta de métricas inseridas no URL não é permitida</translation>
+<translation id="6045733613334942660">Drivers de scanner</translation>
 <translation id="6046615715547751255">Não permitir controles de geração de relatórios granulares</translation>
 <translation id="6048199181629830227">Ativar o gerenciamento de energia no período de pico</translation>
 <translation id="6048690591359317353">Não permitir que o usuário desconecte ou modifique uma VPN de forma manual</translation>
@@ -7766,6 +7767,7 @@ Se a política não for definida, ela será funcionalmente equivalente a ser def
       Se a política for deixada sem definição, o padrão será <ph name="LACROS_AVAILABILITY_LACROS_DISALLOWED_VALUE" /> para usuários gerenciados por empresas e <ph name="LACROS_AVAILABILITY_USER_CHOICE_VALUE" /> para usuários não gerenciados.
 
       No futuro, será possível fazer com que o <ph name="LACROS_NAME" /> seja o único navegador disponível no <ph name="PRODUCT_OS_NAME" /> usando o valor <ph name="LACROS_AVAILABILITY_LACROS_ONLY_VALUE" />.</translation>
+<translation id="751071954873065775">Selecione os Conteúdos transferidos por download que precisam ser pré-instalados</translation>
 <translation id="7512065400265675158">O cabeçalho da solicitação HTTP <ph name="USER_AGENT_HEADER_NAME" /> foi programado para redução. Para facilitar os testes e a compatibilidade, esta política pode ativar o recurso de redução em todos os sites ou desativar os testes de origem ou campo para permitir a ativação do recurso.
 
       Para saber mais sobre o recurso <ph name="USER_AGENT_REDUCTION_FEATURE_NAME" /> e o cronograma relacionado, acesse este link:
@@ -9316,6 +9318,9 @@ muito menor, o que vai prejudicar a proteção.</translation>
 
 Se ela for desativada, o <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> não vai estar disponível em nenhuma página da Web.</translation>
 <translation id="8860894781631833477">Os usuários podem configurar o canal de lançamento do <ph name="PRODUCT_OS_NAME" /></translation>
+<translation id="8862086508140571198">Esta política permite configurar uma lista de Conteúdos transferidos por download para download o mais rápido possível. Depois do download, o conteúdo fica disponível para todos os usuários no dispositivo.
+
+Isso é útil quando o administrador sabe que um recurso que exige a presença do Conteúdo transferido por download provavelmente será usado pelos usuários do dispositivo.</translation>
 <translation id="8864975621965365890">Remove a solicitação de recusa que aparece quando um site é processado pelo <ph name="PRODUCT_FRAME_NAME" />.</translation>
 <translation id="8865404058177794289">Aplicar a configuração padrão para a verificação de uso da Chave RSA</translation>
 <translation id="8866430022832109569">Relatórios de inventário do app</translation>

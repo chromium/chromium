@@ -55,6 +55,7 @@
 <translation id="2030769033451695672">Pieskarieties, lai atgrieztos cilnē <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">Atsaukt</translation>
 <translation id="2091887806945687916">Signāls</translation>
+<translation id="2096716221239095980">Dzēst visus datus</translation>
 <translation id="2117655453726830283">Nākamais slaids</translation>
 <translation id="2148716181193084225">Šodien</translation>
 <translation id="216989819110952009">Pat raugoties caur zaļajām brillēm, kas sargāja acis, Dorotija un viņas draugi sākotnēji apžilba no</translation>
@@ -115,7 +116,6 @@
 <translation id="2913331724188855103">Atļaut vietnēm saglabāt un lasīt sīkfailu datus (ieteicams)</translation>
 <translation id="2932883381142163287">Ziņot par ļaunprātīgu izmantošanu</translation>
 <translation id="2968755619301702150">Sertifikātu skatītājs</translation>
-<translation id="300526633675317032">Tādējādi tiks notīrīti visi vietnes krātuves dati (<ph name="SIZE_IN_KB" />).</translation>
 <translation id="3008272652534848354">Atiestatīt atļaujas</translation>
 <translation id="301521992641321250">Automātiski bloķēta</translation>
 <translation id="3069226013421428034">Atļauja trešajai pusei pierakstīties konkrētā vietnē</translation>
@@ -192,7 +192,6 @@
 <translation id="4278390842282768270">Atļauts</translation>
 <translation id="429312253194641664">Vietne atskaņo multivides saturu</translation>
 <translation id="42981349822642051">Izvērst</translation>
-<translation id="4336434711095810371">Notīrīt visus datus</translation>
 <translation id="4338831206024587507">Visas vietnes domēnā <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">Nerādīt vietnēm, kad jūs aktīvi lietojat šo ierīci</translation>
 <translation id="4412992751769744546">Atļaut trešo pušu sīkfailus</translation>
@@ -283,6 +282,7 @@
 <translation id="5922853908706496913">Notiek jūsu ekrāna kopīgošana</translation>
 <translation id="5922967540311291836">Bloķēt trešo pušu sīkfailus:</translation>
 <translation id="5939518447894949180">Atiestatīt</translation>
+<translation id="5964247741333118902">Iegultais saturs</translation>
 <translation id="5968921426641056619">Ievadiet tīmekļa adresi</translation>
 <translation id="5975083100439434680">Tālināt</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> — <ph name="WARNING_MESSAGE" /></translation>
@@ -351,6 +351,7 @@
 <translation id="7180611975245234373">Atsvaidzināt</translation>
 <translation id="7188508872042490670">Vietnes dati ierīcē</translation>
 <translation id="7203150201908454328">Izvērsts</translation>
+<translation id="7219254577985949841">Vai dzēst vietnes datus?</translation>
 <translation id="723171743924126238">Atlasīt attēlus</translation>
 <translation id="7243308994586599757">Opcijas, kas pieejamas ekrāna apakšējā daļā</translation>
 <translation id="7250468141469952378">Atlasīti vienumi: <ph name="ITEM_COUNT" /></translation>

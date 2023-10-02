@@ -295,7 +295,6 @@ Com base na sua interação com um site, como login frequente em uma conta, um t
 Os tokens de estado particular melhoram a privacidade na Web e não podem ser usados para descobrir quem você é.</translation>
 <translation id="2581165646603367611">Essa ação vai apagar os cookies, cache e outros dados de sites que o Chrome não acredita serem importantes.</translation>
 <translation id="2587052924345400782">Versão mais recente disponível</translation>
-<translation id="2589302627584222634">Criar um bloqueio de perfil</translation>
 <translation id="2593272815202181319">Espaçamento uniforme</translation>
 <translation id="2603212228005142861">Faça login para gerenciar suas preferências</translation>
 <translation id="260403163289591229">Seguindo</translation>
@@ -477,7 +476,6 @@ Os tokens de estado particular melhoram a privacidade na Web e não podem ser us
 <translation id="3479552764303398839">Não agora</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /> sobre o conteúdo sugerido</translation>
 <translation id="3495219333887281978">Página inferior de login aberta na metade da altura.</translation>
-<translation id="3498338220321963224">Os dados salvos serão apagados se o bloqueio de perfil for removido mais tarde.</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="350276055892098337">Ordenar por mais antigo</translation>
 <translation id="3507132249039706973">A Proteção padrão está ativa</translation>
@@ -651,7 +649,6 @@ Os tokens de estado particular melhoram a privacidade na Web e não podem ser us
 <translation id="4405636711880428279">Remover seu cartão virtual?</translation>
 <translation id="4409271659088619928">Seu mecanismo de pesquisa é o <ph name="DSE" />. Veja as instruções dele para excluir o histórico de pesquisa, se aplicável.</translation>
 <translation id="4415276339145661267">Gerenciar sua Conta do Google</translation>
-<translation id="4417111749295506837">Para sincronizar suas informações do Chrome e proteger seus dados no carro, é necessário criar um bloqueio de perfil. Você terá que usar um código ou uma senha sempre que entrar no veículo.</translation>
 <translation id="4425140285732600465">Monitorando o preço. Receba alertas se houver uma redução no preço em algum site.</translation>
 <translation id="442518031075347249">Não será mais possível usar o cartão virtual com Google Pay. <ph name="BEGIN_LINK1" />Saiba mais sobre os cartões virtuais<ph name="END_LINK1" /></translation>
 <translation id="4428065317363009941">Personalização de anúncios</translation>
@@ -966,7 +963,6 @@ Para alterar essa configuração, <ph name="BEGIN_LINK" />redefina a sincroniza�
 <translation id="5964869237734432770">Parar descrição de imagens</translation>
 <translation id="5966233851250124270">O Chrome vai lembrar sua escolha</translation>
 <translation id="5979084224081478209">Verificar senhas</translation>
-<translation id="5985186846584605773">Crie um bloqueio de perfil para o carro</translation>
 <translation id="5995726099713306770">Fazer o download da página novamente?</translation>
 <translation id="6000066717592683814">Continuar usando o Google</translation>
 <translation id="6000203700195075278">Voltar a seguir</translation>
@@ -1035,7 +1031,6 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="6364438453358674297">Remover sugestão do histórico?</translation>
 <translation id="6380100320871303656">Pré-carrega com mais frequência páginas que o Chrome acredita serem de seu interesse. Esta configuração pode resultar em aumento no uso de dados.</translation>
 <translation id="6382848304055775421">Exportando</translation>
-<translation id="6391355955030242704">Para sincronizar suas informações do Chrome e proteger seus dados no carro, é necessário criar um bloqueio de perfil nas configurações de segurança. Você terá que usar um código ou uma senha sempre que entrar no veículo.</translation>
 <translation id="6394791151443660613">Pesquisar: <ph name="SEARCH_QUERY" /></translation>
 <translation id="6395288395575013217">LINK</translation>
 <translation id="6397616442223433927">Conectado novamente</translation>

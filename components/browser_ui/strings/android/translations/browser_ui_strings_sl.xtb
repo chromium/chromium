@@ -55,6 +55,7 @@
 <translation id="2030769033451695672">Dotaknite se, če se želite vrniti na <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">Razveljavi</translation>
 <translation id="2091887806945687916">Zvok</translation>
+<translation id="2096716221239095980">Izbriši vse podatke</translation>
 <translation id="2117655453726830283">Naslednji diapozitiv</translation>
 <translation id="2148716181193084225">Danes</translation>
 <translation id="216989819110952009">Kljub zelenim očalom za zaščito oči je Dorothy in njene prijatelje sprva zaslepilo</translation>
@@ -115,7 +116,6 @@
 <translation id="2913331724188855103">Spletnim mestom dovoli shranjevanje in branje podatkov piškotkov (priporočljivo)</translation>
 <translation id="2932883381142163287">Prijavite zlorabo</translation>
 <translation id="2968755619301702150">Pregledovalnik potrdil</translation>
-<translation id="300526633675317032">S tem bo izbrisanih vseh <ph name="SIZE_IN_KB" /> shranjenih podatkov spletnega mesta.</translation>
 <translation id="3008272652534848354">Ponastavi dovoljenja</translation>
 <translation id="301521992641321250">Samodejno blokirano</translation>
 <translation id="3069226013421428034">Omogočanje prijave prek zunanjih ponudnikov za določeno spletno mesto.</translation>
@@ -192,7 +192,6 @@
 <translation id="4278390842282768270">Dovoljeno</translation>
 <translation id="429312253194641664">Spletno mesto predvaja predstavnost</translation>
 <translation id="42981349822642051">Razširi</translation>
-<translation id="4336434711095810371">Izbriši vse podatke</translation>
 <translation id="4338831206024587507">Vsa spletna mesta v domeni <ph name="DOMAIN" />.</translation>
 <translation id="4402755511846832236">Preprečevanje, da bi spletna mesta vedela, kdaj aktivno uporabljate to napravo.</translation>
 <translation id="4412992751769744546">Omogočanje piškotkov drugih spletnih mest</translation>
@@ -283,6 +282,7 @@
 <translation id="5922853908706496913">Deljenje zaslona</translation>
 <translation id="5922967540311291836">Blokiranje piškotkov tretjih oseb:</translation>
 <translation id="5939518447894949180">Ponastavi</translation>
+<translation id="5964247741333118902">Vdelana vsebina</translation>
 <translation id="5968921426641056619">Vnesite spletni naslov</translation>
 <translation id="5975083100439434680">Pomanjšaj</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
@@ -351,6 +351,7 @@
 <translation id="7180611975245234373">Osveži</translation>
 <translation id="7188508872042490670">Podatki spletnih mest v napravi</translation>
 <translation id="7203150201908454328">Razširjeno</translation>
+<translation id="7219254577985949841">Želite izbrisati podatke spletnega mesta?</translation>
 <translation id="723171743924126238">Izberite slike</translation>
 <translation id="7243308994586599757">Možnosti so na voljo pri dnu zaslona</translation>
 <translation id="7250468141469952378">Št. izbranih: <ph name="ITEM_COUNT" /></translation>

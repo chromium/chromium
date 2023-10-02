@@ -294,7 +294,6 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 Traustslyklar bæta persónuvernd á netinu og ekki er hægt að nota þá til að persónugreina þig.</translation>
 <translation id="2581165646603367611">Þetta mun eyða fótsporum, skyndiminni og öðrum gögnum frá vefsvæðum sem Chrome telur ekki mikilvæg.</translation>
 <translation id="2587052924345400782">Nýrri útgáfa er í boði</translation>
-<translation id="2589302627584222634">Búa til prófíllás</translation>
 <translation id="2593272815202181319">Jafnbreitt</translation>
 <translation id="2603212228005142861">Skráðu þig inn til að stjórna kjörstillingum</translation>
 <translation id="260403163289591229">Fylgir</translation>
@@ -476,7 +475,6 @@ Traustslyklar bæta persónuvernd á netinu og ekki er hægt að nota þá til a
 <translation id="3479552764303398839">Ekki núna</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Frekari upplýsingar<ph name="END_LINK" /> um uppástungur að efni</translation>
 <translation id="3495219333887281978">Innskráningarblað neðst opið í hálfri hæð.</translation>
-<translation id="3498338220321963224">Vistuðu gögnunum þínum verður eytt ef prófíllásinn er fjarlægður síðar.</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="350276055892098337">Raða eftir elsta</translation>
 <translation id="3507132249039706973">Kveikt er á hefðbundinni vörn</translation>
@@ -650,7 +648,6 @@ Traustslyklar bæta persónuvernd á netinu og ekki er hægt að nota þá til a
 <translation id="4405636711880428279">Fjarlægja sýndarkortið þitt?</translation>
 <translation id="4409271659088619928">Leitarvélin þín er <ph name="DSE" />. Skoðaðu leiðbeiningar hennar um að eyða leitarferlinum ef það á við.</translation>
 <translation id="4415276339145661267">Stjórna Google reikningnum</translation>
-<translation id="4417111749295506837">Til að samstilla upplýsingar Chrome og gæta að öryggi gagna í bílnum þarftu að búa til prófíllás. Þú notar kóða eða aðgangsorð í hvert skipti sem þú ferð inn í bílinn.</translation>
 <translation id="4425140285732600465">Vaktar verð. Fáðu tilkynningu ef verðlækkun verður á einhverju vefsvæði.</translation>
 <translation id="442518031075347249">Þú munt ekki lengur geta notað sýndarkortið þitt með Google Pay. <ph name="BEGIN_LINK1" />Nánar um sýndarkort<ph name="END_LINK1" /></translation>
 <translation id="4428065317363009941">Sérsniðnar auglýsingar</translation>
@@ -962,7 +959,6 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />endurstilla sam
 <translation id="5964869237734432770">Slökkva á myndlýsingum</translation>
 <translation id="5966233851250124270">Chrome man valið þitt</translation>
 <translation id="5979084224081478209">Yfirfara aðgangsorð</translation>
-<translation id="5985186846584605773">Búðu til prófíllás fyrir bílinn</translation>
 <translation id="5995726099713306770">Sækja síðu aftur?</translation>
 <translation id="6000066717592683814">Nota Google áfram</translation>
 <translation id="6000203700195075278">Fylgja aftur</translation>
@@ -1031,7 +1027,6 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="6364438453358674297">Fjarlægja tillögu úr ferlinum?</translation>
 <translation id="6380100320871303656">Forhleður oftar síðum sem Chrome telur að þú munir opna. Þessi stilling kann að auka gagnanotkun.</translation>
 <translation id="6382848304055775421">Flytur út</translation>
-<translation id="6391355955030242704">Til að samstilla upplýsingar Chrome og gæta að öryggi gagna í bílnum þarftu að búa til prófíllás í öryggisstillingunum. Þú notar kóða eða aðgangsorð í hvert skipti sem þú ferð inn í bílinn.</translation>
 <translation id="6394791151443660613">Leit: <ph name="SEARCH_QUERY" /></translation>
 <translation id="6395288395575013217">TENGILL</translation>
 <translation id="6397616442223433927">Nettenging komin aftur</translation>

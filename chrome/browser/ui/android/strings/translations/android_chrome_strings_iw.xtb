@@ -294,7 +294,6 @@
 אסימוני מצב פרטי משפרים את הפרטיות באינטרנט ולא ניתן להשתמש בהם כדי לגלות את הזהות שלך.</translation>
 <translation id="2581165646603367611">‏פעולה זו תמחק את קובצי ה-Cookie, את המטמון ונתונים אחרים של אתרים ש-Chrome לא מחשיב כחשובים.</translation>
 <translation id="2587052924345400782">יש גרסה חדשה יותר</translation>
-<translation id="2589302627584222634">יצירה של נעילת פרופיל</translation>
 <translation id="2593272815202181319">רוחב אחיד</translation>
 <translation id="2603212228005142861">צריך להיכנס לחשבון כדי לנהל את ההעדפות</translation>
 <translation id="260403163289591229">במעקב</translation>
@@ -476,7 +475,6 @@
 <translation id="3479552764303398839">לא עכשיו</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /> על הצעות לתוכן</translation>
 <translation id="3495219333887281978">הגיליון התחתון של הכניסה נפתח בחצי הגובה.</translation>
-<translation id="3498338220321963224">אם נעילת הפרופיל תוסר מאוחר יותר, הנתונים השמורים יימחקו.</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="350276055892098337">מיון לפי הישן ביותר</translation>
 <translation id="3507132249039706973">מופעלת הגנה רגילה</translation>
@@ -650,7 +648,6 @@
 <translation id="4405636711880428279">להסיר את הכרטיס הווירטואלי?</translation>
 <translation id="4409271659088619928">מנוע החיפוש שלך הוא <ph name="DSE" />. ניתן לעיין בהוראות שלו לגבי מחיקת היסטוריית החיפושים, אם רלוונטי.</translation>
 <translation id="4415276339145661267">‏ניהול חשבון Google שלך</translation>
-<translation id="4417111749295506837">‏כדי לסנכרן את המידע מ-Chrome ולשמור על אבטחת המידע ברכב, עליך ליצור נעילת פרופיל. יהיה עליך להשתמש בקוד או בסיסמה בכל כניסה לרכב.</translation>
 <translation id="4425140285732600465">המחיר נמצא במעקב. קבלת התראות על הנחות באתר כלשהו.</translation>
 <translation id="442518031075347249">‏לא תהיה לך יותר אפשרות להשתמש בכרטיס הווירטואלי באמצעות Google Pay. <ph name="BEGIN_LINK1" />כאן יש מידע נוסף על כרטיסים וירטואליים<ph name="END_LINK1" /></translation>
 <translation id="4428065317363009941">התאמה אישית של מודעות</translation>
@@ -962,7 +959,6 @@
 <translation id="5964869237734432770">הפסקה של תיאורי התמונות</translation>
 <translation id="5966233851250124270">‏הבחירה שלך תישמר ב-Chrome</translation>
 <translation id="5979084224081478209">בדיקת הסיסמאות</translation>
-<translation id="5985186846584605773">יצירה של נעילת פרופיל לרכב</translation>
 <translation id="5995726099713306770">להוריד שוב את הדף?</translation>
 <translation id="6000066717592683814">‏להמשיך להשתמש ב-Google</translation>
 <translation id="6000203700195075278">מעקב מחודש</translation>
@@ -1031,7 +1027,6 @@
 <translation id="6364438453358674297">האם להסיר את ההצעה מההיסטוריה?</translation>
 <translation id="6380100320871303656">‏מערכת Chrome טוענת מראש בתדירות גבוהה יותר דפים שסביר שהמשתמש יעבור אליהם. ההגדרה הזו יכולה לגרום לשימוש מוגבר בנתונים.</translation>
 <translation id="6382848304055775421">מתבצע ייצוא</translation>
-<translation id="6391355955030242704">‏כדי לסנכרן את המידע מ-Chrome ולשמור על אבטחת המידע ברכב, עליך ליצור נעילת פרופיל בהגדרות האבטחה. יהיה עליך להשתמש בקוד או בסיסמה בכל כניסה לרכב.</translation>
 <translation id="6394791151443660613">חיפוש: <ph name="SEARCH_QUERY" /></translation>
 <translation id="6395288395575013217">קישור</translation>
 <translation id="6397616442223433927">חזרה למצב אונליין</translation>

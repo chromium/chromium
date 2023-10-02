@@ -55,6 +55,7 @@
 <translation id="2030769033451695672">Հպեք՝ <ph name="URL_OF_THE_CURRENT_TAB" /> վերադառնալու համար</translation>
 <translation id="2079545284768500474">Հետարկել</translation>
 <translation id="2091887806945687916">Ձայն</translation>
+<translation id="2096716221239095980">Ջնջել բոլոր տվյալները</translation>
 <translation id="2117655453726830283">Հաջորդ սլայդը</translation>
 <translation id="2148716181193084225">Այսօր</translation>
 <translation id="216989819110952009">Նույնիսկ դնելով կանաչ ապակիներով ակնոցներ՝ Դորոթին և իր ընկերները շլացան այս</translation>
@@ -115,7 +116,6 @@
 <translation id="2913331724188855103">Թույլատրել կայքերին պահել և կարդալ քուքիների տվյալները (խորհուրդ է տրվում)</translation>
 <translation id="2932883381142163287">Հաղորդել չարաշահման մասին</translation>
 <translation id="2968755619301702150">Վկայագրերի դիտում</translation>
-<translation id="300526633675317032">Կազատվի կայքի օգտագործած <ph name="SIZE_IN_KB" /> տարածք:</translation>
 <translation id="3008272652534848354">Վերակայել թույլտվությունները</translation>
 <translation id="301521992641321250">Ավտոմատ արգելափակված է</translation>
 <translation id="3069226013421428034">Նշեք այն կայքերը, որոնց համար երրորդ կողմի ծառայությունների միջոցով մուտքը պետք է թույլատրվի։</translation>
@@ -192,7 +192,6 @@
 <translation id="4278390842282768270">Թույլատրված է</translation>
 <translation id="429312253194641664">Կայքում մեդիա ֆայլ է նվագարկվում</translation>
 <translation id="42981349822642051">Ընդարձակել</translation>
-<translation id="4336434711095810371">Մաքրել բոլոր տվյալները</translation>
 <translation id="4338831206024587507"><ph name="DOMAIN" /> տիրույթով բոլոր կայքերը</translation>
 <translation id="4402755511846832236">Արգելել կայքերին տեղեկանալ, երբ դուք ակտիվորեն օգտագործում եք այս սարքը</translation>
 <translation id="4412992751769744546">Թույլատրել 3-րդ կողմի քուքիները</translation>
@@ -283,6 +282,7 @@
 <translation id="5922853908706496913">Էկրանը ցուցադրվում է</translation>
 <translation id="5922967540311291836">Արգելափակել երրորդ կողմի քուքիները․</translation>
 <translation id="5939518447894949180">Վերակայել</translation>
+<translation id="5964247741333118902">Զետեղված բովանդակություն</translation>
 <translation id="5968921426641056619">Մուտքագրեք վեբ հասցեն</translation>
 <translation id="5975083100439434680">Փոքրացնել</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
@@ -351,6 +351,7 @@
 <translation id="7180611975245234373">Թարմացնել</translation>
 <translation id="7188508872042490670">Կայքերի տվյալները սարքում</translation>
 <translation id="7203150201908454328">Ընդլայնված</translation>
+<translation id="7219254577985949841">Ջնջե՞լ կայքի տվյալները</translation>
 <translation id="723171743924126238">Ընտրեք պատկերներ</translation>
 <translation id="7243308994586599757">Ընտրանքները հասանելի են էկրանի ստորին հատվածում</translation>
 <translation id="7250468141469952378">Ընտրված է <ph name="ITEM_COUNT" /> տարր</translation>

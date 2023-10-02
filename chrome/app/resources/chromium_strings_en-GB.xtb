@@ -339,7 +339,6 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="7467949745582939695">Relaunch Chromium?</translation>
 <translation id="7483335560992089831">Cannot install the same Chromium version that is currently running. Please close Chromium and try again.</translation>
 <translation id="753534427205733210">{0,plural, =1{Chromium will relaunch in 1 minute}other{Chromium will relaunch in # minutes}}</translation>
-<translation id="7561906087460245826">Also clear data from Chromium (<ph name="URL" />)</translation>
 <translation id="7582945390259497898">Chromium can estimate your interests. Later, a site that you visit can ask Chromium to see your interests in order to personalise the ads that you see.</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" /> installer</translation>
 <translation id="761356813943268536">Chromium is using your camera and microphone.</translation>

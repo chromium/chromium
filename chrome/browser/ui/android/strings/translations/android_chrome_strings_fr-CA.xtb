@@ -294,7 +294,6 @@ Un site peut envoyer un jeton de confiance à votre navigateur en fonction de vo
 Les jetons de confiance valides améliorent la confidentialité sur le Web et ne peuvent pas être utilisés pour savoir qui vous êtes.</translation>
 <translation id="2581165646603367611">Cette action entraînera la suppression de tous les témoins, caches et autres données provenant de sites que Chrome estime ne pas être importants.</translation>
 <translation id="2587052924345400782">Version plus récente dispo</translation>
-<translation id="2589302627584222634">Créer un verrouillage de profil</translation>
 <translation id="2593272815202181319">Espace simple</translation>
 <translation id="2603212228005142861">Connectez-vous pour gérer vos préférences</translation>
 <translation id="260403163289591229">Suivi</translation>
@@ -476,7 +475,6 @@ Les jetons de confiance valides améliorent la confidentialité sur le Web et ne
 <translation id="3479552764303398839">Pas maintenant</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /> sur le contenu suggéré</translation>
 <translation id="3495219333887281978">La zone de contenu dans le bas de l'écran de connexion est ouverte à mi-hauteur.</translation>
-<translation id="3498338220321963224">Vos données enregistrées seront effacées si le verrouillage de profil est retiré ultérieurement.</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="350276055892098337">Trier par le plus ancien</translation>
 <translation id="3507132249039706973">La protection standard est activée</translation>
@@ -650,7 +648,6 @@ Les jetons de confiance valides améliorent la confidentialité sur le Web et ne
 <translation id="4405636711880428279">Retirer votre carte virtuelle?</translation>
 <translation id="4409271659088619928">Vous utilisez <ph name="DSE" /> comme moteur de recherche. Consultez les instructions de celui-ci pour supprimer votre historique de recherche, le cas échéant.</translation>
 <translation id="4415276339145661267">Gérer votre compte Google</translation>
-<translation id="4417111749295506837">Pour synchroniser vos données Chrome et sécuriser vos données dans le véhicule, vous devez créer un verrouillage de profil. Vous utiliserez un code ou un mot de passe chaque fois que vous entrerez dans le véhicule.</translation>
 <translation id="4425140285732600465">Suivi des prix activé. Obtenez des alertes si le prix est réduit sur un site.</translation>
 <translation id="442518031075347249">Vous ne pourrez plus utiliser votre carte virtuelle avec Google Pay. <ph name="BEGIN_LINK1" />En savoir plus sur les cartes virtuelles<ph name="END_LINK1" /></translation>
 <translation id="4428065317363009941">Personnalisation des annonces</translation>
@@ -962,7 +959,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5964869237734432770">Arrêter les descriptions</translation>
 <translation id="5966233851250124270">Chrome se souviendra de votre choix</translation>
 <translation id="5979084224081478209">Vérifier les mots de passe</translation>
-<translation id="5985186846584605773">Créez un verrouillage de profil pour votre voiture</translation>
 <translation id="5995726099713306770">Télécharger la page de nouveau?</translation>
 <translation id="6000066717592683814">Conserver Google</translation>
 <translation id="6000203700195075278">Se réabonner</translation>
@@ -1031,7 +1027,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6364438453358674297">Supprimer la suggestion de l'historique?</translation>
 <translation id="6380100320871303656">Précharge plus fréquemment les pages que vous êtes susceptible de visiter selon Chrome. Ce paramètre peut entraîner une augmentation de la consommation de données.</translation>
 <translation id="6382848304055775421">Exportation en cours…</translation>
-<translation id="6391355955030242704">Pour synchroniser vos données Chrome et sécuriser vos données dans le véhicule, vous devez créer un verrouillage de profil dans vos paramètres de sécurité. Vous utiliserez un code ou un mot de passe chaque fois que vous entrerez dans le véhicule.</translation>
 <translation id="6394791151443660613">Recherche : <ph name="SEARCH_QUERY" /></translation>
 <translation id="6395288395575013217">LIEN</translation>
 <translation id="6397616442223433927">De nouveau en ligne</translation>

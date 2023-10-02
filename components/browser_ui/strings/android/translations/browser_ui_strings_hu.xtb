@@ -55,6 +55,7 @@
 <translation id="2030769033451695672">Koppintson, hogy visszatérjen ide: <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">Visszavonás</translation>
 <translation id="2091887806945687916">Hang</translation>
+<translation id="2096716221239095980">Minden adat törlése</translation>
 <translation id="2117655453726830283">Következő dia</translation>
 <translation id="2148716181193084225">Ma</translation>
 <translation id="216989819110952009">Dorkát és barátait még a zöld szemüvegen át is elkápráztatta a</translation>
@@ -115,7 +116,6 @@
 <translation id="2913331724188855103">Cookie-adatok mentésének és olvasásának engedélyezése a webhelyeken (ajánlott)</translation>
 <translation id="2932883381142163287">Visszaélés bejelentése</translation>
 <translation id="2968755619301702150">Tanúsítványmegtekintő</translation>
-<translation id="300526633675317032">Ezzel törli a webhely teljes tárhelyét: <ph name="SIZE_IN_KB" />.</translation>
 <translation id="3008272652534848354">Engedélyek visszavonása</translation>
 <translation id="301521992641321250">Automatikusan letiltva</translation>
 <translation id="3069226013421428034">Engedélyezheti a harmadik félen keresztüli bejelentkezést adott webhelyeken.</translation>
@@ -192,7 +192,6 @@
 <translation id="4278390842282768270">Engedélyezve</translation>
 <translation id="429312253194641664">Az egyik webhely médiatartalmat játszik le</translation>
 <translation id="42981349822642051">Kibontás</translation>
-<translation id="4336434711095810371">Az összes adat törlése</translation>
 <translation id="4338831206024587507">Minden <ph name="DOMAIN" /> alatti webhely</translation>
 <translation id="4402755511846832236">A webhelyek nem kaphatnak információt arról, hogy Ön mikor használja aktívan ezt az eszközt.</translation>
 <translation id="4412992751769744546">Harmadik felektől származó cookie-k engedélyezése</translation>
@@ -283,6 +282,7 @@
 <translation id="5922853908706496913">Képernyő megosztása</translation>
 <translation id="5922967540311291836">Harmadik féltől származó cookie-k letiltása</translation>
 <translation id="5939518447894949180">Visszaállítás</translation>
+<translation id="5964247741333118902">Beágyazott tartalom</translation>
 <translation id="5968921426641056619">Adja meg a kívánt internetcímet</translation>
 <translation id="5975083100439434680">Kicsinyítés</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
@@ -351,6 +351,7 @@
 <translation id="7180611975245234373">Frissítés</translation>
 <translation id="7188508872042490670">Eszközön tárolt webhelyadatok</translation>
 <translation id="7203150201908454328">Kibontott</translation>
+<translation id="7219254577985949841">Törli a webhelyadatokat?</translation>
 <translation id="723171743924126238">Képek kiválasztása</translation>
 <translation id="7243308994586599757">A beállítások a képernyő alsó részén találhatók</translation>
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> elem kiválasztva</translation>

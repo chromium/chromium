@@ -55,6 +55,7 @@
 <translation id="2030769033451695672">Dodirnite da se vratite na <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">Vrati</translation>
 <translation id="2091887806945687916">Zvuk</translation>
+<translation id="2096716221239095980">Izbriši sve podatke</translation>
 <translation id="2117655453726830283">Sljedeći slajd</translation>
 <translation id="2148716181193084225">Danas</translation>
 <translation id="216989819110952009">Čak i s očima zaštićenim zelenim naočalama, Dorothy i njene prijateljice su isprva bile zaslijepljene</translation>
@@ -115,7 +116,6 @@
 <translation id="2913331724188855103">Omogućite web lokacijama da sačuvaju i čitaju podatke o kolačićima (preporučeno)</translation>
 <translation id="2932883381142163287">Prijavite zloupotrebu</translation>
 <translation id="2968755619301702150">Preglednik certifikata</translation>
-<translation id="300526633675317032">Ovim će se izbrisati svih <ph name="SIZE_IN_KB" /> web pohrane.</translation>
 <translation id="3008272652534848354">Poništi odobrenja</translation>
 <translation id="301521992641321250">Automatski blokirano</translation>
 <translation id="3069226013421428034">Dozvolite prijavu trećih stana za određenu web lokaciju.</translation>
@@ -192,7 +192,6 @@
 <translation id="4278390842282768270">Dozvoljeno</translation>
 <translation id="429312253194641664">Web lokacija reproducira medij</translation>
 <translation id="42981349822642051">Proširi</translation>
-<translation id="4336434711095810371">Obriši sve podatke</translation>
 <translation id="4338831206024587507">Sve web lokacije pod domenom <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">Blokirajte web lokacijama informacije o vašem aktivnom korištenju ovog uređaja</translation>
 <translation id="4412992751769744546">Dopusti kolačiće trećih strana</translation>
@@ -283,6 +282,7 @@
 <translation id="5922853908706496913">Dijeljenje ekrana</translation>
 <translation id="5922967540311291836">Blokirajte kolačiće treće strane:</translation>
 <translation id="5939518447894949180">Vrati na zadano</translation>
+<translation id="5964247741333118902">Ugrađeni sadržaj</translation>
 <translation id="5968921426641056619">Unesite web adresu</translation>
 <translation id="5975083100439434680">Umanjivanje</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
@@ -351,6 +351,7 @@
 <translation id="7180611975245234373">Osvježi</translation>
 <translation id="7188508872042490670">Podaci web lokacije na uređaju</translation>
 <translation id="7203150201908454328">Prošireno</translation>
+<translation id="7219254577985949841">Izbrisati podatke web lokacije?</translation>
 <translation id="723171743924126238">Odaberi slike</translation>
 <translation id="7243308994586599757">Opcije su dostupne pri dnu ekrana</translation>
 <translation id="7250468141469952378">Odabrano <ph name="ITEM_COUNT" /></translation>

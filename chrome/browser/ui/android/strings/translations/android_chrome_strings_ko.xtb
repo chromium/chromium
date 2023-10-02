@@ -294,7 +294,6 @@
 비공개 상태 토큰은 웹의 개인 정보 보호를 개선하나, 나를 식별하는 데 사용될 수는 없습니다.</translation>
 <translation id="2581165646603367611">이를 통해 쿠키, 캐시 및 Chrome에서 중요하다고 간주하지 않는 사이트의 기타 데이터가 삭제됩니다.</translation>
 <translation id="2587052924345400782">최신 버전 사용 가능</translation>
-<translation id="2589302627584222634">프로필 잠금 만들기</translation>
 <translation id="2593272815202181319">고정 너비</translation>
 <translation id="2603212228005142861">환경설정을 관리하려면 로그인하세요</translation>
 <translation id="260403163289591229">팔로우 중</translation>
@@ -476,7 +475,6 @@
 <translation id="3479552764303398839">나중에</translation>
 <translation id="3493531032208478708">추천 콘텐츠 <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="3495219333887281978">로그인 하단 시트가 절반 높이로 열렸습니다.</translation>
-<translation id="3498338220321963224">나중에 프로필 잠금을 삭제하면 저장된 데이터가 삭제됩니다.</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="350276055892098337">오래된 항목순 정렬</translation>
 <translation id="3507132249039706973">표준 보호 모드를 사용 중입니다.</translation>
@@ -650,7 +648,6 @@
 <translation id="4405636711880428279">가상 카드를 삭제하시겠습니까?</translation>
 <translation id="4409271659088619928">기본 검색엔진은 <ph name="DSE" />입니다. 해당 검색엔진에서 검색 기록을 삭제할 수 있는 경우 검색 기록 삭제 안내를 확인하세요.</translation>
 <translation id="4415276339145661267">Google 계정 관리</translation>
-<translation id="4417111749295506837">자동차에서 Chrome 정보를 동기화하고 데이터를 안전하게 유지하려면 프로필 잠금을 만들어야 합니다. 차량에 탑승할 때마다 코드나 비밀번호를 사용하게 됩니다.</translation>
 <translation id="4425140285732600465">가격 추적 중입니다. 사이트에서 가격이 인하되면 알림이 전송됩니다.</translation>
 <translation id="442518031075347249">더 이상 Google Pay에서 가상 카드를 사용할 수 없습니다. <ph name="BEGIN_LINK1" />가상 카드에 관해 자세히 알아보기<ph name="END_LINK1" /></translation>
 <translation id="4428065317363009941">광고 개인 최적화</translation>
@@ -962,7 +959,6 @@
 <translation id="5964869237734432770">이미지 설명 중지</translation>
 <translation id="5966233851250124270">선택사항이 Chrome에 저장됩니다</translation>
 <translation id="5979084224081478209">비밀번호 확인</translation>
-<translation id="5985186846584605773">자동차용 프로필 잠금 만들기</translation>
 <translation id="5995726099713306770">페이지를 다시 다운로드하시겠습니까?</translation>
 <translation id="6000066717592683814">계속 Google 사용</translation>
 <translation id="6000203700195075278">다시 팔로우</translation>
@@ -1031,7 +1027,6 @@
 <translation id="6364438453358674297">기록에서 제안을 삭제하시겠습니까?</translation>
 <translation id="6380100320871303656">Chrome에서 사용자가 방문할 가능성이 높다고 생각되는 페이지를 더 자주 미리 로드합니다. 이 설정을 사용하면 데이터 사용량이 늘어날 수 있습니다.</translation>
 <translation id="6382848304055775421">내보내는 중</translation>
-<translation id="6391355955030242704">자동차에서 Chrome 정보를 동기화하고 데이터를 안전하게 유지하려면 보안 설정에서 프로필 잠금을 만들어야 합니다. 차량에 탑승할 때마다 코드나 비밀번호를 사용하게 됩니다.</translation>
 <translation id="6394791151443660613">검색: <ph name="SEARCH_QUERY" /></translation>
 <translation id="6395288395575013217">링크</translation>
 <translation id="6397616442223433927">인터넷에 다시 연결됨</translation>

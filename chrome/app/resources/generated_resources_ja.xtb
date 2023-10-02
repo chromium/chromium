@@ -1734,7 +1734,6 @@
 <translation id="2348176352564285430">アプリ: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="2348729153658512593"><ph name="WINDOW_TITLE" /> - 権限がリクエストされました。対応するには、Ctrl+Forward キーを押してください</translation>
 <translation id="234889437187286781">データの読み込み中にエラーが発生しました</translation>
-<translation id="2348939752188770364">入力履歴の消去...</translation>
 <translation id="2349610121459545414">このサイトによる位置情報へのアクセスを引き続き許可する</translation>
 <translation id="2349896577940037438">[その他のウェブとアプリのアクティビティ] の設定がオンになっている場合、このデータは Google アカウントに保存されます。データの確認、削除、アカウント設定の変更は、account.google.com で行うことができます。</translation>
 <translation id="2350133097354918058">再読み込みされました</translation>

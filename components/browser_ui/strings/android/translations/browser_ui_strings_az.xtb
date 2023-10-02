@@ -55,6 +55,7 @@
 <translation id="2030769033451695672"><ph name="URL_OF_THE_CURRENT_TAB" /> bölməsinə qayıtmaq üçün toxunun</translation>
 <translation id="2079545284768500474">Geri qaytarın</translation>
 <translation id="2091887806945687916">Səs</translation>
+<translation id="2096716221239095980">Bütün datanı silin</translation>
 <translation id="2117655453726830283">Növbəti slayd</translation>
 <translation id="2148716181193084225">Bu gün</translation>
 <translation id="216989819110952009">Doroti və dostları gözlərini yaşıl eynəklə qoruduğu halda, əvvəlcə gözləri qamaşdı</translation>
@@ -115,7 +116,6 @@
 <translation id="2913331724188855103">Saytlara kuki datanı saxlamağa və oxumağa imkan verir (tövsiyə olunur)</translation>
 <translation id="2932883381142163287">Sui-istifadəni xəbər verin</translation>
 <translation id="2968755619301702150">Sertifikat izləyici</translation>
-<translation id="300526633675317032">Bu, veb sayt yaddaşının <ph name="SIZE_IN_KB" /> hissəsini siləcək</translation>
 <translation id="3008272652534848354">İcazələri sıfırlayın</translation>
 <translation id="301521992641321250">Avtomatik olaraq blok edildi</translation>
 <translation id="3069226013421428034">Müəyyən bir sayt üçün üçüncü tərəfin girişinə icazə verin.</translation>
@@ -192,7 +192,6 @@
 <translation id="4278390842282768270">İcazə verilib</translation>
 <translation id="429312253194641664">Sayt media oxudur</translation>
 <translation id="42981349822642051">Genişləndirin</translation>
-<translation id="4336434711095810371">Bütün datanı silin</translation>
 <translation id="4338831206024587507"><ph name="DOMAIN" /> domenindəki bütün saytlar</translation>
 <translation id="4402755511846832236">Saytların bu cihazdan nə zaman aktiv şəkildə istifadə etdiyinizi bilməsini bloklayın</translation>
 <translation id="4412992751769744546">Üçüncü tərəf kukilərinə icazə verin</translation>
@@ -283,6 +282,7 @@
 <translation id="5922853908706496913">Ekranınız paylaşılır</translation>
 <translation id="5922967540311291836">Üçüncü tərəf kukiləri bloklayın:</translation>
 <translation id="5939518447894949180">Sıfırlayın</translation>
+<translation id="5964247741333118902">Daxil edilmiş kontent</translation>
 <translation id="5968921426641056619">Veb ünvanını daxil edin</translation>
 <translation id="5975083100439434680">Kiçildin</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" />-<ph name="WARNING_MESSAGE" /></translation>
@@ -351,6 +351,7 @@
 <translation id="7180611975245234373">Yeniləyin</translation>
 <translation id="7188508872042490670">Cihazda olan sayt məlumatları</translation>
 <translation id="7203150201908454328">Genişləndirilmiş</translation>
+<translation id="7219254577985949841">Sayt datası silinsin?</translation>
 <translation id="723171743924126238">Şəkil seçin</translation>
 <translation id="7243308994586599757">Seçənəklər ekranın aşağısına yaxın yerdə əlçatandır</translation>
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> seçildi</translation>

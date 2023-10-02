@@ -294,7 +294,6 @@ Batay sa iyong pakikipag-ugnayan sa isang site, tulad ng regular na pag-sign in 
 Pinapahusay ng mga private state token ang privacy sa web at hindi magagamit ang mga ito para malaman kung sino ka.</translation>
 <translation id="2581165646603367611">Iki-clear nito ang cookies, cache at iba pang data ng mga site na sa tingin ng Chrome ay hindi mahalaga.</translation>
 <translation id="2587052924345400782">May available na mas bagong bersyon</translation>
-<translation id="2589302627584222634">Gumawa ng lock ng profile</translation>
 <translation id="2593272815202181319">Monospace</translation>
 <translation id="2603212228005142861">Mag-sign in para pamahalaan ang iyong mga preference</translation>
 <translation id="260403163289591229">Sinusubaybayan</translation>
@@ -476,7 +475,6 @@ Pinapahusay ng mga private state token ang privacy sa web at hindi magagamit ang
 <translation id="3479552764303398839">Hindi ngayon</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /> tungkol sa iminumungkahing content</translation>
 <translation id="3495219333887281978">Nakabukas ang bottom sheet sa pag-sign in nang kalahati ang taas.</translation>
-<translation id="3498338220321963224">Buburahin ang iyong naka-save na data kung aalisin sa ibang pagkakataon ang lock ng profile.</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="350276055892098337">Ayon sa pinakaluma</translation>
 <translation id="3507132249039706973">Naka-on ang Standard Protection</translation>
@@ -650,7 +648,6 @@ Pinapahusay ng mga private state token ang privacy sa web at hindi magagamit ang
 <translation id="4405636711880428279">Alisin ang iyong virtual na card?</translation>
 <translation id="4409271659088619928"><ph name="DSE" /> ang iyong search engine. Tingnan ang mga tagubilin nito para sa pag-delete sa iyong history ng paghahanap, kung naaangkop.</translation>
 <translation id="4415276339145661267">Pamahalaan ang iyong Google Account</translation>
-<translation id="4417111749295506837">Para ma-sync ang iyong impormasyon sa Chrome at mapanatiling secure ang data mo sa kotse, dapat kang gumawa ng lock ng profile. Gagamit ka ng code o password sa tuwing papasok ka sa kotse.</translation>
 <translation id="4425140285732600465">Sinusubaybayan ang presyo. Makatanggap ng mga alerto kapag bumaba ang presyo sa alinmang site.</translation>
 <translation id="442518031075347249">Hindi mo na magagamit ang iyong virtual na card sa Google Pay. <ph name="BEGIN_LINK1" />Matuto pa tungkol sa mga virtual na card<ph name="END_LINK1" /></translation>
 <translation id="4428065317363009941">Pag-personalize ng ad</translation>
@@ -962,7 +959,6 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph
 <translation id="5964869237734432770">Ihinto ang desc ng larawan</translation>
 <translation id="5966233851250124270">Matatandaan ng Chrome ang iyong napili</translation>
 <translation id="5979084224081478209">Suriin ang mga password</translation>
-<translation id="5985186846584605773">Gumawa ng lock ng profile para sa iyong kotse</translation>
 <translation id="5995726099713306770">I-download ulit ang page?</translation>
 <translation id="6000066717592683814">Panatilihin ang Google</translation>
 <translation id="6000203700195075278">Subaybayan ulit</translation>
@@ -1031,7 +1027,6 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="6364438453358674297">Alisin ang suhestyon mula sa history?</translation>
 <translation id="6380100320871303656">Mas madalas na nagpi-preload ng mga page na sa palagay ng Chrome ay malamang mong bisitahin. Posibleng magresulta sa mas malakas na paggamit ng data ang setting na ito.</translation>
 <translation id="6382848304055775421">Ine-export</translation>
-<translation id="6391355955030242704">Para ma-sync ang iyong impormasyon sa Chrome at mapanatiling secure ang data mo sa kotse, dapat kang gumawa ng lock ng profile sa iyong mga setting ng seguridad. Gagamit ka ng code o password sa tuwing papasok ka sa kotse.</translation>
 <translation id="6394791151443660613">Hanapin: <ph name="SEARCH_QUERY" /></translation>
 <translation id="6395288395575013217">LINK</translation>
 <translation id="6397616442223433927">Online ulit</translation>

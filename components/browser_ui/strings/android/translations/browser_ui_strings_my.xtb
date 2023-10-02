@@ -55,6 +55,7 @@
 <translation id="2030769033451695672"><ph name="URL_OF_THE_CURRENT_TAB" /> သို့ပြန်သွားရန် တို့ပါ</translation>
 <translation id="2079545284768500474">တစ်ဆင့်နောက်ပြန်ရန်</translation>
 <translation id="2091887806945687916">အသံ</translation>
+<translation id="2096716221239095980">ဒေတာအားလုံး ဖျက်ရန်</translation>
 <translation id="2117655453726830283">လာမည့်ဆလိုက်</translation>
 <translation id="2148716181193084225">ယနေ့</translation>
 <translation id="216989819110952009">မျက်လုံးများကို အစိမ်းရောင်မျက်မှန်ဖြင့် ကာကွယ်ထားသော်လည်း Dorothy နှင့် သူငယ်ချင်းများက အစပိုင်းတွင် မျက်စိကျိန်းသွားကြသည်</translation>
@@ -115,7 +116,6 @@
 <translation id="2913331724188855103">ဆိုဒ်များကို ကွက်ကီးများ ဖတ်ရန်နှင့် သိမ်းရန် ခွင့်ပြုသည် (အကြံပြုထား)</translation>
 <translation id="2932883381142163287">အလွဲသုံးစားပြုခြင်းအား အစီရင်ခံရန်</translation>
 <translation id="2968755619301702150">လက်မှတ်ကို ကြည့်ရှုသူ</translation>
-<translation id="300526633675317032">၎င်းသည် ဝဘ်ဆိုက်သိုလှောင်ခန်း၏ <ph name="SIZE_IN_KB" /> ကို ရှင်းလင်းလိုက်ပါမည်။</translation>
 <translation id="3008272652534848354">ခွင့်ပြုချက်များကို ပြင်ဆင်သတ်မှတ်ရန်</translation>
 <translation id="301521992641321250">အလိုအလျောက် ပိတ်ထားသည်</translation>
 <translation id="3069226013421428034">သတ်မှတ်ဝဘ်ဆိုက်အတွက် ပြင်ပအဖွဲ့အစည်းသို့ လက်မှတ်ထိုးဝင်ခြင်းကို ခွင့်ပြုနိုင်သည်။</translation>
@@ -192,7 +192,6 @@
 <translation id="4278390842282768270">ခွင့်ပြုထား</translation>
 <translation id="429312253194641664">ဝဘ်ဆိုက်တစ်ခုက မီဒီယာကို ဖွင့်နေသည်</translation>
 <translation id="42981349822642051">တိုးချဲ့</translation>
-<translation id="4336434711095810371">ဒေတာအားလုံး ရှင်းထုတ်ရန်</translation>
 <translation id="4338831206024587507"><ph name="DOMAIN" /> အောက်ရှိ ဝဘ်ဆိုက်အားလုံး</translation>
 <translation id="4402755511846832236">ဤကိရိယာသုံးနေချိန်ကို ဝဘ်ဆိုက်များကသိခြင်းအား ပိတ်ထားရန်</translation>
 <translation id="4412992751769744546">တတိယပါတီ ကွတ်ကီးများ ခွင့်ပြု</translation>
@@ -283,6 +282,7 @@
 <translation id="5922853908706496913">သင့်ဖန်သားပြင်ကို မျှဝေနေသည်</translation>
 <translation id="5922967540311291836">ပြင်ပကုမ္ပဏီ၏ကွတ်ကီးများကို ပိတ်ထားခြင်း-</translation>
 <translation id="5939518447894949180">ပြင်ဆင်သတ်မှတ်ရန်</translation>
+<translation id="5964247741333118902">မြှုပ်သွင်းထားသော အကြောင်းအရာ</translation>
 <translation id="5968921426641056619">ဝဘ်လိပ်စာထည့်ပါ</translation>
 <translation id="5975083100439434680">ဇူးမ်ဖြုတ်ရန်</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
@@ -351,6 +351,7 @@
 <translation id="7180611975245234373">ပြန်လည်စတင်ရန်</translation>
 <translation id="7188508872042490670">စက်ပစ္စည်းပေါ်ရှိ ဝဘ်ဆိုက်ဒေတာ</translation>
 <translation id="7203150201908454328">တိုးချဲ့ထား</translation>
+<translation id="7219254577985949841">ဝဘ်ဆိုက်ဒေတာ ဖျက်မလား။</translation>
 <translation id="723171743924126238">ပုံများကို ရွေးရန်</translation>
 <translation id="7243308994586599757">ရွေးစရာများမှာ မျက်နှာပြင်၏ အောက်ခြေပိုင်းနားမှာ ရှိကြသည်</translation>
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> ခု ရွေးထားသည်</translation>

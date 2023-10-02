@@ -294,7 +294,6 @@ Dựa trên tương tác của bạn với một trang web (chẳng hạn như t
 Mã thông báo trạng thái riêng tư giúp cải thiện quyền riêng tư trên web và các bên sẽ không thể dùng mã này để tìm ra bạn là ai.</translation>
 <translation id="2581165646603367611">Thao tác này sẽ xóa cookie, bộ nhớ đệm và các dữ liệu khác của các trang web mà Chrome cho rằng không quan trọng.</translation>
 <translation id="2587052924345400782">Đã có phiên bản mới hơn</translation>
-<translation id="2589302627584222634">Tạo khoá hồ sơ</translation>
 <translation id="2593272815202181319">Monospace</translation>
 <translation id="2603212228005142861">Đăng nhập để quản lý lựa chọn ưu tiên của bạn</translation>
 <translation id="260403163289591229">Đang theo dõi</translation>
@@ -476,7 +475,6 @@ Mã thông báo trạng thái riêng tư giúp cải thiện quyền riêng tư
 <translation id="3479552764303398839">Để sau</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /> về nội dung đề xuất</translation>
 <translation id="3495219333887281978">Bảng đăng nhập ở dưới cùng mở ra trong nửa dưới màn hình.</translation>
-<translation id="3498338220321963224">Dữ liệu bạn đã lưu sẽ bị xoá nếu sau này bạn xoá khoá hồ sơ.</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="350276055892098337">Cũ nhất xếp trước</translation>
 <translation id="3507132249039706973">Tính năng Bảo vệ thông thường đang bật</translation>
@@ -650,7 +648,6 @@ Mã thông báo trạng thái riêng tư giúp cải thiện quyền riêng tư
 <translation id="4405636711880428279">Xoá thẻ ảo?</translation>
 <translation id="4409271659088619928">Bạn đang dùng công cụ tìm kiếm <ph name="DSE" />. Để xóa nhật ký tìm kiếm, hãy xem hướng dẫn (nếu có) của công cụ tìm kiếm đó.</translation>
 <translation id="4415276339145661267">Quản lý Tài khoản Google của bạn</translation>
-<translation id="4417111749295506837">Để đồng bộ hoá thông tin trên Chrome và đảm bảo an toàn cho dữ liệu của bạn trong ô tô, bạn phải tạo khoá hồ sơ. Bạn sẽ sử dụng mã hoặc mật khẩu mỗi khi vào xe.</translation>
 <translation id="4425140285732600465">Đang theo dõi giá. Nhận thông báo nếu có chương trình giảm giá trên một trang web bất kỳ.</translation>
 <translation id="442518031075347249">Bạn sẽ không thể sử dụng thẻ ảo qua Google Pay được nữa. <ph name="BEGIN_LINK1" />Tìm hiểu thêm về thẻ ảo<ph name="END_LINK1" /></translation>
 <translation id="4428065317363009941">Cá nhân hoá quảng cáo</translation>
@@ -962,7 +959,6 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="5964869237734432770">Dừng lấy nội dung mô tả hình ảnh</translation>
 <translation id="5966233851250124270">Chrome sẽ ghi nhớ lựa chọn của bạn</translation>
 <translation id="5979084224081478209">Kiểm tra mật khẩu</translation>
-<translation id="5985186846584605773">Tạo khoá hồ sơ cho ô tô</translation>
 <translation id="5995726099713306770">Tải trang xuống lần nữa?</translation>
 <translation id="6000066717592683814">Giữ Google làm công cụ tìm kiếm mặc định</translation>
 <translation id="6000203700195075278">Theo dõi lại</translation>
@@ -1031,7 +1027,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="6364438453358674297">Xóa đề xuất khỏi lịch sử?</translation>
 <translation id="6380100320871303656">Chrome sẽ thường xuyên tải trước các trang mà trình duyệt cho rằng bạn có thể sẽ truy cập. Chế độ cài đặt này có thể dẫn đến việc dùng dữ liệu nhiều hơn.</translation>
 <translation id="6382848304055775421">Đang xuất</translation>
-<translation id="6391355955030242704">Để đồng bộ hoá thông tin trên Chrome và đảm bảo an toàn cho dữ liệu của bạn trong ô tô, bạn phải tạo khoá hồ sơ trong phần cài đặt bảo mật. Bạn sẽ sử dụng mã hoặc mật khẩu mỗi khi vào xe.</translation>
 <translation id="6394791151443660613">Tìm kiếm: <ph name="SEARCH_QUERY" /></translation>
 <translation id="6395288395575013217">LIÊN KẾT</translation>
 <translation id="6397616442223433927">Đã có kết nối mạng trở lại</translation>

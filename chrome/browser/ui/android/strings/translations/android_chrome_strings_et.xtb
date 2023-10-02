@@ -294,7 +294,6 @@ Teie interaktsioonide põhjal saidiga (nt kontole regulaarselt sisse logimine) s
 Privaatse oleku märgid täiustavad veebis privaatsust ja neid ei saa kasutada teie isiku tuvastamiseks.</translation>
 <translation id="2581165646603367611">See tühjendab vahemälu, kustutab küpsised ja muud andmed, mis pärinevad Chrome'i arvates ebatähtsatelt saitidelt.</translation>
 <translation id="2587052924345400782">Saadaval on uuem versioon</translation>
-<translation id="2589302627584222634">Profiililuku loomine</translation>
 <translation id="2593272815202181319">Püsisammkiri</translation>
 <translation id="2603212228005142861">Eelistuse haldamiseks sisselogimine</translation>
 <translation id="260403163289591229">Jälgitav</translation>
@@ -476,7 +475,6 @@ Privaatse oleku märgid täiustavad veebis privaatsust ja neid ei saa kasutada t
 <translation id="3479552764303398839">Mitte praegu</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /> soovitatud sisu kohta</translation>
 <translation id="3495219333887281978">Sisselogimise alumine leht on avatud poolel kõrgusel.</translation>
-<translation id="3498338220321963224">Teie salvestatud andmed kustutatakse, kui profiililukk hiljem eemaldatakse.</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="350276055892098337">Sordi vanima järgi</translation>
 <translation id="3507132249039706973">Tavakaitse on sisse lülitatud</translation>
@@ -650,7 +648,6 @@ Privaatse oleku märgid täiustavad veebis privaatsust ja neid ei saa kasutada t
 <translation id="4405636711880428279">Kas eemaldada virtuaalkaart?</translation>
 <translation id="4409271659088619928">Teie otsingumootor on <ph name="DSE" />. Vaadake selle juhiseid otsinguajaloo kustutamise kohta, kui see on asjakohane.</translation>
 <translation id="4415276339145661267">Google'i konto haldamine</translation>
-<translation id="4417111749295506837">Autos Chrome'i teabe sünkroonimiseks ja andmete kaitsmiseks peate looma profiililuku. Kasutate koodi või parooli iga kord, kui autosse sisenete.</translation>
 <translation id="4425140285732600465">Jälgite hinda. Teile saadetakse märguanne, kui hind mõnel saidil langeb.</translation>
 <translation id="442518031075347249">Te ei saa enam Google Payga virtuaalkaarti kasutada. <ph name="BEGIN_LINK1" />Lisateave virtuaalkaartide kohta<ph name="END_LINK1" /></translation>
 <translation id="4428065317363009941">Reklaamide isikupärastamine</translation>
@@ -962,7 +959,6 @@ Seade muutmiseks <ph name="BEGIN_LINK" />lähtestage sünkroonimine<ph name="END
 <translation id="5964869237734432770">Piltide kirjelduste peatam.</translation>
 <translation id="5966233851250124270">Chrome jätab teie valiku meelde</translation>
 <translation id="5979084224081478209">Kontrolli paroole</translation>
-<translation id="5985186846584605773">Looge oma auto jaoks profiililukk</translation>
 <translation id="5995726099713306770">Kas soovite lehe uuesti alla laadida?</translation>
 <translation id="6000066717592683814">Säilita Google</translation>
 <translation id="6000203700195075278">Jälgi uuesti</translation>
@@ -1031,7 +1027,6 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="6364438453358674297">Kas eemaldada soovitus ajaloost?</translation>
 <translation id="6380100320871303656">Lehed, mida Chrome'i arvates tõenäoliselt külastate, eellaaditakse sagedamini. See seade võib suurendada andmemahu kasutust.</translation>
 <translation id="6382848304055775421">Eksportimine</translation>
-<translation id="6391355955030242704">Autos Chrome'i teabe sünkroonimiseks ja andmete kaitsmiseks peate turvaseadetes looma profiililuku. Kasutate koodi või parooli iga kord, kui autosse sisenete.</translation>
 <translation id="6394791151443660613">Otsing: <ph name="SEARCH_QUERY" /></translation>
 <translation id="6395288395575013217">LINK</translation>
 <translation id="6397616442223433927">Võrguühendus taastus</translation>

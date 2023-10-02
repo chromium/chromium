@@ -337,7 +337,6 @@ Chromium kan ikke gjenopprette innstillingen dine.</translation>
 <translation id="7467949745582939695">Vil du starte Chromium på nytt?</translation>
 <translation id="7483335560992089831">Kan ikke installere den samme Chromium-versjonen som kjører. Lukk Chromium og prøv på nytt.</translation>
 <translation id="753534427205733210">{0,plural, =1{Chromium startes på nytt om 1 minutt}other{Chromium startes på nytt om # minutter}}</translation>
-<translation id="7561906087460245826">Fjern dataene fra Chromium også (<ph name="URL" />)</translation>
 <translation id="7582945390259497898">Chromium kan anslå interessene dine. Senere kan nettsteder du besøker, spørre Chromium om interessene dine for å kunne sette personlig preg på annonsene du ser.</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" />-installasjonsprogram</translation>
 <translation id="761356813943268536">Chromium bruker kameraet og mikrofonen din.</translation>

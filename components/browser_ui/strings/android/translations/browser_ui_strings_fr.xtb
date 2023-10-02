@@ -55,6 +55,7 @@
 <translation id="2030769033451695672">Appuyez pour revenir à l'adresse <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">Annuler</translation>
 <translation id="2091887806945687916">Son</translation>
+<translation id="2096716221239095980">Supprimer toutes les données</translation>
 <translation id="2117655453726830283">Diapositive suivante</translation>
 <translation id="2148716181193084225">Aujourd'hui</translation>
 <translation id="216989819110952009">Malgré leurs lunettes vertes, Dorothée et ses amis furent d'abord éblouis par l'éclat</translation>
@@ -115,7 +116,6 @@
 <translation id="2913331724188855103">Autoriser les sites à enregistrer et à lire les données des cookies (recommandé)</translation>
 <translation id="2932883381142163287">Signaler un abus</translation>
 <translation id="2968755619301702150">Lecteur de certificat</translation>
-<translation id="300526633675317032">Cette action aura pour effet de libérer l'espace de stockage utilisé pour les données de site (<ph name="SIZE_IN_KB" />).</translation>
 <translation id="3008272652534848354">Réinitialiser les autorisations</translation>
 <translation id="301521992641321250">Bloquée automatiquement</translation>
 <translation id="3069226013421428034">Autorisez la connexion tierce pour un site spécifique.</translation>
@@ -192,7 +192,6 @@
 <translation id="4278390842282768270">Autorisé</translation>
 <translation id="429312253194641664">Un site est en train de lire un contenu multimédia</translation>
 <translation id="42981349822642051">Développer</translation>
-<translation id="4336434711095810371">Effacer toutes les données</translation>
 <translation id="4338831206024587507">Tous les sites du domaine <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">Empêcher les sites de savoir si vous utilisez activement cet appareil</translation>
 <translation id="4412992751769744546">Autoriser les cookies tiers</translation>
@@ -283,6 +282,7 @@
 <translation id="5922853908706496913">Partage de votre écran…</translation>
 <translation id="5922967540311291836">Bloquer les cookies tiers :</translation>
 <translation id="5939518447894949180">Réinitialiser</translation>
+<translation id="5964247741333118902">Contenu intégré</translation>
 <translation id="5968921426641056619">Saisissez une adresse Web</translation>
 <translation id="5975083100439434680">Zoom arrière</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
@@ -351,6 +351,7 @@
 <translation id="7180611975245234373">Actualiser</translation>
 <translation id="7188508872042490670">Données des sites sur l'appareil</translation>
 <translation id="7203150201908454328">Développé</translation>
+<translation id="7219254577985949841">Supprimer les données du site ?</translation>
 <translation id="723171743924126238">Sélectionner des images</translation>
 <translation id="7243308994586599757">Options disponibles au bas de l'écran</translation>
 <translation id="7250468141469952378">Nombre d'éléments sélectionnés : <ph name="ITEM_COUNT" /></translation>

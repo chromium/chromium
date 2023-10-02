@@ -55,6 +55,7 @@
 <translation id="2030769033451695672">Thepha ukubuyela ku-<ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">Hlehlisa</translation>
 <translation id="2091887806945687916">Umsindo</translation>
+<translation id="2096716221239095980">Sula yonke idatha</translation>
 <translation id="2117655453726830283">Islayidi esilandelayo</translation>
 <translation id="2148716181193084225">Namhlanje</translation>
 <translation id="216989819110952009">Ngisho nangamehlo avikelwe yizibuko eziluhlaza u-Dorothy nabangane bakhe baqale bamangazwa yi-</translation>
@@ -115,7 +116,6 @@
 <translation id="2913331724188855103">Vumela amasayithi ukulondoloza nokufunda idatha yamakhukhi (kunconyiwe)</translation>
 <translation id="2932883381142163287">Bika ukuhlukumeza</translation>
 <translation id="2968755619301702150">Isibukeli sesitifiketi</translation>
-<translation id="300526633675317032">Lokhu kuzosula yonke i-<ph name="SIZE_IN_KB" /> yesitoreji sewebhusayithi.</translation>
 <translation id="3008272652534848354">Setha kabusha izimvume</translation>
 <translation id="301521992641321250">Kuvinjelwe ngokuzenzakalelayo</translation>
 <translation id="3069226013421428034">Vumela ukungena ngemvume kwenkampani yangaphandle kusayithi elithile.</translation>
@@ -192,7 +192,6 @@
 <translation id="4278390842282768270">Kuvunyelwe</translation>
 <translation id="429312253194641664">Isayithi lidlala imidiya</translation>
 <translation id="42981349822642051">Nweba</translation>
-<translation id="4336434711095810371">Sula yonke idatha</translation>
 <translation id="4338831206024587507">Wonke amasayithi angaphansi kwe-<ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">Vimbela amasayithi ukuthi azi lapho usebenzisa le divayisi</translation>
 <translation id="4412992751769744546">Vumela amakhukhi wezinkampani zangaphandle</translation>
@@ -283,6 +282,7 @@
 <translation id="5922853908706496913">Yabelana ngesikrini sakho</translation>
 <translation id="5922967540311291836">Vimba amakhukhi angahlangene ngqo:</translation>
 <translation id="5939518447894949180">Setha kabusha</translation>
+<translation id="5964247741333118902">Okuqukethwe okushumekiwe</translation>
 <translation id="5968921426641056619">Faka ikheli lewebhu</translation>
 <translation id="5975083100439434680">Hlehlisa isithombe</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" />, <ph name="WARNING_MESSAGE" /></translation>
@@ -351,6 +351,7 @@
 <translation id="7180611975245234373">Qala kabusha</translation>
 <translation id="7188508872042490670">Idatha yesayithi ekudivayisi</translation>
 <translation id="7203150201908454328">Inwetshiwe</translation>
+<translation id="7219254577985949841">Sula idatha yesayithi?</translation>
 <translation id="723171743924126238">Khetha izithombe</translation>
 <translation id="7243308994586599757">Izinketho ziyatholakala eduze kwangaphansi kwesikrini</translation>
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> kukhethiwe</translation>

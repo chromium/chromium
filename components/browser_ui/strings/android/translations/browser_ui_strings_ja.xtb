@@ -55,6 +55,7 @@
 <translation id="2030769033451695672">タップして <ph name="URL_OF_THE_CURRENT_TAB" /> に戻る</translation>
 <translation id="2079545284768500474">元に戻す</translation>
 <translation id="2091887806945687916">音声</translation>
+<translation id="2096716221239095980">すべてのデータを削除</translation>
 <translation id="2117655453726830283">次のスライド</translation>
 <translation id="2148716181193084225">今日</translation>
 <translation id="216989819110952009">緑色の眼鏡で眼を守っていても、ドロシーと彼女の仲間たちは目が眩みました</translation>
@@ -115,7 +116,6 @@
 <translation id="2913331724188855103">サイトに Cookie データの保存と読み取りを許可する（推奨）</translation>
 <translation id="2932883381142163287">不正行為を報告</translation>
 <translation id="2968755619301702150">証明書ビューア</translation>
-<translation id="300526633675317032">ウェブサイトのストレージ <ph name="SIZE_IN_KB" /> のデータをすべて削除します。</translation>
 <translation id="3008272652534848354">権限をリセット</translation>
 <translation id="301521992641321250">自動でブロックされました</translation>
 <translation id="3069226013421428034">特定のサイトのサードパーティのログインを許可します。</translation>
@@ -192,7 +192,6 @@
 <translation id="4278390842282768270">許可</translation>
 <translation id="429312253194641664">サイトでメディアが再生されています</translation>
 <translation id="42981349822642051">展開</translation>
-<translation id="4336434711095810371">データをすべて消去</translation>
 <translation id="4338831206024587507"><ph name="DOMAIN" /> のすべてのサイト</translation>
 <translation id="4402755511846832236">サイトによるこのデバイスのアクティブ状態の検出をブロックする</translation>
 <translation id="4412992751769744546">サードパーティの Cookie を許可</translation>
@@ -283,6 +282,7 @@
 <translation id="5922853908706496913">画面を共有しています</translation>
 <translation id="5922967540311291836">サードパーティの Cookie をブロックする:</translation>
 <translation id="5939518447894949180">リセット</translation>
+<translation id="5964247741333118902">埋め込みコンテンツ</translation>
 <translation id="5968921426641056619">ウェブアドレスを入力</translation>
 <translation id="5975083100439434680">縮小する</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" />～<ph name="WARNING_MESSAGE" /></translation>
@@ -351,6 +351,7 @@
 <translation id="7180611975245234373">更新</translation>
 <translation id="7188508872042490670">デバイス上のサイトデータ</translation>
 <translation id="7203150201908454328">展開表示中</translation>
+<translation id="7219254577985949841">サイトデータを削除しますか？</translation>
 <translation id="723171743924126238">画像を選択</translation>
 <translation id="7243308994586599757">画面の下の方にオプションがあります</translation>
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> 件選択されています</translation>

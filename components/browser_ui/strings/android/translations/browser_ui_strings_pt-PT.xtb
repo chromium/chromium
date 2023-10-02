@@ -55,6 +55,7 @@
 <translation id="2030769033451695672">Toque para voltar a <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">Anular</translation>
 <translation id="2091887806945687916">Som</translation>
+<translation id="2096716221239095980">Eliminar todos os dados</translation>
 <translation id="2117655453726830283">Diapositivo seguinte</translation>
 <translation id="2148716181193084225">Hoje</translation>
 <translation id="216989819110952009">Mesmo com os olhos protegidos pelos óculos verdes, Dorothy e os seus amigos ficaram ofuscados pelo</translation>
@@ -115,7 +116,6 @@
 <translation id="2913331724188855103">Permitir que os sites guardem e leiam dados de cookies (recomendado)</translation>
 <translation id="2932883381142163287">Denunciar abuso</translation>
 <translation id="2968755619301702150">Visualizador de certificados</translation>
-<translation id="300526633675317032">Esta ação elimina os <ph name="SIZE_IN_KB" /> de armazenamento do Website.</translation>
 <translation id="3008272652534848354">Repor autorizações</translation>
 <translation id="301521992641321250">Bloqueada automaticamente</translation>
 <translation id="3069226013421428034">Permita o início de sessão de terceiros num site específico.</translation>
@@ -192,7 +192,6 @@
 <translation id="4278390842282768270">Permitido</translation>
 <translation id="429312253194641664">Um site está a reproduzir multimédia.</translation>
 <translation id="42981349822642051">Expandir</translation>
-<translation id="4336434711095810371">Limpar todos os dados</translation>
 <translation id="4338831206024587507">Todos os sites em <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">Impeça os sites de saberem quando está ativamente a utilizar este dispositivo.</translation>
 <translation id="4412992751769744546">Permitir cookies de terceiros</translation>
@@ -283,6 +282,7 @@
 <translation id="5922853908706496913">Partilhar o ecrã</translation>
 <translation id="5922967540311291836">Bloqueie cookies de terceiros:</translation>
 <translation id="5939518447894949180">Repor</translation>
+<translation id="5964247741333118902">Conteúdo incorporado</translation>
 <translation id="5968921426641056619">Introduza o endereço Web</translation>
 <translation id="5975083100439434680">Reduzir</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
@@ -351,6 +351,7 @@
 <translation id="7180611975245234373">Atualizar</translation>
 <translation id="7188508872042490670">Dados de sites no dispositivo</translation>
 <translation id="7203150201908454328">Expandido</translation>
+<translation id="7219254577985949841">Eliminar dados do site?</translation>
 <translation id="723171743924126238">Selecionar imagens</translation>
 <translation id="7243308994586599757">Opções disponíveis junto à parte inferior do ecrã</translation>
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> selecionado(s).</translation>

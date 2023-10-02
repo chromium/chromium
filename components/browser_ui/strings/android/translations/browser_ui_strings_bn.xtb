@@ -55,6 +55,7 @@
 <translation id="2030769033451695672"><ph name="URL_OF_THE_CURRENT_TAB" />-এ ফিরে যেতে ট্যাপ করুন</translation>
 <translation id="2079545284768500474">আগের অবস্থায় ফিরুন</translation>
 <translation id="2091887806945687916">আওয়াজ</translation>
+<translation id="2096716221239095980">সব ডেটা মুছুন</translation>
 <translation id="2117655453726830283">পরবর্তী স্লাইড</translation>
 <translation id="2148716181193084225">আজ</translation>
 <translation id="216989819110952009">চোখে সবুজ চশমা লাগানো থাকলেও, ডরোথি ও তার বন্ধুরা অপূর্ব এই শহরের প্রথম চমক দেখেই অবাক হয়ে গেছিল</translation>
@@ -115,7 +116,6 @@
 <translation id="2913331724188855103">সাইটগুলিকে কুকি ডেটা পড়ার এবং সংরক্ষণ করার অনুমতি দিন (প্রস্তাবিত)</translation>
 <translation id="2932883381142163287">আপত্তিজনক হিসাবে অভিযোগ করুন</translation>
 <translation id="2968755619301702150">সার্টিফিকেট প্রদর্শনকারী</translation>
-<translation id="300526633675317032">এটা ওয়েবসাইট স্টোরেজের <ph name="SIZE_IN_KB" />-এর পুরোটা সাফ করবে।</translation>
 <translation id="3008272652534848354">অনুমতি রিসেট করুন</translation>
 <translation id="301521992641321250">স্বয়ংক্রিয়ভাবে ব্লক করা হয়েছে</translation>
 <translation id="3069226013421428034">কোনও নির্দিষ্ট সাইটের জন্য থার্ড-পার্টি সাইন-ইনের অনুমতি দিন।</translation>
@@ -192,7 +192,6 @@
 <translation id="4278390842282768270">মঞ্জুরিপ্রাপ্ত</translation>
 <translation id="429312253194641664">একটি সাইট মিডিয়া চালাচ্ছে</translation>
 <translation id="42981349822642051">প্রসারিত করুন</translation>
-<translation id="4336434711095810371">সব ডেটা মুছে ফেলুন</translation>
 <translation id="4338831206024587507"><ph name="DOMAIN" />-এর সবকটি সাইট</translation>
 <translation id="4402755511846832236">আপনি ডিভাইস কখন সক্রিয়ভাবে ব্যবহার করছেন, সাইট যাতে জানতে না পারে তার জন্য সাইট ব্লক করুন</translation>
 <translation id="4412992751769744546">তৃতীয় পক্ষের কুকিজ মঞ্জুর করুন</translation>
@@ -283,6 +282,7 @@
 <translation id="5922853908706496913">আপনার স্ক্রিন শেয়ার করা হচ্ছে</translation>
 <translation id="5922967540311291836">থার্ড-পার্টি কুকি ব্লক করুন:</translation>
 <translation id="5939518447894949180">রিসেট করুন</translation>
+<translation id="5964247741333118902">এম্বেড করা কন্টেন্ট</translation>
 <translation id="5968921426641056619">ওয়েব ঠিকানা লিখুন</translation>
 <translation id="5975083100439434680">ছোট করুন</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
@@ -351,6 +351,7 @@
 <translation id="7180611975245234373">রিফ্রেশ করুন</translation>
 <translation id="7188508872042490670">অন-ডিভাইস সাইট ডেটা</translation>
 <translation id="7203150201908454328">প্রসারিত</translation>
+<translation id="7219254577985949841">সাইট ডেটা মুছবেন?</translation>
 <translation id="723171743924126238">ছবি বেছে নিন</translation>
 <translation id="7243308994586599757">স্ক্রীনের প্রায় নীচের দিকে বিকল্পগুলি উপলব্ধ</translation>
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" />টি বেছে নেওয়া হয়েছে</translation>

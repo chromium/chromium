@@ -55,6 +55,7 @@
 <translation id="2030769033451695672">Återgå till <ph name="URL_OF_THE_CURRENT_TAB" /> genom att trycka här</translation>
 <translation id="2079545284768500474">Ångra</translation>
 <translation id="2091887806945687916">Ljud</translation>
+<translation id="2096716221239095980">Radera all data</translation>
 <translation id="2117655453726830283">Nästa bild</translation>
 <translation id="2148716181193084225">Idag</translation>
 <translation id="216989819110952009">Trots de skyddande gröna glasögonen blev Dorothy och hennes vänner först bländade av</translation>
@@ -115,7 +116,6 @@
 <translation id="2913331724188855103">Tillåt att webbplatser sparar och läser cookiedata (rekommenderas)</translation>
 <translation id="2932883381142163287">Anmäl otillåten användning</translation>
 <translation id="2968755619301702150">Certifikatvisare</translation>
-<translation id="300526633675317032">Det här alternativet tar bort alla <ph name="SIZE_IN_KB" /> webbplatslagring.</translation>
 <translation id="3008272652534848354">Återställ behörigheter</translation>
 <translation id="301521992641321250">Blockerades automatiskt</translation>
 <translation id="3069226013421428034">Tillåt inloggning hos tredje part på en viss webbplats.</translation>
@@ -192,7 +192,6 @@
 <translation id="4278390842282768270">Tillåts</translation>
 <translation id="429312253194641664">Media spelas upp på en webbplats</translation>
 <translation id="42981349822642051">Expandera</translation>
-<translation id="4336434711095810371">Rensa all data</translation>
 <translation id="4338831206024587507">Alla webbplatser under <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">Blockera webbplatser från att veta när du använder enheten aktivt</translation>
 <translation id="4412992751769744546">Tillåt cookies från tredje part</translation>
@@ -283,6 +282,7 @@
 <translation id="5922853908706496913">Delar skärmen</translation>
 <translation id="5922967540311291836">Blockera cookies från tredje part</translation>
 <translation id="5939518447894949180">Återställ</translation>
+<translation id="5964247741333118902">Inbäddat innehåll</translation>
 <translation id="5968921426641056619">Ange webbadress</translation>
 <translation id="5975083100439434680">Zooma ut</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
@@ -351,6 +351,7 @@
 <translation id="7180611975245234373">Uppdatera</translation>
 <translation id="7188508872042490670">Webbplatsdata på enheten</translation>
 <translation id="7203150201908454328">Utökat</translation>
+<translation id="7219254577985949841">Vill du radera webbplatsdata?</translation>
 <translation id="723171743924126238">Välj bilder</translation>
 <translation id="7243308994586599757">Alternativ visas nära skärmens nedre kant</translation>
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> har valts</translation>

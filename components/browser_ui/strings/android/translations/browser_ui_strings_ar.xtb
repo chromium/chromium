@@ -55,6 +55,7 @@
 <translation id="2030769033451695672">يُرجى النقر للرجوع إلى <ph name="URL_OF_THE_CURRENT_TAB" />.</translation>
 <translation id="2079545284768500474">تراجع</translation>
 <translation id="2091887806945687916">الصوت</translation>
+<translation id="2096716221239095980">حذف كل البيانات</translation>
 <translation id="2117655453726830283">الشريحة التالية</translation>
 <translation id="2148716181193084225">اليوم</translation>
 <translation id="216989819110952009">على الرغم من احتماء "دورثي" ورفاقها خلف نظارات خضراء، انبهرت عيونهم للوهلة الأولى بسبب</translation>
@@ -116,7 +117,6 @@
 <translation id="2913331724188855103">ألسماح للمواقع الإلكترونية بحفظ بيانات ملفات تعريف الارتباط وقراءتها (يُنصح به)</translation>
 <translation id="2932883381142163287">الإبلاغ عن إساءة الاستخدام</translation>
 <translation id="2968755619301702150">عارض الشهادات</translation>
-<translation id="300526633675317032">سيؤدي هذا إلى محو مساحة التخزين البالغة <ph name="SIZE_IN_KB" /> بأكملها من مساحة تخزين المواقع الإلكترونية.</translation>
 <translation id="3008272652534848354">إعادة ضبط الأذونات</translation>
 <translation id="301521992641321250">تم الحظر تلقائيًا</translation>
 <translation id="3069226013421428034">يمكنك السماح بتسجيل الدخول في الخدمات التابعة لجهات خارجية في موقع إلكتروني محدَّد.</translation>
@@ -193,7 +193,6 @@
 <translation id="4278390842282768270">مسموح به</translation>
 <translation id="429312253194641664">تفعيل موقع إلكتروني للوسائط</translation>
 <translation id="42981349822642051">توسيع</translation>
-<translation id="4336434711095810371">محو جميع البيانات</translation>
 <translation id="4338831206024587507">جميع المواقع الإلكترونية ضمن <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">منع المواقع الإلكترونية من رصد استخدامك النشط لهذا الجهاز</translation>
 <translation id="4412992751769744546">السماح بملفات تعريف الارتباط التابعة لجهات خارجية</translation>
@@ -284,6 +283,7 @@
 <translation id="5922853908706496913">جارٍ مشاركة شاشتك</translation>
 <translation id="5922967540311291836">حظر ملفات تعريف الارتباط التابعة لجهات خارجية:</translation>
 <translation id="5939518447894949180">إعادة الضبط</translation>
+<translation id="5964247741333118902">المحتوى المضمَّن</translation>
 <translation id="5968921426641056619">أدخِل عنوان الويب.</translation>
 <translation id="5975083100439434680">تصغير</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
@@ -352,6 +352,7 @@
 <translation id="7180611975245234373">إعادة التحميل</translation>
 <translation id="7188508872042490670">بيانات المواقع الإلكترونية على الجهاز فقط</translation>
 <translation id="7203150201908454328">موسع</translation>
+<translation id="7219254577985949841">هل تريد حذف بيانات الموقع الإلكتروني؟</translation>
 <translation id="723171743924126238">اختيار الصور</translation>
 <translation id="7243308994586599757">الخيارات المتاحة بالقرب من الجزء السفلي من الشاشة</translation>
 <translation id="7250468141469952378">تم اختيار <ph name="ITEM_COUNT" /> عنصراً</translation>

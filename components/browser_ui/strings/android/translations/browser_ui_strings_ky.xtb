@@ -55,6 +55,7 @@
 <translation id="2030769033451695672"><ph name="URL_OF_THE_CURRENT_TAB" /> кайтуу үчүн таптап коюңуз</translation>
 <translation id="2079545284768500474">Кайтаруу</translation>
 <translation id="2091887806945687916">Үн</translation>
+<translation id="2096716221239095980">Бардык нерселерди өчүрүү</translation>
 <translation id="2117655453726830283">Кийинки слайд</translation>
 <translation id="2148716181193084225">Бүгүн</translation>
 <translation id="216989819110952009">Жашыл көз айнек менен корголгон Доротинин көздөрү саамга эч нерсе көрбөй калды</translation>
@@ -115,7 +116,6 @@
 <translation id="2913331724188855103">Сайттарга куки дайындарын сактоого жана окууга уруксат берүү (сунушталат)</translation>
 <translation id="2932883381142163287">Адепсиздик тууралуу кабарлоо</translation>
 <translation id="2968755619301702150">Тастыктаманы көрүүчү</translation>
-<translation id="300526633675317032">Ушуну менен <ph name="SIZE_IN_KB" /> сайттардын дайындарынын баары тазаланат.</translation>
 <translation id="3008272652534848354">Уруксаттарды өзгөртүү</translation>
 <translation id="301521992641321250">Автоматтык түрдө бөгөттөлдү</translation>
 <translation id="3069226013421428034">Белгилүү бир сайтка үчүнчү тараптан кирүүгө уруксат бериңиз.</translation>
@@ -192,7 +192,6 @@
 <translation id="4278390842282768270">Уруксат берилген</translation>
 <translation id="429312253194641664">Сайтта медиа файл ойнотулууда</translation>
 <translation id="42981349822642051">Жайып көрсөтүү</translation>
-<translation id="4336434711095810371">Бардык маалыматты өчүрүү</translation>
 <translation id="4338831206024587507"><ph name="DOMAIN" /> домениндеги бардык сайттар</translation>
 <translation id="4402755511846832236">Түзмөгүңүз активдүү колдонулуп жаткан учур сайттардан жашырылсын</translation>
 <translation id="4412992751769744546">Үчнчү жактн кукилрне урукст брүү</translation>
@@ -283,6 +282,7 @@
 <translation id="5922853908706496913">Экраныңыз бөлүшүлүүдө</translation>
 <translation id="5922967540311291836">Үчүнчү тараптын cookie файлдарын бөгөттөө:</translation>
 <translation id="5939518447894949180">Кайра коюу</translation>
+<translation id="5964247741333118902">Жалгаштырылган контент</translation>
 <translation id="5968921426641056619">Веб дарегин киргизиңиз</translation>
 <translation id="5975083100439434680">Кичирейтүү</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" />, <ph name="WARNING_MESSAGE" /></translation>
@@ -351,6 +351,7 @@
 <translation id="7180611975245234373">Жаңылоо</translation>
 <translation id="7188508872042490670">Түзмөктөгү сайттын маалыматы</translation>
 <translation id="7203150201908454328">Жайылып көрсөтүлгөн</translation>
+<translation id="7219254577985949841">Сайттагы маалымат өчүрүлсүнбү?</translation>
 <translation id="723171743924126238">Сүрөттөрдү тандаңыз</translation>
 <translation id="7243308994586599757">Параметрлер экрандын түбүндө берилген</translation>
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> нерсе тандалды</translation>

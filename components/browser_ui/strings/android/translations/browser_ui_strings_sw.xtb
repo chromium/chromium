@@ -55,6 +55,7 @@
 <translation id="2030769033451695672">Gusa ili urudi kwenye <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">Tendua</translation>
 <translation id="2091887806945687916">Sauti</translation>
+<translation id="2096716221239095980">Futa data yote</translation>
 <translation id="2117655453726830283">Slaidi inayofuata</translation>
 <translation id="2148716181193084225">Leo</translation>
 <translation id="216989819110952009">Licha ya kuwa walivaa miwani ya kijani machoni Dorothy pamoja na marafiki zake kwanza kabisa walishangazwa na uzuri wa jiji la ajabu.</translation>
@@ -115,7 +116,6 @@
 <translation id="2913331724188855103">Ruhusu tovuti zihifadhi na kusoma data ya vidakuzi (imependekezwa)</translation>
 <translation id="2932883381142163287">Ripoti matumizi mabaya</translation>
 <translation id="2968755619301702150">Kitazamaji vyeti</translation>
-<translation id="300526633675317032">Hatua hii itafuta <ph name="SIZE_IN_KB" /> yote ya hifadhi ya tovuti.</translation>
 <translation id="3008272652534848354">Badilisha ruhusa</translation>
 <translation id="301521992641321250">Imezuiwa kiotomatiki</translation>
 <translation id="3069226013421428034">Ruhusu uingiaji wa wahusika wengine katika akaunti kwenye tovuti mahususi.</translation>
@@ -192,7 +192,6 @@
 <translation id="4278390842282768270">Imeruhusiwa</translation>
 <translation id="429312253194641664">Tovuti inacheza maudhui</translation>
 <translation id="42981349822642051">Panua</translation>
-<translation id="4336434711095810371">Futa data yote</translation>
 <translation id="4338831206024587507">Tovuti zote zenye kikoa cha <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">Zuia tovuti zisijue wakati unatumia kifaa hiki</translation>
 <translation id="4412992751769744546">Ruhusu vidakuzi vingine</translation>
@@ -283,6 +282,7 @@
 <translation id="5922853908706496913">Inashiriki skrini yako</translation>
 <translation id="5922967540311291836">Kuzuia vidakuzi vya washirika wengine:</translation>
 <translation id="5939518447894949180">Weka upya</translation>
+<translation id="5964247741333118902">Maudhui yaliyopachikwa</translation>
 <translation id="5968921426641056619">Weka anwani ya wavuti</translation>
 <translation id="5975083100439434680">Fifiza</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
@@ -351,6 +351,7 @@
 <translation id="7180611975245234373">Onyesha upya</translation>
 <translation id="7188508872042490670">Data ya tovuti kwenye kifaa</translation>
 <translation id="7203150201908454328">Imepanuliwa</translation>
+<translation id="7219254577985949841">Je, ungependa kufuta data ya tovuti?</translation>
 <translation id="723171743924126238">Chagua picha</translation>
 <translation id="7243308994586599757">Chaguo zinapatikana karibu na sehemu ya chini ya skrini</translation>
 <translation id="7250468141469952378">Umechagua <ph name="ITEM_COUNT" /></translation>

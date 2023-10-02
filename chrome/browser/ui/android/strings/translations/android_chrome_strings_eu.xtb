@@ -294,7 +294,6 @@ Webgune batekin izandako interakzioa oinarri hartuta (esaterako, kontu batean sa
 Egoeraren token pribatuek sareko pribatutasuna hobetzen dute eta ezin dira erabili zure identitatea desestaltzeko.</translation>
 <translation id="2581165646603367611">Chrome-k garrantzi gabekotzat jotzen dituen cookieak, cachea eta bestelako datuak ezabatuko dira.</translation>
 <translation id="2587052924345400782">Bertsio berriagoa dago</translation>
-<translation id="2589302627584222634">Sortu profilaren blokeo bat</translation>
 <translation id="2593272815202181319">Tarte bakarrekoak</translation>
 <translation id="2603212228005142861">Hasi saioa zure hobespenak kudeatzeko</translation>
 <translation id="260403163289591229">Jarraitzen</translation>
@@ -476,7 +475,6 @@ Egoeraren token pribatuek sareko pribatutasuna hobetzen dute eta ezin dira erabi
 <translation id="3479552764303398839">Orain ez</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /> iradokitako edukiari buruz</translation>
 <translation id="3495219333887281978">Pantailaren behealdean ainguratutako orria, saioa hasteko balio duena, altuera erdian irekita dago.</translation>
-<translation id="3498338220321963224">Aurrerago profilaren blokeoa kentzen baduzu, gordetako datuak ezabatuko dira.</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="350276055892098337">Ordenatu zaharrenetik hasita</translation>
 <translation id="3507132249039706973">Babes estandarra aktibatuta dago</translation>
@@ -650,7 +648,6 @@ Egoeraren token pribatuek sareko pribatutasuna hobetzen dute eta ezin dira erabi
 <translation id="4405636711880428279">Txartel birtuala kendu nahi duzu?</translation>
 <translation id="4409271659088619928"><ph name="DSE" /> da bilatzailea. Behar izanez gero, joan haren argibideetara bilaketa-historia ezabatzeari buruzko informazio gehiago lortzeko.</translation>
 <translation id="4415276339145661267">Kudeatu Google-ko kontua</translation>
-<translation id="4417111749295506837">Chrome-ko informazioa sinkronizatzeko eta datuak autoan babestuta edukitzeko, profilaren blokeo bat sortu behar duzu. Autoan sartzen zaren bakoitzean, kode edo pasahitz bat erabiliko duzu.</translation>
 <translation id="4425140285732600465">Prezioaren jarraipena egiten ari zara. Jaso alertak webguneren batean prezioa jaisten bada.</translation>
 <translation id="442518031075347249">Aurrerantzean, ezingo duzu erabili txartel birtuala Google Pay-rekin. <ph name="BEGIN_LINK1" />Lortu txartel birtualei buruzko informazio gehiago<ph name="END_LINK1" /></translation>
 <translation id="4428065317363009941">Iragarkien pertsonalizazioa</translation>
@@ -962,7 +959,6 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="5964869237734432770">Gelditu irudi-deskribapenak</translation>
 <translation id="5966233851250124270">Chrome-k aukera gogoratuko du</translation>
 <translation id="5979084224081478209">Egiaztatu pasahitzak</translation>
-<translation id="5985186846584605773">Sortu profilaren blokeo bat autorako</translation>
 <translation id="5995726099713306770">Berriro deskargatu nahi duzu orria?</translation>
 <translation id="6000066717592683814">Jarraitu Google erabiltzen</translation>
 <translation id="6000203700195075278">Jarraitu berriro</translation>
@@ -1031,7 +1027,6 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="6364438453358674297">Iradokizuna historiatik ezabatu nahi duzu?</translation>
 <translation id="6380100320871303656">Maizago kargatzen dira aurrez Google-ren ustez bisitatuko dituzun orriak. Litekeena da ezarpen honek datu gehiago erabiltzea.</translation>
 <translation id="6382848304055775421">Esportatzen</translation>
-<translation id="6391355955030242704">Chrome-ko informazioa sinkronizatzeko eta datuak autoan babestuta edukitzeko, profilaren blokeo bat sortu behar duzu segurtasun-ezarpenetan. Autoan sartzen zaren bakoitzean, kode edo pasahitz bat erabiliko duzu.</translation>
 <translation id="6394791151443660613">Bilatu: <ph name="SEARCH_QUERY" /></translation>
 <translation id="6395288395575013217">ESTEKA</translation>
 <translation id="6397616442223433927">Konektatu zara berriro</translation>

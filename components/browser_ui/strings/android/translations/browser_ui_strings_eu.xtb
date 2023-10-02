@@ -55,6 +55,7 @@
 <translation id="2030769033451695672">Sakatu hau <ph name="URL_OF_THE_CURRENT_TAB" /> webgunera itzultzeko</translation>
 <translation id="2079545284768500474">Desegin</translation>
 <translation id="2091887806945687916">Soinua</translation>
+<translation id="2096716221239095980">Ezabatu datu guztiak</translation>
 <translation id="2117655453726830283">Hurrengo diapositiba</translation>
 <translation id="2148716181193084225">Gaur</translation>
 <translation id="216989819110952009">Begiak betaurreko berdeekin babestuta bazituzten ere, Dorothy eta haren lagunak txundituta geratu ziren</translation>
@@ -115,7 +116,6 @@
 <translation id="2913331724188855103">Baimendu webguneei cookieen datuak gordetzea eta irakurtzea (gomendatua)</translation>
 <translation id="2932883381142163287">Eman erabilera okerren berri</translation>
 <translation id="2968755619301702150">Ziurtagiri-ikustailea</translation>
-<translation id="300526633675317032"><ph name="SIZE_IN_KB" /> ezabatuko dira webguneen datuetatik.</translation>
 <translation id="3008272652534848354">Berrezarri baimenak</translation>
 <translation id="301521992641321250">Automatikoki blokeatuta</translation>
 <translation id="3069226013421428034">Eman webgune jakin batean saioa hasteko baimena hirugarrenei.</translation>
@@ -192,7 +192,6 @@
 <translation id="4278390842282768270">Baimenduta</translation>
 <translation id="429312253194641664">Webgune bat multimedia-edukia erreproduzitzen ari da</translation>
 <translation id="42981349822642051">Zabaldu</translation>
-<translation id="4336434711095810371">Garbitu datu guztiak</translation>
 <translation id="4338831206024587507"><ph name="DOMAIN" /> domeinuko webgune guztiak</translation>
 <translation id="4402755511846832236">Ez utzi jakiten webguneei gailua noiz erabiltzen ari zaren</translation>
 <translation id="4412992751769744546">Onartu hirugarrenen cookieak</translation>
@@ -283,6 +282,7 @@
 <translation id="5922853908706496913">Pantaila partekatzen</translation>
 <translation id="5922967540311291836">Blokeatu hirugarrenen cookieak:</translation>
 <translation id="5939518447894949180">Berrezarri</translation>
+<translation id="5964247741333118902">Eduki kapsulatua</translation>
 <translation id="5968921426641056619">Idatzi web-helbidea</translation>
 <translation id="5975083100439434680">Txikitu</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" />: <ph name="WARNING_MESSAGE" /></translation>
@@ -351,6 +351,7 @@
 <translation id="7180611975245234373">Freskatu</translation>
 <translation id="7188508872042490670">Gailuan gordetako webguneetako datuak</translation>
 <translation id="7203150201908454328">Zabalduta</translation>
+<translation id="7219254577985949841">Webguneko datuak ezabatu nahi dituzu?</translation>
 <translation id="723171743924126238">Hautatu irudiak</translation>
 <translation id="7243308994586599757">Pantailaren behealdean agertzen dira dauden aukerak</translation>
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> hautatu dira</translation>

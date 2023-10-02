@@ -55,6 +55,7 @@
 <translation id="2030769033451695672">برای برگشتن به <ph name="URL_OF_THE_CURRENT_TAB" /> ضربه بزنید</translation>
 <translation id="2079545284768500474">لغو</translation>
 <translation id="2091887806945687916">صدا</translation>
+<translation id="2096716221239095980">حذف همه داده‌ها</translation>
 <translation id="2117655453726830283">اسلاید بعدی</translation>
 <translation id="2148716181193084225">امروز</translation>
 <translation id="216989819110952009">دوروتی و دوستانش بااینکه عینک‌های سبز به چشم داشتند، اولش با درخشش شهر شگفت‌انگیز مات‌ومبهوت شدند</translation>
@@ -115,7 +116,6 @@
 <translation id="2913331724188855103">سایت‌ها مجاز به ذخیره و خواندن داده‌های کوکی باشند (توصیه می‌شود)</translation>
 <translation id="2932883381142163287">گزارش سوءاستفاده</translation>
 <translation id="2968755619301702150">بیننده گواهی</translation>
-<translation id="300526633675317032">این کار کل <ph name="SIZE_IN_KB" /> فضای ذخیره‌سازی وب‌سایت را پاک می‌کند.</translation>
 <translation id="3008272652534848354">بازنشانی مجوزها</translation>
 <translation id="301521992641321250">مسدود‌شده به‌طور خودکار</translation>
 <translation id="3069226013421428034">ورود به سیستم شخص ثالث برای سایت خاصی مجاز می‌شود.</translation>
@@ -192,7 +192,6 @@
 <translation id="4278390842282768270">مجاز است</translation>
 <translation id="429312253194641664">سایتی درحال پخش رسانه است</translation>
 <translation id="42981349822642051">بزرگ کردن</translation>
-<translation id="4336434711095810371">پاک کردن همه داده‌ها</translation>
 <translation id="4338831206024587507">همه سایت‌های تحت <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">از اینکه سایت‌ها بدانند چه زمانی به‌صورت فعال از این دستگاه استفاده می‌کنید جلوگیری می‌شود</translation>
 <translation id="4412992751769744546">اجازه به کوکی‌های شخص ثالث</translation>
@@ -283,6 +282,7 @@
 <translation id="5922853908706496913">درحال هم‌رسانی صفحه‌نمایش</translation>
 <translation id="5922967540311291836">مسدود کردن کوکی‌های شخص ثالث:</translation>
 <translation id="5939518447894949180">بازنشانی</translation>
+<translation id="5964247741333118902">محتوای جاسازی‌شده</translation>
 <translation id="5968921426641056619">نشانی وب را وارد کنید</translation>
 <translation id="5975083100439434680">دورنمایی کردن</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
@@ -351,6 +351,7 @@
 <translation id="7180611975245234373">بازآوری</translation>
 <translation id="7188508872042490670">داده‌های سایت‌ها در دستگاه</translation>
 <translation id="7203150201908454328">باز شده</translation>
+<translation id="7219254577985949841">داده‌های سایت حذف شود؟</translation>
 <translation id="723171743924126238">انتخاب تصاویر</translation>
 <translation id="7243308994586599757">گزینه‌ها در نزدیک پایین صفحه نمایش در دسترس هستند</translation>
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> مورد انتخاب شد</translation>

@@ -294,7 +294,6 @@ En webbplats kan utfärda en förtroendetoken till din webbläsare utifrån dina
 Med förtroendetoken förbättras integriteten på webben. De kan inte användas för att ta reda på vem du är.</translation>
 <translation id="2581165646603367611">Det här alternativet rensar cookies, cacheminnet och annan data från webbplatser som bedöms vara oviktiga.</translation>
 <translation id="2587052924345400782">Det finns en nyare version</translation>
-<translation id="2589302627584222634">Skapa ett profillås</translation>
 <translation id="2593272815202181319">Monospace</translation>
 <translation id="2603212228005142861">Logga in för att hantera inställningarna.</translation>
 <translation id="260403163289591229">Följer</translation>
@@ -476,7 +475,6 @@ Med förtroendetoken förbättras integriteten på webben. De kan inte användas
 <translation id="3479552764303398839">Inte nu</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /> om förslag på innehåll</translation>
 <translation id="3495219333887281978">Arket för inloggning på nedre delen av skärmen har öppnats över halva skärmen.</translation>
-<translation id="3498338220321963224">Din sparade data raderas om profillåset tas bort senare.</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="350276055892098337">Sortera efter äldsta</translation>
 <translation id="3507132249039706973">Standardskydd är aktiverat</translation>
@@ -651,7 +649,6 @@ Med förtroendetoken förbättras integriteten på webben. De kan inte användas
 <translation id="4405636711880428279">Vill du ta bort det virtuella kortet?</translation>
 <translation id="4409271659088619928">Du använder <ph name="DSE" /> som sökmotor. Läs den sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</translation>
 <translation id="4415276339145661267">Hantera Google-kontot</translation>
-<translation id="4417111749295506837">Om du vill synkronisera dina Chrome-uppgifter och skydda din data i bilen måste du skapa ett profillås. Du anger en kod eller ett lösenord varje gång du sätter dig i bilen.</translation>
 <translation id="4425140285732600465">Bevakar pris. Få aviseringar när priset sjunker på en webbplats.</translation>
 <translation id="442518031075347249">Du kommer inte längre att kunna använda det virtuella kortet med Google Pay. <ph name="BEGIN_LINK1" />Läs mer om virtuella kort<ph name="END_LINK1" /></translation>
 <translation id="4428065317363009941">Personliga annonspreferenser</translation>
@@ -963,7 +960,6 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5964869237734432770">Stoppa bildbeskrivning</translation>
 <translation id="5966233851250124270">Chrome kommer ihåg valet</translation>
 <translation id="5979084224081478209">Kontrollera lösenord</translation>
-<translation id="5985186846584605773">Skapa ett profillås för bilen</translation>
 <translation id="5995726099713306770">Vill du ladda ned sidan igen?</translation>
 <translation id="6000066717592683814">Behåll Google</translation>
 <translation id="6000203700195075278">Följ på nytt</translation>
@@ -1032,7 +1028,6 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="6364438453358674297">Vill du ta bort förslaget från historiken?</translation>
 <translation id="6380100320871303656">Chrome läser oftare in sidor som du kanske vill besöka i förväg. Den här inställningen kan leda till ökad dataanvändning.</translation>
 <translation id="6382848304055775421">Exporterar</translation>
-<translation id="6391355955030242704">Om du vill synkronisera dina Chrome-uppgifter och skydda din data i bilen måste du skapa ett profillås i säkerhetsinställningarna. Du anger en kod eller ett lösenord varje gång du sätter dig i bilen.</translation>
 <translation id="6394791151443660613">Sök efter: <ph name="SEARCH_QUERY" /></translation>
 <translation id="6395288395575013217">LÄNK</translation>
 <translation id="6397616442223433927">Online igen</translation>

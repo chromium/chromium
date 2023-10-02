@@ -55,6 +55,7 @@
 <translation id="2030769033451695672"><ph name="URL_OF_THE_CURRENT_TAB" /> پر واپس جانے کے لیے تھپتھپائیں</translation>
 <translation id="2079545284768500474">کالعدم کریں</translation>
 <translation id="2091887806945687916">آواز</translation>
+<translation id="2096716221239095980">سبھی ڈیٹا حذف کریں</translation>
 <translation id="2117655453726830283">اگلی سلائیڈ</translation>
 <translation id="2148716181193084225">آج</translation>
 <translation id="216989819110952009">یہاں تک کہ سبز چشموں سے محفوظ آنکھوں کے ساتھ ڈوروتھی اور اس کے دوست شروعات میں اسے دیکھ کر حیران رہ گئے</translation>
@@ -115,7 +116,6 @@
 <translation id="2913331724188855103">سائٹس کو کوکی ڈیٹا کو محفوظ کرنے اور پڑھنے کی اجازت دیں (تجویز کردہ)</translation>
 <translation id="2932883381142163287">بیجا استعمال کی اطلاع دیں</translation>
 <translation id="2968755619301702150">سرٹیفیکیٹ ناظر</translation>
-<translation id="300526633675317032">اس سے ویب سائٹ اسٹوریج کا کُل <ph name="SIZE_IN_KB" /> صاف ہو جائے گا۔</translation>
 <translation id="3008272652534848354">اجازتیں دوبارہ ترتیب دیں</translation>
 <translation id="301521992641321250">خود کار طور پر مسدود ہو گيا</translation>
 <translation id="3069226013421428034">کسی مخصوص سائٹ کیلئے فریق ثالث سائن ان کی اجازت دیں۔</translation>
@@ -192,7 +192,6 @@
 <translation id="4278390842282768270">اجازت یافتہ</translation>
 <translation id="429312253194641664">سائٹ پر میڈیا چل رہا ہے</translation>
 <translation id="42981349822642051">پھیلائیں</translation>
-<translation id="4336434711095810371">سبھی ڈیٹا صاف کریں</translation>
 <translation id="4338831206024587507"><ph name="DOMAIN" /> کے ماتحت سبھی سائٹس</translation>
 <translation id="4402755511846832236">کب آپ فعال طور پر اس آلہ کا استعمال کر رہے ہیں اس کا پتہ لگانے سے سائٹس کو مسدود کریں</translation>
 <translation id="4412992751769744546">فریق ثالث کی کوکیز کی اجازت دیں</translation>
@@ -283,6 +282,7 @@
 <translation id="5922853908706496913">آپ کی اسکرین کا اشتراک کیا جا رہا ہے</translation>
 <translation id="5922967540311291836">فریق ثالث کوکیز کو مسدود کریں:</translation>
 <translation id="5939518447894949180">دوبارہ ترتیب دیں</translation>
+<translation id="5964247741333118902">سرایت کردہ مواد</translation>
 <translation id="5968921426641056619">ویب پتہ درج کریں</translation>
 <translation id="5975083100439434680">زوم آؤٹ کریں</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
@@ -351,6 +351,7 @@
 <translation id="7180611975245234373">ریفریش کریں</translation>
 <translation id="7188508872042490670">آلہ پر موجود سائٹ کا ڈیٹا</translation>
 <translation id="7203150201908454328">توسیع کردہ</translation>
+<translation id="7219254577985949841">سائٹ ڈیٹا کو حذف کریں؟</translation>
 <translation id="723171743924126238">تصاویر منتخب کریں</translation>
 <translation id="7243308994586599757">اسکرین کے نچلے حصہ کے قریب اختیارات دستیاب ہیں</translation>
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> منتخب ہو گئے</translation>

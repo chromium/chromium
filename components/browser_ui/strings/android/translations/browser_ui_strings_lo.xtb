@@ -55,6 +55,7 @@
 <translation id="2030769033451695672">ແຕະເພື່ອກັບຄືນຫາ <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">ບໍ່ເຮັດ</translation>
 <translation id="2091887806945687916">ສຽງ</translation>
+<translation id="2096716221239095980">ລຶບຂໍ້ມູນທັງໝົດ</translation>
 <translation id="2117655453726830283">ສະໄລ້ຕໍ່ໄປ</translation>
 <translation id="2148716181193084225">ມື້​ນີ້</translation>
 <translation id="216989819110952009">ເຖິງແມ່ນວ່າມີຕາທີ່ປ້ອງກັນດ້ວຍແວ່ນສາຍຕາສີຂຽວ, ທຳອິດໂດໂຣທີ ແລະ ໝູ່ຂອງລາວກໍຕື່ນຕາຕື່ນໃຈກັບ</translation>
@@ -115,7 +116,6 @@
 <translation id="2913331724188855103">ອະ​ນຸ​ຍາດ​ໃຫ້​ເວັບ​ໄຊ​ທ໌​ບັນ​ທຶກ ແລະ​ອ່ານ​ຂໍ້​ມູນ​ຄຸກ​ກີ້ (ແນະ​ນຳ​ໃຫ້)</translation>
 <translation id="2932883381142163287">ລາຍງານການນຳ​ໃຊ້​ຜິດ</translation>
 <translation id="2968755619301702150">ຕົວເບິ່ງໃບຢັ້ງຢືນ</translation>
-<translation id="300526633675317032">ນີ້ຈະລຶບລ້າງທັງໝົດ <ph name="SIZE_IN_KB" /> ຂອງບ່ອນເກັບຂໍ້ມູນເວັບໄຊ.</translation>
 <translation id="3008272652534848354">ຣີເຊັດການອະນຸຍາດ</translation>
 <translation id="301521992641321250">ບລັອກອັດຕະໂນມັດແລ້ວ</translation>
 <translation id="3069226013421428034">ອະນຸຍາດໃຫ້ເຂົ້າສູ່ລະບົບພາກສ່ວນທີສາມສຳລັບເວັບໄຊສະເພາະໃດໜຶ່ງ.</translation>
@@ -192,7 +192,6 @@
 <translation id="4278390842282768270">ອະນຸຍາດແລ້ວ</translation>
 <translation id="429312253194641664">ເວັບໄຊກຳລັງຫຼິ້ນສື່ຢູ່</translation>
 <translation id="42981349822642051">ຂະ​ຫຍາຍ</translation>
-<translation id="4336434711095810371">ລຶບລ້າງຂໍ້ມູນທັງໝົດ</translation>
 <translation id="4338831206024587507">ເວັບໄຊທັງໝົດພາຍໃຕ້ <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">ບລັອກບໍ່ໃຫ້ເວັບໄຊຮູ້ໃນເວລາທີ່ທ່ານກຳລັງໃຊ້ອຸປະກອນນີ້ຢູ່</translation>
 <translation id="4412992751769744546">ອະ​ນຸ​ຍາດ​ຄຸກ​ກີ້​ບຸກ​ຄົນ​ທີ​ສາມ</translation>
@@ -283,6 +282,7 @@
 <translation id="5922853908706496913">ກຳລັງແບ່ງປັນໜ້າຈໍຂອງທ່ານ</translation>
 <translation id="5922967540311291836">ບລັອກຄຸກກີ້ພາກສ່ວນທີສາມ:</translation>
 <translation id="5939518447894949180">ຕັ້ງຄ່າຄືນໃໝ່</translation>
+<translation id="5964247741333118902">ເນື້ອຫາທີ່ຝັງໄວ້</translation>
 <translation id="5968921426641056619">ລະບຸທີ່ຢູ່ເວັບ</translation>
 <translation id="5975083100439434680">ຊູມອອກ</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
@@ -351,6 +351,7 @@
 <translation id="7180611975245234373">ຣີເຟຣຊ</translation>
 <translation id="7188508872042490670">ຂໍ້ມູນເວັບໄຊຢູ່ອຸປະກອນ</translation>
 <translation id="7203150201908454328">ຂະ​ຫຍາຍ​ແລ້ວ</translation>
+<translation id="7219254577985949841">ລຶບຂໍ້ມູນເວັບໄຊອອກບໍ?</translation>
 <translation id="723171743924126238">ເລືອກຮູບ</translation>
 <translation id="7243308994586599757">ທາງ​ເລືອກ​ມີ​ໃຫ້​ໃກ້​ປຸ່ມ​ຂອງ​ໜ້າ​ຈໍ</translation>
 <translation id="7250468141469952378">ເລືອກ <ph name="ITEM_COUNT" /> ລາຍການແລ້ວ</translation>

@@ -55,6 +55,7 @@
 <translation id="2030769033451695672">Націсніце, каб вярнуцца на ўкладку <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">Адрабіць</translation>
 <translation id="2091887806945687916">Гук</translation>
+<translation id="2096716221239095980">Выдаліць усе даныя</translation>
 <translation id="2117655453726830283">Наступны слайд</translation>
 <translation id="2148716181193084225">Сёння</translation>
 <translation id="216989819110952009">Нават надзеўшы зялёныя акуляры, Дораці і яе сябры былі ашаломленыя</translation>
@@ -115,7 +116,6 @@
 <translation id="2913331724188855103">Дазволіць сайтам захоўваць і чытаць даныя файлаў cookie (рэкамендуецца)</translation>
 <translation id="2932883381142163287">Паскардзіцца на парушэнне</translation>
 <translation id="2968755619301702150">Звесткі пра сертыфікат</translation>
-<translation id="300526633675317032">Гэта вызваліць <ph name="SIZE_IN_KB" /> у сховішчы вэб-сайтаў.</translation>
 <translation id="3008272652534848354">Скінуць дазволы</translation>
 <translation id="301521992641321250">Заблакіравана аўтаматычна</translation>
 <translation id="3069226013421428034">Дазволіць уваход праз староннія сэрвісы для канкрэтнага сайта.</translation>
@@ -192,7 +192,6 @@
 <translation id="4278390842282768270">Дазволена</translation>
 <translation id="429312253194641664">Сайт прайграе мультымедыя</translation>
 <translation id="42981349822642051">Разгарнуць</translation>
-<translation id="4336434711095810371">Выдаліць усе даныя</translation>
 <translation id="4338831206024587507">Усе сайты дамена <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">Не даваць сайтам знаць, калі вы карыстаецеся гэтай прыладай</translation>
 <translation id="4412992751769744546">Дазволіць староннія файлы cookie</translation>
@@ -283,6 +282,7 @@
 <translation id="5922853908706496913">Ваш экран абагульваецца</translation>
 <translation id="5922967540311291836">Блакіраваць староннія файлы cookie:</translation>
 <translation id="5939518447894949180">Скінуць</translation>
+<translation id="5964247741333118902">Убудаванае змесціва</translation>
 <translation id="5968921426641056619">Увядзіце вэб-адрас</translation>
 <translation id="5975083100439434680">Паменшыць</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
@@ -351,6 +351,7 @@
 <translation id="7180611975245234373">Абнавіць</translation>
 <translation id="7188508872042490670">Даныя сайтаў, захаваныя на прыладзе</translation>
 <translation id="7203150201908454328">Разгорнута</translation>
+<translation id="7219254577985949841">Выдаліць гэтыя даныя?</translation>
 <translation id="723171743924126238">Выберыце відарысы</translation>
 <translation id="7243308994586599757">Параметры знаходзяцца ў ніжняй частцы экрана</translation>
 <translation id="7250468141469952378">Выбрана: <ph name="ITEM_COUNT" /></translation>

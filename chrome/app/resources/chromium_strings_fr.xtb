@@ -339,7 +339,6 @@ Chromium ne peut pas récupérer vos paramètres.</translation>
 <translation id="7467949745582939695">Relancer Chromium ?</translation>
 <translation id="7483335560992089831">Impossible d'installer la même version de Chromium que celle qui est en cours d'exécution. Veuillez fermer Chromium, puis réessayer.</translation>
 <translation id="753534427205733210">{0,plural, =1{Chromium va être relancé dans 1 minute}one{Chromium va être relancé dans # minute}other{Chromium va être relancé dans # minutes}}</translation>
-<translation id="7561906087460245826">Effacer également les données issues de Chromium (<ph name="URL" />)</translation>
 <translation id="7582945390259497898">Chromium peut estimer quels sont vos centres d'intérêt. Ensuite, un site que vous consultez pourra demander à Chromium de voir vos centres d'intérêt pour personnaliser les annonces qui vous sont présentées.</translation>
 <translation id="7583399374488819119">Programme d'installation de <ph name="COMPANY_NAME" /></translation>
 <translation id="761356813943268536">Votre webcam et votre micro sont en cours d'utilisation dans Chromium.</translation>

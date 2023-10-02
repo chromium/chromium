@@ -55,6 +55,7 @@
 <translation id="2030769033451695672"><ph name="URL_OF_THE_CURRENT_TAB" /> પર પરત ફરવા માટે, ટૅપ કરો</translation>
 <translation id="2079545284768500474">છેલ્લો ફેરફાર રદ કરો</translation>
 <translation id="2091887806945687916">ધ્વનિ</translation>
+<translation id="2096716221239095980">બધો ડેટા ડિલીટ કરો</translation>
 <translation id="2117655453726830283">આગલી સ્લાઇડ</translation>
 <translation id="2148716181193084225">આજે</translation>
 <translation id="216989819110952009">લીલા ચશ્માં દ્વારા આંખો સુરક્ષિત હોવા છતાં પણ, ડોરોથી અને તેના મિત્રો પહેલાં તો આનાથી અંજાઈ ગયા હતા</translation>
@@ -115,7 +116,6 @@
 <translation id="2913331724188855103">સાઇટને કુકી ડેટા સાચવવા અને વાંચવાની મંજૂરી આપો (સુઝાવ આપીએ છીએ)</translation>
 <translation id="2932883381142163287">દુરુપયોગ જણાવો</translation>
 <translation id="2968755619301702150">પ્રમાણપત્ર દર્શક</translation>
-<translation id="300526633675317032">આ <ph name="SIZE_IN_KB" /> નું બધું વેબસાઇટ સ્ટોરેજ સાફ કરશે.</translation>
 <translation id="3008272652534848354">પરવાનગીઓ રીસેટ કરો</translation>
 <translation id="301521992641321250">ઑટોમૅટિક રીતે બ્લૉક થયું</translation>
 <translation id="3069226013421428034">ચોક્કસ સાઇટ માટે ત્રીજા પક્ષ દ્વારા સાઇન-ઇનને મંજૂરી આપો.</translation>
@@ -192,7 +192,6 @@
 <translation id="4278390842282768270">મંજૂર</translation>
 <translation id="429312253194641664">સાઇટ મીડિયા ચલાવી રહી છે</translation>
 <translation id="42981349822642051">વિસ્તૃત કરો</translation>
-<translation id="4336434711095810371">બધો ડેટા સાફ કરો</translation>
 <translation id="4338831206024587507"><ph name="DOMAIN" /> હેઠળની બધી સાઇટ</translation>
 <translation id="4402755511846832236">તમે સક્રિય રીતે આ ડિવાઇસનો ઉપયોગ ક્યારે કરો છો, તેની જાણ ન થાય એ માટે સાઇટ બ્લૉક કરો</translation>
 <translation id="4412992751769744546">તૃતીય-પક્ષ કૂકીઝને મંજૂરી આપો</translation>
@@ -283,6 +282,7 @@
 <translation id="5922853908706496913">તમારી સ્ક્રીન શેર કરીએ છીએ</translation>
 <translation id="5922967540311291836">ત્રીજા પક્ષની કુકીને બ્લૉક કરો:</translation>
 <translation id="5939518447894949180">રીસેટ કરો</translation>
+<translation id="5964247741333118902">શામેલ કરેલું કન્ટેન્ટ</translation>
 <translation id="5968921426641056619">વેબ ઍડ્રેસ દાખલ કરો</translation>
 <translation id="5975083100439434680">ઝૂમ ઘટાડો</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
@@ -351,6 +351,7 @@
 <translation id="7180611975245234373">રિફ્રેશ કરો</translation>
 <translation id="7188508872042490670">ડિવાઇસ પર સાઇટનો ડેટા</translation>
 <translation id="7203150201908454328">વિસ્તૃત કરેલ</translation>
+<translation id="7219254577985949841">શું સાઇટનો ડેટા ડિલીટ કરીએ?</translation>
 <translation id="723171743924126238">છબીઓ પસંદ કરો</translation>
 <translation id="7243308994586599757">સ્ક્રીનના તળિયા નજીક વિકલ્પો ઉપલબ્ધ છે</translation>
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" />ની પસંદગી કરી</translation>
