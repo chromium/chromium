@@ -24,9 +24,10 @@ class OptimizationGuideModelExecutor {
  public:
   // Executes the model for `feature` with `request_metadata` and invokes the
   // `callback` with the result.
-  void ExecuteModel(proto::ModelExecutionFeature feature,
-                    const google::protobuf::MessageLite& request_metadata,
-                    OptimizationGuideModelExecutionResultCallback callback);
+  virtual void ExecuteModel(
+      proto::ModelExecutionFeature feature,
+      const google::protobuf::MessageLite& request_metadata,
+      OptimizationGuideModelExecutionResultCallback callback) = 0;
 };
 
 }  // namespace optimization_guide

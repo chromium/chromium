@@ -104,7 +104,7 @@ class OptimizationGuideKeyedService
       optimization_guide::proto::ModelExecutionFeature feature,
       const google::protobuf::MessageLite& request_metadata,
       optimization_guide::OptimizationGuideModelExecutionResultCallback
-          callback);
+          callback) override;
 
   // Adds hints for a URL with provided metadata to the optimization guide.
   // For testing purposes only. This will flush any callbacks for |url| that
@@ -130,6 +130,12 @@ class OptimizationGuideKeyedService
   OptimizationGuideLogger* GetOptimizationGuideLogger() {
     return optimization_guide_logger_.get();
   }
+
+ protected:
+  // Protected so that tests can stub out the implementation.
+  // TODO(b/303103198): Implement better testing support for model execution
+  // users and make that function private.
+  virtual bool ComponentUpdatesEnabledProvider() const;
 
  private:
   friend class ChromeBrowserMainExtraPartsOptimizationGuide;
@@ -187,8 +193,6 @@ class OptimizationGuideKeyedService
           callback) override;
 
   download::BackgroundDownloadService* BackgroundDownloadServiceProvider();
-
-  bool ComponentUpdatesEnabledProvider() const;
 
   raw_ptr<content::BrowserContext> browser_context_;
 

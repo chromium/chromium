@@ -10,12 +10,11 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
-#include "chrome/browser/manta/manta_service_factory.h"
-#include "chrome/browser/manta/manta_status.h"
-#include "chrome/browser/manta/proto/manta.pb.h"
-#include "chrome/browser/manta/snapper_provider.h"
+#include "chrome/browser/browser_features.h"
 #include "chrome/browser/new_tab_page/modules/new_tab_page_modules.h"
 #include "chrome/browser/new_tab_page/new_tab_page_util.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/background/ntp_background_service_factory.h"
 #include "chrome/browser/themes/theme_service.h"
@@ -30,13 +29,17 @@
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_section.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/manta/features.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/core/optimization_guide_util.h"
+#include "components/optimization_guide/proto/model_execution.pb.h"
+#include "components/optimization_guide/proto/wallpaper_search.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/search/ntp_features.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
@@ -94,13 +97,6 @@ CustomizeChromePageHandler::CustomizeChromePageHandler(
 
   ntp_custom_background_service_observation_.Observe(
       ntp_custom_background_service_.get());
-
-  if (base::FeatureList::IsEnabled(
-          ntp_features::kCustomizeChromeWallpaperSearch) &&
-      manta::features::IsMantaServiceEnabled()) {
-    manta_service_ = manta::MantaServiceFactory::GetForProfile(profile_);
-    snapper_provider_ = manta_service_->CreateSnapperProvider();
-  }
 }
 
 CustomizeChromePageHandler::~CustomizeChromePageHandler() {
@@ -228,16 +224,19 @@ void CustomizeChromePageHandler::RemoveBackgroundImage() {
 
 void CustomizeChromePageHandler::WallpaperSearchCallback(
     SearchWallpaperCallback callback,
-    std::unique_ptr<manta::proto::Response> response,
-    manta::MantaStatus manta_status) {
-  if (manta_status.status_code != manta::MantaStatusCode::kOk || !response ||
-      response->output_data_size() < 1) {
-    std::move(callback).Run(false);
+    optimization_guide::OptimizationGuideModelExecutionResult result) {
+  if (!result.has_value()) {
+    return;
+  }
+  auto response = optimization_guide::ParsedAnyMetadata<
+      chrome_intelligence_modelexecution_proto::WallpaperSearchResponse>(
+      result.value());
+  if (response->images_size() < 1) {
     return;
   }
   if (ntp_custom_background_service_) {
     ntp_custom_background_service_->SelectLocalBackgroundImage(
-        response->output_data(0).image().serialized_bytes());
+        response->images(0));
   }
   std::move(callback).Run(true);
 }
@@ -245,34 +244,27 @@ void CustomizeChromePageHandler::WallpaperSearchCallback(
 void CustomizeChromePageHandler::SearchWallpaper(
     const std::string& query,
     SearchWallpaperCallback callback) {
-  if (base::FeatureList::IsEnabled(
-          ntp_features::kCustomizeChromeWallpaperSearch) &&
-      manta::features::IsMantaServiceEnabled()) {
-    manta::proto::Request request;
-    request.set_feature_name(manta::proto::FeatureName::IMAGE_TEST);
-    manta::proto::RequestConfig& request_config =
-        *request.mutable_request_config();
-    request_config.set_num_outputs(1);
-    auto resolution_param = base::GetFieldTrialParamValueByFeature(
-        ntp_features::kCustomizeChromeWallpaperSearch,
-        ntp_features::kCustomizeChromeWallpaperSearchResolutionParam);
-    if (resolution_param == "64") {
-      request_config.set_image_resolution(
-          manta::proto::ImageResolution::RESOLUTION_64);
-    } else if (resolution_param == "256") {
-      request_config.set_image_resolution(
-          manta::proto::ImageResolution::RESOLUTION_256);
-    } else if (resolution_param == "1024") {
-      request_config.set_image_resolution(
-          manta::proto::ImageResolution::RESOLUTION_1024);
-    }
-    manta::proto::InputData& input_data = *request.add_input_data();
-    input_data.set_text(query);
-    snapper_provider_->Call(
-        request,
-        base::BindOnce(&CustomizeChromePageHandler::WallpaperSearchCallback,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  callback =
+      mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback), false);
+  if (!base::FeatureList::IsEnabled(
+          ntp_features::kCustomizeChromeWallpaperSearch) ||
+      !base::FeatureList::IsEnabled(
+          optimization_guide::features::kOptimizationGuideModelExecution)) {
+    return;
   }
+  auto* optimization_guide_keyed_service =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(profile_);
+  if (!optimization_guide_keyed_service) {
+    return;
+  }
+  chrome_intelligence_modelexecution_proto::WallpaperSearchRequest request;
+  request.set_query(query);
+  optimization_guide_keyed_service->ExecuteModel(
+      optimization_guide::proto::ModelExecutionFeature::
+          MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH,
+      request,
+      base::BindOnce(&CustomizeChromePageHandler::WallpaperSearchCallback,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void CustomizeChromePageHandler::UpdateTheme() {

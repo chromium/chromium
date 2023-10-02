@@ -26,7 +26,7 @@
 #include "chrome/grit/side_panel_customize_chrome_resources_map.h"
 #include "chrome/grit/side_panel_shared_resources.h"
 #include "chrome/grit/side_panel_shared_resources_map.h"
-#include "components/manta/features.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/search/ntp_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
@@ -134,10 +134,12 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
           ntp_features::kCustomizeChromeSidePanelExtensionsCard) &&
           features::IsChromeWebuiRefresh2023());
 
-  source->AddBoolean("wallpaperSearchEnabled",
-                     base::FeatureList::IsEnabled(
-                         ntp_features::kCustomizeChromeWallpaperSearch) &&
-                         manta::features::IsMantaServiceEnabled());
+  source->AddBoolean(
+      "wallpaperSearchEnabled",
+      base::FeatureList::IsEnabled(
+          ntp_features::kCustomizeChromeWallpaperSearch) &&
+          base::FeatureList::IsEnabled(
+              optimization_guide::features::kOptimizationGuideModelExecution));
 
   webui::SetupChromeRefresh2023(source);
 
