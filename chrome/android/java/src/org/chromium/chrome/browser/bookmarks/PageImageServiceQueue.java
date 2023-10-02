@@ -10,6 +10,8 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
+import org.chromium.components.sync.ModelType;
+import org.chromium.components.sync.SyncService;
 import org.chromium.url.GURL;
 
 import java.util.HashMap;
@@ -31,14 +33,17 @@ public class PageImageServiceQueue {
     private final List<Callback<GURL>> mRequests = new LinkedList<>();
     private final BookmarkModel mBookmarkModel;
     private final int mMaxFetchRequests;
+    private final SyncService mSyncService;
 
-    public PageImageServiceQueue(BookmarkModel bookmarkModel) {
-        this(bookmarkModel, DEFAULT_MAX_FETCH_REQUESTS);
+    public PageImageServiceQueue(BookmarkModel bookmarkModel, SyncService syncService) {
+        this(bookmarkModel, DEFAULT_MAX_FETCH_REQUESTS, syncService);
     }
 
-    public PageImageServiceQueue(BookmarkModel bookmarkModel, int maxFetchRequests) {
+    public PageImageServiceQueue(
+            BookmarkModel bookmarkModel, int maxFetchRequests, SyncService syncService) {
         mBookmarkModel = bookmarkModel;
         mMaxFetchRequests = maxFetchRequests;
+        mSyncService = syncService;
     }
 
     public void destroy() {
@@ -50,6 +55,11 @@ public class PageImageServiceQueue {
      * url is cached, the callback is invoked immediately.
      */
     public void getSalientImageUrl(GURL url, Callback<GURL> callback) {
+        if (!canRequestSalientImages()) {
+            callback.onResult(null);
+            return;
+        }
+
         if (mSalientImageUrlCache.containsKey(url)) {
             callback.onResult(mSalientImageUrlCache.get(url));
             return;
@@ -72,5 +82,10 @@ public class PageImageServiceQueue {
                         getSalientImageUrl(queuedRequest.first, queuedRequest.second);
                     }
                 }));
+    }
+
+    private boolean canRequestSalientImages() {
+        return mSyncService.isSyncFeatureActive()
+                && mSyncService.getActiveDataTypes().contains(ModelType.BOOKMARKS);
     }
 }
