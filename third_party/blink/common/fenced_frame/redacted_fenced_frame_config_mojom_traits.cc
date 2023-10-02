@@ -140,11 +140,11 @@ bool StructTraits<blink::mojom::AdAuctionDataDataView,
 }
 
 // static
-const url::Origin&
+const net::SchemefulSite&
 StructTraits<blink::mojom::SharedStorageBudgetMetadataDataView,
              blink::FencedFrame::SharedStorageBudgetMetadata>::
-    origin(const blink::FencedFrame::SharedStorageBudgetMetadata& input) {
-  return input.origin;
+    site(const blink::FencedFrame::SharedStorageBudgetMetadata& input) {
+  return input.site;
 }
 // static
 double StructTraits<blink::mojom::SharedStorageBudgetMetadataDataView,
@@ -166,7 +166,7 @@ bool StructTraits<blink::mojom::SharedStorageBudgetMetadataDataView,
                   blink::FencedFrame::SharedStorageBudgetMetadata>::
     Read(blink::mojom::SharedStorageBudgetMetadataDataView data,
          blink::FencedFrame::SharedStorageBudgetMetadata* out_data) {
-  if (!data.ReadOrigin(&out_data->origin)) {
+  if (!data.ReadSite(&out_data->site)) {
     return false;
   }
   out_data->budget_to_charge = data.budget_to_charge();

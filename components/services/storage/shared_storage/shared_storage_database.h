@@ -34,6 +34,10 @@ class Time;
 class TimeDelta;
 }  // namespace base
 
+namespace net {
+class SchemefulSite;
+}  // namespace net
+
 namespace sql {
 class Statement;
 }  // namespace sql
@@ -341,31 +345,38 @@ class SharedStorageDatabase {
   [[nodiscard]] std::vector<mojom::StorageUsageInfoPtr> FetchOrigins();
 
   // Makes a withdrawal of `bits_debit` stamped with the current time from the
-  // privacy budget of `context_origin`.
-  [[nodiscard]] OperationResult MakeBudgetWithdrawal(url::Origin context_origin,
-                                                     double bits_debit);
+  // privacy budget of `context_site`.
+  [[nodiscard]] OperationResult MakeBudgetWithdrawal(
+      net::SchemefulSite context_site,
+      double bits_debit);
 
   // Determines the number of bits remaining in the privacy budget of
-  // `context_origin`, where only withdrawals within the most recent
+  // `context_site`, where only withdrawals within the most recent
   // `budget_interval_` are counted as still valid, and returns this information
   // bundled with an `OperationResult` value to indicate whether the database
   // retrieval was successful.
-  [[nodiscard]] BudgetResult GetRemainingBudget(url::Origin context_origin);
+  [[nodiscard]] BudgetResult GetRemainingBudget(
+      net::SchemefulSite context_site);
 
   // Retrieves the most recent `creation_time` for `context_origin`.
   [[nodiscard]] TimeResult GetCreationTime(url::Origin context_origin);
 
   // Calls `Length()`, `GetRemainingBudget()`, and `GetCreationTime()`, then
   // bundles this info along with the accompanying `OperationResult`s into a
-  // struct to send to the DevTools `StorageHandler`.
+  // struct to send to the DevTools `StorageHandler`. Because DevTools displays
+  // shared storage data by origin, we continue to pass a `url::Origin` in as
+  // parameter `context_origin` and compute the site on the fly to use as
+  // parameter for `GetRemainingBudget()`.
   [[nodiscard]] MetadataResult GetMetadata(url::Origin context_origin);
 
   // Returns an origin's entries in a vector bundled with an `OperationResult`.
   // To only be used by DevTools.
   [[nodiscard]] EntriesResult GetEntriesForDevTools(url::Origin context_origin);
 
-  // Removes all budget withdrawals for `context_origin`. Intended as a
-  // convenience for the DevTools UX.
+  // Removes all budget withdrawals for `context_origin`'s site. Intended as a
+  // convenience for the DevTools UX. Because DevTools displays shared storage
+  // data by origin, we continue to pass a `url::Origin` in as parameter
+  // `context_origin` and compute the site on the fly.
   [[nodiscard]] OperationResult ResetBudgetForDevTools(
       url::Origin context_origin);
 
@@ -395,10 +406,10 @@ class SharedStorageDatabase {
       scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy);
 
   // Gets the number of entries (including stale entries) in the table
-  // `budget_mapping` for `context_origin`. Returns -1 in case of database
+  // `budget_mapping` for `context_site`. Returns -1 in case of database
   // initialization failure or SQL error.
   [[nodiscard]] int64_t GetNumBudgetEntriesForTesting(
-      url::Origin context_origin);
+      net::SchemefulSite context_site);
 
   // Returns the total number of entries in the table for all origins, or -1 in
   // case of database initialization failure or SQL error.

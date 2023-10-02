@@ -1683,9 +1683,9 @@ const base::FeatureParam<int> kSharedStorageSelectURLBitBudgetPerPageLoad = {
     &kSharedStorageSelectURLLimit, "SharedStorageSelectURLBitBudgetPerPageLoad",
     12};
 const base::FeatureParam<int>
-    kSharedStorageSelectURLBitBudgetPerOriginPerPageLoad = {
+    kSharedStorageSelectURLBitBudgetPerSitePerPageLoad = {
         &kSharedStorageSelectURLLimit,
-        "SharedStorageSelectURLBitBudgetPerOriginPerPageLoad", 6};
+        "SharedStorageSelectURLBitBudgetPerSitePerPageLoad", 6};
 
 BASE_FEATURE(kSharedStorageAPIM118,
              "SharedStorageAPIM118",

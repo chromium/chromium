@@ -22,6 +22,10 @@ namespace base {
 class Time;
 }  // namespace base
 
+namespace net {
+class SchemefulSite;
+}  // namespace net
+
 namespace url {
 class Origin;
 }  // namespace url
@@ -202,19 +206,19 @@ class AsyncSharedStorageDatabase {
           callback) = 0;
 
   // Makes a withdrawal of `bits_debit` stamped with the current time from the
-  // privacy budget of `context_origin`.
+  // privacy budget of `context_site`.
   virtual void MakeBudgetWithdrawal(
-      url::Origin context_origin,
+      net::SchemefulSite context_site,
       double bits_debit,
       base::OnceCallback<void(OperationResult)> callback) = 0;
 
   // Determines the number of bits remaining in the privacy budget of
-  // `context_origin`, where only withdrawals within the most recent
+  // `context_site`, where only withdrawals within the most recent
   // `budget_interval_` are counted as still valid, and calls `callback` with
   // this information bundled with an `OperationResult` value to indicate
   // whether the database retrieval was successful.
   virtual void GetRemainingBudget(
-      url::Origin context_origin,
+      net::SchemefulSite context_site,
       base::OnceCallback<void(BudgetResult)> callback) = 0;
 
   // Calls `callback` with the most recent creation time (currently in the
@@ -228,7 +232,10 @@ class AsyncSharedStorageDatabase {
   // `SharedStorageDatabase::GetRemainingBudget()`, and
   // `SharedStorageDatabase::GetCreationTime()`, then bundles this info along
   // with the accompanying `OperationResult`s into a struct to send to the
-  // DevTools `StorageHandler` via `callback`.
+  // DevTools `StorageHandler` via `callback`. Because DevTools displays
+  // shared storage data by origin, we continue to pass a `url::Origin` in as
+  // parameter `context_origin` and compute the site on the fly to use as
+  // parameter for `GetRemainingBudget()`.
   virtual void GetMetadata(
       url::Origin context_origin,
       base::OnceCallback<void(MetadataResult)> callback) = 0;
@@ -239,9 +246,11 @@ class AsyncSharedStorageDatabase {
       url::Origin context_origin,
       base::OnceCallback<void(EntriesResult)> callback) = 0;
 
-  // Removes all budget withdrawals for `context_origin`. Calls `callback` to
-  // indicate whether the transaction succeeded. Intended as a convenience for
-  // the DevTools UX.
+  // Removes all budget withdrawals for `context_origin`'s site. Calls
+  // `callback` to indicate whether the transaction succeeded. Intended as a
+  // convenience for the DevTools UX. Because DevTools displays shared storage
+  // data by origin, we continue to pass a `url::Origin` in as parameter
+  // `context_origin` and compute the site on the fly.
   virtual void ResetBudgetForDevTools(
       url::Origin context_origin,
       base::OnceCallback<void(OperationResult)> callback) = 0;

@@ -17,6 +17,7 @@
 #include "content/browser/renderer_host/stored_page.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/page.h"
+#include "net/base/schemeful_site.h"
 #include "services/metrics/public/cpp/ukm_source.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -183,7 +184,7 @@ class CONTENT_EXPORT PageImpl : public Page {
   // `blink::features::kSharedStorageSelectURLLimit` is enabled. If
   // `blink::features::kSharedStorageSelectURLLimit` is disabled, always returns
   // true.
-  bool CheckAndMaybeDebitSelectURLBudgets(const url::Origin& origin,
+  bool CheckAndMaybeDebitSelectURLBudgets(const net::SchemefulSite& site,
                                           double bits_to_charge);
 
  private:
@@ -251,23 +252,23 @@ class CONTENT_EXPORT PageImpl : public Page {
 
   // If `blink::features::kSharedStorageSelectURLLimit` is enabled, the number
   // of bits of entropy remaining in this pageload's overall budget for calls to
-  // `sharedStorage.selectURL()`. Calls from all origins on this page are
+  // `sharedStorage.selectURL()`. Calls from all sites on this page are
   // charged to this budget. `select_url_overall_budget_` is not renewed until
   // `this` is destroyed, and it does not rely on any assumptions about when
   // specifically `this` is destroyed (e.g. during navigation or not).
   absl::optional<double> select_url_overall_budget_;
 
   // If `blink::features::kSharedStorageSelectURLLimit` is enabled, the maximum
-  // number of bits of entropy in a single origin's budget.
-  absl::optional<double> select_url_max_bits_per_origin_;
+  // number of bits of entropy in a single site's budget.
+  absl::optional<double> select_url_max_bits_per_site_;
 
-  // A map of origins to the number  bits of entropy remaining in this origin's
+  // A map of sites to the number bits of entropy remaining in the site's
   // budget for calls to `sharedStorage.selectURL()` during this pageload.
-  // `select_url_per_origin_budget_` is not cleared until `this` is destroyed,
+  // `select_url_per_site_budget_` is not cleared until `this` is destroyed,
   // and it does not rely on any assumptions about when specifically `this` is
   // destroyed (e.g. during navigation or not). Used only if
   // `blink::features::kSharedStorageSelectURLLimit` is enabled.
-  base::flat_map<url::Origin, double> select_url_per_origin_budget_;
+  base::flat_map<net::SchemefulSite, double> select_url_per_site_budget_;
 
   // This class is owned by the main RenderFrameHostImpl and it's safe to keep a
   // reference to it.

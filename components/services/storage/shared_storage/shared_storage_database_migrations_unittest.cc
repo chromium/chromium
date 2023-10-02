@@ -5,6 +5,7 @@
 #include "components/services/storage/shared_storage/shared_storage_database_migrations.h"
 
 #include <memory>
+#include <tuple>
 #include <vector>
 
 #include "base/files/file_path.h"
@@ -227,6 +228,80 @@ TEST_F(SharedStorageDatabaseMigrationsTest, MigrateTooNewVersionToCurrent) {
 
     ASSERT_TRUE(statement.Step());
     ASSERT_EQ(0, statement.ColumnInt(0));
+  }
+}
+
+TEST_F(SharedStorageDatabaseMigrationsTest, MigrateVersion3ToCurrent) {
+  ASSERT_TRUE(CreateDatabaseFromSQL(file_name_, GetTestFileNameForVersion(3)));
+  std::map<int64_t, std::tuple<url::Origin, base::Time, double>>
+      premigration_values;
+
+  // Verify pre-conditions.
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(file_name_));
+
+    // `id`, `context_origin`, `time_stamp`, and `bits_debit`.
+    EXPECT_EQ(4u, sql::test::CountTableColumns(&db, "budget_mapping"));
+
+    // Implicit index on `meta`, `per_origin_mapping_last_used_time_idx`,
+    // `budget_mapping_origin_time_stamp_idx`, and
+    // `values_mapping_last_used_time_idx`.
+    EXPECT_EQ(4u, sql::test::CountSQLIndices(&db));
+
+    ASSERT_TRUE(db.DoesColumnExist("budget_mapping", "context_origin"));
+    ASSERT_FALSE(db.DoesColumnExist("budget_mapping", "context_site"));
+
+    sql::Statement select_statement(
+        db.GetUniqueStatement("SELECT * FROM budget_mapping"));
+
+    while (select_statement.Step()) {
+      premigration_values[select_statement.ColumnInt64(0)] = std::make_tuple(
+          url::Origin::Create(GURL(select_statement.ColumnString(1))),
+          select_statement.ColumnTime(2), select_statement.ColumnDouble(3));
+    }
+  }
+
+  MigrateDatabase();
+
+  // Verify schema is current.
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(file_name_));
+
+    // Check version.
+    EXPECT_EQ(SharedStorageDatabase::kCurrentVersionNumber,
+              VersionFromDatabase(db));
+
+    // Compare without quotes as sometimes migrations cause table names to be
+    // string literals.
+    EXPECT_EQ(RemoveQuotes(GetCurrentSchema()), RemoveQuotes(db.GetSchema()));
+
+    ASSERT_TRUE(db.DoesColumnExist("budget_mapping", "context_site"));
+    ASSERT_FALSE(db.DoesColumnExist("budget_mapping", "context_origin"));
+
+    // Verify that data is preserved across the migration.
+    sql::Statement count_statement(
+        db.GetUniqueStatement("SELECT COUNT(*) FROM budget_mapping"));
+
+    ASSERT_TRUE(count_statement.Step());
+    ASSERT_LT(0, count_statement.ColumnInt(0));
+
+    // Verify that each `context_site` in `budget_mapping` is the site for the
+    // previously stored `context_origin`.
+    sql::Statement select_statement(
+        db.GetUniqueStatement("SELECT * FROM budget_mapping"));
+
+    while (select_statement.Step()) {
+      auto id_it = premigration_values.find(select_statement.ColumnInt64(0));
+      ASSERT_TRUE(id_it != premigration_values.end());
+
+      EXPECT_EQ(
+          net::SchemefulSite::Deserialize(select_statement.ColumnString(1)),
+          net::SchemefulSite(std::get<0>(id_it->second)));
+      EXPECT_EQ(std::get<1>(id_it->second), select_statement.ColumnTime(2));
+      EXPECT_EQ(std::get<2>(id_it->second), select_statement.ColumnDouble(3));
+    }
   }
 }
 

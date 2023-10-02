@@ -13,6 +13,7 @@
 #include "content/browser/fenced_frame/fenced_frame_reporter.h"
 #include "content/public/test/test_renderer_host.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
+#include "net/base/schemeful_site.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -451,11 +452,11 @@ TEST_F(FencedFrameConfigMojomTraitsTest, ConfigMojomTraitsTest) {
   // Test `shared_storage_budget_metadata`.
   {
     SharedStorageBudgetMetadata test_shared_storage_budget_metadata = {
-        url::Origin::Create(test_url), 0.5, /*top_navigated=*/true};
+        net::SchemefulSite(test_url), 0.5, /*top_navigated=*/true};
     const auto eq = [](const SharedStorageBudgetMetadata& a,
                        const SharedStorageBudgetMetadata& b) {
-      return std::tie(a.origin, a.budget_to_charge, a.top_navigated) ==
-             std::tie(b.origin, b.budget_to_charge, b.top_navigated);
+      return std::tie(a.site, a.budget_to_charge, a.top_navigated) ==
+             std::tie(b.site, b.budget_to_charge, b.top_navigated);
     };
     TestProperty(&FencedFrameConfig::shared_storage_budget_metadata_,
                  &RedactedFencedFrameConfig::shared_storage_budget_metadata,

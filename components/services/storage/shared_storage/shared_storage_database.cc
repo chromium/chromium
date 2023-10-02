@@ -22,6 +22,7 @@
 #include "components/services/storage/shared_storage/shared_storage_database_migrations.h"
 #include "components/services/storage/shared_storage/shared_storage_options.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/base/schemeful_site.h"
 #include "sql/database.h"
 #include "sql/error_delegate_util.h"
 #include "sql/statement.h"
@@ -54,11 +55,16 @@ const int kSharedStorageEntryTotalBytesMultiplier = 4;
 //                prevent roundtrip conversion to UTF-8 and back, which is
 //                lossy if the original UTF-16 string contains unpaired
 //                surrogates
-const int SharedStorageDatabase::kCurrentVersionNumber = 3;
+// Version 4 - https://crrev.com/c/4879582
+//              * rename `context_origin` column in `budget_mapping` to
+//                `context_site`, converting existing data in this column from
+//                origins to sites
+
+const int SharedStorageDatabase::kCurrentVersionNumber = 4;
 
 // Earliest version which can use a `kCurrentVersionNumber` database
 // without failing.
-const int SharedStorageDatabase::kCompatibleVersionNumber = 3;
+const int SharedStorageDatabase::kCompatibleVersionNumber = 4;
 
 // Latest version of the database that cannot be upgraded to
 // `kCurrentVersionNumber` without razing the database.
@@ -66,10 +72,16 @@ const int SharedStorageDatabase::kDeprecatedVersionNumber = 0;
 
 namespace {
 
-[[nodiscard]] std::string SerializeOrigin(const url::Origin& origin) {
+std::string SerializeOrigin(const url::Origin& origin) {
   DCHECK(!origin.opaque());
   DCHECK_NE(url::kFileScheme, origin.scheme());
   return origin.Serialize();
+}
+
+std::string SerializeSite(const net::SchemefulSite& site) {
+  DCHECK(!site.opaque());
+  DCHECK_NE(url::kFileScheme, site.GetURL().scheme());
+  return site.Serialize();
 }
 
 [[nodiscard]] bool InitSchema(sql::Database& db, sql::MetaTable& meta_table) {
@@ -97,17 +109,20 @@ namespace {
   static constexpr char kBudgetMappingSql[] =
       "CREATE TABLE IF NOT EXISTS budget_mapping("
       "id INTEGER NOT NULL PRIMARY KEY,"
-      "context_origin TEXT NOT NULL,"
+      "context_site TEXT NOT NULL,"
       "time_stamp INTEGER NOT NULL,"
       "bits_debit REAL NOT NULL)";
   if (!db.Execute(kBudgetMappingSql))
     return false;
 
-  static constexpr char kOriginTimeIndexSql[] =
-      "CREATE INDEX IF NOT EXISTS budget_mapping_origin_time_stamp_idx "
-      "ON budget_mapping(context_origin,time_stamp)";
-  if (!db.Execute(kOriginTimeIndexSql))
-    return false;
+  if (meta_table.GetVersionNumber() >= 4) {
+    static constexpr char kSiteTimeIndexSql[] =
+        "CREATE INDEX IF NOT EXISTS budget_mapping_site_time_stamp_idx "
+        "ON budget_mapping(context_site,time_stamp)";
+    if (!db.Execute(kSiteTimeIndexSql)) {
+      return false;
+    }
+  }
 
   if (meta_table.GetVersionNumber() >= 2) {
     static constexpr char kValuesLastUsedTimeIndexSql[] =
@@ -428,8 +443,9 @@ SharedStorageDatabase::OperationResult SharedStorageDatabase::Clear(
       return OperationResult::kInitFailure;
   }
 
-  if (!Purge(SerializeOrigin(context_origin)))
+  if (!Purge(SerializeOrigin(context_origin))) {
     return OperationResult::kSqlError;
+  }
   return OperationResult::kSuccess;
 }
 
@@ -848,7 +864,7 @@ std::vector<mojom::StorageUsageInfoPtr> SharedStorageDatabase::FetchOrigins() {
 }
 
 SharedStorageDatabase::OperationResult
-SharedStorageDatabase::MakeBudgetWithdrawal(url::Origin context_origin,
+SharedStorageDatabase::MakeBudgetWithdrawal(net::SchemefulSite context_site,
                                             double bits_debit) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_GT(bits_debit, 0.0);
@@ -857,11 +873,11 @@ SharedStorageDatabase::MakeBudgetWithdrawal(url::Origin context_origin,
     return OperationResult::kInitFailure;
 
   static constexpr char kInsertSql[] =
-      "INSERT INTO budget_mapping(context_origin,time_stamp,bits_debit)"
+      "INSERT INTO budget_mapping(context_site,time_stamp,bits_debit)"
       "VALUES(?,?,?)";
 
   sql::Statement statement(db_.GetCachedStatement(SQL_FROM_HERE, kInsertSql));
-  statement.BindString(0, SerializeOrigin(context_origin));
+  statement.BindString(0, SerializeSite(context_site));
   statement.BindTime(1, clock_->Now());
   statement.BindDouble(2, bits_debit);
 
@@ -871,7 +887,7 @@ SharedStorageDatabase::MakeBudgetWithdrawal(url::Origin context_origin,
 }
 
 SharedStorageDatabase::BudgetResult SharedStorageDatabase::GetRemainingBudget(
-    url::Origin context_origin) {
+    net::SchemefulSite context_site) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (LazyInit(DBCreationPolicy::kIgnoreIfAbsent) != InitStatus::kSuccess) {
@@ -885,10 +901,10 @@ SharedStorageDatabase::BudgetResult SharedStorageDatabase::GetRemainingBudget(
 
   static constexpr char kSelectSql[] =
       "SELECT SUM(bits_debit) FROM budget_mapping "
-      "WHERE context_origin=? AND time_stamp>=?";
+      "WHERE context_site=? AND time_stamp>=?";
 
   sql::Statement statement(db_.GetCachedStatement(SQL_FROM_HERE, kSelectSql));
-  statement.BindString(0, SerializeOrigin(context_origin));
+  statement.BindString(0, SerializeSite(context_site));
   statement.BindTime(1, clock_->Now() - budget_interval_);
 
   double total_debits = 0.0;
@@ -934,7 +950,8 @@ SharedStorageDatabase::MetadataResult SharedStorageDatabase::GetMetadata(
   if (time_result.result == OperationResult::kSuccess)
     metadata.creation_time = time_result.time;
 
-  BudgetResult budget_result = GetRemainingBudget(context_origin);
+  BudgetResult budget_result =
+      GetRemainingBudget(net::SchemefulSite(context_origin));
   metadata.budget_result = budget_result.result;
   if (budget_result.result == OperationResult::kSuccess)
     metadata.remaining_budget = budget_result.bits;
@@ -1005,10 +1022,10 @@ SharedStorageDatabase::ResetBudgetForDevTools(url::Origin context_origin) {
   }
 
   static constexpr char kDeleteSql[] =
-      "DELETE FROM budget_mapping WHERE context_origin=?";
+      "DELETE FROM budget_mapping WHERE context_site=?";
 
   sql::Statement statement(db_.GetCachedStatement(SQL_FROM_HERE, kDeleteSql));
-  statement.BindString(0, SerializeOrigin(context_origin));
+  statement.BindString(0, SerializeSite(net::SchemefulSite(context_origin)));
 
   if (!statement.Run()) {
     return OperationResult::kSqlError;
@@ -1094,7 +1111,7 @@ void SharedStorageDatabase::OverrideSpecialStoragePolicyForTesting(
 }
 
 int64_t SharedStorageDatabase::GetNumBudgetEntriesForTesting(
-    url::Origin context_origin) {
+    net::SchemefulSite context_site) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (LazyInit(DBCreationPolicy::kIgnoreIfAbsent) != InitStatus::kSuccess) {
@@ -1108,10 +1125,10 @@ int64_t SharedStorageDatabase::GetNumBudgetEntriesForTesting(
 
   static constexpr char kSelectSql[] =
       "SELECT COUNT(*) FROM budget_mapping "
-      "WHERE context_origin=?";
+      "WHERE context_site=?";
 
   sql::Statement statement(db_.GetCachedStatement(SQL_FROM_HERE, kSelectSql));
-  statement.BindString(0, SerializeOrigin(context_origin));
+  statement.BindString(0, SerializeSite(context_site));
 
   if (statement.Step())
     return statement.ColumnInt64(0);

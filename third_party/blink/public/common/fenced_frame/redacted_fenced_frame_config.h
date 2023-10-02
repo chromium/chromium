@@ -12,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include "net/base/schemeful_site.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/mojom/fenced_frame/fenced_frame_config.mojom-forward.h"
@@ -55,13 +56,13 @@ struct BLINK_COMMON_EXPORT AdAuctionData {
 };
 
 // The metadata for the shared storage runURLSelectionOperation's budget,
-// which includes the shared storage's origin and the amount of budget to
+// which includes the shared storage's `site` and the amount of budget to
 // charge when a fenced frame that originates from the URN is navigating a top
 // frame. Before the fenced frame results in a top navigation, this
 // `SharedStorageBudgetMetadata` will be stored/associated with the URN inside
 // the `FencedFrameURLMapping`.
 struct BLINK_COMMON_EXPORT SharedStorageBudgetMetadata {
-  url::Origin origin;
+  net::SchemefulSite site;
   double budget_to_charge = 0;
 
   // The bool `top_navigated` needs to be mutable because the overall

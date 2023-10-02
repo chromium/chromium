@@ -60,7 +60,7 @@ template <>
 struct BLINK_COMMON_EXPORT
     StructTraits<blink::mojom::SharedStorageBudgetMetadataDataView,
                  blink::FencedFrame::SharedStorageBudgetMetadata> {
-  static const url::Origin& origin(
+  static const net::SchemefulSite& site(
       const blink::FencedFrame::SharedStorageBudgetMetadata& input);
   static double budget_to_charge(
       const blink::FencedFrame::SharedStorageBudgetMetadata& input);

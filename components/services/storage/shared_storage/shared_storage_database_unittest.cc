@@ -240,17 +240,29 @@ TEST_F(SharedStorageDatabaseTest, CurrentVersion_LoadFromFile) {
                                    google_org, grow_with_google_com, gv_com,
                                    waymo_com, withgoogle_com, youtube_com));
 
-  EXPECT_DOUBLE_EQ(kBitBudget - 5.3, db_->GetRemainingBudget(abc_xyz).bits);
-  EXPECT_DOUBLE_EQ(kBitBudget, db_->GetRemainingBudget(chromium_org).bits);
-  EXPECT_DOUBLE_EQ(kBitBudget, db_->GetRemainingBudget(google_com).bits);
-  EXPECT_DOUBLE_EQ(kBitBudget - 4.0, db_->GetRemainingBudget(google_org).bits);
-  EXPECT_DOUBLE_EQ(kBitBudget - 1.2,
-                   db_->GetRemainingBudget(grow_with_google_com).bits);
-  EXPECT_DOUBLE_EQ(kBitBudget, db_->GetRemainingBudget(gv_com).bits);
-  EXPECT_DOUBLE_EQ(kBitBudget - 4.2, db_->GetRemainingBudget(waymo_com).bits);
-  EXPECT_DOUBLE_EQ(kBitBudget - 1.0,
-                   db_->GetRemainingBudget(withgoogle_com).bits);
-  EXPECT_DOUBLE_EQ(kBitBudget, db_->GetRemainingBudget(youtube_com).bits);
+  EXPECT_DOUBLE_EQ(kBitBudget - 5.3,
+                   db_->GetRemainingBudget(net::SchemefulSite(abc_xyz)).bits);
+  EXPECT_DOUBLE_EQ(
+      kBitBudget,
+      db_->GetRemainingBudget(net::SchemefulSite(chromium_org)).bits);
+  EXPECT_DOUBLE_EQ(
+      kBitBudget, db_->GetRemainingBudget(net::SchemefulSite(google_com)).bits);
+  EXPECT_DOUBLE_EQ(
+      kBitBudget - 4.0,
+      db_->GetRemainingBudget(net::SchemefulSite(google_org)).bits);
+  EXPECT_DOUBLE_EQ(
+      kBitBudget - 1.2,
+      db_->GetRemainingBudget(net::SchemefulSite(grow_with_google_com)).bits);
+  EXPECT_DOUBLE_EQ(kBitBudget,
+                   db_->GetRemainingBudget(net::SchemefulSite(gv_com)).bits);
+  EXPECT_DOUBLE_EQ(kBitBudget - 4.2,
+                   db_->GetRemainingBudget(net::SchemefulSite(waymo_com)).bits);
+  EXPECT_DOUBLE_EQ(
+      kBitBudget - 1.0,
+      db_->GetRemainingBudget(net::SchemefulSite(withgoogle_com)).bits);
+  EXPECT_DOUBLE_EQ(
+      kBitBudget,
+      db_->GetRemainingBudget(net::SchemefulSite(youtube_com)).bits);
 
   EXPECT_EQ(13266954476192362, db_->GetCreationTime(google_com)
                                    .time.ToDeltaSinceWindowsEpoch()
@@ -366,16 +378,28 @@ TEST_F(SharedStorageDatabaseTest, Version1_LoadFromFileNoBudgetTables) {
                                    google_org, grow_with_google_com, gv_com,
                                    waymo_com, withgoogle_com, youtube_com));
 
-  EXPECT_DOUBLE_EQ(kBitBudget, db_->GetRemainingBudget(abc_xyz).bits);
-  EXPECT_DOUBLE_EQ(kBitBudget, db_->GetRemainingBudget(chromium_org).bits);
-  EXPECT_DOUBLE_EQ(kBitBudget, db_->GetRemainingBudget(google_com).bits);
-  EXPECT_DOUBLE_EQ(kBitBudget, db_->GetRemainingBudget(google_org).bits);
   EXPECT_DOUBLE_EQ(kBitBudget,
-                   db_->GetRemainingBudget(grow_with_google_com).bits);
-  EXPECT_DOUBLE_EQ(kBitBudget, db_->GetRemainingBudget(gv_com).bits);
-  EXPECT_DOUBLE_EQ(kBitBudget, db_->GetRemainingBudget(waymo_com).bits);
-  EXPECT_DOUBLE_EQ(kBitBudget, db_->GetRemainingBudget(withgoogle_com).bits);
-  EXPECT_DOUBLE_EQ(kBitBudget, db_->GetRemainingBudget(youtube_com).bits);
+                   db_->GetRemainingBudget(net::SchemefulSite(abc_xyz)).bits);
+  EXPECT_DOUBLE_EQ(
+      kBitBudget,
+      db_->GetRemainingBudget(net::SchemefulSite(chromium_org)).bits);
+  EXPECT_DOUBLE_EQ(
+      kBitBudget, db_->GetRemainingBudget(net::SchemefulSite(google_com)).bits);
+  EXPECT_DOUBLE_EQ(
+      kBitBudget, db_->GetRemainingBudget(net::SchemefulSite(google_org)).bits);
+  EXPECT_DOUBLE_EQ(
+      kBitBudget,
+      db_->GetRemainingBudget(net::SchemefulSite(grow_with_google_com)).bits);
+  EXPECT_DOUBLE_EQ(kBitBudget,
+                   db_->GetRemainingBudget(net::SchemefulSite(gv_com)).bits);
+  EXPECT_DOUBLE_EQ(kBitBudget,
+                   db_->GetRemainingBudget(net::SchemefulSite(waymo_com)).bits);
+  EXPECT_DOUBLE_EQ(
+      kBitBudget,
+      db_->GetRemainingBudget(net::SchemefulSite(withgoogle_com)).bits);
+  EXPECT_DOUBLE_EQ(
+      kBitBudget,
+      db_->GetRemainingBudget(net::SchemefulSite(youtube_com)).bits);
 
   histogram_tester_.ExpectUniqueSample(kIsFileBackedHistogram, true, 1);
   histogram_tester_.ExpectTotalCount(kFileSizeKBHistogram, 1);
@@ -1052,39 +1076,34 @@ TEST_P(SharedStorageDatabaseParamTest, MakeBudgetWithdrawal) {
 
   // SQL database hasn't yet been lazy-initialized. Nevertheless, remaining
   // budgets should be returned as the max possible.
-  const url::Origin kOrigin1 =
-      url::Origin::Create(GURL("http://www.example1.test"));
-  EXPECT_DOUBLE_EQ(kBitBudget, db_->GetRemainingBudget(kOrigin1).bits);
-  const url::Origin kOrigin2 =
-      url::Origin::Create(GURL("http://www.example2.test"));
-  EXPECT_DOUBLE_EQ(kBitBudget, db_->GetRemainingBudget(kOrigin2).bits);
+  const net::SchemefulSite kSite1(GURL("http://www.example1.test"));
+  EXPECT_DOUBLE_EQ(kBitBudget, db_->GetRemainingBudget(kSite1).bits);
+  const net::SchemefulSite kSite2(GURL("http://www.example2.test"));
+  EXPECT_DOUBLE_EQ(kBitBudget, db_->GetRemainingBudget(kSite2).bits);
 
-  // A withdrawal for `kOrigin1` doesn't affect `kOrigin2`.
-  EXPECT_EQ(OperationResult::kSuccess,
-            db_->MakeBudgetWithdrawal(kOrigin1, 1.75));
-  EXPECT_DOUBLE_EQ(kBitBudget - 1.75, db_->GetRemainingBudget(kOrigin1).bits);
-  EXPECT_DOUBLE_EQ(kBitBudget, db_->GetRemainingBudget(kOrigin2).bits);
-  EXPECT_EQ(1L, db_->GetNumBudgetEntriesForTesting(kOrigin1));
+  // A withdrawal for `kSite1` doesn't affect `kSite2`.
+  EXPECT_EQ(OperationResult::kSuccess, db_->MakeBudgetWithdrawal(kSite1, 1.75));
+  EXPECT_DOUBLE_EQ(kBitBudget - 1.75, db_->GetRemainingBudget(kSite1).bits);
+  EXPECT_DOUBLE_EQ(kBitBudget, db_->GetRemainingBudget(kSite2).bits);
+  EXPECT_EQ(1L, db_->GetNumBudgetEntriesForTesting(kSite1));
   EXPECT_EQ(1L, db_->GetTotalNumBudgetEntriesForTesting());
 
-  // An additional withdrawal for `kOrigin1` at or near the same time as the
+  // An additional withdrawal for `kSite1` at or near the same time as the
   // previous one is debited appropriately.
-  EXPECT_EQ(OperationResult::kSuccess,
-            db_->MakeBudgetWithdrawal(kOrigin1, 2.5));
+  EXPECT_EQ(OperationResult::kSuccess, db_->MakeBudgetWithdrawal(kSite1, 2.5));
   EXPECT_DOUBLE_EQ(kBitBudget - 1.75 - 2.5,
-                   db_->GetRemainingBudget(kOrigin1).bits);
-  EXPECT_DOUBLE_EQ(kBitBudget, db_->GetRemainingBudget(kOrigin2).bits);
-  EXPECT_EQ(2L, db_->GetNumBudgetEntriesForTesting(kOrigin1));
+                   db_->GetRemainingBudget(kSite1).bits);
+  EXPECT_DOUBLE_EQ(kBitBudget, db_->GetRemainingBudget(kSite2).bits);
+  EXPECT_EQ(2L, db_->GetNumBudgetEntriesForTesting(kSite1));
   EXPECT_EQ(2L, db_->GetTotalNumBudgetEntriesForTesting());
 
-  // A withdrawal for `kOrigin2` doesn't affect `kOrigin1`.
-  EXPECT_EQ(OperationResult::kSuccess,
-            db_->MakeBudgetWithdrawal(kOrigin2, 3.4));
-  EXPECT_DOUBLE_EQ(kBitBudget - 3.4, db_->GetRemainingBudget(kOrigin2).bits);
+  // A withdrawal for `kSite2` doesn't affect `kSite1`.
+  EXPECT_EQ(OperationResult::kSuccess, db_->MakeBudgetWithdrawal(kSite2, 3.4));
+  EXPECT_DOUBLE_EQ(kBitBudget - 3.4, db_->GetRemainingBudget(kSite2).bits);
   EXPECT_DOUBLE_EQ(kBitBudget - 1.75 - 2.5,
-                   db_->GetRemainingBudget(kOrigin1).bits);
-  EXPECT_EQ(2L, db_->GetNumBudgetEntriesForTesting(kOrigin1));
-  EXPECT_EQ(1L, db_->GetNumBudgetEntriesForTesting(kOrigin2));
+                   db_->GetRemainingBudget(kSite1).bits);
+  EXPECT_EQ(2L, db_->GetNumBudgetEntriesForTesting(kSite1));
+  EXPECT_EQ(1L, db_->GetNumBudgetEntriesForTesting(kSite2));
   EXPECT_EQ(3L, db_->GetTotalNumBudgetEntriesForTesting());
 
   // Advance halfway through the lookback window.
@@ -1092,19 +1111,18 @@ TEST_P(SharedStorageDatabaseParamTest, MakeBudgetWithdrawal) {
 
   // Remaining budgets continue to take into account the withdrawals above, as
   // they are still within the lookback window.
-  EXPECT_DOUBLE_EQ(kBitBudget - 3.4, db_->GetRemainingBudget(kOrigin2).bits);
+  EXPECT_DOUBLE_EQ(kBitBudget - 3.4, db_->GetRemainingBudget(kSite2).bits);
   EXPECT_DOUBLE_EQ(kBitBudget - 1.75 - 2.5,
-                   db_->GetRemainingBudget(kOrigin1).bits);
+                   db_->GetRemainingBudget(kSite1).bits);
 
-  // An additional withdrawal for `kOrigin1` at a later time from previous ones
+  // An additional withdrawal for `kSite1` at a later time from previous ones
   // is debited appropriately.
-  EXPECT_EQ(OperationResult::kSuccess,
-            db_->MakeBudgetWithdrawal(kOrigin1, 1.0));
+  EXPECT_EQ(OperationResult::kSuccess, db_->MakeBudgetWithdrawal(kSite1, 1.0));
   EXPECT_DOUBLE_EQ(kBitBudget - 1.75 - 2.5 - 1.0,
-                   db_->GetRemainingBudget(kOrigin1).bits);
-  EXPECT_DOUBLE_EQ(kBitBudget - 3.4, db_->GetRemainingBudget(kOrigin2).bits);
-  EXPECT_EQ(3L, db_->GetNumBudgetEntriesForTesting(kOrigin1));
-  EXPECT_EQ(1L, db_->GetNumBudgetEntriesForTesting(kOrigin2));
+                   db_->GetRemainingBudget(kSite1).bits);
+  EXPECT_DOUBLE_EQ(kBitBudget - 3.4, db_->GetRemainingBudget(kSite2).bits);
+  EXPECT_EQ(3L, db_->GetNumBudgetEntriesForTesting(kSite1));
+  EXPECT_EQ(1L, db_->GetNumBudgetEntriesForTesting(kSite2));
   EXPECT_EQ(4L, db_->GetTotalNumBudgetEntriesForTesting());
 
   // Advance to the end of the initial lookback window, plus an additional
@@ -1114,19 +1132,19 @@ TEST_P(SharedStorageDatabaseParamTest, MakeBudgetWithdrawal) {
   // Now only the single debit made within the current lookback window is
   // counted, although the entries are still in the table because we haven't
   // called `PurgeStale()`.
-  EXPECT_DOUBLE_EQ(kBitBudget - 1.0, db_->GetRemainingBudget(kOrigin1).bits);
-  EXPECT_DOUBLE_EQ(kBitBudget, db_->GetRemainingBudget(kOrigin2).bits);
-  EXPECT_EQ(3L, db_->GetNumBudgetEntriesForTesting(kOrigin1));
-  EXPECT_EQ(1L, db_->GetNumBudgetEntriesForTesting(kOrigin2));
+  EXPECT_DOUBLE_EQ(kBitBudget - 1.0, db_->GetRemainingBudget(kSite1).bits);
+  EXPECT_DOUBLE_EQ(kBitBudget, db_->GetRemainingBudget(kSite2).bits);
+  EXPECT_EQ(3L, db_->GetNumBudgetEntriesForTesting(kSite1));
+  EXPECT_EQ(1L, db_->GetNumBudgetEntriesForTesting(kSite2));
   EXPECT_EQ(4L, db_->GetTotalNumBudgetEntriesForTesting());
 
   // After `PurgeStale()` runs, there will only be the most recent
   // debit left in the budget table.
   EXPECT_EQ(OperationResult::kSuccess, db_->PurgeStale());
-  EXPECT_DOUBLE_EQ(kBitBudget - 1.0, db_->GetRemainingBudget(kOrigin1).bits);
-  EXPECT_DOUBLE_EQ(kBitBudget, db_->GetRemainingBudget(kOrigin2).bits);
-  EXPECT_EQ(1L, db_->GetNumBudgetEntriesForTesting(kOrigin1));
-  EXPECT_EQ(0L, db_->GetNumBudgetEntriesForTesting(kOrigin2));
+  EXPECT_DOUBLE_EQ(kBitBudget - 1.0, db_->GetRemainingBudget(kSite1).bits);
+  EXPECT_DOUBLE_EQ(kBitBudget, db_->GetRemainingBudget(kSite2).bits);
+  EXPECT_EQ(1L, db_->GetNumBudgetEntriesForTesting(kSite1));
+  EXPECT_EQ(0L, db_->GetNumBudgetEntriesForTesting(kSite2));
   EXPECT_EQ(1L, db_->GetTotalNumBudgetEntriesForTesting());
 
   // Advance to where the last debit should no longer be in the lookback window.
@@ -1134,15 +1152,15 @@ TEST_P(SharedStorageDatabaseParamTest, MakeBudgetWithdrawal) {
 
   // Remaining budgets should be back at the max, although there is still an
   // entry in the table.
-  EXPECT_DOUBLE_EQ(kBitBudget, db_->GetRemainingBudget(kOrigin1).bits);
-  EXPECT_DOUBLE_EQ(kBitBudget, db_->GetRemainingBudget(kOrigin2).bits);
-  EXPECT_EQ(1L, db_->GetNumBudgetEntriesForTesting(kOrigin1));
+  EXPECT_DOUBLE_EQ(kBitBudget, db_->GetRemainingBudget(kSite1).bits);
+  EXPECT_DOUBLE_EQ(kBitBudget, db_->GetRemainingBudget(kSite2).bits);
+  EXPECT_EQ(1L, db_->GetNumBudgetEntriesForTesting(kSite1));
   EXPECT_EQ(1L, db_->GetTotalNumBudgetEntriesForTesting());
 
   // After `PurgeStale()` runs, the budget table will be empty.
   EXPECT_EQ(OperationResult::kSuccess, db_->PurgeStale());
-  EXPECT_DOUBLE_EQ(kBitBudget, db_->GetRemainingBudget(kOrigin1).bits);
-  EXPECT_DOUBLE_EQ(kBitBudget, db_->GetRemainingBudget(kOrigin2).bits);
+  EXPECT_DOUBLE_EQ(kBitBudget, db_->GetRemainingBudget(kSite1).bits);
+  EXPECT_DOUBLE_EQ(kBitBudget, db_->GetRemainingBudget(kSite2).bits);
   EXPECT_EQ(0L, db_->GetTotalNumBudgetEntriesForTesting());
 }
 
@@ -1154,47 +1172,49 @@ TEST_P(SharedStorageDatabaseParamTest, ResetBudgetForDevTools) {
   // budgets should be returned as the max possible.
   const url::Origin kOrigin1 =
       url::Origin::Create(GURL("http://www.example1.test"));
-  EXPECT_DOUBLE_EQ(kBitBudget, db_->GetRemainingBudget(kOrigin1).bits);
+  const net::SchemefulSite kSite1(kOrigin1);
+  EXPECT_DOUBLE_EQ(kBitBudget, db_->GetRemainingBudget(kSite1).bits);
   const url::Origin kOrigin2 =
       url::Origin::Create(GURL("http://www.example2.test"));
-  EXPECT_DOUBLE_EQ(kBitBudget, db_->GetRemainingBudget(kOrigin2).bits);
+  const net::SchemefulSite kSite2(kOrigin2);
+  EXPECT_DOUBLE_EQ(kBitBudget, db_->GetRemainingBudget(kSite2).bits);
+
+  // `kSite1` and `kSite2` are distinct.
+  ASSERT_NE(kSite1, kSite2);
 
   // Resetting a budget in an empty uninitialized database causes no error.
   EXPECT_EQ(OperationResult::kSuccess, db_->ResetBudgetForDevTools(kOrigin1));
 
   // Making withdrawals will initialize the database.
-  EXPECT_EQ(OperationResult::kSuccess,
-            db_->MakeBudgetWithdrawal(kOrigin1, 1.75));
-  EXPECT_EQ(OperationResult::kSuccess,
-            db_->MakeBudgetWithdrawal(kOrigin1, 2.5));
+  EXPECT_EQ(OperationResult::kSuccess, db_->MakeBudgetWithdrawal(kSite1, 1.75));
+  EXPECT_EQ(OperationResult::kSuccess, db_->MakeBudgetWithdrawal(kSite1, 2.5));
 
   // Advance halfway through the lookback window to separate withdrawal times.
   clock_.Advance(base::Hours(kBudgetIntervalHours) / 2);
 
-  EXPECT_EQ(OperationResult::kSuccess,
-            db_->MakeBudgetWithdrawal(kOrigin1, 1.0));
-  EXPECT_EQ(OperationResult::kSuccess,
-            db_->MakeBudgetWithdrawal(kOrigin2, 3.4));
+  EXPECT_EQ(OperationResult::kSuccess, db_->MakeBudgetWithdrawal(kSite1, 1.0));
+  EXPECT_EQ(OperationResult::kSuccess, db_->MakeBudgetWithdrawal(kSite2, 3.4));
 
   EXPECT_DOUBLE_EQ(kBitBudget - 1.75 - 2.5 - 1.0,
-                   db_->GetRemainingBudget(kOrigin1).bits);
-  EXPECT_DOUBLE_EQ(kBitBudget - 3.4, db_->GetRemainingBudget(kOrigin2).bits);
-  EXPECT_EQ(3L, db_->GetNumBudgetEntriesForTesting(kOrigin1));
-  EXPECT_EQ(1L, db_->GetNumBudgetEntriesForTesting(kOrigin2));
+                   db_->GetRemainingBudget(kSite1).bits);
+  EXPECT_DOUBLE_EQ(kBitBudget - 3.4, db_->GetRemainingBudget(kSite2).bits);
+  EXPECT_EQ(3L, db_->GetNumBudgetEntriesForTesting(kSite1));
+  EXPECT_EQ(1L, db_->GetNumBudgetEntriesForTesting(kSite2));
   EXPECT_EQ(4L, db_->GetTotalNumBudgetEntriesForTesting());
 
-  // Resetting `kOrigin1`'s budget doesn't affect `kOrigin2`'s budget.
+  // Resetting `kOrigin1`'s budget doesn't affect `kOrigin2`'s budget because
+  // they correspond to distinct sites `kSite1` and `kSite2`, respetively.
   EXPECT_EQ(OperationResult::kSuccess, db_->ResetBudgetForDevTools(kOrigin1));
-  EXPECT_DOUBLE_EQ(kBitBudget, db_->GetRemainingBudget(kOrigin1).bits);
-  EXPECT_DOUBLE_EQ(kBitBudget - 3.4, db_->GetRemainingBudget(kOrigin2).bits);
-  EXPECT_EQ(0L, db_->GetNumBudgetEntriesForTesting(kOrigin1));
-  EXPECT_EQ(1L, db_->GetNumBudgetEntriesForTesting(kOrigin2));
+  EXPECT_DOUBLE_EQ(kBitBudget, db_->GetRemainingBudget(kSite1).bits);
+  EXPECT_DOUBLE_EQ(kBitBudget - 3.4, db_->GetRemainingBudget(kSite2).bits);
+  EXPECT_EQ(0L, db_->GetNumBudgetEntriesForTesting(kSite1));
+  EXPECT_EQ(1L, db_->GetNumBudgetEntriesForTesting(kSite2));
   EXPECT_EQ(1L, db_->GetTotalNumBudgetEntriesForTesting());
 
   // Resetting an already reset budget causes no error.
   EXPECT_EQ(OperationResult::kSuccess, db_->ResetBudgetForDevTools(kOrigin1));
-  EXPECT_DOUBLE_EQ(kBitBudget, db_->GetRemainingBudget(kOrigin1).bits);
-  EXPECT_EQ(0L, db_->GetNumBudgetEntriesForTesting(kOrigin1));
+  EXPECT_DOUBLE_EQ(kBitBudget, db_->GetRemainingBudget(kSite1).bits);
+  EXPECT_EQ(0L, db_->GetNumBudgetEntriesForTesting(kSite1));
 
   // Resetting budget for a nonexistent origin causes no error.
   EXPECT_EQ(OperationResult::kSuccess,

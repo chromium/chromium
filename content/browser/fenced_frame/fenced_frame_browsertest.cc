@@ -2356,7 +2356,8 @@ IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
       https_server()->GetURL("b.test", "/fenced_frames/title1.html");
   SimulateSharedStorageURNMappingComplete(
       url_mapping1, urn_uuid1, mapped_url1,
-      /*shared_storage_origin=*/url::Origin::Create(GURL("https://foo.com")),
+      /*shared_storage_site=*/
+      net::SchemefulSite::Deserialize("https://foo.com"),
       /*budget_to_charge=*/2.0);
 
   EXPECT_TRUE(ExecJs(root,
@@ -2383,7 +2384,8 @@ IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
       https_server()->GetURL("c.test", "/fenced_frames/title1.html");
   SimulateSharedStorageURNMappingComplete(
       url_mapping2, urn_uuid2, mapped_url2,
-      /*shared_storage_origin=*/url::Origin::Create(GURL("https://bar.com")),
+      /*shared_storage_site=*/
+      net::SchemefulSite::Deserialize("https://bar.com"),
       /*budget_to_charge=*/3.0);
 
   EXPECT_TRUE(ExecJs(fenced_frame_root_node1,
@@ -2405,10 +2407,12 @@ IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
 
   EXPECT_EQ(metadata.size(), 2u);
 
-  EXPECT_EQ(metadata[0]->origin, url::Origin::Create(GURL("https://bar.com")));
+  EXPECT_EQ(metadata[0]->site,
+            net::SchemefulSite::Deserialize("https://bar.com"));
   EXPECT_DOUBLE_EQ(metadata[0]->budget_to_charge, 3.0);
 
-  EXPECT_EQ(metadata[1]->origin, url::Origin::Create(GURL("https://foo.com")));
+  EXPECT_EQ(metadata[1]->site,
+            net::SchemefulSite::Deserialize("https://foo.com"));
   EXPECT_DOUBLE_EQ(metadata[1]->budget_to_charge, 2.0);
 }
 
@@ -2446,7 +2450,8 @@ IN_PROC_BROWSER_TEST_F(
       https_server()->GetURL("a.test", "/fenced_frames/title1.html");
   SimulateSharedStorageURNMappingComplete(
       url_mapping, urn_uuid, mapped_url,
-      /*shared_storage_origin=*/url::Origin::Create(GURL("https://bar.com")),
+      /*shared_storage_site=*/
+      net::SchemefulSite::Deserialize("https://bar.com"),
       /*budget_to_charge=*/2.0);
 
   {
@@ -2535,7 +2540,8 @@ IN_PROC_BROWSER_TEST_F(
   // Trigger the mapping to resume the deferred navigation.
   SimulateSharedStorageURNMappingComplete(
       url_mapping, urn_uuid, mapped_url,
-      /*shared_storage_origin=*/url::Origin::Create(GURL("https://bar.com")),
+      /*shared_storage_site=*/
+      net::SchemefulSite::Deserialize("https://bar.com"),
       /*budget_to_charge=*/2.0);
 
   EXPECT_FALSE(url_mapping_test_peer.HasObserver(urn_uuid, request));
@@ -2548,8 +2554,8 @@ IN_PROC_BROWSER_TEST_F(
 
   budget_metadata = fenced_frame_root_node->FindSharedStorageBudgetMetadata();
   EXPECT_EQ(budget_metadata.size(), 1u);
-  EXPECT_EQ(budget_metadata[0]->origin,
-            url::Origin::Create(GURL("https://bar.com")));
+  EXPECT_EQ(budget_metadata[0]->site,
+            net::SchemefulSite::Deserialize("https://bar.com"));
   EXPECT_DOUBLE_EQ(budget_metadata[0]->budget_to_charge, 2.0);
 }
 
@@ -2610,7 +2616,8 @@ IN_PROC_BROWSER_TEST_F(
   // Trigger the mapping to resume the deferred navigation.
   SimulateSharedStorageURNMappingComplete(
       url_mapping, urn_uuid, mapped_url,
-      /*shared_storage_origin=*/url::Origin::Create(GURL("https://bar.com")),
+      /*shared_storage_site=*/
+      net::SchemefulSite::Deserialize("https://bar.com"),
       /*budget_to_charge=*/2.0);
 
   EXPECT_FALSE(url_mapping_test_peer.HasObserver(urn_uuid, request));

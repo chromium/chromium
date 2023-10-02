@@ -1083,11 +1083,11 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSharedStorageSelectURLLimit);
 // `sharedStorage.selectURL()`, if `kSharedStorageSelectURLLimit` is enabled.
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kSharedStorageSelectURLBitBudgetPerPageLoad;
-// Maximum number of bits of entropy per origin per pageload that are allowed to
+// Maximum number of bits of entropy per site per pageload that are allowed to
 // leak via `sharedStorage.selectURL()`, if `kSharedStorageSelectURLLimit` is
 // enabled.
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
-    kSharedStorageSelectURLBitBudgetPerOriginPerPageLoad;
+    kSharedStorageSelectURLBitBudgetPerSitePerPageLoad;
 
 // Additional Shared Storage API features shipped in M118.
 // TODO(crbug.com/1218540): Merge this flag with `kSharedStorageAPI` once

@@ -31,11 +31,11 @@ void SimulateSharedStorageURNMappingComplete(
     FencedFrameURLMapping& fenced_frame_url_mapping,
     const GURL& urn_uuid,
     const GURL& mapped_url,
-    const url::Origin& shared_storage_origin,
+    const net::SchemefulSite& shared_storage_site,
     double budget_to_charge,
     scoped_refptr<FencedFrameReporter> fenced_frame_reporter) {
   SharedStorageBudgetMetadata budget_metadata = {
-      .origin = shared_storage_origin, .budget_to_charge = budget_to_charge};
+      .site = shared_storage_site, .budget_to_charge = budget_to_charge};
 
   fenced_frame_url_mapping.OnSharedStorageURNMappingResultDetermined(
       urn_uuid,

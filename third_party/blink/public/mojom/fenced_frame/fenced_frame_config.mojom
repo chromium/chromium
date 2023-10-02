@@ -7,6 +7,7 @@
 
 module blink.mojom;
 
+import "services/network/public/mojom/schemeful_site.mojom";
 import "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
@@ -82,7 +83,7 @@ union PotentiallyOpaqueURNConfigVector {
 };
 
 struct SharedStorageBudgetMetadata {
-  url.mojom.Origin origin;
+  network.mojom.SchemefulSite site;
   double budget_to_charge;
   bool top_navigated;
 };

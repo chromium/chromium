@@ -4,14 +4,114 @@
 
 #include "components/services/storage/shared_storage/shared_storage_database_migrations.h"
 
+#include "net/base/schemeful_site.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
+#include "url/gurl.h"
 
 namespace storage {
 
 namespace {
+
+bool MigrateToVersion4(sql::Database& db, sql::MetaTable& meta_table) {
+  static constexpr char kCreateNewIndexSql[] =
+      "CREATE INDEX IF NOT EXISTS budget_mapping_site_time_stamp_idx "
+      "ON budget_mapping(context_site,time_stamp)";
+
+  if (db.DoesColumnExist("budget_mapping", "context_site")) {
+    // This situation can occur if we migrate a Version 1 database without the
+    // `budget_mapping` table (since we added this table without doing a
+    // database migration).
+    CHECK(!db.DoesColumnExist("budget_mapping", "context_origin"));
+    CHECK(!db.DoesIndexExist("budget_mapping_origin_time_stamp_idx"));
+
+    sql::Transaction transaction(&db);
+    if (!transaction.Begin()) {
+      return false;
+    }
+
+    if (!db.Execute(kCreateNewIndexSql)) {
+      return false;
+    }
+
+    return meta_table.SetVersionNumber(4) && transaction.Commit();
+  }
+
+  CHECK(db.DoesColumnExist("budget_mapping", "context_origin"));
+
+  sql::Transaction transaction(&db);
+  if (!transaction.Begin()) {
+    return false;
+  }
+
+  static constexpr char kNewBudgetMappingSql[] =
+      "CREATE TABLE new_budget_mapping("
+      "id INTEGER NOT NULL PRIMARY KEY,"
+      "context_site TEXT NOT NULL,"
+      "time_stamp INTEGER NOT NULL,"
+      "bits_debit REAL NOT NULL)";
+  if (!db.Execute(kNewBudgetMappingSql)) {
+    return false;
+  }
+
+  static constexpr char kSelectPreviousBudgetSql[] =
+      "SELECT id,context_origin,time_stamp,bits_debit FROM budget_mapping";
+  static constexpr char kInsertIntoNewBudgetSql[] =
+      "INSERT INTO new_budget_mapping(id, context_site, time_stamp, "
+      "bits_debit) VALUES(?,?,?,?)";
+
+  sql::Statement select_statement(
+      db.GetCachedStatement(SQL_FROM_HERE, kSelectPreviousBudgetSql));
+
+  while (select_statement.Step()) {
+    net::SchemefulSite context_site =
+        net::SchemefulSite::Deserialize(select_statement.ColumnString(1));
+    if (context_site.opaque() ||
+        context_site.GetURL().scheme() == url::kFileScheme) {
+      continue;
+    }
+
+    sql::Statement insert_statement(
+        db.GetCachedStatement(SQL_FROM_HERE, kInsertIntoNewBudgetSql));
+    insert_statement.BindInt64(0, select_statement.ColumnInt64(0));
+    insert_statement.BindString(1, context_site.Serialize());
+    insert_statement.BindTime(2, select_statement.ColumnTime(2));
+    insert_statement.BindDouble(3, select_statement.ColumnDouble(3));
+
+    if (!insert_statement.Run()) {
+      return false;
+    }
+  }
+
+  if (!select_statement.Succeeded()) {
+    return false;
+  }
+
+  static constexpr char kDropOldIndexSql[] =
+      "DROP INDEX IF EXISTS budget_mapping_origin_time_stamp_idx";
+  if (!db.Execute(kDropOldIndexSql)) {
+    return false;
+  }
+
+  static constexpr char kDropOldBudgetSql[] = "DROP TABLE budget_mapping";
+  if (!db.Execute(kDropOldBudgetSql)) {
+    return false;
+  }
+
+  static constexpr char kRenameBudgetMapSql[] =
+      "ALTER TABLE new_budget_mapping RENAME TO budget_mapping";
+  if (!db.Execute(kRenameBudgetMapSql)) {
+    return false;
+  }
+
+  if (!db.Execute(kCreateNewIndexSql)) {
+    return false;
+  }
+
+  return meta_table.SetVersionNumber(4) && transaction.Commit();
+}
 
 bool MigrateToVersion3(sql::Database& db, sql::MetaTable& meta_table) {
   sql::Transaction transaction(&db);
@@ -157,6 +257,10 @@ bool UpgradeSharedStorageDatabaseSchema(sql::Database& db,
   }
   if (meta_table.GetVersionNumber() == 2 &&
       !MigrateToVersion3(db, meta_table)) {
+    return false;
+  }
+  if (meta_table.GetVersionNumber() == 3 &&
+      !MigrateToVersion4(db, meta_table)) {
     return false;
   }
   return true;

@@ -5,7 +5,7 @@
 BEGIN TRANSACTION;
 CREATE TABLE meta(key LONGVARCHAR NOT NULL UNIQUE PRIMARY KEY, value LONGVARCHAR);
 INSERT INTO "meta" VALUES('version','1');
-INSERT INTO "meta" VALUES('last_compatible_version','4');
+INSERT INTO "meta" VALUES('last_compatible_version','5');
 CREATE TABLE values_mapping(context_origin TEXT NOT NULL,key TEXT NOT NULL,value TEXT,PRIMARY KEY(context_origin,key)) WITHOUT ROWID;
 INSERT INTO "values_mapping" VALUES ('http://google.com','key1','value1');
 INSERT INTO "values_mapping" VALUES ('http://google.com','key2','value2');

@@ -173,6 +173,7 @@ bundle_data("tests_bundle_data") {
     "//components/test/data/storage/shared_storage.v3.iterator.sql",
     "//components/test/data/storage/shared_storage.v3.single_origin.sql",
     "//components/test/data/storage/shared_storage.v3.sql",
+    "//components/test/data/storage/shared_storage.v4.sql",
   ]
   outputs = [ "{{bundle_resources_dir}}/" +
               "{{source_root_relative_dir}}/{{source_file_part}}" ]

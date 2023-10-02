@@ -3974,7 +3974,7 @@ class SharedStorageDevToolsProtocolTest : public DevToolsProtocolTest {
     ASSERT_TRUE(manager);
     base::test::TestFuture<storage::SharedStorageManager::OperationResult>
         future;
-    manager->MakeBudgetWithdrawal(url::Origin::Create(url), bits,
+    manager->MakeBudgetWithdrawal(net::SchemefulSite(url), bits,
                                   future.GetCallback());
     EXPECT_EQ(storage::SharedStorageManager::OperationResult::kSuccess,
               future.Get());

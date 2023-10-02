@@ -231,13 +231,13 @@ class MockAsyncSharedStorageDatabase : public AsyncSharedStorageDatabase {
     Run(std::move(callback));
   }
   void MakeBudgetWithdrawal(
-      url::Origin context_origin,
+      net::SchemefulSite context_site,
       double bits_debit,
       base::OnceCallback<void(OperationResult)> callback) override {
     Run(std::move(callback));
   }
   void GetRemainingBudget(
-      url::Origin context_origin,
+      net::SchemefulSite context_site,
       base::OnceCallback<void(BudgetResult)> callback) override {
     Run(std::move(callback));
   }
@@ -739,21 +739,22 @@ class SharedStorageManagerTest : public testing::Test {
     return future.Get();
   }
 
-  OperationResult MakeBudgetWithdrawalSync(const url::Origin& context_origin,
-                                           double bits_debit) {
+  OperationResult MakeBudgetWithdrawalSync(
+      const net::SchemefulSite& context_site,
+      double bits_debit) {
     DCHECK(GetManager());
 
     base::test::TestFuture<OperationResult> future;
-    GetManager()->MakeBudgetWithdrawal(std::move(context_origin), bits_debit,
+    GetManager()->MakeBudgetWithdrawal(std::move(context_site), bits_debit,
                                        future.GetCallback());
     return future.Get();
   }
 
-  BudgetResult GetRemainingBudgetSync(const url::Origin& context_origin) {
+  BudgetResult GetRemainingBudgetSync(const net::SchemefulSite& context_site) {
     DCHECK(GetManager());
 
     base::test::TestFuture<BudgetResult> future;
-    GetManager()->GetRemainingBudget(std::move(context_origin),
+    GetManager()->GetRemainingBudget(std::move(context_site),
                                      future.GetCallback());
     return future.Take();
   }
@@ -774,11 +775,11 @@ class SharedStorageManagerTest : public testing::Test {
         std::move(context_origin), new_creation_time, std::move(callback));
   }
 
-  int GetNumBudgetEntriesSync(url::Origin context_origin) {
+  int GetNumBudgetEntriesSync(net::SchemefulSite context_site) {
     DCHECK(GetManager());
 
     base::test::TestFuture<int> future;
-    GetManager()->GetNumBudgetEntriesForTesting(std::move(context_origin),
+    GetManager()->GetNumBudgetEntriesForTesting(std::move(context_site),
                                                 future.GetCallback());
     return future.Get();
   }
@@ -1079,10 +1080,15 @@ TEST_F(SharedStorageManagerFromFileV1NoBudgetTableTest,
           url::Origin::Create(GURL("http://waymo.com")),
           url::Origin::Create(GURL("http://withgoogle.com")), youtube_com));
 
-  EXPECT_DOUBLE_EQ(kBitBudget, GetRemainingBudgetSync(chromium_org).bits);
-  EXPECT_DOUBLE_EQ(kBitBudget, GetRemainingBudgetSync(google_com).bits);
-  EXPECT_DOUBLE_EQ(kBitBudget, GetRemainingBudgetSync(google_org).bits);
-  EXPECT_DOUBLE_EQ(kBitBudget, GetRemainingBudgetSync(youtube_com).bits);
+  EXPECT_DOUBLE_EQ(
+      kBitBudget,
+      GetRemainingBudgetSync(net::SchemefulSite(chromium_org)).bits);
+  EXPECT_DOUBLE_EQ(kBitBudget,
+                   GetRemainingBudgetSync(net::SchemefulSite(google_com)).bits);
+  EXPECT_DOUBLE_EQ(kBitBudget,
+                   GetRemainingBudgetSync(net::SchemefulSite(google_org)).bits);
+  EXPECT_DOUBLE_EQ(
+      kBitBudget, GetRemainingBudgetSync(net::SchemefulSite(youtube_com)).bits);
 }
 
 class SharedStorageManagerParamTest
@@ -1442,37 +1448,34 @@ TEST_P(SharedStorageManagerParamTest, SyncMakeBudgetWithdrawal) {
 
   // SQL database hasn't yet been lazy-initialized. Nevertheless, remaining
   // budgets should be returned as the max possible.
-  const url::Origin kOrigin1 =
-      url::Origin::Create(GURL("http://www.example1.test"));
-  EXPECT_DOUBLE_EQ(kBitBudget, GetRemainingBudgetSync(kOrigin1).bits);
-  const url::Origin kOrigin2 =
-      url::Origin::Create(GURL("http://www.example2.test"));
-  EXPECT_DOUBLE_EQ(kBitBudget, GetRemainingBudgetSync(kOrigin2).bits);
+  const net::SchemefulSite kSite1(GURL("http://www.example1.test"));
+  EXPECT_DOUBLE_EQ(kBitBudget, GetRemainingBudgetSync(kSite1).bits);
+  const net::SchemefulSite kSite2(GURL("http://www.example2.test"));
+  EXPECT_DOUBLE_EQ(kBitBudget, GetRemainingBudgetSync(kSite2).bits);
 
-  // A withdrawal for `kOrigin1` doesn't affect `kOrigin2`.
-  EXPECT_EQ(OperationResult::kSuccess,
-            MakeBudgetWithdrawalSync(kOrigin1, 1.75));
-  EXPECT_DOUBLE_EQ(kBitBudget - 1.75, GetRemainingBudgetSync(kOrigin1).bits);
-  EXPECT_DOUBLE_EQ(kBitBudget, GetRemainingBudgetSync(kOrigin2).bits);
-  EXPECT_EQ(1, GetNumBudgetEntriesSync(kOrigin1));
+  // A withdrawal for `kSite1` doesn't affect `kSite2`.
+  EXPECT_EQ(OperationResult::kSuccess, MakeBudgetWithdrawalSync(kSite1, 1.75));
+  EXPECT_DOUBLE_EQ(kBitBudget - 1.75, GetRemainingBudgetSync(kSite1).bits);
+  EXPECT_DOUBLE_EQ(kBitBudget, GetRemainingBudgetSync(kSite2).bits);
+  EXPECT_EQ(1, GetNumBudgetEntriesSync(kSite1));
   EXPECT_EQ(1, GetTotalNumBudgetEntriesSync());
 
-  // An additional withdrawal for `kOrigin1` at or near the same time as the
+  // An additional withdrawal for `kSite1` at or near the same time as the
   // previous one is debited appropriately.
-  EXPECT_EQ(OperationResult::kSuccess, MakeBudgetWithdrawalSync(kOrigin1, 2.5));
+  EXPECT_EQ(OperationResult::kSuccess, MakeBudgetWithdrawalSync(kSite1, 2.5));
   EXPECT_DOUBLE_EQ(kBitBudget - 1.75 - 2.5,
-                   GetRemainingBudgetSync(kOrigin1).bits);
-  EXPECT_DOUBLE_EQ(kBitBudget, GetRemainingBudgetSync(kOrigin2).bits);
-  EXPECT_EQ(2, GetNumBudgetEntriesSync(kOrigin1));
+                   GetRemainingBudgetSync(kSite1).bits);
+  EXPECT_DOUBLE_EQ(kBitBudget, GetRemainingBudgetSync(kSite2).bits);
+  EXPECT_EQ(2, GetNumBudgetEntriesSync(kSite1));
   EXPECT_EQ(2, GetTotalNumBudgetEntriesSync());
 
-  // A withdrawal for `kOrigin2` doesn't affect `kOrigin1`.
-  EXPECT_EQ(OperationResult::kSuccess, MakeBudgetWithdrawalSync(kOrigin2, 3.4));
-  EXPECT_DOUBLE_EQ(kBitBudget - 3.4, GetRemainingBudgetSync(kOrigin2).bits);
+  // A withdrawal for `kSite2` doesn't affect `kSite1`.
+  EXPECT_EQ(OperationResult::kSuccess, MakeBudgetWithdrawalSync(kSite2, 3.4));
+  EXPECT_DOUBLE_EQ(kBitBudget - 3.4, GetRemainingBudgetSync(kSite2).bits);
   EXPECT_DOUBLE_EQ(kBitBudget - 1.75 - 2.5,
-                   GetRemainingBudgetSync(kOrigin1).bits);
-  EXPECT_EQ(2, GetNumBudgetEntriesSync(kOrigin1));
-  EXPECT_EQ(1, GetNumBudgetEntriesSync(kOrigin2));
+                   GetRemainingBudgetSync(kSite1).bits);
+  EXPECT_EQ(2, GetNumBudgetEntriesSync(kSite1));
+  EXPECT_EQ(1, GetNumBudgetEntriesSync(kSite2));
   EXPECT_EQ(3, GetTotalNumBudgetEntriesSync());
 
   // Advance partway through the lookback window, to the point where the first
@@ -1481,18 +1484,18 @@ TEST_P(SharedStorageManagerParamTest, SyncMakeBudgetWithdrawal) {
 
   // Remaining budgets continue to take into account the withdrawals above, as
   // they are still within the lookback window.
-  EXPECT_DOUBLE_EQ(kBitBudget - 3.4, GetRemainingBudgetSync(kOrigin2).bits);
+  EXPECT_DOUBLE_EQ(kBitBudget - 3.4, GetRemainingBudgetSync(kSite2).bits);
   EXPECT_DOUBLE_EQ(kBitBudget - 1.75 - 2.5,
-                   GetRemainingBudgetSync(kOrigin1).bits);
+                   GetRemainingBudgetSync(kSite1).bits);
 
-  // An additional withdrawal for `kOrigin1` at a later time from previous ones
+  // An additional withdrawal for `kSite1` at a later time from previous ones
   // is debited appropriately.
-  EXPECT_EQ(OperationResult::kSuccess, MakeBudgetWithdrawalSync(kOrigin1, 1.0));
+  EXPECT_EQ(OperationResult::kSuccess, MakeBudgetWithdrawalSync(kSite1, 1.0));
   EXPECT_DOUBLE_EQ(kBitBudget - 1.75 - 2.5 - 1.0,
-                   GetRemainingBudgetSync(kOrigin1).bits);
-  EXPECT_DOUBLE_EQ(kBitBudget - 3.4, GetRemainingBudgetSync(kOrigin2).bits);
-  EXPECT_EQ(3, GetNumBudgetEntriesSync(kOrigin1));
-  EXPECT_EQ(1, GetNumBudgetEntriesSync(kOrigin2));
+                   GetRemainingBudgetSync(kSite1).bits);
+  EXPECT_DOUBLE_EQ(kBitBudget - 3.4, GetRemainingBudgetSync(kSite2).bits);
+  EXPECT_EQ(3, GetNumBudgetEntriesSync(kSite1));
+  EXPECT_EQ(1, GetNumBudgetEntriesSync(kSite2));
   EXPECT_EQ(4, GetTotalNumBudgetEntriesSync());
 
   // Advance further through the lookback window, to the point where the second
@@ -1507,10 +1510,10 @@ TEST_P(SharedStorageManagerParamTest, SyncMakeBudgetWithdrawal) {
 
   // After `PurgeStale()` runs via the timer, there will only be the most
   // recent debit left in the budget table.
-  EXPECT_DOUBLE_EQ(kBitBudget - 1.0, GetRemainingBudgetSync(kOrigin1).bits);
-  EXPECT_DOUBLE_EQ(kBitBudget, GetRemainingBudgetSync(kOrigin2).bits);
-  EXPECT_EQ(1, GetNumBudgetEntriesSync(kOrigin1));
-  EXPECT_EQ(0, GetNumBudgetEntriesSync(kOrigin2));
+  EXPECT_DOUBLE_EQ(kBitBudget - 1.0, GetRemainingBudgetSync(kSite1).bits);
+  EXPECT_DOUBLE_EQ(kBitBudget, GetRemainingBudgetSync(kSite2).bits);
+  EXPECT_EQ(1, GetNumBudgetEntriesSync(kSite1));
+  EXPECT_EQ(0, GetNumBudgetEntriesSync(kSite2));
   EXPECT_EQ(1, GetTotalNumBudgetEntriesSync());
 }
 
@@ -1522,19 +1525,19 @@ TEST_P(SharedStorageManagerParamTest, ResetBudgetForDevTools) {
   // budgets should be returned as the max possible.
   const url::Origin kOrigin1 =
       url::Origin::Create(GURL("http://www.example1.test"));
-  EXPECT_DOUBLE_EQ(kBitBudget, GetRemainingBudgetSync(kOrigin1).bits);
+  const net::SchemefulSite kSite1(kOrigin1);
+  EXPECT_DOUBLE_EQ(kBitBudget, GetRemainingBudgetSync(kSite1).bits);
 
   // Make withdrawal.
-  EXPECT_EQ(OperationResult::kSuccess,
-            MakeBudgetWithdrawalSync(kOrigin1, 1.75));
-  EXPECT_DOUBLE_EQ(kBitBudget - 1.75, GetRemainingBudgetSync(kOrigin1).bits);
-  EXPECT_EQ(1, GetNumBudgetEntriesSync(kOrigin1));
+  EXPECT_EQ(OperationResult::kSuccess, MakeBudgetWithdrawalSync(kSite1, 1.75));
+  EXPECT_DOUBLE_EQ(kBitBudget - 1.75, GetRemainingBudgetSync(kSite1).bits);
+  EXPECT_EQ(1, GetNumBudgetEntriesSync(kSite1));
   EXPECT_EQ(1, GetTotalNumBudgetEntriesSync());
 
   // Reset budget.
   EXPECT_EQ(OperationResult::kSuccess, ResetBudgetForDevToolsSync(kOrigin1));
-  EXPECT_DOUBLE_EQ(kBitBudget, GetRemainingBudgetSync(kOrigin1).bits);
-  EXPECT_EQ(0, GetNumBudgetEntriesSync(kOrigin1));
+  EXPECT_DOUBLE_EQ(kBitBudget, GetRemainingBudgetSync(kSite1).bits);
+  EXPECT_EQ(0, GetNumBudgetEntriesSync(kSite1));
   EXPECT_EQ(0, GetTotalNumBudgetEntriesSync());
 }
 

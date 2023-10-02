@@ -10,6 +10,7 @@
 #include "content/browser/fenced_frame/fenced_frame_reporter.h"
 #include "content/browser/fenced_frame/fenced_frame_url_mapping.h"
 #include "net/base/net_errors.h"
+#include "net/base/schemeful_site.h"
 
 namespace content {
 
@@ -26,7 +27,7 @@ void SimulateSharedStorageURNMappingComplete(
     FencedFrameURLMapping& fenced_frame_url_mapping,
     const GURL& urn_uuid,
     const GURL& mapped_url,
-    const url::Origin& shared_storage_origin,
+    const net::SchemefulSite& shared_storage_site,
     double budget_to_charge,
     scoped_refptr<FencedFrameReporter> fenced_frame_reporter = nullptr);
 

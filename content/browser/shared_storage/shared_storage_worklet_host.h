@@ -16,6 +16,7 @@
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/base/schemeful_site.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
@@ -249,8 +250,9 @@ class CONTENT_EXPORT SharedStorageWorkletHost
   // `IsSharedStorageAllowed()`, and to get the global URLLoaderFactory.
   raw_ptr<BrowserContext> browser_context_;
 
-  // The shared storage owner document's origin.
+  // The shared storage owner document's origin and site.
   url::Origin shared_storage_origin_;
+  net::SchemefulSite shared_storage_site_;
 
   // To avoid race conditions associated with top frame navigations and to be
   // able to call `IsSharedStorageAllowed()` during keep-alive, we need to save

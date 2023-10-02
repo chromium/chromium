@@ -12,6 +12,7 @@
 #include "content/browser/fenced_frame/fenced_frame_reporter.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/test/fenced_frame_test_utils.h"
+#include "net/base/schemeful_site.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -189,20 +190,19 @@ TEST_F(FencedFrameURLMappingTest, PendingMappedUUID) {
   fenced_frame_url_mapping.ConvertFencedFrameURNToURL(urn_uuid2, &observer2);
   EXPECT_FALSE(observer2.mapping_complete_observed());
 
-  url::Origin shared_storage_origin =
-      url::Origin::Create(GURL("https://bar.com"));
+  net::SchemefulSite shared_storage_site(GURL("https://bar.com"));
   GURL mapped_url = GURL("https://foo.com");
 
-  // Two SharedStorageBudgetMetadata for the same origin can happen if the same
+  // Two SharedStorageBudgetMetadata for the same site can happen if the same
   // blink::Document invokes window.sharedStorage.runURLSelectionOperation()
   // twice. Each call will generate a distinct URN. And if the input urls have
   // different size, the budget_to_charge (i.e. log(n)) will be also different.
   SimulateSharedStorageURNMappingComplete(fenced_frame_url_mapping, urn_uuid1,
-                                          mapped_url, shared_storage_origin,
+                                          mapped_url, shared_storage_site,
                                           /*budget_to_charge=*/2.0);
 
   SimulateSharedStorageURNMappingComplete(fenced_frame_url_mapping, urn_uuid2,
-                                          mapped_url, shared_storage_origin,
+                                          mapped_url, shared_storage_site,
                                           /*budget_to_charge=*/3.0);
 
   EXPECT_TRUE(observer1.mapping_complete_observed());
@@ -218,7 +218,7 @@ TEST_F(FencedFrameURLMappingTest, PendingMappedUUID) {
           urn_uuid1);
 
   EXPECT_TRUE(metadata1);
-  EXPECT_EQ(metadata1->origin, shared_storage_origin);
+  EXPECT_EQ(metadata1->site, shared_storage_site);
   EXPECT_DOUBLE_EQ(metadata1->budget_to_charge, 2.0);
 
   SharedStorageBudgetMetadata* metadata2 =
@@ -226,7 +226,7 @@ TEST_F(FencedFrameURLMappingTest, PendingMappedUUID) {
           urn_uuid2);
 
   EXPECT_TRUE(metadata2);
-  EXPECT_EQ(metadata2->origin, shared_storage_origin);
+  EXPECT_EQ(metadata2->site, shared_storage_site);
   EXPECT_DOUBLE_EQ(metadata2->budget_to_charge, 3.0);
 }
 
@@ -244,7 +244,8 @@ TEST_F(FencedFrameURLMappingTest, RemoveObserverOnPendingMappedUUID) {
   SimulateSharedStorageURNMappingComplete(
       fenced_frame_url_mapping, urn_uuid,
       /*mapped_url=*/GURL("https://foo.com"),
-      /*shared_storage_origin=*/url::Origin::Create(GURL("https://bar.com")),
+      /*shared_storage_site=*/
+      net::SchemefulSite::Deserialize("https://bar.com"),
       /*budget_to_charge=*/2.0);
 
   EXPECT_FALSE(observer.mapping_complete_observed());
@@ -266,7 +267,8 @@ TEST_F(FencedFrameURLMappingTest, RegisterTwoObservers) {
   SimulateSharedStorageURNMappingComplete(
       fenced_frame_url_mapping, urn_uuid,
       /*mapped_url=*/GURL("https://foo.com"),
-      /*shared_storage_origin=*/url::Origin::Create(GURL("https://bar.com")),
+      /*shared_storage_site=*/
+      net::SchemefulSite::Deserialize("https://bar.com"),
       /*budget_to_charge=*/2.0);
 
   EXPECT_TRUE(observer1.mapping_complete_observed());
