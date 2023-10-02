@@ -53,7 +53,7 @@ BASE_FEATURE(kMessagesForAndroidSaveCard,
 
 BASE_FEATURE(kMessagesForAndroidStackingAnimation,
              "MessagesForAndroidStackingAnimation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsAdsBlockedMessagesUiEnabled() {
   return base::FeatureList::IsEnabled(kMessagesForAndroidInfrastructure) &&
