@@ -1,0 +1,66 @@
+<!doctype html>
+<meta charset=utf-8>
+<meta name=timeout content=long>
+<meta name=variant content="?cloud=aws">
+<meta name=variant content="?cloud=gcp">
+<script src="/common/get-host-info.sub.js"></script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/attribution-reporting/resources/helpers.js"></script>
+<script>
+attribution_reporting_promise_test(async t => {
+  const host = 'https://{{host}}';
+
+  const cloud = new URLSearchParams(location.search).get('cloud');
+  const aggregation_coordinator_origin = cloud === 'aws' ? location.origin : get_host_info().HTTPS_REMOTE_ORIGIN;
+
+  registerAttributionSrcByImg(createRedirectChain([
+    {
+      source: {
+        aggregation_keys: {
+          campaignCounts: '0x159',
+        },
+        destination: host,
+      },
+    },
+    {
+      trigger: {
+        aggregatable_trigger_data: [
+          {
+            key_piece: '0x400',
+            source_keys: ['campaignCounts'],
+          },
+        ],
+        aggregatable_values: {
+          campaignCounts: 32768,
+        },
+        aggregation_coordinator_origin,
+      },
+    },
+  ]));
+
+  const payload = await pollAggregatableReports(location.origin);
+  assert_equals(payload.reports.length, 1);
+  const report = JSON.parse(payload.reports[0].body);
+  const headers = payload.reports[0].headers;
+  assert_own_property(report, 'shared_info');
+  const shared_info = JSON.parse(report.shared_info);
+  assert_own_property(shared_info, 'api');
+  assert_equals(shared_info.api, 'attribution-reporting');
+  assert_own_property(shared_info, 'report_id');
+  assert_own_property(shared_info, 'reporting_origin');
+  assert_own_property(shared_info, 'scheduled_report_time');
+  assert_own_property(shared_info, 'version');
+  assert_own_property(shared_info, 'attribution_destination');
+  assert_equals(shared_info.attribution_destination, host);
+  assert_not_own_property(report, 'source_debug_key');
+  assert_not_own_property(report, 'trigger_debug_key');
+  assert_own_property(report, 'aggregation_service_payloads');
+  assert_equals(report.aggregation_service_payloads.length, 1);
+  const aggregation_service_payload = report.aggregation_service_payloads[0];
+  assert_own_property(aggregation_service_payload, 'payload');
+  assert_own_property(aggregation_service_payload, 'key_id');
+  assert_not_own_property(aggregation_service_payload, 'debug_cleartext_payload');
+  validateReportHeaders(headers);
+}, 'Ensure aggregatable attribution report is received.');
+</script>

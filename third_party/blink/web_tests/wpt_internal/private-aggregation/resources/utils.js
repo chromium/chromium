@@ -179,6 +179,8 @@ const verifyReport = (report, api, is_debug_enabled, debug_key, expected_clearte
   assert_own_property(report, 'aggregation_service_payloads');
   verifyAggregationServicePayloads(report.aggregation_service_payloads, expected_cleartext_payload);
 
+  assert_own_property(report, "aggregation_coordinator_origin");
+
   if (context_id) {
     assert_own_property(report, 'context_id');
     assert_equals(report.context_id, context_id);
@@ -187,7 +189,7 @@ const verifyReport = (report, api, is_debug_enabled, debug_key, expected_clearte
   }
 
   // Check there are no extra keys
-  let expected_length = 2;
+  let expected_length = 3;
   if (debug_key) {
     ++expected_length;
   }
