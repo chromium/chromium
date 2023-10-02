@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/privacy_sandbox/privacy_sandbox_prompt_helper.h"
 
+#include "base/feature_list.h"
 #include "base/hash/hash.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
@@ -16,6 +17,7 @@
 #include "chrome/browser/ui/privacy_sandbox/privacy_sandbox_prompt.h"
 #include "chrome/common/extensions/chrome_manifest_url_handlers.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/sync/service/sync_service.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
@@ -171,16 +173,54 @@ void PrivacySandboxPromptHelper::DidFinishNavigation(
     }
   }
 
-  const bool is_window_too_small = !CanWindowFitPrivacySandboxPrompt(browser);
+  // The PrivacySandbox prompt can always fit inside a normal tabbed window due
+  // to its minimum width, so checking the height is enough here. Other non
+  // normal tabbed browsers will be exlcuded in a later check.
+  const bool is_window_too_small =
+      !CanWindowHeightFitPrivacySandboxPrompt(browser);
   base::UmaHistogramBoolean("Settings.PrivacySandbox.DialogWindowTooSmall",
                             is_window_too_small);
-  // If the windows size is too small, it is difficult to read or interrupt with
-  // the dialog. The dialog is blocking modal, that is why we want to prevent it
-  // from showing if there isn't enough space.
+  // If the windows height is too small, it is difficult to read or interrupt
+  // with the dialog. The dialog is blocking modal, that is why we want to
+  // prevent it from showing if there isn't enough space.
   if (is_window_too_small) {
     base::UmaHistogramEnumeration(
         kPrivacySandboxPromptHelperEventHistogram,
         SettingsPrivacySandboxPromptHelperEvent::kWindowTooSmall);
+    return;
+  }
+
+  auto required_prompt_type = GetRequiredPromptType(profile());
+
+  // Avoid showing the prompt on popups, pip, anything that isn't a normal
+  // browser.
+  if (base::FeatureList::IsEnabled(
+          privacy_sandbox::kPrivacySandboxSuppressDialogOnNonNormalBrowsers) &&
+      browser->type() != Browser::TYPE_NORMAL) {
+    switch (required_prompt_type) {
+      case PrivacySandboxService::PromptType::kM1Consent:
+        // Record how often we were going to show a consent page on a window
+        // with a width that isn't enough for the prompt.
+        base::UmaHistogramBoolean(
+            "Settings.PrivacySandbox.CanNonNormalBrowserWindowFitConsentWidth",
+            CanWindowWidthFitPrivacySandboxPrompt(browser));
+        break;
+      case PrivacySandboxService::PromptType::kM1NoticeROW:
+      case PrivacySandboxService::PromptType::kM1NoticeEEA:
+      case PrivacySandboxService::PromptType::kM1NoticeRestricted:
+        // Record how often we were going to show a notice page on a window
+        // with a width that isn't enough for the prompt.
+        base::UmaHistogramBoolean(
+            "Settings.PrivacySandbox.CanNonNormalBrowserWindowFitNoticeWidth",
+            CanWindowWidthFitPrivacySandboxPrompt(browser));
+        break;
+      default:
+        break;
+    }
+
+    base::UmaHistogramEnumeration(
+        kPrivacySandboxPromptHelperEventHistogram,
+        SettingsPrivacySandboxPromptHelperEvent::kNonNormalBrowser);
     return;
   }
 
@@ -195,7 +235,7 @@ void PrivacySandboxPromptHelper::DidFinishNavigation(
       browser->tab_strip_model()->GetIndexOfWebContents(
           navigation_handle->GetWebContents()));
 
-  ShowPrivacySandboxPrompt(browser, GetRequiredPromptType(profile()));
+  ShowPrivacySandboxPrompt(browser, required_prompt_type);
   base::UmaHistogramEnumeration(
       kPrivacySandboxPromptHelperEventHistogram,
       SettingsPrivacySandboxPromptHelperEvent::kPromptShown);

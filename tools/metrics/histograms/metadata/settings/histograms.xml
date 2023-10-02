@@ -397,6 +397,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Settings.PrivacySandbox.CanNonNormalBrowserWindowFitConsentWidth"
+    enum="Boolean" expires_after="2024-08-25">
+  <owner>boujane@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    In case of non normal browser(Pop up or PIP for example), Records whether
+    the window width was too small to fit the consent dialog.
+  </summary>
+</histogram>
+
+<histogram
+    name="Settings.PrivacySandbox.CanNonNormalBrowserWindowFitNoticeWidth"
+    enum="Boolean" expires_after="2024-08-25">
+  <owner>boujane@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    In case of non normal browser(Pop up or PIP for example), Records whether
+    the window width was too small to fit the notice dialog.
+  </summary>
+</histogram>
+
 <histogram name="Settings.PrivacySandbox.DeprecatedRedirect"
     enum="BooleanRedirected" expires_after="2024-02-11">
   <owner>olesiamarukhno@google.com</owner>
