@@ -1931,7 +1931,8 @@ void ChromeFileSystemAccessPermissionContext::OnAllTabsInBackgroundTimerExpired(
   if (!base::FeatureList::IsEnabled(
           features::kFileSystemAccessPersistentPermissions) ||
       !base::FeatureList::IsEnabled(
-          permissions::features::kOneTimePermission)) {
+          permissions::features::kOneTimePermission) ||
+      expiry_type != BackgroundExpiryType::kLongTimeout) {
     return;
   }
   SetGrantStatus(origin, GrantStatus::kBackgrounded);
