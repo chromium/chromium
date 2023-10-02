@@ -25,15 +25,21 @@
   return static_cast<ParcelTrackingInfobarDelegate*>(self.config->delegate());
 }
 
+#pragma mark - OverlayRequestMediator
+
++ (const OverlayRequestSupport*)requestSupport {
+  return DefaultInfobarOverlayRequestConfig::RequestSupport();
+}
+
 #pragma mark - InfobarParcelTrackingModalDelegate
 
 - (void)parcelTrackingTableViewControllerDidTapTrackAllButton {
-  [self parcelTrackingInfobarDelegate]->TrackPackages(
+  self.parcelTrackingInfobarDelegate->TrackPackages(
       /*display_infobar=*/false);
 }
 
 - (void)parcelTrackingTableViewControllerDidTapUntrackAllButton {
-  [self parcelTrackingInfobarDelegate]->UntrackPackages(
+  self.parcelTrackingInfobarDelegate->UntrackPackages(
       /*display_infobar=*/false);
 }
 

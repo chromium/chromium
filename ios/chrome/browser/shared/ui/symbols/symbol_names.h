@@ -185,6 +185,7 @@ extern NSString* const kCheckmarkShield;
 extern NSString* const kListBulletClipboard;
 extern NSString* const kListBulletRectangle;
 extern NSString* const kBoxTruckFill;
+extern NSString* const kExclamationMarkBubbleSymbol;
 
 // Names of the default symbol being non-monochrome by default. When using them,
 // you probably want to set their color to monochrome.

@@ -2178,6 +2178,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_OPTIONS_TAB_PICKUP_SCREEN_FOOTER" desc="Footer for the screen setting displaying tab suggestion settings.">
         Gives you tab suggestions based on your browsing activity on your other devices using your Google Account. Your devices must be signed in and synced using the same Google Account.
       </message>
+      <message name="IDS_IOS_PARCEL_TRACKING_OPT_IN_ENABLE_TRACKING" desc="Text for the button that allows the user to enable parcel tracking.">
+        Enable Tracking
+      </message>
       <message name="IDS_IOS_PARCEL_TRACKING_INFOBAR_ASK_TO_TRACK_TITLE" desc="Text for the title string of the infobar that is displayed to prompt user to track a package.">
         {COUNT, plural,
         =1 {Track This Package?}
@@ -2203,8 +2206,24 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_PARCEL_TRACKING_INFOBAR_PACKAGE_UNTRACKED_SUBTITLE" desc="Text for the subtitle string of the infobar that is displayed after a package is untracked.">
         This package has been successfully untracked.
       </message>
-      <message name="IDS_IOS_PARCEL_TRACKING_OPT_IN_ENABLE_TRACKING" desc="Text for the button that allows the user to enable parcel tracking.">
-        Enable Tracking
+      <message name="IDS_IOS_PARCEL_TRACKING_MODAL_INFOBAR_DELIVERED_BY" desc="Text that prefaces a parcel carrier in the parcel tracking infobar modal.">
+        Delivered by
+      </message>
+      <message name="IDS_IOS_PARCEL_TRACKING_MODAL_INFOBAR_PACKAGE_LABEL" desc="Text that prefaces a tracking number in the parcel tracking infobar modal when there are multiple packages displayed.">
+        Package
+      </message>
+      <message name="IDS_IOS_PARCEL_TRACKING_MODAL_INFOBAR_PACKAGE_NUMBER" desc="Text that prefaces a tracking number in the parcel tracking infobar modal when there is only one package displayed.">
+        Package Number
+      </message>
+      <message name="IDS_IOS_PARCEL_TRACKING_MODAL_INFOBAR_TRACK_BUTTON" desc="Text for the button in the parcel tracking infobar modal that tracks the package(s).">
+        {COUNT, plural,
+        =1 {Track this package}
+        other {Track all packages}}
+      </message>
+      <message name="IDS_IOS_PARCEL_TRACKING_MODAL_INFOBAR_UNTRACK_BUTTON" desc="Text for the button in the parcel tracking infobar modal that untracks the package(s).">
+        {COUNT, plural,
+        =1 {Untrack this package}
+        other {Untrack all packages}}
       </message>
       <message name="IDS_IOS_PARCEL_TRACKING_OPT_IN_PRIMARY_ACTION" desc="Text for the primary action string of the parcel tracking opt-in half-sheet screen.">
         Always Track Detected Packages
@@ -2214,6 +2233,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       </message>
       <message name="IDS_IOS_PARCEL_TRACKING_OPT_IN_TERTIARY_ACTION" desc="Text for the tertiary action string of the parcel tracking opt-in half-sheet screen.">
         Ask me Every Time
+      </message>
+      <message name="IDS_IOS_PARCEL_TRACKING_REPORT_AN_ISSUE" desc="Title for the option on the parcel tracking infobar to report an issue">
+        Report an issue
       </message>
       <message name="IDS_IOS_PARTIAL_TRANSLATE_ACTION_TRANSLATE_FULL_PAGE" desc="The action button to translate the full page (Title Case).">
         Translate Full Page

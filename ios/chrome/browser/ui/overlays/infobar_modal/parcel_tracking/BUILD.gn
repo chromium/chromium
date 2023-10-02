@@ -15,8 +15,11 @@ source_set("parcel_tracking") {
     "//ios/chrome/browser/overlays/public/default",
     "//ios/chrome/browser/parcel_tracking:infobar_delegate",
     "//ios/chrome/browser/parcel_tracking:parcel_tracking_step",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/ui/infobars/modals/parcel_tracking",
     "//ios/chrome/browser/ui/overlays/infobar_modal:coordinators",
     "//ios/chrome/browser/ui/overlays/infobar_modal:mediators",
+    "//ios/public/provider/chrome/browser/user_feedback:user_feedback_api",
   ]
 }

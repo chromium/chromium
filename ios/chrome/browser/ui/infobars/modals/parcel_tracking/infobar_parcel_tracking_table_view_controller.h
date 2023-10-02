@@ -10,15 +10,19 @@
 
 @protocol InfobarModalDelegate;
 @protocol InfobarParcelTrackingModalDelegate;
+@protocol InfobarParcelTrackingPresenter;
 
 // View controller that represents the content for the parcel tracking
 // infobar modal.
 @interface InfobarParcelTrackingTableViewController
     : ChromeTableViewController <InfobarParcelTrackingModalConsumer>
 
-// Initializes the view controller with the given `delegate`.
-- (instancetype)initWithDelegate:
-    (id<InfobarModalDelegate, InfobarParcelTrackingModalDelegate>)delegate
+// Initializes the view controller with the given `delegate` and
+// `presenter`.
+- (instancetype)
+    initWithDelegate:
+        (id<InfobarModalDelegate, InfobarParcelTrackingModalDelegate>)delegate
+           presenter:(id<InfobarParcelTrackingPresenter>)presenter
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;
