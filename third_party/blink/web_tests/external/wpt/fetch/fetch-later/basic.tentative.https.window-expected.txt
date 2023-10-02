@@ -1,9 +1,10 @@
 This is a testharness.js-based test.
 FAIL fetchLater() cannot be called without request. assert_throws_js: function "() => fetchLater()" threw object "ReferenceError: fetchLater is not defined" ("ReferenceError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
-FAIL fetchLater()'s return tells the deferred request is not yet sent. fetchLater is not defined
 FAIL fetchLater() throws TypeError on non-HTTPS URL. fetchLater is not defined
+FAIL fetchLater() throws RangeError on negative activationTimeout. fetchLater is not defined
 FAIL fetchLater()'s return tells the deferred request is not yet sent. fetchLater is not defined
 FAIL fetchLater() throws TypeError when mutating its returned state. fetchLater is not defined
 FAIL fetchLater() throws AbortError when its initial abort signal is aborted. fetchLater is not defined
+FAIL fetchLater() does not throw error when it is aborted before sending. fetchLater is not defined
 Harness: the test ran to completion.
 

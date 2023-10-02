@@ -5,9 +5,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FETCH_FETCH_MANAGER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FETCH_FETCH_MANAGER_H_
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
+#include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_state_observer.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
@@ -33,7 +35,10 @@ class CORE_EXPORT FetchManager final
   FetchLaterResult* FetchLater(ScriptState*,
                                FetchRequestData*,
                                AbortSignal*,
+                               absl::optional<DOMHighResTimeStamp>,
                                ExceptionState&);
+
+  // ExecutionContextLifecycleObserver overrides:
   void ContextDestroyed() override;
 
   void Trace(Visitor*) const override;

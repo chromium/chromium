@@ -1,5 +1,6 @@
 This is a testharness.js-based test.
 FAIL A discarded document sends all its fetchLater requests.  assert_equals: Number of sent beacons does not match expected count: expected 40 but got 0
+FAIL A discarded document sends all its fetchLater requests, no matter how much their timeout remain.  assert_equals: Number of sent beacons does not match expected count: expected 40 but got 0
 FAIL A discarded document does not send an already aborted fetchLater request.  assert_equals: Number of sent beacons does not match expected count: expected 1 but got 0
 Harness: the test ran to completion.
 

@@ -17,6 +17,12 @@ test(() => {
 }, `fetchLater() throws TypeError on non-HTTPS URL.`);
 
 test(() => {
+  assert_throws_js(
+      RangeError,
+      () => fetchLater('https://www.google.com', {activationTimeout: -1}));
+}, `fetchLater() throws RangeError on negative activationTimeout.`);
+
+test(() => {
   const result = fetchLater('/');
   assert_false(result.activated);
 }, `fetchLater()'s return tells the deferred request is not yet sent.`);
@@ -33,3 +39,11 @@ test(() => {
   assert_throws_dom(
       'AbortError', () => fetchLater('/', {signal: controller.signal}));
 }, `fetchLater() throws AbortError when its initial abort signal is aborted.`);
+
+test(() => {
+  const controller = new AbortController();
+  const result = fetchLater('/', {signal: controller.signal});
+  assert_false(result.activated);
+  controller.abort();
+  assert_false(result.activated);
+}, `fetchLater() does not throw error when it is aborted before sending.`);

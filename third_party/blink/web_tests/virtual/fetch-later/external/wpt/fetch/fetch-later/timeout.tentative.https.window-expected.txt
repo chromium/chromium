@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+PASS fetchLater() sends out based on activationTimeout.
+PASS fetchLater() sends out based on activationTimeout, even if document is in BFCache.
+Harness: the test ran to completion.
+
