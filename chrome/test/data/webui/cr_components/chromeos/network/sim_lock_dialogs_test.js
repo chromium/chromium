@@ -78,6 +78,21 @@ suite('NetworkSimLockDialogsTest', function() {
     assertTrue(!!simLockDialog.$$(`#adminSubtitle`));
   });
 
+  test('Unlock dialog not displayed when carrier locked', async function() {
+    loadTimeData.overrideValues({'isCellularCarrierLockEnabled': true});
+    const deviceState = {
+      simLockStatus:
+          {lockEnabled: true, lockType: 'network-pin', retriesLeft: 3},
+    };
+    const dialog = simLockDialog.$$(`#unlockPinDialog`);
+    assertTrue(!!dialog);
+    assertFalse(dialog.open);
+    simLockDialog.deviceState = deviceState;
+    await flushAsync();
+    assertFalse(dialog.open);
+  });
+
+
   test('Show Unlock PUK dialog', async function() {
     const deviceState = {
       simLockStatus: {lockEnabled: true, lockType: 'sim-puk', retriesLeft: 3},

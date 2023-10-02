@@ -50,6 +50,30 @@ suite('NetworkIconTest', function() {
     assertTrue(networkIcon.$$('#icon').classList.contains('cellular-locked'));
   });
 
+  test('Display locked cellular icon for  carrier lock', async function() {
+    loadTimeData.overrideValues({'isCellularCarrierLockEnabled': true});
+    init();
+    const networkState =
+        OncMojo.getDefaultNetworkState(NetworkType.kCellular, 'cellular');
+    networkState.typeState.cellular.iccid = '1';
+    networkState.typeState.cellular.eid = '1';
+    networkState.typeState.cellular.simLocked = true;
+    networkState.typeState.cellular.simLockType = 'network-pin';
+    networkIcon.networkState = networkState;
+
+    networkIcon.deviceState = {
+      type: NetworkType.kCellular,
+      deviceState: DeviceStateType.kEnabled,
+      simInfos: [
+        {slot_id: 1, eid: '1', iccid: '1', isPrimary: false},
+      ],
+      scanning: true,
+    };
+    await flushAsync();
+
+    assertTrue(networkIcon.$$('#icon').classList.contains('cellular-locked'));
+  });
+
   [true, false].forEach(isUserLoggedIn => {
     test('Display unactivated PSim icon', async function() {
       loadTimeData.overrideValues({

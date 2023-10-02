@@ -178,6 +178,14 @@ Polymer({
       value: false,
       computed: 'computeIsSimPinLockRestricted_(globalPolicy, globalPolicy.*)',
     },
+
+    isCellularCarrierLockEnabled_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.valueExists('isCellularCarrierLockEnabled') &&
+            loadTimeData.getBoolean('isCellularCarrierLockEnabled');
+      },
+    },
   },
 
   /** @private {?CrosNetworkConfigInterface} */
@@ -223,6 +231,14 @@ Polymer({
     const simLockStatus = this.deviceState.simLockStatus;
 
     if (!simLockStatus) {
+      this.isDialogOpen = false;
+      return;
+    }
+
+    // If device is carrier locked, don't show any dialog
+    // Device could only be unlocked by carrier
+    if (this.isCellularCarrierLockEnabled_ &&
+        simLockStatus.lockType === 'network-pin') {
       this.isDialogOpen = false;
       return;
     }

@@ -30,13 +30,16 @@
 
 <!-- SIM locked -->
 <template is="dom-if" if="[[eq_(State.SIM_LOCKED, state_)]]" restamp>
-  <div id="simLocked" class="property-box two-line">
-    <cr-button id="unlockPinButton"
-        on-click="onUnlockPinTap_"
-        disabled="[[disabled]]">
-      [[i18n('networkSimUnlock')]]
-    </cr-button>
-  </div>
+  <template is="dom-if" if="[[!isSimCarrierLocked_(isActiveSim_,
+      deviceState)]]" restamp>
+    <div id="simLocked" class="property-box two-line">
+      <cr-button id="unlockPinButton"
+          on-click="onUnlockPinTap_"
+          disabled="[[disabled]]">
+        [[i18n('networkSimUnlock')]]
+      </cr-button>
+    </div>
+  </template>
 </template>
 
 <!-- SIM unlocked -->

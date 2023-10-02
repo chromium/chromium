@@ -125,6 +125,14 @@ Polymer({
       computed: 'computeIsSimPinLockRestricted_(globalPolicy,' +
           'globalPolicy.*, lockEnabled_)',
     },
+
+    isCellularCarrierLockEnabled_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.valueExists('isCellularCarrierLockEnabled') &&
+            loadTimeData.getBoolean('isCellularCarrierLockEnabled');
+      },
+    },
   },
 
   /** @private {boolean|undefined} */
@@ -322,6 +330,25 @@ Polymer({
     // Note that if this is not the active SIM, we cannot read to lock state, so
     // we default to showing the "unlocked" UI unless we know otherwise.
     return State.SIM_UNLOCKED;
+  },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  isSimCarrierLocked_() {
+    if (!this.isCellularCarrierLockEnabled_) {
+      return false;
+    }
+
+    const simLockStatus = this.deviceState && this.deviceState.simLockStatus;
+
+    if (this.isActiveSim_ && simLockStatus &&
+        simLockStatus.lockType === 'network-pin') {
+      return true;
+    }
+
+    return false;
   },
 
   /**

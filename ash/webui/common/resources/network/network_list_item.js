@@ -253,6 +253,14 @@ Polymer({
             loadTimeData.getBoolean('isUserLoggedIn');
       },
     },
+
+    isCellularCarrierLockEnabled_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.valueExists('isCellularCarrierLockEnabled') &&
+            loadTimeData.getBoolean('isCellularCarrierLockEnabled');
+      },
+    },
   },
 
   /** @private {?CrosNetworkConfigInterface} */
@@ -678,6 +686,13 @@ Polymer({
     }
 
     if (this.networkState.type === NetworkType.kCellular) {
+      // For carrier lock, display string is different from regular
+      // pin lock
+      if (this.isCellularCarrierLockEnabled_ &&
+          this.networkState.typeState.cellular.simLocked &&
+          this.networkState.typeState.cellular.simLockType === 'network-pin') {
+        return this.i18n('networkListItemUpdatedCellularSimCardCarrierLocked');
+      }
       if (this.isPsimPendingActivationWhileLoggedOut_()) {
         return this.i18n('networkListItemActivateAfterDeviceSetup');
       }
@@ -1148,6 +1163,11 @@ Polymer({
       return false;
     }
     if (!this.networkState || !this.networkState.typeState.cellular) {
+      return false;
+    }
+    if (this.isCellularCarrierLockEnabled_ &&
+        this.networkState.typeState.cellular.simLocked &&
+        this.networkState.typeState.cellular.simLockType === 'network-pin') {
       return false;
     }
     return this.networkState.typeState.cellular.simLocked;
