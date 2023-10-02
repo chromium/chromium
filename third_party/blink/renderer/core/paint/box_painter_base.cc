@@ -133,6 +133,80 @@ CompositedPaintStatus CompositedBackgroundColorStatus(Node* node) {
   return element_animations->CompositedBackgroundColorStatus();
 }
 
+void ClipToBorderEdge(GraphicsContext& context,
+                      const FloatRoundedRect& border,
+                      bool has_border_radius,
+                      bool has_opaque_background) {
+  FloatRoundedRect rect_to_clip_out = border;
+
+  // If the box is opaque, it is unnecessary to clip it out. However,
+  // doing so saves time when painting the shadow. On the other hand, it
+  // introduces subpixel gaps along the corners / edges. Those are avoided
+  // by insetting the clipping path by one CSS pixel.
+  if (has_opaque_background) {
+    rect_to_clip_out.Inset(1);
+  }
+
+  if (has_border_radius) {
+    if (!rect_to_clip_out.IsEmpty()) {
+      context.ClipOutRoundedRect(rect_to_clip_out);
+    }
+  } else {
+    if (!rect_to_clip_out.IsEmpty()) {
+      context.ClipOut(rect_to_clip_out.Rect());
+    }
+  }
+}
+
+void ClipToSides(GraphicsContext& context,
+                 const FloatRoundedRect& border,
+                 const ShadowData& shadow,
+                 PhysicalBoxSides sides_to_include) {
+  // Create a "pseudo-infinite" clip rectangle that should be large enough to
+  // contain shadows on all four sides, including blur. Clip to the original
+  // box for the sides that are excluded in this fragment.
+  gfx::OutsetsF shadow_outsets = shadow.RectOutsets();
+  // If an edge is not included, then reset the outset on that edge.
+  if (!sides_to_include.left) {
+    shadow_outsets.set_left(0);
+  }
+  if (!sides_to_include.top) {
+    shadow_outsets.set_top(0);
+  }
+  if (!sides_to_include.right) {
+    shadow_outsets.set_right(0);
+  }
+  if (!sides_to_include.bottom) {
+    shadow_outsets.set_bottom(0);
+  }
+  gfx::RectF keep = border.Rect();
+  keep.Outset(shadow_outsets);
+  context.Clip(keep);
+}
+
+void AdjustRectForSideClipping(gfx::RectF& rect,
+                               const ShadowData& shadow,
+                               PhysicalBoxSides sides_to_include) {
+  if (!sides_to_include.left) {
+    float extend_by = std::max(shadow.X(), 0.0f) + shadow.Blur();
+    rect.Offset(-extend_by, 0);
+    rect.set_width(rect.width() + extend_by);
+  }
+  if (!sides_to_include.top) {
+    float extend_by = std::max(shadow.Y(), 0.0f) + shadow.Blur();
+    rect.Offset(0, -extend_by);
+    rect.set_height(rect.height() + extend_by);
+  }
+  if (!sides_to_include.right) {
+    float shrink_by = std::min(shadow.X(), 0.0f) - shadow.Blur();
+    rect.set_width(rect.width() - shrink_by);
+  }
+  if (!sides_to_include.bottom) {
+    float shrink_by = std::min(shadow.Y(), 0.0f) - shadow.Blur();
+    rect.set_height(rect.height() - shrink_by);
+  }
+}
+
 }  // namespace
 
 void BoxPainterBase::PaintNormalBoxShadow(const PaintInfo& info,
@@ -189,38 +263,19 @@ void BoxPainterBase::PaintNormalBoxShadow(const PaintInfo& info,
     // The clip does not depend on any shadow-specific properties.
     if (!state_saver.Saved()) {
       state_saver.Save();
+      ClipToBorderEdge(context, border, has_border_radius,
+                       has_opaque_background);
+    }
 
-      FloatRoundedRect rect_to_clip_out = border;
+    // Recompute the shadow shape so that spread isn't applied twice in the
+    // border-radius case.
+    fill_rect = border.Rect();
 
-      // If the box is opaque, it is unnecessary to clip it out. However,
-      // doing so saves time when painting the shadow. On the other hand, it
-      // introduces subpixel gaps along the corners / edges. Those are avoided
-      // by insetting the clipping path by one CSS pixel.
-      if (has_opaque_background)
-        rect_to_clip_out.Inset(1);
-
-      if (has_border_radius) {
-        if (!rect_to_clip_out.IsEmpty())
-          context.ClipOutRoundedRect(rect_to_clip_out);
-      } else {
-        if (!rect_to_clip_out.IsEmpty())
-          context.ClipOut(rect_to_clip_out.Rect());
-      }
-
-      if (!sides_to_include.HasAllSides()) {
-        // Create a "pseudo-infinite" clip rectangle that should be large enough
-        // to contain shadows on all four sides, including blur. Clip to the
-        // border box for the sides that are excluded in this fragment.
-        gfx::RectF keep = fill_rect + shadow_offset;
-        keep.Outset(shadow_blur * 3);
-        const gfx::RectF& clip = border.Rect();
-
-        float left = sides_to_include.left ? keep.x() : clip.x();
-        float top = sides_to_include.top ? keep.y() : clip.y();
-        float right = sides_to_include.right ? keep.right() : clip.right();
-        float bottom = sides_to_include.bottom ? keep.bottom() : clip.bottom();
-        context.Clip(gfx::RectF(left, top, right - left, bottom - top));
-      }
+    GraphicsContextStateSaver sides_clip_saver(context, false);
+    if (!sides_to_include.HasAllSides()) {
+      sides_clip_saver.Save();
+      ClipToSides(context, border, shadow, sides_to_include);
+      AdjustRectForSideClipping(fill_rect, shadow, sides_to_include);
     }
 
     // Draw only the shadow. If the color of the shadow is transparent we will
@@ -232,12 +287,13 @@ void BoxPainterBase::PaintNormalBoxShadow(const PaintInfo& info,
     context.SetDrawLooper(draw_looper_builder.DetachDrawLooper());
 
     if (has_border_radius) {
-      FloatRoundedRect rounded_fill_rect = border;
+      FloatRoundedRect rounded_fill_rect(fill_rect, border.GetRadii());
       ApplySpreadToShadowShape(rounded_fill_rect, shadow_spread);
       context.FillRoundedRect(
           rounded_fill_rect, Color::kBlack,
           PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kBackground));
     } else {
+      fill_rect.Outset(shadow_spread);
       context.FillRect(
           fill_rect, Color::kBlack,
           PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kBackground));
@@ -283,29 +339,6 @@ inline gfx::RectF AreaCastingShadowInHole(const gfx::RectF& hole_rect,
   return gfx::UnionRects(bounds, offset_bounds);
 }
 
-void AdjustInnerRectForSideClipping(gfx::RectF& inner_rect,
-                                    const ShadowData& shadow,
-                                    PhysicalBoxSides sides_to_include) {
-  if (!sides_to_include.left) {
-    float extend_by = std::max(shadow.X(), 0.0f) + shadow.Blur();
-    inner_rect.Offset(-extend_by, 0);
-    inner_rect.set_width(inner_rect.width() + extend_by);
-  }
-  if (!sides_to_include.top) {
-    float extend_by = std::max(shadow.Y(), 0.0f) + shadow.Blur();
-    inner_rect.Offset(0, -extend_by);
-    inner_rect.set_height(inner_rect.height() + extend_by);
-  }
-  if (!sides_to_include.right) {
-    float shrink_by = std::min(shadow.X(), 0.0f) - shadow.Blur();
-    inner_rect.set_width(inner_rect.width() - shrink_by);
-  }
-  if (!sides_to_include.bottom) {
-    float shrink_by = std::min(shadow.Y(), 0.0f) - shadow.Blur();
-    inner_rect.set_height(inner_rect.height() - shrink_by);
-  }
-}
-
 }  // namespace
 
 void BoxPainterBase::PaintInsetBoxShadow(const PaintInfo& info,
@@ -336,7 +369,7 @@ void BoxPainterBase::PaintInsetBoxShadow(const PaintInfo& info,
             : resolved_shadow_color;
 
     gfx::RectF inner_rect = bounds.Rect();
-    AdjustInnerRectForSideClipping(inner_rect, shadow, sides_to_include);
+    AdjustRectForSideClipping(inner_rect, shadow, sides_to_include);
     FloatRoundedRect inner_rounded_rect(inner_rect, bounds.GetRadii());
     ApplySpreadToShadowShape(inner_rounded_rect, -shadow.Spread());
     if (inner_rounded_rect.IsEmpty()) {
