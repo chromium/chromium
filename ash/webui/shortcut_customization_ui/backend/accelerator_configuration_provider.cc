@@ -188,6 +188,10 @@ static const auto kReservedAccelerators =
                          ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
                          ui::Accelerator::KeyState::PRESSED),
          IDS_AMBIENT_ACCELERATOR_DESCRIPTION_ACTIVATE_INDEXED_DESK},
+        {ui::Accelerator(ui::VKEY_ESCAPE,
+                         ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
+                         ui::Accelerator::KeyState::PRESSED),
+         IDS_ASH_ACCELERATOR_DESCRIPTION_UNPIN},
     });
 
 // Raw accelerator data may result in the same shortcut being displayed multiple
