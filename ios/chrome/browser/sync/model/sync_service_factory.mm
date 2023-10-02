@@ -56,7 +56,7 @@
 #import "ios/chrome/browser/sync/model/send_tab_to_self_sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/session_sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/sync_invalidations_service_factory.h"
-#import "ios/chrome/browser/trusted_vault/ios_trusted_vault_service_factory.h"
+#import "ios/chrome/browser/trusted_vault/model/ios_trusted_vault_service_factory.h"
 #import "ios/chrome/browser/webdata_services/model/web_data_service_factory.h"
 #import "ios/chrome/common/channel_info.h"
 #import "ios/web/public/thread/web_task_traits.h"

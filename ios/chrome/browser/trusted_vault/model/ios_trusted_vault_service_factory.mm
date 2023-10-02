@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/trusted_vault/ios_trusted_vault_service_factory.h"
+#import "ios/chrome/browser/trusted_vault/model/ios_trusted_vault_service_factory.h"
 
 #import "base/no_destructor.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
@@ -12,7 +12,7 @@
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/trusted_vault_client_backend_factory.h"
-#import "ios/chrome/browser/trusted_vault/ios_trusted_vault_client.h"
+#import "ios/chrome/browser/trusted_vault/model/ios_trusted_vault_client.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 
 // static

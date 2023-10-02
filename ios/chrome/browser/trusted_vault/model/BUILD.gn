@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("trusted_vault") {
+source_set("model") {
   sources = [
     "ios_trusted_vault_client.h",
     "ios_trusted_vault_client.mm",
