@@ -745,7 +745,8 @@ FontSizeAdjust StyleBuilderConverterBase::ConvertFontSizeAdjust(
 
   if (identifier_value &&
       identifier_value->GetValueID() == CSSValueID::kFromFont) {
-    return FontSizeAdjust(FontSizeAdjust::kFontSizeAdjustNone, true);
+    return FontSizeAdjust(FontSizeAdjust::kFontSizeAdjustNone,
+                          FontSizeAdjust::ValueType::kFromFont);
   }
 
   if (value.IsPrimitiveValue()) {
@@ -767,7 +768,8 @@ FontSizeAdjust StyleBuilderConverterBase::ConvertFontSizeAdjust(
 
   DCHECK(To<CSSIdentifierValue>(pair.Second()).GetValueID() ==
          CSSValueID::kFromFont);
-  return FontSizeAdjust(FontSizeAdjust::kFontSizeAdjustNone, metric, true);
+  return FontSizeAdjust(FontSizeAdjust::kFontSizeAdjustNone, metric,
+                        FontSizeAdjust::ValueType::kFromFont);
 }
 
 FontSizeAdjust StyleBuilderConverter::ConvertFontSizeAdjust(

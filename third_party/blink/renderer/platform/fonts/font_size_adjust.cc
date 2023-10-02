@@ -14,7 +14,7 @@ unsigned FontSizeAdjust::GetHash() const {
   // Normalize negative zero.
   WTF::AddFloatToHash(computed_hash, value_ == 0.0 ? 0.0 : value_);
   WTF::AddIntToHash(computed_hash, static_cast<const unsigned>(metric_));
-  WTF::AddIntToHash(computed_hash, is_from_font_);
+  WTF::AddIntToHash(computed_hash, static_cast<const unsigned>(type_));
   return computed_hash;
 }
 

@@ -387,7 +387,7 @@ void FontBuilder::UpdateAdjustedSize(FontDescription& font_description,
     font_description.SetSizeAdjust(FontSizeAdjust(
         aspect_value.has_value() ? aspect_value.value()
                                  : FontSizeAdjust::kFontSizeAdjustNone,
-        size_adjust.GetMetric(), size_adjust.IsFromFont()));
+        size_adjust.GetMetric(), FontSizeAdjust::ValueType::kFromFont));
   }
 
   if (auto adjusted_size = FontSizeFunctions::MetricsMultiplierAdjustedFontSize(
