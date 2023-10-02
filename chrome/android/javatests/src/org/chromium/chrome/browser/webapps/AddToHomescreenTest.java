@@ -99,9 +99,11 @@ public class AddToHomescreenTest {
             + "</head><body>Webapp capable</body></html>");
 
     private static final String NON_MASKABLE_MANIFEST_TEST_PAGE_PATH =
-            "/chrome/test/data/banners/manifest_test_page.html?manifest=manifest_empty_name_short_name.json";
+            "/chrome/test/data/banners/manifest_test_page.html?"
+            + "manifest=manifest_display_browser.json";
     private static final String MASKABLE_MANIFEST_TEST_PAGE_PATH =
-            "/chrome/test/data/banners/manifest_test_page.html?manifest=manifest_empty_name_short_name_maskable.json";
+            "/chrome/test/data/banners/manifest_test_page.html?"
+            + "manifest=manifest_display_browser_maskable.json";
     private static final String MANIFEST_TEST_PAGE_TITLE = "Web app banner test page";
 
     private static final String INSTALL_PATH_HISTOGRAM_NAME = "WebApk.Install.PathToInstall";
@@ -367,7 +369,7 @@ public class AddToHomescreenTest {
     @Feature("{Webapp}")
     public void testAddWebappShortcutAppInstalledEvent() throws Exception {
         loadUrl(WebappTestPage.getServiceWorkerUrlWithManifestAndAction(mTestServerRule.getServer(),
-                        "manifest_empty_name_short_name.json", "verify_appinstalled"),
+                        "manifest_display_browser.json", "verify_appinstalled"),
                 WebappTestPage.PAGE_TITLE);
 
         addShortcutToTab(mTab, "", true);
