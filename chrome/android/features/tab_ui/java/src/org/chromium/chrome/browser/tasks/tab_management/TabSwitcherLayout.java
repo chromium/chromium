@@ -717,10 +717,12 @@ public class TabSwitcherLayout extends Layout {
         super.forceAnimationToFinish();
         if (mConditionalAnimationRunnerRef != null
                 && mConditionalAnimationRunnerRef.get() != null) {
-            // If we are forcing the animation to finish treat this identically to a timeout.
-            mConditionalAnimationRunnerRef.get().runAnimationDueToTimeout();
+            // Prevent re-entrancy.
+            ConditionalAnimationRunner runner = mConditionalAnimationRunnerRef.get();
             mConditionalAnimationRunnerRef.clear();
             mConditionalAnimationRunnerRef = null;
+            // If we are forcing the animation to finish treat this identically to a timeout.
+            runner.runAnimationDueToTimeout();
         }
         mTabJavaView.runOnNextLayoutRunnable();
         if (mNewTabAnimation != null) {
