@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/update_client/ios_chrome_update_query_params_delegate.h"
+#import "ios/chrome/browser/update_client/model/ios_chrome_update_query_params_delegate.h"
 
 #import "base/no_destructor.h"
 #import "base/strings/strcat.h"
