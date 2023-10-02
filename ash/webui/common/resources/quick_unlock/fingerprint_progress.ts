@@ -184,11 +184,6 @@ export class FingerprintProgressElement extends PolymerElement {
    */
   reset() {
     if (this.dynamic) {
-      const link = document.createElement('link');
-      link.rel = 'stylesheet';
-      link.href = 'chrome://theme/colors.css?sets=legacy,sys';
-      document.head.appendChild(link);
-      document.body.classList.add('jelly-enabled');
       this.progressCircleFillColor =
           getComputedStyle(document.body)
               .getPropertyValue('--cros-sys-primary');
