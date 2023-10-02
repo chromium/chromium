@@ -68,13 +68,12 @@ public class CachedFeatureFlagsSafeModeUnitTest {
 
     @Before
     public void setUp() {
-        CachedFlagsSafeMode.getInstance().setExperimentEnabledForTesting(true);
+        CachedFlagsSafeMode.getInstance().enableForTesting();
         clearMemory();
     }
 
     @After
     public void tearDown() {
-        CachedFlagsSafeMode.getInstance().setExperimentEnabledForTesting(null);
         FeatureList.setTestFeatures(null);
         clearMemory();
     }

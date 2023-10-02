@@ -171,7 +171,6 @@ BASE_DECLARE_FEATURE(kSearchEnginesPromoV3);
 BASE_DECLARE_FEATURE(kSharingHubLinkToggle);
 BASE_DECLARE_FEATURE(kShowScrollableMVTOnNTPAndroid);
 BASE_DECLARE_FEATURE(kFeedPositionAndroid);
-BASE_DECLARE_FEATURE(kSafeModeForCachedFlags);
 BASE_DECLARE_FEATURE(kScrollToTLDOptimization);
 BASE_DECLARE_FEATURE(kSearchResumptionModuleAndroid);
 BASE_DECLARE_FEATURE(kShouldIgnoreIntentSkipInternalCheck);

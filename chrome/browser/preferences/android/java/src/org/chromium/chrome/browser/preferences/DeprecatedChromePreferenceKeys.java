@@ -35,6 +35,7 @@ public class DeprecatedChromePreferenceKeys {
                 "Chrome.Flags.SafeBool.*",
                 "Chrome.Flags.SafeDouble.*",
                 "Chrome.Flags.SafeInt.*",
+                "Chrome.Flags.SafeModeEnabled",
                 "Chrome.Flags.SafeString.*",
                 "Chrome.Flags.SafeValuesVersion",
                 "Chrome.OfflineMeasurements.HttpProbeResultsList",

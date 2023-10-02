@@ -171,7 +171,6 @@ public class ChromeCachedFlags {
      * Do not add new simple boolean flags here, add them to {@link #cacheNativeFlags} instead.
      */
     public static void cacheAdditionalNativeFlags() {
-        CachedFlagsSafeMode.cacheSafeModeForCachedFlagsEnabled();
         cacheReachedCodeProfilerTrialGroup();
 
         // Propagate REACHED_CODE_PROFILER feature value to LibraryLoader. This can't be done in

@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.flags;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 
@@ -45,7 +44,6 @@ public class CachedFlagsSafeMode {
     static final String PREF_SAFE_VALUES_VERSION = "Chrome.Flags.SafeValuesVersion";
 
     private Boolean mSafeModeExperimentForcedForTesting;
-    private Boolean mSafeModeExperimentEnabled;
 
     // These values are persisted to logs. Entries should not be renumbered and numeric values
     // should never be reused.
@@ -283,8 +281,6 @@ public class CachedFlagsSafeMode {
     }
 
     Boolean isEnabled(String featureName, String preferenceName, boolean defaultValue) {
-        if (!isSafeModeExperimentEnabled()) return null;
-
         switch (mBehavior.get()) {
             case Behavior.NOT_ENGAGED_BELOW_THRESHOLD:
                 return null;
@@ -304,8 +300,6 @@ public class CachedFlagsSafeMode {
     }
 
     Boolean getBooleanFieldTrialParam(String preferenceName, boolean defaultValue) {
-        if (!isSafeModeExperimentEnabled()) return null;
-
         switch (mBehavior.get()) {
             case Behavior.NOT_ENGAGED_BELOW_THRESHOLD:
                 return null;
@@ -325,8 +319,6 @@ public class CachedFlagsSafeMode {
     }
 
     Integer getIntFieldTrialParam(String preferenceName, int defaultValue) {
-        if (!isSafeModeExperimentEnabled()) return null;
-
         switch (mBehavior.get()) {
             case Behavior.NOT_ENGAGED_BELOW_THRESHOLD:
                 return null;
@@ -346,8 +338,6 @@ public class CachedFlagsSafeMode {
     }
 
     Double getDoubleFieldTrialParam(String preferenceName, double defaultValue) {
-        if (!isSafeModeExperimentEnabled()) return null;
-
         switch (mBehavior.get()) {
             case Behavior.NOT_ENGAGED_BELOW_THRESHOLD:
                 return null;
@@ -368,8 +358,6 @@ public class CachedFlagsSafeMode {
     }
 
     String getStringFieldTrialParam(String preferenceName, String defaultValue) {
-        if (!isSafeModeExperimentEnabled()) return null;
-
         switch (mBehavior.get()) {
             case Behavior.NOT_ENGAGED_BELOW_THRESHOLD:
                 return null;
@@ -388,25 +376,6 @@ public class CachedFlagsSafeMode {
         }
     }
 
-    public static void cacheSafeModeForCachedFlagsEnabled() {
-        SharedPreferencesManager.getInstance().writeBoolean(
-                ChromePreferenceKeys.FLAGS_SAFE_MODE_ENABLED,
-                ChromeFeatureList.isEnabled(ChromeFeatureList.SAFE_MODE_FOR_CACHED_FLAGS));
-    }
-
-    private boolean isSafeModeExperimentEnabled() {
-        if (mSafeModeExperimentForcedForTesting != null) {
-            return mSafeModeExperimentForcedForTesting;
-        }
-
-        if (mSafeModeExperimentEnabled == null) {
-            mSafeModeExperimentEnabled = SharedPreferencesManager.getInstance().readBoolean(
-                    ChromePreferenceKeys.FLAGS_SAFE_MODE_ENABLED, true);
-        }
-
-        return mSafeModeExperimentEnabled;
-    }
-
     @Behavior
     int getBehaviorForTesting() {
         return mBehavior.get();
@@ -416,16 +385,10 @@ public class CachedFlagsSafeMode {
         mBehavior.set(Behavior.UNKNOWN);
         mStartCheckpointWritten.set(false);
         mEndCheckpointWritten.set(false);
-        mSafeModeExperimentEnabled = null;
     }
 
-    @SuppressLint({"ApplySharedPref"})
-    static void clearDiskForTesting() {
-        getSafeValuePreferences().edit().clear().commit();
-    }
-
-    void setExperimentEnabledForTesting(Boolean value) {
-        mSafeModeExperimentForcedForTesting = value;
+    void enableForTesting() {
+        mSafeModeExperimentForcedForTesting = true;
         ResettersForTesting.register(() -> mSafeModeExperimentForcedForTesting = null);
     }
 }

@@ -2554,9 +2554,6 @@ extern const char
 extern const char kSafeBrowsingHashPrefixRealTimeLookupsName[];
 extern const char kSafeBrowsingHashPrefixRealTimeLookupsDescription[];
 
-extern const char kSafeModeForCachedFlagsName[];
-extern const char kSafeModeForCachedFlagsDescription[];
-
 extern const char kSafeSitesFilterBehaviorPolicyAndroidName[];
 extern const char kSafeSitesFilterBehaviorPolicyAndroidDescription[];
 

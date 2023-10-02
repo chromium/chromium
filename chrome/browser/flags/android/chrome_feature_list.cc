@@ -304,7 +304,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kRequestDesktopSiteDefaultsDowngrade,
     &kRequestDesktopSiteDefaultsLogging,
     &kRestoreTabsOnFRE,
-    &kSafeModeForCachedFlags,
     &kSearchEnginesPromoV3,
     &kShowScrollableMVTOnNTPAndroid,
     &kFeedPositionAndroid,
@@ -999,10 +998,6 @@ BASE_FEATURE(kRequestDesktopSiteDefaultsLogging,
 BASE_FEATURE(kRestoreTabsOnFRE,
              "RestoreTabsOnFRE",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kSafeModeForCachedFlags,
-             "SafeModeForCachedFlags",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kScrollToTLDOptimization,
              "ScrollToTLDOptimization",

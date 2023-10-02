@@ -9902,11 +9902,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSafeBrowsingHashPrefixRealTimeLookupsName,
      flag_descriptions::kSafeBrowsingHashPrefixRealTimeLookupsDescription,
      kOsAndroid, FEATURE_VALUE_TYPE(safe_browsing::kHashPrefixRealTimeLookups)},
-
-    {"safe-mode-for-cached-flags",
-     flag_descriptions::kSafeModeForCachedFlagsName,
-     flag_descriptions::kSafeModeForCachedFlagsDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kSafeModeForCachedFlags)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)

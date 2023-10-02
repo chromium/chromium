@@ -4343,11 +4343,6 @@ const char kSafeBrowsingHashPrefixRealTimeLookupsDescription[] =
     "Enable checking URLs through Safe Browsing hash-prefix real time "
     "protocol.";
 
-const char kSafeModeForCachedFlagsName[] = "Safe Mode for Cached Flags";
-const char kSafeModeForCachedFlagsDescription[] =
-    "Attempts recovery from startup crash loops caused by a bad field trial "
-    "by rolling back to previous known safe flag values.";
-
 const char kSafeSitesFilterBehaviorPolicyAndroidName[] =
     "Allow SafeSitesFilterBehavior policy on Android";
 const char kSafeSitesFilterBehaviorPolicyAndroidDescription[] =
