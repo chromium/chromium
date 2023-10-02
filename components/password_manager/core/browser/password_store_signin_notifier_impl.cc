@@ -30,11 +30,11 @@ void PasswordStoreSigninNotifierImpl::UnsubscribeFromSigninEvents() {
 
 void PasswordStoreSigninNotifierImpl::NotifySignedOut(
     const std::string& username,
-    bool primary_account) {
+    bool syncing_account) {
   if (!reuse_manager_)
     return;
 
-  if (primary_account) {
+  if (syncing_account) {
     metrics_util::LogGaiaPasswordHashChange(
         metrics_util::GaiaPasswordHashChange::CLEARED_ON_CHROME_SIGNOUT,
         /*is_sync_password=*/true);
@@ -50,20 +50,28 @@ void PasswordStoreSigninNotifierImpl::NotifySignedOut(
 // IdentityManager::Observer implementation.
 void PasswordStoreSigninNotifierImpl::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event) {
+  // TODO(crbug.com/1462978): Remove this code when ConsentLevel::kSync is
+  // deleted (since kSignin users are handled by
+  // OnExtendedAccountInfoRemoved()). See ConsentLevel::kSync documentation for
+  // details.
   if (event.GetEventTypeFor(signin::ConsentLevel::kSync) ==
       signin::PrimaryAccountChangeEvent::Type::kCleared) {
     NotifySignedOut(event.GetPreviousState().primary_account.email,
-                    /* primary_account= */ true);
+                    /*syncing_account=*/true);
   }
 }
 
 // IdentityManager::Observer implementation.
 void PasswordStoreSigninNotifierImpl::OnExtendedAccountInfoRemoved(
     const AccountInfo& info) {
-  // Only reacts to content area (non-primary) Gaia account sign-out event.
+  // Only react to non-syncing Gaia account sign-out event - the syncing
+  // account is handled separately in OnPrimaryAccountChanged().
+  // TODO(crbug.com/1462978): Remove the not-kSync check when
+  // ConsentLevel::kSync is deleted. See ConsentLevel::kSync documentation for
+  // details.
   if (info.account_id !=
       identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSync)) {
-    NotifySignedOut(info.email, /* primary_account= */ false);
+    NotifySignedOut(info.email, /*syncing_account=*/false);
   }
 }
 
