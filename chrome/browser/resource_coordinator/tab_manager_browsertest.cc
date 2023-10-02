@@ -417,6 +417,8 @@ IN_PROC_BROWSER_TEST_F(TabManagerTest, ProtectPDFPages) {
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 // Makes sure that recently opened or used tabs are protected.
+// These protections only apply on non-Ash desktop platforms. Check
+// TabLifecycleUnit::CanDiscard for more details.
 IN_PROC_BROWSER_TEST_F(TabManagerTest,
                        ProtectRecentlyUsedTabsFromUrgentDiscarding) {
   TabManager* tab_manager = g_browser_process->GetTabManager();
@@ -985,8 +987,15 @@ IN_PROC_BROWSER_TEST_F(TabManagerTest, MAYBE_DiscardTabsWithOccludedWindow) {
 // On ChromeOS, active tabs are discarded if their window is non-visible. On
 // other platforms, they are never discarded.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  EXPECT_TRUE(
-      IsTabDiscarded(browser()->tab_strip_model()->GetWebContentsAt(0)));
+  if (base::FeatureList::IsEnabled(
+          performance_manager::features::
+              kAshUrgentDiscardingFromPerformanceManager)) {
+    EXPECT_FALSE(
+        IsTabDiscarded(browser()->tab_strip_model()->GetWebContentsAt(0)));
+  } else {
+    EXPECT_TRUE(
+        IsTabDiscarded(browser()->tab_strip_model()->GetWebContentsAt(0)));
+  }
 #else
   EXPECT_FALSE(
       IsTabDiscarded(browser()->tab_strip_model()->GetWebContentsAt(0)));
