@@ -15,7 +15,7 @@
 namespace autofill {
 
 namespace {
-constexpr absl::string_view kTestNumber = "4234567890123456";
+constexpr std::string_view kTestNumber = "4234567890123456";
 constexpr int64_t kTestBillingCustomerNumber = 123456;
 }  // namespace
 
