@@ -1829,6 +1829,7 @@
     },
     {
       name: "FontPaletteAnimation",
+      status: "experimental",
     },
     {
       name: "FontSrcLocalMatching",

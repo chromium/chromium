@@ -2341,20 +2341,6 @@
     "expires": "Dec 1, 2023"
   },
   {
-    "prefix": "font-palette-animation",
-    "platforms": ["Linux"],
-    "bases": [
-      "wpt_internal/css/css-fonts/animations",
-      "wpt_internal/css/css-fonts/palette-mix-computed.tentative.html"
-    ],
-    "exclusive_tests": "ALL",
-    "args": [
-      "--enable-blink-features=FontPaletteAnimation",
-      "--disable-threaded-compositing", "--disable-threaded-animation"
-    ],
-    "expires": "Dec 1, 2023"
-  },
-  {
     "prefix": "soft-navigation-fp-fcp",
     "platforms": ["Linux"],
     "bases": [
