@@ -111,6 +111,7 @@ import org.chromium.chrome.features.start_surface.StartSurface;
 import org.chromium.chrome.features.start_surface.StartSurfaceUserData;
 import org.chromium.components.browser_ui.accessibility.PageZoomCoordinator;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
+import org.chromium.components.browser_ui.util.ComposedBrowserControlsVisibilityDelegate;
 import org.chromium.components.browser_ui.widget.InsetObserverView;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.browser_ui.widget.TouchEventObserver;
@@ -153,6 +154,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private NotificationPermissionController mNotificationPermissionController;
     private HistoryNavigationCoordinator mHistoryNavigationCoordinator;
     private NavigationSheet mNavigationSheet;
+    private ComposedBrowserControlsVisibilityDelegate mAppBrowserControlsVisibilityDelegate;
     private LayoutManagerImpl mLayoutManager;
     private CommerceSubscriptionsService mCommerceSubscriptionsService;
     private UndoGroupSnackbarController mUndoGroupSnackbarController;
@@ -883,6 +885,16 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         if (mToolbarManager.getOmniboxStub() != null) {
             mToolbarManager.getOmniboxStub().addUrlFocusChangeListener(mUrlFocusChangeListener);
         }
+    }
+
+    /**
+     * @return {@link ComposedBrowserControlsVisibilityDelegate} object for tabbed activity.
+     */
+    public ComposedBrowserControlsVisibilityDelegate getAppBrowserControlsVisibilityDelegate() {
+        if (mAppBrowserControlsVisibilityDelegate == null) {
+            mAppBrowserControlsVisibilityDelegate = new ComposedBrowserControlsVisibilityDelegate();
+        }
+        return mAppBrowserControlsVisibilityDelegate;
     }
 
     public StatusIndicatorCoordinator getStatusIndicatorCoordinatorForTesting() {

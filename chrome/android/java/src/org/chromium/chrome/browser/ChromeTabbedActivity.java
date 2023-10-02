@@ -114,6 +114,7 @@ import org.chromium.chrome.browser.metrics.AndroidSessionDurationsServiceState;
 import org.chromium.chrome.browser.metrics.LaunchMetrics;
 import org.chromium.chrome.browser.metrics.MainIntentBehaviorMetrics;
 import org.chromium.chrome.browser.modaldialog.ChromeTabModalPresenter;
+import org.chromium.chrome.browser.modaldialog.TabModalLifetimeHandler;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceChromeTabbedActivity;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
@@ -219,6 +220,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.PageTransition;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.widget.Toast;
 
 import java.lang.annotation.Retention;
@@ -298,6 +300,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     private HistoricalTabModelObserver mHistoricalTabModelObserver;
 
     private BrowserControlsVisibilityDelegate mVrBrowserControlsVisibilityDelegate;
+    private TabModalLifetimeHandler mTabModalHandler;
 
     private boolean mUIWithNativeInitialized;
 
@@ -2266,7 +2269,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     }
 
     private void onOmniboxFocusChanged(boolean hasFocus) {
-        getTabModalLifetimeHandler().onOmniboxFocusChanged(hasFocus);
+        mTabModalHandler.onOmniboxFocusChanged(hasFocus);
     }
 
     private void recordLauncherShortcutAction(boolean isIncognito) {
@@ -2294,7 +2297,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             return true;
         }
 
-        if (getTabModalLifetimeHandler().onBackPressed()) {
+        if (mTabModalHandler.onBackPressed()) {
             BackPressManager.record(BackPressHandler.Type.TAB_MODAL_HANDLER);
             return true;
         }
@@ -2898,7 +2901,21 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     }
 
     private ComposedBrowserControlsVisibilityDelegate getAppBrowserControlsVisibilityDelegate() {
-        return mRootUiCoordinator.getAppBrowserControlsVisibilityDelegate();
+        // TODO(jinsukkim): Move this to RootUiCoordinator.
+        return ((TabbedRootUiCoordinator) mRootUiCoordinator)
+                .getAppBrowserControlsVisibilityDelegate();
+    }
+
+    @Override
+    protected ModalDialogManager createModalDialogManager() {
+        ModalDialogManager manager = super.createModalDialogManager();
+        // TODO(crbug.com/1157310): Transition this::method refs to dedicated suppliers.
+        mTabModalHandler = new TabModalLifetimeHandler(this, getLifecycleDispatcher(), manager,
+                this::getAppBrowserControlsVisibilityDelegate, this::getTabObscuringHandler,
+                this::getToolbarManager, getContextualSearchManagerSupplier(),
+                getTabModelSelectorSupplier(), this::getBrowserControlsManager,
+                this::getFullscreenManager, mBackPressManager);
+        return manager;
     }
 
     // App Menu related code -----------------------------------------------------------------------

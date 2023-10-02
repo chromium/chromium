@@ -160,7 +160,6 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.ExpandedSheetHelper;
 import org.chromium.components.browser_ui.bottomsheet.ManagedBottomSheetController;
-import org.chromium.components.browser_ui.util.ComposedBrowserControlsVisibilityDelegate;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
@@ -330,7 +329,6 @@ public class RootUiCoordinator
             new OneshotSupplierImpl<>();
     private FoldTransitionController mFoldTransitionController;
     private RestoreTabsFeatureHelper mRestoreTabsFeatureHelper;
-    private ComposedBrowserControlsVisibilityDelegate mAppBrowserControlsVisibilityDelegate;
 
     /**
      * Create a new {@link RootUiCoordinator} for the given activity.
@@ -1591,16 +1589,6 @@ public class RootUiCoordinator
      */
     public @Nullable FindToolbarManager getFindToolbarManager() {
         return mFindToolbarManager;
-    }
-
-    /**
-     * @return {@link ComposedBrowserControlsVisibilityDelegate} object for tabbed activity.
-     */
-    public ComposedBrowserControlsVisibilityDelegate getAppBrowserControlsVisibilityDelegate() {
-        if (mAppBrowserControlsVisibilityDelegate == null) {
-            mAppBrowserControlsVisibilityDelegate = new ComposedBrowserControlsVisibilityDelegate();
-        }
-        return mAppBrowserControlsVisibilityDelegate;
     }
 
     /**
