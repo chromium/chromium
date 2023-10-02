@@ -4253,18 +4253,6 @@
       typedom_types: ["Keyword", "Length"],
     },
     {
-      name: "scroll-customization",
-      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
-      converter: "ConvertFlags<blink::scroll_customization::ScrollDirection>",
-      type_name: "scroll_customization::ScrollDirection",
-      field_group: "*",
-      field_size: 4,
-      field_template: "primitive",
-      default_value: "scroll_customization::kScrollDirectionNone",
-      include_paths: ["third_party/blink/renderer/core/scroll/scroll_customization.h"],
-      runtime_flag: "ScrollCustomization",
-    },
-    {
       name: "scroll-margin-block-start",
       property_methods: ["ParseSingleValue"],
       logical_property_group: {

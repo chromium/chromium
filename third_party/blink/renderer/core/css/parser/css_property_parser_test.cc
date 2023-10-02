@@ -332,51 +332,6 @@ TEST(CSSPropertyParserTest, ClipPathEllipse) {
   EXPECT_TRUE(doc->IsUseCounted(WebFeature::kBasicShapeEllipseNoRadius));
 }
 
-TEST(CSSPropertyParserTest, ScrollCustomizationPropertySingleValue) {
-  ScopedScrollCustomizationForTest scoped_feature(true);
-  const CSSValue* value = CSSParser::ParseSingleValue(
-      CSSPropertyID::kScrollCustomization, "pan-down",
-      StrictCSSParserContext(SecureContextMode::kSecureContext));
-  const auto* list = To<CSSValueList>(value);
-  EXPECT_EQ(1U, list->length());
-  EXPECT_EQ(CSSValueID::kPanDown,
-            To<CSSIdentifierValue>(list->Item(0U)).GetValueID());
-}
-
-TEST(CSSPropertyParserTest, ScrollCustomizationPropertyTwoValuesCombined) {
-  ScopedScrollCustomizationForTest scoped_feature(true);
-  const CSSValue* value = CSSParser::ParseSingleValue(
-      CSSPropertyID::kScrollCustomization, "pan-left pan-y",
-      StrictCSSParserContext(SecureContextMode::kSecureContext));
-  const auto* list = To<CSSValueList>(value);
-  EXPECT_EQ(2U, list->length());
-  EXPECT_EQ(CSSValueID::kPanLeft,
-            To<CSSIdentifierValue>(list->Item(0U)).GetValueID());
-  EXPECT_EQ(CSSValueID::kPanY,
-            To<CSSIdentifierValue>(list->Item(1U)).GetValueID());
-}
-
-TEST(CSSPropertyParserTest, ScrollCustomizationPropertyInvalidEntries) {
-  // We expect exactly one property value per coordinate.
-  ScopedScrollCustomizationForTest scoped_feature(true);
-  const CSSValue* value = CSSParser::ParseSingleValue(
-      CSSPropertyID::kScrollCustomization, "pan-left pan-right",
-      StrictCSSParserContext(SecureContextMode::kSecureContext));
-  EXPECT_FALSE(value);
-  value = CSSParser::ParseSingleValue(
-      CSSPropertyID::kScrollCustomization, "pan-up pan-down",
-      StrictCSSParserContext(SecureContextMode::kSecureContext));
-  EXPECT_FALSE(value);
-  value = CSSParser::ParseSingleValue(
-      CSSPropertyID::kScrollCustomization, "pan-x pan-left",
-      StrictCSSParserContext(SecureContextMode::kSecureContext));
-  EXPECT_FALSE(value);
-  value = CSSParser::ParseSingleValue(
-      CSSPropertyID::kScrollCustomization, "pan-x pan-x",
-      StrictCSSParserContext(SecureContextMode::kSecureContext));
-  EXPECT_FALSE(value);
-}
-
 TEST(CSSPropertyParserTest, GradientUseCount) {
   auto dummy_page_holder =
       std::make_unique<DummyPageHolder>(gfx::Size(800, 600));

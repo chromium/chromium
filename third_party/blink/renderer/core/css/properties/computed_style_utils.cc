@@ -3953,43 +3953,6 @@ CSSValueList* ComputedStyleUtils::ValuesForContainerShorthand(
   return list;
 }
 
-// Returns up to two values for 'scroll-customization' property. The values
-// correspond to the customization values for 'x' and 'y' axes.
-CSSValue* ComputedStyleUtils::ScrollCustomizationFlagsToCSSValue(
-    scroll_customization::ScrollDirection scroll_customization) {
-  CSSValueList* list = CSSValueList::CreateSpaceSeparated();
-  if (scroll_customization == scroll_customization::kScrollDirectionAuto) {
-    list->Append(*CSSIdentifierValue::Create(CSSValueID::kAuto));
-  } else if (scroll_customization ==
-             scroll_customization::kScrollDirectionNone) {
-    list->Append(*CSSIdentifierValue::Create(CSSValueID::kNone));
-  } else {
-    if ((scroll_customization & scroll_customization::kScrollDirectionPanX) ==
-        scroll_customization::kScrollDirectionPanX) {
-      list->Append(*CSSIdentifierValue::Create(CSSValueID::kPanX));
-    } else if (scroll_customization &
-               scroll_customization::kScrollDirectionPanLeft) {
-      list->Append(*CSSIdentifierValue::Create(CSSValueID::kPanLeft));
-    } else if (scroll_customization &
-               scroll_customization::kScrollDirectionPanRight) {
-      list->Append(*CSSIdentifierValue::Create(CSSValueID::kPanRight));
-    }
-    if ((scroll_customization & scroll_customization::kScrollDirectionPanY) ==
-        scroll_customization::kScrollDirectionPanY) {
-      list->Append(*CSSIdentifierValue::Create(CSSValueID::kPanY));
-    } else if (scroll_customization &
-               scroll_customization::kScrollDirectionPanUp) {
-      list->Append(*CSSIdentifierValue::Create(CSSValueID::kPanUp));
-    } else if (scroll_customization &
-               scroll_customization::kScrollDirectionPanDown) {
-      list->Append(*CSSIdentifierValue::Create(CSSValueID::kPanDown));
-    }
-  }
-
-  DCHECK(list->length());
-  return list;
-}
-
 CSSValue* ComputedStyleUtils::ValueForGapLength(
     const absl::optional<Length>& gap_length,
     const ComputedStyle& style) {

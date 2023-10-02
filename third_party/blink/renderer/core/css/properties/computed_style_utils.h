@@ -316,8 +316,6 @@ class CORE_EXPORT ComputedStyleUtils {
   static CSSValueList* ValuesForContainerShorthand(const ComputedStyle&,
                                                    const LayoutObject*,
                                                    bool allow_visited_style);
-  static CSSValue* ScrollCustomizationFlagsToCSSValue(
-      scroll_customization::ScrollDirection);
   static CSSValue* ValueForGapLength(const absl::optional<Length>&,
                                      const ComputedStyle&);
   static CSSValue* ValueForStyleName(const StyleName&);

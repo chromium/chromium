@@ -6945,65 +6945,6 @@ const CSSValue* ScrollBehavior::CSSValueFromComputedStyleInternal(
   return CSSIdentifierValue::Create(style.GetScrollBehavior());
 }
 
-namespace {
-
-static bool ConsumePan(CSSParserTokenRange& range,
-                       CSSValue** pan_x,
-                       CSSValue** pan_y) {
-  CSSValueID id = range.Peek().Id();
-  if ((id == CSSValueID::kPanX || id == CSSValueID::kPanRight ||
-       id == CSSValueID::kPanLeft) &&
-      !*pan_x) {
-    *pan_x = css_parsing_utils::ConsumeIdent(range);
-  } else if ((id == CSSValueID::kPanY || id == CSSValueID::kPanDown ||
-              id == CSSValueID::kPanUp) &&
-             !*pan_y) {
-    *pan_y = css_parsing_utils::ConsumeIdent(range);
-  } else {
-    return false;
-  }
-  return true;
-}
-
-}  // namespace
-
-const CSSValue* ScrollCustomization::ParseSingleValue(
-    CSSParserTokenRange& range,
-    const CSSParserContext& context,
-    const CSSParserLocalContext&) const {
-  CSSValueList* list = CSSValueList::CreateSpaceSeparated();
-  CSSValueID id = range.Peek().Id();
-  if (id == CSSValueID::kAuto || id == CSSValueID::kNone) {
-    list->Append(*css_parsing_utils::ConsumeIdent(range));
-    return list;
-  }
-
-  CSSValue* pan_x = nullptr;
-  CSSValue* pan_y = nullptr;
-  if (!ConsumePan(range, &pan_x, &pan_y)) {
-    return nullptr;
-  }
-  if (!range.AtEnd() && !ConsumePan(range, &pan_x, &pan_y)) {
-    return nullptr;
-  }
-
-  if (pan_x) {
-    list->Append(*pan_x);
-  }
-  if (pan_y) {
-    list->Append(*pan_y);
-  }
-  return list;
-}
-
-const CSSValue* ScrollCustomization::CSSValueFromComputedStyleInternal(
-    const ComputedStyle& style,
-    const LayoutObject*,
-    bool allow_visited_style) const {
-  return ComputedStyleUtils::ScrollCustomizationFlagsToCSSValue(
-      style.ScrollCustomization());
-}
-
 const CSSValue* ScrollMarginBlockEnd::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
