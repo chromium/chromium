@@ -2080,8 +2080,6 @@ component("ash") {
     "system/toast/toast_overlay.h",
     "system/tracing_notification_controller.cc",
     "system/tracing_notification_controller.h",
-    "system/tray/actionable_view.cc",
-    "system/tray/actionable_view.h",
     "system/tray/detailed_view_delegate.cc",
     "system/tray/detailed_view_delegate.h",
     "system/tray/fake_detailed_view_delegate.cc",

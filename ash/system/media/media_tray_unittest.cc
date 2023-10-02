@@ -208,7 +208,6 @@ TEST_F(MediaTrayTest, ShowEmptyStateWhenNoActiveNotification) {
 
   // Tap and show bubble.
   GestureTapOn(media_tray());
-
   EXPECT_NE(GetBubbleWrapper(), nullptr);
   EXPECT_TRUE(media_tray()->is_active());
 

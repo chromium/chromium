@@ -7,13 +7,14 @@
 
 #include <memory>
 
-#include "ash/system/tray/actionable_view.h"
+#include "ash/ash_export.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/font.h"
 #include "ui/gfx/text_constants.h"
+#include "ui/views/controls/button/button.h"
 
 namespace views {
 class Border;
@@ -28,7 +29,7 @@ class ViewClickListener;
 // A view that changes background color on hover, and triggers a callback in the
 // associated ViewClickListener on click. The view can also be forced to
 // maintain a fixed height.
-class ASH_EXPORT HoverHighlightView : public ActionableView {
+class ASH_EXPORT HoverHighlightView : public views::Button {
  public:
   enum class AccessibilityState {
     // The default accessibility view.
@@ -121,8 +122,7 @@ class ASH_EXPORT HoverHighlightView : public ActionableView {
  private:
   friend class TrayAccessibilityTest;
 
-  // ActionableView:
-  bool PerformAction(const ui::Event& event) override;
+  void PerformAction();
 
   // views::View:
   gfx::Size CalculatePreferredSize() const override;

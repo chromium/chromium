@@ -133,12 +133,10 @@ class CalendarViewEventListViewTest : public AshTestBase,
         ->GetText();
   }
 
-  ActionableView* GetActionableView(int child_index) {
+  views::View* GetHighlightView(int child_index) {
     return features::IsCalendarJellyEnabled()
-               ? static_cast<ActionableView*>(
-                     GetSameDayEventsContainer()->children()[child_index])
-               : static_cast<ActionableView*>(
-                     content_view()->children()[child_index]);
+               ? GetSameDayEventsContainer()->children()[child_index]
+               : content_view()->children()[child_index];
   }
 
   size_t GetContentViewSize() {
@@ -232,7 +230,7 @@ TEST_P(CalendarViewEventListViewTest, LaunchItem) {
   EXPECT_EQ(3u, GetContentViewSize());
 
   // Launch the first item.
-  ActionableView* first_item = GetActionableView(0);
+  views::View* first_item = GetHighlightView(0);
   first_item->AcceleratorPressed(
       ui::Accelerator(ui::KeyboardCode::VKEY_SPACE, /*modifiers=*/0));
 

@@ -14,9 +14,9 @@
 #include "ash/style/typography.h"
 #include "ash/system/model/locale_model.h"
 #include "ash/system/model/system_tray_model.h"
-#include "ash/system/tray/actionable_view.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/i18n/case_conversion.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
@@ -43,7 +43,7 @@ namespace {
 // portion of |iso_code| is shown at the beginning of the row, and
 // |display_name| is shown in the middle. A checkmark is shown in the end if
 // |checked| is true.
-class LocaleItemView : public ActionableView {
+class LocaleItemView : public views::Button {
  public:
   METADATA_HEADER(LocaleItemView);
 
@@ -51,10 +51,10 @@ class LocaleItemView : public ActionableView {
                  const std::string& iso_code,
                  const std::u16string& display_name,
                  bool checked)
-      : ActionableView(TrayPopupInkDropStyle::FILL_BOUNDS),
-        locale_detailed_view_(locale_detailed_view),
-        checked_(checked) {
-    views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
+      : locale_detailed_view_(locale_detailed_view), checked_(checked) {
+    SetCallback(base::BindRepeating(&LocaleItemView::PerformAction,
+                                    base::Unretained(this)));
+    TrayPopupUtils::ConfigureRowButtonInkdrop(views::InkDrop::Get(this));
 
     TriView* tri_view = TrayPopupUtils::CreateDefaultRowView(
         /*use_wide_layout=*/false);
@@ -107,20 +107,18 @@ class LocaleItemView : public ActionableView {
   LocaleItemView& operator=(const LocaleItemView&) = delete;
   ~LocaleItemView() override = default;
 
-  // ActionableView:
-  bool PerformAction(const ui::Event& event) override {
+  void PerformAction(const ui::Event& event) {
     locale_detailed_view_->HandleViewClicked(this);
-    return true;
   }
 
   // views::View:
   void OnFocus() override {
-    ActionableView::OnFocus();
+    views::Button::OnFocus();
     ScrollViewToVisible();
   }
 
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
-    ActionableView::GetAccessibleNodeData(node_data);
+    views::Button::GetAccessibleNodeData(node_data);
     node_data->role = ax::mojom::Role::kCheckBox;
     node_data->SetCheckedState(checked_ ? ax::mojom::CheckedState::kTrue
                                         : ax::mojom::CheckedState::kFalse);
@@ -131,7 +129,7 @@ class LocaleItemView : public ActionableView {
   const bool checked_;
 };
 
-BEGIN_METADATA(LocaleItemView, ActionableView)
+BEGIN_METADATA(LocaleItemView, views::Button)
 END_METADATA
 
 }  // namespace

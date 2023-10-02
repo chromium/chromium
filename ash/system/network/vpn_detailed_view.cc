@@ -26,7 +26,6 @@
 #include "ash/system/network/network_icon_animation_observer.h"
 #include "ash/system/network/tray_network_state_model.h"
 #include "ash/system/network/vpn_list.h"
-#include "ash/system/tray/actionable_view.h"
 #include "ash/system/tray/hover_highlight_view.h"
 #include "ash/system/tray/system_menu_button.h"
 #include "ash/system/tray/tray_popup_utils.h"
@@ -228,20 +227,22 @@ class VPNListProviderEntry : public views::View {
 BEGIN_METADATA(VPNListProviderEntry, views::View)
 END_METADATA
 
-// A view for a VPN provider with QsRevamp. Derives from ActionableView so the
+// A view for a VPN provider with QsRevamp. Derives from views::Button so the
 // entire row is clickable.
-class VPNListProviderEntryRevamp : public ActionableView {
+class VPNListProviderEntryRevamp : public views::Button {
  public:
   METADATA_HEADER(VPNListProviderEntryRevamp);
 
   VPNListProviderEntryRevamp(const VpnProviderPtr& vpn_provider,
                              const std::string& name,
                              bool enabled)
-      : ActionableView(TrayPopupInkDropStyle::FILL_BOUNDS),
-        vpn_provider_type_(vpn_provider->type),
+      : vpn_provider_type_(vpn_provider->type),
         vpn_provider_app_id_(vpn_provider->app_id) {
     DCHECK(features::IsQsRevampEnabled());
-    views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
+    SetCallback(base::BindRepeating(&VPNListProviderEntryRevamp::PerformAction,
+                                    base::Unretained(this)));
+    TrayPopupUtils::ConfigureRowButtonInkdrop(views::InkDrop::Get(this));
+    SetHasInkDropActionOnClick(true);
     // Disable focus on the row because we want the keyboard focus ring to
     // appear on the add network button.
     SetFocusBehavior(FocusBehavior::NEVER);
@@ -307,10 +308,8 @@ class VPNListProviderEntryRevamp : public ActionableView {
     tri_view->AddView(TriView::Container::END, add_vpn_button.release());
   }
 
-  // ActionableView:
-  bool PerformAction(const ui::Event& event) override {
+  void PerformAction() {
     ShowAddVpnDialog(vpn_provider_type_, vpn_provider_app_id_);
-    return true;
   }
 
  private:
@@ -318,7 +317,7 @@ class VPNListProviderEntryRevamp : public ActionableView {
   std::string vpn_provider_app_id_;
 };
 
-BEGIN_METADATA(VPNListProviderEntryRevamp, ActionableView)
+BEGIN_METADATA(VPNListProviderEntryRevamp, views::Button)
 END_METADATA
 
 // A list entry that represents a network. If the network is currently

@@ -20,6 +20,7 @@
 #include "ash/system/time/calendar_view_controller.h"
 #include "ash/system/time/event_date_formatter_util.h"
 #include "base/containers/fixed_flat_map.h"
+#include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "google_apis/calendar/calendar_api_response_types.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -181,11 +182,13 @@ CalendarEventListItemViewJelly::CalendarEventListItemViewJelly(
     google_apis::calendar::CalendarEvent event,
     UIParams ui_params,
     EventListItemIndex event_list_item_index)
-    : ActionableView(TrayPopupInkDropStyle::FILL_BOUNDS),
-      calendar_view_controller_(calendar_view_controller),
+    : calendar_view_controller_(calendar_view_controller),
       selected_date_params_(selected_date_params),
       event_url_(event.html_link()),
       video_conference_url_(event.conference_data_uri()) {
+  SetCallback(base::BindRepeating(
+      &CalendarEventListItemViewJelly::PerformAction, base::Unretained(this)));
+
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
   const auto [start_time, end_time] = calendar_utils::GetStartAndEndTime(
@@ -306,7 +309,7 @@ void CalendarEventListItemViewJelly::OnThemeChanged() {
       GetColorProvider()->GetColor(cros_tokens::kCrosSysSurface5)));
 }
 
-bool CalendarEventListItemViewJelly::PerformAction(const ui::Event& event) {
+void CalendarEventListItemViewJelly::PerformAction(const ui::Event& event) {
   DCHECK(event_url_.is_empty() || event_url_.is_valid());
 
   calendar_view_controller_->RecordEventListItemActivated(event);
@@ -317,7 +320,6 @@ bool CalendarEventListItemViewJelly::PerformAction(const ui::Event& event) {
   Shell::Get()->system_tray_model()->client()->ShowCalendarEvent(
       event_url_, selected_date_params_.selected_date_midnight, opened_pwa,
       finalized_url);
-  return true;
 }
 
 void CalendarEventListItemViewJelly::SetUpFocusHighlight(
@@ -333,7 +335,7 @@ void CalendarEventListItemViewJelly::SetUpFocusHighlight(
   views::HighlightPathGenerator::Install(
       this, std::make_unique<RoundedCornerHighlightPathGenerator>(
                 item_corner_radius));
-  // Unset the focus painter set by `ActionableView`.
+  // Unset the focus painter set by `HoverHighlightView`.
   SetFocusPainter(nullptr);
 }
 

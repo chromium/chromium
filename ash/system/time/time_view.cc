@@ -150,9 +150,7 @@ void VerticalDateView::UpdateIconAndLabelColorId(ui::ColorId color_id) {
 }
 
 TimeView::TimeView(ClockLayout clock_layout, ClockModel* model, Type type)
-    : ActionableView(TrayPopupInkDropStyle::INSET_BOUNDS),
-      model_(model),
-      type_(type) {
+    : model_(model), type_(type) {
   SetTimer(GetTimeToShow());
   SetFocusBehavior(FocusBehavior::NEVER);
   model_->AddObserver(this);
@@ -295,12 +293,8 @@ base::HourClockType TimeView::GetHourTypeForTesting() const {
   return model_->hour_clock_type();
 }
 
-bool TimeView::PerformAction(const ui::Event& event) {
-  return false;
-}
-
 void TimeView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  ActionableView::GetAccessibleNodeData(node_data);
+  views::View::GetAccessibleNodeData(node_data);
   node_data->role = ax::mojom::Role::kTime;
 }
 
@@ -454,7 +448,7 @@ void TimeView::SetTimer(const base::Time& now) {
                this, &TimeView::UpdateText);
 }
 
-BEGIN_METADATA(TimeView, ActionableView)
+BEGIN_METADATA(TimeView, views::View)
 END_METADATA
 
 }  // namespace ash

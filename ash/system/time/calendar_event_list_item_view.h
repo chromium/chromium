@@ -6,9 +6,9 @@
 #define ASH_SYSTEM_TIME_CALENDAR_EVENT_LIST_ITEM_VIEW_H_
 
 #include "ash/ash_export.h"
-#include "ash/system/tray/actionable_view.h"
 #include "base/memory/raw_ptr.h"
 #include "google_apis/calendar/calendar_api_response_types.h"
+#include "ui/views/controls/button/button.h"
 #include "url/gurl.h"
 
 namespace ui {
@@ -28,7 +28,7 @@ namespace ash {
 class CalendarViewController;
 
 // This view displays a calendar event entry.
-class ASH_EXPORT CalendarEventListItemView : public ActionableView {
+class ASH_EXPORT CalendarEventListItemView : public views::Button {
  public:
   METADATA_HEADER(CalendarEventListItemView);
 
@@ -42,8 +42,7 @@ class ASH_EXPORT CalendarEventListItemView : public ActionableView {
   // views::View:
   void OnThemeChanged() override;
 
-  // ActionableView:
-  bool PerformAction(const ui::Event& event) override;
+  void PerformAction(const ui::Event& event);
 
  private:
   friend class CalendarViewEventListViewTest;

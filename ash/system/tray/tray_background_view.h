@@ -35,11 +35,9 @@ class Shelf;
 class TrayContainer;
 
 // Base class for some children of StatusAreaWidget. This class handles setting
-// and animating the background when the Launcher is shown/hidden. It also
-// inherits from ActionableView so that the tray items can override
-// PerformAction when clicked on. Note that events targeting a
-// `TrayBackgroundView`'s view hierarchy are ignored while the
-// `TrayBackgroundView`'s hide animation is running.
+// and animating the background when the Launcher is shown/hidden. Note that
+// events targeting a `TrayBackgroundView`'s view hierarchy are ignored while
+// the `TrayBackgroundView`'s hide animation is running.
 class ASH_EXPORT TrayBackgroundView : public views::Button,
                                       public views::ContextMenuController,
                                       public ShelfBackgroundAnimatorObserver,

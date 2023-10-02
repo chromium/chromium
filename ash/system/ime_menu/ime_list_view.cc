@@ -22,7 +22,6 @@
 #include "ash/style/rounded_container.h"
 #include "ash/style/switch.h"
 #include "ash/style/typography.h"
-#include "ash/system/tray/actionable_view.h"
 #include "ash/system/tray/system_menu_button.h"
 #include "ash/system/tray/tray_detailed_view.h"
 #include "ash/system/tray/tray_popup_utils.h"
@@ -44,6 +43,7 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
+#include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/toggle_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -61,7 +61,7 @@ const int kMinFontSizeDelta = -10;
 
 // Represents a row in the scrollable IME list; each row is either an IME or
 // an IME property. A checkmark icon is shown in the row if selected.
-class ImeListItemView : public ActionableView {
+class ImeListItemView : public views::Button {
  public:
   METADATA_HEADER(ImeListItemView);
 
@@ -70,10 +70,13 @@ class ImeListItemView : public ActionableView {
                   const std::u16string& label,
                   bool selected,
                   const ui::ColorId button_color_id)
-      : ActionableView(TrayPopupInkDropStyle::FILL_BOUNDS),
-        ime_list_view_(list_view),
-        selected_(selected) {
-    views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
+      : ime_list_view_(list_view), selected_(selected) {
+    SetCallback(base::BindRepeating(&ImeListItemView::PerformAction,
+                                    base::Unretained(this)));
+    TrayPopupUtils::ConfigureRowButtonInkdrop(views::InkDrop::Get(this));
+    SetHasInkDropActionOnClick(true);
+
+    views::FocusRing::Get(this)->SetColorId(cros_tokens::kCrosSysFocusRing);
 
     const bool is_qs_revamp = features::IsQsRevampEnabled();
     const bool is_jelly_enabled = chromeos::features::IsJellyEnabled();
@@ -136,26 +139,25 @@ class ImeListItemView : public ActionableView {
   ImeListItemView& operator=(const ImeListItemView&) = delete;
   ~ImeListItemView() override = default;
 
-  // ActionableView:
-  bool PerformAction(const ui::Event& event) override {
-    ime_list_view_->set_last_item_selected_with_keyboard(
-        ime_list_view_->should_focus_ime_after_selection_with_keyboard() &&
-        event.type() == ui::EventType::ET_KEY_PRESSED);
-    ime_list_view_->HandleViewClicked(this);
-    return true;
-  }
-
+  // views::Button:
   void OnFocus() override {
-    ActionableView::OnFocus();
+    views::Button::OnFocus();
     if (ime_list_view_)
       ime_list_view_->ScrollItemToVisible(this);
   }
 
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
-    ActionableView::GetAccessibleNodeData(node_data);
+    views::Button::GetAccessibleNodeData(node_data);
     node_data->role = ax::mojom::Role::kCheckBox;
     node_data->SetCheckedState(selected_ ? ax::mojom::CheckedState::kTrue
                                          : ax::mojom::CheckedState::kFalse);
+  }
+
+  void PerformAction(const ui::Event& event) {
+    ime_list_view_->set_last_item_selected_with_keyboard(
+        ime_list_view_->should_focus_ime_after_selection_with_keyboard() &&
+        event.type() == ui::EventType::ET_KEY_PRESSED);
+    ime_list_view_->HandleViewClicked(this);
   }
 
  private:
@@ -163,7 +165,7 @@ class ImeListItemView : public ActionableView {
   bool selected_;
 };
 
-BEGIN_METADATA(ImeListItemView, ActionableView)
+BEGIN_METADATA(ImeListItemView, views::Button)
 END_METADATA
 
 }  // namespace

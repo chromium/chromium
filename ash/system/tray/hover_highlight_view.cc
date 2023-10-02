@@ -10,22 +10,28 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
+#include "ash/style/style_util.h"
 #include "ash/style/typography.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_popup_utils.h"
+#include "ash/system/tray/tray_utils.h"
 #include "ash/system/tray/tri_view.h"
 #include "ash/system/tray/unfocusable_label.h"
 #include "ash/system/tray/view_click_listener.h"
+#include "base/functional/bind.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
-#include "ui/gfx/canvas.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/animation/ink_drop.h"
+#include "ui/views/animation/ink_drop_highlight.h"
+#include "ui/views/animation/ink_drop_state.h"
 #include "ui/views/border.h"
+#include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
@@ -34,10 +40,17 @@
 
 namespace ash {
 
+// TODO(https://b/302232457): Rename this class since UX no longer requires a
+// highlight to be shown when this view has a mouse hovered on it.
 HoverHighlightView::HoverHighlightView(ViewClickListener* listener)
-    : ActionableView(TrayPopupInkDropStyle::FILL_BOUNDS), listener_(listener) {
-  SetNotifyEnterExitOnChild(true);
-  views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
+    : listener_(listener) {
+  SetCallback(base::BindRepeating(&HoverHighlightView::PerformAction,
+                                  base::Unretained(this)));
+
+  TrayPopupUtils::ConfigureRowButtonInkdrop(views::InkDrop::Get(this));
+  SetHasInkDropActionOnClick(true);
+  SetFocusPainter(TrayPopupUtils::CreateFocusPainter());
+  views::FocusRing::Get(this)->SetColorId(cros_tokens::kCrosSysFocusRing);
 }
 
 HoverHighlightView::~HoverHighlightView() = default;
@@ -244,12 +257,12 @@ void HoverHighlightView::OnSetTooltipText(const std::u16string& tooltip_text) {
   }
 }
 
-bool HoverHighlightView::PerformAction(const ui::Event& event) {
+void HoverHighlightView::PerformAction() {
   if (!listener_) {
-    return false;
+    return;
   }
+
   listener_->OnViewClicked(this);
-  return true;
 }
 
 void HoverHighlightView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
@@ -266,7 +279,7 @@ void HoverHighlightView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
     node_data->SetDescription(
         l10n_util::GetStringUTF16(IDS_ASH_A11Y_ROLE_BUTTON));
   } else {
-    ActionableView::GetAccessibleNodeData(node_data);
+    views::Button::GetAccessibleNodeData(node_data);
   }
 
   ax::mojom::CheckedState checked_state;
@@ -285,7 +298,7 @@ void HoverHighlightView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 }
 
 gfx::Size HoverHighlightView::CalculatePreferredSize() const {
-  gfx::Size size = ActionableView::CalculatePreferredSize();
+  gfx::Size size = views::Button::CalculatePreferredSize();
 
   if (!expandable_ || size.height() < kTrayPopupItemMinHeight) {
     size.set_height(kTrayPopupItemMinHeight);
@@ -300,7 +313,7 @@ int HoverHighlightView::GetHeightForWidth(int width) const {
 
 void HoverHighlightView::OnFocus() {
   ScrollRectToVisible(gfx::Rect(gfx::Point(), size()));
-  ActionableView::OnFocus();
+  views::Button::OnFocus();
 }
 
 void HoverHighlightView::AddSubRowContainer() {
@@ -326,7 +339,7 @@ void HoverHighlightView::OnEnabledChanged() {
   }
 }
 
-BEGIN_METADATA(HoverHighlightView, ActionableView)
+BEGIN_METADATA(HoverHighlightView, views::Button)
 END_METADATA
 
 }  // namespace ash

@@ -163,11 +163,12 @@ const std::u16string GetFormattedInterval(base::Time start_time,
 CalendarEventListItemView::CalendarEventListItemView(
     CalendarViewController* calendar_view_controller,
     google_apis::calendar::CalendarEvent event)
-    : ActionableView(TrayPopupInkDropStyle::FILL_BOUNDS),
-      calendar_view_controller_(calendar_view_controller),
+    : calendar_view_controller_(calendar_view_controller),
       summary_(new views::Label()),
       time_range_(new views::Label()),
       event_url_(event.html_link()) {
+  SetCallback(base::BindRepeating(&CalendarEventListItemView::PerformAction,
+                                  base::Unretained(this)));
   SetLayoutManager(std::make_unique<views::FillLayout>());
   DCHECK(calendar_view_controller_->selected_date().has_value());
 
@@ -227,7 +228,7 @@ void CalendarEventListItemView::OnThemeChanged() {
   time_range_->SetEnabledColor(calendar_utils::GetPrimaryTextColor());
 }
 
-bool CalendarEventListItemView::PerformAction(const ui::Event& event) {
+void CalendarEventListItemView::PerformAction(const ui::Event& event) {
   DCHECK(event_url_.is_empty() || event_url_.is_valid());
 
   calendar_metrics::RecordEventListItemActivated(event);
@@ -239,7 +240,6 @@ bool CalendarEventListItemView::PerformAction(const ui::Event& event) {
   Shell::Get()->system_tray_model()->client()->ShowCalendarEvent(
       event_url_, calendar_view_controller_->selected_date_midnight(),
       opened_pwa, finalized_url);
-  return true;
 }
 
 BEGIN_METADATA(CalendarEventListItemView, views::View);

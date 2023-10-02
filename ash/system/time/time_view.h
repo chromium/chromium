@@ -9,7 +9,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/model/clock_observer.h"
-#include "ash/system/tray/actionable_view.h"
 #include "base/i18n/time_formatting.h"
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
@@ -17,6 +16,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/shadow_value.h"
+#include "ui/views/controls/button/button.h"
 #include "ui/views/view.h"
 
 namespace base {
@@ -59,7 +59,7 @@ class VerticalDateView : public views::View {
 
 // Tray view used to display the current date or time based on the passed in
 // `Type`. Exported for tests.
-class ASH_EXPORT TimeView : public ActionableView, public ClockObserver {
+class ASH_EXPORT TimeView : public views::View, public ClockObserver {
  public:
   METADATA_HEADER(TimeView);
 
@@ -112,9 +112,6 @@ class ASH_EXPORT TimeView : public ActionableView, public ClockObserver {
  private:
   friend class TimeViewTest;
   friend class TimeTrayItemViewTest;
-
-  // ActionableView:
-  bool PerformAction(const ui::Event& event) override;
 
   // views::View:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;

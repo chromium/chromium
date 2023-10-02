@@ -132,8 +132,11 @@ class ASH_EXPORT TrayPopupUtils {
   // Creates a default focus painter used for most things in tray popups.
   static std::unique_ptr<views::Painter> CreateFocusPainter();
 
-  // Sets up |view| to be a sticky header in a tray detail scroll view.
+  // Sets up `view` to be a sticky header in a tray detail scroll view.
   static void ConfigureAsStickyHeader(views::View* view);
+
+  // Sets up `ink_drop` according to jelly ux requirements for row buttons.
+  static void ConfigureRowButtonInkdrop(views::InkDropHost* ink_drop);
 
   // Creates a button for use in the system menu. For MD, this is a prominent
   // text

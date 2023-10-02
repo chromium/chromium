@@ -34,6 +34,7 @@
 #include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_utils.h"
+#include "ui/views/animation/ink_drop_host.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/md_text_button.h"
@@ -247,6 +248,12 @@ void TrayPopupUtils::ConfigureAsStickyHeader(views::View* view) {
       gfx::Insets::VH(kMenuSeparatorVerticalPadding, 0)));
   view->SetPaintToLayer();
   view->layer()->SetFillsBoundsOpaquely(false);
+}
+
+void TrayPopupUtils::ConfigureRowButtonInkdrop(views::InkDropHost* ink_drop) {
+  ink_drop->SetMode(views::InkDropHost::InkDropMode::ON);
+  ink_drop->SetVisibleOpacity(1.0f);  // The colors already contain opacity
+  ink_drop->SetBaseColorId(cros_tokens::kCrosSysRippleNeutralOnSubtle);
 }
 
 views::LabelButton* TrayPopupUtils::CreateTrayPopupButton(
