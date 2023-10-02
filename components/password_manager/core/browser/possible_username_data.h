@@ -46,7 +46,9 @@ struct PossibleUsernameFieldIdentifier {
   }
 
   friend bool operator==(const PossibleUsernameFieldIdentifier& lhs,
-                         const PossibleUsernameFieldIdentifier& rhs) = default;
+                         const PossibleUsernameFieldIdentifier& rhs) {
+    return lhs.driver_id == rhs.driver_id && lhs.renderer_id == rhs.renderer_id;
+  }
 };
 
 // Contains information that the user typed in a text field. It might be the
