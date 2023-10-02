@@ -738,3 +738,52 @@
         const clipRegion = new Path2D();
         clipRegion.rect(20, 20, 160, 160);
         ctx.clip(clipRegion);
+
+- name: 2d.layer.shadow-from-outside-canvas
+  desc: Checks shadow produced by object drawn outside the canvas
+  size: [200, 200]
+  code: |
+    {{ distance }}
+
+    {{ clipping }}
+
+    ctx.beginLayer({filter: [
+        {name: 'dropShadow', dx: -({{ size[0] }} + delta),
+          dy: -({{ size[1] }} + delta), stdDeviation: 0,
+          floodColor: 'green'},
+        ]});
+
+    ctx.fillStyle = 'red';
+    ctx.fillRect({{ size[0] }} + delta, {{ size[1] }} + delta, 100, 100);
+
+    ctx.endLayer();
+  reference: |
+    {{ distance }}
+
+    {{ clipping }}
+
+    ctx.fillStyle = 'green';
+    ctx.fillRect(0, 0, 100, 100);
+  variants:
+    short-distance:
+      distance: |-
+        const delta = 1;
+      clipping: // No clipping.
+    short-distance-with-clipping:
+      distance: |-
+        const delta = 1;
+      clipping: |-
+        const clipRegion = new Path2D();
+        clipRegion.rect(20, 20, 160, 160);
+        ctx.clip(clipRegion);
+    long-distance:
+      distance: |-
+        const delta = 10000;
+      clipping: // No clipping.
+    long-distance-with-clipping:
+      distance: |-
+        const delta = 10000;
+      clipping: |-
+        const clipRegion = new Path2D();
+        clipRegion.rect(20, 20, 160, 160);
+        ctx.clip(clipRegion);
