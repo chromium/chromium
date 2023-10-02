@@ -670,11 +670,16 @@ INSTANTIATE_TEST_SUITE_P(
                    enterprise_management::DevicePolicyRequest::UNSPECIFIED),
         std::tuple(PolicyFetchReason::kBrowserStart,
                    enterprise_management::DevicePolicyRequest::BROWSER_START),
+        std::tuple(PolicyFetchReason::kCrdHostPolicyWatcher,
+                   enterprise_management::DevicePolicyRequest::
+                       CRD_HOST_POLICY_WATCHER),
         std::tuple(
             PolicyFetchReason::kDeviceEnrollment,
             enterprise_management::DevicePolicyRequest::DEVICE_ENROLLMENT),
         std::tuple(PolicyFetchReason::kInvalidation,
                    enterprise_management::DevicePolicyRequest::INVALIDATION),
+        std::tuple(PolicyFetchReason::kLacros,
+                   enterprise_management::DevicePolicyRequest::LACROS),
         std::tuple(
             PolicyFetchReason::kRegistrationChanged,
             enterprise_management::DevicePolicyRequest::REGISTRATION_CHANGED),
@@ -717,7 +722,9 @@ INSTANTIATE_TEST_SUITE_P(
         std::tuple(PolicyFetchReason::kSignin,
                    enterprise_management::DevicePolicyRequest::SIGNIN),
         std::tuple(PolicyFetchReason::kTest,
-                   enterprise_management::DevicePolicyRequest::TEST)));
+                   enterprise_management::DevicePolicyRequest::TEST),
+        std::tuple(PolicyFetchReason::kUserRequest,
+                   enterprise_management::DevicePolicyRequest::USER_REQUEST)));
 
 TEST_F(CloudPolicyClientTest, SetupRegistrationAndPolicyFetchWithOAuthToken) {
   const em::DeviceManagementResponse policy_response = GetPolicyResponse();

@@ -26,6 +26,7 @@
 #include "components/policy/core/common/cloud/cloud_policy_validator.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/policy/core/common/cloud/dm_auth.h"
+#include "components/policy/core/common/policy_types.h"
 #include "components/policy/core/common/remote_commands/remote_command_job.h"
 #include "components/policy/policy_export.h"
 #include "components/policy/proto/device_management_backend.pb.h"
@@ -46,28 +47,6 @@ class DMServerJobConfiguration;
 class RegistrationJobConfiguration;
 class SigningService;
 struct DMServerJobResult;
-
-enum class PolicyFetchReason {
-  kUnspecified,
-  kBrowserStart,
-  kDeviceEnrollment,
-  kInvalidation,
-  kRegistrationChanged,
-  kRetryAfterStatusServiceActivationPending,
-  kRetryAfterStatusServicePolicyNotFound,
-  kRetryAfterStatusServiceTooManyRequests,
-  kRetryAfterStatusRequestFailed,
-  kRetryAfterStatusTemporaryUnavailable,
-  kRetryAfterStatusCannotSignRequest,
-  kRetryAfterStatusRequestInvalid,
-  kRetryAfterStatusHttpStatusError,
-  kRetryAfterStatusResponseDecodingError,
-  kRetryAfterStatusServiceManagementNotSupported,
-  kRetryAfterStatusRequestTooLarge,
-  kScheduled,
-  kSignin,
-  kTest,
-};
 
 // Implements the core logic required to talk to the device management service.
 // Also keeps track of the current state of the association with the service,

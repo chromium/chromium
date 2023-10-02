@@ -277,7 +277,7 @@ TEST_F(CloudPolicyManagerTest, RefreshNotRegistered) {
 
   // A refresh on a non-registered store should not block.
   EXPECT_CALL(observer_, OnUpdatePolicy(manager_.get()));
-  manager_->RefreshPolicies();
+  manager_->RefreshPolicies(PolicyFetchReason::kTest);
   Mock::VerifyAndClearExpectations(&observer_);
 }
 
@@ -300,7 +300,7 @@ TEST_F(CloudPolicyManagerTest, RefreshSuccessful) {
   // Start a refresh.
   EXPECT_CALL(observer_, OnUpdatePolicy(_)).Times(0);
   EXPECT_CALL(*client, FetchPolicy(_));
-  manager_->RefreshPolicies();
+  manager_->RefreshPolicies(PolicyFetchReason::kTest);
   Mock::VerifyAndClearExpectations(client);
   Mock::VerifyAndClearExpectations(&observer_);
   store_.policy_map_ = policy_map_.Clone();

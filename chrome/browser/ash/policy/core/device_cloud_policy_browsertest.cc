@@ -116,7 +116,7 @@ class KeyRotationDeviceCloudPolicyTest : public DevicePolicyCrosBrowserTest {
     g_browser_process->platform_part()
         ->browser_policy_connector_ash()
         ->GetDeviceCloudPolicyManager()
-        ->RefreshPolicies();
+        ->RefreshPolicies(PolicyFetchReason::kTest);
   }
 
   std::string GetOwnerPublicKey() const {

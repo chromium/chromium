@@ -75,16 +75,15 @@ bool DeviceLocalAccountPolicyProvider::IsFirstPolicyLoadComplete(
   return IsInitializationComplete(domain);
 }
 
-// TODO(b/298336121) Add PolicyFetchReason parameter to make the fetch
-// more specific.
-void DeviceLocalAccountPolicyProvider::RefreshPolicies() {
+void DeviceLocalAccountPolicyProvider::RefreshPolicies(
+    PolicyFetchReason reason) {
   DeviceLocalAccountPolicyBroker* broker = GetBroker();
   if (broker && broker->core()->service()) {
     waiting_for_policy_refresh_ = true;
     broker->core()->service()->RefreshPolicy(
         base::BindOnce(&DeviceLocalAccountPolicyProvider::ReportPolicyRefresh,
                        weak_factory_.GetWeakPtr()),
-        PolicyFetchReason::kUnspecified);
+        reason);
   } else {
     UpdateFromBroker();
   }

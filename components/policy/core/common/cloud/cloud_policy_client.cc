@@ -72,10 +72,16 @@ em::DevicePolicyRequest::Reason TranslateFetchReason(PolicyFetchReason reason) {
   switch (reason) {
     case PolicyFetchReason::kUnspecified:
       return Request::UNSPECIFIED;
+    case PolicyFetchReason::kBrowserStart:
+      return Request::BROWSER_START;
+    case PolicyFetchReason::kCrdHostPolicyWatcher:
+      return Request::CRD_HOST_POLICY_WATCHER;
     case PolicyFetchReason::kDeviceEnrollment:
       return Request::DEVICE_ENROLLMENT;
     case PolicyFetchReason::kInvalidation:
       return Request::INVALIDATION;
+    case PolicyFetchReason::kLacros:
+      return Request::LACROS;
     case PolicyFetchReason::kRegistrationChanged:
       return Request::REGISTRATION_CHANGED;
     case PolicyFetchReason::kRetryAfterStatusServiceActivationPending:
@@ -104,10 +110,10 @@ em::DevicePolicyRequest::Reason TranslateFetchReason(PolicyFetchReason reason) {
       return Request::SCHEDULED;
     case PolicyFetchReason::kSignin:
       return Request::SIGNIN;
-    case PolicyFetchReason::kBrowserStart:
-      return Request::BROWSER_START;
     case PolicyFetchReason::kTest:
       return Request::TEST;
+    case PolicyFetchReason::kUserRequest:
+      return Request::USER_REQUEST;
   }
   NOTREACHED_NORETURN();
 }

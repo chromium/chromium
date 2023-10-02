@@ -41,7 +41,7 @@ AndroidCombinedPolicyProvider::~AndroidCombinedPolicyProvider() {
   java_combined_policy_provider_.Reset();
 }
 
-void AndroidCombinedPolicyProvider::RefreshPolicies() {
+void AndroidCombinedPolicyProvider::RefreshPolicies(PolicyFetchReason reason) {
   JNIEnv* env = AttachCurrentThread();
   Java_CombinedPolicyProvider_refreshPolicies(env,
                                               java_combined_policy_provider_);

@@ -6,7 +6,6 @@
 #define COMPONENTS_POLICY_CORE_COMMON_CONFIGURATION_POLICY_PROVIDER_H_
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "build/build_config.h"
 #include "components/policy/core/common/policy_bundle.h"
@@ -15,6 +14,8 @@
 #include "components/policy/policy_export.h"
 
 namespace policy {
+
+enum class PolicyFetchReason;
 
 // A mostly-abstract super class for platform-specific policy providers.
 // Platform-specific policy providers (Windows Group Policy, gconf,
@@ -73,7 +74,10 @@ class POLICY_EXPORT ConfigurationPolicyProvider
   // which are guaranteed to happen even if the refresh fails.
   // It is possible that Shutdown() is called first though, and
   // OnUpdatePolicy won't be called if that happens.
-  virtual void RefreshPolicies() = 0;
+  //
+  // The |reason| parameter can be used to tag the request to DMServer.
+  // Providers that do not communicate with DMServer may ignore the parameter.
+  virtual void RefreshPolicies(PolicyFetchReason reason) = 0;
 
   // Observers must detach themselves before the provider is deleted.
   virtual void AddObserver(Observer* observer);

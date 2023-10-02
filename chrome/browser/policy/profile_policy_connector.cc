@@ -38,6 +38,7 @@
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/core/common/policy_service_impl.h"
+#include "components/policy/core/common/policy_types.h"
 #include "components/policy/core/common/proxy_policy_provider.h"
 #include "components/policy/core/common/schema_registry_tracking_policy_provider.h"
 #include "components/policy/policy_constants.h"
@@ -698,7 +699,8 @@ void ProfilePolicyConnector::UseLocalTestPolicyProvider() {
   if (local_test_policy_provider_) {
     local_test_policy_provider_->set_active(true);
   }
-  policy_service()->RefreshPolicies(base::DoNothing());
+  policy_service()->RefreshPolicies(base::DoNothing(),
+                                    PolicyFetchReason::kTest);
   if (!local_test_infobar_visibility_manager_->infobar_active()) {
     local_test_infobar_visibility_manager_
         ->AddInfobarsForActiveLocalTestPoliciesAllTabs();
@@ -713,7 +715,8 @@ void ProfilePolicyConnector::RevertUseLocalTestPolicyProvider() {
   local_test_policy_provider_->set_active(false);
   static_cast<LocalTestPolicyProvider*>(local_test_policy_provider_)
       ->ClearPolicies();
-  policy_service()->RefreshPolicies(base::DoNothing());
+  policy_service()->RefreshPolicies(base::DoNothing(),
+                                    PolicyFetchReason::kTest);
   if (local_test_infobar_visibility_manager_->infobar_active()) {
     local_test_infobar_visibility_manager_
         ->DismissInfobarsForActiveLocalTestPoliciesAllTabs();

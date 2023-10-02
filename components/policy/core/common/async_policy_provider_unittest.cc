@@ -131,7 +131,7 @@ TEST_F(AsyncPolicyProviderTest, RefreshPolicies) {
   MockConfigurationPolicyObserver observer;
   provider_->AddObserver(&observer);
   EXPECT_CALL(observer, OnUpdatePolicy(provider_.get())).Times(1);
-  provider_->RefreshPolicies();
+  provider_->RefreshPolicies(PolicyFetchReason::kTest);
   base::RunLoop().RunUntilIdle();
   // The refreshed policies are now provided.
   EXPECT_TRUE(provider_->policies().Equals(refreshed_bundle));
@@ -146,13 +146,13 @@ TEST_F(AsyncPolicyProviderTest, RefreshPoliciesTwice) {
   MockConfigurationPolicyObserver observer;
   provider_->AddObserver(&observer);
   EXPECT_CALL(observer, OnUpdatePolicy(provider_.get())).Times(0);
-  provider_->RefreshPolicies();
+  provider_->RefreshPolicies(PolicyFetchReason::kTest);
   // Doesn't refresh before going through the background thread.
   Mock::VerifyAndClearExpectations(&observer);
 
   // Doesn't refresh if another RefreshPolicies request is made.
   EXPECT_CALL(observer, OnUpdatePolicy(provider_.get())).Times(0);
-  provider_->RefreshPolicies();
+  provider_->RefreshPolicies(PolicyFetchReason::kTest);
   Mock::VerifyAndClearExpectations(&observer);
 
   EXPECT_CALL(observer, OnUpdatePolicy(provider_.get())).Times(1);
@@ -188,7 +188,7 @@ TEST_F(AsyncPolicyProviderTest, RefreshPoliciesDuringReload) {
 
   // Doesn't refresh before going through the background thread.
   EXPECT_CALL(observer, OnUpdatePolicy(provider_.get())).Times(0);
-  provider_->RefreshPolicies();
+  provider_->RefreshPolicies(PolicyFetchReason::kTest);
   Mock::VerifyAndClearExpectations(&observer);
 
   EXPECT_CALL(observer, OnUpdatePolicy(provider_.get())).Times(1);

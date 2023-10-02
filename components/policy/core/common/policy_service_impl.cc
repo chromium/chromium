@@ -207,7 +207,8 @@ bool PolicyServiceImpl::IsFirstPolicyLoadComplete(PolicyDomain domain) const {
          policy_domain_status_[domain] == PolicyDomainStatus::kPolicyReady;
 }
 
-void PolicyServiceImpl::RefreshPolicies(base::OnceClosure callback) {
+void PolicyServiceImpl::RefreshPolicies(base::OnceClosure callback,
+                                        PolicyFetchReason reason) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   VLOG_POLICY(2, POLICY_PROCESSING) << "Policy refresh starting";
@@ -230,7 +231,7 @@ void PolicyServiceImpl::RefreshPolicies(base::OnceClosure callback) {
     for (auto* provider : providers_)
       refresh_pending_.insert(provider);
     for (auto* provider : providers_)
-      provider->RefreshPolicies();
+      provider->RefreshPolicies(reason);
   }
 }
 

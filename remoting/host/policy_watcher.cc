@@ -438,7 +438,8 @@ void PolicyWatcher::WatchForRegistryChanges() {
       base::BindOnce(&policy::PolicyService::RefreshPolicies,
                      base::Unretained(policy_service_),
                      base::BindOnce(&PolicyWatcher::WatchForRegistryChanges,
-                                    base::Unretained(this))));
+                                    base::Unretained(this)),
+                     policy::PolicyFetchReason::kCrdHostPolicyWatcher));
   if (!watch_result) {
     LOG(WARNING) << "Failed to register for Chrome policy registry key changes";
     policy_key_.Close();

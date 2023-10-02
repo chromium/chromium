@@ -268,8 +268,10 @@ void PolicyUIHandler::HandleListenPoliciesUpdates(
 
 void PolicyUIHandler::HandleReloadPolicies(const base::Value::List& args) {
   reload_policies_count_ += 1;
-  GetPolicyService()->RefreshPolicies(base::BindOnce(
-      &PolicyUIHandler::OnRefreshPoliciesDone, weak_factory_.GetWeakPtr()));
+  GetPolicyService()->RefreshPolicies(
+      base::BindOnce(&PolicyUIHandler::OnRefreshPoliciesDone,
+                     weak_factory_.GetWeakPtr()),
+      policy::PolicyFetchReason::kUserRequest);
 }
 
 void PolicyUIHandler::SendPolicies() {

@@ -115,6 +115,45 @@ enum PolicyPriorityBrowser {
   POLICY_PRIORITY_BROWSER_MERGED,
 };
 
+// The `PolicyFetchReason` enum is used to tag requests to DMServer. This allows
+// for more targeted monitoring and alerting.
+enum class PolicyFetchReason {
+  kUnspecified,
+  // Policy fetched at browser start, e.g. device policies at Ash start.
+  kBrowserStart,
+  // Policy fetches triggered by the Chrome Remote Desktop policy watcher.
+  kCrdHostPolicyWatcher,
+  // Required policy fetch during device enrollment.
+  kDeviceEnrollment,
+  // Policy fetch triggered by incoming FCM invalidation.
+  kInvalidation,
+  // ChromeOS policy fetch request from Lacros to Ash.
+  kLacros,
+  // CloudPolicyClient registration changed (e.g. during startup).
+  kRegistrationChanged,
+  // Various retry reasons based on DMServer status, see
+  // `CloudPolicyRefreshScheduler`.
+  kRetryAfterStatusServiceActivationPending,
+  kRetryAfterStatusServicePolicyNotFound,
+  kRetryAfterStatusServiceTooManyRequests,
+  kRetryAfterStatusRequestFailed,
+  kRetryAfterStatusTemporaryUnavailable,
+  kRetryAfterStatusCannotSignRequest,
+  kRetryAfterStatusRequestInvalid,
+  kRetryAfterStatusHttpStatusError,
+  kRetryAfterStatusResponseDecodingError,
+  kRetryAfterStatusServiceManagementNotSupported,
+  kRetryAfterStatusRequestTooLarge,
+  // Scheduled policy refresh (e.g. once per day).
+  kScheduled,
+  // Policy fetch triggered by sign-in.
+  kSignin,
+  // A placeholder reason used for tests (should not occur in production).
+  kTest,
+  // Policy fetched as requested by the user, e.g. through chrome://policy.
+  kUserRequest,
+};
+
 }  // namespace policy
 
 #endif  // COMPONENTS_POLICY_CORE_COMMON_POLICY_TYPES_H_

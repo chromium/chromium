@@ -15,6 +15,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
+#include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_service.h"
 #include "components/policy/core/common/policy_bundle.h"
 #include "components/policy/core/common/policy_map.h"
@@ -82,15 +83,13 @@ bool CloudPolicyManager::IsFirstPolicyLoadComplete(PolicyDomain domain) const {
   return store()->first_policies_loaded();
 }
 
-// TODO(b/298336121) Add PolicyFetchReason parameter to make the fetch
-// more specific.
-void CloudPolicyManager::RefreshPolicies() {
+void CloudPolicyManager::RefreshPolicies(PolicyFetchReason reason) {
   if (service()) {
     waiting_for_policy_refresh_ = true;
     service()->RefreshPolicy(
         base::BindOnce(&CloudPolicyManager::OnRefreshComplete,
                        base::Unretained(this)),
-        PolicyFetchReason::kUnspecified);
+        reason);
   } else {
     OnRefreshComplete(false);
   }

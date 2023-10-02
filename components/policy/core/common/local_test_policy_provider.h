@@ -33,7 +33,7 @@ class POLICY_EXPORT LocalTestPolicyProvider
   void SetUserAffiliated(bool affiliated);
 
   // ConfigurationPolicyProvider implementation
-  void RefreshPolicies() override;
+  void RefreshPolicies(PolicyFetchReason reason) override;
   bool IsFirstPolicyLoadComplete(PolicyDomain domain) const override;
 
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);

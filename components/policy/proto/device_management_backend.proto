@@ -938,6 +938,12 @@ message DevicePolicyRequest {
     TEST = 18;
     // Policy fetched at browser start, e.g. device policies at Ash start.
     BROWSER_START = 19;
+    // ChromeOS Policy fetch request from Lacros to Ash.
+    LACROS = 20;
+    // Policy fetched as requested by the user, e.g. through chrome://policy.
+    USER_REQUEST = 21;
+    // Policy fetches triggered by the Chrome Remote Desktop policy watcher.
+    CRD_HOST_POLICY_WATCHER = 22;
   }
   optional Reason reason = 4;
 }

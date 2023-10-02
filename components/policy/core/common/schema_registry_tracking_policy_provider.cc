@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "components/policy/core/common/policy_types.h"
 #include "components/policy/core/common/schema_map.h"
 #include "components/policy/core/common/schema_registry.h"
 
@@ -45,8 +46,9 @@ bool SchemaRegistryTrackingPolicyProvider::IsFirstPolicyLoadComplete(
   return state_ == READY;
 }
 
-void SchemaRegistryTrackingPolicyProvider::RefreshPolicies() {
-  delegate_->RefreshPolicies();
+void SchemaRegistryTrackingPolicyProvider::RefreshPolicies(
+    PolicyFetchReason reason) {
+  delegate_->RefreshPolicies(reason);
 }
 
 void SchemaRegistryTrackingPolicyProvider::OnSchemaRegistryReady() {
@@ -66,7 +68,7 @@ void SchemaRegistryTrackingPolicyProvider::OnSchemaRegistryReady() {
   }
 
   state_ = WAITING_FOR_REFRESH;
-  RefreshPolicies();
+  RefreshPolicies(PolicyFetchReason::kUnspecified);
 }
 
 void SchemaRegistryTrackingPolicyProvider::OnSchemaRegistryUpdated(
@@ -74,7 +76,7 @@ void SchemaRegistryTrackingPolicyProvider::OnSchemaRegistryUpdated(
   if (state_ != READY)
     return;
   if (has_new_schemas) {
-    RefreshPolicies();
+    RefreshPolicies(PolicyFetchReason::kUnspecified);
   } else {
     // Remove the policies that were being served for the component that have
     // been removed. This is important so that update notifications are also

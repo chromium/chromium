@@ -31,6 +31,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/crx_file/crx_verifier.h"
 #include "components/crx_file/id_util.h"
+#include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_namespace.h"
@@ -415,7 +416,8 @@ void UpdatePolicyViaEmbeddedPolicyMixin(
       user_policy_builder->payload().SerializeAsString());
 
   base::RunLoop run_loop;
-  g_browser_process->policy_service()->RefreshPolicies(run_loop.QuitClosure());
+  g_browser_process->policy_service()->RefreshPolicies(
+      run_loop.QuitClosure(), policy::PolicyFetchReason::kTest);
   ASSERT_NO_FATAL_FAILURE(run_loop.Run());
 
   // Report the outcome via an output argument instead of the return value,

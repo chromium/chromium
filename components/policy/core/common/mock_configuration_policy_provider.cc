@@ -45,8 +45,9 @@ void MockConfigurationPolicyProvider::UpdateExtensionPolicy(
 }
 
 void MockConfigurationPolicyProvider::SetAutoRefresh() {
-  EXPECT_CALL(*this, RefreshPolicies()).WillRepeatedly(
-      Invoke(this, &MockConfigurationPolicyProvider::RefreshWithSamePolicies));
+  EXPECT_CALL(*this, RefreshPolicies(testing::_))
+      .WillRepeatedly(Invoke(
+          this, &MockConfigurationPolicyProvider::RefreshWithSamePolicies));
 }
 
 void MockConfigurationPolicyProvider::RefreshWithSamePolicies() {

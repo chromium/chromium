@@ -183,6 +183,7 @@
 #include "components/policy/core/browser/policy_conversions.h"
 #include "components/policy/core/common/cloud/cloud_policy_manager.h"
 #include "components/policy/core/common/policy_service.h"
+#include "components/policy/core/common/policy_types.h"
 #include "components/policy/core/common/remote_commands/remote_commands_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_types.h"
@@ -1502,8 +1503,10 @@ ExtensionFunction::ResponseAction
 AutotestPrivateRefreshEnterprisePoliciesFunction::Run() {
   DVLOG(1) << "AutotestPrivateRefreshEnterprisePoliciesFunction";
 
-  g_browser_process->policy_service()->RefreshPolicies(base::BindOnce(
-      &AutotestPrivateRefreshEnterprisePoliciesFunction::RefreshDone, this));
+  g_browser_process->policy_service()->RefreshPolicies(
+      base::BindOnce(
+          &AutotestPrivateRefreshEnterprisePoliciesFunction::RefreshDone, this),
+      policy::PolicyFetchReason::kTest);
   return RespondLater();
 }
 

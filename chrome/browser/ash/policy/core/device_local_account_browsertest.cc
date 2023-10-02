@@ -122,6 +122,7 @@
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/core/common/policy_service.h"
+#include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/prefs/pref_service.h"
@@ -370,7 +371,8 @@ const base::Value* RefreshAndWaitForPolicies(
   PolicyChangeRegistrar policy_registrar(policy_service, ns);
   TestFuture<const base::Value*, const base::Value*> future;
   policy_registrar.Observe("string", future.GetRepeatingCallback());
-  policy_service->RefreshPolicies(base::OnceClosure());
+  policy_service->RefreshPolicies(base::OnceClosure(),
+                                  PolicyFetchReason::kTest);
   return std::get<1>(future.Take());
 }
 
@@ -1008,7 +1010,8 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, AccountListChange) {
       em::DeviceLocalAccountInfoProto::ACCOUNT_TYPE_PUBLIC_SESSION);
 
   policy_test_server_mixin_.UpdateDevicePolicy(policy);
-  g_browser_process->policy_service()->RefreshPolicies(base::OnceClosure());
+  g_browser_process->policy_service()->RefreshPolicies(
+      base::OnceClosure(), PolicyFetchReason::kTest);
 
   // Make sure the second device-local account disappears.
   base::RunLoop().RunUntilIdle();

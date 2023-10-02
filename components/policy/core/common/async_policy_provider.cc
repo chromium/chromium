@@ -65,7 +65,7 @@ void AsyncPolicyProvider::Shutdown() {
   ConfigurationPolicyProvider::Shutdown();
 }
 
-void AsyncPolicyProvider::RefreshPolicies() {
+void AsyncPolicyProvider::RefreshPolicies(PolicyFetchReason reason) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Subtle: RefreshPolicies() has a contract that requires the next policy

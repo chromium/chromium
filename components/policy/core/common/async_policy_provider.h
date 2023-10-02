@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/cancelable_callback.h"
-#include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/policy/core/common/configuration_policy_provider.h"
@@ -41,7 +40,7 @@ class POLICY_EXPORT AsyncPolicyProvider : public ConfigurationPolicyProvider {
   // ConfigurationPolicyProvider implementation.
   void Init(SchemaRegistry* registry) override;
   void Shutdown() override;
-  void RefreshPolicies() override;
+  void RefreshPolicies(PolicyFetchReason reason) override;
   bool IsFirstPolicyLoadComplete(PolicyDomain domain) const override;
 
  private:

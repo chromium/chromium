@@ -66,7 +66,8 @@ void UserPolicyTestHelper::WaitForInitialPolicy(Profile* profile) {
   PolicyService* const policy_service = profile_connector->policy_service();
 
   base::RunLoop run_loop;
-  policy_service->RefreshPolicies(run_loop.QuitClosure());
+  policy_service->RefreshPolicies(run_loop.QuitClosure(),
+                                  PolicyFetchReason::kTest);
   run_loop.Run();
 }
 
@@ -83,7 +84,8 @@ void UserPolicyTestHelper::RefreshPolicyAndWait(Profile* profile) {
   PolicyService* const policy_service = profile_connector->policy_service();
 
   base::RunLoop run_loop;
-  policy_service->RefreshPolicies(run_loop.QuitClosure());
+  policy_service->RefreshPolicies(run_loop.QuitClosure(),
+                                  PolicyFetchReason::kTest);
   run_loop.Run();
 }
 

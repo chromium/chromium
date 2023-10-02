@@ -96,7 +96,7 @@ IN_PROC_BROWSER_TEST_F(UserCloudExternalDataManagerTest, FetchExternalData) {
   {
     base::test::TestFuture<void> refresh_policy_future;
     policy_connector->policy_service()->RefreshPolicies(
-        refresh_policy_future.GetCallback());
+        refresh_policy_future.GetCallback(), PolicyFetchReason::kTest);
     ASSERT_TRUE(refresh_policy_future.Wait())
         << "RefreshPolicies did not invoke the finished callback.";
   }

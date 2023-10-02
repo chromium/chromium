@@ -12,6 +12,7 @@
 #include "base/memory/ref_counted.h"
 #include "components/policy/core/common/cloud/cloud_policy_manager.h"
 #include "components/policy/core/common/cloud/user_policy_metrics_recorder.h"
+#include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_export.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
 
@@ -60,7 +61,10 @@ class POLICY_EXPORT UserCloudPolicyManager : public CloudPolicyManager {
   // Sets whether or not policies are required for this policy manager.
   // This might be set to false if the user profile is an unmanaged consumer
   // profile.
-  void SetPoliciesRequired(bool required);
+  //
+  // As a side effect, this also calls `RefreshPolicies`, which is why the
+  // `reason` parameter is required.
+  void SetPoliciesRequired(bool required, PolicyFetchReason reason);
   bool ArePoliciesRequired() const;
 
   // Initializes the cloud connection. |local_state| must stay valid until this

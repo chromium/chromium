@@ -31,7 +31,7 @@ class LoginProfilePolicyProvider : public ConfigurationPolicyProvider,
   // ConfigurationPolicyProvider:
   void Init(SchemaRegistry* registry) override;
   void Shutdown() override;
-  void RefreshPolicies() override;
+  void RefreshPolicies(PolicyFetchReason reason) override;
 
   // PolicyService::Observer:
   void OnPolicyUpdated(const PolicyNamespace& ns,

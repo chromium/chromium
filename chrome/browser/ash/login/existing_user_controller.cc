@@ -155,7 +155,8 @@ const long int kSafeModeRestartUiDelayMs = 30000;
 // authentication change.
 void RefreshPoliciesOnUIThread() {
   if (g_browser_process->policy_service())
-    g_browser_process->policy_service()->RefreshPolicies(base::OnceClosure());
+    g_browser_process->policy_service()->RefreshPolicies(
+        base::OnceClosure(), policy::PolicyFetchReason::kSignin);
 }
 
 void OnTranferredHttpAuthCaches() {

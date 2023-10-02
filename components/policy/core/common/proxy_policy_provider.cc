@@ -46,9 +46,9 @@ void ProxyPolicyProvider::Shutdown() {
   ConfigurationPolicyProvider::Shutdown();
 }
 
-void ProxyPolicyProvider::RefreshPolicies() {
+void ProxyPolicyProvider::RefreshPolicies(PolicyFetchReason reason) {
   if (delegate()) {
-    delegate()->RefreshPolicies();
+    delegate()->RefreshPolicies(reason);
   } else {
     // Subtle: if a RefreshPolicies() call comes after Shutdown() then the
     // current bundle should be served instead. This also does the right thing
