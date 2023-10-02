@@ -7,6 +7,7 @@
 #import "base/ios/ios_util.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/time/time.h"
+#import "components/feature_engagement/public/feature_constants.h"
 #import "ios/chrome/browser/default_browser/utils_test_support.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -361,8 +362,9 @@ TEST_F(DefaultBrowserUtilsTest, ManualRecentTimestampForKeyOver6Hours) {
 // detected when the sliding eligibility window experiment is disabled.
 TEST_F(DefaultBrowserUtilsTest,
        HasUserInteractedWithFullscreenPromoBeforeSlidingWindowDisabled) {
-  feature_list_.InitWithFeatures(
-      {/*enabled=*/}, {/*disabled=*/kDefaultBrowserEligibilitySlidingWindow});
+  feature_list_.InitWithFeatures({/*enabled=*/},
+                                 {/*disabled=*/feature_engagement::
+                                      kDefaultBrowserEligibilitySlidingWindow});
 
   // Test with multiple interactions.
   EXPECT_FALSE(HasUserInteractedWithFullscreenPromoBefore());
@@ -392,7 +394,8 @@ TEST_F(DefaultBrowserUtilsTest,
   base::FieldTrialParams feature_params;
   feature_params["sliding-window-days"] = "365";
   feature_list_.InitAndEnableFeatureWithParameters(
-      kDefaultBrowserEligibilitySlidingWindow, feature_params);
+      feature_engagement::kDefaultBrowserEligibilitySlidingWindow,
+      feature_params);
 
   // Test with multiple interactions.
   EXPECT_FALSE(HasUserInteractedWithFullscreenPromoBefore());

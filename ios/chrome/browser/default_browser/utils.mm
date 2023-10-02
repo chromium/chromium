@@ -692,10 +692,13 @@ bool IsDefaultBrowserVideoInSettingsEnabled() {
 }
 
 bool HasUserInteractedWithFullscreenPromoBefore() {
-  if (base::FeatureList::IsEnabled(kDefaultBrowserEligibilitySlidingWindow)) {
+  if (base::FeatureList::IsEnabled(
+          feature_engagement::kDefaultBrowserEligibilitySlidingWindow)) {
     return HasRecordedEventForKeyLessThanDelay(
         kLastTimeUserInteractedWithFullscreenPromo,
-        base::Days(kDefaultBrowserEligibilitySlidingWindowParam.Get()));
+        base::Days(
+            feature_engagement::kDefaultBrowserEligibilitySlidingWindowParam
+                .Get()));
   }
 
   NSNumber* number = GetObjectFromStorageForKey<NSNumber>(

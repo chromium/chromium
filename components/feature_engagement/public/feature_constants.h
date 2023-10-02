@@ -6,6 +6,7 @@
 #define COMPONENTS_FEATURE_ENGAGEMENT_PUBLIC_FEATURE_CONSTANTS_H_
 
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 
@@ -210,6 +211,17 @@ BASE_DECLARE_FEATURE(kIPHiOSDefaultBrowserVideoPromoTriggerFeature);
 BASE_DECLARE_FEATURE(kIPHiOSPromoPostRestoreDefaultBrowserFeature);
 BASE_DECLARE_FEATURE(kIPHiOSPromoPasswordManagerWidgetFeature);
 BASE_DECLARE_FEATURE(kIPHiOSChoiceScreenFeature);
+
+// A feature flag to enable and parametrize the sliding window of time for a
+// user's eligibility to be shown a default browser promo. This is not an FET
+// feature, but there is a related FET feature that needs to adjust its config
+// rules based on this feature, so it needs to be declared here.
+BASE_DECLARE_FEATURE(kDefaultBrowserEligibilitySlidingWindow);
+
+// The param for the default browser eligibility sliding window, measured in
+// days.
+extern const base::FeatureParam<int>
+    kDefaultBrowserEligibilitySlidingWindowParam;
 #endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \

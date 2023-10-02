@@ -522,6 +522,15 @@ BASE_FEATURE(kIPHiOSPromoPasswordManagerWidgetFeature,
 BASE_FEATURE(kIPHiOSChoiceScreenFeature,
              "IPH_iOSChoiceScreenFeature",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Non-FET feature.
+BASE_FEATURE(kDefaultBrowserEligibilitySlidingWindow,
+             "DefaultBrowserEligibilitySlidingWindow",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+constexpr base::FeatureParam<int> kDefaultBrowserEligibilitySlidingWindowParam{
+    &kDefaultBrowserEligibilitySlidingWindow, /*name=*/"sliding-window-days",
+    /*default_value=*/365};
 #endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \

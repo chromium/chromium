@@ -65,13 +65,19 @@ absl::optional<FeatureConfig> GetStandardPromoConfig(
 
     config->used =
         EventConfig("default_browser_promo_used", Comparator(ANY, 0), 365, 365);
-    // Impression limits are currently being enforced on the registration side
-    // of the promo manager on iOS, therefore this promo will not be showing
-    // biweekly as this config may suggest.
-    // TODO(b/302111496): Fix this config to have impression limits be enforced
-    // solely by the FET.
-    config->trigger = EventConfig("default_browser_promo_trigger",
-                                  Comparator(EQUAL, 0), 14, 365);
+    if (base::FeatureList::IsEnabled(kDefaultBrowserEligibilitySlidingWindow)) {
+      // Impression limits are currently being enforced on the registration side
+      // of the promo manager on iOS, therefore this promo will not be showing
+      // biweekly as this config may suggest.
+      // TODO(b/302111496): Fix this config to have impression limits be
+      // enforced solely by the FET.
+      config->trigger = EventConfig("default_browser_promo_trigger",
+                                    Comparator(EQUAL, 0), 14, 365);
+    } else {
+      config->trigger = EventConfig("default_browser_promo_trigger",
+                                    Comparator(LESS_THAN, 4), 365, 365);
+    }
+
     config->event_configs.insert(EventConfig(
         "chrome_opened", Comparator(GREATER_THAN_OR_EQUAL, 7), 365, 365));
     // Default Browser promo shouldn't be shown if the Post Restore Default
@@ -145,10 +151,17 @@ absl::optional<FeatureConfig> GetCustomConfig(const base::Feature* feature) {
     config->availability = Comparator(ANY, 0);
     config->session_rate = Comparator(ANY, 0);
     config->session_rate_impact.type = SessionRateImpact::Type::NONE;
-    config->trigger =
-        EventConfig("default_browser_video_promo_conditions_met_trigger",
-                    Comparator(EQUAL, 0), feature_engagement::kMaxStoragePeriod,
-                    feature_engagement::kMaxStoragePeriod);
+
+    if (base::FeatureList::IsEnabled(kDefaultBrowserEligibilitySlidingWindow)) {
+      config->trigger = EventConfig(
+          "default_browser_video_promo_conditions_met_trigger",
+          Comparator(EQUAL, 0), feature_engagement::kMaxStoragePeriod,
+          feature_engagement::kMaxStoragePeriod);
+    } else {
+      config->trigger =
+          EventConfig("default_browser_video_promo_conditions_met_trigger",
+                      Comparator(ANY, 0), 360, 360);
+    }
     config->used = EventConfig("default_browser_video_promo_shown",
                                Comparator(EQUAL, 0), 360, 360);
     config->event_configs.insert(
