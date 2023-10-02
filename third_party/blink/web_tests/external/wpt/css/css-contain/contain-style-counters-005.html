@@ -9,7 +9,7 @@
     clear: both;
 }
 .reset { counter-reset: c;}
-.increment:before { content: counters(c, ""); }
+.increment::before { content: counters(c, "."); }
 .increment { counter-increment: c; }
 </style>
 <body>
