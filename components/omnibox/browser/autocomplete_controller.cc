@@ -96,28 +96,22 @@ constexpr bool is_android = !!BUILDFLAG(IS_ANDROID);
 // Appends available autocompletion of the given type, subtype, and number to
 // the existing available autocompletions string, encoding according to the
 // spec.
-void AppendAvailableAutocompletion(
+std::string ConstructAvailableAutocompletion(
     omnibox::SuggestType type,
     const base::flat_set<omnibox::SuggestSubtype>& subtypes,
-    int count,
-    std::string* autocompletions) {
-  if (!autocompletions->empty())
-    autocompletions->append("j");
-  base::StringAppendF(autocompletions, "%d", type);
+    int count) {
+  std::ostringstream result;
+  result << int(type);
 
-  std::ostringstream subtype_str;
   for (auto subtype : subtypes) {
-    if (subtype_str.tellp() > 0)
-      subtype_str << 'i';
-    subtype_str << subtype;
+    result << 'i' << subtype;
   }
 
-  // Subtype is optional. Append only if we have subtypes to report.
-  if (subtype_str.tellp() > 0)
-    base::StringAppendF(autocompletions, "i%s", subtype_str.str().c_str());
+  if (count > 1) {
+    result << 'l' << count;
+  }
 
-  if (count > 1)
-    base::StringAppendF(autocompletions, "l%d", count);
+  return result.str();
 }
 
 // Whether this autocomplete match type supports custom descriptions.
@@ -1276,7 +1270,6 @@ void AutocompleteController::UpdateAssistedQueryStats(
   searchbox_stats.set_client_name("chrome");
 
   // Build the impressions string (the AQS part after ".").
-  std::string autocompletions;
   int count = 0;
   int num_zero_prefix_suggestions_shown = 0;
   absl::optional<omnibox::SuggestType> last_type;
@@ -1284,6 +1277,12 @@ void AutocompleteController::UpdateAssistedQueryStats(
   omnibox::GroupId previous_group_id = omnibox::GROUP_INVALID;
   std::vector<size_t> match_index_to_position(result->size());
   size_t match_position = 0;
+
+  std::vector<bool> match_index_belongs_to_horizontal_render_group(
+      result->size());
+  std::vector<size_t> match_index_to_aqs_slot(result->size());
+  std::vector<std::string> aqs;
+  aqs.reserve(result->size());
 
   for (size_t index = 0; index < result->size(); ++index) {
     AutocompleteMatch* match = result->match_at(index);
@@ -1296,10 +1295,16 @@ void AutocompleteController::UpdateAssistedQueryStats(
         match->suggestion_group_id.value_or(omnibox::GROUP_INVALID);
     omnibox::GroupConfig_RenderType render_type =
         result->GetRenderTypeForSuggestionGroup(group_id);
+    bool match_belongs_to_horizontal_render_group =
+        render_type == omnibox::GroupConfig_RenderType_HORIZONTAL;
+    match_index_belongs_to_horizontal_render_group[index] =
+        match_belongs_to_horizontal_render_group;
     if (group_id == previous_group_id &&
-        render_type == omnibox::GroupConfig_RenderType_HORIZONTAL) {
-      // All elements in a Horizontal Render Group share the same index.
+        match_belongs_to_horizontal_render_group) {
+      // All elements in a Horizontal Render Group share the same index
+      // and AQS slot.
       match_index_to_position[index] = match_position - 1;
+      match_index_to_aqs_slot[index] = aqs.size();
       continue;
     }
     previous_group_id = group_id;
@@ -1320,25 +1325,27 @@ void AutocompleteController::UpdateAssistedQueryStats(
     auto* available_suggestion = searchbox_stats.add_available_suggestions();
     available_suggestion->set_index(match_position);
     available_suggestion->set_type(type);
-    match_index_to_position[index] = match_position++;
+    match_index_to_position[index] = match_position;
     for (const auto subtype : subtypes) {
       available_suggestion->add_subtypes(subtype);
     }
 
     if (last_type.has_value() &&
         (type != last_type || subtypes != last_subtypes)) {
-      AppendAvailableAutocompletion(*last_type, last_subtypes, count,
-                                    &autocompletions);
+      aqs.push_back(
+          ConstructAvailableAutocompletion(*last_type, last_subtypes, count));
       count = 1;
     } else {
       count++;
     }
+    match_index_to_aqs_slot[index] = aqs.size();
     last_type = type;
     last_subtypes = subtypes;
+    match_position++;
   }
   if (last_type.has_value()) {
-    AppendAvailableAutocompletion(*last_type, last_subtypes, count,
-                                  &autocompletions);
+    aqs.push_back(
+        ConstructAvailableAutocompletion(*last_type, last_subtypes, count));
   }
 
   // TODO(crbug.com/1307142): These two fields should take into account all the
@@ -1375,9 +1382,17 @@ void AutocompleteController::UpdateAssistedQueryStats(
           ->MergeFrom(*selected_suggestion);
 
       selected_position = base::StringPrintf("%" PRIuS, match_position);
+
+      // Reconstruct AQS for items sharing the slot (e.g. elements in the
+      // carousel).
+      if (match_index_belongs_to_horizontal_render_group[index]) {
+        aqs[match_index_to_aqs_slot[index]] = ConstructAvailableAutocompletion(
+            match->suggest_type, match->subtypes, 1);
+      }
     }
-    match->search_terms_args->assisted_query_stats = base::StringPrintf(
-        "chrome.%s.%s", selected_position.c_str(), autocompletions.c_str());
+    match->search_terms_args->assisted_query_stats =
+        base::StringPrintf("chrome.%s.%s", selected_position.c_str(),
+                           base::JoinString(aqs, "j").c_str());
 
     // Duplicate AQS/SBS for eligible ActionsInSuggest.
     // TODO(1418077): rather than computing the `action_uri`, keep the
