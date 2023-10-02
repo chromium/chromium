@@ -240,6 +240,16 @@ extern const base::FeatureParam<base::TimeDelta> kPageTimelineStateIntervalTime;
 // UKM.
 extern const base::FeatureParam<bool> kUseResourceAttributionCPUMonitor;
 
+// This enables logging to evaluate the efficacy of potential CPU interventions.
+BASE_DECLARE_FEATURE(kCPUInterventionEvaluationLogging);
+
+// This represents the duration that CPU must be over the threshold before
+// logging the delayed metrics.
+extern const base::FeatureParam<base::TimeDelta> kDelayBeforeLogging;
+
+// If Chrome CPU utilization is over the specified percent then we will log it.
+extern const base::FeatureParam<int> kThresholdChromeCPUPercent;
+
 }  // namespace performance_manager::features
 
 #endif  // COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_FEATURES_H_

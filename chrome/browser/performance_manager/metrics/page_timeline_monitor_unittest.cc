@@ -11,6 +11,9 @@
 #include "base/containers/fixed_flat_map.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/system/sys_info.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -42,7 +45,8 @@ namespace {
 using PageMeasurementBackgroundState =
     PageTimelineMonitor::PageMeasurementBackgroundState;
 
-// A class that returns constant 50% CPU used since it was created.
+// A class that returns defaults to returning 50% CPU used since it was created,
+// but the divisor for what proportion of a CPU is being used is configurable.
 class FixedCPUMeasurementDelegate final
     : public PageTimelineCPUMonitor::CPUMeasurementDelegate {
  public:
@@ -50,16 +54,23 @@ class FixedCPUMeasurementDelegate final
   ~FixedCPUMeasurementDelegate() final = default;
 
   base::TimeDelta GetCumulativeCPUUsage() final {
-    return (base::TimeTicks::Now() - creation_time_) / 2;
+    return (base::TimeTicks::Now() - creation_time_) / cpu_divisor_;
   }
 
   static std::unique_ptr<CPUMeasurementDelegate> Create(const ProcessNode*) {
     return std::make_unique<FixedCPUMeasurementDelegate>();
   }
 
+  static void SetCPUDivisor(int divisor) {
+    FixedCPUMeasurementDelegate::cpu_divisor_ = divisor;
+  }
+
  private:
   base::TimeTicks creation_time_ = base::TimeTicks::Now();
+  static int cpu_divisor_;
 };
+
+int FixedCPUMeasurementDelegate::cpu_divisor_ = 2;
 
 }  // namespace
 
@@ -97,6 +108,8 @@ class PageTimelineMonitorUnitTest : public GraphTestHarness {
 
   // To allow tests to call its methods and view its state.
   raw_ptr<PageTimelineMonitor> monitor_;
+
+  base::HistogramTester histogram_tester_;
 
  protected:
   ukm::TestUkmRecorder* test_ukm_recorder() { return test_ukm_recorder_.get(); }
@@ -144,10 +157,15 @@ class PageTimelineMonitorWithFeatureTest
       public ::testing::WithParamInterface<bool> {
  public:
   PageTimelineMonitorWithFeatureTest() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kPageTimelineMonitor,
-        {{"use_resource_attribution_cpu_monitor",
-          GetParam() ? "true" : "false"}});
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kPageTimelineMonitor,
+          {{"use_resource_attribution_cpu_monitor",
+            GetParam() ? "true" : "false"}}},
+         {performance_manager::features::kCPUInterventionEvaluationLogging,
+          {{"threshold_chrome_cpu_percent",
+            base::NumberToString(
+                int(100 / base::SysInfo::NumberOfProcessors() / 2))}}}},
+        {});
   }
 
   void SetUp() override {
@@ -679,5 +697,48 @@ TEST_F(PageTimelineMonitorUnitTest, TestResourceUsageBackgroundState) {
        {mock_source_id2,
         PageMeasurementBackgroundState::kMixedForegroundBackground}});
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+TEST_P(PageTimelineMonitorWithFeatureTest, TestCPUInterventionMetrics) {
+  MockMultiplePagesWithMultipleProcessesGraph mock_graph(graph());
+  const ukm::SourceId mock_source_id = ukm::AssignNewSourceId();
+  mock_graph.page->SetType(performance_manager::PageType::kTab);
+  mock_graph.page->SetUkmSourceId(mock_source_id);
+  mock_graph.page->SetIsVisible(true);
+
+  const ukm::SourceId mock_source_id2 = ukm::AssignNewSourceId();
+  mock_graph.other_page->SetType(performance_manager::PageType::kTab);
+  mock_graph.other_page->SetUkmSourceId(mock_source_id2);
+
+  // Let an arbitrary amount of time pass so there's some CPU usage to measure.
+  task_env().FastForwardBy(base::Minutes(1));
+  TriggerCollectPageResourceUsage();
+
+  histogram_tester_.ExpectUniqueSample(
+      "PerformanceManager.PerformanceInterventions.CPU.TotalBackgroundCPU."
+      "Immediate",
+      0.75 * 100 / base::SysInfo::NumberOfProcessors(), 1);
+
+  // Fast forward for Delayed UMA to be logged.
+  task_env().FastForwardBy(base::Minutes(1));
+
+  if (GetParam()) {
+    histogram_tester_.ExpectUniqueSample(
+        "PerformanceManager.PerformanceInterventions.CPU.TotalBackgroundCPU."
+        "Delayed",
+        0.75 * 100 / base::SysInfo::NumberOfProcessors(), 1);
+  }
+
+  // Lower CPU measurement so the duration is logged.
+  FixedCPUMeasurementDelegate::SetCPUDivisor(6);
+  task_env().FastForwardBy(base::Minutes(1));
+  TriggerCollectPageResourceUsage();
+
+  histogram_tester_.ExpectUniqueSample(
+      "PerformanceManager.PerformanceInterventions.CPU."
+      "DurationOverThreshold",
+      base::Minutes(2).InMilliseconds(), 1);
+}
+#endif
 
 }  // namespace performance_manager::metrics

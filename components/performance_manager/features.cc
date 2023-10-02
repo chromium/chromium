@@ -179,4 +179,15 @@ const base::FeatureParam<base::TimeDelta> kPageTimelineStateIntervalTime{
 const base::FeatureParam<bool> kUseResourceAttributionCPUMonitor{
     &kPageTimelineMonitor, "use_resource_attribution_cpu_monitor", false};
 
+BASE_FEATURE(kCPUInterventionEvaluationLogging,
+             "CPUInterventionEvaluationLogging",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<base::TimeDelta> kDelayBeforeLogging{
+    &kCPUInterventionEvaluationLogging, "delay_before_logging",
+    base::Seconds(60)};
+
+const base::FeatureParam<int> kThresholdChromeCPUPercent{
+    &kCPUInterventionEvaluationLogging, "threshold_chrome_cpu_percent", 25};
+
 }  // namespace performance_manager::features

@@ -34,6 +34,34 @@ each histogram.
   </summary>
 </histogram>
 
+<histogram
+    name="PerformanceManager.PerformanceInterventions.CPU.DurationOverThreshold"
+    units="seconds" expires_after="2024-01-01">
+  <owner>agale@chromium.org</owner>
+  <owner>joenotcharles@chromium.org</owner>
+  <owner>chrome-catan@google.com</owner>
+  <summary>
+    Recorded when a device drops back below the CPU threshold, this histogram
+    represents the total time that the device was above the threshold.
+  </summary>
+</histogram>
+
+<histogram
+    name="PerformanceManager.PerformanceInterventions.CPU.TotalBackgroundCPU.{Timing}"
+    units="%" expires_after="2024-01-01">
+  <owner>agale@chromium.org</owner>
+  <owner>joenotcharles@chromium.org</owner>
+  <owner>chrome-catan@google.com</owner>
+  <summary>
+    Recorded when the CPU threshold is reached, this histogram represents the
+    percent of CPU capacity being used by background tabs.
+  </summary>
+  <token key="Timing">
+    <variant name="Delayed"/>
+    <variant name="Immediate"/>
+  </token>
+</histogram>
+
 <histogram name="PerformanceManager.SiteDB.DatabaseInit"
     enum="LocalSiteCharacteristicsDBInitStatus" expires_after="2023-12-28">
   <owner>joenotcharles@google.com</owner>
