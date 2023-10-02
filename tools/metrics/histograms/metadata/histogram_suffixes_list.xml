@@ -4194,6 +4194,18 @@ chromium-metrics-reviews@google.com.
   <suffix name="ParkableImage.UnparkedSize"
       label="Size of encoded image data of ParkableImages that are not
              written to disk."/>
+  <suffix name="PartitionAlloc.BRPQuarantined"
+      label="Memory used by objects quarantined by BRP, recorded when
+             USE_BACKUP_REF_PTR build flag is enabled."/>
+  <suffix name="PartitionAlloc.BRPQuarantined.ArrayBuffer"
+      label="Memory used by objects quarantined by BRP, recorded when
+             USE_BACKUP_REF_PTR build flag is enabled."/>
+  <suffix name="PartitionAlloc.BRPQuarantined.Buffer"
+      label="Memory used by objects quarantined by BRP, recorded when
+             USE_BACKUP_REF_PTR build flag is enabled."/>
+  <suffix name="PartitionAlloc.BRPQuarantined.FastMalloc"
+      label="Memory used by objects quarantined by BRP, recorded when
+             USE_BACKUP_REF_PTR build flag is enabled."/>
   <suffix name="PartitionAlloc.Partitions.FastMalloc.ThreadCache"
       label="Memory used by all thread caches for the FastMalloc partition.
              Recorded in blink processes, unless PartitionAlloc is used as
@@ -4288,6 +4300,18 @@ chromium-metrics-reviews@google.com.
   <suffix name="PartitionAlloc.AddressSpace.BlocklistSize.After24H"
       label="Monotonically increasing count of blocked addresses. Only
              recorded for 32-bit with process uptime 24H+."/>
+  <suffix name="PartitionAlloc.BRPQuarantinedCount"
+      label="Number of slots quarantined by BRP, recorded when
+             USE_BACKUP_REF_PTR build flag is enabled."/>
+  <suffix name="PartitionAlloc.BRPQuarantinedCount.ArrayBuffer"
+      label="Number of slots quarantined by BRP, recorded when
+             USE_BACKUP_REF_PTR build flag is enabled."/>
+  <suffix name="PartitionAlloc.BRPQuarantinedCount.Buffer"
+      label="Number of slots quarantined by BRP, recorded when
+             USE_BACKUP_REF_PTR build flag is enabled."/>
+  <suffix name="PartitionAlloc.BRPQuarantinedCount.FastMalloc"
+      label="Number of slots quarantined by BRP, recorded when
+             USE_BACKUP_REF_PTR build flag is enabled."/>
   <affected-histogram name="Memory.Experimental.Browser2.Tiny"/>
   <affected-histogram name="Memory.Experimental.Extension2.Tiny"/>
   <affected-histogram name="Memory.Experimental.Gpu2.Tiny"/>
