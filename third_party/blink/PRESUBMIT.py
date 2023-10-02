@@ -57,7 +57,7 @@ def _CheckForWrongMojomIncludes(input_api, output_api):
     # public C++ API. Adding to these allowed interfaces should meet the
     # following conditions:
     # - Its pros/cons is discussed and have consensus on
-    #   platform-architecture-dev@ and/or
+    #   platform-architecture-dev@ or
     # - It uses POD types that will not import STL (or base string) types into
     #   blink (such as no strings or vectors).
     #
