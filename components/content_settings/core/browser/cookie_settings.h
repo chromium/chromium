@@ -17,6 +17,7 @@
 #include "components/content_settings/core/common/cookie_settings_base.h"
 #include "components/keyed_service/core/refcounted_keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "components/privacy_sandbox/tracking_protection_settings_observer.h"
 
 class GURL;
 class PrefService;
@@ -45,9 +46,11 @@ const char kDummyExtensionScheme[] = ":no-extension-scheme:";
 // A frontend to the cookie settings of |HostContentSettingsMap|. Handles
 // cookie-specific logic such as blocking third-party cookies. Written on the UI
 // thread and read on any thread.
-class CookieSettings : public CookieSettingsBase,
-                       public content_settings::Observer,
-                       public RefcountedKeyedService {
+class CookieSettings
+    : public CookieSettingsBase,
+      public content_settings::Observer,
+      public privacy_sandbox::TrackingProtectionSettingsObserver,
+      public RefcountedKeyedService {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -182,6 +185,9 @@ class CookieSettings : public CookieSettingsBase,
   // called before destroying the service. Afterwards, only const methods can be
   // called.
   void ShutdownOnUIThread() override;
+
+  // TrackingProtectionSettingsObserver:
+  void OnTrackingProtection3pcdChanged() override;
 
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 

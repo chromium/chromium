@@ -103,8 +103,9 @@ void TrackingProtectionSettings::OnBlockAllThirdPartyCookiesPrefChanged() {
 }
 
 void TrackingProtectionSettings::OnTrackingProtection3pcdPrefChanged() {
-  // 3PC blocking may change as a result of entering/leaving the experiment.
   for (auto& observer : observers_) {
+    observer.OnTrackingProtection3pcdChanged();
+    // 3PC blocking may change as a result of entering/leaving the experiment.
     observer.OnBlockAllThirdPartyCookiesChanged();
   }
 }

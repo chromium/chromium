@@ -51,10 +51,6 @@ CookieSettings::CookieSettings(
       prefs::kCookieControlsMode,
       base::BindRepeating(&CookieSettings::OnCookiePreferencesChanged,
                           base::Unretained(this)));
-  pref_change_registrar_.Add(
-      prefs::kTrackingProtection3pcdEnabled,
-      base::BindRepeating(&CookieSettings::OnCookiePreferencesChanged,
-                          base::Unretained(this)));
   OnCookiePreferencesChanged();
 }
 
@@ -328,6 +324,20 @@ void CookieSettings::OnContentSettingChanged(
       observer.OnCookieSettingChanged();
     }
   }
+}
+
+void CookieSettings::OnTrackingProtection3pcdChanged() {
+  // If the user opted to block all 3PC while in the experiment, preserve that
+  // preference if they are offboarded.
+  if (!pref_change_registrar_.prefs()->GetBoolean(
+          prefs::kTrackingProtection3pcdEnabled) &&
+      pref_change_registrar_.prefs()->GetBoolean(
+          prefs::kBlockAll3pcToggleEnabled)) {
+    pref_change_registrar_.prefs()->SetInteger(
+        prefs::kCookieControlsMode,
+        static_cast<int>(CookieControlsMode::kBlockThirdParty));
+  }
+  OnCookiePreferencesChanged();
 }
 
 void CookieSettings::OnCookiePreferencesChanged() {

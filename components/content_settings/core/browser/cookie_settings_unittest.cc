@@ -24,6 +24,7 @@
 #include "components/content_settings/core/test/content_settings_mock_provider.h"
 #include "components/content_settings/core/test/content_settings_test_utils.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
+#include "components/privacy_sandbox/tracking_protection_prefs.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "extensions/buildflags/buildflags.h"
 #include "net/base/features.h"
@@ -1655,6 +1656,29 @@ TEST_P(CookieSettingsTest, ThirdPartySettingObserver) {
   prefs_.SetInteger(prefs::kCookieControlsMode,
                     static_cast<int>(CookieControlsMode::kBlockThirdParty));
   EXPECT_TRUE(observer.last_value());
+}
+
+TEST_P(CookieSettingsTest, PreservesBlockingStateFrom3pcdOnOffboarding) {
+  // CookieControlsMode starts in the default state when we onboard.
+  prefs_.SetBoolean(prefs::kTrackingProtection3pcdEnabled, true);
+  cookie_settings_->OnTrackingProtection3pcdChanged();
+  EXPECT_EQ(prefs_.GetInteger(prefs::kCookieControlsMode),
+            static_cast<int>(CookieControlsMode::kIncognitoOnly));
+
+  // If the block all toggle is off when we offboard, the CookieControlsMode
+  // pref stays the same.
+  prefs_.SetBoolean(prefs::kBlockAll3pcToggleEnabled, false);
+  prefs_.SetBoolean(prefs::kTrackingProtection3pcdEnabled, false);
+  cookie_settings_->OnTrackingProtection3pcdChanged();
+  EXPECT_EQ(prefs_.GetInteger(prefs::kCookieControlsMode),
+            static_cast<int>(CookieControlsMode::kIncognitoOnly));
+
+  // If the block all toggle is on when we offboard, the CookieControlsMode
+  // pref is changed to BlockThirdParty.
+  prefs_.SetBoolean(prefs::kBlockAll3pcToggleEnabled, true);
+  cookie_settings_->OnTrackingProtection3pcdChanged();
+  EXPECT_EQ(prefs_.GetInteger(prefs::kCookieControlsMode),
+            static_cast<int>(CookieControlsMode::kBlockThirdParty));
 }
 
 TEST_P(CookieSettingsTest, LegacyCookieAccessAllowAll) {

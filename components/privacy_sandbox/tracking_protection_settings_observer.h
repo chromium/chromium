@@ -24,6 +24,9 @@ class TrackingProtectionSettingsObserver {
 
   // For observation of block all 3PC.
   virtual void OnBlockAllThirdPartyCookiesChanged() {}
+
+  // For observation of tracking protection experiment status.
+  virtual void OnTrackingProtection3pcdChanged() {}
 };
 
 }  // namespace privacy_sandbox
