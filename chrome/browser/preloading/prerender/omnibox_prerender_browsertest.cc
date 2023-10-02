@@ -15,8 +15,6 @@
 #include "chrome/browser/predictors/autocomplete_action_predictor_factory.h"
 #include "chrome/browser/preloading/chrome_preloading.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/field_trial_settings.h"
-#include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service.h"
-#include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service_factory.h"
 #include "chrome/browser/preloading/preloading_prefs.h"
 #include "chrome/browser/preloading/prerender/prerender_manager.h"
 #include "chrome/browser/profiles/profile.h"
@@ -56,8 +54,6 @@ namespace {
 
 using UkmEntry = ukm::TestUkmRecorder::HumanReadableUkmEntry;
 using ukm::builders::Preloading_Attempt;
-
-}  // namespace
 
 class OmniboxPrerenderBrowserTest : public PlatformBrowserTest {
  public:
@@ -229,7 +225,7 @@ class PrerenderOmniboxSearchSuggestionBrowserTest
     feature_list_.InitWithFeaturesAndParameters(
         {{features::kSupportSearchSuggestionForPrerender2,
           {
-              {"implementation_type", "use_prefetch"},
+              {"implementation_type", "ignore_prefetch"},
           }}},
         {});
   }
@@ -265,24 +261,23 @@ class PrerenderOmniboxSearchSuggestionBrowserTest
     return canonical_search_url;
   }
 
-  void PrerenderQuery(const std::string& search_terms) {
-    auto* search_prefetch_service =
-        SearchPrefetchServiceFactory::GetForProfile(GetProfile());
+  int PrerenderQuery(const std::string& search_terms,
+                     const GURL& expected_prerender_url) {
     AutocompleteMatch match = CreateSearchSuggestionMatch(search_terms);
-    auto* template_url_service =
-        TemplateURLServiceFactory::GetForProfile(GetProfile());
-    search_prefetch_service->CoordinatePrefetchWithPrerender(
-        match, GetActiveWebContents(), template_url_service,
-        GetCanonicalSearchURL(match.destination_url));
+    prerender_manager_->StartPrerenderSearchSuggestion(
+        match, GetCanonicalSearchURL(match.destination_url));
+    int host_id = prerender_helper().GetHostForUrl(expected_prerender_url);
+    EXPECT_NE(host_id, content::RenderFrameHost::kNoFrameTreeNodeId);
+    return host_id;
   }
 
   GURL GetSearchSuggestionUrl(const std::string& search_terms,
-                              bool with_parameter) {
+                              bool is_prerender) {
     std::string url_template = prerender_page_target_ + "?q=$1$2&type=test";
     return search_engine_server_.GetURL(
         kSearchDomain,
         base::ReplaceStringPlaceholders(
-            url_template, {search_terms, with_parameter ? "&pf=cs" : ""},
+            url_template, {search_terms, is_prerender ? "&pf=cs" : ""},
             nullptr));
   }
 
@@ -305,14 +300,32 @@ class PrerenderOmniboxSearchSuggestionBrowserTest
     observer.Wait();
   }
 
-  void PrerenderAndActivate(const std::string& search_terms) {
-    PrerenderQuery(search_terms);
-    GURL prerendered_url =
-        GetSearchSuggestionUrl(search_terms, /*with_parameter=*/false);
+  void PrerenderAndActivate(const std::string& search_terms,
+                            bool update_history_before_activation) {
+    GURL expected_prerender_url =
+        GetSearchSuggestionUrl(search_terms, /*is_prerender=*/true);
+    int host_id = PrerenderQuery(search_terms, expected_prerender_url);
     prerender_helper().WaitForPrerenderLoadCompletion(*GetActiveWebContents(),
-                                                      prerendered_url);
-    NavigateToPrerenderedResult(prerendered_url);
-    EXPECT_EQ(GetActiveWebContents()->GetLastCommittedURL(), prerendered_url);
+                                                      expected_prerender_url);
+
+    std::string script = R"(
+      const url = new URL(document.URL);
+      url.searchParams.delete('pf');
+      history.replaceState(null, "", url.toString());
+    )";
+    GURL expected_activated_url =
+        GetSearchSuggestionUrl(search_terms, /*is_prerender=*/false);
+    content::RenderFrameHost* prerender_frame_host =
+        prerender_helper().GetPrerenderedMainFrameHost(host_id);
+    if (update_history_before_activation) {
+      ASSERT_EQ(true, content::ExecJs(prerender_frame_host, script));
+    }
+    NavigateToPrerenderedResult(expected_prerender_url);
+    if (!update_history_before_activation) {
+      ASSERT_EQ(true, content::ExecJs(prerender_frame_host, script));
+    }
+    EXPECT_EQ(GetActiveWebContents()->GetLastCommittedURL(),
+              expected_activated_url);
   }
 
   PrerenderManager* prerender_manager() { return prerender_manager_; }
@@ -325,7 +338,7 @@ class PrerenderOmniboxSearchSuggestionBrowserTest
         base::UTF8ToUTF16(search_terms));
     match.search_terms_args->original_query = base::UTF8ToUTF16(search_terms);
     match.destination_url =
-        GetSearchSuggestionUrl(search_terms, /*with_parameter=*/true);
+        GetSearchSuggestionUrl(search_terms, /*is_prerender=*/false);
     match.keyword = base::UTF8ToUTF16(search_terms);
     match.RecordAdditionalInfo("should_prerender", "true");
     return match;
@@ -361,24 +374,32 @@ class PrerenderOmniboxSearchSuggestionBrowserTest
 };
 
 class PrerenderOmniboxSearchSuggestionReloadBrowserTest
-    : public PrerenderOmniboxSearchSuggestionBrowserTest {
+    : public testing::WithParamInterface<bool>,
+      public PrerenderOmniboxSearchSuggestionBrowserTest {
  public:
   PrerenderOmniboxSearchSuggestionReloadBrowserTest() {
     feature_list_.InitWithFeaturesAndParameters(
         {{features::kSupportSearchSuggestionForPrerender2,
           {
-              {"implementation_type", "use_prefetch"},
+              {"implementation_type", "ignore_prefetch"},
           }}},
         // Disable BFCache, to test the HTTP Cache path.
         {features::kBackForwardCache});
   }
 
+ protected:
+  bool UpdateHistoryBeforeActivation() const { return GetParam(); }
+
  private:
   base::test::ScopedFeatureList feature_list_;
 };
 
+INSTANTIATE_TEST_SUITE_P(All,
+                         PrerenderOmniboxSearchSuggestionReloadBrowserTest,
+                         testing::Bool());
+
 // Test back or forward navigations can use the HTTP Cache.
-IN_PROC_BROWSER_TEST_F(PrerenderOmniboxSearchSuggestionReloadBrowserTest,
+IN_PROC_BROWSER_TEST_P(PrerenderOmniboxSearchSuggestionReloadBrowserTest,
                        BackNavigationHitsHttpCache) {
   base::HistogramTester histogram_tester;
   const GURL kInitialUrl = embedded_test_server()->GetURL("/empty.html");
@@ -388,23 +409,23 @@ IN_PROC_BROWSER_TEST_F(PrerenderOmniboxSearchSuggestionReloadBrowserTest,
 
   // 1. Prerender the first page.
   std::string search_terms_1 = "prerender2222";
-  GURL expected_prefetched_url_1 =
-      GetSearchSuggestionUrl(search_terms_1, /*with_parameter=*/true);
+  GURL expected_prerender_url_1 =
+      GetSearchSuggestionUrl(search_terms_1, /*is_prerender=*/true);
   GURL expected_activated_url_1 =
-      GetSearchSuggestionUrl(search_terms_1, /*with_parameter=*/false);
-  PrerenderAndActivate(search_terms_1);
+      GetSearchSuggestionUrl(search_terms_1, /*is_prerender=*/false);
+  PrerenderAndActivate(search_terms_1, UpdateHistoryBeforeActivation());
   EXPECT_EQ(0, prerender_helper().GetRequestCount(expected_activated_url_1));
-  EXPECT_EQ(1, prerender_helper().GetRequestCount(expected_prefetched_url_1));
+  EXPECT_EQ(1, prerender_helper().GetRequestCount(expected_prerender_url_1));
 
   // 2. Prerender and activate another page.
   std::string search_terms_2 = "prefetch233";
-  GURL expected_prefetched_url_2 =
-      GetSearchSuggestionUrl(search_terms_2, /*with_parameter=*/true);
+  GURL expected_prerender_url_2 =
+      GetSearchSuggestionUrl(search_terms_2, /*is_prerender=*/true);
   GURL expected_activated_url_2 =
-      GetSearchSuggestionUrl(search_terms_2, /*with_parameter=*/false);
-  PrerenderAndActivate(search_terms_2);
+      GetSearchSuggestionUrl(search_terms_2, /*is_prerender=*/false);
+  PrerenderAndActivate(search_terms_2, UpdateHistoryBeforeActivation());
   EXPECT_EQ(0, prerender_helper().GetRequestCount(expected_activated_url_2));
-  EXPECT_EQ(1, prerender_helper().GetRequestCount(expected_prefetched_url_2));
+  EXPECT_EQ(1, prerender_helper().GetRequestCount(expected_prerender_url_2));
 
   // 3. Navigate back. Chrome is supposed to read the response from the cache,
   // instead of sending another request.
@@ -414,7 +435,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderOmniboxSearchSuggestionReloadBrowserTest,
   EXPECT_EQ(expected_activated_url_1,
             GetActiveWebContents()->GetLastCommittedURL());
   EXPECT_EQ(0, prerender_helper().GetRequestCount(expected_activated_url_1));
-  EXPECT_EQ(1, prerender_helper().GetRequestCount(expected_prefetched_url_1));
+  EXPECT_EQ(1, prerender_helper().GetRequestCount(expected_prerender_url_1));
 }
 
 class PrerenderOmniboxSearchSuggestionExpiryBrowserTest
@@ -424,30 +445,25 @@ class PrerenderOmniboxSearchSuggestionExpiryBrowserTest
     feature_list_.InitWithFeaturesAndParameters(
         {{features::kSupportSearchSuggestionForPrerender2,
           {
-              {"implementation_type", "use_prefetch"},
+              {"implementation_type", "ignore_prefetch"},
           }},
-         {kSearchPrefetchServicePrefetching, {}}},
+         {kSearchPrefetchServicePrefetching,
+          {
+              {"prefetch_caching_limit_ms", "10"},
+          }}},
         {});
   }
 
  protected:
-  void PrerenderQueryAndWaitForExpiring(const std::string& search_terms) {
-    content::test::PrerenderHostRegistryObserver registry_observer(
-        *GetActiveWebContents());
-    PrerenderQuery(search_terms);
-    GURL prerendered_url =
-        GetSearchSuggestionUrl(search_terms, /*with_parameter=*/false);
-    registry_observer.WaitForTrigger(prerendered_url);
+  void PrerenderQueryAndWaitForExpiring(const std::string& search_terms,
+                                        const GURL& expected_prerender_url) {
+    int host_id = PrerenderQuery(search_terms, expected_prerender_url);
 
-    int host_id = prerender_helper().GetHostForUrl(prerendered_url);
-    ASSERT_NE(host_id, content::RenderFrameHost::kNoFrameTreeNodeId);
     content::test::PrerenderHostObserver prerender_observer(
         *GetActiveWebContents(), host_id);
 
-    // The prerender will be destroyed automatically for expiry.
-    auto* search_prefetch_service =
-        SearchPrefetchServiceFactory::GetForProfile(GetProfile());
-    search_prefetch_service->FireAllExpiryTimerForTesting();
+    // The prerender will be destroyed automatically soon, since the duration is
+    // set to 10ms.
     prerender_observer.WaitForDestroyed();
   }
 
@@ -466,35 +482,36 @@ IN_PROC_BROWSER_TEST_F(PrerenderOmniboxSearchSuggestionExpiryBrowserTest,
   InitializePrerenderManager();
 
   std::string search_query = "prerender2";
-  PrerenderQueryAndWaitForExpiring("prerender222");
+  GURL expected_prerender_url =
+      GetSearchSuggestionUrl("prerender222", /*is_prerender=*/true);
+  PrerenderQueryAndWaitForExpiring("prerender222", expected_prerender_url);
 
   histogram_tester.ExpectUniqueSample(
       "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_"
       "DefaultSearchEngine",
       /*PrerenderFinalStatus::kTriggerDestroyed*/ 16, 1);
 
-  // The prediction should be treated as cancelled.
-  histogram_tester.ExpectUniqueSample(
-      internal::kHistogramPrerenderPredictionStatusDefaultSearchEngine,
-      PrerenderPredictionStatus::kCancelled, 1);
-
   // Select the prerender hint. The prerendered result has been deleted, so
   // browser loads the search result over again.
   content::TestNavigationObserver observer(GetActiveWebContents());
   GetActiveWebContents()->OpenURL(content::OpenURLParams(
-      GetSearchSuggestionUrl("prerender222", /*with_parameter=*/false),
-      content::Referrer(), WindowOpenDisposition::CURRENT_TAB,
+      expected_prerender_url, content::Referrer(),
+      WindowOpenDisposition::CURRENT_TAB,
       ui::PageTransitionFromInt(ui::PAGE_TRANSITION_GENERATED |
                                 ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
       /*is_renderer_initiated=*/false));
   observer.Wait();
 
-  // This metric is recorded only when prerendering is alive on primary page
-  // changed.
-  histogram_tester.ExpectTotalCount(
+  // The prediction is correct, so kHitFinished should be recorded.
+  histogram_tester.ExpectUniqueSample(
+      internal::kHistogramPrerenderPredictionStatusDefaultSearchEngine,
+      PrerenderPredictionStatus::kHitFinished, 1);
+  // Since the prerendered page ran out of time, the timing metric should
+  // record `prefetch_caching_limit_ms`.
+  histogram_tester.ExpectUniqueTimeSample(
       "Prerender.Experimental.Search."
       "FirstCorrectPrerenderHintReceivedToRealSearchNavigationStartedDuration",
-      0);
+      base::Milliseconds(10), 1);
 }
 
 // Tests that kCanceled is correctly recorded in the case that PrerenderManager
@@ -509,21 +526,39 @@ IN_PROC_BROWSER_TEST_F(PrerenderOmniboxSearchSuggestionExpiryBrowserTest,
   ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), kInitialUrl));
   InitializePrerenderManager();
 
+  GURL expected_prerender_url =
+      GetSearchSuggestionUrl("prerender222", /*is_prerender=*/true);
   // Prerender the first query, and wait for it to be deleted.
-  PrerenderQueryAndWaitForExpiring("prerender222");
+  PrerenderQueryAndWaitForExpiring("prerender222", expected_prerender_url);
 
   histogram_tester.ExpectUniqueSample(
       "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_"
       "DefaultSearchEngine",
       /*PrerenderFinalStatus::kTriggerDestroyed*/ 16, 1);
 
-  // The prediction should be treated as cancelled.
+  // Nothing should be recorded. Because there is no new navigation nor new
+  // search suggestion.
+  histogram_tester.ExpectTotalCount(
+      internal::kHistogramPrerenderPredictionStatusDefaultSearchEngine, 0);
+
+  // Suggest to prerender another term.
+  GURL prerender_url_2 =
+      GetSearchSuggestionUrl("prerender233", /*is_prerender=*/true);
+  PrerenderQuery("prerender233", prerender_url_2);
+
+  // PrerenderPredictionStatus::kCancelled should be recorded for the prediction
+  // of "prerender222".
   histogram_tester.ExpectUniqueSample(
       internal::kHistogramPrerenderPredictionStatusDefaultSearchEngine,
       PrerenderPredictionStatus::kCancelled, 1);
 
-  // Prerender another term and activate it.
-  PrerenderAndActivate("prerender233");
+  content::TestNavigationObserver observer(GetActiveWebContents());
+  GetActiveWebContents()->OpenURL(content::OpenURLParams(
+      prerender_url_2, content::Referrer(), WindowOpenDisposition::CURRENT_TAB,
+      ui::PageTransitionFromInt(ui::PAGE_TRANSITION_GENERATED |
+                                ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
+      /*is_renderer_initiated=*/false));
+  observer.Wait();
 
   // The prediction is correct, so kHitFinished should be recorded.
   histogram_tester.ExpectBucketCount(
@@ -534,3 +569,5 @@ IN_PROC_BROWSER_TEST_F(PrerenderOmniboxSearchSuggestionExpiryBrowserTest,
   histogram_tester.ExpectTotalCount(
       internal::kHistogramPrerenderPredictionStatusDefaultSearchEngine, 2);
 }
+
+}  // namespace
