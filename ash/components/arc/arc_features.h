@@ -63,6 +63,7 @@ BASE_DECLARE_FEATURE(kSwitchToKeyMintOnTOverride);
 BASE_DECLARE_FEATURE(kSyncInstallPriority);
 BASE_DECLARE_FEATURE(kTouchscreenEmulation);
 BASE_DECLARE_FEATURE(kTrackpadScrollTouchscreenEmulation);
+BASE_DECLARE_FEATURE(kUnaffiliatedDeviceArcRestriction);
 BASE_DECLARE_FEATURE(kUsbStorageUIFeature);
 BASE_DECLARE_FEATURE(kUseDalvikMemoryProfile);
 BASE_DECLARE_FEATURE(kUseDefaultBlockSize);
