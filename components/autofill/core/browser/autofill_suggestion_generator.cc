@@ -16,16 +16,20 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_browser_util.h"
 #include "components/autofill/core/browser/autofill_client.h"
+#include "components/autofill/core/browser/autofill_data_util.h"
 #include "components/autofill/core/browser/autofill_experiments.h"
 #include "components/autofill/core/browser/autofill_optimization_guide.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
+#include "components/autofill/core/browser/data_model/borrowed_transliterator.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/field_filler.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/form_parsing/address_field.h"
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/geo/address_i18n.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/card_metadata_metrics.h"
 #include "components/autofill/core/browser/payments/autofill_offer_manager.h"
@@ -43,6 +47,8 @@
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/grit/components_scaled_resources.h"
 #include "components/strings/grit/components_strings.h"
+#include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_data.h"
+#include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_formatter.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 
@@ -207,6 +213,65 @@ void AssignLabelsAndDeduplicate(std::vector<Suggestion>& suggestions,
   }
 }
 
+// Returns whether the `suggestion_canon` is a valid match given
+// `field_contents_canon`.
+bool IsValidSuggestionForFieldContents(std::u16string suggestion_canon,
+                                       std::u16string field_contents_canon,
+                                       const AutofillType& type,
+                                       bool is_masked_server_card,
+                                       bool field_is_autofilled) {
+  // Phones should do a substring match because they can be trimmed to remove
+  // the first parts (e.g. country code or prefix).
+  if (type.group() == FieldTypeGroup::kPhone &&
+      suggestion_canon.find(field_contents_canon) != std::u16string::npos) {
+    return true;
+  }
+
+  // For card number fields, suggest the card if:
+  // - the number matches any part of the card, or
+  // - it's a masked card and there are 6 or fewer typed so far.
+  // - it's a masked card, field is autofilled, and the last 4 digits in the
+  // field match the last 4 digits of the card.
+  if (type.GetStorableType() == CREDIT_CARD_NUMBER) {
+    if (suggestion_canon.find(field_contents_canon) != std::u16string::npos) {
+      return true;
+    }
+
+    if (is_masked_server_card) {
+      if (field_contents_canon.length() < 6) {
+        return true;
+      }
+      if (field_is_autofilled) {
+        int field_contents_length = field_contents_canon.length();
+        DCHECK(field_contents_length >= 4);
+        if (suggestion_canon.find(field_contents_canon.substr(
+                field_contents_length - 4, field_contents_length)) !=
+            std::u16string::npos) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
+
+  return base::StartsWith(suggestion_canon, field_contents_canon,
+                          base::CompareCase::SENSITIVE);
+}
+
+// Normalizes text for comparison based on the type of the field `text` was
+// entered into.
+std::u16string NormalizeForComparisonForType(const std::u16string& text,
+                                             ServerFieldType type) {
+  if (GroupTypeOfServerFieldType(type) == FieldTypeGroup::kEmail) {
+    // For emails, keep special characters so that if the user has two emails
+    // `test@foo.xyz` and `test1@foo.xyz` saved, only the first one is suggested
+    // upon entering `test@` into the email field.
+    return RemoveDiacriticsAndConvertToLowerCase(text);
+  }
+  return AutofillProfileComparator::NormalizeForComparison(text);
+}
+
 }  // namespace
 
 AutofillSuggestionGenerator::AutofillSuggestionGenerator(
@@ -247,8 +312,7 @@ AutofillSuggestionGenerator::GetProfilesToSuggest(
     bool field_is_autofilled,
     const ServerFieldTypeSet& field_types) {
   std::u16string field_contents_canon =
-      suggestion_selection::NormalizeForComparisonForType(
-          field_contents, type.GetStorableType());
+      NormalizeForComparisonForType(field_contents, type.GetStorableType());
 
   // Get the profiles to suggest, which are already sorted.
   std::vector<AutofillProfile*> sorted_profiles =
@@ -263,9 +327,8 @@ AutofillSuggestionGenerator::GetProfilesToSuggest(
   }
 
   std::vector<const AutofillProfile*> matched_profiles =
-      GetPrefixMatchedProfiles(
-          sorted_profiles, type, field_contents, field_contents_canon,
-          personal_data_->app_locale(), field_is_autofilled);
+      GetPrefixMatchedProfiles(sorted_profiles, type, field_contents,
+                               field_contents_canon, field_is_autofilled);
 
   const AutofillProfileComparator comparator(personal_data_->app_locale());
   // Don't show two suggestions if one is a subset of the other.
@@ -299,8 +362,8 @@ AutofillSuggestionGenerator::CreateSuggestionsFromProfiles(
 
   for (const AutofillProfile* profile : profiles) {
     // Compute the main text to be displayed in the suggestion bubble.
-    std::u16string main_text = suggestion_selection::GetSuggestionMainText(
-        profile, trigger_field_type, app_locale);
+    std::u16string main_text =
+        GetProfileSuggestionMainText(profile, trigger_field_type);
     if (trigger_field_type.group() == FieldTypeGroup::kPhone) {
       main_text = FieldFiller::GetPhoneNumberValueForInput(
           trigger_field_max_length, main_text,
@@ -371,8 +434,8 @@ AutofillSuggestionGenerator::DeduplicatedProfilesForSuggestions(
   // `kAutofillUseAddressRewriterInProfileSubsetComparison` launches.
   std::vector<std::u16string> suggestion_main_text;
   for (const AutofillProfile* profile : matched_profiles) {
-    suggestion_main_text.push_back(suggestion_selection::GetSuggestionMainText(
-        profile, trigger_field_type, comparator.app_locale()));
+    suggestion_main_text.push_back(
+        GetProfileSuggestionMainText(profile, trigger_field_type));
   }
 
   std::vector<const AutofillProfile*> unique_matched_profiles;
@@ -434,7 +497,6 @@ AutofillSuggestionGenerator::GetPrefixMatchedProfiles(
     const AutofillType& trigger_field_type,
     const std::u16string& raw_field_contents,
     const std::u16string& field_contents_canon,
-    const std::string& app_locale,
     bool field_is_autofilled) {
   std::vector<const AutofillProfile*> matched_profiles;
   for (const AutofillProfile* profile : profiles) {
@@ -454,18 +516,17 @@ AutofillSuggestionGenerator::GetPrefixMatchedProfiles(
     }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-    std::u16string main_text = suggestion_selection::GetSuggestionMainText(
-        profile, trigger_field_type, app_locale);
+    std::u16string main_text =
+        GetProfileSuggestionMainText(profile, trigger_field_type);
 
     // Discard profiles that do not have a value for the trigger field.
     if (main_text.empty()) {
       continue;
     }
 
-    std::u16string suggestion_canon =
-        suggestion_selection::NormalizeForComparisonForType(
-            main_text, trigger_field_type.GetStorableType());
-    if (suggestion_selection::IsValidSuggestionForFieldContents(
+    std::u16string suggestion_canon = NormalizeForComparisonForType(
+        main_text, trigger_field_type.GetStorableType());
+    if (IsValidSuggestionForFieldContents(
             suggestion_canon, field_contents_canon, trigger_field_type,
             /*is_masked_server_card=*/false, field_is_autofilled)) {
       matched_profiles.push_back(profile);
@@ -484,6 +545,46 @@ void AutofillSuggestionGenerator::RemoveProfilesNotUsedSinceTimestamp(
   const size_t num_profiles_suppressed = original_size - profiles.size();
   AutofillMetrics::LogNumberOfAddressesSuppressedForDisuse(
       num_profiles_suppressed);
+}
+
+std::u16string AutofillSuggestionGenerator::GetProfileSuggestionMainText(
+    const AutofillProfile* profile,
+    const AutofillType& type) {
+  std::string app_locale = personal_data_->app_locale();
+  ::i18n::addressinput::AddressField address_field;
+  if (i18n::FieldForType(type.GetStorableType(), &address_field) &&
+      address_field == ::i18n::addressinput::STREET_ADDRESS) {
+    std::string street_address_line;
+    ::i18n::addressinput::GetStreetAddressLinesAsSingleLine(
+        *i18n::CreateAddressDataFromAutofillProfile(*profile, app_locale),
+        &street_address_line);
+    return base::UTF8ToUTF16(street_address_line);
+  }
+
+  std::u16string value = profile->GetInfo(type, app_locale);
+
+  if (type.group() == FieldTypeGroup::kPhone) {
+    bool format_phone;
+
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+    format_phone = base::FeatureList::IsEnabled(
+        features::kAutofillUseMobileLabelDisambiguation);
+#else
+    format_phone = base::FeatureList::IsEnabled(
+        features::kAutofillUseImprovedLabelDisambiguation);
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+
+    if (format_phone) {
+      // Formats, e.g., the US phone numbers 15084880800, 508 488 0800, and
+      // +15084880800, as (508) 488-0800, and the Brazilian phone numbers
+      // 21987650000 and +55 11 2648-0254 as (21) 98765-0000 and
+      // (11) 2648-0254, respectively.
+      value = base::UTF8ToUTF16(i18n::FormatPhoneNationallyForDisplay(
+          base::UTF16ToUTF8(value),
+          data_util::GetCountryCodeWithFallback(*profile, app_locale)));
+    }
+  }
+  return value;
 }
 
 std::vector<Suggestion>
@@ -527,7 +628,7 @@ AutofillSuggestionGenerator::GetSuggestionsForCreditCards(
     if (creditcard_field_value.empty())
       continue;
 
-    if (suggestion_selection::IsValidSuggestionForFieldContents(
+    if (IsValidSuggestionForFieldContents(
             base::i18n::ToLower(creditcard_field_value), field_contents_lower,
             type,
             credit_card.record_type() ==

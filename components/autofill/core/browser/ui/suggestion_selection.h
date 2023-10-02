@@ -46,25 +46,6 @@ void AddGranularFillingChildSuggestions(
     const std::string& app_locale,
     Suggestion& suggestion);
 
-// In addition to just getting the values out of the autocomplete profile, this
-// function handles formatting of the street addresses and phone numbers.
-std::u16string GetSuggestionMainText(const AutofillProfile* profile,
-                                     const AutofillType& type,
-                                     const std::string& app_locale);
-
-// Normalizes text for comparison based on the type of the field `text` was
-// entered into.
-std::u16string NormalizeForComparisonForType(const std::u16string& text,
-                                             ServerFieldType type);
-
-// Returns whether the `suggestion_canon` is a valid match given
-// `field_contents_canon`.
-bool IsValidSuggestionForFieldContents(std::u16string suggestion_canon,
-                                       std::u16string field_contents_canon,
-                                       const AutofillType& type,
-                                       bool is_masked_server_card,
-                                       bool field_is_autofilled);
-
 }  // namespace suggestion_selection
 }  // namespace autofill
 

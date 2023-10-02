@@ -198,7 +198,6 @@ class AutofillSuggestionGenerator {
       const AutofillType& trigger_field_type,
       const std::u16string& raw_field_contents,
       const std::u16string& field_contents_canon,
-      const std::string& app_locale,
       bool field_is_autofilled);
 
   // Removes profiles that haven't been used after `min_last_used` from
@@ -206,6 +205,11 @@ class AutofillSuggestionGenerator {
   void RemoveProfilesNotUsedSinceTimestamp(
       base::Time min_last_used,
       std::vector<AutofillProfile*>& profiles);
+
+  // In addition to just getting the values out of the profile, this function
+  // handles type-specific formatting.
+  std::u16string GetProfileSuggestionMainText(const AutofillProfile* profile,
+                                              const AutofillType& type);
 
   // Return the texts shown as the first line of the suggestion, based on the
   // `credit_card` and the focused field `type`. The first index in the pair

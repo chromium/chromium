@@ -34,9 +34,6 @@
 namespace autofill::suggestion_selection {
 
 namespace {
-using ::i18n::addressinput::AddressField;
-using ::i18n::addressinput::GetStreetAddressLinesAsSingleLine;
-using ::i18n::addressinput::STREET_ADDRESS;
 
 Suggestion GetEditAddressProfileSuggestion(Suggestion::BackendId backend_id) {
   Suggestion suggestion(l10n_util::GetStringUTF16(
@@ -282,45 +279,6 @@ void AddFooterChildSuggestions(
 
 }  // namespace
 
-std::u16string GetSuggestionMainText(const AutofillProfile* profile,
-                                     const AutofillType& type,
-                                     const std::string& app_locale) {
-  AddressField address_field;
-  if (i18n::FieldForType(type.GetStorableType(), &address_field) &&
-      address_field == STREET_ADDRESS) {
-    std::string street_address_line;
-    GetStreetAddressLinesAsSingleLine(
-        *i18n::CreateAddressDataFromAutofillProfile(*profile, app_locale),
-        &street_address_line);
-    return base::UTF8ToUTF16(street_address_line);
-  }
-
-  std::u16string value = profile->GetInfo(type, app_locale);
-
-  if (type.group() == FieldTypeGroup::kPhone) {
-    bool format_phone;
-
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-    format_phone = base::FeatureList::IsEnabled(
-        features::kAutofillUseMobileLabelDisambiguation);
-#else
-    format_phone = base::FeatureList::IsEnabled(
-        features::kAutofillUseImprovedLabelDisambiguation);
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-
-    if (format_phone) {
-      // Formats, e.g., the US phone numbers 15084880800, 508 488 0800, and
-      // +15084880800, as (508) 488-0800, and the Brazilian phone numbers
-      // 21987650000 and +55 11 2648-0254 as (21) 98765-0000 and
-      // (11) 2648-0254, respectively.
-      value = base::UTF8ToUTF16(i18n::FormatPhoneNationallyForDisplay(
-          base::UTF16ToUTF8(value),
-          data_util::GetCountryCodeWithFallback(*profile, app_locale)));
-    }
-  }
-  return value;
-}
-
 void AddSuggestionDetailsForCurrentFillingGranularity(
     absl::optional<ServerFieldTypeSet> optional_last_targeted_fields,
     const AutofillType& triggering_field_type,
@@ -370,61 +328,6 @@ void AddGranularFillingChildSuggestions(
   AddAddressChildSuggestions(type, profile, app_locale, suggestion);
   AddContactChildSuggestions(type, profile, app_locale, suggestion);
   AddFooterChildSuggestions(profile, last_targeted_fields, suggestion);
-}
-
-std::u16string NormalizeForComparisonForType(const std::u16string& text,
-                                             ServerFieldType type) {
-  if (GroupTypeOfServerFieldType(type) == FieldTypeGroup::kEmail) {
-    // For emails, keep special characters so that if the user has two emails
-    // `test@foo.xyz` and `test1@foo.xyz` saved, only the first one is suggested
-    // upon entering `test@` into the email field.
-    return RemoveDiacriticsAndConvertToLowerCase(text);
-  }
-  return AutofillProfileComparator::NormalizeForComparison(text);
-}
-
-bool IsValidSuggestionForFieldContents(std::u16string suggestion_canon,
-                                       std::u16string field_contents_canon,
-                                       const AutofillType& type,
-                                       bool is_masked_server_card,
-                                       bool field_is_autofilled) {
-  // Phones should do a substring match because they can be trimmed to remove
-  // the first parts (e.g. country code or prefix).
-  if (type.group() == FieldTypeGroup::kPhone &&
-      suggestion_canon.find(field_contents_canon) != std::u16string::npos) {
-    return true;
-  }
-
-  // For card number fields, suggest the card if:
-  // - the number matches any part of the card, or
-  // - it's a masked card and there are 6 or fewer typed so far.
-  // - it's a masked card, field is autofilled, and the last 4 digits in the
-  // field match the last 4 digits of the card.
-  if (type.GetStorableType() == CREDIT_CARD_NUMBER) {
-    if (suggestion_canon.find(field_contents_canon) != std::u16string::npos) {
-      return true;
-    }
-
-    if (is_masked_server_card) {
-      if (field_contents_canon.length() < 6) {
-        return true;
-      }
-      if (field_is_autofilled) {
-        int field_contents_length = field_contents_canon.length();
-        DCHECK(field_contents_length >= 4);
-        if (suggestion_canon.find(field_contents_canon.substr(
-                field_contents_length - 4, field_contents_length)) !=
-            std::u16string::npos) {
-          return true;
-        }
-      }
-    }
-
-    return false;
-  }
-
-  return base::StartsWith(suggestion_canon, field_contents_canon,
-                          base::CompareCase::SENSITIVE);
 }
 
 }  // namespace autofill::suggestion_selection
