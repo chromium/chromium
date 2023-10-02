@@ -268,7 +268,7 @@ class WebTransportVisitorProxy : public quic::WebTransportVisitor {
   void OnIncomingUnidirectionalStreamAvailable() override {
     visitor_->OnIncomingUnidirectionalStreamAvailable();
   }
-  void OnDatagramReceived(absl::string_view datagram) override {
+  void OnDatagramReceived(std::string_view datagram) override {
     visitor_->OnDatagramReceived(datagram);
   }
   void OnCanCreateNewOutgoingBidirectionalStream() override {
@@ -877,7 +877,7 @@ void DedicatedWebTransportHttp3Client::
 }
 
 void DedicatedWebTransportHttp3Client::OnDatagramReceived(
-    absl::string_view datagram) {
+    std::string_view datagram) {
   visitor_->OnDatagramReceived(datagram);
 }
 

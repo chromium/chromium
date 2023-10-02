@@ -21,7 +21,7 @@ class NET_EXPORT_PRIVATE HeaderCoalescer
 
   void OnHeaderBlockStart() override {}
 
-  void OnHeader(absl::string_view key, absl::string_view value) override;
+  void OnHeader(std::string_view key, absl::string_view value) override;
 
   void OnHeaderBlockEnd(size_t uncompressed_header_bytes,
                         size_t compressed_header_bytes) override {}

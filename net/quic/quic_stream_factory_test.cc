@@ -886,7 +886,7 @@ class QuicStreamFactoryTestBase : public WithTaskEnvironment {
       uint64_t packet_number,
       quic::QuicStreamId stream_id,
       bool fin,
-      absl::string_view data) {
+      std::string_view data) {
     return server_maker_.MakeDataPacket(packet_number, stream_id, fin, data);
   }
 

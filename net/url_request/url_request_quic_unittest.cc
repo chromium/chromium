@@ -179,8 +179,8 @@ class URLRequestQuicTest
            std::string(path);
   }
 
-  void SetDelay(absl::string_view host,
-                absl::string_view path,
+  void SetDelay(std::string_view host,
+                std::string_view path,
                 base::TimeDelta delay) {
     memory_cache_backend_.SetResponseDelay(
         host, path,

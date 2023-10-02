@@ -117,8 +117,8 @@ void AppendToHeaderBlock(const char* const extra_headers[],
 
   // Copy in the headers.
   for (int i = 0; i < extra_header_count; i++) {
-    absl::string_view key(extra_headers[i * 2]);
-    absl::string_view value(extra_headers[i * 2 + 1]);
+    std::string_view key(extra_headers[i * 2]);
+    std::string_view value(extra_headers[i * 2 + 1]);
     DCHECK(!key.empty()) << "Header key must not be empty.";
     headers->AppendValueOrAddHeader(key, value);
   }

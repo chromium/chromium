@@ -6,11 +6,11 @@
 #define NET_THIRD_PARTY_QUICHE_OVERRIDES_QUICHE_PLATFORM_IMPL_QUICHE_URL_UTILS_IMPL_H_
 
 #include <string>
+#include <string_view>
 
 #include "quiche/common/platform/api/quiche_export.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
-#include "third_party/abseil-cpp/absl/strings/string_view.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace quiche {
@@ -29,7 +29,7 @@ QUICHE_EXPORT bool ExpandURITemplateImpl(
 // Decodes a URL-encoded string and converts it to ASCII. If the decoded input
 // contains non-ASCII characters, decoding fails and absl::nullopt is returned.
 QUICHE_EXPORT absl::optional<std::string> AsciiUrlDecodeImpl(
-    absl::string_view input);
+    std::string_view input);
 
 }  // namespace quiche
 

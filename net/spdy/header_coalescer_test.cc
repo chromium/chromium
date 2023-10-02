@@ -94,12 +94,12 @@ TEST_F(HeaderCoalescerTest, Append) {
 
   spdy::Http2HeaderBlock header_block = header_coalescer_.release_headers();
   EXPECT_THAT(header_block,
-              ElementsAre(Pair("foo", absl::string_view("bar\0quux", 8)),
+              ElementsAre(Pair("foo", std::string_view("bar\0quux", 8)),
                           Pair("cookie", "baz; qux")));
 }
 
 TEST_F(HeaderCoalescerTest, HeaderNameNotValid) {
-  absl::string_view header_name("\x1\x7F\x80\xFF");
+  std::string_view header_name("\x1\x7F\x80\xFF");
   header_coalescer_.OnHeader(header_name, "foo");
   EXPECT_TRUE(header_coalescer_.error_seen());
   ExpectEntry("%ESCAPED:\xE2\x80\x8B \x1\x7F%80%FF", "foo",
@@ -108,7 +108,7 @@ TEST_F(HeaderCoalescerTest, HeaderNameNotValid) {
 
 // RFC 7540 Section 8.1.2.6. Uppercase in header name is invalid.
 TEST_F(HeaderCoalescerTest, HeaderNameHasUppercase) {
-  absl::string_view header_name("ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+  std::string_view header_name("ABCDEFGHIJKLMNOPQRSTUVWXYZ");
   header_coalescer_.OnHeader(header_name, "foo");
   EXPECT_TRUE(header_coalescer_.error_seen());
   ExpectEntry("ABCDEFGHIJKLMNOPQRSTUVWXYZ", "foo",
@@ -122,7 +122,7 @@ TEST_F(HeaderCoalescerTest, HeaderNameHasUppercase) {
 //                  "^" / "_" / "`" / "|" / "~" / DIGIT / ALPHA
 TEST_F(HeaderCoalescerTest, HeaderNameValid) {
   // Due to RFC 7540 Section 8.1.2.6. Uppercase characters are not included.
-  absl::string_view header_name(
+  std::string_view header_name(
       "abcdefghijklmnopqrstuvwxyz0123456789!#$%&'*+-."
       "^_`|~");
   header_coalescer_.OnHeader(header_name, "foo");

@@ -208,7 +208,7 @@ void BufferedSpdyFramer::OnPushPromise(spdy::SpdyStreamId stream_id,
 
 void BufferedSpdyFramer::OnAltSvc(
     spdy::SpdyStreamId stream_id,
-    absl::string_view origin,
+    std::string_view origin,
     const spdy::SpdyAltSvcWireFormat::AlternativeServiceVector& altsvc_vector) {
   visitor_->OnAltSvc(stream_id, origin, altsvc_vector);
 }

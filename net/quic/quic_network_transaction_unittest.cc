@@ -449,7 +449,7 @@ class QuicNetworkTransactionTest
       uint64_t packet_number,
       quic::QuicStreamId stream_id,
       bool fin,
-      absl::string_view data) {
+      std::string_view data) {
     return server_maker_.MakeDataPacket(packet_number, stream_id, fin, data);
   }
 
@@ -457,7 +457,7 @@ class QuicNetworkTransactionTest
       uint64_t packet_number,
       quic::QuicStreamId stream_id,
       bool fin,
-      absl::string_view data) {
+      std::string_view data) {
     return client_maker_->MakeDataPacket(packet_number, stream_id, fin, data);
   }
 
@@ -467,7 +467,7 @@ class QuicNetworkTransactionTest
       uint64_t largest_received,
       uint64_t smallest_received,
       bool fin,
-      absl::string_view data) {
+      std::string_view data) {
     return client_maker_->MakeAckAndDataPacket(packet_number, stream_id,
                                                largest_received,
                                                smallest_received, fin, data);
@@ -481,7 +481,7 @@ class QuicNetworkTransactionTest
       uint64_t smallest_received,
       quic::QuicStreamId data_id,
       bool fin,
-      absl::string_view data) {
+      std::string_view data) {
     return client_maker_->MakeAckDataAndRst(
         packet_number, stream_id, error_code, largest_received,
         smallest_received, data_id, fin, data);
@@ -1287,7 +1287,7 @@ TEST_P(QuicNetworkTransactionTest, LargeResponseHeaders) {
     mock_quic_data.AddRead(
         ASYNC, ConstructServerDataPacket(
                    packet_number++, stream_id, false,
-                   absl::string_view(response_data.data() + offset, len)));
+                   std::string_view(response_data.data() + offset, len)));
   }
 
   mock_quic_data.AddRead(
@@ -1348,7 +1348,7 @@ TEST_P(QuicNetworkTransactionTest, TooLargeResponseHeaders) {
     mock_quic_data.AddRead(
         ASYNC, ConstructServerDataPacket(
                    packet_number++, stream_id, false,
-                   absl::string_view(response_data.data() + offset, len)));
+                   std::string_view(response_data.data() + offset, len)));
   }
 
   mock_quic_data.AddRead(

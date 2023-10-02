@@ -122,7 +122,7 @@ class QuicTestPacketMaker {
       quic::QuicStreamId rst_stream_id,
       quic::QuicRstStreamErrorCode rst_error_code,
       quic::QuicStreamId data_stream_id,
-      absl::string_view data);
+      std::string_view data);
 
   std::unique_ptr<quic::QuicReceivedPacket> MakeRetransmissionRstAndDataPacket(
       const std::vector<uint64_t>& original_packet_numbers,
@@ -130,20 +130,20 @@ class QuicTestPacketMaker {
       quic::QuicStreamId rst_stream_id,
       quic::QuicRstStreamErrorCode rst_error_code,
       quic::QuicStreamId data_stream_id,
-      absl::string_view data,
+      std::string_view data,
       uint64_t retransmit_frame_count = 0);
 
   std::unique_ptr<quic::QuicReceivedPacket> MakeDataAndRstPacket(
       uint64_t num,
       quic::QuicStreamId data_stream_id,
-      absl::string_view data,
+      std::string_view data,
       quic::QuicStreamId rst_stream_id,
       quic::QuicRstStreamErrorCode rst_error_code);
 
   std::unique_ptr<quic::QuicReceivedPacket> MakeDataRstAndAckPacket(
       uint64_t num,
       quic::QuicStreamId data_stream_id,
-      absl::string_view data,
+      std::string_view data,
       quic::QuicStreamId rst_stream_id,
       quic::QuicRstStreamErrorCode rst_error_code,
       uint64_t largest_received,
@@ -181,7 +181,7 @@ class QuicTestPacketMaker {
       uint64_t smallest_received,
       quic::QuicStreamId data_id,
       bool fin,
-      absl::string_view data);
+      std::string_view data);
 
   std::unique_ptr<quic::QuicReceivedPacket> MakeAckDataAndRst(
       uint64_t num,
@@ -191,7 +191,7 @@ class QuicTestPacketMaker {
       uint64_t smallest_received,
       quic::QuicStreamId data_id,
       bool fin,
-      absl::string_view data);
+      std::string_view data);
 
   std::unique_ptr<quic::QuicReceivedPacket> MakeAckRstAndDataPacket(
       uint64_t num,
@@ -201,7 +201,7 @@ class QuicTestPacketMaker {
       uint64_t smallest_received,
       quic::QuicStreamId data_id,
       bool fin,
-      absl::string_view data);
+      std::string_view data);
 
   std::unique_ptr<quic::QuicReceivedPacket> MakeRstAndConnectionClosePacket(
       uint64_t num,
@@ -213,7 +213,7 @@ class QuicTestPacketMaker {
   std::unique_ptr<quic::QuicReceivedPacket> MakeDataRstAndConnectionClosePacket(
       uint64_t num,
       quic::QuicStreamId data_stream_id,
-      absl::string_view data,
+      std::string_view data,
       quic::QuicStreamId rst_stream_id,
       quic::QuicRstStreamErrorCode error_code,
       quic::QuicErrorCode quic_error,
@@ -223,7 +223,7 @@ class QuicTestPacketMaker {
   MakeDataRstAckAndConnectionClosePacket(
       uint64_t num,
       quic::QuicStreamId data_stream_id,
-      absl::string_view data,
+      std::string_view data,
       quic::QuicStreamId rst_stream_id,
       quic::QuicRstStreamErrorCode error_code,
       uint64_t largest_received,
@@ -235,7 +235,7 @@ class QuicTestPacketMaker {
   MakeDataRstAckAndConnectionClosePacket(
       uint64_t num,
       quic::QuicStreamId data_stream_id,
-      absl::string_view data,
+      std::string_view data,
       quic::QuicStreamId rst_stream_id,
       quic::QuicRstStreamErrorCode error_code,
       uint64_t largest_received,
@@ -282,7 +282,7 @@ class QuicTestPacketMaker {
       uint64_t packet_number,
       quic::QuicStreamId stream_id,
       bool fin,
-      absl::string_view data);
+      std::string_view data);
 
   std::unique_ptr<quic::QuicReceivedPacket> MakeAckAndDataPacket(
       uint64_t packet_number,
@@ -290,7 +290,7 @@ class QuicTestPacketMaker {
       uint64_t largest_received,
       uint64_t smallest_received,
       bool fin,
-      absl::string_view data);
+      std::string_view data);
 
   std::unique_ptr<quic::QuicReceivedPacket> MakeAckRetransmissionAndDataPacket(
       uint64_t packet_number,
@@ -299,7 +299,7 @@ class QuicTestPacketMaker {
       uint64_t largest_received,
       uint64_t smallest_received,
       bool fin,
-      absl::string_view data);
+      std::string_view data);
 
   std::unique_ptr<quic::QuicReceivedPacket> MakeAckAndRetransmissionPacket(
       uint64_t packet_number,
@@ -443,12 +443,12 @@ class QuicTestPacketMaker {
   // Use and increase stream's current offset.
   void AddQuicStreamFrame(quic::QuicStreamId stream_id,
                           bool fin,
-                          absl::string_view data);
+                          std::string_view data);
   // Use |offset| and do not change stream's current offset.
   void AddQuicStreamFrameWithOffset(quic::QuicStreamId stream_id,
                                     bool fin,
                                     quic::QuicStreamOffset offset,
-                                    absl::string_view data);
+                                    std::string_view data);
   void AddQuicAckFrame(uint64_t largest_received, uint64_t smallest_received);
   void AddQuicAckFrame(uint64_t first_received,
                        uint64_t largest_received,

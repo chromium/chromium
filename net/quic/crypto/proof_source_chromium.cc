@@ -77,7 +77,7 @@ bool ProofSourceChromium::GetProofInner(
     const string& hostname,
     const string& server_config,
     quic::QuicTransportVersion quic_version,
-    absl::string_view chlo_hash,
+    std::string_view chlo_hash,
     quiche::QuicheReferenceCountedPointer<quic::ProofSource::Chain>* out_chain,
     quic::QuicCryptoProof* proof) {
   DCHECK(proof != nullptr);
@@ -133,7 +133,7 @@ void ProofSourceChromium::GetProof(const quic::QuicSocketAddress& server_addr,
                                    const std::string& hostname,
                                    const std::string& server_config,
                                    quic::QuicTransportVersion quic_version,
-                                   absl::string_view chlo_hash,
+                                   std::string_view chlo_hash,
                                    std::unique_ptr<Callback> callback) {
   // As a transitional implementation, just call the synchronous version of
   // GetProof, then invoke the callback with the results and destroy it.
@@ -169,7 +169,7 @@ void ProofSourceChromium::ComputeTlsSignature(
     const quic::QuicSocketAddress& client_address,
     const std::string& hostname,
     uint16_t signature_algorithm,
-    absl::string_view in,
+    std::string_view in,
     std::unique_ptr<SignatureCallback> callback) {
   crypto::OpenSSLErrStackTracer err_tracer(FROM_HERE);
   bssl::ScopedEVP_MD_CTX sign_context;

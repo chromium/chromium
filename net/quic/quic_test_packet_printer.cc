@@ -38,9 +38,9 @@ class QuicPacketPrinter : public QuicFramerVisitorInterface {
   }
   void OnRetryPacket(QuicConnectionId original_connection_id,
                      QuicConnectionId new_connection_id,
-                     absl::string_view retry_token,
-                     absl::string_view retry_integrity_tag,
-                     absl::string_view retry_without_tag) override {
+                     std::string_view retry_token,
+                     std::string_view retry_integrity_tag,
+                     std::string_view retry_without_tag) override {
     *output_ << "OnRetryPacket\n";
   }
   bool OnUnauthenticatedPublicHeader(const QuicPacketHeader& header) override {

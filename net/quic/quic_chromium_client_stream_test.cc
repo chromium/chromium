@@ -83,7 +83,7 @@ class MockQuicClientSessionBase : public quic::QuicSpdyClientSessionBase {
 
   MOCK_METHOD2(OnStreamHeaders,
                void(quic::QuicStreamId stream_id,
-                    absl::string_view headers_data));
+                    std::string_view headers_data));
   MOCK_METHOD2(OnStreamHeadersPriority,
                void(quic::QuicStreamId stream_id,
                     const spdy::SpdyStreamPrecedence& precedence));
@@ -226,13 +226,13 @@ class QuicChromiumClientStreamTest
     return headers;
   }
 
-  void ReadData(absl::string_view expected_data) {
+  void ReadData(std::string_view expected_data) {
     scoped_refptr<IOBuffer> buffer =
         base::MakeRefCounted<IOBuffer>(expected_data.length() + 1);
     EXPECT_EQ(static_cast<int>(expected_data.length()),
               stream_->Read(buffer.get(), expected_data.length() + 1));
     EXPECT_EQ(expected_data,
-              absl::string_view(buffer->data(), expected_data.length()));
+              std::string_view(buffer->data(), expected_data.length()));
   }
 
   quic::QuicHeaderList ProcessHeaders(const spdy::Http2HeaderBlock& headers) {
@@ -318,7 +318,7 @@ TEST_P(QuicChromiumClientStreamTest, Handle) {
   quic::QuicStreamFrame frame2(
       quic::test::GetNthClientInitiatedBidirectionalStreamId(
           version_.transport_version, 0),
-      true, offset, absl::string_view());
+      true, offset, std::string_view());
   stream_->OnStreamFrame(frame2);
   EXPECT_TRUE(handle_->fin_received());
   handle_->OnFinRead();
@@ -406,7 +406,7 @@ TEST_P(QuicChromiumClientStreamTest, OnFinRead) {
   quic::QuicStreamFrame frame2(
       quic::test::GetNthClientInitiatedBidirectionalStreamId(
           version_.transport_version, 0),
-      true, offset, absl::string_view());
+      true, offset, std::string_view());
   stream_->OnStreamFrame(frame2);
 }
 
@@ -435,8 +435,7 @@ TEST_P(QuicChromiumClientStreamTest, OnDataAvailable) {
   scoped_refptr<IOBuffer> buffer = base::MakeRefCounted<IOBuffer>(2 * data_len);
   EXPECT_EQ(data_len,
             handle_->ReadBody(buffer.get(), 2 * data_len, callback.callback()));
-  EXPECT_EQ(absl::string_view(data),
-            absl::string_view(buffer->data(), data_len));
+  EXPECT_EQ(std::string_view(data), std::string_view(buffer->data(), data_len));
 }
 
 TEST_P(QuicChromiumClientStreamTest, OnDataAvailableAfterReadBody) {
@@ -468,8 +467,7 @@ TEST_P(QuicChromiumClientStreamTest, OnDataAvailableAfterReadBody) {
       /*offset=*/offset, data));
 
   EXPECT_EQ(data_len, callback.WaitForResult());
-  EXPECT_EQ(absl::string_view(data),
-            absl::string_view(buffer->data(), data_len));
+  EXPECT_EQ(std::string_view(data), std::string_view(buffer->data(), data_len));
   base::RunLoop().RunUntilIdle();
 }
 
@@ -564,8 +562,7 @@ TEST_P(QuicChromiumClientStreamTest, OnTrailers) {
   scoped_refptr<IOBuffer> buffer = base::MakeRefCounted<IOBuffer>(2 * data_len);
   EXPECT_EQ(data_len,
             handle_->ReadBody(buffer.get(), 2 * data_len, callback.callback()));
-  EXPECT_EQ(absl::string_view(data),
-            absl::string_view(buffer->data(), data_len));
+  EXPECT_EQ(std::string_view(data), std::string_view(buffer->data(), data_len));
 
   spdy::Http2HeaderBlock trailers;
   trailers["bar"] = "foo";
@@ -612,8 +609,7 @@ TEST_P(QuicChromiumClientStreamTest, MarkTrailersConsumedWhenNotifyDelegate) {
   scoped_refptr<IOBuffer> buffer = base::MakeRefCounted<IOBuffer>(2 * data_len);
   EXPECT_EQ(data_len,
             handle_->ReadBody(buffer.get(), 2 * data_len, callback.callback()));
-  EXPECT_EQ(absl::string_view(data),
-            absl::string_view(buffer->data(), data_len));
+  EXPECT_EQ(std::string_view(data), std::string_view(buffer->data(), data_len));
 
   // Read again, and it will be pending.
   EXPECT_THAT(
@@ -667,8 +663,7 @@ TEST_P(QuicChromiumClientStreamTest, ReadAfterTrailersReceivedButNotDelivered) {
   scoped_refptr<IOBuffer> buffer = base::MakeRefCounted<IOBuffer>(2 * data_len);
   EXPECT_EQ(data_len,
             handle_->ReadBody(buffer.get(), 2 * data_len, callback.callback()));
-  EXPECT_EQ(absl::string_view(data),
-            absl::string_view(buffer->data(), data_len));
+  EXPECT_EQ(std::string_view(data), std::string_view(buffer->data(), data_len));
 
   // Deliver trailers. Delegate notification is posted asynchronously.
   spdy::Http2HeaderBlock trailers;
@@ -882,8 +877,7 @@ TEST_P(QuicChromiumClientStreamTest, HeadersAndDataBeforeHandle) {
   int data_len = std::size(data) - 1;
   scoped_refptr<IOBuffer> buffer = base::MakeRefCounted<IOBuffer>(data_len + 1);
   ASSERT_EQ(data_len, stream2->Read(buffer.get(), data_len + 1));
-  EXPECT_EQ(absl::string_view(data),
-            absl::string_view(buffer->data(), data_len));
+  EXPECT_EQ(std::string_view(data), std::string_view(buffer->data(), data_len));
 }
 
 // Regression test for https://crbug.com/1043531.

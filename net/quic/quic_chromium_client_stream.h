@@ -261,7 +261,7 @@ class NET_EXPORT_PRIVATE QuicChromiumClientStream
   // Writes |data| to the peer and closes the write side if |fin| is true.
   // Returns true if the data have been fully written. If the data was not fully
   // written, returns false and OnCanWrite() will be invoked later.
-  bool WriteStreamData(absl::string_view data, bool fin);
+  bool WriteStreamData(std::string_view data, bool fin);
   // Same as WriteStreamData except it writes data from a vector of IOBuffers,
   // with the length of each buffer at the corresponding index in |lengths|.
   bool WritevStreamData(const std::vector<scoped_refptr<IOBuffer>>& buffers,

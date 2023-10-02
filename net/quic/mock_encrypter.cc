@@ -21,21 +21,21 @@ const size_t kPaddingSize = 12;
 
 MockEncrypter::MockEncrypter(Perspective perspective) {}
 
-bool MockEncrypter::SetKey(absl::string_view key) {
+bool MockEncrypter::SetKey(std::string_view key) {
   return key.empty();
 }
 
-bool MockEncrypter::SetNoncePrefix(absl::string_view nonce_prefix) {
+bool MockEncrypter::SetNoncePrefix(std::string_view nonce_prefix) {
   return nonce_prefix.empty();
 }
 
-bool MockEncrypter::SetIV(absl::string_view iv) {
+bool MockEncrypter::SetIV(std::string_view iv) {
   return iv.empty();
 }
 
 bool MockEncrypter::EncryptPacket(uint64_t /*packet_number*/,
-                                  absl::string_view associated_data,
-                                  absl::string_view plaintext,
+                                  std::string_view associated_data,
+                                  std::string_view plaintext,
                                   char* output,
                                   size_t* output_length,
                                   size_t max_output_length) {
@@ -48,12 +48,12 @@ bool MockEncrypter::EncryptPacket(uint64_t /*packet_number*/,
   return true;
 }
 
-bool MockEncrypter::SetHeaderProtectionKey(absl::string_view key) {
+bool MockEncrypter::SetHeaderProtectionKey(std::string_view key) {
   return key.empty();
 }
 
 std::string MockEncrypter::GenerateHeaderProtectionMask(
-    absl::string_view sample) {
+    std::string_view sample) {
   return std::string(5, 0);
 }
 
@@ -81,12 +81,12 @@ quic::QuicPacketCount MockEncrypter::GetConfidentialityLimit() const {
   return std::numeric_limits<quic::QuicPacketCount>::max();
 }
 
-absl::string_view MockEncrypter::GetKey() const {
-  return absl::string_view();
+std::string_view MockEncrypter::GetKey() const {
+  return std::string_view();
 }
 
-absl::string_view MockEncrypter::GetNoncePrefix() const {
-  return absl::string_view();
+std::string_view MockEncrypter::GetNoncePrefix() const {
+  return std::string_view();
 }
 
 }  // namespace net

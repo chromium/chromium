@@ -391,7 +391,7 @@ class QuicProxyClientSocketTest
 
   std::unique_ptr<quic::QuicReceivedPacket> ConstructDataPacket(
       uint64_t packet_number,
-      absl::string_view data) {
+      std::string_view data) {
     return client_maker_.MakeDataPacket(packet_number, client_data_stream_id1_,
                                         !kFin, data);
   }
@@ -400,7 +400,7 @@ class QuicProxyClientSocketTest
       uint64_t packet_number,
       uint64_t largest_received,
       uint64_t smallest_received,
-      absl::string_view data) {
+      std::string_view data) {
     return client_maker_.MakeAckAndDataPacket(
         packet_number, client_data_stream_id1_, largest_received,
         smallest_received, !kFin, data);
@@ -426,14 +426,14 @@ class QuicProxyClientSocketTest
 
   std::unique_ptr<quic::QuicReceivedPacket> ConstructServerDataPacket(
       uint64_t packet_number,
-      absl::string_view data) {
+      std::string_view data) {
     return server_maker_.MakeDataPacket(packet_number, client_data_stream_id1_,
                                         !kFin, data);
   }
 
   std::unique_ptr<quic::QuicReceivedPacket> ConstructServerDataFinPacket(
       uint64_t packet_number,
-      absl::string_view data) {
+      std::string_view data) {
     return server_maker_.MakeDataPacket(packet_number, client_data_stream_id1_,
                                         kFin, data);
   }

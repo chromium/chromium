@@ -17,8 +17,8 @@
 
 namespace quiche {
 
-void QuicheRecordTestOutputToFile(absl::string_view filename,
-                                  absl::string_view data) {
+void QuicheRecordTestOutputToFile(std::string_view filename,
+                                  std::string_view data) {
   std::string output_dir;
   if (!base::Environment::Create()->GetVar("QUIC_TEST_OUTPUT_DIR",
                                            &output_dir) ||
@@ -37,12 +37,12 @@ void QuicheRecordTestOutputToFile(absl::string_view filename,
   QUIC_LOG(INFO) << "Recorded test output into " << path;
 }
 
-void QuicheSaveTestOutputImpl(absl::string_view filename,
-                              absl::string_view data) {
+void QuicheSaveTestOutputImpl(std::string_view filename,
+                              std::string_view data) {
   QuicheRecordTestOutputToFile(filename, data);
 }
 
-bool QuicheLoadTestOutputImpl(absl::string_view filename, std::string* data) {
+bool QuicheLoadTestOutputImpl(std::string_view filename, std::string* data) {
   std::string output_dir;
   if (!base::Environment::Create()->GetVar("QUIC_TEST_OUTPUT_DIR",
                                            &output_dir) ||
@@ -58,8 +58,7 @@ bool QuicheLoadTestOutputImpl(absl::string_view filename, std::string* data) {
   return base::ReadFileToString(path, data);
 }
 
-void QuicheRecordTraceImpl(absl::string_view identifier,
-                           absl::string_view data) {
+void QuicheRecordTraceImpl(std::string_view identifier, std::string_view data) {
   const testing::TestInfo* test_info =
       testing::UnitTest::GetInstance()->current_test_info();
 

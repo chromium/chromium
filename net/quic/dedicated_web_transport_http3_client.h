@@ -78,7 +78,7 @@ class NET_EXPORT DedicatedWebTransportHttp3Client
                        const std::string& error_message) override;
   void OnIncomingBidirectionalStreamAvailable() override;
   void OnIncomingUnidirectionalStreamAvailable() override;
-  void OnDatagramReceived(absl::string_view datagram) override;
+  void OnDatagramReceived(std::string_view datagram) override;
   void OnCanCreateNewOutgoingBidirectionalStream() override;
   void OnCanCreateNewOutgoingUnidirectionalStream() override;
 
