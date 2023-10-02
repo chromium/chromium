@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/share_extension/share_extension_service.h"
+#import "ios/chrome/browser/share_extension/model/share_extension_service.h"
 
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/reading_list/core/reading_list_model.h"
-#import "ios/chrome/browser/share_extension/share_extension_item_receiver.h"
+#import "ios/chrome/browser/share_extension/model/share_extension_item_receiver.h"
 
 ShareExtensionService::ShareExtensionService(
     bookmarks::BookmarkModel* bookmark_model,

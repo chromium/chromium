@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/share_extension/share_extension_item_receiver.h"
+#import "ios/chrome/browser/share_extension/model/share_extension_item_receiver.h"
 
 #import <UIKit/UIKit.h>
 
@@ -60,7 +60,7 @@ void LogHistogramReceivedItem(ShareExtensionItemReceived type) {
 
 }  // namespace
 
-@interface ShareExtensionItemReceiver ()<NSFilePresenter> {
+@interface ShareExtensionItemReceiver () <NSFilePresenter> {
   BOOL _isObservingReadingListFolder;
   BOOL _readingListFolderCreated;
   ReadingListModel* _readingListModel;
@@ -122,8 +122,9 @@ void LogHistogramReceivedItem(ShareExtensionItemReceived type) {
   DCHECK(readingListModel);
 
   self = [super init];
-  if (![self presentedItemURL])
+  if (![self presentedItemURL]) {
     return nil;
+  }
 
   if (self) {
     _readingListModel = readingListModel;
@@ -412,8 +413,9 @@ void LogHistogramReceivedItem(ShareExtensionItemReceived type) {
 - (void)entriesReceived:(NSArray<NSURL*>*)files {
   UMA_HISTOGRAM_COUNTS_100("IOS.ShareExtension.ReceivedEntriesCount",
                            [files count]);
-  if (!_taskRunner)
+  if (!_taskRunner) {
     return;
+  }
 
   __weak ShareExtensionItemReceiver* weakSelf = self;
   for (NSURL* fileURL : files) {
