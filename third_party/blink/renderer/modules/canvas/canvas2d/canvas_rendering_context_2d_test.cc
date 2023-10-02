@@ -1388,6 +1388,9 @@ class CanvasRenderingContext2DTestAccelerated
       canvas->DisableAcceleration();
     }
   }
+
+ private:
+  ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform> platform_;
 };
 
 INSTANTIATE_PAINT_TEST_SUITE_P(CanvasRenderingContext2DTestAccelerated);
@@ -1640,6 +1643,7 @@ class CanvasRenderingContext2DTestAcceleratedMultipleDisables
 
  private:
   base::test::ScopedFeatureList feature_list_;
+  ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform> platform_;
 };
 
 INSTANTIATE_PAINT_TEST_SUITE_P(
@@ -1709,7 +1713,6 @@ class CanvasRenderingContext2DTestImageChromium
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform> platform_;
 };
 
 INSTANTIATE_PAINT_TEST_SUITE_P(CanvasRenderingContext2DTestImageChromium);

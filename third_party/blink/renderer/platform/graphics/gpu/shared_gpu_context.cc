@@ -31,13 +31,25 @@ SharedGpuContext::SharedGpuContext() = default;
 // static
 bool SharedGpuContext::IsGpuCompositingEnabled() {
   SharedGpuContext* this_ptr = GetInstanceForCurrentThread();
-  // The check for gpu compositing enabled implies a context will
-  // desired, so we combine them into a single trip to the main thread.
-  // This also ensures that the compositing mode does not change before
-  // the context is created, so if it does change the context will be lost
-  // and this class will know to check the compositing mode again.
-  bool only_if_gpu_compositing = true;
-  this_ptr->CreateContextProviderIfNeeded(only_if_gpu_compositing);
+  if (IsMainThread()) {
+    // On the main thread we have the opportunity to keep
+    // is_gpu_compositing_disabled_ up to date continuously without locking
+    // up the thread, so we do it. This allows user code to adapt immediately
+    // when there is a fallback to software compositing.
+    this_ptr->is_gpu_compositing_disabled_ =
+        Platform::Current()->IsGpuCompositingDisabled();
+  } else {
+    // The check for gpu compositing enabled implies a context will be
+    // desired, so we combine them into a single trip to the main thread.
+    //
+    // TODO(crbug.com/1486981): It is possible for the value of
+    // this_ptr->is_gpu_compositing_disabled_ to become stale without notice
+    // if the compositor falls back to software compositing after this
+    // initialization. There are currently no known observable bugs caused by
+    // this, but in theory, we'd need a mechanism for propagating changes in
+    // GPU compositing availability to worker threads.
+    this_ptr->CreateContextProviderIfNeeded(/*only_if_gpu_compositing=*/true);
+  }
   return !this_ptr->is_gpu_compositing_disabled_;
 }
 
@@ -125,8 +137,7 @@ void SharedGpuContext::CreateContextProviderIfNeeded(
 
   if (context_provider_factory_) {
     // This path should only be used in unit tests.
-    auto context_provider =
-        context_provider_factory_.Run(&is_gpu_compositing_disabled_);
+    auto context_provider = context_provider_factory_.Run();
     if (context_provider) {
       context_provider_wrapper_ =
           std::make_unique<WebGraphicsContext3DProviderWrapper>(

@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/test/gpu_test_utils.h"
+#include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/video_frame_utils.h"
 #include "third_party/skia/include/gpu/GrDriverBugWorkarounds.h"
 
@@ -26,6 +27,12 @@ namespace {
 
 constexpr auto kTestSize = gfx::Size(64, 64);
 const auto kTestInfo = SkImageInfo::MakeN32Premul(64, 64);
+
+class AcceleratedCompositingTestPlatform
+    : public blink::TestingPlatformSupport {
+ public:
+  bool IsGpuCompositingDisabled() const override { return false; }
+};
 
 class ScopedFakeGpuContext {
  public:
@@ -59,6 +66,8 @@ class ScopedFakeGpuContext {
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
   scoped_refptr<viz::TestContextProvider> test_context_provider_;
+  ScopedTestingPlatformSupport<AcceleratedCompositingTestPlatform>
+      accelerated_compositing_scope_;
 };
 
 // TODO(crbug.com/1186864): Remove |expect_broken_tagging| when fixed.

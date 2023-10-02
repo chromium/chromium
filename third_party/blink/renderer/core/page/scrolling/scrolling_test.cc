@@ -2994,9 +2994,8 @@ TEST_F(ScrollingSimTest, CompositedScrollbarScrollDoesNotBubble) {
 class ScrollingTestWithAcceleratedContext : public ScrollingTest {
  protected:
   void SetUp() override {
-    auto factory = [](FakeGLES2Interface* gl, bool* gpu_compositing_disabled)
+    auto factory = [](FakeGLES2Interface* gl)
         -> std::unique_ptr<WebGraphicsContext3DProvider> {
-      *gpu_compositing_disabled = false;
       gl->SetIsContextLost(false);
       return std::make_unique<FakeWebGraphicsContext3DProvider>(gl);
     };

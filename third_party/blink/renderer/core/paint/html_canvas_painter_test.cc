@@ -27,17 +27,30 @@
 
 namespace blink {
 
+namespace {
+
+class AcceleratedCompositingTestPlatform
+    : public blink::TestingPlatformSupport {
+ public:
+  bool IsGpuCompositingDisabled() const override { return false; }
+};
+
+}  // namespace
+
 class HTMLCanvasPainterTest : public PaintControllerPaintTestBase {
  protected:
   void SetUp() override {
+    accelerated_compositing_scope_ = std::make_unique<
+        ScopedTestingPlatformSupport<AcceleratedCompositingTestPlatform>>();
     test_context_provider_ = viz::TestContextProvider::Create();
     InitializeSharedGpuContextGLES2(test_context_provider_.get());
     PaintControllerPaintTestBase::SetUp();
   }
 
   void TearDown() override {
-    SharedGpuContext::ResetForTesting();
     PaintControllerPaintTestBase::TearDown();
+    SharedGpuContext::ResetForTesting();
+    accelerated_compositing_scope_ = nullptr;
   }
 
   FrameSettingOverrideFunction SettingOverrider() const override {
@@ -53,6 +66,9 @@ class HTMLCanvasPainterTest : public PaintControllerPaintTestBase {
 
  private:
   scoped_refptr<viz::TestContextProvider> test_context_provider_;
+  std::unique_ptr<
+      ScopedTestingPlatformSupport<AcceleratedCompositingTestPlatform>>
+      accelerated_compositing_scope_;
 };
 
 TEST_F(HTMLCanvasPainterTest, Canvas2DLayerAppearsInLayerTree) {

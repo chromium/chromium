@@ -107,7 +107,13 @@ class ImageTrackingDecodeCache : public cc::StubDecodeCache {
   bool disallow_cache_use_ = false;
 };
 
-}  // anonymous namespace
+class AcceleratedCompositingTestPlatform
+    : public blink::TestingPlatformSupport {
+ public:
+  bool IsGpuCompositingDisabled() const override { return false; }
+};
+
+}  // namespace
 
 class Canvas2DLayerBridgeTest : public Test {
  public:
@@ -132,6 +138,8 @@ class Canvas2DLayerBridgeTest : public Test {
   }
 
   void SetUp() override {
+    accelerated_compositing_scope_ = std::make_unique<
+        ScopedTestingPlatformSupport<AcceleratedCompositingTestPlatform>>();
     test_context_provider_ = viz::TestContextProvider::Create();
     InitializeSharedGpuContextGLES2(test_context_provider_.get(),
                                     &image_decode_cache_);
@@ -142,6 +150,7 @@ class Canvas2DLayerBridgeTest : public Test {
   void TearDown() override {
     SharedGpuContext::ResetForTesting();
     test_context_provider_.reset();
+    accelerated_compositing_scope_ = nullptr;
   }
 
   FakeCanvasResourceHost* Host() {
@@ -164,6 +173,9 @@ class Canvas2DLayerBridgeTest : public Test {
   scoped_refptr<viz::TestContextProvider> test_context_provider_;
   ImageTrackingDecodeCache image_decode_cache_;
   std::unique_ptr<FakeCanvasResourceHost> host_;
+  std::unique_ptr<
+      ScopedTestingPlatformSupport<AcceleratedCompositingTestPlatform>>
+      accelerated_compositing_scope_;
 };
 
 TEST_F(Canvas2DLayerBridgeTest, DisableAcceleration) {
