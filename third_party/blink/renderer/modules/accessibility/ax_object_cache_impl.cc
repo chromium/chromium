@@ -2646,11 +2646,13 @@ void AXObjectCacheImpl::UpdateTreeIfNeeded() {
 }
 
 void AXObjectCacheImpl::CheckTreeIsUpdated() const {
-  CHECK(nodes_with_pending_children_changed_.empty());
-  CHECK(tree_update_callback_queue_main_.empty());
-  CHECK(tree_update_callback_queue_popup_.empty());
-  CHECK(invalidated_ids_main_.empty());
-  CHECK(invalidated_ids_popup_.empty());
+  // TODO(crbug.com/1480442) Add back as once we implement improved tree repair
+  // in crrev.com/c/4873421.
+  // CHECK(nodes_with_pending_children_changed_.empty());
+  // CHECK(tree_update_callback_queue_main_.empty());
+  // CHECK(tree_update_callback_queue_popup_.empty());
+  // CHECK(invalidated_ids_main_.empty());
+  // CHECK(invalidated_ids_popup_.empty());
 
 #if DCHECK_IS_ON()
   for (const auto& entry : objects_) {
@@ -2687,18 +2689,6 @@ void AXObjectCacheImpl::CheckTreeIsUpdated() const {
             << "\n* Child: " << child->ToString(true, true);
       }
     }
-  }
-#else
-  // TODO(crbug.com/1480627) Temporary: do not ship in stable builds.
-  for (const auto& entry : objects_) {
-    const AXObject* object = entry.value;
-    CHECK(!object->IsDetached());
-    CHECK(!object->IsMissingParent())
-        << "No object should be missing its parent: "
-        << "\n* Object: " << object->ToString(true, true)
-        << "\n* Computed parent: "
-        << (object->ComputeParent() ? object->ComputeParent()->ToString(true)
-                                    : "not found");
   }
 #endif
 }
