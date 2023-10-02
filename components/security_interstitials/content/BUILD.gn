@@ -103,6 +103,8 @@ static_library("security_interstitial_page") {
     "//third_party/re2",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   if (enable_captive_portal_detection) {
     sources += [
       "captive_portal_metrics_recorder.cc",

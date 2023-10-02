@@ -11,4 +11,5 @@ static_library("security_interstitial_page_controller") {
     "//third_party/blink/public:blink",
     "//third_party/blink/public/common",
   ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
