@@ -93,6 +93,9 @@ bool BuildTileSuggest(AutocompleteProvider* provider,
     return false;
   }
 
+  size_t num_search_tiles = 0;
+  size_t num_url_tiles = 0;
+
   if (base::FeatureList::IsEnabled(
           omnibox::kMostVisitedTilesHorizontalRenderGroup)) {
     auto* const url_service = client->GetTemplateURLService();
@@ -119,6 +122,9 @@ bool BuildTileSuggest(AutocompleteProvider* provider,
         // Supply blanket SearchTermsArgs so we can also report SearchBoxStats.
         match.search_terms_args =
             std::make_unique<TemplateURLRef::SearchTermsArgs>(query);
+        num_search_tiles++;
+      } else {
+        num_url_tiles++;
       }
       matches.emplace_back(std::move(match));
       --relevance;
@@ -130,8 +136,6 @@ bool BuildTileSuggest(AutocompleteProvider* provider,
                    AutocompleteMatchType::TILE_NAVSUGGEST);
 
     match.suggest_tiles.reserve(container.size());
-    size_t num_search_tiles = 0;
-    size_t num_url_tiles = 0;
 
     for (const auto& tile : container) {
       match.suggest_tiles.push_back({
@@ -147,11 +151,6 @@ bool BuildTileSuggest(AutocompleteProvider* provider,
       }
     }
 
-    base::UmaHistogramExactLinear(kHistogramTileTypeCountSearch,
-                                  num_search_tiles, kMaxRecordedTileIndex);
-    base::UmaHistogramExactLinear(kHistogramTileTypeCountURL, num_url_tiles,
-                                  kMaxRecordedTileIndex);
-
     matches.push_back(std::move(match));
   } else {
     int relevance = 600;
@@ -162,6 +161,12 @@ bool BuildTileSuggest(AutocompleteProvider* provider,
       --relevance;
     }
   }
+
+  base::UmaHistogramExactLinear(kHistogramTileTypeCountSearch, num_search_tiles,
+                                kMaxRecordedTileIndex);
+  base::UmaHistogramExactLinear(kHistogramTileTypeCountURL, num_url_tiles,
+                                kMaxRecordedTileIndex);
+
   return true;
 }
 }  // namespace
