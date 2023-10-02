@@ -4,11 +4,12 @@
 
 import {TestRunner} from 'test_runner';
 
+import * as WebAudioModule from 'devtools/panels/web_audio/web_audio.js';
+
 (async function() {
   TestRunner.addResult(`Tests the node model.\n`);
 
   await TestRunner.showPanel('web-audio');
-  await TestRunner.loadLegacyModule('web_audio');
 
   const nodeData1 = {
     nodeId: 'node1',
@@ -16,7 +17,7 @@ import {TestRunner} from 'test_runner';
     numberOfInputs: 1,
     numberOfOutputs: 1
   };
-  const node = new WebAudio.GraphVisualizer.NodeView(nodeData1, 'nodeLabel');
+  const node = new WebAudioModule.NodeView.NodeView(nodeData1, 'nodeLabel');
 
   TestRunner.addResult('Original lengths');
   dumpNumberOfPorts();

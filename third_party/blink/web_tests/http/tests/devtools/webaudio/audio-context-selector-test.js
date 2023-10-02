@@ -4,9 +4,10 @@
 
 import {TestRunner} from 'test_runner';
 
+import * as WebAudioModule from 'devtools/panels/web_audio/web_audio.js';
+
 (async function() {
   TestRunner.addResult(`Tests the AudioContextSelector.`);
-  await TestRunner.loadLegacyModule('web_audio');
 
   /** @type {!Protocol.WebAudio.BaseAudioContext} */
   const context1 = {
@@ -20,7 +21,7 @@ import {TestRunner} from 'test_runner';
   };
 
   function dumpSelectorState(
-      /** @type {!WebAudio.AudioContextSelector} */ selector) {
+      /** @type {!WebAudioModule.AudioContextSelector.AudioContextSelector} */ selector) {
     TestRunner.addResult(`
 Number of contexts (items): ${selector.items.length}
 Title: ${selector.toolbarItem().title}}
@@ -30,13 +31,13 @@ Selected Context: ${JSON.stringify(selector.selectedContext(), null, 3)}
 
   TestRunner.runAsyncTestSuite([
     async function testStartsEmpty() {
-      const selector = new WebAudio.AudioContextSelector();
+      const selector = new WebAudioModule.AudioContextSelector.AudioContextSelector();
 
       dumpSelectorState(selector);
     },
 
     async function testSelectsCreatedContext() {
-      const selector = new WebAudio.AudioContextSelector();
+      const selector = new WebAudioModule.AudioContextSelector.AudioContextSelector();
 
       selector.contextCreated({data: context1});
 
@@ -44,7 +45,7 @@ Selected Context: ${JSON.stringify(selector.selectedContext(), null, 3)}
     },
 
     async function testResetClearsList() {
-      const selector = new WebAudio.AudioContextSelector();
+      const selector = new WebAudioModule.AudioContextSelector.AudioContextSelector();
 
       selector.contextCreated({data: context1});
       selector.reset();
@@ -53,7 +54,7 @@ Selected Context: ${JSON.stringify(selector.selectedContext(), null, 3)}
     },
 
     async function testReSelectsCreatedContextAfterChange() {
-      const selector = new WebAudio.AudioContextSelector();
+      const selector = new WebAudioModule.AudioContextSelector.AudioContextSelector();
 
       selector.contextCreated({data: context1});
       selector.contextChanged({data: context1});
@@ -62,7 +63,7 @@ Selected Context: ${JSON.stringify(selector.selectedContext(), null, 3)}
     },
 
     async function testFirstCreatedContextStaysSelected() {
-      const selector = new WebAudio.AudioContextSelector();
+      const selector = new WebAudioModule.AudioContextSelector.AudioContextSelector();
 
       selector.contextCreated({data: context1});
       selector.contextCreated({data: context2});
@@ -71,7 +72,7 @@ Selected Context: ${JSON.stringify(selector.selectedContext(), null, 3)}
     },
 
     async function testChangingContextDoesNotChangeSelection() {
-      const selector = new WebAudio.AudioContextSelector();
+      const selector = new WebAudioModule.AudioContextSelector.AudioContextSelector();
 
       selector.contextCreated({data: context1});
       selector.contextCreated({data: context2});
@@ -81,7 +82,7 @@ Selected Context: ${JSON.stringify(selector.selectedContext(), null, 3)}
     },
 
     async function testSelectedContextBecomesSelected() {
-      const selector = new WebAudio.AudioContextSelector();
+      const selector = new WebAudioModule.AudioContextSelector.AudioContextSelector();
 
       selector.contextCreated({data: context1});
       selector.contextCreated({data: context2});
@@ -98,10 +99,10 @@ Selected Context: ${JSON.stringify(selector.selectedContext(), null, 3)}
       }
 
       TestRunner.addSniffer(
-          WebAudio.AudioContextSelector.prototype, 'onListItemReplaced',
+          WebAudioModule.AudioContextSelector.AudioContextSelector.prototype, 'onListItemReplaced',
           dumpItemCount);
 
-      const selector = new WebAudio.AudioContextSelector();
+      const selector = new WebAudioModule.AudioContextSelector.AudioContextSelector();
       selector.contextCreated({data: context1});
       selector.contextChanged({data: context1});
 
