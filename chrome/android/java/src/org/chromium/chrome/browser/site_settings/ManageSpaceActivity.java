@@ -217,7 +217,7 @@ public class ManageSpaceActivity extends AppCompatActivity implements View.OnCli
                     }
                 });
                 builder.setNegativeButton(R.string.cancel, null);
-                builder.setTitle(R.string.storage_clear_site_storage_title);
+                builder.setTitle(R.string.storage_delete_site_storage_title);
                 builder.setMessage(R.string.storage_management_clear_unimportant_dialog_text);
                 mUnimportantDialog = builder.create();
             }

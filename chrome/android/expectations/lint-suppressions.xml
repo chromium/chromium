@@ -199,7 +199,6 @@ https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md
     <ignore regexp="The resource `R.string.download_manager_offline_home` appears to be unused"/>
     <ignore regexp="The resource `R.string.ntp_learn_more_about_suggested_content` appears to be unused"/>
     <ignore regexp="The resource `R.string.tab_switcher_button_label` appears to be unused"/>
-    <ignore regexp="The resource `R.string.storage_clear_dialog_text` appears to be unused"/>
     <ignore regexp="The resource `R.string.website_settings_category_notifications_block` appears to be unused"/>
     <ignore regexp="The resource `R.string.autofill_cc_google_issued` appears to be unused"/>
     <ignore regexp="The resource `R.string.notification_manage_button` appears to be unused"/>

@@ -299,7 +299,7 @@ public class AllSiteSettings extends BaseSiteSettingsFragment
                         Formatter.formatShortFileSize(getContext(), totalUsage));
         message.setText(dialogFormattedText);
         builder.setView(dialogView);
-        builder.setPositiveButton(R.string.storage_clear_dialog_clear_storage_option,
+        builder.setPositiveButton(R.string.storage_delete_dialog_clear_storage_option,
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
@@ -307,7 +307,7 @@ public class AllSiteSettings extends BaseSiteSettingsFragment
                     }
                 });
         builder.setNegativeButton(R.string.cancel, null);
-        builder.setTitle(R.string.storage_clear_site_storage_title);
+        builder.setTitle(R.string.storage_delete_site_storage_title);
         builder.create().show();
     }
 

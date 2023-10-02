@@ -323,18 +323,15 @@
   <message name="IDS_WEBSTORAGE_CLEAR_DATA_DIALOG_SITE_SETTINGS_REMOVE_SITE_AD_PERSONALIZATION" desc="A bullet in a list of data that gets deleted from the user's device when they choose 'Clear data' for a specific site. 1) Go to chrome://settings/content. 2) From the 'Recent activity' list, choose a site. 3) Click the 'Clear data' button. The 'Clear site data?' dialog appears. This string will appear as a new bullet at the bottom of the dialog.">
     Data that affects ad personalization is deleted
   </message>
-  <message name="IDS_STORAGE_CLEAR_SITE_STORAGE_TITLE" desc="Title of clear storage dialogs used in a couple different places to confirm clearing site storage data. [CHAR_LIMIT=24]">
-    Clear site data?
+  <message name="IDS_STORAGE_DELETE_SITE_STORAGE_TITLE" desc="Title of delete storage dialogs used in a couple different places to confirm deleting site storage data. [CHAR_LIMIT=24]">
+    Delete site data?
   </message>
   <!-- TODO(crbug.com/1459631): Add proper strings and make them translateable. -->
   <message name="IDS_ZOOM_CLEAR_ALL_ZOOMS_DIALOG_TITLE" translateable="false" desc="Title of clear all zoom dialog used when a user decides to clear all zooms. [CHAR_LIMIT=24]">
     Clear all zoom levels?
   </message>
-  <message name="IDS_STORAGE_CLEAR_DIALOG_CLEAR_STORAGE_OPTION" desc="Text of the button that will clear website storage.">
-    Clear
-  </message>
-  <message name="IDS_STORAGE_CLEAR_DIALOG_TEXT" desc="Text of the clear storage dialog which give the user a choice to reset the app or delete site storage data.">
-    This will clear all <ph name="SIZE_IN_KB">%1$s<ex>101kb</ex></ph> of website storage.
+  <message name="IDS_STORAGE_DELETE_DIALOG_CLEAR_STORAGE_OPTION" desc="Text of the button that will delete website storage.">
+    Delete
   </message>
   <message name="IDS_WEBSITE_RESET" desc="The label for the button allowing users to delete all data and reset the permissions for a website.">
     Delete &amp; reset
@@ -796,8 +793,8 @@
   <message name="IDS_ORIGIN_SETTINGS_STORAGE_USAGE_BRIEF" desc="Explanation of how much local storage a website is using">
     <ph name="STORAGE_AMOUNT">%1$s<ex>2 MB</ex></ph> stored data
   </message>
-  <message name="IDS_STORAGE_CLEAR_BUTTON_TITLE" desc="Title of a button in the storage UI used to clear all storage data. [CHAR_LIMIT=24]">
-    Clear all data
+  <message name="IDS_STORAGE_DELETE_BUTTON_TITLE" desc="Title of a button in the storage UI used to delete all storage data. [CHAR_LIMIT=24]">
+    Delete all data
   </message>
 
   <!-- ZOOM -->
