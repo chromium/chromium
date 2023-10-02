@@ -83,6 +83,8 @@ IN_PROC_BROWSER_TEST_F(WmDesksPrivateApiTest, LaunchAndCloseDeskTest) {
   if (ash::DesksController::Get()->AreDesksBeingModified()) {
     remove_waiter.Wait();
   }
+  histogram_tester.ExpectUniqueSample("Ash.DeskApi.RemoveDeskType",
+                                      ash::DeskCloseType::kCloseAllWindows, 1);
 }
 
 // Tests launch and removal of a desk. Makes sure desk cannot be undone after
@@ -190,9 +192,13 @@ IN_PROC_BROWSER_TEST_F(WmDesksPrivateApiTest, MAYBE_LaunchAndUndo) {
   }
 
   histogram_tester.ExpectBucketCount("Ash.DeskApi.RemoveDesk.Result", 1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Ash.DeskApi.RemoveDeskType", ash::DeskCloseType::kCloseAllWindowsAndWait,
+      1);
   EXPECT_TRUE(ash::DesksTestApi::DesksControllerCanUndoDeskRemoval());
 
   ash::DesksController::Get()->MaybeCancelDeskRemoval();
+  histogram_tester.ExpectTotalCount("Ash.DeskApi.CloseAllUndo", 1);
   EXPECT_FALSE(ash::DesksTestApi::DesksControllerCanUndoDeskRemoval());
   EXPECT_EQ(2, ash::DesksController::Get()->GetNumberOfDesks());
 }
@@ -238,6 +244,8 @@ IN_PROC_BROWSER_TEST_F(WmDesksPrivateApiTest, LaunchAndCombineUndoTrue) {
   }
 
   histogram_tester.ExpectBucketCount("Ash.DeskApi.RemoveDesk.Result", 1, 1);
+  histogram_tester.ExpectUniqueSample("Ash.DeskApi.RemoveDeskType",
+                                      ash::DeskCloseType::kCombineDesks, 1);
   EXPECT_FALSE(ash::DesksTestApi::DesksControllerCanUndoDeskRemoval());
   EXPECT_EQ(1, ash::DesksController::Get()->GetNumberOfDesks());
 }
@@ -282,6 +290,8 @@ IN_PROC_BROWSER_TEST_F(WmDesksPrivateApiTest, LaunchAndRemoveCombine) {
   }
 
   histogram_tester.ExpectBucketCount("Ash.DeskApi.RemoveDesk.Result", 1, 1);
+  histogram_tester.ExpectUniqueSample("Ash.DeskApi.RemoveDeskType",
+                                      ash::DeskCloseType::kCombineDesks, 1);
 
   EXPECT_EQ(1, ash::DesksController::Get()->GetNumberOfDesks());
 }

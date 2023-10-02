@@ -96,6 +96,9 @@ constexpr char kMoveWindowFromActiveDeskHistogramName[] =
 constexpr char kCloseAllUndoHistogramName[] = "Ash.Desks.CloseAllUndo";
 constexpr char kCloseAllTotalHistogramName[] = "Ash.Desks.CloseAllTotal";
 constexpr char kRemoveDeskTypeHistogramName[] = "Ash.Desks.RemoveDeskType";
+constexpr char kDeskApiRemoveDeskTypeHistogramName[] =
+    "Ash.DeskApi.RemoveDeskType";
+constexpr char kDeskApiCloseAllUndoHistogramName[] = "Ash.DeskApi.CloseAllUndo";
 constexpr char kNumberOfWindowsClosed[] = "Ash.Desks.NumberOfWindowsClosed2";
 constexpr char kNumberOfWindowsClosedByButton[] =
     "Ash.Desks.NumberOfWindowsClosed2.Button";
@@ -1982,6 +1985,10 @@ void DesksController::RemoveDeskInternal(const Desk* desk,
 
   UMA_HISTOGRAM_ENUMERATION(kRemoveDeskHistogramName, source);
   UMA_HISTOGRAM_ENUMERATION(kRemoveDeskTypeHistogramName, close_type);
+  if (source == DesksCreationRemovalSource::kApi) {
+    base::UmaHistogramEnumeration(kDeskApiRemoveDeskTypeHistogramName,
+                                  close_type);
+  }
 
   // We should only announce desks are being merged if we are combining desks.
   // Otherwise, we tell the user that the desk has closed with its windows.
@@ -2023,6 +2030,10 @@ void DesksController::RemoveDeskInternal(const Desk* desk,
 void DesksController::UndoDeskRemoval() {
   DCHECK(temporary_removed_desk_);
   base::UmaHistogramBoolean(kCloseAllUndoHistogramName, true);
+  if (temporary_removed_desk_->desk_removal_source() ==
+      DesksCreationRemovalSource::kApi) {
+    base::UmaHistogramBoolean(kDeskApiCloseAllUndoHistogramName, true);
+  }
   Desk* readded_desk_ptr = temporary_removed_desk_->desk();
   auto readded_desk_data = std::move(temporary_removed_desk_);
   const int readded_desk_index = readded_desk_data->index();

@@ -2080,6 +2080,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.DeskApi.CloseAllUndo" enum="BooleanClicked"
+    expires_after="2024-03-17">
+  <owner>aprilzhou@google.com</owner>
+  <owner>janetmac@chromium.org</owner>
+  <owner>mclare@google.com</owner>
+  <summary>
+    Emitted after a virtual desk being removed by Desk API and undo toast being
+    clicked.
+  </summary>
+</histogram>
+
+<histogram name="Ash.DeskApi.RemoveDeskType" enum="DeskCloseType"
+    expires_after="2024-04-17">
+  <owner>aprilzhou@google.com</owner>
+  <owner>janetmac@chromium.org</owner>
+  <owner>mclare@google.com</owner>
+  <summary>
+    Emitted when a virtual desk is removed by Desk Api to specify the category
+    of this remove operation among close all, combine desk, and close all and
+    wait.
+  </summary>
+</histogram>
+
 <histogram name="Ash.DeskApi.{Method}.Result" units="BooleanSuccess"
     expires_after="2024-04-07">
   <owner>aprilzhou@google.com</owner>
