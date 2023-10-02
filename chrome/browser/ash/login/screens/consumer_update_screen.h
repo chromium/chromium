@@ -91,6 +91,14 @@ class ConsumerUpdateScreen : public BaseScreen,
     delay_error_message_ = delay;
   }
 
+  void set_delay_for_exit_no_update_for_testing(base::TimeDelta delay) {
+    exit_delay_ = delay;
+  }
+
+  const ScreenExitCallback& get_exit_callback_for_testing() {
+    return exit_callback_;
+  }
+
   void set_exit_callback_for_testing(ScreenExitCallback exit_callback) {
     exit_callback_ = exit_callback;
   }
@@ -138,6 +146,7 @@ class ConsumerUpdateScreen : public BaseScreen,
   // Set update status message.
   void SetUpdateStatusMessage(int percent, base::TimeDelta time_left);
 
+  void DelayExitNoUpdate();
   void DelaySkipButton();
   void SetSkipButton();
 
@@ -189,6 +198,13 @@ class ConsumerUpdateScreen : public BaseScreen,
   base::TimeDelta maximum_time_force_update_ = base::Minutes(5);
 
   base::TimeTicks screen_shown_time_;
+
+  // Time to delay exiting the screen to avoid flashing the screen when no
+  // update is available.
+  base::TimeDelta exit_delay_ = base::Seconds(2);
+
+  // Timer for the interval to wait to exit screen when no update.
+  base::OneShotTimer wait_exit_timer_;
 
   // PowerManagerClient::Observer is used only when screen is shown.
   base::ScopedObservation<chromeos::PowerManagerClient,

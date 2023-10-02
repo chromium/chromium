@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/login_wizard.h"
 #include "chrome/browser/ash/login/screens/error_screen.h"
+#include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/local_state_mixin.h"
@@ -32,6 +33,7 @@
 #include "chrome/browser/ash/policy/handlers/minimum_version_policy_test_helpers.h"
 #include "chrome/browser/ui/webui/ash/login/consumer_update_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/gaia_info_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
 #include "chrome/grit/branded_strings.h"
@@ -107,8 +109,11 @@ class ConsumerUpdateScreenTest : public OobeBaseTest {
     error_screen_ = GetOobeUI()->GetErrorScreen();
     consumer_update_screen_ = WizardController::default_controller()
                                   ->GetScreen<ConsumerUpdateScreen>();
-    consumer_update_screen_->set_exit_callback_for_testing(base::BindRepeating(
-        &ConsumerUpdateScreenTest::HandleScreenExit, base::Unretained(this)));
+
+    original_callback_ =
+        consumer_update_screen_->get_exit_callback_for_testing();
+    consumer_update_screen_->set_exit_callback_for_testing(
+        screen_result_waiter_.GetRepeatingCallback());
     version_updater_ =
         consumer_update_screen_->get_version_updater_for_testing();
 
@@ -124,6 +129,14 @@ class ConsumerUpdateScreenTest : public OobeBaseTest {
     // fire from the test instead.
     consumer_update_screen_->set_delay_for_delayed_timer_for_testing(
         base::TimeDelta::Max());
+
+    consumer_update_screen_->set_delay_for_exit_no_update_for_testing(
+        base::Milliseconds(1));
+
+    // this local state is set in OnUserCreationScreenExit and in the test we
+    // advance directly to the consumerUpdate Screen.
+    StartupUtils::SaveScreenAfterConsumerUpdate(
+        GaiaInfoScreenView::kScreenId.name);
 
     LoginDisplayHost::default_host()
         ->GetWizardContextForTesting()
@@ -166,16 +179,13 @@ class ConsumerUpdateScreenTest : public OobeBaseTest {
         ConsumerUpdateScreenView::kScreenId);
   }
 
- protected:
-  void WaitForScreenResult() {
-    if (screen_result_.has_value()) {
-      return;
-    }
-    base::test::TestFuture<void> waiter;
-    screen_callback_ = waiter.GetCallback();
-    EXPECT_TRUE(waiter.Wait());
+  ConsumerUpdateScreen::Result WaitForScreenExitResult() {
+    ConsumerUpdateScreen::Result result = screen_result_waiter_.Take();
+    original_callback_.Run(result);
+    return result;
   }
 
+ protected:
   chromeos::FakePowerManagerClient* power_manager_client() {
     return chromeos::FakePowerManagerClient::Get();
   }
@@ -188,21 +198,11 @@ class ConsumerUpdateScreenTest : public OobeBaseTest {
   // Handles network connections
   std::unique_ptr<NetworkStateTestHelper> network_state_test_helper_;
 
-  absl::optional<ConsumerUpdateScreen::Result> screen_result_;
-
   NetworkPortalDetectorMixin network_portal_detector_{&mixin_host_};
 
  private:
-  void HandleScreenExit(ConsumerUpdateScreen::Result result) {
-    EXPECT_FALSE(screen_result_.has_value());
-    screen_result_ = result;
-
-    if (screen_callback_) {
-      std::move(screen_callback_).Run();
-    }
-  }
-
-  base::OnceClosure screen_callback_;
+  base::test::TestFuture<ConsumerUpdateScreen::Result> screen_result_waiter_;
+  ConsumerUpdateScreen::ScreenExitCallback original_callback_;
   base::test::ScopedFeatureList feature_list_;
 };
 
@@ -223,9 +223,8 @@ IN_PROC_BROWSER_TEST_F(ConsumerUpdateScreenTest, NoUpdateAvailable) {
 
   SetUpdateEngineStatus(update_engine::Operation::IDLE);
 
-  ASSERT_TRUE(screen_result_.has_value());
-  EXPECT_EQ(ConsumerUpdateScreen::Result::UPDATE_NOT_REQUIRED,
-            screen_result_.value());
+  ConsumerUpdateScreen::Result result = WaitForScreenExitResult();
+  EXPECT_EQ(result, ConsumerUpdateScreen::Result::UPDATE_NOT_REQUIRED);
 }
 
 // TODO(b/293419661) create function SimulateUpdateAvailable
@@ -334,9 +333,9 @@ IN_PROC_BROWSER_TEST_F(ConsumerUpdateScreenTest, UpdateOverCellularDecline) {
   test::OobeJS().ExpectHiddenPath(kUpdateChekingDialog);
 
   test::OobeJS().TapOnPath(kUpdateCellularDeclineButton);
-  ASSERT_TRUE(screen_result_.has_value());
-  EXPECT_EQ(ConsumerUpdateScreen::Result::DECLINE_CELLULAR,
-            screen_result_.value());
+
+  ConsumerUpdateScreen::Result result = WaitForScreenExitResult();
+  EXPECT_EQ(result, ConsumerUpdateScreen::Result::DECLINE_CELLULAR);
 }
 
 IN_PROC_BROWSER_TEST_F(ConsumerUpdateScreenTest, LostNetworkDuringUpdate) {

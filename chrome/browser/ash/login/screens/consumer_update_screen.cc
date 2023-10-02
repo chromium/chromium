@@ -135,7 +135,7 @@ bool ConsumerUpdateScreen::MaybeSkip(WizardContext& context) {
                     "applied during OOBE.";
     RecordOobeConsumerUpdateScreenSkippedReasonHistogram(
         OobeConsumerUpdateScreenSkippedReason::kCriticalUpdateCompleted);
-    exit_callback_.Run(Result::UPDATED);
+    exit_callback_.Run(Result::NOT_APPLICABLE);
     return true;
   }
 
@@ -218,12 +218,17 @@ void ConsumerUpdateScreen::OnUserAction(const base::Value::List& args) {
   }
 }
 
+void ConsumerUpdateScreen::DelayExitNoUpdate() {
+  exit_callback_.Run(Result::UPDATE_NOT_REQUIRED);
+}
+
 void ConsumerUpdateScreen::FinishExitUpdate(VersionUpdater::Result result) {
   switch (result) {
     case VersionUpdater::Result::UPDATE_NOT_REQUIRED:
       RecordOobeConsumerUpdateScreenSkippedReasonHistogram(
           OobeConsumerUpdateScreenSkippedReason::kUpdateNotRequired);
-      exit_callback_.Run(Result::UPDATE_NOT_REQUIRED);
+      wait_exit_timer_.Start(FROM_HERE, exit_delay_, this,
+                             &ConsumerUpdateScreen::DelayExitNoUpdate);
       break;
     case VersionUpdater::Result::UPDATE_ERROR:
       RecordOobeConsumerUpdateScreenSkippedReasonHistogram(
