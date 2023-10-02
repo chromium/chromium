@@ -121,8 +121,7 @@
 // absl::optional is a typedef of std::optional, use the feature macro
 // ABSL_USES_STD_OPTIONAL.
 
-#define ABSL_OPTION_USE_STD_OPTIONAL 0
-
+#define ABSL_OPTION_USE_STD_OPTIONAL 2
 
 // ABSL_OPTION_USE_STD_STRING_VIEW
 //

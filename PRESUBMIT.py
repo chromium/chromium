@@ -1026,21 +1026,6 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
       ],
     ),
     BanRule(
-      r'/\bstd::optional\b',
-      (
-        'std::optional is not allowed yet (https://crbug.com/1373619). Use ',
-        'absl::optional instead.',
-      ),
-      True,
-      [
-          # Clang plugins have different build config.
-          '^tools/clang/blink_gc_plugin/',
-          '^tools/clang/plugins/',
-          # Not an error in third_party folders.
-          _THIRD_PARTY_EXCEPT_BLINK,
-      ],
-    ),
-    BanRule(
       r'/#include <chrono>',
       (
         '<chrono> is banned. Use base/time instead.',

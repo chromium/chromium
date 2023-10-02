@@ -6,9 +6,8 @@ Subject: [PATCH] Turn on hardened mode and alias absl types to STL types..
 The absl implementations contain various hardening checks where the
 standard is UB. At the time, libc++ lacked corresponding hardening
 checks, so we forced the use of absl types. As of
-https://crbug.com/1335422, this is no longer true. Switching so the STL
-versions of optional and variant is tracked by https://crbug.com/1373619 and
-https://crbug.com/1373620, respectively.
+https://crbug.com/1335422, this is no longer true. Switching to the STL
+version of variant is tracked by https://crbug.com/1373620.
 ---
  third_party/abseil-cpp/absl/base/options.h | 10 +++++-----
  1 file changed, 5 insertions(+), 5 deletions(-)
@@ -17,15 +16,6 @@ diff --git a/third_party/abseil-cpp/absl/base/options.h b/third_party/abseil-cpp
 index 230bf1eecc4a4..1641271cd3ff9 100644
 --- a/third_party/abseil-cpp/absl/base/options.h
 +++ b/third_party/abseil-cpp/absl/base/options.h
-@@ -127,7 +127,7 @@
- // absl::optional is a typedef of std::optional, use the feature macro
- // ABSL_USES_STD_OPTIONAL.
- 
--#define ABSL_OPTION_USE_STD_OPTIONAL 2
-+#define ABSL_OPTION_USE_STD_OPTIONAL 0
- 
- 
- // ABSL_OPTION_USE_STD_STRING_VIEW
 @@ -180,7 +180,7 @@
  // absl::variant is a typedef of std::variant, use the feature macro
  // ABSL_USES_STD_VARIANT.
@@ -45,4 +35,3 @@ index 230bf1eecc4a4..1641271cd3ff9 100644
  #endif  // ABSL_BASE_OPTIONS_H_
 -- 
 2.33.0.882.g93a45727a2-goog
-

@@ -846,6 +846,25 @@ objects with the same value have the same object representation.
 [Discussion thread](https://groups.google.com/u/1/a/chromium.org/g/cxx/c/jNMsxFTd30M)
 ***
 
+### std::in_place[_t] <sup>[allowed]</sup>
+
+```c++
+std::optional<std::complex<double>> opt{std::in_place, 0, 1};
+```
+
+**Description:** `std::in_place` is a disambiguation tag for `std::optional` to
+indicate that the object should be constructed in-place.
+
+**Documentation:**
+[`std::in_place`](https://en.cppreference.com/w/cpp/utility/in_place)
+
+**Notes:**
+*** promo
+Allowed now that `std::optional` is allowed.
+[Migration bug](https://crbug.com/1373619) and
+[discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/XG3G85_ZF1k)
+***
+
 ### std::inclusive_scan <sup>[allowed]</sup>
 
 ```c++
@@ -1062,6 +1081,24 @@ the callable object it holds.
 [Migration bug](https://crbug.com/1412529)
 ***
 
+### std::optional <sup>[allowed]</sup>
+
+```c++
+std::optional<std::string> s;
+```
+
+**Description:** The class template `std::optional` manages an optional
+contained value, i.e. a value that may or may not be present.
+
+**Documentation:**
+[`std::optional`](https://en.cppreference.com/w/cpp/utility/optional)
+
+**Notes:**
+*** promo
+[Migration bug](https://crbug.com/1373619) and
+[discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/XG3G85_ZF1k)
+***
+
 ### std::{size,empty,data} <sup>[allowed]</sup>
 
 ```c++
@@ -1239,46 +1276,26 @@ once supported.
 [Discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/cwktrFxxUY4)
 ***
 
-### std::in_place[_type,_index][_t] <sup>[banned]</sup>
+### std::in_place{_type,_index}[_t] <sup>[banned]</sup>
 
 ```c++
-std::optional<std::complex<double>> opt{std::in_place, 0, 1};
 std::variant<int, float> v{std::in_place_type<int>, 1.4};
 ```
 
-**Description:** The `std::in_place` are disambiguation tags for
-`std::optional`, `std::variant`, and `std::any` to indicate that the object
-should be constructed in-place.
+**Description:** `std::in_place_type` and `std::in_place_index` are
+disambiguation tags for `std::variant` and `std::any` to indicate that the
+object should be constructed in-place.
 
 **Documentation:**
-[`std::in_place`](https://en.cppreference.com/w/cpp/utility/in_place)
+[`std::in_place_type`](https://en.cppreference.com/w/cpp/utility/in_place)
 
 **Notes:**
 *** promo
-Banned for now because `std::optional`, `std::variant`, and `std::any` are all
-banned for now. Because `absl::optional` and `absl::variant` are used instead,
-and they require `absl::in_place`, use `absl::in_place` for non-Abseil Chromium
+Banned for now because `std::variant` and `std::any` are banned. Because
+`absl::variant` is used instead, and it requires `absl::in_place_type`, use
+`absl::in_place_type` for non-Abseil Chromium
 code. See the
 [discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/ZspmuJPpv6s).
-***
-
-### std::optional <sup>[banned]</sup>
-
-```c++
-std::optional<std::string> s;
-```
-
-**Description:** The class template `std::optional` manages an optional
-contained value, i.e. a value that may or may not be present. A common use case
-for optional is the return value of a function that may fail.
-
-**Documentation:**
-[`std::optional`](https://en.cppreference.com/w/cpp/utility/optional)
-
-**Notes:**
-*** promo
-[Will be allowed soon](https://crbug.com/1373619); for now, use
-`absl::optional`.
 ***
 
 ### std::uncaught_exceptions <sup>[banned]</sup>
