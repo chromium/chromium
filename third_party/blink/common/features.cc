@@ -1456,9 +1456,9 @@ BASE_FEATURE(kProduceCompileHints2,
 const base::FeatureParam<int> kProduceCompileHintsOnIdleDelayParam{
     &kProduceCompileHints2, "delay-in-ms", 10000};
 const base::FeatureParam<double> kProduceCompileHintsNoiseLevel{
-    &kProduceCompileHints2, "noise probability", 0.5};
+    &kProduceCompileHints2, "noise-probability", 0.5};
 const base::FeatureParam<double> kProduceCompileHintsDataProductionLevel{
-    &kProduceCompileHints2, "data production probability", 0.005};
+    &kProduceCompileHints2, "data-production-probability", 0.005};
 BASE_FEATURE(kForceProduceCompileHints,
              "ForceProduceCompileHints",
              base::FEATURE_DISABLED_BY_DEFAULT);
