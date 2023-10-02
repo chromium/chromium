@@ -298,14 +298,9 @@ std::tuple<float, float, float> XYZD65ToOklab(float x, float y, float z) {
                          lab_output.vals[2]);
 }
 
-std::tuple<float, float, float> LchToLab(float l,
-                                         float c,
-                                         absl::optional<float> h) {
-  if (!h.has_value())
-    return std::make_tuple(l, 0, 0);
-
-  return std::make_tuple(l, c * std::cos(gfx::DegToRad(h.value())),
-                         c * std::sin(gfx::DegToRad(h.value())));
+std::tuple<float, float, float> LchToLab(float l, float c, float h) {
+  return std::make_tuple(l, c * std::cos(gfx::DegToRad(h)),
+                         c * std::sin(gfx::DegToRad(h)));
 }
 std::tuple<float, float, float> LabToLch(float l, float a, float b) {
   return std::make_tuple(l, std::sqrt(a * a + b * b),
@@ -498,10 +493,7 @@ SkColor4f DisplayP3ToSkColor4f(float r, float g, float b, float alpha) {
   return XYZD50ToSkColor4f(x, y, z, alpha);
 }
 
-SkColor4f LchToSkColor4f(float l_input,
-                         float c,
-                         absl::optional<float> h,
-                         float alpha) {
+SkColor4f LchToSkColor4f(float l_input, float c, float h, float alpha) {
   auto [l, a, b] = LchToLab(l_input, c, h);
   auto [x, y, z] = LabToXYZD50(l, a, b);
   return XYZD50ToSkColor4f(x, y, z, alpha);
@@ -516,10 +508,7 @@ SkColor4f Rec2020ToSkColor4f(float r, float g, float b, float alpha) {
   return XYZD50ToSkColor4f(x, y, z, alpha);
 }
 
-SkColor4f OklchToSkColor4f(float l_input,
-                           float c,
-                           absl::optional<float> h,
-                           float alpha) {
+SkColor4f OklchToSkColor4f(float l_input, float c, float h, float alpha) {
   auto [l, a, b] = LchToLab(l_input, c, h);
   auto [x, y, z] = OklabToXYZD65(l, a, b);
   return XYZD65ToSkColor4f(x, y, z, alpha);

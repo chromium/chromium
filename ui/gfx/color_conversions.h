@@ -31,9 +31,7 @@ GFX_EXPORT std::tuple<float, float, float> XYZD65ToOklab(float x,
                                                          float y,
                                                          float z);
 
-GFX_EXPORT std::tuple<float, float, float> LchToLab(float l,
-                                                    float c,
-                                                    absl::optional<float> h);
+GFX_EXPORT std::tuple<float, float, float> LchToLab(float l, float c, float h);
 
 GFX_EXPORT std::tuple<float, float, float> LabToLch(float l, float a, float b);
 
@@ -105,15 +103,9 @@ GFX_EXPORT SkColor4f LabToSkColor4f(float l, float a, float b, float alpha);
 
 GFX_EXPORT SkColor4f OklabToSkColor4f(float l, float a, float b, float alpha);
 
-GFX_EXPORT SkColor4f LchToSkColor4f(float l,
-                                    float a,
-                                    absl::optional<float> b,
-                                    float alpha);
+GFX_EXPORT SkColor4f LchToSkColor4f(float l, float a, float b, float alpha);
 
-GFX_EXPORT SkColor4f OklchToSkColor4f(float l,
-                                      float a,
-                                      absl::optional<float> b,
-                                      float alpha);
+GFX_EXPORT SkColor4f OklchToSkColor4f(float l, float a, float h, float alpha);
 
 GFX_EXPORT SkColor4f SRGBLinearToSkColor4f(float r,
                                            float g,

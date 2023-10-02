@@ -279,8 +279,7 @@ TEST(ColorConversions, LchToLab) {
   for (auto& color_pair : colors_tests) {
     auto [input_l, input_c, input_h] = color_pair.input;
     auto [expected_l, expected_a, expected_b] = color_pair.expected;
-    auto [output_l, output_a, output_b] =
-        LchToLab(input_l, input_c, absl::optional<float>(input_h));
+    auto [output_l, output_a, output_b] = LchToLab(input_l, input_c, input_h);
     EXPECT_NEAR(output_l, expected_l, 0.001f)
         << input_l << ' ' << input_c << ' ' << input_h << " to " << expected_l
         << ' ' << expected_a << ' ' << expected_b << " produced " << output_l
@@ -294,28 +293,6 @@ TEST(ColorConversions, LchToLab) {
         << ' ' << expected_a << ' ' << expected_b << " produced " << output_l
         << ' ' << output_a << ' ' << output_b;
   }
-
-  // Try with a none hue value (white).
-  float input_l = 100.0f;
-  float input_c = 0.000010331815288315629f;
-  absl::optional<float> input_h = absl::nullopt;
-  float expected_l = 100.0f;
-  float expected_a = -0.000007807961277528364f;
-  float expected_b = 0.000006766250648659877f;
-  auto [output_l, output_a, output_b] =
-      LchToLab(input_l, input_c, absl::optional<float>(input_h));
-  EXPECT_NEAR(output_l, expected_l, 0.001f)
-      << input_l << ' ' << input_c << ' ' << "none"
-      << " to " << expected_l << ' ' << expected_a << ' ' << expected_b
-      << " produced " << output_l << ' ' << output_a << ' ' << output_b;
-  EXPECT_NEAR(output_a, expected_a, 0.001f)
-      << input_l << ' ' << input_c << ' ' << "none"
-      << " to " << expected_l << ' ' << expected_a << ' ' << expected_b
-      << " produced " << output_l << ' ' << output_a << ' ' << output_b;
-  EXPECT_NEAR(output_b, expected_b, 0.001f)
-      << input_l << ' ' << input_c << ' ' << "none"
-      << " to " << expected_l << ' ' << expected_a << ' ' << expected_b
-      << " produced " << output_l << ' ' << output_a << ' ' << output_b;
 }
 
 TEST(ColorConversions, LabToLch) {
@@ -372,8 +349,7 @@ TEST(ColorConversions, LchToSkColor4f) {
   for (auto& color_pair : colors_tests) {
     auto [input_l, input_c, input_h] = color_pair.input;
     auto [expected_r, expected_g, expected_b] = color_pair.expected;
-    SkColor4f color =
-        LchToSkColor4f(input_l, input_c, absl::optional<float>(input_h), 1.0f);
+    SkColor4f color = LchToSkColor4f(input_l, input_c, input_h, 1.0f);
     EXPECT_NEAR(color.fR, expected_r, 0.01f)
         << input_l << ' ' << input_c << ' ' << input_h << " to " << expected_r
         << ' ' << expected_g << ' ' << expected_b << " produced " << color.fR
@@ -387,28 +363,6 @@ TEST(ColorConversions, LchToSkColor4f) {
         << ' ' << expected_g << ' ' << expected_b << " produced " << color.fR
         << ' ' << color.fG << ' ' << color.fB;
   }
-
-  // Try with a none hue value (white).
-  float input_l = 100.0f;
-  float input_c = 0.000010331815288315629f;
-  absl::optional<float> input_h = absl::nullopt;
-  float expected_r = 1.0f;
-  float expected_g = 1.0f;
-  float expected_b = 1.0f;
-  SkColor4f color =
-      LchToSkColor4f(input_l, input_c, absl::optional<float>(input_h), 1.0f);
-  EXPECT_NEAR(color.fR, expected_r, 0.001f)
-      << input_l << ' ' << input_c << ' ' << "none"
-      << " to " << expected_r << ' ' << expected_g << ' ' << expected_b
-      << " produced " << color.fR << ' ' << color.fG << ' ' << color.fB;
-  EXPECT_NEAR(color.fG, expected_g, 0.001f)
-      << input_l << ' ' << input_c << ' ' << "none"
-      << " to " << expected_r << ' ' << expected_g << ' ' << expected_b
-      << " produced " << color.fR << ' ' << color.fG << ' ' << color.fB;
-  EXPECT_NEAR(color.fB, expected_b, 0.001f)
-      << input_l << ' ' << input_c << ' ' << "none"
-      << " to " << expected_r << ' ' << expected_g << ' ' << expected_b
-      << " produced " << color.fR << ' ' << color.fG << ' ' << color.fB;
 }
 
 TEST(ColorConversions, OklchToSkColor4f) {
@@ -429,8 +383,7 @@ TEST(ColorConversions, OklchToSkColor4f) {
   for (auto& color_pair : colors_tests) {
     auto [input_l, input_c, input_h] = color_pair.input;
     auto [expected_r, expected_g, expected_b] = color_pair.expected;
-    SkColor4f color = OklchToSkColor4f(input_l, input_c,
-                                       absl::optional<float>(input_h), 1.0f);
+    SkColor4f color = OklchToSkColor4f(input_l, input_c, input_h, 1.0f);
     EXPECT_NEAR(color.fR, expected_r, 0.01f)
         << input_l << ' ' << input_c << ' ' << input_h << " to " << expected_r
         << ' ' << expected_g << ' ' << expected_b << " produced " << color.fR
@@ -444,28 +397,6 @@ TEST(ColorConversions, OklchToSkColor4f) {
         << ' ' << expected_g << ' ' << expected_b << " produced " << color.fR
         << ' ' << color.fG << ' ' << color.fB;
   }
-
-  // Try with a none hue value (white).
-  float input_l = 100.0f;
-  float input_c = 0.000010331815288315629f;
-  absl::optional<float> input_h = absl::nullopt;
-  float expected_r = 1.0f;
-  float expected_g = 1.0f;
-  float expected_b = 1.0f;
-  SkColor4f color =
-      OklchToSkColor4f(input_l, input_c, absl::optional<float>(input_h), 1.0f);
-  EXPECT_NEAR(color.fR, expected_r, 0.001f)
-      << input_l << ' ' << input_c << ' ' << "none"
-      << " to " << expected_r << ' ' << expected_g << ' ' << expected_b
-      << " produced " << color.fR << ' ' << color.fG << ' ' << color.fB;
-  EXPECT_NEAR(color.fG, expected_g, 0.001f)
-      << input_l << ' ' << input_c << ' ' << "none"
-      << " to " << expected_r << ' ' << expected_g << ' ' << expected_b
-      << " produced " << color.fR << ' ' << color.fG << ' ' << color.fB;
-  EXPECT_NEAR(color.fB, expected_b, 0.001f)
-      << input_l << ' ' << input_c << ' ' << "none"
-      << " to " << expected_r << ' ' << expected_g << ' ' << expected_b
-      << " produced " << color.fR << ' ' << color.fG << ' ' << color.fB;
 }
 
 TEST(ColorConversions, SRGBLinearToXYZD50) {
