@@ -427,16 +427,4 @@ bool IsValidSuggestionForFieldContents(std::u16string suggestion_canon,
                           base::CompareCase::SENSITIVE);
 }
 
-void RemoveProfilesNotUsedSinceTimestamp(
-    base::Time min_last_used,
-    std::vector<AutofillProfile*>& profiles) {
-  const size_t original_size = profiles.size();
-  base::EraseIf(profiles, [min_last_used](const AutofillProfile* profile) {
-    return profile->use_date() <= min_last_used;
-  });
-  const size_t num_profiles_suppressed = original_size - profiles.size();
-  AutofillMetrics::LogNumberOfAddressesSuppressedForDisuse(
-      num_profiles_suppressed);
-}
-
 }  // namespace autofill::suggestion_selection

@@ -655,6 +655,44 @@ TEST_F(AutofillSuggestionGeneratorTest,
   ASSERT_TRUE(profiles_to_suggest.empty());
 }
 
+// Tests that disused profiles get removed.
+TEST_F(AutofillSuggestionGeneratorTest,
+       GetProfilesToSuggest_RemoveProfilesNotUsedSinceTimestamp) {
+  const char kAddressesSuppressedHistogramName[] =
+      "Autofill.AddressesSuppressedForDisuse";
+  base::Time kCurrentTime = AutofillClock::Now();
+  constexpr size_t kNumProfiles = 10;
+  constexpr base::TimeDelta k30Days = base::Days(30);
+  constexpr size_t kNbSuggestions =
+      (kDisusedDataModelTimeDelta + base::Days(29)) / k30Days;
+
+  // Set up the profile vectors with last use dates ranging from `kCurrentTime`
+  // to 270 days ago, in 30 day increments.
+  std::vector<AutofillProfile> profiles(kNumProfiles);
+  for (size_t i = 0; i < kNumProfiles; ++i) {
+    profiles[i].SetRawInfo(
+        NAME_FULL, base::UTF8ToUTF16(base::StringPrintf("Bob %zu Doe", i)));
+    profiles[i].set_use_date(kCurrentTime - (i * k30Days));
+    personal_data()->AddProfile(profiles[i]);
+  }
+
+  // Filter the profiles while capturing histograms.
+  base::HistogramTester histogram_tester;
+  std::vector<const AutofillProfile*> profiles_to_suggest =
+      suggestion_generator()->GetProfilesToSuggest(
+          AutofillType(NAME_FULL), u"",
+          /*field_is_autofilled=*/false, {NAME_FULL});
+
+  // Validate that we get the expected filtered profiles and histograms.
+  ASSERT_EQ(kNbSuggestions, profiles_to_suggest.size());
+  for (size_t i = 0; i < kNbSuggestions; ++i) {
+    EXPECT_EQ(profiles[i].guid(), profiles_to_suggest[i]->guid()) << i;
+  }
+  histogram_tester.ExpectTotalCount(kAddressesSuppressedHistogramName, 1);
+  histogram_tester.ExpectBucketCount(kAddressesSuppressedHistogramName,
+                                     kNumProfiles - kNbSuggestions, 1);
+}
+
 TEST_F(AutofillSuggestionGeneratorTest, CreateSuggestionsFromProfiles) {
   AutofillProfile profile;
   test::SetProfileInfo(&profile, "Marion", "Mitchell", "Morrison",

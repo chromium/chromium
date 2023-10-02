@@ -1090,7 +1090,6 @@ source_set("unit_tests") {
     "ui/payments/bubble_show_options_unittest.cc",
     "ui/payments/card_unmask_prompt_controller_impl_unittest.cc",
     "ui/region_combobox_model_unittest.cc",
-    "ui/suggestion_selection_unittest.cc",
     "validation_unittest.cc",
     "webdata/autocomplete_sync_bridge_unittest.cc",
     "webdata/autofill_profile_sync_bridge_unittest.cc",

@@ -201,6 +201,12 @@ class AutofillSuggestionGenerator {
       const std::string& app_locale,
       bool field_is_autofilled);
 
+  // Removes profiles that haven't been used after `min_last_used` from
+  // |profiles|. The relative ordering of `profiles` is maintained.
+  void RemoveProfilesNotUsedSinceTimestamp(
+      base::Time min_last_used,
+      std::vector<AutofillProfile*>& profiles);
+
   // Return the texts shown as the first line of the suggestion, based on the
   // `credit_card` and the focused field `type`. The first index in the pair
   // represents the main text, and the second index represents the minor text.

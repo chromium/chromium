@@ -65,12 +65,6 @@ bool IsValidSuggestionForFieldContents(std::u16string suggestion_canon,
                                        bool is_masked_server_card,
                                        bool field_is_autofilled);
 
-// Removes profiles that haven't been used after |min_last_used| from
-// |profiles|. The relative ordering of |profiles| is maintained.
-void RemoveProfilesNotUsedSinceTimestamp(
-    base::Time min_last_used,
-    std::vector<AutofillProfile*>& profiles);
-
 }  // namespace suggestion_selection
 }  // namespace autofill
 

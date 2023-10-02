@@ -259,8 +259,7 @@ AutofillSuggestionGenerator::GetProfilesToSuggest(
   if (field_contents_canon.empty()) {
     const base::Time min_last_used =
         AutofillClock::Now() - kDisusedDataModelTimeDelta;
-    suggestion_selection::RemoveProfilesNotUsedSinceTimestamp(min_last_used,
-                                                              sorted_profiles);
+    RemoveProfilesNotUsedSinceTimestamp(min_last_used, sorted_profiles);
   }
 
   std::vector<const AutofillProfile*> matched_profiles =
@@ -473,6 +472,18 @@ AutofillSuggestionGenerator::GetPrefixMatchedProfiles(
     }
   }
   return matched_profiles;
+}
+
+void AutofillSuggestionGenerator::RemoveProfilesNotUsedSinceTimestamp(
+    base::Time min_last_used,
+    std::vector<AutofillProfile*>& profiles) {
+  const size_t original_size = profiles.size();
+  base::EraseIf(profiles, [min_last_used](const AutofillProfile* profile) {
+    return profile->use_date() <= min_last_used;
+  });
+  const size_t num_profiles_suppressed = original_size - profiles.size();
+  AutofillMetrics::LogNumberOfAddressesSuppressedForDisuse(
+      num_profiles_suppressed);
 }
 
 std::vector<Suggestion>
