@@ -109,7 +109,7 @@ void FirstPartySetsOverridesPolicyHandler::ApplyPolicySettings(
   std::unique_ptr<base::Value> value;
   policy::SchemaValidatingPolicyHandler::CheckAndGetValue(policies, nullptr,
                                                           &value);
-  prefs->SetValue(first_party_sets::kFirstPartySetsOverrides,
+  prefs->SetValue(first_party_sets::kRelatedWebsiteSetsOverrides,
                   base::Value::FromUniquePtrValue(std::move(value)));
 }
 

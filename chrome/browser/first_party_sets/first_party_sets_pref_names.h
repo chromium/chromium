@@ -8,7 +8,7 @@
 namespace first_party_sets {
 
 // Add Profile prefs below.
-extern const char kFirstPartySetsOverrides[];
+extern const char kRelatedWebsiteSetsOverrides[];
 
 }  // namespace first_party_sets
 

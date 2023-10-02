@@ -55,12 +55,12 @@ TEST_F(FirstPartySetsPolicyServiceFactoryTest,
   disabled_profile->GetPrefs()->SetBoolean(
       prefs::kPrivacySandboxRelatedWebsiteSetsEnabled, false);
   disabled_profile->GetPrefs()->SetDict(
-      first_party_sets::kFirstPartySetsOverrides,
+      first_party_sets::kRelatedWebsiteSetsOverrides,
       std::move(empty_lists.Clone().GetDict()));
   enabled_profile->GetPrefs()->SetBoolean(
       prefs::kPrivacySandboxRelatedWebsiteSetsEnabled, true);
   enabled_profile->GetPrefs()->SetDict(
-      first_party_sets::kFirstPartySetsOverrides,
+      first_party_sets::kRelatedWebsiteSetsOverrides,
       std::move(empty_lists.GetDict()));
 
   // Ensure that the Service creation isn't reliant on the enabled pref.

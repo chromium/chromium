@@ -43,7 +43,7 @@ network::mojom::FirstPartySetsReadyEventPtr MakeReadyEvent(
 
 const base::Value::Dict* GetOverridesPolicyForProfile(
     const PrefService* prefs) {
-  return prefs ? &prefs->GetDict(first_party_sets::kFirstPartySetsOverrides)
+  return prefs ? &prefs->GetDict(first_party_sets::kRelatedWebsiteSetsOverrides)
                : nullptr;
 }
 
