@@ -32,22 +32,9 @@ struct UsesItself : public SupportsUserData::Data {
   raw_ptr<const void> key_;
 };
 
-class SupportsUserDataTest : public ::testing::TestWithParam<bool> {
- public:
-  SupportsUserDataTest() {
-    if (GetParam()) {
-      scoped_features_.InitWithFeatures(
-          {features::kSupportsUserDataFlatHashMap}, {});
-    } else {
-      scoped_features_.InitWithFeatures(
-          {}, {features::kSupportsUserDataFlatHashMap});
-    }
-  }
+using SupportsUserDataTest = ::testing::Test;
 
-  base::test::ScopedFeatureList scoped_features_;
-};
-
-TEST_P(SupportsUserDataTest, ClearWorksRecursively) {
+TEST_F(SupportsUserDataTest, ClearWorksRecursively) {
   char key = 0;  // Must outlive `supports_user_data`.
   TestSupportsUserData supports_user_data;
   supports_user_data.SetUserData(
@@ -57,7 +44,7 @@ TEST_P(SupportsUserDataTest, ClearWorksRecursively) {
 
 struct TestData : public SupportsUserData::Data {};
 
-TEST_P(SupportsUserDataTest, Movable) {
+TEST_F(SupportsUserDataTest, Movable) {
   TestSupportsUserData supports_user_data_1;
   char key1 = 0;
   supports_user_data_1.SetUserData(&key1, std::make_unique<TestData>());
@@ -73,7 +60,7 @@ TEST_P(SupportsUserDataTest, Movable) {
   EXPECT_EQ(nullptr, supports_user_data_2.GetUserData(&key2));
 }
 
-TEST_P(SupportsUserDataTest, ClearAllUserData) {
+TEST_F(SupportsUserDataTest, ClearAllUserData) {
   TestSupportsUserData supports_user_data;
   char key1 = 0;
   supports_user_data.SetUserData(&key1, std::make_unique<TestData>());
@@ -89,7 +76,7 @@ TEST_P(SupportsUserDataTest, ClearAllUserData) {
   EXPECT_FALSE(supports_user_data.GetUserData(&key2));
 }
 
-TEST_P(SupportsUserDataTest, TakeUserData) {
+TEST_F(SupportsUserDataTest, TakeUserData) {
   TestSupportsUserData supports_user_data;
   char key1 = 0;
   supports_user_data.SetUserData(&key1, std::make_unique<TestData>());
@@ -120,16 +107,12 @@ class DataOwnsSupportsUserData : public SupportsUserData::Data {
 
 // Tests that removing a `SupportsUserData::Data` that owns a `SupportsUserData`
 // does not crash.
-TEST_P(SupportsUserDataTest, ReentrantRemoveUserData) {
+TEST_F(SupportsUserDataTest, ReentrantRemoveUserData) {
   DataOwnsSupportsUserData* data = new DataOwnsSupportsUserData;
   char key = 0;
   data->supports_user_data()->SetUserData(&key, WrapUnique(data));
   data->supports_user_data()->RemoveUserData(&key);
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         SupportsUserDataTest,
-                         testing::Values(false, true));
 
 }  // namespace
 }  // namespace base
