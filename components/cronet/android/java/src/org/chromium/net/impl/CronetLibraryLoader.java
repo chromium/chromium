@@ -106,7 +106,9 @@ public class CronetLibraryLoader {
         } else if (Log.isLoggable(nativeLogTag, Log.DEBUG)) {
             loggingLevel = -1; // VLOG(1)
         } else {
-            loggingLevel = 3; // LOG(FATAL) only
+            // Use the default log level, which logs everything except VLOG(). Skip the
+            // setMinLogLevel() call to avoid paying for an unnecessary JNI transition.
+            return;
         }
         CronetLibraryLoaderJni.get().setMinLogLevel(loggingLevel);
     }
