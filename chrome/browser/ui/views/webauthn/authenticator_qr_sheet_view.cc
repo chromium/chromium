@@ -168,5 +168,5 @@ AuthenticatorQRSheetView::BuildStepSpecificContent() {
     label->SetAllowCharacterBreak(true);
     label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
   }
-  return std::make_pair(std::move(container), AutoFocus::kYes);
+  return std::make_pair(std::move(container), AutoFocus::kNo);
 }
