@@ -1064,6 +1064,12 @@ const base::FeatureParam<int> kLCPPFontURLPredictorMaxUrlLength{
 const base::FeatureParam<int> kLCPPFontURLPredictorMaxUrlCountPerOrigin{
     &kLCPPFontURLPredictor, "lcpp_max_font_url_count_per_origin", 10};
 
+const base::FeatureParam<double> kLCPPFontURLPredictorFrequencyThreshold{
+    &kLCPPFontURLPredictor, "lcpp_font_url_frequency_threshold", 0.5};
+
+const base::FeatureParam<int> kLCPPFontURLPredictorMaxPreloadCount{
+    &kLCPPFontURLPredictor, "lcpp_max_font_url_to_preload", 5};
+
 // Enables reporting as LCP of the time the first frame of a video was painted.
 BASE_FEATURE(kLCPVideoFirstFrame,
              "LCPVideoFirstFrame",

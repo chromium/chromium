@@ -593,6 +593,14 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kLCPPFontURLPredictorMaxUrlCountPerOrigin;
 
+// Fonts are preloaded if frequencies are above this threshold.
+BLINK_COMMON_EXPORT extern const base::FeatureParam<double>
+    kLCPPFontURLPredictorFrequencyThreshold;
+
+// The maximum number of Fonts to be sent for preload.
+BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
+    kLCPPFontURLPredictorMaxPreloadCount;
+
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLCPVideoFirstFrame);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLightweightNoStatePrefetch);
