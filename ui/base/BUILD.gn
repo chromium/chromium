@@ -592,7 +592,6 @@ component("base") {
     sources += [
       "glib/glib_cast.h",
       "glib/glib_integers.h",
-      "glib/glib_signal.h",
       "glib/scoped_gobject.h",
       "glib/scoped_gsignal.cc",
       "glib/scoped_gsignal.h",
