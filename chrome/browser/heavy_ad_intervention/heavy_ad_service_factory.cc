@@ -39,7 +39,8 @@ HeavyAdServiceFactory::HeavyAdServiceFactory()
 
 HeavyAdServiceFactory::~HeavyAdServiceFactory() {}
 
-KeyedService* HeavyAdServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+HeavyAdServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new heavy_ad_intervention::HeavyAdService();
+  return std::make_unique<heavy_ad_intervention::HeavyAdService>();
 }
