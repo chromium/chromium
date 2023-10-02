@@ -179,6 +179,9 @@ class FileManagerBrowserTestBase
     // Whether test should use report-only mode for the file transfer connector.
     bool file_transfer_connector_report_only = false;
 
+    // Whether tests should enable V2 of search.
+    bool enable_search_v2 = false;
+
     // Whether tests should enable image content search.
     bool enable_image_content_search = false;
 

@@ -160,6 +160,11 @@ TestCase& TestCase::FileTransferConnectorReportOnlyMode() {
   return *this;
 }
 
+TestCase& TestCase::EnableSearchV2() {
+  options.enable_search_v2 = true;
+  return *this;
+}
+
 TestCase& TestCase::EnableFSPsInRecents() {
   options.enable_fsps_in_recents = true;
   return *this;
@@ -263,6 +268,10 @@ std::string TestCase::GetFullName() const {
 
   if (options.file_transfer_connector_report_only) {
     full_name += "_ReportOnly";
+  }
+
+  if (options.enable_search_v2) {
+    full_name += "_SearchV2";
   }
 
   if (options.enable_fsps_in_recents) {

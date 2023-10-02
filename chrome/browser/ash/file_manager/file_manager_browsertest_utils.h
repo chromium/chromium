@@ -88,6 +88,8 @@ struct TestCase {
 
   TestCase& FileTransferConnectorReportOnlyMode();
 
+  TestCase& EnableSearchV2();
+
   TestCase& EnableFSPsInRecents();
 
   TestCase& EnableOsFeedback();

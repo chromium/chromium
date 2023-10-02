@@ -1416,39 +1416,52 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     FilesAppBrowserTest,
     ::testing::Values(
         TestCase("searchDownloadsWithResults"),
+        TestCase("searchDownloadsWithResults").EnableSearchV2(),
         TestCase("searchDownloadsWithNoResults"),
+        TestCase("searchDownloadsWithNoResults").EnableSearchV2(),
         TestCase("searchDownloadsClearSearchKeyDown"),
+        TestCase("searchDownloadsClearSearchKeyDown").EnableSearchV2(),
         TestCase("searchDownloadsClearSearch"),
+        TestCase("searchDownloadsClearSearch").EnableSearchV2(),
         TestCase("searchHidingViaTab"),
+        TestCase("searchHidingViaTab").EnableSearchV2(),
         TestCase("searchHidingTextEntryField"),
+        TestCase("searchHidingTextEntryField").EnableSearchV2(),
         TestCase("searchButtonToggles"),
-        TestCase("searchWithLocationOptions"),
-        TestCase("searchLocalWithTypeOptions"),
-        TestCase("searchDriveWithTypeOptions"),
-        TestCase("searchWithRecencyOptions"),
-        TestCase("searchDriveWithRecencyOptions"),
-        TestCase("searchRemovableDevice"),
-        TestCase("searchPartitionedRemovableDevice"),
-        TestCase("resetSearchOptionsOnFolderChange"),
-        TestCase("showSearchResultMessageWhenSearching"),
-        TestCase("searchFromMyFiles"),
-        TestCase("selectionPath"),
-        TestCase("searchHierarchy"),
-        TestCase("hideSearchInTrash"),
+        TestCase("searchButtonToggles").EnableSearchV2(),
+        TestCase("searchWithLocationOptions").EnableSearchV2(),
+        TestCase("searchLocalWithTypeOptions").EnableSearchV2(),
+        TestCase("searchDriveWithTypeOptions").EnableSearchV2(),
+        TestCase("searchWithRecencyOptions").EnableSearchV2(),
+        TestCase("searchDriveWithRecencyOptions").EnableSearchV2(),
+        TestCase("searchRemovableDevice").EnableSearchV2(),
+        TestCase("searchPartitionedRemovableDevice").EnableSearchV2(),
+        TestCase("resetSearchOptionsOnFolderChange").EnableSearchV2(),
+        TestCase("showSearchResultMessageWhenSearching").EnableSearchV2(),
+        TestCase("searchFromMyFiles").EnableSearchV2(),
+        TestCase("selectionPath").EnableSearchV2(),
+        TestCase("searchHierarchy").EnableSearchV2(),
+        TestCase("hideSearchInTrash").EnableSearchV2(),
 // TODO(b/287169303): test is flaky on ChromiumOS MSan
 #if !defined(MEMORY_SANITIZER)
-        TestCase("searchTrashedFiles"),
+        TestCase("searchTrashedFiles").EnableSearchV2(),
 #endif
-        TestCase("matchDriveFilesByName"),
-        TestCase("searchSharedWithMe"),
-        TestCase("searchDocumentsProvider").EnableGenericDocumentsProvider(),
+        TestCase("matchDriveFilesByName").EnableSearchV2(),
+        TestCase("searchSharedWithMe").EnableSearchV2(),
+        TestCase("searchDocumentsProvider")
+            .EnableGenericDocumentsProvider()
+            .EnableSearchV2(),
         TestCase("searchDocumentsProviderWithTypeOptions")
-            .EnableGenericDocumentsProvider(),
+            .EnableGenericDocumentsProvider()
+            .EnableSearchV2(),
         TestCase("searchDocumentsProviderWithRecencyOptions")
-            .EnableGenericDocumentsProvider(),
-        TestCase("searchFileSystemProvider"),
-        TestCase("searchImageByContent").EnableImageContentSearch(),
-        TestCase("changingDirectoryClosesSearch")
+            .EnableGenericDocumentsProvider()
+            .EnableSearchV2(),
+        TestCase("searchFileSystemProvider").EnableSearchV2(),
+        TestCase("searchImageByContent")
+            .EnableImageContentSearch()
+            .EnableSearchV2(),
+        TestCase("changingDirectoryClosesSearch").EnableSearchV2()
         // TODO(b/189173190): Enable
         // TestCase("searchQueryLaunchParam")
         ));

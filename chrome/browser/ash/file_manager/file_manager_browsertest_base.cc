@@ -2329,6 +2329,12 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
     disabled_features.push_back(features::kFileTransferEnterpriseConnectorUI);
   }
 
+  if (options.enable_search_v2) {
+    enabled_features.push_back(ash::features::kFilesSearchV2);
+  } else {
+    disabled_features.push_back(ash::features::kFilesSearchV2);
+  }
+
   if (options.enable_image_content_search) {
     enabled_features.push_back(search_features::kLauncherImageSearch);
     enabled_features.push_back(search_features::kLauncherImageSearchIca);
