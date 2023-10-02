@@ -166,7 +166,12 @@ consoles.console_view(
     category = category,
     short_name = short_name,
 ) for name, category, short_name in (
-    ("fuchsia-builder-perf-arm64", "gardener|p/chrome|arm64", "perf-bld"),
+    ("fuchsia-arm64-nest-sd", "gardener|p/chrome|arm64", "nest-arm"),
+    ("fuchsia-builder-perf-arm64", "gardener|p/chrome|arm64", "perf-arm"),
+    ("fuchsia-builder-perf-x64", "gardener|p/chrome|x64", "perf-x64"),
+    ("fuchsia-cast-astro", "gardener|hardware|cast", "ast"),
+    ("fuchsia-cast-nelson", "gardener|hardware|cast", "nsn"),
+    ("fuchsia-cast-sherlock", "gardener|hardware|cast", "sher"),
     ("fuchsia-fyi-arm64-size", "gardener|p/chrome|arm64", "size"),
     ("fuchsia-fyi-astro", "gardener|hardware", "ast"),
     ("fuchsia-fyi-nelson", "gardener|hardware", "nsn"),
@@ -176,6 +181,7 @@ consoles.console_view(
     ("fuchsia-perf-nsn", "gardener|hardware|perf", "nsn"),
     ("fuchsia-perf-shk", "gardener|hardware|perf", "sher"),
     ("fuchsia-x64", "gardener|p/chrome|x64", "rel"),
+    ("fuchsia-x64-nest-sd", "gardener|p/chrome|x64", "nest-x64"),
 )]
 
 exec("./ci/blink.infra.star")

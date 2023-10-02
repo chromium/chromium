@@ -24,22 +24,6 @@ ci.defaults.set(
     shadow_service_account = ci.DEFAULT_SHADOW_SERVICE_ACCOUNT,
 )
 
-consoles.console_view(
-    name = "chromium.fuchsia.fyi",
-)
-
-# The chromium.fuchsia.fyi console includes some entries for builders from the chrome project.
-[branches.console_view_entry(
-    console_view = "chromium.fuchsia.fyi",
-    builder = "chrome:ci/{}".format(name),
-    category = category,
-    short_name = short_name,
-) for name, category, short_name in (
-    ("fuchsia-builder-perf-x64", "p/chrome|x64", "perf-bld"),
-    ("fuchsia-fyi-arm64-size", "p/chrome|arm64", "size"),
-    ("fuchsia-x64", "p/chrome|x64", "rel"),
-)]
-
 ci.builder(
     name = "fuchsia-fyi-arm64-dbg",
     builder_spec = builder_config.builder_spec(
@@ -64,10 +48,6 @@ ci.builder(
         run_tests_serially = True,
     ),
     console_view_entry = [
-        consoles.console_view_entry(
-            category = "debug",
-            short_name = "arm64",
-        ),
         consoles.console_view_entry(
             branch_selector = branches.selector.MAIN,
             console_view = "sheriff.fuchsia",
@@ -101,10 +81,6 @@ ci.builder(
     ),
     console_view_entry = [
         consoles.console_view_entry(
-            category = "asan",
-            short_name = "x64",
-        ),
-        consoles.console_view_entry(
             branch_selector = branches.selector.MAIN,
             console_view = "sheriff.fuchsia",
             category = "gardener|fuchsia ci|x64",
@@ -136,10 +112,6 @@ ci.builder(
         run_tests_serially = True,
     ),
     console_view_entry = [
-        consoles.console_view_entry(
-            category = "debug",
-            short_name = "x64",
-        ),
         consoles.console_view_entry(
             branch_selector = branches.selector.MAIN,
             console_view = "sheriff.fuchsia",
@@ -175,7 +147,9 @@ ci.builder(
     ),
     console_view_entry = [
         consoles.console_view_entry(
-            category = "debug",
+            branch_selector = branches.selector.MAIN,
+            console_view = "sheriff.fuchsia",
+            category = "fyi",
             short_name = "x64-llemu",
         ),
     ],
