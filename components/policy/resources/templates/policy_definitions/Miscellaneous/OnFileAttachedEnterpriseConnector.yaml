@@ -8,6 +8,8 @@ desc: |-
 
         The <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD">block_until_verdict</ph> field being set to 1 means Chrome will wait to get a response from the analysis service before giving the page access to the file. Any other integer value means Chrome gives the page access to the file immediately.
 
+        The <ph name="ENTERPRISE_CONNECTOR_DEFAULT_ACTION_FIELD">default_action</ph> field being set to block means Chrome will not give the page access to the file if an error occurs while communicating with the analysis service. Any other value means Chrome gives the page access to the file.
+
         The <ph name="ENTERPRISE_CONNECTOR_BLOCK_PASSWORD_PROTECTED_FIELD">block_password_protected</ph> field controls whether Chrome blocks or allows files that are password protected.
 
         The <ph name="ENTERPRISE_CONNECTOR_BLOCK_LARGE_FILES_FIELD">block_large_files</ph> fields controls whether Chrome blocks or allows files that are too large to be analyzed.
@@ -21,6 +23,7 @@ example_value:
 - block_large_files: false
   block_password_protected: true
   block_until_verdict: 0
+  default_action: allow
   custom_messages:
   - language: default
     learn_more_url: moreinfo.example.com
@@ -79,6 +82,11 @@ schema:
         type: boolean
       block_until_verdict:
         type: integer
+      default_action:
+        enum:
+        - allow
+        - block
+        type: string
       custom_messages:
         items:
           properties:

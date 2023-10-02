@@ -9,6 +9,8 @@ desc: |-
 
         The <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD">block_until_verdict</ph> field being set to 1 means <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will wait to get a response from the analysis service before allowing the print preview dialog to be shown for the printed page. Any other integer value means <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> shows the print preview dialog immediately.
 
+        The <ph name="ENTERPRISE_CONNECTOR_DEFAULT_ACTION_FIELD">default_action</ph> field being set to block means <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will block the page from printing if an error occurs while communicating with the analysis service. Any other value means <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> allows the page to be printed.
+
         The <ph name="ENTERPRISE_CONNECTOR_BLOCK_LARGE_FILES_FIELD">block_large_files</ph> fields controls whether <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> blocks or allows files/pages that are too large to be analyzed.
 
         The <ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD">require_justification_tags</ph> field is used to determine for which tags the connector should require the user to enter a justification to bypass a scan that results in a bypassable warning. If the field is not set, it's assumed that a justification is not required.
@@ -19,6 +21,7 @@ desc: |-
 example_value:
 - block_large_files: true
   block_until_verdict: 0
+  default_action: allow
   custom_messages:
   - language: default
     learn_more_url: moreinfo.example.com
@@ -68,6 +71,11 @@ schema:
         - 0
         - 1
         type: integer
+      default_action:
+        enum:
+        - allow
+        - block
+        type: string
       custom_messages:
         items:
           properties:
