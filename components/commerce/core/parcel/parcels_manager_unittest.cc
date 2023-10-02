@@ -337,12 +337,45 @@ TEST_F(ParcelsManagerTest,
   run_loop.Run();
 }
 
+TEST_F(ParcelsManagerTest, TestGetAllParcelStatuses_LocalStorageHasDoneStatus) {
+  EXPECT_CALL(*mock_storage_, Init(_)).Times(1);
+  mock_storage_->MockGetAllParcelTrackingContents(kTestTrackingId,
+                                                  ParcelStatus::PICKED_UP);
+  mock_server_proxy_->MockParcelStatusResponses(true, kTestTrackingId,
+                                                ParcelStatus::PICKED_UP);
+  mock_storage_->MockInitCallback(true);
+
+  // Advance clock by 1 day.
+  clock_.Advance(base::Days(1));
+  EXPECT_CALL(*mock_server_proxy_, GetParcelStatus(_, _)).Times(0);
+  EXPECT_CALL(*mock_storage_, GetAllParcelTrackingContents()).Times(1);
+  EXPECT_CALL(*mock_storage_, UpdateParcelStatus(_, _)).Times(0);
+  base::RunLoop run_loop;
+  parcels_manager_->GetAllParcelStatuses(base::BindOnce(
+      [](base::RunLoop* run_loop, bool success,
+         std::unique_ptr<std::vector<ParcelTrackingStatus>> parcel_status) {
+        ASSERT_TRUE(success);
+        ASSERT_EQ(1, static_cast<int>(parcel_status->size()));
+        auto status = (*parcel_status)[0];
+        ASSERT_EQ(kTestTrackingId, status.tracking_id);
+        ASSERT_EQ(commerce::ParcelIdentifier::UPS, status.carrier);
+        ASSERT_EQ(ParcelStatus::PICKED_UP, status.state);
+        run_loop->Quit();
+      },
+      &run_loop));
+  run_loop.Run();
+}
+
 TEST_F(ParcelsManagerTest, TestGetAllParcelStatuses_ServerError) {
   EXPECT_CALL(*mock_storage_, Init(_)).Times(1);
   mock_storage_->MockGetAllParcelTrackingContents(kTestTrackingId,
                                                   ParcelStatus::NEW);
-  mock_server_proxy_->MockParcelStatusResponses(false, kTestTrackingId,
-                                                ParcelStatus::PICKED_UP);
+  ON_CALL(*mock_server_proxy_, GetParcelStatus)
+      .WillByDefault([](const std::vector<ParcelIdentifier>& parcel_identifiers,
+                        ParcelsServerProxy::GetParcelStatusCallback callback) {
+        std::move(callback).Run(
+            false, std::make_unique<std::vector<commerce::ParcelStatus>>());
+      });
   mock_storage_->MockInitCallback(true);
 
   clock_.Advance(base::Days(1));

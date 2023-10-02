@@ -47,7 +47,7 @@ const char kParcelStatusKey[] = "parcelStatus";
 const char kParcelIdentifierKey[] = "parcelIdentifier";
 const char kParcelStateKey[] = "parcelState";
 const char kTrackingUrlKey[] = "trackingUrl";
-const char kEstimatedDeliveryTimeUsecKey[] = "estimatedDeliveryTimeUsec";
+const char kEstimatedDeliveryDateKey[] = "estimatedDeliveryDate";
 const char kSourcePageDomainKey[] = "sourcePageDomain";
 
 constexpr net::NetworkTrafficAnnotationTag
@@ -244,8 +244,8 @@ absl::optional<ParcelStatus> Deserialize(const base::Value& value) {
   }
 
   auto* tracking_url = value_dict.FindString(kTrackingUrlKey);
-  auto estimated_delivery_time_usec =
-      base::ValueToInt64(value_dict.Find(kEstimatedDeliveryTimeUsecKey));
+  auto* estimated_delivery_date =
+      value_dict.FindString(kEstimatedDeliveryDateKey);
   ParcelStatus status;
   auto* identifier = status.mutable_parcel_identifier();
   identifier->set_tracking_id(*tracking_id);
@@ -256,9 +256,15 @@ absl::optional<ParcelStatus> Deserialize(const base::Value& value) {
   if (tracking_url) {
     status.set_tracking_url(*tracking_url);
   }
-  if (estimated_delivery_time_usec) {
-    status.set_estimated_delivery_time_usec(
-        estimated_delivery_time_usec.value());
+  if (estimated_delivery_date) {
+    // Serialize the string to base::Time so that it is easier for UI to format
+    // localized string.
+    base::Time time_to_deliver;
+    if (base::Time::FromString(estimated_delivery_date->c_str(),
+                               &time_to_deliver)) {
+      status.set_estimated_delivery_time_usec(
+          time_to_deliver.ToDeltaSinceWindowsEpoch().InMicroseconds());
+    }
   }
   return absl::make_optional<ParcelStatus>(status);
 }

@@ -10,6 +10,7 @@
 #include "base/run_loop.h"
 #include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "components/commerce/core/commerce_constants.h"
 #include "components/commerce/core/parcel/parcels_server_proxy.h"
 #include "components/commerce/core/proto/parcel.pb.h"
@@ -39,7 +40,7 @@ const std::string kExpectedGetParcelStatusPostData =
 const std::string kResponseSucceeded =
     "{ \"parcelStatus\": [{\"parcelIdentifier\": {\"trackingId\": \"xyz\","
     "\"carrier\": 1}, \"parcelState\": 2, \"trackingUrl\": \"www.foo.com\","
-    "\"estimatedDeliveryTimeUsec\": \"1000\"}]}";
+    "\"estimatedDeliveryDate\": \"2023-10-11\"}]}";
 const std::string kExpectedStartTrackingPostData =
     "{\"parcelIds\":[{\"carrier\":2,\"trackingId\":\"xyz\"}],"
     "\"sourcePageDomain\":\"www.abc.com\"}";
@@ -47,7 +48,6 @@ const std::string kTestTrackingUrl = "www.foo.com";
 const std::string kTestTrackingId = "xyz";
 const std::string kTestSourcePageDomain = "www.abc.com";
 const std::string kDeleteHttpMethod = "DELETE";
-}  // namespace
 
 std::vector<commerce::ParcelIdentifier> GetTestParcelIdentifiers() {
   commerce::ParcelIdentifier identifier;
@@ -55,6 +55,14 @@ std::vector<commerce::ParcelIdentifier> GetTestParcelIdentifiers() {
   identifier.set_carrier(commerce::ParcelIdentifier::UPS);
   return std::vector<commerce::ParcelIdentifier>{identifier};
 }
+
+int64_t GetExpectedDeliveryTimeUsec() {
+  base::Time delivery;
+  CHECK(base::Time::FromString("11-OCT-2023 00:00:00", &delivery));
+  return delivery.ToDeltaSinceWindowsEpoch().InMicroseconds();
+}
+
+}  // namespace
 
 namespace commerce {
 
@@ -121,7 +129,8 @@ TEST_F(ParcelsServerProxyTest, TestGetParcelStatus) {
             auto status = (*parcel_status)[0];
             ASSERT_EQ(ParcelStatus::PICKED_UP, status.parcel_state());
             ASSERT_EQ(kTestTrackingUrl, status.tracking_url());
-            ASSERT_EQ(1000, status.estimated_delivery_time_usec());
+            ASSERT_EQ(GetExpectedDeliveryTimeUsec(),
+                      status.estimated_delivery_time_usec());
             ASSERT_EQ(kTestTrackingId,
                       status.parcel_identifier().tracking_id());
             ASSERT_EQ(commerce::ParcelIdentifier::FEDEX,
@@ -224,7 +233,8 @@ TEST_F(ParcelsServerProxyTest, TestStartTrackingParcels) {
             auto status = (*parcel_status)[0];
             ASSERT_EQ(ParcelStatus::PICKED_UP, status.parcel_state());
             ASSERT_EQ(kTestTrackingUrl, status.tracking_url());
-            ASSERT_EQ(1000, status.estimated_delivery_time_usec());
+            ASSERT_EQ(GetExpectedDeliveryTimeUsec(),
+                      status.estimated_delivery_time_usec());
             ASSERT_EQ(kTestTrackingId,
                       status.parcel_identifier().tracking_id());
             ASSERT_EQ(commerce::ParcelIdentifier::FEDEX,

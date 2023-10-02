@@ -106,6 +106,7 @@ message ParcelStatus {
   // The tracking URL, if available.
   string tracking_url = 3;
 
-  // Estimated delivery time of the parcel in epoch microseconds.
+  // Estimated delivery time of the parcel in epoch microseconds, in local time
+  // zone.
   int64 estimated_delivery_time_usec = 4;
 }
