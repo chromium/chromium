@@ -5498,7 +5498,8 @@ void NavigationRequest::CommitErrorPage(
   common_params_->initiator_base_url = absl::nullopt;
 
   if (request_navigation_client_.is_bound()) {
-    if (GetRenderFrameHost() == frame_tree_node()->current_frame_host()) {
+    if (GetRenderFrameHost() ==
+        RenderFrameHostImpl::FromID(previous_render_frame_host_id_)) {
       // Reuse the request NavigationClient for commit.
       commit_navigation_client_ = std::move(request_navigation_client_);
     } else {
@@ -5648,7 +5649,8 @@ void NavigationRequest::CommitNavigation() {
              frame_tree_node_->render_manager()->speculative_frame_host());
 
   if (request_navigation_client_.is_bound()) {
-    if (GetRenderFrameHost() == frame_tree_node()->current_frame_host()) {
+    if (GetRenderFrameHost() ==
+        RenderFrameHostImpl::FromID(previous_render_frame_host_id_)) {
       // Reuse the request NavigationClient for commit.
       commit_navigation_client_ = std::move(request_navigation_client_);
     } else {
