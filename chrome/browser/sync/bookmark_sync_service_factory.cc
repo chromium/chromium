@@ -27,8 +27,12 @@ BookmarkSyncServiceFactory::BookmarkSyncServiceFactory()
           "BookmarkSyncServiceFactory",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kRedirectedToOriginal)
-              // TODO(crbug.com/1418376): Check if this service is needed in
-              // Guest mode.
+              // Bookmarks can be enabled in Guest sessions under some
+              // enterprise policies, see BookmarkModelFactory. Sync
+              // isn't used it guest, but as a dependency for
+              // BookmarkModelFactory it is necessary to instantiate
+              // BookmarkSyncService too (although it doesn't do anything
+              // useful).
               .WithGuest(ProfileSelection::kRedirectedToOriginal)
               .Build()) {
   DependsOn(BookmarkUndoServiceFactory::GetInstance());
