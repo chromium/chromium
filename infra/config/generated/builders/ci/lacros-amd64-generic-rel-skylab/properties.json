@@ -31,7 +31,7 @@
                   "checkout_lacros_sdk",
                   "chromeos"
                 ],
-                "config": "chromium"
+                "config": "chromium_no_telemetry_dependencies"
               },
               "skylab_upload_location": {
                 "gs_bucket": "chromium-ci-skylab"

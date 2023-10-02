@@ -467,7 +467,7 @@ ci.builder(
     branch_selector = branches.selector.CROS_BRANCHES,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
-            config = "chromium",
+            config = "chromium_no_telemetry_dependencies",
             apply_configs = [
                 "checkout_lacros_sdk",
                 "chromeos",
