@@ -154,7 +154,7 @@
             ChromeOS Chrome User Logs
         </message>
         <message name="IDS_SUPPORT_TOOL_CHROMEOS_BLUETOOTH_FLOSS" desc="Bluetooth logs if Floss is enabled on the device. Floss is the project that works on converging on a single Bluetooth stack between Android and ChromeOS.">
-            ChromeOS Bluetooth Floss
+            ChromeOS Bluetooth
         </message>
         <message name="IDS_SUPPORT_TOOL_CHROMEOS_CONNECTED_INPUT_DEVICES" desc="Information about connected input devices to a ChromeOS device.">
             ChromeOS Connected Input Devices
@@ -173,6 +173,9 @@
         </message>
         <message name="IDS_SUPPORT_TOOL_SIGN_IN" desc="Sign In State.">
             Sign In State
+        </message>
+        <message name="IDS_SUPPORT_TOOL_CHROMEOS_APP_SERVICE" desc="ChromeOS App Service gathers information from app service about installed and running apps.">
+            ChromeOS App Service
         </message>
         <!-- PII type strings -->
         <message name="IDS_SUPPORT_TOOL_ANDROID_APP_INFO" desc="Android App informations on the device. Includes information like app storage paths etc.">
