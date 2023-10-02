@@ -7,14 +7,15 @@
 #include <algorithm>
 #include <limits>
 
-#include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 
+namespace actions {
+
 namespace {
 
-class GlobalActionManager : public actions::ActionManager {
+class GlobalActionManager : public ActionManager {
  public:
   GlobalActionManager() = default;
   GlobalActionManager(const GlobalActionManager&) = delete;
@@ -29,7 +30,6 @@ absl::optional<GlobalActionManager>& GetGlobalManager() {
 
 }  // namespace
 
-namespace actions {
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kActionItemPinnableKey, false)
 
 ActionList::ActionList(Delegate* delegate) : delegate_(delegate) {}
@@ -515,12 +515,11 @@ void ActionManager::ResetForTesting() {
 #include "ui/actions/action_id_macros.inc"
 
 // static
-base::flat_map<ActionId, std::string_view>&
-ActionManager::GetActionIdToStringMap() {
-  static base::flat_map<ActionId, std::string_view> action_id_to_string_map_ =
+ActionManager::ActionIdToStringMap& ActionManager::GetActionIdToStringMap() {
+  static ActionIdToStringMap map =
       base::MakeFlatMap<ActionId, std::string_view>(
           std::vector<std::pair<ActionId, std::string_view>>{ACTION_IDS});
-  return action_id_to_string_map_;
+  return map;
 }
 
 #include "ui/actions/action_id_macros.inc"
@@ -530,12 +529,11 @@ ActionManager::GetActionIdToStringMap() {
 #include "ui/actions/action_id_macros.inc"
 
 // static
-base::flat_map<std::string_view, ActionId>&
-ActionManager::GetStringToActionIdMap() {
-  static base::flat_map<std::string_view, ActionId> string_to_action_id_map_ =
+ActionManager::StringToActionIdMap& ActionManager::GetStringToActionIdMap() {
+  static StringToActionIdMap map =
       base::MakeFlatMap<std::string_view, ActionId>(
           std::vector<std::pair<std::string_view, ActionId>>{ACTION_IDS});
-  return string_to_action_id_map_;
+  return map;
 }
 
 #include "ui/actions/action_id_macros.inc"
@@ -568,8 +566,7 @@ std::vector<absl::optional<std::string>> ActionManager::ActionIdsToStrings(
   action_id_strings.reserve(action_ids.size());
 
   for (ActionId action_id : action_ids) {
-    absl::optional<std::string> str = ActionIdToString(action_id);
-    action_id_strings.push_back(str);
+    action_id_strings.push_back(ActionIdToString(action_id));
   }
   return action_id_strings;
 }
@@ -581,8 +578,7 @@ std::vector<absl::optional<ActionId>> ActionManager::StringsToActionIds(
   action_ids.reserve(action_id_strings.size());
 
   for (std::string action_id_string : action_id_strings) {
-    absl::optional<ActionId> action_id = StringToActionId(action_id_string);
-    action_ids.push_back(action_id);
+    action_ids.push_back(StringToActionId(action_id_string));
   }
   return action_ids;
 }
@@ -592,20 +588,18 @@ void ActionManager::MergeMaps(base::flat_map<T, U>& map1,
                               base::flat_map<T, U>& map2) {
   auto vec1 = std::move(map1).extract();
   auto vec2 = std::move(map2).extract();
-  std::vector<std::pair<T, U>> vec3((int)vec1.size() + (int)vec2.size());
+  std::vector<std::pair<T, U>> vec3(vec1.size() + vec2.size());
   std::merge(vec1.begin(), vec1.end(), vec2.begin(), vec2.end(), vec3.begin());
   map1.replace(std::move(vec3));
 }
 
 // static
-void ActionManager::AddActionIdToStringMappings(
-    base::flat_map<ActionId, std::string_view> map) {
+void ActionManager::AddActionIdToStringMappings(ActionIdToStringMap map) {
   MergeMaps<ActionId, std::string_view>(GetActionIdToStringMap(), map);
 }
 
 // static
-void ActionManager::AddStringToActionIdMappings(
-    base::flat_map<std::string_view, ActionId> map) {
+void ActionManager::AddStringToActionIdMappings(StringToActionIdMap map) {
   MergeMaps(GetStringToActionIdMap(), map);
 }
 
