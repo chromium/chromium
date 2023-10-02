@@ -4,7 +4,11 @@
 
 #import "ios/chrome/browser/parcel_tracking/parcel_tracking_infobar_delegate.h"
 
+#import "components/commerce/core/proto/parcel.pb.h"
+#import "components/commerce/core/shopping_service.h"
+#import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
 #import "ios/chrome/browser/parcel_tracking/parcel_tracking_util.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 
@@ -18,30 +22,32 @@ ParcelTrackingInfobarDelegate::ParcelTrackingInfobarDelegate(
       step_(step),
       parcel_list_(parcel_list),
       application_commands_handler_(application_commands_handler),
-      parcel_tracking_commands_handler_(parcel_tracking_commands_handler) {}
+      parcel_tracking_commands_handler_(parcel_tracking_commands_handler) {
+  shopping_service_ = commerce::ShoppingServiceFactory::GetForBrowserState(
+      web_state->GetBrowserState());
+}
 
 ParcelTrackingInfobarDelegate::~ParcelTrackingInfobarDelegate() = default;
 
 #pragma mark - Public
 
 void ParcelTrackingInfobarDelegate::TrackPackages(bool display_infobar) {
-  if (display_infobar) {
-    [parcel_tracking_commands_handler_
-        showParcelTrackingInfobarWithParcels:parcel_list_
-                                     forStep:ParcelTrackingStep::
-                                                 kNewPackageTracked];
-  }
-  // TODO(crbug.com/1473449): track once Shopping Service API is ready.
+  // Track parcels and display infobar.
+  TrackParcels(shopping_service_, parcel_list_, std::string(),
+               parcel_tracking_commands_handler_, display_infobar);
 }
 
 void ParcelTrackingInfobarDelegate::UntrackPackages(bool display_infobar) {
+  for (std::pair<commerce::ParcelIdentifier::Carrier, std::string> parcel :
+       ConvertCustomTextCheckingResult(parcel_list_)) {
+    shopping_service_->StopTrackingParcel(parcel.second, base::DoNothing());
+  }
   if (display_infobar) {
     [parcel_tracking_commands_handler_
         showParcelTrackingInfobarWithParcels:parcel_list_
                                      forStep:ParcelTrackingStep::
                                                  kPackageUntracked];
   }
-  // TODO(crbug.com/1473449): untrack once Shopping Service API is ready.
 }
 
 void ParcelTrackingInfobarDelegate::OpenNTP() {

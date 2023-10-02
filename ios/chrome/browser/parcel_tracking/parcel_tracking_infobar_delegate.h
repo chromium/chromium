@@ -7,11 +7,14 @@
 
 #import "components/infobars/core/confirm_infobar_delegate.h"
 #import "ios/chrome/browser/parcel_tracking/parcel_tracking_step.h"
-#import "ios/chrome/browser/parcel_tracking/parcel_tracking_util.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/parcel_tracking_opt_in_commands.h"
 #import "ios/web/public/annotations/custom_text_checking_result.h"
 #import "ios/web/public/web_state.h"
+
+namespace commerce {
+class ShoppingService;
+}  // namespace commerce
 
 // Delegate for infobar that prompts users to track package(s) and updates them
 // when the package(s) are tracked or untracked.
@@ -52,6 +55,7 @@ class ParcelTrackingInfobarDelegate : public ConfirmInfoBarDelegate {
   NSArray<CustomTextCheckingResult*>* parcel_list_;
   id<ApplicationCommands> application_commands_handler_;
   id<ParcelTrackingOptInCommands> parcel_tracking_commands_handler_;
+  commerce::ShoppingService* shopping_service_ = nullptr;
 };
 
 #endif  // IOS_CHROME_BROWSER_PARCEL_TRACKING_PARCEL_TRACKING_INFOBAR_DELEGATE_H_

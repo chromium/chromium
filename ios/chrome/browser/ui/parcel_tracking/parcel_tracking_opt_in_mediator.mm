@@ -4,6 +4,12 @@
 
 #import "ios/chrome/browser/ui/parcel_tracking/parcel_tracking_opt_in_mediator.h"
 
+#import "components/commerce/core/shopping_service.h"
+#import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
+#import "ios/chrome/browser/parcel_tracking/parcel_tracking_step.h"
+#import "ios/chrome/browser/parcel_tracking/parcel_tracking_util.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+
 @implementation ParcelTrackingOptInMediator {
   web::WebState* _webState;
 }
@@ -18,14 +24,19 @@
 
 - (void)didTapPrimaryActionButton:
     (NSArray<CustomTextCheckingResult*>*)parcelList {
-  // TODO(crbug.com/1473449): Call on AnnotationsTabHelper to track parcels once
-  // Shopping Service API is ready.
-  // TODO(crbug.com/1473449): trigger infobar.
+  commerce::ShoppingService* shoppingService =
+      commerce::ShoppingServiceFactory::GetForBrowserState(
+          _webState->GetBrowserState());
+  TrackParcels(shoppingService, parcelList, std::string(),
+               _parcelTrackingCommandsHandler, true);
 }
 
 - (void)didTapTertiaryActionButton:
     (NSArray<CustomTextCheckingResult*>*)parcelList {
-  // TODO(crbug.com/1473449): trigger infobar.
+  [_parcelTrackingCommandsHandler
+      showParcelTrackingInfobarWithParcels:parcelList
+                                   forStep:ParcelTrackingStep::
+                                               kAskedToTrackPackage];
 }
 
 @end
