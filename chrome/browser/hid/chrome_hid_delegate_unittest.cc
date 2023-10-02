@@ -1006,6 +1006,9 @@ class ChromeHidDelegateServiceWorkerTestBase
     auto worker_url =
         GURL(base::StringPrintf("%s/worker.js", origin_url_.spec().c_str()));
     CreateAndStartWorker(origin_url_, worker_url);
+
+    // Wait until tasks triggered by ServiceWorkerHidDelegateObserver settle.
+    base::RunLoop().RunUntilIdle();
   }
 
   void StopWorker() { StopAndResetWorker(); }
