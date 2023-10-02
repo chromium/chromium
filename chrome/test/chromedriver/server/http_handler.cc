@@ -950,9 +950,9 @@ HttpHandler::HttpHandler(
       // This command is prefixed because standardization is still pending:
       // https://github.com/fedidcg/FedCM/pull/436/files
       VendorPrefixedCommandMapping(
-          kPost, "session/:sessionId/%s/fedcm/confirmidpsignin",
-          WrapToCommand("ConfirmIdpSignin",
-                        base::BindRepeating(&ExecuteConfirmIdpSignin))),
+          kPost, "session/:sessionId/%s/fedcm/confirmidplogin",
+          WrapToCommand("ConfirmIdpLogin",
+                        base::BindRepeating(&ExecuteConfirmIdpLogin))),
 
       CommandMapping(kGet, "session/:sessionId/fedcm/accountlist",
                      WrapToCommand("GetAccounts",

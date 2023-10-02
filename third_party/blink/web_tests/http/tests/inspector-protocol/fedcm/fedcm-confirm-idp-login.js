@@ -29,11 +29,11 @@
   }
 
   testRunner.log(msg.params, "msg.params: ", ["dialogId"]);
-  if (msg.params.dialogType != "ConfirmIdpSignin") {
+  if (msg.params.dialogType != "ConfirmIdpLogin") {
     testRunner.fail("Wrong dialog type");
     return;
   }
-  dp.FedCm.confirmIdpSignin({dialogId: msg.params.dialogId});
+  dp.FedCm.confirmIdpLogin({dialogId: msg.params.dialogId});
 
   // Now wait for the account chooser dialog.
   msg = await dp.FedCm.onceDialogShown();

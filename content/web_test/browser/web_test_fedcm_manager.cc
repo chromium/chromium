@@ -49,8 +49,8 @@ void WebTestFedCmManager::GetDialogType(
     case FederatedAuthRequestImpl::kAutoReauth:
       type_string = "AutoReauthn";
       break;
-    case FederatedAuthRequestImpl::kConfirmIdpSignin:
-      type_string = "ConfirmIdpSignin";
+    case FederatedAuthRequestImpl::kConfirmIdpLogin:
+      type_string = "ConfirmIdpLogin";
       break;
   };
   std::move(callback).Run(type_string);
@@ -154,8 +154,8 @@ void WebTestFedCmManager::DismissFedCmDialog(
       auth_request->DismissAccountsDialogForDevtools(false);
       std::move(callback).Run(true);
       return;
-    case FederatedAuthRequestImpl::kConfirmIdpSignin:
-      auth_request->DismissConfirmIdpSigninDialogForDevtools();
+    case FederatedAuthRequestImpl::kConfirmIdpLogin:
+      auth_request->DismissConfirmIdpLoginDialogForDevtools();
       std::move(callback).Run(true);
       return;
   }

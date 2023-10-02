@@ -150,14 +150,14 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
     return idp_data_for_display_;
   }
 
-  enum DialogType { kNone, kSelectAccount, kAutoReauth, kConfirmIdpSignin };
+  enum DialogType { kNone, kSelectAccount, kAutoReauth, kConfirmIdpLogin };
   DialogType GetDialogType() const { return dialog_type_; }
 
   void AcceptAccountsDialogForDevtools(const GURL& config_url,
                                        const IdentityRequestAccount& account);
   void DismissAccountsDialogForDevtools(bool should_embargo);
-  void AcceptConfirmIdpSigninDialogForDevtools();
-  void DismissConfirmIdpSigninDialogForDevtools();
+  void AcceptConfirmIdpLoginDialogForDevtools();
+  void DismissConfirmIdpLoginDialogForDevtools();
 
   // Check if the scope of the request allows the browser to mediate
   // or delegate (to the IdP) the authorization.
@@ -413,7 +413,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   // the navigator.credentials.get call.
   std::vector<GURL> idp_order_;
 
-  // If dialog_type_ is kConfirmIdpSignin, this is the signin URL for the IDP.
+  // If dialog_type_ is kConfirmIdpLogin, this is the signin URL for the IDP.
   GURL signin_url_;
 
   DialogType dialog_type_ = kNone;

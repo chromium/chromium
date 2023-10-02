@@ -6985,7 +6985,7 @@ class FedCmSpecificTest(ChromeDriverBaseTestWithWebServer):
     token = self._driver.ExecuteScript('return getResult()')
     self.assertEqual('Error: NetworkError: Error retrieving a token.', token)
 
-  def testConfirmIdpSignin(self):
+  def testConfirmIdpLogin(self):
     self._accounts = ""
 
     self._driver.Load(self._https_server.GetUrl() + "/fedcm.html")
@@ -6998,12 +6998,12 @@ class FedCmSpecificTest(ChromeDriverBaseTestWithWebServer):
     self.assertTrue(self.WaitForCondition(self.FedCmDialogCondition))
 
     accounts = self._driver.GetAccounts()
-    self.assertEqual("ConfirmIdpSignin", self._driver.GetDialogType())
+    self.assertEqual("ConfirmIdpLogin", self._driver.GetDialogType())
     self.assertEqual(0, len(accounts))
 
     self._accounts = self._default_accounts
 
-    self._driver.ConfirmIdpSignin(self._vendor_id)
+    self._driver.ConfirmIdpLogin(self._vendor_id)
 
     self.assertTrue(self.WaitForCondition(self.FedCmDialogCondition))
     accounts = self._driver.GetAccounts()

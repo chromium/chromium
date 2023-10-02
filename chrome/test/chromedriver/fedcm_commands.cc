@@ -62,11 +62,11 @@ Status ExecuteSelectAccount(Session* session,
   return status;
 }
 
-Status ExecuteConfirmIdpSignin(Session* session,
-                               WebView* web_view,
-                               const base::Value::Dict& params,
-                               std::unique_ptr<base::Value>* value,
-                               Timeout* timeout) {
+Status ExecuteConfirmIdpLogin(Session* session,
+                              WebView* web_view,
+                              const base::Value::Dict& params,
+                              std::unique_ptr<base::Value>* value,
+                              Timeout* timeout) {
   FedCmTracker* tracker = nullptr;
   Status status = web_view->GetFedCmTracker(&tracker);
   if (!status.IsOk()) {
@@ -80,7 +80,7 @@ Status ExecuteConfirmIdpSignin(Session* session,
   command_params.Set("dialogId", tracker->GetLastDialogId());
 
   std::unique_ptr<base::Value> result;
-  status = web_view->SendCommandAndGetResult("FedCm.confirmIdpSignin",
+  status = web_view->SendCommandAndGetResult("FedCm.confirmIdpLogin",
                                              command_params, &result);
   tracker->DialogClosed();
   return status;

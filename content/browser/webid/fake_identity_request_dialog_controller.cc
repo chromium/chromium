@@ -77,7 +77,7 @@ void FakeIdentityRequestDialogController::ShowFailureDialog(
     const IdentityProviderMetadata& idp_metadata,
     DismissCallback dismiss_callback,
     SigninToIdPCallback signin_callback) {
-  title_ = "Confirm IDP Signin";
+  title_ = "Confirm IDP Login";
 }
 
 void FakeIdentityRequestDialogController::ShowErrorDialog(

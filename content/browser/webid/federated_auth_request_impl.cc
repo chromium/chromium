@@ -1486,7 +1486,7 @@ void FederatedAuthRequestImpl::HandleAccountsFetchFailure(
   // If IdP sign-in status mismatch dialog is already visible, calling
   // ShowFailureDialog() a 2nd time should notify the user that sign-in
   // failed.
-  dialog_type_ = kConfirmIdpSignin;
+  dialog_type_ = kConfirmIdpLogin;
   signin_url_ = idp_info->metadata.idp_signin_url;
   request_dialog_controller_->ShowFailureDialog(
       GetTopFrameOriginForDisplay(GetEmbeddingOrigin()), iframe_for_display,
@@ -2411,12 +2411,12 @@ void FederatedAuthRequestImpl::DismissAccountsDialogForDevtools(
   OnDialogDismissed(reason);
 }
 
-void FederatedAuthRequestImpl::AcceptConfirmIdpSigninDialogForDevtools() {
+void FederatedAuthRequestImpl::AcceptConfirmIdpLoginDialogForDevtools() {
   DCHECK(signin_url_.is_valid());
   ShowModalDialog(signin_url_);
 }
 
-void FederatedAuthRequestImpl::DismissConfirmIdpSigninDialogForDevtools() {
+void FederatedAuthRequestImpl::DismissConfirmIdpLoginDialogForDevtools() {
   // These values match what HandleAccountsFetchFailure passes.
   OnDismissFailureDialog(
       IdentityRequestDialogController::DismissReason::kOther);
