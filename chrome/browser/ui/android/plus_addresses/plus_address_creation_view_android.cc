@@ -34,10 +34,17 @@ void PlusAddressCreationViewAndroid::Show(
           env, l10n_util::GetStringFUTF8(
                    IDS_PLUS_ADDRESS_MODAL_REGULAR_ADDRESS_LABEL,
                    base::UTF8ToUTF16(primary_email_address)));
+
+  // TODO(b/303054310): Validate that this works as expected, and convert other
+  // strings in the view XML if so.
+  base::android::ScopedJavaLocalRef<jstring> j_title =
+      base::android::ConvertUTF16ToJavaString(
+          env, l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_MODAL_TITLE));
+
   Java_PlusAddressCreationViewBridge_show(
       env, java_object_,
       web_contents_->GetTopLevelNativeWindow()->GetJavaObject(),
-      j_formatted_email);
+      j_formatted_email, j_title);
 }
 
 void PlusAddressCreationViewAndroid::OnConfirmed(

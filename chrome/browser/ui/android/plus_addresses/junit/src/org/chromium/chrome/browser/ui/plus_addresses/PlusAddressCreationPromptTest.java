@@ -35,6 +35,7 @@ import org.chromium.ui.test.util.modaldialog.FakeModalDialogManager;
 public class PlusAddressCreationPromptTest {
     private static final long NATIVE_PLUS_ADDRESS_CREATION_VIEW = 100L;
     private static final String EMAIL_PLACEHOLDER = "plus+plus@plus.plus";
+    private static final String MODAL_TITLE = "mattwashere";
 
     @Rule
     public JniMocker mJniMocker = new JniMocker();
@@ -59,7 +60,8 @@ public class PlusAddressCreationPromptTest {
 
     private void createAndShowPrompt() {
         mModalDialogManager = new FakeModalDialogManager(ModalDialogType.APP);
-        mPrompt = new PlusAddressCreationPrompt(mPromptDelegate, mActivity, EMAIL_PLACEHOLDER);
+        mPrompt = new PlusAddressCreationPrompt(
+                mPromptDelegate, mActivity, EMAIL_PLACEHOLDER, MODAL_TITLE);
         mPrompt.show(mModalDialogManager);
     }
 
@@ -69,9 +71,12 @@ public class PlusAddressCreationPromptTest {
         createAndShowPrompt();
         TextView primaryEmailView = mPrompt.getDialogViewForTesting().findViewById(
                 R.id.plus_address_modal_primary_email);
+        TextView modalTitleView =
+                mPrompt.getDialogViewForTesting().findViewById(R.id.plus_address_notice_title);
         // Ensure that the email placeholder passed into the prompt is shown in the
         // appropriate spot.
         Assert.assertEquals(primaryEmailView.getText().toString(), EMAIL_PLACEHOLDER);
+        Assert.assertEquals(modalTitleView.getText().toString(), MODAL_TITLE);
         Assert.assertNotNull(mModalDialogManager.getShownDialogModel());
     }
 

@@ -29,7 +29,7 @@ public class PlusAddressCreationPrompt implements ModalDialogProperties.Controll
     private final View mDialogView;
 
     public PlusAddressCreationPrompt(PlusAddressCreationDelegate delegate, Activity activity,
-            String primaryEmailAddressHolder) {
+            String primaryEmailAddressHolder, String modalTitle) {
         mPlusAddressDelegate = delegate;
         LayoutInflater inflater = LayoutInflater.from(activity);
         mDialogView = inflater.inflate(R.layout.plus_address_creation_prompt, null);
@@ -38,6 +38,8 @@ public class PlusAddressCreationPrompt implements ModalDialogProperties.Controll
         // inheriting the larger `generated_resources.grd`. This is a temporary state to work around
         // some project exigencies.
         Context context = ContextUtils.getApplicationContext();
+        TextView modalTitleView = mDialogView.findViewById(R.id.plus_address_notice_title);
+        modalTitleView.setText(modalTitle);
         TextView primaryEmailView = mDialogView.findViewById(R.id.plus_address_modal_primary_email);
         primaryEmailView.setText(primaryEmailAddressHolder);
 
