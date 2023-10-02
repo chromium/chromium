@@ -45,6 +45,7 @@ class PageInfoCookiesContentView : public views::View, public PageInfoUI {
 
  private:
   friend class PageInfoCookiesContentViewTest;
+  friend class PageInfoBubbleViewCookiesSubpageBrowserTest;
 
   // Ensures the allowed sites information UI is present, with placeholder
   // information if necessary.

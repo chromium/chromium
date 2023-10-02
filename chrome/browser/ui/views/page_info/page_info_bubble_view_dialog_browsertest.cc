@@ -38,6 +38,7 @@
 #include "components/safe_browsing/content/browser/password_protection/password_protection_test_util.h"
 #include "components/safe_browsing/core/browser/password_protection/metrics_util.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
@@ -46,6 +47,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/test_certificate_data.h"
 #include "net/test/test_data_directory.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/events/test/test_event.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -688,6 +690,7 @@ enum class UserBypassFeatureState {
   kOff = 0,
   kOnTemporaryExceptions = 1,
   kOnPermanentExceptions = 2,
+  kOn3pcdCookiesLimited = 3,
 };
 
 class PageInfoBubbleViewCookiesSubpageBrowserTest
@@ -712,6 +715,10 @@ class PageInfoBubbleViewCookiesSubpageBrowserTest
       case UserBypassFeatureState::kOnPermanentExceptions:
         enabled_features.push_back({content_settings::features::kUserBypassUI,
                                     {{"expiration", "0d"}}});
+        break;
+      case UserBypassFeatureState::kOn3pcdCookiesLimited:
+        enabled_features.push_back(
+            {content_settings::features::kTrackingProtection3pcd, {{}}});
         break;
     }
     feature_list_.InitWithFeaturesAndParameters(enabled_features,
@@ -822,6 +829,33 @@ class PageInfoBubbleViewCookiesSubpageBrowserTest
     // Removing the focus as with tests run in parallel it causes different
     // outputs.
     bubble_view->GetFocusManager()->SetFocusedView(nullptr);
+
+    auto third_party_cookies_title =
+        cookies_subpage_content->third_party_cookies_title_->GetText();
+    auto third_party_cookies_description =
+        cookies_subpage_content->third_party_cookies_description_->GetText();
+    if (cookie_info.status != CookieControlsStatus::kDisabled &&
+        cookie_info.status != CookieControlsStatus::kEnabled) {
+      if (presenter->IsTrackingProtection3pcdEnabled()) {
+        EXPECT_EQ(
+            third_party_cookies_title,
+            l10n_util::GetPluralStringFUTF16(
+                IDS_PAGE_INFO_TRACKING_PROTECTION_COOKIES_LIMITING_RESTART_TITLE,
+                30));
+        EXPECT_EQ(
+            third_party_cookies_description,
+            l10n_util::GetStringUTF16(
+                IDS_PAGE_INFO_COOKIES_TRACKING_PROTECTION_COOKIES_RESTART_DESCRIPTION));
+      } else {
+        EXPECT_EQ(third_party_cookies_title,
+                  l10n_util::GetPluralStringFUTF16(
+                      IDS_PAGE_INFO_COOKIES_BLOCKING_RESTART_TITLE, 30));
+        EXPECT_EQ(
+            third_party_cookies_description,
+            l10n_util::GetStringUTF16(
+                IDS_PAGE_INFO_COOKIES_BLOCKING_RESTART_DESCRIPTION_TODAY));
+      }
+    }
   }
 
  private:
@@ -865,13 +899,18 @@ IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewCookiesSubpageBrowserTest,
                        InvokeUi_CookiesSubpageFpsManaged3pcAllowed) {
   ShowAndVerifyUi();
 }
+IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewCookiesSubpageBrowserTest,
+                       InvokeUi_CookiesSubpageFpsTrackingProtection3pcd) {
+  ShowAndVerifyUi();
+}
 
 INSTANTIATE_TEST_SUITE_P(
     /*no prefix*/,
     PageInfoBubbleViewCookiesSubpageBrowserTest,
     testing::ValuesIn({UserBypassFeatureState::kOff,
                        UserBypassFeatureState::kOnTemporaryExceptions,
-                       UserBypassFeatureState::kOnPermanentExceptions}));
+                       UserBypassFeatureState::kOnPermanentExceptions,
+                       UserBypassFeatureState::kOn3pcdCookiesLimited}));
 
 class PageInfoBubbleViewIsolatedWebAppBrowserTest : public DialogBrowserTest {
  public:

@@ -859,8 +859,17 @@
               =1 {Chrome will block cookies again tomorrow}
               other {# days until Chrome blocks cookies again}}
   </message>
+  <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_COOKIES_LIMITING_RESTART_TITLE" desc="Subtitle shown on the page info bubble indicating how long until cookies are limited again.">
+    {COUNT, plural,
+              =0 {Chrome will limit cookies again today}
+              =1 {Chrome will limit cookies again tomorrow}
+              other {# days until Chrome limits cookies again}}
+  </message>
   <message name="IDS_PAGE_INFO_COOKIES_BLOCKING_RESTART_DESCRIPTION_TODAY" desc="Descriptive text in the page info bubble after the user has allowed third-party cookies on a site explaining the trade-off of their decision.">
     You allowed this site to use third-party cookies. This means that most site features should work, but you have less protection.
+  </message>
+  <message name="IDS_PAGE_INFO_COOKIES_TRACKING_PROTECTION_COOKIES_RESTART_DESCRIPTION" desc="Descriptive text in the page info bubble after the user has temporarily allowed third-party cookies on a site explaining the browsing protection trade-off of their decision.">
+    You temporarily allowed this site to use third-party cookies, which means less browsing protection but site features are more likely to work as expected.
   </message>
   <message name="IDS_PAGE_INFO_COOKIES_PERMANENT_ALLOWED_TITLE" desc="A subtitle in the page info bubble if cookies were allowed by the user and they won't be automatically blocked again the future.">
     You allowed third-party cookies for this site
