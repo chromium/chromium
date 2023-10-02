@@ -312,6 +312,8 @@ public class AutofillProviderUMA {
     public void onFormSubmitted(int submissionSource) {
         if (mRecorder != null) mRecorder.record(SessionRecorder.EVENT_FORM_SUBMITTED);
         recordSession();
+        // TODO(crbug.com/1484985): Consider moving the call to the ServerPredictionRecorder
+        // into recordSession. Is it unclear why this is only recorded on form submission.
         if (mServerPredictionRecorder != null) mServerPredictionRecorder.recordHistograms();
         // We record this no matter autofill service is disabled or not.
         RecordHistogram.recordEnumeratedHistogram(UMA_AUTOFILL_SUBMISSION_SOURCE,
@@ -401,16 +403,23 @@ public class AutofillProviderUMA {
         }
     }
 
-    private static void recordUmaAutofillProvider(int autofillProvider) {
-        RecordHistogram.recordEnumeratedHistogram(
-                UMA_AUTOFILL_PROVIDER, autofillProvider, AUTOFILL_PROVIDER_MAX);
-    }
-
-    private void recordSession() {
+    /**
+     * Records the session-related Autofill metrics, i.e. the witnessed Autofill
+     * events and the AUTOFILL_SESSION UMA.
+     *
+     * After recording, it resets the SessionRecorder. Calling it again is a
+     * no-op until a new session has been started.
+     */
+    public void recordSession() {
         if (mAutofillDisabled != null && !mAutofillDisabled.booleanValue() && mRecorder != null) {
             mRecorder.recordHistogram();
         }
         mRecorder = null;
+    }
+
+    private static void recordUmaAutofillProvider(int autofillProvider) {
+        RecordHistogram.recordEnumeratedHistogram(
+                UMA_AUTOFILL_PROVIDER, autofillProvider, AUTOFILL_PROVIDER_MAX);
     }
 
     private int toUMASubmissionSource(int source) {

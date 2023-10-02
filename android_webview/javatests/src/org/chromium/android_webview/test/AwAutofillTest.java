@@ -1389,6 +1389,31 @@ public class AwAutofillTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> { histograms.assertExpected(); });
     }
 
+    /**
+     * Tests that the metrics of the ongoing session are recorded on AwContents destruction.
+     */
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testUMASessionMetricsRecordedOnAwContentsDestruction() throws Throwable {
+        var histograms = TestThreadUtils.runOnUiThreadBlocking(() -> {
+            return HistogramWatcher.newBuilder()
+                    .expectIntRecord(AutofillProviderUMA.UMA_AUTOFILL_AUTOFILL_SESSION,
+                            AutofillProviderUMA
+                                    .USER_SELECT_SUGGESTION_USER_CHANGE_FORM_NO_FORM_SUBMITTED)
+                    .expectNoRecords(AutofillProviderUMA.UMA_AUTOFILL_SUBMISSION_SOURCE)
+                    .expectNoRecords(AutofillProviderUMA.UMA_AUTOFILL_AWG_SUGGSTION_AVAILABILITY)
+                    .build();
+        });
+        mUMATestHelper.triggerAutofill();
+        invokeOnProvideAutoFillVirtualStructure();
+        invokeOnInputUIShown();
+        mUMATestHelper.simulateUserSelectSuggestion();
+        mUMATestHelper.simulateUserChangeField();
+        TestThreadUtils.runOnUiThreadBlocking(() -> { mAwContents.destroy(); });
+        TestThreadUtils.runOnUiThreadBlocking(() -> { histograms.assertExpected(); });
+    }
+
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})

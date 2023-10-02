@@ -111,6 +111,7 @@ public class AutofillProvider {
     }
 
     public void destroy() {
+        mAutofillUMA.recordSession();
         detachFromJavaAutofillProvider();
         mAutofillManager.destroy();
     }
@@ -565,6 +566,7 @@ public class AutofillProvider {
 
     public void setWebContents(WebContents webContents) {
         if (webContents == mWebContents) return;
+        mAutofillUMA.recordSession();
         if (mWebContents != null) mRequest = null;
         mWebContents = webContents;
         detachFromJavaAutofillProvider();
