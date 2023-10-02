@@ -1,0 +1,12 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ui/webui/resources/tools/build_webui.gni")
+
+build_webui("build") {
+  grd_prefix = "compose"
+  static_files = [ "compose.html" ]
+  web_component_files = [ "app.ts" ]
+  ts_deps = [ "//third_party/polymer/v3_0:library" ]
+}

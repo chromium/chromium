@@ -155,6 +155,7 @@ template("chrome_extra_paks") {
         "$root_gen_dir/chrome/bookmarks_resources.pak",
         "$root_gen_dir/chrome/commander_resources.pak",
         "$root_gen_dir/chrome/component_extension_resources.pak",
+        "$root_gen_dir/chrome/compose_resources.pak",
         "$root_gen_dir/chrome/dev_ui_resources.pak",
         "$root_gen_dir/chrome/downloads_resources.pak",
         "$root_gen_dir/chrome/feed_resources.pak",

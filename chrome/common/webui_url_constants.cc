@@ -55,6 +55,7 @@ const char kChromeUIChromeURLsHost[] = "chrome-urls";
 const char kChromeUIChromeURLsURL[] = "chrome://chrome-urls/";
 const char kChromeUIComponentsHost[] = "components";
 const char kChromeUIComponentsUrl[] = "chrome://components";
+const char kChromeUIComposeHost[] = "compose";
 const char kChromeUIConflictsHost[] = "conflicts";
 const char kChromeUIConstrainedHTMLTestURL[] = "chrome://constrained-test/";
 const char kChromeUIContentSettingsURL[] = "chrome://settings/content";

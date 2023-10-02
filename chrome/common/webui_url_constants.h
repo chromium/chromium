@@ -54,6 +54,7 @@ extern const char kChromeUIChromeURLsHost[];
 extern const char kChromeUIChromeURLsURL[];
 extern const char kChromeUIComponentsHost[];
 extern const char kChromeUIComponentsUrl[];
+extern const char kChromeUIComposeHost[];
 extern const char kChromeUIConflictsHost[];
 extern const char kChromeUIConstrainedHTMLTestURL[];
 extern const char kChromeUIContentSettingsURL[];

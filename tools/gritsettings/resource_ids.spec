@@ -243,9 +243,13 @@
     "META": {"sizes": {"includes": [50]}},
     "includes": [2960],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/connectors_internals/resources.grd": {
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/compose/resources.grd": {
     "META": {"sizes": {"includes": [15]}},
     "includes": [2980],
+  },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/connectors_internals/resources.grd": {
+    "META": {"sizes": {"includes": [15]}},
+    "includes": [2990],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/discards/resources.grd": {
     "META": {"sizes": {"includes": [20],}},
