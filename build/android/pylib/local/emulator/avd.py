@@ -20,6 +20,7 @@ from devil.android import apk_helper
 from devil.android import device_utils
 from devil.android import settings
 from devil.android.sdk import adb_wrapper
+from devil.android.sdk import version_codes
 from devil.android.tools import system_app
 from devil.utils import cmd_helper
 from devil.utils import timeout_retry
@@ -1179,3 +1180,29 @@ def _EnsureSystemSettings(device):
     logging.info('long_press_timeout set to %r', _LONG_PRESS_TIMEOUT)
   else:
     logging.warning('long_press_timeout is not set correctly')
+
+  # TODO(crbug.com/1488458): Move the date sync function to device_utils.py
+  if device.IsUserBuild():
+    logging.warning('Cannot sync the device date on "user" build')
+    return
+
+  logging.info('Sync the device date.')
+  timezone = device.RunShellCommand(['date', '+"%Z"'],
+                                    single_line=True,
+                                    check_return=True)
+  if timezone != 'UTC':
+    device.RunShellCommand(['setprop', 'persist.sys.timezone', '"Etc/UTC"'],
+                           check_return=True,
+                           as_root=True)
+  set_date_format = '%Y%m%d.%H%M%S'
+  set_date_command = ['date', '-s']
+  if device.build_version_sdk >= version_codes.MARSHMALLOW:
+    set_date_format = '%m%d%H%M%Y.%S'
+    set_date_command = ['date']
+  strgmtime = time.strftime(set_date_format, time.gmtime())
+  set_date_command.append(strgmtime)
+  device.RunShellCommand(set_date_command, check_return=True, as_root=True)
+  device.RunShellCommand(
+      ['am', 'broadcast', '-a', 'android.intent.action.TIME_SET'],
+      check_return=True,
+      as_root=True)
