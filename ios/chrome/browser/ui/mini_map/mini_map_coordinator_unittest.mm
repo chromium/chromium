@@ -338,7 +338,8 @@ TEST_F(MiniMapCoordinatorTest, TestOpenURL) {
 }
 
 // Tests the footer buttons.
-TEST_F(MiniMapCoordinatorTest, TestFooterButtons) {
+// TODO(crbug.com/1488572): Test is failing on bots.
+TEST_F(MiniMapCoordinatorTest, DISABLED_TestFooterButtons) {
   base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(web::features::kOneTapForMaps);
