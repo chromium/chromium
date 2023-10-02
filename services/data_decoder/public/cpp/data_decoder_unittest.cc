@@ -12,6 +12,7 @@
 #include "base/rust_buildflags.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/types/expected.h"
@@ -153,6 +154,7 @@ TEST_F(DataDecoderTest, ParseCborAndFailed) {
 class DataDecoderMultiThreadTest : public testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_;
+  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(DataDecoderMultiThreadTest, JSONDecode) {
@@ -177,6 +179,8 @@ TEST_F(DataDecoderMultiThreadTest, JSONDecode) {
             run_loop.Quit();
           }));
   run_loop.Run();
+  histogram_tester_.ExpectTotalCount("Security.DataDecoder.Json.DecodingTime",
+                                     1);
   ASSERT_TRUE(result.has_value());
   ASSERT_TRUE(result->is_list());
   base::Value::List& list = result->GetList();

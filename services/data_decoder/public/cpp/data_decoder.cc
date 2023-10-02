@@ -11,11 +11,13 @@
 #include "base/functional/callback.h"
 #include "base/json/json_reader.h"
 #include "base/memory/ref_counted.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/rust_buildflags.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "build/blink_buildflags.h"
 #include "build/build_config.h"
 #include "net/http/structured_headers.h"
@@ -192,6 +194,16 @@ mojom::DataDecoderService* DataDecoder::GetService() {
 
 void DataDecoder::ParseJson(const std::string& json,
                             ValueParseCallback callback) {
+  // Measure decoding time by intercepting the callback.
+  callback = base::BindOnce(
+      [](base::ElapsedTimer timer, ValueParseCallback callback,
+         base::expected<base::Value, std::string> result) {
+        base::UmaHistogramTimes("Security.DataDecoder.Json.DecodingTime",
+                                timer.Elapsed());
+        std::move(callback).Run(std::move(result));
+      },
+      base::ElapsedTimer(), std::move(callback));
+
   if (base::JSONReader::UsingRust()) {
 #if BUILDFLAG(BUILD_RUST_JSON_READER)
     base::ThreadPool::PostTaskAndReplyWithResult(

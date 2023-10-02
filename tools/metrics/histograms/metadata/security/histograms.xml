@@ -145,6 +145,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Security.DataDecoder.Json.DecodingTime" units="ms"
+    expires_after="2024-02-25">
+  <owner>djmitche@chromium.org</owner>
+  <owner>dadrian@chromium.org</owner>
+  <summary>
+    Logged once for every invocation of `DataDecoder::ParseJson`. Logs the time
+    that has elapsed while decoding the input.
+  </summary>
+</histogram>
+
 <histogram name="Security.GwpAsan.CrashAnalysisResult.{Allocator}"
     enum="GwpAsanCrashAnalysisResult" expires_after="2024-03-24">
   <owner>glazunov@google.com</owner>
