@@ -24,6 +24,10 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+#include "media/formats/mp4/h264_annex_b_to_avc_bitstream_converter.h"
+#endif
+
 namespace media {
 class AudioBus;
 class AudioParameters;
@@ -204,6 +208,10 @@ class MODULES_EXPORT MediaRecorderHandler final
 
   // Worker class doing the actual muxing work.
   std::unique_ptr<media::Muxer> muxer_;
+
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+  std::unique_ptr<media::H264AnnexBToAvcBitstreamConverter> h264_converter_;
+#endif
 };
 
 }  // namespace blink

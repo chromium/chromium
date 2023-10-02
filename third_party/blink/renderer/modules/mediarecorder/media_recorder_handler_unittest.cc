@@ -15,6 +15,7 @@
 #include "media/base/audio_bus.h"
 #include "media/base/video_color_space.h"
 #include "media/base/video_frame.h"
+#include "media/formats/mp4/box_definitions.h"
 #include "media/media_buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -36,6 +37,7 @@
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_track.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component_impl.h"
 #include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
+#include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 using base::test::RunOnceClosure;
@@ -79,6 +81,7 @@ struct MediaRecorderTestParams {
   const char* const mime_type;
   const char* const codecs;
   const bool encoder_supports_alpha;
+  const bool use_mp4_muxer = false;
 };
 
 // Array of valid combinations of video/audio/codecs and expected collected
@@ -101,7 +104,8 @@ static const MediaRecorderTestParams kMediaRecorderTestParams[] = {
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
     {true, true, false, "video/x-matroska", "avc1", false},
     {true, true, false, "video/mp4", "avc1", false},
-    {true, false, true, "audio/mp4", "aac", false},
+    {true, true, true, "video/mp4", "avc1,aac", false, true},
+    {true, false, true, "audio/mp4", "aac", false, true},
 #endif
     {true, false, true, "audio/webm", "opus", true},
     {true, false, true, "audio/webm", "", true},  // Should default to opus.
@@ -178,14 +182,17 @@ class MediaRecorderHandlerFixture : public ScopedMockOverlayScrollbars {
                                                     base::TimeTicks::Now());
   }
 
-  void OnEncodedVideoForTesting(const media::Muxer::VideoParameters& params,
-                                std::string encoded_data,
-                                std::string encoded_alpha,
-                                base::TimeTicks timestamp,
-                                bool is_key_frame) {
+  void OnEncodedVideoForTesting(
+      const media::Muxer::VideoParameters& params,
+      std::string encoded_data,
+      std::string encoded_alpha,
+      base::TimeTicks timestamp,
+      bool is_key_frame,
+      absl::optional<media::VideoEncoder::CodecDescription> codec_description =
+          absl::nullopt) {
     media_recorder_handler_->OnEncodedVideo(
         params, std::move(encoded_data), std::move(encoded_alpha),
-        absl::nullopt, timestamp, is_key_frame);
+        std::move(codec_description), timestamp, is_key_frame);
   }
 
   void OnEncodedAudioForTesting(const media::AudioParameters& params,
@@ -228,6 +235,38 @@ class MediaRecorderHandlerFixture : public ScopedMockOverlayScrollbars {
                              bus.get());
     return bus;
   }
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+  void PopulateAVCDecoderConfiguration(std::vector<uint8_t>& code_description) {
+    // copied from box_reader_unittest.cc.
+    std::vector<uint8_t> test_data{
+        0x1,        // configurationVersion = 1
+        0x64,       // AVCProfileIndication = 100
+        0x0,        // profile_compatibility = 0
+        0xc,        // AVCLevelIndication = 10
+        0xff,       // lengthSizeMinusOne = 3
+        0xe1,       // numOfSequenceParameterSets = 1
+        0x0, 0x19,  // sequenceParameterSetLength = 25
+
+        // sequenceParameterSet
+        0x67, 0x64, 0x0, 0xc, 0xac, 0xd9, 0x41, 0x41, 0xfb, 0x1, 0x10, 0x0, 0x0,
+        0x3, 0x0, 0x10, 0x0, 0x0, 0x3, 0x1, 0x40, 0xf1, 0x42, 0x99, 0x60,
+
+        0x1,       // numOfPictureParameterSets
+        0x0, 0x6,  // pictureParameterSetLength = 6
+        0x68, 0xeb, 0xe3, 0xcb, 0x22, 0xc0,
+
+        0xfd,  // chroma_format = 1
+        0xf8,  // bit_depth_luma_minus8 = 0
+        0xf8,  // bit_depth_chroma_minus8 = 0
+        0x0,   // numOfSequanceParameterSetExt = 0
+    };
+
+    media::mp4::AVCDecoderConfigurationRecord avc_config;
+    ASSERT_TRUE(
+        avc_config.Parse(test_data.data(), static_cast<int>(test_data.size())));
+    ASSERT_TRUE(avc_config.Serialize(code_description));
+  }
+#endif
 
   ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform_;
   MockMediaStreamRegistry registry_;
@@ -277,6 +316,14 @@ class MediaRecorderHandlerTest : public TestWithParam<MediaRecorderTestParams>,
     }
 #endif
     return true;
+  }
+
+  bool IsAacCodecInUnSupportedPlatform(const String codecs) {
+#if !defined(HAS_AAC_ENCODER)
+    return codecs.Find("aac") != kNotFound;
+#else
+    return false;
+#endif
   }
 
  private:
@@ -514,11 +561,9 @@ TEST_P(MediaRecorderHandlerTest, InitializeFailedWhenMP4MuxerFeatureDisabled) {
   const String mime_type(GetParam().mime_type);
   const String codecs(GetParam().codecs);
 
-#if !defined(HAS_AAC_ENCODER)
-  if (EqualIgnoringASCIICase(codecs, "aac")) {
+  if (IsAacCodecInUnSupportedPlatform(codecs)) {
     return;
   }
-#endif
 
   EXPECT_TRUE(media_recorder_handler_->Initialize(
       recorder, registry_.test_stream(), mime_type, codecs,
@@ -542,9 +587,17 @@ TEST_P(MediaRecorderHandlerTest, InitializeFailedWhenMP4MuxerFeatureDisabled) {
 // Sends 2 opaque frames and 1 transparent frame and expects them as WebM
 // contained encoded data in writeData().
 TEST_P(MediaRecorderHandlerTest, EncodeVideoFrames) {
-  // Video-only test.
-  if (GetParam().has_audio || !IsCodecSupported() ||
-      !IsStreamWriteSupported()) {
+  // Video-only test unless it is Mp4 muxer that needs `aac` audio codec.
+  if ((GetParam().has_audio && !GetParam().use_mp4_muxer) ||
+      !IsCodecSupported()) {
+    return;
+  }
+
+  if (!GetParam().has_video) {
+    return;
+  }
+
+  if (IsAacCodecInUnSupportedPlatform(GetParam().codecs)) {
     return;
   }
 
@@ -563,61 +616,84 @@ TEST_P(MediaRecorderHandlerTest, EncodeVideoFrames) {
   const scoped_refptr<media::VideoFrame> video_frame =
       media::VideoFrame::CreateBlackFrame(gfx::Size(160, 80));
 
-  {
-    const size_t kEncodedSizeThreshold = 16;
-    base::RunLoop run_loop;
-    // writeData() is pinged a number of times as the WebM header is written;
-    // the last time it is called it has the encoded data.
-    EXPECT_CALL(*recorder, WriteData(_, Lt(kEncodedSizeThreshold), _, _, _))
-        .Times(AtLeast(1));
-    EXPECT_CALL(*recorder, WriteData(_, Gt(kEncodedSizeThreshold), _, _, _))
-        .Times(1)
-        .WillOnce(RunOnceClosure(run_loop.QuitClosure()));
+  if (GetParam().use_mp4_muxer) {
+    {
+      const size_t kMfraBoxSize = 76;
+      base::RunLoop run_loop;
+      // WriteData is called as many as fragments (`moof` box) in addition
+      // to 3 times of `ftyp`, `moov`, `mfra` boxes.
+      EXPECT_CALL(*recorder, WriteData(_, Lt(kMfraBoxSize), _, _, _))
+          .Times(AtLeast(1));
+      EXPECT_CALL(*recorder, WriteData(_, Gt(kMfraBoxSize), _, _, _))
+          .Times(AtLeast(1));
+      EXPECT_CALL(*recorder, WriteData(_, kMfraBoxSize, _, _, _))
+          .Times(1)
+          .WillOnce(RunOnceClosure(run_loop.QuitClosure()));
 
-    OnVideoFrameForTesting(video_frame);
-    run_loop.Run();
-  }
-  Mock::VerifyAndClearExpectations(recorder);
+      OnVideoFrameForTesting(video_frame);
+      test::RunDelayedTasks(base::Seconds(2));
 
-  {
-    const size_t kEncodedSizeThreshold = 12;
-    base::RunLoop run_loop;
-    // The second time around writeData() is called a number of times to write
-    // the WebM frame header, and then is pinged with the encoded data.
-    EXPECT_CALL(*recorder, WriteData(_, Lt(kEncodedSizeThreshold), _, _, _))
-        .Times(AtLeast(1));
-    EXPECT_CALL(*recorder, WriteData(_, Gt(kEncodedSizeThreshold), _, _, _))
-        .Times(1)
-        .WillOnce(RunOnceClosure(run_loop.QuitClosure()));
-
-    OnVideoFrameForTesting(video_frame);
-    run_loop.Run();
-  }
-  Mock::VerifyAndClearExpectations(recorder);
-  {
-    const scoped_refptr<media::VideoFrame> alpha_frame =
-        media::VideoFrame::CreateTransparentFrame(gfx::Size(160, 80));
-    const size_t kEncodedSizeThreshold = 16;
-    EXPECT_EQ(4u, media::VideoFrame::NumPlanes(alpha_frame->format()));
-    base::RunLoop run_loop;
-    // The second time around writeData() is called a number of times to write
-    // the WebM frame header, and then is pinged with the encoded data.
-    EXPECT_CALL(*recorder, WriteData(_, Lt(kEncodedSizeThreshold), _, _, _))
-        .Times(AtLeast(1));
-    EXPECT_CALL(*recorder, WriteData(_, Gt(kEncodedSizeThreshold), _, _, _))
-        .Times(1)
-        .WillOnce(RunOnceClosure(run_loop.QuitClosure()));
-    if (GetParam().encoder_supports_alpha) {
+      // Mp4Muxer will flush when it is destroyed.
+      media_recorder_handler_->Stop();
+      run_loop.Run();
+    }
+  } else {
+    {
+      const size_t kEncodedSizeThreshold = 16;
+      base::RunLoop run_loop;
+      // writeData() is pinged a number of times as the WebM header is written;
+      // the last time it is called it has the encoded data.
       EXPECT_CALL(*recorder, WriteData(_, Lt(kEncodedSizeThreshold), _, _, _))
           .Times(AtLeast(1));
       EXPECT_CALL(*recorder, WriteData(_, Gt(kEncodedSizeThreshold), _, _, _))
           .Times(1)
           .WillOnce(RunOnceClosure(run_loop.QuitClosure()));
+
+      OnVideoFrameForTesting(video_frame);
+      run_loop.Run();
     }
-    OnVideoFrameForTesting(alpha_frame);
-    run_loop.Run();
+    Mock::VerifyAndClearExpectations(recorder);
+    {
+      const size_t kEncodedSizeThreshold = 12;
+      base::RunLoop run_loop;
+      // The second time around writeData() is called a number of times to write
+      // the WebM frame header, and then is pinged with the encoded data.
+      EXPECT_CALL(*recorder, WriteData(_, Lt(kEncodedSizeThreshold), _, _, _))
+          .Times(AtLeast(1));
+      EXPECT_CALL(*recorder, WriteData(_, Gt(kEncodedSizeThreshold), _, _, _))
+          .Times(1)
+          .WillOnce(RunOnceClosure(run_loop.QuitClosure()));
+
+      OnVideoFrameForTesting(video_frame);
+      run_loop.Run();
+    }
+    Mock::VerifyAndClearExpectations(recorder);
+    {
+      const scoped_refptr<media::VideoFrame> alpha_frame =
+          media::VideoFrame::CreateTransparentFrame(gfx::Size(160, 80));
+      const size_t kEncodedSizeThreshold = 16;
+      EXPECT_EQ(4u, media::VideoFrame::NumPlanes(alpha_frame->format()));
+      base::RunLoop run_loop;
+      // The second time around writeData() is called a number of times to write
+      // the WebM frame header, and then is pinged with the encoded data.
+      EXPECT_CALL(*recorder, WriteData(_, Lt(kEncodedSizeThreshold), _, _, _))
+          .Times(AtLeast(1));
+      EXPECT_CALL(*recorder, WriteData(_, Gt(kEncodedSizeThreshold), _, _, _))
+          .Times(1)
+          .WillOnce(RunOnceClosure(run_loop.QuitClosure()));
+      if (GetParam().encoder_supports_alpha) {
+        EXPECT_CALL(*recorder, WriteData(_, Lt(kEncodedSizeThreshold), _, _, _))
+            .Times(AtLeast(1));
+        EXPECT_CALL(*recorder, WriteData(_, Gt(kEncodedSizeThreshold), _, _, _))
+            .Times(1)
+            .WillOnce(RunOnceClosure(run_loop.QuitClosure()));
+      }
+      OnVideoFrameForTesting(alpha_frame);
+      run_loop.Run();
+    }
+    Mock::VerifyAndClearExpectations(recorder);
   }
-  Mock::VerifyAndClearExpectations(recorder);
+
   media_recorder_handler_->Stop();
 }
 
@@ -763,6 +839,8 @@ TEST_P(MediaRecorderHandlerTest, ActualMimeType) {
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
     if (EqualIgnoringASCIICase(GetParam().codecs, "aac")) {
       actual_mime_type.Append("m4a.40.2");
+    } else if (EqualIgnoringASCIICase(GetParam().codecs, "avc1,aac")) {
+      actual_mime_type.Append("avc1,m4a.40.2");
     } else {
       actual_mime_type.Append(GetParam().codecs);
     }
@@ -782,7 +860,7 @@ TEST_P(MediaRecorderHandlerTest, ActualMimeType) {
 
 TEST_P(MediaRecorderHandlerTest, PauseRecorderForVideo) {
   // Video-only test: Audio would be very similar.
-  if (GetParam().has_audio || !IsStreamWriteSupported()) {
+  if (GetParam().has_audio) {
     return;
   }
 
@@ -802,11 +880,24 @@ TEST_P(MediaRecorderHandlerTest, PauseRecorderForVideo) {
   Mock::VerifyAndClearExpectations(recorder);
   media_recorder_handler_->Pause();
 
-  EXPECT_CALL(*recorder, WriteData).Times(AtLeast(1));
-  media::Muxer::VideoParameters params(gfx::Size(), 1, media::VideoCodec::kVP9,
-                                       gfx::ColorSpace());
-  OnEncodedVideoForTesting(params, "vp9 frame", "", base::TimeTicks::Now(),
-                           true);
+  if (GetParam().use_mp4_muxer) {
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+    EXPECT_CALL(*recorder, WriteData).Times(AtLeast(1));
+    media::Muxer::VideoParameters params(
+        gfx::Size(), 1, media::VideoCodec::kH264, gfx::ColorSpace());
+    std::vector<uint8_t> codec_description;
+    PopulateAVCDecoderConfiguration(codec_description);
+    OnEncodedVideoForTesting(params, "h264 frame", "", base::TimeTicks::Now(),
+                             true, std::move(codec_description));
+    media_recorder_handler_->Stop();
+#endif
+  } else {
+    EXPECT_CALL(*recorder, WriteData).Times(AtLeast(1));
+    media::Muxer::VideoParameters params(
+        gfx::Size(), 1, media::VideoCodec::kVP9, gfx::ColorSpace());
+    OnEncodedVideoForTesting(params, "vp9 frame", "", base::TimeTicks::Now(),
+                             true);
+  }
 
   Mock::VerifyAndClearExpectations(recorder);
 
