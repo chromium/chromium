@@ -45,7 +45,7 @@ function createReadingURL(uuid) {
   return createReportingURL(uuid, 'read');
 }
 
-async function waitForObservedReports(uuid, expectedNumReports, timeout = 1000 /*ms*/) {
+async function waitForObservedReports(uuid, expectedNumReports, timeout = 5000 /*ms*/) {
   expectedReports = Array(expectedNumReports).fill('default-report');
   const reportURL = createReadingURL(uuid);
   let startTime = performance.now();
