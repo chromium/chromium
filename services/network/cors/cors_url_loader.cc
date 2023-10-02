@@ -397,7 +397,8 @@ void CorsURLLoader::Start() {
 }
 
 bool CorsURLLoader::ShouldBlockRequestForAfpExperiment(GURL request_url) {
-  if (context_ && context_->network_service() &&
+  if (context_ && context_->AfpBlockListExperimentEnabled() &&
+      context_->network_service() &&
       context_->network_service()->network_service_resource_block_list()) {
     return context_->network_service()
         ->network_service_resource_block_list()

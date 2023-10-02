@@ -317,7 +317,8 @@ void CorsURLLoaderFactory::DestroyCorsURLLoader(CorsURLLoader* loader) {
 
 bool CorsURLLoaderFactory::ShouldBlockRequestForAfpExperiment(
     const ResourceRequest& resource_request) {
-  if (resource_block_list_ && resource_block_list_->IsEnabled()) {
+  if (context_ && context_->AfpBlockListExperimentEnabled() &&
+      resource_block_list_) {
     return resource_block_list_->Matches(
         resource_request.url,
         URLLoader::GetIsolationInfo(isolation_info_, false, resource_request));

@@ -591,6 +591,14 @@ struct NetworkContextParams {
   // side opt-in to testing without cookies. See:
   // https://developer.chrome.com/en/docs/privacy-sandbox/chrome-testing/#mode-a
   string? cookie_deprecation_label;
+
+  // Whether the experimental AFP block list is enabled for this NetworkContext.
+  // Default is false and will only be true if a feature corresponding to the
+  // type of NetworkContext is enabled.
+  // TODO(crbug.com/1478868): This is an interim field only for AFP block list
+  // experiment. This field should not be used for other use cases. This will
+  // be removed when AFP block list logic is migrated to subresource filter.
+  bool afp_block_list_experiment_enabled = false;
 };
 
 struct NetworkConditions {

@@ -1066,6 +1066,14 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
         network_context_params->ip_protection_config_getter
             .InitWithNewPipeAndPassReceiver());
   }
+
+  network_context_params->afp_block_list_experiment_enabled =
+      (!profile_->IsOffTheRecord() &&
+       base::FeatureList::IsEnabled(
+           features::kEnableNetworkServiceResourceBlockList)) ||
+      (profile_->IsOffTheRecord() &&
+       base::FeatureList::IsEnabled(
+           features::kEnableNetworkServiceResourceBlockListInOtrSessions));
 }
 
 base::FilePath ProfileNetworkContextService::GetPartitionPath(

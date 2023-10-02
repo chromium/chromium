@@ -28,10 +28,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceResourceBlockList {
   // See base/trace_event/memory_usage_estimator.h for more info.
   size_t EstimateMemoryUsage() const;
 
-  // Returns true if the block list is eligible to be used but does not
-  // indicate that allow list is currently populated.
-  bool IsEnabled();
-
   // Returns true if there are entries in the block list and it is possible to
   // match on them. If false, `Matches` will always return false.
   bool IsPopulated();

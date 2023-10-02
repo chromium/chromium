@@ -34,12 +34,6 @@ size_t NetworkServiceResourceBlockList::EstimateMemoryUsage() const {
   return base::trace_event::EstimateMemoryUsage(url_matcher_with_bypass_);
 }
 
-bool NetworkServiceResourceBlockList::IsEnabled() {
-  return base::FeatureList::IsEnabled(
-             network::features::kEnableNetworkServiceResourceBlockList) &&
-         base::FeatureList::IsEnabled(network::features::kMaskedDomainList);
-}
-
 bool NetworkServiceResourceBlockList::IsPopulated() {
   return url_matcher_with_bypass_.IsPopulated();
 }

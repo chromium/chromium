@@ -413,6 +413,24 @@ BASE_FEATURE(kEnableWebUsbOnExtensionServiceWorker,
              "EnableWebUsbOnExtensionServiceWorker",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// When enabled, resource requests will be evaluated against the Network
+// Service's block list for NetworkContexts that are not associated with an Off
+// the Record session. The block list is populated by the MaskedDomainList, so
+// "MaskedDomainList" will need to also be enabled for the block list to have
+// any contents.
+BASE_FEATURE(kEnableNetworkServiceResourceBlockList,
+             "EnableNetworkServiceResourceBlockList",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, resource requests will be evaluated against the Network
+// Service's block list for NetworkContexts that are associated with an Off the
+// Record session. The block list is populated by the MaskedDomainList, so
+// "MaskedDomainList" will need to also be enabled for the block list to have
+// any contents.
+BASE_FEATURE(kEnableNetworkServiceResourceBlockListInOtrSessions,
+             "EnableNetworkServiceResourceBlockListInOtrSessions",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enable extended descriptions for key settings in Chrome settings.
 BASE_FEATURE(kExtendedSettingsDescriptions,
              "ExtendedSettingsDescriptions",

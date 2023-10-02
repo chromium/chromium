@@ -3075,6 +3075,10 @@ bool NetworkContext::IsAllowedToUseAllHttpAuthSchemes(
   return !url_matcher_->MatchURL(scheme_host_port.GetURL()).empty();
 }
 
+bool NetworkContext::AfpBlockListExperimentEnabled() const {
+  return params_ && params_->afp_block_list_experiment_enabled;
+}
+
 void NetworkContext::CreateTrustedUrlLoaderFactoryForNetworkService(
     mojo::PendingReceiver<mojom::URLLoaderFactory>
         url_loader_factory_pending_receiver) {

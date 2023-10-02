@@ -25,33 +25,7 @@ absl::optional<net::IsolationInfo> CreateIsolationInfo(
 
 }  // namespace
 
-class NetworkServiceResourceBlockListTest : public ::testing::Test {
-  void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {network::features::kEnableNetworkServiceResourceBlockList,
-         network::features::kMaskedDomainList},
-        {});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_F(NetworkServiceResourceBlockListTest, NotEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      network::features::kEnableNetworkServiceResourceBlockList);
-  NetworkServiceResourceBlockList blockList;
-  EXPECT_FALSE(blockList.IsEnabled());
-}
-
-TEST_F(NetworkServiceResourceBlockListTest, IsEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      network::features::kEnableNetworkServiceResourceBlockList);
-  NetworkServiceResourceBlockList blockList;
-  EXPECT_TRUE(blockList.IsEnabled());
-}
+class NetworkServiceResourceBlockListTest : public ::testing::Test {};
 
 TEST_F(NetworkServiceResourceBlockListTest, Matches_IsNotPartOfExperiment) {
   MaskedDomainList mdl;
