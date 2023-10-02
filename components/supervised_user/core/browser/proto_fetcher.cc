@@ -285,12 +285,16 @@ class FetcherImpl final : public ProtoFetcher<Response> {
               StringPiece payload,
               const FetcherConfig& fetcher_config,
               Callback callback)
-      : fetcher_(LaunchFetcher(identity_manager,
-                               url_loader_factory,
-                               fetcher_config,
-                               std::move(callback))),
-        payload_(payload),
-        config_(fetcher_config) {}
+      : payload_(payload),
+        config_(fetcher_config),
+        metrics_(fetcher_config.histogram_basename),
+        fetcher_(identity_manager,
+                 fetcher_config.access_token_config,
+                 BindOnce(&FetcherImpl::OnAccessTokenFetchComplete,
+                          Unretained(this),  // Unretained(.) is safe because
+                                             // `this` owns `fetcher_`.
+                          url_loader_factory,
+                          std::move(callback))) {}
 
   // Not copyable.
   FetcherImpl(const FetcherImpl&) = delete;
@@ -316,21 +320,6 @@ class FetcherImpl final : public ProtoFetcher<Response> {
     if (status.state() == ProtoFetcherStatus::State::HTTP_STATUS_OR_NET_ERROR) {
       metrics_.RecordHttpStatusOrNetError(status);
     }
-  }
-
-  // Launch of the fetch process.
-  std::unique_ptr<ApiAccessTokenFetcher> LaunchFetcher(
-      IdentityManager& identity_manager,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      const FetcherConfig& fetcher_config,
-      Callback callback) {
-    CHECK(callback) << "Use base::DoNothing() instead of empty callback.";
-    return std::make_unique<ApiAccessTokenFetcher>(
-        identity_manager, fetcher_config.access_token_config,
-        BindOnce(&FetcherImpl::OnAccessTokenFetchComplete, Unretained(this),
-                 url_loader_factory,
-                 std::move(callback)));  // Unretained(.) is safe because `this`
-                                         // owns `access_token_fetcher_`.
   }
 
   // First phase of fetching done: the access token response is ready.
@@ -394,14 +383,16 @@ class FetcherImpl final : public ProtoFetcher<Response> {
     std::move(callback).Run(ProtoFetcherStatus::Ok(), std::move(response));
   }
 
-  // Entrypoint of the fetch process, which starts with ApiAccessToken access
-  // followed by a request made with SimpleURLLoader.
-  std::unique_ptr<ApiAccessTokenFetcher> fetcher_;
   std::unique_ptr<network::SimpleURLLoader> simple_url_loader_;
 
   const std::string payload_;
   const FetcherConfig config_;
-  const Metrics metrics_{config_.histogram_basename};
+  const Metrics metrics_;
+
+  // Entrypoint of the fetch process, which starts with ApiAccessToken access
+  // followed by a request made with SimpleURLLoader. Purposely made last field
+  // should it depend on other members of this class.
+  ApiAccessTokenFetcher fetcher_;
 };
 
 // Wraps FetcherImpl deferring its startup until explicitly invoked. This is the
