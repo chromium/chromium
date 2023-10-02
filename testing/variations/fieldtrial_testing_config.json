@@ -8195,21 +8195,6 @@
             ]
         }
     ],
-    "IOSBringYourOwnTabs": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "BringYourOwnTabsIOS"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSBrowserEditMenuMetrics": [
         {
             "platforms": [
