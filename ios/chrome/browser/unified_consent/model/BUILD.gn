@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("unified_consent") {
+source_set("model") {
   sources = [
     "unified_consent_service_factory.h",
     "unified_consent_service_factory.mm",

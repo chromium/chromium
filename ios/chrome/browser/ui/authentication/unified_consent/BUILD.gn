@@ -81,7 +81,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/signin:fake_system_identity",
     "//ios/chrome/browser/signin:fake_system_identity_manager",
     "//ios/chrome/browser/signin:test_support",
-    "//ios/chrome/browser/unified_consent",
+    "//ios/chrome/browser/unified_consent/model",
     "//ios/chrome/common:string_util",
     "//ios/chrome/test:test_support",
     "//ios/web/public/test",

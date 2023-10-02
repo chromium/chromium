@@ -19,7 +19,7 @@
 #import "ios/chrome/browser/signin/fake_system_identity_manager.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/ui/authentication/unified_consent/unified_consent_view_controller.h"
-#import "ios/chrome/browser/unified_consent/unified_consent_service_factory.h"
+#import "ios/chrome/browser/unified_consent/model/unified_consent_service_factory.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gmock/include/gmock/gmock.h"

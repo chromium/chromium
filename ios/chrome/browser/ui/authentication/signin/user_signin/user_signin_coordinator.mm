@@ -31,7 +31,7 @@
 #import "ios/chrome/browser/ui/authentication/signin/user_signin/user_signin_mediator.h"
 #import "ios/chrome/browser/ui/authentication/signin/user_signin/user_signin_view_controller.h"
 #import "ios/chrome/browser/ui/authentication/unified_consent/unified_consent_coordinator.h"
-#import "ios/chrome/browser/unified_consent/unified_consent_service_factory.h"
+#import "ios/chrome/browser/unified_consent/model/unified_consent_service_factory.h"
 
 using signin_metrics::AccessPoint;
 using signin_metrics::PromoAction;

@@ -25,7 +25,7 @@
 #import "ios/chrome/browser/ui/authentication/tangible_sync/tangible_sync_mediator_delegate.h"
 #import "ios/chrome/browser/ui/authentication/tangible_sync/tangible_sync_view_controller.h"
 #import "ios/chrome/browser/ui/authentication/tangible_sync/tangible_sync_view_controller_delegate.h"
-#import "ios/chrome/browser/unified_consent/unified_consent_service_factory.h"
+#import "ios/chrome/browser/unified_consent/model/unified_consent_service_factory.h"
 
 namespace {
 

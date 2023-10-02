@@ -33,7 +33,7 @@
 #import "ios/chrome/browser/sync/model/sync_setup_service_mock.h"
 #import "ios/chrome/browser/ui/authentication/authentication_flow.h"
 #import "ios/chrome/browser/ui/authentication/authentication_flow_performer.h"
-#import "ios/chrome/browser/unified_consent/unified_consent_service_factory.h"
+#import "ios/chrome/browser/unified_consent/model/unified_consent_service_factory.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
