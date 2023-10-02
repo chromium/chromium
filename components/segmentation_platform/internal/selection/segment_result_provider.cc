@@ -93,11 +93,11 @@ class SegmentResultProviderImpl : public SegmentResultProvider {
   void PostResultCallback(std::unique_ptr<RequestState> request_state,
                           std::unique_ptr<SegmentResult> result);
 
-  void RunCallback(SegmentId segment_id,
-                   std::unique_ptr<RequestState> request_state,
-                   std::unique_ptr<SegmentResult> segment_result,
-                   ResultCallbackWithState callback,
-                   bool success);
+  void OnSavedSegmentResult(SegmentId segment_id,
+                            std::unique_ptr<RequestState> request_state,
+                            std::unique_ptr<SegmentResult> segment_result,
+                            ResultCallbackWithState callback,
+                            bool success);
 
   const raw_ptr<SegmentInfoDatabase, DanglingUntriaged> segment_database_;
   const raw_ptr<SignalStorageConfig> signal_storage_config_;
@@ -332,8 +332,8 @@ void SegmentResultProviderImpl::OnModelExecuted(
   const auto* segment_info =
       segment_database_->GetCachedSegmentInfo(segment_id, model_source);
   if (!segment_info) {
-    RunCallback(segment_id, std::move(request_state), std::move(segment_result),
-                std::move(callback), /*success=*/false);
+    std::move(callback).Run(std::move(request_state),
+                            std::move(segment_result));
     return;
   }
 
@@ -370,14 +370,13 @@ void SegmentResultProviderImpl::OnModelExecuted(
     segment_database_->SaveSegmentResult(
         segment_id, model_source,
         success ? absl::make_optional(prediction_result) : absl::nullopt,
-        base::BindOnce(&SegmentResultProviderImpl::RunCallback,
-                       weak_ptr_factory_.GetWeakPtr(), segment_id,
-                       std::move(request_state), std::move(segment_result),
-                       std::move(callback)));
+        base::BindOnce(&SegmentResultProviderImpl::OnSavedSegmentResult,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       segment_info->segment_id(), std::move(request_state),
+                       std::move(segment_result), std::move(callback)));
     return;
   }
-  RunCallback(segment_id, std::move(request_state), std::move(segment_result),
-              std::move(callback), success);
+  std::move(callback).Run(std::move(request_state), std::move(segment_result));
 }
 
 void SegmentResultProviderImpl::PostResultCallback(
@@ -388,7 +387,7 @@ void SegmentResultProviderImpl::PostResultCallback(
                                 std::move(result)));
 }
 
-void SegmentResultProviderImpl::RunCallback(
+void SegmentResultProviderImpl::OnSavedSegmentResult(
     SegmentId segment_id,
     std::unique_ptr<RequestState> request_state,
     std::unique_ptr<SegmentResult> segment_result,
