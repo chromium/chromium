@@ -198,7 +198,7 @@ bool IsDefaultBrowserPromoOnlyGenericArmTrain();
 bool IsFullScreenPromoOnOmniboxCopyPasteEnabled();
 
 // Returns true if client is in default browser video in settings experiment.
-bool IsDBVideoInSettingsEnabled();
+bool IsDefaultBrowserVideoInSettingsEnabled();
 
 // Returns true if the user has interacted with the Fullscreen Promo previously.
 // Returns false otherwise.

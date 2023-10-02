@@ -52,7 +52,9 @@ bool HasSecondaryActionButton(UIView* view) {
 // Test view creation with subtitle.
 TEST_F(DefaultBrowserInstructionsViewTest, CreateViewWithSubtitleTest) {
   DefaultBrowserInstructionsView* instructionsView =
-      [[DefaultBrowserInstructionsView alloc] init:NO hasSteps:NO];
+      [[DefaultBrowserInstructionsView alloc] init:NO
+                                          hasSteps:NO
+                                     actionHandler:nil];
   ASSERT_NE(instructionsView, nil);
   EXPECT_TRUE(HasTitle(instructionsView));
   EXPECT_TRUE(HasSubTitle(instructionsView));
@@ -64,7 +66,9 @@ TEST_F(DefaultBrowserInstructionsViewTest, CreateViewWithSubtitleTest) {
 // Test view creation with instruction steps.
 TEST_F(DefaultBrowserInstructionsViewTest, CreateViewWithStepsTest) {
   DefaultBrowserInstructionsView* instructionsView =
-      [[DefaultBrowserInstructionsView alloc] init:NO hasSteps:YES];
+      [[DefaultBrowserInstructionsView alloc] init:NO
+                                          hasSteps:YES
+                                     actionHandler:nil];
   ASSERT_NE(instructionsView, nil);
   EXPECT_TRUE(HasTitle(instructionsView));
   EXPECT_FALSE(HasSubTitle(instructionsView));
@@ -76,7 +80,9 @@ TEST_F(DefaultBrowserInstructionsViewTest, CreateViewWithStepsTest) {
 // Test view creation with secondary button.
 TEST_F(DefaultBrowserInstructionsViewTest, CreateViewWithSecondaryButtonTest) {
   DefaultBrowserInstructionsView* instructionsView =
-      [[DefaultBrowserInstructionsView alloc] init:YES hasSteps:NO];
+      [[DefaultBrowserInstructionsView alloc] init:YES
+                                          hasSteps:NO
+                                     actionHandler:nil];
   ASSERT_NE(instructionsView, nil);
   EXPECT_TRUE(HasTitle(instructionsView));
   EXPECT_TRUE(HasSubTitle(instructionsView));

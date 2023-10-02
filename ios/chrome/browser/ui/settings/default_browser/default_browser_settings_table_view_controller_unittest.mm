@@ -5,6 +5,8 @@
 #import "ios/chrome/browser/ui/settings/default_browser/default_browser_settings_table_view_controller.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/test/scoped_feature_list.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller_test.h"
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -31,6 +33,8 @@ class DefaultBrowserSettingsTableViewControllerTest
 };
 
 TEST_F(DefaultBrowserSettingsTableViewControllerTest, TestModel) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({}, {kDefaultBrowserVideoInSettings});
   CreateController();
   CheckController();
 
@@ -45,4 +49,15 @@ TEST_F(DefaultBrowserSettingsTableViewControllerTest, TestModel) {
   CheckSectionHeaderWithId(IDS_IOS_SETTINGS_FOLLOW_STEPS_BELOW_TEXT, 1);
 }
 
+TEST_F(DefaultBrowserSettingsTableViewControllerTest,
+       TestDefaultBrowserInstructionsView) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({kDefaultBrowserVideoInSettings}, {});
+
+  CreateController();
+
+  CheckTitleWithId(IDS_IOS_SETTINGS_SET_DEFAULT_BROWSER);
+
+  EXPECT_EQ(0, NumberOfSections());
+}
 }  // namespace

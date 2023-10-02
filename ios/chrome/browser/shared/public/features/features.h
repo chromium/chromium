@@ -224,7 +224,7 @@ bool IsBottomOmniboxSteadyStateEnabled();
 BASE_DECLARE_FEATURE(kOnlyAccessClipboardAsync);
 
 // Feature flag that enables default browser video in settings experiment.
-BASE_DECLARE_FEATURE(kDBVideoInSettings);
+BASE_DECLARE_FEATURE(kDefaultBrowserVideoInSettings);
 
 // Feature flag that enables default browser promo to be displayed without
 // matching all the criteria and in depth metrics collection for the displayed

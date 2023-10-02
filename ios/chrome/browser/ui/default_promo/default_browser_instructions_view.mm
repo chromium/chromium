@@ -33,18 +33,22 @@ constexpr CGFloat kSpacing = 24;
 @property(nonatomic, strong) id<LottieAnimation> animationViewWrapper;
 // Custom animation view used in the full-screen promo in dark mode.
 @property(nonatomic, strong) id<LottieAnimation> animationViewWrapperDarkMode;
+// Subview for information and action part of the view.
+@property(nonatomic, strong) ConfirmationAlertViewController* alertScreen;
 
 @end
 
 @implementation DefaultBrowserInstructionsView
 
-- (instancetype)init:(BOOL)hasDissmissButton hasSteps:(BOOL)hasSteps {
+- (instancetype)init:(BOOL)hasDissmissButton
+            hasSteps:(BOOL)hasSteps
+       actionHandler:(id<ConfirmationAlertActionHandler>)actionHandler {
   self = [super init];
   if (self) {
     [self addVideoSection];
-    [self addInformationSection:(BOOL)hasDissmissButton
-                       hasSteps:(BOOL)hasSteps];
-
+    [self addInformationSection:hasDissmissButton
+                       hasSteps:hasSteps
+                  actionHandler:actionHandler];
     [self setBackgroundColor:[UIColor colorNamed:kGrey100Color]];
   }
 
@@ -143,10 +147,13 @@ constexpr CGFloat kSpacing = 24;
 }
 
 // Adds the bottom section of the view which contains instructions and buttons.
-- (void)addInformationSection:(BOOL)hasDissmissButton hasSteps:(BOOL)hasSteps {
+- (void)addInformationSection:(BOOL)hasDissmissButton
+                     hasSteps:(BOOL)hasSteps
+                actionHandler:
+                    (id<ConfirmationAlertActionHandler>)actionHandler {
   ConfirmationAlertViewController* alertScreen =
       [[ConfirmationAlertViewController alloc] init];
-
+  alertScreen.actionHandler = actionHandler;
   alertScreen.titleString =
       l10n_util::GetNSString(IDS_IOS_DEFAULT_BROWSER_VIDEO_PROMO_TITLE_TEXT);
   alertScreen.primaryActionString = l10n_util ::GetNSString(
@@ -197,6 +204,7 @@ constexpr CGFloat kSpacing = 24;
     [alertScreen.view.widthAnchor constraintEqualToAnchor:self.widthAnchor],
     [alertScreen.view.topAnchor constraintEqualToAnchor:self.centerYAnchor],
   ]];
+  self.alertScreen = alertScreen;
 }
 
 @end

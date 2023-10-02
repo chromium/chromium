@@ -8,11 +8,13 @@
 #import "ios/chrome/browser/default_browser/promo_source.h"
 #import "ios/chrome/browser/ui/settings/settings_controller_protocol.h"
 #import "ios/chrome/browser/ui/settings/settings_root_table_view_controller.h"
+#import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 
 // Controller for the UI that shows the user how to set Chrome as the default
 // browser and provides a button to take the user to the Settings app.
 @interface DefaultBrowserSettingsTableViewController
-    : SettingsRootTableViewController <SettingsControllerProtocol>
+    : SettingsRootTableViewController <SettingsControllerProtocol,
+                                       ConfirmationAlertActionHandler>
 
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;

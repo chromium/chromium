@@ -7,11 +7,15 @@
 
 #import <UIKit/UIKit.h>
 
+@protocol ConfirmationAlertActionHandler;
+
 // View for the displaying default browser instructions.
 @interface DefaultBrowserInstructionsView : UIView
 
 // Creates the view based on provided parameters.
-- (instancetype)init:(BOOL)hasDismissButton hasSteps:(BOOL)hasSteps;
+- (instancetype)init:(BOOL)hasDismissButton
+            hasSteps:(BOOL)hasSteps
+       actionHandler:(id<ConfirmationAlertActionHandler>)actionHandler;
 
 @end
 
