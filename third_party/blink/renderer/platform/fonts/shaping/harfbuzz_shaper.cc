@@ -848,9 +848,10 @@ void HarfBuzzShaper::ShapeSegment(
         &range_data->font_features,
         caps_support.FontFeatureToUse(small_caps_behavior));
     hb_direction_t direction = range_data->HarfBuzzDirection(canvas_rotation);
-    HanKerning han_kerning(
-        text_, range_data->start, range_data->end, *adjusted_font, locale,
-        HB_DIRECTION_IS_HORIZONTAL(direction), range_data->font_features);
+    HanKerning han_kerning(text_, range_data->start, range_data->end,
+                           *adjusted_font, font_description,
+                           HB_DIRECTION_IS_HORIZONTAL(direction),
+                           range_data->font_features);
 
     if (!ShapeRange(range_data->buffer, range_data->font_features,
                     adjusted_font, current_font_data_for_range_set->Ranges(),

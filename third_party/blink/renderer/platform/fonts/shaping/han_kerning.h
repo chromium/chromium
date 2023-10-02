@@ -11,6 +11,7 @@
 
 namespace blink {
 
+class FontDescription;
 class FontFeatures;
 class LayoutLocale;
 class SimpleFontData;
@@ -45,14 +46,15 @@ class PLATFORM_EXPORT HanKerning {
              wtf_size_t start,
              wtf_size_t end,
              const SimpleFontData& font_data,
-             const LayoutLocale& locale,
+             const FontDescription& font_description,
              bool is_horizontal,
              FontFeatures& features) {
     if (!RuntimeEnabledFeatures::CSSTextSpacingTrimEnabled()) {
       return;
     }
     // TODO(crbug.com/1463890): Add more conditions to fail fast.
-    Compute(text, start, end, font_data, locale, is_horizontal, features);
+    Compute(text, start, end, font_data, font_description, is_horizontal,
+            features);
   }
 
   enum class CharType : uint8_t {
@@ -97,7 +99,7 @@ class PLATFORM_EXPORT HanKerning {
                       wtf_size_t start,
                       wtf_size_t end,
                       const SimpleFontData& font_data,
-                      const LayoutLocale& locale,
+                      const FontDescription& font_description,
                       bool is_horizontal,
                       FontFeatures& features);
 };

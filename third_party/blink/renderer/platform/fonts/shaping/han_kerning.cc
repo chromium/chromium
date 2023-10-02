@@ -112,9 +112,14 @@ void HanKerning::Compute(const String& text,
                          wtf_size_t start,
                          wtf_size_t end,
                          const SimpleFontData& font,
-                         const LayoutLocale& locale,
+                         const FontDescription& font_description,
                          bool is_horizontal,
                          FontFeatures& features) {
+  if (UNLIKELY(font_description.GetTextSpacingTrim() !=
+               TextSpacingTrim::kSpaceFirst)) {
+    return;
+  }
+  const LayoutLocale& locale = font_description.LocaleOrDefault();
   const FontData& font_data = font.HanKerningData(locale, is_horizontal);
   if (!font_data.has_alternate_spacing) {
     return;
