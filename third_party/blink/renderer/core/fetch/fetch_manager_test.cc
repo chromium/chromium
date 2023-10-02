@@ -7,12 +7,10 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/strcat.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_feature_list.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
@@ -82,10 +80,6 @@ MATCHER_P(HasAbortError,
 
 class FetchLaterTest : public testing::Test {
  public:
-  FetchLaterTest() {
-    feature_list_.InitAndEnableFeature(blink::features::kFetchLaterAPI);
-  }
-
   // FetchLater only supports secure context.
   static const WTF::String GetSourcePageURL() {
     return AtomicString("https://example.com");
@@ -107,9 +101,6 @@ class FetchLaterTest : public testing::Test {
 
     return request;
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 class FetchLaterTestingScope : public V8TestingScope {
@@ -218,39 +209,6 @@ TEST_F(FetchLaterTest, AbortAfterFetchLater) {
   // Even aborted, the FetchLaterResult held by user should still exist.
   EXPECT_THAT(result, Not(IsNull()));
   EXPECT_FALSE(result->activated());
-  EXPECT_FALSE(exception_state.HadException());
-}
-
-// Test to cover when a FetchManager::DeferredLoader triggers its Process()
-// method when its context enters BackForwardCache with BackgroundSync
-// permission off.
-TEST_F(FetchLaterTest, ForcedSendingWithBackgroundSyncOff) {
-  FetchLaterTestingScope scope;
-  auto& exception_state = scope.GetExceptionState();
-  auto target_url = AtomicString("/");
-  url_test_helpers::RegisterMockedURLLoad(KURL(GetSourcePageURL() + target_url),
-                                          test::CoreTestDataPath("foo.html"),
-                                          "text/html");
-  auto* fetch_manager =
-      MakeGarbageCollected<FetchManager>(scope.GetExecutionContext());
-  auto* controller = AbortController::Create(scope.GetScriptState());
-  auto* request =
-      CreateFetchLaterRequest(scope, target_url, controller->signal());
-  // Sets up a FetchLater request.
-  auto* result = fetch_manager->FetchLater(
-      scope.GetScriptState(), request->PassRequestData(scope.GetScriptState()),
-      request->signal(), /*background_timeout=*/absl::nullopt, exception_state);
-  EXPECT_THAT(result, Not(IsNull()));
-
-  // Simluates the context enters BackForwardCache.
-  // The default BackgroundSync is DENIED, so the following call should trigger
-  // immediate sending.
-  fetch_manager->ContextEnteredBackForwardCache();
-
-  // The FetchLaterResult held by user should still exist.
-  EXPECT_THAT(result, Not(IsNull()));
-  // The FetchLater sending is triggered, so its state should be updated.
-  EXPECT_TRUE(result->activated());
   EXPECT_FALSE(exception_state.HadException());
 }
 
