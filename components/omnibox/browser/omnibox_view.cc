@@ -56,6 +56,13 @@ bool RichAutocompletionEitherNonPrefixEnabled() {
              kRichAutocompletionAutocompleteNonPrefixShortcutProvider.Get();
 }
 
+// Return true if the given match uses a vector icon with a background.
+bool HasVectorIconBackground(const AutocompleteMatch& match) {
+  return OmniboxFieldTrial::IsActionsUISimplificationEnabled() &&
+         (match.type == AutocompleteMatchType::HISTORY_CLUSTER ||
+          match.type == AutocompleteMatchType::PEDAL);
+}
+
 }  // namespace
 
 OmniboxView::State::State() = default;
@@ -182,6 +189,7 @@ ui::ImageModel OmniboxView::GetIcon(int dip_size,
                                     SkColor color_current_page_icon,
                                     SkColor color_vectors,
                                     SkColor color_bright_vectors,
+                                    SkColor color_vectors_with_background,
                                     IconFetchedCallback on_icon_fetched,
                                     bool dark_mode) const {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
@@ -256,7 +264,10 @@ ui::ImageModel OmniboxView::GetIcon(int dip_size,
                        match.type == AutocompleteMatchType::STARTER_PACK)
                           ? color_bright_vectors
                           : color_vectors;
-  return ui::ImageModel::FromVectorIcon(vector_icon, color, dip_size);
+  return ui::ImageModel::FromVectorIcon(
+      vector_icon,
+      HasVectorIconBackground(match) ? color_vectors_with_background : color,
+      dip_size);
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 }
 
