@@ -314,6 +314,35 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="FamilyLinkUser.ClassifyUrlRequest.{AuthErrorState}.AccessTokenLatency"
+    units="ms" expires_after="2023-11-01">
+  <owner>tju@google.com</owner>
+  <owner>chrome-kids-eng@google.com</owner>
+  <summary>
+    Latency of the access token fetching before making calls to Kids Management
+    API::ClassifyURL. Currenlty only successful authentication is counted.
+  </summary>
+  <token key="AuthErrorState">
+    <variant name="NONE"/>
+  </token>
+</histogram>
+
+<histogram
+    name="FamilyLinkUser.ClassifyUrlRequest.{HttpStatusOrNetError}.ApiLatency"
+    units="ms" expires_after="2023-11-01">
+  <owner>tju@google.com</owner>
+  <owner>chrome-kids-eng@google.com</owner>
+  <summary>
+    Latency of the calls in calls to Kids Management API::ClassifyURL that
+    resulted with &quot;{HttpStatusOrNetError}&quot; status. Currently only
+    succesful communication with API is recorded.
+  </summary>
+  <token key="HttpStatusOrNetError">
+    <variant name="HTTP_OK"/>
+  </token>
+</histogram>
+
 <histogram name="FamilyLinkUser.ClassifyUrlRequest.{Status}.Latency" units="ms"
     expires_after="2023-11-01">
   <owner>tju@google.com</owner>
