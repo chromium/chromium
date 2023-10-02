@@ -57,6 +57,11 @@ export class OobeCrLottie extends OobeCrLottieBase {
         value: '',
       },
 
+      hidePlayPauseIcon: {
+        type: Boolean,
+        value: false,
+      },
+
       preload: {
         type: Boolean,
         value: false,
@@ -88,6 +93,9 @@ export class OobeCrLottie extends OobeCrLottieBase {
   }
 
   onClick_() {
+    if (this.hidePlayPauseIcon) {
+      return;
+    }
     this.playing = !this.playing;
   }
 
@@ -102,7 +110,8 @@ export class OobeCrLottie extends OobeCrLottieBase {
     this.animationPlayer.setAttribute('asset-url', this.animationUrl);
     this.animationPlayer.setAttribute('dynamic', this.dynamic);
     this.animationPlayer.autoplay = autoplay;
-    this.$.container.insertBefore(this.animationPlayer, this.$.playPauseIcon);
+    this.$.container.insertBefore(
+        this.animationPlayer, this.$.playPauseIconContainer);
     ColorChangeUpdater.forDocument().eventTarget.addEventListener(
         COLOR_PROVIDER_CHANGED, () => this.onColorChange());
   }

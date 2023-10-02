@@ -40,6 +40,9 @@ found in the LICENSE file.
 </style>
 <div id="container">
   <!-- <cros-lottie-renderer> created dynamically -->
-  <cr-icon-button id="playPauseIcon" iron-icon="[[getIcon_(playing)]]"
-      aria-label$="[[getAria_(locale, playing)]]"></cr-icon-button>
+  <div id="playPauseIconContainer" hidden="[[hidePlayPauseIcon]]" >
+    <cr-icon-button id="playPauseIcon" iron-icon="[[getIcon_(playing)]]"
+        aria-label$="[[getAria_(locale, playing)]]"></cr-icon-button>
+  </div>
+
 </div>
