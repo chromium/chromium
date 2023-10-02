@@ -2556,8 +2556,15 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityId) {
   RunHtmlTest(FILE_PATH_LITERAL("id.html"));
 }
 
+// Flaky on Android - crbug.com/1488592
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_AccessibilityImgFormFormControls \
+  DISABLED_AccessibilityImgFormFormControls
+#else
+#define MAYBE_AccessibilityImgFormFormControls AccessibilityImgFormFormControls
+#endif
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       AccessibilityImgFormFormControls) {
+                       MAYBE_AccessibilityImgFormFormControls) {
   RunFormControlsTest(FILE_PATH_LITERAL("img-form.html"));
 }
 
