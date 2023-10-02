@@ -12,6 +12,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/logging.h"
 #include "base/message_loop/message_pump_type.h"
+#include "base/strings/stringprintf.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/test_support_android.h"
 #include "base/threading/thread.h"
@@ -46,10 +47,20 @@ base::OnceCallback<void()> WrapCallbackWithSignal(
       .Then(base::BindOnce([] { wait_for_callback.Signal(); }));
 }
 
+template <typename T>
+void ExecuteSynchronouslyOnServerThread(base::OnceCallback<T> callback,
+                                        base::Location from_here = FROM_HERE) {
+  CHECK(g_quic_server_thread);
+  g_quic_server_thread->task_runner()->PostTask(
+      from_here, WrapCallbackWithSignal(std::move(callback)));
+  wait_for_callback.Wait();
+}
+
 void StartOnServerThread(const base::FilePath& test_files_root,
                          const base::FilePath& test_data_dir) {
   CHECK(g_quic_server_thread->task_runner()->BelongsToCurrentThread());
   CHECK(!g_quic_server);
+  CHECK(!g_quic_memory_cache_backend);
 
   // Set up in-memory cache.
   base::FilePath file_dir = test_files_root.Append("quic_data");
@@ -77,8 +88,21 @@ void StartOnServerThread(const base::FilePath& test_files_root,
   CHECK_GE(rv, 0) << "Quic server fails to start";
 }
 
+void SetResponseDelayOnServerThread(const std::string& path,
+                                    base::TimeDelta delay) {
+  CHECK(g_quic_server_thread->task_runner()->BelongsToCurrentThread());
+  CHECK(g_quic_memory_cache_backend);
+
+  // TODO(crbug.com/1487185): Stop hardcoding server hostname.
+  CHECK(g_quic_memory_cache_backend->SetResponseDelay(
+      base::StringPrintf("%s:%d", "test.example.com", kServerPort), path,
+      quic::QuicTime::Delta::FromMicroseconds(delay.InMicroseconds())));
+}
+
 void ShutdownOnServerThread() {
   CHECK(g_quic_server_thread->task_runner()->BelongsToCurrentThread());
+  CHECK(g_quic_server);
+  CHECK(g_quic_memory_cache_backend);
   g_quic_server->Shutdown();
   g_quic_server.reset();
   g_quic_memory_cache_backend.reset();
@@ -104,24 +128,28 @@ void JNI_QuicTestServer_StartQuicTestServer(
   CHECK(started);
   base::FilePath test_files_root(
       base::android::ConvertJavaStringToUTF8(env, jtest_files_root));
-  g_quic_server_thread->task_runner()->PostTask(
-      FROM_HERE, WrapCallbackWithSignal(base::BindOnce(
-                     &StartOnServerThread, test_files_root, test_data_dir)));
-  wait_for_callback.Wait();
+  ExecuteSynchronouslyOnServerThread(
+      base::BindOnce(&StartOnServerThread, test_files_root, test_data_dir));
 }
 
 void JNI_QuicTestServer_ShutdownQuicTestServer(JNIEnv* env) {
   CHECK(!g_quic_server_thread->task_runner()->BelongsToCurrentThread());
-  CHECK(g_quic_server_thread);
-  g_quic_server_thread->task_runner()->PostTask(
-      FROM_HERE,
-      WrapCallbackWithSignal(base::BindOnce(&ShutdownOnServerThread)));
-  wait_for_callback.Wait();
+  ExecuteSynchronouslyOnServerThread(base::BindOnce(&ShutdownOnServerThread));
   g_quic_server_thread.reset();
 }
 
 int JNI_QuicTestServer_GetServerPort(JNIEnv* env) {
   return kServerPort;
+}
+
+void JNI_QuicTestServer_DelayResponse(JNIEnv* env,
+                                      const JavaParamRef<jstring>& jpath,
+                                      int delayInSeconds) {
+  CHECK(!g_quic_server_thread->task_runner()->BelongsToCurrentThread());
+  std::string path = base::android::ConvertJavaStringToUTF8(env, jpath);
+  base::TimeDelta delay = base::Seconds(delayInSeconds);
+  ExecuteSynchronouslyOnServerThread(
+      base::BindOnce(&SetResponseDelayOnServerThread, path, delay));
 }
 
 }  // namespace cronet
