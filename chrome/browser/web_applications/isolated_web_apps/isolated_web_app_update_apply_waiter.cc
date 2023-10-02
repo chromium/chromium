@@ -31,8 +31,12 @@ void IsolatedWebAppUpdateApplyWaiter::Wait(Profile* profile,
   keep_alive_ = std::make_unique<ScopedKeepAlive>(
       KeepAliveOrigin::ISOLATED_WEB_APP_UPDATE,
       KeepAliveRestartOption::DISABLED);
-  profile_keep_alive_ = std::make_unique<ScopedProfileKeepAlive>(
-      profile, ProfileKeepAliveOrigin::kIsolatedWebAppUpdate);
+  // Off the record profiles cannot have `ScopedProfileKeepAlive`s.
+  profile_keep_alive_ =
+      profile->IsOffTheRecord()
+          ? nullptr
+          : std::make_unique<ScopedProfileKeepAlive>(
+                profile, ProfileKeepAliveOrigin::kIsolatedWebAppUpdate);
 
   ui_manager_->NotifyOnAllAppWindowsClosed(
       url_info_.app_id(),

@@ -10,11 +10,14 @@
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_builder.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_manager.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/fake_web_app_ui_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -22,6 +25,12 @@
 
 namespace web_app {
 namespace {
+
+using ::testing::IsFalse;
+using ::testing::IsNull;
+using ::testing::IsTrue;
+using ::testing::NotNull;
+using ::testing::SizeIs;
 
 class IsolatedWebAppUpdateApplyWaiterTest : public WebAppTest {
  protected:
@@ -90,6 +99,38 @@ TEST_F(IsolatedWebAppUpdateApplyWaiterTest, NeverSynchronouslyCallsCallback) {
   EXPECT_FALSE(future.IsReady());
   auto [keep_alive, profile_keep_alive] = future.Take();
 }
+
+// Other platforms do not have a `WebAppProvider` in guest sessions.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+TEST_F(IsolatedWebAppUpdateApplyWaiterTest,
+       NoProfileKeepAliveWhenOffTheRecord) {
+  // In ChromeOS guest sessions, the profile is both a guest profile and off the
+  // record.
+  Profile* profile = profile_manager().CreateGuestProfile();
+  ASSERT_THAT(profile->GetAllOffTheRecordProfiles(), SizeIs(1));
+  profile = profile->GetAllOffTheRecordProfiles()[0];
+
+  EXPECT_THAT(profile->IsGuestSession(), IsTrue());
+  EXPECT_THAT(profile->IsOffTheRecord(), IsTrue());
+  EXPECT_THAT(AreWebAppsEnabled(profile), IsTrue());
+
+  auto* provider = FakeWebAppProvider::Get(profile);
+  provider->SetEnableAutomaticIwaUpdates(
+      FakeWebAppProvider::AutomaticIwaUpdateStrategy::kDefault);
+  test::AwaitStartWebAppProviderAndSubsystems(profile);
+  EXPECT_THAT(provider->iwa_update_manager().AreAutomaticUpdatesEnabled(),
+              IsFalse());
+
+  IsolatedWebAppUpdateApplyWaiter waiter(url_info_, provider->ui_manager());
+  base::test::TestFuture<std::unique_ptr<ScopedKeepAlive>,
+                         std::unique_ptr<ScopedProfileKeepAlive>>
+      future;
+  waiter.Wait(profile, future.GetCallback());
+  auto [keep_alive, profile_keep_alive] = future.Take();
+  EXPECT_THAT(keep_alive, NotNull());
+  EXPECT_THAT(profile_keep_alive, IsNull());
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace
 }  // namespace web_app

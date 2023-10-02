@@ -60,7 +60,14 @@ IsolatedWebAppUpdateManager::IsolatedWebAppUpdateManager(
       automatic_updates_enabled_(
           content::IsolatedWebAppsPolicy::AreIsolatedWebAppsEnabled(&profile) &&
           base::FeatureList::IsEnabled(
-              features::kIsolatedWebAppAutomaticUpdates)),
+              features::kIsolatedWebAppAutomaticUpdates) &&
+          // Similar to extensions, we don't do any automatic updates in guest
+          // sessions.
+          !profile.IsGuestSession() &&
+          // Web Apps are not a thing in off the record profiles, but have this
+          // here just in case - we also wouldn't want to update IWAs in
+          // incognito windows.
+          !profile.IsOffTheRecord()),
       update_discovery_frequency_(std::move(update_discovery_frequency)),
       task_queue_{*this} {}
 
@@ -99,6 +106,14 @@ void IsolatedWebAppUpdateManager::Start() {
                  << web_app.start_url();
       continue;
     }
+
+    // Off the record profiles cannot have `ScopedProfileKeepAlive`s.
+    auto profile_keep_alive =
+        profile_->IsOffTheRecord()
+            ? nullptr
+            : std::make_unique<ScopedProfileKeepAlive>(
+                  &*profile_, ProfileKeepAliveOrigin::kIsolatedWebAppUpdate);
+
     // During startup of the `IsolatedWebAppUpdateManager`, we do not use
     // `IsolatedWebAppUpdateApplyWaiter`s to wait for all windows to close
     // before applying the update. Instead, we schedule the update apply tasks
@@ -116,9 +131,7 @@ void IsolatedWebAppUpdateManager::Start() {
         std::make_unique<ScopedKeepAlive>(
             KeepAliveOrigin::ISOLATED_WEB_APP_UPDATE,
             KeepAliveRestartOption::DISABLED),
-        std::make_unique<ScopedProfileKeepAlive>(
-            &*profile_, ProfileKeepAliveOrigin::kIsolatedWebAppUpdate),
-        provider_->scheduler()));
+        std::move(profile_keep_alive), provider_->scheduler()));
   }
 
   content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})

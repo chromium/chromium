@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/json/values_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/ranges/algorithm.h"
@@ -30,14 +31,18 @@
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_apply_update_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_constants.h"
+#include "chrome/browser/web_applications/test/fake_web_app_database_factory.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/fake_web_app_ui_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_contents_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
+#include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
 #include "chrome/common/chrome_features.h"
@@ -73,6 +78,7 @@ using ::testing::IsEmpty;
 using ::testing::IsFalse;
 using ::testing::IsTrue;
 using ::testing::NiceMock;
+using ::testing::NotNull;
 using ::testing::Optional;
 using ::testing::Property;
 using ::testing::SizeIs;
@@ -242,8 +248,6 @@ class IsolatedWebAppUpdateManagerUpdateTest
     command_scheduler->DelegateToRealImpl();
     fake_provider().SetScheduler(std::move(command_scheduler));
 
-    test::AwaitStartWebAppProviderAndSubsystems(profile());
-
     iwa_info1_ = IwaInfo(
         web_package::WebBundleSigner::KeyPair::CreateRandom(),
         InstalledBundle{
@@ -263,14 +267,17 @@ class IsolatedWebAppUpdateManagerUpdateTest
         GURL("https://example.com/bundle2.swbn"), base::Version("7.0.0"),
         "updated app 2");
     SetUpIwaInfo(*iwa_info2_);
+
+    SetTrustedWebBundleIdsForTesting({iwa_info1_->url_info.web_bundle_id(),
+                                      iwa_info2_->url_info.web_bundle_id()});
+
+    SeedWebAppDatabase();
+    test::AwaitStartWebAppProviderAndSubsystems(profile());
   }
 
   void SetUpIwaInfo(const IwaInfo& iwa_info) {
     TestSignedWebBundle update_bundle =
-        TestSignedWebBundleBuilder::BuildDefault(
-            TestSignedWebBundleBuilder::BuildOptions()
-                .SetVersion(iwa_info.update_version)
-                .SetKeyPair(iwa_info.key_pair));
+        CreateBundle(iwa_info.update_version, iwa_info.key_pair);
 
     profile_url_loader_factory().AddResponse(
         iwa_info.update_manifest_url.spec(),
@@ -298,6 +305,17 @@ class IsolatedWebAppUpdateManagerUpdateTest
         iwa_info.url_info.origin().GetURL(),
         base::UTF8ToUTF16(iwa_info.update_app_name), iwa_info.update_version);
   }
+
+  TestSignedWebBundle CreateBundle(
+      const base::Version& version,
+      const web_package::WebBundleSigner::KeyPair& key_pair) const {
+    return TestSignedWebBundleBuilder::BuildDefault(
+        TestSignedWebBundleBuilder::BuildOptions()
+            .SetVersion(version)
+            .SetKeyPair(key_pair));
+  }
+
+  virtual void SeedWebAppDatabase() {}
 
   void SetIwaForceInstallPolicy(
       std::vector<std::pair<IsolatedWebAppUrlInfo, base::StringPiece>>
@@ -704,6 +722,83 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
   fake_provider().Shutdown();
   ChromeBrowsingDataRemoverDelegateFactory::GetForProfile(profile())
       ->Shutdown();
+}
+
+class IsolatedWebAppUpdateManagerUpdateApplyOnStartupTest
+    : public IsolatedWebAppUpdateManagerUpdateTest {
+ protected:
+  void SeedWebAppDatabase() override {
+    // Seed the `WebAppProvider` with an IWA before it is started.
+    EXPECT_THAT(fake_provider().is_registry_ready(), IsFalse());
+
+    EXPECT_THAT(temp_dir_.CreateUniqueTempDir(), IsTrue());
+    update_path_ = temp_dir_.GetPath().AppendASCII("update.swbn");
+
+    auto update_bundle =
+        CreateBundle(iwa_info1_->update_version, iwa_info1_->key_pair);
+    base::WriteFile(update_path_, update_bundle.data);
+
+    std::unique_ptr<WebApp> iwa = CreateIsolatedWebApp(
+        iwa_info1_->url_info.origin().GetURL(),
+        WebApp::IsolationData(iwa_info1_->installed_location,
+                              iwa_info1_->installed_version, {},
+                              WebApp::IsolationData::PendingUpdateInfo(
+                                  InstalledBundle{.path = update_path_},
+                                  iwa_info1_->update_version)));
+    CreateStoragePartition(iwa_info1_->url_info);
+
+    Registry registry;
+    registry.emplace(iwa->app_id(), std::move(iwa));
+    auto& database_factory = static_cast<FakeWebAppDatabaseFactory&>(
+        fake_provider().database_factory());
+    database_factory.WriteRegistry(registry);
+  }
+
+  base::FilePath update_path_;
+
+ private:
+  void CreateStoragePartition(IsolatedWebAppUrlInfo& url_info) {
+    content::StoragePartition* new_storage_partition =
+        profile()->GetStoragePartition(
+            url_info.storage_partition_config(profile()),
+            /*can_create=*/true);
+    EXPECT_THAT(new_storage_partition, NotNull());
+  }
+
+  std::unique_ptr<WebApp> CreateIsolatedWebApp(
+      const GURL& start_url,
+      WebApp::IsolationData isolation_data) {
+    webapps::AppId app_id = GenerateAppId(/*manifest_id=*/"", start_url);
+    auto web_app = std::make_unique<WebApp>(app_id);
+    web_app->SetName("iwa name");
+    web_app->SetStartUrl(start_url);
+    web_app->SetScope(start_url.DeprecatedGetOriginAsURL());
+    web_app->SetManifestId(start_url.DeprecatedGetOriginAsURL());
+    web_app->AddSource(WebAppManagement::Type::kCommandLine);
+    web_app->SetIsLocallyInstalled(true);
+    web_app->SetIsolationData(isolation_data);
+    return web_app;
+  }
+
+  base::ScopedTempDir temp_dir_;
+};
+
+TEST_F(IsolatedWebAppUpdateManagerUpdateApplyOnStartupTest,
+       SchedulesPendingUpdateApplyTasks) {
+  WebAppTestManifestUpdatedObserver manifest_updated_observer(
+      &fake_provider().install_manager());
+  manifest_updated_observer.BeginListening({iwa_info1_->url_info.app_id()});
+  manifest_updated_observer.Wait();
+
+  EXPECT_THAT(fake_provider().registrar_unsafe().GetAppById(
+                  iwa_info1_->url_info.app_id()),
+              test::IwaIs(iwa_info1_->update_app_name,
+                          test::IsolationDataIs(
+                              ::testing::VariantWith<InstalledBundle>(
+                                  Eq(InstalledBundle{.path = update_path_})),
+                              Eq(iwa_info1_->update_version),
+                              /*controlled_frame_partitions=*/_,
+                              /*pending_update_info=*/Eq(absl::nullopt))));
 }
 
 class IsolatedWebAppUpdateManagerDiscoveryTimerTest

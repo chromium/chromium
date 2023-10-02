@@ -98,6 +98,8 @@ class IsolatedWebAppUpdateManager : public WebAppInstallManagerObserver {
                                const webapps::AppId& app_id,
                                base::OnceClosure callback);
 
+  bool AreAutomaticUpdatesEnabled() const { return automatic_updates_enabled_; }
+
   void SetEnableAutomaticUpdatesForTesting(bool automatic_updates_enabled);
 
   // `WebAppInstallManagerObserver`:
