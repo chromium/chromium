@@ -295,26 +295,16 @@ class CORE_EXPORT LocalFrameView final
 
   void DidChangeScrollOffset();
 
-  void ViewportSizeChanged(bool width_changed, bool height_changed);
-  void InvalidateLayoutForViewportConstrainedObjects(bool width_changed,
-                                                     bool height_changed);
+  void ViewportSizeChanged();
+  void InvalidateLayoutForViewportConstrainedObjects();
   void DynamicViewportUnitsChanged();
 
   AtomicString MediaType() const;
   void SetMediaType(const AtomicString&);
   void AdjustMediaTypeForPrinting(bool printing);
 
-  typedef HeapHashSet<Member<LayoutObject>> ObjectSet;
-  void AddFixedPositionObject(LayoutObject&);
-  void RemoveFixedPositionObject(LayoutObject&);
-  const ObjectSet* FixedPositionObjects() const {
-    return fixed_position_objects_;
-  }
-  bool HasFixedPositionObjects() const {
-    return fixed_position_objects_ && fixed_position_objects_->size() > 0;
-  }
-
   // Objects with background-attachment:fixed.
+  typedef HeapHashSet<Member<LayoutObject>> ObjectSet;
   void AddBackgroundAttachmentFixedObject(LayoutObject*);
   void RemoveBackgroundAttachmentFixedObject(LayoutObject*);
   bool RequiresMainThreadScrollingForBackgroundAttachmentFixed() const;
@@ -1063,7 +1053,6 @@ class CORE_EXPORT LocalFrameView final
   Member<ScrollableAreaSet> animating_scrollable_areas_;
   // Scrollable areas which are user-scrollable, whether they overflow or not.
   Member<ScrollableAreaSet> user_scrollable_areas_;
-  Member<ObjectSet> fixed_position_objects_;
   ObjectSet background_attachment_fixed_objects_;
   Member<FrameViewAutoSizeInfo> auto_size_info_;
 

@@ -326,7 +326,6 @@ void LocalFrameView::Trace(Visitor* visitor) const {
   visitor->Trace(scroll_anchoring_scrollable_areas_);
   visitor->Trace(animating_scrollable_areas_);
   visitor->Trace(user_scrollable_areas_);
-  visitor->Trace(fixed_position_objects_);
   visitor->Trace(background_attachment_fixed_objects_);
   visitor->Trace(auto_size_info_);
   visitor->Trace(plugins_);
@@ -488,7 +487,6 @@ void LocalFrameView::Dispose() {
   // tracking groups when they update style or are destroyed, but sometimes they
   // are missed. It would be good to understand how/why that happens, but in the
   // mean time, it's not safe to keep pointers around to defunct LayoutObjects.
-  fixed_position_objects_.Clear();
   background_attachment_fixed_objects_.clear();
 
   // Destroy |m_autoSizeInfo| as early as possible, to avoid dereferencing
@@ -564,9 +562,6 @@ void LocalFrameView::SetLifecycleUpdatesThrottledForTesting(bool throttled) {
 }
 
 void LocalFrameView::FrameRectsChanged(const gfx::Rect& old_rect) {
-  const bool width_changed = Size().width() != old_rect.width();
-  const bool height_changed = Size().height() != old_rect.height();
-
   PropagateFrameRects();
 
   if (FrameRect() != old_rect) {
@@ -574,8 +569,8 @@ void LocalFrameView::FrameRectsChanged(const gfx::Rect& old_rect) {
       layout_view->SetShouldCheckForPaintInvalidation();
   }
 
-  if (width_changed || height_changed) {
-    ViewportSizeChanged(width_changed, height_changed);
+  if (Size() != old_rect.size()) {
+    ViewportSizeChanged();
     if (frame_->IsMainFrame())
       frame_->GetPage()->GetVisualViewport().MainFrameDidChangeSize();
     GetFrame().Loader().RestoreScrollPositionAndViewState();
@@ -826,11 +821,8 @@ void LocalFrameView::PerformLayout() {
           layout_object_counter_, contents_height_before_layout,
           GetLayoutView()->DocumentRect().Height(), Height());
 
-  gfx::Size new_size(Size());
-  if (old_size != new_size) {
-    InvalidateLayoutForViewportConstrainedObjects(
-        old_size.width() != new_size.width(),
-        old_size.height() != new_size.height());
+  if (old_size != Size()) {
+    InvalidateLayoutForViewportConstrainedObjects();
   }
 
   if (frame_->IsMainFrame()) {
@@ -1207,20 +1199,7 @@ bool LocalFrameView::RequiresMainThreadScrollingForBackgroundAttachmentFixed()
   return false;
 }
 
-void LocalFrameView::AddFixedPositionObject(LayoutObject& object) {
-  if (!fixed_position_objects_)
-    fixed_position_objects_ = MakeGarbageCollected<ObjectSet>();
-  fixed_position_objects_->insert(&object);
-}
-
-void LocalFrameView::RemoveFixedPositionObject(LayoutObject& object) {
-  if (fixed_position_objects_)
-    fixed_position_objects_->erase(&object);
-}
-
-void LocalFrameView::ViewportSizeChanged(bool width_changed,
-                                         bool height_changed) {
-  DCHECK(width_changed || height_changed);
+void LocalFrameView::ViewportSizeChanged() {
   DCHECK(frame_->GetPage());
   if (frame_->GetDocument() &&
       frame_->GetDocument()->Lifecycle().LifecyclePostponed())
@@ -1254,64 +1233,30 @@ void LocalFrameView::ViewportSizeChanged(bool width_changed,
     layout_view->SetShouldCheckForPaintInvalidation();
 
   if (GetFrame().GetDocument() && !IsInPerformLayout()) {
-    InvalidateLayoutForViewportConstrainedObjects(width_changed,
-                                                  height_changed);
+    InvalidateLayoutForViewportConstrainedObjects();
   }
 
   if (GetPaintTimingDetector().Visualizer())
     GetPaintTimingDetector().Visualizer()->OnViewportChanged();
 }
 
-void LocalFrameView::InvalidateLayoutForViewportConstrainedObjects(
-    bool width_changed,
-    bool height_changed) {
+void LocalFrameView::InvalidateLayoutForViewportConstrainedObjects() {
   auto* layout_view = GetLayoutView();
   if (layout_view && !layout_view->NeedsLayout()) {
     for (const auto& fragment : layout_view->PhysicalFragments()) {
       if (RuntimeEnabledFeatures::LayoutNewStickyLogicEnabled() &&
           fragment.StickyDescendants()) {
         layout_view->SetNeedsSimplifiedLayout();
-        break;
+        return;
       }
-      if (RuntimeEnabledFeatures::LayoutNewFixedPositionInvalidationEnabled()) {
-        if (!fragment.HasOutOfFlowFragmentChild()) {
-          continue;
+      if (!fragment.HasOutOfFlowFragmentChild()) {
+        continue;
+      }
+      for (const auto& fragment_child : fragment.Children()) {
+        if (fragment_child->IsFixedPositioned()) {
+          layout_view->SetNeedsSimplifiedLayout();
+          return;
         }
-        for (const auto& fragment_child : fragment.Children()) {
-          if (fragment_child->IsFixedPositioned()) {
-            layout_view->SetNeedsSimplifiedLayout();
-            return;
-          }
-        }
-      }
-    }
-  }
-
-  if (RuntimeEnabledFeatures::LayoutNewFixedPositionInvalidationEnabled()) {
-    return;
-  }
-
-  if (!HasFixedPositionObjects() || !(width_changed || height_changed))
-    return;
-
-  for (const auto& layout_object : *fixed_position_objects_) {
-    const ComputedStyle& style = layout_object->StyleRef();
-    if (width_changed) {
-      if (style.UsedWidth().IsFixed() &&
-          (style.UsedLeft().IsAuto() || style.UsedRight().IsAuto())) {
-        layout_object->ContainingBlock()->SetNeedsSimplifiedLayout();
-      } else {
-        layout_object->SetNeedsLayoutAndFullPaintInvalidation(
-            layout_invalidation_reason::kSizeChanged);
-      }
-    }
-    if (height_changed) {
-      if (style.UsedHeight().IsFixed() &&
-          (style.UsedTop().IsAuto() || style.UsedBottom().IsAuto())) {
-        layout_object->ContainingBlock()->SetNeedsSimplifiedLayout();
-      } else {
-        layout_object->SetNeedsLayoutAndFullPaintInvalidation(
-            layout_invalidation_reason::kSizeChanged);
       }
     }
   }

@@ -1286,10 +1286,9 @@ void WebViewImpl::ResizeViewWhileAnchored(
     LocalFrameView* frame_view = MainFrameImpl()->GetFrameView();
     gfx::Size old_size = frame_view->Size();
     UpdateICBAndResizeViewport(visible_viewport_size);
-    gfx::Size new_size = frame_view->Size();
-    frame_view->InvalidateLayoutForViewportConstrainedObjects(
-        old_size.width() != new_size.width(),
-        old_size.height() != new_size.height());
+    if (old_size != frame_view->Size()) {
+      frame_view->InvalidateLayoutForViewportConstrainedObjects();
+    }
   }
 
   fullscreen_controller_->UpdateSize();

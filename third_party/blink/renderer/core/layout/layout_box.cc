@@ -501,8 +501,6 @@ void LayoutBox::WillBeDestroyed() {
 
   if (!DocumentBeingDestroyed()) {
     DisassociatePhysicalFragments();
-    if (IsFixedPositioned())
-      GetFrameView()->RemoveFixedPositionObject(*this);
   }
 
   SetSnapContainer(nullptr);
@@ -731,19 +729,6 @@ void LayoutBox::StyleDidChange(StyleDifference diff,
         new_style.BackgroundLayers().Clip() !=
             old_style->BackgroundLayers().Clip()) {
       SetNeedsPaintPropertyUpdate();
-    }
-  }
-
-  if (LocalFrameView* frame_view = View()->GetFrameView()) {
-    bool new_style_is_fixed_position =
-        StyleRef().GetPosition() == EPosition::kFixed;
-    bool old_style_is_fixed_position =
-        old_style && old_style->GetPosition() == EPosition::kFixed;
-    if (new_style_is_fixed_position != old_style_is_fixed_position) {
-      if (new_style_is_fixed_position && Layer())
-        frame_view->AddFixedPositionObject(*this);
-      else
-        frame_view->RemoveFixedPositionObject(*this);
     }
   }
 

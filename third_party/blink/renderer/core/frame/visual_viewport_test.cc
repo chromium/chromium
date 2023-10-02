@@ -2135,7 +2135,7 @@ TEST_P(VisualViewportTest, ResizeNonFixedBackgroundNoLayoutOrInvalidation) {
 
   // A resize will do a layout synchronously so manually check that we don't
   // setNeedsLayout from viewportSizeChanged.
-  document->View()->ViewportSizeChanged(false, true);
+  document->View()->ViewportSizeChanged();
   unsigned needs_layout_objects = 0;
   unsigned total_objects = 0;
   bool is_subtree = false;
