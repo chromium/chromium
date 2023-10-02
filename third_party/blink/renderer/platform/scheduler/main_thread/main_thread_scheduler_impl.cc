@@ -429,16 +429,6 @@ MainThreadSchedulerImpl::MainThreadOnly::MainThreadOnly(
           "Scheduler.BlockingInputExpectedSoon",
           &main_thread_scheduler_impl->tracing_controller_,
           YesNoStateToString),
-      have_reported_blocking_intervention_in_current_policy(
-          false,
-          "Scheduler.HasReportedBlockingInterventionInCurrentPolicy",
-          &main_thread_scheduler_impl->tracing_controller_,
-          YesNoStateToString),
-      have_reported_blocking_intervention_since_navigation(
-          false,
-          "Scheduler.HasReportedBlockingInterventionSinceNavigation",
-          &main_thread_scheduler_impl->tracing_controller_,
-          YesNoStateToString),
       has_visible_render_widget_with_touch_handler(
           false,
           "Scheduler.HasVisibleRenderWidgetWithTouchHandler",
@@ -1901,12 +1891,6 @@ void MainThreadSchedulerImpl::WriteIntoTraceLocked(
   dict.Add("is_any_main_frame_loading", any_thread().is_any_main_frame_loading);
   dict.Add("have_seen_input_since_navigation",
            any_thread().have_seen_input_since_navigation);
-  dict.Add(
-      "have_reported_blocking_intervention_in_current_policy",
-      main_thread_only().have_reported_blocking_intervention_in_current_policy);
-  dict.Add(
-      "have_reported_blocking_intervention_since_navigation",
-      main_thread_only().have_reported_blocking_intervention_since_navigation);
   dict.Add("renderer_backgrounded",
            main_thread_only().renderer_backgrounded.get());
   dict.Add("now", (optional_now - base::TimeTicks()).InMillisecondsF());
@@ -2086,8 +2070,6 @@ void MainThreadSchedulerImpl::ResetForNavigationLocked() {
   any_thread().is_any_main_frame_loading = IsAnyOrdinaryMainFrameLoading();
   any_thread().have_seen_input_since_navigation = false;
   main_thread_only().idle_time_estimator.Clear();
-  main_thread_only().have_reported_blocking_intervention_since_navigation =
-      false;
   UpdatePolicyLocked(UpdateType::kMayEarlyOutIfPolicyUnchanged);
 }
 

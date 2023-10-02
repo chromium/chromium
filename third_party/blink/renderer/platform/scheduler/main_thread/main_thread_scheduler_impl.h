@@ -787,10 +787,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
     TraceableState<bool, TracingCategory::kDefault>
         blocking_input_expected_soon;
     TraceableState<bool, TracingCategory::kDebug>
-        have_reported_blocking_intervention_in_current_policy;
-    TraceableState<bool, TracingCategory::kDebug>
-        have_reported_blocking_intervention_since_navigation;
-    TraceableState<bool, TracingCategory::kDebug>
         has_visible_render_widget_with_touch_handler;
     TraceableState<bool, TracingCategory::kDebug> in_idle_period_for_testing;
     TraceableState<bool, TracingCategory::kTopLevel> is_audio_playing;
