@@ -10,6 +10,7 @@
       "strip_debug_info": true,
       "symbol_level": 0,
       "target_os": "android",
+      "use_dummy_lastchange": true,
       "use_remoteexec": true
     }
   },
@@ -19,6 +20,7 @@
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 0,
+      "use_dummy_lastchange": true,
       "use_remoteexec": true
     }
   },
@@ -38,6 +40,7 @@
       "is_debug": false,
       "proprietary_codecs": true,
       "symbol_level": 0,
+      "use_dummy_lastchange": true,
       "use_remoteexec": true
     }
   },
@@ -49,6 +52,7 @@
       "is_debug": false,
       "proprietary_codecs": true,
       "symbol_level": 1,
+      "use_dummy_lastchange": true,
       "use_remoteexec": true
     }
   },
@@ -61,6 +65,7 @@
       "is_debug": false,
       "proprietary_codecs": true,
       "symbol_level": 0,
+      "use_dummy_lastchange": true,
       "use_remoteexec": true
     }
   },

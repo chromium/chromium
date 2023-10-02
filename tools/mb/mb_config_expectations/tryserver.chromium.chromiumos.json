@@ -29,6 +29,7 @@
       "is_chromeos_device": true,
       "is_debug": true,
       "ozone_platform_headless": true,
+      "use_dummy_lastchange": true,
       "use_remoteexec": true
     }
   },
@@ -128,6 +129,7 @@
       "ozone_platform_headless": true,
       "proprietary_codecs": true,
       "symbol_level": 0,
+      "use_dummy_lastchange": true,
       "use_remoteexec": true
     }
   },
@@ -142,6 +144,7 @@
       "ozone_platform_headless": true,
       "proprietary_codecs": true,
       "symbol_level": 0,
+      "use_dummy_lastchange": true,
       "use_remoteexec": true
     }
   },
@@ -157,6 +160,7 @@
       "ozone_platform_headless": true,
       "proprietary_codecs": true,
       "symbol_level": 0,
+      "use_dummy_lastchange": true,
       "use_remoteexec": true
     }
   },
@@ -183,6 +187,7 @@
       "is_skylab": true,
       "ozone_platform_headless": true,
       "target_os": "chromeos",
+      "use_dummy_lastchange": true,
       "use_remoteexec": true
     }
   },
@@ -232,6 +237,7 @@
       "is_debug": false,
       "symbol_level": 0,
       "target_os": "chromeos",
+      "use_dummy_lastchange": true,
       "use_remoteexec": true
     }
   },
@@ -288,6 +294,7 @@
       "proprietary_codecs": true,
       "symbol_level": 0,
       "target_os": "chromeos",
+      "use_dummy_lastchange": true,
       "use_remoteexec": true
     }
   },

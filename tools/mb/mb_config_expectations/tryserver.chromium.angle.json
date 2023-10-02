@@ -11,6 +11,7 @@
       "symbol_level": 0,
       "target_cpu": "arm64",
       "target_os": "android",
+      "use_dummy_lastchange": true,
       "use_remoteexec": true,
       "use_static_angle": true
     }
@@ -23,6 +24,7 @@
       "is_debug": false,
       "symbol_level": 0,
       "target_os": "fuchsia",
+      "use_dummy_lastchange": true,
       "use_remoteexec": true
     }
   },
@@ -37,6 +39,7 @@
       "target_cpu": "x64",
       "target_environment": "simulator",
       "target_os": "ios",
+      "use_dummy_lastchange": true,
       "use_remoteexec": true
     }
   },
@@ -48,6 +51,7 @@
       "is_debug": false,
       "proprietary_codecs": true,
       "symbol_level": 0,
+      "use_dummy_lastchange": true,
       "use_remoteexec": true
     }
   },
@@ -59,6 +63,7 @@
       "is_debug": false,
       "proprietary_codecs": true,
       "symbol_level": 0,
+      "use_dummy_lastchange": true,
       "use_remoteexec": true
     }
   },
@@ -70,6 +75,7 @@
       "is_debug": false,
       "proprietary_codecs": true,
       "symbol_level": 0,
+      "use_dummy_lastchange": true,
       "use_remoteexec": true
     }
   },
@@ -82,6 +88,7 @@
       "proprietary_codecs": true,
       "symbol_level": 0,
       "target_cpu": "x86",
+      "use_dummy_lastchange": true,
       "use_remoteexec": true
     }
   }

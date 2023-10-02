@@ -7,6 +7,7 @@
       "is_debug": false,
       "is_lsan": true,
       "symbol_level": 1,
+      "use_dummy_lastchange": true,
       "use_remoteexec": true
     }
   },
@@ -32,6 +33,7 @@
       "is_lsan": true,
       "symbol_level": 1,
       "target_os": "chromeos",
+      "use_dummy_lastchange": true,
       "use_remoteexec": true
     }
   },
@@ -151,6 +153,7 @@
       "is_lsan": true,
       "symbol_level": 1,
       "target_os": "chromeos",
+      "use_dummy_lastchange": true,
       "use_remoteexec": true
     }
   },

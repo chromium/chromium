@@ -8,6 +8,7 @@
       "is_debug": false,
       "proprietary_codecs": true,
       "symbol_level": 1,
+      "use_dummy_lastchange": true,
       "use_remoteexec": true
     }
   },
@@ -21,6 +22,7 @@
       "is_debug": false,
       "proprietary_codecs": true,
       "symbol_level": 1,
+      "use_dummy_lastchange": true,
       "use_remoteexec": true
     }
   },
@@ -32,6 +34,7 @@
       "is_debug": true,
       "proprietary_codecs": true,
       "symbol_level": 1,
+      "use_dummy_lastchange": true,
       "use_remoteexec": true
     }
   },
@@ -44,6 +47,7 @@
       "is_debug": false,
       "proprietary_codecs": true,
       "symbol_level": 1,
+      "use_dummy_lastchange": true,
       "use_remoteexec": true
     }
   },
@@ -56,6 +60,7 @@
       "is_debug": false,
       "proprietary_codecs": true,
       "symbol_level": 1,
+      "use_dummy_lastchange": true,
       "use_remoteexec": true
     }
   },
@@ -69,6 +74,7 @@
       "proprietary_codecs": true,
       "symbol_level": 1,
       "target_cpu": "arm64",
+      "use_dummy_lastchange": true,
       "use_remoteexec": true
     }
   },
@@ -82,6 +88,7 @@
       "proprietary_codecs": true,
       "symbol_level": 1,
       "target_cpu": "arm64",
+      "use_dummy_lastchange": true,
       "use_remoteexec": true
     }
   },
@@ -95,6 +102,7 @@
       "proprietary_codecs": true,
       "symbol_level": 1,
       "target_cpu": "arm64",
+      "use_dummy_lastchange": true,
       "use_remoteexec": true
     }
   },
@@ -108,6 +116,7 @@
       "is_debug": false,
       "proprietary_codecs": true,
       "symbol_level": 1,
+      "use_dummy_lastchange": true,
       "use_remoteexec": true
     }
   },
@@ -119,6 +128,7 @@
       "is_debug": true,
       "proprietary_codecs": true,
       "symbol_level": 1,
+      "use_dummy_lastchange": true,
       "use_remoteexec": true
     }
   },
@@ -131,6 +141,7 @@
       "is_debug": false,
       "proprietary_codecs": true,
       "symbol_level": 1,
+      "use_dummy_lastchange": true,
       "use_remoteexec": true
     }
   },
@@ -143,6 +154,7 @@
       "is_debug": false,
       "proprietary_codecs": true,
       "symbol_level": 1,
+      "use_dummy_lastchange": true,
       "use_remoteexec": true
     }
   },
@@ -155,6 +167,7 @@
       "is_debug": false,
       "proprietary_codecs": true,
       "symbol_level": 1,
+      "use_dummy_lastchange": true,
       "use_remoteexec": true
     }
   },
@@ -167,6 +180,7 @@
       "is_debug": false,
       "proprietary_codecs": true,
       "symbol_level": 1,
+      "use_dummy_lastchange": true,
       "use_remoteexec": true
     }
   },
@@ -216,6 +230,7 @@
       "target_environment": "simulator",
       "target_os": "ios",
       "use_blink": true,
+      "use_dummy_lastchange": true,
       "use_remoteexec": true
     }
   },
@@ -307,6 +322,7 @@
       "target_environment": "simulator",
       "target_os": "ios",
       "use_clang_coverage": true,
+      "use_dummy_lastchange": true,
       "use_remoteexec": true
     }
   },
@@ -354,6 +370,7 @@
       "target_os": "ios",
       "use_allocator_shim": false,
       "use_crash_key_stubs": true,
+      "use_dummy_lastchange": true,
       "use_partition_alloc": false,
       "use_platform_icu_alternatives": true,
       "use_remoteexec": true
@@ -370,6 +387,7 @@
       "target_environment": "simulator",
       "target_os": "ios",
       "use_clang_coverage": true,
+      "use_dummy_lastchange": true,
       "use_remoteexec": true
     }
   },
@@ -407,6 +425,7 @@
       "target_cpu": "x64",
       "target_environment": "simulator",
       "target_os": "ios",
+      "use_dummy_lastchange": true,
       "use_remoteexec": true
     }
   },
@@ -421,6 +440,7 @@
       "target_environment": "simulator",
       "target_os": "ios",
       "use_clang_coverage": true,
+      "use_dummy_lastchange": true,
       "use_remoteexec": true
     }
   },
@@ -503,6 +523,7 @@
       "is_debug": false,
       "symbol_level": 0,
       "target_cpu": "arm64",
+      "use_dummy_lastchange": true,
       "use_remoteexec": true
     }
   },
@@ -548,6 +569,7 @@
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 1,
+      "use_dummy_lastchange": true,
       "use_remoteexec": true
     }
   },
@@ -571,6 +593,7 @@
       "is_debug": false,
       "symbol_level": 0,
       "target_cpu": "x64",
+      "use_dummy_lastchange": true,
       "use_remoteexec": true
     }
   },
@@ -583,6 +606,7 @@
       "is_debug": false,
       "proprietary_codecs": true,
       "symbol_level": 0,
+      "use_dummy_lastchange": true,
       "use_remoteexec": true
     }
   },
@@ -594,6 +618,7 @@
       "is_debug": true,
       "proprietary_codecs": true,
       "symbol_level": 0,
+      "use_dummy_lastchange": true,
       "use_remoteexec": true
     }
   },
@@ -603,6 +628,7 @@
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 0,
+      "use_dummy_lastchange": true,
       "use_perfetto_client_library": true,
       "use_remoteexec": true
     }
@@ -621,6 +647,7 @@
       "symbol_level": 0,
       "target_cpu": "x64",
       "use_clang_coverage": true,
+      "use_dummy_lastchange": true,
       "use_remoteexec": true
     }
   },
@@ -638,6 +665,7 @@
       "symbol_level": 0,
       "target_cpu": "x64",
       "use_clang_coverage": true,
+      "use_dummy_lastchange": true,
       "use_remoteexec": true
     }
   },
@@ -647,6 +675,7 @@
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 1,
+      "use_dummy_lastchange": true,
       "use_remoteexec": true
     }
   },
@@ -659,6 +688,7 @@
       "proprietary_codecs": true,
       "symbol_level": 0,
       "target_cpu": "arm64",
+      "use_dummy_lastchange": true,
       "use_remoteexec": true
     }
   },
@@ -669,6 +699,7 @@
       "is_debug": false,
       "symbol_level": 0,
       "target_cpu": "arm64",
+      "use_dummy_lastchange": true,
       "use_remoteexec": true
     }
   },
@@ -678,6 +709,7 @@
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 1,
+      "use_dummy_lastchange": true,
       "use_remoteexec": true
     }
   },
@@ -690,6 +722,7 @@
       "proprietary_codecs": true,
       "symbol_level": 0,
       "target_cpu": "arm64",
+      "use_dummy_lastchange": true,
       "use_remoteexec": true
     }
   },
@@ -700,6 +733,7 @@
       "is_debug": false,
       "symbol_level": 0,
       "target_cpu": "arm64",
+      "use_dummy_lastchange": true,
       "use_remoteexec": true
     }
   },
@@ -709,6 +743,7 @@
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 0,
+      "use_dummy_lastchange": true,
       "use_remoteexec": true
     }
   },
@@ -718,6 +753,7 @@
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 1,
+      "use_dummy_lastchange": true,
       "use_remoteexec": true
     }
   },
@@ -730,6 +766,7 @@
       "proprietary_codecs": true,
       "symbol_level": 0,
       "target_cpu": "arm64",
+      "use_dummy_lastchange": true,
       "use_remoteexec": true
     }
   },
@@ -742,6 +779,7 @@
       "proprietary_codecs": true,
       "symbol_level": 0,
       "target_cpu": "arm64",
+      "use_dummy_lastchange": true,
       "use_remoteexec": true
     }
   },
@@ -752,6 +790,7 @@
       "is_debug": false,
       "symbol_level": 0,
       "target_cpu": "arm64",
+      "use_dummy_lastchange": true,
       "use_remoteexec": true
     }
   },
@@ -761,6 +800,7 @@
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 0,
+      "use_dummy_lastchange": true,
       "use_remoteexec": true
     }
   },
@@ -770,6 +810,7 @@
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 1,
+      "use_dummy_lastchange": true,
       "use_remoteexec": true
     }
   },
@@ -780,6 +821,7 @@
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 0,
+      "use_dummy_lastchange": true,
       "use_remoteexec": true
     }
   },
@@ -789,6 +831,7 @@
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 0,
+      "use_dummy_lastchange": true,
       "use_remoteexec": true
     }
   },
@@ -809,6 +852,7 @@
       "is_debug": true,
       "proprietary_codecs": true,
       "symbol_level": 1,
+      "use_dummy_lastchange": true,
       "use_remoteexec": true
     }
   },
@@ -820,6 +864,7 @@
       "is_debug": false,
       "proprietary_codecs": true,
       "symbol_level": 0,
+      "use_dummy_lastchange": true,
       "use_remoteexec": true
     }
   },
@@ -842,6 +887,7 @@
       "is_debug": false,
       "proprietary_codecs": true,
       "symbol_level": 1,
+      "use_dummy_lastchange": true,
       "use_remoteexec": true
     }
   },

@@ -9,6 +9,7 @@
       "target_cpu": "arm64",
       "target_os": "fuchsia",
       "test_host_cpu": "arm64",
+      "use_dummy_lastchange": true,
       "use_remoteexec": true
     }
   },
@@ -21,6 +22,7 @@
       "target_cpu": "arm64",
       "target_os": "fuchsia",
       "test_host_cpu": "arm64",
+      "use_dummy_lastchange": true,
       "use_remoteexec": true
     }
   },
@@ -33,6 +35,7 @@
       "target_cpu": "arm64",
       "target_os": "fuchsia",
       "test_host_cpu": "arm64",
+      "use_dummy_lastchange": true,
       "use_remoteexec": true
     }
   },
@@ -45,6 +48,7 @@
       "target_cpu": "arm64",
       "target_os": "fuchsia",
       "test_host_cpu": "arm64",
+      "use_dummy_lastchange": true,
       "use_remoteexec": true
     }
   },
@@ -56,6 +60,7 @@
       "is_official_build": true,
       "target_cpu": "arm64",
       "target_os": "fuchsia",
+      "use_dummy_lastchange": true,
       "use_remoteexec": true
     }
   },
@@ -78,6 +83,7 @@
       "is_debug": true,
       "symbol_level": 0,
       "target_os": "fuchsia",
+      "use_dummy_lastchange": true,
       "use_remoteexec": true
     }
   },
@@ -141,6 +147,7 @@
       "symbol_level": 0,
       "target_os": "fuchsia",
       "use_clang_coverage": true,
+      "use_dummy_lastchange": true,
       "use_remoteexec": true
     }
   },
@@ -152,6 +159,7 @@
       "is_debug": false,
       "symbol_level": 0,
       "target_os": "fuchsia",
+      "use_dummy_lastchange": true,
       "use_remoteexec": true
     }
   },
@@ -162,6 +170,7 @@
       "is_debug": false,
       "symbol_level": 0,
       "target_os": "fuchsia",
+      "use_dummy_lastchange": true,
       "use_remoteexec": true
     }
   },
@@ -173,6 +182,7 @@
       "is_debug": false,
       "symbol_level": 0,
       "target_os": "fuchsia",
+      "use_dummy_lastchange": true,
       "use_goma": true
     }
   }

@@ -56,10 +56,18 @@ gn_args.config(
 )
 
 gn_args.config(
+    "use_dummy_lastchange",
+    args = {
+        "use_dummy_lastchange": True,
+    },
+)
+
+gn_args.config(
     "try_builder",
     configs = [
         "minimal_symbols",
         "dcheck_always_on",
+        "use_dummy_lastchange",
     ],
 )
 

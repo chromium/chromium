@@ -9,6 +9,7 @@
       "proprietary_codecs": true,
       "symbol_level": 0,
       "target_cpu": "arm64",
+      "use_dummy_lastchange": true,
       "use_remoteexec": true
     }
   },
@@ -35,6 +36,7 @@
       "is_debug": false,
       "proprietary_codecs": true,
       "symbol_level": 0,
+      "use_dummy_lastchange": true,
       "use_remoteexec": true
     }
   },
@@ -48,6 +50,7 @@
       "is_debug": false,
       "proprietary_codecs": true,
       "symbol_level": 0,
+      "use_dummy_lastchange": true,
       "use_remoteexec": true
     }
   }
