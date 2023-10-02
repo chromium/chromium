@@ -767,6 +767,13 @@ void ServiceWorkerSubresourceLoader::StartResponse(
     case FetchResponseFrom::kAutoPreloadHandlingFallback:
       NOTREACHED_NORETURN();
   }
+
+  // Cancel the in-flight request processing for the fallback.
+  if (commit_responsibility() == FetchResponseFrom::kServiceWorker &&
+      race_network_request_loader_client_) {
+    race_network_request_loader_client_->CancelWriteData(
+        commit_responsibility());
+  }
   RecordFetchResponseFrom();
 
   // A response with status code 0 is Blink telling us to respond with network

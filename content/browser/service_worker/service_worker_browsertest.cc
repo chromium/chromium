@@ -6161,6 +6161,8 @@ class ServiceWorkerAutoPreloadBrowserTest
     feature_list_.InitWithFeatures(
         {features::kServiceWorkerAutoPreload},
         {features::kServiceWorkerBypassFetchHandler});
+    ServiceWorkerRaceNetworkRequestURLLoaderClient::
+        SetDataPipeCapacityBytesForTest(1024);
   }
 
   ~ServiceWorkerAutoPreloadBrowserTest() override = default;
@@ -6224,6 +6226,31 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerAutoPreloadBrowserTest, PassThrough) {
     base::RunLoop().RunUntilIdle();
   }
   EXPECT_EQ(1, GetRequestCount(relative_url));
+}
+
+IN_PROC_BROWSER_TEST_F(ServiceWorkerAutoPreloadBrowserTest,
+                       PassThrough_LargeData) {
+  SetupAndRegisterServiceWorker();
+  const std::string relative_url =
+      "/service_worker/mock_response?sw_pass_through&server_large_data";
+  const GURL test_url = embedded_test_server()->GetURL(relative_url);
+
+  WorkerRunningStatusObserver service_worker_running_status_observer(
+      public_context());
+  NavigationHandleObserver observer(web_contents(), test_url);
+  NavigateToURLBlockUntilNavigationsComplete(shell(), test_url, 1);
+  EXPECT_TRUE(observer.has_committed());
+  service_worker_running_status_observer.WaitUntilRunning();
+
+  // Request count should be 1. RaceNetworkRequest + pass through request from
+  // fetch handler but the fetch handler request will reuse the response from
+  // RaceNetworkRequest.
+  while (GetRequestCount(relative_url) != 1) {
+    base::RunLoop().RunUntilIdle();
+  }
+  EXPECT_EQ(1, GetRequestCount(relative_url));
+  EXPECT_EQ("race-network-request-with-large-data",
+            observer.GetNormalizedResponseHeader("X-Response-From"));
 }
 
 IN_PROC_BROWSER_TEST_F(ServiceWorkerAutoPreloadBrowserTest,
@@ -6303,6 +6330,26 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerAutoPreloadBrowserTest,
             EvalJs(GetPrimaryMainFrame(),
                    "fetch('" + relative_url +
                        "').then(response => response.text())"));
+
+  // Request count should be 1. RaceNetworkRequest + pass through request from
+  // fetch handler but the fetch handler request will reuse the response from
+  // RaceNetworkRequest.
+  while (GetRequestCount(relative_url) != 1) {
+    base::RunLoop().RunUntilIdle();
+  }
+  EXPECT_EQ(1, GetRequestCount(relative_url));
+}
+
+IN_PROC_BROWSER_TEST_F(ServiceWorkerAutoPreloadBrowserTest,
+                       Subresource_PassThrough_LargeData) {
+  SetupAndRegisterServiceWorker();
+  ReloadBlockUntilNavigationsComplete(shell(), 1);
+
+  const std::string relative_url =
+      "/service_worker/mock_response?sw_pass_through&server_large_data";
+  EXPECT_EQ(200, EvalJs(GetPrimaryMainFrame(),
+                        "fetch('" + relative_url +
+                            "').then(response => response.status)"));
 
   // Request count should be 1. RaceNetworkRequest + pass through request from
   // fetch handler but the fetch handler request will reuse the response from

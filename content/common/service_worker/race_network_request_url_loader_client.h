@@ -137,7 +137,16 @@ class CONTENT_EXPORT ServiceWorkerRaceNetworkRequestURLLoaderClient
   // handler may not be consumed by the fetch handler itself if the fetch
   // handler doesn't dispatch the corresponding fetch request. In that case the
   // pipe may be stacked. So this method provides a way to just consume data.
+  //
+  // TODO(crbug.com/1472634): Consider migrating this to CancelWriteData().
   void DrainData(mojo::ScopedDataPipeConsumerHandle source);
+
+  // Close the corresponding data pipe based on |commit_responsibility|, and
+  // cancel watching. The data pipe may not be consumed in some cases e.g. the
+  // fetch handler doesn't dispatch the corresponding fetch request, or
+  // ServiceWorkerAutoPreload is enabled and the fetch result is not a fallback.
+  // In those cases the pipe may be stacked due to the lack of consuming.
+  void CancelWriteData(FetchResponseFrom commit_responsibility);
 
   // Commit and complete the response. Those can be called from |owner_|.
   void CommitAndCompleteResponseIfDataTransferFinished();
