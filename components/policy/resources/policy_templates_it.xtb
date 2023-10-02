@@ -3395,6 +3395,7 @@ Questo criterio è una soluzione alternativa temporanea e verrà rimosso dopo il
 <translation id="3870300103958000506">A meno che <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" /> venga impostato su false, se <ph name="ADS_SETTINGS_FOR_INTRUSIVE_ADS_SITES_POLICY_NAME" /> viene impostato su 1 o se non viene configurato, gli annunci sono consentiti su tutti i siti.
 
       Se il criterio viene impostato su 2, gli annunci sono bloccati sui siti con annunci invasivi.</translation>
+<translation id="3876564097829884243">Attiva la funzionalità EphemeralNetworkPolicies.</translation>
 <translation id="3877517141460819966">Modalità di autenticazione a due fattori integrata</translation>
 <translation id="3877908683993837673">Questo criterio consente di controllare quale stack software viene utilizzato per comunicare con il server DNS: il client DNS del sistema operativo o quello integrato di <ph name="PRODUCT_NAME" />. Questo criterio non influisce sui server DNS utilizzati: se, ad esempio, il sistema operativo viene configurato in modo da usare un server DNS aziendale, lo stesso server viene usato dal client DNS integrato. Non consente nemmeno di controllare se viene utilizzato il protocollo DNS-over-HTTPS; <ph name="PRODUCT_NAME" /> userà sempre il resolver integrato per le richieste DNS-over-HTTPS. Per informazioni relative al controllo del protocollo DNS-over-HTTPS, consulta il criterio <ph name="DNS_OVER_HTTPS_MODE_POLICY_NAME" />.
 
@@ -4774,6 +4775,14 @@ Se questa norma non viene impostata viene utilizzata la riga di comando predefin
       Poiché nessun criterio specifico prevale, vedi <ph name="COOKIES_BLOCKED_FOR_URLS_POLICY_NAME" /> e <ph name="COOKIES_ALLOWED_FOR_URLS_POLICY_NAME" />. I pattern URL di questi tre criteri non devono essere in conflitto.
 
       Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> non è un valore accettato per questo criterio.</translation>
+<translation id="5174547204575752627">Questo criterio consente di controllare il recente refactoring delle API VideoDecoder nel plug-in PPAPI.
+
+La migrazione interessa solo i dettagli di implementazione interni e non deve modificare alcun comportamento. Tuttavia, questo criterio può essere utilizzato nel caso in cui eventuali applicazioni PPAPI non funzionino come previsto.
+
+Se il criterio non viene configurato o se viene attivato, il browser deciderà quale implementazione usare.
+Se il criterio viene disattivato, il browser utilizzerà la vecchia implementazione fino alla scadenza del criterio.
+
+NOTA: le modifiche apportate a questo criterio verranno applicate soltanto ai processi del renderer appena avviati mentre il browser è in esecuzione.</translation>
 <translation id="5177260184597743704">Criterio di configurazione per il connettore OnSecurityEvent di Chrome Enterprise</translation>
 <translation id="5178479074002209469">Un flag booleano che indica se le sessioni utente non gestite devono ricevere o meno notifiche e forzare o meno l'uscita dall'account in caso di aggiornamento obbligatorio, in base a questo criterio.</translation>
 <translation id="5179853299156742425">L'URL da cui è possibile scaricare il modello di scrivania.</translation>
@@ -4791,6 +4800,7 @@ Se questa norma non viene impostata viene utilizzata la riga di comando predefin
 <translation id="519247340330463721">Configura le norme relative alla Navigazione sicura.</translation>
 <translation id="5194683382395300627">Consenti l'utilizzo di <ph name="ASSISTANT_PRODUCT_NAME" /> sul Web, ad esempio per attivare la modifica automatica delle password</translation>
 <translation id="5196630732055960309">Consenti l'API File Handling su queste app web</translation>
+<translation id="5205352023880027050">Non attivare la funzionalità EphemeralNetworkPolicies.</translation>
 <translation id="5206454085187851382">Se per il criterio <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" /> viene selezionata l'opzione <ph name="PRINTERS_ALLOWLIST" />, la configurazione del criterio <ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME" /> consente di specificare le stampanti che possono essere utilizzate dagli utenti. Soltanto le stampanti con ID corrispondenti ai valori specificati in questo criterio saranno a disposizione degli utenti. Gli ID devono corrispondere ai campi <ph name="ID_FIELD" /> o <ph name="GUID_FIELD" /> del file specificato nel criterio <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" />.</translation>
 <translation id="5207543664699568887">Consente di configurare se <ph name="PRODUCT_NAME" /> utilizzerà notifiche di sistema su Linux.
 
@@ -5311,6 +5321,31 @@ Se viene configurato per il kiosk <ph name="PRODUCT_OS_NAME" />, questo criterio
 <translation id="5622924058222112599">Viene attivata la procedura di lancio predefinita di CECPQ2</translation>
 <translation id="5623304306796942802">Mostra richiesta in caso di più certificati corrispondenti</translation>
 <translation id="5625771176514429288">Sarà consentita l'esecuzione delle app di Chrome su queste piattaforme</translation>
+<translation id="5627094573311711592">Consente di configurare un elenco di regole di controllo dei dati per prevenire le fughe di dati. Le fughe di dati possono verificarsi tramite operazioni di copia e incolla dei dati, allegando file a pagine web, stampando, scaricando e così via.
+
+      Ogni regola include quanto segue:
+      - Proprietà dell'origine di un'azione. Una regola viene attivata soltanto se un'azione dell'utente corrisponde a tutti i campi compilati nel relativo campo <ph name="DATA_CONTROLS_SOURCES" />. Per quanto riguarda i campi secondari dell'elenco, deve corrispondere soltanto una voce; ad esempio, deve corrispondere un solo pattern URL per attivare la regola.
+      - Proprietà della destinazione di un'azione. Una regola viene attivata soltanto se un'azione dell'utente corrisponde a tutti i campi compilati nel relativo campo <ph name="DATA_CONTROLS_DESTINATIONS" />. Per quanto riguarda i campi secondari dell'elenco, deve corrispondere soltanto una voce; ad esempio, deve corrispondere un solo pattern URL per attivare la regola.
+      - Un elenco di limitazioni da applicare ai dati delle origini.
+
+      È possibile aggiungere regole per:
+      - Controllare i dati degli appunti condivisi tra le origini e le destinazioni.
+      - Controllare la stampa da tutte le origini.
+      - Controllare i file allegati a tutte le destinazioni.
+      - Controllare i file scaricati da tutte le origini.
+
+      Se il criterio <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" /> viene impostato su True, le regole attivate vengono segnalate all'amministratore.
+      Il livello di limitazione può essere impostato su ALLOW, BLOCK, WARN, REPORT.
+      - Se il livello di limitazione è impostato su ALLOW, l'azione sarà consentita. Verranno sostituite anche le limitazioni applicate da altre regole.
+      - Se il livello di limitazione è impostato su BLOCK, l'azione non sarà consentita.
+      - Se il livello di limitazione è impostato su WARN, l'utente verrà avvisato e potrà scegliere se continuare o annullare l'azione.
+      - Se il livello di limitazione è impostato su REPORT, l'azione dell'utente non verrà interrotta, ma verrà inviata una segnalazione se il criterio <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" /> è attivo.
+
+      Note:
+      - I pattern URL devono avere il formato indicato all'indirizzo https://support.google.com/chrome/a?p=url_blocklist_filter_format.
+      - Per conoscere le regole per la prevenzione delle fughe di dati specifiche di <ph name="PRODUCT_OS_NAME" />, vedi anche il criterio <ph name="DATA_LEAK_PREVENTION_RULES_LIST" />.
+
+      Se il criterio non viene configurato, non verranno applicate limitazioni.</translation>
 <translation id="5630352020869108293">Ripristina l'ultima sessione</translation>
 <translation id="5633871703004128675">Attiva la funzione di accessibilità di evidenziazione del cursore di testo</translation>
 <translation id="5634032995857968056">Abilita la sandbox del container dell'app del renderer</translation>
@@ -6002,6 +6037,7 @@ Per maggiori informazioni, visita la pagina https://developer.chrome.com/blog/im
 <translation id="6299554629216555326">Impostazioni di gestione delle finestre</translation>
 <translation id="6302021021024941085">Disattiva gli strumenti per la risoluzione dei problemi relativi a Kiosk.</translation>
 <translation id="6303118494824248488">URL dell'immagine disco da scaricare.</translation>
+<translation id="6303278429164386663">Consente di controllare l'attivazione della funzionalità EphemeralNetworkPolicies</translation>
 <translation id="6305373713165475629">La configurazione di questo criterio consente di sostituire la modalità di stampa a colori predefinita. Se la modalità non è disponibile, questo criterio viene ignorato.</translation>
 <translation id="6308109234708949641">Questo criterio consente di attivare la funzionalità Registra schermo per gli utenti di Family Link e la autorizza a creare e trascrivere la registrazione dello schermo e a caricarla su Drive.
       Questo criterio non influisce su altri tipi di utenti.
@@ -6824,6 +6860,7 @@ NOTA: le modifiche apportate a questo criterio verranno applicate soltanto ai pr
 Se viene impostato su False o se non viene configurato, il layout non è disponibile. È necessario riavviare per applicare il criterio.</translation>
 <translation id="685769593149966548">Applica la modalità Restrizione massima per YouTube</translation>
 <translation id="686079137349561371">Microsoft Windows 7 o versioni successive</translation>
+<translation id="6866755486434471318">Consenti a <ph name="PEPPER_NAME" /> di usare immagini condivise per la decodifica video.</translation>
 <translation id="6881447940489194100">Hash SHA-256 esadecimale codificato dei dati.</translation>
 <translation id="68818134518270542">La configurazione del criterio consente di specificare le app che gli utenti possono attivare come app per scrivere note nella schermata di blocco di <ph name="PRODUCT_OS_NAME" />.
 
@@ -7179,6 +7216,10 @@ La dimensione <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> indica la qua
 
       Se questo criterio non viene impostato, il browser potrebbe inviare richieste DNS over HTTPS a un resolver associato al resolver di sistema configurato dall'utente.</translation>
 <translation id="7152640356717355643">Attiva i report sull'interfaccia di rete del dispositivo</translation>
+<translation id="7153786895642570081">Questo criterio consente di controllare l'attivazione della funzionalità EphemeralNetworkPolicies.
+Se questo criterio viene impostato su true, le voci di DeviceOpenNetworkConfiguration RecommendedValuesAreEphemeral e UserCreatedNetworkConfigurationsAreEphemeral verranno rispettate.
+Se questo criterio non viene configurato o se viene impostato su false, i criteri di rete menzionati verranno rispettati soltanto se è attiva la funzionalità EphemeralNetworkPolicies.
+Questo criterio viene rimosso se la funzionalità EphemeralNetworkPolicies è attiva per impostazione predefinita.</translation>
 <translation id="7157329428182136164">Attiva il supporto per le API grafiche 3D</translation>
 <translation id="7158358621906236999">Impostazione dei sensori predefinita</translation>
 <translation id="7161568070244869726">Viene forzata l'attivazione di AppCache</translation>
@@ -8947,6 +8988,9 @@ Se il criterio non viene configurato, alla prima esecuzione non vengono importat
       Se imposti il criterio, gli utenti non possono modificare questa funzione. Se non viene impostato, gli utenti possono cambiare l'impostazione.</translation>
 <translation id="8707790573162457301">Esegui la pulizia automatica del disco durante l'accesso</translation>
 <translation id="8713535263782304771">Disattiva Navigazione sicura</translation>
+<translation id="8714556680280715750">Un URL che gli utenti possono visitare per saperne di più. Se lo schema non viene configurato,
+nel programma di installazione non verrà visualizzato alcun URL "Scopri di più". Se presente, deve utilizzare
+lo schema HTTPS.</translation>
 <translation id="8715181294371649277">Consenti la protezione dei download in tempo reale con Navigazione sicura</translation>
 <translation id="8715885991031124968">Consenti le finestre di dialogo JavaScript attivate da un diverso frame secondario di origine.</translation>
 <translation id="8720547069538712402">Consenti all'utente di attivare o disattivare il controllo ortografico</translation>
