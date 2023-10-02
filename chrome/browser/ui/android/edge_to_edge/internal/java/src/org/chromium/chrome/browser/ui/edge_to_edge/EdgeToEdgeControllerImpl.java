@@ -17,8 +17,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowCompat;
 
 import org.chromium.base.Log;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -39,6 +37,7 @@ public class EdgeToEdgeControllerImpl implements EdgeToEdgeController {
 
     private final Activity mActivity;
     private final @NonNull TabSupplierObserver mTabSupplierObserver;
+    private final @NonNull EdgeToEdgeOSWrapper mEdgeToEdgeOSWrapper;
 
     private boolean mToEdge;
 
@@ -48,10 +47,14 @@ public class EdgeToEdgeControllerImpl implements EdgeToEdgeController {
      * @param activity The activity to update to allow drawing under System Bars.
      * @param tabObservableSupplier A supplier for Tab changes so this implementation can adjust
      *     whether to draw under or not for each page.
+     * @param edgeToEdgeOSWrapper An optional wrapper for OS calls for testing etc.
      */
-    public EdgeToEdgeControllerImpl(
-            Activity activity, ObservableSupplier<Tab> tabObservableSupplier) {
+    public EdgeToEdgeControllerImpl(Activity activity,
+            ObservableSupplier<Tab> tabObservableSupplier,
+            @Nullable EdgeToEdgeOSWrapper edgeToEdgeOSWrapper) {
         mActivity = activity;
+        mEdgeToEdgeOSWrapper =
+                edgeToEdgeOSWrapper == null ? new EdgeToEdgeOSWrapperImpl() : edgeToEdgeOSWrapper;
         mTabSupplierObserver = new TabSupplierObserver(tabObservableSupplier) {
             @Override
             protected void onObservingDifferentTab(Tab tab) {
@@ -88,7 +91,8 @@ public class EdgeToEdgeControllerImpl implements EdgeToEdgeController {
         // Note that fitInsideSystemWindows == true means we do NOT draw under the Bars, rather
         // we fit within them. So a value of false is needed to activate ToEdge.
         boolean fitInsideSystemWindows = !toEdge;
-        WindowCompat.setDecorFitsSystemWindows(mActivity.getWindow(), fitInsideSystemWindows);
+        mEdgeToEdgeOSWrapper.setDecorFitsSystemWindows(
+                mActivity.getWindow(), fitInsideSystemWindows);
 
         // We only make the Nav Bar transparent because it's the only thing we want to draw
         // underneath.
@@ -96,7 +100,7 @@ public class EdgeToEdgeControllerImpl implements EdgeToEdgeController {
         //     For the web we may need to call Blink or some system background color API.
         @ColorInt
         int navBarColor = toEdge ? Color.TRANSPARENT : Color.BLACK;
-        mActivity.getWindow().setNavigationBarColor(navBarColor);
+        mEdgeToEdgeOSWrapper.setNavigationBarColor(mActivity.getWindow(), navBarColor);
 
         // Now fix all the edges other than the bottom Gesture Nav Bar by insetting with padding, or
         // cancelling the previous padding when we adjust back ToNormal. This keeps the
@@ -104,11 +108,12 @@ public class EdgeToEdgeControllerImpl implements EdgeToEdgeController {
         // (e.g. Status Bar). When moving back ToNormal we need to clear the padding that we added
         // to prevent drawing under the Status Bar otherwise we'll be inset too much at the top of
         // the screen.
-        ViewCompat.setOnApplyWindowInsetsListener(rootView, (view, windowInsets) -> {
+        mEdgeToEdgeOSWrapper.setOnApplyWindowInsetsListener(rootView, (view, windowInsets) -> {
             Insets systemInsets = windowInsets.getInsets(WindowInsets.Type.systemBars());
             int bottomInset = toEdge ? 0 : systemInsets.bottom;
             // Restore the drawing to normal on all edges, except for the bottom (Nav Bar).
-            view.setPadding(systemInsets.left, systemInsets.top, systemInsets.right, bottomInset);
+            mEdgeToEdgeOSWrapper.setPadding(
+                    view, systemInsets.left, systemInsets.top, systemInsets.right, bottomInset);
             return windowInsets;
         });
     }
@@ -132,6 +137,11 @@ public class EdgeToEdgeControllerImpl implements EdgeToEdgeController {
     @VisibleForTesting
     boolean isToEdge() {
         return mToEdge;
+    }
+
+    @VisibleForTesting
+    void setToEdge(boolean toEdge) {
+        mToEdge = toEdge;
     }
 
     @CallSuper

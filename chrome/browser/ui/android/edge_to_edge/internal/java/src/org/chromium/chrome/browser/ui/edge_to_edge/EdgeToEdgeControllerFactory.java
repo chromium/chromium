@@ -28,7 +28,7 @@ public class EdgeToEdgeControllerFactory {
      */
     public static EdgeToEdgeController create(
             Activity activity, @NonNull ObservableSupplier<Tab> tabObservableSupplier) {
-        return new EdgeToEdgeControllerImpl(activity, tabObservableSupplier);
+        return new EdgeToEdgeControllerImpl(activity, tabObservableSupplier, null);
     }
 
     /** @Return whether the feature is enabled or not. */
