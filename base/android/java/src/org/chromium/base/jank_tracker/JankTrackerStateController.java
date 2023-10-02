@@ -6,6 +6,8 @@ package org.chromium.base.jank_tracker;
 
 import android.view.Window;
 
+import org.chromium.base.Log;
+
 /**
  * A simple holder class to enable easy starting and stopping of metric listening as well as
  * periodic reporting. This is used by JankTrackerImpl to hold the listener reference and this class
@@ -13,6 +15,7 @@ import android.view.Window;
  * metrics.
  */
 public class JankTrackerStateController {
+    private static final String TAG = "JankTracker";
     protected final FrameMetricsListener mFrameMetricsListener;
     protected final JankReportingScheduler mReportingScheduler;
 
@@ -41,7 +44,13 @@ public class JankTrackerStateController {
     public void stopMetricCollection(Window window) {
         mFrameMetricsListener.setIsListenerRecording(false);
         if (window != null) {
-            window.removeOnFrameMetricsAvailableListener(mFrameMetricsListener);
+            try {
+                window.removeOnFrameMetricsAvailableListener(mFrameMetricsListener);
+            } catch (IllegalArgumentException e) {
+                // Adding the listener failed for whatever reason, so it could not be unregistered.
+                Log.e(TAG, "Could not remove listener %s from window %s", mFrameMetricsListener,
+                        window);
+            }
         }
     }
 
