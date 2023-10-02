@@ -9,6 +9,7 @@
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/login/helper.h"
@@ -19,6 +20,8 @@
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ui/webui/ash/login/network_screen_handler.h"
+#include "chrome/grit/branded_strings.h"
+#include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/network/network_state_test_helper.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -27,11 +30,13 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
 
 using ::testing::ElementsAre;
 
+constexpr char kWifiNetworkName[] = "wifi-test-network";
 constexpr char kCancelButton[] = "cancelButton";
 constexpr char kLoadingDialog[] = "loadingDialog";
 constexpr char kQuickStartButton[] = "quick-start-network-button";
@@ -44,8 +49,7 @@ constexpr test::UIPath kQuickStartNetworkButtonPath = {
 constexpr test::UIPath kNextNetworkButtonPath = {
     NetworkScreenView::kScreenId.name /*"network-selection"*/, kNextButton};
 const test::UIPath kNetworkScreenErrorSubtitile = {
-    NetworkScreenView::kScreenId.name /*"network-selection"*/,
-    "errorSubtitleText"};
+    NetworkScreenView::kScreenId.name /*"network-selection"*/, "subtitleText"};
 
 class NetworkScreenTest : public OobeBaseTest {
  public:
@@ -80,12 +84,12 @@ class NetworkScreenTest : public OobeBaseTest {
     network_helper_->device_test()->AddDevice(
         "/device/stub_wifi_device", shill::kTypeWifi, "stub_wifi_device");
     network_helper_->service_test()->AddService(
-        "stub_wifi", "wifi_guid", "wifi-test-network", shill::kTypeWifi,
+        "stub_wifi", "wifi_guid", kWifiNetworkName, shill::kTypeWifi,
         shill::kStateIdle, true);
     network_helper_->service_test()->SetServiceProperty(
         "stub_wifi", shill::kConnectableProperty, base::Value(true));
     network_helper_->profile_test()->AddService(
-        ShillProfileClient::GetSharedProfilePath(), "wifi-test-network");
+        ShillProfileClient::GetSharedProfilePath(), kWifiNetworkName);
 
     // Network modification notifications are posted asynchronously. Wait until
     // idle to ensure observers are notified.
@@ -99,12 +103,12 @@ class NetworkScreenTest : public OobeBaseTest {
     network_helper_->device_test()->AddDevice(
         "/device/stub_wifi_device", shill::kTypeWifi, "stub_wifi_device");
     network_helper_->service_test()->AddService(
-        "stub_wifi", "wifi_guid", "wifi-test-network", shill::kTypeWifi,
+        "stub_wifi", "wifi_guid", kWifiNetworkName, shill::kTypeWifi,
         shill::kStateAssociation, true);
     network_helper_->service_test()->SetServiceProperty(
         "stub_wifi", shill::kConnectableProperty, base::Value(true));
     network_helper_->profile_test()->AddService(
-        ShillProfileClient::GetSharedProfilePath(), "wifi-test-network");
+        ShillProfileClient::GetSharedProfilePath(), kWifiNetworkName);
 
     // Network modification notifications are posted asynchronously. Wait until
     // idle to ensure observers are notified.
@@ -148,9 +152,13 @@ class NetworkScreenTest : public OobeBaseTest {
   NetworkScreen* network_screen() { return network_screen_; }
 
   void WaitForErrorMessageToBeShown() {
+    auto expected_subtitle_text = l10n_util::GetStringFUTF8(
+        IDS_NETWORK_SELECTION_ERROR,
+        l10n_util::GetStringUTF16(IDS_SHORT_PRODUCT_OS_NAME),
+        base::UTF8ToUTF16(base::StringPiece(kWifiNetworkName)));
     test::OobeJS()
-        .CreateVisibilityWaiter(/*visibility=*/true,
-                                kNetworkScreenErrorSubtitile)
+        .CreateElementTextContentWaiter(expected_subtitle_text,
+                                        kNetworkScreenErrorSubtitile)
         ->Wait();
   }
 
@@ -247,9 +255,9 @@ IN_PROC_BROWSER_TEST_F(NetworkScreenTest, CanConnect) {
   OobeScreenWaiter(NetworkScreenView::kScreenId).Wait();
   SetUpDisconnectedWifiNetwork();
   test::OobeJS()
-      .CreateWaiter(NetworkElementSelector("wifi-test-network") + " != null")
+      .CreateWaiter(NetworkElementSelector(kWifiNetworkName) + " != null")
       ->Wait();
-  ClickOnWifiNetwork("wifi-test-network");
+  ClickOnWifiNetwork(kWifiNetworkName);
   EXPECT_EQ(WaitForScreenExitResult(), NetworkScreen::Result::CONNECTED);
 }
 

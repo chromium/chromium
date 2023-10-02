@@ -613,10 +613,10 @@
     You can customize this device to fit your needs. These accessibility features can be changed later in Settings.
   </message>
   <message name="IDS_NETWORK_SELECTION_TITLE" desc="Title of network selection screen" meaning="A title of the dialog where user should select network to connect to Internet">
-    Connect to network
+    Get connected to enjoy all the features on your new <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>
   </message>
-  <message name="IDS_NETWORK_SELECTION_HINT" desc="Under-title line on the network selection screen" meaning="A hint to the user why device should be connected to the network">
-    To restore your data, connect to the internet
+  <message name="IDS_NETWORK_SELECTION_SUBTITLE" desc="Subtitle of the network selection screen">
+    We will remember your network the next time you use the <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>
   </message>
   <message name="IDS_NETWORK_SELECTION_ERROR" desc="Error shown when connection to network failed or timed out.">
     <ph name="PRODUCT_NAME">$1<ex>ChromeOS</ex></ph> was unable to connect to <ph name="NETWORK_ID">$2<ex>Public Wifi</ex></ph>. Please select another network or try again.

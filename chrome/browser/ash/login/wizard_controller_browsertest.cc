@@ -520,14 +520,14 @@ IN_PROC_BROWSER_TEST_F(WizardControllerTest, SwitchLanguage) {
   EXPECT_STREQ("en", icu::Locale::getDefault().getLanguage());
   EXPECT_FALSE(base::i18n::IsRTL());
   const std::u16string en_str =
-      l10n_util::GetStringUTF16(IDS_NETWORK_SELECTION_TITLE);
+      l10n_util::GetStringUTF16(IDS_UPDATE_STATUS_TITLE);
 
   RunSwitchLanguageTest("fr", "fr", true);
   EXPECT_EQ("fr", g_browser_process->GetApplicationLocale());
   EXPECT_STREQ("fr", icu::Locale::getDefault().getLanguage());
   EXPECT_FALSE(base::i18n::IsRTL());
   const std::u16string fr_str =
-      l10n_util::GetStringUTF16(IDS_NETWORK_SELECTION_TITLE);
+      l10n_util::GetStringUTF16(IDS_UPDATE_STATUS_TITLE);
 
   EXPECT_NE(en_str, fr_str);
 
@@ -536,7 +536,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerTest, SwitchLanguage) {
   EXPECT_STREQ("ar", icu::Locale::getDefault().getLanguage());
   EXPECT_TRUE(base::i18n::IsRTL());
   const std::u16string ar_str =
-      l10n_util::GetStringUTF16(IDS_NETWORK_SELECTION_TITLE);
+      l10n_util::GetStringUTF16(IDS_UPDATE_STATUS_TITLE);
 
   EXPECT_NE(fr_str, ar_str);
 }

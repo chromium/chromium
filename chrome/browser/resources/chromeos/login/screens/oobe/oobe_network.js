@@ -59,17 +59,6 @@ class NetworkScreen extends NetworkScreenBase {
   static get properties() {
     return {
       /**
-       * Whether network dialog is shown as a part of demo mode setup flow.
-       * Additional custom elements can be displayed on network list in demo
-       * mode setup.
-       * @type {boolean}
-       */
-      isDemoModeSetup: {
-        type: Boolean,
-        value: false,
-      },
-
-      /**
        * Network error message.
        * @type {string}
        * @private
@@ -124,10 +113,6 @@ class NetworkScreen extends NetworkScreenBase {
 
   /** Called when dialog is shown. */
   onBeforeShow(data) {
-    var isDemoModeSetupKey = 'isDemoModeSetup';
-    var isDemoModeSetup =
-        data && isDemoModeSetupKey in data && data[isDemoModeSetupKey];
-    this.isDemoModeSetup = isDemoModeSetup;
     this.enableWifiScans_ = true;
     this.errorMessage_ = '';
     this.$.networkSelectLogin.onBeforeShow();
@@ -159,6 +144,20 @@ class NetworkScreen extends NetworkScreenBase {
   /** Updates localized elements of the UI. */
   updateLocalizedContent() {
     this.i18nUpdateLocale();
+  }
+
+  /**
+   * Returns subtitle of the network dialog.
+   * @param {string} locale
+   * @param {string} errorMessage
+   * @return {string}
+   * @private
+   */
+  getSubtitleMessage_(locale, errorMessage) {
+    if (errorMessage) {
+      return errorMessage;
+    }
+    return this.i18n('networkSectionSubtitle');
   }
 
   /**
@@ -216,19 +215,11 @@ class NetworkScreen extends NetworkScreenBase {
   }
 
   /**
-   * Next button click handler.
-   * @private
-   */
-  onNextClicked_() {
-    chrome.send('login.NetworkScreen.userActed', ['continue']);
-  }
-
-  /**
    * Quick start button click handler.
    * @private
    */
   onQuickStartClicked_() {
-    chrome.send('login.NetworkScreen.userActed', ['activateQuickStart']);
+    this.userActed('activateQuickStart');
   }
 
   /**
@@ -236,15 +227,17 @@ class NetworkScreen extends NetworkScreenBase {
    * @private
    */
   onBackClicked_() {
-    chrome.send('login.NetworkScreen.userActed', ['back']);
+    this.userActed('back');
   }
 
   /**
-   * This is called when network setup is done.
+   * Called when the network setup is completed. Either by clicking on
+   * already connected network in the list or by directly clicking on the
+   * next button in the bottom of the screen.
    * @private
    */
-  onNetworkConnected_() {
-    chrome.send('login.NetworkScreen.userActed', ['continue']);
+  onContinue_() {
+    this.userActed('continue');
   }
 }
 

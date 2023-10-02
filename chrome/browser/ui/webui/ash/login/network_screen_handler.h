@@ -47,13 +47,12 @@ class NetworkScreenHandler : public NetworkScreenView,
 
   ~NetworkScreenHandler() override;
 
-  void SetQuickStartEnabled() override;
-
  private:
   // NetworkScreenView:
   void Show() override;
   void ShowError(const std::u16string& message) override;
   void ClearErrors() override;
+  void SetQuickStartEnabled() override;
 
   // BaseScreenHandler:
   void DeclareLocalizedValues(
