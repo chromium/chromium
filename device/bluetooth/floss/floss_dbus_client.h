@@ -5,13 +5,20 @@
 #ifndef DEVICE_BLUETOOTH_FLOSS_FLOSS_DBUS_CLIENT_H_
 #define DEVICE_BLUETOOTH_FLOSS_FLOSS_DBUS_CLIENT_H_
 
+#include <map>
+#include <memory>
 #include <ostream>
 #include <string>
+#include <unordered_map>
+#include <unordered_set>
+#include <utility>
+#include <vector>
 
 #include "base/containers/contains.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
+#include "base/strings/strcat.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/types/expected.h"
 #include "dbus/bus.h"
@@ -404,34 +411,34 @@ DEVICE_BLUETOOTH_EXPORT const DBusTypeInfo& GetDBusTypeInfo(const T*);
 
 template <typename T>
 const DBusTypeInfo& GetDBusTypeInfo(const std::vector<T>*) {
-  static base::NoDestructor<DBusTypeInfo> elem_info(
+  static const base::NoDestructor<DBusTypeInfo> elem_info(
       GetDBusTypeInfo(static_cast<T*>(nullptr)));
-  static base::NoDestructor<DBusTypeInfo> info{
-      {"a" + elem_info->dbus_signature,
-       "vector<" + elem_info->type_name + ">"}};
+  static const base::NoDestructor<DBusTypeInfo> info(
+      {base::StrCat({"a", elem_info->dbus_signature}),
+       base::StrCat({"vector<", elem_info->type_name, ">"})});
   return *info;
 }
 
 template <typename T, typename U>
 const DBusTypeInfo& GetDBusTypeInfo(const std::map<T, U>*) {
-  static base::NoDestructor<DBusTypeInfo> key_info(
+  static const base::NoDestructor<DBusTypeInfo> key_info(
       GetDBusTypeInfo(static_cast<T*>(nullptr)));
-  static base::NoDestructor<DBusTypeInfo> val_info(
+  static const base::NoDestructor<DBusTypeInfo> val_info(
       GetDBusTypeInfo(static_cast<U*>(nullptr)));
-  static base::NoDestructor<DBusTypeInfo> info{
-      {std::string("a{") + key_info->dbus_signature + val_info->dbus_signature +
-           std::string("}"),
-       std::string("map<") + key_info->type_name + ", " + val_info->type_name +
-           std::string(">")}};
+  static const base::NoDestructor<DBusTypeInfo> info(
+      {base::StrCat(
+           {"a{", key_info->dbus_signature, val_info->dbus_signature, "}"}),
+       base::StrCat(
+           {"map<", key_info->type_name, ", ", val_info->type_name, ">"})});
   return *info;
 }
 
 template <typename T>
 const DBusTypeInfo& GetDBusTypeInfo(const absl::optional<T>*) {
-  static base::NoDestructor<DBusTypeInfo> elem_info(
+  static const base::NoDestructor<DBusTypeInfo> elem_info(
       GetDBusTypeInfo(static_cast<T*>(nullptr)));
-  static base::NoDestructor<DBusTypeInfo> info{
-      {"a{sv}", "optional<" + elem_info->type_name + ">"}};
+  static const base::NoDestructor<DBusTypeInfo> info(
+      {"a{sv}", base::StrCat({"optional<", elem_info->type_name, ">"})});
   return *info;
 }
 
@@ -533,11 +540,9 @@ class DEVICE_BLUETOOTH_EXPORT FlossDBusClient {
   template <typename T, typename U>
   static void WriteDBusParam(dbus::MessageWriter* writer,
                              const std::map<T, U>& data) {
-    std::string signature(
-        std::string("{") +
-        GetDBusTypeInfo(static_cast<T*>(nullptr)).dbus_signature +
-        GetDBusTypeInfo(static_cast<U*>(nullptr)).dbus_signature +
-        std::string("}"));
+    std::string signature = base::StrCat(
+        {"{", GetDBusTypeInfo(static_cast<T*>(nullptr)).dbus_signature,
+         GetDBusTypeInfo(static_cast<U*>(nullptr)).dbus_signature, "}"});
     dbus::MessageWriter array(nullptr);
     writer->OpenArray(signature, &array);
     for (auto const& [key, val] : data) {
