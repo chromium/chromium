@@ -93,17 +93,8 @@ public class ChromeBrowserInitializer {
     }
 
     /**
-     * @deprecated use isFullBrowserInitialized() instead, the name hasNativeInitializationCompleted
-     * is not accurate.
-     */
-    @Deprecated
-    public boolean hasNativeInitializationCompleted() {
-        return isFullBrowserInitialized();
-    }
-
-    /**
-     * Either runs a task now, or queue it until native (full browser) initialization is done.
-     *
+     * Either runs a task now, or queue it until full browser initialization is done.
+     * <p>
      * All Runnables added this way will run in a single UI thread task.
      *
      * @param task The task to run.
