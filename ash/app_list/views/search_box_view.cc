@@ -1452,8 +1452,6 @@ bool SearchBoxView::HandleKeyEvent(views::Textfield* sender,
       break;
     case ResultSelectionController::MoveResult::
         kSelectionCycleBeforeFirstResult:
-      // TODO(crbug.com/1352636): Handle the case where the search notifier
-      // exists.
       // If the result selection was about to cycle, clear the selection and
       // move the focus to the next element in the SearchBoxView -
       // close_button().

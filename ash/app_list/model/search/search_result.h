@@ -238,9 +238,6 @@ class APP_LIST_MODEL_EXPORT SearchResult {
 
  private:
   friend class SearchController;
-  // TODO(crbug.com/1352636) Remove this friend class. Currently used to mock
-  // results for SearchResultImageView prototyping.
-  friend class SearchResultImageView;
 
   // Opens the result. Clients should use AppListViewDelegate::OpenSearchResult.
   virtual void Open(int event_flags);

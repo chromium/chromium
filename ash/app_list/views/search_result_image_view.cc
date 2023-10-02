@@ -99,25 +99,12 @@ SearchResultImageView::SearchResultImageView(
   SetCallback(base::BindRepeating(&SearchResultImageView::OnImageViewPressed,
                                   base::Unretained(this)));
 
-  set_context_menu_controller(SearchResultImageViewDelegate::Get());
   set_drag_controller(SearchResultImageViewDelegate::Get());
 }
 
 void SearchResultImageView::OnImageViewPressed(const ui::Event& event) {
   list_view_->SearchResultActivated(this, event.flags(),
                                     true /* by_button_press */);
-}
-
-void SearchResultImageView::OnGestureEvent(ui::GestureEvent* event) {
-  SearchResultImageViewDelegate::Get()->HandleSearchResultImageViewGestureEvent(
-      this, *event);
-  SearchResultBaseView::OnGestureEvent(event);
-}
-
-void SearchResultImageView::OnMouseEvent(ui::MouseEvent* event) {
-  SearchResultImageViewDelegate::Get()->HandleSearchResultImageViewMouseEvent(
-      this, *event);
-  SearchResultBaseView::OnMouseEvent(event);
 }
 
 gfx::Size SearchResultImageView::CalculatePreferredSize() const {

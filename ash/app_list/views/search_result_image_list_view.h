@@ -39,8 +39,6 @@ class ASH_EXPORT SearchResultImageListView : public SearchResultContainerView {
 
   // Overridden from SearchResultContainerView:
   SearchResultImageView* GetResultViewAt(size_t index) override;
-  void AppendShownResultMetadata(
-      std::vector<SearchResultAimationMetadata>* result_metadata_) override;
 
   // Returns all search result image views children of this view.
   std::vector<SearchResultImageView*> GetSearchResultImageViews();
@@ -62,7 +60,6 @@ class ASH_EXPORT SearchResultImageListView : public SearchResultContainerView {
 
  private:
   // Overridden from SearchResultContainerView:
-  void OnSelectedResultChanged() override;
   int DoUpdate() override;
   void UpdateResultsVisibility(bool force_hide) override;
   views::View* GetTitleLabel() override;

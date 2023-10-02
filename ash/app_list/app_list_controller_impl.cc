@@ -329,8 +329,6 @@ void AppListControllerImpl::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kLauncherUseLongContinueDelay, false);
 
   // The prefs for launcher search controls.
-  // TODO(crbug.com/1352636): Consider merging this to
-  // `search_notifier_controller` and rename it.
   registry->RegisterDictionaryPref(prefs::kLauncherSearchCategoryControlStatus);
 }
 

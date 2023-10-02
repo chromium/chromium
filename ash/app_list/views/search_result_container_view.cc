@@ -143,9 +143,7 @@ SearchResultContainerView::ScheduleResultAnimations(
 }
 
 void SearchResultContainerView::AppendShownResultMetadata(
-    std::vector<SearchResultAimationMetadata>* result_metadata_) {
-  NOTREACHED();
-}
+    std::vector<SearchResultAimationMetadata>* result_metadata_) {}
 
 bool SearchResultContainerView::HasAnimatingChildView() {
   auto is_animating = [](views::View* view) {

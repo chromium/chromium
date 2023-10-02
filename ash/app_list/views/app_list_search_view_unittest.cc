@@ -19,7 +19,6 @@
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/app_list/views/search_notifier_controller.h"
 #include "ash/app_list/views/search_result_image_list_view.h"
-#include "ash/app_list/views/search_result_image_view_delegate.h"
 #include "ash/app_list/views/search_result_list_view.h"
 #include "ash/app_list/views/search_result_page_view.h"
 #include "ash/constants/ash_features.h"
@@ -416,47 +415,6 @@ TEST_P(SearchResultImageViewTest, OneResultShowsImageInfo) {
   client->set_search_callback(TestAppListClient::SearchCallback());
 }
 
-TEST_P(SearchResultImageViewTest, ShowContextMenu) {
-  auto* test_helper = GetAppListTestHelper();
-  test_helper->ShowAppList();
-
-  // Press a key to start a search.
-  PressAndReleaseKey(ui::VKEY_A);
-
-  SearchModel::SearchResults* results = test_helper->GetSearchResults();
-  SetUpImageSearchResults(
-      results, 1, SharedAppListConfig::instance().image_search_max_results());
-
-  // Check result container visibility.
-  std::vector<SearchResultContainerView*> result_containers =
-      GetSearchView()->result_container_views_for_test();
-  ASSERT_EQ(static_cast<int>(result_containers.size()), kResultContainersCount);
-  for (auto* container : result_containers) {
-    EXPECT_TRUE(container->RunScheduledUpdateForTest());
-  }
-
-  // SearchResultImageListView container should be visible.
-  ASSERT_TRUE(
-      views::IsViewClass<SearchResultImageListView>(result_containers[2]));
-  EXPECT_TRUE(result_containers[2]->GetVisible());
-  auto* search_result_image_view = result_containers[2]->GetResultViewAt(2);
-  ASSERT_TRUE(search_result_image_view->GetVisible());
-  ASSERT_TRUE(
-      views::IsViewClass<SearchResultImageView>(search_result_image_view));
-
-  // Perform a long tap on `search_result_image_view`.
-  auto image_view_center_point =
-      search_result_image_view->GetBoundsInScreen().CenterPoint();
-  auto* event_generator = GetEventGenerator();
-  ui::GestureEvent long_tap(image_view_center_point.x(),
-                            image_view_center_point.y(), 0, base::TimeTicks(),
-                            ui::GestureEventDetails(ui::ET_GESTURE_LONG_TAP));
-  event_generator->Dispatch(&long_tap);
-
-  // The `SearchResultImageViewDelegate` should be showing a context menu.
-  EXPECT_TRUE(SearchResultImageViewDelegate::Get()->HasActiveContextMenu());
-}
-
 TEST_P(SearchResultImageViewTest, ActivateImageResult) {
   auto* test_helper = GetAppListTestHelper();
   test_helper->ShowAppList();
@@ -593,7 +551,7 @@ TEST_P(SearchResultImageViewTest, SearchNotifierController) {
   auto* notifier_controller = GetSearchView()->search_notifier_controller();
   EXPECT_EQ(notifier_controller->GetPrivacyNoticeShownCount(prefs), 0);
   EXPECT_TRUE(notifier_controller->ShouldShowPrivacyNotice());
-  // TODO(crbug.com/1352636): Check that the image search is not enabled.
+  EXPECT_FALSE(IsImageSearchEnabled(prefs));
 
   // Press a character key to open the search.
   PressAndReleaseKey(ui::VKEY_A);
@@ -646,7 +604,9 @@ TEST_P(SearchResultImageViewTest, AcceptingPrivacyNoticeRemovesIt) {
   auto* search_notifier_controller =
       GetSearchView()->search_notifier_controller();
   EXPECT_TRUE(search_notifier_controller->ShouldShowPrivacyNotice());
-  // TODO(crbug.com/1352636): Check that the image search is not enabled.
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetLastActiveUserPrefService();
+  EXPECT_FALSE(IsImageSearchEnabled(prefs));
 
   // Press a character key to open the search.
   PressAndReleaseKey(ui::VKEY_A);
@@ -661,8 +621,6 @@ TEST_P(SearchResultImageViewTest, AcceptingPrivacyNoticeRemovesIt) {
   // The privacy notice should not be shown again after accepted.
   EXPECT_FALSE(GetSearchView()->search_notifier_view());
   EXPECT_FALSE(search_notifier_controller->ShouldShowPrivacyNotice());
-  PrefService* prefs =
-      Shell::Get()->session_controller()->GetLastActiveUserPrefService();
   EXPECT_TRUE(IsImageSearchEnabled(prefs));
 }
 

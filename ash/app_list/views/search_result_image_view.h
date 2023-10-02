@@ -30,8 +30,6 @@ class ASH_EXPORT SearchResultImageView : public SearchResultBaseView {
   void OnImageViewPressed(const ui::Event& event);
 
   // Overridden from views::View:
-  void OnGestureEvent(ui::GestureEvent* event) override;
-  void OnMouseEvent(ui::MouseEvent* event) override;
   gfx::Size CalculatePreferredSize() const override;
 
   // Updates `preferred_width_`.

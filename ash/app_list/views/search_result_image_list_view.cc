@@ -193,12 +193,6 @@ SearchResultImageView* SearchResultImageListView::GetResultViewAt(
   return image_views_[index];
 }
 
-void SearchResultImageListView::AppendShownResultMetadata(
-    std::vector<SearchResultAimationMetadata>* result_metadata_) {
-  // TODO(crbug.com/1352636) Update once animations are defined by UX.
-  return;
-}
-
 std::vector<SearchResultImageView*>
 SearchResultImageListView::GetSearchResultImageViews() {
   return image_views_;
@@ -242,11 +236,6 @@ void SearchResultImageListView::OnImageMetadataLoaded(
     }
     metadata_content_labels_[i]->SetText(text);
   }
-}
-
-void SearchResultImageListView::OnSelectedResultChanged() {
-  // TODO(crbug.com/1352636) once result selection spec is available.
-  return;
 }
 
 int SearchResultImageListView::DoUpdate() {
