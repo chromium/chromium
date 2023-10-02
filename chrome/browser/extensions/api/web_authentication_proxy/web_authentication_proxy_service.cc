@@ -246,9 +246,10 @@ WebAuthenticationProxyRegistrarFactory::GetForBrowserContext(
           ->GetServiceForBrowserContext(context, true));
 }
 
-KeyedService* WebAuthenticationProxyRegistrarFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+WebAuthenticationProxyRegistrarFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new WebAuthenticationProxyRegistrar(
+  return std::make_unique<WebAuthenticationProxyRegistrar>(
       Profile::FromBrowserContext(context));
 }
 

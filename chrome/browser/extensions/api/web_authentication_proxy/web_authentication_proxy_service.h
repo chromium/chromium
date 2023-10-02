@@ -42,6 +42,9 @@ class WebAuthenticationProxyRegistrar : public KeyedService,
                                         public ExtensionRegistryObserver,
                                         public ProfileObserver {
  public:
+  explicit WebAuthenticationProxyRegistrar(Profile* profile);
+  ~WebAuthenticationProxyRegistrar() override;
+
   // Sets the active request proxy. `profile` must be associated with this
   // instance (i.e. the regular profile or an associated off-the-record
   // profile). `extension` must be an enabled extension.
@@ -79,10 +82,6 @@ class WebAuthenticationProxyRegistrar : public KeyedService,
  private:
   using PassKey = base::PassKey<WebAuthenticationProxyRegistrar>;
   friend class WebAuthenticationProxyRegistrarFactory;
-
-  explicit WebAuthenticationProxyRegistrar(Profile* profile);
-
-  ~WebAuthenticationProxyRegistrar() override;
 
   // ExtensionRegistryObserver:
   void OnExtensionUnloaded(content::BrowserContext* browser_context,
@@ -131,7 +130,7 @@ class WebAuthenticationProxyRegistrarFactory
   ~WebAuthenticationProxyRegistrarFactory() override;
 
   // BrowserContextKeyedServiceFactory:
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
 };
 
