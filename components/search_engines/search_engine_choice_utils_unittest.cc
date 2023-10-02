@@ -6,6 +6,7 @@
 
 #include "base/check_deref.h"
 #include "base/command_line.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/country_codes/country_codes.h"
 #include "components/policy/core/common/mock_policy_service.h"
@@ -78,6 +79,7 @@ class SearchEngineChoiceUtilsTest : public ::testing::Test {
   TestingPrefServiceSimple* pref_service() { return &pref_service_; }
   base::test::ScopedFeatureList* feature_list() { return &feature_list_; }
   TemplateURLService& template_url_service() { return template_url_service_; }
+  base::HistogramTester histogram_tester_;
 
  private:
   void InitMockPolicyService() {
@@ -126,6 +128,10 @@ TEST_F(SearchEngineChoiceUtilsTest, ShowChoiceScreenIfPoliciesAreNotSet) {
       policy_service(), /*profile_properties=*/
       {.is_regular_profile = true, .pref_service = pref_service()},
       template_url_service());
+
+  histogram_tester_.ExpectBucketCount(
+      search_engines::kSearchEngineChoiceScreenProfileInitConditionsHistogram,
+      search_engines::SearchEngineChoiceScreenConditions::kEligible, 1);
 }
 
 // Test that the choice screen does not get displayed if the provider list is
@@ -140,6 +146,11 @@ TEST_F(SearchEngineChoiceUtilsTest,
       policy_service(), /*profile_properties=*/
       {.is_regular_profile = true, .pref_service = pref_service()},
       template_url_service());
+  histogram_tester_.ExpectBucketCount(
+      search_engines::kSearchEngineChoiceScreenProfileInitConditionsHistogram,
+      search_engines::SearchEngineChoiceScreenConditions::
+          kSearchProviderOverride,
+      1);
 }
 
 // Test that the choice screen doesn't get displayed if the
@@ -152,6 +163,10 @@ TEST_F(SearchEngineChoiceUtilsTest, DoNotShowChoiceScreenIfPolicySetToFalse) {
       policy_service(), /*profile_properties=*/
       {.is_regular_profile = true, .pref_service = pref_service()},
       template_url_service());
+  histogram_tester_.ExpectBucketCount(
+      search_engines::kSearchEngineChoiceScreenProfileInitConditionsHistogram,
+      search_engines::SearchEngineChoiceScreenConditions::kControlledByPolicy,
+      1);
 }
 
 // Test that the choice screen gets displayed if the
@@ -166,6 +181,9 @@ TEST_F(SearchEngineChoiceUtilsTest,
       policy_service(), /*profile_properties=*/
       {.is_regular_profile = true, .pref_service = pref_service()},
       template_url_service());
+  histogram_tester_.ExpectBucketCount(
+      search_engines::kSearchEngineChoiceScreenProfileInitConditionsHistogram,
+      search_engines::SearchEngineChoiceScreenConditions::kEligible, 1);
 }
 
 // Test that the choice screen doesn't get displayed if the
@@ -183,9 +201,13 @@ TEST_F(SearchEngineChoiceUtilsTest,
       policy_service(), /*profile_properties=*/
       {.is_regular_profile = true, .pref_service = pref_service()},
       template_url_service());
+  histogram_tester_.ExpectBucketCount(
+      search_engines::kSearchEngineChoiceScreenProfileInitConditionsHistogram,
+      search_engines::SearchEngineChoiceScreenConditions::kControlledByPolicy,
+      1);
 }
 
-// Test that the choice screen gets displayed if the
+// Test that the choice screen gets displayed if and only if the
 // `kDefaultSearchProviderChoiceScreenTimestamp` pref is not set. Setting this
 // pref means that the user has made a search engine choice in the choice
 // screen.
@@ -196,6 +218,9 @@ TEST_F(SearchEngineChoiceUtilsTest,
       /*profile_properties=*/
       {.is_regular_profile = true, .pref_service = pref_service()},
       template_url_service());
+  histogram_tester_.ExpectBucketCount(
+      search_engines::kSearchEngineChoiceScreenProfileInitConditionsHistogram,
+      search_engines::SearchEngineChoiceScreenConditions::kEligible, 1);
 
   pref_service()->SetInt64(
       prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp,
@@ -205,6 +230,24 @@ TEST_F(SearchEngineChoiceUtilsTest,
       /*profile_properties=*/
       {.is_regular_profile = true, .pref_service = pref_service()},
       template_url_service());
+  histogram_tester_.ExpectBucketCount(
+      search_engines::kSearchEngineChoiceScreenProfileInitConditionsHistogram,
+      search_engines::SearchEngineChoiceScreenConditions::kAlreadyCompleted, 1);
+}
+
+// Test that there is a regional condition controlling eligibility.
+TEST_F(SearchEngineChoiceUtilsTest, DoNotShowChoiceScreenIfCountryOutOfScope) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kSearchEngineChoiceCountry, "US");
+  VerifyNotEligibleAndWillNotShowChoiceScreen(
+      policy_service(),
+      /*profile_properties=*/
+      {.is_regular_profile = true, .pref_service = pref_service()},
+      template_url_service());
+  histogram_tester_.ExpectBucketCount(
+      search_engines::kSearchEngineChoiceScreenProfileInitConditionsHistogram,
+      search_engines::SearchEngineChoiceScreenConditions::kNotInRegionalScope,
+      1);
 }
 
 // Test that the choice screen does get displayed even if completed if the
@@ -311,4 +354,9 @@ TEST_F(SearchEngineChoiceUtilsTest,
       policy_service(), /*profile_properties=*/
       {.is_regular_profile = true, .pref_service = pref_service()},
       template_url_service());
+  histogram_tester_.ExpectBucketCount(
+      search_engines::kSearchEngineChoiceScreenProfileInitConditionsHistogram,
+      search_engines::SearchEngineChoiceScreenConditions::
+          kHasCustomSearchEngine,
+      1);
 }

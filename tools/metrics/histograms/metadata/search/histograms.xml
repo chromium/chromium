@@ -121,7 +121,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ChoiceScreenEvents"
-    enum="SearchEngineChoiceScreenEvents" expires_after="2024-02-04">
+    enum="SearchEngineChoiceScreenEvents" expires_after="2024-03-31">
   <owner>samarchehade@chromium.org</owner>
   <owner>chrome-waffle-eng@google.com</owner>
   <summary>
@@ -130,6 +130,33 @@ chromium-metrics-reviews@google.com.
     as Default' button and if this selection was in the FRE or not. On Desktop,
     if the choice screen is shown simultaneously in multiple browsers that all
     have the same profile, the display event is only recorded once.
+  </summary>
+</histogram>
+
+<histogram name="Search.ChoiceScreenNavigationConditions"
+    enum="SearchEngineChoiceScreenConditions" expires_after="2024-03-31">
+  <owner>dgn@chromium.org</owner>
+  <owner>muellerj@chromium.org</owner>
+  <owner>chrome-waffle-eng@google.com</owner>
+  <summary>
+    Records the conditon state at page navigation for whether to display the
+    search engine choice screen. This is recorded every time the eligibility
+    state is being checked, which might be as often as every page navigation.
+    The enum is shared with ChoiceScreenProfileInitConditions, and individual
+    enum members might appear in only one histogram.
+  </summary>
+</histogram>
+
+<histogram name="Search.ChoiceScreenProfileInitConditions"
+    enum="SearchEngineChoiceScreenConditions" expires_after="2024-03-31">
+  <owner>dgn@chromium.org</owner>
+  <owner>muellerj@chromium.org</owner>
+  <owner>chrome-waffle-eng@google.com</owner>
+  <summary>
+    Records the conditon state at profile initialization for displaying the
+    search engine choice screen that the profile is in. The enum is shared with
+    ChoiceScreenNavigationConditions, and individual enum members might appear
+    in only one histogram.
   </summary>
 </histogram>
 

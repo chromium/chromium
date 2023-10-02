@@ -16,7 +16,31 @@ class TemplateURLService;
 
 namespace search_engines {
 
+extern const char kSearchEngineChoiceScreenProfileInitConditionsHistogram[];
+extern const char kSearchEngineChoiceScreenNavigationConditionsHistogram[];
 extern const char kSearchEngineChoiceScreenEventsHistogram[];
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class SearchEngineChoiceScreenConditions {
+  // The user has a custom search engine set.
+  kHasCustomSearchEngine = 0,
+  // The user has a search provider list override.
+  kSearchProviderOverride = 1,
+  // The user is not in the regional scope.
+  kNotInRegionalScope = 2,
+  // A policy sets the default search engine or disables search altogether.
+  kControlledByPolicy = 3,
+  // The profile is out of scope.
+  kProfileOutOfScope = 4,
+  // An extension controls the default search engine.
+  kExtensionContolled = 5,
+  // The user is eligible to see the screen at the next opportunity.
+  kEligible = 6,
+  // The choice has already been completed.
+  kAlreadyCompleted = 7,
+  kMaxValue = kAlreadyCompleted,
+};
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -63,6 +87,10 @@ int GetSearchEngineChoiceCountryId(PrefService* profile_prefs);
 // search engine choice prompt.
 // See `//components/country_codes` for the Country ID format.
 bool IsEeaChoiceCountry(int country_id);
+
+// Records the specified choice screen condition at profile initialization.
+void RecordChoiceScreenProfileInitCondition(
+    SearchEngineChoiceScreenConditions event);
 
 // Records the specified choice screen event.
 void RecordChoiceScreenEvent(SearchEngineChoiceScreenEvents event);

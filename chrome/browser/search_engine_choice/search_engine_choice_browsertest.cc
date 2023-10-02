@@ -208,6 +208,13 @@ class SearchEngineChoiceBrowserTest : public InProcessBrowserTest {
         search_engines::SearchEngineChoiceScreenEvents::kDefaultWasSet, 1);
   }
 
+  void CheckNavigationConditionRecorded(
+      search_engines::SearchEngineChoiceScreenConditions condition) {
+    histogram_tester_.ExpectBucketCount(
+        search_engines::kSearchEngineChoiceScreenNavigationConditionsHistogram,
+        condition, 1);
+  }
+
  private:
   base::AutoReset<bool> scoped_chrome_build_override_ =
       SearchEngineChoiceServiceFactory::ScopedChromeBuildOverrideForTesting(
@@ -431,6 +438,9 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceBrowserTest,
 
   EXPECT_TRUE(service->IsShowingDialog(browser()));
 
+  CheckNavigationConditionRecorded(
+      search_engines::SearchEngineChoiceScreenConditions::kEligible);
+
   // Set the pref and simulate a dialog closing event.
   service->NotifyChoiceMade(/*prepopulate_id=*/1);
   EXPECT_FALSE(service->IsShowingDialog(browser()));
@@ -508,6 +518,9 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceBrowserTest,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
   EXPECT_FALSE(search_engine_choice_service->IsShowingDialog(browser()));
+
+  CheckNavigationConditionRecorded(
+      search_engines::SearchEngineChoiceScreenConditions::kExtensionContolled);
 }
 
 IN_PROC_BROWSER_TEST_F(SearchEngineChoiceBrowserTest,

@@ -105,6 +105,12 @@ const base::flat_set<int> GetEeaChoiceCountries() {
 
 }  // namespace
 
+const char kSearchEngineChoiceScreenNavigationConditionsHistogram[] =
+    "Search.ChoiceScreenNavigationConditions";
+
+const char kSearchEngineChoiceScreenProfileInitConditionsHistogram[] =
+    "Search.ChoiceScreenProfileInitConditions";
+
 const char kSearchEngineChoiceScreenEventsHistogram[] =
     "Search.ChoiceScreenEvents";
 
@@ -147,6 +153,8 @@ bool ShouldShowChoiceScreen(const policy::PolicyService& policy_service,
     // default.
     if (default_search_engine->prepopulate_id() ==
         kCustomSearchEnginePrepopulateId) {
+      RecordChoiceScreenProfileInitCondition(
+          SearchEngineChoiceScreenConditions::kHasCustomSearchEngine);
       return false;
     }
   }
@@ -157,20 +165,34 @@ bool ShouldShowChoiceScreen(const policy::PolicyService& policy_service,
   // choice in the choice screen.
   if (prefs.GetInt64(
           prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp)) {
+    RecordChoiceScreenProfileInitCondition(
+        SearchEngineChoiceScreenConditions::kAlreadyCompleted);
     return false;
   }
 
   if (!IsEeaChoiceCountry(GetSearchEngineChoiceCountryId(&prefs))) {
+    RecordChoiceScreenProfileInitCondition(
+        SearchEngineChoiceScreenConditions::kNotInRegionalScope);
     return false;
   }
 
   // Initially exclude users with this type of override. Consult b/302675777 for
   // next steps.
   if (prefs.HasPrefPath(prefs::kSearchProviderOverrides)) {
+    RecordChoiceScreenProfileInitCondition(
+        SearchEngineChoiceScreenConditions::kSearchProviderOverride);
     return false;
   }
 
-  return IsSearchEngineChoiceScreenAllowedByPolicy(policy_service);
+  if (!IsSearchEngineChoiceScreenAllowedByPolicy(policy_service)) {
+    RecordChoiceScreenProfileInitCondition(
+        SearchEngineChoiceScreenConditions::kControlledByPolicy);
+    return false;
+  }
+
+  RecordChoiceScreenProfileInitCondition(
+      SearchEngineChoiceScreenConditions::kEligible);
+  return true;
 }
 
 int GetSearchEngineChoiceCountryId(PrefService* profile_prefs) {
@@ -191,6 +213,13 @@ int GetSearchEngineChoiceCountryId(PrefService* profile_prefs) {
 
 bool IsEeaChoiceCountry(int country_id) {
   return GetEeaChoiceCountries().contains(country_id);
+}
+
+void RecordChoiceScreenProfileInitCondition(
+    SearchEngineChoiceScreenConditions condition) {
+  base::UmaHistogramEnumeration(
+      search_engines::kSearchEngineChoiceScreenProfileInitConditionsHistogram,
+      condition);
 }
 
 void RecordChoiceScreenEvent(SearchEngineChoiceScreenEvents event) {

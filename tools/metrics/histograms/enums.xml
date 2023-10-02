@@ -97110,6 +97110,17 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="33" label="NONE"/>
 </enum>
 
+<enum name="SearchEngineChoiceScreenConditions">
+  <int value="0" label="Has custom search engine set"/>
+  <int value="1" label="Has search provider override"/>
+  <int value="2" label="Not in regional scope"/>
+  <int value="3" label="Is controlled by policy"/>
+  <int value="4" label="The profile is out of scope"/>
+  <int value="5" label="An extension controls the default search engine"/>
+  <int value="6" label="Eligible"/>
+  <int value="7" label="Already completed"/>
+</enum>
+
 <enum name="SearchEngineChoiceScreenEvents">
   <int value="0" label="Unknown"/>
   <int value="1" label="Choice Screen Was Displayed"/>
