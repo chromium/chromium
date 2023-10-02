@@ -53,9 +53,8 @@ void BookmarkSubMenuModel::Build(Browser* browser) {
   if (features::IsChromeRefresh2023()) {
     AddItemWithStringId(IDC_SHOW_BOOKMARK_SIDE_PANEL,
                         IDS_SHOW_BOOKMARK_SIDE_PANEL);
-  } else {
-    AddItemWithStringId(IDC_SHOW_BOOKMARK_MANAGER, IDS_BOOKMARK_MANAGER);
   }
+  AddItemWithStringId(IDC_SHOW_BOOKMARK_MANAGER, IDS_BOOKMARK_MANAGER);
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   AddItemWithStringId(IDC_IMPORT_SETTINGS, IDS_IMPORT_SETTINGS_MENU_LABEL);
@@ -74,15 +73,16 @@ void BookmarkSubMenuModel::Build(Browser* browser) {
     auto set_icon = [this](int command_id, const gfx::VectorIcon& vector_icon) {
       auto index = GetIndexOfCommandId(command_id);
       if (index) {
-        SetIcon(index.value(), ui::ImageModel::FromVectorIcon(vector_icon));
+        SetIcon(index.value(),
+                ui::ImageModel::FromVectorIcon(vector_icon, ui::kColorMenuIcon, 16));
       }
     };
 
     set_icon(IDC_BOOKMARK_THIS_TAB, kBookmarksListsMenuIcon);
     set_icon(IDC_BOOKMARK_ALL_TABS, kBookmarkAllTabsChromeRefreshIcon);
     set_icon(IDC_SHOW_BOOKMARK_BAR, kToolbarChromeRefreshIcon);
-    set_icon(IDC_SHOW_BOOKMARK_MANAGER, kBookmarksChromeRefreshIcon);
-    set_icon(IDC_SHOW_BOOKMARK_SIDE_PANEL, kBookmarksChromeRefreshIcon);
+    set_icon(IDC_SHOW_BOOKMARK_MANAGER, kBookmarksManagerIcon);
+    set_icon(IDC_SHOW_BOOKMARK_SIDE_PANEL, kBookmarksSidePanelIcon);
     set_icon(IDC_IMPORT_SETTINGS, kMenuBookChromeRefreshIcon);
   }
 }

@@ -117434,6 +117434,7 @@ Called by update_scheduler_enums.py.-->
   <int value="79" label="Addresses and more"/>
   <int value="80" label="Switch directly to other profile"/>
   <int value="81" label="Show search companion"/>
+  <int value="82" label="Show bookmark side panel"/>
 </enum>
 
 <enum name="WrongConfigurationMetric">
