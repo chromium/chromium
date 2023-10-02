@@ -300,7 +300,7 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
                 SyncSettingsUtils.toOnClickListener(this, () -> {
                     assert IdentityServicesProvider.get()
                             .getIdentityManager(getProfile())
-                            .hasPrimaryAccount(ConsentLevel.SYNC);
+                            .hasPrimaryAccount(ConsentLevel.SIGNIN);
                     SyncSettingsUtils.openGoogleMyAccount(getActivity());
                 }));
 
