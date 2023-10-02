@@ -127,7 +127,15 @@ const char kBrokerFileOperationsOnDiskCacheInNetworkServiceDescription[] =
 
 const char kCdmStorageDatabaseName[] = "Cdm Storage Database";
 const char kCdmStorageDatabaseDescription[] =
-    "Use the Cdm Storage Database over the MediaLicenseDatabase";
+    "Start to use the CdmStorageDatabase to store data alongside the "
+    "MediaLicenseDatabase. If disabled, we will not use CdmStorage* at all, "
+    "even in MediaLicense* code.";
+
+const char kCdmStorageDatabaseMigrationName[] =
+    "Cdm Storage Database Migration";
+const char kCdmStorageDatabaseMigrationDescription[] =
+    "Use the Cdm Storage Database over the MediaLicenseDatabase for Cdm "
+    "storage operations.";
 
 const char kClickToCallName[] = "Click-To-Call";
 const char kClickToCallDescription[] = "Enable the click-to-call feature.";

@@ -11239,6 +11239,11 @@ const FeatureEntry kFeatureEntries[] = {
     {"cdm-storage-database", flag_descriptions::kCdmStorageDatabaseName,
      flag_descriptions::kCdmStorageDatabaseDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kCdmStorageDatabase)},
+
+    {"cdm-storage-database-migration",
+     flag_descriptions::kCdmStorageDatabaseMigrationName,
+     flag_descriptions::kCdmStorageDatabaseMigrationDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kCdmStorageDatabaseMigration)},
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
 #if BUILDFLAG(IS_ANDROID)

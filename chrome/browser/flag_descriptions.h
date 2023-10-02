@@ -110,6 +110,9 @@ extern const char kCOLRV1FontsDescription[];
 extern const char kCdmStorageDatabaseName[];
 extern const char kCdmStorageDatabaseDescription[];
 
+extern const char kCdmStorageDatabaseMigrationName[];
+extern const char kCdmStorageDatabaseMigrationDescription[];
+
 extern const char kChromeRootStoreEnabledName[];
 extern const char kChromeRootStoreEnabledDescription[];
 

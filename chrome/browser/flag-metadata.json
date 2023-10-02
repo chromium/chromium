@@ -1149,6 +1149,11 @@
     "expiry_milestone": 125
   },
   {
+    "name": "cdm-storage-database-migration",
+    "owners": ["vpasupathy@google.com", "alcatraz-eng@google.com", "chrome-owp-storage@google.com"],
+    "expiry_milestone": 125
+  },
+  {
     "name": "cellular-bypass-esim-installation-connectivity-check",
     "owners": [ "azeemarshad", "khorimoto", "jiajunz", "cros-connectivity@google.com" ],
     // This flag does not expire because it allows some test cases that host a local SM-DP+ server

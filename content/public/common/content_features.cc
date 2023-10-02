@@ -153,8 +153,18 @@ BASE_FEATURE(kCacheControlNoStoreEnterBackForwardCache,
              "CacheControlNoStoreEnterBackForwardCache",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// This serves as an overall kill switch to kill CdmStorageDatabase. If
+// disabled, which it is by default, no operations will be routed through the
+// CdmStorage* path, even in the migration code that lives in MediaLicense* code
+// path.
 BASE_FEATURE(kCdmStorageDatabase,
              "CdmStorageDatabase",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// This guards between using the MediaLicense* code path and the CdmStorage*
+// code path for storing Cdm data. This will be disabled by default.
+BASE_FEATURE(kCdmStorageDatabaseMigration,
+             "CdmStorageDatabaseMigration",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Clear the window.name property for the top-level cross-site navigations that
