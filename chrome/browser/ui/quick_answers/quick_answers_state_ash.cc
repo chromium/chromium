@@ -34,6 +34,8 @@ void IncrementPrefCounter(PrefService* prefs,
 }  // namespace
 
 QuickAnswersStateAsh::QuickAnswersStateAsh() {
+  shell_observation_.Observe(ash::Shell::Get());
+
   auto* session_controller = ash::Shell::Get()->session_controller();
   CHECK(session_controller);
 
@@ -61,6 +63,7 @@ void QuickAnswersStateAsh::OnChromeTerminating() {
 
 void QuickAnswersStateAsh::OnShellDestroying() {
   session_observation_.Reset();
+  shell_observation_.Reset();
 }
 
 void QuickAnswersStateAsh::RegisterPrefChanges(PrefService* pref_service) {

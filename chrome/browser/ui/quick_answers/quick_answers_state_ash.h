@@ -15,6 +15,7 @@ class PrefService;
 
 namespace ash {
 class SessionController;
+class Shell;
 }  // namespace ash
 
 // A class that holds Quick Answers related prefs and states.
@@ -61,6 +62,9 @@ class QuickAnswersStateAsh : public ash::SessionObserver,
 
   base::ScopedObservation<ash::SessionController, ash::SessionObserver>
       session_observation_{this};
+
+  base::ScopedObservation<ash::Shell, ash::ShellObserver> shell_observation_{
+      this};
 };
 
 #endif  // CHROME_BROWSER_UI_QUICK_ANSWERS_QUICK_ANSWERS_STATE_ASH_H_
