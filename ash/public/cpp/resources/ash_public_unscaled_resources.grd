@@ -29,6 +29,9 @@
       <include name="IDR_SETTINGS_RGB_KEYBOARD_RAINBOW_COLOR_48_PNG" file="unscaled_resources/rgb_keyboard_rainbow_color_48.png" type="BINDATA" />
       <!-- Accessibility animations -->
       <include name="IDR_DICTATION_BUBBLE_ANIMATION" file="unscaled_resources/dictation_bubble_animation.json" type="BINDATA"/>
+      <!-- CBX notification images -->
+      <include name="IDR_UPDATE_CHROME_DARK" file="unscaled_resources/update_chrome_dark.png" type="BINDATA" />
+      <include name="IDR_UPDATE_CHROME_LIGHT" file="unscaled_resources/update_chrome_light.png" type="BINDATA" />
       <!-- System tray Cast images -->
       <include name="IDR_TRAY_CAST_ZERO_STATE_DARK" file="unscaled_resources/tray_cast_zero_state_dark.png" type="BINDATA" />
       <include name="IDR_TRAY_CAST_ZERO_STATE_LIGHT" file="unscaled_resources/tray_cast_zero_state_light.png" type="BINDATA" />

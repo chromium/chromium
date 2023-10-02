@@ -126,7 +126,10 @@ TEST_P(UpdateNotificationTest, ShowNotification) {
 
   // Show the update notification if the flag is enabled.
   ASSERT_TRUE(notification);
-  EXPECT_EQ(u"Your Chromebook is updated.", notification->message());
+  EXPECT_EQ(
+      u"New features include Magic Eraser on Google Photos to remove "
+      u"distractions, improved video call tools, and more",
+      notification->message());
 }
 
 }  // namespace ash
