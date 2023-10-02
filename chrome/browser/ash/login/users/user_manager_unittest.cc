@@ -148,9 +148,16 @@ class UserManagerTest : public testing::Test {
     TestingBrowserProcess::GetGlobal()->SetProfileManager(
         std::make_unique<FakeProfileManager>(temp_dir_.GetPath()));
 
-    ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
-
+    // TODO(crbug.com/1466777): UserManager must be initialized before
+    // ProfileManager to align with the production behavior, but it currently
+    // cannot do so since ProfileManager is initialized by ChromeUserManagerImpl
+    // constroctor if ProfileManager is not initialized yet so
+    // FakeProfileManager set in this test will be not reflected to UserManager.
+    // For now reset UserManager after ProfileManager until ProfileHelper
+    // related refactor is completed.
     ResetUserManager();
+
+    ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
 
     wallpaper_controller_client_ = std::make_unique<
         WallpaperControllerClientImpl>(
@@ -173,8 +180,7 @@ class UserManagerTest : public testing::Test {
   }
 
   ChromeUserManagerImpl* GetChromeUserManager() const {
-    return static_cast<ChromeUserManagerImpl*>(
-        user_manager::UserManager::Get());
+    return static_cast<ChromeUserManagerImpl*>(user_manager_.Get());
   }
 
   bool IsEphemeralAccountId(const AccountId& account_id) const {
@@ -196,12 +202,9 @@ class UserManagerTest : public testing::Test {
   }
 
   void ResetUserManager() {
-    // Reset the UserManager singleton.
-    user_manager_enabler_.reset();
     // Initialize the UserManager singleton to a fresh ChromeUserManagerImpl
     // instance.
-    user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
-        ChromeUserManagerImpl::CreateChromeUserManager());
+    user_manager_.Reset(ChromeUserManagerImpl::CreateChromeUserManager());
 
     // ChromeUserManagerImpl ctor posts a task to reload policies.
     // Also ensure that all existing ongoing user manager tasks are completed.
@@ -279,7 +282,7 @@ class UserManagerTest : public testing::Test {
   // local_state_ should be destructed after ProfileManager.
   std::unique_ptr<ScopedTestingLocalState> local_state_;
 
-  std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
+  user_manager::TypedScopedUserManager<ChromeUserManager> user_manager_;
   base::ScopedTempDir temp_dir_;
 };
 

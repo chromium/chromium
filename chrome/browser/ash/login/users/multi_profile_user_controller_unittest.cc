@@ -131,8 +131,7 @@ class MockUserManagerObserver : public user_manager::UserManager::Observer {
 class MultiProfileUserControllerTest : public testing::Test {
  public:
   MultiProfileUserControllerTest()
-      : fake_user_manager_(new FakeChromeUserManager),
-        user_manager_enabler_(base::WrapUnique(fake_user_manager_.get())) {
+      : fake_user_manager_(std::make_unique<ash::FakeChromeUserManager>()) {
     for (size_t i = 0; i < std::size(kUsers); ++i) {
       test_users_.push_back(AccountId::FromUserEmail(kUsers[i]));
     }
@@ -150,7 +149,8 @@ class MultiProfileUserControllerTest : public testing::Test {
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
     controller_ = std::make_unique<MultiProfileUserController>(
-        TestingBrowserProcess::GetGlobal()->local_state(), fake_user_manager_);
+        TestingBrowserProcess::GetGlobal()->local_state(),
+        fake_user_manager_.Get());
 
     for (const auto& account_id : test_users_) {
       fake_user_manager_->AddUser(account_id);
@@ -208,10 +208,9 @@ class MultiProfileUserControllerTest : public testing::Test {
   TestingProfile* profile(int index) { return user_profiles_[index]; }
 
   content::BrowserTaskEnvironment task_environment_;
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      fake_user_manager_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  raw_ptr<FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
-      fake_user_manager_;  // Not owned
-  user_manager::ScopedUserManager user_manager_enabler_;
 
   std::unique_ptr<MultiProfileUserController> controller_;
 
@@ -275,7 +274,7 @@ TEST_F(MultiProfileUserControllerTest, CompromisedCacheFixedOnLogin) {
   base::ScopedObservation<user_manager::UserManager,
                           user_manager::UserManager::Observer>
       observation(&mock_observer);
-  observation.Observe(fake_user_manager_);
+  observation.Observe(fake_user_manager_.Get());
 
   SetPrefBehavior(0, MultiUserSignInPolicy::kPrimaryOnly);
   SetCachedBehavior(0, MultiUserSignInPolicy::kUnrestricted);
@@ -321,7 +320,7 @@ TEST_F(MultiProfileUserControllerTest, PrimaryBehaviorChange) {
   base::ScopedObservation<user_manager::UserManager,
                           user_manager::UserManager::Observer>
       observation(&mock_observer);
-  observation.Observe(fake_user_manager_);
+  observation.Observe(fake_user_manager_.Get());
   EXPECT_CALL(mock_observer, OnUserNotAllowed(testing::_))
       .Times(testing::AnyNumber());
   LoginUser(0);

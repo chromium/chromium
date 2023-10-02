@@ -806,9 +806,7 @@ class KioskLaunchControllerUsingLacrosTest : public testing::Test {
  public:
   using AppState = KioskLaunchController::AppState;
 
-  KioskLaunchControllerUsingLacrosTest()
-      : fake_user_manager_(new FakeChromeUserManager()),
-        scoped_user_manager_(base::WrapUnique(fake_user_manager_.get())) {
+  KioskLaunchControllerUsingLacrosTest() {
     std::vector<base::test::FeatureRef> enabled =
         ash::standalone_browser::GetFeatureRefs();
     enabled.push_back(::features::kWebKioskEnableLacros);
@@ -822,8 +820,8 @@ class KioskLaunchControllerUsingLacrosTest : public testing::Test {
     profile_ = testing_profile_manager_.CreateTestingProfile("Default");
     crosapi_manager_ = crosapi::CreateCrosapiManagerWithTestRegistry();
     SetUpKioskAppId();
-    fake_user_manager().AddWebKioskAppUser(kiosk_app_id().account_id.value());
-    fake_user_manager().LoginUser(kiosk_app_id().account_id.value());
+    fake_user_manager_->AddWebKioskAppUser(kiosk_app_id().account_id.value());
+    fake_user_manager_->LoginUser(kiosk_app_id().account_id.value());
     ASSERT_TRUE(crosapi::browser_util::IsLacrosEnabledInWebKioskSession());
 
     keyboard_controller_client_ =
@@ -920,16 +918,13 @@ class KioskLaunchControllerUsingLacrosTest : public testing::Test {
     return std::move(app_launcher);
   }
 
-  FakeChromeUserManager& fake_user_manager() { return *fake_user_manager_; }
-
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      fake_user_manager_{std::make_unique<ash::FakeChromeUserManager>()};
   TestingProfileManager testing_profile_manager_{
       TestingBrowserProcess::GetGlobal()};
   raw_ptr<Profile, ExperimentalAsh> profile_;
-  raw_ptr<FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
-      fake_user_manager_;
-  user_manager::ScopedUserManager scoped_user_manager_;
   crosapi::FakeBrowserManager browser_manager_;
 
   std::unique_ptr<ChromeKeyboardControllerClientTestHelper>

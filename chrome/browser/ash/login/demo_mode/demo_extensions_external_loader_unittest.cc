@@ -143,10 +143,10 @@ class TestExternalProviderVisitor
 class DemoExtensionsExternalLoaderTest : public testing::Test {
  public:
   DemoExtensionsExternalLoaderTest()
-      : test_shared_loader_factory_(
+      : fake_user_manager_(std::make_unique<FakeChromeUserManager>()),
+        test_shared_loader_factory_(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-                &test_url_loader_factory_)),
-        scoped_user_manager_(std::make_unique<FakeChromeUserManager>()) {}
+                &test_url_loader_factory_)) {}
 
   DemoExtensionsExternalLoaderTest(const DemoExtensionsExternalLoaderTest&) =
       delete;
@@ -218,6 +218,9 @@ class DemoExtensionsExternalLoaderTest : public testing::Test {
 
   TestExternalProviderVisitor external_provider_visitor_;
 
+  user_manager::TypedScopedUserManager<FakeChromeUserManager>
+      fake_user_manager_;
+
   std::unique_ptr<TestingProfile> profile_;
 
   network::TestURLLoaderFactory test_url_loader_factory_;
@@ -232,8 +235,6 @@ class DemoExtensionsExternalLoaderTest : public testing::Test {
 
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   content::InProcessUtilityThreadHelper in_process_utility_thread_helper_;
-
-  user_manager::ScopedUserManager scoped_user_manager_;
 };
 
 TEST_F(DemoExtensionsExternalLoaderTest, NoDemoExtensionsConfig) {
@@ -521,10 +522,7 @@ TEST_F(DemoExtensionsExternalLoaderTest, LoadApp) {
 class ShouldCreateDemoExtensionsExternalLoaderTest : public testing::Test {
  public:
   ShouldCreateDemoExtensionsExternalLoaderTest() {
-    auto fake_user_manager = std::make_unique<FakeChromeUserManager>();
-    user_manager_ = fake_user_manager.get();
-    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::move(fake_user_manager));
+    fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
   }
 
   ShouldCreateDemoExtensionsExternalLoaderTest(
@@ -544,8 +542,8 @@ class ShouldCreateDemoExtensionsExternalLoaderTest : public testing::Test {
   std::unique_ptr<TestingProfile> AddTestUser(const AccountId& account_id) {
     auto profile = std::make_unique<TestingProfile>();
     profile->set_profile_name(account_id.GetUserEmail());
-    user_manager_->AddUser(account_id);
-    user_manager_->LoginUser(account_id);
+    fake_user_manager_->AddUser(account_id);
+    fake_user_manager_->LoginUser(account_id);
     return profile;
   }
 
@@ -554,13 +552,11 @@ class ShouldCreateDemoExtensionsExternalLoaderTest : public testing::Test {
     demo_mode_test_helper_->InitializeSession();
   }
 
-  // Owned by scoped_user_manager_.
-  raw_ptr<FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
-      user_manager_ = nullptr;
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      fake_user_manager_;
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   std::unique_ptr<DemoModeTestHelper> demo_mode_test_helper_;
 };
 

@@ -42,7 +42,8 @@ class TestUserSessionManager : public UserSessionManager {
 class UserSessionManagerTest : public testing::Test {
  public:
   UserSessionManagerTest()
-      : profile_manager_(std::make_unique<TestingProfileManager>(
+      : fake_user_manager_(std::make_unique<FakeChromeUserManager>()),
+        profile_manager_(std::make_unique<TestingProfileManager>(
             TestingBrowserProcess::GetGlobal())) {
     static_assert(
         static_cast<int>(
@@ -85,9 +86,7 @@ class UserSessionManagerTest : public testing::Test {
   TestingProfile* LoginTestUser() {
     const AccountId account_id(
         AccountId::FromUserEmailGaiaId("demo@test.com", "demo_user"));
-    FakeChromeUserManager* user_manager =
-        static_cast<FakeChromeUserManager*>(user_manager::UserManager::Get());
-    test_user_ = user_manager->AddPublicAccountUser(account_id);
+    test_user_ = fake_user_manager_->AddPublicAccountUser(account_id);
 
     auto prefs =
         std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
@@ -96,7 +95,7 @@ class UserSessionManagerTest : public testing::Test {
         account_id.GetUserEmail(), std::move(prefs), u"Test profile",
         /*avatar_id=*/1, TestingProfile::TestingFactories());
 
-    user_manager->LoginUser(account_id);
+    fake_user_manager_->LoginUser(account_id);
     return profile;
   }
 
@@ -106,8 +105,8 @@ class UserSessionManagerTest : public testing::Test {
   // constructor.
   content::BrowserTaskEnvironment task_environment_;
 
-  user_manager::ScopedUserManager scoped_user_manager_{
-      std::make_unique<user_manager::FakeUserManager>()};
+  user_manager::TypedScopedUserManager<FakeChromeUserManager>
+      fake_user_manager_;
 
   std::unique_ptr<TestingProfileManager> profile_manager_;
   raw_ptr<user_manager::User, ExperimentalAsh> test_user_;

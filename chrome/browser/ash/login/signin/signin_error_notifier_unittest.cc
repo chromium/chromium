@@ -54,8 +54,7 @@ class SigninErrorNotifierTest : public BrowserWithTestWindowTest {
     // Required to initialize TokenHandleUtil.
     ash::UserDataAuthClient::InitializeFake();
 
-    user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::make_unique<FakeChromeUserManager>());
+    fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
 
     SigninErrorNotifierFactory::GetForProfile(GetProfile());
     display_service_ =
@@ -91,7 +90,8 @@ class SigninErrorNotifierTest : public BrowserWithTestWindowTest {
 
  protected:
   std::unique_ptr<NotificationDisplayServiceTester> display_service_;
-  std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      fake_user_manager_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_profile_adaptor_;
 };

@@ -176,6 +176,8 @@ class ArcVmDataMigrationScreenTest : public ChromeAshTestBase,
 
     wizard_context_ = std::make_unique<WizardContext>();
 
+    fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
+
     // Set up a primary profile.
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
@@ -183,11 +185,8 @@ class ArcVmDataMigrationScreenTest : public ChromeAshTestBase,
     profile_ = profile_manager_->CreateTestingProfile(kProfileName);
     const AccountId account_id =
         AccountId::FromUserEmailGaiaId(profile_->GetProfileUserName(), kGaiaId);
-    auto fake_user_manager = std::make_unique<FakeChromeUserManager>();
-    fake_user_manager->AddUser(account_id);
-    fake_user_manager->LoginUser(account_id);
-    user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::move(fake_user_manager));
+    fake_user_manager_->AddUser(account_id);
+    fake_user_manager_->LoginUser(account_id);
     DCHECK(ash::ProfileHelper::IsPrimaryProfile(profile_));
 
     // Set the default states. They can be overwritten by individual test cases.
@@ -215,10 +214,11 @@ class ArcVmDataMigrationScreenTest : public ChromeAshTestBase,
     screen_.reset();
     view_.reset();
 
-    user_manager_.reset();
     profile_manager_->DeleteTestingProfile(kProfileName);
     profile_ = nullptr;
     profile_manager_.reset();
+
+    fake_user_manager_.Reset();
 
     wizard_context_.reset();
 
@@ -288,10 +288,11 @@ class ArcVmDataMigrationScreenTest : public ChromeAshTestBase,
   base::SimpleTestTickClock tick_clock_;
 
   std::unique_ptr<WizardContext> wizard_context_;
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      fake_user_manager_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   raw_ptr<TestingProfile, DanglingUntriaged | ExperimentalAsh> profile_ =
       nullptr;  // Owned by |profile_manager_|.
-  std::unique_ptr<user_manager::ScopedUserManager> user_manager_;
 
   std::unique_ptr<TestArcVmDataMigrationScreen> screen_;
   std::unique_ptr<FakeArcVmDataMigrationScreenView> view_;

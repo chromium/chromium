@@ -55,11 +55,11 @@ constexpr char kTestDemoModeResourcesMountPoint[] =
 class DemoSessionTest : public testing::Test {
  public:
   DemoSessionTest()
-      : profile_manager_(std::make_unique<TestingProfileManager>(
+      : fake_user_manager_(std::make_unique<ash::FakeChromeUserManager>()),
+        profile_manager_(std::make_unique<TestingProfileManager>(
             TestingBrowserProcess::GetGlobal())),
         browser_process_platform_part_test_api_(
-            g_browser_process->platform_part()),
-        scoped_user_manager_(std::make_unique<FakeChromeUserManager>()) {
+            g_browser_process->platform_part()) {
     cros_settings_test_helper_.InstallAttributes()->SetDemoMode();
   }
 
@@ -121,9 +121,7 @@ class DemoSessionTest : public testing::Test {
   TestingProfile* LoginDemoUser() {
     const AccountId account_id(
         AccountId::FromUserEmailGaiaId("demo@test.com", "demo_user"));
-    FakeChromeUserManager* user_manager =
-        static_cast<FakeChromeUserManager*>(user_manager::UserManager::Get());
-    user_manager->AddPublicAccountUser(account_id);
+    fake_user_manager_->AddPublicAccountUser(account_id);
 
     auto prefs =
         std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
@@ -132,7 +130,7 @@ class DemoSessionTest : public testing::Test {
         account_id.GetUserEmail(), std::move(prefs), u"Test profile",
         /*avatar_id=*/1, TestingProfile::TestingFactories());
 
-    user_manager->LoginUser(account_id);
+    fake_user_manager_->LoginUser(account_id);
     return profile;
   }
 
@@ -142,12 +140,13 @@ class DemoSessionTest : public testing::Test {
   std::unique_ptr<session_manager::SessionManager> session_manager_;
   std::unique_ptr<WallpaperControllerClientImpl> wallpaper_controller_client_;
   TestWallpaperController test_wallpaper_controller_;
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      fake_user_manager_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   ScopedCrosSettingsTestHelper cros_settings_test_helper_;
 
  private:
   BrowserProcessPlatformPartTestApi browser_process_platform_part_test_api_;
-  user_manager::ScopedUserManager scoped_user_manager_;
 };
 
 TEST_F(DemoSessionTest, StartForDeviceInDemoMode) {

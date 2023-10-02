@@ -5537,7 +5537,7 @@ source_set("unit_tests") {
     "login/screens/reset_screen_unittest.cc",
     "login/screens/update_required_screen_unittest.cc",
     "login/screens/update_screen_unittest.cc",
-    "login/session/user_session_manager_test.cc",
+    "login/session/user_session_manager_unittest.cc",
     "login/signin/offline_signin_limiter_unittest.cc",
     "login/signin/signin_error_notifier_unittest.cc",
     "login/signin_partition_manager_unittest.cc",

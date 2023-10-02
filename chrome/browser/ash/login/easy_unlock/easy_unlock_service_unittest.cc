@@ -196,6 +196,7 @@ class EasyUnlockServiceTest : public testing::Test {
 
     TestingBrowserProcess::GetGlobal()->SetLocalState(&local_pref_service_);
     RegisterLocalState(local_pref_service_.registry());
+    fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
 
     auto test_other_remote_device =
         multidevice::RemoteDeviceRefBuilder()
@@ -219,10 +220,6 @@ class EasyUnlockServiceTest : public testing::Test {
 
     account_id_ = AccountId::FromUserEmail(profile_->GetProfileUserName());
 
-    auto fake_chrome_user_manager = std::make_unique<FakeChromeUserManager>();
-    fake_chrome_user_manager_ = fake_chrome_user_manager.get();
-    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::move(fake_chrome_user_manager));
     SetPrimaryUserLoggedIn();
 
     fake_lock_handler_ = std::make_unique<proximity_auth::FakeLockHandler>();
@@ -330,11 +327,10 @@ class EasyUnlockServiceTest : public testing::Test {
   // destructed after TestingProfile.
   TestingPrefServiceSimple local_pref_service_;
 
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      fake_user_manager_;
   std::unique_ptr<TestingProfile> profile_;
   AccountId account_id_;
-  raw_ptr<FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
-      fake_chrome_user_manager_;
-  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
 
   const multidevice::RemoteDeviceRef test_local_device_;
   const multidevice::RemoteDeviceRef test_remote_device_smart_lock_host_;
@@ -364,10 +360,10 @@ class EasyUnlockServiceTest : public testing::Test {
  private:
   void SetPrimaryUserLoggedIn() {
     const user_manager::User* user =
-        fake_chrome_user_manager_->AddPublicAccountUser(account_id_);
-    fake_chrome_user_manager_->UserLoggedIn(account_id_, user->username_hash(),
-                                            false /* browser_restart */,
-                                            false /* is_child */);
+        fake_user_manager_->AddPublicAccountUser(account_id_);
+    fake_user_manager_->UserLoggedIn(account_id_, user->username_hash(),
+                                     false /* browser_restart */,
+                                     false /* is_child */);
   }
 };
 
@@ -382,7 +378,7 @@ TEST_F(EasyUnlockServiceTest, NotAllowedWhenProhibited) {
 
 TEST_F(EasyUnlockServiceTest, NotAllowedForEphemeralAccounts) {
   InitializeService(true /* should_initialize_all_dependencies */);
-  fake_chrome_user_manager_->set_current_user_ephemeral(true);
+  fake_user_manager_->set_current_user_ephemeral(true);
   EXPECT_FALSE(easy_unlock_service_->IsAllowed());
 }
 

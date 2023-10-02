@@ -56,13 +56,9 @@ class InSessionPasswordChangeManagerTest : public testing::Test {
         prefs::kSamlPasswordExpirationAdvanceWarningDays,
         kAdvanceWarningTime.InDays());
 
-    std::unique_ptr<FakeChromeUserManager> fake_user_manager =
-        std::make_unique<FakeChromeUserManager>();
-    fake_user_manager->AddUser(user_manager::StubAccountId());
-    fake_user_manager->LoginUser(user_manager::StubAccountId());
-    ASSERT_TRUE(fake_user_manager->GetPrimaryUser());
-    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::move(fake_user_manager));
+    fake_user_manager_->AddUser(user_manager::StubAccountId());
+    fake_user_manager_->LoginUser(user_manager::StubAccountId());
+    ASSERT_TRUE(fake_user_manager_->GetPrimaryUser());
 
     display_service_tester_ =
         std::make_unique<NotificationDisplayServiceTester>(profile_);
@@ -99,10 +95,11 @@ class InSessionPasswordChangeManagerTest : public testing::Test {
   content::BrowserTaskEnvironment test_environment_{
       base::test::TaskEnvironment::MainThreadType::UI,
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      fake_user_manager_{std::make_unique<ash::FakeChromeUserManager>()};
   TestingProfileManager profile_manager_{TestingBrowserProcess::GetGlobal()};
   raw_ptr<TestingProfile, ExperimentalAsh> profile_;
 
-  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   std::unique_ptr<NotificationDisplayServiceTester> display_service_tester_;
   std::unique_ptr<InSessionPasswordChangeManager> manager_;
 };

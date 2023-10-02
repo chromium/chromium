@@ -61,8 +61,7 @@ class DemoModeResourcesRemoverTest : public testing::Test {
     demo_resources_path_ =
         demo_mode_test_helper_->GetPreinstalledDemoResourcesPath();
 
-    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::make_unique<FakeChromeUserManager>());
+    fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
 
     DemoModeResourcesRemover::RegisterLocalStatePrefs(local_state_.registry());
   }
@@ -114,38 +113,37 @@ class DemoModeResourcesRemoverTest : public testing::Test {
   };
 
   void AddAndLogInUser(TestUserType type, DemoModeResourcesRemover* remover) {
-    FakeChromeUserManager* user_manager =
-        static_cast<FakeChromeUserManager*>(user_manager::UserManager::Get());
     user_manager::User* user = nullptr;
     switch (type) {
       case TestUserType::kRegular:
-        user =
-            user_manager->AddUser(AccountId::FromUserEmail("fake_user@test"));
+        user = fake_user_manager_->AddUser(
+            AccountId::FromUserEmail("fake_user@test"));
         break;
       case TestUserType::kRegularSecond:
-        user =
-            user_manager->AddUser(AccountId::FromUserEmail("fake_user_1@test"));
+        user = fake_user_manager_->AddUser(
+            AccountId::FromUserEmail("fake_user_1@test"));
         break;
       case TestUserType::kGuest:
-        user = user_manager->AddGuestUser();
+        user = fake_user_manager_->AddGuestUser();
         break;
       case TestUserType::kPublicAccount:
-        user = user_manager->AddPublicAccountUser(
+        user = fake_user_manager_->AddPublicAccountUser(
             AccountId::FromUserEmail("fake_user@test"));
         break;
       case TestUserType::kKiosk:
-        user = user_manager->AddKioskAppUser(
+        user = fake_user_manager_->AddKioskAppUser(
             AccountId::FromUserEmail("fake_user@test"));
         break;
       case TestUserType::kDerelictDemoKiosk:
-        user = user_manager->AddKioskAppUser(user_manager::DemoAccountId());
+        user =
+            fake_user_manager_->AddKioskAppUser(user_manager::DemoAccountId());
         break;
     }
 
     ASSERT_TRUE(user);
 
-    user_manager->LoginUser(user->GetAccountId());
-    user_manager->SwitchActiveUser(user->GetAccountId());
+    fake_user_manager_->LoginUser(user->GetAccountId());
+    fake_user_manager_->SwitchActiveUser(user->GetAccountId());
     remover->ActiveUserChanged(user);
   }
 
@@ -172,7 +170,8 @@ class DemoModeResourcesRemoverTest : public testing::Test {
  private:
   base::FilePath demo_resources_path_;
 
-  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      fake_user_manager_;
 };
 
 class ManagedDemoModeResourcesRemoverTest
