@@ -102,7 +102,7 @@ source_set("scene") {
     "//ios/chrome/browser/policy:policy_util",
     "//ios/chrome/browser/promos_manager:factory",
     "//ios/chrome/browser/promos_manager:features",
-    "//ios/chrome/browser/screenshot",
+    "//ios/chrome/browser/screenshot/model",
     "//ios/chrome/browser/sessions:session_saving",
     "//ios/chrome/browser/sessions:session_service",
     "//ios/chrome/browser/shared/coordinator/default_browser_promo",

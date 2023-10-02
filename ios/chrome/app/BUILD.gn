@@ -495,7 +495,7 @@ source_set("app_internal") {
     "//ios/chrome/browser/promos_manager:factory",
     "//ios/chrome/browser/push_notification:push_notification_service",
     "//ios/chrome/browser/reading_list",
-    "//ios/chrome/browser/screenshot",
+    "//ios/chrome/browser/screenshot/model",
     "//ios/chrome/browser/search_engines",
     "//ios/chrome/browser/search_engines:extension_search_engine_data_updater",
     "//ios/chrome/browser/search_engines:search_engines_util",

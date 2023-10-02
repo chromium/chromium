@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/screenshot/screenshot_metrics_recorder.h"
+#import "ios/chrome/browser/screenshot/model/screenshot_metrics_recorder.h"
 
 #import <UIKit/UIKit.h>
 
@@ -42,8 +42,9 @@ char const* kSingleScreenUserActionName = "MobileSingleScreenScreenshot";
 
   // Only register screenshots taken of chrome in a single screen in the
   // foreground.
-  if (countForegroundScenes == 1)
+  if (countForegroundScenes == 1) {
     base::RecordAction(base::UserMetricsAction(kSingleScreenUserActionName));
+  }
 }
 
 #pragma mark - Private
