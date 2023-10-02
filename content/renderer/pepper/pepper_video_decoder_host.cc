@@ -737,7 +737,7 @@ bool PepperVideoDecoderHost::TryFallbackToSoftwareDecoder() {
   std::unique_ptr<VideoDecoderShim> new_decoder(VideoDecoderShim::Create(
       this, shim_texture_pool_size, /*use_hw_decoder=*/false,
       /*use_shared_images=*/use_shared_images_));
-  if (!new_decoder->Initialize(profile_)) {
+  if (!new_decoder || !new_decoder->Initialize(profile_)) {
     return false;
   }
 
