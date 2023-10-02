@@ -7,6 +7,7 @@
 #import "base/feature_list.h"
 #import "base/notreached.h"
 #import "components/search_engines/search_engine_choice_utils.h"
+#import "components/signin/public/base/signin_switches.h"
 #import "components/sync/base/features.h"
 #import "ios/chrome/browser/policy/browser_state_policy_connector.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -28,7 +29,8 @@
 
   BrowserStatePolicyConnector* policyConnector =
       browserState->GetPolicyConnector();
-  if (search_engines::ShouldShowChoiceScreen(
+  if (base::FeatureList::IsEnabled(switches::kSearchEngineChoiceFre) &&
+      search_engines::ShouldShowChoiceScreen(
           *policyConnector->GetPolicyService(),
           /*profile_properties=*/{.is_regular_profile = true,
                                   .pref_service = browserState->GetPrefs()})) {
