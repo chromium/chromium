@@ -84,7 +84,6 @@ TEST_F(SyncPrefsTest, ObservedPrefs) {
   EXPECT_CALL(mock_sync_pref_observer, OnSyncManagedPrefChange(false));
 
   ASSERT_FALSE(sync_prefs_->IsSyncClientDisabledByPolicy());
-  ASSERT_FALSE(sync_prefs_->IsSyncRequested());
 
   sync_prefs_->AddObserver(&mock_sync_pref_observer);
 
@@ -92,11 +91,6 @@ TEST_F(SyncPrefsTest, ObservedPrefs) {
   EXPECT_TRUE(sync_prefs_->IsSyncClientDisabledByPolicy());
   pref_service_.SetBoolean(prefs::internal::kSyncManaged, false);
   EXPECT_FALSE(sync_prefs_->IsSyncClientDisabledByPolicy());
-
-  sync_prefs_->SetSyncRequested(true);
-  EXPECT_TRUE(sync_prefs_->IsSyncRequested());
-  sync_prefs_->SetSyncRequested(false);
-  EXPECT_FALSE(sync_prefs_->IsSyncRequested());
 
   sync_prefs_->RemoveObserver(&mock_sync_pref_observer);
 }
@@ -123,6 +117,16 @@ TEST_F(SyncPrefsTest, FirstSetupCompletePrefChange) {
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+TEST_F(SyncPrefsTest, SyncFeatureDisabledViaDashboard) {
+  EXPECT_FALSE(sync_prefs_->IsSyncFeatureDisabledViaDashboard());
+
+  sync_prefs_->SetSyncFeatureDisabledViaDashboard();
+  EXPECT_TRUE(sync_prefs_->IsSyncFeatureDisabledViaDashboard());
+
+  sync_prefs_->ClearSyncFeatureDisabledViaDashboard();
+  EXPECT_FALSE(sync_prefs_->IsSyncFeatureDisabledViaDashboard());
+}
+
 TEST_F(SyncPrefsTest, SetSelectedOsTypesTriggersPreferredDataTypesPrefChange) {
   StrictMock<MockSyncPrefObserver> mock_sync_pref_observer;
   EXPECT_CALL(mock_sync_pref_observer,
@@ -144,12 +148,6 @@ TEST_F(SyncPrefsTest, Basic) {
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
   EXPECT_TRUE(sync_prefs_->IsInitialSyncFeatureSetupComplete());
-
-  EXPECT_FALSE(sync_prefs_->IsSyncRequested());
-  sync_prefs_->SetSyncRequested(true);
-  EXPECT_TRUE(sync_prefs_->IsSyncRequested());
-  sync_prefs_->SetSyncRequested(false);
-  EXPECT_FALSE(sync_prefs_->IsSyncRequested());
 
   EXPECT_TRUE(sync_prefs_->HasKeepEverythingSynced());
   sync_prefs_->SetSelectedTypes(

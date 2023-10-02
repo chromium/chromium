@@ -60,7 +60,6 @@
 #include "chrome/browser/preloading/preloading_prefs.h"
 #include "chrome/browser/printing/print_preview_sticky_settings.h"
 #include "chrome/browser/profiles/chrome_version_service.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_impl.h"
@@ -167,6 +166,7 @@
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/subresource_filter/content/browser/ruleset_service.h"
 #include "components/supervised_user/core/common/buildflags.h"
+#include "components/sync/base/pref_names.h"
 #include "components/sync/service/glue/sync_transport_data_prefs.h"
 #include "components/sync/service/sync_prefs.h"
 #include "components/sync_device_info/device_info_prefs.h"
@@ -956,6 +956,9 @@ inline constexpr char kPrivacySandboxManuallyControlled[] =
 const char kSettingsMigratedToUPM[] = "profile.settings_migrated_to_upm";
 #endif
 
+// Deprecated 10/2023.
+inline constexpr char kSyncRequested[] = "sync.requested";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1340,6 +1343,20 @@ void RegisterProfilePrefsForMigration(
 #if BUILDFLAG(IS_ANDROID)
   registry->RegisterBooleanPref(kSettingsMigratedToUPM, false);
 #endif
+  registry->RegisterBooleanPref(kSyncRequested, false);
+}
+
+void ClearSyncRequestedPrefAndMaybeMigrate(PrefService* profile_prefs) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // On Ash specifically, if `kSyncRequested` was set to false explicitly, the
+  // value needs to be migrated to syncer::internal::kSyncDisabledViaDashboard.
+  if (profile_prefs->GetUserPrefValue(kSyncRequested) != nullptr &&
+      !profile_prefs->GetUserPrefValue(kSyncRequested)->GetBool()) {
+    profile_prefs->SetBoolean(
+        syncer::prefs::internal::kSyncDisabledViaDashboard, true);
+  }
+#endif
+  profile_prefs->ClearPref(kSyncRequested);
 }
 
 }  // namespace
@@ -2202,7 +2219,7 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
 
 // This method should be periodically pruned of year+ old migrations.
 // See chrome/browser/prefs/README.md for details.
-void MigrateObsoleteProfilePrefs(Profile* profile) {
+void MigrateObsoleteProfilePrefs(PrefService* profile_prefs) {
   // IMPORTANT NOTE: This code is *not* run on iOS Chrome. If a pref is migrated
   // or cleared here, and that pref is also used in iOS Chrome, it may also need
   // to be migrated or cleared specifically for iOS as well. This could be by
@@ -2212,8 +2229,6 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
 
   // BEGIN_MIGRATE_OBSOLETE_PROFILE_PREFS
   // Please don't delete the preceding line. It is used by PRESUBMIT.py.
-
-  PrefService* profile_prefs = profile->GetPrefs();
 
   // Check MigrateDeprecatedAutofillPrefs() to see if this is safe to remove.
   autofill::prefs::MigrateDeprecatedAutofillPrefs(profile_prefs);
@@ -2513,6 +2528,9 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
 #if BUILDFLAG(IS_ANDROID)
   profile_prefs->ClearPref(kSettingsMigratedToUPM);
 #endif
+
+  // Added 10/2023.
+  ClearSyncRequestedPrefAndMaybeMigrate(profile_prefs);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

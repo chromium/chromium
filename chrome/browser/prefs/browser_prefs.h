@@ -13,7 +13,6 @@
 
 class PrefRegistrySimple;
 class PrefService;
-class Profile;
 
 namespace user_prefs {
 class PrefRegistrySyncable;
@@ -54,10 +53,10 @@ void RegisterSigninProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
 // *the* place to drop deprecated browser-level (Local State) prefs at.
 void MigrateObsoleteLocalStatePrefs(PrefService* local_state);
 
-// Migrate/cleanup deprecated prefs in |profile|'s pref store. Over time, long
+// Migrate/cleanup deprecated prefs in |profile_prefs|. Over time, long
 // deprecated prefs should be removed as new ones are added, but this call
 // should never go away (even if it becomes an empty call for some time) as it
 // should remain *the* place to drop deprecated profile prefs at.
-void MigrateObsoleteProfilePrefs(Profile* profile);
+void MigrateObsoleteProfilePrefs(PrefService* profile_prefs);
 
 #endif  // CHROME_BROWSER_PREFS_BROWSER_PREFS_H_

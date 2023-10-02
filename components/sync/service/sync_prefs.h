@@ -81,17 +81,6 @@ class SyncPrefs {
   void ClearInitialSyncFeatureSetupComplete();
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
-  // Whether the user wants Sync to run. This is false by default, but gets set
-  // to true early in the Sync setup flow, after the user has pressed "turn on
-  // Sync" but before they have actually confirmed the settings (that's
-  // IsInitialSyncFeatureSetupComplete()). After Sync is enabled, this can get
-  // set to false via signout (which also clears
-  // IsInitialSyncFeatureSetupComplete) or, on ChromeOS Ash, when Sync gets
-  // reset from the dashboard.
-  bool IsSyncRequested() const;
-  void SetSyncRequested(bool is_requested);
-  bool IsSyncRequestedSetExplicitly() const;
-
   // Whether the "Sync everything" toggle is enabled. This flag only has an
   // effect if Sync-the-feature is enabled. Note that even if this is true, some
   // types may be disabled e.g. due to enterprise policy.
@@ -162,6 +151,12 @@ class SyncPrefs {
 #endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Functions to deal with the Ash-specific state where sync-the-feature is
+  // disabled because the user reset sync via dashboard.
+  bool IsSyncFeatureDisabledViaDashboard() const;
+  void SetSyncFeatureDisabledViaDashboard();
+  void ClearSyncFeatureDisabledViaDashboard();
+
   // Chrome OS provides a separate settings UI surface for sync of OS types,
   // including a separate "Sync All" toggle for OS types.
   bool IsSyncAllOsTypesEnabled() const;

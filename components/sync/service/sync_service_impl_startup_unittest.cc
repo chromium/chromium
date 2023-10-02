@@ -138,8 +138,6 @@ class SyncServiceImplStartupTest : public testing::Test {
   void SetSyncFeatureEnabledPrefs() {
     CHECK(!sync_service_);
 
-    sync_prefs_.SetSyncRequested(true);
-
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
     sync_prefs_.SetInitialSyncFeatureSetupComplete();
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -459,9 +457,21 @@ TEST_F(SyncServiceImplStartupTest, DisableSync) {
   EXPECT_EQ(SyncService::TransportState::ACTIVE,
             sync_service()->GetTransportState());
 
-  // Sync-the-feature is still considered off.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // On Ash, sync-the-feature remains on. Note however that this is not a
+  // common scenario, because in most case StopAndClear() would be issued from
+  // a codepath that would prevent either sync-the-feature (e.g. dashboard
+  // reset) or sync-the-transport (e.g. unrecoverable error) from starting.
+  EXPECT_TRUE(sync_service()->IsSyncFeatureEnabled());
+  EXPECT_TRUE(sync_service()->IsSyncFeatureActive());
+#else   // BUILDFLAG(IS_CHROMEOS_ASH)
+  // Except for Ash, StopAndClear() turns sync-the-feature off because
+  // IsInitialSyncFeatureSetupComplete() becomes false.
+  EXPECT_FALSE(
+      sync_service()->GetUserSettings()->IsInitialSyncFeatureSetupComplete());
   EXPECT_FALSE(sync_service()->IsSyncFeatureEnabled());
   EXPECT_FALSE(sync_service()->IsSyncFeatureActive());
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Call StopAndClear() again while the sync service is already in transport
   // mode. It should immediately start up again in transport mode.
@@ -578,7 +588,6 @@ TEST_F(SyncServiceImplStartupTest, SwitchManaged) {
 }
 
 TEST_F(SyncServiceImplStartupTest, StartDownloadFailed) {
-  sync_prefs()->SetSyncRequested(true);
   CreateSyncService();
   SignInWithSyncConsent();
   ASSERT_FALSE(component_factory()->HasTransportDataIncludingFirstSync());

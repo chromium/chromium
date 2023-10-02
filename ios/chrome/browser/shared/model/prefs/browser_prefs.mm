@@ -159,6 +159,12 @@ const char kObsoleteIosSettingsSigninPromoDisplayedCount[] =
 inline constexpr char kPrivacySandboxManuallyControlled[] =
     "privacy_sandbox.manually_controlled";
 
+// Deprecated 10/2023.
+// Boolean whether has requested sync to be enabled. This is set early in the
+// sync setup flow, after the user has pressed "turn on sync" but before they
+// have accepted the confirmation dialog.
+inline constexpr char kSyncRequested[] = "sync.requested";
+
 }  // namespace
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
@@ -546,6 +552,7 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
                                 false);
   // Preference related to feed.
   registry->RegisterTimePref(kActivityBucketLastReportedDateKey, base::Time());
+  registry->RegisterBooleanPref(kSyncRequested, false);
 }
 
 // This method should be periodically pruned of year+ old migrations.
@@ -696,6 +703,9 @@ void MigrateObsoleteBrowserStatePrefs(PrefService* prefs) {
                      base::Time::FromNSDate(value));
     }
   }
+
+  // Added 10/2023.
+  prefs->ClearPref(kSyncRequested);
 }
 
 void MigrateObsoleteUserDefault(void) {

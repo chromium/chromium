@@ -53,6 +53,9 @@ inline constexpr char kSelectedTypesPerAccount[] =
     "sync.selected_types_per_account";
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+// Boolean specifying whether sync was disabled due to a dashboard reset event.
+inline constexpr char kSyncDisabledViaDashboard[] =
+    "sync.disabled_via_dashboard";
 
 // Boolean specifying whether to automatically sync all Chrome OS specific data
 // types (including future ones). This includes types like printers, OS-only
@@ -93,14 +96,6 @@ inline constexpr char kSyncSavedTabGroups[] = "sync.saved_tab_groups";
 // Boolean used by enterprise configuration management in order to lock down
 // sync.
 inline constexpr char kSyncManaged[] = "sync.managed";
-
-// Boolean whether has requested sync to be enabled. This is set early in the
-// sync setup flow, after the user has pressed "turn on sync" but before they
-// have accepted the confirmation dialog (that maps to
-// kSyncInitialSyncFeatureSetupComplete). This is also set to false when sync is
-// disabled by the user in sync settings, or when sync was reset from the
-// dashboard.
-inline constexpr char kSyncRequested[] = "sync.requested";
 
 // The type of encryption passphrase used. Determined and set the first time the
 // engine is successfully initialized.

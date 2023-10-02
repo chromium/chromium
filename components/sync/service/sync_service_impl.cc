@@ -306,6 +306,14 @@ void SyncServiceImpl::Initialize() {
   // crash during signout).
   if (HasDisableReason(DISABLE_REASON_ENTERPRISE_POLICY)) {
     StopAndClear();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    // On ChromeOS Ash, sync-the-feature stays disabled even after the policy is
+    // removed, for historic reasons. It is unclear if this behavior is
+    // optional, because it is indistinguishable from the
+    // sync-reset-via-dashboard case. It can be resolved by invoking
+    // SetSyncFeatureRequested().
+    sync_prefs_.SetSyncFeatureDisabledViaDashboard();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   } else if (HasDisableReason(DISABLE_REASON_NOT_SIGNED_IN)) {
     // On ChromeOS-Ash, signout is not possible, so it's not necessary to handle
     // this case.
@@ -345,16 +353,6 @@ void SyncServiceImpl::Initialize() {
     if (!preferred_types.Has(type)) {
       controller->Stop(CLEAR_METADATA, base::DoNothing());
     }
-  }
-
-  // Auto-start means the first time the profile starts up, sync should start up
-  // immediately. Since IsSyncRequested() is false by default and nobody else
-  // will set it, we need to set it here.
-  // Local Sync bypasses the IsSyncRequested() check, so no need to set it in
-  // that case.
-  if (ShouldAutoStartSyncFeature() && !IsLocalSyncEnabled() &&
-      !sync_prefs_.IsSyncRequestedSetExplicitly()) {
-    SetSyncFeatureRequested();
   }
 
   if (IsEngineAllowedToRun()) {
@@ -736,7 +734,10 @@ base::android::ScopedJavaLocalRef<jobject> SyncServiceImpl::GetJavaObject() {
 
 void SyncServiceImpl::SetSyncFeatureRequested() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  sync_prefs_.SetSyncRequested(true);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  sync_prefs_.ClearSyncFeatureDisabledViaDashboard();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // If the Sync engine was already initialized (probably running in transport
   // mode), just reconfigure.
@@ -1063,14 +1064,17 @@ void SyncServiceImpl::OnActionableProtocolError(
       sync_client_->GetTrustedVaultClient()->ClearLocalDataForAccount(
           GetAccountInfo());
 
-      // Note: StopAndClear sets IsSyncRequested to false, which ensures that
-      // Sync-the-feature remains off.
       // Note: This method might get called again in the following code when
       // clearing the primary account. But due to rarity of the event, this
       // should be okay.
       StopAndClear();
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      // On Ash, the primary account is always set and sync the feature
+      // turned on, so a dedicated bit is needed to ensure that
+      // Sync-the-feature remains off.
+      sync_prefs_.SetSyncFeatureDisabledViaDashboard();
+#else  // !BUILDFLAG(IS_CHROMEOS_ASH)
       // On every platform except ash, revoke the Sync consent/Clear primary
       // account after a dashboard clear.
       // TODO(crbug.com/1462552): Simplify once kSync becomes unreachable or is
@@ -1101,7 +1105,7 @@ void SyncServiceImpl::OnActionableProtocolError(
             signin_metrics::SignoutDelete::kIgnoreMetric);
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
       }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
       break;
     case STOP_SYNC_FOR_DISABLED_ACCOUNT:
       // Sync disabled by domain admin. Stop syncing until next restart.
@@ -1317,11 +1321,7 @@ bool SyncServiceImpl::RequiresClientUpgrade() const {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 bool SyncServiceImpl::IsSyncFeatureDisabledViaDashboard() const {
-  // This can return true only on ChromeOS Ash, upon DISABLE_SYNC_ON_CLIENT.
-  // TODO(crbug.com/1443446): A simpler and more robust implementation for this
-  // state would be to use a dedicated pref.
-  return user_settings_->IsInitialSyncFeatureSetupComplete() &&
-         !IsLocalSyncEnabled() && !IsSyncFeatureConsideredRequested();
+  return sync_prefs_.IsSyncFeatureDisabledViaDashboard();
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -1399,9 +1399,9 @@ bool SyncServiceImpl::IsSyncFeatureConsideredRequested() const {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // On Ash, `has_sync_consent` should always be true, and what actually matters
-  // is `is_sync_requested`, which is set to false if the server reports
-  // DISABLE_SYNC_ON_CLIENT (e.g. reset via dashboard).
-  return sync_prefs_.IsSyncRequested();
+  // is whether sync was disabled via dashboard, which is detected when the
+  // server responds with DISABLE_SYNC_ON_CLIENT.
+  return !IsSyncFeatureDisabledViaDashboard();
 #else
   // On all platforms except Chrome Ash, IdentityManager determines via
   // consent level whether or not sync is condered requested.
@@ -1793,6 +1793,14 @@ void SyncServiceImpl::OnSyncManagedPrefChange(bool is_sync_managed) {
 
   if (is_sync_managed) {
     StopAndClear();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    // On ChromeOS Ash, sync-the-feature stays disabled even after the policy is
+    // removed, for historic reasons. It is unclear if this behavior is
+    // optional, because it is indistinguishable from the
+    // sync-reset-via-dashboard case. It can be resolved by invoking
+    // SetSyncFeatureRequested().
+    sync_prefs_.SetSyncFeatureDisabledViaDashboard();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   } else {
     // Sync is no longer disabled by policy. Try starting it up if appropriate.
     DCHECK(!engine_);
@@ -2117,8 +2125,6 @@ void SyncServiceImpl::StopAndClear() {
 #if BUILDFLAG(IS_IOS)
   sync_prefs_.ClearBookmarksAndReadingListAccountStorageOptIn();
 #endif  // BUILDFLAG(IS_IOS)
-
-  sync_prefs_.SetSyncRequested(false);
 
   // Also let observers know that Sync-the-feature is now fully disabled
   // (before it possibly starts up again in transport-only mode).

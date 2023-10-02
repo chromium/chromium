@@ -87,7 +87,6 @@ SyncPrefs::~SyncPrefs() {
 // static
 void SyncPrefs::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   // Actual user-controlled preferences.
-  registry->RegisterBooleanPref(prefs::internal::kSyncRequested, false);
   registry->RegisterBooleanPref(prefs::internal::kSyncKeepEverythingSynced,
                                 true);
 #if BUILDFLAG(IS_IOS)
@@ -99,6 +98,8 @@ void SyncPrefs::RegisterProfilePrefs(PrefRegistrySimple* registry) {
     RegisterTypeSelectedPref(registry, type);
   }
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  registry->RegisterBooleanPref(prefs::internal::kSyncDisabledViaDashboard,
+                                false);
   registry->RegisterBooleanPref(prefs::internal::kSyncAllOsTypes, true);
   registry->RegisterBooleanPref(prefs::internal::kSyncOsApps, false);
   registry->RegisterBooleanPref(prefs::internal::kSyncOsPreferences, false);
@@ -168,25 +169,6 @@ void SyncPrefs::ClearInitialSyncFeatureSetupComplete() {
       prefs::internal::kSyncInitialSyncFeatureSetupComplete);
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
-
-bool SyncPrefs::IsSyncRequested() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return pref_service_->GetBoolean(prefs::internal::kSyncRequested);
-}
-
-void SyncPrefs::SetSyncRequested(bool is_requested) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  pref_service_->SetBoolean(prefs::internal::kSyncRequested, is_requested);
-}
-
-bool SyncPrefs::IsSyncRequestedSetExplicitly() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // GetUserPrefValue() returns nullptr if there is no user-set value for this
-  // pref (there might still be a non-default value, e.g. from a policy, but we
-  // explicitly don't care about that here).
-  return pref_service_->GetUserPrefValue(prefs::internal::kSyncRequested) !=
-         nullptr;
-}
 
 bool SyncPrefs::HasKeepEverythingSynced() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -399,6 +381,21 @@ void SyncPrefs::ClearBookmarksAndReadingListAccountStorageOptIn() {
 #endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+bool SyncPrefs::IsSyncFeatureDisabledViaDashboard() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return pref_service_->GetBoolean(prefs::internal::kSyncDisabledViaDashboard);
+}
+
+void SyncPrefs::SetSyncFeatureDisabledViaDashboard() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  pref_service_->SetBoolean(prefs::internal::kSyncDisabledViaDashboard, true);
+}
+
+void SyncPrefs::ClearSyncFeatureDisabledViaDashboard() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  pref_service_->ClearPref(prefs::internal::kSyncDisabledViaDashboard);
+}
+
 bool SyncPrefs::IsSyncAllOsTypesEnabled() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return pref_service_->GetBoolean(prefs::internal::kSyncAllOsTypes);
