@@ -31,7 +31,7 @@ html, body {
   height: 100%;
   margin: 0;
   padding: 0;
-  overflow: hidden;
+  overflow: scroll;
   font-family: "Roboto", sans-serif;
   display: flex;
   flex-direction: row;
@@ -76,6 +76,8 @@ cr-button {
   display: flex;
   flex-direction: column;
   height: 100%;
+  min-width: 550px;
+  overflow-x: scroll;
 }
 
 .logo {
@@ -84,9 +86,11 @@ cr-button {
 }
 
 .controls-panel {
-  padding: 40px;
+  padding: 20px;
   padding-top: 10px;
   padding-bottom: 10px;
+  min-width: 500px;
+  overflow-x: scroll;
 }
 
 .control {
@@ -122,10 +126,11 @@ np-object {
 #logsPanel {
   width: 60%;
   height: 100%;
-  overflow: hidden;
+  overflow: scroll;
   display: flex;
   flex-direction: column;
   border-left: 1px solid rgba(0,0,0,0.12);
+  min-width: 450px;
 }
 
 #devicesSection {
