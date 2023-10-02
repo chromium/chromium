@@ -2527,7 +2527,7 @@ chromium-metrics-reviews@google.com.
     <variant name="CopyToJson" summary="Copy To JSON"/>
     <variant name="ExportToJson" summary="Export To JSON"/>
     <variant name="ReloadPolicies" summary="Reload Policies"/>
-    <variant name="Upload Report" summary="Upload Report"/>
+    <variant name="UploadReport" summary="Upload Report"/>
   </token>
 </histogram>
 
