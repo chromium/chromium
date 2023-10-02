@@ -2275,7 +2275,7 @@ void WebFormControlElementToFormField(
 
     // The typed value is preserved for all passwords. It is also preserved for
     // potential usernames, as long as the |value| is not deemed acceptable.
-    if (field->form_control_type == StringToFormControlType("password") ||
+    if (field->form_control_type == FormControlType::kInputPassword ||
         !ScriptModifiedUsernameAcceptable(field->value, user_input,
                                           field_data_manager)) {
       field->user_input = user_input;

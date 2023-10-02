@@ -140,7 +140,7 @@ FormData MakePasswordFormData() {
   field.name = u"password-element";
   field.id_attribute = field.name;
   field.name_attribute = field.name;
-  field.form_control_type = autofill::StringToFormControlType("password");
+  field.form_control_type = autofill::FormControlType::kInputPassword;
   field.unique_renderer_id = FieldRendererId(123);
   form_data.fields.push_back(field);
 

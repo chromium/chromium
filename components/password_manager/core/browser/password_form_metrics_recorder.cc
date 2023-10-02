@@ -146,8 +146,7 @@ UsernamePasswordsState CalculateUsernamePasswordsState(
         is_possibly_saved_password_in_account_store;
 
     bool field_has_password_type =
-        field.form_control_type ==
-        autofill::StringToFormControlType("password");
+        field.form_control_type == autofill::FormControlType::kInputPassword;
 
     if (is_possibly_saved_username &&
         (!is_possibly_saved_password || !field_has_password_type)) {

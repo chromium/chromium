@@ -20,13 +20,13 @@ class FieldDataManagerTest : public testing::Test {
     FormFieldData field1;
     field1.id_attribute = u"name1";
     field1.value = u"first";
-    field1.form_control_type = StringToFormControlType("text");
+    field1.form_control_type = FormControlType::kInputText;
     field1.unique_renderer_id = FieldRendererId(1);
     control_elements_.push_back(field1);
 
     FormFieldData field2;
     field2.id_attribute = u"name2";
-    field2.form_control_type = StringToFormControlType("password");
+    field2.form_control_type = FormControlType::kInputPassword;
     field2.unique_renderer_id = FieldRendererId(2);
     control_elements_.push_back(field2);
   }

@@ -352,25 +352,25 @@ bool FormFieldData::SameFieldAs(const FormFieldData& field) const {
 }
 
 bool FormFieldData::IsTextInputElement() const {
-  return form_control_type == StringToFormControlType("text") ||
-         form_control_type == StringToFormControlType("password") ||
-         form_control_type == StringToFormControlType("search") ||
-         form_control_type == StringToFormControlType("tel") ||
-         form_control_type == StringToFormControlType("url") ||
-         form_control_type == StringToFormControlType("email") ||
-         form_control_type == StringToFormControlType("number");
+  return form_control_type == FormControlType::kInputText ||
+         form_control_type == FormControlType::kInputPassword ||
+         form_control_type == FormControlType::kInputSearch ||
+         form_control_type == FormControlType::kInputTelephone ||
+         form_control_type == FormControlType::kInputUrl ||
+         form_control_type == FormControlType::kInputEmail ||
+         form_control_type == FormControlType::kInputNumber;
 }
 
 bool FormFieldData::IsPasswordInputElement() const {
-  return form_control_type == StringToFormControlType("password");
+  return form_control_type == FormControlType::kInputPassword;
 }
 
 bool FormFieldData::IsSelectElement() const {
-  return form_control_type == StringToFormControlType("select-one");
+  return form_control_type == FormControlType::kSelectOne;
 }
 
 bool FormFieldData::IsSelectListElement() const {
-  return form_control_type == StringToFormControlType("selectlist");
+  return form_control_type == FormControlType::kSelectList;
 }
 
 bool FormFieldData::IsSelectOrSelectListElement() const {

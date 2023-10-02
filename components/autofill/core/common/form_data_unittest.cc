@@ -141,7 +141,7 @@ void FillInDummyFormData(FormData* data) {
   field_data.label = u"label";
   field_data.name = u"name";
   field_data.value = u"value";
-  field_data.form_control_type = StringToFormControlType("password");
+  field_data.form_control_type = FormControlType::kInputPassword;
   field_data.autocomplete_attribute = "off";
   field_data.max_length = 200;
   field_data.is_autofilled = true;

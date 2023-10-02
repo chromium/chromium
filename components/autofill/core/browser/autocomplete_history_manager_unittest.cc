@@ -152,7 +152,7 @@ TEST_F(AutocompleteHistoryManagerTest, CreditCardNumberValue) {
   valid_cc.name = u"ccnum";
   valid_cc.value = u"4012888888881881";
   valid_cc.properties_mask |= kUserTyped;
-  valid_cc.form_control_type = StringToFormControlType("text");
+  valid_cc.form_control_type = FormControlType::kInputText;
   form.fields.push_back(valid_cc);
 
   EXPECT_CALL(*(web_data_service_.get()), AddFormFields(_)).Times(0);
@@ -176,7 +176,7 @@ TEST_F(AutocompleteHistoryManagerTest, NonCreditCardNumberValue) {
   invalid_cc.name = u"ccnum";
   invalid_cc.value = u"4580123456789012";
   invalid_cc.properties_mask |= kUserTyped;
-  invalid_cc.form_control_type = StringToFormControlType("text");
+  invalid_cc.form_control_type = FormControlType::kInputText;
   form.fields.push_back(invalid_cc);
 
   EXPECT_CALL(*(web_data_service_.get()), AddFormFields(_));
@@ -197,7 +197,7 @@ TEST_F(AutocompleteHistoryManagerTest, SSNValue) {
   ssn.name = u"ssn";
   ssn.value = u"078-05-1120";
   ssn.properties_mask |= kUserTyped;
-  ssn.form_control_type = StringToFormControlType("text");
+  ssn.form_control_type = FormControlType::kInputText;
   form.fields.push_back(ssn);
 
   EXPECT_CALL(*web_data_service_, AddFormFields(_)).Times(0);
@@ -219,7 +219,7 @@ TEST_F(AutocompleteHistoryManagerTest, SearchField) {
   search_field.name = u"search";
   search_field.value = u"my favorite query";
   search_field.properties_mask |= kUserTyped;
-  search_field.form_control_type = StringToFormControlType("search");
+  search_field.form_control_type = FormControlType::kInputSearch;
   form.fields.push_back(search_field);
 
   EXPECT_CALL(*(web_data_service_.get()), AddFormFields(_));
@@ -240,7 +240,7 @@ TEST_F(AutocompleteHistoryManagerTest, AutocompleteFeatureOff) {
   search_field.name = u"search";
   search_field.value = u"my favorite query";
   search_field.properties_mask |= kUserTyped;
-  search_field.form_control_type = StringToFormControlType("search");
+  search_field.form_control_type = FormControlType::kInputSearch;
   form.fields.push_back(search_field);
 
   EXPECT_CALL(*(web_data_service_.get()), AddFormFields(_)).Times(0);
@@ -264,7 +264,7 @@ TEST_F(AutocompleteHistoryManagerTest, InvalidValues) {
   search_field.name = u"search";
   search_field.value = u"";
   search_field.properties_mask |= kUserTyped;
-  search_field.form_control_type = StringToFormControlType("search");
+  search_field.form_control_type = FormControlType::kInputSearch;
   form.fields.push_back(search_field);
 
   // Single whitespace.
@@ -272,7 +272,7 @@ TEST_F(AutocompleteHistoryManagerTest, InvalidValues) {
   search_field.name = u"other search";
   search_field.value = u" ";
   search_field.properties_mask |= kUserTyped;
-  search_field.form_control_type = StringToFormControlType("search");
+  search_field.form_control_type = FormControlType::kInputSearch;
   form.fields.push_back(search_field);
 
   // Multiple whitespaces.
@@ -280,7 +280,7 @@ TEST_F(AutocompleteHistoryManagerTest, InvalidValues) {
   search_field.name = u"other search";
   search_field.value = u"      ";
   search_field.properties_mask |= kUserTyped;
-  search_field.form_control_type = StringToFormControlType("search");
+  search_field.form_control_type = FormControlType::kInputSearch;
   form.fields.push_back(search_field);
 
   EXPECT_CALL(*(web_data_service_.get()), AddFormFields(_)).Times(0);
@@ -305,7 +305,7 @@ TEST_F(AutocompleteHistoryManagerTest, FieldWithAutocompleteOff) {
   field.name = u"esoterica";
   field.value = u"a truly esoteric value, I assure you";
   field.properties_mask |= kUserTyped;
-  field.form_control_type = StringToFormControlType("text");
+  field.form_control_type = FormControlType::kInputText;
   field.should_autocomplete = false;
   form.fields.push_back(field);
 
@@ -330,7 +330,7 @@ TEST_F(AutocompleteHistoryManagerTest, Incognito) {
   search_field.name = u"search";
   search_field.value = u"my favorite query";
   search_field.properties_mask |= kUserTyped;
-  search_field.form_control_type = StringToFormControlType("search");
+  search_field.form_control_type = FormControlType::kInputSearch;
   form.fields.push_back(search_field);
 
   EXPECT_CALL(*web_data_service_, AddFormFields(_)).Times(0);
@@ -354,7 +354,7 @@ TEST_F(AutocompleteHistoryManagerTest, UserInputNotFocusable) {
   search_field.label = u"Search";
   search_field.name = u"search";
   search_field.value = u"my favorite query";
-  search_field.form_control_type = StringToFormControlType("search");
+  search_field.form_control_type = FormControlType::kInputSearch;
   search_field.properties_mask |= kUserTyped;
   search_field.is_focusable = false;
   form.fields.push_back(search_field);
@@ -380,7 +380,7 @@ TEST_F(AutocompleteHistoryManagerTest, PresentationField) {
   field.name = u"esoterica";
   field.value = u"a truly esoteric value, I assure you";
   field.properties_mask |= kUserTyped;
-  field.form_control_type = StringToFormControlType("text");
+  field.form_control_type = FormControlType::kInputText;
   field.role = FormFieldData::RoleAttribute::kPresentation;
   form.fields.push_back(field);
 

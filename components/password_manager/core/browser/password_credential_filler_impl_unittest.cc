@@ -59,8 +59,8 @@ const FormData PrepareFormData(
              type == FormFieldFocusabilityType::kFocusableCheckbox);
         field.form_control_type =
             (type == FormFieldFocusabilityType::kFocusableCheckbox)
-                ? autofill::StringToFormControlType("checkbox")
-                : autofill::StringToFormControlType("input");
+                ? autofill::FormControlType::kInputCheckbox
+                : autofill::FormControlType::kEmpty;
         return field;
       });
   return form;

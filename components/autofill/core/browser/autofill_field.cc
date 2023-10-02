@@ -573,25 +573,25 @@ void AutofillField::AppendLogEventIfNotRepeated(
 
 DeprecatedFormControlType AutofillField::FormControlType() const {
   // Keep in sync with https://html.spec.whatwg.org/#attr-input-type.
-  if (form_control_type == StringToFormControlType("text") ||
-      form_control_type == StringToFormControlType("search") ||
-      form_control_type == StringToFormControlType("tel") ||
-      form_control_type == StringToFormControlType("url") ||
-      form_control_type == StringToFormControlType("email") ||
-      form_control_type == StringToFormControlType("password") ||
-      form_control_type == StringToFormControlType("number")) {
+  if (form_control_type == FormControlType::kInputText ||
+      form_control_type == FormControlType::kInputSearch ||
+      form_control_type == FormControlType::kInputTelephone ||
+      form_control_type == FormControlType::kInputUrl ||
+      form_control_type == FormControlType::kInputEmail ||
+      form_control_type == FormControlType::kInputPassword ||
+      form_control_type == FormControlType::kInputNumber) {
     return DeprecatedFormControlType::kText;
-  } else if (form_control_type == StringToFormControlType("textarea")) {
+  } else if (form_control_type == FormControlType::kTextArea) {
     return DeprecatedFormControlType::kTextarea;
-  } else if (form_control_type == StringToFormControlType("checkbox")) {
+  } else if (form_control_type == FormControlType::kInputCheckbox) {
     return DeprecatedFormControlType::kCheckbox;
-  } else if (form_control_type == StringToFormControlType("radio")) {
+  } else if (form_control_type == FormControlType::kInputRadio) {
     return DeprecatedFormControlType::kRadio;
-  } else if (form_control_type == StringToFormControlType("select-one")) {
+  } else if (form_control_type == FormControlType::kSelectOne) {
     return DeprecatedFormControlType::kSelectOne;
-  } else if (form_control_type == StringToFormControlType("selectlist")) {
+  } else if (form_control_type == FormControlType::kSelectList) {
     return DeprecatedFormControlType::kSelectlist;
-  } else if (form_control_type == StringToFormControlType("")) {
+  } else if (form_control_type == FormControlType::kEmpty) {
     return DeprecatedFormControlType::kEmpty;
   } else {
     return DeprecatedFormControlType::kOther;

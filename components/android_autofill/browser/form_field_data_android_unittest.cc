@@ -43,7 +43,7 @@ FormFieldData CreateTestField() {
   f.name = u"SomeName";
   f.name_attribute = f.name;
   f.id_attribute = u"some_id";
-  f.form_control_type = StringToFormControlType("text");
+  f.form_control_type = FormControlType::kInputText;
   f.check_status = FormFieldData::CheckStatus::kChecked;
   return f;
 }
@@ -136,7 +136,7 @@ TEST(FormFieldDataAndroidTest, SimilarFieldsAs) {
 
   // If form control types differ, they are not similar.
   f2 = f1;
-  f2.form_control_type = StringToFormControlType("password");
+  f2.form_control_type = FormControlType::kInputPassword;
   EXPECT_FALSE(af.SimilarFieldAs(f2));
 
   // If global ids differ, they are not similar.

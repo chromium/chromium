@@ -138,7 +138,7 @@ TEST_F(AutofillAgentTests,
   form.unique_renderer_id = FormRendererId(1);
 
   autofill::FormFieldData field;
-  field.form_control_type = autofill::StringToFormControlType("text");
+  field.form_control_type = autofill::FormControlType::kInputText;
   field.label = u"Card number";
   field.name = u"number";
   field.name_attribute = field.name;

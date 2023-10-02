@@ -342,13 +342,13 @@ FormFieldData ParseFieldFromJsonDict(const base::Value::Dict& field_dict,
       "tel",      "text",     "time",   "url",   "week",     "textarea"};
   if (const std::string* type = field_dict.FindString("type_attr")) {
     if (*type == "select") {
-      field.form_control_type = StringToFormControlType("select-one");
+      field.form_control_type = FormControlType::kSelectOne;
     } else if (*type == "input") {
-      field.form_control_type = StringToFormControlType("text");
+      field.form_control_type = FormControlType::kInputText;
     } else if (base::Contains(valid_control_types, *type)) {
       field.form_control_type = StringToFormControlType(*type);
     } else {
-      field.form_control_type = StringToFormControlType("text");
+      field.form_control_type = FormControlType::kInputText;
     }
   }
   if (const std::string* autocomplete =

@@ -55,7 +55,7 @@ struct ProcessedField {
   AutocompleteFlag autocomplete_flag = AutocompleteFlag::kNone;
 
   // True if field->form_control_type ==
-  // autofill::StringToFormControlType("password").
+  // autofill::FormControlType::kInputPassword.
   bool is_password = false;
 
   // True if field is predicted to be a password.

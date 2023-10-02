@@ -524,8 +524,8 @@ bool CreditCardField::ParseExpirationDate(AutofillScanner* scanner,
                                           LogManager* log_manager,
                                           const LanguageCode& page_language,
                                           PatternSource pattern_source) {
-  if (!expiration_date_ && scanner->Cursor()->form_control_type ==
-                               StringToFormControlType("month")) {
+  if (!expiration_date_ &&
+      scanner->Cursor()->form_control_type == FormControlType::kInputMonth) {
     expiration_date_ = scanner->Cursor();
     expiration_month_ = nullptr;
     expiration_year_ = nullptr;

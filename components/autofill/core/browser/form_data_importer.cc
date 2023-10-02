@@ -988,7 +988,7 @@ FormDataImporter::ExtractCreditCardFromForm(const FormStructure& form) {
     types_seen.insert(server_field_type);
 
     // If |field| is an HTML5 month input, handle it as a special case.
-    if (field->form_control_type == StringToFormControlType("month")) {
+    if (field->form_control_type == FormControlType::kInputMonth) {
       DCHECK_EQ(CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR, server_field_type);
       result.card.SetInfoForMonthInputType(value);
       continue;

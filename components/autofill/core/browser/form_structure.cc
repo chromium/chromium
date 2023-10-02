@@ -364,7 +364,7 @@ FormStructure::FormStructure(const FormData& form)
     if (!ShouldSkipField(field))
       ++active_field_count_;
 
-    if (field.form_control_type == StringToFormControlType("password")) {
+    if (field.form_control_type == FormControlType::kInputPassword) {
       has_password_field_ = true;
     } else {
       all_fields_are_passwords_ = false;

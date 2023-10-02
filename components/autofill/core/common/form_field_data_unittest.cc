@@ -18,7 +18,7 @@ void FillCommonFields(FormFieldData* data) {
   data->label = u"label";
   data->name = u"name";
   data->value = u"value";
-  data->form_control_type = StringToFormControlType("password");
+  data->form_control_type = FormControlType::kInputPassword;
   data->autocomplete_attribute = "off";
   data->max_length = 200;
   data->is_autofilled = true;

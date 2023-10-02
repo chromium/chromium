@@ -368,14 +368,14 @@ class PasswordFormManagerTest : public testing::Test,
     field.name = u"firstname";
     field.id_attribute = field.name;
     field.name_attribute = field.name;
-    field.form_control_type = autofill::StringToFormControlType("text");
+    field.form_control_type = autofill::FormControlType::kInputText;
     field.unique_renderer_id = autofill::FieldRendererId(2);
     observed_form_.fields.push_back(field);
 
     field.name = u"username";
     field.id_attribute = field.name;
     field.name_attribute = field.name;
-    field.form_control_type = autofill::StringToFormControlType("text");
+    field.form_control_type = autofill::FormControlType::kInputText;
     field.unique_renderer_id = autofill::FieldRendererId(3);
     observed_form_.fields.push_back(field);
 
@@ -384,7 +384,7 @@ class PasswordFormManagerTest : public testing::Test,
     field.name = u"password";
     field.id_attribute = field.name;
     field.name_attribute = field.name;
-    field.form_control_type = autofill::StringToFormControlType("password");
+    field.form_control_type = autofill::FormControlType::kInputPassword;
     field.unique_renderer_id = autofill::FieldRendererId(4);
     observed_form_.fields.push_back(field);
     observed_form_only_password_fields_.fields.push_back(field);
@@ -392,7 +392,7 @@ class PasswordFormManagerTest : public testing::Test,
     field.name = u"password2";
     field.id_attribute = field.name;
     field.name_attribute = field.name;
-    field.form_control_type = autofill::StringToFormControlType("password");
+    field.form_control_type = autofill::FormControlType::kInputPassword;
     field.unique_renderer_id = autofill::FieldRendererId(5);
     observed_form_only_password_fields_.fields.push_back(field);
 
@@ -703,7 +703,7 @@ TEST_P(PasswordFormManagerTest, GenerationOnNewAndConfirmPasswordFields) {
   const autofill::FieldRendererId confirm_password_render_id(
       new_password_render_id.value() + 1);
   field.unique_renderer_id = confirm_password_render_id;
-  field.form_control_type = autofill::StringToFormControlType("password");
+  field.form_control_type = autofill::FormControlType::kInputPassword;
   field.autocomplete_attribute = "new-password";
   observed_form_.fields.push_back(field);
 
@@ -1250,13 +1250,12 @@ TEST_P(PasswordFormManagerTest, UsernameCorrectionVote) {
        saved_match_.all_alternative_usernames) {
     FormFieldData text_field;
     text_field.name = alternative.name;
-    text_field.form_control_type = autofill::StringToFormControlType("text");
+    text_field.form_control_type = autofill::FormControlType::kInputText;
     saved_match_.form_data.fields.push_back(text_field);
   }
   FormFieldData password_field;
   password_field.name = saved_match_.password_element;
-  password_field.form_control_type =
-      autofill::StringToFormControlType("password");
+  password_field.form_control_type = autofill::FormControlType::kInputPassword;
   saved_match_.form_data.fields.push_back(password_field);
   SetNonFederatedAndNotifyFetchCompleted({&saved_match_});
 
@@ -1325,13 +1324,12 @@ TEST_P(PasswordFormManagerTest, CredentialsReusedVote) {
        saved_match_.all_alternative_usernames) {
     FormFieldData field;
     field.name = alternative.name;
-    field.form_control_type = autofill::StringToFormControlType("text");
+    field.form_control_type = autofill::FormControlType::kInputText;
     saved_match_.form_data.fields.push_back(field);
   }
   FormFieldData password_field;
   password_field.name = saved_match_.password_element;
-  password_field.form_control_type =
-      autofill::StringToFormControlType("password");
+  password_field.form_control_type = autofill::FormControlType::kInputPassword;
   saved_match_.form_data.fields.push_back(password_field);
 
   SetNonFederatedAndNotifyFetchCompleted({&saved_match_});
@@ -2020,7 +2018,7 @@ TEST_P(PasswordFormManagerTest, HasObservedFormChangedFormControlsType) {
 
   FormData form = observed_form_;
   form.fields[kUsernameFieldIndex].form_control_type =
-      autofill::StringToFormControlType("password");
+      autofill::FormControlType::kInputPassword;
   EXPECT_TRUE(HasObservedFormChanged(form, *form_manager_));
   form_manager_.reset();
 
@@ -3104,7 +3102,7 @@ TEST_P(PasswordFormManagerTest, ChangePasswordFormWithUsernameSubmitted) {
   FormData submitted_form = observed_form_only_password_fields_;
   FormFieldData username_field;
   username_field.name = u"username";
-  username_field.form_control_type = autofill::StringToFormControlType("text");
+  username_field.form_control_type = autofill::FormControlType::kInputText;
   username_field.value = u"oldusername";
   username_field.unique_renderer_id = autofill::FieldRendererId(2);
   submitted_form.fields.insert(std::begin(submitted_form.fields),

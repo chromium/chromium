@@ -638,8 +638,8 @@ FormData ConvertToFormData(const std::vector<TestCaseFieldInfo>& fields) {
       form_field.properties_mask |= FieldPropertiesFlags::kAutofilledOnPageLoad;
 
     form_field.form_control_type =
-        field.is_password ? autofill::StringToFormControlType("password")
-                          : autofill::StringToFormControlType("text");
+        field.is_password ? autofill::FormControlType::kInputPassword
+                          : autofill::FormControlType::kInputText;
 
     form.fields.push_back(form_field);
   }

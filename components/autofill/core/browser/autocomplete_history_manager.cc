@@ -39,11 +39,11 @@ namespace {
 const int kMaxAutocompleteMenuItems = 6;
 
 bool IsTextField(const FormFieldData& field) {
-  return field.form_control_type == StringToFormControlType("text") ||
-         field.form_control_type == StringToFormControlType("search") ||
-         field.form_control_type == StringToFormControlType("tel") ||
-         field.form_control_type == StringToFormControlType("url") ||
-         field.form_control_type == StringToFormControlType("email");
+  return field.form_control_type == FormControlType::kInputText ||
+         field.form_control_type == FormControlType::kInputSearch ||
+         field.form_control_type == FormControlType::kInputTelephone ||
+         field.form_control_type == FormControlType::kInputUrl ||
+         field.form_control_type == FormControlType::kInputEmail;
 }
 
 // Returns true if the field has a meaningful name.
@@ -91,7 +91,7 @@ bool AutocompleteHistoryManager::OnGetSingleFieldSuggestions(
   CancelPendingQueries(handler.get());
 
   if (!IsMeaningfulFieldName(field.name) || !client.IsAutocompleteEnabled() ||
-      field.form_control_type == StringToFormControlType("textarea") ||
+      field.form_control_type == FormControlType::kTextArea ||
       IsInAutofillSuggestionsDisabledExperiment()) {
     SendSuggestions({}, QueryHandler(field.global_id(), trigger_source,
                                      field.value, handler));

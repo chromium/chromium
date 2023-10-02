@@ -217,21 +217,21 @@ class PasswordSaveManagerImplTestBase : public testing::Test {
     field.name = u"firstname";
     field.id_attribute = field.name;
     field.name_attribute = field.name;
-    field.form_control_type = autofill::StringToFormControlType("text");
+    field.form_control_type = autofill::FormControlType::kInputText;
     field.unique_renderer_id = autofill::FieldRendererId(1);
     observed_form_.fields.push_back(field);
 
     field.name = u"username";
     field.id_attribute = field.name;
     field.name_attribute = field.name;
-    field.form_control_type = autofill::StringToFormControlType("text");
+    field.form_control_type = autofill::FormControlType::kInputText;
     field.unique_renderer_id = autofill::FieldRendererId(2);
     observed_form_.fields.push_back(field);
 
     field.name = u"password";
     field.id_attribute = field.name;
     field.name_attribute = field.name;
-    field.form_control_type = autofill::StringToFormControlType("password");
+    field.form_control_type = autofill::FormControlType::kInputPassword;
     field.unique_renderer_id = autofill::FieldRendererId(3);
     observed_form_.fields.push_back(field);
     observed_form_only_password_fields_.fields.push_back(field);
@@ -239,7 +239,7 @@ class PasswordSaveManagerImplTestBase : public testing::Test {
     field.name = u"password2";
     field.id_attribute = field.name;
     field.name_attribute = field.name;
-    field.form_control_type = autofill::StringToFormControlType("password");
+    field.form_control_type = autofill::FormControlType::kInputPassword;
     field.unique_renderer_id = autofill::FieldRendererId(5);
     observed_form_only_password_fields_.fields.push_back(field);
 
@@ -1299,20 +1299,20 @@ TEST_P(PasswordSaveManagerImplTest, UsernameCorrectionVote) {
   field.name = matched_form_username_field_name;
   field.id_attribute = field.name;
   field.name_attribute = field.name;
-  field.form_control_type = autofill::StringToFormControlType("text");
+  field.form_control_type = autofill::FormControlType::kInputText;
   saved_match_.form_data.fields.push_back(field);
 
   field.name = u"firstname";
   field.id_attribute = field.name;
   field.name_attribute = field.name;
-  field.form_control_type = autofill::StringToFormControlType("text");
+  field.form_control_type = autofill::FormControlType::kInputText;
   saved_match_.form_data.fields.push_back(field);
   saved_match_.username_element = field.name;
 
   field.name = u"password";
   field.id_attribute = field.name;
   field.name_attribute = field.name;
-  field.form_control_type = autofill::StringToFormControlType("password");
+  field.form_control_type = autofill::FormControlType::kInputPassword;
   saved_match_.form_data.fields.push_back(field);
   saved_match_.password_element = field.name;
 

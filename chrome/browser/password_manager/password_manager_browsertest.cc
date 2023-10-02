@@ -1177,7 +1177,7 @@ autofill::FormData GetPlaceholderUsernameFormData(
   form_data.url = signin_form.url;
   // Username
   autofill::FormFieldData username_field;
-  username_field.form_control_type = autofill::StringToFormControlType("text");
+  username_field.form_control_type = autofill::FormControlType::kInputText;
   username_field.id_attribute = u"username_field";
   username_field.name = username_field.id_attribute;
   username_field.value = u"example@example.com";
@@ -1186,8 +1186,7 @@ autofill::FormData GetPlaceholderUsernameFormData(
   form_data.fields.push_back(username_field);
   // Password
   autofill::FormFieldData password_field;
-  password_field.form_control_type =
-      autofill::StringToFormControlType("password");
+  password_field.form_control_type = autofill::FormControlType::kInputPassword;
   password_field.id_attribute = u"password_field";
   password_field.name = password_field.id_attribute;
   password_field.value = u"htmlPass";

@@ -603,7 +603,7 @@ TEST_F(SharedPasswordControllerTest, SuggestsGeneratedPassword) {
   field.id_attribute = field.name;
   field.name_attribute = field.name;
   field.value = u"googleuser";
-  field.form_control_type = autofill::StringToFormControlType("text");
+  field.form_control_type = autofill::FormControlType::kInputText;
   field.unique_renderer_id = autofill::test::MakeFieldRendererId();
   form_data.fields.push_back(field);
 
@@ -611,7 +611,7 @@ TEST_F(SharedPasswordControllerTest, SuggestsGeneratedPassword) {
   field.id_attribute = field.name;
   field.name_attribute = field.name;
   field.value = u"p4ssword";
-  field.form_control_type = autofill::StringToFormControlType("password");
+  field.form_control_type = autofill::FormControlType::kInputPassword;
   field.unique_renderer_id = autofill::test::MakeFieldRendererId();
   field.max_length = max_length;
   form_data.fields.push_back(field);
