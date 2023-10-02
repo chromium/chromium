@@ -14,11 +14,14 @@
 
 import 'chrome://os-settings/os_settings.js';
 
+import {AccountManagerBrowserProxyImpl} from 'chrome://os-settings/lazy_load.js';
 import {createRouterForTesting, CrSettingsPrefs, MainPageContainerElement, OsSettingsMainElement, OsSettingsUiElement, PageDisplayerElement, Router, routesMojom, SettingsIdleLoadElement} from 'chrome://os-settings/os_settings.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
+
+import {TestAccountManagerBrowserProxy} from '../os_people_page/test_account_manager_browser_proxy.js';
 
 import {SECTION_EXPECTATIONS, SectionName} from './page_availability_test_helpers.js';
 
@@ -29,6 +32,12 @@ suite('<os-settings-ui> page availability', () => {
   let ui: OsSettingsUiElement;
   let settingsMain: OsSettingsMainElement;
   let mainPageContainer: MainPageContainerElement;
+  let browserProxy: TestAccountManagerBrowserProxy;
+
+  suiteSetup(() => {
+    browserProxy = new TestAccountManagerBrowserProxy();
+    AccountManagerBrowserProxyImpl.setInstanceForTesting(browserProxy);
+  });
 
   async function createUi() {
     ui = document.createElement('os-settings-ui');
@@ -83,6 +92,9 @@ suite('<os-settings-ui> page availability', () => {
       Router.resetInstanceForTesting(testRouter);
 
       await createUi();
+
+      await browserProxy.whenCalled('getAccounts');
+      flush();
     });
 
     suiteTeardown(() => {
@@ -94,7 +106,7 @@ suite('<os-settings-ui> page availability', () => {
            availableBeforeRevamp,
            availableAfterRevamp,
          } of SECTION_EXPECTATIONS) {
-      test(`${name} page availability`, () => {
+      test(`${name} page availability`, async () => {
         const shouldExpectStamped = (isRevampEnabled && availableAfterRevamp) ||
             (!isRevampEnabled && availableBeforeRevamp);
 
@@ -120,6 +132,9 @@ suite('<os-settings-ui> page availability', () => {
       Router.resetInstanceForTesting(testRouter);
 
       await createUi();
+
+      await browserProxy.whenCalled('getAccounts');
+      flush();
     });
 
     suiteTeardown(() => {
@@ -132,7 +147,7 @@ suite('<os-settings-ui> page availability', () => {
            availableAfterRevamp,
            availableForGuest,
          } of SECTION_EXPECTATIONS) {
-      test(`${name} page availability`, () => {
+      test(`${name} page availability`, async () => {
         const shouldExpectStamped = availableForGuest &&
             ((isRevampEnabled && availableAfterRevamp) ||
              (!isRevampEnabled && availableBeforeRevamp));

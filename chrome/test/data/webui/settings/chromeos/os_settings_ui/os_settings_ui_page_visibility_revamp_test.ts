@@ -14,6 +14,7 @@
 
 import 'chrome://os-settings/os_settings.js';
 
+import {AccountManagerBrowserProxyImpl} from 'chrome://os-settings/lazy_load.js';
 import {createRouterForTesting, CrSettingsPrefs, MainPageContainerElement, OsSettingsMainElement, OsSettingsMenuElement, OsSettingsRoutes, OsSettingsUiElement, PageDisplayerElement, Router, routes, routesMojom, SettingsIdleLoadElement} from 'chrome://os-settings/os_settings.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -22,11 +23,14 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_as
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
+import {TestAccountManagerBrowserProxy} from '../os_people_page/test_account_manager_browser_proxy.js';
+
 suite('<os-settings-ui> page visibility', () => {
   let ui: OsSettingsUiElement;
   let settingsMain: OsSettingsMainElement;
   let mainPageContainer: MainPageContainerElement;
   let menu: OsSettingsMenuElement;
+  let browserProxy: TestAccountManagerBrowserProxy;
 
   async function createUi() {
     ui = document.createElement('os-settings-ui');
@@ -140,6 +144,8 @@ suite('<os-settings-ui> page visibility', () => {
   }
 
   suiteSetup(async () => {
+    browserProxy = new TestAccountManagerBrowserProxy();
+    AccountManagerBrowserProxyImpl.setInstanceForTesting(browserProxy);
     assertTrue(
         loadTimeData.getBoolean('isRevampWayfindingEnabled'),
         'This suite expects OsSettingsRevampWayfinding to be enabled.');

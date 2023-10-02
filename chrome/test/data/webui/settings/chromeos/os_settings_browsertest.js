@@ -959,6 +959,10 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
    'parental_controls_page/parental_controls_page_test.js'
  ],
  [
+   'OsPeopleAccountManagerSettingsCard',
+   'os_people_page/account_manager_settings_card_test.js',
+ ],
+ [
    'OsPeoplePageAccountManagerSubpage',
    'os_people_page/account_manager_subpage_test.js',
    {disabled: ['ash::features::kLacrosOnly']},

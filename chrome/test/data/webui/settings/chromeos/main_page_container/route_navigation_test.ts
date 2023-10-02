@@ -12,12 +12,15 @@
 
 import 'chrome://os-settings/os_settings.js';
 
+import {AccountManagerBrowserProxyImpl} from 'chrome://os-settings/lazy_load.js';
 import {createPageAvailabilityForTesting, CrSettingsPrefs, MainPageContainerElement, Router, routes, routesMojom, setContactManagerForTesting, setNearbyShareSettingsForTesting, SettingsPrefsElement} from 'chrome://os-settings/os_settings.js';
 import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {FakeContactManager} from 'chrome://webui-test/nearby_share/shared/fake_nearby_contact_manager.js';
 import {FakeNearbyShareSettings} from 'chrome://webui-test/nearby_share/shared/fake_nearby_share_settings.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
+
+import {TestAccountManagerBrowserProxy} from '../os_people_page/test_account_manager_browser_proxy.js';
 
 const {Section} = routesMojom;
 
@@ -26,6 +29,7 @@ suite('<main-page-container> Route Navigation', () => {
   let prefElement: SettingsPrefsElement;
   let fakeContactManager: FakeContactManager;
   let fakeNearbyShareSettings: FakeNearbyShareSettings;
+  let browserProxy: TestAccountManagerBrowserProxy;
 
   suiteSetup(async () => {
     // Simulate feature flag enabled for CSS styling purposes.
@@ -36,6 +40,9 @@ suite('<main-page-container> Route Navigation', () => {
     setContactManagerForTesting(fakeContactManager);
     fakeNearbyShareSettings = new FakeNearbyShareSettings();
     setNearbyShareSettingsForTesting(fakeNearbyShareSettings);
+
+    browserProxy = new TestAccountManagerBrowserProxy();
+    AccountManagerBrowserProxyImpl.setInstanceForTesting(browserProxy);
 
     prefElement = document.createElement('settings-prefs');
     await CrSettingsPrefs.initialized;

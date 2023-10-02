@@ -4,6 +4,7 @@
 
 import 'chrome://os-settings/os_settings.js';
 
+import {AccountManagerBrowserProxyImpl} from 'chrome://os-settings/lazy_load.js';
 import {createPageAvailabilityForTesting, createRouterForTesting, CrSettingsPrefs, MainPageContainerElement, Router, routes, routesMojom, setContactManagerForTesting, setNearbyShareSettingsForTesting, SettingsPrefsElement} from 'chrome://os-settings/os_settings.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -11,6 +12,8 @@ import {assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {FakeContactManager} from 'chrome://webui-test/nearby_share/shared/fake_nearby_contact_manager.js';
 import {FakeNearbyShareSettings} from 'chrome://webui-test/nearby_share/shared/fake_nearby_share_settings.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
+
+import {TestAccountManagerBrowserProxy} from '../os_people_page/test_account_manager_browser_proxy.js';
 
 const {Section} = routesMojom;
 
@@ -22,6 +25,7 @@ suite('<main-page-container>', () => {
   let prefElement: SettingsPrefsElement;
   let fakeContactManager: FakeContactManager;
   let fakeNearbyShareSettings: FakeNearbyShareSettings;
+  let browserProxy: TestAccountManagerBrowserProxy;
 
   suiteSetup(async () => {
     loadTimeData.overrideValues({isKerberosEnabled: true});
@@ -32,6 +36,9 @@ suite('<main-page-container>', () => {
 
     fakeNearbyShareSettings = new FakeNearbyShareSettings();
     setNearbyShareSettingsForTesting(fakeNearbyShareSettings);
+
+    browserProxy = new TestAccountManagerBrowserProxy();
+    AccountManagerBrowserProxyImpl.setInstanceForTesting(browserProxy);
 
     prefElement = document.createElement('settings-prefs');
     document.body.appendChild(prefElement);

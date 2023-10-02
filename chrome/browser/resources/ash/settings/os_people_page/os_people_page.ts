@@ -18,6 +18,7 @@ import '../os_settings_page/os_settings_animated_pages.js';
 import '../os_settings_page/os_settings_subpage.js';
 import '../os_settings_page/settings_card.js';
 import '../parental_controls_page/parental_controls_page.js';
+import './account_manager_settings_card.js';
 
 import {ProfileInfo, ProfileInfoBrowserProxyImpl} from '/shared/settings/people_page/profile_info_browser_proxy.js';
 import {SyncBrowserProxy, SyncBrowserProxyImpl, SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
@@ -27,7 +28,7 @@ import {getImage} from 'chrome://resources/js/icon.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {afterNextRender, flush, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {isAccountManagerEnabled} from '../common/load_time_booleans.js';
+import {isAccountManagerEnabled, isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
 import {DeepLinkingMixin} from '../deep_linking_mixin.js';
 import {LockStateMixin} from '../lock_state_mixin.js';
 import {Section} from '../mojom-webui/routes.mojom-webui.js';
@@ -100,6 +101,14 @@ export class OsSettingsPeoplePageElement extends
         readOnly: true,
       },
 
+      isRevampWayfindingEnabled_: {
+        type: Boolean,
+        value: () => {
+          return isRevampWayfindingEnabled();
+        },
+        readOnly: true,
+      },
+
       showParentalControls_: {
         type: Boolean,
         value() {
@@ -151,6 +160,7 @@ export class OsSettingsPeoplePageElement extends
   private profileLabel_: string;
   private fingerprintUnlockEnabled_: boolean;
   private isAccountManagerEnabled_: boolean;
+  private isRevampWayfindingEnabled_: boolean;
   private showParentalControls_: boolean;
   private section_: Section;
   private showPasswordPromptDialog_: boolean;
