@@ -298,13 +298,13 @@ class AccountTrackerServiceTest : public testing::Test {
   void ClearAccountTrackerEvents() { account_tracker_events_.clear(); }
 
   void OnAccountUpdated(const AccountInfo& ids) {
-    account_tracker_events_.push_back(
-        TrackingEvent(UPDATED, ids.account_id, ids.gaia, ids.email));
+    account_tracker_events_.emplace_back(UPDATED, ids.account_id, ids.gaia,
+                                         ids.email);
   }
 
   void OnAccountRemoved(const AccountInfo& ids) {
-    account_tracker_events_.push_back(
-        TrackingEvent(REMOVED, ids.account_id, ids.gaia, ids.email));
+    account_tracker_events_.emplace_back(REMOVED, ids.account_id, ids.gaia,
+                                         ids.email);
   }
 
   // Helpers to fake access token and user info fetching
@@ -367,6 +367,10 @@ class AccountTrackerServiceTest : public testing::Test {
 
   network::TestURLLoaderFactory* GetTestURLLoaderFactory() {
     return signin_client_.GetTestURLLoaderFactory();
+  }
+
+  void SaveToPrefs(const AccountInfo& account) {
+    account_tracker()->SaveToPrefs(account);
   }
 
  protected:
@@ -1137,6 +1141,38 @@ TEST_F(AccountTrackerServiceTest, ChildStatusMigration) {
   absl::optional<int> new_key = dict->FindInt(kNewChildKey);
   ASSERT_TRUE(new_key.has_value());
   EXPECT_EQ(static_cast<int>(signin::Tribool::kTrue), new_key.value());
+}
+
+TEST_F(AccountTrackerServiceTest, Persistence_DeleteEmpty) {
+  // Define a user data directory for the account image storage.
+  base::ScopedTempDir scoped_user_data_dir;
+  ASSERT_TRUE(scoped_user_data_dir.CreateUniqueTempDir());
+
+  // Create a tracker and save to prefs a valid account and an empty one.
+  ResetAccountTrackerWithPersistence(scoped_user_data_dir.GetPath());
+  AccountInfo a;
+  a.account_id = AccountKeyToAccountId(kAccountKeyAlpha);
+  a.gaia = AccountKeyToGaiaId(kAccountKeyAlpha);
+  a.email = AccountKeyToEmail(kAccountKeyAlpha);
+  SaveToPrefs(a);
+
+  AccountInfo empty_account;
+  SaveToPrefs(empty_account);
+
+  // Create a new tracker and make sure it loads the accounts.
+  ClearAccountTrackerEvents();
+  ResetAccountTrackerWithPersistence(scoped_user_data_dir.GetPath());
+
+  // Verify that the account with an empty account id was removed when loading
+  // the accounts from prefs.
+  std::vector<AccountInfo> infos = account_tracker()->GetAccounts();
+  ASSERT_EQ(1u, infos.size());
+  EXPECT_EQ(a.account_id, infos[0].account_id);
+
+  // Delete the account tracker before cleaning up |scoped_user_data_dir| so
+  // that all in-use files are closed.
+  ResetAccountTracker();
+  ASSERT_TRUE(scoped_user_data_dir.Delete());
 }
 
 TEST_F(AccountTrackerServiceTest, SeedAccountInfo) {

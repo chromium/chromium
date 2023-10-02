@@ -172,6 +172,7 @@ class AccountTrackerService {
 
  private:
   friend class AccountFetcherService;
+  friend class AccountTrackerServiceTest;
   friend void signin::SimulateSuccessfulFetchOfAccountInfo(
       signin::IdentityManager*,
       const CoreAccountId&,
@@ -190,7 +191,9 @@ class AccountTrackerService {
   void NotifyAccountUpdated(const AccountInfo& account_info);
   void NotifyAccountRemoved(const AccountInfo& account_info);
 
+  // Start tracking `account_id` (`account_id` must not be empty).
   void StartTrackingAccount(const CoreAccountId& account_id);
+  bool IsTrackingAccount(const CoreAccountId& account_id);
   void StopTrackingAccount(const CoreAccountId& account_id);
 
   // Load the current state of the account info from the preferences file.
