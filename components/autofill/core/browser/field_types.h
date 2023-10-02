@@ -507,6 +507,20 @@ constexpr ServerFieldType ToSafeServerFieldType(
                             : fallback_value;
 }
 
+constexpr HtmlFieldType ToSafeHtmlFieldType(
+    std::underlying_type_t<HtmlFieldType> raw_value,
+    HtmlFieldType fallback_value) {
+  using underlying_type_t = std::underlying_type_t<HtmlFieldType>;
+  auto IsValid = [](underlying_type_t t) {
+    return static_cast<underlying_type_t>(HtmlFieldType::kMinValue) <= t &&
+           t <= static_cast<underlying_type_t>(HtmlFieldType::kMaxValue) &&
+           // Full address is deprecated.
+           t != 17;
+  };
+  return IsValid(raw_value) ? static_cast<HtmlFieldType>(raw_value)
+                            : fallback_value;
+}
+
 constexpr ServerFieldTypeSet kAllServerFieldTypes = [] {
   ServerFieldTypeSet fields;
   for (std::underlying_type_t<ServerFieldType> i = 0; i < MAX_VALID_FIELD_TYPE;

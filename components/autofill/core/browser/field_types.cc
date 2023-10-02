@@ -605,7 +605,6 @@ FieldTypeGroup GroupTypeOfHtmlFieldType(HtmlFieldType field_type) {
     case HtmlFieldType::kCountryCode:
     case HtmlFieldType::kCountryName:
     case HtmlFieldType::kPostalCode:
-    case HtmlFieldType::kFullAddress:
       return FieldTypeGroup::kAddress;
 
     case HtmlFieldType::kCreditCardNameFull:
@@ -715,10 +714,6 @@ ServerFieldType HtmlFieldTypeToBestCorrespondingServerFieldType(
 
     case HtmlFieldType::kPostalCode:
       return ADDRESS_HOME_ZIP;
-
-    // Full address is composed of other types; it can't be stored.
-    case HtmlFieldType::kFullAddress:
-      return UNKNOWN_TYPE;
 
     case HtmlFieldType::kCreditCardNameFull:
       return CREDIT_CARD_NAME_FULL;

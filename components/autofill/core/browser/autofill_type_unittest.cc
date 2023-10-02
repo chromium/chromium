@@ -112,7 +112,7 @@ class AutofillTypeTestForHtmlFieldTypes
     : public ::testing::TestWithParam<std::underlying_type_t<HtmlFieldType>> {
  public:
   HtmlFieldType html_field_type() const {
-    return static_cast<HtmlFieldType>(GetParam());
+    return ToSafeHtmlFieldType(GetParam(), HtmlFieldType::kUnrecognized);
   }
 };
 
@@ -123,11 +123,13 @@ INSTANTIATE_TEST_SUITE_P(
                    base::to_underlying(HtmlFieldType::kMaxValue)));
 
 TEST_P(AutofillTypeTestForHtmlFieldTypes, GroupsOfHtmlFieldTypes) {
-  // Some HtmlFieldTypes have no ServerFieldType representation.
-  if (html_field_type() == HtmlFieldType::kFullAddress ||
-      html_field_type() == HtmlFieldType::kOneTimeCode ||
-      html_field_type() == HtmlFieldType::kTransactionAmount ||
-      html_field_type() == HtmlFieldType::kTransactionCurrency) {
+  if (HtmlFieldTypeToBestCorrespondingServerFieldType(html_field_type()) ==
+      UNKNOWN_TYPE) {
+    return;
+  }
+  // TODO(crbug.com/1476882): AutofillType(HtmlFieldType::kOneTimeCode).group()
+  // is kNoGroup, but AutofillType(ONE_TIME_CODE).group() is kUnfillable.
+  if (html_field_type() == HtmlFieldType::kOneTimeCode) {
     return;
   }
   AutofillType t(html_field_type());

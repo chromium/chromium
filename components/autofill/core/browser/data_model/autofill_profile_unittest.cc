@@ -1407,45 +1407,6 @@ TEST(AutofillProfileTest, SetInfoTrimsWhitespace) {
   EXPECT_EQ(u"user@example.com", profile.GetRawInfo(EMAIL_ADDRESS));
 }
 
-TEST(AutofillProfileTest, FullAddress) {
-  AutofillProfile profile;
-  test::SetProfileInfo(&profile, "Marion", "Mitchell", "Morrison",
-                       "marion@me.xyz", "Fox", "123 Zoo St.", "unit 5",
-                       "Hollywood", "CA", "91601", "US", "12345678910");
-
-  AutofillType full_address(HtmlFieldType::kFullAddress);
-  std::u16string formatted_address(
-      u"Marion Mitchell Morrison\n"
-      u"Fox\n"
-      u"123 Zoo St.\n"
-      u"unit 5\n"
-      u"Hollywood, CA 91601");
-  EXPECT_EQ(formatted_address, profile.GetInfo(full_address, "en-US"));
-  // This should fail and leave the profile unchanged.
-  EXPECT_FALSE(profile.SetInfo(full_address, u"foobar", "en-US"));
-  EXPECT_EQ(formatted_address, profile.GetInfo(full_address, "en-US"));
-
-  // Some things can be missing...
-  profile.SetInfo(ADDRESS_HOME_LINE2, std::u16string(), "en-US");
-  profile.SetInfo(EMAIL_ADDRESS, std::u16string(), "en-US");
-  EXPECT_EQ(
-      u"Marion Mitchell Morrison\n"
-      u"Fox\n"
-      u"123 Zoo St.\n"
-      u"Hollywood, CA 91601",
-      profile.GetInfo(full_address, "en-US"));
-
-  // ...but nothing comes out if a required field is missing.
-  profile.SetInfo(ADDRESS_HOME_STATE, std::u16string(), "en-US");
-  EXPECT_TRUE(profile.GetInfo(full_address, "en-US").empty());
-
-  // Restore the state but remove country. This should also fail.
-  profile.SetInfo(ADDRESS_HOME_STATE, u"CA", "en-US");
-  EXPECT_FALSE(profile.GetInfo(full_address, "en-US").empty());
-  profile.SetInfo(ADDRESS_HOME_COUNTRY, std::u16string(), "en-US");
-  EXPECT_TRUE(profile.GetInfo(full_address, "en-US").empty());
-}
-
 TEST(AutofillProfileTest, SaveAdditionalInfo_Name_AddingNameFull) {
   AutofillProfile a;
 

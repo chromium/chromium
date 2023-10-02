@@ -1050,17 +1050,6 @@ VerificationStatus AutofillProfile::GetVerificationStatusImpl(
 std::u16string AutofillProfile::GetInfoImpl(
     const AutofillType& type,
     const std::string& app_locale) const {
-  if (type.html_type() == HtmlFieldType::kFullAddress) {
-    std::unique_ptr<AddressData> address_data =
-        i18n::CreateAddressDataFromAutofillProfile(*this, app_locale);
-    if (!addressinput::HasAllRequiredFields(*address_data))
-      return std::u16string();
-
-    std::vector<std::string> lines;
-    ::i18n::addressinput::GetFormattedNationalAddress(*address_data, &lines);
-    return base::UTF8ToUTF16(base::JoinString(lines, "\n"));
-  }
-
   const FormGroup* form_group = FormGroupForType(type);
   if (!form_group)
     return std::u16string();

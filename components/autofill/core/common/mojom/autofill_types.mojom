@@ -71,7 +71,7 @@ enum HtmlFieldType {
   kCountryCode = 14,     // The ISO 3166-1-alpha-2 country code.
   kCountryName = 15,     // The localized country name.
   kPostalCode = 16,
-  kFullAddress = 17,     // The complete address, formatted for display.
+  // kFullAddress = 17 is deprecated.
 
   // Credit card types.
   kCreditCardNameFull = 18,

@@ -44,8 +44,6 @@ base::StringPiece FieldTypeToStringPiece(HtmlFieldType type) {
       return "HTML_TYPE_COUNTRY_NAME";
     case HtmlFieldType::kPostalCode:
       return "HTML_TYPE_POSTAL_CODE";
-    case HtmlFieldType::kFullAddress:
-      return "HTML_TYPE_FULL_ADDRESS";
     case HtmlFieldType::kCreditCardNameFull:
       return "HTML_TYPE_CREDIT_CARD_NAME_FULL";
     case HtmlFieldType::kCreditCardNameFirst:

@@ -226,11 +226,6 @@ bool Address::SetInfoWithVerificationStatusImpl(const AutofillType& type,
     return !country_code.empty();
   }
 
-  if (type.html_type() == HtmlFieldType::kFullAddress) {
-    // Parsing a full address is too hard.
-    return false;
-  }
-
   ServerFieldType storable_type = type.GetStorableType();
   if (storable_type == ADDRESS_HOME_COUNTRY && !value.empty()) {
     std::string country_code =
