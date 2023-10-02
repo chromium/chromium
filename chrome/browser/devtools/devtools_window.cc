@@ -1253,6 +1253,11 @@ GURL DevToolsWindow::GetDevToolsURL(Profile* profile,
     url += "&hasOtherClients=true";
   if (browser_connection)
     url += "&browserConnection=true";
+
+#if BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
+  url += "&isChromeForTesting=true";
+#endif
+
   return DevToolsUIBindings::SanitizeFrontendURL(GURL(url));
 }
 

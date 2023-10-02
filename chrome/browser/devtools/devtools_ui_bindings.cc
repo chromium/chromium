@@ -357,6 +357,11 @@ std::string SanitizeFrontendQueryParam(
   if (key == "veLogging" && value == "true") {
     return value;
   }
+
+  if (key == "isChromeForTesting" && value == "true") {
+    return value;
+  }
+
 #if defined(AIDA_SCOPE)
   if (key == "enableAida" && value == "true") {
     return value;
