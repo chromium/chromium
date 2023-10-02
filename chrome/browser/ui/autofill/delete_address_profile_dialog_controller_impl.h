@@ -22,6 +22,10 @@ class DeleteAddressProfileDialogControllerImpl
       public content::WebContentsUserData<
           DeleteAddressProfileDialogControllerImpl> {
  public:
+  using DeleteAddressProfileDialogViewFactory = base::RepeatingCallback<void(
+      content::WebContents*,
+      base::WeakPtr<DeleteAddressProfileDialogController>)>;
+
   DeleteAddressProfileDialogControllerImpl(
       const DeleteAddressProfileDialogControllerImpl&) = delete;
   DeleteAddressProfileDialogControllerImpl& operator=(
@@ -42,6 +46,9 @@ class DeleteAddressProfileDialogControllerImpl
   void OnClosed() override;
   void OnDialogDestroying() override;
 
+  void SetViewFactoryForTest(
+      DeleteAddressProfileDialogViewFactory view_factory);
+
  private:
   explicit DeleteAddressProfileDialogControllerImpl(
       content::WebContents* web_contents);
@@ -55,6 +62,7 @@ class DeleteAddressProfileDialogControllerImpl
   bool is_account_address_profile_;
   AutofillClient::AddressProfileDeleteDialogCallback delete_dialog_callback_;
   absl::optional<bool> user_accepted_;
+  DeleteAddressProfileDialogViewFactory view_factory_for_test_;
 
   base::WeakPtrFactory<DeleteAddressProfileDialogController> weak_ptr_factory_{
       this};

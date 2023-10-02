@@ -2,19 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/autofill/delete_address_profile_dialog_controller_impl.h"
+
 #include <string>
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/autofill/ui/ui_util.h"
-#include "chrome/browser/ui/autofill/delete_address_profile_dialog_controller_impl.h"
+#include "chrome/browser/ui/autofill/delete_address_profile_dialog_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
-#include "delete_address_profile_dialog_controller_impl.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/widget/widget.h"
 
@@ -40,7 +41,12 @@ void DeleteAddressProfileDialogControllerImpl::OfferDelete(
   }
   is_account_address_profile_ = is_account_address_profile;
   delete_dialog_callback_ = std::move(delete_dialog_callback);
-  // TODO(crbug.com/1459990): Open the delete dialog view.
+
+  if (view_factory_for_test_) {
+    view_factory_for_test_.Run(web_contents_, GetWeakPtr());
+  } else {
+    ShowDeleteAddressProfileDialogView(web_contents_, GetWeakPtr());
+  }
   is_dialog_opened_ = true;
 }
 
@@ -102,6 +108,11 @@ void DeleteAddressProfileDialogControllerImpl::OnDialogDestroying() {
 base::WeakPtr<DeleteAddressProfileDialogController>
 DeleteAddressProfileDialogControllerImpl::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
+}
+
+void DeleteAddressProfileDialogControllerImpl::SetViewFactoryForTest(
+    DeleteAddressProfileDialogViewFactory view_factory) {
+  view_factory_for_test_ = view_factory;
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(DeleteAddressProfileDialogControllerImpl);

@@ -43,6 +43,7 @@ class DeleteAddressProfileDialogControllerImplTest
     DeleteAddressProfileDialogControllerImpl::CreateForWebContents(
         web_contents());
     ASSERT_THAT(controller(), ::testing::NotNull());
+    controller()->SetViewFactoryForTest(/*view_factory=*/base::DoNothing());
   }
 
   void TearDown() override { BrowserWithTestWindowTest::TearDown(); }

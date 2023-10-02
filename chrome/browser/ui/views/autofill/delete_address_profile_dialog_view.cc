@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/autofill/delete_address_profile_dialog_view.h"
+#include "chrome/browser/ui/autofill/delete_address_profile_dialog_view.h"
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -13,7 +13,7 @@
 #include "ui/base/models/dialog_model.h"
 #include "ui/views/widget/widget.h"
 
-namespace autofill::dialogs {
+namespace autofill {
 
 // static
 void ShowDeleteAddressProfileDialogView(
@@ -43,7 +43,8 @@ void ShowDeleteAddressProfileDialogView(
               &DeleteAddressProfileDialogController::OnDialogDestroying,
               controller))
           .Build();
+
   constrained_window::ShowWebModal(std::move(dialog_model), web_contents);
 }
 
-}  // namespace autofill::dialogs
+}  // namespace autofill
