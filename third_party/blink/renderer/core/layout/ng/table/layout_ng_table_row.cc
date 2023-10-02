@@ -118,6 +118,12 @@ void LayoutNGTableRow::RemoveChild(LayoutObject* child) {
   NOT_DESTROYED();
   if (LayoutNGTable* table = Table())
     table->TableGridStructureChanged();
+  // Invalidate background in case this doesn't need layout which would
+  // trigger the invalidation, e.g. when the last child is removed.
+  if (StyleRef().HasBackground()) {
+    SetBackgroundNeedsFullPaintInvalidation();
+  }
+
   LayoutBlock::RemoveChild(child);
 }
 
