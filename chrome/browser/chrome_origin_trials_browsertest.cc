@@ -18,6 +18,7 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/common/content_client.h"
 #include "content/public/test/browser_test.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/origin_trials/origin_trial_policy.h"
 
@@ -201,11 +202,10 @@ IN_PROC_BROWSER_TEST_P(ChromeOriginTrialsDisabledTokensTest,
 IN_PROC_BROWSER_TEST_P(ChromeOriginTrialsDisabledTokensTest,
                        DisabledTokensInPolicy) {
   // Convert the uint8_t[] from generate_token.py into strings.
-  std::set<std::string> expected_signatures;
+  std::vector<std::string> expected_signatures;
   base::ranges::transform(
-      GetParam().expected_list,
-      std::inserter(expected_signatures, expected_signatures.begin()),
-      [](const uint8_t bytes[]) -> std::string {
+      GetParam().expected_list, std::back_inserter(expected_signatures),
+      [](const uint8_t bytes[]) {
         return std::string(reinterpret_cast<const char*>(bytes),
                            kTokenSignatureSize);
       });
@@ -214,7 +214,8 @@ IN_PROC_BROWSER_TEST_P(ChromeOriginTrialsDisabledTokensTest,
   ASSERT_TRUE(local_state()->HasPrefPath(
       embedder_support::prefs::kOriginTrialDisabledTokens));
   ASSERT_TRUE(policy);
-  ASSERT_EQ(*(policy->GetDisabledTokensForTesting()), expected_signatures);
+  EXPECT_THAT(*policy->GetDisabledTokensForTesting(),
+              testing::UnorderedElementsAreArray(expected_signatures));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
