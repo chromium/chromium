@@ -1887,6 +1887,13 @@ inline constexpr char kKeyboardDefaultNonChromeOSSettings[] =
 inline constexpr char kTouchpadDefaultSettings[] =
     "ash.settings.touchpad.defaults";
 
+// An integer pref that controls the state (Disabled, Ctrl, etc) of the
+// F11/F12 settings found in the customize keyboard keys subpage in device
+// settings. Can be controlled through device policy
+// DeviceExtendedFkeysMofidier.
+inline constexpr char kExtendedFkeysModifier[] =
+    "ash.settings.extended_fkeys_modifier";
+
 // NOTE: New prefs should start with the "ash." prefix. Existing prefs moved
 // into this file should not be renamed, since they may be synced.
 

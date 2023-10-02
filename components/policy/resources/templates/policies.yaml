@@ -1164,6 +1164,7 @@ policies:
   1163: PPAPISharedImagesForVideoDecoderAllowed
   1164: ProfileReauthPrompt
   1165: RelatedWebsiteSetsEnabled
+  1166: DeviceExtendedFkeysModifier
 atomic_groups:
   1: Homepage
   2: RemoteAccess

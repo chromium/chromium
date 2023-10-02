@@ -81,6 +81,8 @@
 #include "ui/base/ime/ash/extension_ime_util.h"
 #include "ui/base/ime/ash/ime_keyboard.h"
 #include "ui/base/ime/ash/input_method_manager.h"
+#include "ui/events/ash/mojom/extended_fkeys_modifier.mojom-shared.h"
+#include "ui/events/ash/mojom/extended_fkeys_modifier.mojom.h"
 #include "ui/events/ash/mojom/modifier_key.mojom.h"
 #include "ui/events/ash/pref_names.h"
 #include "ui/events/event_constants.h"
@@ -345,6 +347,9 @@ void Preferences::RegisterProfilePrefs(
   // depending on whether an external keyboard is attached to a particular
   // device.
   registry->RegisterBooleanPref(prefs::kSendFunctionKeys, false);
+  registry->RegisterIntegerPref(
+      prefs::kExtendedFkeysModifier,
+      static_cast<int>(ui::mojom::ExtendedFkeysModifier::kDisabled));
 
   registry->RegisterIntegerPref(prefs::kAltEventRemappedToRightClick, 0);
   registry->RegisterIntegerPref(prefs::kSearchEventRemappedToRightClick, 0);

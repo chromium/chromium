@@ -33983,6 +33983,7 @@ Called by update_document_policy_enum.py.-->
   <int value="1163" label="PPAPISharedImagesForVideoDecoderAllowed"/>
   <int value="1164" label="ProfileReauthPrompt"/>
   <int value="1165" label="RelatedWebsiteSetsEnabled"/>
+  <int value="1166" label="DeviceExtendedFkeysModifier"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

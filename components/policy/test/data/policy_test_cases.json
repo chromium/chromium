@@ -25118,5 +25118,32 @@
         }
       }
     ]
+  },
+  "DeviceExtendedFkeysModifier": {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "ash.settings.extended_fkeys_modifier": {
+            "location": "user_profile",
+            "default_value": 0
+          }
+        }
+      },
+      {
+        "policies": {
+          "DeviceExtendedFkeysModifier": 1
+        },
+        "prefs": {
+          "ash.settings.extended_fkeys_modifier": {
+            "location": "user_profile",
+            "value": 1
+          }
+        }
+      }
+    ]
   }
 }

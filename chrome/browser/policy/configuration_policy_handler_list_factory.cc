@@ -1538,6 +1538,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kDeviceSwitchFunctionKeysBehaviorEnabled,
     ash::prefs::kDeviceSwitchFunctionKeysBehaviorEnabled,
     base::Value::Type::BOOLEAN },
+  { key::kDeviceExtendedFkeysModifier,
+    ash::prefs::kExtendedFkeysModifier,
+    base::Value::Type::INTEGER },
 #endif // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_LINUX)

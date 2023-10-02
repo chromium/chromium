@@ -1823,6 +1823,18 @@ message DeviceSwitchFunctionKeysBehaviorEnabledProto {
   optional bool enabled = 1;
 }
 
+// Mirrors ExtendedFkeysModifier from the extended_fkeys_modifier.mojom
+message ExtendedFkeysModifierProto {
+  enum ExtendedFkeysModifier {
+    DISABLED = 0;  // Default value for the F11/F12 settings.
+    ALT = 1;
+    SHIFT = 2;
+    CTRL_SHIFT = 3;
+  }
+
+  optional ExtendedFkeysModifier modifier = 1 [default = DISABLED];
+}
+
 message ChromeDeviceSettingsProto {
   reserved 61, 71, 90;
   optional DevicePolicyRefreshRateProto device_policy_refresh_rate = 1;
@@ -2031,4 +2043,5 @@ message ChromeDeviceSettingsProto {
       device_switch_function_keys_behavior_enabled = 153;
   optional StringListPolicyProto device_dlc_predownload_list = 154;
   optional BooleanPolicyProto device_ephemeral_network_policies_enabled = 155;
+  optional ExtendedFkeysModifierProto extended_fkeys_modifier = 156;
 }

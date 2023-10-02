@@ -9,6 +9,7 @@
 #include "ash/public/mojom/input_device_settings.mojom-forward.h"
 #include "base/export_template.h"
 #include "base/values.h"
+#include "ui/events/ash/mojom/extended_fkeys_modifier.mojom-shared.h"
 #include "ui/events/devices/input_device.h"
 
 class AccountId;
@@ -61,6 +62,13 @@ ASH_EXPORT bool ShouldPersistSetting(
     bool new_value,
     bool default_value,
     bool force_persistence,
+    const base::Value::Dict* existing_settings_dict);
+
+ASH_EXPORT bool ShouldPersistFkeySetting(
+    const mojom::InputDeviceSettingsFkeyPolicyPtr& policy,
+    base::StringPiece setting_key,
+    absl::optional<ui::mojom::ExtendedFkeysModifier> new_value,
+    ui::mojom::ExtendedFkeysModifier default_value,
     const base::Value::Dict* existing_settings_dict);
 
 // Templates exported for each valid value type.

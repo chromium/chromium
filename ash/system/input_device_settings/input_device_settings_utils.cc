@@ -18,6 +18,7 @@
 #include "base/values.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/known_user.h"
+#include "ui/events/ash/mojom/extended_fkeys_modifier.mojom-shared.h"
 #include "ui/events/ash/mojom/modifier_key.mojom.h"
 #include "ui/events/ozone/evdev/keyboard_mouse_combo_device_metrics.h"
 
@@ -95,6 +96,31 @@ bool ShouldPersistSetting(const mojom::InputDeviceSettingsPolicyPtr& policy,
     case mojom::PolicyStatus::kRecommended:
       return ExistingSettingsHasValue(setting_key, existing_settings_dict) ||
              new_value != policy->value;
+    case mojom::PolicyStatus::kManaged:
+      return false;
+  }
+}
+
+bool ShouldPersistFkeySetting(
+    const mojom::InputDeviceSettingsFkeyPolicyPtr& policy,
+    base::StringPiece setting_key,
+    absl::optional<ui::mojom::ExtendedFkeysModifier> new_value,
+    ui::mojom::ExtendedFkeysModifier default_value,
+    const base::Value::Dict* existing_settings_dict) {
+  if (!new_value.has_value()) {
+    return false;
+  }
+
+  if (!policy) {
+    return ShouldPersistSetting(setting_key, new_value.value(), default_value,
+                                /*force_persistence=*/{},
+                                existing_settings_dict);
+  }
+
+  switch (policy->policy_status) {
+    case mojom::PolicyStatus::kRecommended:
+      return ExistingSettingsHasValue(setting_key, existing_settings_dict) ||
+             new_value.value() != policy->value;
     case mojom::PolicyStatus::kManaged:
       return false;
   }

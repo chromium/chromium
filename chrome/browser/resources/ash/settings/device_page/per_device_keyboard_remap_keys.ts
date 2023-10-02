@@ -27,8 +27,35 @@ import {RouteObserverMixin, RouteObserverMixinInterface} from '../route_observer
 import {Route, Router, routes} from '../router.js';
 
 import {getInputDeviceSettingsProvider} from './input_device_mojo_interface_provider.js';
-import {ExtendedFkeysModifier, InputDeviceSettingsProviderInterface, Keyboard, MetaKey, ModifierKey, SixPackKey, SixPackKeyInfo, SixPackShortcutModifier} from './input_device_settings_types.js';
+import {ExtendedFkeysModifier, InputDeviceSettingsFkeyPolicy, InputDeviceSettingsProviderInterface, Keyboard, KeyboardPolicies, MetaKey, ModifierKey, PolicyStatus, SixPackKey, SixPackKeyInfo, SixPackShortcutModifier} from './input_device_settings_types.js';
 import {getTemplate} from './per_device_keyboard_remap_keys.html.js';
+
+interface FkeyPrefPolicyFields {
+  controlledBy?: chrome.settingsPrivate.ControlledBy;
+  enforcement?: chrome.settingsPrivate.Enforcement;
+  recommendedValue?: ExtendedFkeysModifier;
+}
+
+function getFkeyPrefPolicyFields(policy?: InputDeviceSettingsFkeyPolicy):
+    FkeyPrefPolicyFields {
+  if (policy) {
+    const enforcement = policy.policyStatus === PolicyStatus.kManaged ?
+        chrome.settingsPrivate.Enforcement.ENFORCED :
+        chrome.settingsPrivate.Enforcement.RECOMMENDED;
+    return {
+      controlledBy: chrome.settingsPrivate.ControlledBy.USER_POLICY,
+      enforcement,
+      recommendedValue: policy.value,
+    };
+  }
+  // These fields must be set back to undefined so the html badge is properly
+  // removed from the UI.
+  return {
+    controlledBy: undefined,
+    enforcement: undefined,
+    recommendedValue: undefined,
+  };
+}
 
 const SettingsPerDeviceKeyboardRemapKeysElementBase =
     RouteObserverMixin(I18nMixin(PolymerElement)) as {
@@ -273,6 +300,10 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
         },
         readOnly: true,
       },
+
+      keyboardPolicies: {
+        type: Object,
+      },
     };
   }
 
@@ -294,6 +325,7 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
           'f12KeyPref.value,' +
           'fakeCapsLockPref.value)',
       'onKeyboardListUpdated(keyboards.*)',
+      'onPoliciesChanged(keyboardPolicies)',
     ];
   }
 
@@ -302,6 +334,7 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
   }
 
   keyboard: Keyboard;
+  protected keyboardPolicies: KeyboardPolicies;
   isAltClickAndSixPackCustomizationEnabled: boolean;
   areF11andF12KeyShortcutsEnabled: boolean;
   private keyboards: Keyboard[];
@@ -399,6 +432,14 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
     if (this.shouldShowFkeys()) {
       this.set('f11KeyPref.value', searchedKeyboard.settings?.f11);
       this.set('f12KeyPref.value', searchedKeyboard.settings?.f12);
+      this.f11KeyPref = {
+        ...this.f11KeyPref,
+        ...getFkeyPrefPolicyFields(this.keyboardPolicies.extendedFkeysPolicy),
+      };
+      this.f12KeyPref = {
+        ...this.f12KeyPref,
+        ...getFkeyPrefPolicyFields(this.keyboardPolicies.extendedFkeysPolicy),
+      };
     }
 
     this.isInitialized = true;
@@ -615,8 +656,21 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
 
   protected shouldShowFkeys(): boolean {
     return this.areF11andF12KeyShortcutsEnabled &&
-        (this.keyboard.settings?.f11 != null &&
-         this.keyboard.settings?.f12 != null);
+        (this.keyboard?.settings?.f11 != null &&
+         this.keyboard?.settings?.f12 != null);
+  }
+
+  private onPoliciesChanged(): void {
+    if (this.shouldShowFkeys()) {
+      this.f11KeyPref = {
+        ...this.f11KeyPref,
+        ...getFkeyPrefPolicyFields(this.keyboardPolicies.extendedFkeysPolicy),
+      };
+      this.f12KeyPref = {
+        ...this.f12KeyPref,
+        ...getFkeyPrefPolicyFields(this.keyboardPolicies.extendedFkeysPolicy),
+      };
+    }
   }
 }
 

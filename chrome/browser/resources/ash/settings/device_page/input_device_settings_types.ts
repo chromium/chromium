@@ -104,6 +104,10 @@ export type InputDeviceType = Keyboard|Touchpad|Mouse|PointingStick;
 
 export type InputDeviceSettingsPolicy =
     InputDeviceSettingsTypes.InputDeviceSettingsPolicy;
+
+export type InputDeviceSettingsFkeyPolicy =
+    InputDeviceSettingsTypes.InputDeviceSettingsFkeyPolicy;
+
 export type KeyboardPolicies = InputDeviceSettingsTypes.KeyboardPolicies;
 export type MousePolicies = InputDeviceSettingsTypes.MousePolicies;
 

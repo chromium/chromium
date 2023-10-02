@@ -810,9 +810,12 @@ TEST_F(KeyboardPrefHandlerTest,
   policies.enable_meta_fkey_rewrites_policy =
       mojom::InputDeviceSettingsPolicy::New(mojom::PolicyStatus::kManaged,
                                             kDefaultSuppressMetaFKeyRewrites);
+  policies.extended_fkeys_policy = mojom::InputDeviceSettingsFkeyPolicy::New(
+      mojom::PolicyStatus::kManaged, ui::mojom::ExtendedFkeysModifier::kShift);
 
   mojom::Keyboard keyboard;
   keyboard.device_key = kKeyboardKey1;
+  keyboard.meta_key = mojom::MetaKey::kSearch;
 
   pref_handler_->InitializeKeyboardSettings(pref_service_.get(), policies,
                                             &keyboard);
@@ -822,13 +825,21 @@ TEST_F(KeyboardPrefHandlerTest,
   // policy doesn't affect the value of the setting.
   EXPECT_EQ(kDefaultSuppressMetaFKeyRewrites,
             keyboard.settings->suppress_meta_fkey_rewrites);
+  EXPECT_EQ(ui::mojom::ExtendedFkeysModifier::kShift, keyboard.settings->f11);
+  EXPECT_EQ(ui::mojom::ExtendedFkeysModifier::kShift, keyboard.settings->f12);
   keyboard.settings->top_row_are_fkeys = kDefaultTopRowAreFKeys;
+  keyboard.settings->f11 = kDefaultFkey;
+  keyboard.settings->f12 = kDefaultFkey;
+
   EXPECT_EQ(kKeyboardSettingsDefault, *keyboard.settings);
 
   const auto* settings_dict = GetSettingsDictForDeviceKey(kKeyboardKey1);
   EXPECT_FALSE(settings_dict->contains(prefs::kKeyboardSettingTopRowAreFKeys));
   EXPECT_FALSE(
       settings_dict->contains(prefs::kKeyboardSettingSuppressMetaFKeyRewrites));
+
+  EXPECT_FALSE(settings_dict->contains(prefs::kKeyboardSettingF11));
+  EXPECT_FALSE(settings_dict->contains(prefs::kKeyboardSettingF12));
 }
 
 TEST_F(KeyboardPrefHandlerTest,
@@ -839,9 +850,13 @@ TEST_F(KeyboardPrefHandlerTest,
   policies.enable_meta_fkey_rewrites_policy =
       mojom::InputDeviceSettingsPolicy::New(mojom::PolicyStatus::kRecommended,
                                             !kDefaultSuppressMetaFKeyRewrites);
+  policies.extended_fkeys_policy = mojom::InputDeviceSettingsFkeyPolicy::New(
+      mojom::PolicyStatus::kRecommended,
+      ui::mojom::ExtendedFkeysModifier::kCtrlShift);
 
   mojom::Keyboard keyboard;
   keyboard.device_key = kKeyboardKey1;
+  keyboard.meta_key = mojom::MetaKey::kSearch;
 
   pref_handler_->InitializeKeyboardSettings(pref_service_.get(), policies,
                                             &keyboard);
@@ -851,13 +866,21 @@ TEST_F(KeyboardPrefHandlerTest,
   // policy doesn't affect the value of the setting.
   EXPECT_EQ(kDefaultSuppressMetaFKeyRewrites,
             keyboard.settings->suppress_meta_fkey_rewrites);
+  EXPECT_EQ(ui::mojom::ExtendedFkeysModifier::kCtrlShift,
+            keyboard.settings->f11);
+  EXPECT_EQ(ui::mojom::ExtendedFkeysModifier::kCtrlShift,
+            keyboard.settings->f12);
   keyboard.settings->top_row_are_fkeys = kDefaultTopRowAreFKeys;
+  keyboard.settings->f11 = kDefaultFkey;
+  keyboard.settings->f12 = kDefaultFkey;
   keyboard.settings->suppress_meta_fkey_rewrites =
       kDefaultSuppressMetaFKeyRewrites;
   EXPECT_EQ(kKeyboardSettingsDefault, *keyboard.settings);
 
   const auto* settings_dict = GetSettingsDictForDeviceKey(kKeyboardKey1);
   EXPECT_FALSE(settings_dict->contains(prefs::kKeyboardSettingTopRowAreFKeys));
+  EXPECT_FALSE(settings_dict->contains(prefs::kKeyboardSettingF11));
+  EXPECT_FALSE(settings_dict->contains(prefs::kKeyboardSettingF12));
 }
 
 TEST_F(KeyboardPrefHandlerTest,
@@ -868,9 +891,13 @@ TEST_F(KeyboardPrefHandlerTest,
   policies.enable_meta_fkey_rewrites_policy =
       mojom::InputDeviceSettingsPolicy::New(mojom::PolicyStatus::kRecommended,
                                             kDefaultSuppressMetaFKeyRewrites);
+  policies.extended_fkeys_policy = mojom::InputDeviceSettingsFkeyPolicy::New(
+      mojom::PolicyStatus::kRecommended,
+      ui::mojom::ExtendedFkeysModifier::kCtrlShift);
 
   mojom::Keyboard keyboard;
   keyboard.device_key = kKeyboardKey1;
+  keyboard.meta_key = mojom::MetaKey::kSearch;
 
   pref_handler_->InitializeKeyboardSettings(
       pref_service_.get(), /*keyboard_policies=*/{}, &keyboard);
@@ -881,9 +908,15 @@ TEST_F(KeyboardPrefHandlerTest,
   EXPECT_EQ(!kDefaultTopRowAreFKeys, keyboard.settings->top_row_are_fkeys);
   EXPECT_EQ(!kDefaultSuppressMetaFKeyRewrites,
             keyboard.settings->suppress_meta_fkey_rewrites);
+  EXPECT_EQ(ui::mojom::ExtendedFkeysModifier::kCtrlShift,
+            keyboard.settings->f11);
+  EXPECT_EQ(ui::mojom::ExtendedFkeysModifier::kCtrlShift,
+            keyboard.settings->f12);
   keyboard.settings->top_row_are_fkeys = kDefaultTopRowAreFKeys;
   keyboard.settings->suppress_meta_fkey_rewrites =
       kDefaultSuppressMetaFKeyRewrites;
+  keyboard.settings->f11 = kDefaultFkey;
+  keyboard.settings->f12 = kDefaultFkey;
   EXPECT_EQ(kKeyboardSettingsDefault, *keyboard.settings);
 
   const auto* settings_dict = GetSettingsDictForDeviceKey(kKeyboardKey1);
@@ -898,9 +931,13 @@ TEST_F(KeyboardPrefHandlerTest,
   policies.enable_meta_fkey_rewrites_policy =
       mojom::InputDeviceSettingsPolicy::New(mojom::PolicyStatus::kManaged,
                                             kDefaultSuppressMetaFKeyRewrites);
+  policies.extended_fkeys_policy = mojom::InputDeviceSettingsFkeyPolicy::New(
+      mojom::PolicyStatus::kManaged,
+      ui::mojom::ExtendedFkeysModifier::kCtrlShift);
 
   mojom::Keyboard keyboard;
   keyboard.device_key = kKeyboardKey1;
+  keyboard.meta_key = mojom::MetaKey::kSearch;
 
   pref_handler_->InitializeKeyboardSettings(
       pref_service_.get(), /*keyboard_policies=*/{}, &keyboard);
@@ -909,6 +946,8 @@ TEST_F(KeyboardPrefHandlerTest,
   keyboard.settings->top_row_are_fkeys = !kDefaultTopRowAreFKeys;
   keyboard.settings->suppress_meta_fkey_rewrites =
       !kDefaultSuppressMetaFKeyRewrites;
+  keyboard.settings->f11 = ui::mojom::ExtendedFkeysModifier::kAlt;
+  keyboard.settings->f12 = ui::mojom::ExtendedFkeysModifier::kAlt;
   CallUpdateKeyboardSettings(kKeyboardKey1, *keyboard.settings);
 
   pref_handler_->InitializeKeyboardSettings(pref_service_.get(), policies,
@@ -916,9 +955,15 @@ TEST_F(KeyboardPrefHandlerTest,
   EXPECT_EQ(!kDefaultTopRowAreFKeys, keyboard.settings->top_row_are_fkeys);
   EXPECT_EQ(!kDefaultSuppressMetaFKeyRewrites,
             keyboard.settings->suppress_meta_fkey_rewrites);
+  EXPECT_EQ(ui::mojom::ExtendedFkeysModifier::kCtrlShift,
+            keyboard.settings->f11);
+  EXPECT_EQ(ui::mojom::ExtendedFkeysModifier::kCtrlShift,
+            keyboard.settings->f12);
   keyboard.settings->top_row_are_fkeys = kDefaultTopRowAreFKeys;
   keyboard.settings->suppress_meta_fkey_rewrites =
       kDefaultSuppressMetaFKeyRewrites;
+  keyboard.settings->f11 = kDefaultFkey;
+  keyboard.settings->f12 = kDefaultFkey;
   EXPECT_EQ(kKeyboardSettingsDefault, *keyboard.settings);
 
   const auto* settings_dict = GetSettingsDictForDeviceKey(kKeyboardKey1);
@@ -926,6 +971,12 @@ TEST_F(KeyboardPrefHandlerTest,
   EXPECT_EQ(
       !kDefaultTopRowAreFKeys,
       settings_dict->FindBool(prefs::kKeyboardSettingTopRowAreFKeys).value());
+  EXPECT_TRUE(settings_dict->contains(prefs::kKeyboardSettingF11));
+  EXPECT_TRUE(settings_dict->contains(prefs::kKeyboardSettingF12));
+  EXPECT_NE(static_cast<int>(kDefaultFkey),
+            settings_dict->FindInt(prefs::kKeyboardSettingF11).value());
+  EXPECT_NE(static_cast<int>(kDefaultFkey),
+            settings_dict->FindInt(prefs::kKeyboardSettingF12).value());
 }
 
 TEST_F(KeyboardPrefHandlerTest,

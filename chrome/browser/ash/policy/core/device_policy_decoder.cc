@@ -2324,6 +2324,17 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
     SetDeviceDlcPredownloadListPolicy(
         policy.device_dlc_predownload_list().value().entries(), policies);
   }
+
+  if (policy.has_extended_fkeys_modifier()) {
+    const em::ExtendedFkeysModifierProto& container(
+        policy.extended_fkeys_modifier());
+    if (container.has_modifier()) {
+      policies->Set(policy::key::kDeviceExtendedFkeysModifier,
+                    POLICY_LEVEL_RECOMMENDED, POLICY_SCOPE_MACHINE,
+                    POLICY_SOURCE_CLOUD, base::Value(container.modifier()),
+                    nullptr);
+    }
+  }
 }
 
 }  // namespace
