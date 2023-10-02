@@ -54,6 +54,7 @@
 #import "ios/chrome/browser/infobars/overlays/infobar_overlay_tab_helper.h"
 #import "ios/chrome/browser/infobars/overlays/translate_overlay_tab_helper.h"
 #import "ios/chrome/browser/itunes_urls/itunes_urls_handler_tab_helper.h"
+#import "ios/chrome/browser/lens/lens_tab_helper.h"
 #import "ios/chrome/browser/link_to_text/link_to_text_tab_helper.h"
 #import "ios/chrome/browser/metrics/pageload_foreground_duration_tab_helper.h"
 #import "ios/chrome/browser/ntp/features.h"
@@ -143,6 +144,11 @@ void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
   commerce::CommerceTabHelper::CreateForWebState(
       web_state, is_off_the_record,
       commerce::ShoppingServiceFactory::GetForBrowserState(browser_state));
+
+  // Since LensTabHelper listens for a custom scheme, it needs to be
+  // created before AppLauncherTabHelper, which will filter out
+  // unhandled schemes.
+  LensTabHelper::CreateForWebState(web_state);
   AppLauncherTabHelper::CreateForWebState(
       web_state, [[AppLauncherAbuseDetector alloc] init]);
   security_interstitials::IOSBlockingPageTabHelper::CreateForWebState(

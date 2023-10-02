@@ -6,6 +6,8 @@ source_set("lens") {
   sources = [
     "lens_browser_agent.h",
     "lens_browser_agent.mm",
+    "lens_tab_helper.h",
+    "lens_tab_helper.mm",
   ]
   deps = [
     "//components/search_engines",
@@ -22,5 +24,21 @@ source_set("lens") {
   public_deps = [
     "//base",
     "//third_party/abseil-cpp:absl",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "lens_tab_helper_unittest.mm" ]
+  deps = [
+    ":lens",
+    "//base/test:test_support",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/ui/lens:lens_entrypoint",
+    "//ios/testing:ocmock_support",
+    "//ios/web/public/test",
+    "//testing/gtest",
+    "//third_party/ocmock",
   ]
 }
