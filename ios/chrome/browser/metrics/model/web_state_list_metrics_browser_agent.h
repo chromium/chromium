@@ -39,8 +39,9 @@ class WebStateListMetricsBrowserAgent
   void BrowserDestroyed(Browser* browser) override;
 
   // SessionRestorationObserver implementation.
-  void WillStartSessionRestoration() override;
+  void WillStartSessionRestoration(Browser* browser) override;
   void SessionRestorationFinished(
+      Browser* browser,
       const std::vector<web::WebState*>& restored_web_states) override;
 
   // web::WebStateObserver

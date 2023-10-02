@@ -11,7 +11,7 @@
 #import "components/ukm/ios/ukm_url_recorder.h"
 #import "ios/chrome/browser/prerender/prerender_service.h"
 #import "ios/chrome/browser/prerender/prerender_service_factory.h"
-#import "ios/chrome/browser/sessions/session_restoration_browser_agent.h"
+#import "ios/chrome/browser/sessions/session_restoration_observer_helper.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -22,10 +22,6 @@
 #import "ios/web/public/web_state.h"
 #import "services/metrics/public/cpp/ukm_builders.h"
 #import "ui/base/page_transition_types.h"
-
-// To get access to UseSessionSerializationOptimizations().
-// TODO(crbug.com/1383087): remove once the feature is fully launched.
-#import "ios/web/common/features.h"
 
 BROWSER_USER_DATA_KEY_IMPL(TabUsageRecorderBrowserAgent)
 
@@ -43,13 +39,7 @@ TabUsageRecorderBrowserAgent::TabUsageRecorderBrowserAgent(Browser* browser)
     web_state->AddObserver(this);
   }
 
-  if (!web::features::UseSessionSerializationOptimizations()) {
-    SessionRestorationBrowserAgent* restoration_agent =
-        SessionRestorationBrowserAgent::FromBrowser(browser);
-    if (restoration_agent) {
-      restoration_agent->AddObserver(this);
-    }
-  }
+  AddSessionRestorationObserver(browser, this);
 
   // Register for backgrounding and foregrounding notifications. It is safe for
   // the block to capture a pointer to `this` as they are unregistered in the
@@ -85,13 +75,7 @@ void TabUsageRecorderBrowserAgent::BrowserDestroyed(Browser* browser) {
 
   web_state_list_->RemoveObserver(this);
   browser->RemoveObserver(this);
-  if (!web::features::UseSessionSerializationOptimizations()) {
-    SessionRestorationBrowserAgent* restoration_agent =
-        SessionRestorationBrowserAgent::FromBrowser(browser);
-    if (restoration_agent) {
-      restoration_agent->RemoveObserver(this);
-    }
-  }
+  RemoveSessionRestorationObserver(browser, this);
   if (application_backgrounding_observer_) {
     [[NSNotificationCenter defaultCenter]
         removeObserver:application_backgrounding_observer_];
@@ -574,8 +558,23 @@ void TabUsageRecorderBrowserAgent::WebStateListDidChange(
   }
 }
 
+#pragma mark - SessionRestorationObserver
+
+void TabUsageRecorderBrowserAgent::WillStartSessionRestoration(
+    Browser* browser) {
+  // Nothing to do.
+}
+
 void TabUsageRecorderBrowserAgent::SessionRestorationFinished(
+    Browser* browser,
     const std::vector<web::WebState*>& restored_web_states) {
+  // Ignore the event if it does not correspond to the browser this
+  // object is bound to (which can happen with the optimised session
+  // storage code).
+  if (browser->GetWebStateList() != web_state_list_) {
+    return;
+  }
+
   InitialRestoredTabs(web_state_list_->GetActiveWebState(),
                       restored_web_states);
 }

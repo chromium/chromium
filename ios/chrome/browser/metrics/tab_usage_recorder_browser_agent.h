@@ -157,7 +157,9 @@ class TabUsageRecorderBrowserAgent
                              const WebStateListStatus& status) override;
 
   // SessionRestorationObserver implementation.
+  void WillStartSessionRestoration(Browser* browser) override;
   void SessionRestorationFinished(
+      Browser* browser,
       const std::vector<web::WebState*>& restored_web_states) override;
 
   // Keep track of when the most recent tab restore begins, to record the time

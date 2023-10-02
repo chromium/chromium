@@ -19,22 +19,13 @@ class SessionRestorationObserver : public base::CheckedObserver {
  public:
   SessionRestorationObserver() = default;
 
-  // Invoked before the session restoration starts.
-  // OBSOLETE: override `WillStartSessionRestoration(Browser*)` instead.
-  virtual void WillStartSessionRestoration() {}
-
-  // Invoked when the session restoration is finished.
-  // OBSOLETE: override `SessionRestorationFinished(Browser*, ...)` instead.
-  virtual void SessionRestorationFinished(
-      const std::vector<web::WebState*>& restored_web_states) {}
-
   // Invoked before the session restoration starts for `browser`.
-  virtual void WillStartSessionRestoration(Browser* browser) {}
+  virtual void WillStartSessionRestoration(Browser* browser) = 0;
 
   // Invoked when the session restoration is finished for `browser`.
   virtual void SessionRestorationFinished(
       Browser* browser,
-      const std::vector<web::WebState*>& restored_web_states) {}
+      const std::vector<web::WebState*>& restored_web_states) = 0;
 };
 
 #endif  // IOS_CHROME_BROWSER_SESSIONS_SESSION_RESTORATION_OBSERVER_H_

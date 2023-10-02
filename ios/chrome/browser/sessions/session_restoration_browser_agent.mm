@@ -252,7 +252,6 @@ void SessionRestorationBrowserAgent::RestoreSessionWindow(
   restoring_session_ = true;
 
   for (auto& observer : observers_) {
-    observer.WillStartSessionRestoration();
     observer.WillStartSessionRestoration(browser_);
   }
 
@@ -283,7 +282,6 @@ void SessionRestorationBrowserAgent::RestoreSessionWindow(
   }
 
   for (auto& observer : observers_) {
-    observer.SessionRestorationFinished(restored_web_states);
     observer.SessionRestorationFinished(browser_, restored_web_states);
   }
 

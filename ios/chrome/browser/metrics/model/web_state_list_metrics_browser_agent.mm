@@ -11,7 +11,7 @@
 #import "components/navigation_metrics/navigation_metrics.h"
 #import "components/profile_metrics/browser_profile_type.h"
 #import "ios/chrome/browser/crash_report/model/crash_loop_detection_util.h"
-#import "ios/chrome/browser/sessions/session_restoration_browser_agent.h"
+#import "ios/chrome/browser/sessions/session_restoration_observer_helper.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/all_web_state_observation_forwarder.h"
@@ -24,10 +24,6 @@
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
 
-// To get access to UseSessionSerializationOptimizations().
-// TODO(crbug.com/1383087): remove once the feature is fully launched.
-#import "ios/web/common/features.h"
-
 BROWSER_USER_DATA_KEY_IMPL(WebStateListMetricsBrowserAgent)
 
 WebStateListMetricsBrowserAgent::WebStateListMetricsBrowserAgent(
@@ -39,26 +35,38 @@ WebStateListMetricsBrowserAgent::WebStateListMetricsBrowserAgent(
   DCHECK(session_metrics_);
   browser->AddObserver(this);
   web_state_list_->AddObserver(this);
-  web_state_forwarder_.reset(
-      new AllWebStateObservationForwarder(web_state_list_, this));
+  web_state_forwarder_ =
+      std::make_unique<AllWebStateObservationForwarder>(web_state_list_, this);
 
-  if (!web::features::UseSessionSerializationOptimizations()) {
-    SessionRestorationBrowserAgent* restoration_agent =
-        SessionRestorationBrowserAgent::FromBrowser(browser);
-    if (restoration_agent) {
-      restoration_agent->AddObserver(this);
-    }
-  }
+  AddSessionRestorationObserver(browser, this);
 }
 
 WebStateListMetricsBrowserAgent::~WebStateListMetricsBrowserAgent() = default;
 
-void WebStateListMetricsBrowserAgent::WillStartSessionRestoration() {
+#pragma mark - SessionRestorationObserver
+
+void WebStateListMetricsBrowserAgent::WillStartSessionRestoration(
+    Browser* browser) {
+  // Ignore the event if it does not correspond to the browser this
+  // object is bound to (which can happen with the optimised session
+  // storage code).
+  if (browser->GetWebStateList() != web_state_list_) {
+    return;
+  }
+
   metric_collection_paused_ = true;
 }
 
 void WebStateListMetricsBrowserAgent::SessionRestorationFinished(
+    Browser* browser,
     const std::vector<web::WebState*>& restored_web_states) {
+  // Ignore the event if it does not correspond to the browser this
+  // object is bound to (which can happen with the optimised session
+  // storage code).
+  if (browser->GetWebStateList() != web_state_list_) {
+    return;
+  }
+
   metric_collection_paused_ = false;
 }
 
@@ -158,13 +166,7 @@ void WebStateListMetricsBrowserAgent::PageLoaded(
 void WebStateListMetricsBrowserAgent::BrowserDestroyed(Browser* browser) {
   DCHECK_EQ(browser->GetWebStateList(), web_state_list_);
 
-  if (!web::features::UseSessionSerializationOptimizations()) {
-    SessionRestorationBrowserAgent* restoration_agent =
-        SessionRestorationBrowserAgent::FromBrowser(browser);
-    if (restoration_agent) {
-      restoration_agent->RemoveObserver(this);
-    }
-  }
+  RemoveSessionRestorationObserver(browser, this);
 
   web_state_forwarder_.reset(nullptr);
   web_state_list_->RemoveObserver(this);
