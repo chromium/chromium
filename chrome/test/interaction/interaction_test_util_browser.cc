@@ -82,68 +82,95 @@ class InteractionTestUtilSimulatorBrowser
   InteractionTestUtilSimulatorBrowser() = default;
   ~InteractionTestUtilSimulatorBrowser() override = default;
 
-#if BUILDFLAG(IS_MAC)
-  // Browser accelerators must be sent via key events to the window on Mac or
-  // they don't work properly. Dialog accelerators still appear to work the same
-  // as on other platforms.
   ui::test::ActionResult SendAccelerator(ui::TrackedElement* element,
                                          ui::Accelerator accelerator) override {
-    Browser* const browser =
-        InteractionTestUtilBrowser::GetBrowserFromContext(element->context());
-    if (!browser)
-      return ui::test::ActionResult::kNotAttempted;
-
-    if (!ui_controls::SendKeyPress(
-            browser->window()->GetNativeWindow(), accelerator.key_code(),
-            accelerator.IsCtrlDown(), accelerator.IsShiftDown(),
-            accelerator.IsAltDown(), accelerator.IsCmdDown())) {
-      LOG(ERROR) << "Failed to send accelerator"
-                 << accelerator.GetShortcutText() << " to " << *element;
-      return ui::test::ActionResult::kFailed;
+#if BUILDFLAG(IS_MAC)
+    // Browser accelerators must be sent via key events to the window on Mac or
+    // they don't work properly. Dialog accelerators still appear to work the
+    // same as on other platforms.
+    if (Browser* const browser =
+            InteractionTestUtilBrowser::GetBrowserFromContext(
+                element->context())) {
+      if (!ui_controls::SendKeyPress(
+              browser->window()->GetNativeWindow(), accelerator.key_code(),
+              accelerator.IsCtrlDown(), accelerator.IsShiftDown(),
+              accelerator.IsAltDown(), accelerator.IsCmdDown())) {
+        LOG(ERROR) << "Failed to send accelerator"
+                   << accelerator.GetShortcutText() << " to " << *element;
+        return ui::test::ActionResult::kFailed;
+      }
+      return ui::test::ActionResult::kSucceeded;
     }
-    return ui::test::ActionResult::kSucceeded;
-  }
 #endif  // BUILDFLAG(IS_MAC)
+
+    if (auto* const tracked_contents =
+            element->AsA<TrackedElementWebContents>()) {
+      if (auto* const view = tracked_contents->owner()->GetWebView()) {
+        view->GetFocusManager()->ProcessAccelerator(accelerator);
+        return ui::test::ActionResult::kSucceeded;
+      } else {
+        LOG(ERROR) << "No associated view to send accelerators to.";
+        return ui::test::ActionResult::kFailed;
+      }
+    }
+
+    return ui::test::ActionResult::kNotAttempted;
+  }
 
   // Chrome has better and more thorough functionality for bringing a browser
   // window to the front, but it's expensive, so only actually use it for
   // browser windows on platforms where activation requires extra steps.
   ui::test::ActionResult ActivateSurface(ui::TrackedElement* el) override {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-    if (!el->IsA<views::TrackedElementViews>()) {
+    views::View* view = nullptr;
+    bool is_web_contents = false;
+    if (auto* view_el = el->AsA<views::TrackedElementViews>()) {
+      view = view_el->view();
+    } else if (auto* contents_el = el->AsA<TrackedElementWebContents>()) {
+      is_web_contents = true;
+      view = contents_el->owner()->GetWebView();
+      if (!view) {
+        LOG(ERROR) << "WebContents not associated with any UI element.";
+        return ui::test::ActionResult::kFailed;
+      }
+    }
+    if (!view) {
       return ui::test::ActionResult::kNotAttempted;
     }
 
     // Get the browser and browser window associated with the current context.
-    // If there is none, do not use this implementation.
-    auto* const browser =
-        InteractionTestUtilBrowser::GetBrowserFromContext(el->context());
-    if (!browser) {
-      return ui::test::ActionResult::kNotAttempted;
-    }
-    auto* const browser_view = BrowserView::GetBrowserViewForBrowser(browser);
-    if (!browser_view) {
-      return ui::test::ActionResult::kNotAttempted;
-    }
-
-    // If the target widget is not the primary window widget, do not use this
-    // implementation.
-    if (browser_view->GetWidget() !=
-        el->AsA<views::TrackedElementViews>()->view()->GetWidget()) {
-      return ui::test::ActionResult::kNotAttempted;
-    }
-
-    // Bring the browser window to the front using the most aggressive method
-    // for the current platform. If this is not done, then mouse events might
-    // not get routed to the correct surface.
-    if (!ui_test_utils::BringBrowserWindowToFront(browser)) {
-      LOG(ERROR) << "BringBrowserWindowToFront() failed.";
-      return ui::test::ActionResult::kFailed;
-    }
-    return ui::test::ActionResult::kSucceeded;
+    // If there is none, or it is not the same widget as the view, do not use
+    // this implementation.
+    if (auto* const browser =
+            InteractionTestUtilBrowser::GetBrowserFromContext(el->context())) {
+      if (auto* const browser_view =
+              BrowserView::GetBrowserViewForBrowser(browser)) {
+        if (browser_view->GetWidget() == view->GetWidget()) {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+          // Bring the browser window to the front using the most aggressive
+          // method for the current platform. If this is not done, then mouse
+          // events might not get routed to the correct surface.
+          if (!ui_test_utils::BringBrowserWindowToFront(browser)) {
+            LOG(ERROR) << "BringBrowserWindowToFront() failed.";
+            return ui::test::ActionResult::kFailed;
+          }
+          return ui::test::ActionResult::kSucceeded;
 #else
-    return ui::test::ActionResult::kNotAttempted;
+          // Use the default logic to activate the browser.
+          return views::test::InteractionTestUtilSimulatorViews::ActivateWidget(
+              view->GetWidget());
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+        }
+      }
+    }
+
+    // Because the fallback Views handler doesn't know about WebContents, handle
+    // activation here.
+    if (is_web_contents) {
+      return views::test::InteractionTestUtilSimulatorViews::ActivateWidget(
+          view->GetWidget());
+    }
+
+    return ui::test::ActionResult::kNotAttempted;
   }
 
   ui::test::ActionResult SelectTab(ui::TrackedElement* tab_collection,

@@ -171,6 +171,12 @@ class InteractiveBrowserTestApi : public views::test::InteractiveViewsTestApi {
       ui::ElementIdentifier webcontents_id,
       GURL new_url);
 
+  // Raises the surface containing `webcontents_id` and focuses the WebContents
+  // as if a user had interacted directly with it. This is useful if you want
+  // the WebContents to e.g. respond to accelerators.
+  [[nodiscard]] StepBuilder FocusWebContents(
+      ui::ElementIdentifier webcontents_id);
+
   // Waits for the given `state_change` in `webcontents_id`. The sequence will
   // fail if the change times out, unless `expect_timeout` is true, in which
   // case the StateChange *must* timeout, and |state_change.timeout_event| must

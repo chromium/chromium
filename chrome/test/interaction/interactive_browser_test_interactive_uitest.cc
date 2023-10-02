@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_dialog_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "content/public/browser/page_navigator.h"
@@ -32,9 +33,11 @@
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/vector2d.h"
+#include "ui/gfx/native_widget_types.h"
 #include "ui/views/event_monitor.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/interaction/interaction_sequence_views.h"
+#include "ui/views/interaction/widget_focus_observer.h"
 #include "ui/views/layout/fill_layout.h"
 #include "url/gurl.h"
 
@@ -211,19 +214,115 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest, ActivateMultipleSurfaces) {
   auto* const incognito = CreateIncognitoBrowser();
 
   RunTestSequence(
+      SetOnIncompatibleAction(OnIncompatibleAction::kHaltTest,
+                              "Some Linux window managers do not allow "
+                              "programmatically raising/activating windows. "
+                              "This invalidates the rest of the test."),
       InContext(incognito->window()->GetElementContext(),
                 Steps(ActivateSurface(kBrowserViewElementId),
                       MoveMouseTo(kToolbarAppMenuButtonElementId), ClickMouse(),
                       SelectMenuItem(AppMenuModel::kDownloadsMenuItem),
                       WaitForHide(AppMenuModel::kDownloadsMenuItem))),
-      FlushEvents(),
+      FlushEvents(), ActivateSurface(kBrowserViewElementId),
+      MoveMouseTo(kToolbarAppMenuButtonElementId), ClickMouse(),
+      WaitForShow(AppMenuModel::kDownloadsMenuItem));
+}
+
+// Tests whether ActivateSurface() results in kCurrentWidgetFocus updating
+// correctly.
+IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,
+                       WatchForBrowserActivation) {
+  auto* const incognito = CreateIncognitoBrowser();
+
+  RunTestSequence(
       SetOnIncompatibleAction(OnIncompatibleAction::kHaltTest,
                               "Some Linux window managers do not allow "
                               "programmatically raising/activating windows. "
                               "This invalidates the rest of the test."),
-      ActivateSurface(kBrowserViewElementId),
-      MoveMouseTo(kToolbarAppMenuButtonElementId), ClickMouse(),
-      WaitForShow(AppMenuModel::kDownloadsMenuItem));
+      ObserveState(views::test::kCurrentWidgetFocus),
+      InContext(incognito->window()->GetElementContext(),
+                Steps(ActivateSurface(kBrowserViewElementId),
+                      MoveMouseTo(kToolbarAppMenuButtonElementId), ClickMouse(),
+                      SelectMenuItem(AppMenuModel::kDownloadsMenuItem),
+                      WaitForHide(AppMenuModel::kDownloadsMenuItem))),
+      FlushEvents(), ActivateSurface(kBrowserViewElementId),
+      WaitForState(views::test::kCurrentWidgetFocus, [this]() {
+        return BrowserView::GetBrowserViewForBrowser(browser())
+            ->GetWidget()
+            ->GetNativeView();
+      }));
+}
+
+// Tests whether ActivateSurface() results in kCurrentWidgetFocus updating
+// correctly when targeting a tab's web contents.
+IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,
+                       WatchForTabWebContentsActivation) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsElementId);
+  auto* const incognito = CreateIncognitoBrowser();
+
+  RunTestSequence(
+      SetOnIncompatibleAction(OnIncompatibleAction::kHaltTest,
+                              "Some Linux window managers do not allow "
+                              "programmatically raising/activating windows. "
+                              "This invalidates the rest of the test."),
+      ObserveState(views::test::kCurrentWidgetFocus),
+      InContext(incognito->window()->GetElementContext(),
+                Steps(ActivateSurface(kBrowserViewElementId),
+                      MoveMouseTo(kToolbarAppMenuButtonElementId), ClickMouse(),
+                      SelectMenuItem(AppMenuModel::kDownloadsMenuItem),
+                      WaitForHide(AppMenuModel::kDownloadsMenuItem))),
+      FlushEvents(), InstrumentTab(kWebContentsElementId),
+      ActivateSurface(kWebContentsElementId),
+      WaitForState(views::test::kCurrentWidgetFocus, [this]() {
+        return BrowserView::GetBrowserViewForBrowser(browser())
+            ->GetWidget()
+            ->GetNativeView();
+      }));
+}
+
+// Tests whether ActivateSurface() results in kCurrentWidgetFocus updating
+// correctly when targeting a non-tab web contents.
+//
+// TODO(crbug.com/1471043): These tests can be kind of hairy and we're working
+// on making sure these primitives play nice together and do not flake. If you
+// see a flake, first, note that these are edge case tests for new test
+// infrastructure and do not directly affect Chrome stability. Next, please:
+//  - Reopen or add to the attached bug.
+//  - Make sure it is assigned to dfried@chromium.org or another
+//    chrome/test/interaction owner.
+//  - [Selectively] disable the test on the offending platforms.
+//
+// Thank you for working with us to make Chrome test infrastructure better!
+IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,
+                       WatchForNonTabWebContentsActivation) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsElementId);
+  constexpr char kWebViewName[] = "Web View";
+  auto* const incognito = CreateIncognitoBrowser();
+
+  gfx::NativeView expected_view = gfx::NativeView();
+
+  RunTestSequence(
+      SetOnIncompatibleAction(OnIncompatibleAction::kHaltTest,
+                              "Some Linux window managers do not allow "
+                              "programmatically raising/activating windows. "
+                              "This invalidates the rest of the test."),
+      ObserveState(views::test::kCurrentWidgetFocus),
+      InContext(incognito->window()->GetElementContext(),
+                Steps(ActivateSurface(kBrowserViewElementId),
+                      MoveMouseTo(kToolbarAppMenuButtonElementId), ClickMouse(),
+                      SelectMenuItem(AppMenuModel::kDownloadsMenuItem),
+                      WaitForHide(AppMenuModel::kDownloadsMenuItem))),
+      FlushEvents(), PressButton(kTabSearchButtonElementId),
+      WaitForShow(kTabSearchBubbleElementId),
+      NameDescendantViewByType<views::WebView>(kTabSearchBubbleElementId,
+                                               kWebViewName),
+      InstrumentNonTabWebView(kWebContentsElementId, kWebViewName),
+      ActivateSurface(kWebContentsElementId),
+      WithView(kTabSearchBubbleElementId,
+               [&expected_view](views::View* view) {
+                 expected_view = view->GetWidget()->GetNativeView();
+               }),
+      WaitForState(views::test::kCurrentWidgetFocus, std::ref(expected_view)));
 }
 
 IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,

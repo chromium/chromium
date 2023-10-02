@@ -26,9 +26,12 @@
 #include "chrome/test/interaction/webcontents_interaction_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
+#include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-shared.h"
+#include "third_party/blink/public/mojom/frame/user_activation_update_types.mojom-shared.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/interaction_sequence.h"
+#include "ui/base/interaction/interaction_test_util.h"
 #include "ui/base/interaction/interactive_test_internal.h"
 #include "ui/views/interaction/interactive_views_test.h"
 #include "ui/views/views_delegate.h"
@@ -329,6 +332,40 @@ InteractiveBrowserTestApi::NavigateWebContents(
                         target_url))),
       std::move(WaitForWebContentsNavigation(webcontents_id, target_url)
                     .FormatDescription(base::StrCat({desc, ": %s"}))));
+}
+
+InteractiveBrowserTestApi::StepBuilder
+InteractiveBrowserTestApi::FocusWebContents(
+    ui::ElementIdentifier webcontents_id) {
+  StepBuilder builder;
+  builder.SetElementID(webcontents_id);
+  builder.SetDescription("FocusWebContents()");
+  builder.SetStartCallback(base::BindLambdaForTesting(
+      [this](ui::InteractionSequence* seq, ui::TrackedElement* el) {
+        auto* const tracked_el = AsInstrumentedWebContents(el);
+        if (!tracked_el) {
+          LOG(ERROR) << "Element is not an instrumented WebContents.";
+          seq->FailForTesting();
+          return;
+        }
+        const auto result = test_util().ActivateSurface(el);
+        test_impl().HandleActionResult(seq, el, "ActivateSurface", result);
+        if (result != ui::test::ActionResult::kSucceeded) {
+          return;
+        }
+        auto* const contents = tracked_el->web_contents();
+        if (!contents || !contents->GetPrimaryMainFrame()) {
+          LOG(ERROR) << "WebContents not present or no main frame.";
+          seq->FailForTesting();
+          return;
+        }
+        content::UpdateUserActivationStateInterceptor
+            user_activation_interceptor(contents->GetPrimaryMainFrame());
+        user_activation_interceptor.UpdateUserActivationState(
+            blink::mojom::UserActivationUpdateType::kNotifyActivation,
+            blink::mojom::UserActivationNotificationType::kTest);
+      }));
+  return builder;
 }
 
 // static

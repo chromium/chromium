@@ -7,16 +7,57 @@
 #include <memory>
 #include <utility>
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "base/scoped_observation.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
+#include "ui/base/interaction/framework_specific_implementation.h"
 #include "ui/base/interaction/interaction_test_util.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/views/focus/widget_focus_manager.h"
 #include "ui/views/interaction/element_tracker_views.h"
+#include "ui/views/interaction/widget_focus_observer.h"
 #include "ui/views/native_window_tracker.h"
 #include "ui/views/widget/widget.h"
 
 namespace views::test::internal {
+
+namespace {
+
+// Basic observer for low-level activation changes. Relays when a widget
+// receives focus.
+class NativeViewWidgetFocusSupplier : public WidgetFocusSupplier,
+                                      public WidgetFocusChangeListener {
+ public:
+  NativeViewWidgetFocusSupplier() {
+    observation_.Observe(WidgetFocusManager::GetInstance());
+  }
+  ~NativeViewWidgetFocusSupplier() override = default;
+
+  DECLARE_FRAMEWORK_SPECIFIC_METADATA()
+
+  void OnNativeFocusChanged(gfx::NativeView focused_now) override {
+    // TODO(dfried): There's an order-of-operations issue on some platforms
+    // where focus transfers between two native views, and the blur for the old
+    // view is received after the focus for the new view. This results in
+    // `focused_now` being null rather than the currently-focused view.
+    //
+    // While it's slightly less correct, ignore blur events until this can be
+    // fixed. In general, one would not expect windows not from the application
+    // under test to become focused, so this will be a valid choice most of the
+    // time.
+    if (focused_now) {
+      OnWidgetFocusChanged(focused_now);
+    }
+  }
+
+ private:
+  base::ScopedObservation<WidgetFocusManager, WidgetFocusChangeListener>
+      observation_{this};
+};
+
+DEFINE_FRAMEWORK_SPECIFIC_METADATA(NativeViewWidgetFocusSupplier)
+
+}  // namespace
 
 // Caches the last-known native window associated with a context.
 // Useful for executing ClickMouse() and ReleaseMouse() commands, as no target
@@ -52,6 +93,7 @@ class InteractiveViewsTestPrivate::WindowHintCacheEntry {
 InteractiveViewsTestPrivate::InteractiveViewsTestPrivate(
     std::unique_ptr<ui::test::InteractionTestUtil> test_util)
     : InteractiveTestPrivate(std::move(test_util)) {}
+
 InteractiveViewsTestPrivate::~InteractiveViewsTestPrivate() = default;
 
 void InteractiveViewsTestPrivate::OnSequenceComplete() {
@@ -67,6 +109,20 @@ void InteractiveViewsTestPrivate::OnSequenceAborted(
     mouse_util_->CancelAllGestures();
   }
   InteractiveTestPrivate::OnSequenceAborted(data);
+}
+
+void InteractiveViewsTestPrivate::DoTestSetUp() {
+  InteractiveTestPrivate::DoTestSetUp();
+  // Frame should exist from set up to tear down, to prevent framework/system
+  // listeners from receving events outside of the test.
+  widget_focus_supplier_frame_ = std::make_unique<WidgetFocusSupplierFrame>();
+  widget_focus_suppliers().MaybeRegister<NativeViewWidgetFocusSupplier>();
+}
+
+void InteractiveViewsTestPrivate::DoTestTearDown() {
+  // Avoid doing any widget focus tracking after the test completes.
+  widget_focus_supplier_frame_.reset();
+  InteractiveTestPrivate::DoTestTearDown();
 }
 
 gfx::NativeWindow InteractiveViewsTestPrivate::GetWindowHintFor(
