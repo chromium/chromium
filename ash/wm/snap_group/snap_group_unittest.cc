@@ -55,6 +55,7 @@
 #include "base/timer/timer.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/window_state_type.h"
+#include "ui/aura/client/aura_constants.h"
 #include "ui/aura/test/test_window_delegate.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/base/hit_test.h"
@@ -62,7 +63,6 @@
 #include "ui/compositor/layer.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/events/event_constants.h"
-#include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/rect.h"
@@ -72,6 +72,7 @@
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/widget/widget.h"
+#include "ui/wm/core/window_modality_controller.h"
 #include "ui/wm/core/window_util.h"
 
 namespace ash {
@@ -551,6 +552,14 @@ class SnapGroupEntryPointArm1Test : public SnapGroupTest {
     return window;
   }
 
+  std::unique_ptr<aura::Window> CreateTransientChildWindow(
+      gfx::Rect child_window_bounds,
+      aura::Window* transient_parent) {
+    auto child = CreateTestWindow(child_window_bounds);
+    wm::AddTransientChild(transient_parent, child.get());
+    return child;
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -773,7 +782,7 @@ TEST_F(SnapGroupEntryPointArm1Test, ResizeSplitViewOverviewAndWindow) {
 // Tests that the split view divider will be stacked on top of both windows in
 // the snap group and that on a third window activated the split view divider
 // will be stacked below the newly activated window.
-TEST_F(SnapGroupEntryPointArm1Test, SplitViewDividerStackingOrderTest) {
+TEST_F(SnapGroupEntryPointArm1Test, DividerStackingOrderTest) {
   std::unique_ptr<aura::Window> w1(CreateTestWindow());
   std::unique_ptr<aura::Window> w2(CreateTestWindow());
   SnapTwoTestWindowsInArm1(w1.get(), w2.get());
@@ -796,6 +805,76 @@ TEST_F(SnapGroupEntryPointArm1Test, SplitViewDividerStackingOrderTest) {
   EXPECT_TRUE(window_util::IsStackedBelow(w3.get(), w1.get()));
   EXPECT_TRUE(window_util::IsStackedBelow(w1.get(), w2.get()));
   EXPECT_TRUE(window_util::IsStackedBelow(w2.get(), divider_window));
+}
+
+// Tests that divider will be closely tied to the windows in a snap group, which
+// will also apply on transient window added.
+TEST_F(SnapGroupEntryPointArm1Test, DividerStackingOrderWithTransientWindow) {
+  std::unique_ptr<aura::Window> w1(CreateTestWindow());
+  std::unique_ptr<aura::Window> w2(CreateTestWindow());
+  SnapTwoTestWindowsInArm1(w1.get(), w2.get());
+  wm::ActivateWindow(w1.get());
+
+  SplitViewDivider* divider = split_view_divider();
+  ASSERT_TRUE(divider);
+  auto* divider_widget = divider->divider_widget();
+  aura::Window* divider_window = divider_widget->GetNativeWindow();
+  EXPECT_TRUE(window_util::IsStackedBelow(w2.get(), w1.get()));
+  EXPECT_TRUE(window_util::IsStackedBelow(w1.get(), divider_window));
+  EXPECT_TRUE(window_util::IsStackedBelow(w2.get(), divider_window));
+
+  auto w1_transient =
+      CreateTransientChildWindow(gfx::Rect(100, 200, 200, 200), w1.get());
+  w1_transient->SetProperty(aura::client::kModalKey, ui::MODAL_TYPE_WINDOW);
+  wm::SetModalParent(w1_transient.get(), w1.get());
+  EXPECT_TRUE(window_util::IsStackedBelow(divider_window, w1_transient.get()));
+}
+
+// Tests the overall stacking order with two transient windows each of which
+// belongs to a window in snap group is expected. The tests is to verify the
+// transient windows issue showed in http://b/297448600#comment2.
+TEST_F(SnapGroupEntryPointArm1Test,
+       DividerStackingOrderWithTwoTransientWindows) {
+  std::unique_ptr<aura::Window> w1(CreateTestWindow());
+  std::unique_ptr<aura::Window> w2(CreateTestWindow());
+  SnapTwoTestWindowsInArm1(w1.get(), w2.get());
+
+  SplitViewDivider* divider = split_view_divider();
+  ASSERT_TRUE(divider);
+  auto* divider_widget = divider->divider_widget();
+  aura::Window* divider_window = divider_widget->GetNativeWindow();
+  ASSERT_TRUE(window_util::IsStackedBelow(w1.get(), w2.get()));
+  ASSERT_TRUE(window_util::IsStackedBelow(w1.get(), divider_window));
+  ASSERT_TRUE(window_util::IsStackedBelow(w2.get(), divider_window));
+
+  // By default `w1_transient` is `MODAL_TYPE_NONE`, meaning that the associated
+  // `w1` interactable.
+  std::unique_ptr<aura::Window> w1_transient(
+      CreateTransientChildWindow(gfx::Rect(10, 20, 20, 30), w1.get()));
+
+  // Add transient window for `w2` and making it not interactable by setting it
+  // with the type of `ui::MODAL_TYPE_WINDOW`.
+  std::unique_ptr<aura::Window> w2_transient(
+      CreateTransientChildWindow(gfx::Rect(200, 20, 20, 30), w2.get()));
+  w2_transient->SetProperty(aura::client::kModalKey, ui::MODAL_TYPE_WINDOW);
+  wm::SetModalParent(w2_transient.get(), w2.get());
+
+  // The expected stacking order is as follows:
+  //                    TOP
+  // `w2_transient`      |
+  //      |              |
+  //   divider           |
+  //      |              |
+  //     `w2`            |
+  //      |              |
+  // `w1_transient`      |
+  //      |              |
+  //     `w1`            |
+  //                   BOTTOM
+  EXPECT_TRUE(window_util::IsStackedBelow(divider_window, w2_transient.get()));
+  EXPECT_TRUE(
+      window_util::IsStackedBelow(w1_transient.get(), w2_transient.get()));
+  EXPECT_TRUE(window_util::IsStackedBelow(w1_transient.get(), divider_window));
 }
 
 // Tests that the union bounds of the primary window, secondary window in a snap

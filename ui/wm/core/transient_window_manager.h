@@ -61,6 +61,14 @@ class COMPONENT_EXPORT(UI_WM) TransientWindowManager
     parent_controls_visibility_ = parent_controls_visibility;
   }
 
+  // Sets whether the transient parent should control the lifetime of the
+  // transient child or not. `parent_controls_lifetime_` is default set to true
+  // and needs to be set to false when the lifetime of the transient child is
+  // not managed by its transient parent.
+  void set_parent_controls_lifetime(bool parent_controls_lifetime) {
+    parent_controls_lifetime_ = parent_controls_lifetime;
+  }
+
   const Windows& transient_children() const { return transient_children_; }
 
   aura::Window* transient_parent() { return transient_parent_; }
@@ -101,6 +109,7 @@ class COMPONENT_EXPORT(UI_WM) TransientWindowManager
   RAW_PTR_EXCLUSION aura::Window* stacking_target_;
 
   bool parent_controls_visibility_;
+  bool parent_controls_lifetime_;
   bool show_on_parent_visible_;
   bool ignore_visibility_changed_event_;
 

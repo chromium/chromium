@@ -12,6 +12,7 @@
 #include "ui/aura/test/test_windows.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
+#include "ui/aura/window_tracker.h"
 #include "ui/wm/core/transient_window_observer.h"
 #include "ui/wm/core/window_util.h"
 
@@ -495,6 +496,40 @@ TEST_F(TransientWindowManagerTest, ChangeParent) {
   // child_3 and child_4 should remain unaffected.
   EXPECT_EQ(child_3->parent(), container_1.get());
   EXPECT_EQ(child_4->parent(), container_3.get());
+}
+
+// Tests that the lifetime of the transient window will be determined by its
+// transient parent by default. But the transient window is still able to
+// outlive the transient parent if we explicitly
+// `set_parent_controls_lifetime()` to false through its transient window
+// manager.
+TEST_F(TransientWindowManagerTest,
+       TransientLifeTimeMayBeControlledByTransientParent) {
+  // Test that the lifetime of the transient window is controlled by its
+  // transient parent by default.
+  std::unique_ptr<Window> parent(CreateTestWindowWithId(0, root_window()));
+  std::unique_ptr<Window> transient(CreateTransientChild(1, parent.get()));
+
+  aura::WindowTracker tracker({transient.get()});
+
+  // Release the ownership of the `transient` to avoid double deletion in
+  // `TransientWindowManager::OnWindowDestroying()`.
+  transient.release();
+  parent.reset();
+  EXPECT_TRUE(tracker.windows().empty());
+
+  std::unique_ptr<Window> new_parent(CreateTestWindowWithId(2, root_window()));
+  std::unique_ptr<Window> new_transient(
+      CreateTransientChild(3, new_parent.get()));
+
+  tracker.Add(new_transient.get());
+
+  // Test that the transient window can outlive its transient parent by setting
+  // `set_parent_controls_lifetime()` to false.
+  wm::TransientWindowManager::GetOrCreate(new_transient.get())
+      ->set_parent_controls_lifetime(false);
+  new_parent.reset();
+  EXPECT_FALSE(tracker.windows().empty());
 }
 
 }  // namespace wm
