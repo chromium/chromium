@@ -625,6 +625,7 @@
     'chromium.infra.codesearch': {
       'codesearch-gen-chromium-android': 'codesearch_gen_chromium_android_bot_reclient',
       'codesearch-gen-chromium-chromiumos': 'codesearch_gen_chromium_chromiumos_bot_reclient',
+      'codesearch-gen-chromium-cronet': 'codesearch_gen_chromium_cronet_bot_reclient',
       'codesearch-gen-chromium-fuchsia': 'codesearch_gen_chromium_fuchsia_bot_reclient',
       'codesearch-gen-chromium-ios': 'codesearch_gen_chromium_ios_bot_reclient',
       'codesearch-gen-chromium-lacros': 'codesearch_gen_chromium_lacros_bot_reclient',
@@ -2636,7 +2637,6 @@
     ],
 
     'codesearch_gen_chromium_android_bot_reclient': [
-      # Set is_component_build=false to enable cronet targets.
       'codesearch_reclient', 'android_without_codecs', 'static',
     ],
 
@@ -2646,6 +2646,11 @@
 
     'codesearch_gen_chromium_chromiumos_bot_reclient': [
       'codesearch_reclient', 'chromeos',
+    ],
+
+    'codesearch_gen_chromium_cronet_bot_reclient': [
+      # Set is_cronet_build to true in order to build cronet.
+      'codesearch_reclient', 'android_without_codecs', 'static', 'is_cronet_build',
     ],
 
     'codesearch_gen_chromium_fuchsia_bot_reclient': [
@@ -4554,6 +4559,10 @@
 
     'ios_simulator': {
       'gn_args': 'target_environment="simulator"',
+    },
+
+    'is_cronet_build': {
+      'gn_args': 'is_cronet_build=true',
     },
 
     'is_skylab': {
