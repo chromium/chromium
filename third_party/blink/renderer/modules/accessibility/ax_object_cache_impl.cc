@@ -45,6 +45,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_lifecycle.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
+#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/slot_assignment_engine.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
@@ -2645,6 +2646,49 @@ void AXObjectCacheImpl::UpdateTreeIfNeeded() {
   CheckTreeIsUpdated();
 }
 
+void AXObjectCacheImpl::CheckStyleIsComplete(Document& document) const {
+#if EXPENSIVE_DCHECKS_ARE_ON()
+  {
+    // Check that all style is up-to-date when layout is clean, when a11y is on.
+    // This allows content-visibility: auto subtrees to have proper a11y
+    // semantics, e.g. for the hidden and focusable states.
+    Node* node = &document;
+    do {
+      CHECK(!node->NeedsStyleRecalc()) << "Need style on: " << node;
+      const ComputedStyle* style = node->GetComputedStyle();
+      if (!style || style->ContentVisibility() == EContentVisibility::kHidden ||
+          style->IsEnsuredInDisplayNone()) {
+        // content-visibility:hidden nodes are an exception and do not
+        // compute style.
+        node =
+            LayoutTreeBuilderTraversal::NextSkippingChildren(*node, &document);
+      } else {
+        node = LayoutTreeBuilderTraversal::Next(*node, &document);
+      }
+    } while (node);
+  }
+
+  {
+    // Check results of ChildNeedsStyleRecalc() as well, just to be sure there
+    // isn't a discrepancy there.
+    Node* node = &document;
+    do {
+      const ComputedStyle* style = node->GetComputedStyle();
+      if (!style || style->ContentVisibility() == EContentVisibility::kHidden ||
+          style->IsEnsuredInDisplayNone()) {
+        // content-visibility:hidden nodes are an exception and do not
+        // compute style.
+        node =
+            LayoutTreeBuilderTraversal::NextSkippingChildren(*node, &document);
+        continue;
+      }
+      CHECK(!node->ChildNeedsStyleRecalc()) << "Need style on child: " << node;
+      node = LayoutTreeBuilderTraversal::Next(*node, &document);
+    } while (node);
+  }
+#endif
+}
+
 void AXObjectCacheImpl::CheckTreeIsUpdated() const {
   // TODO(crbug.com/1480442) Add back as once we implement improved tree repair
   // in crrev.com/c/4873421.
@@ -2704,6 +2748,7 @@ void AXObjectCacheImpl::ProcessDeferredAccessibilityEvents(Document& document) {
   }
 
   DCHECK_EQ(document, GetDocument());
+  CheckStyleIsComplete(document);
 
   CHECK(!processing_deferred_events_);
 
@@ -2727,6 +2772,7 @@ void AXObjectCacheImpl::ProcessDeferredAccessibilityEvents(Document& document) {
 
   if (GetPopupDocumentIfShowing()) {
     UpdateLifecycleIfNeeded(*GetPopupDocumentIfShowing());
+    CheckStyleIsComplete(*GetPopupDocumentIfShowing());
   }
 
   SCOPED_DISALLOW_LIFECYCLE_TRANSITION();

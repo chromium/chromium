@@ -554,6 +554,7 @@ class MODULES_EXPORT AXObjectCacheImpl
   bool HasBeenDisposed() const { return has_been_disposed_; }
   // Assert that tree is completely up-to-date.
   void CheckTreeIsUpdated() const;
+  void CheckStyleIsComplete(Document& document) const;
 
   // Returns the `TextChangedOperation` associated with the `id` from the
   // `text_operation_in_node_ids_` map, if `id` is in the map.
