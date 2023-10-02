@@ -92,7 +92,8 @@ void WebIdentityRequester::RequestToken() {
 void WebIdentityRequester::AppendGetCall(
     ScriptPromiseResolver* resolver,
     const HeapVector<Member<IdentityProviderConfig>>& providers,
-    mojom::blink::RpContext rp_context) {
+    mojom::blink::RpContext rp_context,
+    mojom::blink::RpMode rp_mode) {
   if (is_requesting_token_) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kNotAllowedError,
@@ -123,7 +124,7 @@ void WebIdentityRequester::AppendGetCall(
 
   mojom::blink::IdentityProviderGetParametersPtr get_params =
       mojom::blink::IdentityProviderGetParameters::New(std::move(idp_ptrs),
-                                                       rp_context);
+                                                       rp_context, rp_mode);
   idp_get_params_.push_back(std::move(get_params));
 
   if (window_onload_event_listener_ || has_posted_task_)

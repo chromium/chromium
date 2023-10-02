@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_cable_authentication_data.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_credential_logout_r_ps_request.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_credential_request_options_context.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_identity_credential_request_options_mode.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_provider_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_user_info.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_creation_options.h"
@@ -88,6 +89,7 @@ using blink::mojom::blink::RemoteDesktopClientOverride;
 using blink::mojom::blink::RemoteDesktopClientOverridePtr;
 using blink::mojom::blink::ResidentKeyRequirement;
 using blink::mojom::blink::RpContext;
+using blink::mojom::blink::RpMode;
 using blink::mojom::blink::UserVerificationRequirement;
 using blink::mojom::blink::WalletFieldRequirement;
 using blink::mojom::blink::WalletFieldRequirementPtr;
@@ -830,6 +832,18 @@ TypeConverter<RpContext, blink::V8IdentityCredentialRequestOptionsContext>::
       return RpContext::kUse;
     case blink::V8IdentityCredentialRequestOptionsContext::Enum::kContinue:
       return RpContext::kContinue;
+  }
+}
+
+// static
+RpMode
+TypeConverter<RpMode, blink::V8IdentityCredentialRequestOptionsMode>::Convert(
+    const blink::V8IdentityCredentialRequestOptionsMode& mode) {
+  switch (mode.AsEnum()) {
+    case blink::V8IdentityCredentialRequestOptionsMode::Enum::kWidget:
+      return RpMode::kWidget;
+    case blink::V8IdentityCredentialRequestOptionsMode::Enum::kButton:
+      return RpMode::kButton;
   }
 }
 

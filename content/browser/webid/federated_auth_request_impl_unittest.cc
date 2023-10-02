@@ -225,6 +225,7 @@ struct IdentityProviderParameters {
 struct RequestParameters {
   std::vector<IdentityProviderParameters> identity_providers;
   blink::mojom::RpContext rp_context;
+  blink::mojom::RpMode rp_mode;
 };
 
 // Expected return values from a call to RequestToken.
@@ -311,7 +312,7 @@ static const IdentityProviderParameters kDefaultIdentityProviderConfig{
 
 static const RequestParameters kDefaultRequestParameters{
     std::vector<IdentityProviderParameters>{kDefaultIdentityProviderConfig},
-    blink::mojom::RpContext::kSignIn};
+    blink::mojom::RpContext::kSignIn, blink::mojom::RpMode::kWidget};
 
 static const MockIdpInfo kDefaultIdentityProviderInfo{
     {kWellKnown, {ParseStatus::kSuccess, net::HTTP_OK}},
@@ -364,7 +365,8 @@ static const RequestParameters kDefaultMultiIdpRequestParameters{
          /*hosted_domain=*/""},
         {kProviderTwoUrlFull, kClientId, kNonce, /*login_hint=*/"",
          /*hosted_domain=*/""}},
-    /*rp_context=*/blink::mojom::RpContext::kSignIn};
+    /*rp_context=*/blink::mojom::RpContext::kSignIn,
+    /*rp_mode=*/blink::mojom::RpMode::kWidget};
 
 MockConfiguration kConfigurationMultiIdpValid{
     kToken,
@@ -889,7 +891,8 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
       idp_ptrs.push_back(std::move(idp_ptr));
       blink::mojom::IdentityProviderGetParametersPtr get_params =
           blink::mojom::IdentityProviderGetParameters::New(
-              std::move(idp_ptrs), request_parameters.rp_context);
+              std::move(idp_ptrs), request_parameters.rp_context,
+              request_parameters.rp_mode);
       idp_get_params.push_back(std::move(get_params));
     }
 

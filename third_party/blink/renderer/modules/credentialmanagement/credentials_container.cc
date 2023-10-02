@@ -1481,6 +1481,14 @@ ScriptPromise CredentialsContainer::get(ScriptState* script_state,
     }
     base::UmaHistogramEnumeration("Blink.FedCm.RpContext", rp_context);
 
+    mojom::blink::RpMode rp_mode = mojom::blink::RpMode::kWidget;
+    if (options->identity()->hasMode()) {
+      // TODO(crbug.com/1429083): add use counters for rp mode.
+      rp_mode =
+          mojo::ConvertTo<mojom::blink::RpMode>(options->identity()->mode());
+    }
+    // TODO(crbug.com/1429083): add uma histograms for rp mode.
+
     CredentialMediationRequirement mediation_requirement;
     if (options->mediation() == "conditional") {
       resolver->Reject(MakeGarbageCollected<DOMException>(
@@ -1528,7 +1536,7 @@ ScriptPromise CredentialsContainer::get(ScriptState* script_state,
       Vector<mojom::blink::IdentityProviderGetParametersPtr> idp_get_params;
       mojom::blink::IdentityProviderGetParametersPtr get_params =
           mojom::blink::IdentityProviderGetParameters::New(
-              std::move(identity_provider_ptrs), rp_context);
+              std::move(identity_provider_ptrs), rp_context, rp_mode);
       idp_get_params.push_back(std::move(get_params));
 
       auto* auth_request =
@@ -1552,8 +1560,9 @@ ScriptPromise CredentialsContainer::get(ScriptState* script_state,
           std::move(scoped_abort_state));
     }
 
-    web_identity_requester_->AppendGetCall(
-        WrapPersistent(resolver), options->identity()->providers(), rp_context);
+    web_identity_requester_->AppendGetCall(WrapPersistent(resolver),
+                                           options->identity()->providers(),
+                                           rp_context, rp_mode);
 
     return promise;
   }

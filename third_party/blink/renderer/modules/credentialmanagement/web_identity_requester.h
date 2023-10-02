@@ -40,7 +40,8 @@ class MODULES_EXPORT WebIdentityRequester final
   void AppendGetCall(
       ScriptPromiseResolver* resolver,
       const HeapVector<Member<IdentityProviderConfig>>& providers,
-      mojom::blink::RpContext rp_context);
+      mojom::blink::RpContext rp_context,
+      mojom::blink::RpMode rp_mode);
   void InsertScopedAbortState(
       std::unique_ptr<ScopedAbortState> scoped_abort_state);
 

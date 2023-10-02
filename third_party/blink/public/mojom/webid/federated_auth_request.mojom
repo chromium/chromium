@@ -51,6 +51,11 @@ enum RpContext {
   kContinue
 };
 
+enum RpMode {
+  kButton,
+  kWidget
+};
+
 // The details of a single logout request from an identity provider.
 struct LogoutRpsRequest {
   // URL to which the request will be sent. The origin is validated to
@@ -146,6 +151,10 @@ struct IdentityProviderGetParameters {
   // TODO(crbug.com/1335237): consider moving this up to IdentityProviderConfig
   // when/if we support the Context API for Multiple IdPs at a time.
   RpContext context;
+
+  // Controls the UX of the FedCM prompt: modality, behavior when the
+  // user is signed-out, etc.
+  RpMode mode;
 };
 
 // The error which occurred during the retrieval of a token.

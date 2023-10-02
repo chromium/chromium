@@ -35,6 +35,7 @@ class PublicKeyCredentialUserEntity;
 class RemoteDesktopClientOverride;
 class UserVerificationRequirement;
 class V8IdentityCredentialRequestOptionsContext;
+class V8IdentityCredentialRequestOptionsMode;
 class V8UnionArrayBufferOrArrayBufferView;
 }  // namespace blink
 
@@ -219,6 +220,14 @@ struct MODULES_EXPORT
                   blink::V8IdentityCredentialRequestOptionsContext> {
   static blink::mojom::blink::RpContext Convert(
       const blink::V8IdentityCredentialRequestOptionsContext&);
+};
+
+template <>
+struct MODULES_EXPORT
+    TypeConverter<blink::mojom::blink::RpMode,
+                  blink::V8IdentityCredentialRequestOptionsMode> {
+  static blink::mojom::blink::RpMode Convert(
+      const blink::V8IdentityCredentialRequestOptionsMode&);
 };
 
 template <>

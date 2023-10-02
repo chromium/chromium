@@ -416,8 +416,9 @@ FederatedAuthRequestImpl::FetchData::~FetchData() = default;
 
 FederatedAuthRequestImpl::IdentityProviderGetInfo::IdentityProviderGetInfo(
     blink::mojom::IdentityProviderConfigPtr provider,
-    blink::mojom::RpContext rp_context)
-    : provider(std::move(provider)), rp_context(rp_context) {}
+    blink::mojom::RpContext rp_context,
+    blink::mojom::RpMode rp_mode)
+    : provider(std::move(provider)), rp_context(rp_context), rp_mode(rp_mode) {}
 
 FederatedAuthRequestImpl::IdentityProviderGetInfo::~IdentityProviderGetInfo() =
     default;
@@ -431,6 +432,7 @@ FederatedAuthRequestImpl::IdentityProviderGetInfo::operator=(
     const IdentityProviderGetInfo& other) {
   provider = other.provider->Clone();
   rp_context = other.rp_context;
+  rp_mode = other.rp_mode;
   return *this;
 }
 
@@ -438,11 +440,13 @@ FederatedAuthRequestImpl::IdentityProviderInfo::IdentityProviderInfo(
     const blink::mojom::IdentityProviderConfigPtr& provider,
     IdpNetworkRequestManager::Endpoints endpoints,
     IdentityProviderMetadata metadata,
-    blink::mojom::RpContext rp_context)
+    blink::mojom::RpContext rp_context,
+    blink::mojom::RpMode rp_mode)
     : provider(provider->Clone()),
       endpoints(std::move(endpoints)),
       metadata(std::move(metadata)),
-      rp_context(rp_context) {}
+      rp_context(rp_context),
+      rp_mode(rp_mode) {}
 
 FederatedAuthRequestImpl::IdentityProviderInfo::~IdentityProviderInfo() =
     default;
@@ -453,6 +457,7 @@ FederatedAuthRequestImpl::IdentityProviderInfo::IdentityProviderInfo(
   metadata = other.metadata;
   has_failing_idp_signin_status = other.has_failing_idp_signin_status;
   rp_context = other.rp_context;
+  rp_mode = other.rp_mode;
   data = other.data;
 }
 
@@ -844,10 +849,12 @@ void FederatedAuthRequestImpl::RequestToken(
     for (auto& idp_ptr : idp_get_params_ptr->providers) {
       idp_order_.push_back(idp_ptr->get_federated()->config_url);
       blink::mojom::RpContext rp_context = idp_get_params_ptr->context;
+      blink::mojom::RpMode rp_mode = idp_get_params_ptr->mode;
       const GURL& idp_config_url = idp_ptr->get_federated()->config_url;
       token_request_get_infos_.emplace(
-          idp_config_url, IdentityProviderGetInfo(
-                              std::move(idp_ptr->get_federated()), rp_context));
+          idp_config_url,
+          IdentityProviderGetInfo(std::move(idp_ptr->get_federated()),
+                                  rp_context, rp_mode));
     }
   }
 
@@ -1095,7 +1102,7 @@ void FederatedAuthRequestImpl::OnAllConfigAndWellKnownFetched(
             get_info_it->second.provider, std::move(fetch_result.endpoints),
             fetch_result.metadata ? std::move(*fetch_result.metadata)
                                   : IdentityProviderMetadata(),
-            get_info_it->second.rp_context);
+            get_info_it->second.rp_context, get_info_it->second.rp_mode);
 
     if (fetch_result.error) {
       const FederatedProviderFetcher::FetchError& fetch_error =
