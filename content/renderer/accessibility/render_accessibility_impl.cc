@@ -583,11 +583,6 @@ void RenderAccessibilityImpl::HandleAXEvent(const ui::AXEvent& event) {
       legacy_event_schedule_mode_ =
           LegacyEventScheduleMode::kProcessEventsImmediately;
     }
-    if (event.event_type == ax::mojom::Event::kLoadStart) {
-      loading_stage_ = LoadingStage::kPreload;
-    } else if (event.event_type == ax::mojom::Event::kLoadComplete) {
-      loading_stage_ = LoadingStage::kLoadCompleted;
-    }
   }
 
   if (!serialize_post_lifecycle_) {
@@ -772,10 +767,6 @@ void RenderAccessibilityImpl::AXReadyCallback() {
   last_serialization_timestamp_ = now;
 
   SendPendingAccessibilityEvents();
-
-  if (loading_stage_ == LoadingStage::kLoadCompleted) {
-    loading_stage_ = LoadingStage::kPostLoad;
-  }
 }
 
 void RenderAccessibilityImpl::ScheduleImmediateAXUpdate() {
@@ -1429,14 +1420,6 @@ void RenderAccessibilityImpl::SendPendingAccessibilityEvents() {
   UMA_HISTOGRAM_TIMES(
       "Accessibility.Performance.SendPendingAccessibilityEvents",
       elapsed_time_ms);
-
-  if (loading_stage_ == LoadingStage::kPostLoad) {
-    // Track serialization after document load in order to measure the
-    // contribution of serialization to interaction latency.
-    UMA_HISTOGRAM_TIMES(
-        "Accessibility.Performance.SendPendingAccessibilityEvents.PostLoad",
-        elapsed_time_ms);
-  }
 
   if (ukm_timer_->Elapsed() >= kMinUKMDelay) {
     MaybeSendUKM();

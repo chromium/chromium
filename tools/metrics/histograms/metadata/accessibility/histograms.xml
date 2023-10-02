@@ -1933,19 +1933,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="Accessibility.Performance.SendPendingAccessibilityEvents.PostLoad"
-    units="ms" expires_after="2024-02-04">
-  <owner>aleventhal@chromium.org</owner>
-  <owner>janewman@microsoft.com</owner>
-  <owner>chrome-a11y-core@google.com</owner>
-  <summary>
-    Tracks time spent on the render process sending pending accessibility
-    events. Logging commences after loading is complete and triggered each time
-    the method is run without returning early.
-  </summary>
-</histogram>
-
 <histogram name="Accessibility.Performance.Tree.Unserialize" units="ms"
     expires_after="2024-02-04">
   <owner>aleventhal@chromium.org</owner>
