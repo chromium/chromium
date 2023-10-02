@@ -364,23 +364,6 @@ function addPeerConnection(data) {
   if (data.rtcConfiguration) {
     deprecationNotices.className = 'peerconnection-deprecations';
   }
-  if (data.constraints) {
-    if (data.constraints.indexOf('enableDtlsSrtp:') !== -1) {
-      if (data.constraints.indexOf('enableDtlsSrtp: {exact: false}') !== -1) {
-        appendChildWithText(deprecationNotices, 'li',
-          'The constraint "DtlsSrtpKeyAgreement" will be removed. You have ' +
-          'specified a "false" value for this constraint, which is ' +
-          'interpreted as an attempt to use the deprecated "SDES" key ' +
-          'negotiation method. This functionality will be removed; use a ' +
-          'service that supports DTLS key negotiation instead.');
-      } else {
-        appendChildWithText(deprecationNotices, 'li',
-          'The constraint "DtlsSrtpKeyAgreement" will be removed. You have ' +
-          'specified a "true" value for this constraint, which has no ' +
-          'effect, but you can remove this constraint for tidiness.');
-      }
-    }
-  }
   peerConnectionElement.appendChild(deprecationNotices);
 
   const iceConnectionStates = document.createElement('div');
