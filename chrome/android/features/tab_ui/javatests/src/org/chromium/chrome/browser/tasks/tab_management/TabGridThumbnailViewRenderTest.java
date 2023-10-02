@@ -203,8 +203,10 @@ public class TabGridThumbnailViewRenderTest {
     @Test
     @MediumTest
     @Feature("RenderTest")
-    @DisableFeatures({ChromeFeatureList.THUMBNAIL_PLACEHOLDER})
-    public void testNoPlaceholderDrawable() throws IOException, InterruptedException {
+    @DisableFeatures({ChromeFeatureList.THUMBNAIL_PLACEHOLDER,
+            ChromeFeatureList.ADVANCED_PERIPHERALS_SUPPORT_TAB_STRIP})
+    public void
+    testNoPlaceholderDrawable() throws IOException, InterruptedException {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             updateColor(/*isIncognito=*/true, /*isSelected=*/false);
             mTabGridThumbnailView.setImageDrawable(null);

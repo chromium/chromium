@@ -11,16 +11,30 @@ found in the LICENSE file.
     android:id="@+id/tab_hover_card_holder"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="@dimen/tab_hover_card_layout_padding"
     android:visibility="gone"
     android:elevation="@dimen/tab_hover_card_elevation"
     android:orientation="vertical"
     android:background="@drawable/tab_hover_card_background">
 
+ <!-- TODO (crbug.com/1451925): Rename to TabThumbnailView for generic use. -->
+ <org.chromium.chrome.browser.tasks.tab_management.TabGridThumbnailView
+    android:id="@+id/thumbnail"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/tab_hover_card_thumbnail_height"
+    android:gravity="center_horizontal"
+    android:scaleType="fitCenter"
+    android:importantForAccessibility="no"
+    app:cornerRadiusTopStart="@dimen/tab_hover_card_corner_radius"
+    app:cornerRadiusTopEnd="@dimen/tab_hover_card_corner_radius"
+    android:src="@color/thumbnail_placeholder_on_primary_bg"/>
+
   <TextView
       android:id="@+id/title"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
+      android:layout_marginTop="@dimen/tab_hover_card_text_content_margin"
+      android:layout_marginStart="@dimen/tab_hover_card_text_content_margin"
+      android:layout_marginEnd="@dimen/tab_hover_card_text_content_margin"
       android:ellipsize="end"
       android:maxLines="2"
       android:textDirection="locale"
@@ -31,6 +45,9 @@ found in the LICENSE file.
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:layout_marginTop="@dimen/tab_hover_card_url_top_margin"
+      android:layout_marginStart="@dimen/tab_hover_card_text_content_margin"
+      android:layout_marginEnd="@dimen/tab_hover_card_text_content_margin"
+      android:layout_marginBottom="@dimen/tab_hover_card_text_content_margin"
       android:ellipsize="end"
       android:maxLines="1"
       android:textDirection="locale"

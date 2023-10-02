@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.compositor.overlays.strip;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
+import android.util.Size;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -15,12 +16,16 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.view.ViewCompat;
 
 import org.chromium.base.MathUtils;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
+import org.chromium.chrome.browser.tasks.tab_management.TabGridThumbnailView;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementFieldTrial;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeProvider;
 import org.chromium.components.embedder_support.util.UrlUtilities;
@@ -29,18 +34,20 @@ import org.chromium.ui.base.LocalizationUtils;
 public class StripTabHoverCardView extends LinearLayout {
     // The max width of the tab hover card in terms of the enclosing window width percent.
     static final float HOVER_CARD_MAX_WIDTH_PERCENT = 0.9f;
+    static final int INVALID_TAB_ID = -1;
 
     private TextView mTitleView;
     private TextView mUrlView;
+    private TabGridThumbnailView mThumbnailView;
     private TabModelSelector mTabModelSelector;
     private TabModelSelectorObserver mTabModelSelectorObserver;
+    private TabContentManager mTabContentManager;
+
+    private int mLastHoveredTabId = INVALID_TAB_ID;
+    private boolean mIsShowing;
 
     public StripTabHoverCardView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
-    }
-
-    public StripTabHoverCardView(Context context) {
-        super(context);
     }
 
     @Override
@@ -48,6 +55,7 @@ public class StripTabHoverCardView extends LinearLayout {
         super.onFinishInflate();
         mTitleView = findViewById(R.id.title);
         mUrlView = findViewById(R.id.url);
+        mThumbnailView = findViewById(R.id.thumbnail);
     }
 
     /**
@@ -61,6 +69,29 @@ public class StripTabHoverCardView extends LinearLayout {
     public void show(Tab hoveredTab, StripLayoutTab hoveredStripLayoutTab, boolean isSelectedTab,
             float height) {
         if (hoveredTab == null) return;
+        mLastHoveredTabId = hoveredTab.getId();
+        mIsShowing = true;
+
+        var thumbnailSize = new Size(
+                Math.round(getContext().getResources().getDimension(R.dimen.tab_hover_card_width)),
+                Math.round(getContext().getResources().getDimension(
+                        R.dimen.tab_hover_card_thumbnail_height)));
+        mTabContentManager.getTabThumbnailWithCallback(
+                hoveredTab.getId(), thumbnailSize, thumbnail -> {
+                    // Thumbnail request was for a previous hover.
+                    if (hoveredTab.getId() != mLastHoveredTabId) return;
+                    // View is not visible any more.
+                    if (!mIsShowing) return;
+                    if (thumbnail != null) {
+                        TabUtils.setBitmapAndUpdateImageMatrix(
+                                mThumbnailView, thumbnail, thumbnailSize);
+                    } else {
+                        // Always use the unselected tab version of the thumbnail placeholder.
+                        mThumbnailView.updateThumbnailPlaceholder(
+                                hoveredTab.isIncognito(), /* isSelected= */ false);
+                    }
+                }, false, false);
+
         mTitleView.setText(hoveredTab.getTitle());
         String url = hoveredTab.getUrl().getHost();
         // If the URL is a Chrome scheme, display the GURL spec instead of the host. For e.g., use
@@ -83,16 +114,22 @@ public class StripTabHoverCardView extends LinearLayout {
      * Hide the strip tab hover card.
      */
     public void hide() {
+        mIsShowing = false;
         setVisibility(GONE);
+        mThumbnailView.setImageDrawable(null);
+        mLastHoveredTabId = INVALID_TAB_ID;
     }
 
     /**
      * Perform tasks after the view is inflated: update the hover card colors, and add a {@link
      * TabModelSelectorObserver} to update the view when a tab model is selected.
      * @param tabModelSelector The {@link TabModelSelector} to observe.
+     * @param tabContentManagerSupplier Supplier of the {@link TabContentManager} instance.
      */
-    public void initialize(TabModelSelector tabModelSelector) {
+    public void initialize(TabModelSelector tabModelSelector,
+            ObservableSupplier<TabContentManager> tabContentManagerSupplier) {
         mTabModelSelector = tabModelSelector;
+        mTabContentManager = tabContentManagerSupplier.get();
         mTabModelSelectorObserver = new TabModelSelectorObserver() {
             @Override
             public void onTabModelSelected(TabModel newModel, TabModel oldModel) {
@@ -203,15 +240,15 @@ public class StripTabHoverCardView extends LinearLayout {
         return new float[] {hoverCardXDp * displayDensity, hoverCardYDp * displayDensity};
     }
 
-    void setTitleViewForTesting(TextView titleView) {
-        mTitleView = titleView;
-    }
-
-    void setUrlViewForTesting(TextView urlView) {
-        mUrlView = urlView;
-    }
-
     TabModelSelectorObserver getTabModelSelectorObserverForTesting() {
         return mTabModelSelectorObserver;
+    }
+
+    int getLastHoveredTabIdForTesting() {
+        return mLastHoveredTabId;
+    }
+
+    boolean isShowingForTesting() {
+        return mIsShowing;
     }
 }

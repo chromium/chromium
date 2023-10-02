@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.compositor.layouts.LayoutManagerHost;
 import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
 import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
 import org.chromium.chrome.browser.compositor.layouts.components.TintedCompositorButton;
+import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager.TabModelStartupInfo;
 import org.chromium.chrome.browser.compositor.scene_layer.TabStripSceneLayer;
 import org.chromium.chrome.browser.compositor.scene_layer.TabStripSceneLayerJni;
@@ -101,6 +102,8 @@ public class StripLayoutHelperManagerTest {
     private StripLayoutTab mHoveredStripTab;
     @Mock
     private ViewStub mTabHoverCardViewStub;
+    @Mock
+    private ObservableSupplierImpl<TabContentManager> mTabContentManagerSupplier;
 
     private StripLayoutHelperManager mStripLayoutHelperManager;
     private Context mContext;
@@ -133,7 +136,7 @@ public class StripLayoutHelperManagerTest {
         mStripLayoutHelperManager = new StripLayoutHelperManager(mContext, mManagerHost,
                 mUpdateHost, mRenderHost, mLayerTitleCacheSupplier, mTabModelStartupInfoSupplier,
                 mLifecycleDispatcher, mMultiInstanceManager, mToolbarContainerView,
-                mTabHoverCardViewStub);
+                mTabHoverCardViewStub, mTabContentManagerSupplier);
         mStripLayoutHelperManager.setTabModelSelector(mTabModelSelector, mTabCreatorManager);
     }
 

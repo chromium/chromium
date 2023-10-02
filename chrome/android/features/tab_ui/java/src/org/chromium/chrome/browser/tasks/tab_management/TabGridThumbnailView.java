@@ -120,7 +120,7 @@ public class TabGridThumbnailView extends ImageView {
         if (!mInitialized) return;
 
         mRectF.set(0, 0, getMeasuredWidth(), getMeasuredHeight());
-        if (TabUiFeatureUtilities.sThumbnailPlaceholder.isEnabled()) {
+        if (useThumbnailPlaceholder()) {
             resizeIconDrawable();
         }
     }
@@ -180,7 +180,7 @@ public class TabGridThumbnailView extends ImageView {
         if (isPlaceholder()) {
             setBackground(mBackgroundDrawable);
 
-            if (TabUiFeatureUtilities.sThumbnailPlaceholder.isEnabled()) {
+            if (useThumbnailPlaceholder()) {
                 updateIconDrawable();
             }
             return;
@@ -210,7 +210,7 @@ public class TabGridThumbnailView extends ImageView {
      * @return whether the image drawable is a placeholder.
      */
     public boolean isPlaceholder() {
-        if (TabUiFeatureUtilities.sThumbnailPlaceholder.isEnabled()) {
+        if (useThumbnailPlaceholder()) {
             // The drawable can only be null if we just removed the drawable and need to set the
             // mIconDrawable.
             if (getDrawable() == null) return true;
@@ -242,7 +242,7 @@ public class TabGridThumbnailView extends ImageView {
         // Make property changes outside the flag intentionally in the event the flag flips status
         // these will have no material effect on the UI and are safe.
         mIconColor = newColor;
-        if (TabUiFeatureUtilities.sThumbnailPlaceholder.isEnabled() && mIconDrawable != null) {
+        if (useThumbnailPlaceholder() && mIconDrawable != null) {
             setColorFilter(mIconColor, PorterDuff.Mode.SRC_IN);
         }
 
@@ -297,5 +297,10 @@ public class TabGridThumbnailView extends ImageView {
                     (float) (height - edgeLength) / 2f - sVerticalOffsetPx);
             setImageMatrix(mIconMatrix);
         }
+    }
+
+    private boolean useThumbnailPlaceholder() {
+        return TabUiFeatureUtilities.sThumbnailPlaceholder.isEnabled()
+                || TabUiFeatureUtilities.sAdvancedPeripheralsSupportTabStrip.isEnabled();
     }
 }

@@ -32,6 +32,7 @@ import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
 import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton;
 import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton.CompositorOnClickHandler;
 import org.chromium.chrome.browser.compositor.layouts.components.TintedCompositorButton;
+import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.compositor.layouts.eventfilter.AreaMotionEventFilter;
 import org.chromium.chrome.browser.compositor.layouts.eventfilter.MotionEventHandler;
 import org.chromium.chrome.browser.compositor.scene_layer.TabStripSceneLayer;
@@ -299,6 +300,7 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
      *         drag and drop.
      * @param toolbarContainerView @{link View} passed to @{link TabDragSource} for drag and drop.
      * @param tabHoverCardViewStub The {@link ViewStub} representing the strip tab hover card.
+     * @param tabContentManagerSupplier Supplier of the {@link TabContentManager} instance.
      */
     public StripLayoutHelperManager(Context context, LayoutManagerHost managerHost,
             LayoutUpdateHost updateHost, LayoutRenderHost renderHost,
@@ -306,7 +308,8 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
             ObservableSupplier<TabModelStartupInfo> tabModelStartupInfoSupplier,
             ActivityLifecycleDispatcher lifecycleDispatcher,
             MultiInstanceManager multiInstanceManager, View toolbarContainerView,
-            @NonNull ViewStub tabHoverCardViewStub) {
+            @NonNull ViewStub tabHoverCardViewStub,
+            ObservableSupplier<TabContentManager> tabContentManagerSupplier) {
         mUpdateHost = updateHost;
         mLayerTitleCacheSupplier = layerTitleCacheSupplier;
         mTabStripTreeProvider = new TabStripSceneLayer(context);
@@ -409,7 +412,7 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
 
         tabHoverCardViewStub.setOnInflateListener((viewStub, view) -> {
             var hoverCardView = (StripTabHoverCardView) view;
-            hoverCardView.initialize(mTabModelSelector);
+            hoverCardView.initialize(mTabModelSelector, tabContentManagerSupplier);
             mNormalHelper.setTabHoverCardView(hoverCardView);
             mIncognitoHelper.setTabHoverCardView(hoverCardView);
         });

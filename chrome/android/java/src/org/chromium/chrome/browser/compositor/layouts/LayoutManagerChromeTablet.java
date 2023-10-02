@@ -91,7 +91,7 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
                 ()
                         -> mLayerTitleCache,
                 tabModelStartupInfoSupplier, lifecycleDispatcher, multiInstanceManager,
-                toolbarContainerView, tabHoverCardViewStub);
+                toolbarContainerView, tabHoverCardViewStub, tabContentManagerSupplier);
         addSceneOverlay(mTabStripLayoutHelperManager);
         addObserver(mTabStripLayoutHelperManager.getTabSwitcherObserver());
 

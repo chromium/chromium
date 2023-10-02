@@ -50,6 +50,10 @@ public class TabUiFeatureUtilities {
     public static final MutableFlagWithSafeDefault sThumbnailPlaceholder =
             new MutableFlagWithSafeDefault(ChromeFeatureList.THUMBNAIL_PLACEHOLDER, false);
 
+    public static final MutableFlagWithSafeDefault sAdvancedPeripheralsSupportTabStrip =
+            new MutableFlagWithSafeDefault(
+                    ChromeFeatureList.ADVANCED_PERIPHERALS_SUPPORT_TAB_STRIP, false);
+
     // Cached and fixed values.
     private static boolean sTabSelectionEditorLongPressEntryEnabled;
     private static Boolean sIsTabToGtsAnimationEnabled;
