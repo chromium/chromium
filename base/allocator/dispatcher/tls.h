@@ -34,6 +34,9 @@
 #define DISABLE_TSAN_INSTRUMENTATION
 #endif
 
+#define STR_HELPER(x) #x
+#define STR(x) STR_HELPER(x)
+
 // Verify that a condition holds and cancel the process in case it doesn't. The
 // functionality is similar to RAW_CHECK but includes more information in the
 // logged messages. It is non allocating to prevent recursions.
@@ -45,7 +48,7 @@
     if (!(condition)) {                                                 \
       constexpr const char* message =                                   \
           "TLS System: " error_message " Failed condition '" #condition \
-          "' in (" file "@" #line ").\n";                               \
+          "' in (" file "@" STR(line) ").\n";                           \
       ::logging::RawCheckFailure(message);                              \
     }                                                                   \
   } while (0)
@@ -470,6 +473,8 @@ using ThreadLocalStorage =
 
 #undef TLS_RAW_CHECK_IMPL
 #undef TLS_RAW_CHECK
+#undef STR
+#undef STR_HELPER
 
 #endif  // USE_LOCAL_TLS_EMULATION()
 #endif  // BASE_ALLOCATOR_DISPATCHER_TLS_H_
