@@ -16,6 +16,10 @@
 #include "chrome/common/chrome_paths.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ambient_time_of_day_constants.h"
+#endif
+
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
 #include "base/android/path_utils.h"
@@ -78,7 +82,6 @@ bool IsAccessAllowedChromeOS(const base::FilePath& path,
       "/media",
       "/opt/oem",
       "/run/arc/sdcard/write/emulated/0",
-      "/run/imageloader",
       "/usr/share/chromeos-assets",
       "/var/log",
   };
@@ -110,6 +113,10 @@ bool IsAccessAllowedChromeOS(const base::FilePath& path,
     if (base::PathService::Get(chrome::DIR_DEFAULT_DOWNLOADS, &downloads_dir))
       allowlist.push_back(downloads_dir);
   }
+  // /run/imageloader is the root directory for all DLC packages. The "timeofday" package
+  // specifically contains assets required for one of ash's screen saver themes.
+  allowlist.push_back(
+      base::FilePath("/run/imageloader").Append(ash::kTimeOfDayDlcId));
 #else
   // Lacros uses the system-level documents directory and downloads directory
   // under /home/chronos/u-<hash>, which are provided via PathService. Since

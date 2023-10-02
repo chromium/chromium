@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/ambient_time_of_day_constants.h"
 #include "ash/constants/ash_features.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
@@ -19,8 +20,6 @@
 namespace ash {
 
 namespace {
-
-constexpr char kTimeOfDayDlcId[] = "timeofday-dlc";
 
 void OnInstallDlcComplete(base::OnceCallback<void(base::FilePath)> on_done,
                           const DlcserviceClient::InstallResult& result) {
