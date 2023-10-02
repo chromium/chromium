@@ -243,14 +243,19 @@ StatusOr<ConfigFile> GetConfigurationProtoFromDict(
   config_file.set_version(config_file_version.value());
 
   // Handle the signature.
-  const std::string* config_file_signature =
+  const std::string* config_file_signature_str =
       file.FindString("configFileSignature");
-  if (config_file_signature->empty()) {
+  if (!config_file_signature_str || config_file_signature_str->empty()) {
     return Status(
         error::INVALID_ARGUMENT,
         "Field configFileSignature is missing from configurationFile");
   }
-  config_file.set_config_file_signature(*config_file_signature);
+  std::string config_file_signature;
+  if (!base::Base64Decode(*config_file_signature_str, &config_file_signature)) {
+    return Status(error::INVALID_ARGUMENT,
+                  "Unable to decode configFileSignature");
+  }
+  config_file.set_config_file_signature(config_file_signature);
 
   auto* const event_config_result = file.FindList("blockedEventConfigs");
   if (!event_config_result) {
