@@ -108,6 +108,8 @@
   STREAM_ACTION: 'stream_action',
   // Message for virtual keyboard state
   IS_VIRTUAL_KEYBOARD_ENABLED: 'is_virtual_keyboard_enabled',
+  // Message for accessibility state
+  IS_ACCESSIBILITY_ENABLED: 'is_accessibility_enabled',
   // Message for Android network info
   ANDROID_NETWORK_INFO: 'android-network-info',
   // Message for changing app stream orientation
@@ -115,6 +117,9 @@
   // Message for notifying Chrome OS about a change in the status of the WebRTC
   // connection.
   CONNECTION_STATUS_CHANGED: 'connection_status_changed',
+  // Enable or disable accessibility tree streaming.
+  ACCESSIBILITY_SET_TREE_STREAMING_ENABLED:
+      'accessibility_set_tree_streaming_enabled',
   // Message for sending accessibility event data.
   ACCESSIBILITY_EVENT_DATA: 'accessibility_event_data',
   // Message for getting the location of text in android.

@@ -12,6 +12,7 @@
 #include "ash/webui/eche_app_ui/mojom/eche_app.mojom.h"
 
 #include "ash/webui/eche_app_ui/proto/accessibility_mojom.pb.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -29,8 +30,11 @@ class AccessibilityProviderProxy {
   virtual ~AccessibilityProviderProxy() = default;
 
   virtual bool UseFullFocusMode() = 0;
+  virtual bool IsAccessibilityEnabled() = 0;
   virtual ax::android::mojom::AccessibilityFilterType GetFilterType() = 0;
   virtual void OnViewTracked() = 0;
+  virtual void SetAccessibilityEnabledStateChangedCallback(
+      base::RepeatingCallback<void(bool)>) = 0;
 };
 class AccessibilityProvider
     : public mojom::AccessibilityProvider,
@@ -43,8 +47,6 @@ class AccessibilityProvider
   // Track the current eche web view.
   void TrackView(AshWebView* view);
   void HandleStreamClosed();
-  // Handles the result from perform action.
-  void OnActionResult(const ui::AXActionData& data, bool result) const;
   // Handles the result of a refreshWithExtraData call.
   void OnGetTextLocationDataResult(const ui::AXActionData& action,
                                    const absl::optional<std::vector<uint8_t>>&
@@ -57,6 +59,7 @@ class AccessibilityProvider
   void SetAccessibilityObserver(
       ::mojo::PendingRemote<mojom::AccessibilityObserver> observer) override;
   void OnStreamOrientationChanged(bool isLandscape) override;
+  void IsAccessibilityEnabled(IsAccessibilityEnabledCallback callback) override;
 
   void Bind(mojo::PendingReceiver<mojom::AccessibilityProvider> receiver);
 
@@ -68,6 +71,9 @@ class AccessibilityProvider
   ax::android::mojom::AccessibilityFilterType GetFilterType();
   void UpdateDeviceBounds(int width, int height);
   gfx::Rect OnGetTextLocationDataResultInternal(proto::Rect proto_rect) const;
+  // Handles the result from perform action.
+  void OnActionResult(const ui::AXActionData& data, bool result) const;
+  void OnAccessibilityEnabledStateChanged(bool enabled);
 
   class SerializationDelegate
       : public ax::android::AXTreeSourceAndroid::SerializationDelegate {

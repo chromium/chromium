@@ -58,7 +58,12 @@ namespace ash::eche_app {
 
 AccessibilityProvider::AccessibilityProvider(
     std::unique_ptr<AccessibilityProviderProxy> proxy)
-    : proxy_(std::move(proxy)) {}
+    : proxy_(std::move(proxy)) {
+  // Register callback to know when accessibility should be enabled or disabled.
+  proxy_->SetAccessibilityEnabledStateChangedCallback(base::BindRepeating(
+      &AccessibilityProvider::OnAccessibilityEnabledStateChanged,
+      weak_ptr_factory_.GetWeakPtr()));
+}
 AccessibilityProvider::~AccessibilityProvider() = default;
 
 void AccessibilityProvider::TrackView(AshWebView* view) {
@@ -146,6 +151,11 @@ void AccessibilityProvider::OnStreamOrientationChanged(bool is_landscape) {
   }
 }
 
+void AccessibilityProvider::IsAccessibilityEnabled(
+    IsAccessibilityEnabledCallback callback) {
+  std::move(callback).Run(proxy_->IsAccessibilityEnabled());
+}
+
 bool AccessibilityProvider::UseFullFocusMode() const {
   return proxy_->UseFullFocusMode();
 }
@@ -162,15 +172,6 @@ void AccessibilityProvider::UpdateDeviceBounds(int width, int height) {
     device_bounds_.set_size({height, width});
   } else {
     device_bounds_.set_size({width, height});
-  }
-}
-
-void AccessibilityProvider::OnActionResult(const ui::AXActionData& action,
-                                           bool result) const {
-  // Tree source could be null if the app is switched before the response comes
-  // back.
-  if (tree_source_) {
-    tree_source_->NotifyActionResult(action, result);
   }
 }
 
@@ -252,6 +253,19 @@ void AccessibilityProvider::Bind(
     mojo::PendingReceiver<mojom::AccessibilityProvider> receiver) {
   receiver_.reset();
   receiver_.Bind(std::move(receiver));
+}
+
+void AccessibilityProvider::OnActionResult(const ui::AXActionData& action,
+                                           bool result) const {
+  // Tree source could be null if the app is switched before the response comes
+  // back.
+  if (tree_source_) {
+    tree_source_->NotifyActionResult(action, result);
+  }
+}
+
+void AccessibilityProvider::OnAccessibilityEnabledStateChanged(bool enabled) {
+  observer_remote_->EnableAccessibilityTreeStreaming(enabled);
 }
 
 // Serialization Delegate implementation

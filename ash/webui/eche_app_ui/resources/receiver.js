@@ -82,6 +82,14 @@ parentMessagePipe.registerHandler(
           /** @type {boolean} */ (message.androidDeviceOnCellular));
     });
 
+let setAccessibilityEnabledCallback = null;
+parentMessagePipe.registerHandler(
+    Message.ACCESSIBILITY_SET_TREE_STREAMING_ENABLED, (enabled) => {
+      if (setAccessibilityEnabledCallback) {
+        setAccessibilityEnabledCallback(enabled);
+      }
+    });
+
 // Handle accessibility perform action.
 let performActionCallback = null;
 parentMessagePipe.registerHandler(
@@ -132,6 +140,11 @@ const EcheApiBindingImpl = new (class {
     console.log('echeapi receiver.js getLocalUid');
     return /** @type {!UidInfo} */ (
       parentMessagePipe.sendMessage(Message.GET_UID));
+  }
+
+  isAccessibilityEnabled() {
+    console.log('echeapi receiver.js isAccessibilityEnabled');
+    return (parentMessagePipe.sendMessage(Message.IS_ACCESSIBILITY_ENABLED));
   }
 
   onScreenBacklightStateChanged(callback) {
@@ -223,6 +236,12 @@ const EcheApiBindingImpl = new (class {
   }
 
   // TODO: rename this and similar methods to set'Xxx'Callback
+  onAccessibilityEnabledStateChanged(callback) {
+    console.log('echeapi receiver.js onAccessibilityEnabledStateChanged');
+    setAccessibilityEnabledCallback = callback;
+  }
+
+  // TODO: rename this and similar methods to set'Xxx'Callback
   onPerformAction(callback) {
     console.log('echeapi receiver.js onPerformAction');
     performActionCallback = callback;
@@ -251,6 +270,11 @@ echeapi.webrtc.closeWindow =
 echeapi.accessibility = {};
 echeapi.accessibility.sendAccessibilityEventData =
   EcheApiBindingImpl.sendAccessibilityEventData.bind(EcheApiBindingImpl);
+echeapi.accessibility.isAccessibilityEnabled =
+    EcheApiBindingImpl.isAccessibilityEnabled.bind(EcheApiBindingImpl);
+echeapi.accessibility.registerAccessibilityEnabledStateChangedReceiver =
+    EcheApiBindingImpl.onAccessibilityEnabledStateChanged.bind(
+        EcheApiBindingImpl);
 echeapi.accessibility.registerPerformActionReceiver =
   EcheApiBindingImpl.onPerformAction.bind(EcheApiBindingImpl);
 echeapi.accessibility.registerRefreshWithExtraDataReceiver =

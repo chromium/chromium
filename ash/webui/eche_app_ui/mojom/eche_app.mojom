@@ -81,6 +81,10 @@ interface AccessibilityProvider {
 
   // Notifies what orientation the stream has changed to for accessibility.
   OnStreamOrientationChanged(bool isLandscape);
+
+  // Returns true if an accessibility feature that requires
+  // the tree stream is enabled.
+  IsAccessibilityEnabled() => (bool enabled);
 };
 
 // Observer for accessibility provider. Should be created using
@@ -89,6 +93,9 @@ interface AccessibilityProvider {
 // with the android phone through the SWA.
 // Proto from: ash/webui/eche_app_ui/proto/accessibility_mojom.proto
 interface AccessibilityObserver {
+  // Enable or disable accessibility tree streaming
+  // based on state of assistive technologies.
+  EnableAccessibilityTreeStreaming(bool enable);
   // Sends the accessibility action to the SWA for processing.
   // The proto sent is proto::AccessibilityActionData.
   PerformAction(array<uint8> serialized_proto) => (bool result);

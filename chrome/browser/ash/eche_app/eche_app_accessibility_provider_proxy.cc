@@ -8,8 +8,8 @@
 
 namespace ash::eche_app {
 
-EcheAppAccessibilityProviderProxy::EcheAppAccessibilityProviderProxy() =
-    default;
+EcheAppAccessibilityProviderProxy::EcheAppAccessibilityProviderProxy()
+    : was_accessibility_enabled_(IsAccessibilityEnabled()) {}
 EcheAppAccessibilityProviderProxy::~EcheAppAccessibilityProviderProxy() =
     default;
 
@@ -29,8 +29,16 @@ void EcheAppAccessibilityProviderProxy::OnAccessibilityStatusChanged(
           AccessibilityNotificationType::kToggleScreenMagnifier) {
     return;
   }
-
   UpdateEnabledFeature();
+
+  // Check if the state of accessibility has changed.
+  bool is_accessibility_enabled = IsAccessibilityEnabled();
+  if (!is_accessibility_enabled == was_accessibility_enabled_) {
+    was_accessibility_enabled_ = is_accessibility_enabled;
+    if (accessibility_state_changed_callback_.has_value()) {
+      accessibility_state_changed_callback_->Run(is_accessibility_enabled);
+    }
+  }
 
   if (event_details.notification_type ==
       AccessibilityNotificationType::kToggleSpokenFeedback) {
@@ -68,6 +76,27 @@ bool EcheAppAccessibilityProviderProxy::UseFullFocusMode() {
   return use_full_focus_mode_;
 }
 
+bool EcheAppAccessibilityProviderProxy::IsAccessibilityEnabled() {
+  AccessibilityManager* accessibility_manager = AccessibilityManager::Get();
+
+  if (accessibility_manager) {
+    return accessibility_manager->IsFocusHighlightEnabled() ||
+           accessibility_manager->IsSelectToSpeakEnabled() ||
+           accessibility_manager->IsSpokenFeedbackEnabled() ||
+           accessibility_manager->IsSwitchAccessEnabled();
+  }
+
+  const MagnificationManager* magnification_manager =
+      MagnificationManager::Get();
+
+  if (magnification_manager) {
+    return magnification_manager->IsDockedMagnifierEnabled() ||
+           magnification_manager->IsMagnifierEnabled();
+  }
+
+  return false;
+}
+
 void EcheAppAccessibilityProviderProxy::OnViewTracked() {
   UpdateEnabledFeature();
   AccessibilityManager* accessibility_manager = AccessibilityManager::Get();
@@ -77,6 +106,12 @@ void EcheAppAccessibilityProviderProxy::OnViewTracked() {
             &EcheAppAccessibilityProviderProxy::OnAccessibilityStatusChanged,
             weak_ptr_factory_.GetWeakPtr()));
   }
+}
+
+void EcheAppAccessibilityProviderProxy::
+    SetAccessibilityEnabledStateChangedCallback(
+        base::RepeatingCallback<void(bool)> callback) {
+  accessibility_state_changed_callback_ = callback;
 }
 
 void EcheAppAccessibilityProviderProxy::UpdateEnabledFeature() {

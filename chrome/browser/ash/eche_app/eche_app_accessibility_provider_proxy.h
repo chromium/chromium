@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_ECHE_APP_ECHE_APP_ACCESSIBILITY_PROVIDER_PROXY_H_
 
 #include "ash/webui/eche_app_ui/accessibility_provider.h"
+#include "third_party/abseil-cpp//absl//types/optional.h"
 
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 
@@ -22,14 +23,20 @@ class EcheAppAccessibilityProviderProxy : public AccessibilityProviderProxy {
 
   // Proxy Overrides
   bool UseFullFocusMode() override;
+  bool IsAccessibilityEnabled() override;
   ax::android::mojom::AccessibilityFilterType GetFilterType() override;
   void OnViewTracked() override;
+  void SetAccessibilityEnabledStateChangedCallback(
+      base::RepeatingCallback<void(bool)> callback) override;
 
  private:
   void UpdateEnabledFeature();
   base::CallbackListSubscription accessibility_status_subscription_;
   bool use_full_focus_mode_ = false;
+  bool was_accessibility_enabled_;
 
+  absl::optional<base::RepeatingCallback<void(bool)>>
+      accessibility_state_changed_callback_;
   base::WeakPtrFactory<EcheAppAccessibilityProviderProxy> weak_ptr_factory_{
       this};
 };

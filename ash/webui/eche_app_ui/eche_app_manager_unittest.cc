@@ -81,6 +81,11 @@ class FakeAccessibilityProviderProxy : public AccessibilityProviderProxy {
     return ax::android::mojom::AccessibilityFilterType::ALL;
   }
   void OnViewTracked() override {}
+
+  bool IsAccessibilityEnabled() override { return true; }
+
+  void SetAccessibilityEnabledStateChangedCallback(
+      base::RepeatingCallback<void(bool)> callback) override {}
 };
 
 }  // namespace
