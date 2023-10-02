@@ -29,13 +29,8 @@ struct MediaSessionSeekToDetails {
   bool fast_seek;
 };
 
-struct MediaSessionPictureInPictureActionDetails {
-  bool automatic;
-};
-
 union MediaSessionActionDetails {
   MediaSessionSeekToDetails seek_to;
-  MediaSessionPictureInPictureActionDetails picture_in_picture;
 };
 
 // MediaMetadata

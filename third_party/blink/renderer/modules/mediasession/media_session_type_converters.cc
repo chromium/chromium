@@ -19,10 +19,6 @@ TypeConverter<const blink::MediaSessionActionDetails*,
     blink_details = TypeConverter<
         blink::MediaSessionSeekToActionDetails*,
         blink::mojom::blink::MediaSessionActionDetailsPtr>::Convert(details);
-  } else if (details && details->is_picture_in_picture()) {
-    blink_details = TypeConverter<
-        blink::MediaSessionPictureInPictureActionDetails*,
-        blink::mojom::blink::MediaSessionActionDetailsPtr>::Convert(details);
   } else {
     DCHECK(!details);
     blink_details = blink::MediaSessionActionDetails::Create();
@@ -40,16 +36,6 @@ TypeConverter<blink::MediaSessionSeekToActionDetails*,
   auto* blink_details = blink::MediaSessionSeekToActionDetails::Create();
   blink_details->setSeekTime(details->get_seek_to()->seek_time.InSecondsF());
   blink_details->setFastSeek(details->get_seek_to()->fast_seek);
-  return blink_details;
-}
-
-blink::MediaSessionPictureInPictureActionDetails*
-TypeConverter<blink::MediaSessionPictureInPictureActionDetails*,
-              blink::mojom::blink::MediaSessionActionDetailsPtr>::
-    Convert(const blink::mojom::blink::MediaSessionActionDetailsPtr& details) {
-  auto* blink_details =
-      blink::MediaSessionPictureInPictureActionDetails::Create();
-  blink_details->setAutomatic(details->get_picture_in_picture()->automatic);
   return blink_details;
 }
 

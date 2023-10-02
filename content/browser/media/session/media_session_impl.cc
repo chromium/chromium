@@ -1200,10 +1200,7 @@ void MediaSessionImpl::EnterPictureInPicture() {
       ShouldRouteAction(
           media_session::mojom::MediaSessionAction::kEnterPictureInPicture)) {
     DidReceiveAction(
-        media_session::mojom::MediaSessionAction::kEnterPictureInPicture,
-        blink::mojom::MediaSessionActionDetails::NewPictureInPicture(
-            blink::mojom::MediaSessionPictureInPictureActionDetails::New(
-                /*automatic=*/false)));
+        media_session::mojom::MediaSessionAction::kEnterPictureInPicture);
     return;
   }
 
@@ -1228,10 +1225,7 @@ void MediaSessionImpl::EnterAutoPictureInPicture() {
   }
 
   DidReceiveAction(
-      media_session::mojom::MediaSessionAction::kEnterPictureInPicture,
-      blink::mojom::MediaSessionActionDetails::NewPictureInPicture(
-          blink::mojom::MediaSessionPictureInPictureActionDetails::New(
-              /*automatic=*/true)));
+      media_session::mojom::MediaSessionAction::kEnterPictureInPicture);
 }
 
 void MediaSessionImpl::SetAudioSinkId(const absl::optional<std::string>& id) {
