@@ -19,8 +19,8 @@
         "autotest_name": "chromium_Graphics",
         "cros_board": "jacuzzi",
         "cros_img": "jacuzzi-release/R119-15629.0.0",
-        "extra_browser_args": "--log-level=0 --js-flags=--expose-gc --use-cmd-decoder=validating",
-        "name": "context_lost_validating_tests JACUZZI_RELEASE_LKGM",
+        "extra_browser_args": "--log-level=0 --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle",
+        "name": "context_lost_passthrough_tests JACUZZI_RELEASE_LKGM",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -47,8 +47,8 @@
         "autotest_name": "chromium_Graphics",
         "cros_board": "jacuzzi",
         "cros_img": "jacuzzi-release/R119-15629.0.0",
-        "extra_browser_args": "--log-level=0 --js-flags=--expose-gc --use-cmd-decoder=validating",
-        "name": "expected_color_pixel_validating_test JACUZZI_RELEASE_LKGM",
+        "extra_browser_args": "--log-level=0 --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle",
+        "name": "expected_color_pixel_passthrough_test JACUZZI_RELEASE_LKGM",
         "precommit_args": [
           "--gerrit-issue=${patch_issue}",
           "--gerrit-patchset=${patch_set}",
@@ -148,8 +148,8 @@
         "autotest_name": "chromium_Graphics",
         "cros_board": "jacuzzi",
         "cros_img": "jacuzzi-release/R119-15629.0.0",
-        "extra_browser_args": "--log-level=0 --js-flags=--expose-gc --force_higher_performance_gpu --use-cmd-decoder=validating",
-        "name": "mediapipe_validating_tests JACUZZI_RELEASE_LKGM",
+        "extra_browser_args": "--log-level=0 --js-flags=--expose-gc --force_higher_performance_gpu --use-cmd-decoder=passthrough --use-gl=angle",
+        "name": "mediapipe_passthrough_tests JACUZZI_RELEASE_LKGM",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -177,8 +177,8 @@
         "autotest_name": "chromium_Graphics",
         "cros_board": "jacuzzi",
         "cros_img": "jacuzzi-release/R119-15629.0.0",
-        "extra_browser_args": "--log-level=0 --js-flags=--expose-gc --use-cmd-decoder=validating",
-        "name": "pixel_skia_gold_validating_test JACUZZI_RELEASE_LKGM",
+        "extra_browser_args": "--log-level=0 --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle",
+        "name": "pixel_skia_gold_passthrough_test JACUZZI_RELEASE_LKGM",
         "precommit_args": [
           "--gerrit-issue=${patch_issue}",
           "--gerrit-patchset=${patch_set}",
@@ -206,8 +206,8 @@
         "autotest_name": "chromium_Graphics",
         "cros_board": "jacuzzi",
         "cros_img": "jacuzzi-release/R119-15629.0.0",
-        "extra_browser_args": "--log-level=0 --js-flags=--expose-gc --use-cmd-decoder=validating",
-        "name": "screenshot_sync_validating_tests JACUZZI_RELEASE_LKGM",
+        "extra_browser_args": "--log-level=0 --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle",
+        "name": "screenshot_sync_passthrough_tests JACUZZI_RELEASE_LKGM",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -254,7 +254,7 @@
         "autotest_name": "chromium_Graphics",
         "cros_board": "jacuzzi",
         "cros_img": "jacuzzi-release/R119-15629.0.0",
-        "extra_browser_args": "--log-level=0 --js-flags=--expose-gc --use-cmd-decoder=validating",
+        "extra_browser_args": "--log-level=0 --js-flags=--expose-gc",
         "name": "webcodecs_tests JACUZZI_RELEASE_LKGM",
         "resultdb": {
           "enable": true,
@@ -293,32 +293,6 @@
       },
       {
         "args": [
-          "webgl2_conformance",
-          "--show-stdout",
-          "--browser=cros-chrome",
-          "--passthrough",
-          "-v",
-          "--stable-jobs",
-          "--webgl-conformance-version=2.0.1",
-          "--read-abbreviated-json-results-from=../../content/test/data/gpu/webgl2_conformance_linux_runtimes.json",
-          "--jobs=1"
-        ],
-        "autotest_name": "chromium_Graphics",
-        "cros_board": "jacuzzi",
-        "cros_img": "jacuzzi-release/R119-15629.0.0",
-        "extra_browser_args": "--log-level=0 --js-flags=--expose-gc --use-cmd-decoder=validating --force_high_performance_gpu",
-        "name": "webgl2_conformance_validating_tests JACUZZI_RELEASE_LKGM",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "test": "telemetry_gpu_integration_test",
-        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
-        "timeout_sec": 10800,
-        "variant_id": "JACUZZI_RELEASE_LKGM"
-      },
-      {
-        "args": [
           "webgl1_conformance",
           "--show-stdout",
           "--browser=cros-chrome",
@@ -331,8 +305,8 @@
         "autotest_name": "chromium_Graphics",
         "cros_board": "jacuzzi",
         "cros_img": "jacuzzi-release/R119-15629.0.0",
-        "extra_browser_args": "--log-level=0 --js-flags=--expose-gc --use-cmd-decoder=validating --force_high_performance_gpu",
-        "name": "webgl_conformance_validating_tests JACUZZI_RELEASE_LKGM",
+        "extra_browser_args": "--log-level=0 --js-flags=--expose-gc --use-gl=angle --use-angle=gles --use-cmd-decoder=passthrough --force_high_performance_gpu",
+        "name": "webgl_conformance_gles_passthrough_tests JACUZZI_RELEASE_LKGM",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true

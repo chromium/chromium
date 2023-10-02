@@ -273,32 +273,27 @@ targets.legacy_matrix_compound_suite(
                 "CROS_JACUZZI_RELEASE_LKGM",
             ],
         ),
-        "gpu_mediapipe_validating_telemetry_tests": targets.legacy_matrix_config(
+        "gpu_mediapipe_passthrough_telemetry_tests": targets.legacy_matrix_config(
             variants = [
                 "CROS_JACUZZI_RELEASE_LKGM",
             ],
         ),
-        "gpu_validating_telemetry_tests": targets.legacy_matrix_config(
+        "gpu_passthrough_telemetry_tests": targets.legacy_matrix_config(
             variants = [
                 "CROS_JACUZZI_RELEASE_LKGM",
             ],
         ),
-        "gpu_webcodecs_validating_telemetry_test": targets.legacy_matrix_config(
+        "gpu_webcodecs_telemetry_test": targets.legacy_matrix_config(
             variants = [
                 "CROS_JACUZZI_RELEASE_LKGM",
             ],
         ),
-        "gpu_webgl_conformance_validating_telemetry_tests": targets.legacy_matrix_config(
+        "gpu_webgl_conformance_gles_passthrough_telemetry_tests": targets.legacy_matrix_config(
             variants = [
                 "CROS_JACUZZI_RELEASE_LKGM",
             ],
         ),
         "gpu_webgl2_conformance_gles_passthrough_telemetry_tests": targets.legacy_matrix_config(
-            variants = [
-                "CROS_JACUZZI_RELEASE_LKGM",
-            ],
-        ),
-        "gpu_webgl2_conformance_validating_telemetry_tests": targets.legacy_matrix_config(
             variants = [
                 "CROS_JACUZZI_RELEASE_LKGM",
             ],

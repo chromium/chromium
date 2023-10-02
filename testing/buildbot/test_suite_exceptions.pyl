@@ -2616,6 +2616,17 @@
       },
     },
   },
+  'expected_color_pixel_passthrough_test JACUZZI_RELEASE_LKGM': {
+    'modifications': {
+      'ChromeOS FYI Release Skylab (jacuzzi)': {
+        'args': [
+          # Skylab currently doesn't support use of LUCI_CONTEXT, so Gold cannot
+          # automatically get the service account to authenticate with.
+          '--service-account=/creds/service_accounts/skylab-drone.json',
+        ],
+      },
+    },
+  },
   'expected_color_pixel_validating_test': {
     'modifications': {
       'Android FYI Release (Pixel 4)': {
@@ -2647,17 +2658,6 @@
         'args': {
           '--git-revision': '${got_cr_revision}',
         },
-      },
-    },
-  },
-  'expected_color_pixel_validating_test JACUZZI_RELEASE_LKGM': {
-    'modifications': {
-      'ChromeOS FYI Release Skylab (jacuzzi)': {
-        'args': [
-          # Skylab currently doesn't support use of LUCI_CONTEXT, so Gold cannot
-          # automatically get the service account to authenticate with.
-          '--service-account=/creds/service_accounts/skylab-drone.json',
-        ],
       },
     },
   },
@@ -3904,6 +3904,17 @@
       },
     },
   },
+  'pixel_skia_gold_passthrough_test JACUZZI_RELEASE_LKGM': {
+    'modifications': {
+      'ChromeOS FYI Release Skylab (jacuzzi)': {
+        'args': [
+          # Skylab currently doesn't support use of LUCI_CONTEXT, so Gold cannot
+          # automatically get the service account to authenticate with.
+          '--service-account=/creds/service_accounts/skylab-drone.json',
+        ],
+      },
+    },
+  },
   'pixel_skia_gold_validating_test': {
     'modifications': {
       'Android FYI Release (Pixel 4)': {
@@ -3935,17 +3946,6 @@
         'args': {
           '--git-revision': '${got_cr_revision}',
         },
-      },
-    },
-  },
-  'pixel_skia_gold_validating_test JACUZZI_RELEASE_LKGM': {
-    'modifications': {
-      'ChromeOS FYI Release Skylab (jacuzzi)': {
-        'args': [
-          # Skylab currently doesn't support use of LUCI_CONTEXT, so Gold cannot
-          # automatically get the service account to authenticate with.
-          '--service-account=/creds/service_accounts/skylab-drone.json',
-        ],
       },
     },
   },
