@@ -217,6 +217,8 @@ GURL GetGooglePasswordManagerURL(ManagePasswordsReferrer referrer) {
         return "password_generation_prompt_in_autofill_dropdown";
       case ManagePasswordsReferrer::kPasswordsGoogleWebsite:
         return "passwords_google";
+      case ManagePasswordsReferrer::kAddUsernameBubble:
+        return "add_username_bubble";
       case ManagePasswordsReferrer::kPasswordsAccessorySheet:
       case ManagePasswordsReferrer::kTouchToFill:
       case ManagePasswordsReferrer::kPasswordBreachDialog:

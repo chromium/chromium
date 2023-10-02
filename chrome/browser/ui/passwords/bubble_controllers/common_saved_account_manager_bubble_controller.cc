@@ -97,10 +97,10 @@ void CommonSavedAccountManagerBubbleController::OnCredentialEdited(
 }
 
 void CommonSavedAccountManagerBubbleController::
-    OnGooglePasswordManagerLinkClicked() {
+    OnGooglePasswordManagerLinkClicked(
+        password_manager::ManagePasswordsReferrer refferer) {
   if (delegate_) {
-    delegate_->NavigateToPasswordManagerSettingsPage(
-        password_manager::ManagePasswordsReferrer::kSaveUpdateBubble);
+    delegate_->NavigateToPasswordManagerSettingsPage(refferer);
   }
 }
 

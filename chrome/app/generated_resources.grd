@@ -6790,6 +6790,12 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_ADD_USERNAME_TITLE" desc="The title of the add username bubble when username was not detected.">
         Add username?
       </message>
+      <message name="IDS_ADD_USERNAME" desc="Confirmation button in the add username bubble.">
+        Add Username
+      </message>
+      <message name="IDS_ADD_USERNAME_BODY" desc="Body text in the add username bubble.">
+        To help Google Password Manager save your sing-in info, add your username for this site
+      </message>
       <message name="IDS_UPDATE_PASSWORD" desc="The title of the save password bubble when a password can be updated.">
         Update password?
       </message>

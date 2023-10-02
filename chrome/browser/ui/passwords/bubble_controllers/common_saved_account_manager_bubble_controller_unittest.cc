@@ -130,5 +130,6 @@ TEST_F(CommonSavedAccountManagerBubbleControllerTest,
   PretendPasswordWaiting();
   EXPECT_CALL(*delegate(), NavigateToPasswordManagerSettingsPage);
 
-  controller()->OnGooglePasswordManagerLinkClicked();
+  controller()->OnGooglePasswordManagerLinkClicked(
+      password_manager::ManagePasswordsReferrer::kAddUsernameBubble);
 }

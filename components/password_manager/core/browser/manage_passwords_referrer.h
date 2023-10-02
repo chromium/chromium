@@ -79,10 +79,14 @@ enum class ManagePasswordsReferrer {
   // manager in search mode.
   kSearchPasswordsWidget = 18,
 
+  // On Desktop, the Google Password Manager link was clicked in the footer of
+  // AddUsername bubble.
+  kAddUsernameBubble = 19,
+
   // NOTE: When adding a new value to this enum that applies or could apply to
   // Android, make sure it is correctly handled by the internal credential
   // manager launcher java implementation.
-  kMaxValue = kSearchPasswordsWidget,
+  kMaxValue = kAddUsernameBubble,
 };
 
 }  // namespace password_manager

@@ -352,7 +352,8 @@ void PasswordSaveUpdateView::UpdateBubbleUIElements() {
 std::unique_ptr<views::View> PasswordSaveUpdateView::CreateFooterView() {
   base::RepeatingClosure open_password_manager_closure = base::BindRepeating(
       [](PasswordSaveUpdateView* dialog) {
-        dialog->controller_.OnGooglePasswordManagerLinkClicked();
+        dialog->controller_.OnGooglePasswordManagerLinkClicked(
+            password_manager::ManagePasswordsReferrer::kSaveUpdateBubble);
       },
       base::Unretained(this));
   if (controller_.IsCurrentStateAffectingPasswordsStoredInTheGoogleAccount()) {

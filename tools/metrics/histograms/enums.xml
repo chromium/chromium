@@ -70314,6 +70314,7 @@ from previous Chrome versions.
   <int value="16" label="Chrome menu item"/>
   <int value="17" label="Shared Passwords Notification Bubble"/>
   <int value="18" label="Search Passwords widget"/>
+  <int value="19" label="Add Username bubble"/>
 </enum>
 
 <enum name="MandatoryReauthAuthEvent">
