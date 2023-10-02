@@ -873,6 +873,7 @@ crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] 
 
 crbug.com/1464417 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] conformance2/extensions/webgl-shader-pixel-local-storage.html [ Failure ]
 crbug.com/1473838 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] conformance2/extensions/oes-sample-variables.html [ Failure ]
+crbug.com/1488581 [ chromeos lacros-chrome chromeos-board-octopus passthrough ] conformance/rendering/out-of-bounds-array-buffers.html [ RetryOnFailure ]
 
 ##############################
 # Lacros-like Linux Failures #
