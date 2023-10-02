@@ -3719,7 +3719,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Shill.Wifi.SecurityChange"
-    enum="NetworkSecurityChange" expires_after="2023-10-08">
+    enum="NetworkSecurityChange" expires_after="2024-02-25">
   <owner>andrzejo@google.com</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
