@@ -98,7 +98,8 @@ class BrowserViewLayout::WebContentsModalDialogHostViews
   }
 
   gfx::Point GetDialogPosition(const gfx::Size& size) override {
-    views::View* view = browser_view_layout_->top_container_;
+    // Horizontally places the dialog at the center of the content.
+    views::View* view = browser_view_layout_->contents_container_;
     gfx::Rect rect = view->ConvertRectToWidget(view->GetLocalBounds());
     const int middle_x = rect.x() + rect.width() / 2;
     const int top = browser_view_layout_->dialog_top_y_;
