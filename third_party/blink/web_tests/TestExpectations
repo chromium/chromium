@@ -6753,3 +6753,6 @@ crbug.com/1487899 [ Linux ] fast/canvas/canvas-toBlob-jpeg-medium-quality.html [
 external/wpt/fs/FileSystemFileHandle-cross-primitive-locking.https.tentative.worker.html [ Skip Failure ]
 external/wpt/fs/FileSystemFileHandle-sync-access-handle-lock-modes.https.tentative.worker.html [ Skip Failure ]
 external/wpt/fs/FileSystemFileHandle-writable-file-stream-lock-modes.https.tentative.worker.html [ Skip Failure ]
+
+# Gardener 2023-10-02
+crbug.com/1481694 [ Win10.20h2 ] accessibility/selection-change-notification-on-selection-removed.html [ Failure ]
