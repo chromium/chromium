@@ -100,7 +100,7 @@ def __rewrite_rewrapper(ctx, cmd):
         })
     ctx.actions.fix(
         args = args,
-        reproxy_config = json.encode(reproxy_config)
+        reproxy_config = json.encode(reproxy_config),
     )
 
 def __strip_rewrapper(ctx, cmd):
@@ -213,6 +213,15 @@ def __step_config(ctx, step_config):
         if rule["name"].startswith("clang/") or rule["name"].startswith("clang-cl/"):
             if not rule.get("action"):
                 fail("clang rule %s found without action" % rule["name"])
+
+            # TODO(b/294160948): reclient doesn't work well with cros wrapper symlink tricks.
+            cros_rule = {
+                "name": rule["name"] + "/cros",
+                "action": rule["action"],
+                "command_prefix": "../../build/cros_cache/",
+                "use_remote_exec_wrapper": True,
+            }
+            new_rules.append(cros_rule)
             new_rule = {
                 "name": rule["name"],
                 "action": rule["action"],
