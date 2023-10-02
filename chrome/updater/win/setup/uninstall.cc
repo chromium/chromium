@@ -81,6 +81,8 @@ void DeleteComInterfaces(UpdaterScope scope, bool uninstall_all) {
            uninstall_all ? GetActiveInterfaces(scope) : std::vector<IID>())) {
     for (const auto& reg_path :
          {GetComIidRegistryPath(iid), GetComTypeLibRegistryPath(iid)}) {
+      VLOG(1) << "Deleting reg_path: " << reg_path
+              << ": from scope: " << UpdaterScopeToString(scope);
       installer::DeleteRegistryKey(UpdaterScopeToHKeyRoot(scope), reg_path,
                                    WorkItem::kWow64Default);
     }

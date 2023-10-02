@@ -59,6 +59,7 @@ void AddInstallComProgIdWorkItems(UpdaterScope scope,
 
     // Delete any old registrations first.
     for (const auto& key_flag : {KEY_WOW64_32KEY, KEY_WOW64_64KEY}) {
+      VLOG(1) << "Deleting reg_path: " << progid_reg_path;
       list->AddDeleteRegKeyWorkItem(root, progid_reg_path, key_flag);
     }
 
@@ -247,6 +248,7 @@ void AddInstallComInterfaceWorkItems(HKEY root,
   // Delete any old registrations first.
   for (const auto& reg_path : {iid_reg_path, typelib_reg_path}) {
     for (const auto& key_flag : {KEY_WOW64_32KEY, KEY_WOW64_64KEY}) {
+      VLOG(1) << "Deleting reg_path: " << reg_path;
       list->AddDeleteRegKeyWorkItem(root, reg_path, key_flag);
     }
   }
@@ -291,6 +293,7 @@ void AddInstallServerWorkItems(HKEY root,
   // Delete any old registrations first.
   for (const auto& reg_path : {clsid_reg_path}) {
     for (const auto& key_flag : {KEY_WOW64_32KEY, KEY_WOW64_64KEY}) {
+      VLOG(1) << "Deleting reg_path: " << reg_path;
       list->AddDeleteRegKeyWorkItem(root, reg_path, key_flag);
     }
   }
@@ -371,9 +374,11 @@ void AddComServiceWorkItems(const base::FilePath& com_service_path,
   // and the current install is 64-bit. If any 32-bit keys remain, they will
   // shadow the 64-bit keys.
   for (const auto& clsid : clsids) {
+    const std::wstring clsid_reg_path = GetComServerClsidRegistryPath(clsid);
+    VLOG(1) << "Deleting reg_path: " << clsid_reg_path;
     for (const auto& key_flag : {KEY_WOW64_32KEY, KEY_WOW64_64KEY}) {
-      list->AddDeleteRegKeyWorkItem(
-          HKEY_LOCAL_MACHINE, GetComServerClsidRegistryPath(clsid), key_flag);
+      list->AddDeleteRegKeyWorkItem(HKEY_LOCAL_MACHINE, clsid_reg_path,
+                                    key_flag);
     }
   }
 
