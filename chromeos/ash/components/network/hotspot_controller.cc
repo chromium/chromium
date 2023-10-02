@@ -50,9 +50,11 @@ void HotspotController::Init(
 }
 
 void HotspotController::EnableHotspot(HotspotControlCallback callback) {
-  if (current_disable_request_) {
-    NET_LOG(ERROR)
-        << "Failed to enable hotspot as a disable request is in progress";
+  if (current_disable_request_ &&
+      current_disable_request_->disable_reason !=
+          hotspot_config::mojom::DisableReason::kRestart) {
+    NET_LOG(ERROR) << "Failed to enable hotspot as a non-restart disable "
+                      "request is in progress";
     HotspotMetricsHelper::RecordSetTetheringEnabledResult(
         /*enabled=*/true,
         hotspot_config::mojom::HotspotControlResult::kInvalid);
