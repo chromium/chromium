@@ -127,8 +127,8 @@ suite('<settings-hotspot-subpage>', () => {
     // Simulate state becoming kEnabling.
     hotspotConfig.setFakeHotspotState(HotspotState.kEnabling);
     await flushAsync();
-    // Toggle should be disabled.
-    assertTrue(enableHotspotToggle.disabled);
+    // Toggle should not be disabled.
+    assertFalse(enableHotspotToggle.disabled);
     hotspotConfig.setFakeHotspotState(HotspotState.kDisabled);
 
     // Simulate AllowStatus becoming kDisallowedByPolicy.
