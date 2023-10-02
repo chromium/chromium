@@ -4558,9 +4558,8 @@ void ForEachAnchorQueryOnContainer(const LayoutBox& box, Function func) {
     return;
   }
 
-  // Now the container is a relatively positioned inline.
+  // Now the container is an inline box that's also an abspos containing block.
   CHECK(container->IsLayoutInline());
-  CHECK(container->IsRelPositioned());
   const LayoutInline* inline_container = To<LayoutInline>(container);
   if (!inline_container->HasInlineFragments()) {
     return;
