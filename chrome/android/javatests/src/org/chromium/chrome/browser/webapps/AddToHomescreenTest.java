@@ -367,7 +367,7 @@ public class AddToHomescreenTest {
     @Feature("{Webapp}")
     public void testAddWebappShortcutAppInstalledEvent() throws Exception {
         loadUrl(WebappTestPage.getServiceWorkerUrlWithManifestAndAction(mTestServerRule.getServer(),
-                        "manifest_empty_name_short_name.json", "verify_appinstalled"),
+                        "manifest_display_browser.json", "verify_appinstalled"),
                 WebappTestPage.PAGE_TITLE);
 
         addShortcutToTab(mTab, "", true);

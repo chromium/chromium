@@ -18586,6 +18586,22 @@
             ]
         }
     ],
+    "WebApkUniversalInstall": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "UniversalInstallIcon",
+                        "UniversalInstallManifest"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebContentsCaptureHiDPI": [
         {
             "platforms": [
