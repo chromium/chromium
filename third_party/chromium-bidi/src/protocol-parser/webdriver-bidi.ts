@@ -2323,26 +2323,16 @@ export namespace Input {
 export namespace Input {
   export const AnglePropertiesSchema = z.lazy(() =>
     z.object({
-      altitudeAngle: z
-        .number()
-        .gte(0)
-        .lte(1.5707963267948966)
-        .default(0)
-        .optional(),
-      azimuthAngle: z
-        .number()
-        .gte(0)
-        .lte(6.283185307179586)
-        .default(0)
-        .optional(),
+      altitudeAngle: z.number().default(0).optional(),
+      azimuthAngle: z.number().default(0).optional(),
     })
   );
 }
 export namespace Input {
   export const TiltPropertiesSchema = z.lazy(() =>
     z.object({
-      tiltX: z.number().int().gte(-90).lte(90).default(0).optional(),
-      tiltY: z.number().int().gte(-90).lte(90).default(0).optional(),
+      tiltX: JsIntSchema.default(0).optional(),
+      tiltY: JsIntSchema.default(0).optional(),
     })
   );
 }

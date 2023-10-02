@@ -1823,14 +1823,10 @@ export namespace Input {
 export namespace Input {
   export type AngleProperties = {
     /**
-     * Must be between `0` and `1.5707963267948966`, inclusive.
-     *
      * @defaultValue `0`
      */
     altitudeAngle?: number;
     /**
-     * Must be between `0` and `6.283185307179586`, inclusive.
-     *
      * @defaultValue `0`
      */
     azimuthAngle?: number;
@@ -1839,17 +1835,13 @@ export namespace Input {
 export namespace Input {
   export type TiltProperties = {
     /**
-     * Must be between `-90` and `90`, inclusive.
-     *
      * @defaultValue `0`
      */
-    tiltX?: number;
+    tiltX?: JsInt;
     /**
-     * Must be between `-90` and `90`, inclusive.
-     *
      * @defaultValue `0`
      */
-    tiltY?: number;
+    tiltY?: JsInt;
   };
 }
 export namespace Input {
