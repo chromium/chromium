@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/app_list/views/launcher_search_iph_view.h"
+#include "ash/assistant/ui/main_stage/launcher_search_iph_view.h"
 
 #include <memory>
 #include <string>

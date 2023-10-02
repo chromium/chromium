@@ -77,6 +77,8 @@ source_set("ui") {
     "main_stage/chip_view.h",
     "main_stage/element_animator.cc",
     "main_stage/element_animator.h",
+    "main_stage/launcher_search_iph_view.cc",
+    "main_stage/launcher_search_iph_view.h",
     "main_stage/suggestion_chip_view.cc",
     "main_stage/suggestion_chip_view.h",
     "main_stage/suggestion_container_view.cc",
