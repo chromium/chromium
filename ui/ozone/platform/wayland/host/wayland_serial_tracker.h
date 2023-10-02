@@ -56,6 +56,8 @@ class SerialTracker final {
 
   void ClearForTesting();
 
+  std::string ToString() const;
+
  private:
   const base::TimeTicks base_time_;
 

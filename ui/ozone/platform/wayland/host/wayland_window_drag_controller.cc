@@ -130,7 +130,11 @@ bool WaylandWindowDragController::StartDragSession(
     return false;
   }
 
-  VLOG(1) << "Starting DND session.";
+  VLOG(1) << "Starting DND session. serial=" << serial->value
+          << ", data_source="
+          << (drag_source == DragEventSource::kMouse ? "mouse" : "touch")
+          << ", serial tracker=" << connection_->serial_tracker().ToString();
+
   state_ = State::kAttached;
   origin_window_ = origin;
   drag_source_ = drag_source;

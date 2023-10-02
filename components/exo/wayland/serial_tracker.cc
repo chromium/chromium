@@ -4,6 +4,8 @@
 
 #include "components/exo/wayland/serial_tracker.h"
 
+#include <sstream>
+
 #include <wayland-server-core.h>
 
 namespace exo {
@@ -93,6 +95,14 @@ uint32_t SerialTracker::MaybeNextKeySerial() {
 
 void SerialTracker::ResetKeySerial() {
   key_serial_ = absl::nullopt;
+}
+
+std::string SerialTracker::ToString() const {
+  std::ostringstream ss;
+  ss << "min=" << min_event_ << ", max=" << max_event_
+     << ", pointer down=" << (pointer_down_serial_ ? *pointer_down_serial_ : 0)
+     << ", touch_down=" << (touch_down_serial_ ? *touch_down_serial_ : 0);
+  return ss.str();
 }
 
 }  // namespace wayland

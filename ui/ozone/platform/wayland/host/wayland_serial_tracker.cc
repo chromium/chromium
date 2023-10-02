@@ -4,6 +4,7 @@
 
 #include "ui/ozone/platform/wayland/host/wayland_serial_tracker.h"
 
+#include <sstream>
 #include <vector>
 
 #include "base/containers/contains.h"
@@ -59,6 +60,25 @@ void SerialTracker::ClearForTesting() {
   ResetSerial(SerialType::kMousePress);
   ResetSerial(SerialType::kTouchPress);
   ResetSerial(SerialType::kKeyPress);
+}
+
+std::string SerialTracker::ToString() const {
+  auto tostring = [this](const SerialType serial_type, const std::string& label,
+                         std::ostringstream& out) {
+    auto serial = GetSerial(serial_type);
+    out << label;
+    if (!serial) {
+      out << "<none>";
+    } else {
+      out << "serial=" << serial->value << ", time=" << serial->timestamp;
+    };
+  };
+  std::ostringstream out;
+  tostring(SerialType::kMouseEnter, "mouse_enter: ", out);
+  tostring(SerialType::kMousePress, ", mouse_press: ", out);
+  tostring(SerialType::kTouchPress, ", touch_press: ", out);
+  tostring(SerialType::kKeyPress, ", key_press: ", out);
+  return out.str();
 }
 
 }  // namespace wl

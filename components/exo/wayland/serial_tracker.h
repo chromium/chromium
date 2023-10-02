@@ -62,6 +62,8 @@ class SerialTracker {
   // never sent or is too old.
   absl::optional<EventType> GetEventType(uint32_t serial) const;
 
+  std::string ToString() const;
+
  private:
   raw_ptr<struct wl_display, DanglingUntriaged | ExperimentalAsh> display_;
 

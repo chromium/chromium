@@ -314,19 +314,32 @@ class WaylandDataDeviceDelegate : public DataDeviceDelegate {
       LOG(ERROR) << "The serial passed to StartDrag does not exist.";
       return;
     }
-    if (event_type == wayland::SerialTracker::EventType::POINTER_BUTTON_DOWN &&
-        serial_tracker_->GetPointerDownSerial() == serial) {
+    if (event_type == wayland::SerialTracker::EventType::POINTER_BUTTON_DOWN) {
+      if (serial_tracker_->GetPointerDownSerial() != serial) {
+        LOG(ERROR)
+            << "The serial passed to StartDrag for pointer does not match its "
+               "expected types. serial="
+            << serial << ", " << serial_tracker_->ToString();
+        return;
+      }
       DCHECK(data_device);
       data_device->StartDrag(source, origin, icon,
                              ui::mojom::DragEventSource::kMouse);
-    } else if (event_type == wayland::SerialTracker::EventType::TOUCH_DOWN &&
-               serial_tracker_->GetTouchDownSerial() == serial) {
+    } else if (event_type == wayland::SerialTracker::EventType::TOUCH_DOWN) {
+      if (serial_tracker_->GetTouchDownSerial() != serial) {
+        LOG(ERROR)
+            << "The serial passed to StartDrag for touch does not match its "
+               "expected types. serial="
+            << serial << ", " << serial_tracker_->ToString();
+        return;
+      }
       DCHECK(data_device);
       data_device->StartDrag(source, origin, icon,
                              ui::mojom::DragEventSource::kTouch);
     } else {
-      LOG(ERROR) << "The serial passed to StartDrag does not match its "
-                    "expected types.";
+      LOG(ERROR) << "Invalid event type for StartDrag:" << (int)*event_type
+                 << ", serial=" << serial << ", "
+                 << serial_tracker_->ToString();
     }
   }
 
