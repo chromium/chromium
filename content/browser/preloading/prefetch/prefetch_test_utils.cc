@@ -408,16 +408,8 @@ void PrefetchTestURLLoaderClient::OnDataAvailable(const void* data,
   total_bytes_read_ += num_bytes;
 }
 
-void PrefetchTestURLLoaderClient::SetOnDataCompleteCallback(
-    base::OnceClosure on_data_complete_callback) {
-  on_data_complete_callback_ = std::move(on_data_complete_callback);
-}
-
 void PrefetchTestURLLoaderClient::OnDataComplete() {
   body_finished_ = true;
-  if (on_data_complete_callback_) {
-    std::move(on_data_complete_callback_).Run();
-  }
 }
 
 }  // namespace content

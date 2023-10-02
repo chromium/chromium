@@ -167,13 +167,12 @@ class PrefetchStreamingURLLoaderTest
       public ::testing::WithParamInterface<bool> {
  public:
   void SetUp() override {
-    task_environment_ =
-        std::make_unique<base::test::SingleThreadTaskEnvironment>(
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME);
+    task_environment_ = std::make_unique<base::test::TaskEnvironment>(
+        base::test::TaskEnvironment::TimeSource::MOCK_TIME);
     test_url_loader_factory_ = std::make_unique<TestURLLoaderFactory>();
   }
 
-  base::test::SingleThreadTaskEnvironment* task_environment() {
+  base::test::TaskEnvironment* task_environment() {
     return task_environment_.get();
   }
 
@@ -182,7 +181,7 @@ class PrefetchStreamingURLLoaderTest
   }
 
  private:
-  std::unique_ptr<base::test::SingleThreadTaskEnvironment> task_environment_;
+  std::unique_ptr<base::test::TaskEnvironment> task_environment_;
   std::unique_ptr<TestURLLoaderFactory> test_url_loader_factory_;
 };
 

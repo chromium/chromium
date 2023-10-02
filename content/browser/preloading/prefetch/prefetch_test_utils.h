@@ -85,8 +85,6 @@ class PrefetchTestURLLoaderClient : public network::mojom::URLLoaderClient,
     return received_redirects_;
   }
 
-  void SetOnDataCompleteCallback(base::OnceClosure on_data_complete_callback);
-
  private:
   // network::mojom::URLLoaderClient
   void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override;
@@ -123,8 +121,6 @@ class PrefetchTestURLLoaderClient : public network::mojom::URLLoaderClient,
 
   std::vector<std::pair<net::RedirectInfo, network::mojom::URLResponseHeadPtr>>
       received_redirects_;
-
-  base::OnceClosure on_data_complete_callback_;
 };
 
 }  // namespace content

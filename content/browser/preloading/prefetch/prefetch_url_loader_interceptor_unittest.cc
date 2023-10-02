@@ -348,7 +348,7 @@ class PrefetchURLLoaderInterceptorTest : public RenderViewHostTestHarness {
     run_loop.Run();
 
     // This will run until the cookie listener gets the cookie change.
-    base::RunLoop().RunUntilIdle();
+    task_environment()->RunUntilIdle();
 
     return result;
   }
@@ -1113,7 +1113,7 @@ TEST_P(PrefetchURLLoaderInterceptorBecomeNotServableTest, DISABLE_ASAN(Basic)) {
       producer_handle.reset();
       pending_request.client->OnComplete(
           network::URLLoaderCompletionStatus(net::OK));
-      base::RunLoop().RunUntilIdle();
+      task_environment()->RunUntilIdle();
       break;
   }
 

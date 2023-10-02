@@ -77,7 +77,7 @@ class PrefetchContainerTest : public RenderViewHostTestHarness {
     run_loop.Run();
 
     // This will run until the cookie listener is updated.
-    base::RunLoop().RunUntilIdle();
+    task_environment()->RunUntilIdle();
 
     return result;
   }
@@ -897,7 +897,7 @@ TEST_F(PrefetchContainerTest, MultipleStreamingURLLoaders) {
   // asynchronously.
   EXPECT_TRUE(
       prefetch_container->IsStreamingURLLoaderDeletionScheduledForTesting());
-  base::RunLoop().RunUntilIdle();
+  task_environment()->RunUntilIdle();
   EXPECT_FALSE(prefetch_container->GetStreamingURLLoader());
 
   PrefetchContainer::Reader reader = prefetch_container->CreateReader();
@@ -941,7 +941,7 @@ TEST_F(PrefetchContainerTest, MultipleStreamingURLLoaders) {
 
   prefetch_container.reset();
 
-  base::RunLoop().RunUntilIdle();
+  task_environment()->RunUntilIdle();
 
   EXPECT_EQ(first_serving_url_loader_client->received_redirects().size(), 1u);
 
@@ -954,7 +954,7 @@ TEST_F(PrefetchContainerTest, MultipleStreamingURLLoaders) {
 
   first_serving_url_loader_client->DisconnectMojoPipes();
   second_serving_url_loader_client->DisconnectMojoPipes();
-  base::RunLoop().RunUntilIdle();
+  task_environment()->RunUntilIdle();
 
   EXPECT_FALSE(weak_first_response_reader);
   EXPECT_FALSE(weak_second_response_reader);
@@ -986,7 +986,7 @@ TEST_F(PrefetchContainerTest, CancelAndClearStreamingLoader) {
   pending_request.client->OnReceiveResponse(
       network::mojom::URLResponseHead::New(), std::move(consumer_handle),
       absl::nullopt);
-  base::RunLoop().RunUntilIdle();
+  task_environment()->RunUntilIdle();
 
   // Prefetching is ongoing.
   ASSERT_TRUE(prefetch_container.GetStreamingURLLoader());
@@ -1003,7 +1003,7 @@ TEST_F(PrefetchContainerTest, CancelAndClearStreamingLoader) {
   EXPECT_EQ(prefetch_container.GetServableState(base::TimeDelta::Max()),
             PrefetchContainer::ServableState::kServable);
 
-  base::RunLoop().RunUntilIdle();
+  task_environment()->RunUntilIdle();
 
   // `streaming_loader` is deleted asynchronously and its prefetching URL loader
   // is canceled. This itself doesn't make PrefetchContainer non-servable.
@@ -1127,7 +1127,7 @@ TEST_P(PrefetchContainerLifetimeTest, Lifetime) {
   pending_request.client->OnReceiveResponse(
       network::mojom::URLResponseHead::New(), std::move(consumer_handle),
       absl::nullopt);
-  base::RunLoop().RunUntilIdle();
+  task_environment()->RunUntilIdle();
 
   EXPECT_EQ(prefetch_container->GetServableState(base::TimeDelta::Max()),
             PrefetchContainer::ServableState::kServable);
@@ -1200,11 +1200,8 @@ TEST_P(PrefetchContainerLifetimeTest, Lifetime) {
         // Wait until the URLLoaderClient completion.
         // `base::RunLoop().RunUntilIdle()` is not sufficient here, because
         // `mojo::DataPipeProducer` uses thread pool.
-        base::RunLoop loop;
-        serving_url_loader_client->SetOnDataCompleteCallback(
-            loop.QuitClosure());
         serving_url_loader_client->StartDraining();
-        loop.Run();
+        task_environment()->RunUntilIdle();
         EXPECT_TRUE(producer_completed);
         break;
       }
@@ -1216,7 +1213,7 @@ TEST_P(PrefetchContainerLifetimeTest, Lifetime) {
     }
     done.insert(event);
 
-    base::RunLoop().RunUntilIdle();
+    task_environment()->RunUntilIdle();
 
     // `PrefetchResponseReader` should be kept alive as long as
     // `PrefetchContainer` is alive or serving URLLoaderClients are not
