@@ -66,9 +66,8 @@ class FlingingRendererTest : public testing::Test {
  protected:
   NiceMock<media::MockRendererClient> renderer_client_;
   std::unique_ptr<MockMediaController> media_controller_;
-  raw_ptr<StrictMock<MockFlingingController>, DanglingUntriaged>
-      flinging_controller_;
   std::unique_ptr<FlingingRenderer> renderer_;
+  raw_ptr<StrictMock<MockFlingingController>> flinging_controller_;
 };
 
 TEST_F(FlingingRendererTest, StartPlayingFromTime) {
