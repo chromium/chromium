@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.flags.CachedFlag;
 import org.chromium.chrome.browser.flags.CachedFlagUtils;
 import org.chromium.chrome.browser.flags.CachedFlagsSafeMode;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.hub.HubFieldTrial;
 import org.chromium.chrome.browser.notifications.chime.ChimeFeatures;
 import org.chromium.chrome.browser.omaha.VersionNumberGetter;
 import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
@@ -86,6 +87,9 @@ public class ChromeCachedFlags {
                 BrandingController.USE_TEMPORARY_STORAGE,
                 BrandingController.ANIMATE_TOOLBAR_ICON_TRANSITION, ChimeFeatures.ALWAYS_REGISTER,
                 FeedPlaceholderLayout.ENABLE_INSTANT_START_ANIMATION,
+                HubFieldTrial.FLOATING_ACTION_BUTTON, HubFieldTrial.PANE_SWITCHER_USES_TEXT,
+                HubFieldTrial.SUPPORTS_OTHER_TABS, HubFieldTrial.SUPPORTS_SEARCH,
+                HubFieldTrial.SUPPORTS_BOOKMARKS,
                 OptimizationGuidePushNotificationManager.MAX_CACHE_SIZE,
                 OmniboxFeatures.ENABLE_MODERNIZE_VISUAL_UPDATE_ON_TABLET,
                 OmniboxFeatures.MODERNIZE_VISUAL_UPDATE_ACTIVE_COLOR_ON_OMNIBOX,
@@ -126,6 +130,7 @@ public class ChromeCachedFlags {
                 VersionNumberGetter.MIN_SDK_VERSION,
                 MinimizeAppAndCloseTabBackPressHandler.SYSTEM_BACK,
                 BackPressManager.TAB_HISTORY_RECOVER);
+
         // clang-format on
         tryToCatchMissingParameters(fieldTrialsToCache);
         CachedFlagUtils.cacheFieldTrialParameters(fieldTrialsToCache);

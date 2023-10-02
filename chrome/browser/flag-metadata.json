@@ -192,6 +192,11 @@
     "expiry_milestone": 124
   },
   {
+    "name": "android-hub",
+    "owners": [ "clank-hub-dev@google.com" ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "android-improved-bookmarks",
     "owners": ["wylieb", "skym", "bttk"],
     "expiry_milestone": 120

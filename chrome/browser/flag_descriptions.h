@@ -2229,6 +2229,9 @@ extern const char kAndroidImprovedBookmarksDescription[];
 extern const char kAndroidHatsRefactorName[];
 extern const char kAndroidHatsRefactorDescription[];
 
+extern const char kAndroidHubName[];
+extern const char kAndroidHubDescription[];
+
 extern const char kAutofillUseMobileLabelDisambiguationName[];
 extern const char kAutofillUseMobileLabelDisambiguationDescription[];
 

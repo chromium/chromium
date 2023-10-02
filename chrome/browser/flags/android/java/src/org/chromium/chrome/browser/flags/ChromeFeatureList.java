@@ -114,6 +114,7 @@ public abstract class ChromeFeatureList {
     public static final String ANDROID_APP_INTEGRATION_SAFE_SEARCH =
             "AndroidAppIntegrationSafeSearch";
     public static final String ANDROID_HATS_REFACTOR = "AndroidHatsRefactor";
+    public static final String ANDROID_HUB = "AndroidHub";
     public static final String ANDROID_SEARCH_ENGINE_CHOICE_NOTIFICATION =
             "AndroidSearchEngineChoiceNotification";
     public static final String ANDROID_IMPROVED_BOOKMARKS = "AndroidImprovedBookmarks";
@@ -495,6 +496,7 @@ public abstract class ChromeFeatureList {
     /* Alphabetical: */
     public static final CachedFlag sAndroidAppIntegration =
             new CachedFlag(ANDROID_APP_INTEGRATION, false);
+    public static final CachedFlag sAndroidHub = new CachedFlag(ANDROID_HUB, false);
     public static final CachedFlag sAppMenuMobileSiteOption =
             new CachedFlag(APP_MENU_MOBILE_SITE_OPTION, false);
     public static final CachedFlag sBackGestureActivityTabProvider =
@@ -636,6 +638,7 @@ public abstract class ChromeFeatureList {
     public static final List<CachedFlag> sFlagsCachedFullBrowser = List.of(
             // clang-format off
         sAndroidAppIntegration,
+        sAndroidHub,
         sAppMenuMobileSiteOption,
         sBackGestureActivityTabProvider,
         sBackGestureRefactorActivityAndroid,

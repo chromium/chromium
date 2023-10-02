@@ -3985,6 +3985,41 @@ const FeatureEntry::FeatureVariation kWebAuthnAndroidCredManVariations[] = {
      &kWebAuthnAndroidCredManGpmInCredManParam, 1, nullptr},
     {"for 3rd party passkeys", &kWebAuthnAndroidCredManGpmNotInCredManParam, 1,
      nullptr}};
+
+const FeatureEntry::FeatureParam kHubPhase1WithFab[] = {
+    {"floating_action_button", "true"}};
+const FeatureEntry::FeatureParam kHubPhase1WithoutFab[] = {
+    {"floating_action_button", "false"}};
+const FeatureEntry::FeatureParam kHubPhase2WithIcons[] = {
+    {"floating_action_button", "true"},
+    {"supports_other_tabs", "true"}};
+const FeatureEntry::FeatureParam kHubPhase2WithText[] = {
+    {"floating_action_button", "true"},
+    {"pane_switcher_uses_text", "true"},
+    {"supports_other_tabs", "true"}};
+const FeatureEntry::FeatureParam kHubPhase3[] = {
+    {"floating_action_button", "true"},
+    {"pane_switcher_uses_text", "true"},
+    {"supports_other_tabs", "true"},
+    {"supports_search", "true"}};
+const FeatureEntry::FeatureParam kHubPhase4[] = {
+    {"floating_action_button", "true"},
+    {"pane_switcher_uses_text", "true"},
+    {"supports_other_tabs", "true"},
+    {"supports_search", "true"},
+    {"supports_bookmarks", "true"}};
+
+const FeatureEntry::FeatureVariation kAndroidHubVariations[] = {
+    {"Phase 1 w/ FAB", kHubPhase1WithFab, std::size(kHubPhase1WithFab),
+     nullptr},
+    {"Phase 1 w/o FAB", kHubPhase1WithoutFab, std::size(kHubPhase1WithoutFab),
+     nullptr},
+    {"Phase 2 w/ Icons", kHubPhase2WithIcons, std::size(kHubPhase2WithIcons),
+     nullptr},
+    {"Phase 2 w/ Text", kHubPhase2WithText, std::size(kHubPhase2WithText),
+     nullptr},
+    {"Phase 3", kHubPhase3, std::size(kHubPhase3), nullptr},
+    {"Phase 4", kHubPhase4, std::size(kHubPhase4), nullptr}};
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // RECORDING USER METRICS FOR FLAGS:
@@ -11266,6 +11301,14 @@ const FeatureEntry kFeatureEntries[] = {
     {"observable-api", flag_descriptions::kObservableAPIName,
      flag_descriptions::kObservableAPIDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kObservableAPI)},
+
+#if BUILDFLAG(IS_ANDROID)
+    {"android-hub", flag_descriptions::kAndroidHubName,
+     flag_descriptions::kAndroidHubDescription, kOsAndroid,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kAndroidHub,
+                                    kAndroidHubVariations,
+                                    "AndroidHub")},
+#endif  // !BUILDFLAG(IS_ANDROID)
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

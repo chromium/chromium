@@ -64693,6 +64693,7 @@ from previous Chrome versions.
   <int value="-215103767" label="ShoppingList:disabled"/>
   <int value="-215048684" label="NtpComprehensiveThemeRealbox:disabled"/>
   <int value="-214859547" label="OmniboxActionsUISimplification:enabled"/>
+  <int value="-214763255" label="AndroidHub:disabled"/>
   <int value="-214618160" label="ESimPolicy:enabled"/>
   <int value="-213893901"
       label="AutofillUpstreamAuthenticatePreflightCall:disabled"/>
@@ -68894,6 +68895,7 @@ from previous Chrome versions.
   <int value="1850641630" label="ForceSecurePaymentConfirmationDialog:enabled"/>
   <int value="1851358497" label="enable-ash-sidebar"/>
   <int value="1851746253" label="ReducedReferrerGranularity:disabled"/>
+  <int value="1852099433" label="AndroidHub:enabled"/>
   <int value="1852285132"
       label="AutofillEnableRankingFormulaAddressProfiles:disabled"/>
   <int value="1852630189" label="NTPBookmarkSuggestions:disabled"/>

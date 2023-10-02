@@ -8,6 +8,7 @@ import("//chrome/android/features/android_library_factory_tmpl.gni")
 android_library("java") {
   sources = [
     "android/java/src/org/chromium/chrome/browser/hub/DefaultPaneOrderController.java",
+    "android/java/src/org/chromium/chrome/browser/hub/HubFieldTrial.java",
     "android/java/src/org/chromium/chrome/browser/hub/Pane.java",
     "android/java/src/org/chromium/chrome/browser/hub/PaneId.java",
     "android/java/src/org/chromium/chrome/browser/hub/PaneListBuilder.java",
@@ -17,6 +18,7 @@ android_library("java") {
 
   deps = [
     "//base:base_java",
+    "//chrome/browser/flags:java",
     "//components/browser_ui/widget/android:java",
     "//third_party/android_deps:guava_android_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
@@ -30,13 +32,17 @@ android_library_factory("factory_java") {
 }
 
 robolectric_library("junit") {
-  sources = [ "android/java/src/org/chromium/chrome/browser/hub/PaneListBuilderUnitTest.java" ]
+  sources = [
+    "android/java/src/org/chromium/chrome/browser/hub/HubFieldTrialTest.java",
+    "android/java/src/org/chromium/chrome/browser/hub/PaneListBuilderUnitTest.java",
+  ]
 
   deps = [
     ":java",
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
+    "//chrome/browser/flags:java",
     "//chrome/test/android:chrome_java_unit_test_support",
     "//components/browser_ui/widget/android:java",
     "//third_party/android_deps:guava_android_java",
