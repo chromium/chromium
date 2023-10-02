@@ -240,7 +240,6 @@ aggregate_vector_icons("components_vector_icons") {
 
   if (is_chrome_branded) {
     sources += [
-      "google_chrome/assistant.icon",
       "google_chrome/google_calendar.icon",
       "google_chrome/google_chrome_webstore.icon",
       "google_chrome/google_docs.icon",
