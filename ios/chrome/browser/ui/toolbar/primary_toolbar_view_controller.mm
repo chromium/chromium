@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_animator.h"
 #import "ios/chrome/browser/ui/keyboard/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_ui_features.h"
@@ -156,6 +157,23 @@
   self.view.topCornersRounded = NO;
   [self.delegate
       viewControllerTraitCollectionDidChange:previousTraitCollection];
+
+  if (previousTraitCollection.horizontalSizeClass !=
+          self.traitCollection.horizontalSizeClass ||
+      previousTraitCollection.verticalSizeClass !=
+          self.traitCollection.verticalSizeClass) {
+    if (IsMagicStackEnabled()) {
+      // When on the Home surface, if the toolbar is now visible (i.e. rotated
+      // to landscape on iphone), then have its background color match the
+      // surface. If rotated back to portrait mode, make sure to reset the
+      // background color so navigations away from the Home surface result in
+      // the default toolbar background color.
+      self.view.backgroundColor =
+          (_isNTP && !IsSplitToolbarMode(self))
+              ? [UIColor colorNamed:@"ntp_background_color"]
+              : self.buttonFactory.toolbarConfiguration.NTPBackgroundColor;
+    }
+  }
 }
 
 #pragma mark - UIResponder
@@ -185,6 +203,11 @@
   if (IsSplitToolbarMode(self) || !self.shouldHideOmniboxOnNTP)
     return;
 
+  if (IsMagicStackEnabled()) {
+    self.view.backgroundColor =
+        _isNTP ? [UIColor colorNamed:@"ntp_background_color"]
+               : self.buttonFactory.toolbarConfiguration.NTPBackgroundColor;
+  }
   // This is hiding/showing and positionning the omnibox. This is only needed
   // if the omnibox should be hidden when there is only one toolbar.
   if (!isNTP) {

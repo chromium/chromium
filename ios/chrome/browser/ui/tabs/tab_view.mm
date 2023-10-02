@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/shared/ui/util/image/image_util.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/common/button_configuration_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/elements/highlight_button.h"
@@ -85,6 +86,8 @@ UIImage* DefaultFaviconImage() {
 
   // Adds hover interaction to background tabs.
   UIPointerInteraction* _pointerInteraction;
+
+  BOOL _showingNTP;
 }
 
 @end
@@ -191,6 +194,14 @@ UIImage* DefaultFaviconImage() {
   [_activityIndicator stopAnimating];
   [_activityIndicator setHidden:YES];
   [_faviconView setHidden:NO];
+}
+
+- (void)setShowingNTP:(BOOL)showingNTP {
+  if (_showingNTP == showingNTP) {
+    return;
+  }
+  _showingNTP = showingNTP;
+  [self updateStyleForSelected:self.selected];
 }
 
 #pragma mark - UIView overrides
@@ -360,7 +371,14 @@ UIImage* DefaultFaviconImage() {
   // Style the background image first.
   NSString* state = (selected ? @"foreground" : @"background");
   NSString* imageName = [NSString stringWithFormat:@"tabstrip_%@_tab", state];
-  _backgroundImageView.image = [UIImage imageNamed:imageName];
+  if (selected && IsMagicStackEnabled() && _showingNTP) {
+    _backgroundImageView.image = [[UIImage imageNamed:imageName]
+        imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    _backgroundImageView.tintColor =
+        [UIColor colorNamed:@"ntp_background_color"];
+  } else {
+    _backgroundImageView.image = [UIImage imageNamed:imageName];
+  }
 
   if (selected) {
     if (_pointerInteraction)
