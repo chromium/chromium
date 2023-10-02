@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/values.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 
@@ -18,6 +19,8 @@ class LockDescription;
 // CallbackCommand simply runs the callback being passed. This is handy for
 // small operations to web app system to avoid defining a new command class but
 // still providing isolation for the work done in the callback.
+// Note: Prefer using WebAppCommandScheduler::ScheduleCallbackWithLock instead
+// of this class directly.
 template <typename LockType,
           typename DescriptionType = typename LockType::LockDescription>
 class CallbackCommand : public WebAppCommandTemplate<LockType> {
@@ -27,7 +30,8 @@ class CallbackCommand : public WebAppCommandTemplate<LockType> {
                   base::OnceCallback<void(LockType& lock)> callback);
   CallbackCommand(const std::string& name,
                   std::unique_ptr<DescriptionType> lock_description,
-                  base::OnceCallback<base::Value(LockType& lock)> callback);
+                  base::OnceCallback<base::Value(LockType& lock)> callback,
+                  base::OnceClosure on_complete);
 
   ~CallbackCommand() override;
 
@@ -42,6 +46,7 @@ class CallbackCommand : public WebAppCommandTemplate<LockType> {
   std::unique_ptr<LockType> lock_;
 
   base::OnceCallback<base::Value(LockType& lock)> callback_;
+  base::OnceClosure on_complete_;
   base::Value debug_value_;
 };
 

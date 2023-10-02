@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -697,14 +698,18 @@ void WebAppCommandScheduler::ScheduleCallbackWithLock(
     const std::string& operation_name,
     std::unique_ptr<DescriptionType> lock_description,
     base::OnceCallback<base::Value(LockType& lock)> callback,
-    const base::Location& location) {
+    const base::Location& location,
+    base::OnceClosure on_complete) {
   if (IsShuttingDown()) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(on_complete));
     return;
   }
 
   provider_->command_manager().ScheduleCommand(
       std::make_unique<CallbackCommand<LockType>>(
-          operation_name, std::move(lock_description), std::move(callback)),
+          operation_name, std::move(lock_description), std::move(callback),
+          std::move(on_complete)),
       location);
 }
 
@@ -883,7 +888,8 @@ template void WebAppCommandScheduler::ScheduleCallbackWithLock<NoopLock>(
     const std::string& operation_name,
     std::unique_ptr<NoopLock::LockDescription> lock_description,
     base::OnceCallback<base::Value(NoopLock& lock)> callback,
-    const base::Location& location);
+    const base::Location& location,
+    base::OnceClosure on_complete);
 
 template void
 WebAppCommandScheduler::ScheduleCallbackWithLock<SharedWebContentsLock>(
@@ -896,7 +902,8 @@ WebAppCommandScheduler::ScheduleCallbackWithLock<SharedWebContentsLock>(
     const std::string& operation_name,
     std::unique_ptr<SharedWebContentsLock::LockDescription> lock_description,
     base::OnceCallback<base::Value(SharedWebContentsLock& lock)> callback,
-    const base::Location& location);
+    const base::Location& location,
+    base::OnceClosure on_complete);
 
 template void WebAppCommandScheduler::ScheduleCallbackWithLock<AppLock>(
     const std::string& operation_name,
@@ -907,7 +914,8 @@ template void WebAppCommandScheduler::ScheduleCallbackWithLock<AppLock>(
     const std::string& operation_name,
     std::unique_ptr<AppLock::LockDescription> lock_description,
     base::OnceCallback<base::Value(AppLock& lock)> callback,
-    const base::Location& location);
+    const base::Location& location,
+    base::OnceClosure on_complete);
 
 template void
 WebAppCommandScheduler::ScheduleCallbackWithLock<SharedWebContentsWithAppLock>(
@@ -923,7 +931,8 @@ WebAppCommandScheduler::ScheduleCallbackWithLock<SharedWebContentsWithAppLock>(
         lock_description,
     base::OnceCallback<base::Value(SharedWebContentsWithAppLock& lock)>
         callback,
-    const base::Location& location);
+    const base::Location& location,
+    base::OnceClosure on_complete);
 
 template void WebAppCommandScheduler::ScheduleCallbackWithLock<AllAppsLock>(
     const std::string& operation_name,
@@ -934,6 +943,7 @@ template void WebAppCommandScheduler::ScheduleCallbackWithLock<AllAppsLock>(
     const std::string& operation_name,
     std::unique_ptr<AllAppsLock::LockDescription> lock_description,
     base::OnceCallback<base::Value(AllAppsLock& lock)> callback,
-    const base::Location& location);
+    const base::Location& location,
+    base::OnceClosure on_complete);
 
 }  // namespace web_app

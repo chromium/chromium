@@ -9,6 +9,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
@@ -328,15 +329,23 @@ class WebAppCommandScheduler {
       std::unique_ptr<DescriptionType> lock_description,
       base::OnceCallback<void(LockType& lock)> callback,
       const base::Location& location = FROM_HERE);
-  // Same as above, but the callback can return a debug value to also be used in
-  // WebAppCommandManager logs, viewable from chrome://web-app-internals.
+  // Same as above, with the following diffences:
+  // - The callback now returns a debug value that is included in
+  //   WebAppCommandManager logs, viewable from chrome://web-app-internals.
+  // - An `on_complete` callback argument allows callers to specify a callback
+  //   to be called after the command has completed. This is because it can no
+  //   longer be simply chained on the command callback with `.Then`, as the
+  //   command callback now returns a value.
+  // Note: The `on_complete` callback will be called if the system has already
+  // been shut down.
   template <typename LockType,
             typename DescriptionType = typename LockType::LockDescription>
   void ScheduleCallbackWithLock(
       const std::string& operation_name,
       std::unique_ptr<DescriptionType> lock_description,
       base::OnceCallback<base::Value(LockType& lock)> callback,
-      const base::Location& location = FROM_HERE);
+      const base::Location& location = FROM_HERE,
+      base::OnceClosure on_complete = base::DoNothing());
 
   // Schedules to clear the browsing data for web app, given the inclusive time
   // range.

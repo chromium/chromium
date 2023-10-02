@@ -28,16 +28,19 @@ CallbackCommand<LockType, DescriptionType>::CallbackCommand(
           std::move(lock_description),
           // Return an empty base::Value() as the debug value.
           std::move(callback).Then(
-              base::BindOnce([]() { return base::Value(); }))) {}
+              base::BindOnce([]() { return base::Value(); })),
+          base::DoNothing()) {}
 
 template <class LockType, class DescriptionType>
 CallbackCommand<LockType, DescriptionType>::CallbackCommand(
     const std::string& name,
     std::unique_ptr<DescriptionType> lock_description,
-    base::OnceCallback<base::Value(LockType& lock)> callback)
+    base::OnceCallback<base::Value(LockType& lock)> callback,
+    base::OnceClosure on_complete)
     : WebAppCommandTemplate<LockType>(name),
       lock_description_(std::move(lock_description)),
-      callback_(std::move(callback)) {
+      callback_(std::move(callback)),
+      on_complete_(std::move(on_complete)) {
   DCHECK(lock_description_);
 }
 
@@ -47,10 +50,11 @@ CallbackCommand<LockType, DescriptionType>::~CallbackCommand() = default;
 template <class LockType, class DescriptionType>
 void CallbackCommand<LockType, DescriptionType>::StartWithLock(
     std::unique_ptr<LockType> lock) {
+  CHECK(!lock_);
   lock_ = std::move(lock);
   debug_value_ = std::move(callback_).Run(*lock_.get());
   this->SignalCompletionAndSelfDestruct(CommandResult::kSuccess,
-                                        base::DoNothing());
+                                        std::move(on_complete_));
 }
 
 template <class LockType, class DescriptionType>
