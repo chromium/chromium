@@ -24,6 +24,8 @@ namespace ash {
 // more details.
 absl::optional<Scanner> CreateSaneScanner(const std::string& name,
                                           const std::string& service_type,
+                                          const std::string& manufacturer,
+                                          const std::string& model,
                                           const absl::optional<std::string>& rs,
                                           const net::IPAddress& ip_address,
                                           int port,

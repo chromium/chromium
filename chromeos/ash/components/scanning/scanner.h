@@ -54,6 +54,12 @@ struct COMPONENT_EXPORT(SCANNING) Scanner {
   // Name to display in a UI.
   std::string display_name;
 
+  // Name of manufacturer.
+  std::string manufacturer;
+
+  // Name of model.
+  std::string model;
+
   // Map of ScanProtocol to a set of corresponding ScannerDeviceNames that can
   // be used with the lorgnette D-Bus service. Clients are responsible for
   // selecting which device name to use.

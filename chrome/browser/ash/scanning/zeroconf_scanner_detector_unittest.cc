@@ -35,6 +35,8 @@ using local_discovery::ServiceDiscoveryDeviceLister;
 
 MATCHER_P(ScannerIsEqual, expected_scanner, "") {
   return arg.display_name == expected_scanner.display_name &&
+         arg.manufacturer == expected_scanner.manufacturer &&
+         arg.model == expected_scanner.model &&
          arg.device_names == expected_scanner.device_names &&
          arg.ip_addresses == expected_scanner.ip_addresses;
 }
@@ -87,6 +89,21 @@ int GetPortFor(const std::string& name) {
   return (std::hash<std::string>()(name) % 1000) + 1;
 }
 
+// Similar to MakeExpectedScanner below except this allows the caller to specify
+// a manufacturer and model.  This can be used with MakeServiceDescription when
+// the metadata is expected to contain a manufacturer and/or model.
+Scanner MakeExpectedScanner(const std::string& name,
+                            const std::string& service_type,
+                            const std::string& manufacturer,
+                            const std::string& model,
+                            const absl::optional<std::string>& rs) {
+  const net::IPAddress ip_address = GetIPAddressFor(name);
+  const int port = GetPortFor(name);
+  auto scanner = CreateSaneScanner(name, service_type, manufacturer, model, rs,
+                                   ip_address, port);
+  return scanner.value();
+}
+
 // This corresponds to MakeServiceDescription() below. Given the same name and
 // correct service type, this generates the expected Scanner that the
 // ZeroconfScannerDetector should create when it gets the ServiceDescription
@@ -95,10 +112,8 @@ int GetPortFor(const std::string& name) {
 Scanner MakeExpectedScanner(const std::string& name,
                             const std::string& service_type,
                             const absl::optional<std::string>& rs) {
-  const net::IPAddress ip_address = GetIPAddressFor(name);
-  const int port = GetPortFor(name);
-  auto scanner = CreateSaneScanner(name, service_type, rs, ip_address, port);
-  return scanner.value();
+  return MakeExpectedScanner(name, service_type, /*manufacturer=*/"",
+                             /*model=*/"", rs);
 }
 
 // Merges all of the Scanners in |scanners| into a single Scanner. Used to
@@ -119,6 +134,20 @@ Scanner MergeScanners(const std::vector<Scanner>& scanners) {
   return merged_scanner;
 }
 
+// Similar to MakeServiceDescription below except the caller can add arbitrary
+// |metadata|.
+ServiceDescription MakeServiceDescription(const std::string& name,
+                                          const std::string& service_type,
+                                          std::vector<std::string> metadata) {
+  ServiceDescription service_description;
+  service_description.service_name = base::StrCat({name, ".", service_type});
+  service_description.address.set_host(base::StrCat({name, ".local"}));
+  service_description.address.set_port(GetPortFor(name));
+  service_description.ip_address = GetIPAddressFor(name);
+  service_description.metadata = std::move(metadata);
+  return service_description;
+}
+
 // Creates a deterministic ServiceDescription based on the service name and
 // type. See the note on MakeExpectedScanner() above. This must be kept in sync
 // with MakeExpectedScanner().
@@ -126,15 +155,11 @@ ServiceDescription MakeServiceDescription(
     const std::string& name,
     const std::string& service_type,
     const absl::optional<std::string>& rs) {
-  ServiceDescription service_description;
-  service_description.service_name = base::StrCat({name, ".", service_type});
-  service_description.address.set_host(base::StrCat({name, ".local"}));
-  service_description.address.set_port(GetPortFor(name));
-  service_description.ip_address = GetIPAddressFor(name);
+  std::vector<std::string> metadata;
   if (rs.has_value()) {
-    service_description.metadata.push_back(base::StrCat({"rs=", rs.value()}));
+    metadata.push_back(base::StrCat({"rs=", rs.value()}));
   }
-  return service_description;
+  return MakeServiceDescription(name, service_type, std::move(metadata));
 }
 
 }  // namespace
@@ -416,6 +441,136 @@ TEST_F(ZeroconfScannerDetectorTest, NoRs) {
   CompleteTasks();
   std::vector<Scanner> expected_scanners = {MakeExpectedScanner(
       "Scanner1", ZeroconfScannerDetector::kEsclServiceType, absl::nullopt)};
+  EXPECT_THAT(scanners_, ScannersAreEqual(expected_scanners));
+}
+
+// Test that metadata with just ty works.
+TEST_F(ZeroconfScannerDetectorTest, MetadataTy) {
+  escl_lister_->Announce(MakeServiceDescription(
+      "Scanner1", ZeroconfScannerDetector::kEsclServiceType,
+      std::vector<std::string>{"ty=Manufacturer   Model 123  "}));
+  CreateDetector();
+  CompleteTasks();
+  std::vector<Scanner> expected_scanners = {
+      MakeExpectedScanner("Scanner1", ZeroconfScannerDetector::kEsclServiceType,
+                          "Manufacturer", "Model 123", /*rs=*/absl::nullopt)};
+  EXPECT_THAT(scanners_, ScannersAreEqual(expected_scanners));
+}
+
+// Test that metadata with just mfg and mdl works.
+TEST_F(ZeroconfScannerDetectorTest, MetadataMfgMdl) {
+  escl_lister_->Announce(MakeServiceDescription(
+      "Scanner1", ZeroconfScannerDetector::kEsclServiceType,
+      {"mfg=Real Manufacturer", "mdl=Model 123"}));
+  CreateDetector();
+  CompleteTasks();
+  std::vector<Scanner> expected_scanners = {MakeExpectedScanner(
+      "Scanner1", ZeroconfScannerDetector::kEsclServiceType,
+      "Real Manufacturer", "Model 123", /*rs=*/absl::nullopt)};
+  EXPECT_THAT(scanners_, ScannersAreEqual(expected_scanners));
+}
+
+// Test that metadata with ty and mfg works.  Since both mfg and mdl are not
+// present, mfg will not be used and ty will be used.
+TEST_F(ZeroconfScannerDetectorTest, MetadataTyMfg) {
+  escl_lister_->Announce(MakeServiceDescription(
+      "Scanner1", ZeroconfScannerDetector::kEsclServiceType,
+      {"ty=Maker Model 123", "mfg=Bad-Manufacturer"}));
+  CreateDetector();
+  CompleteTasks();
+  std::vector<Scanner> expected_scanners = {
+      MakeExpectedScanner("Scanner1", ZeroconfScannerDetector::kEsclServiceType,
+                          "Maker", "Model 123", /*rs=*/absl::nullopt)};
+  EXPECT_THAT(scanners_, ScannersAreEqual(expected_scanners));
+}
+
+// Test that metadata with ty and mdl works.  Since both mfg and mdl are not
+// present, mdl will not be used and ty will be used.
+TEST_F(ZeroconfScannerDetectorTest, MetadataTyMdl) {
+  escl_lister_->Announce(MakeServiceDescription(
+      "Scanner1", ZeroconfScannerDetector::kEsclServiceType,
+      {"ty=The Manufacturer Model 123", "mdl=Bad-Model"}));
+  CreateDetector();
+  CompleteTasks();
+  // Note that if manufacturer in the ty string contains a space, only the first
+  // word is stripped out for the manufacturer entry.  That's why mfg/mdl are
+  // preferred when they are both present.
+  std::vector<Scanner> expected_scanners = {MakeExpectedScanner(
+      "Scanner1", ZeroconfScannerDetector::kEsclServiceType, "The",
+      "Manufacturer Model 123", /*rs=*/absl::nullopt)};
+  EXPECT_THAT(scanners_, ScannersAreEqual(expected_scanners));
+}
+
+// Tests that metadata with ty, mfg, and mdl works.  mfg and mdl should be used
+// instead of the ty info.
+TEST_F(ZeroconfScannerDetectorTest, MetadataTyMfgMdl) {
+  escl_lister_->Announce(MakeServiceDescription(
+      "Scanner1", ZeroconfScannerDetector::kEsclServiceType,
+      {"ty=Bad-Manufacturer Bad-Model", "mfg=Manufacturer", "mdl=Model 123"}));
+  CreateDetector();
+  CompleteTasks();
+  std::vector<Scanner> expected_scanners = {
+      MakeExpectedScanner("Scanner1", ZeroconfScannerDetector::kEsclServiceType,
+                          "Manufacturer", "Model 123", /*rs=*/absl::nullopt)};
+  EXPECT_THAT(scanners_, ScannersAreEqual(expected_scanners));
+}
+
+// Test that metadata with just usb_MFG and usb_MDL works.
+TEST_F(ZeroconfScannerDetectorTest, MetadataUsbMfgMdl) {
+  escl_lister_->Announce(MakeServiceDescription(
+      "Scanner1", ZeroconfScannerDetector::kEsclServiceType,
+      {"usb_MFG=Real Manufacturer", "usb_MDL=Model 123"}));
+  CreateDetector();
+  CompleteTasks();
+  std::vector<Scanner> expected_scanners = {MakeExpectedScanner(
+      "Scanner1", ZeroconfScannerDetector::kEsclServiceType,
+      "Real Manufacturer", "Model 123", /*rs=*/absl::nullopt)};
+  EXPECT_THAT(scanners_, ScannersAreEqual(expected_scanners));
+}
+
+// Test that metadata with ty and usb_MFG works.  Since both usb_MFG and usb_MDL
+// are not present, usb_MFG will not be used and ty will be used.
+TEST_F(ZeroconfScannerDetectorTest, MetadataUsbTyMfg) {
+  escl_lister_->Announce(MakeServiceDescription(
+      "Scanner1", ZeroconfScannerDetector::kEsclServiceType,
+      {"ty=Maker Model 123", "usb_MFG=Bad-Manufacturer"}));
+  CreateDetector();
+  CompleteTasks();
+  std::vector<Scanner> expected_scanners = {
+      MakeExpectedScanner("Scanner1", ZeroconfScannerDetector::kEsclServiceType,
+                          "Maker", "Model 123", /*rs=*/absl::nullopt)};
+  EXPECT_THAT(scanners_, ScannersAreEqual(expected_scanners));
+}
+
+// Test that metadata with ty and usb_MDL works.  Since both usb_MFG and usb_MDL
+// are not present, usb_MDL will not be used and ty will be used.
+TEST_F(ZeroconfScannerDetectorTest, MetadataUsbTyMdl) {
+  escl_lister_->Announce(MakeServiceDescription(
+      "Scanner1", ZeroconfScannerDetector::kEsclServiceType,
+      {"ty=The Manufacturer Model 123", "usb_MDL=Bad Model"}));
+  CreateDetector();
+  CompleteTasks();
+  // Note that if manufacturer in the ty string contains a space, only the first
+  // word is stripped out for the manufacturer entry.  That's why
+  // usb_MFG/usb_MDL are preferred when they are both present.
+  std::vector<Scanner> expected_scanners = {MakeExpectedScanner(
+      "Scanner1", ZeroconfScannerDetector::kEsclServiceType, "The",
+      "Manufacturer Model 123", /*rs=*/absl::nullopt)};
+  EXPECT_THAT(scanners_, ScannersAreEqual(expected_scanners));
+}
+
+// Tests that metadata with ty, usb_MFG, and usb_MDL works.  usb_MFG and usb_MDL
+// should be used instead of the ty info.
+TEST_F(ZeroconfScannerDetectorTest, MetadataUsbTyMfgMdl) {
+  escl_lister_->Announce(MakeServiceDescription(
+      "Scanner1", ZeroconfScannerDetector::kEsclServiceType,
+      {"ty=Bad-Manufacturer Bad-Model", "usb_MFG=The Manufacturer",
+       "usb_MDL=Model 123"}));
+  CreateDetector();
+  CompleteTasks();
+  std::vector<Scanner> expected_scanners = {MakeExpectedScanner(
+      "Scanner1", ZeroconfScannerDetector::kEsclServiceType, "The Manufacturer",
+      "Model 123", /*rs=*/absl::nullopt)};
   EXPECT_THAT(scanners_, ScannersAreEqual(expected_scanners));
 }
 

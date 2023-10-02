@@ -76,9 +76,9 @@ lorgnette::ListScannersResponse CreateListScannersResponse(
 
 // Returns a zeroconf Scanner with the device name marked as |usable|.
 Scanner CreateZeroconfScanner(bool usable = true) {
-  return CreateSaneScanner("Test MX3100",
-                           ZeroconfScannerDetector::kEsclsServiceType, "",
-                           net::IPAddress(192, 168, 0, 3), 5, usable)
+  return CreateSaneScanner(
+             "Test MX3100", ZeroconfScannerDetector::kEsclsServiceType, "Test",
+             "MX3100", /*rs=*/"", net::IPAddress(192, 168, 0, 3), 5, usable)
       .value();
 }
 
@@ -87,16 +87,17 @@ Scanner CreateZeroconfScanner(bool usable = true) {
 Scanner CreateNonEsclEpsonZeroconfScanner(bool usable = true) {
   return CreateSaneScanner("EPSON TEST",
                            ZeroconfScannerDetector::kGenericScannerServiceType,
-                           "", net::IPAddress(192, 168, 0, 3), 5, usable)
+                           "EPSON", "TEST", /*rs=*/"",
+                           net::IPAddress(192, 168, 0, 3), 5, usable)
       .value();
 }
 
 // Returns a zeroconf Scanner with an Epson name but ESCLs Service marked as
 // |usable|.
 Scanner CreateEsclEpsonZeroconfScanner(bool usable = true) {
-  return CreateSaneScanner("EPSON TEST",
-                           ZeroconfScannerDetector::kEsclsServiceType, "",
-                           net::IPAddress(192, 168, 0, 3), 5, usable)
+  return CreateSaneScanner(
+             "EPSON TEST", ZeroconfScannerDetector::kEsclsServiceType, "EPSON",
+             "TEST", /*rs=*/"", net::IPAddress(192, 168, 0, 3), 5, usable)
       .value();
 }
 
@@ -105,7 +106,8 @@ Scanner CreateEsclEpsonZeroconfScanner(bool usable = true) {
 Scanner CreateScannerCustomName(const std::string& scanner_name,
                                 bool usable = true) {
   return CreateSaneScanner(scanner_name,
-                           ZeroconfScannerDetector::kEsclsServiceType, "",
+                           ZeroconfScannerDetector::kEsclsServiceType,
+                           "Manufacturer", "Model", /*rs=*/"",
                            net::IPAddress(192, 168, 0, 3), 5, usable)
       .value();
 }
@@ -405,7 +407,8 @@ TEST_F(LorgnetteScannerManagerTest, EsclEpsonZeroconfScanner) {
 // a scanner if it is not an Epson.
 TEST_F(LorgnetteScannerManagerTest, NonEsclNonEpsonZeroconfScanner) {
   absl::optional<Scanner> scanner = CreateSaneScanner(
-      "Test MX3100", ZeroconfScannerDetector::kGenericScannerServiceType, "",
+      "Test MX3100", ZeroconfScannerDetector::kGenericScannerServiceType,
+      /*manufacturer=*/"", /*model=*/"", /*rs=*/"",
       net::IPAddress(192, 168, 0, 3), 5, true);
   EXPECT_FALSE(scanner.has_value());
 }

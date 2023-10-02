@@ -80,6 +80,8 @@ std::string CreateDeviceName(const std::string& name,
 
 absl::optional<Scanner> CreateSaneScanner(const std::string& name,
                                           const std::string& service_type,
+                                          const std::string& manufacturer,
+                                          const std::string& model,
                                           const absl::optional<std::string>& rs,
                                           const net::IPAddress& ip_address,
                                           int port,
@@ -105,6 +107,8 @@ absl::optional<Scanner> CreateSaneScanner(const std::string& name,
 
   Scanner scanner;
   scanner.display_name = name;
+  scanner.manufacturer = manufacturer;
+  scanner.model = model;
   scanner.device_names[protocol].emplace(
       ScannerDeviceName(device_name, usable));
   scanner.ip_addresses.insert(ip_address);

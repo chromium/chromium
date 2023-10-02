@@ -51,6 +51,9 @@ using local_discovery::ServiceDiscoverySharedClient;
 class ParsedMetadata {
  public:
   explicit ParsedMetadata(const ServiceDescription& service_description) {
+    // Preference is to use mfg/mdl for the manufacturer and model.  If those
+    // are not present in the metadata, attempt to set them using ty.
+    std::string ty;
     for (const std::string& entry : service_description.metadata) {
       const base::StringPiece key_value(entry);
       const size_t equal_pos = key_value.find("=");
@@ -59,19 +62,49 @@ class ParsedMetadata {
 
       const base::StringPiece key = key_value.substr(0, equal_pos);
       const base::StringPiece value = key_value.substr(equal_pos + 1);
-      if (key == "rs")
+      if (key == "rs") {
         rs_ = std::string(value);
+      } else if (key == "usb_MFG" || key == "mfg") {
+        manufacturer_ = value;
+      } else if (key == "usb_MDL" || key == "mdl") {
+        model_ = value;
+      } else if (key == "ty") {
+        ty = value;
+      }
     }
+
+    // Both are already populated - nothing more needs to be done.
+    if (!manufacturer_.empty() && !model_.empty()) {
+      return;
+    }
+
+    if (ty.empty()) {
+      return;
+    }
+
+    // If either |manufacturer_| or |model_| are not provided, use |ty| to
+    // populate both.  In this case, assume the first word in |ty| is the
+    // manufacturer and the rest is the model.
+    auto space = ty.find(" ");
+    manufacturer_ = ty.substr(0, space);
+    model_ = (space == std::string::npos) ? "" : ty.substr(space + 1);
+    // Trim whitespace here in case there are multiple spaces between
+    // manufacturer and model.
+    base::TrimWhitespaceASCII(model_, base::TRIM_ALL, &model_);
   }
   ParsedMetadata(const ParsedMetadata&) = delete;
   ParsedMetadata& operator=(const ParsedMetadata&) = delete;
   ~ParsedMetadata() = default;
 
   const absl::optional<std::string>& rs() const { return rs_; }
+  const std::string& manufacturer() const { return manufacturer_; }
+  const std::string& model() const { return model_; }
 
  private:
   // Used to construct the path for a device name URL.
   absl::optional<std::string> rs_;
+  std::string manufacturer_;
+  std::string model_;
 };
 
 // Attempts to create a Scanner using the information in |service_description|
@@ -96,6 +129,7 @@ absl::optional<Scanner> CreateScanner(
                      << " scanner: " << service_description.instance_name();
 
   return CreateSaneScanner(service_description.instance_name(), service_type,
+                           metadata.manufacturer(), metadata.model(),
                            metadata.rs(), service_description.ip_address,
                            service_description.address.port());
 }
