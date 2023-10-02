@@ -20,6 +20,7 @@
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/window_android.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -69,9 +70,20 @@ void AutofillProviderAndroid::RenderFrameDeleted(
   // actually be shown by the AutofillExternalDelegate of an ancestor frame,
   // which is not notified about `rfh`'s destruction and therefore won't close
   // the popup.
-  if (manager_ &&
-      field_id_.frame_token == LocalFrameToken(rfh->GetFrameToken().value())) {
+  if (manager_ && last_queried_field_rfh_id_ == rfh->GetGlobalId()) {
     OnHidePopup(manager_.get());
+    last_queried_field_rfh_id_ = {};
+  }
+}
+
+void AutofillProviderAndroid::DidFinishNavigation(
+    content::NavigationHandle* navigation_handle) {
+  if (manager_ &&
+      last_queried_field_rfh_id_ ==
+          navigation_handle->GetPreviousRenderFrameHostId() &&
+      !navigation_handle->IsSameDocument()) {
+    OnHidePopup(manager_.get());
+    last_queried_field_rfh_id_ = {};
   }
 }
 
@@ -92,6 +104,15 @@ void AutofillProviderAndroid::OnAskForValuesToFill(
   // response is always for current session, so we just use the current id
   // in response, see OnAutofillAvailable.
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  static_cast<ContentAutofillDriver&>(manager->driver())
+      .render_frame_host()
+      ->ForEachRenderFrameHost([this, &field](content::RenderFrameHost* rfh) {
+        LocalFrameToken frame_token(rfh->GetFrameToken().value());
+        if (frame_token == field.host_frame) {
+          last_queried_field_rfh_id_ = rfh->GetGlobalId();
+        }
+      });
 
   // Focus or field value change will also trigger the query, so it should be
   // ignored if the form is same.

@@ -144,6 +144,14 @@ class MockAutofillProviderAndroidBridge : public AutofillProviderAndroidBridge {
   MOCK_METHOD(void, OnDidFillAutofillFormData, (), (override));
 };
 
+content::RenderFrameHost* NavigateAndCommitFrame(content::RenderFrameHost* rfh,
+                                                 const GURL& url) {
+  std::unique_ptr<content::NavigationSimulator> simulator =
+      content::NavigationSimulator::CreateRendererInitiated(url, rfh);
+  simulator->Commit();
+  return simulator->GetFinalRenderFrameHost();
+}
+
 }  // namespace
 
 class AutofillProviderAndroidTest : public content::RenderViewHostTestHarness {
@@ -174,6 +182,7 @@ class AutofillProviderAndroidTest : public content::RenderViewHostTestHarness {
     // Navigation forces the creation of an AndroidAutofillManager for the main
     // frame.
     NavigateAndCommit(GURL("about:blank"));
+    FocusWebContentsOnMainFrame();
   }
 
   void TearDown() override {
@@ -181,10 +190,13 @@ class AutofillProviderAndroidTest : public content::RenderViewHostTestHarness {
     content::RenderViewHostTestHarness::TearDown();
   }
 
+  content::RenderFrameHost* main_frame() {
+    return web_contents()->GetPrimaryMainFrame();
+  }
+
   TestAndroidAutofillManager& android_autofill_manager(
       content::RenderFrameHost* rfh = nullptr) {
-    return *autofill_manager_injector_
-        [rfh ? rfh : web_contents()->GetPrimaryMainFrame()];
+    return *autofill_manager_injector_[rfh ? rfh : main_frame()];
   }
 
   AutofillProviderAndroid& autofill_provider() {
@@ -193,8 +205,7 @@ class AutofillProviderAndroidTest : public content::RenderViewHostTestHarness {
 
   // Returns the local frame token of the primary main frame.
   LocalFrameToken main_frame_token() {
-    return LocalFrameToken(
-        web_contents()->GetPrimaryMainFrame()->GetFrameToken().value());
+    return LocalFrameToken(main_frame()->GetFrameToken().value());
   }
 
   MockAutofillProviderAndroidBridge& provider_bridge() {
@@ -432,7 +443,7 @@ TEST_F(AutofillProviderAndroidTest, FormSubmissionHappensOnReset) {
 // it tests that the `AutofillManager` is reset on destruction.
 TEST_F(AutofillProviderAndroidTest, FormSubmissionHappensOnFrameDestruction) {
   content::RenderFrameHost* child_rfh =
-      content::RenderFrameHostTester::For(web_contents()->GetPrimaryMainFrame())
+      content::RenderFrameHostTester::For(main_frame())
           ->AppendChild(std::string("child"));
   child_rfh = content::NavigationSimulator::NavigateAndCommitFromDocument(
       GURL("https://foo.bar"), child_rfh);
@@ -461,6 +472,131 @@ TEST_F(AutofillProviderAndroidTest, FormSubmissionHappensOnFrameDestruction) {
               OnFormSubmitted(mojom::SubmissionSource::DOM_MUTATION_AFTER_XHR));
   content::RenderFrameHostTester::For(std::exchange(child_rfh, nullptr))
       ->Detach();
+}
+
+class AutofillProviderAndroidTestHidingLogic
+    : public AutofillProviderAndroidTest {
+ public:
+  void SetUp() override {
+    AutofillProviderAndroidTest::SetUp();
+    NavigateAndCommit(GURL("https://foo.com"));
+    sub_frame_ = content::RenderFrameHostTester::For(main_frame())
+                     ->AppendChild(std::string("child"));
+    sub_frame_ = NavigateAndCommitFrame(sub_frame_, GURL("https://bar.com"));
+  }
+
+  void TearDown() override {
+    sub_frame_ = nullptr;
+    AutofillProviderAndroidTest::TearDown();
+  }
+
+  void AskForValuesToFill(content::RenderFrameHost* rfh) {
+    FocusWebContentsOnFrame(rfh);
+    FormData form =
+        CreateFormDataForFrame(CreateTestPersonalInformationFormData(),
+                               LocalFrameToken(rfh->GetFrameToken().value()));
+    android_autofill_manager(rfh).OnFormsSeen({form},
+                                              /*removed_forms=*/{});
+    // Start an Autofill session.
+    android_autofill_manager(rfh).SimulateOnAskForValuesToFill(form,
+                                                               form.fields[0]);
+  }
+
+ protected:
+  raw_ptr<content::RenderFrameHost> sub_frame_ = nullptr;
+};
+
+// Tests that if the popup is shown in the *main frame*, destruction of the
+// *sub frame* does not hide the popup.
+TEST_F(AutofillProviderAndroidTestHidingLogic,
+       KeepOpenInMainFrameOnSubFrameDestruction) {
+  AskForValuesToFill(main_frame());
+  EXPECT_CALL(provider_bridge(), HideDatalistPopup).Times(0);
+  content::RenderFrameHostTester::For(sub_frame_)->Detach();
+  // Verify and clear before TearDown() closes the popup.
+  Mock::VerifyAndClearExpectations(&provider_bridge());
+}
+
+// Tests that if the popup is shown in the *main frame*, a navigation in the
+// *sub frame* does not hide the popup.
+TEST_F(AutofillProviderAndroidTestHidingLogic,
+       KeepOpenInMainFrameOnSubFrameNavigation) {
+  AskForValuesToFill(main_frame());
+  EXPECT_CALL(provider_bridge(), HideDatalistPopup).Times(0);
+  NavigateAndCommitFrame(sub_frame_, GURL("https://bar.com/"));
+  // Verify and clear before TearDown() closes the popup.
+  Mock::VerifyAndClearExpectations(&provider_bridge());
+}
+
+// Tests that if the popup is shown in the *main frame*, destruction of the
+// *main frame* hides the popup.
+//
+// TODO(crbug.com/1488233): Disabled because the `sub_frame_` is destroyed
+// before `main_frame()`, which leads to a AutofillProviderAndroid::Reset() call
+// by AutofillProviderAndroid::OnManagerResetOrDestroyed(), which in turn
+// invalidates AutofillProviderAndroid::field_rfh_id_, which then makes the main
+// frame's RenderFrameDeleted() event a no-op.
+TEST_F(AutofillProviderAndroidTestHidingLogic,
+       DISABLED_HideInMainFrameOnDestruction) {
+  AskForValuesToFill(main_frame());
+  EXPECT_CALL(provider_bridge(), HideDatalistPopup);
+  // TearDown() destructs the main frame.
+}
+
+// Tests that if the popup is shown in the *sub frame*, destruction of the
+// *sub frame* hides the popup.
+//
+// TODO(crbug.com/1488233): Disabled because AutofillProviderAndroid::Reset()
+// resets AutofillProviderAndroid::field_rfh_ before RenderFrameDeleted(), which
+// prevents OnPopupHidden().
+TEST_F(AutofillProviderAndroidTestHidingLogic,
+       DISABLED_HideInSubFrameOnDestruction) {
+  AskForValuesToFill(sub_frame_);
+  EXPECT_CALL(provider_bridge(), HideDatalistPopup);
+  NavigateAndCommitFrame(sub_frame_, GURL("https://bar.com/"));
+  // Verify and clear before TearDown() closes the popup.
+  Mock::VerifyAndClearExpectations(&provider_bridge());
+}
+
+// Tests that if the popup is shown in the *main frame*, a navigation in the
+// *main frame* hides the popup.
+TEST_F(AutofillProviderAndroidTestHidingLogic,
+       HideInMainFrameOnMainFrameNavigation) {
+  AskForValuesToFill(main_frame());
+  EXPECT_CALL(provider_bridge(), HideDatalistPopup);
+  NavigateAndCommitFrame(main_frame(), GURL("https://bar.com/"));
+}
+
+// Tests that if the popup is shown in the *sub frame*, a navigation in the
+// *sub frame* hides the popup.
+//
+// TODO(crbug.com/1488233): Disabled because AutofillProviderAndroid::Reset()
+// resets AutofillProviderAndroid::field_rfh_ before RenderFrameDeleted(), which
+// prevents OnPopupHidden().
+TEST_F(AutofillProviderAndroidTestHidingLogic,
+       DISABLED_HideInSubFrameOnSubFrameNavigation) {
+  AskForValuesToFill(sub_frame_);
+  EXPECT_CALL(provider_bridge(), HideDatalistPopup);
+  NavigateAndCommitFrame(sub_frame_, GURL("https://bar.com/"));
+}
+
+// Tests that if the popup is shown in the *sub frame*, a navigation in the
+// *main frame* hides the popup.
+TEST_F(AutofillProviderAndroidTestHidingLogic,
+       HideInSubFrameOnMainFrameNavigation) {
+  AskForValuesToFill(main_frame());
+  EXPECT_CALL(provider_bridge(), HideDatalistPopup);
+  NavigateAndCommitFrame(main_frame(), GURL("https://bar.com/"));
+}
+
+// Tests that AutofillProviderAndroid::last_queried_field_rfh_id_ is updated
+// when different frames are queried.
+TEST_F(AutofillProviderAndroidTestHidingLogic,
+       FollowAskForValuesInDifferentFrames) {
+  AskForValuesToFill(main_frame());
+  AskForValuesToFill(sub_frame_);
+  EXPECT_CALL(provider_bridge(), HideDatalistPopup);
+  NavigateAndCommitFrame(sub_frame_, GURL("https://bar.com/"));
 }
 
 }  // namespace autofill

@@ -2226,7 +2226,6 @@ void BrowserAutofillManager::Reset() {
   last_unlocked_credit_card_cvc_.clear();
   initial_interaction_timestamp_ = TimeTicks();
   fetched_credit_card_trigger_source_ = absl::nullopt;
-  external_delegate_->Reset();
   if (touch_to_fill_delegate_) {
     touch_to_fill_delegate_->Reset();
   }

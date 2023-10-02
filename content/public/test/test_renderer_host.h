@@ -296,6 +296,10 @@ class RenderViewHostTestHarness : public ::testing::Test {
   // rely on the focused frame not being null.
   void FocusWebContentsOnMainFrame();
 
+  // Sets the focused frame to the `rfh` for tests that rely on the focused
+  // frame not being null.
+  void FocusWebContentsOnFrame(content::RenderFrameHost* rfh);
+
  protected:
   // testing::Test
   void SetUp() override;

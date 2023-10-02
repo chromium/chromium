@@ -556,13 +556,6 @@ void AutofillExternalDelegate::RegisterDeletionCallback(
   deletion_callback_ = std::move(deletion_callback);
 }
 
-void AutofillExternalDelegate::Reset() {
-  // We should not affect UI on the active page due to a prerendered page.
-  if (!manager_->driver().IsPrerendering()) {
-    manager_->client().HideAutofillPopup(PopupHidingReason::kNavigation);
-  }
-}
-
 base::WeakPtr<AutofillExternalDelegate> AutofillExternalDelegate::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }

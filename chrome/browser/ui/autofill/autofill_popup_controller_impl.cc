@@ -30,6 +30,7 @@
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "components/strings/grit/components_strings.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
@@ -148,6 +149,16 @@ void AutofillPopupControllerImpl::RenderFrameDeleted(
   if (key_press_observer_.handler &&
       key_press_observer_.rfh == rfh->GetGlobalId()) {
     Hide(PopupHidingReason::kRendererEvent);
+  }
+}
+
+void AutofillPopupControllerImpl::DidFinishNavigation(
+    content::NavigationHandle* navigation_handle) {
+  if (key_press_observer_.handler &&
+      key_press_observer_.rfh ==
+          navigation_handle->GetPreviousRenderFrameHostId() &&
+      !navigation_handle->IsSameDocument()) {
+    Hide(PopupHidingReason::kNavigation);
   }
 }
 

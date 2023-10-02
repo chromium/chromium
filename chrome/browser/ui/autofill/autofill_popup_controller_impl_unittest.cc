@@ -39,6 +39,7 @@
 #include "components/autofill/core/common/aliases.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/input/native_web_keyboard_event.h"
 #include "content/public/test/navigation_simulator.h"
@@ -407,6 +408,9 @@ class AutofillPopupControllerImplTest : public ChromeRenderViewHostTestHarness {
       std::vector<Suggestion> suggestions,
       AutofillSuggestionTriggerSource trigger_source =
           AutofillSuggestionTriggerSource::kFormControlElementClicked) {
+    FocusWebContentsOnFrame(
+        static_cast<ContentAutofillDriver&>(manager.driver())
+            .render_frame_host());
     client().popup_controller(manager).Show(std::move(suggestions),
                                             trigger_source,
                                             AutoselectFirstSuggestion(false));
@@ -1071,5 +1075,104 @@ TEST_F(AutofillPopupControllerImplTestAccessibility,
   EXPECT_EQ(absl::nullopt, ui::GetActivePopupAxUniqueId());
 }
 #endif
+
+class AutofillPopupControllerImplTestHidingLogic
+    : public AutofillPopupControllerImplTest {
+ public:
+  void SetUp() override {
+    AutofillPopupControllerImplTest::SetUp();
+    sub_frame_ = CreateAndNavigateChildFrame(
+        main_frame(), GURL("https://bar.com"), "sub_frame");
+  }
+
+  void TearDown() override {
+    sub_frame_ = nullptr;
+    AutofillPopupControllerImplTest::TearDown();
+  }
+
+  BrowserAutofillManagerWithMockDelegate& sub_manager() {
+    return manager(sub_frame_);
+  }
+
+ protected:
+  raw_ptr<content::RenderFrameHost> sub_frame_ = nullptr;
+};
+
+// Tests that if the popup is shown in the *main frame*, destruction of the
+// *sub frame* does not hide the popup.
+TEST_F(AutofillPopupControllerImplTestHidingLogic,
+       KeepOpenInMainFrameOnSubFrameDestruction) {
+  ShowSuggestions(manager(), {PopupItemId::kAddressEntry});
+  test::GenerateTestAutofillPopup(&manager().external_delegate());
+  EXPECT_CALL(client().popup_controller(manager()), Hide).Times(0);
+  content::RenderFrameHostTester::For(sub_frame_.ExtractAsDangling())->Detach();
+  // Verify and clear before TearDown() closes the popup.
+  Mock::VerifyAndClearExpectations(&client().popup_controller(manager()));
+}
+
+// Tests that if the popup is shown in the *main frame*, a navigation in the
+// *sub frame* does not hide the popup.
+TEST_F(AutofillPopupControllerImplTestHidingLogic,
+       KeepOpenInMainFrameOnSubFrameNavigation) {
+  ShowSuggestions(manager(), {PopupItemId::kAddressEntry});
+  test::GenerateTestAutofillPopup(&manager().external_delegate());
+  EXPECT_CALL(client().popup_controller(manager()), Hide).Times(0);
+  NavigateAndCommitFrame(sub_frame_, GURL("https://bar.com/"));
+  // Verify and clear before TearDown() closes the popup.
+  Mock::VerifyAndClearExpectations(&client().popup_controller(manager()));
+}
+
+// Tests that if the popup is shown in the *main frame*, destruction of the
+// *main frame* hides the popup.
+TEST_F(AutofillPopupControllerImplTestHidingLogic,
+       HideInMainFrameOnDestruction) {
+  ShowSuggestions(manager(), {PopupItemId::kAddressEntry});
+  test::GenerateTestAutofillPopup(&manager().external_delegate());
+  EXPECT_CALL(client().popup_controller(manager()),
+              Hide(PopupHidingReason::kRendererEvent));
+}
+
+// Tests that if the popup is shown in the *sub frame*, destruction of the
+// *sub frame* hides the popup.
+TEST_F(AutofillPopupControllerImplTestHidingLogic,
+       HideInSubFrameOnDestruction) {
+  ShowSuggestions(sub_manager(), {PopupItemId::kAddressEntry});
+  test::GenerateTestAutofillPopup(&sub_manager().external_delegate());
+  EXPECT_CALL(client().popup_controller(sub_manager()),
+              Hide(PopupHidingReason::kRendererEvent));
+}
+
+// Tests that if the popup is shown in the *main frame*, a navigation in the
+// *main frame* hides the popup.
+TEST_F(AutofillPopupControllerImplTestHidingLogic,
+       HideInMainFrameOnMainFrameNavigation) {
+  ShowSuggestions(manager(), {PopupItemId::kAddressEntry});
+  test::GenerateTestAutofillPopup(&manager().external_delegate());
+  EXPECT_CALL(client().popup_controller(manager()),
+              Hide(PopupHidingReason::kNavigation));
+  NavigateAndCommitFrame(main_frame(), GURL("https://bar.com/"));
+}
+
+// Tests that if the popup is shown in the *sub frame*, a navigation in the
+// *sub frame* hides the popup.
+TEST_F(AutofillPopupControllerImplTestHidingLogic,
+       HideInSubFrameOnSubFrameNavigation) {
+  ShowSuggestions(sub_manager(), {PopupItemId::kAddressEntry});
+  test::GenerateTestAutofillPopup(&sub_manager().external_delegate());
+  EXPECT_CALL(client().popup_controller(sub_manager()),
+              Hide(PopupHidingReason::kNavigation));
+  NavigateAndCommitFrame(sub_frame_, GURL("https://bar.com/"));
+}
+
+// Tests that if the popup is shown in the *sub frame*, a navigation in the
+// *main frame* hides the popup.
+TEST_F(AutofillPopupControllerImplTestHidingLogic,
+       HideInSubFrameOnMainFrameNavigation) {
+  ShowSuggestions(sub_manager(), {PopupItemId::kAddressEntry});
+  test::GenerateTestAutofillPopup(&sub_manager().external_delegate());
+  EXPECT_CALL(client().popup_controller(sub_manager()),
+              Hide(PopupHidingReason::kRendererEvent));
+  NavigateAndCommitFrame(main_frame(), GURL("https://bar.com/"));
+}
 
 }  // namespace autofill

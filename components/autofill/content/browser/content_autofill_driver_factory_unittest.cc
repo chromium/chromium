@@ -39,11 +39,6 @@ namespace autofill {
 
 namespace {
 
-class MockAutofillClient : public TestAutofillClient {
- public:
-  MOCK_METHOD(void, HideAutofillPopup, (PopupHidingReason), (override));
-};
-
 class MockContentAutofillDriverFactoryObserver
     : public ContentAutofillDriverFactory::Observer {
  public:
@@ -148,7 +143,7 @@ class ContentAutofillDriverFactoryTest
   void SetUp() override {
     content::RenderViewHostTestHarness::SetUp();
 
-    client_ = std::make_unique<MockAutofillClient>();
+    client_ = std::make_unique<TestAutofillClient>();
     client_->set_channel_for_testing(channel_);
 
     agent_ = std::make_unique<MockAutofillAgent>();
@@ -172,11 +167,6 @@ class ContentAutofillDriverFactoryTest
   }
 
   void NavigateMainFrame(base::StringPiece url) {
-    // One call of HideAutofillPopup() comes from ContentAutofillDriverFactory.
-    // A second and third one may come from BrowserAutofillManager::Reset() if
-    // the navigation is cross-document.
-    EXPECT_CALL(*client_, HideAutofillPopup(PopupHidingReason::kNavigation))
-        .Times(Between(1, 3));
     content::NavigationSimulator::CreateBrowserInitiated(GURL(url),
                                                          web_contents())
         ->Commit();
@@ -185,7 +175,7 @@ class ContentAutofillDriverFactoryTest
  protected:
   version_info::Channel channel_;
   std::unique_ptr<MockAutofillAgent> agent_;
-  std::unique_ptr<MockAutofillClient> client_;
+  std::unique_ptr<TestAutofillClient> client_;
   std::unique_ptr<ContentAutofillDriverFactory> factory_;
 };
 
@@ -240,11 +230,6 @@ TEST_F(ContentAutofillDriverFactoryTest_WithTwoFrames, TwoDrivers) {
   EXPECT_EQ(factory_->DriverForFrame(main_rfh()), main_driver);
   EXPECT_EQ(factory_->DriverForFrame(child_rfh()), child_driver);
   EXPECT_EQ(test_api(*factory_).num_drivers(), 2u);
-  // TODO(crbug.com/1200511): Set the router's last source and target, and if
-  // the |child_driver| is destroyed, expect a call to
-  // AutofillManager::OnHidePopup(). For this to work, we need mock
-  // AutofillManagers instead of real BrowserAutofillManager, which are blocked
-  // by ContentAutofillDriver's use of the factory callback.
 }
 
 // Test case with two frames, where the parameter selects one of them.

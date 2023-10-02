@@ -127,10 +127,6 @@ class AutofillExternalDelegate : public AutofillPopupDelegate,
   // used to help record the metrics of when a new popup is shown.
   void DidEndTextFieldEditing();
 
-  // Returns the delegate to its starting state by removing any page specific
-  // values or settings.
-  void Reset();
-
   // PersonalDataManagerObserver:
   void OnPersonalDataFinishedProfileTasks() override;
 

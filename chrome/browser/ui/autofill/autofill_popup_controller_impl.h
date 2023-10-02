@@ -250,6 +250,8 @@ class AutofillPopupControllerImpl
 
   // content::WebContentsObserver:
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override;
   void OnVisibilityChanged(content::Visibility visibility) override;
 
   // Clear the internal state of the controller. This is needed to ensure that
