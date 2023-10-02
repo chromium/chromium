@@ -220,6 +220,8 @@ class SearchPrefetchService : public KeyedService,
       base::OnceClosure streaming_url_loader_destruction_callback);
 
  private:
+  friend class PrerenderOmniboxSearchSuggestionBrowserTest;
+
   // Returns whether the prefetch started or not.
   bool MaybePrefetchURL(const GURL& url,
                         bool navigation_prefetch,
