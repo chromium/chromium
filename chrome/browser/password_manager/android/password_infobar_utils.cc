@@ -7,7 +7,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
-#include "components/password_manager/core/browser/password_bubble_experiment.h"
+#include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/web_contents.h"
@@ -17,7 +17,7 @@ namespace password_manager {
 AccountInfo GetAccountInfoForPasswordMessages(Profile* profile) {
   DCHECK(profile);
 
-  if (!password_bubble_experiment::HasChosenToSyncPasswords(
+  if (!sync_util::IsPasswordSyncEnabled(
           SyncServiceFactory::GetForProfile(profile))) {
     return AccountInfo();
   }
