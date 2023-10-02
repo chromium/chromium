@@ -50,28 +50,43 @@ class AnotherHeapObject : public GarbageCollected<AnotherHeapObject> {
 ./forbidden_fields.h:39:3: note: [blink-gc] TaskRunnerTimer field 'optional_timer_' used within a garbage collected context. Consider using HeapTaskRunnerTimer instead.
   absl::optional<TaskRunnerTimer<AnotherHeapObject>> optional_timer_;
   ^
-./forbidden_fields.h:40:3: note: [blink-gc] From part object field 'optional_embedded_object_' here:
+./forbidden_fields.h:40:3: note: [blink-gc] TaskRunnerTimer field 'optional_timer2_' used within a garbage collected context. Consider using HeapTaskRunnerTimer instead.
+  std::optional<TaskRunnerTimer<AnotherHeapObject>> optional_timer2_;
+  ^
+./forbidden_fields.h:41:3: note: [blink-gc] From part object field 'optional_embedded_object_' here:
   absl::optional<SecondLevelPartObject> optional_embedded_object_;
   ^
 ./forbidden_fields.h:17:3: note: [blink-gc] TaskRunnerTimer field 'timer_' used within a garbage collected context. Consider using HeapTaskRunnerTimer instead.
   TaskRunnerTimer<SecondLevelPartObject> timer_;
   ^
-./forbidden_fields.h:41:3: note: [blink-gc] From part object field 'variant_embedded_object_' here:
+./forbidden_fields.h:42:3: note: [blink-gc] From part object field 'optional_embedded_object2_' here:
+  std::optional<SecondLevelPartObject> optional_embedded_object2_;
+  ^
+./forbidden_fields.h:17:3: note: [blink-gc] TaskRunnerTimer field 'timer_' used within a garbage collected context. Consider using HeapTaskRunnerTimer instead.
+  TaskRunnerTimer<SecondLevelPartObject> timer_;
+  ^
+./forbidden_fields.h:43:3: note: [blink-gc] From part object field 'variant_embedded_object_' here:
   absl::variant<SecondLevelPartObject> variant_embedded_object_;
   ^
 ./forbidden_fields.h:17:3: note: [blink-gc] TaskRunnerTimer field 'timer_' used within a garbage collected context. Consider using HeapTaskRunnerTimer instead.
   TaskRunnerTimer<SecondLevelPartObject> timer_;
   ^
-./forbidden_fields.h:42:3: note: [blink-gc] TaskRunnerTimer field 'unique_ptr_timer_' used within a garbage collected context. Consider using HeapTaskRunnerTimer instead.
+./forbidden_fields.h:44:3: note: [blink-gc] From part object field 'variant_embedded_object2_' here:
+  std::variant<SecondLevelPartObject> variant_embedded_object2_;
+  ^
+./forbidden_fields.h:17:3: note: [blink-gc] TaskRunnerTimer field 'timer_' used within a garbage collected context. Consider using HeapTaskRunnerTimer instead.
+  TaskRunnerTimer<SecondLevelPartObject> timer_;
+  ^
+./forbidden_fields.h:45:3: note: [blink-gc] TaskRunnerTimer field 'unique_ptr_timer_' used within a garbage collected context. Consider using HeapTaskRunnerTimer instead.
   std::unique_ptr<TaskRunnerTimer<AnotherHeapObject>> unique_ptr_timer_;
   ^
-./forbidden_fields.h:43:3: note: [blink-gc] TaskRunnerTimer field 'raw_ptr_timer_' used within a garbage collected context. Consider using HeapTaskRunnerTimer instead.
+./forbidden_fields.h:46:3: note: [blink-gc] TaskRunnerTimer field 'raw_ptr_timer_' used within a garbage collected context. Consider using HeapTaskRunnerTimer instead.
   TaskRunnerTimer<AnotherHeapObject>* raw_ptr_timer_;
   ^
-./forbidden_fields.h:44:3: note: [blink-gc] TaskRunnerTimer field 'scoped_refptr_timer_' used within a garbage collected context. Consider using HeapTaskRunnerTimer instead.
+./forbidden_fields.h:47:3: note: [blink-gc] TaskRunnerTimer field 'scoped_refptr_timer_' used within a garbage collected context. Consider using HeapTaskRunnerTimer instead.
   scoped_refptr<TaskRunnerTimer<AnotherHeapObject>> scoped_refptr_timer_;
   ^
-./forbidden_fields.h:45:3: note: [blink-gc] TaskRunnerTimer field 'weak_ptr_timer_' used within a garbage collected context. Consider using HeapTaskRunnerTimer instead.
+./forbidden_fields.h:48:3: note: [blink-gc] TaskRunnerTimer field 'weak_ptr_timer_' used within a garbage collected context. Consider using HeapTaskRunnerTimer instead.
   WeakPtr<TaskRunnerTimer<AnotherHeapObject>> weak_ptr_timer_;
   ^
 2 warnings generated.

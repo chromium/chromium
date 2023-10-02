@@ -1,7 +1,13 @@
 optional_gc_object.cpp:14:3: warning: [blink-gc] Disallowed optional field of 'optional<blink::Base>' found; 'Base' is a garbage-collected type. Optional fields cannot hold garbage-collected objects.
   absl::optional<Base> optional_field_;  // Optional fields are disallowed.
   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-optional_gc_object.cpp:24:3: warning: [blink-gc] Disallowed new-expression of 'optional<blink::Base>' found; 'Base' is a garbage-collected type. GCed types cannot be created with new.
-  new absl::optional<Base>;  // New expression with gced optionals are not
-  ^~~~~~~~~~~~~~~~~~~~~~~~
-2 warnings generated.
+optional_gc_object.cpp:15:3: warning: [blink-gc] Disallowed optional field of 'optional<blink::Base>' found; 'Base' is a garbage-collected type. Optional fields cannot hold garbage-collected objects.
+  std::optional<Base> optional_field2_;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+optional_gc_object.cpp:26:5: warning: [blink-gc] Disallowed new-expression of 'optional<blink::Base>' found; 'Base' is a garbage-collected type. GCed types cannot be created with new.
+    new absl::optional<Base>;  // New expression with gced optionals are not
+    ^~~~~~~~~~~~~~~~~~~~~~~~
+optional_gc_object.cpp:37:5: warning: [blink-gc] Disallowed new-expression of 'optional<blink::Base>' found; 'Base' is a garbage-collected type. GCed types cannot be created with new.
+    new std::optional<Base>;  // New expression with gced optionals are not
+    ^~~~~~~~~~~~~~~~~~~~~~~
+4 warnings generated.

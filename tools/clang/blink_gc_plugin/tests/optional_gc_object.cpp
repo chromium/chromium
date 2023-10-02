@@ -12,17 +12,31 @@ class WithOpt : public GarbageCollected<WithOpt> {
 
  private:
   absl::optional<Base> optional_field_;  // Optional fields are disallowed.
+  std::optional<Base> optional_field2_;
 };
 
-void DisallowedUseOfUniquePtr() {
-  absl::optional<Base> optional_base;  // Must be okay.
-  (void)optional_base;
+void DisallowedUseOfOptional() {
+  {
+    absl::optional<Base> optional_base;  // Must be okay.
+    (void)optional_base;
 
-  absl::optional<Derived> optional_derived;  // Must also be okay.
-  (void)optional_derived;
+    absl::optional<Derived> optional_derived;  // Must also be okay.
+    (void)optional_derived;
 
-  new absl::optional<Base>;  // New expression with gced optionals are not
-                             // allowed.
+    new absl::optional<Base>;  // New expression with gced optionals are not
+                               // allowed.
+  }
+
+  {
+    std::optional<Base> optional_base;  // Must be okay.
+    (void)optional_base;
+
+    std::optional<Derived> optional_derived;  // Must also be okay.
+    (void)optional_derived;
+
+    new std::optional<Base>;  // New expression with gced optionals are not
+                               // allowed.
+  }
 }
 
 }  // namespace blink

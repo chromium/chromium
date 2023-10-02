@@ -37,8 +37,11 @@ class AnotherHeapObject : public GarbageCollected<AnotherHeapObject> {
   SecondLevelPartObject array_of_embedded_object_[2];
   std::vector<TaskRunnerTimer<AnotherHeapObject>> std_vec_of_timers_;
   absl::optional<TaskRunnerTimer<AnotherHeapObject>> optional_timer_;
+  std::optional<TaskRunnerTimer<AnotherHeapObject>> optional_timer2_;
   absl::optional<SecondLevelPartObject> optional_embedded_object_;
+  std::optional<SecondLevelPartObject> optional_embedded_object2_;
   absl::variant<SecondLevelPartObject> variant_embedded_object_;
+  std::variant<SecondLevelPartObject> variant_embedded_object2_;
   std::unique_ptr<TaskRunnerTimer<AnotherHeapObject>> unique_ptr_timer_;
   TaskRunnerTimer<AnotherHeapObject>* raw_ptr_timer_;
   scoped_refptr<TaskRunnerTimer<AnotherHeapObject>> scoped_refptr_timer_;

@@ -1034,6 +1034,7 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
       True,
       [
           # Clang plugins have different build config.
+          '^tools/clang/blink_gc_plugin/',
           '^tools/clang/plugins/',
           # Not an error in third_party folders.
           _THIRD_PARTY_EXCEPT_BLINK,

@@ -150,6 +150,10 @@ template <typename Elem, size_t N>
 class array {};
 template <typename T1, typename T2>
 class pair {};
+template <typename T>
+class optional {};
+template <class... Ts>
+class variant {};
 
 }  // namespace std
 
