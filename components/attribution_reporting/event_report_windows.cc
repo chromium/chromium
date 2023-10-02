@@ -278,7 +278,7 @@ EventReportWindows::ParseWindowsJSON(const base::Value& v) {
       return base::unexpected(
           SourceRegistrationError::kEventReportWindowsEndTimeValueWrongType);
     }
-    if (item_int.value() < 0) {
+    if (item_int.value() <= 0) {
       return base::unexpected(
           SourceRegistrationError::kEventReportWindowsEndTimeValueInvalid);
     }

@@ -298,6 +298,15 @@ TEST(EventReportWindowsTest, Parse) {
               SourceRegistrationError::kEventReportWindowsEndTimeValueInvalid),
       },
       {
+          "event_report_windows_end_times_value_zero",
+          R"json({"event_report_windows":{
+            "start_time":0,
+            "end_times":[0]
+          }})json",
+          ErrorIs(
+              SourceRegistrationError::kEventReportWindowsEndTimeValueInvalid),
+      },
+      {
           "event_report_windows_start_time_equal_end",
           R"json({"event_report_windows":{
             "start_time":3600,
