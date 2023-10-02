@@ -157,17 +157,10 @@ IN_PROC_BROWSER_TEST_F(TwoClientHistorySyncTest, E2E_ENABLED(SyncsUrl)) {
       base::Uuid::GenerateRandomV4().AsLowercaseString().c_str()));
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
 
-  size_t initial_count = typed_urls_helper::GetTypedUrlsFromClient(0).size();
-
   // Populate one client with a URL, wait for it to sync to the other.
   GURL new_url(kHistoryUrl);
   typed_urls_helper::AddUrlToHistory(0, new_url);
-  ASSERT_TRUE(ProfilesHaveSameTypedURLsChecker().Wait());
-
-  // Verify that the second client has the correct new URL.
-  history::URLRows urls = typed_urls_helper::GetTypedUrlsFromClient(1);
-  ASSERT_EQ(initial_count + 1, urls.size());
-  EXPECT_EQ(new_url, urls.back().url());
+  EXPECT_TRUE(WaitForLocalHistory(1, {{new_url, SizeIs(1)}}));
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientHistorySyncTest, SyncsVisitForBookmarkedUrl) {
@@ -191,11 +184,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientHistorySyncTest, SyncsVisitForBookmarkedUrl) {
   // should not cause a crash.
   typed_urls_helper::AddUrlToHistory(0, bookmark_url);
 
-  ASSERT_TRUE(ProfilesHaveSameTypedURLsChecker().Wait());
-  history::URLRows urls = typed_urls_helper::GetTypedUrlsFromClient(0);
-  EXPECT_EQ(1U, urls.size());
-  EXPECT_EQ(bookmark_url, urls[0].url());
-  EXPECT_EQ(1, urls[0].visit_count());
+  ASSERT_TRUE(WaitForLocalHistory(0, {{bookmark_url, SizeIs(1)}}));
+  EXPECT_TRUE(WaitForLocalHistory(1, {{bookmark_url, SizeIs(1)}}));
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientHistorySyncTest, SyncsUrlDeletion) {

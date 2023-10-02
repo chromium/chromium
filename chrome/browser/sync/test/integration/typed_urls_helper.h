@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "chrome/browser/sync/test/integration/multi_client_status_change_checker.h"
 #include "components/history/core/browser/history_types.h"
 #include "ui/base/page_transition_types.h"
 
@@ -17,9 +16,6 @@ class Time;
 
 // TODO(crbug.com/1365291): Rename this to history_helper.
 namespace typed_urls_helper {
-
-// Gets the typed URLs from a specific sync profile.
-history::URLRows GetTypedUrlsFromClient(int index);
 
 // Gets the URLRow for a specific URL from a specific sync profile. Returns
 // false if the URL was not found in the history DB.
@@ -68,14 +64,5 @@ void AddUrlToHistoryWithTimestamp(int index,
                                   const base::Time& timestamp);
 
 }  // namespace typed_urls_helper
-
-// Checker that blocks until all clients have the same Typed URLs.
-class ProfilesHaveSameTypedURLsChecker : public MultiClientStatusChangeChecker {
- public:
-  ProfilesHaveSameTypedURLsChecker();
-
-  // Implementation of StatusChangeChecker.
-  bool IsExitConditionSatisfied(std::ostream* os) override;
-};
 
 #endif  // CHROME_BROWSER_SYNC_TEST_INTEGRATION_TYPED_URLS_HELPER_H_
