@@ -489,8 +489,6 @@ static_library("browser") {
     "ui/region_combobox_model.h",
     "ui/suggestion.cc",
     "ui/suggestion.h",
-    "ui/suggestion_selection.cc",
-    "ui/suggestion_selection.h",
     "ui/touch_to_fill_delegate.h",
     "validation.cc",
     "validation.h",

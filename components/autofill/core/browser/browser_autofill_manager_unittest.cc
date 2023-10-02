@@ -3407,7 +3407,7 @@ TEST_F(BrowserAutofillManagerTest,
                    Suggestion("two", "", "", PopupItemId::kAutocompleteEntry));
 }
 
-// The method `suggestion_selection::GetPrefixMatchedSuggestions` prevents
+// The method `AutofillSuggestionGenerator::GetPrefixMatchedProfiles` prevents
 // that Android users see values that would override already filled fields
 // due to the narrow surface and a missing preview.
 #if !BUILDFLAG(IS_ANDROID)

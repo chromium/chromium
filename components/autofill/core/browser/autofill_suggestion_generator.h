@@ -211,6 +211,18 @@ class AutofillSuggestionGenerator {
   std::u16string GetProfileSuggestionMainText(const AutofillProfile* profile,
                                               const AutofillType& type);
 
+  // Creates nested/child suggestions for `suggestion` with the `profile`
+  // information. Uses `trigger_field_type_group` to define what group filling
+  // suggestion to add (name, address or phone). The existence of child
+  // suggestions defines whether the autofill popup will have submenus.
+  // `last_targeted_fields` specified the last set of fields target by the user.
+  // When not present, we default to full form.
+  void AddGranularFillingChildSuggestions(
+      FieldTypeGroup trigger_field_type_group,
+      absl::optional<ServerFieldTypeSet> last_targeted_fields,
+      const AutofillProfile& profile,
+      Suggestion& suggestion);
+
   // Return the texts shown as the first line of the suggestion, based on the
   // `credit_card` and the focused field `type`. The first index in the pair
   // represents the main text, and the second index represents the minor text.
