@@ -1252,6 +1252,40 @@
             ]
         }
     ],
+    "AutofillEnableMovingGPayLogoToTheRightOnClank": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillEnableMovingGPayLogoToTheRightOnClank"
+                    ]
+                }
+            ]
+        }
+    ],
+    "AutofillEnableMovingGPayLogoToTheRightOnDesktop": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillEnableMovingGPayLogoToTheRightOnDesktop"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillEnableNewCardProfileRankingAlgorithm": [
         {
             "platforms": [
