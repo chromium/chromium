@@ -122,17 +122,17 @@
   {
     "name": "allow-dsp-based-aec",
     "owners": [ "peah" ],
-    "expiry_milestone": 118
+    "expiry_milestone": 128
   },
   {
     "name": "allow-dsp-based-agc",
     "owners": [ "peah" ],
-    "expiry_milestone": 118
+    "expiry_milestone": 128
   },
   {
     "name": "allow-dsp-based-ns",
     "owners": [ "peah" ],
-    "expiry_milestone": 118
+    "expiry_milestone": 128
   },
   {
     "name": "allow-eap-default-cas-without-subject-verification",
@@ -4099,22 +4099,22 @@
   {
     "name": "enforce-system-aec",
     "owners": [ "peah" ],
-    "expiry_milestone": 118
+    "expiry_milestone": 128
   },
   {
     "name": "enforce-system-aec-agc",
     "owners": [ "peah" ],
-    "expiry_milestone": 118
+    "expiry_milestone": 128
   },
   {
     "name": "enforce-system-aec-ns",
     "owners": [ "peah" ],
-    "expiry_milestone": 118
+    "expiry_milestone": 128
   },
   {
     "name": "enforce-system-aec-ns-agc",
     "owners": [ "peah" ],
-    "expiry_milestone": 118
+    "expiry_milestone": 128
   },
   {
     "name": "enterprise-reporting-ui",
