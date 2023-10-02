@@ -88,28 +88,11 @@ int64_t ComputeCurrentTicks() {
 }
 
 int64_t ComputeThreadTicks() {
-  // The pthreads library keeps a cached reference to the thread port, which
-  // does not have to be released like mach_thread_self() does.
-  mach_port_t thread_port = pthread_mach_thread_np(pthread_self());
-  if (thread_port == MACH_PORT_NULL) {
-    DLOG(ERROR) << "Failed to get pthread_mach_thread_np()";
-    return 0;
-  }
-
-  mach_msg_type_number_t thread_info_count = THREAD_BASIC_INFO_COUNT;
-  thread_basic_info_data_t thread_info_data;
-
-  kern_return_t kr = thread_info(
-      thread_port, THREAD_BASIC_INFO,
-      reinterpret_cast<thread_info_t>(&thread_info_data), &thread_info_count);
-  MACH_DCHECK(kr == KERN_SUCCESS, kr) << "thread_info";
-
-  base::CheckedNumeric<int64_t> absolute_micros(
-      thread_info_data.user_time.seconds +
-      thread_info_data.system_time.seconds);
+  struct timespec ts = {};
+  CHECK(clock_gettime(CLOCK_THREAD_CPUTIME_ID, &ts) == 0);
+  base::CheckedNumeric<int64_t> absolute_micros(ts.tv_sec);
   absolute_micros *= base::Time::kMicrosecondsPerSecond;
-  absolute_micros += (thread_info_data.user_time.microseconds +
-                      thread_info_data.system_time.microseconds);
+  absolute_micros += (ts.tv_nsec / base::Time::kNanosecondsPerMicrosecond);
   return absolute_micros.ValueOrDie();
 }
 
