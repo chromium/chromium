@@ -29,9 +29,8 @@ class PredictionBasedPermissionUiSelector
     : public permissions::PermissionUiSelector {
  public:
   enum class PredictionSource {
-    USE_SERVER_SIDE,
-    USE_ONDEVICE,
-    USE_ANY,
+    USE_SERVER_SIDE,  // url based cpss v2
+    USE_ONDEVICE,     // on device cpss v1
     USE_NONE,
   };
   using PredictionGrantLikelihood =

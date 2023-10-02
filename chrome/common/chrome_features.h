@@ -583,16 +583,6 @@ BASE_DECLARE_FEATURE(kParentAccessCodeForOnlineLogin);
 
 COMPONENT_EXPORT(CHROME_FEATURES) BASE_DECLARE_FEATURE(kPermissionAuditing);
 
-COMPONENT_EXPORT(CHROME_FEATURES) BASE_DECLARE_FEATURE(kPermissionPredictions);
-COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::FeatureParam<double> kPermissionPredictionsHoldbackChance;
-
-COMPONENT_EXPORT(CHROME_FEATURES)
-BASE_DECLARE_FEATURE(kPermissionGeolocationPredictions);
-COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::FeatureParam<double>
-    kPermissionGeolocationPredictionsHoldbackChance;
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 COMPONENT_EXPORT(CHROME_FEATURES) BASE_DECLARE_FEATURE(kPluginVm);
 #endif

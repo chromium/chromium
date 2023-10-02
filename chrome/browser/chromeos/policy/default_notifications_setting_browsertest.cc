@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/permissions/features.h"
 #include "components/policy/policy_constants.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -30,6 +31,8 @@ class DefaultNotificationsSettingBrowserTest
       public testing::WithParamInterface<int> {
  public:
   void SetUpInProcessBrowserTestFixture() override {
+    feature_list_.InitAndDisableFeature(
+        permissions::features::kPermissionDedicatedCpssSetting);
     policy::PolicyTest::SetUpInProcessBrowserTestFixture();
 
     // Use param 0 to test the policy unset case.
@@ -40,6 +43,9 @@ class DefaultNotificationsSettingBrowserTest
       UpdateProviderPolicy(policy_map);
     }
   }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(IntPolicy,

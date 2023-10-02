@@ -61,6 +61,9 @@ BASE_DECLARE_FEATURE(kPermissionOnDeviceGeolocationPredictions);
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
 BASE_DECLARE_FEATURE(kPermissionDedicatedCpssSetting);
 
+COMPONENT_EXPORT(PERMISSIONS_COMMON)
+BASE_DECLARE_FEATURE(kPermissionPredictionsV2);
+
 #if BUILDFLAG(IS_ANDROID)
 
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
@@ -111,6 +114,9 @@ extern const base::FeatureParam<double>
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
 extern const base::FeatureParam<double>
     kPermissionOnDeviceNotificationPredictionsHoldbackChance;
+
+COMPONENT_EXPORT(PERMISSIONS_COMMON)
+extern const base::FeatureParam<double> kPermissionPredictionsV2HoldbackChance;
 
 #if !BUILDFLAG(IS_ANDROID)
 COMPONENT_EXPORT(PERMISSIONS_COMMON)

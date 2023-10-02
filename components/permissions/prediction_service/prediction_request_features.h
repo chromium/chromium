@@ -7,6 +7,7 @@
 
 #include "components/permissions/permission_request_enums.h"
 #include "components/permissions/request_type.h"
+#include "url/gurl.h"
 
 namespace permissions {
 
@@ -30,6 +31,9 @@ struct PredictionRequestFeatures {
 
   // The permission action counts for all permissions type.
   ActionCounts all_permission_counts;
+
+  // The origin of the website requesting the permission.
+  GURL url;
 };
 
 }  // namespace permissions
