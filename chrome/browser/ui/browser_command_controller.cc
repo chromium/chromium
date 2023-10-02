@@ -1907,6 +1907,7 @@ void BrowserCommandController::UpdateCommandsForTabStripStateChanged() {
                                         CanCloseOtherTabs(browser_));
   command_updater_.UpdateCommandEnabled(IDC_MOVE_TAB_TO_NEW_WINDOW,
                                         CanMoveActiveTabToNewWindow(browser_));
+  UpdateCommandsForBookmarkEditing();
 }
 
 BrowserWindow* BrowserCommandController::window() {

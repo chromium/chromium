@@ -6,11 +6,13 @@
 
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/command_updater.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
@@ -28,10 +30,12 @@
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/bookmarks/browser/bookmark_model.h"
 #include "components/performance_manager/public/features.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "content/public/common/input/native_web_keyboard_event.h"
+#include "content/public/test/web_contents_tester.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
@@ -530,4 +534,48 @@ TEST_F(BrowserWithTestWindowTest, ClearBrowsingDataIsEnabledInIncognito) {
 
   chrome::BrowserCommandController command_controller(incognito_browser.get());
   EXPECT_EQ(true, command_controller.IsCommandEnabled(IDC_CLEAR_BROWSING_DATA));
+}
+
+class BrowserCommandControllerWithBookmarksTest
+    : public BrowserCommandControllerTest {
+ public:
+  BrowserCommandControllerWithBookmarksTest() = default;
+
+  // BrowserWithTestWindowTest overrides:
+  TestingProfile::TestingFactories GetTestingFactories() override {
+    return {{BookmarkModelFactory::GetInstance(),
+             BookmarkModelFactory::GetDefaultFactory()}};
+  }
+
+  void AddTab() {
+    std::unique_ptr<content::WebContents> contents(
+        content::WebContentsTester::CreateTestWebContents(profile(), nullptr));
+    browser()->tab_strip_model()->AppendWebContents(std::move(contents),
+                                                    /*foreground=*/false);
+  }
+};
+
+// Adding and removing background tabs should update the bookmark all tab
+// command.
+TEST_F(BrowserCommandControllerWithBookmarksTest,
+       BookmarkAllTabsUpdatesOnTabStripChanges) {
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return BookmarkModelFactory::GetForBrowserContext(profile())->loaded();
+  })) << "Timeout waiting for bookmarks to load";
+
+  chrome::BrowserCommandController command_controller(browser());
+  EXPECT_FALSE(command_controller.IsCommandEnabled(IDC_BOOKMARK_ALL_TABS));
+
+  AddTab();
+  ASSERT_EQ(1, browser()->tab_strip_model()->count());
+  browser()->tab_strip_model()->ActivateTabAt(/*index=*/0);
+  EXPECT_FALSE(command_controller.IsCommandEnabled(IDC_BOOKMARK_ALL_TABS));
+
+  AddTab();
+  ASSERT_EQ(2, browser()->tab_strip_model()->count());
+  EXPECT_TRUE(command_controller.IsCommandEnabled(IDC_BOOKMARK_ALL_TABS));
+
+  browser()->tab_strip_model()->CloseWebContentsAt(/*index=*/1,
+                                                   TabCloseTypes::CLOSE_NONE);
+  EXPECT_FALSE(command_controller.IsCommandEnabled(IDC_BOOKMARK_ALL_TABS));
 }
