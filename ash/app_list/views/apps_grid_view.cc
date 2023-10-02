@@ -1832,10 +1832,16 @@ void AppsGridView::AnimateDragIconToTargetPosition(
 
   drag_icon_drop_bounds =
       items_container_->GetMirroredRect(drag_icon_drop_bounds);
+
   // Convert target bounds to in screen coordinates expected by drag icon proxy.
   views::View::ConvertRectToScreen(items_container_, &drag_icon_drop_bounds);
 
   if (is_drag_and_drop_refactor_enabled) {
+    // Ensure target bounds are in the same coordinates as the drag image layer.
+    wm::ConvertRectFromScreen(
+        items_container_->GetWidget()->GetNativeWindow()->GetRootWindow(),
+        &drag_icon_drop_bounds);
+
     ui::Layer* target_layer = drag_image_layer_->root();
     if (target_layer) {
       target_layer->GetAnimator()->AbortAllAnimations();
