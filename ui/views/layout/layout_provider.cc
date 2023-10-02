@@ -88,7 +88,7 @@ int LayoutProvider::GetDistanceMetric(int metric) const {
     case DISTANCE_BUTTON_MAX_LINKABLE_WIDTH:
       return 112;
     case DISTANCE_CLOSE_BUTTON_MARGIN:
-      return 4;
+      return features::IsChromeRefresh2023() ? 20 : 4;
     case DISTANCE_CONTROL_VERTICAL_TEXT_PADDING:
       return features::IsChromeRefresh2023() ? 10 : 8;
     case DISTANCE_DIALOG_BUTTON_MINIMUM_WIDTH:
