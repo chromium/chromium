@@ -140,8 +140,9 @@ class FeaturePromoDialogTest : public DialogBrowserTest {
     EXPECT_CALL(*mock_tracker, ShouldTriggerHelpUI(Ref(*feature_)))
         .Times(1)
         .WillOnce(Return(true));
-    ASSERT_TRUE(promo_controller->MaybeShowPromo(
-        *feature_, base::DoNothing(), GetReplacementsForFeature(*feature_)));
+    user_education::FeaturePromoParams params(*feature_);
+    params.body_params = GetReplacementsForFeature(*feature_);
+    ASSERT_TRUE(promo_controller->MaybeShowPromo(std::move(params)));
   }
 
  private:

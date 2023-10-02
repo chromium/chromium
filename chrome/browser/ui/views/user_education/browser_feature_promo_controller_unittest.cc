@@ -189,6 +189,18 @@ class BrowserFeaturePromoControllerTest : public TestWithBrowserView {
   }
 
  protected:
+  user_education::FeaturePromoParams MakeParams(
+      const base::Feature& feature,
+      user_education::FeaturePromoController::BubbleCloseCallback
+          close_callback,
+      user_education::FeaturePromoController::StartupPromoCallback
+          startup_callback = base::NullCallback()) {
+    user_education::FeaturePromoParams params(feature);
+    params.close_callback = std::move(close_callback);
+    params.startup_callback = std::move(startup_callback);
+    return params;
+  }
+
   FeaturePromoStorageService* storage_service() {
     return controller_->storage_service();
   }
@@ -293,8 +305,8 @@ TEST_F(BrowserFeaturePromoControllerTest, AsksBackendToShowPromo) {
 
   UNCALLED_MOCK_CALLBACK(BubbleCloseCallback, close_callback);
 
-  EXPECT_FALSE(
-      controller_->MaybeShowPromo(kTestIPHFeature, close_callback.Get()));
+  EXPECT_FALSE(controller_->MaybeShowPromo(
+      MakeParams(kTestIPHFeature, close_callback.Get())));
   EXPECT_FALSE(controller_->IsPromoActive(kTestIPHFeature));
   EXPECT_FALSE(GetPromoBubble());
 }
@@ -310,7 +322,8 @@ TEST_F(BrowserFeaturePromoControllerTest, AsksBackendToShowStartupPromo) {
   EXPECT_CALL_IN_SCOPE(
       callback,
       Run(Ref(kTestIPHFeature), FeaturePromoResult(FeaturePromoResult::kError)),
-      controller_->MaybeShowStartupPromo(kTestIPHFeature, callback.Get()));
+      controller_->MaybeShowStartupPromo(
+          MakeParams(kTestIPHFeature, base::DoNothing(), callback.Get())));
 }
 
 TEST_F(BrowserFeaturePromoControllerTest,
@@ -354,10 +367,10 @@ TEST_F(BrowserFeaturePromoControllerTest, ShowsStartupBubble) {
   UNCALLED_MOCK_CALLBACK(FeaturePromoController::StartupPromoCallback,
                          callback);
 
-  EXPECT_CALL_IN_SCOPE(callback,
-                       Run(Ref(kTestIPHFeature), FeaturePromoResult::Success()),
-                       EXPECT_TRUE(controller_->MaybeShowStartupPromo(
-                           kTestIPHFeature, callback.Get())));
+  EXPECT_CALL_IN_SCOPE(
+      callback, Run(Ref(kTestIPHFeature), FeaturePromoResult::Success()),
+      EXPECT_TRUE(controller_->MaybeShowStartupPromo(
+          MakeParams(kTestIPHFeature, base::DoNothing(), callback.Get()))));
   EXPECT_EQ(FeaturePromoStatus::kBubbleShowing,
             controller_->GetPromoStatus(kTestIPHFeature));
   EXPECT_TRUE(GetPromoBubble());
@@ -382,8 +395,8 @@ TEST_F(BrowserFeaturePromoControllerTest, ShowStartupBlockedWithAsyncCallback) {
   UNCALLED_MOCK_CALLBACK(FeaturePromoController::StartupPromoCallback,
                          callback);
 
-  EXPECT_TRUE(
-      controller_->MaybeShowStartupPromo(kTestIPHFeature, callback.Get()));
+  EXPECT_TRUE(controller_->MaybeShowStartupPromo(
+      MakeParams(kTestIPHFeature, base::DoNothing(), callback.Get())));
   EXPECT_EQ(FeaturePromoStatus::kQueuedForStartup,
             controller_->GetPromoStatus(kTestIPHFeature));
   EXPECT_CALL_IN_SCOPE(
@@ -415,8 +428,8 @@ TEST_F(BrowserFeaturePromoControllerTest, ShowStartupBubbleWithAsyncCallback) {
   UNCALLED_MOCK_CALLBACK(FeaturePromoController::StartupPromoCallback,
                          callback);
 
-  EXPECT_TRUE(
-      controller_->MaybeShowStartupPromo(kTestIPHFeature, callback.Get()));
+  EXPECT_TRUE(controller_->MaybeShowStartupPromo(
+      MakeParams(kTestIPHFeature, base::DoNothing(), callback.Get())));
   EXPECT_EQ(FeaturePromoStatus::kQueuedForStartup,
             controller_->GetPromoStatus(kTestIPHFeature));
   EXPECT_CALL_IN_SCOPE(callback,
@@ -668,8 +681,8 @@ TEST_F(BrowserFeaturePromoControllerTest, PromoEndsWhenRequested) {
   EXPECT_CALL(*mock_tracker_, Dismissed(Ref(kTestIPHFeature))).Times(0);
 
   UNCALLED_MOCK_CALLBACK(BubbleCloseCallback, close_callback);
-  ASSERT_TRUE(
-      controller_->MaybeShowPromo(kTestIPHFeature, close_callback.Get()));
+  ASSERT_TRUE(controller_->MaybeShowPromo(
+      MakeParams(kTestIPHFeature, close_callback.Get())));
 
   // Only valid before the widget is closed.
   auto* const bubble = GetPromoBubble();
@@ -717,8 +730,8 @@ TEST_F(BrowserFeaturePromoControllerTest, PromoEndsOnBubbleClosure) {
   EXPECT_CALL(*mock_tracker_, Dismissed(Ref(kTestIPHFeature))).Times(0);
 
   UNCALLED_MOCK_CALLBACK(BubbleCloseCallback, close_callback);
-  ASSERT_TRUE(
-      controller_->MaybeShowPromo(kTestIPHFeature, close_callback.Get()));
+  ASSERT_TRUE(controller_->MaybeShowPromo(
+      MakeParams(kTestIPHFeature, close_callback.Get())));
 
   // Only valid before the widget is closed.
   auto* const bubble = GetPromoBubble();
@@ -745,8 +758,8 @@ TEST_F(BrowserFeaturePromoControllerTest,
   EXPECT_CALL(*mock_tracker_, Dismissed(Ref(kTestIPHFeature))).Times(0);
 
   UNCALLED_MOCK_CALLBACK(BubbleCloseCallback, close_callback);
-  ASSERT_TRUE(
-      controller_->MaybeShowPromo(kTestIPHFeature, close_callback.Get()));
+  ASSERT_TRUE(controller_->MaybeShowPromo(
+      MakeParams(kTestIPHFeature, close_callback.Get())));
 
   // Only valid before the widget is closed.
   auto* const bubble = GetPromoBubble();
@@ -934,8 +947,8 @@ TEST_F(BrowserFeaturePromoControllerTest, CriticalPromoPreemptsNormalPromo) {
       .WillOnce(Return(true));
 
   UNCALLED_MOCK_CALLBACK(BubbleCloseCallback, close_callback);
-  EXPECT_TRUE(
-      controller_->MaybeShowPromo(kTestIPHFeature, close_callback.Get()));
+  EXPECT_TRUE(controller_->MaybeShowPromo(
+      MakeParams(kTestIPHFeature, close_callback.Get())));
   EXPECT_TRUE(controller_->IsPromoActive(kTestIPHFeature));
   EXPECT_TRUE(GetPromoBubble());
 
@@ -1222,25 +1235,26 @@ class BrowserFeaturePromoControllerViewsTest
     });
   }
 
-  template <typename... Args>
-  auto MaybeShowPromo(Args... args) {
-    return Check([this, args...]() {
+  auto MaybeShowPromo(user_education::FeaturePromoParams params) {
+    return Check([this, p = std::move(params)]() mutable {
       EXPECT_CALL(*mock_tracker_,
                   ShouldTriggerHelpUI(Ref(kStringTestIPHFeature)))
           .WillOnce(Return(FeaturePromoResult::Success()));
 
-      return static_cast<bool>(controller_->MaybeShowPromo(
-          kStringTestIPHFeature, base::DoNothing(), args...));
+      return static_cast<bool>(controller_->MaybeShowPromo(std::move(p)));
     });
   }
 };
 
 TEST_F(BrowserFeaturePromoControllerViewsTest,
        BodyTextSubstitution_SingleString) {
+  user_education::FeaturePromoParams params(kStringTestIPHFeature);
+  params.body_params = kSubstitution1;
+
   RunTestSequenceInContext(
       browser_view()->GetElementContext(),
       RegisterPromo(kStringWithSingleSubstitution),
-      MaybeShowPromo(kSubstitution1),
+      MaybeShowPromo(std::move(params)),
       CheckViewProperty(user_education::HelpBubbleView::kBodyTextIdForTesting,
                         &views::Label::GetText,
                         l10n_util::GetStringFUTF16(
@@ -1249,12 +1263,15 @@ TEST_F(BrowserFeaturePromoControllerViewsTest,
 
 TEST_F(BrowserFeaturePromoControllerViewsTest,
        BodyTextSubstitution_MultipleStrings) {
+  user_education::FeaturePromoParams params(kStringTestIPHFeature);
+  params.body_params =
+      user_education::FeaturePromoSpecification::StringSubstitutions{
+          kSubstitution1, kSubstitution2, kSubstitution3};
+
   RunTestSequenceInContext(
       browser_view()->GetElementContext(),
       RegisterPromo(kStringWithMultipleSubstitutions),
-      MaybeShowPromo(
-          user_education::FeaturePromoSpecification::StringSubstitutions{
-              kSubstitution1, kSubstitution2, kSubstitution3}),
+      MaybeShowPromo(std::move(params)),
       CheckViewProperty(user_education::HelpBubbleView::kBodyTextIdForTesting,
                         &views::Label::GetText,
                         l10n_util::GetStringFUTF16(
@@ -1263,9 +1280,13 @@ TEST_F(BrowserFeaturePromoControllerViewsTest,
 }
 
 TEST_F(BrowserFeaturePromoControllerViewsTest, BodyTextSubstitution_Singular) {
+  user_education::FeaturePromoParams params(kStringTestIPHFeature);
+  params.body_params = 1;
+
   RunTestSequenceInContext(
       browser_view()->GetElementContext(),
-      RegisterPromo(kStringWithPluralSubstitution), MaybeShowPromo(1),
+      RegisterPromo(kStringWithPluralSubstitution),
+      MaybeShowPromo(std::move(params)),
       CheckViewProperty(
           user_education::HelpBubbleView::kBodyTextIdForTesting,
           &views::Label::GetText,
@@ -1273,9 +1294,13 @@ TEST_F(BrowserFeaturePromoControllerViewsTest, BodyTextSubstitution_Singular) {
 }
 
 TEST_F(BrowserFeaturePromoControllerViewsTest, BodyTextSubstitution_Plural) {
+  user_education::FeaturePromoParams params(kStringTestIPHFeature);
+  params.body_params = 3;
+
   RunTestSequenceInContext(
       browser_view()->GetElementContext(),
-      RegisterPromo(kStringWithPluralSubstitution), MaybeShowPromo(3),
+      RegisterPromo(kStringWithPluralSubstitution),
+      MaybeShowPromo(std::move(params)),
       CheckViewProperty(
           user_education::HelpBubbleView::kBodyTextIdForTesting,
           &views::Label::GetText,
@@ -1284,12 +1309,13 @@ TEST_F(BrowserFeaturePromoControllerViewsTest, BodyTextSubstitution_Plural) {
 
 TEST_F(BrowserFeaturePromoControllerViewsTest,
        TitleTextSubstitution_SingleString) {
+  user_education::FeaturePromoParams params(kStringTestIPHFeature);
+  params.title_params = kSubstitution1;
+
   RunTestSequenceInContext(
       browser_view()->GetElementContext(),
       RegisterPromo(IDS_OK, kStringWithSingleSubstitution),
-      MaybeShowPromo(
-          user_education::FeaturePromoSpecification::NoSubstitution(),
-          kSubstitution1),
+      MaybeShowPromo(std::move(params)),
       CheckViewProperty(user_education::HelpBubbleView::kTitleTextIdForTesting,
                         &views::Label::GetText,
                         l10n_util::GetStringFUTF16(
@@ -1298,13 +1324,15 @@ TEST_F(BrowserFeaturePromoControllerViewsTest,
 
 TEST_F(BrowserFeaturePromoControllerViewsTest,
        TitleTextSubstitution_MultipleStrings) {
+  user_education::FeaturePromoParams params(kStringTestIPHFeature);
+  params.title_params =
+      user_education::FeaturePromoSpecification::StringSubstitutions{
+          kSubstitution1, kSubstitution2, kSubstitution3};
+
   RunTestSequenceInContext(
       browser_view()->GetElementContext(),
       RegisterPromo(IDS_OK, kStringWithMultipleSubstitutions),
-      MaybeShowPromo(
-          user_education::FeaturePromoSpecification::NoSubstitution(),
-          user_education::FeaturePromoSpecification::StringSubstitutions{
-              kSubstitution1, kSubstitution2, kSubstitution3}),
+      MaybeShowPromo(std::move(params)),
       CheckViewProperty(user_education::HelpBubbleView::kTitleTextIdForTesting,
                         &views::Label::GetText,
                         l10n_util::GetStringFUTF16(
@@ -1313,11 +1341,13 @@ TEST_F(BrowserFeaturePromoControllerViewsTest,
 }
 
 TEST_F(BrowserFeaturePromoControllerViewsTest, TitleTextSubstitution_Singular) {
+  user_education::FeaturePromoParams params(kStringTestIPHFeature);
+  params.title_params = 1;
+
   RunTestSequenceInContext(
       browser_view()->GetElementContext(),
       RegisterPromo(IDS_OK, kStringWithPluralSubstitution),
-      MaybeShowPromo(
-          user_education::FeaturePromoSpecification::NoSubstitution(), 1),
+      MaybeShowPromo(std::move(params)),
       CheckViewProperty(
           user_education::HelpBubbleView::kTitleTextIdForTesting,
           &views::Label::GetText,
@@ -1325,11 +1355,13 @@ TEST_F(BrowserFeaturePromoControllerViewsTest, TitleTextSubstitution_Singular) {
 }
 
 TEST_F(BrowserFeaturePromoControllerViewsTest, TitleTextSubstitution_Plural) {
+  user_education::FeaturePromoParams params(kStringTestIPHFeature);
+  params.title_params = 3;
+
   RunTestSequenceInContext(
       browser_view()->GetElementContext(),
       RegisterPromo(IDS_OK, kStringWithPluralSubstitution),
-      MaybeShowPromo(
-          user_education::FeaturePromoSpecification::NoSubstitution(), 3),
+      MaybeShowPromo(std::move(params)),
       CheckViewProperty(
           user_education::HelpBubbleView::kTitleTextIdForTesting,
           &views::Label::GetText,

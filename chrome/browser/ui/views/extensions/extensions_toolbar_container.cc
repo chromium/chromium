@@ -1036,10 +1036,11 @@ void ExtensionsToolbarContainer::MaybeShowIPH() {
   if (extensions_controls_->request_access_button()->GetVisible()) {
     const int extensions_size =
         extensions_controls_->request_access_button()->GetExtensionsCount();
-    browser_->window()->MaybeShowFeaturePromo(
-        feature_engagement::kIPHExtensionsRequestAccessButtonFeature,
-        /*close_callback=*/base::DoNothing(), /*body_params=*/extensions_size,
-        /*title_params=*/extensions_size);
+    user_education::FeaturePromoParams params(
+        feature_engagement::kIPHExtensionsRequestAccessButtonFeature);
+    params.body_params = extensions_size;
+    params.title_params = extensions_size;
+    browser_->window()->MaybeShowFeaturePromo(std::move(params));
   }
 
   if (extensions_controls_->extensions_button()->state() ==

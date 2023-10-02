@@ -167,12 +167,12 @@ void TrackingProtectionNoticeService::MaybeUpdateNoticeVisibility(
   }
 
   base::Time shown_when = base::Time::Now();
-  auto is_notice_shown = browser->window()->MaybeShowFeaturePromo(
-      feature_engagement::kIPHTrackingProtectionOnboardingFeature,
-      base::BindOnce(&TrackingProtectionNoticeService::OnNoticeClosed,
-                     base::Unretained(this), shown_when,
-                     browser->window()->GetFeaturePromoController()));
-  if (is_notice_shown) {
+  user_education::FeaturePromoParams params(
+      feature_engagement::kIPHTrackingProtectionOnboardingFeature);
+  params.close_callback = base::BindOnce(
+      &TrackingProtectionNoticeService::OnNoticeClosed, base::Unretained(this),
+      shown_when, browser->window()->GetFeaturePromoController());
+  if (browser->window()->MaybeShowFeaturePromo(std::move(params))) {
     onboarding_service_->NoticeShown();
     // TODO(b/302008359) Emit metrics
   } else {

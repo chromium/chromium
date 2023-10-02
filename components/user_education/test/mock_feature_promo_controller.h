@@ -26,25 +26,12 @@ class MockFeaturePromoController : public FeaturePromoController {
               (const, override));
   MOCK_METHOD(FeaturePromoResult,
               MaybeShowPromo,
-              (const base::Feature&,
-               BubbleCloseCallback,
-               FeaturePromoSpecification::FormatParameters,
-               FeaturePromoSpecification::FormatParameters),
+              (FeaturePromoParams),
               (override));
-  MOCK_METHOD(bool,
-              MaybeShowStartupPromo,
-              (const base::Feature&,
-               StartupPromoCallback,
-               BubbleCloseCallback,
-               FeaturePromoSpecification::FormatParameters,
-               FeaturePromoSpecification::FormatParameters),
-              (override));
+  MOCK_METHOD(bool, MaybeShowStartupPromo, (FeaturePromoParams), (override));
   MOCK_METHOD(FeaturePromoResult,
               MaybeShowPromoForDemoPage,
-              (const base::Feature&,
-               BubbleCloseCallback,
-               FeaturePromoSpecification::FormatParameters,
-               FeaturePromoSpecification::FormatParameters),
+              (FeaturePromoParams),
               (override));
   MOCK_METHOD(FeaturePromoStatus,
               GetPromoStatus,
@@ -73,6 +60,29 @@ class MockFeaturePromoController : public FeaturePromoController {
  private:
   base::WeakPtrFactory<MockFeaturePromoController> weak_ptr_factory_{this};
 };
+
+class FeaturePromoParamsMatcher {
+ public:
+  explicit FeaturePromoParamsMatcher(const base::Feature& feature);
+  FeaturePromoParamsMatcher(const FeaturePromoParamsMatcher&);
+  ~FeaturePromoParamsMatcher();
+  FeaturePromoParamsMatcher& operator=(const FeaturePromoParamsMatcher&);
+
+  using is_gtest_matcher = void;
+
+  bool MatchAndExplain(const FeaturePromoParams&, std::ostream*) const;
+  void DescribeTo(std::ostream*) const;
+  void DescribeNegationTo(std::ostream*) const;
+
+ private:
+  base::raw_ref<const base::Feature> feature_;
+};
+
+template <typename... Args>
+testing::Matcher<FeaturePromoParams> MatchFeaturePromoParams(Args&&... args) {
+  return testing::Matcher<FeaturePromoParams>(
+      FeaturePromoParamsMatcher(std::forward<Args>(args)...));
+}
 
 }  // namespace user_education::test
 

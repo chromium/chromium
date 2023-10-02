@@ -105,11 +105,9 @@ TEST_F(CustomizeChromeFeaturePromoHelperTest,
 
 TEST_F(CustomizeChromeFeaturePromoHelperTest,
        MaybeShowCustomizeChromeFeaturePromoHelper) {
-  EXPECT_CALL(
-      *mock_promo_controller(),
-      MaybeShowPromo(
-          testing::Ref(feature_engagement::kIPHDesktopCustomizeChromeFeature),
-          testing::_, testing::_, testing::_))
+  EXPECT_CALL(*mock_promo_controller(),
+              MaybeShowPromo(user_education::test::MatchFeaturePromoParams(
+                  feature_engagement::kIPHDesktopCustomizeChromeFeature)))
       .Times(1)
       .WillOnce(testing::Return(user_education::FeaturePromoResult::Success()));
   helper()->SetDefaultSearchProviderIsGoogleForTesting(true);
@@ -118,9 +116,7 @@ TEST_F(CustomizeChromeFeaturePromoHelperTest,
 
 TEST_F(CustomizeChromeFeaturePromoHelperTest,
        MaybeShowCustomizeChromeFeaturePromoHelperNonGoogle) {
-  EXPECT_CALL(*mock_promo_controller(),
-              MaybeShowPromo(testing::_, testing::_, testing::_, testing::_))
-      .Times(0);
+  EXPECT_CALL(*mock_promo_controller(), MaybeShowPromo(testing::_)).Times(0);
   helper()->SetDefaultSearchProviderIsGoogleForTesting(false);
   helper()->MaybeShowCustomizeChromeFeaturePromo(tab());
 }
@@ -142,10 +138,8 @@ TEST_F(CustomizeChromeFeaturePromoHelperTest,
   SetChromeRefresh2023();
   EXPECT_CALL(
       *mock_promo_controller(),
-      MaybeShowPromo(
-          testing::Ref(
-              feature_engagement::kIPHDesktopCustomizeChromeRefreshFeature),
-          testing::_, testing::_, testing::_))
+      MaybeShowPromo(user_education::test::MatchFeaturePromoParams(
+          feature_engagement::kIPHDesktopCustomizeChromeRefreshFeature)))
       .Times(1)
       .WillOnce(testing::Return(user_education::FeaturePromoResult::Success()));
   helper()->SetDefaultSearchProviderIsGoogleForTesting(true);
@@ -155,9 +149,7 @@ TEST_F(CustomizeChromeFeaturePromoHelperTest,
 TEST_F(CustomizeChromeFeaturePromoHelperTest,
        MaybeShowCustomizeChromeRefreshFeaturePromoHelperNonGoogle) {
   SetChromeRefresh2023();
-  EXPECT_CALL(*mock_promo_controller(),
-              MaybeShowPromo(testing::_, testing::_, testing::_, testing::_))
-      .Times(0);
+  EXPECT_CALL(*mock_promo_controller(), MaybeShowPromo(testing::_)).Times(0);
   helper()->SetDefaultSearchProviderIsGoogleForTesting(false);
   helper()->MaybeShowCustomizeChromeFeaturePromo(tab());
 }

@@ -136,30 +136,34 @@ bool CookieControlsIconView::MaybeShowIPH() {
   // Need to make element visible or calls to show IPH will fail.
   SetVisible(true);
   // IPH for UB on high-confidence site.
-  if (confidence_ == CookieControlsBreakageConfidenceLevel::kHigh &&
-      browser_->window()->MaybeShowFeaturePromo(
-          feature_engagement::kIPHCookieControlsFeature,
-          base::BindOnce(&CookieControlsIconView::OnIPHClosed,
-                         weak_ptr_factory_.GetWeakPtr()))) {
-    SetHighlighted(true);
-    return true;
+  if (confidence_ == CookieControlsBreakageConfidenceLevel::kHigh) {
+    user_education::FeaturePromoParams params(
+        feature_engagement::kIPHCookieControlsFeature);
+    params.close_callback = base::BindOnce(&CookieControlsIconView::OnIPHClosed,
+                                           weak_ptr_factory_.GetWeakPtr());
+    if (browser_->window()->MaybeShowFeaturePromo(std::move(params))) {
+      SetHighlighted(true);
+      return true;
+    }
   }
 
-  auto* web_contents = delegate()->GetWebContentsForPageActionIconView();
+  auto* const web_contents = delegate()->GetWebContentsForPageActionIconView();
   if (!web_contents) {
     return false;
   }
-  Profile* profile =
+  Profile* const profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   // IPH for UB in 3PCD experiment.
   if (TrackingProtectionSettingsFactory::GetForProfile(profile)
-          ->IsTrackingProtection3pcdEnabled() &&
-      browser_->window()->MaybeShowFeaturePromo(
-          feature_engagement::kIPH3pcdUserBypassFeature,
-          base::BindOnce(&CookieControlsIconView::OnIPHClosed,
-                         weak_ptr_factory_.GetWeakPtr()))) {
-    SetHighlighted(true);
-    return true;
+          ->IsTrackingProtection3pcdEnabled()) {
+    user_education::FeaturePromoParams params(
+        feature_engagement::kIPH3pcdUserBypassFeature);
+    params.close_callback = base::BindOnce(&CookieControlsIconView::OnIPHClosed,
+                                           weak_ptr_factory_.GetWeakPtr());
+    if (browser_->window()->MaybeShowFeaturePromo(std::move(params))) {
+      SetHighlighted(true);
+      return true;
+    }
   }
   return false;
 }

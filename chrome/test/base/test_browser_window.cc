@@ -359,29 +359,19 @@ user_education::FeaturePromoResult TestBrowserWindow::CanShowFeaturePromo(
 }
 
 user_education::FeaturePromoResult TestBrowserWindow::MaybeShowFeaturePromo(
-    const base::Feature& iph_feature,
-    user_education::FeaturePromoController::BubbleCloseCallback close_callback,
-    user_education::FeaturePromoSpecification::FormatParameters body_params,
-    user_education::FeaturePromoSpecification::FormatParameters title_params) {
+    user_education::FeaturePromoParams params) {
   if (!feature_promo_controller_) {
     return user_education::FeaturePromoResult::kBlockedByContext;
   }
 
-  return feature_promo_controller_->MaybeShowPromo(
-      iph_feature, std::move(close_callback), body_params, title_params);
+  return feature_promo_controller_->MaybeShowPromo(std::move(params));
 }
 
 bool TestBrowserWindow::MaybeShowStartupFeaturePromo(
-    const base::Feature& iph_feature,
-    user_education::FeaturePromoController::StartupPromoCallback promo_callback,
-    user_education::FeaturePromoController::BubbleCloseCallback close_callback,
-    user_education::FeaturePromoSpecification::FormatParameters body_params,
-    user_education::FeaturePromoSpecification::FormatParameters title_params) {
+    user_education::FeaturePromoParams params) {
   if (!feature_promo_controller_)
     return false;
-  return feature_promo_controller_->MaybeShowStartupPromo(
-      iph_feature, std::move(promo_callback), std::move(close_callback),
-      std::move(body_params), std::move(title_params));
+  return feature_promo_controller_->MaybeShowStartupPromo(std::move(params));
 }
 
 bool TestBrowserWindow::CloseFeaturePromo(

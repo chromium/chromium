@@ -205,10 +205,11 @@ bool PriceTrackingIconView::MaybeShowIPH() {
   if (!browser_->window() || !ShouldShowFirstUseExperienceBubble()) {
     return false;
   }
-  return browser_->window()->MaybeShowFeaturePromo(
-      feature_engagement::kIPHPriceTrackingChipFeature,
-      base::BindOnce(&PriceTrackingIconView::UnpauseAnimation,
-                     base::Unretained(this)));
+  user_education::FeaturePromoParams params(
+      feature_engagement::kIPHPriceTrackingChipFeature);
+  params.close_callback = base::BindOnce(
+      &PriceTrackingIconView::UnpauseAnimation, base::Unretained(this));
+  return browser_->window()->MaybeShowFeaturePromo(std::move(params));
 }
 
 void PriceTrackingIconView::ForceVisibleForTesting(bool is_tracking_price) {

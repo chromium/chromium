@@ -137,8 +137,10 @@ class BrowserFeaturePromoControllerUiTest : public InteractiveBrowserTest {
             .Times(0);
       }
 
+      user_education::FeaturePromoParams params(iph_feature);
+      params.close_callback = std::move(callback);
       if (expected_result !=
-          promo_controller_->MaybeShowPromo(iph_feature, std::move(callback))) {
+          promo_controller_->MaybeShowPromo(std::move(params))) {
         LOG(ERROR) << "MaybeShowPromo() didn't return expected result.";
         return false;
       }

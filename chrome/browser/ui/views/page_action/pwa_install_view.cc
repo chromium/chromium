@@ -128,12 +128,15 @@ void PwaInstallView::UpdateImpl() {
   // that view is set to visible but not drawn in fullscreen mode.
   if (is_probably_promotable && ShouldShowIph(web_contents, manager) &&
       IsDrawn()) {
-    const bool iph_shown = browser_->window()->MaybeShowFeaturePromo(
-        feature_engagement::kIPHDesktopPwaInstallFeature,
-        base::BindOnce(&PwaInstallView::OnIphClosed,
-                       weak_ptr_factory_.GetWeakPtr()),
-        webapps::AppBannerManager::GetInstallableWebAppName(web_contents));
-    if (iph_shown) {
+    user_education::FeaturePromoParams params(
+        feature_engagement::kIPHDesktopPwaInstallFeature);
+    params.close_callback = base::BindOnce(&PwaInstallView::OnIphClosed,
+                                           weak_ptr_factory_.GetWeakPtr());
+    params.body_params =
+        webapps::AppBannerManager::GetInstallableWebAppName(web_contents);
+    const user_education::FeaturePromoResult iph_result =
+        browser_->window()->MaybeShowFeaturePromo(std::move(params));
+    if (iph_result) {
       // Reset the iph flag when it's shown again.
       install_icon_clicked_after_iph_shown_ = false;
       SetHighlighted(true);

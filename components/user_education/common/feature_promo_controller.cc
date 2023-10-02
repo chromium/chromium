@@ -12,6 +12,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/user_education/common/feature_promo_lifecycle.h"
@@ -53,7 +54,9 @@ FeaturePromoControllerCommon::FeaturePromoControllerCommon(
 FeaturePromoControllerCommon::~FeaturePromoControllerCommon() {
   // Inform any pending startup promos that they were not shown.
   for (auto& [feature, callback] : startup_promos_) {
-    std::move(callback).Run(*feature, FeaturePromoResult::kCanceled);
+    if (callback) {
+      std::move(callback).Run(*feature, FeaturePromoResult::kCanceled);
+    }
   }
 }
 
@@ -67,37 +70,29 @@ FeaturePromoResult FeaturePromoControllerCommon::CanShowPromo(
 }
 
 FeaturePromoResult FeaturePromoControllerCommon::MaybeShowPromo(
-    const base::Feature& iph_feature,
-    BubbleCloseCallback close_callback,
-    FeaturePromoSpecification::FormatParameters body_params,
-    FeaturePromoSpecification::FormatParameters title_params) {
-  return MaybeShowPromoCommon(iph_feature,
-                              /* for_demo =*/false, std::move(close_callback),
-                              std::move(body_params), std::move(title_params));
+    FeaturePromoParams params) {
+  return MaybeShowPromoCommon(std::move(params), /* for_demo =*/false);
 }
 
 bool FeaturePromoControllerCommon::MaybeShowStartupPromo(
-    const base::Feature& iph_feature,
-    StartupPromoCallback promo_callback,
-    BubbleCloseCallback close_callback,
-    FeaturePromoSpecification::FormatParameters body_params,
-    FeaturePromoSpecification::FormatParameters title_params) {
+    FeaturePromoParams params) {
+  const base::Feature* const iph_feature = &params.feature.get();
+
   // If the promo is currently running, fail.
-  if (GetCurrentPromoFeature() == &iph_feature) {
+  if (GetCurrentPromoFeature() == iph_feature) {
     return false;
   }
 
   // If the promo is already queued, fail.
-  if (base::Contains(startup_promos_, &iph_feature))
+  if (base::Contains(startup_promos_, iph_feature)) {
     return false;
+  }
 
   // Queue the promo.
-  startup_promos_.emplace(&iph_feature, std::move(promo_callback));
+  startup_promos_.emplace(iph_feature, std::move(params.startup_callback));
   feature_engagement_tracker_->AddOnInitializedCallback(base::BindOnce(
       &FeaturePromoControllerCommon::OnFeatureEngagementTrackerInitialized,
-      weak_ptr_factory_.GetWeakPtr(), base::Unretained(&iph_feature),
-      std::move(close_callback), std::move(body_params),
-      std::move(title_params)));
+      weak_ptr_factory_.GetWeakPtr(), std::move(params)));
 
   // The promo has been successfully queued. Once the FE backend is initialized,
   // MaybeShowPromo() will be called to see if the promo should actually be
@@ -106,27 +101,19 @@ bool FeaturePromoControllerCommon::MaybeShowStartupPromo(
 }
 
 FeaturePromoResult FeaturePromoControllerCommon::MaybeShowPromoForDemoPage(
-    const base::Feature& iph_feature,
-    BubbleCloseCallback close_callback,
-    FeaturePromoSpecification::FormatParameters body_params,
-    FeaturePromoSpecification::FormatParameters title_params) {
-  return MaybeShowPromoCommon(iph_feature, /* for_demo =*/true,
-                              std::move(close_callback), std::move(body_params),
-                              std::move(title_params));
+    FeaturePromoParams params) {
+  return MaybeShowPromoCommon(std::move(params), /* for_demo =*/true);
 }
 
 FeaturePromoResult FeaturePromoControllerCommon::MaybeShowPromoCommon(
-    const base::Feature& iph_feature,
-    bool for_demo,
-    BubbleCloseCallback close_callback,
-    FeaturePromoSpecification::FormatParameters body_params,
-    FeaturePromoSpecification::FormatParameters title_params) {
+    FeaturePromoParams params,
+    bool for_demo) {
   // Perform common checks.
   const FeaturePromoSpecification* spec = nullptr;
   std::unique_ptr<FeaturePromoLifecycle> lifecycle = nullptr;
   ui::TrackedElement* anchor_element = nullptr;
-  auto result = CanShowPromoCommon(iph_feature, for_demo, &spec, &lifecycle,
-                                   &anchor_element);
+  auto result = CanShowPromoCommon(params.feature.get(), for_demo, &spec,
+                                   &lifecycle, &anchor_element);
   if (!result) {
     return result;
   }
@@ -158,7 +145,7 @@ FeaturePromoResult FeaturePromoControllerCommon::MaybeShowPromoCommon(
       CheckScreenReaderPromptAvailable(for_demo || in_iph_demo_mode_);
 
   if (!for_demo &&
-      !feature_engagement_tracker_->ShouldTriggerHelpUI(iph_feature)) {
+      !feature_engagement_tracker_->ShouldTriggerHelpUI(params.feature.get())) {
     return FeaturePromoResult::kBlockedByConfig;
   }
 
@@ -169,17 +156,18 @@ FeaturePromoResult FeaturePromoControllerCommon::MaybeShowPromoCommon(
 
   // Try to show the bubble and bail out if we cannot.
   auto bubble = ShowPromoBubbleImpl(
-      *spec, anchor_element, std::move(body_params), std::move(title_params),
-      screen_reader_available, /* is_critical_promo =*/false);
+      *spec, anchor_element, std::move(params.body_params),
+      std::move(params.title_params), screen_reader_available,
+      /* is_critical_promo =*/false);
   if (!bubble) {
     current_promo_.reset();
     if (!for_demo) {
-      feature_engagement_tracker_->Dismissed(iph_feature);
+      feature_engagement_tracker_->Dismissed(params.feature.get());
     }
     return FeaturePromoResult::kError;
   }
 
-  bubble_closed_callback_ = std::move(close_callback);
+  bubble_closed_callback_ = std::move(params.close_callback);
 
   if (for_demo) {
     current_promo_->OnPromoShownForDemo(std::move(bubble));
@@ -274,7 +262,9 @@ bool FeaturePromoControllerCommon::EndPromo(const base::Feature& iph_feature,
                                             CloseReason close_reason) {
   const auto it = startup_promos_.find(&iph_feature);
   if (it != startup_promos_.end()) {
-    std::move(it->second).Run(iph_feature, FeaturePromoResult::kCanceled);
+    if (it->second) {
+      std::move(it->second).Run(iph_feature, FeaturePromoResult::kCanceled);
+    }
     startup_promos_.erase(it);
     return true;
   }
@@ -353,11 +343,10 @@ bool FeaturePromoControllerCommon::CheckScreenReaderPromptAvailable(
 }
 
 void FeaturePromoControllerCommon::OnFeatureEngagementTrackerInitialized(
-    const base::Feature* iph_feature,
-    BubbleCloseCallback close_callback,
-    FeaturePromoSpecification::FormatParameters body_params,
-    FeaturePromoSpecification::FormatParameters title_params,
+    FeaturePromoParams params,
     bool tracker_initialized_successfully) {
+  const base::Feature* const iph_feature = &params.feature.get();
+
   // If the promo has been canceled, do not proceed.
   const auto it = startup_promos_.find(iph_feature);
   if (it == startup_promos_.end()) {
@@ -371,12 +360,13 @@ void FeaturePromoControllerCommon::OnFeatureEngagementTrackerInitialized(
   // Try to start the promo, assuming the tracker was successfully initialized.
   FeaturePromoResult result;
   if (tracker_initialized_successfully) {
-    result = MaybeShowPromo(*iph_feature, std::move(close_callback),
-                            std::move(body_params), std::move(title_params));
+    result = MaybeShowPromo(std::move(params));
   } else {
     result = FeaturePromoResult::kError;
   }
-  std::move(callback).Run(*iph_feature, result);
+  if (callback) {
+    std::move(callback).Run(*iph_feature, result);
+  }
 }
 
 FeaturePromoResult FeaturePromoControllerCommon::CanShowPromoCommon(
@@ -811,5 +801,10 @@ FeaturePromoControllerCommon::BlockActiveWindowCheckForTesting() {
   return std::make_unique<base::AutoReset<bool>>(&active_window_check_blocked_,
                                                  true);
 }
+
+FeaturePromoParams::FeaturePromoParams(const base::Feature& iph_feature)
+    : feature(iph_feature) {}
+FeaturePromoParams::FeaturePromoParams(FeaturePromoParams&& other) = default;
+FeaturePromoParams::~FeaturePromoParams() = default;
 
 }  // namespace user_education
