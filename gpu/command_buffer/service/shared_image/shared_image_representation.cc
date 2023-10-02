@@ -456,7 +456,7 @@ void SkiaGaneshImageRepresentation::ScopedGaneshReadAccess::
   if (!end_state_) {
     return;
   }
-  for (int plane = 0; plane < representation()->format().NumberOfPlanes();
+  for (size_t plane = 0; plane < representation()->NumPlanesExpected();
        plane++) {
     if (!ganesh_representation()->gr_context()->setBackendTextureState(
             promise_image_texture(plane)->backendTexture(), *end_state_)) {
