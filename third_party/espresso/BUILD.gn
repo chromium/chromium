@@ -47,7 +47,6 @@ android_java_prebuilt("espresso_core_java") {
   jar_path = "lib/espresso-core-release-no-dep.jar"
   deps = [
     ":espresso_idling_java",
-    "//third_party/android_deps:com_android_support_support_annotations_java",
     "//third_party/android_deps:guava_android_java",
     "//third_party/android_deps:javax_inject_javax_inject_java",
     "//third_party/android_deps:org_codehaus_mojo_animal_sniffer_annotations_java",

@@ -44,13 +44,6 @@ dependencies {
 
     compile 'com.google.android.play:feature-delivery:2.0.1'
 
-    // Architecture components
-    String archComponentsVersion = '1.1.1'
-    compile "android.arch.lifecycle:runtime:${archComponentsVersion}"
-    compile "android.arch.lifecycle:common:${archComponentsVersion}"
-    compile "android.arch.lifecycle:common-java8:${archComponentsVersion}"
-    compile "android.arch.lifecycle:viewmodel:${archComponentsVersion}"
-
     // Play services libraries
     // See https://developers.google.com/android/guides/releases for updates
     // Starting from 15.0.0 these libraries are allowed to update independently
@@ -78,26 +71,10 @@ dependencies {
     // TODO (bjoyce): Remove after androidx migration crbug.com/896775
     // Support v4 libraries
     String supportLibVersion = '28.0.0'
-    compile "com.android.support:support-v4:${supportLibVersion}"
+    compile "com.android.support:drawerlayout:${supportLibVersion}"
+    compile "com.android.support:support-annotations:${supportLibVersion}"
     compile "com.android.support:support-compat:${supportLibVersion}"
     compile "com.android.support:support-core-ui:${supportLibVersion}"
-    compile "com.android.support:support-core-utils:${supportLibVersion}"
-    compile "com.android.support:support-fragment:${supportLibVersion}"
-
-    compile "com.android.support:support-annotations:${supportLibVersion}"
-    compile "com.android.support:design:${supportLibVersion}"
-
-    compile "com.android.support:asynclayoutinflater:${supportLibVersion}"
-    compile "com.android.support:collections:${supportLibVersion}"
-    compile "com.android.support:coordinatorlayout:${supportLibVersion}"
-    compile "com.android.support:customview:${supportLibVersion}"
-    compile "com.android.support:drawerlayout:${supportLibVersion}"
-    compile "com.android.support:interpolator:${supportLibVersion}"
-    compile 'com.android.support:localbroadcastmanager:1.1.0-SNAPSHOT'
-    compile "com.android.support:swiperefreshlayout:${supportLibVersion}"
-    compile "com.android.support:viewpager:${supportLibVersion}"
-
-    compile 'com.android.support:multidex:1.0.0'
 
     compile 'com.google.code.findbugs:jsr305:3.0.2'
     compile 'com.google.firebase:firebase-iid:21.0.1'

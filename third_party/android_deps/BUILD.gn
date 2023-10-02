@@ -676,116 +676,6 @@ java_prebuilt("org_pcollections_pcollections_java") {
 
 if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  java_prebuilt("android_arch_lifecycle_common_java") {
-    jar_path = "libs/android_arch_lifecycle_common/common-1.1.1.jar"
-    output_name = "android_arch_lifecycle_common"
-    supports_android = true
-    enable_bytecode_checks = false
-    deps = [ ":com_android_support_support_annotations_java" ]
-  }
-
-  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  java_prebuilt("android_arch_lifecycle_common_java8_java") {
-    jar_path = "libs/android_arch_lifecycle_common_java8/common-java8-1.1.1.jar"
-    output_name = "android_arch_lifecycle_common_java8"
-    supports_android = true
-    enable_bytecode_checks = false
-    deps = [
-      ":android_arch_lifecycle_common_java",
-      ":com_android_support_support_annotations_java",
-    ]
-  }
-
-  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  android_aar_prebuilt("android_arch_lifecycle_runtime_java") {
-    aar_path = "libs/android_arch_lifecycle_runtime/runtime-1.1.1.aar"
-    info_path = "libs/android_arch_lifecycle_runtime/android_arch_lifecycle_runtime.info"
-    enable_bytecode_checks = false
-    deps = [
-      ":android_arch_core_common_java",
-      ":android_arch_lifecycle_common_java",
-      ":com_android_support_support_annotations_java",
-    ]
-  }
-
-  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  android_aar_prebuilt("android_arch_lifecycle_viewmodel_java") {
-    aar_path = "libs/android_arch_lifecycle_viewmodel/viewmodel-1.1.1.aar"
-    info_path = "libs/android_arch_lifecycle_viewmodel/android_arch_lifecycle_viewmodel.info"
-    enable_bytecode_checks = false
-    deps = [ ":com_android_support_support_annotations_java" ]
-  }
-
-  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  android_aar_prebuilt("com_android_support_asynclayoutinflater_java") {
-    aar_path = "libs/com_android_support_asynclayoutinflater/asynclayoutinflater-28.0.0.aar"
-    info_path = "libs/com_android_support_asynclayoutinflater/com_android_support_asynclayoutinflater.info"
-    enable_bytecode_checks = false
-    deps = [
-      ":com_android_support_support_annotations_java",
-      ":com_android_support_support_compat_java",
-    ]
-    resource_overlay = true
-  }
-
-  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  java_prebuilt("com_android_support_collections_java") {
-    jar_path = "libs/com_android_support_collections/collections-28.0.0.jar"
-    output_name = "com_android_support_collections"
-    supports_android = true
-    enable_bytecode_checks = false
-    deps = [ ":com_android_support_support_annotations_java" ]
-  }
-
-  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  android_aar_prebuilt("com_android_support_coordinatorlayout_java") {
-    aar_path = "libs/com_android_support_coordinatorlayout/coordinatorlayout-28.0.0.aar"
-    info_path = "libs/com_android_support_coordinatorlayout/com_android_support_coordinatorlayout.info"
-    enable_bytecode_checks = false
-    deps = [
-      ":com_android_support_customview_java",
-      ":com_android_support_support_annotations_java",
-      ":com_android_support_support_compat_java",
-    ]
-    resource_overlay = true
-
-    # Reduce binary size. https:crbug.com/954584
-    ignore_proguard_configs = true
-  }
-
-  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  android_aar_prebuilt("com_android_support_customview_java") {
-    aar_path = "libs/com_android_support_customview/customview-28.0.0.aar"
-    info_path = "libs/com_android_support_customview/com_android_support_customview.info"
-    enable_bytecode_checks = false
-    deps = [
-      ":com_android_support_support_annotations_java",
-      ":com_android_support_support_compat_java",
-    ]
-    resource_overlay = true
-  }
-
-  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  android_aar_prebuilt("com_android_support_design_java") {
-    aar_path = "libs/com_android_support_design/design-28.0.0.aar"
-    info_path =
-        "libs/com_android_support_design/com_android_support_design.info"
-    enable_bytecode_checks = false
-    deps = [
-      ":com_android_support_appcompat_v7_java",
-      ":com_android_support_cardview_v7_java",
-      ":com_android_support_recyclerview_v7_java",
-      ":com_android_support_support_annotations_java",
-      ":com_android_support_support_compat_java",
-      ":com_android_support_support_core_ui_java",
-      ":com_android_support_support_core_utils_java",
-      ":com_android_support_support_fragment_java",
-      ":com_android_support_transition_java",
-    ]
-    resource_overlay = true
-  }
-
-  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   android_aar_prebuilt("com_android_support_drawerlayout_java") {
     aar_path = "libs/com_android_support_drawerlayout/drawerlayout-28.0.0.aar"
     info_path = "libs/com_android_support_drawerlayout/com_android_support_drawerlayout.info"
@@ -795,33 +685,6 @@ if (!limit_android_deps) {
       ":com_android_support_support_annotations_java",
       ":com_android_support_support_compat_java",
     ]
-    resource_overlay = true
-  }
-
-  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  android_aar_prebuilt("com_android_support_interpolator_java") {
-    aar_path = "libs/com_android_support_interpolator/interpolator-28.0.0.aar"
-    info_path = "libs/com_android_support_interpolator/com_android_support_interpolator.info"
-    enable_bytecode_checks = false
-    deps = [ ":com_android_support_support_annotations_java" ]
-    resource_overlay = true
-  }
-
-  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  android_aar_prebuilt("com_android_support_localbroadcastmanager_java") {
-    aar_path = "libs/com_android_support_localbroadcastmanager/localbroadcastmanager-28.0.0.aar"
-    info_path = "libs/com_android_support_localbroadcastmanager/com_android_support_localbroadcastmanager.info"
-    enable_bytecode_checks = false
-    deps = [ ":com_android_support_support_annotations_java" ]
-    resource_overlay = true
-  }
-
-  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  android_aar_prebuilt("com_android_support_multidex_java") {
-    aar_path = "libs/com_android_support_multidex/multidex-1.0.0.aar"
-    info_path =
-        "libs/com_android_support_multidex/com_android_support_multidex.info"
-    enable_bytecode_checks = false
     resource_overlay = true
   }
 
@@ -879,81 +742,6 @@ if (!limit_android_deps) {
       ":com_android_support_support_core_utils_java",
       ":com_android_support_swiperefreshlayout_java",
       ":com_android_support_viewpager_java",
-    ]
-    resource_overlay = true
-  }
-
-  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  android_aar_prebuilt("com_android_support_support_core_utils_java") {
-    aar_path = "libs/com_android_support_support_core_utils/support-core-utils-28.0.0.aar"
-    info_path = "libs/com_android_support_support_core_utils/com_android_support_support_core_utils.info"
-    enable_bytecode_checks = false
-    deps = [
-      ":com_android_support_documentfile_java",
-      ":com_android_support_loader_java",
-      ":com_android_support_localbroadcastmanager_java",
-      ":com_android_support_print_java",
-      ":com_android_support_support_annotations_java",
-      ":com_android_support_support_compat_java",
-    ]
-    resource_overlay = true
-  }
-
-  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  android_aar_prebuilt("com_android_support_support_fragment_java") {
-    aar_path =
-        "libs/com_android_support_support_fragment/support-fragment-28.0.0.aar"
-    info_path = "libs/com_android_support_support_fragment/com_android_support_support_fragment.info"
-    enable_bytecode_checks = false
-    deps = [
-      ":android_arch_lifecycle_viewmodel_java",
-      ":com_android_support_loader_java",
-      ":com_android_support_support_annotations_java",
-      ":com_android_support_support_compat_java",
-      ":com_android_support_support_core_ui_java",
-      ":com_android_support_support_core_utils_java",
-    ]
-    resource_overlay = true
-  }
-
-  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  android_aar_prebuilt("com_android_support_support_v4_java") {
-    aar_path = "libs/com_android_support_support_v4/support-v4-28.0.0.aar"
-    info_path = "libs/com_android_support_support_v4/com_android_support_support_v4.info"
-    enable_bytecode_checks = false
-    deps = [
-      ":com_android_support_support_compat_java",
-      ":com_android_support_support_core_ui_java",
-      ":com_android_support_support_core_utils_java",
-      ":com_android_support_support_fragment_java",
-      ":com_android_support_support_media_compat_java",
-    ]
-    resource_overlay = true
-  }
-
-  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  android_aar_prebuilt("com_android_support_swiperefreshlayout_java") {
-    aar_path = "libs/com_android_support_swiperefreshlayout/swiperefreshlayout-28.0.0.aar"
-    info_path = "libs/com_android_support_swiperefreshlayout/com_android_support_swiperefreshlayout.info"
-    enable_bytecode_checks = false
-    deps = [
-      ":com_android_support_interpolator_java",
-      ":com_android_support_support_annotations_java",
-      ":com_android_support_support_compat_java",
-    ]
-    resource_overlay = true
-  }
-
-  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  android_aar_prebuilt("com_android_support_viewpager_java") {
-    aar_path = "libs/com_android_support_viewpager/viewpager-28.0.0.aar"
-    info_path =
-        "libs/com_android_support_viewpager/com_android_support_viewpager.info"
-    enable_bytecode_checks = false
-    deps = [
-      ":com_android_support_customview_java",
-      ":com_android_support_support_annotations_java",
-      ":com_android_support_support_compat_java",
     ]
     resource_overlay = true
   }
@@ -1683,6 +1471,22 @@ if (!limit_android_deps) {
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  java_prebuilt("android_arch_lifecycle_common_java") {
+    jar_path = "libs/android_arch_lifecycle_common/common-1.1.1.jar"
+    output_name = "android_arch_lifecycle_common"
+    supports_android = true
+    enable_bytecode_checks = false
+
+    # To remove visibility constraint, add this dependency to
+    # //third_party/android_deps/build.gradle.
+    visibility = [
+      ":*",
+      "//third_party/androidx:*",
+    ]
+    deps = [ ":com_android_support_support_annotations_java" ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   android_aar_prebuilt("android_arch_lifecycle_livedata_java") {
     aar_path = "libs/android_arch_lifecycle_livedata/livedata-1.1.1.aar"
     info_path = "libs/android_arch_lifecycle_livedata/android_arch_lifecycle_livedata.info"
@@ -1722,9 +1526,9 @@ if (!limit_android_deps) {
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  android_aar_prebuilt("com_android_support_animated_vector_drawable_java") {
-    aar_path = "libs/com_android_support_animated_vector_drawable/animated-vector-drawable-28.0.0.aar"
-    info_path = "libs/com_android_support_animated_vector_drawable/com_android_support_animated_vector_drawable.info"
+  android_aar_prebuilt("android_arch_lifecycle_runtime_java") {
+    aar_path = "libs/android_arch_lifecycle_runtime/runtime-1.1.1.aar"
+    info_path = "libs/android_arch_lifecycle_runtime/android_arch_lifecycle_runtime.info"
     enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
@@ -1734,41 +1538,16 @@ if (!limit_android_deps) {
       "//third_party/androidx:*",
     ]
     deps = [
-      ":com_android_support_support_core_ui_java",
-      ":com_android_support_support_vector_drawable_java",
-    ]
-    resource_overlay = true
-  }
-
-  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  android_aar_prebuilt("com_android_support_appcompat_v7_java") {
-    aar_path = "libs/com_android_support_appcompat_v7/appcompat-v7-28.0.0.aar"
-    info_path = "libs/com_android_support_appcompat_v7/com_android_support_appcompat_v7.info"
-    enable_bytecode_checks = false
-
-    # To remove visibility constraint, add this dependency to
-    # //third_party/android_deps/build.gradle.
-    visibility = [
-      ":*",
-      "//third_party/androidx:*",
-    ]
-    deps = [
-      ":com_android_support_animated_vector_drawable_java",
-      ":com_android_support_collections_java",
-      ":com_android_support_cursoradapter_java",
+      ":android_arch_core_common_java",
+      ":android_arch_lifecycle_common_java",
       ":com_android_support_support_annotations_java",
-      ":com_android_support_support_compat_java",
-      ":com_android_support_support_core_utils_java",
-      ":com_android_support_support_fragment_java",
-      ":com_android_support_support_vector_drawable_java",
     ]
-    resource_overlay = true
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  android_aar_prebuilt("com_android_support_cardview_v7_java") {
-    aar_path = "libs/com_android_support_cardview_v7/cardview-v7-28.0.0.aar"
-    info_path = "libs/com_android_support_cardview_v7/com_android_support_cardview_v7.info"
+  android_aar_prebuilt("android_arch_lifecycle_viewmodel_java") {
+    aar_path = "libs/android_arch_lifecycle_viewmodel/viewmodel-1.1.1.aar"
+    info_path = "libs/android_arch_lifecycle_viewmodel/android_arch_lifecycle_viewmodel.info"
     enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
@@ -1778,7 +1557,64 @@ if (!limit_android_deps) {
       "//third_party/androidx:*",
     ]
     deps = [ ":com_android_support_support_annotations_java" ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  android_aar_prebuilt("com_android_support_asynclayoutinflater_java") {
+    aar_path = "libs/com_android_support_asynclayoutinflater/asynclayoutinflater-28.0.0.aar"
+    info_path = "libs/com_android_support_asynclayoutinflater/com_android_support_asynclayoutinflater.info"
+    enable_bytecode_checks = false
+
+    # To remove visibility constraint, add this dependency to
+    # //third_party/android_deps/build.gradle.
+    visibility = [
+      ":*",
+      "//third_party/androidx:*",
+    ]
+    deps = [
+      ":com_android_support_support_annotations_java",
+      ":com_android_support_support_compat_java",
+    ]
     resource_overlay = true
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  java_prebuilt("com_android_support_collections_java") {
+    jar_path = "libs/com_android_support_collections/collections-28.0.0.jar"
+    output_name = "com_android_support_collections"
+    supports_android = true
+    enable_bytecode_checks = false
+
+    # To remove visibility constraint, add this dependency to
+    # //third_party/android_deps/build.gradle.
+    visibility = [
+      ":*",
+      "//third_party/androidx:*",
+    ]
+    deps = [ ":com_android_support_support_annotations_java" ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  android_aar_prebuilt("com_android_support_coordinatorlayout_java") {
+    aar_path = "libs/com_android_support_coordinatorlayout/coordinatorlayout-28.0.0.aar"
+    info_path = "libs/com_android_support_coordinatorlayout/com_android_support_coordinatorlayout.info"
+    enable_bytecode_checks = false
+
+    # To remove visibility constraint, add this dependency to
+    # //third_party/android_deps/build.gradle.
+    visibility = [
+      ":*",
+      "//third_party/androidx:*",
+    ]
+    deps = [
+      ":com_android_support_customview_java",
+      ":com_android_support_support_annotations_java",
+      ":com_android_support_support_compat_java",
+    ]
+    resource_overlay = true
+
+    # Reduce binary size. https:crbug.com/954584
+    ignore_proguard_configs = true
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -1798,9 +1634,44 @@ if (!limit_android_deps) {
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  android_aar_prebuilt("com_android_support_customview_java") {
+    aar_path = "libs/com_android_support_customview/customview-28.0.0.aar"
+    info_path = "libs/com_android_support_customview/com_android_support_customview.info"
+    enable_bytecode_checks = false
+
+    # To remove visibility constraint, add this dependency to
+    # //third_party/android_deps/build.gradle.
+    visibility = [
+      ":*",
+      "//third_party/androidx:*",
+    ]
+    deps = [
+      ":com_android_support_support_annotations_java",
+      ":com_android_support_support_compat_java",
+    ]
+    resource_overlay = true
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   android_aar_prebuilt("com_android_support_documentfile_java") {
     aar_path = "libs/com_android_support_documentfile/documentfile-28.0.0.aar"
     info_path = "libs/com_android_support_documentfile/com_android_support_documentfile.info"
+    enable_bytecode_checks = false
+
+    # To remove visibility constraint, add this dependency to
+    # //third_party/android_deps/build.gradle.
+    visibility = [
+      ":*",
+      "//third_party/androidx:*",
+    ]
+    deps = [ ":com_android_support_support_annotations_java" ]
+    resource_overlay = true
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  android_aar_prebuilt("com_android_support_interpolator_java") {
+    aar_path = "libs/com_android_support_interpolator/interpolator-28.0.0.aar"
+    info_path = "libs/com_android_support_interpolator/com_android_support_interpolator.info"
     enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
@@ -1836,9 +1707,9 @@ if (!limit_android_deps) {
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  android_aar_prebuilt("com_android_support_print_java") {
-    aar_path = "libs/com_android_support_print/print-28.0.0.aar"
-    info_path = "libs/com_android_support_print/com_android_support_print.info"
+  android_aar_prebuilt("com_android_support_localbroadcastmanager_java") {
+    aar_path = "libs/com_android_support_localbroadcastmanager/localbroadcastmanager-28.0.0.aar"
+    info_path = "libs/com_android_support_localbroadcastmanager/com_android_support_localbroadcastmanager.info"
     enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
@@ -1852,10 +1723,9 @@ if (!limit_android_deps) {
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  android_aar_prebuilt("com_android_support_recyclerview_v7_java") {
-    aar_path =
-        "libs/com_android_support_recyclerview_v7/recyclerview-v7-28.0.0.aar"
-    info_path = "libs/com_android_support_recyclerview_v7/com_android_support_recyclerview_v7.info"
+  android_aar_prebuilt("com_android_support_print_java") {
+    aar_path = "libs/com_android_support_print/print-28.0.0.aar"
+    info_path = "libs/com_android_support_print/com_android_support_print.info"
     enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
@@ -1864,11 +1734,7 @@ if (!limit_android_deps) {
       ":*",
       "//third_party/androidx:*",
     ]
-    deps = [
-      ":com_android_support_support_annotations_java",
-      ":com_android_support_support_compat_java",
-      ":com_android_support_support_core_ui_java",
-    ]
+    deps = [ ":com_android_support_support_annotations_java" ]
     resource_overlay = true
   }
 
@@ -1893,9 +1759,9 @@ if (!limit_android_deps) {
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  android_aar_prebuilt("com_android_support_support_media_compat_java") {
-    aar_path = "libs/com_android_support_support_media_compat/support-media-compat-28.0.0.aar"
-    info_path = "libs/com_android_support_support_media_compat/com_android_support_support_media_compat.info"
+  android_aar_prebuilt("com_android_support_support_core_utils_java") {
+    aar_path = "libs/com_android_support_support_core_utils/support-core-utils-28.0.0.aar"
+    info_path = "libs/com_android_support_support_core_utils/com_android_support_support_core_utils.info"
     enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
@@ -1905,29 +1771,10 @@ if (!limit_android_deps) {
       "//third_party/androidx:*",
     ]
     deps = [
-      ":com_android_support_support_annotations_java",
-      ":com_android_support_support_compat_java",
-      ":com_android_support_versionedparcelable_java",
-    ]
-    resource_overlay = true
-
-    # Target has AIDL, but we do not support it yet: http://crbug.com/644439
-    ignore_aidl = true
-  }
-
-  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  android_aar_prebuilt("com_android_support_support_vector_drawable_java") {
-    aar_path = "libs/com_android_support_support_vector_drawable/support-vector-drawable-28.0.0.aar"
-    info_path = "libs/com_android_support_support_vector_drawable/com_android_support_support_vector_drawable.info"
-    enable_bytecode_checks = false
-
-    # To remove visibility constraint, add this dependency to
-    # //third_party/android_deps/build.gradle.
-    visibility = [
-      ":*",
-      "//third_party/androidx:*",
-    ]
-    deps = [
+      ":com_android_support_documentfile_java",
+      ":com_android_support_loader_java",
+      ":com_android_support_localbroadcastmanager_java",
+      ":com_android_support_print_java",
       ":com_android_support_support_annotations_java",
       ":com_android_support_support_compat_java",
     ]
@@ -1935,9 +1782,9 @@ if (!limit_android_deps) {
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  android_aar_prebuilt("com_android_support_transition_java") {
-    aar_path = "libs/com_android_support_transition/transition-28.0.0.aar"
-    info_path = "libs/com_android_support_transition/com_android_support_transition.info"
+  android_aar_prebuilt("com_android_support_swiperefreshlayout_java") {
+    aar_path = "libs/com_android_support_swiperefreshlayout/swiperefreshlayout-28.0.0.aar"
+    info_path = "libs/com_android_support_swiperefreshlayout/com_android_support_swiperefreshlayout.info"
     enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
@@ -1947,11 +1794,11 @@ if (!limit_android_deps) {
       "//third_party/androidx:*",
     ]
     deps = [
+      ":com_android_support_interpolator_java",
       ":com_android_support_support_annotations_java",
       ":com_android_support_support_compat_java",
     ]
     resource_overlay = true
-    deps += [ ":com_android_support_support_fragment_java" ]
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -1978,6 +1825,27 @@ if (!limit_android_deps) {
       "android/support/v4/graphics/drawable/IconCompat.class",
       "androidx/*",
     ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  android_aar_prebuilt("com_android_support_viewpager_java") {
+    aar_path = "libs/com_android_support_viewpager/viewpager-28.0.0.aar"
+    info_path =
+        "libs/com_android_support_viewpager/com_android_support_viewpager.info"
+    enable_bytecode_checks = false
+
+    # To remove visibility constraint, add this dependency to
+    # //third_party/android_deps/build.gradle.
+    visibility = [
+      ":*",
+      "//third_party/androidx:*",
+    ]
+    deps = [
+      ":com_android_support_customview_java",
+      ":com_android_support_support_annotations_java",
+      ":com_android_support_support_compat_java",
+    ]
+    resource_overlay = true
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
