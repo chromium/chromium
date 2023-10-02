@@ -37,7 +37,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotController
    public:
     ~Observer() override = default;
 
-    virtual void OnHotspotTurnedOn(bool wifi_turned_off) = 0;
+    virtual void OnHotspotTurnedOn() = 0;
 
     virtual void OnHotspotTurnedOff(
         hotspot_config::mojom::DisableReason disable_reason) = 0;
@@ -127,7 +127,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotController
       hotspot_config::mojom::HotspotControlResult result);
   void CompleteDisableRequest(
       hotspot_config::mojom::HotspotControlResult result);
-  void NotifyHotspotTurnedOn(bool wifi_turned_off);
+  void NotifyHotspotTurnedOn();
   void NotifyHotspotTurnedOff(
       hotspot_config::mojom::DisableReason disable_reason);
 

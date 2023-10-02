@@ -34,7 +34,6 @@ class ASH_EXPORT HotspotNotifier
   HotspotNotifier& operator=(const HotspotNotifier&) = delete;
   ~HotspotNotifier() override;
 
-  static const char kWiFiTurnedOffNotificationId[];
   static const char kAdminRestrictedNotificationId[];
   static const char kWiFiTurnedOnNotificationId[];
   static const char kAutoDisabledNotificationId[];
@@ -45,7 +44,7 @@ class ASH_EXPORT HotspotNotifier
   friend class HotspotNotifierTest;
 
   // HotspotEnabledStateObserver:
-  void OnHotspotTurnedOn(bool wifi_turned_off) override;
+  void OnHotspotTurnedOn() override;
   void OnHotspotTurnedOff(
       hotspot_config::mojom::DisableReason disable_reason) override;
 

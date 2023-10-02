@@ -179,9 +179,8 @@ interface CrosHotspotConfigObserver {
 // HotspotEnabledStateObserver is implemented by any module that needs
 // to observe changes to the hotspot enabled state.
 interface HotspotEnabledStateObserver {
-  // Called when Hotspot is successfully turned on. `wifi_turned_off`
-  // indicates that WiFi was disabled in order to turn on Hotspot.
-  OnHotspotTurnedOn(bool wifi_turned_off);
+  // Called when Hotspot is successfully turned on.
+  OnHotspotTurnedOn();
 
   // Called when Hotspot is successfully turned off. `disable_reason`
   // indicates the reason why Hotspot was turned off.

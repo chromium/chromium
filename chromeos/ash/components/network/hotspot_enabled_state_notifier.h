@@ -42,7 +42,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotEnabledStateNotifier
   void OnHotspotStatusChanged() override;
 
   // HotspotController::Observer:
-  void OnHotspotTurnedOn(bool wifi_turned_off) override;
+  void OnHotspotTurnedOn() override;
   void OnHotspotTurnedOff(
       hotspot_config::mojom::DisableReason disable_reason) override;
 

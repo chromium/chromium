@@ -242,7 +242,7 @@ void HotspotController::CompleteEnableRequest(
   }
 
   if (result == HotspotControlResult::kSuccess) {
-    NotifyHotspotTurnedOn(wifi_turned_off_);
+    NotifyHotspotTurnedOn();
   }
   std::move(current_enable_request_->callback).Run(result);
   current_enable_request_.reset();
@@ -355,9 +355,9 @@ void HotspotController::OnDisableHotspotCompleteForRestart(
   EnableHotspot(base::DoNothing());
 }
 
-void HotspotController::NotifyHotspotTurnedOn(bool wifi_turned_off) {
+void HotspotController::NotifyHotspotTurnedOn() {
   for (auto& observer : observer_list_) {
-    observer.OnHotspotTurnedOn(wifi_turned_off);
+    observer.OnHotspotTurnedOn();
   }
 }
 

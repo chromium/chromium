@@ -220,7 +220,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotMetricsHelper
   void LoggedInStateChanged() override;
 
   // hotspot_config::mojom::HotspotEnabledStateObserver:
-  void OnHotspotTurnedOn(bool wifi_turned_off) override;
+  void OnHotspotTurnedOn() override;
   void OnHotspotTurnedOff(hotspot_config::mojom::DisableReason reason) override;
 
   void LogAllowStatus();

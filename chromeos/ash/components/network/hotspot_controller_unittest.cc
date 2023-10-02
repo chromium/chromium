@@ -37,9 +37,7 @@ class TestObserver : public HotspotController::Observer {
   ~TestObserver() override = default;
 
   // HotspotStateHandler::Observer:
-  void OnHotspotTurnedOn(bool wifi_turned_off) override {
-    hotspot_turned_on_count_++;
-  }
+  void OnHotspotTurnedOn() override { hotspot_turned_on_count_++; }
   void OnHotspotTurnedOff(
       hotspot_config::mojom::DisableReason disable_reason) override {
     last_disable_reason_ = disable_reason;

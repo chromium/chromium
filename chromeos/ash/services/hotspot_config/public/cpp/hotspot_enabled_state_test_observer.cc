@@ -14,7 +14,7 @@ HotspotEnabledStateTestObserver::GenerateRemote() {
   return receiver().BindNewPipeAndPassRemote();
 }
 
-void HotspotEnabledStateTestObserver::OnHotspotTurnedOn(bool wifi_turned_off) {
+void HotspotEnabledStateTestObserver::OnHotspotTurnedOn() {
   hotspot_turned_on_count_++;
 }
 

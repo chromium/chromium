@@ -150,26 +150,6 @@ class HotspotNotifierTest : public NoSessionAshTestBase {
   mojo::Remote<hotspot_config::mojom::CrosHotspotConfig> cros_hotspot_config_;
 };
 
-TEST_F(HotspotNotifierTest, WiFiTurnedOff) {
-  SetValidHotspotCapabilities();
-  SetReadinessCheckResultReady();
-  AddActiveCellularService();
-  helper()->manager_test()->SetSimulateTetheringEnableResult(
-      FakeShillSimulatedResult::kSuccess, shill::kTetheringEnableResultSuccess);
-  base::RunLoop().RunUntilIdle();
-
-  EnableHotspot();
-  EXPECT_TRUE(message_center::MessageCenter::Get()->FindVisibleNotificationById(
-      HotspotNotifier::kWiFiTurnedOffNotificationId));
-
-  message_center::MessageCenter::Get()->ClickOnNotificationButton(
-      HotspotNotifier::kWiFiTurnedOffNotificationId, 0);
-  base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(
-      message_center::MessageCenter::Get()->FindVisibleNotificationById(
-          HotspotNotifier::kWiFiTurnedOffNotificationId));
-}
-
 TEST_F(HotspotNotifierTest, AdminRestricted) {
   SetValidHotspotCapabilities();
   SetReadinessCheckResultReady();
@@ -179,8 +159,6 @@ TEST_F(HotspotNotifierTest, AdminRestricted) {
   base::RunLoop().RunUntilIdle();
 
   EnableHotspot();
-  EXPECT_TRUE(message_center::MessageCenter::Get()->FindVisibleNotificationById(
-      HotspotNotifier::kWiFiTurnedOffNotificationId));
 
   NotifyHotspotTurnedOff(
       hotspot_config::mojom::DisableReason::kProhibitedByPolicy);
@@ -198,8 +176,6 @@ TEST_F(HotspotNotifierTest, WiFiTurnedOn) {
   base::RunLoop().RunUntilIdle();
 
   EnableHotspot();
-  EXPECT_TRUE(message_center::MessageCenter::Get()->FindVisibleNotificationById(
-      HotspotNotifier::kWiFiTurnedOffNotificationId));
 
   NotifyHotspotTurnedOff(hotspot_config::mojom::DisableReason::kWifiEnabled);
   base::RunLoop().RunUntilIdle();
@@ -216,8 +192,6 @@ TEST_F(HotspotNotifierTest, AutoDisabled) {
   base::RunLoop().RunUntilIdle();
 
   EnableHotspot();
-  EXPECT_TRUE(message_center::MessageCenter::Get()->FindVisibleNotificationById(
-      HotspotNotifier::kWiFiTurnedOffNotificationId));
 
   NotifyHotspotTurnedOff(hotspot_config::mojom::DisableReason::kAutoDisabled);
   base::RunLoop().RunUntilIdle();
@@ -241,8 +215,6 @@ TEST_F(HotspotNotifierTest, InternalError) {
   base::RunLoop().RunUntilIdle();
 
   EnableHotspot();
-  EXPECT_TRUE(message_center::MessageCenter::Get()->FindVisibleNotificationById(
-      HotspotNotifier::kWiFiTurnedOffNotificationId));
 
   NotifyHotspotTurnedOff(hotspot_config::mojom::DisableReason::kInternalError);
   base::RunLoop().RunUntilIdle();

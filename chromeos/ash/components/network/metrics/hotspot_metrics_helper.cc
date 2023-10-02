@@ -383,7 +383,7 @@ void HotspotMetricsHelper::LogDisableReason(
                                 GetMetricsDisableReason(reason));
 }
 
-void HotspotMetricsHelper::OnHotspotTurnedOn(bool wifi_turned_off) {
+void HotspotMetricsHelper::OnHotspotTurnedOn() {
   is_hotspot_active_ = true;
   LogUpstreamStatus();
   LogUsageConfig();

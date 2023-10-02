@@ -39,7 +39,7 @@ void FakeCrosHotspotConfig::SetHotspotConfig(
 void FakeCrosHotspotConfig::EnableHotspot(EnableHotspotCallback callback) {
   hotspot_info_->state = mojom::HotspotState::kEnabled;
   NotifyHotspotInfoObservers();
-  NotifyHotspotTurnedOn(/*wifi_turned_off=*/false);
+  NotifyHotspotTurnedOn();
   std::move(callback).Run(mojom::HotspotControlResult::kSuccess);
 }
 
@@ -67,9 +67,9 @@ void FakeCrosHotspotConfig::NotifyHotspotInfoObservers() {
   }
 }
 
-void FakeCrosHotspotConfig::NotifyHotspotTurnedOn(bool wifi_turned_off) {
+void FakeCrosHotspotConfig::NotifyHotspotTurnedOn() {
   for (auto& observer : hotspot_enabled_state_observers_) {
-    observer->OnHotspotTurnedOn(wifi_turned_off);
+    observer->OnHotspotTurnedOn();
   }
 }
 

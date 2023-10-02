@@ -38,7 +38,7 @@ class FakeCrosHotspotConfig : public mojom::CrosHotspotConfig {
 
  private:
   void NotifyHotspotInfoObservers();
-  void NotifyHotspotTurnedOn(bool wifi_turned_off);
+  void NotifyHotspotTurnedOn();
   void NotifyHotspotTurnedOff(mojom::DisableReason reason);
 
   mojom::HotspotInfoPtr hotspot_info_;

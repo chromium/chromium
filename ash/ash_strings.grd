@@ -3024,8 +3024,14 @@ Some features are limited to increase battery life.
       <message name="IDS_ASH_HOTSPOT_ON_MESSAGE_ONE_CONNECTED_DEVICE" desc="Message displayed in the notification when hotspot is turned on and one device is connected.">
         1 device connected
       </message>
-      <message name="IDS_ASH_HOTSPOT_ON_MESSAGE_NO_CONNECTED_DEVICES" desc="Message displayed in the notification when hotspot is turned on and no devices are connected.">
-        No devices connected
+      <message name="IDS_ASH_HOTSPOT_ON_MESSAGE_NO_CONNECTED_DEVICES_NOTIFICATION" desc="Message displayed in the notification when hotspot is turned on and no devices are connected.">
+        No devices connected. WiFi will be turned off to start using Hotspot.
+      </message>
+      <message name="IDS_ASH_HOTSPOT_ON_MESSAGE_MULTIPLE_CONNECTED_DEVICES_NOTIFICATION" desc="Message displayed in the notification when hotspot is turned on and multiple devices are connected.">
+        <ph name="DEVICECOUNT">$1</ph> devices connected. WiFi will be turned off to start using Hotspot.
+      </message>
+      <message name="IDS_ASH_HOTSPOT_ON_MESSAGE_ONE_CONNECTED_DEVICE_NOTIFICATION" desc="Message displayed in the notification when hotspot is turned on and one device is connected.">
+        1 device connected. WiFi will be turned off to start using Hotspot.
       </message>
       <message name="IDS_ASH_TURN_OFF_HOTSPOT_LABEL" desc="The label for button used to turn off hotspot.">
         Turn off
@@ -3038,9 +3044,6 @@ Some features are limited to increase battery life.
       </message>
       <message name="IDS_ASH_HOTSPOT_NOTIFICATION_WIFI_TURN_ON_BUTTON" desc="The label for button to turn WiFi on in the hotspot notification.">
         Turn on WiFi instead
-      </message>
-      <message name="IDS_ASH_HOTSPOT_WIFI_TURNED_OFF_MESSAGE" desc="Message displayed in the system notification shown when WiFi is turned off upon enabling hotspot.">
-        We've turned off the WiFi to start using Hotspot through Mobile data. This may incur data costs.
       </message>
       <message name="IDS_ASH_HOTSPOT_WIFI_TURNED_ON_MESSAGE" desc="Message displayed in the system notification shown when hotspot is disabled due to WiFi being turned on.">
         Hotspot has been turned off to use WiFi. To use Hotspot, turn WiFi off.
