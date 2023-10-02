@@ -21,6 +21,7 @@ source_set("form_input_accessory") {
     "form_suggestion_view.mm",
   ]
   deps = [
+    ":common",
     "//base",
     "//components/autofill/core/browser",
     "//components/autofill/ios/browser",
@@ -87,5 +88,45 @@ source_set("unit_tests") {
     "//ios/web/public/test/fakes",
     "//testing/gtest",
     "//third_party/ocmock",
+  ]
+}
+
+source_set("common") {
+  sources = [
+    "scoped_form_input_accessory_reauth_module_override.h",
+    "scoped_form_input_accessory_reauth_module_override.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/common/ui/reauthentication",
+  ]
+}
+
+source_set("eg_app_support+eg2") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [
+    "form_input_accessory_app_interface.h",
+    "form_input_accessory_app_interface.mm",
+  ]
+  deps = [
+    ":common",
+    "//base",
+    "//ios/chrome/common/ui/reauthentication",
+    "//ios/chrome/test/app:test_support",
+  ]
+}
+
+source_set("eg_test_support+eg2") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+
+  sources = [
+    "form_input_accessory_app_interface.h",
+    "form_input_accessory_app_interface_stub.mm",
+  ]
+  deps = [
+    "//ios/chrome/common/ui/reauthentication",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
   ]
 }

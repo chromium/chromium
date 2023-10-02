@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
+#import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_app_interface.h"
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_constants.h"
 #import "ios/chrome/browser/ui/passwords/bottom_sheet/password_suggestion_bottom_sheet_app_interface.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -128,6 +129,10 @@ BOOL WaitForKeyboardToAppear() {
     config.features_enabled.push_back(
         password_manager::features::kIOSPasswordBottomSheet);
   }
+  if ([self isRunningTest:@selector(testFillPasswordFieldsOnForm)]) {
+    config.features_disabled.push_back(
+        password_manager::features::kIOSPasswordBottomSheet);
+  }
   return config;
 }
 
@@ -138,6 +143,22 @@ BOOL WaitForKeyboardToAppear() {
   // Loads simple page. It is on localhost so it is considered a secure context.
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/simple_login_form.html")];
   [ChromeEarlGrey waitForWebStateContainingText:"Login form."];
+}
+
+// Verifies that the username and password fields are filled.
+- (void)verifyFieldsHaveBeenFilledWithUsername:(NSString*)username
+                                      password:(NSString*)password {
+  // Verify that the username field has been filled.
+  NSString* condition = [NSString
+      stringWithFormat:@"window.document.getElementById('%s').value === '%@'",
+                       kFormUsername, username];
+  [ChromeEarlGrey waitForJavaScriptCondition:condition];
+
+  // Verify that the password field has been filled.
+  NSString* filledFieldCondition = [NSString
+      stringWithFormat:@"document.getElementById('%s').value === '%@'",
+                       kFormPassword, password];
+  [ChromeEarlGrey waitForJavaScriptCondition:filledFieldCondition];
 }
 
 #pragma mark - Tests
@@ -259,6 +280,33 @@ BOOL WaitForKeyboardToAppear() {
       selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
                                    IDS_IOS_PASSWORD_BOTTOM_SHEET_USE_PASSWORD))]
       performAction:grey_tap()];
+}
+
+- (void)testFillPasswordFieldsOnForm {
+  [FormInputAccessoryAppInterface setUpMockReauthenticationModule];
+  [FormInputAccessoryAppInterface mockReauthenticationModuleExpectedResult:
+                                      ReauthenticationResult::kSuccess];
+
+  NSString* username = @"user";
+  NSString* password = @"password";
+  [PasswordManagerAppInterface
+      storeCredentialWithUsername:username
+                         password:password
+                              URL:net::NSURLWithGURL(self.testServer->GetURL(
+                                      "/simple_login_form.html"))];
+  [self loadLoginPage];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId(kFormPassword)];
+
+  id<GREYMatcher> user_chip = grey_accessibilityLabel(@"user ••••••••");
+
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:user_chip];
+
+  [[EarlGrey selectElementWithMatcher:user_chip] performAction:grey_tap()];
+
+  [self verifyFieldsHaveBeenFilledWithUsername:username password:password];
+
+  [FormInputAccessoryAppInterface removeMockReauthenticationModule];
 }
 
 // Tests that update password prompt is shown on submitting the new password

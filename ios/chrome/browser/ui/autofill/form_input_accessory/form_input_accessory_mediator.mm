@@ -29,6 +29,7 @@
 #import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_chromium_text_data.h"
 #import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_consumer.h"
 #import "ios/chrome/browser/ui/autofill/form_input_accessory/form_suggestion_view.h"
+#import "ios/chrome/browser/ui/autofill/form_input_accessory/scoped_form_input_accessory_reauth_module_override.h"
 #import "ios/chrome/common/ui/elements/form_input_accessory_view.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_event.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
@@ -448,6 +449,14 @@ class PasswordCounterDelegateBridge
 }
 
 #pragma mark - Private
+
+// Returns the reauthentication module, which can be an override for testing
+// purposes.
+- (ReauthenticationModule*)reauthenticationModule {
+  return ScopedFormInputAccessoryReauthModuleOverride::instance
+             ? ScopedFormInputAccessoryReauthModuleOverride::instance->module
+             : _reauthenticationModule;
+}
 
 - (void)updateSuggestionsIfNeeded {
   if (_hasLastSeenParams && _webState) {
