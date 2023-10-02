@@ -69,18 +69,27 @@ const char kUmaSelectDefaultSearchEngine[] =
 @implementation SearchEngineTableViewController {
   TemplateURLService* _templateURLService;  // weak
   std::unique_ptr<SearchEngineObserverBridge> _observer;
-  // The first list in the page which contains prepopulted search engines and
+  // The list of choice screen search engines retrieved from the
+  // TemplateURLService.
+  std::vector<std::unique_ptr<TemplateURL>> _choiceScreenTemplateURLs;
+  // The first list in the page which contains prepopulated search engines and
   // search engines that are created by policy, and possibly one custom search
   // engine if it's selected as default search engine.
+  // Note that `TemplateURL` pointers should not be freed. They either come from
+  // `TemplateURLService::GetTemplateURLs()`, or they are owned by
+  // `_choiceScreenTemplateUrls`.
   std::vector<TemplateURL*> _firstList;
   // The second list in the page which contains all remaining custom search
   // engines.
+  // Note that `TemplateURL` pointers should not be freed. They either come from
+  // `TemplateURLService::GetTemplateURLs()`, or they are owned by
+  // `_choiceScreenTemplateUrls`.
   std::vector<TemplateURL*> _secondList;
   // FaviconLoader is a keyed service that uses LargeIconService to retrieve
   // favicon images.
   FaviconLoader* _faviconLoader;
-  // Used to retrieve the user's prefs.
-  PrefService* _prefService;
+  // Determines which version of the settings UI should be displayed.
+  BOOL _shouldShowUpdatedSettings;
 }
 
 #pragma mark - Initialization
@@ -97,7 +106,8 @@ const char kUmaSelectDefaultSearchEngine[] =
     _templateURLService->Load();
     _faviconLoader =
         IOSChromeFaviconLoaderFactory::GetForBrowserState(browserState);
-    _prefService = browserState->GetPrefs();
+    _shouldShowUpdatedSettings =
+        search_engines::ShouldShowUpdatedSettings(*browserState->GetPrefs());
     [self setTitle:l10n_util::GetNSString(IDS_IOS_SEARCH_ENGINE_SETTING_TITLE)];
     self.shouldDisableDoneButtonOnEdit = YES;
   }
@@ -112,8 +122,13 @@ const char kUmaSelectDefaultSearchEngine[] =
 
   _updatingBackend = updatingBackend;
 
-  if (!self.searchEngineChangedInBackground)
+  // TODO(b/303006727): Remove this check once we figure out a way to keep a
+  // constant seed for each profile for the random shuffle. In the meantime, it
+  // prevents the order of the items in the list from changing when the user
+  // makes a selection.
+  if (!self.searchEngineChangedInBackground || _shouldShowUpdatedSettings) {
     return;
+  }
 
   [self loadSearchEngines];
 
@@ -141,8 +156,8 @@ const char kUmaSelectDefaultSearchEngine[] =
   NSArray* firstListItem = [self.tableViewModel
       itemsInSectionWithIdentifier:SectionIdentifierFirstList];
   for (NSUInteger index = 0; index < firstListItem.count; index++) {
-    if ([self isItem:firstListItem[index]
-            differentForTemplateURL:_firstList[index]]) {
+    if (![self isItem:firstListItem[index]
+            equalForTemplateURL:_firstList[index]]) {
       // Item has changed, reload the TableView.
       [self reloadData];
       return;
@@ -153,8 +168,8 @@ const char kUmaSelectDefaultSearchEngine[] =
     NSArray* secondListItem = [self.tableViewModel
         itemsInSectionWithIdentifier:SectionIdentifierSecondList];
     for (NSUInteger index = 0; index < secondListItem.count; index++) {
-      if ([self isItem:secondListItem[index]
-              differentForTemplateURL:_secondList[index]]) {
+      if (![self isItem:secondListItem[index]
+              equalForTemplateURL:_secondList[index]]) {
         // Item has changed, reload the TableView.
         [self reloadData];
         return;
@@ -217,7 +232,7 @@ const char kUmaSelectDefaultSearchEngine[] =
   if (_firstList.size() > 0) {
     [model addSectionWithIdentifier:SectionIdentifierFirstList];
 
-    if (search_engines::ShouldShowUpdatedSettings(*_prefService)) {
+    if (_shouldShowUpdatedSettings) {
       TableViewTextHeaderFooterItem* header =
           [[TableViewTextHeaderFooterItem alloc] initWithType:ItemTypeHeader];
       header.subtitle =
@@ -470,21 +485,37 @@ const char kUmaSelectDefaultSearchEngine[] =
   if (_settingsAreDismissed)
     return;
 
-  // TODO(b/280753739): Fetch the list of URLs used for the search engine choice
-  // screen, when appropriate.
+  // TODO(b/280753739) Update this method to return the correct list of search
+  // engines directly (for both choice-screen-eligible users and
+  // non-choice-screen-eligible users). This way we don't have to worry about
+  // calling two different methods anymore.
   std::vector<TemplateURL*> urls = _templateURLService->GetTemplateURLs();
   _firstList.clear();
   _firstList.reserve(urls.size());
   _secondList.clear();
   _secondList.reserve(urls.size());
 
+  if (_shouldShowUpdatedSettings) {
+    // This method returns all the required prepopulated search engines and
+    // possibly one custom search engine if it's selected as default search
+    // engine.
+    _choiceScreenTemplateURLs =
+        _templateURLService->GetTemplateURLsForChoiceScreen();
+    _firstList.reserve(_choiceScreenTemplateURLs.size());
+    for (auto& url : _choiceScreenTemplateURLs) {
+      _firstList.push_back(url.get());
+    }
+  }
+
   // Classify TemplateURLs.
   for (TemplateURL* url : urls) {
-    if (_templateURLService->IsPrepopulatedOrCreatedByPolicy(url) ||
-        url == _templateURLService->GetDefaultSearchProvider())
+    if (!_shouldShowUpdatedSettings &&
+        (_templateURLService->IsPrepopulatedOrCreatedByPolicy(url) ||
+         url == _templateURLService->GetDefaultSearchProvider())) {
       _firstList.push_back(url);
-    else
+    } else {
       _secondList.push_back(url);
+    }
   }
 
   // Do not sort prepopulated search engines, they are already sorted by
@@ -529,7 +560,9 @@ const char kUmaSelectDefaultSearchEngine[] =
   }
   item.text = base::SysUTF16ToNSString(templateURL->short_name());
   item.detailText = base::SysUTF16ToNSString(templateURL->keyword());
-  if (templateURL == _templateURLService->GetDefaultSearchProvider()) {
+  if ([self isItem:item
+          equalForTemplateURL:_templateURLService
+                                  ->GetDefaultSearchProvider()]) {
     [item setAccessoryType:UITableViewCellAccessoryCheckmark];
   }
   return item;
@@ -684,14 +717,17 @@ const char kUmaSelectDefaultSearchEngine[] =
                         withRowAnimation:UITableViewRowAnimationAutomatic];
 }
 
-// Returns whether the `item` is different from an item that would be created
+// Returns whether the `item` is the same as an item that would be created
 // from `templateURL`.
 - (BOOL)isItem:(SearchEngineItem*)item
-    differentForTemplateURL:(TemplateURL*)templateURL {
+    equalForTemplateURL:(const TemplateURL*)templateURL {
+  if (!templateURL) {
+    return NO;
+  }
   NSString* name = base::SysUTF16ToNSString(templateURL->short_name());
   NSString* keyword = base::SysUTF16ToNSString(templateURL->keyword());
-  return ![item.text isEqualToString:name] ||
-         ![item.detailText isEqualToString:keyword];
+  return [item.text isEqualToString:name] &&
+         [item.detailText isEqualToString:keyword];
 }
 
 @end
