@@ -8,7 +8,10 @@ import static android.system.OsConstants.AF_INET6;
 import static android.system.OsConstants.SOCK_STREAM;
 
 import static com.google.common.truth.Truth.assertThat;
+import static com.google.common.truth.TruthJUnit.assume;
 
+import android.net.ConnectivityManager;
+import android.net.Network;
 import android.os.ConditionVariable;
 import android.system.Os;
 
@@ -39,6 +42,86 @@ public class NetworkChangesTest {
     public final CronetTestRule mTestRule = CronetTestRule.withAutomaticEngineStartup();
 
     private FileDescriptor mSocket;
+
+    private static class Networks {
+        private Network mDefaultNetwork;
+        private Network mCellular;
+        private Network mWifi;
+
+        public Networks(ConnectivityManager connectivityManager) {
+            postToInitThreadSync(() -> {
+                NetworkChangeNotifierAutoDetect autoDetector =
+                        NetworkChangeNotifier.getAutoDetectorForTest();
+                assertThat(autoDetector).isNotNull();
+
+                mDefaultNetwork = autoDetector.getDefaultNetwork();
+
+                for (Network network : autoDetector.getNetworksForTesting()) {
+                    switch (connectivityManager.getNetworkInfo(network).getType()) {
+                        case ConnectivityManager.TYPE_MOBILE:
+                            mCellular = network;
+                            break;
+                        case ConnectivityManager.TYPE_WIFI:
+                            mWifi = network;
+                            break;
+                        default:
+                            // Ignore
+                    }
+                }
+            });
+
+            // TODO(crbug.com/1486376): Drop assumes once CQ bots have multiple networks.
+            assume().that(mCellular).isNotNull();
+            assume().that(mWifi).isNotNull();
+            assume().that(mDefaultNetwork).isNotNull();
+            assume().that(mDefaultNetwork).isAnyOf(mWifi, mCellular);
+            // Protect us against unexpected Network#equals implementation.
+            assertThat(mCellular).isNotEqualTo(mWifi);
+        }
+
+        public void swapDefaultNetwork() {
+            if (isWifiDefault()) {
+                makeCellularDefault();
+            } else {
+                makeWifiDefault();
+            }
+        }
+
+        public void disconnectNonDefaultNetwork() {
+            fakeNetworkDisconnected(getNonDefaultNetwork());
+        }
+
+        private void fakeDefaultNetworkChange(Network network) {
+            postToInitThreadSync(() -> {
+                NetworkChangeNotifier.fakeDefaultNetwork(
+                        network.getNetworkHandle(), ConnectionType.CONNECTION_4G);
+            });
+        }
+
+        private void fakeNetworkDisconnected(Network network) {
+            postToInitThreadSync(() -> {
+                NetworkChangeNotifier.fakeNetworkDisconnected(network.getNetworkHandle());
+            });
+        }
+
+        private boolean isWifiDefault() {
+            return mDefaultNetwork.equals(mWifi);
+        }
+
+        private Network getNonDefaultNetwork() {
+            return isWifiDefault() ? mCellular : mWifi;
+        }
+
+        private void makeWifiDefault() {
+            fakeDefaultNetworkChange(mWifi);
+            mDefaultNetwork = mWifi;
+        }
+
+        private void makeCellularDefault() {
+            fakeDefaultNetworkChange(mCellular);
+            mDefaultNetwork = mCellular;
+        }
+    }
 
     @Before
     public void setUp() throws Exception {
@@ -72,13 +155,10 @@ public class NetworkChangesTest {
         waitForConnectingStatus(request);
 
         // Simulate network change which should abort connect jobs
-        CronetLibraryLoader.postToInitThread(new Runnable() {
-            @Override
-            public void run() {
-                NetworkChangeNotifier.fakeDefaultNetwork(
-                        NetworkChangeNotifier.getInstance().getCurrentDefaultNetId(),
-                        ConnectionType.CONNECTION_4G);
-            }
+        postToInitThreadSync(() -> {
+            NetworkChangeNotifier.fakeDefaultNetwork(
+                    NetworkChangeNotifier.getInstance().getCurrentDefaultNetId(),
+                    ConnectionType.CONNECTION_4G);
         });
 
         // Wait for ERR_NETWORK_CHANGED
@@ -91,6 +171,14 @@ public class NetworkChangesTest {
                 .isEqualTo(NetError.ERR_NETWORK_CHANGED);
     }
 
+    @Test
+    @SmallTest
+    public void testNetworksEmtpyTest() throws Exception {
+        // This is to prevent UnusedNestedClass warning from yelling. This will be dropped by a
+        // child CL.
+        Networks networks;
+    }
+
     private static void waitForConnectingStatus(UrlRequest request) {
         final ConditionVariable cv = new ConditionVariable(false /* closed */);
         request.getStatus(new UrlRequest.StatusListener() {
@@ -100,6 +188,15 @@ public class NetworkChangesTest {
                     cv.open();
                 }
             }
+        });
+        cv.block();
+    }
+
+    private static void postToInitThreadSync(Runnable r) {
+        final ConditionVariable cv = new ConditionVariable(/*open=*/false);
+        CronetLibraryLoader.postToInitThread(() -> {
+            r.run();
+            cv.open();
         });
         cv.block();
     }
