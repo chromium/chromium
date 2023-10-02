@@ -362,11 +362,11 @@ Polymer({
     let blob;
     if (filtered) {
       blob = new Blob(
-          this.filteredLogList_.map(logToSavedString_).reverse(),
+          this.filteredLogList_.map(logToSavedString_),
           {type: 'text/plain;charset=utf-8'});
     } else {
       blob = new Blob(
-          this.logList_.map(logToSavedString_).reverse(),
+          this.logList_.map(logToSavedString_),
           {type: 'text/plain;charset=utf-8'});
     }
     const url = URL.createObjectURL(blob);
