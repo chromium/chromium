@@ -210,7 +210,7 @@ void TestPersonalDataManager::LoadCreditCardCloudTokenData() {
 }
 
 void TestPersonalDataManager::LoadIbans() {
-  pending_ibans_query_ = 128;
+  pending_local_ibans_query_ = 128;
   pending_server_ibans_query_ = 129;
   {
     std::vector<std::unique_ptr<Iban>> ibans;
@@ -218,7 +218,7 @@ void TestPersonalDataManager::LoadIbans() {
     std::unique_ptr<WDTypedResult> result =
         std::make_unique<WDResult<std::vector<std::unique_ptr<Iban>>>>(
             AUTOFILL_IBANS_RESULT, std::move(ibans));
-    OnWebDataServiceRequestDone(pending_ibans_query_, std::move(result));
+    OnWebDataServiceRequestDone(pending_local_ibans_query_, std::move(result));
   }
   {
     std::vector<std::unique_ptr<Iban>> server_ibans;

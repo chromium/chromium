@@ -850,7 +850,7 @@ class PersonalDataManager : public KeyedService,
   WebDataServiceBase::Handle pending_server_creditcards_query_ = 0;
   WebDataServiceBase::Handle pending_server_creditcard_cloud_token_data_query_ =
       0;
-  WebDataServiceBase::Handle pending_ibans_query_ = 0;
+  WebDataServiceBase::Handle pending_local_ibans_query_ = 0;
   WebDataServiceBase::Handle pending_server_ibans_query_ = 0;
   WebDataServiceBase::Handle pending_customer_data_query_ = 0;
   WebDataServiceBase::Handle pending_offer_data_query_ = 0;

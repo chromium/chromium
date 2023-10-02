@@ -514,7 +514,7 @@ void PersonalDataManager::OnWebDataServiceRequestDone(
          pending_creditcard_billing_addresses_query_ ||
          pending_creditcards_query_ || pending_server_creditcards_query_ ||
          pending_server_creditcard_cloud_token_data_query_ ||
-         pending_ibans_query_ || pending_server_ibans_query_ ||
+         pending_local_ibans_query_ || pending_server_ibans_query_ ||
          pending_customer_data_query_ || pending_offer_data_query_ ||
          pending_virtual_card_usage_data_query_);
 
@@ -532,8 +532,8 @@ void PersonalDataManager::OnWebDataServiceRequestDone(
       pending_server_creditcards_query_ = 0;
     } else if (h == pending_server_creditcard_cloud_token_data_query_) {
       pending_server_creditcard_cloud_token_data_query_ = 0;
-    } else if (h == pending_ibans_query_) {
-      pending_ibans_query_ = 0;
+    } else if (h == pending_local_ibans_query_) {
+      pending_local_ibans_query_ = 0;
     } else if (h == pending_server_ibans_query_) {
       pending_server_ibans_query_ = 0;
     } else if (h == pending_customer_data_query_) {
@@ -583,8 +583,8 @@ void PersonalDataManager::OnWebDataServiceRequestDone(
             &server_credit_card_cloud_token_data_);
         break;
       case AUTOFILL_IBANS_RESULT:
-        if (h == pending_ibans_query_) {
-          ReceiveLoadedDbValues(h, result.get(), &pending_ibans_query_,
+        if (h == pending_local_ibans_query_) {
+          ReceiveLoadedDbValues(h, result.get(), &pending_local_ibans_query_,
                                 &local_ibans_);
         } else {
           DCHECK_EQ(h, pending_server_ibans_query_)
@@ -592,7 +592,6 @@ void PersonalDataManager::OnWebDataServiceRequestDone(
           ReceiveLoadedDbValues(h, result.get(), &pending_server_ibans_query_,
                                 &server_ibans_);
         }
-
         break;
       case AUTOFILL_CUSTOMERDATA_RESULT:
         DCHECK_EQ(h, pending_customer_data_query_)
@@ -2133,10 +2132,11 @@ void PersonalDataManager::LoadIbans() {
     return;
   }
 
-  CancelPendingLocalQuery(&pending_ibans_query_);
+  CancelPendingLocalQuery(&pending_local_ibans_query_);
   CancelPendingServerQuery(&pending_server_ibans_query_);
 
-  pending_ibans_query_ = database_helper_->GetLocalDatabase()->GetIbans(this);
+  pending_local_ibans_query_ =
+      database_helper_->GetLocalDatabase()->GetIbans(this);
   if (database_helper_->GetServerDatabase()) {
     pending_server_ibans_query_ =
         database_helper_->GetServerDatabase()->GetServerIbans(this);
