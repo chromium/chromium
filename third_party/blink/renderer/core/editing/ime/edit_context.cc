@@ -642,8 +642,6 @@ void EditContext::DetachElement(Element* element_to_detach) {
 WebTextInputInfo EditContext::TextInputInfo() {
   WebTextInputInfo info;
   // Fetch all the text input info from edit context.
-  // TODO(crbug.com/1197325): Change this to refer to the "view" part of the
-  // EditContext once the EditContext spec adds this feature.
   info.node_id = GetInputMethodController().NodeIdOfFocusedElement();
   info.action = GetInputMethodController().InputActionOfFocusedElement();
   info.input_mode = GetInputMethodController().InputModeOfFocusedElement();
@@ -651,26 +649,12 @@ WebTextInputInfo EditContext::TextInputInfo() {
   info.virtual_keyboard_policy =
       GetInputMethodController().VirtualKeyboardPolicyOfFocusedElement();
   info.value = text();
-  info.flags = TextInputFlags();
+  info.flags = GetInputMethodController().TextInputFlags();
   info.selection_start = selection_start_;
   info.selection_end = selection_end_;
   info.composition_start = composition_range_start_;
   info.composition_end = composition_range_end_;
   return info;
-}
-
-int EditContext::TextInputFlags() const {
-  int flags = 0;
-  // Disable spellcheck & autocorrect for EditContext.
-  flags |= kWebTextInputFlagAutocorrectOff;
-  flags |= kWebTextInputFlagSpellcheckOff;
-
-  // TODO:(snianu) Enable this once the password type
-  // is supported by inputMode attribute.
-  // if (input_mode_ == WebTextInputMode::kPassword)
-  //   flags |= kWebTextInputFlagHasBeenPasswordField;
-
-  return flags;
 }
 
 WebRange EditContext::CompositionRange() const {

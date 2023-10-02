@@ -167,6 +167,7 @@ class CORE_EXPORT InputMethodController final
   ui::mojom::VirtualKeyboardPolicy VirtualKeyboardPolicyOfFocusedElement()
       const;
   WebTextInputType TextInputType() const;
+  int TextInputFlags() const;
 
  private:
   friend class InputMethodControllerTest;
@@ -231,7 +232,6 @@ class CORE_EXPORT InputMethodController final
       int selection_start,
       int selection_end,
       size_t text_length) const;
-  int TextInputFlags() const;
 
   // Implements |ExecutionContextLifecycleObserver|.
   void ContextDestroyed() final;

@@ -137,7 +137,6 @@ class CORE_EXPORT EditContext final : public EventTarget,
       ConfirmCompositionBehavior selection_behavior) override;
   WebTextInputInfo TextInputInfo() override;
   int ComputeWebTextInputNextPreviousFlags() override { return 0; }
-  int TextInputFlags() const;
   WebRange CompositionRange() const override;
   bool GetCompositionCharacterBounds(WebVector<gfx::Rect>& bounds) override;
   WebRange GetSelectionOffsets() const override;
