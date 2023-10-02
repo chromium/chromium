@@ -31,6 +31,7 @@ class SearchEngineChoiceUtilsTest : public ::testing::Test {
     country_codes::RegisterProfilePrefs(pref_service_.registry());
     pref_service_.registry()->RegisterInt64Pref(
         prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp, 0);
+    pref_service_.registry()->RegisterListPref(prefs::kSearchProviderOverrides);
 
     // Override the country checks to simulate being in Belgium.
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
@@ -114,6 +115,19 @@ TEST_F(SearchEngineChoiceUtilsTest,
 // `DefaultSearchProviderEnabled` policy is not set.
 TEST_F(SearchEngineChoiceUtilsTest, ShowChoiceScreenIfPoliciesAreNotSet) {
   VerifyWillShowChoiceScreen(
+      policy_service(), /*profile_properties=*/{
+          .is_regular_profile = true, .pref_service = pref_service()});
+}
+
+// Test that the choice screen does not get displayed if the provider list is
+// overridden in the intial_preferences file.
+TEST_F(SearchEngineChoiceUtilsTest,
+       DoNotShowChoiceScreenWithProviderListOverride) {
+  base::Value::List override_list;
+  pref_service()->SetList(prefs::kSearchProviderOverrides,
+                          override_list.Clone());
+
+  VerifyEligibleButWillNotShowChoiceScreen(
       policy_service(), /*profile_properties=*/{
           .is_regular_profile = true, .pref_service = pref_service()});
 }

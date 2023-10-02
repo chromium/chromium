@@ -147,6 +147,12 @@ bool ShouldShowChoiceScreen(const policy::PolicyService& policy_service,
     return false;
   }
 
+  // Initially exclude users with this type of override. Consult b/302675777 for
+  // next steps.
+  if (prefs.HasPrefPath(prefs::kSearchProviderOverrides)) {
+    return false;
+  }
+
   return IsSearchEngineChoiceScreenAllowedByPolicy(policy_service);
 }
 
