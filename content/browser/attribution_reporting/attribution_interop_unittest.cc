@@ -75,6 +75,25 @@ void ProcessReports(base::Value::Dict& dict, base::StringPiece key) {
     return;
   }
   base::ranges::sort(*list);
+
+  // Ensure that integral values for this field are replaced with the equivalent
+  // double, since they are equivalent at the JSON level.
+  if (key == kEventLevelResultsKey || key == kDebugEventLevelResultsKey) {
+    for (base::Value& v : *list) {
+      if (!v.is_dict()) {
+        continue;
+      }
+
+      base::Value* rate =
+          v.GetDict().FindByDottedPath("payload.randomized_trigger_rate");
+      if (!rate || !rate->is_int()) {
+        continue;
+      }
+
+      // This coerces the integer to a double.
+      *rate = base::Value(rate->GetDouble());
+    }
+  }
 }
 
 class AttributionInteropTest : public ::testing::TestWithParam<base::FilePath> {
