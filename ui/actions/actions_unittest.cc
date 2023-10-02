@@ -7,6 +7,7 @@
 #include "base/callback_list.h"
 #include "base/functional/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/class_property.h"
@@ -187,47 +188,42 @@ TEST_F(ActionManagerTest, TestCreateActionId) {
 TEST_F(ActionManagerTest, MapBetweenEnumAndString) {
   const std::string expected_action_string = "kActionPaste";
   auto actual_action_string = ActionManager::ActionIdToString(kActionPaste);
-  ASSERT_TRUE(actual_action_string.has_value());
-  EXPECT_EQ(expected_action_string, actual_action_string.value());
+  ASSERT_THAT(actual_action_string, testing::Optional(expected_action_string));
 
   // Map back from enum to string
-  const ActionId expected_action_id = kActionPaste;
   auto actual_action_id =
       ActionManager::StringToActionId(actual_action_string.value());
-  ASSERT_TRUE(actual_action_id.has_value());
-  EXPECT_EQ(expected_action_id, actual_action_id.value());
+  EXPECT_THAT(actual_action_id, testing::Optional(kActionPaste));
 
   const std::vector<std::string> strings{"kActionPaste", "kActionCut"};
   const std::vector<ActionId> action_ids{kActionPaste, kActionCut};
 
   auto actual_strings = ActionManager::ActionIdsToStrings(action_ids);
-  EXPECT_EQ(strings.size(), actual_strings.size());
-  EXPECT_EQ(strings[0], actual_strings[0].value());
-  EXPECT_EQ(strings[1], actual_strings[1].value());
+  ASSERT_EQ(strings.size(), actual_strings.size());
+  EXPECT_THAT(actual_strings[0], testing::Optional(strings[0]));
+  EXPECT_THAT(actual_strings[1], testing::Optional(strings[1]));
 
   auto actual_action_ids = ActionManager::StringsToActionIds(strings);
-  EXPECT_EQ(action_ids.size(), actual_action_ids.size());
-  EXPECT_EQ(action_ids[0], actual_action_ids[0].value());
-  EXPECT_EQ(action_ids[1], actual_action_ids[1].value());
+  ASSERT_EQ(action_ids.size(), actual_action_ids.size());
+  EXPECT_THAT(actual_action_ids[0], testing::Optional(action_ids[0]));
+  EXPECT_THAT(actual_action_ids[1], testing::Optional(action_ids[1]));
 }
 
 #define MAP_ACTION_IDS_TO_STRINGS
 #include "ui/actions/action_id_macros.inc"
 
 TEST_F(ActionManagerTest, MergeMaps) {
-  auto kTestActionMap = base::MakeFlatMap<ActionId, std::string_view>(
+  auto test_action_map = base::MakeFlatMap<ActionId, std::string_view>(
       std::vector<std::pair<ActionId, std::string_view>>{TEST_ACTION_IDS});
-  ActionManager::AddActionIdToStringMappings(kTestActionMap);
+  ActionManager::AddActionIdToStringMappings(test_action_map);
 
   const std::string expected_action_string = "kActionPaste";
   auto actual_action_string = ActionManager::ActionIdToString(kActionPaste);
-  ASSERT_TRUE(actual_action_string.has_value());
-  EXPECT_EQ(expected_action_string, actual_action_string.value());
+  EXPECT_THAT(actual_action_string, testing::Optional(expected_action_string));
 
   const std::string expected_string = "kActionTest2";
   auto actual_string = ActionManager::ActionIdToString(kActionTest2);
-  ASSERT_TRUE(actual_string.has_value());
-  EXPECT_EQ(expected_string, actual_string.value());
+  EXPECT_THAT(actual_string, testing::Optional(expected_string));
 }
 
 #include "ui/actions/action_id_macros.inc"
