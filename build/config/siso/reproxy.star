@@ -253,6 +253,7 @@ def __step_config(ctx, step_config):
             "platform": p,
             "labels": {
                 "type": "tool",
+                "siso_rule": rule["name"],
             },
             "canonicalize_working_dir": rule.get("canonicalize_dir", False),
             # TODO: b/297807325 - Siso wants to handle local execution. However,

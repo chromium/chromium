@@ -33,7 +33,7 @@ def __step_config(ctx, step_config):
     })
     step_config["rules"].extend([
         {
-            "name": "proto_linux/protoc_wrapper",
+            "name": "proto/protoc_wrapper",
             "command_prefix": "python3 ../../tools/protoc_wrapper/protoc_wrapper.py",
             "indirect_inputs": {
                 "includes": ["*.proto"],

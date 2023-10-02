@@ -51,7 +51,7 @@ __handlers = {}
 def __step_config(ctx, step_config):
     step_config["rules"].extend([
         {
-            "name": "nacl_linux/pnacl-clang++",
+            "name": "nacl/pnacl-clang++",
             "action": "newlib_pnacl.*_cxx",
             "command_prefix": "../../native_client/toolchain/linux_x86/pnacl_newlib/bin/pnacl-clang++",
             "inputs": [
@@ -62,7 +62,7 @@ def __step_config(ctx, step_config):
             "timeout": "2m",
         },
         {
-            "name": "nacl_linux/pnacl-clang",
+            "name": "nacl/pnacl-clang",
             "action": "newlib_pnacl.*_cc",
             "command_prefix": "../../native_client/toolchain/linux_x86/pnacl_newlib/bin/pnacl-clang",
             "inputs": [
@@ -73,7 +73,7 @@ def __step_config(ctx, step_config):
             "timeout": "2m",
         },
         {
-            "name": "nacl_linux/glibc/x86_64-nacl-gcc",
+            "name": "nacl/glibc/x86_64-nacl-gcc",
             "action": "glibc_x64_cc",
             "inputs": [
                 "native_client/toolchain/linux_x86/nacl_x86_glibc/bin/x86_64-nacl-gcc",
@@ -85,7 +85,7 @@ def __step_config(ctx, step_config):
             "input_root_absolute_path": True,
         },
         {
-            "name": "nacl_linux/glibc/x86_64-nacl-g++",
+            "name": "nacl/glibc/x86_64-nacl-g++",
             "action": "glibc_x64_cxx",
             "inputs": [
                 "native_client/toolchain/linux_x86/nacl_x86_glibc/bin/x86_64-nacl-g++",
@@ -97,7 +97,7 @@ def __step_config(ctx, step_config):
             "input_root_absolute_path": True,
         },
         {
-            "name": "nacl_linux/pnacl_newlib/x86_64-nacl-clang++",
+            "name": "nacl/pnacl_newlib/x86_64-nacl-clang++",
             "action": "clang_newlib_x64_cxx",
             "inputs": [
                 "native_client/toolchain/linux_x86/pnacl_newlib/bin/x86_64-nacl-clang++",
@@ -108,7 +108,7 @@ def __step_config(ctx, step_config):
             "timeout": "2m",
         },
         {
-            "name": "nacl_linux/pnacl_newlib/x86_64-nacl-clang",
+            "name": "nacl/pnacl_newlib/x86_64-nacl-clang",
             "action": "clang_newlib_x64_cc",
             "inputs": [
                 "native_client/toolchain/linux_x86/pnacl_newlib/bin/x86_64-nacl-clang",
@@ -119,7 +119,7 @@ def __step_config(ctx, step_config):
             "timeout": "2m",
         },
         {
-            "name": "nacl_linux/saigo_newlib/x86_64-nacl-clang++",
+            "name": "nacl/saigo_newlib/x86_64-nacl-clang++",
             "action": "irt_x64_cxx",
             "command_prefix": "../../native_client/toolchain/linux_x86/saigo_newlib/bin/x86_64-nacl-clang++",
             "inputs": [
@@ -130,7 +130,7 @@ def __step_config(ctx, step_config):
             "timeout": "2m",
         },
         {
-            "name": "nacl_linux/saigo_newlib/x86_64-nacl-clang",
+            "name": "nacl/saigo_newlib/x86_64-nacl-clang",
             "action": "irt_x64_cc",
             "command_prefix": "../../native_client/toolchain/linux_x86/saigo_newlib/bin/x86_64-nacl-clang",
             "inputs": [
