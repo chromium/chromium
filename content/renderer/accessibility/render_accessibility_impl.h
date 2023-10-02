@@ -313,6 +313,19 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
   // a UKM and then reset.
   base::TimeDelta slowest_serialization_time_;
 
+  // Tracks the stage in the loading process for a document, which is used to
+  // determine if serialization is part of the loading process or post load.
+  enum class LoadingStage {
+    kPreload,        // Expect to process a kLoadComplete event.
+    kLoadCompleted,  // kLoadComplete event has been processed and waiting on
+                     // next AXReady call to indicate that we have completed
+                     // processing all events associated with loading the
+                     // document.
+    kPostLoad        // All accessibility events associated with the initial
+                     // document load have been serialized.
+  };
+  LoadingStage loading_stage_ = LoadingStage::kPreload;
+
   // This stores the last time during that a serialization was done, so that
   // serializations can be skipped if the time since the last serialization is
   // less than GetDeferredEventsDelay(). Setting to "beginning of time" causes
