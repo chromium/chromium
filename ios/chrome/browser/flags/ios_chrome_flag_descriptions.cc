@@ -852,6 +852,12 @@ const char kOmniboxOnDeviceTailSuggestionsDescription[] =
     "Google tail non personalized search suggestions provided by a compact on "
     "device model.";
 
+const char kOmniboxPopulateShortcutsDatabaseName[] =
+    "Omnibox shortcuts database";
+const char kOmniboxPopulateShortcutsDatabaseDescription[] =
+    "Enables storing successful query/match in the omnibox shortcut database "
+    "to provider better suggestions ranking.";
+
 const char kOmniboxReportAssistedQueryStatsName[] =
     "Omnibox Assisted Query Stats param";
 const char kOmniboxReportAssistedQueryStatsDescription[] =

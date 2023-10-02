@@ -1675,6 +1675,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kIOSIncognitoDownloadsWarningName,
      flag_descriptions::kIOSIncognitoDownloadsWarningDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kIOSIncognitoDownloadsWarning)},
+    {"omnibox-shortcuts-database-ios",
+     flag_descriptions::kOmniboxPopulateShortcutsDatabaseName,
+     flag_descriptions::kOmniboxPopulateShortcutsDatabaseDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kOmniboxPopulateShortcutsDatabase)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

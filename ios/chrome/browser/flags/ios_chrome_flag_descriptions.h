@@ -730,6 +730,10 @@ extern const char kOmniboxOnDeviceTailSuggestionsDescription[];
 extern const char kOmniboxOnFocusSuggestionsName[];
 extern const char kOmniboxOnFocusSuggestionsDescription[];
 
+// Title and description for storing query/match in the shortcuts database.
+extern const char kOmniboxPopulateShortcutsDatabaseName[];
+extern const char kOmniboxPopulateShortcutsDatabaseDescription[];
+
 // Title and description for assisted query stats param reporting.
 extern const char kOmniboxReportAssistedQueryStatsName[];
 extern const char kOmniboxReportAssistedQueryStatsDescription[];

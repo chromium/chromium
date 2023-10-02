@@ -34,4 +34,8 @@ BASE_DECLARE_FEATURE(kOmniboxSuggestionsRTLImprovements);
 // disabled, no icon is shown for secure pages.
 BASE_DECLARE_FEATURE(kOmniboxLockIconEnabled);
 
+// Feature flag to enable storing successful query/match in the shortcut
+// database.
+BASE_DECLARE_FEATURE(kOmniboxPopulateShortcutsDatabase);
+
 #endif  // IOS_CHROME_BROWSER_UI_OMNIBOX_OMNIBOX_UI_FEATURES_H_
