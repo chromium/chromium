@@ -191,6 +191,17 @@ class ScriptingUpdateContentScriptsFunction : public ExtensionFunction {
  private:
   ~ScriptingUpdateContentScriptsFunction() override;
 
+  // Returns a UserScript object by updating the `original_script` with the
+  // `new_script` given delta. If the updated script cannot be parsed, populates
+  // `parse_error` and returns nullptr. `definition_index` may be used for the
+  // error message.
+  std::unique_ptr<UserScript> ApplyUpdate(
+      std::set<std::string>* script_ids_to_persist,
+      api::scripting::RegisteredContentScript& new_script,
+      api::scripting::RegisteredContentScript& original_script,
+      int definition_index,
+      std::u16string* parse_error);
+
   // Called when script files have been checked.
   void OnContentScriptFilesValidated(
       std::set<std::string> persistent_script_ids,

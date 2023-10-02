@@ -58,6 +58,8 @@ namespace userScripts {
 
   callback UnregisterCallback = void();
 
+  callback UpdateCallback = void();
+
   interface Functions {
     // Registers one or more user scripts for this extension.
     // |scripts|: Contains a list of user scripts to be registered.
@@ -83,5 +85,17 @@ namespace userScripts {
     [supportsPromises] static void unregister(
         optional UserScriptFilter filter,
         UnregisterCallback callback);
+
+    // Updates one or more user scripts for this extension.
+    // |scripts|: Contains a list of user scripts to be updated. A property is
+    // only updated for the existing script if it is specified in this object.
+    // If there are errors during script parsing/file validation, or if the IDs
+    // specified do not correspond to a fully registered script, then no scripts
+    // are updated.
+    // |callback|: Called once scripts have been fully updated or if an error
+    // occurs.
+    [supportsPromises] static void update(
+        RegisteredUserScript[] scripts,
+        optional UpdateCallback callback);
   };
 };

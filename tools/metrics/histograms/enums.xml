@@ -37799,6 +37799,7 @@ Called by update_extension_histograms.py.-->
   <int value="1829" label="OS_DIAGNOSTICS_ISMEMORYROUTINEARGUMENTSUPPORTED"/>
   <int value="1830"
       label="ACCESSIBILITY_PRIVATE_CLIPBOARDCOPYINACTIVELACROSGOOGLEDOC"/>
+  <int value="1831" label="USERSCRIPTS_UPDATE"/>
 </enum>
 
 <enum name="ExtensionIconState">

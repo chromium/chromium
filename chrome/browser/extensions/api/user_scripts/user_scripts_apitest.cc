@@ -51,6 +51,10 @@ IN_PROC_BROWSER_TEST_F(UserScriptsAPITest, UnregisterUserScripts) {
   ASSERT_TRUE(RunExtensionTest("user_scripts/unregister")) << message_;
 }
 
+IN_PROC_BROWSER_TEST_F(UserScriptsAPITest, UpdateUserScripts) {
+  ASSERT_TRUE(RunExtensionTest("user_scripts/update")) << message_;
+}
+
 // Base test fixture for tests spanning multiple sessions where a custom arg is
 // set before the test is run.
 class PersistentUserScriptsAPITest : public UserScriptsAPITest {

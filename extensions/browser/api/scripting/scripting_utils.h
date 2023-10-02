@@ -5,7 +5,11 @@
 #ifndef EXTENSIONS_BROWSER_API_SCRIPTING_SCRIPTING_UTILS_H_
 #define EXTENSIONS_BROWSER_API_SCRIPTING_SCRIPTING_UTILS_H_
 
+#include <string>
+
 #include "base/containers/contains.h"
+#include "base/functional/callback_forward.h"
+#include "base/strings/utf_string_conversions.h"
 #include "extensions/browser/extension_user_script_loader.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension_id.h"
@@ -59,6 +63,69 @@ std::set<std::string> CreateDynamicScriptIds(
   }
 
   return new_script_ids;
+}
+
+// Returns a list of UserScript objects for each `scripts_to_update` by
+// retrieving the metadata of all loaded scripts with `source` using
+// `create_script_callback` and updating them with the given delta using
+// `apply_update_callback`. If any of the `scripts_to_update` hasn't been
+// previously loaded or parsing fails, populates error and returns nullptr.
+template <typename Script>
+std::unique_ptr<UserScriptList> UpdateScripts(
+    std::vector<Script>& scripts_to_update,
+    UserScript::Source source,
+    ExtensionUserScriptLoader& loader,
+    base::RepeatingCallback<Script(const UserScript& script)>
+        create_script_metadata_callback,
+    base::RepeatingCallback<std::unique_ptr<UserScript>(
+        Script& new_script,
+        Script& existent_script,
+        int definition_index,
+        std::u16string* parse_error)> apply_update_callback,
+    std::string* error) {
+  // Retrieve the metadata of all loaded scripts with `source`.
+  std::map<std::string, Script> loaded_scripts_metadata;
+  const UserScriptList& dynamic_scripts = loader.GetLoadedDynamicScripts();
+  for (const std::unique_ptr<UserScript>& script : dynamic_scripts) {
+    if (script->GetSource() != source) {
+      continue;
+    }
+
+    Script script_metadata = create_script_metadata_callback.Run(*script);
+    loaded_scripts_metadata.emplace(script->id(), std::move(script_metadata));
+  }
+
+  // Verify scripts to update have previously been loaded.
+  for (const auto& script : scripts_to_update) {
+    if (!loaded_scripts_metadata.contains(script.id)) {
+      *error = ErrorUtils::FormatErrorMessage(
+          "Script with ID '*' does not exist or is not fully registered",
+          UserScript::TrimPrefixFromScriptID(script.id));
+      return nullptr;
+    }
+  }
+
+  // Update the scripts.
+  std::u16string parse_error;
+  auto parsed_scripts = std::make_unique<UserScriptList>();
+  parsed_scripts->reserve(scripts_to_update.size());
+  for (size_t i = 0; i < scripts_to_update.size(); ++i) {
+    Script& new_script = scripts_to_update[i];
+    CHECK(base::Contains(loaded_scripts_metadata, new_script.id));
+    Script& existent_script = loaded_scripts_metadata[new_script.id];
+
+    std::unique_ptr<UserScript> script =
+        apply_update_callback.Run(new_script, existent_script, i, &parse_error);
+    if (!script) {
+      CHECK(!parse_error.empty());
+      *error = base::UTF16ToASCII(parse_error);
+      return nullptr;
+    }
+
+    parsed_scripts->push_back(std::move(script));
+  }
+
+  return parsed_scripts;
 }
 
 // Removes all scripts with `ids` of `extension_id`. If `ids` has no value,

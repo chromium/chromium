@@ -653,6 +653,25 @@ void ExtensionUserScriptLoader::ClearDynamicScripts(
   RemoveDynamicScripts(GetDynamicScriptIDs(source), std::move(callback));
 }
 
+void ExtensionUserScriptLoader::UpdateDynamicScripts(
+    std::unique_ptr<UserScriptList> scripts,
+    std::set<std::string> script_ids,
+    std::set<std::string> persistent_script_ids,
+    ExtensionUserScriptLoader::DynamicScriptsModifiedCallback add_callback) {
+  // To guarantee that scripts are updated, they need to be removed then added
+  // again. It should be guaranteed that the new scripts are added after the old
+  // ones are removed.
+  RemoveDynamicScripts(script_ids, /*callback=*/base::DoNothing());
+
+  // Since RemoveDynamicScripts will remove pending script IDs, but
+  // AddDynamicScripts will only add scripts that are marked as pending, we must
+  // mark `script_ids` as pending again here.
+  AddPendingDynamicScriptIDs(std::move(script_ids));
+
+  AddDynamicScripts(std::move(scripts), std::move(persistent_script_ids),
+                    std::move(add_callback));
+}
+
 std::set<std::string> ExtensionUserScriptLoader::GetDynamicScriptIDs(
     UserScript::Source source) const {
   std::set<std::string> dynamic_script_ids;
