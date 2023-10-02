@@ -84,7 +84,7 @@ class AnnotationsTabHelper : public web::AnnotationsTextObserver,
 
   // Triggers the parcel tracking UI display if the given list of annotations
   // contains at least one parcel number and the user is eligible for the
-  // prompt. May modify `annotations_list`.
+  // prompt. Removes parcels from `annotations_list`.
   void ProcessParcelTrackingNumbers(base::Value::List& annotations_list);
 
   // Triggers the parcel tracking UI display for the given parcel

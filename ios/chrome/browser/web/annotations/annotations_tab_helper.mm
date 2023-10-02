@@ -192,10 +192,6 @@ void AnnotationsTabHelper::BuildCache(base::Value::List& annotations_list) {
 
 void AnnotationsTabHelper::ProcessParcelTrackingNumbers(
     base::Value::List& annotations_list) {
-  // Return early if not currently active WebState.
-  if (!web_state_->IsVisible()) {
-    return;
-  }
   NSMutableArray<CustomTextCheckingResult*>* unique_parcels =
       [[NSMutableArray alloc] init];
   NSMutableSet* existing_parcel_numbers = [NSMutableSet set];
@@ -218,7 +214,8 @@ void AnnotationsTabHelper::ProcessParcelTrackingNumbers(
     // tracking number.
     annotations_list.EraseValue(annotations_list[i]);
   }
-  if ([unique_parcels count] > 0) {
+  // Show UI only if this is the currently active WebState.
+  if ([unique_parcels count] > 0 && web_state_->IsVisible()) {
     // Call asynchronously to allow the rest of the annotations to be decorated
     // first.
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
