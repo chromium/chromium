@@ -2595,6 +2595,9 @@ Style notes:
       <message name="IDS_ASH_DESKS_DESK_NAME" desc="Alert when highlighting the desk name">
         Desk name
       </message>
+      <message name="IDS_ASH_DESKS_DESK_PREVIEW" desc="The desk preview accessible name">
+        Desk preview
+      </message>
       <message name="IDS_ASH_DESKS_DESK_ACCESSIBLE_NAME" desc="The full accessible desk name">
         Desk: <ph name="DESK_NAME">$1</ph>
       </message>

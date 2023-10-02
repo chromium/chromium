@@ -359,6 +359,7 @@ DeskPreviewView::DeskPreviewView(PressedCallback callback,
   views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::OFF);
   SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
   SetPaintToLayer(ui::LAYER_TEXTURED);
+  SetAccessibleName(l10n_util::GetStringUTF16(IDS_ASH_DESKS_DESK_PREVIEW));
   layer()->SetFillsBoundsOpaquely(false);
   layer()->SetMasksToBounds(false);
 
