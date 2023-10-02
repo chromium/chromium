@@ -180,6 +180,8 @@ bool CdmStorageDatabase::DeleteDataForStorageKey(
 bool CdmStorageDatabase::ClearDatabase() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  last_operation_ = "ClearDatabase";
+
   db_.Close();
 
   if (path_.empty()) {

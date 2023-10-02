@@ -2454,6 +2454,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.EME.CdmStorageDatabaseSQLiteError.ClearDatabase"
+    enum="SqliteLoggedResultCode" expires_after="2023-12-19">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    This UMA records SQLite specific errors that occur when clearing the Cdm
+    Storage Database. This UMA is recorded on every error for this operation.
+  </summary>
+</histogram>
+
 <histogram name="Media.EME.CdmStorageDatabaseSQLiteError.DeleteFile"
     enum="SqliteLoggedResultCode" expires_after="2023-12-19">
   <owner>vpasupathy@chromium.org</owner>
