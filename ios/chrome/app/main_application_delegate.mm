@@ -227,6 +227,16 @@ const int kMainIntentCheckDelay = 1;
 
 - (void)application:(UIApplication*)application
     didRegisterForRemoteNotificationsWithDeviceToken:(NSData*)deviceToken {
+  // In rare cases, for example when a user obtains a new device and restores it
+  // from a previous backup, iOS invokes the [application
+  // didRegisterForRemoteNotificationsWithDeviceToken:] function potentially
+  // before Chrome threads have been initialized. In this case, iOS'
+  // invocation is ignored and the device is registered for push notifications
+  // through the normal startup process.
+  if (!web::WebThread::IsThreadInitialized(web::WebThread::UI)) {
+    return;
+  }
+
   // This method is invoked by iOS on the successful registration of the app to
   // APNS and retrieval of the device's APNS token.
   _didRegisterDeviceWithAPNS = YES;
