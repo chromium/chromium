@@ -1228,6 +1228,14 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
     }
 
     /**
+     * Returns all connected networks that are useful and accessible to Chrome.
+     * Only callable on Lollipop and newer releases.
+     */
+    public Network[] getNetworksForTesting() {
+        return getAllNetworksFiltered(mConnectivityManagerDelegate, null);
+    }
+
+    /**
      * Returns an array of all of the device's currently connected
      * networks and ConnectionTypes, including only those that are useful and accessible to Chrome.
      * Array elements are a repeated sequence of:
@@ -1251,16 +1259,25 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
     }
 
     /**
+     * Returns the device's current default connected network used for
+     * communication.
+     * Only implemented on Lollipop and newer releases, returns null when not implemented.
+     */
+    public Network getDefaultNetwork() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            return null;
+        }
+        return mConnectivityManagerDelegate.getDefaultNetwork();
+    }
+
+    /**
      * Returns NetID of device's current default connected network used for
      * communication.
      * Only implemented on Lollipop and newer releases, returns NetId.INVALID
      * when not implemented.
      */
     public long getDefaultNetId() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-            return NetId.INVALID;
-        }
-        Network network = mConnectivityManagerDelegate.getDefaultNetwork();
+        Network network = getDefaultNetwork();
         return network == null ? NetId.INVALID : networkToNetId(network);
     }
 
