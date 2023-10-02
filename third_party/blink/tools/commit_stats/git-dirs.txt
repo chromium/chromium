@@ -35,7 +35,6 @@
 ./third_party/vulkan-deps/spirv-cross/src,Vulkan
 ./third_party/crc32c/src,crc32c
 ./third_party/jsoncpp/source,jsoncpp
-./third_party/minizip/src,minizip
 ./third_party/dav1d/libdav1d,dav1d
 ./third_party/cros_system_api,cros_system_api
 ./third_party/grpc/src,gRPC
