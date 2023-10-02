@@ -217,6 +217,7 @@ tast_disabled_tests_from_lacros_all = [
 
   # http://b/301459041
   "lacros.Activate.keep_alive",
+  "lacros.Activate.no_keep_alive",
 
   # https://crbug.com/1361163
   "lacros.AudioPinnedStream.play",
