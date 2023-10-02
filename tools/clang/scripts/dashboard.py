@@ -14,6 +14,9 @@ THIS_DIR = os.path.abspath(os.path.dirname(__file__))
 CHROMIUM_REPO = os.path.abspath(os.path.join(THIS_DIR, '..', '..', '..'))
 LLVM_REPO = ''  # This gets filled in by main().
 
+# This script produces the dashboard at
+# https://commondatastorage.googleapis.com/chromium-browser-clang/toolchain-dashboard.html
+#
 # Usage:
 #
 # ./dashboard.py > /tmp/toolchain-dashboard.html
@@ -51,6 +54,9 @@ def clang_rolls():
       f'{FIRST_GIT_ROLL}..origin/main', '--', 'tools/clang/scripts/update.py'
   ]).decode('utf-8')
 
+  # AuthorDate is when a commit was first authored; CommitDate (part of
+  # --pretty=fuller) is when a commit was last updated. We use the latter since
+  # it's more likely to reflect when the commit become part of upstream.
   DATE_RE = re.compile(r'^CommitDate: (\d+)$')
   VERSION_RE = re.compile(
       r'^\+CLANG_REVISION = \'llvmorg-\d+-init-\d+-g([0-9a-f]+)\'$')
@@ -77,13 +83,11 @@ def clang_roll_ages(rolls):
     of timestamp string and clang revision age in days at that timestamp.'''
 
   ages = []
-  ts = sorted(rolls.keys())
-  assert (len(ts) > 0)
-
   def add(timestamp, rev):
     ages.append((timestamp_to_str(timestamp),
                  (timestamp - get_git_timestamp(LLVM_REPO, rev)) / (3600 * 24)))
 
+  assert (rolls)
   prev_roll_rev = None
   for roll_time, roll_rev in sorted(rolls.items()):
     if prev_roll_rev:
@@ -100,9 +104,12 @@ def print_dashboard():
   ages = clang_roll_ages(rolls)
 
   print('''
-<html>
+<!doctype html>
+<html lang="en">
   <head>
-    <title>Chromium Toolchain Dashbaord</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Chromium Toolchain Dashboard</title>
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script type="text/javascript">
       google.charts.load('current', {'packages':['corechart', 'controls']});
@@ -148,7 +155,7 @@ def print_dashboard():
     </script>
   </head>
   <body>
-    <h1>Chromium Toolchain Dashboard (go/clang-roll-dashboard)</h1>''')
+    <h1>Chromium Toolchain Dashboard (go/chrome-clang-dash)</h1>''')
 
   print(f'<p>Last updated: {timestamp_to_str(time.time())} UTC</p>')
 
