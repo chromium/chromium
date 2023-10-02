@@ -333,6 +333,7 @@ template("grit") {
       public_configs += invoker.public_configs
     }
 
+    configs += [ "//build/config/compiler:wexit_time_destructors" ]
     if (defined(invoker.configs)) {
       configs += invoker.configs
     }
