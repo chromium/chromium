@@ -90,7 +90,6 @@ template <typename NodeType>
 class StaticNodeTypeList;
 using StaticNodeList = StaticNodeTypeList<Node>;
 class StyleChangeReasonForTracing;
-class V8ScrollStateCallback;
 class V8UnionNodeOrStringOrTrustedScript;
 class V8UnionStringOrTrustedScript;
 class WebPluginContainerImpl;
@@ -228,11 +227,7 @@ class CORE_EXPORT Node : public EventTarget {
   Node* lastChild() const;
   Node* getRootNode(const GetRootNodeOptions*) const;
 
-  // Scroll Customization API. See crbug.com/410974 for details.
-  void setDistributeScroll(V8ScrollStateCallback*,
-                           const String& native_scroll_behavior);
-  void setApplyScroll(V8ScrollStateCallback*,
-                      const String& native_scroll_behavior);
+  // TODO(crbug.com/1369739): Get rid of these.
   void SetApplyScroll(ScrollStateCallback*);
   void RemoveApplyScroll();
   ScrollStateCallback* GetApplyScroll();

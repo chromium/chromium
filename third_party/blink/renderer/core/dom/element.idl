@@ -18,12 +18,6 @@
  * Boston, MA 02110-1301, USA.
  */
 
-// See
-// https://docs.google.com/document/d/1VnvAqeWFG9JFZfgG5evBqrLGDZYRE5w6G5jEDORekPY
-// for details.
-enum NativeScrollBehavior { "disable-native-scroll", "perform-before-native-scroll", "perform-after-native-scroll" };
-callback ScrollStateCallback = void (ScrollState scrollState);
-
 // https://drafts.csswg.org/cssom-view/#dictdef-checkvisibilityoptions
 dictionary CheckVisibilityOptions {
   boolean checkOpacity = false;

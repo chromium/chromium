@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "third_party/blink/renderer/bindings/core/v8/v8_scroll_state_init.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
@@ -23,29 +22,6 @@ Node* NodeForId(DOMNodeId node_id) {
 }
 
 }  // namespace
-
-ScrollState* ScrollState::Create(ScrollStateInit* init) {
-  std::unique_ptr<ScrollStateData> scroll_state_data =
-      std::make_unique<ScrollStateData>();
-  scroll_state_data->delta_x = init->deltaX();
-  scroll_state_data->delta_y = init->deltaY();
-  scroll_state_data->delta_x_hint = init->deltaXHint();
-  scroll_state_data->delta_y_hint = init->deltaYHint();
-  scroll_state_data->position_x = init->positionX();
-  scroll_state_data->position_y = init->positionY();
-  scroll_state_data->velocity_x = init->velocityX();
-  scroll_state_data->velocity_y = init->velocityY();
-  scroll_state_data->is_beginning = init->isBeginning();
-  scroll_state_data->is_in_inertial_phase = init->isInInertialPhase();
-  scroll_state_data->is_ending = init->isEnding();
-  scroll_state_data->from_user_input = init->fromUserInput();
-  scroll_state_data->is_direct_manipulation = init->isDirectManipulation();
-  scroll_state_data->delta_granularity =
-      static_cast<ui::ScrollGranularity>(init->deltaGranularity());
-  ScrollState* scroll_state =
-      MakeGarbageCollected<ScrollState>(std::move(scroll_state_data));
-  return scroll_state;
-}
 
 ScrollState::ScrollState(std::unique_ptr<ScrollStateData> data)
     : data_(std::move(data)) {}

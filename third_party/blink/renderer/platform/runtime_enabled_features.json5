@@ -3293,10 +3293,6 @@
       status: "experimental",
     },
     {
-      name: "ScrollCustomization",
-      base_feature: "none",
-    },
-    {
       name: "ScrollEndEvents",
       status: "stable",
     },

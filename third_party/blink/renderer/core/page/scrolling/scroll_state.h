@@ -11,22 +11,17 @@
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/scroll/scroll_state_data.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
 
-class ScrollStateInit;
-
-class CORE_EXPORT ScrollState final : public ScriptWrappable {
-  DEFINE_WRAPPERTYPEINFO();
-
+// TODO(crbug.com/1369739): Remove this class.
+class CORE_EXPORT ScrollState final : public GarbageCollected<ScrollState> {
  public:
-  static ScrollState* Create(ScrollStateInit*);
-
   explicit ScrollState(std::unique_ptr<ScrollStateData>);
-  ~ScrollState() override = default;
+  ~ScrollState() = default;
 
   // Web exposed methods.
 
@@ -94,10 +89,7 @@ class CORE_EXPORT ScrollState final : public ScriptWrappable {
 
   ScrollStateData* Data() const { return data_.get(); }
 
-  void Trace(Visitor* visitor) const override {
-    visitor->Trace(node_);
-    ScriptWrappable::Trace(visitor);
-  }
+  void Trace(Visitor* visitor) const { visitor->Trace(node_); }
 
  private:
   ScrollState() = delete;
