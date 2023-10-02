@@ -7,7 +7,7 @@
 
 #include "ash/webui/shimless_rma/backend/shimless_rma_delegate.h"
 #include "base/files/file_path.h"
-#include "chrome/browser/web_applications/web_app_id.h"
+#include "components/webapps/common/web_app_id.h"
 #include "extensions/common/extension_id.h"
 
 namespace content {
@@ -38,7 +38,7 @@ class DiagnosticsAppProfileHelperDelegate {
       content::BrowserContext* browser_context);
 
   virtual const web_app::WebApp* GetWebAppById(
-      const web_app::AppId& app_id,
+      const webapps::AppId& app_id,
       content::BrowserContext* browser_context);
 };
 

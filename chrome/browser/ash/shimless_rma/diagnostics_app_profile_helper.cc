@@ -27,12 +27,12 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chromeos/extensions/chromeos_system_extension_info.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/service_worker_context.h"
 #include "extensions/browser/crx_file_info.h"
 #include "extensions/browser/extension_registry.h"
@@ -383,7 +383,7 @@ DiagnosticsAppProfileHelperDelegate::GetWebAppCommandScheduler(
 }
 
 const web_app::WebApp* DiagnosticsAppProfileHelperDelegate::GetWebAppById(
-    const web_app::AppId& app_id,
+    const webapps::AppId& app_id,
     content::BrowserContext* browser_context) {
   auto* web_app_provider = web_app::WebAppProvider::GetForWebApps(
       Profile::FromBrowserContext(browser_context));
