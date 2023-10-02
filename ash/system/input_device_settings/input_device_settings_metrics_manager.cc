@@ -358,6 +358,26 @@ void HandleSettingsUpdatedMetric(const T& device) {
                         std::move(updated_settings_update_info_dict));
 }
 
+void RecordCurrentButtonRemappingAction(
+    const mojom::ButtonRemappingPtr& button_remapping,
+    const char* peripheral_kind) {
+  const std::string metric_name_prefix = base::StrCat(
+      {"ChromeOS.Settings.Device.", peripheral_kind, ".ButtonRemapping."});
+  switch (button_remapping->remapping_action->which()) {
+    case mojom::RemappingAction::Tag::kAcceleratorAction:
+      // TODO(cambickel): Add metric recording for AcceleratorAction.
+      break;
+    case mojom::RemappingAction::Tag::kStaticShortcutAction:
+      base::UmaHistogramEnumeration(
+          base::StrCat({metric_name_prefix, "StaticShortcutAction.Initial"}),
+          button_remapping->remapping_action->get_static_shortcut_action());
+      break;
+    case mojom::RemappingAction::Tag::kKeyEvent:
+      // TODO(cambickel): Add metric recording for KeyEvent.
+      break;
+  }
+}
+
 }  // namespace
 
 InputDeviceSettingsMetricsManager::InputDeviceSettingsMetricsManager() =
@@ -554,6 +574,11 @@ void InputDeviceSettingsMetricsManager::RecordMouseInitialMetrics(
   base::UmaHistogramBoolean(
       "ChromeOS.Settings.Device.Mouse.SwapPrimaryButtons.Initial",
       mouse.settings->swap_right);
+
+  for (const auto& button_remapping : mouse.settings->button_remappings) {
+    RecordCurrentButtonRemappingAction(button_remapping,
+                                       /*peripheral_kind=*/"Mouse");
+  }
 }
 
 void InputDeviceSettingsMetricsManager::RecordMouseChangedMetrics(
@@ -818,7 +843,16 @@ void InputDeviceSettingsMetricsManager::RecordGraphicsTabletInitialMetrics(
   }
   recorded_graphics_tablets_[account_id].insert(graphics_tablet.device_key);
 
-  // TODO(cambickel): Add graphics tablet initial metrics logging.
+  for (const auto& button_remapping :
+       graphics_tablet.settings->pen_button_remappings) {
+    RecordCurrentButtonRemappingAction(button_remapping,
+                                       /*peripheral_kind=*/"GraphicsTabletPen");
+  }
+  for (const auto& button_remapping :
+       graphics_tablet.settings->tablet_button_remappings) {
+    RecordCurrentButtonRemappingAction(button_remapping,
+                                       /*peripheral_kind=*/"GraphicsTablet");
+  }
 }
 
 void InputDeviceSettingsMetricsManager::RecordGraphicsTabletChangedMetrics(

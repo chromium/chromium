@@ -27211,6 +27211,11 @@ located in chromeos/ash/components/device_activity/device_activity_client.h -->
   <int value="44" label="Unknown owner no key, no policy"/>
 </enum>
 
+<enum name="DeviceSettingsStaticShortcutAction">
+  <int value="0" label="Copy"/>
+  <int value="1" label="Paste"/>
+</enum>
+
 <enum name="DeviceSettingsStatus">
   <int value="0" label="STORE_SUCCESS"/>
   <int value="1" label="STORE_KEY_UNAVAILABLE"/>
