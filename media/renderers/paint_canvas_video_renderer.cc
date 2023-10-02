@@ -1793,6 +1793,100 @@ bool PaintCanvasVideoRenderer::UploadVideoFrameToGLTexture(
   return true;
 }
 
+// static
+bool PaintCanvasVideoRenderer::PrepareVideoFrameForWebGL(
+    viz::RasterContextProvider* raster_context_provider,
+    gpu::gles2::GLES2Interface* destination_gl,
+    scoped_refptr<VideoFrame> video_frame,
+    unsigned int target,
+    unsigned int texture) {
+  // TODO(776222): This static function uses no common functionality in
+  // PaintCanvasVideoRenderer, and should be removed from this class.
+  CHECK(video_frame);
+  CHECK(video_frame->HasTextures());
+  if (video_frame->NumTextures() == 1 &&
+      video_frame->shared_image_format_type() !=
+          SharedImageFormatType::kSharedImageFormat) {
+    if (target == GL_TEXTURE_EXTERNAL_OES) {
+      // We don't support Android now.
+      // TODO(crbug.com/776222): support Android.
+      return false;
+    }
+    // We don't support sharing single video frame texture now.
+    // TODO(crbug.com/776222): deal with single video frame texture.
+    return false;
+  }
+
+  DCHECK(video_frame->metadata().texture_origin_is_top_left);
+
+  if (video_frame->shared_image_format_type() ==
+      SharedImageFormatType::kLegacy) {
+    // TODO(nazabris): Support OOP-R code path here that does not have
+    // GrContext.
+    if (!raster_context_provider || !raster_context_provider->GrContext()) {
+      return false;
+    }
+
+    // Take webgl video texture as 2D texture. Setting it as external render
+    // target backend for skia.
+    BindAndTexImage2D(destination_gl, target, texture,
+                      /*internal_format=*/GL_RGBA, /*format=*/GL_RGBA,
+                      /*type=*/GL_UNSIGNED_BYTE, /*level=*/0,
+                      video_frame->coded_size());
+
+    CHECK_GT(video_frame->NumTextures(), 1u);
+    gpu::MailboxHolder mailbox_holder;
+    mailbox_holder.texture_target = target;
+    gpu::raster::RasterInterface* source_ri =
+        raster_context_provider->RasterInterface();
+    destination_gl->ProduceTextureDirectCHROMIUM(texture,
+                                                 mailbox_holder.mailbox.name);
+    destination_gl->GenUnverifiedSyncTokenCHROMIUM(
+        mailbox_holder.sync_token.GetData());
+
+    // Generate a new image.
+    VideoFrameYUVConverter::ConvertYUVVideoFrameNoCaching(
+        video_frame.get(), raster_context_provider, mailbox_holder);
+
+    // Wait for mailbox creation on canvas context before consuming it and
+    // copying from it on the consumer context.
+    source_ri->GenUnverifiedSyncTokenCHROMIUM(
+        mailbox_holder.sync_token.GetData());
+
+    destination_gl->WaitSyncTokenCHROMIUM(
+        mailbox_holder.sync_token.GetConstData());
+
+    WaitAndReplaceSyncTokenClient client(source_ri);
+    video_frame->UpdateReleaseSyncToken(&client);
+  } else {
+    // Take webgl video texture as 2D texture. Setting it as external render
+    // target backend for skia.
+    BindAndTexImage2D(destination_gl, target, texture,
+                      /*internal_format=*/GL_RGBA, /*format=*/GL_RGBA,
+                      /*type=*/GL_UNSIGNED_BYTE, /*level=*/0,
+                      video_frame->coded_size());
+
+    CHECK_EQ(video_frame->NumTextures(), 1u);
+    CHECK_EQ(video_frame->shared_image_format_type(),
+             SharedImageFormatType::kSharedImageFormat);
+    gpu::MailboxHolder mailbox_holder =
+        GetVideoFrameMailboxHolder(video_frame.get());
+    destination_gl->WaitSyncTokenCHROMIUM(
+        mailbox_holder.sync_token.GetConstData());
+
+    destination_gl->CopySharedImageToTextureINTERNAL(
+        texture, target, GL_RGBA, GL_UNSIGNED_BYTE,
+        /*src_x=*/0, /*src_y=*/0, video_frame->coded_size().width(),
+        video_frame->coded_size().height(), /*flip_y=*/GL_FALSE,
+        mailbox_holder.mailbox.name);
+
+    WaitAndReplaceSyncTokenClient client(destination_gl);
+    video_frame->UpdateReleaseSyncToken(&client);
+  }
+
+  return true;
+}
+
 bool PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
     viz::RasterContextProvider* raster_context_provider,
     gpu::gles2::GLES2Interface* destination_gl,

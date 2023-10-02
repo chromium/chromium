@@ -64,6 +64,7 @@ class WebGLDepthTexture;
 class WebGLLoseContext;
 class WebGLMultiDraw;
 class WebGLPolygonMode;
+class WebGLVideoTexture;
 
 class WebGLRenderingContext final : public WebGLRenderingContextBase {
   DEFINE_WRAPPERTYPEINFO();
@@ -143,6 +144,7 @@ class WebGLRenderingContext final : public WebGLRenderingContextBase {
   Member<WebGLLoseContext> webgl_lose_context_;
   Member<WebGLMultiDraw> webgl_multi_draw_;
   Member<WebGLPolygonMode> webgl_polygon_mode_;
+  Member<WebGLVideoTexture> webgl_video_texture_;
 };
 
 }  // namespace blink

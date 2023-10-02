@@ -138,6 +138,7 @@ crbug.com/849576 [ no-passthrough ] WebglExtension_KHR_parallel_shader_compile [
 crbug.com/angleproject/3031 [ android angle-opengles passthrough ] WebglExtension_KHR_parallel_shader_compile [ Skip ]
 crbug.com/angleproject/3031 [ mac angle-opengl passthrough ] WebglExtension_KHR_parallel_shader_compile [ Skip ]
 crbug.com/angleproject/3031 [ win angle-opengl passthrough ] WebglExtension_KHR_parallel_shader_compile [ Skip ]
+crbug.com/776222 [ android ] WebglExtension_WEBGL_video_texture [ Skip ]
 
 # Extensions not available with SwiftShader
 [ passthrough angle-swiftshader ] WebglExtension_EXT_blend_func_extended [ Skip ]
