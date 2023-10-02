@@ -160,7 +160,8 @@ TEST_F(UnifiedVolumeViewTest, MoreButton) {
 }
 
 // Tests that pressing the keyboard volume mute key will mute the slider, and
-// pressing the volume up key will restore the volume level.
+// pressing the volume up key will unmute and increase the volume level by one
+// step.
 TEST_F(UnifiedVolumeViewTest, VolumeMuteThenVolumeUp) {
   // Sets the volume level by user.
   const float level = 0.8;
@@ -170,22 +171,26 @@ TEST_F(UnifiedVolumeViewTest, VolumeMuteThenVolumeUp) {
 
   EXPECT_EQ(slider()->GetValue(), level);
   CheckSliderIcon(level);
+  const bool is_muted = CrasAudioHandler::Get()->IsOutputMuted();
 
   PressAndReleaseKey(ui::KeyboardCode::VKEY_VOLUME_MUTE);
-  // The slider level should remain as `level`.
+  // The slider level should remain as `level` and the mute state toggles.
   EXPECT_EQ(slider()->GetValue(), level);
   CheckSliderIcon(level);
+  EXPECT_EQ(CrasAudioHandler::Get()->IsOutputMuted(), !is_muted);
 
   PressAndReleaseKey(ui::KeyboardCode::VKEY_VOLUME_UP);
   // The slider level should increase by `kVolumeStepChange` and the icon should
-  // change accordingly.
+  // change accordingly. The mute state toggles back to the original state.
   const float new_level = level + kVolumeStepChange;
   EXPECT_FLOAT_EQ(slider()->GetValue(), new_level);
   CheckSliderIcon(new_level);
+  EXPECT_EQ(CrasAudioHandler::Get()->IsOutputMuted(), is_muted);
 }
 
 // Tests that pressing the keyboard volume mute key will mute the slider, and
-// pressing the volume down key will preserve the mute state.
+// pressing the volume down key will preserve the mute state and decrease the
+// volume level by one step.
 TEST_F(UnifiedVolumeViewTest, VolumeMuteThenVolumeDown) {
   // Sets the volume level by user.
   const float level = 0.8;
@@ -195,18 +200,22 @@ TEST_F(UnifiedVolumeViewTest, VolumeMuteThenVolumeDown) {
 
   EXPECT_EQ(slider()->GetValue(), level);
   CheckSliderIcon(level);
+  const bool is_muted = CrasAudioHandler::Get()->IsOutputMuted();
 
   PressAndReleaseKey(ui::KeyboardCode::VKEY_VOLUME_MUTE);
-  // The slider level should remain as `level`.
+  // The slider level should remain as `level` and the mute state toggles.
   EXPECT_EQ(slider()->GetValue(), level);
   CheckSliderIcon(level);
+  EXPECT_EQ(CrasAudioHandler::Get()->IsOutputMuted(), !is_muted);
 
   PressAndReleaseKey(ui::KeyboardCode::VKEY_VOLUME_DOWN);
   // The slider level should decrease by `kVolumeStepChange` and the icon should
-  // change accordingly.
+  // change accordingly. The mute state remains the same as before pressing the
+  // volume down.
   const float new_level = level - kVolumeStepChange;
   EXPECT_FLOAT_EQ(slider()->GetValue(), new_level);
   CheckSliderIcon(new_level);
+  EXPECT_EQ(CrasAudioHandler::Get()->IsOutputMuted(), !is_muted);
 }
 
 // Tests when the slider is focused, press enter will toggle the mute state.

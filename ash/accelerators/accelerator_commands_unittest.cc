@@ -176,16 +176,40 @@ TEST_F(AcceleratorCommandsAudioTest, VolumeSetToZeroAndThenMute) {
   // Volume down, should decrease to zero and no mute.
   PressAndReleaseKey(ui::VKEY_VOLUME_DOWN, ui::EF_NONE);
   EXPECT_EQ(audio_handler->GetOutputVolumePercent(), 0);
-  // For QsRevamp: the muted state is equivalent to the zero volume state.
-  if (features::IsQsRevampEnabled()) {
-    EXPECT_TRUE(audio_handler->IsOutputMuted());
-  } else {
-    EXPECT_FALSE(audio_handler->IsOutputMuted());
-  }
+  EXPECT_FALSE(audio_handler->IsOutputMuted());
   // Volume down again, should decrease to zero and mute.
   PressAndReleaseKey(ui::VKEY_VOLUME_DOWN, ui::EF_NONE);
   EXPECT_EQ(audio_handler->GetOutputVolumePercent(), 0);
+  // For QsRevamp: output node mute state will not change.
+  if (features::IsQsRevampEnabled()) {
+    EXPECT_FALSE(audio_handler->IsOutputMuted());
+  } else {
+    EXPECT_TRUE(audio_handler->IsOutputMuted());
+  }
+}
+
+TEST_F(AcceleratorCommandsAudioTest, ChangeVolumeAfterMuted) {
+  // This behavior is for QsRevamp.
+  if (!features::IsQsRevampEnabled()) {
+    return;
+  }
+
+  SetUpAudioNode();
+  auto* audio_handler = CrasAudioHandler::Get();
+  // Make sure that output node is in mute state.
+  audio_handler->SetOutputVolumePercent(80);
+  audio_handler->SetOutputMute(true);
   EXPECT_TRUE(audio_handler->IsOutputMuted());
+  EXPECT_EQ(audio_handler->GetOutputVolumePercent(), 80);
+  // Press the volume down key will decrease the volume but won't change the
+  // muted state.
+  PressAndReleaseKey(ui::VKEY_VOLUME_DOWN, ui::EF_NONE);
+  EXPECT_TRUE(audio_handler->IsOutputMuted());
+  EXPECT_LE(audio_handler->GetOutputVolumePercent(), 80);
+  // Volume up, should bring back the volume to its original level and unmute.
+  PressAndReleaseKey(ui::VKEY_VOLUME_UP, ui::EF_NONE);
+  EXPECT_EQ(audio_handler->GetOutputVolumePercent(), 80);
+  EXPECT_FALSE(audio_handler->IsOutputMuted());
 }
 
 TEST_F(AcceleratorCommandsAudioTest, VolumeMuteToggle) {
