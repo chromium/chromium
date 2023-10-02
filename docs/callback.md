@@ -692,19 +692,26 @@ base::RepeatingClosure void_cb = base::BindRepeating(base::IgnoreResult(cb));
 
 ### Ignoring Arguments Values
 
-Sometimes you want to pass a function that doesn't take any arguments in a
-place that expects a callback that takes some arguments
+Sometimes you want to use a function that takes fewer arguments than the
+designated callback type expects. The extra arguments can be ignored as long
+as they are leading.
 
 ```cpp
-void DoSomething() {
-  cout << "Hello!" << endl;
+void LogError(char* error_message) {
+  if (error_message)
+    cout << "Log: " << error_message << endl;
 }
-base::RepeatingCallback<void(int)> cb =
-    base::IgnoreArgs<int>(base::BindRepeating(&DoSomething));
+base::RepeatingCallback<void(int, char*)> cb =
+    base::IgnoreArgs<int>(base::BindRepeating(&LogError));
+cb.Run(42, nullptr);
 ```
 
-Similarly, you may want to use an existing closure in a place that expects a
-value-accepting callback.
+Note in the example above that the type(s) passed to `IgnoreArgs` represent
+the additional prepended parameters (those which will be "ignored"). The other
+arguments to `cb` are inferred from the callback that is being wrapped.
+
+`IgnoreArgs` can be used to adapt a closure to a callback, ignoring all the
+arguments that are eventually passed:
 
 ```cpp
 base::OnceClosure closure = base::BindOnce([](){ cout << "Hello!" << endl; });

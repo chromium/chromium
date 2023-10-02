@@ -141,22 +141,45 @@ SplitOnceCallback(OnceCallback<void(Args...)> callback) {
   return std::make_pair(wrapped_once, wrapped_once);
 }
 
-// Convenience helper to allow a `closure` to be used in a context which is
-// expecting a callback with arguments. Returns a null callback if `closure` is
-// null.
-template <typename... Args>
-RepeatingCallback<void(Args...)> IgnoreArgs(RepeatingClosure closure) {
-  return closure ? BindRepeating([](Args...) {}).Then(std::move(closure))
-                 : RepeatingCallback<void(Args...)>();
+// Adapts `callback` for use in a context which is expecting a callback with
+// additional parameters. Returns a null callback if `callback` is null.
+//
+// Usage:
+//   void LogError(char* error_message) {
+//     if (error_message) {
+//       cout << "Log: " << error_message << endl;
+//     }
+//   }
+//   base::RepeatingCallback<void(int, char*)> cb =
+//      base::IgnoreArgs<int>(base::BindRepeating(&LogError));
+//   cb.Run(42, nullptr);
+//
+// Note in the example above that the type(s) passed to `IgnoreArgs`
+// represent the additional prepended parameters (those which will be
+// "ignored").
+template <typename... Preargs, typename... Args>
+RepeatingCallback<void(Preargs..., Args...)> IgnoreArgs(
+    RepeatingCallback<void(Args...)> callback) {
+  return callback ? BindRepeating(
+                        [](RepeatingCallback<void(Args...)> callback,
+                           Preargs..., Args... args) {
+                          std::move(callback).Run(std::forward<Args>(args)...);
+                        },
+                        std::move(callback))
+                  : RepeatingCallback<void(Preargs..., Args...)>();
 }
 
-// Convenience helper to allow a `closure` to be used in a context which is
-// expecting a callback with arguments. Returns a null callback if `closure` is
-// null.
-template <typename... Args>
-OnceCallback<void(Args...)> IgnoreArgs(OnceClosure closure) {
-  return closure ? BindOnce([](Args...) {}).Then(std::move(closure))
-                 : OnceCallback<void(Args...)>();
+// As above, but for OnceCallback.
+template <typename... Preargs, typename... Args>
+OnceCallback<void(Preargs..., Args...)> IgnoreArgs(
+    OnceCallback<void(Args...)> callback) {
+  return callback ? BindOnce(
+                        [](OnceCallback<void(Args...)> callback, Preargs...,
+                           Args... args) {
+                          std::move(callback).Run(std::forward<Args>(args)...);
+                        },
+                        std::move(callback))
+                  : OnceCallback<void(Preargs..., Args...)>();
 }
 
 // ScopedClosureRunner is akin to std::unique_ptr<> for Closures. It ensures

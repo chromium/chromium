@@ -289,6 +289,19 @@ TEST(CallbackHelpersTest, IgnoreArgs) {
   EXPECT_EQ(2, count);
   std::move(once_int_cb).Run(42);
   EXPECT_EQ(3, count);
+
+  // Ignore only some (one) argument and forward the rest.
+  auto repeating_callback = base::BindRepeating(&Increment);
+  auto repeating_cb_with_extra_arg = base::IgnoreArgs<bool>(repeating_callback);
+  repeating_cb_with_extra_arg.Run(false, &count);
+  EXPECT_EQ(4, count);
+
+  // Ignore two arguments and forward the rest.
+  auto once_callback = base::BindOnce(&Increment);
+  auto once_cb_with_extra_arg =
+      base::IgnoreArgs<char, bool>(repeating_callback);
+  std::move(once_cb_with_extra_arg).Run('d', false, &count);
+  EXPECT_EQ(5, count);
 }
 
 TEST(CallbackHelpersTest, IgnoreArgs_EmptyCallback) {
