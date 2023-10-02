@@ -173,7 +173,7 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
     return source.expiry;
   }
 
-  static absl::optional<base::TimeDelta> aggregatable_report_window(
+  static base::TimeDelta aggregatable_report_window(
       const attribution_reporting::SourceRegistration& source) {
     return source.aggregatable_report_window;
   }

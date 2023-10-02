@@ -347,7 +347,8 @@ absl::optional<base::Time> AttributionStorageDelegateImpl::GetReportWindowTime(
     return absl::nullopt;
   }
 
-  return source_time + std::clamp(*declared_window, base::Hours(1),
+  return source_time + std::clamp(*declared_window,
+                                  attribution_reporting::kMinReportWindow,
                                   attribution_reporting::kMaxSourceExpiry);
 }
 

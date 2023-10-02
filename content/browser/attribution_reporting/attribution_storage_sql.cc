@@ -872,9 +872,7 @@ StoreSourceResult AttributionStorageSql::StoreSource(
   }
 
   const base::Time aggregatable_report_window_time =
-      ComputeReportWindowTime(delegate_->GetReportWindowTime(
-                                  reg.aggregatable_report_window, source_time),
-                              expiry_time);
+      source_time + reg.aggregatable_report_window;
 
   ASSIGN_OR_RETURN(const auto randomized_response_data,
                    delegate_->GetRandomizedResponse(

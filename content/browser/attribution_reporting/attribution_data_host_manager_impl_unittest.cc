@@ -484,6 +484,7 @@ TEST_F(AttributionDataHostManagerImplTest,
   SourceRegistration source_data(*DestinationSet::Create({destination_site}));
   // Non-whole-day expiry is invalid for `SourceType::kEvent`.
   source_data.expiry = base::Days(1) + base::Microseconds(1);
+  source_data.aggregatable_report_window = source_data.expiry;
 
   {
     mojo::test::BadMessageObserver bad_message_observer;

@@ -35,8 +35,6 @@ constexpr char kEventReportWindows[] = "event_report_windows";
 constexpr char kStartTime[] = "start_time";
 constexpr char kEndTimes[] = "end_times";
 
-constexpr base::TimeDelta kMinReportWindow = base::Hours(1);
-
 bool EventReportWindowsValid(base::TimeDelta start_time,
                              const base::flat_set<base::TimeDelta>& end_times) {
   // TODO(apaseltiner): This should also check `*end_times.begin() >=

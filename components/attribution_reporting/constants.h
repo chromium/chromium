@@ -31,6 +31,10 @@ constexpr base::TimeDelta kMaxSourceExpiry = base::Days(30);
 
 static_assert(kMinSourceExpiry < kMaxSourceExpiry);
 
+constexpr base::TimeDelta kMinReportWindow = base::Hours(1);
+
+static_assert(kMinReportWindow <= kMinSourceExpiry);
+
 }  // namespace attribution_reporting
 
 #endif  // COMPONENTS_ATTRIBUTION_REPORTING_CONSTANTS_H_

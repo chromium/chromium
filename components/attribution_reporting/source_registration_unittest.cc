@@ -75,7 +75,7 @@ TEST(SourceRegistrationTest, Parse) {
               Field(&SourceRegistration::expiry, base::Days(30)),
               Field(&SourceRegistration::event_report_windows, absl::nullopt),
               Field(&SourceRegistration::aggregatable_report_window,
-                    absl::nullopt),
+                    base::Days(30)),
               Field(&SourceRegistration::max_event_level_reports, 3),
               Field(&SourceRegistration::priority, 0),
               Field(&SourceRegistration::filter_data, FilterData()),
@@ -240,6 +240,18 @@ TEST(SourceRegistrationTest, Parse) {
               SourceRegistrationError::kAggregatableReportWindowValueInvalid),
       },
       {
+          "aggregatable_report_window_clamped_min",
+          R"json({"aggregatable_report_window":3599,"destination":"https://d.example"})json",
+          ValueIs(Field(&SourceRegistration::aggregatable_report_window,
+                        base::Seconds(3600))),
+      },
+      {
+          "aggregatable_report_window_clamped_max",
+          R"json({"aggregatable_report_window":259200,"expiry":172800,"destination":"https://d.example"})json",
+          ValueIs(Field(&SourceRegistration::aggregatable_report_window,
+                        base::Seconds(172800))),
+      },
+      {
           "max_event_level_reports_omitted_event",
           R"json({"destination":"https://d.example"})json",
           ValueIs(Field(&SourceRegistration::max_event_level_reports, 1)),
@@ -356,6 +368,7 @@ TEST(SourceRegistrationTest, ToJson) {
       {
           SourceRegistration(destination),
           R"json({
+            "aggregatable_report_window": 2592000,
             "debug_reporting": false,
             "destination":"https://d.example",
             "expiry": 2592000,
@@ -410,26 +423,37 @@ TEST(SourceRegistrationTest, IsValid) {
 
   EXPECT_FALSE(SourceRegistrationWith(destination, [](SourceRegistration& r) {
                  r.expiry = base::Days(1) - base::Microseconds(1);
+                 r.aggregatable_report_window = r.expiry;
                }).IsValid());
 
   EXPECT_FALSE(SourceRegistrationWith(destination, [](SourceRegistration& r) {
                  r.expiry = base::Days(30) + base::Microseconds(1);
+                 r.aggregatable_report_window = r.expiry;
                }).IsValid());
 
   EXPECT_TRUE(SourceRegistrationWith(destination, [](SourceRegistration& r) {
                 r.expiry = base::Days(1);
+                r.aggregatable_report_window = r.expiry;
               }).IsValid());
 
   EXPECT_TRUE(SourceRegistrationWith(destination, [](SourceRegistration& r) {
                 r.expiry = base::Days(30);
+                r.aggregatable_report_window = r.expiry;
               }).IsValid());
 
   EXPECT_FALSE(SourceRegistrationWith(destination, [](SourceRegistration& r) {
-                 r.aggregatable_report_window = base::Microseconds(-1);
+                 r.aggregatable_report_window =
+                     base::Hours(1) - base::Microseconds(1);
+               }).IsValid());
+
+  EXPECT_FALSE(SourceRegistrationWith(destination, [](SourceRegistration& r) {
+                 r.expiry = base::Days(1);
+                 r.aggregatable_report_window =
+                     r.expiry + base::Microseconds(1);
                }).IsValid());
 
   EXPECT_TRUE(SourceRegistrationWith(destination, [](SourceRegistration& r) {
-                r.aggregatable_report_window = base::Microseconds(0);
+                r.aggregatable_report_window = base::Hours(1);
               }).IsValid());
 
   EXPECT_FALSE(SourceRegistrationWith(destination, [](SourceRegistration& r) {

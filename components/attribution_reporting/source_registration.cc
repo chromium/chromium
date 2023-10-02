@@ -150,6 +150,11 @@ SourceRegistration::Parse(base::Value::Dict registration,
         ParseLegacyDuration(
             *value,
             SourceRegistrationError::kAggregatableReportWindowValueInvalid));
+
+    result.aggregatable_report_window = std::clamp(
+        result.aggregatable_report_window, kMinReportWindow, result.expiry);
+  } else {
+    result.aggregatable_report_window = result.expiry;
   }
 
   if (const base::Value* value = registration.Find(kMaxEventLevelReports)) {
@@ -230,8 +235,8 @@ bool SourceRegistration::IsValid() const {
     return false;
   }
 
-  if (aggregatable_report_window.has_value() &&
-      aggregatable_report_window->is_negative()) {
+  if (aggregatable_report_window < kMinReportWindow ||
+      aggregatable_report_window > expiry) {
     return false;
   }
 

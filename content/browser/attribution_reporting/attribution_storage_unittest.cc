@@ -698,17 +698,6 @@ TEST_F(AttributionStorageTest, ReportTimes) {
               kSourceTime + base::Days(4),
       },
       {
-          .desc = "clamp-aggregatable-report-window",
-          .expiry = base::Days(4),
-          .aggregatable_report_window = base::Days(30),
-          .expected_expiry_time = kSourceTime + base::Days(4),
-          .expected_event_report_windows =
-              *attribution_reporting::EventReportWindows::CreateWindows(
-                  base::Days(0), {base::Days(4)}),
-          .expected_aggregatable_report_window_time =
-              kSourceTime + base::Days(4),
-      },
-      {
           .desc = "all",
           .expiry = base::Days(9),
           .event_report_window = base::Days(7),
@@ -728,7 +717,8 @@ TEST_F(AttributionStorageTest, ReportTimes) {
     reg.event_report_windows =
         attribution_reporting::EventReportWindows::CreateSingularWindow(
             test_case.event_report_window.value_or(reg.expiry));
-    reg.aggregatable_report_window = test_case.aggregatable_report_window;
+    reg.aggregatable_report_window =
+        test_case.aggregatable_report_window.value_or(reg.expiry);
 
     storage()->StoreSource(
         StorableSource(reporting_origin, std::move(reg),

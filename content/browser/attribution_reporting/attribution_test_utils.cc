@@ -33,7 +33,6 @@
 #include "content/browser/attribution_reporting/attribution_observer.h"
 #include "content/browser/attribution_reporting/attribution_reporting.mojom.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
-#include "content/browser/attribution_reporting/attribution_utils.h"
 #include "content/browser/attribution_reporting/os_registration.h"
 #include "content/browser/attribution_reporting/rate_limit_result.h"
 #include "content/public/browser/attribution_data_model.h"
@@ -242,10 +241,7 @@ StoredSource SourceBuilder::BuildStored() const {
       registration_.event_report_windows.value_or(
           *attribution_reporting::EventReportWindows::CreateWindows(
               base::Milliseconds(0), {registration_.expiry})),
-      ComputeReportWindowTime(
-          GetReportWindowTimeForTesting(
-              registration_.aggregatable_report_window, source_time_),
-          expiry_time),
+      source_time_ + registration_.aggregatable_report_window,
       registration_.max_event_level_reports, registration_.priority,
       registration_.filter_data, registration_.debug_key,
       registration_.aggregation_keys, attribution_logic_, active_state_,

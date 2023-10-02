@@ -91,9 +91,9 @@ struct SourceRegistration {
   // bounds of a report being generated with this source.
   EventReportWindows? event_report_windows;
 
-  // Optionally specifies how long after source registration an aggregatable
+  // Specifies how long after source registration an aggregatable
   // report can be generated with this source.
-  mojo_base.mojom.TimeDelta? aggregatable_report_window;
+  mojo_base.mojom.TimeDelta aggregatable_report_window;
 
   // Specifies how many event-level reports can be generated with this source.
   int32 max_event_level_reports;
