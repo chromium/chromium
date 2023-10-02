@@ -36,7 +36,7 @@ source_set("sharing_internal") {
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/util",
-    "//ios/chrome/browser/sharing",
+    "//ios/chrome/browser/sharing/model",
     "//ios/chrome/browser/ui/sharing/activity_services",
     "//ios/chrome/browser/ui/sharing/qr_generator",
     "//ios/third_party/material_components_ios",

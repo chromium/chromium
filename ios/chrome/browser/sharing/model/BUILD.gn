@@ -4,7 +4,7 @@
 
 import("//build/config/ios/rules.gni")
 
-source_set("sharing") {
+source_set("model") {
   sources = [
     "share_file_download_tab_helper.h",
     "share_file_download_tab_helper.mm",

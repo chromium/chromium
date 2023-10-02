@@ -100,7 +100,7 @@ source_set("tabs_internal") {
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/features",
-    "//ios/chrome/browser/sharing",
+    "//ios/chrome/browser/sharing/model",
     "//ios/chrome/browser/snapshots",
     "//ios/chrome/browser/ssl",
     "//ios/chrome/browser/store_kit",

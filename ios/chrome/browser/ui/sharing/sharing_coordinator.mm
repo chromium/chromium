@@ -18,7 +18,7 @@
 #import "ios/chrome/browser/shared/public/commands/qr_generation_commands.h"
 #import "ios/chrome/browser/shared/public/commands/share_download_overlay_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
-#import "ios/chrome/browser/sharing/share_file_download_tab_helper.h"
+#import "ios/chrome/browser/sharing/model/share_file_download_tab_helper.h"
 #import "ios/chrome/browser/ui/sharing/activity_services/activity_service_coordinator.h"
 #import "ios/chrome/browser/ui/sharing/activity_services/activity_service_presentation.h"
 #import "ios/chrome/browser/ui/sharing/qr_generator/qr_generator_coordinator.h"

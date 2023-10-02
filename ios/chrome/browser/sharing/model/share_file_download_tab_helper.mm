@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/sharing/share_file_download_tab_helper.h"
+#import "ios/chrome/browser/sharing/model/share_file_download_tab_helper.h"
 
 #import "base/memory/ptr_util.h"
 #import "base/metrics/histogram_functions.h"
