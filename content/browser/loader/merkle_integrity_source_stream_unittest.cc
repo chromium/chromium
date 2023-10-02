@@ -122,8 +122,8 @@ class MerkleIntegritySourceStreamTest
   scoped_refptr<net::IOBuffer> output_buffer_;
   int output_buffer_size_;
 
-  raw_ptr<net::MockSourceStream, DanglingUntriaged> source_;
   std::unique_ptr<MerkleIntegritySourceStream> stream_;
+  raw_ptr<net::MockSourceStream> source_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
