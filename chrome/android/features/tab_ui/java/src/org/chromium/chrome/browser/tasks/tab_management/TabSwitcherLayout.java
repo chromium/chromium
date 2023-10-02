@@ -21,6 +21,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
@@ -36,6 +37,7 @@ import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
 import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
 import org.chromium.chrome.browser.compositor.layouts.components.LayoutTab;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
+import org.chromium.chrome.browser.compositor.scene_layer.SolidColorSceneLayer;
 import org.chromium.chrome.browser.compositor.scene_layer.StaticTabSceneLayer;
 import org.chromium.chrome.browser.compositor.scene_layer.TabListSceneLayer;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -127,7 +129,7 @@ public class TabSwitcherLayout extends Layout {
      * An empty SceneLayer is used to avoid drawing a SceneLayer with any content when the
      * animation is not running. Used when sGridTabSwitcherAndroidAnimations is enabled.
      */
-    private SceneLayer mEmptySceneLayer;
+    private SolidColorSceneLayer mEmptySceneLayer;
     /**
      * TabListSceneLayer is used to show the dynamic resource for the Tab Switcher when using
      * composited animations. Used when sGridTabSwitcherAndroidAnimations is not enabled.
@@ -362,6 +364,18 @@ public class TabSwitcherLayout extends Layout {
     @Override
     public void destroy() {
         mController.removeTabSwitcherViewObserver(mTabSwitcherObserver);
+        if (mTabSceneLayer != null) {
+            mTabSceneLayer.destroy();
+            mTabSceneLayer = null;
+        }
+        if (mEmptySceneLayer != null) {
+            mEmptySceneLayer.destroy();
+            mEmptySceneLayer = null;
+        }
+        if (mTabListSceneLayer != null) {
+            mTabListSceneLayer.destroy();
+            mTabListSceneLayer = null;
+        }
     }
 
     @Override
@@ -617,7 +631,7 @@ public class TabSwitcherLayout extends Layout {
 
         if (ChromeFeatureList.sGridTabSwitcherAndroidAnimations.isEnabled()) {
             mTabSceneLayer = new StaticTabSceneLayer();
-            mEmptySceneLayer = new SceneLayer();
+            mEmptySceneLayer = new SolidColorSceneLayer();
         } else {
             mTabListSceneLayer = new TabListSceneLayer();
         }
@@ -668,8 +682,7 @@ public class TabSwitcherLayout extends Layout {
         Rect origin = new Rect(x, y, x + 1, y + 1);
         resetTabJavaView(new Rect(x, offsetY, x + 1, offsetY + 1));
         mTabJavaView.setImageBitmap(null);
-        mTabJavaView.setBackgroundColor(
-                ChromeColors.getPrimaryBackgroundColor(getContext(), newIsIncognito));
+        updateBackgroundColor(newIsIncognito);
         mTabJavaView.setVisibility(View.INVISIBLE);
 
         mRectAnimator = new GtsRectAnimator(mTabJavaView, origin, fullscreenRect);
@@ -690,6 +703,7 @@ public class TabSwitcherLayout extends Layout {
         });
 
         mRunningNewTabAnimation = true;
+        mShowEmptyLayer = true;
         mTabJavaView.invalidate();
         mTabJavaView.setOnNextLayoutRunnable(() -> {
             mTabJavaView.setVisibility(View.VISIBLE);
@@ -869,8 +883,7 @@ public class TabSwitcherLayout extends Layout {
 
         resetTabJavaView(new Rect(fullscreenRect.left, topMargin, fullscreenRect.right,
                 fullscreenRect.bottom + topMargin));
-        mTabJavaView.setBackgroundColor(
-                ChromeColors.getPrimaryBackgroundColor(getContext(), isIncognito()));
+        updateBackgroundColor(isIncognito());
         mTabJavaView.setImageBitmap(bitmap);
         mTabJavaView.setVisibility(View.INVISIBLE);
 
@@ -969,8 +982,7 @@ public class TabSwitcherLayout extends Layout {
                         return;
                     }
 
-                    mTabJavaView.setBackgroundColor(
-                            ChromeColors.getPrimaryBackgroundColor(getContext(), isIncognito()));
+                    updateBackgroundColor(isIncognito());
                     mTabJavaView.setImageBitmap(bitmap);
                     mRectAnimator.setRect(source);
                     mTabJavaView.setVisibility(View.VISIBLE);
@@ -1294,6 +1306,13 @@ public class TabSwitcherLayout extends Layout {
             mFinishedHidingRunnable.run();
             mFinishedHidingRunnable = null;
         }
+    }
+
+    private void updateBackgroundColor(boolean isIncognito) {
+        @ColorInt
+        int backgroundColor = ChromeColors.getPrimaryBackgroundColor(getContext(), isIncognito);
+        mTabJavaView.setBackgroundColor(backgroundColor);
+        mEmptySceneLayer.setBackgroundColor(backgroundColor);
     }
 
     private ConditionalAnimationRunner createShrinkAnimationRunner(boolean shouldAnimate) {

@@ -3480,6 +3480,7 @@ generate_jni("chrome_jni_headers") {
     "java/src/org/chromium/chrome/browser/compositor/bottombar/OverlayPanelContent.java",
     "java/src/org/chromium/chrome/browser/compositor/layouts/content/TabContentManager.java",
     "java/src/org/chromium/chrome/browser/compositor/scene_layer/ContextualSearchSceneLayer.java",
+    "java/src/org/chromium/chrome/browser/compositor/scene_layer/SolidColorSceneLayer.java",
     "java/src/org/chromium/chrome/browser/compositor/scene_layer/StaticTabSceneLayer.java",
     "java/src/org/chromium/chrome/browser/compositor/scene_layer/TabListSceneLayer.java",
     "java/src/org/chromium/chrome/browser/compositor/scene_layer/TabStripSceneLayer.java",
