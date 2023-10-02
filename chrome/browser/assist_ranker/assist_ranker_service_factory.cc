@@ -38,9 +38,10 @@ AssistRankerServiceFactory::AssistRankerServiceFactory()
 
 AssistRankerServiceFactory::~AssistRankerServiceFactory() = default;
 
-KeyedService* AssistRankerServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+AssistRankerServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* browser_context) const {
-  return new AssistRankerServiceImpl(
+  return std::make_unique<AssistRankerServiceImpl>(
       browser_context->GetPath(),
       g_browser_process->system_network_context_manager()
           ->GetSharedURLLoaderFactory());
