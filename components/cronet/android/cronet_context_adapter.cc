@@ -318,14 +318,6 @@ static jlong JNI_CronetUrlRequestContext_CreateRequestContextAdapter(
   return reinterpret_cast<jlong>(context_adapter);
 }
 
-static jint JNI_CronetUrlRequestContext_SetMinLogLevel(JNIEnv* env,
-                                                       jint jlog_level) {
-  jint old_log_level = static_cast<jint>(logging::GetMinLogLevel());
-  // MinLogLevel is global, shared by all URLRequestContexts.
-  logging::SetMinLogLevel(static_cast<int>(jlog_level));
-  return old_log_level;
-}
-
 static ScopedJavaLocalRef<jbyteArray>
 JNI_CronetUrlRequestContext_GetHistogramDeltas(JNIEnv* env) {
   std::vector<uint8_t> data;

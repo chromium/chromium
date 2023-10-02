@@ -86,10 +86,29 @@ public class CronetLibraryLoader {
                 }
                 Log.i(TAG, "Cronet version: %s, arch: %s", implVersion,
                         System.getProperty("os.arch"));
+                setNativeLoggingLevel();
                 sLibraryLoaded = true;
                 sWaitForLibLoad.open();
             }
         }
+    }
+
+    private static void setNativeLoggingLevel() {
+        // The constants used here should be kept in sync with logging::LogMessage::~LogMessage().
+        final String nativeLogTag = "chromium";
+        int loggingLevel;
+        // TODO: this way of enabling VLOG is a hack - it doesn't make a ton of sense because
+        // logging::LogMessage() will still log VLOG() at the Android INFO log level, not DEBUG or
+        // VERBOSE; also this doesn't make it possible to use advanced filters like --vmodule. See
+        // https://crbug.com/1488393 for a proposed alternative.
+        if (Log.isLoggable(nativeLogTag, Log.VERBOSE)) {
+            loggingLevel = -2; // VLOG(2)
+        } else if (Log.isLoggable(nativeLogTag, Log.DEBUG)) {
+            loggingLevel = -1; // VLOG(1)
+        } else {
+            loggingLevel = 3; // LOG(FATAL) only
+        }
+        CronetLibraryLoaderJni.get().setMinLogLevel(loggingLevel);
     }
 
     /**
@@ -228,5 +247,7 @@ public class CronetLibraryLoader {
         void cronetInitOnInitThread();
 
         String getCronetVersion();
+
+        void setMinLogLevel(int loggingLevel);
     }
 }

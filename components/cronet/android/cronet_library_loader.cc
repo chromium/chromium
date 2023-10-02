@@ -157,6 +157,10 @@ ScopedJavaLocalRef<jstring> JNI_CronetLibraryLoader_GetCronetVersion(
   return base::android::ConvertUTF8ToJavaString(env, CRONET_VERSION);
 }
 
+void JNI_CronetLibraryLoader_SetMinLogLevel(JNIEnv* env, jint jlog_level) {
+  logging::SetMinLogLevel(jlog_level);
+}
+
 void PostTaskToInitThread(const base::Location& posted_from,
                           base::OnceClosure task) {
   g_init_thread_init_done.Wait();
