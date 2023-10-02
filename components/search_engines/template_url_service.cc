@@ -593,11 +593,11 @@ TemplateURLService::TemplateURLVector TemplateURLService::GetTemplateURLs() {
 
 TemplateURLService::OwnedTemplateURLVector
 TemplateURLService::GetTemplateURLsForChoiceScreen() {
-  // TODO (b/282656014): Update the returned list of search engines to comply
-  // with choice screen requirements.
   OwnedTemplateURLVector result;
   std::vector<std::unique_ptr<TemplateURLData>> engines =
-      TemplateURLPrepopulateData::GetPrepopulatedEnginesForChoiceScreen(prefs_);
+      TemplateURLPrepopulateData::GetPrepopulatedEngines(
+          prefs_, /*default_search_provider_index=*/nullptr,
+          /*include_current_default=*/true, /*template_url_service=*/this);
   for (const auto& engine : engines) {
     result.push_back(std::make_unique<TemplateURL>(*engine));
   }

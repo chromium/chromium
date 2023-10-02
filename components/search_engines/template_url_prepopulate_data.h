@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 
 class PrefService;
+class TemplateURLService;
 struct TemplateURLData;
 
 namespace user_prefs {
@@ -36,14 +37,14 @@ int GetDataVersion(PrefService* prefs);
 // Returns the prepopulated URLs for the current country.
 // If |default_search_provider_index| is non-null, it is set to the index of the
 // default search provider within the returned vector.
+// `include_current_default` should be true and `template_url_service` should be
+// non-null if we want the current default search engine to be present at the
+// top of the returned list if it's not already there.
 std::vector<std::unique_ptr<TemplateURLData>> GetPrepopulatedEngines(
     PrefService* prefs,
-    size_t* default_search_provider_index);
-
-// Returns the prepopulated URLs for the current country, shuffled for display
-// in a search engine choice screen.
-std::vector<std::unique_ptr<TemplateURLData>>
-GetPrepopulatedEnginesForChoiceScreen(PrefService* prefs);
+    size_t* default_search_provider_index,
+    bool include_current_default = false,
+    TemplateURLService* template_url_service = nullptr);
 
 // Returns the prepopulated search engine with the given |prepopulated_id|.
 std::unique_ptr<TemplateURLData> GetPrepopulatedEngine(PrefService* prefs,

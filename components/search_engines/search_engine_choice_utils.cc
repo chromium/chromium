@@ -5,10 +5,10 @@
 #include "components/search_engines/search_engine_choice_utils.h"
 
 #include "base/check_deref.h"
+#include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/no_destructor.h"
 #include "base/values.h"
 #include "components/country_codes/country_codes.h"
 #include "components/policy/core/common/policy_service.h"
@@ -109,7 +109,7 @@ const char kSearchEngineChoiceScreenEventsHistogram[] =
 
 bool ShouldShowUpdatedSettings(PrefService& profile_prefs) {
   return base::FeatureList::IsEnabled(switches::kSearchEngineChoice) &&
-         IsEeaChoiceCountry(GetSearchEngineChoiceCountryId(profile_prefs));
+         IsEeaChoiceCountry(GetSearchEngineChoiceCountryId(&profile_prefs));
 }
 
 bool ShouldShowChoiceScreen(const policy::PolicyService& policy_service,
@@ -143,7 +143,7 @@ bool ShouldShowChoiceScreen(const policy::PolicyService& policy_service,
     return false;
   }
 
-  if (!IsEeaChoiceCountry(GetSearchEngineChoiceCountryId(prefs))) {
+  if (!IsEeaChoiceCountry(GetSearchEngineChoiceCountryId(&prefs))) {
     return false;
   }
 
@@ -156,7 +156,12 @@ bool ShouldShowChoiceScreen(const policy::PolicyService& policy_service,
   return IsSearchEngineChoiceScreenAllowedByPolicy(policy_service);
 }
 
-int GetSearchEngineChoiceCountryId(PrefService& profile_prefs) {
+int GetSearchEngineChoiceCountryId(PrefService* profile_prefs) {
+  // Prefs are sometimes null in unit tests.
+  if (!profile_prefs) {
+    CHECK_IS_TEST();
+  }
+
   int command_line_country = country_codes::CountryStringToCountryID(
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
           switches::kSearchEngineChoiceCountry));
@@ -164,7 +169,7 @@ int GetSearchEngineChoiceCountryId(PrefService& profile_prefs) {
     return command_line_country;
   }
 
-  return country_codes::GetCountryIDFromPrefs(&profile_prefs);
+  return country_codes::GetCountryIDFromPrefs(profile_prefs);
 }
 
 bool IsEeaChoiceCountry(int country_id) {

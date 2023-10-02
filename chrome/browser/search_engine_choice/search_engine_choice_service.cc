@@ -8,6 +8,7 @@
 #include "base/containers/contains.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/startup/first_run_service.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
@@ -155,9 +156,13 @@ bool SearchEngineChoiceService::IsShowingDialog(Browser* browser) {
 
 std::vector<std::unique_ptr<TemplateURLData>>
 SearchEngineChoiceService::GetSearchEngines() {
-  auto* pref_service = profile_->GetPrefs();
-  return TemplateURLPrepopulateData::GetPrepopulatedEnginesForChoiceScreen(
-      pref_service);
+  PrefService* pref_service = profile_->GetPrefs();
+  TemplateURLService* template_url_service =
+      TemplateURLServiceFactory::GetForProfile(&profile_.get());
+  return TemplateURLPrepopulateData::GetPrepopulatedEngines(
+      pref_service,
+      /*default_search_provider_index=*/nullptr,
+      /*include_current_default=*/true, template_url_service);
 }
 
 bool SearchEngineChoiceService::CanShowDialog(Browser& browser) {

@@ -13,6 +13,7 @@
 #include "base/containers/contains.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "components/country_codes/country_codes.h"
 #include "components/google/core/common/google_switches.h"
@@ -24,6 +25,7 @@
 #include "components/search_engines/template_url_data_util.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/testing_search_terms_data.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -134,6 +136,7 @@ class TemplateURLPrepopulateDataTest : public testing::Test {
 
  protected:
   sync_preferences::TestingPrefServiceSyncable prefs_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Verifies the set of prepopulate data doesn't contain entries with duplicate
@@ -155,6 +158,8 @@ TEST_F(TemplateURLPrepopulateDataTest, UniqueIDs) {
 // consistent with the set of countries in EeaChoiceCountry. For example, when
 // in EEA they should have more than 5, and outside of EEA not more than 5.
 TEST_F(TemplateURLPrepopulateDataTest, NumberOfEntriesPerCountryConsistency) {
+  feature_list_.Reset();
+  feature_list_.InitAndEnableFeature(switches::kSearchEngineChoice);
   const size_t kMinEea = 6;
   const size_t kMaxEea = 12;
   const size_t kMinRow = 3;
@@ -162,33 +167,24 @@ TEST_F(TemplateURLPrepopulateDataTest, NumberOfEntriesPerCountryConsistency) {
 
   for (int country_id : kAllCountryIds) {
     prefs_.SetInteger(country_codes::kCountryIDAtInstall, country_id);
-    const bool kIsEeaCountry = search_engines::IsEeaChoiceCountry(country_id);
 
-    // TODO(b/282656014): As-is this is not too useful as GetPrepopulatedEngines
-    // never returns more than 5. But once GetPrepopulatedEngines and
-    // GetPrepopulatedEnginesForChoiceScreen get merged, can then cover
-    // that the counts are in the expected range.
-    const size_t kActualSize =
-        kIsEeaCountry
-            ? TemplateURLPrepopulateData::GetPrepopulatedEnginesForChoiceScreen(
-                  &prefs_)
-                  .size()
-            : TemplateURLPrepopulateData::GetPrepopulatedEngines(&prefs_,
-                                                                 nullptr)
-                  .size();
+    const size_t kNumberOfSearchEngines =
+        TemplateURLPrepopulateData::GetPrepopulatedEngines(
+            &prefs_, /*default_search_provider_index=*/nullptr)
+            .size();
 
-    if (kIsEeaCountry) {
-      EXPECT_GE(kActualSize, kMinEea)
+    if (search_engines::IsEeaChoiceCountry(country_id)) {
+      EXPECT_GE(kNumberOfSearchEngines, kMinEea)
           << " for country "
           << country_codes::CountryIDToCountryString(country_id);
-      EXPECT_LE(kActualSize, kMaxEea)
+      EXPECT_LE(kNumberOfSearchEngines, kMaxEea)
           << " for country "
           << country_codes::CountryIDToCountryString(country_id);
     } else {
-      EXPECT_GE(kActualSize, kMinRow)
+      EXPECT_GE(kNumberOfSearchEngines, kMinRow)
           << " for country "
           << country_codes::CountryIDToCountryString(country_id);
-      EXPECT_LE(kActualSize, kMaxRow)
+      EXPECT_LE(kNumberOfSearchEngines, kMaxRow)
           << " for country "
           << country_codes::CountryIDToCountryString(country_id);
     }
@@ -534,23 +530,4 @@ TEST_F(TemplateURLPrepopulateDataTest, FindGoogleIndex) {
   EXPECT_GT(index, size_t{0});
   EXPECT_LT(index, urls.size());
   EXPECT_EQ(urls[index]->prepopulate_id, kGoogleId);
-}
-
-TEST_F(TemplateURLPrepopulateDataTest, GetPrepopulatedEnginesForChoiceScreen) {
-  std::vector<std::unique_ptr<TemplateURLData>> ordered_urls;
-  std::vector<std::unique_ptr<TemplateURLData>> shuffled_urls;
-  prefs_.SetInteger(country_codes::kCountryIDAtInstall, 'U' << 8 | 'S');
-  ordered_urls =
-      TemplateURLPrepopulateData::GetPrepopulatedEngines(&prefs_, nullptr);
-
-  shuffled_urls =
-      TemplateURLPrepopulateData::GetPrepopulatedEnginesForChoiceScreen(
-          &prefs_);
-
-  EXPECT_EQ(ordered_urls.size(), shuffled_urls.size());
-  for (const auto& url_data : ordered_urls) {
-    EXPECT_TRUE(base::ranges::find(shuffled_urls, url_data->prepopulate_id,
-                                   &TemplateURLData::prepopulate_id) !=
-                shuffled_urls.end());
-  }
 }

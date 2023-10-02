@@ -232,27 +232,27 @@ TEST_F(SearchEngineChoiceUtilsTest, GetSearchEngineChoiceCountryId) {
 
   // The test is set up to use the command line to simulate the country as being
   // Belgium.
-  EXPECT_EQ(search_engines::GetSearchEngineChoiceCountryId(*pref_service()),
+  EXPECT_EQ(search_engines::GetSearchEngineChoiceCountryId(pref_service()),
             kBelgiumCountryId);
 
   // When removing the command line flag, the default value is based on the
   // device locale.
   base::CommandLine::ForCurrentProcess()->RemoveSwitch(
       switches::kSearchEngineChoiceCountry);
-  EXPECT_EQ(search_engines::GetSearchEngineChoiceCountryId(*pref_service()),
+  EXPECT_EQ(search_engines::GetSearchEngineChoiceCountryId(pref_service()),
             country_codes::GetCurrentCountryID());
 
   // When the command line value is invalid, it is ignored.
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kSearchEngineChoiceCountry, "USA");
-  EXPECT_EQ(search_engines::GetSearchEngineChoiceCountryId(*pref_service()),
+  EXPECT_EQ(search_engines::GetSearchEngineChoiceCountryId(pref_service()),
             country_codes::GetCurrentCountryID());
 
   // Note that if the format matches (2-character strings), we might get a
   // country ID that is not valid/supported.
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kSearchEngineChoiceCountry, "??");
-  EXPECT_EQ(search_engines::GetSearchEngineChoiceCountryId(*pref_service()),
+  EXPECT_EQ(search_engines::GetSearchEngineChoiceCountryId(pref_service()),
             country_codes::CountryCharsToCountryID('?', '?'));
 
   // The value set from the pref is reflected otherwise.
@@ -260,7 +260,7 @@ TEST_F(SearchEngineChoiceUtilsTest, GetSearchEngineChoiceCountryId) {
                              kBelgiumCountryId);
   base::CommandLine::ForCurrentProcess()->RemoveSwitch(
       switches::kSearchEngineChoiceCountry);
-  EXPECT_EQ(search_engines::GetSearchEngineChoiceCountryId(*pref_service()),
+  EXPECT_EQ(search_engines::GetSearchEngineChoiceCountryId(pref_service()),
             kBelgiumCountryId);
 }
 

@@ -53,7 +53,7 @@ bool ShouldShowChoiceScreen(const policy::PolicyService& policy_service,
 // Returns the country ID to use in the context of any search engine choice
 // logic. Can be overridden using `switches::kSearchEngineChoiceCountry`.
 // See `//components/country_codes` for the Country ID format.
-int GetSearchEngineChoiceCountryId(PrefService& profile_prefs);
+int GetSearchEngineChoiceCountryId(PrefService* profile_prefs);
 
 // Returns whether the provided `country_id` is eligible for the EEA default
 // search engine choice prompt.
