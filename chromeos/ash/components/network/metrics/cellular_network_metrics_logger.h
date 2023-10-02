@@ -54,7 +54,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularNetworkMetricsLogger
 
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
-  enum class ESimInstallResult {
+  enum class ESimOperationResult {
     kSuccess = 0,
     kInhibitFailed = 1,
     kHermesFailed = 2,
@@ -229,6 +229,18 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularNetworkMetricsLogger
           "ViaQrCodeSkippedSmds";
   static constexpr char kESimUserInstallUserErrorsIncludedViaSmds[] =
       "Network.Ash.Cellular.ESim.UserInstall.UserErrorsIncluded.ViaSmds";
+  static constexpr char kESimSmdsScanOtherUserErrorsFiltered[] =
+      "Network.Ash.Cellular.ESim.SmdsScan.Other.UserErrorsFiltered";
+  static constexpr char kESimSmdsScanOtherUserErrorsIncluded[] =
+      "Network.Ash.Cellular.ESim.SmdsScan.Other.UserErrorsIncluded";
+  static constexpr char kESimSmdsScanAndroidUserErrorsFiltered[] =
+      "Network.Ash.Cellular.ESim.SmdsScan.Android.UserErrorsFiltered";
+  static constexpr char kESimSmdsScanAndroidUserErrorsIncluded[] =
+      "Network.Ash.Cellular.ESim.SmdsScan.Android.UserErrorsIncluded";
+  static constexpr char kESimSmdsScanGsmaUserErrorsFiltered[] =
+      "Network.Ash.Cellular.ESim.SmdsScan.Gsma.UserErrorsFiltered";
+  static constexpr char kESimSmdsScanGsmaUserErrorsIncluded[] =
+      "Network.Ash.Cellular.ESim.SmdsScan.Gsma.UserErrorsIncluded";
 
   static constexpr char kUserAllowTextMessagesSuppressionStateHistogram[] =
       "Network.Ash.Cellular.AllowTextMessages.User.SuppressionState";
@@ -276,17 +288,22 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularNetworkMetricsLogger
   // the "filtered" version of our histograms so that we may have a better
   // understanding of eSIM installations on ChromeOS with minimal noise.
   static void LogESimUserInstallResult(ESimUserInstallMethod method,
-                                       ESimInstallResult result,
+                                       ESimOperationResult result,
                                        bool is_user_error);
   static void LogESimPolicyInstallResult(ESimPolicyInstallMethod method,
-                                         ESimInstallResult result,
+                                         ESimOperationResult result,
                                          bool is_initial,
                                          bool is_user_error);
+  // Record the result of a single SM-DS scan of a single SM-DS server. When
+  // |status| is not provided this function assumes that we failed to inhibit
+  // the cellular device.
+  static void LogSmdsScanResult(const std::string& smds_activation_code,
+                                absl::optional<HermesResponseStatus> status);
 
   // Returns the eSIM installation result for the provided Hermes response
   // status. When the status is unavailable, assume that we failed to inhibit
   // the cellular device.
-  static ESimInstallResult ComputeESimInstallResult(
+  static ESimOperationResult ComputeESimOperationResult(
       absl::optional<HermesResponseStatus> status);
 
   // Returns whether |status| is considered a "user error" and should be

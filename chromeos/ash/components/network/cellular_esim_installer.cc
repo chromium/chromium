@@ -179,8 +179,8 @@ void CellularESimInstaller::RecordInstallESimProfileResult(
   const bool is_user_error =
       status.has_value() &&
       CellularNetworkMetricsLogger::HermesResponseStatusIsUserError(*status);
-  const CellularNetworkMetricsLogger::ESimInstallResult result =
-      CellularNetworkMetricsLogger::ComputeESimInstallResult(status);
+  const CellularNetworkMetricsLogger::ESimOperationResult result =
+      CellularNetworkMetricsLogger::ComputeESimOperationResult(status);
 
   if (is_managed) {
     CellularNetworkMetricsLogger::LogESimPolicyInstallResult(

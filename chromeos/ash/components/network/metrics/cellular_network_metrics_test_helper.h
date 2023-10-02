@@ -14,49 +14,65 @@ class HistogramTester;
 namespace ash {
 namespace cellular_metrics {
 
+struct ESimOperationResultBucket {
+  void Check(const base::HistogramTester* tester, const char* histogram) const;
+
+  size_t success_count = 0u;
+  size_t inhibit_failed_count = 0u;
+  size_t hermes_failed_count = 0u;
+};
+
 // This helper struct is used in tests to simplify the logic around checking the
 // many eSIM installation histograms. This struct allows clients to assert the
 // counts for all histograms without any added complexity when writing tests.
 struct ESimInstallHistogramState {
-  struct HistogramState {
-    size_t success_count = 0u;
-    size_t inhibit_failed_count = 0u;
-    size_t hermes_failed_count = 0u;
-  };
-
   ESimInstallHistogramState();
 
   void Check(const base::HistogramTester* tester) const;
-  void CheckHistogram(const base::HistogramTester* tester,
-                      const char* histogram,
-                      const HistogramState& state) const;
 
-  HistogramState policy_install_user_errors_filtered_all;
-  HistogramState policy_install_user_errors_filtered_smdp_initial;
-  HistogramState policy_install_user_errors_filtered_smdp_retry;
-  HistogramState policy_install_user_errors_filtered_smds_initial;
-  HistogramState policy_install_user_errors_filtered_smds_retry;
-  HistogramState policy_install_user_errors_included_all;
-  HistogramState policy_install_user_errors_included_smdp_initial;
-  HistogramState policy_install_user_errors_included_smdp_retry;
-  HistogramState policy_install_user_errors_included_smds_initial;
-  HistogramState policy_install_user_errors_included_smds_retry;
-  HistogramState user_install_user_errors_filtered_all;
-  HistogramState
+  ESimOperationResultBucket policy_install_user_errors_filtered_all;
+  ESimOperationResultBucket policy_install_user_errors_filtered_smdp_initial;
+  ESimOperationResultBucket policy_install_user_errors_filtered_smdp_retry;
+  ESimOperationResultBucket policy_install_user_errors_filtered_smds_initial;
+  ESimOperationResultBucket policy_install_user_errors_filtered_smds_retry;
+  ESimOperationResultBucket policy_install_user_errors_included_all;
+  ESimOperationResultBucket policy_install_user_errors_included_smdp_initial;
+  ESimOperationResultBucket policy_install_user_errors_included_smdp_retry;
+  ESimOperationResultBucket policy_install_user_errors_included_smds_initial;
+  ESimOperationResultBucket policy_install_user_errors_included_smds_retry;
+  ESimOperationResultBucket user_install_user_errors_filtered_all;
+  ESimOperationResultBucket
       user_install_user_errors_filtered_via_activation_code_after_smds;
-  HistogramState
+  ESimOperationResultBucket
       user_install_user_errors_filtered_via_activation_code_skipped_smds;
-  HistogramState user_install_user_errors_filtered_via_qr_code_after_smds;
-  HistogramState user_install_user_errors_filtered_via_qr_code_skipped_smds;
-  HistogramState user_install_user_errors_filtered_via_smds;
-  HistogramState user_install_user_errors_included_all;
-  HistogramState
+  ESimOperationResultBucket
+      user_install_user_errors_filtered_via_qr_code_after_smds;
+  ESimOperationResultBucket
+      user_install_user_errors_filtered_via_qr_code_skipped_smds;
+  ESimOperationResultBucket user_install_user_errors_filtered_via_smds;
+  ESimOperationResultBucket user_install_user_errors_included_all;
+  ESimOperationResultBucket
       user_install_user_errors_included_via_activation_code_after_smds;
-  HistogramState
+  ESimOperationResultBucket
       user_install_user_errors_included_via_activation_code_skipped_smds;
-  HistogramState user_install_user_errors_included_via_qr_code_after_smds;
-  HistogramState user_install_user_errors_included_via_qr_code_skipped_smds;
-  HistogramState user_install_user_errors_included_via_smds;
+  ESimOperationResultBucket
+      user_install_user_errors_included_via_qr_code_after_smds;
+  ESimOperationResultBucket
+      user_install_user_errors_included_via_qr_code_skipped_smds;
+  ESimOperationResultBucket user_install_user_errors_included_via_smds;
+};
+
+struct ESimSmdsScanHistogramState {
+  ESimSmdsScanHistogramState();
+
+  void Check(const base::HistogramTester* tester) const;
+
+  ESimOperationResultBucket smds_scan_other_user_errors_filtered;
+  ESimOperationResultBucket smds_scan_other_user_errors_included;
+  ESimOperationResultBucket smds_scan_android_user_errors_filtered;
+  ESimOperationResultBucket smds_scan_android_user_errors_included;
+  ESimOperationResultBucket smds_scan_gsma_user_errors_filtered;
+  ESimOperationResultBucket smds_scan_gsma_user_errors_included;
 };
 
 }  // namespace cellular_metrics

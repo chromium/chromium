@@ -117,6 +117,35 @@ const char* GetESimPolicyInstallationResultHistogram(
   }
 }
 
+bool IsAndroidActivationCode(const std::string& smds_activation_code) {
+  return smds_activation_code == cellular_utils::kSmdsAndroidProduction ||
+         smds_activation_code == cellular_utils::kSmdsAndroidStaging;
+}
+
+bool IsGmsaActivationCode(const std::string& smds_activation_code) {
+  return smds_activation_code == cellular_utils::kSmdsGsma;
+}
+
+const char* GetSmdsScanResultHistogram(const std::string& smds_activation_code,
+                                       bool user_errors_included) {
+  if (IsAndroidActivationCode(smds_activation_code)) {
+    return user_errors_included ? CellularNetworkMetricsLogger::
+                                      kESimSmdsScanAndroidUserErrorsIncluded
+                                : CellularNetworkMetricsLogger::
+                                      kESimSmdsScanAndroidUserErrorsFiltered;
+  }
+  if (smds_activation_code == cellular_utils::kSmdsGsma) {
+    return user_errors_included ? CellularNetworkMetricsLogger::
+                                      kESimSmdsScanGsmaUserErrorsIncluded
+                                : CellularNetworkMetricsLogger::
+                                      kESimSmdsScanGsmaUserErrorsFiltered;
+  }
+  return user_errors_included ? CellularNetworkMetricsLogger::
+                                    kESimSmdsScanOtherUserErrorsIncluded
+                              : CellularNetworkMetricsLogger::
+                                    kESimSmdsScanOtherUserErrorsFiltered;
+}
+
 }  // namespace
 
 CellularNetworkMetricsLogger::CellularNetworkMetricsLogger(
@@ -249,18 +278,16 @@ void CellularNetworkMetricsLogger::LogSmdsScanDuration(
     bool success,
     const std::string& smds_activation_code) {
   std::string histogram;
-  if (smds_activation_code == cellular_utils::kSmdsAndroidProduction ||
-      smds_activation_code == cellular_utils::kSmdsAndroidStaging) {
+  if (IsAndroidActivationCode(smds_activation_code)) {
     histogram = success ? kSmdsScanAndroidDurationSuccess
                         : kSmdsScanAndroidDurationFailure;
-  } else if (smds_activation_code == cellular_utils::kSmdsGsma) {
+  } else if (IsGmsaActivationCode(smds_activation_code)) {
     histogram =
         success ? kSmdsScanGsmaDurationSuccess : kSmdsScanGsmaDurationFailure;
   } else {
     histogram =
         success ? kSmdsScanOtherDurationSuccess : kSmdsScanOtherDurationFailure;
   }
-
   base::UmaHistogramTimes(histogram, duration);
 }
 
@@ -279,7 +306,7 @@ void CellularNetworkMetricsLogger::LogESimPolicyInstallMethod(
 // static
 void CellularNetworkMetricsLogger::LogESimUserInstallResult(
     ESimUserInstallMethod method,
-    ESimInstallResult result,
+    ESimOperationResult result,
     bool is_user_error) {
   if (!is_user_error) {
     base::UmaHistogramEnumeration(kESimUserInstallUserErrorsFilteredAll,
@@ -297,7 +324,7 @@ void CellularNetworkMetricsLogger::LogESimUserInstallResult(
 // static
 void CellularNetworkMetricsLogger::LogESimPolicyInstallResult(
     ESimPolicyInstallMethod method,
-    ESimInstallResult result,
+    ESimOperationResult result,
     bool is_initial,
     bool is_user_error) {
   if (!is_user_error) {
@@ -314,19 +341,40 @@ void CellularNetworkMetricsLogger::LogESimPolicyInstallResult(
       GetESimPolicyInstallationResultHistogram(
           method, /*is_initial=*/is_initial, /*user_errors_included=*/true),
       result);
-  GetESimPolicyInstallationResultHistogram(method, is_initial, is_user_error);
 }
 
 // static
-CellularNetworkMetricsLogger::ESimInstallResult
-CellularNetworkMetricsLogger::ComputeESimInstallResult(
+void CellularNetworkMetricsLogger::LogSmdsScanResult(
+    const std::string& smds_activation_code,
+    absl::optional<HermesResponseStatus> status) {
+  const bool is_user_error =
+      status.has_value() &&
+      CellularNetworkMetricsLogger::HermesResponseStatusIsUserError(*status);
+  const ESimOperationResult result =
+      CellularNetworkMetricsLogger::ComputeESimOperationResult(status);
+
+  if (!is_user_error) {
+    base::UmaHistogramEnumeration(
+        GetSmdsScanResultHistogram(smds_activation_code,
+                                   /*user_errors_included=*/false),
+        result);
+  }
+  base::UmaHistogramEnumeration(
+      GetSmdsScanResultHistogram(smds_activation_code,
+                                 /*user_errors_included=*/true),
+      result);
+}
+
+// static
+CellularNetworkMetricsLogger::ESimOperationResult
+CellularNetworkMetricsLogger::ComputeESimOperationResult(
     absl::optional<HermesResponseStatus> status) {
   if (status.has_value()) {
     return *status == HermesResponseStatus::kSuccess
-               ? ESimInstallResult::kSuccess
-               : ESimInstallResult::kHermesFailed;
+               ? ESimOperationResult::kSuccess
+               : ESimOperationResult::kHermesFailed;
   }
-  return ESimInstallResult::kInhibitFailed;
+  return ESimOperationResult::kInhibitFailed;
 }
 
 // static

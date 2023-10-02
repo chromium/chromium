@@ -20,6 +20,7 @@
 #include "chromeos/ash/components/network/cellular_utils.h"
 #include "chromeos/ash/components/network/managed_cellular_pref_handler.h"
 #include "chromeos/ash/components/network/metrics/cellular_network_metrics_logger.h"
+#include "chromeos/ash/components/network/metrics/cellular_network_metrics_test_helper.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
@@ -146,6 +147,7 @@ class CellularPolicyHandlerTest : public testing::Test {
     size_t scan_duration_android_failure_count = 0u;
     size_t scan_duration_gsma_success_count = 0u;
     size_t scan_duration_gsma_failure_count = 0u;
+    cellular_metrics::ESimSmdsScanHistogramState smds_scan_state;
   };
 
   CellularPolicyHandlerTest(
@@ -368,6 +370,7 @@ class CellularPolicyHandlerTest : public testing::Test {
     histogram_tester_.ExpectTotalCount(
         CellularNetworkMetricsLogger::kSmdsScanGsmaDurationFailure,
         /*expected_count=*/state.scan_duration_gsma_failure_count);
+    state.smds_scan_state.Check(&histogram_tester_);
   }
 
   // This functionality was explicitly separated from InstallProfile() since
@@ -496,6 +499,7 @@ TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
 
   ExpectedHistogramState expected_state;
   CheckHistogramState(expected_state);
+
   const policy_util::SmdxActivationCode activation_code(
       policy_util::SmdxActivationCode::Type::SMDP,
       HermesEuiccClient::Get()
@@ -584,6 +588,10 @@ TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
   expected_state.smds_scan_profile_sum++;
   expected_state.install_method_via_smds_count++;
   expected_state.scan_duration_other_success_count++;
+  expected_state.smds_scan_state.smds_scan_other_user_errors_filtered
+      .success_count++;
+  expected_state.smds_scan_state.smds_scan_other_user_errors_included
+      .success_count++;
   CheckHistogramState(expected_state);
 }
 
@@ -623,6 +631,10 @@ TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
   EXPECT_FALSE(HasESimMetadata(activation_code.value()));
   expected_state.smds_scan_profile_total_count++;
   expected_state.scan_duration_other_failure_count++;
+  expected_state.smds_scan_state.smds_scan_other_user_errors_filtered
+      .hermes_failed_count++;
+  expected_state.smds_scan_state.smds_scan_other_user_errors_included
+      .hermes_failed_count++;
   CheckHistogramState(expected_state);
 }
 
@@ -771,6 +783,10 @@ TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
   expected_state.smds_scan_profile_sum = 5;
   expected_state.install_method_via_smds_count++;
   expected_state.scan_duration_other_success_count++;
+  expected_state.smds_scan_state.smds_scan_other_user_errors_filtered
+      .success_count++;
+  expected_state.smds_scan_state.smds_scan_other_user_errors_included
+      .success_count++;
   CheckHistogramState(expected_state);
 }
 
@@ -1089,6 +1105,10 @@ TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
   expected_state.smds_scan_profile_total_count++;
   expected_state.smds_scan_profile_sum++;
   expected_state.scan_duration_other_success_count++;
+  expected_state.smds_scan_state.smds_scan_other_user_errors_filtered
+      .success_count++;
+  expected_state.smds_scan_state.smds_scan_other_user_errors_included
+      .success_count++;
   CheckHistogramState(expected_state);
 }
 

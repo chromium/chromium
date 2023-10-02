@@ -435,6 +435,12 @@ void CellularPolicyHandler::OnInhibitedForRefreshSmdxProfiles(
         << "Failed to inhibit cellular for refreshing SM-DX profiles";
     auto current_request = std::move(remaining_install_requests_.front());
 
+    if (current_request->activation_code.type() ==
+        policy_util::SmdxActivationCode::Type::SMDS) {
+      CellularNetworkMetricsLogger::LogSmdsScanResult(
+          current_request->activation_code.value(),
+          /*result=*/absl::nullopt);
+    }
     PopRequest();
     ScheduleRetryAndProcessRequests(std::move(current_request),
                                     InstallRetryReason::kInternalError);
@@ -459,17 +465,19 @@ void CellularPolicyHandler::OnRefreshSmdxProfiles(
     const std::vector<dbus::ObjectPath>& profile_paths) {
   DCHECK(inhibit_lock);
 
+  auto& current_request = remaining_install_requests_.front();
+
   const bool is_smds =
       remaining_install_requests_.front()->activation_code.type() ==
       policy_util::SmdxActivationCode::Type::SMDS;
   if (is_smds) {
+    CellularNetworkMetricsLogger::LogSmdsScanResult(
+        current_request->activation_code.value(), status);
     CellularNetworkMetricsLogger::LogSmdsScanProfileCount(profile_paths.size());
     CellularNetworkMetricsLogger::LogSmdsScanDuration(
         base::TimeTicks::Now() - start_time,
         status == HermesResponseStatus::kSuccess,
-        remaining_install_requests_.front()->activation_code.ToString());
-    // TODO(b/278135630): Emit
-    // Network.Ash.Cellular.ESim.SMDSScan.{SMDSType}.{ResultType}.
+        current_request->activation_code.ToString());
   }
 
   std::unique_ptr<CellularESimProfileWaiter> waiter =

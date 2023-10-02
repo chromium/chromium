@@ -34840,7 +34840,7 @@ Called by update_document_policy_enum.py.-->
   <int value="0" label="errSecSuccess"/>
 </enum>
 
-<enum name="ESimInstallResult">
+<enum name="ESimOperationResult">
   <int value="0" label="Success"/>
   <int value="1" label="Inhibit failed"/>
   <int value="2" label="Hermes failed"/>

@@ -208,10 +208,12 @@ void CellularESimProfileHandler::OnInhibitedForRequestAvailableProfiles(
   DCHECK(info->callback);
 
   if (!inhibit_lock) {
-    // TODO(b/278135630): Emit
-    // Network.Ash.Cellular.ESim.SMDSScan.{SMDSType}.{ResultType}.
+    DCHECK(!info->smds_activation_codes.empty());
     NET_LOG(ERROR)
         << "Failed to inhibit cellular for requesting available profiles";
+    CellularNetworkMetricsLogger::LogSmdsScanResult(
+        info->smds_activation_codes.front(),
+        /*result=*/absl::nullopt);
     std::move(info->callback)
         .Run(cellular_setup::mojom::ESimOperationResult::kFailure,
              std::vector<CellularESimProfile>());
@@ -302,6 +304,7 @@ void CellularESimProfileHandler::OnRequestAvailableProfiles(
   DCHECK(info->callback);
   DCHECK(inhibit_lock);
 
+  CellularNetworkMetricsLogger::LogSmdsScanResult(smds_activation_code, status);
   CellularNetworkMetricsLogger::LogSmdsScanDuration(
       base::TimeTicks::Now() - start_time,
       status == HermesResponseStatus::kSuccess, smds_activation_code);

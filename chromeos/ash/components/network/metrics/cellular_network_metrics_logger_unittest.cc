@@ -342,7 +342,7 @@ TEST_F(CellularNetworkMetricsLoggerTest, OnlyCellularNetworksStatusRecorded) {
 }
 
 TEST_F(CellularNetworkMetricsLoggerTest, ESimUserInstall) {
-  using ESimInstallResult = CellularNetworkMetricsLogger::ESimInstallResult;
+  using ESimOperationResult = CellularNetworkMetricsLogger::ESimOperationResult;
   using ESimUserInstallMethod =
       CellularNetworkMetricsLogger::ESimUserInstallMethod;
 
@@ -350,20 +350,19 @@ TEST_F(CellularNetworkMetricsLoggerTest, ESimUserInstall) {
   state.Check(histogram_tester());
 
   auto do_increment =
-      [](ash::cellular_metrics::ESimInstallHistogramState::HistogramState*
-             state,
-         ESimInstallResult result) {
-        if (result == ESimInstallResult::kSuccess) {
+      [](ash::cellular_metrics::ESimOperationResultBucket* state,
+         ESimOperationResult result) {
+        if (result == ESimOperationResult::kSuccess) {
           state->success_count++;
-        } else if (result == ESimInstallResult::kInhibitFailed) {
+        } else if (result == ESimOperationResult::kInhibitFailed) {
           state->inhibit_failed_count++;
-        } else if (result == ESimInstallResult::kHermesFailed) {
+        } else if (result == ESimOperationResult::kHermesFailed) {
           state->hermes_failed_count++;
         }
       };
 
   auto increment_user_errors_filtered = [&](ESimUserInstallMethod method,
-                                            ESimInstallResult result) {
+                                            ESimOperationResult result) {
     do_increment(&state.user_install_user_errors_filtered_all, result);
     if (method == ESimUserInstallMethod::kViaSmds) {
       do_increment(&state.user_install_user_errors_filtered_via_smds, result);
@@ -389,7 +388,7 @@ TEST_F(CellularNetworkMetricsLoggerTest, ESimUserInstall) {
   };
 
   auto increment_user_errors_included = [&](ESimUserInstallMethod method,
-                                            ESimInstallResult result) {
+                                            ESimOperationResult result) {
     do_increment(&state.user_install_user_errors_included_all, result);
     if (method == ESimUserInstallMethod::kViaSmds) {
       do_increment(&state.user_install_user_errors_included_via_smds, result);
@@ -415,9 +414,9 @@ TEST_F(CellularNetworkMetricsLoggerTest, ESimUserInstall) {
   };
 
   auto emit_and_check = [this, &increment_user_errors_filtered,
-                         &increment_user_errors_included,
-                         &state](ESimUserInstallMethod method,
-                                 ESimInstallResult result, bool is_user_error) {
+                         &increment_user_errors_included, &state](
+                            ESimUserInstallMethod method,
+                            ESimOperationResult result, bool is_user_error) {
     CellularNetworkMetricsLogger::LogESimUserInstallResult(method, result,
                                                            is_user_error);
     if (!is_user_error) {
@@ -433,8 +432,8 @@ TEST_F(CellularNetworkMetricsLoggerTest, ESimUserInstall) {
                       ESimUserInstallMethod::kViaActivationCodeAfterSmds,
                       ESimUserInstallMethod::kViaActivationCodeSkippedSmds}) {
     for (auto result :
-         {ESimInstallResult::kSuccess, ESimInstallResult::kInhibitFailed,
-          ESimInstallResult::kHermesFailed}) {
+         {ESimOperationResult::kSuccess, ESimOperationResult::kInhibitFailed,
+          ESimOperationResult::kHermesFailed}) {
       for (auto is_user_error : {true, false}) {
         emit_and_check(method, result, is_user_error);
       }
@@ -443,7 +442,7 @@ TEST_F(CellularNetworkMetricsLoggerTest, ESimUserInstall) {
 }
 
 TEST_F(CellularNetworkMetricsLoggerTest, ESimPolicyInstall) {
-  using ESimInstallResult = CellularNetworkMetricsLogger::ESimInstallResult;
+  using ESimOperationResult = CellularNetworkMetricsLogger::ESimOperationResult;
   using ESimPolicyInstallMethod =
       CellularNetworkMetricsLogger::ESimPolicyInstallMethod;
 
@@ -451,19 +450,18 @@ TEST_F(CellularNetworkMetricsLoggerTest, ESimPolicyInstall) {
   state.Check(histogram_tester());
 
   auto do_increment =
-      [](ash::cellular_metrics::ESimInstallHistogramState::HistogramState*
-             state,
-         ESimInstallResult result) {
-        if (result == ESimInstallResult::kSuccess) {
+      [](ash::cellular_metrics::ESimOperationResultBucket* state,
+         ESimOperationResult result) {
+        if (result == ESimOperationResult::kSuccess) {
           state->success_count++;
-        } else if (result == ESimInstallResult::kInhibitFailed) {
+        } else if (result == ESimOperationResult::kInhibitFailed) {
           state->inhibit_failed_count++;
-        } else if (result == ESimInstallResult::kHermesFailed) {
+        } else if (result == ESimOperationResult::kHermesFailed) {
           state->hermes_failed_count++;
         }
       };
 
-  auto increment_user_errors_filtered_smdp = [&](ESimInstallResult result,
+  auto increment_user_errors_filtered_smdp = [&](ESimOperationResult result,
                                                  bool is_initial) {
     if (is_initial) {
       do_increment(&state.policy_install_user_errors_filtered_smdp_initial,
@@ -474,7 +472,7 @@ TEST_F(CellularNetworkMetricsLoggerTest, ESimPolicyInstall) {
     }
   };
 
-  auto increment_user_errors_filtered_smds = [&](ESimInstallResult result,
+  auto increment_user_errors_filtered_smds = [&](ESimOperationResult result,
                                                  bool is_initial) {
     if (is_initial) {
       do_increment(&state.policy_install_user_errors_filtered_smds_initial,
@@ -486,7 +484,7 @@ TEST_F(CellularNetworkMetricsLoggerTest, ESimPolicyInstall) {
   };
 
   auto increment_user_errors_filtered = [&](ESimPolicyInstallMethod method,
-                                            ESimInstallResult result,
+                                            ESimOperationResult result,
                                             bool is_initial) {
     do_increment(&state.policy_install_user_errors_filtered_all, result);
     if (method == ESimPolicyInstallMethod::kViaSmdp) {
@@ -496,7 +494,7 @@ TEST_F(CellularNetworkMetricsLoggerTest, ESimPolicyInstall) {
     }
   };
 
-  auto increment_user_errors_included_smdp = [&](ESimInstallResult result,
+  auto increment_user_errors_included_smdp = [&](ESimOperationResult result,
                                                  bool is_initial) {
     if (is_initial) {
       do_increment(&state.policy_install_user_errors_included_smdp_initial,
@@ -507,7 +505,7 @@ TEST_F(CellularNetworkMetricsLoggerTest, ESimPolicyInstall) {
     }
   };
 
-  auto increment_user_errors_included_smds = [&](ESimInstallResult result,
+  auto increment_user_errors_included_smds = [&](ESimOperationResult result,
                                                  bool is_initial) {
     if (is_initial) {
       do_increment(&state.policy_install_user_errors_included_smds_initial,
@@ -519,7 +517,7 @@ TEST_F(CellularNetworkMetricsLoggerTest, ESimPolicyInstall) {
   };
 
   auto increment_user_errors_included = [&](ESimPolicyInstallMethod method,
-                                            ESimInstallResult result,
+                                            ESimOperationResult result,
                                             bool is_initial) {
     do_increment(&state.policy_install_user_errors_included_all, result);
     if (method == ESimPolicyInstallMethod::kViaSmdp) {
@@ -531,7 +529,7 @@ TEST_F(CellularNetworkMetricsLoggerTest, ESimPolicyInstall) {
 
   auto emit_and_check =
       [this, &increment_user_errors_filtered, &increment_user_errors_included,
-       &state](ESimPolicyInstallMethod method, ESimInstallResult result,
+       &state](ESimPolicyInstallMethod method, ESimOperationResult result,
                bool is_initial, bool is_user_error) {
         CellularNetworkMetricsLogger::LogESimPolicyInstallResult(
             method, result, is_initial, is_user_error);
@@ -545,8 +543,8 @@ TEST_F(CellularNetworkMetricsLoggerTest, ESimPolicyInstall) {
   for (auto method :
        {ESimPolicyInstallMethod::kViaSmdp, ESimPolicyInstallMethod::kViaSmds}) {
     for (auto result :
-         {ESimInstallResult::kSuccess, ESimInstallResult::kInhibitFailed,
-          ESimInstallResult::kHermesFailed}) {
+         {ESimOperationResult::kSuccess, ESimOperationResult::kInhibitFailed,
+          ESimOperationResult::kHermesFailed}) {
       for (auto is_initial : {true, false}) {
         for (auto is_user_error : {true, false}) {
           emit_and_check(method, result, is_initial, is_user_error);
