@@ -21,6 +21,10 @@
 #include "extensions/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/flags/android/chrome_feature_list.h"
+#endif
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "base/strings/string_split.h"
 #include "chrome/browser/browsing_data/counters/hosted_apps_counter.h"
@@ -34,12 +38,19 @@ class BrowsingDataCounterUtilsTest : public testing::Test {
 
   TestingProfile* GetProfile() { return &profile_; }
 
+  base::test::ScopedFeatureList scoped_feature_list_;
+
  private:
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
 };
 
 TEST_F(BrowsingDataCounterUtilsTest, CacheCounterResult) {
+#if BUILDFLAG(IS_ANDROID)
+  scoped_feature_list_.InitAndDisableFeature(
+      chrome::android::kQuickDeleteForAndroid);
+#endif
+
   // This test assumes that the strings are served exactly as defined,
   // i.e. that the locale is set to the default "en".
   ASSERT_EQ("en", TestingBrowserProcess::GetGlobal()->GetApplicationLocale());
@@ -87,6 +98,51 @@ TEST_F(BrowsingDataCounterUtilsTest, CacheCounterResult) {
     EXPECT_EQ(output, base::ASCIIToUTF16(test_case.expected_output));
   }
 }
+
+#if BUILDFLAG(IS_ANDROID)
+// Tests the output of the hosted apps counter.
+TEST_F(BrowsingDataCounterUtilsTest, QuickDeleteAdvancedCacheCounterResult) {
+  scoped_feature_list_.InitAndEnableFeature(
+      chrome::android::kQuickDeleteForAndroid);
+
+  // This test assumes that the strings are served exactly as defined,
+  // i.e. that the locale is set to the default "en".
+  ASSERT_EQ("en", TestingBrowserProcess::GetGlobal()->GetApplicationLocale());
+  const int kBytesInAMegabyte = 1024 * 1024;
+
+  // Test the output for various forms of CacheResults.
+  const struct TestCase {
+    int bytes;
+    bool is_upper_limit;
+    std::string expected_output;
+  } kTestCases[] = {
+      {42, false,
+       "Less than 1 MB. Some sites may load more slowly on your next "
+       "visit."},
+      {static_cast<int>(2.312 * kBytesInAMegabyte), false,
+       "2.3 MB. Some sites may load more slowly on your next "
+       "visit."},
+      {static_cast<int>(2.312 * kBytesInAMegabyte), true,
+       "Less than 2.3 MB. Some sites may load more slowly on your next "
+       "visit."}};
+
+  for (const TestCase& test_case : kTestCases) {
+    CacheCounter counter(GetProfile());
+    browsing_data::ClearBrowsingDataTab tab =
+        browsing_data::ClearBrowsingDataTab::ADVANCED;
+    counter.Init(GetProfile()->GetPrefs(), tab,
+                 browsing_data::BrowsingDataCounter::ResultCallback());
+    CacheCounter::CacheResult result(&counter, test_case.bytes,
+                                     test_case.is_upper_limit);
+    SCOPED_TRACE(base::StringPrintf("Test params: %d bytes, %d is_upper_limit",
+                                    test_case.bytes, test_case.is_upper_limit));
+
+    std::u16string output =
+        GetChromeCounterTextFromResult(&result, GetProfile());
+    EXPECT_EQ(output, base::ASCIIToUTF16(test_case.expected_output));
+  }
+}
+#endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 // Tests the complex output of the hosted apps counter.

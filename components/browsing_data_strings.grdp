@@ -31,6 +31,15 @@
   <message name="IDS_DEL_CACHE_COUNTER_ALMOST_EMPTY_BASIC" desc="A counter showing that the user's cache is almost empty and explaining that the cache is used to speed up the loading of websites.">
     Frees up less than 1 MB. Some sites may load more slowly on your next visit.
   </message>
+  <message name="IDS_ANDROID_DEL_CACHE_COUNTER_ADVANCED" desc="A counter showing the size of the users's cache on the Advanced Clear browsing data dialog. The value (e.g. '328 MB') will be substituted. It also explains that the cache is used to speed up the loading of websites.">
+    <ph name="SIZE">$1<ex>328 MB</ex></ph>. Some sites may load more slowly on your next visit.
+  </message>
+  <message name="IDS_ANDROID_DEL_CACHE_COUNTER_ADVANCED_UPPER_ESTIMATE" desc="A counter showing that the user has less than X megabytes of cache on the Advanced Clear browsing data dialog. The value X will be substituted. It also explains that the cache is used to speed up the loading of websites.">
+    Less than <ph name="UPPER_ESTIMATE">$1<ex>328 MB</ex></ph>. Some sites may load more slowly on your next visit.
+  </message>
+  <message name="IDS_ANDROID_DEL_CACHE_COUNTER_ADVANCED_ALMOST_EMPTY" desc="A counter showing that the user's cache is almost empty, having less than 1 MB of data, on the Advanced Clear browsing data dialog. It also explains that the cache is used to speed up the loading of websites.">
+    Less than 1 MB. Some sites may load more slowly on your next visit.
+  </message>
   <message name="IDS_DEL_PASSWORDS_COUNTER" desc="A counter showing how many passwords the user has. The list of example domains associated with the user's passwords is denoted by the placeholder DOMAIN_LIST.">
     {COUNT, plural,
      =0 {None}
@@ -148,6 +157,12 @@
       =0 {None}
       =1 {From 1 site (you won't be signed out of your Google Account)}
       other {From # sites (you won't be signed out of your Google Account)}}
+  </message>
+  <message name="IDS_ANDROID_DEL_COOKIES_COUNTER_ADVANCED" desc="A counter showing the number of sites that use cookies on the advanced Clear browsing data screen on Android. It also explains that deleting these cookies will sign you out of most sites.">
+    {COUNT, plural,
+      =0 {None}
+      =1 {From 1 site. Signs you out of most sites. }
+      other {From # sites. Signs you out of most sites. }}
   </message>
   <message name="IDS_DEL_DOWNLOADS_COUNTER" desc="A counter showing how many items of downloads history the user has.">
     {COUNT, plural,

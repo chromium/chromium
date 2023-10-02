@@ -39,6 +39,7 @@ import org.chromium.chrome.browser.browsing_data.BrowsingDataCounterBridge.Brows
 import org.chromium.chrome.browser.browsing_data.TimePeriodUtils.TimePeriodSpinnerOption;
 import org.chromium.chrome.browser.feedback.FragmentHelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.historyreport.AppIndexingReporter;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -696,7 +697,11 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
 
     @VisibleForTesting
     SpannableString buildSignOutOfChromeText() {
-        return SpanApplier.applySpans(getContext().getString(R.string.sign_out_of_chrome_link),
+        int signOutOfChromeStringId = getClearBrowsingDataTabType() == ClearBrowsingDataTab.ADVANCED
+                        && ChromeFeatureList.isEnabled(ChromeFeatureList.QUICK_DELETE_FOR_ANDROID)
+                ? R.string.sign_out_of_chrome_link_advanced
+                : R.string.sign_out_of_chrome_link;
+        return SpanApplier.applySpans(getContext().getString(signOutOfChromeStringId),
                 new SpanInfo("<link1>", "</link1>",
                         new NoUnderlineClickableSpan(
                                 requireContext(), createSignOutOfChromeCallback())));
