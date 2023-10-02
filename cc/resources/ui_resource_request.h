@@ -16,20 +16,18 @@ namespace cc {
 
 class CC_EXPORT UIResourceRequest {
  public:
-  enum UIResourceRequestType {
-    UI_RESOURCE_CREATE,
-    UI_RESOURCE_DELETE,
+  enum class Type {
+    kCreate,
+    kDelete,
   };
 
-  UIResourceRequest(UIResourceRequestType type, UIResourceId id);
-  UIResourceRequest(UIResourceRequestType type,
-                    UIResourceId id,
-                    const UIResourceBitmap& bitmap);
+  UIResourceRequest(Type type, UIResourceId id);
+  UIResourceRequest(Type type, UIResourceId id, const UIResourceBitmap& bitmap);
   UIResourceRequest(const UIResourceRequest& request);
 
   ~UIResourceRequest();
 
-  UIResourceRequestType GetType() const { return type_; }
+  Type GetType() const { return type_; }
   UIResourceId GetId() const { return id_; }
   UIResourceBitmap GetBitmap() const {
     DCHECK(bitmap_);
@@ -39,7 +37,7 @@ class CC_EXPORT UIResourceRequest {
   UIResourceRequest& operator=(const UIResourceRequest& request);
 
  private:
-  UIResourceRequestType type_;
+  Type type_;
   UIResourceId id_;
   std::unique_ptr<UIResourceBitmap> bitmap_;
 };

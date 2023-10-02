@@ -24,7 +24,7 @@ UIResourceId UIResourceManager::CreateUIResource(UIResourceClient* client) {
   DCHECK(!base::Contains(ui_resource_client_map_, next_id));
 
   bool resource_lost = false;
-  UIResourceRequest request(UIResourceRequest::UI_RESOURCE_CREATE, next_id,
+  UIResourceRequest request(UIResourceRequest::Type::kCreate, next_id,
                             client->GetBitmap(next_id, resource_lost));
   ui_resource_request_queue_.push_back(request);
 
@@ -41,7 +41,7 @@ void UIResourceManager::DeleteUIResource(UIResourceId uid) {
   if (iter == ui_resource_client_map_.end())
     return;
 
-  UIResourceRequest request(UIResourceRequest::UI_RESOURCE_DELETE, uid);
+  UIResourceRequest request(UIResourceRequest::Type::kDelete, uid);
   ui_resource_request_queue_.push_back(request);
   ui_resource_client_map_.erase(iter);
 }
@@ -53,7 +53,7 @@ void UIResourceManager::RecreateUIResources() {
     bool resource_lost = true;
     if (!base::Contains(ui_resource_request_queue_, uid,
                         &UIResourceRequest::GetId)) {
-      UIResourceRequest request(UIResourceRequest::UI_RESOURCE_CREATE, uid,
+      UIResourceRequest request(UIResourceRequest::Type::kCreate, uid,
                                 data.client->GetBitmap(uid, resource_lost));
       ui_resource_request_queue_.push_back(request);
     }

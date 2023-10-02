@@ -454,11 +454,11 @@ void LayerTreeImpl::GenerateCompositorFrame(
   for (auto& resource_request :
        ui_resource_manager_.TakeUIResourcesRequests()) {
     switch (resource_request.GetType()) {
-      case cc::UIResourceRequest::UI_RESOURCE_CREATE:
+      case cc::UIResourceRequest::Type::kCreate:
         frame_sink_->UploadUIResource(resource_request.GetId(),
                                       resource_request.GetBitmap());
         break;
-      case cc::UIResourceRequest::UI_RESOURCE_DELETE:
+      case cc::UIResourceRequest::Type::kDelete:
         frame_sink_->MarkUIResourceForDeletion(resource_request.GetId());
         break;
     }

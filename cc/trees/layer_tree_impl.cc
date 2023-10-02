@@ -2110,10 +2110,10 @@ void LayerTreeImpl::ProcessUIResourceRequestQueue() {
                ui_resource_request_queue_.size());
   for (const auto& req : ui_resource_request_queue_) {
     switch (req.GetType()) {
-      case UIResourceRequest::UI_RESOURCE_CREATE:
+      case UIResourceRequest::Type::kCreate:
         host_impl_->CreateUIResource(req.GetId(), req.GetBitmap());
         break;
-      case UIResourceRequest::UI_RESOURCE_DELETE:
+      case UIResourceRequest::Type::kDelete:
         host_impl_->DeleteUIResource(req.GetId());
         break;
     }
