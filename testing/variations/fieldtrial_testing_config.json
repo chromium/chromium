@@ -16422,6 +16422,25 @@
             ]
         }
     ],
+    "SynchronizedScrolling": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Disabled",
+                    "disable_features": [
+                        "SynchronizedScrolling"
+                    ]
+                }
+            ]
+        }
+    ],
     "SynthesizePageLoadOnlyOnInitialMainDocumentAccess": [
         {
             "platforms": [
