@@ -22,12 +22,12 @@
     "@typescript-eslint/eslint-plugin": "5.50.0",
     "@typescript-eslint/parser": "5.50.0",
     "babel-eslint": "10.0.2",
-    "eslint": "8.33.0",
+    "eslint": "8.50.0",
     "eslint-plugin-jsdoc": "37.5.1",
     "html-minifier": "4.0.0",
-    "rollup": "3.12.0",
-    "svgo": "2.8.0",
-    "terser": "5.16.2",
+    "rollup": "3.29.4",
+    "svgo": "3.0.2",
+    "terser": "5.20.0",
     "typescript": "5.0.3"
   }
 }
