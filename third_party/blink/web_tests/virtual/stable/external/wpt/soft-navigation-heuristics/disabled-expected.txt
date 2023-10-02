@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+PASS Test that a soft navigation is not detected when the feature is disabled
+Harness: the test ran to completion.
+

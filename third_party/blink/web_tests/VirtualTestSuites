@@ -271,7 +271,8 @@
               "media/stable",
               "webexposed",
               "compositing/filters",
-              "external/wpt/performance-timeline/tentative/with-filter-options-originA.html"
+              "external/wpt/performance-timeline/tentative/with-filter-options-originA.html",
+              "external/wpt/soft-navigation-heuristics/disabled.html"
             ],
     "exclusive_tests": ["media/stable"],
     "args": ["--stable-release-mode",
