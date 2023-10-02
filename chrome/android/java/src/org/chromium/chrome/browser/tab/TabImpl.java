@@ -1010,6 +1010,8 @@ public class TabImpl implements Tab {
         assert state != null;
         CriticalPersistedTabData.from(this).setWebContentsState(state.contentsState);
         CriticalPersistedTabData.from(this).setTimestampMillis(state.timestampMillis);
+        CriticalPersistedTabData.from(this).setLastNavigationCommittedTimestampMillis(
+                state.lastNavigationCommittedTimestampMillis);
         CriticalPersistedTabData.from(this).setUrl(
                 new GURL(state.contentsState.getVirtualUrlFromState()));
         CriticalPersistedTabData.from(this).setTitle(
