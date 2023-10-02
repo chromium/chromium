@@ -1116,6 +1116,17 @@ void RenderFrameHostManager::UnloadOldFrame(
                 "bfcache_eligibility",
                 bfcache_eligibility.flattened_reasons.ToString());
     if (can_store) {
+      bool is_same_process =
+          (old_render_frame_host->GetProcess() ==
+           frame_tree_node_->current_frame_host()->GetProcess());
+      if (old_render_frame_host->GetSiteInstance()->IsSameSiteWithURL(
+              frame_tree_node_->current_url())) {
+        base::UmaHistogramBoolean("BackForwardCache.ProcessReuse.SameSite",
+                                  is_same_process);
+      } else {
+        base::UmaHistogramBoolean("BackForwardCache.ProcessReuse.CrossSite",
+                                  is_same_process);
+      }
       auto stored_page = CollectPage(std::move(old_render_frame_host));
       auto entry =
           std::make_unique<BackForwardCacheImpl::Entry>(std::move(stored_page));

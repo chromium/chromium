@@ -51,6 +51,11 @@ chromium-metrics-reviews@google.com.
   <variant name="Regular"/>
 </variants>
 
+<variants name="SiteRelation">
+  <variant name="CrossSite"/>
+  <variant name="SameSite"/>
+</variants>
+
 <histogram name="BackForwardCache.AllSites.EvictedAfterDocumentRestoredReason"
     enum="BackForwardCacheEvictedAfterDocumentRestoredReason"
     expires_after="2024-03-03">
@@ -426,6 +431,21 @@ chromium-metrics-reviews@google.com.
     &quot;PageSeen&quot; will be recorded; if the page is egligible to be stored
     in the back forward cache, &quot;PageStored&quot; will be recorded.
   </summary>
+</histogram>
+
+<histogram name="BackForwardCache.ProcessReuse.{SiteRelation}" units="count"
+    expires_after="2024-01-15">
+  <owner>rakina@chromium.org</owner>
+  <owner>bfcache-dev@chromium.org</owner>
+  <summary>
+    Whether a back/forward cached page shares the same process as the page that
+    we're navigating to (i.e. whether the new active page reuses the process of
+    the back/forward cached page).
+
+    Recorded when navigating away from a page, after the navigation commits and
+    we're about to put the previous page into the back/forward cache.
+  </summary>
+  <token key="SiteRelation" variants="SiteRelation"/>
 </histogram>
 
 <histogram name="BackForwardCache.Restore.NavigationToFirstPaint" units="ms"
