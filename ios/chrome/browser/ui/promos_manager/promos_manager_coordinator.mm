@@ -16,7 +16,7 @@
 #import "components/crash/core/common/crash_key.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "ios/chrome/app/tests_hook.h"
-#import "ios/chrome/browser/credential_provider_promo/features.h"
+#import "ios/chrome/browser/credential_provider_promo/model/features.h"
 #import "ios/chrome/browser/default_browser/utils.h"
 #import "ios/chrome/browser/feature_engagement/tracker_factory.h"
 #import "ios/chrome/browser/ntp/features.h"

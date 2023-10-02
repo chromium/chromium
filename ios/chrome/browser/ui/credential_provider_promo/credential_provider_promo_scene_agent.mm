@@ -6,7 +6,7 @@
 
 #import "components/password_manager/core/browser/password_manager_util.h"
 #import "components/prefs/pref_service.h"
-#import "ios/chrome/browser/credential_provider_promo/features.h"
+#import "ios/chrome/browser/credential_provider_promo/model/features.h"
 #import "ios/chrome/browser/promos_manager/constants.h"
 #import "ios/chrome/browser/promos_manager/promos_manager.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"

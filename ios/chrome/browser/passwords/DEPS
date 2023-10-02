@@ -4,7 +4,7 @@ include_rules = [
   "+ios/chrome/browser/infobars",
   "+ios/chrome/browser/safe_browsing",
   "+ios/chrome/browser/autofill",
-  "+ios/chrome/browser/credential_provider_promo/features.h",
+  "+ios/chrome/browser/credential_provider_promo/model/features.h",
   "+ios/chrome/browser/translate",
   "+ios/chrome/browser/webdata_services/model",
 ]

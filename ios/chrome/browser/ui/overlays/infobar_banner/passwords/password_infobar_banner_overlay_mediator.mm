@@ -7,7 +7,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "build/build_config.h"
-#import "ios/chrome/browser/credential_provider_promo/features.h"
+#import "ios/chrome/browser/credential_provider_promo/model/features.h"
 #import "ios/chrome/browser/overlays/public/default/default_infobar_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/overlay_request_support.h"
 #import "ios/chrome/browser/passwords/ios_chrome_save_password_infobar_delegate.h"

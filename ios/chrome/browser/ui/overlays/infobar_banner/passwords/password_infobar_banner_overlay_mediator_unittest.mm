@@ -10,7 +10,7 @@
 #import "base/test/scoped_feature_list.h"
 #import "build/build_config.h"
 #import "components/infobars/core/infobar.h"
-#import "ios/chrome/browser/credential_provider_promo/features.h"
+#import "ios/chrome/browser/credential_provider_promo/model/features.h"
 #import "ios/chrome/browser/infobars/infobar_ios.h"
 #import "ios/chrome/browser/overlays/public/default/default_infobar_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/overlay_request.h"

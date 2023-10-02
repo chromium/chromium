@@ -9,7 +9,7 @@
 #import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/testing_pref_service.h"
-#import "ios/chrome/browser/credential_provider_promo/features.h"
+#import "ios/chrome/browser/credential_provider_promo/model/features.h"
 #import "ios/chrome/browser/promos_manager/mock_promos_manager.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/commands/credential_provider_promo_commands.h"

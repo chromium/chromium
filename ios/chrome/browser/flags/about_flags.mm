@@ -73,7 +73,7 @@
 #import "ios/chrome/browser/bring_android_tabs/model/features.h"
 #import "ios/chrome/browser/browsing_data/model/browsing_data_features.h"
 #import "ios/chrome/browser/crash_report/model/features.h"
-#import "ios/chrome/browser/credential_provider_promo/features.h"
+#import "ios/chrome/browser/credential_provider_promo/model/features.h"
 #import "ios/chrome/browser/default_browser/utils.h"
 #import "ios/chrome/browser/find_in_page/util.h"
 #import "ios/chrome/browser/flags/chrome_switches.h"
