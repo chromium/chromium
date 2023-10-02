@@ -4243,6 +4243,15 @@
           'shards': 3,
         },
       },
+      'win10-code-coverage': {
+        'swarming': {
+          'shards': 4,
+          'dimensions': {
+            'pool': 'chromium.tests.coverage',
+            'ssd': '1',
+          },
+        }
+      },
     },
   },
   'sync_integration_tests_no_field_trial': {
