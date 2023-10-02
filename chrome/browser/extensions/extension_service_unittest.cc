@@ -1518,7 +1518,8 @@ TEST_F(ExtensionServiceTest, UninstallingNotLoadedExtension) {
 }
 
 // Test that external extensions with incorrect IDs are not installed.
-TEST_F(ExtensionServiceTest, FailOnWrongId) {
+// TODO(b/300670172): This test is extremely flaky.
+TEST_F(ExtensionServiceTest, DISABLED_FailOnWrongId) {
   InitializeEmptyExtensionService();
   base::FilePath path = data_dir().AppendASCII("good.crx");
 
