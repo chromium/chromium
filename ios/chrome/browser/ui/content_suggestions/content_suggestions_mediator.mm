@@ -39,6 +39,7 @@
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
+#import "ios/chrome/app/application_delegate/app_state_observer.h"
 #import "ios/chrome/browser/default_browser/utils.h"
 #import "ios/chrome/browser/intents/intents_donation_helper.h"
 #import "ios/chrome/browser/ntp/features.h"
@@ -140,7 +141,8 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 
 }  // namespace
 
-@interface ContentSuggestionsMediator () <AuthenticationServiceObserving,
+@interface ContentSuggestionsMediator () <AppStateObserver,
+                                          AuthenticationServiceObserving,
                                           SyncObserverModelBridge,
                                           IdentityManagerObserverBridgeDelegate,
                                           MostVisitedSitesObserving,
@@ -350,7 +352,11 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 
     SceneState* sceneState =
         SceneStateBrowserAgent::FromBrowser(browser)->GetSceneState();
+
     [sceneState addObserver:self];
+
+    [sceneState.appState addObserver:self];
+
     _browser = browser;
 
     if (IsSafetyCheckMagicStackEnabled() &&
@@ -371,17 +377,19 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
           prefs::kIosSafetyCheckManagerSafeBrowsingCheckResult,
           &_prefChangeRegistrar);
 
-      IOSChromeSafetyCheckManager* safetyCheckManager =
-          IOSChromeSafetyCheckManagerFactory::GetForBrowserState(
-              browser->GetBrowserState());
-
       _safetyCheckState = [self initialSafetyCheckState];
 
       _safetyCheckManagerObserver = std::make_unique<SafetyCheckObserverBridge>(
           self, IOSChromeSafetyCheckManagerFactory::GetForBrowserState(
                     browser->GetBrowserState()));
 
-      if (_safetyCheckState.runningState == RunningSafetyCheckState::kRunning) {
+      if (sceneState.appState.initStage > InitStageNormalUI &&
+          sceneState.appState.firstSceneHasInitializedUI &&
+          _safetyCheckState.runningState == RunningSafetyCheckState::kRunning) {
+        IOSChromeSafetyCheckManager* safetyCheckManager =
+            IOSChromeSafetyCheckManagerFactory::GetForBrowserState(
+                browser->GetBrowserState());
+
         safetyCheckManager->StartSafetyCheck();
       }
     }
@@ -412,6 +420,7 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
   _setUpList = nil;
   SceneState* sceneState =
       SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();
+  [sceneState.appState removeObserver:self];
   [sceneState removeObserver:self];
   _localState = nullptr;
 }
@@ -542,6 +551,27 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
       base::BindOnce(
           ^(bool, std::unique_ptr<std::vector<commerce::ParcelTrackingStatus>>){
           }));
+}
+
+#pragma mark - AppStateObserver
+
+// Conditionally starts the Safety Check if the upcoming init stage is
+// `InitStageFinal` and the Safety Check state indicates it's running.
+//
+// NOTE: It's safe to call `StartSafetyCheck()` multiple times, because calling
+// `StartSafetyCheck()` on an already-running Safety Check is a no-op.
+- (void)appState:(AppState*)appState
+    willTransitionToInitStage:(InitStage)nextInitStage {
+  if (IsSafetyCheckMagicStackEnabled() &&
+      !safety_check_prefs::IsSafetyCheckInMagicStackDisabled(_localState) &&
+      nextInitStage == InitStageFinal && appState.firstSceneHasInitializedUI &&
+      _safetyCheckState.runningState == RunningSafetyCheckState::kRunning) {
+    IOSChromeSafetyCheckManager* safetyCheckManager =
+        IOSChromeSafetyCheckManagerFactory::GetForBrowserState(
+            _browser->GetBrowserState());
+
+    safetyCheckManager->StartSafetyCheck();
+  }
 }
 
 #pragma mark - IdentityManagerObserverBridgeDelegate
@@ -979,6 +1009,7 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
   }
 
   if (IsSafetyCheckMagicStackEnabled() &&
+      !safety_check_prefs::IsSafetyCheckInMagicStackDisabled(_localState) &&
       _safetyCheckState.runningState == RunningSafetyCheckState::kDefault) {
     [self.consumer showSafetyCheck:_safetyCheckState];
   }
