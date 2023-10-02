@@ -362,7 +362,7 @@ INSTANTIATE_TEST_SUITE_P(RTL,
 TEST_P(AppListViewTabletPixelTest, Basic) {
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "tablet_launcher_basics",
-      /*revision_number=*/IsJellyEnabled() ? 8 : 6,
+      /*revision_number=*/IsJellyEnabled() ? 7 : 6,
       GetAppListTestHelper()->GetAppsContainerView()));
 }
 
@@ -384,7 +384,7 @@ TEST_P(AppListViewTabletPixelTest, TopGradientZone) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "tablet_launcher_top_gradient_zone",
-      /*revision_number=*/6,
+      /*revision_number=*/IsJellyEnabled() ? 6 : 5,
       GetAppListTestHelper()->GetAppsContainerView()));
 }
 
@@ -406,7 +406,7 @@ TEST_P(AppListViewTabletPixelTest, BottomGradientZone) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "tablet_launcher_bottom_gradient_zone",
-      /*revision_number=*/IsJellyEnabled() ? 8 : 7,
+      /*revision_number=*/IsJellyEnabled() ? 7 : 6,
       GetAppListTestHelper()->GetAppsContainerView()));
 }
 

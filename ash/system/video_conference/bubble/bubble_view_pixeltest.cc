@@ -191,7 +191,7 @@ TEST_F(BubbleViewPixelTest, Basic) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "video_conference_bubble_view_basic",
-      /*revision_number=*/3, bubble_view()));
+      /*revision_number=*/2, bubble_view()));
 }
 
 // Pixel test that tests toggled on/off and focused/not focused for the toggle

@@ -218,12 +218,12 @@ TEST_P(AppListItemViewPixelTest, AppListFolderItemsLayoutInIcon) {
 
   if (jelly_enabled()) {
     EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-        GenerateScreenshotName(), /*revision_number=*/5, GetItemViewAt(0),
+        GenerateScreenshotName(), /*revision_number=*/4, GetItemViewAt(0),
         GetItemViewAt(1), GetItemViewAt(2), GetItemViewAt(3),
         GetItemViewAt(4)));
   } else {
     EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-        GenerateScreenshotName(), /*revision_number=*/6, GetItemViewAt(0),
+        GenerateScreenshotName(), /*revision_number=*/5, GetItemViewAt(0),
         GetItemViewAt(1), GetItemViewAt(2), GetItemViewAt(3),
         GetItemViewAt(4)));
   }
@@ -268,7 +268,7 @@ TEST_P(AppListItemViewPixelTest, AppListFolderIconExtendedState) {
         GetItemViewAt(4)));
   } else {
     EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-        GenerateScreenshotName(), /*revision_number=*/6, GetItemViewAt(0),
+        GenerateScreenshotName(), /*revision_number=*/5, GetItemViewAt(0),
         GetItemViewAt(1), GetItemViewAt(2), GetItemViewAt(3),
         GetItemViewAt(4)));
   }

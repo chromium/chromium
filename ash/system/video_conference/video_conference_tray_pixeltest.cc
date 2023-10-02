@@ -108,13 +108,13 @@ TEST_F(VideoConferenceTrayPixelTest, BasicPixelTest) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "video_conference_tray_audio_focused_not_toggled",
-      /*revision_number=*/4, video_conference_tray()));
+      /*revision_number=*/3, video_conference_tray()));
 
   PressAndReleaseKey(ui::VKEY_RETURN);
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "video_conference_tray_audio_focused_and_toggled",
-      /*revision_number=*/6, video_conference_tray()));
+      /*revision_number=*/5, video_conference_tray()));
 
   // Un-toggle the audio icon, then focus the video icon.
   PressAndReleaseKey(ui::VKEY_RETURN);

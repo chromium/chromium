@@ -77,28 +77,28 @@ TEST_F(LoginShelfViewPixelTest, FocusTraversalFromLockContents) {
   PressAndReleaseKey(ui::VKEY_TAB);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "focus_on_login_user_expand_button",
-      /*revision_number=*/7, primary_big_user_view_.get(),
+      /*revision_number=*/6, primary_big_user_view_.get(),
       primary_shelf_window));
 
   // Trigger the tab key. Check that the login shelf shutdown button is focused.
   PressAndReleaseKey(ui::VKEY_TAB);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "focus_on_shutdown_button",
-      /*revision_number=*/7, primary_big_user_view_.get(),
+      /*revision_number=*/6, primary_big_user_view_.get(),
       primary_shelf_window));
 
   // Trigger the tab key. Check that the browser as guest button is focused.
   PressAndReleaseKey(ui::VKEY_TAB);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "focus_on_browser_as_guest_button",
-      /*revision_number=*/7, primary_big_user_view_.get(),
+      /*revision_number=*/6, primary_big_user_view_.get(),
       primary_shelf_window));
 
   // Trigger the tab key. Check that the add person button is focused.
   PressAndReleaseKey(ui::VKEY_TAB);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "focus_on_add_person_button",
-      /*revision_number=*/7, primary_big_user_view_.get(),
+      /*revision_number=*/6, primary_big_user_view_.get(),
       primary_shelf_window));
 }
 
@@ -119,7 +119,7 @@ TEST_F(LoginShelfViewPixelTest, FocusTraversalWithinShelf) {
   PressAndReleaseKey(ui::VKEY_TAB);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "focus_on_time_view.rev_0",
-      /*revision_number=*/5, primary_shelf_window));
+      /*revision_number=*/4, primary_shelf_window));
 
   PressAndReleaseKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
   PressAndReleaseKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
@@ -127,7 +127,7 @@ TEST_F(LoginShelfViewPixelTest, FocusTraversalWithinShelf) {
   // Move the focus back to the add person button.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "refocus_on_login_shelf",
-      /*revision_number=*/5, primary_shelf_window));
+      /*revision_number=*/4, primary_shelf_window));
 }
 
 class LoginShelfWithPolicyWallpaperPixelTestWithRTL
