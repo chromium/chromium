@@ -11,7 +11,11 @@
 void ClearDefaultBrowserPromoData();
 
 // Sets an object into NSUserDefaults storage under the default browser utils
-// key.
-void SetObjectInStorageForKey(NSString* key, NSObject* data);
+// key. Replaces the entire dictionary, so any existing entries are erased.
+void ResetStorageAndSetObjectForKey(NSString* key, NSObject* data);
+
+// Overwrites the dictionary under the default browser utils key with the
+// provided one.
+void SetValuesInStorage(NSDictionary<NSString*, NSObject*>* data);
 
 #endif  // IOS_CHROME_BROWSER_DEFAULT_BROWSER_UTILS_TEST_SUPPORT_H_

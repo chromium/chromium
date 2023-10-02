@@ -692,6 +692,12 @@ bool IsDBVideoInSettingsEnabled() {
 }
 
 bool HasUserInteractedWithFullscreenPromoBefore() {
+  if (base::FeatureList::IsEnabled(kDefaultBrowserEligibilitySlidingWindow)) {
+    return HasRecordedEventForKeyLessThanDelay(
+        kLastTimeUserInteractedWithFullscreenPromo,
+        base::Days(kDefaultBrowserEligibilitySlidingWindowParam.Get()));
+  }
+
   NSNumber* number = GetObjectFromStorageForKey<NSNumber>(
       kUserHasInteractedWithFullscreenPromo);
   return number.boolValue;

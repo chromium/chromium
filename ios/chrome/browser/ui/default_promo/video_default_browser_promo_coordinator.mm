@@ -43,6 +43,7 @@ using base::UserMetricsAction;
 #pragma mark - ChromeCoordinator
 
 - (void)start {
+  LogFullscreenDefaultBrowserPromoDisplayed();
   RecordAction(UserMetricsAction("IOS.DefaultBrowserVideoPromo.Appear"));
   self.mediator = [[VideoDefaultBrowserPromoMediator alloc] init];
 
@@ -60,6 +61,7 @@ using base::UserMetricsAction;
 }
 
 - (void)stop {
+  LogUserInteractionWithFullscreenPromo();
   [self.baseViewController dismissViewControllerAnimated:YES completion:nil];
   if (self.halfScreenPromoCoordinator) {
     [self.halfScreenPromoCoordinator stop];

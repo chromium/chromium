@@ -12,6 +12,15 @@
 // Feature flag to enable default browser blue dot promo.
 BASE_DECLARE_FEATURE(kDefaultBrowserBlueDotPromo);
 
+// Feature flag to enable and parametrize the sliding window of time for a
+// user's eligibility to be shown a default browser promo.
+BASE_DECLARE_FEATURE(kDefaultBrowserEligibilitySlidingWindow);
+
+// The default param value for the default browser eligibility sliding window in
+// amount of days.
+extern const base::FeatureParam<int>
+    kDefaultBrowserEligibilitySlidingWindowParam;
+
 // Feature flag to enable the Payments Bottom Sheet.
 BASE_DECLARE_FEATURE(kIOSPaymentsBottomSheet);
 

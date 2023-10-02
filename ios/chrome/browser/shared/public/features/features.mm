@@ -21,6 +21,14 @@ constexpr base::FeatureParam<BlueDotPromoUserGroup> kBlueDotPromoUserGroupParam{
     &kDefaultBrowserBlueDotPromo, "user-group",
     BlueDotPromoUserGroup::kAllDBPromosEnabled, &kBlueDotPromoUserGroupOptions};
 
+BASE_FEATURE(kDefaultBrowserEligibilitySlidingWindow,
+             "DefaultBrowserEligibilitySlidingWindow",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+constexpr base::FeatureParam<int> kDefaultBrowserEligibilitySlidingWindowParam{
+    &kDefaultBrowserEligibilitySlidingWindow, /*name=*/"sliding-window-days",
+    /*default_value=*/365};
+
 BASE_FEATURE(kIOSPaymentsBottomSheet,
              "IOSPaymentsBottomSheet",
              base::FEATURE_DISABLED_BY_DEFAULT);

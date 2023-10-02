@@ -31,6 +31,15 @@ constexpr base::TimeDelta kLessThan6Hours = base::Hours(6) - base::Minutes(1);
 // More than 6 hours.
 constexpr base::TimeDelta kMoreThan6Hours = base::Hours(6) + base::Minutes(1);
 
+// About 6 months.
+constexpr base::TimeDelta k6Months = base::Days(6 * 365 / 12);
+
+// About 2 years.
+constexpr base::TimeDelta k2Years = base::Days(2 * 365);
+
+// About 5 years.
+constexpr base::TimeDelta k5Years = base::Days(5 * 365);
+
 // Test key for a generic timestamp in NSUserDefaults.
 NSString* const kTestTimestampKey = @"testTimestampKeyDefaultBrowserUtils";
 
@@ -41,6 +50,18 @@ NSString* const kTimestampAppLastOpenedViaFirstPartyIntent =
 // Test key in storage for timestamp of last valid URL pasted.
 NSString* const kTimestampLastValidURLPasted = @"TimestampLastValidURLPasted";
 
+// Test key in storage for flagging default browser promo interaction.
+NSString* const kUserHasInteractedWithFullscreenPromo =
+    @"userHasInteractedWithFullscreenPromo";
+
+// Test key in storage for the timestamp of last default browser promo
+// interaction.
+NSString* const kLastTimeUserInteractedWithFullscreenPromo =
+    @"lastTimeUserInteractedWithFullscreenPromo";
+
+// Test key in storage for counting past default browser promo interactions.
+NSString* const kGenericPromoInteractionCount = @"genericPromoInteractionCount";
+
 class DefaultBrowserUtilsTest : public PlatformTest {
  protected:
   void SetUp() override { ClearDefaultBrowserPromoData(); }
@@ -48,6 +69,17 @@ class DefaultBrowserUtilsTest : public PlatformTest {
 
   base::test::ScopedFeatureList feature_list_;
 };
+
+void SimulateUserInteractionWithFullscreenPromo(const base::TimeDelta& timeAgo,
+                                                int count) {
+  NSDictionary<NSString*, NSObject*>* values = @{
+    kUserHasInteractedWithFullscreenPromo : @YES,
+    kLastTimeUserInteractedWithFullscreenPromo :
+        [[NSDate alloc] initWithTimeIntervalSinceNow:-timeAgo.InSecondsF()],
+    kGenericPromoInteractionCount : [NSNumber numberWithInt:count]
+  };
+  SetValuesInStorage(values);
+}
 
 // Tests interesting information for each type.
 TEST_F(DefaultBrowserUtilsTest, LogInterestingActivityEach) {
@@ -137,8 +169,8 @@ TEST_F(DefaultBrowserUtilsTest,
 TEST_F(DefaultBrowserUtilsTest, NonModalPromoCoolDownWithPriorInteraction) {
   EXPECT_FALSE(UserInNonModalPromoCooldown());
 
-  SetObjectInStorageForKey(kLastTimeUserInteractedWithNonModalPromo,
-                           [NSDate date]);
+  ResetStorageAndSetObjectForKey(kLastTimeUserInteractedWithNonModalPromo,
+                                 [NSDate date]);
 
   EXPECT_TRUE(UserInNonModalPromoCooldown());
 }
@@ -148,8 +180,8 @@ TEST_F(DefaultBrowserUtilsTest, NonModalPromoCoolDownWithPriorInteraction) {
 TEST_F(DefaultBrowserUtilsTest, NonModalPromoCoolDownWithoutPriorInteraction) {
   EXPECT_FALSE(UserInNonModalPromoCooldown());
 
-  SetObjectInStorageForKey(kLastTimeUserInteractedWithFullscreenPromo,
-                           [NSDate date]);
+  ResetStorageAndSetObjectForKey(kLastTimeUserInteractedWithFullscreenPromo,
+                                 [NSDate date]);
 
   EXPECT_TRUE(UserInNonModalPromoCooldown());
 }
@@ -236,7 +268,7 @@ TEST_F(DefaultBrowserUtilsTest,
 TEST_F(
     DefaultBrowserUtilsTest,
     ManualHasRecentFirstPartyIntentLaunchesAndRecordsCurrentLaunchLessThan6Hours) {
-  SetObjectInStorageForKey(
+  ResetStorageAndSetObjectForKey(
       kTimestampAppLastOpenedViaFirstPartyIntent,
       [[NSDate alloc]
           initWithTimeIntervalSinceNow:-kLessThan6Hours.InSecondsF()]);
@@ -248,7 +280,7 @@ TEST_F(
 TEST_F(
     DefaultBrowserUtilsTest,
     ManualHasRecentFirstPartyIntentLaunchesAndRecordsCurrentLaunchMoreThan7Days) {
-  SetObjectInStorageForKey(
+  ResetStorageAndSetObjectForKey(
       kTimestampAppLastOpenedViaFirstPartyIntent,
       [[NSDate alloc]
           initWithTimeIntervalSinceNow:-kMoreThan7Days.InSecondsF()]);
@@ -260,7 +292,7 @@ TEST_F(
 TEST_F(
     DefaultBrowserUtilsTest,
     ManualHasRecentFirstPartyIntentLaunchesAndRecordsCurrentLaunchLessThan7DaysMoreThan6Hours) {
-  SetObjectInStorageForKey(
+  ResetStorageAndSetObjectForKey(
       kTimestampAppLastOpenedViaFirstPartyIntent,
       [[NSDate alloc]
           initWithTimeIntervalSinceNow:-kLessThan7Days.InSecondsF()]);
@@ -279,7 +311,7 @@ TEST_F(DefaultBrowserUtilsTest, TwoConsecutivePastesUnder7Days) {
 // Manually tests two consecutive pastes recorded within 7 days, should return
 // true.
 TEST_F(DefaultBrowserUtilsTest, ManualTwoConsecutivePastesUnder7Days) {
-  SetObjectInStorageForKey(
+  ResetStorageAndSetObjectForKey(
       kTimestampLastValidURLPasted,
       [[NSDate alloc]
           initWithTimeIntervalSinceNow:-kLessThan7Days.InSecondsF()]);
@@ -289,7 +321,7 @@ TEST_F(DefaultBrowserUtilsTest, ManualTwoConsecutivePastesUnder7Days) {
 // Manually tests two consecutive pastes recorded with more than 7 days between,
 // should return false.
 TEST_F(DefaultBrowserUtilsTest, ManualTwoConsecutivePastesOver7Days) {
-  SetObjectInStorageForKey(
+  ResetStorageAndSetObjectForKey(
       kTimestampLastValidURLPasted,
       [[NSDate alloc]
           initWithTimeIntervalSinceNow:-kMoreThan7Days.InSecondsF()]);
@@ -308,7 +340,7 @@ TEST_F(DefaultBrowserUtilsTest, HasRecentTimestampForKeyUnder6Hours) {
 // Manually tests that a recent event timestamp (less than 6 hours) has already
 // been recorded.
 TEST_F(DefaultBrowserUtilsTest, ManualHasRecentTimestampForKeyUnder6Hours) {
-  SetObjectInStorageForKey(
+  ResetStorageAndSetObjectForKey(
       kTestTimestampKey,
       [[NSDate alloc]
           initWithTimeIntervalSinceNow:-kLessThan6Hours.InSecondsF()]);
@@ -318,11 +350,82 @@ TEST_F(DefaultBrowserUtilsTest, ManualHasRecentTimestampForKeyUnder6Hours) {
 // Manually tests that no recent event timestamp (more than 6 hours) has already
 // been recorded.
 TEST_F(DefaultBrowserUtilsTest, ManualRecentTimestampForKeyOver6Hours) {
-  SetObjectInStorageForKey(
+  ResetStorageAndSetObjectForKey(
       kTestTimestampKey,
       [[NSDate alloc]
           initWithTimeIntervalSinceNow:-kMoreThan6Hours.InSecondsF()]);
   EXPECT_FALSE(HasRecentTimestampForKey(kTestTimestampKey));
+}
+
+// Tests that past interactions with the default browser promo are correctly
+// detected when the sliding eligibility window experiment is disabled.
+TEST_F(DefaultBrowserUtilsTest,
+       HasUserInteractedWithFullscreenPromoBeforeSlidingWindowDisabled) {
+  feature_list_.InitWithFeatures(
+      {/*enabled=*/}, {/*disabled=*/kDefaultBrowserEligibilitySlidingWindow});
+
+  // Test with multiple interactions.
+  EXPECT_FALSE(HasUserInteractedWithFullscreenPromoBefore());
+  SimulateUserInteractionWithFullscreenPromo(kMoreThan6Hours, 1);
+  EXPECT_TRUE(HasUserInteractedWithFullscreenPromoBefore());
+  SimulateUserInteractionWithFullscreenPromo(kMoreThan14Days, 2);
+  EXPECT_TRUE(HasUserInteractedWithFullscreenPromoBefore());
+
+  // Test with a single, more distant interaction.
+  ClearDefaultBrowserPromoData();
+  EXPECT_FALSE(HasUserInteractedWithFullscreenPromoBefore());
+  SimulateUserInteractionWithFullscreenPromo(k6Months, 1);
+  EXPECT_TRUE(HasUserInteractedWithFullscreenPromoBefore());
+
+  // Test with a single, even more distant interaction.
+  ClearDefaultBrowserPromoData();
+  EXPECT_FALSE(HasUserInteractedWithFullscreenPromoBefore());
+  SimulateUserInteractionWithFullscreenPromo(k2Years, 1);
+  EXPECT_TRUE(HasUserInteractedWithFullscreenPromoBefore());
+}
+
+// Tests that past interactions with the default browser promo are correctly
+// detected when the sliding eligibility window experiment is enabled and set
+// to 365 days.
+TEST_F(DefaultBrowserUtilsTest,
+       HasUserInteractedWithFullscreenPromoBeforeSlidingWindowEnabled) {
+  base::FieldTrialParams feature_params;
+  feature_params["sliding-window-days"] = "365";
+  feature_list_.InitAndEnableFeatureWithParameters(
+      kDefaultBrowserEligibilitySlidingWindow, feature_params);
+
+  // Test with multiple interactions.
+  EXPECT_FALSE(HasUserInteractedWithFullscreenPromoBefore());
+  SimulateUserInteractionWithFullscreenPromo(kMoreThan6Hours, 1);
+  EXPECT_TRUE(HasUserInteractedWithFullscreenPromoBefore());
+  SimulateUserInteractionWithFullscreenPromo(kMoreThan14Days, 2);
+  EXPECT_TRUE(HasUserInteractedWithFullscreenPromoBefore());
+
+  // Test with a single, more distant interaction (but still within the sliding
+  // window limit).
+  ClearDefaultBrowserPromoData();
+  EXPECT_FALSE(HasUserInteractedWithFullscreenPromoBefore());
+  SimulateUserInteractionWithFullscreenPromo(k6Months, 1);
+  EXPECT_TRUE(HasUserInteractedWithFullscreenPromoBefore());
+
+  // Test with a single interaction that's outside the sliding window limit.
+  ClearDefaultBrowserPromoData();
+  EXPECT_FALSE(HasUserInteractedWithFullscreenPromoBefore());
+  SimulateUserInteractionWithFullscreenPromo(k2Years, 1);
+  EXPECT_FALSE(HasUserInteractedWithFullscreenPromoBefore());
+
+  // Test with multiple interactions, some within and some outside the sliding
+  // window limit.
+  ClearDefaultBrowserPromoData();
+  EXPECT_FALSE(HasUserInteractedWithFullscreenPromoBefore());
+  SimulateUserInteractionWithFullscreenPromo(k5Years, 1);
+  EXPECT_FALSE(HasUserInteractedWithFullscreenPromoBefore());
+  SimulateUserInteractionWithFullscreenPromo(k2Years, 2);
+  EXPECT_FALSE(HasUserInteractedWithFullscreenPromoBefore());
+  SimulateUserInteractionWithFullscreenPromo(k6Months, 3);
+  EXPECT_TRUE(HasUserInteractedWithFullscreenPromoBefore());
+  SimulateUserInteractionWithFullscreenPromo(kMoreThan14Days, 4);
+  EXPECT_TRUE(HasUserInteractedWithFullscreenPromoBefore());
 }
 
 // Test `CalculatePromoStatistics` when feature flag is disabled.
@@ -367,8 +470,8 @@ TEST_F(DefaultBrowserUtilsTest, CalculatePromoStatisticsTest_FlagEnabled) {
   NSTimeInterval secondsPerDay = 24 * 60 * 60;
   NSDate* yesterday =
       [[NSDate alloc] initWithTimeIntervalSinceNow:-secondsPerDay];
-  SetObjectInStorageForKey(kLastTimeUserInteractedWithFullscreenPromo,
-                           yesterday);
+  ResetStorageAndSetObjectForKey(kLastTimeUserInteractedWithFullscreenPromo,
+                                 yesterday);
 
   LogFullscreenDefaultBrowserPromoDisplayed();
 
