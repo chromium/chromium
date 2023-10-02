@@ -71,6 +71,7 @@ void IOSChromeSafetyCheckManager::Shutdown() {
   pref_change_registrar_.RemoveAll();
   pref_service_ = nullptr;
   local_pref_service_ = nullptr;
+  password_check_manager_observation_.Reset();
 }
 
 void IOSChromeSafetyCheckManager::StartSafetyCheck() {

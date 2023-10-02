@@ -8542,13 +8542,14 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_Magic_Stack_Less_Top_Space_20230912",
+                    "name": "Enabled_Magic_Stack_Less_Top_Space_20230928",
                     "params": {
                         "ReducedNTPTopSpace": "20",
                         "enable_default_model": "true"
                     },
                     "enable_features": [
                         "MagicStack",
+                        "SafetyCheckMagicStack",
                         "SegmentationPlatformIosModuleRanker",
                         "SegmentationPlatformUserVisibleTaskRunner",
                         "TabResumption"

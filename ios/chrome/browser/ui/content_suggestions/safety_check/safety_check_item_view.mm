@@ -191,6 +191,8 @@ int PasswordIssuesTypeCount(NSInteger weak_passwords_count,
 
   UILabel* titleLabel = [self createTitleLabelForLayoutType:_layoutType];
   UILabel* descriptionLabel = [self createDescriptionLabel];
+  self.accessibilityLabel =
+      [NSString stringWithFormat:@"%@,%@", titleLabel, descriptionLabel];
 
   // Add a vertical stack for the title and description labels.
   UIStackView* textStack = [[UIStackView alloc]
