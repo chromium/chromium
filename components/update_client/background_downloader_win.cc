@@ -124,8 +124,7 @@ const int kJobPollingIntervalSec = 4;
 const int kMinimumRetryDelayMin = 1;
 
 // How long to wait for stuck jobs. Stuck jobs could be queued for too long,
-// have trouble connecting, could be suspended for any reason, or they have
-// encountered some transient error.
+// have trouble connecting, or could be suspended for any reason.
 const int kJobStuckTimeoutMin = 15;
 
 // How long BITS waits before giving up on a job that could not be completed
@@ -675,13 +674,6 @@ bool BackgroundDownloader::OnStateCancelled() {
 // Called when the job has encountered a transient error, such as a
 // network disconnect, a server error, or some other recoverable error.
 bool BackgroundDownloader::OnStateTransientError() {
-  // If the job appears to be stuck, handle the transient error as if
-  // it were a final error. This causes the job to be cancelled and a specific
-  // error be returned, if the error was available.
-  if (IsStuck()) {
-    return OnStateError();
-  }
-
   // Don't retry at all if the transient error was a 5xx.
   HRESULT error_code = S_OK;
   HRESULT hr = GetJobError(job_, &error_code);
