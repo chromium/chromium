@@ -182,7 +182,7 @@ class LaunchCommand(object):
         erase_all_simulators()
         erase_all_simulators(XTDEVICE_FOLDER)
         if self.cert_path:
-          iossim_util.copy_trusted_certificate(self.cert_path, self.uuid)
+          iossim_util.copy_trusted_certificate(self.cert_path, self.udid)
 
         # ideally this should be the last step before running tests, because
         # it boots the simulator.
