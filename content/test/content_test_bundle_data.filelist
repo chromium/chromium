@@ -3560,6 +3560,8 @@ data/accessibility/html/input-radio-in-menu-expected-mac.txt
 data/accessibility/html/input-radio-in-menu-expected-uia-win.txt
 data/accessibility/html/input-radio-in-menu-expected-win.txt
 data/accessibility/html/input-radio-in-menu.html
+data/accessibility/html/input-radio-unhidden-expected-blink.txt
+data/accessibility/html/input-radio-unhidden.html
 data/accessibility/html/input-radio-wrapped-label-expected-blink.txt
 data/accessibility/html/input-radio-wrapped-label-expected-fuchsia.txt
 data/accessibility/html/input-radio-wrapped-label.html

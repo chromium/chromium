@@ -2387,6 +2387,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityInputRadioUnhidden) {
+  RunHtmlTest(FILE_PATH_LITERAL("input-radio-unhidden.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityInputRadioWrappedLabel) {
   RunHtmlTest(FILE_PATH_LITERAL("input-radio-wrapped-label.html"));
 }

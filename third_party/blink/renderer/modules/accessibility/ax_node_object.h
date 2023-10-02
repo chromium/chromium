@@ -148,6 +148,9 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   AXObject* GetChildFigcaption() const override;
   bool IsDescendantOfLandmarkDisallowedElement() const override;
 
+  // Is a redundant label of a radio button or checkbox.
+  static bool IsRedundantLabel(HTMLLabelElement* label);
+
   // Used to compute kRadioGroupIds, which is only used on Mac.
   // TODO(accessibility) Consider computing on browser side and removing here.
   AXObjectVector RadioButtonsInGroup() const override;
@@ -358,7 +361,6 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   ax::mojom::blink::Dropeffect ParseDropeffect(String& dropeffect) const;
 
   static bool IsNameFromLabelElement(HTMLElement* control);
-  static bool IsRedundantLabel(HTMLLabelElement* label);
 
 #if BUILDFLAG(IS_ANDROID)
   bool always_load_inline_text_boxes_ = false;
