@@ -3277,9 +3277,9 @@ void AddSiteSettingsStrings(content::WebUIDataSource* html_source,
       "trackingProtectionBulletTwoDescription",
       l10n_util::GetStringFUTF16(
           IDS_SETTINGS_TRACKING_PROTECTION_BULLET_TWO_DESCRIPTION,
-          base::ASCIIToUTF16(chrome::kTrackingProtectionHelpCenterURL)));
+          base::ASCIIToUTF16(chrome::kUserBypassHelpCenterURL)));
   html_source->AddString("trackingProtectionThirdPartyCookiesLearnMoreUrl",
-                         chrome::kUserBypassHelpCenterURL);
+                         chrome::kManage3pcHelpCenterURL);
 
   // These ones cannot be constexpr because we need to check base::FeatureList.
   static webui::LocalizedString kSensorsLocalizedStrings[] = {
