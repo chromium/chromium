@@ -18,7 +18,6 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/browser_features.h"
 #include "chrome/browser/manta/manta_service.h"
 #include "chrome/browser/manta/manta_service_callbacks.h"
 #include "chrome/browser/manta/manta_service_factory.h"
@@ -42,6 +41,7 @@
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/manta/features.h"
 #include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
 #include "content/public/browser/web_contents.h"
@@ -839,7 +839,7 @@ class CustomizeChromePageHandlerWithWallpaperSearchTest
   void SetUp() override {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{ntp_features::kCustomizeChromeWallpaperSearch,
-                              features::kMantaService},
+                              manta::features::kMantaService},
         /*disabled_features=*/{});
     CustomizeChromePageHandlerTest::SetUp();
   }

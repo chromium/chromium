@@ -2585,6 +2585,7 @@ static_library("browser") {
     deps += [
       "//chrome/browser/companion/visual_search:flags",
       "//chrome/browser/manta/proto:manta_proto",
+      "//components/manta",
       "//components/user_education/common",
     ]
   }

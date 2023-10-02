@@ -42,6 +42,7 @@ static_library("personalization_app") {
     "//chromeos/strings",
     "//components/keyed_service/content",
     "//components/keyed_service/core",
+    "//components/manta",
     "//content/public/browser",
     "//ui/chromeos",
     "//ui/chromeos/styles:cros_styles_views",

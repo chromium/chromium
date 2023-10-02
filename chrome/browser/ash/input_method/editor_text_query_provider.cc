@@ -6,17 +6,17 @@
 
 #include "base/notreached.h"
 #include "base/values.h"
-#include "chrome/browser/browser_features.h"
 #include "chrome/browser/manta/manta_service.h"
 #include "chrome/browser/manta/manta_service_factory.h"
 #include "chrome/browser/manta/manta_status.h"
 #include "chromeos/ash/services/orca/public/mojom/orca_service.mojom.h"
+#include "components/manta/features.h"
 
 namespace ash::input_method {
 
 namespace {
 std::unique_ptr<manta::OrcaProvider> CreateProvider(Profile* profile) {
-  if (!base::FeatureList::IsEnabled(::features::kMantaService)) {
+  if (!manta::features::IsMantaServiceEnabled()) {
     return nullptr;
   }
 

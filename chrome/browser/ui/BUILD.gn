@@ -1968,6 +1968,7 @@ static_library("ui") {
       "//components/feedback/proto",
       "//components/headless/policy",
       "//components/keep_alive_registry",
+      "//components/manta",
       "//components/media_router/common/mojom:media_router",
       "//components/network_session_configurator/common",
       "//components/omnibox/browser:mojo_bindings",

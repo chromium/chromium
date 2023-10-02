@@ -110,6 +110,7 @@
 #include "components/language/core/common/language_experiments.h"
 #include "components/lens/buildflags.h"
 #include "components/lens/lens_features.h"
+#include "components/manta/features.h"
 #include "components/mirroring/service/mirroring_features.h"
 #include "components/nacl/common/buildflags.h"
 #include "components/nacl/common/nacl_switches.h"
@@ -11128,7 +11129,7 @@ const FeatureEntry kFeatureEntries[] = {
 #if !BUILDFLAG(IS_ANDROID)
     {"enable-manta-service", flag_descriptions::kEnableMantaServiceName,
      flag_descriptions::kEnableMantaServiceDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kMantaService)},
+     FEATURE_VALUE_TYPE(manta::features::kMantaService)},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

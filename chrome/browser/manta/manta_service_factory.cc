@@ -6,11 +6,11 @@
 
 #include <memory>
 
-#include "chrome/browser/browser_features.h"
 #include "chrome/browser/manta/manta_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "components/manta/features.h"
 #include "content/public/browser/browser_context.h"
 
 namespace manta {
@@ -43,7 +43,7 @@ MantaServiceFactory::BuildServiceInstanceForBrowserContext(
 }
 
 bool MantaServiceFactory::ServiceIsCreatedWithBrowserContext() const {
-  return base::FeatureList::IsEnabled(features::kMantaService);
+  return features::IsMantaServiceEnabled();
 }
 
 }  // namespace manta

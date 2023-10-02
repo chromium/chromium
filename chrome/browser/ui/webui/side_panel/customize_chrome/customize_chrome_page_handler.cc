@@ -10,7 +10,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
-#include "chrome/browser/browser_features.h"
 #include "chrome/browser/manta/manta_service_factory.h"
 #include "chrome/browser/manta/manta_status.h"
 #include "chrome/browser/manta/proto/manta.pb.h"
@@ -31,6 +30,7 @@
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_section.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/manta/features.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/search/ntp_features.h"
@@ -97,7 +97,7 @@ CustomizeChromePageHandler::CustomizeChromePageHandler(
 
   if (base::FeatureList::IsEnabled(
           ntp_features::kCustomizeChromeWallpaperSearch) &&
-      base::FeatureList::IsEnabled(features::kMantaService)) {
+      manta::features::IsMantaServiceEnabled()) {
     manta_service_ = manta::MantaServiceFactory::GetForProfile(profile_);
     snapper_provider_ = manta_service_->CreateSnapperProvider();
   }
@@ -247,7 +247,7 @@ void CustomizeChromePageHandler::SearchWallpaper(
     SearchWallpaperCallback callback) {
   if (base::FeatureList::IsEnabled(
           ntp_features::kCustomizeChromeWallpaperSearch) &&
-      base::FeatureList::IsEnabled(features::kMantaService)) {
+      manta::features::IsMantaServiceEnabled()) {
     manta::proto::Request request;
     request.set_feature_name(manta::proto::FeatureName::IMAGE_TEST);
     manta::proto::RequestConfig& request_config =
