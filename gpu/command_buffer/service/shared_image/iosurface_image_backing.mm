@@ -883,13 +883,15 @@ IOSurfaceImageBacking::RetainGLTexture() {
                                 &gl_texture, nullptr);
     // Set the IOSurface to be initially unbound from the GL texture.
     gl_texture->SetEstimatedSize(GetEstimatedSize());
-    gl_texture->set_bind_pending();
     gl_textures.push_back(std::move(gl_texture));
   }
 
-  return new IOSurfaceBackingEGLState(this, egl_display, context,
-                                      gl::GLSurface::GetCurrent(), gl_target_,
-                                      std::move(gl_textures));
+  scoped_refptr<IOSurfaceBackingEGLState> egl_state =
+      new IOSurfaceBackingEGLState(this, egl_display, context,
+                                   gl::GLSurface::GetCurrent(), gl_target_,
+                                   std::move(gl_textures));
+  egl_state->set_bind_pending();
+  return egl_state;
 }
 
 void IOSurfaceImageBacking::ReleaseGLTexture(
@@ -1183,9 +1185,7 @@ void IOSurfaceImageBacking::Update(std::unique_ptr<gfx::GpuFence> in_fence) {
     egl_fence->ServerWait();
   }
   for (auto iter : egl_state_map_) {
-    for (const auto& texture : iter.second->gl_textures_) {
-      texture->set_bind_pending();
-    }
+    iter.second->set_bind_pending();
   }
 }
 
@@ -1261,10 +1261,7 @@ bool IOSurfaceImageBacking::IOSurfaceBackingEGLStateBeginAccess(
 
   // If the GL texture is already bound (the bind is not marked as pending),
   // then early-out.
-  bool is_bind_pending = base::ranges::any_of(
-      egl_state->gl_textures_,
-      [](const auto& texture) { return texture->is_bind_pending(); });
-  if (!is_bind_pending) {
+  if (!egl_state->is_bind_pending()) {
     return true;
   }
 
@@ -1349,9 +1346,8 @@ bool IOSurfaceImageBacking::IOSurfaceBackingEGLStateBeginAccess(
       LOG(ERROR) << "Failed to bind ScopedEGLSurfaceIOSurface to target";
       return false;
     }
-
-    egl_state->gl_textures_[plane_index]->clear_bind_pending();
   }
+  egl_state->clear_bind_pending();
 
   return true;
 }
@@ -1423,10 +1419,10 @@ void IOSurfaceImageBacking::IOSurfaceBackingEGLStateEndAccess(
     DCHECK(egl_state->egl_surfaces_.empty() ||
            static_cast<int>(egl_state->egl_surfaces_.size()) ==
                format().NumberOfPlanes());
-    for (int plane_index = 0; plane_index < format().NumberOfPlanes();
-         plane_index++) {
-      if (!egl_state->gl_textures_[plane_index]->is_bind_pending()) {
-        if (!egl_state->egl_surfaces_.empty()) {
+    if (!egl_state->is_bind_pending()) {
+      if (!egl_state->egl_surfaces_.empty()) {
+        for (int plane_index = 0; plane_index < format().NumberOfPlanes();
+             plane_index++) {
           // NOTE: We pass `restore_prev_even_if_invalid=true` to maintain
           // behavior from when this class was using a
           // duplicate-but-not-identical utility.
@@ -1438,8 +1434,8 @@ void IOSurfaceImageBacking::IOSurfaceBackingEGLStateEndAccess(
               egl_state->GetGLServiceId(plane_index));
           egl_state->egl_surfaces_[plane_index]->ReleaseTexImage();
         }
-        egl_state->gl_textures_[plane_index]->set_bind_pending();
       }
+      egl_state->set_bind_pending();
     }
   }
 }
