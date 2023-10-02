@@ -39,6 +39,7 @@ _SECTION_SORT_ORDER = {
     models.SECTION_TEXT: 0,
     models.SECTION_BSS: 1,
     models.SECTION_BSS_REL_RO: 1,
+    models.SECTION_RELRO_PADDING: 1,
     models.SECTION_PART_END: 1,
     models.SECTION_DEX: 2,
     models.SECTION_DEX_METHOD: 3,
