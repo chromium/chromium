@@ -633,7 +633,8 @@ TEST_F(PersonalDataManagerCleanerTest, ApplyDedupingRoutine_OncePerVersion) {
   EXPECT_EQ(2U, personal_data_->GetProfiles().size());
 
   // The deduping routine should be run a first time.
-  EXPECT_TRUE(personal_data_manager_cleaner_->ApplyDedupingRoutineForTesting());
+  EXPECT_TRUE(
+      personal_data_manager_cleaner_->ApplyAddressFixesAndCleanupsForTesting());
   PersonalDataProfileTaskWaiter(*personal_data_).Wait();
 
   std::vector<AutofillProfile*> profiles = personal_data_->GetProfiles();
@@ -654,7 +655,7 @@ TEST_F(PersonalDataManagerCleanerTest, ApplyDedupingRoutine_OncePerVersion) {
 
   // The deduping routine should not be run.
   EXPECT_FALSE(
-      personal_data_manager_cleaner_->ApplyDedupingRoutineForTesting());
+      personal_data_manager_cleaner_->ApplyAddressFixesAndCleanupsForTesting());
 
   // The two duplicate profiles should still be present.
   EXPECT_EQ(2U, personal_data_->GetProfiles().size());

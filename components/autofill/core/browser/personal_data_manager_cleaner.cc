@@ -109,15 +109,24 @@ void PersonalDataManagerCleaner::SyncStarted(syncer::ModelType model_type) {
   }
 }
 
-void PersonalDataManagerCleaner::ApplyAddressFixesAndCleanups() {
-  // Once per major version, otherwise NOP.
+bool PersonalDataManagerCleaner::ApplyAddressFixesAndCleanups() {
+  // Check if de-duplication has already been performed on this major version.
+  if (!is_autofill_profile_cleanup_pending_) {
+    DVLOG(1)
+        << "Autofill profile de-duplication already performed for this version";
+    return false;
+  }
+
   ApplyDedupingRoutine();
-
-  // Once per major version, otherwise NOP.
   DeleteDisusedAddresses();
-
-  // Once per user profile startup.
   RemoveInaccessibleProfileValues();
+
+  is_autofill_profile_cleanup_pending_ = false;
+  // Set the pref to the current major version.
+  pref_service_->SetInteger(prefs::kAutofillLastVersionDeduped,
+                            CHROME_VERSION_MAJOR);
+
+  return true;
 }
 
 void PersonalDataManagerCleaner::ApplyCardFixesAndCleanups() {
@@ -151,13 +160,6 @@ void PersonalDataManagerCleaner::RemoveInaccessibleProfileValues() {
 }
 
 bool PersonalDataManagerCleaner::ApplyDedupingRoutine() {
-  // Check if de-duplication has already been performed on this major version.
-  if (!is_autofill_profile_cleanup_pending_) {
-    DVLOG(1)
-        << "Autofill profile de-duplication already performed for this version";
-    return false;
-  }
-
   const std::vector<AutofillProfile*>& profiles =
       base::FeatureList::IsEnabled(
                   features::kAutofillAccountProfileStorage)
@@ -199,11 +201,6 @@ bool PersonalDataManagerCleaner::ApplyDedupingRoutine() {
   }
 
   UpdateCardsBillingAddressReference(guids_merge_map);
-
-  is_autofill_profile_cleanup_pending_ = false;
-  // Set the pref to the current major version.
-  pref_service_->SetInteger(prefs::kAutofillLastVersionDeduped,
-                            CHROME_VERSION_MAJOR);
 
   return true;
 }

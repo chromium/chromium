@@ -38,11 +38,19 @@ class PersonalDataManagerCleaner {
 
   // Applies address/credit card fixes and cleanups depending on the
   // |model_type|.
+  // TODO(crbug.com/1477292): For syncing users, SyncStarted is called just once
+  // when the sync is enabled. Instead, it should be called every time on
+  // browser startup.
   void SyncStarted(syncer::ModelType model_type);
 
 #if defined(UNIT_TEST)
   // A wrapper around |ApplyDedupingRoutine()| used for testing purposes.
   bool ApplyDedupingRoutineForTesting() { return ApplyDedupingRoutine(); }
+
+  // A wrapper around `ApplyAddressFixesAndCleanups` used for testing purposes.
+  bool ApplyAddressFixesAndCleanupsForTesting() {
+    return ApplyAddressFixesAndCleanups();
+  }
 
   // A wrapper around |RemoveInaccessibleProfileValues()| used for testing
   // purposes.
@@ -88,7 +96,7 @@ class PersonalDataManagerCleaner {
 
  private:
   // Applies various fixes and cleanups on autofill addresses.
-  void ApplyAddressFixesAndCleanups();
+  bool ApplyAddressFixesAndCleanups();
 
   // Applies various fixes and cleanups on autofill credit cards.
   void ApplyCardFixesAndCleanups();
