@@ -56,6 +56,7 @@ CONTENT_EXPORT extern const base::FeatureParam<bool>
     kCookieDeprecationFacilitatedTestingEnableOTRProfiles;
 CONTENT_EXPORT extern const base::FeatureParam<std::string>
     kCookieDeprecationLabel;
+CONTENT_EXPORT extern const char kCookieDeprecationLabelName[];
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kCooperativeScheduling);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kCrashReporting);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kDevicePosture);

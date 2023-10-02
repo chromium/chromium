@@ -60907,6 +60907,8 @@ from previous Chrome versions.
   <int value="-2056198604" label="InterestFeedV2Hearts:disabled"/>
   <int value="-2054871630"
       label="PasswordsAccountStorageRevisedOptInFlow:enabled"/>
+  <int value="-2054733957"
+      label="CookieDeprecationFacilitatedTesting:disabled"/>
   <int value="-2054612904" label="BuiltInModuleInfra:enabled"/>
   <int value="-2053860791" label="XGEOVisibleNetworks:enabled"/>
   <int value="-2053098867" label="AutofillEnableCvcStorageAndFilling:enabled"/>
@@ -62351,6 +62353,7 @@ from previous Chrome versions.
   <int value="-1369089674" label="ArcTouchModeMouse:enabled"/>
   <int value="-1368913664" label="TabSearch:disabled"/>
   <int value="-1368499577" label="OnTheFlyMhtmlHashComputation:enabled"/>
+  <int value="-1367479795" label="CookieDeprecationFacilitatedTesting:enabled"/>
   <int value="-1367447724"
       label="IncognitoClearBrowsingDataDialogForDesktop:disabled"/>
   <int value="-1366114365" label="BluetoothAdvertisementMonitoring:disabled"/>

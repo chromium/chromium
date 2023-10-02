@@ -3415,6 +3415,12 @@ const char kUseNAT64ForIPv4LiteralDescription[] =
     "Enables IPv4 to IPv6 address translation for IPv4 literals when chrome is "
     "on an IPv6 only network";
 
+const char kTPCPhaseOutFacilitatedTestingName[] =
+    "Third-party Cookie Phase Out Facilitated Testing";
+const char kTPCPhaseOutFacilitatedTestingDescription[] =
+    "Enables third-party cookie phase out for facilitated testing described in "
+    "https://developer.chrome.com/en/docs/privacy-sandbox/chrome-testing/";
+
 const char kTrackingProtection3pcdName[] = "Tracking Protection for 3PCD";
 const char kTrackingProtection3pcdDescription[] =
     "Enables the tracking protection UI + prefs that will be used for the 3PCD "

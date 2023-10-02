@@ -181,7 +181,9 @@ const base::FeatureParam<bool>
 
 // The experiment label for the cookie deprecation (Mode A/B) study.
 const base::FeatureParam<std::string> kCookieDeprecationLabel{
-    &kCookieDeprecationFacilitatedTesting, "label", ""};
+    &kCookieDeprecationFacilitatedTesting, kCookieDeprecationLabelName, ""};
+
+const char kCookieDeprecationLabelName[] = "label";
 
 // Enables Blink cooperative scheduling.
 BASE_FEATURE(kCooperativeScheduling,

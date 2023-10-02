@@ -60,6 +60,7 @@
 #include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/site_isolation/about_flags.h"
 #include "chrome/browser/thumbnail/cc/features.h"
+#include "chrome/browser/tpcd/experiment/tpcd_experiment_features.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/unexpire_flags.h"
@@ -3709,6 +3710,77 @@ const FeatureEntry::FeatureVariation kPrivacySandboxSettings4Variations[] = {
     {"Force restricted user",
      kPrivacySandboxSettings4ForceRestrictedUserForTesting,
      std::size(kPrivacySandboxSettings4ForceRestrictedUserForTesting), nullptr},
+};
+
+const FeatureEntry::FeatureParam kTPCPhaseOutFacilitatedTestingControl1[] = {
+    {tpcd::experiment::kForceEligibleForTestingName, "false"},
+    {tpcd::experiment::kDisable3PCookiesName, "false"},
+    {tpcd::experiment::kDisableAdsAPIsName, "false"},
+    {features::kCookieDeprecationLabelName, "fake_control_1.1"},
+    {tpcd::experiment::kVersionName, "9990"}};
+const FeatureEntry::FeatureParam kTPCPhaseOutFacilitatedTestingLabelOnly[] = {
+    {tpcd::experiment::kForceEligibleForTestingName, "false"},
+    {tpcd::experiment::kDisable3PCookiesName, "false"},
+    {tpcd::experiment::kDisableAdsAPIsName, "false"},
+    {features::kCookieDeprecationLabelName, "fake_label_only_1.1"},
+    {tpcd::experiment::kVersionName, "9991"}};
+const FeatureEntry::FeatureParam kTPCPhaseOutFacilitatedTestingTreatment[] = {
+    {tpcd::experiment::kForceEligibleForTestingName, "false"},
+    {tpcd::experiment::kDisable3PCookiesName, "true"},
+    {tpcd::experiment::kDisableAdsAPIsName, "false"},
+    {features::kCookieDeprecationLabelName, "fake_treatment_1.1"},
+    {tpcd::experiment::kVersionName, "9992"}};
+const FeatureEntry::FeatureParam kTPCPhaseOutFacilitatedTestingControl2[] = {
+    {tpcd::experiment::kForceEligibleForTestingName, "false"},
+    {tpcd::experiment::kDisable3PCookiesName, "true"},
+    {tpcd::experiment::kDisableAdsAPIsName, "true"},
+    {features::kCookieDeprecationLabelName, "fake_control_2"},
+    {tpcd::experiment::kVersionName, "9993"}};
+const FeatureEntry::FeatureParam kTPCPhaseOutFacilitatedTestingForceControl1[] =
+    {{tpcd::experiment::kForceEligibleForTestingName, "true"},
+     {tpcd::experiment::kDisable3PCookiesName, "false"},
+     {tpcd::experiment::kDisableAdsAPIsName, "false"},
+     {features::kCookieDeprecationLabelName, "fake_control_1.1"},
+     {tpcd::experiment::kVersionName, "9994"}};
+const FeatureEntry::FeatureParam
+    kTPCPhaseOutFacilitatedTestingForceLabelOnly[] = {
+        {tpcd::experiment::kForceEligibleForTestingName, "true"},
+        {tpcd::experiment::kDisable3PCookiesName, "false"},
+        {tpcd::experiment::kDisableAdsAPIsName, "false"},
+        {features::kCookieDeprecationLabelName, "fake_label_only_1.1"},
+        {tpcd::experiment::kVersionName, "9995"}};
+const FeatureEntry::FeatureParam
+    kTPCPhaseOutFacilitatedTestingForceTreatment[] = {
+        {tpcd::experiment::kForceEligibleForTestingName, "true"},
+        {tpcd::experiment::kDisable3PCookiesName, "true"},
+        {tpcd::experiment::kDisableAdsAPIsName, "false"},
+        {features::kCookieDeprecationLabelName, "fake_treatment_1.1"},
+        {tpcd::experiment::kVersionName, "9996"}};
+const FeatureEntry::FeatureParam kTPCPhaseOutFacilitatedTestingForceControl2[] =
+    {{tpcd::experiment::kForceEligibleForTestingName, "true"},
+     {tpcd::experiment::kDisable3PCookiesName, "true"},
+     {tpcd::experiment::kDisableAdsAPIsName, "true"},
+     {features::kCookieDeprecationLabelName, "fake_control_2"},
+     {tpcd::experiment::kVersionName, "9997"}};
+
+const FeatureEntry::FeatureVariation
+    kTPCPhaseOutFacilitatedTestingVariations[] = {
+        {"Control 1", kTPCPhaseOutFacilitatedTestingControl1,
+         std::size(kTPCPhaseOutFacilitatedTestingControl1), nullptr},
+        {"LabelOnly", kTPCPhaseOutFacilitatedTestingLabelOnly,
+         std::size(kTPCPhaseOutFacilitatedTestingLabelOnly), nullptr},
+        {"Treatment", kTPCPhaseOutFacilitatedTestingTreatment,
+         std::size(kTPCPhaseOutFacilitatedTestingTreatment), nullptr},
+        {"Control 2", kTPCPhaseOutFacilitatedTestingControl2,
+         std::size(kTPCPhaseOutFacilitatedTestingControl2), nullptr},
+        {"Force Control 1", kTPCPhaseOutFacilitatedTestingForceControl1,
+         std::size(kTPCPhaseOutFacilitatedTestingForceControl1), nullptr},
+        {"Force LabelOnly", kTPCPhaseOutFacilitatedTestingForceLabelOnly,
+         std::size(kTPCPhaseOutFacilitatedTestingForceLabelOnly), nullptr},
+        {"Force Treatment", kTPCPhaseOutFacilitatedTestingForceTreatment,
+         std::size(kTPCPhaseOutFacilitatedTestingForceTreatment), nullptr},
+        {"Force Control 2", kTPCPhaseOutFacilitatedTestingForceControl2,
+         std::size(kTPCPhaseOutFacilitatedTestingForceControl2), nullptr},
 };
 
 const FeatureEntry::FeatureParam kDIPSWithDeletion[] = {
@@ -9373,6 +9445,14 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kThirdPartyStoragePartitioningName,
      flag_descriptions::kThirdPartyStoragePartitioningDescription, kOsAll,
      FEATURE_VALUE_TYPE(net::features::kThirdPartyStoragePartitioning)},
+
+    {"tpc-phase-out-facilitated-testing",
+     flag_descriptions::kTPCPhaseOutFacilitatedTestingName,
+     flag_descriptions::kTPCPhaseOutFacilitatedTestingDescription, kOsAll,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         features::kCookieDeprecationFacilitatedTesting,
+         kTPCPhaseOutFacilitatedTestingVariations,
+         "TPCPhaseOutFacilitatedTesting")},
 
     {"bounce-tracking-mitigations", flag_descriptions::kDIPSName,
      flag_descriptions::kDIPSDescription, kOsAll,

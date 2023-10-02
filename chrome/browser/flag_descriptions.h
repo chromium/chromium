@@ -1969,6 +1969,9 @@ extern const char kPrivateStateTokensDescription[];
 extern const char kTailoredSecurityRetryForSyncUsersName[];
 extern const char kTailoredSecurityRetryForSyncUsersDescription[];
 
+extern const char kTPCPhaseOutFacilitatedTestingName[];
+extern const char kTPCPhaseOutFacilitatedTestingDescription[];
+
 extern const char kTrackingProtection3pcdName[];
 extern const char kTrackingProtection3pcdDescription[];
 
