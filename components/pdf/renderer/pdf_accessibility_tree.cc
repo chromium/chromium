@@ -20,7 +20,6 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversion_utils.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/time/time.h"
 #include "components/pdf/renderer/pdf_ax_action_target.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/renderer/render_accessibility.h"
@@ -30,7 +29,6 @@
 #include "pdf/pdf_accessibility_image_fetcher.h"
 #include "pdf/pdf_features.h"
 #include "third_party/blink/public/strings/grit/blink_accessibility_strings.h"
-#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/ax_node_id_forward.h"
@@ -46,6 +44,7 @@
 #include "base/metrics/metrics_hashes.h"
 #include "components/language/core/common/language_util.h"  // nogncheck
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "ui/accessibility/accessibility_features.h"
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
 namespace pdf {
@@ -212,10 +211,6 @@ const float kHeadingFontSizeRatio = 1.2f;
 // Ratio between the line spacing between two lines and the median on the
 // page for that line spacing to be considered a paragraph break.
 const float kParagraphLineSpacingRatio = 1.2f;
-
-// Delay before loading all the PDF content into the accessibility tree and
-// removing the status node from an accessibility tree.
-constexpr base::TimeDelta kDelayBeforeRemovingStatusNode = base::Seconds(1);
 
 // This class is used as part of our heuristic to determine which text runs live
 // on the same "line".  As we process runs, we keep a weighted average of the
@@ -506,6 +501,7 @@ std::unique_ptr<ui::AXNodeData> CreateNode(
   return node;
 }
 
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 // TODO(crbug.com/1442928): Need to test this status node with screen readers
 // on other desktop platforms, such as Windows, macOS, and Linux, as well as in
 // the embedded PDF case.
@@ -560,7 +556,6 @@ std::unique_ptr<ui::AXNodeData> CreateStatusNodeWrapper(
   return node_wrapper;
 }
 
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 gfx::Transform MakeTransformForImage(const gfx::RectF image_screen_size,
                                      const gfx::SizeF image_pixel_size) {
   // Nodes created with OCR results from the image will be misaligned on screen
@@ -1723,31 +1718,17 @@ void PdfAccessibilityTree::DoSetAccessibilityDocInfo(
   // doc's bounding box surrounds all pages.
   doc_node_->relative_bounds.bounds = gfx::RectF(0, 0, 1, 1);
 
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   // This notification node needs to be added as the first node in the PDF
   // accessibility tree so that the user will reach out to this node first when
   // navigating the PDF accessibility tree.
-  status_node_wrapper_ =
-      CreateStatusNodeWrapper(render_accessibility, doc_node_.get());
-  status_node_ =
-      CreateStatusNode(render_accessibility, status_node_wrapper_.get());
-  SetStatusMessage(IDS_PDF_LOADING_TO_A11Y_TREE);
-
-  // Create a PDF accessibility tree with the status node first to notify users
-  // that PDF content is being loaded.
-  ui::AXTreeUpdate update;
-  // We need to set the `AXTreeID` both in the `AXTreeUpdate` and the
-  // `AXTreeData` member because the constructor of `AXTree` might expect the
-  // tree to be constructed with a valid tree ID.
-  update.has_tree_data = true;
-  update.tree_data.tree_id = render_accessibility->GetTreeIDForPluginHost();
-  tree_data_.tree_id = render_accessibility->GetTreeIDForPluginHost();
-  tree_data_.focus_id = doc_node_->id;
-  update.root_id = doc_node_->id;
-  update.nodes = {*doc_node_, *status_node_wrapper_, *status_node_};
-  if (!tree_.Unserialize(update)) {
-    LOG(FATAL) << tree_.error();
+  if (features::IsPdfOcrEnabled()) {
+    ocr_status_node_wrapper_ =
+        CreateStatusNodeWrapper(render_accessibility, doc_node_.get());
+    ocr_status_node_ =
+        CreateStatusNode(render_accessibility, ocr_status_node_wrapper_.get());
   }
-  render_accessibility->SetPluginTreeSource(this);
+#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 }
 
 void PdfAccessibilityTree::SetAccessibilityPageInfo(
@@ -1780,20 +1761,13 @@ void PdfAccessibilityTree::DoSetAccessibilityPageInfo(
     return;
 
   // If unsanitized data is found, don't trust it and stop creation of the
-  // accessibility tree. Now that we already created the initial tree with the
-  // root node and the status node, destroy the existing tree as well.
+  // accessibility tree.
   if (!invalid_plugin_message_received_) {
     invalid_plugin_message_received_ =
         !IsDataFromPluginValid(text_runs, chars, page_objects);
   }
-  if (invalid_plugin_message_received_) {
-    if (tree_.root()) {
-      tree_.Destroy();
-      status_node_wrapper_.reset();
-      status_node_.reset();
-    }
+  if (invalid_plugin_message_received_)
     return;
-  }
 
   CHECK_LT(page_index, page_count_);
   ++next_page_index_;
@@ -1813,39 +1787,14 @@ void PdfAccessibilityTree::DoSetAccessibilityPageInfo(
       // the AXMode was set for PDF OCR.
       SetStatusMessage(IDS_PDF_OCR_IN_PROGRESS);
     } else {
-      if (page_index == page_count_ - 1) {
-        // Set the status node for PDF OCR feature notification after adding
-        // the last page's content.
-        SetStatusMessage(IDS_PDF_OCR_FEATURE_ALERT);
-      }
+      // Notify users of the PDF OCR feature when they encounter an inaccessible
+      // PDF before turning on the feature via the status node.
+      SetStatusMessage(IDS_PDF_OCR_FEATURE_ALERT);
     }
   }
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
   if (page_index == page_count_ - 1) {
-    if (!features::IsPdfOcrEnabled() || did_get_a_text_run_) {
-      // When PDF OCR is off, or when PDF OCR is on and PDF already has
-      // accessible text, notify users that all the PDF content has been loaded
-      // into an accessibility tree.
-      // TODO(crbug.com/1473176): Consider merging the code below with
-      // `SetOcrCompleteStatus()`.
-      SetStatusMessage(IDS_PDF_LOADED_TO_A11Y_TREE);
-      ui::AXTreeUpdate update;
-      update.root_id = doc_node_->id;
-      update.nodes.push_back(*status_node_);
-      if (!tree_.Unserialize(update)) {
-        LOG(FATAL) << tree_.error();
-      }
-      render_accessibility->SetPluginTreeSource(this);
-
-      // Post a delayed task for removing the status node so that screen reader
-      // users can hear the `IDS_PDF_LOADED_TO_A11Y_TREE` message via the status
-      // node before it gets removed.
-      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-          FROM_HERE,
-          base::BindOnce(&PdfAccessibilityTree::RemoveStatusNode, GetWeakPtr()),
-          kDelayBeforeRemovingStatusNode);
-    }
     UnserializeNodes();
   }
 }
@@ -1881,19 +1830,34 @@ void PdfAccessibilityTree::UnserializeNodes() {
   doc_node_->relative_bounds.transform = MakeTransformFromViewInfo();
 
   ui::AXTreeUpdate update;
+  // We need to set the `AXTreeID` both in the `AXTreeUpdate` and the
+  // `AXTreeData` member because the constructor of `AXTree` might expect the
+  // tree to be constructed with a valid tree ID.
+  update.has_tree_data = true;
+  update.tree_data.tree_id = render_accessibility->GetTreeIDForPluginHost();
+  tree_data_.tree_id = render_accessibility->GetTreeIDForPluginHost();
+  tree_data_.focus_id = doc_node_->id;
   update.root_id = doc_node_->id;
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  // Note that the status node will be removed if `!features::IsPdfOcrEnabled()`
-  // or `did_get_a_text_run_`, so the status node must not be added to an
-  // `AXTreeUpdate` in either of those cases.
-  if (features::IsPdfOcrEnabled() && !did_get_a_text_run_) {
-    CHECK(status_node_);
-    CHECK(status_node_wrapper_);
-    update.nodes.push_back(*status_node_);
+  // Remove the status node if PDF already has accessible text.
+  // `did_get_a_text_run_` will be true if the PDF already has accessible text
+  // and thus doesn't need OCR.
+  if (features::IsPdfOcrEnabled() && did_get_a_text_run_) {
+    size_t num_erased =
+        base::Erase(doc_node_->child_ids, ocr_status_node_wrapper_->id);
+    CHECK_EQ(num_erased, 1u);
+    ocr_status_node_.reset();
+    ocr_status_node_wrapper_.reset();
   }
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-
   update.nodes.push_back(*doc_node_);
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  if (features::IsPdfOcrEnabled() && ocr_status_node_wrapper_ &&
+      ocr_status_node_) {
+    update.nodes.push_back(*ocr_status_node_wrapper_);
+    update.nodes.push_back(*ocr_status_node_);
+  }
+#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   for (const auto& node : nodes_)
     update.nodes.push_back(std::move(*node));
 
@@ -1929,38 +1893,6 @@ void PdfAccessibilityTree::UnserializeNodes() {
     }
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   }
-}
-
-void PdfAccessibilityTree::RemoveStatusNode() {
-  content::RenderAccessibility* render_accessibility =
-      GetRenderAccessibilityIfEnabled();
-  if (!render_accessibility) {
-    return;
-  }
-
-  CHECK(doc_node_);
-  CHECK(status_node_wrapper_);
-  CHECK(status_node_);
-  const ui::AXNodeID& status_wrapper_id = status_node_wrapper_->id;
-  CHECK_NE(ui::kInvalidAXNodeID, status_wrapper_id);
-  size_t num_erased = base::EraseIf(
-      doc_node_->child_ids, [&status_wrapper_id](const ui::AXNodeID child_id) {
-        return child_id == status_wrapper_id;
-      });
-  CHECK_EQ(num_erased, 1u);
-
-  ui::AXTreeUpdate update;
-  update.root_id = doc_node_->id;
-  update.node_id_to_clear = status_wrapper_id;
-  update.nodes.push_back(*doc_node_);
-
-  status_node_.reset();
-  status_node_wrapper_.reset();
-
-  if (!tree_.Unserialize(update)) {
-    LOG(FATAL) << tree_.error();
-  }
-  render_accessibility->SetPluginTreeSource(this);
 }
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
@@ -2079,28 +2011,28 @@ void PdfAccessibilityTree::SetOcrCompleteStatus() {
 
   if (!nodes_.empty()) {
     // `nodes_` is not empty yet as `UnserializeNodes()` hasn't been called. In
-    // this case, `status_node_` will be unserialized along with `nodes_` when
-    // `UnserializeNodes()` gets called later.
+    // this case, `ocr_status_node_` will be unserialized along with `nodes_`
+    // when `UnserializeNodes()` gets called later.
     return;
   }
 
   ui::AXTreeUpdate update;
   update.root_id = doc_node_->id;
-  update.nodes.push_back(*status_node_);
+  update.nodes.push_back(*ocr_status_node_);
 
   if (!tree_.Unserialize(update)) {
     LOG(FATAL) << tree_.error();
   }
   render_accessibility->SetPluginTreeSource(this);
 }
-#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
 void PdfAccessibilityTree::SetStatusMessage(int message_id) {
-  CHECK(status_node_);
+  DCHECK(ocr_status_node_);
   const std::string message = l10n_util::GetStringUTF8(message_id);
   VLOG(2) << "Setting the status node with message: " << message;
-  status_node_->SetNameChecked(message);
+  ocr_status_node_->SetNameChecked(message);
 }
+#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
 void PdfAccessibilityTree::UpdateAXTreeDataFromSelection() {
   tree_data_.sel_is_backward = false;
@@ -2170,11 +2102,15 @@ bool PdfAccessibilityTree::FindCharacterOffset(
 void PdfAccessibilityTree::ClearAccessibilityNodes() {
   next_page_index_ = 0;
   doc_node_.reset();
-  status_node_.reset();
-  status_node_wrapper_.reset();
   nodes_.clear();
   node_id_to_page_char_index_.clear();
   node_id_to_annotation_info_.clear();
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  if (features::IsPdfOcrEnabled()) {
+    ocr_status_node_.reset();
+    ocr_status_node_wrapper_.reset();
+  }
+#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 }
 
 content::RenderAccessibility* PdfAccessibilityTree::GetRenderAccessibility() {
@@ -2469,20 +2405,8 @@ void PdfAccessibilityTree::OnOcrDataReceived(
   }
 
   if (did_unserialize_once) {
-    // PDF accessibility tree is available now, so it may be necessary to add a
-    // postamble page after the last OCRed page.
     AddPostamblePageIfNeeded(ocr_requests.back().page_node_id);
     render_accessibility->SetPluginTreeSource(this);
-  } else {
-    // PDF accessibility tree is not yet available. If all pages are OCRed
-    // before PDF content is being loaded into the accessibility tree, update
-    // the status node's message here.
-    if (ocr_service_->AreAllPagesOcred()) {
-      // This message will be loaded to the status node in the tree along with
-      // the PDF content when `UnserializeNodes()` gets called.
-      SetStatusMessage(was_text_converted_from_image_ ? IDS_PDF_OCR_COMPLETED
-                                                      : IDS_PDF_OCR_NO_RESULT);
-    }
   }
 }
 
