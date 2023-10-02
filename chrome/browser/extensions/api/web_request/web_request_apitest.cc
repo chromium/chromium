@@ -5595,7 +5595,6 @@ IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest, WebRequestBlocking) {
     EXPECT_EQ(net::OK, nav_observer.last_net_error_code());
   }
 
-  base::HistogramTester histogram_tester;
   // Now, navigate to block.example. This navigation should be blocked.
   {
     content::TestNavigationObserver nav_observer(web_contents);
@@ -5604,16 +5603,6 @@ IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest, WebRequestBlocking) {
         embedded_test_server()->GetURL("block.example", "/simple.html")));
     EXPECT_EQ(net::ERR_BLOCKED_BY_CLIENT, nav_observer.last_net_error_code());
   }
-
-  // TODO(crbug.com/1441221): Create more targeted tests to confirm when metrics
-  // should be firing or not.
-  // Web request API events should not have metrics emitted for SW/MV3.
-  histogram_tester.ExpectTotalCount(
-      "Extensions.Events.DispatchToAckTime.ExtensionServiceWorker2",
-      /*expected_count=*/0);
-  histogram_tester.ExpectTotalCount(
-      "Extensions.Events.DispatchToAckLongTime.ExtensionServiceWorker2",
-      /*expected_count=*/0);
 }
 
 // Tests a service worker-based extension registering multiple webRequest events

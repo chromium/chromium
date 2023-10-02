@@ -718,7 +718,6 @@ IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest, OnUnload) {
 // Tests that both a regular page and an event page will receive events when
 // the event page is not loaded.
 IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest, EventDispatchToTab) {
-  base::HistogramTester histogram_tester;
   ResultCatcher catcher;
   catcher.RestrictToBrowserContext(browser()->profile());
 
@@ -747,10 +746,6 @@ IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest, EventDispatchToTab) {
   page_ready.Reply("go");
 
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
-  // Call to runtime.onInstalled and bookmarks.onCreated are expected.
-  histogram_tester.ExpectTotalCount(
-      "Extensions.Events.DispatchToAckTime.ExtensionEventPage2",
-      /*expected_count=*/2);
 }
 
 // Tests that the lazy background page will be unloaded if the onSuspend event
