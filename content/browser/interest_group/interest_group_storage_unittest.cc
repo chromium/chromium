@@ -500,9 +500,10 @@ TEST_F(InterestGroupStorageTest, ClearOriginJoinedInterestGroups) {
   // Leave all of origin's B's interest groups joined from origin A, except for
   // a list that contains all of the groups actually joined that way (plus an
   // extra group). No groups should be left.
-  storage->ClearOriginJoinedInterestGroups(
-      kOriginB, {kName1, kName2, kName3, "not-present-group"},
-      /*main_frame_origin=*/kOriginA);
+  EXPECT_THAT(storage->ClearOriginJoinedInterestGroups(
+                  kOriginB, {kName1, kName2, kName3, "not-present-group"},
+                  /*main_frame_origin=*/kOriginA),
+              testing::UnorderedElementsAre());
   EXPECT_THAT(GetInterestGroupSummary(*storage),
               testing::UnorderedElementsAre(
                   // Origin B's groups that were joined on origin A.
@@ -515,8 +516,10 @@ TEST_F(InterestGroupStorageTest, ClearOriginJoinedInterestGroups) {
   // kName1 and kName3. Only the kName2 group should be left. Despite kName2 and
   // kName3 groups both having "group-by-origin" execution mode, group kName3
   // should not have been left.
-  storage->ClearOriginJoinedInterestGroups(kOriginB, {kName1, kName3},
-                                           /*main_frame_origin=*/kOriginA);
+  EXPECT_THAT(
+      storage->ClearOriginJoinedInterestGroups(kOriginB, {kName1, kName3},
+                                               /*main_frame_origin=*/kOriginA),
+      testing::UnorderedElementsAre(kName2));
   EXPECT_THAT(GetInterestGroupSummary(*storage),
               testing::UnorderedElementsAre(
                   // Origin B's groups that were joined on origin A.
@@ -525,8 +528,10 @@ TEST_F(InterestGroupStorageTest, ClearOriginJoinedInterestGroups) {
                   "https://c.test;name1", "https://b.test;name4"));
 
   // Leave all of origin's B's interest groups joined from origin A.
-  storage->ClearOriginJoinedInterestGroups(kOriginB, {},
-                                           /*main_frame_origin=*/kOriginA);
+  EXPECT_THAT(
+      storage->ClearOriginJoinedInterestGroups(kOriginB, {},
+                                               /*main_frame_origin=*/kOriginA),
+      testing::UnorderedElementsAre(kName1, kName3));
   EXPECT_THAT(GetInterestGroupSummary(*storage),
               testing::UnorderedElementsAre("https://c.test;name1",
                                             "https://b.test;name4"));

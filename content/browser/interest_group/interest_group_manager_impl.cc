@@ -251,15 +251,26 @@ void InterestGroupManagerImpl::LeaveInterestGroup(
 }
 
 void InterestGroupManagerImpl::ClearOriginJoinedInterestGroups(
-    url::Origin owner,
+    const url::Origin& owner,
     std::set<std::string> interest_groups_to_keep,
     url::Origin main_frame_origin) {
   // TODO(https://crbug.com/1486606): Add NotifyInterestGroupAccessed() calls
   // for this after retrieving list of IGs that were left from the databases.
   // See bug for more details.
   impl_.AsyncCall(&InterestGroupStorage::ClearOriginJoinedInterestGroups)
-      .WithArgs(std::move(owner), std::move(interest_groups_to_keep),
-                std::move(main_frame_origin));
+      .WithArgs(owner, std::move(interest_groups_to_keep),
+                std::move(main_frame_origin))
+      .Then(base::BindOnce(
+          &InterestGroupManagerImpl::OnClearOriginJoinedInterestGroupsComplete,
+          weak_factory_.GetWeakPtr(), owner));
+}
+
+void InterestGroupManagerImpl::OnClearOriginJoinedInterestGroupsComplete(
+    const url::Origin& owner,
+    std::vector<std::string> left_interest_group_names) {
+  for (const auto& name : left_interest_group_names) {
+    NotifyInterestGroupAccessed(InterestGroupObserver::kClear, owner, name);
+  }
 }
 
 void InterestGroupManagerImpl::UpdateInterestGroupsOfOwner(

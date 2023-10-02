@@ -1805,15 +1805,16 @@ bool DoClearClusteredBiddingGroups(sql::Database& db,
 }
 
 // Leaves all the interest groups joined on `joining_origin` except
-// `interest_groups_to_keep`.
-bool DoClearOriginJoinedInterestGroups(
+// `interest_groups_to_keep`. Returns absl::nullopt on error, and a (possibly
+// empty) list of left interest groups on success.
+absl::optional<std::vector<std::string>> DoClearOriginJoinedInterestGroups(
     sql::Database& db,
     const url::Origin owner,
     const std::set<std::string>& interest_groups_to_keep,
     const url::Origin joining_origin) {
   sql::Transaction transaction(&db);
   if (!transaction.Begin()) {
-    return false;
+    return absl::nullopt;
   }
 
   // Have to select interest groups and then use DoRemoveInterestGroup() in
@@ -1829,24 +1830,29 @@ bool DoClearOriginJoinedInterestGroups(
   // clang-format on
 
   if (!same_cluster_groups.is_valid()) {
-    return false;
+    return absl::nullopt;
   }
 
   same_cluster_groups.Reset(true);
   same_cluster_groups.BindString(0, Serialize(owner));
   same_cluster_groups.BindString(1, Serialize(joining_origin));
 
+  std::vector<std::string> cleared_interest_groups;
+
   while (same_cluster_groups.Step()) {
     std::string name = same_cluster_groups.ColumnString(0);
     if (interest_groups_to_keep.find(name) != interest_groups_to_keep.end()) {
       continue;
     }
-    if (!DoRemoveInterestGroup(
-            db, blink::InterestGroupKey(owner, std::move(name)))) {
-      return false;
+    if (!DoRemoveInterestGroup(db, blink::InterestGroupKey(owner, name))) {
+      return absl::nullopt;
     }
+    cleared_interest_groups.emplace_back(std::move(name));
   }
-  return transaction.Commit();
+  if (!transaction.Commit()) {
+    return absl::nullopt;
+  }
+  return cleared_interest_groups;
 }
 
 bool DoLoadInterestGroup(sql::Database& db,
@@ -3681,19 +3687,23 @@ void InterestGroupStorage::LeaveInterestGroup(
   }
 }
 
-void InterestGroupStorage::ClearOriginJoinedInterestGroups(
+std::vector<std::string> InterestGroupStorage::ClearOriginJoinedInterestGroups(
     const url::Origin& owner,
     const std::set<std::string>& interest_groups_to_keep,
     const url::Origin& main_frame_origin) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!EnsureDBInitialized()) {
-    return;
+    return std::vector<std::string>();
   }
 
-  if (!DoClearOriginJoinedInterestGroups(*db_, owner, interest_groups_to_keep,
-                                         main_frame_origin)) {
+  absl::optional<std::vector<std::string>> left_interest_groups =
+      DoClearOriginJoinedInterestGroups(*db_, owner, interest_groups_to_keep,
+                                        main_frame_origin);
+  if (!left_interest_groups) {
     DLOG(ERROR) << "Could not leave interest group: " << db_->GetErrorMessage();
+    return std::vector<std::string>();
   }
+  return std::move(left_interest_groups.value());
 }
 
 bool InterestGroupStorage::UpdateInterestGroup(

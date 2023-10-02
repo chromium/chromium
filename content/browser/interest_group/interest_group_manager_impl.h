@@ -98,7 +98,8 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
       kBid,
       kAdditionalBid,
       kWin,
-      kAdditionalBidWin
+      kAdditionalBidWin,
+      kClear,
     };
     virtual void OnInterestGroupAccessed(const base::Time& access_time,
                                          AccessType type,
@@ -183,7 +184,7 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   // Removes all interest groups owned by `owner` joined from
   // `main_frame_origin` except `interest_groups_to_keep`, if they exist.
   void ClearOriginJoinedInterestGroups(
-      url::Origin owner,
+      const url::Origin& owner,
       std::set<std::string> interest_groups_to_keep,
       url::Origin main_frame_origin);
   // Loads all interest groups owned by `owner`, then updates their
@@ -444,6 +445,9 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
       bool report_result_only,
       blink::mojom::AdAuctionService::LeaveInterestGroupCallback callback,
       bool can_leave);
+  void OnClearOriginJoinedInterestGroupsComplete(
+      const url::Origin& owner,
+      std::vector<std::string> left_interest_group_names);
 
   // For a given owner, gets interest group keys along with their update urls.
   // `groups_limit` sets a limit on the maximum number of interest group keys

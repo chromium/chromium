@@ -1039,6 +1039,9 @@ void StorageHandler::OnInterestGroupAccessed(
     case AccessType::kAdditionalBidWin:
       type_enum = Storage::InterestGroupAccessTypeEnum::AdditionalBidWin;
       break;
+    case AccessType::kClear:
+      type_enum = Storage::InterestGroupAccessTypeEnum::Clear;
+      break;
   };
   frontend_->InterestGroupAccessed(access_time.ToDoubleT(), type_enum,
                                    owner_origin.Serialize(), name);

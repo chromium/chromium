@@ -71,7 +71,8 @@ class CONTENT_EXPORT InterestGroupStorage {
 
   // Removes all interest groups owned by `owner` joined from
   // `main_frame_origin` except `interest_groups_to_keep`, if they exist.
-  void ClearOriginJoinedInterestGroups(
+  // Returns a (possibly empty) list of all interest groups that were cleared.
+  std::vector<std::string> ClearOriginJoinedInterestGroups(
       const url::Origin& owner,
       const std::set<std::string>& interest_groups_to_keep,
       const url::Origin& main_frame_origin);

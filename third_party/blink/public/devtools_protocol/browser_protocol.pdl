@@ -9359,6 +9359,7 @@ experimental domain Storage
       win
       additionalBid
       additionalBidWin
+      clear
 
   # Ad advertising element inside an interest group.
   type InterestGroupAd extends object

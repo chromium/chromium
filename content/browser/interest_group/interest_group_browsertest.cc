@@ -2329,6 +2329,50 @@ IN_PROC_BROWSER_TEST_F(
                           test_origin_a, /*groups_to_keep=*/{{}}));
 }
 
+// Make sure that ClearOriginJoinedInterestGroups() sends leave notifications
+// for the right set of interest groups. This is separate from the above tests
+// because the *AndVerify() series of methods results in extra notifications.
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       SameOriginClearOriginJoinedInterestGroupsNotifications) {
+  const char kName1[] = "name1";
+  const char kName2[] = "name2";
+  const char kName3[] = "name3";
+  const char kName4[] = "name4";
+
+  AttachInterestGroupObserver();
+
+  GURL test_url_a = https_server_->GetURL("a.test", "/echo");
+  url::Origin test_origin_a = url::Origin::Create(test_url_a);
+  ASSERT_TRUE(test_url_a.SchemeIs(url::kHttpsScheme));
+  ASSERT_TRUE(NavigateToURL(shell(), test_url_a));
+
+  // These joins should all succeed.
+  EXPECT_EQ(kSuccess, JoinInterestGroup(test_origin_a, kName1));
+  EXPECT_EQ(kSuccess, JoinInterestGroup(test_origin_a, kName2));
+  EXPECT_EQ(kSuccess, JoinInterestGroup(test_origin_a, kName3));
+
+  // Directly join an interest group from a different main frame origin. This
+  // should not be left by the clear call.
+  manager_->JoinInterestGroup(
+      blink::TestInterestGroupBuilder(test_origin_a, kName4).Build(),
+      /*joining_url=*/https_server_->GetURL("b.test", "/echo"));
+
+  WaitForAccessObserved(
+      {{TestInterestGroupObserver::kJoin, test_origin_a, kName1},
+       {TestInterestGroupObserver::kJoin, test_origin_a, kName2},
+       {TestInterestGroupObserver::kJoin, test_origin_a, kName3},
+       {TestInterestGroupObserver::kJoin, test_origin_a, kName4}});
+
+  EXPECT_EQ(kSuccess, ClearOriginJoinedInterestGroups(
+                          test_origin_a, /*groups_to_keep=*/{{kName2}}));
+
+  // kName2 and kName4 should not be cleared. Don't check exact order, as
+  // there's no guarantee about the order groups will be listed in.
+  WaitForAccessObserved(
+      {{TestInterestGroupObserver::kClear, test_origin_a, kName1},
+       {TestInterestGroupObserver::kClear, test_origin_a, kName3}});
+}
+
 // Can't join or leave interest groups from http://localhost, even though it's
 // a "secure context" (since it's potentially trustworthy).
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, CantJoinLeaveHttpLocalhost) {
@@ -18652,12 +18696,23 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, NotificationOrder) {
   EXPECT_EQ(kSuccess, EvalJs(shell(), R"(
 (async function() {
   try {
-    // Join a same-origin interest group with no bidding script.
+    // Join a pair of same-origin interest groups with no bidding script.
     // Unlike other tests, don't wait for the join to complete
     // before making more FLEDGE calls. The calls should still be
     // executed in order, since they're all same-origin.
     navigator.joinAdInterestGroup(
         {name: 'cars', owner: document.location.origin},
+        /*joinDurationSec=*/300);
+    navigator.joinAdInterestGroup(
+        {name: 'golf carts', owner: document.location.origin},
+        /*joinDurationSec=*/300);
+
+    // This should clear the interest group joined second only.
+    // If this left multiple groups, there'd be no guarantee about
+    // the relative order of those two groups, so it deliberately
+    // leaves only one group.
+    navigator.clearOriginJoinedAdInterestGroups(
+        document.location.origin, ['cars'],
         /*joinDurationSec=*/300);
 
     // Run an auction. Don't bother using a real decision logic URL.
@@ -18680,6 +18735,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, NotificationOrder) {
   // Expect events to be in order.
   WaitForAccessObservedInOrder(
       {{TestInterestGroupObserver::kJoin, test_origin, "cars"},
+       {TestInterestGroupObserver::kJoin, test_origin, "golf carts"},
+       {TestInterestGroupObserver::kClear, test_origin, "golf carts"},
        {TestInterestGroupObserver::kLoaded, test_origin, "cars"},
        {TestInterestGroupObserver::kLeave, test_origin, "cars"}});
 }
