@@ -15,6 +15,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
@@ -174,8 +175,12 @@ IN_PROC_BROWSER_TEST_F(PersistedTabDataAndroidBrowserTest,
 IN_PROC_BROWSER_TEST_F(PersistedTabDataAndroidBrowserTest,
                        TestCachedCallbacks) {
   OnDeferredStartup();
-  FooPersistedTabDataAndroid foo_persisted_tab_data_android(tab_android());
-  foo_persisted_tab_data_android.SetValue(INITIAL_VALUE);
+  content::RunAllTasksUntilIdle();
+
+  FooPersistedTabDataAndroid* foo_persisted_tab_data_android =
+      static_cast<FooPersistedTabDataAndroid*>(tab_android()->GetUserData(
+          FooPersistedTabDataAndroid::UserDataKey()));
+  foo_persisted_tab_data_android->SetValue(INITIAL_VALUE);
 
   base::RunLoop run_loop;
   FooPersistedTabDataAndroid::From(
@@ -214,6 +219,7 @@ IN_PROC_BROWSER_TEST_F(PersistedTabDataAndroidBrowserTest,
   another_tab_bar_persisted_tab_data_android.SetValue(false);
 
   base::RunLoop run_loop[4];
+  int beginning_deferred_request_size = GetDeferredRequests()->size();
   FooPersistedTabDataAndroid::From(
       tab_android(), base::BindOnce(
                          [](base::OnceClosure done,
@@ -229,7 +235,8 @@ IN_PROC_BROWSER_TEST_F(PersistedTabDataAndroidBrowserTest,
                          },
                          run_loop[1].QuitClosure()));
   // Requests should be stored for deferred startup.
-  EXPECT_EQ(2u, GetDeferredRequests()->size());
+  EXPECT_EQ(beginning_deferred_request_size + 2u,
+            GetDeferredRequests()->size());
   OnDeferredStartup();
   run_loop[0].Run();
   run_loop[1].Run();

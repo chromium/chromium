@@ -15,6 +15,7 @@
 #include "chrome/test/base/android/android_browser_test.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "url/gurl.h"
@@ -33,6 +34,7 @@ class AuxiliarySearchProviderBrowserTest : public AndroidBrowserTest {
     auxiliary_search_provider_ =
         std::make_unique<AuxiliarySearchProvider>(profile());
     PersistedTabDataAndroid::OnDeferredStartup();
+    content::RunAllTasksUntilIdle();
   }
 
   content::WebContents* web_contents() {
