@@ -507,10 +507,20 @@ base::expected<void, GLError> CopySharedImageHelper::ConvertYUVAMailboxesToRGB(
     }
 
     sk_sp<SkImage> result_image;
-    SkISize dest_size =
-        SkISize::Make(dest_surface->width(), dest_surface->height());
-    SkYUVAInfo yuva_info(dest_size, src_plane_config, src_subsampling,
-                         src_yuv_color_space);
+
+    gfx::Size dest_size =
+        gfx::Size(dest_surface->width(), dest_surface->height());
+
+    gfx::Rect dest_rect(0, 0, width, height);
+    if (!gfx::Rect(dest_size).Contains(dest_rect)) {
+      return base::unexpected(GLError(GL_INVALID_VALUE,
+                                      "ConvertYUVAMailboxesToRGB",
+                                      "destination texture bad dimensions."));
+    }
+
+    auto src_size = yuva_images[0]->size();
+    SkYUVAInfo yuva_info(gfx::SizeToSkISize(src_size), src_plane_config,
+                         src_subsampling, src_yuv_color_space);
     if (auto* gr_context = shared_context_state_->gr_context()) {
       std::array<GrBackendTexture, SkYUVAInfo::kMaxPlanes> yuva_textures;
       for (int i = 0; i < num_src_planes; ++i) {
@@ -542,8 +552,10 @@ base::expected<void, GLError> CopySharedImageHelper::ConvertYUVAMailboxesToRGB(
     } else {
       SkPaint paint;
       paint.setBlendMode(SkBlendMode::kSrc);
-      dest_surface->getCanvas()->drawImage(result_image, 0, 0,
-                                           SkSamplingOptions(), &paint);
+      SkRect src_rect = SkRect::MakeXYWH(src_x, src_y, width, height);
+      dest_surface->getCanvas()->drawImageRect(
+          result_image, src_rect, gfx::RectToSkRect(dest_rect),
+          SkSamplingOptions(), &paint, SkCanvas::kStrict_SrcRectConstraint);
       drew_image = true;
     }
   }
