@@ -461,6 +461,20 @@ class ImportNotifier:
             _log.warning('buganizer instantiation failed')
             _log.warning(e)
 
+        # TODO(crbug.com/1488118): clean up the test code once api is confirmed
+        if bugs:
+            bug = bugs[0]
+            try:
+                buganizer_res = buganizer_api.NewIssue(
+                    title=bug.summary,
+                    description=bug.description,
+                    cc=bug.cc + ['nihardamar@google.com'],
+                    status="New",
+                    componentId=BUGANIZER_WPT_COMPONENT)
+            except Exception as e:
+                _log.warning('buganizer api call to new issue failed')
+                _log.warning(e)
+
         for index, bug in enumerate(bugs, start=1):
             buganizer_component_id = BUGANIZER_WPT_COMPONENT
             if buganizer_api and USE_BUGANIZER:
