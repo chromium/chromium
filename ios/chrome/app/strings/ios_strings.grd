@@ -992,7 +992,7 @@ See your search engine’s instructions for deleting your search history, if app
         Switch in Settings…
       </message>
       <message name="IDS_IOS_DEFAULT_BROWSER_VIDEO_PROMO_PRIMARY_BUTTON_TEXT" desc="Text of button that will take users to iOS settings, where they can change the default browser. Used in the video default browser promo [iOS only]">
-        Open Settings
+        Go to Settings…
       </message>
       <message name="IDS_IOS_DEFAULT_BROWSER_VIDEO_PROMO_STEP_1" desc="Text of the row indicating the first step of the instruction to set Chrome as default browser [iOS only]">
         Open "Settings."
