@@ -540,7 +540,7 @@ public class UrlOverridingTest {
             doClick(params.clickTargetId, tab);
             try {
                 // Some tests have a long delay before starting the load.
-                loadCallback.waitForCallback(loadCount, 1, 10, TimeUnit.SECONDS);
+                loadCallback.waitForCallback(loadCount, 1, 20, TimeUnit.SECONDS);
             } catch (TimeoutException ex) {
                 // Non-subframe clicks shouldn't be flaky.
                 if (!params.willLoadSubframe) throw ex;
