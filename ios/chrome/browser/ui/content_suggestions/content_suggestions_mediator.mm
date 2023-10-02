@@ -482,18 +482,8 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
   [self hideTabResumption];
 }
 
-- (void)disableSafetyCheck {
+- (void)disableSafetyCheck:(ContentSuggestionsModuleType)type {
   safety_check_prefs::DisableSafetyCheckInMagicStack(_localState);
-
-  ContentSuggestionsModuleType type;
-  int checkIssuesCount = CheckIssuesCount(_safetyCheckState);
-  if (checkIssuesCount > 2) {
-    type = ContentSuggestionsModuleType::kSafetyCheckMultiRowOverflow;
-  } else if (checkIssuesCount > 1) {
-    type = ContentSuggestionsModuleType::kSafetyCheckMultiRow;
-  } else {
-    type = ContentSuggestionsModuleType::kSafetyCheck;
-  }
 
   MagicStackOrderChange change{MagicStackOrderChange::Type::kRemove};
   change.old_module = type;

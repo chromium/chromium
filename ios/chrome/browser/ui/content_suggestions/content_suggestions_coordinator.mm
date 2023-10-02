@@ -310,7 +310,9 @@ BASE_FEATURE(kNoRecentTabIfNullWebState,
       [self.contentSuggestionsMediator disableTabResumption];
       break;
     case ContentSuggestionsModuleType::kSafetyCheck:
-      [self.contentSuggestionsMediator disableSafetyCheck];
+    case ContentSuggestionsModuleType::kSafetyCheckMultiRow:
+    case ContentSuggestionsModuleType::kSafetyCheckMultiRowOverflow:
+      [self.contentSuggestionsMediator disableSafetyCheck:type];
       break;
     case ContentSuggestionsModuleType::kSetUpListSync:
     case ContentSuggestionsModuleType::kSetUpListDefaultBrowser:
