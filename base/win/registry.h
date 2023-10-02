@@ -85,9 +85,6 @@ class BASE_EXPORT RegKey {
   // cannot be determined.
   base::expected<DWORD, LONG> GetValueCount() const;
 
-  // Returns the last write time or 0 on failure.
-  FILETIME GetLastWriteTime() const;
-
   // Determines the nth value's name.
   LONG GetValueNameAt(DWORD index, std::wstring* name) const;
 

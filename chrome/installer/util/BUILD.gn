@@ -375,16 +375,4 @@ if (is_win) {
       "//chrome/test/data/installer/",
     ]
   }
-
-  source_set("interactive_ui_tests") {
-    testonly = true
-    sources = [ "shell_util_interactive_uitest.cc" ]
-    deps = [
-      ":with_no_strings",
-      "//base",
-      "//base/test:test_support",
-      "//build:branding_buildflags",
-      "//testing/gtest",
-    ]
-  }
 }  # is_win

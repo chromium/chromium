@@ -171,17 +171,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Windows.MakeChromeDefaultDirectly.Result"
-    enum="DefaultDirectAttemptResult" expires_after="2024-01-28">
-  <owner>robliao@chromium.org</owner>
-  <owner>davidbienvenu@chromium.org</owner>
-  <summary>
-    Records the outcome of attempting to set the default directly. Recorded when
-    a request to make Chrome default is received and is eligible for the direct
-    path.
-  </summary>
-</histogram>
-
 <histogram name="Windows.Menu.Win11Style" enum="BooleanWin11MenuStyle"
     expires_after="M97">
   <owner>kylixrd@chromium.org</owner>

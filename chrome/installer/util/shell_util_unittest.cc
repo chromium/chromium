@@ -28,7 +28,6 @@
 #include "chrome/install_static/install_util.h"
 #include "chrome/installer/util/install_util.h"
 #include "chrome/installer/util/util_constants.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -1524,88 +1523,4 @@ TEST(ShellUtilTest, GetOldUserSpecificRegistrySuffix) {
   ASSERT_NE(0, ::GetUserName(user_name, &size));
   ASSERT_GE(size, 1U);
   ASSERT_STREQ(user_name, suffix.substr(1).c_str());
-}
-
-TEST(ShellUtilTest, HashComputationTest) {
-  // Random selection of data to validate hash behavior.
-  EXPECT_THAT(ShellUtil::ComputeHashForTesting(std::vector<uint8_t>{
-                  0xad, 0x02, 0x99, 0xd7, 0xe6, 0xae, 0x58, 0xb2}),
-              ::testing::ContainerEq(std::array<uint32_t, 4>{
-                  0x09dea6a1, 0x4a8fc186, 0xbc7c90a4, 0xca06d9a3}));
-  EXPECT_THAT(ShellUtil::ComputeHashForTesting(std::vector<uint8_t>{
-                  0xdf, 0x5e, 0xaa, 0x78, 0xb2, 0xad, 0x92, 0x2f, 0x2a, 0xdc,
-                  0xcd, 0xaf, 0xda, 0xd3, 0x4e, 0x86}),
-              ::testing::ContainerEq(std::array<uint32_t, 4>{
-                  0xaf9b175d, 0xcc68a9ce, 0x8f9f7b8b, 0x895cd714}));
-  EXPECT_THAT(ShellUtil::ComputeHashForTesting(std::vector<uint8_t>{
-                  0xdc, 0x94, 0xa7, 0x6f, 0x94, 0xd7, 0x6c, 0xf6, 0xca, 0x95,
-                  0xc7, 0xf3, 0x54, 0x39, 0xb1, 0xac, 0xb3, 0xa2, 0x7a, 0xa7,
-                  0x6f, 0xbe, 0xb3, 0xe1, 0xbd, 0x42, 0x22, 0xe3}),
-              ::testing::ContainerEq(std::array<uint32_t, 4>{
-                  0xec3767a8, 0x1e115388, 0x94e1a5fc, 0x9217bd7c}));
-  EXPECT_THAT(ShellUtil::ComputeHashForTesting(
-                  std::vector<uint8_t>{0x2e, 0x64, 0x7e, 0x26, 0xab, 0xec, 0xe5,
-                                       0xb4, 0x54, 0x16, 0xb1, 0xa2}),
-              ::testing::ContainerEq(std::array<uint32_t, 4>{
-                  0xc5b56876, 0x472a21c8, 0x642c79f7, 0x7214ae18}));
-  EXPECT_THAT(ShellUtil::ComputeHashForTesting(
-                  std::vector<uint8_t>{0x15, 0xb2, 0xc1, 0x91, 0x5f, 0x8f, 0x12,
-                                       0xad, 0xd4, 0x4c, 0xa7, 0x30}),
-              ::testing::ContainerEq(std::array<uint32_t, 4>{
-                  0xae9a26cd, 0x82769b2e, 0x85ef1ecd, 0x6c94e1a4}));
-  EXPECT_THAT(ShellUtil::ComputeHashForTesting(std::vector<uint8_t>{
-                  0x9f, 0xf3, 0xdc, 0x20, 0xef, 0xbb, 0x28, 0x29, 0x58, 0x0b,
-                  0xc0, 0xb3, 0x40, 0xa5, 0x30, 0xb2, 0x32, 0x1c, 0x54, 0xf2}),
-              ::testing::ContainerEq(std::array<uint32_t, 4>{
-                  0xe9765ccb, 0x828b33ad, 0x619d1e26, 0x6e3645c9}));
-  EXPECT_THAT(ShellUtil::ComputeHashForTesting(std::vector<uint8_t>{
-                  0x45, 0xb4, 0xe8, 0x81, 0x65, 0x6f, 0x6c, 0x76}),
-              ::testing::ContainerEq(std::array<uint32_t, 4>{
-                  0x33c1d050, 0x79fdc457, 0xe677ddba, 0x2eb1dcee}));
-  EXPECT_THAT(ShellUtil::ComputeHashForTesting(std::vector<uint8_t>{
-                  0x04, 0xbb, 0xd6, 0x1a, 0x8d, 0x40, 0xa6, 0xfd,
-                  0x79, 0x80, 0x26, 0xc0, 0xfc, 0x8b, 0x4e, 0xc4,
-                  0x60, 0x0b, 0x44, 0x0e, 0x27, 0x71, 0x0f, 0x57}),
-              ::testing::ContainerEq(std::array<uint32_t, 4>{
-                  0x355884a8, 0x0760d56d, 0xd602215c, 0xe5792b0c}));
-  EXPECT_THAT(ShellUtil::ComputeHashForTesting(std::vector<uint8_t>{
-                  0x4a, 0xca, 0x02, 0x1f, 0xd4, 0xf0, 0xfd, 0x2c, 0x88, 0x09,
-                  0xee, 0xf6, 0xeb, 0xd9, 0xf4, 0x8b}),
-              ::testing::ContainerEq(std::array<uint32_t, 4>{
-                  0xe11db6db, 0x3c2728d2, 0xc65e3481, 0x10d6e545}));
-  EXPECT_THAT(
-      ShellUtil::ComputeHashForTesting(std::vector<uint8_t>{
-          0x9c, 0x05, 0x18, 0x01, 0xb0, 0x92, 0x8c, 0xec, 0x67, 0x6a, 0xd1,
-          0x81, 0xed, 0x6a, 0xb6, 0xf8, 0xad, 0xb0, 0x41, 0xf4, 0x21, 0x34,
-          0x30, 0xca, 0x7f, 0x51, 0x47, 0xc4, 0x1c, 0xcf, 0x06, 0x91}),
-      ::testing::ContainerEq(std::array<uint32_t, 4>{0xec0c887c, 0x36538d64,
-                                                     0x302c1cdf, 0x0fe7c73d}));
-
-  // Invalid data that should hash to zeros.
-  EXPECT_THAT(ShellUtil::ComputeHashForTesting(std::vector<uint8_t>{}),
-              ::testing::ContainerEq(std::array<uint32_t, 4>{}));
-  EXPECT_THAT(
-      ShellUtil::ComputeHashForTesting(std::vector<uint8_t>{0x00, 0x01}),
-      ::testing::ContainerEq(std::array<uint32_t, 4>{}));
-  EXPECT_THAT(
-      ShellUtil::ComputeHashForTesting(std::vector<uint8_t>{0x00, 0x01, 0x02}),
-      ::testing::ContainerEq(std::array<uint32_t, 4>{}));
-  EXPECT_THAT(ShellUtil::ComputeHashForTesting(
-                  std::vector<uint8_t>{0x00, 0x01, 0x02, 0x03}),
-              ::testing::ContainerEq(std::array<uint32_t, 4>{}));
-}
-
-TEST(ShellUtilTest, UserChoiceHashComputationTest) {
-  // If these tests fail, investigate if the salt changed or if the hash
-  // function changed.
-  EXPECT_EQ(
-      L"EYe0ErlvGho=",
-      ShellUtil::ComputeUserChoiceHashForTesting(
-          L".htm", L"S-1-5-21-2745944652-1798522384-4190209206-1001",
-          L"ChromiumHTM.77HL62E3NQOIRZILVHSWMGHIQE", L"01d88bf3ee5fd000"));
-  EXPECT_EQ(
-      L"w4oUasKJq/Y=",
-      ShellUtil::ComputeUserChoiceHashForTesting(
-          L".html", L"S-1-5-21-2745944652-1798522384-4190209206-1001",
-          L"ChromiumHTM.77HL62E3NQOIRZILVHSWMGHIQE", L"01d88bf3ee5fd000"));
 }

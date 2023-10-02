@@ -268,14 +268,6 @@ base::expected<DWORD, LONG> RegKey::GetValueCount() const {
   return base::unexpected(result);
 }
 
-FILETIME RegKey::GetLastWriteTime() const {
-  FILETIME last_write_time;
-  LONG result = RegQueryInfoKey(key_, nullptr, nullptr, nullptr, nullptr,
-                                nullptr, nullptr, nullptr, nullptr, nullptr,
-                                nullptr, &last_write_time);
-  return (result == ERROR_SUCCESS) ? last_write_time : FILETIME{};
-}
-
 LONG RegKey::GetValueNameAt(DWORD index, std::wstring* name) const {
   wchar_t buf[256];
   DWORD bufsize = std::size(buf);

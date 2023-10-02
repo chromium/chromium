@@ -18,7 +18,6 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/feature_list.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -58,14 +57,6 @@
 namespace shell_integration {
 
 namespace {
-
-BASE_FEATURE(kWin10UnattendedDefaultExportDerived,
-             "Win10UnattendedDefaultExportDerived",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-bool CanSetAsDefaultDirectly() {
-  return base::FeatureList::IsEnabled(kWin10UnattendedDefaultExportDerived);
-}
 
 // Helper function for GetAppId to generates profile id
 // from profile path. "profile_id" is composed of sanitized basenames of
@@ -653,12 +644,8 @@ bool SetAsDefaultBrowser() {
   }
 
   // From UI currently we only allow setting default browser for current user.
-  if (!(CanSetAsDefaultDirectly()
-            ? ShellUtil::MakeChromeDefaultDirectly(
-                  ShellUtil::CURRENT_USER, chrome_exe,
-                  true /* elevate_if_not_admin */)
-            : ShellUtil::MakeChromeDefault(ShellUtil::CURRENT_USER, chrome_exe,
-                                           true /* elevate_if_not_admin */))) {
+  if (!ShellUtil::MakeChromeDefault(ShellUtil::CURRENT_USER, chrome_exe,
+                                    true /* elevate_if_not_admin */)) {
     LOG(ERROR) << "Chrome could not be set as default browser.";
     return false;
   }
@@ -743,10 +730,6 @@ DefaultWebClientSetPermission GetPlatformSpecificDefaultWebClientSetPermission(
     return SET_DEFAULT_NOT_ALLOWED;
   }
   if (ShellUtil::CanMakeChromeDefaultUnattended()) {
-    return SET_DEFAULT_UNATTENDED;
-  }
-  if (method == WebClientSetMethod::kDefaultBrowser &&
-      CanSetAsDefaultDirectly()) {
     return SET_DEFAULT_UNATTENDED;
   }
   // Setting the default web client generally requires user interaction in
