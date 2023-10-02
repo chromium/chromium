@@ -191,6 +191,7 @@ if (is_android && current_toolchain == default_toolchain) {
     "Chrome: $chrome_version_code",
     "Monochrome: $monochrome_version_code",
     "TrichromeChrome: $trichrome_version_code",
+    "TrichromeChromeOpenBeta: $trichrome_beta_version_code",
     "TrichromeChromeAuto: $trichrome_auto_version_code",
     "AndroidWebviewStable: $webview_stable_version_code",
     "AndroidWebviewBeta: $webview_beta_version_code",
