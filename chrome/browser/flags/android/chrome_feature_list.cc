@@ -248,6 +248,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kDrawEdgeToEdge,
     &kDrawNativeEdgeToEdge,
     &kDrawWebEdgeToEdge,
+    &kEarlyInitializeStartupMetrics,
     &kEmptyStates,
     &kExperimentsForAgsa,
     &kExploreSites,
@@ -781,6 +782,10 @@ BASE_FEATURE(kDrawNativeEdgeToEdge,
 
 BASE_FEATURE(kDrawWebEdgeToEdge,
              "DrawWebEdgeToEdge",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kEarlyInitializeStartupMetrics,
+             "EarlyInitializeStartupMetrics",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEmptyStates, "EmptyStates", base::FEATURE_ENABLED_BY_DEFAULT);

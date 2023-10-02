@@ -262,6 +262,7 @@ public abstract class ChromeFeatureList {
     public static final String DRAW_EDGE_TO_EDGE = "DrawEdgeToEdge";
     public static final String DRAW_NATIVE_EDGE_TO_EDGE = "DrawNativeEdgeToEdge";
     public static final String DRAW_WEB_EDGE_TO_EDGE = "DrawWebEdgeToEdge";
+    public static final String EARLY_INITIALIZE_STARTUP_METRICS = "EarlyInitializeStartupMetrics";
     public static final String ENABLE_PROTO_API_FOR_CLASSIFY_URL = "EnableProtoApiForClassifyUrl";
     public static final String EXPERIMENTS_FOR_AGSA = "ExperimentsForAgsa";
     public static final String EMPTY_STATES = "EmptyStates";
@@ -555,6 +556,8 @@ public abstract class ChromeFeatureList {
             new CachedFlag(DRAW_NATIVE_EDGE_TO_EDGE, false);
     public static final CachedFlag sDrawWebEdgeToEdge =
             new CachedFlag(DRAW_WEB_EDGE_TO_EDGE, false);
+    public static final CachedFlag sEarlyInitializeStartupMetrics =
+            new CachedFlag(EARLY_INITIALIZE_STARTUP_METRICS, false);
     public static final CachedFlag sEmptyStates = new CachedFlag(EMPTY_STATES, true);
     public static final CachedFlag sExperimentsForAgsa = new CachedFlag(EXPERIMENTS_FOR_AGSA, true);
     public static final CachedFlag sFeedLoadingPlaceholder =
@@ -666,6 +669,7 @@ public abstract class ChromeFeatureList {
         sDrawEdgeToEdge,
         sDrawNativeEdgeToEdge,
         sDrawWebEdgeToEdge,
+        sEarlyInitializeStartupMetrics,
         sEmptyStates,
         sFeedLoadingPlaceholder,
         sFriendlierSafeBrowsingSettingsEnhancedProtection,

@@ -5907,6 +5907,21 @@
             ]
         }
     ],
+    "EarlyInitializeStartupMetrics": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EarlyInitializeStartupMetrics"
+                    ]
+                }
+            ]
+        }
+    ],
     "En840AndFstDecoderParamsUpdate": [
         {
             "platforms": [

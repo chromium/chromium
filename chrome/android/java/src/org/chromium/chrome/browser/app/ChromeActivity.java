@@ -336,7 +336,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     private ActivityTabStartupMetricsTracker mActivityTabStartupMetricsTracker;
 
     /** A means of providing the foreground tab of the activity to different features. */
-    private ActivityTabProvider mActivityTabProvider = new ActivityTabProvider();
+    private final ActivityTabProvider mActivityTabProvider = new ActivityTabProvider();
 
     /** Whether or not the activity is in started state. */
     private boolean mStarted;
@@ -421,8 +421,16 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     protected void onPreCreate() {
         incrementCounter(ChromePreferenceKeys.UMA_ON_PRECREATE_COUNTER);
         CachedFlagsSafeMode.getInstance().onStartOrResumeCheckpoint();
+        if (earlyInitializeStartupMetrics()) {
+            mActivityTabStartupMetricsTracker =
+                    new ActivityTabStartupMetricsTracker(mTabModelSelectorSupplier);
+        }
         super.onPreCreate();
         initializeBackPressHandling();
+    }
+
+    private boolean earlyInitializeStartupMetrics() {
+        return ChromeFeatureList.sEarlyInitializeStartupMetrics.isEnabled();
     }
 
     @Override
@@ -687,8 +695,10 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                 ChromeActivitySessionTracker.getInstance();
         chromeActivitySessionTracker.registerTabModelSelectorSupplier(
                 this, mTabModelSelectorSupplier);
-        mActivityTabStartupMetricsTracker =
-                new ActivityTabStartupMetricsTracker(mTabModelSelectorSupplier);
+        if (!earlyInitializeStartupMetrics()) {
+            mActivityTabStartupMetricsTracker =
+                    new ActivityTabStartupMetricsTracker(mTabModelSelectorSupplier);
+        }
     }
 
     public ActivityTabStartupMetricsTracker getActivityTabStartupMetricsTracker() {
