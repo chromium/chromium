@@ -13,6 +13,7 @@
 
 #include "base/containers/queue.h"
 #include "base/memory/scoped_refptr.h"
+#include "gpu/command_buffer/common/mailbox.h"
 #include "ppapi/proxy/connection.h"
 #include "ppapi/proxy/plugin_resource.h"
 #include "ppapi/proxy/ppapi_proxy_export.h"
@@ -118,6 +119,18 @@ class PPAPI_PROXY_EXPORT VideoDecoderResource
     PP_Rect visible_rect;
   };
 
+  struct ReceivedSharedImage {
+    int32_t decode_id;
+    gpu::Mailbox mailbox;
+    PP_Size size;
+    PP_Rect visible_rect;
+  };
+
+  bool use_shared_images() const {
+    CHECK(initialized_);
+    return use_shared_images_;
+  }
+
   // Unsolicited reply message handlers.
   void OnPluginMsgRequestTextures(const ResourceMessageReplyParams& params,
                                   uint32_t num_textures,
@@ -127,13 +140,20 @@ class PPAPI_PROXY_EXPORT VideoDecoderResource
                                int32_t decode_id,
                                uint32_t texture_id,
                                const PP_Rect& visible_rect);
+  void OnPluginMsgSharedImageReady(const ResourceMessageReplyParams& params,
+                                   int32_t decode_id,
+                                   const gpu::Mailbox& mailbox,
+                                   const PP_Size& size,
+                                   const PP_Rect& visible_rect);
+
   void OnPluginMsgDismissPicture(const ResourceMessageReplyParams& params,
                                  uint32_t texture_id);
   void OnPluginMsgNotifyError(const ResourceMessageReplyParams& params,
                               int32_t error);
 
   // Reply message handlers for operations that are done in the host.
-  void OnPluginMsgInitializeComplete(const ResourceMessageReplyParams& params);
+  void OnPluginMsgInitializeComplete(const ResourceMessageReplyParams& params,
+                                     bool use_shared_images);
   void OnPluginMsgDecodeComplete(const ResourceMessageReplyParams& params,
                                  uint32_t shm_id);
   void OnPluginMsgFlushComplete(const ResourceMessageReplyParams& params);
@@ -142,6 +162,7 @@ class PPAPI_PROXY_EXPORT VideoDecoderResource
   void RunCallbackWithError(scoped_refptr<TrackedCallback>* callback);
   void DeleteGLTexture(uint32_t texture_id);
   void WriteNextPicture();
+  void WriteNextSharedImage();
 
   // The shared memory buffers.
   std::vector<std::unique_ptr<ShmBuffer>> shm_buffers_;
@@ -157,6 +178,8 @@ class PPAPI_PROXY_EXPORT VideoDecoderResource
   // Queue of received pictures.
   using PictureQueue = base::queue<Picture>;
   PictureQueue received_pictures_;
+
+  base::queue<ReceivedSharedImage> received_shared_images_;
 
   // Pending callbacks.
   scoped_refptr<TrackedCallback> initialize_callback_;
@@ -188,6 +211,11 @@ class PPAPI_PROXY_EXPORT VideoDecoderResource
   bool initialized_;
   bool testing_;
   int32_t decoder_last_error_;
+  bool use_shared_images_ = false;
+
+  // |used_shared_images_| maps texture names to ReceivedSharedImages that are
+  // in use by the plugin.
+  base::flat_map<uint32_t, ReceivedSharedImage> used_shared_images_;
 };
 
 }  // namespace proxy

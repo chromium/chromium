@@ -20,10 +20,7 @@
 #include "media/renderers/paint_canvas_video_renderer.h"
 #include "media/video/video_decode_accelerator.h"
 #include "ppapi/c/pp_codecs.h"
-
-namespace viz {
-class ContextProviderCommandBuffer;
-}
+#include "services/viz/public/cpp/gpu/context_provider_command_buffer.h"
 
 namespace content {
 
@@ -36,7 +33,8 @@ class VideoDecoderShim {
  public:
   static std::unique_ptr<VideoDecoderShim> Create(PepperVideoDecoderHost* host,
                                                   uint32_t texture_pool_size,
-                                                  bool use_hw_decoder);
+                                                  bool use_hw_decoder,
+                                                  bool use_shared_images);
 
   VideoDecoderShim(const VideoDecoderShim&) = delete;
   VideoDecoderShim& operator=(const VideoDecoderShim&) = delete;
@@ -47,9 +45,15 @@ class VideoDecoderShim {
   void Decode(media::BitstreamBuffer bitstream_buffer);
   void AssignPictureBuffers(const std::vector<media::PictureBuffer>& buffers);
   void ReusePictureBuffer(int32_t picture_buffer_id);
+  void ReuseSharedImage(const gpu::Mailbox& mailbox, gfx::Size size);
   void Flush();
   void Reset();
   void Destroy();
+
+  const scoped_refptr<viz::ContextProviderCommandBuffer>& context_provider()
+      const {
+    return shared_main_thread_context_provider_;
+  }
 
  private:
   enum State {
@@ -66,6 +70,7 @@ class VideoDecoderShim {
   VideoDecoderShim(PepperVideoDecoderHost* host,
                    uint32_t texture_pool_size,
                    bool use_hw_decoder,
+                   bool use_shared_images,
                    scoped_refptr<viz::ContextProviderCommandBuffer>
                        shared_main_thread_context_provider,
                    scoped_refptr<viz::ContextProviderCommandBuffer>
@@ -75,6 +80,7 @@ class VideoDecoderShim {
   void OnDecodeComplete(int32_t result, absl::optional<uint32_t> decode_id);
   void OnOutputComplete(std::unique_ptr<PendingFrame> frame);
   void SendPictures();
+  void SendSharedImages();
   void OnResetComplete();
   void NotifyCompletedDecodes();
   void DismissTexture(uint32_t texture_id);
@@ -101,6 +107,8 @@ class VideoDecoderShim {
   // Available textures (these are plugin ids.)
   using TextureIdSet = std::unordered_set<uint32_t>;
   TextureIdSet available_textures_;
+  std::vector<gpu::Mailbox> available_shared_images_;
+
   // Track textures that are no longer needed (these are plugin ids.)
   TextureIdSet textures_to_dismiss_;
 
@@ -120,6 +128,8 @@ class VideoDecoderShim {
   const bool use_hw_decoder_;
 
   std::unique_ptr<media::PaintCanvasVideoRenderer> video_renderer_;
+
+  const bool use_shared_images_;
 
   base::WeakPtrFactory<VideoDecoderShim> weak_ptr_factory_{this};
 };
