@@ -4,6 +4,8 @@
 
 source_set("default_promo") {
   sources = [
+    "default_browser_instructions_view.h",
+    "default_browser_instructions_view.mm",
     "default_browser_promo_commands.h",
     "default_browser_promo_coordinator.h",
     "default_browser_promo_coordinator.mm",
@@ -48,6 +50,7 @@ source_set("default_promo") {
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/ui/elements",
     "//ios/chrome/browser/ui/default_promo/resources",
     "//ios/chrome/browser/ui/default_promo/resources:animation_files",
     "//ios/chrome/common/ui/colors",
@@ -89,7 +92,10 @@ source_set("default_promo_ui") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "default_browser_string_util_unittest.mm" ]
+  sources = [
+    "default_browser_instructions_view_unittest.mm",
+    "default_browser_string_util_unittest.mm",
+  ]
   deps = [
     ":default_promo",
     "//base",
@@ -108,6 +114,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/model/web_state_list/test:test_support",
     "//ios/chrome/browser/shared/public/commands:commands",
+    "//ios/chrome/common/ui/confirmation_alert:constants",
     "//ios/web/public/test/fakes",
     "//testing/gtest",
     "//third_party/ocmock",

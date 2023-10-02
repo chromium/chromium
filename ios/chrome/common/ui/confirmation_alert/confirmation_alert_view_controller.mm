@@ -134,6 +134,8 @@ const CGFloat kFaviconBadgeSideLength = 24;
   }
 
   if (self.underTitleView) {
+    self.underTitleView.accessibilityIdentifier =
+        kConfirmationAlertUnderTitleViewAccessibilityIdentifier;
     [stackSubviews addObject:self.underTitleView];
   }
 
