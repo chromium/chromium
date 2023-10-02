@@ -1153,6 +1153,7 @@ void ViewTransitionStyleTracker::ComputeLiveElementGeometry(
     auto* resize_observer_entry = MakeGarbageCollected<ResizeObserverEntry>(
         To<Element>(layout_object.GetNode()));
     auto entry_size = resize_observer_entry->borderBoxSize()[0];
+    // ResizeObserver gives us CSS space pixels.
     border_box_size_in_css_space =
         layout_object.IsHorizontalWritingMode()
             ? PhysicalSize(LayoutUnit(entry_size->inlineSize()),
@@ -1162,6 +1163,9 @@ void ViewTransitionStyleTracker::ComputeLiveElementGeometry(
   } else if (auto* box_model = DynamicTo<LayoutBoxModelObject>(layout_object)) {
     border_box_size_in_css_space =
         PhysicalSize(box_model->BorderBoundingBox().size());
+    // Size BorderBoundingBox is in Layout space, we need to convert to CSS
+    // space.
+    border_box_size_in_css_space.Scale(1.f / device_pixel_ratio_);
   }
 
   // If the object's effective zoom differs from device_pixel_ratio, adjust
