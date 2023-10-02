@@ -1978,10 +1978,6 @@ extern const char kTrackingProtection3pcdDescription[];
 extern const char kTrackingProtectionOnboardingForceEligibilityName[];
 extern const char kTrackingProtectionOnboardingForceEligibilityDescription[];
 
-extern const char kTrackingProtectionOnboardingResetEligibilityForTestingName[];
-extern const char
-    kTrackingProtectionOnboardingResetEligibilityForTestingDescription[];
-
 extern const char kUnifiedPasswordManagerAndroidName[];
 extern const char kUnifiedPasswordManagerAndroidDescription[];
 

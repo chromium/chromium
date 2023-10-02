@@ -168,10 +168,6 @@ BASE_DECLARE_FEATURE(kPrivacySandboxProactiveTopicsBlocking);
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kTrackingProtectionOnboardingForceEligibility);
 
-// Resets eligibility for Tracking Protection Onboarding.
-COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
-BASE_DECLARE_FEATURE(kTrackingProtectionOnboardingResetEligibilityForTesting);
-
 }  // namespace privacy_sandbox
 
 #endif  // COMPONENTS_PRIVACY_SANDBOX_PRIVACY_SANDBOX_FEATURES_H_

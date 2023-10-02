@@ -126,9 +126,4 @@ BASE_FEATURE(kTrackingProtectionOnboardingForceEligibility,
              "TrackingProtectionOnboardingForceEligibility",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Resets the tracking protection Onboarding eligibility.
-BASE_FEATURE(kTrackingProtectionOnboardingResetEligibilityForTesting,
-             "TrackingProtectionOnboardingResetEligibilityForTesting",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 }  // namespace privacy_sandbox

@@ -373,7 +373,7 @@ INSTANTIATE_TEST_SUITE_P(
         std::pair(TrackingProtectionOnboardingStatus::kOnboarded,
                   TrackingProtectionOnboarding::OnboardingStatus::kOnboarded)));
 
-class TrackingProtectionOnboardingWithForceEligibilityFeatureTest
+class TrackingProtectionOnboardingWithFeatureOverrideTest
     : public TrackingProtectionOnboardingTest {
  public:
   void SetUp() override {
@@ -387,53 +387,10 @@ class TrackingProtectionOnboardingWithForceEligibilityFeatureTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_F(TrackingProtectionOnboardingWithForceEligibilityFeatureTest,
+TEST_F(TrackingProtectionOnboardingWithFeatureOverrideTest,
        StartsUpAsEligible) {
   EXPECT_EQ(tracking_protection_onboarding()->GetOnboardingStatus(),
             TrackingProtectionOnboarding::OnboardingStatus::kEligible);
-}
-
-class TrackingProtectionOnboardingWithResetEligibilityFeatureTest
-    : public TrackingProtectionOnboardingTest {
- public:
-  void SetUp() override {
-    feature_list_.InitAndEnableFeature(
-        privacy_sandbox::
-            kTrackingProtectionOnboardingResetEligibilityForTesting);
-
-    prefs()->SetInteger(
-        prefs::kTrackingProtectionOnboardingStatus,
-        static_cast<int>(TrackingProtectionOnboardingStatus::kOnboarded));
-    prefs()->SetBoolean(prefs::kTrackingProtectionOnboardingAcked, true);
-    prefs()->SetTime(prefs::kTrackingProtectionEligibleSince,
-                     base::Time::Now());
-    prefs()->SetTime(prefs::kTrackingProtectionOnboardedSince,
-                     base::Time::Now());
-
-    tracking_protection_onboarding_service_ =
-        std::make_unique<TrackingProtectionOnboarding>(prefs());
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-TEST_F(TrackingProtectionOnboardingWithResetEligibilityFeatureTest,
-       RequiresNoticeOnStartup) {
-  EXPECT_EQ(tracking_protection_onboarding()->GetOnboardingStatus(),
-            TrackingProtectionOnboarding::OnboardingStatus::kIneligible);
-  EXPECT_FALSE(prefs()
-                   ->FindPreference(prefs::kTrackingProtectionOnboardingStatus)
-                   ->HasUserSetting());
-  EXPECT_FALSE(prefs()
-                   ->FindPreference(prefs::kTrackingProtectionOnboardingAcked)
-                   ->HasUserSetting());
-  EXPECT_FALSE(prefs()
-                   ->FindPreference(prefs::kTrackingProtectionEligibleSince)
-                   ->HasUserSetting());
-  EXPECT_FALSE(prefs()
-                   ->FindPreference(prefs::kTrackingProtectionOnboardedSince)
-                   ->HasUserSetting());
 }
 
 }  // namespace
