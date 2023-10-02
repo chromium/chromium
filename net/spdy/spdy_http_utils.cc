@@ -201,20 +201,29 @@ SpdyHeadersToHttpResponseHeadersUsingBuilder(
     //    Set-Cookie: bar\0
     size_t start = 0;
     size_t end = 0;
+    absl::optional<base::StringPiece> location_value;
     do {
       end = value.find('\0', start);
       base::StringPiece tval;
       if (end != value.npos) {
+        tval = value.substr(start, (end - start));
+
         // TODO(ricea): Make this comparison case-sensitive when we are no
         // longer maintaining compatibility with the old version of the
         // function.
-        if (base::EqualsCaseInsensitiveASCII(name, "location")) {
-          // We must have received multiple "location" headers from the server.
-          return base::unexpected(ERR_RESPONSE_HEADERS_MULTIPLE_LOCATION);
+        if (base::EqualsCaseInsensitiveASCII(name, "location") &&
+            !location_value.has_value()) {
+          location_value = HttpUtil::TrimLWS(tval);
         }
-        tval = value.substr(start, (end - start));
       } else {
         tval = value.substr(start);
+      }
+      if (location_value.has_value() && start > 0) {
+        DCHECK(base::EqualsCaseInsensitiveASCII(name, "location"));
+        base::StringPiece trimmed_value = HttpUtil::TrimLWS(tval);
+        if (trimmed_value != location_value.value()) {
+          return base::unexpected(ERR_RESPONSE_HEADERS_MULTIPLE_LOCATION);
+        }
       }
       builder.AddHeader(name, tval);
       start = end + 1;

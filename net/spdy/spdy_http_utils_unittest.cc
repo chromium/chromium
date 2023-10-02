@@ -321,6 +321,46 @@ TEST_P(SpdyHeadersToHttpResponseHeadersTest, PseudoHeadersAreDropped) {
   EXPECT_EQ(kRawHeaders, ToSimpleString(output));
 }
 
+TEST_P(SpdyHeadersToHttpResponseHeadersTest, DoubleEmptyLocationHeader) {
+  constexpr char kRawHeaders[] =
+      "HTTP/1.1 200\n"
+      "location: \n"
+      "location: \n";
+  spdy::Http2HeaderBlock headers;
+  headers[spdy::kHttp2StatusHeader] = "200";
+  headers.AppendValueOrAddHeader("location", "");
+  headers.AppendValueOrAddHeader("location", "");
+  ASSERT_OK_AND_ASSIGN(const auto output, PerformConversion(headers));
+  EXPECT_EQ(kRawHeaders, ToSimpleString(output));
+}
+
+TEST_P(SpdyHeadersToHttpResponseHeadersTest,
+       DifferentLocationHeaderTriggersError) {
+  spdy::Http2HeaderBlock headers;
+  headers[spdy::kHttp2StatusHeader] = "200";
+  headers.AppendValueOrAddHeader("location", "https://same/");
+  headers.AppendValueOrAddHeader("location", "https://same/");
+  headers.AppendValueOrAddHeader("location", "https://different/");
+  EXPECT_THAT(PerformConversion(headers),
+              base::test::ErrorIs(ERR_RESPONSE_HEADERS_MULTIPLE_LOCATION));
+}
+
+// TODO(ricea): Ensure that QUICHE will never send us header values with leading
+// or trailing whitespace and remove this test.
+TEST_P(SpdyHeadersToHttpResponseHeadersTest,
+       LocationEquivalenceIgnoresSurroundingSpace) {
+  constexpr char kRawHeaders[] =
+      "HTTP/1.1 200\n"
+      "location: https://same/\n"
+      "location: https://same/\n";
+  spdy::Http2HeaderBlock headers;
+  headers[spdy::kHttp2StatusHeader] = "200";
+  headers.AppendValueOrAddHeader("location", " https://same/");
+  headers.AppendValueOrAddHeader("location", "https://same/ ");
+  ASSERT_OK_AND_ASSIGN(const auto output, PerformConversion(headers));
+  EXPECT_EQ(kRawHeaders, ToSimpleString(output));
+}
+
 INSTANTIATE_TEST_SUITE_P(
     SpdyHttpUtils,
     SpdyHeadersToHttpResponseHeadersTest,
