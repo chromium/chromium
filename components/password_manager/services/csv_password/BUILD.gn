@@ -18,6 +18,8 @@ source_set("lib") {
 
   public_deps =
       [ "//components/password_manager/services/csv_password/public/mojom" ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 if (use_blink) {
@@ -36,6 +38,8 @@ if (use_blink) {
       "//components/password_manager/services/csv_password/public/mojom",
       "//mojo/public/cpp/bindings",
     ]
+
+    configs += [ "//build/config/compiler:wexit_time_destructors" ]
   }
 }
 

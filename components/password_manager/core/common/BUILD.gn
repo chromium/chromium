@@ -35,10 +35,13 @@ static_library("common") {
     ":constants",
     ":features",
   ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 source_set("constants") {
   sources = [ "password_manager_constants.h" ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 source_set("features") {
@@ -55,6 +58,8 @@ source_set("features") {
     "//base",
     "//build:blink_buildflags",
   ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 source_set("unit_tests") {

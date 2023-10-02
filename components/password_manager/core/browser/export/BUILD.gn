@@ -21,6 +21,7 @@ source_set("export") {
     # TODO(crbug.com/1479425): Remove dependency on core/browser. Instead depend on subdirectories of browser.
     "//components/password_manager/core/browser",
   ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 source_set("unit_tests") {

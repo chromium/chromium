@@ -29,6 +29,7 @@ if (use_blink) {
       "//components/password_manager/services/csv_password:service",
       "//components/sync/base:base",
     ]
+    configs += [ "//build/config/compiler:wexit_time_destructors" ]
   }
 
   source_set("importer_unit_tests") {
@@ -67,6 +68,7 @@ source_set("csv") {
     "//components/password_manager/core/browser/form_parsing",
     "//url",
   ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 source_set("csv_unit_tests") {

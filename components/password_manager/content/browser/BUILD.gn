@@ -49,6 +49,8 @@ static_library("browser") {
     "//mojo/public/cpp/system",
     "//net",
   ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 source_set("test_support") {

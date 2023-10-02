@@ -18,6 +18,7 @@ source_set("well_known_change_password") {
     "//third_party/abseil-cpp:absl",
     "//url",
   ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 source_set("unit_tests") {

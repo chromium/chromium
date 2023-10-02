@@ -53,6 +53,7 @@ source_set("affiliation") {
     "//sql",
     "//url",
   ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 source_set("affiliation_fetching") {
@@ -69,6 +70,7 @@ source_set("affiliation_fetching") {
     "//net",
     "//url",
   ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 source_set("test_support") {

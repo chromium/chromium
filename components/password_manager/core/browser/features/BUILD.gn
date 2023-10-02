@@ -8,6 +8,7 @@ source_set("password_features") {
     "password_features.h",
   ]
   deps = [ "//base" ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 source_set("utils") {
@@ -23,6 +24,8 @@ source_set("utils") {
     "//components/prefs",
     "//components/sync/service",
   ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   if (!is_android && !is_ios) {
     sources += [ "password_manager_features_util_desktop.cc" ]

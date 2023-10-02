@@ -33,6 +33,8 @@ component("ios") {
     "//url",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   sources = [
     "ios_password_manager_driver.h",
     "ios_password_manager_driver.mm",
@@ -67,6 +69,8 @@ source_set("password_manager_feature_header") {
     "//ios/web/public/js_messaging",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   sources = [ "password_manager_java_script_feature.h" ]
 }
 
@@ -77,6 +81,8 @@ source_set("account_select_fill_data") {
     "//components/autofill/ios/browser:util",
     "//url",
   ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   sources = [
     "account_select_fill_data.cc",

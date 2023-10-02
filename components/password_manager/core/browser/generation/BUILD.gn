@@ -17,6 +17,7 @@ source_set("core") {
     "//base",
     "//components/password_manager/core/common:features",
   ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 source_set("generation") {
@@ -33,6 +34,7 @@ source_set("generation") {
     "//services/network/public/cpp",
     "//url",
   ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 source_set("unit_tests") {
