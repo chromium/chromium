@@ -61,7 +61,7 @@ The latter two tags work much better when there are reliable repro steps for a
 bug, so endeavour to get those first - TE time is precious and we should make
 good use of it.
 
-We wait **30 days** for user feedback on Needs-Feedback bugs; after 30 days
+We wait **28 days** for user feedback on Needs-Feedback bugs; after 28 days
 without a response to a question we move bugs to WontFix.
 
 Some useful debugging questions here:
@@ -147,7 +147,7 @@ triage processes:
 * Admin
 * Blink
 * Infra
-* Internals>Cast, Headless, Network, Plugins, Printing, Skia, Views
+* Internals>Cast, GPU, Headless, Network, Plugins, Printing, Skia, Views
 * IO>Bluetooth, USB
 * Platform
 * Services>Chromoting
@@ -158,6 +158,6 @@ triage processes:
 
 [unconfirmed]: https://bugs.chromium.org/p/chromium/issues/list?q=OS%3DMac%20status%3AUnconfirmed%20-component%3ABlink%2CEnterprise%2CInternals%3ENetwork%2CPlatform%3EDevtools%2CServices%3ESyncs%2CUI%3EBrowser%3EPasswords%20-label%3AMac-TriageBypass%20-label%3AHotlist-MacTriageBypass&can=2
 [untriaged-m]: https://bugs.chromium.org/p/chromium/issues/list?q=has%3AMac%20status%3AUntriaged%20-label%3AMac-TriageBypass%20-label%3AHotlist-MacTriageBypass&can=2
-[untriaged-c]: https://bugs.chromium.org/p/chromium/issues/list?q=OS%3DMac%20-OS%3DWindows%2CLinux%2CChrome%2CAndroid%2CiOS%20status%3AUntriaged%20-component%3AAdmin%2CBlink%2CInfra%2CInternals%3ECast%2CInternals%3EHeadless%2CInternals%3ENetwork%2CInternals%3EPlugins%3EPDF%2CInternals%3EPrinting%2CInternals%3ESkia%2CInternals%3EUpdater%2CInternals%3EViews%2CIO%3EBluetooth%2CIO%3EUSB%2CPlatform%2CServices%3EChromoting%2CTest%3ETelemetry%2CUI%3EBrowser%3EWebAppInstalls%2CPlatform%3EWebAppProvider%2CUI%3EBrowser%3EWebUI%2CInternals%3EGPU%2CEnterprise%2CUI%3EBrowser%3ESharing%2CUI>Accessibility%20-label%3AMac-TriageBypass%20-label%3AHotlist-MacTriageBypass&can=2
+[untriaged-c]: https://bugs.chromium.org/p/chromium/issues/list?q=OS%3DMac%20-OS%3DWindows%2CLinux%2CChrome%2CAndroid%2CiOS%20status%3AUntriaged%20-component%3AAdmin%2CBlink%2CInfra%2CInternals%3ECast%2CInternals%3EHeadless%2CInternals%3ENetwork%2CInternals%3EPlugins%3EPDF%2CInternals%3EPrinting%2CInternals%3ESkia%2CInternals%3EUpdater%2CInternals%3EViews%2CIO%3EBluetooth%2CIO%3EUSB%2CPlatform%2CServices%3EChromoting%2CTest%3ETelemetry%2CUI%3EBrowser%3EWebAppInstalls%2CPlatform%3EWebAppProvider%2CUI%3EBrowser%3EWebUI%2CInternals%3EGPU%2CEnterprise%2CUI%3EBrowser%3ESharing%2CUI%3EAccessibility%2CInternals%3EGPU%20-label%3AMac-TriageBypass%20-label%3AHotlist-MacTriageBypass&can=2
 [available]: https://bugs.chromium.org/p/chromium/issues/list?q=has%3AMac%20status%3AAvailable&can=2
 [assigned]: https://bugs.chromium.org/p/chromium/issues/list?q=has%3AMac%20status%3AAssigned&can=2
