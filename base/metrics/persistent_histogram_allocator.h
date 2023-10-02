@@ -296,6 +296,13 @@ class BASE_EXPORT PersistentHistogramAllocator {
 
   // Sets the internal |ranges_manager_|, which will be used by the allocator to
   // register BucketRanges. Takes ownership of the passed |ranges_manager|.
+  //
+  // WARNING: Since histograms may be created from |this| from multiple threads,
+  // for example through a direct call to CreateHistogram(), or while iterating
+  // through |this|, then the passed manager may also be accessed concurrently.
+  // Hence, care must be taken to ensure that either:
+  //   1) The passed manager is threadsafe (see ThreadSafeRangesManager), or
+  //   2) |this| is not used concurrently.
   void SetRangesManager(RangesManager* ranges_manager);
 
   // Clears the internal |last_created_| reference so testing can validate

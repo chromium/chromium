@@ -548,9 +548,11 @@ FileMetricsProvider::AccessResult FileMetricsProvider::CheckAndMapMetricSource(
       std::move(memory_allocator));
   // Pass a custom RangesManager so that we do not register the BucketRanges
   // with the global StatisticsRecorder when creating histogram objects using
-  // the allocator's underlying data. Otherwise, it could add unnecessary
-  // contention, and possibly a low amount of extra memory that will never be
-  // released.
+  // the allocator's underlying data. This avoids unnecessary contention on the
+  // global StatisticsRecorder lock.
+  // Note: Since RangesManager is not thread safe, this means that |allocator|
+  // must be iterated over one thread at a time (i.e., not concurrently). This
+  // is the case.
   source->allocator->SetRangesManager(new base::RangesManager());
 
   // Check that an "independent" file has the necessary information present.
