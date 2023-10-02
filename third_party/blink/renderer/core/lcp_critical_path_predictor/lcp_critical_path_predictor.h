@@ -51,6 +51,10 @@ class CORE_EXPORT LCPCriticalPathPredictor final
     return lcp_influencer_scripts_;
   }
 
+  void set_fetched_fonts(Vector<KURL> fonts);
+
+  const Vector<KURL>& fetched_fonts() { return fetched_fonts_; }
+
   void Reset() {
     lcp_element_locators_.clear();
     lcp_influencer_scripts_.clear();
@@ -78,6 +82,7 @@ class CORE_EXPORT LCPCriticalPathPredictor final
 
   Vector<ElementLocator> lcp_element_locators_;
   HashSet<KURL> lcp_influencer_scripts_;
+  Vector<KURL> fetched_fonts_;
 };
 
 }  // namespace blink
