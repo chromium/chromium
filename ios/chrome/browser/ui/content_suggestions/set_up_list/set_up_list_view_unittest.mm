@@ -219,10 +219,12 @@ TEST_F(SetUpListViewTest, AllSetView) {
   [_superview addSubview:view];
 
   ExpectSubview(set_up_list::kAllSetID, false);
+  ExpectSubview(set_up_list::kSignInItemID, true);
 
   [view showDoneWithAnimations:nil];
   // Give time for run loop to execute events.
   _task_environment.RunUntilIdle();
 
   ExpectSubview(set_up_list::kAllSetID, true);
+  ExpectSubview(set_up_list::kSignInItemID, false);
 }
