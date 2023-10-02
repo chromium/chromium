@@ -212,7 +212,9 @@ void AwAutofillClient::ShowEditAddressProfileDialog(
   NOTREACHED();
 }
 
-void AwAutofillClient::ShowDeleteAddressProfileDialog() {
+void AwAutofillClient::ShowDeleteAddressProfileDialog(
+    const autofill::AutofillProfile& profile,
+    AddressProfileDeleteDialogCallback delete_dialog_callback) {
   NOTREACHED();
 }
 

@@ -272,7 +272,9 @@ void WebViewAutofillClientIOS::ShowEditAddressProfileDialog(
   NOTREACHED();
 }
 
-void WebViewAutofillClientIOS::ShowDeleteAddressProfileDialog() {
+void WebViewAutofillClientIOS::ShowDeleteAddressProfileDialog(
+    const AutofillProfile& profile,
+    AddressProfileDeleteDialogCallback delete_dialog_callback) {
   // Please note: This method is only implemented on desktop and is therefore
   // unreachable here.
   NOTREACHED();

@@ -901,14 +901,18 @@ void ChromeAutofillClient::ShowEditAddressProfileDialog(
 #endif
 }
 
-void ChromeAutofillClient::ShowDeleteAddressProfileDialog() {
+void ChromeAutofillClient::ShowDeleteAddressProfileDialog(
+    const AutofillProfile& profile,
+    AddressProfileDeleteDialogCallback delete_dialog_callback) {
 #if !BUILDFLAG(IS_ANDROID)
   DeleteAddressProfileDialogControllerImpl::CreateForWebContents(
       web_contents());
   DeleteAddressProfileDialogControllerImpl* controller =
       DeleteAddressProfileDialogControllerImpl::FromWebContents(web_contents());
-  controller->OfferDelete(/*is_account_address_profile=*/false,
-                          /*delete_dialog_callback=*/base::DoNothing());
+  controller->OfferDelete(
+      /*is_account_address_profile=*/profile.source() ==
+          AutofillProfile::Source::kAccount,
+      /*delete_dialog_callback=*/std::move(delete_dialog_callback));
 #else
   // Delete address profile dialog is only available is desktop.
   NOTREACHED_NORETURN();

@@ -85,6 +85,7 @@ class MockPersonalDataManager : public TestPersonalDataManager {
               (const override));
   MOCK_METHOD(bool, IsAutofillProfileEnabled, (), (const override));
   MOCK_METHOD(void, UpdateProfile, (const AutofillProfile&), (override));
+  MOCK_METHOD(void, RemoveByGUID, (const std::string&), (override));
 };
 
 class MockAutofillDriver : public TestAutofillDriver {
@@ -149,6 +150,10 @@ class MockAutofillClient : public TestAutofillClient {
   MOCK_METHOD(void,
               ShowEditAddressProfileDialog,
               (const AutofillProfile&, AddressProfileSavePromptCallback),
+              (override));
+  MOCK_METHOD(void,
+              ShowDeleteAddressProfileDialog,
+              (const AutofillProfile&, AddressProfileDeleteDialogCallback),
               (override));
 
 #if BUILDFLAG(IS_IOS)
@@ -312,7 +317,7 @@ class AutofillExternalDelegateCardsFromAccountTest
   }
 };
 
-// Test that address editor is not shown if there's no autofill profile with
+// Test that the address editor is not shown if there's no Autofill profile with
 // the provided GUID.
 TEST_F(AutofillExternalDelegateUnitTest, ShowEditorForNonexistingProfile) {
   IssueOnQuery();
@@ -329,8 +334,8 @@ TEST_F(AutofillExternalDelegateUnitTest, ShowEditorForNonexistingProfile) {
       AutofillSuggestionTriggerSource::kFormControlElementClicked);
 }
 
-// Test that address editor is shown for the GUID identifying existing autofill
-// profile.
+// Test that the address editor is shown for the GUID identifying existing
+// Autofill profile.
 TEST_F(AutofillExternalDelegateUnitTest, ShowEditorForExistingProfile) {
   IssueOnQuery();
 
@@ -346,7 +351,8 @@ TEST_F(AutofillExternalDelegateUnitTest, ShowEditorForExistingProfile) {
       AutofillSuggestionTriggerSource::kFormControlElementClicked);
 }
 
-// Test that editor changes are not persisted if the user has canceled editing.
+// Test that the editor changes are not persisted if the user has canceled
+// editing.
 TEST_F(AutofillExternalDelegateUnitTest, UserCancelsEditing) {
   IssueOnQuery();
 
@@ -377,7 +383,7 @@ TEST_F(AutofillExternalDelegateUnitTest, UserCancelsEditing) {
       AutofillSuggestionTriggerSource::kFormControlElementClicked);
 }
 
-// Test that editor changes are persisted if the user has canceled editing.
+// Test that the editor changes are persisted if the user has canceled editing.
 TEST_F(AutofillExternalDelegateUnitTest, UserSavesEdits) {
   IssueOnQuery();
 
@@ -391,7 +397,7 @@ TEST_F(AutofillExternalDelegateUnitTest, UserSavesEdits) {
                      kEditAccepted,
                  profile_);
       });
-  // Updated autofill profile must be persisted when user saves changes through
+  // Updated Autofill profile must be persisted when user saves changes through
   // the address editor.
   EXPECT_CALL(personal_data_manager_, AddObserver(external_delegate_.get()));
   EXPECT_CALL(personal_data_manager_, UpdateProfile(profile_));
@@ -430,7 +436,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
       });
   // PDM observer must be added only once.
   EXPECT_CALL(personal_data_manager_, AddObserver(external_delegate_.get()));
-  // Changes to the autofill profile must be persisted both times.
+  // Changes to the Autofill profile must be persisted both times.
   EXPECT_CALL(personal_data_manager_, UpdateProfile(profile_)).Times(2);
 
   auto suggestion = Suggestion(PopupItemId::kEditAddressProfile);
@@ -472,6 +478,130 @@ TEST_F(AutofillExternalDelegateUnitTest,
 
   EXPECT_CALL(personal_data_manager_, RemoveObserver(external_delegate_.get()));
   external_delegate_.reset();
+}
+
+// Test that the delete dialog is not shown if there's no Autofill profile with
+// the provided GUID.
+TEST_F(AutofillExternalDelegateUnitTest,
+       ShowDeleteDialogForNonexistingProfile) {
+  IssueOnQuery();
+
+  const std::string guid = base::Uuid().AsLowercaseString();
+  ON_CALL(personal_data_manager_, GetProfileByGUID(guid))
+      .WillByDefault(Return(nullptr));
+  EXPECT_CALL(autofill_client_, ShowDeleteAddressProfileDialog(_, _)).Times(0);
+  auto suggestion = Suggestion(PopupItemId::kDeleteAddressProfile);
+  suggestion.payload = Suggestion::BackendId(guid);
+
+  external_delegate_->DidAcceptSuggestion(
+      suggestion, 0,
+      AutofillSuggestionTriggerSource::kFormControlElementClicked);
+}
+
+// Test that the delete dialog is shown for the GUID identifying existing
+// Autofill profile.
+TEST_F(AutofillExternalDelegateUnitTest, ShowDeleteDialog) {
+  IssueOnQuery();
+
+  const std::string guid = base::Uuid().AsLowercaseString();
+  ON_CALL(personal_data_manager_, GetProfileByGUID(guid))
+      .WillByDefault(Return(&profile_));
+  EXPECT_CALL(autofill_client_, ShowDeleteAddressProfileDialog(profile_, _));
+  auto suggestion = Suggestion(PopupItemId::kDeleteAddressProfile);
+  suggestion.payload = Suggestion::BackendId(guid);
+
+  external_delegate_->DidAcceptSuggestion(
+      suggestion, 0,
+      AutofillSuggestionTriggerSource::kFormControlElementClicked);
+}
+
+// Test that the Autofill profile is not deleted when user cancels the deletion
+// process.
+TEST_F(AutofillExternalDelegateUnitTest, UserCancelsDeletion) {
+  IssueOnQuery();
+
+  const std::string guid = base::Uuid().AsLowercaseString();
+  ON_CALL(personal_data_manager_, GetProfileByGUID(guid))
+      .WillByDefault(Return(&profile_));
+  EXPECT_CALL(autofill_client_, ShowDeleteAddressProfileDialog(profile_, _))
+      .WillOnce([](auto profile, auto delete_dialog_callback) {
+        std::move(delete_dialog_callback).Run(/*user_accepted_delete=*/false);
+      });
+  // Address profile must remain intact if user cancels deletion process.
+  EXPECT_CALL(personal_data_manager_, AddObserver(_)).Times(0);
+  EXPECT_CALL(personal_data_manager_, RemoveByGUID(_)).Times(0);
+  // The Autofill popup must be reopened when the delete dialog is closed.
+  EXPECT_CALL(
+      *autofill_driver_,
+      RendererShouldTriggerSuggestions(
+          queried_form_triggering_field_id_,
+          AutofillSuggestionTriggerSource::kShowPromptAfterDialogClosed));
+  auto suggestion = Suggestion(PopupItemId::kDeleteAddressProfile);
+  suggestion.payload = Suggestion::BackendId(guid);
+
+  external_delegate_->DidAcceptSuggestion(
+      suggestion, 0,
+      AutofillSuggestionTriggerSource::kFormControlElementClicked);
+}
+
+// Test that the correct Autofill profile is deleted when the user accepts the
+// deletion process.
+TEST_F(AutofillExternalDelegateUnitTest, UserAcceptsDeletion) {
+  IssueOnQuery();
+
+  const std::string guid = base::Uuid().AsLowercaseString();
+  ON_CALL(personal_data_manager_, GetProfileByGUID(guid))
+      .WillByDefault(Return(&profile_));
+  EXPECT_CALL(autofill_client_, ShowDeleteAddressProfileDialog(profile_, _))
+      .WillOnce([](auto profile, auto delete_dialog_callback) {
+        std::move(delete_dialog_callback).Run(/*user_accepted_delete=*/true);
+      });
+  // Autofill profile must be deleted when user confirms the dialog.
+  EXPECT_CALL(personal_data_manager_, AddObserver(external_delegate_.get()));
+  EXPECT_CALL(personal_data_manager_, RemoveByGUID(guid));
+  // The Autofill popup must be reopened when the delete dialog is closed.
+  EXPECT_CALL(
+      *autofill_driver_,
+      RendererShouldTriggerSuggestions(
+          queried_form_triggering_field_id_,
+          AutofillSuggestionTriggerSource::kShowPromptAfterDialogClosed));
+  auto suggestion = Suggestion(PopupItemId::kDeleteAddressProfile);
+  suggestion.payload = Suggestion::BackendId(guid);
+
+  external_delegate_->DidAcceptSuggestion(
+      suggestion, 0,
+      AutofillSuggestionTriggerSource::kFormControlElementClicked);
+
+  external_delegate_->OnPersonalDataFinishedProfileTasks();
+}
+
+// Test the situation when AutofillExternalDelegate is destroyed before the
+// PersonalDataManager observer is notified that all tasks have been processed.
+TEST_F(AutofillExternalDelegateUnitTest,
+       UserOpensDeleteDialogTwiceBeforeProfileIsDeleted) {
+  IssueOnQuery();
+
+  const std::string guid = base::Uuid().AsLowercaseString();
+  ON_CALL(personal_data_manager_, GetProfileByGUID(guid))
+      .WillByDefault(Return(&profile_));
+  EXPECT_CALL(autofill_client_, ShowDeleteAddressProfileDialog(profile_, _))
+      .Times(2)
+      .WillRepeatedly([](auto profile, auto delete_dialog_callback) {
+        std::move(delete_dialog_callback).Run(/*user_accepted_delete=*/true);
+      });
+  // PDM observer must be added only once.
+  EXPECT_CALL(personal_data_manager_, AddObserver(_));
+  // Autofill profile can be deleted both times.
+  EXPECT_CALL(personal_data_manager_, RemoveByGUID(guid)).Times(2);
+  auto suggestion = Suggestion(PopupItemId::kDeleteAddressProfile);
+  suggestion.payload = Suggestion::BackendId(guid);
+
+  external_delegate_->DidAcceptSuggestion(
+      suggestion, 0,
+      AutofillSuggestionTriggerSource::kFormControlElementClicked);
+  external_delegate_->DidAcceptSuggestion(
+      suggestion, 0,
+      AutofillSuggestionTriggerSource::kFormControlElementClicked);
 }
 
 // Test that our external delegate called the virtual methods at the right time.

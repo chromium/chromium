@@ -729,7 +729,9 @@ class AutofillClient : public RiskDataLoader {
 
   // Show a delete address profile dialog asking if users want to proceed with
   // deletion.
-  virtual void ShowDeleteAddressProfileDialog() = 0;
+  virtual void ShowDeleteAddressProfileDialog(
+      const AutofillProfile& profile,
+      AddressProfileDeleteDialogCallback delete_dialog_callback) = 0;
 
   // Shows the offer-to-save (or update) address profile bubble. If
   // `original_profile` is nullptr, this renders a save prompt. Otherwise, it

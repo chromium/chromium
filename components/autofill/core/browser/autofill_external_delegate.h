@@ -150,10 +150,16 @@ class AutofillExternalDelegate : public AutofillPopupDelegate,
   // determined by passed `guid`.
   void ShowEditAddressProfileDialog(const std::string& guid);
 
+  // Shows the delete address profile dialog to the user. The Autofill profile
+  // to delete is determined by the passed `guid`.
+  void ShowDeleteAddressProfileDialog(const std::string& guid);
+
   // Triggered when user closes the address editor dialog.
   void OnAddressEditorClosed(
       AutofillClient::SaveAddressProfileOfferUserDecision decision,
       AutofillProfile profile);
+
+  void OnDeleteDialogClosed(const std::string& guid, bool user_accepted_delete);
 
   // Called when a credit card is scanned using device camera.
   void OnCreditCardScanned(const AutofillTriggerSource trigger_source,
@@ -231,6 +237,9 @@ class AutofillExternalDelegate : public AutofillPopupDelegate,
   // If not null then it will be called in destructor.
   base::OnceClosure deletion_callback_;
 
+  // Autofill profile update and deletion are async operations. PDM observer is
+  // used to detect when these operations finish. These operations can happen at
+  // the same time.
   base::ScopedObservation<PersonalDataManager, PersonalDataManagerObserver>
       pdm_observation_{this};
 

@@ -343,8 +343,8 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       break;
     }
     case PopupItemId::kDeleteAddressProfile:
-      // TODO(crbug.com/1459990): call the manager to display the delete address
-      // profile dialog.
+      ShowDeleteAddressProfileDialog(
+          suggestion.GetPayload<Suggestion::BackendId>().value());
       break;
     case PopupItemId::kClearForm:
       // This serves as a clear form or undo autofill suggestion, depending on
@@ -579,6 +579,18 @@ void AutofillExternalDelegate::ShowEditAddressProfileDialog(
   }
 }
 
+void AutofillExternalDelegate::ShowDeleteAddressProfileDialog(
+    const std::string& guid) {
+  AutofillProfile* profile =
+      manager_->client().GetPersonalDataManager()->GetProfileByGUID(guid);
+  if (profile) {
+    manager_->client().ShowDeleteAddressProfileDialog(
+        *profile,
+        base::BindOnce(&AutofillExternalDelegate::OnDeleteDialogClosed,
+                       GetWeakPtr(), guid));
+  }
+}
+
 void AutofillExternalDelegate::OnAddressEditorClosed(
     AutofillClient::SaveAddressProfileOfferUserDecision decision,
     AutofillProfile profile) {
@@ -589,6 +601,21 @@ void AutofillExternalDelegate::OnAddressEditorClosed(
       pdm_observation_.Observe(pdm);
     }
     pdm->UpdateProfile(profile);
+    return;
+  }
+  manager_->driver().RendererShouldTriggerSuggestions(
+      query_field_.global_id(),
+      AutofillSuggestionTriggerSource::kShowPromptAfterDialogClosed);
+}
+
+void AutofillExternalDelegate::OnDeleteDialogClosed(const std::string& guid,
+                                                    bool user_accepted_delete) {
+  if (user_accepted_delete) {
+    PersonalDataManager* pdm = manager_->client().GetPersonalDataManager();
+    if (!pdm_observation_.IsObserving()) {
+      pdm_observation_.Observe(pdm);
+    }
+    pdm->RemoveByGUID(guid);
     return;
   }
   manager_->driver().RendererShouldTriggerSuggestions(

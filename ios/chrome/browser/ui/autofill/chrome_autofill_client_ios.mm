@@ -397,7 +397,9 @@ void ChromeAutofillClientIOS::ShowEditAddressProfileDialog(
   NOTREACHED_NORETURN();
 }
 
-void ChromeAutofillClientIOS::ShowDeleteAddressProfileDialog() {
+void ChromeAutofillClientIOS::ShowDeleteAddressProfileDialog(
+    const AutofillProfile& profile,
+    AddressProfileDeleteDialogCallback delete_dialog_callback) {
   NOTREACHED_NORETURN();
 }
 
