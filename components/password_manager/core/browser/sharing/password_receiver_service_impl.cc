@@ -7,6 +7,7 @@
 #include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/features/password_manager_features_util.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_digest.h"
@@ -99,12 +100,22 @@ void ProcessIncomingSharingInvitationTask::OnGetPasswordStoreResults(
     return;
   }
 
-  // Credentials exist already, and hence the invitation cannot be
-  // auto-approved. For now, emit metrics to assess how frequent this use
-  // case is.
-  metrics_util::LogProcessIncomingPasswordSharingInvitationResult(
+  ProcessIncomingPasswordSharingInvitationResult processing_result =
       GetProcessSharingInvitationResultForIgnoredInvitations(
-          **credential_with_same_username_it, invitation_));
+          **credential_with_same_username_it, invitation_);
+  metrics_util::LogProcessIncomingPasswordSharingInvitationResult(
+      processing_result);
+
+  if (processing_result ==
+          ProcessIncomingPasswordSharingInvitationResult::
+              kSharedCredentialsExistWithSameSenderAndDifferentPassword &&
+      base::FeatureList::IsEnabled(
+          features::kAutoApproveSharedPasswordUpdatesFromSameSender)) {
+    password_store_->UpdateLogin(
+        IncomingSharingInvitationToPasswordForm(invitation_),
+        base::BindOnce(std::move(done_processing_invitation_callback_), this));
+    return;
+  }
   // Run the callback anyway to cleanup the processing task.
   std::move(done_processing_invitation_callback_).Run(this);
 }

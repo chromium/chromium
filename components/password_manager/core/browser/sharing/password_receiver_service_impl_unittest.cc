@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/features/password_manager_features_util.h"
@@ -425,6 +426,72 @@ TEST_F(
       metrics_util::ProcessIncomingPasswordSharingInvitationResult::
           kSharedCredentialsExistWithDifferentSenderAndDifferentPassword,
       1);
+}
+
+TEST_F(PasswordReceiverServiceImplTest,
+       ShouldIgnorePasswordUpdatesFromSameSenderWhenAutoApproveDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kAutoApproveSharedPasswordUpdatesFromSameSender);
+
+  base::HistogramTester histogram_tester;
+  const std::u16string kNewPassword = u"new_password";
+  PasswordForm existing_password = CreatePasswordForm();
+  existing_password.type = PasswordForm::Type::kReceivedViaSharing;
+  existing_password.sender_email = u"user@example.com";
+  AddLoginAndWait(existing_password, profile_password_store());
+
+  // Simulate an incoming invitation for the same stored credentials with a
+  // different password from the same sender.
+  IncomingSharingInvitation invitation =
+      PasswordFormToIncomingSharingInvitation(existing_password);
+  invitation.sender_email = existing_password.sender_email;
+  invitation.password_value = kNewPassword;
+
+  password_receiver_service()->ProcessIncomingSharingInvitation(invitation);
+
+  RunUntilIdle();
+
+  // The password value should remain kPassword.
+  EXPECT_THAT(
+      profile_password_store().stored_passwords().at(invitation.url.spec()),
+      ElementsAre(AllOf(Field(&PasswordForm::username_value, kUsername),
+                        Field(&PasswordForm::password_value, kPassword),
+                        Field(&PasswordForm::type,
+                              PasswordForm::Type::kReceivedViaSharing))));
+}
+
+TEST_F(PasswordReceiverServiceImplTest,
+       ShouldAcceptPasswordUpdatesFromSameSenderWhenAutoApproveEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kAutoApproveSharedPasswordUpdatesFromSameSender);
+
+  base::HistogramTester histogram_tester;
+  const std::u16string kNewPassword = u"new_password";
+  PasswordForm existing_password = CreatePasswordForm();
+  existing_password.type = PasswordForm::Type::kReceivedViaSharing;
+  existing_password.sender_email = u"user@example.com";
+  AddLoginAndWait(existing_password, profile_password_store());
+
+  // Simulate an incoming invitation for the same stored credentials with a
+  // different password from the same sender.
+  IncomingSharingInvitation invitation =
+      PasswordFormToIncomingSharingInvitation(existing_password);
+  invitation.sender_email = existing_password.sender_email;
+  invitation.password_value = kNewPassword;
+
+  password_receiver_service()->ProcessIncomingSharingInvitation(invitation);
+
+  RunUntilIdle();
+
+  // The password value should have been updated to kNewPassword.
+  EXPECT_THAT(
+      profile_password_store().stored_passwords().at(invitation.url.spec()),
+      ElementsAre(AllOf(Field(&PasswordForm::username_value, kUsername),
+                        Field(&PasswordForm::password_value, kNewPassword),
+                        Field(&PasswordForm::type,
+                              PasswordForm::Type::kReceivedViaSharing))));
 }
 
 }  // namespace password_manager

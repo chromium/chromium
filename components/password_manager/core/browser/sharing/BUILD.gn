@@ -31,6 +31,7 @@ source_set("sharing") {
     "//base",
     "//components/password_manager/core/browser",
     "//components/password_manager/core/browser:password_form",
+    "//components/password_manager/core/browser/features:password_features",
     "//components/prefs",
     "//components/signin/public/identity_manager",
     "//components/sync/base",

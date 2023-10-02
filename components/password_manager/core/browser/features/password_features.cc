@@ -6,6 +6,12 @@
 
 namespace password_manager::features {
 
+// When enabled, updates to shared existing passwords from the same sender are
+// auto-approved.
+BASE_FEATURE(kAutoApproveSharedPasswordUpdatesFromSameSender,
+             "AutoApproveSharedPasswordUpdatesFromSameSender",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables Biometrics for the Touch To Fill feature. This only effects Android.
 BASE_FEATURE(kBiometricTouchToFill,
              "BiometricTouchToFill",
