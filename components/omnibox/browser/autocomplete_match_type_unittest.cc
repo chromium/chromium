@@ -5,11 +5,28 @@
 #include "components/omnibox/browser/autocomplete_match_type.h"
 
 #include "base/json/json_reader.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "components/omnibox/browser/actions/omnibox_action.h"
+#include "components/omnibox/browser/actions/omnibox_pedal.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/suggestion_answer.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
+
+namespace {
+
+class FakeOmniboxPedal : public OmniboxPedal {
+ public:
+  FakeOmniboxPedal(OmniboxPedalId id, LabelStrings strings, GURL url)
+      : OmniboxPedal(id, strings, url) {}
+
+ private:
+  ~FakeOmniboxPedal() override = default;
+};
+
+}  // namespace
 
 TEST(AutocompleteMatchTypeTest, AccessibilityLabelHistory) {
   const std::u16string& kTestUrl = u"https://www.chromium.org";
@@ -42,6 +59,25 @@ TEST(AutocompleteMatchTypeTest, AccessibilityLabelSearch) {
   // |match_index| value.
   EXPECT_EQ(kSearch + u" search",
             AutocompleteMatchType::ToAccessibilityLabel(match, kSearch, 5, 0));
+}
+
+TEST(AutocompleteMatchTypeTest, AccessibilityLabelPedal) {
+  const std::u16string& kPedal = u"clear browsing data";
+  const std::u16string& kAccessibilityHint =
+      u"Clear your chrome browsing history, cookies, and cache";
+
+  AutocompleteMatch match;
+  match.type = AutocompleteMatchType::PEDAL;
+  const OmniboxAction::LabelStrings label_strings(
+      /*hint=*/u"", /*suggestion_contents=*/u"", /*accessibility_suffix=*/u"",
+      /*accessibility_hint=*/kAccessibilityHint);
+  match.takeover_action = base::MakeRefCounted<FakeOmniboxPedal>(
+      OmniboxPedalId::CLEAR_BROWSING_DATA, label_strings, GURL());
+
+  // Ensure that the accessibility hint is present in the a11y label for pedal
+  // suggestions.
+  EXPECT_EQ(kAccessibilityHint + u", 2 of 5",
+            AutocompleteMatchType::ToAccessibilityLabel(match, kPedal, 1, 5));
 }
 
 namespace {
