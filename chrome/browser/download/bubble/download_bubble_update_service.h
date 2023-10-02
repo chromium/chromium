@@ -54,6 +54,9 @@ class DownloadBubbleUpdateService
     bool operator!=(const ItemSortKey& other) const;
     bool operator>(const ItemSortKey& other) const;
 
+    // Returns a key that sorts before any other.
+    static ItemSortKey Min();
+
     // Active in-progress items come before paused items, which come before
     // not-in-progress items.
     State state;
@@ -233,12 +236,29 @@ class DownloadBubbleUpdateService
     bool IsDownloadItemCacheAtMax() const;
     bool IsOfflineItemCacheAtMax() const;
 
-    // See comments on the public DownloadBubbleUpdateService methods of the
+    // See comments on the public DownloadBubbleUpdateService method of the
     // same name.
     bool GetAllModelsToDisplay(
         std::vector<DownloadUIModel::DownloadUIModelPtr>& models,
         bool force_backfill_download_items = false);
+    // Implements the above.
+    void GetDownloadItemModelToDisplayOrPrune(
+        base::Time cutoff_time,
+        std::vector<DownloadUIModel::DownloadUIModelPtr>& models,
+        bool& download_item_pruned,
+        SortedDownloadItems::iterator& download_item_it);
+    void GetOfflineItemModelToDisplayOrPrune(
+        base::Time cutoff_time,
+        std::vector<DownloadUIModel::DownloadUIModelPtr>& models,
+        bool& offline_item_pruned,
+        SortedOfflineItems::iterator& offline_item_it);
+
+    // See comments on the public DownloadBubbleUpdateService method of the
+    // same name.
     const DownloadBubbleDisplayInfo& GetDisplayInfo() const;
+
+    // See comments on the public DownloadBubbleUpdateService method of the
+    // same name.
     DownloadDisplay::ProgressInfo GetProgressInfo() const;
 
     // Adds an item to the cache if it is recent enough and meets other criteria
@@ -272,9 +292,19 @@ class DownloadBubbleUpdateService
     bool RemoveOfflineItemFromCache(
         const offline_items_collection::ContentId& id);
 
-    // Updates |all_models_info_| based on the current contents of the cache.
+    // Updates |display_info_| based on the current contents of the cache.
     // This is kept updated as items are added or removed from the cache.
-    void UpdateAllModelsInfo();
+    void UpdateDisplayInfo();
+    // Implements the above.
+    void UpdateDisplayInfoForDownloadItem(
+        base::Time cutoff_time,
+        DownloadBubbleDisplayInfo& info,
+        SortedDownloadItems::iterator& download_item_it);
+    void UpdateDisplayInfoForOfflineItem(
+        base::Time cutoff_time,
+        DownloadBubbleDisplayInfo& info,
+        SortedOfflineItems::iterator& offline_item_it);
+    bool ShouldStopUpdatingDisplayInfo(const DownloadBubbleDisplayInfo& info);
 
     // Clears the cache.
     void DropAllDownloadItems();
@@ -284,6 +314,18 @@ class DownloadBubbleUpdateService
     // Forwards to |update_service_|.
     size_t GetMaxNumItemsToShow() const;
     size_t GetNumItemsToCache() const;
+
+    // Implements the loop that iterates over the download item and offline item
+    // caches and merges them, running `download_item_action` if we take a
+    // download item and running `offline_item_action` if we take an offline
+    // action (these should also advance the corresponding iterator). Iterates
+    // until `should_stop` returns true or all items have been processed.
+    void IterateOverMergedCaches(
+        base::RepeatingCallback<void(SortedDownloadItems::iterator&)>
+            download_item_action,
+        base::RepeatingCallback<void(SortedOfflineItems::iterator&)>
+            offline_item_action,
+        base::RepeatingCallback<bool()> should_stop);
 
     template <typename Id, typename Item>
     bool AddItemToCacheImpl(Item item,

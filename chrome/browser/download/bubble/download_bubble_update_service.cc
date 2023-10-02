@@ -140,6 +140,12 @@ bool MaybeAddModel(DownloadUIModelPtr model,
   return true;
 }
 
+// For GetAllModelsToDisplay()'s iteration over the merged caches, don't stop
+// until all models have been processed.
+bool NeverStop() {
+  return false;
+}
+
 void UpdateInfoForModel(const DownloadUIModel& model,
                         base::Time cutoff_time,
                         DownloadBubbleDisplayInfo& info) {
@@ -196,6 +202,12 @@ bool DownloadBubbleUpdateService::ItemSortKey::operator!=(
 bool DownloadBubbleUpdateService::ItemSortKey::operator>(
     const DownloadBubbleUpdateService::ItemSortKey& other) const {
   return !(*this == other || *this < other);
+}
+
+// static
+DownloadBubbleUpdateService::ItemSortKey
+DownloadBubbleUpdateService::ItemSortKey::Min() {
+  return ItemSortKey{kInProgressActive, base::Time::Max()};
 }
 
 DownloadBubbleUpdateService::CacheManager::CacheManager(
@@ -386,36 +398,17 @@ bool DownloadBubbleUpdateService::CacheManager::GetAllModelsToDisplay(
   // criteria for pruning requires the model, to avoid unnecessary creation and
   // destruction of models, we collect the models to return and prune items in
   // the same loop iteration.
-  auto download_item_it = download_items_.begin();
-  auto offline_item_it = offline_items_.begin();
-  while (download_item_it != download_items_.end() ||
-         offline_item_it != offline_items_.end()) {
-    // If the current download item sorts before the current offline item (or we
-    // are out of offline items), take the download item.
-    if (download_item_it != download_items_.end() &&
-        (offline_item_it == offline_items_.end() ||
-         download_item_it->first < offline_item_it->first)) {
-      if (!MaybeAddDownloadItemModel(download_item_it->second, cutoff_time,
-                                     models)) {
-        download_item_it = RemoveItemFromCacheByIter(
-            download_item_it, download_items_, download_items_iter_map_);
-        download_item_pruned = true;
-      } else {
-        ++download_item_it;
-      }
-    } else {
-      // Else, the current offline item sorts before the current download item
-      // (or we are out of download items), so take the offline item.
-      if (!MaybeAddOfflineItemModel(offline_item_it->second, cutoff_time,
-                                    models)) {
-        offline_item_it = RemoveItemFromCacheByIter(
-            offline_item_it, offline_items_, offline_items_iter_map_);
-        offline_item_pruned = true;
-      } else {
-        ++offline_item_it;
-      }
-    }
-  }
+  IterateOverMergedCaches(
+      base::BindRepeating(&DownloadBubbleUpdateService::CacheManager::
+                              GetDownloadItemModelToDisplayOrPrune,
+                          base::Unretained(this), cutoff_time, std::ref(models),
+                          std::ref(download_item_pruned)),
+      base::BindRepeating(&DownloadBubbleUpdateService::CacheManager::
+                              GetOfflineItemModelToDisplayOrPrune,
+                          base::Unretained(this), cutoff_time, std::ref(models),
+                          std::ref(offline_item_pruned)),
+      base::BindRepeating(&NeverStop));
+
   CHECK_LE(models.size(), GetMaxNumItemsToShow());
 
   bool download_items_need_backfill =
@@ -425,8 +418,7 @@ bool DownloadBubbleUpdateService::CacheManager::GetAllModelsToDisplay(
 
   if (download_items_need_backfill) {
     // A key that will sort before any other key.
-    ItemSortKey last_download_item_key{ItemSortKey::kInProgressActive,
-                                       base::Time::Now()};
+    ItemSortKey last_download_item_key = ItemSortKey::Min();
     if (!download_items_.empty()) {
       last_download_item_key = GetLastIter(download_items_)->first;
     }
@@ -443,8 +435,7 @@ bool DownloadBubbleUpdateService::CacheManager::GetAllModelsToDisplay(
 
   if (offline_items_need_backfill) {
     // A key that will sort before any other key.
-    ItemSortKey last_offline_item_key{ItemSortKey::kInProgressActive,
-                                      base::Time::Now()};
+    ItemSortKey last_offline_item_key = ItemSortKey::Min();
     if (!offline_items_.empty()) {
       last_offline_item_key = GetLastIter(offline_items_)->first;
     }
@@ -456,6 +447,37 @@ bool DownloadBubbleUpdateService::CacheManager::GetAllModelsToDisplay(
 #endif  // DCHECK_IS_ON()
   return models.size() == GetMaxNumItemsToShow() ||
          !(download_items_need_backfill || offline_items_need_backfill);
+}
+
+void DownloadBubbleUpdateService::CacheManager::
+    GetDownloadItemModelToDisplayOrPrune(
+        base::Time cutoff_time,
+        std::vector<DownloadUIModel::DownloadUIModelPtr>& models,
+        bool& download_item_pruned,
+        SortedDownloadItems::iterator& download_item_it) {
+  if (!MaybeAddDownloadItemModel(download_item_it->second, cutoff_time,
+                                 models)) {
+    download_item_it = RemoveItemFromCacheByIter(
+        download_item_it, download_items_, download_items_iter_map_);
+    download_item_pruned = true;
+  } else {
+    ++download_item_it;
+  }
+}
+
+void DownloadBubbleUpdateService::CacheManager::
+    GetOfflineItemModelToDisplayOrPrune(
+        base::Time cutoff_time,
+        std::vector<DownloadUIModel::DownloadUIModelPtr>& models,
+        bool& offline_item_pruned,
+        SortedOfflineItems::iterator& offline_item_it) {
+  if (!MaybeAddOfflineItemModel(offline_item_it->second, cutoff_time, models)) {
+    offline_item_it = RemoveItemFromCacheByIter(offline_item_it, offline_items_,
+                                                offline_items_iter_map_);
+    offline_item_pruned = true;
+  } else {
+    ++offline_item_it;
+  }
 }
 
 bool DownloadBubbleUpdateService::GetAllModelsToDisplay(
@@ -487,11 +509,12 @@ const DownloadBubbleDisplayInfo& DownloadBubbleUpdateService::GetDisplayInfo(
   return DownloadBubbleDisplayInfo::EmptyInfo();
 }
 
-void DownloadBubbleUpdateService::CacheManager::UpdateAllModelsInfo() {
+void DownloadBubbleUpdateService::CacheManager::UpdateDisplayInfo() {
 #if DCHECK_IS_ON()
   ConsistencyCheckCaches();
 #endif  // DCHECK_IS_ON()
 
+  // A new info is constructed from scratch based on the current cache contents.
   DownloadBubbleDisplayInfo info;
   base::Time cutoff_time = GetCutoffTime();
 
@@ -499,6 +522,54 @@ void DownloadBubbleUpdateService::CacheManager::UpdateAllModelsInfo() {
   // combined/merged sorted order. This is done in the same way as in
   // GetAllItemsToDisplay() to ensure that the info most accurately represents
   // the list of items that would be returned from that method.
+  IterateOverMergedCaches(
+      base::BindRepeating(&DownloadBubbleUpdateService::CacheManager::
+                              UpdateDisplayInfoForDownloadItem,
+                          base::Unretained(this), cutoff_time, std::ref(info)),
+      base::BindRepeating(&DownloadBubbleUpdateService::CacheManager::
+                              UpdateDisplayInfoForOfflineItem,
+                          base::Unretained(this), cutoff_time, std::ref(info)),
+      base::BindRepeating(&DownloadBubbleUpdateService::CacheManager::
+                              ShouldStopUpdatingDisplayInfo,
+                          base::Unretained(this), std::ref(info)));
+
+  display_info_ = info;
+}
+
+void DownloadBubbleUpdateService::CacheManager::
+    UpdateDisplayInfoForDownloadItem(
+        base::Time cutoff_time,
+        DownloadBubbleDisplayInfo& info,
+        SortedDownloadItems::iterator& download_item_it) {
+  DownloadItemModel model(
+      download_item_it->second,
+      std::make_unique<DownloadUIModel::BubbleStatusTextBuilder>());
+  UpdateInfoForModel(model, cutoff_time, info);
+  ++download_item_it;
+}
+
+void DownloadBubbleUpdateService::CacheManager::UpdateDisplayInfoForOfflineItem(
+    base::Time cutoff_time,
+    DownloadBubbleDisplayInfo& info,
+    SortedOfflineItems::iterator& offline_item_it) {
+  OfflineItemModel model(
+      update_service_->GetOfflineManager(), offline_item_it->second,
+      std::make_unique<DownloadUIModel::BubbleStatusTextBuilder>());
+  UpdateInfoForModel(model, cutoff_time, info);
+  ++offline_item_it;
+}
+
+bool DownloadBubbleUpdateService::CacheManager::ShouldStopUpdatingDisplayInfo(
+    const DownloadBubbleDisplayInfo& info) {
+  return info.all_models_size >= GetMaxNumItemsToShow();
+}
+
+void DownloadBubbleUpdateService::CacheManager::IterateOverMergedCaches(
+    base::RepeatingCallback<void(SortedDownloadItems::iterator&)>
+        download_item_action,
+    base::RepeatingCallback<void(SortedOfflineItems::iterator&)>
+        offline_item_action,
+    base::RepeatingCallback<bool()> should_stop) {
   auto download_item_it = download_items_.begin();
   auto offline_item_it = offline_items_.begin();
   while (download_item_it != download_items_.end() ||
@@ -508,23 +579,16 @@ void DownloadBubbleUpdateService::CacheManager::UpdateAllModelsInfo() {
     if (download_item_it != download_items_.end() &&
         (offline_item_it == offline_items_.end() ||
          download_item_it->first < offline_item_it->first)) {
-      DownloadItemModel model(download_item_it->second);
-      UpdateInfoForModel(model, cutoff_time, info);
-      ++download_item_it;
+      download_item_action.Run(download_item_it);
     } else {
       // Else, the current offline item sorts before the current download item
       // (or we are out of download items), so take the offline item.
-      OfflineItemModel model(update_service_->GetOfflineManager(),
-                             offline_item_it->second);
-      UpdateInfoForModel(model, cutoff_time, info);
-      ++offline_item_it;
+      offline_item_action.Run(offline_item_it);
     }
-    if (info.all_models_size >= GetMaxNumItemsToShow()) {
+    if (should_stop.Run()) {
       break;
     }
   }
-
-  display_info_ = info;
 }
 
 ProgressInfo DownloadBubbleUpdateService::CacheManager::GetProgressInfo()
@@ -926,7 +990,7 @@ bool DownloadBubbleUpdateService::CacheManager::AddItemToCacheImpl(
     cache.erase(to_remove);
   }
 
-  UpdateAllModelsInfo();
+  UpdateDisplayInfo();
 
   CHECK(!cache.empty());
   auto last_it = GetLastIter(cache);
@@ -958,7 +1022,7 @@ bool DownloadBubbleUpdateService::CacheManager::RemoveItemFromCacheImpl(
   cache.erase(iter_map_it->second);
   iter_map.erase(iter_map_it);
 
-  UpdateAllModelsInfo();
+  UpdateDisplayInfo();
 
   CHECK(cache.size() < GetNumItemsToCache());
   return true;
@@ -975,7 +1039,7 @@ DownloadBubbleUpdateService::CacheManager::RemoveItemFromCacheByIter(
   iter_map.erase(GetItemId(iter->second));
   cache.erase(iter);
 
-  UpdateAllModelsInfo();
+  UpdateDisplayInfo();
 
   return next_iter;
 }
@@ -1168,7 +1232,7 @@ void DownloadBubbleUpdateService::OnEphemeralWarningExpired(
     return;
   }
 
-  GetCacheForItem(item).UpdateAllModelsInfo();
+  GetCacheForItem(item).UpdateDisplayInfo();
 
   auto* web_app_data = DownloadItemWebAppData::Get(item);
   for (Browser* browser : chrome::FindAllBrowsersWithProfile(profile_)) {
