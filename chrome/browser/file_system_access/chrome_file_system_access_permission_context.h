@@ -15,6 +15,7 @@
 #include "base/sequence_checker.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
+#include "chrome/browser/file_system_access/file_system_access_permission_request_manager.h"
 #include "components/permissions/object_permission_context_base.h"
 #include "content/public/browser/file_system_access_permission_context.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom-forward.h"
@@ -178,34 +179,6 @@ class ChromeFileSystemAccessPermissionContext
     extended_permissions_settings_map_[origin] =
         ContentSetting::CONTENT_SETTING_ALLOW;
   }
-  // This method may only be called when the Persistent Permissions feature
-  // flag is enabled.
-  void OnDontAllowRestorePromptForTesting(const url::Origin& origin) {
-    CHECK(base::FeatureList::IsEnabled(
-        features::kFileSystemAccessPersistentPermissions));
-    OnDontAllowRestorePrompt(origin);
-  }
-  // This method may only be called when the Persistent Permissions feature
-  // flag is enabled.
-  void OnIgnoreRestorePromptForTesting(const url::Origin& origin) {
-    CHECK(base::FeatureList::IsEnabled(
-        features::kFileSystemAccessPersistentPermissions));
-    OnIgnoreRestorePrompt(origin);
-  }
-  // This method may only be called when the Persistent Permissions feature
-  // flag is enabled.
-  void OnRestorePromptAllowEveryTimeForTesting(const url::Origin& origin) {
-    CHECK(base::FeatureList::IsEnabled(
-        features::kFileSystemAccessPersistentPermissions));
-    OnRestorePromptAllowEveryTime(origin);
-  }
-  // This method may only be called when the Persistent Permissions feature
-  // flag is enabled.
-  void OnRestorePromptAllowThisTimeForTesting(const url::Origin& origin) {
-    CHECK(base::FeatureList::IsEnabled(
-        features::kFileSystemAccessPersistentPermissions));
-    OnRestorePromptAllowThisTime(origin);
-  }
   bool RevokeActiveGrantsForTesting(
       const url::Origin& origin,
       base::FilePath file_path = base::FilePath()) {
@@ -303,9 +276,6 @@ class ChromeFileSystemAccessPermissionContext
     kUpdatePersistedPermission,
   };
 
-  // Retrieve the persisted grant type for a given origin.
-  PersistedGrantType GetPersistedGrantType(const url::Origin& origin) const;
-
   void PermissionGrantDestroyed(PermissionGrantImpl* grant);
 
   // Checks whether the file or directory at `path` corresponds to a directory
@@ -344,30 +314,6 @@ class ChromeFileSystemAccessPermissionContext
   // permissions for that origin.
   void MaybeCleanupActivePermissions(const url::Origin& origin);
 
-  // Called when the restore prompt is accepted as a result of the user
-  // selecting the 'Allow every time' option.
-  void OnRestorePromptAllowEveryTime(const url::Origin& origin);
-
-  // Called when the restore prompt is accepted as a result of the user
-  // selecting the 'Allow this time' option.
-  void OnRestorePromptAllowThisTime(const url::Origin& origin);
-
-  // Updates the grant status and the active / persistent permissions grant sets
-  // when the user selects either the 'Allow this time' or 'Allow every time'
-  // option from the restore prompt.
-  void UpdateGrantsOnRestorePromptAllow(const url::Origin& origin);
-
-  // Called when the restore prompt is dismissed or denied.
-  void OnDontAllowRestorePrompt(const url::Origin& origin);
-
-  // Records restore prompt ignore with `PermissionDecisionAutoblocker`.
-  void OnIgnoreRestorePrompt(const url::Origin& origin);
-
-  // Updates the `grant_status` and / or the persisted grants for a given
-  // origin, in the case that either the restore prompt is denied, dismissed,
-  // or ignored by the user.
-  void OnRestorePermissionNotAllowed(const url::Origin& origin);
-
   bool AncestorHasActivePermission(const url::Origin& origin,
                                    const base::FilePath& path,
                                    GrantType grant_type) const;
@@ -389,6 +335,39 @@ class ChromeFileSystemAccessPermissionContext
       UserAction user_action,
       GrantType grant_type);
 
+  // Builds a list of `FileRequestData` from persisted grants, which is used
+  // to show the restore permission prompt. Expects that the persisted grants
+  // are dormant grants eligible to be restored.
+  std::vector<FileSystemAccessPermissionRequestManager::FileRequestData>
+  GetFileRequestDataForRestorePermissionPrompt(const url::Origin& origin);
+
+  // Called when the restore permission prompt is accepted as a result of the
+  // user selecting the 'Allow on every visit' option.
+  void OnRestorePermissionAllowedEveryTime(const url::Origin& origin);
+
+  // Called when the restore permission prompt is accepted as a result of the
+  // user selecting the 'Allow this time' option.
+  void OnRestorePermissionAllowedOnce(const url::Origin& origin);
+
+  // Called when the restore permission prompt is dismissed or denied.
+  void OnRestorePermissionDeniedOrDismissed(const url::Origin& origin);
+
+  // Records restore permission prompt ignore with
+  // `PermissionDecisionAutoblocker`.
+  void OnRestorePermissionIgnored(const url::Origin& origin);
+
+  // Updates the grant status and the active / persistent permissions grant sets
+  // when the user selects either the 'Allow this time' or
+  // 'Allow on every visit' option from the restore permission prompt.
+  // Assumes that persisted grants are still dormant type.
+  void UpdateGrantsOnRestorePermissionAllowed(const url::Origin& origin);
+
+  // Updates the `grant_status` and / or the persisted grants for a given
+  // origin, in the case that either the restore permission prompt is denied,
+  // dismissed, or ignored by the user. Assumes that persisted grants are still
+  // dormant type.
+  void UpdateGrantsOnRestorePermissionNotAllowed(const url::Origin& origin);
+
   // Returns whether a matching persisted grant object exists.
   bool HasPersistedGrantObject(const url::Origin& origin,
                                const base::FilePath& file_path,
@@ -400,9 +379,16 @@ class ChromeFileSystemAccessPermissionContext
                              const base::FilePath& path,
                              HandleType handle_type,
                              GrantType grant_type);
+
   // Returns whether the origin has extended permission enabled via user
   // opt-in or by having an actively installed PWA.
   bool OriginHasExtendedPermission(const url::Origin& origin) const;
+
+  // Retrieve the persisted grant type for a given origin.
+  PersistedGrantType GetPersistedGrantType(const url::Origin& origin) const;
+
+  GrantStatus GetGrantStatus(const url::Origin& origin) const;
+  void SetGrantStatus(const url::Origin& origin, GrantStatus grant_status);
 
   // Similar to GetGrantedObjects() but returns only extended grants.
   std::vector<std::unique_ptr<Object>> GetExtendedPersistedObjects(
