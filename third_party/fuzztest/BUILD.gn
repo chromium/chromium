@@ -79,6 +79,9 @@ config("centipede_internal_config") {
     "-Wno-unused-private-field",
     "-Wno-unreachable-code-return",
     "-Wno-unused-but-set-variable",
+    "-Wno-shadow",
+    "-Wno-unused-const-variable",
+    "-Wno-unused-function",
   ]
 
   # int_utils.h depends on an SSE 4.2 intrinsic.
@@ -173,5 +176,7 @@ executable("centipede") {
     "src/centipede/stats.cc",
     "src/centipede/symbol_table.cc",
     "src/centipede/util.cc",
+    "src/centipede/workdir.cc",
+    "src/centipede/workdir.h",
   ]
 }
