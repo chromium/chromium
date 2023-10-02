@@ -334,11 +334,28 @@ Iban GetIban2() {
 
 Iban GetServerIban() {
   Iban iban(Iban::InstrumentId("1234567"));
-  // Set the prefix, suffix and length of the server IBAN.
   iban.set_prefix(u"FR76");
   iban.set_suffix(u"0189");
   iban.set_length(27);
   iban.set_nickname(u"My doctor's IBAN");
+  return iban;
+}
+
+Iban GetServerIban2() {
+  Iban iban(Iban::InstrumentId("1234568"));
+  iban.set_prefix(u"BE71");
+  iban.set_suffix(u"8676");
+  iban.set_length(16);
+  iban.set_nickname(u"My sister's IBAN");
+  return iban;
+}
+
+Iban GetServerIban3() {
+  Iban iban(Iban::InstrumentId("1234569"));
+  iban.set_prefix(u"DE91");
+  iban.set_suffix(u"6789");
+  iban.set_length(22);
+  iban.set_nickname(u"My IBAN");
   return iban;
 }
 

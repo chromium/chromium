@@ -773,8 +773,8 @@ class AutofillTable : public WebDatabaseTable,
   // Get all server cvcs from `server_stored_cvc` table.
   std::vector<std::unique_ptr<ServerCvc>> GetAllServerCvcs() const;
 
-  // Methods to add, update, remove and get the metadata for server cards and
-  // addresses.
+  // Methods to add, update, remove and get the metadata for server cards,
+  // addresses, and IBANs. Return true if the operations succeeded.
   bool AddServerCardMetadata(const AutofillMetadata& card_metadata);
   bool UpdateServerCardMetadata(const CreditCard& credit_card);
   bool UpdateServerCardMetadata(const AutofillMetadata& card_metadata);
@@ -787,6 +787,9 @@ class AutofillTable : public WebDatabaseTable,
   bool RemoveServerAddressMetadata(const std::string& id);
   bool GetServerAddressesMetadata(
       std::map<std::string, AutofillMetadata>* addresses_metadata) const;
+  bool AddOrUpdateServerIbanMetadata(const Iban& iban);
+  bool RemoveServerIbanMetadata(const std::string& instrument_id);
+  std::vector<AutofillMetadata> GetServerIbansMetadata() const;
 
   // Methods to add the server cards and addresses data independently from the
   // metadata.
@@ -800,6 +803,11 @@ class AutofillTable : public WebDatabaseTable,
   bool GetCreditCardCloudTokenData(
       std::vector<std::unique_ptr<CreditCardCloudTokenData>>*
           credit_card_cloud_token_data);
+
+  // Gets the list of server IBANs from the database.
+  std::vector<std::unique_ptr<Iban>> GetServerIbans();
+  // Overwrite the IBANs in the database with the given `ibans`.
+  bool SetServerIbans(const std::vector<Iban>& ibans);
 
   // Setters and getters related to the Google Payments customer data.
   // Passing null to the setter will clear the data.

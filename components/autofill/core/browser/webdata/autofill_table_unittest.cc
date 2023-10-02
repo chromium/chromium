@@ -1172,6 +1172,23 @@ TEST_F(AutofillTableTest, Iban) {
   EXPECT_FALSE(db_iban);
 }
 
+// Test that masked IBANs can be added and loaded successfully.
+TEST_F(AutofillTableTest, MaskedServerIban) {
+  Iban iban_0 = test::GetServerIban();
+  Iban iban_1 = test::GetServerIban2();
+  Iban iban_2 = test::GetServerIban3();
+  std::vector<Iban> ibans = {iban_0, iban_1, iban_2};
+
+  EXPECT_TRUE(table_->SetServerIbans(ibans));
+
+  std::vector<std::unique_ptr<Iban>> masked_server_ibans =
+      table_->GetServerIbans();
+  EXPECT_EQ(3U, masked_server_ibans.size());
+  EXPECT_THAT(ibans, UnorderedElementsAre(*masked_server_ibans[0],
+                                          *masked_server_ibans[1],
+                                          *masked_server_ibans[2]));
+}
+
 TEST_F(AutofillTableTest, CreditCard) {
   base::test::ScopedFeatureList features(
       features::kAutofillEnableCvcStorageAndFilling);
@@ -2227,6 +2244,28 @@ TEST_F(AutofillTableTest, SetGetRemoveServerAddressMetadata) {
   EXPECT_EQ(0U, outputs.size());
 }
 
+// Test that masked IBAN metadata can be added, retrieved and removed
+// successfully.
+TEST_F(AutofillTableTest, SetGetRemoveServerIbanMetadata) {
+  Iban iban = test::GetServerIban();
+  // Set the metadata.
+  iban.set_use_count(50);
+  iban.set_use_date(AutofillClock::Now());
+  EXPECT_TRUE(table_->AddOrUpdateServerIbanMetadata(iban));
+
+  // Make sure it was added correctly.
+  std::vector<AutofillMetadata> outputs = table_->GetServerIbansMetadata();
+  ASSERT_EQ(1U, outputs.size());
+  EXPECT_EQ(iban.GetMetadata(), outputs[0]);
+
+  // Remove the metadata from the table.
+  EXPECT_TRUE(table_->RemoveServerIbanMetadata(outputs[0].id));
+
+  // Make sure it was removed correctly.
+  outputs = table_->GetServerIbansMetadata();
+  EXPECT_EQ(0U, outputs.size());
+}
+
 TEST_F(AutofillTableTest, AddUpdateServerAddressMetadata) {
   // Create and set the metadata.
   AutofillMetadata input;
@@ -2351,6 +2390,32 @@ TEST_F(AutofillTableTest, UpdateServerCardMetadataDoesNotChangeData) {
   std::vector<std::unique_ptr<CreditCard>> outputs2;
   table_->GetServerCreditCards(&outputs2);
   ASSERT_EQ(1u, outputs2.size());
+  EXPECT_EQ(0, outputs[0]->Compare(*outputs2[0]));
+}
+
+// Test that updating masked IBAN metadata won't affect IBAN data.
+TEST_F(AutofillTableTest, UpdateServerIbanMetadataDoesNotChangeData) {
+  std::vector<Iban> inputs = {test::GetServerIban()};
+  table_->SetServerIbans(inputs);
+
+  std::vector<std::unique_ptr<Iban>> outputs = table_->GetServerIbans();
+  ASSERT_EQ(1U, outputs.size());
+  EXPECT_EQ(inputs[0].instrument_id(), outputs[0]->instrument_id());
+
+  // Update metadata in the IBAN.
+  outputs[0]->set_use_count(outputs[0]->use_count() + 1);
+
+  EXPECT_TRUE(table_->AddOrUpdateServerIbanMetadata(*outputs[0]));
+
+  // Make sure it was updated correctly.
+  std::vector<AutofillMetadata> output_metadata =
+      table_->GetServerIbansMetadata();
+  ASSERT_EQ(1U, output_metadata.size());
+  EXPECT_EQ(outputs[0]->GetMetadata(), output_metadata[0]);
+
+  // Make sure nothing else got updated.
+  std::vector<std::unique_ptr<Iban>> outputs2 = table_->GetServerIbans();
+  ASSERT_EQ(1U, outputs2.size());
   EXPECT_EQ(0, outputs[0]->Compare(*outputs2[0]));
 }
 

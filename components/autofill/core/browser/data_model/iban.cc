@@ -196,8 +196,9 @@ Iban::~Iban() = default;
 Iban& Iban::operator=(const Iban& iban) = default;
 
 AutofillMetadata Iban::GetMetadata() const {
+  CHECK_NE(record_type_, Iban::kUnknown);
   AutofillMetadata metadata = AutofillDataModel::GetMetadata();
-  metadata.id = guid();
+  metadata.id = record_type_ == Iban::kLocalIban ? guid() : instrument_id();
   return metadata;
 }
 
@@ -307,7 +308,7 @@ int Iban::Compare(const Iban& iban) const {
 }
 
 bool Iban::operator==(const Iban& iban) const {
-  return guid() == iban.guid() && Compare(iban) == 0;
+  return Compare(iban) == 0;
 }
 
 bool Iban::operator!=(const Iban& iban) const {
