@@ -88,14 +88,18 @@ class NGInlineBoxFragmentPainterBase {
       const NinePieceImage& image,
       const PhysicalRect& paint_rect);
 
-  enum BorderPaintingType {
-    kDontPaintBorders,
-    kPaintBordersWithoutClip,
-    kPaintBordersWithClip
+  enum SlicePaintingType {
+    kDontPaint,
+    kPaintWithoutClip,
+    kPaintWithClip,
   };
-  BorderPaintingType GetBorderPaintType(const PhysicalRect& adjusted_frame_rect,
-                                        gfx::Rect& adjusted_clip_rect,
-                                        bool object_has_multiple_boxes) const;
+  SlicePaintingType GetBorderPaintType(const PhysicalRect& adjusted_frame_rect,
+                                       gfx::Rect& adjusted_clip_rect,
+                                       bool object_has_multiple_boxes) const;
+  SlicePaintingType GetSlicePaintType(const NinePieceImage&,
+                                      const PhysicalRect& adjusted_frame_rect,
+                                      gfx::Rect& adjusted_clip_rect,
+                                      bool object_has_multiple_boxes) const;
 
   void PaintNormalBoxShadow(const PaintInfo&,
                             const ComputedStyle&,
@@ -184,6 +188,8 @@ class NGInlineBoxFragmentPainter : public NGInlineBoxFragmentPainterBase {
                                 const PaintInfo&);
 
  private:
+  void PaintMask(const PaintInfo&, const PhysicalOffset& paint_offset);
+
   const NGPhysicalBoxFragment& PhysicalFragment() const {
     return static_cast<const NGPhysicalBoxFragment&>(inline_box_fragment_);
   }

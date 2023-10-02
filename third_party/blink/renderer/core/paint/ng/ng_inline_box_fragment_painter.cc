@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_fragment.h"
 #include "third_party/blink/renderer/core/paint/background_image_geometry.h"
+#include "third_party/blink/renderer/core/paint/nine_piece_image_painter.h"
 #include "third_party/blink/renderer/core/paint/object_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
@@ -58,15 +59,20 @@ void NGInlineBoxFragmentPainter::Paint(const PaintInfo& paint_info,
       paint_info.context, inline_box_item_.FragmentId());
   const LayoutObject& layout_object = *inline_box_fragment_.GetLayoutObject();
   absl::optional<ScopedSVGPaintState> svg_paint_state;
-  if (layout_object.IsSVGInline())
-    svg_paint_state.emplace(layout_object, paint_info);
-
   const PhysicalOffset adjusted_paint_offset =
       paint_offset + inline_box_item_.OffsetInContainerFragment();
-  if (paint_info.phase == PaintPhase::kForeground &&
-      !layout_object.IsSVGInline())
-    PaintBackgroundBorderShadow(paint_info, adjusted_paint_offset);
 
+  if (!layout_object.IsSVGInline()) {
+    if (paint_info.phase == PaintPhase::kMask) {
+      PaintMask(paint_info, adjusted_paint_offset);
+      return;
+    }
+    if (paint_info.phase == PaintPhase::kForeground) {
+      PaintBackgroundBorderShadow(paint_info, adjusted_paint_offset);
+    }
+  } else {
+    svg_paint_state.emplace(layout_object, paint_info);
+  }
   const bool suppress_box_decoration_background = true;
   DCHECK(inline_context_);
   NGInlinePaintContext::ScopedInlineItem scoped_item(inline_box_item_,
@@ -76,6 +82,60 @@ void NGInlineBoxFragmentPainter::Paint(const PaintInfo& paint_info,
                                    PhysicalFragment(), inline_context_);
   box_painter.PaintObject(paint_info, adjusted_paint_offset,
                           suppress_box_decoration_background);
+}
+
+void NGInlineBoxFragmentPainter::PaintMask(const PaintInfo& paint_info,
+                                           const PhysicalOffset& paint_offset) {
+  DCHECK_EQ(PaintPhase::kMask, paint_info.phase);
+  if (!style_.HasMask() || style_.Visibility() != EVisibility::kVisible) {
+    return;
+  }
+
+  const DisplayItemClient& display_item_client = GetDisplayItemClient();
+  if (DrawingRecorder::UseCachedDrawingIfPossible(
+          paint_info.context, display_item_client, paint_info.phase)) {
+    return;
+  }
+
+  DrawingRecorder recorder(paint_info.context, display_item_client,
+                           paint_info.phase, VisualRect(paint_offset));
+  PhysicalRect adjusted_frame_rect(paint_offset,
+                                   inline_box_fragment_.LocalRect().size);
+
+  const LayoutObject& layout_object = *inline_box_fragment_.GetLayoutObject();
+  bool object_may_have_multiple_boxes =
+      MayHaveMultipleFragmentItems(inline_box_item_, layout_object);
+
+  DCHECK(inline_box_cursor_);
+  NGBoxFragmentPainter box_painter(*inline_box_cursor_, inline_box_item_,
+                                   PhysicalFragment(), inline_context_);
+
+  BackgroundImageGeometry geometry(
+      static_cast<const LayoutBoxModelObject&>(layout_object));
+  PaintFillLayers(box_painter, paint_info, Color::kTransparent,
+                  style_.MaskLayers(), adjusted_frame_rect, geometry,
+                  object_may_have_multiple_boxes);
+
+  gfx::Rect adjusted_clip_rect;
+  SlicePaintingType border_painting_type =
+      GetSlicePaintType(style_.MaskBoxImage(), adjusted_frame_rect,
+                        adjusted_clip_rect, object_may_have_multiple_boxes);
+  if (border_painting_type == kDontPaint) {
+    return;
+  }
+  GraphicsContextStateSaver state_saver(paint_info.context, false);
+  PhysicalRect adjusted_paint_rect;
+  if (border_painting_type == kPaintWithClip) {
+    state_saver.Save();
+    paint_info.context.Clip(adjusted_clip_rect);
+    adjusted_paint_rect =
+        PaintRectForImageStrip(adjusted_frame_rect, style_.Direction());
+  } else {
+    adjusted_paint_rect = adjusted_frame_rect;
+  }
+  NinePieceImagePainter::Paint(paint_info.context, image_observer_, *document_,
+                               node_, adjusted_paint_rect, style_,
+                               style_.MaskBoxImage(), SidesToInclude());
 }
 
 void NGInlineBoxFragmentPainterBase::PaintBackgroundBorderShadow(
@@ -270,35 +330,46 @@ PhysicalRect NGInlineBoxFragmentPainterBase::ClipRectForNinePieceImageStrip(
   return clip_rect;
 }
 
-NGInlineBoxFragmentPainterBase::BorderPaintingType
+NGInlineBoxFragmentPainterBase::SlicePaintingType
 NGInlineBoxFragmentPainterBase::GetBorderPaintType(
     const PhysicalRect& adjusted_frame_rect,
     gfx::Rect& adjusted_clip_rect,
     bool object_has_multiple_boxes) const {
   const ComputedStyle& style = inline_box_fragment_.Style();
-  if (!style.HasBorderDecoration())
-    return kDontPaintBorders;
+  if (!style.HasBorderDecoration()) {
+    return kDontPaint;
+  }
+  return GetSlicePaintType(style.BorderImage(), adjusted_frame_rect,
+                           adjusted_clip_rect, object_has_multiple_boxes);
+}
 
-  const NinePieceImage& border_image = style.BorderImage();
-  StyleImage* border_image_source = border_image.GetImage();
-  bool has_border_image =
-      border_image_source && border_image_source->CanRender();
-  if (has_border_image && !border_image_source->IsLoaded())
-    return kDontPaintBorders;
+NGInlineBoxFragmentPainterBase::SlicePaintingType
+NGInlineBoxFragmentPainterBase::GetSlicePaintType(
+    const NinePieceImage& nine_piece_image,
+    const PhysicalRect& adjusted_frame_rect,
+    gfx::Rect& adjusted_clip_rect,
+    bool object_has_multiple_boxes) const {
+  StyleImage* nine_piece_image_source = nine_piece_image.GetImage();
+  bool has_nine_piece_image =
+      nine_piece_image_source && nine_piece_image_source->CanRender();
+  if (has_nine_piece_image && !nine_piece_image_source->IsLoaded()) {
+    return kDontPaint;
+  }
 
   // The simple case is where we either have no border image or we are the
   // only box for this object.  In those cases only a single call to draw is
   // required.
-  if (!has_border_image || !object_has_multiple_boxes ||
+  const ComputedStyle& style = inline_box_fragment_.Style();
+  if (!has_nine_piece_image || !object_has_multiple_boxes ||
       style.BoxDecorationBreak() == EBoxDecorationBreak::kClone) {
     adjusted_clip_rect = ToPixelSnappedRect(adjusted_frame_rect);
-    return kPaintBordersWithoutClip;
+    return kPaintWithoutClip;
   }
 
   // We have a border image that spans multiple lines.
   adjusted_clip_rect = ToPixelSnappedRect(ClipRectForNinePieceImageStrip(
-      style, SidesToInclude(), border_image, adjusted_frame_rect));
-  return kPaintBordersWithClip;
+      style, SidesToInclude(), nine_piece_image, adjusted_frame_rect));
+  return kPaintWithClip;
 }
 
 void NGInlineBoxFragmentPainterBase::PaintNormalBoxShadow(
@@ -336,17 +407,17 @@ void NGInlineBoxFragmentPainterBase::PaintBoxDecorationBackground(
   PaintInsetBoxShadow(paint_info, line_style_, adjusted_frame_rect);
 
   gfx::Rect adjusted_clip_rect;
-  BorderPaintingType border_painting_type = GetBorderPaintType(
+  SlicePaintingType border_painting_type = GetBorderPaintType(
       adjusted_frame_rect, adjusted_clip_rect, object_has_multiple_boxes);
   switch (border_painting_type) {
-    case kDontPaintBorders:
+    case kDontPaint:
       break;
-    case kPaintBordersWithoutClip:
+    case kPaintWithoutClip:
       BoxPainterBase::PaintBorder(image_observer_, *document_, node_,
                                   paint_info, adjusted_frame_rect, line_style_,
                                   kBackgroundBleedNone, sides_to_include);
       break;
-    case kPaintBordersWithClip:
+    case kPaintWithClip:
       // FIXME: What the heck do we do with RTL here? The math we're using is
       // obviously not right, but it isn't even clear how this should work at
       // all.
