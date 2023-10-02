@@ -1313,6 +1313,9 @@ extern const char kOmniboxCacheSuggestionResourcesDescription[];
 extern const char kOmniboxCalcProviderName[];
 extern const char kOmniboxCalcProviderDescription[];
 
+extern const char kOmniboxCompanyEntityIconAdjustmentName[];
+extern const char kOmniboxCompanyEntityIconAdjustmentDescription[];
+
 extern const char kOmniboxConsumesImeInsetsName[];
 extern const char kOmniboxConsumesImeInsetsDescription[];
 

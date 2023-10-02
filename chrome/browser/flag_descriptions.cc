@@ -2306,6 +2306,12 @@ const char kOmniboxCalcProviderName[] = "Omnibox calc provider";
 const char kOmniboxCalcProviderDescription[] =
     "When enabled, suggests recent calculator results in the omnibox.";
 
+const char kOmniboxCompanyEntityIconAdjustmentName[] =
+    "Omnibox Company Entity Icon Adjustment";
+const char kOmniboxCompanyEntityIconAdjustmentDescription[] =
+    "When enabled, company entity icons may be replaced based on the search "
+    "suggestions and their corresponding order.";
+
 const char kOmniboxCR23ActionChipsName[] = "Omnibox CR 2023 Action Chips";
 const char kOmniboxCR23ActionChipsDescription[] =
     "Updates Omnibox Action Chips to comply with CR23 shape guidelines.";

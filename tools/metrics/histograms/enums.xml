@@ -66726,6 +66726,7 @@ from previous Chrome versions.
   <int value="782167080" label="enable-new-qp-input-view"/>
   <int value="783270752" label="AndroidHistoryManager:enabled"/>
   <int value="783443490" label="ArcInputOverlayBeta:enabled"/>
+  <int value="784664314" label="CompanyEntityIconAdjustment:disabled"/>
   <int value="784856302" label="EnableBorderlessPrinting:disabled"/>
   <int value="785273919" label="CompositingBasedThrottling:disabled"/>
   <int value="785795587" label="AndroidAppIntegrationSafeSearch:enabled"/>
@@ -67983,6 +67984,7 @@ from previous Chrome versions.
   <int value="1413948819" label="NupPrinting:enabled"/>
   <int value="1414652547" label="LinkCapturingAutoDisplayIntentPicker:enabled"/>
   <int value="1414918327" label="enable-accelerated-video-decode"/>
+  <int value="1416395000" label="CompanyEntityIconAdjustment:enabled"/>
   <int value="1416592483" label="ash-enable-mirrored-screen"/>
   <int value="1416845437" label="InstallPromptSegmentation:disabled"/>
   <int value="1416970206" label="ArcGameModeFeature:disabled"/>

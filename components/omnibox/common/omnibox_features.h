@@ -80,6 +80,7 @@ BASE_DECLARE_FEATURE(kPrefBasedDataCollectionConsentHelper);
 BASE_DECLARE_FEATURE(kAdaptiveSuggestionsCount);
 BASE_DECLARE_FEATURE(kClipboardSuggestionContentHidden);
 BASE_DECLARE_FEATURE(kSuppressClipboardSuggestionAfterFirstUsed);
+BASE_DECLARE_FEATURE(kCompanyEntityIconAdjustment);
 BASE_DECLARE_FEATURE(kCr2023ActionChips);
 BASE_DECLARE_FEATURE(kCr2023ActionChipsIcons);
 BASE_DECLARE_FEATURE(kSuggestionAnswersColorReverse);

@@ -6479,6 +6479,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxGroupingFrameworkDescription, kOsAll,
      FEATURE_VALUE_TYPE(omnibox::kGroupingFrameworkForNonZPS)},
 
+    {"omnibox-company-entity-icon-adjustment",
+     flag_descriptions::kOmniboxCompanyEntityIconAdjustmentName,
+     flag_descriptions::kOmniboxCompanyEntityIconAdjustmentDescription,
+     kOsDesktop, FEATURE_VALUE_TYPE(omnibox::kCompanyEntityIconAdjustment)},
+
     {"optimization-guide-debug-logs",
      flag_descriptions::kOptimizationGuideDebugLogsName,
      flag_descriptions::kOptimizationGuideDebugLogsDescription, kOsAll,
