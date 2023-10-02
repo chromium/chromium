@@ -267,14 +267,9 @@ EGLDisplay GetDisplayFromType(
     EGLDisplayPlatform native_display,
     const std::vector<std::string>& enabled_angle_features,
     const std::vector<std::string>& disabled_angle_features,
-    bool disable_all_angle_features,
     uint64_t system_device_id,
     DisplayKey display_key) {
   std::vector<EGLAttrib> extra_display_attribs;
-  if (disable_all_angle_features) {
-    extra_display_attribs.push_back(EGL_FEATURE_ALL_DISABLED_ANGLE);
-    extra_display_attribs.push_back(EGL_TRUE);
-  }
   if (system_device_id != 0 &&
       g_driver_egl.client_ext.b_EGL_ANGLE_platform_angle_device_id) {
     uint32_t low_part = system_device_id & 0xffffffff;
@@ -754,15 +749,11 @@ bool GLDisplayEGL::InitializeDisplay(bool supports_angle,
   AdjustAngleFeaturesFromChromeFeatures(enabled_angle_features,
                                         disabled_angle_features);
 
-  bool disable_all_angle_features =
-      command_line->HasSwitch(switches::kDisableGpuDriverBugWorkarounds);
-
   for (size_t disp_index = 0; disp_index < init_displays.size(); ++disp_index) {
     DisplayType display_type = init_displays[disp_index];
-    EGLDisplay display =
-        GetDisplayFromType(display_type, native_display, enabled_angle_features,
-                           disabled_angle_features, disable_all_angle_features,
-                           system_device_id_, display_key_);
+    EGLDisplay display = GetDisplayFromType(
+        display_type, native_display, enabled_angle_features,
+        disabled_angle_features, system_device_id_, display_key_);
     if (display == EGL_NO_DISPLAY) {
       // Assume this is not an error, so don't verbosely report it;
       // simply try the next display type.
