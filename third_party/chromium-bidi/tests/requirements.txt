@@ -1,4 +1,4 @@
-anys==0.2.1
+anys==0.3.0
 mypy==1.5.1
 pillow==10.0.1
 pytest==7.4.0
