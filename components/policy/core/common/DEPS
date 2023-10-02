@@ -8,7 +8,6 @@ include_rules = [
   "+components/reporting",
   "-components/policy/core/browser",
   "+components/signin/public",
-  "+components/invalidation",
   "+components/strings",
   "+extensions/buildflags",
   "+net/http",

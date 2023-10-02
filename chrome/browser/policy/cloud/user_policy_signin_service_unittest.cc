@@ -537,24 +537,31 @@ TEST_F(UserPolicySigninServiceTest, RegisteredClient) {
   data->set_device_id("fake client id");
   mock_store_->set_policy_data_for_testing(std::move(data));
 
-  // Complete initialization of the store.
-  mock_store_->NotifyStoreLoaded();
-
   // Since there is a signed-in user expect a policy fetch to be started to
   // refresh the policy for the user.
-  DeviceManagementService::JobConfiguration::JobType job_type =
+  DeviceManagementService::JobConfiguration::JobType job_type_1 =
+      DeviceManagementService::JobConfiguration::TYPE_INVALID;
+  DeviceManagementService::JobConfiguration::JobType job_type_2 =
       DeviceManagementService::JobConfiguration::TYPE_INVALID;
   DeviceManagementService::JobForTesting job;
   EXPECT_CALL(job_creation_handler_, OnJobCreation)
-      .WillOnce(DoAll(device_management_service_.CaptureJobType(&job_type),
+      .Times(2)
+      .WillOnce(DoAll(device_management_service_.CaptureJobType(&job_type_1),
+                      SaveArg<0>(&job)))
+      .WillOnce(DoAll(device_management_service_.CaptureJobType(&job_type_2),
                       SaveArg<0>(&job)));
+
+  // Complete initialization of the store.
+  mock_store_->NotifyStoreLoaded();
 
   // Client registration should not be in progress since the client should be
   // already registered.
   ASSERT_TRUE(manager_->IsClientRegistered());
   ASSERT_FALSE(IsRequestActive());
+  EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_REMOTE_COMMANDS,
+            job_type_1);
   EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_POLICY_FETCH,
-            job_type);
+            job_type_2);
 }
 
 // Tests that the explicit policy registration can coexist with registration
@@ -684,22 +691,31 @@ TEST_F(UserPolicySigninServiceTest,
   data->set_request_token("fake token");
   data->set_device_id("fake client id");
   mock_store_->set_policy_data_for_testing(std::move(data));
-  mock_store_->NotifyStoreLoaded();
-  // The client should be registered.
-  ASSERT_TRUE(manager_->IsClientRegistered());
+
   // Since there is a signed-in user expect a policy fetch to be started to
   // refresh the policy for the user.
-  DeviceManagementService::JobConfiguration::JobType job_type =
+  DeviceManagementService::JobConfiguration::JobType job_type_1 =
+      DeviceManagementService::JobConfiguration::TYPE_INVALID;
+  DeviceManagementService::JobConfiguration::JobType job_type_2 =
       DeviceManagementService::JobConfiguration::TYPE_INVALID;
   DeviceManagementService::JobForTesting job;
   EXPECT_CALL(job_creation_handler_, OnJobCreation)
-      .WillOnce(DoAll(device_management_service_.CaptureJobType(&job_type),
+      .WillOnce(DoAll(device_management_service_.CaptureJobType(&job_type_1),
+                      SaveArg<0>(&job)))
+      .WillOnce(DoAll(device_management_service_.CaptureJobType(&job_type_2),
                       SaveArg<0>(&job)));
   // A task to trigger policy fetch should have been posted to the task queue.
+
+  mock_store_->NotifyStoreLoaded();
+  // The client should be registered.
+  ASSERT_TRUE(manager_->IsClientRegistered());
+
   base::RunLoop().RunUntilIdle();
   Mock::VerifyAndClearExpectations(&job_creation_handler_);
+  EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_REMOTE_COMMANDS,
+            job_type_1);
   EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_POLICY_FETCH,
-            job_type);
+            job_type_2);
 
   EXPECT_CALL(*mock_store_, Store(_));
   // Complete the policy fetch request.
@@ -879,11 +895,15 @@ TEST_F(UserPolicySigninServiceTest, FetchPolicyForSignedInUser) {
 
   // `FetchPolicyForSignedInUser()` will create a new registered client and
   // fetch policies with it.
-  DeviceManagementService::JobConfiguration::JobType job_type =
+  DeviceManagementService::JobConfiguration::JobType job_type_1 =
+      DeviceManagementService::JobConfiguration::TYPE_INVALID;
+  DeviceManagementService::JobConfiguration::JobType job_type_2 =
       DeviceManagementService::JobConfiguration::TYPE_INVALID;
   DeviceManagementService::JobForTesting job;
   EXPECT_CALL(job_creation_handler_, OnJobCreation)
-      .WillOnce(DoAll(device_management_service_.CaptureJobType(&job_type),
+      .WillOnce(DoAll(device_management_service_.CaptureJobType(&job_type_1),
+                      SaveArg<0>(&job)))
+      .WillOnce(DoAll(device_management_service_.CaptureJobType(&job_type_2),
                       SaveArg<0>(&job)));
   UserPolicySigninService* signin_service =
       UserPolicySigninServiceFactory::GetForProfile(profile_.get());
@@ -899,8 +919,10 @@ TEST_F(UserPolicySigninServiceTest, FetchPolicyForSignedInUser) {
   // Let it execute.
   base::RunLoop().RunUntilIdle();
   Mock::VerifyAndClearExpectations(&job_creation_handler_);
+  EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_REMOTE_COMMANDS,
+            job_type_1);
   EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_POLICY_FETCH,
-            job_type);
+            job_type_2);
 
   // Complete the policy fetch request.
   EXPECT_CALL(*mock_store_, Store(_));

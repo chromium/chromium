@@ -1149,6 +1149,7 @@ if (is_android) {
       "../browser/browsing_data/browsing_data_remover_browsertest_base.h",
       "../browser/browsing_data/chrome_browsing_data_lifetime_manager_browsertest.cc",
       "../browser/engagement/important_sites_util_browsertest.cc",
+      "../browser/enterprise/remote_commands/user_remote_commands_service_browsertest.cc",
       "../browser/fast_checkout/fast_checkout_tab_helper_browsertest.cc",
       "../browser/installable/installable_manager_browsertest.cc",
       "../browser/metrics/metrics_log_browsertest.cc",
@@ -1218,6 +1219,7 @@ if (is_android) {
       "//components/plus_addresses",
       "//components/policy:chrome_settings_proto_generated_compile",
       "//components/policy/core/browser:test_support",
+      "//components/policy/test_support:test_support",
       "//components/privacy_sandbox/privacy_sandbox_attestations",
       "//components/privacy_sandbox/privacy_sandbox_attestations:test_support",
       "//components/privacy_sandbox/privacy_sandbox_attestations/proto:proto",
@@ -3094,6 +3096,7 @@ if (!is_android) {
     if (!is_chromeos_ash) {
       sources += [
         "../browser/chrome_multiprofile_startup_browsertest.cc",
+        "../browser/enterprise/remote_commands/user_remote_commands_service_browsertest.cc",
         "../browser/enterprise/reporting/cloud_profile_reporting_browsertest.cc",
         "../browser/profiles/avatar_menu_browsertest.cc",
         "../browser/profiles/delete_profile_helper_browsertest.cc",

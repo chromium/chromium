@@ -15,6 +15,8 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/enterprise/remote_commands/user_remote_commands_service.h"
+#include "chrome/browser/enterprise/remote_commands/user_remote_commands_service_factory.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -64,6 +66,12 @@ UserPolicySigninService::~UserPolicySigninService() {}
 
 void UserPolicySigninService::ShutdownCloudPolicyManager() {
   CancelPendingRegistration();
+  auto* remote_command_service =
+      enterprise_commands::UserRemoteCommandsServiceFactory::GetForProfile(
+          profile_);
+  if (remote_command_service) {
+    remote_command_service->Shutdown();
+  }
   UserPolicySigninServiceBase::ShutdownCloudPolicyManager();
 }
 
@@ -130,6 +138,20 @@ bool UserPolicySigninService::CanApplyPolicies(bool check_for_refresh_token) {
 
   return (profile_can_be_managed_for_testing_ ||
           chrome::enterprise_util::ProfileCanBeManaged(profile_));
+}
+
+void UserPolicySigninService::InitializeCloudPolicyManager(
+    const AccountId& account_id,
+    std::unique_ptr<CloudPolicyClient> client) {
+  UserPolicySigninServiceBase::InitializeCloudPolicyManager(account_id,
+                                                            std::move(client));
+  // Triggers the initialization of user remote commands service.
+  auto* remote_command_service =
+      enterprise_commands::UserRemoteCommandsServiceFactory::GetForProfile(
+          profile_);
+  if (remote_command_service) {
+    remote_command_service->Init();
+  }
 }
 
 base::TimeDelta UserPolicySigninService::GetTryRegistrationDelay() {
