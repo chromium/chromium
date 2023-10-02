@@ -514,30 +514,33 @@ void PersonalDataManager::OnWebDataServiceRequestDone(
          pending_creditcard_billing_addresses_query_ ||
          pending_creditcards_query_ || pending_server_creditcards_query_ ||
          pending_server_creditcard_cloud_token_data_query_ ||
-         pending_ibans_query_ || pending_customer_data_query_ ||
-         pending_offer_data_query_ || pending_virtual_card_usage_data_query_);
+         pending_ibans_query_ || pending_server_ibans_query_ ||
+         pending_customer_data_query_ || pending_offer_data_query_ ||
+         pending_virtual_card_usage_data_query_);
 
   if (!result) {
     // Error from the web database.
-    if (h == pending_synced_local_profiles_query_)
+    if (h == pending_synced_local_profiles_query_) {
       pending_synced_local_profiles_query_ = 0;
-    else if (h == pending_account_profiles_query_)
+    } else if (h == pending_account_profiles_query_) {
       pending_account_profiles_query_ = 0;
-    else if (h == pending_creditcard_billing_addresses_query_)
+    } else if (h == pending_creditcard_billing_addresses_query_) {
       pending_creditcard_billing_addresses_query_ = 0;
-    else if (h == pending_creditcards_query_)
+    } else if (h == pending_creditcards_query_) {
       pending_creditcards_query_ = 0;
-    else if (h == pending_server_creditcards_query_)
+    } else if (h == pending_server_creditcards_query_) {
       pending_server_creditcards_query_ = 0;
-    else if (h == pending_server_creditcard_cloud_token_data_query_)
+    } else if (h == pending_server_creditcard_cloud_token_data_query_) {
       pending_server_creditcard_cloud_token_data_query_ = 0;
-    else if (h == pending_ibans_query_)
+    } else if (h == pending_ibans_query_) {
       pending_ibans_query_ = 0;
-    else if (h == pending_customer_data_query_)
+    } else if (h == pending_server_ibans_query_) {
+      pending_server_ibans_query_ = 0;
+    } else if (h == pending_customer_data_query_) {
       pending_customer_data_query_ = 0;
-    else if (h == pending_offer_data_query_)
+    } else if (h == pending_offer_data_query_) {
       pending_offer_data_query_ = 0;
-    else if (h == pending_virtual_card_usage_data_query_) {
+    } else if (h == pending_virtual_card_usage_data_query_) {
       pending_virtual_card_usage_data_query_ = 0;
     }
   } else {
@@ -580,10 +583,16 @@ void PersonalDataManager::OnWebDataServiceRequestDone(
             &server_credit_card_cloud_token_data_);
         break;
       case AUTOFILL_IBANS_RESULT:
-        DCHECK_EQ(h, pending_ibans_query_)
-            << "received ibans from invalid request.";
-        ReceiveLoadedDbValues(h, result.get(), &pending_ibans_query_,
-                              &local_ibans_);
+        if (h == pending_ibans_query_) {
+          ReceiveLoadedDbValues(h, result.get(), &pending_ibans_query_,
+                                &local_ibans_);
+        } else {
+          DCHECK_EQ(h, pending_server_ibans_query_)
+              << "received ibans from invalid request.";
+          ReceiveLoadedDbValues(h, result.get(), &pending_server_ibans_query_,
+                                &server_ibans_);
+        }
+
         break;
       case AUTOFILL_CUSTOMERDATA_RESULT:
         DCHECK_EQ(h, pending_customer_data_query_)
@@ -1241,6 +1250,7 @@ void PersonalDataManager::ClearAllServerData() {
   // that the data changed and then this class will re-fetch. Preemptively
   // clear so that tests can synchronously verify that this data was cleared.
   server_credit_cards_.clear();
+  server_ibans_.clear();
   credit_card_billing_addresses_.clear();
   payments_customer_data_.reset();
   server_credit_card_cloud_token_data_.clear();
@@ -1251,6 +1261,7 @@ void PersonalDataManager::ClearAllServerData() {
 void PersonalDataManager::ClearAllLocalData() {
   database_helper_->GetLocalDatabase()->ClearAllLocalData();
   local_credit_cards_.clear();
+  local_ibans_.clear();
   synced_local_profiles_.clear();
 }
 
@@ -1446,6 +1457,19 @@ std::vector<Iban*> PersonalDataManager::GetLocalIbans() const {
   std::vector<Iban*> result;
   result.reserve(local_ibans_.size());
   for (const auto& iban : local_ibans_) {
+    result.push_back(iban.get());
+  }
+  return result;
+}
+
+std::vector<const Iban*> PersonalDataManager::GetServerIbans() const {
+  std::vector<const Iban*> result;
+  if (!IsAutofillWalletImportEnabled()) {
+    return result;
+  }
+
+  result.reserve(server_ibans_.size());
+  for (const std::unique_ptr<Iban>& iban : server_ibans_) {
     result.push_back(iban.get());
   }
   return result;
@@ -2110,8 +2134,13 @@ void PersonalDataManager::LoadIbans() {
   }
 
   CancelPendingLocalQuery(&pending_ibans_query_);
+  CancelPendingServerQuery(&pending_server_ibans_query_);
 
   pending_ibans_query_ = database_helper_->GetLocalDatabase()->GetIbans(this);
+  if (database_helper_->GetServerDatabase()) {
+    pending_server_ibans_query_ =
+        database_helper_->GetServerDatabase()->GetServerIbans(this);
+  }
 }
 
 void PersonalDataManager::LoadAutofillOffers() {
@@ -2164,6 +2193,7 @@ void PersonalDataManager::CancelPendingServerQueries() {
   CancelPendingServerQuery(&pending_server_creditcards_query_);
   CancelPendingServerQuery(&pending_customer_data_query_);
   CancelPendingServerQuery(&pending_server_creditcard_cloud_token_data_query_);
+  CancelPendingServerQuery(&pending_server_ibans_query_);
   CancelPendingServerQuery(&pending_offer_data_query_);
   CancelPendingServerQuery(&pending_virtual_card_usage_data_query_);
 }

@@ -869,8 +869,8 @@ class AutofillTable : public WebDatabaseTable,
   bool RemoveOriginURLsModifiedBetween(const base::Time& delete_begin,
                                        const base::Time& delete_end);
 
-  // Clear all credit cards.
-  void ClearCreditCards();
+  // Clear all local payment methods (credit cards and IBANs).
+  void ClearLocalPaymentMethodsData();
 
   // Read all the stored metadata for |model_type| and fill |metadata_batch|
   // with it.

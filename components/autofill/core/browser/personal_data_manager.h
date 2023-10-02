@@ -378,6 +378,8 @@ class PersonalDataManager : public KeyedService,
 
   // Returns local IBANs.
   virtual std::vector<Iban*> GetLocalIbans() const;
+  // Returns server IBANs.
+  virtual std::vector<const Iban*> GetServerIbans() const;
 
   // Returns the Payments customer data. Returns nullptr if no data is present.
   virtual PaymentsCustomerData* GetPaymentsCustomerData() const;
@@ -817,8 +819,9 @@ class PersonalDataManager : public KeyedService,
   std::vector<std::unique_ptr<CreditCard>> local_credit_cards_;
   std::vector<std::unique_ptr<CreditCard>> server_credit_cards_;
 
-  // Cached versions of the local IBANs.
+  // Cached versions of the local and server IBANs.
   std::vector<std::unique_ptr<Iban>> local_ibans_;
+  std::vector<std::unique_ptr<Iban>> server_ibans_;
 
   // Cached version of the CreditCardCloudTokenData obtained from the database.
   std::vector<std::unique_ptr<CreditCardCloudTokenData>>
@@ -848,6 +851,7 @@ class PersonalDataManager : public KeyedService,
   WebDataServiceBase::Handle pending_server_creditcard_cloud_token_data_query_ =
       0;
   WebDataServiceBase::Handle pending_ibans_query_ = 0;
+  WebDataServiceBase::Handle pending_server_ibans_query_ = 0;
   WebDataServiceBase::Handle pending_customer_data_query_ = 0;
   WebDataServiceBase::Handle pending_offer_data_query_ = 0;
   WebDataServiceBase::Handle pending_virtual_card_usage_data_query_ = 0;

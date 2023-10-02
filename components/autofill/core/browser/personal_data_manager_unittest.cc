@@ -964,6 +964,25 @@ TEST_F(PersonalDataManagerTest,
 }
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
 
+// Test that server IBANs can be added and automatically loaded/cached.
+TEST_F(PersonalDataManagerTest, AddAndReloadServerIbans) {
+  Iban server_iban1 = test::GetServerIban();
+  Iban server_iban2 = test::GetServerIban2();
+
+  GetServerDataTable()->SetServerIbans({server_iban1, server_iban2});
+  std::vector<const Iban*> expected_ibans = {&server_iban1, &server_iban2};
+  personal_data_->Refresh();
+  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
+  ExpectSameElements(expected_ibans, personal_data_->GetServerIbans());
+
+  // Reset the PersonalDataManager. This tests that the personal data was saved
+  // to the web database, and that we can load the IBANs from the web database.
+  ResetPersonalDataManager();
+
+  // Verify that we've reloaded the IBANs from the web database.
+  ExpectSameElements(expected_ibans, personal_data_->GetServerIbans());
+}
+
 TEST_F(PersonalDataManagerTest, NoIbansAddedIfDisabled) {
   prefs::SetAutofillCreditCardEnabled(prefs_.get(), false);
 

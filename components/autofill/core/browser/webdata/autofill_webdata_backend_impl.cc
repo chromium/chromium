@@ -657,6 +657,15 @@ std::unique_ptr<WDTypedResult> AutofillWebDataBackendImpl::GetIbans(
       AUTOFILL_IBANS_RESULT, std::move(ibans));
 }
 
+std::unique_ptr<WDTypedResult> AutofillWebDataBackendImpl::GetServerIbans(
+    WebDatabase* db) {
+  DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
+  std::vector<std::unique_ptr<Iban>> ibans =
+      AutofillTable::FromWebDatabase(db)->GetServerIbans();
+  return std::make_unique<WDResult<std::vector<std::unique_ptr<Iban>>>>(
+      AUTOFILL_IBANS_RESULT, std::move(ibans));
+}
+
 WebDatabase::State AutofillWebDataBackendImpl::AddIban(const Iban& iban,
                                                        WebDatabase* db) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());

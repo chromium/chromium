@@ -187,8 +187,9 @@ class AutofillWebDataBackendImpl
   std::unique_ptr<WDTypedResult> GetCreditCards(WebDatabase* db);
   std::unique_ptr<WDTypedResult> GetServerCreditCards(WebDatabase* db);
 
-  // Returns a vector of local IBANs from the web database.
+  // Returns a vector of local/server IBANs from the web database.
   std::unique_ptr<WDTypedResult> GetIbans(WebDatabase* db);
+  std::unique_ptr<WDTypedResult> GetServerIbans(WebDatabase* db);
 
   // Adds an IBAN to the web database. Valid only for local IBANs.
   WebDatabase::State AddIban(const Iban& iban, WebDatabase* db);

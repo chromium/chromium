@@ -121,11 +121,12 @@ class AutofillWebDataService : public WebDataServiceBase {
   // Schedules a task to add IBAN to the web database.
   void AddIban(const Iban& iban);
 
-  // Initiates the request for local IBANs. The method
+  // Initiates the request for local/server IBANs. The method
   // OnWebDataServiceRequestDone of |consumer| gets called when the request is
   // finished, with the IBAN included in the argument |result|. The consumer
   // owns the IBAN.
   WebDataServiceBase::Handle GetIbans(WebDataServiceConsumer* consumer);
+  WebDataServiceBase::Handle GetServerIbans(WebDataServiceConsumer* consumer);
 
   // Schedules a task to update iban in the web database.
   void UpdateIban(const Iban& iban);

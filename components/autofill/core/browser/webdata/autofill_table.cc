@@ -3019,7 +3019,7 @@ bool AutofillTable::ClearAllServerData() {
 
   bool changed = false;
   for (std::string_view table_name :
-       {kMaskedCreditCardsTable, kUnmaskedCreditCardsTable,
+       {kMaskedCreditCardsTable, kMaskedIbansTable, kUnmaskedCreditCardsTable,
         kServerAddressesTable, kServerCardMetadataTable,
         kServerAddressMetadataTable, kPaymentsCustomerDataTable,
         kServerCardCloudTokenDataTable, kOfferDataTable,
@@ -3040,7 +3040,7 @@ bool AutofillTable::ClearAllLocalData() {
 
   RemoveAllAutofillProfiles(AutofillProfile::Source::kLocalOrSyncable);
   bool changed = db_->GetLastChangeCount() > 0;
-  ClearCreditCards();
+  ClearLocalPaymentMethodsData();
   changed |= db_->GetLastChangeCount() > 0;
 
   transaction.Commit();
@@ -3164,9 +3164,10 @@ bool AutofillTable::RemoveOriginURLsModifiedBetween(
   return true;
 }
 
-void AutofillTable::ClearCreditCards() {
+void AutofillTable::ClearLocalPaymentMethodsData() {
   Delete(db_, kLocalStoredCvcTable);
   Delete(db_, kCreditCardsTable);
+  Delete(db_, kLocalIbansTable);
 }
 
 bool AutofillTable::GetAllSyncMetadata(syncer::ModelType model_type,

@@ -236,6 +236,15 @@ WebDataServiceBase::Handle AutofillWebDataService::GetIbans(
       consumer);
 }
 
+WebDataServiceBase::Handle AutofillWebDataService::GetServerIbans(
+    WebDataServiceConsumer* consumer) {
+  return wdbs_->ScheduleDBTaskWithResult(
+      FROM_HERE,
+      base::BindOnce(&AutofillWebDataBackendImpl::GetServerIbans,
+                     autofill_backend_),
+      consumer);
+}
+
 void AutofillWebDataService::UpdateIban(const Iban& iban) {
   wdbs_->ScheduleDBTask(FROM_HERE,
                         base::BindOnce(&AutofillWebDataBackendImpl::UpdateIban,

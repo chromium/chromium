@@ -1314,19 +1314,22 @@ TEST_F(AutofillTableTest, AddCreditCardCvcWithFlagOff) {
   EXPECT_EQ(u"", db_card->cvc());
 }
 
-// Tests that verify ClearCreditCards function working as expected.
-TEST_F(AutofillTableTest, ClearCreditCards) {
+// Tests that verify ClearLocalPaymentMethodsData function working as expected.
+TEST_F(AutofillTableTest, ClearLocalPaymentMethodsData) {
   base::test::ScopedFeatureList features(
       features::kAutofillEnableCvcStorageAndFilling);
   CreditCard card = test::WithCvc(test::GetCreditCard());
   EXPECT_TRUE(table_->AddCreditCard(card));
   std::unique_ptr<CreditCard> db_card = table_->GetCreditCard(card.guid());
   EXPECT_EQ(card.cvc(), db_card->cvc());
+  Iban iban = test::GetIban();
+  EXPECT_TRUE(table_->AddIban(iban));
 
-  // After ClearCreditCards, local_stored_cvc table and credit_cards table
-  // should be empty.
-  table_->ClearCreditCards();
+  // After calling ClearLocalPaymentMethodsData, the local_stored_cvc,
+  // credit_cards, and local_ibans tables should be empty.
+  table_->ClearLocalPaymentMethodsData();
   EXPECT_FALSE(table_->GetCreditCard(card.guid()));
+  EXPECT_FALSE(table_->GetIban(iban.guid()));
   sql::Statement s(db_->GetSQLConnection()->GetUniqueStatement(
       "SELECT guid FROM local_stored_cvc WHERE guid=?"));
   s.BindString(0, card.guid());
@@ -2263,7 +2266,7 @@ TEST_F(AutofillTableTest, SetGetRemoveServerIbanMetadata) {
 
   // Make sure it was removed correctly.
   outputs = table_->GetServerIbansMetadata();
-  EXPECT_EQ(0U, outputs.size());
+  EXPECT_EQ(0u, outputs.size());
 }
 
 TEST_F(AutofillTableTest, AddUpdateServerAddressMetadata) {
