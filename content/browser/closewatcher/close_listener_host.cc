@@ -35,14 +35,14 @@ void CloseListenerHost::SetListener(
   // waiting for a Signal().
   close_listener_.set_disconnect_handler(
       base::BindOnce(&CloseListenerHost::OnDisconnect, base::Unretained(this)));
-  GetOrCreateManager()->UpdateInterceptStatus();
+  GetOrCreateManager()->MaybeUpdateInterceptStatus(this);
 }
 
 void CloseListenerHost::OnDisconnect() {
   if (close_listener_.is_bound()) {
     close_listener_.reset();
   }
-  GetOrCreateManager()->UpdateInterceptStatus();
+  GetOrCreateManager()->MaybeUpdateInterceptStatus(this);
 }
 
 bool CloseListenerHost::IsActive() {

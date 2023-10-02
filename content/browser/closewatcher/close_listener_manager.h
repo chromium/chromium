@@ -9,6 +9,7 @@
 #include "content/public/browser/web_contents_user_data.h"
 
 namespace content {
+class CloseListenerHost;
 
 // CloseListenerManager tracks whether its WebContents' focused frame has an
 // active CloseWatcher. Updates when a CloseWatcher is added/remove and when
@@ -25,7 +26,9 @@ class CONTENT_EXPORT CloseListenerManager
 
   static void DidChangeFocusedFrame(WebContents* web_contents);
 
-  void UpdateInterceptStatus();
+  // `host_being_updated` may not be associated with the currently focused
+  // frame, in which case nothing will be updated.
+  void MaybeUpdateInterceptStatus(CloseListenerHost* host_being_updated);
 
  private:
   explicit CloseListenerManager(WebContents* web_contents);
