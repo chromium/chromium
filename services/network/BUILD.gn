@@ -367,8 +367,6 @@ component("network_service") {
 
   if (is_android) {
     sources += [
-      "empty_network_service.cc",
-      "empty_network_service.h",
       "sandboxed_vfs_delegate.cc",
       "sandboxed_vfs_delegate.h",
     ]

@@ -118,7 +118,4 @@ const char kUseFirstPartySet[] = "use-first-party-set";
 // https://github.com/web-platform-tests/rfcs/blob/master/rfcs/address_space_overrides.md
 const char kIpAddressSpaceOverrides[] = "ip-address-space-overrides";
 
-// Enables register the empty network service in utility process.
-const char kRegisterEmptyNetworkService[] = "register-empty-network-service";
-
 }  // namespace network::switches

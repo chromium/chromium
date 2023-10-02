@@ -22,9 +22,6 @@
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/buildflag.h"
-#include "content/browser/network/network_service_util_internal.h"
-#include "content/browser/network_service_instance_impl.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
@@ -1803,39 +1800,6 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceBoundedNetLogBrowserTest,
   // Because the file isn't closed until the network service shuts down the
   // final checks are performed in TearDownInProcessBrowserTestFixture().
 }
-
-#if BUILDFLAG(IS_ANDROID)
-class EmptyNetworkServiceTest : public ContentBrowserTest {
- public:
-  EmptyNetworkServiceTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {network::features::kNetworkServiceEmptyOutOfProcess}, {});
-    ForceInProcessNetworkService();
-  }
-  EmptyNetworkServiceTest(const EmptyNetworkServiceTest&) = delete;
-  EmptyNetworkServiceTest& operator=(const EmptyNetworkServiceTest&) = delete;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(EmptyNetworkServiceTest, Base) {
-  // Check if EmptyNetworkService is available.
-  network::mojom::EmptyNetworkService* empty_network_service =
-      GetEmptyNetworkServiceForTesting();
-  DCHECK(empty_network_service);
-  const int32_t kExpected = 42;
-  int32_t value = 0;
-  base::RunLoop loop;
-  empty_network_service->Ping(kExpected,
-                              base::BindLambdaForTesting([&](int32_t val) {
-                                value = val;
-                                loop.Quit();
-                              }));
-  loop.Run();
-  EXPECT_EQ(kExpected, value);
-}
-#endif
 
 }  // namespace
 

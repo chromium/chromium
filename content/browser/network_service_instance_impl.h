@@ -7,14 +7,7 @@
 
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
-#include "build/build_config.h"
 #include "content/common/content_export.h"
-
-#if BUILDFLAG(IS_ANDROID)
-namespace network::mojom {
-class EmptyNetworkService;
-}  // namespace network::mojom
-#endif
 
 namespace content {
 
@@ -53,11 +46,6 @@ CONTENT_EXPORT void ShutDownNetworkService();
 // `on_restart` will be called at the end of every RestartNetworkService().
 CONTENT_EXPORT void OnRestartNetworkServiceForTesting(
     base::RepeatingClosure on_restart);
-
-#if BUILDFLAG(IS_ANDROID)
-CONTENT_EXPORT network::mojom::EmptyNetworkService*
-GetEmptyNetworkServiceForTesting();
-#endif
 
 }  // namespace content
 

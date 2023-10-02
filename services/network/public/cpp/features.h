@@ -9,7 +9,6 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
-#include "build/build_config.h"
 
 namespace network {
 namespace features {
@@ -145,13 +144,6 @@ BASE_DECLARE_FEATURE(kPrefetchNoVarySearch);
 // make use of TaskEnvironment::FastForward with very long delays (days) which
 // interacts poorly with this metric that is recorded every 30s.
 COMPONENT_EXPORT(NETWORK_CPP) BASE_DECLARE_FEATURE(kGetCookiesStringUma);
-
-#if BUILDFLAG(IS_ANDROID)
-// Create empty network service out of process only if canonical network service
-// is in process to see process overhead on Android.
-COMPONENT_EXPORT(NETWORK_CPP)
-BASE_DECLARE_FEATURE(kNetworkServiceEmptyOutOfProcess);
-#endif
 
 COMPONENT_EXPORT(NETWORK_CPP)
 BASE_DECLARE_FEATURE(kCompressionDictionaryTransportBackend);
