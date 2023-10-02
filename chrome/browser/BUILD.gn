@@ -8323,6 +8323,8 @@ static_library("test_support") {
       "notifications/notification_test_util.h",
       "privacy_sandbox/mock_privacy_sandbox_service.cc",
       "privacy_sandbox/mock_privacy_sandbox_service.h",
+      "privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations_mixin.cc",
+      "privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations_mixin.h",
       "profile_resetter/profile_resetter_test_base.cc",
       "profile_resetter/profile_resetter_test_base.h",
       "sessions/app_session_service_test_helper.cc",
@@ -8346,6 +8348,8 @@ static_library("test_support") {
     ]
     deps += [
       "//chrome/browser/apps/app_service",
+      "//chrome/test:test_support_ui",
+      "//components/privacy_sandbox/privacy_sandbox_attestations:test_support",
       "//components/services/app_service",
     ]
   }

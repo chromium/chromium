@@ -14,10 +14,11 @@
 #include "chrome/browser/optimization_guide/browser_test_util.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations_mixin.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/browsing_topics/browsing_topics_service.h"
 #include "components/browsing_topics/browsing_topics_service_impl.h"
@@ -31,7 +32,6 @@
 #include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
 #include "components/optimization_guide/proto/page_topics_model_metadata.pb.h"
 #include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations.h"
-#include "components/privacy_sandbox/privacy_sandbox_attestations/scoped_privacy_sandbox_attestations.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "components/ukm/test_ukm_recorder.h"
@@ -177,16 +177,10 @@ class TesterBrowsingTopicsService : public BrowsingTopicsServiceImpl {
   base::OnceClosure calculation_finish_callback_;
 };
 
-class BrowsingTopicsBrowserTestBase : public InProcessBrowserTest {
+class BrowsingTopicsBrowserTestBase : public MixinBasedInProcessBrowserTest {
  public:
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
-    // `PrivacySandboxAttestations` has a member of type
-    // `scoped_refptr<base::SequencedTaskRunner>`, its initialization must be
-    // done after a browser process is created.
-    scoped_attestations_ =
-        std::make_unique<privacy_sandbox::ScopedPrivacySandboxAttestations>(
-            privacy_sandbox::PrivacySandboxAttestations::CreateForTesting());
     // Mark all Privacy Sandbox APIs as attested since the test cases are
     // testing behaviors not related to attestations.
     privacy_sandbox::PrivacySandboxAttestations::GetInstance()
@@ -273,8 +267,8 @@ class BrowsingTopicsBrowserTestBase : public InProcessBrowserTest {
 
   // Mapping of request paths to the topics header they were requested with.
   std::map<std::string, std::string> request_path_topics_map_;
-  std::unique_ptr<privacy_sandbox::ScopedPrivacySandboxAttestations>
-      scoped_attestations_;
+  privacy_sandbox::PrivacySandboxAttestationsMixin
+      privacy_sandbox_attestations_mixin_{&mixin_host_};
 };
 
 class BrowsingTopicsDisabledBrowserTest : public BrowsingTopicsBrowserTestBase {

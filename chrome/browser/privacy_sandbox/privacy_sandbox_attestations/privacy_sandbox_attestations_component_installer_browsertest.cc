@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <memory>
 #include <string>
 
 #include "base/files/file_path.h"
@@ -15,26 +14,19 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/privacy_sandbox_attestations_component_installer.h"
 #include "chrome/browser/component_updater/privacy_sandbox_attestations_component_installer_test_util.h"
-#include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations_mixin.h"
+#include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "components/component_updater/component_updater_paths.h"
 #include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations.h"
 #include "components/privacy_sandbox/privacy_sandbox_attestations/proto/privacy_sandbox_attestations.pb.h"
-#include "components/privacy_sandbox/privacy_sandbox_attestations/scoped_privacy_sandbox_attestations.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "content/public/test/browser_test.h"
 
 namespace privacy_sandbox {
-class PrivacySandboxAttestationsBrowserTest : public InProcessBrowserTest {
+class PrivacySandboxAttestationsBrowserTest
+    : public MixinBasedInProcessBrowserTest {
  public:
   PrivacySandboxAttestationsBrowserTest() = default;
-
-  void SetUpOnMainThread() override {
-    // `PrivacySandboxAttestations` has a member of type
-    // `scoped_refptr<base::SequencedTaskRunner>`, its initialization must be
-    // done after a browser process is created.
-    scoped_attestations_ = std::make_unique<ScopedPrivacySandboxAttestations>(
-        PrivacySandboxAttestations::CreateForTesting());
-  }
 
   void TearDown() override {
     // Delete the privacy sandbox attestations installation directory.
@@ -51,8 +43,9 @@ class PrivacySandboxAttestationsBrowserTest : public InProcessBrowserTest {
       component_updater::PrivacySandboxAttestationsComponentInstallerPolicy;
 
  private:
-  std::unique_ptr<ScopedPrivacySandboxAttestations> scoped_attestations_;
   base::test::ScopedFeatureList attestations_feature_;
+  PrivacySandboxAttestationsMixin privacy_sandbox_attestations_mixin_{
+      &mixin_host_};
 };
 
 IN_PROC_BROWSER_TEST_F(

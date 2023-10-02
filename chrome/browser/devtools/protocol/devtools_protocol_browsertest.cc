@@ -31,6 +31,7 @@
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/unpacked_installer.h"
 #include "chrome/browser/preloading/preloading_prefs.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations_mixin.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_paths.h"
@@ -43,7 +44,6 @@
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_delegate.h"
 #include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations.h"
-#include "components/privacy_sandbox/privacy_sandbox_attestations/scoped_privacy_sandbox_attestations.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/ssl_status.h"
 #include "content/public/browser/web_contents.h"
@@ -1185,19 +1185,9 @@ class PrivacySandboxAttestationsOverrideTest : public DevToolsProtocolTest {
  public:
   PrivacySandboxAttestationsOverrideTest() = default;
 
-  void SetUpOnMainThread() override {
-    // `PrivacySandboxAttestations` has a member of type
-    // `scoped_refptr<base::SequencedTaskRunner>`, its initialization must be
-    // done after a browser process is created.
-    DevToolsProtocolTest::SetUpOnMainThread();
-    scoped_attestations_ =
-        std::make_unique<privacy_sandbox::ScopedPrivacySandboxAttestations>(
-            privacy_sandbox::PrivacySandboxAttestations::CreateForTesting());
-  }
-
  private:
-  std::unique_ptr<privacy_sandbox::ScopedPrivacySandboxAttestations>
-      scoped_attestations_;
+  privacy_sandbox::PrivacySandboxAttestationsMixin
+      privacy_sandbox_attestations_mixin_{&mixin_host_};
 };
 
 IN_PROC_BROWSER_TEST_F(PrivacySandboxAttestationsOverrideTest,

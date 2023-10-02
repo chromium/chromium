@@ -7,17 +7,17 @@
 #include "base/test/bind.h"
 #include "base/test/test_timeouts.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations_mixin.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations.h"
-#include "components/privacy_sandbox/privacy_sandbox_attestations/scoped_privacy_sandbox_attestations.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "content/public/common/content_features.h"
@@ -28,7 +28,8 @@
 
 namespace interest_group {
 
-class InterestGroupPermissionsBrowserTest : public InProcessBrowserTest {
+class InterestGroupPermissionsBrowserTest
+    : public MixinBasedInProcessBrowserTest {
  public:
   InterestGroupPermissionsBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
@@ -44,12 +45,6 @@ class InterestGroupPermissionsBrowserTest : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
-    // `PrivacySandboxAttestations` has a member of type
-    // `scoped_refptr<base::SequencedTaskRunner>`, its initialization must be
-    // done after a browser process is created.
-    scoped_attestations_ =
-        std::make_unique<privacy_sandbox::ScopedPrivacySandboxAttestations>(
-            privacy_sandbox::PrivacySandboxAttestations::CreateForTesting());
     // Mark all Privacy Sandbox APIs as attested since the test cases are
     // testing behaviors not related to attestations.
     privacy_sandbox::PrivacySandboxAttestations::GetInstance()
@@ -215,8 +210,8 @@ class InterestGroupPermissionsBrowserTest : public InProcessBrowserTest {
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
-  std::unique_ptr<privacy_sandbox::ScopedPrivacySandboxAttestations>
-      scoped_attestations_;
+  privacy_sandbox::PrivacySandboxAttestationsMixin
+      privacy_sandbox_attestations_mixin_{&mixin_host_};
 };
 
 class InterestGroupOffBrowserTest : public InterestGroupPermissionsBrowserTest {

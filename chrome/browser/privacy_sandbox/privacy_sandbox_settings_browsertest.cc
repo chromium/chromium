@@ -13,12 +13,12 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations_mixin.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/privacy_sandbox/privacy_sandbox_attestations/scoped_privacy_sandbox_attestations.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "components/privacy_sandbox/privacy_sandbox_test_util.h"
@@ -51,7 +51,8 @@ constexpr char kPrivateAggregationHostPipeResultHistogram[] =
 
 }  // namespace
 
-class PrivacySandboxSettingsBrowserTest : public InProcessBrowserTest {
+class PrivacySandboxSettingsBrowserTest
+    : public MixinBasedInProcessBrowserTest {
  public:
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -192,16 +193,6 @@ class PrivacySandboxSettingsAttestationsBrowserTestBase
  public:
   PrivacySandboxSettingsAttestationsBrowserTestBase() = default;
 
-  void SetUpOnMainThread() override {
-    // `PrivacySandboxAttestations` has a member of type
-    // `scoped_refptr<base::SequencedTaskRunner>`, its initialization must be
-    // done after a browser process is created.
-    PrivacySandboxSettingsBrowserTest::SetUpOnMainThread();
-    scoped_attestations_ =
-        std::make_unique<privacy_sandbox::ScopedPrivacySandboxAttestations>(
-            privacy_sandbox::PrivacySandboxAttestations::CreateForTesting());
-  }
-
   content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
     return fenced_frame_test_helper_;
   }
@@ -292,8 +283,8 @@ class PrivacySandboxSettingsAttestationsBrowserTestBase
   }
 
  private:
-  std::unique_ptr<privacy_sandbox::ScopedPrivacySandboxAttestations>
-      scoped_attestations_;
+  privacy_sandbox::PrivacySandboxAttestationsMixin
+      privacy_sandbox_attestations_mixin_{&mixin_host_};
   content::test::FencedFrameTestHelper fenced_frame_test_helper_;
 };
 
