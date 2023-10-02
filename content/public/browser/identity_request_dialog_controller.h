@@ -42,7 +42,7 @@ struct CONTENT_EXPORT IdentityProviderMetadata {
   absl::optional<SkColor> brand_text_color;
   absl::optional<SkColor> brand_background_color;
   GURL brand_icon_url;
-  GURL idp_signin_url;
+  GURL idp_login_url;
   // The URL of the configuration endpoint. This is stored in
   // IdentityProviderMetadata so that the UI code can pass it along when an
   // Account is selected by the user.

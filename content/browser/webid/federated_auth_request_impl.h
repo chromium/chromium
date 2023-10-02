@@ -417,8 +417,8 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   // the navigator.credentials.get call.
   std::vector<GURL> idp_order_;
 
-  // If dialog_type_ is kConfirmIdpLogin, this is the signin URL for the IDP.
-  GURL signin_url_;
+  // If dialog_type_ is kConfirmIdpLogin, this is the login URL for the IDP.
+  GURL login_url_;
 
   DialogType dialog_type_ = kNone;
   MediationRequirement mediation_requirement_;

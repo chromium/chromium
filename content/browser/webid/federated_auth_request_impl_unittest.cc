@@ -91,7 +91,7 @@ constexpr char kTokenEndpoint[] = "https://idp.example/token";
 constexpr char kClientMetadataEndpoint[] =
     "https://idp.example/client_metadata";
 constexpr char kMetricsEndpoint[] = "https://idp.example/metrics";
-constexpr char kIdpSigninUrl[] = "https://idp.example/signin_url";
+constexpr char kIdpLoginUrl[] = "https://idp.example/login_url";
 constexpr char kPrivacyPolicyUrl[] = "https://rp.example/pp";
 constexpr char kTermsOfServiceUrl[] = "https://rp.example/tos";
 constexpr char kClientId[] = "client_id_123";
@@ -263,7 +263,7 @@ struct MockConfig {
   std::string token_endpoint;
   std::string client_metadata_endpoint;
   std::string metrics_endpoint;
-  std::string idp_signin_url;
+  std::string idp_login_url;
 };
 
 struct MockIdpInfo {
@@ -322,7 +322,7 @@ static const MockIdpInfo kDefaultIdentityProviderInfo{
         kTokenEndpoint,
         kClientMetadataEndpoint,
         kMetricsEndpoint,
-        kIdpSigninUrl,
+        kIdpLoginUrl,
     },
     kDefaultClientMetadata,
     {ParseStatus::kSuccess, net::HTTP_OK},
@@ -341,7 +341,7 @@ static const MockIdpInfo kProviderTwoInfo{
         "https://idp2.example/token",
         "https://idp2.example/client_metadata",
         "https://idp2.example/metrics",
-        "https://idp2.example/signin_url",
+        "https://idp2.example/login_url",
     },
     kDefaultClientMetadata,
     {ParseStatus::kSuccess, net::HTTP_OK},
@@ -436,8 +436,8 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
 
     IdentityProviderMetadata idp_metadata;
     idp_metadata.config_url = provider;
-    idp_metadata.idp_signin_url =
-        GURL(config_.idp_info[provider_key].config.idp_signin_url);
+    idp_metadata.idp_login_url =
+        GURL(config_.idp_info[provider_key].config.idp_login_url);
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback),
@@ -1432,10 +1432,10 @@ TEST_F(FederatedAuthRequestImplTest, MissingAccountsEndpoint) {
   EXPECT_EQ("Provider's FedCM config file is invalid.", messages[1]);
 }
 
-// Test that request does not fail if config is missing an IDP signin URL.
-TEST_F(FederatedAuthRequestImplTest, MissingSigninURL) {
+// Test that request does not fail if config is missing an IDP login URL.
+TEST_F(FederatedAuthRequestImplTest, MissingLoginURL) {
   MockConfiguration configuration = kConfigurationValid;
-  configuration.idp_info[kProviderUrlFull].config.idp_signin_url = "";
+  configuration.idp_info[kProviderUrlFull].config.idp_login_url = "";
   RunAuthTest(kDefaultRequestParameters, kExpectationSuccess, configuration);
   EXPECT_TRUE(DidFetchWellKnownAndConfig());
 }
@@ -1464,16 +1464,16 @@ TEST_F(FederatedAuthRequestImplTest, AccountEndpointDifferentOriginIdp) {
   EXPECT_FALSE(DidFetch(FetchedEndpoint::ACCOUNTS));
 }
 
-// Test that request fails if IDP signin URL is different origin from IDP config
+// Test that request fails if IDP login URL is different origin from IDP config
 // URL.
-TEST_F(FederatedAuthRequestImplTest, SigninUrlDifferentOriginIdp) {
-  // We only validate the signin_url if IdpSigninStatus is enabled.
+TEST_F(FederatedAuthRequestImplTest, LoginUrlDifferentOriginIdp) {
+  // We only validate the login_url if IdpSigninStatus is enabled.
   base::test::ScopedFeatureList list;
   list.InitAndEnableFeature(features::kFedCmIdpSigninStatusEnabled);
 
   MockConfiguration configuration = kConfigurationValid;
-  configuration.idp_info[kProviderUrlFull].config.idp_signin_url =
-      "https://idp2.example/signin_url";
+  configuration.idp_info[kProviderUrlFull].config.idp_login_url =
+      "https://idp2.example/login_url";
   RequestExpectations expectations = {
       RequestTokenStatus::kError,
       FederatedAuthRequestResult::kErrorFetchingConfigInvalidResponse,
@@ -1487,7 +1487,7 @@ TEST_F(FederatedAuthRequestImplTest, SigninUrlDifferentOriginIdp) {
   ASSERT_EQ(2U, messages.size());
   EXPECT_EQ(
       "Config file is missing or has an invalid URL for the following:\n"
-      "\"signin_url\"\n",
+      "\"login_url\"\n",
       messages[0]);
   EXPECT_EQ("Provider's FedCM config file is invalid.", messages[1]);
 }

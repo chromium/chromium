@@ -65,7 +65,8 @@ constexpr char kIdAssertionEndpoint[] = "id_assertion_endpoint";
 constexpr char kAccountsEndpointKey[] = "accounts_endpoint";
 constexpr char kClientMetadataEndpointKey[] = "client_metadata_endpoint";
 constexpr char kMetricsEndpoint[] = "metrics_endpoint";
-constexpr char kSigninUrlKey[] = "signin_url";
+constexpr char kLoginUrlKeyDeprecated[] = "login_url";
+constexpr char kLoginUrlKey[] = "login_url";
 
 // Keys in fedcm.json 'branding' dictionary.
 constexpr char kIdpBrandingBackgroundColor[] = "background_color";
@@ -496,7 +497,11 @@ void OnConfigParsed(const GURL& provider,
                                   idp_brand_icon_ideal_size,
                                   idp_brand_icon_minimum_size, idp_metadata);
   }
-  idp_metadata.idp_signin_url = ExtractEndpoint(kSigninUrlKey);
+  idp_metadata.idp_login_url = ExtractEndpoint(kLoginUrlKey);
+  // TODO(cbiesinger): remove this fallback before 120
+  if (idp_metadata.idp_login_url.is_empty()) {
+    idp_metadata.idp_login_url = ExtractEndpoint(kLoginUrlKeyDeprecated);
+  }
 
   std::move(callback).Run({ParseStatus::kSuccess, fetch_status.response_code},
                           endpoints, std::move(idp_metadata));

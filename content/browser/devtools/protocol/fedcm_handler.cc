@@ -128,7 +128,7 @@ void FedCmHandler::OnDialogShown() {
                 .SetGivenName(account.given_name)
                 .SetPictureUrl(account.picture.spec())
                 .SetIdpConfigUrl(data.idp_metadata.config_url.spec())
-                .SetIdpLoginUrl(data.idp_metadata.idp_signin_url.spec())
+                .SetIdpLoginUrl(data.idp_metadata.idp_login_url.spec())
                 .SetLoginState(login_state)
                 .Build();
         if (pp_url) {

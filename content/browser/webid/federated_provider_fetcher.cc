@@ -236,13 +236,13 @@ void FederatedProviderFetcher::OnConfigFetched(
                                   fetch_result.endpoints.accounts);
   url::Origin idp_origin =
       url::Origin::Create(fetch_result.identity_provider_config_url);
-  // We only need a signin URL if the IDP signin status API is enabled.
-  bool is_signin_url_valid =
+  // We only need a login URL if the IDP signin status API is enabled.
+  bool is_login_url_valid =
       webid::GetIdpSigninStatusMode(render_frame_host_.get(), idp_origin) !=
           FedCmIdpSigninStatusMode::ENABLED ||
       webid::IsEndpointSameOrigin(fetch_result.identity_provider_config_url,
-                                  idp_metadata.idp_signin_url);
-  if (!is_token_valid || !is_accounts_valid || !is_signin_url_valid) {
+                                  idp_metadata.idp_login_url);
+  if (!is_token_valid || !is_accounts_valid || !is_login_url_valid) {
     std::string console_message =
         "Config file is missing or has an invalid URL for the following:\n";
     if (!is_token_valid) {
@@ -251,8 +251,8 @@ void FederatedProviderFetcher::OnConfigFetched(
     if (!is_accounts_valid) {
       console_message += "\"accounts_endpoint\"\n";
     }
-    if (!is_signin_url_valid) {
-      console_message += "\"signin_url\"\n";
+    if (!is_login_url_valid) {
+      console_message += "\"login_url\"\n";
     }
 
     OnError(fetch_result,

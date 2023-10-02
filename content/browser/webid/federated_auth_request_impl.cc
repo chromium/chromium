@@ -1490,11 +1490,11 @@ void FederatedAuthRequestImpl::HandleAccountsFetchFailure(
       base::BindOnce(&FederatedAuthRequestImpl::CompleteRequestWithError,
                      weak_ptr_factory_.GetWeakPtr()));
 
-  // If IdP sign-in status mismatch dialog is already visible, calling
-  // ShowFailureDialog() a 2nd time should notify the user that sign-in
+  // If IdP login status mismatch dialog is already visible, calling
+  // ShowFailureDialog() a 2nd time should notify the user that login
   // failed.
   dialog_type_ = kConfirmIdpLogin;
-  signin_url_ = idp_info->metadata.idp_signin_url;
+  login_url_ = idp_info->metadata.idp_login_url;
   request_dialog_controller_->ShowFailureDialog(
       GetTopFrameOriginForDisplay(GetEmbeddingOrigin()), iframe_for_display,
       FormatOriginForDisplay(idp_origin), idp_info->rp_context,
@@ -1502,7 +1502,7 @@ void FederatedAuthRequestImpl::HandleAccountsFetchFailure(
       base::BindOnce(&FederatedAuthRequestImpl::OnDismissFailureDialog,
                      weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&FederatedAuthRequestImpl::ShowModalDialog,
-                     weak_ptr_factory_.GetWeakPtr(), signin_url_));
+                     weak_ptr_factory_.GetWeakPtr(), login_url_));
   fedcm_metrics_->RecordMismatchDialogShown();
   mismatch_dialog_shown_time_ = base::TimeTicks::Now();
   devtools_instrumentation::OnFedCmDialogShown(&render_frame_host());
@@ -2206,7 +2206,7 @@ void FederatedAuthRequestImpl::CleanUp() {
   idp_order_.clear();
   metrics_endpoints_.clear();
   token_request_get_infos_.clear();
-  signin_url_ = GURL();
+  login_url_ = GURL();
   dialog_type_ = kNone;
 }
 
@@ -2419,8 +2419,8 @@ void FederatedAuthRequestImpl::DismissAccountsDialogForDevtools(
 }
 
 void FederatedAuthRequestImpl::AcceptConfirmIdpLoginDialogForDevtools() {
-  DCHECK(signin_url_.is_valid());
-  ShowModalDialog(signin_url_);
+  DCHECK(login_url_.is_valid());
+  ShowModalDialog(login_url_);
 }
 
 void FederatedAuthRequestImpl::DismissConfirmIdpLoginDialogForDevtools() {

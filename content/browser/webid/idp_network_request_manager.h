@@ -52,14 +52,14 @@ class RenderFrameHostImpl;
 //      | POST /idp_url with OIDC request |
 //      |-------------------------------->|
 //      |                                 |
-//      |       token or signin_url       |
+//      |       token or login_url       |
 //      |<--------------------------------|
 //  .-------.                           .---.
 //  |Browser|                           |IDP|
 //  '-------'                           '---'
 //
 // If the IDP returns an token, the sequence finishes. If it returns a
-// signin_url, that URL is loaded as a rendered Document into a new window for
+// login_url, that URL is loaded as a rendered Document into a new window for
 // the user to interact with the IDP.
 class CONTENT_EXPORT IdpNetworkRequestManager {
  public:
