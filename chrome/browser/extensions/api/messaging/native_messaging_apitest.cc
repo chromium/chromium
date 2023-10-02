@@ -89,8 +89,9 @@ INSTANTIATE_TEST_SUITE_P(NativeMessagingLaunchExe,
                          NativeMessagingLaunchExeTest,
                          testing::Bool());
 
+// DISABLED due to missing executable; crbug.com/1487674
 IN_PROC_BROWSER_TEST_P(NativeMessagingLaunchExeTest,
-                       UserLevelSendNativeMessageWinExe) {
+                       DISABLED_UserLevelSendNativeMessageWinExe) {
   ASSERT_NO_FATAL_FAILURE(test_host_.RegisterTestExeHost(
       "native_messaging_test_echo_host.exe", /*user_level=*/true));
 
@@ -106,16 +107,17 @@ IN_PROC_BROWSER_TEST_P(NativeMessagingLaunchExeTest,
   ASSERT_NO_FATAL_FAILURE(test_host_.RegisterTestExeHost(
       "native_messaging_test_echo_&_host.exe", /*user_level=*/false));
 
-  ASSERT(RunExtensionTest("native_messaging_send_native_message_exe"));
+  ASSERT_TRUE(RunExtensionTest("native_messaging_send_native_message_exe"));
 }
 
 // Make sure that a filename with a space is supported.
+// DISABLED due to missing executable; crbug.com/1487674
 IN_PROC_BROWSER_TEST_P(NativeMessagingLaunchExeTest,
-                       SendNativeMessageWinExeSpace) {
+                       DISABLED_SendNativeMessageWinExeSpace) {
   ASSERT_NO_FATAL_FAILURE(test_host_.RegisterTestExeHost(
       "native_messaging_test_echo_ _host.exe", /*user_level=*/false));
 
-  ASSERT(RunExtensionTest("native_messaging_send_native_message_exe"));
+  ASSERT_TRUE(RunExtensionTest("native_messaging_send_native_message_exe"));
 }
 #endif
 
