@@ -28,32 +28,6 @@
 #include "media/capture/video/mac/uvc_control_mac.h"
 #endif
 
-@implementation DeviceNameAndTransportType {
-  NSString* __strong _deviceName;
-  // The transport type of the device (USB, PCI, etc), values are defined in
-  // <IOKit/audio/IOAudioTypes.h> as kIOAudioDeviceTransportType*.
-  media::VideoCaptureTransportType _transportType;
-}
-
-- (instancetype)initWithName:(NSString*)deviceName
-               transportType:(media::VideoCaptureTransportType)transportType {
-  if (self = [super init]) {
-    _deviceName = [deviceName copy];
-    _transportType = transportType;
-  }
-  return self;
-}
-
-- (NSString*)deviceName {
-  return _deviceName;
-}
-
-- (media::VideoCaptureTransportType)deviceTransportType {
-  return _transportType;
-}
-
-@end  // @implementation DeviceNameAndTransportType
-
 namespace media {
 
 namespace {

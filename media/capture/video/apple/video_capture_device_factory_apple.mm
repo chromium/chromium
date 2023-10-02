@@ -22,6 +22,8 @@
 #include "media/capture/video/video_capture_metrics.h"
 
 #if BUILDFLAG(IS_MAC)
+#import <IOKit/audio/IOAudioTypes.h>
+
 #import "media/capture/video/mac/video_capture_device_decklink_mac.h"
 #endif
 
@@ -39,21 +41,9 @@ void EnsureRunsOnCFRunLoopEnabledThread() {
   }
 }
 
-media::VideoCaptureFormats GetDeviceSupportedFormats(
-    const media::VideoCaptureDeviceDescriptor& descriptor) {
+media::VideoCaptureFormats GetDeviceSupportedFormats(AVCaptureDevice* device) {
   media::VideoCaptureFormats formats;
 
-  NSArray<AVCaptureDevice*>* devices = media::GetVideoCaptureDevices();
-
-  AVCaptureDevice* device = nil;
-  for (device in devices) {
-    if (base::SysNSStringToUTF8(device.uniqueID) == descriptor.device_id) {
-      break;
-    }
-  }
-  if (device == nil) {
-    return media::VideoCaptureFormats();
-  }
   for (AVCaptureDeviceFormat* device_format in device.formats) {
     // MediaSubType is a CMPixelFormatType but can be used as CVPixelFormatType
     // as well according to CMFormatDescription.h
@@ -69,7 +59,7 @@ media::VideoCaptureFormats GetDeviceSupportedFormats(
       media::VideoCaptureFormat format(
           gfx::Size(dimensions.width, dimensions.height),
           frameRate.maxFrameRate, pixelFormat);
-      DVLOG(2) << descriptor.display_name() << " "
+      DVLOG(2) << device.localizedName << " "
                << media::VideoCaptureFormat::ToString(format);
       formats.push_back(std::move(format));
     }
@@ -143,33 +133,48 @@ void VideoCaptureDeviceFactoryApple::GetDevicesInfo(
   DCHECK(thread_checker_.CalledOnValidThread());
   EnsureRunsOnCFRunLoopEnabledThread();
 
+  NSArray<AVCaptureDevice*>* devices = media::GetVideoCaptureDevices();
+
   // Loop through all available devices and add to |devices_info|.
   std::vector<VideoCaptureDeviceInfo> devices_info;
   DVLOG(1) << "Enumerating video capture devices using AVFoundation";
-  NSDictionary<NSString*, DeviceNameAndTransportType*>* capture_devices =
-      GetVideoCaptureDeviceNames();
-  // Enumerate all devices found by AVFoundation, translate the info for each
-  // to class Name and add it to |device_names|.
-  for (NSString* key in capture_devices) {
-    const std::string device_id = base::SysNSStringToUTF8(key);
-    const VideoCaptureApi capture_api = VideoCaptureApi::MACOSX_AVFOUNDATION;
-    VideoCaptureTransportType device_transport_type =
-        [capture_devices[key] deviceTransportType];
-    const std::string model_id = VideoCaptureDeviceApple::GetDeviceModelId(
-        device_id, capture_api, device_transport_type);
-    const VideoCaptureControlSupport control_support =
-        VideoCaptureDeviceApple::GetControlSupport(model_id);
-    VideoCaptureDeviceDescriptor descriptor(
-        base::SysNSStringToUTF8([capture_devices[key] deviceName]), device_id,
-        model_id, capture_api, control_support, device_transport_type);
-    if (IsDeviceBlocked(descriptor)) {
-      continue;
-    }
-    devices_info.emplace_back(descriptor);
 
-    // Get supported formats
-    devices_info.back().supported_formats =
-        GetDeviceSupportedFormats(descriptor);
+  for (AVCaptureDevice* device in devices) {
+    if ([device hasMediaType:AVMediaTypeVideo] ||
+        [device hasMediaType:AVMediaTypeMuxed]) {
+      if (device.suspended) {
+        continue;
+      }
+
+      const std::string device_id = base::SysNSStringToUTF8(device.uniqueID);
+      const VideoCaptureApi capture_api = VideoCaptureApi::MACOSX_AVFOUNDATION;
+#if BUILDFLAG(IS_MAC)
+      // Transport types are defined for Audio devices and reused for video.
+      int transport_type = device.transportType;
+      VideoCaptureTransportType device_transport_type =
+          (transport_type == kIOAudioDeviceTransportTypeBuiltIn ||
+           transport_type == kIOAudioDeviceTransportTypeUSB)
+              ? VideoCaptureTransportType::APPLE_USB_OR_BUILT_IN
+              : VideoCaptureTransportType::OTHER_TRANSPORT;
+#else
+      VideoCaptureTransportType device_transport_type =
+          VideoCaptureTransportType::APPLE_USB_OR_BUILT_IN;
+#endif
+      const std::string model_id = VideoCaptureDeviceApple::GetDeviceModelId(
+          device_id, capture_api, device_transport_type);
+      const VideoCaptureControlSupport control_support =
+          VideoCaptureDeviceApple::GetControlSupport(model_id);
+      VideoCaptureDeviceDescriptor descriptor(
+          base::SysNSStringToUTF8(device.localizedName), device_id, model_id,
+          capture_api, control_support, device_transport_type);
+      if (IsDeviceBlocked(descriptor)) {
+        continue;
+      }
+      devices_info.emplace_back(descriptor);
+
+      // Get supported formats
+      devices_info.back().supported_formats = GetDeviceSupportedFormats(device);
+    }
   }
 
 #if BUILDFLAG(IS_MAC)
