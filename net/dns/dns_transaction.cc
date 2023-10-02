@@ -1155,7 +1155,7 @@ class DnsTransactionImpl : public DnsTransaction,
   DnsTransactionImpl(DnsSession* session,
                      std::string hostname,
                      uint16_t qtype,
-                     const NetLogWithSource& net_log,
+                     const NetLogWithSource& parent_net_log,
                      const OptRecordRdata* opt_rdata,
                      bool secure,
                      SecureDnsMode secure_dns_mode,
@@ -1168,11 +1168,14 @@ class DnsTransactionImpl : public DnsTransaction,
         secure_(secure),
         secure_dns_mode_(secure_dns_mode),
         fast_timeout_(fast_timeout),
-        net_log_(net_log),
+        net_log_(NetLogWithSource::Make(NetLog::Get(),
+                                        NetLogSourceType::DNS_TRANSACTION)),
         resolve_context_(resolve_context->AsSafeRef()) {
     DCHECK(session_.get());
     DCHECK(!hostname_.empty());
     DCHECK(!IsIPLiteral(hostname_));
+    parent_net_log.AddEventReferencingSource(NetLogEventType::DNS_TRANSACTION,
+                                             net_log_.source());
   }
 
   DnsTransactionImpl(const DnsTransactionImpl&) = delete;

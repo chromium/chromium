@@ -1026,8 +1026,8 @@ TEST_F(DnsTransactionTest, LookupWithLog) {
   helper0.StartTransaction(transaction_factory_.get(), kT0HostName, kT0Qtype,
                            false /* secure */, resolve_context_.get());
   helper0.RunUntilComplete();
-  EXPECT_EQ(observer.count(), 6);
-  EXPECT_EQ(observer.dict_count(), 4);
+  EXPECT_EQ(observer.count(), 7);
+  EXPECT_EQ(observer.dict_count(), 5);
 }
 
 TEST_F(DnsTransactionTest, LookupWithEDNSOption) {
@@ -2656,8 +2656,8 @@ TEST_F(DnsTransactionTest, HttpsPostLookupWithLog) {
                            true /* secure */, resolve_context_.get());
   helper0.RunUntilComplete();
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(observer.count(), 18);
-  EXPECT_EQ(observer.dict_count(), 9);
+  EXPECT_EQ(observer.count(), 19);
+  EXPECT_EQ(observer.dict_count(), 10);
 }
 
 // Test for when a slow DoH response is delayed until after the initial fallback
@@ -3121,8 +3121,8 @@ TEST_F(DnsTransactionTest, TcpLookup_UdpRetry_WithLog) {
   helper0.StartTransaction(transaction_factory_.get(), kT0HostName, kT0Qtype,
                            false /* secure */, resolve_context_.get());
   helper0.RunUntilComplete();
-  EXPECT_EQ(observer.count(), 8);
-  EXPECT_EQ(observer.dict_count(), 6);
+  EXPECT_EQ(observer.count(), 9);
+  EXPECT_EQ(observer.dict_count(), 7);
 }
 
 TEST_F(DnsTransactionTest, TcpLookup_LowEntropy) {
