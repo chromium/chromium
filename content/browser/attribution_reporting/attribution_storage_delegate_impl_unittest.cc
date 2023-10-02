@@ -610,86 +610,6 @@ TEST(AttributionStorageDelegateImplTest, GetDefaultReportWindows_AsExpected) {
   }
 }
 
-class AttributionStorageDelegateImplTestEventFlagEnabled
-    : public testing::Test {
- public:
-  AttributionStorageDelegateImplTestEventFlagEnabled() {
-    feature_list_.InitWithFeaturesAndParameters(
-        {{attribution_reporting::features::kConversionMeasurement,
-          {{"vtc_early_reporting_windows", "true"}}}},
-        /*disabled_features=*/{});
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-TEST_F(AttributionStorageDelegateImplTestEventFlagEnabled,
-       GetFeatureReportWindows_AsExpected) {
-  const struct {
-    SourceType source_type;
-    base::TimeDelta last_report_window;
-    attribution_reporting::EventReportWindows expected;
-  } kTestCases[] = {
-      {
-          .source_type = SourceType::kNavigation,
-          .last_report_window = base::Days(30),
-          .expected = *attribution_reporting::EventReportWindows::CreateWindows(
-              base::Days(0), {base::Days(2), base::Days(7), base::Days(30)}),
-      },
-      {
-          .source_type = SourceType::kNavigation,
-          .last_report_window = base::Days(5),
-          .expected = *attribution_reporting::EventReportWindows::CreateWindows(
-              base::Days(0), {base::Days(2), base::Days(5)}),
-      },
-      {
-          .source_type = SourceType::kNavigation,
-          .last_report_window = base::Days(1),
-          .expected = *attribution_reporting::EventReportWindows::CreateWindows(
-              base::Days(0), {base::Days(1)}),
-      },
-      {
-          .source_type = SourceType::kEvent,
-          .last_report_window = base::Days(30),
-          .expected = *attribution_reporting::EventReportWindows::CreateWindows(
-              base::Days(0), {base::Days(2), base::Days(7), base::Days(30)}),
-      },
-      {
-          .source_type = SourceType::kEvent,
-          .last_report_window = base::Days(5),
-          .expected = *attribution_reporting::EventReportWindows::CreateWindows(
-              base::Days(0), {base::Days(2), base::Days(5)}),
-      },
-      {
-          .source_type = SourceType::kEvent,
-          .last_report_window = base::Days(1),
-          .expected = *attribution_reporting::EventReportWindows::CreateWindows(
-              base::Days(0), {base::Days(1)}),
-      },
-  };
-  for (const auto& test_case : kTestCases) {
-    EXPECT_EQ(test_case.expected,
-              AttributionStorageDelegateImpl().GetDefaultEventReportWindows(
-                  test_case.source_type, test_case.last_report_window));
-  }
-}
-
-TEST_F(AttributionStorageDelegateImplTestEventFlagEnabled,
-       GetRandomFakeReports_Event_MatchesExpectedDistribution) {
-  // The probability that not all of the 3 states are seen after `num_samples`
-  // trials is at most ~1e-14476, which is 0 for all practical purposes, so the
-  // `expected_num_combinations` check should always pass.
-  //
-  // For the distribution check, the probability of failure with `tolerance` is
-  // at most 1e-9.
-  RunRandomFakeReportsTest(SourceType::kEvent,
-                           /*num_stars=*/1,
-                           /*num_bars=*/6,
-                           /*num_samples=*/100'000,
-                           /*tolerance=*/0.03);
-}
-
 // Change test to verify that expected value is returned (test
 // GetDefaultReportWindows())
 class AttributionStorageDelegateImplTestFeatureConfigured
@@ -698,12 +618,7 @@ class AttributionStorageDelegateImplTestFeatureConfigured
   AttributionStorageDelegateImplTestFeatureConfigured() {
     feature_list_.InitWithFeaturesAndParameters(
         {{attribution_reporting::features::kConversionMeasurement,
-          {{"vtc_early_reporting_windows", "true"},
-           {"first_report_window_deadline", "1d"},
-           {"second_report_window_deadline", "5d"},
-           {"first_event_report_window_deadline", "1d"},
-           {"second_event_report_window_deadline", "5d"},
-           {"aggregate_report_min_delay", "1m"},
+          {{"aggregate_report_min_delay", "1m"},
            {"aggregate_report_delay_span", "29m"}}}},
         /*disabled_features=*/{});
   }
@@ -711,57 +626,6 @@ class AttributionStorageDelegateImplTestFeatureConfigured
  private:
   base::test::ScopedFeatureList feature_list_;
 };
-
-TEST_F(AttributionStorageDelegateImplTestFeatureConfigured,
-       GetFeatureReportWindows_AsExpected) {
-  const struct {
-    SourceType source_type;
-    base::TimeDelta last_report_window;
-    attribution_reporting::EventReportWindows expected;
-  } kTestCases[] = {
-      {
-          .source_type = SourceType::kNavigation,
-          .last_report_window = base::Days(30),
-          .expected = *attribution_reporting::EventReportWindows::CreateWindows(
-              base::Days(0), {base::Days(1), base::Days(5), base::Days(30)}),
-      },
-      {
-          .source_type = SourceType::kNavigation,
-          .last_report_window = base::Days(5),
-          .expected = *attribution_reporting::EventReportWindows::CreateWindows(
-              base::Days(0), {base::Days(1), base::Days(5)}),
-      },
-      {
-          .source_type = SourceType::kNavigation,
-          .last_report_window = base::Days(1),
-          .expected = *attribution_reporting::EventReportWindows::CreateWindows(
-              base::Days(0), {base::Days(1)}),
-      },
-      {
-          .source_type = SourceType::kEvent,
-          .last_report_window = base::Days(30),
-          .expected = *attribution_reporting::EventReportWindows::CreateWindows(
-              base::Days(0), {base::Days(1), base::Days(5), base::Days(30)}),
-      },
-      {
-          .source_type = SourceType::kEvent,
-          .last_report_window = base::Days(5),
-          .expected = *attribution_reporting::EventReportWindows::CreateWindows(
-              base::Days(0), {base::Days(1), base::Days(5)}),
-      },
-      {
-          .source_type = SourceType::kEvent,
-          .last_report_window = base::Days(1),
-          .expected = *attribution_reporting::EventReportWindows::CreateWindows(
-              base::Days(0), {base::Days(1)}),
-      },
-  };
-  for (const auto& test_case : kTestCases) {
-    EXPECT_EQ(test_case.expected,
-              AttributionStorageDelegateImpl().GetDefaultEventReportWindows(
-                  test_case.source_type, test_case.last_report_window));
-  }
-}
 
 TEST_F(AttributionStorageDelegateImplTestFeatureConfigured,
        GetFeatureAggregatableReportTime) {
@@ -779,12 +643,7 @@ class AttributionStorageDelegateImplTestInvalidFeatureConfigured
   AttributionStorageDelegateImplTestInvalidFeatureConfigured() {
     feature_list_.InitWithFeaturesAndParameters(
         {{attribution_reporting::features::kConversionMeasurement,
-          {{"vtc_early_reporting_windows", "true"},
-           {"first_report_window_deadline", "-1d"},
-           {"second_report_window_deadline", "-5d"},
-           {"first_event_report_window_deadline", "-1d"},
-           {"second_event_report_window_deadline", "-5d"},
-           {"aggregate_report_min_delay", "-1m"},
+          {{"aggregate_report_min_delay", "-1m"},
            {"aggregate_report_delay_span", "-29m"}}}},
         /*disabled_features=*/{});
   }
@@ -792,57 +651,6 @@ class AttributionStorageDelegateImplTestInvalidFeatureConfigured
  private:
   base::test::ScopedFeatureList feature_list_;
 };
-
-TEST_F(AttributionStorageDelegateImplTestInvalidFeatureConfigured,
-       GetFeatureReportWindows_DefaultsUsed) {
-  const struct {
-    SourceType source_type;
-    base::TimeDelta last_report_window;
-    attribution_reporting::EventReportWindows expected;
-  } kTestCases[] = {
-      {
-          .source_type = SourceType::kNavigation,
-          .last_report_window = base::Days(30),
-          .expected = *attribution_reporting::EventReportWindows::CreateWindows(
-              base::Days(0), {base::Days(2), base::Days(7), base::Days(30)}),
-      },
-      {
-          .source_type = SourceType::kNavigation,
-          .last_report_window = base::Days(5),
-          .expected = *attribution_reporting::EventReportWindows::CreateWindows(
-              base::Days(0), {base::Days(2), base::Days(5)}),
-      },
-      {
-          .source_type = SourceType::kNavigation,
-          .last_report_window = base::Days(1),
-          .expected = *attribution_reporting::EventReportWindows::CreateWindows(
-              base::Days(0), {base::Days(1)}),
-      },
-      {
-          .source_type = SourceType::kEvent,
-          .last_report_window = base::Days(30),
-          .expected = *attribution_reporting::EventReportWindows::CreateWindows(
-              base::Days(0), {base::Days(2), base::Days(7), base::Days(30)}),
-      },
-      {
-          .source_type = SourceType::kEvent,
-          .last_report_window = base::Days(5),
-          .expected = *attribution_reporting::EventReportWindows::CreateWindows(
-              base::Days(0), {base::Days(2), base::Days(5)}),
-      },
-      {
-          .source_type = SourceType::kEvent,
-          .last_report_window = base::Days(1),
-          .expected = *attribution_reporting::EventReportWindows::CreateWindows(
-              base::Days(0), {base::Days(1)}),
-      },
-  };
-  for (const auto& test_case : kTestCases) {
-    EXPECT_EQ(test_case.expected,
-              AttributionStorageDelegateImpl().GetDefaultEventReportWindows(
-                  test_case.source_type, test_case.last_report_window));
-  }
-}
 
 TEST_F(AttributionStorageDelegateImplTestInvalidFeatureConfigured,
        NegativeAggregateParams_DefaultsUsed) {

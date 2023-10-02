@@ -7,13 +7,11 @@
 #include <vector>
 
 #include "base/functional/function_ref.h"
-#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "components/attribution_reporting/event_report_windows.h"
-#include "components/attribution_reporting/features.h"
 #include "components/attribution_reporting/source_type.mojom.h"
-#include "content/browser/attribution_reporting/attribution_features.h"
+#include "content/browser/attribution_reporting/attribution_constants.h"
 #include "content/browser/attribution_reporting/attribution_storage_sql.h"
 #include "content/browser/attribution_reporting/sql_utils.h"
 #include "net/base/schemeful_site.h"
@@ -26,22 +24,6 @@
 namespace content {
 
 namespace {
-
-const base::FeatureParam<base::TimeDelta> kFirstNavigationReportWindowDeadline{
-    &attribution_reporting::features::kConversionMeasurement,
-    "first_report_window_deadline", base::Days(2)};
-
-const base::FeatureParam<base::TimeDelta> kSecondNavigationReportWindowDeadline{
-    &attribution_reporting::features::kConversionMeasurement,
-    "second_report_window_deadline", base::Days(7)};
-
-const base::FeatureParam<base::TimeDelta> kFirstEventReportWindowDeadline{
-    &attribution_reporting::features::kConversionMeasurement,
-    "first_event_report_window_deadline", base::Days(2)};
-
-const base::FeatureParam<base::TimeDelta> kSecondEventReportWindowDeadline{
-    &attribution_reporting::features::kConversionMeasurement,
-    "second_event_report_window_deadline", base::Days(7)};
 
 // Ensure that both version numbers are updated together to prevent crashes on
 // downgrades as in crbug.com/1413728.
@@ -329,18 +311,10 @@ bool To56(sql::Database& db) {
     switch (source_type.value()) {
       case attribution_reporting::mojom::SourceType::kNavigation:
         max_event_level_reports = 3;
-        end_times = {kFirstNavigationReportWindowDeadline.Get(),
-                     kSecondNavigationReportWindowDeadline.Get()};
+        end_times = {kDefaultNavigationReportWindow1,
+                     kDefaultNavigationReportWindow2};
         break;
       case attribution_reporting::mojom::SourceType::kEvent:
-        if (kVTCEarlyReportingWindows.Get()) {
-          base::TimeDelta first_window = kFirstEventReportWindowDeadline.Get();
-          base::TimeDelta second_window =
-              kSecondEventReportWindowDeadline.Get();
-          if (!first_window.is_negative() && first_window < second_window) {
-            end_times = {first_window, second_window};
-          }
-        }
         max_event_level_reports = 1;
         break;
     }

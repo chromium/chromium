@@ -45,10 +45,6 @@ bool operator==(const AttributionConfig::EventLevelLimit& a,
         config.navigation_source_trigger_data_cardinality,
         config.event_source_trigger_data_cardinality,
         config.randomized_response_epsilon, config.max_reports_per_destination,
-        config.first_navigation_report_window_deadline,
-        config.second_navigation_report_window_deadline,
-        config.first_event_report_window_deadline,
-        config.second_event_report_window_deadline,
         config.max_navigation_info_gain, config.max_event_info_gain);
   };
   return tie(a) == tie(b);
