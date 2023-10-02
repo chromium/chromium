@@ -105,8 +105,7 @@ android_resources("java_resources") {
     "java/res/drawable-xxxhdpi/google_play.png",
     "java/res/drawable-xxxhdpi/star_gray.png",
     "java/res/drawable-xxxhdpi/star_green.png",
-    "java/res/drawable/pwa_restore_icon_dark.xml",
-    "java/res/drawable/pwa_restore_icon_light.xml",
+    "java/res/drawable/pwa_restore_icon.xml",
     "java/res/drawable/rating_bar.xml",
     "java/res/layout/add_to_homescreen_dialog.xml",
     "java/res/layout/image_zoom_view.xml",
@@ -118,6 +117,8 @@ android_resources("java_resources") {
     "java/res/mipmap-xhdpi/shortcut_icon_shadow.png",
     "java/res/mipmap-xxhdpi/shortcut_icon_shadow.png",
     "java/res/mipmap-xxxhdpi/shortcut_icon_shadow.png",
+    "java/res/values-night/colors.xml",
+    "java/res/values/colors.xml",
     "java/res/values/dimens.xml",
     "java/res/values/styles.xml",
   ]

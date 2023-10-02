@@ -18,7 +18,6 @@ import androidx.core.content.res.ResourcesCompat;
 
 import org.chromium.components.webapps.R;
 import org.chromium.components.webapps.pwa_restore_ui.PwaRestoreProperties.ViewState;
-import org.chromium.ui.util.ColorUtils;
 
 /**
  * The view portion of the PWA Install bottom sheet.
@@ -54,10 +53,9 @@ public class PwaRestoreBottomSheetView implements View.OnTouchListener {
         mContentView = LayoutInflater.from(mContext).inflate(
                 R.layout.pwa_restore_bottom_sheet_content, /* root= */ null);
 
-        int id = ColorUtils.inNightMode(mContext) ? R.drawable.pwa_restore_icon_dark
-                                                  : R.drawable.pwa_restore_icon_light;
-        mPreviewView.findViewById(R.id.icon).setBackgroundResource(id);
-        mPreviewView.findViewById(R.id.icon).setTag(id);
+        int backgroundId = R.drawable.pwa_restore_icon;
+        mPreviewView.findViewById(R.id.icon).setBackgroundResource(backgroundId);
+        mPreviewView.findViewById(R.id.icon).setTag(backgroundId);
         mBackArrow = backArrowId != 0 ? ResourcesCompat.getDrawable(
                              mContext.getResources(), backArrowId, mContext.getTheme())
                                       : null;
