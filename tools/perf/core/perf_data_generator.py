@@ -295,12 +295,16 @@ FYI_BUILDERS = {
         'target_bits':
         64,
         'dimension': {
-            'pool': 'chrome.tests.perf-fyi',
-            'id': 'build370-a7',
+            'pool':
+            'chrome.tests.perf-fyi',
             # TODO(crbug.com/971204): Explicitly set the gpu to None to make
             # chromium_swarming recipe_module ignore this dimension.
-            'gpu': None,
-            'os': 'Windows-10',
+            'gpu':
+            None,
+            'os':
+            'Windows-10',
+            'synthetic_product_name':
+            'HP Laptop 15-bs1xx [Type1ProductConfigId] (HP)'
         },
     },
     'chromeos-kevin-builder-perf-fyi': {
@@ -823,16 +827,18 @@ BUILDERS = {
         'target_bits':
         64,
         'dimension': {
-            'pool': 'chrome.tests.perf',
+            'pool':
+            'chrome.tests.perf',
             # Explicitly set GPU driver version and Windows OS version such
             # that we can be informed if this
             # version ever changes or becomes inconsistent. It is important
             # that bots are homogeneous. See crbug.com/988045 for history.
-            'os': 'Windows-10-18363.476',
-            'gpu': '8086:1616-20.19.15.5070',
-            # TODO(crbug.com/998161): Add synthetic product name for these.
-            # They don't have this dimension yet as I am writing this CL since
-            # they are since in pool 'unassigned'.
+            'os':
+            'Windows-10-18363.476',
+            'gpu':
+            '8086:1616-20.19.15.5070',
+            'synthetic_product_name':
+            'HP Laptop 15-bs1xx [Type1ProductConfigId] (HP)'
         },
     },
     'win-10_laptop_low_end-perf-pgo': {

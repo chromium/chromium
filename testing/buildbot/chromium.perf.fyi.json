@@ -372,9 +372,9 @@
           "can_use_on_swarming_builders": true,
           "dimensions": {
             "gpu": null,
-            "id": "build370-a7",
             "os": "Windows-10",
-            "pool": "chrome.tests.perf-fyi"
+            "pool": "chrome.tests.perf-fyi",
+            "synthetic_product_name": "HP Laptop 15-bs1xx [Type1ProductConfigId] (HP)"
           },
           "expiration": 7200,
           "hard_timeout": 21600,
