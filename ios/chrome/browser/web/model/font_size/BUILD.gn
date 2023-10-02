@@ -1,0 +1,28 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ios/web/public/js_messaging/optimize_ts.gni")
+
+source_set("font_size") {
+  sources = [ "font_size_java_script_feature.h" ]
+  deps = [
+    ":font_size_js",
+    "//base",
+    "//components/google/core/common",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//components/ukm/ios:ukm_url_recorder",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/web:feature_flags",
+    "//ios/components/ui_util",
+    "//ios/public/provider/chrome/browser/text_zoom:text_zoom_api",
+    "//services/metrics/public/cpp:ukm_builders",
+  ]
+  public_deps = [
+    "//ios/chrome/browser/web/font_size:font_size",
+    "//ios/web/public/js_messaging",
+  ]
+}

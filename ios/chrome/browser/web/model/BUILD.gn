@@ -1,0 +1,71 @@
+# Copyright 2016 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//base/allocator/allocator.gni")
+import("//ios/web/public/js_messaging/optimize_js.gni")
+import("//rlz/buildflags/buildflags.gni")
+
+source_set("model") {
+  sources = [ "web_navigation_util.h" ]
+  deps = [
+    ":feature_flags",
+    ":page_placeholder",
+    ":tab_helper_delegates",
+    "//base",
+    "//components/content_settings/core/browser",
+    "//components/error_page/common",
+    "//components/feature_engagement/public",
+    "//components/pref_registry",
+    "//components/resources:components_resources_grit",
+    "//components/resources:dev_ui_components_resources_grit",
+    "//components/search_engines",
+    "//components/strings",
+    "//components/ukm/ios:ukm_url_recorder",
+    "//components/variations/net",
+    "//ios/chrome/app/application_delegate:observing_app_state_agent",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/content_settings/model",
+    "//ios/chrome/browser/feature_engagement",
+    "//ios/chrome/browser/infobars",
+    "//ios/chrome/browser/infobars:public",
+    "//ios/chrome/browser/lens",
+    "//ios/chrome/browser/ntp",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/url:constants",
+    "//ios/chrome/browser/shared/model/utils",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/ui/elements",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/ui/fullscreen",
+    "//ios/chrome/common/ui/util",
+    "//ios/components/ui_util",
+    "//ios/components/webui:url_constants",
+    "//ios/net",
+    "//ios/web",
+    "//ios/web/common",
+    "//ios/web/common:user_agent",
+    "//ios/web/public/js_messaging",
+    "//ios/web/public/security",
+    "//ios/web/public/session",
+    "//services/metrics/public/cpp:ukm_builders",
+    "//ui/base",
+    "//url",
+  ]
+  public_deps = [
+    "//components/infobars/core",
+    "//ios/chrome/browser/web:web",
+  ]
+}
+
+source_set("feature_flags") {
+  sources = [ "features.h" ]
+  deps = [
+    "//base",
+    "//ios/web/common:features",
+  ]
+  public_deps = [ "//ios/chrome/browser/web:feature_flags" ]
+}
