@@ -39,6 +39,7 @@ bundle_data("golden_dbs_bundle_data") {
     "//chrome/test/data/dips/v1.sql",
     "//chrome/test/data/dips/v2.sql",
     "//chrome/test/data/dips/v3.sql",
+    "//chrome/test/data/dips/v4.sql",
   ]
   outputs = [ "{{bundle_resources_dir}}/" +
               "{{source_root_relative_dir}}/{{source_file_part}}" ]

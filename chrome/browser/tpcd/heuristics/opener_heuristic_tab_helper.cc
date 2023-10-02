@@ -175,7 +175,7 @@ void OpenerHeuristicTabHelper::PopupObserver::EmitPastInteractionIfReady() {
       .SetPopupId(popup_id_)
       .Record(ukm::UkmRecorder::Get());
 
-  EmitTopLevel(initial_url_, has_iframe);
+  EmitTopLevel(initial_url_, has_iframe, /*is_current_interaction=*/false);
 }
 
 void OpenerHeuristicTabHelper::PopupObserver::DidFinishNavigation(
@@ -239,7 +239,8 @@ void OpenerHeuristicTabHelper::PopupObserver::FrameReceivedUserActivation(
 
   interaction_reported_ = true;
 
-  EmitTopLevel(render_frame_host->GetLastCommittedURL(), has_iframe);
+  EmitTopLevel(render_frame_host->GetLastCommittedURL(), has_iframe,
+               /*is_current_interaction=*/true);
 }
 
 void OpenerHeuristicTabHelper::OnCookiesAccessed(
@@ -302,7 +303,8 @@ void OpenerHeuristicTabHelper::EmitPostPopupCookieAccess(
 
 void OpenerHeuristicTabHelper::PopupObserver::EmitTopLevel(
     const GURL& popup_url,
-    OptionalBool has_iframe) {
+    OptionalBool has_iframe,
+    bool is_current_interaction) {
   if (toplevel_reported_) {
     return;
   }
@@ -329,7 +331,7 @@ void OpenerHeuristicTabHelper::PopupObserver::EmitTopLevel(
       ->AsyncCall(&DIPSStorage::WritePopup)
       .WithArgs(GetSiteForDIPS(opener_url_), GetSiteForDIPS(popup_url),
                 access_id,
-                /*popup_time=*/GetClock()->Now())
+                /*popup_time=*/GetClock()->Now(), is_current_interaction)
       .Then(base::BindOnce([](bool succeeded) { DCHECK(succeeded); }));
 }
 

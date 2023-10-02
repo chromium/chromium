@@ -38,8 +38,8 @@ class DIPSDatabase;
 
 namespace {
 
-const int kCurrentVersionNumber = 4;
-const int kCompatibleVersionNumber = 4;
+const int kCurrentVersionNumber = 5;
+const int kCompatibleVersionNumber = 5;
 
 class TestDatabase : public DIPSDatabase {
  public:
@@ -392,13 +392,17 @@ TEST_P(DIPSDatabasePopupsTest, AddPopup) {
       GetSiteForDIPS(GURL("http://www.doubleclick.net/"));
   uint64_t access_id = 123;
   base::Time popup_time = Time::FromDoubleT(1);
+  bool is_current_interaction = true;
 
-  EXPECT_TRUE(db_->WritePopup(opener_site, popup_site, access_id, popup_time));
+  EXPECT_TRUE(db_->WritePopup(opener_site, popup_site, access_id, popup_time,
+                              is_current_interaction));
 
   auto popups_state_value = db_->ReadPopup(opener_site, popup_site);
   ASSERT_TRUE(popups_state_value.has_value());
   EXPECT_EQ(popups_state_value.value().access_id, access_id);
   EXPECT_EQ(popups_state_value.value().last_popup_time, popup_time);
+  EXPECT_EQ(popups_state_value.value().is_current_interaction,
+            is_current_interaction);
 }
 
 // Test updating entries in the `popups` table of the DIPSDatabase.
@@ -414,7 +418,8 @@ TEST_P(DIPSDatabasePopupsTest, UpdatePopup) {
 
   // Write the initial entry and verify it was added to the db.
   EXPECT_TRUE(db_->WritePopup(opener_site, popup_site, first_access_id,
-                              first_popup_time));
+                              first_popup_time,
+                              /*is_current_interaction=*/true));
   EXPECT_EQ(db_->ReadPopup(opener_site, popup_site)
                 .value_or(PopupsStateValue())
                 .last_popup_time,
@@ -422,13 +427,15 @@ TEST_P(DIPSDatabasePopupsTest, UpdatePopup) {
 
   // Update the entry with a new popup time of t = 2.
   EXPECT_TRUE(db_->WritePopup(opener_site, popup_site, second_access_id,
-                              second_popup_time));
+                              second_popup_time,
+                              /*is_current_interaction=*/false));
 
   // Verify the new entry.
   auto popups_state_value = db_->ReadPopup(opener_site, popup_site);
   ASSERT_TRUE(popups_state_value.has_value());
   EXPECT_EQ(popups_state_value.value().access_id, second_access_id);
   EXPECT_EQ(popups_state_value.value().last_popup_time, second_popup_time);
+  EXPECT_EQ(popups_state_value.value().is_current_interaction, false);
 }
 
 // Test deleting an entry from the `popups` table of the DIPSDatabase. An entry
@@ -443,7 +450,8 @@ TEST_P(DIPSDatabasePopupsTest, DeletePopup) {
   base::Time popup_time = Time::FromDoubleT(1);
 
   // Write the popup to db, and verify.
-  EXPECT_TRUE(db_->WritePopup(opener_site, popup_site, access_id, popup_time));
+  EXPECT_TRUE(db_->WritePopup(opener_site, popup_site, access_id, popup_time,
+                              /*is_current_interaction=*/true));
   EXPECT_TRUE(db_->ReadPopup(opener_site, popup_site).has_value());
 
   // Delete the entry in db by opener_site, and verify.
@@ -451,7 +459,8 @@ TEST_P(DIPSDatabasePopupsTest, DeletePopup) {
   EXPECT_FALSE(db_->ReadPopup(opener_site, popup_site).has_value());
 
   // Write the popup to db, and verify.
-  EXPECT_TRUE(db_->WritePopup(opener_site, popup_site, access_id, popup_time));
+  EXPECT_TRUE(db_->WritePopup(opener_site, popup_site, access_id, popup_time,
+                              /*is_current_interaction=*/true));
   EXPECT_TRUE(db_->ReadPopup(opener_site, popup_site).has_value());
 
   // Delete the entry in db by popup_site, and verify.
@@ -469,9 +478,11 @@ TEST_P(DIPSDatabasePopupsTest, DeleteSeveralPopups) {
   const std::string popup_site =
       GetSiteForDIPS(GURL("http://www.doubleclick.net/"));
   EXPECT_TRUE(db_->WritePopup(opener_site_1, popup_site,
-                              /*access_id=*/123, Time::FromDoubleT(1)));
+                              /*access_id=*/123, Time::FromDoubleT(1),
+                              /*is_current_interaction=*/true));
   EXPECT_TRUE(db_->WritePopup(opener_site_2, popup_site,
-                              /*access_id=*/456, Time::FromDoubleT(2)));
+                              /*access_id=*/456, Time::FromDoubleT(2),
+                              /*is_current_interaction=*/true));
 
   // Verify that both sites are in the `popups` table.
   EXPECT_TRUE(db_->ReadPopup(opener_site_1, popup_site).has_value());
@@ -660,9 +671,11 @@ TEST_P(DIPSDatabaseInteractionTest, ClearExpiredRowsFromPopupsTable) {
   const base::Time second_popup_time = Time::FromDoubleT(2);
 
   EXPECT_TRUE(db_->WritePopup(opener_site_1, popup_site,
-                              /*access_id=*/123, first_popup_time));
+                              /*access_id=*/123, first_popup_time,
+                              /*is_current_interaction=*/true));
   EXPECT_TRUE(db_->WritePopup(opener_site_2, popup_site,
-                              /*access_id=*/456, second_popup_time));
+                              /*access_id=*/456, second_popup_time,
+                              /*is_current_interaction=*/true));
 
   // Advance to just before the first popup expires.
   AdvanceTimeTo(first_popup_time + DIPSDatabase::kPopupTtl - tiny_delta);
@@ -1133,7 +1146,8 @@ class DIPSDatabaseGarbageCollectionTest
                              waa_times));
     } else {
       ASSERT_TRUE(db_->WritePopup(site, "doubleclick.net", /*access_id=*/123,
-                                  interaction_times->second));
+                                  interaction_times->second,
+                                  /*is_current_interaction=*/true));
     }
   }
 
@@ -1165,7 +1179,8 @@ class DIPSDatabaseGarbageCollectionTest
       } else {
         ASSERT_TRUE(db_->WritePopup(base::StringPrintf("entry%d.test", 7 - i),
                                     "doubleclick.net", /*access_id=*/123,
-                                    times[(i + 1) % 3]));
+                                    times[(i + 1) % 3],
+                                    /*is_current_interaction=*/true));
       }
       for (auto& time : times) {
         time += tiny_delta * 3;
@@ -1180,7 +1195,8 @@ class DIPSDatabaseGarbageCollectionTest
       } else {
         ASSERT_TRUE(db_->WritePopup(base::StringPrintf("entry%d.test", 7 - i),
                                     "doubleclick.net", /*access_id=*/123,
-                                    times[(i + 1) % 3]));
+                                    times[(i + 1) % 3],
+                                    /*is_current_interaction=*/true));
       }
       for (auto& time : times) {
         time += tiny_delta * 3;
@@ -1524,9 +1540,14 @@ class DIPSDatabaseMigrationTest : public testing::Test {
     ASSERT_TRUE(sql::test::CreateDatabaseFromSQL(db_path(), file_path));
   }
 
-  std::string DbToString(sql::Database* db) {
+  std::string DbBouncesToString(sql::Database* db) {
     return sql::test::ExecuteWithResults(
         db, "SELECT * FROM bounces ORDER BY site", "|", "\n");
+  }
+
+  std::string DbPopupsToString(sql::Database* db) {
+    return sql::test::ExecuteWithResults(
+        db, "SELECT * FROM popups ORDER BY opener_site", "|", "\n");
   }
 
  private:
@@ -1607,7 +1628,7 @@ TEST_F(DIPSDatabaseMigrationTest, RazeIfIncompatible_TooNew) {
               kCurrentVersionNumber + tiny_increment);
 
     // These values are all set in v2.sql.
-    EXPECT_EQ(DbToString(&db),
+    EXPECT_EQ(DbBouncesToString(&db),
               "both-bounce-kinds.test|||4|4|1|4|2|6\n"
               "stateful-bounce.test|||4|4|1|1||\n"
               "stateless-bounce.test|||4|4|||1|1\n"
@@ -1634,7 +1655,7 @@ TEST_F(DIPSDatabaseMigrationTest, RazeIfIncompatible_TooNew) {
     EXPECT_TRUE(db.DoesColumnExist("bounces", "last_web_authn_assertion_time"));
 
     // As expected the database is razed after migration.
-    EXPECT_EQ(DbToString(&db), "");
+    EXPECT_EQ(DbBouncesToString(&db), "");
   }
 }
 
@@ -1660,7 +1681,7 @@ TEST_F(DIPSDatabaseMigrationTest, MigrateV1ToCurrentVersion) {
         db.DoesColumnExist("bounces", "last_web_authn_assertion_time"));
 
     // These values are all set in v1.sql.
-    EXPECT_EQ(DbToString(&db),
+    EXPECT_EQ(DbBouncesToString(&db),
               "both-bounce-kinds.test|0|0|4|4|1|4|2|6\n"
               "stateful-bounce.test|0|0|4|4|1|1|0|0\n"
               "stateless-bounce.test|0|0|4|4|0|0|1|1\n"
@@ -1729,7 +1750,7 @@ TEST_F(DIPSDatabaseMigrationTest, MigrateV1ToCurrentVersion) {
     // Notably:
     // - All zeros are transformed to NULL, and
     // - Four extra columns were added.
-    EXPECT_EQ(DbToString(&db),
+    EXPECT_EQ(DbBouncesToString(&db),
               "both-bounce-kinds.test|||4|4|1|4|1|6||\n"
               "stateful-bounce.test|||4|4|1|1|1|1||\n"
               "stateless-bounce.test|||4|4|||1|1||\n"
@@ -1791,7 +1812,7 @@ TEST_F(DIPSDatabaseMigrationTest, MigrateV2ToCurrentVersion) {
     EXPECT_FALSE(
         db.DoesColumnExist("bounces", "last_web_authn_assertion_time"));
 
-    EXPECT_EQ(DbToString(&db),
+    EXPECT_EQ(DbBouncesToString(&db),
               "both-bounce-kinds.test|||4|4|1|4|2|6\n"
               "stateful-bounce.test|||4|4|1|1||\n"
               "stateless-bounce.test|||4|4|||1|1\n"
@@ -1816,7 +1837,7 @@ TEST_F(DIPSDatabaseMigrationTest, MigrateV2ToCurrentVersion) {
         db.DoesColumnExist("bounces", "first_web_authn_assertion_time"));
     EXPECT_TRUE(db.DoesColumnExist("bounces", "last_web_authn_assertion_time"));
 
-    EXPECT_EQ(DbToString(&db),
+    EXPECT_EQ(DbBouncesToString(&db),
               "both-bounce-kinds.test|||4|4|1|4|2|6||\n"
               "stateful-bounce.test|||4|4|1|1||||\n"
               "stateless-bounce.test|||4|4|||1|1||\n"
@@ -1838,7 +1859,7 @@ TEST_F(DIPSDatabaseMigrationTest, MigrateV3ToCurrentVersion) {
 
     EXPECT_FALSE(db.DoesTableExist("popups"));
 
-    EXPECT_EQ(DbToString(&db),
+    EXPECT_EQ(DbBouncesToString(&db),
               "both-bounce-kinds.test|||4|4|1|4|2|6||\n"
               "stateful-bounce.test|||4|4|1|1||||\n"
               "stateless-bounce.test|||4|4|||1|1||\n"
@@ -1863,10 +1884,53 @@ TEST_F(DIPSDatabaseMigrationTest, MigrateV3ToCurrentVersion) {
     EXPECT_TRUE(db.DoesColumnExist("popups", "access_id"));
     EXPECT_TRUE(db.DoesColumnExist("popups", "last_popup_time"));
 
-    EXPECT_EQ(DbToString(&db),
+    EXPECT_EQ(DbBouncesToString(&db),
               "both-bounce-kinds.test|||4|4|1|4|2|6||\n"
               "stateful-bounce.test|||4|4|1|1||||\n"
               "stateless-bounce.test|||4|4|||1|1||\n"
               "storage.test|1|1|4|4||||||");
+  }
+}
+
+TEST_F(DIPSDatabaseMigrationTest, MigrateV4ToCurrentVersion) {
+  ASSERT_NO_FATAL_FAILURE(LoadDatabase("v4.sql"));
+
+  // Verify pre migration conditions.
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(db_path()));
+
+    EXPECT_EQ(GetDatabaseVersion(&db), 4);
+    EXPECT_EQ(GetDatabaseLastCompatibleVersion(&db), 4);
+    EXPECT_EQ(GetDatabasePrepopulated(&db), 1);
+
+    EXPECT_TRUE(db.DoesColumnExist("popups", "opener_site"));
+    EXPECT_TRUE(db.DoesColumnExist("popups", "popup_site"));
+    EXPECT_TRUE(db.DoesColumnExist("popups", "access_id"));
+    EXPECT_TRUE(db.DoesColumnExist("popups", "last_popup_time"));
+
+    EXPECT_EQ(DbPopupsToString(&db),
+              "site1.com|3p-site.com|123|2023-10-01 12:00:00\n"
+              "site2.com|3p-site.com|456|2023-10-02 12:00:00");
+  }
+
+  MigrateDatabase();
+
+  // Verify post migration conditions.
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(db_path()));
+
+    EXPECT_EQ(GetDatabaseVersion(&db), kCurrentVersionNumber);
+    EXPECT_EQ(GetDatabaseLastCompatibleVersion(&db), kCompatibleVersionNumber);
+    EXPECT_EQ(GetDatabasePrepopulated(&db), 1);
+
+    ASSERT_TRUE(db.DoesTableExist("bounces"));
+    ASSERT_TRUE(db.DoesTableExist("popups"));
+    EXPECT_TRUE(db.DoesColumnExist("popups", "is_current_interaction"));
+
+    EXPECT_EQ(DbPopupsToString(&db),
+              "site1.com|3p-site.com|123|2023-10-01 12:00:00|\n"
+              "site2.com|3p-site.com|456|2023-10-02 12:00:00|");
   }
 }

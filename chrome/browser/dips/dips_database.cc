@@ -83,11 +83,11 @@ void BindTimesOrNull(sql::Statement& statement,
 // Version number of the database.
 // NOTE: When changing the version, add a new golden file for the new version
 // and a test to verify that Init() works with it.
-const int kCurrentVersionNumber = 4;
+const int kCurrentVersionNumber = 5;
 
 // This number represents the min database version number with which this chrome
 // code will be compatible with.
-const int kCompatibleVersionNumber = 4;
+const int kCompatibleVersionNumber = 5;
 }  // namespace
 
 // See comments at declaration of these variables in dips_database.h
@@ -188,6 +188,7 @@ bool DIPSDatabase::InitTables() {
       "popup_site TEXT NOT NULL,"
       "access_id INT64,"
       "last_popup_time INTEGER,"
+      "is_current_interaction BOOLEAN,"
       "PRIMARY KEY (`opener_site`,`popup_site`)"
     ")";
   // clang-format on
@@ -345,6 +346,16 @@ bool DIPSDatabase::MigrateToVersion4() {
   return db_->Execute(kCreatePopupsTableSql) && meta_table_.SetVersionNumber(4);
 }
 
+bool DIPSDatabase::MigrateToVersion5() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(db_->HasActiveTransactions());
+
+  return db_->Execute(
+             "ALTER TABLE popups ADD COLUMN is_current_interaction "
+             "BOOLEAN DEFAULT NULL") &&
+         meta_table_.SetVersionNumber(5);
+}
+
 bool DIPSDatabase::MigrateAsNeeded() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -371,6 +382,15 @@ bool DIPSDatabase::MigrateAsNeeded() {
         break;
       case 4:
         if (!MigrateToVersion4()) {
+          return false;
+        }
+        if (!meta_table_.SetCompatibleVersionNumber(
+                std::min(next_version, kCompatibleVersionNumber))) {
+          return false;
+        }
+        break;
+      case 5:
+        if (!MigrateToVersion5()) {
           return false;
         }
         if (!meta_table_.SetCompatibleVersionNumber(
@@ -549,7 +569,8 @@ bool DIPSDatabase::Write(const std::string& site,
 bool DIPSDatabase::WritePopup(const std::string& opener_site,
                               const std::string& popup_site,
                               const uint64_t access_id,
-                              const base::Time& popup_time) {
+                              const base::Time& popup_time,
+                              bool is_current_interaction) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!CheckDBInit()) {
     return false;
@@ -560,8 +581,9 @@ bool DIPSDatabase::WritePopup(const std::string& opener_site,
       "opener_site,"
       "popup_site,"
       "access_id,"
-      "last_popup_time"
-    ") VALUES(?,?,?,?)";
+      "last_popup_time,"
+      "is_current_interaction"
+    ") VALUES(?,?,?,?,?)";
   // clang-format on
   DCHECK(db_->IsSQLValid(kWriteSql));
 
@@ -570,6 +592,7 @@ bool DIPSDatabase::WritePopup(const std::string& opener_site,
   statement.BindString(1, popup_site);
   statement.BindInt64(2, access_id);
   statement.BindTime(3, popup_time);
+  statement.BindBool(4, is_current_interaction);
 
   return statement.Run();
 }
@@ -687,7 +710,8 @@ absl::optional<PopupsStateValue> DIPSDatabase::ReadPopup(
       "SELECT opener_site,"
         "popup_site,"
         "access_id,"
-        "last_popup_time "
+        "last_popup_time, "
+        "is_current_interaction "
         "FROM popups "
         "WHERE opener_site=? AND popup_site=?";
   // clang-format on
@@ -706,8 +730,10 @@ absl::optional<PopupsStateValue> DIPSDatabase::ReadPopup(
   if (!popup_time.has_value()) {
     return absl::nullopt;
   }
+  bool is_current_interaction = statement.ColumnBool(4);
 
-  return PopupsStateValue{access_id, popup_time.value()};
+  return PopupsStateValue{access_id, popup_time.value(),
+                          is_current_interaction};
 }
 
 std::vector<std::string> DIPSDatabase::GetAllSitesForTesting(

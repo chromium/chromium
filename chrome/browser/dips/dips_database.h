@@ -56,7 +56,15 @@ class DIPSDatabase {
   // extra columns for recording the first and last time a web authn assertion
   // was called.
   bool MigrateToVersion3();
+
+  // Migrates from v2 to v3 of the DIPS database schema. This migration adds a
+  // Popups table for recording popupts with a current or prior user
+  // interaction.
   bool MigrateToVersion4();
+
+  // Migrates from v2 to v3 of the DIPS database schema. This migration adds an
+  // `is_current_interaction` field to the Popups table.
+  bool MigrateToVersion5();
 
   // DIPS Bounce table functions -----------------------------------------------
   bool Write(const std::string& site,
@@ -69,7 +77,8 @@ class DIPSDatabase {
   bool WritePopup(const std::string& opener_site,
                   const std::string& popup_site,
                   const uint64_t access_id,
-                  const base::Time& popup_time);
+                  const base::Time& popup_time,
+                  bool is_current_interaction);
 
   // This is implicitly `inline`. Don't move its definition to the .cc file.
   bool HasExpired(absl::optional<base::Time> time) {

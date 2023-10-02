@@ -53,7 +53,9 @@ class OpenerHeuristicTabHelper
     // the necessary information.
     void EmitPastInteractionIfReady();
     // Emit the OpenerHeuristic.TopLevel UKM event.
-    void EmitTopLevel(const GURL& tracker_url, OptionalBool has_iframe);
+    void EmitTopLevel(const GURL& tracker_url,
+                      OptionalBool has_iframe,
+                      bool is_current_interaction);
     // See if the opener page has an iframe from the same site.
     OptionalBool GetOpenerHasSameSiteIframe(const GURL& popup_url);
 

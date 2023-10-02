@@ -644,11 +644,14 @@ TEST_F(DIPSStorageTest, RemovePopupEventsByTime) {
   base::Time delete_end = base::Time::FromDoubleT(5);
 
   ASSERT_TRUE(storage_.WritePopup(site1, site2, /*access_id=*/1u,
-                                  base::Time::FromDoubleT(2)));
+                                  base::Time::FromDoubleT(2),
+                                  /*is_current_interaction=*/true));
   ASSERT_TRUE(storage_.WritePopup(site1, site3, /*access_id=*/2u,
-                                  base::Time::FromDoubleT(4)));
+                                  base::Time::FromDoubleT(4),
+                                  /*is_current_interaction=*/true));
   ASSERT_TRUE(storage_.WritePopup(site2, site3, /*access_id=*/3u,
-                                  base::Time::FromDoubleT(6)));
+                                  base::Time::FromDoubleT(6),
+                                  /*is_current_interaction=*/false));
 
   storage_.RemoveEvents(delete_begin, delete_end, nullptr,
                         DIPSEventRemovalType::kHistory);
@@ -659,6 +662,7 @@ TEST_F(DIPSStorageTest, RemovePopupEventsByTime) {
   ASSERT_TRUE(popup1.has_value());
   EXPECT_EQ(popup1.value().access_id, 1u);
   EXPECT_EQ(popup1.value().last_popup_time, base::Time::FromDoubleT(2));
+  EXPECT_TRUE(popup1.value().is_current_interaction);
 
   absl::optional<PopupsStateValue> popup2 = storage_.ReadPopup(site1, site3);
   ASSERT_FALSE(popup2.has_value());
@@ -667,6 +671,7 @@ TEST_F(DIPSStorageTest, RemovePopupEventsByTime) {
   ASSERT_TRUE(popup3.has_value());
   EXPECT_EQ(popup3.value().access_id, 3u);
   EXPECT_EQ(popup3.value().last_popup_time, base::Time::FromDoubleT(6));
+  EXPECT_FALSE(popup3.value().is_current_interaction);
 }
 
 TEST_F(DIPSStorageTest, RemoveByTimeBounces) {

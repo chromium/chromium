@@ -116,12 +116,13 @@ absl::optional<PopupsStateValue> DIPSStorage::ReadPopup(
 bool DIPSStorage::WritePopup(const std::string& first_party_site,
                              const std::string& tracking_site,
                              const uint64_t access_id,
-                             const base::Time& popup_time) {
+                             const base::Time& popup_time,
+                             bool is_current_interaction) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(db_);
 
-  return db_->WritePopup(first_party_site, tracking_site, access_id,
-                         popup_time);
+  return db_->WritePopup(first_party_site, tracking_site, access_id, popup_time,
+                         is_current_interaction);
 }
 
 void DIPSStorage::RemoveEvents(base::Time delete_begin,

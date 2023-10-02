@@ -147,6 +147,7 @@ struct StateValue {
 struct PopupsStateValue {
   uint64_t access_id;
   base::Time last_popup_time;
+  bool is_current_interaction;
 };
 
 inline bool operator==(const StateValue& lhs, const StateValue& rhs) {
