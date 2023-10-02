@@ -30,7 +30,6 @@ class IdentityManager;
 }  // namespace signin
 
 namespace commerce {
-class AccountChecker;
 class ParcelsServerProxy;
 class ParcelsStorage;
 
@@ -41,8 +40,7 @@ class ParcelsManager {
       signin::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       SessionProtoStorage<parcel_tracking_db::ParcelTrackingContent>*
-          parcel_tracking_proto_db,
-      AccountChecker* account_checker);
+          parcel_tracking_proto_db);
   // Ctor used for testing purposes.
   ParcelsManager(std::unique_ptr<ParcelsServerProxy> parcels_server_proxy,
                  std::unique_ptr<ParcelsStorage> parcels_storage,

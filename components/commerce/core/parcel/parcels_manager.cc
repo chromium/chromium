@@ -119,8 +119,7 @@ ParcelsManager::ParcelsManager(
     signin::IdentityManager* identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     SessionProtoStorage<parcel_tracking_db::ParcelTrackingContent>*
-        parcel_tracking_proto_db,
-    AccountChecker* account_checker)
+        parcel_tracking_proto_db)
     : clock_(base::DefaultClock::GetInstance()),
       parcels_server_proxy_(
           std::make_unique<ParcelsServerProxy>(identity_manager,

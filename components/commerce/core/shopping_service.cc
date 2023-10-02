@@ -203,8 +203,7 @@ ShoppingService::ShoppingService(
 
     if (parcel_tracking_proto_db) {
       parcels_manager_ = std::make_unique<ParcelsManager>(
-          identity_manager, url_loader_factory, parcel_tracking_proto_db,
-          account_checker_.get());
+          identity_manager, url_loader_factory, parcel_tracking_proto_db);
     }
   }
 
@@ -799,8 +798,7 @@ bool ShoppingService::IsParcelTrackingEligible() {
                                     country_on_startup_, locale_on_startup_)) {
     return false;
   }
-  return account_checker_ && account_checker_->IsSignedIn() &&
-         account_checker_->IsAnonymizedUrlDataCollectionEnabled();
+  return account_checker_ && account_checker_->IsSignedIn();
 }
 
 bool ShoppingService::IsShoppingPageTypesApiEnabled() {
