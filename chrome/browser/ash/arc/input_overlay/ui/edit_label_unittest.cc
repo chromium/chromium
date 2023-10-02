@@ -20,6 +20,7 @@
 #include "chrome/browser/ash/arc/input_overlay/ui/button_options_menu.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/edit_label.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/edit_labels.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/editing_list.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/input_mapping_view.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/name_tag.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
@@ -78,30 +79,35 @@ class EditLabelTest : public OverlayViewTestBase {
                    ButtonOptionsMenu* menu,
                    const std::vector<ui::DomCode>& expected_code,
                    const std::vector<std::u16string>& expected_text) {
+    auto* action = menu->action();
+    auto* list_item = GetActionViewListItem(action);
+    EXPECT_TRUE(list_item);
     switch (action_type) {
       case ActionType::TAP:
         if (expected_code.empty()) {
-          EXPECT_TRUE(tap_action_->current_input()->keys().empty());
+          EXPECT_TRUE(action->current_input()->keys().empty());
         } else {
-          EXPECT_EQ(expected_code[0], tap_action_->current_input()->keys()[0]);
+          EXPECT_EQ(expected_code[0], action->current_input()->keys()[0]);
         }
         EXPECT_EQ(expected_text[0],
-                  GetEditLabel(tap_action_list_item_, /*index=*/0)->GetText());
+                  GetEditLabel(list_item, /*index=*/0)->GetText());
         EXPECT_EQ(expected_text[0], GetEditLabel(menu, /*index=*/0)->GetText());
-        EXPECT_EQ(expected_text[0],
-                  GetLabel(tap_action_->action_view(), /*index=*/0)->GetText());
+        EXPECT_EQ(action->is_new()
+                      ? (expected_text[0].empty() ? u"?" : expected_text[0])
+                      : expected_text[0],
+                  GetLabel(action->action_view(), /*index=*/0)->GetText());
         break;
       case ActionType::MOVE:
         for (size_t i = 0; i < kActionMoveKeysSize; i++) {
-          EXPECT_EQ(expected_code[i], move_action_->current_input()->keys()[i]);
-          EXPECT_EQ(
-              expected_text[i],
-              GetEditLabel(move_action_list_item_, /*index=*/i)->GetText());
+          EXPECT_EQ(expected_code[i], action->current_input()->keys()[i]);
+          EXPECT_EQ(expected_text[i],
+                    GetEditLabel(list_item, /*index=*/i)->GetText());
           EXPECT_EQ(expected_text[i],
                     GetEditLabel(menu, /*index=*/i)->GetText());
-          EXPECT_EQ(
-              expected_text[i],
-              GetLabel(move_action_->action_view(), /*index=*/i)->GetText());
+          EXPECT_EQ(action->is_new()
+                        ? (expected_text[i].empty() ? u"?" : expected_text[i])
+                        : expected_text[i],
+                    GetLabel(action->action_view(), /*index=*/i)->GetText());
         }
         break;
       default:
@@ -115,6 +121,43 @@ class EditLabelTest : public OverlayViewTestBase {
                        bool list_item_has_error) {
     EXPECT_EQ(menu_has_error, IsInErrorState(menu));
     EXPECT_EQ(list_item_has_error, IsInErrorState(list_item));
+  }
+
+  void AddNewAction(ActionType action_type) {
+    controller_->AddNewAction(action_type);
+  }
+
+  // Returns `ButtonOptionsMenu` if there is one shown. Otherwise, return
+  // nullptr;
+  ButtonOptionsMenu* GetButtonOptionsMenu() {
+    auto* menu_widget = controller_->button_options_widget_.get();
+    if (!menu_widget) {
+      return nullptr;
+    }
+    return static_cast<ButtonOptionsMenu*>(menu_widget->GetContentsView());
+  }
+
+  ActionViewListItem* GetActionViewListItem(Action* action) {
+    views::View* scroll_content = editing_list_->scroll_content_;
+    DCHECK(scroll_content);
+    if (editing_list_->is_zero_state_) {
+      return nullptr;
+    }
+    for (auto* child : scroll_content->children()) {
+      auto* list_item = static_cast<ActionViewListItem*>(child);
+      if (list_item->action() == action) {
+        return list_item;
+      }
+    }
+    return nullptr;
+  }
+
+  Action* GetAction(ButtonOptionsMenu* menu) {
+    if (!menu) {
+      return nullptr;
+    }
+    DCHECK(controller_);
+    return menu->action();
   }
 
  private:
@@ -259,6 +302,36 @@ TEST_F(EditLabelTest, TestEditingListLabelReservedKey) {
   // Error state still shows up after leaving focus.
   CheckErrorState(menu, move_action_list_item_, /*menu_has_error=*/true,
                   /*list_item_has_error=*/true);
+}
+
+TEST_F(EditLabelTest, TestEditingNewAction) {
+  AddNewAction(ActionType::MOVE);
+  auto* menu = GetButtonOptionsMenu();
+  EXPECT_TRUE(menu);
+  auto* action = GetAction(menu);
+  EXPECT_TRUE(action->is_new());
+  CheckAction(ActionType::MOVE, menu,
+              {ui::DomCode::NONE, ui::DomCode::NONE, ui::DomCode::NONE,
+               ui::DomCode::NONE},
+              {u"", u"", u"", u""});
+
+  auto* label0 = GetEditLabel(menu, /*index=*/0);
+  FocusOnLabel(label0);
+  TapKeyboardKeyOnEditLabel(label0, ui::VKEY_A);
+  EXPECT_TRUE(action->is_new());
+  CheckAction(ActionType::MOVE, menu,
+              {ui::DomCode::US_A, ui::DomCode::NONE, ui::DomCode::NONE,
+               ui::DomCode::NONE},
+              {u"a", u"", u"", u""});
+
+  auto* label1 = GetEditLabel(menu, /*index=*/1);
+  FocusOnLabel(label1);
+  TapKeyboardKeyOnEditLabel(label1, ui::VKEY_A);
+  EXPECT_TRUE(action->is_new());
+  CheckAction(ActionType::MOVE, menu,
+              {ui::DomCode::NONE, ui::DomCode::US_A, ui::DomCode::NONE,
+               ui::DomCode::NONE},
+              {u"", u"a", u"", u""});
 }
 
 }  // namespace arc::input_overlay

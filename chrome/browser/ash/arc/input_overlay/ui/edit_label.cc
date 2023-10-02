@@ -84,13 +84,8 @@ void EditLabel::SetLabelContent() {
                                             kGameControlsEditPenIcon,
                                             cros_tokens::kCrosSysHighlightShape)
                                       : ui::ImageModel());
-  if (output_string.empty()) {
-    SetBackground(views::CreateThemedRoundedRectBackground(
-        cros_tokens::kCrosSysHighlightShape,
-        /*radius=*/8));
-  } else {
-    SetTextLabel(output_string);
-  }
+  // Set text label by `output_string` even it is empty to clear the text label.
+  SetTextLabel(output_string);
 }
 
 void EditLabel::SetTextLabel(const std::u16string& text) {
