@@ -1128,7 +1128,11 @@ class GLES2DecoderImpl : public GLES2Decoder,
       GLenum plane_config,
       GLenum subsampling,
       const volatile GLbyte* mailboxes_in);
-  void DoConvertYUVAMailboxesToRGBINTERNAL(GLenum yuv_color_space,
+  void DoConvertYUVAMailboxesToRGBINTERNAL(GLint src_x,
+                                           GLint src_y,
+                                           GLsizei width,
+                                           GLsizei height,
+                                           GLenum yuv_color_space,
                                            GLenum plane_config,
                                            GLenum subsampling,
                                            const volatile GLbyte* mailboxes_in);
@@ -17237,6 +17241,10 @@ void GLES2DecoderImpl::DoConvertRGBAToYUVAMailboxesINTERNAL(
 }
 
 void GLES2DecoderImpl::DoConvertYUVAMailboxesToRGBINTERNAL(
+    GLint src_x,
+    GLint src_y,
+    GLsizei width,
+    GLsizei height,
     GLenum yuv_color_space,
     GLenum plane_config,
     GLenum subsampling,

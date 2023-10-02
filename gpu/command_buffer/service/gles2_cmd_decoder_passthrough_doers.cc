@@ -5303,6 +5303,10 @@ error::Error GLES2DecoderPassthroughImpl::DoConvertRGBAToYUVAMailboxesINTERNAL(
 }
 
 error::Error GLES2DecoderPassthroughImpl::DoConvertYUVAMailboxesToRGBINTERNAL(
+    GLint src_x,
+    GLint src_y,
+    GLsizei width,
+    GLsizei height,
     GLenum yuv_color_space,
     GLenum plane_config,
     GLenum subsampling,
@@ -5318,7 +5322,8 @@ error::Error GLES2DecoderPassthroughImpl::DoConvertYUVAMailboxesToRGBINTERNAL(
                             lazy_context_->shared_context_state()->surface());
   CopySharedImageHelper helper(group_->shared_image_representation_factory(),
                                lazy_context_->shared_context_state());
-  auto result = helper.ConvertYUVAMailboxesToRGB(yuv_color_space, plane_config,
+  auto result = helper.ConvertYUVAMailboxesToRGB(src_x, src_y, width, height,
+                                                 yuv_color_space, plane_config,
                                                  subsampling, mailboxes_in);
   if (!result.has_value()) {
     InsertError(result.error().gl_error, result.error().msg);

@@ -431,6 +431,10 @@ base::expected<void, GLError> CopySharedImageHelper::ConvertRGBAToYUVAMailboxes(
 }
 
 base::expected<void, GLError> CopySharedImageHelper::ConvertYUVAMailboxesToRGB(
+    GLint src_x,
+    GLint src_y,
+    GLsizei width,
+    GLsizei height,
     GLenum planes_yuv_color_space,
     GLenum plane_config,
     GLenum subsampling,

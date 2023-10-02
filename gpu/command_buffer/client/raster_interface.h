@@ -89,6 +89,10 @@ class RasterInterface : public InterfaceBase {
   // `dest_mailbox`'s color space.
   virtual void ConvertYUVAMailboxesToRGB(
       const gpu::Mailbox& dest_mailbox,
+      GLint src_x,
+      GLint src_y,
+      GLsizei width,
+      GLsizei height,
       SkYUVColorSpace planes_yuv_color_space,
       const SkColorSpace* planes_rgb_color_space,
       SkYUVAInfo::PlaneConfig plane_config,

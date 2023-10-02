@@ -3190,7 +3190,11 @@ void ConvertRGBAToYUVAMailboxesINTERNALImmediate(GLenum planes_yuv_color_space,
   }
 }
 
-void ConvertYUVAMailboxesToRGBINTERNALImmediate(GLenum planes_yuv_color_space,
+void ConvertYUVAMailboxesToRGBINTERNALImmediate(GLint src_x,
+                                                GLint src_y,
+                                                GLsizei width,
+                                                GLsizei height,
+                                                GLenum planes_yuv_color_space,
                                                 GLenum plane_config,
                                                 GLenum subsampling,
                                                 const GLbyte* mailboxes) {
@@ -3200,7 +3204,8 @@ void ConvertYUVAMailboxesToRGBINTERNALImmediate(GLenum planes_yuv_color_space,
       GetImmediateCmdSpaceTotalSize<
           gles2::cmds::ConvertYUVAMailboxesToRGBINTERNALImmediate>(size);
   if (c) {
-    c->Init(planes_yuv_color_space, plane_config, subsampling, mailboxes);
+    c->Init(src_x, src_y, width, height, planes_yuv_color_space, plane_config,
+            subsampling, mailboxes);
   }
 }
 

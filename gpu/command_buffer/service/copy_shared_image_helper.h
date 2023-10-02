@@ -44,6 +44,10 @@ class GPU_GLES2_EXPORT CopySharedImageHelper {
       GLenum subsampling,
       const volatile GLbyte* mailboxes_in);
   base::expected<void, GLError> ConvertYUVAMailboxesToRGB(
+      GLint src_x,
+      GLint src_y,
+      GLsizei width,
+      GLsizei height,
       GLenum yuv_color_space,
       GLenum plane_config,
       GLenum subsampling,

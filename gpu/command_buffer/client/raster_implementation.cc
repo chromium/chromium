@@ -1336,6 +1336,10 @@ constexpr size_t kNumMailboxes = SkYUVAInfo::kMaxPlanes + 1;
 
 void RasterImplementation::ConvertYUVAMailboxesToRGB(
     const gpu::Mailbox& dest_mailbox,
+    GLint src_x,
+    GLint src_y,
+    GLsizei width,
+    GLsizei height,
     SkYUVColorSpace planes_yuv_color_space,
     const SkColorSpace* planes_rgb_color_space,
     SkYUVAInfo::PlaneConfig plane_config,
@@ -1372,8 +1376,9 @@ void RasterImplementation::ConvertYUVAMailboxesToRGB(
   DCHECK_EQ(offset, kByteSize);
 
   helper_->ConvertYUVAMailboxesToRGBINTERNALImmediate(
-      planes_yuv_color_space, static_cast<GLenum>(plane_config),
-      static_cast<GLenum>(subsampling), reinterpret_cast<GLbyte*>(bytes));
+      src_x, src_y, width, height, planes_yuv_color_space,
+      static_cast<GLenum>(plane_config), static_cast<GLenum>(subsampling),
+      reinterpret_cast<GLbyte*>(bytes));
 }
 
 void RasterImplementation::ConvertRGBAToYUVAMailboxes(

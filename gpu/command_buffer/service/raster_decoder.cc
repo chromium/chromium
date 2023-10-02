@@ -722,7 +722,11 @@ class RasterDecoderImpl final : public RasterDecoder,
                                         GLuint v_stride,
                                         const volatile GLbyte* mailbox);
 
-  void DoConvertYUVAMailboxesToRGBINTERNAL(GLenum yuv_color_space,
+  void DoConvertYUVAMailboxesToRGBINTERNAL(GLint src_x,
+                                           GLint src_y,
+                                           GLsizei width,
+                                           GLsizei height,
+                                           GLenum yuv_color_space,
                                            GLenum plane_config,
                                            GLenum subsampling,
                                            const volatile GLbyte* mailboxes);
@@ -2768,6 +2772,10 @@ void RasterDecoderImpl::DoReadbackYUVImagePixelsINTERNAL(
 }
 
 void RasterDecoderImpl::DoConvertYUVAMailboxesToRGBINTERNAL(
+    GLint src_x,
+    GLint src_y,
+    GLsizei width,
+    GLsizei height,
     GLenum planes_yuv_color_space,
     GLenum plane_config,
     GLenum subsampling,
@@ -2775,7 +2783,8 @@ void RasterDecoderImpl::DoConvertYUVAMailboxesToRGBINTERNAL(
   CopySharedImageHelper helper(&shared_image_representation_factory_,
                                shared_context_state_.get());
   auto result = helper.ConvertYUVAMailboxesToRGB(
-      planes_yuv_color_space, plane_config, subsampling, bytes_in);
+      src_x, src_y, width, height, planes_yuv_color_space, plane_config,
+      subsampling, bytes_in);
   if (!result.has_value()) {
     LOCAL_SET_GL_ERROR(result.error().gl_error,
                        result.error().function_name.c_str(),

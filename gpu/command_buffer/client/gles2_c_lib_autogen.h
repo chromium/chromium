@@ -1667,12 +1667,17 @@ GLES2ConvertRGBAToYUVAMailboxesINTERNAL(GLenum planes_yuv_color_space,
       planes_yuv_color_space, plane_config, subsampling, mailboxes);
 }
 void GL_APIENTRY
-GLES2ConvertYUVAMailboxesToRGBINTERNAL(GLenum planes_yuv_color_space,
+GLES2ConvertYUVAMailboxesToRGBINTERNAL(GLint src_x,
+                                       GLint src_y,
+                                       GLsizei width,
+                                       GLsizei height,
+                                       GLenum planes_yuv_color_space,
                                        GLenum plane_config,
                                        GLenum subsampling,
                                        const GLbyte* mailboxes) {
   gles2::GetGLContext()->ConvertYUVAMailboxesToRGBINTERNAL(
-      planes_yuv_color_space, plane_config, subsampling, mailboxes);
+      src_x, src_y, width, height, planes_yuv_color_space, plane_config,
+      subsampling, mailboxes);
 }
 void GL_APIENTRY GLES2CopySharedImageINTERNAL(GLint xoffset,
                                               GLint yoffset,

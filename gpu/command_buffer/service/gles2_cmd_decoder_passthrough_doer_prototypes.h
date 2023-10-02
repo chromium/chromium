@@ -1063,6 +1063,10 @@ error::Error DoConvertRGBAToYUVAMailboxesINTERNAL(
     GLenum subsampling,
     const volatile GLbyte* mailboxes_in);
 error::Error DoConvertYUVAMailboxesToRGBINTERNAL(
+    GLint src_x,
+    GLint src_y,
+    GLsizei width,
+    GLsizei height,
     GLenum yuv_color_space,
     GLenum plane_config,
     GLenum subsampling,

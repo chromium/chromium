@@ -181,9 +181,11 @@ bool VideoFrameYUVConverter::ConvertYUVVideoFrame(
                                    mailboxes,
                                    /*allow_multiplanar_for_upload=*/false);
     ri->ConvertYUVAMailboxesToRGB(
-        dest_mailbox_holder.mailbox, holder_->yuva_info().yuvColorSpace(),
-        nullptr, holder_->yuva_info().planeConfig(),
-        holder_->yuva_info().subsampling(), mailboxes);
+        dest_mailbox_holder.mailbox, 0, 0, video_frame->coded_size().width(),
+        video_frame->coded_size().height(),
+        holder_->yuva_info().yuvColorSpace(), nullptr,
+        holder_->yuva_info().planeConfig(), holder_->yuva_info().subsampling(),
+        mailboxes);
   }
   return true;
 }

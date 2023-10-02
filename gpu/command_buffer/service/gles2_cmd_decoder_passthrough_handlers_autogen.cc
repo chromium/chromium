@@ -4648,6 +4648,10 @@ GLES2DecoderPassthroughImpl::HandleConvertYUVAMailboxesToRGBINTERNALImmediate(
   const volatile gles2::cmds::ConvertYUVAMailboxesToRGBINTERNALImmediate& c =
       *static_cast<const volatile gles2::cmds::
                        ConvertYUVAMailboxesToRGBINTERNALImmediate*>(cmd_data);
+  GLint src_x = static_cast<GLint>(c.src_x);
+  GLint src_y = static_cast<GLint>(c.src_y);
+  GLsizei width = static_cast<GLsizei>(c.width);
+  GLsizei height = static_cast<GLsizei>(c.height);
   GLenum planes_yuv_color_space = static_cast<GLenum>(c.planes_yuv_color_space);
   GLenum plane_config = static_cast<GLenum>(c.plane_config);
   GLenum subsampling = static_cast<GLenum>(c.subsampling);
@@ -4664,7 +4668,8 @@ GLES2DecoderPassthroughImpl::HandleConvertYUVAMailboxesToRGBINTERNALImmediate(
     return error::kOutOfBounds;
   }
   error::Error error = DoConvertYUVAMailboxesToRGBINTERNAL(
-      planes_yuv_color_space, plane_config, subsampling, mailboxes);
+      src_x, src_y, width, height, planes_yuv_color_space, plane_config,
+      subsampling, mailboxes);
   if (error != error::kNoError) {
     return error;
   }

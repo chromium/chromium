@@ -838,7 +838,11 @@ void ConvertRGBAToYUVAMailboxesINTERNAL(GLenum planes_yuv_color_space,
                                         GLenum plane_config,
                                         GLenum subsampling,
                                         const GLbyte* mailboxes) override;
-void ConvertYUVAMailboxesToRGBINTERNAL(GLenum planes_yuv_color_space,
+void ConvertYUVAMailboxesToRGBINTERNAL(GLint src_x,
+                                       GLint src_y,
+                                       GLsizei width,
+                                       GLsizei height,
+                                       GLenum planes_yuv_color_space,
                                        GLenum plane_config,
                                        GLenum subsampling,
                                        const GLbyte* mailboxes) override;

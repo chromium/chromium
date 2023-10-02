@@ -3049,8 +3049,8 @@ TEST_F(GLES2ImplementationTest, ConvertYUVAMailboxesToRGBINTERNAL) {
     data[jj] = static_cast<GLbyte>(jj);
   }
   Cmds expected;
-  expected.cmd.Init(1, 2, 3, &data[0]);
-  gl_->ConvertYUVAMailboxesToRGBINTERNAL(1, 2, 3, &data[0]);
+  expected.cmd.Init(1, 2, 3, 4, 5, 6, 7, &data[0]);
+  gl_->ConvertYUVAMailboxesToRGBINTERNAL(1, 2, 3, 4, 5, 6, 7, &data[0]);
   EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
 }
 

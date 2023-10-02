@@ -2380,12 +2380,13 @@ TEST_P(OopYUVToRGBPixelTest, ConvertYUVToRGB) {
   UploadPixels(ri, yuv_mailboxes[1], uv_info, u_bitmap);
   UploadPixels(ri, yuv_mailboxes[2], uv_info, v_bitmap);
 
-  ri->ConvertYUVAMailboxesToRGB(dest_mailbox, kJPEG_SkYUVColorSpace,
-                                TestColorSpaceConversion()
-                                    ? source_color_space.ToSkColorSpace().get()
-                                    : nullptr,
-                                SkYUVAInfo::PlaneConfig::kY_U_V,
-                                SkYUVAInfo::Subsampling::k420, yuv_mailboxes);
+  ri->ConvertYUVAMailboxesToRGB(
+      dest_mailbox, 0, 0, options.resource_size.width(),
+      options.resource_size.height(), kJPEG_SkYUVColorSpace,
+      TestColorSpaceConversion() ? source_color_space.ToSkColorSpace().get()
+                                 : nullptr,
+      SkYUVAInfo::PlaneConfig::kY_U_V, SkYUVAInfo::Subsampling::k420,
+      yuv_mailboxes);
   SkBitmap actual_bitmap =
       ReadbackMailbox(ri, dest_mailbox, options.resource_size,
                       dest_color_space.ToSkColorSpace());
@@ -2461,10 +2462,11 @@ TEST_F(OopPixelTest, ConvertNV12ToRGB) {
   UploadPixels(ri, y_uv_mailboxes[0], y_info, y_bitmap);
   UploadPixels(ri, y_uv_mailboxes[1], uv_info, uv_bitmap);
 
-  ri->ConvertYUVAMailboxesToRGB(dest_mailbox, kJPEG_SkYUVColorSpace,
-                                SkColorSpace::MakeSRGB().get(),
-                                SkYUVAInfo::PlaneConfig::kY_UV,
-                                SkYUVAInfo::Subsampling::k420, y_uv_mailboxes);
+  ri->ConvertYUVAMailboxesToRGB(
+      dest_mailbox, 0, 0, options.resource_size.width(),
+      options.resource_size.height(), kJPEG_SkYUVColorSpace,
+      SkColorSpace::MakeSRGB().get(), SkYUVAInfo::PlaneConfig::kY_UV,
+      SkYUVAInfo::Subsampling::k420, y_uv_mailboxes);
   SkBitmap actual_bitmap =
       ReadbackMailbox(ri, dest_mailbox, options.resource_size);
 
