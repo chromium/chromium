@@ -961,6 +961,9 @@ extern const char kWebIdentityMDocsDescription[];
 extern const char kFileHandlingIconsName[];
 extern const char kFileHandlingIconsDescription[];
 
+extern const char kFileSystemAccessLockingSchemeName[];
+extern const char kFileSystemAccessLockingSchemeDescription[];
+
 extern const char kFileSystemObserverName[];
 extern const char kFileSystemObserverDescription[];
 

@@ -1707,6 +1707,13 @@ const char kFileHandlingIconsDescription[] =
     "icons. See https://github.com/WICG/file-handling/blob/main/explainer.md "
     "for more information.";
 
+const char kFileSystemAccessLockingSchemeName[] = "File system lock modes";
+const char kFileSystemAccessLockingSchemeDescription[] =
+    "Allows the creation of FileSystemSyncAccessHandle and "
+    "FileSystemWritableFileStream in new locking modes. See "
+    "https://github.com/whatwg/fs/blob/main/proposals/"
+    "MultipleReadersWriters.md for more information.";
+
 const char kFileSystemObserverName[] = "FileSystemObserver";
 const char kFileSystemObserverDescription[] =
     "Enables the FileSystemObserver interface, which allows websites to be "

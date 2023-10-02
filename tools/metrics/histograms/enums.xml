@@ -63040,6 +63040,7 @@ from previous Chrome versions.
   <int value="-1034344165" label="V8NoTurbo:disabled"/>
   <int value="-1033738911" label="enable-mac-views-dialogs"/>
   <int value="-1032884201" label="HeavyAdPrivacyMitigations:enabled"/>
+  <int value="-1032545529" label="FileSystemAccessLockingScheme:disabled"/>
   <int value="-1032265414" label="AutocompleteExtendedSuggestions:disabled"/>
   <int value="-1031350684" label="PdfIsolation:disabled"/>
   <int value="-1030683709" label="OnlyShowNewShortcutsApp:disabled"/>
@@ -65106,6 +65107,7 @@ from previous Chrome versions.
   <int value="-11983392"
       label="MagnifierContinuousMouseFollowingModeSetting:enabled"/>
   <int value="-11260186" label="enable-offline-pages-as-saved-pages"/>
+  <int value="-11209341" label="FileSystemAccessLockingScheme:enabled"/>
   <int value="-10709540"
       label="OmniboxUIExperimentHideSuggestionUrlScheme:enabled"/>
   <int value="-9881235"

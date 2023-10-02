@@ -4473,6 +4473,11 @@
     "expiry_milestone": 110
   },
   {
+    "name": "file-system-access-locking-scheme",
+    "owners": [ "memmott", "chrome-owp-storage@google.com" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "file-system-observer",
     "owners": [ "asully", "chrome-owp-storage@google.com" ],
     "expiry_milestone": 120
