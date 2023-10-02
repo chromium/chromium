@@ -567,7 +567,7 @@ class OutputBooleanProperty extends OutputProperty {
     super((value ? 'is: ' : 'not: ') + filterName);
 
     const icon = document.createElement('div');
-    icon.classList.add(value ? 'check-mark' : 'x-mark');
+    icon.classList.add('icon', value ? 'check-icon' : 'x-icon');
     this.appendChild(icon);
 
     return this;
@@ -638,9 +638,10 @@ class OutputDictionaryProperty extends OutputProperty {
     container.appendChild(pre);
 
     const link = document.createElement('a');
+    link.classList.add('icon', 'download-icon');
     link.download = 'AdditionalInfo.json';
     link.href = OutputDictionaryProperty.createDownloadLink(value);
-    container.appendChild(link);
+    container.insertBefore(link, container.firstChild);
 
     this.appendChild(container);
 
