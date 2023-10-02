@@ -30,6 +30,10 @@ FakeSafeBrowsingClient::GetHashRealTimeService() {
   return nullptr;
 }
 
+variations::VariationsService* FakeSafeBrowsingClient::GetVariationsService() {
+  return nullptr;
+}
+
 bool FakeSafeBrowsingClient::ShouldBlockUnsafeResource(
     const security_interstitials::UnsafeResource& resource) const {
   return should_block_unsafe_resource_;

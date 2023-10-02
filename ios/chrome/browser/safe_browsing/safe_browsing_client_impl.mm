@@ -40,6 +40,10 @@ SafeBrowsingClientImpl::GetHashRealTimeService() {
   return hash_real_time_service_;
 }
 
+variations::VariationsService* SafeBrowsingClientImpl::GetVariationsService() {
+  return GetApplicationContext()->GetVariationsService();
+}
+
 bool SafeBrowsingClientImpl::ShouldBlockUnsafeResource(
     const security_interstitials::UnsafeResource& resource) const {
   // Send do-not-proceed signal if the WebState is for a prerender tab.

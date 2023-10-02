@@ -17,6 +17,10 @@ namespace security_interstitials {
 struct UnsafeResource;
 }  // namespace security_interstitials
 
+namespace variations {
+class VariationsService;
+}  // namespace variations
+
 namespace web {
 class WebState;
 }  // namespace web
@@ -34,8 +38,10 @@ class SafeBrowsingClient : public KeyedService {
   // Gets the real time url look up service. Clients may return nullptr.
   virtual safe_browsing::RealTimeUrlLookupService*
   GetRealTimeUrlLookupService() = 0;
-  // Gets the hash-real-time service factory. Client may return nulltpr.
+  // Gets the hash-real-time service factory. Client may return nullptr.
   virtual safe_browsing::HashRealTimeService* GetHashRealTimeService() = 0;
+  // Gets the variations service. Clients may return nullptr.
+  virtual variations::VariationsService* GetVariationsService() = 0;
   // Returns whether or not `resource` should be blocked from loading.
   virtual bool ShouldBlockUnsafeResource(
       const security_interstitials::UnsafeResource& resource) const = 0;

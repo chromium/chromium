@@ -156,15 +156,13 @@ SafeBrowsingServiceImpl::CreateUrlChecker(
   safe_browsing::HashRealTimeService* hash_real_time_service =
       client->GetHashRealTimeService();
 
-  // TODO(crbug.com/1468377): Pass through `variations_service` in
-  // `GetCountryCode` call.
   safe_browsing::hash_realtime_utils::HashRealTimeSelection
       hash_real_time_selection =
           safe_browsing::hash_realtime_utils::DetermineHashRealTimeSelection(
               web_state->GetBrowserState()->IsOffTheRecord(),
               pref_change_registrar_->prefs(),
               safe_browsing::hash_realtime_utils::GetCountryCode(
-                  /*variations_service=*/nullptr),
+                  client->GetVariationsService()),
               /*log_usage_histograms=*/true);
 
   return std::make_unique<safe_browsing::SafeBrowsingUrlCheckerImpl>(

@@ -34,6 +34,12 @@ WebViewSafeBrowsingClient::GetHashRealTimeService() {
   return nullptr;
 }
 
+variations::VariationsService*
+WebViewSafeBrowsingClient::GetVariationsService() {
+  // ios/web_view does not support variations.
+  return nullptr;
+}
+
 bool WebViewSafeBrowsingClient::ShouldBlockUnsafeResource(
     const security_interstitials::UnsafeResource& resource) const {
   return false;
