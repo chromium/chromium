@@ -1,6 +1,7 @@
 include_rules = [
   '+third_party/libaddressinput/chromium/chrome_metadata_source.h',
   '+third_party/libaddressinput/chromium/chrome_storage_impl.h',
+  '+components/browser_ui/device_lock/android',
 ]
 
 specific_include_rules = {

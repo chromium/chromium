@@ -10,11 +10,12 @@ namespace autofill {
 
 AutofillSaveCardDelegate::AutofillSaveCardDelegate(
     absl::variant<AutofillClient::LocalSaveCardPromptCallback,
-                  AutofillClient::UploadSaveCardPromptCallback> callback,
+                  AutofillClient::UploadSaveCardPromptCallback>
+        save_card_callback,
     AutofillClient::SaveCreditCardOptions options)
     : options_(options),
       had_user_interaction_(false),
-      callback_(std::move(callback)) {}
+      save_card_callback_(std::move(save_card_callback)) {}
 
 AutofillSaveCardDelegate::~AutofillSaveCardDelegate() = default;
 
@@ -23,7 +24,9 @@ void AutofillSaveCardDelegate::OnUiShown() {
                                               is_for_upload(), options_);
 }
 
-void AutofillSaveCardDelegate::OnUiAccepted() {
+void AutofillSaveCardDelegate::OnUiAccepted(base::OnceClosure callback) {
+  on_finished_gathering_consent_callback_ = std::move(callback);
+
   // Acceptance can be logged immediately if:
   // 1. the user is accepting local save.
   // 2. or when we don't need more info in order to upload.
@@ -35,17 +38,13 @@ void AutofillSaveCardDelegate::OnUiAccepted() {
         is_for_upload(), options_);
   }
   LogUserAction(AutofillMetrics::INFOBAR_ACCEPTED);
-  RunSaveCardPromptCallback(
-      AutofillClient::SaveCardOfferUserDecision::kAccepted,
-      /*user_provided_details=*/{});
+  GatherAdditionalConsentIfApplicable(/*user_provided_details=*/{});
 }
 
 void AutofillSaveCardDelegate::OnUiUpdatedAndAccepted(
     AutofillClient::UserProvidedCardDetails user_provided_details) {
   LogUserAction(AutofillMetrics::INFOBAR_ACCEPTED);
-  RunSaveCardPromptCallback(
-      AutofillClient::SaveCardOfferUserDecision::kAccepted,
-      user_provided_details);
+  GatherAdditionalConsentIfApplicable(user_provided_details);
 }
 
 void AutofillSaveCardDelegate::OnUiCanceled() {
@@ -70,17 +69,34 @@ void AutofillSaveCardDelegate::OnUiIgnored() {
   }
 }
 
+void AutofillSaveCardDelegate::OnFinishedGatheringConsent(
+    AutofillClient::SaveCardOfferUserDecision user_decision,
+    AutofillClient::UserProvidedCardDetails user_provided_details) {
+  RunSaveCardPromptCallback(user_decision, user_provided_details);
+  if (!on_finished_gathering_consent_callback_.is_null()) {
+    std::move(on_finished_gathering_consent_callback_).Run();
+  }
+}
+
 void AutofillSaveCardDelegate::RunSaveCardPromptCallback(
     AutofillClient::SaveCardOfferUserDecision user_decision,
     AutofillClient::UserProvidedCardDetails user_provided_details) {
   if (is_for_upload()) {
     absl::get<AutofillClient::UploadSaveCardPromptCallback>(
-        std::move(callback_))
+        std::move(save_card_callback_))
         .Run(user_decision, user_provided_details);
   } else {
-    absl::get<AutofillClient::LocalSaveCardPromptCallback>(std::move(callback_))
+    absl::get<AutofillClient::LocalSaveCardPromptCallback>(
+        std::move(save_card_callback_))
         .Run(user_decision);
   }
+}
+
+void AutofillSaveCardDelegate::GatherAdditionalConsentIfApplicable(
+    AutofillClient::UserProvidedCardDetails user_provided_details) {
+  OnFinishedGatheringConsent(
+      AutofillClient::SaveCardOfferUserDecision::kAccepted,
+      user_provided_details);
 }
 
 void AutofillSaveCardDelegate::LogUserAction(

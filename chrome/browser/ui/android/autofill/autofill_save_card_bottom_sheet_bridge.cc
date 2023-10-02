@@ -11,6 +11,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "chrome/android/chrome_jni_headers/AutofillSaveCardBottomSheetBridge_jni.h"
 #include "chrome/browser/android/resource_mapper.h"
+#include "chrome/browser/ui/android/autofill/autofill_save_card_delegate_android.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "components/autofill/android/payments/legal_message_line_android.h"
 #include "components/autofill/android/payments_jni_headers/AutofillSaveCardUiInfo_jni.h"
@@ -67,7 +68,7 @@ AutofillSaveCardBottomSheetBridge::~AutofillSaveCardBottomSheetBridge() {
 
 void AutofillSaveCardBottomSheetBridge::RequestShowContent(
     const AutofillSaveCardUiInfo& ui_info,
-    std::unique_ptr<AutofillSaveCardDelegate> delegate) {
+    std::unique_ptr<AutofillSaveCardDelegateAndroid> delegate) {
   JNIEnv* env = base::android::AttachCurrentThread();
   save_card_delegate_ = std::move(delegate);
   Java_AutofillSaveCardBottomSheetBridge_requestShowContent(
@@ -89,22 +90,28 @@ void AutofillSaveCardBottomSheetBridge::OnUiShown(JNIEnv* env) {
 
 void AutofillSaveCardBottomSheetBridge::OnUiAccepted(JNIEnv* env) {
   if (save_card_delegate_) {
-    save_card_delegate_->OnUiAccepted();
+    save_card_delegate_->OnUiAccepted(base::BindOnce(
+        &AutofillSaveCardBottomSheetBridge::ResetSaveCardDelegate,
+        base::Unretained(this)));
   }
-  save_card_delegate_.reset(nullptr);
+  ResetSaveCardDelegate();
 }
 
 void AutofillSaveCardBottomSheetBridge::OnUiCanceled(JNIEnv* env) {
   if (save_card_delegate_) {
     save_card_delegate_->OnUiCanceled();
   }
-  save_card_delegate_.reset(nullptr);
+  ResetSaveCardDelegate();
 }
 
 void AutofillSaveCardBottomSheetBridge::OnUiIgnored(JNIEnv* env) {
   if (save_card_delegate_) {
     save_card_delegate_->OnUiIgnored();
   }
+  ResetSaveCardDelegate();
+}
+
+void AutofillSaveCardBottomSheetBridge::ResetSaveCardDelegate() {
   save_card_delegate_.reset(nullptr);
 }
 

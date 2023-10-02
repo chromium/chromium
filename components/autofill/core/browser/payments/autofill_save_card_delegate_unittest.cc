@@ -5,6 +5,7 @@
 #include <string>
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/mock_callback.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/metrics/payments/credit_card_save_metrics.h"
 #include "components/autofill/core/browser/payments/autofill_save_card_delegate.h"
@@ -84,6 +85,16 @@ testing::Matcher<UploadCallbackArgs> EqualToUploadCallbackArgs(
       testing::Field(&UploadCallbackArgs::first, decision),
       testing::Field(&UploadCallbackArgs::second,
                      EqualToUserProvidedCardDetails(details)));
+}
+
+TEST_F(AutofillSaveCardDelegateTest,
+       OnUiAcceptedWithCallbackArgumentRunsCallback) {
+  auto delegate = AutofillSaveCardDelegate(MakeLocalCallback(),
+                                           /*options=*/{});
+
+  base::MockOnceClosure mock_finish_gathering_consent_callback;
+  EXPECT_CALL(mock_finish_gathering_consent_callback, Run).Times(1);
+  delegate.OnUiAccepted(mock_finish_gathering_consent_callback.Get());
 }
 
 TEST_F(AutofillSaveCardDelegateTest, OnUiAcceptedRunsLocalCallback) {

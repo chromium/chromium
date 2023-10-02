@@ -18,22 +18,32 @@ class AutofillSaveCardDelegate {
  public:
   AutofillSaveCardDelegate(
       absl::variant<AutofillClient::LocalSaveCardPromptCallback,
-                    AutofillClient::UploadSaveCardPromptCallback> callback,
+                    AutofillClient::UploadSaveCardPromptCallback>
+          save_card_callback,
       AutofillClient::SaveCreditCardOptions options);
 
-  ~AutofillSaveCardDelegate();
+  virtual ~AutofillSaveCardDelegate();
 
   bool is_for_upload() const {
     return absl::holds_alternative<
-        AutofillClient::UploadSaveCardPromptCallback>(callback_);
+        AutofillClient::UploadSaveCardPromptCallback>(save_card_callback_);
   }
 
   void OnUiShown();
-  void OnUiAccepted();
+  // `on_save_card_completed` will be triggered after the save card flow has
+  // finished.
+  void OnUiAccepted(
+      base::OnceClosure on_save_card_completed = base::NullCallback());
   void OnUiUpdatedAndAccepted(
       AutofillClient::UserProvidedCardDetails user_provided_details);
   void OnUiCanceled();
   void OnUiIgnored();
+
+ protected:
+  // Called when all of the prerequisites for saving a card have been met.
+  void OnFinishedGatheringConsent(
+      AutofillClient::SaveCardOfferUserDecision user_decision,
+      AutofillClient::UserProvidedCardDetails user_provided_details);
 
  private:
   friend class AutofillSaveCardInfoBarDelegateMobileTest;
@@ -46,6 +56,15 @@ class AutofillSaveCardDelegate {
   // empty the current card values will be used.
   void RunSaveCardPromptCallback(
       AutofillClient::SaveCardOfferUserDecision user_decision,
+      AutofillClient::UserProvidedCardDetails user_provided_details);
+
+  // TODO(crbug.com/1486941): Make GatherAdditionalConsentIfApplicable() a pure
+  //                          virtual function.
+  // This function by default saves the credit card, but allows subclasses to
+  // override if there are prerequisites to saving the card (ex: Android
+  // automotive requires a pin/password to be set on the device and must
+  // redirect to that flow before saving card information).
+  virtual void GatherAdditionalConsentIfApplicable(
       AutofillClient::UserProvidedCardDetails user_provided_details);
 
   void LogUserAction(AutofillMetrics::InfoBarMetric user_action);
@@ -62,7 +81,13 @@ class AutofillSaveCardDelegate {
   // credit card offer-to-save prompt.
   absl::variant<AutofillClient::LocalSaveCardPromptCallback,
                 AutofillClient::UploadSaveCardPromptCallback>
-      callback_;
+      save_card_callback_;
+
+  // Callback to run immediately after `save_card_callback_`. An example of a
+  // callback is cleaning up pointers to delegates that have their lifecycle
+  // extended due to user going through device lock setup flows before saving a
+  // card.
+  base::OnceClosure on_finished_gathering_consent_callback_;
 };
 
 }  // namespace autofill

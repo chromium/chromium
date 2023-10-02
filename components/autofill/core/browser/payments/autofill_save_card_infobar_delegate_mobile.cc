@@ -106,8 +106,15 @@ std::u16string AutofillSaveCardInfoBarDelegateMobile::GetButtonLabel(
 }
 
 bool AutofillSaveCardInfoBarDelegateMobile::Accept() {
+#if BUILDFLAG(IS_ANDROID)
+  delegate_->OnUiAccepted(
+      base::BindOnce(&AutofillSaveCardInfoBarDelegateMobile::RemoveInfobar,
+                     base::Unretained(this)));
+  return false;
+#else
   delegate_->OnUiAccepted();
   return true;
+#endif
 }
 
 #if BUILDFLAG(IS_IOS)
@@ -123,5 +130,13 @@ bool AutofillSaveCardInfoBarDelegateMobile::UpdateAndAccept(
   return true;
 }
 #endif  // BUILDFLAG(IS_IOS)
+
+#if BUILDFLAG(IS_ANDROID)
+void AutofillSaveCardInfoBarDelegateMobile::RemoveInfobar() {
+  if (infobar()) {
+    infobar()->RemoveSelf();
+  }
+}
+#endif
 
 }  // namespace autofill

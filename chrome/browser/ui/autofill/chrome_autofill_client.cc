@@ -124,6 +124,7 @@
 #include "chrome/browser/ui/android/autofill/autofill_accessibility_utils.h"
 #include "chrome/browser/ui/android/autofill/autofill_logger_android.h"
 #include "chrome/browser/ui/android/autofill/autofill_save_card_bottom_sheet_bridge.h"
+#include "chrome/browser/ui/android/autofill/autofill_save_card_delegate_android.h"
 #include "chrome/browser/ui/android/autofill/card_expiration_date_fix_flow_view_android.h"
 #include "chrome/browser/ui/android/autofill/card_name_fix_flow_view_android.h"
 #include "chrome/browser/ui/android/infobars/autofill_credit_card_filling_infobar.h"
@@ -792,8 +793,8 @@ void ChromeAutofillClient::ConfirmSaveCreditCardLocally(
   DCHECK(options.show_prompt);
   AutofillSaveCardUiInfo ui_info =
       AutofillSaveCardUiInfo::CreateForLocalSave(options, card);
-  auto save_card_delegate =
-      std::make_unique<AutofillSaveCardDelegate>(std::move(callback), options);
+  auto save_card_delegate = std::make_unique<AutofillSaveCardDelegateAndroid>(
+      std::move(callback), options, web_contents());
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnablePaymentsAndroidBottomSheet)) {
     if (auto* bridge = GetOrCreateAutofillSaveCardBottomSheetBridge()) {
@@ -833,8 +834,8 @@ void ChromeAutofillClient::ConfirmSaveCreditCardToCloud(
       identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
   AutofillSaveCardUiInfo ui_info = AutofillSaveCardUiInfo::CreateForUploadSave(
       options, card, legal_message_lines, account_info);
-  auto save_card_delegate =
-      std::make_unique<AutofillSaveCardDelegate>(std::move(callback), options);
+  auto save_card_delegate = std::make_unique<AutofillSaveCardDelegateAndroid>(
+      std::move(callback), options, web_contents());
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnablePaymentsAndroidBottomSheet)) {
     if (auto* bridge = GetOrCreateAutofillSaveCardBottomSheetBridge()) {

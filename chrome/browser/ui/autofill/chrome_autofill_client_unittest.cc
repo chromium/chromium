@@ -11,6 +11,7 @@
 #include "chrome/browser/fast_checkout/fast_checkout_client_impl.h"
 #include "chrome/browser/fast_checkout/fast_checkout_features.h"
 #include "chrome/browser/plus_addresses/plus_address_service_factory.h"
+#include "chrome/browser/ui/android/autofill/autofill_save_card_delegate_android.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
 #include "components/autofill/content/browser/test_autofill_driver_injector.h"
@@ -49,7 +50,7 @@ class MockAutofillSaveCardBottomSheetBridge
   MOCK_METHOD(void,
               RequestShowContent,
               (const AutofillSaveCardUiInfo&,
-               std::unique_ptr<AutofillSaveCardDelegate>),
+               std::unique_ptr<AutofillSaveCardDelegateAndroid>),
               (override));
 };
 #endif
