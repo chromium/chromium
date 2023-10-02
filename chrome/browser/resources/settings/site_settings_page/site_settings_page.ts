@@ -41,11 +41,9 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
   if (categoryItemMap !== null) {
     return categoryItemMap;
   }
-  const is3pcdRedesignEnabled =
-      loadTimeData.getBoolean('is3pcdCookieSettingsRedesignEnabled');
   // The following list is ordered alphabetically by |id|. The order in which
   // these appear in the UI is determined elsewhere in this file.
-  const categoryList = [
+  const categoryList: CategoryListItem[] = [
     {
       route: routes.SITE_SETTINGS_ADS,
       id: Id.ADS,
@@ -135,20 +133,6 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       icon: 'settings:clipboard',
       enabledLabel: 'siteSettingsClipboardAllowed',
       disabledLabel: 'siteSettingsClipboardBlocked',
-    },
-    {
-      route: routes.COOKIES,
-      id: Id.COOKIES,
-      label: is3pcdRedesignEnabled ?
-          'trackingProtectionLinkRowLabel' :
-          (loadTimeData.getBoolean('isPrivacySandboxSettings4') ?
-               'thirdPartyCookiesLinkRowLabel' :
-               'siteSettingsCookies'),
-      icon: is3pcdRedesignEnabled ? 'settings:visibility-off' :
-                                    'settings:cookie',
-      enabledLabel: 'siteSettingsCookiesAllowed',
-      disabledLabel: 'siteSettingsBlocked',
-      otherLabel: 'cookiePageClearOnExit',
     },
     {
       route: routes.SITE_SETTINGS_LOCATION,
@@ -360,7 +344,29 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       icon: 'settings:zoom-in',
     },
   ];
-
+  if (loadTimeData.getBoolean('is3pcdCookieSettingsRedesignEnabled')) {
+    categoryList.push({
+      route: routes.TRACKING_PROTECTION,
+      id: Id.COOKIES,
+      label: 'trackingProtectionLinkRowLabel',
+      icon: 'settings:visibility-off',
+      enabledLabel: 'siteSettingsCookiesAllowed',
+      disabledLabel: 'siteSettingsBlocked',
+      otherLabel: 'cookiePageClearOnExit',
+    });
+  } else {
+    categoryList.push({
+      route: routes.COOKIES,
+      id: Id.COOKIES,
+      label:
+          (loadTimeData.getBoolean('isPrivacySandboxSettings4') ?
+               'thirdPartyCookiesLinkRowLabel' :
+               'siteSettingsCookies'),
+      icon: 'settings:cookie',
+      enabledLabel: 'trackingProtectionLinkRowSubLabel',
+      disabledLabel: 'trackingProtectionLinkRowSubLabel',
+    });
+  }
   categoryItemMap = new Map(categoryList.map(item => [item.id, item]));
   return categoryItemMap;
 }
