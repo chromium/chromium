@@ -207,6 +207,9 @@ class DownloadToolbarButtonView : public ToolbarButton,
   // Parameters determining how the progress ring should be drawn.
   ProgressInfo progress_info_;
 
+  // Whether we have a new progress_info_ and need to redraw the button.
+  bool redraw_progress_soon_ = false;
+
   // Marks whether there is a pending download started animation. This is needed
   // because the animation should only be triggered after the view has been
   // laid out properly, so this provides a way to remember to show the animation

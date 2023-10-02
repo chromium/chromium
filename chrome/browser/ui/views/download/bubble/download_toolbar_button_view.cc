@@ -244,6 +244,8 @@ gfx::RenderText& DownloadToolbarButtonView::GetBadgeText(
 }
 
 void DownloadToolbarButtonView::PaintButtonContents(gfx::Canvas* canvas) {
+  redraw_progress_soon_ = false;
+
   // Do not show the progress ring when there is no in progress download.
   if (progress_info_.download_count == 0) {
     if (scanning_animation_.is_animating()) {
@@ -327,6 +329,9 @@ void DownloadToolbarButtonView::UpdateDownloadIcon(
 }
 
 void DownloadToolbarButtonView::UpdateIconProgress(const ProgressInfo& info) {
+  if (progress_info_ != info) {
+    redraw_progress_soon_ = true;
+  }
   progress_info_ = info;
 }
 
@@ -423,7 +428,9 @@ void DownloadToolbarButtonView::UpdateIcon() {
     return;
 
   // Schedule paint to update the progress ring.
-  SchedulePaint();
+  if (redraw_progress_soon_) {
+    SchedulePaint();
+  }
 
   const gfx::VectorIcon* new_icon;
   SkColor icon_color = GetIconColor();
