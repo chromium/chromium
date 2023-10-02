@@ -274,17 +274,17 @@ IN_PROC_BROWSER_TEST_F(NewTabPageModulesHistoryClustersModuleTest, Layouts) {
 }
 
 IN_PROC_BROWSER_TEST_F(NewTabPageModulesHistoryClustersModuleTest,
-                       UnloadMetricImageDisplayStateNone) {
+                       PagehideMetricImageDisplayStateNone) {
   RunTest("new_tab_page/modules/history_clusters/module_test.js",
           "runMochaSuite('NewTabPageModulesHistoryClustersModuleTest "
-          "UnloadMetricNoImages')");
+          "PagehideMetricNoImages')");
 }
 
 IN_PROC_BROWSER_TEST_F(NewTabPageModulesHistoryClustersModuleTest,
-                       UnloadMetricImageDisplayStateAll) {
+                       PagehideMetricImageDisplayStateAll) {
   RunTest("new_tab_page/modules/history_clusters/module_test.js",
           "runMochaSuite('NewTabPageModulesHistoryClustersModuleTest "
-          "UnloadMetricAllImages')");
+          "PagehideMetricAllImages')");
 }
 
 IN_PROC_BROWSER_TEST_F(NewTabPageModulesHistoryClustersModuleTest,

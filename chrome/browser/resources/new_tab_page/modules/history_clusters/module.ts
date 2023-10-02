@@ -116,7 +116,10 @@ export class HistoryClustersModuleElement extends I18nMixin
     HistoryClustersProxyImpl.getInstance().handler.recordLayoutTypeShown(
         this.layoutType, this.cluster.id);
 
-    listenOnce(window, 'unload', () => {
+    // Use `pagehide` rather than `unload` because unload is being deprecated.
+    // `pagehide` fires with the same timing and is safe to use since NTP never
+    // enters back/forward-cache.
+    listenOnce(window, 'pagehide', () => {
       const visitTiles: TileModuleElement[] = Array.from(
           this.shadowRoot!.querySelectorAll('ntp-history-clusters-tile'));
       const count = visitTiles.reduce(
