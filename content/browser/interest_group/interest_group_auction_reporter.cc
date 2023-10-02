@@ -107,9 +107,9 @@ BASE_FEATURE(kFledgeRounding,
              base::FEATURE_ENABLED_BY_DEFAULT);
 // For now default bid and score to full resolution.
 const base::FeatureParam<int> kFledgeBidReportingBits{
-    &kFledgeRounding, "fledge_bid_reporting_bits", 53};
+    &kFledgeRounding, "fledge_bid_reporting_bits", 16};
 const base::FeatureParam<int> kFledgeScoreReportingBits{
-    &kFledgeRounding, "fledge_score_reporting_bits", 53};
+    &kFledgeRounding, "fledge_score_reporting_bits", 16};
 const base::FeatureParam<int> kFledgeAdCostReportingBits{
     &kFledgeRounding, "fledge_ad_cost_reporting_bits", 8};
 
