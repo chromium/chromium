@@ -1274,17 +1274,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="SafeBrowsing.HPRT.Network.Result"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2024-02-04">
-  <owner>thefrog@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Response or error codes from SafeBrowsing hash-prefix real-time lookups.
-    Logged on each resource check for which a lookup request is sent to the
-    server.
-  </summary>
-</histogram>
-
 <histogram name="SafeBrowsing.HPRT.Network.Result.WhenEnteringBackoff"
     enum="CombinedHttpResponseAndNetErrorCode" expires_after="2024-03-17">
   <owner>thefrog@chromium.org</owner>
@@ -1305,6 +1294,26 @@ chromium-metrics-reviews@google.com.
     real-time lookup. Logged on each resource check for which a lookup request
     is sent to the server.
   </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.HPRT.Network.{ResponseSource}Result"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2024-02-04">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Response or error codes from SafeBrowsing hash-prefix real-time lookups that
+    are obtained from {ResponseSource}. Logged on each resource check for which
+    a lookup request is sent to the server. Not logged if the response is not
+    from {ResponseSource}.
+  </summary>
+  <token key="ResponseSource">
+    <variant name=""
+        summary="aggregated OHTTP handler callback or direct fetch"/>
+    <variant name="InnerResponse"
+        summary="inner OHTTP response (Safe Browsing)"/>
+    <variant name="NetError" summary="internal OHTTP handler net error"/>
+    <variant name="OuterResponse" summary="outer OHTTP response (proxy)"/>
+  </token>
 </histogram>
 
 <histogram name="SafeBrowsing.HPRT.OhttpKeyService.BackoffState"

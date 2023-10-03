@@ -93,26 +93,38 @@ class ObliviousHttpClient : public network::mojom::ObliviousHttpClient {
       return;
     }
     called_ = true;
+
+    absl::optional<std::string> response_body;
+    int net_error;
+    int response_code;
+    scoped_refptr<net::HttpResponseHeaders> response_headers;
+    std::string histogram_suffix;
     if (status->is_net_error()) {
-      std::move(callback_).Run(absl::nullopt, status->get_net_error(),
-                               /*response_code=*/0, /*headers=*/nullptr);
+      net_error = status->get_net_error();
+      response_code = 0;
+      histogram_suffix = "NetErrorResult";
     } else if (status->is_outer_response_error_code()) {
-      std::move(callback_).Run(
-          absl::nullopt, net::ERR_HTTP_RESPONSE_CODE_FAILURE,
-          status->get_outer_response_error_code(), /*headers=*/nullptr);
+      net_error = net::ERR_HTTP_RESPONSE_CODE_FAILURE;
+      response_code = status->get_outer_response_error_code();
+      histogram_suffix = "OuterResponseResult";
     } else {
       DCHECK(status->is_inner_response());
+      response_headers = std::move(status->get_inner_response()->headers);
+      histogram_suffix = "InnerResponseResult";
       if (status->get_inner_response()->response_code != net::HTTP_OK) {
-        std::move(callback_).Run(
-            absl::nullopt, net::ERR_HTTP_RESPONSE_CODE_FAILURE,
-            status->get_inner_response()->response_code,
-            std::move(status->get_inner_response()->headers));
+        net_error = net::ERR_HTTP_RESPONSE_CODE_FAILURE;
+        response_code = status->get_inner_response()->response_code;
       } else {
-        std::move(callback_).Run(
-            status->get_inner_response()->response_body, net::OK, net::HTTP_OK,
-            std::move(status->get_inner_response()->headers));
+        response_body = status->get_inner_response()->response_body;
+        net_error = net::OK;
+        response_code = net::HTTP_OK;
       }
     }
+    RecordHttpResponseOrErrorCode(
+        ("SafeBrowsing.HPRT.Network." + histogram_suffix).c_str(), net_error,
+        response_code);
+    std::move(callback_).Run(response_body, net_error, response_code,
+                             response_headers);
   }
 
  private:
