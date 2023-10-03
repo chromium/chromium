@@ -123,6 +123,7 @@ void SoftwareRenderer::SwapBuffers(SwapFrameData swap_frame_data) {
   output_frame.latency_info = std::move(swap_frame_data.latency_info);
   output_frame.top_controls_visible_height_changed =
       swap_frame_data.top_controls_visible_height_changed;
+  output_frame.data.swap_trace_id = swap_frame_data.swap_trace_id;
   output_surface_->SwapBuffers(std::move(output_frame));
 }
 

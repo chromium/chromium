@@ -211,7 +211,8 @@ class VIZ_SERVICE_EXPORT SkiaOutputDevice {
         gfx::SwapCompletionResult result,
         const absl::optional<gfx::Rect>& damage_area,
         std::vector<gpu::Mailbox> released_overlays,
-        const gpu::Mailbox& primary_plane_mailbox);
+        const gpu::Mailbox& primary_plane_mailbox,
+        int64_t swap_trace_id);
     void CallFeedback();
 
    private:

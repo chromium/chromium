@@ -238,11 +238,22 @@ void SkiaOutputDevice::FinishSwapBuffers(
     const gpu::Mailbox& primary_plane_mailbox) {
   DCHECK(!pending_swaps_.empty());
 
+  TRACE_EVENT(
+      "viz,benchmark,graphics.pipeline", "Graphics.Pipeline",
+      perfetto::Flow::Global(frame.data.swap_trace_id),
+      [swap_trace_id = frame.data.swap_trace_id](perfetto::EventContext ctx) {
+        auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+        auto* data = event->set_chrome_graphics_pipeline();
+        data->set_step(perfetto::protos::pbzero::ChromeGraphicsPipeline::
+                           StepName::STEP_FINISH_BUFFER_SWAP);
+        data->set_display_trace_id(swap_trace_id);
+      });
+
   auto release_fence = std::move(result.release_fence);
   const gpu::SwapBuffersCompleteParams& params =
-      pending_swaps_.front().Complete(std::move(result), damage_area,
-                                      std::move(released_overlays),
-                                      primary_plane_mailbox);
+      pending_swaps_.front().Complete(
+          std::move(result), damage_area, std::move(released_overlays),
+          primary_plane_mailbox, frame.data.swap_trace_id);
 
   did_swap_buffer_complete_callback_.Run(params, size,
                                          std::move(release_fence));
@@ -326,7 +337,8 @@ const gpu::SwapBuffersCompleteParams& SkiaOutputDevice::SwapInfo::Complete(
     gfx::SwapCompletionResult result,
     const absl::optional<gfx::Rect>& damage_rect,
     std::vector<gpu::Mailbox> released_overlays,
-    const gpu::Mailbox& primary_plane_mailbox) {
+    const gpu::Mailbox& primary_plane_mailbox,
+    int64_t swap_trace_id) {
   params_.swap_response.result = result.swap_result;
   params_.swap_response.timings.swap_end = base::TimeTicks::Now();
   params_.frame_buffer_damage_area = damage_rect;
@@ -335,6 +347,8 @@ const gpu::SwapBuffersCompleteParams& SkiaOutputDevice::SwapInfo::Complete(
 
   params_.primary_plane_mailbox = primary_plane_mailbox;
   params_.released_overlays = std::move(released_overlays);
+
+  params_.swap_trace_id = swap_trace_id;
   return params_;
 }
 

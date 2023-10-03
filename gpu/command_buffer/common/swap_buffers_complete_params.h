@@ -42,6 +42,12 @@ struct GPU_EXPORT SwapBuffersCompleteParams {
 
   // Used only on macOS, for released overlays with SkiaRenderer.
   std::vector<Mailbox> released_overlays;
+
+  // Used by graphics pipeline to trace each individual frame swap. The value is
+  // passed from viz::Display::DrawAndSwap to Renderer, then to gl::Presenter or
+  // gl::GLSurface via gfx::FrameData and then passed back to viz::Display via
+  // gfx::SwapCompletionResult.
+  int64_t swap_trace_id = -1;
 };
 
 }  // namespace gpu

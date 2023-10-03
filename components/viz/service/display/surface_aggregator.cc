@@ -879,13 +879,15 @@ void SurfaceAggregator::EmitSurfaceContent(
 
   TRACE_EVENT(
       "viz,benchmark,graphics.pipeline", "Graphics.Pipeline",
-      perfetto::Flow::Global(frame.metadata.begin_frame_ack.trace_id),
-      [&](perfetto::EventContext ctx) {
+      perfetto::TerminatingFlow::Global(
+          frame.metadata.begin_frame_ack.trace_id),
+      perfetto::Flow::Global(display_trace_id_),
+      [trace_id = display_trace_id_](perfetto::EventContext ctx) {
         auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
         auto* data = event->set_chrome_graphics_pipeline();
         data->set_step(perfetto::protos::pbzero::ChromeGraphicsPipeline::
                            StepName::STEP_SURFACE_AGGREGATION);
-        data->set_display_trace_id(display_trace_id_);
+        data->set_display_trace_id(trace_id);
       });
 
   const gfx::Rect& surface_quad_visible_rect = surface_quad->visible_rect;
@@ -2202,14 +2204,15 @@ AggregatedFrame SurfaceAggregator::Aggregate(
       surface->GetActiveOrInterpolatedFrame();
   TRACE_EVENT(
       "viz,benchmark,graphics.pipeline", "Graphics.Pipeline",
-      perfetto::Flow::Global(
+      perfetto::TerminatingFlow::Global(
           root_surface_frame.metadata.begin_frame_ack.trace_id),
-      [&](perfetto::EventContext ctx) {
+      perfetto::Flow::Global(display_trace_id_),
+      [trace_id = display_trace_id_](perfetto::EventContext ctx) {
         auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
         auto* data = event->set_chrome_graphics_pipeline();
         data->set_step(perfetto::protos::pbzero::ChromeGraphicsPipeline::
                            StepName::STEP_SURFACE_AGGREGATION);
-        data->set_display_trace_id(display_trace_id_);
+        data->set_display_trace_id(trace_id);
       });
 
   AggregatedFrame frame;

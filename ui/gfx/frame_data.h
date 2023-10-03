@@ -20,6 +20,10 @@ struct FrameData {
   // point). This may happen for some cases, like the ozone demo, tests, or
   // users of GLSurface other than SkiaRenderer.
   int64_t seq = -1;
+
+  // Used to track swap of this frame swap with tracing. The value is taken from
+  // |viz::Display::swapped_trace_id|.
+  int64_t swap_trace_id = -1;
 };
 
 }  // namespace gfx
