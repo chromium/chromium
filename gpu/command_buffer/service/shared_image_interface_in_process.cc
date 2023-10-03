@@ -370,6 +370,13 @@ void SharedImageInterfaceInProcess::CreateSharedImageWithBufferUsageOnGpuThread(
   }
 
   DCHECK(shared_image_factory_);
+
+  // Note that SharedImageInterfaceInProcess implementation here uses
+  // SharedImageFactory::CreateSharedImage() to create a shared image backed by
+  // native buffer/shared memory in GPU process. This is different
+  // implementation and code path compared to ClientSharedImage implementation
+  // which creates native buffer/shared memory on IO thread and then creates a
+  // mailbox from it on GPU thread.
   if (!shared_image_factory_->CreateSharedImage(
           mailbox, format, size, color_space, surface_origin, alpha_type,
           surface_handle, usage, std::move(debug_label), buffer_usage)) {

@@ -95,8 +95,6 @@ class GPU_IPC_SERVICE_EXPORT SharedImageStub : public MemoryTracker {
   SharedImageStub(GpuChannel* channel, int32_t route_id);
 
   void OnCreateSharedImage(mojom::CreateSharedImageParamsPtr params);
-  void OnCreateSharedImageBackedByBuffer(
-      mojom::CreateSharedImageBackedByBufferParamsPtr params);
   void OnCreateSharedImageWithData(
       mojom::CreateSharedImageWithDataParamsPtr params);
   void OnCreateSharedImageWithBuffer(
