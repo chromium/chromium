@@ -323,6 +323,8 @@ void PrivacySandboxAttestations::LoadAttestationsInternal(
     return;
   }
 
+  attestations_parse_progress_ = Progress::kFinished;
+
   // Queries on Privacy Sandbox APIs attestation status may happen on the UI
   // thread. The final assignment of the attestations map and its version is
   // done on the UI thread to avoid race condition.
@@ -339,7 +341,6 @@ void PrivacySandboxAttestations::SetParsedAttestations(
     PrivacySandboxAttestationsMap attestations_map) {
   file_version_ = std::move(version);
   attestations_map_ = std::move(attestations_map);
-  attestations_parse_progress_ = Progress::kFinished;
 
   RunLoadAttestationsDoneCallbackForTesting();  // IN-TEST
 }
