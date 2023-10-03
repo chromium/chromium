@@ -15,8 +15,6 @@ namespace supervised_user {
 BASE_DECLARE_FEATURE(kKidFriendlyContentFeed);
 
 BASE_DECLARE_FEATURE(kLocalWebApprovals);
-extern const char kLocalWebApprovalsPreferredButtonLocal[];
-extern const char kLocalWebApprovalsPreferredButtonRemote[];
 
 // Flags related to supervision features on Desktop and iOS platforms.
 BASE_DECLARE_FEATURE(kFilterWebsitesForSupervisedUsersOnDesktopAndIOS);
@@ -53,11 +51,6 @@ BASE_DECLARE_FEATURE(kCustomWebSignInInterceptForSupervisedUsers);
 // Local web approvals are only available when refreshed version of web
 // filter interstitial is enabled.
 bool IsLocalWebApprovalsEnabled();
-
-// Returns whether the local parent approval should be displayed as the
-// preferred option.
-// This should only be called if IsLocalWebApprovalsEnabled() returns true.
-bool IsLocalWebApprovalThePreferredButton();
 
 // Returns whether the ClassifyUrl call uses proto apis.
 bool IsProtoApiForClassifyUrlEnabled();

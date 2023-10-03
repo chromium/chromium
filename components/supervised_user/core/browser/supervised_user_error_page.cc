@@ -93,8 +93,6 @@ std::string BuildErrorPageHtml(bool allow_access_requests,
   bool local_web_approvals_enabled =
       supervised_user::IsLocalWebApprovalsEnabled();
   strings.Set("isLocalWebApprovalsEnabled", local_web_approvals_enabled);
-  strings.Set("isLocalWebApprovalsPreferred",
-              supervised_user::IsLocalWebApprovalThePreferredButton());
   strings.Set("showBanner", show_banner);
   strings.Set("bannerTitle",
               l10n_util::GetStringUTF8(IDS_PARENT_BLOCKED_SITE_BANNER_TITLE));
