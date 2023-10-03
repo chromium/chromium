@@ -954,21 +954,13 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
   sources.PutOrRemove(WebAppManagement::kDefault,
                       local_data.sources().default_());
   sources.PutOrRemove(WebAppManagement::kOem, local_data.sources().oem());
-  if (local_data.sources().has_sub_app()) {
-    sources.PutOrRemove(WebAppManagement::kSubApp,
-                        local_data.sources().sub_app());
-  }
-  if (local_data.sources().has_kiosk()) {
-    sources.PutOrRemove(WebAppManagement::kKiosk, local_data.sources().kiosk());
-  }
-  if (local_data.sources().has_command_line()) {
-    sources.PutOrRemove(WebAppManagement::kCommandLine,
-                        local_data.sources().command_line());
-  }
-  if (local_data.sources().has_one_drive_integration()) {
-    sources.PutOrRemove(WebAppManagement::kOneDriveIntegration,
-                        local_data.sources().one_drive_integration());
-  }
+  sources.PutOrRemove(WebAppManagement::kSubApp,
+                      local_data.sources().sub_app());
+  sources.PutOrRemove(WebAppManagement::kKiosk, local_data.sources().kiosk());
+  sources.PutOrRemove(WebAppManagement::kCommandLine,
+                      local_data.sources().command_line());
+  sources.PutOrRemove(WebAppManagement::kOneDriveIntegration,
+                      local_data.sources().one_drive_integration());
   if (sources.Empty() && !local_data.is_uninstalling()) {
     DLOG(ERROR) << "WebApp proto parse error: no source in sources field, "
                    "and is_uninstalling isn't true.";
