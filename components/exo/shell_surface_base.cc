@@ -403,6 +403,7 @@ ShellSurfaceBase::ShellSurfaceBase(Surface* surface,
 }
 
 ShellSurfaceBase::~ShellSurfaceBase() {
+  LOG(ERROR) << "~ShellSurfaceBase";
   // If the surface was TrustedPinned, we have to unpin first as this might have
   // locked down some system functions.
   if (current_pinned_state_ == chromeos::WindowPinType::kTrustedPinned) {
@@ -423,6 +424,10 @@ ShellSurfaceBase::~ShellSurfaceBase() {
   surface_destroyed_callback_.Reset();
 
   if (widget_) {
+    if (has_grab_) {
+      widget_->ReleaseCapture();
+      WMHelper::GetInstance()->GetCaptureClient()->RemoveObserver(this);
+    }
     widget_->GetNativeWindow()->RemoveObserver(this);
     widget_->RemoveObserver(this);
     // Remove transient children which are shell surfaces so they are not
@@ -436,8 +441,6 @@ ShellSurfaceBase::~ShellSurfaceBase() {
     parent_->RemoveObserver(this);
   if (root_surface())
     root_surface()->RemoveSurfaceObserver(this);
-  if (has_grab_)
-    WMHelper::GetInstance()->GetCaptureClient()->RemoveObserver(this);
   WMHelper::GetInstance()->RemoveTooltipObserver(this);
   CHECK(!views::WidgetObserver::IsInObserverList());
 }

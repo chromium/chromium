@@ -4035,4 +4035,39 @@ TEST_F(ShellSurfaceTest, SubpixelPositionOffset) {
             shell_surface->host_window()->layer()->GetSubpixelOffset());
 }
 
+// Make sure the shell surface with capture can be safely deleted
+// even if the widget is not visible.
+TEST_F(ShellSurfaceTest, DeleteWithGrab) {
+  auto shell_surface =
+      test::ShellSurfaceBuilder({200, 200}).BuildShellSurface();
+  auto popup_shell_surface = test::ShellSurfaceBuilder({100, 100})
+                                 .SetAsPopup()
+                                 .SetParent(shell_surface.get())
+                                 .SetGrab()
+                                 .BuildShellSurface();
+  popup_shell_surface->GetWidget()->GetNativeWindow()->layer()->SetVisible(
+      false);
+  popup_shell_surface.reset();
+
+  // Close with grab.
+  popup_shell_surface = test::ShellSurfaceBuilder({100, 100})
+                            .SetAsPopup()
+                            .SetParent(shell_surface.get())
+                            .SetGrab()
+                            .BuildShellSurface();
+  popup_shell_surface->GetWidget()->Close();
+  // Close is async.
+  base::RunLoop().RunUntilIdle();
+  popup_shell_surface.reset();
+
+  // CloseNow with grab.
+  popup_shell_surface = test::ShellSurfaceBuilder({100, 100})
+                            .SetAsPopup()
+                            .SetParent(shell_surface.get())
+                            .SetGrab()
+                            .BuildShellSurface();
+  popup_shell_surface->GetWidget()->CloseNow();
+  popup_shell_surface.reset();
+}
+
 }  // namespace exo

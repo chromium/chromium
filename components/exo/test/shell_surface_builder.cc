@@ -247,6 +247,12 @@ ShellSurfaceBuilder& ShellSurfaceBuilder::SetAsMenu() {
   return SetAsPopup();
 }
 
+ShellSurfaceBuilder& ShellSurfaceBuilder::SetGrab() {
+  DCHECK(!built_);
+  grab_ = true;
+  return *this;
+}
+
 ShellSurfaceBuilder& ShellSurfaceBuilder::SetClientSubmitsInPixelCoordinates(
     bool enabled) {
   DCHECK(!built_);
@@ -340,6 +346,9 @@ std::unique_ptr<ShellSurface> ShellSurfaceBuilder::BuildShellSurface() {
     shell_surface->SetPopup();
   if (menu_)
     shell_surface->SetMenu();
+  if (grab_) {
+    shell_surface->Grab();
+  }
   if (client_submits_surfaces_in_pixel_coordinates_.has_value()) {
     shell_surface->set_client_submits_surfaces_in_pixel_coordinates(
         client_submits_surfaces_in_pixel_coordinates_.value());
