@@ -29,6 +29,7 @@
 #include "content/common/features.h"
 #import "content/public/browser/render_widget_host_view_mac_delegate.h"
 #include "skia/ext/skia_utils_mac.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom.h"
 #include "third_party/blink/public/platform/web_text_input_type.h"
 #import "ui/base/clipboard/clipboard_util_mac.h"
@@ -247,8 +248,9 @@ void ExtractUnderlines(NSAttributedString* string,
   // the other hand, we need to implement a C++ method for an IPC-message
   // handler which receives input-method events from the renderer.
 
-  // Indicates if we are currently handling a key down event.
-  BOOL _handlingKeyDown;
+  // keyCode value of an NSEvent. This field has a value while we're handling
+  // a key down event.
+  absl::optional<unsigned short> _currentKeyDownCode;
 
   // Indicates if a reconversion (which means a piece of committed text becomes
   // part of the composition again) is triggered in Japanese IME when Live
@@ -319,7 +321,7 @@ void ExtractUnderlines(NSAttributedString* string,
   // The set of key codes from key down events that we haven't seen the matching
   // key up events yet.
   // Used for filtering out non-matching NSEventTypeKeyUp events.
-  std::set<unsigned short> _keyDownCodes;
+  std::set<unsigned short> _unmatchedKeyDownCodes;
 
   // The filter used to guide touch events towards a horizontal or vertical
   // orientation.
@@ -1142,7 +1144,7 @@ void ExtractUnderlines(NSAttributedString* string,
   // omnibox (https://crbug.com/338736) or from closing another window
   // (https://crbug.com/155492).
   if (eventType == NSEventTypeKeyUp) {
-    auto numErased = _keyDownCodes.erase(keyCode);
+    auto numErased = _unmatchedKeyDownCodes.erase(keyCode);
     if (numErased < 1)
       return;
   }
@@ -1170,7 +1172,7 @@ void ExtractUnderlines(NSAttributedString* string,
     return;
   }
 
-  _keyDownCodes.insert(keyCode);
+  _unmatchedKeyDownCodes.insert(keyCode);
 
   RenderWidgetHostViewCocoa* __attribute__((objc_precise_lifetime))
   keepSelfAlive = self;
@@ -1180,11 +1182,11 @@ void ExtractUnderlines(NSAttributedString* string,
   BOOL oldHasMarkedText = _hasMarkedText;
 
   // This method should not be called recursively.
-  DCHECK(!_handlingKeyDown);
+  DCHECK(![self isHandlingKeyDown]);
 
   // Tells insertText: and doCommandBySelector: that we are handling a key
   // down event.
-  _handlingKeyDown = YES;
+  _currentKeyDownCode = keyCode;
 
   // This is to handle an edge case for the "Live Conversion" feature in default
   // Japanese IME. When the feature is on, pressing the left key at the
@@ -1228,7 +1230,7 @@ void ExtractUnderlines(NSAttributedString* string,
     // as if it were a key press. As a result, with the insertion point
     // in a web text box, after typing something like "Function e" to invoke
     // the Emoji palette, we would wind up in -insertText:replacementRange:.
-    // The logic there (_handlingKeyDown && replacementRange.location ==
+    // The logic there ([self isHandlingKeyDown] && replacementRange.location ==
     // NSNotFound) would create an invisible placeholder for the character. This
     // invisible placeholder would cause macOS to position the palette at the
     // upper-left corner of the webcontents instead of at the insertion point.
@@ -1265,7 +1267,7 @@ void ExtractUnderlines(NSAttributedString* string,
     }
   }
 
-  _handlingKeyDown = NO;
+  _currentKeyDownCode.reset();
 
   // Indicates if we should send the key event and corresponding editor commands
   // after processing the input method result.
@@ -1394,7 +1396,7 @@ void ExtractUnderlines(NSAttributedString* string,
 }
 
 - (BOOL)suppressNextKeyUpForTesting:(int)keyCode {
-  return _keyDownCodes.count(keyCode) == 0;
+  return _unmatchedKeyDownCodes.count(keyCode) == 0;
 }
 
 - (void)forceTouchEvent:(NSEvent*)theEvent {
@@ -2163,7 +2165,7 @@ extern NSString* NSTextInputReplacementRangeAttributeName;
 
   // If we are handling a key down event, then FinishComposingText() will be
   // called in keyEvent: method.
-  if (!_handlingKeyDown) {
+  if (![self isHandlingKeyDown]) {
     _host->ImeFinishComposingText();
   } else {
     _unmarkTextCalled = YES;
@@ -2246,7 +2248,7 @@ extern NSString* NSTextInputReplacementRangeAttributeName;
   // is empty to update the input method state. (Our input method backend
   // automatically cancels an ongoing composition when we send an empty text.
   // So, it is OK to send an empty text to the renderer.)
-  if (_handlingKeyDown && !_isReconversionTriggered) {
+  if ([self isHandlingKeyDown] && !_isReconversionTriggered) {
     _setMarkedTextReplacementRange = gfx::Range(replacementRange);
   } else {
     _host->ImeSetComposition(_markedText, _ime_text_spans,
@@ -2271,7 +2273,38 @@ extern NSString* NSTextInputReplacementRangeAttributeName;
   // If this method is called when handling a key down event, then we need to
   // handle the command in the key event handler. Otherwise we can just handle
   // it here.
-  if (_handlingKeyDown) {
+  if ([self isHandlingKeyDown]) {
+    if ((_textInputFlags & blink::kWebTextInputFlagVertical) &&
+        base::FeatureList::IsEnabled(
+            blink::features::kArrowKeysInVerticalWritingModes)) {
+      // Commands assigned to arrow keys are ignored and Blink handles key down
+      // events because macOS doesn't work well with some vertical writing
+      // modes. See editing_behavior.cc.
+      //
+      // The following bindings are affected:
+      //                 Left: moveLeft
+      //           Shift-Left: moveLeftAndModifySelection
+      //          Option-Left: moveWordLeft
+      //    Option-Shift-Left: moveWordLeftAndModifySelection
+      //                Right: moveRight
+      //          Shift-Right: moveRightAndModifySelection
+      //         Option-Right: moveWordRight
+      //   Option-Shift-Right: moveWordRightAndModifySelection
+      //                   Up: moveUp
+      //             Shift-Up: moveUpAndModifySelection
+      //            Option-Up: moveBackward + moveToBeginningOfParagraph
+      //                 Down: moveDown
+      //           Shift-Down: moveDownAndModifySelection
+      //          Option-Down: moveForward + moveToEndOfParagraph:
+      //
+      // This doesn't affect Fn + an arrow key, which produces a keyCode for
+      // PageUp, PageDown, Home, or End.
+      unsigned short keyCode = *_currentKeyDownCode;
+      if (keyCode == kVK_LeftArrow || keyCode == kVK_RightArrow ||
+          keyCode == kVK_DownArrow || keyCode == kVK_UpArrow) {
+        return;
+      }
+    }
     _hasEditCommands = YES;
     // We ignore commands that insert characters, because this was causing
     // strange behavior (e.g. tab always inserted a tab rather than moving to
@@ -2300,7 +2333,7 @@ extern NSString* NSTextInputReplacementRangeAttributeName;
   // sent as an input method event as well.
   BOOL isAttributedString = [string isKindOfClass:[NSAttributedString class]];
   NSString* imText = isAttributedString ? [string string] : string;
-  if (_handlingKeyDown && replacementRange.location == NSNotFound) {
+  if ([self isHandlingKeyDown] && replacementRange.location == NSNotFound) {
     // The user uses keyboard to type in a char without an IME or select a word
     // on the IME. Don't commit the change to the render, because the event is
     // being processed in |keyEvent:|. The commit will happen later after
@@ -2537,6 +2570,10 @@ extern NSString* NSTextInputReplacementRangeAttributeName;
   }
 
   return [super makeTouchBar];
+}
+
+- (BOOL)isHandlingKeyDown {
+  return _currentKeyDownCode.has_value();
 }
 
 @end

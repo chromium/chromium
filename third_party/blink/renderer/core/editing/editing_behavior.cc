@@ -107,10 +107,10 @@ const KeyboardCodeKeyDownEntry kKeyboardCodeKeyDownEntries[] = {
     {VKEY_DOWN, 0, "MoveDown"},
     {VKEY_DOWN, kShiftKey, "MoveDownAndModifySelection"},
     {VKEY_NEXT, kShiftKey, "MovePageDownAndModifySelection"},
+    {VKEY_UP, OPTION_OR_CTRL_KEY, "MoveParagraphBackward"},
+    {VKEY_DOWN, OPTION_OR_CTRL_KEY, "MoveParagraphForward"},
 #if !BUILDFLAG(IS_MAC)
-    {VKEY_UP, kCtrlKey, "MoveParagraphBackward"},
     {VKEY_UP, kCtrlKey | kShiftKey, "MoveParagraphBackwardAndModifySelection"},
-    {VKEY_DOWN, kCtrlKey, "MoveParagraphForward"},
     {VKEY_DOWN, kCtrlKey | kShiftKey, "MoveParagraphForwardAndModifySelection"},
     {VKEY_PRIOR, 0, "MovePageUp"},
     {VKEY_NEXT, 0, "MovePageDown"},
