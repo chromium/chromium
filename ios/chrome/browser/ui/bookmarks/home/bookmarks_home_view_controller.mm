@@ -260,6 +260,10 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   return self;
 }
 
+- (void)dealloc {
+  DCHECK(_isShutDown);
+}
+
 - (void)shutdown {
   _isShutDown = YES;
   [self.editingFolderCell stopEdit];
