@@ -6706,6 +6706,10 @@ crbug.com/1479476 [ Mac ] external/wpt/workers/constructors/Worker/same-origin.h
 crbug.com/1479485 [ Linux ] fast/events/middleClickAutoscroll-drag.html [ Failure Pass ]
 crbug.com/1479485 [ Linux ] fast/events/middleClickAutoscroll-event-fired.html [ Failure Pass ]
 
+# This test is so slow it must expect timeouts for the time being
+# on some platforms.
+crbug.com/1488391 external/wpt/mst-content-hint/RTCRtpSendParameters-degradationEffect.html [ Timeout Skip ]
+
 # Gardener 2023-09-07
 crbug.com/1479983 [ Mac ] external/wpt/mediacapture-record/MediaRecorder-mimetype.html [ Failure Pass Timeout ]
 
