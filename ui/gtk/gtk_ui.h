@@ -120,6 +120,8 @@ class GtkUi : public ui::LinuxUiAndTheme {
 
   void OnCursorThemeSizeChanged(GtkSettings* settings, GtkParamSpec* param);
 
+  void OnEnableAnimationsChanged(GtkSettings* settings, GtkParamSpec* param);
+
   void OnGtkXftDpiChanged(GtkSettings* settings, GParamSpec* param);
 
   void OnScreenResolutionChanged(GdkScreen* screen, GParamSpec* param);

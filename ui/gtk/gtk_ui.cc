@@ -41,6 +41,7 @@
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/dom_keyboard_layout_manager.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
+#include "ui/gfx/animation/animation.h"
 #include "ui/gfx/font_render_params.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -250,6 +251,8 @@ bool GtkUi::Initialize() {
           &GtkUi::OnCursorThemeNameChanged);
   connect(settings, "notify::gtk-cursor-theme-size",
           &GtkUi::OnCursorThemeSizeChanged);
+  connect(settings, "notify::gtk-enable-animations",
+          &GtkUi::OnEnableAnimationsChanged);
 
   // Listen for DPI changes.
   if (GtkCheckVersion(4)) {
@@ -679,6 +682,11 @@ void GtkUi::OnCursorThemeSizeChanged(GtkSettings* settings,
   for (auto& observer : cursor_theme_observers()) {
     observer.OnCursorThemeSizeChanged(cursor_theme_size);
   }
+}
+
+void GtkUi::OnEnableAnimationsChanged(GtkSettings* settings,
+                                      GtkParamSpec* param) {
+  gfx::Animation::UpdatePrefersReducedMotion();
 }
 
 void GtkUi::OnGtkXftDpiChanged(GtkSettings* settings, GParamSpec* param) {
