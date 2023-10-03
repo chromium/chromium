@@ -16,7 +16,7 @@ export class PasswordSettingsApi implements PasswordSettingsApiInterface {
     assertTrue(this.element.shadowRoot !== null);
   }
 
-  public newRemote(): PasswordSettingsApiRemote {
+  newRemote(): PasswordSettingsApiRemote {
     const receiver = new PasswordSettingsApiReceiver(this);
     return receiver.$.bindNewPipeAndPassRemote();
   }

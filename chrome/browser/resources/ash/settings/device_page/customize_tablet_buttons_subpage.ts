@@ -56,7 +56,7 @@ export class SettingsCustomizeTabletButtonsSubpageElement extends
   }
 
   selectedTablet: GraphicsTablet;
-  public graphicsTablets: GraphicsTablet[];
+  graphicsTablets: GraphicsTablet[];
   private buttonActionList_: ActionChoice[];
   private inputDeviceSettingsProvider_: InputDeviceSettingsProviderInterface =
       getInputDeviceSettingsProvider();

@@ -8,7 +8,7 @@ import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export class TestAmbientProvider extends TestBrowserProxy implements
     AmbientProviderInterface {
-  public albums: AmbientModeAlbum[] = [
+  albums: AmbientModeAlbum[] = [
     {
       id: '0',
       checked: false,
@@ -65,9 +65,9 @@ export class TestAmbientProvider extends TestBrowserProxy implements
     },
   ];
 
-  public shouldShowBanner: boolean = true;
+  shouldShowBanner: boolean = true;
 
-  public previews: Url[] = [
+  previews: Url[] = [
     {url: 'http://preview0'},
     {url: 'http://preview1'},
     {url: 'http://preview2'},

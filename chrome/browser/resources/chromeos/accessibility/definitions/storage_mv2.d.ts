@@ -29,18 +29,17 @@ declare global {
       }
 
       export class StorageArea {
-        public get(
-            keysOrCallback?: string|string[]|object|((obj: any) => void),
+        get(keysOrCallback?: string|string[]|object|((obj: any) => void),
             callback?: (obj: any) => void): void;
 
-        public getBytesInUse(
+        getBytesInUse(
             keysOrCallback?: string|string[]|((obj: any) => void),
             callback?: (num: number) => void): void;
 
-        public set(items: {[x: string]: any}, callback?: () => void): void;
-        public remove(keys: string|string[], callback?: () => void): void;
-        public clear(callback?: () => void): void;
-        public onChanged: StorageAreaChangeEvent;
+        set(items: {[x: string]: any}, callback?: () => void): void;
+        remove(keys: string|string[], callback?: () => void): void;
+        clear(callback?: () => void): void;
+        onChanged: StorageAreaChangeEvent;
       }
     }
   }

@@ -216,7 +216,7 @@ export class AcceleratorEditViewElement extends AcceleratorEditViewElementBase {
         this.acceleratorInfo.state === AcceleratorState.kDisabledByUser;
   }
 
-  public getStatusMessageForTesting(): string {
+  getStatusMessageForTesting(): string {
     return this.statusMessage;
   }
 }

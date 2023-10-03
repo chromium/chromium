@@ -13,12 +13,12 @@ import {PinDialogApi} from './pin_dialog_api.js';
 export class PinSettingsApi implements PinSettingsApiInterface {
   private element: HTMLElement;
 
-  public constructor(element: HTMLElement) {
+  constructor(element: HTMLElement) {
     this.element = element;
     assertTrue(element.tagName === 'SETTINGS-PIN-SETTINGS');
   }
 
-  public newRemote(): PinSettingsApiRemote {
+  newRemote(): PinSettingsApiRemote {
     const receiver = new PinSettingsApiReceiver(this);
     return receiver.$.bindNewPipeAndPassRemote();
   }
@@ -27,7 +27,7 @@ export class PinSettingsApi implements PinSettingsApiInterface {
     return this.moreButton() !== null;
   }
 
-  public async setPin(pin: string): Promise<void> {
+  async setPin(pin: string): Promise<void> {
     const pinDialog = await this.openPinSetupDialog();
 
     // Enter pin twice and submit each time.
@@ -66,29 +66,29 @@ export class PinSettingsApi implements PinSettingsApiInterface {
     await assertAsync(() => this.hasPin());
   }
 
-  public async removePin(): Promise<void> {
+  async removePin(): Promise<void> {
     (await retryUntilSome(() => this.moreButton())).click();
     (await retryUntilSome(() => this.removeButton())).click();
     await assertAsync(() => !this.hasPin());
   }
 
-  public async assertHasPin(hasPin: boolean): Promise<void> {
+  async assertHasPin(hasPin: boolean): Promise<void> {
     await assertAsync(() => this.hasPin() === hasPin);
     await assertForDuration(() => this.hasPin() === hasPin);
   }
 
-  public async assertDisabled(disabled: boolean): Promise<void> {
+  async assertDisabled(disabled: boolean): Promise<void> {
     const property = () => this.setPinButton().disabled === disabled;
     await assertAsync(property);
     await assertForDuration(property);
   }
 
-  public async setPinButCancelImmediately(): Promise<void> {
+  async setPinButCancelImmediately(): Promise<void> {
     const pinDialog = await this.openPinSetupDialog();
     pinDialog.cancel();
   }
 
-  public async setPinButCancelConfirmation(pin: string): Promise<void> {
+  async setPinButCancelConfirmation(pin: string): Promise<void> {
     const pinDialog = await this.openPinSetupDialog();
 
     await pinDialog.enterPin(pin);
@@ -99,7 +99,7 @@ export class PinSettingsApi implements PinSettingsApiInterface {
     await assertAsync(() => this.setupPinDialog() === null);
   }
 
-  public async setPinButFailConfirmation(firstPin: string, secondPin: string):
+  async setPinButFailConfirmation(firstPin: string, secondPin: string):
       Promise<void> {
     const pinDialog = await this.openPinSetupDialog();
 
@@ -124,7 +124,7 @@ export class PinSettingsApi implements PinSettingsApiInterface {
     await assertAsync(() => this.setupPinDialog() === null);
   }
 
-  public async setPinButInternalError(pin: string): Promise<void> {
+  async setPinButInternalError(pin: string): Promise<void> {
     const pinDialog = await this.openPinSetupDialog();
 
     // Enter pin values.
@@ -147,8 +147,7 @@ export class PinSettingsApi implements PinSettingsApiInterface {
     await assertForDuration(() => !this.hasPin());
   }
 
-  public async setPinButTooShort(shortPin: string, okPin: string):
-      Promise<void> {
+  async setPinButTooShort(shortPin: string, okPin: string): Promise<void> {
     const pinDialog = await this.openPinSetupDialog();
 
     await pinDialog.enterPin(shortPin);

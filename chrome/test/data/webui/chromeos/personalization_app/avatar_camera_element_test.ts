@@ -16,8 +16,8 @@ import {TestUserProvider} from './test_user_interface_provider';
 type WebcamUtilsInterface = typeof webcamUtils;
 
 class MockWebcamUtils extends TestBrowserProxy implements WebcamUtilsInterface {
-  public captureFramesResponse = [];
-  public pngUint8Array = new Uint8Array(10);
+  captureFramesResponse = [];
+  pngUint8Array = new Uint8Array(10);
 
   /* eslint-disable @typescript-eslint/naming-convention */
   CAPTURE_SIZE = {height: 10, width: 10};

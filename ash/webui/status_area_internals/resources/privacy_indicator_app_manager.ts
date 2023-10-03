@@ -42,7 +42,7 @@ export class PrivacyIndicatorAppManagerElement extends PolymerElement {
   private idLatest: number = 0;
   private appList: string[] = [];
 
-  public onAddPrivacyIndicatorsApp(e: Event) {
+  onAddPrivacyIndicatorsApp(e: Event) {
     e.stopPropagation();
 
     this.appList.push(testAppIdPrefix + this.idLatest);

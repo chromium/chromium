@@ -23,15 +23,15 @@ export interface SettingsSetLocalPasswordDialogElement {
 }
 
 export class SettingsSetLocalPasswordDialogElement extends PolymerElement {
-  public static get is() {
+  static get is() {
     return 'settings-set-local-password-dialog' as const;
   }
 
-  public static get template() {
+  static get template() {
     return getTemplate();
   }
 
-  public static get properties() {
+  static get properties() {
     return {
       authToken: {
         type: String,
@@ -44,7 +44,7 @@ export class SettingsSetLocalPasswordDialogElement extends PolymerElement {
     };
   }
 
-  public authToken: string|null;
+  authToken: string|null;
   private showError_: boolean;
 
   override ready(): void {

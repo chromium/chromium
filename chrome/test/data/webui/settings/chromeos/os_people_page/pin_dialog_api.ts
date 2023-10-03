@@ -18,7 +18,7 @@ export class PinDialogApi {
   private element: HTMLElement;
   private dialogType: PinDialogType;
 
-  public constructor(element: HTMLElement) {
+  constructor(element: HTMLElement) {
     this.element = element;
     switch (element.tagName) {
       case 'SETTINGS-SETUP-PIN-DIALOG':
@@ -120,7 +120,7 @@ export class PinDialogApi {
   }
 
   // Returns the backspace button element of the PIN pad.
-  public backspaceButton(): HTMLElement&{disabled: boolean} {
+  backspaceButton(): HTMLElement&{disabled: boolean} {
     const pinKeyboard = this.pinKeyboard();
     assertTrue(pinKeyboard.shadowRoot !== null);
 
@@ -132,11 +132,11 @@ export class PinDialogApi {
     return backspaceButton;
   }
 
-  public async enterPin(pin: string): Promise<void> {
+  async enterPin(pin: string): Promise<void> {
     (await retry(() => this.pinKeyboard())).value = pin;
   }
 
-  public async submit(): Promise<void> {
+  async submit(): Promise<void> {
     // This sleep shouldn't be here, but appears to be necessary because PIN
     // dialogs can't immediately submit after their PIN values have changed.
     // Consider removing this check and fixing PIN dialog logic.
@@ -144,16 +144,16 @@ export class PinDialogApi {
     (await retry(() => this.submitButton())).click();
   }
 
-  public canSubmit(): boolean {
+  canSubmit(): boolean {
     return !this.submitButton().disabled;
   }
 
-  public async cancel(): Promise<void> {
+  async cancel(): Promise<void> {
     (await retry(() => this.cancelButton())).click();
   }
 
   // Sends a keyboard event to the input control.
-  public sendKeyboardEvent(ev: KeyboardEvent) {
+  sendKeyboardEvent(ev: KeyboardEvent) {
     const pinKeyboard = this.pinKeyboard();
     assertTrue(pinKeyboard.shadowRoot !== null);
     const pinInput = pinKeyboard.shadowRoot.getElementById('pinInput');
@@ -163,24 +163,24 @@ export class PinDialogApi {
 
   // Returns the current value of the PIN input field. Throws an assertion
   // error if the pin input field cannot be found.
-  public pinValue(): string {
+  pinValue(): string {
     return this.pinKeyboard().value;
   }
 
   // Returns the current title of the dialog. Throws an assertion error if the
   // title field cannot be found.
-  public titleText(): string {
+  titleText(): string {
     return this.titleElement().innerText;
   }
 
   // Returns the current text of the "submit" control. Throws an assertion
   // error if the title field cannot be found.
-  public submitText(): string {
+  submitText(): string {
     return this.submitButton().innerText;
   }
 
   // Returns whether an error is shown.
-  public hasError(): boolean {
+  hasError(): boolean {
     const pe = this.problemErrorDiv();
     if (pe === null) {
       return false;
@@ -196,7 +196,7 @@ export class PinDialogApi {
 
   // Returns whether a warning is shown. This only applies to a PIN setup
   // dialog and must not be called for a PIN autosubmit dialog.
-  public hasWarning(): boolean {
+  hasWarning(): boolean {
     assertTrue(this.dialogType === PinDialogType.SETUP);
 
     const pe = this.problemErrorDiv();

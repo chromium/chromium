@@ -29,49 +29,49 @@ export class StatusAreaInternalsElement extends PolymerElement {
     return {};
   }
 
-  public onImeToggled(e: CustomEvent<boolean>) {
+  onImeToggled(e: CustomEvent<boolean>) {
     e.stopPropagation();
 
     const toggled = e.detail;
     pageHandler.toggleImeTray(toggled);
   }
 
-  public onPaletteToggled(e: CustomEvent<boolean>) {
+  onPaletteToggled(e: CustomEvent<boolean>) {
     e.stopPropagation();
 
     const toggled = e.detail;
     pageHandler.togglePaletteTray(toggled);
   }
 
-  public onLogoutToggled(e: CustomEvent<boolean>) {
+  onLogoutToggled(e: CustomEvent<boolean>) {
     e.stopPropagation();
 
     const toggled = e.detail;
     pageHandler.toggleLogoutTray(toggled);
   }
 
-  public onVirtualKeyboardToggled(e: CustomEvent<boolean>) {
+  onVirtualKeyboardToggled(e: CustomEvent<boolean>) {
     e.stopPropagation();
 
     const toggled = e.detail;
     pageHandler.toggleVirtualKeyboardTray(toggled);
   }
 
-  public onDictationToggled(e: CustomEvent<boolean>) {
+  onDictationToggled(e: CustomEvent<boolean>) {
     e.stopPropagation();
 
     const toggled = e.detail;
     pageHandler.toggleDictationTray(toggled);
   }
 
-  public onVideoConferenceToggled(e: CustomEvent<boolean>) {
+  onVideoConferenceToggled(e: CustomEvent<boolean>) {
     e.stopPropagation();
 
     const toggled = e.detail;
     pageHandler.toggleVideoConferenceTray(toggled);
   }
 
-  public onProjectorToggled(e: CustomEvent<boolean>) {
+  onProjectorToggled(e: CustomEvent<boolean>) {
     e.stopPropagation();
 
     const toggled = e.detail;

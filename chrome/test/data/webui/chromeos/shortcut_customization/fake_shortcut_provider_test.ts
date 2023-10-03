@@ -26,7 +26,7 @@ suite('fakeShortcutProviderTest', function() {
   // the data received.
   class FakeAcceleratorsUpdatedRemote extends
       AcceleratorsUpdatedObserverRemote {
-    public override onAcceleratorsUpdated(config: MojoAcceleratorConfig) {
+    override onAcceleratorsUpdated(config: MojoAcceleratorConfig) {
       assertDeepEquals(fakeAcceleratorConfig, config);
     }
   }
@@ -35,7 +35,7 @@ suite('fakeShortcutProviderTest', function() {
   // allows us to intercept the request send from the remote and validate
   // the data received.
   class FakePolicyUpdatedRemote extends PolicyUpdatedObserverRemote {
-    public override onCustomizationPolicyUpdated() {}
+    override onCustomizationPolicyUpdated() {}
   }
 
   function getProvider(): FakeShortcutProvider {

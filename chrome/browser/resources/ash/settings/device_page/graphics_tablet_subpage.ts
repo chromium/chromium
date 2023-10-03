@@ -47,7 +47,7 @@ export class SettingsGraphicsTabletSubpageElement extends
     };
   }
 
-  public graphicsTablets: GraphicsTablet[];
+  graphicsTablets: GraphicsTablet[];
 
   override currentRouteChanged(route: Route): void {
     // Does not apply to this page.

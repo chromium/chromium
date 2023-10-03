@@ -68,7 +68,7 @@ export class ThemesElement extends ThemesElementBase {
     };
   }
 
-  public selectedCollection: BackgroundCollection|null;
+  selectedCollection: BackgroundCollection|null;
 
   private header_: string;
   private isRefreshToggleChecked_: boolean;

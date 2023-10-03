@@ -97,12 +97,12 @@ export class SetLocalPasswordInputElement extends
     };
   }
 
-  public value: string|null;
+  value: string|null;
 
   private firstInputValidity_: null|FirstInputValidity;
   private confirmInputValidity_: null|ConfirmInputValidity;
 
-  public locale: string;
+  locale: string;
 
   constructor() {
     super();
@@ -125,7 +125,7 @@ export class SetLocalPasswordInputElement extends
   }
 
   // See comment at the |locale| attribute for why this is here.
-  public i18nUpdateLocale(): void {
+  i18nUpdateLocale(): void {
     this.locale = loadTimeData.getString('app_locale');
   }
 
@@ -178,7 +178,7 @@ export class SetLocalPasswordInputElement extends
     this.confirmInputValidity_ = ConfirmInputValidity.OK;
   }
 
-  public async validate(): Promise<void> {
+  async validate(): Promise<void> {
     await this.validateFirstInput();
     if (this.showFirstInputError()) {
       this.$.firstInput.focus();
@@ -192,7 +192,7 @@ export class SetLocalPasswordInputElement extends
     }
   }
 
-  public reset(): void {
+  reset(): void {
     this.$.firstInput.value = '';
     this.$.confirmInput.value = '';
     this.firstInputValidity_ = null;

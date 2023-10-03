@@ -569,7 +569,7 @@ TEST_F(PersonalizationAppWallpaperSubpageBrowserTest.name, 'All', async () => {
       assertDeepEquals(
           new Map([
             ['googlePhotosAlbumId', sharedAlbumId],
-            ['googlePhotosAlbumIsShared', 'true']
+            ['googlePhotosAlbumIsShared', 'true'],
           ]),
           new Map(new URLSearchParams(location.search).entries()),
           'album id and is shared param should appear in location.search');

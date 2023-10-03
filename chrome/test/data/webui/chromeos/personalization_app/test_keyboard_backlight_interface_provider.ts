@@ -8,15 +8,14 @@ import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export class TestKeyboardBacklightProvider extends TestBrowserProxy implements
     KeyboardBacklightProviderInterface {
-  public zoneCount: number = 5;
-  public zoneColors: BacklightColor[] = [
+  zoneCount: number = 5;
+  zoneColors: BacklightColor[] = [
     BacklightColor.kBlue,
     BacklightColor.kRed,
     BacklightColor.kWallpaper,
     BacklightColor.kYellow,
   ];
-  public currentBacklightState:
-      CurrentBacklightState = {color: BacklightColor.kBlue};
+  currentBacklightState: CurrentBacklightState = {color: BacklightColor.kBlue};
 
   constructor() {
     super([

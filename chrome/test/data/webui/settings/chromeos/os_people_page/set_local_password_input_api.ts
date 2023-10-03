@@ -13,36 +13,36 @@ export class SetLocalPasswordInputApi implements
     SetLocalPasswordInputApiInterface {
   private element: HTMLElement;
 
-  public constructor(element: HTMLElement) {
+  constructor(element: HTMLElement) {
     this.element = element;
     assertTrue(element.tagName === 'SET-LOCAL-PASSWORD-INPUT');
   }
 
-  public newRemote(): SetLocalPasswordInputApiRemote {
+  newRemote(): SetLocalPasswordInputApiRemote {
     const receiver = new SetLocalPasswordInputApiReceiver(this);
     return receiver.$.bindNewPipeAndPassRemote();
   }
 
-  public async enterFirstInput(value: string): Promise<void> {
+  async enterFirstInput(value: string): Promise<void> {
     const input = await retry(() => this.firstInput());
     input.focus();
     input.value = value;
   }
 
-  public async enterConfirmInput(value: string): Promise<void> {
+  async enterConfirmInput(value: string): Promise<void> {
     const input = await retry(() => this.confirmInput());
     input.focus();
     input.value = value;
   }
 
-  public async assertFirstInputInvalid(invalid: boolean): Promise<void> {
+  async assertFirstInputInvalid(invalid: boolean): Promise<void> {
     const input = await retry(() => this.firstInput());
     const property = () => input.invalid === invalid;
     await assertAsync(property);
     await assertForDuration(property);
   }
 
-  public async assertConfirmInputInvalid(invalid: boolean): Promise<void> {
+  async assertConfirmInputInvalid(invalid: boolean): Promise<void> {
     const input = await retry(() => this.confirmInput());
     const property = () => input.invalid === invalid;
     await assertAsync(property);
