@@ -14,7 +14,8 @@ import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {ButtonRemapping} from './input_device_settings_types.js';
+import {ButtonRemapping, KeyEvent} from './input_device_settings_types.js';
+import {keyEventsAreEqual} from './input_device_settings_utils.js';
 import {getTemplate} from './key_combination_input_dialog.html.js';
 
 /**
@@ -28,6 +29,14 @@ export interface KeyCombinationInputDialogElement {
   $: {
     keyCombinationInputDialog: CrDialogElement,
   };
+}
+
+export type ShortcutInputCompleteEvent = CustomEvent<{keyEvent: KeyEvent}>;
+
+declare global {
+  interface HTMLElementEventMap {
+    'shortcut-input-complete': ShortcutInputCompleteEvent;
+  }
 }
 
 const KeyCombinationInputDialogElementBase = I18nMixin(PolymerElement);
@@ -63,13 +72,45 @@ export class KeyCombinationInputDialogElement extends
     };
   }
 
+  static get observers(): string[] {
+    return [
+      'initializeDialog(buttonRemappingList.*, remappingIndex)',
+    ];
+  }
+
   buttonRemappingList: ButtonRemapping[];
   remappingIndex: number;
   isOpen: boolean;
   private buttonRemapping_: ButtonRemapping;
+  private inputKeyEvent_: KeyEvent;
+
+  override connectedCallback(): void {
+    super.connectedCallback();
+
+    this.addEventListener(
+        'shortcut-input-complete', this.onShortcutInputComplete_);
+  }
+
+  override disconnectedCallback(): void {
+    super.disconnectedCallback();
+
+    this.removeEventListener(
+        'shortcut-input-complete', this.onShortcutInputComplete_);
+  }
+
+  /**
+   * Initialize the button remapping content and set up fake pref.
+   */
+  private initializeDialog(): void {
+    if (!this.buttonRemappingList ||
+        !this.buttonRemappingList[this.remappingIndex]) {
+      return;
+    }
+    this.buttonRemapping_ = this.buttonRemappingList[this.remappingIndex];
+  }
 
   showModal(): void {
-    this.buttonRemapping_ = this.buttonRemappingList[this.remappingIndex];
+    this.initializeDialog();
     const keyCombinationInputDialog = this.$.keyCombinationInputDialog;
     keyCombinationInputDialog.showModal();
     this.isOpen = keyCombinationInputDialog.open;
@@ -86,13 +127,21 @@ export class KeyCombinationInputDialogElement extends
   }
 
   private saveDialogClicked_(): void {
-    this.set(
-        `buttonRemappingList.${this.remappingIndex}`,
-        this.getUpdatedButtonRemapping_());
-    this.dispatchEvent(new CustomEvent('button-remapping-changed', {
-      bubbles: true,
-      composed: true,
-    }));
+    if (!this.inputKeyEvent_) {
+      return;
+    }
+    const prevKeyEvent: KeyEvent|undefined =
+        this.buttonRemapping_.remappingAction?.keyEvent;
+    if (!prevKeyEvent ||
+        !keyEventsAreEqual(this.inputKeyEvent_, prevKeyEvent!)) {
+      this.set(
+          `buttonRemappingList.${this.remappingIndex}`,
+          this.getUpdatedButtonRemapping_());
+      this.dispatchEvent(new CustomEvent('button-remapping-changed', {
+        bubbles: true,
+        composed: true,
+      }));
+    }
     this.close();
   }
 
@@ -101,9 +150,19 @@ export class KeyCombinationInputDialogElement extends
    * users' key combination input.
    */
   private getUpdatedButtonRemapping_(): ButtonRemapping {
-    // TODO(yyhyyh@): Implement updated button remapping based on key
-    // combination input.
-    return this.buttonRemapping_;
+    return {
+      ...this.buttonRemapping_,
+      remappingAction: {
+        keyEvent: this.inputKeyEvent_,
+      },
+    };
+  }
+
+  /**
+   * Listens for ShortcutInputCompleteEvent to store users' input keyEvent.
+   */
+  private onShortcutInputComplete_(e: ShortcutInputCompleteEvent): void {
+    this.inputKeyEvent_ = e.detail.keyEvent;
   }
 }
 
