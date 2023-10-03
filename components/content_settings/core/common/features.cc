@@ -65,7 +65,7 @@ const base::FeatureParam<base::TimeDelta> kUserBypassUIExceptionExpiration{
     &kUserBypassUI, "expiration", base::Days(90)};
 
 const base::FeatureParam<int> kUserBypassUIReloadCount{&kUserBypassUI,
-                                                       "reload-count", 3};
+                                                       "reload-count", 2};
 
 const base::FeatureParam<base::TimeDelta> kUserBypassUIReloadTime{
     &kUserBypassUI, "reload-time", base::Seconds(30)};

@@ -877,18 +877,8 @@ TEST_P(CookieControlsUserBypassTest, FrequentPageReloads) {
       /*blocked_by_policy=*/false);
   testing::Mock::VerifyAndClearExpectations(mock());
 
-  // ...and again.
-  EXPECT_CALL(*mock(), OnSitesCountChanged(1, 0));
-  EXPECT_CALL(*mock(), OnBreakageConfidenceLevelChanged(
-                           CookieControlsBreakageConfidenceLevel::kMedium));
-  NavigateAndCommit(GURL("https://example.com"));
-  page_specific_content_settings()->OnStorageAccessed(
-      StorageType::DATABASE,
-      CreateUnpartitionedStorageKey(GURL("https://thirdparty.com")),
-      /*blocked_by_policy=*/false);
-  testing::Mock::VerifyAndClearExpectations(mock());
-
-  // After the third reload and accessing storage, the confidence level is high.
+  // After the second reload and accessing storage, the confidence level is
+  // high.
   EXPECT_CALL(*mock(), OnBreakageConfidenceLevelChanged(
                            CookieControlsBreakageConfidenceLevel::kLow));
   EXPECT_CALL(*mock(), OnSitesCountChanged(1, 0));
@@ -923,7 +913,7 @@ TEST_P(CookieControlsUserBypassTest, FrequentPageReloads) {
   testing::Mock::VerifyAndClearExpectations(mock());
 }
 
-TEST_P(CookieControlsUserBypassTest, FrequestPageReloadsMetrics) {
+TEST_P(CookieControlsUserBypassTest, FrequentPageReloadsMetrics) {
   base::HistogramTester t;
   cookie_controls()->Update(web_contents());
 
@@ -959,18 +949,8 @@ TEST_P(CookieControlsUserBypassTest, FrequestPageReloadsMetrics) {
       /*blocked_by_policy=*/false);
   testing::Mock::VerifyAndClearExpectations(mock());
 
-  // ...and again.
-  EXPECT_CALL(*mock(), OnSitesCountChanged(1, 0));
-  EXPECT_CALL(*mock(), OnBreakageConfidenceLevelChanged(
-                           CookieControlsBreakageConfidenceLevel::kMedium));
-  NavigateAndCommit(GURL("https://example.com"));
-  page_specific_content_settings()->OnStorageAccessed(
-      StorageType::DATABASE,
-      CreateUnpartitionedStorageKey(GURL("https://thirdparty.com")),
-      /*blocked_by_policy=*/false);
-  testing::Mock::VerifyAndClearExpectations(mock());
-
-  // After the third reload and accessing storage, the confidence level is high.
+  // After the second reload and accessing storage, the confidence level is
+  // high.
   EXPECT_CALL(*mock(), OnBreakageConfidenceLevelChanged(
                            CookieControlsBreakageConfidenceLevel::kLow));
   EXPECT_CALL(*mock(), OnSitesCountChanged(1, 0));
@@ -993,7 +973,7 @@ TEST_P(CookieControlsUserBypassTest, FrequestPageReloadsMetrics) {
                            CookieControlsBreakageConfidenceLevel::kMedium));
   cookie_controls()->OnCookieBlockingEnabledForSite(false);
   t.ExpectUniqueSample(kCookieControlsActivatedSaaHistogram, false, 1);
-  t.ExpectUniqueSample(kCookieControlsActivatedRefreshCountHistogram, 3, 1);
+  t.ExpectUniqueSample(kCookieControlsActivatedRefreshCountHistogram, 2, 1);
   t.ExpectUniqueSample(kCookieControlsActivatedSiteEngagementHistogram, 0, 1);
   t.ExpectUniqueSample(
       kCookieControlsActivatedSiteDataAccessHistogram,
@@ -1001,7 +981,7 @@ TEST_P(CookieControlsUserBypassTest, FrequestPageReloadsMetrics) {
   ValidateCookieControlsActivatedUKM(
       /*fed_cm_initiated=*/false,
       /*storage_access_api_requested=*/false,
-      /*page_refresh_count=*/3,  // Count was reset to 0 after timeout.
+      /*page_refresh_count=*/2,  // Count was reset to 0 after timeout.
       /*repeated_activation=*/false, blink::mojom::EngagementLevel::NONE,
       ThirdPartySiteDataAccessType::kAnyAllowedThirdPartySiteAccesses);
   testing::Mock::VerifyAndClearExpectations(mock());
@@ -1041,21 +1021,10 @@ TEST_P(CookieControlsUserBypassTest, InfrequentPageReloads) {
       /*blocked_by_policy=*/false);
   testing::Mock::VerifyAndClearExpectations(mock());
 
-  // ...and again.
-  EXPECT_CALL(*mock(), OnSitesCountChanged(1, 0));
-  EXPECT_CALL(*mock(), OnBreakageConfidenceLevelChanged(
-                           CookieControlsBreakageConfidenceLevel::kMedium));
-  NavigateAndCommit(GURL("https://example.com"));
-  page_specific_content_settings()->OnStorageAccessed(
-      StorageType::DATABASE,
-      CreateUnpartitionedStorageKey(GURL("https://thirdparty.com")),
-      /*blocked_by_policy=*/false);
-  testing::Mock::VerifyAndClearExpectations(mock());
-
   // Wait for 30 seconds.
   FastForwardBy(base::Seconds(30));
 
-  // The third reload happens with a delay and doesn't trigger the confidence
+  // The second reload happens with a delay and doesn't trigger the confidence
   // level change.
   EXPECT_CALL(*mock(), OnSitesCountChanged(1, 0));
   EXPECT_CALL(*mock(), OnBreakageConfidenceLevelChanged(
@@ -1463,7 +1432,9 @@ TEST_P(CookieControlsUserBypassTest, HighConfidenceAfterExpiration) {
   cookie_controls()->Update(web_contents());
   testing::Mock::VerifyAndClearExpectations(mock());
 
-  // Revisiting the site again doesn't report high confidence signal.
+  // Revisiting the site again after 30 seconds doesn't report high confidence
+  // signal.
+  FastForwardBy(base::Seconds(30));
   NavigateAndCommit(GURL("https://example.com"));
   page_specific_content_settings()->OnStorageAccessed(
       StorageType::DATABASE,
