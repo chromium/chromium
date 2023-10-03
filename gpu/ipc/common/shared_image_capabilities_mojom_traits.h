@@ -21,6 +21,16 @@ struct GPU_EXPORT StructTraits<gpu::mojom::SharedImageCapabilitiesDataView,
       const gpu::SharedImageCapabilities& input) {
     return input.supports_scanout_shared_images;
   }
+
+  static bool supports_luminance_shared_images(
+      const gpu::SharedImageCapabilities& input) {
+    return input.supports_luminance_shared_images;
+  }
+
+  static bool disable_r8_shared_images(
+      const gpu::SharedImageCapabilities& input) {
+    return input.disable_r8_shared_images;
+  }
 };
 
 }  // namespace mojo

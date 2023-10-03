@@ -198,7 +198,8 @@ SharedImageFactory::SharedImageFactory(
       memory_tracker_(std::make_unique<MemoryTypeTracker>(memory_tracker)),
       is_for_display_compositor_(is_for_display_compositor),
       gr_context_type_(context_state ? context_state->gr_context_type()
-                                     : GrContextType::kGL) {
+                                     : GrContextType::kGL),
+      workarounds_(workarounds) {
 #if defined(USE_OZONE)
   if (!set_format_supported_metric) {
     bool is_pixmap_supported = ui::OzonePlatform::GetInstance()
@@ -861,6 +862,12 @@ gpu::SharedImageCapabilities SharedImageFactory::MakeCapabilities() {
   gpu::SharedImageCapabilities shared_image_caps;
   shared_image_caps.supports_scanout_shared_images =
       SharedImageManager::SupportsScanoutImages();
+  const bool is_angle_metal =
+      (gl::GetGLImplementation() == gl::kGLImplementationEGLANGLE &&
+       gl::GetANGLEImplementation() == gl::ANGLEImplementation::kMetal);
+  shared_image_caps.supports_luminance_shared_images = !is_angle_metal;
+  shared_image_caps.disable_r8_shared_images =
+      workarounds_.r8_egl_images_broken;
   return shared_image_caps;
 }
 

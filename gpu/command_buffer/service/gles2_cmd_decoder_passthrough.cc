@@ -1433,10 +1433,6 @@ gpu::Capabilities GLES2DecoderPassthroughImpl::GetCapabilities() {
   // so that clients can use this to detect support.
   caps.supports_yuv_readback = true;
   caps.texture_npot = feature_info_->feature_flags().npot_ok;
-  caps.supports_luminance_shared_images =
-      !feature_info_->gl_version_info().is_angle_metal;
-  caps.disable_r8_shared_images =
-      feature_info_->workarounds().r8_egl_images_broken;
   caps.chromium_gpu_fence = feature_info_->feature_flags().chromium_gpu_fence;
   caps.chromium_nonblocking_readback = true;
   caps.mesa_framebuffer_flip_y =

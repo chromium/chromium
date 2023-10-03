@@ -478,8 +478,6 @@ TestContextProvider::TestContextProvider(
     : support_(std::move(support)),
       context_gl_(std::move(gl)),
       raster_interface_gles_(std::move(raster)),
-      shared_image_interface_(
-          sii ? std::move(sii) : std::make_unique<TestSharedImageInterface>()),
       support_locking_(support_locking) {
   DCHECK(main_thread_checker_.CalledOnValidThread());
   DCHECK(context_gl_);
@@ -496,6 +494,18 @@ TestContextProvider::TestContextProvider(
   // unittests, and isn't needed here.
   cache_controller_ =
       std::make_unique<ContextCacheController>(support_.get(), nullptr);
+
+  if (sii) {
+    shared_image_interface_ = std::move(sii);
+  } else {
+    shared_image_interface_ = std::make_unique<TestSharedImageInterface>();
+
+    // By default, luminance textures are supported in GLES2.
+    gpu::SharedImageCapabilities shared_image_caps;
+    shared_image_caps.supports_luminance_shared_images = true;
+
+    shared_image_interface_->SetCapabilities(shared_image_caps);
+  }
 }
 
 TestContextProvider::~TestContextProvider() {

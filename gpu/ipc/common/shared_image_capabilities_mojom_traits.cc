@@ -12,6 +12,9 @@ bool StructTraits<gpu::mojom::SharedImageCapabilitiesDataView,
     Read(gpu::mojom::SharedImageCapabilitiesDataView data,
          gpu::SharedImageCapabilities* out) {
   out->supports_scanout_shared_images = data.supports_scanout_shared_images();
+  out->supports_luminance_shared_images =
+      data.supports_luminance_shared_images();
+  out->disable_r8_shared_images = data.disable_r8_shared_images();
   return true;
 }
 
