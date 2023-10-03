@@ -127,7 +127,7 @@ source_set("model") {
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/signin:system_identity",
     "//ios/chrome/browser/signin:trusted_vault_factory",
-    "//ios/chrome/browser/snapshots",
+    "//ios/chrome/browser/snapshots/model",
     "//ios/chrome/browser/supervised_user",
     "//ios/chrome/browser/supervised_user:sync_settings_factory",
     "//ios/chrome/browser/sync/model",

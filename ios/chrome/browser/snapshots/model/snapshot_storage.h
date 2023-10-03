@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_SNAPSHOTS_SNAPSHOT_STORAGE_H_
-#define IOS_CHROME_BROWSER_SNAPSHOTS_SNAPSHOT_STORAGE_H_
+#ifndef IOS_CHROME_BROWSER_SNAPSHOTS_MODEL_SNAPSHOT_STORAGE_H_
+#define IOS_CHROME_BROWSER_SNAPSHOTS_MODEL_SNAPSHOT_STORAGE_H_
 
 #include <vector>
 
@@ -124,4 +124,4 @@ class Time;
 - (NSUInteger)lruCacheMaxSize;
 @end
 
-#endif  // IOS_CHROME_BROWSER_SNAPSHOTS_SNAPSHOT_STORAGE_H_
+#endif  // IOS_CHROME_BROWSER_SNAPSHOTS_MODEL_SNAPSHOT_STORAGE_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/snapshots/fake_snapshot_generator_delegate.h"
+#import "ios/chrome/browser/snapshots/model/fake_snapshot_generator_delegate.h"
 
 @implementation FakeSnapshotGeneratorDelegate
 

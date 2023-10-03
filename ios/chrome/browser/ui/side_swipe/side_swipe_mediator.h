@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/snapshots/snapshot_generator_delegate.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_generator_delegate.h"
 
 class FullscreenController;
 @protocol SideSwipeToolbarInteracting;

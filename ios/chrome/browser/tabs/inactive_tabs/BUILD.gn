@@ -47,7 +47,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/model/web_state_list/test:test_support",
-    "//ios/chrome/browser/snapshots",
+    "//ios/chrome/browser/snapshots/model",
     "//ios/chrome/browser/web",
     "//ios/chrome/test:test_support",
     "//ios/web/public/test",

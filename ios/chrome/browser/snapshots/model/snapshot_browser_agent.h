@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_SNAPSHOTS_SNAPSHOT_BROWSER_AGENT_H_
-#define IOS_CHROME_BROWSER_SNAPSHOTS_SNAPSHOT_BROWSER_AGENT_H_
+#ifndef IOS_CHROME_BROWSER_SNAPSHOTS_MODEL_SNAPSHOT_BROWSER_AGENT_H_
+#define IOS_CHROME_BROWSER_SNAPSHOTS_MODEL_SNAPSHOT_BROWSER_AGENT_H_
 
 #import <Foundation/Foundation.h>
 
@@ -12,7 +12,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser_observer.h"
 #import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
-#import "ios/chrome/browser/snapshots/snapshot_id.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_id.h"
 
 @class SnapshotStorage;
 
@@ -75,4 +75,4 @@ class SnapshotBrowserAgent : public BrowserObserver,
   Browser* browser_ = nullptr;
 };
 
-#endif  // IOS_CHROME_BROWSER_SNAPSHOTS_SNAPSHOT_BROWSER_AGENT_H_
+#endif  // IOS_CHROME_BROWSER_SNAPSHOTS_MODEL_SNAPSHOT_BROWSER_AGENT_H_

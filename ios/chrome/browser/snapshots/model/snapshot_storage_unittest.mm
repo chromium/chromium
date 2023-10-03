@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/snapshots/snapshot_storage.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_storage.h"
 
 #import <UIKit/UIKit.h>
 
@@ -16,9 +16,9 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
 #import "components/sessions/core/session_id.h"
-#import "ios/chrome/browser/snapshots/snapshot_id.h"
-#import "ios/chrome/browser/snapshots/snapshot_storage_internal.h"
-#import "ios/chrome/browser/snapshots/snapshot_storage_observer.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_id.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_storage_internal.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_storage_observer.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/thread/web_thread.h"
 #import "testing/gtest/include/gtest/gtest.h"

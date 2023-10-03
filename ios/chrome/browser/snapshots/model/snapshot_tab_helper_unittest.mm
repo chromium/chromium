@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 
 #import "base/files/scoped_temp_dir.h"
 #import "base/run_loop.h"
 #import "ios/chrome/browser/shared/ui/util/image/image_util.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/snapshots/fake_snapshot_generator_delegate.h"
-#import "ios/chrome/browser/snapshots/snapshot_storage.h"
+#import "ios/chrome/browser/snapshots/model/fake_snapshot_generator_delegate.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_storage.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"

@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 
 #import "base/functional/bind.h"
 #import "base/memory/ptr_util.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/task/sequenced_task_runner.h"
-#import "ios/chrome/browser/snapshots/snapshot_generator.h"
-#import "ios/chrome/browser/snapshots/snapshot_storage.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_generator.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_storage.h"
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/web_client.h"
 #import "ios/web/public/web_state.h"
@@ -77,8 +77,9 @@ void SnapshotTabHelper::UpdateSnapshotWithCallback(void (^callback)(UIImage*)) {
   // unavailable.
   UIImage* image = [snapshot_generator_ updateSnapshot];
   dispatch_async(dispatch_get_main_queue(), ^{
-    if (callback)
+    if (callback) {
       callback(image);
+    }
   });
 }
 
@@ -136,8 +137,9 @@ void SnapshotTabHelper::PageLoaded(
       break;
 
     case web::PageLoadCompletionStatus::SUCCESS:
-      if (ignore_next_load_)
+      if (ignore_next_load_) {
         break;
+      }
 
       bool was_loading = was_loading_during_last_snapshot_;
       base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(

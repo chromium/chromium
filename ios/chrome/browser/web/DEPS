@@ -32,7 +32,7 @@ include_rules = [
   "+ios/chrome/browser/search_engines",
   "+ios/chrome/browser/sessions",
   "+ios/chrome/browser/signin",
-  "+ios/chrome/browser/snapshots/snapshot_tab_helper.h",
+  "+ios/chrome/browser/snapshots/model/snapshot_tab_helper.h",
   "+ios/chrome/browser/ssl",
   "+ios/chrome/browser/supervised_user",
   "+ios/chrome/browser/tab_insertion/model",

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/snapshots/snapshot_browser_agent.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
 
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/task_environment.h"

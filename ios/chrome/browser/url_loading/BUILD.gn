@@ -42,7 +42,7 @@ source_set("url_loading") {
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
-    "//ios/chrome/browser/snapshots",
+    "//ios/chrome/browser/snapshots/model",
     "//ios/chrome/browser/tab_insertion/model",
     "//ios/chrome/browser/ui/incognito_reauth:incognito_reauth_scene_agent",
     "//ios/chrome/browser/web",

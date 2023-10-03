@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/snapshots/snapshot_storage.h"
-#import "ios/chrome/browser/snapshots/snapshot_storage_internal.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_storage.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_storage_internal.h"
 
 #import <UIKit/UIKit.h>
 
@@ -30,9 +30,9 @@
 #import "base/threading/scoped_blocking_call.h"
 #import "base/time/time.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/snapshots/snapshot_id.h"
-#import "ios/chrome/browser/snapshots/snapshot_lru_cache.h"
-#import "ios/chrome/browser/snapshots/snapshot_storage_observer.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_id.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_lru_cache.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_storage_observer.h"
 #import "ios/chrome/browser/tabs/features.h"
 #import "ui/base/device_form_factor.h"
 

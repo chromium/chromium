@@ -35,7 +35,7 @@ source_set("inactive_tabs") {
     "//ios/chrome/browser/shared/model/url",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/ui/symbols",
-    "//ios/chrome/browser/snapshots",
+    "//ios/chrome/browser/snapshots/model",
     "//ios/chrome/browser/tabs/inactive_tabs:features",
     "//ios/chrome/browser/ui/settings:settings_root",
     "//ios/chrome/browser/ui/tab_switcher",

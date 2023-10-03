@@ -111,7 +111,7 @@
 #import "ios/chrome/browser/signin/constants.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/system_identity_manager.h"
-#import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/browser/tab_insertion/model/tab_insertion_browser_agent.h"
 #import "ios/chrome/browser/ui/app_store_rating/app_store_rating_scene_agent.h"
 #import "ios/chrome/browser/ui/app_store_rating/features.h"

@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("snapshots") {
+source_set("model") {
   public = [
     "snapshot_browser_agent.h",
     "snapshot_generator_delegate.h",
@@ -47,7 +47,7 @@ source_set("test_utils") {
     "fake_snapshot_generator_delegate.h",
     "fake_snapshot_generator_delegate.mm",
   ]
-  deps = [ ":snapshots" ]
+  deps = [ ":model" ]
 }
 
 source_set("unit_tests") {
@@ -59,7 +59,7 @@ source_set("unit_tests") {
     "snapshot_tab_helper_unittest.mm",
   ]
   deps = [
-    ":snapshots",
+    ":model",
     ":test_utils",
     "//base",
     "//base/test:test_support",

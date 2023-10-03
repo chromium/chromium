@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/snapshots/snapshot_generator.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_generator.h"
 
 #import <algorithm>
 
@@ -15,9 +15,9 @@
 #import "base/functional/bind.h"
 #import "build/blink_buildflags.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/snapshots/snapshot_generator_delegate.h"
-#import "ios/chrome/browser/snapshots/snapshot_id.h"
-#import "ios/chrome/browser/snapshots/snapshot_storage.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_generator_delegate.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_id.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_storage.h"
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/thread/web_thread.h"
 #import "ios/web/public/web_client.h"
@@ -38,8 +38,9 @@ struct SnapshotInfo {
 
 // Returns YES if `view` or any view it contains is a WKWebView.
 BOOL ViewHierarchyContainsWebView(UIView* view) {
-  if ([view isKindOfClass:[WKWebView class]])
+  if ([view isKindOfClass:[WKWebView class]]) {
     return YES;
+  }
 #if BUILDFLAG(USE_BLINK)
   // TODO(crbug.com/1419001): Remove NSClassFromString and use the class
   // directly when possible.
@@ -109,8 +110,9 @@ BOOL ViewHierarchyContainsWebView(UIView* view) {
   void (^wrappedCallback)(UIImage*) = ^(UIImage* image) {
     if (!image) {
       image = [weakSelf updateSnapshot];
-      if (image)
+      if (image) {
         image = GreyImage(image);
+      }
     }
     callback(image);
   };
@@ -159,14 +161,16 @@ BOOL ViewHierarchyContainsWebView(UIView* view) {
                      frameInWindow:snapshotInfo.snapshotFrameInWindow];
         }
         [weakSelf updateSnapshotStorageWithImage:snapshot];
-        if (completion)
+        if (completion) {
           completion(snapshot);
+        }
       }));
 }
 
 - (UIImage*)generateSnapshotWithOverlays:(BOOL)shouldAddOverlay {
-  if (![self canTakeSnapshot])
+  if (![self canTakeSnapshot]) {
     return nil;
+  }
   SnapshotInfo snapshotInfo = [self snapshotInfo];
   [_delegate snapshotGenerator:self willUpdateSnapshotForWebState:_webState];
   UIImage* baseImage =
@@ -299,13 +303,15 @@ BOOL ViewHierarchyContainsWebView(UIView* view) {
                        baseImage:(UIImage*)baseImage
                    frameInWindow:(CGRect)frameInWindow {
   DCHECK(!CGRectIsEmpty(frameInWindow));
-  if (!baseImage)
+  if (!baseImage) {
     return nil;
+  }
   // Note: If the baseImage scale differs from device scale, the baseImage size
   // may slightly differ from frameInWindow size due to rounding. Do not attempt
   // to compare the baseImage size and frameInWindow size.
-  if (overlays.count == 0)
+  if (overlays.count == 0) {
     return baseImage;
+  }
   const CGFloat kScale =
       std::max<CGFloat>(1.0, [_snapshotStorage snapshotScaleForDevice]);
 

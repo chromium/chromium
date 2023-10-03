@@ -17,7 +17,7 @@
 #import "ios/chrome/browser/overlays/public/web_content_area/http_auth_overlay.h"
 #import "ios/chrome/browser/permissions/permissions_tab_helper.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/browser/tab_insertion/model/tab_insertion_browser_agent.h"
 #import "ios/chrome/browser/ui/context_menu/context_menu_configuration_provider.h"
 #import "ios/chrome/browser/ui/dialogs/nsurl_protection_space_util.h"

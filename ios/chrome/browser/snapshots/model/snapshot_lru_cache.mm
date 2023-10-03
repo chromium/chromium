@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/snapshots/snapshot_lru_cache.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_lru_cache.h"
 
 #import <memory>
 
 #import "base/containers/lru_cache.h"
-#import "ios/chrome/browser/snapshots/snapshot_id.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_id.h"
 
 @implementation SnapshotLRUCache {
   std::unique_ptr<base::LRUCache<SnapshotID, id>> _cache;
@@ -26,8 +26,9 @@
 
 - (id)objectForKey:(SnapshotID)key {
   auto it = _cache->Get(key);
-  if (it == _cache->end())
+  if (it == _cache->end()) {
     return nil;
+  }
   return it->second;
 }
 
@@ -37,8 +38,9 @@
 
 - (void)removeObjectForKey:(SnapshotID)key {
   auto it = _cache->Peek(key);
-  if (it != _cache->end())
+  if (it != _cache->end()) {
     _cache->Erase(it);
+  }
 }
 
 - (void)removeAllObjects {

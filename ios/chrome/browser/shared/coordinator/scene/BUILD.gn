@@ -120,7 +120,7 @@ source_set("scene") {
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/signin:capabilities_types",
     "//ios/chrome/browser/signin:system_identity_manager",
-    "//ios/chrome/browser/snapshots",
+    "//ios/chrome/browser/snapshots/model",
     "//ios/chrome/browser/tab_insertion/model",
     "//ios/chrome/browser/ui/app_store_rating",
     "//ios/chrome/browser/ui/app_store_rating:features",

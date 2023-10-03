@@ -79,7 +79,7 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/sharing/model/share_file_download_tab_helper.h"
-#import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/browser/ssl/captive_portal_tab_helper.h"
 #import "ios/chrome/browser/supervised_user/supervised_user_error_container.h"
 #import "ios/chrome/browser/supervised_user/supervised_user_url_filter_tab_helper.h"

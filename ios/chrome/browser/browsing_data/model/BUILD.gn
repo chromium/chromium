@@ -71,7 +71,7 @@ source_set("model") {
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/paths",
     "//ios/chrome/browser/signin",
-    "//ios/chrome/browser/snapshots",
+    "//ios/chrome/browser/snapshots/model",
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/translate:translate",
     "//ios/chrome/browser/web",

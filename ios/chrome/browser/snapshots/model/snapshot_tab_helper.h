@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_SNAPSHOTS_SNAPSHOT_TAB_HELPER_H_
-#define IOS_CHROME_BROWSER_SNAPSHOTS_SNAPSHOT_TAB_HELPER_H_
+#ifndef IOS_CHROME_BROWSER_SNAPSHOTS_MODEL_SNAPSHOT_TAB_HELPER_H_
+#define IOS_CHROME_BROWSER_SNAPSHOTS_MODEL_SNAPSHOT_TAB_HELPER_H_
 
 #import <UIKit/UIKit.h>
 
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "ios/chrome/browser/snapshots/snapshot_id.h"
+#include "ios/chrome/browser/snapshots/model/snapshot_id.h"
 #include "ios/web/public/web_state_observer.h"
 #include "ios/web/public/web_state_user_data.h"
 
@@ -112,4 +112,4 @@ class SnapshotTabHelper : public web::WebStateObserver,
   WEB_STATE_USER_DATA_KEY_DECL();
 };
 
-#endif  // IOS_CHROME_BROWSER_SNAPSHOTS_SNAPSHOT_TAB_HELPER_H_
+#endif  // IOS_CHROME_BROWSER_SNAPSHOTS_MODEL_SNAPSHOT_TAB_HELPER_H_

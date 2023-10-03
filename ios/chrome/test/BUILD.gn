@@ -277,7 +277,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/shared/ui/util:unit_tests",
     "//ios/chrome/browser/signin:signin_util_internal_unit_tests",
     "//ios/chrome/browser/signin:unit_tests",
-    "//ios/chrome/browser/snapshots:unit_tests",
+    "//ios/chrome/browser/snapshots/model:unit_tests",
     "//ios/chrome/browser/ssl:unit_tests",
     "//ios/chrome/browser/store_kit/model:unit_tests",
     "//ios/chrome/browser/supervised_user:unit_tests",
