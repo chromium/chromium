@@ -193,6 +193,14 @@ std::unique_ptr<views::ImageView> GetIconImageViewByName(
 #endif
   }
 
+  if (icon_str == "penSparkIcon") {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    return ImageViewFromVectorIcon(vector_icons::kPenSparkIcon, kIconSize);
+#else
+    return nullptr;
+#endif
+  }
+
   if (icon_str == "googlePasswordManager") {
     return ImageViewFromVectorIcon(GooglePasswordManagerVectorIcon(),
                                    kGooglePasswordManagerIconSize);
