@@ -19,6 +19,7 @@
 @protocol CRWWebViewHandlerDelegate;
 @protocol MiniMapCommands;
 @protocol ParcelTrackingOptInCommands;
+@protocol UnitConversionCommands;
 @class UIViewController;
 
 namespace web {
@@ -44,6 +45,10 @@ class AnnotationsTabHelper : public web::AnnotationsTextObserver,
   // opt-in prompt.
   void SetParcelTrackingOptInCommands(
       id<ParcelTrackingOptInCommands> parcel_tracking_handler);
+
+  // Sets the UnitConversionCommands that can display unit conversion.
+  void SetUnitConversionCommands(
+      id<UnitConversionCommands> unit_conversion_handler);
 
   // Returns pointer to latest metadata extracted or `nullptr`. See
   // i/w/p/a/annotations_text_observer.h for metadata key/pair values.
@@ -100,6 +105,8 @@ class AnnotationsTabHelper : public web::AnnotationsTextObserver,
   id<MiniMapCommands> mini_map_handler_ = nil;
 
   id<ParcelTrackingOptInCommands> parcel_tracking_handler_ = nil;
+
+  id<UnitConversionCommands> unit_conversion_handler_ = nil;
 
   web::WebState* web_state_ = nullptr;
 

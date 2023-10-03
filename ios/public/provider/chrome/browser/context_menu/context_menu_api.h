@@ -14,6 +14,7 @@
 #import "third_party/abseil-cpp/absl/types/optional.h"
 
 @protocol MiniMapCommands;
+@protocol UnitConversionCommands;
 
 // Wraps information to add/show to/in a context menu
 @interface ElementsToAddToContextMenu : NSObject
@@ -39,7 +40,8 @@ ElementsToAddToContextMenu* GetContextMenuElementsToAdd(
     web::WebState* web_state,
     web::ContextMenuParams params,
     UIViewController* presenting_view_controller,
-    id<MiniMapCommands> mini_map_handler);
+    id<MiniMapCommands> mini_map_handler,
+    id<UnitConversionCommands> unit_conversion_handler);
 
 // Returns set of `NSTextCheckingType` representing the intent types that
 // can be handled by the provider, for the given `web_state`.
@@ -52,11 +54,14 @@ NSTextCheckingType GetHandledIntentTypesForOneTap(web::WebState* web_state);
 
 // Executes 1-tap action for the given `match`'s type and returns YES. Returns
 // NO if no direct 1-tap action is defined.
-BOOL HandleIntentTypesForOneTap(web::WebState* web_state,
-                                NSTextCheckingResult* match,
-                                NSString* text,
-                                UIViewController* presenting_view_controller,
-                                id<MiniMapCommands> mini_map_handler);
+BOOL HandleIntentTypesForOneTap(
+    web::WebState* web_state,
+    NSTextCheckingResult* match,
+    NSString* text,
+    CGPoint location,
+    UIViewController* presenting_view_controller,
+    id<MiniMapCommands> mini_map_handler,
+    id<UnitConversionCommands> unit_conversion_handler);
 
 // Returns a full set of intents of `handled_types`, located inside `text`. The
 // `model_path` for the give web state should be passed in if a detection by

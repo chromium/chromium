@@ -28,6 +28,7 @@
 #import "ios/chrome/browser/shared/public/commands/mini_map_commands.h"
 #import "ios/chrome/browser/shared/public/commands/reading_list_add_command.h"
 #import "ios/chrome/browser/shared/public/commands/search_image_with_lens_command.h"
+#import "ios/chrome/browser/shared/public/commands/unit_conversion_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/image/image_copier.h"
 #import "ios/chrome/browser/shared/ui/util/image/image_saver.h"
@@ -341,7 +342,9 @@ const NSUInteger kContextMenuMaxTitleLength = 30;
       ios::provider::GetContextMenuElementsToAdd(
           webState, params, self.baseViewController,
           HandlerForProtocol(self.browser->GetCommandDispatcher(),
-                             MiniMapCommands));
+                             MiniMapCommands),
+          HandlerForProtocol(self.browser->GetCommandDispatcher(),
+                             UnitConversionCommands));
   if (result && result.elements) {
     [menuElements addObjectsFromArray:result.elements];
     menuTitle = result.title;

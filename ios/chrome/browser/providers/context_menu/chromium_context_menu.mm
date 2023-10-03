@@ -10,7 +10,8 @@ ElementsToAddToContextMenu* GetContextMenuElementsToAdd(
     web::WebState* web_state,
     web::ContextMenuParams params,
     UIViewController* presenting_view_controller,
-    id<MiniMapCommands> mini_map_handler) {
+    id<MiniMapCommands> mini_map_handler,
+    id<UnitConversionCommands> unit_conversion_handler) {
   return nil;
 }
 
@@ -22,11 +23,14 @@ NSTextCheckingType GetHandledIntentTypesForOneTap(web::WebState* web_state) {
   return 0;
 }
 
-BOOL HandleIntentTypesForOneTap(web::WebState* web_state,
-                                NSTextCheckingResult* match,
-                                NSString* text,
-                                UIViewController* presenting_view_controller,
-                                id<MiniMapCommands> mini_map_handler) {
+BOOL HandleIntentTypesForOneTap(
+    web::WebState* web_state,
+    NSTextCheckingResult* match,
+    NSString* text,
+    CGPoint location,
+    UIViewController* presenting_view_controller,
+    id<MiniMapCommands> mini_map_handler,
+    id<UnitConversionCommands> unit_conversion_handler) {
   return NO;
 }
 

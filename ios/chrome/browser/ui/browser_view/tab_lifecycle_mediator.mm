@@ -25,6 +25,7 @@
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/mini_map_commands.h"
 #import "ios/chrome/browser/shared/public/commands/parcel_tracking_opt_in_commands.h"
+#import "ios/chrome/browser/shared/public/commands/unit_conversion_commands.h"
 #import "ios/chrome/browser/shared/public/commands/web_content_commands.h"
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
 #import "ios/chrome/browser/ssl/captive_portal_tab_helper.h"
@@ -147,6 +148,8 @@
     annotationsTabHelper->SetBaseViewController(_baseViewController);
     annotationsTabHelper->SetMiniMapCommands(
         HandlerForProtocol(_commandDispatcher, MiniMapCommands));
+    annotationsTabHelper->SetUnitConversionCommands(
+        HandlerForProtocol(_commandDispatcher, UnitConversionCommands));
     if (IsIOSParcelTrackingEnabled()) {
       annotationsTabHelper->SetParcelTrackingOptInCommands(
           HandlerForProtocol(_commandDispatcher, ParcelTrackingOptInCommands));
@@ -211,6 +214,7 @@
   if (annotationsTabHelper) {
     annotationsTabHelper->SetBaseViewController(nil);
     annotationsTabHelper->SetMiniMapCommands(nil);
+    annotationsTabHelper->SetUnitConversionCommands(nil);
   }
 
   PriceNotificationsTabHelper* priceNotificationsTabHelper =

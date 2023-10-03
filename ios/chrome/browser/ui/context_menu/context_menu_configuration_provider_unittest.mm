@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/mini_map_commands.h"
 #import "ios/chrome/browser/shared/public/commands/save_to_photos_commands.h"
+#import "ios/chrome/browser/shared/public/commands/unit_conversion_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/signin/fake_system_identity_manager.h"
@@ -76,6 +77,11 @@ class ContextMenuConfigurationProviderTest : public PlatformTest {
     [browser_->GetCommandDispatcher()
         startDispatchingToTarget:mock_mini_map_commands_handler
                      forProtocol:@protocol(MiniMapCommands)];
+    mock_unit_conversion_handler =
+        OCMStrictProtocolMock(@protocol(UnitConversionCommands));
+    [browser_->GetCommandDispatcher()
+        startDispatchingToTarget:mock_unit_conversion_handler
+                     forProtocol:@protocol(UnitConversionCommands)];
     mock_save_to_photos_commands_handler =
         OCMStrictProtocolMock(@protocol(SaveToPhotosCommands));
     [browser_->GetCommandDispatcher()
@@ -121,6 +127,7 @@ class ContextMenuConfigurationProviderTest : public PlatformTest {
   ContextMenuConfigurationProvider* configuration_provider_;
 
   id mock_mini_map_commands_handler;
+  id mock_unit_conversion_handler;
   id mock_save_to_photos_commands_handler;
 };
 
