@@ -11,11 +11,9 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
-#include "chrome/browser/ui/views/extensions/extension_dialog.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/test_extension_registry_observer.h"
-#include "extensions/test/extension_test_message_listener.h"
 
 namespace {
 
@@ -38,12 +36,7 @@ class ExtensionDialogBoundsTest
   }
 
   // DialogBrowserTest:
-  void ShowUi(const std::string& name) override {
-    if (name == "OpenFileDialog")
-      ShowOpenFileDialog();
-    else if (name == "BigExtensionDialog")
-      ShowBigExtensionDialog();
-  }
+  void ShowUi(const std::string& name) override { browser()->OpenFile(); }
 
   void EnableDockedMagnifier() const {
     extensions::TestExtensionRegistryObserver registry_observer(
@@ -53,40 +46,14 @@ class ExtensionDialogBoundsTest
     registry_observer.WaitForExtensionLoaded();
     ASSERT_TRUE(MagnificationManager::Get()->IsDockedMagnifierEnabled());
   }
-
- private:
-  void ShowOpenFileDialog() { browser()->OpenFile(); }
-
-  void ShowBigExtensionDialog() {
-    ExtensionTestMessageListener init_listener("ready");
-
-    scoped_refptr<const extensions::Extension> extension =
-        LoadExtension(test_data_dir_.AppendASCII("uitest/tab_traversal"));
-    ASSERT_TRUE(extension.get());
-
-    // Dimensions of a dialog that would be bigger than the remaining display
-    // work area when the docked magnifier is enabled.
-    ExtensionDialog::InitParams params(gfx::Size(1000, 1000));
-    params.is_modal = true;
-    params.min_size = {640, 240};
-    auto* dialog = ExtensionDialog::Show(
-        extension->url().Resolve("main.html"),
-        browser()->window()->GetNativeWindow(), browser()->profile(),
-        nullptr /* web_contents */, nullptr /* observer */, params);
-    ASSERT_TRUE(dialog);
-    ASSERT_TRUE(init_listener.WaitUntilSatisfied());
-  }
 };
 
 // Note that the underscores in the test names below are important as whatever
 // comes after the underscore is used as the parameter for the ShowUi() above.
-
+// TODO(crbug.com/1488468): File dialog no longer uses deprecated extension
+// dialog. Thus, move this test to SelectFileDialogExtensionBrowserTest and
+// remove this file.
 IN_PROC_BROWSER_TEST_F(ExtensionDialogBoundsTest, Test_OpenFileDialog) {
-  EnableDockedMagnifier();
-  ShowAndVerifyUi();
-}
-
-IN_PROC_BROWSER_TEST_F(ExtensionDialogBoundsTest, Test_BigExtensionDialog) {
   EnableDockedMagnifier();
   ShowAndVerifyUi();
 }
