@@ -19,6 +19,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
+#include "ui/base/device_form_factor.h"
 
 namespace {
 class FakeTopSites : public history::TopSites {
@@ -214,13 +215,23 @@ void MostVisitedSitesProviderTest::CheckMatchesEquivalentTo(
   } else if (ui_type == ExpectedUiType::kIndividualTiles) {
     ASSERT_EQ(urls.size(), NumMostVisitedMatches())
         << "Unexpected number of TILE matches";
+    int expected_relevance = 1600;  // kMostVisitedTilesIndividualHighRelevance
     for (const auto& match : result) {
       EXPECT_EQ(match.type, AutocompleteMatchType::TILE_MOST_VISITED_SITE);
       EXPECT_EQ(urls[match_index].url, match.destination_url)
           << "Invalid Match URL at position " << match_index;
       EXPECT_EQ(urls[match_index].title, match.description)
           << "Invalid Match Title at position " << match_index;
+      EXPECT_EQ(expected_relevance, match.relevance)
+          << "Invalid Match Relevance at position " << match_index;
       ++match_index;
+      // Degrade relevance of partially visible and invisible matches.
+      if (match_index == 4 &&
+          ui::GetDeviceFormFactor() ==
+              ui::DeviceFormFactor::DEVICE_FORM_FACTOR_PHONE) {
+        expected_relevance = 100;  // kMostVisitedTilesIndividualLowRelevance
+      }
+      --expected_relevance;
     }
   }
 }
@@ -475,6 +486,7 @@ TEST_F(MostVisitedSitesProviderTest,
   EXPECT_EQ(0u, NumMostVisitedMatches());
   // Accept only direct TopSites data.
   EXPECT_TRUE(top_sites_->EmitURLs());
+  EXPECT_EQ(5u, top_sites_->urls().size());
   CheckMatchesEquivalentTo(top_sites_->urls(),
                            ExpectedUiType::kIndividualTiles);
 }

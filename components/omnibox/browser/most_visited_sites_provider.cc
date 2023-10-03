@@ -18,8 +18,8 @@
 #include "components/search_engines/template_url_service.h"
 #include "components/url_formatter/url_formatter.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
-#include "third_party/metrics_proto/omnibox_input_type.pb.h"
 #include "third_party/omnibox_proto/types.pb.h"
+#include "ui/base/device_form_factor.h"
 #include "url/gurl.h"
 
 namespace {
@@ -31,7 +31,14 @@ constexpr const int kMostVisitedTilesAggregateRelevance = 1;
 // The relevance score for suggest tiles represented as individual matches.
 // Repeatable Queries are recognized as searches, and may get merged to higher
 // ranking search suggestions listed below the carousel.
-constexpr const int kMostVisitedTilesIndividualRelevance = 1600;
+constexpr const int kMostVisitedTilesIndividualHighRelevance = 1600;
+// Matches known to be off-screen by default are listed as low-relevance.
+// If we have additional AutocompleteMatches listed below the MV carousel
+// pointing to the same destination, we want the tiles to be deduplicated to
+// these matches.
+constexpr const int kMostVisitedTilesIndividualLowRelevance = 100;
+// Index of the last high-relevance tile.
+constexpr const int kLastHighRelevanceIndividualTile = 4;
 
 constexpr const int kMaxRecordedTileIndex = 15;
 
@@ -83,6 +90,7 @@ AutocompleteMatch BuildMatch(AutocompleteProvider* provider,
 template <typename TileContainer>
 bool BuildTileSuggest(AutocompleteProvider* provider,
                       AutocompleteProviderClient* const client,
+                      ui::DeviceFormFactor device_form_factor,
                       const TileContainer& container,
                       ACMatches& matches) {
   if (container.empty()) {
@@ -100,7 +108,7 @@ bool BuildTileSuggest(AutocompleteProvider* provider,
           omnibox::kMostVisitedTilesHorizontalRenderGroup)) {
     auto* const url_service = client->GetTemplateURLService();
     auto* const dse = url_service->GetDefaultSearchProvider();
-    int relevance = kMostVisitedTilesIndividualRelevance;
+    int relevance = kMostVisitedTilesIndividualHighRelevance;
     for (const auto& tile : container) {
       auto match = BuildMatch(
           provider, client, tile.title, tile.url, relevance,
@@ -127,6 +135,14 @@ bool BuildTileSuggest(AutocompleteProvider* provider,
         num_url_tiles++;
       }
       matches.emplace_back(std::move(match));
+
+      // On phones, we fully expose a fixed number of matches. Matches beyond
+      // that number are partially or fully concealed by design. Drop relevance
+      // for these matches.
+      if (matches.size() == kLastHighRelevanceIndividualTile &&
+          device_form_factor == ui::DEVICE_FORM_FACTOR_PHONE) {
+        relevance = kMostVisitedTilesIndividualLowRelevance;
+      }
       --relevance;
     }
   } else if (base::FeatureList::IsEnabled(omnibox::kMostVisitedTiles)) {
@@ -209,7 +225,9 @@ void MostVisitedSitesProvider::Stop(bool clear_cached_results,
 MostVisitedSitesProvider::MostVisitedSitesProvider(
     AutocompleteProviderClient* client,
     AutocompleteProviderListener* listener)
-    : AutocompleteProvider(TYPE_MOST_VISITED_SITES), client_{client} {
+    : AutocompleteProvider(TYPE_MOST_VISITED_SITES),
+      device_form_factor_{ui::GetDeviceFormFactor()},
+      client_{client} {
   AddListener(listener);
 
   // TopSites updates itself after a delay. To ensure up-to-date results,
@@ -225,8 +243,9 @@ MostVisitedSitesProvider::~MostVisitedSitesProvider() = default;
 void MostVisitedSitesProvider::OnMostVisitedUrlsAvailable(
     const history::MostVisitedURLList& urls) {
   done_ = true;
-  if (BuildTileSuggest(this, client_, urls, matches_))
+  if (BuildTileSuggest(this, client_, device_form_factor_, urls, matches_)) {
     NotifyListeners(true);
+  }
 }
 
 bool MostVisitedSitesProvider::AllowMostVisitedSitesSuggestions(
