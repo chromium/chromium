@@ -318,7 +318,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SBClientDownload.SafeDownloadOpenedLatencyByContentType.{DownloadContent}"
-    units="ms" expires_after="2023-12-14">
+    units="ms" expires_after="2024-03-31">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
