@@ -356,6 +356,8 @@ public abstract class ChromeFeatureList {
     public static final String PAGE_INFO_ABOUT_THIS_SITE_MORE_LANGS =
             "PageInfoAboutThisSiteMoreLangs";
     public static final String PAINT_PREVIEW_DEMO = "PaintPreviewDemo";
+    public static final String PAINT_PREVIEW_NEW_COLD_START_HEURISTIC =
+            "PaintPreviewNewColdStartHeuristic";
     public static final String PARTNER_CUSTOMIZATIONS_UMA = "PartnerCustomizationsUma";
     public static final String PASSKEY_MANAGEMENT_USING_ACCOUNT_SETTINGS_ANDROID =
             "PasskeyManagementUsingAccountSettingsAndroid";
@@ -591,6 +593,8 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sOptimizationGuidePushNotifications =
             new CachedFlag(OPTIMIZATION_GUIDE_PUSH_NOTIFICATIONS, false);
     public static final CachedFlag sPaintPreviewDemo = new CachedFlag(PAINT_PREVIEW_DEMO, false);
+    public static final CachedFlag sPaintPreviewNewColdStartHeuristic =
+            new CachedFlag(PAINT_PREVIEW_NEW_COLD_START_HEURISTIC, true);
     public static final CachedFlag sQueryTiles = new CachedFlag(QUERY_TILES, false);
     public static final CachedFlag sQueryTilesOnStart = new CachedFlag(QUERY_TILES_ON_START, false);
     public static final CachedFlag sSearchEngineChoice =
@@ -682,6 +686,7 @@ public abstract class ChromeFeatureList {
         sInstantStart,
         sHideTabOnTabSwitcher,
         sNewTabSearchEngineUrlAndroid,
+        sPaintPreviewNewColdStartHeuristic,
         sPrivacyGuideAndroid3,
         sPrivacyGuidePreloadAndroid,
         sPrivacyGuidePostMVP,
