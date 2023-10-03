@@ -375,7 +375,6 @@ bool UtilityProcessHost::StartProcess() {
       switches::kWebXrForceRuntime,
       sandbox::policy::switches::kAddXrAppContainerCaps,
 #endif
-      network::switches::kUseFirstPartySet,
       network::switches::kIpAddressSpaceOverrides,
 #if BUILDFLAG(IS_CHROMEOS)
       switches::kSchedulerBoostUrgent,

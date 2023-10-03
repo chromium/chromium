@@ -41,7 +41,7 @@ absl::optional<FirstPartySetParser::SingleSet> CanonicalizeSet(
             return pair.second.primary() != primary;
           })) {
     // More than one set was provided. That is (currently) unsupported.
-    LOG(ERROR) << "Ignoring use-first-party-set switch due to multiple set "
+    LOG(ERROR) << "Ignoring use-related-website-set switch due to multiple set "
                   "declarations.";
     return absl::nullopt;
   }

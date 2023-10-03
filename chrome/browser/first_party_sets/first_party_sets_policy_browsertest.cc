@@ -122,7 +122,7 @@ class EnabledPolicyBrowsertest
       // Only append this switch when the First-Party Sets base::Feature is
       // enabled.
       command_line->AppendSwitchASCII(
-          network::switches::kUseFirstPartySet,
+          network::switches::kUseRelatedWebsiteSet,
           base::StringPrintf(
               R"({"primary": "https://%s",)"
               R"("associatedSites": ["https://%s","https://%s"]})",

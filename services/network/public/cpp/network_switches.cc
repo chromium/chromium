@@ -92,7 +92,15 @@ const char kAdditionalTrustTokenKeyCommitments[] =
 // Allows the manual specification of a First-Party Set, as a comma-separated
 // list of origins. The first origin in the list is treated as the owner of the
 // set.
+// DEPRECATED(crbug.com/1486689): This switch is under deprecation due to
+// renaming "First-Party Set" to "Related Website Set". Please use
+// `kUseRelatedWebsiteSet` instead.
 const char kUseFirstPartySet[] = "use-first-party-set";
+
+// Allows the manual specification of a Related Website Set, as a
+// comma-separated list of origins. The first origin in the list is treated as
+// the primary site of the set.
+const char kUseRelatedWebsiteSet[] = "use-related-website-set";
 
 // Specifies manual overrides to the IP endpoint -> IP address space mapping.
 // This allows running local tests against "public" and "private" IP addresses.

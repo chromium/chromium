@@ -60,15 +60,6 @@ class HttpCookieBrowserTest : public ContentBrowserTest,
     ASSERT_TRUE(https_server()->Start());
   }
 
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    ContentBrowserTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitchASCII(
-        network::switches::kUseFirstPartySet,
-        base::StringPrintf(R"({"primary": "https://%s",)"
-                           R"("associatedSites": ["https://%s","https://%s"]})",
-                           kHostA, kHostB, kHostC));
-  }
-
   bool DoesSameSiteConsiderRedirectChain() { return GetParam(); }
 
   const char* kHostA = "a.test";

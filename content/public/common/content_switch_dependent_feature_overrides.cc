@@ -138,6 +138,12 @@ GetSwitchDependentFeatureOverrides(const base::CommandLine& command_line) {
      std::cref(network::features::kCrossOriginOpenerPolicyByDefault),
      base::FeatureList::OVERRIDE_ENABLE_FEATURE},
 
+    // Overrides for First-Party Sets, which is enabled when either switch is
+    // present. When both switches are present, `kUseRelatedWebsiteSet` takes
+    // precedence.
+    {network::switches::kUseRelatedWebsiteSet,
+     std::cref(features::kFirstPartySets),
+     base::FeatureList::OVERRIDE_ENABLE_FEATURE},
     {network::switches::kUseFirstPartySet, std::cref(features::kFirstPartySets),
      base::FeatureList::OVERRIDE_ENABLE_FEATURE},
 
@@ -163,7 +169,8 @@ GetSwitchDependentFeatureOverrides(const base::CommandLine& command_line) {
      std::cref(network::features::kReduceAcceptLanguage),
      base::FeatureList::OVERRIDE_ENABLE_FEATURE},
 
-    // Override for --privacy-sandbox-ads-apis. See also chrome layer overrides.
+    // Override for --privacy-sandbox-ads-apis. See also chrome layer
+    // overrides.
     {switches::kEnablePrivacySandboxAdsApis,
      std::cref(features::kPrivacySandboxAdsAPIsOverride),
      base::FeatureList::OVERRIDE_ENABLE_FEATURE},
