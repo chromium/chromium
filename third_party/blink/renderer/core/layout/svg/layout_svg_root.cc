@@ -402,13 +402,8 @@ PositionWithAffinity LayoutSVGRoot::PositionForPoint(
 
   LayoutObject* layout_object = closest_descendant;
   AffineTransform transform = layout_object->LocalToSVGParentTransform();
-  if (RuntimeEnabledFeatures::LayoutNGNoLocationEnabled()) {
-    PhysicalOffset location = To<LayoutBox>(layout_object)->PhysicalLocation();
-    transform.Translate(location.left, location.top);
-  } else {
-    transform.Translate(To<LayoutBox>(layout_object)->Location().X(),
-                        To<LayoutBox>(layout_object)->Location().Y());
-  }
+  PhysicalOffset location = To<LayoutBox>(layout_object)->PhysicalLocation();
+  transform.Translate(location.left, location.top);
   while (layout_object) {
     layout_object = layout_object->Parent();
     if (layout_object->IsSVGRoot())
@@ -446,14 +441,9 @@ SVGTransformChange LayoutSVGRoot::BuildLocalToBorderBoxTransform() {
 
 AffineTransform LayoutSVGRoot::LocalToSVGParentTransform() const {
   NOT_DESTROYED();
-  if (RuntimeEnabledFeatures::LayoutNGNoLocationEnabled()) {
-    PhysicalOffset location = PhysicalLocation();
-    return AffineTransform::Translation(RoundToInt(location.left),
-                                        RoundToInt(location.top)) *
-           local_to_border_box_transform_;
-  }
-  return AffineTransform::Translation(RoundToInt(Location().X()),
-                                      RoundToInt(Location().Y())) *
+  PhysicalOffset location = PhysicalLocation();
+  return AffineTransform::Translation(RoundToInt(location.left),
+                                      RoundToInt(location.top)) *
          local_to_border_box_transform_;
 }
 

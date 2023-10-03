@@ -380,15 +380,9 @@ TEST_F(LayoutBoxTest, TopLeftLocationFlipped) {
   )HTML");
 
   const LayoutBox* box1 = GetLayoutBoxByElementId("box1");
-  if (!RuntimeEnabledFeatures::LayoutNGNoLocationEnabled()) {
-    EXPECT_EQ(LayoutPoint(0, 0), box1->Location());
-  }
   EXPECT_EQ(PhysicalOffset(500, 0), box1->PhysicalLocation());
 
   const LayoutBox* box2 = GetLayoutBoxByElementId("box2");
-  if (!RuntimeEnabledFeatures::LayoutNGNoLocationEnabled()) {
-    EXPECT_EQ(LayoutPoint(100, 0), box2->Location());
-  }
   EXPECT_EQ(PhysicalOffset(300, 0), box2->PhysicalLocation());
 }
 
@@ -414,18 +408,12 @@ TEST_F(LayoutBoxTest, TableRowCellTopLeftLocationFlipped) {
   // relative to the containing section.
 
   const LayoutBox* row1 = GetLayoutBoxByElementId("row1");
-  if (!RuntimeEnabledFeatures::LayoutNGNoLocationEnabled()) {
-    EXPECT_EQ(LayoutPoint(0, 0), row1->Location());
-  }
   EXPECT_EQ(PhysicalOffset(300, 0), row1->PhysicalLocation());
 
   const LayoutBox* cell1 = GetLayoutBoxByElementId("cell1");
   EXPECT_EQ(PhysicalOffset(0, 0), cell1->PhysicalLocation());
 
   const LayoutBox* row2 = GetLayoutBoxByElementId("row2");
-  if (!RuntimeEnabledFeatures::LayoutNGNoLocationEnabled()) {
-    EXPECT_EQ(LayoutPoint(100, 0), row2->Location());
-  }
   EXPECT_EQ(PhysicalOffset(0, 0), row2->PhysicalLocation());
 
   const LayoutBox* cell2 = GetLayoutBoxByElementId("cell2");
@@ -689,8 +677,7 @@ TEST_F(LayoutBoxTest, ContentsVisualOverflowPropagation) {
     </div>
   )HTML");
 
-  const int kCContentsLeft =
-      RuntimeEnabledFeatures::LayoutNGNoLocationEnabled() ? -10 : 0;
+  const int kCContentsLeft = -10;
   auto* c = GetLayoutBoxByElementId("c");
   EXPECT_EQ(LayoutRect(0, 0, 100, 100), c->SelfVisualOverflowRect());
   EXPECT_CONTENTS_VISUAL_OVERFLOW(LayoutRect(kCContentsLeft, 20, 100, 100), c);
@@ -699,8 +686,7 @@ TEST_F(LayoutBoxTest, ContentsVisualOverflowPropagation) {
   EXPECT_EQ(LayoutRect(kCContentsLeft, 0, 110, 120),
             c->VisualOverflowRectForPropagation());
 
-  const int kDLeft =
-      RuntimeEnabledFeatures::LayoutNGNoLocationEnabled() ? 0 : -10;
+  const int kDLeft = 0;
   auto* d = GetLayoutBoxByElementId("d");
   EXPECT_EQ(LayoutRect(0, 0, 100, 100), d->SelfVisualOverflowRect());
   EXPECT_CONTENTS_VISUAL_OVERFLOW(LayoutRect(10, 20, 100, 100), d);
@@ -710,8 +696,7 @@ TEST_F(LayoutBoxTest, ContentsVisualOverflowPropagation) {
             d->VisualOverflowRectForPropagation());
 
   auto* b = GetLayoutBoxByElementId("b");
-  const int kBContentsLeft =
-      RuntimeEnabledFeatures::LayoutNGNoLocationEnabled() ? -130 : 0;
+  const int kBContentsLeft = -130;
   EXPECT_EQ(LayoutRect(0, 0, 100, 100), b->SelfVisualOverflowRect());
   // Union of VisualOverflowRectForPropagations offset by locations of c and d.
   EXPECT_CONTENTS_VISUAL_OVERFLOW(LayoutRect(kBContentsLeft, 40, 200, 120), b);
@@ -983,14 +968,6 @@ TEST_F(LayoutBoxTest, LocationOfAbsoluteChildWithContainerScrollbars) {
   EXPECT_EQ(PhysicalOffset(150, 90), vlr->PhysicalLocation());
 
   const auto* vrl = GetLayoutBoxByElementId("vrl");
-  // In vrl writing mode, child's Location() is the location of the
-  // top-right corner of its border box relative the top-right corner of its
-  // containing box's border box.
-  // 240 = total_container_width (540) - physical_child_left (150) +
-  //       total_child_width (150)
-  if (!RuntimeEnabledFeatures::LayoutNGNoLocationEnabled()) {
-    EXPECT_EQ(LayoutPoint(240, 90), vrl->Location());
-  }
   // The physical location is still about the top-left corners.
   EXPECT_EQ(PhysicalOffset(150, 90), vrl->PhysicalLocation());
 
@@ -1005,9 +982,6 @@ TEST_F(LayoutBoxTest, LocationOfAbsoluteChildWithContainerScrollbars) {
 
   // Same as "vrl".
   const auto* rtl_vrl = GetLayoutBoxByElementId("rtl-vrl");
-  if (!RuntimeEnabledFeatures::LayoutNGNoLocationEnabled()) {
-    EXPECT_EQ(LayoutPoint(240, 90), rtl_vrl->Location());
-  }
   EXPECT_EQ(PhysicalOffset(150, 90), rtl_vrl->PhysicalLocation());
 }
 
@@ -1054,15 +1028,9 @@ TEST_F(LayoutBoxTest,
   EXPECT_EQ(PhysicalOffset(150, 90), vrl_in_vlr->PhysicalLocation());
 
   const auto* htb_in_vrl = GetLayoutBoxByElementId("htb-in-vrl");
-  if (!RuntimeEnabledFeatures::LayoutNGNoLocationEnabled()) {
-    EXPECT_EQ(LayoutPoint(240, 90), htb_in_vrl->Location());
-  }
   EXPECT_EQ(PhysicalOffset(150, 90), htb_in_vrl->PhysicalLocation());
 
   const auto* vlr_in_vrl = GetLayoutBoxByElementId("vlr-in-vrl");
-  if (!RuntimeEnabledFeatures::LayoutNGNoLocationEnabled()) {
-    EXPECT_EQ(LayoutPoint(240, 90), vlr_in_vrl->Location());
-  }
   EXPECT_EQ(PhysicalOffset(150, 90), vlr_in_vrl->PhysicalLocation());
 }
 
@@ -1106,15 +1074,9 @@ TEST_F(LayoutBoxTest,
   EXPECT_EQ(PhysicalOffset(90, 30), vlr->PhysicalLocation());
 
   const auto* vrl = GetLayoutBoxByElementId("vrl");
-  // In vrl writing mode, child's Location() is the location of the
-  // top-right corner of its border box relative the top-right corner of its
-  // containing box's border box.
+  // The physical location is still about the top-left corners.
   // 65 = container_border_right (30) + container_padding_right (20) +
   //      vertical_scrollbar_width (15)
-  if (!RuntimeEnabledFeatures::LayoutNGNoLocationEnabled()) {
-    EXPECT_EQ(LayoutPoint(65, 30), vrl->Location());
-  }
-  // The physical location is still about the top-left corners.
   // 325 = total_container_width (540) - child_x (65) - total_child_width (150)
   EXPECT_EQ(PhysicalOffset(325, 30), vrl->PhysicalLocation());
 
@@ -1133,9 +1095,6 @@ TEST_F(LayoutBoxTest,
   const auto* rtl_vrl = GetLayoutBoxByElementId("rtl-vrl");
   // Horizontal is the same as "vrl".
   // Vertical is the same as "rtl_vlr".
-  if (!RuntimeEnabledFeatures::LayoutNGNoLocationEnabled()) {
-    EXPECT_EQ(LayoutPoint(65, 134), rtl_vrl->Location());
-  }
   EXPECT_EQ(PhysicalOffset(325, 134), rtl_vrl->PhysicalLocation());
 }
 
@@ -1189,9 +1148,6 @@ TEST_F(LayoutBoxTest,
   EXPECT_EQ(PhysicalOffset(90, 30), vlr->PhysicalLocation());
 
   const auto* vrl = GetLayoutBoxByElementId("vrl");
-  if (!RuntimeEnabledFeatures::LayoutNGNoLocationEnabled()) {
-    EXPECT_EQ(LayoutPoint(65, 30), vrl->Location());
-  }
   EXPECT_EQ(PhysicalOffset(325, 30), vrl->PhysicalLocation());
 
   const auto* rtl = GetLayoutBoxByElementId("rtl");
@@ -1201,9 +1157,6 @@ TEST_F(LayoutBoxTest,
   EXPECT_EQ(PhysicalOffset(90, 134), rtl_vlr->PhysicalLocation());
 
   const auto* rtl_vrl = GetLayoutBoxByElementId("rtl-vrl");
-  if (!RuntimeEnabledFeatures::LayoutNGNoLocationEnabled()) {
-    EXPECT_EQ(LayoutPoint(65, 134), rtl_vrl->Location());
-  }
   EXPECT_EQ(PhysicalOffset(325, 134), rtl_vrl->PhysicalLocation());
 }
 
@@ -1252,17 +1205,9 @@ TEST_F(LayoutBoxTest, LocationOfInFlowChildWithContainerScrollbars) {
   EXPECT_EQ(PhysicalOffset(190, 30), vlr->PhysicalLocation());
 
   const auto* vrl = GetLayoutBoxByElementId("vrl");
-  // In vrl writing mode, child's Location is the location of the
-  // top-right corner of its border box relative the top-right corner of its
-  // containing box's border box.
-  // 165 = container_border_right (30) + container_padding_right (20) +
-  //       vertical_scrollbar_width (15) + offset_width (100)
-  // 30 = container_border_top (20) + container_padding_left (10)
-  if (!RuntimeEnabledFeatures::LayoutNGNoLocationEnabled()) {
-    EXPECT_EQ(LayoutPoint(165, 30), vrl->Location());
-  }
   // The physical location is still about the top-left corners.
   // 225 = total_container_width (540) - total_child_width (150) - 165
+  // 30 = container_border_top (20) + container_padding_left (10)
   EXPECT_EQ(PhysicalOffset(225, 30), vrl->PhysicalLocation());
 
   const auto* rtl = GetLayoutBoxByElementId("rtl");
@@ -1281,9 +1226,6 @@ TEST_F(LayoutBoxTest, LocationOfInFlowChildWithContainerScrollbars) {
   const auto* rtl_vrl = GetLayoutBoxByElementId("rtl-vrl");
   // Horizontal is the same as "vrl"
   // Vertical is the same as "rtl_vlr"
-  if (!RuntimeEnabledFeatures::LayoutNGNoLocationEnabled()) {
-    EXPECT_EQ(LayoutPoint(165, 134), rtl_vrl->Location());
-  }
   EXPECT_EQ(PhysicalOffset(225, 134), rtl_vrl->PhysicalLocation());
 }
 
@@ -1333,18 +1275,12 @@ TEST_F(LayoutBoxTest, LocationOfRelativeChildWithContainerScrollbars) {
 
   EXPECT_EQ(PhysicalOffset(278, 107), vlr->PhysicalLocation());
 
-  if (!RuntimeEnabledFeatures::LayoutNGNoLocationEnabled()) {
-    EXPECT_EQ(LayoutPoint(77, 107), vrl->Location());
-  }
   EXPECT_EQ(PhysicalOffset(313, 107), vrl->PhysicalLocation());
 
   EXPECT_EQ(PhysicalOffset(428, 177), rtl->PhysicalLocation());
 
   EXPECT_EQ(PhysicalOffset(278, 211), rtl_vlr->PhysicalLocation());
 
-  if (!RuntimeEnabledFeatures::LayoutNGNoLocationEnabled()) {
-    EXPECT_EQ(LayoutPoint(77, 211), rtl_vrl->Location());
-  }
   EXPECT_EQ(PhysicalOffset(313, 211), rtl_vrl->PhysicalLocation());
 }
 
@@ -1384,15 +1320,9 @@ TEST_F(LayoutBoxTest, LocationOfFloatLeftChildWithContainerScrollbars) {
   EXPECT_EQ(PhysicalOffset(90, 30), vlr->PhysicalLocation());
 
   const auto* vrl = GetLayoutBoxByElementId("vrl");
-  // In vrl writing mode, child's Location() is the location of the
-  // top-right corner of its border box relative the top-right corner of its
-  // containing box's border box.
+  // The physical location is still about the top-left corners.
   // 65 = container_border_right (30) + container_padding_right (20) +
   //      vertical_scrollbar_width (15)
-  if (!RuntimeEnabledFeatures::LayoutNGNoLocationEnabled()) {
-    EXPECT_EQ(LayoutPoint(65, 30), vrl->Location());
-  }
-  // The physical location is still about the top-left corners.
   // 325 = total_container_width (540) - child_x (65) - total_child_width (150)
   EXPECT_EQ(PhysicalOffset(325, 30), vrl->PhysicalLocation());
 
@@ -1407,9 +1337,6 @@ TEST_F(LayoutBoxTest, LocationOfFloatLeftChildWithContainerScrollbars) {
 
   // Same as "vrl".
   const auto* rtl_vrl = GetLayoutBoxByElementId("rtl-vrl");
-  if (!RuntimeEnabledFeatures::LayoutNGNoLocationEnabled()) {
-    EXPECT_EQ(LayoutPoint(65, 30), rtl_vrl->Location());
-  }
   EXPECT_EQ(PhysicalOffset(325, 30), rtl_vrl->PhysicalLocation());
 }
 
@@ -1453,15 +1380,9 @@ TEST_F(LayoutBoxTest, LocationOfFloatRightChildWithContainerScrollbars) {
   EXPECT_EQ(PhysicalOffset(90, 134), vlr->PhysicalLocation());
 
   const auto* vrl = GetLayoutBoxByElementId("vrl");
-  // In vrl writing mode, child's Location() is the location of the
-  // top-right corner of its border box relative the top-right corner of its
-  // containing box's border box.
+  // The physical location is still about the top-left corners.
   // 65 = container_border_right (30) + container_padding_right (20) +
   //      vertical_scrollbar_width (15)
-  if (!RuntimeEnabledFeatures::LayoutNGNoLocationEnabled()) {
-    EXPECT_EQ(LayoutPoint(65, 134), vrl->Location());
-  }
-  // The physical location is still about the top-left corners.
   // 325 = total_container_width (540) - child_x (65) - total_child_width (150)
   EXPECT_EQ(PhysicalOffset(325, 134), vrl->PhysicalLocation());
 
@@ -1476,9 +1397,6 @@ TEST_F(LayoutBoxTest, LocationOfFloatRightChildWithContainerScrollbars) {
 
   // Same as "vrl".
   const auto* rtl_vrl = GetLayoutBoxByElementId("rtl-vrl");
-  if (!RuntimeEnabledFeatures::LayoutNGNoLocationEnabled()) {
-    EXPECT_EQ(LayoutPoint(65, 134), rtl_vrl->Location());
-  }
   EXPECT_EQ(PhysicalOffset(325, 134), rtl_vrl->PhysicalLocation());
 }
 

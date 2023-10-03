@@ -61,12 +61,9 @@ gfx::RectF LayoutSVGForeignObject::DecoratedBoundingBox() const {
 
 gfx::RectF LayoutSVGForeignObject::VisualRectInLocalSVGCoordinates() const {
   NOT_DESTROYED();
-  if (RuntimeEnabledFeatures::LayoutNGNoLocationEnabled()) {
-    PhysicalOffset offset = PhysicalLocation();
-    PhysicalSize size = Size();
-    return gfx::RectF(offset.left, offset.top, size.width, size.height);
-  }
-  return gfx::RectF(FrameRect());
+  PhysicalOffset offset = PhysicalLocation();
+  PhysicalSize size = Size();
+  return gfx::RectF(offset.left, offset.top, size.width, size.height);
 }
 
 AffineTransform LayoutSVGForeignObject::LocalToSVGParentTransform() const {

@@ -1360,7 +1360,7 @@ void NGBlockNode::PlaceChildrenInFlowThread(
       LayoutBox* placeholder = child_box->SpannerPlaceholder();
       if (!child_fragment.BreakToken()) {
         // Last fragment for this spanner. Update its placeholder.
-        placeholder->SetLocation(child_box->Location());
+        placeholder->SetLocation(child_box->DeprecatedLocation());
         placeholder->SetSize(child_box->Size());
       }
 

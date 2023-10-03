@@ -1048,20 +1048,14 @@ LayoutUnit LayoutBox::ClientHeightFrom(LayoutUnit height) const {
 int LayoutBox::PixelSnappedClientWidth() const {
   NOT_DESTROYED();
   DCHECK(!RuntimeEnabledFeatures::LayoutNewOverflowLogicEnabled());
-  LayoutUnit left = RuntimeEnabledFeatures::LayoutNGNoLocationEnabled()
-                        ? PhysicalLocation().left
-                        : Location().X();
-  return SnapSizeToPixel(ClientWidth(), left + ClientLeft());
+  return SnapSizeToPixel(ClientWidth(), PhysicalLocation().left + ClientLeft());
 }
 
 DISABLE_CFI_PERF
 int LayoutBox::PixelSnappedClientHeight() const {
   NOT_DESTROYED();
   DCHECK(!RuntimeEnabledFeatures::LayoutNewOverflowLogicEnabled());
-  LayoutUnit top = RuntimeEnabledFeatures::LayoutNGNoLocationEnabled()
-                       ? PhysicalLocation().top
-                       : Location().Y();
-  return SnapSizeToPixel(ClientHeight(), top + ClientTop());
+  return SnapSizeToPixel(ClientHeight(), PhysicalLocation().top + ClientTop());
 }
 
 LayoutUnit LayoutBox::ClientWidthWithTableSpecialBehavior() const {
@@ -1145,18 +1139,13 @@ LayoutUnit LayoutBox::ScrollHeight() const {
 int LayoutBox::PixelSnappedScrollWidth() const {
   NOT_DESTROYED();
   DCHECK(!RuntimeEnabledFeatures::LayoutNewOverflowLogicEnabled());
-  LayoutUnit left = RuntimeEnabledFeatures::LayoutNGNoLocationEnabled()
-                        ? PhysicalLocation().left
-                        : Location().X();
-  return SnapSizeToPixel(ScrollWidth(), left + ClientLeft());
+  return SnapSizeToPixel(ScrollWidth(), PhysicalLocation().left + ClientLeft());
 }
 
 int LayoutBox::PixelSnappedScrollHeight() const {
   NOT_DESTROYED();
   DCHECK(!RuntimeEnabledFeatures::LayoutNewOverflowLogicEnabled());
-  LayoutUnit top = RuntimeEnabledFeatures::LayoutNGNoLocationEnabled()
-                       ? PhysicalLocation().top
-                       : Location().Y();
+  LayoutUnit top = PhysicalLocation().top;
   if (IsScrollContainer()) {
     return SnapSizeToPixel(GetScrollableArea()->ScrollHeight(),
                            top + ClientTop());
@@ -1427,28 +1416,20 @@ LayoutUnit LayoutBox::DefaultIntrinsicContentBlockSize() const {
 
 LayoutUnit LayoutBox::LogicalLeft() const {
   NOT_DESTROYED();
-  if (RuntimeEnabledFeatures::LayoutNGNoLocationEnabled()) {
-    auto [offset, container_writing_mode] = LogicalLocation(*this);
-    return IsParallelWritingMode(container_writing_mode,
-                                 StyleRef().GetWritingMode())
-               ? offset.inline_offset
-               : offset.block_offset;
-  }
-  auto location = Location();
-  return StyleRef().IsHorizontalWritingMode() ? location.X() : location.Y();
+  auto [offset, container_writing_mode] = LogicalLocation(*this);
+  return IsParallelWritingMode(container_writing_mode,
+                               StyleRef().GetWritingMode())
+             ? offset.inline_offset
+             : offset.block_offset;
 }
 
 LayoutUnit LayoutBox::LogicalTop() const {
   NOT_DESTROYED();
-  if (RuntimeEnabledFeatures::LayoutNGNoLocationEnabled()) {
-    auto [offset, container_writing_mode] = LogicalLocation(*this);
-    return IsParallelWritingMode(container_writing_mode,
-                                 StyleRef().GetWritingMode())
-               ? offset.block_offset
-               : offset.inline_offset;
-  }
-  auto location = Location();
-  return StyleRef().IsHorizontalWritingMode() ? location.Y() : location.X();
+  auto [offset, container_writing_mode] = LogicalLocation(*this);
+  return IsParallelWritingMode(container_writing_mode,
+                               StyleRef().GetWritingMode())
+             ? offset.block_offset
+             : offset.inline_offset;
 }
 
 gfx::QuadF LayoutBox::AbsoluteContentQuad(MapCoordinatesFlags flags) const {
@@ -3201,9 +3182,6 @@ LayoutRect LayoutBox::LocalCaretRect(
     int caret_offset,
     LayoutUnit* extra_width_to_end_of_line) const {
   NOT_DESTROYED();
-  if (!RuntimeEnabledFeatures::LayoutNGNoLocationEnabled()) {
-    return FlippedLocalCaretRect(caret_offset, extra_width_to_end_of_line);
-  }
   // VisiblePositions at offsets inside containers either a) refer to the
   // positions before/after those containers (tables and select elements) or
   // b) refer to the position inside an empty block.
@@ -3265,59 +3243,6 @@ LayoutRect LayoutBox::LocalCaretRect(
   }
 
   return rect.ToLayoutRect();
-}
-
-LayoutRect LayoutBox::FlippedLocalCaretRect(
-    int caret_offset,
-    LayoutUnit* extra_width_to_end_of_line) const {
-  NOT_DESTROYED();
-  // VisiblePositions at offsets inside containers either a) refer to the
-  // positions before/after those containers (tables and select elements) or
-  // b) refer to the position inside an empty block.
-  // They never refer to children.
-  // FIXME: Paint the carets inside empty blocks differently than the carets
-  // before/after elements.
-  LayoutUnit caret_width = GetFrameView()->CaretWidth();
-  LayoutRect rect(Location(), DeprecatedLayoutSize(caret_width, Size().height));
-  bool ltr = StyleRef().IsLeftToRightDirection();
-
-  if ((!caret_offset) ^ ltr)
-    rect.Move(DeprecatedLayoutSize(Size().width - caret_width, LayoutUnit()));
-
-  // If height of box is smaller than font height, use the latter one,
-  // otherwise the caret might become invisible.
-  //
-  // Also, if the box is not an atomic inline-level element, always use the font
-  // height. This prevents the "big caret" bug described in:
-  // <rdar://problem/3777804> Deleting all content in a document can result in
-  // giant tall-as-window insertion point
-  //
-  // FIXME: ignoring :first-line, missing good reason to take care of
-  const SimpleFontData* font_data = StyleRef().GetFont().PrimaryFont();
-  LayoutUnit font_height =
-      LayoutUnit(font_data ? font_data->GetFontMetrics().Height() : 0);
-  if (font_height > rect.Height() || (!IsAtomicInlineLevel() && !IsTable()))
-    rect.SetHeight(font_height);
-
-  if (extra_width_to_end_of_line)
-    *extra_width_to_end_of_line = Location().X() + Size().width - rect.MaxX();
-
-  // Move to local coords
-  rect.MoveBy(-Location());
-
-  // FIXME: Border/padding should be added for all elements but this workaround
-  // is needed because we use offsets inside an "atomic" element to represent
-  // positions before and after the element in deprecated editing offsets.
-  if (GetNode() &&
-      !(EditingIgnoresContent(*GetNode()) || IsDisplayInsideTable(GetNode()))) {
-    rect.SetX(rect.X() + BorderLeft() + PaddingLeft());
-    rect.SetY(rect.Y() + PaddingTop() + BorderTop());
-  }
-
-  if (!IsHorizontalWritingMode())
-    return rect.TransposedRect();
-
-  return rect;
 }
 
 PositionWithAffinity LayoutBox::PositionForPointInFragments(
@@ -3855,13 +3780,6 @@ void LayoutBox::CopyVisualOverflowFromFragmentsWithoutInvalidations() {
   if (!has_overflow) {
     ClearVisualOverflow();
     return;
-  }
-  if (!RuntimeEnabledFeatures::LayoutNGNoLocationEnabled() &&
-      UNLIKELY(IsFlippedBlocksWritingMode(writing_mode))) {
-    DCHECK(!blink::IsHorizontalWritingMode(writing_mode));
-    const LayoutUnit flip_offset = cb->Size().width - Size().width;
-    self_rect.offset.left += flip_offset;
-    contents_rect.offset.left += flip_offset;
   }
   SetVisualOverflow(self_rect, contents_rect);
 }

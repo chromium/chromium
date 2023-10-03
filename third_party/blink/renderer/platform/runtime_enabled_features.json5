@@ -2203,12 +2203,6 @@
     {
       // crbug.com/1353190
       name: "LayoutNGNoCopyBack",
-      depends_on: ["LayoutNGNoLocation"],
-      status: "stable",
-    },
-    {
-      // crbug.com/1353190
-      name: "LayoutNGNoLocation",
       status: "stable",
     },
     {

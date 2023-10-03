@@ -136,16 +136,9 @@ bool FrameSerializerDelegateImpl::ShouldIgnorePopupOverlayElement(
     center_y = page->GetChromeClient().WindowToViewportScalar(
         window->GetFrame(), center_y);
   }
-  if (RuntimeEnabledFeatures::LayoutNGNoLocationEnabled()) {
-    if (!PhysicalRect(box->PhysicalLocation(), box->Size())
-             .Contains(LayoutUnit(center_x), LayoutUnit(center_y))) {
-      return false;
-    }
-  } else {
-    LayoutPoint center_point(center_x, center_y);
-    if (!box->FrameRect().Contains(center_point)) {
-      return false;
-    }
+  if (!PhysicalRect(box->PhysicalLocation(), box->Size())
+           .Contains(LayoutUnit(center_x), LayoutUnit(center_y))) {
+    return false;
   }
 
   // The z-index should be greater than the threshold.

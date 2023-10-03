@@ -572,12 +572,9 @@ bool LayoutBoxModelObject::UpdateStickyPositionConstraints() {
   {
     if (IsLayoutInline()) {
       sticky_box_rect = To<LayoutInline>(this)->PhysicalLinesBoundingBox();
-    } else if (RuntimeEnabledFeatures::LayoutNGNoLocationEnabled()) {
+    } else {
       const LayoutBox& box = To<LayoutBox>(*this);
       sticky_box_rect = PhysicalRect(box.PhysicalLocation(), box.Size());
-    } else {
-      sticky_box_rect = sticky_container->FlipForWritingMode(
-          To<LayoutBox>(this)->FrameRect());
     }
 
     PhysicalRect scroll_container_relative_sticky_box_rect =

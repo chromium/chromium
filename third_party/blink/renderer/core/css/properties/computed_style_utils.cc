@@ -803,13 +803,8 @@ CSSValue* ComputedStyleUtils::ValueForPositionOffset(
       // container's padding edge. Thus it includes margins which we subtract
       // below.
       const PhysicalOffset client_offset =
-          RuntimeEnabledFeatures::LayoutNGNoLocationEnabled()
-              ? box->PhysicalLocation() -
-                    PhysicalOffset(container->ClientLeft(),
-                                   container->ClientTop())
-              : PhysicalOffset(box->LocationOffset() -
-                               DeprecatedLayoutSize(container->ClientLeft(),
-                                                    container->ClientTop()));
+          box->PhysicalLocation() -
+          PhysicalOffset(container->ClientLeft(), container->ClientTop());
 
       LayoutUnit position;
 

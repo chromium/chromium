@@ -288,18 +288,11 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
       SetWidth(size);
   }
 
-  // Location() is deprecated.  Use PhysicalLocation() instead.
-  LayoutPoint Location() const {
+  // Use PhysicalLocation() instead.
+  LayoutPoint DeprecatedLocation() const {
     NOT_DESTROYED();
     DCHECK(!RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled());
     return LocationInternal();
-  }
-  // LocationOffset() is deprecated.  Use PhysicalLocation() instead.
-  DeprecatedLayoutSize LocationOffset() const {
-    NOT_DESTROYED();
-    DCHECK(!RuntimeEnabledFeatures::LayoutNGNoLocationEnabled());
-    auto location = Location();
-    return DeprecatedLayoutSize(location.X(), location.Y());
   }
   virtual PhysicalSize Size() const;
 
@@ -324,14 +317,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     }
     frame_size_ = size;
     SizeChanged();
-  }
-
-  // FrameRect() is deprecated. Use
-  // PhysicalRect(box->PhysicalLocation(), box->Size()) instead.
-  LayoutRect FrameRect() const {
-    NOT_DESTROYED();
-    DCHECK(!RuntimeEnabledFeatures::LayoutNGNoLocationEnabled());
-    return LayoutRect(Location(), Size().ToLayoutSize());
   }
 
   // Note that those functions have their origin at this box's CSS border box.
@@ -457,10 +442,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   LayoutRect VisualOverflowRect() const;
   PhysicalRect PhysicalVisualOverflowRect() const final {
     NOT_DESTROYED();
-    if (RuntimeEnabledFeatures::LayoutNGNoLocationEnabled()) {
-      return PhysicalRect(VisualOverflowRect());
-    }
-    return FlipForWritingMode(VisualOverflowRect());
+    return PhysicalRect(VisualOverflowRect());
   }
   // VisualOverflow has DCHECK for reading before it is computed. These
   // functions pretend there is no visual overflow when it is not computed.
@@ -482,10 +464,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   }
   PhysicalRect PhysicalSelfVisualOverflowRect() const {
     NOT_DESTROYED();
-    if (RuntimeEnabledFeatures::LayoutNGNoLocationEnabled()) {
-      return PhysicalRect(SelfVisualOverflowRect());
-    }
-    return FlipForWritingMode(SelfVisualOverflowRect());
+    return PhysicalRect(SelfVisualOverflowRect());
   }
   LayoutRect ContentsVisualOverflowRect() const {
     NOT_DESTROYED();
@@ -495,10 +474,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   }
   PhysicalRect PhysicalContentsVisualOverflowRect() const {
     NOT_DESTROYED();
-    if (RuntimeEnabledFeatures::LayoutNGNoLocationEnabled()) {
-      return PhysicalRect(ContentsVisualOverflowRect());
-    }
-    return FlipForWritingMode(ContentsVisualOverflowRect());
+    return PhysicalRect(ContentsVisualOverflowRect());
   }
 
   // These methods don't mean the box *actually* has top/left overflow. They
@@ -514,17 +490,12 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   void AddSelfVisualOverflow(const PhysicalRect& r) {
     NOT_DESTROYED();
-    AddSelfVisualOverflow(RuntimeEnabledFeatures::LayoutNGNoLocationEnabled()
-                              ? r.ToLayoutRect()
-                              : FlipForWritingMode(r));
+    AddSelfVisualOverflow(r.ToLayoutRect());
   }
   void AddSelfVisualOverflow(const LayoutRect&);
   void AddContentsVisualOverflow(const PhysicalRect& r) {
     NOT_DESTROYED();
-    AddContentsVisualOverflow(
-        RuntimeEnabledFeatures::LayoutNGNoLocationEnabled()
-            ? r.ToLayoutRect()
-            : FlipForWritingMode(r));
+    AddContentsVisualOverflow(r.ToLayoutRect());
   }
   void AddContentsVisualOverflow(const LayoutRect&);
 
@@ -532,11 +503,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   NGPhysicalBoxStrut ComputeVisualEffectOverflowOutsets();
   void AddVisualOverflowFromChild(const LayoutBox& child) {
     NOT_DESTROYED();
-    DeprecatedLayoutSize delta =
-        RuntimeEnabledFeatures::LayoutNGNoLocationEnabled()
-            ? PhysicalLocation().ToLayoutSize()
-            : child.LocationOffset();
-    AddVisualOverflowFromChild(child, delta);
+    AddVisualOverflowFromChild(child, PhysicalLocation().ToLayoutSize());
   }
   void AddVisualOverflowFromChild(const LayoutBox& child,
                                   const DeprecatedLayoutSize& delta);
@@ -1164,10 +1131,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   LayoutRect VisualOverflowRectForPropagation() const {
     NOT_DESTROYED();
-    if (RuntimeEnabledFeatures::LayoutNGNoLocationEnabled()) {
-      return VisualOverflowRect();
-    }
-    return RectForOverflowPropagation(VisualOverflowRect());
+    return VisualOverflowRect();
   }
 
   bool HasSelfVisualOverflow() const {
@@ -1642,10 +1606,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   // Clear LayoutObject fields of physical fragments.
   void DisassociatePhysicalFragments();
-
-  LayoutRect FlippedLocalCaretRect(
-      int caret_offset,
-      LayoutUnit* extra_width_to_end_of_line) const;
 
  protected:
   // The CSS border box rect for this box.
