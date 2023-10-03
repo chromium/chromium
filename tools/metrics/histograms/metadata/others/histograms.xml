@@ -1989,7 +1989,22 @@ chromium-metrics-reviews@google.com.
   <owner>cros-oac@chromium.org</owner>
   <summary>
     Time from the moment sign in authentication is started until the first user
-    session UI elements become ready to use. (Chrome OS).
+    session UI elements are painted. (Chrome OS).
+  </summary>
+</histogram>
+
+<histogram name="BootTime.Login3" units="ms" expires_after="never">
+<!-- expires-never: This is a primary metric for the ChromeOS login. -->
+
+  <owner>alemate@chromium.org</owner>
+  <owner>xiyuan@chromium.org</owner>
+  <owner>cros-sw-perf@google.com</owner>
+  <summary>
+    Chrome OS: The time it takes from when sign-in authentication begins to when
+    the login animation finishes. This marks the end of the login process, as
+    the user's session should be usable at this point.
+
+    This does not replace the BootTime.Login2 histogram.
   </summary>
 </histogram>
 

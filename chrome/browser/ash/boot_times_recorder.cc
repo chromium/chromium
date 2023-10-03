@@ -9,6 +9,7 @@
 
 #include <vector>
 
+#include "ash/shell.h"
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
@@ -112,6 +113,8 @@ void BootTimesRecorder::LoginDone(bool is_user_new) {
   login_done_ = true;
   login_started_ = false;
   AddLoginTimeMarker("LoginDone", false);
+  ash::Shell::Get()->login_unlock_throughput_recorder()->AddLoginTimeMarker(
+      kUmaLogin);
   RecordCurrentStats(kChromeFirstRender);
   LoginEventRecorder::Get()->ScheduleWriteLoginTimes(
       kLoginTimes, (is_user_new ? kUmaLoginNewUser : kUmaLogin),

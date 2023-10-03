@@ -144,15 +144,6 @@ void ReportLoginTotalAnimationThroughput(
       "Ash.LoginAnimation.Duration.", "Ash.LoginAnimation.Duration2.");
 }
 
-void ReportLoginFinished() {
-  LoginEventRecorder::Get()->AddLoginTimeMarker("LoginFinished",
-                                                /*send_to_uma=*/false,
-                                                /*write_to_file=*/false);
-  ash::Shell::Get()->login_unlock_throughput_recorder()->AddLoginTimeMarker(
-      "LoginFinished");
-  LoginEventRecorder::Get()->RunScheduledWriteLoginTimes();
-}
-
 void RecordSmoothnessMetrics(
     const cc::FrameSequenceMetrics::CustomReportData& data,
     const char* smoothness_name) {
@@ -251,7 +242,7 @@ void LoginUnlockThroughputRecorder::LoggedInStateChanged() {
   auto* rec = new ui::TotalAnimationThroughputReporter(
       primary_root->GetHost()->compositor(),
       base::BindOnce(&LoginUnlockThroughputRecorder::OnLoginAnimationFinish,
-                     weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now()),
+                     weak_ptr_factory_.GetWeakPtr(), primary_user_logged_in_),
       /*should_delete=*/true);
   login_animation_throughput_reporter_ = rec->GetWeakPtr();
   DCHECK(!scoped_throughput_reporter_blocker_);
@@ -571,6 +562,8 @@ void LoginUnlockThroughputRecorder::AddLoginTimeMarker(
     REPORT_LOGIN_THROUGHPUT_EVENT("Ash.LoginAnimation.Duration.TabletMode");
     REPORT_LOGIN_THROUGHPUT_EVENT("Ash.LoginAnimation.Duration2.ClamshellMode");
     REPORT_LOGIN_THROUGHPUT_EVENT("Ash.LoginAnimation.Duration2.TabletMode");
+    REPORT_LOGIN_THROUGHPUT_EVENT("BootTime.Login2");
+    REPORT_LOGIN_THROUGHPUT_EVENT("BootTime.Login3");
     REPORT_LOGIN_THROUGHPUT_EVENT(
         "Ash.UnlockAnimation.Smoothness.ClamshellMode");
     REPORT_LOGIN_THROUGHPUT_EVENT("Ash.UnlockAnimation.Smoothness.TabletMode");
@@ -621,7 +614,19 @@ void LoginUnlockThroughputRecorder::MaybeReportLoginFinished() {
   login_finished_reported_ = true;
 
   ui_recorder_.OnPostLoginAnimationFinish();
-  ReportLoginFinished();
+
+  AddLoginTimeMarker("LoginFinished");
+  LoginEventRecorder::Get()->AddLoginTimeMarker("LoginFinished",
+                                                /*send_to_uma=*/false,
+                                                /*write_to_file=*/false);
+
+  AddLoginTimeMarker("BootTime.Login3");
+  base::UmaHistogramCustomTimes(
+      "BootTime.Login3", base::TimeTicks::Now() - primary_user_logged_in_,
+      base::Milliseconds(100), base::Seconds(100), 100);
+
+  LoginEventRecorder::Get()->RunScheduledWriteLoginTimes();
+
   login_animation_finished_timer_.Stop();
   if (!post_login_deferred_task_runner_->Started()) {
     post_login_deferred_task_runner_->Start();
