@@ -72,6 +72,10 @@ class BLINK_COMMON_EXPORT
       const blink::ParsedPermissionsPolicyDeclaration& policy) {
     return policy.matches_opaque_src;
   }
+  static const absl::optional<std::string>& reporting_endpoint(
+      const blink::ParsedPermissionsPolicyDeclaration& policy) {
+    return policy.reporting_endpoint;
+  }
 
   static bool Read(blink::mojom::ParsedPermissionsPolicyDeclarationDataView in,
                    blink::ParsedPermissionsPolicyDeclaration* out);

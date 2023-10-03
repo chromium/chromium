@@ -570,6 +570,7 @@ scoped_refptr<base::SingleThreadTaskRunner> LocalDOMWindow::GetTaskRunner(
 void LocalDOMWindow::ReportPermissionsPolicyViolation(
     mojom::blink::PermissionsPolicyFeature feature,
     mojom::blink::PolicyDisposition disposition,
+    const absl::optional<String>& reporting_endpoint,
     const String& message) const {
   if (disposition == mojom::blink::PolicyDisposition::kEnforce) {
     const_cast<LocalDOMWindow*>(this)->CountPermissionsPolicyUsage(
@@ -594,8 +595,13 @@ void LocalDOMWindow::ReportPermissionsPolicyViolation(
   Report* report = MakeGarbageCollected<Report>(
       ReportType::kPermissionsPolicyViolation, Url().GetString(), body);
 
-  // Send the permissions policy violation report to any ReportingObservers.
-  ReportingContext::From(this)->QueueReport(report);
+  // Send the permissions policy violation report to the specified endpoint,
+  // if one exists, as well as any ReportingObservers.
+  if (reporting_endpoint) {
+    ReportingContext::From(this)->QueueReport(report, {*reporting_endpoint});
+  } else {
+    ReportingContext::From(this)->QueueReport(report);
+  }
 
   // TODO(iclelland): Report something different in report-only mode
   if (disposition == mojom::blink::PolicyDisposition::kEnforce) {

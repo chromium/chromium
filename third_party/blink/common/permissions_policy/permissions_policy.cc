@@ -295,6 +295,15 @@ PermissionsPolicy::GetAllowlistForFeatureIfExists(
   return absl::nullopt;
 }
 
+absl::optional<std::string> PermissionsPolicy::GetEndpointForFeature(
+    mojom::PermissionsPolicyFeature feature) const {
+  auto endpoint = reporting_endpoints_.find(feature);
+  if (endpoint != reporting_endpoints_.end()) {
+    return endpoint->second;
+  }
+  return absl::nullopt;
+}
+
 void PermissionsPolicy::SetHeaderPolicy(
     const ParsedPermissionsPolicy& parsed_header) {
   if (allowlists_set_by_manifest_)
@@ -305,6 +314,10 @@ void PermissionsPolicy::SetHeaderPolicy(
     mojom::PermissionsPolicyFeature feature = parsed_declaration.feature;
     DCHECK(feature != mojom::PermissionsPolicyFeature::kNotFound);
     allowlists_.emplace(feature, AllowlistFromDeclaration(parsed_declaration));
+    if (parsed_declaration.reporting_endpoint.has_value()) {
+      reporting_endpoints_.insert(
+          {feature, parsed_declaration.reporting_endpoint.value()});
+    }
   }
 }
 

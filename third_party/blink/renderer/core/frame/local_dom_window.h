@@ -194,6 +194,7 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   void ReportPermissionsPolicyViolation(
       mojom::blink::PermissionsPolicyFeature,
       mojom::blink::PolicyDisposition,
+      const absl::optional<String>& reporting_endpoint,
       const String& message = g_empty_string) const final;
   void ReportDocumentPolicyViolation(
       mojom::blink::DocumentPolicyFeature,

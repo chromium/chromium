@@ -50,6 +50,7 @@ interface ReportingServiceProxy {
   //
   // (See //third_party/blink/renderer/core/frame/permissions_policy_violation_report_body.h.)
   QueuePermissionsPolicyViolationReport(url.mojom.Url url,
+                                    string endpoint,
                                     string policy_id,
                                     string disposition,
                                     string? message,

@@ -261,21 +261,34 @@ TEST_F(PermissionsPolicyDevtoolsSupportSimTest,
           MainFrame().GetFrame()->FirstChild()->FirstChild(),
           mojom::blink::PermissionsPolicyFeature::kFullscreen);
 
-  EXPECT_TRUE(MainFrame().GetFrame()->GetSecurityContext()->IsFeatureEnabled(
-      mojom::blink::PermissionsPolicyFeature::kFullscreen));
-  EXPECT_TRUE(MainFrame()
-                  .GetFrame()
-                  ->FirstChild()
-                  ->GetSecurityContext()
-                  ->IsFeatureEnabled(
-                      mojom::blink::PermissionsPolicyFeature::kFullscreen));
-  EXPECT_TRUE(MainFrame()
-                  .GetFrame()
-                  ->FirstChild()
-                  ->FirstChild()
-                  ->GetSecurityContext()
-                  ->IsFeatureEnabled(
-                      mojom::blink::PermissionsPolicyFeature::kFullscreen));
+  SecurityContext::FeatureStatus status =
+      MainFrame().GetFrame()->GetSecurityContext()->IsFeatureEnabled(
+          mojom::blink::PermissionsPolicyFeature::kFullscreen);
+  EXPECT_TRUE(status.enabled);
+  EXPECT_FALSE(status.should_report);
+  EXPECT_EQ(status.reporting_endpoint, absl::nullopt);
+
+  status = MainFrame()
+               .GetFrame()
+               ->FirstChild()
+               ->GetSecurityContext()
+               ->IsFeatureEnabled(
+                   mojom::blink::PermissionsPolicyFeature::kFullscreen);
+  EXPECT_TRUE(status.enabled);
+  EXPECT_FALSE(status.should_report);
+  EXPECT_EQ(status.reporting_endpoint, absl::nullopt);
+
+  status = MainFrame()
+               .GetFrame()
+               ->FirstChild()
+               ->FirstChild()
+               ->GetSecurityContext()
+               ->IsFeatureEnabled(
+                   mojom::blink::PermissionsPolicyFeature::kFullscreen);
+  EXPECT_TRUE(status.enabled);
+  EXPECT_FALSE(status.should_report);
+  EXPECT_EQ(status.reporting_endpoint, absl::nullopt);
+
   EXPECT_EQ(locator, absl::nullopt);
 }
 

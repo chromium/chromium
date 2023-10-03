@@ -57,6 +57,8 @@ struct BLINK_COMMON_EXPORT ParsedPermissionsPolicyDeclaration {
   // flag is set instead.
   bool matches_opaque_src{false};
 
+  absl::optional<std::string> reporting_endpoint;
+
   // Indicates that the parsed policy is deprecated.
   // The feature specified here will be tracked via
   // Deprecation::CountDeprecation once the document is installed.

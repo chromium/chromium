@@ -215,6 +215,9 @@ class BLINK_COMMON_EXPORT PermissionsPolicy {
   absl::optional<const Allowlist> GetAllowlistForFeatureIfExists(
       mojom::PermissionsPolicyFeature feature) const;
 
+  absl::optional<std::string> GetEndpointForFeature(
+      mojom::PermissionsPolicyFeature feature) const;
+
   // Sets the declared policy from the parsed Permissions-Policy HTTP header.
   // Unrecognized features will be ignored.
   void SetHeaderPolicy(const ParsedPermissionsPolicy& parsed_header);
@@ -306,6 +309,10 @@ class BLINK_COMMON_EXPORT PermissionsPolicy {
   // Map of feature names to declared allowlists. Any feature which is missing
   // from this map should use the inherited policy.
   std::map<mojom::PermissionsPolicyFeature, Allowlist> allowlists_;
+
+  // Map of feature names to reporting endpoints. Any feature which is missing
+  // from this map should report to the default endpoint, if it is set.
+  std::map<mojom::PermissionsPolicyFeature, std::string> reporting_endpoints_;
 
   // Set this to true if `allowlists_` have already been checked.
   mutable bool allowlists_checked_;

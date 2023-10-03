@@ -573,23 +573,24 @@ bool ExecutionContext::IsFeatureEnabled(
     mojom::blink::PermissionsPolicyFeature feature,
     ReportOptions report_option,
     const String& message) {
-  bool should_report;
-  bool enabled = security_context_.IsFeatureEnabled(feature, &should_report);
+  SecurityContext::FeatureStatus status =
+      security_context_.IsFeatureEnabled(feature);
 
-  if (should_report && report_option == ReportOptions::kReportOnFailure) {
+  if (status.should_report &&
+      report_option == ReportOptions::kReportOnFailure) {
     mojom::blink::PolicyDisposition disposition =
-        enabled ? mojom::blink::PolicyDisposition::kReport
-                : mojom::blink::PolicyDisposition::kEnforce;
+        status.enabled ? mojom::blink::PolicyDisposition::kReport
+                       : mojom::blink::PolicyDisposition::kEnforce;
 
-    ReportPermissionsPolicyViolation(feature, disposition, message);
+    ReportPermissionsPolicyViolation(feature, disposition,
+                                     status.reporting_endpoint, message);
   }
-  return enabled;
+  return status.enabled;
 }
 
 bool ExecutionContext::IsFeatureEnabled(
     mojom::blink::PermissionsPolicyFeature feature) const {
-  bool should_report;
-  return security_context_.IsFeatureEnabled(feature, &should_report);
+  return security_context_.IsFeatureEnabled(feature).enabled;
 }
 
 bool ExecutionContext::IsFeatureEnabled(

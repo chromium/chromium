@@ -166,9 +166,8 @@ void SecurityContext::SetReportOnlyDocumentPolicy(
   report_only_document_policy_ = std::move(policy);
 }
 
-bool SecurityContext::IsFeatureEnabled(
-    mojom::blink::PermissionsPolicyFeature feature,
-    bool* should_report) const {
+SecurityContext::FeatureStatus SecurityContext::IsFeatureEnabled(
+    mojom::blink::PermissionsPolicyFeature feature) const {
   DCHECK(permissions_policy_);
   bool permissions_policy_result =
       permissions_policy_->IsFeatureEnabled(feature);
@@ -176,12 +175,21 @@ bool SecurityContext::IsFeatureEnabled(
       !report_only_permissions_policy_ ||
       report_only_permissions_policy_->IsFeatureEnabled(feature);
 
-  if (should_report) {
-    *should_report =
-        !permissions_policy_result || !report_only_permissions_policy_result;
+  bool should_report =
+      !permissions_policy_result || !report_only_permissions_policy_result;
+
+  absl::optional<String> reporting_endpoint;
+  if (!permissions_policy_result) {
+    reporting_endpoint = absl::optional<String>(
+        permissions_policy_->GetEndpointForFeature(feature));
+  } else if (!report_only_permissions_policy_result) {
+    reporting_endpoint = absl::optional<String>(
+        report_only_permissions_policy_->GetEndpointForFeature(feature));
+  } else {
+    reporting_endpoint = absl::nullopt;
   }
 
-  return permissions_policy_result;
+  return {permissions_policy_result, should_report, reporting_endpoint};
 }
 
 bool SecurityContext::IsFeatureEnabled(
@@ -200,7 +208,8 @@ SecurityContext::FeatureStatus SecurityContext::IsFeatureEnabled(
   bool report_only_policy_result =
       !report_only_document_policy_ ||
       report_only_document_policy_->IsFeatureEnabled(feature, threshold_value);
-  return {policy_result, !policy_result || !report_only_policy_result};
+  return {policy_result, !policy_result || !report_only_policy_result,
+          absl::nullopt};
 }
 
 }  // namespace blink

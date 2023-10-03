@@ -34,12 +34,13 @@ class CORE_EXPORT PermissionsPolicyParser {
   STATIC_ONLY(PermissionsPolicyParser);
 
  public:
-  // Following is the intermediate represetnation(IR) of permissions policy.
+  // Following is the intermediate representation(IR) of permissions policy.
   // Parsing of syntax structures is done in this IR, but semantic checks, e.g.
   // whether feature_name is valid, are not yet performed.
   struct Declaration {
     String feature_name;
     Vector<String> allowlist;
+    String endpoint;
   };
   // We need to keep track of the source of the list of declarations as
   // different features (e.g., wildcards) might be active per-context.

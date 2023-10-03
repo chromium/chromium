@@ -98,6 +98,7 @@ class MockReportingServiceProxy : public mojom::blink::ReportingServiceProxy {
   }
 
   void QueuePermissionsPolicyViolationReport(const KURL& url,
+                                             const String& endpoint,
                                              const String& policy_id,
                                              const String& disposition,
                                              const String& message,
