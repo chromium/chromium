@@ -400,12 +400,12 @@ void CandidateWindowView::SetCursorAndCompositionBounds(
         return;
       }
     }
-
-    if (candidate_window_.show_window_at_composition())
-      SetAnchorRect(composition_bounds);
-    else
-      SetAnchorRect(cursor_bounds);
   }
+
+  if (candidate_window_.show_window_at_composition())
+    SetAnchorRect(composition_bounds);
+  else
+    SetAnchorRect(cursor_bounds);
 }
 
 void CandidateWindowView::OnTextFieldContextualInfoAvailable(
