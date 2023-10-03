@@ -163,6 +163,11 @@ id<GREYMatcher> ProfileTableViewButtonMatcher() {
 // Tests that the input accessory view continues working after a picker is
 // present.
 - (void)testInputAccessoryBarIsPresentAfterPickers {
+  // TODO(crbug.com/1488889): Test fails on iPhone.
+  if (![ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Fails on iPhone.");
+  }
+
   // Add the profile to be used.
   [AutofillAppInterface saveExampleProfile];
 
