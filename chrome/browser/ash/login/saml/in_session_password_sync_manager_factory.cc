@@ -39,7 +39,8 @@ InSessionPasswordSyncManagerFactory::InSessionPasswordSyncManagerFactory()
 InSessionPasswordSyncManagerFactory::~InSessionPasswordSyncManagerFactory() =
     default;
 
-KeyedService* InSessionPasswordSyncManagerFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+InSessionPasswordSyncManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = static_cast<Profile*>(context);
 
@@ -47,7 +48,7 @@ KeyedService* InSessionPasswordSyncManagerFactory::BuildServiceInstanceFor(
   if (!ProfileHelper::IsPrimaryProfile(profile)) {
     return nullptr;
   }
-  return new InSessionPasswordSyncManager(profile);
+  return std::make_unique<InSessionPasswordSyncManager>(profile);
 }
 
 }  // namespace ash
