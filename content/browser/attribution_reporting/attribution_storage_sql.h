@@ -164,6 +164,8 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
     kError,
   };
 
+  void RecordValidReports() VALID_CONTEXT_REQUIRED(sequence_checker_);
+
   void RecordSourcesPerSourceOrigin() VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   ReportAlreadyStoredStatus ReportAlreadyStored(

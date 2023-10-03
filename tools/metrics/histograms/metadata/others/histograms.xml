@@ -4445,6 +4445,21 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Conversions.{ReportStatus}ReportsInDatabase" units="Reports"
+    expires_after="M121">
+  <owner>tquintanilla@chromium.org</owner>
+  <owner>apaseltiner@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the number of valid/corrupted reports in a client's database.
+    Reports are scanned during database initialization.
+  </summary>
+  <token key="ReportStatus">
+    <variant name="Corrupt"/>
+    <variant name="Valid"/>
+  </token>
+</histogram>
+
 <histogram name="Conversions.{ReportType}.NetworkConnectionTypeOnFailure"
     enum="NetworkConnectionType" expires_after="2024-03-10">
   <owner>linnan@chromium.org</owner>

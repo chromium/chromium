@@ -2403,6 +2403,7 @@ bool AttributionStorageSql::LazyInit(DbCreationPolicy creation_policy) {
     }
   }
 
+  RecordValidReports();
   RecordSourcesPerSourceOrigin();
 
   return true;
@@ -2415,6 +2416,27 @@ absl::optional<int64_t> AttributionStorageSql::NumberOfSources() {
     return absl::nullopt;
   }
   return statement.ColumnInt64(0);
+}
+
+void AttributionStorageSql::RecordValidReports() {
+  sql::Statement statement(db_.GetCachedStatement(
+      SQL_FROM_HERE, attribution_queries::kGetReportsSql));
+  statement.BindTime(0, base::Time::Max());
+  statement.BindInt(1, -1);
+
+  int valid_reports = 0;
+  int corrupt_reports = 0;
+  while (statement.Step()) {
+    if (ReadReportFromStatement(statement).has_value()) {
+      valid_reports++;
+    } else {
+      corrupt_reports++;
+    }
+  }
+  base::UmaHistogramCounts1000("Conversions.ValidReportsInDatabase",
+                               valid_reports);
+  base::UmaHistogramCounts1000("Conversions.CorruptReportsInDatabase",
+                               corrupt_reports);
 }
 
 void AttributionStorageSql::RecordSourcesPerSourceOrigin() {

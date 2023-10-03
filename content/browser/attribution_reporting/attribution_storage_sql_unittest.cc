@@ -1816,6 +1816,7 @@ TEST_P(AttributionStorageSqlTest,
         .metadata = metadata,
     });
 
+    base::HistogramTester histograms;
     OpenDatabase();
     EXPECT_THAT(
         storage()->GetAttributionReports(/*max_report_time=*/base::Time::Max()),
@@ -1824,6 +1825,11 @@ TEST_P(AttributionStorageSqlTest,
     storage()->ClearData(base::Time::Min(), base::Time::Max(),
                          base::NullCallback());
     CloseDatabase();
+
+    histograms.ExpectUniqueSample("Conversions.ValidReportsInDatabase",
+                                  test_case.valid, 1);
+    histograms.ExpectUniqueSample("Conversions.CorruptReportsInDatabase",
+                                  !test_case.valid, 1);
   }
 }
 
@@ -1984,6 +1990,7 @@ TEST_P(AttributionStorageSqlTest,
         .metadata = metadata,
     });
 
+    base::HistogramTester histograms;
     OpenDatabase();
     if (test_case.max_budget) {
       delegate()->set_aggregatable_budget_per_source(*test_case.max_budget);
@@ -1995,6 +2002,11 @@ TEST_P(AttributionStorageSqlTest,
     storage()->ClearData(base::Time::Min(), base::Time::Max(),
                          base::NullCallback());
     CloseDatabase();
+
+    histograms.ExpectUniqueSample("Conversions.ValidReportsInDatabase",
+                                  test_case.valid, 1);
+    histograms.ExpectUniqueSample("Conversions.CorruptReportsInDatabase",
+                                  !test_case.valid, 1);
   }
 }
 
