@@ -12,6 +12,7 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/lottie/lottie_animation_api.h"
 #import "ios/public/provider/chrome/browser/lottie/lottie_animation_configuration.h"
+#import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
@@ -25,6 +26,9 @@ NSString* const kChromeKeypath = @"IDS_CHROME";
 
 // Spacing used in the bottom alert view.
 constexpr CGFloat kSpacing = 24;
+
+// Vertical center offset for tablets.
+constexpr CGFloat kTabletCenterOffset = 40;
 }  // namespace
 
 @interface DefaultBrowserInstructionsView ()
@@ -106,7 +110,8 @@ constexpr CGFloat kSpacing = 24;
     [self.animationViewWrapper.animationView.topAnchor
         constraintEqualToAnchor:self.topAnchor],
     [self.animationViewWrapper.animationView.bottomAnchor
-        constraintEqualToAnchor:self.centerYAnchor],
+        constraintEqualToAnchor:self.centerYAnchor
+                       constant:[self centerOffset]],
   ]];
 
   AddSameConstraints(self.animationViewWrapperDarkMode.animationView,
@@ -163,9 +168,12 @@ constexpr CGFloat kSpacing = 24;
   alertScreen.titleTextStyle = UIFontTextStyleTitle2;
   alertScreen.customSpacingBeforeImageIfNoNavigationBar = kSpacing;
   alertScreen.topAlignedLayout = YES;
-  alertScreen.actionStackBottomMargin = kSpacing;
   alertScreen.customSpacingAfterImage = kSpacing;
   alertScreen.customSpacing = kSpacing;
+
+  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
+    alertScreen.actionStackBottomMargin = kSpacing;
+  }
 
   // The view can have either instruction steps or subtitles.
   if (hasSteps) {
@@ -202,9 +210,19 @@ constexpr CGFloat kSpacing = 24;
     [alertScreen.view.bottomAnchor constraintEqualToAnchor:self.bottomAnchor],
     [alertScreen.view.centerXAnchor constraintEqualToAnchor:self.centerXAnchor],
     [alertScreen.view.widthAnchor constraintEqualToAnchor:self.widthAnchor],
-    [alertScreen.view.topAnchor constraintEqualToAnchor:self.centerYAnchor],
+    [alertScreen.view.topAnchor constraintEqualToAnchor:self.centerYAnchor
+                                               constant:[self centerOffset]],
   ]];
   self.alertScreen = alertScreen;
+}
+
+// Returns the center offset for video instructions and information sectionto
+// align with.
+- (CGFloat)centerOffset {
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+    return -kTabletCenterOffset;
+  }
+  return 0;
 }
 
 @end
