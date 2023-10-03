@@ -39,7 +39,8 @@ class ChromeContextMenuItem {
             Item.SHOP_IMAGE_WITH_GOOGLE_LENS, Item.SHARE_IMAGE, Item.DIRECT_SHARE_IMAGE, Item.CALL,
             Item.SEND_MESSAGE, Item.ADD_TO_CONTACTS, Item.COPY, Item.SAVE_VIDEO,
             Item.OPEN_IN_CHROME, Item.OPEN_IN_NEW_TAB_IN_GROUP, Item.SHARE_HIGHLIGHT,
-            Item.REMOVE_HIGHLIGHT, Item.LEARN_MORE, Item.FREE_COPY, Item.MOVE_TO_NEW_TAB, Item.MARK_ADS})
+            Item.REMOVE_HIGHLIGHT, Item.LEARN_MORE, Item.FREE_COPY, Item.MOVE_TO_NEW_TAB,
+            Item.MARK_ADS, Item.OPEN_IN_BACKGROUND})
     @Retention(RetentionPolicy.SOURCE)
     public @interface Item {
         // Values are numerated from 0 and can't have gaps.
@@ -89,8 +90,9 @@ class ChromeContextMenuItem {
         int FREE_COPY = 35;
         int MOVE_TO_NEW_TAB = 36;
         int MARK_ADS = 37;
+        int OPEN_IN_BACKGROUND = 38;
         // ALWAYS UPDATE!
-        int NUM_ENTRIES = 38;
+        int NUM_ENTRIES = 39;
     }
 
     /**
@@ -135,6 +137,7 @@ class ChromeContextMenuItem {
             R.id.contextmenu_free_copy,
             R.id.contextmenu_move_to_new_tab,
             R.id.contextmenu_mark_ads,
+            R.id.contextmenu_open_in_background,
     };
 
     /**
@@ -179,6 +182,7 @@ class ChromeContextMenuItem {
             R.string.contextmenu_free_copy,
             R.string.contextmenu_move_to_new_tab,
             R.string.contextmenu_mark_ads,
+            R.string.contextmenu_open_in_background,
     };
 
     /**

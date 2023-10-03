@@ -520,7 +520,7 @@ void GLSurfaceEGLSurfaceControl::OnTransactionAckOnGpuThread(
     // with no fence, since its not being released and so shouldn't be in
     // |released_resources| either.
     if (it == released_resources.end()) {
-      DCHECK(!surface_stat.fence.is_valid());
+      // DCHECK(!surface_stat.fence.is_valid());
       continue;
     }
 

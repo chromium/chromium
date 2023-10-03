@@ -72,5 +72,6 @@
     <string name="contextmenu_free_copy">自由复制</string>
     <string name="contextmenu_move_to_new_tab">移动至新窗口</string>
     <string name="contextmenu_mark_ads">标记广告</string>
+    <string name="contextmenu_open_in_background">后台标签中打开</string>
 
 </resources>

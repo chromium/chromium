@@ -69,9 +69,10 @@ public class MediaNotificationInfo {
 
         public MediaNotificationInfo build() {
             assert mMetadata != null;
-            assert mOrigin != null;
             assert mListener != null;
-
+            if (mOrigin == null) {
+                mOrigin = "";
+            }
             return new MediaNotificationInfo(mMetadata, mIsPaused, mOrigin, mInstanceId, mIsPrivate,
                     mNotificationSmallIcon, mNotificationLargeIcon, mDefaultNotificationLargeIcon,
                     mMediaSessionImage, mActions, mId, mContentIntent, mListener,

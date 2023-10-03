@@ -23,7 +23,6 @@ import org.chromium.chrome.browser.tab.TabStateExtractor;
 import org.chromium.chrome.browser.tabpersistence.TabStateFileManager;
 
 import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -376,6 +375,24 @@ public class ChildTab implements ITab, IPageGroup {
             return null;
         }
         return page.getPageInfo();
+    }
+
+    public boolean selectPage(IPage page) {
+        ArkLogger.e(this, "selectPage page=" + page);
+        if (page == null) {
+            return false;
+        }
+        IPage lastPage = getCurrentPage();
+        if (lastPage != null && lastPage != page && lastPage.getId() != page.getId()) {
+            ArkWebContents arkWeb = ArkWebManager.get(lastPage.getId());
+            if (arkWeb != null && !arkWeb.needsReload() && !arkWeb.isDestroyed()) {
+                arkWeb.cacheThumbnail();
+            }
+        }
+        mTabInfo.setChildIndex(indexOfPage(page.getId()));
+        mTabInfo.setCurrentPageId(page.getId());
+        saveTabInfo();
+        return true;
     }
 
 }

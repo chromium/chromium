@@ -256,7 +256,7 @@ public class WarmupManager {
         if (!LibraryLoader.getInstance().isInitialized() || mSpareWebContents != null) return;
 
         mWebContentsCreatedForCCT = forCCT;
-        mSpareWebContents = new WebContentsFactory().createWebContentsWithWarmRenderer(
+        mSpareWebContents = WebContentsFactory.createWebContentsWithWarmRenderer(
                 Profile.getLastUsedRegularProfile(), true /* initiallyHidden */);
         mObserver = new RenderProcessGoneObserver();
         mSpareWebContents.addObserver(mObserver);

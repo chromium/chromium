@@ -196,6 +196,11 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
     }
 
     @Override
+    public void onOpenInBackground(GURL url, Referrer referrer) {
+
+    }
+
+    @Override
     public void onOpenInNewTabInGroup(GURL url, Referrer referrer) {
         RecordUserAction.record("MobileNewTabOpened");
         RecordUserAction.record("LinkOpenedInNewTab");

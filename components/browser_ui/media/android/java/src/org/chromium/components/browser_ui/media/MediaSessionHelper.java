@@ -425,6 +425,9 @@ public class MediaSessionHelper implements MediaImageCallback {
      * @return The sanitized tab title, e.g. "Foo - Bar"
      */
     private String sanitizeMediaTitle(String title) {
+        if (title == null) {
+            return "";
+        }
         title = title.trim();
         return title.startsWith(UNICODE_PLAY_CHARACTER) ? title.substring(1).trim() : title;
     }

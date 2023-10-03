@@ -88,6 +88,8 @@ public interface ContextMenuItemDelegate {
      */
     void onOpenInNewTab(GURL url, Referrer referrer, boolean navigateToTab);
 
+    void onOpenInBackground(GURL url, Referrer referrer);
+
     /**
      * Called when {@code url} should be opened in a new tab in the same group as the current
      * {@link Tab}.

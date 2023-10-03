@@ -4,6 +4,7 @@ import android.util.AtomicFile;
 
 import androidx.annotation.NonNull;
 
+import com.ark.browser.core.ArkWebContents;
 import com.ark.browser.tab.ArkTabImpl;
 import com.ark.browser.tab.PageInfo;
 import com.ark.browser.tab.TabCacheManager;
@@ -352,6 +353,7 @@ public class GroupTab implements ITabGroup {
         } else {
             newTab.getTabInfo().setPosition(getCount());
             mTabList.add(newTab);
+            saveTabInfo();
         }
 
         ArkLogger.d(TAG, "openNewTab newPos=" + newTab.getTabInfo().getPosition());
@@ -368,7 +370,6 @@ public class GroupTab implements ITabGroup {
 //        newTab.getPageGroup().getPageInfoList().add(newPage);
 
         newTab.getTabInfo().setLaunchType(type);
-        ArkTabImpl nativeTab = ArkTabImpl.create(newTab, currentTab);
 //        nativeTab.loadInNewPage();
 
         // TODO optimise
@@ -378,8 +379,20 @@ public class GroupTab implements ITabGroup {
         }
         ArkLogger.d(TAG, "openNewTab loadUrlParams=" + loadUrlParams);
 
-        IPage page = nativeTab.loadInNewPage(loadUrlParams);
-        selectTab(newTab, page);
+        if (type == TabLaunchType.FROM_LONGPRESS_BACKGROUND) {
+            IPage page = newTab.openNewPage();
+            page.getPageInfo().setUrl(loadUrlParams.getUrl());
+            newTab.selectPage(page);
+            ArkWebContents arkWeb = ArkWebContents.Builder.createLiveTab(page.getPageInfo(), true)
+                    .setLoadUrlParams(loadUrlParams)
+                    .build();
+            arkWeb.loadUrlInternal(loadUrlParams);
+        } else {
+            ArkTabImpl nativeTab = ArkTabImpl.create(newTab, currentTab);
+            IPage page = nativeTab.loadInNewPage(loadUrlParams);
+            newTab.saveTabInfo();
+            selectTab(newTab, page);
+        }
     }
 
     @Override

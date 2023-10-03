@@ -186,7 +186,6 @@ public class ArkWebContents {
                         public void didFinishNavigation(NavigationHandle navigation) {
                             ArkLogger.e(this, "didFinishNavigation navigation=" + navigation);
                             super.didFinishNavigation(navigation);
-                            updateThemeColor();
                             NavigationController controller = ArkWebContents.this.mWebContents.getNavigationController();
                             ArkLogger.e(this, "didFinishNavigation navigationHistory="
                                     + controller.getNavigationHistory());
@@ -733,7 +732,7 @@ public class ArkWebContents {
                 if (webContents == null) {
                     Profile profile = IncognitoUtils.getProfileFromWindowAndroid(
                             null, mPageInfo.isIncognito);
-                    webContents = WebContentsFactory.createWebContents(profile, mInitiallyHidden);
+                    webContents = WebContentsFactory.createWebContentsWithWarmRenderer(profile, mInitiallyHidden);
                 }
 
                 arkWeb = new ArkWebContents(mPageInfo, webContents);

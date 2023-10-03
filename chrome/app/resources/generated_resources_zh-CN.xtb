@@ -798,7 +798,7 @@
 <translation id="176193854664720708">指纹传感器位于电源按钮中。请用任一根手指轻轻触摸它。</translation>
 <translation id="176272781006230109">购物建议</translation>
 <translation id="1763046204212875858">创建应用快捷方式</translation>
-<translation id="1763808908432309942">在新标签页中打开</translation>
+<translation id="1763808908432309942">新标签中打开</translation>
 <translation id="1764226536771329714">Beta 版</translation>
 <translation id="176587472219019965">打开新的窗口(&amp;N)</translation>
 <translation id="1766575458646819543">已退出全屏模式</translation>
@@ -2112,7 +2112,7 @@
 <translation id="2989123969927553766">鼠标滚屏加速</translation>
 <translation id="2989474696604907455">未连接</translation>
 <translation id="2989786307324390836">DER 编码二进制，单一证书</translation>
-<translation id="2989805286512600854">在新标签页中打开</translation>
+<translation id="2989805286512600854">新标签中打开</translation>
 <translation id="2990313168615879645">添加 Google 帐号</translation>
 <translation id="2990583317361835189">不允许网站使用移动传感器</translation>
 <translation id="2992931425024192067">显示所有通知内容</translation>
@@ -2712,7 +2712,7 @@
 <translation id="3611658447322220736">最近关闭的网站可以完成数据收发操作</translation>
 <translation id="3612673635130633812">由&lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;下载</translation>
 <translation id="3613134908380545408">显示“<ph name="FOLDER_NAME" />”</translation>
-<translation id="3613422051106148727">在新标签页中打开(&amp;O)</translation>
+<translation id="3613422051106148727">新标签中打开(&amp;O)</translation>
 <translation id="3615073365085224194">用手指轻触指纹传感器</translation>
 <translation id="3615579745882581859">正在扫描“<ph name="FILE_NAME" />”。</translation>
 <translation id="3616741288025931835">清除浏览数据(&amp;C)...</translation>

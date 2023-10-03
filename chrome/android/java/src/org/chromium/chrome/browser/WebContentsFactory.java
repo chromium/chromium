@@ -48,7 +48,7 @@ public class WebContentsFactory {
      * @param initiallyHidden Whether or not the {@link WebContents} should be initially hidden.
      * @return                A newly created {@link WebContents} object.
      */
-    public WebContents createWebContentsWithWarmRenderer(Profile profile, boolean initiallyHidden) {
+    public static WebContents createWebContentsWithWarmRenderer(Profile profile, boolean initiallyHidden) {
         return createWebContents(profile, initiallyHidden, true);
     }
 

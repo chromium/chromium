@@ -319,7 +319,6 @@ public class ArkTabWebContentsObserver implements UserData {
 
         @Override
         public void didStartNavigation(NavigationHandle navigation) {
-            removeSadTab();
             if (navigation.isInPrimaryMainFrame() && !navigation.isSameDocument()) {
                 mTab.didStartPageLoad(navigation.getUrl());
             }
