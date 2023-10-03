@@ -33,8 +33,6 @@
 
 namespace {
 
-constexpr base::TimeDelta kGrantDuration = base::Hours(24);
-
 void RecordOutcomeSample(TopLevelStorageAccessRequestOutcome outcome) {
   base::UmaHistogramEnumeration("API.TopLevelStorageAccess.RequestOutcome",
                                 outcome);
@@ -236,7 +234,8 @@ void TopLevelStorageAccessPermissionContext::NotifyPermissionSetInternal(
           ->Build();
 
   content_settings::ContentSettingConstraints constraints;
-  constraints.set_lifetime(kGrantDuration);
+  constraints.set_lifetime(
+      blink::features::kStorageAccessAPIRelatedWebsiteSetsLifetime.Get());
   constraints.set_session_model(
       content_settings::SessionModel::NonRestorableUserSession);
 
