@@ -456,13 +456,14 @@ def _CheckForDoctypeHTML(input_api, output_api):
     return results
 
 
-def _CheckNewVirtualSuitesForOwners(input_api, output_api):
-    """Suggest that new virtual test suites have OWNERS responsible for them."""
+def _CheckNewVirtualSuites(input_api, output_api, max_suite_length: int = 48):
+    """Validate new virtual test suites."""
     # TODO(crbug.com/1380165): Once all virtual suites adopt "owners", consider
     # making the field mandatory. In that case, we don't need to access the
     # change contents and can promote this check to `lint_test_expectations.py`.
     vts_path = input_api.os_path.join(input_api.PresubmitLocalPath(),
                                       'VirtualTestSuites')
+    results = []
     for affected_file in input_api.AffectedFiles():
         if affected_file.AbsoluteLocalPath() != vts_path:
             continue
@@ -472,24 +473,35 @@ def _CheckNewVirtualSuitesForOwners(input_api, output_api):
             old_suites = _FilterForSuites(input_api.json.loads(old_contents))
             new_suites = _FilterForSuites(input_api.json.loads(new_contents))
             old_suite_names = {suite['prefix'] for suite in old_suites}
-            new_ownerless_suites = []
+            new_ownerless_suites, new_long_suites = [], []
             for suite in new_suites:
                 prefix, owners = suite['prefix'], suite.get('owners', [])
-                if prefix not in old_suite_names and not owners:
+                if prefix in old_suite_names:
+                    continue
+                if not owners:
                     new_ownerless_suites.append(prefix)
+                if len(prefix) > max_suite_length:
+                    new_long_suites.append(prefix)
             if new_ownerless_suites:
-                return [
+                results.append(
                     output_api.PresubmitPromptWarning(
                         'Consider specifying "owners" (a list of emails) '
                         'for the virtual suites added by this patch:',
-                        new_ownerless_suites),
-                ]
+                        new_ownerless_suites))
+            if new_long_suites:
+                results.append(
+                    output_api.PresubmitPromptWarning(
+                        'Consider shorter virtual suite names so that the '
+                        "global filename length presubmit doesn't reject "
+                        'future `*-expected.txt` under their directories. You '
+                        'can add comments about these suites to '
+                        'VirtualTestSuites.', new_long_suites))
         except (ValueError, KeyError):
             # Invalid JSON or missing required fields will be detected by
             # `lint_test_expectations.py`.
             pass
         break
-    return []
+    return results
 
 
 def _CheckNoWPTBaselines(input_api, output_api):
@@ -536,7 +548,7 @@ def CheckChangeOnUpload(input_api, output_api):
     results.extend(_CheckForExtraVirtualBaselines(input_api, output_api))
     results.extend(_CheckWebViewExpectations(input_api, output_api))
     results.extend(_CheckForDoctypeHTML(input_api, output_api))
-    results.extend(_CheckNewVirtualSuitesForOwners(input_api, output_api))
+    results.extend(_CheckNewVirtualSuites(input_api, output_api))
     return results
 
 
@@ -550,5 +562,5 @@ def CheckChangeOnCommit(input_api, output_api):
     results.extend(_CheckForExtraVirtualBaselines(input_api, output_api))
     results.extend(_CheckWebViewExpectations(input_api, output_api))
     results.extend(_CheckForDoctypeHTML(input_api, output_api))
-    results.extend(_CheckNewVirtualSuitesForOwners(input_api, output_api))
+    results.extend(_CheckNewVirtualSuites(input_api, output_api))
     return results

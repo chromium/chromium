@@ -22,10 +22,12 @@
 # - The prefix of the virtual test suites should not be too long. There is
 #   a 260 characters limit for the length of the path on Windows. The prefix
 #   will be part of the path should a baseline be needed, and will cause
-#   trouble at that time.
+#   trouble at that time. A presubmit check will recommend that new prefixes
+#   not exceed 48 characters, but this can be ignored if a longer name would
+#   help readability.
 #
 # - The expiration date of the virtual test suite usually should be 6 month
-#   from the creatation of the test suite. The expiration date can be set to
+#   from the creation of the test suite. The expiration date can be set to
 #   'never' when it is not expected to expire. In this case an explanation is
 #   required.
 #
