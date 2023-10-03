@@ -450,9 +450,9 @@ absl::optional<AcceleratorConfigResult> ValidateAccelerator(
   if (base::Contains(kReservedKeys, accelerator.key_code())) {
     VLOG(1) << "Failed to validate accelerator: "
             << accelerator.GetShortcutText() << " with error: "
-            << static_cast<int>(AcceleratorConfigResult::kKeyNotAllowed)
+            << static_cast<int>(AcceleratorConfigResult::kReservedKeyNotAllowed)
             << "- Reserved key in accelerator.";
-    return AcceleratorConfigResult::kKeyNotAllowed;
+    return AcceleratorConfigResult::kReservedKeyNotAllowed;
   }
 
   // Case: Top-row action keys cannot be part of the accelerator.

@@ -421,6 +421,14 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
         this.hasError = true;
         return;
       }
+      case AcceleratorConfigResult.kReservedKeyNotAllowed: {
+        this.statusMessage = this.i18n(
+            'reservedKeyNotAllowedStatusMessage',
+            this.pendingAcceleratorInfo.layoutProperties.standardAccelerator
+                .keyDisplay);
+        this.hasError = true;
+        return;
+      }
       case AcceleratorConfigResult.kSuccess: {
         this.fireUpdateEvent();
         getShortcutProvider().recordUserAction(

@@ -41,4 +41,6 @@ enum AcceleratorConfigResult {
   kNonSearchAcceleratorWarning = 11,
   // Error - search + function key is not allowed.
   kSearchWithFunctionKeyNotAllowed = 12,
+  // Error - reserved key is not allowed.
+  kReservedKeyNotAllowed = 13,
 };

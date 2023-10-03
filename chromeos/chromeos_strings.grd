@@ -4126,6 +4126,11 @@
             translateable="false">
           Shortcut with function keys and search are not allowed. Press a new shortcut.
         </message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_RESERVED_KEY_NOT_ALLOWED_STATUS_MESSAGE"
+            desc="The status message that displays when user press a key combination
+            that includes a reserved key.">
+          Shortcut not available. Press a new shortcut without <ph name="key">$1<ex>CapsLock</ex></ph>.
+        </message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_NON_SEARCH_SHORTCUT_WARNING"
             desc="The status (warning) message that displays when user attempts to input a shortcut that does not include the search/meta key.">
           Shortcut without search key might conflict with some app's shortcut. Press this shortcut again to continue using it, or press a new shortcut using the search key.

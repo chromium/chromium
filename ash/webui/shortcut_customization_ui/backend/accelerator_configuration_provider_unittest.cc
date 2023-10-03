@@ -1861,7 +1861,8 @@ TEST_F(AcceleratorConfigurationProviderTest, ReservedKeysNotAllowed) {
       AcceleratorConfigurationProviderAsyncWaiter(provider_.get())
           .AddAccelerator(mojom::AcceleratorSource::kAsh, kToggleMirrorMode,
                           power_accelerator, &result);
-  EXPECT_EQ(mojom::AcceleratorConfigResult::kKeyNotAllowed, result->result);
+  EXPECT_EQ(mojom::AcceleratorConfigResult::kReservedKeyNotAllowed,
+            result->result);
 
   // Sleep key.
   const ui::Accelerator sleep_accelerator(ui::VKEY_SLEEP, ui::EF_COMMAND_DOWN);
@@ -1869,7 +1870,8 @@ TEST_F(AcceleratorConfigurationProviderTest, ReservedKeysNotAllowed) {
       AcceleratorConfigurationProviderAsyncWaiter(provider_.get())
           .AddAccelerator(mojom::AcceleratorSource::kAsh, kToggleMirrorMode,
                           sleep_accelerator, &result);
-  EXPECT_EQ(mojom::AcceleratorConfigResult::kKeyNotAllowed, result->result);
+  EXPECT_EQ(mojom::AcceleratorConfigResult::kReservedKeyNotAllowed,
+            result->result);
 
   // Lock/f13 key.
   const ui::Accelerator lock_accelerator(ui::VKEY_F13, ui::EF_COMMAND_DOWN);
@@ -1877,7 +1879,8 @@ TEST_F(AcceleratorConfigurationProviderTest, ReservedKeysNotAllowed) {
       AcceleratorConfigurationProviderAsyncWaiter(provider_.get())
           .AddAccelerator(mojom::AcceleratorSource::kAsh, kToggleMirrorMode,
                           lock_accelerator, &result);
-  EXPECT_EQ(mojom::AcceleratorConfigResult::kKeyNotAllowed, result->result);
+  EXPECT_EQ(mojom::AcceleratorConfigResult::kReservedKeyNotAllowed,
+            result->result);
 
   // Capslock key.
   const ui::Accelerator capslock_accelerator(ui::VKEY_CAPITAL,
@@ -1886,7 +1889,8 @@ TEST_F(AcceleratorConfigurationProviderTest, ReservedKeysNotAllowed) {
       AcceleratorConfigurationProviderAsyncWaiter(provider_.get())
           .AddAccelerator(mojom::AcceleratorSource::kAsh, kToggleMirrorMode,
                           capslock_accelerator, &result);
-  EXPECT_EQ(mojom::AcceleratorConfigResult::kKeyNotAllowed, result->result);
+  EXPECT_EQ(mojom::AcceleratorConfigResult::kReservedKeyNotAllowed,
+            result->result);
 
   // ScrollLock key.
   const ui::Accelerator scrolllock_accelerator(ui::VKEY_SCROLL,
@@ -1895,7 +1899,8 @@ TEST_F(AcceleratorConfigurationProviderTest, ReservedKeysNotAllowed) {
       AcceleratorConfigurationProviderAsyncWaiter(provider_.get())
           .AddAccelerator(mojom::AcceleratorSource::kAsh, kToggleMirrorMode,
                           scrolllock_accelerator, &result);
-  EXPECT_EQ(mojom::AcceleratorConfigResult::kKeyNotAllowed, result->result);
+  EXPECT_EQ(mojom::AcceleratorConfigResult::kReservedKeyNotAllowed,
+            result->result);
 
   // NumLock key.
   const ui::Accelerator numlock_accelerator(ui::VKEY_NUMLOCK,
@@ -1904,7 +1909,8 @@ TEST_F(AcceleratorConfigurationProviderTest, ReservedKeysNotAllowed) {
       AcceleratorConfigurationProviderAsyncWaiter(provider_.get())
           .AddAccelerator(mojom::AcceleratorSource::kAsh, kToggleMirrorMode,
                           numlock_accelerator, &result);
-  EXPECT_EQ(mojom::AcceleratorConfigResult::kKeyNotAllowed, result->result);
+  EXPECT_EQ(mojom::AcceleratorConfigResult::kReservedKeyNotAllowed,
+            result->result);
 }
 
 TEST_F(AcceleratorConfigurationProviderTest, AddAcceleratorNonConfigConflict) {
