@@ -175,6 +175,9 @@ void OfferNotificationBubbleViews::InitWithFreeListingCouponOfferContent() {
   std::u16string promo_code_value_prop_string;
 
   if (::features::IsChromeRefresh2023()) {
+    set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
+        views::DialogContentType::kControl, views::DialogContentType::kText));
+
     const int dialog_inset = views::LayoutProvider::Get()
                                  ->GetInsetsMetric(views::INSETS_DIALOG)
                                  .left();
