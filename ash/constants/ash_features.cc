@@ -455,7 +455,7 @@ BASE_FEATURE(kClipboardHistoryUrlTitles,
 // instead of using synthetic key events.
 BASE_FEATURE(kClipboardHistoryWebContentsPaste,
              "ClipboardHistoryWebContentsPaste",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled and account falls under the new deal, will be allowed to toggle
 // auto updates.
