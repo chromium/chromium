@@ -1,13 +1,13 @@
 {
   "layers": [
     {
-      "name": "Scrolling background of LayoutNGView #document",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "Scrolling background of LayoutNGView #document",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [508, 608],
       "contentsOpaque": true,
       "backgroundColor": "#C0C0C0",
@@ -35,7 +35,7 @@
       "transform": 1
     },
     {
-      "name": "Scroll corner of LayoutNGView #document",
+      "name": "Scroll corner of LayoutView #document",
       "position": [285, 135],
       "bounds": [15, 15],
       "contentsOpaque": true,

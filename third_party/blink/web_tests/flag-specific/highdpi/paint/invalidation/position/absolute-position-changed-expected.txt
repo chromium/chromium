@@ -1,7 +1,7 @@
 {
   "layers": [
     {
-      "name": "Scrolling background of LayoutNGView #document",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [1200, 3024],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",

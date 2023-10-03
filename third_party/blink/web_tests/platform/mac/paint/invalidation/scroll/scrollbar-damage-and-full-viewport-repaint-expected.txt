@@ -1,7 +1,7 @@
 {
   "layers": [
     {
-      "name": "LayoutNGView #document",
+      "name": "LayoutView #document",
       "bounds": [1000, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"

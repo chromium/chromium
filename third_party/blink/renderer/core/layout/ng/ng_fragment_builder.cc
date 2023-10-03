@@ -569,7 +569,7 @@ void NGFragmentBuilder::PropagateOOFPositionedInfo(
       // fragment, since it hasn't finished layout yet. But we still need to
       // propagate the fixed-positioned descendant, so that it gets laid out
       // inside the fragmentation context (and repeated on every page), instead
-      // of becoming a direct child of the LayoutNGView fragment (and thus a
+      // of becoming a direct child of the LayoutView fragment (and thus a
       // sibling of the page fragments).
       if (fixedpos_containing_block &&
           (fixedpos_containing_block->Fragment() || node_.IsPaginatedRoot())) {

@@ -97,7 +97,7 @@ class CORE_EXPORT NGLayoutInputNode {
     return box_->CanContainFixedPositionObjects();
   }
   bool IsBody() const { return IsBlock() && box_->IsBody(); }
-  bool IsView() const { return IsBlock() && box_->IsLayoutNGView(); }
+  bool IsView() const { return IsBlock() && box_->IsLayoutView(); }
   bool IsDocumentElement() const { return box_->IsDocumentElement(); }
   bool IsFlexItem() const { return IsBlock() && box_->IsFlexItemIncludingNG(); }
   bool IsFlexibleBox() const {

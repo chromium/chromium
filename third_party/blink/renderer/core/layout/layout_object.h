@@ -928,10 +928,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     NOT_DESTROYED();
     return IsOfType(kLayoutObjectTextCombine);
   }
-  bool IsLayoutNGView() const {
-    NOT_DESTROYED();
-    return IsOfType(kLayoutObjectNGView);
-  }
   bool IsLayoutTableCol() const {
     NOT_DESTROYED();
     return IsOfType(kLayoutObjectTableCol);
@@ -3530,7 +3526,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     kLayoutObjectNGInsideListMarker,
     kLayoutObjectNGListItem,
     kLayoutObjectNGOutsideListMarker,
-    kLayoutObjectNGView,
     kLayoutObjectProgress,
     kLayoutObjectQuote,
     kLayoutObjectReplaced,

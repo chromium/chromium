@@ -163,11 +163,11 @@ void LayersAsJSON::AddLayer(const cc::Layer& layer,
                             const ContentLayerClientImpl* layer_client) {
   if (!(flags_ & kLayerTreeIncludesAllLayers) && !layer.draws_content()) {
     std::string debug_name = layer.DebugName();
-    if (debug_name == "LayoutNGView #document" ||
-        debug_name == "LayoutView #document" ||
+    if (debug_name == "LayoutView #document" ||
         debug_name == "Inner Viewport Scroll Layer" ||
-        debug_name == "Scrolling Contents Layer")
+        debug_name == "Scrolling Contents Layer") {
       return;
+    }
   }
 
   auto layer_json = CCLayerAsJSON(layer, flags_);

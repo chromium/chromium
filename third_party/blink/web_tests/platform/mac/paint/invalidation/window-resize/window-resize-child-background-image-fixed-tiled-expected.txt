@@ -1,7 +1,7 @@
 {
   "layers": [
     {
-      "name": "Scrolling background of LayoutNGView #document",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [1008, 1016],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -32,7 +32,7 @@
       "contentsOpaque": true
     },
     {
-      "name": "Scroll corner of LayoutNGView #document",
+      "name": "Scroll corner of LayoutView #document",
       "position": [585, 235],
       "bounds": [15, 15],
       "invalidations": [
@@ -44,7 +44,7 @@
 {
   "layers": [
     {
-      "name": "Scrolling background of LayoutNGView #document",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [1008, 1016],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -75,7 +75,7 @@
       "contentsOpaque": true
     },
     {
-      "name": "Scroll corner of LayoutNGView #document",
+      "name": "Scroll corner of LayoutView #document",
       "position": [385, 235],
       "bounds": [15, 15],
       "invalidations": [
@@ -87,7 +87,7 @@
 {
   "layers": [
     {
-      "name": "Scrolling background of LayoutNGView #document",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [1008, 1016],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -118,7 +118,7 @@
       "contentsOpaque": true
     },
     {
-      "name": "Scroll corner of LayoutNGView #document",
+      "name": "Scroll corner of LayoutView #document",
       "position": [385, 585],
       "bounds": [15, 15],
       "invalidations": [
@@ -130,7 +130,7 @@
 {
   "layers": [
     {
-      "name": "Scrolling background of LayoutNGView #document",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [1008, 1016],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -161,7 +161,7 @@
       "contentsOpaque": true
     },
     {
-      "name": "Scroll corner of LayoutNGView #document",
+      "name": "Scroll corner of LayoutView #document",
       "position": [785, 585],
       "bounds": [15, 15],
       "invalidations": [

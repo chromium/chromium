@@ -2,7 +2,7 @@ In all iframes, the green fixed-position element should not be composited.
 {
   "layers": [
     {
-      "name": "Scrolling background of LayoutNGView #document",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [785, 4016],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
