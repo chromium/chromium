@@ -48,6 +48,7 @@ web::WebUIIOSDataSource* CreateFlagsUIHTMLSource() {
       base::make_span(kFlagsUiResources, kFlagsUiResourcesSize));
   source->SetDefaultResource(IDR_FLAGS_UI_FLAGS_HTML);
   source->UseStringsJs();
+  source->EnableReplaceI18nInJS();
   return source;
 }
 
