@@ -990,18 +990,30 @@ scoped_refptr<SharedContextState> GpuChannelManager::GetSharedContextState(
   }
 
   auto gr_context_type = gpu_preferences_.gr_context_type;
-#if BUILDFLAG(IS_APPLE)
   const bool want_graphite = gr_context_type == GrContextType::kGraphiteDawn ||
                              gr_context_type == GrContextType::kGraphiteMetal;
   const bool force_graphite = base::CommandLine::ForCurrentProcess()->HasSwitch(
       switches::kSkiaGraphiteBackend);
-  const bool is_angle_metal =
-      gl::GetANGLEImplementation() == gl::ANGLEImplementation::kMetal;
-  // Fallback from Graphite to Ganesh/GL if ANGLE is not using Metal too.
-  if (want_graphite && !force_graphite && !is_angle_metal) {
+
+#if BUILDFLAG(IS_APPLE)
+  // Graphite requires ANGLE Metal on Mac
+  constexpr auto kRequiredANGLEImplementation = gl::ANGLEImplementation::kMetal;
+#elif BUILDFLAG(IS_WIN)
+  // Graphite requires ANGLE D3D11 on Windows
+  constexpr auto kRequiredANGLEImplementation = gl::ANGLEImplementation::kD3D11;
+#else
+  constexpr auto kRequiredANGLEImplementation = gl::ANGLEImplementation::kNone;
+#endif
+  const bool has_required_angle_impl_for_graphite =
+      kRequiredANGLEImplementation == gl::ANGLEImplementation::kNone ||
+      gl::GetANGLEImplementation() == kRequiredANGLEImplementation;
+
+  if (want_graphite && !force_graphite &&
+      !has_required_angle_impl_for_graphite) {
+    // Fallback from Graphite to Ganesh/GL if ANGLE is not using required
+    // implementation.
     gr_context_type = GrContextType::kGL;
   }
-#endif
 
   // TODO(penghuang): https://crbug.com/899735 Handle device lost for Vulkan.
   auto shared_context_state = base::MakeRefCounted<SharedContextState>(
