@@ -163,8 +163,17 @@ HTMLElement* CustomElementDefinition::CreateElement(
   // 6. If definition is non-null, then:
   // 6.1. If the synchronous custom elements flag is set, then run these
   // steps while catching any exceptions:
-  if (!flags.IsAsyncCustomElements())
+  if (!flags.IsAsyncCustomElements()) {
+    // It's impossible to create a custom element with a scoped definition
+    // without push the custom element construction stack. Make sure that
+    // doesn't happen for synchrnous autonomous custom elements, which  don't
+    // push the stack,
+    // TODO(crbug.com/1304439): Alternatively, we can push the construction
+    // stack only when using a scoped definition. Decide the exact behavior.
+    CHECK(!RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled() ||
+          registry_->IsGlobalRegistry());
     return CreateAutonomousCustomElementSync(document, tag_name);
+  }
 
   // 6.2. Otherwise: (the synchronous custom elements flag is not set)
   // 6.2.1. Set result to a new element that implements the HTMLElement

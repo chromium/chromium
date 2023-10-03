@@ -244,7 +244,6 @@ class TreeWalker;
 class TrustedHTML;
 class V8NodeFilter;
 class V8ObservableArrayCSSStyleSheet;
-class V8UnionElementCreationOptionsOrString;
 class V8UnionStringOrTrustedHTML;
 class ViewportData;
 class VisitedLinkState;
@@ -448,20 +447,6 @@ class CORE_EXPORT Document : public ContainerNode,
 
   Location* location() const;
 
-  Element* CreateElementForBinding(const AtomicString& local_name,
-                                   ExceptionState& = ASSERT_NO_EXCEPTION);
-  Element* CreateElementForBinding(
-      const AtomicString& local_name,
-      const V8UnionElementCreationOptionsOrString* string_or_options,
-      ExceptionState& exception_state);
-  Element* createElementNS(const AtomicString& namespace_uri,
-                           const AtomicString& qualified_name,
-                           ExceptionState&);
-  Element* createElementNS(
-      const AtomicString& namespace_uri,
-      const AtomicString& qualified_name,
-      const V8UnionElementCreationOptionsOrString* string_or_options,
-      ExceptionState& exception_state);
   DocumentFragment* createDocumentFragment();
   Text* createTextNode(const String& data);
   Comment* createComment(const String& data);
@@ -475,11 +460,6 @@ class CORE_EXPORT Document : public ContainerNode,
                           ExceptionState&);
   Node* importNode(Node* imported_node, bool deep, ExceptionState&);
 
-  // "create an element" defined in DOM standard. This supports both of
-  // autonomous custom elements and customized built-in elements.
-  Element* CreateElement(const QualifiedName&,
-                         const CreateElementFlags,
-                         const AtomicString& is);
   // Creates an element without custom element processing.
   Element* CreateRawElement(const QualifiedName&,
                             const CreateElementFlags = CreateElementFlags());

@@ -42,6 +42,33 @@ interface ShadowRoot : DocumentFragment {
 
     // Declarative Shadow DOM getInnerHTML() function.
     [Affects=Nothing, MeasureAs=ElementGetInnerHTML] HTMLString getInnerHTML(optional GetInnerHTMLOptions options = {});
+
+    // Scoped element creation APIs
+    // https://wicg.github.io/webcomponents/proposals/Scoped-Custom-Element-Registries#scoped-element-creation-apis
+    [
+      NewObject, PerWorldBindings, RaisesException, CEReactions,
+      RuntimeEnabled=ScopedCustomElementRegistry,
+      ImplementedAs=CreateElementForBinding
+    ]
+    Element createElement(DOMString localName);
+    [
+      NewObject, PerWorldBindings, RaisesException, CEReactions,
+      RuntimeEnabled=ScopedCustomElementRegistry,
+      ImplementedAs=CreateElementForBinding
+    ]
+    Element createElement(DOMString localName, (DOMString or ElementCreationOptions) options);
+    [
+      NewObject, RaisesException, CEReactions,
+      RuntimeEnabled=ScopedCustomElementRegistry
+    ]
+    Element createElementNS(DOMString? namespaceURI, DOMString qualifiedName);
+    [
+      NewObject, RaisesException, CEReactions,
+      RuntimeEnabled=ScopedCustomElementRegistry
+    ]
+    Element createElementNS(DOMString? namespaceURI, DOMString qualifiedName,
+                            (DOMString or ElementCreationOptions) options);
+
 };
 
 ShadowRoot includes DocumentOrShadowRoot;

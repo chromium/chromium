@@ -9205,6 +9205,8 @@ interface ShadowRoot : DocumentFragment
     getter slotAssignment
     getter styleSheets
     method constructor
+    method createElement
+    method createElementNS
     method elementFromPoint
     method elementsFromPoint
     method getAnimations

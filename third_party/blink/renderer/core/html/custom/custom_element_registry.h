@@ -70,6 +70,8 @@ class CORE_EXPORT CustomElementRegistry final : public ScriptWrappable {
 
   const LocalDOMWindow* GetOwnerWindow() const { return owner_; }
 
+  bool IsGlobalRegistry() const;
+
   void Trace(Visitor*) const override;
 
  private:

@@ -53,6 +53,9 @@ class Node;
 class SVGTreeScopeResources;
 class ScopedStyleResolver;
 class StyleSheetList;
+class CreateElementFlags;
+class QualifiedName;
+class V8UnionElementCreationOptionsOrString;
 
 // The root node of a document tree (in which case this is a Document) or of a
 // shadow tree (in which case this is a ShadowRoot). Various things, like
@@ -174,6 +177,27 @@ class CORE_EXPORT TreeScope : public GarbageCollectedMixin {
   bool HasAdoptedStyleSheets() const;
   void SetAdoptedStyleSheetsForTesting(HeapVector<Member<CSSStyleSheet>>&);
   void ClearAdoptedStyleSheets();
+
+  Element* CreateElementForBinding(const AtomicString& local_name,
+                                   ExceptionState& = ASSERT_NO_EXCEPTION);
+  Element* CreateElementForBinding(
+      const AtomicString& local_name,
+      const V8UnionElementCreationOptionsOrString* string_or_options,
+      ExceptionState& exception_state);
+  Element* createElementNS(const AtomicString& namespace_uri,
+                           const AtomicString& qualified_name,
+                           ExceptionState&);
+  Element* createElementNS(
+      const AtomicString& namespace_uri,
+      const AtomicString& qualified_name,
+      const V8UnionElementCreationOptionsOrString* string_or_options,
+      ExceptionState& exception_state);
+
+  // "create an element" defined in DOM standard. This supports both of
+  // autonomous custom elements and customized built-in elements.
+  Element* CreateElement(const QualifiedName&,
+                         const CreateElementFlags,
+                         const AtomicString& is);
 
  protected:
   explicit TreeScope(ContainerNode&,

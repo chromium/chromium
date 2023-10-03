@@ -1101,33 +1101,39 @@ Element* Document::CreateRawElement(const QualifiedName& qname,
 }
 
 // https://dom.spec.whatwg.org/#dom-document-createelement
-Element* Document::CreateElementForBinding(const AtomicString& name,
-                                           ExceptionState& exception_state) {
-  if (!IsValidElementName(this, name)) {
+// TODO(crbug.com/1304439): Move it to `tree_scope.cc` if the feature
+// `ScopedCustomElementRegistry` can stabilize.
+Element* TreeScope::CreateElementForBinding(const AtomicString& name,
+                                            ExceptionState& exception_state) {
+  Document& document = GetDocument();
+  if (!IsValidElementName(&document, name)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidCharacterError,
         "The tag name provided ('" + name + "') is not a valid name.");
     return nullptr;
   }
 
-  if (IsXHTMLDocument() || IsA<HTMLDocument>(this)) {
+  if (document.IsXHTMLDocument() || IsA<HTMLDocument>(document)) {
     // 2. If the context object is an HTML document, let localName be
     // converted to ASCII lowercase.
-    AtomicString local_name = ConvertLocalName(name);
+    AtomicString local_name = document.ConvertLocalName(name);
     if (CustomElement::ShouldCreateCustomElement(local_name)) {
       return CustomElement::CreateCustomElement(
           *this,
           QualifiedName(g_null_atom, local_name, html_names::xhtmlNamespaceURI),
-          CreateElementFlags::ByCreateElement());
+          IsA<ShadowRoot>(this)
+              ? CreateElementFlags::ByShadowRootCreateElement()
+              : CreateElementFlags::ByCreateElement());
     }
     if (auto* element = HTMLElementFactory::Create(
-            local_name, *this, CreateElementFlags::ByCreateElement()))
+            local_name, document, CreateElementFlags::ByCreateElement())) {
       return element;
+    }
     QualifiedName q_name(g_null_atom, local_name,
                          html_names::xhtmlNamespaceURI);
-    return MakeGarbageCollected<HTMLUnknownElement>(q_name, *this);
+    return MakeGarbageCollected<HTMLUnknownElement>(q_name, document);
   }
-  return MakeGarbageCollected<Element>(QualifiedName(name), this);
+  return MakeGarbageCollected<Element>(QualifiedName(name), &document);
 }
 
 AtomicString GetTypeExtension(
@@ -1154,7 +1160,9 @@ AtomicString GetTypeExtension(
 }
 
 // https://dom.spec.whatwg.org/#dom-document-createelement
-Element* Document::CreateElementForBinding(
+// TODO(crbug.com/1304439): Move it to `tree_scope.cc` if the feature
+// `ScopedCustomElementRegistry` can stabilize.
+Element* TreeScope::CreateElementForBinding(
     const AtomicString& local_name,
     const V8UnionElementCreationOptionsOrString* string_or_options,
     ExceptionState& exception_state) {
@@ -1162,8 +1170,10 @@ Element* Document::CreateElementForBinding(
     return CreateElementForBinding(local_name, exception_state);
   }
 
+  Document& document = GetDocument();
+
   // 1. If localName does not match Name production, throw InvalidCharacterError
-  if (!IsValidElementName(this, local_name)) {
+  if (!IsValidElementName(&document, local_name)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidCharacterError,
         "The tag name provided ('" + local_name + "') is not a valid name.");
@@ -1171,14 +1181,15 @@ Element* Document::CreateElementForBinding(
   }
 
   // 2. localName converted to ASCII lowercase
-  const AtomicString& converted_local_name = ConvertLocalName(local_name);
+  const AtomicString& converted_local_name =
+      document.ConvertLocalName(local_name);
   QualifiedName q_name(g_null_atom, converted_local_name,
-                       IsXHTMLDocument() || IsA<HTMLDocument>(this)
+                       document.IsXHTMLDocument() || IsA<HTMLDocument>(document)
                            ? html_names::xhtmlNamespaceURI
                            : g_null_atom);
 
   // 3.
-  const AtomicString& is = GetTypeExtension(this, string_or_options);
+  const AtomicString& is = GetTypeExtension(&document, string_or_options);
 
   // 5. Let element be the result of creating an element given ...
   Element* element =
@@ -1209,22 +1220,30 @@ static inline QualifiedName CreateQualifiedName(
   return q_name;
 }
 
-Element* Document::createElementNS(const AtomicString& namespace_uri,
-                                   const AtomicString& qualified_name,
-                                   ExceptionState& exception_state) {
+// TODO(crbug.com/1304439): Move it to `tree_scope.cc` if the feature
+// `ScopedCustomElementRegistry` can stabilize.
+Element* TreeScope::createElementNS(const AtomicString& namespace_uri,
+                                    const AtomicString& qualified_name,
+                                    ExceptionState& exception_state) {
   QualifiedName q_name(
       CreateQualifiedName(namespace_uri, qualified_name, exception_state));
   if (q_name == QualifiedName::Null())
     return nullptr;
 
   CreateElementFlags flags = CreateElementFlags::ByCreateElement();
-  if (CustomElement::ShouldCreateCustomElement(q_name))
-    return CustomElement::CreateCustomElement(*this, q_name, flags);
-  return CreateRawElement(q_name, flags);
+  if (CustomElement::ShouldCreateCustomElement(q_name)) {
+    return CustomElement::CreateCustomElement(
+        *this, q_name,
+        IsA<ShadowRoot>(this) ? CreateElementFlags::ByShadowRootCreateElement()
+                              : CreateElementFlags::ByCreateElement());
+  }
+  return GetDocument().CreateRawElement(q_name, flags);
 }
 
 // https://dom.spec.whatwg.org/#internal-createelementns-steps
-Element* Document::createElementNS(
+// TODO(crbug.com/1304439): Move it to `tree_scope.cc` if the feature
+// `ScopedCustomElementRegistry` can stabilize.
+Element* TreeScope::createElementNS(
     const AtomicString& namespace_uri,
     const AtomicString& qualified_name,
     const V8UnionElementCreationOptionsOrString* string_or_options,
@@ -1237,10 +1256,12 @@ Element* Document::createElementNS(
   if (q_name == QualifiedName::Null())
     return nullptr;
 
-  // 2.
-  const AtomicString& is = GetTypeExtension(this, string_or_options);
+  Document& document = GetDocument();
 
-  if (!IsValidElementName(this, qualified_name)) {
+  // 2.
+  const AtomicString& is = GetTypeExtension(&document, string_or_options);
+
+  if (!IsValidElementName(&document, qualified_name)) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidCharacterError,
                                       "The tag name provided ('" +
                                           qualified_name +
@@ -1257,9 +1278,11 @@ Element* Document::createElementNS(
 
 // Entry point of "create an element".
 // https://dom.spec.whatwg.org/#concept-create-element
-Element* Document::CreateElement(const QualifiedName& q_name,
-                                 const CreateElementFlags flags,
-                                 const AtomicString& is) {
+// TODO(crbug.com/1304439): Move it to `tree_scope.cc` if the feature
+// `ScopedCustomElementRegistry` can stabilize.
+Element* TreeScope::CreateElement(const QualifiedName& q_name,
+                                  const CreateElementFlags flags,
+                                  const AtomicString& is) {
   CustomElementDefinition* definition = nullptr;
   if (flags.IsCustomElements() &&
       q_name.NamespaceURI() == html_names::xhtmlNamespaceURI) {
@@ -1270,10 +1293,10 @@ Element* Document::CreateElement(const QualifiedName& q_name,
   }
 
   if (definition)
-    return definition->CreateElement(*this, q_name, flags);
+    return definition->CreateElement(GetDocument(), q_name, flags);
 
-  return CustomElement::CreateUncustomizedOrUndefinedElement(*this, q_name,
-                                                             flags, is);
+  return CustomElement::CreateUncustomizedOrUndefinedElement(GetDocument(),
+                                                             q_name, flags, is);
 }
 
 DocumentFragment* Document::createDocumentFragment() {
