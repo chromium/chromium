@@ -47,6 +47,9 @@ IN_PROC_BROWSER_TEST_F(SidePanelCustomizeChromeTest, CheckMarkWrapper) {
   RunTest("side_panel/customize_chrome/check_mark_wrapper_test.js",
           "mocha.run()");
 }
+IN_PROC_BROWSER_TEST_F(SidePanelCustomizeChromeTest, Combobox) {
+  RunTest("side_panel/customize_chrome/combobox_test.js", "mocha.run()");
+}
 
 IN_PROC_BROWSER_TEST_F(SidePanelCustomizeChromeTest, HoverButton) {
   RunTest("side_panel/customize_chrome/hover_button_test.js", "mocha.run()");

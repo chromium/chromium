@@ -1,0 +1,37 @@
+<style include="md-select">
+:host {
+  display: block;
+  position: relative;
+}
+
+.md-select {
+  text-align: start;
+}
+
+#dropdown {
+  display: none;
+}
+
+:host([expanded_]) #dropdown {
+  display: block;
+  min-width: 100%;
+  position: absolute;
+  z-index: 999;
+  background: white;
+  border-radius: 12px;
+  box-shadow: var(--cr-elevation-3);
+}
+</style>
+
+<button id="input" class="md-select"
+    role="combobox" tabindex="0"
+    aria-controls="dropdown"
+    aria-expanded="[[expanded_]]"
+    aria-haspopup="listbox"
+    on-click="onInputClick_"
+    on-focusout="onInputFocusout_">
+  [[label]]
+</button>
+<div id="dropdown" role="listbox">
+  <slot></slot>
+</div>
