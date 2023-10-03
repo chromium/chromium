@@ -76,8 +76,6 @@ class PrerenderCancellationReason {
 
   PrerenderFinalStatus final_status() const { return final_status_; }
 
-  // This is mainly used for displaying a detailed reason on devtools panel.
-  std::string ToDevtoolReasonString() const;
   // Returns disallowed Mojo interface name iff final status is
   // `kMojoBinderPolicy`.
   absl::optional<std::string> DisallowedMojoInterface() const;

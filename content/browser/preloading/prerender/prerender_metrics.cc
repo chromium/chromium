@@ -203,26 +203,6 @@ void PrerenderCancellationReason::ReportMetrics(
   }
 }
 
-std::string PrerenderCancellationReason::ToDevtoolReasonString() const {
-  switch (final_status_) {
-    case PrerenderFinalStatus::kInactivePageRestriction:
-      CHECK(absl::holds_alternative<uint64_t>(explanation_));
-      // TODO(https://crbug.com/1328365): It seems we have to return an integer.
-      // And devtool has to handle it based on the enum.xml, as the content
-      // layer cannot know about the enums added by the embedder layer.
-      return std::string();
-    case PrerenderFinalStatus::kMojoBinderPolicy:
-      CHECK(absl::holds_alternative<std::string>(explanation_));
-      return absl::get<std::string>(explanation_);
-    case PrerenderFinalStatus::kDidFailLoad:
-      CHECK(absl::holds_alternative<int32_t>(explanation_));
-      return std::string();
-    default:
-      CHECK(absl::holds_alternative<absl::monostate>(explanation_));
-      return std::string();
-  }
-}
-
 absl::optional<std::string>
 PrerenderCancellationReason::DisallowedMojoInterface() const {
   switch (final_status_) {
