@@ -87,13 +87,12 @@ void StatusAreaWidget::Initialize() {
   // Create the child views, left to right.
   overflow_button_tray_ =
       AddTrayButton(std::make_unique<StatusAreaOverflowButtonTray>(shelf_));
-  if (features::IsFocusModeEnabled()) {
-    // TODO(b/297445628): Get approval for order of focus mode tray in shelf.
-    focus_mode_tray_ = AddTrayButton(std::make_unique<FocusModeTray>(shelf_));
-  }
   if (features::IsVideoConferenceEnabled()) {
     video_conference_tray_ =
         AddTrayButton(std::make_unique<VideoConferenceTray>(shelf_));
+  }
+  if (features::IsFocusModeEnabled()) {
+    focus_mode_tray_ = AddTrayButton(std::make_unique<FocusModeTray>(shelf_));
   }
   holding_space_tray_ =
       AddTrayButton(std::make_unique<HoldingSpaceTray>(shelf_));
