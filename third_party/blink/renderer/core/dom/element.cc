@@ -169,6 +169,7 @@
 #include "third_party/blink/renderer/core/html/html_template_element.h"
 #include "third_party/blink/renderer/core/html/nesting_level_incrementer.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
+#include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
 #include "third_party/blink/renderer/core/html_element_type_helpers.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
@@ -222,6 +223,7 @@
 #include "third_party/blink/renderer/platform/language.h"
 #include "third_party/blink/renderer/platform/region_capture_crop_id.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/text/bidi_paragraph.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/hash_functions.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
@@ -4046,12 +4048,438 @@ void Element::RecomputeDirectionFromParent() {
   // direction from a parent or shadow host.
   //
   // It should match the computation done in
-  // HTMLElement::UpdateDirectionalityAndDescendant that applies an inherited
+  // Element::UpdateDirectionalityAndDescendant that applies an inherited
   // direction change to the descendants that need updating.
   if (GetDocument().HasDirAttribute() &&
       RuntimeEnabledFeatures::CSSPseudoDirEnabled() &&
       HTMLElement::ElementInheritsDirectionality(this)) {
     SetCachedDirectionality(ParentDirectionality());
+  }
+}
+
+void Element::UpdateDirectionalityAndDescendant(TextDirection direction) {
+  if (!RuntimeEnabledFeatures::CSSPseudoDirEnabled()) {
+    SetCachedDirectionality(direction);
+    if (HTMLElement* html_element = DynamicTo<HTMLElement>(this)) {
+      html_element->UpdateDescendantDirectionality(direction);
+    }
+  } else {
+    // This code applies a direction change to an element and to any elements
+    // that inherit from it.  It should match the code in
+    // Element::RecomputeDirectionFromParent that determines whether a single
+    // element should inherit direction and recomputes it if it does.
+    Element* element = this;
+    do {
+      if (element != this &&
+          (ToHTMLSlotElementIfSupportsAssignmentOrNull(element) ||
+           !HTMLElement::ElementInheritsDirectionality(element) ||
+           element->CachedDirectionality() == direction)) {
+        element = ElementTraversal::NextSkippingChildren(*element, this);
+        continue;
+      }
+
+      element->SetCachedDirectionality(direction);
+      element->PseudoStateChanged(CSSSelector::kPseudoDir);
+
+      if (ShadowRoot* shadow_root = element->GetShadowRoot()) {
+        for (Node& child : ElementTraversal::ChildrenOf(*shadow_root)) {
+          // TODO(https://crbug.com/576815): This should work for
+          // non-HTML elements too.
+          if (HTMLElement* child_element = DynamicTo<HTMLElement>(child)) {
+            if (HTMLElement::ElementInheritsDirectionality(child_element) &&
+                child_element->CachedDirectionality() != direction) {
+              child_element->UpdateDirectionalityAndDescendant(direction);
+            }
+          }
+        }
+        if (shadow_root->HasSlotAssignment()) {
+          for (HTMLSlotElement* slot :
+               shadow_root->GetSlotAssignment().Slots()) {
+            if (HTMLElement::ElementInheritsDirectionality(slot) &&
+                slot->CachedDirectionality() != direction) {
+              slot->UpdateDirectionalityAndDescendant(direction);
+            }
+          }
+        }
+      }
+      element = ElementTraversal::Next(*element, this);
+    } while (element);
+  }
+}
+
+// Because the self-or-ancestor has dir=auto state could come from either a
+// node tree ancestor, a slot, or an input, we have a method to
+// recalculate it (just for this element) based on all three sources.
+//
+// TODO(https://crbug.com/576815): When this code moves to Element, this could
+// be a member function.
+namespace {
+
+bool RecalcSelfOrAncestorHasDirAuto(Element* element) {
+  if (DynamicTo<HTMLElement>(element)) {
+    AtomicString dir_attribute_value =
+        element->FastGetAttribute(html_names::kDirAttr);
+    if (HTMLElement::IsValidDirAttribute(dir_attribute_value)) {
+      return EqualIgnoringASCIICase(dir_attribute_value, "auto");
+    }
+  }
+  Node* parent = element->parentNode();
+  if (parent && parent->SelfOrAncestorHasDirAutoAttribute()) {
+    return true;
+  }
+  if (HTMLSlotElement* slot = element->AssignedSlot()) {
+    if (slot->HasDirectionAuto()) {
+      return true;
+    }
+  }
+  if (ShadowRoot* shadow_root = DynamicTo<ShadowRoot>(parent)) {
+    if (TextControlElement* text_element =
+            HTMLElement::ElementIfAutoDirShouldUseValueOrNull(
+                &shadow_root->host())) {
+      if (text_element->HasDirectionAuto()) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+}  // namespace
+
+void Element::UpdateDescendantHasDirAutoAttribute(bool has_dir_auto) {
+  if (RuntimeEnabledFeatures::CSSPseudoDirEnabled()) {
+    if (ToHTMLSlotElementIfSupportsAssignmentOrNull(this) ||
+        HTMLElement::ElementIfAutoDirShouldUseValueOrNull(this)) {
+      for (Node& node : FlatTreeTraversal::ChildrenOf(*this)) {
+        if (HTMLElement* element = DynamicTo<HTMLElement>(node)) {
+          if (!HTMLElement::IsValidDirAttribute(
+                  element->FastGetAttribute(html_names::kDirAttr))) {
+            if (!has_dir_auto) {
+              if (!element->SelfOrAncestorHasDirAutoAttribute() ||
+                  RecalcSelfOrAncestorHasDirAuto(element)) {
+                continue;
+              }
+              element->ClearSelfOrAncestorHasDirAutoAttribute();
+            } else {
+              if (element->SelfOrAncestorHasDirAutoAttribute()) {
+                continue;
+              }
+              element->SetSelfOrAncestorHasDirAutoAttribute();
+            }
+            element->UpdateDescendantHasDirAutoAttribute(has_dir_auto);
+          }
+        }
+      }
+    } else {
+      Element* element = ElementTraversal::FirstChild(*this);
+      while (element) {
+        AtomicString dir_attribute_value =
+            element->FastGetAttribute(html_names::kDirAttr);
+        if (HTMLElement::IsValidDirAttribute(dir_attribute_value)) {
+          element = ElementTraversal::NextSkippingChildren(*element, this);
+          continue;
+        }
+
+        if (!has_dir_auto) {
+          if (!element->SelfOrAncestorHasDirAutoAttribute() ||
+              RecalcSelfOrAncestorHasDirAuto(element)) {
+            element = ElementTraversal::NextSkippingChildren(*element, this);
+            continue;
+          }
+          element->ClearSelfOrAncestorHasDirAutoAttribute();
+        } else {
+          if (element->SelfOrAncestorHasDirAutoAttribute()) {
+            element = ElementTraversal::NextSkippingChildren(*element, this);
+            continue;
+          }
+          element->SetSelfOrAncestorHasDirAutoAttribute();
+        }
+        element = ElementTraversal::Next(*element, this);
+      }
+    }
+  } else {
+    Node* node = FlatTreeTraversal::FirstChild(*this);
+    while (node) {
+      if (auto* element = DynamicTo<Element>(node)) {
+        AtomicString dir_attribute_value =
+            element->FastGetAttribute(html_names::kDirAttr);
+        if (HTMLElement::IsValidDirAttribute(dir_attribute_value)) {
+          node = FlatTreeTraversal::NextSkippingChildren(*node, this);
+          continue;
+        }
+
+        if (auto* slot = ToHTMLSlotElementIfSupportsAssignmentOrNull(node)) {
+          ShadowRoot* root = slot->ContainingShadowRoot();
+          // Defer to adjust the directionality to avoid recalcuating slot
+          // assignment in FlatTreeTraversal when updating slot.
+          // Slot and its children will be updated after recalculating children.
+          if (root->NeedsSlotAssignmentRecalc()) {
+            root->SetNeedsDirAutoAttributeUpdate(true);
+            node = FlatTreeTraversal::NextSkippingChildren(*node, this);
+            continue;
+          }
+        }
+
+        if (!has_dir_auto) {
+          if (!element->SelfOrAncestorHasDirAutoAttribute()) {
+            node = FlatTreeTraversal::NextSkippingChildren(*node, this);
+            continue;
+          }
+          element->ClearSelfOrAncestorHasDirAutoAttribute();
+        } else {
+          if (element->SelfOrAncestorHasDirAutoAttribute()) {
+            node = FlatTreeTraversal::NextSkippingChildren(*node, this);
+            continue;
+          }
+          element->SetSelfOrAncestorHasDirAutoAttribute();
+        }
+      }
+      node = FlatTreeTraversal::Next(*node, this);
+    }
+  }
+}
+
+// TODO(https://crbug.com/576815): Once the CSSPseudoDir flag is
+// removed, this function no longer needs to be templatized over
+// Traversal since it can always use NodeTraversal.
+template <typename Traversal>
+absl::optional<TextDirection> Element::ResolveAutoDirectionality(
+    bool& is_deferred,
+    Node* stay_within) const {
+  // TODO(https://crbug.com/576815): Once the CSSPseudoDir flag is
+  // removed, we can remove the stay_within argument.
+  CHECK(!RuntimeEnabledFeatures::CSSPseudoDirEnabled() || this == stay_within);
+
+  is_deferred = false;
+  if (const TextControlElement* text_element =
+          HTMLElement::ElementIfAutoDirShouldUseValueOrNull(this)) {
+    return BidiParagraph::BaseDirectionForStringOrLtr(text_element->Value());
+  }
+
+  if (RuntimeEnabledFeatures::CSSPseudoDirEnabled()) {
+    if (const HTMLSlotElement* slot_this =
+            ToHTMLSlotElementIfSupportsAssignmentOrNull(this)) {
+      auto& assigned_nodes = slot_this->AssignedNodes();
+      // Use the assigned nodes if there are any.  Otherwise, the <slot>
+      // represents its content and we should fall back to the regular codepath.
+      if (!assigned_nodes.empty()) {
+        for (Node* slotted_node : assigned_nodes) {
+          if (slotted_node->IsTextNode()) {
+            if (const absl::optional<TextDirection> text_direction =
+                    BidiParagraph::BaseDirectionForString(
+                        slotted_node->textContent(true))) {
+              return *text_direction;
+            }
+          } else if (HTMLElement* slotted_element =
+                         DynamicTo<HTMLElement>(slotted_node)) {
+            // TODO(https://crbug.com/576815): This should work for
+            // non-HTML elements too.
+            absl::optional<TextDirection> slotted_child_result =
+                slotted_element->ResolveAutoDirectionality<NodeTraversal>(
+                    is_deferred, slotted_element);
+            if (slotted_child_result) {
+              return slotted_child_result;
+            }
+          }
+        }
+        return absl::nullopt;
+      }
+    }
+  }
+
+  Node* node;
+  if (RuntimeEnabledFeatures::CSSPseudoDirEnabled()) {
+    node = Traversal::FirstChild(*this);
+  } else {
+    node = (IsA<HTMLTextAreaElement>(*this) || IsA<HTMLSlotElement>(*this))
+               ? FlatTreeTraversal::FirstChild(*this)
+               : Traversal::FirstChild(*this);
+  }
+  while (node) {
+    // Skip bdi, script, style and text form controls.
+    auto* element = DynamicTo<Element>(node);
+    if (EqualIgnoringASCIICase(node->nodeName(), "bdi") ||
+        IsA<HTMLScriptElement>(*node) || IsA<HTMLStyleElement>(*node) ||
+        (element && element->IsTextControl()) ||
+        (element && element->ShadowPseudoId() ==
+                        shadow_element_names::kPseudoInputPlaceholder)) {
+      node = Traversal::NextSkippingChildren(*node, stay_within);
+      continue;
+    }
+
+    auto* slot = ToHTMLSlotElementIfSupportsAssignmentOrNull(node);
+    if (slot && !RuntimeEnabledFeatures::CSSPseudoDirEnabled()) {
+      ShadowRoot* root = slot->ContainingShadowRoot();
+      // Defer to adjust the directionality to avoid recalcuating slot
+      // assignment in FlatTreeTraversal when updating slot.
+      // ResolveAutoDirectionality will be adjusted after recalculating its
+      // children.
+      if (root->NeedsSlotAssignmentRecalc()) {
+        is_deferred = true;
+        return TextDirection::kLtr;
+      }
+    }
+
+    // Skip elements with valid dir attribute
+    if (auto* element_node = DynamicTo<Element>(node)) {
+      AtomicString dir_attribute_value =
+          element_node->FastGetAttribute(html_names::kDirAttr);
+      if (HTMLElement::IsValidDirAttribute(dir_attribute_value)) {
+        node = Traversal::NextSkippingChildren(*node, stay_within);
+        continue;
+      }
+    }
+
+    // TODO(https://crbug.com/576815): Once we have final spec text for
+    // https://github.com/whatwg/html/issues/3699 we should recheck the
+    // relative order of this check and the "Skip elements with valid
+    // dir attribute" check above, and add tests for the case that
+    // exercises both.  (Note that if the order is switched, this test
+    // needs to consider the dir attribute on the slot element rather
+    // than just jumping to its shadow host.)
+    if (slot && RuntimeEnabledFeatures::CSSPseudoDirEnabled()) {
+      ShadowRoot* root = slot->ContainingShadowRoot();
+      return root->host().CachedDirectionality();
+    }
+
+    if (node->IsTextNode()) {
+      if (const absl::optional<TextDirection> text_direction =
+              BidiParagraph::BaseDirectionForString(node->textContent(true))) {
+        return *text_direction;
+      }
+    }
+
+    if (slot) {
+      absl::optional<TextDirection> text_direction =
+          slot->ResolveAutoDirectionality<FlatTreeTraversal>(is_deferred,
+                                                             stay_within);
+      if (text_direction.has_value()) {
+        return text_direction;
+      }
+    }
+
+    node = Traversal::Next(*node, stay_within);
+  }
+  return absl::nullopt;
+}
+
+// explicitly instantiate for use in html_element.cc
+template absl::optional<TextDirection>
+Element::ResolveAutoDirectionality<NodeTraversal>(bool& is_deferred,
+                                                  Node* stay_within) const;
+
+void Element::AdjustDirectionalityIfNeededAfterChildrenChanged(
+    const ChildrenChange& change) {
+  if (!SelfOrAncestorHasDirAutoAttribute()) {
+    return;
+  }
+
+  Node* stay_within = nullptr;
+  if (change.type == ChildrenChangeType::kTextChanged) {
+    CHECK(change.old_text);
+    absl::optional<TextDirection> old_text_direction =
+        BidiParagraph::BaseDirectionForString(*change.old_text);
+    auto* character_data = DynamicTo<CharacterData>(change.sibling_changed);
+    DCHECK(character_data);
+    absl::optional<TextDirection> new_text_direction =
+        BidiParagraph::BaseDirectionForString(character_data->data());
+    if (old_text_direction == new_text_direction) {
+      return;
+    }
+    stay_within = change.sibling_changed;
+  } else if (change.IsChildInsertion()) {
+    if (change.sibling_changed->IsTextNode()) {
+      const absl::optional<TextDirection> new_text_direction =
+          BidiParagraph::BaseDirectionForString(
+              change.sibling_changed->textContent(true));
+      if (!new_text_direction ||
+          (*new_text_direction == CachedDirectionality() &&
+           !DirAutoInheritsFromParent())) {
+        return;
+      }
+    }
+    stay_within = change.sibling_changed;
+  }
+
+  UpdateDescendantHasDirAutoAttribute(true /* has_dir_auto */);
+
+  // We have some fixes to dir=auto calculation behind the
+  // CSSPseudoDirEnabled() flag.  This code has two branches to account
+  // for *both* those fixes *and* for the :dir() pseudo-class itself.
+  if (RuntimeEnabledFeatures::CSSPseudoDirEnabled()) {
+    this->UpdateAncestorWithDirAuto(UpdateAncestorTraversal::IncludeSelf);
+  } else {
+    for (Element* element_to_adjust = this; element_to_adjust;
+         element_to_adjust =
+             FlatTreeTraversal::ParentElement(*element_to_adjust)) {
+      if (HTMLElement::ElementAffectsDirectionality(element_to_adjust)) {
+        if (To<HTMLElement>(element_to_adjust)
+                ->CalculateAndAdjustAutoDirectionality(
+                    stay_within ? stay_within : element_to_adjust)) {
+          SetNeedsStyleRecalc(kLocalStyleChange,
+                              StyleChangeReasonForTracing::Create(
+                                  style_change_reason::kPseudoClass));
+        }
+        return;
+      }
+    }
+  }
+}
+
+void Element::UpdateAncestorWithDirAuto(UpdateAncestorTraversal traversal) {
+  CHECK(RuntimeEnabledFeatures::CSSPseudoDirEnabled());
+
+  bool skip = traversal == UpdateAncestorTraversal::ExcludeSelf;
+
+  for (Element* element_to_adjust = this; element_to_adjust;
+       element_to_adjust = element_to_adjust->parentElement()) {
+    if (!skip) {
+      if (HTMLElement::ElementAffectsDirectionality(element_to_adjust)) {
+        HTMLElement* html_element_to_adjust =
+            To<HTMLElement>(element_to_adjust);
+        if (html_element_to_adjust->HasDirectionAuto() &&
+            html_element_to_adjust->CalculateAndAdjustAutoDirectionality(
+                element_to_adjust)) {
+          SetNeedsStyleRecalc(kLocalStyleChange,
+                              StyleChangeReasonForTracing::Create(
+                                  style_change_reason::kPseudoClass));
+          element_to_adjust->PseudoStateChanged(CSSSelector::kPseudoDir);
+        }
+        return;
+      }
+      if (!element_to_adjust->SelfOrAncestorHasDirAutoAttribute()) {
+        return;
+      }
+    }
+    skip = false;
+    // Directionality mostly operates on the node tree rather than the
+    // flat tree.  However, a <slot>'s dir=auto is affected by its
+    // assigned nodes.
+    if (HTMLSlotElement* slot = element_to_adjust->AssignedSlot()) {
+      if (slot->HasDirectionAuto() &&
+          slot->CalculateAndAdjustAutoDirectionality(slot)) {
+        SetNeedsStyleRecalc(kLocalStyleChange,
+                            StyleChangeReasonForTracing::Create(
+                                style_change_reason::kPseudoClass));
+        slot->PseudoStateChanged(CSSSelector::kPseudoDir);
+      }
+    }
+    // And the values of many text form controls influence dir=auto on
+    // the control.
+    if (ShadowRoot* shadow_root =
+            DynamicTo<ShadowRoot>(element_to_adjust->parentNode())) {
+      if (TextControlElement* text_control =
+              HTMLElement::ElementIfAutoDirShouldUseValueOrNull(
+                  &shadow_root->host())) {
+        if (text_control->HasDirectionAuto() &&
+            text_control->CalculateAndAdjustAutoDirectionality(text_control)) {
+          SetNeedsStyleRecalc(kLocalStyleChange,
+                              StyleChangeReasonForTracing::Create(
+                                  style_change_reason::kPseudoClass));
+          text_control->PseudoStateChanged(CSSSelector::kPseudoDir);
+        }
+      }
+    }
   }
 }
 
