@@ -1051,6 +1051,7 @@ if (is_win || is_mac || is_linux) {
       ":updater_test_sources",
       "//base/test:test_support",
       "//chrome/common:constants",
+      "//testing/buildbot/filters:updater_tests_filters",
       "//testing/gtest",
     ]
 
