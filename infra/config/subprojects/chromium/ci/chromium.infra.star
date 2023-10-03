@@ -122,6 +122,12 @@ packager_builder(
     properties = {
         "$build/avd_packager": {
             "avd_configs": [
+                "tools/android/avd/proto/creation/android_30_google_atd_x86.textpb",
+                "tools/android/avd/proto/creation/android_30_google_atd_x64.textpb",
+                "tools/android/avd/proto/creation/android_31_google_atd_x64.textpb",
+                "tools/android/avd/proto/creation/android_32_google_atd_x64.textpb",
+                "tools/android/avd/proto/creation/android_33_google_atd_x64.textpb",
+                # TODO(hypan): Using more specific names for the configs below.
                 "tools/android/avd/proto/creation/generic_android19.textpb",
                 "tools/android/avd/proto/creation/generic_android22.textpb",
                 "tools/android/avd/proto/creation/generic_android23.textpb",
