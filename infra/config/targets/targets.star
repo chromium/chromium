@@ -643,11 +643,6 @@ targets.windowed_test_launcher(
     label = "//chrome/test/chromedriver:chromedriver_unittests",
 )
 
-targets.generated_script(
-    name = "chrome_finch_smoke_tests",
-    label = "//clank/java:chrome_finch_smoke_tests",
-)
-
 targets.console_test_launcher(
     name = "chromeos_components_unittests",
     label = "//chromeos/components:chromeos_components_unittests",
@@ -1414,11 +1409,6 @@ targets.generated_script(
 targets.generated_script(
     name = "module_installer_junit_tests",
     label = "//components/module_installer/android:module_installer_junit_tests",
-)
-
-targets.generated_script(
-    name = "monochrome_finch_smoke_tests",
-    label = "//clank/android_webview/components:monochrome_finch_smoke_tests",
 )
 
 targets.console_test_launcher(

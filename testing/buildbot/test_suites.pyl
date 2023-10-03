@@ -112,37 +112,6 @@
       },
     },
 
-    'android_finch_smoke_tests': {
-      'chrome_finch_smoke_tests': {
-        'mixins': [
-          'skia_gold_test',
-        ],
-        'args': [
-          '--finch-seed-path',
-          '../../variations_seed',
-        ],
-      },
-      'monochrome_finch_smoke_tests': {
-        'mixins': [
-          'skia_gold_test',
-        ],
-        'args': [
-          '--finch-seed-path',
-          '../../variations_seed',
-        ],
-      },
-      'variations_smoke_tests': {
-        'test': 'variations_desktop_smoke_tests',
-        'mixins': [
-          'skia_gold_test',
-          'has_native_resultdb_integration',
-        ],
-        'args': [
-          '--target-platform=android',
-        ],
-      },
-    },
-
     'android_isolated_scripts': {
       'content_shell_crash_test': {
         'args': [

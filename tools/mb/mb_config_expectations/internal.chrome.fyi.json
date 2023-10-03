@@ -30,27 +30,6 @@
       "use_remoteexec": true
     }
   },
-  "android-nougat-x86-finch-smoke-chrome": {
-    "gn_args": {
-      "android_static_analysis": "off",
-      "dcheck_always_on": false,
-      "debuggable_apks": false,
-      "enable_resource_allowlist_generation": false,
-      "ffmpeg_branding": "Chrome",
-      "is_chrome_branded": true,
-      "is_component_build": false,
-      "is_debug": false,
-      "is_official_build": true,
-      "proprietary_codecs": true,
-      "strip_debug_info": true,
-      "symbol_level": 1,
-      "system_webview_package_name": "com.google.android.apps.chrome",
-      "system_webview_shell_package_name": "org.chromium.my_webview_shell",
-      "target_cpu": "x86",
-      "target_os": "android",
-      "use_remoteexec": true
-    }
-  },
   "chromeos-arm-generic-cfi-thin-lto-chrome-reclient": {
     "args_file": "//build/args/chromeos/arm-generic.gni",
     "gn_args": {

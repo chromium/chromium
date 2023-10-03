@@ -138,40 +138,6 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
-    name = "android_finch_smoke_tests",
-    tests = {
-        "chrome_finch_smoke_tests": targets.legacy_test_config(
-            mixins = [
-                "skia_gold_test",
-            ],
-            args = [
-                "--finch-seed-path",
-                "../../variations_seed",
-            ],
-        ),
-        "monochrome_finch_smoke_tests": targets.legacy_test_config(
-            mixins = [
-                "skia_gold_test",
-            ],
-            args = [
-                "--finch-seed-path",
-                "../../variations_seed",
-            ],
-        ),
-        "variations_smoke_tests": targets.legacy_test_config(
-            test = "variations_desktop_smoke_tests",
-            mixins = [
-                "skia_gold_test",
-                "has_native_resultdb_integration",
-            ],
-            args = [
-                "--target-platform=android",
-            ],
-        ),
-    },
-)
-
-targets.legacy_basic_suite(
     name = "android_isolated_scripts",
     tests = {
         "content_shell_crash_test": targets.legacy_test_config(
