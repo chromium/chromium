@@ -1,7 +1,17 @@
 // META: script=/resources/testdriver.js
 // META: script=/common/utils.js
 // META: script=resources/fledge-util.js
+// META: script=/common/subset-tests.js
 // META: timeout=long
+// META: variant=?1-10
+// META: variant=?11-20
+// META: variant=?21-30
+// META: variant=?31-40
+// META: variant=?41-50
+// META: variant=?51-60
+// META: variant=?61-70
+// META: variant=?71-80
+// META: variant=?81-last
 
 "use strict;"
 
@@ -492,7 +502,7 @@ for (testCase of SIMPLE_JOIN_LEAVE_TEST_CASES) {
     test_name += JSON.stringify(testCase);
   }
 
-  promise_test((async (testCase) => {
+  subsetTest(promise_test, (async (testCase) => {
     const INTEREST_GROUP_LIFETIME_SECS = 1;
 
     let join_promise = navigator.joinAdInterestGroup(testCase.interestGroup,
@@ -526,7 +536,7 @@ for (testCase of SIMPLE_JOIN_LEAVE_TEST_CASES) {
   }).bind(undefined, testCase), test_name);
 }
 
-promise_test(async test => {
+subsetTest(promise_test, async test => {
   const uuid = generateUuid(test);
 
   // Joining an interest group without a bidding script and run an auction.
@@ -551,7 +561,7 @@ promise_test(async test => {
                 'Auction unexpectedly had a winner');
 }, 'Join same interest group overwrites old matching group.');
 
-promise_test(async test => {
+subsetTest(promise_test, async test => {
   const uuid = generateUuid(test);
 
   // Join an interest group, run an auction to make sure it was joined.
@@ -567,7 +577,7 @@ promise_test(async test => {
                 'Auction unexpectedly had a winner');
 }, 'Leaving interest group actually leaves interest group.');
 
-promise_test(async test => {
+subsetTest(promise_test, async test => {
   // This should not throw.
   await leaveInterestGroup({ name: 'Never join group' });
 }, 'Leave an interest group that was never joined.');
@@ -576,7 +586,7 @@ promise_test(async test => {
 // Expiration tests
 ///////////////////////////////////////////////////////////////////////////////
 
-promise_test(async test => {
+subsetTest(promise_test, async test => {
   const uuid = generateUuid(test);
 
   // Joins the default interest group, with a 0.2 second duration.
@@ -590,7 +600,7 @@ promise_test(async test => {
   while (await runBasicFledgeAuction(test, uuid) !== null);
 }, 'Interest group duration.');
 
-promise_test(async test => {
+subsetTest(promise_test, async test => {
   const uuid = generateUuid(test);
 
   // Join interest group with a duration of -600. The interest group should
@@ -599,7 +609,7 @@ promise_test(async test => {
   assert_true(await runBasicFledgeAuction(test, uuid) === null);
 }, 'Interest group duration of -600.');
 
-promise_test(async test => {
+subsetTest(promise_test, async test => {
   const uuid = generateUuid(test);
 
   // Join a long-lived interest group.
@@ -615,7 +625,7 @@ promise_test(async test => {
   while (await runBasicFledgeAuction(test, uuid) !== null);
 }, 'Interest group test with overwritten duration.');
 
-promise_test(async test => {
+subsetTest(promise_test, async test => {
   const uuid = generateUuid(test);
 
   // Join a long-lived interest group.

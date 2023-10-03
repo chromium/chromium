@@ -1,11 +1,14 @@
 // META: script=/resources/testdriver.js
 // META: script=/common/utils.js
 // META: script=resources/fledge-util.js
+// META: script=/common/subset-tests.js
 // META: timeout=long
+// META: variant=?1-5
+// META: variant=?6-last
 
 "use strict;"
 
-promise_test(async test => {
+subsetTest(promise_test, async test => {
   const uuid = generateUuid(test);
   await runReportTest(
       test, uuid,
@@ -20,7 +23,7 @@ promise_test(async test => {
   );
 }, 'Both send reports, seller passes nothing to bidder.');
 
-promise_test(async test => {
+subsetTest(promise_test, async test => {
   const uuid = generateUuid(test);
   await runReportTest(
       test, uuid,
@@ -33,7 +36,7 @@ promise_test(async test => {
   );
 }, 'Only seller sends a report');
 
-promise_test(async test => {
+subsetTest(promise_test, async test => {
   const uuid = generateUuid(test);
   await runReportTest(
       test, uuid,
@@ -46,7 +49,7 @@ promise_test(async test => {
   );
 }, 'Only seller sends a report, bidder throws an exception');
 
-promise_test(async test => {
+subsetTest(promise_test, async test => {
   const uuid = generateUuid(test);
   await runReportTest(
       test, uuid,
@@ -57,7 +60,7 @@ promise_test(async test => {
   );
 }, 'Only seller sends a report, bidder has no reportWin() method');
 
-promise_test(async test => {
+subsetTest(promise_test, async test => {
   const uuid = generateUuid(test);
   await runReportTest(
       test, uuid,
@@ -72,7 +75,7 @@ promise_test(async test => {
   );
 }, 'Only bidder sends a report');
 
-promise_test(async test => {
+subsetTest(promise_test, async test => {
   const uuid = generateUuid(test);
   await runReportTest(
       test, uuid,
@@ -87,7 +90,7 @@ promise_test(async test => {
   );
 }, 'Only bidder sends a report, seller passes a message to bidder');
 
-promise_test(async test => {
+subsetTest(promise_test, async test => {
   const uuid = generateUuid(test);
   await runReportTest(
       test, uuid,
@@ -102,7 +105,7 @@ promise_test(async test => {
   );
 }, 'Only bidder sends a report, seller throws an exception');
 
-promise_test(async test => {
+subsetTest(promise_test, async test => {
   const uuid = generateUuid(test);
   await runReportTest(
       test, uuid,
@@ -115,7 +118,7 @@ promise_test(async test => {
   );
 }, 'Only bidder sends a report, seller has no reportResult() method');
 
-promise_test(async test => {
+subsetTest(promise_test, async test => {
   const uuid = generateUuid(test);
   await runReportTest(
       test, uuid,
@@ -132,7 +135,7 @@ promise_test(async test => {
   );
 }, 'Seller calls sendReportTo() twice, which throws an exception.');
 
-promise_test(async test => {
+subsetTest(promise_test, async test => {
   const uuid = generateUuid(test);
   await runReportTest(
       test, uuid,
