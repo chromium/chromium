@@ -68,9 +68,9 @@
 #include "chrome/browser/ui/tab_dialogs.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_ui_utils.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
+#include "components/webapps/common/web_app_id.h"
 #include "ui/events/event.h"
 #else
 #include "chrome/grit/branded_strings.h"
@@ -238,7 +238,7 @@ bool ChromePageInfoDelegate::IsIsolatedWebApp() {
     return false;
   }
 
-  const web_app::AppId* app_id =
+  const webapps::AppId* app_id =
       web_app::WebAppTabHelper::GetAppId(web_contents_);
   return app_id && provider->registrar_unsafe().IsIsolated(*app_id);
 }
