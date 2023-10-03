@@ -2685,6 +2685,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.SafeSites.Latency" units="ms"
+    expires_after="2024-02-11">
+  <owner>ftirelo@chromium.org</owner>
+  <owner>ljjlee@google.com</owner>
+  <owner>cbe-eng@google.com</owner>
+  <summary>
+    The latency of the request to the SafeSites API to classify URLs for users
+    with the SafeSitesFilterBehavior policy. This is measured once per
+    classified URL that requires a network request (URLs returned from the cache
+    are not recorded).
+  </summary>
+</histogram>
+
 <histogram
     name="Enterprise.SecondaryGoogleAccountUsage.PolicyFetch.ResponseLatency"
     units="ms" expires_after="2023-10-04">

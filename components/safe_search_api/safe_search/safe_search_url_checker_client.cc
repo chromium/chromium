@@ -8,7 +8,7 @@
 
 #include "base/functional/callback.h"
 #include "base/json/json_reader.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -147,9 +147,8 @@ void SafeSearchURLCheckerClient::OnSimpleLoaderComplete(
                              : ClientClassification::kAllowed;
   }
 
-  // TODO(msramek): Consider moving this to SupervisedUserResourceThrottle.
-  UMA_HISTOGRAM_TIMES("ManagedUsers.SafeSitesDelay",
-                      base::TimeTicks::Now() - check->start_time);
+  base::UmaHistogramTimes("Enterprise.SafeSites.Latency",
+                          base::TimeTicks::Now() - check->start_time);
 
   std::move(check->callback).Run(check->url, classification);
 }

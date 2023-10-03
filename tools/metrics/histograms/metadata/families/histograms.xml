@@ -785,16 +785,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ManagedUsers.SafeSitesDelay" units="ms"
-    expires_after="2024-02-11">
-  <owner>agawronska@chromium.org</owner>
-  <owner>cros-families-eng@google.com</owner>
-  <summary>
-    The extra page load delays introduced by network requests due to the
-    supervised user SafeSites feature, measured once per page load.
-  </summary>
-</histogram>
-
 <histogram name="SupervisedUsers.ExtensionEnablement"
     enum="SupervisedUserExtensionEnablement" expires_after="2024-02-11">
   <owner>courtneywong@chromium.org</owner>
