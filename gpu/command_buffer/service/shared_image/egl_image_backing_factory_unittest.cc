@@ -6,9 +6,11 @@
 
 #include <thread>
 
+#include "base/bits.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/test_timeouts.h"
 #include "build/build_config.h"
 #include "components/viz/common/resources/resource_sizes.h"
 #include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
@@ -17,6 +19,7 @@
 #include "gpu/command_buffer/service/mailbox_manager_impl.h"
 #include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
+#include "gpu/command_buffer/service/shared_image/dawn_image_representation_unittest_common.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
@@ -209,6 +212,58 @@ class EGLImageBackingFactoryThreadSafeTest
       EXPECT_EQ(pixel[1], expected_color[1]);
       EXPECT_EQ(pixel[2], expected_color[2]);
       EXPECT_EQ(pixel[3], expected_color[3]);
+    }
+  }
+
+  void CheckDawnPixels(wgpu::Texture texture,
+                       const wgpu::Device& device,
+                       const gfx::Size& size,
+                       const std::vector<uint8_t>& expected_color) const {
+    uint32_t buffer_stride =
+        static_cast<uint32_t>(base::bits::AlignUp(size.width() * 4, 256));
+    size_t buffer_size = static_cast<size_t>(size.height()) * buffer_stride;
+    wgpu::BufferDescriptor buffer_desc{
+        .usage = wgpu::BufferUsage::CopyDst | wgpu::BufferUsage::MapRead,
+        .size = buffer_size};
+    wgpu::Buffer buffer = device.CreateBuffer(&buffer_desc);
+
+    wgpu::CommandEncoder encoder = device.CreateCommandEncoder();
+    auto src = wgpu::ImageCopyTexture{.texture = texture, .origin = {0, 0, 0}};
+    auto dst = wgpu::ImageCopyBuffer{.layout = {.bytesPerRow = buffer_stride},
+                                     .buffer = buffer};
+    auto copy_size = wgpu::Extent3D{static_cast<uint32_t>(size.width()),
+                                    static_cast<uint32_t>(size.height(), 1)};
+    encoder.CopyTextureToBuffer(&src, &dst, &copy_size);
+    wgpu::CommandBuffer commands = encoder.Finish();
+
+    wgpu::Queue queue = device.GetQueue();
+    queue.Submit(1, &commands);
+
+    WGPUBufferMapAsyncStatus map_status = WGPUBufferMapAsyncStatus_Unknown;
+    auto map_callback = [](WGPUBufferMapAsyncStatus status, void* userdata) {
+      WGPUBufferMapAsyncStatus* status_out =
+          reinterpret_cast<WGPUBufferMapAsyncStatus*>(userdata);
+      *status_out = status;
+    };
+    buffer.MapAsync(wgpu::MapMode::Read, 0, buffer_desc.size, map_callback,
+                    &map_status);
+    // Tick device until async map operation completes.
+    while (map_status == WGPUBufferMapAsyncStatus_Unknown) {
+      device.Tick();
+      base::PlatformThread::Sleep(TestTimeouts::tiny_timeout());
+    }
+
+    const uint8_t* dst_pixels =
+        reinterpret_cast<const uint8_t*>(buffer.GetConstMappedRange());
+    for (int row = 0; row < size.height(); row++) {
+      for (int col = 0; col < size.width(); col++) {
+        // Compare the pixel values.
+        const uint8_t* pixel = dst_pixels + (row * buffer_stride) + col * 4;
+        EXPECT_EQ(pixel[0], expected_color[0]);
+        EXPECT_EQ(pixel[1], expected_color[1]);
+        EXPECT_EQ(pixel[2], expected_color[2]);
+        EXPECT_EQ(pixel[3], expected_color[3]);
+      }
     }
   }
 #endif  // BUILDFLAG(USE_DAWN) && BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
@@ -447,6 +502,157 @@ TEST_F(EGLImageBackingFactoryThreadSafeTest, Dawn_SkiaGL) {
   dawnProcSetProcs(nullptr);
 
   factory_ref.reset();
+}
+
+// Check an EGLImage wrapped and sampled in Dawn.
+TEST_P(EGLImageBackingFactoryThreadSafeTest, Dawn_SampledTexture) {
+  DawnProcTable procs = dawn::native::GetProcs();
+  dawnProcSetProcs(&procs);
+
+  // Create a Dawm OpenGLES device.
+  dawn::native::Instance instance;
+
+  wgpu::RequestAdapterOptions adapter_options;
+  adapter_options.backendType = wgpu::BackendType::OpenGLES;
+  adapter_options.compatibilityMode = true;
+
+  std::vector<dawn::native::Adapter> adapters =
+      instance.EnumerateAdapters(&adapter_options);
+
+  ASSERT_FALSE(adapters.empty());
+
+  // Allocate all the Dawn objects in their own scope so they are freed before
+  // dawnProcSetProcs(null) is called (below).
+  {
+    wgpu::Adapter adapter(adapters[0].Get());
+
+    wgpu::DeviceDescriptor device_descriptor;
+    wgpu::Device device = adapter.CreateDevice(&device_descriptor);
+
+    // Create a backing using mailbox.
+    const auto mailbox = Mailbox::GenerateForSharedImage();
+    const auto format = viz::SinglePlaneFormat::kRGBA_8888;
+    const gfx::Size size(1, 1);
+    const auto color_space = gfx::ColorSpace::CreateSRGB();
+    const uint32_t usage = SHARED_IMAGE_USAGE_WEBGPU;
+
+    std::vector<uint8_t> pixel_data = {0x80, 0x40, 0x20, 0x10};
+
+    auto backing = backing_factory_->CreateSharedImage(
+        mailbox, format, size, color_space, kTopLeft_GrSurfaceOrigin,
+        kPremul_SkAlphaType, usage, "Dawn_SampledTexture", pixel_data);
+    ASSERT_NE(backing, nullptr);
+
+    std::unique_ptr<SharedImageRepresentationFactoryRef> factory_ref =
+        shared_image_manager_->Register(std::move(backing),
+                                        memory_type_tracker_.get());
+
+    // Create a DawnImageRepresentation using the OpenGLES backend.
+    auto dawn_representation =
+        shared_image_representation_factory_->ProduceDawn(
+            mailbox, device, wgpu::BackendType::OpenGLES, {});
+    ASSERT_TRUE(dawn_representation);
+
+    auto scoped_access = dawn_representation->BeginScopedAccess(
+        wgpu::TextureUsage::TextureBinding,
+        SharedImageRepresentation::AllowUnclearedAccess::kYes);
+    ASSERT_TRUE(scoped_access);
+
+    wgpu::Texture texture(scoped_access->texture());
+
+    wgpu::TextureDescriptor attachmentDesc;
+    attachmentDesc.usage =
+        wgpu::TextureUsage::RenderAttachment | wgpu::TextureUsage::CopySrc;
+    attachmentDesc.size = {1, 1, 1};
+    attachmentDesc.format = wgpu::TextureFormat::RGBA8Unorm;
+
+    wgpu::Texture attachment = device.CreateTexture(&attachmentDesc);
+
+    wgpu::RenderPassColorAttachment colorAttachmentDesc;
+    colorAttachmentDesc.view = attachment.CreateView();
+    colorAttachmentDesc.resolveTarget = nullptr;
+    colorAttachmentDesc.loadOp = wgpu::LoadOp::Clear;
+    colorAttachmentDesc.storeOp = wgpu::StoreOp::Store;
+    colorAttachmentDesc.clearValue = {0, 255, 0, 255};
+
+    wgpu::RenderPassDescriptor renderPassDesc = {};
+    renderPassDesc.colorAttachmentCount = 1;
+    renderPassDesc.colorAttachments = &colorAttachmentDesc;
+    renderPassDesc.depthStencilAttachment = nullptr;
+
+    // Render pipeline
+    constexpr char kVS[] = R"(
+struct VertexOut {
+@location(0) tex_coord : vec2 <f32>,
+@builtin(position) position : vec4f,
+}
+
+@vertex fn main(
+@builtin(vertex_index) vertex_index : u32,
+) -> VertexOut {
+const pos = array(
+    vec2f(-1.0, -1.0),
+    vec2f( 3.0, -1.0),
+    vec2f(-1.0,  3.0));
+
+var out_vert: VertexOut;
+out_vert.position = vec4f(pos[vertex_index], 0.0, 1.0);
+out_vert.tex_coord = vec2f(out_vert.position.xy * 0.5) + vec2f(0.5, 0.5);
+
+return out_vert;
+}
+  )";
+
+    constexpr char kFS[] = R"(
+@group(0) @binding(0) var smp : sampler;
+@group(0) @binding(1) var tex : texture_2d<f32>;
+
+@fragment fn main(@location(0) tex_coord : vec2f) -> @location(0) vec4f {
+return textureSample(tex, smp, tex_coord);
+}
+  )";
+
+    auto render_pipeline = CreateRenderPipeline(
+        device, CreateShaderModule(device, kVS),
+        CreateShaderModule(device, kFS), wgpu::TextureFormat::RGBA8Unorm);
+
+    ASSERT_NE(render_pipeline, nullptr);
+
+    wgpu::SamplerDescriptor sampler_desc;
+    auto sampler = device.CreateSampler(&sampler_desc);
+    ASSERT_NE(sampler, nullptr);
+
+    std::array<wgpu::BindGroupEntry, 2> bind_group_entries;
+    bind_group_entries[0].binding = 0;
+    bind_group_entries[0].sampler = sampler;
+    bind_group_entries[1].binding = 1;
+    bind_group_entries[1].textureView = scoped_access->texture().CreateView();
+
+    wgpu::BindGroupDescriptor bind_group_desc;
+    bind_group_desc.entryCount = 2;
+    bind_group_desc.entries = bind_group_entries.data();
+    bind_group_desc.layout = render_pipeline.GetBindGroupLayout(0);
+
+    auto bind_group = device.CreateBindGroup(&bind_group_desc);
+    ASSERT_NE(bind_group, nullptr);
+
+    wgpu::CommandEncoder encoder = device.CreateCommandEncoder();
+    wgpu::RenderPassEncoder pass = encoder.BeginRenderPass(&renderPassDesc);
+    pass.SetPipeline(render_pipeline);
+    pass.SetBindGroup(0, bind_group);
+    pass.Draw(6, 1, 0, 0);
+    pass.End();
+    wgpu::CommandBuffer commands = encoder.Finish();
+
+    wgpu::Queue queue = device.GetQueue();
+    queue.Submit(1, &commands);
+
+    CheckDawnPixels(attachment, device, size, pixel_data);
+  }
+
+  // Shut down Dawn
+
+  dawnProcSetProcs(nullptr);
 }
 #endif  // BUILDFLAG(USE_DAWN) && BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
 

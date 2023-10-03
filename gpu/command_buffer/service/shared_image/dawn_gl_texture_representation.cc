@@ -54,6 +54,11 @@ wgpu::Texture DawnGLTextureRepresentation::BeginAccess(
                              static_cast<uint32_t>(size().height()), 1};
   texture_descriptor.mipLevelCount = 1;
   texture_descriptor.sampleCount = 1;
+
+  // TODO(crbug.com/1424119): once the forceReadback path is removed, determine
+  // the correct set of internal usages to apply and add
+  // DawnTextureInternalUsageDescriptor to the descriptor chain.
+
   dawn::native::opengl::ExternalImageDescriptorGLTexture externalImageDesc;
   externalImageDesc.cTextureDescriptor =
       reinterpret_cast<WGPUTextureDescriptor*>(&texture_descriptor);
