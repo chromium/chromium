@@ -1708,6 +1708,16 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
         'test.cc',
       ),
     ),
+    BanRule(
+      pattern = r'\bg_signal_connect',
+      explanation = (
+        'Use ScopedGSignal instead of g_signal_connect*()',
+      ),
+      treat_as_error = True,
+      excluded_paths = (
+        '^ui/base/glib/scoped_gsignal.h',
+      ),
+    ),
 )
 
 _BANNED_MOJOM_PATTERNS : Sequence[BanRule] = (
