@@ -21,9 +21,7 @@ class IncognitoGridMediatorTest : public GridMediatorTestClass {
 
   void SetUp() override {
     GridMediatorTestClass::SetUp();
-    mediator_ = [[IncognitoGridMediator alloc]
-        initWithPrefService:browser_state_->GetSyncablePrefs()
-                   consumer:consumer_];
+    mediator_ = [[IncognitoGridMediator alloc] initWithConsumer:consumer_];
     mediator_.browser = browser_.get();
   }
 
@@ -56,9 +54,7 @@ TEST_F(IncognitoGridMediatorTest, OpenNewTab_OpenIfAllowedByPolicy) {
       policy::policy_prefs::kIncognitoModeAvailability,
       std::make_unique<base::Value>(
           static_cast<int>(IncognitoModePrefs::kEnabled)));
-  mediator_ = [[IncognitoGridMediator alloc]
-      initWithPrefService:browser_state_->GetSyncablePrefs()
-                 consumer:consumer_];
+  mediator_ = [[IncognitoGridMediator alloc] initWithConsumer:consumer_];
   mediator_.browser = browser_.get();
   EXPECT_EQ(3, browser_->GetWebStateList()->count());
 
@@ -76,9 +72,7 @@ TEST_F(IncognitoGridMediatorTest, OpenNewTab_OpenIfAllowedByPolicy) {
       policy::policy_prefs::kIncognitoModeAvailability,
       std::make_unique<base::Value>(
           static_cast<int>(IncognitoModePrefs::kDisabled)));
-  mediator_ = [[IncognitoGridMediator alloc]
-      initWithPrefService:browser_state_->GetSyncablePrefs()
-                 consumer:consumer_];
+  mediator_ = [[IncognitoGridMediator alloc] initWithConsumer:consumer_];
   mediator_.browser = browser_.get();
   EXPECT_EQ(4, browser_->GetWebStateList()->count());
   [mediator_ newTabButtonTapped:nil];
