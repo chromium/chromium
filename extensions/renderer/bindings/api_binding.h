@@ -159,15 +159,14 @@ class APIBinding {
 
   // The associated request handler, shared between this and other bindings.
   // Required to outlive this object.
-  raw_ptr<APIRequestHandler, ExperimentalRenderer> request_handler_;
+  raw_ptr<APIRequestHandler, DanglingUntriaged> request_handler_;
 
   // The associated event handler, shared between this and other bindings.
   // Required to outlive this object.
-  raw_ptr<APIEventHandler, ExperimentalRenderer> event_handler_;
+  raw_ptr<APIEventHandler, DanglingUntriaged> event_handler_;
 
   // The associated access checker; required to outlive this object.
-  const raw_ptr<const BindingAccessChecker, ExperimentalRenderer>
-      access_checker_;
+  const raw_ptr<const BindingAccessChecker, DanglingUntriaged> access_checker_;
 
   // The template for this API. Note: some methods may only be available in
   // certain contexts, but this template contains all methods. Those that are

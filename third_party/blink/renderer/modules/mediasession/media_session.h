@@ -86,7 +86,7 @@ class MODULES_EXPORT MediaSession final
   // Returns null if the associated window is detached.
   mojom::blink::MediaSessionService* GetService();
 
-  raw_ptr<const base::TickClock, ExperimentalRenderer> clock_ = nullptr;
+  raw_ptr<const base::TickClock, DanglingUntriaged> clock_ = nullptr;
 
   mojom::blink::MediaSessionPlaybackState playback_state_;
   media_session::mojom::blink::MediaPositionPtr position_state_;

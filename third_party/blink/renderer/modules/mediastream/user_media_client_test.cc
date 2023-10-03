@@ -375,7 +375,7 @@ class MockMediaDevicesDispatcherHost
  private:
   media::AudioParameters audio_parameters_ =
       media::AudioParameters::UnavailableDeviceParams();
-  raw_ptr<blink::MediaStreamVideoSource, ExperimentalRenderer> video_source_ =
+  raw_ptr<blink::MediaStreamVideoSource, DanglingUntriaged> video_source_ =
       nullptr;
 };
 
@@ -529,9 +529,9 @@ class UserMediaProcessorUnderTest : public UserMediaProcessor {
   std::unique_ptr<WebMediaStreamDeviceObserver> media_stream_device_observer_;
   HeapMojoRemote<blink::mojom::blink::MediaDevicesDispatcherHost>
       media_devices_dispatcher_;
-  raw_ptr<MockMediaStreamVideoCapturerSource, ExperimentalRenderer>
-      video_source_ = nullptr;
-  raw_ptr<MockLocalMediaStreamAudioSource, ExperimentalRenderer>
+  raw_ptr<MockMediaStreamVideoCapturerSource, DanglingUntriaged> video_source_ =
+      nullptr;
+  raw_ptr<MockLocalMediaStreamAudioSource, DanglingUntriaged>
       local_audio_source_ = nullptr;
   bool create_source_that_fails_ = false;
   Member<MediaStreamDescriptor> last_generated_descriptor_;

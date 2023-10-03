@@ -239,7 +239,7 @@ class WebRtcAudioRendererTest : public testing::Test {
   Persistent<MediaStreamDescriptor> stream_descriptor_;
   std::unique_ptr<blink::scheduler::WebAgentGroupScheduler>
       agent_group_scheduler_;
-  raw_ptr<WebView, ExperimentalRenderer> web_view_ = nullptr;
+  raw_ptr<WebView, DanglingUntriaged> web_view_ = nullptr;
   WebLocalFrameClient web_local_frame_client_;
   raw_ptr<WebLocalFrame, ExperimentalRenderer> web_local_frame_ = nullptr;
   scoped_refptr<blink::WebRtcAudioRenderer> renderer_;

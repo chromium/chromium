@@ -141,8 +141,8 @@ class AudioArray {
     return reinterpret_cast<T*>((value + alignment - 1) & ~(alignment - 1));
   }
 
-  raw_ptr<T, ExperimentalRenderer> allocation_;
-  raw_ptr<T, ExperimentalRenderer> aligned_data_;
+  raw_ptr<T, DanglingUntriaged> allocation_;
+  raw_ptr<T, DanglingUntriaged> aligned_data_;
   uint32_t size_;
 };
 

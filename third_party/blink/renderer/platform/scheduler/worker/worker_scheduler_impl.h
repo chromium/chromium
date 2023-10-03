@@ -132,7 +132,7 @@ class PLATFORM_EXPORT WorkerSchedulerImpl : public WorkerScheduler {
   SchedulingLifecycleState lifecycle_state_ =
       SchedulingLifecycleState::kNotThrottled;
 
-  raw_ptr<WorkerThreadScheduler, ExperimentalRenderer>
+  raw_ptr<WorkerThreadScheduler, DanglingUntriaged>
       thread_scheduler_;  // NOT OWNED
 
   bool is_disposed_ = false;

@@ -227,9 +227,9 @@ class FakeMediaMetricsProvider
 
  private:
   mojo::Receiver<media::mojom::blink::MediaMetricsProvider> receiver_{this};
-  raw_ptr<MockLearningTaskControllerService, ExperimentalRenderer>
+  raw_ptr<MockLearningTaskControllerService, DanglingUntriaged>
       bad_window_service_;
-  raw_ptr<MockLearningTaskControllerService, ExperimentalRenderer> nnr_service_;
+  raw_ptr<MockLearningTaskControllerService, DanglingUntriaged> nnr_service_;
 };
 
 // Simple helper for saving back-end callbacks for pending decodingInfo() calls.

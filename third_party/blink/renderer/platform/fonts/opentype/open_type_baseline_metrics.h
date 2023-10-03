@@ -29,7 +29,7 @@ class PLATFORM_EXPORT OpenTypeBaselineMetrics {
   absl::optional<float> OpenTypeIdeographicBaseline();
 
  private:
-  raw_ptr<hb_font_t, ExperimentalRenderer> font_;
+  raw_ptr<hb_font_t, DanglingUntriaged> font_;
   hb_direction_t hb_dir_;
 };
 

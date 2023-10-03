@@ -615,7 +615,7 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
 
   std::unique_ptr<WebGraphicsContext3DProviderWrapper> context_provider_;
   // Lifetime is tied to the m_contextProvider.
-  raw_ptr<gpu::gles2::GLES2Interface, ExperimentalRenderer> gl_;
+  raw_ptr<gpu::gles2::GLES2Interface, DanglingUntriaged> gl_;
   std::unique_ptr<Extensions3DUtil> extensions_util_;
   gfx::Size size_;
   const bool discard_framebuffer_supported_;

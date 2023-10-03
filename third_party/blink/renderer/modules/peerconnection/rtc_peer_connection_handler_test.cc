@@ -611,7 +611,7 @@ class RTCPeerConnectionHandlerTest : public SimTest {
   std::unique_ptr<RTCPeerConnectionHandlerUnderTest> pc_handler_;
 
   // Weak reference to the mocked native peer connection implementation.
-  raw_ptr<blink::MockPeerConnectionImpl, ExperimentalRenderer>
+  raw_ptr<blink::MockPeerConnectionImpl, DanglingUntriaged>
       mock_peer_connection_;
 
   std::vector<std::unique_ptr<blink::RTCRtpSenderImpl>> senders_;

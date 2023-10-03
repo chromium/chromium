@@ -98,7 +98,7 @@ class FilteringNetworkManager : public rtc::NetworkManagerBase,
   // The class is created by the main thread but used by the worker thread.
   THREAD_CHECKER(thread_checker_);
 
-  raw_ptr<media::MediaPermission, ExperimentalRenderer> media_permission_;
+  raw_ptr<media::MediaPermission, DanglingUntriaged> media_permission_;
 
   int pending_permission_checks_ = 0;
 

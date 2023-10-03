@@ -120,7 +120,7 @@ class MediaStreamVideoRendererSinkTest : public testing::Test {
   }
 
   Persistent<MediaStreamSource> media_stream_source_;
-  raw_ptr<MockMediaStreamVideoSource, ExperimentalRenderer> mock_source_;
+  raw_ptr<MockMediaStreamVideoSource, DanglingUntriaged> mock_source_;
 };
 
 // Checks that the initialization-destruction sequence works fine.

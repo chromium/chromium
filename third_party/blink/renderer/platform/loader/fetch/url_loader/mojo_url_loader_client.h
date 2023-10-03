@@ -110,7 +110,7 @@ class BLINK_PLATFORM_EXPORT MojoURLLoaderClient final
   bool has_received_complete_ = false;
   LoaderFreezeMode freeze_mode_ = LoaderFreezeMode::kNone;
   int32_t accumulated_transfer_size_diff_during_deferred_ = 0;
-  const raw_ptr<ResourceRequestSender, ExperimentalRenderer>
+  const raw_ptr<ResourceRequestSender, DanglingUntriaged>
       resource_request_sender_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   bool bypass_redirect_checks_ = false;

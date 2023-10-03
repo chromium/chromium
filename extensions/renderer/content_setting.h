@@ -64,12 +64,11 @@ class ContentSetting final : public gin::Wrappable<ContentSetting> {
   void HandleFunction(const std::string& function_name,
                       gin::Arguments* arguments);
 
-  raw_ptr<APIRequestHandler, ExperimentalRenderer> request_handler_;
+  raw_ptr<APIRequestHandler, DanglingUntriaged> request_handler_;
 
-  raw_ptr<const APITypeReferenceMap, ExperimentalRenderer> type_refs_;
+  raw_ptr<const APITypeReferenceMap, DanglingUntriaged> type_refs_;
 
-  const raw_ptr<const BindingAccessChecker, ExperimentalRenderer>
-      access_checker_;
+  const raw_ptr<const BindingAccessChecker, DanglingUntriaged> access_checker_;
 
   // The name of the preference this ContentSetting is managing.
   std::string pref_name_;

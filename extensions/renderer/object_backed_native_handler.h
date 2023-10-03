@@ -132,7 +132,7 @@ class ObjectBackedNativeHandler : public NativeHandler {
   // Owned list of HandlerFunctions.
   std::vector<std::unique_ptr<HandlerFunction>> handler_functions_;
 
-  raw_ptr<ScriptContext, ExperimentalRenderer> context_;
+  raw_ptr<ScriptContext, DanglingUntriaged> context_;
 
   v8::Global<v8::ObjectTemplate> object_template_;
 };

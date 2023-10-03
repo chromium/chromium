@@ -32,7 +32,7 @@ class PLATFORM_EXPORT GeometryMapperClipCache {
     DISALLOW_NEW();
 
    public:
-    raw_ptr<const ClipPaintPropertyNode, ExperimentalRenderer> ancestor_clip;
+    raw_ptr<const ClipPaintPropertyNode, DanglingUntriaged> ancestor_clip;
     raw_ptr<const TransformPaintPropertyNode, ExperimentalRenderer>
         ancestor_transform;
     OverlayScrollbarClipBehavior clip_behavior;

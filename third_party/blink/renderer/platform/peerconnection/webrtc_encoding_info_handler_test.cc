@@ -129,7 +129,7 @@ class WebrtcEncodingInfoHandlerTests : public ::testing::Test {
 
  protected:
   std::vector<webrtc::AudioCodecSpec> kSupportedAudioCodecs;
-  raw_ptr<MockVideoEncoderFactory, ExperimentalRenderer>
+  raw_ptr<MockVideoEncoderFactory, DanglingUntriaged>
       mock_video_encoder_factory_;
   std::unique_ptr<webrtc::VideoEncoderFactory> video_encoder_factory_;
   rtc::scoped_refptr<webrtc::AudioEncoderFactory> audio_encoder_factory_;

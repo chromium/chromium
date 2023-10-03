@@ -78,7 +78,7 @@ class RuntimeHooksDelegate : public APIBindingHooksDelegate {
 
   // The messaging service to handle connect() and sendMessage() calls.
   // Guaranteed to outlive this object.
-  const raw_ptr<NativeRendererMessagingService, ExperimentalRenderer>
+  const raw_ptr<NativeRendererMessagingService, DanglingUntriaged>
       messaging_service_;
 };
 

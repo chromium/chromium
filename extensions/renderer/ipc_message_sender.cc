@@ -311,7 +311,7 @@ class MainThreadIPCMessageSender : public IPCMessageSender {
     return renderer_host_.get();
   }
 
-  const raw_ptr<content::RenderThread, ExperimentalRenderer> render_thread_;
+  const raw_ptr<content::RenderThread, DanglingUntriaged> render_thread_;
   mojo::AssociatedRemote<mojom::EventRouter> event_router_remote_;
   mojo::AssociatedRemote<mojom::RendererHost> renderer_host_;
   mojo::AssociatedRemote<extensions::mojom::RendererAutomationRegistry>

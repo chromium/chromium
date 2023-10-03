@@ -86,7 +86,7 @@ class FakeWebNNGraph : public blink_mojom::WebNNGraph {
     std::move(callback).Run(compute_result.result, std::move(mojo_outputs));
   }
 
-  const raw_ref<MLGraphTestMojo, ExperimentalRenderer> helper_;
+  const raw_ref<MLGraphTestMojo, DanglingUntriaged> helper_;
 };
 
 class FakeWebNNContext : public blink_mojom::WebNNContext {
@@ -111,7 +111,7 @@ class FakeWebNNContext : public blink_mojom::WebNNContext {
     std::move(callback).Run(blink_mojom::CreateGraphResult::NewGraphRemote(
         std::move(blink_remote)));
   }
-  const raw_ref<MLGraphTestMojo, ExperimentalRenderer> helper_;
+  const raw_ref<MLGraphTestMojo, DanglingUntriaged> helper_;
 };
 
 class FakeWebNNContextProvider : public blink_mojom::WebNNContextProvider {

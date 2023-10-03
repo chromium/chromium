@@ -166,7 +166,7 @@ class NativeExtensionBindingsSystemUnittest : public APIBindingTest {
   std::vector<ScriptContext*> raw_script_contexts_;
   std::unique_ptr<NativeExtensionBindingsSystem> bindings_system_;
   // The TestIPCMessageSender; owned by the bindings system.
-  raw_ptr<TestIPCMessageSender, ExperimentalRenderer> ipc_message_sender_ =
+  raw_ptr<TestIPCMessageSender, DanglingUntriaged> ipc_message_sender_ =
       nullptr;
 
   StringSourceMap source_map_;

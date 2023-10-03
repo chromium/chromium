@@ -51,7 +51,7 @@ class MockAudioRendererSink : public media::AudioRendererSink {
   MOCK_METHOD(bool, IsOptimizedForHardwareParameters, (), (override));
   MOCK_METHOD(bool, CurrentThreadIsRenderingThread, (), (override));
 
-  raw_ptr<media::AudioRendererSink::RenderCallback, ExperimentalRenderer>
+  raw_ptr<media::AudioRendererSink::RenderCallback, DanglingUntriaged>
       callback_ = nullptr;
 
  private:

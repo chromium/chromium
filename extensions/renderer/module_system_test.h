@@ -86,8 +86,8 @@ class ModuleSystemTestEnvironment {
 
   scoped_refptr<const Extension> extension_;
   raw_ptr<ScriptContextSet, ExperimentalRenderer> context_set_;
-  raw_ptr<ScriptContext, ExperimentalRenderer> context_;
-  raw_ptr<AssertNatives, ExperimentalRenderer> assert_natives_;
+  raw_ptr<ScriptContext, DanglingUntriaged> context_;
+  raw_ptr<AssertNatives, DanglingUntriaged> assert_natives_;
   std::unique_ptr<StringSourceMap> source_map_;
 
   std::unique_ptr<NativeExtensionBindingsSystem> bindings_system_;

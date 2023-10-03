@@ -104,7 +104,7 @@ class PushableMediaStreamVideoSourceTest : public testing::Test {
   ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform_;
 
   Persistent<MediaStreamSource> stream_source_;
-  raw_ptr<PushableMediaStreamVideoSource, ExperimentalRenderer>
+  raw_ptr<PushableMediaStreamVideoSource, DanglingUntriaged>
       pushable_video_source_;
 };
 

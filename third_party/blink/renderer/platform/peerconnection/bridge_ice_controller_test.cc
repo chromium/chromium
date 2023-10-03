@@ -713,8 +713,7 @@ class BridgeIceControllerInvalidProposalTest : public BridgeIceControllerTest {
   scoped_refptr<IceInteractionInterface> interaction_agent;
   StrictMock<MockIceAgent> agent;
   StrictMock<MockIceControllerObserver> observer;
-  raw_ptr<StrictMock<MockIceController>, ExperimentalRenderer>
-      wrapped_controller;
+  raw_ptr<StrictMock<MockIceController>, DanglingUntriaged> wrapped_controller;
   std::unique_ptr<BridgeIceController> controller;
 };
 

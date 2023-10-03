@@ -94,8 +94,8 @@ class HarfBuzzFace final : public RefCounted<HarfBuzzFace> {
 
   const raw_ptr<FontPlatformData, ExperimentalRenderer> platform_data_;
   const uint64_t unique_id_;
-  raw_ptr<hb_font_t, ExperimentalRenderer> unscaled_font_;
-  raw_ptr<HarfBuzzFontData, ExperimentalRenderer> harfbuzz_font_data_;
+  raw_ptr<hb_font_t, DanglingUntriaged> unscaled_font_;
+  raw_ptr<HarfBuzzFontData, DanglingUntriaged> harfbuzz_font_data_;
 };
 
 }  // namespace blink

@@ -319,7 +319,7 @@ class NavigationBodyLoader::MainThreadBodyReader : public BodyReader {
   }
 
  private:
-  raw_ptr<NavigationBodyLoader, ExperimentalRenderer> loader_;
+  raw_ptr<NavigationBodyLoader, DanglingUntriaged> loader_;
 };
 
 NavigationBodyLoader::NavigationBodyLoader(

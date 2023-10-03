@@ -119,9 +119,9 @@ class PLATFORM_EXPORT BackForwardCacheDisablingFeatureTracker {
   BFCacheBlockingFeatureAndLocations non_sticky_features_and_js_locations_;
   BFCacheBlockingFeatureAndLocations sticky_features_and_js_locations_;
 
-  raw_ptr<FrameOrWorkerScheduler::Delegate, ExperimentalRenderer> delegate_ =
+  raw_ptr<FrameOrWorkerScheduler::Delegate, DanglingUntriaged> delegate_ =
       nullptr;
-  raw_ptr<ThreadSchedulerBase, ExperimentalRenderer> scheduler_;
+  raw_ptr<ThreadSchedulerBase, DanglingUntriaged> scheduler_;
 
   base::WeakPtrFactory<BackForwardCacheDisablingFeatureTracker> weak_factory_{
       this};

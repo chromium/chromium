@@ -884,7 +884,7 @@ class VideoTrackRecorderPassthroughTest
 
   // All members are non-const due to the series of initialize() calls needed.
   // |mock_source_| is owned by |source_|.
-  raw_ptr<MockMediaStreamVideoSource, ExperimentalRenderer> mock_source_;
+  raw_ptr<MockMediaStreamVideoSource, DanglingUntriaged> mock_source_;
   Persistent<MediaStreamSource> source_;
   Persistent<MediaStreamComponent> component_;
 

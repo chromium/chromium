@@ -68,7 +68,7 @@ class AudioTrackOpusEncoder : public AudioTrackEncoder,
   // Buffer for passing AudioBus data from the converter to the encoder.
   std::unique_ptr<float[]> buffer_;
 
-  raw_ptr<OpusEncoder, ExperimentalRenderer> opus_encoder_;
+  raw_ptr<OpusEncoder, DanglingUntriaged> opus_encoder_;
 };
 
 }  // namespace blink

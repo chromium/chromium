@@ -190,7 +190,7 @@ class APIRequestHandler {
   std::unique_ptr<APIResponseValidator> response_validator_;
 
   // Outlives |this|.
-  const raw_ptr<const InteractionProvider, ExperimentalRenderer>
+  const raw_ptr<const InteractionProvider, DanglingUntriaged>
       interaction_provider_;
 };
 

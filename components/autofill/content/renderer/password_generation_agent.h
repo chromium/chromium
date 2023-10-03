@@ -178,7 +178,7 @@ class PasswordGenerationAgent : public content::RenderFrameObserver,
 
   // Unowned pointer. Used to notify PassowrdAutofillAgent when values
   // in password fields are updated.
-  raw_ptr<PasswordAutofillAgent, ExperimentalRenderer> password_agent_;
+  raw_ptr<PasswordAutofillAgent, DanglingUntriaged> password_agent_;
 
   mojo::AssociatedRemote<mojom::PasswordGenerationDriver>
       password_generation_client_;

@@ -807,7 +807,7 @@ class AudioTrackRecorderTest : public testing::TestWithParam<ATRTestParams> {
   int excess_input_ = 0;
 
   // Decoder for verifying data was properly encoded.
-  raw_ptr<OpusDecoder, ExperimentalRenderer> opus_decoder_ = nullptr;
+  raw_ptr<OpusDecoder, DanglingUntriaged> opus_decoder_ = nullptr;
   std::unique_ptr<float[]> opus_buffer_;
   int opus_buffer_size_;
 

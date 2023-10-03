@@ -93,7 +93,7 @@ class VSyncTickProviderTest : public ::testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<FakeDefaultTickProvider> fake_default_tick_provider_holder_ =
       std::make_unique<FakeDefaultTickProvider>();
-  raw_ptr<FakeDefaultTickProvider, ExperimentalRenderer>
+  raw_ptr<FakeDefaultTickProvider, DanglingUntriaged>
       fake_default_tick_provider_ = fake_default_tick_provider_holder_.get();
   FakeVSyncProvider fake_begin_frame_provider_;
   std::unique_ptr<VSyncTickProvider> begin_frame_tick_provider_ =

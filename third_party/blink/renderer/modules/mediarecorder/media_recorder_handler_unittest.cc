@@ -274,7 +274,7 @@ class MediaRecorderHandlerFixture : public ScopedMockOverlayScrollbars {
   bool has_audio_;
   Persistent<MediaRecorderHandler> media_recorder_handler_;
   media::SineWaveAudioSource audio_source_;
-  raw_ptr<MockMediaStreamVideoSource, ExperimentalRenderer> video_source_ =
+  raw_ptr<MockMediaStreamVideoSource, DanglingUntriaged> video_source_ =
       nullptr;
 };
 
@@ -1190,7 +1190,7 @@ class MediaRecorderHandlerPassthroughTest
 
   ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform_;
   MockMediaStreamRegistry registry_;
-  raw_ptr<MockMediaStreamVideoSource, ExperimentalRenderer> video_source_ =
+  raw_ptr<MockMediaStreamVideoSource, DanglingUntriaged> video_source_ =
       nullptr;
   Persistent<MediaRecorderHandler> media_recorder_handler_;
 };

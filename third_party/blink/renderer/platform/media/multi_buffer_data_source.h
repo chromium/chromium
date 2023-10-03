@@ -266,7 +266,7 @@ class PLATFORM_EXPORT MultiBufferDataSource
   int buffer_size_update_counter_;
 
   // Host object to report buffered byte range changes to.
-  raw_ptr<BufferedDataSourceHost, ExperimentalRenderer> host_;
+  raw_ptr<BufferedDataSourceHost, DanglingUntriaged> host_;
 
   DownloadingCB downloading_cb_;
 

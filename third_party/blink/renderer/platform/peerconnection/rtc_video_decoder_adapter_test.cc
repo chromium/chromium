@@ -451,7 +451,7 @@ class RTCVideoDecoderAdapterTest : public ::testing::TestWithParam<bool> {
   base::Thread media_thread_;
 
   // Owned by |rtc_video_decoder_adapter_|.
-  raw_ptr<StrictMock<MockVideoDecoder>, ExperimentalRenderer> video_decoder_ =
+  raw_ptr<StrictMock<MockVideoDecoder>, DanglingUntriaged> video_decoder_ =
       nullptr;
 
   StrictMock<base::MockCallback<

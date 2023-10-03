@@ -196,9 +196,9 @@ class PhishingClassifierDelegateTest : public ChromeRenderViewTest {
     EXPECT_FALSE(verdict.is_phishing());
   }
 
-  raw_ptr<StrictMock<MockPhishingClassifier>, ExperimentalRenderer>
+  raw_ptr<StrictMock<MockPhishingClassifier>, DanglingUntriaged>
       classifier_;  // Owned by |delegate_|.
-  raw_ptr<PhishingClassifierDelegate, ExperimentalRenderer>
+  raw_ptr<PhishingClassifierDelegate, DanglingUntriaged>
       delegate_;  // Owned by the RenderFrame.
 };
 

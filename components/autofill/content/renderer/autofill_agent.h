@@ -359,9 +359,9 @@ class AutofillAgent : public content::RenderFrameObserver,
   // reset when the AutofillAgent is pending deletion.
   std::unique_ptr<FormCache> form_cache_;
 
-  raw_ptr<PasswordAutofillAgent, ExperimentalRenderer>
+  raw_ptr<PasswordAutofillAgent, DanglingUntriaged>
       password_autofill_agent_;  // Weak reference.
-  raw_ptr<PasswordGenerationAgent, ExperimentalRenderer>
+  raw_ptr<PasswordGenerationAgent, DanglingUntriaged>
       password_generation_agent_;  // Weak reference.
 
   // The element corresponding to the last request sent for form field Autofill.

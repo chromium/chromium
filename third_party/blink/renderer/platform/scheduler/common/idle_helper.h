@@ -226,7 +226,7 @@ class PLATFORM_EXPORT IdleHelper : public base::TaskObserver,
 
   raw_ptr<SchedulerHelper, ExperimentalRenderer> helper_;  // NOT OWNED
   raw_ptr<Delegate, ExperimentalRenderer> delegate_;       // NOT OWNED
-  raw_ptr<base::sequence_manager::TaskQueue, ExperimentalRenderer>
+  raw_ptr<base::sequence_manager::TaskQueue, DanglingUntriaged>
       idle_queue_;  // NOT OWNED
   scoped_refptr<SingleThreadIdleTaskRunner> idle_task_runner_;
 

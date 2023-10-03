@@ -211,7 +211,7 @@ class TranslateAgentBrowserTest : public ChromeRenderViewTest {
     ChromeRenderViewTest::TearDown();
   }
 
-  raw_ptr<TestTranslateAgent, ExperimentalRenderer> translate_agent_;
+  raw_ptr<TestTranslateAgent, DanglingUntriaged> translate_agent_;
   FakeContentTranslateDriver fake_translate_driver_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };

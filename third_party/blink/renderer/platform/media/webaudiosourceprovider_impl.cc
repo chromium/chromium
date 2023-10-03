@@ -101,7 +101,7 @@ class WebAudioSourceProviderImpl::TeeFilter
   bool is_tainted() const { return origin_tainted_.IsSet(); }
 
  private:
-  raw_ptr<AudioRendererSink::RenderCallback, ExperimentalRenderer> renderer_ =
+  raw_ptr<AudioRendererSink::RenderCallback, DanglingUntriaged> renderer_ =
       nullptr;
   int channels_ = 0;
   int sample_rate_ = 0;

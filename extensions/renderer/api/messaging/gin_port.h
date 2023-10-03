@@ -146,7 +146,7 @@ class GinPort final : public gin::Wrappable<GinPort> {
 
   // The delegate for handling the message passing between ports. Guaranteed to
   // outlive this object.
-  const raw_ptr<Delegate, ExperimentalRenderer> delegate_;
+  const raw_ptr<Delegate, DanglingUntriaged> delegate_;
 
   // Whether the `sender` property has been accessed, and thus set on the
   // port JS object.

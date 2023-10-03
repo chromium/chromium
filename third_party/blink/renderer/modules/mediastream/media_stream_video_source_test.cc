@@ -292,7 +292,7 @@ class MediaStreamVideoSourceTest : public testing::Test {
   WebString result_name_;
   Persistent<MediaStreamSource> stream_source_;
   // |mock_stream_video_source_| is owned by |stream_source_|.
-  raw_ptr<MockMediaStreamVideoSource, ExperimentalRenderer>
+  raw_ptr<MockMediaStreamVideoSource, DanglingUntriaged>
       mock_stream_video_source_;
 };
 

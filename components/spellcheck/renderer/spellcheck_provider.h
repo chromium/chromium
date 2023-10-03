@@ -164,7 +164,7 @@ class SpellCheckProvider : public content::RenderFrameObserver,
   int last_identifier_;
 
   // Weak pointer to shared (per renderer) spellcheck data.
-  raw_ptr<SpellCheck, ExperimentalRenderer> spellcheck_;
+  raw_ptr<SpellCheck, DanglingUntriaged> spellcheck_;
 
   // Not owned. |embedder_provider_| should outlive SpellCheckProvider.
   raw_ptr<service_manager::LocalInterfaceProvider, ExperimentalRenderer>

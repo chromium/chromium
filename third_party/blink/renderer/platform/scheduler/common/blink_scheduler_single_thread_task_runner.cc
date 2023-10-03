@@ -74,7 +74,7 @@ class DeleteHelper {
  private:
   base::Location from_here_;
   void (*deleter_)(const void*) = nullptr;
-  raw_ptr<const void, ExperimentalRenderer> object_ = nullptr;
+  raw_ptr<const void, DanglingUntriaged> object_ = nullptr;
   scoped_refptr<base::SingleThreadTaskRunner> preferred_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> fallback_task_runner_;
 };

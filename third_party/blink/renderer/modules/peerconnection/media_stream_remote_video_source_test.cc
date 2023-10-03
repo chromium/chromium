@@ -178,7 +178,7 @@ class MediaStreamRemoteVideoSourceTest : public ::testing::Test {
   scoped_refptr<webrtc::VideoTrackSourceInterface> webrtc_video_source_;
   scoped_refptr<webrtc::VideoTrackInterface> webrtc_video_track_;
   // |remote_source_| is owned by |source_|.
-  raw_ptr<MediaStreamRemoteVideoSourceUnderTest, ExperimentalRenderer>
+  raw_ptr<MediaStreamRemoteVideoSourceUnderTest, DanglingUntriaged>
       remote_source_ = nullptr;
   Persistent<MediaStreamSource> source_;
   int number_of_successful_track_starts_ = 0;

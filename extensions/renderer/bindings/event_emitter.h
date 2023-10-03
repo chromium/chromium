@@ -99,7 +99,7 @@ class EventEmitter final : public gin::Wrappable<EventEmitter> {
   std::unique_ptr<APIEventListeners> listeners_;
 
   // The associated exception handler; guaranteed to outlive this object.
-  const raw_ptr<ExceptionHandler, ExperimentalRenderer> exception_handler_ =
+  const raw_ptr<ExceptionHandler, DanglingUntriaged> exception_handler_ =
       nullptr;
 
   // The next id to use in the pending_filters_ map.

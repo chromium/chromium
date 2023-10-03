@@ -47,7 +47,7 @@ class PLATFORM_EXPORT Extensions3DUtil final {
   Extensions3DUtil(gpu::gles2::GLES2Interface*);
   void InitializeExtensions();
 
-  raw_ptr<gpu::gles2::GLES2Interface, ExperimentalRenderer> gl_;
+  raw_ptr<gpu::gles2::GLES2Interface, DanglingUntriaged> gl_;
   HashSet<String> enabled_extensions_;
   HashSet<String> requestable_extensions_;
   bool is_valid_;

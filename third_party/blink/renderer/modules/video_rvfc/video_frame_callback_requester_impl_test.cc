@@ -225,7 +225,7 @@ class VideoFrameCallbackRequesterImplTest : public PageTestBase {
   Persistent<HTMLVideoElement> video_;
 
   // Owned by HTMLVideoElementFrameClient.
-  raw_ptr<MockWebMediaPlayer, ExperimentalRenderer> media_player_;
+  raw_ptr<MockWebMediaPlayer, DanglingUntriaged> media_player_;
 };
 
 class VideoFrameCallbackRequesterImplNullMediaPlayerTest

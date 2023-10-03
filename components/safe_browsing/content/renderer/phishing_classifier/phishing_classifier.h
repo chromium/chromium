@@ -148,7 +148,7 @@ class PhishingClassifier {
   // Clears the current state of the PhishingClassifier.
   void Clear();
 
-  raw_ptr<content::RenderFrame, ExperimentalRenderer> render_frame_;  // owns us
+  raw_ptr<content::RenderFrame, DanglingUntriaged> render_frame_;  // owns us
   std::unique_ptr<PhishingUrlFeatureExtractor> url_extractor_;
   std::unique_ptr<PhishingDOMFeatureExtractor> dom_extractor_;
   std::unique_ptr<PhishingTermFeatureExtractor> term_extractor_;

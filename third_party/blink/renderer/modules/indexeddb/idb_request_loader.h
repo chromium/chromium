@@ -77,14 +77,13 @@ class IDBRequestLoader : public GarbageCollected<IDBRequestLoader>,
   // Transaction result queue item for the IDBRequest.
   //
   // The IDBRequestQueueItem owns this loader.
-  raw_ptr<IDBRequestQueueItem, ExperimentalRenderer> queue_item_;
+  raw_ptr<IDBRequestQueueItem, DanglingUntriaged> queue_item_;
 
   // All the values that will be passed back to the IDBRequest.
   //
   // The Vector is owned by the IDBRequestLoader owner, which is currently a
   // IDBRequestQueueItem.
-  const raw_ref<Vector<std::unique_ptr<IDBValue>>, ExperimentalRenderer>
-      values_;
+  const raw_ref<Vector<std::unique_ptr<IDBValue>>, DanglingUntriaged> values_;
 
   // Buffer used to unwrap an IDBValue.
   Vector<char> wrapped_data_;

@@ -166,8 +166,7 @@ class MODULES_EXPORT WebRtcAudioDeviceImpl
   // Weak reference to the audio callback.
   // The webrtc client defines |audio_transport_callback_| by calling
   // RegisterAudioCallback().
-  raw_ptr<webrtc::AudioTransport, ExperimentalRenderer>
-      audio_transport_callback_;
+  raw_ptr<webrtc::AudioTransport, DanglingUntriaged> audio_transport_callback_;
 
   // Cached value of the current audio delay on the output/renderer side.
   base::TimeDelta output_delay_ GUARDED_BY(lock_);

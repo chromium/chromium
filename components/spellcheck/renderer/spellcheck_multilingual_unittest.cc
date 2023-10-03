@@ -118,7 +118,7 @@ class MultilingualSpellCheckTest : public testing::Test {
   spellcheck::EmptyLocalInterfaceProvider embedder_provider_;
 
   // Owned by |provider_|.
-  raw_ptr<SpellCheck, ExperimentalRenderer> spellcheck_;
+  raw_ptr<SpellCheck, DanglingUntriaged> spellcheck_;
   std::unique_ptr<TestingSpellCheckProvider> provider_;
 };
 

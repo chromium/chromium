@@ -48,7 +48,7 @@ class ResourceBundleSourceMap : public SourceMap {
     mutable std::unique_ptr<std::string> cached;
   };
 
-  raw_ptr<const ui::ResourceBundle, ExperimentalRenderer> resource_bundle_;
+  raw_ptr<const ui::ResourceBundle, DanglingUntriaged> resource_bundle_;
   std::map<std::string, ResourceInfo> resource_map_;
 };
 

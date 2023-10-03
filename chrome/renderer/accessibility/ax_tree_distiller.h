@@ -121,7 +121,7 @@ class AXTreeDistiller {
   // render_frame_ is only used in the ENABLE_SCREEN_AI_SERVICE buildflag.
   // Fuchsia does not build with that buildflag so it is throwing
   // -Wunused-private-field errors. [[maybe_unused]] suppresses them.
-  [[maybe_unused]] raw_ptr<content::RenderFrame, ExperimentalRenderer>
+  [[maybe_unused]] raw_ptr<content::RenderFrame, DanglingUntriaged>
       render_frame_;
 
   // TODO(crbug.com/1266555): Ensure this is called even if ScreenAIService is

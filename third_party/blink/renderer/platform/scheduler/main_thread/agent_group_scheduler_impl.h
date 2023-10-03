@@ -67,7 +67,7 @@ class PLATFORM_EXPORT AgentGroupSchedulerImpl : public AgentGroupScheduler {
   scoped_refptr<base::SingleThreadTaskRunner> default_task_runner_;
   scoped_refptr<MainThreadTaskQueue> compositor_task_queue_;
   scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner_;
-  const raw_ref<MainThreadSchedulerImpl, ExperimentalRenderer>
+  const raw_ref<MainThreadSchedulerImpl, DanglingUntriaged>
       main_thread_scheduler_;  // Not owned.
   HeapHashSet<WeakMember<Agent>> agents_;
 

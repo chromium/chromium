@@ -124,7 +124,7 @@ class FakeMediaStreamAudioSink : public WebMediaStreamAudioSink {
   int expected_frames_ = 0;
   int expected_sample_rate_ = 0;
   bool expect_data_on_audio_task_runner_ = true;
-  raw_ptr<media::AudioBus, ExperimentalRenderer> expected_data_ = nullptr;
+  raw_ptr<media::AudioBus, DanglingUntriaged> expected_data_ = nullptr;
   base::TimeTicks expected_time_;
 
   bool did_receive_format_change_ = false;
@@ -222,7 +222,7 @@ class PushableMediaStreamAudioSourceTest
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> audio_task_runner_;
 
-  raw_ptr<PushableMediaStreamAudioSource, ExperimentalRenderer>
+  raw_ptr<PushableMediaStreamAudioSource, DanglingUntriaged>
       pushable_audio_source_;
   scoped_refptr<PushableMediaStreamAudioSource::Broker> broker_;
 };

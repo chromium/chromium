@@ -146,8 +146,7 @@ class VideoFrameCompositorTest
   base::test::SingleThreadTaskEnvironment task_environment_;
   base::TimeDelta preferred_render_interval_;
   base::SimpleTestTickClock tick_clock_;
-  raw_ptr<StrictMock<MockWebVideoFrameSubmitter>, ExperimentalRenderer>
-      submitter_;
+  raw_ptr<StrictMock<MockWebVideoFrameSubmitter>, DanglingUntriaged> submitter_;
   std::unique_ptr<StrictMock<MockWebVideoFrameSubmitter>> client_;
   std::unique_ptr<VideoFrameCompositor> compositor_;
   const scoped_refptr<base::SingleThreadTaskRunner> task_runner_ =

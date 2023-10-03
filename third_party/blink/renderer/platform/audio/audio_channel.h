@@ -125,7 +125,7 @@ class PLATFORM_EXPORT AudioChannel {
  private:
   uint32_t length_;
 
-  raw_ptr<float, ExperimentalRenderer> raw_pointer_;
+  raw_ptr<float, DanglingUntriaged> raw_pointer_;
   std::unique_ptr<AudioFloatArray> mem_buffer_;
   bool silent_;
 };

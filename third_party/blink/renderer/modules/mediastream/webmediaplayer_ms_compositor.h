@@ -231,7 +231,7 @@ class MODULES_EXPORT WebMediaPlayerMSCompositor
   // is not |nullptr| while the compositor is actively using this
   // VideoFrameProvider. This will be set to |nullptr| when the compositor stops
   // serving this VideoFrameProvider.
-  raw_ptr<cc::VideoFrameProvider::Client, ExperimentalRenderer>
+  raw_ptr<cc::VideoFrameProvider::Client, DanglingUntriaged>
       video_frame_provider_client_;
 
   // |current_frame_| is updated only on compositor thread. The object it

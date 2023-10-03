@@ -201,7 +201,7 @@ class MainThreadMetricsHelperTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<MainThreadSchedulerImpl> scheduler_;
-  raw_ptr<MainThreadMetricsHelper, ExperimentalRenderer>
+  raw_ptr<MainThreadMetricsHelper, DanglingUntriaged>
       metrics_helper_;  // NOT OWNED
   std::unique_ptr<base::HistogramTester> histogram_tester_;
   std::unique_ptr<FakePageScheduler> playing_view_ =

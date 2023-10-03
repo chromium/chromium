@@ -160,7 +160,7 @@ class BLINK_MODULES_EXPORT AudioRendererMixerManager final
   // AudioRendererMixerManager to keep track explicitly (v.s. RefCounted which
   // is implicit) of the number of outstanding AudioRendererMixers.
   struct AudioRendererMixerReference {
-    raw_ptr<media::AudioRendererMixer, ExperimentalRenderer> mixer;
+    raw_ptr<media::AudioRendererMixer, DanglingUntriaged> mixer;
     size_t ref_count;
   };
 

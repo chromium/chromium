@@ -241,7 +241,7 @@ class MockMediaStreamVideoRenderer : public WebMediaStreamVideoRenderer {
   gfx::Size standard_size_;
 
   const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-  const raw_ptr<ReusableMessageLoopEvent, ExperimentalRenderer>
+  const raw_ptr<ReusableMessageLoopEvent, DanglingUntriaged>
       message_loop_controller_;
   const WebMediaStreamVideoRenderer::RepaintCB repaint_cb_;
 
@@ -640,20 +640,20 @@ class WebMediaPlayerMSTest
     return std::move(surface_layer_bridge_);
   }
 
-  raw_ptr<MockRenderFactory, ExperimentalRenderer> render_factory_;
+  raw_ptr<MockRenderFactory, DanglingUntriaged> render_factory_;
   std::unique_ptr<media::MockGpuVideoAcceleratorFactories> gpu_factories_;
   FakeWebMediaPlayerDelegate delegate_;
   std::unique_ptr<WebMediaPlayerMS> player_;
-  raw_ptr<WebMediaPlayerMSCompositor, ExperimentalRenderer> compositor_;
+  raw_ptr<WebMediaPlayerMSCompositor, DanglingUntriaged> compositor_;
   ReusableMessageLoopEvent message_loop_controller_;
   raw_ptr<cc::Layer, ExperimentalRenderer> layer_;
   bool is_audio_element_ = false;
   std::vector<base::OnceClosure> frame_ready_cbs_;
   std::unique_ptr<NiceMock<MockSurfaceLayerBridge>> surface_layer_bridge_;
   std::unique_ptr<NiceMock<MockWebVideoFrameSubmitter>> submitter_;
-  raw_ptr<NiceMock<MockSurfaceLayerBridge>, ExperimentalRenderer>
+  raw_ptr<NiceMock<MockSurfaceLayerBridge>, DanglingUntriaged>
       surface_layer_bridge_ptr_ = nullptr;
-  raw_ptr<NiceMock<MockWebVideoFrameSubmitter>, ExperimentalRenderer>
+  raw_ptr<NiceMock<MockWebVideoFrameSubmitter>, DanglingUntriaged>
       submitter_ptr_ = nullptr;
   bool enable_surface_layer_for_video_ = false;
 

@@ -605,7 +605,7 @@ class PLATFORM_EXPORT GraphicsContext {
   // initializes this to not null.
   raw_ptr<cc::PaintCanvas, ExperimentalRenderer> canvas_ = nullptr;
 
-  const raw_ref<PaintController, ExperimentalRenderer> paint_controller_;
+  const raw_ref<PaintController, DanglingUntriaged> paint_controller_;
 
   // Paint states stack. The state controls the appearance of drawn content, so
   // this stack enables local drawing state changes with Save()/Restore() calls.
@@ -620,9 +620,9 @@ class PLATFORM_EXPORT GraphicsContext {
 
   PaintRecorder paint_recorder_;
 
-  raw_ptr<printing::MetafileSkia, ExperimentalRenderer> printing_metafile_ =
+  raw_ptr<printing::MetafileSkia, DanglingUntriaged> printing_metafile_ =
       nullptr;
-  raw_ptr<paint_preview::PaintPreviewTracker, ExperimentalRenderer>
+  raw_ptr<paint_preview::PaintPreviewTracker, DanglingUntriaged>
       paint_preview_tracker_ = nullptr;
 
 #if DCHECK_IS_ON()

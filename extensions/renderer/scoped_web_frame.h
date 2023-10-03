@@ -34,7 +34,7 @@ private:
  // ~ScopedWebFrame explicitly closes the WebView.
  std::unique_ptr<blink::scheduler::WebAgentGroupScheduler>
      agent_group_scheduler_;
- raw_ptr<blink::WebView, ExperimentalRenderer> view_;
+ raw_ptr<blink::WebView, DanglingUntriaged> view_;
  raw_ptr<blink::WebLocalFrame, ExperimentalRenderer> frame_;
 };
 

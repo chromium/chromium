@@ -43,7 +43,7 @@ class ExtensionJSRunner : public JSRunner {
                           base::TimeTicks start_time);
 
   // The associated ScriptContext. Guaranteed to outlive this object.
-  const raw_ptr<ScriptContext, ExperimentalRenderer> script_context_;
+  const raw_ptr<ScriptContext, DanglingUntriaged> script_context_;
 
   base::WeakPtrFactory<ExtensionJSRunner> weak_factory_{this};
 };

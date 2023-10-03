@@ -55,7 +55,7 @@ class DeclarativeEvent final : public gin::Wrappable<DeclarativeEvent> {
 
   raw_ptr<APITypeReferenceMap, ExperimentalRenderer> type_refs_;
 
-  raw_ptr<APIRequestHandler, ExperimentalRenderer> request_handler_;
+  raw_ptr<APIRequestHandler, DanglingUntriaged> request_handler_;
 
   const int webview_instance_id_;
 };

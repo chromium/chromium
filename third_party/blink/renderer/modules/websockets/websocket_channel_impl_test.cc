@@ -388,7 +388,7 @@ class WebSocketChannelImplTest : public WebSocketChannelImplTestBase {
   WebSocketConnector connector_;
   Persistent<MockWebSocketChannelClient> channel_client_;
   std::unique_ptr<MockWebSocketHandshakeThrottle> handshake_throttle_;
-  const raw_ptr<MockWebSocketHandshakeThrottle, ExperimentalRenderer>
+  const raw_ptr<MockWebSocketHandshakeThrottle, DanglingUntriaged>
       raw_handshake_throttle_;
   Persistent<WebSocketChannelImpl> channel_;
   uint64_t sum_of_consumed_buffered_amount_;

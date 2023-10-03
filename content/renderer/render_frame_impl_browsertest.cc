@@ -213,7 +213,7 @@ class RenderFrameImplTest : public RenderViewTest {
   }
 
  private:
-  raw_ptr<TestRenderFrame, ExperimentalRenderer> frame_;
+  raw_ptr<TestRenderFrame, DanglingUntriaged> frame_;
   mojo::AssociatedRemote<blink::mojom::Widget> widget_remote_;
 };
 

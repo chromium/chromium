@@ -578,10 +578,10 @@ class RTCVideoEncoderTest {
         features::kWebRtcInitializeEncoderOnFirstFrame);
   }
 
-  raw_ptr<media::MockVideoEncodeAccelerator, ExperimentalRenderer> mock_vea_;
+  raw_ptr<media::MockVideoEncodeAccelerator, DanglingUntriaged> mock_vea_;
   std::unique_ptr<RTCVideoEncoderWrapper> rtc_encoder_;
   absl::optional<media::VideoEncodeAccelerator::Config> config_;
-  raw_ptr<media::VideoEncodeAccelerator::Client, ExperimentalRenderer> client_;
+  raw_ptr<media::VideoEncodeAccelerator::Client, DanglingUntriaged> client_;
   base::Thread encoder_thread_;
 
   std::unique_ptr<media::MockGpuVideoAcceleratorFactories> mock_gpu_factories_;

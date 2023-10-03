@@ -41,7 +41,7 @@ class MetronomeSourceTest : public ::testing::Test {
  public:
   std::unique_ptr<MockTickProvider> tick_provider_{
       std::make_unique<MockTickProvider>()};
-  raw_ptr<MockTickProvider, ExperimentalRenderer> tick_provider_ptr_ =
+  raw_ptr<MockTickProvider, DanglingUntriaged> tick_provider_ptr_ =
       tick_provider_.get();
   std::unique_ptr<MetronomeSource> source_{
       std::make_unique<MetronomeSource>(std::move(tick_provider_))};

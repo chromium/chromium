@@ -191,7 +191,7 @@ class MediaRecorderEncoderWrapperTest : public ::testing::Test {
   media::VideoEncoder::OutputCB output_cb;
 
   media::MockVideoEncoder mock_encoder_;
-  raw_ptr<media::MockVideoEncoderMetricsProvider, ExperimentalRenderer>
+  raw_ptr<media::MockVideoEncoderMetricsProvider, DanglingUntriaged>
       mock_metrics_provider_;
   MediaRecorderEncoderWrapper encoder_wrapper_;
 };

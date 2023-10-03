@@ -44,7 +44,7 @@ class FakeBlob : public mojom::blink::Blob {
  protected:
   String uuid_;
   String body_;
-  raw_ptr<State, ExperimentalRenderer> state_;
+  raw_ptr<State, DanglingUntriaged> state_;
 };
 
 }  // namespace blink

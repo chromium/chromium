@@ -135,7 +135,7 @@ class PLATFORM_EXPORT V8PerContextData final
   ScopedPersistent<v8::Context> context_;
 
   // This is owned by a static hash map in V8DOMActivityLogger.
-  raw_ptr<V8DOMActivityLogger, ExperimentalRenderer> activity_logger_;
+  raw_ptr<V8DOMActivityLogger, DanglingUntriaged> activity_logger_;
 
   using DataMap = HeapHashMap<const char*, Member<Data>>;
   DataMap data_map_;

@@ -78,7 +78,7 @@ class LearningExperimentHelperTest : public testing::Test {
   }
 
   LearningTask task_;
-  raw_ptr<MockLearningTaskController, ExperimentalRenderer> controller_raw_ =
+  raw_ptr<MockLearningTaskController, DanglingUntriaged> controller_raw_ =
       nullptr;
   std::unique_ptr<LearningExperimentHelper> helper_;
 

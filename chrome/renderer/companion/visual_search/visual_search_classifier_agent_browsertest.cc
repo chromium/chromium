@@ -109,7 +109,7 @@ class VisualSearchClassifierAgentTest : public ChromeRenderViewTest {
   }
 
  protected:
-  raw_ptr<VisualSearchClassifierAgent, ExperimentalRenderer>
+  raw_ptr<VisualSearchClassifierAgent, DanglingUntriaged>
       agent_;  // Owned by RenderFrame
   base::HistogramTester histogram_tester_;
   TestVisualResultHandler test_handler_;

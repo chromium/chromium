@@ -293,14 +293,13 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
   }
 
   ui::AXTreeID tree_id_;
-  raw_ptr<MockAXTreeDistiller, ExperimentalRenderer> distiller_ = nullptr;
+  raw_ptr<MockAXTreeDistiller, DanglingUntriaged> distiller_ = nullptr;
   testing::StrictMock<MockReadAnythingUntrustedPageHandler> page_handler_;
 
  private:
   // ReadAnythingAppController constructor and destructor are private so it's
   // not accessible by std::make_unique.
-  raw_ptr<ReadAnythingAppController, ExperimentalRenderer> controller_ =
-      nullptr;
+  raw_ptr<ReadAnythingAppController, DanglingUntriaged> controller_ = nullptr;
 };
 
 TEST_F(ReadAnythingAppControllerTest, Theme) {

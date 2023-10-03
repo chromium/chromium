@@ -153,7 +153,7 @@ class UnfilteredEventListeners final : public APIEventListeners {
   // The listener tracker to notify of added or removed listeners. This may be
   // null if this is a set of listeners for an unmanaged event. If
   // non-null, required to outlive this object.
-  raw_ptr<ListenerTracker, ExperimentalRenderer> listener_tracker_ = nullptr;
+  raw_ptr<ListenerTracker, DanglingUntriaged> listener_tracker_ = nullptr;
 };
 
 // A listener list implementation that supports filtering. Events should only

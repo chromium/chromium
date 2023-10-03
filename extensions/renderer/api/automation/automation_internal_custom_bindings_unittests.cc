@@ -61,7 +61,7 @@ class AutomationInternalCustomBindingsTest
   }
 
  private:
-  raw_ptr<AutomationInternalCustomBindings, ExperimentalRenderer>
+  raw_ptr<AutomationInternalCustomBindings, DanglingUntriaged>
       automation_internal_bindings_ = nullptr;
 };
 

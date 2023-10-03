@@ -80,7 +80,7 @@ class TestingPlatformSupportWithMockScheduler : public TestingPlatformSupport {
   bool auto_advance_ = true;
 
   std::unique_ptr<scheduler::MainThreadSchedulerImpl> scheduler_;
-  raw_ptr<base::sequence_manager::SequenceManager, ExperimentalRenderer>
+  raw_ptr<base::sequence_manager::SequenceManager, DanglingUntriaged>
       sequence_manager_;  // Owned by scheduler_.
   std::unique_ptr<ScopedMainThreadOverrider> main_thread_overrider_;
 };

@@ -61,7 +61,7 @@ struct FrameFirstPaint {
         text_painted(false),
         image_painted(false) {}
 
-  raw_ptr<const void, ExperimentalRenderer> frame;
+  raw_ptr<const void, DanglingUntriaged> frame;
   bool first_painted : 1;
   bool text_painted : 1;
   bool image_painted : 1;

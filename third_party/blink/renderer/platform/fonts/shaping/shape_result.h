@@ -316,7 +316,7 @@ class PLATFORM_EXPORT ShapeResult : public RefCounted<ShapeResult> {
 
     unsigned start;
     unsigned end;
-    raw_ptr<ShapeResult, ExperimentalRenderer> target;
+    raw_ptr<ShapeResult, DanglingUntriaged> target;
   };
 
   // Copy a set of sequential ranges. The ranges may not overlap and the offsets

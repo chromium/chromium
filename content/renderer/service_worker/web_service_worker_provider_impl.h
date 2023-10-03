@@ -101,7 +101,7 @@ class CONTENT_EXPORT WebServiceWorkerProviderImpl
   // |provider_client_| is implemented by blink::SWContainer and this pointer's
   // nullified when its execution context is destroyed. (|this| is attached to
   // the same context, but could live longer until the context is GC'ed)
-  raw_ptr<blink::WebServiceWorkerProviderClient, ExperimentalRenderer>
+  raw_ptr<blink::WebServiceWorkerProviderClient, DanglingUntriaged>
       provider_client_;
 
   base::WeakPtrFactory<WebServiceWorkerProviderImpl> weak_factory_{this};

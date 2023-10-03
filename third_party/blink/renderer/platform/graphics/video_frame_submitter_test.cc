@@ -266,7 +266,7 @@ class VideoFrameSubmitterTest : public testing::Test,
   std::unique_ptr<viz::FakeExternalBeginFrameSource> begin_frame_source_;
   std::unique_ptr<StrictMock<VideoMockCompositorFrameSink>> sink_;
   std::unique_ptr<StrictMock<MockVideoFrameProvider>> video_frame_provider_;
-  raw_ptr<StrictMock<MockVideoFrameResourceProvider>, ExperimentalRenderer>
+  raw_ptr<StrictMock<MockVideoFrameResourceProvider>, DanglingUntriaged>
       resource_provider_;
   scoped_refptr<viz::TestContextProvider> context_provider_;
   std::unique_ptr<VideoFrameSubmitter> submitter_;

@@ -180,7 +180,7 @@ class APISignature {
   std::unique_ptr<APISignature::ReturnsAsync> returns_async_;
 
   // The associated access checker; required to outlive this object.
-  raw_ptr<const BindingAccessChecker, ExperimentalRenderer> access_checker_;
+  raw_ptr<const BindingAccessChecker, DanglingUntriaged> access_checker_;
 
   // A developer-readable method signature string, lazily set.
   mutable std::string expected_signature_;

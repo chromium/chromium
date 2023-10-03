@@ -303,7 +303,7 @@ class MODULES_EXPORT UserMediaProcessor
   WebMediaStreamDeviceObserver* GetMediaStreamDeviceObserver();
 
   // Owned by the test.
-  raw_ptr<WebMediaStreamDeviceObserver, ExperimentalRenderer>
+  raw_ptr<WebMediaStreamDeviceObserver, DanglingUntriaged>
       media_stream_device_observer_for_testing_ = nullptr;
 
   LocalStreamSources local_sources_;

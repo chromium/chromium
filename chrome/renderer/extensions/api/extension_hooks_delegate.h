@@ -60,7 +60,7 @@ class ExtensionHooksDelegate : public APIBindingHooksDelegate {
 
   // The messaging service to handle messaging calls.
   // Guaranteed to outlive this object.
-  const raw_ptr<NativeRendererMessagingService, ExperimentalRenderer>
+  const raw_ptr<NativeRendererMessagingService, DanglingUntriaged>
       messaging_service_;
 };
 

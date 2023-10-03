@@ -495,7 +495,7 @@ class GpuVideoAcceleratorFactoriesImplTest : public testing::Test {
   viz::TestGpuMemoryBufferManager gpu_memory_buffer_manager_;
   scoped_refptr<TestGpuChannelHost> gpu_channel_host_;
   scoped_refptr<MockContextProviderCommandBuffer> mock_context_provider_;
-  raw_ptr<gpu::CommandBufferProxyImpl, ExperimentalRenderer>
+  raw_ptr<gpu::CommandBufferProxyImpl, DanglingUntriaged>
       gpu_command_buffer_proxy_;
 
   FakeVEAProviderImpl fake_vea_provider_;

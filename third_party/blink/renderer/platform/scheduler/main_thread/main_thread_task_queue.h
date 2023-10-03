@@ -584,8 +584,7 @@ class PLATFORM_EXPORT MainThreadTaskQueue
   // Set in the constructor. Cleared in `DetachTaskQueue()` and
   // `ShutdownTaskQueue()`. Can never be set to a different value afterwards
   // (except in tests).
-  raw_ptr<FrameSchedulerImpl, ExperimentalRenderer>
-      frame_scheduler_;  // NOT OWNED
+  raw_ptr<FrameSchedulerImpl, DanglingUntriaged> frame_scheduler_;  // NOT OWNED
 
   // The WakeUpBudgetPool for this TaskQueue, if any.
   raw_ptr<WakeUpBudgetPool, ExperimentalRenderer> wake_up_budget_pool_{

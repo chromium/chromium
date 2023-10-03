@@ -332,7 +332,7 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
 
   scoped_refptr<cc::Layer> root_layer_;
   struct SynthesizedClipEntry {
-    raw_ptr<const ClipPaintPropertyNode, ExperimentalRenderer> key;
+    raw_ptr<const ClipPaintPropertyNode, DanglingUntriaged> key;
     std::unique_ptr<SynthesizedClip> synthesized_clip;
     bool in_use;
   };

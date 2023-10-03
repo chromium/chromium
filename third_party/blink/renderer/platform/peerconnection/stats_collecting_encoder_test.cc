@@ -216,7 +216,7 @@ class StatsCollectingEncoderTest : public ::testing::Test {
   int spatial_layers_{1};
   bool is_hw_accelerated_{false};
   FakeEncodedImageCallback encoded_image_callback_;
-  raw_ptr<MockEncoder, ExperimentalRenderer> internal_encoder_;
+  raw_ptr<MockEncoder, DanglingUntriaged> internal_encoder_;
   StatsCollectingEncoder stats_encoder_;
 
   uint32_t frame_counter_{0};

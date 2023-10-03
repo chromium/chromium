@@ -55,8 +55,8 @@ class MockSctpTransport : public webrtc::SctpTransportInterface {
  private:
   webrtc::SctpTransportInformation info_ =
       webrtc::SctpTransportInformation(webrtc::SctpTransportState::kNew);
-  raw_ptr<webrtc::SctpTransportObserverInterface, ExperimentalRenderer>
-      observer_ = nullptr;
+  raw_ptr<webrtc::SctpTransportObserverInterface, DanglingUntriaged> observer_ =
+      nullptr;
 };
 
 class RTCSctpTransportTest : public testing::Test {

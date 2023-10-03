@@ -180,7 +180,7 @@ class PLATFORM_EXPORT MediaStreamSource final
     void ConsumeAudio(AudioBus* bus, int number_of_frames);
 
     // m_consumer is not owned by this class.
-    raw_ptr<WebAudioDestinationConsumer, ExperimentalRenderer> consumer_;
+    raw_ptr<WebAudioDestinationConsumer, DanglingUntriaged> consumer_;
     // bus_vector_ must only be used in ConsumeAudio. The only reason it's a
     // member variable is to not have to reallocate it for each call.
     Vector<const float*> bus_vector_;

@@ -822,7 +822,7 @@ class VideoTrackAdapterEncodedTest : public ::testing::Test {
       platform_support_;
   base::Thread render_thread_;
   WebMediaStreamSource web_source_;
-  raw_ptr<MockMediaStreamVideoSource, ExperimentalRenderer> mock_source_;
+  raw_ptr<MockMediaStreamVideoSource, DanglingUntriaged> mock_source_;
   scoped_refptr<VideoTrackAdapter> adapter_;
 };
 

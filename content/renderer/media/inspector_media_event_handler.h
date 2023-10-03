@@ -26,8 +26,7 @@ class CONTENT_EXPORT InspectorMediaEventHandler
   void OnWebMediaPlayerDestroyed() override;
 
  private:
-  raw_ptr<blink::MediaInspectorContext, ExperimentalRenderer>
-      inspector_context_;
+  raw_ptr<blink::MediaInspectorContext, DanglingUntriaged> inspector_context_;
   blink::WebString player_id_;
   bool video_player_destroyed_ = false;
 };
