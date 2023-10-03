@@ -176,8 +176,11 @@ message ServiceWorkerRegistrationData {
           }
           optional Status status = 1;
         }
-        message OrCondition {
+        message ConditionObject {
           repeated Condition conditions = 1;
+        }
+        message OrCondition {
+          repeated ConditionObject objects = 1;
         }
         oneof condition {
           // Used for representing URLPattern.

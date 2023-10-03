@@ -75,13 +75,15 @@ TEST(ServiceWorkerRouterRulesTest, SimpleRoundTrip) {
       blink::ServiceWorkerRouterCondition condition;
       condition.type = blink::ServiceWorkerRouterCondition::Type::kOr;
       blink::ServiceWorkerRouterOrCondition or_condition;
-
-      blink::ServiceWorkerRouterCondition fake;
-      fake.type = blink::ServiceWorkerRouterCondition::Type::kRequest;
-      blink::ServiceWorkerRouterRequestCondition request;
-      fake.request = request;
-
-      or_condition.conditions = std::vector(3, fake);
+      blink::ServiceWorkerRouterConditionObject fake_object;
+      {
+        blink::ServiceWorkerRouterCondition fake;
+        fake.type = blink::ServiceWorkerRouterCondition::Type::kRequest;
+        blink::ServiceWorkerRouterRequestCondition request;
+        fake.request = request;
+        fake_object.conditions = std::vector(3, fake);
+      }
+      or_condition.objects = std::vector(3, fake_object);
       condition.or_condition = or_condition;
       rule.conditions.push_back(condition);
     }

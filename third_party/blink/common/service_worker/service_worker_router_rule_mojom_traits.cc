@@ -19,11 +19,21 @@ bool StructTraits<
   return true;
 }
 
+bool StructTraits<blink::mojom::ServiceWorkerRouterConditionObjectDataView,
+                  blink::ServiceWorkerRouterConditionObject>::
+    Read(blink::mojom::ServiceWorkerRouterConditionObjectDataView data,
+         blink::ServiceWorkerRouterConditionObject* out) {
+  if (!data.ReadConditions(&out->conditions)) {
+    return false;
+  }
+  return true;
+}
+
 bool StructTraits<blink::mojom::ServiceWorkerRouterOrConditionDataView,
                   blink::ServiceWorkerRouterOrCondition>::
     Read(blink::mojom::ServiceWorkerRouterOrConditionDataView data,
          blink::ServiceWorkerRouterOrCondition* out) {
-  if (!data.ReadConditions(&out->conditions)) {
+  if (!data.ReadObjects(&out->objects)) {
     return false;
   }
   return true;

@@ -54,8 +54,11 @@ struct ServiceWorkerRouterRequestCondition {
   network.mojom.RequestDestination destination;
 };
 
-struct ServiceWorkerRouterOrCondition {
+struct ServiceWorkerRouterConditionObject {
   array<ServiceWorkerRouterCondition> conditions;
+};
+struct ServiceWorkerRouterOrCondition {
+  array<ServiceWorkerRouterConditionObject> objects;
 };
 
 // This represents a condition of the router rule.

@@ -12,9 +12,14 @@ bool ServiceWorkerRouterRequestCondition::operator==(
          destination == other.destination;
 }
 
+bool ServiceWorkerRouterConditionObject::operator==(
+    const ServiceWorkerRouterConditionObject& other) const {
+  return conditions == other.conditions;
+}
+
 bool ServiceWorkerRouterOrCondition::operator==(
     const ServiceWorkerRouterOrCondition& other) const {
-  return conditions == other.conditions;
+  return objects == other.objects;
 }
 
 bool ServiceWorkerRouterCondition::operator==(

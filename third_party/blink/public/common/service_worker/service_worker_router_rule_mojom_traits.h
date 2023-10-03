@@ -106,11 +106,25 @@ struct BLINK_COMMON_EXPORT
 
 template <>
 struct BLINK_COMMON_EXPORT
+    StructTraits<blink::mojom::ServiceWorkerRouterConditionObjectDataView,
+                 blink::ServiceWorkerRouterConditionObject> {
+  static const std::vector<blink::ServiceWorkerRouterCondition>& conditions(
+      const blink::ServiceWorkerRouterConditionObject& data) {
+    return data.conditions;
+  }
+
+  static bool Read(
+      blink::mojom::ServiceWorkerRouterConditionObjectDataView data,
+      blink::ServiceWorkerRouterConditionObject* out);
+};
+
+template <>
+struct BLINK_COMMON_EXPORT
     StructTraits<blink::mojom::ServiceWorkerRouterOrConditionDataView,
                  blink::ServiceWorkerRouterOrCondition> {
-  static const std::vector<blink::ServiceWorkerRouterCondition>& conditions(
+  static const std::vector<blink::ServiceWorkerRouterConditionObject>& objects(
       const blink::ServiceWorkerRouterOrCondition& data) {
-    return data.conditions;
+    return data.objects;
   }
 
   static bool Read(blink::mojom::ServiceWorkerRouterOrConditionDataView data,

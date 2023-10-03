@@ -52,8 +52,13 @@ struct ServiceWorkerRouterRunningStatusCondition {
   }
 };
 
-struct ServiceWorkerRouterOrCondition {
+struct ServiceWorkerRouterConditionObject {
   std::vector<ServiceWorkerRouterCondition> conditions;
+
+  bool operator==(const ServiceWorkerRouterConditionObject& other) const;
+};
+struct ServiceWorkerRouterOrCondition {
+  std::vector<ServiceWorkerRouterConditionObject> objects;
 
   bool operator==(const ServiceWorkerRouterOrCondition& other) const;
 };
