@@ -12,13 +12,11 @@ namespace tpcd::experiment {
 
 extern const char kVersionName[];
 extern const char kDisable3PCookiesName[];
-extern const char kDisableAdsAPIsName[];
 extern const char kDecisionDelayTimeName[];
 extern const char kForceEligibleForTestingName[];
 
 extern const base::FeatureParam<int> kVersion;
 extern const base::FeatureParam<bool> kDisable3PCookies;
-extern const base::FeatureParam<bool> kDisableAdsAPIs;
 extern const base::FeatureParam<base::TimeDelta> kDecisionDelayTime;
 extern const base::FeatureParam<bool> kForceEligibleForTesting;
 

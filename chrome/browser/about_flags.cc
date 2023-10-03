@@ -3695,51 +3695,51 @@ const FeatureEntry::FeatureVariation kPrivacySandboxSettings4Variations[] = {
 const FeatureEntry::FeatureParam kTPCPhaseOutFacilitatedTestingControl1[] = {
     {tpcd::experiment::kForceEligibleForTestingName, "false"},
     {tpcd::experiment::kDisable3PCookiesName, "false"},
-    {tpcd::experiment::kDisableAdsAPIsName, "false"},
+    {features::kCookieDeprecationTestingDisableAdsAPIsName, "false"},
     {features::kCookieDeprecationLabelName, "fake_control_1.1"},
     {tpcd::experiment::kVersionName, "9990"}};
 const FeatureEntry::FeatureParam kTPCPhaseOutFacilitatedTestingLabelOnly[] = {
     {tpcd::experiment::kForceEligibleForTestingName, "false"},
     {tpcd::experiment::kDisable3PCookiesName, "false"},
-    {tpcd::experiment::kDisableAdsAPIsName, "false"},
+    {features::kCookieDeprecationTestingDisableAdsAPIsName, "false"},
     {features::kCookieDeprecationLabelName, "fake_label_only_1.1"},
     {tpcd::experiment::kVersionName, "9991"}};
 const FeatureEntry::FeatureParam kTPCPhaseOutFacilitatedTestingTreatment[] = {
     {tpcd::experiment::kForceEligibleForTestingName, "false"},
     {tpcd::experiment::kDisable3PCookiesName, "true"},
-    {tpcd::experiment::kDisableAdsAPIsName, "false"},
+    {features::kCookieDeprecationTestingDisableAdsAPIsName, "false"},
     {features::kCookieDeprecationLabelName, "fake_treatment_1.1"},
     {tpcd::experiment::kVersionName, "9992"}};
 const FeatureEntry::FeatureParam kTPCPhaseOutFacilitatedTestingControl2[] = {
     {tpcd::experiment::kForceEligibleForTestingName, "false"},
     {tpcd::experiment::kDisable3PCookiesName, "true"},
-    {tpcd::experiment::kDisableAdsAPIsName, "true"},
+    {features::kCookieDeprecationTestingDisableAdsAPIsName, "true"},
     {features::kCookieDeprecationLabelName, "fake_control_2"},
     {tpcd::experiment::kVersionName, "9993"}};
 const FeatureEntry::FeatureParam kTPCPhaseOutFacilitatedTestingForceControl1[] =
     {{tpcd::experiment::kForceEligibleForTestingName, "true"},
      {tpcd::experiment::kDisable3PCookiesName, "false"},
-     {tpcd::experiment::kDisableAdsAPIsName, "false"},
+     {features::kCookieDeprecationTestingDisableAdsAPIsName, "false"},
      {features::kCookieDeprecationLabelName, "fake_control_1.1"},
      {tpcd::experiment::kVersionName, "9994"}};
 const FeatureEntry::FeatureParam
     kTPCPhaseOutFacilitatedTestingForceLabelOnly[] = {
         {tpcd::experiment::kForceEligibleForTestingName, "true"},
         {tpcd::experiment::kDisable3PCookiesName, "false"},
-        {tpcd::experiment::kDisableAdsAPIsName, "false"},
+        {features::kCookieDeprecationTestingDisableAdsAPIsName, "false"},
         {features::kCookieDeprecationLabelName, "fake_label_only_1.1"},
         {tpcd::experiment::kVersionName, "9995"}};
 const FeatureEntry::FeatureParam
     kTPCPhaseOutFacilitatedTestingForceTreatment[] = {
         {tpcd::experiment::kForceEligibleForTestingName, "true"},
         {tpcd::experiment::kDisable3PCookiesName, "true"},
-        {tpcd::experiment::kDisableAdsAPIsName, "false"},
+        {features::kCookieDeprecationTestingDisableAdsAPIsName, "false"},
         {features::kCookieDeprecationLabelName, "fake_treatment_1.1"},
         {tpcd::experiment::kVersionName, "9996"}};
 const FeatureEntry::FeatureParam kTPCPhaseOutFacilitatedTestingForceControl2[] =
     {{tpcd::experiment::kForceEligibleForTestingName, "true"},
      {tpcd::experiment::kDisable3PCookiesName, "true"},
-     {tpcd::experiment::kDisableAdsAPIsName, "true"},
+     {features::kCookieDeprecationTestingDisableAdsAPIsName, "true"},
      {features::kCookieDeprecationLabelName, "fake_control_2"},
      {tpcd::experiment::kVersionName, "9997"}};
 

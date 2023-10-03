@@ -192,8 +192,15 @@ const base::FeatureParam<bool>
 // The experiment label for the cookie deprecation (Mode A/B) study.
 const base::FeatureParam<std::string> kCookieDeprecationLabel{
     &kCookieDeprecationFacilitatedTesting, kCookieDeprecationLabelName, ""};
+// Set whether Ads APIs should be disabled for third-party cookie deprecation.
+const base::FeatureParam<bool> kCookieDeprecationTestingDisableAdsAPIs{
+    &features::kCookieDeprecationFacilitatedTesting,
+    /*name=*/kCookieDeprecationTestingDisableAdsAPIsName,
+    /*default_value=*/false};
 
 const char kCookieDeprecationLabelName[] = "label";
+
+const char kCookieDeprecationTestingDisableAdsAPIsName[] = "disable_ads_apis";
 
 // Enables Blink cooperative scheduling.
 BASE_FEATURE(kCooperativeScheduling,
