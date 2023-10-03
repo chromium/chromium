@@ -35,13 +35,31 @@ chromium-metrics-reviews@google.com.
 
 <variants name="MXVersion">
   <variant name=""
-      summary="The default MXPayload, only recorded when the app version
-               number matches."/>
+      summary="Warning: This is only recorded when the current app version
+               number matches the version number for all the data received in
+               a MetricKit payload. Since MetricKit payloads are received
+               once every 24 hours, this means that payloads received within
+               24 hours of updating the app will get dropped. As a result,
+               there will be a substantial decrease in histogram volume when
+               a new app version is released, biasing the collected data
+               towards users who are slow to update, and possibly creating
+               spurious regressions or progressions. This histogram will have
+               misleading trends around release dates. The version of this
+               metric prefixed by IOS.MetricKit.IncludingMismatch does not
+               drop data this way, so will not have these spurious changes."/>
   <variant name="IncludingMismatch."
-      summary="The processed MXPayload may not match the current app's
-               version. This is very common on app updates, which would
-               otherwise lead to losing multiple days of MetricKit reports.
-               Instead, record them here."/>
+      summary="Warning: This is recorded even when the current app version
+               number doesn't match the version number for some or all of the
+               data received in a MetricKit payload. This means that data
+               reported for a particular Chrome version may actually be
+               coming from an earlier version that the user was running
+               within the previous 24 hours. Splitting this histogram by
+               version number will yield misleading results, as some data
+               attributed to be from a particular version will have been
+               actually recorded for a different version number. The version
+               of this metric that does not contain IncludingMismatch in its
+               name drops data from older versions, so is safe to split by
+               version number."/>
 </variants>
 
 <histogram name="IOS.Allocator.ShimInstalled" enum="Boolean"
@@ -1326,7 +1344,15 @@ chromium-metrics-reviews@google.com.
     browser process are reported.
 
     Recorded only if user opted in for sharing diagnostic data on iOS device.
-    Note: The date the data is reported is later than the day it account for.
+    The exact percentage of users who are opted into sharing data with Apple is
+    not known, but see go/chrome-uma-metrickit-sharing-rate for an estimate.
+
+    Note: Data is received from Apple once a day when Chrome is running,
+    covering the previous 24 hours as well as any older data that has not yet
+    been delivered to Chrome. This means that the date the data is reported may
+    be later than the user activity it corresponds to.
+
+    {MXVersion}
 
     This histogram is of special interest to the chrome-analysis-team@. Do not
     change its semantics or retire it without talking to them first.
@@ -1343,7 +1369,15 @@ chromium-metrics-reviews@google.com.
     aggregated). Logged when a MXMetricPayload is received (one per day).
 
     Recorded only if user opted in for sharing diagnostic data on iOS device.
-    Note: The date the data is reported is later than the day it account for.
+    The exact percentage of users who are opted into sharing data with Apple is
+    not known, but see go/chrome-uma-metrickit-sharing-rate for an estimate.
+
+    Note: Data is received from Apple once a day when Chrome is running,
+    covering the previous 24 hours as well as any older data that has not yet
+    been delivered to Chrome. This means that the date the data is reported may
+    be later than the user activity it corresponds to.
+
+    {MXVersion}
   </summary>
   <token key="MXVersion" variants="MXVersion"/>
 </histogram>
@@ -1358,7 +1392,15 @@ chromium-metrics-reviews@google.com.
     day).
 
     Recorded only if user opted in for sharing diagnostic data on iOS device.
-    Note: The date the data is reported is later than the day it account for.
+    The exact percentage of users who are opted into sharing data with Apple is
+    not known, but see go/chrome-uma-metrickit-sharing-rate for an estimate.
+
+    Note: Data is received from Apple once a day when Chrome is running,
+    covering the previous 24 hours as well as any older data that has not yet
+    been delivered to Chrome. This means that the date the data is reported may
+    be later than the user activity it corresponds to.
+
+    {MXVersion}
   </summary>
   <token key="MXVersion" variants="MXVersion"/>
 </histogram>
@@ -1382,7 +1424,15 @@ chromium-metrics-reviews@google.com.
     &quot;CleanExitBeacon&quot; is set when Chrome is put in the background.
 
     Recorded only if user opted in for sharing diagnostic data on iOS device.
-    Note: The date the data is reported is later than the day it account for.
+    The exact percentage of users who are opted into sharing data with Apple is
+    not known, but see go/chrome-uma-metrickit-sharing-rate for an estimate.
+
+    Note: Data is received from Apple once a day when Chrome is running,
+    covering the previous 24 hours as well as any older data that has not yet
+    been delivered to Chrome. This means that the date the data is reported may
+    be later than the user activity it corresponds to.
+
+    {MXVersion}
 
     This histogram is of special interest to the chrome-analysis-team@. Do not
     change its semantics or retire it without talking to them first.
@@ -1401,7 +1451,15 @@ chromium-metrics-reviews@google.com.
     background activity like background music or picture in picture).
 
     Recorded only if user opted in for sharing diagnostic data on iOS device.
-    Note: The date the data is reported is later than the day it account for.
+    The exact percentage of users who are opted into sharing data with Apple is
+    not known, but see go/chrome-uma-metrickit-sharing-rate for an estimate.
+
+    Note: Data is received from Apple once a day when Chrome is running,
+    covering the previous 24 hours as well as any older data that has not yet
+    been delivered to Chrome. This means that the date the data is reported may
+    be later than the user activity it corresponds to.
+
+    {MXVersion}
   </summary>
   <token key="MXVersion" variants="MXVersion"/>
 </histogram>
@@ -1415,13 +1473,23 @@ chromium-metrics-reviews@google.com.
     receive input. This measures startup until the same point as
     Startup.ColdStartFromProcessCreationTimeV2 but is computed by iOS in a way
     that accounts for app pre-warming. The exact adjustments made to account for
-    pre-warming are not documented by Apple. Logged when a MXMetricPayload is
-    received (one per day).
+    pre-warming are not documented by Apple. This metric only covers cold
+    starts, that is, when Chrome is not running and is then launched into the
+    foreground. It does not cover warms starts, that is, when Chrome is already
+    running in the background and is then brought into the foreground. Logged
+    when a MXMetricPayload is received (one per day).
 
     This is only recorded on iOS 16+, and recorded only if user opted in for
-    sharing diagnostic data on iOS device.
+    sharing diagnostic data on iOS device with Apple. The exact percentage of
+    users who are opted into sharing data with Apple is not known, but see
+    go/chrome-uma-metrickit-sharing-rate for an estimate.
 
-    Note: The date the data is reported is later than the day it accounts for.
+    Note: Data is received from Apple once a day when Chrome is running,
+    covering the previous 24 hours as well as any older data that has not yet
+    been delivered to Chrome. This means that the date the data is reported may
+    be later than the user activity it corresponds to.
+
+    {MXVersion}
   </summary>
   <token key="MXVersion" variants="MXVersion"/>
 </histogram>
@@ -1447,7 +1515,15 @@ chromium-metrics-reviews@google.com.
     foreground.
 
     Recorded only if user opted in for sharing diagnostic data on iOS device.
-    Note: The date the data is reported is later than the day it account for.
+    The exact percentage of users who are opted into sharing data with Apple is
+    not known, but see go/chrome-uma-metrickit-sharing-rate for an estimate.
+
+    Note: Data is received from Apple once a day when Chrome is running,
+    covering the previous 24 hours as well as any older data that has not yet
+    been delivered to Chrome. This means that the date the data is reported may
+    be later than the user activity it corresponds to.
+
+    {MXVersion}
 
     This histogram is of special interest to the chrome-analysis-team@. Do not
     change its semantics or retire it without talking to them first.
@@ -1469,7 +1545,15 @@ chromium-metrics-reviews@google.com.
     foreground
 
     Recorded only if user opted in for sharing diagnostic data on iOS device.
-    Note: The date the data is reported is later than the day it account for.
+    The exact percentage of users who are opted into sharing data with Apple is
+    not known, but see go/chrome-uma-metrickit-sharing-rate for an estimate.
+
+    Note: Data is received from Apple once a day when Chrome is running,
+    covering the previous 24 hours as well as any older data that has not yet
+    been delivered to Chrome. This means that the date the data is reported may
+    be later than the user activity it corresponds to.
+
+    {MXVersion}
   </summary>
   <token key="MXVersion" variants="MXVersion"/>
 </histogram>
@@ -1486,9 +1570,16 @@ chromium-metrics-reviews@google.com.
     (one per day).
 
     This is only recorded on iOS 16+, and recorded only if user opted in for
-    sharing diagnostic data on iOS device.
+    sharing diagnostic data on iOS device. The exact percentage of users who are
+    opted into sharing data with Apple is not known, but see
+    go/chrome-uma-metrickit-sharing-rate for an estimate.
 
-    Note: The date the data is reported is later than the day it accounts for.
+    Note: Data is received from Apple once a day when Chrome is running,
+    covering the previous 24 hours as well as any older data that has not yet
+    been delivered to Chrome. This means that the date the data is reported may
+    be later than the user activity it corresponds to.
+
+    {MXVersion}
   </summary>
   <token key="MXVersion" variants="MXVersion"/>
 </histogram>
@@ -1508,7 +1599,15 @@ chromium-metrics-reviews@google.com.
     whether this is going to be reported.
 
     Recorded only if user opted in for sharing diagnostic data on iOS device.
-    Note: The date the data is reported is later than the day it account for.
+    The exact percentage of users who are opted into sharing data with Apple is
+    not known, but see go/chrome-uma-metrickit-sharing-rate for an estimate.
+
+    Note: Data is received from Apple once a day when Chrome is running,
+    covering the previous 24 hours as well as any older data that has not yet
+    been delivered to Chrome. This means that the date the data is reported may
+    be later than the user activity it corresponds to.
+
+    {MXVersion}
   </summary>
   <token key="MXVersion" variants="MXVersion"/>
 </histogram>
@@ -1522,7 +1621,15 @@ chromium-metrics-reviews@google.com.
     received (one per day).
 
     Recorded only if user opted in for sharing diagnostic data on iOS device.
-    Note: The date the data is reported is later than the day it account for.
+    The exact percentage of users who are opted into sharing data with Apple is
+    not known, but see go/chrome-uma-metrickit-sharing-rate for an estimate.
+
+    Note: Data is received from Apple once a day when Chrome is running,
+    covering the previous 24 hours as well as any older data that has not yet
+    been delivered to Chrome. This means that the date the data is reported may
+    be later than the user activity it corresponds to.
+
+    {MXVersion}
   </summary>
   <token key="MXVersion" variants="MXVersion"/>
 </histogram>
