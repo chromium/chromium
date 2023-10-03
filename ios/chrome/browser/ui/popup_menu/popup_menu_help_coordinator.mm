@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_help_coordinator.h"
 
+#import "base/strings/sys_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/time/time.h"
 #import "components/feature_engagement/public/event_constants.h"
@@ -29,7 +30,7 @@
 #import "ios/chrome/browser/ui/popup_menu/public/popup_menu_ui_updating.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
-#import "ui/base/l10n/l10n_util_mac.h"
+#import "ui/base/l10n/l10n_util.h"
 
 namespace {
 base::TimeDelta kPromoDisplayDelayForTests = base::Seconds(1);
@@ -191,7 +192,11 @@ base::TimeDelta kPromoDisplayDelayForTests = base::Seconds(1);
                           alignment:BubbleAlignmentBottomOrTrailing
                isLongDurationBubble:NO
                   dismissalCallback:dismissalCallback];
-  bubbleViewControllerPresenter.voiceOverAnnouncement = text;
+  std::u16string menuButtonA11yLabel = base::SysNSStringToUTF16(
+      l10n_util::GetNSString(IDS_IOS_TOOLBAR_SETTINGS));
+  bubbleViewControllerPresenter.voiceOverAnnouncement = l10n_util::GetNSStringF(
+      IDS_IOS_VIEW_BROWSING_HISTORY_FROM_MENU_ANNOUNCEMENT,
+      menuButtonA11yLabel);
   return bubbleViewControllerPresenter;
 }
 
@@ -309,8 +314,11 @@ base::TimeDelta kPromoDisplayDelayForTests = base::Seconds(1);
                           alignment:alignment
                isLongDurationBubble:NO
                   dismissalCallback:dismissalCallback];
-  bubbleViewControllerPresenter.voiceOverAnnouncement =
-      l10n_util::GetNSString(IDS_IOS_VIEW_BROWSING_HISTORY_OVERFLOW_MENU_TIP);
+  std::u16string historyButtonA11yLabel = base::SysNSStringToUTF16(
+      l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_HISTORY));
+  bubbleViewControllerPresenter.voiceOverAnnouncement = l10n_util::GetNSStringF(
+      IDS_IOS_VIEW_BROWSING_HISTORY_BY_SELECTING_HISTORY_TIP_ANNOUNCEMENT,
+      historyButtonA11yLabel);
   return bubbleViewControllerPresenter;
 }
 

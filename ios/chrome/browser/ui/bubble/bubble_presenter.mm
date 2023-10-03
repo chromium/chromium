@@ -8,6 +8,7 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#import "base/strings/sys_string_conversions.h"
 #import "components/content_settings/core/browser/host_content_settings_map.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/feature_constants.h"
@@ -388,6 +389,10 @@
                                                   : BubbleArrowDirectionUp;
   NSString* text =
       l10n_util::GetNSStringWithFixup(IDS_IOS_OPEN_NEW_TAB_IPH_TEXT);
+  std::u16string newTabButtonA11yLabel = base::SysNSStringToUTF16(
+      l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_NEW_TAB));
+  NSString* announcement = l10n_util::GetNSStringF(
+      IDS_IOS_OPEN_NEW_TAB_IPH_ANNOUNCEMENT, newTabButtonA11yLabel);
   CGPoint newTabButtonAnchor = [self anchorPointToGuide:kNewTabButtonGuide
                                               direction:arrowDirection];
 
@@ -414,7 +419,7 @@
                           direction:arrowDirection
                           alignment:BubbleAlignmentBottomOrTrailing
                                text:text
-              voiceOverAnnouncement:text
+              voiceOverAnnouncement:announcement
                         anchorPoint:newTabButtonAnchor
                       presentAction:presentAction
                       dismissAction:dismissAction];
@@ -457,6 +462,8 @@
                                                   : BubbleArrowDirectionUp;
   NSString* text =
       l10n_util::GetNSStringWithFixup(IDS_IOS_SEE_ALL_OPEN_TABS_IPH_TEXT);
+  NSString* announcement =
+      l10n_util::GetNSString(IDS_IOS_SEE_ALL_OPEN_TABS_IPH_ANNOUNCEMENT);
   CGPoint tabGridButtonAnchor = [self anchorPointToGuide:kTabSwitcherGuide
                                                direction:arrowDirection];
 
@@ -478,7 +485,7 @@
                           direction:arrowDirection
                           alignment:BubbleAlignmentBottomOrTrailing
                                text:text
-              voiceOverAnnouncement:text
+              voiceOverAnnouncement:announcement
                         anchorPoint:tabGridButtonAnchor
                       presentAction:presentAction
                       dismissAction:dismissAction];

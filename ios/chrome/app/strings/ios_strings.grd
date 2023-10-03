@@ -1953,6 +1953,9 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_NEW_ITEM_ACCESSIBILITY_HINT" desc="Accessibility hint spoken by VoiceOver to let the user know there is a new item. This string will be appended to an existing accesibility label when the UI is showing a little blue dot to attract the user's attention. For example, the label 'Default Browser' would become 'Default Browser, new item', which is why the string is not capitalized at its start. [iOS/iPadOS only]">
         new item
       </message>
+      <message name="IDS_IOS_SEE_ALL_OPEN_TABS_IPH_ANNOUNCEMENT" desc="Announcement for the tab grid button's in-product help, explaining that all open tabs can be accessed from the Tab Switcher. Read by Text To Speech. [iOS only]">
+        You can access all your open tabs from the Tab Switcher.
+      </message>
       <message name="IDS_IOS_SEE_ALL_OPEN_TABS_IPH_TEXT" desc="Text for the tab grid button's in-product help, explaining that all open tabs can be seen. [iOS only]">
         You can find all your open tabs here.
       </message>
@@ -2007,7 +2010,10 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_OPEN_IN_FILE_DOWNLOAD_FAILED" desc="The message of the alert informing a user that the download of the file to be opened in another application failed. [Length: 60em] [iOS only]">
         The file could not be downloaded at this time.
       </message>
-      <message name="IDS_IOS_OPEN_NEW_TAB_IPH_TEXT" desc="Text for the New Tab Tip in-product help promotion, explaining that new tabs can be added. [iOS only]" meaning="The user has never created a new tab, and a bubble is displayed pointing to the tab switcher to inform users how to create tabs and switch between them.">
+      <message name="IDS_IOS_OPEN_NEW_TAB_IPH_ANNOUNCEMENT" desc="Announcement for the New Tab Tip in-product help promotion, explaining that new tabs can be added.  Read by Text To Speech. [iOS only]" meaning="The user has never created a new tab, and a bubble is displayed pointing to the new tab button to inform users how to create tabs and switch between them.">
+        You can open a new tab from the <ph name="NEW_TAB_BUTTON_ACCESSIBILITY_LABEL">$1<ex>new tab</ex></ph> button.
+      </message>
+      <message name="IDS_IOS_OPEN_NEW_TAB_IPH_TEXT" desc="Text for the New Tab Button in-product help promotion, explaining that new tabs can be added. [iOS only]" meaning="The user has never created a new tab, and a bubble is displayed pointing to the new tab button to inform users how to create tabs and switch between them.">
         You can open a new tab here.
       </message>
       <message name="IDS_IOS_OPEN_SOURCE_LICENSES" desc="The label to access the open source licenses, displayed in the application settings [Length: 30em] [iOS only]">
@@ -5359,7 +5365,13 @@ Your data was encrypted with your passphrase on <ph name="TIME">$2<ex>Sept 1, 20
       <message name="IDS_IOS_KEYBOARD_ACCESSORY_VIEW_PASTE_SEARCH" desc="Accessibility label for a button that starts a Paste and Search [iOS only]">
         Paste and Search
       </message>
-      <message name="IDS_IOS_VIEW_BROWSING_HISTORY_OVERFLOW_MENU_TIP" desc="The text of the tip explaining to the user they can use the history item in the overflow menu.">
+      <message name="IDS_IOS_VIEW_BROWSING_HISTORY_FROM_MENU_ANNOUNCEMENT" desc="The announcement of the tip explaining to the user they can find the browsing history from the menu. The tip is displayed as a bubble pointing to the menu button. Read by Text To Speech. [iOS only]">
+        You can find all your browsing history from the <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL">$1<ex>Menu</ex></ph>.
+      </message>
+      <message name="IDS_IOS_VIEW_BROWSING_HISTORY_BY_SELECTING_HISTORY_TIP_ANNOUNCEMENT" desc="The announcement of the tip explaining to the user they can find the browsing history by selecting the History. The tip is displayed as a bubble pointing to the History item in the menu. Read by Text To Speech. [iOS only]">
+        You can access all your browsing history by selecting <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL">$1<ex>History</ex></ph>.
+      </message>
+      <message name="IDS_IOS_VIEW_BROWSING_HISTORY_OVERFLOW_MENU_TIP" desc="The text of the tip explaining to the user they can use the history item in the overflow menu. [iOS only]">
         You can find all your browsing history here.
       </message>
       <message name="IDS_IOS_AUTOFILL_ADDRESS_SUGGESTIONS_AVAILABLE_ACCESSIBILITY_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="The accessibility announcement to indicate the number of address suggestions available to the user above the keyboard. This announcement is triggered when the user enters edit mode in a form field that has address suggestions available for autofill purposes. According to the number of available addresses, the string goes from singular to plural. [iOS only]">
