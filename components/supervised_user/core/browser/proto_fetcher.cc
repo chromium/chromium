@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
@@ -215,7 +216,6 @@ class Metrics {
         return "AccessTokenLatency";
       case MetricType::kApiLatency:
         return "ApiLatency";
-
       case MetricType::kRetryCount:
         NOTREACHED_NORETURN();
       default:
@@ -241,7 +241,7 @@ class Metrics {
   std::string GetFullHistogramName(
       MetricType metric_type,
       GoogleServiceAuthError::State auth_error_state) const {
-    CHECK(auth_error_state == GoogleServiceAuthError::State::NONE)
+    CHECK_EQ(auth_error_state, GoogleServiceAuthError::State::NONE)
         << "Only authenticated case is supported.";
     return JoinString({basename_, "NONE", GetMetricKey(metric_type)}, ".");
   }
@@ -251,8 +251,8 @@ class Metrics {
   std::string GetFullHistogramName(MetricType metric_type,
                                    ProtoFetcherStatus::HttpStatusOrNetErrorType
                                        http_status_or_net_error) const {
-    CHECK(http_status_or_net_error ==
-          ProtoFetcherStatus::HttpStatusOrNetErrorType(net::HTTP_OK))
+    CHECK_EQ(http_status_or_net_error,
+             ProtoFetcherStatus::HttpStatusOrNetErrorType(net::HTTP_OK))
         << "Only successful api call case is supported.";
     return JoinString({basename_, "HTTP_OK", GetMetricKey(metric_type)}, ".");
   }
