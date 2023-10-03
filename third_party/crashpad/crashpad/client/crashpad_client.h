@@ -807,11 +807,17 @@ class CrashpadClient {
 #endif
 
  private:
+#if BUILDFLAG(IS_WIN)
+  //!  \brief Registers process handlers for the client.
+  void RegisterHandlers();
+#endif
+
 #if BUILDFLAG(IS_APPLE)
   base::apple::ScopedMachSendRight exception_port_;
 #elif BUILDFLAG(IS_WIN)
   std::wstring ipc_pipe_;
   ScopedKernelHANDLE handler_start_thread_;
+  ScopedVectoredExceptionRegistration vectored_handler_;
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   std::set<int> unhandled_signals_;
 #endif  // BUILDFLAG(IS_APPLE)

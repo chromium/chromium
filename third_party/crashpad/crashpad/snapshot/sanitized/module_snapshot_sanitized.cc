@@ -14,6 +14,8 @@
 
 #include "snapshot/sanitized/module_snapshot_sanitized.h"
 
+#include "base/strings/pattern.h"
+
 namespace crashpad {
 namespace internal {
 
@@ -22,7 +24,7 @@ namespace {
 bool KeyIsAllowed(const std::string& name,
                   const std::vector<std::string>& allowed_keys) {
   for (const auto& key : allowed_keys) {
-    if (name == key) {
+    if (base::MatchPattern(name, key)) {
       return true;
     }
   }

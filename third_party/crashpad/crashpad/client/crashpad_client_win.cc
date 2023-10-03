@@ -589,45 +589,10 @@ void CommonInProcessInitialization() {
   g_non_crash_dump_lock = new base::Lock();
 }
 
-void RegisterHandlers() {
-  SetUnhandledExceptionFilter(&UnhandledExceptionHandler);
-
-  // Windows swallows heap corruption failures but we can intercept them with
-  // a vectored exception handler.
-#if defined(ADDRESS_SANITIZER)
-  // Let ASAN have first go.
-  bool go_first = false;
-#else
-  bool go_first = true;
-#endif
-  AddVectoredExceptionHandler(go_first, HandleHeapCorruption);
-
-  // The Windows CRT's signal.h lists:
-  // - SIGINT
-  // - SIGILL
-  // - SIGFPE
-  // - SIGSEGV
-  // - SIGTERM
-  // - SIGBREAK
-  // - SIGABRT
-  // SIGILL and SIGTERM are documented as not being generated. SIGBREAK and
-  // SIGINT are for Ctrl-Break and Ctrl-C, and aren't something for which
-  // capturing a dump is warranted. SIGFPE and SIGSEGV are captured as regular
-  // exceptions through the unhandled exception filter. This leaves SIGABRT. In
-  // the standard CRT, abort() is implemented as a synchronous call to the
-  // SIGABRT signal handler if installed, but after doing so, the unhandled
-  // exception filter is not triggered (it instead __fastfail()s). So, register
-  // to handle SIGABRT to catch abort() calls, as client code might use this and
-  // expect it to cause a crash dump. This will only work when the abort()
-  // that's called in client code is the same (or has the same behavior) as the
-  // one in use here.
-  void (*rv)(int) = signal(SIGABRT, HandleAbortSignal);
-  DCHECK_NE(rv, SIG_ERR);
-}
-
 }  // namespace
 
-CrashpadClient::CrashpadClient() : ipc_pipe_(), handler_start_thread_() {}
+CrashpadClient::CrashpadClient()
+    : ipc_pipe_(), handler_start_thread_(), vectored_handler_() {}
 
 CrashpadClient::~CrashpadClient() {}
 
@@ -699,6 +664,43 @@ bool CrashpadClient::StartHandler(
     return StartHandlerProcess(
         std::unique_ptr<BackgroundHandlerStartThreadData>(data));
   }
+}
+
+void CrashpadClient::RegisterHandlers() {
+  SetUnhandledExceptionFilter(&UnhandledExceptionHandler);
+
+  // Windows swallows heap corruption failures but we can intercept them with
+  // a vectored exception handler.
+#if defined(ADDRESS_SANITIZER)
+  // Let ASAN have first go.
+  bool go_first = false;
+#else
+  bool go_first = true;
+#endif
+  PVOID handler = AddVectoredExceptionHandler(go_first, HandleHeapCorruption);
+  vectored_handler_.reset(handler);
+
+  // The Windows CRT's signal.h lists:
+  // - SIGINT
+  // - SIGILL
+  // - SIGFPE
+  // - SIGSEGV
+  // - SIGTERM
+  // - SIGBREAK
+  // - SIGABRT
+  // SIGILL and SIGTERM are documented as not being generated. SIGBREAK and
+  // SIGINT are for Ctrl-Break and Ctrl-C, and aren't something for which
+  // capturing a dump is warranted. SIGFPE and SIGSEGV are captured as regular
+  // exceptions through the unhandled exception filter. This leaves SIGABRT. In
+  // the standard CRT, abort() is implemented as a synchronous call to the
+  // SIGABRT signal handler if installed, but after doing so, the unhandled
+  // exception filter is not triggered (it instead __fastfail()s). So, register
+  // to handle SIGABRT to catch abort() calls, as client code might use this and
+  // expect it to cause a crash dump. This will only work when the abort()
+  // that's called in client code is the same (or has the same behavior) as the
+  // one in use here.
+  void (*rv)(int) = signal(SIGABRT, HandleAbortSignal);
+  DCHECK_NE(rv, SIG_ERR);
 }
 
 bool CrashpadClient::SetHandlerIPCPipe(const std::wstring& ipc_pipe) {
