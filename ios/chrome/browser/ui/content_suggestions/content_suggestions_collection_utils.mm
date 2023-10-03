@@ -72,6 +72,10 @@ const CGFloat kSymbolContentSuggestionsPointSize = 18;
 const CGFloat kFakeboxHeight = 65;
 const CGFloat kFakeboxHeightNonDynamic = 45;
 
+// The height of the Fakebox when it is pinned to the top.
+const CGFloat kPinnedFakeboxHeight = 48;
+const CGFloat kPinnedFakeboxHeightNonDynamic = 18;
+
 // Returns the color of the search hint label in the fakebox.
 UIColor* SearchHintLabelColor() {
   if (IsIOSLargeFakeboxEnabled()) {
@@ -80,6 +84,19 @@ UIColor* SearchHintLabelColor() {
     return [UIColor colorNamed:@"fake_omnibox_placeholder_color"];
   }
   return [UIColor colorNamed:kTextfieldPlaceholderColor];
+}
+
+// Returns the amount of vertical margin to include in the Fake Toolbar.
+CGFloat FakeToolbarVerticalMargin() {
+  UIContentSizeCategory category =
+      [UIApplication sharedApplication].preferredContentSizeCategory;
+  CGFloat vertical_margin =
+      2 * kAdaptiveLocationBarVerticalMargin - kTopToolbarUnsplitMargin;
+  CGFloat dynamic_type_vertical_adjustment =
+      (ToolbarClampedFontSizeMultiplier(category) - 1) *
+      (kLocationBarVerticalMarginDynamicType +
+       kAdaptiveLocationBarVerticalMargin);
+  return vertical_margin + dynamic_type_vertical_adjustment;
 }
 }
 
@@ -156,6 +173,25 @@ CGFloat FakeOmniboxHeight() {
     return AlignValueToPixel((kFakeboxHeight - kFakeboxHeightNonDynamic) *
                                  multiplier +
                              kFakeboxHeightNonDynamic);
+  }
+  return ToolbarExpandedHeight(
+      [UIApplication sharedApplication].preferredContentSizeCategory);
+}
+
+CGFloat PinnedFakeOmniboxHeight() {
+  if (IsIOSLargeFakeboxEnabled()) {
+    CGFloat multiplier = ui_util::SystemSuggestedFontSizeMultiplier();
+    return AlignValueToPixel(
+        (kPinnedFakeboxHeight - kPinnedFakeboxHeightNonDynamic) * multiplier +
+        kPinnedFakeboxHeightNonDynamic);
+  }
+  return LocationBarHeight(
+      [UIApplication sharedApplication].preferredContentSizeCategory);
+}
+
+CGFloat FakeToolbarHeight() {
+  if (IsIOSLargeFakeboxEnabled()) {
+    return PinnedFakeOmniboxHeight() + FakeToolbarVerticalMargin();
   }
   return ToolbarExpandedHeight(
       [UIApplication sharedApplication].preferredContentSizeCategory);

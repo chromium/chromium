@@ -7,6 +7,7 @@
 #import <memory>
 
 #import "base/test/scoped_feature_list.h"
+#import "ios/chrome/browser/ntp/features.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
 #import "ios/testing/scoped_block_swizzler.h"
 #import "testing/platform_test.h"
@@ -180,6 +181,24 @@ TEST_F(ContentSuggestionsCollectionUtilsTest, shrunkDoodleFrameIPhone) {
   EXPECT_EQ(68, heightLogoPortrait);
   EXPECT_EQ(kDoodleHeightNoLogo, heightNoLogoPortrait);
   EXPECT_EQ(95, topMarginPortrait);
+}
+
+TEST_F(ContentSuggestionsCollectionUtilsTest, fakeOmniboxHeight) {
+  EXPECT_EQ(50, FakeOmniboxHeight());
+  base::test::ScopedFeatureList scoped_feature_list(kIOSLargeFakebox);
+  EXPECT_EQ(65, FakeOmniboxHeight());
+}
+
+TEST_F(ContentSuggestionsCollectionUtilsTest, pinnedFakeOmniboxHeight) {
+  EXPECT_EQ(36, PinnedFakeOmniboxHeight());
+  base::test::ScopedFeatureList scoped_feature_list(kIOSLargeFakebox);
+  EXPECT_EQ(48, PinnedFakeOmniboxHeight());
+}
+
+TEST_F(ContentSuggestionsCollectionUtilsTest, fakeToolbarHeight) {
+  EXPECT_EQ(50, FakeToolbarHeight());
+  base::test::ScopedFeatureList scoped_feature_list(kIOSLargeFakebox);
+  EXPECT_EQ(62, FakeToolbarHeight());
 }
 
 }  // namespace content_suggestions

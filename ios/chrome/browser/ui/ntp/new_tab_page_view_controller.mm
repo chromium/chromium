@@ -901,11 +901,7 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
 
 // Returns the height of the fake omnibox to stick to the top of the NTP.
 - (CGFloat)stickyOmniboxHeight {
-  // Takes the height of the entire header and subtracts the margin to stick the
-  // fake omnibox. Adjusts this for the device by further subtracting the
-  // toolbar height.
-  return ToolbarExpandedHeight(
-      [UIApplication sharedApplication].preferredContentSizeCategory);
+  return content_suggestions::FakeToolbarHeight();
 }
 
 // Sets the feed collection contentOffset from the saved state to `offset` to
@@ -1444,11 +1440,9 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
   // for Discover infinite feed.
   CGFloat minimumHeight = collectionViewHeight + headerHeight;
   if (!IsRegularXRegularSizeClass(self.collectionView)) {
-    CGFloat toolbarHeight =
-        IsSplitToolbarMode(self.collectionView)
-            ? ToolbarExpandedHeight([UIApplication sharedApplication]
-                                        .preferredContentSizeCategory)
-            : 0;
+    CGFloat toolbarHeight = IsSplitToolbarMode(self.collectionView)
+                                ? [self stickyOmniboxHeight]
+                                : 0;
     CGFloat additionalHeight =
         toolbarHeight + self.collectionView.contentInset.bottom;
     minimumHeight -= additionalHeight;

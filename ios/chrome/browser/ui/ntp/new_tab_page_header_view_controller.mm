@@ -229,8 +229,7 @@ NSString* const kScribbleFakeboxElementId = @"fakebox";
 - (CGFloat)pinnedOffsetY {
   CGFloat offsetY = [self headerHeight];
   if (IsSplitToolbarMode(self)) {
-    offsetY -= ToolbarExpandedHeight(
-        self.traitCollection.preferredContentSizeCategory);
+    offsetY -= content_suggestions::FakeToolbarHeight();
   }
 
   return AlignValueToPixel(offsetY);

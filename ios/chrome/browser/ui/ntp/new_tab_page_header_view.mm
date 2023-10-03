@@ -220,9 +220,7 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   [NSLayoutConstraint activateConstraints:@[
     [toolbarView.leadingAnchor constraintEqualToAnchor:self.leadingAnchor],
     [toolbarView.heightAnchor
-        constraintEqualToConstant:ToolbarExpandedHeight(
-                                      [UIApplication sharedApplication]
-                                          .preferredContentSizeCategory)],
+        constraintEqualToConstant:content_suggestions::FakeToolbarHeight()],
     [toolbarView.trailingAnchor constraintEqualToAnchor:self.trailingAnchor],
     self.invisibleOmniboxConstraint,
   ]];
@@ -475,10 +473,7 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   self.hintLabelTrailingConstraint.constant = -hintLabelScalingExtraOffset;
 
   CGFloat fakeOmniboxHeight = content_suggestions::FakeOmniboxHeight();
-  // Use UIApplication preferredContentSizeCategory as this VC has a weird trait
-  // collection from times to times.
-  CGFloat locationBarHeight = LocationBarHeight(
-      [UIApplication sharedApplication].preferredContentSizeCategory);
+  CGFloat locationBarHeight = content_suggestions::PinnedFakeOmniboxHeight();
 
   if (!IsSplitToolbarMode(self)) {
     // When Voiceover is running, if the header's alpha is set to 0, voiceover
@@ -652,9 +647,7 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
 // The positive offset value to begin the fake omnibox expansion animation.
 - (CGFloat)offsetToBeginFakeOmniboxExpansion {
   CGFloat offset =
-      self.frame.size.height -
-      ToolbarExpandedHeight(
-          [UIApplication sharedApplication].preferredContentSizeCategory);
+      self.frame.size.height - content_suggestions::FakeToolbarHeight();
 
   // For non-split toolbar, the fake omnibox goes beneath the toolbar.
   if (!IsSplitToolbarMode(self)) {
