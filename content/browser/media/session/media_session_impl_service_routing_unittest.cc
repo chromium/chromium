@@ -115,7 +115,7 @@ class MockMediaSessionPlayerObserver : public MediaSessionPlayerObserver {
   }
 
  private:
-  raw_ptr<RenderFrameHost, DanglingUntriaged> render_frame_host_;
+  raw_ptr<RenderFrameHost> render_frame_host_;
 
   const media_session::mojom::MediaAudioVideoState audio_video_state_;
 
@@ -161,6 +161,9 @@ class MediaSessionImplServiceRoutingTest
 
   void TearDown() override {
     services_.clear();
+    players_.clear();
+    sub_frame_ = nullptr;
+    main_frame_ = nullptr;
 
     RenderViewHostImplTestHarness::TearDown();
   }
@@ -247,8 +250,8 @@ class MediaSessionImplServiceRoutingTest
     return empty_metadata_.source_title;
   }
 
-  raw_ptr<TestRenderFrameHost, DanglingUntriaged> main_frame_;
-  raw_ptr<TestRenderFrameHost, DanglingUntriaged> sub_frame_;
+  raw_ptr<TestRenderFrameHost> main_frame_;
+  raw_ptr<TestRenderFrameHost> sub_frame_;
 
   using ServiceMap = std::map<TestRenderFrameHost*,
                               std::unique_ptr<MockMediaSessionServiceImpl>>;
@@ -1394,13 +1397,20 @@ class MediaSessionImplServiceRoutingFencedFrameTest
     fenced_frame_ = main_frame_->AppendFencedFrame();
   }
 
+  void TearDown() override {
+    inner_fenced_frame_ = nullptr;
+    fenced_frame_ = nullptr;
+
+    MediaSessionImplServiceRoutingTest::TearDown();
+  }
+
   void CreateFencedFrameInSubframe() {
     inner_fenced_frame_ = sub_frame_->AppendFencedFrame();
   }
 
  protected:
-  raw_ptr<TestRenderFrameHost, DanglingUntriaged> fenced_frame_;
-  raw_ptr<TestRenderFrameHost, DanglingUntriaged> inner_fenced_frame_;
+  raw_ptr<TestRenderFrameHost> fenced_frame_;
+  raw_ptr<TestRenderFrameHost> inner_fenced_frame_;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
