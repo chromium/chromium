@@ -77,7 +77,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer4.GpuImageDecodeState.FirstLockWasted"
-    enum="BooleanWasted" expires_after="2024-01-28">
+    enum="BooleanWasted" expires_after="2024-03-31">
   <owner>vmpstr@chromium.org</owner>
   <owner>thiabaud@google.com</owner>
   <summary>

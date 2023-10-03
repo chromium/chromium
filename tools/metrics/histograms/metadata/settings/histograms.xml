@@ -326,7 +326,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.PrivacyElementInteractions"
-    enum="SettingsPrivacyElementInteractions" expires_after="2024-01-31">
+    enum="SettingsPrivacyElementInteractions" expires_after="2024-03-31">
   <owner>harrisonsean@chromium.org</owner>
   <owner>msramek@chromium.org</owner>
   <owner>sauski@chromium.org</owner>
@@ -348,7 +348,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.PrivacyGuide.EntryExit"
-    enum="SettingsPrivacyGuideInteractions" expires_after="2024-01-31">
+    enum="SettingsPrivacyGuideInteractions" expires_after="2024-03-31">
   <owner>harrisonsean@chromium.org</owner>
   <owner>rainhard@chromium.org</owner>
   <owner>chrome-privacy-controls@google.com</owner>
@@ -359,7 +359,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.PrivacyGuide.FlowLength" units="steps"
-    expires_after="2024-01-31">
+    expires_after="2024-03-31">
   <owner>rainhard@chromium.org</owner>
   <owner>aisulu@chromium.org</owner>
   <owner>chrome-privacy-controls@google.com</owner>
@@ -371,7 +371,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.PrivacyGuide.NextNavigation"
-    enum="SettingsPrivacyGuideInteractions" expires_after="2024-01-31">
+    enum="SettingsPrivacyGuideInteractions" expires_after="2024-03-31">
   <owner>harrisonsean@chromium.org</owner>
   <owner>rainhard@chromium.org</owner>
   <owner>chrome-privacy-controls@google.com</owner>
@@ -394,7 +394,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Settings.PrivacyGuide.StepsEligibleAndReached"
     enum="SettingsPrivacyGuideStepsEligibleAndReached"
-    expires_after="2024-01-31">
+    expires_after="2024-03-31">
   <owner>rainhard@chromium.org</owner>
   <owner>aisulu@chromium.org</owner>
   <owner>chrome-privacy-controls@google.com</owner>
@@ -515,7 +515,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.PrivacySandbox.InvalidTopicIdLocalized" units="units"
-    expires_after="M121">
+    expires_after="2024-03-31">
   <owner>sauski@google.com</owner>
   <owner>chrome-privacy-controls@google.com</owner>
   <summary>

@@ -568,7 +568,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UpdateEngine.Rollback.Result" enum="BooleanSuccess"
-    expires_after="2024-01-01">
+    expires_after="2024-03-31">
   <owner>kimjae@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>
