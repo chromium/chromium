@@ -14,6 +14,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
@@ -344,6 +345,12 @@ void InstallApp(UpdaterScope scope,
 }
 
 void UninstallApp(UpdaterScope scope, const std::string& app_id) {
+  const base::FilePath& install_path =
+      base::MakeRefCounted<PersistedData>(
+          scope, CreateGlobalPrefs(scope)->GetPrefService())
+          ->GetExistenceCheckerPath(app_id);
+  VLOG(1) << "Deleting app install path: " << install_path;
+  base::DeletePathRecursively(install_path);
   SetExistenceCheckerPath(scope, app_id,
                           base::FilePath(FILE_PATH_LITERAL("NONE")));
 }

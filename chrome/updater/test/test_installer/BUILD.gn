@@ -169,7 +169,27 @@ if (is_win) {
     output = "$root_build_dir/test_installer/TestSystemMsiInstaller.msi.crx3"
     deps = [ ":copy_test_msi_installer2.0.0.0" ]
   }
+
+  group("app_installers") {
+    testonly = true
+
+    data_deps = [
+      ":test_app2_installer",
+      ":test_app2_installer_crx",
+      ":test_installer",
+      ":test_msi_installer1.0.0.0",
+      ":test_msi_installer_crx",
+    ]
+  }
 } else {
+  copy("test_installer") {
+    testonly = true
+
+    sources = [ "test_app_setup.sh" ]
+
+    outputs = [ "$root_build_dir/test_installer/{{source_file_part}}" ]
+  }
+
   template("test_app_installer") {
     testonly = true
     app_name = target_name
@@ -189,6 +209,8 @@ if (is_win) {
         invoker.script,
         "--app",
         invoker.app,
+        "--company",
+        updater_company_short_name,
         "--version",
         invoker.version,
         "--output",
@@ -217,9 +239,48 @@ if (is_win) {
     }
   }
 
-  test_app_installer("app") {
-    app = "MockApp"
+  test_app_installer("test1_v1") {
+    app = "test1"
     version = "1.0.0.0"
     script = "test_app_setup.sh"
+  }
+  test_app_installer("test1_v2") {
+    app = "test1"
+    version = "2.0.0.0"
+    script = "test_app_setup.sh"
+  }
+  test_app_installer("test2_v1") {
+    app = "test2"
+    version = "100.0.0.0"
+    script = "test_app_setup.sh"
+  }
+  test_app_installer("test2_v2") {
+    app = "test2"
+    version = "101.0.0.0"
+    script = "test_app_setup.sh"
+  }
+  test_app_installer("test3_v1") {
+    app = "test3"
+    version = "1.0"
+    script = "test_app_setup.sh"
+  }
+  test_app_installer("test3_v2") {
+    app = "test3"
+    version = "1.1"
+    script = "test_app_setup.sh"
+  }
+
+  group("app_installers") {
+    testonly = true
+
+    data_deps = [
+      ":test_installer",
+      ":test_installer_test1_v1",
+      ":test_installer_test1_v2",
+      ":test_installer_test2_v1",
+      ":test_installer_test2_v2",
+      ":test_installer_test3_v1",
+      ":test_installer_test3_v2",
+    ]
   }
 }

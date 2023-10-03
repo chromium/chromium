@@ -14,7 +14,7 @@ def generate_app_install_script(command: str, app: str, company: str,
         f.write('#/bin/bash\n\n')
         f.write('SCRIPT_DIR=$(dirname -- "${BASH_SOURCE[0]}")\n')
         f.write('"${SCRIPT_DIR}/' +
-                f'{command}" --appname={app} --company={company} '
+                f'{command}" --appid={app} --company={company} '
                 f'--product_version={version}\n')
     os.chmod(output, os.stat(output).st_mode | stat.S_IEXEC)
 

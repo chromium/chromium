@@ -15,6 +15,8 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/functional/function_ref.h"
+#include "base/json/json_file_value_serializer.h"
+#include "base/json/json_reader.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -480,6 +482,7 @@ class IntegrationTest : public ::testing::Test {
                           const base::Version& expected_version) {
     ASSERT_NO_FATAL_FAILURE(ExpectAppVersion(appid, expected_version));
 
+    // Verify installed app artifacts.
 #if BUILDFLAG(IS_WIN)
     std::wstring pv;
     EXPECT_EQ(
@@ -488,6 +491,26 @@ class IntegrationTest : public ::testing::Test {
                           GetAppClientsKey(appid).c_str(), Wow6432(KEY_READ))
             .ReadValue(kRegValuePV, &pv));
     EXPECT_EQ(pv, base::ASCIIToWide(expected_version.GetString()));
+#else
+    const base::FilePath app_json_path =
+        GetInstallDirectory(UpdaterScope::kSystem)
+            ->DirName()
+            .AppendASCII(appid)
+            .AppendASCII("app.json");
+    JSONFileValueDeserializer parser(app_json_path,
+                                     base::JSON_ALLOW_TRAILING_COMMAS);
+    int error_code = 0;
+    std::string error_message;
+    std::unique_ptr<base::Value> app_data(
+        parser.Deserialize(&error_code, &error_message));
+    EXPECT_EQ(error_code, 0)
+        << "Failed to load app json file at: " << app_json_path;
+    EXPECT_TRUE(app_data);
+    EXPECT_TRUE(app_data->is_dict());
+    const base::Value::Dict& app_info = app_data->GetDict();
+    EXPECT_EQ(*app_info.FindString("app"), appid);
+    EXPECT_EQ(*app_info.FindString("company"), COMPANY_SHORTNAME_STRING);
+    EXPECT_EQ(*app_info.FindString("pv"), expected_version.GetString());
 #endif  // BUILDFLAG(IS_WIN)
   }
 
@@ -1781,11 +1804,11 @@ class IntegrationTestDeviceManagement : public IntegrationTest {
   void InstallAppWithVersion(const std::string& app_id,
                              const base::Version& version) {
     InstallApp(app_id, version, [&]() {
+      base::FilePath exe_path;
+      ASSERT_TRUE(base::PathService::Get(base::DIR_EXE, &exe_path));
 #if BUILDFLAG(IS_WIN)
       // Run test app installer to set app `pv` value to its initial
       // version.
-      base::FilePath exe_path;
-      ASSERT_TRUE(base::PathService::Get(base::DIR_EXE, &exe_path));
       const std::wstring command(base::StrCat(
           {base::CommandLine::QuoteForCommandLineToArgvW(
                exe_path
@@ -1804,7 +1827,27 @@ class IntegrationTestDeviceManagement : public IntegrationTest {
       EXPECT_TRUE(process.WaitForExitWithTimeout(TestTimeouts::action_timeout(),
                                                  &exit_code));
       EXPECT_EQ(0, exit_code);
-#endif  // BUILDFLAG(IS_WIN)
+#else
+      // Run test app installer to set app initial version artifacts.
+      base::CommandLine command(exe_path
+                   .Append(GetInstallerPath(kAppCRX).DirName().AppendASCII(
+                       "test_app_setup.sh")));
+      command.AppendSwitchASCII("--appid", app_id);
+      command.AppendSwitchASCII("--company", COMPANY_SHORTNAME_STRING);
+      command.AppendSwitchASCII("--product_version", version.GetString());
+      VLOG(2) << "Launch app setup command: " << command.GetCommandLineString();
+      base::Process process = base::LaunchProcess(MakeElevated(command), {});
+      if (!process.IsValid()) {
+        VLOG(2) << "Failed to launch the process";
+      }
+      int exit_code = -1;
+      EXPECT_TRUE(process.WaitForExitWithTimeout(TestTimeouts::action_timeout(),
+                                                 &exit_code));
+      EXPECT_EQ(0, exit_code);
+      SetExistenceCheckerPath(app_id,
+          GetInstallDirectory(
+              UpdaterScope::kSystem)->DirName().AppendASCII(app_id));
+#endif
     });
 
     ExpectAppInstalled(app_id, version);
@@ -1829,7 +1872,7 @@ class IntegrationTestDeviceManagement : public IntegrationTest {
 #if BUILDFLAG(IS_WIN)
   static constexpr char kAppCRX[] = "Testapp2Setup.crx3";
 #else
-  static constexpr char kAppCRX[] = "test_installer_app.crx3";
+  static constexpr char kAppCRX[] = "test_installer_test1_v1.crx3";
 #endif  // BUILDFLAG(IS_WIN)
 };
 
@@ -1883,7 +1926,7 @@ TEST_F(IntegrationTestDeviceManagement, PolicyFetchBeforeInstall) {
 #if !defined(COMPONENT_BUILD)
 
 TEST_F(IntegrationTestDeviceManagement, AppInstall) {
-  const base::Version kApp1Version = base::Version("1.2.3.4");
+  const base::Version kApp1Version = base::Version("1.0.0.0");
   OmahaSettingsClientProto omaha_settings;
   omaha_settings.set_install_default(
       enterprise_management::INSTALL_DEFAULT_DISABLED);
@@ -1922,7 +1965,7 @@ TEST_F(IntegrationTestDeviceManagement, AppInstall) {
 }
 
 TEST_F(IntegrationTestDeviceManagement, ForceInstall) {
-  const base::Version kApp1Version = base::Version("1.2.3.4");
+  const base::Version kApp1Version = base::Version("1.0.0.0");
 
   ASSERT_NO_FATAL_FAILURE(Install());
   ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
@@ -1971,8 +2014,8 @@ TEST_F(IntegrationTestDeviceManagement, ForceInstall) {
 // the default on POSIX. Therefore, this test is Windows only.
 #if BUILDFLAG(IS_WIN)
 TEST_F(IntegrationTestDeviceManagement, AppUpdateConflictPolicies) {
-  const base::Version kApp1InitialVersion = base::Version("1.2.3.4");
-  const base::Version kApp1UpdatedVersion = base::Version("2.3.4.5");
+  const base::Version kApp1InitialVersion = base::Version("1.0.0.0");
+  const base::Version kApp1UpdatedVersion = base::Version("2.0.0.0");
   const base::Version kApp2InitialVersion = base::Version("100.0.0.0");
   const base::Version kApp2UpdatedVersion = base::Version("101.0.0.0");
   const base::Version kApp3InitialVersion = base::Version("1.0");
@@ -2036,6 +2079,9 @@ TEST_F(IntegrationTestDeviceManagement, AppUpdateConflictPolicies) {
   ASSERT_NO_FATAL_FAILURE(ExpectAppInstalled(kAppId2, kApp2UpdatedVersion));
   ASSERT_NO_FATAL_FAILURE(ExpectAppInstalled(kAppId3, kApp3InitialVersion));
   ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(test_server_.get()));
+  ASSERT_NO_FATAL_FAILURE(UninstallApp(kAppId1));
+  ASSERT_NO_FATAL_FAILURE(UninstallApp(kAppId2));
+  ASSERT_NO_FATAL_FAILURE(UninstallApp(kAppId3));
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 #endif  // BUILDFLAG(IS_WIN)
@@ -2046,8 +2092,8 @@ TEST_F(IntegrationTestDeviceManagement, AppUpdateConflictPolicies) {
 TEST_F(IntegrationTestDeviceManagement, CloudPolicyOverridesPlatformPolicy) {
   ASSERT_NO_FATAL_FAILURE(SetCloudPolicyOverridesPlatformPolicy());
 
-  const base::Version kApp1InitialVersion = base::Version("1.2.3.4");
-  const base::Version kApp1UpdatedVersion = base::Version("2.3.4.5");
+  const base::Version kApp1InitialVersion = base::Version("1.0.0.0");
+  const base::Version kApp1UpdatedVersion = base::Version("2.0.0.0");
   const base::Version kApp2InitialVersion = base::Version("100.0.0.0");
   const base::Version kApp2UpdatedVersion = base::Version("101.0.0.0");
   const base::Version kApp3InitialVersion = base::Version("1.0");
@@ -2119,14 +2165,17 @@ TEST_F(IntegrationTestDeviceManagement, CloudPolicyOverridesPlatformPolicy) {
   ASSERT_NO_FATAL_FAILURE(ExpectAppInstalled(kAppId2, kApp2InitialVersion));
   ASSERT_NO_FATAL_FAILURE(ExpectAppInstalled(kAppId3, kApp3UpdatedVersion));
   ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(test_server_.get()));
+  ASSERT_NO_FATAL_FAILURE(UninstallApp(kAppId1));
+  ASSERT_NO_FATAL_FAILURE(UninstallApp(kAppId2));
+  ASSERT_NO_FATAL_FAILURE(UninstallApp(kAppId3));
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 #endif  // BUILDFLAG(IS_WIN)
 
 TEST_F(IntegrationTestDeviceManagement, RollbackToTargetVersion) {
   constexpr char kTargetVersionPrefix[] = "1.0.";
-  const base::Version kAppInitialVersion = base::Version("2.3.1.0");
-  const base::Version kAppRollbackVersion = base::Version("1.0.1.2");
+  const base::Version kAppInitialVersion = base::Version("2.0.0.0");
+  const base::Version kAppRollbackVersion = base::Version("1.0.0.0");
 
   ASSERT_NO_FATAL_FAILURE(Install());
   ASSERT_NO_FATAL_FAILURE(InstallAppWithVersion(kAppId1, kAppInitialVersion));
@@ -2161,6 +2210,7 @@ TEST_F(IntegrationTestDeviceManagement, RollbackToTargetVersion) {
   ASSERT_NO_FATAL_FAILURE(ExpectAppInstalled(kAppId1, kAppRollbackVersion));
 
   ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(test_server_.get()));
+  ASSERT_NO_FATAL_FAILURE(UninstallApp(kAppId1));
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 #endif  // !defined(COMPONENT_BUILD)

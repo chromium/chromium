@@ -821,7 +821,10 @@ if (is_win || is_mac || is_linux) {
       "test/data/tagged_msi/GUH-untagged.msi",
     ]
 
-    data_deps = [ ":updater_selfupdate_test_crx" ]
+    data_deps = [
+      ":updater_selfupdate_test_crx",
+      "//chrome/updater/test/test_installer:app_installers",
+    ]
 
     if (is_win) {
       sources += [
@@ -859,10 +862,6 @@ if (is_win || is_mac || is_linux) {
       ]
 
       data_deps += [
-        "//chrome/updater/test/test_installer:test_app2_installer",
-        "//chrome/updater/test/test_installer:test_app2_installer_crx",
-        "//chrome/updater/test/test_installer:test_msi_installer1.0.0.0",
-        "//chrome/updater/test/test_installer:test_msi_installer_crx",
         "//chrome/updater/win:updater",
         "//chrome/updater/win:updater_test",
         "//chrome/updater/win/installer:installer_test",
@@ -967,7 +966,6 @@ if (is_win || is_mac || is_linux) {
       data_deps += [
         "//chrome/updater/mac:ksadmin_test",
         "//chrome/updater/mac:updater_bundle_test",
-        "//chrome/updater/test/test_installer:test_installer_app",
       ]
 
       if (target_cpu == "arm64") {
@@ -1065,7 +1063,6 @@ if (is_win || is_mac || is_linux) {
       deps += [ "//chrome/installer/util:with_no_strings" ]
       data_deps = [
         ":test_service_files",
-        "//chrome/updater/test/test_installer:test_installer",
         "//chrome/updater/win:updater_test",
         "//third_party/updater:old_updater",
       ]
@@ -1105,7 +1102,6 @@ if (is_win || is_mac || is_linux) {
       deps += [ "//chrome/installer/util:with_no_strings" ]
       data_deps += [
         ":test_service_files",
-        "//chrome/updater/test/test_installer:test_installer",
         "//chrome/updater/win:updater_test",
         "//third_party/updater:old_updater",
       ]
