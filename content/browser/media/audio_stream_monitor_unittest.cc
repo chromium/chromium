@@ -70,6 +70,11 @@ class AudioStreamMonitorTest : public RenderViewHostTestHarness {
     const_cast<const base::TickClock*&>(monitor_->clock_) = &clock_;
   }
 
+  void TearDown() override {
+    monitor_ = nullptr;
+    RenderViewHostTestHarness::TearDown();
+  }
+
   base::TimeTicks GetTestClockTime() { return clock_.NowTicks(); }
 
   void AdvanceClock(const base::TimeDelta& delta) { clock_.Advance(delta); }
@@ -163,7 +168,7 @@ class AudioStreamMonitorTest : public RenderViewHostTestHarness {
   WebContents* web_contents() { return monitor_->web_contents_; }
 
  protected:
-  raw_ptr<AudioStreamMonitor, DanglingUntriaged> monitor_;
+  raw_ptr<AudioStreamMonitor> monitor_;
 
  private:
   void ExpectWasRecentlyAudible() const {
