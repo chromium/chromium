@@ -422,4 +422,10 @@ BASE_FEATURE(kVisibilityAwareResourceScheduler,
 
 BASE_FEATURE(kSharedZstd, "SharedZstd", base::FEATURE_ENABLED_BY_DEFAULT);
 
+// This feature will permits de-duplicating cookie access details that are sent
+// to observers via OnCookiesAccessed.
+BASE_FEATURE(kCookieAccessDetailsNotificationDeDuping,
+             "CookieAccessDetailsNotificationDeDuping",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace network::features

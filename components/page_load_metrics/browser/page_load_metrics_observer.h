@@ -225,7 +225,6 @@ class PageLoadMetricsObserver : public PageLoadMetricsObserverInterface {
   void OnSubFrameDeleted(int frame_tree_node_id) override {}
   void OnCookiesRead(const GURL& url,
                      const GURL& first_party_url,
-                     const net::CookieList& cookie_list,
                      bool blocked_by_policy) override {}
   void OnCookieChange(const GURL& url,
                       const GURL& first_party_url,

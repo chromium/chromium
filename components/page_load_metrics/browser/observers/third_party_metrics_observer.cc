@@ -115,7 +115,6 @@ void ThirdPartyMetricsObserver::OnLoadedResource(
 void ThirdPartyMetricsObserver::OnCookiesRead(
     const GURL& url,
     const GURL& first_party_url,
-    const net::CookieList& cookie_list,
     bool blocked_by_policy) {
   OnCookieOrStorageAccess(url, first_party_url, blocked_by_policy,
                           AccessType::kCookieRead);

@@ -766,11 +766,9 @@ void PageLoadTracker::FrameSizeChanged(
 
 void PageLoadTracker::OnCookiesRead(const GURL& url,
                                     const GURL& first_party_url,
-                                    const net::CookieList& cookie_list,
                                     bool blocked_by_policy) {
   for (const auto& observer : observers_) {
-    observer->OnCookiesRead(url, first_party_url, cookie_list,
-                            blocked_by_policy);
+    observer->OnCookiesRead(url, first_party_url, blocked_by_policy);
   }
 }
 

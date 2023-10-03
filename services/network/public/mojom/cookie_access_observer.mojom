@@ -33,6 +33,11 @@ struct CookieAccessDetails {
   // |devtools_request_id| contains the DevTools request id of the request
   // that triggered the cookie change, if the read was triggered by a request.
   string? devtools_request_id;
+
+  // CookieAccessDetails may be deduplicated to reduce IPC costs. In this case,
+  // |count| refers to the number of instances that are duplicates of |this|
+  // that would have been sent (including |this|).
+  uint32 count = 1;
 };
 
 // Cloneable interface to observe the cookie reads or writes.

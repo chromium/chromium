@@ -158,6 +158,7 @@ TEST_F(PageSpecificContentSettingsTest, BlockedContent) {
                                   origin,
                                   origin,
                                   {*cookie1},
+                                  1u,
                                   false});
   content_settings = PageSpecificContentSettings::GetForFrame(
       web_contents()->GetPrimaryMainFrame());
@@ -194,6 +195,7 @@ TEST_F(PageSpecificContentSettingsTest, BlockedContent) {
                                   origin,
                                   origin,
                                   {*cookie1},
+                                  1u,
                                   false});
 
   // Block a cookie.
@@ -206,6 +208,7 @@ TEST_F(PageSpecificContentSettingsTest, BlockedContent) {
                                   origin,
                                   origin,
                                   {*cookie2},
+                                  1u,
                                   true});
   EXPECT_TRUE(content_settings->IsContentBlocked(ContentSettingsType::COOKIES));
 
@@ -298,6 +301,7 @@ TEST_F(PageSpecificContentSettingsTest, AllowedContent) {
                                   origin,
                                   origin,
                                   {*cookie1},
+                                  1u,
                                   false});
   ASSERT_TRUE(content_settings->IsContentAllowed(ContentSettingsType::COOKIES));
   ASSERT_FALSE(
@@ -313,6 +317,7 @@ TEST_F(PageSpecificContentSettingsTest, AllowedContent) {
                                   origin,
                                   origin,
                                   {*cookie2},
+                                  1u,
                                   true});
   ASSERT_TRUE(content_settings->IsContentAllowed(ContentSettingsType::COOKIES));
   ASSERT_TRUE(content_settings->IsContentBlocked(ContentSettingsType::COOKIES));
@@ -400,7 +405,7 @@ TEST_F(PageSpecificContentSettingsTest, EmptyCookieList) {
   GetHandle()->OnCookiesAccessed(
       web_contents()->GetPrimaryMainFrame(),
       {content::CookieAccessDetails::Type::kRead, GURL("http://google.com"),
-       GURL("http://google.com"), net::CookieList(), true});
+       GURL("http://google.com"), net::CookieList(), 1u, true});
   ASSERT_FALSE(
       content_settings->IsContentAllowed(ContentSettingsType::COOKIES));
   ASSERT_FALSE(
@@ -426,6 +431,7 @@ TEST_F(PageSpecificContentSettingsTest, SiteDataObserver) {
                                   origin,
                                   origin,
                                   {*cookie},
+                                  1u,
                                   blocked_by_policy});
 
   net::CookieList cookie_list;
@@ -440,7 +446,7 @@ TEST_F(PageSpecificContentSettingsTest, SiteDataObserver) {
   GetHandle()->OnCookiesAccessed(
       rfh,
       {content::CookieAccessDetails::Type::kRead, GURL("http://google.com"),
-       GURL("http://google.com"), cookie_list, blocked_by_policy});
+       GURL("http://google.com"), cookie_list, 1u, blocked_by_policy});
 
   auto google_storage_key = rfh->GetStorageKey();
   content_settings->OnStorageAccessed(StorageType::FILE_SYSTEM,
@@ -468,6 +474,7 @@ TEST_F(PageSpecificContentSettingsTest, LocalSharedObjectsContainer) {
                                   GURL("http://google.com"),
                                   GURL("http://google.com"),
                                   {*cookie},
+                                  1u,
                                   blocked_by_policy});
   content_settings->OnStorageAccessed(
       StorageType::FILE_SYSTEM,
@@ -553,6 +560,7 @@ TEST_F(PageSpecificContentSettingsTest, LocalSharedObjectsContainerCookie) {
                                   GURL("https://www.google.com"),
                                   GURL("https://www.google.com"),
                                   {*cookie5},
+                                  1u,
                                   blocked_by_policy});
 
   const auto& objects = content_settings->allowed_local_shared_objects();
@@ -805,24 +813,28 @@ TEST_F(PageSpecificContentSettingsTest, LocalSharedObjectsContainerHostsCount) {
                                   GURL("http://google.com"),
                                   GURL("http://google.com"),
                                   {*cookie1},
+                                  1u,
                                   blocked_by_policy});
   GetHandle()->OnCookiesAccessed(web_contents()->GetPrimaryMainFrame(),
                                  {content::CookieAccessDetails::Type::kRead,
                                   GURL("https://example.com"),
                                   GURL("https://example.com"),
                                   {*cookie2},
+                                  1u,
                                   blocked_by_policy});
   GetHandle()->OnCookiesAccessed(web_contents()->GetPrimaryMainFrame(),
                                  {content::CookieAccessDetails::Type::kRead,
                                   GURL("http://example.com"),
                                   GURL("http://example.com"),
                                   {*cookie3},
+                                  1u,
                                   blocked_by_policy});
   GetHandle()->OnCookiesAccessed(web_contents()->GetPrimaryMainFrame(),
                                  {content::CookieAccessDetails::Type::kRead,
                                   GURL("http://example.com"),
                                   GURL("http://example.com"),
                                   {*cookie4},
+                                  1u,
                                   blocked_by_policy});
   content_settings->OnStorageAccessed(
       StorageType::FILE_SYSTEM,
@@ -917,12 +929,14 @@ TEST_F(PageSpecificContentSettingsTest, AllowedSitesCountedFromBothModels) {
                                   googleURL,
                                   googleURL,
                                   {*cookie1},
+                                  1u,
                                   blocked_by_policy});
   GetHandle()->OnCookiesAccessed(web_contents()->GetPrimaryMainFrame(),
                                  {content::CookieAccessDetails::Type::kRead,
                                   exampleURL,
                                   exampleURL,
                                   {*cookie2},
+                                  1u,
                                   blocked_by_policy});
 
   PageSpecificContentSettings* pscs = PageSpecificContentSettings::GetForFrame(
@@ -1028,6 +1042,7 @@ TEST_F(PageSpecificContentSettingsWithPrerenderTest, SiteDataAccessed) {
                              origin,
                              origin,
                              {*cookie1},
+                             1u,
                              false});
   }
   // Activate prerendering page.
@@ -1069,6 +1084,7 @@ TEST_F(PageSpecificContentSettingsWithPrerenderTest,
                            url,
                            url,
                            {*cookie},
+                           1u,
                            /*blocked_by_policy=*/false});
   pscs->OnStorageAccessed(StorageType::INDEXED_DB,
                           prerender_frame->GetStorageKey(),
@@ -1213,6 +1229,7 @@ TEST_F(PageSpecificContentSettingsWithFencedFrameTest, SiteDataAccessed) {
                                 origin,
                                 origin,
                                 {*cookie1},
+                                1u,
                                 false});
   }
 }
@@ -1243,6 +1260,7 @@ TEST_F(PageSpecificContentSettingsWithFencedFrameTest, DelegateUpdatesSent) {
                               ff_url,
                               ff_url,
                               {*cookie},
+                              1u,
                               /*blocked_by_policy=*/false});
   ff_pscs->OnStorageAccessed(StorageType::INDEXED_DB,
                              fenced_frame_root->GetStorageKey(),

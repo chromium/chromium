@@ -352,12 +352,10 @@ void PageLoadMetricsForwardObserver::OnSubFrameDeleted(int frame_tree_node_id) {
 void PageLoadMetricsForwardObserver::OnCookiesRead(
     const GURL& url,
     const GURL& first_party_url,
-    const net::CookieList& cookie_list,
     bool blocked_by_policy) {
   if (!parent_observer_)
     return;
-  parent_observer_->OnCookiesRead(url, first_party_url, cookie_list,
-                                  blocked_by_policy);
+  parent_observer_->OnCookiesRead(url, first_party_url, blocked_by_policy);
 }
 
 void PageLoadMetricsForwardObserver::OnCookieChange(

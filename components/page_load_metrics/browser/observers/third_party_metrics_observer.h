@@ -56,7 +56,6 @@ class ThirdPartyMetricsObserver
                             extra_request_complete_info) override;
   void OnCookiesRead(const GURL& url,
                      const GURL& first_party_url,
-                     const net::CookieList& cookie_list,
                      bool blocked_by_policy) override;
   void OnCookieChange(const GURL& url,
                       const GURL& first_party_url,

@@ -41,6 +41,14 @@ struct NET_EXPORT CookieAccessResult {
                other.is_allowed_to_access_secure_cookies;
   }
 
+  bool operator<(const CookieAccessResult& other) const {
+    return std::tie(status, effective_same_site, access_semantics,
+                    is_allowed_to_access_secure_cookies) <
+           std::tie(other.status, other.effective_same_site,
+                    other.access_semantics,
+                    other.is_allowed_to_access_secure_cookies);
+  }
+
   CookieInclusionStatus status;
   CookieEffectiveSameSite effective_same_site =
       CookieEffectiveSameSite::UNDEFINED;

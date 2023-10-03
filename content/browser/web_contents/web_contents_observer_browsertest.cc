@@ -279,14 +279,16 @@ class CookieTracker : public WebContentsObserver {
   void OnCookiesAccessed(NavigationHandle* navigation,
                          const CookieAccessDetails& details) override {
     for (const auto& cookie : details.cookie_list) {
-      cookie_accesses_.push_back({details.type,
-                                  ContextType::kNavigation,
-                                  {},
-                                  navigation->GetNavigationId(),
-                                  details.url,
-                                  details.first_party_url,
-                                  cookie.Name(),
-                                  cookie.Value()});
+      for (size_t i = 0; i < details.count; ++i) {
+        cookie_accesses_.push_back({details.type,
+                                    ContextType::kNavigation,
+                                    {},
+                                    navigation->GetNavigationId(),
+                                    details.url,
+                                    details.first_party_url,
+                                    cookie.Name(),
+                                    cookie.Value()});
+      }
     }
 
     QuitIfReady();
@@ -295,15 +297,17 @@ class CookieTracker : public WebContentsObserver {
   void OnCookiesAccessed(RenderFrameHost* rfh,
                          const CookieAccessDetails& details) override {
     for (const auto& cookie : details.cookie_list) {
-      cookie_accesses_.push_back(
-          {details.type,
-           ContextType::kFrame,
-           {rfh->GetProcess()->GetID(), rfh->GetRoutingID()},
-           -1,
-           details.url,
-           details.first_party_url,
-           cookie.Name(),
-           cookie.Value()});
+      for (size_t i = 0; i < details.count; ++i) {
+        cookie_accesses_.push_back(
+            {details.type,
+             ContextType::kFrame,
+             {rfh->GetProcess()->GetID(), rfh->GetRoutingID()},
+             -1,
+             details.url,
+             details.first_party_url,
+             cookie.Name(),
+             cookie.Value()});
+      }
     }
 
     QuitIfReady();

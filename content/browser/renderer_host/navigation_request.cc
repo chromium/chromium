@@ -8787,8 +8787,10 @@ void NavigationRequest::OnCookiesAccessed(
     // TODO(721329): We should not send information to the current frame about
     // (potentially unrelated) ongoing navigation, but at the moment we don't
     // have another way to add messages to DevTools console.
-    EmitCookieWarningsAndMetrics(frame_tree_node()->current_frame_host(),
-                                 details);
+    for (size_t i = 0; i < details->count; ++i) {
+      EmitCookieWarningsAndMetrics(frame_tree_node()->current_frame_host(),
+                                   details);
+    }
 
     CookieAccessDetails allowed;
     CookieAccessDetails blocked;
@@ -8809,7 +8811,7 @@ void NavigationRequest::OnCookiesAccessed(
       uint64_t http_only_cookie_modification_count = 0u;
       for (net::CanonicalCookie& cookie : allowed.cookie_list) {
         if (cookie.IsHttpOnly()) {
-          http_only_cookie_modification_count++;
+          http_only_cookie_modification_count += details->count;
         }
       }
       if (cookie_change_listener_) {

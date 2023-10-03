@@ -166,6 +166,7 @@ void SplitCookiesIntoAllowedAndBlocked(
                            cookie_details->url,
                            cookie_details->site_for_cookies.RepresentativeUrl(),
                            {},
+                           cookie_details->count,
                            /* blocked_by_policy=*/false});
   int allowed_count = base::ranges::count_if(
       cookie_details->cookie_list,
@@ -182,6 +183,7 @@ void SplitCookiesIntoAllowedAndBlocked(
                            cookie_details->url,
                            cookie_details->site_for_cookies.RepresentativeUrl(),
                            {},
+                           cookie_details->count,
                            /* blocked_by_policy=*/true});
   int blocked_count = base::ranges::count_if(
       cookie_details->cookie_list,

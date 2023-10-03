@@ -46,6 +46,18 @@ bool CookieInclusionStatus::operator!=(
   return !operator==(other);
 }
 
+bool CookieInclusionStatus::operator<(
+    const CookieInclusionStatus& other) const {
+  static_assert(NUM_EXCLUSION_REASONS <= sizeof(unsigned long) * CHAR_BIT,
+                "use .ullong() instead");
+  static_assert(NUM_WARNING_REASONS <= sizeof(unsigned long) * CHAR_BIT,
+                "use .ullong() instead");
+  return std::make_pair(exclusion_reasons_.to_ulong(),
+                        warning_reasons_.to_ulong()) <
+         std::make_pair(other.exclusion_reasons_.to_ulong(),
+                        other.warning_reasons_.to_ulong());
+}
+
 bool CookieInclusionStatus::IsInclude() const {
   return exclusion_reasons_.none();
 }

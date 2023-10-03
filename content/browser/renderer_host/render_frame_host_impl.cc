@@ -15474,8 +15474,10 @@ void RenderFrameHostImpl::OnCookiesAccessed(
                           details_vector.size());
   size_t access_sum = 0;
   for (auto& details : details_vector) {
-    access_sum += details->cookie_list.size();
-    EmitCookieWarningsAndMetrics(this, details);
+    for (size_t i = 0; i < details->count; ++i) {
+      access_sum += details->cookie_list.size();
+      EmitCookieWarningsAndMetrics(this, details);
+    }
 
     CookieAccessDetails allowed;
     CookieAccessDetails blocked;

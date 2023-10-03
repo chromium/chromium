@@ -550,7 +550,6 @@ class PageLoadMetricsObserverInterface {
   // Called when a cookie is read for a resource request or by document.cookie.
   virtual void OnCookiesRead(const GURL& url,
                              const GURL& first_party_url,
-                             const net::CookieList& cookie_list,
                              bool blocked_by_policy) = 0;
 
   // Called when a cookie is set by a header or via document.cookie.

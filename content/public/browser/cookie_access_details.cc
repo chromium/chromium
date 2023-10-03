@@ -13,11 +13,13 @@ CookieAccessDetails::CookieAccessDetails(Type type,
                                          const GURL& url,
                                          const GURL& first_party_url,
                                          const net::CookieList& cookie_list,
+                                         size_t count,
                                          bool blocked_by_policy)
     : type(type),
       url(url),
       first_party_url(first_party_url),
       cookie_list(cookie_list),
+      count(count),
       blocked_by_policy(blocked_by_policy) {}
 
 CookieAccessDetails::CookieAccessDetails(const CookieAccessDetails& details) =
