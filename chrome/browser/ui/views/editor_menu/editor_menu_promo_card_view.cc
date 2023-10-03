@@ -168,8 +168,9 @@ void EditorMenuPromoCardView::UpdateBounds(
 
 void EditorMenuPromoCardView::InitLayout() {
   SetBackground(views::CreateThemedRoundedRectBackground(
-      ui::kColorSysSurface, views::LayoutProvider::Get()->GetCornerRadiusMetric(
-                                views::ShapeContextTokens::kMenuRadius)));
+      ui::kColorPrimaryBackground,
+      views::LayoutProvider::Get()->GetCornerRadiusMetric(
+          views::ShapeContextTokens::kMenuRadius)));
 
   auto* layout = SetLayoutManager(std::make_unique<views::FlexLayout>());
   layout->SetOrientation(views::LayoutOrientation::kHorizontal)

@@ -23,11 +23,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
-#include "ui/color/color_provider.h"
-#include "ui/compositor/layer.h"
-#include "ui/compositor/layer_owner.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -42,6 +38,7 @@
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/layout/layout_manager.h"
+#include "ui/views/layout/layout_provider.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
@@ -54,13 +51,10 @@ namespace {
 constexpr char kWidgetName[] = "EditorMenuViewWidget";
 constexpr char16_t kContainerTitle[] = u"Editor Menu";
 
-constexpr int kRadiusDip = 4;
-
-constexpr gfx::Insets kTitleContainerInsets = gfx::Insets::TLBR(10, 16, 10, 10);
+constexpr gfx::Insets kTitleContainerInsets = gfx::Insets::TLBR(12, 16, 12, 8);
 
 constexpr char16_t kSettingsTooltipString[] = u"Settings";
 constexpr int kSettingsIconSizeDip = 20;
-constexpr int kSettingsButtonBorderDip = 4;
 
 // Spacing to apply between and around chips.
 constexpr int kChipsHorizontalPadding = 8;
@@ -90,6 +84,7 @@ views::UniqueWidgetPtr EditorMenuView::CreateWidget(
     const gfx::Rect& anchor_view_bounds,
     EditorMenuViewDelegate* delegate) {
   views::Widget::InitParams params;
+  params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.activatable = views::Widget::InitParams::Activatable::kYes;
   params.shadow_elevation = 2;
   params.shadow_type = views::Widget::InitParams::ShadowType::kDrop;
@@ -164,12 +159,10 @@ void EditorMenuView::UpdateBounds(const gfx::Rect& anchor_view_bounds) {
 }
 
 void EditorMenuView::InitLayout(const PresetTextQueries& preset_text_queries) {
-  SetPaintToLayer();
-  layer()->SetFillsBoundsOpaquely(false);
-  layer()->SetMasksToBounds(true);
-
   SetBackground(views::CreateThemedRoundedRectBackground(
-      cros_tokens::kCrosSysAppBase, kRadiusDip));
+      ui::kColorPrimaryBackground,
+      views::LayoutProvider::Get()->GetCornerRadiusMetric(
+          views::ShapeContextTokens::kMenuRadius)));
 
   auto* layout = SetLayoutManager(std::make_unique<views::FlexLayout>());
   layout->SetOrientation(views::LayoutOrientation::kVertical);
@@ -202,23 +195,16 @@ void EditorMenuView::AddTitleContainer() {
       title_container_->AddChildView(std::make_unique<views::View>());
   layout->SetFlexForView(spacer, 1);
 
-  auto* button_container =
-      title_container_->AddChildView(std::make_unique<views::FlexLayoutView>());
-  button_container->SetMainAxisAlignment(views::LayoutAlignment::kCenter);
-  button_container->SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
-
   settings_button_ =
-      button_container->AddChildView(std::make_unique<views::ImageButton>(
+      title_container_->AddChildView(std::make_unique<views::ImageButton>(
           base::BindRepeating(&EditorMenuView::OnSettingsButtonPressed,
                               weak_factory_.GetWeakPtr())));
   settings_button_->SetTooltipText(kSettingsTooltipString);
   settings_button_->SetImageModel(
       views::Button::STATE_NORMAL,
       ui::ImageModel::FromVectorIcon(vector_icons::kSettingsOutlineIcon,
-                                     cros_tokens::kCrosSysOnSurface,
+                                     ui::kColorSysOnSurface,
                                      kSettingsIconSizeDip));
-  settings_button_->SetBorder(
-      views::CreateEmptyBorder(kSettingsButtonBorderDip));
   views::InkDrop::Get(settings_button_)
       ->SetMode(views::InkDropHost::InkDropMode::ON);
   views::InkDrop::Get(settings_button_)->SetBaseColorId(ui::kColorIcon);
