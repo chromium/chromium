@@ -323,15 +323,7 @@ public class BookmarkUtils {
 
         bookmarkId =
                 bookmarkModel.addBookmark(parent, bookmarkModel.getChildCount(parent), title, url);
-        // TODO(lazzzis): remove log after bookmark sync is fixed, crbug.com/986978
         if (bookmarkId == null) {
-            Log.e(TAG,
-                    "Failed to add bookmarks: parentTypeAndId %s, defaultFolderTypeAndId %s, "
-                            + "mobileFolderTypeAndId %s, parentEditable Managed isFolder %s,",
-                    parent, bookmarkModel.getDefaultFolder(), bookmarkModel.getMobileFolderId(),
-                    parentItem == null ? "null"
-                                       : (parentItem.isEditable() + " " + parentItem.isManaged()
-                                               + " " + parentItem.isFolder()));
             setLastUsedParent(context, bookmarkModel.getDefaultFolder());
         }
         return bookmarkId;
