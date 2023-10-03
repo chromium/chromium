@@ -1291,7 +1291,6 @@ crbug.com/1098801 virtual/text-antialias/whitespace/whitespace-in-pre.html [ Fai
 crbug.com/990657 external/wpt/css/css-lists/counter-001.html [ Failure ]
 crbug.com/990657 external/wpt/css/css-lists/counter-002.html [ Failure ]
 crbug.com/990657 external/wpt/css/css-lists/counter-003.html [ Failure ]
-crbug.com/990657 external/wpt/css/css-lists/counter-004.html [ Failure ]
 crbug.com/990657 external/wpt/css/css-lists/counters-001.html [ Failure ]
 crbug.com/990657 external/wpt/css/css-lists/counters-002.html [ Failure ]
 crbug.com/990657 external/wpt/css/css-lists/counters-003.html [ Failure ]
@@ -1516,7 +1515,6 @@ crbug.com/1068610 external/wpt/css/css-color/oklch-009.html [ Failure ]
 crbug.com/1068610 external/wpt/css/css-color/oklch-010.html [ Failure ]
 
 # tests failing due to small round errors (.5 values getting rounded up or down)
-crbug.com/1068610 external/wpt/css/css-color/lch-005.html [ Failure ]
 crbug.com/1068610 external/wpt/css/css-color/xyz-003.html [ Failure ]
 crbug.com/1068610 external/wpt/css/css-color/xyz-d65-003.html [ Failure ]
 
@@ -2566,7 +2564,7 @@ crbug.com/1100119 [ Mac ] external/wpt/css/css-pseudo/active-selection-051.html 
 crbug.com/1100119 [ Mac ] external/wpt/css/css-pseudo/active-selection-052.html [ Failure ]
 crbug.com/1100119 [ Mac ] external/wpt/css/css-pseudo/active-selection-053.html [ Failure ]
 crbug.com/1100119 [ Mac ] external/wpt/css/css-pseudo/active-selection-054.html [ Failure ]
-crbug.com/932343 external/wpt/css/css-pseudo/active-selection-014.html [ Failure ]
+crbug.com/932343 [ Mac ] external/wpt/css/css-pseudo/active-selection-014.html [ Failure ]
 
 # This test should pass when prefetch behavior in iframe is fixed.
 crbug.com/1371358 external/wpt/navigation-timing/prefetch-transfer-size-iframe.html [ Failure ]
@@ -2814,8 +2812,6 @@ crbug.com/626703 external/wpt/css/selectors/selectors-4/lang-017.html [ Failure 
 crbug.com/626703 external/wpt/css/selectors/selectors-4/lang-018.html [ Failure ]
 crbug.com/626703 [ Mac12 ] virtual/threaded-prefer-compositing/external/wpt/scroll-animations/view-timelines/view-timeline-range.html [ Timeout ]
 crbug.com/626703 [ Mac13 ] virtual/threaded-prefer-compositing/external/wpt/scroll-animations/view-timelines/view-timeline-range.html [ Timeout ]
-crbug.com/626703 external/wpt/css/css-text-decor/text-decoration-line-grammar-error-color-001.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-text-decor/text-decoration-line-spelling-error-color-001.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-text/line-breaking/line-breaking-atomic-010.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-text/line-breaking/line-breaking-atomic-011.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-text/line-breaking/line-breaking-atomic-012.html [ Failure ]
@@ -2909,7 +2905,6 @@ crbug.com/626703 virtual/threaded-preload-scanner/external/wpt/html/semantics/sc
 crbug.com/626703 virtual/threaded-preload-scanner/external/wpt/html/semantics/scripting-1/the-script-element/json-module/module.html [ Timeout ]
 crbug.com/626703 virtual/threaded-preload-scanner/external/wpt/html/semantics/scripting-1/the-script-element/json-module/valid-content-type.html [ Timeout ]
 crbug.com/626703 external/wpt/css/css-contain/counter-scoping-004.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-masking/clip-path/clip-path-rect-003.html [ Failure ]
 crbug.com/626703 external/wpt/css/motion/animation/offset-path-interpolation-006.html [ Crash ]
 crbug.com/626703 [ Win10.20h2 ] external/wpt/web-locks/bfcache/sharedworker-multiple.tentative.https.html [ Skip Timeout ]
 crbug.com/626703 virtual/composite-clip-path-animation/external/wpt/css/css-masking/clip-path/animations/clip-path-rect-interpolation-001.html [ Failure ]
@@ -2954,7 +2949,6 @@ crbug.com/626703 [ Mac10.15 ] external/wpt/workers/modules/shared-worker-import-
 crbug.com/626703 [ Mac12 ] virtual/threaded/external/wpt/scroll-animations/view-timelines/view-timeline-inset.html [ Timeout ]
 crbug.com/626703 [ Mac12 ] virtual/threaded/external/wpt/scroll-animations/view-timelines/view-timeline-range.html [ Timeout ]
 crbug.com/626703 [ Mac13 ] virtual/threaded/external/wpt/scroll-animations/view-timelines/view-timeline-range.html [ Timeout ]
-crbug.com/626703 external/wpt/css/css-backgrounds/border-image-002.html [ Failure ]
 crbug.com/626703 virtual/threaded/external/wpt/css/css-backgrounds/border-image-002.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-nesting/nesting-type-selector.html [ Failure ]
 crbug.com/626703 [ Mac11 ] external/wpt/fetch/api/cors/cors-keepalive.any.html [ Skip Timeout ]
@@ -3026,7 +3020,6 @@ crbug.com/626703 external/wpt/css/selectors/selectors-4/lang-010.html [ Failure 
 crbug.com/626703 external/wpt/css/selectors/selectors-4/lang-011.html [ Failure ]
 crbug.com/626703 external/wpt/css/selectors/selectors-4/lang-012.html [ Failure ]
 crbug.com/626703 external/wpt/css/selectors/selectors-4/lang-015.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-color/system-color-hightlights-vs-getSelection-001.html [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/mediacapture-record/MediaRecorder-mimetype.html [ Timeout ]
 crbug.com/626703 external/wpt/svg/text/reftests/opacity.svg [ Failure ]
 crbug.com/626703 external/wpt/css/css-box/margin-trim/flex-column-style-change-triggers-layout-block-end.html [ Failure ]
@@ -4255,8 +4248,8 @@ crbug.com/1043357 http/tests/credentialmanagement/credentialscontainer-get-with-
 # specific bugs.
 crbug.com/1043675 [ Linux ] animations/animation-paused-hardware.html [ Failure ]
 crbug.com/1043675 [ Linux ] external/wpt/css/filter-effects/backdrop-filter-basic-opacity-2.html [ Failure ]
-crbug.com/1043675 [ Linux ] external/wpt/css/filter-effects/backdrop-filters-brightness.html [ Failure ]
-crbug.com/1043675 [ Linux ] external/wpt/css/filter-effects/backdrop-filters-invert.html [ Failure ]
+crbug.com/1043675 [ Linux ] external/wpt/css/filter-effects/backdrop-filters-brightness.html [ Pass Failure ]
+crbug.com/1043675 [ Linux ] external/wpt/css/filter-effects/backdrop-filters-invert.html [ Pass Failure ]
 crbug.com/1043675 [ Linux ] http/tests/media/video-frame-size-change.html [ Failure ]
 crbug.com/1043675 [ Linux ] svg/custom/svg-root-with-opacity.html [ Failure ]
 crbug.com/1043675 [ Linux ] virtual/scalefactor200/external/wpt/css/filter-effects/backdrop-filters-brightness.html [ Failure ]
@@ -6533,7 +6526,6 @@ crbug.com/1464993 [ Linux ] fast/forms/number/number-appearance-spinbutton-disab
 
 
 # Fix importer 2023-06-27
-crbug.com/626703 external/wpt/css/motion/offset-path-shape-ellipse-001.html [ Failure ]
 crbug.com/626703 external/wpt/loading/early-hints/modulepreload-as-worker.h2.window.html [ Failure ]
 
 # Gardener 2023-06-29
