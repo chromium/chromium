@@ -2719,7 +2719,12 @@ if (enable_nocompile_tests) {
     ]
 
     # Since the nocompile test is not able to inspect the contents of
-    # include_dirs, we need to specify the v8 include dir manually.
-    include_dirs = [ "//v8/include" ]
+    # include_dirs, we need to specify the v8 and PartitionAlloc include dir
+    # manually.
+    include_dirs = [
+      "//v8/include",
+      "${root_gen_dir}/base/allocator/partition_allocator/src",
+      "//base/allocator/partition_allocator/src",
+    ]
   }
 }
