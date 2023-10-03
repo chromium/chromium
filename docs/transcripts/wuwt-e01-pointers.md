@@ -15,11 +15,13 @@ special guest is C++ expert Dana. This talk covers smart pointer types we have
 in Chrome, how to use them, and what can go wrong.
 
 Notes:
+
 - https://docs.google.com/document/d/1VRevv8JhlP4I8fIlvf87IrW2IRjE0PbkSfIcI6-UbJo/edit
 
 Links:
-- [Life of a Vulnerability](https://www.youtube.com/watch?v=HAJAEQrPUN0)
-- [MiraclePtr](https://www.youtube.com/watch?v=WhI1NWbGvpE)
+
+- [Life of a Vulnerability]
+- [MiraclePtr]
 
 ---
 
@@ -29,8 +31,8 @@ Sharon, and today's inaugural episode will be all about pointers. There are so
 many types of types - which one should I use? What can possibly go wrong? Our
 guest today is Dana, who is one of our Base and C++ OWNERS and is currently
 working on introducing Rust to Chromium. Previously, she was part of bringing
-C++ 11 support to the Android NDK and then to Chrome. Today, she'll be telling
-us what's up with points. Welcome, Dana!
+C++11 support to the Android NDK and then to Chrome. Today, she'll be telling
+us what's up with pointers. Welcome, Dana!
 
 00:31 DANA: Thank you, Sharon. It's super exciting to be here. Thank you for
 letting me be on your podcast thingy.
@@ -63,8 +65,8 @@ pointers.
 
 02:23 SHARON: Today, we'll be mostly looking at the Use-After-Free kind of
 bugs. We definitely see a lot of those. And if you want to see an example of
-one being used, Dana has previously done a talk called, "Life of a
-Vulnerability." It'll be linked below. You can check that out. So that being
+one being used, Dana has previously done a talk called, "[Life of a
+Vulnerability]." It'll be linked below. You can check that out. So that being
 said, should we ever be using just a regular raw pointer in C++ in Chrome?
 
 02:41 DANA: First of all, let's call them native pointers. You will see them
@@ -79,14 +81,14 @@ passing them as a function parameter, you can share it as a pointer or a
 reference, which is like a pointer with slightly different rules. But you
 should not store native pointers as fields and objects because that is a place
 where they go wrong a lot. And you should not use a native pointer to express
-ownership. So before C++ 11, you would just say, this is my pointer, use a
+ownership. So before C++11, you would just say, this is my pointer, use a
 comment, say this one is owning it. And then if you wanted to pass the
 ownership, you just pass this native pointer over to something else as an
 argument, and put a comment and say this is passing ownership. And you just
 kind of hope it works out. But then it's very difficult. It requires the
 programmer to understand the whole system to do it correctly. There is no help.
-So in C++ 11, the type called `std::optional_ptr` - or sorry, `std::unique_ptr`
-- was introduced. And this is expressing unique ownership. That's why it's
+So in C++11, the type called `std::optional_ptr` - or sorry, `std::unique_ptr` -
+was introduced. And this is expressing unique ownership. That's why it's
 called `unique_ptr`. And it's just going to hold your pointer, and when it goes
 out of scope, it gets deleted. It can't be copied because it's unique
 ownership. But it can be moved around. And so if you're going to express
@@ -98,7 +100,7 @@ like `unique_ptr` is one of those.
 
 04:55 DANA: Yes, so a smart pointer, which can also be referred to as a
 pointer-like object, perhaps as a subset of them, is a class that holds inside
-of it a pointer and mediates access to it in some way. So unique pointer
+of it a pointer and mediates access to it in some way. So `unique_ptr`
 mediates access by saying I own this pointer, I will delete this pointer when I
 go away, but I'll give you access to it. So you can use the arrow operator or
 the star operator to get at the underlying pointer. And you can construct them
@@ -108,14 +110,14 @@ to add something to what a native pointer is, while giving you access to it in
 some way.
 
 05:40 SHARON: That makes sense. That's kind of what our main thing is going to
-be about today because you look around in Chrome. You'll see a lot of these
+be about today because you look around in Chrome, you'll see a lot of these
 wrapper types. It'll be a `unique_ptr` and then a type. And you'll see so many
 types of these, and talking to other people, myself, I find this all very
 confusing. So we'll cover some of the more common types today. We just talked
 about unique pointers. Next, talk about `absl::optional`. So why don't you tell
 us about that.
 
-06:10 DANA: So that's actually a really great example of a pointer-like object
+06:10 DANA: So that's actually a really good example of a pointer-like object
 that's not actually holding a pointer, so it's not a smart pointer. But it
 looks like one. So this is this distinction. So `absl::optional`, also known as
 `std::optional`, if you're not working in Chromium, and at some point, we will
@@ -129,7 +131,7 @@ in how you can think about them. But otherwise, they do look quite similar. An
 `optional` is a unique ownership because it's literally holding the object
 inside of it. However, an `optional` is copyable if the object inside is
 copyable, for instance. So it doesn't have quite the same semantics. And it
-doesn't require a heap allocation, the way unique pointer does because it's
+doesn't require a heap allocation, the way `unique_ptr` does because it's
 storing the memory in place. So if you have an `optional` on the stack, the
 object inside is also right there on the stack. That's good or bad, depending
 what you want. If you're worried about your object sizes, not so good. If
@@ -139,7 +141,7 @@ the trade-off between the two.
 07:51 SHARON: Can you give any examples of when you might want to use one
 versus the other? Like you mentioned some kind of general trade-offs, but any
 specific examples? Because I've definitely seen use cases where `unique_ptr` is
-used when maybe an `optional` makes more sense or vise versa. Maybe it's just
+used when maybe an `optional` makes more sense or vice versa. Maybe it's just
 because someone didn't know about it or it was chosen that way. Do you have any
 specific examples?
 
@@ -166,7 +168,7 @@ It also generates less optimal code. Pointers cause the optimizer to have
 troubles. And it doesn't express as nicely what your intention is. A return,
 this thing, sometimes. And so in place of using this pointer plus bool, you can
 put that into a single type, return an `optional`. Similar for holding
-something as a field, where you want it to be held in line in your class, but
+something as a field, where you want it to be held inline in your class, but
 you don't always have it present, you can do that with an `optional` now, where
 you would have probably used a pointer before. Or a `union` or something, but
 that gets even more tricky. And then another place you might use it as a
@@ -178,7 +180,7 @@ type is. And if your caller to your function doesn't have already an
 `optional`, they have to go and construct it to pass it to you. And that's a
 copy or move of that inner type. So generally, if you're going to receive a
 parameter, maybe sometimes, the right way to spell that is just to pass it as a
-pointer because a native pointer, which can be null, when it's not present.
+native pointer, which can be null, when it's not present.
 
 11:29 SHARON: Hopefully that clarifies some things for people who are trying to
 decide which one best suits their use case. So moving on from that, some people
@@ -188,21 +190,21 @@ quickly mention why we switched from `base` to `absl`? And you mentioned even
 switching to `std::optional`. Why this transition?
 
 11:53 DANA: Yeah, absolutely. So as the C++ standards come out, we want to use
-them, but we can't until our toolchain is ready. What's our toolchain? So our
-compiler, our standard library, and unfortunately, we have more than one
+them, but we can't until our toolchain is ready. What's our toolchain? It's our
+compiler, our standard library - and unfortunately, we have more than one
 compiler that we need to worry about. So we have the NaCl compiler. Luckily, we
 just have Clang for the compiler choice we really have to worry about. But we
 do have to wait for these things to be ready, and for a code base to be ready
 to turn on the new standard because sometimes there are some non-backwards
 compatible changes. But we can forward port stuff out of the standard library
-into base. And so we've done that. We have a bunch of C++ 20 backport in base
-now. We had 17 back ports before. We turned on 17, now they should hopefully be
+into base. And so we've done that. We have a bunch of C++20 backports in base
+now. We had 17 backports before. We turned on 17, now they should hopefully be
 gone. And so `base::optional` was an example of a backport, while `optional`
 was still considered experimental in the standard library. We adopted use of
 `absl` since then, and `absl` had also, essentially, a backport of the
-`optional` type` inside of it for presumably the same reasons. And so why have
+`optional` type inside of it for presumably the same reasons. And so why have
 two when you can have one? That's a pretty good rule. And so we deprecated the
-`base` one, removed it, and moved everything to the `abslq one. One thing to
+`base` one, removed it, and moved everything to the `absl` one. One thing to
 note here, possibly interest, is we often add security hardening to things in
 `base`. And so sometimes there is available in the standard library something.
 But we choose not to use it and use something in `base` or `absl`, but we use
@@ -220,12 +222,12 @@ What's that? When should we use it?
 13:59 DANA: So `scoped_refptr` is kind of your Chromium equivalent to
 `shared_ptr` in the standard library. So if you're familiar with that, it's
 quite similar, but it has some slight differences. So what is `scoped_refptr`?
-It gives you share ownership of the underlying object. And it's a smart
-pointer. It holds a pointer to an object that's allocated in the heap when all
+It gives you shared ownership of the underlying object. And it's a smart
+pointer. It holds a pointer to an object that's allocated in the heap. When all
 `scoped_refptr` that point to the same object are gone, it'll be deleted. So
 it's like `unique_ptr`, except it can be copied to add to your ref count,
 basically. And when all of them are gone, it's destroyed. And it gives access
-to the underlined pointer in exactly the same ways. Oh, but why is it different
+to the underlying pointer in exactly the same ways. Oh, but why is it different
 than `shared_ptr`? I did say it is. `scoped_refptr` requires the type that is
 held inside of it to inherit from `RefCounted` or `RefCountedThreadSafe`.
 `shared_ptr` doesn't require this. Why? So `shared_ptr` sticks an allocation
@@ -235,24 +237,24 @@ Chromium took this position to be doing intrusive ref counting. So because we
 inherit from a known type, we stick the ref count in that base class,
 `RefCounted` or `RefCountedThreadSafe`. And so that is enforced by the
 compiler. You must inherit from one of these two in order to be stored and
-owned in a `scoped_refptr`. What's the difference? Ref counted is the default
+owned in a `scoped_refptr`. What's the difference? `RefCounted` is the default
 choice, but it's not thread safe. So the ref counting is cheap. It's the more
 performant one, but if you have a `scoped_refptr` on two different threads
 owning the same object, their ref counting will race, can be wrong, you can end
 up with a double free - which is another way that pointers can go wrong, two
-things free in the same thing - or you could end up with potentially not
+things freeing the same thing - or you could end up with potentially not
 freeing it at all, probably. I guess I've never checked if that's possible. But
-they can race, and then bad things happen. Whereas, ref counted thread safe
+they can race, and then bad things happen. Whereas, `RefCountedThreadSafe`
 gives you atomic ref counting. So atomic means that across all threads, they're
 all going to have the same view of the state. And so it can be used across
 threads and be owned across threads. And the tricky part there is the last
 thread that owns that object is where it's going to be destroyed. So if your
-objects destructor does things that you expect to happen on a specific thread,
+object's destructor does things that you expect to happen on a specific thread,
 you have to be super careful that you synchronize which thread that last
-reference is going away on, or it could explode in a really flakey way.
+reference is going away on, or it could explode in a really flaky way.
 
 17:02 SHARON: This sounds useful in other ways. What are some kind of more
-design things to consider, in terms of when a scope ref pointer is useful and
+design things to consider, in terms of when a `scoped_refptr` is useful and
 does help enforce things that you want to enforce, like relative lifetimes of
 certain objects?
 
@@ -264,7 +266,7 @@ is this object going to outlive that other object? Maybe sometimes. It's not
 super obvious. It's a little more clear with a `unique_ptr`, at least local to
 where that `unique_ptr`'s destruction is. But there's usually no
 `scoped_refptr`. You can say this is the last one. So I know it's gone after
-this thing is gone. Maybe it is, maybe it's not often. So it's a bit tricky.
+this thing is gone. Maybe it is, maybe it's not, often. So it's a bit tricky.
 However, there are scenarios when you truly want a bunch of things to have
 access to a piece of data. And you want that data to go away when nobody needs
 it anymore. And so that is your use case for a `scoped_refptr`. It is nicer
@@ -300,13 +302,13 @@ thing. And maybe that next thing is like a user input event, maybe that's a
 reply from the network, whatever it might be. And there's just a ton of steps
 in things that happen in Chrome. Like, a navigation has a request, a response,
 maybe another request - some redirects, whatever. That's an example of tons of
-smaller asynchronous tasks that all happen independently. So what goes on with
+smaller asynchronous tasks that all happen independently. So what goes wrong with
 asynchronous tasks? You don't have a continuous stack frame. What does that
 mean? So if you're just running some synchronous code, you make a variable, you
-go off and you do some things, you come back. Your variable is still here
-right. You're in this stack frame. And you can keep using it. You have
+go off and you do some things, you come back. Your variable is still here,
+right? You're in this stack frame and you can keep using it. You have
 asynchronous tasks. You make a variable, you go and do some work, and you are
-done your task Boop, your stack's gone. You come back later, you're going to
+done your task. Boop, your stack's gone. You come back later, you're going to
 continue. You don't have your variable anymore. So any state that you want to
 keep across your various tasks has to be stored and what we call bound in with
 that task. If that's a pointer, that's especially risky. So we talked earlier
@@ -314,10 +316,10 @@ about Use-After-Frees. Well, you can, I hope, imagine how easy it is to stick a
 pointer into your state. This pointer is valid, I'm using it. I go away, I come
 back when? I don't know, sometime in the future. And I'm going to go use this
 pointer. Is it still around? I don't own it. I didn't use a `unique_ptr`. So
-who owns it. How do they know that I have a task waiting to use it? Well,
+who owns it? How do they know that I have a task waiting to use it? Well,
 unless we have some side channel communicating that, they don't. And how do I
 know if they've destroyed it if we don't have some side channel communicating
-that. I don't know. And so I'm just going to use this pointer and bad things
+that? I don't know. And so I'm just going to use this pointer and bad things
 happen. Your bank account is gone.
 
 22:06 SHARON: No! My bank account!
@@ -325,7 +327,7 @@ happen. Your bank account is gone.
 22:06 DANA: I know. So what's the side channel? The side channel that we have
 is WeakPtr. So a WeakPtr and WeakPtrFactory provide this communication
 mechanism where WeakPtrFactory watches an object, and when the object gets
-destroyed, the WeakPtrFactory inside of it is destroyed. And that sends this
+destroyed, the WeakPtrFactory inside of it is destroyed. And that sets this
 little bit that says, I'm gone. And then when your asynchronous task comes back
 with its pointer, but it's a WeakPtr inside of it and tries to run, it can be
 like, am I still here? If the WeakPtrFactory was destroyed, no, I'm not. And
@@ -344,7 +346,7 @@ that in places where you as the code author want to believe that this object is
 actually always there, but you don't want a security bug if you're wrong. And
 it doesn't mean that you're wrong now, even. Sometime later, someone can change
 code, unrelated to where this is, where the ownership happens, and break you.
-And maybe they don't know all the users of a given object and change in its
+And maybe they don't know all the users of a given object and changing its
 lifetime in some subtle way, maybe not even realizing they are. Suddenly you're
 eventually seeing security bugs. And so that's why native pointers can be
 pretty scary. And so SafeRef is something we can use instead of a native
@@ -373,9 +375,9 @@ over, and over, and static analysis, which is what we as humans have to do -
 we're not running the program, we're reading the code - can't really tell what
 will happen because there's so many things that could happen. We could exit
 here, we could exit there, we could exit here. Who knows. And that makes it
-increasingly hard to maintain and refactor the code. So SafeRef you the option
-to say this is always going to be valid. You can't check it. So if it's not
-valid, go fix that bug somewhere else. It should be valid here.
+increasingly hard to maintain and refactor the code. So SafeRef gives you the
+option to say this is always going to be valid. You can't check it. So if it's
+not valid, go fix that bug somewhere else. It should be valid here.
 
 26:16 SHARON: So what kind of -
 
@@ -396,7 +398,7 @@ little sad file comes up?
 It's a sad tab. So that's not great. It's better than a security bug. Because
 your options here are don't write bugs. Ideal. I love that idea, but we know
 that bugs happen. Use a native pointer, security problem. Use a WeakPtr, that
-makes sense if you wanted it to sometimes not be there. But if you want it to
+makes sense if you want it to sometimes not be there. But if you want it to
 always be there - because you have to make a choice now of what you're supposed
 to do if it's not, and it makes the code very hard to understand. And you're
 only going to find out it can't be there through a crash anyhow. Or use a
@@ -418,13 +420,13 @@ pointers. Because the difference between `raw_ptr` and raw pointer, very easy
 to mix those up. So why don't you tell us a bit about `raw_ptr`s?
 
 28:40 DANA: So `raw_ptr` is really cool. It's a non-owning smart pointer. So
-that's kind of WeakPtr or SafeRef. These are also non-owning. And it's actually
+that's kind of like WeakPtr or SafeRef. These are also non-owning. And it's actually
 very similar in inspiration to what WeakPtr is. So it has a side channel where
-it can see if the thing It's pointing to is alive or gone. So for WeakPtr, it
-talks to the WeakPtrFactory and says am I deleted? And for `raw_ptr`, what it
+it can see if the thing it's pointing to is alive or gone. So for WeakPtr, it
+talks to the WeakPtrFactory and says "am I deleted?" And for `raw_ptr`, what it
 does is it keeps a reference count, kind of like `scoped_refptr`, but it's a
 weak reference count. It's not owning. And it keeps this reference count in the
-memory allocator. So Chrome has its own memory allocator for new and delete
+memory allocator. So Chrome has its own memory allocator for `new` and `delete`
 called PartitionAlloc. And that lets us do some interesting stuff. And this is
 one of them. And so what happens is as long as there is `raw_ptr` around, this
 reference count is non-zero. So even if you go and you delete the object, the
@@ -447,7 +449,7 @@ little bit different than a WeakPtr, which is going to deterministically crash
 as soon as you try to use it when it's gone. It's really just a protection or a
 mitigation against security exploits through Use-After-Free. And then we
 recently just added `raw_ref`, which is really the same as `raw_ptr`, except
-addressing null ability. So smart pointers in C++ have historically all allowed
+addressing nullability. So smart pointers in C++ have historically all allowed
 a null state. That's representative of what native pointers did in C and C++.
 And so this is kind of just bringing this along in this obvious, historical
 way. But if you look at other languages that have been able to break with
@@ -458,9 +460,9 @@ like for WeakPtr, how we said, we just check if it's there or not. And if it's
 not, we return, and so on. It's every time you have a WeakPtr, if you were
 thinking of a timeline, every time you touch a WeakPtr, your timeline splits.
 And so you get this exponential timeline of possible states that your
-software's in. That's really intense. Whereas every time you cannot do that,
+software's in. That's really intense. Whereas every time you can not do that,
 say this can't be null, so instead of WeakPtr, you're using SafeRef. This can't
-be not here or null, actually. WeakPtr can't just be straight up null. This is
+be not here or null, actually - WeakPtr can just be straight up null - this is
 always present. Then you don't have a split in your timeline, and that makes it
 a lot easier to understand what your software is doing. And so for `raw_ptr`,
 it followed this historical precedent. It lets you have a null value inside of
@@ -470,28 +472,29 @@ it, conceptually, meaning it just can't be null. That is just basically - it's
 a pointer, but it can't be null.
 
 33:24 SHARON: So these do sound the most straightforward to use. So basically,
-if you're not sure - or your class members at least - any time you would use a
+if you're not sure - for your class members at least - any time you would use a
 native pointer or an ampersand, basically you should always just put those in
 either a `raw_ptr` or a `raw_ref`, right?
 
 33:45 DANA: Yeah, that's what our style guide recommends, with one nuance. So
 because `raw_ptr` and `raw_ref` interact with the memory allocator, they have
-the ability to be like, turn on or off dynamically at runtime. And there's a
+the ability to be like, turned on or off dynamically at runtime. And there's a
 performance hit on keeping this reference count around. And so at the moment,
 they are not turned on in the renderer process because it's a really
-performance-critical place. And the impact of security bugs, there is a little
-less than in the browser process where you just immediately get access to the
+performance-critical place. And the impact of security bugs there is a little
+less than in the browser process, where you just immediately get access to the
 whole system. And so we're working on turning it on there. But if you're
 writing code that's only in the renderer process, then there's no point to use
 it. And we don't recommend that you use it. But the default rule is yes. Don't
 use a native pointer, don't use a native reference. As a field to an object,
-use a `raw_ptr`, use a `raw_ref`. Prefer something with less states, always,
-because you get less branches in your timeline. And then you can make it cost
-if you don't want it to be able to rebound to an object, if you don't want the
-pointer to change. Or you can make it mutable if you wanted to be able to.
+use a `raw_ptr`, use a `raw_ref`. Prefer `raw_ref` - prefer something with less states, always,
+because you get less branches in your timeline. And then you can make it
+`const` if you don't want it to be able to rebound to a new object, if you
+don't want the pointer to change. Or you can make it mutable if you wanted to
+be able to.
 
 34:58 SHARON: So you did mention that these types are ref counted, but earlier
-you said that you should avoid ref counting things. So
+you said that you should avoid ref counting things. So -
 
 35:04 DANA: Yes.
 
@@ -504,17 +507,16 @@ there's two kinds of ref counts going on here. I tried to kind of allude to it,
 but it's great to make it clear. So `scoped_refptr` is a strong ref count,
 meaning the ref count owns the object. So the destructor runs, the object is
 gone and deleted when that ref count goes to 0. `raw_ref` and `raw_ptr` are a
-witchcraft count. They could be pointing to something owned in a
+weak ref count. They could be pointing to something owned in a
 `scoped_refptr` even. So they can exist at the same time. You can have both
 kind of ref counts going at the same time. A weak ref count, in this case, is
 holding the memory alive so that it doesn't get re-used. But it's not keeping
 the object in that memory alive. And so from a programming state point-of-view,
 the weak refs don't matter. They're helping protect you from security bugs.
-They're helping to make - when things go wrong, when a bug happens, they're
-helping to make it less impactful. But they don't change your program in a
-visible way. Whereas, strong references do. That destrutor's is based on when
-the ref count goes to 0 for a strong reference. So that's the difference
-between these two.
+When things go wrong, when a bug happens, they're helping to make it less
+impactful. But they don't change your program in a visible way. Whereas, strong
+references do. That destrutor's timing is based on when the ref count goes to 0
+for a strong reference. So that's the difference between these two.
 
 36:46 SHARON: So when you say don't use ref counting, you mean don't use strong
 ref counting.
@@ -522,13 +524,13 @@ ref counting.
 36:46 DANA: I do, yes.
 
 36:51 SHARON: And if you want to learn more about the raw pointer, `raw_ptr`,
-`raw_ref`, that's all part of the MiraclePtr project, and there's a talk about
+`raw_ref`, that's all part of the [MiraclePtr] project, and there's a talk about
 that from BlinkOn. I'll link that below also. So in terms of other base types,
 there's a new one that's called `base::expected`. I haven't even really seen
 this around. So can you tell us a bit more about how we use that, and what
 that's for?
 
-37:09 DANA: `base::expected` is a backport from C++ 23, I want to say. So the
+37:09 DANA: `base::expected` is a backport from C++23, I want to say. So the
 proposal for `base::expected` actually cites a Rust type as inspiration, which
 is called `std::result` in Rust. And it's a lot like `optional`, so it's used
 for return values. And it's more or less kind of a replacement for exceptions.
@@ -541,7 +543,7 @@ your value, like `optional` can, or it returns an error. And so that's the
 difference between `optional` and `expected`. You can give a full error type.
 And so this is really useful when you want to give more context on what went
 wrong, or why you're not returning the value. So it makes a lot of sense in
-stuff like File IO. So you're opening a file, and it can fail for various
+stuff like file IO. So you're opening a file, and it can fail for various
 reasons, like I don't have permission, it doesn't exist, whatever. And so in
 that case, the way you would express that in a modern way would be to return
 `base::expected` of your file handle or file class. And as an error, some
@@ -583,15 +585,15 @@ for you. And so Rust is that kind of safety net for our code, to say no matter
 how you change it over time, it's got your back. You can't introduce this kind
 of bug.
 
-42:03 SHARON: So the first project sounds really cool. If people want to learn
-more or get involved - if you're into the whole languages, memory kind of thing
-- where can people go to learn more?
+42:03 SHARON: So this Rust project sounds really cool. If people want to learn
+more or get involved - if you're into the whole languages, memory safety kind
+of thing - where can people go to learn more?
 
 42:09 DANA: So if you're interested in helping out with our Rust experiment,
 then you can look for us in the Rust channel on Slack. If you're interested in
 C++ language stuff, you can find us in the CXX channel on Slack, as well. As
-well as the same CXX@chromium.org mailing list. And there is, of course, the
-rust-dev@chromium.org mailing list if you want to use email to reach us as
+well as the [cxx@chromium.org] mailing list. And there is, of course, the
+[rust-dev@chromium.org] mailing list if you want to use email to reach us as
 well.
 
 42:44 SHARON: Thank you very much, Dana. There will be notes from all of this
@@ -599,3 +601,8 @@ also linked in the description box. And thank you very much for this first
 episode.
 
 42:52 DANA: Thanks, Sharon This was fun.
+
+[Life of a Vulnerability]: https://www.youtube.com/watch?v=HAJAEQrPUN0
+[MiraclePtr]: (https://www.youtube.com/watch?v=WhI1NWbGvpE)
+[cxx@chromium.org]: https://groups.google.com/a/chromium.org/g/cxx
+[rust-dev@chromium.org]: https://groups.google.com/a/chromium.org/g/rust-dev
