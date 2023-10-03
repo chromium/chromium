@@ -434,11 +434,17 @@ gfx::RectF AutofillProviderAndroid::ToClientAreaBound(
 }
 
 void AutofillProviderAndroid::Reset() {
+  manager_ = nullptr;
   form_.reset();
   field_id_ = {};
   field_type_group_ = FieldTypeGroup::kNoGroup;
   triggered_origin_ = {};
   check_submission_ = false;
+
+  // This is a no-op if there is no datalist popup.
+  bridge_->HideDatalistPopup();
+  // TODO(crbug.com/1488233): Also send an unfocus event to make sure that the
+  // Autofill session is truly terminated.
 }
 
 }  // namespace autofill

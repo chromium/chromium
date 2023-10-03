@@ -128,7 +128,7 @@ void AutofillProviderAndroidBridgeImpl::HideDatalistPopup() {
     return;
   }
 
-  Java_AutofillProvider_hidePopup(env, obj);
+  Java_AutofillProvider_hideDatalistPopup(env, obj);
 }
 
 void AutofillProviderAndroidBridgeImpl::OnTextFieldDidScroll(

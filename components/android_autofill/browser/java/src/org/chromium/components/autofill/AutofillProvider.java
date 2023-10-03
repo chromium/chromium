@@ -402,12 +402,12 @@ public class AutofillProvider {
     }
 
     @CalledByNative
-    public void hidePopup() {
-        if (mDatalistPopup != null) {
-            mDatalistPopup.dismiss();
-            mDatalistPopup = null;
-            mDatalistSuggestions = null;
-        }
+    public void hideDatalistPopup() {
+        if (mDatalistPopup == null) return;
+
+        mDatalistPopup.dismiss();
+        mDatalistPopup = null;
+        mDatalistSuggestions = null;
         if (mWebContentsAccessibility != null) {
             mWebContentsAccessibility.onAutofillPopupDismissed();
         }
@@ -532,7 +532,7 @@ public class AutofillProvider {
         if (mNativeAutofillProvider != 0) {
             acceptDataListSuggestion(mNativeAutofillProvider, value);
         }
-        hidePopup();
+        hideDatalistPopup();
     }
 
     private void setAnchorViewRect(RectF rect) {

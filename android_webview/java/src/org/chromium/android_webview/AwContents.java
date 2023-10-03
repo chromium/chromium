@@ -3773,7 +3773,7 @@ public class AwContents implements SmartClipProvider {
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             if (mAutofillProvider != null) {
-                mAutofillProvider.hidePopup();
+                mAutofillProvider.hideDatalistPopup();
             }
         }
     }
