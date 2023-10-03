@@ -25,7 +25,9 @@ std::string GetStringKeyForQuickStartMessageType(
     case ash::quick_start::QuickStartMessageType::kSecondDeviceAuthPayload:
       return kSecondDeviceAuthPayloadKey;
     case ash::quick_start::QuickStartMessageType::kBootstrapConfigurations:
-      return kBootstrapConfigurationsPayloadKey;
+      // For BootstrapConfigurations, we use the top-level payload since
+      // multiple keys need to be set.
+      return std::string();
     case ash::quick_start::QuickStartMessageType::kBootstrapOptions:
       return kBootstrapOptionsPayloadKey;
     case ash::quick_start::QuickStartMessageType::kQuickStartPayload:
@@ -87,7 +89,15 @@ QuickStartMessage::ReadMessage(std::vector<uint8_t> data) {
   base::Value::Dict* payload;
   std::string* encoded_json_payload;
 
-  if ((encoded_json_payload = message.FindString(kQuickStartPayloadKey))) {
+  if ((message.FindDict(kBootstrapConfigurationsPayloadKey))) {
+    // BootstrapConfigurations needs to have a higher precedence than
+    // QuickStartPayload since a BootstrapConfigurations message may also
+    // contain a QuickStartPayload.
+    return std::make_unique<QuickStartMessage>(
+        ash::quick_start::QuickStartMessageType::kBootstrapConfigurations,
+        message.Clone());
+  } else if ((encoded_json_payload =
+                  message.FindString(kQuickStartPayloadKey))) {
     std::string json_payload;
     bool base64_decoding_succeeded =
         base::Base64Decode(*encoded_json_payload, &json_payload,
@@ -121,10 +131,6 @@ QuickStartMessage::ReadMessage(std::vector<uint8_t> data) {
   } else if ((payload = message.FindDict(kSecondDeviceAuthPayloadKey))) {
     return std::make_unique<QuickStartMessage>(
         ash::quick_start::QuickStartMessageType::kSecondDeviceAuthPayload,
-        payload->Clone());
-  } else if ((payload = message.FindDict(kBootstrapConfigurationsPayloadKey))) {
-    return std::make_unique<QuickStartMessage>(
-        ash::quick_start::QuickStartMessageType::kBootstrapConfigurations,
         payload->Clone());
   } else if ((payload = message.FindDict(kBootstrapOptionsPayloadKey))) {
     return std::make_unique<QuickStartMessage>(
@@ -171,6 +177,10 @@ std::unique_ptr<base::Value::Dict> QuickStartMessage::GenerateEncodedMessage() {
       std::make_unique<base::Value::Dict>();
   std::string str_payload_key =
       GetStringKeyForQuickStartMessageType(message_type_);
+  if (str_payload_key.empty()) {
+    return std::make_unique<base::Value::Dict>(std::move(payload_));
+  }
+
   bool base64_encoded_payload_ = IsMessagePayloadBase64Encoded(message_type_);
   if (!base64_encoded_payload_) {
     message->Set(str_payload_key, std::move(payload_));

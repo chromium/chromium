@@ -286,6 +286,9 @@ void Connection::OnBootstrapConfigurationsResponse(
 
 void Connection::ParseBootstrapConfigurationsResponse(
     absl::optional<mojom::BootstrapConfigurations> bootstrap_configurations) {
+  if (!bootstrap_configurations) {
+    return;
+  }
   phone_instance_id_ = bootstrap_configurations->cryptauth_device_id;
 }
 

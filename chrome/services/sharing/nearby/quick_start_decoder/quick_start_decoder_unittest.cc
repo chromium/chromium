@@ -28,6 +28,7 @@ namespace {
 
 constexpr char kCredentialIdKey[] = "id";
 constexpr char kEntitiyIdMapKey[] = "id";
+constexpr char kBootstrapConfigurationsKey[] = "bootstrapConfigurations";
 constexpr char kDeviceDetailsKey[] = "deviceDetails";
 constexpr char kCryptauthDeviceIdKey[] = "cryptauthDeviceId";
 constexpr char kExampleCryptauthDeviceId[] = "helloworld";
@@ -355,6 +356,7 @@ TEST_F(QuickStartDecoderTest, DecodeBootstrapConfigurations_NullPayload) {
 TEST_F(QuickStartDecoderTest,
        DecodeBootstrapConfigurations_EmptyMessagePayload) {
   QuickStartMessage message(QuickStartMessageType::kBootstrapConfigurations);
+  message.GetPayload()->Set(kBootstrapConfigurationsKey, base::Value::Dict());
 
   base::test::TestFuture<
       ::ash::quick_start::mojom::BootstrapConfigurationsPtr,
@@ -396,6 +398,7 @@ TEST_F(QuickStartDecoderTest,
 TEST_F(QuickStartDecoderTest,
        DecodeBootstrapConfigurations_EmptyBootstrapConfigurations) {
   QuickStartMessage message(QuickStartMessageType::kBootstrapConfigurations);
+  message.GetPayload()->Set(kBootstrapConfigurationsKey, base::Value::Dict());
 
   base::test::TestFuture<
       ::ash::quick_start::mojom::BootstrapConfigurationsPtr,
@@ -414,6 +417,7 @@ TEST_F(QuickStartDecoderTest,
   base::Value::Dict device_details;
 
   QuickStartMessage message(QuickStartMessageType::kBootstrapConfigurations);
+  message.GetPayload()->Set(kBootstrapConfigurationsKey, base::Value::Dict());
   message.GetPayload()->Set(kDeviceDetailsKey, std::move(device_details));
 
   base::test::TestFuture<
@@ -435,6 +439,7 @@ TEST_F(QuickStartDecoderTest,
   device_details.Set(kCryptauthDeviceIdKey, "");
 
   QuickStartMessage message(QuickStartMessageType::kBootstrapConfigurations);
+  message.GetPayload()->Set(kBootstrapConfigurationsKey, base::Value::Dict());
   message.GetPayload()->Set(kDeviceDetailsKey, std::move(device_details));
 
   base::test::TestFuture<
@@ -456,6 +461,7 @@ TEST_F(QuickStartDecoderTest,
   device_details.Set(kCryptauthDeviceIdKey, kExampleCryptauthDeviceId);
 
   QuickStartMessage message(QuickStartMessageType::kBootstrapConfigurations);
+  message.GetPayload()->Set(kBootstrapConfigurationsKey, base::Value::Dict());
   message.GetPayload()->Set(kDeviceDetailsKey, std::move(device_details));
 
   base::test::TestFuture<
