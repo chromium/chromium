@@ -19,6 +19,13 @@ PrefService* GetActiveUserPrefService() {
   CHECK(ash::Shell::Get()->session_controller());
   return ash::Shell::Get()->session_controller()->GetActivePrefService();
 }
+// True if customization is set by admin, false if unset.
+bool IsCustomizationPolicySet() {
+  PrefService* pref_service = GetActiveUserPrefService();
+  return pref_service && pref_service->IsManagedPreference(
+                             ash::prefs::kShortcutCustomizationAllowed);
+}
+
 }  // namespace
 
 namespace ash {
@@ -76,14 +83,19 @@ bool AcceleratorPrefs::IsUserEnterpriseManaged() {
   return delegate_->IsUserEnterpriseManaged();
 }
 
+bool AcceleratorPrefs::IsCustomizationAllowedByPolicy() {
+  if (IsCustomizationPolicySet()) {
+    return GetActiveUserPrefService()->GetBoolean(
+        prefs::kShortcutCustomizationAllowed);
+  }
+  // If the policy is unset, return default value true.
+  return true;
+}
+
 bool AcceleratorPrefs::IsCustomizationAllowed() {
-  // If user is managed and pref is set by admin policy, check the pref.
-  if (IsUserEnterpriseManaged()) {
-    PrefService* pref_service = GetActiveUserPrefService();
-    if (pref_service && pref_service->IsManagedPreference(
-                            prefs::kShortcutCustomizationAllowed)) {
-      return pref_service->GetBoolean(prefs::kShortcutCustomizationAllowed);
-    }
+  // If user is managed and customization policy is set, check the policy.
+  if (IsUserEnterpriseManaged() && IsCustomizationPolicySet()) {
+    return IsCustomizationAllowedByPolicy();
   }
 
   // If user is not managed or the policy is unset, check the flag.

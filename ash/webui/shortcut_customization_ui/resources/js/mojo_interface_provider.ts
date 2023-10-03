@@ -80,6 +80,11 @@ export class ShortcutProviderWrapper implements ShortcutProviderInterface {
     return this.remote.isMutable(source);
   }
 
+  isCustomizationAllowedByPolicy():
+      Promise<{isCustomizationAllowedByPolicy: boolean}> {
+    return this.remote.isCustomizationAllowedByPolicy();
+  }
+
   hasLauncherButton(): Promise<{hasLauncherButton: boolean}> {
     return this.remote.hasLauncherButton();
   }

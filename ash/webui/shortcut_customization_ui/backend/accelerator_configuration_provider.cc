@@ -691,6 +691,17 @@ void AcceleratorConfigurationProvider::IsMutable(
   std::move(callback).Run(is_mutable);
 }
 
+void AcceleratorConfigurationProvider::IsCustomizationAllowedByPolicy(
+    IsCustomizationAllowedByPolicyCallback callback) {
+  // If not enterprise managed, return true.
+  if (!Shell::Get()->accelerator_prefs()->IsUserEnterpriseManaged()) {
+    std::move(callback).Run(/*is_customization_allowed_by_policy=*/true);
+    return;
+  }
+  std::move(callback).Run(
+      Shell::Get()->accelerator_prefs()->IsCustomizationAllowedByPolicy());
+}
+
 void AcceleratorConfigurationProvider::HasLauncherButton(
     HasLauncherButtonCallback callback) {
   std::move(callback).Run(

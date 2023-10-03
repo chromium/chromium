@@ -75,6 +75,10 @@ interface AcceleratorConfigurationProvider {
   // Whether the source is mutable and shortcuts can be changed.
   IsMutable(ash.mojom.AcceleratorSource source) => (bool is_mutable);
 
+  // Returns true if the user is allowed to customize system shortcuts.
+  // (default value is true for non-managed users).
+  IsCustomizationAllowedByPolicy() => (bool is_customization_allowed_by_policy);
+
   // True if the keyboard has a launcher button.
   // False if the keyboard has a search button.
   HasLauncherButton() => (bool has_launcher_button);

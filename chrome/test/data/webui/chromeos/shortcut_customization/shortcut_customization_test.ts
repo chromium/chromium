@@ -73,6 +73,7 @@ suite('shortcutCustomizationAppTest', function() {
     provider.setFakeAcceleratorLayoutInfos(fakeLayoutInfo);
     provider.setFakeGetDefaultAcceleratorsForId(fakeDefaultAccelerators);
     provider.setFakeHasLauncherButton(true);
+    provider.setFakeIsCustomizationAllowedByPolicy(true);
 
     setShortcutProviderForTesting(provider);
 
@@ -1071,5 +1072,23 @@ suite('shortcutCustomizationAppTest', function() {
             .querySelector('#keyboardSettingsLinkContainer')!.querySelector(
                 '#keyboardSettingsLink') as HTMLLinkElement;
     assertEquals('chrome://os-settings/per-device-keyboard', actualLink.href);
+  });
+
+  test('PolicyIndicatorShown', async () => {
+    provider.setFakeIsCustomizationAllowedByPolicy(false);
+    page = initShortcutCustomizationAppElement();
+    await flushTasks();
+    const policyIndicator = getPage().shadowRoot!.querySelector(
+                                '#policyIndicator') as HTMLDivElement;
+    assertTrue(!!policyIndicator);
+  });
+
+  test('PolicyIndicatorHidden', async () => {
+    provider.setFakeIsCustomizationAllowedByPolicy(true);
+    page = initShortcutCustomizationAppElement();
+    await flushTasks();
+    const policyIndicator = getPage().shadowRoot!.querySelector(
+                                '#policyIndicator') as HTMLDivElement;
+    assertFalse(!!policyIndicator);
   });
 });

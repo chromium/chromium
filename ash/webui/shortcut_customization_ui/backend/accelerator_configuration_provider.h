@@ -87,6 +87,8 @@ class AcceleratorConfigurationProvider
   // shortcut_customization::mojom::AcceleratorConfigurationProvider:
   void IsMutable(ash::mojom::AcceleratorSource source,
                  IsMutableCallback callback) override;
+  void IsCustomizationAllowedByPolicy(
+      IsCustomizationAllowedByPolicyCallback callback) override;
   void HasLauncherButton(HasLauncherButtonCallback callback) override;
   void GetConflictAccelerator(mojom::AcceleratorSource source,
                               uint32_t action_id,

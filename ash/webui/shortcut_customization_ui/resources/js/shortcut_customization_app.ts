@@ -13,9 +13,11 @@ import 'chrome://resources/ash/common/navigation_view_panel.js';
 import 'chrome://resources/ash/common/page_toolbar.js';
 import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+import 'chrome://resources/cr_elements/policy/cr_policy_indicator.js';
 
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {NavigationViewPanelElement} from 'chrome://resources/ash/common/navigation_view_panel.js';
+import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
@@ -98,6 +100,11 @@ export class ShortcutCustomizationAppElement extends
         type: Boolean,
         value: false,
       },
+
+      isCustomizationAllowedByPolicy: {
+        type: Boolean,
+        value: true,
+      },
     };
   }
 
@@ -108,6 +115,7 @@ export class ShortcutCustomizationAppElement extends
   protected dialogSource: AcceleratorSource;
   protected showEditDialog: boolean;
   protected keyboardSettingsLink: string;
+  protected isCustomizationAllowedByPolicy: boolean;
   private shortcutProvider: ShortcutProviderInterface = getShortcutProvider();
   private acceleratorlookupManager: AcceleratorLookupManager =
       AcceleratorLookupManager.getInstance();
@@ -134,12 +142,17 @@ export class ShortcutCustomizationAppElement extends
     this.policyUpdatedReceiver = new PolicyUpdatedObserverReceiver(this);
     this.shortcutProvider.addPolicyObserver(
         this.policyUpdatedReceiver.$.bindNewPipeAndPassRemote());
+    this.shortcutProvider.isCustomizationAllowedByPolicy().then(
+        ({isCustomizationAllowedByPolicy}) => {
+          this.isCustomizationAllowedByPolicy = isCustomizationAllowedByPolicy;
+        });
 
     this.fetchAccelerators();
     this.addEventListener('show-edit-dialog', this.showDialog);
     this.addEventListener('edit-dialog-closed', this.onDialogClosed);
     this.addEventListener(
         'request-update-accelerator', this.onRequestUpdateAccelerators);
+    this.addEventListener('scroll-to-top', this.onScollToTop);
 
     this.keyboardSettingsLink =
         loadTimeData.getBoolean('isInputDeviceSettingsSplitEnabled') ?
@@ -157,6 +170,7 @@ export class ShortcutCustomizationAppElement extends
     this.removeEventListener('edit-dialog-closed', this.onDialogClosed);
     this.removeEventListener(
         'request-update-accelerator', this.onRequestUpdateAccelerators);
+    this.removeEventListener('scroll-to-top', this.onScollToTop);
 
     Router.getInstance().removeObserver(this);
   }
@@ -245,6 +259,11 @@ export class ShortcutCustomizationAppElement extends
     this.showEditDialog = false;
     this.dialogShortcutTitle = '';
     this.dialogAccelerators = [];
+  }
+
+  private onScollToTop(): void {
+    strictQuery('#topNavigationBody', this.shadowRoot, HTMLDivElement)
+        .scrollIntoView();
   }
 
   onRouteChanged(url: URL): void {

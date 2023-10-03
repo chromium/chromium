@@ -62,6 +62,19 @@
     padding-inline: var(--container-padding-nav);
   }
 
+  #policyIndicator {
+    align-items: center;
+    display: flex;
+    height: 32px;
+    justify-content: center;
+    padding-bottom: 16px;
+    width: 100%;
+  }
+
+  #policyIcon {
+    padding-inline-end: 8px;
+  }
+
   #restoreDialog::part(dialog) {
     width: 320px;
   }
@@ -92,6 +105,15 @@
     show-tool-bar has-search>
   <div slot="toolbar-main" id="searchBoxWrapper">
     <search-box></search-box>
+  </div>
+  <div slot="top-navigation-body" id="topNavigationBody">
+    <template is="dom-if" if="[[!isCustomizationAllowedByPolicy]]">
+      <div id="policyIndicator">
+        <cr-policy-indicator id="policyIcon" indicator-type="userPolicy">
+        </cr-policy-indicator>
+        <div>[[i18n('customizationDisabledByPolicyMessage')]]</div>
+      </div>
+    </template>
   </div>
   <div slot="bottom-nav-content-panel" id="bottomNavContentPanel">
     <shortcuts-bottom-nav-content

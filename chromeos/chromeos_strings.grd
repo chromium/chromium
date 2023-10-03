@@ -4070,6 +4070,11 @@
         <message name="IDS_SHORTCUT_CUSTOMIZATION_EDIT" desc="Used to edit action in various modals" translateable="false">
           Edit
         </message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_CUSTOMIZATION_DISABLED_BY_POLICY_MESSAGE"
+            desc="The message shown to indicate that a user policy is in place
+            to prevent the user from customizing the system shortcut">
+          This app is managed by your administrator
+        </message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_EDIT_VIEW_STATUS_MESSAGE" desc="Instructions to user when they're inputting a new shortcut">
           Press 1-4 modifiers and 1 other key on your keyboard. To exit editing mode, press alt + esc.
         </message>

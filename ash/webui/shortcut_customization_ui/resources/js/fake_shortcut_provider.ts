@@ -42,6 +42,7 @@ export class FakeShortcutProvider implements ShortcutProviderInterface {
     this.methods.register('getAccelerators');
     this.methods.register('getAcceleratorLayoutInfos');
     this.methods.register('isMutable');
+    this.methods.register('isCustomizationAllowedByPolicy');
     this.methods.register('hasLauncherButton');
     this.methods.register('addAccelerator');
     this.methods.register('replaceAccelerator');
@@ -88,6 +89,11 @@ export class FakeShortcutProvider implements ShortcutProviderInterface {
     this.methods.setResult(
         'isMutable', {isMutable: source !== AcceleratorSource.kBrowser});
     return this.methods.resolveMethod('isMutable');
+  }
+
+  isCustomizationAllowedByPolicy():
+      Promise<{isCustomizationAllowedByPolicy: boolean}> {
+    return this.methods.resolveMethod('isCustomizationAllowedByPolicy');
   }
 
   hasLauncherButton(): Promise<{hasLauncherButton: boolean}> {
@@ -257,6 +263,12 @@ export class FakeShortcutProvider implements ShortcutProviderInterface {
 
   setFakeRemoveAcceleratorResult(result: AcceleratorResultData): void {
     this.methods.setResult('removeAccelerator', {result});
+  }
+
+  setFakeIsCustomizationAllowedByPolicy(isCustomizationAllowedByPolicy:
+                                            boolean): void {
+    this.methods.setResult(
+        'isCustomizationAllowedByPolicy', {isCustomizationAllowedByPolicy});
   }
 
   // Sets up an observer for methodName.
