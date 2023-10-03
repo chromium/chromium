@@ -359,6 +359,8 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
 
 - (void)onSigninComplete:(BOOL)succeeded {
   if (!succeeded) {
+    [HandlerForProtocol(self.browser->GetCommandDispatcher(),
+                        BrowserCoordinatorCommands) hideSendTabToSelfUI];
     return;
   }
   __weak __typeof(self) weakSelf = self;
