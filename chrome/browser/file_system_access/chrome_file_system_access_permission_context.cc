@@ -64,6 +64,9 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/web_applications/web_app_id.h"
+#include "chrome/browser/web_applications/web_app_install_manager.h"
+#include "chrome/browser/web_applications/web_app_install_manager_observer.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #endif
@@ -1039,6 +1042,14 @@ ChromeFileSystemAccessPermissionContext::
   content_settings_ = base::WrapRefCounted(
       HostContentSettingsMapFactory::GetForProfile(profile_));
 
+#if !BUILDFLAG(IS_ANDROID)
+  auto* provider = web_app::WebAppProvider::GetForWebApps(
+      Profile::FromBrowserContext(profile_));
+  if (provider) {
+    install_manager_observation_.Observe(&provider->install_manager());
+  }
+#endif
+
   // TODO(crbug.com/1373962): Remove `kFileSystemAccessPersistentPermissions`
   // feature flag checks before launch.
   if (base::FeatureList::IsEnabled(
@@ -1805,29 +1816,30 @@ ChromeFileSystemAccessPermissionContext::ConvertObjectsToGrants(
   return grants;
 }
 
-// TODO(https://crbug.com/1011533): Integrate with Safety Hub for site
-// inactivity revocation.
 // TODO(crbug.com/1373962): Remove `kFileSystemAccessPersistentPermissions`
 // feature flag checks before launch.
-void ChromeFileSystemAccessPermissionContext::RevokeGrants(
-    const url::Origin& origin) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  bool grant_revoked = false;
-
+void ChromeFileSystemAccessPermissionContext::
+    CreatePersistedGrantsFromActiveGrants(const url::Origin& origin) {
   if (base::FeatureList::IsEnabled(
           features::kFileSystemAccessPersistentPermissions)) {
-    grant_revoked =
-        ObjectPermissionContextBase::RevokeObjectPermissions(origin);
-    // TODO(https://crbug.com/1011533): Clear Extended Permission state.
-  }
-
-  if (RevokeActiveGrants(origin)) {
-    grant_revoked = true;
-  }
-
-  if (grant_revoked) {
-    ScheduleUsageIconUpdate();
+    auto origin_it = active_permissions_map_.find(origin);
+    if (origin_it != active_permissions_map_.end()) {
+      OriginState& origin_state = origin_it->second;
+      for (auto& read_grant : origin_state.read_grants) {
+        if (read_grant.second->GetStatus() == PermissionStatus::GRANTED) {
+          read_grant.second->SetStatus(
+              PermissionStatus::GRANTED,
+              PersistedPermissionOptions::kUpdatePersistedPermission);
+        }
+      }
+      for (auto& write_grant : origin_state.write_grants) {
+        if (write_grant.second->GetStatus() == PermissionStatus::GRANTED) {
+          write_grant.second->SetStatus(
+              PermissionStatus::GRANTED,
+              PersistedPermissionOptions::kUpdatePersistedPermission);
+        }
+      }
+    }
   }
 }
 
@@ -1851,6 +1863,32 @@ void ChromeFileSystemAccessPermissionContext::RevokeGrant(
   }
 
   if (RevokeActiveGrants(origin, file_path)) {
+    grant_revoked = true;
+  }
+
+  if (grant_revoked) {
+    ScheduleUsageIconUpdate();
+  }
+}
+
+// TODO(https://crbug.com/1011533): Integrate with Safety Hub for site
+// inactivity revocation.
+// TODO(crbug.com/1373962): Remove `kFileSystemAccessPersistentPermissions`
+// feature flag checks before launch.
+void ChromeFileSystemAccessPermissionContext::RevokeGrants(
+    const url::Origin& origin) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  bool grant_revoked = false;
+
+  if (base::FeatureList::IsEnabled(
+          features::kFileSystemAccessPersistentPermissions)) {
+    grant_revoked =
+        ObjectPermissionContextBase::RevokeObjectPermissions(origin);
+    // TODO(https://crbug.com/1011533): Clear Extended Permission state.
+  }
+
+  if (RevokeActiveGrants(origin)) {
     grant_revoked = true;
   }
 
@@ -1946,6 +1984,76 @@ void ChromeFileSystemAccessPermissionContext::OnAllTabsInBackgroundTimerExpired(
 
 void ChromeFileSystemAccessPermissionContext::OnShutdown() {
   one_time_permissions_tracker_.Reset();
+}
+
+void ChromeFileSystemAccessPermissionContext::OnWebAppInstalled(
+    const web_app::AppId& app_id) {
+  // TODO(crbug.com/1011533): Replace use of
+  // `extended_permissions_settings_map_` with `ExtendedPermissionPref`
+  // content setting, once implemented.
+  auto* provider = web_app::WebAppProvider::GetForWebApps(
+      Profile::FromBrowserContext(profile()));
+  const auto& registrar = provider->registrar_unsafe();
+  if (!registrar.IsActivelyInstalled(app_id)) {
+    return;
+  }
+  // TODO(crbug.com/1487679): Ensure that `GetAppScope` retrieves the correct
+  // GURL when Scope Extensions is launched, which allows web apps to have more
+  // than one origin as a scope.
+  const auto gurl = registrar.GetAppScope(app_id);
+  if (!gurl.is_valid()) {
+    return;
+  }
+  const auto origin = url::Origin::Create(gurl);
+  if (extended_permissions_settings_map_[origin] !=
+      ContentSetting::CONTENT_SETTING_DEFAULT) {
+    // The user has already enabled or disabled extended permissions from the
+    // Restore Prompt or Page Info bubble. Installing a WebApp should not
+    // change the extended permission state.
+    return;
+  }
+  if (active_permissions_map_[origin].grant_status == GrantStatus::kCurrent) {
+    // Previously, the given origin's persisted grants were shadow grants, and
+    // installing a WebApp promotes these grants to extended grants. The
+    // persisted grants are not affected, given that they are now considered
+    // extended grants.
+    return;
+  }
+  // Previously, the given origin's persisted grants were dormant grants and
+  // therefore should not be promoted to extended grants. The dormant grants
+  // are cleared so that they cannot be considered extended grants.
+  RevokeObjectPermissions(origin);
+  ScheduleUsageIconUpdate();
+  active_permissions_map_[origin].grant_status = GrantStatus::kCurrent;
+}
+
+void ChromeFileSystemAccessPermissionContext::OnWebAppWillBeUninstalled(
+    const web_app::AppId& app_id) {
+  auto* provider = web_app::WebAppProvider::GetForWebApps(
+      Profile::FromBrowserContext(profile()));
+  const auto& registrar = provider->registrar_unsafe();
+  auto gurl = registrar.GetAppScope(app_id);
+  if (!gurl.is_valid()) {
+    return;
+  }
+  const auto origin = url::Origin::Create(gurl);
+  if (extended_permissions_settings_map_[origin] !=
+      ContentSetting::CONTENT_SETTING_DEFAULT) {
+    // The user has already enabled or disabled extended permissions from the
+    // Restore Prompt or Page Info bubble. Uninstalling a WebApp should not
+    // change the extended permission state.
+    return;
+  }
+  // Re-create shadow grants based on active grants.
+  RevokeObjectPermissions(origin);
+  CreatePersistedGrantsFromActiveGrants(origin);
+  ScheduleUsageIconUpdate();
+  active_permissions_map_[origin].grant_status = GrantStatus::kCurrent;
+}
+
+void ChromeFileSystemAccessPermissionContext::
+    OnWebAppInstallManagerDestroyed() {
+  install_manager_observation_.Reset();
 }
 #endif
 

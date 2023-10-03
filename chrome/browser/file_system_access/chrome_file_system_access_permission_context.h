@@ -23,6 +23,9 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/permissions/one_time_permissions_tracker.h"
 #include "chrome/browser/permissions/one_time_permissions_tracker_observer.h"
+#include "chrome/browser/web_applications/web_app_id.h"
+#include "chrome/browser/web_applications/web_app_install_manager.h"
+#include "chrome/browser/web_applications/web_app_install_manager_observer.h"
 #endif
 
 class HostContentSettingsMap;
@@ -67,7 +70,8 @@ class ChromeFileSystemAccessPermissionContext
       public permissions::ObjectPermissionContextBase
 #if !BUILDFLAG(IS_ANDROID)
     ,
-      public OneTimePermissionsTrackerObserver
+      public OneTimePermissionsTrackerObserver,
+      public web_app::WebAppInstallManagerObserver
 #endif
 {
  public:
@@ -88,6 +92,23 @@ class ChromeFileSystemAccessPermissionContext
     kBackgrounded
   };
   enum class GrantType { kRead, kWrite };
+  // This value should not be stored, and should only be used to check the
+  // state of persisted grants, using the `GetPersistedGrantType()` method.
+  enum class PersistedGrantType {
+    // Represents a grant that was granted access on previous visit.
+    // Extended Permissions is not enabled for the given origin.
+    kDormant,
+    // Represents a grant that "shadows" an active grant for the
+    // current visit. Extended permissions is not enabled for the
+    // given origin. Shadow grants can be used to auto-grant
+    // permission requests. May have active grants that are GRANTED.
+    kShadow,
+    // Represents a grant that persists across multiple visits.
+    // The user has enabled Extended Permissions for the given
+    // origin via the Restore Prompt or by installing a PWA. Can be
+    // used to auto-grant permission requests.
+    kExtended,
+  };
 
   explicit ChromeFileSystemAccessPermissionContext(
       content::BrowserContext* context,
@@ -109,14 +130,16 @@ class ChromeFileSystemAccessPermissionContext
 
 #if !BUILDFLAG(IS_ANDROID)
   // OneTimePermissionsTrackerObserver:
-  base::ScopedObservation<OneTimePermissionsTracker,
-                          OneTimePermissionsTrackerObserver>
-      one_time_permissions_tracker_{this};
   void OnAllTabsInBackgroundTimerExpired(
       const url::Origin& origin,
       const OneTimePermissionsTrackerObserver::BackgroundExpiryType&
           expiry_type) override;
   void OnShutdown() override;
+
+  // WebAppInstallManagerObserver:
+  void OnWebAppInstalled(const web_app::AppId& app_id) override;
+  void OnWebAppInstallManagerDestroyed() override;
+  void OnWebAppWillBeUninstalled(const web_app::AppId& app_id) override;
 #endif
 
   // content::FileSystemAccessPermissionContext:
@@ -171,6 +194,13 @@ class ChromeFileSystemAccessPermissionContext
 
   // This method may only be called when the Persistent Permissions feature
   // flag is enabled.
+  GrantStatus GetGrantStatusForTesting(const url::Origin& origin) {
+    CHECK(base::FeatureList::IsEnabled(
+        features::kFileSystemAccessPersistentPermissions));
+    return GetGrantStatus(origin);
+  }
+  // This method may only be called when the Persistent Permissions feature
+  // flag is enabled.
   void SetOriginHasExtendedPermissionForTesting(const url::Origin& origin) {
     CHECK(base::FeatureList::IsEnabled(
         features::kFileSystemAccessPersistentPermissions));
@@ -187,6 +217,10 @@ class ChromeFileSystemAccessPermissionContext
   std::vector<std::unique_ptr<Object>> GetExtendedPersistedObjectsForTesting(
       const url::Origin& origin) {
     return GetExtendedPersistedObjects(origin);
+  }
+  PersistedGrantType GetPersistedGrantTypeForTesting(
+      const url::Origin& origin) {
+    return GetPersistedGrantType(origin);
   }
 
   // Converts permissions objects into a snapshot of grants categorized by
@@ -205,6 +239,10 @@ class ChromeFileSystemAccessPermissionContext
   };
   Grants ConvertObjectsToGrants(
       const std::vector<std::unique_ptr<Object>> objects);
+
+  // Creates a new set of persisted grants based on the currently granted,
+  // active grants for a given origin.
+  void CreatePersistedGrantsFromActiveGrants(const url::Origin& origin);
 
   // Revokes active and extended grants for the given origin and given file
   // path.
@@ -252,24 +290,6 @@ class ChromeFileSystemAccessPermissionContext
 
  private:
   class PermissionGrantImpl;
-
-  // This value should not be stored, and should only be used to check the
-  // state of persisted grants, using the `GetPersistedGrantType()` method.
-  enum class PersistedGrantType {
-    // Represents a grant that was granted access on previous visit.
-    // Extended Permissions is not enabled for the given origin.
-    kDormant,
-    // Represents a grant that "shadows" an active grant for the
-    // current visit. Extended permissions is not enabled for the
-    // given origin. Shadow grants can be used to auto-grant
-    // permission requests. May have active grants that are GRANTED.
-    kShadow,
-    // Represents a grant that persists across multiple visits.
-    // The user has enabled Extended Permissions for the given
-    // origin via the Restore Prompt or by installing a PWA. Can be
-    // used to auto-grant permission requests.
-    kExtended,
-  };
 
   enum class PersistedPermissionOptions {
     kDoNotUpdatePersistedPermission,
@@ -415,6 +435,15 @@ class ChromeFileSystemAccessPermissionContext
   bool usage_icon_update_scheduled_ = false;
 
   scoped_refptr<HostContentSettingsMap> content_settings_;
+
+#if !BUILDFLAG(IS_ANDROID)
+  base::ScopedObservation<OneTimePermissionsTracker,
+                          OneTimePermissionsTrackerObserver>
+      one_time_permissions_tracker_{this};
+  base::ScopedObservation<web_app::WebAppInstallManager,
+                          web_app::WebAppInstallManagerObserver>
+      install_manager_observation_{this};
+#endif
 
   // Number of custom IDs an origin can specify.
   size_t max_ids_per_origin_ = 32u;

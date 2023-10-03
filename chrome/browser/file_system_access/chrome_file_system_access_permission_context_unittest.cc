@@ -49,15 +49,22 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/permissions/one_time_permissions_tracker_observer.h"
+#include "chrome/browser/web_applications/test/fake_web_app_provider.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/test/web_app_test_utils.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #endif
 
 using content::BrowserContext;
 using content::WebContents;
 using content::WebContentsTester;
 using permissions::PermissionAction;
+using GrantStatus = ChromeFileSystemAccessPermissionContext::GrantStatus;
 using GrantType = ChromeFileSystemAccessPermissionContext::GrantType;
 using HandleType = ChromeFileSystemAccessPermissionContext::HandleType;
 using PathType = ChromeFileSystemAccessPermissionContext::PathType;
+using PersistedGrantType =
+    ChromeFileSystemAccessPermissionContext::PersistedGrantType;
 using UserAction = ChromeFileSystemAccessPermissionContext::UserAction;
 using PermissionStatus =
     content::FileSystemAccessPermissionGrant::PermissionStatus;
@@ -115,6 +122,9 @@ class ChromeFileSystemAccessPermissionContextTest : public testing::Test {
     permission_context_ =
         std::make_unique<TestFileSystemAccessPermissionContext>(
             browser_context(), task_environment_.GetMockClock());
+#if !BUILDFLAG(IS_ANDROID)
+    web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
+#endif
   }
 
   void TearDown() override {
@@ -238,6 +248,9 @@ class ChromeFileSystemAccessPermissionContextTest : public testing::Test {
   TestingProfile profile_;
   std::unique_ptr<WebContents> web_contents_;
   base::test::ScopedFeatureList scoped_feature_list_;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  web_app::test::ScopedSkipMainProfileCheck skip_main_profile_check_;
+#endif
 };
 
 class ChromeFileSystemAccessPermissionContextNoPersistenceTest
@@ -1516,6 +1529,136 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   EXPECT_TRUE(origin_is_embargoed_after_rejection_limit);
 }
 
+TEST_F(ChromeFileSystemAccessPermissionContextTest, OnWebAppInstalled) {
+  // Create a persisted grant for `kTestOrigin`.
+  auto read_grant = permission_context()->GetReadPermissionGrant(
+      kTestOrigin, kTestPath, HandleType::kFile, UserAction::kSave);
+  auto write_grant = permission_context()->GetWritePermissionGrant(
+      kTestOrigin, kTestPath, HandleType::kFile, UserAction::kSave);
+  ASSERT_THAT(permission_context()->GetGrantedObjects(kTestOrigin),
+              testing::SizeIs(1));
+
+  // Install a web app for `kTestOrigin`.
+  const GURL kTestOriginUrl = GURL("https://example.com");
+  web_app::test::InstallDummyWebApp(profile(), "Test App", kTestOriginUrl);
+
+  // When extended permissions is not enabled, the persistent grants are
+  // revoked and the grant status is set to current.
+  ASSERT_THAT(permission_context()->GetGrantedObjects(kTestOrigin),
+              testing::IsEmpty());
+  EXPECT_EQ(permission_context()->GetGrantStatusForTesting(kTestOrigin),
+            GrantStatus::kCurrent);
+}
+
+TEST_F(ChromeFileSystemAccessPermissionContextTest,
+       OnWebAppInstalled_WithCurrentGrants) {
+  // Create current, persisted grants by triggering the restore prompt and
+  // accepting it.
+  FileSystemAccessPermissionRequestManager::FromWebContents(web_contents())
+      ->set_auto_response_for_test(PermissionAction::GRANTED);
+  TriggerRestorePermissionPromptAfterBeingBackgrounded(kTestOrigin);
+  ASSERT_THAT(permission_context()->GetGrantedObjects(kTestOrigin),
+              testing::SizeIs(2));
+
+  // Install a web app for `kTestOrigin`.
+  const GURL kTestOriginUrl = GURL("https://example.com");
+  web_app::test::InstallDummyWebApp(profile(), "Test App", kTestOriginUrl);
+
+  // When extended permissions is not enabled and a web app is installed when
+  // the grant status is current, the persisted grants are not revoked.
+  ASSERT_THAT(permission_context()->GetGrantedObjects(kTestOrigin),
+              testing::SizeIs(2));
+}
+
+TEST_F(ChromeFileSystemAccessPermissionContextTest,
+       OnWebAppInstalled_ExtendedPermissionsEnabled) {
+  // Enabled extended permissions.
+  permission_context()->SetOriginHasExtendedPermissionForTesting(kTestOrigin);
+
+  // Create a persisted grant for `kTestOrigin`.
+  auto read_grant = permission_context()->GetReadPermissionGrant(
+      kTestOrigin, kTestPath, HandleType::kFile, UserAction::kSave);
+  auto write_grant = permission_context()->GetWritePermissionGrant(
+      kTestOrigin, kTestPath, HandleType::kFile, UserAction::kSave);
+  ASSERT_THAT(permission_context()->GetGrantedObjects(kTestOrigin),
+              testing::SizeIs(1));
+
+  // Install a web app for `kTestOrigin`.
+  const GURL kTestOriginUrl = GURL("https://example.com");
+  web_app::test::InstallDummyWebApp(profile(), "Test App", kTestOriginUrl);
+
+  // When extended permissions is enabled, the persisted grants are not
+  // revoked and the persisted grant type remains 'extended'.
+  ASSERT_THAT(permission_context()->GetGrantedObjects(kTestOrigin),
+              testing::SizeIs(1));
+  EXPECT_EQ(permission_context()->GetPersistedGrantTypeForTesting(kTestOrigin),
+            PersistedGrantType::kExtended);
+}
+
+TEST_F(ChromeFileSystemAccessPermissionContextTest,
+       OnWebAppUninstalled_WithPeristentAndActiveGrants) {
+  const base::FilePath kTestPath2 = base::FilePath(FILE_PATH_LITERAL("/a/b"));
+  // Install a web app for `kTestOrigin`.
+  const GURL kTestOriginUrl = GURL("https://example.com");
+  const web_app::AppId app_id =
+      web_app::test::InstallDummyWebApp(profile(), "Test App", kTestOriginUrl);
+
+  // Create a grant, then revoke its active permissions.
+  auto read_grant = permission_context()->GetReadPermissionGrant(
+      kTestOrigin, kTestPath, HandleType::kFile, UserAction::kSave);
+  auto write_grant = permission_context()->GetWritePermissionGrant(
+      kTestOrigin, kTestPath, HandleType::kFile, UserAction::kSave);
+
+  permission_context()->RevokeActiveGrantsForTesting(kTestOrigin);
+
+  // Create another grant, with granted active permissions.
+  auto read_grant2 = permission_context()->GetReadPermissionGrant(
+      kTestOrigin, kTestPath2, HandleType::kFile, UserAction::kSave);
+  auto write_grant2 = permission_context()->GetWritePermissionGrant(
+      kTestOrigin, kTestPath2, HandleType::kFile, UserAction::kSave);
+  ASSERT_THAT(permission_context()->GetGrantedObjects(kTestOrigin),
+              testing::SizeIs(2));
+
+  // Uninstall the web app for `kTestOrigin`.
+  web_app::test::UninstallWebApp(profile(), app_id);
+
+  // After the web app is uninstalled, persistent grants are cleared and
+  // re-created off of the granted active grants set.
+  ASSERT_THAT(permission_context()->GetGrantedObjects(kTestOrigin),
+              testing::SizeIs(1));
+}
+
+TEST_F(ChromeFileSystemAccessPermissionContextTest,
+       OnWebAppUninstalled_NoGrantedActiveGrants) {
+  // Install a web app for `kTestOrigin`.
+  const GURL kTestOriginUrl = GURL("https://example.com");
+  const web_app::AppId app_id =
+      web_app::test::InstallDummyWebApp(profile(), "Test App", kTestOriginUrl);
+
+  // Create a persistent grant, and revoke its active permissions.
+  auto read_grant = permission_context()->GetReadPermissionGrant(
+      kTestOrigin, kTestPath, HandleType::kFile, UserAction::kSave);
+  auto write_grant = permission_context()->GetWritePermissionGrant(
+      kTestOrigin, kTestPath, HandleType::kFile, UserAction::kSave);
+  permission_context()->RevokeActiveGrantsForTesting(kTestOrigin);
+  ASSERT_THAT(permission_context()->GetGrantedObjects(kTestOrigin),
+              testing::SizeIs(1));
+  EXPECT_EQ(permission_context()->GetGrantStatusForTesting(kTestOrigin),
+            GrantStatus::kLoaded);
+
+  // Uninstall the web app for `kTestOrigin`, while there are persistent grants
+  // and no granted active grants.
+  web_app::test::UninstallWebApp(profile(), app_id);
+
+  // The grant status is set to current, and the persistent grants are revoked.
+  // The persisted grants are not re-created because there were no granted
+  // active grants at the time the web app was uninstalled.
+  ASSERT_THAT(permission_context()->GetGrantedObjects(kTestOrigin),
+              testing::IsEmpty());
+  EXPECT_EQ(permission_context()->GetGrantStatusForTesting(kTestOrigin),
+            GrantStatus::kCurrent);
+}
+
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
        RestorePermissionPrompt_Ignored) {
   FileSystemAccessPermissionRequestManager::FromWebContents(web_contents())
@@ -1688,8 +1831,8 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   EXPECT_TRUE(permission_context()->HasExtendedPermissionForTesting(
       kTestOrigin, kTestPath, HandleType::kDirectory, GrantType::kRead));
 
-  // |dir_path| has read permission while we're asking for write permission, so
-  // do not auto-grant the permission.
+  // |dir_path| has read permission while we're asking for write permission,
+  // so do not auto-grant the permission.
   auto file_path = kTestPath.AppendASCII("baz");
   auto file_grant = permission_context()->GetWritePermissionGrant(
       kTestOrigin, file_path, HandleType::kFile, UserAction::kLoadFromStorage);
@@ -1791,8 +1934,9 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   // Remove the active grant, but not the persisted permission.
   dir_grant.reset();
 
-  // |dir_path| has read permission while we're asking for write permission, so
-  // do not auto-grant the permission and do not grant via persisted permission.
+  // |dir_path| has read permission while we're asking for write permission,
+  // so do not auto-grant the permission and do not grant via persisted
+  // permission.
   auto file_path = kTestPath.AppendASCII("baz");
   auto file_grant = permission_context()->GetWritePermissionGrant(
       kTestOrigin, file_path, HandleType::kFile, UserAction::kLoadFromStorage);
@@ -1995,8 +2139,8 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
        RequestPermission_AlreadyGranted) {
   // If the permission has already been granted, a call to RequestPermission()
-  // should call the passed-in callback and return immediately without showing a
-  // prompt.
+  // should call the passed-in callback and return immediately without showing
+  // a prompt.
   permission_context()->SetOriginHasExtendedPermissionForTesting(kTestOrigin);
   auto grant = permission_context()->GetWritePermissionGrant(
       kTestOrigin, kTestPath, HandleType::kFile, UserAction::kSave);
