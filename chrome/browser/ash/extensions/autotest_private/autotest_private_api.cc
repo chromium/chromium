@@ -3215,51 +3215,6 @@ ExtensionFunction::ResponseAction AutotestPrivateRemovePrinterFunction::Run() {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// AutotestPrivateBootstrapMachineLearningServiceFunction
-///////////////////////////////////////////////////////////////////////////////
-
-AutotestPrivateBootstrapMachineLearningServiceFunction::
-    AutotestPrivateBootstrapMachineLearningServiceFunction() = default;
-AutotestPrivateBootstrapMachineLearningServiceFunction::
-    ~AutotestPrivateBootstrapMachineLearningServiceFunction() = default;
-
-ExtensionFunction::ResponseAction
-AutotestPrivateBootstrapMachineLearningServiceFunction::Run() {
-  DVLOG(1) << "AutotestPrivateBootstrapMachineLearningServiceFunction";
-
-  // Load a model. This will first bootstrap the Mojo connection to ML Service.
-  chromeos::machine_learning::ServiceConnection::GetInstance()
-      ->GetMachineLearningService()
-      .LoadBuiltinModel(
-          chromeos::machine_learning::mojom::BuiltinModelSpec::New(
-              chromeos::machine_learning::mojom::BuiltinModelId::TEST_MODEL),
-          model_.BindNewPipeAndPassReceiver(),
-          base::BindOnce(
-              &AutotestPrivateBootstrapMachineLearningServiceFunction::
-                  ModelLoaded,
-              this));
-  model_.set_disconnect_handler(base::BindOnce(
-      &AutotestPrivateBootstrapMachineLearningServiceFunction::OnMojoDisconnect,
-      this));
-  return RespondLater();
-}
-
-void AutotestPrivateBootstrapMachineLearningServiceFunction::ModelLoaded(
-    chromeos::machine_learning::mojom::LoadModelResult result) {
-  if (result == chromeos::machine_learning::mojom::LoadModelResult::OK) {
-    Respond(NoArguments());
-  } else {
-    Respond(Error(base::StrCat(
-        {"Model load error ", (std::ostringstream() << result).str()})));
-  }
-}
-
-void AutotestPrivateBootstrapMachineLearningServiceFunction::
-    OnMojoDisconnect() {
-  Respond(Error("ML Service connection error"));
-}
-
-///////////////////////////////////////////////////////////////////////////////
 // AutotestPrivateLoadSmartDimComponentFunction
 ///////////////////////////////////////////////////////////////////////////////
 

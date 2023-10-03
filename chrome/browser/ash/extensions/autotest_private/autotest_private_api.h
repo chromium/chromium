@@ -716,24 +716,6 @@ class AutotestPrivateRefreshRemoteCommandsFunction : public ExtensionFunction {
   ResponseAction Run() override;
 };
 
-class AutotestPrivateBootstrapMachineLearningServiceFunction
-    : public ExtensionFunction {
- public:
-  AutotestPrivateBootstrapMachineLearningServiceFunction();
-  DECLARE_EXTENSION_FUNCTION("autotestPrivate.bootstrapMachineLearningService",
-                             AUTOTESTPRIVATE_BOOTSTRAPMACHINELEARNINGSERVICE)
-
- private:
-  ~AutotestPrivateBootstrapMachineLearningServiceFunction() override;
-  ResponseAction Run() override;
-
-  // Callbacks for a basic Mojo call to MachineLearningService.LoadModel.
-  void ModelLoaded(chromeos::machine_learning::mojom::LoadModelResult result);
-  void OnMojoDisconnect();
-
-  mojo::Remote<chromeos::machine_learning::mojom::Model> model_;
-};
-
 class AutotestPrivateLoadSmartDimComponentFunction : public ExtensionFunction {
  public:
   AutotestPrivateLoadSmartDimComponentFunction();

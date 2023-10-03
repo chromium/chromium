@@ -1092,12 +1092,6 @@ namespace autotestPrivate {
         DOMString display_id,
         TakeScreenshotCallback callback);
 
-    // Makes a basic request to ML Service, triggering 1. ML Service
-    // daemon startup, and 2. the initial D-Bus -> Mojo IPC bootstrap.
-    // |callback|: Called when the operation has completed.
-    [supportsPromises] static void bootstrapMachineLearningService(
-        VoidCallback callback);
-
     // Triggers an on-demand update of smart dim component and checks whether
     // it's successfully loaded by smart dim ml_agent.
     // |callback|: Called when the operation has completed.

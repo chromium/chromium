@@ -302,10 +302,6 @@ var defaultTests = [
           chrome.test.succeed();
         });
   },
-  function bootstrapMachineLearningService() {
-    chrome.autotestPrivate.bootstrapMachineLearningService(
-        chrome.test.callbackFail('ML Service connection error'));
-  },
   function runCrostiniUninstaller() {
     chrome.autotestPrivate.runCrostiniUninstaller(chrome.test.callbackFail(
         'Crostini is not available for the current user'));
