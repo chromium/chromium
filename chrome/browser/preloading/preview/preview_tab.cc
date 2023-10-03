@@ -24,6 +24,40 @@
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
+class PreviewTab::WebContentsObserver final
+    : public content::WebContentsObserver {
+ public:
+  explicit WebContentsObserver(content::WebContents* web_contents)
+      : content::WebContentsObserver(web_contents) {
+    UpdateZoomSettings();
+  }
+
+ private:
+  // content::WebContentsObserver.
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override {
+    // TODO(b:291842891): We will update zoom settings also at the preview
+    // navigation.
+    if (!navigation_handle->IsInPrimaryMainFrame() ||
+        !navigation_handle->HasCommitted()) {
+      return;
+    }
+    // Zoom settings will be reset by ZoomController::DidFinishNavigation when
+    // the primary main frame navigation happens. We need to override them
+    // again whenever the settings are reset.
+    UpdateZoomSettings();
+  }
+
+  void UpdateZoomSettings() {
+    auto* zoom_controller =
+        zoom::ZoomController::FromWebContents(web_contents());
+    zoom_controller->SetZoomMode(
+        zoom::ZoomController::ZoomMode::ZOOM_MODE_ISOLATED);
+    const double level = blink::PageZoomFactorToZoomLevel(0.5f);
+    zoom_controller->SetZoomLevel(level);
+  }
+};
+
 PreviewTab::PreviewTab(content::WebContents& parent, const GURL& url)
     : widget_(std::make_unique<views::Widget>()),
       view_(std::make_unique<views::WebView>(parent.GetBrowserContext())),
@@ -31,6 +65,11 @@ PreviewTab::PreviewTab(content::WebContents& parent, const GURL& url)
   // WebView setup.
   view_->GetWebContents()->SetDelegate(this);
   AttachTabHelpersForInit();
+  // Our observer should be created after ZoomController is created in
+  // AttachTabHelpersForInit() above to ensure our DidFinishNavigation is called
+  // after ZoomController::DidFinishNavigation resets zoom settings. This is
+  // because the observer invocation order depends on its registration order.
+  observer_ = std::make_unique<WebContentsObserver>(view_->GetWebContents());
 
   // The attempt is attached to the parent WebContents that initiates the
   // Link-Preview.
