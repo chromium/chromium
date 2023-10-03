@@ -6,8 +6,7 @@
 // See https://drafts.csswg.org/css-view-transitions-1/
 [
     Exposed=Window,
-    ImplementedAs=DOMViewTransition,
-    RuntimeEnabled=ViewTransition
+    ImplementedAs=DOMViewTransition
 ] interface ViewTransition {
   // Skips the transition. This will cause the UpdateDOMCallback to run if it
   // was not yet run. This will also reject ready and finished promises if they

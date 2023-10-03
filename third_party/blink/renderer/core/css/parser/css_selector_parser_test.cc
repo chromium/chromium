@@ -240,8 +240,6 @@ TEST(CSSSelectorParserTest, InvalidSimpleAfterPseudoElementInCompound) {
 }
 
 TEST(CSSSelectorParserTest, TransitionPseudoStyles) {
-  ScopedViewTransitionForTest view_transition_enabled(true);
-
   struct TestCase {
     const char* selector;
     bool valid;

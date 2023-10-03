@@ -3,8 +3,7 @@
 // found in the LICENSE file.
 
 [
-    ImplementedAs=ViewTransitionSupplement,
-    RuntimeEnabled=ViewTransition
+    ImplementedAs=ViewTransitionSupplement
 ] partial interface Document {
     [MeasureAs=ViewTransition, CallWith=ScriptState, RaisesException] ViewTransition startViewTransition(optional ViewTransitionCallback? callback = null);
 };

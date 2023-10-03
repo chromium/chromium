@@ -54,8 +54,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * See https://www.w3.org/TR/css-view-transitions-1/
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-        "enable-features=ViewTransition", "hide-scrollbars"})
+@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "hide-scrollbars"})
 @Batch(Batch.PER_CLASS)
 public class ViewTransitionPixelTest {
     @Rule

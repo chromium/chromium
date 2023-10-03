@@ -975,10 +975,6 @@ const char kDisallowManagedProfileSignoutDescription[] =
     "Disallows signing out from managed profiles.";
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 
-const char kViewTransitionName[] = "viewTransition API";
-const char kViewTransitionDescription[] =
-    "Controls the availability of the viewTransition JavaScript API.";
-
 const char kViewTransitionOnNavigationName[] =
     "viewTransition API for navigations";
 const char kViewTransitionOnNavigationDescription[] =

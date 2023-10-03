@@ -5450,7 +5450,6 @@
       field_template: "external",
       keywords: ["none"],
       typedom_types: ["Keyword"],
-      runtime_flag: "ViewTransition",
     },
     {
       name: "visibility",

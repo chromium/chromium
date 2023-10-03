@@ -126,10 +126,9 @@ TEST_F(AccessibilityTest, PauseUpdatesAfterMaxNumberQueued) {
   ASSERT_EQ(0u, MockAXObject::num_children_changed_calls_);
 }
 
-class AXViewTransitionTest : public testing::Test,
-                             private ScopedViewTransitionForTest {
+class AXViewTransitionTest : public testing::Test {
  public:
-  AXViewTransitionTest() : ScopedViewTransitionForTest(true) {}
+  AXViewTransitionTest() {}
 
   void SetUp() override {
     web_view_helper_ = std::make_unique<frame_test_helpers::WebViewHelper>();

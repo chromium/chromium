@@ -5445,9 +5445,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsMac | kOsWin | kOsLinux | kOsLacros,
      FEATURE_VALUE_TYPE(kDisallowManagedProfileSignout)},
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
-    {"view-transition", flag_descriptions::kViewTransitionName,
-     flag_descriptions::kViewTransitionDescription, kOsAll,
-     FEATURE_VALUE_TYPE(blink::features::kViewTransition)},
     {"view-transition-on-navigation",
      flag_descriptions::kViewTransitionOnNavigationName,
      flag_descriptions::kViewTransitionOnNavigationDescription, kOsAll,

@@ -51,10 +51,9 @@
 namespace blink {
 
 class ViewTransitionTest : public testing::Test,
-                           public PaintTestConfigurations,
-                           private ScopedViewTransitionForTest {
+                           public PaintTestConfigurations {
  public:
-  ViewTransitionTest() : ScopedViewTransitionForTest(true) {}
+  ViewTransitionTest() {}
 
   void SetUp() override {
     web_view_helper_ = std::make_unique<frame_test_helpers::WebViewHelper>();

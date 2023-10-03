@@ -3946,13 +3946,6 @@
       base_feature: "none",
     },
     {
-      // View transitions.
-      // See https://www.w3.org/TR/css-view-transitions-1/
-      name: "ViewTransition",
-      status: "stable",
-      implied_by: ["ViewTransitionOnNavigation"],
-    },
-    {
       name: "ViewTransitionLayoutObjectVisualOverflow",
       status: "stable",
     },
