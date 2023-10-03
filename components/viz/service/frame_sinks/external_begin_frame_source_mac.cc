@@ -16,6 +16,11 @@ namespace viz {
 
 constexpr base::TimeDelta kMaxSupportedFrameInterval = base::Hertz(14);
 namespace {
+
+// Output level for VLOG. TODO(crbug.com/1404797): Remove loggings after
+// CVDisplayLinkBeginFrameSource is cleaned up.
+constexpr int kOutputLevel = 4;
+
 BASE_FEATURE(kForceMacVSyncTimerForDebugging,
              "ForceMacVSyncTimerForDebugging",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -47,6 +52,9 @@ ExternalBeginFrameSourceMac::ExternalBeginFrameSourceMac(
     OutputSurface* output_surface)
     : ExternalBeginFrameSource(this, restart_id),
       output_surface_(output_surface) {
+  VLOG(kOutputLevel) << "ExternalBeginFrameSourceMac(" << this << ")"
+                     << "::ExternalBeginFrameSourceMac() ID:" << display_id;
+
   if (display_id == display::kInvalidDisplayId) {
     RecordDisplayLinkCreateStatus(DisplayLinkResult::kFailedInvalidDisplayId);
     DLOG(ERROR)
@@ -57,7 +65,10 @@ ExternalBeginFrameSourceMac::ExternalBeginFrameSourceMac(
   }
 }
 
-ExternalBeginFrameSourceMac::~ExternalBeginFrameSourceMac() = default;
+ExternalBeginFrameSourceMac::~ExternalBeginFrameSourceMac() {
+  VLOG(kOutputLevel) << "ExternalBeginFrameSourceMac(" << this << ")"
+                     << "::~ExternalBeginFrameSourceMac() ID:" << display_id_;
+}
 
 void ExternalBeginFrameSourceMac::CreateDelayBasedTimeSourceIfNeeded() {
   if (!time_source_) {
@@ -110,6 +121,9 @@ void ExternalBeginFrameSourceMac::SetVSyncDisplayID(int64_t display_id) {
     } else {
       nominal_refresh_period_ = BeginFrameArgs::DefaultInterval();
     }
+    VLOG(kOutputLevel) << "ExternalBeginFrameSourceMac(" << this << ")"
+                       << "::SetVSyncDisplayID: " << display_id_
+                       << ", refresh_period_: " << nominal_refresh_period_;
 
     if (update_vsync_params_callback_) {
       update_vsync_params_callback_.Run(display_link_mac_->GetCurrentTime(),
@@ -233,6 +247,10 @@ void ExternalBeginFrameSourceMac::OnDisplayLinkCallback(
   // Notify Display FrameRateDecider of the frame interval change.
   if (display_link_frame_interval_change) {
     DCHECK(update_vsync_params_callback_);
+    VLOG(kOutputLevel) << "ExternalBeginFrameSourceMac(" << this << ")"
+                       << "::OnDisplayLinkCallback: " << display_id_
+                       << ", nominal_refresh_period_: "
+                       << nominal_refresh_period_;
     update_vsync_params_callback_.Run(frame_time, nominal_refresh_period_);
   } else if (!just_started_begin_frame_) {
     base::TimeDelta delta =
@@ -307,6 +325,9 @@ void ExternalBeginFrameSourceMac::OnTimerTick() {
 void ExternalBeginFrameSourceMac::SetPreferredInterval(
     base::TimeDelta interval) {
   preferred_interval_ = interval;
+  VLOG(kOutputLevel) << "ExternalBeginFrameSourceMac(" << this << ")"
+                     << "::SetPreferredInterval: ID: " << display_id_
+                     << ", Interval: " << interval;
 
   if (!display_link_mac_) {
     time_source_->SetTimebaseAndInterval(last_frame_time_, interval);
@@ -341,7 +362,12 @@ void ExternalBeginFrameSourceMac::SetUpdateVSyncParametersCallback(
 std::vector<base::TimeDelta>
 ExternalBeginFrameSourceMac::GetSupportedFrameIntervals(
     base::TimeDelta current_interval) {
+  VLOG(kOutputLevel) << "ExternalBeginFrameSourceMac(" << this << ")"
+                     << "::GetSupportedFrameIntervals: ID: " << display_id_;
+
   if (nominal_refresh_period_ > kMaxSupportedFrameInterval) {
+    VLOG(kOutputLevel) << "nominal_refresh_period_: "
+                       << nominal_refresh_period_;
     return {nominal_refresh_period_};
   }
 
@@ -350,6 +376,7 @@ ExternalBeginFrameSourceMac::GetSupportedFrameIntervals(
   std::vector<base::TimeDelta> supported_intervals;
   base::TimeDelta interval = nominal_refresh_period_;
   while (interval <= kMaxSupportedFrameInterval) {
+    VLOG(kOutputLevel) << interval;
     supported_intervals.push_back(interval);
     interval *= 2;
   }
@@ -392,6 +419,11 @@ void DelayBasedBeginFrameSourceMac::OnTimeSourceParamsUpdate(
     ui::VSyncParamsMac params) {
   time_source_next_update_time_ = base::TimeTicks::Now() + base::Seconds(10);
   time_source_updater_ = nullptr;
+
+  VLOG(kOutputLevel) << "DelayBasedBeginFrameSourceMac(" << this << ")"
+                     << "::OnTimeSourceParamsUpdate: ID: " << display_id_
+                     << "last_hw_interval_," << last_hw_interval_
+                     << "display_interval," << params.display_interval;
 
   CHECK(update_vsync_params_callback_);
   if (last_hw_interval_ == params.display_interval) {
