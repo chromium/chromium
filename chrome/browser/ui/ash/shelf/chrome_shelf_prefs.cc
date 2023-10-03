@@ -423,7 +423,7 @@ std::vector<ash::ShelfID> ChromeShelfPrefs::GetPinnedAppsFromSync(
     // the app service.
     bool is_ash_chrome = app_id == app_constants::kChromeAppId;
     if (!is_ash_chrome && !helper->IsValidIDForCurrentUser(app_id) &&
-        !helper->IsValidPromisePackageIdFromAppService(promise_package_id)) {
+        !ShelfControllerHelper::IsPromiseApp(profile_, promise_package_id)) {
       continue;
     }
 

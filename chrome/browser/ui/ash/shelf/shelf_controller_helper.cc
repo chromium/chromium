@@ -226,6 +226,9 @@ float ShelfControllerHelper::GetPromiseAppProgress(
 // static
 bool ShelfControllerHelper::IsPromiseApp(Profile* profile,
                                          const std::string& id) {
+  if (!ash::features::ArePromiseIconsEnabled()) {
+    return false;
+  }
   return apps::AppServiceProxyFactory::GetForProfile(profile)
       ->PromiseAppRegistryCache()
       ->GetPromiseAppForStringPackageId(id);
@@ -397,14 +400,4 @@ bool ShelfControllerHelper::IsValidIDFromAppService(
     is_valid = true;
   }
   return is_valid;
-}
-
-bool ShelfControllerHelper::IsValidPromisePackageIdFromAppService(
-    const std::string& promise_package_id) const {
-  if (!ash::features::ArePromiseIconsEnabled()) {
-    return false;
-  }
-  return apps::AppServiceProxyFactory::GetForProfile(profile_)
-      ->PromiseAppRegistryCache()
-      ->GetPromiseAppForStringPackageId(promise_package_id);
 }

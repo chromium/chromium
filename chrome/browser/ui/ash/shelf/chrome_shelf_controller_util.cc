@@ -124,7 +124,7 @@ bool IsPromiseAppReadyToShowInShelf(Profile* profile,
       apps::AppServiceProxyFactory::GetForProfile(profile)
           ->PromiseAppRegistryCache()
           ->GetPromiseAppForStringPackageId(promise_package_id);
-  return promise_app && promise_app->should_show;
+  return promise_app && promise_app->should_show.value_or(false);
 }
 
 bool IsAppPinEditable(apps::AppType app_type,
