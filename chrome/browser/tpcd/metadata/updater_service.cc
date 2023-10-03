@@ -46,7 +46,13 @@ void UpdaterService::OnMetadataReady() {
     const auto secondary_pattern = ContentSettingsPattern::FromString(
         metadata_entry.secondary_pattern_spec());
 
-    base::Value value = base::Value(ContentSetting::CONTENT_SETTING_ALLOW);
+    // This is unlikely to occurred as it is validated before the component is
+    // installed by the component installer.
+    if (!primary_pattern.IsValid() || !secondary_pattern.IsValid()) {
+      continue;
+    }
+
+    base::Value value(ContentSetting::CONTENT_SETTING_ALLOW);
 
     tpcd_metadata_grants.emplace_back(primary_pattern, secondary_pattern,
                                       std::move(value), std::string(), false);

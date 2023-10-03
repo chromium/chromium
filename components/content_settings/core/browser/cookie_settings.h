@@ -56,6 +56,7 @@ class CookieSettings
    public:
     virtual void OnThirdPartyCookieBlockingChanged(
         bool block_third_party_cookies) {}
+    virtual void OnMitigationsEnabledFor3pcdChanged(bool enable) {}
     virtual void OnCookieSettingChanged() {}
   };
 
@@ -160,7 +161,7 @@ class CookieSettings
   // Resets the third party cookie setting for the given url. Resets both site-
   // and origin-scoped exceptions since either one might be present.
   // `SetCookieSettingForUserBypass()` and `SetThirdPartyCookieSetting()` create
-  // site- and origin-scoped exceptions respectevely.
+  // site- and origin-scoped exceptions respectively.
   //
   // This should only be called on the UI thread.
   void ResetThirdPartyCookieSetting(const GURL& first_party_url);
@@ -171,6 +172,15 @@ class CookieSettings
   //
   // This method may be called on any thread. Virtual for testing.
   bool ShouldBlockThirdPartyCookies() const override;
+
+  // Returns true iff third party cookies deprecation mitigations should be
+  // allowed.
+  //
+  // NOTE: Most mitigations will also be individually gated behind dedicated
+  // feature flags.
+  //
+  // This method may be called on any thread. Virtual for testing.
+  bool MitigationsEnabledFor3pcd() const override;
 
   // Returns true if there is an active storage access exception with
   // |first_party_url| as the secondary pattern.
@@ -199,9 +209,13 @@ class CookieSettings
   ~CookieSettings() override;
 
  private:
-  // Evaluate if third-party cookies are blocked. Should only be called
+  // Evaluates if third-party cookies are blocked. Should only be called
   // when the preference changes to update the internal state.
   bool ShouldBlockThirdPartyCookiesInternal();
+
+  // Evaluates whether third party cookies deprecation mitigations should be
+  // enabled.
+  bool MitigationsEnabledFor3pcdInternal();
 
   void OnCookiePreferencesChanged();
 
@@ -243,6 +257,7 @@ class CookieSettings
 
   mutable base::Lock lock_;
   bool block_third_party_cookies_ GUARDED_BY(lock_);
+  bool mitigations_enabled_for_3pcd_ GUARDED_BY(lock_);
 };
 
 }  // namespace content_settings

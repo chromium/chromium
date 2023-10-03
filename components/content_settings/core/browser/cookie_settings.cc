@@ -7,6 +7,7 @@
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/synchronization/lock.h"
 #include "build/blink_buildflags.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
@@ -315,6 +316,28 @@ bool CookieSettings::ShouldBlockThirdPartyCookiesInternal() {
   return false;
 }
 
+bool CookieSettings::MitigationsEnabledFor3pcdInternal() {
+  // Mitigations shouldn't be enabled in incognito;
+  if (is_incognito_) {
+    return false;
+  }
+
+  // Mitigations won't be enabled when Third Party Cookies Blocking is enabled
+  // by `features::kForceThirdPartyCookieBlocking` which is intended to be used
+  // via command-lines by developers for testing.
+  if (net::cookie_util::IsForceThirdPartyCookieBlockingEnabled()) {
+    return false;
+  }
+
+  if (!ShouldBlockThirdPartyCookiesInternal()) {
+    return false;
+  }
+
+  // TODO(njeunje): Integrate this method with the new 3PC Prefs and migrate all
+  // mitigations + test coverage.
+  return false;
+}
+
 void CookieSettings::OnContentSettingChanged(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
@@ -344,22 +367,44 @@ void CookieSettings::OnCookiePreferencesChanged() {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   bool new_block_third_party_cookies = ShouldBlockThirdPartyCookiesInternal();
+  bool new_mitigations_enabled_for_3pcd = MitigationsEnabledFor3pcdInternal();
 
-  {
-    base::AutoLock auto_lock(lock_);
-    if (block_third_party_cookies_ == new_block_third_party_cookies) {
-      return;
-    }
+  // TODO(njeunje): Look into if it would be better to use std::atomic<bool>
+  // instead of all these locks and unlocks.
+  base::AutoLock auto_lock(lock_);
+
+  if (block_third_party_cookies_ != new_block_third_party_cookies) {
     block_third_party_cookies_ = new_block_third_party_cookies;
+
+    {
+      base::AutoUnlock auto_unlock(lock_);
+      for (Observer& obs : observers_) {
+        obs.OnThirdPartyCookieBlockingChanged(new_block_third_party_cookies);
+      }
+    }
   }
-  for (Observer& obs : observers_) {
-    obs.OnThirdPartyCookieBlockingChanged(new_block_third_party_cookies);
+
+  if (mitigations_enabled_for_3pcd_ != new_mitigations_enabled_for_3pcd) {
+    mitigations_enabled_for_3pcd_ = new_mitigations_enabled_for_3pcd;
+
+    {
+      base::AutoUnlock auto_unlock(lock_);
+      for (Observer& obs : observers_) {
+        obs.OnMitigationsEnabledFor3pcdChanged(
+            new_mitigations_enabled_for_3pcd);
+      }
+    }
   }
 }
 
 bool CookieSettings::ShouldBlockThirdPartyCookies() const {
   base::AutoLock auto_lock(lock_);
   return block_third_party_cookies_;
+}
+
+bool CookieSettings::MitigationsEnabledFor3pcd() const {
+  base::AutoLock auto_lock(lock_);
+  return mitigations_enabled_for_3pcd_;
 }
 
 }  // namespace content_settings

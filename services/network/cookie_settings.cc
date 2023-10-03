@@ -338,6 +338,10 @@ bool CookieSettings::ShouldBlockThirdPartyCookies() const {
   return block_third_party_cookies_;
 }
 
+bool CookieSettings::MitigationsEnabledFor3pcd() const {
+  return mitigations_enabled_for_3pcd_;
+}
+
 bool CookieSettings::IsStorageAccessApiEnabled() const {
   // The network service relies on the browser process passing
   // storage_access_grants_ correctly.

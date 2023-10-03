@@ -462,6 +462,16 @@ void ProfileNetworkContextService::OnThirdPartyCookieBlockingChanged(
       block_third_party_cookies));
 }
 
+void ProfileNetworkContextService::OnMitigationsEnabledFor3pcdChanged(
+    bool enable) {
+  profile_->ForEachLoadedStoragePartition(base::BindRepeating(
+      [](bool enable, content::StoragePartition* storage_partition) {
+        storage_partition->GetCookieManagerForBrowserProcess()
+            ->SetMitigationsEnabledFor3pcd(enable);
+      },
+      enable));
+}
+
 void ProfileNetworkContextService::OnTruncatedCookieBlockingChanged() {
   const bool block_truncated_cookies =
       profile_->GetPrefs()->GetBoolean(prefs::kBlockTruncatedCookies);
@@ -645,6 +655,9 @@ ProfileNetworkContextService::CreateCookieManagerParams(
 
   out->block_truncated_cookies =
       profile->GetPrefs()->GetBoolean(prefs::kBlockTruncatedCookies);
+
+  out->mitigations_enabled_for_3pcd =
+      cookie_settings.MitigationsEnabledFor3pcd();
 
   return out;
 }

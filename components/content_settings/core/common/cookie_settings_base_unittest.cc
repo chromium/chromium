@@ -60,6 +60,7 @@ class CallbackCookieSettings : public CookieSettingsBase {
   }
 
   bool ShouldBlockThirdPartyCookies() const override { return false; }
+  bool MitigationsEnabledFor3pcd() const override { return false; }
 
   bool IsThirdPartyCookiesAllowedScheme(
       const std::string& scheme) const override {
@@ -269,9 +270,6 @@ TEST_P(CookieSettingsBaseStorageAccessAPITest,
   EXPECT_EQ(
       overrides.Has(
           net::CookieSettingOverride::kTopLevelStorageAccessGrantEligible),
-      IsStoragePartitioned());
-  EXPECT_EQ(
-      overrides.Has(net::CookieSettingOverride::k3pcdMetadataGrantEligible),
       IsStoragePartitioned());
 }
 

@@ -197,10 +197,8 @@ bool CookieSettingsBase::ShouldConsider3pcdSupportSettings(
   return base::FeatureList::IsEnabled(net::features::kTpcdSupportSettings);
 }
 
-bool CookieSettingsBase::ShouldConsider3pcdMetadataGrantsSettings(
-    net::CookieSettingOverrides overrides) const {
-  return base::FeatureList::IsEnabled(net::features::kTpcdMetadataGrants) &&
-         overrides.Has(net::CookieSettingOverride::k3pcdMetadataGrantEligible);
+bool CookieSettingsBase::ShouldConsider3pcdMetadataGrantsSettings() const {
+  return base::FeatureList::IsEnabled(net::features::kTpcdMetadataGrants);
 }
 
 bool CookieSettingsBase::ShouldConsiderStorageAccessGrants(
@@ -218,8 +216,6 @@ net::CookieSettingOverrides CookieSettingsBase::SettingOverridesForStorage()
   if (is_storage_partitioned_) {
     overrides.Put(
         net::CookieSettingOverride::kTopLevelStorageAccessGrantEligible);
-
-    overrides.Put(net::CookieSettingOverride::k3pcdMetadataGrantEligible);
   }
   return overrides;
 }
@@ -267,6 +263,14 @@ CookieSettingsBase::GetCookieSettingInternal(
         net::cookie_util::StorageAccessResult::ACCESS_ALLOWED);
   }
 
+  if (block_third && ShouldConsider3pcdMetadataGrantsSettings() &&
+      IsAllowed(GetContentSetting(url, first_party_url,
+                                  ContentSettingsType::TPCD_METADATA_GRANTS))) {
+    block_third = false;
+    FireStorageAccessHistogram(net::cookie_util::StorageAccessResult::
+                                   ACCESS_ALLOWED_3PCD_METADATA_GRANT);
+  }
+
   if (block_third) {
     bool has_storage_access_opt_in =
         ShouldConsiderStorageAccessGrants(overrides);
@@ -305,15 +309,6 @@ CookieSettingsBase::GetCookieSettingInternal(
     block_third = false;
     FireStorageAccessHistogram(
         net::cookie_util::StorageAccessResult::ACCESS_ALLOWED_3PCD);
-  }
-
-  if (block_third && ShouldConsider3pcdMetadataGrantsSettings(overrides) &&
-      GetContentSetting(url, first_party_url,
-                        ContentSettingsType::TPCD_METADATA_GRANTS) ==
-          CONTENT_SETTING_ALLOW) {
-    block_third = false;
-    FireStorageAccessHistogram(net::cookie_util::StorageAccessResult::
-                                   ACCESS_ALLOWED_3PCD_METADATA_GRANT);
   }
 
   if (!IsAllowed(setting) || block_third) {
