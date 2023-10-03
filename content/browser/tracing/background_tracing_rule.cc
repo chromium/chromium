@@ -504,7 +504,7 @@ class RepeatingIntervalRule : public BackgroundTracingRule {
   base::TimeTicks GetFireTimeForInterval(base::TimeTicks interval_start) const {
     if (randomized_) {
       return interval_start +
-             base::Microseconds(base::RandInt(0, period_.InMicroseconds() - 1));
+             base::Microseconds(base::RandGenerator(period_.InMicroseconds()));
     }
     return interval_start;
   }
