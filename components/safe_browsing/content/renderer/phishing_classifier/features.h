@@ -29,6 +29,9 @@
 #include <string>
 #include <unordered_map>
 
+#include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
+
 namespace safe_browsing {
 
 // Container for a map of features to values, which enforces behavior
@@ -69,6 +72,10 @@ class FeatureMap {
  private:
   std::unordered_map<std::string, double> features_;
 };
+
+BASE_DECLARE_FEATURE(kClientSideDetectionRetryLimit);
+
+extern const base::FeatureParam<int> kClientSideDetectionRetryLimitTime;
 
 namespace features {
 // Constants for the various feature names that we use.

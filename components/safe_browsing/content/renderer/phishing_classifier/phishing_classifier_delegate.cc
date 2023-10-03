@@ -12,10 +12,14 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/lazy_instance.h"
+#include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom-forward.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom-shared.h"
+#include "components/safe_browsing/content/renderer/phishing_classifier/features.h"
 #include "components/safe_browsing/content/renderer/phishing_classifier/phishing_classifier.h"
 #include "components/safe_browsing/content/renderer/phishing_classifier/scorer.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
@@ -41,6 +45,11 @@ GURL StripRef(const GURL& url) {
   return url.ReplaceComponents(replacements);
 }
 
+void LogClassificationRetryWithinTimeout(bool success) {
+  base::UmaHistogramBoolean(
+      "SBClientPhishing.Classifier.ReadyAfterRetryTimeout", success);
+}
+
 }  // namespace
 
 PhishingClassifierDelegate::PhishingClassifierDelegate(
@@ -49,12 +58,18 @@ PhishingClassifierDelegate::PhishingClassifierDelegate(
     : content::RenderFrameObserver(render_frame),
       last_main_frame_transition_(ui::PAGE_TRANSITION_LINK),
       have_page_text_(false),
-      is_classifying_(false) {
+      is_classifying_(false),
+      awaiting_retry_(false) {
   if (!classifier) {
     classifier = new PhishingClassifier(render_frame);
   }
 
   classifier_.reset(classifier);
+
+  model_version_ =
+      classifier_->is_ready()
+          ? ScorerStorage::GetInstance()->GetScorer()->model_version()
+          : 0;
 
   render_frame->GetAssociatedInterfaceRegistry()
       ->AddInterface<mojom::PhishingDetector>(base::BindRepeating(
@@ -91,6 +106,7 @@ void PhishingClassifierDelegate::StartPhishingDetection(
   if (!callback_.is_null())
     std::move(callback_).Run(mojom::PhishingDetectorResult::CANCELLED, "");
   is_phishing_detection_running_ = true;
+  awaiting_retry_ = false;
   last_url_received_from_browser_ = StripRef(url);
   callback_ = std::move(callback);
   // Start classifying the current page if all conditions are met.
@@ -159,6 +175,7 @@ void PhishingClassifierDelegate::CancelPendingClassification(
   }
   classifier_page_text_.clear();
   have_page_text_ = false;
+  awaiting_retry_ = false;
 }
 
 void PhishingClassifierDelegate::ClassificationDone(
@@ -190,12 +207,13 @@ void PhishingClassifierDelegate::MaybeStartClassification() {
   // Note that if we determine that this particular navigation should not be
   // classified at all (as opposed to deferring it until we get an IPC or
   // the load completes), we discard the page text since it won't be needed.
-  if (!classifier_->is_ready()) {
-    is_phishing_detection_running_ = false;
-    // Keep classifier_page_text_, in case a Scorer is set later.
-    if (!callback_.is_null())
-      std::move(callback_).Run(
-          mojom::PhishingDetectorResult::CLASSIFIER_NOT_READY, "");
+  if (!classifier_->is_ready() && !awaiting_retry_) {
+    awaiting_retry_ = true;
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&PhishingClassifierDelegate::OnRetryTimeout,
+                       weak_factory_.GetWeakPtr()),
+        base::Seconds(kClientSideDetectionRetryLimitTime.Get()));
     return;
   }
 
@@ -213,12 +231,12 @@ void PhishingClassifierDelegate::MaybeStartClassification() {
     return;
   }
 
-  GURL stripped_last_load_url(StripRef(last_finished_load_url_));
   if (!have_page_text_) {
     RecordEvent(SBPhishingClassifierEvent::kPageTextNotLoaded);
     return;
   }
 
+  GURL stripped_last_load_url(StripRef(last_finished_load_url_));
   if (last_url_received_from_browser_ != stripped_last_load_url) {
     RecordEvent(SBPhishingClassifierEvent::kUrlShouldNotBeClassified);
     // The browser has not yet confirmed that this URL should be classified,
@@ -231,11 +249,32 @@ void PhishingClassifierDelegate::MaybeStartClassification() {
   }
 
   last_url_sent_to_classifier_ = last_finished_load_url_;
+
+  if (awaiting_retry_) {
+    LogClassificationRetryWithinTimeout(true);
+    awaiting_retry_ = false;
+  }
+
   is_classifying_ = true;
   classifier_->BeginClassification(
       &classifier_page_text_,
       base::BindOnce(&PhishingClassifierDelegate::ClassificationDone,
                      base::Unretained(this)));
+}
+
+void PhishingClassifierDelegate::OnRetryTimeout() {
+  // If |awaiting_retry_| is false, the classification is happening, completed,
+  // cancelled, or there is a new phishing detection request.
+  if (!awaiting_retry_) {
+    return;
+  }
+
+  is_phishing_detection_running_ = false;
+  if (!callback_.is_null()) {
+    std::move(callback_).Run(
+        mojom::PhishingDetectorResult::CLASSIFIER_NOT_READY, "");
+  }
+  LogClassificationRetryWithinTimeout(false);
 }
 
 void PhishingClassifierDelegate::RecordEvent(SBPhishingClassifierEvent event) {
@@ -250,11 +289,39 @@ void PhishingClassifierDelegate::OnDestruct() {
 }
 
 void PhishingClassifierDelegate::OnScorerChanged() {
+  Scorer* scorer = ScorerStorage::GetInstance()->GetScorer();
+
+  if (!scorer) {
+    // If the scorer is reset, we should clear pending classification if there
+    // is one going on, which is checked by the function below.
+    CancelPendingClassification(SCORER_CLEARED);
+    return;
+  }
+
+  // When a scorer is updated, we want to make sure that the model version is
+  // updated. When the user restarts their browser, their scorer could be
+  // changed twice due to the image embedding model polled from
+  // OptimizationGuide server shortly afterwards, and this can interfere with
+  // the first classification happening.
+  if (model_version_ == scorer->model_version()) {
+    return;
+  }
+
+  model_version_ = scorer->model_version();
+
+  // If the model version has changed, we should cancel any pending
+  // classification if there is one. We check |is_classifying_| here because
+  // |CancelPendingClassification| clears the page text, and we do not want that
+  // if we are awaiting retry.
   if (is_classifying_) {
-    // If there is a classification going on right now it means we're
-    // actually replacing an existing scorer with a new model.  In
-    // this case we simply cancel the current classification.
     CancelPendingClassification(NEW_PHISHING_SCORER);
+  } else if (awaiting_retry_) {
+    // If a classificiation is not going on right now, a retry has been
+    // attempted, and we're still within the timeout, call the classification
+    // process again, because we should be able to classify now with the scorer
+    // available.
+    RecordEvent(SBPhishingClassifierEvent::kScorerUpdatedWithinRetryTimeout);
+    MaybeStartClassification();
   }
 }
 
