@@ -1200,8 +1200,9 @@ IN_PROC_BROWSER_TEST_F(LcpBreakdownTimingsTest, MAYBE_NativeLazyLoadingImage) {
   Validate();
 }
 
-// TODO(https://crbug.com/1487837): This test is failing on Linux CFI.
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
+// TODO(https://crbug.com/1487837): This test is failing on Linux CFI and Chrome
+// OS (Both Lacros and ASH).
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 #define MAYBE_ManualLazyLoadingImage DISABLED_ManualLazyLoadingImage
 #else
 #define MAYBE_ManualLazyLoadingImage ManualLazyLoadingImage
