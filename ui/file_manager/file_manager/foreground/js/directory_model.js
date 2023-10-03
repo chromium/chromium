@@ -20,7 +20,7 @@ import {VolumeInfo} from '../../externs/volume_info.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 import {getMyFiles} from '../../state/ducks/all_entries.js';
 import {changeDirectory} from '../../state/ducks/current_directory.js';
-import {clearSearch, getDefaultSearchOptions, updateSearch} from '../../state/ducks/search.js';
+import {getDefaultSearchOptions, updateSearch} from '../../state/ducks/search.js';
 import {getFileData, getStore, getVolume} from '../../state/store.js';
 
 import {constants} from './constants.js';
@@ -110,7 +110,6 @@ export class DirectoryModel extends EventTarget {
     this.rescanTime_ = null;
     this.scanFailures_ = 0;
     this.changeDirectorySequence_ = 0;
-    this.cachedSearch_ = null;
 
     /** @private {?function(Event): void} */
     this.onSearchCompleted_ = null;
@@ -184,16 +183,6 @@ export class DirectoryModel extends EventTarget {
 
   /** @param {!State} state latest state from the store. */
   onStateChanged(state) {
-    this.handleSearchState_(state);
-    this.handleDirectoryState_(state);
-  }
-
-  /**
-   * Handles the current directory slice of the store's state.
-   * @param {!State} state latest state from the store.
-   * @private
-   */
-  handleDirectoryState_(state) {
     const currentEntry = this.getCurrentDirEntry();
     const currentURL = currentEntry ? currentEntry.toURL() : null;
     let newURL = state.currentDirectory ? state.currentDirectory.key : null;
@@ -231,35 +220,6 @@ export class DirectoryModel extends EventTarget {
 
       // Initiate the directory change.
       this.changeDirectoryEntry(/** @type {!DirectoryEntry} */ (entry));
-    }
-  }
-
-  /**
-   * Reacts to changes in the search state of the store. If the search changed
-   * and the query is not empty, this method triggers a new directory search.
-   * @param {!State} state
-   * @private
-   */
-  handleSearchState_(state) {
-    const search = state.search;
-    if (this.cachedSearch_ === search) {
-      // Bail out early if the search part of the state has not changed.
-      return;
-    }
-
-    // Cache the last received search state for future comparisons.
-    const lastSearch = this.cachedSearch_;
-    this.cachedSearch_ = search;
-
-    // We change the search state (STARTED, SUCCESS, etc.) so only trigger
-    // a new search if the query or the options have changed.
-    if (!search) {
-      return;
-    }
-    if (!lastSearch || lastSearch.query !== search.query ||
-        lastSearch.options !== search.options) {
-      this.search_(
-          search.query || '', search.options || getDefaultSearchOptions());
     }
   }
 
@@ -1309,9 +1269,6 @@ export class DirectoryModel extends EventTarget {
       event.newDirEntry = dirEntry;
       event.volumeChanged = previousVolumeInfo !== currentVolumeInfo;
       this.dispatchEvent(event);
-      // Preemptively always clear search and search query on directory change.
-      this.store_.dispatch(clearSearch());
-      this.clearLastSearchQuery();
       // Notify the Store that the new directory has successfully changed.
       this.store_.dispatch(
           changeDirectory({to: dirEntry, status: PropStatus.SUCCESS}));
@@ -1701,9 +1658,10 @@ export class DirectoryModel extends EventTarget {
    * @param {string} query Query that will be searched for.
    * @param {!SearchOptions} options Search options, such as file
    *     type, etc.
-   * @private
+   * @param {function(Event)} onSearchRescan Function that will be called when
+   *     the search directory is rescanned (i.e. search results are displayed).
    */
-  search_(query, options) {
+  search(query, options, onSearchRescan) {
     this.lastSearchQuery_ = query;
     this.stopActiveSearch_();
     const currentDirEntry = this.getCurrentDirEntry();
@@ -1741,6 +1699,9 @@ export class DirectoryModel extends EventTarget {
       this.store_.dispatch(
           updateSearch({query: query, status: PropStatus.STARTED}));
       this.onSearchCompleted_ = (...args) => {
+        // Notify the caller via callback, for non-store based callers.
+        onSearchRescan(...args);
+
         // Notify the store-aware parts.
         this.store_.dispatch(updateSearch({status: PropStatus.SUCCESS}));
       };

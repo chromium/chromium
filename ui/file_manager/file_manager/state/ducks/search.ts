@@ -14,13 +14,6 @@ const slice = new Slice<State, State['search']>('search');
 export {slice as searchSlice};
 
 /**
- * Returns if the given search data represents empty (cleared) search.
- */
-export function isSearchEmpty(search: SearchData): boolean {
-  return Object.values(search).every(f => f === undefined);
-}
-
-/**
  * Helper function that does a deep comparison between two SearchOptions.
  */
 function optionsChanged(
@@ -48,15 +41,11 @@ function searchReducer(state: State, payload: SearchData): State {
   };
   // Special case: if none of the fields are set, the action clears the search
   // state in the store.
-  if (isSearchEmpty(payload)) {
-    // Only change the state if the stored value has some defined values.
-    if (state.search && !isSearchEmpty(state.search)) {
-      return {
-        ...state,
-        search: blankSearch,
-      };
-    }
-    return state;
+  if (Object.values(payload).every(field => field === undefined)) {
+    return {
+      ...state,
+      search: blankSearch,
+    };
   }
 
   const currentSearch = state.search || blankSearch;
