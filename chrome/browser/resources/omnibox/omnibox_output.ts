@@ -538,10 +538,12 @@ class OutputAnswerProperty extends FlexWrappingOutputProperty {
       classes: ACMatchClassification[]) {
     clearChildren(container);
     OutputAnswerProperty.classify(string, classes)
-        .map(
-            ({string, style}) => OutputJsonProperty.renderJsonWord(
-                string, OutputAnswerProperty.styleToClasses(style)))
-        .forEach(span => container.appendChild(span));
+        .forEach(({string, style}) => {
+          const span = document.createElement('span');
+          span.classList.add(...OutputAnswerProperty.styleToClasses(style));
+          span.textContent = string;
+          container.appendChild(span);
+        });
   }
 
   private static classify(string: string, classes: ACMatchClassification[]):
@@ -574,54 +576,6 @@ class OutputBooleanProperty extends OutputProperty {
   }
 }
 
-class OutputJsonProperty extends OutputProperty {
-  private static classifications: Array<{re: RegExp, clazz: string}>;
-  private static spaceRegex: RegExp;
-
-  constructor(json: string) {
-    super(JSON.stringify(json, null, 2));
-
-    const pre = document.createElement('pre');
-    pre.classList.add('json');
-    json.split(/("(?:[^"\\]|\\.)*":?|\w+)/)
-        .map(word => {
-          return OutputJsonProperty.renderJsonWord(
-              word, [OutputJsonProperty.classifyJsonWord(word)]);
-        })
-        .forEach(jsonSpan => pre.appendChild(jsonSpan));
-    this.appendChild(pre);
-
-    return this;
-  }
-
-  static renderJsonWord(word: string, classes: string[]): HTMLElement {
-    const span = document.createElement('span');
-    span.classList.add(...classes);
-    span.textContent = word;
-    return span;
-  }
-
-  static classifyJsonWord(word: string): string {
-    // Statically creating the regexes only once.
-    OutputJsonProperty.classifications = OutputJsonProperty.classifications || [
-      {re: /^"[^]*":$/, clazz: 'key'},
-      {re: /^"[^]*"$/, clazz: 'string'},
-      {re: /true|false/, clazz: 'boolean'},
-      {re: /null/, clazz: 'null'},
-    ];
-    OutputJsonProperty.spaceRegex = OutputJsonProperty.spaceRegex || /^\s*$/;
-
-    if (Number.isNaN(Number(word))) {
-      const classification =
-          OutputJsonProperty.classifications.find(({re}) => re.test(word));
-      return classification && classification.clazz || '';
-    } else if (!OutputJsonProperty.spaceRegex.test(word)) {
-      return 'number';
-    }
-    return '';
-  }
-}
-
 class OutputDictionaryProperty extends OutputProperty {
   constructor(value: DictionaryEntry[]) {
     super(value.map(({key, value}) => `${key}: ${value}`).join('\n'));
@@ -631,9 +585,15 @@ class OutputDictionaryProperty extends OutputProperty {
     const pre = document.createElement('pre');
     pre.classList.add('json');
     value.forEach(({key, value}) => {
-      pre.appendChild(OutputJsonProperty.renderJsonWord(key + ': ', ['key']));
-      pre.appendChild(
-          OutputJsonProperty.renderJsonWord(value + '\n', ['number']));
+      const keySpan = document.createElement('span');
+      keySpan.classList.add('key');
+      keySpan.textContent = key + ': ';
+      pre.appendChild(keySpan);
+
+      const valueSpan = document.createElement('span');
+      valueSpan.classList.add('value');
+      valueSpan.textContent = value + '\n';
+      pre.appendChild(valueSpan);
     });
     container.appendChild(pre);
 
@@ -900,8 +860,6 @@ customElements.define(
     'output-answer-property', OutputAnswerProperty, {extends: 'td'});
 customElements.define(
     'output-boolean-property', OutputBooleanProperty, {extends: 'td'});
-customElements.define(
-    'output-json-property', OutputJsonProperty, {extends: 'td'});
 customElements.define(
     'output-additional-info-property', OutputDictionaryProperty,
     {extends: 'td'});

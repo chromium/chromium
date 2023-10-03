@@ -268,22 +268,8 @@ pre.json .key {
   font-weight: bold;
 }
 
-pre.json .string {
-  color: green;
-}
-
-pre.json .number {
+pre.json .value {
   color: blue;
-}
-
-pre.json .boolean {
-  color: slateblue;
-  font-weight: bold;
-}
-
-pre.json .null {
-  color: magenta;
-  font-weight: bold;
 }
 
 /* misc cells */
