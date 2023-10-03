@@ -48,7 +48,7 @@ class EmojiiBubbleDialogView : public WebUIBubbleDialogView {
     // Emoji Picker.
     if (base::FeatureList::IsEnabled(
             ash::features::kImeSystemEmojiPickerJellySupport)) {
-      set_corner_radius(16);
+      set_corner_radius(20);
     }
   }
 
