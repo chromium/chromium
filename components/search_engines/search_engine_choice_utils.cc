@@ -5,7 +5,6 @@
 #include "components/search_engines/search_engine_choice_utils.h"
 
 #include "base/check_deref.h"
-#include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
@@ -196,11 +195,6 @@ bool ShouldShowChoiceScreen(const policy::PolicyService& policy_service,
 }
 
 int GetSearchEngineChoiceCountryId(PrefService* profile_prefs) {
-  // Prefs are sometimes null in unit tests.
-  if (!profile_prefs) {
-    CHECK_IS_TEST();
-  }
-
   int command_line_country = country_codes::CountryStringToCountryID(
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
           switches::kSearchEngineChoiceCountry));
