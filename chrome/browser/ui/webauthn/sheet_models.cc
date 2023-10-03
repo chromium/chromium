@@ -89,10 +89,6 @@ bool AuthenticatorSheetModelBase::IsActivityIndicatorVisible() const {
   return false;
 }
 
-bool AuthenticatorSheetModelBase::IsBackButtonVisible() const {
-  return true;
-}
-
 bool AuthenticatorSheetModelBase::IsCancelButtonVisible() const {
   return true;
 }
@@ -157,10 +153,6 @@ AuthenticatorMechanismSelectorSheetModel::
         AuthenticatorRequestDialogModel* dialog_model)
     : AuthenticatorSheetModelBase(dialog_model) {
   vector_illustrations_.emplace(kPasskeyHeaderIcon, kPasskeyHeaderDarkIcon);
-}
-
-bool AuthenticatorMechanismSelectorSheetModel::IsBackButtonVisible() const {
-  return false;
 }
 
 std::u16string AuthenticatorMechanismSelectorSheetModel::GetStepTitle() const {
@@ -245,10 +237,6 @@ AuthenticatorTimeoutErrorModel::AuthenticatorTimeoutErrorModel(
   vector_illustrations_.emplace(kPasskeyErrorIcon, kPasskeyErrorDarkIcon);
 }
 
-bool AuthenticatorTimeoutErrorModel::IsBackButtonVisible() const {
-  return false;
-}
-
 std::u16string AuthenticatorTimeoutErrorModel::GetCancelButtonLabel() const {
   return l10n_util::GetStringUTF16(IDS_CLOSE);
 }
@@ -268,10 +256,6 @@ AuthenticatorNoAvailableTransportsErrorModel::
         AuthenticatorRequestDialogModel* dialog_model)
     : AuthenticatorSheetModelBase(dialog_model) {
   vector_illustrations_.emplace(kPasskeyErrorIcon, kPasskeyErrorDarkIcon);
-}
-
-bool AuthenticatorNoAvailableTransportsErrorModel::IsBackButtonVisible() const {
-  return false;
 }
 
 std::u16string
@@ -298,10 +282,6 @@ AuthenticatorNoPasskeysErrorModel::AuthenticatorNoPasskeysErrorModel(
   vector_illustrations_.emplace(kPasskeyErrorIcon, kPasskeyErrorDarkIcon);
 }
 
-bool AuthenticatorNoPasskeysErrorModel::IsBackButtonVisible() const {
-  return false;
-}
-
 std::u16string AuthenticatorNoPasskeysErrorModel::GetCancelButtonLabel() const {
   return l10n_util::GetStringUTF16(IDS_CLOSE);
 }
@@ -320,10 +300,6 @@ AuthenticatorNotRegisteredErrorModel::AuthenticatorNotRegisteredErrorModel(
     AuthenticatorRequestDialogModel* dialog_model)
     : AuthenticatorSheetModelBase(dialog_model) {
   vector_illustrations_.emplace(kPasskeyErrorIcon, kPasskeyErrorDarkIcon);
-}
-
-bool AuthenticatorNotRegisteredErrorModel::IsBackButtonVisible() const {
-  return false;
 }
 
 std::u16string AuthenticatorNotRegisteredErrorModel::GetCancelButtonLabel()
@@ -367,10 +343,6 @@ AuthenticatorAlreadyRegisteredErrorModel::
   vector_illustrations_.emplace(kPasskeyErrorIcon, kPasskeyErrorDarkIcon);
 }
 
-bool AuthenticatorAlreadyRegisteredErrorModel::IsBackButtonVisible() const {
-  return false;
-}
-
 std::u16string AuthenticatorAlreadyRegisteredErrorModel::GetCancelButtonLabel()
     const {
   return l10n_util::GetStringUTF16(IDS_CLOSE);
@@ -410,11 +382,6 @@ AuthenticatorInternalUnrecognizedErrorSheetModel::
         AuthenticatorRequestDialogModel* dialog_model)
     : AuthenticatorSheetModelBase(dialog_model) {
   vector_illustrations_.emplace(kPasskeyErrorIcon, kPasskeyErrorDarkIcon);
-}
-
-bool AuthenticatorInternalUnrecognizedErrorSheetModel::IsBackButtonVisible()
-    const {
-  return dialog_model()->offer_try_again_in_ui();
 }
 
 bool AuthenticatorInternalUnrecognizedErrorSheetModel::IsAcceptButtonVisible()
@@ -550,10 +517,6 @@ AuthenticatorBlePermissionMacSheetModel::
                                   OtherMechanismButtonVisibility::kVisible) {
   vector_illustrations_.emplace(kPasskeyErrorBluetoothIcon,
                                 kPasskeyErrorBluetoothDarkIcon);
-}
-
-bool AuthenticatorBlePermissionMacSheetModel::ShouldFocusBackArrow() const {
-  return true;
 }
 
 std::u16string AuthenticatorBlePermissionMacSheetModel::GetStepTitle() const {
@@ -695,10 +658,6 @@ AuthenticatorAndroidAccessorySheetModel::
 
 AuthenticatorAndroidAccessorySheetModel::
     ~AuthenticatorAndroidAccessorySheetModel() = default;
-
-bool AuthenticatorAndroidAccessorySheetModel::IsBackButtonVisible() const {
-  return true;
-}
 
 bool AuthenticatorAndroidAccessorySheetModel::IsActivityIndicatorVisible()
     const {
@@ -1013,10 +972,6 @@ AuthenticatorGenericErrorSheetModel::AuthenticatorGenericErrorSheetModel(
   vector_illustrations_.emplace(kPasskeyErrorIcon, kPasskeyErrorDarkIcon);
 }
 
-bool AuthenticatorGenericErrorSheetModel::IsBackButtonVisible() const {
-  return false;
-}
-
 std::u16string AuthenticatorGenericErrorSheetModel::GetCancelButtonLabel()
     const {
   return l10n_util::GetStringUTF16(IDS_CLOSE);
@@ -1060,11 +1015,6 @@ AuthenticatorResidentCredentialConfirmationSheetView::
 
 AuthenticatorResidentCredentialConfirmationSheetView::
     ~AuthenticatorResidentCredentialConfirmationSheetView() = default;
-
-bool AuthenticatorResidentCredentialConfirmationSheetView::IsBackButtonVisible()
-    const {
-  return false;
-}
 
 bool AuthenticatorResidentCredentialConfirmationSheetView::
     IsAcceptButtonVisible() const {
@@ -1214,10 +1164,6 @@ std::u16string AttestationPermissionRequestSheetModel::GetStepDescription()
   return l10n_util::GetStringFUTF16(
       IDS_WEBAUTHN_REQUEST_ATTESTATION_PERMISSION_DESC,
       GetRelyingPartyIdString(dialog_model()));
-}
-
-bool AttestationPermissionRequestSheetModel::IsBackButtonVisible() const {
-  return false;
 }
 
 bool AttestationPermissionRequestSheetModel::IsAcceptButtonVisible() const {

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBAUTHN_AUTHENTICATOR_REQUEST_SHEET_MODEL_H_
 #define CHROME_BROWSER_UI_WEBAUTHN_AUTHENTICATOR_REQUEST_SHEET_MODEL_H_
 
-#include <memory>
 #include <string>
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -29,8 +28,8 @@ struct VectorIcon;
 //        subclasses, if any,
 //
 //  (3) logic to handle user interactions with:
-//    (a) the `Back`, `Accept`, `Cancel`, buttons, even though the latter two
-//    are actually rendered by the AuthenticatorRequestDialogView,
+//    (a) the `Accept` and `Cancel` buttons, even though thouse are actually
+//        rendered by the AuthenticatorRequestDialogView,
 //    (b) the step-specific contents, if any.
 //
 class AuthenticatorRequestSheetModel {
@@ -47,9 +46,6 @@ class AuthenticatorRequestSheetModel {
   virtual ~AuthenticatorRequestSheetModel() = default;
 
   virtual bool IsActivityIndicatorVisible() const = 0;
-  virtual bool IsBackButtonVisible() const = 0;
-  virtual bool ShouldFocusBackArrow() const;
-  virtual bool IsCloseButtonVisible() const;
 
   virtual bool IsCancelButtonVisible() const = 0;
   virtual std::u16string GetCancelButtonLabel() const = 0;

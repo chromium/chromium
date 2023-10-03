@@ -42,10 +42,6 @@ bool WebauthnDialogModel::IsActivityIndicatorVisible() const {
          state_ == WebauthnDialogState::kVerifyPending;
 }
 
-bool WebauthnDialogModel::IsBackButtonVisible() const {
-  return false;
-}
-
 bool WebauthnDialogModel::IsCancelButtonVisible() const {
   return true;
 }
