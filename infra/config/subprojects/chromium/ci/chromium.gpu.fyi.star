@@ -216,6 +216,7 @@ ci.thin_tester(
         android_config = builder_config.android_config(
             config = "main_builder_rel_mb",
         ),
+        run_tests_serially = True,
     ),
     console_view_entry = consoles.console_view_entry(
         category = "Android|S32|ARM",
@@ -242,6 +243,7 @@ ci.thin_tester(
         android_config = builder_config.android_config(
             config = "main_builder_rel_mb",
         ),
+        run_tests_serially = True,
     ),
     console_view_entry = consoles.console_view_entry(
         category = "Android|S32|QCOM",

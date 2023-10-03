@@ -117,7 +117,8 @@
                 "bucket": "ci",
                 "builder": "GPU FYI Android arm Builder",
                 "project": "chromium"
-              }
+              },
+              "run_tests_serially": true
             }
           },
           {
@@ -146,7 +147,8 @@
                 "bucket": "ci",
                 "builder": "GPU FYI Android arm Builder",
                 "project": "chromium"
-              }
+              },
+              "run_tests_serially": true
             }
           },
           {
