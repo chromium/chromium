@@ -91,6 +91,7 @@ class SupervisionMixin : public InProcessBrowserTestMixin {
   void SetUpIdentityTestEnvironment();
   void ConfigureIdentityTestEnvironment();
   void ConfigureParentalControls(bool is_supervised_profile);
+  void SetParentalControlsAccountCapability(bool is_supervised_profile);
 
   Profile* GetProfile() const;
 

@@ -17,6 +17,7 @@
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
@@ -113,10 +114,23 @@ void SupervisionMixin::SetUpIdentityTestEnvironment() {
 
 void SupervisionMixin::ConfigureParentalControls(bool is_supervised_profile) {
   if (is_supervised_profile) {
+    SetParentalControlsAccountCapability(true);
     EnableParentalControls(*GetProfile()->GetPrefs());
   } else {
     DisableParentalControls(*GetProfile()->GetPrefs());
   }
+}
+
+void SupervisionMixin::SetParentalControlsAccountCapability(
+    bool is_supervised_profile) {
+  auto* identity_manager = GetIdentityTestEnvironment()->identity_manager();
+  CoreAccountInfo account_info =
+      identity_manager->GetPrimaryAccountInfo(consent_level_);
+  AccountInfo account = identity_manager->FindExtendedAccountInfo(account_info);
+
+  AccountCapabilitiesTestMutator mutator(&account.capabilities);
+  mutator.set_is_subject_to_parental_controls(is_supervised_profile);
+  signin::UpdateAccountInfoForAccount(identity_manager, account);
 }
 
 void SupervisionMixin::ConfigureIdentityTestEnvironment() {

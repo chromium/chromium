@@ -388,6 +388,7 @@ class SupervisedUserExtensionWebstorePrivateApiTest
             this,
             embedded_test_server_.get(),
             {
+                .consent_level = signin::ConsentLevel::kSignin,
                 .sign_in_mode =
                     supervised_user::SupervisionMixin::SignInMode::kSupervised,
             }) {
@@ -396,15 +397,26 @@ class SupervisedUserExtensionWebstorePrivateApiTest
           /*enabled_features=*/
           {supervised_user::
                kEnableExtensionsPermissionsForSupervisedUsersOnDesktop,
-           supervised_user::kLocalExtensionApprovalsV2},
+           supervised_user::kLocalExtensionApprovalsV2,
+           // Used to prevent user sign-out which crashes the test.
+           supervised_user::kClearingCookiesKeepsSupervisedUsersSignedIn},
           /*disabled_features=*/{});
     } else {
       feature_list_.InitWithFeatures(
           /*enabled_features=*/
           {supervised_user::
-               kEnableExtensionsPermissionsForSupervisedUsersOnDesktop},
+               kEnableExtensionsPermissionsForSupervisedUsersOnDesktop,
+           // Used to prevent user sign-out which crashes the test.
+           supervised_user::kClearingCookiesKeepsSupervisedUsersSignedIn},
           /*disabled_features=*/{supervised_user::kLocalExtensionApprovalsV2});
     }
+  }
+
+  ~SupervisedUserExtensionWebstorePrivateApiTest() override {
+    // Reset the feature list explicitly here, as other test members that may
+    // contain it will try to destruct it (e.g. objects contained in
+    // supervision_mixin_).
+    feature_list_.Reset();
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -506,15 +518,9 @@ INSTANTIATE_TEST_SUITE_P(All,
                          SupervisedUserExtensionWebstorePrivateApiTest,
                          testing::Bool());
 
-// TODO(b/289179073): Investigate flakiness on Windows/Mac/Linux.
 // Tests install for a child when parent permission is granted.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#define MAYBE_ParentPermissionGranted ParentPermissionGranted
-#else
-#define MAYBE_ParentPermissionGranted DISABLED_ParentPermissionGranted
-#endif
 IN_PROC_BROWSER_TEST_P(SupervisedUserExtensionWebstorePrivateApiTest,
-                       MAYBE_ParentPermissionGranted) {
+                       ParentPermissionGranted) {
   WebstoreInstallListener listener;
   auto delegate_reset = WebstorePrivateApi::SetDelegateForTesting(&listener);
   set_next_dialog_action(NextDialogAction::kAccept);
