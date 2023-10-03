@@ -540,7 +540,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sCloseTabSaveTabList =
             new CachedFlag(CLOSE_TAB_SAVE_TAB_LIST, true);
     public static final CachedFlag sCollectAndroidFrameTimelineMetrics =
-            new CachedFlag(COLLECT_ANDROID_FRAME_TIMELINE_METRICS, true);
+            new CachedFlag(COLLECT_ANDROID_FRAME_TIMELINE_METRICS, false);
     public static final CachedFlag sCommandLineOnNonRooted =
             new CachedFlag(COMMAND_LINE_ON_NON_ROOTED,
                     ChromePreferenceKeys.FLAGS_CACHED_COMMAND_LINE_ON_NON_ROOTED_ENABLED, false);
