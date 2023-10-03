@@ -149,6 +149,18 @@ void Env::SetLastMouseLocation(const gfx::Point& last_mouse_location) {
   last_mouse_location_ = last_mouse_location;
 }
 
+void Env::SetLastTouchLocation(const aura::Window* target,
+                               const gfx::Point& last_touch_location) {
+  last_touch_locations_.insert_or_assign(target, last_touch_location);
+}
+
+void Env::SetTouchDown(bool is_touch_down) {
+  if (!is_touch_down_ && is_touch_down) {
+    last_touch_locations_.clear();
+  }
+  is_touch_down_ = is_touch_down;
+}
+
 void Env::SetGestureRecognizer(
     std::unique_ptr<ui::GestureRecognizer> gesture_recognizer) {
   gesture_recognizer_ = std::move(gesture_recognizer);
@@ -157,27 +169,17 @@ void Env::SetGestureRecognizer(
 gfx::Point Env::GetLastPointerPoint(ui::mojom::DragEventSource event_source,
                                     Window* window,
                                     absl::optional<gfx::Point> fallback) {
-  if (event_source == ui::mojom::DragEventSource::kTouch && is_touch_down()) {
-    DCHECK(window);
-    DCHECK(window->GetRootWindow());
-    gfx::PointF touch_point_f;
-    bool got_touch_point = gesture_recognizer()->GetLastTouchPointForTarget(
-        window, &touch_point_f);
-    if (got_touch_point) {
-      Window* root = window->GetRootWindow();
-      DCHECK(root);
-      DCHECK(root->GetRootWindow());
-      DCHECK(aura::client::GetScreenPositionClient(root->GetRootWindow()));
-      client::GetScreenPositionClient(root->GetRootWindow())
-          ->ConvertPointToScreen(root, &touch_point_f);
-      return gfx::ToFlooredPoint(touch_point_f);
+  if (event_source == ui::mojom::DragEventSource::kTouch) {
+    if (is_touch_down()) {
+      auto iter = last_touch_locations_.find(window);
+      if (iter != last_touch_locations_.end()) {
+        return iter->second;
+      }
     }
-    // Fallback when touch state is lost. See http://crbug.com/1162541.
     if (fallback)
       return *fallback;
   }
 
-  // TODO(https://crbug.com/1338746): Use last_mouse_location_.
   return display::Screen::GetScreen()->GetCursorScreenPoint();
 }
 

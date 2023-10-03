@@ -74,6 +74,10 @@ class VIEWS_EXPORT DesktopWindowTreeHostLacros
   void AddAdditionalInitProperties(
       const Widget::InitParams& params,
       ui::PlatformWindowInitProperties* properties) override;
+  Widget::MoveLoopResult RunMoveLoop(
+      const gfx::Vector2d& drag_offset,
+      Widget::MoveLoopSource source,
+      Widget::MoveLoopEscapeBehavior escape_behavior) override;
 
   // aura::WindowObserver:
   void OnWindowPropertyChanged(aura::Window* window,

@@ -9,6 +9,7 @@
 #include <set>
 #include <utility>
 
+#include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "build/build_config.h"
@@ -89,10 +90,12 @@ class AURA_EXPORT Env : public ui::EventTarget {
   // coordinates.
   const gfx::Point& last_mouse_location() const { return last_mouse_location_; }
   void SetLastMouseLocation(const gfx::Point& last_mouse_location);
+  void SetLastTouchLocation(const aura::Window* target,
+                            const gfx::Point& last_touch_location);
 
   // Whether any touch device is currently down.
   bool is_touch_down() const { return is_touch_down_; }
-  void set_touch_down(bool value) { is_touch_down_ = value; }
+  void SetTouchDown(bool value);
 
   void set_context_factory(ui::ContextFactory* context_factory) {
     context_factory_ = context_factory;
@@ -116,8 +119,10 @@ class AURA_EXPORT Env : public ui::EventTarget {
   void SetGestureRecognizer(
       std::unique_ptr<ui::GestureRecognizer> gesture_recognizer);
 
-  // The `fallback` parameter allows callers of this API to specify a
-  // value to be returned in the case of a missing touch state.
+  // Returns the location of last mouse or touch event. Note that touch makes
+  // sense only during pressed state, and this will fallback to to the
+  // 'fallback' value, or mouse pointer location in the case of a missing touch
+  // state.
   gfx::Point GetLastPointerPoint(ui::mojom::DragEventSource event_source,
                                  aura::Window* window,
                                  absl::optional<gfx::Point> fallback);
@@ -192,8 +197,9 @@ class AURA_EXPORT Env : public ui::EventTarget {
 
   std::unique_ptr<EnvInputStateController> env_controller_;
   int mouse_button_flags_ = 0;
-  // Location of last mouse event, in screen coordinates.
+  // Location of last mouse event and touch event in screen coordinates.
   mutable gfx::Point last_mouse_location_;
+  mutable gfx::Point last_touch_location_;
   bool is_touch_down_ = false;
 
   std::unique_ptr<ui::GestureRecognizer> gesture_recognizer_;
@@ -213,6 +219,10 @@ class AURA_EXPORT Env : public ui::EventTarget {
   std::unique_ptr<WindowOcclusionTracker> window_occlusion_tracker_;
 
   std::vector<aura::WindowTreeHost*> window_tree_hosts_;
+
+  // Touch points. The `target` window may be stale and should not be accessed
+  // other than looking up purpose.
+  base::flat_map<const aura::Window*, gfx::Point> last_touch_locations_;
 
   raw_ptr<client::CursorShapeClient> cursor_shape_client_ = nullptr;
 };

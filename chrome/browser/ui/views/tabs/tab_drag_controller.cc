@@ -2449,7 +2449,7 @@ Browser* TabDragController::CreateBrowserForDrag(
 }
 
 gfx::Point TabDragController::GetCursorScreenPoint() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   views::Widget* widget = GetAttachedBrowserWidget();
   DCHECK(widget);
   aura::Window* widget_window = widget->GetNativeWindow();

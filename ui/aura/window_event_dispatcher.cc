@@ -1042,7 +1042,8 @@ DispatchDetails WindowEventDispatcher::PreDispatchTouchEvent(
     return DispatchDetails();
   }
 
-  Env::GetInstance()->env_controller()->UpdateStateForTouchEvent(*event);
+  Env::GetInstance()->env_controller()->UpdateStateForTouchEvent(target,
+                                                                 *event);
 
   ui::TouchEvent root_relative_event(*event);
   root_relative_event.set_location_f(event->root_location_f());

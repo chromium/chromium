@@ -9,9 +9,12 @@
 
 #include "chromeos/ui/base/window_properties.h"
 #include "ui/aura/client/aura_constants.h"
+#include "ui/aura/env.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_delegate.h"
 #include "ui/events/event.h"
+#include "ui/events/event_handler.h"
+#include "ui/events/event_target.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/platform_window/extensions/desk_extension.h"
 #include "ui/platform_window/extensions/pinned_mode_extension.h"
@@ -49,6 +52,27 @@ chromeos::WindowStateType ToChromeosWindowStateType(
       return chromeos::WindowStateType::kFloated;
   }
 }
+
+// Chrome do not expect the pointer (mouse/touch) events are dispatched to
+// chrome during move loop. The mouse events are already consumed by
+// ozone-wayland but touch events are sent to the `aura::WindowEventDispatcher`
+// to update the touch location. Consume touch events at system handler level so
+// that chrome will not see the touch events.
+class ScopedTouchEventDisabler : public ui::EventHandler {
+ public:
+  ScopedTouchEventDisabler() {
+    aura::Env::GetInstance()->AddPreTargetHandler(
+        this, ui::EventTarget::Priority::kSystem);
+  }
+  ScopedTouchEventDisabler(const ScopedTouchEventDisabler&) = delete;
+  ScopedTouchEventDisabler& operator=(const ScopedTouchEventDisabler&) = delete;
+  ~ScopedTouchEventDisabler() override {
+    aura::Env::GetInstance()->RemovePreTargetHandler(this);
+  }
+
+  // ui::EventHandler:
+  void OnTouchEvent(ui::TouchEvent* event) override { event->SetHandled(); }
+};
 
 }  // namespace
 namespace views {
@@ -145,6 +169,15 @@ void DesktopWindowTreeHostLacros::AddAdditionalInitProperties(
     ui::PlatformWindowInitProperties* properties) {
   properties->icon = ViewsDelegate::GetInstance()->GetDefaultWindowIcon();
   properties->wayland_app_id = params.wayland_app_id;
+}
+
+Widget::MoveLoopResult DesktopWindowTreeHostLacros::RunMoveLoop(
+    const gfx::Vector2d& drag_offset,
+    Widget::MoveLoopSource source,
+    Widget::MoveLoopEscapeBehavior escape_behavior) {
+  ScopedTouchEventDisabler touch_event_disabler;
+  return DesktopWindowTreeHostPlatform::RunMoveLoop(drag_offset, source,
+                                                    escape_behavior);
 }
 
 void DesktopWindowTreeHostLacros::OnWindowPropertyChanged(aura::Window* window,

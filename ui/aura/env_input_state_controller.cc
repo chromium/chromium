@@ -40,11 +40,12 @@ void EnvInputStateController::UpdateStateForMouseEvent(
 }
 
 void EnvInputStateController::UpdateStateForTouchEvent(
+    const aura::Window* window,
     const ui::TouchEvent& event) {
   switch (event.type()) {
     case ui::ET_TOUCH_PRESSED:
       touch_ids_down_ |= (1 << event.pointer_details().id);
-      env_->set_touch_down(touch_ids_down_ != 0);
+      env_->SetTouchDown(touch_ids_down_ != 0);
       break;
 
     // Handle ET_TOUCH_CANCELLED only if it has a native event.
@@ -55,7 +56,7 @@ void EnvInputStateController::UpdateStateForTouchEvent(
     case ui::ET_TOUCH_RELEASED:
       touch_ids_down_ = (touch_ids_down_ | (1 << event.pointer_details().id)) ^
                         (1 << event.pointer_details().id);
-      env_->set_touch_down(touch_ids_down_ != 0);
+      env_->SetTouchDown(touch_ids_down_ != 0);
       break;
 
     case ui::ET_TOUCH_MOVED:
@@ -65,6 +66,15 @@ void EnvInputStateController::UpdateStateForTouchEvent(
       NOTREACHED();
       break;
   }
+  const gfx::Point& location_in_root = event.root_location();
+  const auto* root_window = window->GetRootWindow();
+  client::ScreenPositionClient* client =
+      client::GetScreenPositionClient(root_window);
+  gfx::Point location_in_screen = location_in_root;
+  if (client) {
+    client->ConvertPointToScreen(root_window, &location_in_screen);
+  }
+  env_->SetLastTouchLocation(window, location_in_screen);
 }
 
 void EnvInputStateController::SetLastMouseLocation(

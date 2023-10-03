@@ -38,7 +38,8 @@ class AURA_EXPORT EnvInputStateController {
 
   void UpdateStateForMouseEvent(const Window* window,
                                 const ui::MouseEvent& event);
-  void UpdateStateForTouchEvent(const ui::TouchEvent& event);
+  void UpdateStateForTouchEvent(const Window* window,
+                                const ui::TouchEvent& event);
   void SetLastMouseLocation(const Window* root_window,
                             const gfx::Point& location_in_root) const;
   uint32_t touch_ids_down() const { return touch_ids_down_; }

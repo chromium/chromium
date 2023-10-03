@@ -603,7 +603,14 @@ void WaylandEventSource::SetTargetAndDispatchEvent(Event* event,
   if (event->IsLocatedEvent()) {
     SetRootLocation(event->AsLocatedEvent());
     auto* cursor_position = connection_->wayland_cursor_position();
-    if (cursor_position) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    bool update_cursor_position = cursor_position && event->IsMouseEvent();
+#else
+    // TODO(crbug.com/1488644): Touch event should not update the cursor
+    // position.
+    bool update_cursor_position = cursor_position;
+#endif
+    if (update_cursor_position) {
       cursor_position->OnCursorPositionChanged(
           GetLocationInScreen(event->AsLocatedEvent()));
     }
