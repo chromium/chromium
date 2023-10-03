@@ -74,10 +74,13 @@ EncoderStatus SetUpAomConfig(const VideoEncoder::Options& opts,
     config.kf_max_dist = opts.keyframe_interval.value();
   }
 
+  uint32_t default_bitrate = GetDefaultVideoEncodeBitrate(
+      opts.frame_size, opts.framerate.value_or(30));
+  config.rc_end_usage = AOM_VBR;
+  // The unit of rc_target_bitrate is kilobits per second.
+  config.rc_target_bitrate = default_bitrate / 1000;
   if (opts.bitrate.has_value()) {
-    auto& bitrate = opts.bitrate.value();
-    config.rc_target_bitrate =
-        base::saturated_cast<int32_t>(bitrate.target_bps()) / 1000;
+    const auto& bitrate = opts.bitrate.value();
     switch (bitrate.mode()) {
       case Bitrate::Mode::kVariable:
         config.rc_end_usage = AOM_VBR;
@@ -95,10 +98,10 @@ EncoderStatus SetUpAomConfig(const VideoEncoder::Options& opts,
         config.rc_min_quantizer = 1;
         break;
     }
-  } else {
-    config.rc_end_usage = AOM_VBR;
-    config.rc_target_bitrate = GetDefaultVideoEncodeBitrate(
-        opts.frame_size, opts.framerate.value_or(30));
+    if (bitrate.target_bps() != 0) {
+      config.rc_target_bitrate =
+          base::saturated_cast<int32_t>(bitrate.target_bps()) / 1000;
+    }
   }
 
   config.g_w = opts.frame_size.width();

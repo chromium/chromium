@@ -57,7 +57,13 @@ void SetUpOpenH264Params(media::VideoCodecProfile profile,
   if (options.bitrate.has_value()) {
     auto& bitrate = options.bitrate.value();
     params->iRCMode = RC_BITRATE_MODE;
-    params->iTargetBitrate = base::saturated_cast<int>(bitrate.target_bps());
+    if (bitrate.target_bps() != 0) {
+      params->iTargetBitrate = base::saturated_cast<int>(bitrate.target_bps());
+    } else {
+      params->iTargetBitrate =
+          base::saturated_cast<int>(GetDefaultVideoEncodeBitrate(
+              options.frame_size, options.framerate.value_or(30)));
+    }
   } else {
     params->iRCMode = RC_OFF_MODE;
   }
