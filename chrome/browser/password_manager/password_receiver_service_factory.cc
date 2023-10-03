@@ -51,7 +51,8 @@ PasswordReceiverServiceFactory::PasswordReceiverServiceFactory()
 
 PasswordReceiverServiceFactory::~PasswordReceiverServiceFactory() = default;
 
-KeyedService* PasswordReceiverServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+PasswordReceiverServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   if (!base::FeatureList::IsEnabled(
           password_manager::features::kPasswordManagerEnableReceiverService)) {
@@ -75,7 +76,7 @@ KeyedService* PasswordReceiverServiceFactory::BuildServiceInstanceFor(
       std::move(change_processor),
       ModelTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory());
 
-  return new password_manager::PasswordReceiverServiceImpl(
+  return std::make_unique<password_manager::PasswordReceiverServiceImpl>(
       profile->GetPrefs(), std::move(sync_bridge),
       PasswordStoreFactory::GetForProfile(profile,
                                           ServiceAccessType::EXPLICIT_ACCESS)
