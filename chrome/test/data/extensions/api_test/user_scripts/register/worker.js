@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {openTab} from '/_test_resources/test_util/tabs_util.js';
+import { openTab, getInjectedElementIds } from '/_test_resources/test_util/tabs_util.js';
 
 chrome.test.runTests([
   // Tests that an error is returned when multiple user script entries in
@@ -190,15 +190,16 @@ chrome.test.runTests([
     chrome.test.succeed();
   },
 
-  // Tests that a (valid) script is registered and injected into a frame where
-  // the extension has host permissions for.
-  async function scriptRegistered_HostPermissions() {
+  // Tests that a registered user script with files is injected into a frame
+  // where the extension has host permissions for and matches the script match
+  // patterns.
+  async function registerFile_HostPermissions() {
     await chrome.userScripts.unregister();
 
     const scripts = [{
       id: 'hostPerms',
       matches: ['*://requested.com/*'],
-      js: [{file: 'script.js'}],
+      js: [{ file: 'inject_element.js' }, { file: 'inject_element_2.js' }],
       runAt: 'document_end'
     }];
 
@@ -210,15 +211,16 @@ chrome.test.runTests([
     const url = `http://requested.com:${config.testServer.port}/simple.html`;
     const tab = await openTab(url);
 
-    // Verify script changed the tab title.
-    const currentTab = await chrome.tabs.get(tab.id);
-    chrome.test.assertEq('NEW TITLE', currentTab.title);
+    // Verify script files were injected.
+    chrome.test.assertEq(
+      ['injected_user_script', 'injected_user_script_2'],
+      await getInjectedElementIds(tab.id));
     chrome.test.succeed();
   },
 
-  // Tests that a registered user script will not be injected into a frame
-  // where the extension does not have the host permissions for.
-  async function scriptRegistered_NoHostPermissions() {
+  // Tests that a registered user script with a file will not be injected into a
+  // frame where the extension does not have the host permissions for.
+  async function registerFile_NoHostPermissions() {
     await chrome.userScripts.unregister();
 
     const scripts = [{

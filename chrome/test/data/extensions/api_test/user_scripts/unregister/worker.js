@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {openTab} from '/_test_resources/test_util/tabs_util.js';
+import { openTab, getInjectedElementIds } from '/_test_resources/test_util/tabs_util.js';
 
 // Navigates to an url requested by the extension and returns the opened tab.
 async function navigateToRequestedUrl() {
@@ -11,21 +11,6 @@ async function navigateToRequestedUrl() {
   let tab = await openTab(url);
   return tab;
 }
-
-// Returns the injected element ids in `tabId`.
-async function getInjectedElementIds(tabId) {
-  let injectedElements = await chrome.scripting.executeScript({
-    target: {tabId: tabId},
-    func: () => {
-      let childIds = [];
-      for (const child of document.body.children)
-        childIds.push(child.id);
-      return childIds.sort();
-    }
-  });
-  chrome.test.assertEq(1, injectedElements.length);
-  return injectedElements[0].result;
-};
 
 chrome.test.runTests([
   // Tests that calling unregister with specific ids unregisters such scripts
