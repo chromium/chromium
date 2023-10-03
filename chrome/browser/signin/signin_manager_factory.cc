@@ -32,12 +32,13 @@ SigninManagerFactory::SigninManagerFactory()
 
 SigninManagerFactory::~SigninManagerFactory() = default;
 
-KeyedService* SigninManagerFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+SigninManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
-  return new SigninManager(*profile->GetPrefs(),
-                           *IdentityManagerFactory::GetForProfile(profile),
-                           *ChromeSigninClientFactory::GetForProfile(profile));
+  return std::make_unique<SigninManager>(
+      *profile->GetPrefs(), *IdentityManagerFactory::GetForProfile(profile),
+      *ChromeSigninClientFactory::GetForProfile(profile));
 }
 
 bool SigninManagerFactory::ServiceIsCreatedWithBrowserContext() const {
