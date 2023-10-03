@@ -14,9 +14,12 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
@@ -174,6 +177,22 @@ tab_groups::TabGroupColorId ColorToColorId(api::tab_groups::Color color) {
 
   NOTREACHED();
   return tab_groups::TabGroupColorId::kGrey;
+}
+
+bool IsGroupSaved(tab_groups::TabGroupId tab_group_id,
+                  TabStripModel* tab_strip_model) {
+  // If the feature is turned off, then the tab is not in a saved group.
+  if (!base::FeatureList::IsEnabled(features::kTabGroupsSave)) {
+    return false;
+  }
+
+  // If the service failed to start, then there are no saved tab groups.
+  SavedTabGroupKeyedService* saved_tab_group_service =
+      SavedTabGroupServiceFactory::GetForProfile(tab_strip_model->profile());
+  if (!saved_tab_group_service) {
+    return false;
+  }
+  return saved_tab_group_service->model()->Contains(tab_group_id);
 }
 
 }  // namespace tab_groups_util

@@ -12,6 +12,7 @@
 #include "base/containers/contains.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/api/tab_groups/tab_groups_constants.h"
 #include "chrome/browser/extensions/api/tab_groups/tab_groups_event_router.h"
@@ -23,9 +24,12 @@
 #include "chrome/browser/sessions/session_tab_helper_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/sessions/content/session_tab_helper.h"
@@ -366,6 +370,42 @@ TEST_F(TabGroupsApiUnitTest, TabGroupsUpdateError) {
   EXPECT_EQ(ErrorUtils::FormatErrorMessage(
                 tab_groups_constants::kGroupNotFoundError, "0"),
             error);
+}
+
+// Test that tabGroups.update() fails on a saved group.
+TEST_F(TabGroupsApiUnitTest, TabGroupsUpdateSavedTabGroupsError) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({features::kTabGroupsSave}, {});
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  ASSERT_TRUE(tab_strip_model->SupportsTabGroups());
+
+  TabGroupModel* tab_group_model = tab_strip_model->group_model();
+
+  // Create a group.
+  tab_groups::TabGroupId group = tab_strip_model->AddToNewGroup({0, 1, 2});
+  tab_groups::TabGroupVisualData visual_data(
+      u"Initial title", tab_groups::TabGroupColorId::kBlue);
+  tab_group_model->GetTabGroup(group)->SetVisualData(visual_data);
+
+  SavedTabGroupKeyedService* saved_service =
+      SavedTabGroupServiceFactory::GetInstance()->GetForProfile(
+          browser()->profile());
+  ASSERT_NE(saved_service, nullptr);
+  saved_service->SaveGroup(group);
+  int group_id = tab_groups_util::GetGroupId(group);
+  ASSERT_TRUE(tab_groups_util::IsGroupSaved(group, tab_strip_model));
+
+  scoped_refptr<const Extension> extension = CreateTabGroupsExtension();
+
+  // Try to update a non-existent group and expect an error.
+  auto function = base::MakeRefCounted<TabGroupsUpdateFunction>();
+  function->set_extension(extension);
+  constexpr char kFormatArgs[] =
+      R"([%d, {"title": "another title", "color": "red"}])";
+  const std::string args = base::StringPrintf(kFormatArgs, group_id);
+  std::string error = api_test_utils::RunFunctionAndReturnError(
+      function.get(), args, profile(), api_test_utils::FunctionMode::kNone);
+  EXPECT_EQ(tabs_constants::kSavedTabGroupNotEditableError, error);
 }
 
 // Test that moving a group to the right results in the correct tab order.

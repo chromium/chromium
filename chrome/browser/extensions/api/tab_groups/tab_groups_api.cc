@@ -197,6 +197,10 @@ ExtensionFunction::ResponseAction TabGroupsUpdateFunction::Run() {
         Error(tabs_constants::kTabStripDoesNotSupportTabGroupsError));
   TabGroup* tab_group = tab_strip_model->group_model()->GetTabGroup(id);
 
+  if (tab_groups_util::IsGroupSaved(id, tab_strip_model)) {
+    return RespondNow(Error(tabs_constants::kSavedTabGroupNotEditableError));
+  }
+
   tab_groups::TabGroupVisualData new_visual_data(title, color, collapsed);
   tab_group->SetVisualData(std::move(new_visual_data));
 

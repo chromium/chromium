@@ -17,6 +17,7 @@ namespace content {
 class BrowserContext;
 }
 
+class TabStripModel;
 namespace tab_groups {
 class TabGroupId;
 class TabGroupVisualData;
@@ -64,6 +65,9 @@ bool GetGroupById(int group_id,
 api::tab_groups::Color ColorIdToColor(
     const tab_groups::TabGroupColorId& color_id);
 tab_groups::TabGroupColorId ColorToColorId(api::tab_groups::Color color);
+
+bool IsGroupSaved(tab_groups::TabGroupId tab_group_id,
+                  TabStripModel* tab_strip_model);
 
 }  // namespace tab_groups_util
 }  // namespace extensions

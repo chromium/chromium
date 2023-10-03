@@ -14,6 +14,7 @@
 #include "base/uuid.h"
 #include "base/values.h"
 #include "chrome/common/extensions/api/tabs.h"
+#include "components/tab_groups/tab_group_id.h"
 #include "extensions/common/features/feature.h"
 #include "ui/base/window_open_disposition.h"
 
@@ -262,6 +263,9 @@ class ExtensionTabUtil {
 
   // Retrieve a TabStripModel only if every browser is editable.
   static TabStripModel* GetEditableTabStripModel(Browser* browser);
+
+  static bool TabIsInSavedTabGroup(content::WebContents* contents,
+                                   TabStripModel* tab_strip_model);
 };
 
 }  // namespace extensions
