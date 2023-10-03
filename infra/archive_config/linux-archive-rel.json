@@ -25,7 +25,7 @@
                 "xdg-mime",
                 "xdg-settings"
             ],
-            "dirs": ["ClearKeyCdm", "locales", "resources"],
+            "dirs": ["locales", "resources"],
             "rename_dirs": [
                 {"from_dir": ".", "to_dir": "chrome-linux"}
             ],
