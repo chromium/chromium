@@ -523,30 +523,6 @@ void PrefetchService::CheckEligibilityOfPrefetch(
     return;
   }
 
-  // This blocks same-site cross-origin prefetches that require the prefetch
-  // proxy. Same-site prefetches are made using the default network context, and
-  // the prefetch request cannot be configured to use the proxy in that network
-  // context.
-  // TODO(https://crbug.com/1439986): Allow same-site cross-origin prefetches
-  // that require the prefetch proxy to be made.
-  if (prefetch_container->IsProxyRequiredForURL(url) &&
-      !prefetch_container
-           ->IsIsolatedNetworkContextRequiredForCurrentPrefetch()) {
-    std::move(result_callback)
-        .Run(prefetch_container, false,
-             PrefetchStatus::
-                 kPrefetchNotEligibleSameSiteCrossOriginPrefetchRequiredProxy);
-    return;
-  }
-
-  // We do not need to check the cookies of prefetches that do not need an
-  // isolated network context.
-  if (!prefetch_container
-           ->IsIsolatedNetworkContextRequiredForCurrentPrefetch()) {
-    std::move(result_callback).Run(prefetch_container, true, absl::nullopt);
-    return;
-  }
-
   CheckHasServiceWorker(url, prefetch_container, std::move(result_callback));
 }
 
@@ -618,6 +594,28 @@ void PrefetchService::OnGotServiceWorkerResult(
           .Run(prefetch_container, false,
                PrefetchStatus::kPrefetchNotEligibleUserHasServiceWorker);
       return;
+  }
+  // This blocks same-site cross-origin prefetches that require the prefetch
+  // proxy. Same-site prefetches are made using the default network context, and
+  // the prefetch request cannot be configured to use the proxy in that network
+  // context.
+  // TODO(https://crbug.com/1439986): Allow same-site cross-origin prefetches
+  // that require the prefetch proxy to be made.
+  if (prefetch_container->IsProxyRequiredForURL(url) &&
+      !prefetch_container
+           ->IsIsolatedNetworkContextRequiredForCurrentPrefetch()) {
+    std::move(result_callback)
+        .Run(prefetch_container, false,
+             PrefetchStatus::
+                 kPrefetchNotEligibleSameSiteCrossOriginPrefetchRequiredProxy);
+    return;
+  }
+  // We do not need to check the cookies of prefetches that do not need an
+  // isolated network context.
+  if (!prefetch_container
+           ->IsIsolatedNetworkContextRequiredForCurrentPrefetch()) {
+    std::move(result_callback).Run(prefetch_container, true, absl::nullopt);
+    return;
   }
   StoragePartition* default_storage_partition =
       browser_context_->GetDefaultStoragePartition();
