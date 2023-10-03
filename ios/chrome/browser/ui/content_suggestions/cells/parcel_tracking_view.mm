@@ -255,7 +255,11 @@ const CGFloat kStatusBarCornerRadius = 3.0f;
 // Returns the appropriate icon image for a `parcelType`.
 - (UIImage*)iconImageForParcelType:(ParcelType)parcelType {
 #if !BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
-  return DefaultSymbolWithPointSize(kBoxTruckFill, kIconSize);
+  if (@available(iOS 16.0, *)) {
+    return DefaultSymbolWithPointSize(kBoxTruckFill, kIconSize);
+  } else {
+    return DefaultSymbolWithPointSize(kShippingBoxFill, kIconSize);
+  }
 #else
   switch (parcelType) {
     case ParcelType::kUSPS:
