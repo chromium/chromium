@@ -289,6 +289,8 @@ public class UpdateStatusProvider {
                 status.latestVersion = VersionNumberGetter.getInstance().getLatestKnownVersion();
 
                 boolean allowedToUpdate = checkForSufficientStorage()
+                        // Disable the version update check for automotive. See b/297925838.
+                        && !BuildInfo.getInstance().isAutomotive
                         && PackageUtils.isPackageInstalled(
                                 GooglePlayServicesUtil.GOOGLE_PLAY_STORE_PACKAGE);
                 status.updateState =
