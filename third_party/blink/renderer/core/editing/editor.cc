@@ -979,9 +979,6 @@ void Editor::ReplaceSelection(const String& text) {
 }
 
 void Editor::ElementRemoved(Element* element) {
-  if (!RuntimeEnabledFeatures::DontLeakDetachedInputEnabled()) {
-    return;
-  }
   if (last_edit_command_ &&
       last_edit_command_->EndingSelection().RootEditableElement() == element) {
     last_edit_command_ = nullptr;

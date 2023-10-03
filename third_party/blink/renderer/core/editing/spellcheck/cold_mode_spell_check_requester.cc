@@ -264,9 +264,6 @@ void ColdModeSpellCheckRequester::RequestLocalChecking(
 }
 
 void ColdModeSpellCheckRequester::ElementRemoved(Element* element) {
-  if (!RuntimeEnabledFeatures::DontLeakDetachedInputEnabled()) {
-    return;
-  }
   if (root_editable_ == element) {
     ClearProgress();
   }
