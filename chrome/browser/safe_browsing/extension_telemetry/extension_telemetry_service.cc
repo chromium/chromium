@@ -95,6 +95,15 @@ constexpr char kFileDataProcessTimestampPref[] = "last_processed_timestamp";
 constexpr char kFileDataDictPref[] = "file_data";
 constexpr char kManifestFile[] = "manifest.json";
 
+// Specifies the default for `num_checks_per_upload_interval_`
+// NOTE: With a value of 1, the telemetry service will perform checks at the
+// upload interval itself and will only write a report to disk if the upload
+// fails.
+constexpr int kNumChecksPerUploadInterval = 1;
+
+// Specifies the upload interval for extension telemetry reports.
+base::TimeDelta kUploadIntervalSeconds = base::Seconds(3600);
+
 // Delay before the Telemetry Service checks its last upload time.
 base::TimeDelta kStartupUploadCheckDelaySeconds = base::Seconds(15);
 
@@ -234,8 +243,8 @@ ExtensionTelemetryService::ExtensionTelemetryService(
       extension_registry_(extensions::ExtensionRegistry::Get(profile)),
       extension_prefs_(extensions::ExtensionPrefs::Get(profile)),
       enabled_(false),
-      current_reporting_interval_(
-          base::Seconds(kExtensionTelemetryUploadIntervalSeconds.Get())),
+      current_reporting_interval_(kUploadIntervalSeconds),
+      num_checks_per_upload_interval_(kNumChecksPerUploadInterval),
       offstore_file_data_collection_duration_limit_(
           kOffstoreFileDataCollectionDurationLimitSeconds) {
   // Register for SB preference change notifications.
@@ -354,14 +363,14 @@ void ExtensionTelemetryService::SetEnabled(bool enable) {
     if (current_reporting_interval_.is_positive()) {
       int max_files_supported =
           ExtensionTelemetryPersister::MaxFilesSupported();
-      int writes_per_interval = std::min(
-          max_files_supported, kExtensionTelemetryWritesPerInterval.Get());
+      int checks_per_interval =
+          std::min(max_files_supported, num_checks_per_upload_interval_);
       // Configure persister for the maximum number of reports to be persisted
       // on disk. This number is the sum of reports written at every
       // write interval plus an additional allocation (3) for files written at
       // browser/profile shutdown.
       int max_reports_to_persist =
-          std::min(writes_per_interval + 3, max_files_supported);
+          std::min(checks_per_interval + 3, max_files_supported);
       // Instantiate persister which is used to read/write telemetry reports to
       // disk and start timer for sending periodic telemetry reports.
       persister_ = base::SequenceBound<ExtensionTelemetryPersister>(
@@ -370,7 +379,7 @@ void ExtensionTelemetryService::SetEnabled(bool enable) {
                base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN}),
           max_reports_to_persist, profile_->GetPath());
       persister_.AsyncCall(&ExtensionTelemetryPersister::PersisterInit);
-      timer_.Start(FROM_HERE, current_reporting_interval_ / writes_per_interval,
+      timer_.Start(FROM_HERE, current_reporting_interval_ / checks_per_interval,
                    this, &ExtensionTelemetryService::PersistOrUploadData);
     }
     // Post this task with a delay to avoid running right at Chrome startup

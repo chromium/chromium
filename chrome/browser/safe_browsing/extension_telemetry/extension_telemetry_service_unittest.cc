@@ -557,14 +557,9 @@ TEST_F(ExtensionTelemetryServiceTest, PersistsReportsOnInterval) {
   // Setting up the persister, signals, upload/write intervals, and the
   // uploader itself.
   telemetry_service_->SetEnabled(false);
-  // NumberOfWritesInInterval defaults to 1, setting to 4 to test functionality
-  // of writing at intervals and uploading multiple files.
-  scoped_feature_list.InitWithFeaturesAndParameters(
-      /*enabled_features=*/
-      {
-          {kExtensionTelemetry, {{"NumberOfWritesInInterval", "4"}}},
-      },
-      /*disabled_features=*/{});
+  // NumChecksPerUploadInterval defaults to 1, setting to 4 to test
+  // functionality of writing at intervals and uploading multiple files.
+  telemetry_service_->num_checks_per_upload_interval_ = 4;
   telemetry_service_->SetEnabled(true);
   base::TimeDelta interval = telemetry_service_->current_reporting_interval();
   profile_.GetPrefs()->SetTime(prefs::kExtensionTelemetryLastUploadTime,
@@ -592,16 +587,10 @@ TEST_F(ExtensionTelemetryServiceTest, PersistsReportsOnInterval) {
 }
 
 TEST_F(ExtensionTelemetryServiceTest, MalformedPersistedFile) {
-  // Setting up the persister, signals, upload/write intervals, and the
+  // Setting up the persister, signals, upload/check intervals, and the
   // uploader itself.
   telemetry_service_->SetEnabled(false);
-
-  scoped_feature_list.InitWithFeaturesAndParameters(
-      /*enabled_features=*/
-      {
-          {kExtensionTelemetry, {{"NumberOfWritesInInterval", "4"}}},
-      },
-      /*disabled_features=*/{});
+  telemetry_service_->num_checks_per_upload_interval_ = 4;
   telemetry_service_->SetEnabled(true);
   base::TimeDelta interval = telemetry_service_->current_reporting_interval();
   profile_.GetPrefs()->SetTime(prefs::kExtensionTelemetryLastUploadTime,

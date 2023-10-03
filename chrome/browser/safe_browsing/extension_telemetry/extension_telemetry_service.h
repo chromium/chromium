@@ -261,6 +261,17 @@ class ExtensionTelemetryService : public KeyedService {
   base::RepeatingTimer timer_;
   base::TimeDelta current_reporting_interval_;
 
+  // Specifies the number of times(N) the telemetry service checks if a
+  // telemetry upload is required within an upload interval(I). The telemetry
+  // service checks if an upload is necessary at I/N intervals. At each check
+  // interval, the in-memory telemetry data is saved to disk - till the time an
+  // upload interval has elapsed. For example, a value of 2 means that the
+  // telemetry service checks for uploads at I/2 and I. At the first check
+  // interval, the in-memory report is written to disk. At the second check
+  // interval, the in-memory report and the previously saved report in disk are
+  // both uploaded to the telemetry server.
+  int num_checks_per_upload_interval_;
+
   // The current report being uploaded.
   std::unique_ptr<ExtensionTelemetryReportRequest> active_report_;
   // The current uploader instance uploading the active report.
@@ -301,7 +312,12 @@ class ExtensionTelemetryService : public KeyedService {
   friend class ExtensionTelemetryServiceTest;
   friend class ExtensionTelemetryServiceBrowserTest;
   FRIEND_TEST_ALL_PREFIXES(ExtensionTelemetryServiceTest,
+                           PersistsReportsOnInterval);
+  FRIEND_TEST_ALL_PREFIXES(ExtensionTelemetryServiceTest,
+                           MalformedPersistedFile);
+  FRIEND_TEST_ALL_PREFIXES(ExtensionTelemetryServiceTest,
                            FileData_EnforcesCollectionDurationLimit);
+
   base::WeakPtrFactory<ExtensionTelemetryService> weak_factory_{this};
 };
 

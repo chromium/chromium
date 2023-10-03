@@ -92,10 +92,6 @@ BASE_DECLARE_FEATURE(kEvaluateProtectedPasswordLengthMinimum);
 extern const base::FeatureParam<int>
     kEvaluateProtectedPasswordLengthMinimumValue;
 
-// Enables collection of signals related to extension activity and uploads
-// of telemetry reports to SB servers.
-BASE_DECLARE_FEATURE(kExtensionTelemetry);
-
 // Allows the Extension Telemetry Service to accept and use configurations
 // sent by the server.
 BASE_DECLARE_FEATURE(kExtensionTelemetryConfiguration);
@@ -123,13 +119,6 @@ extern const base::FeatureParam<int>
 // offstore extension file data.
 extern const base::FeatureParam<int>
     kExtensionTelemetryFileDataStartupDelaySeconds;
-
-// Specifies the upload interval for extension telemetry reports.
-extern const base::FeatureParam<int> kExtensionTelemetryUploadIntervalSeconds;
-
-// Specifies the number of writes the telemetry service will perform during
-// a full upload interval.
-extern const base::FeatureParam<int> kExtensionTelemetryWritesPerInterval;
 
 // Enables collection of telemetry signal whenever an extension invokes the
 // chrome.tabs API methods.
