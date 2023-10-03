@@ -435,6 +435,7 @@
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/webui/ash/kerberos/kerberos_in_browser_dialog.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "chromeos/ash/services/network_health/public/cpp/network_health_helper.h"
 #include "components/crash/core/app/breakpad_linux.h"
 #include "components/user_manager/user.h"
@@ -7989,6 +7990,12 @@ bool ChromeContentBrowserClient::AreIsolatedWebAppsEnabled(
   if (!isolated_web_apps.empty()) {
     return true;
   }
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // IWAs should be enabled for ShimlessRMA app profile.
+  if (ash::IsShimlessRmaAppBrowserContext(browser_context)) {
+    return true;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   if (base::FeatureList::IsEnabled(features::kIsolatedWebApps)) {
