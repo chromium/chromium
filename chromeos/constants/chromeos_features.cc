@@ -81,7 +81,7 @@ BASE_FEATURE(kExperimentalWebAppStoragePartitionIsolation,
 // Enable IWA support for Telemetry Extension API.
 BASE_FEATURE(kIWAForTelemetryExtensionAPI,
              "IWAForTelemetryExtensionAPI",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables Jelly features. go/jelly-flags
 BASE_FEATURE(kJelly, "Jelly", base::FEATURE_ENABLED_BY_DEFAULT);

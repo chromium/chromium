@@ -2422,7 +2422,7 @@ BASE_FEATURE(kShimlessRMAComplianceCheck,
 // Enables 3p diagnostics in the Shimless RMA flow.
 BASE_FEATURE(kShimlessRMA3pDiagnostics,
              "ShimlessRMA3pDiagnostics",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables 3p diagnostics dev mode in the Shimless RMA flow. This will skip some
 // checks to allow developers to use dev-signed extensions for development
