@@ -32,6 +32,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/test/views_test_base.h"
+#include "ui/views/view_utils.h"
 
 namespace media_message_center {
 
@@ -425,9 +426,10 @@ TEST_F(MediaNotificationViewImplTest, PlayToggle_FromObserver_Empty) {
   EnableAction(MediaSessionAction::kPlay);
 
   {
-    views::ToggleImageButton* button = static_cast<views::ToggleImageButton*>(
-        GetButtonForAction(MediaSessionAction::kPlay));
-    ASSERT_EQ(views::ToggleImageButton::kViewClassName, button->GetClassName());
+    views::ToggleImageButton* button =
+        views::AsViewClass<views::ToggleImageButton>(
+            GetButtonForAction(MediaSessionAction::kPlay));
+    ASSERT_TRUE(button);
     EXPECT_FALSE(button->GetToggled());
   }
 
@@ -435,9 +437,10 @@ TEST_F(MediaNotificationViewImplTest, PlayToggle_FromObserver_Empty) {
       media_session::mojom::MediaSessionInfo::New());
 
   {
-    views::ToggleImageButton* button = static_cast<views::ToggleImageButton*>(
-        GetButtonForAction(MediaSessionAction::kPlay));
-    ASSERT_EQ(views::ToggleImageButton::kViewClassName, button->GetClassName());
+    views::ToggleImageButton* button =
+        views::AsViewClass<views::ToggleImageButton>(
+            GetButtonForAction(MediaSessionAction::kPlay));
+    ASSERT_TRUE(button);
     EXPECT_FALSE(button->GetToggled());
   }
 }
@@ -447,9 +450,10 @@ TEST_F(MediaNotificationViewImplTest, PlayToggle_FromObserver_PlaybackState) {
   EnableAction(MediaSessionAction::kPause);
 
   {
-    views::ToggleImageButton* button = static_cast<views::ToggleImageButton*>(
-        GetButtonForAction(MediaSessionAction::kPlay));
-    ASSERT_EQ(views::ToggleImageButton::kViewClassName, button->GetClassName());
+    views::ToggleImageButton* button =
+        views::AsViewClass<views::ToggleImageButton>(
+            GetButtonForAction(MediaSessionAction::kPlay));
+    ASSERT_TRUE(button);
     EXPECT_FALSE(button->GetToggled());
   }
 
@@ -461,9 +465,10 @@ TEST_F(MediaNotificationViewImplTest, PlayToggle_FromObserver_PlaybackState) {
   view()->UpdateWithMediaSessionInfo(session_info.Clone());
 
   {
-    views::ToggleImageButton* button = static_cast<views::ToggleImageButton*>(
-        GetButtonForAction(MediaSessionAction::kPause));
-    ASSERT_EQ(views::ToggleImageButton::kViewClassName, button->GetClassName());
+    views::ToggleImageButton* button =
+        views::AsViewClass<views::ToggleImageButton>(
+            GetButtonForAction(MediaSessionAction::kPause));
+    ASSERT_TRUE(button);
     EXPECT_TRUE(button->GetToggled());
   }
 
@@ -472,9 +477,10 @@ TEST_F(MediaNotificationViewImplTest, PlayToggle_FromObserver_PlaybackState) {
   view()->UpdateWithMediaSessionInfo(session_info.Clone());
 
   {
-    views::ToggleImageButton* button = static_cast<views::ToggleImageButton*>(
-        GetButtonForAction(MediaSessionAction::kPlay));
-    ASSERT_EQ(views::ToggleImageButton::kViewClassName, button->GetClassName());
+    views::ToggleImageButton* button =
+        views::AsViewClass<views::ToggleImageButton>(
+            GetButtonForAction(MediaSessionAction::kPlay));
+    ASSERT_TRUE(button);
     EXPECT_FALSE(button->GetToggled());
   }
 }

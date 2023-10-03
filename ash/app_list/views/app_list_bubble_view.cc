@@ -48,6 +48,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/drop_target_event.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/animation_throughput_reporter.h"
@@ -639,10 +640,6 @@ void AppListBubbleView::UpdateForNewSortingOrder(
                                        std::move(done_closure));
 }
 
-const char* AppListBubbleView::GetClassName() const {
-  return "AppListBubbleView";
-}
-
 bool AppListBubbleView::AcceleratorPressed(const ui::Accelerator& accelerator) {
   switch (accelerator.key_code()) {
     case ui::VKEY_ESCAPE:
@@ -870,5 +867,8 @@ void AppListBubbleView::MaybeFocusAndActivateSearchBox() {
   // Explicitly request focus in case the search box was active before.
   search_box_view_->search_box()->RequestFocus();
 }
+
+BEGIN_METADATA(AppListBubbleView, views::View)
+END_METADATA
 
 }  // namespace ash

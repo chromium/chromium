@@ -16,6 +16,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -42,6 +43,8 @@ class ASH_EXPORT AppListBubbleView : public views::View,
                                      public SearchBoxViewDelegate,
                                      public AppListFolderController {
  public:
+  METADATA_HEADER(AppListBubbleView);
+
   AppListBubbleView(AppListViewDelegate* view_delegate,
                     ApplicationDragAndDropHost* drag_and_drop_host);
   AppListBubbleView(const AppListBubbleView&) = delete;
@@ -96,7 +99,6 @@ class ASH_EXPORT AppListBubbleView : public views::View,
       base::OnceClosure update_position_closure);
 
   // views::View:
-  const char* GetClassName() const override;
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
   void Layout() override;
   bool GetDropFormats(int* formats,

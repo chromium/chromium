@@ -44,6 +44,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/menu/menu_config.h"
 #include "ui/views/controls/menu/menu_controller.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/views_delegate.h"
 #include "ui/views/widget/native_widget_mac.h"
 #include "ui/views/widget/widget.h"
@@ -1135,8 +1136,7 @@ bool NativeWidgetMacNSWindowHost::GetIsFocusedViewTextual(bool* is_textual) {
   views::FocusManager* focus_manager =
       root_view_ ? root_view_->GetWidget()->GetFocusManager() : nullptr;
   *is_textual = focus_manager && focus_manager->GetFocusedView() &&
-                focus_manager->GetFocusedView()->GetClassName() ==
-                    views::Label::kViewClassName;
+                IsViewClass<views::Label>(focus_manager->GetFocusedView());
   return true;
 }
 

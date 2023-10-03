@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -28,6 +29,8 @@ class SearchBoxViewBase;
 class ASH_EXPORT AppListMainView : public views::View,
                                    public SearchBoxViewDelegate {
  public:
+  METADATA_HEADER(AppListMainView);
+
   AppListMainView(AppListViewDelegate* delegate, AppListView* app_list_view);
 
   AppListMainView(const AppListMainView&) = delete;
@@ -50,7 +53,6 @@ class ASH_EXPORT AppListMainView : public views::View,
   AppListViewDelegate* view_delegate() { return delegate_; }
 
   // Overridden from views::View:
-  const char* GetClassName() const override;
   void Layout() override;
 
  private:

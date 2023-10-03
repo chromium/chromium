@@ -21,6 +21,7 @@
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/resources/grit/views_resources.h"
 #include "ui/views/vector_icons.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
 namespace views {
@@ -73,8 +74,9 @@ bool RadioButton::IsGroupFocusTraversable() const {
 
 void RadioButton::OnFocus() {
   Checkbox::OnFocus();
-  if (select_on_focus_)
+  if (select_on_focus_) {
     SetChecked(true);
+  }
 }
 
 void RadioButton::OnThemeChanged() {
@@ -94,8 +96,9 @@ void RadioButton::RequestFocusFromEvent() {
 void RadioButton::NotifyClick(const ui::Event& event) {
   // Set the checked state to true only if we are unchecked, since we can't
   // be toggled on and off like a checkbox.
-  if (!GetChecked())
+  if (!GetChecked()) {
     SetChecked(true);
+  }
   LabelButton::NotifyClick(event);
 }
 
@@ -104,8 +107,9 @@ ui::NativeTheme::Part RadioButton::GetThemePart() const {
 }
 
 void RadioButton::SetChecked(bool checked) {
-  if (checked == RadioButton::GetChecked())
+  if (checked == RadioButton::GetChecked()) {
     return;
+  }
   if (checked) {
     // We can't start from the root view because other parts of the UI might use
     // radio buttons with the same group. This can happen when re-using the same
@@ -114,7 +118,7 @@ void RadioButton::SetChecked(bool checked) {
     GetViewsInGroupFromParent(GetGroup(), &other);
     for (auto* peer : other) {
       if (peer != this) {
-        DCHECK(!strcmp(peer->GetClassName(), kViewClassName))
+        DCHECK(IsViewClass<RadioButton>(peer))
             << "radio-button-nt has same group as non radio-button-nt views.";
         static_cast<RadioButton*>(peer)->SetChecked(false);
       }
@@ -143,8 +147,9 @@ SkPath RadioButton::GetFocusRingPath() const {
 }
 
 void RadioButton::GetViewsInGroupFromParent(int group, Views* views) {
-  if (parent())
+  if (parent()) {
     parent()->GetViewsInGroup(group, views);
+  }
 }
 
 BEGIN_METADATA(RadioButton, Checkbox)

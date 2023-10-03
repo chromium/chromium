@@ -72,6 +72,7 @@
 #include "ui/views/style/typography_provider.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/view_utils.h"
 
 namespace ash {
 namespace {
@@ -972,7 +973,7 @@ bool CalendarView::IsDateCellViewFocused() {
     return false;
   }
 
-  return focused_view->GetClassName() == CalendarDateCellView::kViewClassName;
+  return views::IsViewClass<CalendarDateCellView>(focused_view);
 }
 
 bool CalendarView::IsAnimating() {
@@ -1723,9 +1724,9 @@ void CalendarView::OnEvent(ui::Event* event) {
         // Sometimes the position of the upper row cells, which should be
         // focused next, are above (and hidden behind) the header buttons. So
         // this loop skips those buttons.
-        while (current_focusable_view &&
-               current_focusable_view->GetClassName() !=
-                   CalendarDateCellView::kViewClassName) {
+        while (
+            current_focusable_view &&
+            !views::IsViewClass<CalendarDateCellView>(current_focusable_view)) {
           current_focusable_view = focus_manager->GetNextFocusableView(
               current_focusable_view, GetWidget(),
               /*reverse=*/key_code == ui::VKEY_UP,
@@ -1833,7 +1834,7 @@ void CalendarView::OnMonthArrowButtonActivated(bool up,
 
 void CalendarView::AdjustDateCellVoxBounds() {
   auto* focused_view = GetFocusManager()->GetFocusedView();
-  DCHECK_EQ(focused_view->GetClassName(), CalendarDateCellView::kViewClassName);
+  DCHECK(views::IsViewClass<CalendarDateCellView>(focused_view));
 
   // When the Chrome Vox focusing box is in a `ScrollView`, the hidden content
   // height, which is `scroll_view_->GetVisibleRect().y()` should also be added.

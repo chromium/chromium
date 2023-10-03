@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/ui_devtools/views/overlay_agent_views.h"
-
 #include "base/strings/stringprintf.h"
 #include "components/ui_devtools/ui_devtools_unittest_utils.h"
 #include "components/ui_devtools/ui_element.h"
 #include "components/ui_devtools/views/dom_agent_views.h"
+#include "components/ui_devtools/views/overlay_agent_views.h"
 #include "components/ui_devtools/views/view_element.h"
 #include "components/ui_devtools/views/widget_element.h"
 #include "ui/events/base_event_utils.h"
@@ -16,6 +15,7 @@
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/test/views_test_base.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget_utils.h"
 #include "ui/views/window/non_client_view.h"
 
@@ -254,8 +254,7 @@ TEST_F(OverlayAgentTest, HighlightRects) {
     // view and adding the subviews directly causes NonClientView's hit test to
     // fail.
     views::View* contents_view = widget()->GetContentsView();
-    DCHECK_EQ(contents_view->GetClassName(),
-              views::NonClientView::kViewClassName);
+    DCHECK(views::IsViewClass<views::NonClientView>(contents_view));
     views::NonClientView* non_client_view =
         static_cast<views::NonClientView*>(contents_view);
     views::View* client_view = non_client_view->client_view();

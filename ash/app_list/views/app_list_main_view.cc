@@ -35,6 +35,7 @@
 #include "base/functional/callback.h"
 #include "base/strings/string_util.h"
 #include "ui/aura/window.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/border.h"
@@ -104,14 +105,11 @@ PaginationModel* AppListMainView::GetAppsPaginationModel() {
       ->pagination_model();
 }
 
-const char* AppListMainView::GetClassName() const {
-  return "AppListMainView";
-}
-
 void AppListMainView::Layout() {
   gfx::Rect rect = GetContentsBounds();
-  if (!rect.IsEmpty())
+  if (!rect.IsEmpty()) {
     contents_view_->SetBoundsRect(rect);
+  }
 }
 
 void AppListMainView::QueryChanged(const std::u16string& trimmed_query,
@@ -125,8 +123,9 @@ void AppListMainView::QueryChanged(const std::u16string& trimmed_query,
 
 void AppListMainView::ActiveChanged(SearchBoxViewBase* sender) {
   // Do not update views on closing.
-  if (app_list_view_->app_list_state() == AppListViewState::kClosed)
+  if (app_list_view_->app_list_state() == AppListViewState::kClosed) {
     return;
+  }
 
   if (search_box_view_->is_search_box_active()) {
     // Show zero state suggestions when search box is activated with an empty
@@ -188,5 +187,8 @@ void AppListMainView::CloseButtonPressed() {
   search_box_view_->SetSearchBoxActive(false, ui::ET_UNKNOWN);
   search_box_view_->ClearSearch();
 }
+
+BEGIN_METADATA(AppListMainView, views::View)
+END_METADATA
 
 }  // namespace ash

@@ -15,6 +15,7 @@
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -94,11 +95,8 @@ class BluetoothDeviceListItemMultipleBatteryViewTest : public AshTestBase {
   }
 
   void BatteryViewExistsAtIndex(int index) {
-    EXPECT_EQ(bluetooth_device_list_multiple_battery_item()
-                  ->children()
-                  .at(index)
-                  ->GetClassName(),
-              BluetoothDeviceListItemBatteryView::kViewClassName);
+    EXPECT_TRUE(views::IsViewClass<BluetoothDeviceListItemBatteryView>(
+        bluetooth_device_list_multiple_battery_item()->children().at(index)));
   }
 
  private:
