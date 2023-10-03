@@ -334,15 +334,14 @@ TEST_F(DialogTest, HitTest_CloseButton) {
 
   const gfx::Rect close_button_bounds = frame->close_button()->bounds();
 #if BUILDFLAG(IS_WIN)
-  // On Win, when HTCLOSE is returned, the tooltip is automatically generated.
-  // Do not return |HTCLOSE| to use views tooltip.
-  EXPECT_EQ(HTCAPTION,
-            frame->NonClientHitTest(gfx::Point(close_button_bounds.x() + 4,
-                                               close_button_bounds.y() + 4)));
+  // On Win, a native tooltip is generated when HTCLOSE is returned.
+  // Since we are using views tooltip, do not return |HTCLOSE| to avoid double
+  // tooltips.
+  EXPECT_NE(HTCLOSE,
+            frame->NonClientHitTest(close_button_bounds.CenterPoint()));
 #else
   EXPECT_EQ(HTCLOSE,
-            frame->NonClientHitTest(gfx::Point(close_button_bounds.x() + 4,
-                                               close_button_bounds.y() + 4)));
+            frame->NonClientHitTest(close_button_bounds.CenterPoint()));
 #endif
 }
 
