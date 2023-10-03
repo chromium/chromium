@@ -105,7 +105,7 @@ export class CheckupListItemElement extends CheckupListItemElementBase {
     }));
   }
 
-  public showHidePassword() {
+  showHidePassword() {
     if (this.isPasswordVisible === true) {
       this.onShowHidePasswordButtonClick();
       this.item.password = undefined;
@@ -125,7 +125,7 @@ export class CheckupListItemElement extends CheckupListItemElementBase {
         .catch(() => {});
   }
 
-  public showEditDialog() {
+  showEditDialog() {
     PasswordManagerImpl.getInstance()
         .requestCredentialsDetails([this.item.id])
         .then(entries => {
@@ -139,7 +139,7 @@ export class CheckupListItemElement extends CheckupListItemElementBase {
         .catch(() => {});
   }
 
-  public showDeleteDialog() {
+  showDeleteDialog() {
     this.showDeletePasswordDialog_ = true;
   }
 

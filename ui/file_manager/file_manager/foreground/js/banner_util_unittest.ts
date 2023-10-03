@@ -18,8 +18,8 @@ let allowedVolumes: AllowedVolumeOrType[] = [];
 function createAndSetVolumeInfo(
     volumeType: VolumeManagerCommon.VolumeType, volumeId: string|null = null) {
   class FakeVolumeInfo {
-    public volumeType: VolumeManagerCommon.VolumeType;
-    public volumeId: string|null;
+    volumeType: VolumeManagerCommon.VolumeType;
+    volumeId: string|null;
     constructor() {
       this.volumeType = volumeType;
       this.volumeId = volumeId;

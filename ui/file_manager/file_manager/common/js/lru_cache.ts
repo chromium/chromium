@@ -6,8 +6,8 @@
  * A linked-list node which holds data for cache entry such as key, value, size.
  */
 class LruCacheNode<T> {
-  public next: LruCacheNode<T>|null = null;
-  public prev: LruCacheNode<T>|null = null;
+  next: LruCacheNode<T>|null = null;
+  prev: LruCacheNode<T>|null = null;
   constructor(public key: string, public value: T, public size: number) {}
 }
 

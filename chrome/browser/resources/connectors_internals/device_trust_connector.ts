@@ -43,15 +43,15 @@ export class DeviceTrustConnectorElement extends CustomElement {
     return getTemplate();
   }
 
-  public get deleteKeyEnabled(): boolean {
+  get deleteKeyEnabled(): boolean {
     return loadTimeData.getBoolean('canDeleteDeviceTrustKey');
   }
 
-  public set enabledString(isEnabledString: string) {
+  set enabledString(isEnabledString: string) {
     this.setValueToElement('#enabled-string', isEnabledString);
   }
 
-  public set policyEnabledLevels(policyLevels: string[]) {
+  set policyEnabledLevels(policyLevels: string[]) {
     if (policyLevels.length === 0) {
       this.setValueToElement('#policy-enabled-levels', 'None');
       return;
@@ -60,7 +60,7 @@ export class DeviceTrustConnectorElement extends CustomElement {
     this.setValueToElement('#policy-enabled-levels', `${policyLevels}`);
   }
 
-  public set consentMetadata(consentMetadata: ConsentMetadata|undefined) {
+  set consentMetadata(consentMetadata: ConsentMetadata|undefined) {
     const consentDetailsEl = (this.$('#consent-details') as HTMLElement);
     const noConsentDetailsEl = (this.$('#no-consent') as HTMLElement);
     if (!consentMetadata) {
@@ -78,7 +78,7 @@ export class DeviceTrustConnectorElement extends CustomElement {
         '#can-collect', `${consentMetadata.canCollectSignals}`);
   }
 
-  public set keyInfo(keyInfo: KeyInfo) {
+  set keyInfo(keyInfo: KeyInfo) {
     const keySectionEl = (this.$('#key-manager-section') as HTMLElement);
     const initStateEl = (this.$('#key-manager-state') as HTMLElement);
 
@@ -136,7 +136,7 @@ export class DeviceTrustConnectorElement extends CustomElement {
   }
 
   private signalsString_: string = '';
-  public set signalsString(str: string) {
+  set signalsString(str: string) {
     const signalsEl = (this.$('#signals') as HTMLElement);
     if (signalsEl) {
       signalsEl.innerText = str;
@@ -146,15 +146,15 @@ export class DeviceTrustConnectorElement extends CustomElement {
     }
   }
 
-  public get copyButton(): HTMLButtonElement|undefined {
+  get copyButton(): HTMLButtonElement|undefined {
     return this.$('#copy-signals') as HTMLButtonElement;
   }
 
-  public get deleteKeyButton(): HTMLButtonElement|undefined {
+  get deleteKeyButton(): HTMLButtonElement|undefined {
     return this.$('#delete-key') as HTMLButtonElement;
   }
 
-  public get signalsString(): string {
+  get signalsString(): string {
     return this.signalsString_;
   }
 

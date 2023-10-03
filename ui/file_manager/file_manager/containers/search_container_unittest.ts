@@ -17,7 +17,7 @@ import {getEmptyState, getStore, type Store} from '../state/store.js';
 import {SearchContainer} from './search_container.js';
 
 class TestA11yAnnouncer extends A11yAnnounce {
-  public messages: string[] = [];
+  messages: string[] = [];
 
   override speakA11yMessage(message: string) {
     this.messages.push(message);

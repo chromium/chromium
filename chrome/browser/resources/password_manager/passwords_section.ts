@@ -211,7 +211,7 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
     }
   }
 
-  public focusFirstResult() {
+  focusFirstResult() {
     if (!this.searchTerm_) {
       // If search term is empty don't do anything.
       return;

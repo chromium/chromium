@@ -34,7 +34,7 @@ import {ListContainer} from './ui/list_container.js';
 import {ListSelectionModel} from './ui/list_selection_model.js';
 
 class TestFileTransferController extends FileTransferController {
-  public isDocumentWideEvent() {
+  isDocumentWideEvent() {
     return super.isDocumentWideEvent_();
   }
 }

@@ -33,8 +33,8 @@ export class CrSegmentedButtonElement extends PolymerElement {
     };
   }
 
-  public selected: string;
-  public selectableElements: string;
+  selected: string;
+  selectableElements: string;
 }
 
 declare global {

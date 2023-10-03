@@ -213,9 +213,9 @@ export class MostVisitedElement extends MostVisitedElementBase {
     };
   }
 
-  public theme: MostVisitedTheme|null;
-  public reflowOnOverflow: boolean;
-  public singleRow: boolean;
+  theme: MostVisitedTheme|null;
+  reflowOnOverflow: boolean;
+  singleRow: boolean;
   private useWhiteTileIcon_: boolean;
   private columnCount_: number;
   private rowCount_: number;

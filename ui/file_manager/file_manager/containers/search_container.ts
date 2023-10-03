@@ -591,7 +591,7 @@ export class SearchContainer extends EventTarget {
    * Returns whether the search container is open. In the open state the user
    * may enter a search query, interact with options, etc.
    */
-  public isOpen() {
+  isOpen() {
     return this.inputState_ === SearchInputState.OPEN;
   }
 

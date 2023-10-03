@@ -55,11 +55,11 @@ export class ThemeColorElement extends PolymerElement {
     };
   }
 
-  public backgroundColor: SkColor;
-  public foregroundColor: SkColor;
-  public baseColor: SkColor;
-  public checked: boolean;
-  public backgroundColorHidden: boolean;
+  backgroundColor: SkColor;
+  foregroundColor: SkColor;
+  baseColor: SkColor;
+  checked: boolean;
+  backgroundColorHidden: boolean;
 
   override connectedCallback() {
     super.connectedCallback();

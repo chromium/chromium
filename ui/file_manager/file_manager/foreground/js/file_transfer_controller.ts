@@ -129,7 +129,7 @@ export class FileTransferController {
   /**
    * The array of the pending task IDs.
    */
-  public pendingTaskIds: string[] = [];
+  pendingTaskIds: string[] = [];
 
   /**
    * File objects for selected files.
@@ -1493,7 +1493,7 @@ export class FileTransferController {
  * Container for defining a copy/move operation.
  */
 export class PastePlan {
-  public failureUrls: string[] = [];
+  failureUrls: string[] = [];
 
   constructor(
       public sourceURLs: string[], public sourceEntries: Entry[],
