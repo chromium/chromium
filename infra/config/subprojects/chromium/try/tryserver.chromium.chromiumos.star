@@ -102,9 +102,7 @@ This builder should be removed after migrating chromeos-amd64-generic-rel from N
     },
     main_list_view = "try",
     tryjob = try_.job(
-        # TODO(b/277863839): increase percentage.
-        # TODO(b/294160948): Siso doesn't support cxx actions for lacros.
-        experiment_percentage = 0.01,
+        experiment_percentage = 10,
     ),
 )
 
