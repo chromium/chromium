@@ -33,9 +33,11 @@
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "base/values.h"
+#include "components/aggregation_service/features.h"
 #include "components/attribution_reporting/parsing_utils.h"
 #include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/trigger_registration.h"
+#include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/aggregation_service/aggregation_service_features.h"
 #include "content/browser/aggregation_service/aggregation_service_impl.h"
 #include "content/browser/aggregation_service/aggregation_service_test_utils.h"
@@ -63,6 +65,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace content {
 
@@ -464,7 +467,9 @@ base::expected<base::Value::Dict, std::string> RunAttributionInteropSimulation(
   static_cast<AggregationServiceImpl*>(
       storage_partition->GetAggregationService())
       ->SetPublicKeysForTesting(
-          GURL(kPrivacySandboxAggregationServiceTrustedServerUrlAwsParam.Get()),
+          GetAggregationServiceProcessingUrl(url::Origin::Create(
+              GURL(::aggregation_service::kAggregationServiceCoordinatorAwsCloud
+                       .Get()))),
           PublicKeyset({aggregation_service::GenerateKey().public_key},
                        /*fetch_time=*/base::Time::Now(),
                        /*expiry_time=*/base::Time::Max()));

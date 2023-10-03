@@ -21,7 +21,9 @@
 #include "base/test/gmock_expected_support.h"
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"
+#include "components/aggregation_service/features.h"
 #include "components/attribution_reporting/source_registration_time_config.mojom.h"
+#include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/aggregation_service/aggregation_service.h"
 #include "content/browser/aggregation_service/aggregation_service_features.h"
 #include "content/browser/aggregation_service/aggregation_service_impl.h"
@@ -40,6 +42,7 @@
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/boringssl/src/include/openssl/hpke.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace content {
 namespace {
@@ -78,7 +81,9 @@ class AttributionAggregatableReportGoldenLatestVersionTest
     ASSERT_EQ(keyset.keys.size(), 1u);
 
     aggregation_service().SetPublicKeysForTesting(
-        GURL(kPrivacySandboxAggregationServiceTrustedServerUrlAwsParam.Get()),
+        GetAggregationServiceProcessingUrl(url::Origin::Create(
+            GURL(::aggregation_service::kAggregationServiceCoordinatorAwsCloud
+                     .Get()))),
         std::move(keyset));
 
     absl::optional<std::vector<uint8_t>> private_key =

@@ -26,6 +26,8 @@
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "base/values.h"
+#include "components/aggregation_service/features.h"
+#include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/aggregation_service/aggregation_service.h"
 #include "content/browser/aggregation_service/aggregation_service_features.h"
 #include "content/browser/aggregation_service/aggregation_service_impl.h"
@@ -84,7 +86,9 @@ class PrivateAggregationReportGoldenLatestVersionTest : public testing::Test {
     ASSERT_EQ(keyset.keys.size(), 1u);
 
     aggregation_service().SetPublicKeysForTesting(
-        GURL(kPrivacySandboxAggregationServiceTrustedServerUrlAwsParam.Get()),
+        GetAggregationServiceProcessingUrl(url::Origin::Create(
+            GURL(::aggregation_service::kAggregationServiceCoordinatorAwsCloud
+                     .Get()))),
         std::move(keyset));
 
     absl::optional<std::vector<uint8_t>> private_key =

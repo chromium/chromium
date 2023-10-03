@@ -1,4 +1,5 @@
 {
+  "aggregation_coordinator_origin": "https://publickeyservice.msmt.aws.privacysandboxservices.com",
   "aggregation_service_payloads": [
     {
       "key_id": "example_id",

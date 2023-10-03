@@ -60,14 +60,6 @@ using DpfParameters = distributed_point_functions::DpfParameters;
 constexpr char kHistogramValue[] = "histogram";
 constexpr char kOperationKey[] = "operation";
 
-GURL GetProcessingUrl(const url::Origin& origin) {
-  GURL::Replacements replacements;
-  static constexpr char kEndpointPath[] =
-      ".well-known/aggregation-service/v1/public-keys";
-  replacements.SetPathStr(kEndpointPath);
-  return origin.GetURL().ReplaceComponents(replacements);
-}
-
 std::vector<GURL> GetDefaultProcessingUrls(
     blink::mojom::AggregationServiceMode aggregation_mode,
     const absl::optional<url::Origin>& aggregation_coordinator_origin) {
@@ -76,14 +68,15 @@ std::vector<GURL> GetDefaultProcessingUrls(
       if (base::FeatureList::IsEnabled(
               aggregation_service::kAggregationServiceMultipleCloudProviders)) {
         if (!aggregation_coordinator_origin.has_value()) {
-          return {GetProcessingUrl(
+          return {GetAggregationServiceProcessingUrl(
               ::aggregation_service::GetDefaultAggregationCoordinatorOrigin())};
         }
         if (!::aggregation_service::IsAggregationCoordinatorOriginAllowed(
                 *aggregation_coordinator_origin)) {
           return {};
         }
-        return {GetProcessingUrl(*aggregation_coordinator_origin)};
+        return {GetAggregationServiceProcessingUrl(
+            *aggregation_coordinator_origin)};
       } else {
         return {GURL(
             kPrivacySandboxAggregationServiceTrustedServerUrlAwsParam.Get())};
@@ -514,6 +507,14 @@ void MaybeVerifyPayloadLength(size_t max_contributions_allowed,
 }
 
 }  // namespace
+
+GURL GetAggregationServiceProcessingUrl(const url::Origin& origin) {
+  GURL::Replacements replacements;
+  static constexpr char kEndpointPath[] =
+      ".well-known/aggregation-service/v1/public-keys";
+  replacements.SetPathStr(kEndpointPath);
+  return origin.GetURL().ReplaceComponents(replacements);
+}
 
 AggregationServicePayloadContents::AggregationServicePayloadContents(
     Operation operation,
