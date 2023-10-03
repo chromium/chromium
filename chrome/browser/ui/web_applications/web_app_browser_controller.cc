@@ -7,6 +7,7 @@
 #include "base/callback_list.h"
 #include "base/check_is_test.h"
 #include "base/containers/flat_set.h"
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -590,7 +591,22 @@ std::u16string WebAppBrowserController::GetAppShortName() const {
 }
 
 std::u16string WebAppBrowserController::GetFormattedUrlOrigin() const {
-  return FormatUrlOrigin(GetAppStartUrl());
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kWebAppEnableScopeExtensions)) {
+    return FormatUrlOrigin(GetAppStartUrl());
+  }
+
+  CHECK(browser() != nullptr && browser()->tab_strip_model() != nullptr);
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  if (contents == nullptr) {
+    return FormatUrlOrigin(GetAppStartUrl());
+  }
+  GURL last_committed_url = contents->GetLastCommittedURL();
+  if (last_committed_url.is_empty()) {
+    return FormatUrlOrigin(GetAppStartUrl());
+  }
+  return FormatUrlOrigin(last_committed_url);
 }
 
 bool WebAppBrowserController::CanUserUninstall() const {

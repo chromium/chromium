@@ -150,7 +150,7 @@ class WebAppBrowserFrameViewWinTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
 
-    WebAppToolbarButtonContainer::DisableAnimationForTesting();
+    WebAppToolbarButtonContainer::DisableAnimationForTesting(true);
   }
 
   void InstallAndLaunchWebApp() {

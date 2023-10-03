@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
+#include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_origin_text.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_toolbar_button_container.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
@@ -30,7 +31,7 @@
 #include "url/gurl.h"
 
 WebAppFrameToolbarTestHelper::WebAppFrameToolbarTestHelper() {
-  WebAppToolbarButtonContainer::DisableAnimationForTesting();
+  WebAppToolbarButtonContainer::DisableAnimationForTesting(true);
 }
 
 WebAppFrameToolbarTestHelper::~WebAppFrameToolbarTestHelper() = default;
@@ -277,4 +278,9 @@ BrowserView* WebAppFrameToolbarTestHelper::OpenPopup(
       popup_browser_view->GetActiveWebContents()->GetPrimaryMainFrame()));
 
   return popup_browser_view;
+}
+
+WebAppOriginText* WebAppFrameToolbarTestHelper::origin_text_view() {
+  return static_cast<WebAppOriginText*>(
+      web_app_frame_toolbar()->GetViewByID(VIEW_ID_WEB_APP_ORIGIN_TEXT));
 }
