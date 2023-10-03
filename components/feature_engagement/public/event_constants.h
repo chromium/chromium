@@ -134,6 +134,9 @@ extern const char kPriceNotificationsUsed[];
 // The user has been shown a default browser promo.
 extern const char kDefaultBrowserPromoShown[];
 
+// The user tapped Remind Me Later on a default browser promo.
+extern const char kDefaultBrowserPromoRemindMeLater[];
+
 // The Password Manager widget promo was triggered.
 extern const char kPasswordManagerWidgetPromoTriggered[];
 

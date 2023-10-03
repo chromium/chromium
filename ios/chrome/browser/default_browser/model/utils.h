@@ -54,7 +54,8 @@ enum class IOSDefaultBrowserVideoPromoAction {
   kPrimaryActionTapped = 0,
   kSecondaryActionTapped = 1,
   kSwipeDown = 2,
-  kMaxValue = kSwipeDown,
+  kTertiaryActionTapped = 3,
+  kMaxValue = kTertiaryActionTapped,
 };
 
 // The feature parameter to activate the remind me later button.
