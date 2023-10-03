@@ -25,9 +25,12 @@
 //     StructuredMetricsMixin structured_metrics_mixin_{&mixin_host_};
 namespace metrics::structured {
 
+class StructuredMetricsService;
+
 class StructuredMetricsMixin : public InProcessBrowserTestMixin {
  public:
-  explicit StructuredMetricsMixin(InProcessBrowserTestMixinHost* host);
+  explicit StructuredMetricsMixin(InProcessBrowserTestMixinHost* host,
+                                  bool setup_profile = true);
   StructuredMetricsMixin(const StructuredMetricsMixin&) = delete;
   StructuredMetricsMixin& operator=(const StructuredMetricsMixin&) = delete;
   ~StructuredMetricsMixin() override;
@@ -49,6 +52,9 @@ class StructuredMetricsMixin : public InProcessBrowserTestMixin {
   // Returns a pointer to the recorder used.
   StructuredMetricsRecorder* GetRecorder();
 
+  // Returns a pointer to the service used.
+  structured::StructuredMetricsService* GetService();
+
   // Returns pointer to the first event with the hash |project_name_hash| and
   // |event_name_hash|. If no event is found, returns absl::nullopt.
   absl::optional<StructuredEventProto> FindEvent(uint64_t project_name_hash,
@@ -68,14 +74,10 @@ class StructuredMetricsMixin : public InProcessBrowserTestMixin {
   // Adds a test profile and loads and generates profile keys.
   void AddProfile();
 
- private:
-  // The timeout for this is set to 3 seconds because this should be ample time
-  // for the event to show up after Event::Record() has been called. There is
-  // normally a delay between flushes but this delay has been set to 0 for
-  // testing.
-  base::test::ScopedRunLoopTimeout shortened_timeout_{FROM_HERE,
-                                                      base::Seconds(3)};
+  // Builds a log of unstaged events.
+  std::unique_ptr<ChromeUserMetricsExtension> GetUmaProto();
 
+ private:
   std::unique_ptr<MetricsProvider> system_profile_provider_;
 
   std::unique_ptr<TestStructuredMetricsProvider> structured_metrics_provider_;
@@ -83,6 +85,9 @@ class StructuredMetricsMixin : public InProcessBrowserTestMixin {
   base::ScopedTempDir temp_dir_;
 
   bool recording_state_ = true;
+
+  // Controls whether a profile is added during setup.
+  bool setup_profile_ = true;
 
   std::unique_ptr<base::RunLoop> record_run_loop_;
   std::unique_ptr<base::RunLoop> keys_run_loop_;

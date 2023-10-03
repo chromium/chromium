@@ -1093,6 +1093,7 @@ class TestProcessor : public EventsProcessorInterface {
 
   // no-op
   void OnEventsRecord(Event* event) override {}
+  void OnEventRecorded(StructuredEventProto* event) override {}
 
   void OnProvideIndependentMetrics(
       ChromeUserMetricsExtension* uma_proto) override {

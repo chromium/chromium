@@ -6,6 +6,7 @@
 
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "cros_events_processor.h"
 
 namespace metrics::structured::cros_event {
 
@@ -36,6 +37,8 @@ void CrOSEventsProcessor::OnEventsRecord(Event* event) {
   event->SetEventSequenceMetadata(
       Event::EventSequenceMetadata(current_reset_counter_));
 }
+
+void CrOSEventsProcessor::OnEventRecorded(StructuredEventProto* event) {}
 
 void CrOSEventsProcessor::OnProvideIndependentMetrics(
     ChromeUserMetricsExtension* uma_proto) {

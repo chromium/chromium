@@ -104,6 +104,9 @@ class Recorder {
   // Modifies |uma_proto| before the log is sent.
   void OnProvideIndependentMetrics(ChromeUserMetricsExtension* uma_proto);
 
+  // Modifies |event| once after the proto has been built.
+  void OnEventRecorded(StructuredEventProto* event);
+
  private:
   friend class base::NoDestructor<Recorder>;
 

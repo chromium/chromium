@@ -28,6 +28,16 @@ void DelegatingEventsProcessor::OnEventsRecord(Event* event) {
   }
 }
 
+void DelegatingEventsProcessor::OnEventRecorded(StructuredEventProto* event) {
+  DCHECK(event);
+
+  for (auto& events_processor : events_processors_) {
+    // Note that every |events_processor| is operating on the same |event|.
+    // Race conditions should be mangaged by the client.
+    events_processor->OnEventRecorded(event);
+  }
+}
+
 void DelegatingEventsProcessor::AddEventsProcessor(
     std::unique_ptr<EventsProcessorInterface> events_processor) {
   DCHECK(events_processor);

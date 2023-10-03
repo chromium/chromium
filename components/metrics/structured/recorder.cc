@@ -119,4 +119,8 @@ void Recorder::OnProvideIndependentMetrics(
   delegating_events_processor_.OnProvideIndependentMetrics(uma_proto);
 }
 
+void Recorder::OnEventRecorded(StructuredEventProto* event) {
+  delegating_events_processor_.OnEventRecorded(event);
+}
+
 }  // namespace metrics::structured
