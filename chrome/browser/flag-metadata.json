@@ -8160,6 +8160,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "uno-desktop",
+    "owners": [ "droger", "gabolvr@google.com", "uno-desktop@google.com" ],
+    "expiry_milestone": 125
+  },
+  {
     "name": "unsafely-treat-insecure-origin-as-secure",
     "owners": [ "security-dev" ],
     // This flag is supported for bypassing security restrictions on HTTP pages,

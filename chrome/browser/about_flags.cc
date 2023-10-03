@@ -11072,6 +11072,10 @@ const FeatureEntry kFeatureEntries[] = {
      kOsLinux | kOsMac | kOsWin,
      FEATURE_VALUE_TYPE(
          profile_management::features::kThirdPartyProfileManagement)},
+
+    {"uno-desktop", flag_descriptions::kUnoDesktopName,
+     flag_descriptions::kUnoDesktopDescription, kOsLinux | kOsMac | kOsWin,
+     FEATURE_VALUE_TYPE(switches::kUnoDesktop)},
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
     {"forgot-password-form-support",
