@@ -1990,6 +1990,12 @@ Your Google account may have other forms of browsing history like searches and a
         Never translate sites
       </message>
 
+      <!-- Translate Messages Snackbar -->
+      <message name="IDS_TRANSLATE_MESSAGE_SNACKBAR_PAGE_TRANSLATED"
+      desc="Message that the page has been translated into a specific target language">
+        Page translated to <ph name="target_language">%1$s<ex>English</ex></ph>
+      </message>
+
        <!-- Dangerous download -->
       <message name="IDS_DANGEROUS_DOWNLOAD_DIALOG_CONFIRM_TEXT" desc="Text label for the confirm button on the dangerous download dialog for user to confirm the download.">
         Download anyway

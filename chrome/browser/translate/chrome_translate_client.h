@@ -22,6 +22,8 @@
 
 namespace content {
 class BrowserContext;
+class Page;
+enum class Visibility;
 class WebContents;
 }  // namespace content
 
@@ -32,6 +34,7 @@ class AcceptLanguagesService;
 }
 
 namespace translate {
+class AutoTranslateSnackbarController;
 class LanguageState;
 class TranslatePrefs;
 class TranslateManager;
@@ -150,6 +153,13 @@ class ChromeTranslateClient
   bool manual_translate_on_ready_ = false;
 
   std::unique_ptr<translate::TranslateMessage> translate_message_;
+  std::unique_ptr<translate::AutoTranslateSnackbarController>
+      auto_translate_snackbar_controller_;
+
+  // content::WebContentsObserver implementation on Android only. Used for the
+  // auto-translate Snackbar.
+  void PrimaryPageChanged(content::Page& page) override;
+  void OnVisibilityChanged(content::Visibility visibility) override;
 #endif
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();

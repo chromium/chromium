@@ -3481,6 +3481,8 @@ static_library("browser") {
       "//chrome/browser/touch_to_fill/password_generation/android",
       "//chrome/browser/touch_to_fill/password_generation/android:public",
       "//chrome/browser/touch_to_fill/payments/android:public",
+      "//chrome/browser/translate/android",
+      "//chrome/browser/translate/android:jni_headers",
       "//chrome/browser/ui/android/layouts:android",
       "//chrome/browser/ui/webui/feed_internals:mojo_bindings",
       "//chrome/browser/usb/android:jni_headers",
