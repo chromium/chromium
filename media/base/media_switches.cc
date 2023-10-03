@@ -320,7 +320,7 @@ const base::FeatureParam<base::TimeDelta>
 // Prefer FFmpeg to LibVPX for Vp8 decoding with opaque alpha mode.
 BASE_FEATURE(kFFmpegDecodeOpaqueVP8,
              "FFmpegDecodeOpaqueVP8",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Only used for disabling overlay fullscreen (aka SurfaceView) in Clank.
 BASE_FEATURE(kOverlayFullscreenVideo,
