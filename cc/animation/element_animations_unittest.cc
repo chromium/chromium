@@ -310,7 +310,7 @@ TEST_F(ElementAnimationsTest, AddedAnimationIsDestroyed) {
   auto events = CreateEventsForTesting();
   animation2_impl->UpdateState(true, events.get());
   EXPECT_EQ(1u, events->events_.size());
-  EXPECT_EQ(AnimationEvent::STARTED, events->events_[0].type);
+  EXPECT_EQ(AnimationEvent::Type::kStarted, events->events_[0].type);
 
   // The actual detachment happens here, inside the callback
   animation2->DispatchAndDelegateAnimationEvent(events->events_[0]);
@@ -605,7 +605,7 @@ TEST_F(ElementAnimationsTest, DoNotSyncFinishedAnimation) {
   animation_impl_->Tick(kInitialTickTime);
   animation_impl_->UpdateState(true, events.get());
   EXPECT_EQ(1u, events->events_.size());
-  EXPECT_EQ(AnimationEvent::STARTED, events->events_[0].type);
+  EXPECT_EQ(AnimationEvent::Type::kStarted, events->events_[0].type);
 
   // Notify main thread animations that the animation has started.
   animation_->DispatchAndDelegateAnimationEvent(events->events_[0]);
@@ -615,7 +615,7 @@ TEST_F(ElementAnimationsTest, DoNotSyncFinishedAnimation) {
   animation_impl_->Tick(kInitialTickTime + base::Seconds(1));
   animation_impl_->UpdateState(true, events.get());
   EXPECT_EQ(1u, events->events_.size());
-  EXPECT_EQ(AnimationEvent::FINISHED, events->events_[0].type);
+  EXPECT_EQ(AnimationEvent::Type::kFinished, events->events_[0].type);
 
   animation_->DispatchAndDelegateAnimationEvent(events->events_[0]);
 
@@ -657,7 +657,7 @@ TEST_F(ElementAnimationsTest, AnimationsAreDeleted) {
 
   // There should be a STARTED event for the animation.
   EXPECT_EQ(1u, events->events_.size());
-  EXPECT_EQ(AnimationEvent::STARTED, events->events_[0].type);
+  EXPECT_EQ(AnimationEvent::Type::kStarted, events->events_[0].type);
   animation_->DispatchAndDelegateAnimationEvent(events->events_[0]);
 
   animation_->Tick(kInitialTickTime + base::Milliseconds(1000));
@@ -674,7 +674,7 @@ TEST_F(ElementAnimationsTest, AnimationsAreDeleted) {
 
   // There should be a FINISHED event for the animation.
   EXPECT_EQ(1u, events->events_.size());
-  EXPECT_EQ(AnimationEvent::FINISHED, events->events_[0].type);
+  EXPECT_EQ(AnimationEvent::Type::kFinished, events->events_[0].type);
 
   // Neither animations should have deleted the animation yet.
   EXPECT_TRUE(animation_->GetKeyframeModel(TargetProperty::OPACITY));
@@ -720,7 +720,7 @@ TEST_F(ElementAnimationsTest, AnimationFinishedOnImplDeletedOnMain) {
 
   // There should be a STARTED event for the animation.
   EXPECT_EQ(1u, events->events_.size());
-  EXPECT_EQ(AnimationEvent::STARTED, events->events_[0].type);
+  EXPECT_EQ(AnimationEvent::Type::kStarted, events->events_[0].type);
   animation_->DispatchAndDelegateAnimationEvent(events->events_[0]);
 
   events = CreateEventsForTesting();
@@ -731,7 +731,7 @@ TEST_F(ElementAnimationsTest, AnimationFinishedOnImplDeletedOnMain) {
 
   // There should be a FINISHED event for the animation.
   EXPECT_EQ(1u, events->events_.size());
-  EXPECT_EQ(AnimationEvent::FINISHED, events->events_[0].type);
+  EXPECT_EQ(AnimationEvent::Type::kFinished, events->events_[0].type);
 
   // Before the FINISHED event is received, main aborts the keyframe
   // and detaches the element.
@@ -1379,7 +1379,7 @@ TEST_F(ElementAnimationsTest,
 
   // Send the synchronized start time.
   animation_->DispatchAndDelegateAnimationEvent(AnimationEvent(
-      AnimationEvent::STARTED,
+      AnimationEvent::Type::kStarted,
       {animation_->animation_timeline()->id(), animation_->id(),
        keyframe_model_id},
       1, TargetProperty::OPACITY, kInitialTickTime + base::Milliseconds(2000)));
@@ -2010,7 +2010,7 @@ TEST_F(ElementAnimationsTest, ImplThreadAbortedAnimationGetsDeleted) {
   animation_impl_->UpdateState(true, events.get());
   EXPECT_TRUE(host_impl_->needs_push_properties());
   EXPECT_EQ(1u, events->events_.size());
-  EXPECT_EQ(AnimationEvent::ABORTED, events->events_[0].type);
+  EXPECT_EQ(AnimationEvent::Type::kAborted, events->events_[0].type);
   EXPECT_EQ(
       KeyframeModel::WAITING_FOR_DELETION,
       animation_impl_->GetKeyframeModel(TargetProperty::OPACITY)->run_state());
@@ -2082,7 +2082,7 @@ TEST_F(ElementAnimationsTest, ImplThreadTakeoverAnimationGetsDeleted) {
   EXPECT_TRUE(delegate_impl.finished());
   EXPECT_TRUE(host_impl_->needs_push_properties());
   EXPECT_EQ(1u, events->events_.size());
-  EXPECT_EQ(AnimationEvent::TAKEOVER, events->events_[0].type);
+  EXPECT_EQ(AnimationEvent::Type::kTakeOver, events->events_[0].type);
   EXPECT_EQ(TicksFromSecondsF(123), events->events_[0].animation_start_time);
   EXPECT_EQ(target_value, static_cast<ScrollOffsetAnimationCurve*>(
                               events->events_[0].curve.get())
@@ -2138,8 +2138,8 @@ TEST_F(ElementAnimationsTest, FinishedEventsForGroup) {
 
   // Both animations should have started.
   EXPECT_EQ(2u, events->events_.size());
-  EXPECT_EQ(AnimationEvent::STARTED, events->events_[0].type);
-  EXPECT_EQ(AnimationEvent::STARTED, events->events_[1].type);
+  EXPECT_EQ(AnimationEvent::Type::kStarted, events->events_[0].type);
+  EXPECT_EQ(AnimationEvent::Type::kStarted, events->events_[1].type);
 
   events = CreateEventsForTesting();
   animation_impl_->Tick(kInitialTickTime + base::Milliseconds(1000));
@@ -2160,8 +2160,8 @@ TEST_F(ElementAnimationsTest, FinishedEventsForGroup) {
 
   // Both animations should have generated FINISHED events.
   EXPECT_EQ(2u, events->events_.size());
-  EXPECT_EQ(AnimationEvent::FINISHED, events->events_[0].type);
-  EXPECT_EQ(AnimationEvent::FINISHED, events->events_[1].type);
+  EXPECT_EQ(AnimationEvent::Type::kFinished, events->events_[0].type);
+  EXPECT_EQ(AnimationEvent::Type::kFinished, events->events_[1].type);
 }
 
 // Ensure that when a group has a mix of aborted and finished animations,
@@ -2192,8 +2192,8 @@ TEST_F(ElementAnimationsTest, FinishedAndAbortedEventsForGroup) {
 
   // Both animations should have started.
   EXPECT_EQ(2u, events->events_.size());
-  EXPECT_EQ(AnimationEvent::STARTED, events->events_[0].type);
-  EXPECT_EQ(AnimationEvent::STARTED, events->events_[1].type);
+  EXPECT_EQ(AnimationEvent::Type::kStarted, events->events_[0].type);
+  EXPECT_EQ(AnimationEvent::Type::kStarted, events->events_[1].type);
 
   animation_impl_->AbortKeyframeModelsWithProperty(TargetProperty::OPACITY,
                                                    false);
@@ -2205,9 +2205,9 @@ TEST_F(ElementAnimationsTest, FinishedAndAbortedEventsForGroup) {
   // We should have exactly 2 events: a FINISHED event for the tranform
   // animation, and an ABORTED event for the opacity animation.
   EXPECT_EQ(2u, events->events_.size());
-  EXPECT_EQ(AnimationEvent::FINISHED, events->events_[0].type);
+  EXPECT_EQ(AnimationEvent::Type::kFinished, events->events_[0].type);
   EXPECT_EQ(TargetProperty::TRANSFORM, events->events_[0].target_property);
-  EXPECT_EQ(AnimationEvent::ABORTED, events->events_[1].type);
+  EXPECT_EQ(AnimationEvent::Type::kAborted, events->events_[1].type);
   EXPECT_EQ(TargetProperty::OPACITY, events->events_[1].target_property);
 }
 

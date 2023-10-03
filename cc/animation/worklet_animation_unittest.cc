@@ -136,7 +136,7 @@ TEST_F(WorkletAnimationTest, AnimationEventLocalTimeUpdate) {
   worklet_animation_->TakeTimeUpdatedEvent(animation_events);
   EXPECT_EQ(1u, animation_events->events_.size());
   AnimationEvent event = animation_events->events_[0];
-  EXPECT_EQ(AnimationEvent::TIME_UPDATED, event.type);
+  EXPECT_EQ(AnimationEvent::Type::kTimeUpdated, event.type);
   EXPECT_EQ(worklet_animation_->id(), event.uid.animation_id);
   EXPECT_EQ(local_time, event.local_time);
 

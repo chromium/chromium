@@ -184,22 +184,22 @@ void Animation::DispatchAndDelegateAnimationEvent(const AnimationEvent& event) {
 void Animation::DelegateAnimationEvent(const AnimationEvent& event) {
   if (animation_delegate_) {
     switch (event.type) {
-      case AnimationEvent::STARTED:
+      case AnimationEvent::Type::kStarted:
         animation_delegate_->NotifyAnimationStarted(
             event.monotonic_time, event.target_property, event.group_id);
         break;
 
-      case AnimationEvent::FINISHED:
+      case AnimationEvent::Type::kFinished:
         animation_delegate_->NotifyAnimationFinished(
             event.monotonic_time, event.target_property, event.group_id);
         break;
 
-      case AnimationEvent::ABORTED:
+      case AnimationEvent::Type::kAborted:
         animation_delegate_->NotifyAnimationAborted(
             event.monotonic_time, event.target_property, event.group_id);
         break;
 
-      case AnimationEvent::TAKEOVER:
+      case AnimationEvent::Type::kTakeOver:
         // TODO(crbug.com/1018213): Routing TAKEOVER events is broken.
         DCHECK(!event.is_impl_only);
         DCHECK(event.target_property == TargetProperty::SCROLL_OFFSET);
@@ -209,7 +209,7 @@ void Animation::DelegateAnimationEvent(const AnimationEvent& event) {
             event.animation_start_time, event.curve->Clone());
         break;
 
-      case AnimationEvent::TIME_UPDATED:
+      case AnimationEvent::Type::kTimeUpdated:
         DCHECK(!event.is_impl_only);
         animation_delegate_->NotifyLocalTimeUpdated(event.local_time);
         break;
@@ -288,7 +288,7 @@ void Animation::NotifyKeyframeModelFinishedForTesting(
     int keyframe_model_id,
     TargetProperty::Type target_property,
     int group_id) {
-  AnimationEvent event(AnimationEvent::FINISHED,
+  AnimationEvent event(AnimationEvent::Type::kFinished,
                        {timeline_id, id(), keyframe_model_id}, group_id,
                        target_property, base::TimeTicks());
   DispatchAndDelegateAnimationEvent(event);

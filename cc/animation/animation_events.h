@@ -16,7 +16,7 @@
 namespace cc {
 
 struct CC_ANIMATION_EXPORT AnimationEvent {
-  enum Type { STARTED, FINISHED, ABORTED, TAKEOVER, TIME_UPDATED };
+  enum class Type { kStarted, kFinished, kAborted, kTakeOver, kTimeUpdated };
 
   typedef size_t KeyframeEffectId;
   struct UniqueKeyframeModelId {

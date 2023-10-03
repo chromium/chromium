@@ -22,7 +22,7 @@ AnimationEvent::AnimationEvent(AnimationEvent::Type type,
 AnimationEvent::AnimationEvent(int timeline_id,
                                int animation_id,
                                absl::optional<base::TimeDelta> local_time)
-    : type(TIME_UPDATED),
+    : type(Type::kTimeUpdated),
       // Initializing model_id with an invalid value (0).
       // Also initializing keyframe_id with 0 which in its case is a valid
       // value. However this is safe since keyframe_id and model_id are not used
@@ -77,7 +77,7 @@ bool AnimationEvent::ShouldDispatchToKeyframeEffectAndModel() const {
   // this process.
   // is_impl_only events are not dispatched because they don't have
   // corresponding main thread components.
-  return type != TIME_UPDATED && !is_impl_only;
+  return type != Type::kTimeUpdated && !is_impl_only;
 }
 
 }  // namespace cc

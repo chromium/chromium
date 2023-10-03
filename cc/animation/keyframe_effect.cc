@@ -388,7 +388,7 @@ bool KeyframeEffect::DispatchAnimationEventToKeyframeModel(
       GetKeyframeModelById(event.uid.model_id));
   bool dispatched = false;
   switch (event.type) {
-    case AnimationEvent::STARTED:
+    case AnimationEvent::Type::kStarted:
       if (keyframe_model && keyframe_model->needs_synchronized_start_time()) {
         keyframe_model->set_needs_synchronized_start_time(false);
         if (!keyframe_model->has_set_start_time())
@@ -397,7 +397,7 @@ bool KeyframeEffect::DispatchAnimationEventToKeyframeModel(
       }
       break;
 
-    case AnimationEvent::FINISHED:
+    case AnimationEvent::Type::kFinished:
       if (keyframe_model) {
         keyframe_model->set_received_finished_event(true);
         dispatched = true;
@@ -410,7 +410,7 @@ bool KeyframeEffect::DispatchAnimationEventToKeyframeModel(
       }
       break;
 
-    case AnimationEvent::ABORTED:
+    case AnimationEvent::Type::kAborted:
       if (keyframe_model) {
         keyframe_model->SetRunState(gfx::KeyframeModel::ABORTED,
                                     event.monotonic_time);
@@ -421,14 +421,14 @@ bool KeyframeEffect::DispatchAnimationEventToKeyframeModel(
       }
       break;
 
-    case AnimationEvent::TAKEOVER:
+    case AnimationEvent::Type::kTakeOver:
       // TODO(crbug.com/1018213): Routing TAKEOVER events is broken.
       // We need to purge KeyframeModels marked for deletion on CT.
       SetNeedsPushProperties();
       dispatched = true;
       break;
 
-    case AnimationEvent::TIME_UPDATED:
+    case AnimationEvent::Type::kTimeUpdated:
       // TIME_UPDATED events are used to synchronize effect time between cc and
       // main thread worklet animations. Keyframe models are not involved in
       // this process.
@@ -925,7 +925,7 @@ void KeyframeEffect::PromoteStartedKeyframeModels(AnimationEvents* events) {
       else
         start_time = last_tick_time_.value_or(base::TimeTicks());
 
-      GenerateEvent(events, *cc_keyframe_model, AnimationEvent::STARTED,
+      GenerateEvent(events, *cc_keyframe_model, AnimationEvent::Type::kStarted,
                     start_time);
     }
   }
@@ -942,15 +942,15 @@ void KeyframeEffect::MarkKeyframeModelsForDeletion(
   };
 
   // Non-aborted KeyframeModels are marked for deletion after a corresponding
-  // AnimationEvent::FINISHED event is sent or received. This means that if
-  // we don't have an events vector, we must ensure that non-aborted
+  // AnimationEvent::Type::kFinished event is sent or received. This means that
+  // if we don't have an events vector, we must ensure that non-aborted
   // KeyframeModels have received a finished event before marking them for
   // deletion.
   for (auto& keyframe_model : keyframe_models()) {
     KeyframeModel* cc_keyframe_model =
         KeyframeModel::ToCcKeyframeModel(keyframe_model.get());
     if (cc_keyframe_model->run_state() == gfx::KeyframeModel::ABORTED) {
-      GenerateEvent(events, *cc_keyframe_model, AnimationEvent::ABORTED,
+      GenerateEvent(events, *cc_keyframe_model, AnimationEvent::Type::kAborted,
                     monotonic_time);
       // If this is the controlling instance or it has already received finish
       // event, keyframe model can be marked for deletion.
@@ -1014,7 +1014,7 @@ void KeyframeEffect::MarkKeyframeModelsForDeletion(
         continue;
 
       GenerateEvent(events, *same_group_keyframe_model,
-                    AnimationEvent::FINISHED, monotonic_time);
+                    AnimationEvent::Type::kFinished, monotonic_time);
       MarkForDeletion(same_group_keyframe_model);
     }
   }
@@ -1098,7 +1098,7 @@ void KeyframeEffect::GenerateTakeoverEventForScrollAnimation(
     return;
 
   AnimationEvent takeover_event(
-      AnimationEvent::TAKEOVER,
+      AnimationEvent::Type::kTakeOver,
       {animation_->animation_timeline()->id(), animation_->id(),
        keyframe_model.id()},
       keyframe_model.group(), keyframe_model.TargetProperty(), monotonic_time);
@@ -1111,7 +1111,7 @@ void KeyframeEffect::GenerateTakeoverEventForScrollAnimation(
   events->events_.push_back(takeover_event);
 
   AnimationEvent finished_event(
-      AnimationEvent::FINISHED,
+      AnimationEvent::Type::kFinished,
       {animation_->animation_timeline()->id(), animation_->id(),
        keyframe_model.id()},
       keyframe_model.group(), keyframe_model.TargetProperty(), monotonic_time);
