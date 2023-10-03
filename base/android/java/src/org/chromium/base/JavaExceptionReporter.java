@@ -9,7 +9,6 @@ import androidx.annotation.UiThread;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.build.annotations.MainDex;
 
 /**
  * This UncaughtExceptionHandler will create a breakpad minidump when there is an uncaught
@@ -19,7 +18,6 @@ import org.chromium.build.annotations.MainDex;
  * to be reported in the same way as other native crashes.
  */
 @JNINamespace("base::android")
-@MainDex
 public class JavaExceptionReporter implements Thread.UncaughtExceptionHandler {
     private final Thread.UncaughtExceptionHandler mParent;
     private final boolean mCrashAfterReport;

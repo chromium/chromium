@@ -19,14 +19,12 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.build.BuildConfig;
-import org.chromium.build.annotations.MainDex;
 
 /**
  * Tests for early JNI initialization.
  */
 @RunWith(BaseJUnit4ClassRunner.class)
 @JNINamespace("base")
-@MainDex
 @Batch(Batch.UNIT_TESTS)
 public class EarlyNativeTest {
     private boolean mWasInitialized;

@@ -37,7 +37,6 @@ import org.chromium.base.compat.ApiHelperForM;
 import org.chromium.base.compat.ApiHelperForN;
 import org.chromium.base.compat.ApiHelperForP;
 import org.chromium.base.compat.ApiHelperForQ;
-import org.chromium.build.annotations.MainDex;
 
 import java.io.FileDescriptor;
 import java.io.IOException;
@@ -61,7 +60,6 @@ import java.util.List;
 /**
  * This class implements net utilities required by the net component.
  */
-@MainDex
 class AndroidNetworkLibrary {
     private static final String TAG = "AndroidNetworkLibrary";
 

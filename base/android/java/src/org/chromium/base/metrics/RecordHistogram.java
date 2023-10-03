@@ -6,14 +6,11 @@ package org.chromium.base.metrics;
 
 import android.text.format.DateUtils;
 
-import org.chromium.build.annotations.MainDex;
-
 import java.util.List;
 
 /**
  * Java API for recording UMA histograms.
  * */
-@MainDex
 public class RecordHistogram {
     /**
      * Records a sample in a boolean UMA histogram of the given name. Boolean histogram has two

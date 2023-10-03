@@ -8,7 +8,6 @@ import android.os.Parcel;
 import android.os.ParcelFileDescriptor;
 import android.os.Parcelable;
 
-import org.chromium.build.annotations.MainDex;
 import org.chromium.build.annotations.UsedByReflection;
 
 import javax.annotation.concurrent.Immutable;
@@ -18,7 +17,6 @@ import javax.annotation.concurrent.Immutable;
  * be passed to child processes.
  */
 @Immutable
-@MainDex
 @UsedByReflection("child_process_launcher_helper_android.cc")
 public final class FileDescriptorInfo implements Parcelable {
     public final int id;

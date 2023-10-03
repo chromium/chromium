@@ -6,7 +6,6 @@ package org.chromium.base;
 
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.build.annotations.MainDex;
 
 /**
  * A class that serves as a bridge to native code to check the status of feature switches.
@@ -15,7 +14,6 @@ import org.chromium.build.annotations.MainDex;
  * single C++ Feature.
  */
 @JNINamespace("base::android")
-@MainDex
 public abstract class Features {
     private final String mName;
 

@@ -4,11 +4,8 @@
 
 package org.chromium.components.version_info;
 
-import org.chromium.build.annotations.MainDex;
-
 // Constants shared by Android Chrome and WebView. Chrome specific constants are
 // in ChromeVersionConstants.
-@MainDex
 public class VersionConstants {
     public static final String PRODUCT_VERSION = "@MAJOR@.@MINOR@.@BUILD@.@PATCH@";
     @SuppressWarnings({"ComplexBooleanConstant", "IdentityBinaryExpression"})

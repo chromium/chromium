@@ -16,7 +16,6 @@ import org.chromium.base.MemoryPressureListener;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.build.annotations.MainDex;
 
 /**
  * This class monitors memory pressure and reports it to the native side.
@@ -71,7 +70,6 @@ import org.chromium.build.annotations.MainDex;
  * NOTE: This class should only be used on UiThread as defined by ThreadUtils (which is
  *       Android main thread for Chrome, but can be some other thread for WebView).
  */
-@MainDex
 public class MemoryPressureMonitor {
     private static final int DEFAULT_THROTTLING_INTERVAL_MS = 60 * 1000;
 

@@ -8,12 +8,10 @@ import android.os.StrictMode;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
-import org.chromium.build.annotations.MainDex;
 
 import java.util.TimeZone;
 
 @JNINamespace("base::android")
-@MainDex
 class TimezoneUtils {
     /**
      * Guards this class from being instantiated.

@@ -10,7 +10,6 @@ import android.content.ComponentCallbacks2;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.memory.MemoryPressureCallback;
-import org.chromium.build.annotations.MainDex;
 
 /**
  * This class is Java equivalent of base::MemoryPressureListener: it distributes pressure
@@ -25,7 +24,6 @@ import org.chromium.build.annotations.MainDex;
  * NOTE: this class should only be used on UiThread as defined by ThreadUtils (which is
  *       Android main thread for Chrome, but can be some other thread for WebView).
  */
-@MainDex
 public class MemoryPressureListener {
     /**
      * Sending an intent with this action to Chrome will cause it to issue a call to onLowMemory

@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.flags;
 import org.chromium.base.FeatureMap;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.build.annotations.MainDex;
 
 /**
  * Java accessor for state of Chrome-layer feature flags.
@@ -20,7 +19,6 @@ import org.chromium.build.annotations.MainDex;
  * backwards compatibility and convenience.
  */
 @JNINamespace("chrome::android")
-@MainDex
 public class ChromeFeatureMap extends FeatureMap {
     private static final ChromeFeatureMap sInstance = new ChromeFeatureMap();
 

@@ -13,7 +13,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.library_loader.LibraryLoader;
-import org.chromium.build.annotations.MainDex;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,7 +21,6 @@ import java.util.Map;
  * Provides shared capabilities for feature flag support.
  */
 @JNINamespace("base::android")
-@MainDex
 public class FeatureList {
     /**
      * Test value overrides for tests without native.

@@ -34,7 +34,6 @@ import org.chromium.base.compat.ApiHelperForN;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.memory.MemoryPressureMonitor;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.build.annotations.MainDex;
 
 import java.util.List;
 
@@ -63,7 +62,6 @@ import javax.annotation.concurrent.GuardedBy;
  * implementation which cannot directly inherit from this class (e.g. for WebLayer child services).
  */
 @JNINamespace("base::android")
-@MainDex
 public class ChildProcessService {
     private static final String MAIN_THREAD_NAME = "ChildProcessMain";
     private static final String TAG = "ChildProcessService";

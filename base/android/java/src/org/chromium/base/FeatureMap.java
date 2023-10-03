@@ -6,7 +6,6 @@ package org.chromium.base;
 
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.build.annotations.MainDex;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -24,7 +23,6 @@ import java.util.Map;
  * access to the list of base::Features passed to the base::android::FeatureMap.
  */
 @JNINamespace("base::android")
-@MainDex
 public abstract class FeatureMap {
     private long mNativeMapPtr;
     protected FeatureMap() {}

@@ -10,7 +10,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.build.annotations.MainDex;
 
 import java.io.File;
 import java.io.FileReader;
@@ -27,7 +26,6 @@ import java.util.concurrent.atomic.AtomicReference;
  * file at a specific location early during startup. Applications each define their own files, e.g.,
  * ContentShellApplication.COMMAND_LINE_FILE.
 **/
-@MainDex
 public abstract class CommandLine {
     // Public abstract interface, implemented in derived classes.
     // All these methods reflect their native-side counterparts.
