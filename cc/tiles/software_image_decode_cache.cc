@@ -741,15 +741,16 @@ SkColorType SoftwareImageDecodeCache::GetColorTypeForPaintImage(
     const TargetColorParams& target_color_params,
     const PaintImage& paint_image) {
   const gfx::ColorSpace& target_color_space = target_color_params.color_space;
-  // Decode HDR images to half float when targeting HDR.
-  //
   // TODO(crbug.com/1076568): Once we have access to the display's buffer format
   // via gfx::DisplayColorSpaces, we should also do this for HBD images.
-  if (paint_image.GetContentColorUsage() == gfx::ContentColorUsage::kHDR &&
+  // Do not decode an image to F16 unless the PaintImage reports that its type
+  // is F16. Otherwise, image decode will fail.
+  // https://crbug.com/1488786
+  if (paint_image.GetColorType() == kRGBA_F16_SkColorType &&
+      paint_image.GetContentColorUsage() == gfx::ContentColorUsage::kHDR &&
       target_color_space.IsHDR()) {
     return kRGBA_F16_SkColorType;
   }
-
   return color_type_;
 }
 
