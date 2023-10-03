@@ -921,6 +921,7 @@
 <translation id="1723824996674794290">新增視窗(&amp;N)</translation>
 <translation id="1724801751621173132">輸入模式</translation>
 <translation id="1725562816265788801">分頁捲動</translation>
+<translation id="1726294682426724172">現在可以使用多項新功能，包括 Google 相簿可消除干擾元素的魔術橡皮擦、功能更強大的視訊通話工具等等</translation>
 <translation id="1726503915437308071">斜體字型</translation>
 <translation id="1729533290416704613">這個擴充功能也會控管你使用網址列搜尋時所顯示的網頁。</translation>
 <translation id="1730666151302379551">清除舊密碼</translation>
@@ -3493,7 +3494,6 @@
 <translation id="3771851622616482156">系統會將你登出這個網站，包含已開啟的分頁</translation>
 <translation id="3772046291955677288">我已詳閱並同意《<ph name="BEGIN_LINK1" />Google 服務條款<ph name="END_LINK1" />》以及《<ph name="BEGIN_LINK2" />Chrome 和 ChromeOS 附加服務條款<ph name="END_LINK2" />》。</translation>
 <translation id="3774166835015494435">最近的相片和通知</translation>
-<translation id="3774546890772201673">更新「<ph name="NAME" />」。</translation>
 <translation id="3775432569830822555">SSL 伺服器憑證</translation>
 <translation id="3775705724665058594">傳送至你的裝置</translation>
 <translation id="3776508619697147021">網站可以要求自動下載多個檔案</translation>
@@ -3937,6 +3937,7 @@
 <translation id="4110485659976215879">取消忽略警告</translation>
 <translation id="4110490973560452005">下載完成：<ph name="FILE_NAME" />。按下 Shift+F6 即可回到下載內容列區域。</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (離線)</translation>
+<translation id="411318099524508025">你已升級到 <ph name="NAME" />。</translation>
 <translation id="4113743276555482284">檔案密碼</translation>
 <translation id="4114524937989710624">畫面上會顯示建議的檔案，方便你繼續執行最近在 Google 雲端硬碟中的活動。
         <ph name="BREAK" />
@@ -8748,7 +8749,6 @@
 <translation id="8077120325605624147">你造訪的網站都能對你顯示所有廣告</translation>
 <translation id="8077579734294125741">其他 Chrome 設定檔</translation>
 <translation id="80798452873915119">網站可以要求管理所有螢幕上的視窗</translation>
-<translation id="807990231167557618">Chromebook 已更新。</translation>
 <translation id="8080028325999236607">關閉所有分頁</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">工作階段是由 <ph name="MANAGER_NAME" /> 管理。管理員可以刪除設定檔並監控網路流量。</translation>

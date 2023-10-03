@@ -921,6 +921,7 @@
 <translation id="1723824996674794290">&amp;ახალი ფანჯარა</translation>
 <translation id="1724801751621173132">შეყვანის რეჟიმი</translation>
 <translation id="1725562816265788801">ჩანართებში გადაადგილება</translation>
+<translation id="1726294682426724172">ახალ ფუნქციებს შორისაა ჯადოსნური საშლელი Google Photos-ში (ხელისშემშლელი ფაქტორების მოსაშორებლად), ვიდეოზარების გაუმჯობესებული ხელსაწყოები და სხვა</translation>
 <translation id="1726503915437308071">დახრილი შრიფტი</translation>
 <translation id="1729533290416704613">იგი ასევე აკონტროლებს, თუ რომელი გვერდი გამოჩნდება Omnibox-ში ძიების დროს.</translation>
 <translation id="1730666151302379551">ძველი პაროლი დამავიწყდა</translation>
@@ -3493,7 +3494,6 @@
 <translation id="3771851622616482156">თქვენ გამოხვალთ ამ საიტიდან, მათ შორის, გახსნილ ჩანართებზე</translation>
 <translation id="3772046291955677288">წავიკითხე <ph name="BEGIN_LINK1" />Google-ის მომსახურების პირობები<ph name="END_LINK1" />, ასევე, <ph name="BEGIN_LINK2" />Chrome-ისა და ChromeOS-ის მომსახურების დამატებითი პირობები<ph name="END_LINK2" /> და ვეთანხმები მათ.</translation>
 <translation id="3774166835015494435">ბოლოდროინდელი ფოტოები და შეტყობინებები</translation>
-<translation id="3774546890772201673">განაახლეთ <ph name="NAME" />.</translation>
 <translation id="3775432569830822555">SSL სერვერის სერტიფიკატი</translation>
 <translation id="3775705724665058594">გააგზავნეთ თქვენს მოწყობილობებზე</translation>
 <translation id="3776508619697147021">საიტებს შეუძლია რამდენიმე ფაილის ავტომატურად ჩამოტვირთვის თხოვნა</translation>
@@ -3938,6 +3938,7 @@
 <translation id="4110485659976215879">გაფრთხილების აღდგენა</translation>
 <translation id="4110490973560452005">ჩამოტვირთვა დასრულდა: <ph name="FILE_NAME" />. ჩამოტვირთვების ზოლის არეზე გადასასვლელად დააჭირეთ კლავიშთა კომბინაციას: Shift+F6.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (ხაზგარეშე)</translation>
+<translation id="411318099524508025">თქვენ გადახვედით <ph name="NAME" />-ზე.</translation>
 <translation id="4113743276555482284">ფაილის პაროლი</translation>
 <translation id="4114524937989710624">თქვენ ხედავთ შემოთავაზებულ ფაილებს, რომლებიც დაგეხმარებათ, მარტივად დაუბრუნდეთ თქვენს ყველაზე ბოლოდროინდელ აქტივობას Google Drive-ში.
         <ph name="BREAK" />
@@ -8750,7 +8751,6 @@
 <translation id="8077120325605624147">თქვენთვის რეკლამის ჩვენება შეუძლია ნებისმიერ საიტს, რომელსაც სტუმრობთ</translation>
 <translation id="8077579734294125741">სხვა Chrome პროფილები</translation>
 <translation id="80798452873915119">საიტებს შეუძლია თქვენს ყველა ეკრანზე ფანჯრების მართვის მოთხოვნა</translation>
-<translation id="807990231167557618">თქვენი Chromebook განახლებულია.</translation>
 <translation id="8080028325999236607">ყველა ჩანართის დახურვა</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">თქვენს სესიას მართავს <ph name="MANAGER_NAME" />. ადმინისტრატორებს შეუძლიათ თქვენი პროფილის წაშლა და თქვენი ქსელის ტრაფიკზე დაკვირვება.</translation>

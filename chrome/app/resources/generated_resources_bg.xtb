@@ -928,6 +928,7 @@
 <translation id="1723824996674794290">&amp;Нов прозорец</translation>
 <translation id="1724801751621173132">Режим за въвеждане</translation>
 <translation id="1725562816265788801">Превъртане на разделите</translation>
+<translation id="1726294682426724172">Новите функции включват „Магическа гума“ в Google Снимки за премахване на разсейващите елементи, подобрени инструменти за видеообаждане и др.</translation>
 <translation id="1726503915437308071">Курсив</translation>
 <translation id="1729533290416704613">То също контролира коя страница се показва при търсене от полето за всичко.</translation>
 <translation id="1730666151302379551">Забравена стара парола</translation>
@@ -3504,7 +3505,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3771851622616482156">Ще излезете от профила си в този сайт, включително в отворените раздели</translation>
 <translation id="3772046291955677288">Прочетох и приемам <ph name="BEGIN_LINK1" />Общите условия на Google<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />Допълнителните общи условия на Chrome и Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="3774166835015494435">Скорошни снимки и известия</translation>
-<translation id="3774546890772201673">Актуализирайте <ph name="NAME" />.</translation>
 <translation id="3775432569830822555">Сертификат на SSL сървър</translation>
 <translation id="3775705724665058594">Изпращане до устройствата ви</translation>
 <translation id="3776508619697147021">Сайтовете могат да извеждат запитвания за автоматично изтегляне на няколко файла</translation>
@@ -3950,6 +3950,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4110485659976215879">Възстановяване на предупреждението</translation>
 <translation id="4110490973560452005">Изтеглянето завърши: <ph name="FILE_NAME" />. Натиснете Shift + F6, за да преминете към лентата на изтеглянето.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (офлайн)</translation>
+<translation id="411318099524508025">Извършена бе надстройка до <ph name="NAME" />.</translation>
 <translation id="4113743276555482284">Парола за файла</translation>
 <translation id="4114524937989710624">Показват се предложени файлове, с чиято помощ лесно да се върнете към скорошната си активност в Google Диск.
         <ph name="BREAK" />
@@ -8767,7 +8768,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8077120325605624147">Всички посещавани от вас сайтове могат да ви показват всякакви реклами</translation>
 <translation id="8077579734294125741">Други потребителски профили в Chrome</translation>
 <translation id="80798452873915119">Сайтовете могат да извеждат запитвания за управление на прозорците на всичките ви дисплеи</translation>
-<translation id="807990231167557618">Вашият Chromebook е актуализиран.</translation>
 <translation id="8080028325999236607">Затваряне на разделите</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">Сесията ви се управлява от <ph name="MANAGER_NAME" />. Администраторите могат да изтрият потребителския ви профил и да следят трафика ви в мрежата.</translation>

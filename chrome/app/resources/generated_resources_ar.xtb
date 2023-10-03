@@ -923,6 +923,7 @@
 <translation id="1723824996674794290">نافذة &amp;جديدة</translation>
 <translation id="1724801751621173132">وضع الإدخال</translation>
 <translation id="1725562816265788801">الانتقال بين علامات التبويب</translation>
+<translation id="1726294682426724172">‏تشمل الميزات الجديدة ميزة "الممحاة السحرية" في تطبيق "صور Google" لإزالة العناصر المشتِّتة للانتباه إلى جانب أدوات مكالمات الفيديو المحسَّنة وغيرها.</translation>
 <translation id="1726503915437308071">خط مائل</translation>
 <translation id="1729533290416704613">كما أنها تتحكم في الصفحة التي تظهر عند إجراء بحث من المربع متعدد الاستخدامات.</translation>
 <translation id="1730666151302379551">نسيت كلمة المرور القديمة</translation>
@@ -3498,7 +3499,6 @@
 <translation id="3771851622616482156">سيتم تسجيل خروجك من هذا الموقع الإلكتروني، بما في ذلك المواقع الإلكترونية في علامات التبويب المفتوحة.</translation>
 <translation id="3772046291955677288">‏لقد قرأت <ph name="BEGIN_LINK1" />بنود خدمة Google<ph name="END_LINK1" /> و<ph name="BEGIN_LINK2" />بنود الخدمة الإضافية لكلٍّ من متصفّح Google Chrome ونظام التشغيل Chrome<ph name="END_LINK2" /> وأوافق عليها.</translation>
 <translation id="3774166835015494435">الصور والإشعارات الحديثة</translation>
-<translation id="3774546890772201673">يتوفّر تحديث لجهاز <ph name="NAME" /></translation>
 <translation id="3775432569830822555">‏شهادة خادم بروتوكول SSL (طبقة المقابس الآمنة)</translation>
 <translation id="3775705724665058594">إرسال إلى أجهزتك</translation>
 <translation id="3776508619697147021">السماح للمواقع الإلكترونية بطلب تنزيل الملفات المتعدّدة تلقائيًا</translation>
@@ -3940,6 +3940,7 @@
 <translation id="4110485659976215879">استعادة التحذير</translation>
 <translation id="4110490973560452005">‏اكتمل التنزيل: <ph name="FILE_NAME" />. يمكنك الضغط على Shift+F6 للانتقال إلى منطقة شريط عمليات التنزيل.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (غير متصل بالإنترنت)</translation>
+<translation id="411318099524508025">تمت الترقية إلى <ph name="NAME" /></translation>
 <translation id="4113743276555482284">كلمة مرور الملف</translation>
 <translation id="4114524937989710624">‏تظهر لك ملفات مُقترحة لمساعدتك في الرجوع بسهولة إلى آخر نشاط أجريته في Google Drive.
         <ph name="BREAK" />
@@ -8763,7 +8764,6 @@
 <translation id="8077120325605624147">السماح لأي موقع إلكتروني تزوره بعرض أي إعلان لك</translation>
 <translation id="8077579734294125741">‏الملفات الشخصية الأخرى على Chrome</translation>
 <translation id="80798452873915119">السماح للمواقع الإلكترونية بطلب إدارة النوافذ على جميع شاشات أجهزتك</translation>
-<translation id="807990231167557618">‏تم تحديث جهاز Chromebook.</translation>
 <translation id="8080028325999236607">إغلاق جميع علامات التبويب</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">تتم إدارة جلستك من خلال <ph name="MANAGER_NAME" />. ويمكن للمشرفين حذف ملفك الشخصي وتتبّع حركة بيانات الشبكة أيضًا.</translation>

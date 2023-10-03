@@ -933,6 +933,7 @@
 <translation id="1723824996674794290">&amp;Нов прозорец</translation>
 <translation id="1724801751621173132">Режим за внесување</translation>
 <translation id="1725562816265788801">Лизгање на лентата за картички</translation>
+<translation id="1726294682426724172">Новите функции опфаќаат „Волшебно бришење“ на „Фотографии на Google“ за отстранување работи што го одвлекуваат вниманието, подобрени алатки за видеоповици и друго</translation>
 <translation id="1726503915437308071">Закосен фонт</translation>
 <translation id="1729533290416704613">Исто така, контролира која страница е прикажана кога пребарувате од Omnibox.</translation>
 <translation id="1730666151302379551">Ја заборавив старата лозинка</translation>
@@ -3509,7 +3510,6 @@
 <translation id="3771851622616482156">Ќе ве одјавиме од сајтов, вклучително и од отворените картички</translation>
 <translation id="3772046291955677288">Ги прочитав и се согласувам со <ph name="BEGIN_LINK1" />Условите за користење на Google<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />Дополнителните услови за користење на Chrome и ChromeOS<ph name="END_LINK2" />.</translation>
 <translation id="3774166835015494435">Неодамнешни фотографии и известувања</translation>
-<translation id="3774546890772201673">Ажурирање на <ph name="NAME" />.</translation>
 <translation id="3775432569830822555">Сертификат на SSL-сервер</translation>
 <translation id="3775705724665058594">Испратете до вашите уреди</translation>
 <translation id="3776508619697147021">Сајтовите може да прашуваат дали автоматски да преземаат повеќе датотеки</translation>
@@ -3954,6 +3954,7 @@
 <translation id="4110485659976215879">Врати ја опомената</translation>
 <translation id="4110490973560452005">Преземањето е завршено: <ph name="FILE_NAME" />. Притиснете Shift+F6 за да одите до областа на лентата за преземања.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (офлајн)</translation>
+<translation id="411318099524508025">Добивте надградба на <ph name="NAME" />.</translation>
 <translation id="4113743276555482284">Лозинка на датотеката</translation>
 <translation id="4114524937989710624">Прикажани се предложени датотеки што ќе ви помогнат полесно да се вратите на последната активност во Google Drive.
         <ph name="BREAK" />
@@ -8770,7 +8771,6 @@
 <translation id="8077120325605624147">Секој сајт што го посетувате може да ви прикаже која било реклама</translation>
 <translation id="8077579734294125741">Други профили на Chrome</translation>
 <translation id="80798452873915119">Сајтовите може да бараат да управуваат со прозорците на сите екрани</translation>
-<translation id="807990231167557618">Вашиот Chromebook е ажуриран.</translation>
 <translation id="8080028325999236607">Затвори ги сите картички</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">Со вашата сесија управува <ph name="MANAGER_NAME" />. Администраторите може да го избришат вашиот профил и да го надгледуваат мрежниот сообраќај.</translation>

@@ -920,6 +920,7 @@
 <translation id="1723824996674794290">&amp;Нови прозор</translation>
 <translation id="1724801751621173132">Режим уноса</translation>
 <translation id="1725562816265788801">Померање картица</translation>
+<translation id="1726294682426724172">У нове функције спадају Магични брисач у Google сликама за уклањање ометања, побољшане алатке за видео позиве и друго</translation>
 <translation id="1726503915437308071">Фонт у курзиву</translation>
 <translation id="1729533290416704613">Контролише и страницу која се приказује када претражујете из омнибокса.</translation>
 <translation id="1730666151302379551">Заборављена стара лозинка</translation>
@@ -3491,7 +3492,6 @@
 <translation id="3771851622616482156">Одјавићете се са овог сајта, укључујући и инстанце на отвореним картицама</translation>
 <translation id="3772046291955677288">Прочитао/ла сам и прихватам <ph name="BEGIN_LINK1" />Google услове коришћења услуге<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />додатне услове коришћења услуге за Chrome и Chrome ОС<ph name="END_LINK2" />.</translation>
 <translation id="3774166835015494435">Недавне слике и обавештења</translation>
-<translation id="3774546890772201673">Ажурирајте <ph name="NAME" />.</translation>
 <translation id="3775432569830822555">Сертификат SSL сервера</translation>
 <translation id="3775705724665058594">Пошаљите на своје уређаје</translation>
 <translation id="3776508619697147021">Сајтови могу да траже да аутоматски преузимају више фајлова</translation>
@@ -3936,6 +3936,7 @@
 <translation id="4110485659976215879">Врати упозорење</translation>
 <translation id="4110490973560452005">Преузимање је довршено: <ph name="FILE_NAME" />. Притисните Shift + F6 да бисте прешли на област траке са преузимањима.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (офлајн)</translation>
+<translation id="411318099524508025">Обавили сте надоградњу на <ph name="NAME" />.</translation>
 <translation id="4113743276555482284">Лозинка за фајл</translation>
 <translation id="4114524937989710624">Предложени фајлови вам се приказују да бисте лако могли да се вратите најновијим активностима на Google диску.
         <ph name="BREAK" />
@@ -8755,7 +8756,6 @@
 <translation id="8077120325605624147">Сваки сајт који посетите може да вам прикаже било који оглас</translation>
 <translation id="8077579734294125741">Други Chrome профили</translation>
 <translation id="80798452873915119">Сајтови могу да затраже да управљају прозорима на свим екранима</translation>
-<translation id="807990231167557618">Chromebook је ажуриран.</translation>
 <translation id="8080028325999236607">Затвори све картице</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">Сесијом управља <ph name="MANAGER_NAME" />. Администратори могу да избришу ваш профил и да надгледају ваш мрежни саобраћај.</translation>

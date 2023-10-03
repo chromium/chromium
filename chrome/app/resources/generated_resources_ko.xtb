@@ -932,6 +932,7 @@
 <translation id="1723824996674794290">새 창(&amp;N)</translation>
 <translation id="1724801751621173132">입력 모드</translation>
 <translation id="1725562816265788801">탭 스크롤</translation>
+<translation id="1726294682426724172">새로운 기능에는 방해 요소를 없애 주는 Google 포토의 매직 지우개, 개선된 영상 통화 도구 등이 포함됩니다.</translation>
 <translation id="1726503915437308071">기울임꼴</translation>
 <translation id="1729533290416704613">또한 검색주소창에서 검색할 때 표시되는 페이지를 설정합니다.</translation>
 <translation id="1730666151302379551">이전 비밀번호 지우기</translation>
@@ -3510,7 +3511,6 @@
 <translation id="3771851622616482156">열려 있는 탭을 포함하여 이 사이트에서 로그아웃됩니다.</translation>
 <translation id="3772046291955677288"><ph name="BEGIN_LINK1" />Google 서비스 약관<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Chrome 및 ChromeOS 추가 서비스 약관<ph name="END_LINK2" />을 읽었으며 이에 동의합니다.</translation>
 <translation id="3774166835015494435">최근 사진 및 알림</translation>
-<translation id="3774546890772201673"><ph name="NAME" />을 업데이트합니다.</translation>
 <translation id="3775432569830822555">SSL 서버 인증서</translation>
 <translation id="3775705724665058594">기기로 전송</translation>
 <translation id="3776508619697147021">사이트에서 여러 파일의 자동 다운로드를 요청할 수 있음</translation>
@@ -3953,6 +3953,7 @@
 <translation id="4110485659976215879">경고 다시 열기</translation>
 <translation id="4110490973560452005">다운로드 완료: <ph name="FILE_NAME" />. 다운로드바 영역으로 이동하려면 Shift+F6를 누르세요.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" />(오프라인)</translation>
+<translation id="411318099524508025"><ph name="NAME" /> 버전으로 업그레이드됨</translation>
 <translation id="4113743276555482284">파일 비밀번호</translation>
 <translation id="4114524937989710624">Google Drive에서 최근 활동으로 쉽게 돌아갈 수 있도록 표시된 추천 파일입니다.
         <ph name="BREAK" />
@@ -8769,7 +8770,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8077120325605624147">어떤 사이트에서나 광고를 게재할 수 있습니다.</translation>
 <translation id="8077579734294125741">기타 Chrome 프로필</translation>
 <translation id="80798452873915119">사이트에서 모든 디스플레이의 창 관리 허용 여부를 확인할 수 있음</translation>
-<translation id="807990231167557618">Chromebook이 업데이트되었습니다.</translation>
 <translation id="8080028325999236607">탭 모두 닫기</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289"><ph name="MANAGER_NAME" />에서 세션을 관리합니다. 관리자가 내 프로필을 삭제하고 네트워크 트래픽을 모니터링할 수도 있습니다.</translation>

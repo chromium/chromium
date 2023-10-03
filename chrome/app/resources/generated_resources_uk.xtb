@@ -935,6 +935,7 @@
 <translation id="1723824996674794290">&amp;Нове вікно</translation>
 <translation id="1724801751621173132">Режим введення</translation>
 <translation id="1725562816265788801">Прокручування вкладок</translation>
+<translation id="1726294682426724172">Серед нових функцій – чарівна гумка в Google Фото, яка дає змогу вилучати небажані об’єкти, покращені інструменти для відеодзвінків тощо</translation>
 <translation id="1726503915437308071">Курсив</translation>
 <translation id="1729533290416704613">Розширення також змінило сторінку, яка відкривається під час пошуку в універсальному вікні пошуку.</translation>
 <translation id="1730666151302379551">Не пам’ятаю старий пароль</translation>
@@ -3511,7 +3512,6 @@
 <translation id="3771851622616482156">Ви вийдете з облікового запису на цьому сайті, зокрема у відкритих вкладках</translation>
 <translation id="3772046291955677288">Я приймаю <ph name="BEGIN_LINK1" />Загальні положення та умови Google<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Додаткові умови використання Chrome і ОС Chrome<ph name="END_LINK2" />.</translation>
 <translation id="3774166835015494435">Нещодавні фотографії та сповіщення</translation>
-<translation id="3774546890772201673">Оновіть <ph name="NAME" />.</translation>
 <translation id="3775432569830822555">Сертифікат SSL-сервера</translation>
 <translation id="3775705724665058594">Надіслати на пристрої</translation>
 <translation id="3776508619697147021">Сайти можуть просити дозвіл автоматично завантажувати кілька файлів</translation>
@@ -3956,6 +3956,7 @@
 <translation id="4110485659976215879">Відновити попередження</translation>
 <translation id="4110490973560452005">Завантажено: <ph name="FILE_NAME" />. Натисніть Shift+F6, щоб перейти на панель завантажень.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (офлайн)</translation>
+<translation id="411318099524508025">Ви перейшли на <ph name="NAME" />.</translation>
 <translation id="4113743276555482284">Пароль файлу</translation>
 <translation id="4114524937989710624">Ви бачите пропозиції файлів, які допоможуть вам легко повернутися до останніх дій на Google Диску.
         <ph name="BREAK" />
@@ -8774,7 +8775,6 @@
 <translation id="8077120325605624147">Усі сайти, які ви відвідуєте, можуть показувати вам будь-які оголошення</translation>
 <translation id="8077579734294125741">Інші профілі Chrome</translation>
 <translation id="80798452873915119">Сайти можуть просити дозвіл керувати вікнами на всіх ваших екранах</translation>
-<translation id="807990231167557618">Chromebook оновлено.</translation>
 <translation id="8080028325999236607">Закрити всі вкладки</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">Вашим сеансом керує <ph name="MANAGER_NAME" />. Адміністратори можуть видалити ваш профіль, а також відстежувати мережевий трафік.</translation>

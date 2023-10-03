@@ -931,6 +931,7 @@
 <translation id="1723824996674794290">新視窗(&amp;N)</translation>
 <translation id="1724801751621173132">輸入法</translation>
 <translation id="1725562816265788801">分頁捲動</translation>
+<translation id="1726294682426724172">現可使用多項新功能，包括「Google 相片」可消除干擾元素的「魔術橡皮擦」、功能更強大的視像通話工具等</translation>
 <translation id="1726503915437308071">斜體字型</translation>
 <translation id="1729533290416704613">這個擴充功能也會控管您使用網址列搜尋時所顯示的網頁。</translation>
 <translation id="1730666151302379551">忘記舊密碼</translation>
@@ -3508,7 +3509,6 @@
 <translation id="3771851622616482156">您將會從此網站 (包括已開啟的分頁) 登出。</translation>
 <translation id="3772046291955677288">我已閱讀並同意《<ph name="BEGIN_LINK1" />Google 服務條款<ph name="END_LINK1" />》和《<ph name="BEGIN_LINK2" />Chrome 和 Chrome OS 附加服務條款<ph name="END_LINK2" />》。</translation>
 <translation id="3774166835015494435">最近的相片和通知</translation>
-<translation id="3774546890772201673">更新 <ph name="NAME" />。</translation>
 <translation id="3775432569830822555">SSL 伺服器憑證</translation>
 <translation id="3775705724665058594">傳送至您的裝置</translation>
 <translation id="3776508619697147021">網站可要求自動下載多個檔案</translation>
@@ -3949,6 +3949,7 @@
 <translation id="4110485659976215879">取消忽略警告</translation>
 <translation id="4110490973560452005">下載完成 ：<ph name="FILE_NAME" />。按住 Shift+F6 鍵即可切換至下載內容列的位置。</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (離線)</translation>
+<translation id="411318099524508025">你已升級到 <ph name="NAME" />。</translation>
 <translation id="4113743276555482284">檔案密碼</translation>
 <translation id="4114524937989710624">畫面會顯示建議的檔案，以便您繼續執行最近在「Google 雲端硬碟」中的活動。
         <ph name="BREAK" />
@@ -8762,7 +8763,6 @@
 <translation id="8077120325605624147">您瀏覽的網站都可向您顯示所有廣告</translation>
 <translation id="8077579734294125741">其他 Chrome 設定檔</translation>
 <translation id="80798452873915119">網站可以要求在您所有的顯示屏上管理視窗</translation>
-<translation id="807990231167557618">Chromebook 已更新。</translation>
 <translation id="8080028325999236607">關閉所有分頁</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">工作階段由 <ph name="MANAGER_NAME" /> 管理。管理員可刪除設定檔並監察網絡流量。</translation>

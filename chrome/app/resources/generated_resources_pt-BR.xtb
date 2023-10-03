@@ -933,6 +933,7 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1723824996674794290">&amp;Nova janela</translation>
 <translation id="1724801751621173132">Modo de entrada</translation>
 <translation id="1725562816265788801">Rolagem de guias</translation>
+<translation id="1726294682426724172">Os novos recursos incluem a Borracha mágica no Google Fotos para remover distrações das suas fotos, ferramentas aprimoradas para videochamadas e muito mais</translation>
 <translation id="1726503915437308071">Fonte em itálico</translation>
 <translation id="1729533290416704613">Controla também qual página deve ser exibida quando você faz uma pesquisa na Omnibox.</translation>
 <translation id="1730666151302379551">Esqueci a senha antiga</translation>
@@ -3509,7 +3510,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3771851622616482156">Sua conta será desconectada deste site, inclusive nas guias abertas</translation>
 <translation id="3772046291955677288">Li e concordo com os <ph name="BEGIN_LINK1" />Termos de Serviço do Google<ph name="END_LINK1" /> e os <ph name="BEGIN_LINK2" />Termos de Serviço Adicionais do Chrome e do ChromeOS<ph name="END_LINK2" />.</translation>
 <translation id="3774166835015494435">Fotos e notificações recentes</translation>
-<translation id="3774546890772201673">Atualizar <ph name="NAME" /></translation>
 <translation id="3775432569830822555">Certificado de servidor SSL</translation>
 <translation id="3775705724665058594">Enviar para seus dispositivos</translation>
 <translation id="3776508619697147021">Os sites podem pedir para fazer o download automático de vários arquivos</translation>
@@ -3954,6 +3954,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="4110485659976215879">Restaurar aviso</translation>
 <translation id="4110490973560452005">Download concluído: <ph name="FILE_NAME" />. Pressione Shift+F6 para voltar à área da barra de downloads.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (off-line)</translation>
+<translation id="411318099524508025">O navegador fez upgrade para o <ph name="NAME" />.</translation>
 <translation id="4113743276555482284">Senha do arquivo</translation>
 <translation id="4114524937989710624">Você está vendo arquivos sugeridos para voltar de forma simples à sua atividade mais recente no Google Drive.
         <ph name="BREAK" />
@@ -8773,7 +8774,6 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8077120325605624147">Qualquer site que você visitar poderá mostrar anúncios para você</translation>
 <translation id="8077579734294125741">Outros perfis do Chrome</translation>
 <translation id="80798452873915119">Os sites podem pedir para gerenciar janelas em todas as suas telas</translation>
-<translation id="807990231167557618">Seu Chromebook está atualizado.</translation>
 <translation id="8080028325999236607">Fechar todas as guias</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">Sua sessão é gerenciada por <ph name="MANAGER_NAME" />. Os administradores podem excluir seu perfil e também monitorar o tráfego de rede.</translation>

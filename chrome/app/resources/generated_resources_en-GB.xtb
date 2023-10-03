@@ -932,6 +932,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1723824996674794290">&amp;New window</translation>
 <translation id="1724801751621173132">Input mode</translation>
 <translation id="1725562816265788801">Tab scrolling</translation>
+<translation id="1726294682426724172">New features include Magic Eraser on Google Photos to remove distractions, improved video call tools and more</translation>
 <translation id="1726503915437308071">Italic font</translation>
 <translation id="1729533290416704613">It also controls what page is shown when you search from the Omnibox.</translation>
 <translation id="1730666151302379551">Forgot old password</translation>
@@ -3508,7 +3509,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3771851622616482156">You'll be signed out of this site, including in open tabs</translation>
 <translation id="3772046291955677288">I have read and agree to the <ph name="BEGIN_LINK1" />Google Terms of Service<ph name="END_LINK1" /> and <ph name="BEGIN_LINK2" />Chrome and Chrome OS additional Terms of Service<ph name="END_LINK2" />.</translation>
 <translation id="3774166835015494435">Recent photos and notifications</translation>
-<translation id="3774546890772201673">Update <ph name="NAME" />.</translation>
 <translation id="3775432569830822555">SSL Server Certificate</translation>
 <translation id="3775705724665058594">Send to your devices</translation>
 <translation id="3776508619697147021">Sites can ask to automatically download multiple files</translation>
@@ -3953,6 +3953,7 @@ This can include information about installed software, files, your browser and t
 <translation id="4110485659976215879">Restore warning</translation>
 <translation id="4110490973560452005">Download complete: <ph name="FILE_NAME" />. Press Shift+F6 to cycle to the downloads bar area.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (offline)</translation>
+<translation id="411318099524508025">You've been upgraded to <ph name="NAME" />.</translation>
 <translation id="4113743276555482284">File password</translation>
 <translation id="4114524937989710624">You’re seeing suggested files to help you easily get back to your most recent activity in Google Drive.
         <ph name="BREAK" />
@@ -8769,7 +8770,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8077120325605624147">Any site that you visit can show any ad to you</translation>
 <translation id="8077579734294125741">Other Chrome Profiles</translation>
 <translation id="80798452873915119">Sites can ask to manage windows on all your displays</translation>
-<translation id="807990231167557618">Your Chromebook is updated.</translation>
 <translation id="8080028325999236607">Close All Tabs</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">Your session is managed by <ph name="MANAGER_NAME" />. Administrators can delete your profile and also monitor your network traffic.</translation>

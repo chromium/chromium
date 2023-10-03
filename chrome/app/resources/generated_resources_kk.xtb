@@ -918,6 +918,7 @@
 <translation id="1723824996674794290">&amp;Жаңа терезе</translation>
 <translation id="1724801751621173132">Енгізу режимі</translation>
 <translation id="1725562816265788801">Қойындыны айналдыру</translation>
+<translation id="1726294682426724172">Жаңа мүмкіндіктерге Google Photos-дағы алаңдататын нәрселерді өшіретін сиқырлы өшіргіш, жақсартылған бейнеқоңырау құралдары және т.б. жатады.</translation>
 <translation id="1726503915437308071">Көлбеу қаріп</translation>
 <translation id="1729533290416704613">Сонымен қатар ол Omnibox жүйесінен іздегенде қайсы бет көрсетілуін бақылайды.</translation>
 <translation id="1730666151302379551">Ескі құпия сөзді ұмытып қалдым</translation>
@@ -3490,7 +3491,6 @@
 <translation id="3771851622616482156">Осы сайттан, оның ішінде ашық қойындылардан шығып кетесіз.</translation>
 <translation id="3772046291955677288"><ph name="BEGIN_LINK1" />Google Қызмет көрсету шарттарын<ph name="END_LINK1" /> және <ph name="BEGIN_LINK2" />Chrome мен ChromeOS Қосымша қызмет көрсету шарттарын<ph name="END_LINK2" /> оқып шықтым және оларға келісемін.</translation>
 <translation id="3774166835015494435">Соңғы фотосуреттер мен хабарландырулар</translation>
-<translation id="3774546890772201673"><ph name="NAME" /> құрылғысын жаңартыңыз.</translation>
 <translation id="3775432569830822555">SSL сервер сертификаты</translation>
 <translation id="3775705724665058594">Құрылғыларға жіберу</translation>
 <translation id="3776508619697147021">Сайт автоматты түрде бірнеше файл жүктеп алуға рұқсат сұрай алады.</translation>
@@ -3935,6 +3935,7 @@
 <translation id="4110485659976215879">Ескертуді қалпына келтіру</translation>
 <translation id="4110490973560452005">Жүктеп алу аяқталды: <ph name="FILE_NAME" />. Жүктеп алынғандар жолағы аумағына оралу үшін Shift+F6 пернелерін басыңыз.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (офлайн)</translation>
+<translation id="411318099524508025"><ph name="NAME" /> нұсқасына жаңарттыңыз.</translation>
 <translation id="4113743276555482284">Файл құпия сөзі</translation>
 <translation id="4114524937989710624">Google Drive қызметіндегі соңғы іс-әрекеттерге оңай оралуға көмектесетін файлдарды көріп тұрсыз.
         <ph name="BREAK" />
@@ -8744,7 +8745,6 @@
 <translation id="8077120325605624147">Сіз кірген кез келген сайт сізге кез келген жарнаманы көрсете алады</translation>
 <translation id="8077579734294125741">Chrome басқа профильдері</translation>
 <translation id="80798452873915119">Сайттар барлық дисплейде терезелерді басқаруды сұрай алады.</translation>
-<translation id="807990231167557618">Chromebook құрылғыңыз жаңартылды.</translation>
 <translation id="8080028325999236607">Барлық қойындыларды жабу</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">Сеансты <ph name="MANAGER_NAME" /> басқарады. Әкімшілер профильді жоя және желі трафигін қадағалай алады.</translation>

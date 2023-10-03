@@ -931,6 +931,7 @@
 <translation id="1723824996674794290">&amp;नवीन विंडो</translation>
 <translation id="1724801751621173132">इनपुट मोड</translation>
 <translation id="1725562816265788801">टॅब स्क्रोल करणे</translation>
+<translation id="1726294682426724172">नवीन वैशिष्‍ट्यांमध्ये, व्यत्यय काढून टाकण्यासाठी Google Photos वरील मॅजिक इरेझर, सुधारित व्हिडिओ कॉल टूल आणि आणखी बऱ्याच गोष्टींचा समावेश आहे</translation>
 <translation id="1726503915437308071">आयटॅलिक फॉंट</translation>
 <translation id="1729533290416704613">तुम्ही ओम्निबॉक्समधून शोध घेता तेव्हा कोणते पेज दाखवावे हेदेखील ते नियंत्रित करते.</translation>
 <translation id="1730666151302379551">जुना पासवर्ड लक्षात नाही</translation>
@@ -3507,7 +3508,6 @@
 <translation id="3771851622616482156">उघड्या असलेल्या टॅबच्या समावेशासह तुम्हाला या साइटमधून साइन आउट केले जाईल</translation>
 <translation id="3772046291955677288">मी <ph name="BEGIN_LINK1" />Google सेवा अटी<ph name="END_LINK1" /> आणि <ph name="BEGIN_LINK2" />Chrome व ChromeOS अतिरिक्त सेवा अटी<ph name="END_LINK2" /> वाचल्या आहेत आणि सहमती दर्शवत आहे.</translation>
 <translation id="3774166835015494435">अलीकडील फोटो आणि सूचना</translation>
-<translation id="3774546890772201673"><ph name="NAME" /> अपडेट करा.</translation>
 <translation id="3775432569830822555">SSL सर्व्हर प्रमाणप‍त्र</translation>
 <translation id="3775705724665058594">तुमच्या डिव्हाइसवर पाठवा</translation>
 <translation id="3776508619697147021">साइट एकाहून अधिक फाइल आपोआप डाउनलोड करण्यासाठी विचारू शकतात</translation>
@@ -3950,6 +3950,7 @@
 <translation id="4110485659976215879">चेतावणी रिस्टोअर करा</translation>
 <translation id="4110490973560452005">डाउनलोड पूर्ण: <ph name="FILE_NAME" />. डाउनलोड बार भागाकडे जाण्यासाठी Shift+F6 प्रेस करा.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (ऑफलाइन)</translation>
+<translation id="411318099524508025">तुम्हाला <ph name="NAME" /> वर अपग्रेड केले गेले आहे.</translation>
 <translation id="4113743276555482284">फाइलचा पासवर्ड</translation>
 <translation id="4114524937989710624">Google Drive मधील तुमच्या सर्वात अलीकडील अ‍ॅक्टिव्हिटीवर सहजपणे परत जाण्यात मदत करण्यासाठी, तुम्हाला सुचवलेल्या फाइल दिसत आहेत.
         <ph name="BREAK" />
@@ -8765,7 +8766,6 @@
 <translation id="8077120325605624147">तुम्ही भेट देता ती कोणतीही साइट तुम्हाला कोणतीही जाहिरात दाखवू शकते</translation>
 <translation id="8077579734294125741">इतर Chrome प्रोफाइल</translation>
 <translation id="80798452873915119">साइट तुमच्या सर्व डिस्प्लेवर विंडो व्यवस्थापित करण्याची विनंती करू शकतात</translation>
-<translation id="807990231167557618">तुमचे Chromebook अपडेट केलेले आहे.</translation>
 <translation id="8080028325999236607">सर्व टॅब बंद करा</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">तुमचे सेशन <ph name="MANAGER_NAME" /> द्वारे व्यवस्थापित केले आहे. अ‍ॅडमिनिस्ट्रेटर तुमची प्रोफाइल हटवू शकतात आणि तुमच्या नेटवर्क ट्रॅफिकवरदेखील लक्ष ठेवू शकतात.</translation>

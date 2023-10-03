@@ -923,6 +923,7 @@
 <translation id="1723824996674794290">&amp;Նոր պատուհան</translation>
 <translation id="1724801751621173132">Ներածման ռեժիմ</translation>
 <translation id="1725562816265788801">Ներդիրների ոլորում</translation>
+<translation id="1726294682426724172">Այժմ կարող եք օգտվել այնպիսի նոր գործառույթներից, ինչպիսիք են կախարդական ջնջոցը Google Լուսանկարներում (խանգարող օբյեկտները հեռացնելու համար), տեսազանգի բարելավված գործիքները և այլն</translation>
 <translation id="1726503915437308071">Շեղ տառատեսակ</translation>
 <translation id="1729533290416704613">Այն նաև վերահսկում է ցուցադրվող էջերը, երբ դուք որոնում եք կատարում Omnibox-ից:</translation>
 <translation id="1730666151302379551">Մոռացել եմ հին գաղտնաբառը</translation>
@@ -3493,7 +3494,6 @@
 <translation id="3771851622616482156">Դուք դուրս կգրվեք հաշվից այս կայքում և բաց ներդիրներում</translation>
 <translation id="3772046291955677288">Ես կարդացել և ընդունում եմ <ph name="BEGIN_LINK1" />Google-ի օգտագործման պայմանները<ph name="END_LINK1" /> և <ph name="BEGIN_LINK2" />Chrome-ի և ChromeOS-ի օգտագործման լրացուցիչ պայմանները<ph name="END_LINK2" />։</translation>
 <translation id="3774166835015494435">Վերջին լուսանկարներ և ծանուցումներ</translation>
-<translation id="3774546890772201673">Թարմացրեք <ph name="NAME" />-ը։</translation>
 <translation id="3775432569830822555">SSL սերվերի վկայագիր</translation>
 <translation id="3775705724665058594">Ուղարկել սարքերին</translation>
 <translation id="3776508619697147021">Կայքերը կարող են ավտոմատ մի քանի ֆայլ ներբեռնելու թույլտվություն հայցել</translation>
@@ -3938,6 +3938,7 @@
 <translation id="4110485659976215879">Վերականգնել նախազգուշացումը</translation>
 <translation id="4110490973560452005">Ներբեռնումն ավարտվեց. <ph name="FILE_NAME" />: Սեղմեք Shift+F6՝ ներբեռնումների գոտու տարածք անցնելու համար:</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (անցանց)</translation>
+<translation id="411318099524508025">Դուք անցում եք կատարել <ph name="NAME" />-ին։</translation>
 <translation id="4113743276555482284">Ֆայլի գաղտնաբառ</translation>
 <translation id="4114524937989710624">Այս առաջարկվող ֆայլերը կօգնեն ձեզ արագ անցնել վերջին գործողություններին Google-ում։
         <ph name="BREAK" />
@@ -8752,7 +8753,6 @@
 <translation id="8077120325605624147">Ցանկացած կայք, որն այցելում եք, կարող է գովազդ ցուցադրել ձեզ</translation>
 <translation id="8077579734294125741">Այլ Chrome պրոֆիլներ</translation>
 <translation id="80798452873915119">Կայքերը կարող են հայցել պատուհանները բոլոր էկրաններին կառավարելու թույլտվություն</translation>
-<translation id="807990231167557618">Ձեր Chromebook-ը թարմացված է։</translation>
 <translation id="8080028325999236607">Փակել բոլոր ներդիրները</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">Ձեր աշխատաշրջանը կառավարվում է <ph name="MANAGER_NAME" />-ի կողմից։ Ադմինիստրատորները կարող են ջնջել ձեր պրոֆիլը, ինչպես նաև վերահսկել ձեր ցանցի թրաֆիկը։</translation>

@@ -930,6 +930,7 @@
 <translation id="1723824996674794290">&amp;కొత్త విండో</translation>
 <translation id="1724801751621173132">ఇన్‌పుట్ మోడ్</translation>
 <translation id="1725562816265788801">ట్యాబ్ స్క్రోలింగ్</translation>
+<translation id="1726294682426724172">కొత్త ఫీచర్‌లలో దృష్టి మరల్చేవాటిని తొలగించడానికి Google Photosలో మ్యాజిక్ ఎరేజర్, మెరుగైన వీడియో కాల్ టూల్స్, అలాగే మరిన్ని ఉన్నాయి</translation>
 <translation id="1726503915437308071">ఇటాలిక్ ఫాంట్</translation>
 <translation id="1729533290416704613">ఓమ్నిబాక్స్ నుండి వెతికేటప్పుడు చూపబడే పేజీని కూడా ఇది నియంత్రిస్తుంది.</translation>
 <translation id="1730666151302379551">పాత పాస్‌వర్డ్‌ను మర్చిపోయారా</translation>
@@ -3506,7 +3507,6 @@
 <translation id="3771851622616482156">మీరు తెరిచిన ట్యాబ్‌లతో సహా, ఈ సైట్ నుండి మీరు సైన్ అవుట్ చేయబడతారు</translation>
 <translation id="3772046291955677288">నేను <ph name="BEGIN_LINK1" />Google సర్వీస్ నియమాలు<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Chrome, అలాగే ChromeOS అదనపు సర్వీస్ నియమాలను<ph name="END_LINK2" /> చదివి అంగీకరిస్తున్నాను.</translation>
 <translation id="3774166835015494435">తాజా ఫోటోలు, నోటిఫికేషన్‌లు</translation>
-<translation id="3774546890772201673"><ph name="NAME" />‌ను అప్‌డేట్ చేయండి.</translation>
 <translation id="3775432569830822555">SSL సర్వర్ సర్టిఫికెట్</translation>
 <translation id="3775705724665058594">మీ పరికరాలకు పంపండి</translation>
 <translation id="3776508619697147021">అనేక ఫైళ్లను ఆటోమేటిక్‌గా డౌన్‌లోడ్ చేయడానికి సైట్‌లు అడగవచ్చు</translation>
@@ -3951,6 +3951,7 @@
 <translation id="4110485659976215879">హెచ్చరికను రీస్టోర్ చేయండి</translation>
 <translation id="4110490973560452005">డౌన్‌లోడ్ పూర్తయింది: <ph name="FILE_NAME" />. డౌన్‌లోడ్‌ల బార్ ప్రాంతంలోకి వెళ్లడం కోసం Shift+F6 నొక్కండి.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (ఆఫ్‌లైన్)</translation>
+<translation id="411318099524508025">మీరు <ph name="NAME" />‌కు అప్‌గ్రేడ్ చేయబడ్డారు.</translation>
 <translation id="4113743276555482284">ఫైల్ పాస్‌వర్డ్</translation>
 <translation id="4114524937989710624">Google Driveలోని మీ అత్యంత ఇటీవలి యాక్టివిటీకి తిరిగి వెళ్లడంలో మీకు సహాయపడటానికి సూచించబడిన ఫైల్స్ మీకు కనిపిస్తున్నాయి.
         <ph name="BREAK" />
@@ -8763,7 +8764,6 @@
 <translation id="8077120325605624147">మీరు చూసే ఏ సైట్ అయినా మీకు ఏ యాడ్‌ను అయినా చూపవచ్చు</translation>
 <translation id="8077579734294125741">ఇతర Chrome ప్రొఫైల్స్</translation>
 <translation id="80798452873915119">సైట్‌లు మీ డిస్‌ప్లేలన్నింటిలో విండోలను మేనేజ్ చేయడానికి అనుమతిని అడగవచ్చు</translation>
-<translation id="807990231167557618">మీ Chromebook అప్‌డేట్ చేయబడింది.</translation>
 <translation id="8080028325999236607">అన్ని ట్యాబ్‌లను మూసివేయి</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">మీ సెషన్ <ph name="MANAGER_NAME" /> ద్వారా మేనేజ్ చేయబడుతోంది. అడ్మినిస్ట్రేటర్‌లు మీ ప్రొఫైల్‌ను తొలగించగలరు అలాగే మీ నెట్‌వర్క్ ట్రాఫిక్‌ను కూడా పర్యవేక్షించగలరు.</translation>

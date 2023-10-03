@@ -924,6 +924,7 @@
 <translation id="1723824996674794290">&amp;Новае акно</translation>
 <translation id="1724801751621173132">Рэжым уводу</translation>
 <translation id="1725562816265788801">Прагортка ўкладак</translation>
+<translation id="1726294682426724172">Сярод новых функцый: магічная сцірка для выдалення ўсяго лішняга з відарысаў у Google Фота, палепшаныя інструменты для ажыццяўлення відэавыклікаў і іншыя магчымасці</translation>
 <translation id="1726503915437308071">Курсіўны шрыфт</translation>
 <translation id="1729533290416704613">Таксама вызначае, якая старонка паказваецца пры пошуку ў амнібоксе.</translation>
 <translation id="1730666151302379551">Забыць стары пароль</translation>
@@ -3492,7 +3493,6 @@
 <translation id="3771851622616482156">Будзе выкананы выхад з гэтага сайта, у тым ліку на адкрытых укладках</translation>
 <translation id="3772046291955677288">Мною былі прачытаны <ph name="BEGIN_LINK1" />Умовы выкарыстання Google<ph name="END_LINK1" /> і <ph name="BEGIN_LINK2" />Дадатковыя ўмовы выкарыстання Google Chrome і Chrome OS<ph name="END_LINK2" />, і я згаджаюся з імі.</translation>
 <translation id="3774166835015494435">Нядаўнія фота і апавяшчэнні</translation>
-<translation id="3774546890772201673">Абнавіце <ph name="NAME" />.</translation>
 <translation id="3775432569830822555">Сертыфікат сервера SSL</translation>
 <translation id="3775705724665058594">Адпраўка на вашы прылады</translation>
 <translation id="3776508619697147021">Сайты могуць запытваць дазвол на аўтаматычнае спампоўванне некалькіх файлаў</translation>
@@ -3937,6 +3937,7 @@
 <translation id="4110485659976215879">Аднавіць адпраўку заўваг</translation>
 <translation id="4110490973560452005">Спампоўванне завершана: "<ph name="FILE_NAME" />". Каб перамяшчацца па панэлі спамповак, націскайце Shift+F6.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (па-за сеткай)</translation>
+<translation id="411318099524508025">Вы перайшлі на <ph name="NAME" />.</translation>
 <translation id="4113743276555482284">Пароль файла</translation>
 <translation id="4114524937989710624">Вы бачыце прапанаваныя вам файлы, выкарыстоўваючы якія, можна з лёгкасцю пераходзіць да сваіх апошніх дзеянняў на Google Дыску.
         <ph name="BREAK" />
@@ -8756,7 +8757,6 @@
 <translation id="8077120325605624147">Любы наведаны вамі сайт будзе паказваць вам рэкламу</translation>
 <translation id="8077579734294125741">Іншыя профілі Chrome</translation>
 <translation id="80798452873915119">Сайты могуць запытваць дазвол кіраваць вокнамі на ўсіх дысплэях</translation>
-<translation id="807990231167557618">Прылада Chromebook абноўлена.</translation>
 <translation id="8080028325999236607">Закрыць усе ўкладкі</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">Гэтым сеансам кіруе <ph name="MANAGER_NAME" />. Адміністратары могуць выдаліць ваш профіль, а таксама адсочваць сеткавы трафік.</translation>

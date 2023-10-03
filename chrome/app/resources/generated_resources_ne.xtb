@@ -918,6 +918,7 @@
 <translation id="1723824996674794290">&amp;नयाँ सञ्झ्याल</translation>
 <translation id="1724801751621173132">इनपुट मोड</translation>
 <translation id="1725562816265788801">ट्याब स्क्रोलिङ</translation>
+<translation id="1726294682426724172">नयाँ सुविधाहरूमा फोटोमा भएका अनावश्यक कुरा हटाउने सुविधा भएको Google Photos को म्याजिक इरेजर, भिडियो कलका लागि सुधारिएका टुल र अन्य सुविधा समावेश छन्</translation>
 <translation id="1726503915437308071">इटालिक फन्ट</translation>
 <translation id="1729533290416704613">तपाईंले ओम्निबक्सबाट खोज्दा पनि कुन पृष्ठ देखाइयो भनि यसले नियन्त्रण गर्छ।</translation>
 <translation id="1730666151302379551">पुरानो पासवर्ड बिर्सिएँ</translation>
@@ -3491,7 +3492,6 @@
 <translation id="3771851622616482156">तपाईंलाई यो साइटबाट साइन आउट गरिने छ। साथै, हाल कुनै ट्याबमा यो साइट खोलिएको छ भने सो ट्याबबाट पनि साइन आउट गरिने छ</translation>
 <translation id="3772046291955677288">मैले <ph name="BEGIN_LINK1" />Google का सेवाका सर्त<ph name="END_LINK1" /> र <ph name="BEGIN_LINK2" />Chrome र ChromeOS का सेवाका अतिरिक्त सर्तहरू<ph name="END_LINK2" /> पढेको छु र म ती सर्तहरूमा सहमत छु।</translation>
 <translation id="3774166835015494435">हालसालैका फोटो तथा सूचनाहरू</translation>
-<translation id="3774546890772201673"><ph name="NAME" /> अपडेट गर्नुहोस्।</translation>
 <translation id="3775432569830822555">SSL सर्भर सर्टिफिकेट</translation>
 <translation id="3775705724665058594">आफ्ना यन्त्रहरूमा पठाउनुहोस्</translation>
 <translation id="3776508619697147021">साइटहरूले एकभन्दा बढी फाइल स्वतः डाउनलोड गर्ने अनुमति माग्न सक्छन्</translation>
@@ -3935,6 +3935,7 @@
 <translation id="4110485659976215879">चेतावनी रिस्टोर गर्नुहोस्</translation>
 <translation id="4110490973560452005">डाउनलोड सम्पन्न भयो: <ph name="FILE_NAME" />। डाउनलोडहरूको पट्टीमा जान Shift+F6 थिच्नुहोस्।</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (अफलाइन)</translation>
+<translation id="411318099524508025">तपाईंको ब्राउजर अपग्रेड गरी <ph name="NAME" /> बनाइएको छ।</translation>
 <translation id="4113743276555482284">फाइलको पासवर्ड</translation>
 <translation id="4114524937989710624">तपाईंले Google Drive मा गर्नुभएका हालसालैको क्रियाकलापका आधारमा तपाईंलाई Google Drive मा फाइलहरू खोज्न सजिलो होस् भन्नाका लागि तपाईं सिफारिस गरिएका फाइलहरू देख्दै हुनुहुन्छ।
         <ph name="BREAK" />
@@ -8747,7 +8748,6 @@
 <translation id="8077120325605624147">तपाईंले खोल्ने कुनै पनि साइटले तपाईंलाई जुनसुकै विज्ञापन देखाउन सक्छ</translation>
 <translation id="8077579734294125741">Chrome का अन्य प्रोफाइलहरू</translation>
 <translation id="80798452873915119">साइटहरूले तपाईंका सबै डिस्प्लेमा विन्डो व्यवस्थापन गर्ने अनुमति माग्न सक्छन्</translation>
-<translation id="807990231167557618">तपाईंको Chromebook अपडेट गरिएको छ।</translation>
 <translation id="8080028325999236607">सबै ट्याबहरू बन्द गर्नुहोस्</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289"><ph name="MANAGER_NAME" /> ले तपाईंको सत्र व्यवस्थापन गर्नुहुन्छ। एड्मिनहरू तपाईंको प्रोफाइल मेटाउन सक्छन्। साथै, उनीहरू तपाईंको नेटवर्क ट्राफिकको निरीक्षण गर्न पनि सक्छन्।</translation>
