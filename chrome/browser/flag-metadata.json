@@ -141,8 +141,8 @@
   },
   {
     "name": "allow-insecure-localhost",
-    "owners": [ "security-dev" ],
-    "expiry_milestone": 118
+    "owners": [ "cthomp", "security-dev" ],
+    "expiry_milestone": 130
   },
   {
     "name": "allow-repeated-updates",
