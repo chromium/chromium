@@ -62,13 +62,13 @@ constexpr char16_t kSettingsTooltipString[] = u"Settings";
 constexpr int kSettingsIconSizeDip = 20;
 constexpr int kSettingsButtonBorderDip = 4;
 
-constexpr int kChipsContainerVerticalSpacingDip = 16;
-constexpr gfx::Insets kChipsMargin =
-    gfx::Insets::TLBR(0, 8, kChipsContainerVerticalSpacingDip, 0);
-constexpr gfx::Insets kChipsContainerInsets = gfx::Insets::VH(0, 16);
+// Spacing to apply between and around chips.
+constexpr int kChipsHorizontalPadding = 8;
+constexpr int kChipsVerticalPadding = 12;
+constexpr gfx::Insets kChipsContainerInsets = gfx::Insets::TLBR(0, 16, 16, 16);
 
 constexpr gfx::Insets kTextfieldContainerInsets =
-    gfx::Insets::TLBR(0, 16, 10, 16);
+    gfx::Insets::TLBR(0, 16, 12, 16);
 
 }  // namespace
 
@@ -231,7 +231,11 @@ void EditorMenuView::AddChipsContainer(
     const PresetTextQueries& preset_text_queries) {
   chips_container_ = AddChildView(std::make_unique<views::FlexLayoutView>());
   chips_container_->SetOrientation(views::LayoutOrientation::kVertical);
+  chips_container_->SetCollapseMargins(true);
+  chips_container_->SetIgnoreDefaultMainAxisMargins(true);
   chips_container_->SetProperty(views::kMarginsKey, kChipsContainerInsets);
+  chips_container_->SetDefault(views::kMarginsKey,
+                               gfx::Insets::VH(kChipsVerticalPadding, 0));
 
   // Put all the chips in a single row while we are initially creating the
   // editor menu. This layout will be adjusted once the editor menu bounds are
@@ -276,11 +280,12 @@ void EditorMenuView::UpdateChipsContainer(int editor_menu_width) {
   views::View* row = nullptr;
   for (auto& chip : chips) {
     const int chip_width = chip->GetPreferredSize().width();
-    if (row != nullptr && running_width + chip_width + kChipsMargin.left() <=
-                              chip_container_width) {
+    if (row != nullptr &&
+        running_width + chip_width + kChipsHorizontalPadding <=
+            chip_container_width) {
       // Add the chip to the current row if it can fit (including space for
       // padding between chips).
-      running_width += chip_width + kChipsMargin.left();
+      running_width += chip_width + kChipsHorizontalPadding;
     } else {
       // Otherwise, create a new row for the chip.
       row = AddChipsRow();
@@ -295,7 +300,8 @@ views::View* EditorMenuView::AddChipsRow() {
       chips_container_->AddChildView(std::make_unique<views::FlexLayoutView>());
   row->SetCollapseMargins(true);
   row->SetIgnoreDefaultMainAxisMargins(true);
-  row->SetDefault(views::kMarginsKey, kChipsMargin);
+  row->SetDefault(views::kMarginsKey,
+                  gfx::Insets::VH(0, kChipsHorizontalPadding));
   return row;
 }
 

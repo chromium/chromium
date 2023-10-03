@@ -6,27 +6,24 @@
 
 #include "chrome/browser/ui/views/editor_menu/utils/preset_text_query.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/base/models/image_model.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/animation/ink_drop.h"
+#include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/label_button.h"
-#include "ui/views/controls/highlight_path_generator.h"
+#include "ui/views/layout/layout_provider.h"
+#include "ui/views/painter.h"
 #include "ui/views/style/typography.h"
 
 namespace chromeos::editor_menu {
 
 namespace {
 
-constexpr int kHeightDip = 32;
-constexpr int kHorizontalPaddingDip = 8;
-constexpr int kIconSizeDip = 20;
-constexpr int kImageLabelSpacingDip = 8;
-constexpr int kRadiusDip = 8;
-constexpr int kBorderThicknessDip = 1;
+constexpr int kIconSizeDip = 16;
+constexpr gfx::Insets kChipInsets = gfx::Insets::VH(6, 8);
 
 }  // namespace
 
@@ -39,12 +36,12 @@ EditorMenuChipView::EditorMenuChipView(views::Button::PressedCallback callback,
   views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
   views::InkDrop::Get(this)->SetBaseColorId(ui::kColorIcon);
   SetHasInkDropActionOnClick(true);
-  views::HighlightPathGenerator::Install(
-      this, std::make_unique<views::RoundRectHighlightPathGenerator>(
-                gfx::Insets(), kRadiusDip));
+  SetFocusRingCornerRadius(views::LayoutProvider::Get()->GetCornerRadiusMetric(
+      views::Emphasis::kHigh));
 
   SetTooltipText(preset_text_query.name);
-  SetImageLabelSpacing(kImageLabelSpacingDip);
+  SetImageLabelSpacing(views::LayoutProvider::Get()->GetDistanceMetric(
+      views::DistanceMetric::DISTANCE_VECTOR_ICON_PADDING));
 }
 
 EditorMenuChipView::~EditorMenuChipView() = default;
@@ -54,20 +51,9 @@ void EditorMenuChipView::AddedToWidget() {
   InitLayout();
 }
 
-gfx::Size EditorMenuChipView::CalculatePreferredSize() const {
-  int width = 0;
-
-  // Add the padding at both sides.
-  width += 2 * kHorizontalPaddingDip;
-
-  // Add the icon width and the spacing between the icon and the text.
-  width += kIconSizeDip + GetImageLabelSpacing();
-
-  // Add the text width.
-  width += label()->GetPreferredSize().width();
-
-  gfx::Size size(width, kHeightDip);
-  return size;
+void EditorMenuChipView::OnThemeChanged() {
+  LabelButton::OnThemeChanged();
+  UpdateBackgroundColor();
 }
 
 void EditorMenuChipView::InitLayout() {
@@ -76,11 +62,22 @@ void EditorMenuChipView::InitLayout() {
   label()->SetTextStyle(views::style::STYLE_BODY_4_EMPHASIS);
   label()->SetEnabledColorId(ui::kColorSysOnSurface);
   SetImageModel(views::Button::STATE_NORMAL,
-                ui::ImageModel::FromVectorIcon(
-                    *icon_, cros_tokens::kCrosSysPrimary, kIconSizeDip));
-  SetBorder(views::CreateThemedRoundedRectBorder(
-      kBorderThicknessDip, kRadiusDip, ui::kColorSysTonalOutline));
+                ui::ImageModel::FromVectorIcon(*icon_, ui::kColorSysOnSurface,
+                                               kIconSizeDip));
+
+  SetBorder(views::CreateEmptyBorder(kChipInsets));
+  UpdateBackgroundColor();
+
   PreferredSizeChanged();
+}
+
+void EditorMenuChipView::UpdateBackgroundColor() {
+  SetBackground(CreateBackgroundFromPainter(
+      views::Painter::CreateRoundRectWith1PxBorderPainter(
+          SK_ColorTRANSPARENT,
+          GetColorProvider()->GetColor(ui::kColorSysTonalOutline),
+          views::LayoutProvider::Get()->GetCornerRadiusMetric(
+              views::Emphasis::kHigh))));
 }
 
 BEGIN_METADATA(EditorMenuChipView, views::LabelButton)

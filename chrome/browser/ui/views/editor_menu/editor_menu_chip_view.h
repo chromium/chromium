@@ -27,10 +27,12 @@ class EditorMenuChipView : public views::LabelButton {
 
   // views::LabelButton:
   void AddedToWidget() override;
-  gfx::Size CalculatePreferredSize() const override;
+  void OnThemeChanged() override;
 
  private:
   void InitLayout();
+
+  void UpdateBackgroundColor() override;
 
   const raw_ptr<const gfx::VectorIcon> icon_;
 };
