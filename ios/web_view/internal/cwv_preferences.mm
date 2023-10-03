@@ -49,11 +49,11 @@
 }
 
 - (void)setCreditCardAutofillEnabled:(BOOL)enabled {
-  autofill::prefs::SetAutofillCreditCardEnabled(_prefService, enabled);
+  autofill::prefs::SetAutofillPaymentMethodsEnabled(_prefService, enabled);
 }
 
 - (BOOL)isCreditCardAutofillEnabled {
-  return autofill::prefs::IsAutofillCreditCardEnabled(_prefService);
+  return autofill::prefs::IsAutofillPaymentMethodsEnabled(_prefService);
 }
 
 - (void)setPasswordAutofillEnabled:(BOOL)enabled {

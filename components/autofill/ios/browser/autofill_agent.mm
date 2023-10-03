@@ -1001,7 +1001,7 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
 // if the current URL has a web scheme and the page content is HTML.
 - (BOOL)isAutofillEnabled {
   if (!autofill::prefs::IsAutofillProfileEnabled(_prefService) &&
-      !autofill::prefs::IsAutofillCreditCardEnabled(_prefService)) {
+      !autofill::prefs::IsAutofillPaymentMethodsEnabled(_prefService)) {
     return NO;
   }
 

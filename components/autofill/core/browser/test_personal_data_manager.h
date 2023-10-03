@@ -62,7 +62,7 @@ class TestPersonalDataManager : public PersonalDataManager {
   void LoadCreditCardCloudTokenData() override;
   void LoadIbans() override;
   bool IsAutofillProfileEnabled() const override;
-  bool IsAutofillCreditCardEnabled() const override;
+  bool IsAutofillPaymentMethodsEnabled() const override;
   bool IsAutofillWalletImportEnabled() const override;
   bool ShouldSuggestServerCards() const override;
   std::string CountryCodeForCurrentTimezone() const override;
@@ -125,8 +125,8 @@ class TestPersonalDataManager : public PersonalDataManager {
     return num_times_save_imported_credit_card_called_;
   }
 
-  void SetAutofillCreditCardEnabled(bool autofill_credit_card_enabled) {
-    autofill_credit_card_enabled_ = autofill_credit_card_enabled;
+  void SetAutofillPaymentMethodsEnabled(bool autofill_payment_methods_enabled) {
+    autofill_payment_methods_enabled_ = autofill_payment_methods_enabled;
   }
 
   void SetAutofillProfileEnabled(bool autofill_profile_enabled) {
@@ -161,7 +161,7 @@ class TestPersonalDataManager : public PersonalDataManager {
   std::string default_country_code_;
   int num_times_save_imported_credit_card_called_ = 0;
   absl::optional<bool> autofill_profile_enabled_;
-  absl::optional<bool> autofill_credit_card_enabled_;
+  absl::optional<bool> autofill_payment_methods_enabled_;
   absl::optional<bool> autofill_wallet_import_enabled_;
   absl::optional<bool> eligible_for_account_storage_;
   absl::optional<bool> payment_methods_mandatory_reauth_enabled_;

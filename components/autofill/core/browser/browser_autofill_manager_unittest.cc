@@ -1956,8 +1956,8 @@ TEST_F(BrowserAutofillManagerTest,
 
   // Disable Autofill.
   browser_autofill_manager_->SetAutofillProfileEnabled(autofill_client_, false);
-  browser_autofill_manager_->SetAutofillCreditCardEnabled(autofill_client_,
-                                                          false);
+  browser_autofill_manager_->SetAutofillPaymentMethodsEnabled(autofill_client_,
+                                                              false);
 
   GetAutofillSuggestions(form, form.fields[0]);
   EXPECT_FALSE(external_delegate()->on_suggestions_returned_seen());
@@ -3310,8 +3310,8 @@ TEST_F(BrowserAutofillManagerTest,
   FormData form = CreateTestAddressFormData();
 
   // Disable autofill and the password manager.
-  browser_autofill_manager_->SetAutofillCreditCardEnabled(autofill_client_,
-                                                          false);
+  browser_autofill_manager_->SetAutofillPaymentMethodsEnabled(autofill_client_,
+                                                              false);
   browser_autofill_manager_->SetAutofillProfileEnabled(autofill_client_, false);
   ON_CALL(autofill_client_, IsPasswordManagerEnabled())
       .WillByDefault(Return(false));
@@ -6320,8 +6320,8 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
 // submissions are still received by the SingleFieldFormFillRouter.
 TEST_F(BrowserAutofillManagerTest, FormSubmittedAutocompleteEnabled) {
   browser_autofill_manager_->SetAutofillProfileEnabled(autofill_client_, false);
-  browser_autofill_manager_->SetAutofillCreditCardEnabled(autofill_client_,
-                                                          false);
+  browser_autofill_manager_->SetAutofillPaymentMethodsEnabled(autofill_client_,
+                                                              false);
 
   // Set up our form data.
   FormData form = CreateTestAddressFormData();
@@ -6360,8 +6360,8 @@ TEST_F(BrowserAutofillManagerTest, ValuePatternsMetric) {
 TEST_F(BrowserAutofillManagerTest,
        SingleFieldFormFillSuggestions_SomeWhenAutofillDisabled) {
   browser_autofill_manager_->SetAutofillProfileEnabled(autofill_client_, false);
-  browser_autofill_manager_->SetAutofillCreditCardEnabled(autofill_client_,
-                                                          false);
+  browser_autofill_manager_->SetAutofillPaymentMethodsEnabled(autofill_client_,
+                                                              false);
 
   // Set up our form data.
   FormData form = CreateTestAddressFormData();
@@ -6426,8 +6426,8 @@ TEST_F(BrowserAutofillManagerTest,
       autofill_client_.form_origin().ReplaceComponents(replacements));
   ResetBrowserAutofillManager();
   browser_autofill_manager_->SetAutofillProfileEnabled(autofill_client_, false);
-  browser_autofill_manager_->SetAutofillCreditCardEnabled(autofill_client_,
-                                                          false);
+  browser_autofill_manager_->SetAutofillPaymentMethodsEnabled(autofill_client_,
+                                                              false);
 
   // Set up our form data.
   FormData form = CreateTestCreditCardFormData(false, false);
@@ -6455,8 +6455,8 @@ TEST_F(BrowserAutofillManagerTest,
       autofill_client_.form_origin().ReplaceComponents(replacements));
   ResetBrowserAutofillManager();
   browser_autofill_manager_->SetAutofillProfileEnabled(autofill_client_, false);
-  browser_autofill_manager_->SetAutofillCreditCardEnabled(autofill_client_,
-                                                          false);
+  browser_autofill_manager_->SetAutofillPaymentMethodsEnabled(autofill_client_,
+                                                              false);
 
   // Set up our form data.
   FormData form = CreateTestCreditCardFormData(false, false);
@@ -6508,8 +6508,8 @@ TEST_F(
     BrowserAutofillManagerTest,
     SingleFieldFormFillSuggestions_NoneWhenSingleFieldFormFillConditionsNotMet) {
   browser_autofill_manager_->SetAutofillProfileEnabled(autofill_client_, false);
-  browser_autofill_manager_->SetAutofillCreditCardEnabled(autofill_client_,
-                                                          false);
+  browser_autofill_manager_->SetAutofillPaymentMethodsEnabled(autofill_client_,
+                                                              false);
 
   // Set up our form data.
   FormData form = CreateTestAddressFormData();
@@ -8058,8 +8058,8 @@ TEST_F(BrowserAutofillManagerTest, ProfileDisabledDoesNotSuggest) {
 }
 
 TEST_F(BrowserAutofillManagerTest, CreditCardDisabledDoesNotFillFormData) {
-  browser_autofill_manager_->SetAutofillCreditCardEnabled(autofill_client_,
-                                                          false);
+  browser_autofill_manager_->SetAutofillPaymentMethodsEnabled(autofill_client_,
+                                                              false);
 
   // Set up our form data.
   FormData form = CreateTestCreditCardFormData(true, false);
@@ -8071,8 +8071,8 @@ TEST_F(BrowserAutofillManagerTest, CreditCardDisabledDoesNotFillFormData) {
 }
 
 TEST_F(BrowserAutofillManagerTest, CreditCardDisabledDoesNotSuggest) {
-  browser_autofill_manager_->SetAutofillCreditCardEnabled(autofill_client_,
-                                                          false);
+  browser_autofill_manager_->SetAutofillPaymentMethodsEnabled(autofill_client_,
+                                                              false);
 
   // Set up our form data.
   FormData form = CreateTestCreditCardFormData(true, false);
@@ -8176,8 +8176,8 @@ TEST_F(BrowserAutofillManagerTest, ShouldUploadForm) {
 
   // Autofill disabled.
   browser_autofill_manager_->SetAutofillProfileEnabled(autofill_client_, false);
-  browser_autofill_manager_->SetAutofillCreditCardEnabled(autofill_client_,
-                                                          false);
+  browser_autofill_manager_->SetAutofillPaymentMethodsEnabled(autofill_client_,
+                                                              false);
   EXPECT_FALSE(
       browser_autofill_manager_->ShouldUploadForm(FormStructure(form)));
 }
@@ -9589,14 +9589,14 @@ TEST_F(BrowserAutofillManagerTest, ScanCreditCardBasedOnAutofillPreference) {
   ASSERT_EQ(card_number_field.name, u"cardnumber");
 
   // Test case where autofill is enabled.
-  browser_autofill_manager_->SetAutofillCreditCardEnabled(autofill_client_,
-                                                          true);
+  browser_autofill_manager_->SetAutofillPaymentMethodsEnabled(autofill_client_,
+                                                              true);
   EXPECT_TRUE(browser_autofill_manager_->ShouldShowScanCreditCard(
       form, card_number_field));
 
   // Test case where autofill is disabled.
-  browser_autofill_manager_->SetAutofillCreditCardEnabled(autofill_client_,
-                                                          false);
+  browser_autofill_manager_->SetAutofillPaymentMethodsEnabled(autofill_client_,
+                                                              false);
   EXPECT_FALSE(browser_autofill_manager_->ShouldShowScanCreditCard(
       form, card_number_field));
 }

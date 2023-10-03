@@ -402,7 +402,8 @@ class SaveCardInfobarEGTestHelper
 
   ChromeBrowserState* browserState =
       chrome_test_util::GetOriginalBrowserState();
-  autofill::prefs::SetAutofillCreditCardEnabled(browserState->GetPrefs(), YES);
+  autofill::prefs::SetAutofillPaymentMethodsEnabled(browserState->GetPrefs(),
+                                                    YES);
 }
 
 + (NSString*)saveLocalCreditCard {

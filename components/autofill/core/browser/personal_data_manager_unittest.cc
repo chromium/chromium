@@ -984,7 +984,7 @@ TEST_F(PersonalDataManagerTest, AddAndReloadServerIbans) {
 }
 
 TEST_F(PersonalDataManagerTest, NoIbansAddedIfDisabled) {
-  prefs::SetAutofillCreditCardEnabled(prefs_.get(), false);
+  prefs::SetAutofillPaymentMethodsEnabled(prefs_.get(), false);
 
   Iban iban;
   iban.set_value(base::UTF8ToUTF16(std::string(test::kIbanValue)));
@@ -1951,7 +1951,7 @@ TEST_F(PersonalDataManagerTest, GetAutofillOffers_AutofillCreditCardDisabled) {
   AddOfferDataForTest(test::GetCardLinkedOfferData1());
   AddOfferDataForTest(test::GetPromoCodeOfferData());
 
-  prefs::SetAutofillCreditCardEnabled(prefs_.get(), false);
+  prefs::SetAutofillPaymentMethodsEnabled(prefs_.get(), false);
 
   // Should return neither of the offers as the autofill credit card import pref
   // is disabled.
@@ -2018,7 +2018,7 @@ TEST_F(PersonalDataManagerTest,
   AddOfferDataForTest(test::GetPromoCodeOfferData(
       /*origin=*/GURL("http://www.example.com")));
 
-  prefs::SetAutofillCreditCardEnabled(prefs_.get(), false);
+  prefs::SetAutofillPaymentMethodsEnabled(prefs_.get(), false);
 
   // Should not return the offer as the autofill credit card pref is disabled.
   EXPECT_EQ(0U, personal_data_
@@ -2043,7 +2043,7 @@ TEST_F(PersonalDataManagerTest, DefaultCountryCodeIsCached) {
   // Disabling Autofill blows away this cache and shouldn't account for Autofill
   // profiles.
   prefs::SetAutofillProfileEnabled(prefs_.get(), false);
-  prefs::SetAutofillCreditCardEnabled(prefs_.get(), false);
+  prefs::SetAutofillPaymentMethodsEnabled(prefs_.get(), false);
   PersonalDataProfileTaskWaiter(*personal_data_).Wait();
   EXPECT_EQ(default_country,
             personal_data_->GetDefaultCountryCodeForNewAddress());
@@ -2475,7 +2475,7 @@ TEST_F(PersonalDataManagerTest,
   PersonalDataProfileTaskWaiter(*personal_data_).Wait();
 
   // Disable Credit card autofill.
-  prefs::SetAutofillCreditCardEnabled(personal_data_->pref_service_, false);
+  prefs::SetAutofillPaymentMethodsEnabled(personal_data_->pref_service_, false);
   PersonalDataProfileTaskWaiter(*personal_data_).Wait();
 
   // Check that profiles were saved.
@@ -2518,7 +2518,7 @@ TEST_F(PersonalDataManagerTest,
   EXPECT_EQ(5U, personal_data_->GetCreditCards().size());
 
   // Disable Credit card autofill.
-  prefs::SetAutofillCreditCardEnabled(personal_data_->pref_service_, false);
+  prefs::SetAutofillPaymentMethodsEnabled(personal_data_->pref_service_, false);
   // Reload the database.
   ResetPersonalDataManager();
 
@@ -2535,7 +2535,7 @@ TEST_F(PersonalDataManagerTest,
 TEST_F(PersonalDataManagerTest,
        GetCreditCardsToSuggest_NoCreditCardsAddedIfDisabled) {
   // Disable Profile autofill.
-  prefs::SetAutofillCreditCardEnabled(personal_data_->pref_service_, false);
+  prefs::SetAutofillPaymentMethodsEnabled(personal_data_->pref_service_, false);
 
   // Add a local credit card.
   CreditCard credit_card("002149C1-EE28-4213-A3B9-DA243FFF021B",

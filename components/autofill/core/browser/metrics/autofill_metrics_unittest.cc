@@ -1652,7 +1652,7 @@ TEST_F(AutofillMetricsTest, AutofillProfileIsDisabledAtStartup) {
 // Test that we correctly log when CreditCard Autofill is enabled at startup.
 TEST_F(AutofillMetricsTest, AutofillCreditCardIsEnabledAtStartup) {
   base::HistogramTester histogram_tester;
-  personal_data().SetAutofillCreditCardEnabled(true);
+  personal_data().SetAutofillPaymentMethodsEnabled(true);
   personal_data().SetSyncServiceForTest(nullptr);  // Undo work in base suite.
   personal_data().Init(scoped_refptr<AutofillWebDataService>(nullptr),
                        /*account_database=*/nullptr,
@@ -1670,7 +1670,7 @@ TEST_F(AutofillMetricsTest, AutofillCreditCardIsEnabledAtStartup) {
 // Test that we correctly log when CreditCard Autofill is disabled at startup.
 TEST_F(AutofillMetricsTest, AutofillCreditCardIsDisabledAtStartup) {
   base::HistogramTester histogram_tester;
-  personal_data().SetAutofillCreditCardEnabled(false);
+  personal_data().SetAutofillPaymentMethodsEnabled(false);
   personal_data().SetSyncServiceForTest(nullptr);  // Undo work in base suite.
   personal_data().Init(scoped_refptr<AutofillWebDataService>(nullptr),
                        /*account_database=*/nullptr,
@@ -5206,7 +5206,7 @@ TEST_F(AutofillMetricsTest, AutofillProfileIsDisabledAtPageLoad) {
 // Test that we log that CreditCard Autofill is enabled when filling a form.
 TEST_F(AutofillMetricsTest, AutofillCreditCardIsEnabledAtPageLoad) {
   base::HistogramTester histogram_tester;
-  autofill_manager().SetAutofillCreditCardEnabled(*autofill_client_, true);
+  autofill_manager().SetAutofillPaymentMethodsEnabled(*autofill_client_, true);
   autofill_manager().OnFormsSeen(/*updated_forms=*/{},
                                  /*removed_forms=*/{});
   histogram_tester.ExpectUniqueSample("Autofill.CreditCard.IsEnabled.PageLoad",
@@ -5216,7 +5216,7 @@ TEST_F(AutofillMetricsTest, AutofillCreditCardIsEnabledAtPageLoad) {
 // Test that we log that CreditCard Autofill is disabled when filling a form.
 TEST_F(AutofillMetricsTest, AutofillCreditCardIsDisabledAtPageLoad) {
   base::HistogramTester histogram_tester;
-  autofill_manager().SetAutofillCreditCardEnabled(*autofill_client_, false);
+  autofill_manager().SetAutofillPaymentMethodsEnabled(*autofill_client_, false);
   autofill_manager().OnFormsSeen(/*updated_forms=*/{},
                                  /*removed_forms=*/{});
   histogram_tester.ExpectUniqueSample("Autofill.CreditCard.IsEnabled.PageLoad",

@@ -35,7 +35,7 @@ bool IbanManager::OnGetSingleFieldSuggestions(
   }
 
   if (!personal_data_manager_ ||
-      !personal_data_manager_->IsAutofillCreditCardEnabled()) {
+      !personal_data_manager_->IsAutofillPaymentMethodsEnabled()) {
     return false;
   }
 

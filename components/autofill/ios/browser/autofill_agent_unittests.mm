@@ -91,7 +91,7 @@ class AutofillAgentTests : public web::WebTest {
 
     prefs_ = autofill::test::PrefServiceForTesting();
     autofill::prefs::SetAutofillProfileEnabled(prefs_.get(), true);
-    autofill::prefs::SetAutofillCreditCardEnabled(prefs_.get(), true);
+    autofill::prefs::SetAutofillPaymentMethodsEnabled(prefs_.get(), true);
     UniqueIDDataTabHelper::CreateForWebState(&fake_web_state_);
     autofill_agent_ =
         [[AutofillAgent alloc] initWithPrefService:prefs_.get()

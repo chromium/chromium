@@ -62,7 +62,7 @@ class TestBrowserAutofillManager : public BrowserAutofillManager {
 
   // BrowserAutofillManager overrides.
   bool IsAutofillProfileEnabled() const override;
-  bool IsAutofillCreditCardEnabled() const override;
+  bool IsAutofillPaymentMethodsEnabled() const override;
   void StoreUploadVotesAndLogQualityCallback(
       FormSignature form_signature,
       base::OnceClosure callback) override;
@@ -120,8 +120,8 @@ class TestBrowserAutofillManager : public BrowserAutofillManager {
   // `client()` is a *Test*AutofillClient.
   void SetAutofillProfileEnabled(TestAutofillClient& client,
                                  bool profile_enabled);
-  void SetAutofillCreditCardEnabled(TestAutofillClient& client,
-                                    bool credit_card_enabled);
+  void SetAutofillPaymentMethodsEnabled(TestAutofillClient& client,
+                                        bool credit_card_enabled);
 
   void SetExpectedSubmittedFieldTypes(
       const std::vector<ServerFieldTypeSet>& expected_types);
@@ -130,7 +130,7 @@ class TestBrowserAutofillManager : public BrowserAutofillManager {
 
  private:
   bool autofill_profile_enabled_ = true;
-  bool autofill_credit_card_enabled_ = true;
+  bool autofill_payment_methods_enabled_ = true;
   absl::optional<bool> expected_observed_submission_;
   const gfx::Image card_image_ = gfx::test::CreateImage(40, 24);
 

@@ -62,7 +62,7 @@ void FastCheckoutTabHelper::FetchCapabilities(const GURL& url) {
       return;
     }
     if (!autofill::prefs::IsAutofillProfileEnabled(pref_service) ||
-        !autofill::prefs::IsAutofillCreditCardEnabled(pref_service)) {
+        !autofill::prefs::IsAutofillPaymentMethodsEnabled(pref_service)) {
       return;
     }
 

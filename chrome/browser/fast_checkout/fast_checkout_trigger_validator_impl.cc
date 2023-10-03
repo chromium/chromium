@@ -130,7 +130,7 @@ FastCheckoutTriggerValidatorImpl::HasValidPersonalData() const {
     return FastCheckoutTriggerOutcome::kFailureAutofillProfileDisabled;
   }
 
-  if (!pdm->IsAutofillCreditCardEnabled()) {
+  if (!pdm->IsAutofillPaymentMethodsEnabled()) {
     LogAutofillInternals(
         "not triggered because Autofill credit card is disabled.");
     return FastCheckoutTriggerOutcome::kFailureAutofillCreditCardDisabled;

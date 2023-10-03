@@ -620,7 +620,8 @@ void BrowserAutofillManager::ShowAutofillSettings(PopupType popup_type) {
 bool BrowserAutofillManager::ShouldShowScanCreditCard(
     const FormData& form,
     const FormFieldData& field) {
-  if (!client().HasCreditCardScanFeature() || !IsAutofillCreditCardEnabled()) {
+  if (!client().HasCreditCardScanFeature() ||
+      !IsAutofillPaymentMethodsEnabled()) {
     return false;
   }
 
@@ -737,7 +738,7 @@ bool BrowserAutofillManager::ShouldParseForms() {
     AutofillMetrics::LogIsAutofillProfileEnabledAtPageLoad(
         IsAutofillProfileEnabled(), signin_state_for_metrics_);
     AutofillMetrics::LogIsAutofillCreditCardEnabledAtPageLoad(
-        IsAutofillCreditCardEnabled(), signin_state_for_metrics_);
+        IsAutofillPaymentMethodsEnabled(), signin_state_for_metrics_);
     has_logged_autofill_enabled_ = true;
   }
 
@@ -863,7 +864,7 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
     address_form_event_logger_->OnWillSubmitForm(signin_state_for_metrics_,
                                                  *submitted_form);
   }
-  if (IsAutofillCreditCardEnabled()) {
+  if (IsAutofillPaymentMethodsEnabled()) {
     credit_card_form_event_logger_->OnWillSubmitForm(signin_state_for_metrics_,
                                                      *submitted_form);
   }
@@ -874,9 +875,9 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
   // Also triggers offering local/upload credit card save, if applicable.
   if (submitted_form->IsAutofillable()) {
     FormDataImporter* form_data_importer = client().GetFormDataImporter();
-    form_data_importer->ImportAndProcessFormData(*submitted_form,
-                                                 IsAutofillProfileEnabled(),
-                                                 IsAutofillCreditCardEnabled());
+    form_data_importer->ImportAndProcessFormData(
+        *submitted_form, IsAutofillProfileEnabled(),
+        IsAutofillPaymentMethodsEnabled());
     // Associate the form signatures of recently submitted address/credit card
     // forms to `submitted_form`, if it is an address/credit card form itself.
     // This information is attached to the vote.
@@ -905,7 +906,7 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
     address_form_event_logger_->OnFormSubmitted(signin_state_for_metrics_,
                                                 *submitted_form);
   }
-  if (IsAutofillCreditCardEnabled()) {
+  if (IsAutofillPaymentMethodsEnabled()) {
     credit_card_form_event_logger_->OnFormSubmitted(signin_state_for_metrics_,
                                                     *submitted_form);
     if (touch_to_fill_delegate_) {
@@ -2017,15 +2018,15 @@ void BrowserAutofillManager::OnDidEndTextFieldEditingImpl() {
 }
 
 bool BrowserAutofillManager::IsAutofillEnabled() const {
-  return IsAutofillProfileEnabled() || IsAutofillCreditCardEnabled();
+  return IsAutofillProfileEnabled() || IsAutofillPaymentMethodsEnabled();
 }
 
 bool BrowserAutofillManager::IsAutofillProfileEnabled() const {
   return prefs::IsAutofillProfileEnabled(client().GetPrefs());
 }
 
-bool BrowserAutofillManager::IsAutofillCreditCardEnabled() const {
-  return prefs::IsAutofillCreditCardEnabled(client().GetPrefs());
+bool BrowserAutofillManager::IsAutofillPaymentMethodsEnabled() const {
+  return prefs::IsAutofillPaymentMethodsEnabled(client().GetPrefs());
 }
 
 const FormData& BrowserAutofillManager::last_query_form() const {

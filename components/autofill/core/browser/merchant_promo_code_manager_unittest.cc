@@ -74,7 +74,7 @@ class MerchantPromoCodeManagerTest : public testing::Test {
   std::string SetUpPromoCodeOffer(std::string origin,
                                   const GURL& offer_details_url) {
     personal_data_manager_.get()->SetAutofillWalletImportEnabled(true);
-    personal_data_manager_.get()->SetAutofillCreditCardEnabled(true);
+    personal_data_manager_.get()->SetAutofillPaymentMethodsEnabled(true);
     AutofillOfferData testPromoCodeOfferData =
         test::GetPromoCodeOfferData(GURL(origin));
     testPromoCodeOfferData.SetOfferDetailsUrl(offer_details_url);
@@ -301,7 +301,7 @@ TEST_F(MerchantPromoCodeManagerTest, NoPromoCodeOffers) {
   auto suggestions_handler = std::make_unique<MockSuggestionsHandler>();
   std::string last_committed_origin_url = "https://www.example.com";
   personal_data_manager_.get()->SetAutofillWalletImportEnabled(true);
-  personal_data_manager_.get()->SetAutofillCreditCardEnabled(true);
+  personal_data_manager_.get()->SetAutofillPaymentMethodsEnabled(true);
   FormData form_data;
   form_data.main_frame_origin =
       url::Origin::Create(GURL(last_committed_origin_url));
@@ -402,7 +402,7 @@ TEST_F(MerchantPromoCodeManagerTest, AutofillCreditCardDisabled) {
   AddPromoCodeFocusedFieldToSuggestionsContext(&context);
   SetUpPromoCodeOffer(last_committed_origin_url,
                       GURL("https://offer-details-url.com/"));
-  personal_data_manager_->SetAutofillCreditCardEnabled(false);
+  personal_data_manager_->SetAutofillPaymentMethodsEnabled(false);
 
   // Autofill credit card is disabled, so check that we do not return
   // suggestions to the handler.

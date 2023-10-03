@@ -77,9 +77,9 @@ bool IsCreditCardFIDOAuthEnabled(PrefService* prefs);
 
 void SetCreditCardFIDOAuthEnabled(PrefService* prefs, bool enabled);
 
-bool IsAutofillCreditCardEnabled(const PrefService* prefs);
+bool IsAutofillPaymentMethodsEnabled(const PrefService* prefs);
 
-void SetAutofillCreditCardEnabled(PrefService* prefs, bool enabled);
+void SetAutofillPaymentMethodsEnabled(PrefService* prefs, bool enabled);
 
 bool HasSeenIban(const PrefService* prefs);
 

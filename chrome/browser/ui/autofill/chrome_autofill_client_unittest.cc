@@ -123,7 +123,7 @@ class ChromeAutofillClientTest : public ChromeRenderViewHostTestHarness {
                 }));
 
     personal_data_manager_->SetAutofillProfileEnabled(true);
-    personal_data_manager_->SetAutofillCreditCardEnabled(true);
+    personal_data_manager_->SetAutofillPaymentMethodsEnabled(true);
     personal_data_manager_->SetAutofillWalletImportEnabled(false);
 
     // Enable MSBB by default. If MSBB has been explicitly turned off, Fast

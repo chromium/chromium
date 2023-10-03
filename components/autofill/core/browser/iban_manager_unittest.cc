@@ -65,7 +65,7 @@ class IbanManagerTest : public testing::Test {
   IbanManagerTest() : iban_manager_(&personal_data_manager_) {}
 
   void SetUp() override {
-    personal_data_manager_.SetAutofillCreditCardEnabled(true);
+    personal_data_manager_.SetAutofillPaymentMethodsEnabled(true);
     original_resource_bundle_ =
         ui::ResourceBundle::SwapSharedInstanceForTesting(nullptr);
 
@@ -180,7 +180,7 @@ TEST_F(IbanManagerTest, ShowsIbanSuggestions) {
 }
 
 TEST_F(IbanManagerTest, PaymentsAutofillEnabledPrefOff_NoIbanSuggestionsShown) {
-  personal_data_manager_.SetAutofillCreditCardEnabled(false);
+  personal_data_manager_.SetAutofillPaymentMethodsEnabled(false);
   SetUpLocalIbanAndSuggestion(test::kIbanValue, kNickname_0);
   SetUpLocalIbanAndSuggestion(test::kIbanValue_1, kNickname_1);
 

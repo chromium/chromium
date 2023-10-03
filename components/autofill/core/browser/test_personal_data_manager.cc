@@ -238,12 +238,13 @@ bool TestPersonalDataManager::IsAutofillProfileEnabled() const {
   return PersonalDataManager::IsAutofillProfileEnabled();
 }
 
-bool TestPersonalDataManager::IsAutofillCreditCardEnabled() const {
-  // Return the value of autofill_credit_card_enabled_ if it has been set,
+bool TestPersonalDataManager::IsAutofillPaymentMethodsEnabled() const {
+  // Return the value of autofill_payment_methods_enabled_ if it has been set,
   // otherwise fall back to the normal behavior of checking the pref_service.
-  if (autofill_credit_card_enabled_.has_value())
-    return autofill_credit_card_enabled_.value();
-  return PersonalDataManager::IsAutofillCreditCardEnabled();
+  if (autofill_payment_methods_enabled_.has_value()) {
+    return autofill_payment_methods_enabled_.value();
+  }
+  return PersonalDataManager::IsAutofillPaymentMethodsEnabled();
 }
 
 bool TestPersonalDataManager::IsAutofillWalletImportEnabled() const {
@@ -255,7 +256,7 @@ bool TestPersonalDataManager::IsAutofillWalletImportEnabled() const {
 }
 
 bool TestPersonalDataManager::ShouldSuggestServerCards() const {
-  return IsAutofillCreditCardEnabled() && IsAutofillWalletImportEnabled();
+  return IsAutofillPaymentMethodsEnabled() && IsAutofillWalletImportEnabled();
 }
 
 std::string TestPersonalDataManager::CountryCodeForCurrentTimezone() const {

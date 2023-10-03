@@ -419,7 +419,7 @@ void PersonalDataManager::Init(
   AutofillMetrics::LogIsAutofillProfileEnabledAtStartup(
       IsAutofillProfileEnabled());
   AutofillMetrics::LogIsAutofillCreditCardEnabledAtStartup(
-      IsAutofillCreditCardEnabled());
+      IsAutofillPaymentMethodsEnabled());
 
   if (strike_database) {
     profile_migration_strike_database_ =
@@ -937,7 +937,7 @@ void PersonalDataManager::MigrateProfileToAccount(
 std::string PersonalDataManager::AddIban(Iban iban) {
   CHECK_EQ(iban.record_type(), Iban::kUnknown);
   // IBAN shares the same pref with payment methods enablement toggle.
-  if (!IsAutofillCreditCardEnabled()) {
+  if (!IsAutofillPaymentMethodsEnabled()) {
     return std::string();
   }
 
@@ -989,8 +989,9 @@ std::string PersonalDataManager::UpdateIban(const Iban& iban) {
 }
 
 void PersonalDataManager::AddCreditCard(const CreditCard& credit_card) {
-  if (!IsAutofillCreditCardEnabled())
+  if (!IsAutofillPaymentMethodsEnabled()) {
     return;
+  }
 
   if (credit_card.IsEmpty(app_locale_))
     return;
@@ -1491,8 +1492,9 @@ PersonalDataManager::GetCreditCardCloudTokenData() const {
 }
 
 std::vector<AutofillOfferData*> PersonalDataManager::GetAutofillOffers() const {
-  if (!IsAutofillWalletImportEnabled() || !IsAutofillCreditCardEnabled())
+  if (!IsAutofillWalletImportEnabled() || !IsAutofillPaymentMethodsEnabled()) {
     return {};
+  }
 
   std::vector<AutofillOfferData*> result;
   result.reserve(autofill_offer_data_.size());
@@ -1504,8 +1506,9 @@ std::vector<AutofillOfferData*> PersonalDataManager::GetAutofillOffers() const {
 std::vector<const AutofillOfferData*>
 PersonalDataManager::GetActiveAutofillPromoCodeOffersForOrigin(
     GURL origin) const {
-  if (!IsAutofillWalletImportEnabled() || !IsAutofillCreditCardEnabled())
+  if (!IsAutofillWalletImportEnabled() || !IsAutofillPaymentMethodsEnabled()) {
     return {};
+  }
 
   std::vector<const AutofillOfferData*> promo_code_offers_for_origin;
   base::ranges::for_each(
@@ -1572,7 +1575,7 @@ gfx::Image* PersonalDataManager::GetCachedCardArtImageForUrl(
 
 std::vector<VirtualCardUsageData*>
 PersonalDataManager::GetVirtualCardUsageData() const {
-  if (!IsAutofillWalletImportEnabled() || !IsAutofillCreditCardEnabled()) {
+  if (!IsAutofillWalletImportEnabled() || !IsAutofillPaymentMethodsEnabled()) {
     return {};
   }
 
@@ -1608,8 +1611,9 @@ std::vector<AutofillProfile*> PersonalDataManager::GetProfilesForSettings()
 
 const std::vector<CreditCard*> PersonalDataManager::GetCreditCardsToSuggest()
     const {
-  if (!IsAutofillCreditCardEnabled())
+  if (!IsAutofillPaymentMethodsEnabled()) {
     return std::vector<CreditCard*>{};
+  }
 
   std::vector<CreditCard*> credit_cards;
   if (ShouldSuggestServerCards()) {
@@ -1646,15 +1650,15 @@ const std::vector<CreditCard*> PersonalDataManager::GetCreditCardsToSuggest()
 }
 
 bool PersonalDataManager::IsAutofillEnabled() const {
-  return IsAutofillProfileEnabled() || IsAutofillCreditCardEnabled();
+  return IsAutofillProfileEnabled() || IsAutofillPaymentMethodsEnabled();
 }
 
 bool PersonalDataManager::IsAutofillProfileEnabled() const {
   return prefs::IsAutofillProfileEnabled(pref_service_);
 }
 
-bool PersonalDataManager::IsAutofillCreditCardEnabled() const {
-  return prefs::IsAutofillCreditCardEnabled(pref_service_);
+bool PersonalDataManager::IsAutofillPaymentMethodsEnabled() const {
+  return prefs::IsAutofillPaymentMethodsEnabled(pref_service_);
 }
 
 bool PersonalDataManager::IsAutofillHasSeenIbanPrefEnabled() const {

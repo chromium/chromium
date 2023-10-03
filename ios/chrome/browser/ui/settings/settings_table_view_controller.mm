@@ -868,7 +868,8 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 
 - (TableViewItem*)autoFillCreditCardDetailItem {
   BOOL autofillCreditCardEnabled =
-      autofill::prefs::IsAutofillCreditCardEnabled(_browserState->GetPrefs());
+      autofill::prefs::IsAutofillPaymentMethodsEnabled(
+          _browserState->GetPrefs());
   NSString* detailText = autofillCreditCardEnabled
                              ? l10n_util::GetNSString(IDS_IOS_SETTING_ON)
                              : l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
@@ -2268,7 +2269,8 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 
   if (preferenceName == autofill::prefs::kAutofillCreditCardEnabled) {
     BOOL autofillCreditCardEnabled =
-        autofill::prefs::IsAutofillCreditCardEnabled(_browserState->GetPrefs());
+        autofill::prefs::IsAutofillPaymentMethodsEnabled(
+            _browserState->GetPrefs());
     NSString* detailText = autofillCreditCardEnabled
                                ? l10n_util::GetNSString(IDS_IOS_SETTING_ON)
                                : l10n_util::GetNSString(IDS_IOS_SETTING_OFF);

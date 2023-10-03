@@ -59,7 +59,7 @@ class PaymentsSuggestionBottomSheetMediatorTest : public PlatformTest {
   void SetUp() override {
     PrefService* pref_service = chrome_browser_state_->GetPrefs();
     autofill::prefs::SetAutofillProfileEnabled(pref_service, true);
-    autofill::prefs::SetAutofillCreditCardEnabled(pref_service, true);
+    autofill::prefs::SetAutofillPaymentMethodsEnabled(pref_service, true);
     personal_data_manager_->SetPrefService(pref_service);
     personal_data_manager_->SetSyncServiceForTest(&sync_service_);
   }

@@ -232,11 +232,11 @@ void SetCreditCardFIDOAuthEnabled(PrefService* prefs, bool enabled) {
   prefs->SetBoolean(kAutofillCreditCardFidoAuthEnabled, enabled);
 }
 
-bool IsAutofillCreditCardEnabled(const PrefService* prefs) {
+bool IsAutofillPaymentMethodsEnabled(const PrefService* prefs) {
   return prefs->GetBoolean(kAutofillCreditCardEnabled);
 }
 
-void SetAutofillCreditCardEnabled(PrefService* prefs, bool enabled) {
+void SetAutofillPaymentMethodsEnabled(PrefService* prefs, bool enabled) {
   prefs->SetBoolean(kAutofillCreditCardEnabled, enabled);
 }
 

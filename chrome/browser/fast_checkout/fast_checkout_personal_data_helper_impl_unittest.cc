@@ -39,7 +39,7 @@ std::unique_ptr<KeyedService> BuildTestPersonalDataManager(
   auto personal_data_manager =
       std::make_unique<autofill::TestPersonalDataManager>();
   personal_data_manager->SetAutofillProfileEnabled(true);
-  personal_data_manager->SetAutofillCreditCardEnabled(true);
+  personal_data_manager->SetAutofillPaymentMethodsEnabled(true);
   personal_data_manager->SetAutofillWalletImportEnabled(true);
   return personal_data_manager;
 }

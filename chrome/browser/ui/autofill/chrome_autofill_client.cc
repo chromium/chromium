@@ -659,8 +659,9 @@ void ChromeAutofillClient::HideVirtualCardEnrollBubbleAndIconIfVisible() {
 #if !BUILDFLAG(IS_ANDROID)
 std::vector<std::string>
 ChromeAutofillClient::GetAllowedMerchantsForVirtualCards() {
-  if (!prefs::IsAutofillCreditCardEnabled(GetPrefs()))
+  if (!prefs::IsAutofillPaymentMethodsEnabled(GetPrefs())) {
     return std::vector<std::string>();
+  }
 
   return AutofillGstaticReader::GetInstance()
       ->GetTokenizationMerchantAllowlist();
@@ -668,8 +669,9 @@ ChromeAutofillClient::GetAllowedMerchantsForVirtualCards() {
 
 std::vector<std::string>
 ChromeAutofillClient::GetAllowedBinRangesForVirtualCards() {
-  if (!prefs::IsAutofillCreditCardEnabled(GetPrefs()))
+  if (!prefs::IsAutofillPaymentMethodsEnabled(GetPrefs())) {
     return std::vector<std::string>();
+  }
 
   return AutofillGstaticReader::GetInstance()
       ->GetTokenizationBinRangesAllowlist();

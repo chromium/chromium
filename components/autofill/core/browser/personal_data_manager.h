@@ -547,8 +547,8 @@ class PersonalDataManager : public KeyedService,
   // Returns the value of the AutofillProfileEnabled pref.
   virtual bool IsAutofillProfileEnabled() const;
 
-  // Returns the value of the AutofillCreditCardEnabled pref.
-  virtual bool IsAutofillCreditCardEnabled() const;
+  // Returns the value of the AutofillPaymentMethodsEnabled pref.
+  virtual bool IsAutofillPaymentMethodsEnabled() const;
 
   // Returns the value of the kAutofillHasSeenIban pref.
   bool IsAutofillHasSeenIbanPrefEnabled() const;
