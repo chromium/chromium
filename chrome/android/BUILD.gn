@@ -2791,6 +2791,7 @@ if (current_toolchain == default_toolchain) {
       "//components/translate/content/android:unit_device_javatests",
       "//components/url_formatter/android:unit_device_javatests",
       "//components/variations/android:unit_device_javatests",
+      "//components/webapps/browser/android:unit_device_javatests",
       "//ui/android:ui_unit_device_javatests",
     ]
 
