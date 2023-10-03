@@ -2695,7 +2695,37 @@ crbug.com/1483059 [ Mac ] virtual/fetch-later/external/wpt/fetch/fetch-later/sen
 crbug.com/1484043 [ Mac ] virtual/fetch-later/external/wpt/fetch/fetch-later/send-on-deactivate.tentative.https.window.html [ Pass Timeout ]
 crbug.com/1484043 [ Win ] virtual/fetch-later/external/wpt/fetch/fetch-later/send-on-deactivate.tentative.https.window.html [ Pass Timeout ]
 
+# These tests generate baselines whose names are too long.
+crbug.com/626703 [ Mac ] virtual/webcodecs-without-task-runner-with-custom-deleter/external/wpt/webcodecs/videoDecoder-codec-specific.https.any.html?h265_annexb [ Failure ]
+crbug.com/626703 [ Mac ] virtual/webcodecs-without-task-runner-with-custom-deleter/external/wpt/webcodecs/videoDecoder-codec-specific.https.any.html?h265_hevc [ Failure ]
+crbug.com/626703 [ Mac ] virtual/webcodecs-without-task-runner-with-custom-deleter/external/wpt/webcodecs/videoDecoder-codec-specific.https.any.worker.html?h265_annexb [ Failure ]
+crbug.com/626703 [ Mac ] virtual/webcodecs-without-task-runner-with-custom-deleter/external/wpt/webcodecs/videoDecoder-codec-specific.https.any.worker.html?h265_hevc [ Failure ]
+
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 [ Mac13 ] external/wpt/IndexedDB/reading-autoincrement-indexes.any.html [ Timeout ]
+crbug.com/626703 external/wpt/css/css-text/tab-size/tab-size-integer-005.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-text/text-spacing-trim/text-spacing-trim-001.html?class=chws,vrl [ Failure ]
+crbug.com/626703 external/wpt/css/css-text/text-spacing-trim/text-spacing-trim-colon-001.html?class=chws,vrl [ Failure ]
+crbug.com/626703 external/wpt/css/css-text/text-spacing-trim/text-spacing-trim-dot-001.html?class=chws,vrl [ Failure ]
+crbug.com/626703 external/wpt/css/css-text/text-spacing-trim/text-spacing-trim-trim-all-001.html?class=chws,htb [ Failure ]
+crbug.com/626703 external/wpt/css/css-text/text-spacing-trim/text-spacing-trim-trim-all-001.html?class=chws,vrl [ Failure ]
+crbug.com/626703 external/wpt/css/css-text/text-spacing-trim/text-spacing-trim-trim-all-001.html?class=halt,htb [ Failure ]
+crbug.com/626703 external/wpt/css/css-text/text-spacing-trim/text-spacing-trim-trim-all-001.html?class=halt,vrl [ Failure ]
+crbug.com/626703 external/wpt/css/css-text/white-space/text-wrap-balance-float-003.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-text/white-space/text-wrap-balance-float-004.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-text/white-space/text-wrap-balance-float-005.html [ Failure ]
+crbug.com/626703 virtual/css-text-spacing-trim/external/wpt/css/css-text/text-spacing-trim/text-spacing-trim-001.html?class=chws,vrl [ Failure ]
+crbug.com/626703 virtual/css-text-spacing-trim/external/wpt/css/css-text/text-spacing-trim/text-spacing-trim-001.html?class=halt,vrl [ Failure ]
+crbug.com/626703 virtual/css-text-spacing-trim/external/wpt/css/css-text/text-spacing-trim/text-spacing-trim-colon-001.html?class=chws,vrl [ Failure ]
+crbug.com/626703 virtual/css-text-spacing-trim/external/wpt/css/css-text/text-spacing-trim/text-spacing-trim-colon-001.html?class=halt,vrl [ Failure ]
+crbug.com/626703 virtual/css-text-spacing-trim/external/wpt/css/css-text/text-spacing-trim/text-spacing-trim-dot-001.html?class=chws,vrl [ Failure ]
+crbug.com/626703 virtual/css-text-spacing-trim/external/wpt/css/css-text/text-spacing-trim/text-spacing-trim-dot-001.html?class=halt,vrl [ Failure ]
+crbug.com/626703 virtual/css-text-spacing-trim/external/wpt/css/css-text/text-spacing-trim/text-spacing-trim-trim-all-001.html?class=chws,htb [ Failure ]
+crbug.com/626703 virtual/css-text-spacing-trim/external/wpt/css/css-text/text-spacing-trim/text-spacing-trim-trim-all-001.html?class=chws,vrl [ Failure ]
+crbug.com/626703 virtual/css-text-spacing-trim/external/wpt/css/css-text/text-spacing-trim/text-spacing-trim-trim-all-001.html?class=halt,htb [ Failure ]
+crbug.com/626703 virtual/css-text-spacing-trim/external/wpt/css/css-text/text-spacing-trim/text-spacing-trim-trim-all-001.html?class=halt,vrl [ Failure ]
+crbug.com/626703 [ Mac13 ] virtual/fsa-locking-scheme/external/wpt/fs/FileSystemBaseHandle-IndexedDB.https.any.worker.html [ Timeout ]
+crbug.com/626703 [ Mac13 ] virtual/third-party-storage-partitioning/external/wpt/IndexedDB/idb-explicit-commit.any.worker.html [ Timeout ]
 crbug.com/626703 [ Win10.20h2 ] virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/hit-test-unrelated-element.html [ Failure ]
 crbug.com/626703 [ Mac13 ] virtual/threaded-prefer-compositing/external/wpt/scroll-animations/css/view-timeline-range-animation.html [ Timeout ]
 crbug.com/626703 [ Mac13 ] virtual/threaded/external/wpt/scroll-animations/css/view-timeline-range-animation.html [ Timeout ]
@@ -3508,11 +3538,8 @@ crbug.com/1463891 external/wpt/css/css-text/text-spacing-trim/text-spacing-trim-
 crbug.com/1463891 external/wpt/css/css-text/text-spacing-trim/text-spacing-trim-dot-001.html?class=halt,vrl [ Failure ]
 crbug.com/1463891 external/wpt/css/css-text/text-spacing-trim/text-spacing-trim-space-all-001.html?class=chws [ Failure ]
 crbug.com/1463891 virtual/css-text-spacing-trim/external/wpt/css/css-text/text-spacing-trim/text-spacing-trim-001.html?class=halt,htb [ Pass ]
-crbug.com/1463891 virtual/css-text-spacing-trim/external/wpt/css/css-text/text-spacing-trim/text-spacing-trim-001.html?class=halt,vrl [ Pass ]
 crbug.com/1463891 virtual/css-text-spacing-trim/external/wpt/css/css-text/text-spacing-trim/text-spacing-trim-colon-001.html?class=halt,htb [ Pass ]
-crbug.com/1463891 virtual/css-text-spacing-trim/external/wpt/css/css-text/text-spacing-trim/text-spacing-trim-colon-001.html?class=halt,vrl [ Pass ]
 crbug.com/1463891 virtual/css-text-spacing-trim/external/wpt/css/css-text/text-spacing-trim/text-spacing-trim-dot-001.html?class=halt,htb [ Pass ]
-crbug.com/1463891 virtual/css-text-spacing-trim/external/wpt/css/css-text/text-spacing-trim/text-spacing-trim-dot-001.html?class=halt,vrl [ Pass ]
 crbug.com/1463891 virtual/css-text-spacing-trim/external/wpt/css/css-text/text-spacing-trim/text-spacing-trim-space-all-001.html?class=chws [ Pass ]
 
 # Implement text-decoration correctly for vertical text
@@ -4251,8 +4278,8 @@ crbug.com/1043357 http/tests/credentialmanagement/credentialscontainer-get-with-
 # specific bugs.
 crbug.com/1043675 [ Linux ] animations/animation-paused-hardware.html [ Failure ]
 crbug.com/1043675 [ Linux ] external/wpt/css/filter-effects/backdrop-filter-basic-opacity-2.html [ Failure ]
-crbug.com/1043675 [ Linux ] external/wpt/css/filter-effects/backdrop-filters-brightness.html [ Pass Failure ]
-crbug.com/1043675 [ Linux ] external/wpt/css/filter-effects/backdrop-filters-invert.html [ Pass Failure ]
+crbug.com/1043675 [ Linux ] external/wpt/css/filter-effects/backdrop-filters-brightness.html [ Failure Pass ]
+crbug.com/1043675 [ Linux ] external/wpt/css/filter-effects/backdrop-filters-invert.html [ Failure Pass ]
 crbug.com/1043675 [ Linux ] http/tests/media/video-frame-size-change.html [ Failure ]
 crbug.com/1043675 [ Linux ] svg/custom/svg-root-with-opacity.html [ Failure ]
 crbug.com/1043675 [ Linux ] virtual/scalefactor200/external/wpt/css/filter-effects/backdrop-filters-brightness.html [ Failure ]
@@ -6708,7 +6735,7 @@ crbug.com/1479485 [ Linux ] fast/events/middleClickAutoscroll-event-fired.html [
 
 # This test is so slow it must expect timeouts for the time being
 # on some platforms.
-crbug.com/1488391 external/wpt/mst-content-hint/RTCRtpSendParameters-degradationEffect.html [ Timeout Skip ]
+crbug.com/1488391 external/wpt/mst-content-hint/RTCRtpSendParameters-degradationEffect.html [ Skip Timeout ]
 
 # Gardener 2023-09-07
 crbug.com/1479983 [ Mac ] external/wpt/mediacapture-record/MediaRecorder-mimetype.html [ Failure Pass Timeout ]
@@ -6749,9 +6776,9 @@ crbug.com/1487899 [ Linux ] fast/canvas/canvas-toBlob-jpeg-medium-quality.html [
 
 # TODO(crbug.com/1399685): These tests should be added to exclusive_tests in
 # VirtualTestSuites fsa-locking-scheme but linting prevents this.
-external/wpt/fs/FileSystemFileHandle-cross-primitive-locking.https.tentative.worker.html [ Skip Failure ]
-external/wpt/fs/FileSystemFileHandle-sync-access-handle-lock-modes.https.tentative.worker.html [ Skip Failure ]
-external/wpt/fs/FileSystemFileHandle-writable-file-stream-lock-modes.https.tentative.worker.html [ Skip Failure ]
+external/wpt/fs/FileSystemFileHandle-cross-primitive-locking.https.tentative.worker.html [ Failure Skip ]
+external/wpt/fs/FileSystemFileHandle-sync-access-handle-lock-modes.https.tentative.worker.html [ Failure Skip ]
+external/wpt/fs/FileSystemFileHandle-writable-file-stream-lock-modes.https.tentative.worker.html [ Failure Skip ]
 
 # Gardener 2023-10-02
 crbug.com/1481694 [ Win10.20h2 ] accessibility/selection-change-notification-on-selection-removed.html [ Failure ]

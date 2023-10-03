@@ -11,6 +11,8 @@ div, main { color: grey }
 .none { display: none; }
 #subject:has(.test) { color: red; }
 #subject:has(~ #sibling .test) { color: green; }
+#subject:has(:is(.test_inner #subject_descendant)) { color: blue; }
+#subject:has(~ #sibling :is(.test_inner #sibling_descendant)) { color: yellow; }
 </style>
 
 <main id=main>
@@ -29,9 +31,9 @@ div, main { color: grey }
 <script>
 const grey = 'rgb(128, 128, 128)';
 const red = 'rgb(255, 0, 0)';
-const orangered = 'rgb(255, 69, 0)';
 const green = 'rgb(0, 128, 0)';
-const lightgreen = 'rgb(144, 238, 144)';
+const blue = 'rgb(0, 0, 255)';
+const yellow = "rgb(255, 255, 0)";
 const colors = {
   grey: {
     classTest: grey,
@@ -42,6 +44,12 @@ const colors = {
   green: {
     classTest: green,
   },
+  blue: {
+    classTest: blue,
+  },
+  yellow: {
+    classTest: yellow,
+  },
 };
 
 function testColor(test_name, color) {
@@ -50,18 +58,20 @@ function testColor(test_name, color) {
     }, test_name);
 }
 
-function testClassChange(element, expectedColorName)
+function testClassChange(element, cls, expectedColorName)
 {
     const expectedColorForClassTest = colors[expectedColorName].classTest;
-    element.classList.add('test');
-    testColor(`add .test to ${element.id}`, expectedColorForClassTest);
-    element.classList.remove('test');
-    testColor(`remove .test from ${element.id}`, grey);
+    element.classList.add(cls);
+    testColor(`add ${cls} to ${element.id}`, expectedColorForClassTest);
+    element.classList.remove(cls);
+    testColor(`remove ${cls} from ${element.id}`, grey);
 }
 
 testColor('Initial color', grey);
 
-testClassChange(subject_descendant, 'red');
-testClassChange(sibling_descendant, 'green');
+testClassChange(subject_descendant, 'test', 'red');
+testClassChange(sibling_descendant, 'test', 'green');
+testClassChange(subject_child, 'test_inner', 'blue');
+testClassChange(sibling_child, 'test_inner', 'yellow');
 
 </script>
