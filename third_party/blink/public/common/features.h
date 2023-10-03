@@ -1198,6 +1198,10 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
 // empty duration (e.g. "0s"), then no top-level user interaction is required.
 BLINK_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
     kStorageAccessAPITopLevelUserInteractionBound;
+// How long a Related Website Sets Storage Access API permission
+// grant/denial should last (not taking renewals into account).
+BLINK_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
+    kStorageAccessAPIRelatedWebsiteSetsLifetime;
 // How long an implicit Storage Access API permission grant/denial should last
 // (not taking renewals into account).
 BLINK_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>

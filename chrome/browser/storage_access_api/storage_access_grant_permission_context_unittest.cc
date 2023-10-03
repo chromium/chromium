@@ -828,6 +828,8 @@ class StorageAccessGrantPermissionContextAPIWithFirstPartySetsTest
 
 TEST_P(StorageAccessGrantPermissionContextAPIWithFirstPartySetsTest,
        ImplicitGrant_AutograntedWithinFPS) {
+  base::Time expiration_lower_bound_check = base::Time::Now();
+
   HostContentSettingsMap* settings_map =
       HostContentSettingsMapFactory::GetForProfile(profile());
   DCHECK(settings_map);
@@ -856,6 +858,17 @@ TEST_P(StorageAccessGrantPermissionContextAPIWithFirstPartySetsTest,
   EXPECT_THAT(page_specific_content_settings()->GetTwoSiteRequests(
                   ContentSettingsType::STORAGE_ACCESS),
               IsEmpty());
+
+  auto setting = non_restorable_grants[0];
+
+  EXPECT_NE(true, setting.IsExpired());
+  // Check to ensure the expiration time is in expected range.
+  EXPECT_GT(setting.metadata.expiration(),
+            blink::features::kStorageAccessAPIRelatedWebsiteSetsLifetime.Get() +
+                expiration_lower_bound_check);
+  EXPECT_LT(setting.metadata.expiration(),
+            blink::features::kStorageAccessAPIRelatedWebsiteSetsLifetime.Get() +
+                base::Time::Now());
 }
 
 // This test suite is no-op since the enablde/disabled features are hard coded.

@@ -1836,6 +1836,10 @@ const base::FeatureParam<base::TimeDelta>
         &kStorageAccessAPI,
         "storage_access_api_top_level_user_interaction_bound", base::Days(30)};
 const base::FeatureParam<base::TimeDelta>
+    kStorageAccessAPIRelatedWebsiteSetsLifetime{
+        &kStorageAccessAPI, "related_website_sets_permission_lifetime",
+        base::Days(30)};
+const base::FeatureParam<base::TimeDelta>
     kStorageAccessAPIImplicitPermissionLifetime{
         &kStorageAccessAPI, "storage_access_api_implicit_permission_lifetime",
         base::Hours(24)};

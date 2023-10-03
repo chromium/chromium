@@ -145,7 +145,7 @@ content_settings::ContentSettingConstraints ComputeConstraints(
   switch (outcome) {
     case RequestOutcome::kGrantedByFirstPartySet:
       constraints.set_lifetime(
-          blink::features::kStorageAccessAPIImplicitPermissionLifetime.Get());
+          blink::features::kStorageAccessAPIRelatedWebsiteSetsLifetime.Get());
       constraints.set_session_model(
           content_settings::SessionModel::NonRestorableUserSession);
       return constraints;
