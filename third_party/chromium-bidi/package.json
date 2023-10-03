@@ -187,7 +187,7 @@
     "@rollup/plugin-terser": "0.4.3",
     "@types/argparse": "2.0.11",
     "@types/chai": "4.3.5",
-    "@types/chai-as-promised": "7.1.5",
+    "@types/chai-as-promised": "7.1.6",
     "@types/debug": "4.1.8",
     "@types/mocha": "10.0.1",
     "@types/node": "20.4.6",
