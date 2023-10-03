@@ -65,6 +65,10 @@ class GlanceablesTasksClientImpl : public GlanceablesTasksClient {
                        bool completed) override;
   void AddTask(const std::string& task_list_id,
                const std::string& title) override;
+  void UpdateTask(const std::string& task_list_id,
+                  const std::string& task_id,
+                  const std::string& title,
+                  GlanceablesTasksClient::UpdateTaskCallback callback) override;
   void OnGlanceablesBubbleClosed(
       GlanceablesTasksClient::OnAllPendingCompletedTasksSavedCallback callback =
           base::DoNothing()) override;
@@ -177,6 +181,12 @@ class GlanceablesTasksClientImpl : public GlanceablesTasksClient {
   void OnTaskAdded(const std::string& task_list_id,
                    base::expected<std::unique_ptr<google_apis::tasks::Task>,
                                   google_apis::ApiErrorCode> result);
+
+  // Done callback for `UpdateTask()` request.
+  // `task_list_id` - id of the task list used in the request.
+  // `status_code`  - HTTP status code of the operation.
+  void OnTaskUpdated(GlanceablesTasksClient::UpdateTaskCallback callback,
+                     google_apis::ApiErrorCode status_code);
 
   // To be called when requests to get user's task lists complete.
   // It sets the task lists fetch status to `final_fetch_status`, and runs all

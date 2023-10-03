@@ -24,6 +24,7 @@ class ASH_EXPORT GlanceablesTasksClient {
       base::OnceCallback<void(ui::ListModel<GlanceablesTaskList>* task_lists)>;
   using GetTasksCallback =
       base::OnceCallback<void(ui::ListModel<GlanceablesTask>* tasks)>;
+  using UpdateTaskCallback = base::OnceCallback<void(bool success)>;
   using OnAllPendingCompletedTasksSavedCallback = base::OnceClosure;
 
   // Fetches all the authenticated user's task lists and invokes `callback` when
@@ -46,6 +47,12 @@ class ASH_EXPORT GlanceablesTasksClient {
   // Adds a new task to the specified task list with the specified title.
   virtual void AddTask(const std::string& task_list_id,
                        const std::string& title) = 0;
+
+  // Updates the specified task in the specified task list.
+  virtual void UpdateTask(const std::string& task_list_id,
+                          const std::string& task_id,
+                          const std::string& title,
+                          UpdateTaskCallback callback) = 0;
 
   // Method called when the glanceables bubble UI closes. The client can use
   // this as a signal to invalidate cached tasks data.

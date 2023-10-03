@@ -1241,4 +1241,42 @@ TEST_F(GlanceablesTasksClientImplTest, AddsNewTask) {
   run_loop.Run();
 }
 
+// ----------------------------------------------------------------------------
+// Update a task:
+
+TEST_F(GlanceablesTasksClientImplTest, UpdatesTask) {
+  EXPECT_CALL(
+      request_handler(),
+      HandleRequest(Field(&HttpRequest::method, Eq(HttpMethod::METHOD_PATCH))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+          {
+            "kind": "tasks#tasks",
+            "id": "task-id",
+            "title": "Task 1",
+            "status": "needsAction"
+          }
+        )"))));
+
+  TestFuture<bool> update_task_future;
+  client()->UpdateTask("task-list-id", "task-id", "Updated title",
+                       update_task_future.GetCallback());
+
+  ASSERT_TRUE(update_task_future.Wait());
+  EXPECT_TRUE(update_task_future.Get());
+}
+
+TEST_F(GlanceablesTasksClientImplTest, UpdatesTaskOnHttpError) {
+  EXPECT_CALL(
+      request_handler(),
+      HandleRequest(Field(&HttpRequest::method, Eq(HttpMethod::METHOD_PATCH))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateFailedResponse())));
+
+  TestFuture<bool> update_task_future;
+  client()->UpdateTask("task-list-id", "task-id", "Updated title",
+                       update_task_future.GetCallback());
+
+  ASSERT_TRUE(update_task_future.Wait());
+  EXPECT_FALSE(update_task_future.Get());
+}
+
 }  // namespace ash

@@ -10,9 +10,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/glanceables/common/glanceables_view_id.h"
-#include "ash/glanceables/glanceables_controller.h"
 #include "ash/glanceables/glanceables_metrics.h"
-#include "ash/glanceables/tasks/glanceables_tasks_client.h"
 #include "ash/glanceables/tasks/glanceables_tasks_types.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
@@ -22,7 +20,9 @@
 #include "ash/system/time/date_helper.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -230,11 +230,14 @@ class GlanceablesTaskView::TaskTitleButton : public views::LabelButton {
   }
 };
 
-GlanceablesTaskView::GlanceablesTaskView(const std::string& task_list_id,
-                                         const GlanceablesTask* task)
-    : task_list_id_(task_list_id),
-      task_id_(task->id),
-      task_title_(base::UTF8ToUTF16(task->title)) {
+GlanceablesTaskView::GlanceablesTaskView(
+    const GlanceablesTask* task,
+    MarkAsCompletedCallback mark_as_completed_callback,
+    UpdateCallback update_callback)
+    : task_id_(task->id),
+      task_title_(base::UTF8ToUTF16(task->title)),
+      mark_as_completed_callback_(std::move(mark_as_completed_callback)),
+      update_callback_(std::move(update_callback)) {
   SetAccessibleRole(ax::mojom::Role::kListItem);
 
   SetBackground(views::CreateThemedRoundedRectBackground(
@@ -338,9 +341,7 @@ void GlanceablesTaskView::CheckButtonPressed() {
     task_title_button_->UpdateLabelForState(/*completed=*/target_state);
   }
   RecordTaskMarkedAsCompleted(target_state);
-
-  Shell::Get()->glanceables_controller()->GetTasksClient()->MarkAsCompleted(
-      task_list_id_, task_id_, /*completed=*/target_state);
+  mark_as_completed_callback_.Run(task_id_, /*completed=*/target_state);
 }
 
 void GlanceablesTaskView::TaskTitleButtonPressed() {
@@ -350,6 +351,8 @@ void GlanceablesTaskView::TaskTitleButtonPressed() {
 
 void GlanceablesTaskView::OnFinishedEditing(const std::u16string& title) {
   task_title_ = title;
+  update_callback_.Run(task_id_, base::UTF16ToUTF8(task_title_),
+                       base::DoNothing());
   UpdateTaskTitleViewForState(TaskTitleViewState::kView);
 }
 

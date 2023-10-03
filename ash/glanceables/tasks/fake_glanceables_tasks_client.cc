@@ -72,6 +72,12 @@ void FakeGlanceablesTasksClient::AddTask(const std::string& task_list_id,
   NOTIMPLEMENTED();
 }
 
+void FakeGlanceablesTasksClient::UpdateTask(
+    const std::string& task_list_id,
+    const std::string& task_id,
+    const std::string& title,
+    GlanceablesTasksClient::UpdateTaskCallback callback) {}
+
 void FakeGlanceablesTasksClient::OnGlanceablesBubbleClosed(
     GlanceablesTasksClient::OnAllPendingCompletedTasksSavedCallback callback) {
   ++bubble_closed_count_;

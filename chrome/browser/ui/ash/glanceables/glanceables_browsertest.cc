@@ -35,7 +35,10 @@
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/views/controls/label.h"
+#include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/view_utils.h"
 
 namespace ash {
@@ -89,7 +92,7 @@ views::Label* FindMenuItemLabelWithString(const std::u16string& label) {
 
 }  // namespace
 
-class GlanceablesV2BrowserTest : public InProcessBrowserTest {
+class GlanceablesBrowserTest : public InProcessBrowserTest {
  public:
   GlanceablesController* glanceables_controller() {
     return Shell::Get()->glanceables_controller();
@@ -97,9 +100,6 @@ class GlanceablesV2BrowserTest : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
-
-    base::AddFeatureIdTagToTestResult(
-        "screenplay-ace3b729-5402-40cd-b2bf-d488bc95b7e2");
 
     base::Time date;
     ASSERT_TRUE(base::Time::FromString(kDueDate, &date));
@@ -223,7 +223,15 @@ class GlanceablesV2BrowserTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList features_{features::kGlanceablesV2};
 };
 
-IN_PROC_BROWSER_TEST_F(GlanceablesV2BrowserTest, OpenStudentCourseItemURL) {
+class GlanceablesMvpBrowserTest : public GlanceablesBrowserTest {
+  void SetUpOnMainThread() override {
+    GlanceablesBrowserTest::SetUpOnMainThread();
+    base::AddFeatureIdTagToTestResult(
+        "screenplay-ace3b729-5402-40cd-b2bf-d488bc95b7e2");
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(GlanceablesMvpBrowserTest, OpenStudentCourseItemURL) {
   ASSERT_TRUE(glanceables_controller()->GetClassroomClient());
 
   // Click the date tray to show the glanceable bubbles.
@@ -254,7 +262,7 @@ IN_PROC_BROWSER_TEST_F(GlanceablesV2BrowserTest, OpenStudentCourseItemURL) {
       "https://classroom.google.com/c/test/a/test_course_id_0/details");
 }
 
-IN_PROC_BROWSER_TEST_F(GlanceablesV2BrowserTest, ClickSeeAllStudentButton) {
+IN_PROC_BROWSER_TEST_F(GlanceablesMvpBrowserTest, ClickSeeAllStudentButton) {
   ASSERT_TRUE(glanceables_controller()->GetClassroomClient());
 
   // Click the date tray to show the glanceable bubbles.
@@ -285,7 +293,7 @@ IN_PROC_BROWSER_TEST_F(GlanceablesV2BrowserTest, ClickSeeAllStudentButton) {
       "https://classroom.google.com/u/0/a/not-turned-in/all");
 }
 
-IN_PROC_BROWSER_TEST_F(GlanceablesV2BrowserTest,
+IN_PROC_BROWSER_TEST_F(GlanceablesMvpBrowserTest,
                        ViewAndSwitchStudentClassroomLists) {
   ASSERT_TRUE(glanceables_controller()->GetClassroomClient());
 
@@ -340,7 +348,7 @@ IN_PROC_BROWSER_TEST_F(GlanceablesV2BrowserTest,
                                       "No Due Date Course Work 2"}));
 }
 
-IN_PROC_BROWSER_TEST_F(GlanceablesV2BrowserTest, ViewAndSwitchTaskLists) {
+IN_PROC_BROWSER_TEST_F(GlanceablesMvpBrowserTest, ViewAndSwitchTaskLists) {
   ASSERT_TRUE(glanceables_controller()->GetTasksClient());
   EXPECT_FALSE(GetGlanceableTrayBubble());
 
@@ -383,7 +391,7 @@ IN_PROC_BROWSER_TEST_F(GlanceablesV2BrowserTest, ViewAndSwitchTaskLists) {
                                       "Task List 2 Item 3 Title"}));
 }
 
-IN_PROC_BROWSER_TEST_F(GlanceablesV2BrowserTest, ClickSeeAllTasksButton) {
+IN_PROC_BROWSER_TEST_F(GlanceablesMvpBrowserTest, ClickSeeAllTasksButton) {
   ASSERT_TRUE(glanceables_controller()->GetTasksClient());
   EXPECT_FALSE(GetGlanceableTrayBubble());
 
@@ -416,7 +424,7 @@ IN_PROC_BROWSER_TEST_F(GlanceablesV2BrowserTest, ClickSeeAllTasksButton) {
       "https://calendar.google.com/calendar/u/0/r/week?opentasks=1");
 }
 
-IN_PROC_BROWSER_TEST_F(GlanceablesV2BrowserTest, CheckOffTaskItems) {
+IN_PROC_BROWSER_TEST_F(GlanceablesMvpBrowserTest, CheckOffTaskItems) {
   ASSERT_TRUE(glanceables_controller()->GetTasksClient());
   EXPECT_FALSE(GetGlanceableTrayBubble());
 
@@ -461,6 +469,89 @@ IN_PROC_BROWSER_TEST_F(GlanceablesV2BrowserTest, CheckOffTaskItems) {
   GetEventGenerator()->ClickLeftButton();
   EXPECT_TRUE(GetTaskItemView(/*item_index=*/0)->GetCompletedForTest());
   EXPECT_TRUE(GetTaskItemView(/*item_index=*/1)->GetCompletedForTest());
+}
+
+class GlanceablesWithAddEditBrowserTest : public GlanceablesBrowserTest {
+ private:
+  base::test::ScopedFeatureList features_{features::kGlanceablesV2TasksAddEdit};
+};
+
+IN_PROC_BROWSER_TEST_F(GlanceablesWithAddEditBrowserTest, EditTaskItem) {
+  ASSERT_TRUE(glanceables_controller()->GetTasksClient());
+  EXPECT_FALSE(GetGlanceableTrayBubble());
+
+  // Click the date tray to show the glanceable bubbles.
+  GetEventGenerator()->MoveMouseTo(
+      GetDateTray()->GetBoundsInScreen().CenterPoint());
+  GetEventGenerator()->ClickLeftButton();
+
+  EXPECT_TRUE(GetGlanceableTrayBubble());
+  EXPECT_TRUE(GetTasksView());
+
+  // Check that the tasks glanceable is completely shown on the primary screen.
+  GetTasksView()->ScrollViewToVisible();
+  EXPECT_TRUE(
+      Shell::Get()->GetPrimaryRootWindow()->GetBoundsInScreen().Contains(
+          GetTasksView()->GetBoundsInScreen()));
+
+  const auto* const task_view = GetTaskItemView(0);
+  ASSERT_TRUE(task_view);
+
+  {
+    const auto* const title_label =
+        views::AsViewClass<views::Label>(task_view->GetViewByID(
+            base::to_underlying(GlanceablesViewId::kTaskItemTitleLabel)));
+    const auto* const title_text_field =
+        views::AsViewClass<views::Textfield>(task_view->GetViewByID(
+            base::to_underlying(GlanceablesViewId::kTaskItemTitleTextField)));
+
+    // Check that the view is in "view" mode (the label is displayed).
+    ASSERT_TRUE(title_label);
+    ASSERT_FALSE(title_text_field);
+    EXPECT_EQ(title_label->GetText(), u"Task List 1 Item 1 Title");
+
+    // Click the label to switch to "edit" mode.
+    GetEventGenerator()->MoveMouseTo(
+        title_label->GetBoundsInScreen().CenterPoint());
+    GetEventGenerator()->ClickLeftButton();
+  }
+
+  {
+    const auto* const title_label =
+        views::AsViewClass<views::Label>(task_view->GetViewByID(
+            base::to_underlying(GlanceablesViewId::kTaskItemTitleLabel)));
+    const auto* const title_text_field =
+        views::AsViewClass<views::Textfield>(task_view->GetViewByID(
+            base::to_underlying(GlanceablesViewId::kTaskItemTitleTextField)));
+
+    // Check that the view is in "edit" mode (the text field is displayed).
+    ASSERT_FALSE(title_label);
+    ASSERT_TRUE(title_text_field);
+    EXPECT_EQ(title_text_field->GetText(), u"Task List 1 Item 1 Title");
+
+    // Append " upd" text.
+    GetEventGenerator()->PressAndReleaseKey(ui::VKEY_SPACE);
+    GetEventGenerator()->PressAndReleaseKey(ui::VKEY_U);
+    GetEventGenerator()->PressAndReleaseKey(ui::VKEY_P);
+    GetEventGenerator()->PressAndReleaseKey(ui::VKEY_D);
+
+    // Finish editing by pressing Esc key.
+    GetEventGenerator()->PressAndReleaseKey(ui::VKEY_ESCAPE);
+  }
+
+  {
+    const auto* const title_label =
+        views::AsViewClass<views::Label>(task_view->GetViewByID(
+            base::to_underlying(GlanceablesViewId::kTaskItemTitleLabel)));
+    const auto* const title_text_field =
+        views::AsViewClass<views::Textfield>(task_view->GetViewByID(
+            base::to_underlying(GlanceablesViewId::kTaskItemTitleTextField)));
+
+    // Check that the view is in "view" mode with the updated label
+    ASSERT_TRUE(title_label);
+    ASSERT_FALSE(title_text_field);
+    EXPECT_EQ(title_label->GetText(), u"Task List 1 Item 1 Title upd");
+  }
 }
 
 }  // namespace ash

@@ -22,6 +22,7 @@
 #include "ash/style/icon_button.h"
 #include "ash/system/unified/glanceable_tray_child_bubble.h"
 #include "ash/system/unified/tasks_combobox_model.h"
+#include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/types/cxx23_to_underlying.h"
@@ -239,6 +240,12 @@ void TasksBubbleView::UpdateTasksList(const std::string& task_list_id,
 
   task_items_container_view_->RemoveAllChildViews();
 
+  auto mark_task_as_completed =
+      base::BindRepeating(&TasksBubbleView::MarkTaskAsCompleted,
+                          base::Unretained(this), task_list_id);
+  auto update_task = base::BindRepeating(&TasksBubbleView::UpdateTask,
+                                         base::Unretained(this), task_list_id);
+
   num_tasks_shown_ = 0;
   num_tasks_ = 0;
   for (const auto& task : *tasks) {
@@ -248,7 +255,8 @@ void TasksBubbleView::UpdateTasksList(const std::string& task_list_id,
 
     if (num_tasks_shown_ < kMaximumTasks) {
       task_items_container_view_->AddChildView(
-          std::make_unique<GlanceablesTaskView>(task_list_id, task.get()));
+          std::make_unique<GlanceablesTaskView>(
+              task.get(), mark_task_as_completed, update_task));
       ++num_tasks_shown_;
     }
     ++num_tasks_;
@@ -308,6 +316,23 @@ void TasksBubbleView::AnnounceListStateOnComboBoxAccessibility() {
     task_list_combo_box_view_->GetViewAccessibility().AnnounceText(
         list_footer_view_->items_count_label()->GetText());
   }
+}
+
+void TasksBubbleView::MarkTaskAsCompleted(const std::string& task_list_id,
+                                          const std::string& task_id,
+                                          bool completed) {
+  Shell::Get()->glanceables_controller()->GetTasksClient()->MarkAsCompleted(
+      task_list_id, task_id, completed);
+}
+
+void TasksBubbleView::UpdateTask(
+    const std::string& task_list_id,
+    const std::string& task_id,
+    const std::string& title,
+    GlanceablesTasksClient::UpdateTaskCallback callback) {
+  // TODO(b/301253574): show/hide `progress_bar_` and/or an error message.
+  Shell::Get()->glanceables_controller()->GetTasksClient()->UpdateTask(
+      task_list_id, task_id, title, std::move(callback));
 }
 
 BEGIN_METADATA(TasksBubbleView, views::View)

@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/glanceables/glanceables_metrics.h"
+#include "ash/glanceables/tasks/glanceables_tasks_client.h"
 #include "ash/glanceables/tasks/glanceables_tasks_types.h"
 #include "ash/system/unified/glanceable_tray_child_bubble.h"
 #include "base/memory/raw_ptr.h"
@@ -103,6 +104,17 @@ class ASH_EXPORT TasksBubbleView : public GlanceableTrayChildBubble,
   // Announces text describing the task list state through a screen
   // reader, using `task_list_combo_box_view_` view accessibility helper.
   void AnnounceListStateOnComboBoxAccessibility();
+
+  // Marks the specified task as completed.
+  void MarkTaskAsCompleted(const std::string& task_list_id,
+                           const std::string& task_id,
+                           bool completed);
+
+  // Updates the specified task.
+  void UpdateTask(const std::string& task_list_id,
+                  const std::string& task_id,
+                  const std::string& title,
+                  GlanceablesTasksClient::UpdateTaskCallback callback);
 
   // Model for the combobox used to change the active task list.
   std::unique_ptr<TasksComboboxModel> tasks_combobox_model_;

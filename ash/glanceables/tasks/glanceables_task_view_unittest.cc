@@ -12,6 +12,7 @@
 #include "ash/glanceables/tasks/glanceables_tasks_types.h"
 #include "ash/system/time/calendar_unittest_utils.h"
 #include "ash/test/ash_test_base.h"
+#include "base/functional/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -61,7 +62,9 @@ TEST_F(GlanceablesTaskViewTest, FormatsDueDate) {
         "task-id", "Task title", /*completed=*/false,
         /*due=*/due,
         /*has_subtasks=*/false, /*has_email_link=*/false, /*has_notes=*/false);
-    const auto view = GlanceablesTaskView("task-list-id", &task);
+    const auto view = GlanceablesTaskView(
+        &task, /*mark_as_completed_callback=*/base::DoNothing(),
+        /*update_callback=*/base::DoNothing());
 
     const auto* const due_label =
         views::AsViewClass<views::Label>(view.GetViewByID(
@@ -82,8 +85,10 @@ TEST_F(GlanceablesTaskViewTest, EntersAndExitsEditState) {
 
   const auto widget = CreateFramelessTestWidget();
   widget->SetFullscreen(true);
-  const auto* const view = widget->SetContentsView(
-      std::make_unique<GlanceablesTaskView>("task-list-id", &task));
+  const auto* const view =
+      widget->SetContentsView(std::make_unique<GlanceablesTaskView>(
+          &task, /*mark_as_completed_callback=*/base::DoNothing(),
+          /*update_callback=*/base::DoNothing()));
 
   {
     const auto* const title_label =

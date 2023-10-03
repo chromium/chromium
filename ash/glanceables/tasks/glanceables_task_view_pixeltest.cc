@@ -11,6 +11,7 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/test/pixel/ash_pixel_differ.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
+#include "base/functional/callback_helpers.h"
 #include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -45,7 +46,8 @@ class GlanceablesTaskViewPixelTest
     widget_ = CreateFramelessTestWidget();
     widget_->SetBounds(gfx::Rect(/*width=*/370, /*height=*/50));
     widget_->SetContentsView(std::make_unique<GlanceablesTaskView>(
-        /*task_list_id=*/"task-list-id", task_.get()));
+        task_.get(), /*mark_as_completed_callback=*/base::DoNothing(),
+        /*update_callback=*/base::DoNothing()));
   }
 
   absl::optional<pixel_test::InitParams> CreatePixelTestInitParams()

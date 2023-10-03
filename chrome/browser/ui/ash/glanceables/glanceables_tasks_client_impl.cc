@@ -221,6 +221,24 @@ void GlanceablesTasksClientImpl::AddTask(const std::string& task_list_id,
                      weak_factory_.GetWeakPtr(), task_list_id)));
 }
 
+void GlanceablesTasksClientImpl::UpdateTask(
+    const std::string& task_list_id,
+    const std::string& task_id,
+    const std::string& title,
+    GlanceablesTasksClient::UpdateTaskCallback callback) {
+  CHECK(!task_list_id.empty());
+  CHECK(!task_id.empty());
+  CHECK(!title.empty());
+  CHECK(callback);
+
+  auto* const request_sender = GetRequestSender();
+  request_sender->StartRequestWithAuthRetry(std::make_unique<PatchTaskRequest>(
+      request_sender,
+      base::BindOnce(&GlanceablesTasksClientImpl::OnTaskUpdated,
+                     weak_factory_.GetWeakPtr(), std::move(callback)),
+      task_list_id, task_id, TaskRequestPayload{.title = title}));
+}
+
 void GlanceablesTasksClientImpl::OnGlanceablesBubbleClosed(
     GlanceablesTasksClient::OnAllPendingCompletedTasksSavedCallback callback) {
   weak_factory_.InvalidateWeakPtrs();
@@ -434,6 +452,16 @@ void GlanceablesTasksClientImpl::OnTaskAdded(
           result.value()->id(), result.value()->title(),
           /*completed=*/false, /*due=*/absl::nullopt, /*has_subtasks=*/false,
           /*has_email_link=*/false, /*has_notes=*/false));
+}
+
+void GlanceablesTasksClientImpl::OnTaskUpdated(
+    GlanceablesTasksClient::UpdateTaskCallback callback,
+    ApiErrorCode status_code) {
+  // TODO(b/301253574): Add metrics.
+  // TODO(b/301253574): Update the task in `tasks_in_task_lists_`.
+
+  std::move(callback).Run(/*success=*/status_code ==
+                          ApiErrorCode::HTTP_SUCCESS);
 }
 
 google_apis::RequestSender* GlanceablesTasksClientImpl::GetRequestSender() {
