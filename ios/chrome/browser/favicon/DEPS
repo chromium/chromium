@@ -1,5 +1,6 @@
 include_rules = [
   "+ios/chrome/browser/history",
+  "+ios/chrome/browser/sessions",
 ]
 
 specific_include_rules = {

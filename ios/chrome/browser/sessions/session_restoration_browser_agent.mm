@@ -12,7 +12,6 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
-#import "components/favicon/ios/web_favicon_driver.h"
 #import "components/previous_session_info/previous_session_info.h"
 #import "ios/chrome/browser/sessions/session_constants.h"
 #import "ios/chrome/browser/sessions/session_restoration_observer.h"
@@ -22,14 +21,12 @@
 #import "ios/chrome/browser/sessions/web_state_list_serialization.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/all_web_state_observation_forwarder.h"
 #import "ios/chrome/browser/shared/model/web_state_list/order_controller.h"
 #import "ios/chrome/browser/shared/model/web_state_list/order_controller_source.h"
 #import "ios/chrome/browser/shared/model/web_state_list/removing_indexes.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web/features.h"
-#import "ios/chrome/browser/web/page_placeholder_tab_helper.h"
 #import "ios/chrome/browser/web/session_state/web_session_state_tab_helper.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
@@ -263,23 +260,6 @@ void SessionRestorationBrowserAgent::RestoreSessionWindow(
           base::BindRepeating(
               &web::WebState::CreateWithStorageSession,
               web::WebState::CreateParams(browser_->GetBrowserState())));
-
-  // Setup the placeholder and start fetching the favicon for the restored
-  // tabs if necessary.
-  for (web::WebState* web_state : restored_web_states) {
-    const GURL& visible_url = web_state->GetVisibleURL();
-    if (!visible_url.is_valid()) {
-      continue;
-    }
-
-    favicon::WebFaviconDriver::FromWebState(web_state)->FetchFavicon(
-        visible_url, /*is_same_document=*/false);
-
-    if (visible_url != kChromeUINewTabURL) {
-      PagePlaceholderTabHelper::FromWebState(web_state)
-          ->AddPlaceholderForNextNavigation();
-    }
-  }
 
   for (auto& observer : observers_) {
     observer.SessionRestorationFinished(browser_, restored_web_states);

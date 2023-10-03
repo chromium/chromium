@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/app_launcher/model/app_launcher_browser_agent.h"
 #import "ios/chrome/browser/crash_report/model/breadcrumbs/breadcrumb_manager_browser_agent.h"
 #import "ios/chrome/browser/device_sharing/device_sharing_browser_agent.h"
+#import "ios/chrome/browser/favicon/favicon_browser_agent.h"
 #import "ios/chrome/browser/follow/follow_browser_agent.h"
 #import "ios/chrome/browser/infobars/overlays/browser_agent/infobar_overlay_browser_agent_util.h"
 #import "ios/chrome/browser/lens/lens_browser_agent.h"
@@ -135,6 +136,7 @@ void AttachBrowserAgents(Browser* browser) {
   ReadingListBrowserAgent::CreateForBrowser(browser);
 
   PagePlaceholderBrowserAgent::CreateForBrowser(browser);
+  FaviconBrowserAgent::CreateForBrowser(browser);
 
   // This needs to be called last in case any downstream browser agents need to
   // access upstream agents created earlier in this function.

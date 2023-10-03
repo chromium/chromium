@@ -4,21 +4,32 @@
 
 #import "ios/chrome/browser/web/page_placeholder_browser_agent.h"
 
+#import "base/check.h"
+#import "base/check_op.h"
+#import "ios/chrome/browser/sessions/session_restoration_observer_helper.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web/page_placeholder_tab_helper.h"
 #import "ios/web/public/web_state.h"
 
 BROWSER_USER_DATA_KEY_IMPL(PagePlaceholderBrowserAgent)
 
 PagePlaceholderBrowserAgent::PagePlaceholderBrowserAgent(Browser* browser)
-    : web_state_list_(browser->GetWebStateList()) {
+    : browser_(browser) {
   // All the BrowserAgent are attached to the Browser during the creation,
   // the WebStateList must be empty at this point.
-  DCHECK(web_state_list_->empty())
+  DCHECK(browser_->GetWebStateList()->empty())
       << "PagePlaceholderBrowserAgent created for a Browser with a non-empty "
          "WebStateList.";
+
+  browser_->AddObserver(this);
+  AddSessionRestorationObserver(browser_.get(), this);
 }
 
-PagePlaceholderBrowserAgent::~PagePlaceholderBrowserAgent() {}
+PagePlaceholderBrowserAgent::~PagePlaceholderBrowserAgent() {
+  DCHECK(!browser_);
+}
 
 #pragma mark - Public
 
@@ -27,8 +38,11 @@ void PagePlaceholderBrowserAgent::ExpectNewForegroundTab() {
 }
 
 void PagePlaceholderBrowserAgent::AddPagePlaceholder() {
-  web::WebState* web_state =
-      web_state_list_ ? web_state_list_->GetActiveWebState() : nullptr;
+  if (!browser_) {
+    return;
+  }
+
+  web::WebState* web_state = browser_->GetWebStateList()->GetActiveWebState();
   if (web_state && expecting_foreground_tab_) {
     PagePlaceholderTabHelper::FromWebState(web_state)
         ->AddPlaceholderForNextNavigation();
@@ -36,17 +50,56 @@ void PagePlaceholderBrowserAgent::AddPagePlaceholder() {
 }
 
 void PagePlaceholderBrowserAgent::CancelPagePlaceholder() {
-  if (expecting_foreground_tab_) {
-    // Now that the new tab has been displayed, return to normal. Rather than
-    // keep a reference to the previous tab, just turn off preview mode for all
-    // tabs (since doing so is a no-op for the tabs that don't have it set).
-    expecting_foreground_tab_ = false;
+  if (!expecting_foreground_tab_ || !browser_) {
+    return;
+  }
 
-    int web_state_list_size = web_state_list_ ? web_state_list_->count() : 0;
-    for (int index = 0; index < web_state_list_size; ++index) {
-      web::WebState* web_state_at_index = web_state_list_->GetWebStateAt(index);
-      PagePlaceholderTabHelper::FromWebState(web_state_at_index)
-          ->CancelPlaceholderForNextNavigation();
+  // Now that the new tab has been displayed, return to normal. Rather than
+  // keep a reference to the previous tab, just turn off preview mode for all
+  // tabs (since doing so is a no-op for the tabs that don't have it set).
+  expecting_foreground_tab_ = false;
+
+  WebStateList* web_state_list = browser_->GetWebStateList();
+  const int web_state_list_size = web_state_list->count();
+  for (int index = 0; index < web_state_list_size; ++index) {
+    web::WebState* web_state_at_index = web_state_list->GetWebStateAt(index);
+    PagePlaceholderTabHelper::FromWebState(web_state_at_index)
+        ->CancelPlaceholderForNextNavigation();
+  }
+}
+
+#pragma mark - BrowserObserver
+
+void PagePlaceholderBrowserAgent::BrowserDestroyed(Browser* browser) {
+  DCHECK_EQ(browser_.get(), browser);
+  RemoveSessionRestorationObserver(browser_.get(), this);
+  browser_->RemoveObserver(this);
+  browser_ = nullptr;
+}
+
+#pragma mark - SessionRestorationObserver
+
+void PagePlaceholderBrowserAgent::WillStartSessionRestoration(
+    Browser* browser) {
+  // Nothing to do.
+}
+
+void PagePlaceholderBrowserAgent::SessionRestorationFinished(
+    Browser* browser,
+    const std::vector<web::WebState*>& restored_web_states) {
+  // Ignore the event if it does not correspond to the browser this
+  // object is bound to (which can happen with the optimised session
+  // storage code).
+  if (browser_.get() != browser) {
+    return;
+  }
+
+  // Setup the placeholder for the restored tabs if necessary.
+  for (web::WebState* web_state : restored_web_states) {
+    const GURL& visible_url = web_state->GetVisibleURL();
+    if (visible_url.is_valid() && visible_url != kChromeUINewTabURL) {
+      PagePlaceholderTabHelper::FromWebState(web_state)
+          ->AddPlaceholderForNextNavigation();
     }
   }
 }
