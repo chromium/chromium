@@ -1403,6 +1403,25 @@ suite('<os-settings-input-page>', () => {
         const orcaToggle = inputPage.shadowRoot!.querySelector('#orcaToggle');
         assertTrue(isVisible(orcaToggle));
       });
+
+      test('Deep link to orca suggestion toggle', async () => {
+        await createInputPage();
+
+        const params = new URLSearchParams();
+        const setting = settingMojom.Setting.kShowOrca;
+        params.append('settingId', setting.toString());
+        Router.getInstance().navigateTo(routes.OS_LANGUAGES_INPUT, params);
+        flush();
+
+        const deepLinkElement =
+            inputPage.shadowRoot!.querySelector<HTMLElement>('#orcaToggle');
+        assertTrue(!!deepLinkElement);
+        await waitAfterNextRender(deepLinkElement);
+        assertEquals(
+            deepLinkElement, inputPage.shadowRoot!.activeElement,
+            `Orca suggestion toggle should be focused for settingId=${
+                setting}.`);
+      });
     });
 
     suite('when both the emoji suggestions and orca are not allowed', () => {

@@ -660,6 +660,7 @@ void LanguagesSection::RegisterHierarchy(HierarchyGenerator* generator) const {
         mojom::Setting::kAddInputMethod,
         mojom::Setting::kShowEmojiSuggestions,
         mojom::Setting::kShowInputOptionsInShelf,
+        mojom::Setting::kShowOrca,
         mojom::Setting::kSpellCheck,
     };
     RegisterNestedSettingBulk(mojom::Subpage::kInput, kInputSubpageSettings,

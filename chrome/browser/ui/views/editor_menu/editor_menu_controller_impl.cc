@@ -7,6 +7,10 @@
 #include <string_view>
 #include <vector>
 
+#include "ash/webui/settings/public/constants/routes.mojom.h"
+#include "ash/webui/settings/public/constants/setting.mojom.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -19,9 +23,12 @@
 #include "ui/views/widget/widget.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/crosapi/mojom/url_handler.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
 #else
+#include "ash/public/cpp/new_window_delegate.h"
 #include "chrome/browser/ash/input_method/editor_mediator.h"
+#include "chromeos/ash/services/ime/public/mojom/input_method.mojom.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace chromeos::editor_menu {
@@ -111,7 +118,22 @@ void EditorMenuControllerImpl::OnDismiss(bool is_other_command_executed) {
   }
 }
 
-void EditorMenuControllerImpl::OnSettingsButtonPressed() {}
+void EditorMenuControllerImpl::OnSettingsButtonPressed() {
+  GURL setting_url = GURL(base::StrCat({"chrome://os-settings/",
+                    chromeos::settings::mojom::kInputSubpagePath, "?settingId=",
+                    base::NumberToString(static_cast<int>(
+                        chromeos::settings::mojom::Setting::kShowOrca))}));
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  chromeos::LacrosService* service = chromeos::LacrosService::Get();
+  DCHECK(service->IsAvailable<crosapi::mojom::UrlHandler>());
+
+  service->GetRemote<crosapi::mojom::UrlHandler>()->OpenUrl(setting_url);
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
+  ash::NewWindowDelegate::GetInstance()->OpenUrl(
+      setting_url, ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+      ash::NewWindowDelegate::Disposition::kNewForegroundTab);
+#endif
+}
 
 void EditorMenuControllerImpl::OnChipButtonPressed(
     std::string_view text_query_id) {

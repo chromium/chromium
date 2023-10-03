@@ -39,6 +39,7 @@ source_set("editor_menu") {
   deps = [
     ":utils",
     ":views",
+    "//ash/webui/settings/public/constants:mojom",
     "//base",
     "//chromeos/components/editor_menu/public/cpp",
     "//chromeos/crosapi/mojom",

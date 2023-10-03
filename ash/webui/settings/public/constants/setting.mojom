@@ -242,6 +242,7 @@ enum Setting {
   kShowPKAutoCorrection = 1209,
   kShowVKAutoCorrection = 1210,
   kShowDiacritic = 1211,
+  kShowOrca = 1212,
 
   // Files section.
   kGoogleDriveConnection = 1300,

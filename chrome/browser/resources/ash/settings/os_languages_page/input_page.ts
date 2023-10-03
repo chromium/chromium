@@ -167,6 +167,7 @@ export class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
     Setting.kAddInputMethod,
     Setting.kShowEmojiSuggestions,
     Setting.kShowInputOptionsInShelf,
+    Setting.kShowOrca,
     Setting.kSpellCheck,
   ]);
   // From RouteOriginMixin.
