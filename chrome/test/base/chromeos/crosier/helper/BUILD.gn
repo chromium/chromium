@@ -7,7 +7,10 @@ import("//build/config/chromeos/ui_mode.gni")
 assert(is_chromeos && is_chromeos_device)
 
 copy("helper") {
-  sources = [ "test_sudo_helper.py" ]
+  sources = [
+    "reset_dut.py",
+    "test_sudo_helper.py",
+  ]
   outputs = [ "$root_out_dir/{{source_file_part}}" ]
 }
 
