@@ -26,6 +26,25 @@ using DiscountsContent = discounts_db::DiscountsContentProto;
 using DiscountsKeyAndValues =
     std::vector<SessionProtoStorage<DiscountsContent>::KeyAndValue>;
 
+extern const char kDiscountsFetchResultHistogramName[];
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class DiscountsFetchResult {
+  // We got info back from OptGuide.
+  kInfoFromOptGuide = 0,
+  // We found valid info in local db. This is only recorded when we don't get
+  // info back from OptGuide.
+  kValidInfoInDb = 1,
+  // We found invalid info in local db. This is only recorded when we don't get
+  // info back from OptGuide.
+  kInvalidInfoInDb = 2,
+  // We don't get info back from OptGuide and don't find any info in local db.
+  kInfoNotFound = 3,
+
+  kMaxValue = kInfoNotFound
+};
+
 class DiscountsStorage : public history::HistoryServiceObserver {
  public:
   explicit DiscountsStorage(

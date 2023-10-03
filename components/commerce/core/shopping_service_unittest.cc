@@ -5,6 +5,7 @@
 #include "components/commerce/core/shopping_service.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/uuid.h"
 #include "base/values.h"
 #include "components/bookmarks/browser/bookmark_model.h"
@@ -1159,6 +1160,9 @@ TEST_P(ShoppingServiceTest, TestDiscountInfoResponse) {
                             std::vector<std::string>{kDiscountsUrl1}, _, _));
   SetDiscountsStorageForTesting(std::move(storage));
 
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectTotalCount(kDiscountsFetchResultHistogramName, 0);
+
   base::RunLoop run_loop;
   shopping_service_->GetDiscountInfoForUrls(
       std::vector<GURL>{GURL(kDiscountsUrl1), GURL(kDiscountsUrl2)},
@@ -1190,6 +1194,9 @@ TEST_P(ShoppingServiceTest, TestDiscountInfoResponse) {
           },
           &run_loop));
   run_loop.Run();
+
+  histogram_tester.ExpectTotalCount(kDiscountsFetchResultHistogramName, 1);
+  histogram_tester.ExpectBucketCount(kDiscountsFetchResultHistogramName, 0, 1);
 }
 
 TEST_P(ShoppingServiceTest, TestDiscountInfoResponse_InfoWithoutId) {
