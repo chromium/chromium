@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/task/sequenced_task_runner.h"
 #include "device/fido/enclave/enclave_authenticator.h"
+#include "device/fido/enclave/enclave_protocol_utils.h"
 #include "url/gurl.h"
 
 namespace device::enclave {
@@ -51,7 +52,7 @@ void EnclaveAuthenticatorDiscovery::AddAuthenticator() {
   std::vector<uint8_t> device_id = {1, 2, 3, 4};
   authenticator_ = std::make_unique<EnclaveAuthenticator>(
       localUrl, peerPublicKey, std::move(passkeys_), std::move(device_id),
-      testUsername, EnclaveAuthenticator::RequestSigningCallback());
+      testUsername, EnclaveRequestSigningCallback());
   observer()->DiscoveryStarted(this, /*success=*/true, {authenticator_.get()});
 }
 

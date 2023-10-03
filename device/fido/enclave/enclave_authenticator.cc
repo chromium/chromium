@@ -17,7 +17,6 @@
 #include "device/fido/cable/v2_handshake.h"
 #include "device/fido/discoverable_credential_metadata.h"
 #include "device/fido/enclave/enclave_http_client.h"
-#include "device/fido/enclave/enclave_protocol_utils.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_parsing_utils.h"
 #include "device/fido/public_key_credential_descriptor.h"
@@ -55,7 +54,7 @@ EnclaveAuthenticator::EnclaveAuthenticator(
     std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys,
     std::vector<uint8_t> device_id,
     const std::string& username,
-    RequestSigningCallback request_signing_callback)
+    EnclaveRequestSigningCallback request_signing_callback)
     : peer_identity_(fido_parsing_utils::Materialize(peer_identity)),
       available_passkeys_(std::move(passkeys)),
       device_id_(std::move(device_id)),
@@ -102,7 +101,7 @@ void EnclaveAuthenticator::GetAssertion(CtapGetAssertionRequest request,
   }
 
   CHECK(state_ == State::kConnected);
-  SendCommand();
+  BuildCommand();
 }
 
 void EnclaveAuthenticator::OnResponseReceived(
@@ -131,7 +130,7 @@ void EnclaveAuthenticator::OnResponseReceived(
 
     state_ = State::kConnected;
 
-    SendCommand();
+    BuildCommand();
     return;
   } else if (state_ == State::kConnected) {
     std::vector<uint8_t> plaintext;
@@ -159,7 +158,7 @@ void EnclaveAuthenticator::OnResponseReceived(
   NOTREACHED() << "State is " << static_cast<int>(state_);
 }
 
-void EnclaveAuthenticator::SendCommand() {
+void EnclaveAuthenticator::BuildCommand() {
   CHECK(pending_get_assertion_request_);
   CHECK(handshake_hash_);
 
@@ -172,20 +171,24 @@ void EnclaveAuthenticator::SendCommand() {
                      return selected_credential_id == passkey.credential_id();
                    });
   CHECK(found_passkey_it != available_passkeys_.end());
-  std::vector<uint8_t> request_body = BuildCommandRequestBody(
+  BuildCommandRequestBody(
       base::BindOnce(&BuildGetAssertionCommand, *found_passkey_it,
                      std::move(pending_get_assertion_request_->options.json),
                      request.client_data_json, request.rp_id),
-      request_signing_callback_, *handshake_hash_, device_id_);
+      request_signing_callback_, *handshake_hash_, device_id_,
+      base::BindOnce(&EnclaveAuthenticator::SendCommand,
+                     weak_factory_.GetWeakPtr()));
+}
 
-  if (!crypter_->Encrypt(&request_body)) {
+void EnclaveAuthenticator::SendCommand(std::vector<uint8_t> command_body) {
+  if (!crypter_->Encrypt(&command_body)) {
     FIDO_LOG(ERROR) << "Failed to encrypt command to enclave service.";
     CompleteGetAssertionRequest(CtapDeviceResponseCode::kCtap2ErrOther, {});
     return;
   }
 
   http_client_->SendHttpRequest(EnclaveHttpClient::RequestType::kCommand,
-                                request_body);
+                                command_body);
 }
 
 void EnclaveAuthenticator::CompleteGetAssertionRequest(

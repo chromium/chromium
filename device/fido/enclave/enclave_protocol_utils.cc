@@ -12,6 +12,7 @@
 #include "base/json/json_writer.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
+#include "base/task/thread_pool.h"
 #include "base/values.h"
 #include "components/cbor/reader.h"
 #include "components/cbor/values.h"
@@ -20,6 +21,7 @@
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #include "device/fido/authenticator_data.h"
 #include "device/fido/fido_constants.h"
+#include "device/fido/fido_parsing_utils.h"
 #include "device/fido/fido_transport_protocol.h"
 #include "device/fido/json_request.h"
 #include "device/fido/public_key_credential_user_entity.h"
@@ -282,13 +284,12 @@ cbor::Value BuildGetAssertionCommand(
   return cbor::Value(entry_map);
 }
 
-std::vector<uint8_t> BuildCommandRequestBody(
+void BuildCommandRequestBody(
     base::OnceCallback<cbor::Value()> command_callback,
-    base::RepeatingCallback<std::vector<uint8_t>(base::span<const uint8_t>,
-                                                 base::span<const uint8_t>)>
-        signing_callback,
-    base::span<uint8_t> handshake_hash_,
-    const std::vector<uint8_t>& device_id) {
+    EnclaveRequestSigningCallback signing_callback,
+    base::span<uint8_t> handshake_hash,
+    const std::vector<uint8_t>& device_id,
+    base::OnceCallback<void(std::vector<uint8_t>)> complete_callback) {
   cbor::Value::MapValue request_body_map;
 
   request_body_map.emplace(cbor::Value(kCommandDeviceIdKey),
@@ -299,21 +300,32 @@ std::vector<uint8_t> BuildCommandRequestBody(
   absl::optional<std::vector<uint8_t>> serialized_command_list =
       cbor::Writer::Write(cbor::Value(command_list));
 
-  // TODO(kenrb): The |signing_callback| invocation probably needs to be
-  // asynchronous, which would require a small refactor here.
-  request_body_map.emplace(cbor::Value(kCommandSigKey),
-                           cbor::Value(signing_callback.Run(
-                               handshake_hash_, *serialized_command_list)));
-
   request_body_map.emplace(cbor::Value(kCommandAuthLevelKey),
                            cbor::Value("hw"));
 
   request_body_map.emplace(cbor::Value(kCommandEncodedRequestsKey),
                            cbor::Value(*serialized_command_list));
 
-  absl::optional<std::vector<uint8_t>> serialized_request =
-      cbor::Writer::Write(cbor::Value(request_body_map));
-  return std::move(*serialized_request);
+  auto append_signature_and_finish =
+      [](cbor::Value::MapValue request_body_map,
+         base::OnceCallback<void(std::vector<uint8_t>)> complete_callback,
+         std::vector<uint8_t> signature) {
+        request_body_map.emplace(cbor::Value(kCommandSigKey),
+                                 cbor::Value(signature));
+        absl::optional<std::vector<uint8_t>> serialized_request =
+            cbor::Writer::Write(cbor::Value(request_body_map));
+        std::move(complete_callback).Run(*serialized_request);
+      };
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(
+          [](EnclaveRequestSigningCallback callback, std::vector<uint8_t> hash,
+             std::vector<uint8_t> data) { return callback.Run(hash, data); },
+          signing_callback, fido_parsing_utils::Materialize(handshake_hash),
+          std::move(*serialized_command_list)),
+      base::BindOnce(append_signature_and_finish, std::move(request_body_map),
+                     std::move(complete_callback)));
 }
 
 bool ParseGetAssertionRequestBody(
