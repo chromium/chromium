@@ -271,6 +271,7 @@
 #include "third_party/blink/renderer/core/loader/http_refresh_scheduler.h"
 #include "third_party/blink/renderer/core/loader/idleness_detector.h"
 #include "third_party/blink/renderer/core/loader/interactive_detector.h"
+#include "third_party/blink/renderer/core/loader/lazy_image_helper.h"
 #include "third_party/blink/renderer/core/loader/no_state_prefetch_client.h"
 #include "third_party/blink/renderer/core/loader/pending_link_preload.h"
 #include "third_party/blink/renderer/core/loader/progress_tracker.h"
@@ -3264,8 +3265,7 @@ void Document::DisplayNoneChangedForFrame() {
 }
 
 bool Document::WillPrintSoon() {
-  loading_for_print_ =
-      EnsureLazyLoadImageObserver().LoadAllImagesAndBlockLoadEvent();
+  loading_for_print_ = LazyImageHelper::LoadAllImagesAndBlockLoadEvent(*this);
 
   if (auto* view = View()) {
     loading_for_print_ = loading_for_print_ || view->LoadAllLazyLoadedIframes();

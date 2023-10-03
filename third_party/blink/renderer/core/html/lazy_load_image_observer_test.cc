@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
+#include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/loader/resource/image_resource.h"
@@ -404,21 +405,31 @@ class LazyLoadImagesTest : public SimTest {
         kLoadingDistanceThreshold);
   }
 
-  void LoadMainResourceWithImageFarFromViewport(const char* image_attributes) {
-    SimRequest main_resource("https://example.com/", "text/html");
-    LoadURL("https://example.com/");
-
-    main_resource.Complete(String::Format(
+  String MakeMainResourceString(const char* image_attributes) {
+    return String::Format(
         R"HTML(
         <body onload='console.log("main body onload");'>
         <div style='height: %dpx;'></div>
         <img src='https://example.com/image.png' %s
              onload='console.log("image onload");' />
         </body>)HTML",
-        kViewportHeight + kLoadingDistanceThreshold + 100, image_attributes));
+        kViewportHeight + kLoadingDistanceThreshold + 100, image_attributes);
+  }
+
+  void LoadMainResourceWithImageFarFromViewport(
+      const String& main_resource_string) {
+    SimRequest main_resource("https://example.com/", "text/html");
+    LoadURL("https://example.com/");
+
+    main_resource.Complete(main_resource_string);
 
     Compositor().BeginFrame();
     test::RunPendingTasks();
+  }
+
+  void LoadMainResourceWithImageFarFromViewport(const char* image_attributes) {
+    LoadMainResourceWithImageFarFromViewport(
+        MakeMainResourceString(image_attributes));
   }
 
   void TestLoadImageExpectingLazyLoad(const char* image_attributes) {
@@ -479,6 +490,66 @@ TEST_F(LazyLoadImagesTest, LoadAllImagesIfPrinting) {
   Compositor().BeginFrame();
   test::RunPendingTasks();
   EXPECT_TRUE(ConsoleMessages().Contains("image onload"));
+}
+
+TEST_F(LazyLoadImagesTest, LoadAllImagesIfPrintingIFrame) {
+  SimRequest iframe_resource("https://example.com/iframe.html", "text/html");
+
+  const String main_resource =
+      String::Format(R"HTML(
+    <body onload='console.log("main body onload");'>
+    <div style='height: %dpx;'></div>
+    <iframe id='iframe' src='iframe.html'></iframe>
+    <img src='https://example.com/top-image.png' loading='lazy'
+         onload='console.log("main body image onload");'>
+    </body>)HTML",
+                     kViewportHeight + kLoadingDistanceThreshold + 100);
+  LoadMainResourceWithImageFarFromViewport(main_resource);
+
+  iframe_resource.Complete(R"HTML(
+    <!doctype html>
+    <body onload='console.log("iframe body onload");'>
+    <img src='https://example.com/image.png' id='my_image' loading='lazy'
+         onload='console.log("iframe image onload");'>
+  )HTML");
+
+  // The body's load event should have already fired.
+  EXPECT_TRUE(ConsoleMessages().Contains("main body onload"));
+  EXPECT_TRUE(ConsoleMessages().Contains("iframe body onload"));
+  EXPECT_FALSE(ConsoleMessages().Contains("main body image onload"));
+  EXPECT_FALSE(ConsoleMessages().Contains("iframe image onload"));
+
+  auto* iframe = To<HTMLIFrameElement>(
+      GetDocument().getElementById(AtomicString("iframe")));
+  ASSERT_TRUE(iframe);
+  ASSERT_TRUE(iframe->ContentFrame());
+
+  test::RunPendingTasks();
+
+  EXPECT_FALSE(ConsoleMessages().Contains("main body image onload"));
+  EXPECT_FALSE(ConsoleMessages().Contains("iframe image onload"));
+
+  SimSubresourceRequest img_resource("https://example.com/image.png",
+                                     "image/png");
+
+  Document* iframe_doc = To<LocalFrame>(iframe->ContentFrame())->GetDocument();
+  ASSERT_TRUE(iframe_doc);
+  EXPECT_EQ(0, iframe_doc->Fetcher()->BlockingRequestCount());
+  EXPECT_EQ(0, GetDocument().Fetcher()->BlockingRequestCount());
+
+  EXPECT_TRUE(iframe_doc->WillPrintSoon());
+
+  // The loads in this case are blocking the load event.
+  ASSERT_EQ(1, iframe_doc->Fetcher()->BlockingRequestCount());
+  ASSERT_EQ(0, GetDocument().Fetcher()->BlockingRequestCount());
+
+  img_resource.Complete(TestImage());
+
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+
+  EXPECT_FALSE(ConsoleMessages().Contains("main body image onload"));
+  EXPECT_TRUE(ConsoleMessages().Contains("iframe image onload"));
 }
 
 TEST_F(LazyLoadImagesTest, AttributeChangedFromLazyToEager) {

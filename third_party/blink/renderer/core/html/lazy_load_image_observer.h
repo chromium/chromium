@@ -46,7 +46,7 @@ class LazyLoadImageObserver final
 
   // Loads all currently known lazy-loaded images. Returns whether any
   // resources started loading as a result.
-  bool LoadAllImagesAndBlockLoadEvent();
+  bool LoadAllImagesAndBlockLoadEvent(Document& for_document);
 
   // Called when the document finishes loading. If DelayOutOfViewportLazyImages
   // is enabled, this may update the intersection observer to start using a

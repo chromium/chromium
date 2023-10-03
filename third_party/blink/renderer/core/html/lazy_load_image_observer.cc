@@ -135,6 +135,15 @@ void RecordVisibleLoadTimeForImage(
                           base::Minutes(3), 50);
 }
 
+bool IsDescendantOrSameDocument(Document& subject, Document& root) {
+  for (Document* doc = &subject; doc; doc = doc->ParentDocument()) {
+    if (doc == root) {
+      return true;
+    }
+  }
+  return false;
+}
+
 }  // namespace
 
 LazyLoadImageObserver::LazyLoadImageObserver(const Document& root_document) {
@@ -157,7 +166,8 @@ void LazyLoadImageObserver::StopMonitoring(Element* element) {
   }
 }
 
-bool LazyLoadImageObserver::LoadAllImagesAndBlockLoadEvent() {
+bool LazyLoadImageObserver::LoadAllImagesAndBlockLoadEvent(
+    Document& for_document) {
   if (!lazy_load_intersection_observer_) {
     return false;
   }
@@ -166,6 +176,9 @@ bool LazyLoadImageObserver::LoadAllImagesAndBlockLoadEvent() {
   for (const IntersectionObservation* observation :
        lazy_load_intersection_observer_->Observations()) {
     Element* element = observation->Target();
+    if (!IsDescendantOrSameDocument(element->GetDocument(), for_document)) {
+      continue;
+    }
     if (auto* image_element = DynamicTo<HTMLImageElement>(element)) {
       const_cast<HTMLImageElement*>(image_element)
           ->LoadDeferredImageBlockingLoad();
