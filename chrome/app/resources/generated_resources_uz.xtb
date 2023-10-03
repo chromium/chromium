@@ -917,6 +917,7 @@ Ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Android ilovala
 <translation id="1723824996674794290">&amp;Yangi oyna</translation>
 <translation id="1724801751621173132">Matn kiritish rejimi</translation>
 <translation id="1725562816265788801">Varaqni aylantirish</translation>
+<translation id="1726294682426724172">Google Photos xizmatida ortiqcha elementlarni olib tashlovchi Magic Eraser, yaxshilangan video chaqiruvi vositalari va boshqa yangi funksyalar kiritildi.</translation>
 <translation id="1726503915437308071">Qiya shrift</translation>
 <translation id="1729533290416704613">Bundan tashqari kengaytma Omniboksda so‘rovlar kiritishda foydalaniladigan birlamchi qidiruv tizimini o‘zgartirib qo‘ydi.</translation>
 <translation id="1730666151302379551">Eski parolni unutdingizmi?</translation>
@@ -1241,7 +1242,6 @@ Ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Android ilovala
 <translation id="1974060860693918893">Qo‘shimcha</translation>
 <translation id="1974159333077206889">Barcha karnaylar orqali bil xil audio</translation>
 <translation id="1974216844776165821">Chrome parolni bu qurilmaga saqlagan, lekin uni Google hisobingizga saqlashingiz ham mumkin. Keyin hisobingizga kirgan qurilmalarda Google hisobingizda saqlangan barcha parollar va kirish kalitlaridan foydalana olasiz.</translation>
-<translation id="1974821797477522211">Tarmoqqa ulanish</translation>
 <translation id="1975841812214822307">O‘chirish...</translation>
 <translation id="1976150099241323601">Havfsizlik qurilmasiga kirish</translation>
 <translation id="1976823515278601587">Katta tejash</translation>
@@ -1925,7 +1925,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2485681265915754872">Google Play xizmat shartlari</translation>
 <translation id="248676429071089168">Sahifani pastga varaqlash uchun tepaga suring</translation>
 <translation id="2487067538648443797">Yangi xatcho‘p qo‘shish</translation>
-<translation id="2487268545026948104">Maʼlumotlarni tiklash uchun internetga ulaning</translation>
 <translation id="2489686758589235262">Yana 2 ta kalit tugma tayinlash</translation>
 <translation id="2489829450872380594">Keyingi safar yangi telefoningiz <ph name="DEVICE_TYPE" /> qurilmasini qulfdan chiqara oladi. Sozlamalar orqali Smart Lock funksiyasini faolsizlantirish mumkin.</translation>
 <translation id="2489918096470125693">&amp;Jild qo‘shish</translation>
@@ -2005,7 +2004,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2546991196809436099">Ekrandagi elementlar kattalashtirilishi. Lupani yoqib, oʻchirish uchun Search+Ctrl+M tugmalarini bosing.</translation>
 <translation id="2548347166720081527"><ph name="PERMISSION" /> ruxsati berildi</translation>
 <translation id="2548545707296594436">eSIM profil keshini asliga qaytarish</translation>
-<translation id="2549435700753464129">ChromeOS Bluetooth Floss</translation>
 <translation id="2549985041256363841">Yozuvni boshlash</translation>
 <translation id="2550212893339833758">Swap xotirasi</translation>
 <translation id="2550596535588364872"><ph name="FILE_NAME" /> <ph name="EXTENSION_NAME" /> bilan ochilsinmi?</translation>
@@ -3496,7 +3494,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3771851622616482156">Bu saytdagi hisobingizdan avtomatik chiqarilasiz (shuningdek, ochiq varaqlardan ham)</translation>
 <translation id="3772046291955677288">Men <ph name="BEGIN_LINK1" />Google xizmat shartlari<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Chrome va ChromeOS qoʻshimcha xizmat shartlari<ph name="END_LINK2" /> bilan tanishdim va ularga roziman.</translation>
 <translation id="3774166835015494435">Oxirgi rasmlar va bildirishnomalar</translation>
-<translation id="3774546890772201673"><ph name="NAME" />ni yangilang.</translation>
 <translation id="3775432569830822555">SSL server sertifikati</translation>
 <translation id="3775705724665058594">Qurilmalaringizga yuborish</translation>
 <translation id="3776508619697147021">Saytlar birdaniga bir nechta fayl yuklab olishga ruxsat soʻrashi mumkin</translation>
@@ -8739,7 +8736,6 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8077120325605624147">Siz ochgan har qanday sayt istalgan reklamani koʻrsatishi mumkin</translation>
 <translation id="8077579734294125741">Boshqa Chrome profillari</translation>
 <translation id="80798452873915119">Saytlar barcha displeylaringizda oynalarni boshqarishni soʻrashi mumkin</translation>
-<translation id="807990231167557618">Chromebook yangilangan.</translation>
 <translation id="8080028325999236607">Barcha tablarni yopish</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">Seansingiz <ph name="MANAGER_NAME" /> tomonidan boshqariladi. Administratorlar profilingizni oʻchirishi va tarmoq trafigini kuzatishi mumkin.</translation>

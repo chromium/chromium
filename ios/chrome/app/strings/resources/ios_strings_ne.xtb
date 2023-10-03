@@ -218,6 +218,7 @@
 <translation id="2195124168004379331">तपाईंको ब्राउजर सुरक्षित छ जस्तो देखिन्छ</translation>
 <translation id="2213327331203157297">Chrome मा लकडाउन मोड अफ गर्न आफ्नो iPhone मा उक्त मोड अफ गर्नुहोस्।</translation>
 <translation id="2218443599109088993">जुम घटाउनुहोस्</translation>
+<translation id="2220529011494928058">मुद्दा उजुरी गर्नुहोस्</translation>
 <translation id="2230173723195178503">वेबपृष्ठ लोड गरियो</translation>
 <translation id="2239626343334228536">ब्राउजिङ डेटा खाली गर्दै...</translation>
 <translation id="2242467532204595597">जुनसुकै बेला म्यासेज, डकुमेन्ट र अन्य एपहरूमा भएका लिंकहरूमा ट्याप गरेर Chrome प्रयोग गर्नुहोस्।</translation>
@@ -543,7 +544,6 @@
 <translation id="3959736869653157332">मेनु → नयाँ इन्कोग्निटो ट्याब</translation>
 <translation id="3967822245660637423">डाउनलोड पूर्ण भयो</translation>
 <translation id="3968505803272650567">रुचिहरू व्यवस्थापन गर्नुहोस्</translation>
-<translation id="3971789053442864420">{count,plural, =1{{count} पासवर्ड}other{{count} वटा पासवर्ड}}</translation>
 <translation id="3989635538409502728">साइन आउट गर्नुहोस्</translation>
 <translation id="3995521777587992544">पृष्ठ लोडसम्बन्धी प्रगति पट्टी, <ph name="EMAIL" /> लोड गरियो।</translation>
 <translation id="4002019827078931033">एड्रेस बार सारेर सिरानमा लैजानुहोस्</translation>
@@ -1339,7 +1339,6 @@
 <translation id="8328777765163860529">सबै बन्द गर्नुहोस्</translation>
 <translation id="8343993175958086504">आफ्नो डेटा ब्याकअप गर्नुहोस् र जुनसुकै डिभाइसमा सो डेटा प्रयोग गर्नुहोस्।</translation>
 <translation id="834783239627985533">सबैभन्दा बढी हेरिएका साइटहरू</translation>
-<translation id="8356276002902955750">{count,plural, =1{{count} बुकमार्क}other{{count} वटा बुकमार्क}}</translation>
 <translation id="8364841868226993049">यो फोटो <ph name="USER_EMAIL" /> को Google Photos मा सेभ गरिँदैन छ...</translation>
 <translation id="8378714024927312812">तपाईंको सङ्गठनले व्यवस्थापन गरेको</translation>
 <translation id="8386068868580335421">रिसेट गर्नुहोस्</translation>

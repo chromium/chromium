@@ -933,6 +933,7 @@ Az alkalmazások számára már megadott engedélyek erre a fiókra is érvénye
 <translation id="1723824996674794290">&amp;Új ablak</translation>
 <translation id="1724801751621173132">Beviteli mód</translation>
 <translation id="1725562816265788801">Lapgörgetés</translation>
+<translation id="1726294682426724172">Az új funkciók közé tartoznak többek között a Google Fotókban található, a zavaró tényezők eltávolítására szolgáló Varázsradír, a videohívásra szolgáló továbbfejlesztett eszközök és egyebek.</translation>
 <translation id="1726503915437308071">Dőlt betűtípus</translation>
 <translation id="1729533290416704613">Továbbá azt is szabályozza, hogy melyik oldal jelenik meg a cím- és keresősávban indított kereséskor.</translation>
 <translation id="1730666151302379551">Elfelejtettem a régi jelszót</translation>
@@ -1259,7 +1260,6 @@ Az alkalmazások számára már megadott engedélyek erre a fiókra is érvénye
 <translation id="1974060860693918893">Speciális</translation>
 <translation id="1974159333077206889">Azonos hang mindegyik hangszórón</translation>
 <translation id="1974216844776165821">A Chrome erre az eszközre mentette a jelszavát, de ha szeretné, mentheti inkább a Google-fiókjába. Így a Google-fiókjában található összes jelszavához és azonosítókulcsához hozzáférhet, amikor be van jelentkezve.</translation>
-<translation id="1974821797477522211">Csatlakozás hálózathoz</translation>
 <translation id="1975841812214822307">Eltávolítás…</translation>
 <translation id="1976150099241323601">Bejelentkezés a biztonságos eszközre</translation>
 <translation id="1976823515278601587">Jelentős megtakarítás</translation>
@@ -1943,7 +1943,6 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2485681265915754872">A Google Play Általános Szerződési Feltételei</translation>
 <translation id="248676429071089168">Az oldal lefelé mozgatásához csúsztasson felfelé</translation>
 <translation id="2487067538648443797">Új könyvjelző hozzáadása</translation>
-<translation id="2487268545026948104">Az adatok helyreállításához csatlakozzon az internethez</translation>
 <translation id="2489686758589235262">Két további kapcsoló hozzárendelése</translation>
 <translation id="2489829450872380594">Legközelebb új telefonnal oldhatja fel <ph name="DEVICE_TYPE" /> eszköze lezárását. A Smart Lock funkciót a Beállításokban kapcsolhatja ki.</translation>
 <translation id="2489918096470125693">Mappa &amp;hozzáadása...</translation>
@@ -2024,7 +2023,6 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2546991196809436099">Felnagyíthatja a képernyőn megjelenő elemeket. A nagyító be- és kikapcsolásához használja a Keresés + Ctrl + M billentyűparancsot.</translation>
 <translation id="2548347166720081527"><ph name="PERMISSION" /> engedélyezve</translation>
 <translation id="2548545707296594436">eSIM-profil gyorsítótárának visszaállítása</translation>
-<translation id="2549435700753464129">ChromeOS Bluetooth Floss</translation>
 <translation id="2549985041256363841">Felvétel megkezdése</translation>
 <translation id="2550212893339833758">Swap memória</translation>
 <translation id="2550596535588364872">Engedélyezi <ph name="EXTENSION_NAME" /> számára a(z) <ph name="FILE_NAME" /> megnyitását?</translation>
@@ -3518,7 +3516,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3771851622616482156">A rendszer kijelentkezteti erről a webhelyről (a megnyitott lapok esetében is)</translation>
 <translation id="3772046291955677288">Elolvastam és elfogadom a <ph name="BEGIN_LINK1" />Google Általános Szerződési Feltételeket<ph name="END_LINK1" />, valamint a <ph name="BEGIN_LINK2" />Chrome és a Chrome OS Kiegészítő Általános Szerződési Feltételeit<ph name="END_LINK2" />.</translation>
 <translation id="3774166835015494435">Friss fotók és értesítések</translation>
-<translation id="3774546890772201673">Frissítse a(z) <ph name="NAME" /> eszközt.</translation>
 <translation id="3775432569830822555">SSL-szerver tanúsítvány</translation>
 <translation id="3775705724665058594">Küldés a saját eszközökre</translation>
 <translation id="3776508619697147021">A webhelyek engedélyt kérhetnek arra, hogy automatikus töltsenek le több fájlt</translation>
@@ -8768,7 +8765,6 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8077120325605624147">Bármely felkeresett webhely bármilyen hirdetést megjeleníthet Önnek</translation>
 <translation id="8077579734294125741">Egyéb Chrome-profilok</translation>
 <translation id="80798452873915119">A webhelyek engedélyt kérhetnek arra, hogy az összes képernyőn kezeljék az ablakokat</translation>
-<translation id="807990231167557618">Frissült a Chromebookja.</translation>
 <translation id="8080028325999236607">Összes lap bezárása</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">A munkamenetet a(z) <ph name="MANAGER_NAME" /> kezeli. A rendszergazdák törölhetik az Ön profilját, és figyelhetik a hálózati forgalmát is.</translation>

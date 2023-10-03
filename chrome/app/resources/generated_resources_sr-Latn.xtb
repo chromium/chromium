@@ -921,6 +921,7 @@ Dozvole koje ste već dali aplikacijama mogu da važe za ovaj nalog. Možete da
 <translation id="1723824996674794290">&amp;Novi prozor</translation>
 <translation id="1724801751621173132">Režim unosa</translation>
 <translation id="1725562816265788801">Pomeranje kartica</translation>
+<translation id="1726294682426724172">U nove funkcije spadaju Magični brisač u Google slikama za uklanjanje ometanja, poboljšane alatke za video pozive i drugo</translation>
 <translation id="1726503915437308071">Font u kurzivu</translation>
 <translation id="1729533290416704613">Kontroliše i stranicu koja se prikazuje kada pretražujete iz omniboksa.</translation>
 <translation id="1730666151302379551">Zaboravljena stara lozinka</translation>
@@ -1247,7 +1248,6 @@ Dozvole koje ste već dali aplikacijama mogu da važe za ovaj nalog. Možete da
 <translation id="1974060860693918893">Napredne opcije</translation>
 <translation id="1974159333077206889">Isti zvuk na svim zvučnicima</translation>
 <translation id="1974216844776165821">Chrome je sačuvao lozinku na ovaj uređaj, ali možete umesto toga da je sačuvate na Google nalogu. Tada će sve lozinke i pristupni kodovi na Google nalogu takođe biti dostupni dok ste prijavljeni.</translation>
-<translation id="1974821797477522211">Povežite se sa mrežom</translation>
 <translation id="1975841812214822307">Ukloni...</translation>
 <translation id="1976150099241323601">Prijava na bezbednosni uređaj</translation>
 <translation id="1976823515278601587">Velike uštede</translation>
@@ -1927,7 +1927,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2485681265915754872">Uslovi korišćenja usluge Google Play</translation>
 <translation id="248676429071089168">Prevucite nagore da biste pomerili stranicu nadole</translation>
 <translation id="2487067538648443797">Dodaj novi obeleživač</translation>
-<translation id="2487268545026948104">Da biste vratili podatke, povežite se na internet</translation>
 <translation id="2489686758589235262">Dodeli još 2 prekidača</translation>
 <translation id="2489829450872380594">Sledeći put će novi telefon otključati ovaj <ph name="DEVICE_TYPE" />. Možete da isključite Smart Lock u podešavanjima.</translation>
 <translation id="2489918096470125693">Dodaj &amp;direktorijum...</translation>
@@ -2008,7 +2007,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2546991196809436099">Uvećajte prikaz da biste uvećali stavke na ekranu. Koristite taster za pretragu + Ctrl + M da biste uključili ili isključili lupu.</translation>
 <translation id="2548347166720081527">Funkcija <ph name="PERMISSION" /> je dozvoljena</translation>
 <translation id="2548545707296594436">Resetuj keš eSIM profila</translation>
-<translation id="2549435700753464129">ChromeOS Bluetooth Floss</translation>
 <translation id="2549985041256363841">Započni snimanje</translation>
 <translation id="2550212893339833758">Zamenjena memorija</translation>
 <translation id="2550596535588364872">Želite li da dozvolite da <ph name="EXTENSION_NAME" /> otvori <ph name="FILE_NAME" />?</translation>
@@ -3502,7 +3500,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3771851622616482156">Odjavićete se sa ovog sajta, uključujući i instance na otvorenim karticama</translation>
 <translation id="3772046291955677288">Pročitao/la sam i prihvatam <ph name="BEGIN_LINK1" />Google uslove korišćenja usluge<ph name="END_LINK1" /> i <ph name="BEGIN_LINK2" />dodatne uslove korišćenja usluge za Chrome i Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="3774166835015494435">Nedavne slike i obaveštenja</translation>
-<translation id="3774546890772201673">Ažurirajte <ph name="NAME" />.</translation>
 <translation id="3775432569830822555">Sertifikat SSL servera</translation>
 <translation id="3775705724665058594">Pošaljite na svoje uređaje</translation>
 <translation id="3776508619697147021">Sajtovi mogu da traže da automatski preuzimaju više fajlova</translation>
@@ -8755,7 +8752,6 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8077120325605624147">Svaki sajt koji posetite može da vam prikaže bilo koji oglas</translation>
 <translation id="8077579734294125741">Drugi Chrome profili</translation>
 <translation id="80798452873915119">Sajtovi mogu da zatraže da upravljaju prozorima na svim ekranima</translation>
-<translation id="807990231167557618">Chromebook je ažuriran.</translation>
 <translation id="8080028325999236607">Zatvori sve kartice</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">Sesijom upravlja <ph name="MANAGER_NAME" />. Administratori mogu da izbrišu vaš profil i da nadgledaju vaš mrežni saobraćaj.</translation>

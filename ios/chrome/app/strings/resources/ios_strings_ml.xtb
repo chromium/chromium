@@ -218,6 +218,7 @@
 <translation id="2195124168004379331">നിങ്ങളുടെ ബ്രൗസർ നല്ല നിലയിലാണെന്ന് തോന്നുന്നു</translation>
 <translation id="2213327331203157297">Chrome-ൽ ലോക്ക്ഡൗൺ മോഡ് പ്രവർത്തനരഹിതമാക്കാൻ നിങ്ങളുടെ iPhone-ൽ അത് ഓഫാക്കുക.</translation>
 <translation id="2218443599109088993">സൂം ഔട്ട് ചെയ്യുക</translation>
+<translation id="2220529011494928058">ഒരു പ്രശ്‌നം റിപ്പോർട്ട് ചെയ്യുക</translation>
 <translation id="2230173723195178503">വെബ്‌പേജ് ലോഡ് ചെയ്‌തു</translation>
 <translation id="2239626343334228536">ബ്രൗസിംഗ് ഡാറ്റ മായ്‌ക്കുന്നു...</translation>
 <translation id="2242467532204595597">സന്ദേശങ്ങൾ, ഡോക്യുമെന്റുകൾ, മറ്റ് ആപ്പുകൾ എന്നിവയിലെ ലിങ്കുകൾ ക്ലിക്ക് ചെയ്യുമ്പോഴെല്ലാം Chrome ഉപയോഗിക്കുക.</translation>
@@ -543,7 +544,6 @@
 <translation id="3959736869653157332">മെനു → പുതിയ അദൃശ്യ ടാബ്</translation>
 <translation id="3967822245660637423">ഡൗൺലോഡ് പൂർത്തിയായി</translation>
 <translation id="3968505803272650567">താൽപ്പര്യങ്ങൾ മാനേജ് ചെയ്യുക</translation>
-<translation id="3971789053442864420">{count,plural, =1{{count} പാസ്‌വേഡ്}other{{count} പാസ്‌വേഡുകൾ}}</translation>
 <translation id="3989635538409502728">സൈൻ ഔട്ട് ചെയ്യുക</translation>
 <translation id="3995521777587992544">പേജ് ലോഡ് പ്രോഗ്രസ് ബാര്‍, <ph name="EMAIL" /> ലോഡ് ചെയ്‌തു.</translation>
 <translation id="4002019827078931033">വിലാസ ബാർ മുകളിലേക്ക് നീക്കുക</translation>
@@ -1339,7 +1339,6 @@
 <translation id="8328777765163860529">എല്ലാം അടയ്‌ക്കുക</translation>
 <translation id="8343993175958086504">നിങ്ങളുടെ ഡാറ്റ ബാക്കപ്പ് ചെയ്‌ത് ഏത് ഉപകരണത്തിലും ഉപയോഗിക്കുക.</translation>
 <translation id="834783239627985533">ഏറ്റവും കൂടുതൽ സന്ദർശിച്ച സൈറ്റുകൾ</translation>
-<translation id="8356276002902955750">{count,plural, =1{{count} ബുക്ക്‌മാർക്ക്}other{{count} ബുക്ക്‌മാർക്കുകൾ}}</translation>
 <translation id="8364841868226993049"><ph name="USER_EMAIL" /> എന്ന വിലാസത്തിൽ നിന്ന് Google Photos-ൽ ചിത്രം സംരക്ഷിക്കുന്നു...</translation>
 <translation id="8378714024927312812">നിങ്ങളുടെ സ്ഥാപനം മാനേജ് ചെയ്യുന്നത്</translation>
 <translation id="8386068868580335421">റീസെറ്റ് ചെയ്യുക</translation>

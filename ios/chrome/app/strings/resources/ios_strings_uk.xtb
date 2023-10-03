@@ -218,6 +218,7 @@
 <translation id="2195124168004379331">Ваш веб-переглядач у безпеці</translation>
 <translation id="2213327331203157297">Щоб вимкнути режим блокування входу в Chrome, відключіть його на своєму пристрої iPhone.</translation>
 <translation id="2218443599109088993">Віддалити</translation>
+<translation id="2220529011494928058">Повідомити про проблему</translation>
 <translation id="2230173723195178503">Веб-сторінку завантажено</translation>
 <translation id="2239626343334228536">Очищення даних веб-перегляду…</translation>
 <translation id="2242467532204595597">Тепер ви можете відкривати в Chrome посилання з повідомлень, документів і інших додатків.</translation>
@@ -543,7 +544,6 @@
 <translation id="3959736869653157332">Меню → Нова анонімна вкладка</translation>
 <translation id="3967822245660637423">Завантажено</translation>
 <translation id="3968505803272650567">Керувати інтересами</translation>
-<translation id="3971789053442864420">{count,plural, =1{{count} пароль}one{{count} пароль}few{{count} паролі}many{{count} паролів}other{{count} пароля}}</translation>
 <translation id="3989635538409502728">Вийти</translation>
 <translation id="3995521777587992544">Індикатор перебігу завантаження сторінки. Завантажено <ph name="EMAIL" />.</translation>
 <translation id="4002019827078931033">Перемістити адресний рядок угору</translation>
@@ -1338,7 +1338,6 @@
 <translation id="8328777765163860529">Закрити всі</translation>
 <translation id="8343993175958086504">Створюйте резервні копії даних і використовуйте їх на будь-якому пристрої.</translation>
 <translation id="834783239627985533">Найпопулярніші сайти</translation>
-<translation id="8356276002902955750">{count,plural, =1{{count} закладка}one{{count} закладка}few{{count} закладки}many{{count} закладок}other{{count} закладки}}</translation>
 <translation id="8364841868226993049">Зображення зберігається в Google Фото в обліковому записі <ph name="USER_EMAIL" />…</translation>
 <translation id="8378714024927312812">Профілем керує ваша організація</translation>
 <translation id="8386068868580335421">Скинути</translation>

@@ -921,6 +921,7 @@
 <translation id="1723824996674794290">&amp;Նոր պատուհան</translation>
 <translation id="1724801751621173132">Ներածման ռեժիմ</translation>
 <translation id="1725562816265788801">Ներդիրների ոլորում</translation>
+<translation id="1726294682426724172">Այժմ կարող եք օգտվել այնպիսի նոր գործառույթներից, ինչպիսիք են կախարդական ջնջոցը Google Լուսանկարներում (խանգարող օբյեկտները հեռացնելու համար), տեսազանգի բարելավված գործիքները և այլն</translation>
 <translation id="1726503915437308071">Շեղ տառատեսակ</translation>
 <translation id="1729533290416704613">Այն նաև վերահսկում է ցուցադրվող էջերը, երբ դուք որոնում եք կատարում Omnibox-ից:</translation>
 <translation id="1730666151302379551">Մոռացել եմ հին գաղտնաբառը</translation>
@@ -1244,7 +1245,6 @@
 <translation id="1974060860693918893">Լրացուցիչ</translation>
 <translation id="1974159333077206889">Նույն աուդիոն բոլոր բարձրախոսներով</translation>
 <translation id="1974216844776165821">Chrome-ը պահել է ձեր գաղտնաբառն այս սարքում, սակայն դուք կարող եք պահել այն ձեր Google հաշվում։ Google հաշվում պահվող բոլոր գաղտնաբառերն ու անցաբառերը նույնպես հասանելի կլինեն, եթե մտնեք հաշիվ։</translation>
-<translation id="1974821797477522211">Միացում ցանցին</translation>
 <translation id="1975841812214822307">Հեռացնել…</translation>
 <translation id="1976150099241323601">Մուտք անվտանգության սարք</translation>
 <translation id="1976823515278601587">Մեծ տնտեսում</translation>
@@ -1925,7 +1925,6 @@
 <translation id="2485681265915754872">Google Play-ի օգտագործման պայմաններ</translation>
 <translation id="248676429071089168">Սահեցրեք վերև՝ էջի ներքև անցնելու համար</translation>
 <translation id="2487067538648443797">Ավելացնել նոր էջանիշ</translation>
-<translation id="2487268545026948104">Տվյալները վերականգնելու համար միացեք համացանցին</translation>
 <translation id="2489686758589235262">Նշանակել ևս 2 փոխանջատիչ</translation>
 <translation id="2489829450872380594">Հաջորդ անգամ <ph name="DEVICE_TYPE" /> սարքը կապակողպվի նոր հեռախոսով: Smart Lock-ը կարող եք անջատել կարգավորումներում։</translation>
 <translation id="2489918096470125693">Հավելել &amp;թղթապանակ...</translation>
@@ -2003,7 +2002,6 @@
 <translation id="2546991196809436099">Մեծացրեք մասշտաբը՝ տարրերը էկրանին ավելի խոշոր դարձնելու համար։ Օգտագործեք Որոնում + Ctrl + M դյուրանցումը՝ խոշորացույցը միացնելու և անջատելու համար։</translation>
 <translation id="2548347166720081527">«<ph name="PERMISSION" />»՝ թույլատրված է</translation>
 <translation id="2548545707296594436">Վերակայել eSIM պրոֆիլի քեշը</translation>
-<translation id="2549435700753464129">Bluetooth-ի համար Floss՝ ChromeOS-ում</translation>
 <translation id="2549985041256363841">Սկսել տեսագրումը</translation>
 <translation id="2550212893339833758">Swap հիշողություն</translation>
 <translation id="2550596535588364872">Թույլատրե՞լ <ph name="EXTENSION_NAME" /> հավելվածին բացել «<ph name="FILE_NAME" />» ֆայլը:</translation>
@@ -3494,7 +3492,6 @@
 <translation id="3771851622616482156">Դուք դուրս կգրվեք հաշվից այս կայքում և բաց ներդիրներում</translation>
 <translation id="3772046291955677288">Ես կարդացել և ընդունում եմ <ph name="BEGIN_LINK1" />Google-ի օգտագործման պայմանները<ph name="END_LINK1" /> և <ph name="BEGIN_LINK2" />Chrome-ի և ChromeOS-ի օգտագործման լրացուցիչ պայմանները<ph name="END_LINK2" />։</translation>
 <translation id="3774166835015494435">Վերջին լուսանկարներ և ծանուցումներ</translation>
-<translation id="3774546890772201673">Թարմացրեք <ph name="NAME" />-ը։</translation>
 <translation id="3775432569830822555">SSL սերվերի վկայագիր</translation>
 <translation id="3775705724665058594">Ուղարկել սարքերին</translation>
 <translation id="3776508619697147021">Կայքերը կարող են ավտոմատ մի քանի ֆայլ ներբեռնելու թույլտվություն հայցել</translation>
@@ -8738,7 +8735,6 @@
 <translation id="8077120325605624147">Ցանկացած կայք, որն այցելում եք, կարող է գովազդ ցուցադրել ձեզ</translation>
 <translation id="8077579734294125741">Այլ Chrome պրոֆիլներ</translation>
 <translation id="80798452873915119">Կայքերը կարող են հայցել պատուհանները բոլոր էկրաններին կառավարելու թույլտվություն</translation>
-<translation id="807990231167557618">Ձեր Chromebook-ը թարմացված է։</translation>
 <translation id="8080028325999236607">Փակել բոլոր ներդիրները</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">Ձեր աշխատաշրջանը կառավարվում է <ph name="MANAGER_NAME" />-ի կողմից։ Ադմինիստրատորները կարող են ջնջել ձեր պրոֆիլը, ինչպես նաև վերահսկել ձեր ցանցի թրաֆիկը։</translation>

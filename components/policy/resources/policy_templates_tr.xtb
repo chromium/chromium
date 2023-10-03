@@ -2497,23 +2497,6 @@ Bu politika devre dışı olarak ayarlanırsa veya ayarlanmadan bırakılırsa k
 <translation id="3150351525324499342">Araç çubuğunda <ph name="PRODUCT_NAME" /> simgesini varsayılan olarak gösterme, kullanıcıların seçmesine izin ver</translation>
 <translation id="3152135410085709340">Yerel dosyaların, PDF görüntüleyicide bu sitelerdeki file:// URL'lerine erişmesine izin ver</translation>
 <translation id="3152425128389603870">Birleşik Masaüstü'nü kullanılabilir hale getir ve varsayılan olarak aç.</translation>
-<translation id="3157857846231611820">Chrome'a bir dosya eklendiğinde tetiklenen <ph name="ON_FILE_ATTACHED_ENTERPRISE_CONNECTOR" /> Enterprise Bağlayıcı'ya uygulanacak Chrome Enterprise Connectors hizmetleri ayarlarının listesidir.
-
-      <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> ve <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> alanları, bağlayıcının, belirli bir sayfaya dosya eklendiğinde ilgili dosyayı analiz için gönderip göndermemesi gerektiğini ve bu dosyanın analiz isteğine hangi etiketlerin dahil edileceğini belirlemek amacıyla kullanılır. Sayfa URL'si etiketle ilişkilendirilen desenle eşleşirse "etkinleştir" desenine karşılık gelen bu etiket analiz isteğine dahil edilir. Ancak, aynı etikete sahip "devre dışı bırak" deseni sayfa URL'si ile eşleşirse dahil edilmez. Analiz, isteğe en az 1 etiket dahil edilecekse gerçekleşir.
-
-      <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> alanı, ayarların hangi analiz servis sağlayıcısına karşılık geldiğini tanımlar.
-
-      <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" /> alanının 1 değerine ayarlanması, Chrome'un dosyaya sayfaya erişim izni vermeden önce analiz hizmetinden yanıt almak için bekleyeceği anlamına gelir. Başka herhangi bir tam sayı değeri, Chrome'un sayfaya dosya erişim iznini hemen vereceği anlamına gelir.
-
-      <ph name="ENTERPRISE_CONNECTOR_BLOCK_PASSWORD_PROTECTED_FIELD" /> alanı, Chrome'un şifre korumalı dosyaları engelleyeceğini mi yoksa izin mi vereceğini kontrol eder.
-
-      <ph name="ENTERPRISE_CONNECTOR_BLOCK_LARGE_FILES_FIELD" /> alanı, Chrome'un analiz edilemeyecek kadar büyük dosyaları engelleyeceğini mi yoksa izin mi vereceğini kontrol eder.
-
-      <ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD" /> alanı, bağlayıcının hangi etiketler için kullanıcının atlanabilir uyarıyla sonuçlanan taramayı atlamak üzere gerekçe girmesini gerektirdiğini belirlemek amacıyla kullanılır. Bu alan ayarlanmazsa gerekçe girmenin zorunlu olmadığı varsayılır.
-
-      <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" /> ve <ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" /> alanları, tarama sonucu net olmadığında görüntülenen uyarıdan sonra kullanıcıya gösterilen mesajı yapılandırmak için kullanılır. Mesaj alanında, en fazla 200 karakterden oluşması gereken metin bulunur. Learn_more_url (daha fazla bilgi edinin) alanı, yönetici tarafından sağlanan URL'yi içerir. Bu URL, işlemin neden engellendiği hakkında daha fazla müşteri tarafından sağlanan bilgi edinmek için kullanıcı tarafından tıklanabilir olur. Mesajın dilini içeren dil alanı isteğe bağlıdır. Dil alanının boş bırakılması veya "varsayılan" değerine ayarlanması, kullanıcının dilinde mesaj olmadığında kullanılacak mesajı gösterir. Etiket alanı, mesajın hangi tarama türleri için görüntüleneceğini belirtir. Custom_messages (özel mesajlar) listesi herhangi bir giriş içermeyebilir veya birden fazla giriş içerebilir. Her girişin boş olmayan mesajı ve etiket alanları olmalıdır.
-
-      Bu politikanın yürürlüğe girmesi için ek kurulum gerekir. Daha fazla bilgi için lütfen https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting adresini ziyaret edin.</translation>
 <translation id="3159375329008977062">Kullanıcının, kullanıcı arayüzü üzerinden Crostini kapsayıcıları dışa/içe aktarmasına izin verilir</translation>
 <translation id="3163167792874598128">Politika ayarlanmaz veya Etkin değerine ayarlanırsa App Store puan promosyonu, kullanıcıya en fazla yılda bir kez gösterilebilir.
 Politika, Devre Dışı değerine ayarlanırsa App Store puan promosyonu, kullanıcıya gösterilmez.</translation>
@@ -3430,6 +3413,7 @@ Bu politika geçici bir çözümdür ve birkaç kilometre taşından kaldırıla
 <translation id="3870300103958000506"><ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" />, False (Yanlış) olarak ayarlanmamış ve <ph name="ADS_SETTINGS_FOR_INTRUSIVE_ADS_SITES_POLICY_NAME" /> seçeneğine, 1 verilmiş veya herhangi bir değer verilmemişse tüm sitelerde reklamlara izin verilir.
 
       Politikayı 2 değerine ayarlayarak sitelerde araya giren reklamları engelleyebilirsiniz.</translation>
+<translation id="3876564097829884243">EphemeralNetworkPolicies özelliğini etkinleştir.</translation>
 <translation id="3877517141460819966">Entegre iki etmenli kimlik doğrulama modu</translation>
 <translation id="3877908683993837673">Bu politika, DNS sunucusuyla iletişim kurmak için hangi yazılım yığınının kullanıldığını kontrol eder: İşletim Sistemi DNS istemcisi veya <ph name="PRODUCT_NAME" /> ürününün yerleşik DNS istemcisi Bu politika hangi DNS sunucularının kullanıldığını etkilemez: Örneğin, işletim sistemi kurumsal DNS sunucusu kullanacak şekilde yapılandırılmışsa aynı sunucu, yerleşik DNS istemcisi tarafından da kullanılır. Ayrıca DNS-over-HTTPS kullanılıp kullanılmadığını da kontrol etmez; <ph name="PRODUCT_NAME" />, DNS-over-HTTPS istekleri için her zaman yerleşik çözümleyici kullanır. DNS-over-HTTPS'nin kontrolüyle ilgili bilgi için <ph name="DNS_OVER_HTTPS_MODE_POLICY_NAME" /> politikasına bakın.
 
@@ -4810,6 +4794,15 @@ Politika ayarlanmadan bırakılırsa ya da devre dışı bırakılırsa çerezle
       Hiçbir politikanın diğeri üzerinde önceliği olmamakla birlikte, <ph name="COOKIES_BLOCKED_FOR_URLS_POLICY_NAME" /> ve <ph name="COOKIES_ALLOWED_FOR_URLS_POLICY_NAME" /> politikalarına bakın. Bu üç politikada yer alan URL kalıpları birbirleriyle çakışmamalıdır.
 
       Geçerli <ph name="URL_LABEL" /> kalıpları hakkında ayrıntılı bilgi için https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns adresine bakabilirsiniz. <ph name="WILDCARD_VALUE" />, bu politikada kabul edilen bir değer değildir.</translation>
+<translation id="5174547204575752627">Bu politika, PPAPI eklentisindeki VideoDecoder API'ler için kısa süre önce yapılan yeni düzenlemeyi kontrol eder.
+
+Taşıma işlemi yalnızca dahili uygulama ayrıntılarını etkiler ve hiçbir davranışı değiştirmez. Ancak bu politika, PPAPI uygulamalarının beklendiği gibi çalışmaması durumunda kullanılabilir.
+
+Politika ayarlanmadan bırakıldığında veya Etkin değerine ayarlandığında hangi uygulamanın kullanılacağına tarayıcı karar verir.
+Politika, Devre Dışı değerine ayarlandığında tarayıcı, politikanın geçerliliği sona erene kadar eski uygulamayı kullanır.
+
+NOT: Tarayıcı çalışırken bu politikada yapılan değişiklikleri yalnızca
+yeni başlatılan oluşturucu işlemleri yansıtır.</translation>
 <translation id="5177260184597743704">OnSecurityEvent Chrome Enterprise Bağlayıcı için yapılandırma politikası</translation>
 <translation id="5178479074002209469">Bu politika uyarınca güncelleme gerekiyorsa yönetilmeyen kullanıcı oturumlarının bildirim alıp almayacağını ve zorla çıkış yapıp yapmayacağını gösteren bir boole flag'i.</translation>
 <translation id="5179853299156742425">Masa şablonunun indirilebileceği URL.</translation>
@@ -4827,6 +4820,7 @@ Politika ayarlanmadan bırakılırsa ya da devre dışı bırakılırsa çerezle
 <translation id="519247340330463721">Güvenli Tarama ile ilgili politikaları yapılandırır.</translation>
 <translation id="5194683382395300627">Şifrelerin otomatik olarak değiştirilmesi gibi işlemler için web'de <ph name="ASSISTANT_PRODUCT_NAME" /> kullanımına izin ver</translation>
 <translation id="5196630732055960309">Bu web uygulamalarının üzerinden File Handling API'ye izin ver</translation>
+<translation id="5205352023880027050">EphemeralNetworkPolicies özelliğini etkinleştirme.</translation>
 <translation id="5206454085187851382"><ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" /> için <ph name="PRINTERS_ALLOWLIST" /> seçiliyken <ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME" /> politikası ayarlanırsa kullanıcıların hangi yazıcıları kullanabileceği belirlenir. Kullanıcı yalnızca kimlikleri bu politikadaki değerlerle eşleşen yazıcıları kullanabilir. Kimliklerin, <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> politikasında belirtilen dosyadaki <ph name="ID_FIELD" /> veya <ph name="GUID_FIELD" /> alanlarına karşılık gelmesi gerekir.</translation>
 <translation id="5207543664699568887">Linux'ta <ph name="PRODUCT_NAME" /> tarafından sistem bildirimlerinin kullanılıp kullanılmayacağını yapılandırır.
 
@@ -5353,6 +5347,31 @@ Bu ayarı etkinleştirirseniz veya yapılandırmazsanız kullanıcılar şifrele
 <translation id="5622924058222112599">Varsayılan CECPQ2 kullanıma sunma işlemini etkinleştir</translation>
 <translation id="5623304306796942802">Birden fazla sertifika eşleştiğinde istem görüntüle</translation>
 <translation id="5625771176514429288">Chrome Uygulamalarının bu platformlarda çalıştırılmasına izin verilir.</translation>
+<translation id="5627094573311711592">Veri sızıntılarını önlemek için veri denetimi kural listesini yapılandırır. Veri sızıntısı; veri kopyalayıp yapıştırma, web sayfalarına dosya ekleme, yazdırma, indirme gibi işlemler sırasında meydana gelebilir.
+
+      Her kural şunlardan oluşur:
+      - İşlem kaynağının özellikleri. Kuralın tetiklenmesi için kullanıcı işleminin, <ph name="DATA_CONTROLS_SOURCES" /> alanındaki tüm dolu alanlarla eşleşmesi gerekir. Listenin alt alanları için yalnızca bir girişin eşleşmesi gerekir. Örneğin, kuralın tetiklenmesi için yalnızca bir URL kalıbının eşleşmesi yeterlidir.
+      - İşlem hedefinin özellikleri. Kuralın tetiklenmesi için kullanıcı işleminin, <ph name="DATA_CONTROLS_DESTINATIONS" /> alanındaki tüm dolu alanlarla eşleşmesi gerekir. Listenin alt alanları için yalnızca bir girişin eşleşmesi gerekir. Örneğin, kuralın tetiklenmesi için yalnızca bir URL kalıbının eşleşmesi yeterlidir.
+      - Kaynakların verilerine uygulanan kısıtlamaların listesi.
+
+      Kurallar şunları yapmak için eklenebilir:
+      - Kaynaklar ve hedefler arasında paylaşılan pano verilerini kontrol etme.
+      - Herhangi bir kaynaktan yazdırmayı kontrol etme.
+      - Hedeflerin herhangi birine eklenen dosyaları kontrol etme.
+      - Kaynakların herhangi birinden indirilen dosyaları kontrol etme.
+
+      <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" /> politikası Doğru değerine ayarlanırsa tetiklenen kurallar yöneticiye bildirilir.
+      Kısıtlama seviyesi; ALLOW (İZİN VER), BLOCK (ENGELLE), WARN (UYAR), REPORT (BİLDİR) değerine ayarlanabilir.
+      - Kısıtlama seviyesi, ALLOW (İZİN VER) değerine ayarlanırsa işleme izin verilir. Bu işlem, diğer kurallar tarafından uygulanan kısıtlamaları da geçersiz kılar.
+      - Kısıtlama seviyesi, BLOCK (ENGELLE) değerine ayarlanırsa işleme izin verilmez.
+      - Kısıtlama seviyesi WARN (UYAR) değerine ayarlanırsa kullanıcı uyarılır ve isterse işlemi sürdürebilir ya da iptal edebilir.
+      - Kısıtlama seviyesi REPORT (BİLDİR) değerine ayarlanırsa kullanıcı işlemi kesintiye uğramaz ancak <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" /> politikası etkinleştirilirse rapor gönderilir.
+
+      Notlar:
+      - URL kalıplarını şu biçime göre biçimlendirin ( https://support.google.com/chrome/a?p=url_blocklist_filter_format ).
+      - <ph name="PRODUCT_OS_NAME" /> ürününe özgü veri sızıntısı önleme kuralları için <ph name="DATA_LEAK_PREVENTION_RULES_LIST" /> politikasını da inceleyin.
+
+      Politika ayarlanmadan bırakılırsa hiçbir kısıtlama uygulanmaz.</translation>
 <translation id="5630352020869108293">Son oturumu geri yükle</translation>
 <translation id="5633871703004128675">Metin imlecini vurgulama erişilebilirlik özelliğini etkinleştir</translation>
 <translation id="5634032995857968056">Oluşturucu uygulama kapsayıcısı korumalı alanını etkinleştir</translation>
@@ -5841,21 +5860,6 @@ Bu politika ayarlanmazsa veya listede geçerli bir resim referansı yoksa <ph na
 <translation id="6135398260575578389">Güvenli Tarama gelişmiş modda etkin. Bu mod daha yüksek güvenlik sağlar, ancak Google ile daha fazla tarama bilgisi paylaşmayı gerektirir.</translation>
 <translation id="6135552820180449830">Crosh (99 sürümünden itibaren desteklenir)</translation>
 <translation id="6138636318340561140">Ziyaret edilen URL'lerin Güvenli Tarama durumunu gerçek zamanlı olarak kontrol et</translation>
-<translation id="6140635914906859015">Chrome'da panodan veri girildiğinde veya web içeriği sürüklenip bırakıldığında tetiklenen <ph name="ON_BULK_DATA_ENTRY_ENTERPRISE_CONNECTOR" /> Enterprise Bağlayıcı'ya uygulanacak Chrome Enterprise Connectors  hizmetleri ayarlarının listesidir.
-
-      <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> ve <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> alanları, bağlayıcının, belirli bir sayfada veri girildiğinde ilgili veriyi analiz için gönderip göndermemesi gerektiğini ve bu veri analiz isteğine hangi etiketlerin dahil edileceğini belirlemek üzere kullanılır. Sayfa URL'si etiketle ilişkilendirilen desenle eşleşirse "etkinleştir" desenine karşılık gelen bu etiket analiz isteğine dahil edilir. Ancak, aynı etikete sahip "devre dışı bırak" deseni sayfa URL'si ile eşleşirse dahil edilmez. Analiz, isteğe en az 1 etiket dahil edilecekse gerçekleşir.
-
-      <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> alanı, ayarların hangi analiz servis sağlayıcısına karşılık geldiğini tanımlar.
-
-      <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" /> alanının 1 değerine ayarlanması, Chrome'un verilere sayfaya erişim izni vermeden önce analiz hizmetinden yanıt almak için bekleyeceği anlamına gelir. Başka herhangi bir tam sayı değeri, Chrome'un sayfaya dosya erişim iznini hemen vereceği anlamına gelir.
-
-      <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> alanı, Chrome'a girilen verilerin taranabilmesi için eşit olması veya aşması gereken minimum boyutu (bayt cinsinden) belirtir. Alan ayarlanmadan bırakılırsa varsayılan değer 100 bayttır.
-
-      <ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD" /> alanı, bağlayıcının hangi etiketler için kullanıcının atlanabilir uyarıyla sonuçlanan taramayı atlamak üzere gerekçe girmesini gerektirdiğini belirlemek amacıyla kullanılır. Bu alan ayarlanmazsa gerekçe girmenin zorunlu olmadığı varsayılır.
-
-      <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" /> ve <ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" /> alanları, tarama sonucu net olmadığında görüntülenen uyarıdan sonra kullanıcıya gösterilen mesajı yapılandırmak için kullanılır. Mesaj alanında, en fazla 200 karakterden oluşması gereken metin bulunur. Learn_more_url (daha fazla bilgi edinin) alanı, yönetici tarafından sağlanan URL'yi içerir. Bu URL, işlemin neden engellendiği hakkında daha fazla müşteri tarafından sağlanan bilgi edinmek için kullanıcı tarafından tıklanabilir olur. Mesajın dilini içeren dil alanı isteğe bağlıdır. Dil alanının boş bırakılması veya "varsayılan" değerine ayarlanması, kullanıcının dilinde mesaj olmadığında kullanılacak mesajı gösterir. Etiket alanı, mesajın hangi tarama türleri için görüntüleneceğini belirtir. Custom_messages (özel mesajlar) listesi herhangi bir giriş içermeyebilir veya birden fazla giriş içerebilir. Her girişin boş olmayan mesajı ve etiket alanları olmalıdır.
-
-      Bu politikanın yürürlüğe girmesi için ek kurulum gerekir. Daha fazla bilgi için lütfen https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting adresini ziyaret edin.</translation>
 <translation id="6141402445226505817">Her zaman yüzeysel saat dilimi algılamasını kullan</translation>
 <translation id="6141944295566709543">Cihaz kilitliyken kullanıcıların medya oynatmasına izin ver</translation>
 <translation id="6142501278956229253">Yazdırma Pikselleştirme PDF DPI</translation>
@@ -6045,6 +6049,7 @@ Ayrıntılı bilgi için https://developer.chrome.com/blog/immutable-document-do
 <translation id="6299554629216555326">Pencere yönetimi ayarları</translation>
 <translation id="6302021021024941085">Kiosk sorun giderme araçlarını devre dışı bırak.</translation>
 <translation id="6303118494824248488">İndirilecek disk görüntüsünün URL'si.</translation>
+<translation id="6303278429164386663">EphemeralNetworkPolicies özelliğinin etkinleştirilmesini kontrol eder.</translation>
 <translation id="6305373713165475629">Politika ayarlanırsa varsayılan renkli yazdırma modu geçersiz kılınır. Mod kullanılamıyorsa bu politika yok sayılır.</translation>
 <translation id="6308109234708949641">Bu politika, Family Link kullanıcıları için Ekran Kaydı özelliğini etkinleştirir ve bu özelliğin ekran kaydı oluşturup metne dönüştürmesine, ayrıca bunları Drive'a yüklemesine izin verir.
       Bu politika diğer kullanıcı türlerini etkilemez.
@@ -6554,21 +6559,6 @@ Bu politika, Doğru değerine (varsayılan) ayarlandığında yeni davranış et
 
 Bu politika Yanlış değerine ayarlandığında eski davranış etkinleştirilir.</translation>
 <translation id="663685822663765995">Renkli yazdırma modunu kısıtla</translation>
-<translation id="6637946190026453735"><ph name="PRODUCT_NAME" /> hizmetinden bir sayfa veya dosya yazdırıldığında tetiklenen <ph name="ON_PRINT_ENTERPRISE_CONNECTOR" /> Enterprise Bağlayıcı'ya uygulanacak <ph name="PRODUCT_NAME" /> Enterprise Connectors hizmetleri ayarlarının listesidir.
-
-      <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> ve<ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> alanları, bağlayıcının, belirli bir sayfada yazdırma işlemi tetiklendiğinde ilgili veriyi analiz için gönderip göndermemesi gerektiğini ve analiz isteğine hangi etiketlerin dahil edileceğini belirlemek üzere kullanılır. Analiz, isteğe en az 1 etiket dahil edilecekse gerçekleşir.
-
-      <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> alanı, ayarların hangi analiz servis sağlayıcısına karşılık geldiğini tanımlar.
-
-      <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" /> alanının 1 değerine ayarlanması <ph name="PRODUCT_NAME" /> hizmetinin, yazdırılan sayfa için yazdırma önizleme iletişim kutusunun gösterilmesine izin vermeden önce analiz hizmetinden yanıt almak için bekleyeceği anlamına gelir. Başka herhangi bir tam sayı değeri, <ph name="PRODUCT_NAME" /> hizmetinin yazdırma önizleme iletişim kutusunu hemen göstereceği anlamına gelir.
-
-      <ph name="ENTERPRISE_CONNECTOR_BLOCK_LARGE_FILES_FIELD" /> alanları, <ph name="PRODUCT_NAME" /> hizmetinin analiz edilemeyecek kadar büyük dosyaları/sayfaları engelleyeceğini mi yoksa izin mi vereceğini kontrol eder.
-
-      <ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD" /> alanı, bağlayıcının hangi etiketler için kullanıcının atlanabilir uyarıyla sonuçlanan taramayı atlamak üzere gerekçe girmesini gerektirdiğini belirlemek amacıyla kullanılır. Bu alan ayarlanmazsa gerekçe girmenin zorunlu olmadığı varsayılır.
-
-      <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" /> ve <ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" /> alanları, tarama sonucu net olmadığında görüntülenen uyarıdan sonra kullanıcıya gösterilen mesajı yapılandırmak için kullanılır. Yönetici en fazla 200 karakterlik mesajları yapılandırabilir.
-
-      Bu politikanın yürürlüğe girmesi için ek kurulum gerekir. Daha fazla bilgi için lütfen https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting adresini ziyaret edin.</translation>
 <translation id="6640355849038068978">Bu ayar etkinleştirilirse kullanıcılar örneğin bir Telefon Merkezi bildirimini tıklayarak Eche uygulamasını başlatabilir.
 
       Bu ayar devre dışı bırakılırsa kullanıcılar Eche uygulamasını başlatamaz.
@@ -6866,6 +6856,7 @@ yeni başlatılan oluşturucu işlemleri yansıtır.</translation>
 Politika, yanlış değerine ayarlanır veya ayarlanmadan bırakılırsa bu düzen kullanılamaz. Geçerli olması için yeniden başlatma gerekir.</translation>
 <translation id="685769593149966548">YouTube için Yüksek Düzey Kısıtlı Mod'u zorunlu kıl</translation>
 <translation id="686079137349561371">Microsoft Windows 7 veya sonraki sürümler</translation>
+<translation id="6866755486434471318">Video kodu çözmek için paylaşılan resimlerin <ph name="PEPPER_NAME" /> tarafından kullanılmasına izin ver.</translation>
 <translation id="6881447940489194100">Verilerin on altılı kodlanmış SHA-256 karması.</translation>
 <translation id="68818134518270542">Politikanın ayarlanması, kullanıcıların <ph name="PRODUCT_OS_NAME" /> kilit ekranında not alma uygulaması olarak açabilecekleri uygulamaları belirtir.
 
@@ -7224,6 +7215,10 @@ Kaynakları eşleşen kalıplar, https://support.google.com/chrome/a?p=url_block
 
       Bu politika ayarlanmazsa tarayıcı kullanıcının yapılandırılmış sistem çözümleyicisi ile ilişkilendirilmiş bir çözümleyiciye DNS-over-HTTPS istekleri gönderebilir.</translation>
 <translation id="7152640356717355643">Cihaz ağ arayüzü raporlamasını etkinleştir</translation>
+<translation id="7153786895642570081">Bu politika, EphemeralNetworkPolicies özelliğinin etkinleştirilmesini kontrol eder.
+Bu politika Doğru değerine ayarlandığında DeviceOpenNetworkConfiguration girişleri olan RecommendedValuesAreEphemeral ve UserCreatedNetworkConfigurationsAreEphemeral'a uyulur.
+Bu politika ayarlanmadığında veya Yanlış değerine ayarlandığında, belirtilen ağ politikalarına yalnızca EphemeralNetworkPolicies özelliği etkinse uyulur.
+EphemeralNetworkPolicies özelliği varsayılan olarak etkinleştirildiğinde bu politika kaldırılacaktır.</translation>
 <translation id="7157329428182136164">3D grafik API'leri için desteği etkinleştir</translation>
 <translation id="7158358621906236999">Varsayılan sensörler ayarı</translation>
 <translation id="7161568070244869726">AppCache özelliğini etkinleştirmeye zorla</translation>
@@ -7565,23 +7560,6 @@ Politikanın ayarlanmadan bırakılması, normal kullanıcılar için işlevsel 
 <translation id="7477149584454865826">Yazıcıyı kurmak için IPP Everywhere'in kullanılıp kullanılmayacağını belirten boole flag'i.</translation>
 <translation id="7477231245051133709">Mono ses erişilebilirlik özelliklerini etkinleştir</translation>
 <translation id="7479408102162550711">Ağ etkinliklerini raporla</translation>
-<translation id="7480826412572122600">Chrome'da bir dosya indirildiğinde tetiklenen <ph name="ON_FILE_DOWNLOADED_ENTERPRISE_CONNECTOR" /> Enterprise Bağlayıcı'ya uygulanacak Chrome Enterprise Connectors hizmetleri ayarlarının listesidir.
-
-      <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> ve <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> alanları, bağlayıcı belirli bir sayfadan indirildiğinde analiz için dosya gönderip göndermemesi gerektiğini ve bu dosyanın analiz isteğine hangi etiketlerin dahil edileceğini belirlemek üzere kullanılır. Sayfa URL'si etiketle ilişkilendirilen desenle eşleşirse "etkinleştir" desenine karşılık gelen bu etiket analiz isteğine dahil edilir. Ancak, aynı etikete sahip "devre dışı bırak" deseni sayfa URL'si ile eşleşirse dahil edilmez. Analiz, isteğe en az 1 etiket dahil edilecekse gerçekleşir.
-
-      <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> alanı, ayarların hangi analiz servis sağlayıcısına karşılık geldiğini tanımlar.
-
-      <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" /> alanının 1 değerine ayarlanması, Chrome'un kullanıcıya indirilen dosyaya erişim izni vermeden önce analiz hizmetinden yanıt almak için bekleyeceği anlamına gelir. Başka herhangi bir tam sayı değeri, Chrome'un, kullanıcıya dosya erişim iznini hemen vereceği anlamına gelir.
-
-      <ph name="ENTERPRISE_CONNECTOR_BLOCK_PASSWORD_PROTECTED_FIELD" /> alanı, Chrome'un şifre korumalı dosyaları engelleyeceğini mi yoksa izin mi vereceğini kontrol eder.
-
-      <ph name="ENTERPRISE_CONNECTOR_BLOCK_LARGE_FILES_FIELD" /> alanı, Chrome'un analiz edilemeyecek kadar büyük dosyaları engelleyeceğini mi yoksa izin mi vereceğini kontrol eder.
-
-      <ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD" /> alanı, bağlayıcının hangi etiketler için kullanıcının atlanabilir uyarıyla sonuçlanan taramayı atlamak üzere gerekçe girmesini gerektirdiğini belirlemek amacıyla kullanılır. Bu alan ayarlanmazsa gerekçe girmenin zorunlu olmadığı varsayılır.
-
-      <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" /> ve <ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" /> alanları, tarama sonucu net olmadığında görüntülenen uyarıdan sonra kullanıcıya gösterilen mesajı yapılandırmak için kullanılır. Mesaj alanında, en fazla 200 karakterden oluşması gereken metin bulunur. Learn_more_url (daha fazla bilgi edinin) alanı, yönetici tarafından sağlanan URL'yi içerir. Bu URL, işlemin neden engellendiği hakkında daha fazla müşteri tarafından sağlanan bilgi edinmek için kullanıcı tarafından tıklanabilir olur. Mesajın dilini içeren dil alanı isteğe bağlıdır. Dil alanının boş bırakılması veya "varsayılan" değerine ayarlanması, kullanıcının dilinde mesaj olmadığında kullanılacak mesajı gösterir. Etiket alanı, mesajın hangi tarama türleri için görüntüleneceğini belirtir. Custom_messages (özel mesajlar) listesi herhangi bir giriş içermeyebilir veya birden fazla giriş içerebilir. Her girişin boş olmayan mesajı ve etiket alanları olmalıdır.
-
-      Bu politikanın yürürlüğe girmesi için ek kurulum gerekir. Daha fazla bilgi için lütfen https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting adresini ziyaret edin.</translation>
 <translation id="7481702249684965639">Çöp kutusu, kullanıcı için etkinleştirildi.</translation>
 <translation id="7482768039644066614">Göz atma deneyimini iyileştirmek için makine öğrenimi modellerinin ve sayfa yükleme meta verilerinin getirilmesini etkinleştir</translation>
 <translation id="748292668225669178"><ph name="MICROSOFT_ONE_DRIVE_NAME" /> ekleme işlemini yapılandırır</translation>
@@ -9022,6 +9000,8 @@ Politika ayarlanmadan bırakılırsa kayıtlı şifreler ilk çalıştırma sır
       Politikayı ayarlarsanız kullanıcılar bu fonksiyonu değiştiremez. Ayarlamadan bırakırsanız kullanıcılar bu ayarı değiştirebilir.</translation>
 <translation id="8707790573162457301">Giriş sırasında otomatik disk temizlemeyi çalıştır</translation>
 <translation id="8713535263782304771">Güvenli Tarama'yı devre dışı bırak</translation>
+<translation id="8714556680280715750">Kullanıcıların daha fazla bilgi edinmek için ziyaret edebileceği bir URL. Ayarlanmadan bırakılırsa
+yükleyicide "daha fazla bilgi" URL'si görünmez. Görünüyorsa https şemasını kullanmalıdır.</translation>
 <translation id="8715181294371649277">Gerçek Zamanlı Güvenli Tarama İndirme Koruması'na izin ver</translation>
 <translation id="8715885991031124968">Farklı kaynaklı alt çerçevelerden tetiklenen JavaScript iletişim kutularına izin verilir.</translation>
 <translation id="8720547069538712402">Kullanıcının yazım denetimini etkinleştirmesine veya devre dışı bırakmasına izin verir</translation>

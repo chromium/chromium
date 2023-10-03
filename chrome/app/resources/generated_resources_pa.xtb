@@ -931,6 +931,7 @@
 <translation id="1723824996674794290">&amp;ਨਵੀਂ window</translation>
 <translation id="1724801751621173132">ਇਨਪੁੱਟ ਮੋਡ</translation>
 <translation id="1725562816265788801">ਟੈਬ ਸਕ੍ਰੋਲਿੰਗ</translation>
+<translation id="1726294682426724172">ਨਵੀਆਂ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਵਿੱਚ ਅਣਚਾਹੀਆਂ ਚੀਜ਼ਾਂ ਨੂੰ ਹਟਾਉਣ ਲਈ Google Photos 'ਤੇ ਜਾਦੂਈ ਰਬੜ, ਵੀਡੀਓ ਕਾਲ ਸੰਬੰਧੀ ਬਿਹਤਰ ਬਣਾਏ ਟੂਲ ਅਤੇ ਹੋਰ ਬਹੁਤ ਕੁਝ ਸ਼ਾਮਲ ਹਨ</translation>
 <translation id="1726503915437308071">ਇਟੈਲਿਕ ਫ਼ੌਂਟ</translation>
 <translation id="1729533290416704613">ਇਹ ਇਸਨੂੰ ਵੀ ਕੰਟਰੋਲ ਕਰਦਾ ਹੈ ਕਿ ਜਦੋਂ ਤੁਸੀਂ ਓਮਨੀਬਾਕਸ ਤੋਂ ਖੋਜ ਕਰਦੇ ਹੋ ਤਾਂ ਕਿਹੜਾ ਪੰਨਾ ਦਿਖਾਇਆ ਜਾਂਦਾ ਹੈ।</translation>
 <translation id="1730666151302379551">ਪੁਰਾਣਾ ਪਾਸਵਰਡ ਭੁੱਲ ਗਏ</translation>
@@ -1255,7 +1256,6 @@
 <translation id="1974060860693918893">ਉੱਨਤ</translation>
 <translation id="1974159333077206889">ਸਾਰੇ ਸਪੀਕਰਾਂ ਵਿੱਚੋਂ ਇੱਕੋ ਜਿਹੀ ਅਵਾਜ਼</translation>
 <translation id="1974216844776165821">Chrome ਨੇ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਤੁਹਾਡਾ ਪਾਸਵਰਡ ਰੱਖਿਅਤ ਕਰ ਲਿਆ ਹੈ, ਪਰ ਤੁਸੀਂ ਇਸਦੀ ਬਜਾਏ Google ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਕਰ ਸਕਦੇ ਹੋ। ਫਿਰ, ਤੁਹਾਡੇ ਵੱਲੋਂ ਸਾਈਨ-ਇਨ ਕੀਤਾ ਹੋਣ ਵੇਲੇ ਤੁਹਾਡੇ Google ਖਾਤੇ ਵਿਚਲੇ ਸਾਰੇ ਪਾਸਵਰਡ ਅਤੇ ਪਾਸਕੀਆਂ ਵੀ ਉਪਲਬਧ ਹੋਣਗੀਆਂ।</translation>
-<translation id="1974821797477522211">ਨੈੱਟਵਰਕ ਨਾਲ ਕਨੈਕਟ ਕਰੋ</translation>
 <translation id="1975841812214822307">ਹਟਾਓ...</translation>
 <translation id="1976150099241323601">ਸੁਰੱਖਿਆ ਡੀਵਾਈਸ 'ਤੇ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="1976823515278601587">ਜ਼ਿਆਦਾ ਬਚਤਾਂ</translation>
@@ -1939,7 +1939,6 @@
 <translation id="2485681265915754872">Google Play ਦੀ ਸੇਵਾ ਦੇ ਨਿਯਮ</translation>
 <translation id="248676429071089168">ਪੰਨੇ ਨੂੰ ਹੇਠਾਂ ਲਿਜਾਉਣ ਲਈ ਉੱਪਰ ਵੱਲ ਸਵਾਈਪ ਕਰੋ</translation>
 <translation id="2487067538648443797">ਨਵਾਂ ਬੁੱਕਮਾਰਕ ਸ਼ਾਮਲ ਕਰੋ</translation>
-<translation id="2487268545026948104">ਆਪਣੇ ਡਾਟੇ ਨੂੰ ਮੁੜ-ਬਹਾਲ ਕਰਨ ਲਈ, ਇੰਟਰਨੈੱਟ ਨਾਲ ਕਨੈਕਟ ਕਰੋ</translation>
 <translation id="2489686758589235262">2 ਹੋਰ ਸਵਿੱਚ ਜ਼ਿੰਮੇ ਲਗਾਓ</translation>
 <translation id="2489829450872380594">ਅਗਲੀ ਵਾਰ ਇੱਕ ਨਵਾਂ ਫ਼ੋਨ ਇਸ <ph name="DEVICE_TYPE" /> ਨੂੰ ਅਣਲਾਕ ਕਰੇਗਾ। ਤੁਸੀਂ ਸੈਟਿੰਗਾਂ ਵਿੱਚ 'ਸਮਾਰਟ ਲਾਕ' ਨੂੰ ਬੰਦ ਕਰ ਸਕਦੇ ਹੋ।</translation>
 <translation id="2489918096470125693">&amp;ਫੋਲਡਰ ਜੋੜੋ...</translation>
@@ -2019,7 +2018,6 @@
 <translation id="2546991196809436099">ਸਕ੍ਰੀਨ ਦੀਆਂ ਆਈਟਮਾਂ ਨੂੰ ਵੱਡਾ ਕਰਨ ਲਈ ਜ਼ੂਮ ਵਧਾਓ। ਵੱਡਦਰਸ਼ੀ ਨੂੰ ਚਾਲੂ ਅਤੇ ਬੰਦ ਕਰਨ ਲਈ Search + Ctrl + M ਵਰਤੋ।</translation>
 <translation id="2548347166720081527">ਮਨਜ਼ੂਰਸ਼ੁਦਾ <ph name="PERMISSION" /></translation>
 <translation id="2548545707296594436">ਈ-ਸਿਮ ਪ੍ਰੋਫਾਈਲ ਕੈਸ਼ੇ ਰੀਸੈੱਟ ਕਰੋ</translation>
-<translation id="2549435700753464129">ChromeOS ਬਲੂਟੁੱਥ Floss</translation>
 <translation id="2549985041256363841">ਰਿਕਾਰਡਿੰਗ ਸ਼ੁੁਰੂ ਕਰੋ</translation>
 <translation id="2550212893339833758">ਸਵੈਪ ਕੀਤੀ ਗਈ ਮੈਮਰੀ</translation>
 <translation id="2550596535588364872">ਕੀ <ph name="EXTENSION_NAME" /> ਨੂੰ <ph name="FILE_NAME" /> ਖੋਲ੍ਹਣ ਦੇਣੀ ਹੈ?</translation>
@@ -3509,7 +3507,6 @@
 <translation id="3771851622616482156">ਖੁੱਲ੍ਹੀਆਂ ਟੈਬਾਂ ਸਮੇਤ, ਤੁਹਾਨੂੰ ਇਸ ਸਾਈਟ ਤੋਂ ਸਾਈਨ-ਆਊਟ ਕਰ ਦਿੱਤਾ ਜਾਵੇਗਾ</translation>
 <translation id="3772046291955677288">ਮੈਂ <ph name="BEGIN_LINK1" />Google ਦੇ ਸੇਵਾ ਦੇ ਨਿਯਮਾਂ<ph name="END_LINK1" /> ਅਤੇ <ph name="BEGIN_LINK2" />Chrome ਅਤੇ ChromeOS ਦੇ ਵਧੀਕ ਸੇਵਾ ਦੇ ਨਿਯਮਾਂ<ph name="END_LINK2" /> ਨੂੰ ਪੜ੍ਹ ਲਿਆ ਹੈ ਅਤੇ ਉਨ੍ਹਾਂ ਨਾਲ ਸਹਿਮਤ ਹਾਂ।</translation>
 <translation id="3774166835015494435">ਹਾਲੀਆ ਫ਼ੋਟੋਆਂ ਅਤੇ ਸੂਚਨਾਵਾਂ</translation>
-<translation id="3774546890772201673"><ph name="NAME" /> ਨੂੰ ਅੱਪਡੇਟ ਕਰੋ।</translation>
 <translation id="3775432569830822555">SSL ਸਰਵਰ ਪ੍ਰਮਾਣ-ਪੱਤਰ</translation>
 <translation id="3775705724665058594">ਆਪਣੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਭੇਜੋ</translation>
 <translation id="3776508619697147021">ਸਾਈਟਾਂ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਕਈ ਫ਼ਾਈਲਾਂ ਡਾਊਨਲੋਡ ਕਰਨ ਲਈ ਪੁੱਛ ਸਕਦੀਆਂ ਹਨ</translation>
@@ -8755,7 +8752,6 @@
 <translation id="8077120325605624147">ਤੁਹਾਡੇ ਵੱਲੋਂ ਦੇਖੀ ਗਈ ਕੋਈ ਵੀ ਸਾਈਟ ਤੁਹਾਨੂੰ ਕੋਈ ਵੀ ਵਿਗਿਆਪਨ ਦਿਖਾ ਸਕਦੀ ਹੈ</translation>
 <translation id="8077579734294125741">ਹੋਰ Chrome ਪ੍ਰੋਫਾਈਲਾਂ</translation>
 <translation id="80798452873915119">ਸਾਈਟਾਂ ਤੁਹਾਡੀਆਂ ਸਾਰੀਆਂ ਡਿਸਪਲੇਆਂ 'ਤੇ ਵਿੰਡੋਆਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰਨ ਲਈ ਪੁੱਛ ਸਕਦੀਆਂ ਹਨ</translation>
-<translation id="807990231167557618">ਤੁਹਾਡੀ Chromebook ਅੱਪਡੇਟ ਕੀਤੀ ਗਈ ਹੈ।</translation>
 <translation id="8080028325999236607">ਸਾਰੀਆਂ ਟੈਬਸ ਬੰਦ ਕਰੋ</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">ਤੁਹਾਡੇ ਸੈਸ਼ਨ ਦਾ ਪ੍ਰਬੰਧਨ <ph name="MANAGER_NAME" /> ਵੱਲੋਂ ਕੀਤਾ ਜਾਂਦਾ ਹੈ। ਪ੍ਰਸ਼ਾਸਕ ਤੁਹਾਡੇ ਪ੍ਰੋਫਾਈਲ ਨੂੰ ਮਿਟਾ ਸਕਦੇ ਹਨ ਅਤੇ ਤੁਹਾਡੇ ਨੈੱਟਵਰਕ ਟਰੈਫ਼ਿਕ ਦੀ ਨਿਗਰਾਨੀ ਵੀ ਕਰ ਸਕਦੇ ਹਨ।</translation>

@@ -930,6 +930,7 @@
 <translation id="1723824996674794290">새 창(&amp;N)</translation>
 <translation id="1724801751621173132">입력 모드</translation>
 <translation id="1725562816265788801">탭 스크롤</translation>
+<translation id="1726294682426724172">새로운 기능에는 방해 요소를 없애 주는 Google 포토의 매직 지우개, 개선된 영상 통화 도구 등이 포함됩니다.</translation>
 <translation id="1726503915437308071">기울임꼴</translation>
 <translation id="1729533290416704613">또한 검색주소창에서 검색할 때 표시되는 페이지를 설정합니다.</translation>
 <translation id="1730666151302379551">이전 비밀번호 지우기</translation>
@@ -1255,7 +1256,6 @@
 <translation id="1974060860693918893">고급</translation>
 <translation id="1974159333077206889">모든 스피커에서 동일한 오디오</translation>
 <translation id="1974216844776165821">Chrome에서 비밀번호를 이 기기에 저장했으나, 기기가 아닌 Google 계정에 저장해도 됩니다. 그렇게 하면 로그인한 상태에서 Google 계정에 저장된 모든 비밀번호 및 패스키를 사용할 수도 있습니다.</translation>
-<translation id="1974821797477522211">네트워크에 연결</translation>
 <translation id="1975841812214822307">삭제...</translation>
 <translation id="1976150099241323601">보안 장치 로그인</translation>
 <translation id="1976823515278601587">메모리 대폭 절약</translation>
@@ -1940,7 +1940,6 @@
 <translation id="2485681265915754872">Google Play 서비스 약관</translation>
 <translation id="248676429071089168">위로 스와이프하여 페이지 아래로 이동</translation>
 <translation id="2487067538648443797">새 북마크 추가</translation>
-<translation id="2487268545026948104">데이터를 복원하려면 인터넷에 연결하세요.</translation>
 <translation id="2489686758589235262">추가 스위치 2개 할당</translation>
 <translation id="2489829450872380594">다음번에는 새로운 휴대전화를 통해 <ph name="DEVICE_TYPE" />이(가) 잠금 해제됩니다. 설정에서 Smart Lock을 사용 중지할 수 없습니다.</translation>
 <translation id="2489918096470125693">폴더 추가(&amp;F)...</translation>
@@ -2020,7 +2019,6 @@
 <translation id="2546991196809436099">확대하여 화면에 있는 항목을 더 크게 표시할 수 있습니다. 돋보기를 사용 설정하거나 중지하려면 검색 + Ctrl + M을 사용하세요.</translation>
 <translation id="2548347166720081527"><ph name="PERMISSION" /> 권한이 허용됨</translation>
 <translation id="2548545707296594436">eSIM 프로필 캐시 재설정</translation>
-<translation id="2549435700753464129">ChromeOS 블루투스 플로스</translation>
 <translation id="2549985041256363841">녹화 시작</translation>
 <translation id="2550212893339833758">교체된 메모리</translation>
 <translation id="2550596535588364872"><ph name="EXTENSION_NAME" />에서 <ph name="FILE_NAME" /> 파일을 열도록 허용하시겠습니까?</translation>
@@ -3511,7 +3509,6 @@
 <translation id="3771851622616482156">열려 있는 탭을 포함하여 이 사이트에서 로그아웃됩니다.</translation>
 <translation id="3772046291955677288"><ph name="BEGIN_LINK1" />Google 서비스 약관<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Chrome 및 ChromeOS 추가 서비스 약관<ph name="END_LINK2" />을 읽었으며 이에 동의합니다.</translation>
 <translation id="3774166835015494435">최근 사진 및 알림</translation>
-<translation id="3774546890772201673"><ph name="NAME" />을 업데이트합니다.</translation>
 <translation id="3775432569830822555">SSL 서버 인증서</translation>
 <translation id="3775705724665058594">기기로 전송</translation>
 <translation id="3776508619697147021">사이트에서 여러 파일의 자동 다운로드를 요청할 수 있음</translation>
@@ -8755,7 +8752,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8077120325605624147">어떤 사이트에서나 광고를 게재할 수 있습니다.</translation>
 <translation id="8077579734294125741">기타 Chrome 프로필</translation>
 <translation id="80798452873915119">사이트에서 모든 디스플레이의 창 관리 허용 여부를 확인할 수 있음</translation>
-<translation id="807990231167557618">Chromebook이 업데이트되었습니다.</translation>
 <translation id="8080028325999236607">탭 모두 닫기</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289"><ph name="MANAGER_NAME" />에서 세션을 관리합니다. 관리자가 내 프로필을 삭제하고 네트워크 트래픽을 모니터링할 수도 있습니다.</translation>

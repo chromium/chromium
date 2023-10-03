@@ -218,6 +218,7 @@ Ukuze ushintshel lawa masethingi, <ph name="BEGIN_LINK" />sula idatha yakho ye-C
 <translation id="2195124168004379331">Ibhrawuza Yakho Ibukeka Ikahle</translation>
 <translation id="2213327331203157297">Ukuze uvale Imodi Yokukhiya ku-Chrome yivale iPhone yakho.</translation>
 <translation id="2218443599109088993">Hlehlisa isithombe</translation>
+<translation id="2220529011494928058">Bika inkinga</translation>
 <translation id="2230173723195178503">Ikhasi lewebhu lilayishiwe</translation>
 <translation id="2239626343334228536">Isula idatha yokuphequlula...</translation>
 <translation id="2242467532204595597">Sebenzisa i-Chrome noma nini uma uthepha amalinki kumilayezo, amadokhumenti, namanye ama-app.</translation>
@@ -543,7 +544,6 @@ Bona imiyalelo yenjini yakho yokusesha yokusula umlando wakho wosesho, uma kuseb
 <translation id="3959736869653157332">Imenyu → Ithebhu ye-Incognito Entsha</translation>
 <translation id="3967822245660637423">Ukulanda kuqedile</translation>
 <translation id="3968505803272650567">Phatha ongaba nentshisekelo kukho</translation>
-<translation id="3971789053442864420">{count,plural, =1{Iphasiwedi engu-{count}}one{Amaphasiwedi angu-{count}}other{Amaphasiwedi angu-{count}}}</translation>
 <translation id="3989635538409502728">Phuma ngemvume</translation>
 <translation id="3995521777587992544">Ibha yenqubo yokulayisha ikhasi, i-<ph name="EMAIL" /> ilayishiwe.</translation>
 <translation id="4002019827078931033">Hambisa Ibha Lekheli Phezulu</translation>
@@ -1338,7 +1338,6 @@ Amasayithi angasebenzisa amakhukhi ukubona umsebenzi wakho wokuphequlula kumasay
 <translation id="8328777765163860529">Vala konke</translation>
 <translation id="8343993175958086504">Yenza isipele izinto zakho futhi uzisebenzise kunoma iyiphi idivayisi.</translation>
 <translation id="834783239627985533">Amasayithi Avakashelwe Kaningi</translation>
-<translation id="8356276002902955750">{count,plural, =1{Ibhukhimakhi e-{count}}one{Amabhukhimakhi angu-{count}}other{Amabhukhimakhi angu-{count}}}</translation>
 <translation id="8364841868226993049">Ilondoloza umfanekiso ku-Google Photos ka-<ph name="USER_EMAIL" />...</translation>
 <translation id="8378714024927312812">Kuphethwe inhlangano yakho</translation>
 <translation id="8386068868580335421">Setha kabusha</translation>

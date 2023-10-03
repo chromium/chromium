@@ -1504,7 +1504,6 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="7188494361780961876">Menu zostało przeniesione w lewy górny róg ekranu.</translation>
 <translation id="7189412385142492784">Jak daleko jest Wenus</translation>
 <translation id="7198435252016571249">Podgląd z kamery został przyciągnięty do prawego dolnego rogu. Konflikt z obszarem systemowym.</translation>
-<translation id="7219573373513695352">Brak podłączonych urządzeń</translation>
 <translation id="7229029500464092426">Pamięć: <ph name="AVAILABLE_MEMORY" /> | Łącznie: <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Konieczne jest ponowne uruchomienie tego Chromebooka, by zainstalować aktualizację. Może to potrwać około minuty.</translation>
 <translation id="7256634071279256947">Tylny mikrofon</translation>
@@ -1946,7 +1945,6 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="9089416786594320554">Wprowadzanie tekstu</translation>
 <translation id="9091626656156419976">Wyświetlacz <ph name="DISPLAY_NAME" /> został usunięty</translation>
 <translation id="9098969848082897657">Wycisz telefon</translation>
-<translation id="9120448753905017833">Wyłączyliśmy Wi-Fi, aby umożliwić korzystanie z hotspota za pomocą mobilnej transmisji danych. Może się to wiązać z kosztami.</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> lub <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">Cofnij ostatnią czynność</translation>
 <translation id="9133335900048457298">Nie można nagrać treści chronionej</translation>

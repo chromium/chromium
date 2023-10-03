@@ -921,6 +921,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris lietotnēm. Vara
 <translation id="1723824996674794290">Jauns logs</translation>
 <translation id="1724801751621173132">Ievades režīms</translation>
 <translation id="1725562816265788801">Ciļņu ritināšana</translation>
+<translation id="1726294682426724172">Pakalpojumā Google fotoattēli ir jaunas funkcijas, tostarp funkcija Brīnumainā dzēšgumija, kas ļauj novērst traucēkļus, kā arī uzlaboti videozvanu rīki u.c.</translation>
 <translation id="1726503915437308071">Fonts slīprakstā</translation>
 <translation id="1729533290416704613">Tas nosaka arī to, kāda lapa tiks rādīta, kad meklēsiet, izmantojot universālo lodziņu.</translation>
 <translation id="1730666151302379551">Aizmirsu iepriekšējo paroli</translation>
@@ -1244,7 +1245,6 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris lietotnēm. Vara
 <translation id="1974060860693918893">Papildu</translation>
 <translation id="1974159333077206889">Viens audio visos skaļruņos</translation>
 <translation id="1974216844776165821">Pārlūks Chrome paroli saglabāja šajā ierīcē, taču varat to saglabāt Google kontā. Tādējādi arī visas Google kontā saglabātās paroles un piekļuves atslēgas būs pieejamas, kad būsiet pierakstījies.</translation>
-<translation id="1974821797477522211">Savienojuma izveide ar tīklu</translation>
 <translation id="1975841812214822307">Noņemt...</translation>
 <translation id="1976150099241323601">Pierakstīties drošības ierīcē</translation>
 <translation id="1976823515278601587">Liels ietaupījums</translation>
@@ -1925,7 +1925,6 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2485681265915754872">Google Play pakalpojumu sniegšanas noteikumi</translation>
 <translation id="248676429071089168">Velciet augšup, lai pārvietotu lapu uz leju</translation>
 <translation id="2487067538648443797">Pievienot jaunu grāmatzīmi</translation>
-<translation id="2487268545026948104">Lai atjaunotu savus datus, izveidojiet savienojumu ar internetu.</translation>
 <translation id="2489686758589235262">Piešķirt vēl divus slēdžus</translation>
 <translation id="2489829450872380594">Nākamajā reizē šīs ierīces <ph name="DEVICE_TYPE" /> atbloķēšanai tiks izmantots jauns tālrunis. Iestatījumos varat izslēgt Smart Lock.</translation>
 <translation id="2489918096470125693">Pievienot &amp;mapi...</translation>
@@ -2005,7 +2004,6 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2546991196809436099">Tuviniet, lai palielinātu ekrānā redzamos vienumus. Lai ieslēgtu vai izslēgtu lupu, nospiediet meklēšanas taustiņu + Ctrl + M.</translation>
 <translation id="2548347166720081527">Piešķirta atļauja “<ph name="PERMISSION" />”</translation>
 <translation id="2548545707296594436">Atiestatīt eSIM profila kešatmiņu</translation>
-<translation id="2549435700753464129">ChromeOS Bluetooth Floss</translation>
 <translation id="2549985041256363841">Sākt ierakstīšanu</translation>
 <translation id="2550212893339833758">Apmainītā atmiņa</translation>
 <translation id="2550596535588364872">Vai atļaut paplašinājumam <ph name="EXTENSION_NAME" /> atvērt failu <ph name="FILE_NAME" />?</translation>
@@ -3496,7 +3494,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3771851622616482156">Jūs tiksiet izrakstīts no šīs vietnes, tostarp atvērtajās cilnēs</translation>
 <translation id="3772046291955677288">Es izlasīju <ph name="BEGIN_LINK1" />Google pakalpojumu sniegšanas noteikumus<ph name="END_LINK1" /> un <ph name="BEGIN_LINK2" />Chrome un Chrome OS pakalpojumu sniegšanas papildu noteikumus<ph name="END_LINK2" /> un piekrītu tiem.</translation>
 <translation id="3774166835015494435">Jaunākie fotoattēli un paziņojumi</translation>
-<translation id="3774546890772201673">Atjauniniet <ph name="NAME" />.</translation>
 <translation id="3775432569830822555">SSL servera sertifikāts</translation>
 <translation id="3775705724665058594">Sūtīšana uz jūsu ierīcēm</translation>
 <translation id="3776508619697147021">Atļaut vietnēm pieprasīt atļauju automātiski lejupielādēt vairākus failus</translation>
@@ -8741,7 +8738,6 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8077120325605624147">Jebkurā jūsu apmeklētā vietnē var tikt rādītas jebkādas reklāmas</translation>
 <translation id="8077579734294125741">Citi Chrome profili</translation>
 <translation id="80798452873915119">Vietnes var pieprasīt atļauju pārvaldīt logus visos jūsu displejos</translation>
-<translation id="807990231167557618">Chromebook dators ir atjaunināts.</translation>
 <translation id="8080028325999236607">Aizvērt visas cilnes</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">Jūsu sesiju pārvalda <ph name="MANAGER_NAME" />. Administratori var dzēst jūsu profilu un pārraudzīt jūsu tīkla datplūsmu.</translation>

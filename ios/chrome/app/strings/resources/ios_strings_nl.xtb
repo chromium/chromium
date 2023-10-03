@@ -218,6 +218,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />wis je de Chrome-g
 <translation id="2195124168004379331">Je browser ziet er goed uit</translation>
 <translation id="2213327331203157297">Als je de Lockdown-modus in Chrome wilt uitzetten, zet je deze uit op je iPhone.</translation>
 <translation id="2218443599109088993">Uitzoomen</translation>
+<translation id="2220529011494928058">Een probleem melden</translation>
 <translation id="2230173723195178503">Webpagina geladen</translation>
 <translation id="2239626343334228536">Browsegegevens wissen…</translation>
 <translation id="2242467532204595597">Gebruik Chrome als je op links in berichten, documenten en andere apps tikt.</translation>
@@ -543,7 +544,6 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="3959736869653157332">Menu → Nieuw incognitotabblad</translation>
 <translation id="3967822245660637423">Downloaden voltooid</translation>
 <translation id="3968505803272650567">Interesses beheren</translation>
-<translation id="3971789053442864420">{count,plural, =1{{count} wachtwoord}other{{count} wachtwoorden}}</translation>
 <translation id="3989635538409502728">Afmelden</translation>
 <translation id="3995521777587992544">Voortgangsbalk voor laden van pagina, <ph name="EMAIL" /> geladen.</translation>
 <translation id="4002019827078931033">Adresbalk naar boven verplaatsen</translation>
@@ -1339,7 +1339,6 @@ Sites mogen cookies gebruiken om je browse-activiteit op verschillende sites te 
 <translation id="8328777765163860529">Alles sluiten</translation>
 <translation id="8343993175958086504">Maak een back-up van je gegevens en gebruik deze op elk apparaat.</translation>
 <translation id="834783239627985533">Meest bezochte sites</translation>
-<translation id="8356276002902955750">{count,plural, =1{{count} bookmark}other{{count} bookmarks}}</translation>
 <translation id="8364841868226993049">Afbeelding in Google Foto's opslaan voor <ph name="USER_EMAIL" />...</translation>
 <translation id="8378714024927312812">Beheerd door je organisatie</translation>
 <translation id="8386068868580335421">Resetten</translation>

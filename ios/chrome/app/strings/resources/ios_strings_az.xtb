@@ -218,6 +218,7 @@ Bu ayarı dəyişmək üçün <ph name="BEGIN_LINK" />hesabda Chrome datasını 
 <translation id="2195124168004379331">Brauzer təhlükəsiz görünür</translation>
 <translation id="2213327331203157297">Chrome-da Kilidləmə rejimini deaktiv etmək üçün onu iPhone-da söndürün.</translation>
 <translation id="2218443599109088993">Kiçildin</translation>
+<translation id="2220529011494928058">Problemi xəbər verin</translation>
 <translation id="2230173723195178503">Veb səhifə yükləndi</translation>
 <translation id="2239626343334228536">Brauzinq datası silinir...</translation>
 <translation id="2242467532204595597">Mesaj, sənəd və digər tətbiqlərdə keçidlərə toxunduqda Chrome istifadə edin.</translation>
@@ -543,7 +544,6 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="3959736869653157332">Menyu → Yeni Anonim Tab</translation>
 <translation id="3967822245660637423">Endirmə tamamdır</translation>
 <translation id="3968505803272650567">Maraqları idarə edin</translation>
-<translation id="3971789053442864420">{count,plural, =1{{count} parol}other{{count} parol}}</translation>
 <translation id="3989635538409502728">Çıxış</translation>
 <translation id="3995521777587992544">Səhifənin yüklənmə gedişatını göstərən panel, <ph name="EMAIL" /> yüklənib.</translation>
 <translation id="4002019827078931033">Ünvan panelini yuxarı köçürün</translation>
@@ -1338,7 +1338,6 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukilərd
 <translation id="8328777765163860529">Hamısını Bağlayın</translation>
 <translation id="8343993175958086504">Elementləri yedəkləyin və istənilən cihazda istifadə edin.</translation>
 <translation id="834783239627985533">Çox daxil olunan saytlar</translation>
-<translation id="8356276002902955750">{count,plural, =1{{count} əlfəcin}other{{count} əlfəcin}}</translation>
 <translation id="8364841868226993049"><ph name="USER_EMAIL" /> üçün şəkil Google Fotoda yadda saxlanır...</translation>
 <translation id="8378714024927312812">Təşkilatınız tərəfindən idarə olunur</translation>
 <translation id="8386068868580335421">Sıfırlayın</translation>

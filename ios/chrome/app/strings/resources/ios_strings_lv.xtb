@@ -218,6 +218,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />notīriet Chrome datus sa
 <translation id="2195124168004379331">Jūsu pārlūks izskatās drošs</translation>
 <translation id="2213327331203157297">Lai pārlūkā Chrome atspējotu funkciju Lockdown Mode, izslēdziet to savā iPhone tālrunī.</translation>
 <translation id="2218443599109088993">Tālināt</translation>
+<translation id="2220529011494928058">Ziņot par problēmu</translation>
 <translation id="2230173723195178503">Tīmekļa lapa ielādēta</translation>
 <translation id="2239626343334228536">Notiek pārlūkošanas datu notīrīšana…</translation>
 <translation id="2242467532204595597">Izmantojiet pārlūku Chrome ikreiz, kad pieskaraties saitēm ziņojumos, dokumentos un citās lietotnēs.</translation>
@@ -543,7 +544,6 @@ Skatiet savas meklētājprogrammas norādījumus par meklēšanas vēstures dzē
 <translation id="3959736869653157332">Izvēlne → Jauna inkognito cilne</translation>
 <translation id="3967822245660637423">Lejupielāde pabeigta</translation>
 <translation id="3968505803272650567">Pārvaldīt intereses</translation>
-<translation id="3971789053442864420">{count,plural, =1{{count} parole}zero{{count} paroles}one{{count} parole}other{{count} paroles}}</translation>
 <translation id="3989635538409502728">Izrakstīties</translation>
 <translation id="3995521777587992544">Lapas ielādes norises josla, ielādēti <ph name="EMAIL" />.</translation>
 <translation id="4002019827078931033">Pārvietot adreses joslu uz augšdaļu</translation>
@@ -1338,7 +1338,6 @@ Vietnes drīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbība
 <translation id="8328777765163860529">Aizvērt visu</translation>
 <translation id="8343993175958086504">Varat dublēt savus datus un izmantot tos jebkurā ierīcē.</translation>
 <translation id="834783239627985533">Visbiežāk apmeklētās vietnes</translation>
-<translation id="8356276002902955750">{count,plural, =1{{count} grāmatzīme}zero{{count} grāmatzīmes}one{{count} grāmatzīme}other{{count} grāmatzīmes}}</translation>
 <translation id="8364841868226993049">Notiek attēla saglabāšana pakalpojuma “Google fotoattēli” kontā <ph name="USER_EMAIL" />…</translation>
 <translation id="8378714024927312812">Pārvalda jūsu organizācija</translation>
 <translation id="8386068868580335421">Atiestatīt</translation>

@@ -929,6 +929,7 @@ Sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä. Voit päättä
 <translation id="1723824996674794290">Uusi ikku&amp;na</translation>
 <translation id="1724801751621173132">Syöttötapa</translation>
 <translation id="1725562816265788801">Välilehden vieritys</translation>
+<translation id="1726294682426724172">Uusia ominaisuuksia ovat esimerkiksi Google Kuvien Magic Eraser, joka poistaa häiriötekijät, ja parannetut videopuhelutyökalut.</translation>
 <translation id="1726503915437308071">Kursiivi</translation>
 <translation id="1729533290416704613">Määrittää myös omnibox-hakujen aloitussivun.</translation>
 <translation id="1730666151302379551">Salasana unohtunut</translation>
@@ -1253,7 +1254,6 @@ Sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä. Voit päättä
 <translation id="1974060860693918893">Lisäasetukset</translation>
 <translation id="1974159333077206889">Samat äänet kaikista kaiuttimista</translation>
 <translation id="1974216844776165821">Chrome tallensi salasanasi tälle laitteelle, mutta voit halutessasi tallentaa sen Google-tilillesi. Kaikki Google-tilillä olevat salasanat ja avainkoodit ovat käytettävissä, kun olet sisäänkirjautuneena.</translation>
-<translation id="1974821797477522211">Yhdistä verkkoon</translation>
 <translation id="1975841812214822307">Poista...</translation>
 <translation id="1976150099241323601">Kirjaudu sisään suojauslaitteeseen</translation>
 <translation id="1976823515278601587">Suuret säästöt</translation>
@@ -1937,7 +1937,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2485681265915754872">Google Playn käyttöehdot</translation>
 <translation id="248676429071089168">Siirry alaspäin sivulla pyyhkäisemällä ylöspäin</translation>
 <translation id="2487067538648443797">Lisää kirjanmerkki</translation>
-<translation id="2487268545026948104">Muodosta internetyhteys datan palauttamiseksi</translation>
 <translation id="2489686758589235262">Ota käyttöön kaksi kytkintä lisää</translation>
 <translation id="2489829450872380594">Ensi kerralla tämä <ph name="DEVICE_TYPE" /> avataan lukituksesta uudella puhelimella. Voit poistaa Smart Lockin käytöstä asetuksissa.</translation>
 <translation id="2489918096470125693">Lisää kansio...</translation>
@@ -2017,7 +2016,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2546991196809436099">Suurenna näytöllä olevia kohteita lähentämällä. Laita suurennus päälle tai pois päältä painamalla Haku + Ctrl + M.</translation>
 <translation id="2548347166720081527"><ph name="PERMISSION" /> sallittu</translation>
 <translation id="2548545707296594436">Nollaa eSIM-profiilin välimuisti</translation>
-<translation id="2549435700753464129">ChromeOS Bluetooth Floss</translation>
 <translation id="2549985041256363841">Aloita tallennus</translation>
 <translation id="2550212893339833758">Vaihdettu muisti</translation>
 <translation id="2550596535588364872">Saako <ph name="EXTENSION_NAME" /> avata tiedoston <ph name="FILE_NAME" />?</translation>
@@ -3508,7 +3506,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3771851622616482156">Sinut kirjataan ulos tältä sivustolta, myös avoimilta välilehdiltä</translation>
 <translation id="3772046291955677288">Olen lukenut ja hyväksyn <ph name="BEGIN_LINK1" />Googlen käyttöehdot<ph name="END_LINK1" /> sekä <ph name="BEGIN_LINK2" />Chromen ja ChromeOS:n lisäkäyttöehdot<ph name="END_LINK2" />.</translation>
 <translation id="3774166835015494435">Viimeisimmät kuvat ja ilmoitukset</translation>
-<translation id="3774546890772201673">Päivitä <ph name="NAME" />.</translation>
 <translation id="3775432569830822555">SSL-palvelinvarmenne</translation>
 <translation id="3775705724665058594">Lähetä laitteillesi</translation>
 <translation id="3776508619697147021">Sivustot saavat pyytää lupaa ladata useita tiedostoja automaattisesti</translation>
@@ -8750,7 +8747,6 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8077120325605624147">Kaikki avamaasi sivustot voivat näyttää mitä tahansa mainoksia</translation>
 <translation id="8077579734294125741">Muut Chrome-profiilit</translation>
 <translation id="80798452873915119">Sivustot voivat pyytää lupaa hallinnoida ikkunoita kaikilla näytöillä</translation>
-<translation id="807990231167557618">Chromebookisi on päivitetty.</translation>
 <translation id="8080028325999236607">Sulje kaikki välilehdet</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289"><ph name="MANAGER_NAME" /> ylläpitää tätä istuntoa. Järjestelmänvalvojat voivat poistaa profiilisi ja seurata verkkoliikennettäsi.</translation>

@@ -1501,7 +1501,6 @@
 <translation id="7188494361780961876">메뉴가 화면 왼쪽 상단으로 이동했습니다.</translation>
 <translation id="7189412385142492784">금성까지의 거리</translation>
 <translation id="7198435252016571249">카메라 미리보기가 오른쪽 하단으로 맞춰졌습니다. 시스템 표시 경로와 충돌합니다.</translation>
-<translation id="7219573373513695352">연결된 기기 없음</translation>
 <translation id="7229029500464092426">총 메모리 <ph name="TOTAL_MEMORY" /> 중 <ph name="AVAILABLE_MEMORY" /> 사용</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. 업데이트를 적용하려면 Chromebook을 다시 시작해야 합니다. 여기에는 최대 1분이 걸릴 수 있습니다.</translation>
 <translation id="7256634071279256947">후면 마이크</translation>
@@ -1942,7 +1941,6 @@
 <translation id="9089416786594320554">입력 방법</translation>
 <translation id="9091626656156419976">디스플레이 <ph name="DISPLAY_NAME" /> 제거됨</translation>
 <translation id="9098969848082897657">휴대전화 무음 설정</translation>
-<translation id="9120448753905017833">모바일 데이터를 통해 핫스팟을 사용하기 위해 Wi-Fi를 사용 중지했습니다. 이로 인해 데이터 비용이 발생할 수 있습니다.</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> 또는 <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">마지막 작업 실행취소</translation>
 <translation id="9133335900048457298">보호된 콘텐츠는 녹화할 수 없음</translation>

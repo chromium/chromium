@@ -913,6 +913,7 @@
 <translation id="1723824996674794290">打开新的窗口(&amp;N)</translation>
 <translation id="1724801751621173132">输入法</translation>
 <translation id="1725562816265788801">标签页滚动</translation>
+<translation id="1726294682426724172">新功能包括 Google 相册中可擦除干扰内容的魔术橡皮擦、经过改进的视频通话工具，等等</translation>
 <translation id="1726503915437308071">斜体</translation>
 <translation id="1729533290416704613">它还能够控制您通过多功能框进行搜索时系统显示的页面。</translation>
 <translation id="1730666151302379551">忘记了旧密码</translation>
@@ -1233,7 +1234,6 @@
 <translation id="1974060860693918893">高级</translation>
 <translation id="1974159333077206889">所有音响设备播放相同的音频</translation>
 <translation id="1974216844776165821">Chrome 已将您的密码保存到此设备，但您可改为将其保存到自己的 Google 账号。这样一来，在登录后，您也能获取您 Google 账号中保存的所有密码和通行密钥。</translation>
-<translation id="1974821797477522211">连接到网络</translation>
 <translation id="1975841812214822307">移除…</translation>
 <translation id="1976150099241323601">登录安全设备</translation>
 <translation id="1976823515278601587">节省大量内存</translation>
@@ -1913,7 +1913,6 @@
 <translation id="2485681265915754872">Google Play 服务条款</translation>
 <translation id="248676429071089168">向上滑动手指可使页面向下移动</translation>
 <translation id="2487067538648443797">添加新书签</translation>
-<translation id="2487268545026948104">若要恢复您的数据，请连接到互联网</translation>
 <translation id="2489686758589235262">再分配 2 个开关</translation>
 <translation id="2489829450872380594">下次，您只需使用新手机就能解锁 <ph name="DEVICE_TYPE" /> 了。您可在“设置”中关闭 Smart Lock。</translation>
 <translation id="2489918096470125693">添加文件夹(&amp;F)...</translation>
@@ -1992,7 +1991,6 @@
 <translation id="2546991196809436099">放大屏幕上的各项内容。使用搜索键 + Ctrl + M 可开启和关闭放大镜。</translation>
 <translation id="2548347166720081527">已允许使用<ph name="PERMISSION" /></translation>
 <translation id="2548545707296594436">重置 eSIM 卡配置文件缓存</translation>
-<translation id="2549435700753464129">ChromeOS 蓝牙 Floss</translation>
 <translation id="2549985041256363841">开始录制</translation>
 <translation id="2550212893339833758">已交换的内存</translation>
 <translation id="2550596535588364872">允许“<ph name="EXTENSION_NAME" />”打开“<ph name="FILE_NAME" />”？</translation>
@@ -3480,7 +3478,6 @@
 <translation id="3771851622616482156">您将会自动退出这个网站（包括已打开的标签页中的网站）</translation>
 <translation id="3772046291955677288">我已阅读并同意接受 <ph name="BEGIN_LINK1" />Google 服务条款<ph name="END_LINK1" />以及 <ph name="BEGIN_LINK2" />Chrome 和 Chrome 操作系统附加服务条款<ph name="END_LINK2" />。</translation>
 <translation id="3774166835015494435">近期拍摄的照片和收到的通知</translation>
-<translation id="3774546890772201673">更新 <ph name="NAME" />。</translation>
 <translation id="3775432569830822555">SSL 服务器证书</translation>
 <translation id="3775705724665058594">发送到您的设备</translation>
 <translation id="3776508619697147021">网站可以请求自动下载多个文件</translation>
@@ -8707,7 +8704,6 @@
 <translation id="8077120325605624147">您访问的任何网站都可向您展示任何广告</translation>
 <translation id="8077579734294125741">其他 Chrome 个人资料</translation>
 <translation id="80798452873915119">网站可以询问能否管理您的所有显示屏上的窗口</translation>
-<translation id="807990231167557618">您的 Chromebook 已更新。</translation>
 <translation id="8080028325999236607">关闭所有标签页</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">您的会话由 <ph name="MANAGER_NAME" /> 管理。管理员可以删除您的个人资料和监控您的网络流量。</translation>

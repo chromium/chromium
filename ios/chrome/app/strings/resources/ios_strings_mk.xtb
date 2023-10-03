@@ -218,6 +218,7 @@
 <translation id="2195124168004379331">Вашиот прелистувач изгледа безбедно</translation>
 <translation id="2213327331203157297">За да го оневозможите режимот на заклучување во Chrome, исклучете го на вашиот iPhone.</translation>
 <translation id="2218443599109088993">Одзумирај</translation>
+<translation id="2220529011494928058">Пријави проблем</translation>
 <translation id="2230173723195178503">Веб-страницата е вчитана</translation>
 <translation id="2239626343334228536">Се чистат податоците од прелистувањето…</translation>
 <translation id="2242467532204595597">Користете Chrome секогаш кога ќе допрете линкови во пораки, документи и други апликации.</translation>
@@ -543,7 +544,6 @@
 <translation id="3959736869653157332">Мени → Нова картичка „Инкогнито“</translation>
 <translation id="3967822245660637423">Преземањето е завршено</translation>
 <translation id="3968505803272650567">Управувајте со интересите</translation>
-<translation id="3971789053442864420">{count,plural, =1{{count} лозинка}one{{count} лозинка}other{{count} лозинки}}</translation>
 <translation id="3989635538409502728">Одјави се</translation>
 <translation id="3995521777587992544">Лента за напредокот на вчитувањето на страницата. Вчитано: <ph name="EMAIL" />.</translation>
 <translation id="4002019827078931033">Преместете ја лентата за адреси најгоре</translation>
@@ -1338,7 +1338,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="8328777765163860529">Затвори ги сите</translation>
 <translation id="8343993175958086504">Направете бекап од вашите работи и користете ги на сите уреди.</translation>
 <translation id="834783239627985533">Најпосетувани сајтови</translation>
-<translation id="8356276002902955750">{count,plural, =1{{count} обележувач}one{{count} обележувач}other{{count} обележувачи}}</translation>
 <translation id="8364841868226993049">Се зачувува слика во „Фотографии на Google“ за <ph name="USER_EMAIL" />…</translation>
 <translation id="8378714024927312812">Управувано од вашата организација</translation>
 <translation id="8386068868580335421">Ресетирај</translation>

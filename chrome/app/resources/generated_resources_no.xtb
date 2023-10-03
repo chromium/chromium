@@ -925,6 +925,7 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1723824996674794290">&amp;Nytt vindu</translation>
 <translation id="1724801751621173132">Inndatamodus</translation>
 <translation id="1725562816265788801">Fanerulling</translation>
+<translation id="1726294682426724172">Oppgraderingen inneholder nye funksjoner, som Magisk viskelær i Google Foto for å fjerne forstyrrelser, bedre videosamtaleverktøy med mer</translation>
 <translation id="1726503915437308071">Kursiv skrifttype</translation>
 <translation id="1729533290416704613">Den styrer også hvilken side som vises når du søker fra multifunksjonsfeltet.</translation>
 <translation id="1730666151302379551">Glemt gammelt passord</translation>
@@ -1248,7 +1249,6 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1974060860693918893">Avanserte</translation>
 <translation id="1974159333077206889">Lik lyd i alle høyttalere</translation>
 <translation id="1974216844776165821">Chrome har lagret passordet ditt på denne enheten, men du kan lagre det i Google-kontoen din i stedet. Da blir alle passordene og passnøklene i Google-kontoen din også tilgjengelige mens du er logget på.</translation>
-<translation id="1974821797477522211">Koble til nettverk</translation>
 <translation id="1975841812214822307">Fjern</translation>
 <translation id="1976150099241323601">Logg på sikkerhetsenhet</translation>
 <translation id="1976823515278601587">Store besparelser</translation>
@@ -1933,7 +1933,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2485681265915754872">Vilkår for bruk av Google Play</translation>
 <translation id="248676429071089168">Sveip opp for å flytte siden ned</translation>
 <translation id="2487067538648443797">Legg til nytt bokmerke</translation>
-<translation id="2487268545026948104">For å gjenopprette dataene dine, koble til internett</translation>
 <translation id="2489686758589235262">Tilordne to brytere til</translation>
 <translation id="2489829450872380594">Neste gang låser en ny telefon opp denne <ph name="DEVICE_TYPE" />-enheten. Du kan slå av Smart Lock i innstillingene.</translation>
 <translation id="2489918096470125693">Legg til &amp;mappe</translation>
@@ -2013,7 +2012,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2546991196809436099">Zoom inn for å gjøre elementer på skjermen større. Bruk søketasten + Ctrl + M for å slå på og av lupen.</translation>
 <translation id="2548347166720081527">Tillatt <ph name="PERMISSION" /></translation>
 <translation id="2548545707296594436">Tilbakestill eSIM-profilbufferen</translation>
-<translation id="2549435700753464129">ChromeOS Bluetooth Floss</translation>
 <translation id="2549985041256363841">Start opptak</translation>
 <translation id="2550212893339833758">Virtuelt minne</translation>
 <translation id="2550596535588364872">Vil du gi <ph name="EXTENSION_NAME" /> tillatelse til å åpne <ph name="FILE_NAME" />?</translation>
@@ -3504,7 +3502,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3771851622616482156">Du blir logget av dette nettstedet, også på faner som er åpne</translation>
 <translation id="3772046291955677288">Jeg har lest og samtykker i <ph name="BEGIN_LINK1" />Googles vilkår for bruk<ph name="END_LINK1" /> og <ph name="BEGIN_LINK2" />tilleggsvilkårene for bruk av Chrome og ChromeOS<ph name="END_LINK2" />.</translation>
 <translation id="3774166835015494435">Nylige bilder og varsler</translation>
-<translation id="3774546890772201673">Oppdater <ph name="NAME" />.</translation>
 <translation id="3775432569830822555">SSL-tjenersertifikat</translation>
 <translation id="3775705724665058594">Send til enhetene dine</translation>
 <translation id="3776508619697147021">Nettsteder kan be om å få laste ned flere filer automatisk</translation>
@@ -8746,7 +8743,6 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8077120325605624147">Alle nettsteder du besøker, kan vise deg alle slags annonser</translation>
 <translation id="8077579734294125741">Andre Chrome-profiler</translation>
 <translation id="80798452873915119">Nettsteder kan be om å få administrere vinduer på alle skjermene dine</translation>
-<translation id="807990231167557618">Chromebooken er oppdatert.</translation>
 <translation id="8080028325999236607">Lukk alle faner</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">Økten din administreres av <ph name="MANAGER_NAME" />. Administratorer kan slette profilen din og dessuten overvåke nettverkstrafikken din.</translation>

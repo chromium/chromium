@@ -918,6 +918,7 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
 <translation id="1723824996674794290">&amp;Yeni pəncərə</translation>
 <translation id="1724801751621173132">Daxiletmə rejimi</translation>
 <translation id="1725562816265788801">Tab Sürüşdürülməsi</translation>
+<translation id="1726294682426724172">Yeni funksiyalara diqqət yayındıran elementləri silmək üçün Google Fotoda Sehrli pozan, təkmil videozəng və s. daxildir</translation>
 <translation id="1726503915437308071">Kursiv şrift</translation>
 <translation id="1729533290416704613">Həmçinin Omnibox'dan axtarış etdiyiniz zaman göstərilən səhifəyə nəzarət edir.</translation>
 <translation id="1730666151302379551">Köhnə parolu unutdum</translation>
@@ -1244,7 +1245,6 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
 <translation id="1974060860693918893">Qabaqcıl</translation>
 <translation id="1974159333077206889">Eyni audio bütün dinamiklərlə</translation>
 <translation id="1974216844776165821">Chrome parolu bu cihazda yadda saxlayıb. Onu Google Hesabında yadda saxlaya bilərsiniz. Daxil olduqda Google Hesabındakı parol və giriş açarları da əlçatan olacaq.</translation>
-<translation id="1974821797477522211">Şəbəkəyə qoşulun</translation>
 <translation id="1975841812214822307">Silin...</translation>
 <translation id="1976150099241323601">Təhlükəsizlik Cihazına daxil olun</translation>
 <translation id="1976823515278601587">Böyük qənaət</translation>
@@ -1928,7 +1928,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2485681265915754872">Google Play xidmət şərtləri</translation>
 <translation id="248676429071089168">Səhifəni aşağı köçürmək üçün yuxarı sürüşdürün</translation>
 <translation id="2487067538648443797">Yeni əlfəcin əlavə edin</translation>
-<translation id="2487268545026948104">Datanızı bərpa etmək üçün internetə qoşulun</translation>
 <translation id="2489686758589235262">Daha 2 keçirici təyin edin</translation>
 <translation id="2489829450872380594">Növbəti dəfə yeni telefon <ph name="DEVICE_TYPE" /> cihazını kiliddən çıxaracaq. Ayarlardan Smart Lock'u deaktiv edə bilərsiniz.</translation>
 <translation id="2489918096470125693">Qovluq əlavə edin...</translation>
@@ -2009,7 +2008,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2546991196809436099">Ekrandakı elementləri böyütmək üçün yaxınlaşdırın. Böyüdücünü aktiv və deaktiv etmək üçün Axtarış + Ctrl + M istifadə edin.</translation>
 <translation id="2548347166720081527"><ph name="PERMISSION" /> üçün icazə verilib</translation>
 <translation id="2548545707296594436">eSIM profil keşini sıfırlayın</translation>
-<translation id="2549435700753464129">ChromeOS Bluetooth Floss</translation>
 <translation id="2549985041256363841">Çəkməyə başlayın</translation>
 <translation id="2550212893339833758">Dəyişdirilmiş Yaddaş</translation>
 <translation id="2550596535588364872"><ph name="EXTENSION_NAME" /> artırmasının <ph name="FILE_NAME" /> faylını açmasına icazə verilsin?</translation>
@@ -3503,7 +3501,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3771851622616482156">Açıq tablar da daxil olmaqla, bu saytdan çıxmış olacaqsınız</translation>
 <translation id="3772046291955677288"><ph name="BEGIN_LINK1" />Google Xidmət Şərtləri<ph name="END_LINK1" /> və <ph name="BEGIN_LINK2" />Chrome və ChromeOS Əlavə Xidmət Şərtlərini<ph name="END_LINK2" /> oxudum və qəbul edirəm.</translation>
 <translation id="3774166835015494435">Son fotolar və bildirişlər</translation>
-<translation id="3774546890772201673">Güncəlləyin: <ph name="NAME" />.</translation>
 <translation id="3775432569830822555">SSL Server Sertifikatı</translation>
 <translation id="3775705724665058594">Cihazlara göndərin</translation>
 <translation id="3776508619697147021">Saytlar çoxsaylı faylları avtomatik olaraq endirmək üçün icazə istəyə bilər</translation>
@@ -8746,7 +8743,6 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8077120325605624147">Ziyarət etdiyiniz istənilən sayt sizə istənilən reklamı göstərə bilər</translation>
 <translation id="8077579734294125741">Digər Chrome profilləri</translation>
 <translation id="80798452873915119">Saytlar bütün displeylərinizdə pəncərələri idarə etməyi tələb edə bilər</translation>
-<translation id="807990231167557618">Chromebook güncəllənib.</translation>
 <translation id="8080028325999236607">Bütün Panelləri Qapadın</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">Sessiyanız <ph name="MANAGER_NAME" /> tərəfindən idarə edilir. Administratorlar profilinizi silə və həmçinin şəbəkə trafikinizə nəzarət edə bilərlər.</translation>

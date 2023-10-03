@@ -921,6 +921,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1723824996674794290">&amp;Nowe okno</translation>
 <translation id="1724801751621173132">Tryb wprowadzania</translation>
 <translation id="1725562816265788801">Przewijanie kart</translation>
+<translation id="1726294682426724172">Nowe funkcje to m.in. magiczna gumka w Zdjęciach Google usuwająca elementy rozpraszające uwagę oraz ulepszone narzędzia do rozmów wideo</translation>
 <translation id="1726503915437308071">Kursywa</translation>
 <translation id="1729533290416704613">Kontroluje także to, jaka strona wyświetla się po wyszukiwaniu w omniboksie.</translation>
 <translation id="1730666151302379551">Nie pamiętam starego hasła</translation>
@@ -1240,7 +1241,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1974060860693918893">Zaawansowane</translation>
 <translation id="1974159333077206889">Ten sam dźwięk na wszystkich głośnikach</translation>
 <translation id="1974216844776165821">Przeglądarka Chrome zapisała Twoje hasło na tym urządzeniu, ale jeśli wolisz, możesz je zamiast tego zapisać na swoim koncie Google. Jeśli to zrobisz, po zalogowaniu się będziesz mieć dostęp do wszystkich haseł i kluczy dostępu ze swojego konta Google.</translation>
-<translation id="1974821797477522211">Łączenie z siecią</translation>
 <translation id="1975841812214822307">Usuń...</translation>
 <translation id="1976150099241323601">Zaloguj się do urządzenia zabezpieczającego</translation>
 <translation id="1976823515278601587">Duża oszczędność</translation>
@@ -1909,7 +1909,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2485681265915754872">Warunki korzystania z usługi Google Play</translation>
 <translation id="248676429071089168">Przesuń palcem w górę, aby przesunąć stronę w dół</translation>
 <translation id="2487067538648443797">Dodaj nową zakładkę</translation>
-<translation id="2487268545026948104">Aby przywrócić dane, połącz się z internetem</translation>
 <translation id="2489686758589235262">Przypisz jeszcze 2 przełączniki</translation>
 <translation id="2489829450872380594">Następnym razem nowy telefon odblokuje to urządzenie <ph name="DEVICE_TYPE" />. Smart Lock możesz wyłączyć w Ustawieniach.</translation>
 <translation id="2489918096470125693">Dodaj &amp;folder</translation>
@@ -1987,7 +1986,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2546991196809436099">Powiększa elementy na ekranie. Aby włączyć lub wyłączyć lupę, użyj klawisza wyszukiwania + Ctrl + M.</translation>
 <translation id="2548347166720081527">Przyznano uprawnienie: <ph name="PERMISSION" /></translation>
 <translation id="2548545707296594436">Zresetuj pamięć podręczną profilu eSIM</translation>
-<translation id="2549435700753464129">ChromeOS Bluetooth Floss</translation>
 <translation id="2549985041256363841">Zacznij nagrywanie</translation>
 <translation id="2550212893339833758">Zamieniona pamięć</translation>
 <translation id="2550596535588364872">Pozwolić rozszerzeniu <ph name="EXTENSION_NAME" /> otworzyć plik <ph name="FILE_NAME" />?</translation>
@@ -3478,7 +3476,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3771851622616482156">Wylogujemy Cię z tej strony, także na otwartych kartach</translation>
 <translation id="3772046291955677288">Znam i akceptuję <ph name="BEGIN_LINK1" />Warunki korzystania z usług Google<ph name="END_LINK1" /> oraz <ph name="BEGIN_LINK2" />Dodatkowe warunki korzystania z Google Chrome i Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="3774166835015494435">Najnowsze zdjęcia i powiadomienia</translation>
-<translation id="3774546890772201673">Zaktualizuj urządzenie <ph name="NAME" />.</translation>
 <translation id="3775432569830822555">Certyfikat serwera SSL</translation>
 <translation id="3775705724665058594">Wyślij na swoje urządzenia</translation>
 <translation id="3776508619697147021">Strony mogą prosić o zgodę na automatyczne pobieranie wielu plików</translation>
@@ -8723,7 +8720,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8077120325605624147">Każda witryna, którą odwiedzasz, może wyświetlać Ci dowolne reklamy</translation>
 <translation id="8077579734294125741">Inne profile Chrome</translation>
 <translation id="80798452873915119">Strony mogą prosić o zgodę na zarządzanie oknami na wszystkich wyświetlaczach</translation>
-<translation id="807990231167557618">Chromebook został zaktualizowany.</translation>
 <translation id="8080028325999236607">Zamknij wszystkie karty</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">Twoją sesją zarządza <ph name="MANAGER_NAME" />. Administratorzy mogą usunąć Twój profil i obserwować Twój ruch w sieci.</translation>

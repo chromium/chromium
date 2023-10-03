@@ -218,6 +218,7 @@ Bu sozlamani oʻzgartirish uchun <ph name="BEGIN_LINK" />hisobingizda Chrome ma�
 <translation id="2195124168004379331">Brauzeringizda hammasi joyida</translation>
 <translation id="2213327331203157297">Chromeda Lokdaun rejimini faolsizlantirish uchun iPhone qurilmangizdan oʻchiring.</translation>
 <translation id="2218443599109088993">Uzoqlashtirish</translation>
+<translation id="2220529011494928058">Muammo haqida xabar yuborish</translation>
 <translation id="2230173723195178503">Veb-sahifa yuklandi</translation>
 <translation id="2239626343334228536">Brauzer tarixini tozalash...</translation>
 <translation id="2242467532204595597">Xabarlar, hujjatlar va boshqa ilovalardagi havolalarni bosganda Chrome ochiladi.</translation>
@@ -543,7 +544,6 @@ Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsat
 <translation id="3959736869653157332">Menyu → Yangi inkognito varaq</translation>
 <translation id="3967822245660637423">Yuklab olindi</translation>
 <translation id="3968505803272650567">Qiziqishlarni sozlash</translation>
-<translation id="3971789053442864420">{count,plural, =1{{count} ta parol}other{{count} ta parol}}</translation>
 <translation id="3989635538409502728">Chiqish</translation>
 <translation id="3995521777587992544">Sahifa yuklanishidagi kutish qatori: <ph name="EMAIL" /> yuklandi.</translation>
 <translation id="4002019827078931033">Manzillar qatorini tepaga olish</translation>
@@ -1338,7 +1338,6 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <translation id="8328777765163860529">Hammasini yopish</translation>
 <translation id="8343993175958086504">Maʼlumotlaringizni zaxiralang va istalgan qurilmada oching.</translation>
 <translation id="834783239627985533">Eng koʻp ochilgan saytlar</translation>
-<translation id="8356276002902955750">{count,plural, =1{{count} ta bukmark}other{{count} ta bukmark}}</translation>
 <translation id="8364841868226993049">Rasm <ph name="USER_EMAIL" /> uchun Google Photos xizmatiga saqlanmoqda...</translation>
 <translation id="8378714024927312812">Tashkilotingiz tomonidan boshqariladi</translation>
 <translation id="8386068868580335421">Asliga qaytarish</translation>

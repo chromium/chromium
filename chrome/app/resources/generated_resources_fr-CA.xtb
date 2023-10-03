@@ -919,6 +919,7 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="1723824996674794290">&amp;Nouvelle fenêtre</translation>
 <translation id="1724801751621173132">Mode d'entrée</translation>
 <translation id="1725562816265788801">Défilement des onglets</translation>
+<translation id="1726294682426724172">Les nouvelles fonctionnalités incluent l'Efface magique sur Google Photos, qui permet d'effacer les distractions de vos photos, de profiter d'outils d'appel vidéo améliorés et plus.</translation>
 <translation id="1726503915437308071">Caractères italiques</translation>
 <translation id="1729533290416704613">Elle définit également quelle page s'affiche lorsque vous effectuez une recherche dans l'omnibox.</translation>
 <translation id="1730666151302379551">Ancien mot de passe oublié</translation>
@@ -1241,7 +1242,6 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="1974060860693918893">Options avancées</translation>
 <translation id="1974159333077206889">Même son sur tous les haut-parleurs</translation>
 <translation id="1974216844776165821">Chrome a enregistré votre mot de passe sur cet appareil, mais vous pouvez l'enregistrer dans votre compte Google à la place. Ensuite, tous les mots de passe et les clés d'accès stockés dans votre compte Google seront également accessibles lorsque vous serez connecté.</translation>
-<translation id="1974821797477522211">Se connecter au réseau</translation>
 <translation id="1975841812214822307">Supprimer...</translation>
 <translation id="1976150099241323601">Connexion au dispositif de sécurité</translation>
 <translation id="1976823515278601587">Grandes économies</translation>
@@ -1921,7 +1921,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2485681265915754872">Conditions d'utilisation de Google Play</translation>
 <translation id="248676429071089168">Balayez l'écran vers le haut pour déplacer la page vers le bas</translation>
 <translation id="2487067538648443797">Ajouter un favori</translation>
-<translation id="2487268545026948104">Pour restaurer vos données, connectez-vous à Internet</translation>
 <translation id="2489686758589235262">Attribuer au moins deux commutateurs</translation>
 <translation id="2489829450872380594">La prochaine fois, un nouveau téléphone déverrouillera votre <ph name="DEVICE_TYPE" />. Vous pouvez désactiver Smart Lock dans le menu Paramètres.</translation>
 <translation id="2489918096470125693">Ajouter un &amp;dossier...</translation>
@@ -2001,7 +2000,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2546991196809436099">Zoomez pour agrandir les éléments à l'écran. Utilisez Recherche+Ctrl+M pour activer et désactiver la loupe.</translation>
 <translation id="2548347166720081527">Autorisé <ph name="PERMISSION" /></translation>
 <translation id="2548545707296594436">Réinitialiser le cache du profil eSIM</translation>
-<translation id="2549435700753464129">Floss Bluetooth ChromeOS</translation>
 <translation id="2549985041256363841">Commencer l'enregistrement</translation>
 <translation id="2550212893339833758">Mémoire échangée</translation>
 <translation id="2550596535588364872">Autoriser <ph name="EXTENSION_NAME" /> à ouvrir <ph name="FILE_NAME" />?</translation>
@@ -3489,7 +3487,6 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="3771851622616482156">Vous serez déconnecté de ce site, y compris dans les onglets ouverts</translation>
 <translation id="3772046291955677288">J'ai lu et accepté les <ph name="BEGIN_LINK1" />conditions d'utilisation de Google<ph name="END_LINK1" /> ainsi que les <ph name="BEGIN_LINK2" />conditions d'utilisation supplémentaires de Google Chrome et de Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="3774166835015494435">Photos et notifications récentes</translation>
-<translation id="3774546890772201673">Mettre à jour <ph name="NAME" /></translation>
 <translation id="3775432569830822555">Certificat du serveur SSL</translation>
 <translation id="3775705724665058594">Envoyer à vos appareils</translation>
 <translation id="3776508619697147021">Les sites peuvent demander à télécharger automatiquement plusieurs fichiers</translation>
@@ -8722,7 +8719,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8077120325605624147">Tous les sites que vous visitez peuvent vous suggérer n’importe quelle annonce</translation>
 <translation id="8077579734294125741">Autres profils Chrome</translation>
 <translation id="80798452873915119">Les sites peuvent demander à gérer les fenêtres sur tous vos écrans</translation>
-<translation id="807990231167557618">Votre Chromebook est mis à jour.</translation>
 <translation id="8080028325999236607">Ferm ts onglets</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">Votre session est gérée par <ph name="MANAGER_NAME" />. Les administrateurs peuvent supprimer votre profil ainsi que surveiller votre trafic réseau.</translation>

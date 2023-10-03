@@ -218,6 +218,7 @@
 <translation id="2195124168004379331">נראה שהדפדפן שלך בטוח</translation>
 <translation id="2213327331203157297">‏כדי להשבית את האפשרות 'ללא 'ביטול נעילה עם טביעת אצבע'' ב-Chrome, צריך להשבית אותה ב-iPhone.</translation>
 <translation id="2218443599109088993">התרחקות</translation>
+<translation id="2220529011494928058">דיווח על בעיה</translation>
 <translation id="2230173723195178503">דף האינטרנט נטען</translation>
 <translation id="2239626343334228536">ניקוי נתוני הגלישה מתבצע…</translation>
 <translation id="2242467532204595597">‏שימוש ב-Chrome בכל פעם שמקישים על קישורים בהודעות, במסמכים ובאפליקציות אחרות.</translation>
@@ -543,7 +544,6 @@
 <translation id="3959736869653157332">תפריט ← כרטיסייה פרטית חדשה</translation>
 <translation id="3967822245660637423">ההורדה הושלמה</translation>
 <translation id="3968505803272650567">ניהול תחומי עניין</translation>
-<translation id="3971789053442864420">{count,plural, =1{סיסמה אחת ({count})}one{{count} סיסמאות}two{{count} סיסמאות}other{{count} סיסמאות}}</translation>
 <translation id="3989635538409502728">יציאה</translation>
 <translation id="3995521777587992544">סרגל התקדמות של טעינת דף, <ph name="EMAIL" /> נטענו.</translation>
 <translation id="4002019827078931033">העברת סרגל הכתובות למעלה</translation>
@@ -1338,7 +1338,6 @@
 <translation id="8328777765163860529">סגירת הכול</translation>
 <translation id="8343993175958086504">כדאי לגבות את הנתונים כדי להשתמש בהם בכל מכשיר.</translation>
 <translation id="834783239627985533">האתרים שאליהם נכנסת בתדירות הגבוהה ביותר</translation>
-<translation id="8356276002902955750">{count,plural, =1{סימנייה אחת ({count})}one{{count} סימניות}two{{count} סימניות}other{{count} סימניות}}</translation>
 <translation id="8364841868226993049">‏התמונה נשמרת ב-Google Photos של <ph name="USER_EMAIL" />...</translation>
 <translation id="8378714024927312812">מנוהל על-ידי הארגון</translation>
 <translation id="8386068868580335421">איפוס</translation>

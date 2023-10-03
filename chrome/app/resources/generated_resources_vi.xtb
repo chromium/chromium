@@ -930,6 +930,7 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="1723824996674794290">Cửa sổ &amp;Mới</translation>
 <translation id="1724801751621173132">Chế độ nhập</translation>
 <translation id="1725562816265788801">Cuộn thẻ</translation>
+<translation id="1726294682426724172">Các tính năng mới bao gồm Bút tẩy thần kỳ trên Google Photos (giúp bạn loại bỏ những điểm mà bạn chưa hài lòng), công cụ gọi video hiệu quả hơn và nhiều tính năng khác</translation>
 <translation id="1726503915437308071">Phông chữ nghiêng</translation>
 <translation id="1729533290416704613">Tiện ích này cũng điều khiển trang nào được hiển thị khi bạn tìm kiếm từ Thanh địa chỉ.</translation>
 <translation id="1730666151302379551">Quên mật khẩu cũ</translation>
@@ -1254,7 +1255,6 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="1974060860693918893">Nâng cao</translation>
 <translation id="1974159333077206889">Cùng một âm thanh ở tất cả các loa</translation>
 <translation id="1974216844776165821">Chrome đã lưu mật khẩu của bạn vào thiết bị này, nhưng bạn cũng có thể chuyển sang lưu mật khẩu đó vào Tài khoản Google. Nếu bạn chọn cách này, tất cả mật khẩu và khoá truy cập trong Tài khoản Google cũng sẽ hiển thị khi bạn đăng nhập.</translation>
-<translation id="1974821797477522211">Kết nối mạng</translation>
 <translation id="1975841812214822307">Xóa...</translation>
 <translation id="1976150099241323601">Đăng nhập vào thiết bị bảo mật</translation>
 <translation id="1976823515278601587">Mức tiết kiệm lớn</translation>
@@ -1938,7 +1938,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2485681265915754872">Điều khoản dịch vụ của Google Play</translation>
 <translation id="248676429071089168">Vuốt lên để di chuyển xuống phía dưới của trang</translation>
 <translation id="2487067538648443797">Thêm dấu trang mới</translation>
-<translation id="2487268545026948104">Để khôi phục dữ liệu, hãy kết nối Internet</translation>
 <translation id="2489686758589235262">Gán thêm 2 công tắc</translation>
 <translation id="2489829450872380594">Vào lần tới, một điện thoại mới sẽ mở khóa <ph name="DEVICE_TYPE" /> này. Bạn có thể tắt tính năng Smart Lock trong phần Cài đặt.</translation>
 <translation id="2489918096470125693">Thêm &amp;thư mục...</translation>
@@ -2018,7 +2017,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2546991196809436099">Phóng to để tăng kích thước các mục trên màn hình. Nhấn tổ hợp phím Tìm kiếm + Ctrl + M để bật và tắt tính năng phóng to.</translation>
 <translation id="2548347166720081527">Đã cho phép <ph name="PERMISSION" /></translation>
 <translation id="2548545707296594436">Đặt lại bộ nhớ đệm của hồ sơ eSIM</translation>
-<translation id="2549435700753464129">ChromeOS Bluetooth Floss</translation>
 <translation id="2549985041256363841">Bắt đầu ghi</translation>
 <translation id="2550212893339833758">Đã hoán đổi bộ nhớ</translation>
 <translation id="2550596535588364872">Bạn muốn cho phép <ph name="EXTENSION_NAME" /> mở <ph name="FILE_NAME" />?</translation>
@@ -3509,7 +3507,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3771851622616482156">Bạn sẽ bị đăng xuất khỏi trang web này, kể cả ở các thẻ đang mở</translation>
 <translation id="3772046291955677288">Tôi đã đọc và đồng ý với <ph name="BEGIN_LINK1" />Điều khoản dịch vụ của Google<ph name="END_LINK1" /> và <ph name="BEGIN_LINK2" />Điều khoản dịch vụ bổ sung của Google Chrome và Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="3774166835015494435">Thông báo và ảnh mới đây</translation>
-<translation id="3774546890772201673">Cập nhật <ph name="NAME" />.</translation>
 <translation id="3775432569830822555">Chứng chỉ Máy chủ SSL</translation>
 <translation id="3775705724665058594">Gửi đến thiết bị của bạn</translation>
 <translation id="3776508619697147021">Các trang web có thể yêu cầu tự động tải nhiều tệp xuống</translation>
@@ -8755,7 +8752,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8077120325605624147">Mọi trang web bạn truy cập đều có thể hiện quảng cáo cho bạn</translation>
 <translation id="8077579734294125741">Các hồ sơ khác trên Chrome</translation>
 <translation id="80798452873915119">Các trang web có thể yêu cầu quản lý các cửa sổ trên tất cả màn hình của bạn</translation>
-<translation id="807990231167557618">Chromebook của bạn đã được cập nhật.</translation>
 <translation id="8080028325999236607">Đóng tất cả các thẻ</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">Phiên của bạn chịu sự quản lý của <ph name="MANAGER_NAME" />. Quản trị viên có thể xoá hồ sơ của bạn cũng như giám sát lưu lượng truy cập mạng của bạn.</translation>

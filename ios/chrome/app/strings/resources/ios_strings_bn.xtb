@@ -218,6 +218,7 @@
 <translation id="2195124168004379331">আপনার ব্রাউজার ঠিক আছে</translation>
 <translation id="2213327331203157297">Chrome-এ 'লকডাউন' মোড বন্ধ করতে এটি আপনার iPhone-এ বন্ধ করুন।</translation>
 <translation id="2218443599109088993">ছোট করে দেখুন</translation>
+<translation id="2220529011494928058">কোনো সমস্যার অভিযোগ করুন</translation>
 <translation id="2230173723195178503">Webpage loaded</translation>
 <translation id="2239626343334228536">ব্রাউজিং ডেটা মোছা হচ্ছে…</translation>
 <translation id="2242467532204595597">মেসেজ, ডকুমেন্ট এবং অন্যান্য অ্যাপের লিঙ্কে ট্যাপ করার সময় Chrome ব্যবহার করুন।</translation>
@@ -543,7 +544,6 @@
 <translation id="3959736869653157332">মেনু → নতুন ছদ্মবেশী ট্যাব</translation>
 <translation id="3967822245660637423">ডাউনলোড সম্পূর্ণ</translation>
 <translation id="3968505803272650567">আপনার পছন্দ ম্যানেজ করুন</translation>
-<translation id="3971789053442864420">{count,plural, =1{{count}টি পাসওয়ার্ড}one{{count}টি পাসওয়ার্ড}other{{count}টি পাসওয়ার্ড}}</translation>
 <translation id="3989635538409502728">সাইন-আউট করুন</translation>
 <translation id="3995521777587992544">পৃষ্ঠা লোড করার প্রগ্রেস বার, <ph name="EMAIL" /> লোড করা হয়েছে।</translation>
 <translation id="4002019827078931033">অ্যাড্রেস বার একেবারে উপরে সরান</translation>
@@ -1339,7 +1339,6 @@
 <translation id="8328777765163860529">সমস্ত বন্ধ করুন</translation>
 <translation id="8343993175958086504">আপনার ডেটার ব্যাক-আপ নিন এবং যেকোনও ডিভাইসে তা ব্যবহার করুন।</translation>
 <translation id="834783239627985533">সবচেয়ে বেশিবার ভিজিট করা সাইট</translation>
-<translation id="8356276002902955750">{count,plural, =1{{count}টি বুকমার্ক}one{{count}টি বুকমার্ক}other{{count}টি বুকমার্ক}}</translation>
 <translation id="8364841868226993049"><ph name="USER_EMAIL" />-এর জন্য Google Photos-এ ছবি সেভ করা হচ্ছে...</translation>
 <translation id="8378714024927312812">আপনার প্রতিষ্ঠানের দ্বারা ম্যানেজ করা</translation>
 <translation id="8386068868580335421">রিসেট করুন</translation>

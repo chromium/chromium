@@ -931,6 +931,7 @@ Heimildir sem þú hefur þegar veitt forritum kunna að gilda á þessum reikni
 <translation id="1723824996674794290">&amp;Nýr gluggi</translation>
 <translation id="1724801751621173132">Innfærsluaðferð</translation>
 <translation id="1725562816265788801">Flipafletting</translation>
+<translation id="1726294682426724172">Nýir eiginleikar eru meðal annars töfrastrokleður í Google-myndum til að fjarlægja truflanir, endurbætt verkfæri fyrir myndsímtöl og fleira</translation>
 <translation id="1726503915437308071">Skáletur</translation>
 <translation id="1729533290416704613">Hún stýrir því einnig hvaða síða birtist þegar þú leitar með veffangastikunni.</translation>
 <translation id="1730666151302379551">Eldra lykilorð gleymt</translation>
@@ -1255,7 +1256,6 @@ Heimildir sem þú hefur þegar veitt forritum kunna að gilda á þessum reikni
 <translation id="1974060860693918893">Ítarlegt</translation>
 <translation id="1974159333077206889">Sama hljóð með öllum hátölurum</translation>
 <translation id="1974216844776165821">Chrome vistaði aðgangsorðið þitt í þessu tæki en þú getur vistað það á Google-reikningnum þínum í staðinn. Ef þú gerir það verða öll aðgangsorð og aðgangslyklar á Google-reikningum einnig í boði þegar þú ert innskráð(ur).</translation>
-<translation id="1974821797477522211">Tengjast neti</translation>
 <translation id="1975841812214822307">Fjarlægja...</translation>
 <translation id="1976150099241323601">Innskráning á öryggistæki</translation>
 <translation id="1976823515278601587">Mikill sparnaður</translation>
@@ -1939,7 +1939,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2485681265915754872">Þjónustuskilmálar Google Play</translation>
 <translation id="248676429071089168">Strjúktu upp til að færa síðuna niður</translation>
 <translation id="2487067538648443797">Bæta nýju bókamerki við</translation>
-<translation id="2487268545026948104">Tengstu internetinu til að endurheimta gögnin þín.</translation>
 <translation id="2489686758589235262">Úthluta tveimur rofum í viðbót</translation>
 <translation id="2489829450872380594">Næst mun nýr sími taka <ph name="DEVICE_TYPE" /> úr lás. Þú getur slökkt á Smart Lock í stillingunum.</translation>
 <translation id="2489918096470125693">Bæta við möppu</translation>
@@ -2019,7 +2018,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2546991196809436099">Auktu síðan aðdráttinn til að stækka atriðin á skjánum. Notaðu Search + Ctrl + M til að kveikja og slökkva á stækkunarglerinu.</translation>
 <translation id="2548347166720081527">Leyft: <ph name="PERMISSION" /></translation>
 <translation id="2548545707296594436">Endurstilla skyndiminni eSIM-prófíls</translation>
-<translation id="2549435700753464129">ChromeOS Bluetooth Floss</translation>
 <translation id="2549985041256363841">Hefja upptöku</translation>
 <translation id="2550212893339833758">Skiptiminni</translation>
 <translation id="2550596535588364872">Viltu leyfa <ph name="EXTENSION_NAME" /> að opna <ph name="FILE_NAME" />?</translation>
@@ -3510,7 +3508,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3771851622616482156">Þú verður skráð(ur) út af þessu vefsvæði, þar á meðal opnum flipum</translation>
 <translation id="3772046291955677288">Ég hef lesið og samþykki <ph name="BEGIN_LINK1" />þjónustuskilmála Google<ph name="END_LINK1" /> og <ph name="BEGIN_LINK2" />viðbótarþjónustuskilmála Chrome og ChromeOS<ph name="END_LINK2" />.</translation>
 <translation id="3774166835015494435">Nýlegar myndir og tilkynningar</translation>
-<translation id="3774546890772201673">Uppfærðu <ph name="NAME" />.</translation>
 <translation id="3775432569830822555">SSL-þjónsvottorð</translation>
 <translation id="3775705724665058594">Senda í tækin þín</translation>
 <translation id="3776508619697147021">Vefsvæði geta beðið um að fá að hlaða sjálfkrafa niður mörgum skrám</translation>
@@ -8756,7 +8753,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8077120325605624147">Öll vefsvæði sem þú heimsækir mega birta þér hvaða auglýsingar sem er</translation>
 <translation id="8077579734294125741">Aðrir Chrome-prófílar</translation>
 <translation id="80798452873915119">Vefsvæði geta beðið um að stjórna gluggum á öllum skjáum</translation>
-<translation id="807990231167557618">Chromebook-tölvan þín er uppfærð.</translation>
 <translation id="8080028325999236607">Loka öllum flipum</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">Lotunni er stjórnað af <ph name="MANAGER_NAME" />. Stjórnendur geta eytt prófílnum þínum og fylgst með netumferð þinni.</translation>

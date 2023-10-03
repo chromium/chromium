@@ -1501,7 +1501,6 @@
 <translation id="7188494361780961876">メニューは画面左上に移動しました。</translation>
 <translation id="7189412385142492784">金星までの距離は</translation>
 <translation id="7198435252016571249">カメラは右下にスナップされています。システムのサーフェスと競合しています。</translation>
-<translation id="7219573373513695352">接続されているデバイスはありません</translation>
 <translation id="7229029500464092426">メモリ <ph name="AVAILABLE_MEMORY" /> | 合計 <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />。アップデートを適用するには、Chromebook を再起動する必要があります。再起動には最長で 1 分ほどかかります。</translation>
 <translation id="7256634071279256947">後方のマイク</translation>
@@ -1942,7 +1941,6 @@
 <translation id="9089416786594320554">入力方法</translation>
 <translation id="9091626656156419976">ディスプレイ「<ph name="DISPLAY_NAME" />」が取り外されました</translation>
 <translation id="9098969848082897657">スマートフォンを消音する</translation>
-<translation id="9120448753905017833">モバイルデータ接続でアクセス ポイントを使用するため、Wi-Fi をオフにしました。データ通信料が発生する場合があります。</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> または <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">直前の操作を元に戻す</translation>
 <translation id="9133335900048457298">保護されたコンテンツは録画できません</translation>

@@ -930,6 +930,7 @@
 <translation id="1723824996674794290">&amp;Жаңы терезе</translation>
 <translation id="1724801751621173132">Киргизүү режими</translation>
 <translation id="1725562816265788801">Тилди сыдыруу</translation>
+<translation id="1726294682426724172">Жаңы функциялар Google Фотодогу Сыйкырдуу өчүргүчтү, жакшыртылган видео чалуу куралдарын жана башкаларды камтыйт.</translation>
 <translation id="1726503915437308071">Жантык арип</translation>
 <translation id="1729533290416704613">Omnibox'тон изделгенде, кайсы бет көрсөтүлө тургандыгын көзөмөлдөйт.</translation>
 <translation id="1730666151302379551">Эски сырсөздү унутуу</translation>
@@ -1254,7 +1255,6 @@
 <translation id="1974060860693918893">Өркүндөтүлгөн</translation>
 <translation id="1974159333077206889">Бардык динамиктер үчүн бир эле аудио</translation>
 <translation id="1974216844776165821">Chrome сырсөзүңүздү ушул түзмөккө сактап койду, бирок аны Google аккаунтуңузга сактасаңыз болот. Ошондо Google аккаунтуңузга кирип, бардык сырсөздөрдү жана киргизүүчү ачкычтарды колдоно аласыз.</translation>
-<translation id="1974821797477522211">Тармакка туташуу</translation>
 <translation id="1975841812214822307">Алып салуу…</translation>
 <translation id="1976150099241323601">Коопсуз түзмөккө кириңиз</translation>
 <translation id="1976823515278601587">Чоң үнөмдөөлөр</translation>
@@ -1938,7 +1938,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2485681265915754872">Google Play тейлөө шарттары</translation>
 <translation id="248676429071089168">Баракты ылдый жылдыруу үчүн экранды өйдө сүрүңүз</translation>
 <translation id="2487067538648443797">Жаңы кыстарма кошуу</translation>
-<translation id="2487268545026948104">Маалыматты калыбына келтирүү үчүн Интернетке туташыңыз</translation>
 <translation id="2489686758589235262">Дагы 2 которгучту дайындоо</translation>
 <translation id="2489829450872380594">Эми <ph name="DEVICE_TYPE" /> түзмөгүнүн кулпусун жаңы телефон менен ача аласыз. Параметрлерге өтүп, Smart Lock'ту өчүрүп койсоңуз болот.</translation>
 <translation id="2489918096470125693">&amp;Куржун кошуу…</translation>
@@ -2018,7 +2017,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2546991196809436099">Экрандагы элементтерди чоңойтуңуз. Лупаны күйгүзүп жана өчүрүү үчүн Издөө + Ctrl + M баскычтарын басыңыз.</translation>
 <translation id="2548347166720081527"><ph name="PERMISSION" /> – уруксат берилди</translation>
 <translation id="2548545707296594436">eSIM-карта профилинин кешин баштапкы абалга келтирүү</translation>
-<translation id="2549435700753464129">ChromeOS'тогу Bluetooth Floss</translation>
 <translation id="2549985041256363841">Жаздырып баштоо</translation>
 <translation id="2550212893339833758">Жүктөлгөн эстутум</translation>
 <translation id="2550596535588364872"><ph name="FILE_NAME" /> файлы <ph name="EXTENSION_NAME" /> менен ачылсынбы?</translation>
@@ -3509,7 +3507,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="3771851622616482156">Бул сайттан, анын ичинде ачылып турган өтмөктөрдөн чыгарыласыз</translation>
 <translation id="3772046291955677288"><ph name="BEGIN_LINK1" />Google'дун Тейлөө шарттарын<ph name="END_LINK1" />жана <ph name="BEGIN_LINK2" />Chrome жана ChromeOS кошумча Тейлөө шарттарын<ph name="END_LINK2" /> окудум жана аларга макулмун.</translation>
 <translation id="3774166835015494435">Соңку сүрөттөр жана билдирмелер</translation>
-<translation id="3774546890772201673"><ph name="NAME" /> жаңыртыңыз.</translation>
 <translation id="3775432569830822555">SSL сервер тастыктамасы</translation>
 <translation id="3775705724665058594">Түзмөктөрүңүзгө жөнөтүңүз</translation>
 <translation id="3776508619697147021">Сайттар сиздин уруксатыңыз менен бир нече файлды автоматтык түрдө жүктөп ала алат</translation>
@@ -8753,7 +8750,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8077120325605624147">Сиз кирген бардык сайттар каалаган жарнаманы көрсөтө алышат</translation>
 <translation id="8077579734294125741">Башка Chrome профилдери</translation>
 <translation id="80798452873915119">Сайттар бардык экрандардагы терезелерди тескөөнү сурана алышат</translation>
-<translation id="807990231167557618">Сиздин Chromebook жаңыртылды.</translation>
 <translation id="8080028325999236607">Бард кыстрм жап</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">Сеансты <ph name="MANAGER_NAME" /> башкарат. Администраторлор профилиңизди өчүрүп, тармактын трафигин көзөмөлдөй алышат.</translation>

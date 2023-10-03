@@ -218,6 +218,7 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />pastro të dhënat e 
 <translation id="2195124168004379331">Shfletuesi yt duket në rregull</translation>
 <translation id="2213327331203157297">Për të çaktivizuar Lockdown Mode në Chrome, çaktivizoje atë në iPhone.</translation>
 <translation id="2218443599109088993">Zvogëlo</translation>
+<translation id="2220529011494928058">Raporto një problem</translation>
 <translation id="2230173723195178503">Faqja e uebit u ngarkua</translation>
 <translation id="2239626343334228536">Të dhënat e shfletimit po pastrohen...</translation>
 <translation id="2242467532204595597">Përdore Chrome sa herë që troket te lidhjet në mesazhe, dokumente dhe aplikacione të tjera.</translation>
@@ -543,7 +544,6 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="3959736869653157332">Menyja → Skedë e re "e fshehtë"</translation>
 <translation id="3967822245660637423">Shkarkimi përfundoi</translation>
 <translation id="3968505803272650567">Menaxho interesat</translation>
-<translation id="3971789053442864420">{count,plural, =1{{count} fjalëkalim}other{{count} fjalëkalime}}</translation>
 <translation id="3989635538409502728">Dil</translation>
 <translation id="3995521777587992544">Shiriti i progresit të ngarkimit të faqes, është ngarkuar <ph name="EMAIL" />.</translation>
 <translation id="4002019827078931033">Zhvendose shiritin e adresës në krye</translation>
@@ -1338,7 +1338,6 @@ Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit 
 <translation id="8328777765163860529">Mbylli të gjitha</translation>
 <translation id="8343993175958086504">Rezervo gjërat e tua dhe përdori në çdo pajisje.</translation>
 <translation id="834783239627985533">Sajtet më të vizituara</translation>
-<translation id="8356276002902955750">{count,plural, =1{{count} faqeshënues}other{{count} faqeshënues}}</translation>
 <translation id="8364841868226993049">Imazhi po ruhet te "Fotografitë e Google" për <ph name="USER_EMAIL" />...</translation>
 <translation id="8378714024927312812">Menaxhohet nga organizata jote</translation>
 <translation id="8386068868580335421">Rivendos</translation>

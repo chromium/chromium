@@ -218,6 +218,7 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />borra los datos de Chrome de t
 <translation id="2195124168004379331">Parece que todo está correcto en tu navegador</translation>
 <translation id="2213327331203157297">Para inhabilitar el modo Bloqueo de seguridad en Chrome, desactívalo en tu iPhone.</translation>
 <translation id="2218443599109088993">Reducir</translation>
+<translation id="2220529011494928058">Notificar un problema</translation>
 <translation id="2230173723195178503">Página web cargada</translation>
 <translation id="2239626343334228536">Borrando datos de navegación...</translation>
 <translation id="2242467532204595597">Utiliza Chrome cada vez que toques enlaces de mensajes, documentos y otras aplicaciones.</translation>
@@ -543,7 +544,6 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="3959736869653157332">Menú → Nueva pestaña de Incógnito</translation>
 <translation id="3967822245660637423">Descarga completa</translation>
 <translation id="3968505803272650567">Gestionar intereses</translation>
-<translation id="3971789053442864420">{count,plural, =1{{count} contraseña}other{{count} contraseñas}}</translation>
 <translation id="3989635538409502728">Cerrar sesión</translation>
 <translation id="3995521777587992544">Barra de progreso de carga de la página: <ph name="EMAIL" /> cargado.</translation>
 <translation id="4002019827078931033">Mover barra de direcciones a la parte superior</translation>
@@ -1338,7 +1338,6 @@ Los sitios pueden usar cookies para ver tu actividad de navegación en otros sit
 <translation id="8328777765163860529">Cerrar todo</translation>
 <translation id="8343993175958086504">Crea una copia de seguridad de tus cosas y úsala en cualquier dispositivo.</translation>
 <translation id="834783239627985533">Sitios más visitados</translation>
-<translation id="8356276002902955750">{count,plural, =1{{count} marcador}other{{count} marcadores}}</translation>
 <translation id="8364841868226993049">Guardando imagen de <ph name="USER_EMAIL" /> en Google Fotos...</translation>
 <translation id="8378714024927312812">Gestionado por tu organización</translation>
 <translation id="8386068868580335421">Restablecer</translation>

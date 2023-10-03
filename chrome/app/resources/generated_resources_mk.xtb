@@ -931,6 +931,7 @@
 <translation id="1723824996674794290">&amp;Нов прозорец</translation>
 <translation id="1724801751621173132">Режим за внесување</translation>
 <translation id="1725562816265788801">Лизгање на лентата за картички</translation>
+<translation id="1726294682426724172">Новите функции опфаќаат „Волшебно бришење“ на „Фотографии на Google“ за отстранување работи што го одвлекуваат вниманието, подобрени алатки за видеоповици и друго</translation>
 <translation id="1726503915437308071">Закосен фонт</translation>
 <translation id="1729533290416704613">Исто така, контролира која страница е прикажана кога пребарувате од Omnibox.</translation>
 <translation id="1730666151302379551">Ја заборавив старата лозинка</translation>
@@ -1255,7 +1256,6 @@
 <translation id="1974060860693918893">Напредни</translation>
 <translation id="1974159333077206889">Ист звук на сите звучници</translation>
 <translation id="1974216844776165821">Chrome ја зачува лозинката на уредов, но, наместо тоа, може да ја зачувате во вашата сметка на Google. Потоа, сите лозинки и криптографски клучеви во вашата сметка на Google ќе бидат достапни и додека сте најавени.</translation>
-<translation id="1974821797477522211">Поврзете се на мрежа</translation>
 <translation id="1975841812214822307">Отстрани...</translation>
 <translation id="1976150099241323601">Најавете се на безбедносниот уред</translation>
 <translation id="1976823515278601587">Големи заштеди</translation>
@@ -1939,7 +1939,6 @@
 <translation id="2485681265915754872">Услови за користење на Google Play</translation>
 <translation id="248676429071089168">Повлечете нагоре за да ја преместите страницата надолу</translation>
 <translation id="2487067538648443797">Додај нов обележувач</translation>
-<translation id="2487268545026948104">За да ги вратите податоците, поврзете се на интернет</translation>
 <translation id="2489686758589235262">Додели уште 2 прекинувачи</translation>
 <translation id="2489829450872380594">Следниот пат, нов телефон ќе го отклучи <ph name="DEVICE_TYPE" />. Smart Lock може да се исклучи во „Поставки“.</translation>
 <translation id="2489918096470125693">Додај &amp;Папка</translation>
@@ -2019,7 +2018,6 @@
 <translation id="2546991196809436099">Зумирајте за поголеми ставки на екранот. Користете Search + Ctrl + M за да се вклучи или исклучи лупата.</translation>
 <translation id="2548347166720081527">Дозволена е <ph name="PERMISSION" /></translation>
 <translation id="2548545707296594436">Ресетирај го кешот на профилот на eSIM</translation>
-<translation id="2549435700753464129">Floss за Bluetooth на ChromeOS</translation>
 <translation id="2549985041256363841">Започни со снимање</translation>
 <translation id="2550212893339833758">Заменета меморија</translation>
 <translation id="2550596535588364872">Да се дозволи <ph name="EXTENSION_NAME" /> да ја отвори датотеката „<ph name="FILE_NAME" />“?</translation>
@@ -3510,7 +3508,6 @@
 <translation id="3771851622616482156">Ќе ве одјавиме од сајтов, вклучително и од отворените картички</translation>
 <translation id="3772046291955677288">Ги прочитав и се согласувам со <ph name="BEGIN_LINK1" />Условите за користење на Google<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />Дополнителните услови за користење на Chrome и ChromeOS<ph name="END_LINK2" />.</translation>
 <translation id="3774166835015494435">Неодамнешни фотографии и известувања</translation>
-<translation id="3774546890772201673">Ажурирање на <ph name="NAME" />.</translation>
 <translation id="3775432569830822555">Сертификат на SSL-сервер</translation>
 <translation id="3775705724665058594">Испратете до вашите уреди</translation>
 <translation id="3776508619697147021">Сајтовите може да прашуваат дали автоматски да преземаат повеќе датотеки</translation>
@@ -8756,7 +8753,6 @@
 <translation id="8077120325605624147">Секој сајт што го посетувате може да ви прикаже која било реклама</translation>
 <translation id="8077579734294125741">Други профили на Chrome</translation>
 <translation id="80798452873915119">Сајтовите може да бараат да управуваат со прозорците на сите екрани</translation>
-<translation id="807990231167557618">Вашиот Chromebook е ажуриран.</translation>
 <translation id="8080028325999236607">Затвори ги сите картички</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">Со вашата сесија управува <ph name="MANAGER_NAME" />. Администраторите може да го избришат вашиот профил и да го надгледуваат мрежниот сообраќај.</translation>

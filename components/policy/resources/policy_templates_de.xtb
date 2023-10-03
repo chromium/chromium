@@ -2443,23 +2443,6 @@ Ist diese Richtlinie deaktiviert oder nicht konfiguriert, wird das unverankerte 
 <translation id="3150351525324499342"><ph name="PRODUCT_NAME" />-Symbol nicht standardmäßig in der Symbolleiste anzeigen, sondern Nutzer auswählen lassen</translation>
 <translation id="3152135410085709340">Lokalen Dateizugriff auf „file://“-URLs auf diesen Websites im PDF-Viewer zulassen</translation>
 <translation id="3152425128389603870">Unified Desktop verfügbar machen und standardmäßig aktivieren</translation>
-<translation id="3157857846231611820">Liste der Einstellungen für Chrome Enterprise Connectors-Dienste für den Enterprise Connector „<ph name="ON_FILE_ATTACHED_ENTERPRISE_CONNECTOR" />“. Dieser wird ausgelöst, wenn eine Datei an eine Seite in Chrome angehängt wird.
-
-      Mit den Feldern „<ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />“, „<ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />“, „<ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" />“ und „<ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" />“ wird festgelegt, ob der Connector eine Datei zur Analyse senden soll, wenn sie an eine bestimmte Seite angehängt wird, und welche Tags für die Analyseanfrage verwendet werden sollen. Ein Tag, das einem „enable“-Muster entspricht, wird der Anfrage hinzugefügt, wenn die Seiten-URL mit einem für das jeweilige Tag passenden Muster übereinstimmt – jedoch nur, wenn kein „disable“-Muster mit demselben Tag mit der Seiten-URL übereinstimmt. Die Analyse wird durchgeführt, wenn die Anfrage mindestens ein Tag enthält.
-
-      Mit dem Feld „<ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" />“ wird festgelegt, für welchen Analyseanbieter die Einstellungen gelten.
-
-      Wenn das Feld „<ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" />“ auf 1 gesetzt ist, wartet Chrome auf eine Antwort des Analyseanbieters, bevor der Seite Zugriff auf die Datei gewährt wird. Wenn es auf einen anderen Ganzzahlwert gesetzt ist, gewährt Chrome der Seite sofort Zugriff auf die Datei.
-
-      Mit dem Feld „<ph name="ENTERPRISE_CONNECTOR_BLOCK_PASSWORD_PROTECTED_FIELD" />“ wird festgelegt, ob Chrome den Zugriff auf Dateien blockiert, die durch ein Passwort geschützt sind.
-
-      Mit dem Feld „<ph name="ENTERPRISE_CONNECTOR_BLOCK_LARGE_FILES_FIELD" />“ wird festgelegt, ob Chrome den Zugriff auf Dateien, die zu groß für die Analyse sind, blockiert oder erlaubt.
-
-      Mit dem Feld „<ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD" />“ wird festgelegt, für welche Tags der Connector vom Nutzer eine Begründung für das Umgehen eines Scans anfordern soll, die zu einer Genehmigung für die Umgehung führt. Wenn das Feld nicht festgelegt ist, wird angenommen, dass keine Begründung erforderlich ist.
-
-      Mit den Feldern „<ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />“, „<ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />“, „<ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />“, „<ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" />“ und „<ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" />“ wird festgelegt, welche Meldung der Nutzer sieht, wenn eine Warnung angezeigt wird, nachdem beim Scan ein potenzielles Problem gefunden wurde. Das Nachrichtenfeld enthält den Text, den der Nutzer sieht (maximal 200 Zeichen). Das Feld „learn_more_url“ enthält eine vom Administrator festgelegte URL, die der Nutzer anklicken kann, um weitere benutzerdefinierte Informationen darüber zu erhalten, warum die Aktion blockiert wurde. Das Feld für die Sprache ist optional und enthält die Sprache der Meldung. Wenn das Feld leer oder auf „default“ festgelegt ist, wird die entsprechende Nachricht angezeigt, wenn es für die Sprache des Nutzers keine eigene Meldung gibt. Das Tag-Feld gibt an, für welche Arten von Scans die Meldung angezeigt wird. Die Liste „custom_messages“ kann keine oder mehrere Einträge haben – das Nachrichten- und das Tag-Feld der einzelnen Einträge dürfen dabei nicht leer sein.
-
-      Für diese Richtlinie sind zusätzliche Einrichtungen nötig. Weitere Informationen dazu findest du unter https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting.</translation>
 <translation id="3159375329008977062">Nutzer darf Crostini-Container über die Benutzeroberfläche exportieren/importieren</translation>
 <translation id="3163167792874598128">Wenn die Richtlinie nicht konfiguriert oder aktiviert ist, wird dem Nutzer die Werbung für App Store-Bewertungen maximal einmal pro Jahr angezeigt.
 Ist die Richtlinie deaktiviert, wird dem Nutzer die Werbung für App Store-Bewertungen nicht angezeigt.</translation>
@@ -3319,6 +3302,7 @@ Falls die Richtlinie nicht festgelegt wird, bleibt die Varianten-Seed-URL unver�
 <translation id="3870300103958000506">Wenn <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" /> nicht auf "False" gesetzt ist, wird auf allen Websites Werbung zugelassen, sofern <ph name="ADS_SETTINGS_FOR_INTRUSIVE_ADS_SITES_POLICY_NAME" /> auf 1 gesetzt oder nicht konfiguriert ist.
 
       Ist die Richtlinie auf 2 gesetzt, wird Werbung auf Websites mit aufdringlichen Werbeanzeigen blockiert.</translation>
+<translation id="3876564097829884243">Aktiviere die Funktion „EphemeralNetworkPolicies“.</translation>
 <translation id="3877517141460819966">Integrierter Zwei-Faktor-Authentifizierungsmodus</translation>
 <translation id="3877908683993837673">Mit dieser Richtlinie wird festgelegt, welcher Software-Stack zur Kommunikation mit dem DNS-Server verwendet wird: der DNS-Client des Betriebssystems oder der integrierte DNS-Client von <ph name="PRODUCT_NAME" />. Sie beeinflusst nicht, welche DNS-Server verwendet werden. Wenn beispielsweise das Betriebssystem für die Verwendung eines Unternehmens-DNS-Servers konfiguriert ist, verwendet der integrierte DNS-Client genau diesen Server. Mit der Richtlinie wird auch nicht gesteuert, ob DNS-over-HTTPS verwendet wird. <ph name="PRODUCT_NAME" /> nutzt immer den integrierten Resolver für DNS-over-HTTPS-Anfragen. Weitere Informationen zum Steuern von DNS-over-HTTPS findest du in der Richtlinie „<ph name="DNS_OVER_HTTPS_MODE_POLICY_NAME" />“.
 
@@ -4646,6 +4630,14 @@ Falls die Richtlinie nicht konfiguriert oder deaktiviert ist, können Cookies un
       Weder die Richtlinie mit Standardwerten noch eine der beiden folgenden Richtlinien, d. h. <ph name="COOKIES_BLOCKED_FOR_URLS_POLICY_NAME" /> oder <ph name="COOKIES_ALLOWED_FOR_URLS_POLICY_NAME" />,  hat automatisch Vorrang. Es darf nur hinsichtlich der URL-Muster keine Konflikte zwischen diesen drei Richtlinien geben.
 
       Genaue Informationen zu gültigen <ph name="URL_LABEL" />-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> ist kein akzeptierter Wert für diese Richtlinie.</translation>
+<translation id="5174547204575752627">Mit dieser Richtlinie wird die aktuelle Refaktorierung für VideoDecoder-APIs im PPAPI-Plug‑in gesteuert.
+
+Die Migration wirkt sich nur auf Details der internen Implementierung aus und sollte das Verhalten nicht ändern. Diese Richtlinie kann jedoch verwendet werden, wenn PPAPI-Anwendungen nicht wie erwartet funktionieren.
+
+Wenn die Richtlinie nicht konfiguriert oder aktiviert ist, entscheidet der Browser, welche Implementierung verwendet wird.
+Wenn die Richtlinie deaktiviert ist, verwendet der Browser die alte Implementierung, bis die Richtlinie abgelaufen ist.
+
+HINWEIS: Während der Browser ausgeführt wird, werden Änderungen an dieser Richtlinie nur für neu gestartete Rendererprozesse übernommen.</translation>
 <translation id="5177260184597743704">Konfigurationsrichtlinie für den Chrome Enterprise Connector "OnSecurityEvent"</translation>
 <translation id="5178479074002209469">Boolescher Parameter, der angibt, ob nicht verwaltete Nutzersitzungen Benachrichtigungen erhalten sollen und ob die Abmeldung erzwungen werden soll, wenn gemäß dieser Richtlinie ein Update erforderlich ist.</translation>
 <translation id="5179853299156742425">URL, über die die Desktopvorlage heruntergeladen werden kann.</translation>
@@ -4663,6 +4655,7 @@ Falls die Richtlinie nicht konfiguriert oder deaktiviert ist, können Cookies un
 <translation id="519247340330463721">Hiermit werden die Safe Browsing-Richtlinien konfiguriert.</translation>
 <translation id="5194683382395300627">Verwendung von <ph name="ASSISTANT_PRODUCT_NAME" /> im Web zulassen, z. B. um das automatische Ändern von Passwörtern zu ermöglichen</translation>
 <translation id="5196630732055960309">File Handling API bei diesen Webanwendungen erlauben</translation>
+<translation id="5205352023880027050">Aktiviere nicht die Funktion „EphemeralNetworkPolicies“.</translation>
 <translation id="5206454085187851382">Wenn <ph name="PRINTERS_ALLOWLIST" /> für <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" /> ausgewählt ist, wird durch Festlegen von <ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME" /> angegeben, welche Drucker die Nutzer verwenden können. Den Nutzern stehen nur die Drucker zur Verfügung, deren IDs mit den Werten in dieser Richtlinie übereinstimmen. Die IDs müssen dem Feld <ph name="ID_FIELD" /> oder dem Feld <ph name="GUID_FIELD" /> in der Datei entsprechen, die in <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> angegeben ist.</translation>
 <translation id="5207543664699568887">Mit der Richtlinie wird konfiguriert, ob <ph name="PRODUCT_NAME" /> unter Linux Systembenachrichtigungen verwendet.
 
@@ -5180,6 +5173,31 @@ Wenn diese Richtlinie für <ph name="PRODUCT_OS_NAME" /> Kiosk festgelegt ist, w
 <translation id="5622924058222112599">Standardmäßigen Einführungsprozess für CECPQ2 aktivieren</translation>
 <translation id="5623304306796942802">Aufforderung, wenn mehrere Zertifikate passen</translation>
 <translation id="5625771176514429288">Chrome-Apps dürfen zukünftig auf diesen Plattformen ausgeführt werden.</translation>
+<translation id="5627094573311711592">Konfiguriert eine Liste von Datenkontrollregeln zur Vermeidung von Datenlecks. Datenlecks können unter anderem beim Kopieren und Einfügen von Daten, beim Anhängen von Dateien an Webseiten oder beim Drucken oder Herunterladen auftreten.
+
+      Jede Regel besteht aus Folgendem:
+      – Eigenschaften der Quelle einer Aktion. Eine Regel wird nur ausgelöst, wenn eine Nutzeraktion mit allen Feldern im Feld <ph name="DATA_CONTROLS_SOURCES" /> übereinstimmt. Bei untergeordneten Feldern einer Liste muss nur ein Eintrag abgeglichen werden. Beispielsweise muss nur ein URL-Muster übereinstimmen, um die Regel auszulösen.
+      – Eigenschaften des Ziels einer Aktion. Eine Regel wird nur ausgelöst, wenn eine Nutzeraktion mit allen Feldern im Feld <ph name="DATA_CONTROLS_DESTINATIONS" /> übereinstimmt. Bei untergeordneten Feldern einer Liste muss nur ein Eintrag abgeglichen werden. Beispielsweise muss nur ein URL-Muster übereinstimmen, um die Regel auszulösen.
+      – Eine Liste von Einschränkungen, die auf die Daten der Quellen angewendet werden.
+
+      Regeln können hinzugefügt werden, um Einschränkungen für Folgendes zu steuern:
+– Daten in der Zwischenablage, die zwischen Quellen und Zielen geteilt werden.
+      – Das Drucken von Quellen.
+      – An beliebige Ziele angehängte Dateien.
+      – Aus einer der Quellen heruntergeladene Dateien.
+
+      Wenn die Richtlinie <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" /> auf „True“ gesetzt ist, werden die ausgelösten Regeln dem Administrator gemeldet.
+      Die Einschränkungsebene kann mit ALLOW, BLOCK, WARN oder REPORT festgelegt werden.
+      – Wenn die Einschränkungsebene auf ALLOW gesetzt ist, wird die Aktion zugelassen. Dadurch werden auch Einschränkungen überschrieben, die von anderen Regeln angewendet werden.
+      – Wenn die Einschränkungsebene auf BLOCK gesetzt ist, wird die Aktion nicht zugelassen.
+      – Wenn die Einschränkungsebene auf WARN gesetzt ist, erhält der Nutzer eine Warnung und kann entweder mit der Aktion fortfahren oder sie abbrechen.
+      – Wenn die Einschränkungsebene auf REPORT gesetzt ist, wird die Nutzeraktion nicht unterbrochen, aber ein Bericht wird gesendet, wenn die Richtlinie <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" /> aktiviert ist.
+
+      Hinweise:
+      – Formatiere die URL-Muster gemäß diesem Format (https://support.google.com/chrome/a?p=url_blocklist_filter_format).
+      – Für Regeln zur Vermeidung von Datenlecks speziell für <ph name="PRODUCT_OS_NAME" /> kannst du dir auch die Richtlinie <ph name="DATA_LEAK_PREVENTION_RULES_LIST" /> ansehen.
+
+      Ist die Richtlinie nicht konfiguriert, werden keine Einschränkungen angewendet.</translation>
 <translation id="5630352020869108293">Letzte Sitzung wiederherstellen</translation>
 <translation id="5633871703004128675">Bedienungshilfe "Textcursor hervorheben" aktivieren</translation>
 <translation id="5634032995857968056">Renderer-App-Container-Sandbox aktivieren</translation>
@@ -5662,21 +5680,6 @@ Wenn diese Richtlinie nicht konfiguriert ist oder die Liste keine gültigen Bild
 <translation id="6135398260575578389">Safe Browsing ist im erweiterten Modus aktiv. Dieser bietet einen besseren Schutz. Es müssen jedoch mehr Browserdaten mit Google geteilt werden.</translation>
 <translation id="6135552820180449830">Crosh (wird seit Version 99 unterstützt)</translation>
 <translation id="6138636318340561140">Safe Browsing-Status von URLs in Echtzeit prüfen</translation>
-<translation id="6140635914906859015">Liste der Einstellungen für Chrome Enterprise Connectors-Dienste für den Enterprise Connector „<ph name="ON_BULK_DATA_ENTRY_ENTERPRISE_CONNECTOR" />“. Dieser wird ausgelöst, wenn Daten aus der Zwischenablage oder durch Drag-and-drop von Webinhalten in Chrome eingegeben werden.
-
-      Mit den Feldern „<ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />“, „<ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />“, „<ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" />“ und „<ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" />“ wird festgelegt, ob der Connector Daten zur Analyse senden soll, wenn sie auf einer bestimmten Seite eingegeben werden, und welche Tags für die Analyseanfrage verwendet werden sollen. Ein Tag, das einem „enable“-Muster entspricht, wird der Anfrage hinzugefügt, wenn die Seiten-URL mit einem für das jeweilige Tag passenden Muster übereinstimmt – jedoch nur, wenn kein „disable“-Muster mit demselben Tag mit der Seiten-URL übereinstimmt. Die Analyse wird durchgeführt, wenn die Anfrage mindestens ein Tag enthält.
-
-      Mit dem Feld „<ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" />“ wird festgelegt, für welchen Analyseanbieter die Einstellungen gelten.
-
-      Wenn das Feld „<ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" />“ auf 1 gesetzt ist, wartet Chrome auf eine Antwort des Analyseanbieters, bevor der Seite Zugriff auf die Daten gewährt wird. Wenn es auf einen anderen Ganzzahlwert gesetzt ist, gewährt Chrome der Seite sofort Zugriff auf die Daten.
-
-      Das Feld „<ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" />“ gibt die für eine Prüfung erforderliche Mindestgröße (in Byte) für in Chrome eingegebene Daten an. Wenn der Wert nicht festgelegt ist, gilt der Standardwert von 100 Byte.
-
-      Mit dem Feld „<ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD" />“ wird festgelegt, für welche Tags der Connector vom Nutzer eine Begründung für das Umgehen eines Scans anfordern soll, die zu einer Genehmigung für die Umgehung führt. Wenn das Feld nicht festgelegt ist, wird angenommen, dass keine Begründung erforderlich ist.
-
-      Mit den Feldern „<ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />“, „<ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />“, „<ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />“, „<ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" />“ und „<ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" />“ wird festgelegt, welche Meldung der Nutzer sieht, wenn eine Warnung angezeigt wird, nachdem beim Scan ein potenzielles Problem gefunden wurde. Das Nachrichtenfeld enthält den Text, den der Nutzer sieht (maximal 200 Zeichen). Das Feld „learn_more_url“ enthält eine vom Administrator festgelegte URL, die der Nutzer anklicken kann, um weitere benutzerdefinierte Informationen darüber zu erhalten, warum die Aktion blockiert wurde. Das Feld für die Sprache ist optional und enthält die Sprache der Meldung. Wenn das Feld leer oder auf „default“ festgelegt ist, wird die entsprechende Nachricht angezeigt, wenn es für die Sprache des Nutzers keine eigene Meldung gibt. Das Tag-Feld gibt an, für welche Arten von Scans die Meldung angezeigt wird. Die Liste „custom_messages“ kann keine oder mehrere Einträge haben – das Nachrichten- und das Tag-Feld der einzelnen Einträge dürfen dabei nicht leer sein.
-
-      Für diese Richtlinie sind zusätzliche Einrichtungen nötig. Weitere Informationen dazu findest du unter https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting.</translation>
 <translation id="6141402445226505817">Immer die ungefähre Erkennung der Zeitzone verwenden</translation>
 <translation id="6141944295566709543">Zulassen, dass Nutzer Medien abspielen, wenn das Gerät gesperrt ist</translation>
 <translation id="6142501278956229253">DPI für Druck gerasteter PDFs</translation>
@@ -5867,6 +5870,7 @@ Weitere Informationen findest du unter https://developer.chrome.com/blog/immutab
 <translation id="6299554629216555326">Einstellungen für die Fensterverwaltung</translation>
 <translation id="6302021021024941085">Kiosk-Tools zur Fehlerbehebung deaktivieren.</translation>
 <translation id="6303118494824248488">URL des herunterzuladenden Speicherabbilds.</translation>
+<translation id="6303278429164386663">Steuert die Aktivierung der Funktion „EphemeralNetworkPolicies“</translation>
 <translation id="6305373713165475629">Durch die Richtlinie wird der standardmäßige Farbdruckmodus überschrieben. Wenn der Modus nicht verfügbar ist, wird die Richtlinie ignoriert.</translation>
 <translation id="6308109234708949641">Diese Richtlinie ermöglicht Family Link-Nutzern die Nutzung der Screencast-Funktion und gibt ihr die Berechtigung, Bildschirmaufzeichnungen zu erstellen, zu transkribieren und in Drive hochzuladen.
       Sie wirkt sich nicht auf andere Nutzertypen aus.
@@ -6347,21 +6351,6 @@ Wenn diese Richtlinie auf „true“ gesetzt ist (Standardeinstellung), ist das 
 
 Wenn diese Richtlinie auf „false“ gesetzt ist, ist das alte Verhalten aktiviert.</translation>
 <translation id="663685822663765995">Farbdruck einschränken</translation>
-<translation id="6637946190026453735">Liste der Einstellungen für <ph name="PRODUCT_NAME" /> Enterprise Connectors-Dienste für den Enterprise Connector „<ph name="ON_PRINT_ENTERPRISE_CONNECTOR" />“. Dieser wird ausgelöst, wenn eine Seite oder Datei über <ph name="PRODUCT_NAME" /> gedruckt wird.
-
-      Mit den Feldern „<ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />“, „<ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />“, „<ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" />“ und „<ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" />“ wird festgelegt, ob der Connector Daten zur Analyse senden soll, wenn auf einer bestimmten Seite ein Druckvorgang gestartet wird, und welche Tags für die Analyseanfrage verwendet werden sollen. Die Analyse wird durchgeführt, wenn die Anfrage mindestens ein Tag enthält.
-
-      Mit dem Feld „<ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" />“ wird festgelegt, für welchen Analyseanbieter die Einstellungen gelten.
-
-      Wenn das Feld „<ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" />“ auf 1 gesetzt ist, wartet <ph name="PRODUCT_NAME" /> auf eine Antwort des Analyseanbieters, bevor die Druckvorschau für die gedruckte Seite angezeigt werden darf. Wenn es auf einen anderen Ganzzahlwert gesetzt ist, zeigt <ph name="PRODUCT_NAME" /> die Druckvorschau sofort an.
-
-      Mit dem Feld „<ph name="ENTERPRISE_CONNECTOR_BLOCK_LARGE_FILES_FIELD" />“ wird festgelegt, ob <ph name="PRODUCT_NAME" /> den Zugriff auf Dateien/Seiten, die zu groß für die Analyse sind, blockiert oder erlaubt.
-
-      Mit dem Feld „<ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD" />“ wird festgelegt, für welche Tags der Connector vom Nutzer eine Begründung für das Umgehen eines Scans anfordern soll, die zu einer Genehmigung für die Umgehung führt. Wenn das Feld nicht festgelegt ist, wird angenommen, dass keine Begründung erforderlich ist.
-
-      Mit den Feldern „<ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />“, „<ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />“, „<ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />“, „<ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" />“ und „<ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" />“ wird festgelegt, welche Meldung der Nutzer sieht, wenn eine Warnung angezeigt wird, nachdem beim Scan ein potenzielles Problem gefunden wurde. Der Administrator kann Nachrichten mit einer Länge von bis zu 200 Zeichen festlegen.
-
-      Für diese Richtlinie sind zusätzliche Einrichtungen nötig. Weitere Informationen dazu findest du unter https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting.</translation>
 <translation id="6640355849038068978">Wenn diese Einstellung aktiviert ist, können Nutzer die App „Eche“ starten, z. B. mit einem Klick auf eine Phone Hub-Benachrichtigung.
 
       Ist diese Einstellung deaktiviert, können Nutzer die App „Eche“ nicht starten.
@@ -6650,6 +6639,7 @@ Hinweis: Nutzer können Cookies blockieren und so auf Google-Dienste zugreifen, 
 Ist sie auf „false“ gesetzt oder nicht festgelegt, ist das Layout nicht verfügbar. Damit die Änderungen wirksam werden, ist ein Neustart erforderlich.</translation>
 <translation id="685769593149966548">Strikt eingeschränkten Modus auf YouTube erzwingen</translation>
 <translation id="686079137349561371">Microsoft Windows 7 oder höher</translation>
+<translation id="6866755486434471318">Zulassen, dass <ph name="PEPPER_NAME" /> freigegebene Bilder für die Videodecodierung verwendet.</translation>
 <translation id="6881447940489194100">Hexadezimalcodierter SHA‑256-Hash der Daten.</translation>
 <translation id="68818134518270542">Mit der Konfiguration der Richtlinie werden die Apps festgelegt, die Nutzer als Notizen-App auf dem Sperrbildschirm von <ph name="PRODUCT_OS_NAME" /> aktivieren können.
 
@@ -7000,6 +6990,10 @@ Unter <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> ist die minimale Date
 
       Wenn diese Richtlinie nicht konfiguriert ist, sendet der Browser eventuell DoH-Anfragen an einen Resolver, der dem vom Nutzer auf Systemebene konfigurierten Resolver zugewiesen ist.</translation>
 <translation id="7152640356717355643">Melden der Netzwerkschnittstellen auf Geräten aktivieren</translation>
+<translation id="7153786895642570081">Diese Richtlinie steuert die Aktivierung der Funktion „EphemeralNetworkPolicies“.
+Wenn diese Richtlinie auf „True“ gesetzt ist, werden die Einträge „DeviceOpenNetworkConfiguration“, „RecommendedValuesAreEphemeral“ und „UserCreatedNetworkConfigurationsAreEphemeral“ berücksichtigt.
+Wenn diese Richtlinie nicht konfiguriert oder auf „False“ gesetzt ist, werden die genannten Netzwerkrichtlinien nur dann berücksichtigt, wenn die Funktion „EphemeralNetworkPolicies“ aktiviert ist.
+Diese Richtlinie wird entfernt, wenn die Funktion „EphemeralNetworkPolicies“ standardmäßig aktiviert ist.</translation>
 <translation id="7157329428182136164">Unterstützung für 3D-Grafik-APIs aktivieren</translation>
 <translation id="7158358621906236999">Standardeinstellung für Sensoren</translation>
 <translation id="7161568070244869726">Aktivieren von AppCache erzwingen</translation>
@@ -7338,23 +7332,6 @@ Ist die Richtlinie nicht konfiguriert, entspricht dies der Einstellung „<ph na
 <translation id="7477149584454865826">Boolescher Parameter, der angibt, ob zum Einrichten des Druckers IPP Everywhere verwendet werden soll.</translation>
 <translation id="7477231245051133709">Bedienungshilfe "Mono-Audio" aktivieren</translation>
 <translation id="7479408102162550711">Netzwerkereignisse melden</translation>
-<translation id="7480826412572122600">Liste der Einstellungen für Chrome Enterprise Connectors-Dienste für den Enterprise-Connector „<ph name="ON_FILE_DOWNLOADED_ENTERPRISE_CONNECTOR" />“. Dieser wird ausgelöst, wenn eine Datei in Chrome heruntergeladen wird.
-
-      Mit den Feldern „<ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />“, „<ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />“, „<ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" />“ und „<ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" />“ wird festgelegt, ob der Connector eine Datei zur Analyse senden soll, wenn sie von einer bestimmten Seite heruntergeladen wird, und welche Tags für die Analyseanfrage verwendet werden sollen. Ein Tag, das einem „enable“-Muster entspricht, wird der Anfrage hinzugefügt, wenn die Seiten-URL mit einem für das jeweilige Tag passenden Muster übereinstimmt – jedoch nur, wenn kein „disable“-Muster mit demselben Tag mit der Seiten-URL übereinstimmt. Die Analyse wird durchgeführt, wenn die Anfrage mindestens ein Tag enthält.
-
-      Mit dem Feld „<ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" />“ wird festgelegt, für welchen Analyseanbieter die Einstellungen gelten.
-
-      Wenn das Feld „<ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" />“ auf 1 gesetzt ist, wartet Chrome auf eine Antwort des Analyseanbieters, bevor dem Nutzer Zugriff auf die heruntergeladene Datei gewährt wird. Wenn es auf einen anderen Ganzzahlwert gesetzt ist, gewährt Chrome dem Nutzer sofort Zugriff auf die Datei.
-
-      Mit dem Feld „<ph name="ENTERPRISE_CONNECTOR_BLOCK_PASSWORD_PROTECTED_FIELD" />“ wird festgelegt, ob Chrome den Zugriff auf Dateien blockiert, die durch ein Passwort geschützt sind.
-
-      Mit dem Feld „<ph name="ENTERPRISE_CONNECTOR_BLOCK_LARGE_FILES_FIELD" />“ wird festgelegt, ob Chrome den Zugriff auf Dateien, die zu groß für die Analyse sind, blockiert oder erlaubt.
-
-      Mit dem Feld „<ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD" />“ wird festgelegt, für welche Tags der Connector vom Nutzer eine Begründung für das Umgehen eines Scans anfordern soll, die zu einer Genehmigung für die Umgehung führt. Wenn das Feld nicht festgelegt ist, wird angenommen, dass keine Begründung erforderlich ist.
-
-      Mit den Feldern „<ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />“, „<ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />“, „<ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />“, „<ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" />“ und „<ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" />“ wird festgelegt, welche Meldung der Nutzer sieht, wenn eine Warnung angezeigt wird, nachdem beim Scan ein potenzielles Problem gefunden wurde. Das Nachrichtenfeld enthält den Text, den der Nutzer sieht (maximal 200 Zeichen). Das Feld „learn_more_url“ enthält eine vom Administrator festgelegte URL, die der Nutzer anklicken kann, um weitere benutzerdefinierte Informationen darüber zu erhalten, warum die Aktion blockiert wurde. Das Feld für die Sprache ist optional und enthält die Sprache der Meldung. Wenn das Feld leer oder auf „default“ festgelegt ist, wird die entsprechende Nachricht angezeigt, wenn es für die Sprache des Nutzers keine eigene Meldung gibt. Das Tag-Feld gibt an, für welche Arten von Scans die Meldung angezeigt wird. Die Liste „custom_messages“ kann keine oder mehrere Einträge haben – das Nachrichten- und das Tag-Feld der einzelnen Einträge dürfen dabei nicht leer sein.
-
-      Für diese Richtlinie sind zusätzliche Einrichtungen nötig. Weitere Informationen dazu findest du unter https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting.</translation>
 <translation id="7481702249684965639">Der Papierkorb ist für den Nutzer aktiviert.</translation>
 <translation id="7482768039644066614">Abruf von Metadaten zum Seitenaufbau und Modellen zum maschinellen Lernen zum Verbessern der Browsernutzung aktivieren</translation>
 <translation id="748292668225669178">Konfiguriert die Bereitstellung von <ph name="MICROSOFT_ONE_DRIVE_NAME" /></translation>
@@ -8755,6 +8732,7 @@ Wenn die Richtlinie nicht konfiguriert ist, werden bei der ersten Ausführung ke
       Nach dem Konfigurieren der Richtlinie kann diese Funktion von den Nutzern nicht mehr geändert werden. Ist sie dagegen nicht konfiguriert, kann der Nutzer die Einstellung ändern.</translation>
 <translation id="8707790573162457301">Automatische Datenträgerbereinigung während der Anmeldung ausführen</translation>
 <translation id="8713535263782304771">Safe Browsing deaktivieren</translation>
+<translation id="8714556680280715750">Eine URL, über die Nutzer mehr erfahren können. Sofern nicht konfiguriert, gibt es im Installationsprogramm keine URL „Weitere Informationen“. Falls vorhanden, muss das HTTPS-Schema verwendet werden.</translation>
 <translation id="8715181294371649277">Safe Browsing-Downloadschutz in Echtzeit zulassen</translation>
 <translation id="8715885991031124968">JavaScript-Dialogfelder zulassen, die von einem anderen Quell-Subframe ausgelöst wurden</translation>
 <translation id="8720547069538712402">Zulassen, dass Nutzer die Rechtschreibprüfung aktivieren oder deaktivieren</translation>

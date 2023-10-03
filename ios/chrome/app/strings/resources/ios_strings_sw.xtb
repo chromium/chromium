@@ -218,6 +218,7 @@ Ili kubadilisha mpangilio huu, <ph name="BEGIN_LINK" />futa data ya Chrome kweny
 <translation id="2195124168004379331">Kivinjari Chako Kinaonekana Kuwa Salama</translation>
 <translation id="2213327331203157297">Ili uzime Hali ya Kufunga katika Chrome, izime kwenye iPhone yako.</translation>
 <translation id="2218443599109088993">Sogeza Mbali</translation>
+<translation id="2220529011494928058">Ripoti tatizo</translation>
 <translation id="2230173723195178503">Ukurasa wa Wavuti umepakiwa</translation>
 <translation id="2239626343334228536">Inafuta data ya kuvinjari...</translation>
 <translation id="2242467532204595597">Tumia Chrome wakati wowote unapogusa viungo kwenye ujumbe, hati na programu zingine.</translation>
@@ -543,7 +544,6 @@ Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta h
 <translation id="3959736869653157332">Menyu → Kichupo Fiche Kipya</translation>
 <translation id="3967822245660637423">Imemaliza kupakua</translation>
 <translation id="3968505803272650567">Dhibiti Mambo Yanayokuvutia</translation>
-<translation id="3971789053442864420">{count,plural, =1{Nenosiri {count}}other{Manenosiri {count}}}</translation>
 <translation id="3989635538409502728">Ondoka</translation>
 <translation id="3995521777587992544">Upau wa shughuli ya upakiaji wa ukurasa, imepakia <ph name="EMAIL" />.</translation>
 <translation id="4002019827078931033">Sogeza Sehemu ya Anwani Kwenda Juu</translation>
@@ -1338,7 +1338,6 @@ Tovuti zinaweza kutumia vidakuzi kuona shughuli zako za kuvinjari kwenye tovuti 
 <translation id="8328777765163860529">Funga Vyote</translation>
 <translation id="8343993175958086504">Hifadhi nakala ya maudhui yako ili uyatumie kwenye kifaa chochote.</translation>
 <translation id="834783239627985533">Tovuti Zilizotembelewa Zaidi</translation>
-<translation id="8356276002902955750">{count,plural, =1{Alamisho {count}}other{Alamisho {count}}}</translation>
 <translation id="8364841868226993049">Inahifadhi picha katika Picha kwenye Google kwa<ph name="USER_EMAIL" />...</translation>
 <translation id="8378714024927312812">Inasimamiwa na shirika lako</translation>
 <translation id="8386068868580335421">Weka upya</translation>

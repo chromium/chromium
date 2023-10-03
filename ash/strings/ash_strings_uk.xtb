@@ -1501,7 +1501,6 @@
 <translation id="7188494361780961876">Меню переміщено у верхній лівий кут екрана.</translation>
 <translation id="7189412385142492784">Яка відстань від Землі до Венери</translation>
 <translation id="7198435252016571249">Зображення з камери закріплено в нижньому правому куті, що конфліктує із системною платформою.</translation>
-<translation id="7219573373513695352">Немає підключених пристроїв</translation>
 <translation id="7229029500464092426">Обсяг використаної пам’яті: <ph name="AVAILABLE_MEMORY" /> | Усього: <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Щоб оновлення почали діяти, Chromebook потрібно перезапустити. Це може зайняти до 1 хвилини.</translation>
 <translation id="7256634071279256947">Мікрофон на задній панелі</translation>
@@ -1942,7 +1941,6 @@
 <translation id="9089416786594320554">Методи введення</translation>
 <translation id="9091626656156419976">Дисплей <ph name="DISPLAY_NAME" /> вилучено</translation>
 <translation id="9098969848082897657">Вимкнути звук на телефоні</translation>
-<translation id="9120448753905017833">Ми вимкнули Wi-Fi, щоб використовувати точку доступу через мобільний Інтернет. За передавання даних може стягуватися плата.</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> або <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">Відмінити останню дію</translation>
 <translation id="9133335900048457298">Не вдається записати захищений контент</translation>

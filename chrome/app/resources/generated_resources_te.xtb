@@ -928,6 +928,7 @@
 <translation id="1723824996674794290">&amp;కొత్త విండో</translation>
 <translation id="1724801751621173132">ఇన్‌పుట్ మోడ్</translation>
 <translation id="1725562816265788801">ట్యాబ్ స్క్రోలింగ్</translation>
+<translation id="1726294682426724172">కొత్త ఫీచర్‌లలో దృష్టి మరల్చేవాటిని తొలగించడానికి Google Photosలో మ్యాజిక్ ఎరేజర్, మెరుగైన వీడియో కాల్ టూల్స్, అలాగే మరిన్ని ఉన్నాయి</translation>
 <translation id="1726503915437308071">ఇటాలిక్ ఫాంట్</translation>
 <translation id="1729533290416704613">ఓమ్నిబాక్స్ నుండి వెతికేటప్పుడు చూపబడే పేజీని కూడా ఇది నియంత్రిస్తుంది.</translation>
 <translation id="1730666151302379551">పాత పాస్‌వర్డ్‌ను మర్చిపోయారా</translation>
@@ -1252,7 +1253,6 @@
 <translation id="1974060860693918893">అధునాతన సెట్టింగ్‌లు</translation>
 <translation id="1974159333077206889">అన్ని స్పీకర్‌లతోనూ ఒకేలాంటి ఆడియో</translation>
 <translation id="1974216844776165821">Chrome మీ పాస్‌వర్డ్‌ను ఈ పరికరంలో సేవ్ చేసింది, బదులుగా మీరు దానిని మీ Google ఖాతాలో సేవ్ చేసుకోవచ్చు. ఆ తర్వాత, మీరు సైన్ ఇన్ చేసినప్పుడు మీ Google ఖాతాలోని అన్ని పాస్‌వర్డ్‌లు, పాస్-కీలు కూడా అందుబాటులో ఉంటాయి.</translation>
-<translation id="1974821797477522211">నెట్‌వర్క్‌కి కనెక్ట్ చేయండి</translation>
 <translation id="1975841812214822307">తీసివేయండి...</translation>
 <translation id="1976150099241323601">భద్రతా పరికరానికి సైన్ ఇన్ చేయండి</translation>
 <translation id="1976823515278601587">ఎక్కువ మెమరీ సేవింగ్స్</translation>
@@ -1936,7 +1936,6 @@
 <translation id="2485681265915754872">Google Play సర్వీస్ నియమాలు</translation>
 <translation id="248676429071089168">పైకి స్వైప్ చేసి, పేజీని కిందికి తరలించండి</translation>
 <translation id="2487067538648443797">కొత్త బుక్‌మార్క్‌ను జోడించండి</translation>
-<translation id="2487268545026948104">మీ డేటాను పునరుద్ధరించడానికి, ఇంటర్నెట్‌కు కనెక్ట్ అవండి</translation>
 <translation id="2489686758589235262">మరో 2 స్విచ్‌లను అసైన్ చేయండి</translation>
 <translation id="2489829450872380594">తర్వాతసారి, ఈ <ph name="DEVICE_TYPE" />‌ను కొత్త ఫోన్ అన్‌లాక్ చేస్తుంది. మీరు సెట్టింగ్‌లలో స్మార్ట్ లాక్‌ను ఆఫ్ చేయవచ్చు.</translation>
 <translation id="2489918096470125693">&amp;ఫోల్డర్‌ను జోడించండి...</translation>
@@ -2016,7 +2015,6 @@
 <translation id="2546991196809436099">స్క్రీన్‌పై ఉన్న ఐటెమ్‌లను పెద్దగా చూపడానికి జూమ్ - ఇన్ చేయండి. సెర్చ్ + Ctrl + Mను ఉపయోగించి మాగ్నిఫైయర్‌ను అన్, ఆఫ్ చేయండి.</translation>
 <translation id="2548347166720081527"><ph name="PERMISSION" />‌ను అనుమతించారు</translation>
 <translation id="2548545707296594436">eSIM ప్రొఫైల్ కాష్‌ను రీసెట్ చేయండి</translation>
-<translation id="2549435700753464129">ChromeOS బ్లూటూత్ ఫ్లాస్</translation>
 <translation id="2549985041256363841">రికార్డింగ్‌ను ప్రారంభించండి</translation>
 <translation id="2550212893339833758">వినిమయం చేసిన మెమరీ</translation>
 <translation id="2550596535588364872"><ph name="EXTENSION_NAME" />ని <ph name="FILE_NAME" /> తెరవడానికి అనుమతించాలా?</translation>
@@ -3507,7 +3505,6 @@
 <translation id="3771851622616482156">మీరు తెరిచిన ట్యాబ్‌లతో సహా, ఈ సైట్ నుండి మీరు సైన్ అవుట్ చేయబడతారు</translation>
 <translation id="3772046291955677288">నేను <ph name="BEGIN_LINK1" />Google సర్వీస్ నియమాలు<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Chrome, అలాగే ChromeOS అదనపు సర్వీస్ నియమాలను<ph name="END_LINK2" /> చదివి అంగీకరిస్తున్నాను.</translation>
 <translation id="3774166835015494435">తాజా ఫోటోలు, నోటిఫికేషన్‌లు</translation>
-<translation id="3774546890772201673"><ph name="NAME" />‌ను అప్‌డేట్ చేయండి.</translation>
 <translation id="3775432569830822555">SSL సర్వర్ సర్టిఫికెట్</translation>
 <translation id="3775705724665058594">మీ పరికరాలకు పంపండి</translation>
 <translation id="3776508619697147021">అనేక ఫైళ్లను ఆటోమేటిక్‌గా డౌన్‌లోడ్ చేయడానికి సైట్‌లు అడగవచ్చు</translation>
@@ -8749,7 +8746,6 @@
 <translation id="8077120325605624147">మీరు చూసే ఏ సైట్ అయినా మీకు ఏ యాడ్‌ను అయినా చూపవచ్చు</translation>
 <translation id="8077579734294125741">ఇతర Chrome ప్రొఫైల్స్</translation>
 <translation id="80798452873915119">సైట్‌లు మీ డిస్‌ప్లేలన్నింటిలో విండోలను మేనేజ్ చేయడానికి అనుమతిని అడగవచ్చు</translation>
-<translation id="807990231167557618">మీ Chromebook అప్‌డేట్ చేయబడింది.</translation>
 <translation id="8080028325999236607">అన్ని ట్యాబ్‌లను మూసివేయి</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">మీ సెషన్ <ph name="MANAGER_NAME" /> ద్వారా మేనేజ్ చేయబడుతోంది. అడ్మినిస్ట్రేటర్‌లు మీ ప్రొఫైల్‌ను తొలగించగలరు అలాగే మీ నెట్‌వర్క్ ట్రాఫిక్‌ను కూడా పర్యవేక్షించగలరు.</translation>

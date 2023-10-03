@@ -2480,23 +2480,6 @@ Se il criterio è impostato su Disattivato o non è impostato, il menu Accessibi
 <translation id="3150351525324499342">Non mostrare l'icona <ph name="PRODUCT_NAME" /> nella barra degli strumenti per impostazione predefinita, ma lascia la scelta agli utenti</translation>
 <translation id="3152135410085709340">Consenti l'accesso ai file locali per gli URL file:// su questi siti nel visualizzatore PDF</translation>
 <translation id="3152425128389603870">Rendi disponibile la modalità Desktop unificato e attivala per impostazione predefinita</translation>
-<translation id="3157857846231611820">Elenco di impostazioni per i servizi di Chrome Enterprise Connectors da applicare al connettore di Enterprise <ph name="ON_FILE_ATTACHED_ENTERPRISE_CONNECTOR" />, che si attiva quando un file viene allegato a Chrome.
-
-      I campi <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> e <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> vengono utilizzati per stabilire se il connettore deve inviare un file per l'analisi quando viene allegato a una pagina specifica e quali tag includere nella richiesta di analisi di questo file. Un tag che corrisponde a un pattern "attivato" viene incluso nella richiesta di analisi se l'URL della pagina corrisponde a un pattern associato a questo tag, purché nessun pattern "disattivato" con lo stesso tag corrisponda all'URL della pagina. L'analisi viene eseguita se almeno 1 tag deve essere incluso nella richiesta.
-
-      Il campo <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> identifica il fornitore di servizi di analisi a cui corrispondono le impostazioni.
-
-      Se il campo <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" /> viene impostato su 1, Chrome attende di ricevere una risposta dal servizio di analisi prima di concedere alla pagina l'accesso al file. Con qualsiasi altro valore intero, Chrome concede immediatamente l'accesso al file.
-
-      Il campo <ph name="ENTERPRISE_CONNECTOR_BLOCK_PASSWORD_PROTECTED_FIELD" /> consente di controllare se Chrome blocca o autorizza i file protetti tramite password.
-
-      Il campo <ph name="ENTERPRISE_CONNECTOR_BLOCK_LARGE_FILES_FIELD" /> consente di controllare se Chrome blocca o autorizza i file troppo grandi per essere analizzati.
-
-      Il campo <ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD" /> viene utilizzato per determinare per quali tag il connettore deve richiedere all'utente di inserire una giustificazione per ignorare una scansione che risulti in un avviso ignorabile. Se il campo non viene configurato, si presume che non sia richiesta alcuna giustificazione.
-
-      I campi <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" /> e <ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" /> vengono utilizzati per configurare un messaggio da mostrare all'utente quando viene visualizzato un avviso dopo una scansione che ha rilevato dei problemi. Il campo del messaggio contiene il testo da mostrare all'utente e può includere al massimo 200 caratteri. Il campo learn_more_url contiene un URL fornito dall'amministratore su cui l'utente può fare clic per ricevere maggiori informazioni fornite dal cliente sul motivo per cui l'azione è stata bloccata. Il campo della lingua è facoltativo e contiene la lingua in cui è scritto il messaggio. Un campo della lingua vuoto o con il valore "predefinito" indica il messaggio da utilizzare se la lingua dell'utente non ne ha uno. Il campo dei tag consente di specificare per quale tipo di scansioni viene visualizzato il messaggio. L'elenco custom_messages può avere alcune voci o nessuna, dove per ognuna di queste i campi del messaggio e dei tag non devono essere vuoti.
-
-      Questo criterio richiede una configurazione aggiuntiva per essere applicato. Visita https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting per maggiori informazioni.</translation>
 <translation id="3159375329008977062">L'utente è abilitato a importare/esportare contenitori Crostini tramite l'interfaccia</translation>
 <translation id="3163167792874598128">Se il criterio non viene configurato o se viene impostato su Enabled, la promozione di valutazione dell'App Store potrebbe essere mostrata all'utente al massimo una volta all'anno.
 Se viene impostato su Disabled, la promozione di valutazione dell'App Store non verrà mostrata all'utente.</translation>
@@ -5831,21 +5814,6 @@ Se questo criterio non viene configurato o se l'elenco non contiene riferimenti 
 <translation id="6135398260575578389">Navigazione sicura è attiva in modalità potenziata. Questa modalità fornisce maggior sicurezza, ma non richiede la condivisione di ulteriori dati di navigazione con Google.</translation>
 <translation id="6135552820180449830">Crosh (supporto dalla versione 99)</translation>
 <translation id="6138636318340561140">Controlla lo stato degli URL in tempo reale con Navigazione sicura</translation>
-<translation id="6140635914906859015">Elenco di impostazioni per i servizi di Chrome Enterprise Connectors da applicare al connettore di Enterprise <ph name="ON_BULK_DATA_ENTRY_ENTERPRISE_CONNECTOR" />, che si attiva quando vengono inseriti dati in Chrome dagli appunti o tramite trascinamento di contenuti web.
-
-      I campi <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> e <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> vengono utilizzati per stabilire se il connettore deve inviare dati per l'analisi quando vengono inseriti in una pagina specifica e quali tag includere nella richiesta di analisi di questi dati. Un tag che corrisponde a un pattern "attivato" viene incluso nella richiesta di analisi se l'URL della pagina corrisponde a un pattern associato a questo tag, purché nessun pattern "disattivato" con lo stesso tag corrisponda all'URL della pagina. L'analisi viene eseguita se almeno 1 tag deve essere incluso nella richiesta.
-
-      Il campo <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> identifica il fornitore di servizi di analisi a cui corrispondono le impostazioni.
-
-      Se il campo <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" /> viene impostato su 1, Chrome attende di ricevere una risposta dal servizio di analisi prima di concedere alla pagina l'accesso ai dati. Con qualsiasi altro valore intero, Chrome concede immediatamente alla pagina l'accesso ai dati.
-
-      Il campo <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> indica le dimensioni minime (in byte) che devono avere i dati inseriti in Chrome per poter essere analizzati. Se il campo non viene configurato, il valore predefinito è 100 byte.
-
-      Il campo <ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD" /> viene utilizzato per determinare per quali tag il connettore deve richiedere all'utente di inserire una giustificazione per ignorare una scansione che risulti in un avviso ignorabile. Se il campo non viene configurato, si presume che non sia richiesta alcuna giustificazione.
-
-      I campi <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" /> e <ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" /> vengono utilizzati per configurare un messaggio da mostrare all'utente quando viene visualizzato un avviso dopo una scansione che ha rilevato dei problemi. Il campo del messaggio contiene il testo da mostrare all'utente e può includere al massimo 200 caratteri. Il campo learn_more_url contiene un URL fornito dall'amministratore su cui l'utente può fare clic per ricevere maggiori informazioni fornite dal cliente sul motivo per cui l'azione è stata bloccata. Il campo della lingua è facoltativo e contiene la lingua in cui è scritto il messaggio. Un campo della lingua vuoto o con il valore "predefinito" indica il messaggio da utilizzare se la lingua dell'utente non ne ha uno. Il campo dei tag consente di specificare per quale tipo di scansioni viene visualizzato il messaggio. L'elenco custom_messages può avere alcune voci o nessuna, dove per ognuna di queste i campi del messaggio e dei tag non devono essere vuoti.
-
-      Questo criterio richiede una configurazione aggiuntiva per essere applicato. Visita https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting per maggiori informazioni.</translation>
 <translation id="6141402445226505817">Utilizza sempre il rilevamento approssimativo del fuso orario</translation>
 <translation id="6141944295566709543">Consenti agli utenti di riprodurre contenuti multimediali quando il dispositivo è bloccato</translation>
 <translation id="6142501278956229253">DPI stampa PDF con rasterizzazione</translation>
@@ -6552,21 +6520,6 @@ Se questo criterio viene impostato su Vero (valore predefinito), il nuovo compor
 
 Se questo criterio viene impostato su Falso, viene attivato il comportamento precedente.</translation>
 <translation id="663685822663765995">Limita la modalità di stampa a colori</translation>
-<translation id="6637946190026453735">Elenco di impostazioni per i servizi di <ph name="PRODUCT_NAME" /> Enterprise Connectors da applicare al connettore di <ph name="ON_PRINT_ENTERPRISE_CONNECTOR" /> Enterprise, che si attiva quando una pagina o un file vengono stampati da <ph name="PRODUCT_NAME" />.
-
-      I campi <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> e <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> vengono utilizzati per stabilire se il connettore deve inviare i dati per le analisi quando viene attivata la stampa su una pagina specifica e quali tag includere nella richiesta di analisi. L'analisi viene eseguita se almeno 1 tag deve essere incluso nella richiesta.
-
-      Il campo <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> identifica il fornitore di servizi di analisi a cui corrispondono le impostazioni.
-
-      Se il campo <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" /> viene impostato su 1, <ph name="PRODUCT_NAME" /> attende di ricevere una risposta dal servizio di analisi prima di consentire la visualizzazione della finestra di dialogo dell'anteprima di stampa per la pagina stampata. Con qualsiasi altro valore intero, <ph name="PRODUCT_NAME" /> mostra immediatamente la finestra di dialogo dell'anteprima di stampa.
-
-      Il campo <ph name="ENTERPRISE_CONNECTOR_BLOCK_LARGE_FILES_FIELD" /> consente di controllare se <ph name="PRODUCT_NAME" /> blocca o autorizza i file o le pagine troppo grandi per essere analizzati.
-
-      Il campo <ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD" /> viene utilizzato per determinare per quali tag il connettore deve richiedere all'utente di inserire una giustificazione per ignorare una scansione che risulti in un avviso ignorabile. Se il campo non viene configurato, si presume che non sia richiesta alcuna giustificazione.
-
-      I campi <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" /> e <ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" /> vengono utilizzati per configurare un messaggio da mostrare all'utente quando viene visualizzato un avviso dopo una scansione che ha rilevato dei problemi. L'amministratore è in grado di configurare messaggi composti da 200 caratteri al massimo.
-
-      Questo criterio richiede una configurazione aggiuntiva per essere applicato. Visita https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting per maggiori informazioni.</translation>
 <translation id="6640355849038068978">Se questa impostazione viene attivata, gli utenti potranno avviare l'applicazione Eche, ad esempio facendo clic su una notifica di Phone Hub.
 
       Se questa impostazione viene disattivata, gli utenti non potranno avviare l'applicazione Eche.
@@ -7559,23 +7512,6 @@ Se il criterio non viene configurato, in pratica equivale a impostarlo su "<ph n
 <translation id="7477149584454865826">Un flag booleano che indica se deve essere usato o meno IPP Everywhere per configurare la stampante.</translation>
 <translation id="7477231245051133709">Attiva la funzione di accessibilità di audio in formato mono</translation>
 <translation id="7479408102162550711">Segnala eventi di rete</translation>
-<translation id="7480826412572122600">Elenco di impostazioni per i servizi di Chrome Enterprise Connectors da applicare al connettore di Enterprise <ph name="ON_FILE_DOWNLOADED_ENTERPRISE_CONNECTOR" />, che si attiva quando un file viene scaricato in Chrome.
-
-      I campi <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> e <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> vengono utilizzati per stabilire se il connettore deve inviare un file per l'analisi quando viene scaricato da una pagina specifica e quali tag includere nella richiesta di analisi di questo file. Un tag che corrisponde a un pattern "attivato" viene incluso nella richiesta di analisi se l'URL della pagina corrisponde a un pattern associato a questo tag, purché nessun pattern "disattivato" con lo stesso tag corrisponda all'URL della pagina. L'analisi viene eseguita se almeno 1 tag deve essere incluso nella richiesta.
-
-      Il campo <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> identifica il fornitore di servizi di analisi a cui corrispondono le impostazioni.
-
-      Se il campo <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" /> viene impostato su 1, Chrome attende di ricevere una risposta dal servizio di analisi prima di concedere l'accesso all'utente al file scaricato. Con qualsiasi altro valore intero, Chrome concede all'utente l'accesso al file immediatamente.
-
-      Il campo <ph name="ENTERPRISE_CONNECTOR_BLOCK_PASSWORD_PROTECTED_FIELD" /> consente di controllare se Chrome blocca o autorizza i file protetti tramite password.
-
-      Il campo <ph name="ENTERPRISE_CONNECTOR_BLOCK_LARGE_FILES_FIELD" /> consente di controllare se Chrome blocca o autorizza i file troppo grandi per essere analizzati.
-
-      Il campo <ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD" /> viene utilizzato per determinare per quali tag il connettore deve richiedere all'utente di inserire una giustificazione per ignorare una scansione che risulti in un avviso ignorabile. Se il campo non viene configurato, si presume che non sia richiesta alcuna giustificazione.
-
-      I campi <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" /> e <ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" /> vengono utilizzati per configurare un messaggio da mostrare all'utente quando viene visualizzato un avviso dopo una scansione che ha rilevato dei problemi. Il campo del messaggio contiene il testo da mostrare all'utente e può includere al massimo 200 caratteri. Il campo learn_more_url contiene un URL fornito dall'amministratore su cui l'utente può fare clic per ricevere maggiori informazioni fornite dal cliente sul motivo per cui l'azione è stata bloccata. Il campo della lingua è facoltativo e contiene la lingua in cui è scritto il messaggio. Un campo della lingua vuoto o con il valore "predefinito" indica il messaggio da utilizzare se la lingua dell'utente non ne ha uno. Il campo dei tag consente di specificare per quale tipo di scansioni viene visualizzato il messaggio. L'elenco custom_messages può avere alcune voci o nessuna, dove per ognuna di queste i campi del messaggio e dei tag non devono essere vuoti.
-
-      Questo criterio richiede una configurazione aggiuntiva per essere applicato. Visita https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting per maggiori informazioni.</translation>
 <translation id="7481702249684965639">Il Cestino è attivo per l'utente.</translation>
 <translation id="7482768039644066614">Attiva il recupero dei metadati di caricamento delle pagine e dei modelli di machine learning per migliorare l'esperienza di navigazione</translation>
 <translation id="748292668225669178">Configura il montaggio di <ph name="MICROSOFT_ONE_DRIVE_NAME" /></translation>

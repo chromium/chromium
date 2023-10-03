@@ -218,6 +218,7 @@
 <translation id="2195124168004379331">የእርስዎ አሳሽ ጥሩ ይመስላል</translation>
 <translation id="2213327331203157297">ቆልፍ እና ዝጋ ሁነታን በChrome ውስጥ ለማሰናከል በእርስዎ iPhone ላይ ያጥፉት።</translation>
 <translation id="2218443599109088993">አሳንስ</translation>
+<translation id="2220529011494928058">ችግር ሪፖርት አድርግ</translation>
 <translation id="2230173723195178503">ድረ-ገፅ ተጭኗል</translation>
 <translation id="2239626343334228536">የአሰሳ ውሂብን በማጽዳት ላይ...</translation>
 <translation id="2242467532204595597">በመልዕክቶች፣ ሰነዶች እና ሌሎች መተግበሪያዎች ውስጥ አገናኞች ላይ መታ በሚያደርጉበት በማንኛውም ጊዜ Chromeን ይጠቀሙ።</translation>
@@ -543,7 +544,6 @@
 <translation id="3959736869653157332">ምናሌ → አዲስ ማንነት የማያሳውቅ ትር</translation>
 <translation id="3967822245660637423">ማውረድ ተጠናቅቋል</translation>
 <translation id="3968505803272650567">ፍላጎቶችን አቀናብር</translation>
-<translation id="3971789053442864420">{count,plural, =1{{count} የይለፍ ቃል}one{{count} የይለፍ ቃል}other{{count} የይለፍ ቃላት}}</translation>
 <translation id="3989635538409502728">ዘግተህ ውጣ</translation>
 <translation id="3995521777587992544">የገጽ መጫን ሂደት አሞሌ፣ <ph name="EMAIL" /> ተጭኗል።</translation>
 <translation id="4002019827078931033">የአድራሻ አሞሌን ወደ ላይ ይውሰዱ</translation>
@@ -1339,7 +1339,6 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="8328777765163860529">ሁሉንም ዝጋ</translation>
 <translation id="8343993175958086504">የእርስዎን ነገሮች ምትኬ ያስቀምጡ እና በማንኛውም መሣሪያ ላይ ይጠቀሙበት።</translation>
 <translation id="834783239627985533">በብዛት የተጎበኙ ጣቢያዎች</translation>
-<translation id="8356276002902955750">{count,plural, =1{{count} ዕልባት}one{{count} ዕልባት}other{{count} ዕልባቶች}}</translation>
 <translation id="8364841868226993049">በGoogle ፎቶዎች ውስጥ ለ<ph name="USER_EMAIL" /> ምስልን በማስቀመጥ ላይ...</translation>
 <translation id="8378714024927312812">በእርስዎ ድርጅት የሚተዳደር</translation>
 <translation id="8386068868580335421">ዳግም አስጀምር</translation>

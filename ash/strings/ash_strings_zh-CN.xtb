@@ -1500,7 +1500,6 @@
 <translation id="7188494361780961876">菜单已移至屏幕的左上角。</translation>
 <translation id="7189412385142492784">金星有多远</translation>
 <translation id="7198435252016571249">相机已对准右下角。与系统界面冲突。</translation>
-<translation id="7219573373513695352">未连接任何设备</translation>
 <translation id="7229029500464092426">可用内存为 <ph name="AVAILABLE_MEMORY" /> | 共 <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />。此 Chromebook 需要重新启动才能让更新生效。此过程最多可能需要 1 分钟的时间。</translation>
 <translation id="7256634071279256947">后置麦克风</translation>
@@ -1938,7 +1937,6 @@
 <translation id="9089416786594320554">输入法</translation>
 <translation id="9091626656156419976">已移除显示器“<ph name="DISPLAY_NAME" />”</translation>
 <translation id="9098969848082897657">将手机设为静音</translation>
-<translation id="9120448753905017833">为了开始通过移动流量建立热点，系统已关闭 WLAN。这可能会产生移动流量费用。</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> 或 <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">撤消上一次操作</translation>
 <translation id="9133335900048457298">无法录制受保护的内容</translation>

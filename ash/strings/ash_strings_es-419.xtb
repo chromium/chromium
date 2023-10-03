@@ -1502,7 +1502,6 @@ Nueva instalación</translation>
 <translation id="7188494361780961876">El menú se movió a la esquina superior izquierda de la pantalla.</translation>
 <translation id="7189412385142492784">A qué distancia está Venus</translation>
 <translation id="7198435252016571249">Se ajustó la cámara a la esquina inferior derecha. Entra en conflicto con la superficie del sistema.</translation>
-<translation id="7219573373513695352">No hay dispositivos conectados</translation>
 <translation id="7229029500464092426"><ph name="AVAILABLE_MEMORY" /> de memoria | <ph name="TOTAL_MEMORY" /> en total</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Debes reiniciar esta Chromebook para aplicar una actualización. Este proceso puede tardar 1 minuto.</translation>
 <translation id="7256634071279256947">Micrófono posterior</translation>
@@ -1943,7 +1942,6 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="9089416786594320554">Métodos de entrada</translation>
 <translation id="9091626656156419976">Se quitó la pantalla <ph name="DISPLAY_NAME" /></translation>
 <translation id="9098969848082897657">Silenciar teléfono</translation>
-<translation id="9120448753905017833">Desactivamos el Wi-Fi para comenzar a usar el hotspot mediante datos móviles. Es posible que se generen costos por el uso de datos.</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> o <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">Deshacer la última acción</translation>
 <translation id="9133335900048457298">No se puede grabar contenido protegido</translation>

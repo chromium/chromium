@@ -930,6 +930,7 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
 <translation id="1723824996674794290">Nuwe venster</translation>
 <translation id="1724801751621173132">Invoermodus</translation>
 <translation id="1725562816265788801">Oortjierollees</translation>
+<translation id="1726294682426724172">Nuwe kenmerke sluit Toweruitveër op Google Foto’s in om afleidings te verwyder, verbeterde video-oproepnutsgoed, en nog meer</translation>
 <translation id="1726503915437308071">Kursieflettertipe</translation>
 <translation id="1729533290416704613">Dit beheer ook watter bladsy gewys word wanneer jy van die omnikassie af soek.</translation>
 <translation id="1730666151302379551">Het ou wagwoord vergeet</translation>
@@ -1254,7 +1255,6 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
 <translation id="1974060860693918893">Gevorderd</translation>
 <translation id="1974159333077206889">Dieselfde oudio met alle luidsprekers</translation>
 <translation id="1974216844776165821">Chrome het jou wagwoord op hierdie toestel gestoor, maar jy kan pleks daarvan dit in jou Google-rekening stoor. Alle wagwoorde en toegangsleutels sal dan ook in jou Google-rekening beskikbaar wees terwyl jy aangemeld is</translation>
-<translation id="1974821797477522211">Koppel aan netwerk</translation>
 <translation id="1975841812214822307">Verwyder …</translation>
 <translation id="1976150099241323601">Meld aan op sekuriteitstoestel</translation>
 <translation id="1976823515278601587">Groot besparing</translation>
@@ -1938,7 +1938,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2485681265915754872">Google Play se diensbepalings</translation>
 <translation id="248676429071089168">Swiep op om die bladsy af te beweeg</translation>
 <translation id="2487067538648443797">Voeg nuwe boekmerk by</translation>
-<translation id="2487268545026948104">Koppel aan die internet om jou data terug te stel</translation>
 <translation id="2489686758589235262">Wys nog 2 skakelaars toe</translation>
 <translation id="2489829450872380594">'n Nuwe foon sal volgende keer hierdie <ph name="DEVICE_TYPE" /> ontsluit. Jy kan Smart Lock in Instellings afskakel.</translation>
 <translation id="2489918096470125693">Voeg vouer by …</translation>
@@ -2018,7 +2017,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2546991196809436099">Zoem in om items op die skerm groter te maak. Gebruik Soek + Ctrl + M om die vergrootglas aan en af te skakel.</translation>
 <translation id="2548347166720081527">Het <ph name="PERMISSION" /> toegelaat</translation>
 <translation id="2548545707296594436">Stel e-SIM-profielkas terug</translation>
-<translation id="2549435700753464129">ChromeOS Bluetooth Floss</translation>
 <translation id="2549985041256363841">Begin opname</translation>
 <translation id="2550212893339833758">Geruilde geheue</translation>
 <translation id="2550596535588364872">Laat <ph name="EXTENSION_NAME" /> toe om <ph name="FILE_NAME" /> oop te maak?</translation>
@@ -3509,7 +3507,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3771851622616482156">Jy sal by hierdie werf afgemeld word, insluitend in oop oortjies</translation>
 <translation id="3772046291955677288">Ek het <ph name="BEGIN_LINK1" />Google se diensbepalings<ph name="END_LINK1" /> en <ph name="BEGIN_LINK2" />Chrome en Chrome-bedryfstelsel se bykomende diensbepalings<ph name="END_LINK2" /> gelees en stem daartoe in.</translation>
 <translation id="3774166835015494435">Onlangse foto's en kennisgewings</translation>
-<translation id="3774546890772201673">Dateer <ph name="NAME" /> op.</translation>
 <translation id="3775432569830822555">SSL-bedienersertifikaat</translation>
 <translation id="3775705724665058594">Stuur na jou toestelle toe</translation>
 <translation id="3776508619697147021">Werwe kan vra om outomaties veelvuldige lêers af te laai</translation>
@@ -8754,7 +8751,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8077120325605624147">Enige werf wat jy besoek, kan vir jou enige advertensie wys</translation>
 <translation id="8077579734294125741">Ander Chrome-profiele</translation>
 <translation id="80798452873915119">Werwe kan vra om vensters op al jou skerms te bestuur</translation>
-<translation id="807990231167557618">Jou Chromebook is opgedateer.</translation>
 <translation id="8080028325999236607">Maak alle oortjies toe</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">Jou sessie word bestuur deur <ph name="MANAGER_NAME" />. Administrateurs kan jou profiel uitvee en ook jou netwerkverkeer monitor.</translation>

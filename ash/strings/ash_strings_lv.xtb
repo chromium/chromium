@@ -1501,7 +1501,6 @@ Jauna instalācija</translation>
 <translation id="7188494361780961876">Izvēlne pārvietota uz ekrāna augšējo kreiso malu.</translation>
 <translation id="7189412385142492784">Cik tālu atrodas Venera?</translation>
 <translation id="7198435252016571249">Kamera pārnesta uz labo apakšējo stūri. Konflikts ar sistēmas virsmu.</translation>
-<translation id="7219573373513695352">Nav pievienota neviena ierīce</translation>
 <translation id="7229029500464092426">Izmantotā atmiņa: <ph name="AVAILABLE_MEMORY" /> | Kopējā atmiņa: <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Šis Chromebook dators ir jārestartē, lai lietotu atjauninājumu. Tas var ilgt aptuveni 1 minūti.</translation>
 <translation id="7256634071279256947">Aizmugurējais mikrofons</translation>
@@ -1942,7 +1941,6 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="9089416786594320554">Ievades metodes</translation>
 <translation id="9091626656156419976">Displejs <ph name="DISPLAY_NAME" /> tika noņemts.</translation>
 <translation id="9098969848082897657">Izslēgt tālruņa skaņu</translation>
-<translation id="9120448753905017833">Mēs esam izslēguši Wi-Fi, lai sāktu izmantot tīklāju, lietojot mobilos datus. Tādējādi var rasties izmaksas par datiem.</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> vai <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">Atsaukt pēdējo darbību</translation>
 <translation id="9133335900048457298">Aizsargātu saturu nevar ierakstīt</translation>

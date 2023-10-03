@@ -218,6 +218,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chrome
 <translation id="2195124168004379331">Browserul pare în regulă</translation>
 <translation id="2213327331203157297">Pentru a dezactiva modul Blocare în Chrome, dezactivează-l pe iPhone.</translation>
 <translation id="2218443599109088993">Micșorează</translation>
+<translation id="2220529011494928058">Semnalați o problemă</translation>
 <translation id="2230173723195178503">Pagina web s-a încărcat</translation>
 <translation id="2239626343334228536">Se șterg datele de navigare...</translation>
 <translation id="2242467532204595597">Folosește Chrome oricând atingi linkuri în mesaje, documente și alte aplicații.</translation>
@@ -543,7 +544,6 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="3959736869653157332">Meniu → Filă incognito nouă</translation>
 <translation id="3967822245660637423">Descărcare finalizată</translation>
 <translation id="3968505803272650567">Gestionează interesele</translation>
-<translation id="3971789053442864420">{count,plural, =1{{count} parolă}few{{count} parole}other{{count} de parole}}</translation>
 <translation id="3989635538409502728">Deconectează-te</translation>
 <translation id="3995521777587992544">Bara de progres a încărcării paginii, <ph name="EMAIL" /> s-a încărcat.</translation>
 <translation id="4002019827078931033">Mută bara de adrese în partea de sus</translation>
@@ -1338,7 +1338,6 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <translation id="8328777765163860529">Închideți toate</translation>
 <translation id="8343993175958086504">Fă backup datelor și folosește-le pe orice dispozitiv.</translation>
 <translation id="834783239627985533">Cele mai accesate site-uri</translation>
-<translation id="8356276002902955750">{count,plural, =1{{count} marcaj}few{{count} marcaje}other{{count} de marcaje}}</translation>
 <translation id="8364841868226993049">Se salvează imaginea în Google Foto pentru <ph name="USER_EMAIL" />...</translation>
 <translation id="8378714024927312812">Gestionat de organizația ta</translation>
 <translation id="8386068868580335421">Resetează</translation>

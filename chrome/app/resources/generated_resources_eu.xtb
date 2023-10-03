@@ -919,6 +919,7 @@ Baliteke aplikazioei emandako baimenak kontu honi aplikatzea. <ph name="APPS_LIN
 <translation id="1723824996674794290">&amp;Leiho berria</translation>
 <translation id="1724801751621173132">Idazketa-metodoa</translation>
 <translation id="1725562816265788801">Fitxen zintan eskuinera/ezkerrera egitea</translation>
+<translation id="1726294682426724172">Eginbide berrien artean, Google Argazkiak zerbitzuko Ezabagoma magikoa (distrakzioak kentzeko) eta bideodeiak egiteko tresna hobetuak daude</translation>
 <translation id="1726503915437308071">Letra etzana</translation>
 <translation id="1729533290416704613">Omnibox-etik bilaketak egin dituzunean erakusten den orria ere kontrolatzen du.</translation>
 <translation id="1730666151302379551">Aurreko pasahitza ahaztu zaizu?</translation>
@@ -1242,7 +1243,6 @@ Baliteke aplikazioei emandako baimenak kontu honi aplikatzea. <ph name="APPS_LIN
 <translation id="1974060860693918893">Aurreratuak</translation>
 <translation id="1974159333077206889">Audio bera bozgorailu guztietatik</translation>
 <translation id="1974216844776165821">Chrome-k gailu honetan gorde du pasahitza, baina Google-ko kontuan gorde dezakezu, bestela. Horrela, Google-ko kontuko pasahitz eta sarbide-gako guztiak ere erabilgarri egongo dira saioa hasita daukazunean.</translation>
-<translation id="1974821797477522211">Konektatu sarera</translation>
 <translation id="1975841812214822307">Kendu…</translation>
 <translation id="1976150099241323601">Hasi saioa segurtasun-gailuan</translation>
 <translation id="1976823515278601587">Aurrezte handia</translation>
@@ -1922,7 +1922,6 @@ Voice Match-ekin, Google-ren Laguntzailea zerbitzuak <ph name="SUPERVISED_USER_N
 <translation id="2485681265915754872">Google Play-ren Zerbitzu-baldintzak</translation>
 <translation id="248676429071089168">Pasatu hatza gorantz orria beherantz mugitzeko</translation>
 <translation id="2487067538648443797">Gehitu laster-marka bat</translation>
-<translation id="2487268545026948104">Datuak leheneratzeko, konektatu Internetera</translation>
 <translation id="2489686758589235262">Esleitu beste bi erabilerraztasun-etengailu</translation>
 <translation id="2489829450872380594">Hurrengoan, beste telefono batek desblokeatuko du <ph name="DEVICE_TYPE" /> gailua. Smart Lock desaktibatzeko, joan ezarpenetara.</translation>
 <translation id="2489918096470125693">Gehitu &amp;karpeta…</translation>
@@ -2002,7 +2001,6 @@ Voice Match-ekin, Google-ren Laguntzailea zerbitzuak <ph name="SUPERVISED_USER_N
 <translation id="2546991196809436099">Handitu pantaila bertako elementuak hobeto ikusteko. Erabili Bilaketa + Ktrl + M lupa aktibatu eta desaktibatzeko.</translation>
 <translation id="2548347166720081527"><ph name="PERMISSION" /> baimendu da</translation>
 <translation id="2548545707296594436">Berrezarri eSIMaren profilaren cachea</translation>
-<translation id="2549435700753464129">Floss-en Bluetoothari buruzko erregistroak ChromeOS-en</translation>
 <translation id="2549985041256363841">Hasi grabatzen</translation>
 <translation id="2550212893339833758">Trukerako memoria</translation>
 <translation id="2550596535588364872"><ph name="FILE_NAME" /> fitxategia irekitzeko baimena eman nahi diozu <ph name="EXTENSION_NAME" /> luzapenari?</translation>
@@ -3493,7 +3491,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3771851622616482156">Webguneko saioa amaituko da, baita irekita dauden fitxetakoa ere.</translation>
 <translation id="3772046291955677288">Irakurri ditut eta onartzen ditut <ph name="BEGIN_LINK1" />Google-ren Zerbitzu-baldintzak<ph name="END_LINK1" /> eta <ph name="BEGIN_LINK2" />Chrome-ren eta ChromeOS-ren Zerbitzu-baldintza gehigarriak<ph name="END_LINK2" />.</translation>
 <translation id="3774166835015494435">Azken argazkiak eta jakinarazpenak</translation>
-<translation id="3774546890772201673">Eguneratu <ph name="NAME" />.</translation>
 <translation id="3775432569830822555">SSL zerbitzariaren ziurtagiria</translation>
 <translation id="3775705724665058594">Bidali zure gailuetara</translation>
 <translation id="3776508619697147021">Webguneek fitxategi bat baino gehiago automatikoki deskargatzea eska dezakete</translation>
@@ -8725,7 +8722,6 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8077120325605624147">Bisitatzen dituzun webgune guztiek edozein iragarki erakusteko aukera dute</translation>
 <translation id="8077579734294125741">Chrome-ko beste profilak</translation>
 <translation id="80798452873915119">Webguneek leihoak pantaila guztietan kudeatzea eska dezakete</translation>
-<translation id="807990231167557618">Chromebook-a eguneratuta dago.</translation>
 <translation id="8080028325999236607">Itxi fitxa guztiak</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289"><ph name="MANAGER_NAME" /> bidez kudeatzen da saioa. Administratzaileek zure profila ezaba dezakete, eta sareko trafikoa gainbegiratu.</translation>

@@ -220,6 +220,7 @@
 <translation id="2195124168004379331">يبدو متصفّحك آمنًا</translation>
 <translation id="2213327331203157297">‏لإيقاف "وضع التأمين" (Lockdown Mode) في Chrome، عليك إيقافه على جهاز iPhone.</translation>
 <translation id="2218443599109088993">تصغير</translation>
+<translation id="2220529011494928058">الإبلاغ عن مشكلة</translation>
 <translation id="2230173723195178503">تم تحميل الصفحة المطلوبة</translation>
 <translation id="2239626343334228536">جارٍ محو بيانات التصفُّح...</translation>
 <translation id="2242467532204595597">‏يمكنك فتح Chrome عند النقر على الروابط في الرسائل والمستندات والتطبيقات الأخرى.</translation>
@@ -545,7 +546,6 @@
 <translation id="3959736869653157332">القائمة ← علامة تبويب جديدة في وضع التصفّح المتخفي</translation>
 <translation id="3967822245660637423">اكتمل التنزيل</translation>
 <translation id="3968505803272650567">إدارة الاهتمامات</translation>
-<translation id="3971789053442864420">{count,plural, =1{كلمة مرور واحدة ({count})}zero{‫{count} كلمة مرور}two{كلمتا مرور ({count})}few{‫{count} كلمات مرور}many{‫{count} كلمة مرور}other{‫{count} كلمة مرور}}</translation>
 <translation id="3989635538409502728">تسجيل الخروج</translation>
 <translation id="3995521777587992544">شريط تقدُّم تحميل الصفحة، تم تحميل <ph name="EMAIL" />.</translation>
 <translation id="4002019827078931033">‏نقل شريط العناوين إلى أعلى الشاشة (Move Address Bar To Top)</translation>
@@ -1340,7 +1340,6 @@
 <translation id="8328777765163860529">إغلاق الكل</translation>
 <translation id="8343993175958086504">يمكنك الاحتفاظ بنسخة احتياطية من بياناتك واستخدامها على أي جهاز.</translation>
 <translation id="834783239627985533">المواقع الإلكترونية الأكثر زيارة</translation>
-<translation id="8356276002902955750">{count,plural, =1{إشارة مرجعية واحدة ({count})}zero{‫{count} إشارة مرجعية}two{إشارتان مرجعيتان ({count})}few{‫{count} إشارات مرجعية}many{‫{count} إشارة مرجعية}other{‫{count} إشارة مرجعية}}</translation>
 <translation id="8364841868226993049">‏جارٍ حفظ الصورة في "صور Google" للحساب <ph name="USER_EMAIL" />…</translation>
 <translation id="8378714024927312812">بإدارة مؤسستك</translation>
 <translation id="8386068868580335421">إعادة ضبط</translation>

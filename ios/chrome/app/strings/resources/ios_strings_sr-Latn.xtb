@@ -218,6 +218,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />obrišite Chrome po
 <translation id="2195124168004379331">Pregledač deluje dobro</translation>
 <translation id="2213327331203157297">Da biste onemogućili režim zaključavanja u Chrome-u, isključite ga na iPhone-u.</translation>
 <translation id="2218443599109088993">Umanjite</translation>
+<translation id="2220529011494928058">Prijavi problem</translation>
 <translation id="2230173723195178503">Veb-stranica je učitana</translation>
 <translation id="2239626343334228536">Brišu se podaci pregledanja...</translation>
 <translation id="2242467532204595597">Koristite Chrome svaki put kada dodirnete linkove u porukama, dokumentima i drugim aplikacijama.</translation>
@@ -543,7 +544,6 @@ Pogledajte uputstva pretraživača za brisanje istorije pretrage ako je to prime
 <translation id="3959736869653157332">Meni → Nova kartica bez arhiviranja</translation>
 <translation id="3967822245660637423">Preuzimanje je dovršeno</translation>
 <translation id="3968505803272650567">Upravljajte interesovanjima</translation>
-<translation id="3971789053442864420">{count,plural, =1{{count} lozinka}one{{count} lozinka}few{{count} lozinke}other{{count} lozinki}}</translation>
 <translation id="3989635538409502728">Odjavi me</translation>
 <translation id="3995521777587992544">Traka napretka učitavanja stranica, učitano je <ph name="EMAIL" />.</translation>
 <translation id="4002019827078931033">Premesti traku za adresu na vrh</translation>
@@ -1338,7 +1338,6 @@ Sajtovi mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja na
 <translation id="8328777765163860529">Zatvori sve</translation>
 <translation id="8343993175958086504">Pravite rezervne kopije sadržaja i koristite ga na bilo kom uređaju.</translation>
 <translation id="834783239627985533">Najposećeniji sajtovi</translation>
-<translation id="8356276002902955750">{count,plural, =1{{count} obeleživač}one{{count} obeleživač}few{{count} obeleživača}other{{count} obeleživača}}</translation>
 <translation id="8364841868226993049">Čuva se slika u Google slikama naloga <ph name="USER_EMAIL" />…</translation>
 <translation id="8378714024927312812">Ovim upravlja organizacija</translation>
 <translation id="8386068868580335421">Resetuj</translation>

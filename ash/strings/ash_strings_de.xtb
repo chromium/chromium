@@ -1498,7 +1498,6 @@ Neuinstallation</translation>
 <translation id="7188494361780961876">Menü wurde nach links oben auf dem Bildschirm verschoben.</translation>
 <translation id="7189412385142492784">Wie weit ist die Venus entfernt?</translation>
 <translation id="7198435252016571249">Kamera ist an der unteren rechten Ecke angepinnt. Konflikt mit der Systemoberfläche.</translation>
-<translation id="7219573373513695352">Keine verbundenen Geräte</translation>
 <translation id="7229029500464092426">Arbeitsspeicher <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> insgesamt</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Dieses Chromebook muss zur Installation eines Updates neu gestartet werden. Dies kann bis zu einer Minute dauern.</translation>
 <translation id="7256634071279256947">Mikrofon auf der Rückseite</translation>
@@ -1939,7 +1938,6 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="9089416786594320554">Eingabemethoden</translation>
 <translation id="9091626656156419976">Bildschirm <ph name="DISPLAY_NAME" /> wurde entfernt</translation>
 <translation id="9098969848082897657">Smartphone stummschalten</translation>
-<translation id="9120448753905017833">Das WLAN wurde deaktiviert, damit du die Hotspotfunktion über mobile Daten nutzen kannst. Dadurch können Kosten anfallen.</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> oder <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">Letzte Aktion rückgängig machen</translation>
 <translation id="9133335900048457298">Geschützte Inhalte können nicht aufgezeichnet werden</translation>

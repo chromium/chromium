@@ -931,6 +931,7 @@
 <translation id="1723824996674794290">&amp;নতুন উইন্ডো</translation>
 <translation id="1724801751621173132">ইনপুট মোড</translation>
 <translation id="1725562816265788801">ট্যাব স্ক্রল করা</translation>
+<translation id="1726294682426724172">নতুন ফিচারের মধ্যে ব্যাঘাত সরানোর জন্য Google Photos-এ ম্যাজিক ইরেজার, উন্নত ভিডিও কলের টুল ও আরও অনেক কিছু অন্তর্ভুক্ত করা আছে</translation>
 <translation id="1726503915437308071">ইটালিক ফন্ট</translation>
 <translation id="1729533290416704613">আপনি Omnibox থেকে সার্চ করলে কোন পৃষ্ঠাটি দেখানো হবে তাও এটি নিয়ন্ত্রণ করে।</translation>
 <translation id="1730666151302379551">পুরানো পাসওয়ার্ড ভুলে গেছি</translation>
@@ -1255,7 +1256,6 @@
 <translation id="1974060860693918893">উন্নত</translation>
 <translation id="1974159333077206889">সমস্ত স্পিকার থেকে একই অডিও শোনা যাবে (মোনো অডিও)</translation>
 <translation id="1974216844776165821">Chrome আপনার পাসওয়ার্ড এই ডিভাইসে সেভ করেছে, তবে এর পরিবর্তে আপনি এটি Google অ্যাকাউন্টেও সেভ করতে পারবেন। এরপর, সাইন-ইন করাকালীন আপনার Google অ্যাকাউন্টে সেভ করা সব পাসওয়ার্ড ও পাসকীও উপলভ্য হবে।</translation>
-<translation id="1974821797477522211">নেটওয়ার্কে সংযোগ করুন</translation>
 <translation id="1975841812214822307">সরান...</translation>
 <translation id="1976150099241323601">সিকিউরিটি ডিভাইসে সাইন-ইন করুন</translation>
 <translation id="1976823515278601587">বেশি পরিমাণে সেভ করা</translation>
@@ -1939,7 +1939,6 @@
 <translation id="2485681265915754872">Google Play পরিষেবার শর্তাবলী</translation>
 <translation id="248676429071089168">পৃষ্ঠা নিচের দিকে নামাতে উপরের দিকে সোয়াইপ করুন</translation>
 <translation id="2487067538648443797">নতুন বুকমার্ক যোগ করুন</translation>
-<translation id="2487268545026948104">আপনার ডেটা ফিরিয়ে আনতে ইন্টারনেটে কানেক্ট করুন</translation>
 <translation id="2489686758589235262">আরও ২টি সুইচ অ্যাসাইন করুন</translation>
 <translation id="2489829450872380594">পরের বার, নতুন ফোন এই <ph name="DEVICE_TYPE" /> আনলক করবে। সেটিংসে গিয়ে Smart Lock বন্ধ করতে পারেন।</translation>
 <translation id="2489918096470125693">ফোল্ডার যুক্ত &amp;করুন...</translation>
@@ -2019,7 +2018,6 @@
 <translation id="2546991196809436099">স্ক্রিনে কোনও আইটেম বড় করে দেখতে জুম-ইন করুন। ম্যাগনিফায়ার চালু বা বন্ধ করতে, 'Search + Ctrl + M' কী ব্যবহার করুন।</translation>
 <translation id="2548347166720081527"><ph name="PERMISSION" />-এর অনুমতি দেওয়া হয়েছে</translation>
 <translation id="2548545707296594436">eSIM প্রোফাইল ক্যাশে রিসেট করুন</translation>
-<translation id="2549435700753464129">ChromeOS Bluetooth Floss</translation>
 <translation id="2549985041256363841">রেকর্ডিং শুরু করুন</translation>
 <translation id="2550212893339833758">অদলবদল করা মেমরি</translation>
 <translation id="2550596535588364872"><ph name="FILE_NAME" /> খোলার জন্য <ph name="EXTENSION_NAME" />-কে অনুমতি দিন?</translation>
@@ -3510,7 +3508,6 @@
 <translation id="3771851622616482156">খোলা ট্যাবের সাইটগুলি সহ এই সাইট থেকে আপনাকে সাইন-আউট করে দেওয়া হবে</translation>
 <translation id="3772046291955677288">আমি <ph name="BEGIN_LINK1" />Google পরিষেবার শর্তাবলী<ph name="END_LINK1" /> এবং <ph name="BEGIN_LINK2" />Chrome ও ChromeOS-এর অতিরিক্ত পরিষেবার শর্তাবলী<ph name="END_LINK2" /> পড়েছি ও সেগুলিতে সম্মতি জানাচ্ছি।</translation>
 <translation id="3774166835015494435">সাম্প্রতিক ফটো এবং বিজ্ঞপ্তি</translation>
-<translation id="3774546890772201673"><ph name="NAME" /> আপডেট করুন।</translation>
 <translation id="3775432569830822555">SSL সার্ভার সার্টিফিকেট</translation>
 <translation id="3775705724665058594">আপনার ডিভাইসে পাঠান</translation>
 <translation id="3776508619697147021">একাধিক ফাইল অটোমেটিক ডাউনলোড করতে, সাইট অনুমতি চাইতে পারে</translation>
@@ -8760,7 +8757,6 @@
 <translation id="8077120325605624147">আপনি ভিজিট করেন এমন যেকোনও সাইট আপনাকে যেকোনও বিজ্ঞাপন দেখাতে পারে</translation>
 <translation id="8077579734294125741">অন্যান্য Chrome প্রোফাইল</translation>
 <translation id="80798452873915119">সাইট আপনার সব ডিসপ্লেতে উইন্ডো ম্যানেজ করার অনুমতি চাইতে পারে</translation>
-<translation id="807990231167557618">আপনার Chromebook আপডেট করা হবে।</translation>
 <translation id="8080028325999236607">সমস্ত ট্যাব বন্ধ করুন</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">আপনার সেশন <ph name="MANAGER_NAME" /> ম্যানেজ করেন। অ্যাডমিনিস্ট্রেটররা আপনার প্রোফাইল মুছে দিতে এবং আপনার নেটওয়ার্ক ট্রাফিক মনিটর করতে পারেন।</translation>

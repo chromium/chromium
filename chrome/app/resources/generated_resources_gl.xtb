@@ -918,6 +918,7 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1723824996674794290">&amp;Nova ventá</translation>
 <translation id="1724801751621173132">Modo de introdución de texto</translation>
 <translation id="1725562816265788801">Desprazamento polas pestanas</translation>
+<translation id="1726294682426724172">Entre as novas funcións, inclúense o Borrador máxico de Google Fotos para quitar as distraccións, ferramentas melloradas para as videochamadas e moitas outras</translation>
 <translation id="1726503915437308071">Tipo de letra cursiva</translation>
 <translation id="1729533290416704613">Tamén controla que páxina se mostra ao buscar desde a omnibox.</translation>
 <translation id="1730666151302379551">Esquecín o contrasinal antigo</translation>
@@ -1241,7 +1242,6 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1974060860693918893">Configuración avanzada</translation>
 <translation id="1974159333077206889">O mesmo audio en todos os altofalantes</translation>
 <translation id="1974216844776165821">Chrome gardou o teu contrasinal neste dispositivo, pero, se o prefires, podes almacenalo na túa Conta de Google. Todos os contrasinais e claves de acceso que teñas gardados na Conta de Google estarán dispoñibles mentres teñas a sesión iniciada.</translation>
-<translation id="1974821797477522211">Conectarse á rede</translation>
 <translation id="1975841812214822307">Eliminar...</translation>
 <translation id="1976150099241323601">Iniciar sesión no dispositivo de seguranza</translation>
 <translation id="1976823515278601587">Aforro elevado</translation>
@@ -1922,7 +1922,6 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="2485681265915754872">Condicións de servizo de Google Play</translation>
 <translation id="248676429071089168">Pasa o dedo cara arriba para mover a páxina cara abaixo</translation>
 <translation id="2487067538648443797">Engadir un marcador novo</translation>
-<translation id="2487268545026948104">Para restaurar os teus datos, conéctate a Internet</translation>
 <translation id="2489686758589235262">Asignar accións a 2 interruptores máis</translation>
 <translation id="2489829450872380594">A próxima vez, o novo teléfono desbloqueará este <ph name="DEVICE_TYPE" />. Podes desactivar Smart Lock en Configuración.</translation>
 <translation id="2489918096470125693">Engadir &amp;cartafol...</translation>
@@ -2002,7 +2001,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2546991196809436099">Achega a imaxe a fin de que os elementos da pantalla sexan meirandes. Para activar e desactivar a lupa, preme Buscar + Control + M.</translation>
 <translation id="2548347166720081527">Concedeuse o permiso: <ph name="PERMISSION" /></translation>
 <translation id="2548545707296594436">Restablecer memoria caché do perfil da eSIM</translation>
-<translation id="2549435700753464129">ChromeOS Bluetooth Floss</translation>
 <translation id="2549985041256363841">Iniciar gravación</translation>
 <translation id="2550212893339833758">Memoria cambiada</translation>
 <translation id="2550596535588364872">Queres permitirlle á extensión <ph name="EXTENSION_NAME" /> abrir <ph name="FILE_NAME" />?</translation>
@@ -3496,7 +3494,6 @@ https://allthings.how/content/images/wordpress/2023/02/allthings.how-how-to-make
 <translation id="3771851622616482156">Pecharase sesión neste sitio, aínda que o teñas aberto en pestanas</translation>
 <translation id="3772046291955677288">Lin e acepto as <ph name="BEGIN_LINK1" />Condicións de servizo de Google<ph name="END_LINK1" /> e as <ph name="BEGIN_LINK2" />Condicións de servizo adicionais de Chrome e ChromeOS<ph name="END_LINK2" />.</translation>
 <translation id="3774166835015494435">Notificacións e fotos recentes</translation>
-<translation id="3774546890772201673">Actualizar <ph name="NAME" />.</translation>
 <translation id="3775432569830822555">Certificado do servidor SSL</translation>
 <translation id="3775705724665058594">Enviar contido aos teus dispositivos</translation>
 <translation id="3776508619697147021">Os sitios poden pedirche permiso para descargar automaticamente varios ficheiros</translation>
@@ -8736,7 +8733,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8077120325605624147">Calquera sitio que visites pode mostrarche anuncios</translation>
 <translation id="8077579734294125741">Outros perfís de Chrome</translation>
 <translation id="80798452873915119">Os sitios poden pedir permiso para xestionar ventás en todas as pantallas</translation>
-<translation id="807990231167557618">O teu Chromebook está actualizado.</translation>
 <translation id="8080028325999236607">Pechar pestanas</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289"><ph name="MANAGER_NAME" /> xestiona a túa sesión. Os administradores poden eliminar o teu perfil e tamén supervisar o tráfico da túa rede.</translation>

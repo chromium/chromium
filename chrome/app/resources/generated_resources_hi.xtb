@@ -937,6 +937,7 @@
 <translation id="1723824996674794290">&amp;नई विंडो</translation>
 <translation id="1724801751621173132">इनपुट मोड</translation>
 <translation id="1725562816265788801">टैब स्क्रोलिंग</translation>
+<translation id="1726294682426724172">नई सुविधाओं में, मैजिक इरेज़र, वीडियो कॉल के लिए बेहतर टूल वगैरह शामिल हैं. Google Photos के मैजिक इरेज़र की मदद से, फ़ोटो में मौजूद ध्यान भटकाने वाली चीज़ें हटाई जा सकती हैं</translation>
 <translation id="1726503915437308071">इटैलिक फ़ॉन्ट</translation>
 <translation id="1729533290416704613">इससे यह भी नियंत्रित होता है कि ऑम्निबॉक्‍स से खोजते समय आपको कौन सा पेज दिखाया जाए.</translation>
 <translation id="1730666151302379551">पुराना पासवर्ड याद नहीं है</translation>
@@ -1264,7 +1265,6 @@
 <translation id="1974060860693918893">बेहतर सेटिंग</translation>
 <translation id="1974159333077206889">सभी स्पीकर से एक जैसी आवाज़ (मोनो ऑडियो)</translation>
 <translation id="1974216844776165821">Chrome ने आपके पासवर्ड को इस डिवाइस में सेव कर दिया है. हालांकि, इसे Google खाते में सेव किया जा सकता है. इसके बाद, आपके साइन इन रहने पर आपके Google खाते में मौजूद सभी पासकी और पासवर्ड भी उपलब्ध होंगे.</translation>
-<translation id="1974821797477522211">नेटवर्क से कनेक्ट करें</translation>
 <translation id="1975841812214822307">निकालें...</translation>
 <translation id="1976150099241323601">सुरक्षा डिवाइस में साइन इन करें</translation>
 <translation id="1976823515278601587">बहुत ज़्यादा बचत</translation>
@@ -1949,7 +1949,6 @@
 <translation id="2485681265915754872">Google Play की सेवा की शर्तें</translation>
 <translation id="248676429071089168">पेज को नीचे ले जाने के लिए, ऊपर की ओर स्वाइप करें</translation>
 <translation id="2487067538648443797">नया बुकमार्क जोड़ें</translation>
-<translation id="2487268545026948104">अपना डेटा वापस लाने के लिए, इंटरनेट से कनेक्ट करें</translation>
 <translation id="2489686758589235262">दो स्विच और असाइन करें</translation>
 <translation id="2489829450872380594">अगली बार, नया फ़ोन इस <ph name="DEVICE_TYPE" /> को अनलॉक कर देगा. आप सेटिंग में जाकर Smart Lock को बंद कर सकते हैं.</translation>
 <translation id="2489918096470125693">&amp;फ़ोल्डर जोड़ें...</translation>
@@ -2030,7 +2029,6 @@
 <translation id="2546991196809436099">स्क्रीन पर मौजूद आइटम बड़े करने के लिए, ज़ूम इन करें. स्क्रीन पर मौजूद कॉन्टेंट को बड़ा करके दिखाने की सुविधा को चालू या बंद करने के लिए, Search + Ctrl + M का इस्तेमाल करें.</translation>
 <translation id="2548347166720081527"><ph name="PERMISSION" /> इस्तेमाल करने की अनुमति दी गई है</translation>
 <translation id="2548545707296594436">ई-सिम प्रोफ़ाइल की कैश मेमोरी को रीसेट करें</translation>
-<translation id="2549435700753464129">ChromeOS ब्लूटूथ के फ़्लॉस</translation>
 <translation id="2549985041256363841">रिकॉर्ड करना शुरू करें</translation>
 <translation id="2550212893339833758">स्वैप की गई मेमोरी</translation>
 <translation id="2550596535588364872"><ph name="EXTENSION_NAME" /> को <ph name="FILE_NAME" /> खोलने की मंज़ूरी दें?</translation>
@@ -3530,7 +3528,6 @@
 <translation id="3771851622616482156">आपको इस साइट और खुले हुए टैब से साइन आउट कर दिया जाएगा</translation>
 <translation id="3772046291955677288">मैंने <ph name="BEGIN_LINK1" />Google की सेवा की शर्तें<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Chrome और ChromeOS की सेवा की अन्य शर्तें<ph name="END_LINK2" /> पढ़ ली हैं और मैं उनसे सहमत हूं.</translation>
 <translation id="3774166835015494435">हाल ही की फ़ोटो और सूचनाएं</translation>
-<translation id="3774546890772201673"><ph name="NAME" /> अपडेट करें.</translation>
 <translation id="3775432569830822555">SSL सर्वर प्रमाणपत्र</translation>
 <translation id="3775705724665058594">अपने डिवाइस पर भेजें</translation>
 <translation id="3776508619697147021">साइटें कई फ़ाइलों को अपने-आप डाउनलोड करने के लिए पूछ सकती हैं</translation>
@@ -8787,7 +8784,6 @@
 <translation id="8077120325605624147">किसी भी साइट को देखने पर, आपको कोई भी विज्ञापन दिख सकता है</translation>
 <translation id="8077579734294125741">Chrome की अन्य प्रोफ़ाइलें</translation>
 <translation id="80798452873915119">साइटें, आपके सभी डिसप्ले पर विंडो मैनेज करने की अनुमति मांग सकती हैं</translation>
-<translation id="807990231167557618">आपका Chromebook अपडेट हो गया है.</translation>
 <translation id="8080028325999236607">सभी टैब बंद करें</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">आपके सेशन को <ph name="MANAGER_NAME" /> मैनेज करता है. एडमिन आपकी प्रोफ़ाइल मिटा सकते हैं और आपके नेटवर्क ट्रैफ़िक की निगरानी भी कर सकते हैं.</translation>
@@ -10199,7 +10195,7 @@
 <translation id="9214695392875603905">कपकेक</translation>
 <translation id="9215293857209265904">"<ph name="EXTENSION_NAME" />" जोड़ा गया</translation>
 <translation id="9215742531438648683">'Google Play Store' अनइंस्टॉल करें</translation>
-<translation id="9218430445555521422">डिफ़ॉल्ट के रूप में सेट करें</translation>
+<translation id="9218430445555521422">डिफ़ॉल्ट के तौर पर सेट करें</translation>
 <translation id="9218842937876577955"><ph name="APP_NAME" /> (ऐप्लिकेशन काम नहीं करता)</translation>
 <translation id="9219582468404818260">वेब को बेहतर बनाने में हमारी मदद करें</translation>
 <translation id="9219741625496141320">ब्राउज़िंग डेटा अपने-आप मिट गया</translation>

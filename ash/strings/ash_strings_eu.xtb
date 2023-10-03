@@ -1501,7 +1501,6 @@ Berriki instalatu da</translation>
 <translation id="7188494361780961876">Pantailaren goiko ezkerreko izkinara eraman da menua.</translation>
 <translation id="7189412385142492784">Zer distantziatara dago Artizarra</translation>
 <translation id="7198435252016571249">Atxiki egin da kamera beheko eskuinaldeko izkinan, sistemaren beste gainazal batean gainjartzen zelako.</translation>
-<translation id="7219573373513695352">Ez dago gailurik konektatuta</translation>
 <translation id="7229029500464092426">Memoria: <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> guztira</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Chromebook hau berrabiarazi egin behar da eguneratzea aplikatzeko. Baliteke minutu bat behar izatea.</translation>
 <translation id="7256634071279256947">Atzeko mikrofonoa</translation>
@@ -1941,7 +1940,6 @@ Itzaltzeko, eduki sakatuta berriro gailuaren etengailua.</translation>
 <translation id="9089416786594320554">Idazketa-metodoak</translation>
 <translation id="9091626656156419976">Kendu da <ph name="DISPLAY_NAME" /> pantaila</translation>
 <translation id="9098969848082897657">Isilarazi telefonoa</translation>
-<translation id="9120448753905017833">Wifia desaktibatu da wifi-gunea datu-konexioaren bidez erabiltzen hasteko. Baliteke datu-konexioari dagozkion kostuak ordaindu behar izatea.</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> edo <ph name="CTRL" /> <ph name="SEPARATOR1" /> <ph name="SHIFT" /> <ph name="SEPARATOR2" /> <ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">Desegin azken ekintza</translation>
 <translation id="9133335900048457298">Ezin da kapturatu eduki babestua</translation>

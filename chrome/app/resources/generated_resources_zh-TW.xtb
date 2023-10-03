@@ -919,6 +919,7 @@
 <translation id="1723824996674794290">新增視窗(&amp;N)</translation>
 <translation id="1724801751621173132">輸入模式</translation>
 <translation id="1725562816265788801">分頁捲動</translation>
+<translation id="1726294682426724172">現在可以使用多項新功能，包括 Google 相簿可消除干擾元素的魔術橡皮擦、功能更強大的視訊通話工具等等</translation>
 <translation id="1726503915437308071">斜體字型</translation>
 <translation id="1729533290416704613">這個擴充功能也會控管你使用網址列搜尋時所顯示的網頁。</translation>
 <translation id="1730666151302379551">清除舊密碼</translation>
@@ -1242,7 +1243,6 @@
 <translation id="1974060860693918893">進階</translation>
 <translation id="1974159333077206889">所有揚聲器都播放相同音效</translation>
 <translation id="1974216844776165821">Chrome 已將你的密碼儲存至這個裝置，但你可以改將密碼儲存到 Google 帳戶。這樣一來，只要登入 Google 帳戶，也就能使用帳戶中的所有密碼和密碼金鑰。</translation>
-<translation id="1974821797477522211">連線至網路</translation>
 <translation id="1975841812214822307">移除...</translation>
 <translation id="1976150099241323601">登入安全性裝置</translation>
 <translation id="1976823515278601587">節省量：大</translation>
@@ -1923,7 +1923,6 @@
 <translation id="2485681265915754872">Google Play 服務條款</translation>
 <translation id="248676429071089168">向上滑動即可將頁面向下移動</translation>
 <translation id="2487067538648443797">新增書籤</translation>
-<translation id="2487268545026948104">如要還原資料，請連線至網際網路</translation>
 <translation id="2489686758589235262">再指派 2 個外接切換裝置</translation>
 <translation id="2489829450872380594">手機之後會解鎖這部 <ph name="DEVICE_TYPE" />。你可以在「設定」中停用 Smart Lock。</translation>
 <translation id="2489918096470125693">新增資料夾(&amp;F)...</translation>
@@ -2003,7 +2002,6 @@
 <translation id="2546991196809436099">放大畫面上的項目。使用搜尋鍵 + Ctrl + M 鍵即可開啟或關閉放大鏡。</translation>
 <translation id="2548347166720081527">已允許使用<ph name="PERMISSION" /></translation>
 <translation id="2548545707296594436">重設 eSIM 卡設定檔快取</translation>
-<translation id="2549435700753464129">ChromeOS 藍牙 Floss</translation>
 <translation id="2549985041256363841">開始錄影</translation>
 <translation id="2550212893339833758">交換的記憶體</translation>
 <translation id="2550596535588364872">要允許「<ph name="EXTENSION_NAME" />」開啟「<ph name="FILE_NAME" />」嗎？</translation>
@@ -3494,7 +3492,6 @@
 <translation id="3771851622616482156">系統會將你登出這個網站，包含已開啟的分頁</translation>
 <translation id="3772046291955677288">我已詳閱並同意《<ph name="BEGIN_LINK1" />Google 服務條款<ph name="END_LINK1" />》以及《<ph name="BEGIN_LINK2" />Chrome 和 ChromeOS 附加服務條款<ph name="END_LINK2" />》。</translation>
 <translation id="3774166835015494435">最近的相片和通知</translation>
-<translation id="3774546890772201673">更新「<ph name="NAME" />」。</translation>
 <translation id="3775432569830822555">SSL 伺服器憑證</translation>
 <translation id="3775705724665058594">傳送至你的裝置</translation>
 <translation id="3776508619697147021">網站可以要求自動下載多個檔案</translation>
@@ -8734,7 +8731,6 @@
 <translation id="8077120325605624147">你造訪的網站都能對你顯示所有廣告</translation>
 <translation id="8077579734294125741">其他 Chrome 設定檔</translation>
 <translation id="80798452873915119">網站可以要求管理所有螢幕上的視窗</translation>
-<translation id="807990231167557618">Chromebook 已更新。</translation>
 <translation id="8080028325999236607">關閉所有分頁</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">工作階段是由 <ph name="MANAGER_NAME" /> 管理。管理員可以刪除設定檔並監控網路流量。</translation>

@@ -218,6 +218,7 @@
 <translation id="2195124168004379331">เบราว์เซอร์ของคุณปลอดภัยแล้ว</translation>
 <translation id="2213327331203157297">หากต้องการปิดใช้โหมดปิดล็อกใน Chrome ให้ปิดโหมดนี้ใน iPhone ของคุณ</translation>
 <translation id="2218443599109088993">ซูมออก</translation>
+<translation id="2220529011494928058">รายงานปัญหา</translation>
 <translation id="2230173723195178503">หน้าเว็บโหลดแล้ว</translation>
 <translation id="2239626343334228536">กำลังล้างข้อมูลการท่องเว็บ...</translation>
 <translation id="2242467532204595597">ใช้ Chrome ทุกครั้งที่คุณแตะลิงก์ในข้อความ เอกสาร และแอปอื่นๆ</translation>
@@ -543,7 +544,6 @@
 <translation id="3959736869653157332">เมนู → แท็บใหม่ที่ไม่ระบุตัวตน</translation>
 <translation id="3967822245660637423">ดาวน์โหลดเสร็จสมบูรณ์</translation>
 <translation id="3968505803272650567">จัดการความสนใจ</translation>
-<translation id="3971789053442864420">{count,plural, =1{รหัสผ่าน {count} รายการ}other{รหัสผ่าน {count} รายการ}}</translation>
 <translation id="3989635538409502728">ออกจากระบบ</translation>
 <translation id="3995521777587992544">แถบความคืบหน้าการโหลดหน้าเว็บ โหลดแล้ว <ph name="EMAIL" /></translation>
 <translation id="4002019827078931033">ย้ายแถบที่อยู่ไปยังด้านบน</translation>
@@ -1339,7 +1339,6 @@
 <translation id="8328777765163860529">ปิดทั้งหมด</translation>
 <translation id="8343993175958086504">สำรองข้อมูลและใช้ในอุปกรณ์เครื่องใดก็ได้</translation>
 <translation id="834783239627985533">เว็บไซต์ที่เข้าชมบ่อยที่สุด</translation>
-<translation id="8356276002902955750">{count,plural, =1{บุ๊กมาร์ก {count} รายการ}other{บุ๊กมาร์ก {count} รายการ}}</translation>
 <translation id="8364841868226993049">กำลังบันทึกรูปภาพใน Google Photos สำหรับ <ph name="USER_EMAIL" />...</translation>
 <translation id="8378714024927312812">จัดการโดยองค์กร</translation>
 <translation id="8386068868580335421">รีเซ็ต</translation>

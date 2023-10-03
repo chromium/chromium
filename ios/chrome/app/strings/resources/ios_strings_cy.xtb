@@ -218,6 +218,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />cliriwch y data Chrome yn eich c
 <translation id="2195124168004379331">Mae Eich Porwr yn Edrych yn Dda</translation>
 <translation id="2213327331203157297">I analluogi Modd Cloi i Lawr yn Chrome trowch ef i ffwrdd ar eich dyfais</translation>
 <translation id="2218443599109088993">Pellhau</translation>
+<translation id="2220529011494928058">Adrodd am broblem</translation>
 <translation id="2230173723195178503">Mae tudalen we wedi'i llwytho</translation>
 <translation id="2239626343334228536">Wrthi'n clirio data pori...</translation>
 <translation id="2242467532204595597">Defnyddiwch Chrome unrhyw bryd y byddwch yn tapio dolenni mewn negeseuon, dogfennau ac apiau eraill.</translation>
@@ -543,7 +544,6 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="3959736869653157332">Dewislen → Tab Anhysbys Newydd</translation>
 <translation id="3967822245660637423">Lawrlwytho wedi'i gwblhau</translation>
 <translation id="3968505803272650567">Rheoli Diddordebau</translation>
-<translation id="3971789053442864420">{count,plural, =1{{count} Cyfrinair}zero{{count} Cyfrinair}two{{count} Gyfrinair}few{{count} Chyfrinair}many{{count} Chyfrinair}other{{count} Cyfrinair}}</translation>
 <translation id="3989635538409502728">Allgofnodi</translation>
 <translation id="3995521777587992544">Bar cynnydd llwytho tudalen, mae <ph name="EMAIL" /> wedi'i lwytho.</translation>
 <translation id="4002019827078931033">Symud Bar Cyfeiriad i'r Brig</translation>
@@ -1338,7 +1338,6 @@ Gall gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahanol 
 <translation id="8328777765163860529">Cau Pob Un</translation>
 <translation id="8343993175958086504">Gwneud copïau wrth gefn o'ch pethau a'u defnyddio ar unrhyw ddyfais.</translation>
 <translation id="834783239627985533">Gwefannau yr Ymwelwyd â Nhw Fwyaf</translation>
-<translation id="8356276002902955750">{count,plural, =1{{count} Nod tudalen}zero{{count} Nod tudalen}two{{count} Nod tudalen}few{{count} Nod tudalen}many{{count} Nod tudalen}other{{count} Nod tudalen}}</translation>
 <translation id="8364841868226993049">Wrthi'n cadw llun yn Google Photos ar gyfer <ph name="USER_EMAIL" />...</translation>
 <translation id="8378714024927312812">Rheolir gan eich sefydliad</translation>
 <translation id="8386068868580335421">Ailosod</translation>

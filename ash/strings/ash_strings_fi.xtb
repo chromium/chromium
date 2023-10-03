@@ -1501,7 +1501,6 @@ Uusi asennus</translation>
 <translation id="7188494361780961876">Valikko siirretty näytön vasempaan ylänurkkaan</translation>
 <translation id="7189412385142492784">Kuinka kaukana Venus on</translation>
 <translation id="7198435252016571249">Kamera kohdistettu oikeaan alakulmaan. Ristiriita järjestelmän alustan kanssa.</translation>
-<translation id="7219573373513695352">Ei liitettyjä laitteita</translation>
 <translation id="7229029500464092426">Muisti <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> yhteensä</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Tämä Chromebook on käynnistettävä uudelleen, jotta päivitys voidaan ottaa käyttöön. Tämä voi kestää enintään minuutin.</translation>
 <translation id="7256634071279256947">Takamikrofoni</translation>
@@ -1941,7 +1940,6 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="9089416786594320554">Syöttötavat</translation>
 <translation id="9091626656156419976">Näyttö <ph name="DISPLAY_NAME" /> poistettu</translation>
 <translation id="9098969848082897657">Mykistä puhelin</translation>
-<translation id="9120448753905017833">Wi-Fi-yhteys on laitettu pois päältä, jotta voit käyttää hotspotia mobiilidatan kautta. Tästä voidaan veloittaa datamaksuja.</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> tai <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">Kumoa edellinen toiminto</translation>
 <translation id="9133335900048457298">Suojattua sisältöä ei voi kuvata</translation>

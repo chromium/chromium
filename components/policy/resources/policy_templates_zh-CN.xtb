@@ -2472,23 +2472,6 @@
 <translation id="3150351525324499342">默认情况下不在工具栏中显示 <ph name="PRODUCT_NAME" /> 图标，但允许用户选择是否显示</translation>
 <translation id="3152135410085709340">允许这些网站使用 PDF 查看器对 file:// 网址进行本地文件访问</translation>
 <translation id="3152425128389603870">使“统一桌面”功能可供用户使用，并使其在默认情况下处于启用状态</translation>
-<translation id="3157857846231611820">让您能够以列表形式指定要应用于 <ph name="ON_FILE_ATTACHED_ENTERPRISE_CONNECTOR" /> 企业版接口的 Chrome 企业版接口服务设置，以供系统在有人向 Chrome 附加文件时调用。
-
-      <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> 和 <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> 字段用于确定当用户向特定网页附加文件时，该接口是否应将此文件发送给系统进行分析，以及要将哪些标记添加到此文件的分析请求中。如果相应的网页网址与某个标记关联的“enable”格式相匹配，但不与此标记关联的任何“disable”格式匹配，该接口便会将这个标记添加到分析请求中。如果该接口向分析请求中添加了至少 1 个标记，系统便会分析输入的数据。
-
-      <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> 字段用于确定您指定的设置是与哪个分析服务提供商对应。
-
-      如果您将 <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" /> 字段设为 1，Chrome 需要先等到分析服务做出响应，再确定是否要授权相应网页访问此文件。如果您将该字段设为任何其他整数值，Chrome 就会立即授权相应网页访问此文件。
-
-      <ph name="ENTERPRISE_CONNECTOR_BLOCK_PASSWORD_PROTECTED_FIELD" /> 字段用于控制 Chrome 是会禁止访问还是会允许访问受密码保护的文件。
-
-      <ph name="ENTERPRISE_CONNECTOR_BLOCK_LARGE_FILES_FIELD" /> 字段用于控制 Chrome 是会禁止访问还是会允许访问因过大而无法分析的文件。
-
-      <ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD" /> 字段用于确定该接口应要求用户为哪些标记输入理由，以绕过那些触发了可绕过式警告的扫描。如果该字段未设置，系统会假设不需要输入理由。
-
-      <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" /> 和 <ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" /> 字段用于配置系统在扫描完毕并判定文件有问题后向用户显示的警告消息。message 字段包含要向用户显示的文字，最多只能有 200 个字符。learn_more_url 字段包含管理员提供的网址，用户可点击该网址以从客户提供的信息中详细了解相应操作被禁止的原因。language 字段是可选字段，包含消息所用的语言。空 language 字段或“default”值用于指明要显示的消息不是以用户所用语言设定的。tag 字段用于指定要针对哪类扫描显示消息。custom_messages 列表可包含零个或多个条目，每个条目都必须具有非空的 message 和 tag 字段。
-
-      此政策需要额外的设置才能生效，请访问 https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting 了解详情。</translation>
 <translation id="3159375329008977062">允许用户通过界面导出/导入 Crostini 容器</translation>
 <translation id="3163167792874598128">如果此政策未设置或已启用，弹出式提醒“App Store 评分”可能每年最多向用户显示 1 次。
 如果此政策已停用，系统将不会向用户显示弹出式提醒“App Store 评分”。</translation>
@@ -3366,6 +3349,7 @@
 <translation id="3870300103958000506">如果 <ph name="ADS_SETTINGS_FOR_INTRUSIVE_ADS_SITES_POLICY_NAME" /> 设为 1 或不设置，系统会允许所有网站展示广告，除非 <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" /> 设为 False。
 
       如果此政策设为 2，系统会阻止含侵扰性广告的网站展示广告。</translation>
+<translation id="3876564097829884243">启用 EphemeralNetworkPolicies 功能。</translation>
 <translation id="3877517141460819966">集成的双重身份验证模式</translation>
 <translation id="3877908683993837673">此政策用于控制使用哪个软件堆栈与 DNS 服务器通信：操作系统 DNS 客户端或 <ph name="PRODUCT_NAME" /> 的内置 DNS 客户端。此政策不会影响使用哪些 DNS 服务器：例如，如果操作系统已配置为使用一台企业 DNS 服务器，内置 DNS 客户端也会使用这台服务器。此政策也不会控制是否使用 DNS-over-HTTPS；<ph name="PRODUCT_NAME" /> 将始终使用内置的解析器发送 DNS-over-HTTPS 请求。如需了解如何控制 DNS-over-HTTPS，请参阅 <ph name="DNS_OVER_HTTPS_MODE_POLICY_NAME" /> 政策。
 
@@ -4728,6 +4712,14 @@
       另请查看一下 <ph name="COOKIES_BLOCKED_FOR_URLS_POLICY_NAME" /> 和 <ph name="COOKIES_ALLOWED_FOR_URLS_POLICY_NAME" />。虽然这 3 项政策并无优先级差异，它们的网址格式不得互相冲突。
 
       如需详细了解有效的<ph name="URL_LABEL" />格式，请访问 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。<ph name="WILDCARD_VALUE" /> 不是此政策可接受的值。</translation>
+<translation id="5174547204575752627">此政策用于控制 PPAPI 插件中 VideoDecoder API 的近期重构。
+
+迁移只会影响内部实现细节，应该不会改变任何行为。不过，如有任何 PPAPI 应用无法正常运行，可以使用此政策。
+
+如果此政策未设置或已启用，浏览器会决定使用哪种实现方案。
+如果此政策已停用，浏览器将会使用旧版实现方案，直至此政策到期。
+
+注意：在浏览器运行期间，只有新启动的渲染程序进程才会反映对此政策的更改。</translation>
 <translation id="5177260184597743704">OnSecurityEvent Chrome Enterprise Connector 的配置政策</translation>
 <translation id="5178479074002209469">一个布尔值标记，用于表明：如果此政策要求进行更新，不受管理的用户会话是否应收到通知以及用户是否应被强制退出登录。</translation>
 <translation id="5179853299156742425">可供下载桌面模板的网址。</translation>
@@ -4745,6 +4737,7 @@
 <translation id="519247340330463721">配置与安全浏览功能相关的政策。</translation>
 <translation id="5194683382395300627">允许在网页上使用 <ph name="ASSISTANT_PRODUCT_NAME" />来实现诸多目的（例如启用自动更改密码的功能）</translation>
 <translation id="5196630732055960309">允许在这些 Web 应用上使用 File Handling API</translation>
+<translation id="5205352023880027050">不启用 EphemeralNetworkPolicies 功能。</translation>
 <translation id="5206454085187851382">如果为 <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" /> 选择了 <ph name="PRINTERS_ALLOWLIST" />，您便可通过设置 <ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME" /> 来指定用户可以使用哪些打印机。用户将只能使用那些符合条件（ID 与此政策中所列的值匹配）的打印机。ID 必须与 <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> 所指定文件内的<ph name="ID_FIELD" />或<ph name="GUID_FIELD" />字段相符。</translation>
 <translation id="5207543664699568887">配置 Linux 上的 <ph name="PRODUCT_NAME" /> 是否会使用系统通知。
 
@@ -5263,6 +5256,31 @@
 <translation id="5622924058222112599">启用默认 CECPQ2 发布流程</translation>
 <translation id="5623304306796942802">有多份证书匹配时发出提示</translation>
 <translation id="5625771176514429288">Chrome 应用可以在这些平台上运行。</translation>
+<translation id="5627094573311711592">配置一系列数据控制规则，以防止数据泄露。复制和粘贴数据、将文件附加到网页、打印、下载等操作都可能会导致数据泄露。
+
+      每条规则都包含以下内容：
+      - 操作来源的属性。只有当某项用户操作与其“<ph name="DATA_CONTROLS_SOURCES" />”字段中填充的所有字段均匹配时，才会触发规则。对于列表子字段，只需匹配 1 个条目，例如只需匹配 1 个网址格式即可触发规则。
+      - 操作目的地的属性。只有当某项用户操作与其“<ph name="DATA_CONTROLS_DESTINATIONS" />”字段中填充的所有字段均匹配时，才会触发规则。对于列表子字段，只需匹配 1 个条目，例如只需匹配 1 个网址格式即可触发规则。
+      - 一个限制条件列表，包含要应用到来源所含数据上的限制条件。
+
+      您可通过添加规则来实现以下目的：
+      - 控制在来源和目的地之间共享的剪贴板数据。
+      - 控制任何来源的打印操作。
+      - 控制附加到任何目的地的文件。
+      - 控制从任何来源下载的文件。
+
+      如果 <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" /> 政策设为 True，系统会将触发的规则报告给管理员。
+      限制级别可设为 ALLOW、BLOCK、WARN、REPORT。
+      - 如果限制级别设为 ALLOW，系统将允许执行该操作。其他规则已应用的限制也会被覆盖。
+      - 如果限制级别设为 BLOCK，系统将不允许执行该操作。
+      - 如果限制级别设为 WARN，用户将收到警告消息，但可选择是继续还是取消该操作。
+      - 如果限制级别设为 REPORT，用户操作将不会中断，但如果启用了 <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" /> 政策，系统会发送报告。
+
+      注意：
+      - 所列网址必须采用 https://support.google.com/chrome/a?p=url_blocklist_filter_format 规定的格式。
+      - 对于专门针对 <ph name="PRODUCT_OS_NAME" /> 的数据泄露防范规则，另请参阅 <ph name="DATA_LEAK_PREVENTION_RULES_LIST" /> 政策。
+
+      如果未设置此政策，系统将不会应用任何限制。</translation>
 <translation id="5630352020869108293">恢复上次的会话</translation>
 <translation id="5633871703004128675">启用“插入符号突出显示”无障碍功能</translation>
 <translation id="5634032995857968056">启用渲染程序应用容器沙盒</translation>
@@ -5748,21 +5766,6 @@
 <translation id="6135398260575578389">“安全浏览”功能会处于开启状态且会在增强模式下运行。此模式可提高安全性，但需与 Google 分享更多浏览信息。</translation>
 <translation id="6135552820180449830">crosh（自 99 版起受支持）</translation>
 <translation id="6138636318340561140">实时查看网址的安全浏览状态</translation>
-<translation id="6140635914906859015">让您能够以列表形式指定要应用于 <ph name="ON_BULK_DATA_ENTRY_ENTERPRISE_CONNECTOR" /> 企业版接口的 Chrome 企业版接口服务设置，以供系统在下述情况发生时调用：有人通过复制剪贴板内容或拖放网页内容在 Chrome 中输入数据。
-
-      <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> 和 <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> 字段用于确定当用户在特定网页中输入数据时，该接口是否应将此数据发送给系统进行分析，以及要将哪些标记添加到此数据的分析请求中。如果相应的网页网址与某个标记关联的“enable”格式相匹配，但不与此标记关联的任何“disable”格式匹配，该接口便会将这个标记添加到分析请求中。如果该接口向分析请求中添加了至少 1 个标记，系统便会分析输入的数据。
-
-      <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> 字段用于确定您指定的设置是与哪个分析服务提供商对应。
-
-      如果您将 <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" /> 字段设为 1，Chrome 需要先等到分析服务做出响应，再确定是否要授权相应网页访问此数据。如果您将该字段设为任何其他整数值，Chrome 就会立即授权相应网页访问此数据。
-
-      <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> 字段用于指明数据大小下限（以字节为单位）- 在 Chrome 中输入的数据必须达到或超过此限值才能被扫描。如果该字段未设置，默认值为 100 字节。
-
-      <ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD" /> 字段用于确定该接口应要求用户为哪些标记输入理由，以绕过那些触发了可绕过式警告的扫描。如果该字段未设置，系统会假设不需要输入理由。
-
-      <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" /> 和 <ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" /> 字段用于配置系统在扫描完毕并判定数据有问题后向用户显示的警告消息。message 字段包含要向用户显示的文字，最多只能有 200 个字符。learn_more_url 字段包含管理员提供的网址，用户可点击该网址以从客户提供的信息中详细了解相应操作被禁止的原因。language 字段是可选字段，包含消息所用的语言。空 language 字段或“default”值用于指明要显示的消息不是以用户所用语言设定的。tag 字段用于指定要针对哪类扫描显示消息。custom_messages 列表可包含零个或多个条目，每个条目都必须具有非空的 message 和 tag 字段。
-
-      此政策需要额外的设置才能生效，请访问 https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting 了解详情。</translation>
 <translation id="6141402445226505817">一律使用粗略式时区检测方式</translation>
 <translation id="6141944295566709543">允许用户在设备锁定时播放媒体</translation>
 <translation id="6142501278956229253">打印光栅化的 PDF DPI</translation>
@@ -5951,6 +5954,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="6299554629216555326">窗口管理设置</translation>
 <translation id="6302021021024941085">停用自助服务终端问题排查工具。</translation>
 <translation id="6303118494824248488">要下载的磁盘映像的网址。</translation>
+<translation id="6303278429164386663">控制 EphemeralNetworkPolicies 功能的启用状态</translation>
 <translation id="6305373713165475629">通过设置此政策，您可以替换默认打印颜色模式。如果这种模式不适用，系统会忽略此政策。</translation>
 <translation id="6308109234708949641">通过设置此政策，您可为 Family Link 用户启用“屏幕录制”功能，并授权该功能创建录屏、转录所录内容并将其上传到云端硬盘。
       此政策不会影响其他类型的用户。
@@ -6446,21 +6450,6 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 
 如果此政策设为 False，系统会启用旧行为。</translation>
 <translation id="663685822663765995">限制打印颜色模式</translation>
-<translation id="6637946190026453735">让您能够以列表形式指定要应用于 <ph name="ON_PRINT_ENTERPRISE_CONNECTOR" /> 企业版接口的 <ph name="PRODUCT_NAME" /> 企业版接口服务设置，以供系统在有人通过 <ph name="PRODUCT_NAME" /> 打印网页或文件时调用。
-
-      <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> 和 <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> 字段用于确定当用户在特定网页中触发打印操作时，该接口是否应将数据发送给系统进行分析，以及要将哪些标记添加到分析请求中。如果该接口向分析请求中添加了至少 1 个标记，系统便会分析输入的数据。
-
-      <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> 字段用于确定您指定的设置是与哪个分析服务提供商对应。
-
-      如果您将 <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" /> 字段设为 1，<ph name="PRODUCT_NAME" /> 需要先等到分析服务做出响应，再确定是否要为打印的网页显示“打印预览”对话框。如果您将该字段设为任何其他整数值，<ph name="PRODUCT_NAME" /> 就会立即显示“打印预览”对话框。
-
-      <ph name="ENTERPRISE_CONNECTOR_BLOCK_LARGE_FILES_FIELD" /> 字段用于控制 <ph name="PRODUCT_NAME" /> 是会禁止访问还是会允许访问因过大而无法分析的文件/网页。
-
-      <ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD" /> 字段用于确定该接口应要求用户为哪些标记输入理由，以绕过那些触发了可绕过式警告的扫描。如果该字段未设置，系统会假设不需要输入理由。
-
-      <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" /> 和 <ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" /> 字段用于配置系统在扫描完毕并判定数据有问题后向用户显示的警告消息。管理员能够配置最多 200 个字符的消息。
-
-      此政策需要额外的设置才能生效，请访问 https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting 了解详情。</translation>
 <translation id="6640355849038068978">如果此设置已启用，用户将能够启动 Eche 应用（例如通过点击 Phone Hub 通知）。
 
       如果此设置已停用，用户将无法启动 Eche 应用。
@@ -6754,6 +6743,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 如果此政策设为 false 或未设置，布局将不可用。需要重新启动才能生效。</translation>
 <translation id="685769593149966548">强制启用 YouTube“严格”受限模式</translation>
 <translation id="686079137349561371">Microsoft Windows 7 或更高版本</translation>
+<translation id="6866755486434471318">允许 <ph name="PEPPER_NAME" /> 使用共享图片进行视频解码。</translation>
 <translation id="6881447940489194100">数据的十六进制编码 SHA-256 哈希。</translation>
 <translation id="68818134518270542">通过设置此政策，您可以指定用户能在 <ph name="PRODUCT_OS_NAME" />锁定屏幕中将哪些应用作为笔记应用开启。
 
@@ -7109,6 +7099,10 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 
       如果未设置此政策，浏览器可能会向与用户配置的系统解析器关联的解析器发送 DNS-over-HTTPS 请求。</translation>
 <translation id="7152640356717355643">启用设备网络接口报告功能</translation>
+<translation id="7153786895642570081">此政策用于控制 EphemeralNetworkPolicies 功能的启用状态。
+如果此政策设为 true，系统将会遵循 DeviceOpenNetworkConfiguration 条目 RecommendedValuesAreEphemeral 和 UserCreatedNetworkConfigurationsAreEphemeral。
+如果此政策未设置或设为 false，仅当启用了 EphemeralNetworkPolicies 功能时，系统才会遵循上述网络政策。
+当 EphemeralNetworkPolicies 功能默认处于启用状态时，此政策将被移除。</translation>
 <translation id="7157329428182136164">启用对 3D 图形 API 的支持</translation>
 <translation id="7158358621906236999">默认传感器设置</translation>
 <translation id="7161568070244869726">强制启用 AppCache</translation>
@@ -7447,23 +7441,6 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="7477149584454865826">一个布尔值标记，用于表明是否应该使用 IPP Everywhere 来设置打印机。</translation>
 <translation id="7477231245051133709">启用“单声道音频”无障碍功能</translation>
 <translation id="7479408102162550711">报告网络事件</translation>
-<translation id="7480826412572122600">让您能够以列表形式指定要应用于 <ph name="ON_FILE_DOWNLOADED_ENTERPRISE_CONNECTOR" /> 企业版接口的 Chrome 企业版接口服务设置，以供系统在有人通过 Chrome 下载文件时调用。
-
-      <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> 和 <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> 字段用于确定当用户从特定网页下载某个文件时，该接口是否应将此文件发送给系统进行分析，以及要将哪些标记添加到此文件的分析请求中。如果相应的网页网址与某个标记关联的“enable”格式相匹配，但不与此标记关联的任何“disable”格式匹配，该接口便会将这个标记添加到分析请求中。如果该接口向分析请求中添加了至少 1 个标记，系统便会分析输入的数据。
-
-      <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> 字段用于确定您指定的设置是与哪个分析服务提供商对应。
-
-      如果您将 <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" /> 字段设为 1，Chrome 需要先等到分析服务做出响应，再确定是否要授权相应用户访问所下载的文件。如果您将该字段设为任何其他整数值，Chrome 就会立即授权相应用户访问此文件。
-
-      <ph name="ENTERPRISE_CONNECTOR_BLOCK_PASSWORD_PROTECTED_FIELD" /> 字段用于控制 Chrome 是会禁止访问还是会允许访问受密码保护的文件。
-
-      <ph name="ENTERPRISE_CONNECTOR_BLOCK_LARGE_FILES_FIELD" /> 字段用于控制 Chrome 是会禁止访问还是会允许访问因过大而无法分析的文件。
-
-      <ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD" /> 字段用于确定该接口应要求用户为哪些标记输入理由，以绕过那些触发了可绕过式警告的扫描。如果该字段未设置，系统会假设不需要输入理由。
-
-      <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" /> 和 <ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" /> 字段用于配置系统在扫描完毕并判定文件有问题后向用户显示的警告消息。message 字段包含要向用户显示的文字，最多只能有 200 个字符。learn_more_url 字段包含管理员提供的网址，用户可点击该网址以从客户提供的信息中详细了解相应操作被禁止的原因。language 字段是可选字段，包含消息所用的语言。空 language 字段或“default”值用于指明要显示的消息不是以用户所用语言设定的。tag 字段用于指定要针对哪类扫描显示消息。custom_messages 列表可包含零个或多个条目，每个条目都必须具有非空的 message 和 tag 字段。
-
-      此政策需要额外的设置才能生效，请访问 https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting 了解详情。</translation>
 <translation id="7481702249684965639">已为用户启用回收站。</translation>
 <translation id="7482768039644066614">启用页面加载元数据提取功能和用以提升浏览体验的机器学习模型</translation>
 <translation id="748292668225669178">配置 <ph name="MICROSOFT_ONE_DRIVE_NAME" /> 的装载方式</translation>
@@ -8870,6 +8847,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
       如果您设置了此政策，用户将无法更改这项功能。如果此政策未设置，用户便可以更改此设置。</translation>
 <translation id="8707790573162457301">在登录期间运行“自动清理磁盘”功能</translation>
 <translation id="8713535263782304771">停用安全浏览功能</translation>
+<translation id="8714556680280715750">一个网址，供用户访问以了解详情。如果未设置此政策，安装程序中就不会显示“了解详情”网址。如果该网址存在，它必须使用 HTTPS 协议方案。</translation>
 <translation id="8715181294371649277">启用“安全浏览”功能的实时下载保护服务</translation>
 <translation id="8715885991031124968">允许显示从其他来源的子框架触发的 JavaScript 对话框。</translation>
 <translation id="8720547069538712402">允许用户启用或停用拼写检查</translation>

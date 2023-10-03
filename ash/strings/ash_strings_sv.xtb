@@ -1501,7 +1501,6 @@ Nyligen installerad</translation>
 <translation id="7188494361780961876">Menyn har flyttats till skärmens övre vänstra hörn.</translation>
 <translation id="7189412385142492784">Hår långt är det till Venus</translation>
 <translation id="7198435252016571249">Kameran har fästs i det nedre högra hörnet. Konflikt med systemyta.</translation>
-<translation id="7219573373513695352">Inga enheter har anslutits</translation>
 <translation id="7229029500464092426">Minne <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> totalt</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Denna Chromebook behöver startas om så att en uppdatering tillämpas. Det kan ta upp till en minut.</translation>
 <translation id="7256634071279256947">Mikrofonen på baksidan</translation>
@@ -1942,7 +1941,6 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="9089416786594320554">Inmatningsmetoder</translation>
 <translation id="9091626656156419976">Skärmen <ph name="DISPLAY_NAME" /> har tagits bort</translation>
 <translation id="9098969848082897657">Inga telefonljud</translation>
-<translation id="9120448753905017833">Vi har inaktiverat wifi så att mobildata används för surfzonen. Detta kan innebära dataavgifter.</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> eller <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">Ångra den senaste åtgärden</translation>
 <translation id="9133335900048457298">Det går inte att spela in skyddat innehåll</translation>

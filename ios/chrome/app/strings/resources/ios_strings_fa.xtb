@@ -218,6 +218,7 @@
 <translation id="2195124168004379331">مرورگرتان خوب به‌نظر می‌رسد</translation>
 <translation id="2213327331203157297">‏برای غیرفعال کردن حالت «قفل همه» در Chrome، آن را در iPhone خود خاموش کنید.</translation>
 <translation id="2218443599109088993">کوچک کردن</translation>
+<translation id="2220529011494928058">گزارش یک مشکل</translation>
 <translation id="2230173723195178503">صفحه وب بار شد</translation>
 <translation id="2239626343334228536">درحال پاک کردن داده‌های محصول مرور…</translation>
 <translation id="2242467532204595597">‏با ضربه زدن روی پیوندهای موجود در پیام‌ها، اسناد و دیگر برنامه‌ها، از Chrome استفاده کنید.</translation>
@@ -543,7 +544,6 @@
 <translation id="3959736869653157332">منو ← برگه ناشناس جدید</translation>
 <translation id="3967822245660637423">بارگیری کامل شد</translation>
 <translation id="3968505803272650567">مدیریت علایق</translation>
-<translation id="3971789053442864420">{count,plural, =1{{count} گذرواژه}one{{count} گذرواژه}other{{count} گذرواژه}}</translation>
 <translation id="3989635538409502728">خروج از سیستم</translation>
 <translation id="3995521777587992544">نوار پیشرفت بار کردن صفحه، <ph name="EMAIL" /> بار شد.</translation>
 <translation id="4002019827078931033">انتقال نوار نشانی به‌بالا</translation>
@@ -1338,7 +1338,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8328777765163860529">بستن همه</translation>
 <translation id="8343993175958086504">از داده‌هایتان پشتیبان بگیرید و در هر دستگاهی از آن‌ها استفاده کنید.</translation>
 <translation id="834783239627985533">پربازدیدترین سایت‌ها</translation>
-<translation id="8356276002902955750">{count,plural, =1{{count} نشانک}one{{count} نشانک}other{{count} نشانک}}</translation>
 <translation id="8364841868226993049">‏درحال ذخیره کردن تصویر در Google Photos برای <ph name="USER_EMAIL" />…</translation>
 <translation id="8378714024927312812">توسط سازمانتان مدیریت می‌شود</translation>
 <translation id="8386068868580335421">بازنشانی</translation>

@@ -2493,23 +2493,6 @@ Keychain.
 <translation id="3150351525324499342">Не показувати значок функції <ph name="PRODUCT_NAME" /> за умовчанням на панелі інструментів, але дозволити користувачам вибирати</translation>
 <translation id="3152135410085709340">Дозволити цим сайтам доступ до локальних файлів із URL-адресами типу file:// у засобі перегляду PDF-файлів</translation>
 <translation id="3152425128389603870">За умовчанням робити доступним і вмикати уніфікований режим робочого стола</translation>
-<translation id="3157857846231611820">Список налаштувань сервісів Chrome Enterprise Connectors, які застосовуються до конектора Enterprise <ph name="ON_FILE_ATTACHED_ENTERPRISE_CONNECTOR" />, що активується, коли до сторінки в Chrome долучено файл.
-
-      Поля <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> і <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> визначають, чи надсилатиме конектор на аналіз долучений до певної сторінки файл, а також які теги додавати в запит на аналіз цього файлу. Тег, який відповідає шаблону enable, буде включено в запит на аналіз, якщо URL-адреса сторінки відповідає шаблону, зв’язаному з цим тегом, і якщо для цього тега немає шаблону disable, що відповідає цій URL-адресі сторінки. Дані аналізуються, якщо запит містить принаймні 1 тег.
-
-      Поле <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> визначає, якому постачальнику послуг аналізу відповідають налаштування.
-
-      Якщо в полі <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" /> указано значення 1, Chrome надає сторінці доступ до файлу, лише коли отримує відповідь від сервісу аналізу. Якщо в цьому полі вказано будь-яке інше ціле число, Chrome одразу надає сторінці доступ до файлу.
-
-      Поле <ph name="ENTERPRISE_CONNECTOR_BLOCK_PASSWORD_PROTECTED_FIELD" /> контролює, чи блокуватиме Chrome захищені паролем файли.
-
-      Поле <ph name="ENTERPRISE_CONNECTOR_BLOCK_LARGE_FILES_FIELD" /> контролює, чи блокуватиме Chrome завеликі для аналізу файли.
-
-      Поле <ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD" /> визначає теги, для яких конектор вимагає від користувача вказати підставу для обходу перевірки (після чого попередження можна буде закрити). Якщо це поле не налаштовано, вважається, що вказувати підставу не потрібно.
-
-      Поля <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" /> і <ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" /> дають змогу налаштувати повідомлення для користувача про незадовільний результат перевірки. Поле message – це текст, який бачитиме користувач (довжиною не більше ніж 200 символів). Поле learn_more_url містить указану адміністратором URL-адресу, за якою користувач зможе перейти й дізнатися докладніше, чому дію заблоковано. Поле language – необов’язкове, у ньому вказано мову повідомлення. Порожнє поле language або значення за умовчанням указують, яке повідомлення буде відображатися, коли немає повідомлення мовою користувача. Поле tag визначає, для яких типів перевірки показується повідомлення. Список custom_messages може мати нуль або більше записів, і для кожного з них потрібно налаштувати поля message і tag.
-
-      Щоб це правило почало діяти, його потрібно додатково налаштувати. Докладніше читайте на сторінці https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting.</translation>
 <translation id="3159375329008977062">Користувач може експортувати або імпортувати контейнери Crostini через інтерфейс</translation>
 <translation id="3163167792874598128">Якщо це правило ввімкнути або не налаштувати, спливаюча реклама з оцінкою в App Store може показуватися користувачу щонайбільше раз на рік.
 Якщо його вимкнути, така реклама не показуватиметься.</translation>
@@ -5842,21 +5825,6 @@ WebSQL було вилучено у версії M112.</translation>
 <translation id="6135398260575578389">Безпечний перегляд увімкнено в режимі покращеного захисту. Цей режим забезпечує вищий рівень захисту, але в Google надсилатиметься більше інформації.</translation>
 <translation id="6135552820180449830">Crosh (підтримується, починаючи з версії 99)</translation>
 <translation id="6138636318340561140">Перевіряти статус URL-адрес у реальному часі за допомогою Безпечного перегляду</translation>
-<translation id="6140635914906859015">Список налаштувань сервісів Chrome Enterprise Connectors, які застосовуються до конектора Enterprise <ph name="ON_BULK_DATA_ENTRY_ENTERPRISE_CONNECTOR" />, що активується, коли у веб-переглядачі Chrome вставляють дані з буферу обміну або перетягують веб-контент.
-
-      Поля <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> і <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> визначають, чи надсилатиме конектор на аналіз внесені на певній сторінці дані, а також які теги додавати в запит на аналіз цих даних. Тег, який відповідає шаблону enable, буде включено в запит на аналіз, якщо URL-адреса сторінки відповідає шаблону, зв’язаному з цим тегом, і якщо для цього тега немає шаблону disable, що відповідає цій URL-адресі сторінки. Дані аналізуються, якщо запит містить принаймні 1 тег.
-
-      Поле <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> визначає, якому постачальнику послуг аналізу відповідають налаштування.
-
-      Якщо в полі <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" /> указано значення 1, Chrome надає сторінці доступ до даних, лише коли отримує відповідь від сервісу аналізу. Якщо в цьому полі вказано будь-яке інше ціле число, Chrome одразу надає сторінці доступ до даних.
-
-      Поле <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> визначає мінімальний розмір (у байтах) введених у Chrome даних, які скануються. Якщо це поле не налаштовано, використовується значення за умовчанням 100 байт.
-
-      Поле <ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD" /> визначає теги, для яких конектор вимагає від користувача вказати підставу для обходу перевірки (після чого попередження можна буде закрити). Якщо це поле не налаштовано, вважається, що вказувати підставу не потрібно.
-
-      Поля <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" /> і <ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" /> дають змогу налаштувати повідомлення для користувача про незадовільний результат перевірки. Поле message – це текст, який бачитиме користувач (довжиною не більше ніж 200 символів). Поле learn_more_url містить указану адміністратором URL-адресу, за якою користувач зможе перейти й дізнатися докладніше, чому дію заблоковано. Поле language – необов’язкове, у ньому вказано мову повідомлення. Порожнє поле language або значення за умовчанням указують, яке повідомлення буде відображатися, коли немає повідомлення мовою користувача. Поле tag визначає, для яких типів перевірки показується повідомлення. Список custom_messages може мати нуль або більше записів, і для кожного з них потрібно налаштувати поля message і tag.
-
-      Щоб це правило почало діяти, його потрібно додатково налаштувати. Докладніше читайте на сторінці https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting.</translation>
 <translation id="6141402445226505817">Завжди приблизно визначати часовий пояс</translation>
 <translation id="6141944295566709543">Дозволити користувачам відтворювати медіафайли, коли пристрій заблоковано</translation>
 <translation id="6142501278956229253">DPI для растеризації файлів PDF під час друку</translation>
@@ -6573,21 +6541,6 @@ HTTP-заголовок Origin-Agent-Cluster визначає, як ізолюв
 
 а якщо "неправда" – стара поведінка.</translation>
 <translation id="663685822663765995">Обмежити кольоровий друк</translation>
-<translation id="6637946190026453735">Список налаштувань сервісів <ph name="PRODUCT_NAME" /> Enterprise Connectors, які застосовуються до конектора Enterprise <ph name="ON_PRINT_ENTERPRISE_CONNECTOR" />, що активується, коли у веб-переглядачі <ph name="PRODUCT_NAME" /> виконується друк сторінки або файлу.
-
-      Поля <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> і <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> визначають, чи надсилатиме конектор на аналіз дані, коли активується друк на певній сторінці, а також які теги додавати в запит на аналіз. Дані аналізуються, якщо запит містить принаймні 1 тег.
-
-      Поле <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> визначає, якому постачальнику послуг аналізу відповідають налаштування.
-
-      Якщо в полі <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" /> указано значення 1, <ph name="PRODUCT_NAME" /> показує вікно попереднього перегляду друку для сторінки, лише коли отримує відповідь від сервісу аналізу. Якщо в цьому полі вказано будь-яке інше ціле число, <ph name="PRODUCT_NAME" /> одразу показує вікно попереднього перегляду друку.
-
-      Поле <ph name="ENTERPRISE_CONNECTOR_BLOCK_LARGE_FILES_FIELD" /> контролює, чи блокуватиме <ph name="PRODUCT_NAME" /> завеликі для аналізу файли або сторінки.
-
-      Поле <ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD" /> визначає теги, для яких конектор вимагає від користувача вказати підставу для обходу перевірки (після чого попередження можна буде закрити). Якщо це поле не налаштовано, вважається, що вказувати підставу не потрібно.
-
-      Поля <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" /> і <ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" /> дають змогу налаштувати повідомлення для користувача про незадовільний результат перевірки. (довжиною не більше ніж 200 символів).
-
-      Щоб це правило почало діяти, його потрібно додатково налаштувати. Докладніше читайте на сторінці https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting.</translation>
 <translation id="6640355849038068978">Якщо ввімкнути це налаштування, користувачі зможуть запускати додаток Eche, натиснувши сповіщення, згенероване функцією "Керування телефоном".
 
       Якщо вимкнути це налаштування, користувачі не зможуть запускати додаток Eche.
@@ -7592,23 +7545,6 @@ HTTP-заголовок Origin-Agent-Cluster визначає, як ізолюв
 <translation id="7477149584454865826">Логічне значення експериментального параметра, яке вказує, чи потрібно налаштовувати принтер за допомогою IPP Everywhere.</translation>
 <translation id="7477231245051133709">Увімкнути спеціальну можливість "Монофонічне аудіо"</translation>
 <translation id="7479408102162550711">Повідомляти про події в мережі</translation>
-<translation id="7480826412572122600">Список налаштувань сервісів Chrome Enterprise Connectors, які застосовуються до конектора Enterprise <ph name="ON_FILE_DOWNLOADED_ENTERPRISE_CONNECTOR" />, що активується, коли у веб-переглядачі Chrome завантажується файл.
-
-      Поля <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> і <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> визначають, чи надсилатиме конектор на аналіз завантажений із певної сторінки файл, а також які теги додавати в запит на аналіз цього файлу. Тег, який відповідає шаблону enable, буде включено в запит на аналіз, якщо URL-адреса сторінки відповідає шаблону, зв’язаному з цим тегом, і якщо для цього тега немає шаблону disable, що відповідає цій URL-адресі сторінки. Дані аналізуються, якщо запит містить принаймні 1 тег.
-
-      Поле <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> визначає, якому постачальнику послуг аналізу відповідають налаштування.
-
-      Якщо в полі <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" /> указано значення 1, Chrome надає користувачу доступ до завантаженого файлу, лише коли отримує відповідь від сервісу аналізу. Якщо в цьому полі вказано будь-яке інше ціле число, Chrome одразу надає користувачу доступ до файлу.
-
-      Поле <ph name="ENTERPRISE_CONNECTOR_BLOCK_PASSWORD_PROTECTED_FIELD" /> контролює, чи блокуватиме Chrome захищені паролем файли.
-
-      Поле <ph name="ENTERPRISE_CONNECTOR_BLOCK_LARGE_FILES_FIELD" /> контролює, чи блокуватиме Chrome завеликі для аналізу файли.
-
-      Поле <ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD" /> визначає теги, для яких конектор вимагає від користувача вказати підставу для обходу перевірки (після чого попередження можна буде закрити). Якщо це поле не налаштовано, вважається, що вказувати підставу не потрібно.
-
-      Поля <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" /> і <ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" /> дають змогу налаштувати повідомлення для користувача про незадовільний результат перевірки. Поле message – це текст, який бачитиме користувач (довжиною не більше ніж 200 символів). Поле learn_more_url містить указану адміністратором URL-адресу, за якою користувач зможе перейти й дізнатися докладніше, чому дію заблоковано. Поле language – необов’язкове, у ньому вказано мову повідомлення. Порожнє поле language або значення за умовчанням указують, яке повідомлення буде відображатися, коли немає повідомлення мовою користувача. Поле tag визначає, для яких типів перевірки показується повідомлення. Список custom_messages може мати нуль або більше записів, і для кожного з них потрібно налаштувати поля message і tag.
-
-      Щоб це правило почало діяти, його потрібно додатково налаштувати. Докладніше читайте на сторінці https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting.</translation>
 <translation id="7481702249684965639">Кошик увімкнено для користувача.</translation>
 <translation id="7482768039644066614">Увімкнути отримання метаданих про завантаження сторінки та моделі машинного навчання, що покращують веб-перегляд</translation>
 <translation id="748292668225669178">Налаштовує підключення сервісу <ph name="MICROSOFT_ONE_DRIVE_NAME" /></translation>

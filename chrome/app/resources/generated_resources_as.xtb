@@ -928,6 +928,7 @@
 <translation id="1723824996674794290">&amp;নতুন ৱিণ্ড’</translation>
 <translation id="1724801751621173132">ইনপুট ম’ড</translation>
 <translation id="1725562816265788801">টেব স্ক্ৰ’ল কৰা</translation>
+<translation id="1726294682426724172">নতুন সুবিধাসমূহত মনোযোগ বিনষ্টকাৰী বস্তু আঁতৰাবলৈ Google Photosত মেজিক ইৰেজাৰ, উন্নত ভিডিঅ’ কলৰ সঁজুলি আৰু বহুতো সুবিধা অন্তৰ্ভুক্ত হয়</translation>
 <translation id="1726503915437308071">ইটালিক ফণ্ট</translation>
 <translation id="1729533290416704613">এইটোৱে লগতে আপুনি Omniboxৰ পৰা সন্ধান কৰিলে কি পৃষ্ঠা দেখুওৱা হয় সেয়াও নিয়ন্ত্ৰণ কৰে।</translation>
 <translation id="1730666151302379551">পুৰণি পাছৱৰ্ড পাহৰিলে</translation>
@@ -1252,7 +1253,6 @@
 <translation id="1974060860693918893">উন্নত</translation>
 <translation id="1974159333077206889">সকলো স্পীকাৰতে একেই অডিঅ’</translation>
 <translation id="1974216844776165821">Chromeএ এই ডিভাইচটোত আপোনাৰ পাছৱৰ্ডটো ছেভ কৰিছে, কিন্তু আপুনি তাৰ পৰিৱৰ্তে এইটো আপোনাৰ Google একাউণ্টত ছেভ কৰিব পাৰে। তাৰ পাছত, আপোনাৰ Google একাউণ্টত থকা আটাইবোৰ পাছৱৰ্ড আৰু পাছকী আপুনি ছাইন ইন কৰি থ’লেও উপলব্ধ হ’ব।</translation>
-<translation id="1974821797477522211">নেটৱৰ্কৰ লগত সংযোগ কৰক</translation>
 <translation id="1975841812214822307">আঁতৰাওক...</translation>
 <translation id="1976150099241323601">সুৰক্ষা প্ৰদানকাৰী ডিভাইচত ছাইন ইন কৰক</translation>
 <translation id="1976823515278601587">বহুত ৰাহি</translation>
@@ -1936,7 +1936,6 @@
 <translation id="2485681265915754872">Google Playৰ সেৱাৰ চৰ্তাৱলী</translation>
 <translation id="248676429071089168">পৃষ্ঠাটো তললৈ নিবলৈ ওপৰলৈ ছোৱাইপ কৰক</translation>
 <translation id="2487067538648443797">নতুন বুকমাৰ্ক যোগ কৰক</translation>
-<translation id="2487268545026948104">আপোনাৰ ডেটা পুনঃস্থাপন কৰিবলৈ ইণ্টাৰনেটৰ লগত সংযোগ কৰক</translation>
 <translation id="2489686758589235262">আৰু ২ টা ছুইচ আবণ্টন কৰক</translation>
 <translation id="2489829450872380594">আগলৈ এটা নতুন ডিভাইচে এই <ph name="DEVICE_TYPE" />টো আনলক কৰিব। আপুনি ছেটিংসমূহ-ত গৈ স্মাৰ্ট লক অফ কৰিব পাৰে।</translation>
 <translation id="2489918096470125693">&amp;ফ’ল্ডাৰ যোগ দিয়ক...</translation>
@@ -2016,7 +2015,6 @@
 <translation id="2546991196809436099">স্ক্ৰীনখনত থকা বস্তুবোৰ ডাঙৰ কৰিবলৈ জুম ইন কৰক। বিৱৰ্ধক অন আৰু অফ কৰিবলৈ Search + Ctrl + M ব্যৱহাৰ কৰক।</translation>
 <translation id="2548347166720081527"><ph name="PERMISSION" />ৰ অনুমতি দিয়া হৈছে</translation>
 <translation id="2548545707296594436">ই-ছিমৰ প্ৰ'ফাইলৰ কেশ্ব ৰিছেট কৰক</translation>
-<translation id="2549435700753464129">ChromeOS ব্লুটুথৰ ফ্লছ</translation>
 <translation id="2549985041256363841">ৰেকৰ্ডিং কৰা আৰম্ভ কৰক</translation>
 <translation id="2550212893339833758">ছোৱেপ কৰা মেম’ৰী</translation>
 <translation id="2550596535588364872"><ph name="FILE_NAME" /> খুলিবলৈ <ph name="EXTENSION_NAME" /> অনুমতি দিবনে?</translation>
@@ -3507,7 +3505,6 @@
 <translation id="3771851622616482156">খোলা থকা টেবসমূহকে ধৰি আপুনি এই ছাইটটোৰ পৰা ছাইন আউট হৈ যাব</translation>
 <translation id="3772046291955677288">মই <ph name="BEGIN_LINK1" />Googleৰ সেৱাৰ চৰ্তাৱলী<ph name="END_LINK1" /> আৰু <ph name="BEGIN_LINK2" />Chrome আৰু ChromeOSৰ অতিৰিক্ত সেৱাৰ চৰ্তাৱলী<ph name="END_LINK2" /> পঢ়িছোঁ আৰু তাত সন্মতি দিওঁ।</translation>
 <translation id="3774166835015494435">শেহতীয়া ফট’ আৰু জাননী</translation>
-<translation id="3774546890772201673"><ph name="NAME" /> আপডে’ট কৰক।</translation>
 <translation id="3775432569830822555">SSL ছাৰ্ভাৰৰ প্ৰমাণপত্ৰ</translation>
 <translation id="3775705724665058594">আপোনাৰ ডিভাইচসমূহলৈ পঠিয়াওক</translation>
 <translation id="3776508619697147021">ছাইটে স্বয়ংক্ৰিয়ভাৱে একাধিক ফাইল ডাউনল'ড কৰিবলৈ বিচাৰিব পাৰে</translation>
@@ -8752,7 +8749,6 @@
 <translation id="8077120325605624147">আপুনি চোৱা যিকোনো ছাইটে আপোনাক যিকোনো বিজ্ঞাপন দেখুৱাব পাৰে</translation>
 <translation id="8077579734294125741">Chromeৰ অন্য প্ৰ’ফাইল</translation>
 <translation id="80798452873915119">ছাইটসমূহে আপোনাৰ আটাইবোৰ ডিছপ্লে’ত থকা ৱিণ্ড’সমূহ পৰিচালনা কৰাৰ অনুমতি বিচাৰিব পাৰে</translation>
-<translation id="807990231167557618">আপোনাৰ Chromebook আপডে’ট কৰা হ’ল।</translation>
 <translation id="8080028325999236607">আটাইবোৰ টেব বন্ধ কৰক</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">আপোনাৰ ছেশ্বনটো <ph name="MANAGER_NAME" />এ পৰিচালনা কৰে। প্ৰশাসকে আপোনাৰ প্ৰ’ফাইলটো মচিব পাৰে আৰু লগতে আপোনাৰ নেটৱৰ্ক ট্ৰেফিক নিৰীক্ষণ কৰিব পাৰে।</translation>

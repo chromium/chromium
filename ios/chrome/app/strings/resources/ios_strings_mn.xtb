@@ -218,6 +218,7 @@
 <translation id="2195124168004379331">Таны хөтөч сайн харагдаж байна</translation>
 <translation id="2213327331203157297">Chrome-д Түгжих горимыг идэвхгүй болгохын тулд үүнийг iPhone-доо унтраана уу.</translation>
 <translation id="2218443599109088993">Жижигрүүлэх</translation>
+<translation id="2220529011494928058">Асуудлыг мэдэгдэх</translation>
 <translation id="2230173723195178503">Веб хуудсыг ачаалласан</translation>
 <translation id="2239626343334228536">Хөтчийн өгөгдлийг устгаж байна...</translation>
 <translation id="2242467532204595597">Мессеж, документ болон бусад аппад холбооснуудыг товших бүрдээ Chrome-г ашиглана уу.</translation>
@@ -543,7 +544,6 @@
 <translation id="3959736869653157332">Цэс → Шинэ нууцлалтай таб</translation>
 <translation id="3967822245660637423">Татаж авч дууслаа</translation>
 <translation id="3968505803272650567">Сонирхлыг удирдах</translation>
-<translation id="3971789053442864420">{count,plural, =1{{count} нууц үг}other{{count} нууц үг}}</translation>
 <translation id="3989635538409502728">Гарах</translation>
 <translation id="3995521777587992544"><ph name="EMAIL" /> хуудас ачаалах явцын заалтыг ачаалсан.</translation>
 <translation id="4002019827078931033">Хаяг оруулах хэсгийг дээш зөөх</translation>
@@ -1338,7 +1338,6 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="8328777765163860529">Бүгдийг хаах</translation>
 <translation id="8343993175958086504">Зүйлсээ хуулбарлаж, дурын төхөөрөмж дээр ашиглана уу.</translation>
 <translation id="834783239627985533">Хамгийн их зочилсон сайтууд</translation>
-<translation id="8356276002902955750">{count,plural, =1{{count} хавчуурга}other{{count} хавчуурга}}</translation>
 <translation id="8364841868226993049"><ph name="USER_EMAIL" />-д зориулж зургийг Google Зурагт хадгалж байна...</translation>
 <translation id="8378714024927312812">Танай байгууллагаас удирддаг</translation>
 <translation id="8386068868580335421">Шинэчлэх</translation>

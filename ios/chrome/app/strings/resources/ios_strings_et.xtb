@@ -218,6 +218,7 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="2195124168004379331">Teie brauser näib turvaline</translation>
 <translation id="2213327331203157297">Chrome'is lukustamisrežiimi keelamiseks lülitage see iPhone'is välja.</translation>
 <translation id="2218443599109088993">Suumi välja</translation>
+<translation id="2220529011494928058">Probleemist teatamine</translation>
 <translation id="2230173723195178503">Veebileht laaditi</translation>
 <translation id="2239626343334228536">Sirvimisandmete kustutamine …</translation>
 <translation id="2242467532204595597">Saate Chrome'i kasutada igal ajal, kui puudutate sõnumites, dokumentides ja muudes rakendustes linke.</translation>
@@ -543,7 +544,6 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="3959736869653157332">Menüü → Uus inkognito vaheleht</translation>
 <translation id="3967822245660637423">Allalaadimine on lõpule viidud</translation>
 <translation id="3968505803272650567">Huvide haldamine</translation>
-<translation id="3971789053442864420">{count,plural, =1{{count} parool}other{{count} parooli}}</translation>
 <translation id="3989635538409502728">Logi välja</translation>
 <translation id="3995521777587992544">Lehe laadimise edenemisriba, <ph name="EMAIL" /> on laaditud.</translation>
 <translation id="4002019827078931033">Nihuta aadressiriba ülaserva</translation>
@@ -1338,7 +1338,6 @@ Saidid saavad küpsisefailide abil eri saitidel teie sirvimistegevust jälgida, 
 <translation id="8328777765163860529">Sule kõik</translation>
 <translation id="8343993175958086504">Varundage oma sisu ja kasutage seda mis tahes seadmes.</translation>
 <translation id="834783239627985533">Enim külastatavad saidid</translation>
-<translation id="8356276002902955750">{count,plural, =1{{count} järjehoidja}other{{count} järjehoidjat}}</translation>
 <translation id="8364841868226993049">Pilt salvestatakse teenusesse Google Photos kontol <ph name="USER_EMAIL" /> …</translation>
 <translation id="8378714024927312812">Haldab teie organisatsioon</translation>
 <translation id="8386068868580335421">Lähtesta</translation>

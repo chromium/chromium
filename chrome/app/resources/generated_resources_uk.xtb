@@ -933,6 +933,7 @@
 <translation id="1723824996674794290">&amp;Нове вікно</translation>
 <translation id="1724801751621173132">Режим введення</translation>
 <translation id="1725562816265788801">Прокручування вкладок</translation>
+<translation id="1726294682426724172">Серед нових функцій – чарівна гумка в Google Фото, яка дає змогу вилучати небажані об’єкти, покращені інструменти для відеодзвінків тощо</translation>
 <translation id="1726503915437308071">Курсив</translation>
 <translation id="1729533290416704613">Розширення також змінило сторінку, яка відкривається під час пошуку в універсальному вікні пошуку.</translation>
 <translation id="1730666151302379551">Не пам’ятаю старий пароль</translation>
@@ -1257,7 +1258,6 @@
 <translation id="1974060860693918893">Розширені</translation>
 <translation id="1974159333077206889">Однаковий звук на всіх колонках</translation>
 <translation id="1974216844776165821">Веб-переглядач Chrome зберіг пароль на цьому пристрої, але ви можете натомість зберегти його в обліковому записі Google. Тоді всі паролі й ключі доступу в обліковому записі Google будуть доступні, доки ви не вийдете з нього.</translation>
-<translation id="1974821797477522211">Під’єднатися до мережі</translation>
 <translation id="1975841812214822307">Видалити…</translation>
 <translation id="1976150099241323601">Увійти в пристрій безпеки</translation>
 <translation id="1976823515278601587">Значне заощадження</translation>
@@ -1941,7 +1941,6 @@
 <translation id="2485681265915754872">Умови використання Google Play</translation>
 <translation id="248676429071089168">Проведіть пальцем угору, щоб прокрутити сторінку вниз</translation>
 <translation id="2487067538648443797">Додати нову закладку</translation>
-<translation id="2487268545026948104">Щоб відновити дані, підключіться до Інтернету</translation>
 <translation id="2489686758589235262">Призначити ще 2 перемикачі</translation>
 <translation id="2489829450872380594">Наступного разу цей пристрій <ph name="DEVICE_TYPE" /> можна буде розблокувати за допомогою нового телефона. Smart Lock можна вимкнути в налаштуваннях.</translation>
 <translation id="2489918096470125693">Додати &amp;папку...</translation>
@@ -2021,7 +2020,6 @@
 <translation id="2546991196809436099">Щоб збільшити елементи на екрані, наблизьте область. Щоб увімкнути або вимкнути лупу, натисніть клавішу пошуку + Ctrl + M.</translation>
 <translation id="2548347166720081527">Дозволено: <ph name="PERMISSION" /></translation>
 <translation id="2548545707296594436">Скинути кеш профілю eSIM-карти</translation>
-<translation id="2549435700753464129">Floss для Bluetooth у ChromeOS</translation>
 <translation id="2549985041256363841">Почати запис</translation>
 <translation id="2550212893339833758">Змінна пам’ять</translation>
 <translation id="2550596535588364872">Дозволити розширенню <ph name="EXTENSION_NAME" /> відкрити файл <ph name="FILE_NAME" />?</translation>
@@ -3512,7 +3510,6 @@
 <translation id="3771851622616482156">Ви вийдете з облікового запису на цьому сайті, зокрема у відкритих вкладках</translation>
 <translation id="3772046291955677288">Я приймаю <ph name="BEGIN_LINK1" />Загальні положення та умови Google<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Додаткові умови використання Chrome і ОС Chrome<ph name="END_LINK2" />.</translation>
 <translation id="3774166835015494435">Нещодавні фотографії та сповіщення</translation>
-<translation id="3774546890772201673">Оновіть <ph name="NAME" />.</translation>
 <translation id="3775432569830822555">Сертифікат SSL-сервера</translation>
 <translation id="3775705724665058594">Надіслати на пристрої</translation>
 <translation id="3776508619697147021">Сайти можуть просити дозвіл автоматично завантажувати кілька файлів</translation>
@@ -8760,7 +8757,6 @@
 <translation id="8077120325605624147">Усі сайти, які ви відвідуєте, можуть показувати вам будь-які оголошення</translation>
 <translation id="8077579734294125741">Інші профілі Chrome</translation>
 <translation id="80798452873915119">Сайти можуть просити дозвіл керувати вікнами на всіх ваших екранах</translation>
-<translation id="807990231167557618">Chromebook оновлено.</translation>
 <translation id="8080028325999236607">Закрити всі вкладки</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">Вашим сеансом керує <ph name="MANAGER_NAME" />. Адміністратори можуть видалити ваш профіль, а також відстежувати мережевий трафік.</translation>

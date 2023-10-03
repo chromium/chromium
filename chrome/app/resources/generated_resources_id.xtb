@@ -930,6 +930,7 @@ Izin yang telah Anda berikan ke aplikasi dapat berlaku untuk akun ini. Anda dapa
 <translation id="1723824996674794290">&amp;Jendela baru</translation>
 <translation id="1724801751621173132">Mode input</translation>
 <translation id="1725562816265788801">Scrolling Tab</translation>
+<translation id="1726294682426724172">Fitur baru mencakup Penghapus Ajaib di Google Foto untuk menghilangkan gangguan, meningkatkan kualitas alat panggilan video, dan lainnya</translation>
 <translation id="1726503915437308071">Font miring</translation>
 <translation id="1729533290416704613">Juga mengontrol halaman apa yang ditampilkan saat Anda menelusuri dari Omnibox.</translation>
 <translation id="1730666151302379551">Lupa sandi lama</translation>
@@ -1254,7 +1255,6 @@ Izin yang telah Anda berikan ke aplikasi dapat berlaku untuk akun ini. Anda dapa
 <translation id="1974060860693918893">Lanjutan</translation>
 <translation id="1974159333077206889">Audio yang sama di semua speaker</translation>
 <translation id="1974216844776165821">Chrome menyimpan sandi Anda ke perangkat ini, tetapi Anda dapat menyimpannya ke Akun Google Anda. Dengan begitu, semua sandi dan kunci sandi di Akun Google Anda juga akan tersedia saat Anda login.</translation>
-<translation id="1974821797477522211">Sambungkan ke jaringan</translation>
 <translation id="1975841812214822307">Buang...</translation>
 <translation id="1976150099241323601">Login ke Peranti Keamanan</translation>
 <translation id="1976823515278601587">Penghematan Besar</translation>
@@ -1938,7 +1938,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2485681265915754872">Persyaratan layanan Google Play</translation>
 <translation id="248676429071089168">Geser ke atas untuk memindahkan halaman ke bawah</translation>
 <translation id="2487067538648443797">Tambahkan bookmark baru</translation>
-<translation id="2487268545026948104">Untuk memulihkan data Anda, sambungkan ke internet</translation>
 <translation id="2489686758589235262">Tetapkan 2 tombol akses lagi</translation>
 <translation id="2489829450872380594">Saat digunakan lagi, ponsel baru akan membuka kunci <ph name="DEVICE_TYPE" /> ini. Anda dapat menonaktifkan Smart Lock di Setelan.</translation>
 <translation id="2489918096470125693">Tambahkan &amp;Map...</translation>
@@ -2018,7 +2017,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2546991196809436099">Perbesar untuk membuat item pada layar lebih besar. Gunakan Penelusuran + Ctrl + M untuk mengaktifkan dan menonaktifkan kaca pembesar.</translation>
 <translation id="2548347166720081527"><ph name="PERMISSION" /> diizinkan</translation>
 <translation id="2548545707296594436">Reset cache profil eSIM</translation>
-<translation id="2549435700753464129">Floss Bluetooth ChromeOS</translation>
 <translation id="2549985041256363841">Mulai merekam</translation>
 <translation id="2550212893339833758">Memori yang ditukar</translation>
 <translation id="2550596535588364872">Izinkan <ph name="EXTENSION_NAME" /> membuka <ph name="FILE_NAME" />?</translation>
@@ -3509,7 +3507,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3771851622616482156">Anda akan logout dari situs ini, termasuk di tab yang terbuka</translation>
 <translation id="3772046291955677288">Saya telah membaca dan menyetujui <ph name="BEGIN_LINK1" />Persyaratan Layanan Google<ph name="END_LINK1" /> dan <ph name="BEGIN_LINK2" />Persyaratan Layanan Tambahan Chrome and ChromeOS<ph name="END_LINK2" />.</translation>
 <translation id="3774166835015494435">Foto terbaru dan notifikasi</translation>
-<translation id="3774546890772201673">Update <ph name="NAME" />.</translation>
 <translation id="3775432569830822555">Sertifikat Server SSL</translation>
 <translation id="3775705724665058594">Kirim ke perangkat Anda</translation>
 <translation id="3776508619697147021">Situs dapat meminta untuk otomatis mendownload beberapa file</translation>
@@ -8754,7 +8751,6 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8077120325605624147">Setiap situs yang Anda buka dapat menampilkan iklan apa pun kepada Anda</translation>
 <translation id="8077579734294125741">Profil Chrome lainnya</translation>
 <translation id="80798452873915119">Situs dapat meminta untuk mengelola jendela di semua layar</translation>
-<translation id="807990231167557618">Chromebook Anda sudah diupdate.</translation>
 <translation id="8080028325999236607">Tutup Semua Tab</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">Sesi Anda dikelola oleh <ph name="MANAGER_NAME" />. Administrator dapat menghapus profil serta memantau traffic jaringan Anda.</translation>

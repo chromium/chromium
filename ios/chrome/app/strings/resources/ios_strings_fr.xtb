@@ -218,6 +218,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chrome
 <translation id="2195124168004379331">Votre navigateur semble sûr</translation>
 <translation id="2213327331203157297">Pour désactiver le mode Blocage dans Chrome, désactivez-le sur votre iPhone.</translation>
 <translation id="2218443599109088993">Zoom arrière</translation>
+<translation id="2220529011494928058">Signaler un problème</translation>
 <translation id="2230173723195178503">Page Web chargée</translation>
 <translation id="2239626343334228536">Effacement des données de navigation…</translation>
 <translation id="2242467532204595597">Utilisez Chrome chaque fois que vous appuyez sur des liens dans des messages, des documents et d'autres applis.</translation>
@@ -543,7 +544,6 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="3959736869653157332">Menu → Nouvel onglet de navigation privée</translation>
 <translation id="3967822245660637423">Téléchargement terminé</translation>
 <translation id="3968505803272650567">Gérer les centres d'intérêt</translation>
-<translation id="3971789053442864420">{count,plural, =1{{count} mot de passe}one{{count} mot de passe}other{{count} mots de passe}}</translation>
 <translation id="3989635538409502728">Déconnexion</translation>
 <translation id="3995521777587992544">Barre de progression du chargement de page, <ph name="EMAIL" /> chargé(s).</translation>
 <translation id="4002019827078931033">Déplacer la barre d'adresse vers le haut</translation>
@@ -1339,7 +1339,6 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="8328777765163860529">Tout fermer</translation>
 <translation id="8343993175958086504">Sauvegardez vos données et utilisez-les sur n'importe quel appareil.</translation>
 <translation id="834783239627985533">Sites les plus consultés</translation>
-<translation id="8356276002902955750">{count,plural, =1{{count} favori}one{{count} favori}other{{count} favoris}}</translation>
 <translation id="8364841868226993049">Enregistrement de l'image dans Google Photos pour <ph name="USER_EMAIL" />…</translation>
 <translation id="8378714024927312812">Géré par votre organisation</translation>
 <translation id="8386068868580335421">Réinitialiser</translation>

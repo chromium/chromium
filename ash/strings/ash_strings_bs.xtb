@@ -1505,7 +1505,6 @@ Nova instalacija</translation>
 <translation id="7188494361780961876">Meni je pomjeren u gornji lijevi ugao ekrana.</translation>
 <translation id="7189412385142492784">Koliko je udaljena Venera</translation>
 <translation id="7198435252016571249">Kamera se uklopila u donji desni ugao. Došlo je do konflikta s površinom sistema.</translation>
-<translation id="7219573373513695352">Nema povezanih uređaja</translation>
 <translation id="7229029500464092426">Memorija <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> ukupno</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Ovaj Chromebook se treba ponovo pokrenuti da bi se primijenilo ažuriranje. To može potrajati do jedne minute.</translation>
 <translation id="7256634071279256947">Stražnji mikrofon</translation>
@@ -1947,7 +1946,6 @@ Da isključite uređaj, ponovo pritisnite i zadržite dugme za uključivanje na 
 <translation id="9089416786594320554">Načini unosa</translation>
 <translation id="9091626656156419976">Uklonjen je ekran <ph name="DISPLAY_NAME" /></translation>
 <translation id="9098969848082897657">Utišavanje telefona</translation>
-<translation id="9120448753905017833">Isključili smo WiFi radi korištenja pristupne tačke putem prijenosa podataka na mobilnoj mreži. Ovo može uzrokovati troškove prijenosa podataka.</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> ili <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">Opoziv posljednje radnje</translation>
 <translation id="9133335900048457298">Nije moguće snimiti zaštićeni sadržaj</translation>

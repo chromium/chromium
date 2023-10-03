@@ -918,6 +918,7 @@
 <translation id="1723824996674794290">新しいウィンドウ(&amp;N)</translation>
 <translation id="1724801751621173132">ローマ字入力・かな入力</translation>
 <translation id="1725562816265788801">タブスクロール</translation>
+<translation id="1726294682426724172">不要な部分を消せる　Google フォトの消しゴムマジックや便利になったビデオ通話ツールなどの新機能をご利用いただけます</translation>
 <translation id="1726503915437308071">斜体フォント</translation>
 <translation id="1729533290416704613">この拡張機能では、アドレスバーからの検索時に表示されるページも制御されます。</translation>
 <translation id="1730666151302379551">以前のパスワードを忘れた場合</translation>
@@ -1239,7 +1240,6 @@
 <translation id="1974060860693918893">詳細設定</translation>
 <translation id="1974159333077206889">すべてのスピーカーで同じ音声を再生</translation>
 <translation id="1974216844776165821">パスワードがこのデバイスに保存されました。パスワードは Google アカウントに保存することもできます。Google アカウントに保存したすべてのパスワードとパスキーは、アカウントにログインすれば使用できます。</translation>
-<translation id="1974821797477522211">ネットワークへの接続</translation>
 <translation id="1975841812214822307">削除...</translation>
 <translation id="1976150099241323601">セキュリティ デバイスへのログイン</translation>
 <translation id="1976823515278601587">大量の節約</translation>
@@ -1918,7 +1918,6 @@
 <translation id="2485681265915754872">Google Play 利用規約</translation>
 <translation id="248676429071089168">上にスワイプすると、ページ下部に移動します</translation>
 <translation id="2487067538648443797">新しいブックマークを追加</translation>
-<translation id="2487268545026948104">データを復元するには、インターネットに接続してください</translation>
 <translation id="2489686758589235262">スイッチを 2 つ追加で割り当てる</translation>
 <translation id="2489829450872380594">次回から、新しいスマートフォンでこの <ph name="DEVICE_TYPE" /> のロックを解除できます。Smart Lock を無効にするには [設定] をご利用ください。</translation>
 <translation id="2489918096470125693">フォルダを追加(&amp;F)...</translation>
@@ -1997,7 +1996,6 @@
 <translation id="2546991196809436099">画面上の項目を拡大表示します。拡大鏡をオンまたはオフにするには、検索+Ctrl+M キーを使用します。</translation>
 <translation id="2548347166720081527"><ph name="PERMISSION" />を許可</translation>
 <translation id="2548545707296594436">eSIM プロファイルのキャッシュをリセット</translation>
-<translation id="2549435700753464129">ChromeOS Bluetooth Floss</translation>
 <translation id="2549985041256363841">撮影を開始</translation>
 <translation id="2550212893339833758">スワップ対象メモリ</translation>
 <translation id="2550596535588364872"><ph name="EXTENSION_NAME" /> が <ph name="FILE_NAME" /> を開くことを許可しますか？</translation>
@@ -3487,7 +3485,6 @@
 <translation id="3771851622616482156">タブで表示中のものも含め、このサイトからログアウトします</translation>
 <translation id="3772046291955677288"><ph name="BEGIN_LINK1" />Google 利用規約<ph name="END_LINK1" />、<ph name="BEGIN_LINK2" />Chrome および Chrome OS 追加利用規約<ph name="END_LINK2" />を確認し、内容に同意します。</translation>
 <translation id="3774166835015494435">最近の写真と通知</translation>
-<translation id="3774546890772201673"><ph name="NAME" /> を更新します。</translation>
 <translation id="3775432569830822555">SSL サーバー証明書</translation>
 <translation id="3775705724665058594">お使いのデバイスに送信</translation>
 <translation id="3776508619697147021">サイトが複数のファイルの自動ダウンロードを要求できるようにする</translation>
@@ -8725,7 +8722,6 @@
 <translation id="8077120325605624147">アクセスしたすべてのサイトであらゆる広告の表示が許可されます</translation>
 <translation id="8077579734294125741">その他の Chrome プロフィール</translation>
 <translation id="80798452873915119">全ディスプレイのウィンドウ管理をリクエストすることをサイトに許可する</translation>
-<translation id="807990231167557618">Chromebook が更新されています。</translation>
 <translation id="8080028325999236607">すべてのタブを閉じる</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">セッションは <ph name="MANAGER_NAME" /> によって管理されています。管理者はあなたのプロフィールを削除することや、ネットワークトラフィックを監視することができます。</translation>

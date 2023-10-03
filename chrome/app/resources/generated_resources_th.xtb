@@ -919,6 +919,7 @@
 <translation id="1723824996674794290">&amp;หน้าต่างใหม่</translation>
 <translation id="1724801751621173132">โหมดป้อนข้อมูล</translation>
 <translation id="1725562816265788801">การเลื่อนแท็บ</translation>
+<translation id="1726294682426724172">มีฟีเจอร์ใหม่ๆ เช่น การลบอัจฉริยะใน Google Photos เพื่อนำสิ่งที่เบี่ยงเบนสายตาออก เครื่องมือวิดีโอคอลที่ปรับปรุงใหม่ และอีกมากมาย</translation>
 <translation id="1726503915437308071">แบบอักษรตัวเอียง</translation>
 <translation id="1729533290416704613">อีกทั้งยังควบคุมหน้าที่จะแสดงเมื่อคุณทำการค้นหาจากแถบอเนกประสงค์ด้วย</translation>
 <translation id="1730666151302379551">ลืมรหัสผ่านเก่า</translation>
@@ -1242,7 +1243,6 @@
 <translation id="1974060860693918893">ขั้นสูง</translation>
 <translation id="1974159333077206889">ฟังเสียงเดียวกันที่ลำโพงทุกตัว</translation>
 <translation id="1974216844776165821">Chrome บันทึกรหัสผ่านของคุณลงในอุปกรณ์นี้แล้ว แต่คุณจะบันทึกลงในบัญชี Google แทนก็ได้ ซึ่งจะทำให้รหัสผ่านและพาสคีย์ทั้งหมดในบัญชี Google พร้อมใช้งานในระหว่างที่คุณลงชื่อเข้าใช้ด้วย</translation>
-<translation id="1974821797477522211">เชื่อมต่อกับเครือข่าย</translation>
 <translation id="1975841812214822307">นำออก...</translation>
 <translation id="1976150099241323601">ลงชื่อเข้าใช้อุปกรณ์รักษาความปลอดภัย</translation>
 <translation id="1976823515278601587">ประหยัดหน่วยความจำได้มาก</translation>
@@ -1923,7 +1923,6 @@
 <translation id="2485681265915754872">ข้อกำหนดในการให้บริการของ Google Play</translation>
 <translation id="248676429071089168">ปัดขึ้นเพื่อเลื่อนหน้าลง</translation>
 <translation id="2487067538648443797">เพิ่มบุ๊กมาร์กใหม่</translation>
-<translation id="2487268545026948104">โปรดเชื่อมต่ออินเทอร์เน็ตเพื่อคืนค่าข้อมูล</translation>
 <translation id="2489686758589235262">กำหนดสวิตช์เพิ่มอีก 2 อัน</translation>
 <translation id="2489829450872380594">โทรศัพท์เครื่องใหม่จะปลดล็อก <ph name="DEVICE_TYPE" /> เครื่องนี้ในครั้งถัดไป คุณปิด Smart Lock ได้ในการตั้งค่า</translation>
 <translation id="2489918096470125693">เพิ่ม&amp;โฟลเดอร์...</translation>
@@ -2003,7 +2002,6 @@
 <translation id="2546991196809436099">ซูมเข้าเพื่อทำให้รายการในหน้าจอมีขนาดใหญ่ขึ้น ใช้แป้นค้นหา + Ctrl + M เพื่อเปิดและปิดแว่นขยาย</translation>
 <translation id="2548347166720081527">อนุญาตการเข้าถึง<ph name="PERMISSION" /></translation>
 <translation id="2548545707296594436">รีเซ็ตแคชของโปรไฟล์ eSIM</translation>
-<translation id="2549435700753464129">ChromeOS Bluetooth Floss</translation>
 <translation id="2549985041256363841">เริ่มบันทึก</translation>
 <translation id="2550212893339833758">หน่วยความจำสว็อป</translation>
 <translation id="2550596535588364872">อนุญาตให้ <ph name="EXTENSION_NAME" /> เปิด <ph name="FILE_NAME" /> ไหม</translation>
@@ -3494,7 +3492,6 @@
 <translation id="3771851622616482156">คุณจะออกจากระบบของเว็บไซต์นี้ รวมถึงในแท็บที่เปิดอยู่</translation>
 <translation id="3772046291955677288">ฉันได้อ่านและยอมรับ<ph name="BEGIN_LINK1" />ข้อกำหนดในการให้บริการของ Google<ph name="END_LINK1" /> รวมถึง<ph name="BEGIN_LINK2" />ข้อกำหนดในการให้บริการเพิ่มเติมของ Chrome และ Chrome OS<ph name="END_LINK2" /></translation>
 <translation id="3774166835015494435">รูปภาพและการแจ้งเตือนล่าสุด</translation>
-<translation id="3774546890772201673">อัปเดต <ph name="NAME" /></translation>
 <translation id="3775432569830822555">ใบรับรองเซิร์ฟเวอร์ SSL</translation>
 <translation id="3775705724665058594">ส่งไปยังอุปกรณ์</translation>
 <translation id="3776508619697147021">เว็บไซต์ขอดาวน์โหลดไฟล์หลายไฟล์โดยอัตโนมัติได้</translation>
@@ -8735,7 +8732,6 @@
 <translation id="8077120325605624147">เว็บไซต์ที่คุณเข้าชมจะแสดงโฆษณาต่อคุณได้</translation>
 <translation id="8077579734294125741">โปรไฟล์ Chrome อื่นๆ</translation>
 <translation id="80798452873915119">เว็บไซต์ขอจัดการหน้าต่างบนจอแสดงผลทั้งหมดได้</translation>
-<translation id="807990231167557618">Chromebook ของคุณได้รับการอัปเดตแล้ว</translation>
 <translation id="8080028325999236607">ปิดแท็บทั้งหมด</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289"><ph name="MANAGER_NAME" /> เป็นผู้จัดการเซสชันของคุณ ผู้ดูแลระบบจะลบโปรไฟล์ รวมทั้งตรวจสอบการจราจรของข้อมูลในเครือข่ายได้</translation>

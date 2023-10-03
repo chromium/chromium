@@ -922,6 +922,7 @@ Load, mille olete juba rakendustele andnud, võivad selle konto puhul kehtida. S
 <translation id="1723824996674794290">&amp;Uus aken</translation>
 <translation id="1724801751621173132">Sisestusrežiim</translation>
 <translation id="1725562816265788801">Vahelehtede kerimine</translation>
+<translation id="1726294682426724172">Uute funktsioonide hulka kuulub teenuses Google Photos olev Maagiline kustutuskumm, mis eemaldab segavad tegurid, täiustatud videokõnede tööriistad ja palju muud</translation>
 <translation id="1726503915437308071">Kursiiv</translation>
 <translation id="1729533290416704613">Lisaks juhib omnikastikeses otsingu tegemise lehte.</translation>
 <translation id="1730666151302379551">Unusta vana parool</translation>
@@ -1245,7 +1246,6 @@ Load, mille olete juba rakendustele andnud, võivad selle konto puhul kehtida. S
 <translation id="1974060860693918893">Täpsemad</translation>
 <translation id="1974159333077206889">Sama heli kõigist kõlaritest</translation>
 <translation id="1974216844776165821">Chrome salvestas teie parooli sellesse seadmesse, kuid saate selle salvestada hoopis oma Google'i kontole. Nii on kõik teie Google'i kontol olevad paroolid ja pääsuvõtmed saadaval, kui olete sisse logitud.</translation>
-<translation id="1974821797477522211">Võrguga ühendamine</translation>
 <translation id="1975841812214822307">Eemalda ...</translation>
 <translation id="1976150099241323601">Turvaseadmesse sisselogimine</translation>
 <translation id="1976823515278601587">Suur sääst</translation>
@@ -1929,7 +1929,6 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2485681265915754872">Google Play teenusetingimused</translation>
 <translation id="248676429071089168">Lehe allapoole liigutamiseks pühkige üles</translation>
 <translation id="2487067538648443797">Uue järjehoidja lisamine</translation>
-<translation id="2487268545026948104">Andmete taastamiseks looge ühendus internetiga</translation>
 <translation id="2489686758589235262">Määrake veel kaks lülitit</translation>
 <translation id="2489829450872380594">Järgmisel korral avab seadme <ph name="DEVICE_TYPE" /> uus telefon. Funktsiooni Smart Lock saab välja lülitada menüüs Seaded.</translation>
 <translation id="2489918096470125693">Lisa &amp;kaust ...</translation>
@@ -2009,7 +2008,6 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2546991196809436099">Suumige sisse, et üksused ekraanil suuremaks teha. Suurenduse sisse- ja väljalülitamiseks kasutage klahvikombinatsiooni Otsing + Ctrl + M.</translation>
 <translation id="2548347166720081527">Lubati <ph name="PERMISSION" /></translation>
 <translation id="2548545707296594436">Lähtesta eSIM-i profiili vahemälu</translation>
-<translation id="2549435700753464129">ChromeOS-i Bluetoothi Floss</translation>
 <translation id="2549985041256363841">Alusta salvestamist</translation>
 <translation id="2550212893339833758">Saalitud mälu</translation>
 <translation id="2550596535588364872">Kas soovite lubada laiendusel <ph name="EXTENSION_NAME" /> avada faili <ph name="FILE_NAME" />?</translation>
@@ -3500,7 +3498,6 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3771851622616482156">Teid logitakse sellelt saidilt (sh avatud vahelehtedel) välja</translation>
 <translation id="3772046291955677288">Olen <ph name="BEGIN_LINK1" />Google'i teenusetingimused<ph name="END_LINK1" /> ning <ph name="BEGIN_LINK2" />Chrome'i ja Chrome OS-i lisateenusetingimused<ph name="END_LINK2" /> läbi lugenud ning nõustun nendega.</translation>
 <translation id="3774166835015494435">Hiljutised fotod ja märguanded</translation>
-<translation id="3774546890772201673">Seadme <ph name="NAME" /> värskendamine</translation>
 <translation id="3775432569830822555">SSL-serveri sertifikaat</translation>
 <translation id="3775705724665058594">Saatmine teie seadmetesse</translation>
 <translation id="3776508619697147021">Saidid saavad küsida luba automaatselt mitu faili alla laadida</translation>
@@ -8745,7 +8742,6 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8077120325605624147">Mis tahes külastatav sait saab teile kuvada mis tahes reklaami</translation>
 <translation id="8077579734294125741">Muud Chrome'i profiilid</translation>
 <translation id="80798452873915119">Saidid võivad küsida luba kõikidel teie ekraanidel akende haldamiseks</translation>
-<translation id="807990231167557618">Teie Chromebook on värskendatud.</translation>
 <translation id="8080028325999236607">Sule kõik vahelehed</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">Teie seanssi haldab <ph name="MANAGER_NAME" />. Administraatorid saavad teie profiili kustutada ning ka teie võrguliiklust jälgida.</translation>

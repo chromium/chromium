@@ -94,7 +94,6 @@ To change this setting, <ph name="BEGIN_LINK" />clear the Chromium data in your 
 <translation id="4736424910885271643">Your account is managed by <ph name="HOSTED_DOMAIN" />, so your Chromium data will be cleared from this device</translation>
 <translation id="4790638144988730920">Keep using the Chromium data in your Google Account.</translation>
 <translation id="4828317641996116749">Chromium couldn't check all passwords. Try again later.</translation>
-<translation id="4935539884203837577">Chromium can detect the tracking numbers you input and track your packages on the New Tab Page while helping other shopping experiences from Chromium.</translation>
 <translation id="4985291216379576555">Offline, Chromium can't check for updates</translation>
 <translation id="4996471330284142407">Get more done with a simple, secure and faster-than-ever Chromium.</translation>
 <translation id="4999538639245140991">Because you're signing out of an account managed by <ph name="SIGNOUT_MANAGED_DOMAIN" />, your Chromium data will be deleted from this device. Your data will remain in your Google Account.</translation>

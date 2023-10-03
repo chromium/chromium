@@ -919,6 +919,7 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1723824996674794290">&amp;Nova janela</translation>
 <translation id="1724801751621173132">Método de introdução</translation>
 <translation id="1725562816265788801">Deslocamento do separador</translation>
+<translation id="1726294682426724172">As novas funcionalidades incluem a Borracha mágica no Google Fotos para remover distrações, ferramentas de videochamadas melhoradas e muito mais</translation>
 <translation id="1726503915437308071">Tipo de letra itálico</translation>
 <translation id="1729533290416704613">Também controla a página apresentada quando pesquisa a partir da Caixa geral.</translation>
 <translation id="1730666151302379551">Esqueci-me da palavra-passe antiga</translation>
@@ -1242,7 +1243,6 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1974060860693918893">Avançadas</translation>
 <translation id="1974159333077206889">O mesmo áudio com todos os altifalantes</translation>
 <translation id="1974216844776165821">O Chrome guardou a sua palavra-passe neste dispositivo, mas pode guardá-la na sua Conta Google em alternativa. Assim, todas as palavras-passe e chaves de acesso na sua Conta Google também vão estar disponíveis enquanto tiver sessão iniciada.</translation>
-<translation id="1974821797477522211">Ligar à rede</translation>
 <translation id="1975841812214822307">Remover...</translation>
 <translation id="1976150099241323601">Iniciar sessão no Dispositivo de segurança</translation>
 <translation id="1976823515278601587">Grandes poupanças</translation>
@@ -1923,7 +1923,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2485681265915754872">Termos de Utilização do Google Play</translation>
 <translation id="248676429071089168">Deslize rapidamente para cima para mover a página para baixo</translation>
 <translation id="2487067538648443797">Adicionar novo marcador</translation>
-<translation id="2487268545026948104">Para restaurar os dados, estabeleça ligação à Internet.</translation>
 <translation id="2489686758589235262">Atribuir mais 2 interruptores</translation>
 <translation id="2489829450872380594">Da próxima vez, um novo telemóvel irá desbloquear o <ph name="DEVICE_TYPE" />. Pode desativar o Smart Lock nas Definições.</translation>
 <translation id="2489918096470125693">Adicionar &amp;Pasta...</translation>
@@ -2003,7 +2002,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2546991196809436099">Aumente o zoom para aumentar o tamanho dos itens no ecrã. Use Pesquisa + Ctrl + M para ativar e desativar a lupa.</translation>
 <translation id="2548347166720081527">Autorizou <ph name="PERMISSION" /></translation>
 <translation id="2548545707296594436">Repor cache do perfil do eSIM</translation>
-<translation id="2549435700753464129">Floss para o Bluetooth do ChromeOS</translation>
 <translation id="2549985041256363841">Iniciar gravação</translation>
 <translation id="2550212893339833758">Memória trocada</translation>
 <translation id="2550596535588364872">Permitir que <ph name="EXTENSION_NAME" /> abra <ph name="FILE_NAME" />?</translation>
@@ -3495,7 +3493,6 @@ Quer pará-lo?</translation>
 <translation id="3771851622616482156">A sua sessão neste site será terminada, incluindo em separadores abertos</translation>
 <translation id="3772046291955677288">Li e aceito os <ph name="BEGIN_LINK1" />Termos de Utilização da Google<ph name="END_LINK1" /> e os <ph name="BEGIN_LINK2" />Termos de Utilização Adicionais do Chrome e Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="3774166835015494435">Notificações e fotos recentes</translation>
-<translation id="3774546890772201673">Atualize o <ph name="NAME" />.</translation>
 <translation id="3775432569830822555">Certificado de servidor SSL</translation>
 <translation id="3775705724665058594">Envie para os seus dispositivos</translation>
 <translation id="3776508619697147021">Os sites podem solicitar a transferência automática de vários ficheiros</translation>
@@ -8741,7 +8738,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8077120325605624147">Qualquer site que visitar pode mostrar-lhe qualquer anúncio</translation>
 <translation id="8077579734294125741">Outros perfis do Chrome</translation>
 <translation id="80798452873915119">Os sites podem pedir para gerir janelas em todos os seus ecrãs</translation>
-<translation id="807990231167557618">O Chromebook está atualizado.</translation>
 <translation id="8080028325999236607">Fechar Todos os Separadores</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">A sua sessão é gerida por <ph name="MANAGER_NAME" />. Os administradores podem eliminar o seu perfil e monitorizar o tráfego de rede.</translation>

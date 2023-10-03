@@ -1502,7 +1502,6 @@ Nuova installazione</translation>
 <translation id="7188494361780961876">Menu spostato nell'angolo in alto a sinistra dello schermo.</translation>
 <translation id="7189412385142492784">Quanto è distante Venere</translation>
 <translation id="7198435252016571249">Fotocamera allineata all'angolo in basso a destra. Conflitto con la piattaforma di sistema.</translation>
-<translation id="7219573373513695352">Nessun dispositivo collegato</translation>
 <translation id="7229029500464092426">Memoria usata: <ph name="AVAILABLE_MEMORY" /> | Totale: <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. È richiesto il riavvio del Chromebook per installare un aggiornamento. L'operazione può richiedere fino a 1 minuto.</translation>
 <translation id="7256634071279256947">Microfono posteriore</translation>
@@ -1943,7 +1942,6 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="9089416786594320554">Metodi immissione</translation>
 <translation id="9091626656156419976">Schermo <ph name="DISPLAY_NAME" /> rimosso</translation>
 <translation id="9098969848082897657">Disattiva audio</translation>
-<translation id="9120448753905017833">Abbiamo disattivato il Wi-Fi per iniziare a utilizzare l'hotspot tramite i dati mobili. Questa operazione può comportare costi dei dati.</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> oppure <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">Annulla ultima azione</translation>
 <translation id="9133335900048457298">Impossibile registrare contenuti protetti</translation>

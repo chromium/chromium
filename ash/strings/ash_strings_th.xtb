@@ -1501,7 +1501,6 @@
 <translation id="7188494361780961876">เมนูได้ย้ายไปอยู่ที่มุมซ้ายบนของหน้าจอ</translation>
 <translation id="7189412385142492784">ดาวศุกร์อยู่ไกลแค่ไหน</translation>
 <translation id="7198435252016571249">จัดกล้องพอดีกับมุมขวาล่างแล้ว เนื่องจากขัดแย้งกับแพลตฟอร์มของระบบ</translation>
-<translation id="7219573373513695352">ไม่ได้เชื่อมต่ออุปกรณ์</translation>
 <translation id="7229029500464092426">ใช้หน่วยความจำแล้ว <ph name="AVAILABLE_MEMORY" /> | รวมทั้งหมด <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" /> Chromebook นี้ต้องรีสตาร์ทเพื่อใช้การอัปเดต ซึ่งอาจใช้เวลาถึง 1 นาที</translation>
 <translation id="7256634071279256947">ไมโครโฟนด้านหลัง</translation>
@@ -1943,7 +1942,6 @@
 <translation id="9089416786594320554">วิธีป้อนข้อมูล</translation>
 <translation id="9091626656156419976">นำจอแสดงผล <ph name="DISPLAY_NAME" /> ออกแล้ว</translation>
 <translation id="9098969848082897657">ปิดเสียงโทรศัพท์</translation>
-<translation id="9120448753905017833">เราได้ปิด Wi-Fi เพื่อเริ่มใช้ฮอตสปอตผ่านอินเทอร์เน็ตมือถือ ซึ่งอาจทำให้มีค่าบริการอินเทอร์เน็ต</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> หรือ <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">เลิกทำงานล่าสุด</translation>
 <translation id="9133335900048457298">บันทึกเนื้อหาที่ได้รับการคุ้มครองไม่ได้</translation>

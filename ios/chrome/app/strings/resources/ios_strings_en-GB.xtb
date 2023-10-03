@@ -218,6 +218,7 @@ To change this setting, <ph name="BEGIN_LINK" />clear the Chrome data in your ac
 <translation id="2195124168004379331">Your Browser Looks Good</translation>
 <translation id="2213327331203157297">To disable Lockdown mode in Chrome, turn it off on your iPhone.</translation>
 <translation id="2218443599109088993">Zoom out</translation>
+<translation id="2220529011494928058">Report an issue</translation>
 <translation id="2230173723195178503">Web page loaded</translation>
 <translation id="2239626343334228536">Clearing browsing data…</translation>
 <translation id="2242467532204595597">Use Chrome anytime that you tap links in messages, documents and other apps.</translation>
@@ -543,7 +544,6 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="3959736869653157332">Menu → New incognito tab</translation>
 <translation id="3967822245660637423">Download complete</translation>
 <translation id="3968505803272650567">Manage interests</translation>
-<translation id="3971789053442864420">{count,plural, =1{{count} Password}other{{count} Passwords}}</translation>
 <translation id="3989635538409502728">Sign Out</translation>
 <translation id="3995521777587992544">Page load progress bar, <ph name="EMAIL" /> loaded.</translation>
 <translation id="4002019827078931033">Move address bar to top</translation>
@@ -1339,7 +1339,6 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8328777765163860529">Close All</translation>
 <translation id="8343993175958086504">Back up your stuff and use it on any device.</translation>
 <translation id="834783239627985533">Most-visited sites</translation>
-<translation id="8356276002902955750">{count,plural, =1{{count} Bookmark}other{{count} Bookmarks}}</translation>
 <translation id="8364841868226993049">Saving image in Google Photos for <ph name="USER_EMAIL" />…</translation>
 <translation id="8378714024927312812">Managed by your organisation</translation>
 <translation id="8386068868580335421">Reset</translation>

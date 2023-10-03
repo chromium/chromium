@@ -217,6 +217,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="2195124168004379331">Dein Browser sieht sicher aus</translation>
 <translation id="2213327331203157297">Um den Blockierungsmodus in Chrome zu deaktivieren, musst du ihn auf deinem iPhone ausschalten.</translation>
 <translation id="2218443599109088993">Herauszoomen</translation>
+<translation id="2220529011494928058">Problem melden</translation>
 <translation id="2230173723195178503">Webseite geladen</translation>
 <translation id="2239626343334228536">Browserdaten werden gelöscht…</translation>
 <translation id="2242467532204595597">Du kannst Chrome jederzeit nutzen, wenn du in Nachrichten, Dokumenten und anderen Apps auf Links tippst.</translation>
@@ -539,7 +540,6 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="3959736869653157332">Menü → Neuer Inkognitotab</translation>
 <translation id="3967822245660637423">Download abgeschlossen</translation>
 <translation id="3968505803272650567">Interessen verwalten</translation>
-<translation id="3971789053442864420">{count,plural, =1{{count} Passwort}other{{count} Passwörter}}</translation>
 <translation id="3989635538409502728">Abmelden</translation>
 <translation id="3995521777587992544">Statusanzeige für den Seitenaufbau, <ph name="EMAIL" /> geladen.</translation>
 <translation id="4002019827078931033">Adressleiste nach oben verschieben</translation>
@@ -1327,7 +1327,6 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <translation id="8328777765163860529">Alle schließen</translation>
 <translation id="8343993175958086504">Du kannst deine Inhalte sichern und auf jedem Gerät verwenden.</translation>
 <translation id="834783239627985533">Am häufigsten besuchte Websites</translation>
-<translation id="8356276002902955750">{count,plural, =1{{count} Lesezeichen}other{{count} Lesezeichen}}</translation>
 <translation id="8364841868226993049">Bild für <ph name="USER_EMAIL" /> wird in Google Fotos gespeichert…</translation>
 <translation id="8378714024927312812">Von deiner Organisation verwaltet</translation>
 <translation id="8386068868580335421">Zurücksetzen</translation>

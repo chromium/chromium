@@ -927,6 +927,7 @@
 <translation id="1723824996674794290">&amp;ಹೊಸ ವಿಂಡೋ</translation>
 <translation id="1724801751621173132">ಇನ್‌ಪುಟ್ ಮೋಡ್</translation>
 <translation id="1725562816265788801">ಟ್ಯಾಬ್ ಸ್ಕ್ರಾಲ್ ಮಾಡುವಿಕೆ</translation>
+<translation id="1726294682426724172">ಗೊಂದಲವನ್ನು ನಿವಾರಿಸಲು Google Photos ನಲ್ಲಿ ಮ್ಯಾಜಿಕ್ ಎರೇಸರ್, ಸುಧಾರಿತ ವೀಡಿಯೊ ಕರೆ ಟೂಲ್‌ಗಳು ಮತ್ತು ಇನ್ನಷ್ಟು ಹೊಸ ಫೀಚರ್‌ಗಳನ್ನು ಒಳಗೊಂಡಿವೆ</translation>
 <translation id="1726503915437308071">ಇಟಾಲಿಕ್ ಫಾಂಟ್</translation>
 <translation id="1729533290416704613">ಓಮ್ನಿಬಾಕ್ಸ್‌ನಿಂದ ನೀವು ಹುಡುಕಾಟ ನಡೆಸಿದಾಗ ತೋರಿಸಬೇಕಾದ ಪುಟವನ್ನು ಕೂಡಾ ಇದು ನಿಯಂತ್ರಿಸುತ್ತದೆ.</translation>
 <translation id="1730666151302379551">ಹಳೆಯ ಪಾಸ್‌ವರ್ಡ್ ಮರೆತುಹೋಗಿದೆ</translation>
@@ -1253,7 +1254,6 @@
 <translation id="1974060860693918893">ಸುಧಾರಿತ</translation>
 <translation id="1974159333077206889">ಎಲ್ಲಾ ಸ್ಪೀಕರ್‌ಗಳಲ್ಲಿ ಒಂದೇ ಆಡಿಯೋ</translation>
 <translation id="1974216844776165821">Chrome ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಈ ಸಾಧನದಲ್ಲಿ ಸೇವ್ ಮಾಡಿದೆ, ಆದರೆ ನೀವು ಅದನ್ನು ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಸೇವ್ ಮಾಡಬಹುದು. ನಂತರ, ನೀವು ಸೈನ್ ಇನ್ ಮಾಡಿದಾಗ ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿರುವ ಎಲ್ಲಾ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಮತ್ತು ಪಾಸ್‌ಕೀಗಳು ಸಹ ಲಭ್ಯವಿರುತ್ತವೆ.</translation>
-<translation id="1974821797477522211">ನೆಟ್‌ವರ್ಕ್‌ಗೆ ಸಂಪರ್ಕಿಸು</translation>
 <translation id="1975841812214822307">ತೆಗೆದುಹಾಕಿ...</translation>
 <translation id="1976150099241323601">ಭದ್ರತಾ ಸಾಧನಕ್ಕೆ ಸೈನ್ ಇನ್ ಆಗಿರಿ</translation>
 <translation id="1976823515278601587">ಹೆಚ್ಚಿನ ಉಳಿತಾಯಗಳು</translation>
@@ -1937,7 +1937,6 @@
 <translation id="2485681265915754872">Google Play ಸೇವಾ ನಿಯಮಗಳು</translation>
 <translation id="248676429071089168">ಪುಟವನ್ನು ಕೆಳಕ್ಕೆ ಸರಿಸಲು ಮೇಲಕ್ಕೆ ಸ್ವೈಪ್ ಮಾಡಿ</translation>
 <translation id="2487067538648443797">ಹೊಸ ಬುಕ್‌ಮಾರ್ಕ್‌ ಸೇರಿಸಿ</translation>
-<translation id="2487268545026948104">ನಿಮ್ಮ ಡೇಟಾವನ್ನು ಮರುಸ್ಥಾಪಿಸಲು, ಇಂಟರ್ನೆಟ್‌ಗೆ ಕನೆಕ್ಟ್ ಮಾಡಿ</translation>
 <translation id="2489686758589235262">ಇನ್ನೂ 2 ಸ್ವಿಚ್‌ಗಳನ್ನು ನಿಯೋಜಿಸಿ</translation>
 <translation id="2489829450872380594">ಮುಂದಿನ ಬಾರಿ, ಹೊಸ ಫೋನ್ ಈ <ph name="DEVICE_TYPE" /> ಅನ್ನು ಅನ್‌ಲಾಕ್ ಮಾಡುತ್ತದೆ. ನೀವು ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ Smart Lock ಅನ್ನು ಆಫ್ ಮಾಡಬಹುದು.</translation>
 <translation id="2489918096470125693">&amp;ಫೋಲ್ಡರ್ ಅನ್ನು ಸೇರಿಸಿ...</translation>
@@ -2018,7 +2017,6 @@
 <translation id="2546991196809436099">ಪರದೆಯ ಮೇಲಿನ ಐಟಂಗಳನ್ನು ದೊಡ್ಡದಾಗಿ ಮಾಡಲು ಝೂಮ್‌ ಇನ್‌ ಮಾಡಿ. ಮ್ಯಾಗ್ನಿಫೈರ್ ಅನ್ನು ಆನ್ ಮತ್ತು ಆಫ್ ಮಾಡಲು Search + Ctrl + M ಬಳಸಿ.</translation>
 <translation id="2548347166720081527"><ph name="PERMISSION" /> ಅನುಮತಿಸಲಾಗಿದೆ</translation>
 <translation id="2548545707296594436">eSIM ಪ್ರೊಫೈಲ್ ಕ್ಯಾಷ್ ಅನ್ನು ರೀಸೆಟ್ ಮಾಡಿ</translation>
-<translation id="2549435700753464129">ChromeOS ಬ್ಲೂಟೂತ್ ಫ್ಲಾಸ್</translation>
 <translation id="2549985041256363841">ರೆಕಾರ್ಡಿಂಗ್ ಪ್ರಾರಂಭಿಸಿ</translation>
 <translation id="2550212893339833758">ಬದಲಾಯಿಸಿದ ಮೆಮೊರಿ</translation>
 <translation id="2550596535588364872"><ph name="FILE_NAME" /> ಅನ್ನು ತೆರೆಯಲು <ph name="EXTENSION_NAME" /> ಗೆ ಅನುಮತಿಸಬೇಕೆ?</translation>
@@ -3513,7 +3511,6 @@
 <translation id="3771851622616482156">ತೆರೆದ ಟ್ಯಾಬ್‌ಗಳಲ್ಲೂ ಸೇರಿದಂತೆ, ಈ ಸೈಟ್‌ನಿಂದ ನಿಮ್ಮನ್ನು ಸೈನ್ ಔಟ್ ಮಾಡಲಾಗುತ್ತದೆ</translation>
 <translation id="3772046291955677288"><ph name="BEGIN_LINK1" />Google ಸೇವಾ ನಿಯಮಗಳು<ph name="END_LINK1" /> ಮತ್ತು <ph name="BEGIN_LINK2" />Chrome ಹಾಗೂ Chrome OS ಹೆಚ್ಚುವರಿ ಸೇವಾ ನಿಯಮಗಳನ್ನು<ph name="END_LINK2" /> ನಾನು ಓದಿದ್ದೇನೆ ಮತ್ತು ಅವುಗಳಿಗೆ ಸಮ್ಮತಿಸುತ್ತೇನೆ.</translation>
 <translation id="3774166835015494435">ಇತ್ತೀಚಿನ ಫೋಟೋಗಳು ಮತ್ತು ಅಧಿಸೂಚನೆಗಳು</translation>
-<translation id="3774546890772201673"><ph name="NAME" /> ಅನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಿ.</translation>
 <translation id="3775432569830822555">SSL ಸರ್ವರ್ ಪ್ರಮಾಣಪತ್ರ</translation>
 <translation id="3775705724665058594">ನಿಮ್ಮ ಸಾಧನಗಳಿಗೆ ಕಳುಹಿಸಿ</translation>
 <translation id="3776508619697147021">ಸೈಟ್‌ಗಳು ಹಲವಾರು ಫೈಲ್‌ಗಳನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಡೌನ್‌ಲೋಡ್ ಮಾಡಲು ಕೇಳಬಹುದು</translation>
@@ -8762,7 +8759,6 @@
 <translation id="8077120325605624147">ನೀವು ಭೇಟಿ ನೀಡುವ ಯಾವುದೇ ಸೈಟ್ ನಿಮಗೆ ಯಾವುದೇ ಜಾಹೀರಾತನ್ನು ತೋರಿಸಬಹುದು</translation>
 <translation id="8077579734294125741">ಇತರ Chrome ಪ್ರೊಫೈಲ್‌ಗಳು</translation>
 <translation id="80798452873915119">ನಿಮ್ಮ ಎಲ್ಲಾ ಡಿಸ್‌ಪ್ಲೇಗಳಲ್ಲಿ ವಿಂಡೋಗಳನ್ನು ನಿರ್ವಹಿಸಲು ಸೈಟ್‌ಗಳು ಕೇಳಬಹುದು</translation>
-<translation id="807990231167557618">ನಿಮ್ಮ Chromebook ಅನ್ನು ಅಪ್‌ಡೇಟ್‌ ಮಾಡಲಾಗಿದೆ.</translation>
 <translation id="8080028325999236607">ಎಲ್ಲ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಿ</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">ನಿಮ್ಮ ಸೆಶನ್ ಅನ್ನು <ph name="MANAGER_NAME" /> ಅವರು ನಿರ್ವಹಿಸುತ್ತಿದ್ದಾರೆ. ನಿರ್ವಾಹಕರು ನಿಮ್ಮ ಪ್ರೊಫೈಲ್ ಅನ್ನು ಅಳಿಸಬಹುದು ಮತ್ತು ನಿಮ್ಮ ನೆಟ್‌ವರ್ಕ್ ಟ್ರಾಫಿಕ್‌ನ ಮೇಲ್ವಿಚಾರಣೆ ಸಹ ನಡೆಸಬಹುದು.</translation>

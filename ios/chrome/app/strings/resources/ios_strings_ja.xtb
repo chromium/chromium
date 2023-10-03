@@ -218,6 +218,7 @@
 <translation id="2195124168004379331">お使いのブラウザは安全です</translation>
 <translation id="2213327331203157297">Chrome のロックダウン モードを無効にするには、iPhone でロックダウン モードをオフにします。</translation>
 <translation id="2218443599109088993">縮小</translation>
+<translation id="2220529011494928058">問題を報告</translation>
 <translation id="2230173723195178503">ウェブページを読み込みました</translation>
 <translation id="2239626343334228536">閲覧データを削除しています...</translation>
 <translation id="2242467532204595597">メッセージ、ドキュメント、他のアプリのリンクをタップしたときに、常に Chrome で開くよう設定できます。</translation>
@@ -543,7 +544,6 @@
 <translation id="3959736869653157332">メニュー → 新しいシークレット タブ</translation>
 <translation id="3967822245660637423">ダウンロード完了</translation>
 <translation id="3968505803272650567">興味のあるトピックを管理</translation>
-<translation id="3971789053442864420">{count,plural, =1{{count} 件のパスワード}other{{count} 件のパスワード}}</translation>
 <translation id="3989635538409502728">ログアウト</translation>
 <translation id="3995521777587992544">ページ読み込み状況バー、<ph name="EMAIL" /> 読み込み完了。</translation>
 <translation id="4002019827078931033">アドレスバーを一番上に移動</translation>
@@ -1338,7 +1338,6 @@
 <translation id="8328777765163860529">すべて閉じる</translation>
 <translation id="8343993175958086504">データをバックアップして、他のデバイスで使用できるようにします。</translation>
 <translation id="834783239627985533">よくアクセスするサイト</translation>
-<translation id="8356276002902955750">{count,plural, =1{{count} 件のブックマーク}other{{count} 件のブックマーク}}</translation>
 <translation id="8364841868226993049"><ph name="USER_EMAIL" /> さんの Google フォトに画像を保存しています...</translation>
 <translation id="8378714024927312812">組織によって管理されています</translation>
 <translation id="8386068868580335421">リセット</translation>

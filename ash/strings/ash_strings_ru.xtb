@@ -1501,7 +1501,6 @@
 <translation id="7188494361780961876">Меню перемещено в левый верхний угол экрана.</translation>
 <translation id="7189412385142492784">Расстояние до Венеры</translation>
 <translation id="7198435252016571249">Окно предварительного просмотра камеры привязано к правому нижнему углу, так как перекрывало элементы системного интерфейса</translation>
-<translation id="7219573373513695352">Нет подключенных устройств.</translation>
 <translation id="7229029500464092426">Доступно памяти: <ph name="AVAILABLE_MEMORY" /> | Всего памяти: <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" /> Для установки обновления необходимо перезапустить Chromebook. Это может занять около минуты.</translation>
 <translation id="7256634071279256947">Основной микрофон</translation>
@@ -1942,7 +1941,6 @@
 <translation id="9089416786594320554">Способы ввода</translation>
 <translation id="9091626656156419976">Удален экран "<ph name="DISPLAY_NAME" />"</translation>
 <translation id="9098969848082897657">Отключить звук на телефоне</translation>
-<translation id="9120448753905017833">Чтобы использовать мобильный интернет через точку доступа, Wi-Fi был отключен. За передачу данных может взиматься плата.</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> или <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">Отменить последнее действие</translation>
 <translation id="9133335900048457298">Не удается записать видео с экрана из-за защищенного контента</translation>

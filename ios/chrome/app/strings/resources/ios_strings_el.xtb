@@ -218,6 +218,7 @@
 <translation id="2195124168004379331">Το πρόγραμμα περιήγησής σας φαίνεται εντάξει</translation>
 <translation id="2213327331203157297">Για να απενεργοποιήσετε τη Λειτουργία κλειδώματος στο Chrome, απενεργοποιήστε τη στο iPhone.</translation>
 <translation id="2218443599109088993">Σμίκρυνση</translation>
+<translation id="2220529011494928058">Αναφορά προβλήματος</translation>
 <translation id="2230173723195178503">Η ιστοσελίδα φορτώθηκε</translation>
 <translation id="2239626343334228536">Διαγραφή δεδομένων περιήγησης…</translation>
 <translation id="2242467532204595597">Χρησιμοποιήστε το Chrome κάθε φορά που πατάτε συνδέσμους σε μηνύματα, έγγραφα και άλλες εφαρμογές.</translation>
@@ -543,7 +544,6 @@
 <translation id="3959736869653157332">Μενού → Νέα καρτέλα ανώνυμης περιήγησης</translation>
 <translation id="3967822245660637423">Ολοκλήρωση λήψης</translation>
 <translation id="3968505803272650567">Διαχείριση Ενδιαφερόντων</translation>
-<translation id="3971789053442864420">{count,plural, =1{{count} κωδικός πρόσβασης}other{{count} κωδικοί πρόσβασης}}</translation>
 <translation id="3989635538409502728">Έξοδος</translation>
 <translation id="3995521777587992544">Γραμμή προόδου φόρτωσης σελίδας, φορτώθηκε το <ph name="EMAIL" />.</translation>
 <translation id="4002019827078931033">Μετακίνηση γραμμής διευθύνσεων στο επάνω μέρος</translation>
@@ -1339,7 +1339,6 @@
 <translation id="8328777765163860529">Κλείσιμο όλων</translation>
 <translation id="8343993175958086504">Δημιουργήστε αντίγραφα ασφαλείας των δεδομένων σας και χρησιμοποιήστε τα σε οποιαδήποτε συσκευή.</translation>
 <translation id="834783239627985533">Ιστότοποι με τις περισσότερες επισκέψεις</translation>
-<translation id="8356276002902955750">{count,plural, =1{{count} σελιδοδείκτης}other{{count} σελιδοδείκτες}}</translation>
 <translation id="8364841868226993049">Αποθήκευση εικόνας στις Φωτογραφίες Google για τον λογαριασμό <ph name="USER_EMAIL" />…</translation>
 <translation id="8378714024927312812">Διαχειριζόμενο από τον οργανισμό σας</translation>
 <translation id="8386068868580335421">Επαναφορά</translation>

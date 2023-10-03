@@ -218,6 +218,7 @@
 <translation id="2195124168004379331">మీ బ్రౌజర్ చూడటానికి బాగుంది</translation>
 <translation id="2213327331203157297">Chromeలో లాక్‌డౌన్ మోడ్‌ను డిజేబుల్ చేయడానికి మీ iPhoneలో దాన్ని ఆఫ్ చేయాలి.</translation>
 <translation id="2218443599109088993">దూరంగా జూమ్ చేయి</translation>
+<translation id="2220529011494928058">సమస్యను రిపోర్ట్ చేయండి</translation>
 <translation id="2230173723195178503">వెబ్‌పేజీ లోడ్ అయ్యింది</translation>
 <translation id="2239626343334228536">బ్రౌజింగ్ డేటాను తీసివేస్తోంది...</translation>
 <translation id="2242467532204595597">మీరు మెసేజ్‌లు, డాక్యుమెంట్‌లు, అలాగే ఇతర యాప్‌లలోని లింక్‌లను ఎప్పుడైనా ట్యాప్ చేసినప్పుడు Chromeను ఉపయోగించండి.</translation>
@@ -543,7 +544,6 @@
 <translation id="3959736869653157332">మెనూ → కొత్త అజ్ఞాత ట్యాబ్</translation>
 <translation id="3967822245660637423">డౌన్‌లోడ్ పూర్తయింది</translation>
 <translation id="3968505803272650567">ఆసక్తులను మేనేజ్ చేయండి</translation>
-<translation id="3971789053442864420">{count,plural, =1{{count} పాస్‌వర్డ్}other{{count} పాస్‌వర్డ్‌లు}}</translation>
 <translation id="3989635538409502728">సైన్ అవుట్</translation>
 <translation id="3995521777587992544">పేజీ లోడ్ పురోగతి బార్, <ph name="EMAIL" /> లోడ్ చేయబడింది.</translation>
 <translation id="4002019827078931033">అడ్రస్ బార్‌ను పై భాగానికి తరలించండి</translation>
@@ -1339,7 +1339,6 @@
 <translation id="8328777765163860529">అన్నింటినీ మూసివేయి</translation>
 <translation id="8343993175958086504">మీ అంశాలను బ్యాకప్ చేసి, వాటిని ఏ పరికరంలో అయినా ఉపయోగించండి.</translation>
 <translation id="834783239627985533">అత్యంత ఎక్కువగా సందర్శించిన సైట్‌లు</translation>
-<translation id="8356276002902955750">{count,plural, =1{{count} బుక్‌మార్క్}other{{count} బుక్‌మార్క్‌లు}}</translation>
 <translation id="8364841868226993049"><ph name="USER_EMAIL" /> కోసం Google Photosలో ఇమేజ్‌ను సేవ్ చేస్తోంది...</translation>
 <translation id="8378714024927312812">మీ సంస్థ ద్వారా నిర్వహించబడుతున్నవి</translation>
 <translation id="8386068868580335421">రీసెట్ చేయండి</translation>

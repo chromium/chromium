@@ -218,6 +218,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="2195124168004379331">Zabezpieczenia w przeglądarce wydają się wystarczające</translation>
 <translation id="2213327331203157297">Aby wyłączyć tryb blokady w Chrome, wyłącz go na iPhonie.</translation>
 <translation id="2218443599109088993">Pomniejsz</translation>
+<translation id="2220529011494928058">Zgłoś problem</translation>
 <translation id="2230173723195178503">Wczytano stronę internetową</translation>
 <translation id="2239626343334228536">Czyszczę dane przeglądania…</translation>
 <translation id="2242467532204595597">Używaj Chrome, zawsze gdy klikasz linki w wiadomościach, dokumentach i w innych aplikacjach.</translation>
@@ -543,7 +544,6 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="3959736869653157332">Menu → Nowa karta incognito</translation>
 <translation id="3967822245660637423">Pobieranie zakończone</translation>
 <translation id="3968505803272650567">Zarządzaj zainteresowaniami</translation>
-<translation id="3971789053442864420">{count,plural, =1{{count} hasło}few{{count} hasła}many{{count} haseł}other{{count} hasła}}</translation>
 <translation id="3989635538409502728">Wyloguj się</translation>
 <translation id="3995521777587992544">Pasek postępu wczytywania strony, załadowano <ph name="EMAIL" />.</translation>
 <translation id="4002019827078931033">Przesuń pasek adresu na górę ekranu</translation>
@@ -1339,7 +1339,6 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="8328777765163860529">Zamknij wszystkie</translation>
 <translation id="8343993175958086504">Twórz kopie zapasowe swoich danych i używaj ich na dowolnym urządzeniu.</translation>
 <translation id="834783239627985533">Najczęściej odwiedzane witryny</translation>
-<translation id="8356276002902955750">{count,plural, =1{{count} zakładka}few{{count} zakładki}many{{count} zakładek}other{{count} zakładki}}</translation>
 <translation id="8364841868226993049">Zapisuję obraz w Zdjęciach Google użytkownika <ph name="USER_EMAIL" />…</translation>
 <translation id="8378714024927312812">Zarządzane przez Twoją organizację</translation>
 <translation id="8386068868580335421">Resetuj</translation>

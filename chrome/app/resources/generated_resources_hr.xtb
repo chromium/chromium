@@ -921,6 +921,7 @@ Dopuštenja koja ste već dali aplikacijama mogu se primijeniti na ovaj račun. 
 <translation id="1723824996674794290">&amp;Novi prozor</translation>
 <translation id="1724801751621173132">Način unosa</translation>
 <translation id="1725562816265788801">Pomicanje kartica</translation>
+<translation id="1726294682426724172">Nove značajke uključuju čarobnu gumicu na Google fotografijama kako biste uklonili ometanja, poboljšane alate za videopozive i još mnogo toga</translation>
 <translation id="1726503915437308071">Kurzivni font</translation>
 <translation id="1729533290416704613">Upravlja i time koja se stranica prikazuje prilikom pretraživanja putem višenamjenskog okvira.</translation>
 <translation id="1730666151302379551">Zaboravljena stara zaporka</translation>
@@ -1244,7 +1245,6 @@ Dopuštenja koja ste već dali aplikacijama mogu se primijeniti na ovaj račun. 
 <translation id="1974060860693918893">Napredno</translation>
 <translation id="1974159333077206889">Isti audio na svim zvučnicima</translation>
 <translation id="1974216844776165821">Chrome je spremio vašu zaporku na ovaj uređaj, no možete je spremiti na svoj Google račun. Tada će sve zaporke i pristupni ključevi na vašem Google računu biti dostupni dok ste prijavljeni.</translation>
-<translation id="1974821797477522211">Povezivanje s mrežom</translation>
 <translation id="1975841812214822307">Ukloni...</translation>
 <translation id="1976150099241323601">Prijavi se na sigurnosni uređaj</translation>
 <translation id="1976823515278601587">Velike uštede</translation>
@@ -1926,7 +1926,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2485681265915754872">Uvjeti pružanja usluge za Google Play</translation>
 <translation id="248676429071089168">Prijeđite prstom prema gore za pomicanje stranice prema dolje</translation>
 <translation id="2487067538648443797">Dodajte novu oznaku</translation>
-<translation id="2487268545026948104">Da biste vratili svoje podatke, povežite se s internetom</translation>
 <translation id="2489686758589235262">Dodijeli još dva prekidača</translation>
 <translation id="2489829450872380594">Sljedeći će put novi telefon otključati ovaj uređaj <ph name="DEVICE_TYPE" />. Smart Lock možete isključiti u Postavkama.</translation>
 <translation id="2489918096470125693">Dodavanje &amp;mape...</translation>
@@ -2006,7 +2005,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2546991196809436099">Zumirajte kako biste povećali stavke na zaslonu. Upotrijebite Pretraživanje + Ctrl + M da biste uključili i isključili povećalo.</translation>
 <translation id="2548347166720081527">Odobreno je dopuštenje <ph name="PERMISSION" /></translation>
 <translation id="2548545707296594436">Poništi predmemoriju eSIM profila</translation>
-<translation id="2549435700753464129">ChromeOS Bluetooth Floss</translation>
 <translation id="2549985041256363841">Početak snimanja</translation>
 <translation id="2550212893339833758">Zamijenjena memorija</translation>
 <translation id="2550596535588364872">Omogućiti proširenju <ph name="EXTENSION_NAME" /> da otvori <ph name="FILE_NAME" />?</translation>
@@ -3497,7 +3495,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3771851622616482156">Odjavit ćete se s te web-lokacije, uključujući prijave na otvorenim karticama</translation>
 <translation id="3772046291955677288">Pročitao/pročitala sam i prihvaćam <ph name="BEGIN_LINK1" />Googleove uvjete pružanja usluge<ph name="END_LINK1" /> i <ph name="BEGIN_LINK2" />Dodatne uvjete pružanja usluge za Chrome i OS Chrome<ph name="END_LINK2" />.</translation>
 <translation id="3774166835015494435">Nedavne fotografije i obavijesti</translation>
-<translation id="3774546890772201673">Ažurirajte <ph name="NAME" />.</translation>
 <translation id="3775432569830822555">Certifikat SSL poslužitelja</translation>
 <translation id="3775705724665058594">Pošaljite na svoje uređaje</translation>
 <translation id="3776508619697147021">Web-lokacije mogu tražiti dopuštenje za automatsko preuzimanje više datoteka</translation>
@@ -8743,7 +8740,6 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="8077120325605624147">Svaka web-lokacija koju posjetite može vam prikazati bilo koji oglas</translation>
 <translation id="8077579734294125741">Ostali profili na Chromeu</translation>
 <translation id="80798452873915119">Web-lokacije mogu tražiti dopuštenje za upravljanje prozorima na svim zaslonima</translation>
-<translation id="807990231167557618">Chromebook je ažuriran.</translation>
 <translation id="8080028325999236607">Zatvori sve kartice</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">Vašom sesijom upravlja <ph name="MANAGER_NAME" />. Administratori mogu izbrisati vaš profil te pratiti vaš mrežni promet.</translation>

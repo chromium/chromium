@@ -218,6 +218,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />hreinsa Chrome-
 <translation id="2195124168004379331">Vafrinn virðist í fínu standi</translation>
 <translation id="2213327331203157297">Til að slökkva á Lockdown Mode í Chrome þarftu að slökkva á því í iPhone-símanum þínum.</translation>
 <translation id="2218443599109088993">Minnka aðdrátt</translation>
+<translation id="2220529011494928058">Tilkynna vandamál</translation>
 <translation id="2230173723195178503">Vefsíða sótt</translation>
 <translation id="2239626343334228536">Hreinsar vefskoðunargögn...</translation>
 <translation id="2242467532204595597">Notaðu Chrome þegar þú ýtir á tengla í skilaboðum, skjölum og öðrum forritum.</translation>
@@ -543,7 +544,6 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="3959736869653157332">Valmynd → Nýr huliðsflipi</translation>
 <translation id="3967822245660637423">Niðurhali lokið</translation>
 <translation id="3968505803272650567">Stjórna áhugasviðum</translation>
-<translation id="3971789053442864420">{count,plural, =1{{count} aðgangsorð}one{{count} aðgangsorð}other{{count} aðgangsorð}}</translation>
 <translation id="3989635538409502728">Skrá út</translation>
 <translation id="3995521777587992544">Framvindustika fyrir hleðslu á síðu, <ph name="EMAIL" /> hlaðið.</translation>
 <translation id="4002019827078931033">Færa veffangastiku efst</translation>
@@ -1338,7 +1338,6 @@ Vefsvæði geta notað fótspor til að sjá vafranotkun þína á mismunandi ve
 <translation id="8328777765163860529">Loka öllu</translation>
 <translation id="8343993175958086504">Afritaðu efnið þitt og notaðu það í hvaða tæki sem er.</translation>
 <translation id="834783239627985533">Mest heimsóttu vefsvæðin</translation>
-<translation id="8356276002902955750">{count,plural, =1{{count} bókamerki}one{{count} bókamerki}other{{count} bókamerki}}</translation>
 <translation id="8364841868226993049">Vistar mynd í Google-myndum fyrir <ph name="USER_EMAIL" />...</translation>
 <translation id="8378714024927312812">Stjórnað af fyrirtækinu þínu</translation>
 <translation id="8386068868580335421">Endurstilla</translation>

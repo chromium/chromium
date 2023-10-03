@@ -933,6 +933,7 @@ Leidimai, kuriuos jau esate suteikę programoms, gali būti taikomi šiai paskyr
 <translation id="1723824996674794290">&amp;Naujas langas</translation>
 <translation id="1724801751621173132">Įvesties režimas</translation>
 <translation id="1725562816265788801">Skirtukų slinkimas</translation>
+<translation id="1726294682426724172">Naujos funkcijos apima magiškąjį trintuką „Google“ nuotraukose, kad būtų mažiau blaškomas dėmesys, patobulinti vaizdo skambučių įrankiai ir kt.</translation>
 <translation id="1726503915437308071">Kursyvo šriftas</translation>
 <translation id="1729533290416704613">Ji taip pat kontroliuoja, koks puslapis rodomas, kai ieškote „Omnibox“.</translation>
 <translation id="1730666151302379551">Pamiršau seną slaptažodį</translation>
@@ -1257,7 +1258,6 @@ Leidimai, kuriuos jau esate suteikę programoms, gali būti taikomi šiai paskyr
 <translation id="1974060860693918893">Išplėstiniai</translation>
 <translation id="1974159333077206889">Tas pats garso įrašas per visus garsiakalbius</translation>
 <translation id="1974216844776165821">„Chrome“ išsaugojo jūsų slaptažodį šiame įrenginyje, bet galite jį išsaugoti savo „Google“ paskyroje. Tada visi slaptažodžiai ir prieigos raktai „Google“ paskyroje taip pat bus pasiekiami, kol būsite prisijungę.</translation>
-<translation id="1974821797477522211">Prisijungimas prie tinklo</translation>
 <translation id="1975841812214822307">Pašalinti...</translation>
 <translation id="1976150099241323601">Prisijungti prie apsaugos įrenginio</translation>
 <translation id="1976823515278601587">Daug sutaupoma</translation>
@@ -1941,7 +1941,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2485681265915754872">„Google Play“ paslaugų teikimo sąlygos</translation>
 <translation id="248676429071089168">Perbraukite aukštyn, kad perkeltumėte puslapį žemyn</translation>
 <translation id="2487067538648443797">Pridėti naują žymą</translation>
-<translation id="2487268545026948104">Norėdami atkurti duomenis, prisijunkite prie interneto</translation>
 <translation id="2489686758589235262">Priskirti dar du jungiklius</translation>
 <translation id="2489829450872380594">Kitą kartą nauju telefonu bus galima atrakinti šį „<ph name="DEVICE_TYPE" />“. Funkciją „Smart Lock“ galite išjungti „Nustatymų“ skiltyje.</translation>
 <translation id="2489918096470125693">Pridėti &amp;aplanką...</translation>
@@ -2021,7 +2020,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2546991196809436099">Artinkite, kad padidintumėte ekrane rodomus elementus. Norėdami įjungti ar išjungti didintuvą, naudokite paieškos klavišą + „Ctrl“ + M.</translation>
 <translation id="2548347166720081527">Leidžiama: <ph name="PERMISSION" /></translation>
 <translation id="2548545707296594436">Nustatyti „eSIM“ kortelės profilio talpyklą iš naujo</translation>
-<translation id="2549435700753464129">„ChromeOS“ „Bluetooth Floss“</translation>
 <translation id="2549985041256363841">Pradėti įrašymą</translation>
 <translation id="2550212893339833758">Sukeista atmintis</translation>
 <translation id="2550596535588364872">Leisti „<ph name="EXTENSION_NAME" />“ atidaryti <ph name="FILE_NAME" /> failą?</translation>
@@ -3512,7 +3510,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3771851622616482156">Būsite atjungti nuo šios svetainės, įskaitant atidarytus skirtukus</translation>
 <translation id="3772046291955677288">Perskaičiau <ph name="BEGIN_LINK1" />„Google“ paslaugų teikimo sąlygas<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />papildomas „Chrome“ bei „Chrome“ OS paslaugų teikimo sąlygas<ph name="END_LINK2" /> ir su jomis sutinku.</translation>
 <translation id="3774166835015494435">Naujausios nuotraukos ir pranešimai</translation>
-<translation id="3774546890772201673">Atnaujinkite „<ph name="NAME" />“.</translation>
 <translation id="3775432569830822555">SSL serverio sertifikatas</translation>
 <translation id="3775705724665058594">Išsiųsti į jūsų įrenginius</translation>
 <translation id="3776508619697147021">Svetainėse gali būti prašoma automatiškai atsisiųsti kelis failus</translation>
@@ -8765,7 +8762,6 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8077120325605624147">Bet kokia svetainė, kurioje lankotės, gali rodyti jums bet kokį skelbimą</translation>
 <translation id="8077579734294125741">Kiti „Chrome“ profiliai</translation>
 <translation id="80798452873915119">Svetainėse gali būti prašoma tvarkyti langus visuose ekranuose</translation>
-<translation id="807990231167557618">„Chromebook“ atnaujintas.</translation>
 <translation id="8080028325999236607">Uždaryti visus skirtukus</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">Jūsų seansą valdo <ph name="MANAGER_NAME" />. Administratoriai gali ištrinti jūsų profilį ir stebėti tinklo srautą.</translation>

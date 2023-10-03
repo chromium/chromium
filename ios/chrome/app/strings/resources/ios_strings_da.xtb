@@ -218,6 +218,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />rydde Chrome-data
 <translation id="2195124168004379331">Din browser ser sikker ud</translation>
 <translation id="2213327331203157297">Hvis du vil deaktivere Nedlukningstilstand i Chrome, skal du deaktivere den på din iPhone.</translation>
 <translation id="2218443599109088993">Zoom ud</translation>
+<translation id="2220529011494928058">Rapportér et problem</translation>
 <translation id="2230173723195178503">Websiden er indlæst</translation>
 <translation id="2239626343334228536">Browserdata ryddes...</translation>
 <translation id="2242467532204595597">Brug Chrome, hver gang du trykker på links i meddelelser, dokumenter og andre apps.</translation>
@@ -543,7 +544,6 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="3959736869653157332">Menu → Ny inkognitofane</translation>
 <translation id="3967822245660637423">Download fuldført</translation>
 <translation id="3968505803272650567">Administrer interesser</translation>
-<translation id="3971789053442864420">{count,plural, =1{{count} adgangskode}one{{count} adgangskode}other{{count} adgangskoder}}</translation>
 <translation id="3989635538409502728">Log ud</translation>
 <translation id="3995521777587992544">Statuslinje for sideindlæsning, <ph name="EMAIL" /> er indlæst.</translation>
 <translation id="4002019827078931033">Flyt adresselinjen til toppen</translation>
@@ -1338,7 +1338,6 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="8328777765163860529">Luk alt</translation>
 <translation id="8343993175958086504">Sikkerhedskopiér dit indhold, og få adgang til det på enhver enhed.</translation>
 <translation id="834783239627985533">Mest besøgte websites</translation>
-<translation id="8356276002902955750">{count,plural, =1{{count} bogmærke}one{{count} bogmærke}other{{count} bogmærker}}</translation>
 <translation id="8364841868226993049">Gemmer billedet i Google Fotos for <ph name="USER_EMAIL" />…</translation>
 <translation id="8378714024927312812">Administreret af din organisation</translation>
 <translation id="8386068868580335421">Nulstil</translation>

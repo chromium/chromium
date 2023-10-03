@@ -926,6 +926,7 @@
 <translation id="1723824996674794290">&amp;Нов прозорец</translation>
 <translation id="1724801751621173132">Режим за въвеждане</translation>
 <translation id="1725562816265788801">Превъртане на разделите</translation>
+<translation id="1726294682426724172">Новите функции включват „Магическа гума“ в Google Снимки за премахване на разсейващите елементи, подобрени инструменти за видеообаждане и др.</translation>
 <translation id="1726503915437308071">Курсив</translation>
 <translation id="1729533290416704613">То също контролира коя страница се показва при търсене от полето за всичко.</translation>
 <translation id="1730666151302379551">Забравена стара парола</translation>
@@ -1250,7 +1251,6 @@
 <translation id="1974060860693918893">Разширени</translation>
 <translation id="1974159333077206889">Възпроизвеждане на един и същ звук през всички високоговорители</translation>
 <translation id="1974216844776165821">Chrome запази паролата ви на това устройство, но имате възможност да я запазите и в профила си в Google. Така всички пароли и ключове за достъп в профила ви в Google ще бъдат достъпни, когато сте влезли в него.</translation>
-<translation id="1974821797477522211">Свързване с мрежа</translation>
 <translation id="1975841812214822307">Премахване...</translation>
 <translation id="1976150099241323601">Вход в защитното устройство</translation>
 <translation id="1976823515278601587">Голяма икономия</translation>
@@ -1934,7 +1934,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2485681265915754872">Общи условия на Google Play</translation>
 <translation id="248676429071089168">Прекарайте пръст нагоре, за да преместите страницата надолу</translation>
 <translation id="2487067538648443797">Добавяне на нова отметка</translation>
-<translation id="2487268545026948104">За да възстановите данните си, свържете се с интернет</translation>
 <translation id="2489686758589235262">Задаване на още 2 превключвателя</translation>
 <translation id="2489829450872380594">Следващия път нов телефон ще отключи това устройство <ph name="DEVICE_TYPE" />. Можете да изключите Smart Lock от настройките.</translation>
 <translation id="2489918096470125693">Добавяне на &amp;папка...</translation>
@@ -2014,7 +2013,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2546991196809436099">Увеличете мащаба, за да уголемите елементите на екрана. Използвайте клавиша „търсене“ + Ctrl + M, за да включите или изключите лупата.</translation>
 <translation id="2548347166720081527">„<ph name="PERMISSION" />“ е разрешено</translation>
 <translation id="2548545707296594436">Нулиране на кеша на потребителските профили на електронната SIM карта</translation>
-<translation id="2549435700753464129">Floss за Bluetooth под ChromeOS</translation>
 <translation id="2549985041256363841">Старт на записа</translation>
 <translation id="2550212893339833758">Резервна памет</translation>
 <translation id="2550596535588364872">Да се разреши ли на <ph name="EXTENSION_NAME" /> да отвори <ph name="FILE_NAME" />?</translation>
@@ -3505,7 +3503,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3771851622616482156">Ще излезете от профила си в този сайт, включително в отворените раздели</translation>
 <translation id="3772046291955677288">Прочетох и приемам <ph name="BEGIN_LINK1" />Общите условия на Google<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />Допълнителните общи условия на Chrome и Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="3774166835015494435">Скорошни снимки и известия</translation>
-<translation id="3774546890772201673">Актуализирайте <ph name="NAME" />.</translation>
 <translation id="3775432569830822555">Сертификат на SSL сървър</translation>
 <translation id="3775705724665058594">Изпращане до устройствата ви</translation>
 <translation id="3776508619697147021">Сайтовете могат да извеждат запитвания за автоматично изтегляне на няколко файла</translation>
@@ -8753,7 +8750,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8077120325605624147">Всички посещавани от вас сайтове могат да ви показват всякакви реклами</translation>
 <translation id="8077579734294125741">Други потребителски профили в Chrome</translation>
 <translation id="80798452873915119">Сайтовете могат да извеждат запитвания за управление на прозорците на всичките ви дисплеи</translation>
-<translation id="807990231167557618">Вашият Chromebook е актуализиран.</translation>
 <translation id="8080028325999236607">Затваряне на разделите</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">Сесията ви се управлява от <ph name="MANAGER_NAME" />. Администраторите могат да изтрият потребителския ви профил и да следят трафика ви в мрежата.</translation>

@@ -1510,7 +1510,6 @@ Frissen telepítve</translation>
 <translation id="7188494361780961876">A menü a képernyő bal felső sarkába került.</translation>
 <translation id="7189412385142492784">Milyen messze van a Vénusz?</translation>
 <translation id="7198435252016571249">Kamera a jobb alsó sarokhoz igazítva. Ütközés a rendszerfelülettel.</translation>
-<translation id="7219573373513695352">Nincsenek csatlakoztatott eszközök</translation>
 <translation id="7229029500464092426">Memória <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> összesen</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. A Chromebookot újra kell indítani a frissítés alkalmazásához. Ez akár egy percig is eltarthat.</translation>
 <translation id="7256634071279256947">Hátulsó mikrofon</translation>
@@ -1953,7 +1952,6 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="9089416786594320554">Beviteli módszerek</translation>
 <translation id="9091626656156419976">A(z) <ph name="DISPLAY_NAME" /> kijelző eltávolítva</translation>
 <translation id="9098969848082897657">Telefon némítása</translation>
-<translation id="9120448753905017833">Kikapcsoltuk a Wi-Fi-t, hogy elkezdhesse használni a hotspotot mobiladat-kapcsolaton keresztül. Ez adatforgalmi költségekkel járhat.</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> vagy <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">Utolsó művelet visszavonása</translation>
 <translation id="9133335900048457298">Nem lehet rögzíteni védett tartalmakat</translation>

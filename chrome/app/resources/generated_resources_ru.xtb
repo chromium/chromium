@@ -921,6 +921,7 @@
 <translation id="1723824996674794290">&amp;Новое окно</translation>
 <translation id="1724801751621173132">Режим ввода</translation>
 <translation id="1725562816265788801">Прокрутка вкладок</translation>
+<translation id="1726294682426724172">Вам доступны новые функции, например улучшенные инструменты для видеовызовов и волшебный ластик в Google Фото, чтобы удалять все лишнее с изображений.</translation>
 <translation id="1726503915437308071">Курсив</translation>
 <translation id="1729533290416704613">Кроме того, расширение изменило поисковую систему, используемую по умолчанию при вводе запроса в омнибокс.</translation>
 <translation id="1730666151302379551">Забыли старый пароль?</translation>
@@ -1244,7 +1245,6 @@
 <translation id="1974060860693918893">Дополнительные</translation>
 <translation id="1974159333077206889">Одно и то же аудио через все динамики</translation>
 <translation id="1974216844776165821">Пароль хранится локально, но вы можете добавить его в свой аккаунт Google. Тогда, чтобы использовать пароль или ключ доступа, вам будет достаточно выполнить вход на устройстве.</translation>
-<translation id="1974821797477522211">Подключение к сети</translation>
 <translation id="1975841812214822307">Удалить</translation>
 <translation id="1976150099241323601">Вход в устройство безопасности</translation>
 <translation id="1976823515278601587">Большая экономия</translation>
@@ -1925,7 +1925,6 @@
 <translation id="2485681265915754872">Условия использования Google Play</translation>
 <translation id="248676429071089168">Если провести вверх, страница прокрутится вниз</translation>
 <translation id="2487067538648443797">Новая закладка</translation>
-<translation id="2487268545026948104">Чтобы восстановить данные, подключитесь к Интернету.</translation>
 <translation id="2489686758589235262">Назначить ещё два</translation>
 <translation id="2489829450872380594">После этого вы сможете разблокировать устройство <ph name="DEVICE_TYPE" /> с помощью телефона. Выключить Smart Lock можно в настройках.</translation>
 <translation id="2489918096470125693">Добавить &amp;папку</translation>
@@ -2005,7 +2004,6 @@
 <translation id="2546991196809436099">Увеличивать объекты на экране. Включайте и выключайте режим лупы с помощью сочетания клавиш Поиск + Ctrl + M.</translation>
 <translation id="2548347166720081527">Предоставлено разрешение: <ph name="PERMISSION" /></translation>
 <translation id="2548545707296594436">Сбросить кеш профиля eSIM</translation>
-<translation id="2549435700753464129">Floss для Bluetooth в ChromeOS</translation>
 <translation id="2549985041256363841">Начать запись</translation>
 <translation id="2550212893339833758">Память подкачки</translation>
 <translation id="2550596535588364872">Разрешить <ph name="EXTENSION_NAME" /> открыть файл <ph name="FILE_NAME" />?</translation>
@@ -3496,7 +3494,6 @@
 <translation id="3771851622616482156">Вы автоматически выйдете из аккаунта на этом сайте (в том числе на открытых вкладках).</translation>
 <translation id="3772046291955677288">Я принимаю <ph name="BEGIN_LINK1" />Условия использования<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />Дополнительные условия использования Chrome и Chrome OS<ph name="END_LINK2" /></translation>
 <translation id="3774166835015494435">Недавние фотографии и уведомления</translation>
-<translation id="3774546890772201673">Обновите <ph name="NAME" /></translation>
 <translation id="3775432569830822555">Сертификат сервера SSL</translation>
 <translation id="3775705724665058594">Отправка на свои устройства</translation>
 <translation id="3776508619697147021">Разрешить сайтам отправлять запрос на автоматическое скачивание нескольких файлов</translation>
@@ -8746,7 +8743,6 @@
 <translation id="8077120325605624147">Реклама может показываться на любом посещаемом сайте</translation>
 <translation id="8077579734294125741">Другие профили Chrome</translation>
 <translation id="80798452873915119">Разрешить сайтам запрашивать управление окнами на всех ваших экранах</translation>
-<translation id="807990231167557618">Устройство Chromebook обновлено.</translation>
 <translation id="8080028325999236607">Закрыть все вкладки</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">Сеансом управляет <ph name="MANAGER_NAME" />. Администраторы могут удалять профили и следить за сетевым трафиком.</translation>

@@ -218,6 +218,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="2195124168004379331">Alt er på stell med nettleseren din</translation>
 <translation id="2213327331203157297">For å deaktivere låsingsmodus i Chrome, slå den av på iPhone.</translation>
 <translation id="2218443599109088993">Zoom ut</translation>
+<translation id="2220529011494928058">Rapporter et problem</translation>
 <translation id="2230173723195178503">Nettsiden er lastet inn</translation>
 <translation id="2239626343334228536">Sletter nettlesingsdata …</translation>
 <translation id="2242467532204595597">Bruk Chrome hver gang du trykker på linker i meldinger, dokumenter og andre apper.</translation>
@@ -543,7 +544,6 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="3959736869653157332">Meny → Ny inkognitofane</translation>
 <translation id="3967822245660637423">Nedlasting fullført</translation>
 <translation id="3968505803272650567">Administrer interesser</translation>
-<translation id="3971789053442864420">{count,plural, =1{{count} passord}other{{count} passord}}</translation>
 <translation id="3989635538409502728">Logg av</translation>
 <translation id="3995521777587992544">Fremdriftslinje for sideinnlasting, <ph name="EMAIL" /> er lastet inn.</translation>
 <translation id="4002019827078931033">Flytt adressefeltet til toppen</translation>
@@ -1338,7 +1338,6 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="8328777765163860529">Lukk alle</translation>
 <translation id="8343993175958086504">Sikkerhetskopier tingene dine, og bruk dem på alle enheter.</translation>
 <translation id="834783239627985533">Mest besøkte nettsteder</translation>
-<translation id="8356276002902955750">{count,plural, =1{{count} bokmerke}other{{count} bokmerker}}</translation>
 <translation id="8364841868226993049">Lagrer bildet i Google Foto for <ph name="USER_EMAIL" /> …</translation>
 <translation id="8378714024927312812">Administreres av organisasjonen din</translation>
 <translation id="8386068868580335421">Tilbakestill</translation>

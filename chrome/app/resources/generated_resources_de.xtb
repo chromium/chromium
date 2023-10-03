@@ -914,6 +914,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1723824996674794290">Neues &amp;Fenster</translation>
 <translation id="1724801751621173132">Eingabemodus</translation>
 <translation id="1725562816265788801">Tab-Scrollen</translation>
+<translation id="1726294682426724172">Zu den neuen Funktionen gehören der Magische Radierer in Google Fotos, um störende Elemente zu entfernen, verbesserte Tools für Videoanrufe und vieles mehr</translation>
 <translation id="1726503915437308071">Kursiv</translation>
 <translation id="1729533290416704613">Die Erweiterung legt auch fest, welche Seite bei der Suche über die Omnibox angezeigt wird.</translation>
 <translation id="1730666151302379551">Ich habe mein altes Passwort vergessen</translation>
@@ -1235,7 +1236,6 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1974060860693918893">Erweitert</translation>
 <translation id="1974159333077206889">Audio auf allen Lautsprechern gleich</translation>
 <translation id="1974216844776165821">Chrome hat dein Passwort auf diesem Gerät gespeichert, du kannst es aber stattdessen auch in deinem Google-Konto speichern lassen. Dann sind alle Passwörter und Passkeys aus deinem Google-Konto verfügbar, solange du angemeldet bist.</translation>
-<translation id="1974821797477522211">Mit Netzwerk verbinden</translation>
 <translation id="1975841812214822307">Entfernen...</translation>
 <translation id="1976150099241323601">In Sicherheitsgerät anmelden</translation>
 <translation id="1976823515278601587">Große Einsparungen</translation>
@@ -1915,7 +1915,6 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="2485681265915754872">Google Play-Nutzungsbedingungen</translation>
 <translation id="248676429071089168">Nach oben wischen, um die Seite nach unten zu verschieben</translation>
 <translation id="2487067538648443797">Neues Lesezeichen hinzufügen</translation>
-<translation id="2487268545026948104">Verbindung mit dem Internet herstellen, um Daten wiederherzustellen</translation>
 <translation id="2489686758589235262">2 weitere Schalter einrichten</translation>
 <translation id="2489829450872380594">Das nächste Mal wird dieses <ph name="DEVICE_TYPE" /> durch ein neues Smartphone entsperrt. Du kannst Smart Lock in den Einstellungen deaktivieren.</translation>
 <translation id="2489918096470125693">&amp;Ordner hinzufügen...</translation>
@@ -1994,7 +1993,6 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="2546991196809436099">Durch Zoomen kannst du Bildschirmelemente vergrößern. Verwende die Suchtaste + Strg + M, um die Lupe zu aktivieren oder zu deaktivieren.</translation>
 <translation id="2548347166720081527"><ph name="PERMISSION" /> zugelassen</translation>
 <translation id="2548545707296594436">eSIM-Profilcache zurücksetzen</translation>
-<translation id="2549435700753464129">ChromeOS Bluetooth Floss</translation>
 <translation id="2549985041256363841">Aufnahme starten</translation>
 <translation id="2550212893339833758">Swap-Speicher</translation>
 <translation id="2550596535588364872">Zulassen, dass <ph name="EXTENSION_NAME" /> <ph name="FILE_NAME" /> öffnet?</translation>
@@ -3480,7 +3478,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3771851622616482156">Du wirst von dieser Website abgemeldet, auch in offenen Tabs</translation>
 <translation id="3772046291955677288">Ich habe die <ph name="BEGIN_LINK1" />Nutzungsbedingungen von Google<ph name="END_LINK1" /> und <ph name="BEGIN_LINK2" />die zusätzlichen Nutzungsbedingungen für Google Chrome und Chrome OS<ph name="END_LINK2" /> gelesen und stimme ihnen zu.</translation>
 <translation id="3774166835015494435">Letzte Fotos und Benachrichtigungen</translation>
-<translation id="3774546890772201673"><ph name="NAME" /> aktualisieren.</translation>
 <translation id="3775432569830822555">SSL-Serverzertifikat</translation>
 <translation id="3775705724665058594">An meine Geräte senden</translation>
 <translation id="3776508619697147021">Websites dürfen nachfragen, ob sie automatisch mehrere Dateien herunterladen dürfen</translation>
@@ -8706,7 +8703,6 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8077120325605624147">Jede Website, die du besuchst, kann dir beliebige Werbung präsentieren</translation>
 <translation id="8077579734294125741">Andere Chrome-Profile</translation>
 <translation id="80798452873915119">Zulassen, dass Websites Fenster auf allen deinen Bildschirmen verwalten</translation>
-<translation id="807990231167557618">Chromebook wurde aktualisiert.</translation>
 <translation id="8080028325999236607">Alle Tabs schließen</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">Deine Sitzung wird von <ph name="MANAGER_NAME" /> verwaltet. Administratoren können dein Profil löschen und auch deinen Netzwerkverkehr ansehen.</translation>

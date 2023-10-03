@@ -394,6 +394,9 @@ Jika kebijakan disetel ke Nonaktif atau tidak disetel, setelan pemulihan penuh a
 <translation id="1372618949173323717">Nonaktifkan JavaScript</translation>
 <translation id="1376119291123231789">Mengaktifkan mode pengisian daya baterai lanjutan</translation>
 <translation id="1376765488559847650">CloudUpload</translation>
+<translation id="1379689277107868399">Jika kebijakan ini disetel ke DoNotPrompt atau tidak disetel, <ph name="PRODUCT_NAME" /> tidak akan otomatis meminta pengguna untuk melakukan autentikasi ulang ke browser.
+
+Jika kebijakan ini disetel ke PromptInTab, tab baru dengan halaman login Google akan langsung dibuka ketika masa berlaku autentikasi pengguna berakhir. Hal ini hanya terjadi jika menggunakan <ph name="CHROME_SYNC_NAME" />.</translation>
 <translation id="1384459581748403878">Referensi: <ph name="REFERENCE_URL" /></translation>
 <translation id="1384594066274112751">Kebijakan ini membuat URL apa pun yang cocok dengan satu atau beberapa pola yang ditentukan (menggunakan format filter <ph name="URL_BLOCKLIST_POLICY_NAME" />) tidak akan dihapus oleh browser.
       Kebijakan ini berlaku untuk menghentikan tekanan memori dan mode efisiensi tinggi.
@@ -2532,23 +2535,6 @@ Jika kebijakan ini disetel ke nonaktif atau tidak disetel, menu aksesibilitas me
 <translation id="3150351525324499342">Jangan tampilkan ikon <ph name="PRODUCT_NAME" /> di toolbar secara default, tetapi izinkan pengguna memilih</translation>
 <translation id="3152135410085709340">Mengizinkan akses file lokal ke URL file:// di situs ini di Penampil PDF</translation>
 <translation id="3152425128389603870">Membuat Desktop Terpadu tersedia dan aktif secara default</translation>
-<translation id="3157857846231611820">Daftar setelan layanan Chrome Enterprise Connectors yang akan diterapkan ke <ph name="ON_FILE_ATTACHED_ENTERPRISE_CONNECTOR" /> Enterprise Connector, yang aktif saat file dilampirkan ke Chrome.
-
-      Kolom <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" />, dan <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> digunakan untuk menentukan apakah konektor perlu mengirimkan file untuk dianalisis saat dilampirkan ke halaman tertentu, dan jenis tag yang perlu disertakan dalam permintaan analisis untuk file tersebut. Tag yang sesuai dengan pola 'enable' akan disertakan dalam permintaan analisis jika URL halaman cocok dengan pola yang terkait dengan tag tersebut, selama tidak ada pola 'disable' ber-tag sama yang cocok dengan URL halaman. Analisis dilakukan jika terdapat minimal 1 tag yang disertakan dalam permintaan.
-
-      Kolom <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> akan mengidentifikasi penyedia layanan analisis yang sesuai dengan setelan.
-
-      Jika kolom <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" /> disetel ke 1, Chrome akan menunggu untuk mendapatkan respons dari layanan analisis sebelum memberikan akses halaman ke file tersebut. Jika nilai berupa bilangan bulat lainnya, Chrome akan langsung memberikan akses halaman ke file.
-
-      Kolom <ph name="ENTERPRISE_CONNECTOR_BLOCK_PASSWORD_PROTECTED_FIELD" /> mengontrol apakah Chrome akan memblokir atau mengizinkan file yang dilindungi sandi.
-
-      Kolom <ph name="ENTERPRISE_CONNECTOR_BLOCK_LARGE_FILES_FIELD" /> mengontrol apakah Chrome akan memblokir atau mengizinkan file yang berukuran terlalu besar untuk dianalisis.
-
-      Kolom <ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD" /> digunakan untuk menentukan tag mana yang diperlukan saat konektor mewajibkan pengguna memasukkan justifikasi agar dapat mengabaikan pemindaian yang menghasilkan peringatan yang dapat diabaikan. Jika kolom tidak disetel, tidak perlu justifikasi.
-
-      Kolom <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" />, dan <ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" /> digunakan untuk mengonfigurasi pesan yang akan ditampilkan kepada pengguna, yaitu saat peringatan dimunculkan setelah hasil pemindaian menunjukkan ada masalah. Kolom message berisi teks yang akan ditampilkan kepada pengguna dan tidak boleh melebihi 200 karakter. Kolom learn_more_url berisi URL yang disediakan oleh admin. Pengguna dapat mengklik URL untuk mengetahui lebih lanjut penyebab diblokirnya tindakan tersebut. Kolom language bersifat opsional dan berisi bahasa pesan. Kolom language yang kosong atau nilai 'default' menunjukkan pesan yang akan digunakan saat bahasa pengguna tidak memiliki pesan. Kolom tag menentukan jenis pemindaian yang akan menampilkan pesan. Daftar custom_messages dapat memiliki nol atau beberapa entri, dengan tiap entri perlu memiliki kolom message dan tag yang tidak kosong.
-
-      Kebijakan ini memerlukan penyiapan tambahan agar dapat berlaku. Buka https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting untuk informasi selengkapnya.</translation>
 <translation id="3159375329008977062">Pengguna diaktifkan untuk mengekspor/mengimpor container Crostini melalui UI</translation>
 <translation id="3163167792874598128">Jika kebijakan disetel ke Aktif atau tidak disetel, pop-up Rating App Store dapat ditampilkan kepada pengguna, paling banyak setahun sekali.
 Jika kebijakan disetel ke Nonaktif, pop-up Rating App Store tidak akan ditampilkan kepada pengguna.</translation>
@@ -3588,6 +3574,7 @@ Kebijakan ini adalah solusi sementara dan akan dihapus dalam beberapa milestone 
 <translation id="3977304360459208438">Gunakan setelan default untuk cipher suite 3DES di TLS</translation>
 <translation id="3979738908158213640">URL yang akan diberi akses untuk melakukan pengesahan perangkat saat autentikasi SAML</translation>
 <translation id="3982322576186033243">Jangan Izinkan Hash Tidak Aman di Handshake TLS</translation>
+<translation id="3982465141749620677">Minta autentikasi ulang di tab</translation>
 <translation id="3983162212222338509">Resolusi DNS sistem dapat berjalan di dalam atau di luar proses jaringan, atau sebagian di dalam dan sebagian di luar proses jaringan, bergantung pada konfigurasi sistem dan tombol fitur.</translation>
 <translation id="3986700049001404598">Izinkan pengguna mengakhiri proses dengan pengelola tugas Chrome</translation>
 <translation id="398884292557092447">Jika kebijakan disetel ke Benar (True) atau tidak disetel, pengguna akan dapat mengontrol saran isi otomatis untuk kartu kredit di UI.
@@ -5979,21 +5966,6 @@ Jika kebijakan ini tidak disetel atau daftar tidak berisi referensi gambar yang 
 <translation id="6135398260575578389">Safe Browsing aktif dalam mode yang disempurnakan. Mode ini memberikan keamanan yang lebih baik, tetapi perlu membagikan lebih banyak informasi penjelajahan kepada Google.</translation>
 <translation id="6135552820180449830">Crosh (didukung sejak versi 99)</translation>
 <translation id="6138636318340561140">Memeriksa status Safe Browsing pada URL secara real-time</translation>
-<translation id="6140635914906859015">Daftar setelan layanan Chrome Enterprise Connectors yang akan diterapkan ke <ph name="ON_BULK_DATA_ENTRY_ENTERPRISE_CONNECTOR" /> Enterprise Connector, yang aktif saat data dimasukkan ke Chrome dari papan klip atau dengan menarik lalu melepas konten web.
-
-      Kolom <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" />, dan <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> digunakan untuk menentukan apakah konektor perlu mengirimkan data untuk dianalisis saat dimasukkan ke halaman tertentu, dan jenis tag yang perlu disertakan dalam permintaan analisis untuk data tersebut. Tag yang sesuai dengan pola 'enable' akan disertakan dalam permintaan analisis jika URL halaman cocok dengan pola yang terkait dengan tag tersebut, selama tidak ada pola 'disable' ber-tag sama yang cocok dengan URL halaman. Analisis dilakukan jika terdapat minimal 1 tag yang disertakan dalam permintaan.
-
-      Kolom <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> akan mengidentifikasi penyedia layanan analisis yang sesuai dengan setelan.
-
-      Jika kolom <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" /> disetel ke 1, Chrome akan menunggu untuk mendapatkan respons dari layanan analisis sebelum memberikan akses halaman ke data tersebut. Jika nilai berupa bilangan bulat lainnya, Chrome akan langsung memberikan akses halaman ke data.
-
-      Kolom <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> menunjukkan bahwa ukuran minimum data (dalam byte) yang dimasukkan di Chrome harus sama atau lebih besar agar dapat dipindai. Nilai defaultnya adalah 100 byte jika kolom tidak disetel.
-
-      Kolom <ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD" /> digunakan untuk menentukan tag mana yang diperlukan saat konektor mewajibkan pengguna memasukkan justifikasi agar dapat mengabaikan pemindaian yang menghasilkan peringatan yang dapat diabaikan. Jika kolom tidak disetel, tidak perlu justifikasi.
-
-      Kolom <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" />, dan <ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" /> digunakan untuk mengonfigurasi pesan yang akan ditampilkan kepada pengguna, yaitu saat peringatan dimunculkan setelah hasil pemindaian menunjukkan ada masalah. Kolom message berisi teks yang akan ditampilkan kepada pengguna dan tidak boleh melebihi 200 karakter. Kolom learn_more_url berisi URL yang disediakan oleh admin. Pengguna dapat mengklik URL untuk mengetahui lebih lanjut penyebab diblokirnya tindakan tersebut. Kolom language bersifat opsional dan berisi bahasa pesan. Kolom language yang kosong atau nilai 'default' menunjukkan pesan yang akan digunakan saat bahasa pengguna tidak memiliki pesan. Kolom tag menentukan jenis pemindaian yang akan menampilkan pesan. Daftar custom_messages dapat memiliki nol atau beberapa entri, dengan tiap entri perlu memiliki kolom message dan tag yang tidak kosong.
-
-      Kebijakan ini memerlukan penyiapan tambahan agar dapat berlaku. Buka https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting untuk informasi selengkapnya.</translation>
 <translation id="6141402445226505817">Selalu gunakan deteksi zona waktu kasar</translation>
 <translation id="6141944295566709543">Izinkan pengguna memutar media saat perangkat dikunci</translation>
 <translation id="6142501278956229253">Mencetak DPI PDF Raster</translation>
@@ -6632,6 +6604,7 @@ Jika tidak disetel, interval default 15 menit akan berlaku.</translation>
       Jika kebijakan tidak disetel, pengguna dapat memilih setelan proxy.
 
       Catatan: Untuk contoh mendetail, buka Project Chromium ( https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett ).</translation>
+<translation id="6559643481486165125">Jangan minta autentikasi ulang</translation>
 <translation id="656130159911161669">Update ChromeOS mengabaikan versi yang telah ditentukan dalam manifes aplikasi kios</translation>
 <translation id="6561396069801924653">Tampilkan opsi aksesibilitas di menu baki sistem</translation>
 <translation id="6562889469672829421">Durasi waktu tanpa masukan pengguna sebelum layar diredupkan, dalam milidetik.</translation>
@@ -6732,21 +6705,6 @@ Jika kebijakan ini disetel ke Benar (True), yang merupakan setelan defaultnya, p
 
 Jika kebijakan ini disetel ke Salah (False), perilaku lama akan diaktifkan.</translation>
 <translation id="663685822663765995">Batasi mode warna pencetakan</translation>
-<translation id="6637946190026453735">Daftar setelan layanan <ph name="PRODUCT_NAME" /> Enterprise Connectors yang akan diterapkan ke <ph name="ON_PRINT_ENTERPRISE_CONNECTOR" /> Enterprise Connector, yang aktif saat halaman atau file dicetak dari <ph name="PRODUCT_NAME" />.
-
-      Kolom <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" />, dan <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> digunakan untuk menentukan apakah konektor perlu mengirimkan data untuk dianalisis saat pencetakan dipicu pada halaman tertentu, dan jenis tag yang perlu disertakan dalam permintaan analisis. Analisis dilakukan jika terdapat minimal 1 tag yang disertakan dalam permintaan.
-
-      Kolom <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> akan mengidentifikasi penyedia layanan analisis yang sesuai dengan setelan.
-
-      Jika kolom <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" /> disetel ke 1, <ph name="PRODUCT_NAME" /> akan menunggu untuk mendapatkan respons dari layanan analisis sebelum mengizinkan dialog pratinjau cetak ditampilkan untuk halaman yang dicetak. Jika nilai berupa bilangan bulat lainnya, <ph name="PRODUCT_NAME" /> akan langsung menampilkan dialog pratinjau cetak.
-
-      Kolom <ph name="ENTERPRISE_CONNECTOR_BLOCK_LARGE_FILES_FIELD" /> mengontrol apakah <ph name="PRODUCT_NAME" /> akan memblokir atau mengizinkan file/halaman yang berukuran terlalu besar untuk dianalisis.
-
-      Kolom <ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD" /> digunakan untuk menentukan tag mana yang diperlukan saat konektor mewajibkan pengguna memasukkan justifikasi agar dapat mengabaikan pemindaian yang menghasilkan peringatan yang dapat diabaikan. Jika kolom tidak disetel, tidak perlu justifikasi.
-
-      Kolom <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" />, dan <ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" /> digunakan untuk mengonfigurasi pesan yang akan ditampilkan kepada pengguna, yaitu saat peringatan dimunculkan setelah hasil pemindaian menunjukkan ada masalah. Administrator dapat mengonfigurasi pesan yang berisi hingga 200 karakter.
-
-      Kebijakan ini memerlukan penyiapan tambahan agar dapat berlaku. Buka https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting untuk informasi selengkapnya.</translation>
 <translation id="6640355849038068978">Jika setelan ini diaktifkan, pengguna akan dapat meluncurkan aplikasi Eche, misalnya dengan mengklik notifikasi Phone Hub.
 
       Jika setelan ini dinonaktifkan, pengguna tidak akan dapat meluncurkan aplikasi Eche.
@@ -7777,23 +7735,6 @@ Jika kebijakan ini tidak disetel, hal ini setara dengan menyetel kebijakan ke '<
 <translation id="7477149584454865826">Tanda boolean menunjukkan apakah IPP Everywhere harus digunakan untuk menyiapkan printer.</translation>
 <translation id="7477231245051133709">Mengaktifkan fitur aksesibilitas audio mono</translation>
 <translation id="7479408102162550711">Laporkan peristiwa jaringan</translation>
-<translation id="7480826412572122600">Daftar setelan layanan Chrome Enterprise Connectors yang akan diterapkan ke <ph name="ON_FILE_DOWNLOADED_ENTERPRISE_CONNECTOR" /> Enterprise Connector, yang aktif saat file didownload di Chrome.
-
-      Kolom <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" />, dan <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> digunakan untuk menentukan apakah konektor perlu mengirimkan file untuk dianalisis saat didownload dari halaman tertentu, dan jenis tag yang perlu disertakan dalam permintaan analisis untuk file tersebut. Tag yang sesuai dengan pola 'enable' akan disertakan dalam permintaan analisis jika URL halaman cocok dengan pola yang terkait dengan tag tersebut, selama tidak ada pola 'disable' ber-tag sama yang cocok dengan URL halaman. Analisis dilakukan jika terdapat minimal 1 tag yang disertakan dalam permintaan.
-
-      Kolom <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> akan mengidentifikasi penyedia layanan analisis yang sesuai dengan setelan.
-
-      Jika kolom <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" /> disetel ke 1, Chrome akan menunggu untuk mendapatkan respons dari layanan analisis sebelum memberikan akses pengguna ke file yang didownload. Jika nilai berupa bilangan bulat lainnya, Chrome akan langsung memberikan akses pengguna ke file.
-
-      Kolom <ph name="ENTERPRISE_CONNECTOR_BLOCK_PASSWORD_PROTECTED_FIELD" /> mengontrol apakah Chrome akan memblokir atau mengizinkan file yang dilindungi sandi.
-
-      Kolom <ph name="ENTERPRISE_CONNECTOR_BLOCK_LARGE_FILES_FIELD" /> mengontrol apakah Chrome akan memblokir atau mengizinkan file yang berukuran terlalu besar untuk dianalisis.
-
-      Kolom <ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD" /> digunakan untuk menentukan tag mana yang diperlukan saat konektor mewajibkan pengguna memasukkan justifikasi agar dapat mengabaikan pemindaian yang menghasilkan peringatan yang dapat diabaikan. Jika kolom tidak disetel, tidak perlu justifikasi.
-
-      Kolom <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" />, dan <ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" /> digunakan untuk mengonfigurasi pesan yang akan ditampilkan kepada pengguna, yaitu saat peringatan dimunculkan setelah hasil pemindaian menunjukkan ada masalah. Kolom message berisi teks yang akan ditampilkan kepada pengguna dan tidak boleh melebihi 200 karakter. Kolom learn_more_url berisi URL yang disediakan oleh admin. Pengguna dapat mengklik URL untuk mengetahui lebih lanjut penyebab diblokirnya tindakan tersebut. Kolom language bersifat opsional dan berisi bahasa pesan. Kolom language yang kosong atau nilai 'default' menunjukkan pesan yang akan digunakan saat bahasa pengguna tidak memiliki pesan. Kolom tag menentukan jenis pemindaian yang akan menampilkan pesan. Daftar custom_messages dapat memiliki nol atau beberapa entri, dengan tiap entri perlu memiliki kolom message dan tag yang tidak kosong.
-
-      Kebijakan ini memerlukan penyiapan tambahan agar dapat berlaku. Buka https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting untuk informasi selengkapnya.</translation>
 <translation id="7481702249684965639">Sampah diaktifkan untuk pengguna.</translation>
 <translation id="7482768039644066614">Aktifkan pengambilan metadata pemuatan halaman dan model machine learning yang meningkatkan pengalaman penjelajahan</translation>
 <translation id="748292668225669178">Mengonfigurasi pemasangan <ph name="MICROSOFT_ONE_DRIVE_NAME" /></translation>
@@ -9263,6 +9204,7 @@ skema HTTPS.</translation>
 <translation id="8744844164152340112">Mengontrol tema yang digunakan untuk merender UI selama OOBE dan dalam sesi (gelap/terang/otomatis).
       Mode otomatis akan mengubah tema antara gelap dan terang secara otomatis saat matahari terbit dan tenggelam.
       Kebijakan ini harus direkomendasikan, sehingga memungkinkan pengguna untuk mengubah tema di setelan sistem.</translation>
+<translation id="8744997936011793680">Meminta pengguna untuk melakukan autentikasi ulang ke profil</translation>
 <translation id="8749536858950505376">Jika kebijakan ditetapkan ke Benar (True), kursor besar akan tetap diaktifkan. Jika kebijakan ditetapkan ke Salah (False), kursor besar akan tetap dinonaktifkan.
 
       Jika kebijakan tersebut ditetapkan, pengguna tidak dapat mengubah fitur. Jika tidak ditetapkan, kursor besar mula-mula akan dinonaktifkan, tetapi pengguna dapat mengaktifkannya kapan saja.</translation>

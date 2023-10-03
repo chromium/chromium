@@ -218,6 +218,7 @@
 <translation id="2195124168004379331">உங்கள் உலாவி பாதுகாப்பாக உள்ளது</translation>
 <translation id="2213327331203157297">Chrome உலாவியில் முழுப் பூட்டுப் பயன்முறையை முடக்க உங்கள் iPhoneனில் அதை முடக்கவும்.</translation>
 <translation id="2218443599109088993">சிறிதாக்கு</translation>
+<translation id="2220529011494928058">சிக்கல் குறித்துப் புகார் செய்</translation>
 <translation id="2230173723195178503">இணையப் பக்கம் ஏற்றப்பட்டது</translation>
 <translation id="2239626343334228536">உலாவிய தரவை அழிக்கிறது...</translation>
 <translation id="2242467532204595597">மெசேஜ்கள், ஆவணங்கள் மற்றும் பிற ஆப்ஸில் உள்ள இணைப்புகளைக் கிளிக் செய்யும்போதெல்லாம் Chromeமைப் பயன்படுத்தலாம்.</translation>
@@ -543,7 +544,6 @@
 <translation id="3959736869653157332">மெனு → புதிய மறைநிலைப் பக்கம்</translation>
 <translation id="3967822245660637423">பதிவிறக்கம் முடிந்தது</translation>
 <translation id="3968505803272650567">ஆர்வங்களை நிர்வகி</translation>
-<translation id="3971789053442864420">{count,plural, =1{{count} கடவுச்சொல்}other{{count} கடவுச்சொற்கள்}}</translation>
 <translation id="3989635538409502728">வெளியேறு</translation>
 <translation id="3995521777587992544">பக்க ஏற்றச் செயல்நிலைப் பட்டி, <ph name="EMAIL" /> ஏற்றப்பட்டுள்ளது.</translation>
 <translation id="4002019827078931033">முகவரிப் பட்டியை மேற்பகுதிக்கு நகர்த்து</translation>
@@ -1338,7 +1338,6 @@
 <translation id="8328777765163860529">எல்லாவற்றையும் மூடு</translation>
 <translation id="8343993175958086504">உங்கள் தரவைக் காப்புப் பிரதி எடுத்து எந்தச் சாதனத்தில் வேண்டுமானாலும் பயன்படுத்தலாம்.</translation>
 <translation id="834783239627985533">அதிகம் பார்த்த தளங்கள்</translation>
-<translation id="8356276002902955750">{count,plural, =1{{count} புக்மார்க்}other{{count} புக்மார்க்குகள்}}</translation>
 <translation id="8364841868226993049"><ph name="USER_EMAIL" /> கணக்கிற்கான Google Photosஸில் படம் சேமிக்கப்படுகிறது...</translation>
 <translation id="8378714024927312812">உங்கள் நிறுவனத்தால் நிர்வகிக்கப்படுகிறது</translation>
 <translation id="8386068868580335421">மீட்டமை</translation>

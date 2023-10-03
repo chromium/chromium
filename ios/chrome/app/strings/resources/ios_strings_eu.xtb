@@ -218,6 +218,7 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />garbitu kontuko Chrome-ko datuak
 <translation id="2195124168004379331">Zure arakatzaileak itxura ona du</translation>
 <translation id="2213327331203157297">Chrome-n blokeo modua desgaitzeko, desaktiba ezazu iPhone-an.</translation>
 <translation id="2218443599109088993">Txikitu</translation>
+<translation id="2220529011494928058">Eman arazo baten berri</translation>
 <translation id="2230173723195178503">Kargatu da webgunea</translation>
 <translation id="2239626343334228536">Arakatze-datuak garbitzen…</translation>
 <translation id="2242467532204595597">Erabili Chrome mezuetako, dokumentuetako eta beste aplikazioetako estekak sakatzen dituzunean.</translation>
@@ -542,7 +543,6 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="3959736869653157332">Menu → Ireki ezkutuko moduko fitxa bat</translation>
 <translation id="3967822245660637423">Deskargatzen amaitu da</translation>
 <translation id="3968505803272650567">Kudeatu interesak</translation>
-<translation id="3971789053442864420">{count,plural, =1{{count} pasahitz}other{{count} pasahitz}}</translation>
 <translation id="3989635538409502728">Amaitu saioa</translation>
 <translation id="3995521777587992544">Kargatzen ari den orriaren garapen-barra; kargatu da <ph name="EMAIL" />.</translation>
 <translation id="4002019827078931033">Eraman helbide-barra goraino</translation>
@@ -1334,7 +1334,6 @@ Webguneek cookieak erabil ditzakete beste webguneetan egiten dituzun arakatze-ja
 <translation id="8328777765163860529">Itxi guztiak</translation>
 <translation id="8343993175958086504">Egin zure gauzen babeskopiak, edozein gailutan erabil ditzazun.</translation>
 <translation id="834783239627985533">Gehien bisitatutako webguneak</translation>
-<translation id="8356276002902955750">{count,plural, =1{{count} laster-marka}other{{count} laster-marka}}</translation>
 <translation id="8364841868226993049">Irudia <ph name="USER_EMAIL" /> erabiltzailearentzat Google Argazkiak zerbitzuan gordetzen…</translation>
 <translation id="8378714024927312812">Erakundeak kudeatzen du</translation>
 <translation id="8386068868580335421">Berrezarri</translation>

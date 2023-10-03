@@ -922,6 +922,7 @@
 <translation id="1723824996674794290">&amp;نئی ونڈو</translation>
 <translation id="1724801751621173132">اندراج کی طرز</translation>
 <translation id="1725562816265788801">ٹیب اسکرولنگ</translation>
+<translation id="1726294682426724172">‏نئی خصوصیات میں انتشارات کو دور کرنے، ویڈیو کالز کے لیے بہتر کردہ ٹولز اور بہت کچھ کیلئے Google تصاویر پر جادوئی اریزر شامل ہے</translation>
 <translation id="1726503915437308071">ترچھا فونٹ</translation>
 <translation id="1729533290416704613">یہ آپ کی جانب سے اومنی باکس سے تلاش کیے جانے پر دکھائی دینے والے صفحہ کو کنٹرول بھی کرتا ہے۔</translation>
 <translation id="1730666151302379551">پرانا پاس ورڈ بھول گیا</translation>
@@ -1248,7 +1249,6 @@
 <translation id="1974060860693918893">جدید ترین</translation>
 <translation id="1974159333077206889">سبھی اسپیکرز کے ساتھ ایک ہی آڈیو</translation>
 <translation id="1974216844776165821">‏Chrome نے آپ کا پاس ورڈ اس آلہ میں محفوظ کر لیا ہے، لیکن آپ اس کے بجائے اسے اپنے Google اکاؤنٹ میں محفوظ کر سکتے ہیں۔ پھر، آپ کے سائن ان ہونے پر آپ کے Google اکاؤنٹ میں موجود تمام پاس ورڈز اور پاس کیز بھی دستیاب ہوں گی۔</translation>
-<translation id="1974821797477522211">نیٹ ورک سے منسلک ہوں</translation>
 <translation id="1975841812214822307">ہٹائیں…</translation>
 <translation id="1976150099241323601">سیکیورٹی آلہ میں سائن ان کریں</translation>
 <translation id="1976823515278601587">بڑی بچتیں</translation>
@@ -1931,7 +1931,6 @@
 <translation id="2485681265915754872">‏Google Play سروس کی شرائط</translation>
 <translation id="248676429071089168">صفحہ کو نیچے لے جانے کے لیے اوپر سوائپ کریں</translation>
 <translation id="2487067538648443797">نیا بُک مارک شامل کریں</translation>
-<translation id="2487268545026948104">اپنے ڈیٹا کو بحال کرنے کے لیے، انٹرنیٹ سے منسلک ہوں</translation>
 <translation id="2489686758589235262">2 مزید سوئچز تفویض کریں</translation>
 <translation id="2489829450872380594">‏اگلی بار ایک نئے فون سے یہ <ph name="DEVICE_TYPE" /> غیر مقفل ہوگا۔ آپ ترتیبات میں Smart Lock کو آف کر سکتے ہیں۔</translation>
 <translation id="2489918096470125693">&amp;فولڈر شامل کریں…</translation>
@@ -2012,7 +2011,6 @@
 <translation id="2546991196809436099">‏اسکرین پر موجود آئٹمز کو بڑا کرنے کے لیے زوم ان کریں۔ میگنیفائر کو آن اور آف کرنے کے لیے Search + Ctrl + M استعمال کریں۔</translation>
 <translation id="2548347166720081527"><ph name="PERMISSION" /> کی اجازت ہے</translation>
 <translation id="2548545707296594436">‏eSIM پروفائل cache کو ری سیٹ کریں</translation>
-<translation id="2549435700753464129">‏ChromeOS بلوٹوتھ فلوس</translation>
 <translation id="2549985041256363841">ریکارڈنگ شروع کریں</translation>
 <translation id="2550212893339833758">سویپ کردہ میموری</translation>
 <translation id="2550596535588364872"><ph name="EXTENSION_NAME" /> کو <ph name="FILE_NAME" /> کھولنے کی اجازت دیں؟</translation>
@@ -3506,7 +3504,6 @@
 <translation id="3771851622616482156">اوپن ٹیبز سمیت، آپ اس سائٹ سے سائن آؤٹ ہو جائیں گے</translation>
 <translation id="3772046291955677288">‏میں نے پڑھا اور میں <ph name="BEGIN_LINK1" />Google کی سروس کی شرائط<ph name="END_LINK1" /> اور <ph name="BEGIN_LINK2" />Chrome اور Chrome OS کی اضافی سروس کی شرائط<ph name="END_LINK2" /> سے اتفاق کرتا ہوں۔</translation>
 <translation id="3774166835015494435">حالیہ تصاویر اور اطلاعات</translation>
-<translation id="3774546890772201673"><ph name="NAME" /> کو اپ ڈیٹ کریں۔</translation>
 <translation id="3775432569830822555">‏SSL سرور سرٹیفکیٹ</translation>
 <translation id="3775705724665058594">اپنے آلات پر بھیجیں</translation>
 <translation id="3776508619697147021">سائٹس خودکار طور پر متعدد فائلز ڈاؤن لوڈ کرنے کیلئے پوچھ سکتی ہیں</translation>
@@ -8752,7 +8749,6 @@
 <translation id="8077120325605624147">آپ کی ملاحظہ کردہ کوئی بھی سائٹ آپ کو کوئی بھی اشتہار دکھا سکتی ہے</translation>
 <translation id="8077579734294125741">‏دیگر Chrome پروفائلز</translation>
 <translation id="80798452873915119">سائٹس آپ کے سبھی ڈسپلیز پر ونڈوز کا نظم کرنے کو کہہ سکتی ہیں</translation>
-<translation id="807990231167557618">‏آپ کا Chromebook اپ ڈیٹ ہو گیا ہے۔</translation>
 <translation id="8080028325999236607">سبھی ٹیبز بند کریں</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">آپ کا سیشن <ph name="MANAGER_NAME" /> کے زیر انتظام ہے۔ منتظمین آپ کی پروفائل حذف کر سکتے ہیں اور آپ کے نیٹ ورک ٹریفک کی نگرانی بھی کر سکتے ہیں۔</translation>

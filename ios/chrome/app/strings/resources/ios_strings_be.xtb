@@ -218,6 +218,7 @@
 <translation id="2195124168004379331">З браўзерам усё ў парадку</translation>
 <translation id="2213327331203157297">Каб адключыць рэжым Lockdown Mode у Chrome, адключыце яго на iPhone.</translation>
 <translation id="2218443599109088993">Паменшыць</translation>
+<translation id="2220529011494928058">Паведаміць аб праблеме</translation>
 <translation id="2230173723195178503">Вэб-старонка загружана</translation>
 <translation id="2239626343334228536">Ідзе ачыстка даных прагляду...</translation>
 <translation id="2242467532204595597">Выкарыстоўвайце Chrome кожны раз, калі націскаеце на спасылкі ў паведамленнях, дакументах або іншых праграмах.</translation>
@@ -543,7 +544,6 @@
 <translation id="3959736869653157332">Меню → Новая ўкладка ў рэжыме інкогніта</translation>
 <translation id="3967822245660637423">Спампоўка завершана</translation>
 <translation id="3968505803272650567">Кіраваць інтарэсамі</translation>
-<translation id="3971789053442864420">{count,plural, =1{{count} пароль}one{{count} пароль}few{{count} паролі}many{{count} пароляў}other{{count} пароля}}</translation>
 <translation id="3989635538409502728">Выйсці</translation>
 <translation id="3995521777587992544">Індыкатар стану загрузкі старонкі, загружана <ph name="EMAIL" />.</translation>
 <translation id="4002019827078931033">Перамясціць адрасны радок у верхнюю частку экрана</translation>
@@ -1338,7 +1338,6 @@
 <translation id="8328777765163860529">Закрыць усе</translation>
 <translation id="8343993175958086504">Стварайце рэзервовыя копіі сваіх даных, каб іх можна было выкарыстоўваць на іншых прыладах.</translation>
 <translation id="834783239627985533">Сайты, якія часцей за ўсё наведваліся</translation>
-<translation id="8356276002902955750">{count,plural, =1{{count} закладка}one{{count} закладка}few{{count} закладкі}many{{count} закладак}other{{count} закладкі}}</translation>
 <translation id="8364841868226993049">Ідзе захаванне відарыса ў Google Фота пад уліковым запісам <ph name="USER_EMAIL" />...</translation>
 <translation id="8378714024927312812">Пад кіраваннем вашай арганізацыі</translation>
 <translation id="8386068868580335421">Скінуць</translation>

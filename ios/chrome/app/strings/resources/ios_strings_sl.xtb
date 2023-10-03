@@ -218,6 +218,7 @@
 <translation id="2195124168004379331">Vaš brskalnik je videti v redu</translation>
 <translation id="2213327331203157297">Če želite onemogočiti način zaklepa v Chromu, ga izklopite v iPhonu.</translation>
 <translation id="2218443599109088993">Pomanjšaj</translation>
+<translation id="2220529011494928058">Prijavite težavo</translation>
 <translation id="2230173723195178503">Spletna stran je naložena</translation>
 <translation id="2239626343334228536">Brisanje podatkov brskanja …</translation>
 <translation id="2242467532204595597">Chrome lahko uporabljate, kadar koli se dotaknete povezav v sporočilih, dokumentih in drugih aplikacijah.</translation>
@@ -543,7 +544,6 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="3959736869653157332">Meni → Novi anonimni zavihek</translation>
 <translation id="3967822245660637423">Prenos končan</translation>
 <translation id="3968505803272650567">Upravljanje zanimanj</translation>
-<translation id="3971789053442864420">{count,plural, =1{{count} geslo}one{{count} geslo}two{{count} gesli}few{{count} gesla}other{{count} gesel}}</translation>
 <translation id="3989635538409502728">Odjava</translation>
 <translation id="3995521777587992544">Vrstica z napredkom nalaganja strani, <ph name="EMAIL" /> naloženega.</translation>
 <translation id="4002019827078931033">Premik naslovne vrstice na vrh</translation>
@@ -1338,7 +1338,6 @@ Spletna mesta lahko uporabljajo piškotke za ogled dejavnosti brskanja na razli�
 <translation id="8328777765163860529">Zapri vse</translation>
 <translation id="8343993175958086504">Varnostno kopirajte vsebino in jo uporabljajte v poljubni napravi.</translation>
 <translation id="834783239627985533">Najbolj obiskana spletna mesta</translation>
-<translation id="8356276002902955750">{count,plural, =1{{count} zaznamek}one{{count} zaznamek}two{{count} zaznamka}few{{count} zaznamki}other{{count} zaznamkov}}</translation>
 <translation id="8364841868226993049">Shranjevanje slike v Google Foto za račun <ph name="USER_EMAIL" /> …</translation>
 <translation id="8378714024927312812">Upravlja vaša organizacija</translation>
 <translation id="8386068868580335421">Ponastavi</translation>

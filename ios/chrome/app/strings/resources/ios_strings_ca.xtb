@@ -218,6 +218,7 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />esborra les
 <translation id="2195124168004379331">El teu navegador sembla correcte</translation>
 <translation id="2213327331203157297">Per desactivar el mode d’aïllament a Chrome, l'has de desactivar a l'iPhone.</translation>
 <translation id="2218443599109088993">Redueix</translation>
+<translation id="2220529011494928058">Informa d'un problema</translation>
 <translation id="2230173723195178503">La pàgina web s'ha carregat</translation>
 <translation id="2239626343334228536">S'estan esborrant les dades de navegació...</translation>
 <translation id="2242467532204595597">Utilitza Chrome cada vegada que toquis enllaços de missatges, de documents i d'altres aplicacions.</translation>
@@ -543,7 +544,6 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="3959736869653157332">Menú → Nova pestanya d'incògnit</translation>
 <translation id="3967822245660637423">S'ha completat la baixada</translation>
 <translation id="3968505803272650567">Gestiona els interessos</translation>
-<translation id="3971789053442864420">{count,plural, =1{{count} contrasenya}other{{count} contrasenyes}}</translation>
 <translation id="3989635538409502728">Tanca la sessió</translation>
 <translation id="3995521777587992544">Barra de progrés de càrrega de la pàgina; s'ha carregat un <ph name="EMAIL" />.</translation>
 <translation id="4002019827078931033">Mou la barra d'adreces a la part superior</translation>
@@ -1338,7 +1338,6 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="8328777765163860529">Tanca-ho tot</translation>
 <translation id="8343993175958086504">Fes una còpia de seguretat de les teves dades i utilitza-les en qualsevol dispositiu.</translation>
 <translation id="834783239627985533">Llocs més visitats</translation>
-<translation id="8356276002902955750">{count,plural, =1{{count} adreça d'interès}other{{count} adreces d'interès}}</translation>
 <translation id="8364841868226993049">S'està desant la imatge de <ph name="USER_EMAIL" /> a Google Fotos...</translation>
 <translation id="8378714024927312812">Gestionat per la teva organització</translation>
 <translation id="8386068868580335421">Restableix</translation>

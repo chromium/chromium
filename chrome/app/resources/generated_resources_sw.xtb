@@ -927,6 +927,7 @@ Huenda ruhusa ambazo tayari umezipa programu zikatumika kwenye akaunti hii. Unaw
 <translation id="1723824996674794290">&amp;Dirisha jipya</translation>
 <translation id="1724801751621173132">Mipangilio ya kuingiza data</translation>
 <translation id="1725562816265788801">Usogezaji wa Vichupo</translation>
+<translation id="1726294682426724172">Vipengele vipya vinajumuisha Kifutio cha Ajabu kwenye huduma ya Picha kwenye Google cha kuondoa watu na vitu visivyotakikana, zana zilizoboreshwa za simu za video na zaidi</translation>
 <translation id="1726503915437308071">Fonti ya italiki</translation>
 <translation id="1729533290416704613">Pia inadhibiti ukurasa unaoonyeshwa unapotafuta kutoka Sanduku Kuu.</translation>
 <translation id="1730666151302379551">Umesahau nenosiri la zamani</translation>
@@ -1250,7 +1251,6 @@ Hatua hii haiathiri programu au maudhui kwenye vifaa vingine.</translation>
 <translation id="1974060860693918893">Mipangilio ya kina</translation>
 <translation id="1974159333077206889">Sauti sawa kwa spika zote</translation>
 <translation id="1974216844776165821">Chrome imehifadhi nenosiri lako kwenye kifaa hiki, lakini unaweza kulihifadhi kwenye Akaunti yako ya Google badala yake. Kisha, manenosiri na funguo zote za siri zilizo kwenye Akaunti yako ya Google zitapatikana ukiwa umeingia katika akaunti.</translation>
-<translation id="1974821797477522211">Unganisha kwenye mtandao</translation>
 <translation id="1975841812214822307">Ondoa...</translation>
 <translation id="1976150099241323601">Ingia kwenye Kifaa Salama</translation>
 <translation id="1976823515278601587">Nafasi Kubwa Iliyookolewa na Kiokoa Hifadhi</translation>
@@ -1935,7 +1935,6 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2485681265915754872">Sheria na Masharti ya Google Play</translation>
 <translation id="248676429071089168">Telezesha kidole juu ili usogeze ukurasa chini</translation>
 <translation id="2487067538648443797">Ongeza alamisho mpya</translation>
-<translation id="2487268545026948104">Ili urejeshe data yako, unganisha kwenye intaneti</translation>
 <translation id="2489686758589235262">Kabidhi swichi zingine mbili</translation>
 <translation id="2489829450872380594">Wakati ujao, simu mpya itafungua <ph name="DEVICE_TYPE" /> hii. Unaweza kuzima Smart Lock katika Mipangilio.</translation>
 <translation id="2489918096470125693">Ongeza &amp;Folda...</translation>
@@ -2015,7 +2014,6 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2546991196809436099">Vuta karibu ili uvifanye vipengee kwenye skrini viwe vikubwa. Bonyeza kitufe cha Tafuta kisha Ctrl na M kwa wakati mmoja ili uwashe au uzime kikuzaji.</translation>
 <translation id="2548347166720081527">Umeruhusu <ph name="PERMISSION" /></translation>
 <translation id="2548545707296594436">Weka upya akiba ya wasifu wa eSIM</translation>
-<translation id="2549435700753464129">Bluetooth Floss ya ChromeOS</translation>
 <translation id="2549985041256363841">Anza kurekodi</translation>
 <translation id="2550212893339833758">Hifadhi iliyobadilishwa</translation>
 <translation id="2550596535588364872">Ungependa kuruhusu <ph name="EXTENSION_NAME" /> ifungue <ph name="FILE_NAME" />?</translation>
@@ -3506,7 +3504,6 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="3771851622616482156">Utaondolewa katika akaunti kwenye tovuti hii, ikiwa ni pamoja na vichupo ulivyofungua</translation>
 <translation id="3772046291955677288">Nimesoma na ninakubali <ph name="BEGIN_LINK1" />Sheria na Masharti ya Google<ph name="END_LINK1" /> na <ph name="BEGIN_LINK2" />Sheria na Masharti ya Ziada ya Chrome na Mfumo wa Uendeshaji wa Chrome<ph name="END_LINK2" />.</translation>
 <translation id="3774166835015494435">Picha na arifa za hivi karibuni</translation>
-<translation id="3774546890772201673">Sasisha <ph name="NAME" />.</translation>
 <translation id="3775432569830822555">Cheti cha Seva cha SSL</translation>
 <translation id="3775705724665058594">Tuma kwenye vifaa vyako</translation>
 <translation id="3776508619697147021">Tovuti zinaweza kuomba ruhusa ya kupakua faili nyingi kiotomatiki</translation>
@@ -8751,7 +8748,6 @@ Weka faili yako ya funguo mahali salama. Utaihitaji kuunda matoleo mapya ya kien
 <translation id="8077120325605624147">Tovuti yoyote unayotembelea inaweza kukuonyesha tangazo lolote</translation>
 <translation id="8077579734294125741">Wasifu Mwingine Kwenye Chrome</translation>
 <translation id="80798452873915119">Tovuti zinaweza kuomba kudhibiti madirisha kwenye skrini zako zote</translation>
-<translation id="807990231167557618">Chromebook yako imesasishwa.</translation>
 <translation id="8080028325999236607">Funga Vichupo Vyote</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">Kipindi chako kinasimamiwa na <ph name="MANAGER_NAME" />. Wasimamizi wanaweza kufuta wasifu wako na kufuatilia trafiki ya mtandao wako.</translation>

@@ -926,6 +926,7 @@
 <translation id="1723824996674794290">&amp;Шинэ цонх</translation>
 <translation id="1724801751621173132">Орох горим</translation>
 <translation id="1725562816265788801">Таб гүйлгэх</translation>
+<translation id="1726294682426724172">Шинэ онцлогуудад анхаарал сарниулах зүйлсийг хасах Google Зургийн Шидэт баллуур, сайжруулсан видео дуудлагын хэрэгсэл болон бусад зүйл багтана</translation>
 <translation id="1726503915437308071">Налуу фонт</translation>
 <translation id="1729533290416704613">Omnibox-оос хайлт хийхэд ямар хуудсуудыг харуулахыг мөн хянадаг.</translation>
 <translation id="1730666151302379551">Хуучин нууц үгийг мартсан</translation>
@@ -1250,7 +1251,6 @@
 <translation id="1974060860693918893">Боловсронгуй</translation>
 <translation id="1974159333077206889">Бүх чанга яригчаар ижил аудио</translation>
 <translation id="1974216844776165821">Chrome таны нууц үгийг энэ төхөөрөмжид хадгалсан хэдий ч та үүнийг оронд нь Google Бүртгэлдээ хадгалах боломжтой. Дараа нь таны Google Бүртгэлийн бүх нууц үг болон нэвтрэх түлхүүр таныг нэвтэрсэн үед мөн боломжтой байх болно.</translation>
-<translation id="1974821797477522211">Сүлжээнд холбогдох</translation>
 <translation id="1975841812214822307">Устгах...</translation>
 <translation id="1976150099241323601">Аюулгүй байдлын төхөөрөмж рүү нэвтэрнэ үү.</translation>
 <translation id="1976823515278601587">Том хэмнэлт</translation>
@@ -1934,7 +1934,6 @@
 <translation id="2485681265915754872">Google Play-н үйлчилгээний нөхцөл</translation>
 <translation id="248676429071089168">Хуудсыг доош зөөхийн тулд дээш шударна уу</translation>
 <translation id="2487067538648443797">Шинэ хавчуурга нэмэх</translation>
-<translation id="2487268545026948104">Өгөгдлөө сэргээхийн тулд интернэтэд холбогдоно уу</translation>
 <translation id="2489686758589235262">Өөр 2 сэлгүүр оноох</translation>
 <translation id="2489829450872380594">Дараагийн удаа шинэ утас энэ <ph name="DEVICE_TYPE" />-н түгжээг тайлна. Та Smart Lock-г Тохиргоонд унтрааж болно.</translation>
 <translation id="2489918096470125693">Хавтас нэмэх...</translation>
@@ -2014,7 +2013,6 @@
 <translation id="2546991196809436099">Дэлгэц дээрх зүйлсийг томсгохын тулд томруулна уу. Томруулагчийг асаах болон унтраахын тулд Search + Ctrl + M-г ашиглана уу.</translation>
 <translation id="2548347166720081527"><ph name="PERMISSION" />-г зөвшөөрсөн</translation>
 <translation id="2548545707296594436">eSIM профайлын завсрын санах ойг шинэчлэх</translation>
-<translation id="2549435700753464129">ChromeOS Bluetooth Floss</translation>
 <translation id="2549985041256363841">Бичиж эхлэх</translation>
 <translation id="2550212893339833758">Солилцсон санах ой</translation>
 <translation id="2550596535588364872"><ph name="EXTENSION_NAME" />-д <ph name="FILE_NAME" />-г нээхийг зөвшөөрөх үү?</translation>
@@ -3505,7 +3503,6 @@
 <translation id="3771851622616482156">Таныг энэ сайтаас гаргах бөгөөд үүнд нээлттэй табын сайтууд мөн багтана</translation>
 <translation id="3772046291955677288">Би <ph name="BEGIN_LINK1" />Google-н үйлчилгээний нөхцөл<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Chrome болон ChromeOS-н үйлчилгээний нэмэлт нөхцөлийг<ph name="END_LINK2" /> уншсан бөгөөд зөвшөөрч байна.</translation>
 <translation id="3774166835015494435">Саяхны зургууд болон мэдэгдлүүд</translation>
-<translation id="3774546890772201673"><ph name="NAME" />-г шинэчилнэ үү.</translation>
 <translation id="3775432569830822555">SSL серверийн сертификат</translation>
 <translation id="3775705724665058594">Төхөөрөмжүүддээ илгээх</translation>
 <translation id="3776508619697147021">Сайтууд олон файлыг автоматаар татахыг хүсэх боломжтой</translation>
@@ -8746,7 +8743,6 @@
 <translation id="8077120325605624147">Таны зочилсон ямар ч сайт танд ямар ч зар харуулах боломжтой</translation>
 <translation id="8077579734294125741">Chrome-н бусад профайл</translation>
 <translation id="80798452873915119">Сайтууд таны бүх дэлгэц дээр цонх удирдахыг хүсэх боломжтой</translation>
-<translation id="807990231167557618">Таны Chromebook-г шинэчилсэн.</translation>
 <translation id="8080028325999236607">Бүх цонхнуудыг хаах</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">Таны харилцан үйлдлийг <ph name="MANAGER_NAME" /> удирддаг. Администраторууд таны профайлыг устгаж, мөн сүлжээний ачааллыг тань хянах боломжтой.</translation>

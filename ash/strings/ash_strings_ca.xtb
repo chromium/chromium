@@ -1505,7 +1505,6 @@ Instal·lació nova</translation>
 <translation id="7188494361780961876">El menú s'ha mogut a l'extrem superior esquerre de la pantalla.</translation>
 <translation id="7189412385142492784">A quina distància es troba Venus?</translation>
 <translation id="7198435252016571249">La càmera s'ha ajustat a l'extrem inferior dret. S'ha produït un conflicte amb la superfície del sistema.</translation>
-<translation id="7219573373513695352">Cap dispositiu connectat</translation>
 <translation id="7229029500464092426">Memòria: <ph name="AVAILABLE_MEMORY" /> | Total: <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Aquest Chromebook s'ha de reiniciar perquè s'apliqui una actualització. Aquest procés pot tardar fins a 1 minut</translation>
 <translation id="7256634071279256947">Micròfon posterior</translation>
@@ -1944,7 +1943,6 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="9089416786594320554">Mètodes d'introducció</translation>
 <translation id="9091626656156419976">S'ha suprimit la pantalla <ph name="DISPLAY_NAME" /></translation>
 <translation id="9098969848082897657">Silencia el telèfon</translation>
-<translation id="9120448753905017833">Hem desactivat la Wi-Fi per començar a utilitzar el punt d'accés Wi‐Fi mitjançant dades mòbils. Això pot comportar costos addicionals.</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> o <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">Desfés l'última acció</translation>
 <translation id="9133335900048457298">No es pot gravar contingut protegit</translation>

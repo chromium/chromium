@@ -920,6 +920,7 @@ Permisiunile pe care le-ai acordat deja aplicațiilor se pot aplica acestui cont
 <translation id="1723824996674794290">&amp;Fereastră nouă</translation>
 <translation id="1724801751621173132">Mod de introducere</translation>
 <translation id="1725562816265788801">Derulare prin file</translation>
+<translation id="1726294682426724172">Printre funcțiile noi se numără radiera magică din Google Foto care elimină obiectele care distrag atenția, instrumente îmbunătățite pentru apeluri video și multe altele</translation>
 <translation id="1726503915437308071">Font cursiv</translation>
 <translation id="1729533290416704613">Stabilește și ce pagină se afișează când căutați din caseta polivalentă.</translation>
 <translation id="1730666151302379551">Am uitat parola veche</translation>
@@ -1243,7 +1244,6 @@ Permisiunile pe care le-ai acordat deja aplicațiilor se pot aplica acestui cont
 <translation id="1974060860693918893">Avansate</translation>
 <translation id="1974159333077206889">Același sunet la toate difuzoarele</translation>
 <translation id="1974216844776165821">Chrome a salvat parola pe acest dispozitiv, dar o poți salva în Contul tău Google. Apoi toate parolele și cheile de acces din Contul Google vor fi disponibile după ce te conectezi.</translation>
-<translation id="1974821797477522211">Conectează-te la rețea</translation>
 <translation id="1975841812214822307">Elimină...</translation>
 <translation id="1976150099241323601">Conectează-te la dispozitivul de securitate</translation>
 <translation id="1976823515278601587">Economii mari de memorie</translation>
@@ -1924,7 +1924,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2485681265915754872">Termeni și condiții Google Play</translation>
 <translation id="248676429071089168">Glisează în sus pentru a muta pagina în jos</translation>
 <translation id="2487067538648443797">Adaugă un marcaj nou</translation>
-<translation id="2487268545026948104">Pentru a restabili datele, conectează-te la internet</translation>
 <translation id="2489686758589235262">Atribuie încă două comutatoare</translation>
 <translation id="2489829450872380594">Data viitoare, un telefon nou va debloca acest <ph name="DEVICE_TYPE" />. Poți dezactiva Smart Lock în Setări.</translation>
 <translation id="2489918096470125693">Adăugați un &amp;dosar...</translation>
@@ -2004,7 +2003,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2546991196809436099">Mărește pentru a face mai mari elementele de pe ecran. Folosește tasta de căutare + Ctrl + M pentru a activa și a dezactiva lupa.</translation>
 <translation id="2548347166720081527">Se permite <ph name="PERMISSION" /></translation>
 <translation id="2548545707296594436">Resetează memoria cache a profilului eSIM</translation>
-<translation id="2549435700753464129">Floss Bluetooth în ChromeOS</translation>
 <translation id="2549985041256363841">Pornește înregistrarea</translation>
 <translation id="2550212893339833758">Dimensiunea memoriei de swap</translation>
 <translation id="2550596535588364872">Permiți ca <ph name="EXTENSION_NAME" /> să deschidă <ph name="FILE_NAME" />?</translation>
@@ -3495,7 +3493,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3771851622616482156">Te vei deconecta de la acest site, inclusiv din filele deschise</translation>
 <translation id="3772046291955677288">Am citit și sunt de acord cu <ph name="BEGIN_LINK1" />Termenii și condițiile Google<ph name="END_LINK1" /> și <ph name="BEGIN_LINK2" />Termenii și condițiile suplimentare pentru Chrome și sistemul de operare Chrome<ph name="END_LINK2" />.</translation>
 <translation id="3774166835015494435">Fotografiile și notificările recente</translation>
-<translation id="3774546890772201673">Actualizează <ph name="NAME" />.</translation>
 <translation id="3775432569830822555">Certificat de server SSL</translation>
 <translation id="3775705724665058594">Trimite pe dispozitivele tale</translation>
 <translation id="3776508619697147021">Site-urile pot solicita permisiunea de a descărca automat mai multe fișiere</translation>
@@ -8742,7 +8739,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8077120325605624147">Orice site pe care îl accesezi îți poate afișa orice anunț</translation>
 <translation id="8077579734294125741">Alte profiluri Chrome</translation>
 <translation id="80798452873915119">Site-urile pot solicita permisiunea de a gestiona ferestre pe toate ecranele</translation>
-<translation id="807990231167557618">Chromebookul este actualizat.</translation>
 <translation id="8080028325999236607">Închide filele</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">Sesiunea este gestionată de <ph name="MANAGER_NAME" />. Administratorii pot să-ți șteargă profilul și să monitorizeze traficul de rețea.</translation>

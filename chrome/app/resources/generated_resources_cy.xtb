@@ -933,6 +933,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i apiau yn berthnasol i'
 <translation id="1723824996674794290">&amp;Ffenestr newydd</translation>
 <translation id="1724801751621173132">Modd mewnbynnu</translation>
 <translation id="1725562816265788801">Sgrolio Tab</translation>
+<translation id="1726294682426724172">Mae nodweddion newydd yn cynnwys Rhwbiwr Hud ar Google Photos i dynnu difyrion, offer gwella galwad fideo, a rhagor</translation>
 <translation id="1726503915437308071">Ffont italig</translation>
 <translation id="1729533290416704613">Mae hefyd yn rheoli pa dudalen sy'n cael ei dangos pan fyddwch yn chwilio o'r Omniflwch.</translation>
 <translation id="1730666151302379551">Wedi anghofio hen gyfrinair</translation>
@@ -1257,7 +1258,6 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i apiau yn berthnasol i'
 <translation id="1974060860693918893">Uwch</translation>
 <translation id="1974159333077206889">Yr un sain gyda'r holl seinyddion</translation>
 <translation id="1974216844776165821">Gwnaeth Chrome gadw'ch cyfrinair i'r ddyfais hon, ond gallwch ei gadw i'ch Cyfrif Google yn lle hynny. Yna, bydd yr holl gyfrineiriau a chodau pas yn eich Cyfrif Google hefyd ar gael wrth i chi fewngofnodi.</translation>
-<translation id="1974821797477522211">Cysylltu â rhwydwaith</translation>
 <translation id="1975841812214822307">Tynnu...</translation>
 <translation id="1976150099241323601">Mewngofnodi i Ddyfais Diogelwch</translation>
 <translation id="1976823515278601587">Arbedion Mawr</translation>
@@ -1941,7 +1941,6 @@ Mae Voice Match yn helpu Google Assistant i adnabod llais <ph name="SUPERVISED_U
 <translation id="2485681265915754872">Telerau gwasanaeth Google Play</translation>
 <translation id="248676429071089168">Sweipiwch i fyny i symud y dudalen i lawr</translation>
 <translation id="2487067538648443797">Ychwanegu nod tudalen newydd</translation>
-<translation id="2487268545026948104">I adfer eich data, cysylltwch â'r rhyngrwyd</translation>
 <translation id="2489686758589235262">Aseinio 2 switsh arall</translation>
 <translation id="2489829450872380594">Y tro nesaf, bydd ffôn newydd yn datgloi'r ddyfais <ph name="DEVICE_TYPE" /> hon. Gallwch ddiffodd Smart Lock yn y gosodiadau.</translation>
 <translation id="2489918096470125693">Ychwanegu &amp;Ffolder...</translation>
@@ -2021,7 +2020,6 @@ Mae Voice Match yn helpu Google Assistant i adnabod llais <ph name="SUPERVISED_U
 <translation id="2546991196809436099">Chwyddwch i mewn i wneud eitemau ar y sgrîn yn fwy. Defnyddiwch Search + Ctrl + M i droi chwyddwydr ymlaen a'i ddiffodd.</translation>
 <translation id="2548347166720081527">Caniateir <ph name="PERMISSION" /></translation>
 <translation id="2548545707296594436">Ailosod storfa dros dro proffil eSIM</translation>
-<translation id="2549435700753464129">ChromeOS Bluetooth Floss</translation>
 <translation id="2549985041256363841">Dechrau recordio</translation>
 <translation id="2550212893339833758">Cof sydd wedi'i gyfnewid</translation>
 <translation id="2550596535588364872">Caniatáu i <ph name="EXTENSION_NAME" /> agor <ph name="FILE_NAME" />?</translation>
@@ -3512,7 +3510,6 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="3771851622616482156">Byddwch yn cael eich allgofnodi o'r wefan hon, gan gynnwys mewn tabiau sydd ar agor</translation>
 <translation id="3772046291955677288">Rydw i wedi darllen ac yn cytuno i <ph name="BEGIN_LINK1" />Delerau Gwasanaeth Google<ph name="END_LINK1" /> a <ph name="BEGIN_LINK2" />Thelerau Gwasanaeth Ychwanegol Chrome a ChromeOS<ph name="END_LINK2" />.</translation>
 <translation id="3774166835015494435">Lluniau diweddar a hysbysebion</translation>
-<translation id="3774546890772201673">Diweddaru <ph name="NAME" />.</translation>
 <translation id="3775432569830822555">Tystysgrif Gweinydd SSL</translation>
 <translation id="3775705724665058594">Anfon at eich dyfeisiau</translation>
 <translation id="3776508619697147021">Gall gwefannau ofyn am lawrlwytho mwy nag un ffeil yn awtomatig</translation>
@@ -8764,7 +8761,6 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="8077120325605624147">Gall unrhyw wefan yr ymwelwch â hi ddangos unrhyw hysbyseb i chi</translation>
 <translation id="8077579734294125741">Proffiliau Chrome Eraill</translation>
 <translation id="80798452873915119">Gall gwefannau ofyn i reoli ffenestri ar eich holl sgriniau</translation>
-<translation id="807990231167557618">Mae eich Chromebook wedi'i ddiweddaru.</translation>
 <translation id="8080028325999236607">Cau Pob Tab</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">Rheolir eich sesiwn gan <ph name="MANAGER_NAME" />. Gall gweinyddwyr ddileu eich proffil a hefyd monitro traffig eich rhwydwaith.</translation>

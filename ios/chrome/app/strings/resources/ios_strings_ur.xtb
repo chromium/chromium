@@ -218,6 +218,7 @@
 <translation id="2195124168004379331">آپ کا براؤزر صحیح لگ رہا ہے</translation>
 <translation id="2213327331203157297">‏Chrome میں لاک ڈاؤن وضع کو غیر فعال کرنے کیلئے اسے اپنے iPhone پر آف کریں۔</translation>
 <translation id="2218443599109088993">زوم آؤٹ کریں</translation>
+<translation id="2220529011494928058">ایک مسئلے کی اطلاع دیں</translation>
 <translation id="2230173723195178503">ویب صفحہ لوڈ کر دیا گیا ہے</translation>
 <translation id="2239626343334228536">براؤزنگ ڈیٹا صاف ہو رہا ہے...</translation>
 <translation id="2242467532204595597">‏جب بھی آپ پیغامات، دستاویزات اور دیگر ایپس میں لنکس پر تھپتھپاتے ہیں تو Chrome استعمال کریں۔</translation>
@@ -543,7 +544,6 @@
 <translation id="3959736869653157332">مینیو ← نیا پوشیدگی ٹیب</translation>
 <translation id="3967822245660637423">ڈاؤن لوڈ مکمل ہوگیا ہے</translation>
 <translation id="3968505803272650567">دلچسپیوں کا نظم کریں</translation>
-<translation id="3971789053442864420">{count,plural, =1{{count} پاس ورڈ}other{{count} پاس ورڈز}}</translation>
 <translation id="3989635538409502728">سائن آؤٹ کریں</translation>
 <translation id="3995521777587992544">صفحہ لوڈ ہونے کا پیش رفت بار، <ph name="EMAIL" /> لوڈ ہوا۔</translation>
 <translation id="4002019827078931033">ایڈریس بار کو اوپر منتقل کریں</translation>
@@ -1339,7 +1339,6 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8328777765163860529">تمام بند کریں</translation>
 <translation id="8343993175958086504">اپنے ڈیٹا کا بیک اپ لیں اور اسے کسی بھی آلے پر استعمال کریں۔</translation>
 <translation id="834783239627985533">سب سے زیادہ ملاحظہ کردہ سائٹس</translation>
-<translation id="8356276002902955750">{count,plural, =1{{count} بُک مارک}other{{count} بک مارکس}}</translation>
 <translation id="8364841868226993049">‏<ph name="USER_EMAIL" /> کے لیے Google تصاویر میں تصویر محفوظ ہو رہی ہے...</translation>
 <translation id="8378714024927312812">آپ کی تنظیم کے زیر نظم</translation>
 <translation id="8386068868580335421">ری سیٹ کریں</translation>

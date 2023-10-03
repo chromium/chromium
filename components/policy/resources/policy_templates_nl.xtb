@@ -389,6 +389,9 @@ Als je het beleid niet toepast of niet instelt, wordt op basis van de instelling
 <translation id="1372618949173323717">JavaScript uitzetten</translation>
 <translation id="1376119291123231789">Geavanceerde batterijoplaadmodus aanzetten</translation>
 <translation id="1376765488559847650">CloudUpload</translation>
+<translation id="1379689277107868399">Als je dit beleid instelt op DoNotPrompt of niet instelt, vraagt <ph name="PRODUCT_NAME" /> de gebruiker niet automatisch om opnieuw te verifiëren voor de browser.
+
+Als je dit beleid instelt op PromptInTab, wordt na het verlopen van de verificatie van de gebruiker meteen een nieuw tabblad met de inlogpagina van Google geopend. Dit gebeurt alleen als je <ph name="CHROME_SYNC_NAME" /> gebruikt.</translation>
 <translation id="1384459581748403878">Referentie: <ph name="REFERENCE_URL" /></translation>
 <translation id="1384594066274112751">Dit beleid zorgt ervoor dat elke URL die overeenkomt met een of meer patronen uit het beleid (met de filterindeling <ph name="URL_BLOCKLIST_POLICY_NAME" />), nooit door de browser wordt verwijderd.
       Dit is van toepassing op geheugenbelasting en weggooien in de modus voor hoge efficiëntie.
@@ -2477,23 +2480,6 @@ Als je dit beleid niet instelt, geldt de standaardwaarde 'niet toegestaan' voor 
 <translation id="3150351525324499342">Het icoon voor <ph name="PRODUCT_NAME" /> niet standaard tonen in de werkbalk, maar gebruikers laten kiezen</translation>
 <translation id="3152135410085709340">Lokale bestandstoegang tot file://-URL's op deze sites toestaan in de pdf-viewer</translation>
 <translation id="3152425128389603870">Maak Samengestelde desktop beschikbaar en zet deze standaard aan</translation>
-<translation id="3157857846231611820">Lijst met instellingen voor Chrome Enterprise Connectors-services die moeten worden toegepast op de Enterprise Connector <ph name="ON_FILE_ATTACHED_ENTERPRISE_CONNECTOR" />. De lijst wordt geactiveerd als een bestand wordt bijgevoegd in Chrome.
-
-      De velden <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> en <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> worden gebruikt om te bepalen of de connector een bestand voor analyse moet sturen als het is bijgevoegd bij een specifieke pagina en welke tags moeten worden opgenomen in het analyseverzoek voor dat bestand. Een tag die overeenkomt met een 'enable'-patroon, wordt opgenomen in het analyseverzoek als de pagina-URL overeenkomt met een patroon dat is gekoppeld aan die tag, op voorwaarde dat er geen 'disable'-patroon met dezelfde tag overeenkomt met de pagina-URL. De analyse vindt plaats als er ten minste 1 tag moet worden opgenomen in het verzoek.
-
-      Het veld <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> geeft aan bij welke analyseserviceprovider de instellingen horen.
-
-      Als je het veld <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" /> instelt op 1, betekent dit dat Chrome wacht op een reactie van de analyseservice voordat Chrome de pagina toegang tot het bestand geeft. Elke andere waarde met een geheel getal betekent dat Chrome de pagina onmiddellijk toegang tot het bestand geeft.
-
-      Het veld <ph name="ENTERPRISE_CONNECTOR_BLOCK_PASSWORD_PROTECTED_FIELD" /> bepaalt of Chrome bestanden die zijn beveiligd met een wachtwoord blokkeert of toestaat.
-
-      Het veld <ph name="ENTERPRISE_CONNECTOR_BLOCK_LARGE_FILES_FIELD" /> bepaalt of Chrome bestanden blokkeert of toestaat die te groot zijn om te worden geanalyseerd.
-
-      Het veld <ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD" /> wordt gebruikt om te bepalen voor welke tags de connector moet vereisen dat de gebruiker een verantwoording opgeeft om een scan over te slaan die resulteert in een waarschuwing die kan worden overgeslagen. Als je het veld niet instelt, wordt aangenomen dat er geen verantwoording vereist is.
-
-      De velden <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" /> en <ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" /> worden gebruikt om een bericht in te stellen dat de gebruiker te zien krijgt als een waarschuwing wordt getoond nadat een scan problemen heeft gevonden. Het veld 'message' bevat de tekst die de gebruiker te zien krijgt en mag maximaal 200 tekens bevatten. Het veld 'learn_more_url' bevat een door de beheerder geleverde URL waarop de gebruiker kan klikken voor meer door de klant geleverde informatie over waarom de actie is geblokkeerd. Het veld 'language' is optioneel en bevat de taal van het bericht. Met een leeg veld 'language' of de waarde 'default' wordt een bericht aangegeven dat moet worden gebruikt als er geen bericht is in de taal van de gebruiker. Het veld 'tag' geeft aan voor welk type scans het bericht wordt getoond. De lijst 'custom_messages' kan nul of meer items bevatten. Voor elk item moeten de velden 'message' en 'tag' zijn ingevuld.
-
-      Dit beleid vereist aanvullende instellingen om van kracht te worden. Ga naar https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting voor meer informatie.</translation>
 <translation id="3159375329008977062">Gebruiker kan Crostini-containers exporteren/importeren via de gebruikersinterface</translation>
 <translation id="3163167792874598128">Als je het beleid toepast of niet instelt, kan de promotie voor appstore-beoordelingen maximaal één keer per jaar worden getoond aan de gebruiker.
 Als je het beleid niet toepast, wordt de promotie voor appstore-beoordelingen niet getoond aan de gebruiker.</translation>
@@ -3488,6 +3474,7 @@ Dit beleid is een tijdelijke oplossing en wordt na bepaalde tijd verwijderd (de 
 <translation id="3977304360459208438">Gebruik de standaardinstellingen voor 3DES cipher suites in TLS</translation>
 <translation id="3979738908158213640">URL's die toegang krijgen om apparaatattesten uit te voeren tijdens SAML-verificatie</translation>
 <translation id="3982322576186033243">Onveilige hashes niet toestaan in TLS-handshakes</translation>
+<translation id="3982465141749620677">Vragen om opnieuw te verifiëren in een tabblad</translation>
 <translation id="3983162212222338509">De DNS-omzetting van het systeem kan binnen of buiten het netwerkproces worden uitgevoerd, of gedeeltelijk binnen en gedeeltelijk buiten het netwerkproces, afhankelijk van de systeemconfiguratie en functievlaggen.</translation>
 <translation id="3986700049001404598">Gebruikers toestaan processen te beëindigen met taakbeheer van Chrome</translation>
 <translation id="398884292557092447">Als je het beleid instelt op True of niet instelt, krijgen gebruikers de controle over 'Automatisch invullen' voor creditcards in de UI.
@@ -5789,21 +5776,6 @@ Als dit beleid niet is ingesteld of de lijst geen geldige verwijzingen naar afbe
 <translation id="6135398260575578389">Safe Browsing is actief in de uitgebreide modus. Deze modus biedt betere beveiliging, maar vereist dat er meer browsegegevens worden gedeeld met Google.</translation>
 <translation id="6135552820180449830">Crosh (ondersteund sinds versie 99)</translation>
 <translation id="6138636318340561140">Safe Browsing-status van URL's in realtime checken</translation>
-<translation id="6140635914906859015">Lijst met instellingen voor Chrome Enterprise Connectors-services die moeten worden toegepast op de Enterprise Connector <ph name="ON_BULK_DATA_ENTRY_ENTERPRISE_CONNECTOR" />. De lijst wordt geactiveerd als gegevens in Chrome worden ingevoerd vanaf het klembord of door slepen en neerzetten van webcontent.
-
-      De velden <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> en <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> worden gebruikt om te bepalen of de connector gegevens voor analyse moet sturen als ze worden ingevoerd op een specifieke pagina en welke tags moeten worden opgenomen in het analyseverzoek voor die gegevens. Een tag die overeenkomt met een 'enable'-patroon, wordt opgenomen in het analyseverzoek als de pagina-URL overeenkomt met een patroon dat is gekoppeld aan die tag, op voorwaarde dat er geen 'disable'-patroon met dezelfde tag overeenkomt met de pagina-URL. De analyse vindt plaats als er ten minste 1 tag moet worden opgenomen in het verzoek.
-
-      Het veld <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> geeft aan bij welke analyseserviceprovider de instellingen horen.
-
-      Als je het veld <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" /> instelt op 1, betekent dit dat Chrome wacht op een reactie van de analyseservice voordat Chrome de pagina toegang tot de gegevens geeft. Elke andere waarde met een geheel getal betekent dat Chrome de pagina onmiddellijk toegang tot de gegevens geeft.
-
-      Het veld <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> geeft de minimumgrootte (in bytes) aan die in Chrome ingevoerde gegevens ten minste moeten hebben om te worden gescand. De standaardwaarde is 100 bytes als het veld niet is ingesteld.
-
-      Het veld <ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD" /> wordt gebruikt om te bepalen voor welke tags de connector moet vereisen dat de gebruiker een verantwoording opgeeft om een scan over te slaan die resulteert in een waarschuwing die kan worden overgeslagen. Als je het veld niet instelt, wordt aangenomen dat er geen verantwoording vereist is.
-
-      De velden <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" /> en <ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" /> worden gebruikt om een bericht in te stellen dat de gebruiker te zien krijgt als een waarschuwing wordt getoond nadat een scan problemen heeft gevonden. Het veld 'message' bevat de tekst die de gebruiker te zien krijgt en mag maximaal 200 tekens bevatten. Het veld 'learn_more_url' bevat een door de beheerder geleverde URL waarop de gebruiker kan klikken voor meer door de klant geleverde informatie over waarom de actie is geblokkeerd. Het veld 'language' is optioneel en bevat de taal van het bericht. Met een leeg veld 'language' of de waarde 'default' wordt een bericht aangegeven dat moet worden gebruikt als er geen bericht is in de taal van de gebruiker. Het veld 'tag' geeft aan voor welk type scans het bericht wordt getoond. De lijst 'custom_messages' kan nul of meer items bevatten. Voor elk item moeten de velden 'message' en 'tag' zijn ingevuld.
-
-      Dit beleid vereist aanvullende instellingen om van kracht te worden. Ga naar https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting voor meer informatie.</translation>
 <translation id="6141402445226505817">Altijd minder nauwkeurige tijdzonedetectie gebruiken</translation>
 <translation id="6141944295566709543">Gebruikers toestaan media af te spelen als het apparaat is vergrendeld</translation>
 <translation id="6142501278956229253">DPI voor afdrukrastering van pdf's</translation>
@@ -6386,6 +6358,7 @@ Als je ervoor kiest het volgende te gebruiken:
       Als je het beleid niet instelt, kunnen gebruikers de proxyinstellingen kiezen.
 
       Opmerking: Voor gedetailleerde voorbeelden ga je naar The Chromium Projects ( https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett ).</translation>
+<translation id="6559643481486165125">Niet vragen om opnieuw te verifiëren</translation>
 <translation id="656130159911161669">ChromeOS-updates negeren de versie die is gedefinieerd in het manifest van de kiosk-app</translation>
 <translation id="6561396069801924653">Toegankelijkheidsopties tonen in het systeemvakmenu</translation>
 <translation id="6562889469672829421">De tijdsduur zonder gebruikersinvoer waarna het scherm wordt gedimd (in milliseconden)</translation>
@@ -6486,21 +6459,6 @@ Als je dit beleid instelt op True (standaard), wordt het nieuwe gedrag toegepast
 
 Als je dit beleid instelt op False, wordt het oude gedrag toegepast.</translation>
 <translation id="663685822663765995">Afdrukken in kleurenmodus beperken</translation>
-<translation id="6637946190026453735">Lijst met instellingen voor <ph name="PRODUCT_NAME" /> Enterprise Connectors-services die moeten worden toegepast op de Enterprise Connector <ph name="ON_PRINT_ENTERPRISE_CONNECTOR" />. Die wordt geactiveerd als een pagina of bestand wordt afgedrukt vanuit <ph name="PRODUCT_NAME" />.
-
-      De velden <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> en <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> worden gebruikt om te bepalen of de connector gegevens voor analyse moet sturen als afdrukken wordt geactiveerd op een specifieke pagina en welke tags moeten worden opgenomen in het analyseverzoek. De analyse vindt plaats als er ten minste 1 tag moet worden opgenomen in het verzoek.
-
-      Het veld <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> geeft aan bij welke analyseserviceprovider de instellingen horen.
-
-      Als je het veld <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" /> instelt op 1, betekent dit dat <ph name="PRODUCT_NAME" /> wacht op een reactie van de analyseservice voordat het dialoogvenster met het afdrukvoorbeeld mag worden getoond voor de pagina die wordt afgedrukt. Elke andere waarde met een geheel getal betekent dat <ph name="PRODUCT_NAME" /> het dialoogvenster met het afdrukvoorbeeld meteen laat zien.
-
-      Het veld <ph name="ENTERPRISE_CONNECTOR_BLOCK_LARGE_FILES_FIELD" /> bepaalt of <ph name="PRODUCT_NAME" /> bestanden/pagina's blokkeert of toestaat die te groot zijn om te worden geanalyseerd.
-
-      Het veld <ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD" /> wordt gebruikt om te bepalen voor welke tags de connector moet vereisen dat de gebruiker een verantwoording opgeeft om een scan over te slaan die resulteert in een waarschuwing die kan worden overgeslagen. Als je het veld niet instelt, wordt aangenomen dat er geen verantwoording vereist is.
-
-      De velden <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" /> en <ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" /> worden gebruikt om een bericht in te stellen dat de gebruiker te zien krijgt als een waarschuwing wordt getoond nadat een scan problemen heeft gevonden. De beheerder kan berichten van maximaal 200 tekens instellen.
-
-      Dit beleid vereist aanvullende instellingen om van kracht te worden. Ga naar https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting voor meer informatie.</translation>
 <translation id="6640355849038068978">Als deze instelling aanstaat, kunnen gebruikers de Eche-app starten, bijvoorbeeld door op een Telefoonhub-melding te klikken.
 
       Staat deze instelling uit, dan kunnen gebruikers de Eche-app niet starten.
@@ -7491,23 +7449,6 @@ Als je het beleid niet instelt, is dit functioneel gelijk aan het beleid instell
 <translation id="7477149584454865826">Booleaanse markering die aangeeft of IPP Everywhere moet worden gebruikt om de printer in te stellen.</translation>
 <translation id="7477231245051133709">Toegankelijkheidsfunctie voor monogeluid aanzetten</translation>
 <translation id="7479408102162550711">Netwerkgebeurtenissen rapporteren</translation>
-<translation id="7480826412572122600">Lijst met instellingen voor Chrome Enterprise Connectors-services die moeten worden toegepast op de Enterprise Connector <ph name="ON_FILE_DOWNLOADED_ENTERPRISE_CONNECTOR" />. De lijst wordt geactiveerd als een bestand wordt gedownload in Chrome.
-
-      De velden <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> en <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> worden gebruikt om te bepalen of de connector een bestand voor analyse moet sturen als het wordt gedownload vanaf een specifieke pagina en welke tags moeten worden opgenomen in het analyseverzoek voor dat bestand. Een tag die overeenkomt met een 'enable'-patroon, wordt opgenomen in het analyseverzoek als de pagina-URL overeenkomt met een patroon dat is gekoppeld aan die tag, op voorwaarde dat er geen 'disable'-patroon met dezelfde tag overeenkomt met de pagina-URL. De analyse vindt plaats als er ten minste 1 tag moet worden opgenomen in het verzoek.
-
-      Het veld <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> geeft aan bij welke analyseserviceprovider de instellingen horen.
-
-      Als je het veld <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" /> instelt op 1, betekent dit dat Chrome wacht op een reactie van de analyseservice voordat Chrome de gebruiker toegang tot het gedownloade bestand geeft. Elke andere waarde met een geheel getal betekent dat Chrome de gebruiker onmiddellijk toegang tot het bestand geeft.
-
-      Het veld <ph name="ENTERPRISE_CONNECTOR_BLOCK_PASSWORD_PROTECTED_FIELD" /> bepaalt of Chrome bestanden die zijn beveiligd met een wachtwoord blokkeert of toestaat.
-
-      Het veld <ph name="ENTERPRISE_CONNECTOR_BLOCK_LARGE_FILES_FIELD" /> bepaalt of Chrome bestanden blokkeert of toestaat die te groot zijn om te worden geanalyseerd.
-
-      Het veld <ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD" /> wordt gebruikt om te bepalen voor welke tags de connector moet vereisen dat de gebruiker een verantwoording opgeeft om een scan over te slaan die resulteert in een waarschuwing die kan worden overgeslagen. Als je het veld niet instelt, wordt aangenomen dat er geen verantwoording vereist is.
-
-      De velden <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" /> en <ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" /> worden gebruikt om een bericht in te stellen dat de gebruiker te zien krijgt als een waarschuwing wordt getoond nadat een scan problemen heeft gevonden. Het veld 'message' bevat de tekst die de gebruiker te zien krijgt en mag maximaal 200 tekens bevatten. Het veld 'learn_more_url' bevat een door de beheerder geleverde URL waarop de gebruiker kan klikken voor meer door de klant geleverde informatie over waarom de actie is geblokkeerd. Het veld 'language' is optioneel en bevat de taal van het bericht. Met een leeg veld 'language' of de waarde 'default' wordt een bericht aangegeven dat moet worden gebruikt als er geen bericht is in de taal van de gebruiker. Het veld 'tag' geeft aan voor welk type scans het bericht wordt getoond. De lijst 'custom_messages' kan nul of meer items bevatten. Voor elk item moeten de velden 'message' en 'tag' zijn ingevuld.
-
-      Dit beleid vereist aanvullende instellingen om van kracht te worden. Ga naar https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting voor meer informatie.</translation>
 <translation id="7481702249684965639">De prullenbak is aangezet voor de gebruiker.</translation>
 <translation id="7482768039644066614">Ophalen aanzetten van metadata voor het laden van pagina's en machinelearning-modellen die de browsefunctionaliteit verbeteren</translation>
 <translation id="748292668225669178">Hiermee stel je de activering van <ph name="MICROSOFT_ONE_DRIVE_NAME" /> in</translation>
@@ -8948,6 +8889,7 @@ Als je het beleid niet instelt, worden er geen opgeslagen wachtwoorden geïmport
 <translation id="8744844164152340112">Bepaalt het thema dat wordt gebruikt om de UI weer te geven tijdens OOBE en in sessies (donker/licht/automatisch).
       De automatische modus schakelt automatisch tussen het donkere en lichte thema bij zonsopgang en -ondergang.
       Dit beleid moet worden aanbevolen, om gebruikers de mogelijkheid te geven het thema te wijzigen in de systeeminstellingen.</translation>
+<translation id="8744997936011793680">Gebruikers vragen opnieuw te verifiëren voor het profiel</translation>
 <translation id="8749536858950505376">Als het beleid is ingesteld op True, blijft de grote cursor aan. Als het beleid is ingesteld op False, blijft de grote cursor uit.
 
       Als je dit beleid instelt, kunnen gebruikers de functie niet wijzigen. Als je dit beleid niet instelt, staat de grote cursor in eerste instantie uit, maar kunnen gebruikers deze op elk moment aanzetten.</translation>

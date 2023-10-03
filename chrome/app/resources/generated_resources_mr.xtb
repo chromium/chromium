@@ -929,6 +929,7 @@
 <translation id="1723824996674794290">&amp;नवीन विंडो</translation>
 <translation id="1724801751621173132">इनपुट मोड</translation>
 <translation id="1725562816265788801">टॅब स्क्रोल करणे</translation>
+<translation id="1726294682426724172">नवीन वैशिष्‍ट्यांमध्ये, व्यत्यय काढून टाकण्यासाठी Google Photos वरील मॅजिक इरेझर, सुधारित व्हिडिओ कॉल टूल आणि आणखी बऱ्याच गोष्टींचा समावेश आहे</translation>
 <translation id="1726503915437308071">आयटॅलिक फॉंट</translation>
 <translation id="1729533290416704613">तुम्ही ओम्निबॉक्समधून शोध घेता तेव्हा कोणते पेज दाखवावे हेदेखील ते नियंत्रित करते.</translation>
 <translation id="1730666151302379551">जुना पासवर्ड लक्षात नाही</translation>
@@ -1253,7 +1254,6 @@
 <translation id="1974060860693918893">प्रगत</translation>
 <translation id="1974159333077206889">सर्व स्पीकरसाठी सारखा ऑडिओ</translation>
 <translation id="1974216844776165821">Chrome ने तुमचा पासवर्ड या डिव्‍हाइसवर सेव्‍ह केला आहे, पण तुम्‍ही तो त्‍याऐवजी तुमच्‍या Google खाते मध्ये सेव्‍ह करू शकता. त्यानंतर, तुम्ही साइन इन केल्यावर तुमच्या Google खाते मधीलदेखील सर्व पासवर्ड आणि पासकी उपलब्ध होतील.</translation>
-<translation id="1974821797477522211">नेटवर्कशी कनेक्ट करा</translation>
 <translation id="1975841812214822307">काढून टाका...</translation>
 <translation id="1976150099241323601">सुरक्षा डिव्हाइसमध्ये साइन इन करा</translation>
 <translation id="1976823515278601587">मोठ्या बचती</translation>
@@ -1937,7 +1937,6 @@
 <translation id="2485681265915754872">Google Play सेवा अटी</translation>
 <translation id="248676429071089168">पेज खाली हलवण्यासाठी वर स्वाइप करा</translation>
 <translation id="2487067538648443797">नवीन बुकमार्क जोडा</translation>
-<translation id="2487268545026948104">तुमचा डेटा रिस्टोअर करण्यासाठी, इंटरनेटशी कनेक्ट करा</translation>
 <translation id="2489686758589235262">आणखी दोन स्विच असाइन करा</translation>
 <translation id="2489829450872380594">पुढील वेळेस नवीन फोन तुमचे हे <ph name="DEVICE_TYPE" /> अनलॉक करेल. तुम्ही सेटिंग्जमधून Smart Lock बंद करू शकता.</translation>
 <translation id="2489918096470125693">&amp;फोल्डर जोडा...</translation>
@@ -2017,7 +2016,6 @@
 <translation id="2546991196809436099">स्क्रीनवरील आयटम मोठे करण्यासाठी झूम इन करा. मॅग्निफायर सुरू आणि बंद करण्यासाठी Search + Ctrl + M वापरा.</translation>
 <translation id="2548347166720081527">अनुमती असलेली <ph name="PERMISSION" /></translation>
 <translation id="2548545707296594436">eSIM प्रोफाइल कॅशे रीसेट करा</translation>
-<translation id="2549435700753464129">ChromeOS ब्लूटूथ फ्लॉस</translation>
 <translation id="2549985041256363841">रेकॉर्डिंग सुरू करा</translation>
 <translation id="2550212893339833758">स्वॅप केलेली मेमरी</translation>
 <translation id="2550596535588364872"><ph name="EXTENSION_NAME" /> ला <ph name="FILE_NAME" /> उघडू द्यायचे?</translation>
@@ -3508,7 +3506,6 @@
 <translation id="3771851622616482156">उघड्या असलेल्या टॅबच्या समावेशासह तुम्हाला या साइटमधून साइन आउट केले जाईल</translation>
 <translation id="3772046291955677288">मी <ph name="BEGIN_LINK1" />Google सेवा अटी<ph name="END_LINK1" /> आणि <ph name="BEGIN_LINK2" />Chrome व ChromeOS अतिरिक्त सेवा अटी<ph name="END_LINK2" /> वाचल्या आहेत आणि सहमती दर्शवत आहे.</translation>
 <translation id="3774166835015494435">अलीकडील फोटो आणि सूचना</translation>
-<translation id="3774546890772201673"><ph name="NAME" /> अपडेट करा.</translation>
 <translation id="3775432569830822555">SSL सर्व्हर प्रमाणप‍त्र</translation>
 <translation id="3775705724665058594">तुमच्या डिव्हाइसवर पाठवा</translation>
 <translation id="3776508619697147021">साइट एकाहून अधिक फाइल आपोआप डाउनलोड करण्यासाठी विचारू शकतात</translation>
@@ -8751,7 +8748,6 @@
 <translation id="8077120325605624147">तुम्ही भेट देता ती कोणतीही साइट तुम्हाला कोणतीही जाहिरात दाखवू शकते</translation>
 <translation id="8077579734294125741">इतर Chrome प्रोफाइल</translation>
 <translation id="80798452873915119">साइट तुमच्या सर्व डिस्प्लेवर विंडो व्यवस्थापित करण्याची विनंती करू शकतात</translation>
-<translation id="807990231167557618">तुमचे Chromebook अपडेट केलेले आहे.</translation>
 <translation id="8080028325999236607">सर्व टॅब बंद करा</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">तुमचे सेशन <ph name="MANAGER_NAME" /> द्वारे व्यवस्थापित केले आहे. अ‍ॅडमिनिस्ट्रेटर तुमची प्रोफाइल हटवू शकतात आणि तुमच्या नेटवर्क ट्रॅफिकवरदेखील लक्ष ठेवू शकतात.</translation>

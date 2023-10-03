@@ -218,6 +218,7 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chr
 <translation id="2195124168004379331">Čini se da je sve u redu s preglednikom</translation>
 <translation id="2213327331203157297">Da biste onemogućili način zaključavanja u Chromeu, isključite ga na iPhoneu.</translation>
 <translation id="2218443599109088993">Smanji</translation>
+<translation id="2220529011494928058">Prijavite poteškoću</translation>
 <translation id="2230173723195178503">Web-stranica učitana</translation>
 <translation id="2239626343334228536">Brisanje podataka o pregledavanju...</translation>
 <translation id="2242467532204595597">Chrome možete upotrebljavati svaki put kad dodirnete veze u porukama, dokumentima i drugim aplikacijama.</translation>
@@ -543,7 +544,6 @@ Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povij
 <translation id="3959736869653157332">Izbornik → Nova anonimna kartica</translation>
 <translation id="3967822245660637423">Preuzimanje dovršeno</translation>
 <translation id="3968505803272650567">Upravljaj interesima</translation>
-<translation id="3971789053442864420">{count,plural, =1{{count} zaporka}one{{count} zaporka}few{{count} zaporke}other{{count} zaporki}}</translation>
 <translation id="3989635538409502728">Odjava</translation>
 <translation id="3995521777587992544">Traka napretka učitavanja stranice, učitano <ph name="EMAIL" />.</translation>
 <translation id="4002019827078931033">Pomaknite adresnu traku na vrh</translation>
@@ -1338,7 +1338,6 @@ Web-lokacije mogu upotrebljavati kolačiće za uvid u vašu aktivnost pregledava
 <translation id="8328777765163860529">Zatvori sve</translation>
 <translation id="8343993175958086504">Sigurnosno kopirajte svoje sadržaje i upotrebljavajte ih na bilo kojem uređaju.</translation>
 <translation id="834783239627985533">Najposjećenije web-lokacije</translation>
-<translation id="8356276002902955750">{count,plural, =1{{count} oznaka}one{{count} oznaka}few{{count} oznake}other{{count} oznaka}}</translation>
 <translation id="8364841868226993049">Spremanje slike na Google fotografije za <ph name="USER_EMAIL" />...</translation>
 <translation id="8378714024927312812">Pod upravljanjem vaše organizacije</translation>
 <translation id="8386068868580335421">Vrati</translation>

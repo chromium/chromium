@@ -218,6 +218,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="2195124168004379331">Browser Anda Aman</translation>
 <translation id="2213327331203157297">Untuk menonaktifkan Mode Kunci Total di Chrome, nonaktifkan di iPhone Anda.</translation>
 <translation id="2218443599109088993">Perkecil</translation>
+<translation id="2220529011494928058">Laporkan masalah</translation>
 <translation id="2230173723195178503">Halaman web dimuat</translation>
 <translation id="2239626343334228536">Menghapus data browsing...</translation>
 <translation id="2242467532204595597">Gunakan Chrome kapan saja dengan mengetuk link di pesan, dokumen, dan aplikasi lainnya.</translation>
@@ -543,7 +544,6 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="3959736869653157332">Menu → Tab Samaran Baru</translation>
 <translation id="3967822245660637423">Download selesai</translation>
 <translation id="3968505803272650567">Kelola Minat</translation>
-<translation id="3971789053442864420">{count,plural, =1{{count} Sandi}other{{count} Sandi}}</translation>
 <translation id="3989635538409502728">Logout</translation>
 <translation id="3995521777587992544">Status progres pemuatan halaman, <ph name="EMAIL" /> telah dimuat.</translation>
 <translation id="4002019827078931033">Pindahkan Kolom URL ke Atas</translation>
@@ -1338,7 +1338,6 @@ Situs dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berb
 <translation id="8328777765163860529">Tutup Semua</translation>
 <translation id="8343993175958086504">Cadangkan data Anda dan gunakan di perangkat mana pun.</translation>
 <translation id="834783239627985533">Situs yang Paling Sering Dikunjungi</translation>
-<translation id="8356276002902955750">{count,plural, =1{{count} Bookmark}other{{count} Bookmark}}</translation>
 <translation id="8364841868226993049">Menyimpan gambar di Google Foto untuk <ph name="USER_EMAIL" />...</translation>
 <translation id="8378714024927312812">Dikelola oleh organisasi</translation>
 <translation id="8386068868580335421">Reset</translation>

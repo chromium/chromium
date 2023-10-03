@@ -218,6 +218,7 @@
 <translation id="2195124168004379331">ನಿಮ್ಮ ಬ್ರೌಸರ್ ಉತ್ತಮವಾಗಿ ಕಾಣಿಸುತ್ತದೆ</translation>
 <translation id="2213327331203157297">Chrome ನಲ್ಲಿ ಲಾಕ್‌ಡೌನ್ ಮೋಡ್ ಅನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲು ನಿಮ್ಮ iPhone ನಲ್ಲಿ ಅದನ್ನು ಆಫ್ ಮಾಡಿ.</translation>
 <translation id="2218443599109088993">ಝೂಮ್ ಔಟ್</translation>
+<translation id="2220529011494928058">ಸಮಸ್ಯೆ ವರದಿಮಾಡಿ</translation>
 <translation id="2230173723195178503">ವೆಬ್‌ಪುಟ ಲೋಡ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="2239626343334228536">ಬ್ರೌಸಿಂಗ್ ಡೇಟಾವನ್ನು ತೆರವುಗೊಳಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="2242467532204595597">ಸಂದೇಶಗಳು, ಡಾಕ್ಯುಮೆಂಟ್‌ಗಳು ಮತ್ತು ಇತರ ಆ್ಯಪ್‌ಗಳಲ್ಲಿನ ಲಿಂಕ್‌ಗಳನ್ನು ಟ್ಯಾಪ್ ಮಾಡಿದಾಗ ನೀವು ಯಾವಾಗ ಬೇಕಾದರೂ Chrome ಅನ್ನು ಬಳಸಬಹುದು.</translation>
@@ -543,7 +544,6 @@
 <translation id="3959736869653157332">ಮೆನು → ಹೊಸ ಅಜ್ಞಾತ ಟ್ಯಾಬ್‌</translation>
 <translation id="3967822245660637423">ಡೌನ್‌ಲೋಡ್‌‌ ಪೂರ್ಣಗೊಂಡಿದೆ</translation>
 <translation id="3968505803272650567">ಆಸಕ್ತಿಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
-<translation id="3971789053442864420">{count,plural, =1{{count} ಪಾಸ್‌ವರ್ಡ್}one{{count} ಪಾಸ್‌ವರ್ಡ್‌ಗಳು}other{{count} ಪಾಸ್‌ವರ್ಡ್‌ಗಳು}}</translation>
 <translation id="3989635538409502728">ಸೈನ್ ಔಟ್</translation>
 <translation id="3995521777587992544">ಪುಟ ಲೋಡ್ ಪ್ರಗತಿ ಪಟ್ಟಿ, <ph name="EMAIL" /> ಅನ್ನು ಲೋಡ್ ಮಾಡಲಾಗಿದೆ.</translation>
 <translation id="4002019827078931033">ಅಡ್ರೆಸ್ ಬಾರ್ ಅನ್ನು ಮೇಲಕ್ಕೆ ಮೂವ್ ಮಾಡಿ</translation>
@@ -1339,7 +1339,6 @@
 <translation id="8328777765163860529">ಎಲ್ಲವನ್ನು ಮುಚ್ಚಿರಿ</translation>
 <translation id="8343993175958086504">ನಿಮ್ಮ ವಿಷಯವನ್ನು ಬ್ಯಾಕಪ್ ಮಾಡಿ ಹಾಗೂ ಅದನ್ನು ಯಾವುದೇ ಸಾಧನದಲ್ಲಿ ಬಳಸಿ.</translation>
 <translation id="834783239627985533">ಹೆಚ್ಚು ಭೇಟಿ ನೀಡಿರುವ ಸೈಟ್‌ಗಳು</translation>
-<translation id="8356276002902955750">{count,plural, =1{{count} ಬುಕ್‌ಮಾರ್ಕ್}one{{count} ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು}other{{count} ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು}}</translation>
 <translation id="8364841868226993049"><ph name="USER_EMAIL" /> ಗೆ ಸಂಬಂಧಿಸಿದ Google Photos ನಲ್ಲಿ ಚಿತ್ರವನ್ನು ಸೇವ್ ಮಾಡಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="8378714024927312812">ನಿಮ್ಮ ಸಂಸ್ಥೆಯ ಮೂಲಕ ನಿರ್ವಹಿಸಲಾಗಿದೆ</translation>
 <translation id="8386068868580335421">ಮರುಹೊಂದಿಸಿ</translation>

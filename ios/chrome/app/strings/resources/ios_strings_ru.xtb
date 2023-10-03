@@ -218,6 +218,7 @@
 <translation id="2195124168004379331">Ваш браузер в безопасности</translation>
 <translation id="2213327331203157297">Отключите режим блокировки входа в Chrome на своем устройстве iPhone.</translation>
 <translation id="2218443599109088993">Уменьшить</translation>
+<translation id="2220529011494928058">Сообщить о проблеме</translation>
 <translation id="2230173723195178503">Веб-страница загружена</translation>
 <translation id="2239626343334228536">Удаление данных о работе в браузере…</translation>
 <translation id="2242467532204595597">Открывайте ссылки в сообщениях, документах и других приложениях с помощью Chrome.</translation>
@@ -543,7 +544,6 @@
 <translation id="3959736869653157332">Меню → Новая вкладка инкогнито</translation>
 <translation id="3967822245660637423">Скачивание завершено.</translation>
 <translation id="3968505803272650567">Настроить интересы</translation>
-<translation id="3971789053442864420">{count,plural, =1{{count} пароль}one{{count} пароль}few{{count} пароля}many{{count} паролей}other{{count} пароля}}</translation>
 <translation id="3989635538409502728">Выйти</translation>
 <translation id="3995521777587992544">Индикатор загрузки страницы: выполнено <ph name="EMAIL" />.</translation>
 <translation id="4002019827078931033">Разместить адресную строку вверху</translation>
@@ -1338,7 +1338,6 @@
 <translation id="8328777765163860529">Закрыть все</translation>
 <translation id="8343993175958086504">Создайте резервную копию данных и используйте их на любом устройстве.</translation>
 <translation id="834783239627985533">Часто посещаемые сайты</translation>
-<translation id="8356276002902955750">{count,plural, =1{{count} закладка}one{{count} закладка}few{{count} закладки}many{{count} закладок}other{{count} закладки}}</translation>
 <translation id="8364841868226993049">Сохраняем изображение в Google Фото в аккаунте <ph name="USER_EMAIL" />…</translation>
 <translation id="8378714024927312812">Управляется вашей организацией</translation>
 <translation id="8386068868580335421">Сбросить</translation>

@@ -927,6 +927,7 @@
 <translation id="1723824996674794290">&amp;አዲስ መስኮት</translation>
 <translation id="1724801751621173132">ግቤት ቅጥ</translation>
 <translation id="1725562816265788801">የትር ሽብለላ</translation>
+<translation id="1726294682426724172">አዳዲስ ባህሪያት በGoogle ፎቶዎች ላይ አዘናጊዎችን ለማስወገድ ምትሃታዊ ማጥፊያ፣ የተሻሻሉ የቪዲዮ ጥሪ መሣሪያዎች እና ሌሎችንም ያካትታሉ</translation>
 <translation id="1726503915437308071">ሰያፍ ቅርጸ-ቁምፊ</translation>
 <translation id="1729533290416704613">እንዲሁም ከኦምኒቦክሱ ሆነው ሲፈልጉ የሚታየውን ገፅ ይቆጣጠራል።</translation>
 <translation id="1730666151302379551">የቀድሞ የይለፍ ቃልን ዘንጋ</translation>
@@ -1250,7 +1251,6 @@
 <translation id="1974060860693918893">የላቀ</translation>
 <translation id="1974159333077206889">በሁሉም ድምፅ ማጉያዎች ላይ ተመሳሳይ ኦዲዮ</translation>
 <translation id="1974216844776165821">Chrome የይለፍ ቃልዎን እዚህ መሣሪያ ላይ አስቀምጧል፣ ነገር ግን እርስዎ በምትኩ Google መለያዎ ላይ ሊያስቀምጡት ይችላሉ። በመቀጠል፣ የእርስዎ Google መለያ ውስጥ ያሉ ሁሉም የይለፍ ቃላት እና የይለፍ ቁልፎች እርስዎ በመለያ ገብተውም ሳለ ይገኛሉ።</translation>
-<translation id="1974821797477522211">ከአውታረ መረብ ጋር ይገናኙ</translation>
 <translation id="1975841812214822307">አስወግድ...</translation>
 <translation id="1976150099241323601">የደህንነት መሣሪያ ውስጥ ይግቡ</translation>
 <translation id="1976823515278601587">ትልቅ ቁጠባዎች</translation>
@@ -1932,7 +1932,6 @@
 <translation id="2485681265915754872">የGoogle Play አገልግሎት ውል</translation>
 <translation id="248676429071089168">ገጹን ወደታች ለማንቀሳቀስ ወደላይ ያሸብልሉ</translation>
 <translation id="2487067538648443797">አዲስ ዕልባት ያክሉ</translation>
-<translation id="2487268545026948104">የእርስዎን ውሂብ ወደነበረበት ለመመለስ፣ ወደ በይነመረብ ያገናኙ</translation>
 <translation id="2489686758589235262">2 ተጨማሪ መቀየሪያዎችን ይመድቡ</translation>
 <translation id="2489829450872380594">በሚቀጥለው ጊዜ አዲስ ስልክ ይህን <ph name="DEVICE_TYPE" /> ይከፍተዋል። በቅንብሮች ውስጥ Smart Lockን ማጥፋት ይችላሉ።</translation>
 <translation id="2489918096470125693">&amp;አቃፊ አክል...</translation>
@@ -2012,7 +2011,6 @@
 <translation id="2546991196809436099">በማያ ገጹ ላይ ያሉ ንጥሎችን ለማተለቅ ያጉሉ። ማጉያን ለማብራት እና ለማጥፋት Search + Ctrl + Mን ይጠቀሙ።</translation>
 <translation id="2548347166720081527"><ph name="PERMISSION" /> ተፈቅዷል</translation>
 <translation id="2548545707296594436">የኢሲም መገለጫ መሸጎጫን ዳግም ያስጀምሩ</translation>
-<translation id="2549435700753464129">ChromeOS ብሉቱዝ Floss</translation>
 <translation id="2549985041256363841">መቅረጽ ጀምር</translation>
 <translation id="2550212893339833758">የተተካ ማህደረ ትውስታ</translation>
 <translation id="2550596535588364872"><ph name="EXTENSION_NAME" /> <ph name="FILE_NAME" />ን እንዲከፍት ይፈቀድለት?</translation>
@@ -3503,7 +3501,6 @@
 <translation id="3771851622616482156">ክፍት ትሮችን ጨምሮ፣ ከዚህ ጣቢያ ዘግተው እንዲወጡ ይደረጋሉ</translation>
 <translation id="3772046291955677288"><ph name="BEGIN_LINK1" />የGoogle አገልግሎት ውል<ph name="END_LINK1" />ን እና <ph name="BEGIN_LINK2" />የChrome እና ChromeOS ተጨማሪ አገልግሎት ውል<ph name="END_LINK2" />ን አንብቤ ተስማምቼባቸዋለሁ።</translation>
 <translation id="3774166835015494435">የቅርብ ጊዜ ፎቶዎች እና ማሳወቂያዎች</translation>
-<translation id="3774546890772201673"><ph name="NAME" />ን ያዘምኑ።</translation>
 <translation id="3775432569830822555">SSL አገልጋይ ሰርቲፊኬት</translation>
 <translation id="3775705724665058594">ወደ መሣሪያዎችዎ ይላኩ</translation>
 <translation id="3776508619697147021">ጣቢያዎች ብዙ ፋይሎችን በራስ-ሰር ለማውረድ መጠየቅ ይችላሉ</translation>
@@ -8753,7 +8750,6 @@ nil</translation>
 <translation id="8077120325605624147">የሚጎበኙት ማንኛውም ጣቢያ ማንኛውንም ማስታወቂያ ሊያሳይዎ ይችላል</translation>
 <translation id="8077579734294125741">ሌሎች የChrome መገለጫዎች</translation>
 <translation id="80798452873915119">ጣቢያዎች በሁሉም የእርስዎ ማሳያዎች ላይ መስኮቶችን ለማስተዳደር መጠየቅ ይችላሉ</translation>
-<translation id="807990231167557618">የእርስዎ Chromebook ተዘምኗል።</translation>
 <translation id="8080028325999236607">ሁሉንም ትሮች ይዝጉ</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">ክፍለ ጊዜዎ በ<ph name="MANAGER_NAME" /> የሚተዳደር ነው። አስተዳዳሪዎች የእርስዎን መገለጫ መሰረዝ እና እንዲሁም የእርስዎን የአውታረ መረብ ትራፊክ መቆጣጠር ይችላሉ።</translation>

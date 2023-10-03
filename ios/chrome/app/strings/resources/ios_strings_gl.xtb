@@ -218,6 +218,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />borra os da
 <translation id="2195124168004379331">Parece que o teu navegador está ben</translation>
 <translation id="2213327331203157297">Para desactivar o modo de bloqueo en Chrome, desactívao no teu iPhone.</translation>
 <translation id="2218443599109088993">Afastar</translation>
+<translation id="2220529011494928058">Informar dun problema</translation>
 <translation id="2230173723195178503">Cargouse a páxina web</translation>
 <translation id="2239626343334228536">Borrando datos de navegación…</translation>
 <translation id="2242467532204595597">Utiliza Chrome sempre que toques ligazóns en mensaxes, en documentos e noutras aplicacións.</translation>
@@ -543,7 +544,6 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="3959736869653157332">Menú → Nova pestana do modo de incógnito</translation>
 <translation id="3967822245660637423">Descarga completa</translation>
 <translation id="3968505803272650567">Xestionar intereses</translation>
-<translation id="3971789053442864420">{count,plural, =1{{count} contrasinal}other{{count} contrasinais}}</translation>
 <translation id="3989635538409502728">Pechar sesión</translation>
 <translation id="3995521777587992544">Barra de progreso de carga de páxinas: cargouse <ph name="EMAIL" />.</translation>
 <translation id="4002019827078931033">Mover barra de enderezos á parte superior</translation>
@@ -1338,7 +1338,6 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="8328777765163860529">Pechar todo</translation>
 <translation id="8343993175958086504">Fai unha copia de seguranza dos teus datos e úsaos en calquera dispositivo.</translation>
 <translation id="834783239627985533">Sitios máis visitados</translation>
-<translation id="8356276002902955750">{count,plural, =1{{count} marcador}other{{count} marcadores}}</translation>
 <translation id="8364841868226993049">Gardando imaxe de <ph name="USER_EMAIL" /> en Google Fotos...</translation>
 <translation id="8378714024927312812">Xestionado pola túa organización</translation>
 <translation id="8386068868580335421">Restablecer</translation>

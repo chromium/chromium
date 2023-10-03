@@ -391,6 +391,9 @@ Se a política for definida como "Desativada" ou não for definida, as configura
 <translation id="1372618949173323717">Desativar JavaScript</translation>
 <translation id="1376119291123231789">Ativar o modo avançado de carregamento da bateria</translation>
 <translation id="1376765488559847650">CloudUpload</translation>
+<translation id="1379689277107868399">Quando a política for definida como DoNotPrompt ou deixada sem definição, o <ph name="PRODUCT_NAME" /> não vai pedir automaticamente que o usuário faça a autenticação de novo no navegador.
+
+Se definida como PromptInTab, quando a autenticação do usuário expirar, uma nova guia será aberta imediatamente com a página de login do Google. Isso só vai acontecer se você estiver usando a <ph name="CHROME_SYNC_NAME" />.</translation>
 <translation id="1384459581748403878">Referência: <ph name="REFERENCE_URL" /></translation>
 <translation id="1384594066274112751">Esta política determina que qualquer URL que corresponda a um ou mais padrões especificados, usando o formato de filtro <ph name="URL_BLOCKLIST_POLICY_NAME" />, nunca seja descartado pelo navegador.
       Isso se aplica à pressão da memória e ao descarte no modo de alta eficiência.
@@ -2526,23 +2529,6 @@ Se a política for definida como desativada ou não for definida, o menu de aces
 <translation id="3150351525324499342">Não mostrar o ícone do <ph name="PRODUCT_NAME" /> na barra de ferramentas por padrão, mas permitir que os usuários escolham</translation>
 <translation id="3152135410085709340">Permitir que os arquivos locais sejam acessados pelos URLs file:// nesses sites no Visualizador de PDF</translation>
 <translation id="3152425128389603870">Disponibilizar e ativar por padrão a área de trabalho unificada</translation>
-<translation id="3157857846231611820">Lista de configurações para os serviços do Chrome Enterprise Connectors que serão aplicadas ao conector <ph name="ON_FILE_ATTACHED_ENTERPRISE_CONNECTOR" />, que é acionado quando um arquivo é anexado ao Chrome.
-
-      Os campos <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> e <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> são usados para determinar se o conector envia um arquivo para análise quando é anexado a uma página específica e quais tags são incluídas na solicitação de análise desse arquivo. Uma tag correspondente ao padrão "ativar" será incluída na solicitação de análise se o URL da página corresponder a um padrão associado a essa tag. Isso acontece apenas se nenhum padrão "desativar" com a mesma tag corresponder ao URL da página. A análise é feita quando há pelo menos uma tag incluída na solicitação.
-
-      O campo <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> identifica o provedor de serviços de análise correspondente às configurações.
-
-      Se o campo <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" /> for definido como 1, o Chrome vai esperar uma resposta do serviço de análise antes de dar à página acesso ao arquivo. Qualquer outro valor inteiro dará à página acesso imediato ao arquivo.
-
-      O campo <ph name="ENTERPRISE_CONNECTOR_BLOCK_PASSWORD_PROTECTED_FIELD" /> controla se o Chrome bloqueia ou permite arquivos protegidos por senha.
-
-      O campo <ph name="ENTERPRISE_CONNECTOR_BLOCK_LARGE_FILES_FIELD" /> controla se o Chrome bloqueia ou permite arquivos grandes demais para ser analisados.
-
-      O campo <ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD" /> é usado com o objetivo de determinar para quais tags o conector precisa de uma justificativa do usuário para ignorar uma verificação que resulta em um aviso que pode ser ignorado. Quando o campo não é definido, presume-se que uma justificativa não é necessária.
-
-      Os campos <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" /> e <ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" /> são usados para configurar uma mensagem que informa ao usuário quando um aviso é mostrado após uma verificação apresentar um veredito não limpo. O campo "message" contém o texto que é mostrado ao usuário e pode ter no máximo 200 caracteres. O campo "learn_more_url" contém um URL fornecido pelo administrador em que o usuário pode clicar para receber mais informações fornecidas pelo cliente sobre o motivo de a ação ter sido bloqueada. O campo "language" é opcional e contém o idioma da mensagem. Deixar esse campo vazio ou com um valor "default" (padrão) indica uma mensagem que será usada quando o idioma do usuário não tiver mensagens. O campo "tag" especifica para quais tipos de verificação a mensagem é mostrada. A lista "custom_messages" pode ter zero ou mais entradas e cada uma delas precisa ter campos "message" e "tag" não vazios.
-
-      Configurações extras são necessárias para que essa política seja aplicada. Acesse https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting para mais informações.</translation>
 <translation id="3159375329008977062">O usuário tem permissão para exportar/importar contêineres do Crostini por meio da interface</translation>
 <translation id="3163167792874598128">Quando a política é ativada ou deixada sem definição, a promoção de avaliação na App Store pode ser mostrada para o usuário, no máximo uma vez por ano.
 Se a política for desativada, a promoção de avaliação na App Store não vai ser mostrada ao usuário.</translation>
@@ -3459,6 +3445,7 @@ Esta política é uma solução temporária e vai ser removida em marcos futuros
 <translation id="3870300103958000506">A não ser que <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" /> esteja definida como falsa, definir a política <ph name="ADS_SETTINGS_FOR_INTRUSIVE_ADS_SITES_POLICY_NAME" /> como 1 ou deixá-la sem definição permitirá anúncios em todos os sites.
 
       Se a política for definida como 2, os anúncios serão bloqueados em sites com anúncios invasivos.</translation>
+<translation id="3876564097829884243">Ativar o recurso EphemeralNetworkPolicies.</translation>
 <translation id="3877517141460819966">Modo de autenticação de segundo fator integrado</translation>
 <translation id="3877908683993837673">Esta política controla qual pilha de software é usada para se comunicar com o servidor DNS: o cliente DNS do sistema operacional ou o integrado do <ph name="PRODUCT_NAME" />. A política não afeta qual servidor DNS vai ser usado. Se, por exemplo, o sistema operacional estiver configurado para usar um servidor DNS empresarial, o mesmo servidor será usado pelo cliente DNS integrado. Ela também não controla como o DNS sobre HTTPS é usado. O <ph name="PRODUCT_NAME" /> sempre vai usar o resolvedor integrado para solicitações DNS sobre HTTPS. Consulte a política <ph name="DNS_OVER_HTTPS_MODE_POLICY_NAME" /> para informações sobre como controlar o DNS sobre HTTPS.
 
@@ -3575,6 +3562,7 @@ Esta política é uma solução temporária e vai ser removida em marcos futuros
 <translation id="3977304360459208438">Usar a configuração padrão para pacotes de criptografia 3DES em TLS</translation>
 <translation id="3979738908158213640">URLs que terão acesso para realizar o atestado do dispositivo durante a autenticação SAML</translation>
 <translation id="3982322576186033243">Não permitir hashes não seguros em handshakes do TLS</translation>
+<translation id="3982465141749620677">Pedir a reautenticação em uma guia</translation>
 <translation id="3983162212222338509">A resolução de DNS pode ser executada dentro ou fora do processo de rede, ou parcialmente dentro e parcialmente fora, dependendo da configuração do sistema e das flags de recursos.</translation>
 <translation id="3986700049001404598">Permitir que os usuários encerrem processos no gerenciador de tarefas do Chrome</translation>
 <translation id="398884292557092447">Se a política for definida como verdadeira ou não for definida, os usuários poderão controlar as sugestões de preenchimento automático para cartões de crédito na interface.
@@ -4876,6 +4864,19 @@ Quando a política não está definida ou é desativada, os cookies e os dados p
       Embora nenhuma política específica tenha precedência, consulte <ph name="COOKIES_BLOCKED_FOR_URLS_POLICY_NAME" /> e <ph name="COOKIES_ALLOWED_FOR_URLS_POLICY_NAME" />. Os padrões de URL dentre essas três políticas não podem ser conflitantes.
 
       Para ver informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> não é um valor aceitável para esta política.</translation>
+<translation id="5174547204575752627">Esta política controla a refatoração recente das APIs VideoDecoder no plug-in PPAPI.
+
+A migração afeta apenas os detalhes de implementação internos e não pode
+mudar nenhum comportamento. No entanto, ela pode ser usada caso algum app PPAPI
+não funcione como esperado.
+
+Quando a política for ativada ou deixada sem definição, o navegador vai decidir qual
+implementação será usada.
+Quando a política for desativada, o navegador vai usar a implementação antiga
+até que a política expire.
+
+OBSERVAÇÃO: somente processos de renderizador recém-iniciados vão refletir as mudanças nesta
+política enquanto o navegador estiver em execução.</translation>
 <translation id="5177260184597743704">Política de configuração para o conector OnSecurityEvent do Chrome Enterprise</translation>
 <translation id="5178479074002209469">Uma sinalização booleana indicando se as sessões de usuários não gerenciados precisam receber notificações e ter a desconexão forçada caso uma atualização seja exigida por esta política.</translation>
 <translation id="5179853299156742425">O URL no qual o download do modelo de espaço de trabalho pode ser feito.</translation>
@@ -4893,6 +4894,7 @@ Quando a política não está definida ou é desativada, os cookies e os dados p
 <translation id="519247340330463721">Configura as políticas relacionadas ao Safe Browsing.</translation>
 <translation id="5194683382395300627">Permitir o uso do <ph name="ASSISTANT_PRODUCT_NAME" /> na Web, por exemplo, para autorizar a mudança automática de senhas</translation>
 <translation id="5196630732055960309">Permitir a API File Handling nesses apps da Web</translation>
+<translation id="5205352023880027050">Não ativar o recurso EphemeralNetworkPolicies.</translation>
 <translation id="5206454085187851382">Se <ph name="PRINTERS_ALLOWLIST" /> for escolhida para <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" />, a definição de <ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME" /> especificará quais impressoras os usuários não podem usar. Apenas as impressoras com IDs correspondentes aos valores desta política estão disponíveis para o usuário. Os IDs precisam corresponder aos campos <ph name="ID_FIELD" /> ou <ph name="GUID_FIELD" /> no arquivo especificado na <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" />.</translation>
 <translation id="5207543664699568887">Configura se o <ph name="PRODUCT_NAME" /> no Linux usará notificações do sistema.
 
@@ -5420,6 +5422,31 @@ Quando definida para o quiosque do <ph name="PRODUCT_OS_NAME" />, esta política
 <translation id="5622924058222112599">Ativar o processo de lançamento padrão do CECPQ2</translation>
 <translation id="5623304306796942802">Solicitar quando houver várias correspondências de certificado</translation>
 <translation id="5625771176514429288">A execução de apps do Chrome será permitida nestas plataformas.</translation>
+<translation id="5627094573311711592">Configura uma lista de regras de controle de dados para evitar vazamentos. Pode haver vazamentos ao copiar e colar dados, anexar arquivos a páginas da Web, imprimir, fazer downloads etc.
+
+      Cada regra consiste no seguinte:
+      - Propriedades da origem de uma ação. Uma regra só será acionada se uma ação do usuário corresponder a todos os campos preenchidos em <ph name="DATA_CONTROLS_SOURCES" />. Para subcampos da lista, precisa haver correspondência de apenas uma entrada. Por exemplo, apenas um padrão de URL precisa ser correspondente para acionar a regra.
+      - Propriedades do destino de uma ação. Uma regra só será acionada se uma ação do usuário corresponder a todos os campos preenchidos em <ph name="DATA_CONTROLS_DESTINATIONS" />. Para subcampos da lista, precisa haver correspondência de apenas uma entrada. Por exemplo, apenas um padrão de URL precisa ser correspondente para acionar a regra.
+      - Uma lista de restrições a serem aplicadas aos dados das origens.
+
+      As regras podem ser aplicadas para controlar:
+      - Os dados na área de transferência compartilhados entre as origens e os destinos.
+      - A impressão de qualquer uma das origens.
+      - Os arquivos de controle que estão sendo anexados a qualquer um dos destinos.
+      - Os arquivos transferidos por download de qualquer uma das origens.
+
+      Se a política <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" /> for definida como verdadeira, as regras acionadas serão informadas ao administrador.
+      O nível de restrição pode ser definido como ALLOW, BLOCK, WARN, REPORT (permitir, bloquear, alertar, denunciar).
+      - Se a restrição for definida como ALLOW, a ação será autorizada. Isso também substitui as restrições aplicadas por outras regras.
+      - Se a restrição for definida como BLOCK, a ação não será autorizada.
+      - Se a restrição for definida como WARN, o usuário será avisado e poderá escolher entre continuar ou cancelar a ação.
+      - Se a restrição for definida como REPORT, a ação do usuário não será interrompida, mas um relatório será enviado se a política <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" /> estiver ativada.
+
+      Observações:
+      - Formate os padrões de URL da maneira descrita em https://support.google.com/chrome/a?p=url_blocklist_filter_format.
+      - Para regras de prevenção contra vazamento de dados específicas do <ph name="PRODUCT_OS_NAME" />, consulte também a política <ph name="DATA_LEAK_PREVENTION_RULES_LIST" />.
+
+      Se a política for deixada sem definição, nenhuma restrição será aplicada.</translation>
 <translation id="5630352020869108293">Restaurar a última sessão</translation>
 <translation id="5633871703004128675">Ativar o recurso de acessibilidade que destaca o cursor</translation>
 <translation id="5634032995857968056">Ativar o sandbox do contêiner do app Renderer</translation>
@@ -5922,21 +5949,6 @@ Se a política for deixada sem definição ou se a lista não tiver referências
 <translation id="6135398260575578389">O "Navegação segura" está ativo no modo avançado. Esse modo oferece maior segurança, mas requer o compartilhamento de mais informações de navegação com o Google.</translation>
 <translation id="6135552820180449830">Crosh (com suporte desde a versão 99)</translation>
 <translation id="6138636318340561140">Verifica em tempo real o status dos URLs no "Navegação segura"</translation>
-<translation id="6140635914906859015">Lista de configurações para os serviços do Chrome Enterprise Connectors que serão aplicadas ao conector <ph name="ON_BULK_DATA_ENTRY_ENTERPRISE_CONNECTOR" />, que é acionado quando há a inserção de dados no Chrome da área de transferência ou de conteúdos da Web pelo recurso de arrastar e soltar.
-
-      Os campos <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> e <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> são usados para determinar se o conector vai enviar dados para análise quando eles forem inseridos em uma página específica e quais tags serão incluídas na solicitação de análise desses dados. Uma tag correspondente ao padrão "ativar" é incluída na solicitação de análise se o URL da página corresponder a um padrão associado a essa tag. Isso acontece apenas se nenhum padrão "desativar" com a mesma tag corresponder ao URL da página. A análise é feita se pelo menos uma tag estiver incluída na solicitação.
-
-      O campo <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> identifica o provedor de serviços de análise correspondente às configurações.
-
-      Se o campo <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" /> for definido como 1, o Chrome espera uma resposta do serviço de análise antes de dar à página acesso aos dados. Qualquer outro valor inteiro dá à página acesso imediato aos dados.
-
-      O campo "<ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" />" indica que o tamanho mínimo (em bytes) dos dados inseridos no Chrome precisa ser igual ou maior para ser verificado. Se o campo não é definido, o valor padrão é de 100 bytes.
-
-      O campo <ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD" /> é usado para determinar para quais tags o conector precisa requisitar uma justificativa do usuário para ignorar uma verificação que resulta em um aviso que pode ser ignorado. Se o campo não for definido, presume-se que uma justificativa não é necessária.
-
-      Os campos <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" /> e <ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" /> são usados para configurar uma mensagem que informa ao usuário quando um aviso é mostrado após uma verificação apresentar um veredito não limpo. O campo "message" contém o texto que é mostrado ao usuário e pode ter no máximo 200 caracteres. O campo "learn_more_url" contém um URL fornecido pelo administrador em que o usuário pode clicar para receber mais informações fornecidas pelo cliente sobre o motivo de a ação ter sido bloqueada. O campo "language" é opcional e contém o idioma da mensagem. Deixar esse campo vazio ou com um valor "default" (padrão) indica uma mensagem que será usada quando o idioma do usuário não tiver mensagens. O campo "tag" especifica para quais tipos de verificação a mensagem é mostrada. A lista "custom_messages" pode ter zero ou mais entradas e cada uma delas precisa ter campos "message" e "tag" não vazios.
-
-      Configurações extras são necessárias para que essa política seja aplicada. Acesse https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting para mais informações.</translation>
 <translation id="6141402445226505817">Sempre usar detecção de fuso horário aproximada</translation>
 <translation id="6141944295566709543">Permitir que os usuários reproduzam mídia quando o dispositivo estiver bloqueado</translation>
 <translation id="6142501278956229253">Rasterizar o DPI de PDFs na impressão</translation>
@@ -6137,6 +6149,7 @@ Confira mais detalhes em https://developer.chrome.com/blog/immutable-document-do
 <translation id="6299554629216555326">Configurações de gerenciamento de janelas</translation>
 <translation id="6302021021024941085">Desativar as ferramentas de solução de problemas em quiosques.</translation>
 <translation id="6303118494824248488">URL da imagem do disco para download.</translation>
+<translation id="6303278429164386663">Controla a ativação do recurso EphemeralNetworkPolicies.</translation>
 <translation id="6305373713165475629">A definição da política substitui o modo de cor de impressão padrão. Se o modo não estiver disponível, a política será ignorada.</translation>
 <translation id="6308109234708949641">Esta política ativa o recurso do Screencast para usuários do Family Link e permite criar e transcrever gravações da tela e fazer upload delas no Drive.
       Esta política não afeta outros tipos de usuários.
@@ -6570,6 +6583,7 @@ Se deixada sem definição, a frequência padrão de 15 minutos será usada.</tr
       Se a política não for definida, os usuários poderão escolher as configurações de proxy.
 
       Observação: para ver exemplos detalhados, acesse The Chromium Projects (https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett, link em inglês).</translation>
+<translation id="6559643481486165125">Não pedir que os usuários façam a autenticação de novo</translation>
 <translation id="656130159911161669">As atualizações do ChromeOS ignoram a versão definida no manifesto do app de quiosque</translation>
 <translation id="6561396069801924653">Mostrar opções de acessibilidade no menu da bandeja do sistema</translation>
 <translation id="6562889469672829421">O tempo, em milissegundos, sem entrada do usuário até que a tela seja escurecida.</translation>
@@ -6670,21 +6684,6 @@ Se esta política for definida como verdadeira (padrão), o novo comportamento s
 
 Se ela for definida como falsa, o comportamento antigo será ativado.</translation>
 <translation id="663685822663765995">Restringir o modo de cor de impressão</translation>
-<translation id="6637946190026453735">Lista de configurações para os serviços do <ph name="PRODUCT_NAME" /> Enterprise Connectors que serão aplicados ao conector <ph name="ON_PRINT_ENTERPRISE_CONNECTOR" />, que é acionado quando uma página ou um arquivo é impresso usando o <ph name="PRODUCT_NAME" />.
-
-      Os campos <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> e <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> são usados para determinar se o conector envia dados para análise quando a impressão é acionada em uma página específica e quais tags são incluídas na solicitação de análise. A análise será feita se pelo menos uma tag for incluída na solicitação.
-
-      O campo <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> identifica o provedor de serviços de análise correspondente às configurações.
-
-      Se o campo <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" /> for definido como 1, o <ph name="PRODUCT_NAME" /> vai esperar uma resposta do serviço de análise antes de mostrar a caixa de diálogo da prévia de impressão da página. Qualquer outro valor inteiro significa que o <ph name="PRODUCT_NAME" /> mostra a caixa de diálogo da prévia de impressão imediatamente.
-
-      O campo <ph name="ENTERPRISE_CONNECTOR_BLOCK_LARGE_FILES_FIELD" /> controla se o <ph name="PRODUCT_NAME" /> bloqueia ou permite que arquivos/páginas grandes demais sejam analisados.
-
-      O campo <ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD" /> é usado com o objetivo de determinar para quais tags o conector precisa de uma justificativa do usuário para ignorar uma verificação que resulta em um aviso que pode ser ignorado. Quando o campo não é definido, presume-se que uma justificativa não é necessária.
-
-      Os campos <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" /> e <ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" /> são usados para configurar uma mensagem que informa ao usuário quando um aviso é mostrado após uma verificação apresentar um veredito não limpo. O administrador pode configurar mensagens de até 200 caracteres.
-
-      Configurações extras são necessárias para que essa política seja aplicada. Acesse https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting para mais informações.</translation>
 <translation id="6640355849038068978">Se esta configuração estiver ativada, os usuários vão poder abrir o app Eche, por exemplo, clicando na notificação do recurso Seu smartphone.
 
       Se ela estiver desativada, os usuários não vão poder abrir o app Eche.
@@ -7000,6 +6999,7 @@ política enquanto o navegador estiver em execução.</translation>
 Se ela for definida como "false" ou deixada sem definição, o layout não ficará disponível. É necessário reiniciar para que a mudança seja aplicada.</translation>
 <translation id="685769593149966548">Aplicar o Modo restrito rigoroso para o YouTube</translation>
 <translation id="686079137349561371">Microsoft Windows 7 ou versão posterior</translation>
+<translation id="6866755486434471318">Permitir que <ph name="PEPPER_NAME" /> use imagens compartilhadas para decodificar vídeos.</translation>
 <translation id="6881447940489194100">Hash SHA-256 dos dados codificado em hexadecimal.</translation>
 <translation id="68818134518270542">A definição da política especifica os apps que os usuários podem ativar para fazer anotações na tela de bloqueio do <ph name="PRODUCT_OS_NAME" />.
 
@@ -7357,6 +7357,10 @@ O <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> indica a quantidade míni
 
       Se esta política não for definida, o navegador poderá enviar solicitações DNS sobre HTTPS para um resolvedor associado ao resolvedor do sistema configurado pelo usuário.</translation>
 <translation id="7152640356717355643">Ativar relatórios sobre a interface de rede do dispositivo</translation>
+<translation id="7153786895642570081">Esta política controla a ativação do recurso EphemeralNetworkPolicies.
+Quando ela é definida como verdadeira, as entradas RecommendedValuesAreEphemeral e UserCreatedNetworkConfigurationsAreEphemeral de DeviceOpenNetworkConfiguration são respeitadas.
+Quando a política é deixada sem definição ou definida como falsa, as políticas de rede mencionadas só são respeitadas quando o recurso EphemeralNetworkPolicies está ativado.
+Esta política será removida quando o recurso EphemeralNetworkPolicies ficar ativado por padrão.</translation>
 <translation id="7157329428182136164">Ativar suporte a APIs de gráficos 3D</translation>
 <translation id="7158358621906236999">Configuração padrão de sensores</translation>
 <translation id="7161568070244869726">Forçar a ativação do AppCache</translation>
@@ -7706,23 +7710,6 @@ Se a política não for definida, ela será funcionalmente equivalente a ser def
 <translation id="7477149584454865826">Flag booleana indicando se o IPP Everywhere deve ser usado ou não para configurar a impressora.</translation>
 <translation id="7477231245051133709">Ativar o recurso de acessibilidade de áudio mono</translation>
 <translation id="7479408102162550711">Informar eventos de rede</translation>
-<translation id="7480826412572122600">Lista de configurações para os serviços do Chrome Enterprise Connectors que serão aplicadas ao conector <ph name="ON_FILE_DOWNLOADED_ENTERPRISE_CONNECTOR" />, que é acionado quando o download de um arquivo é feito no Chrome.
-
-      Os campos <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> e <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> são usados para determinar se o conector envia um arquivo para análise quando o download é feito em uma página específica e quais tags são incluídas na solicitação de análise desse arquivo. Uma tag correspondente ao padrão "ativar" será incluída na solicitação de análise se o URL da página corresponder a um padrão associado a essa tag. Isso acontece apenas se nenhum padrão "desativar" com a mesma tag corresponder ao URL da página. A análise é feita quando há pelo menos uma tag incluída na solicitação.
-
-      O campo <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> identifica o provedor de serviços de análise correspondente às configurações.
-
-      Se o campo <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" /> for definido como 1, o Chrome vai esperar uma resposta do serviço de análise antes de dar ao usuário acesso ao arquivo. Qualquer outro valor inteiro dará ao usuário acesso imediato ao arquivo.
-
-      O campo <ph name="ENTERPRISE_CONNECTOR_BLOCK_PASSWORD_PROTECTED_FIELD" /> controla se o Chrome bloqueia ou permite arquivos protegidos por senha.
-
-      O campo <ph name="ENTERPRISE_CONNECTOR_BLOCK_LARGE_FILES_FIELD" /> controla se o Chrome bloqueia ou permite arquivos grandes demais para ser analisados.
-
-      O campo <ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD" /> é usado com o objetivo de determinar para quais tags o conector precisa exigir uma justificativa do usuário para ignorar uma verificação que resulta em um aviso que pode ser ignorado. Quando o campo não é definido, presume-se que uma justificativa não é necessária.
-
-      Os campos <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" /> e <ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" /> são usados para configurar uma mensagem que informa ao usuário quando um aviso é mostrado após uma verificação apresentar um veredito não limpo. O campo "message" contém o texto que é mostrado ao usuário e pode ter no máximo 200 caracteres. O campo "learn_more_url" contém um URL fornecido pelo administrador em que o usuário pode clicar para receber mais informações fornecidas pelo cliente sobre o motivo de a ação ter sido bloqueada. O campo "language" é opcional e contém o idioma da mensagem. Deixar esse campo vazio ou com um valor "default" (padrão) indica uma mensagem que será usada quando o idioma do usuário não tiver mensagens. O campo "tag" especifica para quais tipos de verificação a mensagem é mostrada. A lista "custom_messages" pode ter zero ou mais entradas e cada uma delas precisa ter campos "message" e "tag" não vazios.
-
-      Configurações extras são necessárias para que essa política seja aplicada. Acesse https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting para mais informações.</translation>
 <translation id="7481702249684965639">A lixeira está ativada para o usuário.</translation>
 <translation id="7482768039644066614">Ativar a busca de metadados para carregamento de página e dos modelos de aprendizado de máquina para melhorar a experiência de navegação</translation>
 <translation id="748292668225669178">Configura a instalação do <ph name="MICROSOFT_ONE_DRIVE_NAME" /></translation>
@@ -9172,6 +9159,9 @@ Se a política for deixada sem definição, nenhuma senha salva será importada 
       Se você definir a política, os usuários não poderão mudar essa função. Se ela não for definida, os usuários poderão mudar a configuração.</translation>
 <translation id="8707790573162457301">Executar a limpeza de disco automática durante o login</translation>
 <translation id="8713535263782304771">Desativar o Navegação segura</translation>
+<translation id="8714556680280715750">Um URL que os usuários podem acessar para saber mais. Se essa propriedade não for configurada, não
+haverá um URL do tipo "saiba mais" no instalador. Se estiver presente, ela precisará usar
+o esquema https.</translation>
 <translation id="8715181294371649277">Permitir a proteção de downloads em tempo real da Navegação segura</translation>
 <translation id="8715885991031124968">Permitir caixas de diálogo de JavaScript acionadas por um subframe de origem diferente.</translation>
 <translation id="8720547069538712402">Permitir que o usuário ative ou desative a verificação ortográfica</translation>
@@ -9196,6 +9186,7 @@ Se a política for deixada sem definição, nenhuma senha salva será importada 
 <translation id="8744844164152340112">Controla o tema usado para renderizar a interface na configuração inicial feita pelo usuário e durante a sessão (escuro/claro/automático).
       O modo automático troca automaticamente entre os temas claro e escuro ao amanhecer e ao anoitecer.
       Esta política precisa ser recomendada para dar aos usuários a possibilidade de mudar o tema nas configurações do sistema.</translation>
+<translation id="8744997936011793680">Pedir que os usuários façam a autenticação do perfil de novo</translation>
 <translation id="8749536858950505376">Se esta política for definida como verdadeira, o cursor grande será ativado. Se esta política for definida como falsa, o cursor grande será desativado.
 
       Se você definir a política, os usuários não poderão mudar o recurso. Se a política não for definida, o cursor grande será desativado inicialmente, mas os usuários poderão ativá-lo quando quiserem.</translation>

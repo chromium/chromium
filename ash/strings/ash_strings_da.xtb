@@ -1501,7 +1501,6 @@ Installeret for nylig</translation>
 <translation id="7188494361780961876">Menuen blev flyttet til øverste venstre hjørne af skærmen.</translation>
 <translation id="7189412385142492784">Hvor langt væk er Venus?</translation>
 <translation id="7198435252016571249">Kameraet er fastgjort til hjørnet nederst til højre. Dette er i strid med systemfladen.</translation>
-<translation id="7219573373513695352">Ingen enheder er forbundet</translation>
 <translation id="7229029500464092426">Hukommelse <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> i alt</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Denne Chromebook skal genstartes, før opdateringen kan anvendes. Dette kan tage op til 1 minut.</translation>
 <translation id="7256634071279256947">Mikrofon på bagsiden</translation>
@@ -1942,7 +1941,6 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="9089416786594320554">Inputmetoder</translation>
 <translation id="9091626656156419976">Skærmen <ph name="DISPLAY_NAME" /> blev fjernet</translation>
 <translation id="9098969848082897657">Sæt telefonen på lydløs</translation>
-<translation id="9120448753905017833">Vi har deaktiveret Wi-Fi, og der bruges hotspot via mobildata. Dette kan medføre dataomkostninger.</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> eller <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">Fortryd seneste handling</translation>
 <translation id="9133335900048457298">Der kan ikke optages beskyttet indhold</translation>

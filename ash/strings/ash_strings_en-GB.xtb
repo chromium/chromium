@@ -1505,7 +1505,6 @@ New install</translation>
 <translation id="7188494361780961876">Menu moved to the top-left corner of the screen.</translation>
 <translation id="7189412385142492784">How far is Venus</translation>
 <translation id="7198435252016571249">Camera snapped to the bottom-right corner. Conflict with system surface.</translation>
-<translation id="7219573373513695352">No devices connected</translation>
 <translation id="7229029500464092426">Memory <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> total</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. This Chromebook needs to restart to apply an update. This can take up to one minute.</translation>
 <translation id="7256634071279256947">Rear microphone</translation>
@@ -1947,7 +1946,6 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="9089416786594320554">Input methods</translation>
 <translation id="9091626656156419976">Removed display <ph name="DISPLAY_NAME" /></translation>
 <translation id="9098969848082897657">Silence phone</translation>
-<translation id="9120448753905017833">We've turned off the Wi-Fi to start using hotspot through mobile data. This may incur data costs.</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> or <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">Undo last action</translation>
 <translation id="9133335900048457298">Can't record protected content</translation>

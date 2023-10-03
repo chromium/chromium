@@ -218,6 +218,7 @@
 <translation id="2195124168004379331">你的瀏覽器安全無虞</translation>
 <translation id="2213327331203157297">在 iPhone 上關閉「封鎖模式」，就能在 Chrome 中停用此模式。</translation>
 <translation id="2218443599109088993">縮小</translation>
+<translation id="2220529011494928058">報告問題</translation>
 <translation id="2230173723195178503">已載入網頁</translation>
 <translation id="2239626343334228536">正在清除瀏覽資料…</translation>
 <translation id="2242467532204595597">隨時使用 Chrome 開啟訊息、文件和其他應用程式中的連結。</translation>
@@ -543,7 +544,6 @@
 <translation id="3959736869653157332">「選單」→「新無痕式分頁」</translation>
 <translation id="3967822245660637423">下載完成</translation>
 <translation id="3968505803272650567">管理興趣</translation>
-<translation id="3971789053442864420">{count,plural, =1{{count} 個密碼}other{{count} 個密碼}}</translation>
 <translation id="3989635538409502728">登出</translation>
 <translation id="3995521777587992544">網頁載入進度列，已經載入咗 <ph name="EMAIL" />。</translation>
 <translation id="4002019827078931033">將網址列移至頂部</translation>
@@ -1336,7 +1336,6 @@
 <translation id="8328777765163860529">全部關閉</translation>
 <translation id="8343993175958086504">備份資料即可在任何裝置上使用。</translation>
 <translation id="834783239627985533">最常瀏覽的網站</translation>
-<translation id="8356276002902955750">{count,plural, =1{{count} 個書籤}other{{count} 個書籤}}</translation>
 <translation id="8364841868226993049">正在將圖片儲存至 <ph name="USER_EMAIL" /> 的「Google 相片」…</translation>
 <translation id="8378714024927312812">由您的機構管理</translation>
 <translation id="8386068868580335421">重設</translation>
