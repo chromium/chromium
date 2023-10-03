@@ -5863,10 +5863,9 @@ class SSLUITestNoCert : public SSLUITest,
   SSLUITestNoCert() = default;
   ~SSLUITestNoCert() override = default;
 
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitch(switches::kDisableTestCerts);
+  void SetUp() override {
     net::TestRootCerts::GetInstance()->Clear();
-    SSLUITest::SetUpCommandLine(command_line);
+    SSLUITest::SetUp();
   }
 
   // CertificateManagerModel::Observer implementation:

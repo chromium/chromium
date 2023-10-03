@@ -321,7 +321,6 @@ bool UtilityProcessHost::StartProcess() {
       sandbox::policy::switches::kEnableSandboxLogging,
       os_crypt::switches::kUseMockKeychain,
 #endif
-      switches::kDisableTestCerts,
       switches::kEnableBackgroundThreadPool,
       switches::kEnableExperimentalCookieFeatures,
       switches::kEnableLogging,
