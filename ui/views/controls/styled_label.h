@@ -80,7 +80,7 @@ class VIEWS_EXPORT StyledLabel : public View {
 
     // A custom view shown instead of the underlying text. Ownership of custom
     // views must be passed to StyledLabel via AddCustomView().
-    raw_ptr<View, DanglingUntriaged> custom_view = nullptr;
+    raw_ptr<View> custom_view = nullptr;
   };
 
   // Sizing information for laying out the label based on a particular width.
@@ -248,13 +248,13 @@ class VIEWS_EXPORT StyledLabel : public View {
 
   absl::optional<int> line_height_;
 
-  // The ranges that should be linkified, sorted by start position.
-  StyleRanges style_ranges_;
-
   // Temporarily owns the custom views until they've been been placed into the
   // StyledLabel's child list. This list also holds the custom views during
   // layout.
   std::list<std::unique_ptr<View>> custom_views_;
+
+  // The ranges that should be linkified, sorted by start position.
+  StyleRanges style_ranges_;
 
   // Saves the effects of the last CalculateLayout() call to avoid repeated
   // calculation.  |layout_size_info_| can then be cached until the next
