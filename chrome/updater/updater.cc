@@ -15,7 +15,9 @@
 #include "base/logging.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/process/memory.h"
+#include "base/process/process_handle.h"
 #include "base/ranges/algorithm.h"
+#include "base/system/sys_info.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/platform_thread.h"
@@ -281,9 +283,11 @@ int UpdaterMain(int argc, const char* const* argv) {
 
   const UpdaterScope updater_scope = GetUpdaterScope();
   InitLogging(updater_scope);
-
   VLOG(1) << "Version " << kUpdaterVersion << ", " << BuildFlavor() << ", "
           << BuildArch() << ", command line: " << GetCommandLineString();
+  VLOG(1) << "System uptime (seconds): " << base::SysInfo::Uptime().InSeconds()
+          << ", parent pid: "
+          << base::GetParentProcessId(base::GetCurrentProcessHandle());
   const int retval = HandleUpdaterCommands(updater_scope, command_line);
   VLOG(1) << __func__ << " (--" << GetUpdaterCommand(command_line) << ")"
           << " returned " << retval << ".";
