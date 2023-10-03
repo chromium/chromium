@@ -29,8 +29,9 @@ FieldInfoManagerFactory::FieldInfoManagerFactory()
 FieldInfoManagerFactory::~FieldInfoManagerFactory() = default;
 
 // BrowserContextKeyedServiceFactory overrides:
-KeyedService* FieldInfoManagerFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+FieldInfoManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new FieldInfoManager(
+  return std::make_unique<FieldInfoManager>(
       base::SingleThreadTaskRunner::GetCurrentDefault());
 }
