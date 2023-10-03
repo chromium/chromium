@@ -29,6 +29,8 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 
+typedef void (^BlockWithViewController)(UIViewController*);
+
 // Expose mediator to test coordinator.
 @interface MiniMapCoordinator (Testing) <MiniMapMediatorDelegate>
 // Override the mediator property
@@ -338,8 +340,7 @@ TEST_F(MiniMapCoordinatorTest, TestOpenURL) {
 }
 
 // Tests the footer buttons.
-// TODO(crbug.com/1488572): Test is failing on bots.
-TEST_F(MiniMapCoordinatorTest, DISABLED_TestFooterButtons) {
+TEST_F(MiniMapCoordinatorTest, TestFooterButtons) {
   base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(web::features::kOneTapForMaps);
@@ -349,23 +350,23 @@ TEST_F(MiniMapCoordinatorTest, DISABLED_TestFooterButtons) {
   id mini_map_controller = OCMStrictProtocolMock(@protocol(MiniMapController));
   factory_.controller = mini_map_controller;
 
-  __block ProceduralBlock left_button_block;
-  __block ProceduralBlock right_button_block;
+  __block BlockWithViewController left_button_block;
+  __block BlockWithViewController right_button_block;
 
   OCMExpect([mini_map_controller
       configureFooterWithTitle:[OCMArg any]
             leadingButtonTitle:[OCMArg any]
            trailingButtonTitle:[OCMArg any]
-           leadingButtonAction:[OCMArg
-                                   checkWithBlock:^BOOL(ProceduralBlock block) {
-                                     left_button_block = block;
-                                     return YES;
-                                   }]
-          trailingButtonAction:[OCMArg
-                                   checkWithBlock:^BOOL(ProceduralBlock block) {
-                                     right_button_block = block;
-                                     return YES;
-                                   }]]);
+           leadingButtonAction:[OCMArg checkWithBlock:^BOOL(
+                                           BlockWithViewController block) {
+             left_button_block = block;
+             return YES;
+           }]
+          trailingButtonAction:[OCMArg checkWithBlock:^BOOL(
+                                           BlockWithViewController block) {
+            right_button_block = block;
+            return YES;
+          }]]);
 
   OCMExpect([mini_map_controller
       presentMapsWithPresentingViewController:[OCMArg any]]);
@@ -374,14 +375,14 @@ TEST_F(MiniMapCoordinatorTest, DISABLED_TestFooterButtons) {
   OCMExpect([mock_application_settings_command_handler_
       showContentsSettingsFromViewController:[OCMArg any]]);
   histogram_tester.ExpectBucketCount("IOS.MiniMap.Outcome", 3, 0);
-  left_button_block();
+  left_button_block(nil);
   histogram_tester.ExpectBucketCount("IOS.MiniMap.Outcome", 3, 1);
 
   OCMExpect([mock_application_command_handler_
       showReportAnIssueFromViewController:[OCMArg any]
                                    sender:UserFeedbackSender::MiniMap]);
   histogram_tester.ExpectBucketCount("IOS.MiniMap.Outcome", 2, 0);
-  right_button_block();
+  right_button_block(nil);
   histogram_tester.ExpectBucketCount("IOS.MiniMap.Outcome", 2, 1);
 
   OCMExpect([mock_mini_map_command_handler_ hideMiniMap]);
