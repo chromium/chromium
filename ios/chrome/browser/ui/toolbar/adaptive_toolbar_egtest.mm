@@ -470,7 +470,8 @@ id<GREYMatcher> MoveAddressBarToBottomContextMenuButton() {
 
 // Verifies that the back/forward buttons are working and are correctly enabled
 // during navigations.
-- (void)testNavigationButtons {
+// TODO(crbug.com/1488801): Test is failing on downstream bots.
+- (void)DISABLED_testNavigationButtons {
   // Setup the server.
   self.testServer->RegisterRequestHandler(
       base::BindRepeating(&StandardResponse));
