@@ -117,6 +117,13 @@ void ExternalAppDialog::SetMockShowForTesting(
   g_mock_show_function = callback;
 }
 
+// static
+void ExternalAppDialog::CloseForTesting() {
+  if (g_instance) {
+    g_instance->widget_->Close();
+  }
+}
+
 ExternalAppDialog::ExternalAppDialog(const InitParams& params)
     : content::WebContentsObserver(nullptr),
       on_console_log_(params.on_console_log) {
@@ -140,9 +147,9 @@ ExternalAppDialog::ExternalAppDialog(const InitParams& params)
       ash::Shell::GetContainer(ash::Shell::GetPrimaryRootWindow(),
                                ash::kShellWindowId_LockSystemModalContainer);
 
-  views::Widget* widget = new views::Widget;
-  widget->Init(std::move(widget_params));
-  widget->Show();
+  widget_ = new views::Widget;
+  widget_->Init(std::move(widget_params));
+  widget_->Show();
 }
 
 ExternalAppDialog::~ExternalAppDialog() {

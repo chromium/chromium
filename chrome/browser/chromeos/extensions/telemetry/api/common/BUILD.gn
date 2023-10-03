@@ -208,6 +208,7 @@ source_set("unit_tests") {
 
   if (is_chromeos_ash) {
     deps += [
+      "//ash/webui/shimless_rma/3p_diagnostics",
       "//chrome/browser/ash:test_support",
       "//chrome/common/chromeos/extensions",
       "//components/user_manager",

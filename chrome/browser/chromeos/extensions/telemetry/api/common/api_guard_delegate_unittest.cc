@@ -10,6 +10,7 @@
 #include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/run_loop.h"
 #include "base/test/test_future.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/common/api_guard_delegate.h"
@@ -33,6 +34,10 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/session/session_controller.h"
+#include "ash/public/cpp/session/session_types.h"
+#include "ash/shell.h"
+#include "ash/webui/shimless_rma/3p_diagnostics/external_app_dialog.h"
 #include "base/command_line.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
@@ -47,6 +52,7 @@
 #include "components/account_id/account_id.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user.h"
+#include "content/public/browser/web_contents_observer.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -549,6 +555,29 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 // TODO(b/292227137): Migrate Shimless RMA app to LaCrOS.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+
+class WebContentsCloseWaiter : public content::WebContentsObserver {
+ public:
+  explicit WebContentsCloseWaiter(content::WebContents* contents);
+  WebContentsCloseWaiter(const WebContentsCloseWaiter&) = delete;
+  WebContentsCloseWaiter& operator=(const WebContentsCloseWaiter&) = delete;
+
+  void Wait() { future_.Wait(); }
+
+ private:
+  // content::WebContentsObserver overrides.
+  void WebContentsDestroyed() override;
+
+  base::test::TestFuture<void> future_;
+};
+
+WebContentsCloseWaiter::WebContentsCloseWaiter(content::WebContents* contents)
+    : content::WebContentsObserver(contents) {}
+
+void WebContentsCloseWaiter::WebContentsDestroyed() {
+  future_.SetValue();
+}
+
 class ApiGuardDelegateShimlessRMAAppTest : public ApiGuardDelegateTest {
  public:
   ApiGuardDelegateShimlessRMAAppTest() = default;
@@ -573,9 +602,41 @@ class ApiGuardDelegateShimlessRMAAppTest : public ApiGuardDelegateTest {
 
     // Above overrides need to be done before creating extensions.
     ApiGuardDelegateTest::SetUp();
+
+    ash::Shell::Get()->session_controller()->SetSessionInfo(ash::SessionInfo{
+        .can_lock_screen = true,
+        .should_lock_screen_automatically = false,
+        .add_user_session_policy = ash::AddUserSessionPolicy::ALLOWED,
+        .state = session_manager::SessionState::RMA,
+    });
+  }
+
+  void TearDown() override {
+    if (ash::shimless_rma::ExternalAppDialog::GetWebContents()) {
+      WebContentsCloseWaiter waiter(
+          ash::shimless_rma::ExternalAppDialog::GetWebContents());
+      ash::shimless_rma::ExternalAppDialog::CloseForTesting();
+      waiter.Wait();
+    }
+    ApiGuardDelegateTest::TearDown();
   }
 
  protected:
+  void OpenShimlessRmaAppDialog() {
+    ash::shimless_rma::ExternalAppDialog::InitParams params;
+    params.context = profile();
+    params.app_name = "App Name";
+    params.content_url = GURL(app_ui_url());
+    ash::shimless_rma::ExternalAppDialog::Show(params);
+
+    // Wait for WebContents being created.
+    base::RunLoop().RunUntilIdle();
+    auto* content = ash::shimless_rma::ExternalAppDialog::GetWebContents();
+    CHECK(content);
+
+    CommitPendingLoad(&content->GetController());
+  }
+
   // BrowserWithTestWindowTest overrides.
   TestingProfile* CreateProfile() override {
     return profile_manager()->CreateTestingProfile(
@@ -605,28 +666,8 @@ TEST_P(ApiGuardDelegateShimlessRMAAppTest, IwaNotOpen) {
   EXPECT_EQ("Companion app UI is not open or not secure", error.value());
 }
 
-TEST_P(ApiGuardDelegateShimlessRMAAppTest, AppIsOpenButNotSecure) {
-  OpenAppUIUrlAndSetCertificateWithStatus(
-      /*cert_status=*/net::CERT_STATUS_INVALID);
-
-  auto api_guard_delegate = ApiGuardDelegate::Factory::Create();
-  base::test::TestFuture<absl::optional<std::string>> future;
-  api_guard_delegate->CanAccessApi(profile(), extension(),
-                                   future.GetCallback());
-
-  ASSERT_TRUE(future.Wait());
-  absl::optional<std::string> error = future.Get();
-  if (base::StartsWith(app_ui_url(), chrome::kIsolatedAppScheme)) {
-    // IWA are always considered secure.
-    EXPECT_FALSE(error.has_value()) << error.value();
-  } else {
-    ASSERT_TRUE(error.has_value());
-    EXPECT_EQ("Companion app UI is not open or not secure", error.value());
-  }
-}
-
 TEST_P(ApiGuardDelegateShimlessRMAAppTest, ManufacturerNotAllowed) {
-  OpenAppUIUrlAndSetCertificateWithStatus(/*cert_status=*/net::OK);
+  OpenShimlessRmaAppDialog();
 
   // Make sure device manufacturer is not allowed.
   SetDeviceManufacturer("NOT_ALLOWED");
@@ -644,7 +685,7 @@ TEST_P(ApiGuardDelegateShimlessRMAAppTest, ManufacturerNotAllowed) {
 }
 
 TEST_P(ApiGuardDelegateShimlessRMAAppTest, NoError) {
-  OpenAppUIUrlAndSetCertificateWithStatus(/*cert_status=*/net::OK);
+  OpenShimlessRmaAppDialog();
 
   auto api_guard_delegate = ApiGuardDelegate::Factory::Create();
   base::test::TestFuture<absl::optional<std::string>> future;
@@ -655,11 +696,6 @@ TEST_P(ApiGuardDelegateShimlessRMAAppTest, NoError) {
   EXPECT_FALSE(error.has_value()) << error.value();
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         ApiGuardDelegateShimlessRMAAppTest,
-                         testing::ValuesIn(kAllExtensionInfoTestParams));
-// TODO(chungsheng): Add this to `kAllExtensionInfoTestParams` once the
-// `kIWAForTelemetryExtensionAPI` is enabled by default.
 INSTANTIATE_TEST_SUITE_P(
     IWA,
     ApiGuardDelegateShimlessRMAAppTest,

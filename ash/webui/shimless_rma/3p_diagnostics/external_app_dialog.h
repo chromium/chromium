@@ -20,6 +20,7 @@ class BrowserContext;
 
 namespace views {
 class WebDialogView;
+class Widget;
 }  // namespace views
 
 namespace ash::shimless_rma {
@@ -64,6 +65,9 @@ class ExternalAppDialog : public ui::WebDialogDelegate,
   static void SetMockShowForTesting(
       base::RepeatingCallback<void(const InitParams& params)> callback);
 
+  // Closes the open dialog in test. Does nothing if there is no open dialog.
+  static void CloseForTesting();
+
  protected:
   explicit ExternalAppDialog(const InitParams& params);
   ExternalAppDialog(const ExternalAppDialog&) = delete;
@@ -87,6 +91,8 @@ class ExternalAppDialog : public ui::WebDialogDelegate,
 
   // views::WebDialogView that owns this delegate.
   raw_ptr<views::WebDialogView> web_dialog_view_;
+  // views::Widget that owns this delegate.
+  raw_ptr<views::Widget> widget_;
   // Callback for handling the console log from the app.
   ConsoleLogCallback on_console_log_;
 };
