@@ -325,9 +325,12 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
     BubbleUmaLogger();
     ~BubbleUmaLogger();
 
-    void set_bubble_name(std::string bubble_name) {
-      bubble_name_ = bubble_name;
+    void set_delegate(views::BubbleDialogDelegate* delegate) {
+      delegate_ = delegate;
     }
+    void set_bubble_view(views::View* view) { bubble_view_ = view; }
+
+    absl::optional<std::string> GetBubbleName() const;
 
     base::WeakPtr<BubbleUmaLogger> GetWeakPtr();
 
@@ -341,7 +344,8 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
                    Value value) const;
 
    private:
-    absl::optional<std::string> bubble_name_;
+    absl::optional<raw_ptr<views::View>> bubble_view_;
+    absl::optional<raw_ptr<views::BubbleDialogDelegate>> delegate_;
     base::WeakPtrFactory<BubbleUmaLogger> weak_factory_{this};
   };
 
