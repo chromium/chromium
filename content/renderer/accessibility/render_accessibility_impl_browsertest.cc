@@ -922,6 +922,56 @@ TEST_F(RenderAccessibilityImplTest, TestAXActionTargetFromNodeId) {
   EXPECT_EQ(ui::AXActionTarget::Type::kNull, null_action_target->GetType());
 }
 
+TEST_F(RenderAccessibilityImplTest, SendPendingAccessibilityEventsPostLoad) {
+  LoadHTMLAndRefreshAccessibilityTree(R"HTML(
+      <body>
+        <input id="text" value="Hello, World">
+      </body>
+      )HTML");
+
+  // No logs initially.
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.Performance.SendPendingAccessibilityEvents", 0);
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.Performance.SendPendingAccessibilityEvents.PostLoad", 0);
+
+  // A load started event pauses logging.
+  WebDocument document = GetMainFrame()->GetDocument();
+  WebAXObject root_obj = WebAXObject::FromWebDocument(document);
+  GetRenderAccessibilityImpl()->HandleAXEvent(
+      ui::AXEvent(root_obj.AxID(), ax::mojom::Event::kLoadStart));
+  SendPendingAccessibilityEvents();
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.Performance.SendPendingAccessibilityEvents", 1);
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.Performance.SendPendingAccessibilityEvents.PostLoad", 0);
+
+  // Do not log in the serialization immediately following load completion.
+  GetRenderAccessibilityImpl()->HandleAXEvent(
+      ui::AXEvent(root_obj.AxID(), ax::mojom::Event::kLoadComplete));
+  SendPendingAccessibilityEvents();
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.Performance.SendPendingAccessibilityEvents", 2);
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.Performance.SendPendingAccessibilityEvents.PostLoad", 0);
+
+  // Now we start logging.
+  GetRenderAccessibilityImpl()->MarkWebAXObjectDirty(root_obj, false);
+  SendPendingAccessibilityEvents();
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.Performance.SendPendingAccessibilityEvents", 3);
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.Performance.SendPendingAccessibilityEvents.PostLoad", 1);
+
+  GetRenderAccessibilityImpl()->MarkWebAXObjectDirty(root_obj, false);
+  SendPendingAccessibilityEvents();
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.Performance.SendPendingAccessibilityEvents", 4);
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.Performance.SendPendingAccessibilityEvents.PostLoad", 2);
+}
+
 class BlinkAXActionTargetTest : public RenderAccessibilityImplTest {
  protected:
   void SetUp() override {
