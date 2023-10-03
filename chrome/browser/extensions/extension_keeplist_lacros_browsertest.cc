@@ -32,12 +32,6 @@ const char kExtensionAppRunInAshOnlyId[] = "dddddddddddddddddddddddddddd";
 
 const char kTestExtensionId[] = "pkplfbidichfdicaijlchgnapepdginl";
 const char kTestChromeAppId[] = "knldjmfmopnpolahpmmgbagdohdnhkik";
-
-bool DoesAshSupportKeeplistInCmdlineSwitch() {
-  auto capabilities = chromeos::BrowserParamsProxy::Get()->AshCapabilities();
-  return capabilities && base::Contains(*capabilities, "crbug/1409199");
-}
-
 }  // namespace
 
 using LacrosExtensionKeeplistTest = ExtensionApiTest;
@@ -80,35 +74,17 @@ class ExtensionAppsAppServiceBlocklistTest
 
   void InstallTestChromeApp() {
     DCHECK(test_app_id_.empty());
-    // TODO(crbug/1409199): Remove the fake gnubbyd app when the old
-    // ash versions support commandline switches for keeplist data (M120).
-    base::StringPiece test_app_path =
-        DoesAshSupportKeeplistInCmdlineSwitch()
-            ? "ash_extension_keeplist/simple_app"
-            : "ash_extension_keeplist/fake_gnubbyd_app";
-
-    const extensions::Extension* extension =
-        LoadExtension(test_data_dir_.AppendASCII(test_app_path));
+    const extensions::Extension* extension = LoadExtension(
+        test_data_dir_.AppendASCII("ash_extension_keeplist/simple_app"));
     test_app_id_ = extension->id();
-    EXPECT_EQ(test_app_id_, DoesAshSupportKeeplistInCmdlineSwitch()
-                                ? kTestChromeAppId
-                                : extension_misc::kGnubbyAppId);
+    EXPECT_EQ(test_app_id_, kTestChromeAppId);
   }
 
   void InstallTestExtension() {
     DCHECK(!test_extension_);
-    // TODO(crbug/1409199): Remove the fake GCSE extension when the old
-    // ash versions support commandline switches for keeplist data (M120).
-    base::StringPiece test_extension_path =
-        DoesAshSupportKeeplistInCmdlineSwitch()
-            ? "ash_extension_keeplist/simple_extension"
-            : "ash_extension_keeplist/fake_GCSE_extension";
-    test_extension_ =
-        LoadExtension(test_data_dir_.AppendASCII(test_extension_path));
-
-    EXPECT_EQ(test_extension_->id(), DoesAshSupportKeeplistInCmdlineSwitch()
-                                         ? kTestExtensionId
-                                         : extension_misc::kGCSEExtensionId);
+    test_extension_ = LoadExtension(
+        test_data_dir_.AppendASCII("ash_extension_keeplist/simple_extension"));
+    EXPECT_EQ(test_extension_->id(), kTestExtensionId);
   }
 
   const std::string& test_app_id() const { return test_app_id_; }
@@ -226,10 +202,6 @@ class KeeplistIdsFromAshCmdlineSwitchTest
 };
 
 IN_PROC_BROWSER_TEST_F(KeeplistIdsFromAshCmdlineSwitchTest, GetTestIds) {
-  if (!DoesAshSupportKeeplistInCmdlineSwitch()) {
-    GTEST_SKIP() << "Unsupported ash version";
-  }
-
   EXPECT_TRUE(
       ExtensionRunsInBothOSAndStandaloneBrowser(kExtensionRunInAshAndLacrosId));
   EXPECT_TRUE(ExtensionRunsInOS(kExtensionRunInAshAndLacrosId));

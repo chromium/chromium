@@ -57,7 +57,6 @@ std::vector<std::string> GetIdsFromCmdlineSwitch(
 base::span<const base::StringPiece>
 ExtensionsRunInOSAndStandaloneBrowserAllowlist() {
   static const base::StringPiece kKeeplist[] = {
-      extension_misc::kGCSEExtensionId,
       extension_misc::kGnubbyV3ExtensionId,
       extension_misc::kPdfExtensionId,
   };
