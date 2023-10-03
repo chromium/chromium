@@ -129,6 +129,15 @@ const char kPathKey[] = "path";
 const char kPathTypeKey[] = "path-type";
 const char kTimestampKey[] = "timestamp";
 
+// TODO(crbug.com/1373962): Remove `kFileSystemAccessPersistentPermissions`
+// feature flag checks before launch.
+bool UseOneTimePermissionNavigationHandler() {
+  return base::FeatureList::IsEnabled(
+             features::kFileSystemAccessPersistentPermissions) &&
+         base::FeatureList::IsEnabled(
+             permissions::features::kOneTimePermission);
+}
+
 void ShowFileSystemAccessRestrictedDirectoryDialogOnUIThread(
     content::GlobalRenderFrameHostId frame_id,
     const url::Origin& origin,
@@ -1958,6 +1967,8 @@ bool ChromeFileSystemAccessPermissionContext::OriginHasWriteAccess(
   });
 }
 
+// TODO(crbug.com/1373962): Remove `kFileSystemAccessPersistentPermissions`
+// feature flag checks before launch.
 // All tabs for a given origin have been backgrounded or cleared in the past
 // 16 hours. When this happens, we update the given origin's `OriginState` to
 // note that all tabs were recently backgrounded.
@@ -1980,6 +1991,13 @@ void ChromeFileSystemAccessPermissionContext::OnAllTabsInBackgroundTimerExpired(
     // backgrounding.
     ScheduleUsageIconUpdate();
   }
+}
+
+// TODO(crbug.com/1373962): Remove `kFileSystemAccessPersistentPermissions`
+// feature flag checks before launch.
+void ChromeFileSystemAccessPermissionContext::OnLastPageFromOriginClosed(
+    const url::Origin& origin) {
+  CleanupPermissions(origin);
 }
 
 void ChromeFileSystemAccessPermissionContext::OnShutdown() {
@@ -2060,21 +2078,23 @@ void ChromeFileSystemAccessPermissionContext::
 void ChromeFileSystemAccessPermissionContext::NavigatedAwayFromOrigin(
     const url::Origin& origin) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto it = active_permissions_map_.find(origin);
-  // If we have no permissions for the origin, there is nothing to do.
-  if (it == active_permissions_map_.end()) {
-    return;
-  }
+  if (!UseOneTimePermissionNavigationHandler()) {
+    auto it = active_permissions_map_.find(origin);
+    // If we have no permissions for the origin, there is nothing to do.
+    if (it == active_permissions_map_.end()) {
+      return;
+    }
 
-  // Start a timer to possibly clean up permissions for this origin.
-  if (!it->second.cleanup_timer) {
-    it->second.cleanup_timer = std::make_unique<base::RetainingOneShotTimer>(
-        FROM_HERE, kPermissionRevocationTimeout,
-        base::BindRepeating(&ChromeFileSystemAccessPermissionContext::
-                                MaybeCleanupActivePermissions,
-                            base::Unretained(this), origin));
+    // Start a timer to possibly clean up permissions for this origin.
+    if (!it->second.cleanup_timer) {
+      it->second.cleanup_timer = std::make_unique<base::RetainingOneShotTimer>(
+          FROM_HERE, kPermissionRevocationTimeout,
+          base::BindRepeating(
+              &ChromeFileSystemAccessPermissionContext::MaybeCleanupPermissions,
+              base::Unretained(this), origin));
+    }
+    it->second.cleanup_timer->Reset();
   }
-  it->second.cleanup_timer->Reset();
 }
 
 void ChromeFileSystemAccessPermissionContext::TriggerTimersForTesting() {
@@ -2088,19 +2108,14 @@ void ChromeFileSystemAccessPermissionContext::TriggerTimersForTesting() {
   }
 }
 
-void ChromeFileSystemAccessPermissionContext::MaybeCleanupActivePermissions(
+void ChromeFileSystemAccessPermissionContext::MaybeCleanupPermissions(
     const url::Origin& origin) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto it = active_permissions_map_.find(origin);
-  // If we have no permissions for the origin, there is nothing to do.
-  if (it == active_permissions_map_.end()) {
-    return;
-  }
-
 #if !BUILDFLAG(IS_ANDROID)
   // Iterate over all top-level frames by iterating over all browsers, and all
   // tabs within those browsers. This also counts PWAs in windows without
-  // tab strips, as those are still implemented as a Browser with a single tab.
+  // tab strips, as those are still implemented as a Browser with a single
+  // tab.
   for (Browser* browser : *BrowserList::GetInstance()) {
     if (browser->profile() != profile()) {
       continue;
@@ -2117,13 +2132,28 @@ void ChromeFileSystemAccessPermissionContext::MaybeCleanupActivePermissions(
       }
     }
   }
+  CleanupPermissions(origin);
+#endif
+}
 
-  // No tabs found with the same origin, so revoke all active permissions for
-  // the origin.
+void ChromeFileSystemAccessPermissionContext::CleanupPermissions(
+    const url::Origin& origin) {
+  // TODO(crbug.com/1011533): Remove this custom implementation to handle site
+  // navigation, with the launch of Persistent Permissions.
+  if (base::FeatureList::IsEnabled(
+          features::kFileSystemAccessPersistentPermissions)) {
+    // Clear the grants that should not be carried across sessions.
+    if (!OriginHasExtendedPermission(origin) &&
+        GetGrantStatus(origin) == GrantStatus::kLoaded) {
+      RevokeObjectPermissions(origin);
+    }
+    // Reset the grant status to the default state.
+    SetGrantStatus(origin, GrantStatus::kLoaded);
+  }
+  // Revoke the active grants, setting the status to `ASK`.
   if (RevokeActiveGrants(origin)) {
     ScheduleUsageIconUpdate();
   }
-#endif
 }
 
 void ChromeFileSystemAccessPermissionContext::

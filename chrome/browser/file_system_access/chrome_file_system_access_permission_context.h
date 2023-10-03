@@ -16,6 +16,7 @@
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
 #include "chrome/browser/file_system_access/file_system_access_permission_request_manager.h"
+#include "components/permissions/features.h"
 #include "components/permissions/object_permission_context_base.h"
 #include "content/public/browser/file_system_access_permission_context.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom-forward.h"
@@ -134,6 +135,7 @@ class ChromeFileSystemAccessPermissionContext
       const url::Origin& origin,
       const OneTimePermissionsTrackerObserver::BackgroundExpiryType&
           expiry_type) override;
+  void OnLastPageFromOriginClosed(const url::Origin& origin) override;
   void OnShutdown() override;
 
   // WebAppInstallManagerObserver:
@@ -330,9 +332,11 @@ class ChromeFileSystemAccessPermissionContext
   // windows.
   void DoUsageIconUpdate();
 
-  // Checks if any tabs are open for |origin|, and if not revokes all active
-  // permissions for that origin.
-  void MaybeCleanupActivePermissions(const url::Origin& origin);
+  // Checks if any tabs are open for the given origin, and if not, updates the
+  // permission grants.
+  void MaybeCleanupPermissions(const url::Origin& origin);
+
+  void CleanupPermissions(const url::Origin& origin);
 
   bool AncestorHasActivePermission(const url::Origin& origin,
                                    const base::FilePath& path,

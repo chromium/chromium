@@ -1704,6 +1704,62 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   EXPECT_TRUE(origin_is_embargoed_after_ignore_limit);
 }
 
+// TODO(crbug.com/1011533): Expand upon this test case to cover checking that
+// dormant grants are not revoked, when backgrounded dormant grants exist.
+// Currently, there is no method to retrieve dormant grants, for testing
+// purposes.
+TEST_F(ChromeFileSystemAccessPermissionContextTest,
+       OnLastPageFromOriginClosed) {
+  auto read_grant = permission_context()->GetReadPermissionGrant(
+      kTestOrigin, kTestPath, HandleType::kFile, UserAction::kSave);
+  auto write_grant = permission_context()->GetWritePermissionGrant(
+      kTestOrigin, kTestPath, HandleType::kFile, UserAction::kSave);
+  EXPECT_EQ(write_grant->GetStatus(), PermissionStatus::GRANTED);
+  ASSERT_THAT(permission_context()->GetGrantedObjects(kTestOrigin),
+              testing::SizeIs(1));
+  // When the last tab for an origin is closed or navigated away from,
+  // while there are loaded grants, both the active and persistent grants
+  // are revoked.
+  permission_context()->OnLastPageFromOriginClosed(kTestOrigin);
+  EXPECT_EQ(write_grant->GetStatus(), PermissionStatus::ASK);
+  ASSERT_THAT(permission_context()->GetGrantedObjects(kTestOrigin),
+              testing::IsEmpty());
+}
+
+TEST_F(ChromeFileSystemAccessPermissionContextTest,
+       OnLastPageFromOriginClosed_GrantStatusUpdated) {
+  // Create a current grant by triggering the restore prompt, and accepting it.
+  FileSystemAccessPermissionRequestManager::FromWebContents(web_contents())
+      ->set_auto_response_for_test(PermissionAction::GRANTED);
+  TriggerRestorePermissionPromptAfterBeingBackgrounded(kTestOrigin);
+  EXPECT_EQ(permission_context()->GetGrantStatusForTesting(kTestOrigin),
+            GrantStatus::kCurrent);
+  // The grant status is updated to loaded, as a result of the last tab being
+  // navigated away from.
+  permission_context()->OnLastPageFromOriginClosed(kTestOrigin);
+  EXPECT_EQ(permission_context()->GetGrantStatusForTesting(kTestOrigin),
+            GrantStatus::kLoaded);
+}
+
+TEST_F(ChromeFileSystemAccessPermissionContextTest,
+       OnLastPageFromOriginClosed_HasExtendedPermissions) {
+  permission_context()->SetOriginHasExtendedPermissionForTesting(kTestOrigin);
+  auto read_grant = permission_context()->GetReadPermissionGrant(
+      kTestOrigin, kTestPath, HandleType::kFile, UserAction::kSave);
+  auto write_grant = permission_context()->GetWritePermissionGrant(
+      kTestOrigin, kTestPath, HandleType::kFile, UserAction::kSave);
+  base::test::TestFuture<PermissionRequestOutcome> future;
+  write_grant->RequestPermission(frame_id(), UserActivationState::kNotRequired,
+                                 future.GetCallback());
+  ASSERT_THAT(permission_context()->GetGrantedObjects(kTestOrigin),
+              testing::SizeIs(1));
+  // When the last tab for an origin is closed or navigated away from, while
+  // extended permissions is enabled, the grants are not cleared.
+  permission_context()->OnLastPageFromOriginClosed(kTestOrigin);
+  ASSERT_THAT(permission_context()->GetGrantedObjects(kTestOrigin),
+              testing::SizeIs(1));
+}
+
 TEST_F(
     ChromeFileSystemAccessPermissionContextNoPersistenceTest,
     GetWritePermissionGrant_GrantIsRevokedWhenNoLongerUsed_GlobalGuardBlockedAfterNewGrant_NoPersistentPermissions) {
