@@ -16,15 +16,14 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.readaloud.expandedplayer.ExpandedPlayerCoordinator;
 import org.chromium.chrome.browser.readaloud.player.PlayerCoordinator;
-import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelTabObserver;
 import org.chromium.chrome.browser.translate.TranslateBridge;
 import org.chromium.chrome.modules.readaloud.ExpandedPlayer;
 import org.chromium.chrome.modules.readaloud.Playback;
-import org.chromium.chrome.modules.readaloud.PlaybackListener;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs;
+import org.chromium.chrome.modules.readaloud.PlaybackListener;
 import org.chromium.chrome.modules.readaloud.ReadAloudPlaybackHooks;
 import org.chromium.chrome.modules.readaloud.ReadAloudPlaybackHooksProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -180,14 +179,7 @@ public class ReadAloudController {
      * incognito mode and user opted into "Make searches and browsing better".
      */
     public boolean isAvailable() {
-        Profile profile = mProfileSupplier.get();
-        if (profile == null || profile.isOffTheRecord()) {
-            return false;
-        }
-        // Check whether the user has enabled anonymous URL-keyed data collection.
-        // This is surfaced on the relatively new "Make searches and browsing better"
-        // user setting.
-        return UnifiedConsentServiceBridge.isUrlKeyedAnonymizedDataCollectionEnabled(profile);
+        return ReadAloudFeatures.isAllowed(mProfileSupplier.get());
     }
 
     /**

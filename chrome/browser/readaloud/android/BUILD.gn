@@ -6,6 +6,8 @@ import("//build/config/android/rules.gni")
 android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/readaloud/ReadAloudController.java",
+
+    # TODO(b/302564407): Remove ReadAloudFeatures.java and related deps when internal change moves to depending on :features_java.
     "java/src/org/chromium/chrome/browser/readaloud/ReadAloudFeatures.java",
     "java/src/org/chromium/chrome/browser/readaloud/ReadAloudToolbarButtonController.java",
   ]
@@ -38,6 +40,18 @@ android_library("java") {
     "//url:gurl_java",
   ]
   resources_package = "org.chromium.chrome.browser.readaloud"
+}
+
+android_library("features_java") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/readaloud/ReadAloudFeatures.java",
+  ]
+  deps = [
+    "//chrome/browser/flags:java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/signin/services/android:java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+  ]
 }
 
 android_resources("java_resources") {
