@@ -66,6 +66,7 @@ class BASE_EXPORT SupportsUserData {
  private:
   // Externally-defined data accessible by key.
   absl::flat_hash_map<const void*, std::unique_ptr<Data>> user_data_;
+  bool in_destructor_ = false;
   // Guards usage of |user_data_|
   SEQUENCE_CHECKER(sequence_checker_);
 };

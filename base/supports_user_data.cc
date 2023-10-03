@@ -51,6 +51,8 @@ std::unique_ptr<SupportsUserData::Data> SupportsUserData::TakeUserData(
 void SupportsUserData::SetUserData(const void* key,
                                    std::unique_ptr<Data> data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(!in_destructor_) << "Calling SetUserData() when SupportsUserData is "
+                            "being destroyed is not supported.";
   // Avoid null keys; they are too vulnerable to collision.
   DCHECK(key);
   if (data.get()) {
@@ -97,6 +99,7 @@ SupportsUserData::~SupportsUserData() {
   if (!user_data_.empty()) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   }
+  in_destructor_ = true;
   absl::flat_hash_map<const void*, std::unique_ptr<Data>> user_data;
   user_data_.swap(user_data);
   // Now this->user_data_ is empty, and any destructors called transitively from

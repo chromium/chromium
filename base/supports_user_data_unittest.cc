@@ -7,7 +7,8 @@
 #include "base/features.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/test/scoped_feature_list.h"
+#include "base/memory/raw_ref.h"
+#include "base/test/gtest_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -112,6 +113,41 @@ TEST_F(SupportsUserDataTest, ReentrantRemoveUserData) {
   char key = 0;
   data->supports_user_data()->SetUserData(&key, WrapUnique(data));
   data->supports_user_data()->RemoveUserData(&key);
+}
+
+TEST_F(SupportsUserDataTest, ReentrantSetUserDataDuringRemoval) {
+  static const char kKey = 0;
+
+  class ProblematicSet : public SupportsUserData::Data {
+   public:
+    explicit ProblematicSet(const void* const key,
+                            TestSupportsUserData& supports_user_data)
+        : key_(key), supports_user_data_(supports_user_data) {}
+
+    ~ProblematicSet() override {
+      supports_user_data_->SetUserData(
+          key_, std::make_unique<ProblematicSet>(key_, *supports_user_data_));
+    }
+
+   private:
+    const raw_ptr<const void> key_;
+    raw_ref<TestSupportsUserData> supports_user_data_;
+  };
+  {
+    absl::optional<TestSupportsUserData> supports_user_data;
+    supports_user_data.emplace();
+    // This awkward construction is required since death tests are typically
+    // implemented using `fork()`, so calling `SetUserData()` outside the
+    // `EXPECT_CHECK_DEATH()` macro will also crash the process that's trying to
+    // observe the crash.
+    EXPECT_CHECK_DEATH([&] {
+      supports_user_data->SetUserData(
+          &kKey, std::make_unique<ProblematicSet>(&kKey, *supports_user_data));
+      // Triggers the reentrant attempt to call `SetUserData()` during
+      // destruction.
+      supports_user_data.reset();
+    }());
+  }
 }
 
 }  // namespace
