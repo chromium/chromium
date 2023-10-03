@@ -4881,8 +4881,6 @@ TEST_P(GpuImageDecodeCachePurgeOnTimerTest, NoDeadlock) {
 }
 
 TEST_P(GpuImageDecodeCachePurgeOnTimerTest, NoCache) {
-  base::test::ScopedFeatureList fl{features::kImageCacheNoCache};
-
   const uint32_t client_id = cache_->GenerateClientId();
   PaintImage image = CreatePaintImageInternal(GetNormalImageSize());
   image.set_no_cache(true);
@@ -4904,32 +4902,6 @@ TEST_P(GpuImageDecodeCachePurgeOnTimerTest, NoCache) {
   cache_->UnrefImage(draw_image);
   EXPECT_EQ(cache_->GetWorkingSetBytesForTesting(), 0u);
   EXPECT_EQ(cache_->GetNumCacheEntriesForTesting(), 0u);
-}
-
-TEST_P(GpuImageDecodeCachePurgeOnTimerTest, NoCacheIsNoopWithoutFeature) {
-  base::test::ScopedFeatureList fl;
-  fl.InitAndDisableFeature(features::kImageCacheNoCache);
-
-  const uint32_t client_id = cache_->GenerateClientId();
-  PaintImage image = CreatePaintImageInternal(GetNormalImageSize());
-  image.set_no_cache(true);
-  DrawImage draw_image = CreateDrawImageInternal(image);
-
-  ImageDecodeCache::TaskResult result = cache_->GetTaskForImageAndRef(
-      client_id, draw_image, ImageDecodeCache::TracingInfo());
-  EXPECT_TRUE(result.need_unref);
-  EXPECT_TRUE(result.task);
-  TestTileTaskRunner::ProcessTask(result.task->dependencies()[0].get());
-  TestTileTaskRunner::ProcessTask(result.task.get());
-
-  // Cached and in-use.
-  EXPECT_GT(cache_->GetWorkingSetBytesForTesting(), 0u);
-  EXPECT_EQ(cache_->GetNumCacheEntriesForTesting(), 1u);
-
-  cache_->UnrefImage(draw_image);
-  // Not in use, but stll cached.
-  EXPECT_EQ(cache_->GetWorkingSetBytesForTesting(), 0u);
-  EXPECT_EQ(cache_->GetNumCacheEntriesForTesting(), 1u);
 }
 
 INSTANTIATE_TEST_SUITE_P(
