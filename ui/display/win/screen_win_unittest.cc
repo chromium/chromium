@@ -166,7 +166,7 @@ class TestScreenWinManager final : public TestScreenWinInitializer {
         win::test::CreateMonitorInfo(pixel_bounds, pixel_work, device_name);
     monitor_infos_.push_back(monitor_info);
     display_infos_.push_back(internal::DisplayInfo(
-        monitor_info, device_scale_factor, 1.0f, Display::ROTATE_0, 60,
+        monitor_info, device_scale_factor, 1.0f, Display::ROTATE_0, 60.0f,
         gfx::Vector2dF(), tech, std::string()));
   }
 

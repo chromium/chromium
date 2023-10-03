@@ -267,8 +267,8 @@ class DISPLAY_EXPORT Display final {
   void set_is_monochrome(bool is_monochrome) { is_monochrome_ = is_monochrome; }
 
   // The display frequency of the monitor.
-  int display_frequency() const { return display_frequency_; }
-  void set_display_frequency(int display_frequency) {
+  float display_frequency() const { return display_frequency_; }
+  void set_display_frequency(float display_frequency) {
     display_frequency_ = display_frequency;
   }
 
@@ -334,7 +334,7 @@ class DISPLAY_EXPORT Display final {
   int depth_per_component_;
   bool is_monochrome_ = false;
   bool detected_ = true;
-  int display_frequency_ = 0;
+  float display_frequency_ = 0;
   std::string label_;
   uint32_t audio_formats_ = 0;
 };

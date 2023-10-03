@@ -34,7 +34,7 @@ struct ScreenInfo {
 
   // The display frequency in Hz of the monitor. Set to 0 if it fails in the
   // monitor frequency query.
-  uint32 display_frequency;
+  float display_frequency;
 
   // The display monitor rectangle in virtual-screen coordinates. Note that
   // this may be negative.
