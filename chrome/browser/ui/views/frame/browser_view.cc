@@ -286,6 +286,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/metrics_util.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
@@ -3579,8 +3580,12 @@ ui::ImageModel BrowserView::GetWindowIcon() {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
-  if (browser_->is_type_normal())
-    return ui::ImageModel::FromImage(rb.GetImageNamed(IDR_CHROME_APP_ICON_192));
+  if (browser_->is_type_normal()) {
+    int resource_id = ash::switches::IsAshDebugBrowserEnabled()
+                          ? IDR_DEBUG_CHROME_APP_ICON_192
+                          : IDR_CHROME_APP_ICON_192;
+    return ui::ImageModel::FromImage(rb.GetImageNamed(resource_id));
+  }
   auto* window = GetNativeWindow();
   int override_window_icon_resource_id =
       window ? window->GetProperty(kOverrideWindowIconResourceIdKey) : -1;

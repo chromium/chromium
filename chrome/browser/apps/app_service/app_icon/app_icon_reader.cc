@@ -4,6 +4,7 @@
 
 #include "chrome/browser/apps/app_service/app_icon/app_icon_reader.h"
 
+#include "ash/constants/ash_switches.h"
 #include "base/files/file_util.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
@@ -13,23 +14,33 @@
 #include "chrome/browser/apps/app_service/app_icon/dip_px_util.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/grit/chrome_unscaled_resources.h"
 #include "chrome/grit/component_extension_resources.h"
+#include "components/app_constants/constants.h"
 
 namespace {
+
+bool UseSmallIcon(int32_t size_in_dip) {
+  int size_in_px = apps_util::ConvertDipToPx(
+      size_in_dip, /*quantize_to_supported_scale_factor=*/true);
+  return size_in_px <= 32;
+}
 
 int GetResourceIdForIcon(const std::string& id,
                          int32_t size_in_dip,
                          const apps::IconKey& icon_key) {
-  int resource_id = icon_key.resource_id;
-
   if (id == arc::kPlayStoreAppId) {
-    int size_in_px = apps_util::ConvertDipToPx(
-        size_in_dip, /*quantize_to_supported_scale_factor=*/false);
-    resource_id = (size_in_px <= 32) ? IDR_ARC_SUPPORT_ICON_32_PNG
+    return UseSmallIcon(size_in_dip) ? IDR_ARC_SUPPORT_ICON_32_PNG
                                      : IDR_ARC_SUPPORT_ICON_192_PNG;
   }
 
-  return resource_id;
+  if (ash::switches::IsAshDebugBrowserEnabled() &&
+      id == app_constants::kChromeAppId) {
+    return UseSmallIcon(size_in_dip) ? IDR_DEBUG_CHROME_APP_ICON_32
+                                     : IDR_DEBUG_CHROME_APP_ICON_192;
+  }
+
+  return icon_key.resource_id;
 }
 
 }  // namespace
