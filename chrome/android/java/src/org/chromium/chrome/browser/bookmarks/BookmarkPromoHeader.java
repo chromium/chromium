@@ -64,25 +64,26 @@ public class BookmarkPromoHeader implements SyncService.SyncStateChangedListener
         mContext = context;
         mProfile = profile;
         mPromoHeaderChangeAction = promoHeaderChangeAction;
-
         mSyncService = SyncServiceFactory.getForProfile(profile);
-        if (mSyncService != null) mSyncService.addSyncStateChangedListener(this);
-
         mSigninManager = IdentityServicesProvider.get().getSigninManager(mProfile);
-        mSigninManager.addSignInStateObserver(this);
-
         mAccountManagerFacade = AccountManagerFacadeProvider.getInstance();
 
         if (SyncPromoController.canShowSyncPromo(SigninAccessPoint.BOOKMARK_MANAGER)) {
             mProfileDataCache = ProfileDataCache.createWithDefaultImageSizeAndNoBadge(mContext);
-            mProfileDataCache.addObserver(this);
             mSyncPromoController = new SyncPromoController(
                     SigninAccessPoint.BOOKMARK_MANAGER, SyncConsentActivityLauncherImpl.get());
-            mAccountManagerFacade.addObserver(this);
         } else {
             mProfileDataCache = null;
             mSyncPromoController = null;
         }
+
+        if (mSyncService != null) mSyncService.addSyncStateChangedListener(this);
+        mSigninManager.addSignInStateObserver(this);
+        if (mSyncPromoController != null) {
+            mAccountManagerFacade.addObserver(this);
+            mProfileDataCache.addObserver(this);
+        }
+
         updatePromoState();
     }
 
