@@ -1162,7 +1162,6 @@ void GpuServiceImpl::EstablishGpuChannel(int32_t client_id,
 
   media_gpu_channel_manager_->AddChannel(client_id, channel_token);
 
-  gpu_channel->SetGpuExtraInfo(gpu_extra_info_);
   std::move(callback).Run(
       std::move(pipe.handle1), gpu_info_, gpu_feature_info_,
       gpu_channel->shared_image_stub()->factory()->MakeCapabilities());
