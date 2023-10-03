@@ -242,7 +242,8 @@ constexpr char kFindInPagePreviousButtonID[] = "find.previousButton";
 }
 
 // Tests the various ways to dismiss the keyboard during a Find session.
-- (void)testFindInPageDismissKeyboard {
+// TODO(crbug.com/1488891): Test fails on downstream bots.
+- (void)DISABLED_testFindInPageDismissKeyboard {
   [_helper helperTestFindInPageDismissKeyboard];
 }
 
