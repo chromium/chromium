@@ -57,7 +57,7 @@
 namespace updater {
 namespace {
 
-constexpr int64_t kLogRotateAtSize = 1024 * 1024 * 2;  // 2 MiB.
+constexpr int64_t kLogRotateAtSize = 1024 * 1024;  // 1 MiB.
 
 const char kHexString[] = "0123456789ABCDEF";
 inline char IntToHex(int i) {
