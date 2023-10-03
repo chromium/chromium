@@ -199,7 +199,7 @@ public class NetworkChangesTest {
     }
 
     @OptIn(markerClass = org.chromium.net.QuicOptions.Experimental.class)
-    private static void goAwayOnIpChange(CronetEngine.Builder engineBuilder) {
+    private static void goawayOnIpChange(CronetEngine.Builder engineBuilder) {
         QuicOptions.Builder optionBuilder = QuicOptions.builder();
         optionBuilder.closeSessionsOnIpChange(false);
         optionBuilder.goawaySessionsOnIpChange(true);
@@ -309,7 +309,7 @@ public class NetworkChangesTest {
     public void testDefaultNetworkChange_goAwayonIpChange_pendingRequestSucceeds()
             throws Exception {
         mTestRule.getTestFramework().applyEngineBuilderPatch(
-                (builder) -> { goAwayOnIpChange(builder); });
+                (builder) -> { goawayOnIpChange(builder); });
         mTestRule.getTestFramework().startEngine();
         ConnectivityManager connectivityManager =
                 (ConnectivityManager) mTestRule.getTestFramework().getContext().getSystemService(
@@ -423,7 +423,7 @@ public class NetworkChangesTest {
     public void testDefaultNetworkChangeAndDisconnect_goAwayonIpChange_pendingRequestFails()
             throws Exception {
         mTestRule.getTestFramework().applyEngineBuilderPatch(
-                (builder) -> { goAwayOnIpChange(builder); });
+                (builder) -> { goawayOnIpChange(builder); });
         mTestRule.getTestFramework().startEngine();
         ConnectivityManager connectivityManager =
                 (ConnectivityManager) mTestRule.getTestFramework().getContext().getSystemService(
@@ -537,6 +537,196 @@ public class NetworkChangesTest {
         assertThat(callback.getResponseInfoWithChecks())
                 .hasNegotiatedProtocolThat()
                 .isEqualTo("h3");
+    }
+
+    @Test
+    @SmallTest
+    public void testDefaultNetworkChangeAndDisconnect_defaultNetworkMigration_sessionIsMigrated()
+            throws Exception {
+        mTestRule.getTestFramework().applyEngineBuilderPatch(
+                (builder) -> { enableDefaultNetworkMigration(builder); });
+        mTestRule.getTestFramework().startEngine();
+        ConnectivityManager connectivityManager =
+                (ConnectivityManager) mTestRule.getTestFramework().getContext().getSystemService(
+                        Context.CONNECTIVITY_SERVICE);
+        Networks networks = new Networks(connectivityManager);
+
+        TestRequestFinishedListener listener = new TestRequestFinishedListener();
+        mTestRule.getTestFramework().getEngine().addRequestFinishedListener(listener);
+        String url = QuicTestServer.getServerURL() + "/simple.txt";
+
+        TestUrlRequestCallback callback = new TestUrlRequestCallback();
+        UrlRequest request = mTestRule.getTestFramework()
+                                     .getEngine()
+                                     .newUrlRequestBuilder(url, callback, callback.getExecutor())
+                                     .build();
+        request.start();
+
+        callback.blockForDone();
+        listener.blockUntilDone();
+        assertThat(callback.getResponseInfoWithChecks())
+                .hasNegotiatedProtocolThat()
+                .isEqualTo("h3");
+        // Socket reused is a poorly named API. What it really represent is whether the underlying
+        // session was reused or not (for requests over QUIC, this is populated from
+        // https://source.chromium.org/chromium/chromium/src/+/main:net/quic/quic_http_stream.h;l=205;drc=150d8c7e45daeef094be8ec8852e3486eed8f59d).
+        assertThat(listener.getRequestInfo().getMetrics().getSocketReused()).isFalse();
+        mTestRule.getTestFramework().getEngine().removeRequestFinishedListener(listener);
+
+        // QUIC session created due to the previous request should migrate to the new default
+        // network.
+        networks.swapDefaultNetwork();
+
+        callback = new TestUrlRequestCallback();
+        listener = new TestRequestFinishedListener();
+        mTestRule.getTestFramework().getEngine().addRequestFinishedListener(listener);
+        request = mTestRule.getTestFramework()
+                          .getEngine()
+                          .newUrlRequestBuilder(url, callback, callback.getExecutor())
+                          .build();
+        request.start();
+
+        callback.blockForDone();
+        listener.blockUntilDone();
+        assertThat(callback.getResponseInfoWithChecks())
+                .hasNegotiatedProtocolThat()
+                .isEqualTo("h3");
+        // See previous check as to why we're checking for socket being reused.
+        assertThat(listener.getRequestInfo().getMetrics().getSocketReused()).isTrue();
+        mTestRule.getTestFramework().getEngine().removeRequestFinishedListener(listener);
+
+        // Disconnecting the non-default network should not affect an existing QUIC session.
+        networks.disconnectNonDefaultNetwork();
+
+        callback = new TestUrlRequestCallback();
+        listener = new TestRequestFinishedListener();
+        mTestRule.getTestFramework().getEngine().addRequestFinishedListener(listener);
+        request = mTestRule.getTestFramework()
+                          .getEngine()
+                          .newUrlRequestBuilder(url, callback, callback.getExecutor())
+                          .build();
+        request.start();
+
+        callback.blockForDone();
+        listener.blockUntilDone();
+        assertThat(callback.getResponseInfoWithChecks())
+                .hasNegotiatedProtocolThat()
+                .isEqualTo("h3");
+        // See previous check as to why we're checking for socket being reused.
+        assertThat(listener.getRequestInfo().getMetrics().getSocketReused()).isTrue();
+        mTestRule.getTestFramework().getEngine().removeRequestFinishedListener(listener);
+    }
+
+    @Test
+    @SmallTest
+    public void testDefaultNetworkChange_goawayOnIpChange_sessionIsNotReused() throws Exception {
+        mTestRule.getTestFramework().applyEngineBuilderPatch(
+                (builder) -> { goawayOnIpChange(builder); });
+        mTestRule.getTestFramework().startEngine();
+        ConnectivityManager connectivityManager =
+                (ConnectivityManager) mTestRule.getTestFramework().getContext().getSystemService(
+                        Context.CONNECTIVITY_SERVICE);
+        Networks networks = new Networks(connectivityManager);
+
+        TestRequestFinishedListener listener = new TestRequestFinishedListener();
+        mTestRule.getTestFramework().getEngine().addRequestFinishedListener(listener);
+        String url = QuicTestServer.getServerURL() + "/simple.txt";
+
+        TestUrlRequestCallback callback = new TestUrlRequestCallback();
+        UrlRequest request = mTestRule.getTestFramework()
+                                     .getEngine()
+                                     .newUrlRequestBuilder(url, callback, callback.getExecutor())
+                                     .build();
+        request.start();
+
+        callback.blockForDone();
+        listener.blockUntilDone();
+        assertThat(callback.getResponseInfoWithChecks())
+                .hasNegotiatedProtocolThat()
+                .isEqualTo("h3");
+        // Socket reused is a poorly named API. What it really represent is whether the underlying
+        // session was reused or not (for requests over QUIC, this is populated from
+        // https://source.chromium.org/chromium/chromium/src/+/main:net/quic/quic_http_stream.h;l=205;drc=150d8c7e45daeef094be8ec8852e3486eed8f59d).
+        assertThat(listener.getRequestInfo().getMetrics().getSocketReused()).isFalse();
+        mTestRule.getTestFramework().getEngine().removeRequestFinishedListener(listener);
+
+        // This should cause the QUIC session created due to the previous request to be marked as
+        // going away.
+        networks.swapDefaultNetwork();
+
+        callback = new TestUrlRequestCallback();
+        listener = new TestRequestFinishedListener();
+        mTestRule.getTestFramework().getEngine().addRequestFinishedListener(listener);
+        request = mTestRule.getTestFramework()
+                          .getEngine()
+                          .newUrlRequestBuilder(url, callback, callback.getExecutor())
+                          .build();
+        request.start();
+
+        callback.blockForDone();
+        listener.blockUntilDone();
+        assertThat(callback.getResponseInfoWithChecks())
+                .hasNegotiatedProtocolThat()
+                .isEqualTo("h3");
+        // See previous check as to why we're checking for socket being reused.
+        assertThat(listener.getRequestInfo().getMetrics().getSocketReused()).isFalse();
+        mTestRule.getTestFramework().getEngine().removeRequestFinishedListener(listener);
+    }
+
+    @Test
+    @SmallTest
+    public void testDefaultNetworkChange_closeSessionsOnIpChange_sessionIsNotReused()
+            throws Exception {
+        mTestRule.getTestFramework().applyEngineBuilderPatch(
+                (builder) -> { closeSessionsOnIpChange(builder); });
+        mTestRule.getTestFramework().startEngine();
+        ConnectivityManager connectivityManager =
+                (ConnectivityManager) mTestRule.getTestFramework().getContext().getSystemService(
+                        Context.CONNECTIVITY_SERVICE);
+        Networks networks = new Networks(connectivityManager);
+
+        TestRequestFinishedListener listener = new TestRequestFinishedListener();
+        mTestRule.getTestFramework().getEngine().addRequestFinishedListener(listener);
+        String url = QuicTestServer.getServerURL() + "/simple.txt";
+
+        TestUrlRequestCallback callback = new TestUrlRequestCallback();
+        UrlRequest request = mTestRule.getTestFramework()
+                                     .getEngine()
+                                     .newUrlRequestBuilder(url, callback, callback.getExecutor())
+                                     .build();
+        request.start();
+
+        callback.blockForDone();
+        listener.blockUntilDone();
+        assertThat(callback.getResponseInfoWithChecks())
+                .hasNegotiatedProtocolThat()
+                .isEqualTo("h3");
+        // Socket reused is a poorly named API. What it really represent is whether the underlying
+        // session was reused or not (for requests over QUIC, this is populated from
+        // https://source.chromium.org/chromium/chromium/src/+/main:net/quic/quic_http_stream.h;l=205;drc=150d8c7e45daeef094be8ec8852e3486eed8f59d).
+        assertThat(listener.getRequestInfo().getMetrics().getSocketReused()).isFalse();
+        mTestRule.getTestFramework().getEngine().removeRequestFinishedListener(listener);
+
+        // This should cause the QUIC session created due to the previous request to be closed.
+        networks.swapDefaultNetwork();
+
+        callback = new TestUrlRequestCallback();
+        listener = new TestRequestFinishedListener();
+        mTestRule.getTestFramework().getEngine().addRequestFinishedListener(listener);
+        request = mTestRule.getTestFramework()
+                          .getEngine()
+                          .newUrlRequestBuilder(url, callback, callback.getExecutor())
+                          .build();
+        request.start();
+
+        callback.blockForDone();
+        listener.blockUntilDone();
+        assertThat(callback.getResponseInfoWithChecks())
+                .hasNegotiatedProtocolThat()
+                .isEqualTo("h3");
+        // See previous check as to why we're checking for socket being reused.
+        assertThat(listener.getRequestInfo().getMetrics().getSocketReused()).isFalse();
+        mTestRule.getTestFramework().getEngine().removeRequestFinishedListener(listener);
     }
 
     private static void waitForStatus(UrlRequest request, int targetStatus) {
