@@ -525,6 +525,7 @@ src/webgpu/shader/execution/flow_control/phony.spec.ts
 src/webgpu/shader/execution/flow_control/return.spec.ts
 src/webgpu/shader/execution/flow_control/switch.spec.ts
 src/webgpu/shader/execution/flow_control/while.spec.ts
+src/webgpu/shader/execution/memory_model/adjacent.spec.ts
 src/webgpu/shader/execution/memory_model/memory_model_setup.ts
 src/webgpu/shader/execution/memory_model/atomicity.spec.ts
 src/webgpu/shader/execution/memory_model/barrier.spec.ts
