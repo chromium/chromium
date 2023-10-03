@@ -9,4 +9,5 @@
   [CallWith=ScriptState] Promise<DOMString> getFedCmTitle();
   [CallWith=ScriptState, RaisesException] Promise<void> selectFedCmAccount(long accountIndex);
   [CallWith=ScriptState] Promise<void> dismissFedCmDialog();
+  [CallWith=ScriptState] Promise<void> confirmIdpLogin();
 };

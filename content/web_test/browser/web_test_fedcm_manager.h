@@ -10,6 +10,7 @@
 
 namespace content {
 
+class FederatedAuthRequestImpl;
 class RenderFrameHost;
 class RenderFrameHostImpl;
 
@@ -32,8 +33,13 @@ class WebTestFedCmManager
   void SelectFedCmAccount(uint32_t account_index,
                           SelectFedCmAccountCallback) override;
   void DismissFedCmDialog(DismissFedCmDialogCallback) override;
+  void ConfirmIdpLogin(ConfirmIdpLoginCallback) override;
 
  private:
+  // Returns the active FederatedAuthRequestImpl for the current Page,
+  // or nullptr if there isn't one.
+  FederatedAuthRequestImpl* GetAuthRequestImpl();
+
   base::WeakPtr<RenderFrameHostImpl> render_frame_host_;
 };
 

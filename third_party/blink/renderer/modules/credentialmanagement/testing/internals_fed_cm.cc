@@ -165,4 +165,34 @@ ScriptPromise InternalsFedCm::dismissFedCmDialog(ScriptState* script_state,
   return promise;
 }
 
+// static
+ScriptPromise InternalsFedCm::confirmIdpLogin(ScriptState* script_state,
+                                              Internals&) {
+  mojo::Remote<test::mojom::blink::FederatedAuthRequestAutomation>
+      federated_auth_request_automation =
+          CreateFedAuthRequestAutomation(script_state);
+
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  ScriptPromise promise = resolver->Promise();
+  // Get the interface so `federated_auth_request_automation` can be moved
+  // below.
+  test::mojom::blink::FederatedAuthRequestAutomation*
+      raw_federated_auth_request_automation =
+          federated_auth_request_automation.get();
+  raw_federated_auth_request_automation->ConfirmIdpLogin(WTF::BindOnce(
+      // While we only really need |resolver|, we also take the
+      // mojo::Remote<> so that it remains alive after this function exits.
+      [](ScriptPromiseResolver* resolver,
+         mojo::Remote<test::mojom::blink::FederatedAuthRequestAutomation>,
+         bool success) {
+        if (success) {
+          resolver->Resolve();
+        } else {
+          resolver->Reject();
+        }
+      },
+      WrapPersistent(resolver), std::move(federated_auth_request_automation)));
+  return promise;
+}
+
 }  // namespace blink

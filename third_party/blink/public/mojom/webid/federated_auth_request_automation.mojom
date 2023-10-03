@@ -18,4 +18,7 @@ interface FederatedAuthRequestAutomation {
 
   // Dismisses the current dialog, if one is open.
   DismissFedCmDialog() => (bool success);
+
+  // Accepts the IDP login confirmation dialog, if one is open.
+  ConfirmIdpLogin() => (bool success);
 };

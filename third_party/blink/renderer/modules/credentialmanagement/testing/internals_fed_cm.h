@@ -25,6 +25,7 @@ class InternalsFedCm {
                                           int account_index,
                                           ExceptionState&);
   static ScriptPromise dismissFedCmDialog(ScriptState*, Internals&);
+  static ScriptPromise confirmIdpLogin(ScriptState*, Internals&);
 };
 
 }  // namespace blink

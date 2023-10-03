@@ -542,6 +542,10 @@
     return internals.dismissFedCmDialog();
   }
 
+  window.test_driver_internal.confirm_idp_login = async function() {
+    return internals.confirmIdpLogin();
+  }
+
   // Enable automation so we don't wait for user input on unimplemented APIs
   window.test_driver_internal.in_automation = true;
 
