@@ -90,7 +90,7 @@ source_set("tabs_internal") {
     "//ios/chrome/browser/permissions:tab_helper",
     "//ios/chrome/browser/policy_url_blocking",
     "//ios/chrome/browser/prerender",
-    "//ios/chrome/browser/reading_list",
+    "//ios/chrome/browser/reading_list/model",
     "//ios/chrome/browser/safe_browsing",
     "//ios/chrome/browser/safe_browsing/tailored_security",
     "//ios/chrome/browser/search_engines",

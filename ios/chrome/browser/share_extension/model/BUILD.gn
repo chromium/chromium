@@ -18,7 +18,7 @@ source_set("model") {
     "//components/keyed_service/ios",
     "//components/reading_list/core",
     "//ios/chrome/browser/bookmarks/model",
-    "//ios/chrome/browser/reading_list",
+    "//ios/chrome/browser/reading_list/model",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/public/features:system_flags",
     "//ios/chrome/common/app_group",

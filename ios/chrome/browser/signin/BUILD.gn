@@ -85,7 +85,7 @@ source_set("signin") {
     "//ios/chrome/browser/content_settings/model",
     "//ios/chrome/browser/crash_report/model",
     "//ios/chrome/browser/policy:policy_util",
-    "//ios/chrome/browser/reading_list:reading_list_remover",
+    "//ios/chrome/browser/reading_list/model:reading_list_remover",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",

@@ -3,5 +3,5 @@ include_rules = [
   "+ios/chrome/browser/mailto_handler",
   "+ios/chrome/browser/overlays/public",
   "+ios/chrome/browser/policy_url_blocking",
-  "+ios/chrome/browser/reading_list",
+  "+ios/chrome/browser/reading_list/model",
 ]

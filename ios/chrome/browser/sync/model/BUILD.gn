@@ -75,7 +75,7 @@ source_set("model") {
     "//ios/chrome/browser/passwords:sharing_factory",
     "//ios/chrome/browser/passwords:store_factory",
     "//ios/chrome/browser/power_bookmarks",
-    "//ios/chrome/browser/reading_list",
+    "//ios/chrome/browser/reading_list/model",
     "//ios/chrome/browser/search_engines",
     "//ios/chrome/browser/sessions",
     "//ios/chrome/browser/shared/model/application_context",
@@ -102,7 +102,7 @@ source_set("model") {
   allow_circular_includes_from = [
     "//ios/chrome/browser/history",
     "//ios/chrome/browser/passwords:store_factory",
-    "//ios/chrome/browser/reading_list",
+    "//ios/chrome/browser/reading_list/model",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/sync/model/glue",
     "//ios/chrome/browser/sync/model/sessions",

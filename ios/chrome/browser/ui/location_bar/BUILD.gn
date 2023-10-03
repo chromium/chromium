@@ -115,7 +115,7 @@ source_set("location_bar_model_delegate") {
     "//components/prefs",
     "//components/security_state/ios",
     "//ios/chrome/browser/autocomplete/model",
-    "//ios/chrome/browser/reading_list",
+    "//ios/chrome/browser/reading_list/model",
     "//ios/chrome/browser/search_engines:template_url_service_factory",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/prefs:pref_names",

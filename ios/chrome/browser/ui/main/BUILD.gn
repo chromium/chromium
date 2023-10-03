@@ -83,7 +83,7 @@ source_set("main") {
     "//ios/chrome/browser/device_sharing",
     "//ios/chrome/browser/download",
     "//ios/chrome/browser/main",
-    "//ios/chrome/browser/reading_list",
+    "//ios/chrome/browser/reading_list/model",
     "//ios/chrome/browser/sessions",
     "//ios/chrome/browser/sessions:restoration_agent",
     "//ios/chrome/browser/sessions:serialisation",

@@ -12,7 +12,7 @@ include_rules = [
   "+ios/chrome/browser/https_upgrades",
   "+ios/chrome/browser/language",
   "+ios/chrome/browser/optimization_guide",
-  "+ios/chrome/browser/reading_list",
+  "+ios/chrome/browser/reading_list/model",
   "+ios/chrome/browser/search_engines",
   "+ios/chrome/browser/signin",
   "+ios/chrome/browser/snapshots",

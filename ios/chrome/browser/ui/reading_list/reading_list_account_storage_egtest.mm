@@ -8,7 +8,7 @@
 #import "components/reading_list/features/reading_list_switches.h"
 #import "components/signin/public/base/consent_level.h"
 #import "components/sync/base/features.h"
-#import "ios/chrome/browser/reading_list/reading_list_constants.h"
+#import "ios/chrome/browser/reading_list/model/reading_list_constants.h"
 #import "ios/chrome/browser/shared/ui/elements/activity_overlay_egtest_util.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller_constants.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"

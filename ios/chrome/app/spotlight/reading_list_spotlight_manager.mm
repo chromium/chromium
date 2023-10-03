@@ -18,7 +18,7 @@
 #import "ios/chrome/app/spotlight/spotlight_interface.h"
 #import "ios/chrome/app/spotlight/spotlight_logger.h"
 #import "ios/chrome/browser/favicon/ios_chrome_large_icon_service_factory.h"
-#import "ios/chrome/browser/reading_list/reading_list_model_factory.h"
+#import "ios/chrome/browser/reading_list/model/reading_list_model_factory.h"
 
 // Called from the BrowserBookmarkModelBridge from C++ -> ObjC.
 @interface ReadingListSpotlightManager () <ReadingListModelBridgeObserver> {
