@@ -20,7 +20,7 @@ module.exports = {
           // This plugin strips 'unused' IDs, however they may be used in
           // another file to embed an external SVG via <use>. This setting keeps
           // all IDs that start with "EXPORT_".
-          cleanupIDs: {
+          cleanupIds: {
             preservePrefixes: ["EXPORT_"],
           },
         },
