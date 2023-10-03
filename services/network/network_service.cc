@@ -1027,8 +1027,8 @@ void NetworkService::StartNetLogBounded(base::File file,
 
       base::BindOnce(
           &NetworkService::OnStartNetLogBoundedScratchDirectoryCreated,
-          base::Unretained(this), std::move(file), max_total_size, capture_mode,
-          std::move(constants)));
+          weak_factory_.GetWeakPtr(), std::move(file), max_total_size,
+          capture_mode, std::move(constants)));
 }
 
 void NetworkService::OnStartNetLogBoundedScratchDirectoryCreated(
